@@ -143,7 +143,7 @@ QoreChain registers **45+ genesis modules including 20+ custom modules**, groupe
 
 **Security**
 
-* `x/pqc` — Post-quantum cryptography: Dilithium-5, ML-KEM-1024, hybrid Ed25519 + ML-DSA-87, SHAKE-256, algorithm agility
+* `x/pqc` — Post-quantum cryptography: Dilithium-5, ML-KEM-1024, hybrid secp256k1 (ECDSA) + ML-DSA-87, SHAKE-256, algorithm agility
 
 **AI and Machine Learning**
 
@@ -216,7 +216,7 @@ SetUpContext
 Key decorators run in the following sequence (each decorator runs in order and can reject a transaction):
 
 1. **PQCVerify** — Module `x/pqc`. Verify Dilithium-5 signatures on PQC-flagged transactions.
-2. **PQCHybridVerify** — Module `x/pqc`. Verify dual Ed25519 + ML-DSA-87 hybrid signatures.
+2. **PQCHybridVerify** — Module `x/pqc`. Verify dual secp256k1 (ECDSA) + ML-DSA-87 hybrid signatures.
 3. **AIAnomaly** — Module `x/ai`. Run isolation forest anomaly detection and risk scoring.
 4. **FairBlock** — Module `x/fairblock`. Process tIBE encrypted transactions for MEV protection.
 5. **SVMComputeBudget** — Module `x/svm`. Validate and allocate compute units for SVM programs.

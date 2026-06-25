@@ -64,11 +64,11 @@ Accounts register PQC keys via `MsgRegisterPQCKey` (legacy, defaults to Dilithiu
 
 The hybrid signature system allows transactions to carry **both** a classical signature and a PQC signature simultaneously. This provides defense-in-depth: even if one scheme is broken, the other protects the transaction.
 
-*A transaction signed with Ed25519 plus ML-DSA-87 (Dilithium-5), verified by the ante handler under the chain-wide enforcement mode.*
+*A transaction signed with secp256k1 (ECDSA) plus ML-DSA-87 (Dilithium-5), verified by the ante handler under the chain-wide enforcement mode.*
 
 ```mermaid
 flowchart TD
-    A["Transaction<br/>Ed25519 signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
+    A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
     B --> C{"Account has<br/>PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
     C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]

@@ -15,7 +15,7 @@ Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 20
 
 ### 1. Post-Quantum Cryptography
 
-QoreChain uses NIST-standardized ML-DSA-87 (Dilithium-5) for digital signatures and ML-KEM-1024 for key encapsulation, providing security against attacks from both classical and quantum computers. The hybrid signature architecture pairs Ed25519 with ML-DSA-87 so that every transaction can carry dual signatures — classical wallets continue working unmodified while PQC-enabled wallets gain quantum resistance. Three governance-controlled enforcement modes (disabled, optional, required) allow the network to migrate gradually without disrupting existing users. An algorithm agility framework ensures that signature schemes can be upgraded via governance proposals as cryptographic standards evolve.
+QoreChain uses NIST-standardized ML-DSA-87 (Dilithium-5) for digital signatures and ML-KEM-1024 for key encapsulation, providing security against attacks from both classical and quantum computers. The hybrid signature architecture pairs a classical secp256k1 (ECDSA) signature with ML-DSA-87 so that every transaction can carry dual signatures — classical wallets continue working unmodified while PQC-enabled wallets gain quantum resistance. Three governance-controlled enforcement modes (disabled, optional, required) allow the network to migrate gradually without disrupting existing users. An algorithm agility framework ensures that signature schemes can be upgraded via governance proposals as cryptographic standards evolve.
 
 ### 2. AI-Native Processing
 

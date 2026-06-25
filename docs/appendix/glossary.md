@@ -29,7 +29,7 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **EIP-1559** — Ethereum Improvement Proposal 1559. A transaction fee model that uses a base fee (burned) plus a priority fee (paid to validators). QoreChain implements EIP-1559-style fee mechanics in its QoreChain EVM Engine.
 
-**HCS** — Hybrid Cryptographic Signatures. QoreChain's dual-signature system where transactions carry both a classical signature (Ed25519) and a post-quantum signature (ML-DSA-87), providing cryptographic security against both classical and quantum adversaries.
+**HCS** — Hybrid Cryptographic Signatures. QoreChain's dual-signature system where transactions carry both a classical signature (secp256k1/ECDSA) and a post-quantum signature (ML-DSA-87), providing cryptographic security against both classical and quantum adversaries.
 
 **IBC** — Inter-Blockchain Communication. A protocol for authenticated message passing between independent blockchains. QoreChain supports IBC channels for cross-chain token transfers and data relay.
 

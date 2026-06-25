@@ -69,11 +69,11 @@ This enables deployment and interaction with SVM programs running on QoreChain.
 
 ## PQC-Enabled Wallets
 
-QoreChain features hybrid post-quantum cryptography (PQC) support through ML-DSA-87 (Dilithium-5) signatures. This provides quantum-resistant security alongside standard Ed25519 signatures.
+QoreChain features hybrid post-quantum cryptography (PQC) support through ML-DSA-87 (Dilithium-5) signatures. This provides quantum-resistant security alongside standard secp256k1 (ECDSA) signatures.
 
 ### How It Works
 
-Wallets can attach an ML-DSA-87 PQC signature as a transaction extension alongside the standard Ed25519 signature. This hybrid approach ensures backward compatibility while enabling quantum resistance.
+Wallets can attach an ML-DSA-87 PQC signature as a transaction extension alongside the standard secp256k1 (ECDSA) signature. This hybrid approach ensures backward compatibility while enabling quantum resistance.
 
 ### Auto-Registration
 

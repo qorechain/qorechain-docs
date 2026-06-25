@@ -71,7 +71,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 **Release focus:** Post-quantum cryptographic security and algorithm agility.
 
-* **Dual Ed25519 + ML-DSA-87 signatures** — Every transaction carries both a classical and a post-quantum signature, verified in the AnteHandler chain
+* **Dual secp256k1 (ECDSA) + ML-DSA-87 signatures** — Every transaction carries both a classical and a post-quantum signature, verified in the AnteHandler chain
 * **3 enforcement modes** — Configurable hybrid signature enforcement: off (mode 0), permissive (mode 1, PQC optional), mandatory (mode 2, PQC required)
 * **Auto-registration** — PQC public keys are automatically registered on the first hybrid transaction, eliminating a separate registration step
 * **SHAKE-256 hash foundation** — All PQC-related hashing operations use SHAKE-256 (SHA-3 family) for quantum-resistant address derivation
