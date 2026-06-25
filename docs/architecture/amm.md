@@ -165,3 +165,5 @@ qorechaind tx amm resume-pool 1 \
 
 - The **Dashboard Trade / DEX** surfaces these pools, quotes, and swaps in a graphical interface for everyday users.
 - For how QOR supply, fees, and value flow through the chain, see [Tokenomics](/architecture/tokenomics).
+- Try swaps yourself in the [Trade / DEX](/dashboard/trade) interface.
+- To bring assets onto QoreChain first, see [Bridging Assets](/user-guide/bridging-assets).

@@ -42,3 +42,10 @@ QCAIA is in **beta**. It is improving continuously, and occasionally it may not 
 | **Telegram** | Join **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** and mention the bot | [Using QCAIA on Telegram](/qcaia/telegram) |
 
 Pick your platform above to learn exactly how to ask, or jump straight to the [Examples](/qcaia/examples) page to see QCAIA in action.
+
+## Related
+
+* [Using QCAIA on Discord](/qcaia/discord) — slash commands and usage on Discord.
+* [Using QCAIA on Telegram](/qcaia/telegram) — mentioning the bot on Telegram.
+* [Examples](/qcaia/examples) — sample questions and answers.
+* [FAQ](/appendix/faq) — common questions about QoreChain.

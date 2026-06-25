@@ -126,3 +126,10 @@ The sequencer determines who orders transactions within a rollup block before se
 Not sure where to start? The RDK ships **preset profiles** that bundle these choices for common application categories — see **[Preset Profiles](/rollups/preset-profiles)** — and a `suggest-profile` query that recommends one from a plain-language description of your use case.
 
 For developers, the RDK also ships as the public TypeScript SDK **`@qorechain/rdk`** plus the **`create-qorechain-rollup`** scaffolder, which drive the same on-chain module from code — see **[Deploying a Rollup](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.
+
+## Related
+
+* [Deploying a Rollup](/rollups/deploying-a-rollup) — launch a rollup from the CLI or TypeScript RDK.
+* [Preset Profiles](/rollups/preset-profiles) — one-click bundles for common application categories.
+* [Data Availability](/rollups/data-availability) — the native DA router and blob storage.
+* [ZK / STARK Withdrawals](/rollups/zk-stark-withdrawals) — proof-backed withdrawal flows.

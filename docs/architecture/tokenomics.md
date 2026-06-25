@@ -203,3 +203,10 @@ x/burn → x/xqore → x/inflation → x/rlconsensus
 4. **x/rlconsensus** — Adjusts consensus parameters based on PRISM reinforcement-learning signals.
 
 This ordering ensures that burns are finalized before rebases, and rebases complete before scheduled emissions are released, maintaining consistent economic state transitions.
+
+## Related
+
+* [Chain Parameters](/appendix/chain-parameters) — canonical economic and consensus defaults.
+* [Staking and Delegation](/user-guide/staking-and-delegation) — delegate QOR and earn rewards.
+* [xQORE Staking](/user-guide/xqore-staking) — the PvP rebase staking mechanism.
+* [Light Node Rewards](/light-node/rewards-and-monitoring) — the light-node reward share.

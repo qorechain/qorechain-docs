@@ -244,3 +244,10 @@ The bridge module emits the following on-chain events:
 | `bridge_circuit_breaker_trip` | Circuit breaker activated or deactivated        |
 | `bridge_validator_registered` | New bridge validator registered                 |
 | `bridge_pqc_verification`     | PQC signature verification result (IBC packets) |
+
+## Related
+
+* [Bridging Assets](/user-guide/bridging-assets) — move assets across chains step by step.
+* [Dashboard Bridge](/dashboard/bridge) — the bridge interface for everyday users.
+* [BTC Restaking via Babylon](/architecture/btc-restaking-babylon) — Bitcoin-backed security.
+* [Post-Quantum Security](/architecture/post-quantum-security) — PQC verification on IBC packets.

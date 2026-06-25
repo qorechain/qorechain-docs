@@ -243,3 +243,10 @@ docker compose up -d
 ```
 
 All persistent data is stored in named Docker volumes: `node-data`, `postgres-data`, `prometheus-data`, and `grafana-data`.
+
+## Related
+
+* [Multilayer Architecture](/architecture/multilayer-architecture) — sidechain registration and state anchoring.
+* [Consensus Mechanism](/architecture/consensus-mechanism) — block production, finality, and slashing.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI-driven parameter optimization.
+* [Post-Quantum Security](/architecture/post-quantum-security) — Dilithium-5 signatures across the stack.

@@ -57,3 +57,10 @@ QoreChain does not publish fixed public RPC/REST/EVM hostnames in this reference
 ## Add to MetaMask
 
 To add a QoreChain network to an EVM wallet such as MetaMask, use the EVM chain IDs above — **9801** for mainnet and **9800** for testnet — together with the EVM JSON-RPC endpoint for the network you are connecting to. See [Wallet Setup](/getting-started/wallet-setup) for the step-by-step walkthrough.
+
+## Related
+
+* [Connecting to Mainnet](/getting-started/connecting-to-mainnet) — join the live `qorechain-vladi` network.
+* [Connecting to Testnet](/getting-started/connecting-to-testnet) — join the Diana testnet.
+* [Chain Parameters](/appendix/chain-parameters) — canonical chain configuration.
+* [SDK Overview](/sdk/overview) — resolve network configuration from code.

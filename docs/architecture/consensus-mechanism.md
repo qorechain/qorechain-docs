@@ -278,3 +278,10 @@ The following table lists all governance-configurable parameters in the `x/qca` 
 | `xqore_multiplier`   | LegacyDec | `2.0`   | xQORE weight relative to staked tokens |
 | `rep_min_multiplier` | LegacyDec | `0.5`   | Minimum reputation multiplier          |
 | `rep_max_multiplier` | LegacyDec | `2.0`   | Maximum reputation multiplier          |
+
+## Related
+
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI layer that tunes consensus parameters.
+* [Multilayer Architecture](/architecture/multilayer-architecture) — how sidechains anchor to the base layer.
+* [Running a Validator](/developer-guide/running-a-validator) — operate a validator that secures the chain.
+* [Tokenomics](/architecture/tokenomics) — staking rewards, inflation, and slashing economics.

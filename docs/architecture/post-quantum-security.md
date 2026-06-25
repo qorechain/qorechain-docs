@@ -194,3 +194,10 @@ This ensures that cross-chain security is not degraded by the use of classical c
 | `default_migration_blocks` | int64               | `1,000,000`       | Default dual-signature migration period in blocks     |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Default signature algorithm for new key registrations |
 | `hybrid_signature_mode`    | HybridSignatureMode | `1` (Optional)    | Chain-wide hybrid signature enforcement level         |
+
+## Related
+
+* [Wallet Setup](/getting-started/wallet-setup) — create and manage PQC-backed accounts.
+* [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc) — keys and post-quantum signing from code.
+* [Chain Parameters](/appendix/chain-parameters) — default algorithms and migration settings.
+* [Bridge Architecture](/architecture/bridge-architecture) — PQC verification on cross-chain packets.

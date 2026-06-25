@@ -64,3 +64,5 @@ The light node is released under the **Apache 2.0** license.
 - [UX Edition](/light-node/ux-edition) — run the web dashboard edition.
 - [Registration and Licensing](/light-node/registration-and-licensing) — register on-chain and obtain a license.
 - [Rewards and Monitoring](/light-node/rewards-and-monitoring) — earn the 3% share and keep the node healthy.
+- [SX Edition](/light-node/sx-edition) and [UX Edition](/light-node/ux-edition) are the two ways to run a light node.
+- [Tokenomics](/architecture/tokenomics) — how the light-node reward share fits the wider economy.

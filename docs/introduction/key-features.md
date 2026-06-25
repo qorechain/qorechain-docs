@@ -67,3 +67,10 @@ Added cross-chain connectivity (8 IBC channels + 37 QCB configs covering 36 exte
 Shipped the Rollup Development Kit with four settlement paradigms (optimistic, zk, based, sovereign), five preset deployment profiles (defi, gaming, nft, enterprise, custom), a native DA router, bank escrow lifecycle management, EndBlocker-driven auto-finalization, PRISM-assisted rollup configuration, and chain licensing (`x/license`). Deep integration with the multilayer architecture module for automatic sidechain registration and state anchoring.
 
 </details>
+
+## Related
+
+* [What is QoreChain](/introduction/what-is-qorechain) — the platform overview in context.
+* [Tokenomics](/architecture/tokenomics) — the economic model behind QOR.
+* [Bridge Architecture](/architecture/bridge-architecture) — cross-chain connectivity and BTC restaking.
+* [Rollups Overview](/rollups/overview) — the Rollup Development Kit and settlement paradigms.

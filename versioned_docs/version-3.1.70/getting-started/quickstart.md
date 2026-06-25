@@ -95,3 +95,5 @@ A successful response includes the node's `moniker`, `network` (should be `qorec
 * [Connecting to Testnet](/getting-started/connecting-to-testnet) — Join the live Diana testnet
 * [Wallet Setup](/getting-started/wallet-setup) — Configure a wallet to interact with the chain
 * [Your First Transaction](/getting-started/first-transaction) — Send your first QOR transfer
+* [Connecting to Mainnet](/getting-started/connecting-to-mainnet) — Join the live Vladi mainnet
+* [SDK Overview](/sdk/overview) — Build applications against QoreChain from code

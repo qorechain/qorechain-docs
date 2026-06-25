@@ -109,3 +109,5 @@ qorechaind query license holders bridge_ethereum
 
 - Licenses for bridge and validator features back the capabilities described in [Bridge Architecture](/architecture/bridge-architecture).
 - Licenses are obtained through the **Dashboard (Tools → Buy License)**.
+- Light nodes obtain a license during [Registration and Licensing](/light-node/registration-and-licensing).
+- Buy and manage licenses from the [Tools Hub](/dashboard/tools-hub).

@@ -52,3 +52,11 @@ The native token is **QOR** (base denomination `uqor`, where 1 QOR = 10^6 uqor).
 :::tip New to QoreChain?
 Follow [Connecting to Testnet](/getting-started/connecting-to-testnet) and [Your First Transaction](/getting-started/first-transaction) to get hands-on quickly, then come back to explore the rest of the Dashboard.
 :::
+
+## Related
+
+* [Explorer](/dashboard/explorer) — browse blocks, transactions, and accounts.
+* [Wallet](/dashboard/wallet) — manage accounts and send transactions.
+* [Trade / DEX](/dashboard/trade) — swap tokens against on-chain AMM pools.
+* [Bridge](/dashboard/bridge) — move assets across chains.
+* [Tools Hub](/dashboard/tools-hub) — licenses, faucet, and developer utilities.

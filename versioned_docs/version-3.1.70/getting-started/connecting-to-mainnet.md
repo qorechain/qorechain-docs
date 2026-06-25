@@ -206,3 +206,5 @@ http://localhost:1317
 * [Running a Validator](/developer-guide/running-a-validator) — Create and operate a validator
 * [Wallet Setup](/getting-started/wallet-setup) — Configure a wallet for mainnet
 * [Your First Transaction](/getting-started/first-transaction) — Send your first QOR transfer
+* [Connecting to Testnet](/getting-started/connecting-to-testnet) — Join the Diana testnet for free testing
+* [Networks](/appendix/networks) — Chain IDs, ports, and the full networks reference

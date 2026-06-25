@@ -74,3 +74,4 @@ follow-up in the other languages.
 - [Guides](/sdk/guides/evm) — per-VM how-tos.
 - [Network & endpoints reference](/sdk/reference/network) — chain id, ports, token.
 - [Examples](/sdk/examples) — runnable, copy-pasteable snippets.
+- [Network & endpoints reference](/sdk/reference/network) is also surfaced in [Networks](/appendix/networks).

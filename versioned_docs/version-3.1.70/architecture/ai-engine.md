@@ -222,3 +222,9 @@ Federated learning is currently at the interface specification stage. Implementa
 | `/ai/v1/fraud/investigations`    | Lists active and resolved fraud investigations                 |
 | `/ai/v1/network/recommendations` | Returns current network parameter optimization recommendations |
 | `/ai/v1/circuit-breakers`        | Lists active circuit breaker states for contracts              |
+
+## Related
+
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — the AI layer driving consensus optimization.
+* [Smart Contract Creator](/dashboard/smart-contract-creator) — AI-assisted contract generation in the Dashboard.
+* [Contract Auditor](/dashboard/contract-auditor) — AI-assisted contract security review.

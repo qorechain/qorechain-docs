@@ -56,3 +56,9 @@ Use the [QoreChain SDK](/sdk/overview), the public SDK for building applications
 ### Where can I ask questions?
 
 The QCAIA community bot answers questions on Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) and Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). See [QCAIA Community Bot](/qcaia/overview).
+
+## Related
+
+* [Networks](/appendix/networks) — chain IDs, ports, and endpoints reference.
+* [What is QoreChain](/introduction/what-is-qorechain) — the platform overview.
+* [QCAIA Community Bot](/qcaia/overview) — ask questions on Discord and Telegram.

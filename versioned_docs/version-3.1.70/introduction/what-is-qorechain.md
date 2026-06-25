@@ -77,3 +77,11 @@ Smart accounts with three programmable types (multisig, social recovery, session
 ## Ecosystem
 
 QoreChain ships with **45+ genesis modules including 20+ custom modules**, covering security (pqc), AI (ai, reputation, rlconsensus), consensus (qca), virtual machines (vm, svm, crossvm), tokenomics (burn, xqore, inflation), liquidity (amm), licensing (license), bridges (bridge, babylon, multilayer), governance extensions (abstractaccount, fairblock, gasabstraction), and rollups (rdk). Recent additions include `x/amm` for AMM / on-chain liquidity and `x/license` for chain licensing. The chain follows an open-core architecture — the protocol layer is fully open source, with optional proprietary extensions for enterprise deployments.
+
+## Related
+
+* [Architecture Overview](/introduction/architecture-overview) — how the layers fit together end to end.
+* [Key Features](/introduction/key-features) — the capability highlights at a glance.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — the AI-assisted consensus at the core.
+* [Tokenomics](/architecture/tokenomics) — QOR supply, burns, rebases, and emissions.
+* [Quickstart](/getting-started/quickstart) — spin up a local node and start building.

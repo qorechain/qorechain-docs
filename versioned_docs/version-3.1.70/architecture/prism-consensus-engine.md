@@ -241,3 +241,9 @@ All functions operate on `cosmossdk.io/math.LegacyDec` values, ensuring identica
 | `reward_weight_decentralization` | LegacyDec | `0.20`       | Reward weight for decentralization improvement       |
 | `reward_weight_mev`              | LegacyDec | `0.15`       | Penalty weight for MEV extraction                    |
 | `reward_weight_failed_txs`       | LegacyDec | `0.10`       | Penalty weight for failed transactions               |
+
+## Related
+
+* [Consensus Mechanism](/architecture/consensus-mechanism) — the consensus layer PRISM optimizes.
+* [AI Engine](/architecture/ai-engine) — the broader on-chain AI services and endpoints.
+* [Tokenomics](/architecture/tokenomics) — how RL signals feed reward and parameter adjustments.
