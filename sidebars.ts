@@ -22,6 +22,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "getting-started/quickstart",
         "getting-started/wallet-setup",
+        "getting-started/connecting-to-mainnet",
         "getting-started/connecting-to-testnet",
         "getting-started/first-transaction",
       ],
@@ -51,6 +52,7 @@ const sidebars: SidebarsConfig = {
         "developer-guide/evm-precompiles",
         "developer-guide/account-abstraction",
         "developer-guide/running-a-validator",
+        "developer-guide/running-a-node",
       ],
     },
     {
