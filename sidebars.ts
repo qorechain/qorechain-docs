@@ -26,6 +26,19 @@ const sidebars: SidebarsConfig = {
         "getting-started/first-transaction",
       ],
     },
+    {
+      type: "category",
+      label: "User Guide",
+      items: [
+        "user-guide/token-operations",
+        "user-guide/staking-and-delegation",
+        "user-guide/governance",
+        "user-guide/xqore-staking",
+        "user-guide/bridging-assets",
+        "user-guide/deploying-rollups",
+        "user-guide/gas-abstraction",
+      ],
+    },
   ],
 };
 
