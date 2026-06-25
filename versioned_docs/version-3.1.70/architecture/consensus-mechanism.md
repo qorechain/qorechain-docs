@@ -11,6 +11,20 @@ QoreChain implements **Triple-Pool Composite Proof-of-Stake (CPoS)**, a consensu
 
 The reinforcement-learning optimization layer that tunes consensus parameters at runtime is branded **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). See the [PRISM Consensus Engine](/architecture/prism-consensus-engine) for details.
 
+The diagram below summarizes one block/consensus cycle of Triple-Pool CPoS on the QoreChain Consensus Engine, and shows where PRISM feeds back into the tunable `x/qca` parameters.
+
+```mermaid
+flowchart TD
+    A["Validator set<br/>(x/qca)"] --> B["Pool classification<br/>RPoS / DPoS / PoS<br/>every 1,000 blocks"]
+    B --> C["Stage 1: Pool selection<br/>weights 0.40 / 0.35 / 0.25"]
+    C --> D["Stage 2: Within-pool<br/>reputation x stake CDF"]
+    D --> E["Block proposed &amp; finalized<br/>on QoreChain Consensus Engine"]
+    E --> F["Rewards (bonding curve)<br/>&amp; progressive slashing"]
+    F --> A
+    P["PRISM<br/>RL optimization"] -. tunes params .-> B
+    P -. tunes params .-> C
+```
+
 ---
 
 ## Triple-Pool Architecture

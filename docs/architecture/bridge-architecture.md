@@ -107,6 +107,23 @@ To verify external-chain events trustlessly, the bridge is designed to run on-ch
 
 ## Deposit Flow (External to QoreChain)
 
+The sequence below shows a QCB deposit: assets are locked on an external chain, QoreChain validators submit PQC-signed attestations (7-of-10 Dilithium-5), and wrapped tokens are minted. Cosmos SDK-compatible chains instead use the parallel IBC path (8 channels, with optional Dilithium-5 packet signatures). Both paths are testnet/pending.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant X as External Chain
+    participant V as QoreChain Validators
+    participant Q as QoreChain
+    U->>X: 1. Lock assets on bridge contract
+    X->>V: 2. Observe lock event
+    V->>Q: 3. Submit attestations (7/10 PQC sigs)
+    Note over V,Q: Light client verifies source proofs where available
+    Q->>Q: 4. Mint wrapped tokens
+    Note over Q: If > 100K QOR: 24h challenge period before execution
+    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+```
+
 ```
 External Chain          QoreChain Validators           QoreChain
      |                         |                          |

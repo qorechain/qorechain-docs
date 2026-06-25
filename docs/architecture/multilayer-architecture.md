@@ -13,6 +13,19 @@ QoreChain implements a **4-tier hierarchical chain architecture** through the `x
 
 ## System Overview
 
+The 4-tier hierarchy below shows the main chain as the settlement and trust root, with three subsidiary layer types anchoring their state roots back to it via Hierarchical Commitment Schemes (HCS).
+
+```mermaid
+flowchart TD
+    M["MAIN CHAIN<br/>Settlement + Routing<br/>Full CPoS, PQC (Dilithium-5)<br/>QCAI routing engine"]
+    M --> S["SIDECHAINS<br/>Compute<br/>3-10 validators<br/>1,000 QOR min"]
+    M --> P["PAYCHAINS<br/>MicroTX<br/>500ms blocks<br/>100 QOR min"]
+    M --> R["ROLLUPS<br/>App-Specific<br/>4 settlement modes<br/>10,000 QOR min"]
+    S -. state anchors (HCS) .-> M
+    P -. state anchors (HCS) .-> M
+    R -. state anchors (HCS) .-> M
+```
+
 ```
                     +---------------------------+
                     |       MAIN CHAIN          |

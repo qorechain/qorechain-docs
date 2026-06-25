@@ -73,6 +73,18 @@ The `x/burn` module implements a 10-channel token burn system. Every burned toke
 
 ### Fee Distribution
 
+All transaction fees collected by the network are split across five destinations, as shown below. The shares are enforced on-chain and always sum to exactly 100%.
+
+```mermaid
+flowchart LR
+    F["Transaction fees"]
+    F --> V["Validators<br/>37%"]
+    F --> B["Burned<br/>30%"]
+    F --> T["Treasury<br/>20%"]
+    F --> S["Stakers<br/>10%"]
+    F --> L["Light Nodes<br/>3%"]
+```
+
 All transaction fees collected by the network are split across five destinations:
 
 | Recipient       | Share | Description                                                          |

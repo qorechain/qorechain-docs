@@ -34,7 +34,22 @@ Each rollup is registered with a unique `rollup-id`, backed by a stake bond in Q
 
 ## The four settlement paradigms
 
-QoreChain RDK supports four distinct settlement modes, each with different trust assumptions, finality characteristics, and proof requirements. The combination of settlement mode and proof system is validated on-chain — an incompatible pairing is rejected at creation.
+QoreChain RDK supports four distinct settlement modes, each with different trust assumptions, finality characteristics, and proof requirements. The combination of settlement mode and proof system is validated on-chain — an incompatible pairing is rejected at creation. The diagram below maps each settlement mode to its valid proof system.
+
+```mermaid
+flowchart TD
+    S["Settlement mode"]
+    S --> O["optimistic"]
+    S --> Z["zk"]
+    S --> BA["based"]
+    S --> SV["sovereign"]
+    O --> OF["fraud<br/>(required)"]
+    Z --> ZS["snark or stark"]
+    BA --> BN["none<br/>(required)"]
+    SV --> SN["none<br/>(required)"]
+```
+
+
 
 ### Optimistic
 
