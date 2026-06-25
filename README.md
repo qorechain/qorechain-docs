@@ -32,5 +32,4 @@ Generates the static site into the `build` directory.
 
 ```bash
 npm run typecheck          # TypeScript type-check
-./scripts/check.sh  # checks
 ```
