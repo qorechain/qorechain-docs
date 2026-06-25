@@ -6,7 +6,6 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 // slug so the old GitBook section URLs (and llms.txt consumers) keep resolving.
 const sidebars: SidebarsConfig = {
   docsSidebar: [
-    "index",
     {
       type: "category",
       label: "Introduction",

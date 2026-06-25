@@ -95,7 +95,6 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: "QoreChain Documentation",
       logo: {
         alt: "QoreChain",
         src: "img/logo.png",
