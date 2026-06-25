@@ -254,7 +254,9 @@
       "items": [
         "appendix/glossary",
         "appendix/chain-parameters",
-        "appendix/version-history"
+        "appendix/version-history",
+        "appendix/networks",
+        "appendix/faq"
       ]
     }
   ]

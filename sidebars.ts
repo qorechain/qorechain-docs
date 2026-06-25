@@ -268,6 +268,8 @@ const sidebars: SidebarsConfig = {
         "appendix/glossary",
         "appendix/chain-parameters",
         "appendix/version-history",
+        "appendix/networks",
+        "appendix/faq",
       ],
     },
   ],
