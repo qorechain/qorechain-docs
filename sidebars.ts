@@ -152,6 +152,16 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "QCAIA Community Bot",
+      items: [
+        "qcaia/overview",
+        "qcaia/discord",
+        "qcaia/telegram",
+        "qcaia/examples",
+      ],
+    },
+    {
+      type: "category",
       label: "API Reference",
       items: [
         "api-reference/rest-grpc-endpoints",
