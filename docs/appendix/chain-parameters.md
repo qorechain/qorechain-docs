@@ -212,7 +212,7 @@ The `x/rlconsensus` module implements **PRISM**, the reinforcement-learning opti
 | `max_batches_pending` | uint   | `10`                               | Maximum unfinalized batches per rollup   |
 | `auto_finalize`       | bool   | `true`                             | Enable EndBlocker auto-finalization      |
 | `settlement_types`    | array  | optimistic, zk, based, sovereign   | Allowed settlement paradigms             |
-| `preset_profiles`     | array  | defi, gaming, nft, social, general | Available rollup presets                 |
+| `preset_profiles`     | array  | defi, gaming, nft, enterprise, custom | Available rollup presets              |
 
 ---
 

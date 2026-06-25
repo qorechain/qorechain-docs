@@ -68,7 +68,7 @@ The `x/rdk` module is a protocol-native framework for deploying application-spec
 * **Based** — L1-sequenced transactions with finality in approximately 2 host blocks.
 * **Sovereign** — Independent chains using QoreChain exclusively for data availability.
 
-Five preset profiles (**defi, gaming, nft, social, general**) enable one-click deployment with pre-configured settlement modes, block times, VM choices, DA backends, and gas models. A native DA router provides SHA-256 committed blob storage with configurable retention and automatic pruning. The PRISM consensus module provides advisory methods for AI-assisted rollup configuration.
+Five preset profiles (**defi, gaming, nft, enterprise, custom**) enable one-click deployment with pre-configured settlement modes, block times, VM choices, DA backends, and gas models. A native DA router provides SHA-256 committed blob storage with configurable retention and automatic pruning. The PRISM consensus module provides advisory methods for AI-assisted rollup configuration.
 
 ### 7. Account and Gas Abstraction
 

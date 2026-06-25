@@ -377,7 +377,7 @@ qorechaind tx rdk create-rollup <rollup_id> [flags]
 | Flag                | Type   | Description                                          |
 | ------------------- | ------ | ---------------------------------------------------- |
 | `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`       |
-| `--profile`         | string | Preset: `defi`, `gaming`, `nft`, `social`, `general` |
+| `--profile`         | string | Preset: `defi`, `gaming`, `nft`, `enterprise`, `custom` |
 | `--stake`           | string | Operator stake amount                                |
 | `--da-enabled`      | bool   | Enable native data availability                      |
 

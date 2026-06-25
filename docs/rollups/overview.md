@@ -109,3 +109,5 @@ The sequencer determines who orders transactions within a rollup block before se
 | Full independence with your own consensus, anchored for verifiability | **sovereign** |
 
 Not sure where to start? The RDK ships **preset profiles** that bundle these choices for common application categories — see **[Preset Profiles](/rollups/preset-profiles)** — and a `suggest-profile` query that recommends one from a plain-language description of your use case.
+
+For developers, the RDK also ships as the public TypeScript SDK **`@qorechain/rdk`** plus the **`create-qorechain-rollup`** scaffolder, which drive the same on-chain module from code — see **[Deploying a Rollup](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.

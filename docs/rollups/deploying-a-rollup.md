@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Deploying a Rollup
 
-You can deploy an application-specific rollup two ways: through the **Dashboard** (a guided, no-code wizard) or through the **CLI** (full control over the on-chain transaction). This page covers both, plus the operator lifecycle and batch commands.
+You can deploy an application-specific rollup three ways: through the **Dashboard** (a guided, no-code wizard), through the chain **CLI** (`qorechaind`, full control over the on-chain transaction), or programmatically with the **TypeScript RDK** (`@qorechain/rdk` plus the `create-qorechain-rollup` scaffolder). This page covers all three, plus the operator lifecycle and batch commands.
 
 :::note
 The commands below target the **`qorechain-diana`** testnet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.70** — substitute the mainnet chain ID and endpoints when deploying on mainnet. Validate every deployment on testnet first.
@@ -95,6 +95,92 @@ qorechaind query rdk rollup my-defi-rollup
 
 # List all registered rollups
 qorechaind query rdk list-rollups
+```
+
+---
+
+## Deploy with the TypeScript RDK (`@qorechain/rdk`)
+
+The Rollup Development Kit ships as two public npm packages that drive the same on-chain `x/rdk` module as the CLI, over public RPC/REST/gRPC/JSON-RPC and any cosmjs `OfflineSigner`:
+
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.1.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, and typed read clients.
+* **`create-qorechain-rollup`** (`v0.1.1`) — a scaffolder that clones one runnable starter template per profile.
+
+:::note
+The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Py, Go, and Rust RDK packages are scaffolds (coming soon). Pin versions and validate on testnet.
+:::
+
+### Scaffold a project with `create-qorechain-rollup`
+
+Each profile has a matching starter template (`defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`). Scaffold one with either form:
+
+```bash
+npm create qorechain-rollup my-rollup
+# or
+npx create-qorechain-rollup my-rollup
+```
+
+For non-interactive / CI use, pass the template and network explicitly:
+
+```bash
+npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet --yes
+```
+
+The scaffolder prints the documented stake and creation-burn cost and the next steps to create your rollup and read its status.
+
+### Create a rollup from code
+
+Build a config from a preset, read the live stake and burn rate from the chain, then create the rollup with a signing client. The config builder enforces the settlement → proof compatibility matrix on `validate()` / `build()`.
+
+```ts
+import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
+
+// A config builder pre-filled with the defi preset's defaults; override via .set({ ... }).
+const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
+
+const rdk = createRdkClient({ network: "testnet" });
+
+// Read the live module parameters — never hardcode the stake or burn rate.
+const params = await rdk.params();
+const cost = estimateCreationCost({
+  stakeUqor: params.minStakeForRollup,
+  burnRate: params.rollupCreationBurnRate,
+});
+console.log(`Stake: ${uqorToQor(cost.stakeUqor)} QOR — burned: ${uqorToQor(cost.burnUqor)} QOR`);
+
+// Connect a signing client with any cosmjs OfflineSigner.
+const tx = await rdk.connectTx(signer, { gasPrice: "0.025uqor" });
+const msg = config.toCreateMsg(tx.address, { stakeAmount: params.minStakeForRollup });
+
+const res = await tx.createRollup({
+  rollupId: msg.rollupId,
+  profile: msg.profile,
+  vmType: msg.vmType,
+  stakeAmount: msg.stakeAmount,
+});
+console.log(`Submitted: ${res.transactionHash} (code ${res.code})`);
+```
+
+Not sure which profile fits? `rdk.suggestProfile("a lending protocol with predictable fees")` returns a QCAI-assisted recommendation (with a documented fallback).
+
+### Manage the lifecycle and read state from code
+
+The signing client exposes the full lifecycle — `pauseRollup`, `resumeRollup`, `stopRollup`, plus `submitBatch`, `challengeBatch`, `resolveChallenge`, and `executeWithdrawal`. The lifecycle transitions can be guarded by passing `currentStatus`.
+
+```ts
+await tx.pauseRollup({ rollupId: "my-defi-rollup", reason: "maintenance" });
+await tx.resumeRollup({ rollupId: "my-defi-rollup" });
+await tx.stopRollup({ rollupId: "my-defi-rollup" });
+```
+
+Read state with the typed REST client (no signer required):
+
+```ts
+const rollup = await rdk.rest.getRollup("my-defi-rollup");
+console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
+
+const batch = await rdk.rest.getLatestBatch("my-defi-rollup");
+console.log(batch.batchIndex, batch.status, batch.txCount);
 ```
 
 ---

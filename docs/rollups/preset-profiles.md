@@ -16,22 +16,28 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-The exact configuration behind each preset — settlement mode, sequencer, data availability, VM, block time, and gas/fee parameters — is **resolved on-chain** and may evolve as the RDK matures. The descriptions below are indicative use-case guidance, not a guarantee of specific per-preset values. Query the live module parameters with `qorechaind query rdk config` for the authoritative configuration, and validate on the **`qorechain-diana`** testnet before mainnet.
+The per-preset values below match the shipped **`@qorechain/rdk`** profile defaults, which mirror the network's published profile table. They can still evolve as the RDK matures — query the live module parameters with `qorechaind query rdk config` (or `RdkClient.params()` from the SDK) for the authoritative configuration, and validate on the **`qorechain-diana`** testnet before mainnet.
 :::
 
 ---
 
 ## The preset profiles
 
-| Profile | Intended use case (qualified) |
-| ------- | ----------------------------- |
-| **`defi`** | Tuned for DeFi and AMM-style applications — lending markets, DEXs, and derivatives where finality characteristics and predictable fees matter |
-| **`gaming`** | Intended for high-throughput, low-latency game state and in-game economies |
-| **`nft`** | Tuned for NFT minting, marketplaces, and digital collectibles |
-| **`social`** | Intended for social and content applications with frequent, lightweight actions |
-| **`general`** | A balanced, general-purpose default for mixed workloads |
+Each preset bundles a settlement paradigm (and the proof system its settlement requires), a sequencer mode, a data availability backend, a gas model, and a VM:
 
-Treat these as starting points. Each preset is intended to be a sensible default for its category; the precise bundled parameters are owned by the chain and can change between releases. When in doubt, start from a preset and refine.
+| Profile | Settlement (proof) | Sequencer | DA | Gas model | VM | Intended use case |
+| ------- | ------------------ | --------- | -- | --------- | -- | ----------------- |
+| **`defi`** | zk (SNARK) | dedicated | native | EIP-1559 | EVM | DeFi and AMM-style applications — lending markets, DEXs, and derivatives where fast finality and predictable fees matter |
+| **`gaming`** | based | based | native | flat | custom | High-throughput, low-latency game state and in-game economies |
+| **`nft`** | optimistic (fraud) | dedicated | native (Celestia DA planned) | standard | CosmWasm | NFT minting, marketplaces, and digital collectibles |
+| **`enterprise`** | based | based | native | subsidized | EVM | Permissioned and consortium deployments with sponsored (subsidized) fees |
+| **`custom`** | fully parameterized | fully parameterized | fully parameterized | fully parameterized | fully parameterized | Every field is user-defined — start from scratch and set each option yourself |
+
+A few constraints follow from the [settlement → proof matrix](/rollups/overview): `optimistic` settlement uses `fraud` proofs, `zk` uses `snark` (or `stark`), and `based` and `sovereign` carry no proof. `based` settlement always pairs with the `based` sequencer mode. The `nft` preset settles natively today with **Celestia DA planned**.
+
+Treat the four domain presets as sensible starting points and the **`custom`** profile as the fully open option. The precise bundled parameters can change between releases — query `rdk config` (below) for the authoritative values, then start from the closest preset and refine.
+
+The [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-project-with-create-qorechain-rollup) CLI scaffolds a runnable starter project — one template per profile (`defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`) — so you can go from a profile to working create/query code in one command.
 
 ---
 

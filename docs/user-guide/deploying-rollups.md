@@ -29,16 +29,16 @@ The QoreChain RDK allows developers to launch sovereign rollups that settle on Q
 
 The RDK ships with five preset profiles, each tuned for a common application category:
 
-| Profile     | Intended use case                                                  |
-| ----------- | ------------------------------------------------------------------ |
-| **defi**    | Preset tuned for DeFi/AMM applications (lending, DEXs, derivatives) |
-| **gaming**  | Intended for high-throughput game state and real-time experiences  |
-| **nft**     | Tuned for NFT minting and marketplace workloads                    |
-| **social**  | Intended for social and content applications                       |
-| **general** | Balanced, general-purpose default profile                          |
+| Profile        | Settlement (proof)  | Sequencer | DA              | Gas model    | VM       | Intended use case |
+| -------------- | ------------------- | --------- | --------------- | ------------ | -------- | ----------------- |
+| **defi**       | zk (SNARK)          | dedicated | native          | EIP-1559     | EVM      | DeFi/AMM applications (lending, DEXs, derivatives) |
+| **gaming**     | based               | based     | native          | flat         | custom   | High-throughput game state and real-time experiences |
+| **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA planned) | standard | CosmWasm | NFT minting and marketplace workloads |
+| **enterprise** | based               | based     | native          | subsidized   | EVM      | Permissioned and consortium deployments with sponsored fees |
+| **custom**     | fully parameterized | fully parameterized | fully parameterized | fully parameterized | fully parameterized | Set every field yourself |
 
 :::note
-The exact configuration behind each preset — settlement mode, sequencer, data availability, and gas/fee parameters — is detailed in the **Rollups architecture** section. Preset specifics may evolve as the RDK matures, so treat the descriptions above as indicative rather than authoritative.
+The per-preset values above match the shipped `@qorechain/rdk` profile defaults. The exact configuration may evolve as the RDK matures — query the authoritative values with `qorechaind query rdk config` (or `RdkClient.params()`), and note that `based` settlement always pairs with the `based` sequencer mode.
 :::
 
 ---
@@ -224,7 +224,7 @@ qorechaind query rdk suggest-profile --use-case "defi lending protocol"
 suggested_profile: defi
 confidence: 0.94
 reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality, EVM compatibility for Solidity smart contracts, and EIP-1559 fee model for predictable gas costs."
-alternative_profile: general
+alternative_profile: enterprise
 ```
 
 This command analyzes your description and recommends the most suitable preset profile along with an explanation.

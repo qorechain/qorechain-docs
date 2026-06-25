@@ -90,17 +90,17 @@ STARK and full ZK proof verification are still maturing; see the [ZK Settlement]
 
 ## Preset Profiles
 
-The RDK ships **five preset profiles** that provide turnkey rollup configurations optimized for common use cases. Each preset bundles a settlement mode, sequencer mode, data availability backend, and execution parameters tuned for its target domain:
+The RDK ships **five preset profiles** that provide turnkey rollup configurations optimized for common use cases. Each preset bundles a settlement paradigm, sequencer mode, data availability backend, gas model, and VM tuned for its target domain:
 
-| Profile       | Target Use Case                                                      |
-| ------------- | ------------------------------------------------------------------- |
-| **`defi`**    | Decentralized finance: trading, lending, and AMM-style applications |
-| **`gaming`**  | High-throughput, low-latency game state and in-game economies       |
-| **`nft`**     | NFT minting, marketplaces, and digital collectibles                 |
-| **`social`**  | Social and content applications with frequent lightweight actions   |
-| **`general`** | A balanced, general-purpose default for mixed workloads             |
+| Profile          | Settlement (proof)       | Sequencer | DA              | Gas model    | VM      | Target use case |
+| ---------------- | ------------------------ | --------- | --------------- | ------------ | ------- | --------------- |
+| **`defi`**       | zk (SNARK)               | dedicated | native          | EIP-1559     | EVM     | Trading, lending, and AMM-style applications |
+| **`gaming`**     | based                    | based     | native          | flat         | custom  | High-throughput, low-latency game state and in-game economies |
+| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planned) | standard | CosmWasm | NFT minting, marketplaces, and digital collectibles |
+| **`enterprise`** | based                    | based     | native          | subsidized   | EVM     | Permissioned and consortium deployments with sponsored fees |
+| **`custom`**     | fully parameterized      | fully parameterized | fully parameterized | fully parameterized | fully parameterized | Every field is user-defined |
 
-The specific settlement mode, VM, block time, and fee parameters bundled into each preset are subject to change as the RDK matures; consult the live module parameters for the authoritative per-preset configuration. Developers can also select a **Custom** configuration and set every parameter individually.
+The `custom` profile leaves every field for you to set. The exact values bundled into each preset can evolve as the RDK matures; query the live configuration with `qorechaind query rdk config` (or `RdkClient.params()` from `@qorechain/rdk`) for the authoritative per-preset parameters, and note that `based` settlement always pairs with the `based` sequencer mode.
 
 ---
 

@@ -47,7 +47,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 **Release focus:** Native rollup infrastructure for sovereign and shared-security rollup deployments.
 
 * **x/rdk module** — Full Rollup Development Kit with four settlement paradigms: optimistic, zk, based, and sovereign
-* **5 preset profiles** — Pre-configured rollup templates for DeFi, gaming, NFT, social, and general-purpose use cases
+* **5 preset profiles** — Pre-configured rollup templates for DeFi, gaming, NFT, enterprise, and fully custom use cases
 * **Native data availability** — On-chain DA layer with blob storage, retention management, and pruning lifecycle
 * **EndBlocker auto-finalization** — Automatic batch finalization when the challenge window expires, with no operator intervention required
 * **AI-assisted profile selection** — `suggest-profile` query that recommends an optimal rollup configuration based on the intended use case
