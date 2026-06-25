@@ -10,7 +10,11 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Introduction",
-      items: ["introduction/what-is-qorechain"],
+      items: [
+        "introduction/what-is-qorechain",
+        "introduction/architecture-overview",
+        "introduction/key-features",
+      ],
     },
   ],
 };
