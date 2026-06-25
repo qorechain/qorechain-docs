@@ -75,6 +75,17 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Rollups",
+      items: [
+        "rollups/overview",
+        "rollups/preset-profiles",
+        "rollups/deploying-a-rollup",
+        "rollups/data-availability",
+        "rollups/zk-stark-withdrawals",
+      ],
+    },
+    {
+      type: "category",
       label: "API Reference",
       items: [
         "api-reference/rest-grpc-endpoints",
