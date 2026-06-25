@@ -27,15 +27,19 @@ The QoreChain RDK allows developers to launch sovereign rollups that settle on Q
 
 ## Preset Profiles
 
-The RDK ships with five preset profiles optimized for common application categories:
+The RDK ships with five preset profiles, each tuned for a common application category:
 
-| Profile     | Settlement | VM       | Block Time | Fee Model  | Best For                        |
-| ----------- | ---------- | -------- | ---------- | ---------- | ------------------------------- |
-| **DeFi**    | ZK         | EVM      | 500ms      | EIP-1559   | Lending, DEXs, derivatives      |
-| **Gaming**  | Based      | Custom   | 200ms      | Flat       | Real-time games, metaverse      |
-| **NFT**     | Optimistic | CosmWasm | 2s         | Standard   | NFT marketplaces, collectibles  |
-| **Social**  | Optimistic | CosmWasm | 1s         | Subsidized | Social apps, content platforms  |
-| **General** | Sovereign  | EVM      | 1s         | EIP-1559   | General-purpose applications    |
+| Profile     | Intended use case                                                  |
+| ----------- | ------------------------------------------------------------------ |
+| **defi**    | Preset tuned for DeFi/AMM applications (lending, DEXs, derivatives) |
+| **gaming**  | Intended for high-throughput game state and real-time experiences  |
+| **nft**     | Tuned for NFT minting and marketplace workloads                    |
+| **social**  | Intended for social and content applications                       |
+| **general** | Balanced, general-purpose default profile                          |
+
+:::note
+The exact configuration behind each preset — settlement mode, sequencer, data availability, and gas/fee parameters — is detailed in the **Rollups architecture** section. Preset specifics may evolve as the RDK matures, so treat the descriptions above as indicative rather than authoritative.
+:::
 
 ---
 
