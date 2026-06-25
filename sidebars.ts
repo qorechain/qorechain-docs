@@ -66,6 +66,8 @@ const sidebars: SidebarsConfig = {
         "architecture/multilayer-architecture",
         "architecture/tokenomics",
         "architecture/bridge-architecture",
+        "architecture/amm",
+        "architecture/chain-licensing",
         "architecture/mev-protection-fairblock",
         "architecture/btc-restaking-babylon",
         "architecture/rollup-development-kit",
