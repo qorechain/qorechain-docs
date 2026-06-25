@@ -86,6 +86,17 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Light Node",
+      items: [
+        "light-node/overview",
+        "light-node/sx-edition",
+        "light-node/ux-edition",
+        "light-node/registration-and-licensing",
+        "light-node/rewards-and-monitoring",
+      ],
+    },
+    {
+      type: "category",
       label: "API Reference",
       items: [
         "api-reference/rest-grpc-endpoints",
