@@ -135,6 +135,23 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Dashboard",
+      items: [
+        "dashboard/overview",
+        "dashboard/explorer",
+        "dashboard/wallet",
+        "dashboard/trade",
+        "dashboard/bridge",
+        "dashboard/smart-contract-creator",
+        "dashboard/contract-auditor",
+        "dashboard/staking-and-validators",
+        "dashboard/faucet",
+        "dashboard/quests",
+        "dashboard/tools-hub",
+      ],
+    },
+    {
+      type: "category",
       label: "API Reference",
       items: [
         "api-reference/rest-grpc-endpoints",
