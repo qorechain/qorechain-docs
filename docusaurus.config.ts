@@ -13,6 +13,19 @@ const config: Config = {
   organizationName: "qorechain",
   projectName: "qorechain-docs",
 
+  future: {
+    faster: {
+      swcJsLoader: true,
+      swcJsMinimizer: true,
+      swcHtmlMinimizer: true,
+      lightningCssMinimizer: true,
+      mdxCrossCompilerCache: true,
+      rspackBundler: true,
+      rspackPersistentCache: true,
+      ssgWorkerThreads: false,
+    },
+  },
+
   onBrokenLinks: "throw",
 
   i18n: {
