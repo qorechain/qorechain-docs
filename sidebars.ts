@@ -16,6 +16,16 @@ const sidebars: SidebarsConfig = {
         "introduction/key-features",
       ],
     },
+    {
+      type: "category",
+      label: "Getting Started",
+      items: [
+        "getting-started/quickstart",
+        "getting-started/wallet-setup",
+        "getting-started/connecting-to-testnet",
+        "getting-started/first-transaction",
+      ],
+    },
   ],
 };
 
