@@ -11,11 +11,11 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 ---
 
-**AMM** — Automated Market Maker. QoreChain's native on-chain liquidity module (`x/amm`) providing constant-product pools, swaps, and liquidity provisioning directly at the protocol level, without an external smart-contract deployment.
+**AMM** — Automated Market Maker. QoreChain's native on-chain liquidity module (`x/amm`) providing constant-product pools, swaps, and liquidity provisioning directly at the protocol level, without an external smart-contract deployment. See [AMM](/architecture/amm).
 
 **BPF** — Berkeley Packet Filter. The bytecode format used by the SVM runtime to execute on-chain programs. Programs are compiled to BPF before deployment.
 
-**Chain License** — An on-chain license record managed by the `x/license` module. Chain licenses gate access to specific protocol capabilities and let operators register, verify, and manage licensing entitlements on-chain.
+**Chain License** — An on-chain license record managed by the `x/license` module. Chain licenses gate access to specific protocol capabilities and let operators register, verify, and manage licensing entitlements on-chain. See [Chain Licensing](/architecture/chain-licensing).
 
 **CLFB** — Cross-Layer Fee Balancing. A mechanism within the multilayer architecture that dynamically adjusts fees across sidechains and paychains to maintain equilibrium and prevent congestion on any single layer.
 
@@ -33,31 +33,31 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **IBC** — Inter-Blockchain Communication. A protocol for authenticated message passing between independent blockchains. QoreChain supports IBC channels for cross-chain token transfers and data relay.
 
-**Light Node** — A resource-light node that follows the chain and serves lightweight queries without holding full state. Light nodes receive a dedicated **3%** share of the protocol fee split, rewarding participants who extend network reachability.
+**Light Node** — A resource-light node that follows the chain and serves lightweight queries without holding full state. Light nodes receive a dedicated **3%** share of the protocol fee split, rewarding participants who extend network reachability. See [Light Node](/light-node/overview).
 
-**MLP** — Multi-Layer Perceptron. A class of neural network used by QCAI for pattern recognition in fraud detection and anomaly scoring.
+**MEV** — Maximal Extractable Value. The profit that can be obtained by reordering, inserting, or censoring transactions within a block. QoreChain's FairBlock module (tIBE encryption) and 5-lane TX prioritization mitigate MEV extraction.
 
 **ML-DSA-87** — Module-Lattice Digital Signature Algorithm (security level 5). The NIST-standardized post-quantum digital signature scheme used by QoreChain for quantum-resistant transaction signing. Produces signatures of 4,627 bytes with public keys of 2,592 bytes.
 
 **ML-KEM-1024** — Module-Lattice Key Encapsulation Mechanism (security level 5). A NIST-standardized post-quantum key encapsulation scheme available in QoreChain's PQC algorithm registry for future encrypted communication channels.
 
-**MEV** — Maximal Extractable Value. The profit that can be obtained by reordering, inserting, or censoring transactions within a block. QoreChain's FairBlock module (tIBE encryption) and 5-lane TX prioritization mitigate MEV extraction.
-
-**PQC** — Post-Quantum Cryptography. Cryptographic algorithms designed to be secure against attacks from both classical and quantum computers. QoreChain implements PQC through its `x/pqc` module with ML-DSA-87 as the primary signature scheme.
+**MLP** — Multi-Layer Perceptron. A class of neural network used by QCAI for pattern recognition in fraud detection and anomaly scoring.
 
 **PPO** — Proximal Policy Optimization. A reinforcement learning algorithm used by PRISM to optimize chain parameters (block size, gas limits, validator set size) based on observed network conditions.
 
-**PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. The reinforcement-learning optimization layer embedded in the QoreChain Consensus Engine (via the `x/rlconsensus` module). PRISM observes network metrics and proposes deterministic consensus-parameter adjustments under circuit-breaker safety controls.
+**PQC** — Post-Quantum Cryptography. Cryptographic algorithms designed to be secure against attacks from both classical and quantum computers. QoreChain implements PQC through its `x/pqc` module with ML-DSA-87 as the primary signature scheme.
+
+**PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. The reinforcement-learning optimization layer embedded in the QoreChain Consensus Engine (via the `x/rlconsensus` module). PRISM observes network metrics and proposes deterministic consensus-parameter adjustments under circuit-breaker safety controls. See [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
 **PvP Rebase** — Player versus Player Rebase. A mechanism in the xQORE module where penalties from early unlock are redistributed proportionally to remaining locked stakers, rewarding long-term commitment.
 
-**QCB** — QoreChain Bridge. QoreChain's native bridge protocol for connecting to non-IBC chains (e.g., Ethereum, Bitcoin, Solana, Avalanche). QCB uses a federated validator set for cross-chain attestation.
-
 **QCAI** — QoreChain Artificial Intelligence. The umbrella term for QoreChain's AI subsystem, including the on-chain heuristic engine (`x/ai` module) and the off-chain QCAI sidecar that provides advanced inference capabilities.
+
+**QCB** — QoreChain Bridge. QoreChain's native bridge protocol for connecting to non-IBC chains (e.g., Ethereum, Bitcoin, Solana, Avalanche). QCB uses a federated validator set for cross-chain attestation. See [Bridge Architecture](/architecture/bridge-architecture).
 
 **QDRW** — QoreChain Dynamic Reward Weighting. A governance mechanism that allows PRISM (under governance approval) to dynamically adjust reward distribution weights across validator pools, optimizing for network health metrics.
 
-**RDK** — Rollup Development Kit. QoreChain's native framework for deploying and managing rollups with four settlement paradigms (optimistic, zk, based, sovereign), five preset profiles, and integrated data availability.
+**RDK** — Rollup Development Kit. QoreChain's native framework for deploying and managing rollups with four settlement paradigms (optimistic, zk, based, sovereign), five preset profiles, and integrated data availability. See [Rollups Overview](/rollups/overview).
 
 **RL** — Reinforcement Learning. A machine learning approach where an agent learns optimal actions through trial and reward. PRISM uses RL to dynamically tune chain parameters within the QoreChain Consensus Engine.
 
@@ -77,4 +77,4 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **uqor** — The base denomination of the QOR token. 1 QOR = 1,000,000 uqor (10^6). All on-chain amounts, fees, and staking values are denominated in uqor.
 
-**xQORE** — The governance staking derivative of QOR. Users lock QOR to receive xQORE, which grants enhanced governance voting power and earns PvP rebase rewards from early-unlock penalties.
+**xQORE** — The governance staking derivative of QOR. Users lock QOR to receive xQORE, which grants enhanced governance voting power and earns PvP rebase rewards from early-unlock penalties. See [Tokenomics](/architecture/tokenomics).

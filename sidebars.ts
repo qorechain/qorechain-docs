@@ -2,14 +2,20 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
-// Minimal Phase 0 sidebar. The full documentation tree is added in a later
-// phase as real pages are migrated from GitBook.
+// Each top-level category exposes a generated-index landing page at a fixed
+// slug so the old GitBook section URLs (and llms.txt consumers) keep resolving.
 const sidebars: SidebarsConfig = {
   docsSidebar: [
     "index",
     {
       type: "category",
       label: "Introduction",
+      link: {
+        type: "generated-index",
+        slug: "/introduction",
+        description:
+          "Start here for a high-level overview of QoreChain — what it is, its architecture, and its key features.",
+      },
       items: [
         "introduction/what-is-qorechain",
         "introduction/architecture-overview",
@@ -19,6 +25,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Getting Started",
+      link: {
+        type: "generated-index",
+        slug: "/getting-started",
+        description:
+          "Set up a wallet, connect to mainnet or testnet, and send your first transaction.",
+      },
       items: [
         "getting-started/quickstart",
         "getting-started/wallet-setup",
@@ -30,6 +42,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "User Guide",
+      link: {
+        type: "generated-index",
+        slug: "/user-guide",
+        description:
+          "Everyday operations on QoreChain — tokens, staking, governance, bridging, and gas abstraction.",
+      },
       items: [
         "user-guide/token-operations",
         "user-guide/staking-and-delegation",
@@ -43,6 +61,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Developer Guide",
+      link: {
+        type: "generated-index",
+        slug: "/developer-guide",
+        description:
+          "Build on QoreChain — EVM, CosmWasm, and SVM development, cross-VM interoperability, and running nodes.",
+      },
       items: [
         "developer-guide/building-from-source",
         "developer-guide/evm-development",
@@ -58,6 +82,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Architecture",
+      link: {
+        type: "generated-index",
+        slug: "/architecture",
+        description:
+          "How QoreChain works under the hood — consensus, post-quantum security, multi-VM layers, tokenomics, and more.",
+      },
       items: [
         "architecture/consensus-mechanism",
         "architecture/prism-consensus-engine",
@@ -76,6 +106,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Rollups",
+      link: {
+        type: "generated-index",
+        slug: "/rollups",
+        description:
+          "Deploy and operate rollups with the QoreChain Rollup Development Kit — profiles, data availability, and withdrawals.",
+      },
       items: [
         "rollups/overview",
         "rollups/preset-profiles",
@@ -87,6 +123,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Light Node",
+      link: {
+        type: "generated-index",
+        slug: "/light-node",
+        description:
+          "Run a QoreChain light node — SX and UX editions, registration and licensing, rewards and monitoring.",
+      },
       items: [
         "light-node/overview",
         "light-node/sx-edition",
@@ -98,6 +140,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "QoreChain SDK",
+      link: {
+        type: "generated-index",
+        slug: "/sdk",
+        description:
+          "The public dApp SDK for building on QoreChain — install, quickstart, guides, concepts, and reference.",
+      },
       items: [
         "sdk/overview",
         "sdk/install",
@@ -105,6 +153,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Guides",
+          link: { type: "generated-index" },
           items: [
             "sdk/guides/evm",
             "sdk/guides/svm",
@@ -115,6 +164,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Concepts",
+          link: { type: "generated-index" },
           items: [
             "sdk/concepts/architecture",
             "sdk/concepts/accounts-pqc",
@@ -123,6 +173,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Reference",
+          link: { type: "generated-index" },
           items: [
             "sdk/reference/network",
             "sdk/reference/cli",
@@ -136,6 +187,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Dashboard",
+      link: {
+        type: "generated-index",
+        slug: "/dashboard",
+        description:
+          "The QoreChain Dashboard — explorer, wallet, trading, bridge, contract tooling, staking, faucet, quests, and tools.",
+      },
       items: [
         "dashboard/overview",
         "dashboard/explorer",
@@ -153,6 +210,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "QCAIA Community Bot",
+      link: {
+        type: "generated-index",
+        slug: "/qcaia",
+        description:
+          "The QCAIA community bot for Discord and Telegram — what it does and how to use it.",
+      },
       items: [
         "qcaia/overview",
         "qcaia/discord",
@@ -163,6 +226,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "API Reference",
+      link: {
+        type: "generated-index",
+        slug: "/api-reference",
+        description:
+          "REST, gRPC, JSON-RPC, and WebSocket interfaces for interacting with QoreChain programmatically.",
+      },
       items: [
         "api-reference/rest-grpc-endpoints",
         "api-reference/json-rpc-qor_-namespace",
@@ -174,6 +243,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "CLI Reference",
+      link: {
+        type: "generated-index",
+        slug: "/cli-reference",
+        description:
+          "Command-line reference for node, transaction, and query operations.",
+      },
       items: [
         "cli-reference/node-commands",
         "cli-reference/transaction-commands",
@@ -183,6 +258,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Appendix",
+      link: {
+        type: "generated-index",
+        slug: "/appendix",
+        description:
+          "Reference material — glossary, chain parameters, and version history.",
+      },
       items: [
         "appendix/glossary",
         "appendix/chain-parameters",

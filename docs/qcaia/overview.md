@@ -9,7 +9,7 @@ sidebar_position: 1
 
 **QCAIA** is the official **QoreChain AI Assistant** — a community Q&A bot that answers questions about QoreChain in plain language. It is powered by **QCAI**, QoreChain's AI engine, and is currently in **beta**.
 
-QCAIA lives where the community already is: it is available on **Telegram** and **Discord**. Ask it a question and it replies with a concise, branding-compliant answer drawn from QoreChain's public knowledge.
+QCAIA lives where the community already is: it is available on **Telegram** and **Discord**. Ask it a question and it replies with a concise, branding-compliant answer drawn from QoreChain's official documentation.
 
 ## What QCAIA can answer
 

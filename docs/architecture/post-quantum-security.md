@@ -68,7 +68,7 @@ The hybrid signature system allows transactions to carry **both** a classical si
 
 PQC signatures are attached to transactions as a **TX extension** with type URL `/qorechain.pqc.v1.PQCHybridSignature`:
 
-```json
+```text
 {
   "algorithm_id": 1,
   "pqc_signature": "<4627 bytes for Dilithium-5>",

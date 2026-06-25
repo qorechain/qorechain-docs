@@ -9,6 +9,24 @@ sidebar_position: 2
 
 QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on chain version **v3.1.70**, with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
 
+The transaction lifecycle below summarises how a submitted transaction flows through the node — from the AnteHandler decorator chain (security and fee checks) into VM execution and on-chain settlement:
+
+```mermaid
+flowchart LR
+    Tx[Submitted transaction] --> Ante[AnteHandler chain]
+    Ante --> PQC[PQC signature verify]
+    PQC --> AI[AI anomaly detection]
+    AI --> Fair[FairBlock MEV protection]
+    Fair --> Fee[Fee deduction & gas abstraction]
+    Fee --> Router{VM router}
+    Router -->|Solidity| EVM[EVM]
+    Router -->|Wasm| Wasm[CosmWasm]
+    Router -->|BPF| SVM[SVM]
+    EVM --> Commit[Block commit & indexing]
+    Wasm --> Commit
+    SVM --> Commit
+```
+
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
 │                            QoreChain Node                                  │

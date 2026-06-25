@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Smart Contract Creator
 
-The **Smart Contract Creator** generates smart contracts from a plain-language description, powered by **QCAI**. Describe what you want, pick your target blockchain, and QCAI writes the contract for you. It supports **17 supported blockchains** for AI tooling, so you can target the ecosystem you are building for.
+The **Smart Contract Creator** generates smart contracts from a plain-language description, powered by **QCAI**. Describe what you want, pick your target blockchain, and QCAI writes the contract for you. It supports **17 blockchains** for AI tooling, so you can target the ecosystem you are building for.
 
 Connecting your wallet lets you save and manage the contracts you generate — see [Overview & Getting Started](/dashboard/overview#connect-your-wallet).
 

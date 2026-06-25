@@ -73,7 +73,12 @@ const config: Config = {
     [
       "@docusaurus/plugin-client-redirects",
       {
-        redirects: [],
+        redirects: [
+          {
+            from: "/architecture/rl-consensus-engine",
+            to: "/architecture/prism-consensus-engine",
+          },
+        ],
       },
     ],
   ],

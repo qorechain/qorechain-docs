@@ -7,7 +7,7 @@ sidebar_position: 7
 
 # Contract Auditor
 
-The **Contract Auditor** runs an AI-powered security analysis of a smart contract, powered by **QCAI**. Submit a contract and QCAI reviews it for vulnerabilities, assigns an overall risk level and security score, and explains each finding with a recommended fix. Like the [Smart Contract Creator](/dashboard/smart-contract-creator), the Auditor works across **17 supported blockchains** for AI tooling.
+The **Contract Auditor** runs an AI-powered security analysis of a smart contract, powered by **QCAI**. Submit a contract and QCAI reviews it for vulnerabilities, assigns an overall risk level and security score, and explains each finding with a recommended fix. Like the [Smart Contract Creator](/dashboard/smart-contract-creator), the Auditor works across **17 blockchains** for AI tooling.
 
 ## Run an audit
 
