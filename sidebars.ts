@@ -89,6 +89,15 @@ const sidebars: SidebarsConfig = {
         "cli-reference/query-commands",
       ],
     },
+    {
+      type: "category",
+      label: "Appendix",
+      items: [
+        "appendix/glossary",
+        "appendix/chain-parameters",
+        "appendix/version-history",
+      ],
+    },
   ],
 };
 
