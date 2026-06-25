@@ -97,6 +97,44 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "QoreChain SDK",
+      items: [
+        "sdk/overview",
+        "sdk/install",
+        "sdk/quickstart",
+        {
+          type: "category",
+          label: "Guides",
+          items: [
+            "sdk/guides/evm",
+            "sdk/guides/svm",
+            "sdk/guides/cosmwasm",
+            "sdk/guides/cross-vm",
+          ],
+        },
+        {
+          type: "category",
+          label: "Concepts",
+          items: [
+            "sdk/concepts/architecture",
+            "sdk/concepts/accounts-pqc",
+          ],
+        },
+        {
+          type: "category",
+          label: "Reference",
+          items: [
+            "sdk/reference/network",
+            "sdk/reference/cli",
+            "sdk/reference/api",
+          ],
+        },
+        "sdk/examples",
+        "sdk/faq",
+      ],
+    },
+    {
+      type: "category",
       label: "API Reference",
       items: [
         "api-reference/rest-grpc-endpoints",
