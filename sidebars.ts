@@ -39,6 +39,20 @@ const sidebars: SidebarsConfig = {
         "user-guide/gas-abstraction",
       ],
     },
+    {
+      type: "category",
+      label: "Developer Guide",
+      items: [
+        "developer-guide/building-from-source",
+        "developer-guide/evm-development",
+        "developer-guide/cosmwasm-development",
+        "developer-guide/svm-development",
+        "developer-guide/cross-vm-interoperability",
+        "developer-guide/evm-precompiles",
+        "developer-guide/account-abstraction",
+        "developer-guide/running-a-validator",
+      ],
+    },
   ],
 };
 
