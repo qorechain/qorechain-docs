@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architecture Overview
 
-QoreChain is a modular blockchain node composed of three primary processes -- the chain node, AI sidecar, and block indexer -- backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on chain version **v3.1.70**, with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
+QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on chain version **v3.1.70**, with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
@@ -125,47 +125,47 @@ QoreChain registers **45+ genesis modules including 20+ custom modules**, groupe
 
 **Security**
 
-* `x/pqc` -- Post-quantum cryptography: Dilithium-5, ML-KEM-1024, hybrid Ed25519 + ML-DSA-87, SHAKE-256, algorithm agility
+* `x/pqc` — Post-quantum cryptography: Dilithium-5, ML-KEM-1024, hybrid Ed25519 + ML-DSA-87, SHAKE-256, algorithm agility
 
 **AI and Machine Learning**
 
-* `x/ai` -- Transaction routing, anomaly detection, fraud detection, fee optimization, TEE attestation, federated learning
-* `x/reputation` -- Multi-factor validator reputation scoring with temporal decay
-* `x/rlconsensus` -- On-chain RL agent (PPO MLP), dynamic consensus tuning, circuit breaker, rollup advisory — the PRISM optimization layer
+* `x/ai` — Transaction routing, anomaly detection, fraud detection, fee optimization, TEE attestation, federated learning
+* `x/reputation` — Multi-factor validator reputation scoring with temporal decay
+* `x/rlconsensus` — On-chain RL agent (PPO MLP), dynamic consensus tuning, circuit breaker, rollup advisory — the PRISM optimization layer
 
 **Consensus**
 
-* `x/qca` -- Triple-Pool Composite PoS (RPoS/DPoS/PoS) on the QoreChain Consensus Engine, custom bonding curve, progressive slashing, QDRW governance
+* `x/qca` — Triple-Pool Composite PoS (RPoS/DPoS/PoS) on the QoreChain Consensus Engine, custom bonding curve, progressive slashing, QDRW governance
 
 **Virtual Machines**
 
-* `x/vm` -- VM routing and lifecycle management
-* `x/svm` -- SVM runtime: BPF deployment/execution, rent collection, Solana-compatible RPC
-* `x/crossvm` -- Cross-VM communication: EVM-CosmWasm precompile + SVM async events
+* `x/vm` — VM routing and lifecycle management
+* `x/svm` — SVM runtime: BPF deployment/execution, rent collection, Solana-compatible RPC
+* `x/crossvm` — Cross-VM communication: EVM-CosmWasm precompile + SVM async events
 
 **Tokenomics and Liquidity**
 
-* `x/burn` -- 10 burn channels, EndBlocker fee distribution (37/30/20/10/3 split)
-* `x/xqore` -- Governance-boosted staking: lock/unlock, graduated exit penalties, PvP rebase
-* `x/inflation` -- Fixed-supply emission from a finite staking-rewards budget on a multi-year schedule
-* `x/amm` -- On-chain liquidity / automated market maker
+* `x/burn` — 10 burn channels, EndBlocker fee distribution (37/30/20/10/3 split)
+* `x/xqore` — Governance-boosted staking: lock/unlock, graduated exit penalties, PvP rebase
+* `x/inflation` — Fixed-supply emission from a finite staking-rewards budget on a multi-year schedule
+* `x/amm` — On-chain liquidity / automated market maker
 
 **Bridges and Interoperability**
 
-* `x/bridge` -- 37 QCB configs (36 external chains + QoreChain loopback) across every major chain type, PQC-signed attestations, circuit breakers
-* `x/babylon` -- BTC restaking via Babylon Protocol, epoch checkpoints
-* `x/multilayer` -- Sidechain/paychain/rollup layer management, state anchoring
+* `x/bridge` — 37 QCB configs (36 external chains + QoreChain loopback) across every major chain type, PQC-signed attestations, circuit breakers
+* `x/babylon` — BTC restaking via Babylon Protocol, epoch checkpoints
+* `x/multilayer` — Sidechain/paychain/rollup layer management, state anchoring
 
 **Governance and Licensing Extensions**
 
-* `x/abstractaccount` -- Smart accounts: multisig, social recovery, session keys, spending rules
-* `x/fairblock` -- MEV protection: threshold IBE encrypted mempool framework
-* `x/gasabstraction` -- Multi-token gas payment: ibc/USDC, ibc/ATOM fee conversion
-* `x/license` -- Chain licensing
+* `x/abstractaccount` — Smart accounts: multisig, social recovery, session keys, spending rules
+* `x/fairblock` — MEV protection: threshold IBE encrypted mempool framework
+* `x/gasabstraction` — Multi-token gas payment: ibc/USDC, ibc/ATOM fee conversion
+* `x/license` — Chain licensing
 
 **Rollups**
 
-* `x/rdk` -- Rollup Development Kit: 4 settlement modes (optimistic, zk, based, sovereign), preset profiles, native DA, bank escrow
+* `x/rdk` — Rollup Development Kit: 4 settlement modes (optimistic, zk, based, sovereign), preset profiles, native DA, bank escrow
 
 ## AnteHandler Chain
 
