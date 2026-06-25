@@ -53,6 +53,22 @@ const sidebars: SidebarsConfig = {
         "developer-guide/running-a-validator",
       ],
     },
+    {
+      type: "category",
+      label: "Architecture",
+      items: [
+        "architecture/consensus-mechanism",
+        "architecture/prism-consensus-engine",
+        "architecture/post-quantum-security",
+        "architecture/ai-engine",
+        "architecture/multilayer-architecture",
+        "architecture/tokenomics",
+        "architecture/bridge-architecture",
+        "architecture/mev-protection-fairblock",
+        "architecture/btc-restaking-babylon",
+        "architecture/rollup-development-kit",
+      ],
+    },
   ],
 };
 
