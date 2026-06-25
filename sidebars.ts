@@ -69,6 +69,26 @@ const sidebars: SidebarsConfig = {
         "architecture/rollup-development-kit",
       ],
     },
+    {
+      type: "category",
+      label: "API Reference",
+      items: [
+        "api-reference/rest-grpc-endpoints",
+        "api-reference/json-rpc-qor_-namespace",
+        "api-reference/json-rpc-eth_-namespace",
+        "api-reference/json-rpc-solana-compatible",
+        "api-reference/websocket-events",
+      ],
+    },
+    {
+      type: "category",
+      label: "CLI Reference",
+      items: [
+        "cli-reference/node-commands",
+        "cli-reference/transaction-commands",
+        "cli-reference/query-commands",
+      ],
+    },
   ],
 };
 
