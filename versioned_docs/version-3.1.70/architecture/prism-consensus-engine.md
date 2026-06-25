@@ -9,6 +9,19 @@ sidebar_position: 2
 
 QoreChain embeds **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), a reinforcement-learning optimization layer, directly into the consensus layer via the `x/rlconsensus` module. PRISM observes chain metrics every N blocks, runs inference through a fixed-point neural network, and proposes consensus parameter adjustments — all deterministically, with no floating-point arithmetic in consensus-critical paths.
 
+*The PRISM optimization loop: observe chain state, run policy inference, clamp and apply parameter changes, then feed the result back.*
+
+```mermaid
+flowchart LR
+    A["Observation Collector<br/>25-dim state vector<br/>every 10 blocks"] --> B["Policy Network (MLP)<br/>int64 fixed-point<br/>2x256 hidden, ReLU/tanh"]
+    B --> C["5-dim action vector<br/>clamped to mode bounds"]
+    C --> D["Adjust consensus params<br/>block time, gas price,<br/>RPoS / DPoS pool weights"]
+    D --> E["Reward Computer<br/>weighted multi-objective"]
+    E --> A
+    D --> F{"Circuit Breaker<br/>healthy fraction<br/>&lt; threshold?"}
+    F -. revert to defaults .-> D
+```
+
 ---
 
 ## Architecture Overview

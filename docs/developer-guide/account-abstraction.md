@@ -23,6 +23,19 @@ Traditional blockchain accounts are controlled by a single private key. Account 
 
 The `x/abstractaccount` module implements these capabilities at the protocol layer, meaning they work across all three VMs (EVM, CosmWasm, SVM) and benefit from native gas efficiency.
 
+*A session-based dApp flow: a scoped session key signs a transaction, the module validates it against the session and spending rules, then executes.*
+
+```mermaid
+flowchart TD
+    A["User connects wallet,<br/>grants scoped session key"] --> B["dApp signs tx<br/>with session key"]
+    B --> C{"Validate against<br/>session permissions"}
+    C -- "message type allowed?<br/>contract allowed?<br/>not expired?" --> D{"Validate spending rules"}
+    C -- "fails" --> R["Reject transaction"]
+    D -- "per-tx + daily limit<br/>allowed denom" --> E["Execute transaction<br/>across EVM / CosmWasm / SVM"]
+    D -- "exceeds limit" --> R
+    E --> F["Session expires<br/>or owner revokes"]
+```
+
 ## Account Types
 
 | Type              | Description                             | Use Case                       |

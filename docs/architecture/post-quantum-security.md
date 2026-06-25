@@ -64,6 +64,22 @@ Accounts register PQC keys via `MsgRegisterPQCKey` (legacy, defaults to Dilithiu
 
 The hybrid signature system allows transactions to carry **both** a classical signature and a PQC signature simultaneously. This provides defense-in-depth: even if one scheme is broken, the other protects the transaction.
 
+*A transaction signed with Ed25519 plus ML-DSA-87 (Dilithium-5), verified by the ante handler under the chain-wide enforcement mode.*
+
+```mermaid
+flowchart TD
+    A["Transaction<br/>Ed25519 signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
+    B --> C{"Account has<br/>PQC key?"}
+    C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
+    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
+    C -- "No extension" --> F{"Hybrid mode"}
+    F -- "Disabled / Optional" --> G["Allow classical-only tx"]
+    F -- "Required" --> H["Reject transaction"]
+    D --> I["Accept"]
+    E --> I
+    G --> I
+```
+
 ### TX Extension Format
 
 PQC signatures are attached to transactions as a **TX extension** with type URL `/qorechain.pqc.v1.PQCHybridSignature`:

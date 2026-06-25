@@ -86,6 +86,20 @@ The `--proof` value is the inclusion proof: the sibling hashes along the path fr
 
 ## End-to-end withdrawal flow
 
+*The L2 to L1 path: a settlement batch commits a withdrawals root, the batch finalizes, then a permissionless inclusion proof releases escrowed funds on QoreChain.*
+
+```mermaid
+flowchart LR
+    A["Rollup (L2)<br/>outbound L2 to L1 messages"] --> B["submit-batch<br/>commits withdrawals root<br/>(Merkle root over withdrawals)"]
+    B --> C{"Finalize batch"}
+    C -- "zk: valid proof verification" --> D["Withdrawals root canonical"]
+    C -- "optimistic: after challenge window" --> D
+    D --> E["execute-withdrawal<br/>--proof (Merkle siblings, leaf to root)"]
+    E --> F{"Recompute root,<br/>match finalized root?"}
+    F -- "yes" --> G["Release funds from<br/>rdk module escrow to recipient"]
+    F -- "no" --> H["Reject"]
+```
+
 1. **Settle a batch.** The rollup operator submits a settlement batch with `submit-batch`. The batch can commit a withdrawals root over its outbound L2 → L1 messages.
 2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it).
 3. **Prove and execute.** Once finalized, anyone submits `execute-withdrawal` with the Merkle inclusion proof (`--proof`) for the specific withdrawal leaf. The module verifies inclusion against the finalized batch's withdrawals root and pays the recipient from escrow.

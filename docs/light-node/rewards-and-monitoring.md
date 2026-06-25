@@ -15,6 +15,20 @@ QoreChain's fee distribution reserves a fixed **3% share for light nodes** that 
 
 To be eligible for this share, a node must be **registered on-chain and actively proving liveness** via heartbeat proofs. A node that is registered but offline does not earn the share. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration and heartbeats work.
 
+*Reward eligibility: register on-chain, prove liveness via heartbeats to reach active status, earn the 3% share, then auto-compound it into stake.*
+
+```mermaid
+flowchart LR
+    A["Register on-chain"] --> B["Submit heartbeat<br/>liveness proofs"]
+    B --> C{"Synced and<br/>proving liveness?"}
+    C -- "yes" --> D["Active status<br/>eligible for 3% light-node share"]
+    C -- "stalled / offline" --> E["Not eligible<br/>(no share)"]
+    E --> B
+    D --> F["Earn 3% fee share<br/>+ staking rewards"]
+    F --> G["Auto-compound:<br/>claim and re-delegate"]
+    G --> D
+```
+
 ## How rewards work
 
 Beyond the light-node share, the node manages delegated stake and the staking rewards it produces. The behaviour is driven by the `[delegation]` section of `config.toml`.
