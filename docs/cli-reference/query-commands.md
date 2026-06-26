@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint (chain version **v3.1.70**) for live data, or a **`qorechain-diana`** testnet endpoint for testing. The default `tcp://localhost:26657` targets a node you run yourself.
+Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint (chain version **v3.1.77**) for live data, or a **`qorechain-diana`** testnet endpoint for testing. The default `tcp://localhost:26657` targets a node you run yourself.
 :::
 
 Common flags apply to every `query` subcommand:

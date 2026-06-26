@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain supports **CosmWasm** smart contracts, enabling developers to write secure, sandboxed programs in Rust that compile to WebAssembly. CosmWasm contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.70**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.77**. Substitute `--chain-id qorechain-diana` for the testnet.
 :::
 
 ---

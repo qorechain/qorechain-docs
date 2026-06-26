@@ -10,7 +10,7 @@ sidebar_position: 1
 Reference for `qorechaind` commands used to initialize, configure, and operate a QoreChain node.
 
 :::note
-QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.70**) and the **`qorechain-diana`** testnet. Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet.
+QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.77**) and the **`qorechain-diana`** testnet. Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet.
 :::
 
 ---

@@ -58,13 +58,13 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.70** on mainnet) and mount a persistent volume for chain data.
+A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.77** on mainnet) and mount a persistent volume for chain data.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.70
+    image: qorechain/qorechaind:v3.1.77
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.70** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the live tag (**v3.1.77** on mainnet) and track official releases for coordinated upgrades.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

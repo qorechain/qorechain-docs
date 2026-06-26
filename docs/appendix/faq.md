@@ -43,7 +43,7 @@ For a full node, see [Running a Node](/developer-guide/running-a-node). For a va
 
 ### What signature scheme does QoreChain use?
 
-QoreChain uses a hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. See [Post-Quantum Security](/architecture/post-quantum-security).
+QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. This hybrid scheme is required by default on the Cosmos transaction path, with enforcement mode governance-controlled. See [Post-Quantum Security](/architecture/post-quantum-security).
 
 ### How do I build a rollup?
 

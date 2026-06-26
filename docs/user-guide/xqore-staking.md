@@ -10,7 +10,7 @@ sidebar_position: 4
 This guide covers the xQORE governance staking mechanism, which allows QOR holders to lock their tokens for enhanced governance power with a PvP rebase model that rewards long-term participants.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.70** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.77** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 ---

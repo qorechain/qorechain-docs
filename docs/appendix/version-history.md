@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.70**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.77**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,52 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.70 — Current Mainnet Release
+## v3.1.77 — Current Mainnet Release
+
+**Release focus:** Read-only REST access for cross-chain and supply modules.
+
+* **Bridge REST endpoints** — Read-only HTTP query endpoints for the bridge module, exposing bridge state over standard REST in addition to gRPC.
+* **Burn REST endpoints** — Read-only HTTP query endpoints for the burn module, making fee-distribution and supply data queryable over standard REST.
+
+## v3.1.76 — SVM Toolchain Modernization
+
+**Release focus:** Solana Virtual Machine compatibility refresh.
+
+* **Current-toolchain program support** — SVM execution modernized so that programs built with the current Solana toolchain run on the QoreChain SVM runtime.
+
+## v3.1.75 — SVM JSON-RPC by Default
+
+**Release focus:** Out-of-the-box Solana-compatible RPC.
+
+* **Solana-compatible JSON-RPC** — The SVM JSON-RPC server is now enabled by default (port **8899**) and started automatically with the node, providing a Solana-compatible RPC interface for SVM tooling.
+
+## v3.1.74 — Rollup Profile Presets
+
+**Release focus:** Rollup Development Kit usability and settlement.
+
+* **Profile-preset application** — Rollup creation now applies the selected profile's preset (DeFi, gaming, NFT, enterprise, or fully custom), so new rollups inherit sensible defaults for their use case.
+* **Optimistic settlement** — The optimistic settlement path (batch submit and challenge) is operational end to end.
+
+## v3.1.73 — Post-Quantum Hash Baseline
+
+**Release focus:** Completing the default post-quantum cryptographic baseline.
+
+* **SHAKE-256 default hash** — SHAKE-256 (SHA-3 family) is adopted as the default application hash, completing the default post-quantum baseline of **ML-DSA-87 (Dilithium-5)** signatures, **ML-KEM-1024** key encapsulation, and **SHAKE-256** hashing.
+
+## v3.1.72 — Stability & Maintenance
+
+**Release focus:** Routine stability and build-pipeline maintenance.
+
+* **Stability improvements** — Internal stability, dependency, and build-pipeline maintenance with no externally visible behavior changes.
+
+## v3.1.71 — PQC Hybrid Signatures Enforced by Default
+
+**Release focus:** Post-quantum security on by default on the Cosmos transaction path.
+
+* **Hybrid signatures required by default** — Post-quantum hybrid signatures are now enforced by default on the Cosmos transaction path: each transaction carries a post-quantum **ML-DSA-87 (Dilithium-5)** signature alongside the classical **secp256k1** signature.
+* **Governance-controlled enforcement** — Enforcement mode remains governance-controlled, with the default set to **required**.
+
+## v3.1.70 — Production Hardening
 
 **Release focus:** Production hardening and consensus optimization for the live mainnet.
 
