@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.70**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.77**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
 :::
 
 Common flags apply to every `tx` subcommand:
@@ -156,6 +156,24 @@ qorechaind tx gov deposit <proposal_id> <amount> [flags]
 ---
 
 ## pqc
+
+The cosmos transaction path requires a hybrid signature by default (`hybrid_signature_mode = required`). The `gen-key` and `cosign` commands produce the Dilithium-5 (ML-DSA-87) key and the `PQCHybridSignature` extension needed to transact on the cosmos path alongside the classical secp256k1 signature.
+
+### gen-key
+
+Generate a Dilithium-5 (ML-DSA-87) post-quantum key for hybrid signing.
+
+```bash
+qorechaind tx pqc gen-key [flags]
+```
+
+### cosign
+
+Attach a Dilithium-5 cosignature to a transaction as a `PQCHybridSignature` extension, producing a hybrid (secp256k1 + ML-DSA-87) transaction. Required for cosmos-path transactions under the default `required` enforcement mode. Standard CosmJS / relayer tooling must produce this extension to transact; the QoreChain SDK's `buildHybridTx` (with `includePqcPublicKey`) does the equivalent.
+
+```bash
+qorechaind tx pqc cosign <unsigned_tx_file> [flags]
+```
 
 ### register-key
 

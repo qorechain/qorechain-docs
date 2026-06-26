@@ -67,27 +67,49 @@ console.log("Current slot:", slot);
 
 This enables deployment and interaction with SVM programs running on QoreChain.
 
-## PQC-Enabled Wallets
+## PQC-Enabled Wallets (Required on the Cosmos Path)
 
-QoreChain features hybrid post-quantum cryptography (PQC) support through ML-DSA-87 (Dilithium-5) signatures. This provides quantum-resistant security alongside standard secp256k1 (ECDSA) signatures.
+QoreChain requires hybrid post-quantum cryptography (PQC) on the cosmos transaction path. As of the current chain version (**v3.1.77**), the network default is `hybrid_signature_mode = required` with `allow_classical_fallback = false` — so **every cosmos-path transaction must carry an ML-DSA-87 (Dilithium-5) signature alongside the standard secp256k1 (ECDSA) signature**. Classical-only cosmos transactions from a PQC account are rejected.
+
+:::caution Cosmos txs require the hybrid PQC extension
+Sending a plain classical transaction on the cosmos path will be rejected. You must attach the Dilithium-5 signature as a `PQCHybridSignature` transaction extension. Standard CosmJS / Keplr tooling does not produce this extension by itself — use the `qorechaind tx pqc cosign` CLI command or the QoreChain SDK's hybrid signing (see below). The only exemptions are genesis gentxs and PQC key registration/migration transactions.
+:::
 
 ### How It Works
 
-Wallets can attach an ML-DSA-87 PQC signature as a transaction extension alongside the standard secp256k1 (ECDSA) signature. This hybrid approach ensures backward compatibility while enabling quantum resistance.
+Wallets attach an ML-DSA-87 PQC signature as a transaction extension alongside the standard secp256k1 (ECDSA) signature. The classical signature is computed over sign bytes that exclude the extension, so it stays valid for classical verification while the PQC signature provides quantum resistance.
+
+### Generate a Dilithium-5 Key
+
+Generate a post-quantum key for hybrid signing:
+
+```bash
+qorechaind tx pqc gen-key
+```
 
 ### Auto-Registration
 
-When you include a PQC public key in your first transaction, QoreChain automatically registers it on-chain. No separate registration step is needed.
+When you include a PQC public key in your first transaction, QoreChain automatically registers it on-chain. No separate registration step is needed. (PQC key registration/migration transactions are themselves exempt from the hybrid requirement, so an account can bootstrap its first key.)
+
+### Hybrid Signing with the SDK
+
+The QoreChain SDK produces compliant cosmos transactions via `buildHybridTx` with `includePqcPublicKey: true`, which attaches the Dilithium-5 extension and embeds the public key for auto-registration. See [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc).
 
 ### PQC Modes
+
+The three enforcement modes remain governance-controlled; the **current network default is Required**:
 
 | Mode                   | Description                                                             |
 | ---------------------- | ----------------------------------------------------------------------- |
 | **Disabled**           | PQC verification is turned off. Standard signatures only.               |
-| **Optional** (default) | Transactions may include PQC signatures. If present, they are verified. |
-| **Required**           | All transactions must include a valid PQC signature.                    |
+| **Optional**           | Transactions may include PQC signatures. If present, they are verified. |
+| **Required** (default) | All cosmos-path transactions must include a valid PQC signature.        |
 
 The active mode is configured at the chain level and can be updated through governance.
+
+:::note EVM / MetaMask unaffected
+The MetaMask (EVM) flow above is **not** affected by the hybrid requirement. EVM transactions use a separate `eth_secp256k1` ante path and never need the PQC extension.
+:::
 
 ## CLI Wallet
 

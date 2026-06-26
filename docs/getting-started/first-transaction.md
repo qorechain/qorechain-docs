@@ -35,6 +35,10 @@ qorechaind tx bank send mykey qor1recipient... 1000000uqor \
 
 This sends **1 QOR** (1,000,000 uqor) to the recipient address, paying a fee of 500 uqor.
 
+:::caution Cosmos transfers require a hybrid PQC signature
+On the cosmos path, the network default is `hybrid_signature_mode = required` (current chain version **v3.1.77**). A plain classical `tx bank send` is **rejected** — every cosmos-path transaction must carry an ML-DSA-87 (Dilithium-5) signature alongside the secp256k1 signature. Generate a Dilithium-5 key with `qorechaind tx pqc gen-key`, then attach the hybrid cosignature with `qorechaind tx pqc cosign` (or build the transaction with the QoreChain SDK's `buildHybridTx`, using `includePqcPublicKey` so the key auto-registers on first use). See [Wallet Setup](/getting-started/wallet-setup) for the full hybrid flow.
+:::
+
 You will be prompted to confirm the transaction before it is broadcast. Once confirmed, the CLI returns a transaction hash.
 
 ## Query Transaction
@@ -56,6 +60,10 @@ qorechaind query tx <txhash> --output json
 ## Using JSON-RPC (EVM)
 
 QoreChain's EVM execution environment exposes a standard Ethereum JSON-RPC interface on port `8545`.
+
+:::note
+EVM transactions are **unaffected** by the cosmos-path hybrid PQC requirement. They use a separate `eth_secp256k1` ante path, so standard Ethereum signing (MetaMask, ethers.js, etc.) works without a PQC extension.
+:::
 
 ### Get the Latest Block Number
 

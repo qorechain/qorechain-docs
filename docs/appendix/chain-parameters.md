@@ -19,7 +19,8 @@ Values shown are the deployed genesis defaults. Parameters apply to mainnet **`q
 
 | Parameter                   | Type   | Default Value          | Description                                                            |
 | --------------------------- | ------ | ---------------------- | ---------------------------------------------------------------------- |
-| `hybrid_signature_mode`     | uint   | `1`                    | Enforcement mode: 0=off, 1=permissive, 2=mandatory                     |
+| `hybrid_signature_mode`     | uint   | `2` (required)         | Enforcement mode: 0=disabled, 1=optional, 2=required (current default) |
+| `allow_classical_fallback`  | bool   | `false`                | Classical-only fallback is closed; cosmos txs must be hybrid           |
 | `algorithm_registry`        | array  | ML-DSA-87, ML-KEM-1024 | Registered PQC algorithms with size constraints                        |
 | `auto_register_enabled`     | bool   | `true`                 | Auto-register PQC keys on first hybrid tx                              |
 | `migration_deadline_height` | uint64 | `0`                    | Block height after which classical-only keys are rejected (0=disabled) |

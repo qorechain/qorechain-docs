@@ -101,6 +101,15 @@ ML-DSA-87 signature, so it remains valid under classical verification while
 gaining post-quantum protection. The post-quantum part travels as a
 `PQCHybridSignature` extension on the transaction.
 
+:::caution Hybrid signing is required on the cosmos path
+As of the current chain version (**v3.1.77**), the network default is
+`hybrid_signature_mode = required` with `allow_classical_fallback = false`.
+Hybrid signing via `buildHybridTx` (with `includePqcPublicKey`) is **mandatory**
+for cosmos-path transactions — classical-only cosmos transactions are rejected
+on-chain. EVM transactions use a separate `eth_secp256k1` path and are
+unaffected.
+:::
+
 ```ts
 import {
   buildHybridTx,
@@ -135,8 +144,9 @@ verifier understands the PQC part. The lower-level helpers
 builders (`buildHybridTx`, `signAndBroadcastHybrid`) are exported for advanced
 use.
 
-> Hybrid transaction submission is being finalized for the live network. The
-> local sign/verify primitives and tx-building helpers are available today.
+> Hybrid transaction submission is the required path on the live network for
+> cosmos transactions. The local sign/verify primitives and tx-building helpers
+> are available today.
 
 ## Algorithm identifiers
 

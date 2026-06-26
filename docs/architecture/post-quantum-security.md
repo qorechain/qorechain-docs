@@ -9,10 +9,12 @@ sidebar_position: 3
 
 QoreChain is built with **post-quantum cryptography (PQC) at genesis** — not retrofitted as an upgrade. The `x/pqc` module provides lattice-based digital signatures and key encapsulation as the primary cryptographic primitives, with a governance-controlled algorithm agility framework for long-term resilience.
 
+The full PQC baseline — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — is now complete and the network default. As of the current chain version (**v3.1.77**), hybrid signatures are **required by default** on the cosmos transaction path: `hybrid_signature_mode = required` and `allow_classical_fallback = false`. Every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature; classical-only transactions from a PQC account are rejected, and the classical downgrade path is closed.
+
 ## Design Principles
 
-* **PQC-first**: Post-quantum signatures are the primary authentication scheme. Classical ECDSA is available as an optional fallback, not the default.
-* **Hybrid mode**: Transactions can carry both classical and PQC signatures simultaneously, enabling a gradual migration path.
+* **PQC-required by default**: Post-quantum signatures are mandatory on the cosmos path. Classical secp256k1 signatures alone are no longer sufficient — `allow_classical_fallback = false`.
+* **Hybrid by default**: Cosmos transactions carry both a classical secp256k1 signature and a Dilithium-5 PQC signature simultaneously. The classical-only fallback is closed.
 * **Algorithm agility**: The cryptographic algorithm registry is governance-controlled, allowing the network to adopt new algorithms or deprecate compromised ones without hard forks.
 * **Deterministic verification**: All signature verification is deterministic and reproducible across validator nodes.
 
@@ -62,7 +64,19 @@ Accounts register PQC keys via `MsgRegisterPQCKey` (legacy, defaults to Dilithiu
 
 ## Hybrid Signatures
 
-The hybrid signature system allows transactions to carry **both** a classical signature and a PQC signature simultaneously. This provides defense-in-depth: even if one scheme is broken, the other protects the transaction.
+The hybrid signature system requires cosmos-path transactions to carry **both** a classical signature and a PQC signature simultaneously. This provides defense-in-depth: even if one scheme is broken, the other protects the transaction.
+
+With the network default of `hybrid_signature_mode = required`, every cosmos-path transaction must include the Dilithium-5 extension alongside the secp256k1 signature. The only exemptions (for bootstrap) are **genesis gentxs (height 0)** and **PQC key registration/migration transactions** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), which are allowed to be classical-only so accounts can register their first PQC key.
+
+**EVM transactions are unaffected.** EVM transactions are authenticated on a separate `eth_secp256k1` ante path (the QoreChain EVM Engine path) and never require the hybrid PQC extension. The hybrid requirement applies only to the cosmos transaction path.
+
+### Cosign Flow
+
+To produce a compliant cosmos transaction, the classical secp256k1 signature is computed over the standard sign bytes (which exclude the PQC extension), and a Dilithium-5 signature is computed and attached as the `PQCHybridSignature` extension. Standard CosmJS / relayer tooling must produce this extension to transact on the cosmos path. Today this is done via:
+
+* `qorechaind tx pqc gen-key` — generate a Dilithium-5 key.
+* `qorechaind tx pqc cosign` — attach the Dilithium-5 cosignature to a transaction.
+* The QoreChain SDK's hybrid signing — `buildHybridTx` with `includePqcPublicKey` (embeds the PQC public key for auto-registration on first use).
 
 *A transaction signed with secp256k1 (ECDSA) plus ML-DSA-87 (Dilithium-5), verified by the ante handler under the chain-wide enforcement mode.*
 
@@ -108,15 +122,15 @@ The `PQCHybridVerifyDecorator` ante handler processes hybrid signatures with thr
 
 ### Hybrid Signature Modes
 
-The chain-wide hybrid enforcement level is governance-configurable:
+The chain-wide hybrid enforcement level is governance-configurable. The **current network default is `required`**:
 
 | Mode         | ID | Default | Behavior                                                                                                          |
 | ------------ | -- | ------- | ----------------------------------------------------------------------------------------------------------------- |
 | **Disabled** | 0  | No      | Classical signatures only. PQC extensions are ignored.                                                            |
-| **Optional** | 1  | Yes     | PQC extensions are verified if present. Accounts without PQC keys may transact with classical signatures only.    |
-| **Required** | 2  | No      | All transactions must carry both classical and PQC signatures. Transactions without a PQC extension are rejected. |
+| **Optional** | 1  | No      | PQC extensions are verified if present. Accounts without PQC keys may transact with classical signatures only.    |
+| **Required** | 2  | **Yes** | All cosmos-path transactions must carry both classical and PQC signatures. Transactions without a PQC extension are rejected. |
 
-The recommended migration path is: **Optional** (default at genesis) → **Required** (via governance proposal when PQC wallet adoption reaches sufficient levels).
+The network has completed its migration: **Optional** (genesis) → **Required** (the current default since v3.1.71, with `allow_classical_fallback = false`). The three modes remain governance-controlled and can be adjusted by proposal.
 
 ## Algorithm Agility Framework
 
@@ -161,9 +175,9 @@ Adding a new algorithm requires:
 2. Submitting a `MsgAddAlgorithm` governance proposal with the algorithm metadata.
 3. Once approved, the algorithm becomes available for key registration and verification.
 
-## SHAKE-256 Foundation
+## SHAKE-256 Hash
 
-QoreChain uses **SHAKE-256** (SHA-3 extendable-output function) as its quantum-resistant hash primitive. The `x/pqc` module provides pure-Go SHAKE-256 utilities:
+As of v3.1.73, **SHAKE-256** (SHA-3 extendable-output function) is the **default application hash** across QoreChain — provided by the `qorehash` package — completing the quantum-resistant cryptographic baseline alongside Dilithium-5 signatures and ML-KEM-1024 key encapsulation. The `x/pqc` module provides pure-Go SHAKE-256 utilities:
 
 | Function                           | Description                       | Output           |
 | ---------------------------------- | --------------------------------- | ---------------- |
@@ -172,9 +186,9 @@ QoreChain uses **SHAKE-256** (SHA-3 extendable-output function) as its quantum-r
 | `SHAKE256ConcatHash(left, right)`  | Hash of concatenated inputs       | 32 bytes         |
 | `SHAKE256DomainHash(domain, data)` | Domain-separated hash             | 32 bytes         |
 
-These utilities serve as the foundation for:
+These utilities back the default application hash and are used for:
 
-* Merkle tree node hashing (preparatory for future quantum-safe state tree replacement)
+* Merkle tree node hashing
 * Hash commitments in cross-layer attestations
 * Domain separation for different hash contexts (e.g., `"leaf:"` vs `"node:"`)
 
@@ -189,11 +203,11 @@ This ensures that cross-chain security is not degraded by the use of classical c
 | Parameter                  | Type                | Default           | Description                                           |
 | -------------------------- | ------------------- | ----------------- | ----------------------------------------------------- |
 | `pqc_primary`              | bool                | `true`            | PQC is the primary signature scheme                   |
-| `allow_classical_fallback` | bool                | `true`            | Allow ECDSA fallback for accounts without PQC keys    |
+| `allow_classical_fallback` | bool                | `false`           | Classical-only fallback is closed; cosmos txs must be hybrid |
 | `min_security_level`       | int32               | `5`               | Minimum NIST security level for accepted algorithms   |
 | `default_migration_blocks` | int64               | `1,000,000`       | Default dual-signature migration period in blocks     |
 | `default_signature_algo`   | AlgorithmID         | `1` (Dilithium-5) | Default signature algorithm for new key registrations |
-| `hybrid_signature_mode`    | HybridSignatureMode | `1` (Optional)    | Chain-wide hybrid signature enforcement level         |
+| `hybrid_signature_mode`    | HybridSignatureMode | `2` (Required)    | Chain-wide hybrid signature enforcement level         |
 
 ## Related
 
