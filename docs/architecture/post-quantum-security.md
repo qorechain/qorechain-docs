@@ -47,6 +47,8 @@ Algorithm-aware operations:
 
 All signing and verification operations are deterministic and produce identical results across every validator node and supported platform.
 
+These same primitives — ML-DSA (FIPS-204), ML-KEM (FIPS-203), and SHAKE-256 (FIPS-202) — are available to wallets and integrators through the open-source [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc) library, which provides one consistent, byte-compatible API across six languages (JavaScript/TypeScript, Rust, Go, C, Python, Java). See [Post-Quantum Signing](/developer-guide/post-quantum-signing).
+
 ## Key Registration
 
 Accounts register PQC keys via `MsgRegisterPQCKey` (legacy, defaults to Dilithium-5) or `MsgRegisterPQCKeyV2` (algorithm-aware). Each message includes:
@@ -211,6 +213,7 @@ This ensures that cross-chain security is not degraded by the use of classical c
 
 ## Related
 
+* [Post-Quantum Signing](/developer-guide/post-quantum-signing) — the open-source `qorechain-pqc` library (six languages) for these primitives and hybrid signing.
 * [Wallet Setup](/getting-started/wallet-setup) — create and manage PQC-backed accounts.
 * [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc) — keys and post-quantum signing from code.
 * [Chain Parameters](/appendix/chain-parameters) — default algorithms and migration settings.

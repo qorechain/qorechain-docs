@@ -2,7 +2,7 @@
 slug: /developer-guide/running-a-validator
 title: Running a Validator
 sidebar_label: Running a Validator
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Running a Validator

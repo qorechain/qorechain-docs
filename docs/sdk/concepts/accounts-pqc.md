@@ -87,6 +87,8 @@ The exported length constants (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
 `ML_DSA_87_SECRET_KEY_LENGTH`, `ML_DSA_87_SIGNATURE_LENGTH`,
 `ML_DSA_87_SEED_LENGTH`) let you validate buffer sizes.
 
+> Underneath, the PQC primitives come from [**qorechain-pqc**](/developer-guide/post-quantum-signing) — the open-source, standards-only library that wraps audited FIPS-204/203/202 implementations behind one consistent API in six languages (JavaScript/TypeScript, Rust, Go, C, Python, Java). Reach for it directly when you need the raw primitives or `hybridSignBytes` framing outside the SDK.
+
 ### Pluggable signers
 
 For composition, the SDK provides a `Signer` abstraction plus `PqcSigner` and

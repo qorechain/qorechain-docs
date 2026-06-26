@@ -72,7 +72,7 @@ This enables deployment and interaction with SVM programs running on QoreChain.
 QoreChain requires hybrid post-quantum cryptography (PQC) on the cosmos transaction path. As of the current chain version (**v3.1.77**), the network default is `hybrid_signature_mode = required` with `allow_classical_fallback = false` — so **every cosmos-path transaction must carry an ML-DSA-87 (Dilithium-5) signature alongside the standard secp256k1 (ECDSA) signature**. Classical-only cosmos transactions from a PQC account are rejected.
 
 :::caution Cosmos txs require the hybrid PQC extension
-Sending a plain classical transaction on the cosmos path will be rejected. You must attach the Dilithium-5 signature as a `PQCHybridSignature` transaction extension. Standard CosmJS / Keplr tooling does not produce this extension by itself — use the `qorechaind tx pqc cosign` CLI command or the QoreChain SDK's hybrid signing (see below). The only exemptions are genesis gentxs and PQC key registration/migration transactions.
+Sending a plain classical transaction on the cosmos path will be rejected. You must attach the Dilithium-5 signature as a `PQCHybridSignature` transaction extension. Standard CosmJS / Keplr tooling does not produce this extension by itself — use the `qorechaind tx pqc cosign` CLI command, the QoreChain SDK's hybrid signing (see below), or, to build it yourself in code, the open-source [**qorechain-pqc**](/developer-guide/post-quantum-signing) library (`hybridSignBytes`). The only exemptions are genesis gentxs and PQC key registration/migration transactions.
 :::
 
 ### How It Works

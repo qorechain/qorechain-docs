@@ -74,6 +74,7 @@ const sidebars: SidebarsConfig = {
         "developer-guide/cross-vm-interoperability",
         "developer-guide/evm-precompiles",
         "developer-guide/account-abstraction",
+        "developer-guide/post-quantum-signing",
         "developer-guide/running-a-validator",
         "developer-guide/running-a-node",
       ],

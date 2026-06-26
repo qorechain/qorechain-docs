@@ -2,7 +2,7 @@
 slug: /developer-guide/running-a-node
 title: Running a Node
 sidebar_label: Running a Node
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Running a Node
