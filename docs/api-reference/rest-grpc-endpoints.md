@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.70**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; substitute your provider's mainnet or testnet host for remote access.
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.77**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; substitute your provider's mainnet or testnet host for remote access.
 :::
 
 ## Base URLs
@@ -42,6 +42,20 @@ RPC:   http://localhost:26657
 | GET    | `/ai/v1/circuit-breakers`          | Current circuit breaker states and thresholds      |
 
 ## Bridge Module
+
+As of chain version **v3.1.77**, the bridge module's read-only state is exposed over REST via grpc-gateway under the `/qorechain/bridge/v1/...` prefix (previously gRPC-only). These endpoints serve real on-chain JSON over HTTP for explorers and light-node telemetry. The bridge `config` reports e.g. `min_validators=10` and `threshold=7`.
+
+| Method | Endpoint                                   | Description                              |
+| ------ | ------------------------------------------ | ---------------------------------------- |
+| GET    | `/qorechain/bridge/v1/config`              | Current bridge module configuration      |
+| GET    | `/qorechain/bridge/v1/chains`              | Lists all registered bridge chains       |
+| GET    | `/qorechain/bridge/v1/chains/{chain_id}`   | Details for a specific bridged chain     |
+| GET    | `/qorechain/bridge/v1/validators`          | Lists registered bridge validators       |
+| GET    | `/qorechain/bridge/v1/validators/{address}`| Details for a specific bridge validator  |
+| GET    | `/qorechain/bridge/v1/operations`          | Lists bridge operations                  |
+| GET    | `/qorechain/bridge/v1/operations/{id}`     | Details for a specific bridge operation  |
+
+The following shorter-path endpoints remain available:
 
 | Method | Endpoint                            | Description                                    |
 | ------ | ----------------------------------- | ---------------------------------------------- |
@@ -109,6 +123,17 @@ PRISM tuning parameters and reinforcement-learning agent state are exposed throu
 | GET    | `/rlconsensus/v1/policy`      | Active policy configuration and weights |
 
 ## Burn Module
+
+As of chain version **v3.1.77**, the burn module's read-only state is exposed over REST via grpc-gateway under the `/qorechain/burn/v1/...` prefix (previously gRPC-only). These endpoints serve real on-chain JSON over HTTP for explorers and light-node telemetry. Burn `stats` include e.g. `gas_burn_rate=0.30`.
+
+| Method | Endpoint                       | Description                          |
+| ------ | ------------------------------ | ------------------------------------ |
+| GET    | `/qorechain/burn/v1/params`    | Current Burn module parameters       |
+| GET    | `/qorechain/burn/v1/stats`     | Burn statistics across all channels  |
+| GET    | `/qorechain/burn/v1/records`   | Lists burn records                   |
+| GET    | `/qorechain/burn/v1/milestone` | Burn milestone progress             |
+
+The following shorter-path endpoints remain available:
 
 | Method | Endpoint          | Description                         |
 | ------ | ----------------- | ----------------------------------- |

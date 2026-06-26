@@ -11,12 +11,14 @@ QoreChain provides a Solana-compatible JSON-RPC interface through its SVM (Solan
 
 ## Connection
 
-| Transport | Default Address         |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8899` |
+| Transport | Default Address           |
+| --------- | ------------------------- |
+| HTTP      | `http://127.0.0.1:8899`   |
+
+The JSON-RPC server is **started by `qorechaind start`** and is **enabled by default**, listening on `127.0.0.1:8899`. It is configured via a `[svm-rpc]` section in `app.toml` (`enable` + `address`). A freshly started node already serves this interface — no extra process is required.
 
 :::note
-The Solana-compatible JSON-RPC interface is served on port **8899** by both the **`qorechain-vladi`** mainnet (live on chain version **v3.1.70**) and the **`qorechain-diana`** testnet. The local address above applies to a node you run yourself; substitute your provider's mainnet or testnet endpoint for remote access.
+The Solana-compatible JSON-RPC interface is served on port **8899** by both the **`qorechain-vladi`** mainnet (live on chain version **v3.1.77**) and the **`qorechain-diana`** testnet. The local address above applies to a node you run yourself; substitute your provider's mainnet or testnet endpoint for remote access.
 :::
 
 ---
@@ -163,7 +165,7 @@ Existing Solana applications can connect to QoreChain by pointing the `Connectio
 ```javascript
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-const connection = new Connection("http://localhost:8899", "confirmed");
+const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 
 // Check version
 const version = await connection.getVersion();

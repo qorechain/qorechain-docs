@@ -10,7 +10,7 @@ sidebar_position: 3
 You can deploy an application-specific rollup three ways: through the **Dashboard** (a guided, no-code wizard), through the chain **CLI** (`qorechaind`, full control over the on-chain transaction), or programmatically with the **TypeScript RDK** (`@qorechain/rdk` plus the `create-qorechain-rollup` scaffolder). This page covers all three, plus the operator lifecycle and batch commands.
 
 :::note
-The commands below target the **`qorechain-diana`** testnet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.70** — substitute the mainnet chain ID and endpoints when deploying on mainnet. Validate every deployment on testnet first.
+The commands below target the **`qorechain-diana`** testnet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.77** — substitute the mainnet chain ID and endpoints when deploying on mainnet. Validate every deployment on testnet first.
 :::
 
 ---
@@ -61,19 +61,21 @@ The Dashboard wizard presents friendly, product-level choices and routes provisi
 
 The CLI creates the rollup directly on-chain. `create-rollup` takes three positional arguments — the rollup ID, a profile, and the stake amount (in `uqor`) — plus an optional `--vm` flag.
 
+:::tip
+As of chain version **v3.1.74**, `create-rollup` **applies the chosen profile's preset automatically** — settlement mode, sequencer, DA, gas model, and VM are all taken from the preset. You no longer need to set them by hand (previously the message hardcoded a sovereign configuration). The `--vm` flag now **defaults to empty**, so the profile's VM applies unless you explicitly override it.
+:::
+
 ```bash
 qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount] \
-  --vm evm \
   --from mykey \
   --chain-id qorechain-diana \
   --fees 500uqor
 ```
 
-**Example** — create a rollup from the `defi` preset:
+**Example** — create a rollup from the `defi` preset (settlement, sequencer, DA, and VM all come from the preset; `defi` resolves to zk settlement on the EVM):
 
 ```bash
 qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
-  --vm evm \
   --from mykey \
   --chain-id qorechain-diana \
   --fees 500uqor
@@ -83,9 +85,9 @@ qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
 
 | Flag | Default | Description |
 | ---- | ------- | ----------- |
-| `--vm` | `evm` | Rollup VM type: `evm`, `cosmwasm`, `svm`, or `custom` |
+| `--vm` | *(empty — use the profile's VM)* | Override the rollup VM type: `evm`, `cosmwasm`, `svm`, or `custom`. Leave unset to apply the preset's VM. |
 
-The `[profile]` argument selects a preset configuration — see **[Preset Profiles](/rollups/preset-profiles)**. The `[stake-amount]` is the bond in `uqor`.
+The `[profile]` argument selects a preset configuration that is applied automatically — see **[Preset Profiles](/rollups/preset-profiles)**. The `[stake-amount]` is the bond in `uqor`.
 
 ### Inspect what you deployed
 
@@ -103,8 +105,8 @@ qorechaind query rdk list-rollups
 
 The Rollup Development Kit ships as two public npm packages that drive the same on-chain `x/rdk` module as the CLI, over public RPC/REST/gRPC/JSON-RPC and any cosmjs `OfflineSigner`:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.1.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, and typed read clients.
-* **`create-qorechain-rollup`** (`v0.1.1`) — a scaffolder that clones one runnable starter template per profile.
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.2.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, and typed read clients.
+* **`create-qorechain-rollup`** (`v0.2.0`) — a scaffolder that clones one runnable starter template per profile.
 
 :::note
 The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Py, Go, and Rust RDK packages are scaffolds (coming soon). Pin versions and validate on testnet.
@@ -245,7 +247,7 @@ qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
 
 ### Challenge a batch
 
-Challenge a submitted batch (for optimistic rollups). Takes the rollup ID and batch index; pass the fraud proof with `--proof`.
+Challenge a submitted batch (for optimistic rollups). Takes the rollup ID and batch index; pass the fraud proof with `--proof`. As of chain version **v3.1.74**, the optimistic **submit-batch → challenge-batch** path is live and working end-to-end.
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \

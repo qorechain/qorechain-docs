@@ -7,10 +7,10 @@ sidebar_position: 4
 
 # SVM Development
 
-QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**.
+QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.70**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.77**. Substitute `--chain-id qorechain-diana` for the testnet.
 :::
 
 ---
@@ -19,7 +19,7 @@ The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026
 
 The `x/svm` module provides:
 
-* BPF program deployment and execution
+* SBF/BPF program deployment and execution
 * Data account creation and management
 * A Solana-compatible JSON-RPC endpoint
 * Bidirectional address mapping between QoreChain and Solana address formats
@@ -27,12 +27,27 @@ The `x/svm` module provides:
 
 ---
 
-## JSON-RPC Endpoint
+## JSON-RPC Server
 
-| Property      | Value                    |
-| ------------- | ------------------------ |
-| Default URL   | `http://localhost:8899`  |
-| Compatibility | Solana JSON-RPC (subset) |
+The Solana-compatible JSON-RPC server is **started by `qorechaind start`** and is **enabled by default**. It is configured through a `[svm-rpc]` section in `app.toml`:
+
+```toml
+[svm-rpc]
+# Enable the Solana-compatible JSON-RPC server
+enable = true
+# Address the server listens on
+address = "127.0.0.1:8899"
+```
+
+The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly started node already serves the Solana JSON-RPC interface on port 8899 — `@solana/web3.js` connects at `http://127.0.0.1:8899` with no extra setup. `getVersion` reports `1.18.0-qorechain`, and `getBalance` / `getAccountInfo` return live on-chain SVM accounts.
+
+| Property      | Value                     |
+| ------------- | ------------------------- |
+| Default URL   | `http://127.0.0.1:8899`   |
+| Enabled       | Yes, by default           |
+| Started by    | `qorechaind start`        |
+| Compatibility | Solana JSON-RPC (subset)  |
+| `getVersion`  | `1.18.0-qorechain`        |
 
 ### Supported Methods
 
@@ -49,9 +64,16 @@ The `x/svm` module provides:
 
 ## Deploying and Interacting with Programs
 
-1. **Deploy a BPF Program** — Compile your Solana program to a BPF shared object, then deploy it to QoreChain:
+:::info
+**Modern SBF execution.** The SVM execution engine has been modernized onto **solana-sbpf 0.21.1**, so freshly-compiled SBF programs from the current Solana toolchain (**platform-tools v1.53 / agave 4.x**) both **deploy and run** on QoreChain — execution is fully supported, not deploy-only. Programs built with either `cargo build-sbf --arch v0` or `--arch v3` are supported.
+:::
+
+1. **Deploy an SBF Program** — Compile your Solana program to an SBF shared object with the current platform-tools (v1.53 / agave 4.x), then deploy it to QoreChain:
 
    ```bash
+   # Build with the current Solana toolchain (--arch v0 or --arch v3)
+   cargo build-sbf --arch v3
+
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
@@ -112,7 +134,7 @@ The `x/svm` module provides:
    ```javascript
    import { Connection, PublicKey } from "@solana/web3.js";
 
-   const connection = new Connection("http://localhost:8899");
+   const connection = new Connection("http://127.0.0.1:8899");
 
    // Check health
    const health = await connection.getHealth();

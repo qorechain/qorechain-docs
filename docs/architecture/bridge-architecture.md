@@ -220,6 +220,8 @@ The bridge module integrates with the AI subsystem for route optimization. For t
 
 ## REST API Endpoints
 
+As of chain version **v3.1.77**, bridge state is also queryable **read-only over REST** via grpc-gateway under the `/qorechain/bridge/v1/...` prefix (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — previously gRPC-only. These serve real on-chain JSON over HTTP for explorers and light-node telemetry. See [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#bridge-module) for the full list.
+
 | Method | Endpoint                                           | Description                                      |
 | ------ | -------------------------------------------------- | ------------------------------------------------ |
 | GET    | `/bridge/v1/chains`                                | List all supported chain configurations          |
