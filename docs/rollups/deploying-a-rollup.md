@@ -112,7 +112,24 @@ These are published to npm. The repo also ships a published operator CLI, **`@qo
 
 #### Python, Go, and Rust clients
 
-Alongside the TypeScript package, the RDK monorepo now provides full **Python**, **Go**, and **Rust** clients (each `v0.2.0`) that mirror the TypeScript surface: the config builder with validation, the five preset profiles, denom/economics/bech32 utilities, binary-Merkle and withdrawal-proof helpers, rollup manifests, REST and `qor_` JSON-RPC read clients, preflight/health checks, accounts (mnemonic → `qor` address), and **transaction signing + broadcast** (`SIGN_MODE_DIRECT`). All three are verified against shared cross-language golden vectors. They are currently **available in the repo** (`packages/py`, `packages/go`, `packages/rust`) and are not yet published to PyPI, the Go module proxies, or crates.io — build them from the [monorepo](https://github.com/qorechain/qorechain-rdk) for now. Live broadcast requires a node endpoint.
+Alongside the TypeScript package, the RDK provides full **Python**, **Go**, and **Rust** clients that mirror the TypeScript surface: the config builder with validation, the five preset profiles, denom/economics/bech32 utilities, binary-Merkle and withdrawal-proof helpers, rollup manifests, REST and `qor_` JSON-RPC read clients, preflight/health checks, accounts (mnemonic → `qor` address), and **transaction signing + broadcast** (`SIGN_MODE_DIRECT`). All three are verified against shared cross-language golden vectors and are **published** to their registries:
+
+```bash
+# Python — installs as qorechain-rdk, imports as qorrdk
+pip install qorechain-rdk
+
+# Rust
+cargo add qorechain-rdk
+
+# Go
+go get github.com/qorechain/qorechain-rdk/packages/go
+```
+
+```python
+import qorrdk
+```
+
+Current published versions: Python `qorechain-rdk` **0.3.1** (PyPI), Rust `qorechain-rdk` **0.3.1** (crates.io), Go module `github.com/qorechain/qorechain-rdk/packages/go`. Live broadcast requires a node endpoint.
 
 :::note
 The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Pin versions and validate on testnet.

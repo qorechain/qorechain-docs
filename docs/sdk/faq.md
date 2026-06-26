@@ -62,12 +62,14 @@ fromBase("1500000"); // "1.5"
 Note the EVM runtime represents QOR with **18** decimals (EVM convention), which
 is distinct from the Cosmos `uqor` base of 10^6.
 
-## A package isn't on npm / PyPI / crates.io yet
+## Which packages are published, and where?
 
-The TypeScript core (`@qorechain/sdk`) is published. The EVM/SVM adapters and the
-Python, Go, and Rust packages are **publish-pending**. Until they publish, build
-them from the [monorepo](https://github.com/qorechain/qorechain-sdk), and use the
-CLI's `--local` flag to point a scaffolded project at the workspace packages.
+All of them. The TypeScript core (`@qorechain/sdk`) and the EVM/SVM adapters
+(`@qorechain/evm`, `@qorechain/svm`) are on npm at `0.3.0`; the Python client is
+on PyPI (`pip install qorechain-sdk` at `0.3.1`, import `qorsdk`); the Rust
+client is on crates.io (`cargo add qorechain-sdk` at `0.3.0`); and the Go client
+is on the module proxy (`go get github.com/qorechain/qorechain-sdk/packages/go/...`).
+See [Install](/sdk/install) for the full per-language commands.
 
 ## My mnemonic is rejected
 

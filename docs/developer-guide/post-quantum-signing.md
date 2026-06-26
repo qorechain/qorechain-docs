@@ -43,17 +43,17 @@ Pick the security level by your size/security budget.
 
 Every language exposes the same API, each backed by a different audited implementation. This is what guarantees byte-compatibility — independent backends agree on the standard.
 
-| Language | Package | Backed by |
-| --- | --- | --- |
-| JavaScript / TypeScript | `@qorechain/pqc` (npm) | [@noble/post-quantum](https://github.com/paulmillr/noble-post-quantum) |
-| Rust | `qorechain-pqc` (crates.io) | `fips204` · `fips203` · `sha3` |
-| Go | `github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
-| C | `c/` (static lib + header) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Python | `qorechain-pqc` (PyPI) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
-| Java | `network.qorechain:qorechain-pqc` (Maven) | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Language | Package | Install | Backed by |
+| --- | --- | --- | --- |
+| JavaScript / TypeScript | `@qorechain/pqc` (npm) | `npm i @qorechain/pqc` | [@noble/post-quantum](https://github.com/paulmillr/noble-post-quantum) |
+| Rust | `qorechain-pqc` (crates.io) | `cargo add qorechain-pqc` | `fips204` · `fips203` · `sha3` |
+| Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
+| Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
+| C | `c/` (static lib + header) | build from the [repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
+| Java | `network.qorechain:qorechain-pqc` (Maven) | via Maven *(publishing)* | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Availability
-The library is **open-source and usable from the repository today** — clone [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) and build the binding you need (current version: **0.1.0**). Registry packages (npm, crates.io, PyPI, Maven Central, pkg.go.dev) are **publishing as part of the rollout**: each registry goes live independently when its release credential is configured, triggered by pushing a `v*` tag. Until a given package appears on its registry, use the package name and API shown here against the source in the repo.
+The JavaScript, Rust, Python, and Go bindings are **published** at version **0.1.0** — install them straight from npm, crates.io, PyPI, and the Go module proxy with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc). The **Java** package (`network.qorechain:qorechain-pqc`, Bouncy Castle backend) is **publishing to Maven** — until it lands on Maven Central, build it from the repo.
 :::
 
 ## Consistent API

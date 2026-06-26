@@ -19,8 +19,7 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publish-pending. Until published, run it from the monorepo
-> (`cli/`) or with `--local` against a built workspace.
+> Published to npm as `create-qorechain-dapp` (`0.3.0`).
 
 ## Templates
 

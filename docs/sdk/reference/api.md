@@ -69,11 +69,11 @@ constants.
 
 ## Other languages
 
-| Language | Generated docs | Notes |
+| Language | Generated docs | Install |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain/) — docstrings on the public API | publish-pending |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | publish-pending |
-| Rust | [docs.rs](https://docs.rs/qorechain) (rustdoc) | publish-pending |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` |
 
 Each package mirrors the same surface (network presets, denom/address
 utilities, HD derivation, PQC primitives, REST + `qor_` JSON-RPC read clients),

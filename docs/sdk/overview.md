@@ -49,33 +49,31 @@ math, and read surfaces.
 
 | Package | Language | Install | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (v0.3.0) |
-| `qorechain` | Python | build from `packages/py` | In repo (v0.3.0) |
-| `qorechain` (Go module) | Go | build from `packages/go` | In repo (v0.3.0) |
-| `qorechain` | Rust | build from `packages/rust` | In repo (v0.3.0) |
-| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Publish-pending |
-| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Publish-pending |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publish-pending |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.3.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.3.1) |
+| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, v0.3.0) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` | Published (crates.io, v0.3.0) |
+| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.3.0) |
+| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.3.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.3.0) |
 
-> Only `@qorechain/sdk` is published to npm today. The Python, Go, and Rust
-> clients are full native-chain SDKs that live in the
-> [monorepo](https://github.com/qorechain/qorechain-sdk) at the unified `0.3.0`
-> release — build them from `packages/` until they are published to PyPI,
-> crates.io, and Go module proxies.
+> The Python distribution installs as `qorechain-sdk` but **imports as
+> `qorsdk`**. All clients are published to their registries — see
+> [Install](/sdk/install) for the per-language commands.
 
-The TypeScript core (`@qorechain/sdk`) is the published package and the basis for
-the examples in this documentation. The Python, Go, and Rust clients now exist in
-the [monorepo](https://github.com/qorechain/qorechain-sdk) at the same unified
-`0.3.0` release and reach **full native-chain parity** with TypeScript: network
-presets, denom/address utilities, HD account derivation (native/EVM/SVM), PQC
-(ML-DSA-87) signing, typed message composers for every custom module plus the
-standard Cosmos modules, typed query clients, the complete transaction lifecycle
-(auto-gas, error decoding, tx tracking, block/tx search), hybrid post-quantum
-transactions, and WebSocket subscriptions. These language clients are
-**available in the repo** (build from `packages/`); only `@qorechain/sdk` is
-published to a registry today. The EVM/SVM execution adapters
-(`@qorechain/evm`, `@qorechain/svm`) and the `create-qorechain-dapp` scaffolding
-CLI remain TypeScript-only and publish-pending.
+The TypeScript core (`@qorechain/sdk`) is the basis for the examples in this
+documentation. The Python, Go, and Rust clients reach **full native-chain
+parity** with TypeScript: network presets, denom/address utilities, HD account
+derivation (native/EVM/SVM), PQC (ML-DSA-87) signing, typed message composers
+for every custom module plus the standard Cosmos modules, typed query clients,
+the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
+block/tx search), hybrid post-quantum transactions, and WebSocket
+subscriptions. All of these clients are **published**: TypeScript to npm
+(`@qorechain/sdk` 0.3.0), Python to PyPI (`qorechain-sdk` 0.3.1, import
+`qorsdk`), Go to the module proxy (`.../packages/go` 0.3.0), and Rust to
+crates.io (`qorechain-sdk` 0.3.0). The EVM/SVM execution adapters
+(`@qorechain/evm`, `@qorechain/svm`, both 0.3.0) and the `create-qorechain-dapp`
+scaffolding CLI are TypeScript-only and likewise published to npm.
 
 ## Where to go next
 
