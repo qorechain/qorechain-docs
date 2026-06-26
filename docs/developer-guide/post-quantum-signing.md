@@ -50,10 +50,10 @@ Every language exposes the same API, each backed by a different audited implemen
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (static lib + header) | build from the [repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `network.qorechain:qorechain-pqc` (Maven) | via Maven *(publishing)* | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.0` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Availability
-The JavaScript, Rust, Python, and Go bindings are **published** at version **0.1.0** — install them straight from npm, crates.io, PyPI, and the Go module proxy with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc). The **Java** package (`network.qorechain:qorechain-pqc`, Bouncy Castle backend) is **publishing to Maven** — until it lands on Maven Central, build it from the repo.
+The JavaScript, Rust, Python, Go, and Java bindings are all **published** at version **0.1.0** — install them straight from npm, crates.io, PyPI, the Go module proxy, and Maven Central with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **Java** package is on Maven Central as `io.github.qorechain:qorechain-pqc:0.1.0` (Bouncy Castle backend). The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
 :::
 
 ## Consistent API
