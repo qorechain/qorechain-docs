@@ -108,8 +108,14 @@ The Rollup Development Kit ships as two public npm packages that drive the same 
 * **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.2.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, and typed read clients.
 * **`create-qorechain-rollup`** (`v0.2.0`) — a scaffolder that clones one runnable starter template per profile.
 
+These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.1.0`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands.
+
+#### Python, Go, and Rust clients
+
+Alongside the TypeScript package, the RDK monorepo now provides full **Python**, **Go**, and **Rust** clients (each `v0.2.0`) that mirror the TypeScript surface: the config builder with validation, the five preset profiles, denom/economics/bech32 utilities, binary-Merkle and withdrawal-proof helpers, rollup manifests, REST and `qor_` JSON-RPC read clients, preflight/health checks, accounts (mnemonic → `qor` address), and **transaction signing + broadcast** (`SIGN_MODE_DIRECT`). All three are verified against shared cross-language golden vectors. They are currently **available in the repo** (`packages/py`, `packages/go`, `packages/rust`) and are not yet published to PyPI, the Go module proxies, or crates.io — build them from the [monorepo](https://github.com/qorechain/qorechain-rdk) for now. Live broadcast requires a node endpoint.
+
 :::note
-The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Py, Go, and Rust RDK packages are scaffolds (coming soon). Pin versions and validate on testnet.
+The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Pin versions and validate on testnet.
 :::
 
 ### Scaffold a project with `create-qorechain-rollup`

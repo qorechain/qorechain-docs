@@ -74,7 +74,7 @@ The UX edition surfaces the same data live across its **Overview**, **Network**,
 
 ### Sync and heartbeat health
 
-The `status` command reports the chain ID, latest block height, whether the chain is catching up, and the light client's synced height and syncing state. A node that is registered, synced, and running continues to submit **heartbeat liveness proofs** and so stays eligible for the reward share. If `status` shows the node stalled or not syncing, it may be failing to prove liveness — investigate before eligibility is affected.
+The `status` command reports the chain ID, latest block height, whether the chain is catching up, and the light client's synced height and syncing state. A node that is registered, synced, and running continues to submit **heartbeat liveness proofs** and so stays eligible for the reward share. These heartbeats are produced via a **PQC-cosigned transaction pipeline** (hybrid Dilithium-5 / ML-DSA-87), consistent with the chain's PQC-required default — see [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) for how the pipeline works and how to enable on-chain heartbeats. If `status` shows the node stalled or not syncing, it may be failing to prove liveness — investigate before eligibility is affected.
 
 ### Self-test health
 
