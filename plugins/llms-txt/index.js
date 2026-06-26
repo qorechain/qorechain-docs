@@ -96,20 +96,9 @@ module.exports = function llmsTxtPlugin(context) {
 
     async postBuild({ siteConfig, outDir }) {
       const siteUrl = (siteConfig.url || "").replace(/\/$/, "");
-      const versions = JSON.parse(
-        fs.readFileSync(path.join(context.siteDir, "versions.json"), "utf8"),
-      );
-      // lastVersion is the default served version; fall back to first listed.
-      const defaultVersion =
-        (siteConfig.presets || [])
-          .map((p) => Array.isArray(p) && p[1] && p[1].docs && p[1].docs.lastVersion)
-          .find(Boolean) || versions[0];
-
-      const versionedDir = path.join(
-        context.siteDir,
-        "versioned_docs",
-        `version-${defaultVersion}`,
-      );
+      // Single-version site: the current docs source lives in docs/.
+      const defaultVersion = "3.1.77";
+      const versionedDir = path.join(context.siteDir, "docs");
 
       const files = collectMarkdownFiles(versionedDir);
 

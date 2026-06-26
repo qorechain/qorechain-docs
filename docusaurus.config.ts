@@ -60,11 +60,6 @@ const config: Config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: "./sidebars.ts",
-          lastVersion: "3.1.70",
-          versions: {
-            current: { label: "Next", path: "next" },
-            "3.1.70": { label: "v3.1.70", path: "" },
-          },
         },
         blog: false,
         theme: {
@@ -116,7 +111,8 @@ const config: Config = {
           position: "right",
         },
         {
-          type: "docsVersionDropdown",
+          to: "/appendix/version-history",
+          label: "v3.1.77",
           position: "right",
         },
       ],
