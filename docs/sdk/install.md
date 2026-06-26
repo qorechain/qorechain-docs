@@ -96,6 +96,26 @@ Requires Rust 1.74+. The read clients are async (Tokio).
 
 > Published to crates.io as `qorechain-sdk` at `0.3.0`.
 
+## Java
+
+Maven (`pom.xml`):
+
+```xml
+<dependency>
+  <groupId>io.github.qorechain</groupId>
+  <artifactId>qorechain-sdk</artifactId>
+  <version>0.3.0</version>
+</dependency>
+```
+
+Or Gradle:
+
+```groovy
+implementation 'io.github.qorechain:qorechain-sdk:0.3.0'
+```
+
+> Published to Maven Central as `io.github.qorechain:qorechain-sdk:0.3.0`.
+
 ## Next
 
 Continue to the [Quickstart](/sdk/quickstart) to connect and read on-chain state.

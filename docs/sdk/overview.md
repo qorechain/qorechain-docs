@@ -53,6 +53,7 @@ math, and read surfaces.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.3.1) |
 | `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, v0.3.0) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` | Published (crates.io, v0.3.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.3.0` | Published (Maven Central, v0.3.0) |
 | `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.3.0) |
 | `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.3.0) |
 | `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.3.0) |
@@ -62,7 +63,7 @@ math, and read surfaces.
 > [Install](/sdk/install) for the per-language commands.
 
 The TypeScript core (`@qorechain/sdk`) is the basis for the examples in this
-documentation. The Python, Go, and Rust clients reach **full native-chain
+documentation. The Python, Go, Rust, and Java clients reach **full native-chain
 parity** with TypeScript: network presets, denom/address utilities, HD account
 derivation (native/EVM/SVM), PQC (ML-DSA-87) signing, typed message composers
 for every custom module plus the standard Cosmos modules, typed query clients,
@@ -70,8 +71,9 @@ the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
 block/tx search), hybrid post-quantum transactions, and WebSocket
 subscriptions. All of these clients are **published**: TypeScript to npm
 (`@qorechain/sdk` 0.3.0), Python to PyPI (`qorechain-sdk` 0.3.1, import
-`qorsdk`), Go to the module proxy (`.../packages/go` 0.3.0), and Rust to
-crates.io (`qorechain-sdk` 0.3.0). The EVM/SVM execution adapters
+`qorsdk`), Go to the module proxy (`.../packages/go` 0.3.0), Rust to
+crates.io (`qorechain-sdk` 0.3.0), and Java to Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.3.0). The EVM/SVM execution adapters
 (`@qorechain/evm`, `@qorechain/svm`, both 0.3.0) and the `create-qorechain-dapp`
 scaffolding CLI are TypeScript-only and likewise published to npm.
 
