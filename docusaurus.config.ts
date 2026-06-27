@@ -94,28 +94,10 @@ const config: Config = {
         alt: "QoreChain",
         src: "img/logo.png",
       },
-      items: [
-        {
-          href: "https://qorechain.io",
-          label: "Website",
-          position: "right",
-        },
-        {
-          href: "https://github.com/qorechain/qorechain-docs",
-          label: "GitHub",
-          position: "right",
-        },
-        {
-          href: "https://discord.gg/qorechain",
-          label: "Discord",
-          position: "right",
-        },
-        {
-          to: "/appendix/version-history",
-          label: "v3.1.77",
-          position: "right",
-        },
-      ],
+      // No navbar links: Website/GitHub/Discord/version live in the footer, so
+      // the mobile hamburger drawer shows only the doc sidebar. Search + the
+      // theme toggle are added automatically.
+      items: [],
     },
     footer: {
       style: "dark",
@@ -129,10 +111,11 @@ const config: Config = {
               href: "https://github.com/qorechain/qorechain-docs",
             },
             { label: "Discord", href: "https://discord.gg/qorechain" },
+            { label: "Version history", to: "/appendix/version-history" },
           ],
         },
       ],
-      copyright: `© QoreChain<br/>QoreChain Association · CHE-484.963.998 · Rolle, Switzerland · team@qorechain.io`,
+      copyright: `© QoreChain · v3.1.77<br/>QoreChain Association · CHE-484.963.998 · Rolle, Switzerland · team@qorechain.io`,
     },
     prism: {
       theme: prismThemes.github,
