@@ -13,7 +13,17 @@ const ALL_LOCALES = ["ar", "de", "es", "fr", "it", "ja", "ko", "ro", "tr"] as co
 // Locales whose content is actually translated — the only ones we auto-redirect
 // to (so we never send a visitor to a locale that would just show English).
 // Add a locale here once its docs are translated.
-const TRANSLATED_LOCALES: readonly string[] = [];
+const TRANSLATED_LOCALES: readonly string[] = [
+  "ar",
+  "de",
+  "es",
+  "fr",
+  "it",
+  "ja",
+  "ko",
+  "ro",
+  "tr",
+];
 const DEFAULT_LOCALE = "en";
 const STORAGE_KEY = "qore-locale-redirected";
 

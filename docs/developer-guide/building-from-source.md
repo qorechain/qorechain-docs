@@ -113,7 +113,7 @@ This compiles all public module interfaces with stub keepers for proprietary fea
 CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
 ```
 
-The `-tags proprietary` flag activates the full keeper implementations. This build requires access to the `qorechain-proprietary` repository.
+The `-tags proprietary` flag activates the full keeper implementations, which are not part of the public source tree.
 
 ## Running Tests
 

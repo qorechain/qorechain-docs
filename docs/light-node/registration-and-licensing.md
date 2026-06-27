@@ -38,7 +38,7 @@ Registration alone is not enough to stay eligible. A registered light node must 
 
 In practice this means a node that is registered and kept running (and synced) maintains its eligibility, while a node that goes offline stops proving liveness and loses eligibility until it returns. Keeping the daemon running and healthy is therefore part of earning rewards — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for how to watch heartbeat and sync health.
 
-### PQC-cosigned heartbeat pipeline
+### PQC-cosigned heartbeat pipeline {#pqc-cosigned-heartbeat-pipeline}
 
 QoreChain is **PQC-required by default**, so the heartbeat liveness transaction is produced through a post-quantum co-signed pipeline rather than a classical-only signature. The daemon builds the unsigned heartbeat, then co-signs it with a **hybrid Dilithium-5 (ML-DSA-87)** signature before broadcast — the same post-quantum posture the chain enforces for every transaction. The node submits one heartbeat per `interval_blocks` window (matching the chain's `heartbeat_interval` parameter), pacing itself by block height to avoid early-submission rejections.
 

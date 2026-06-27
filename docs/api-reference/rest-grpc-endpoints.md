@@ -41,7 +41,7 @@ RPC:   http://localhost:26657
 | GET    | `/ai/v1/network/recommendations`   | AI-generated network optimization recommendations  |
 | GET    | `/ai/v1/circuit-breakers`          | Current circuit breaker states and thresholds      |
 
-## Bridge Module
+## Bridge Module {#bridge-module}
 
 As of chain version **v3.1.77**, the bridge module's read-only state is exposed over REST via grpc-gateway under the `/qorechain/bridge/v1/...` prefix (previously gRPC-only). These endpoints serve real on-chain JSON over HTTP for explorers and light-node telemetry. The bridge `config` reports e.g. `min_validators=10` and `threshold=7`.
 

@@ -183,7 +183,7 @@ For post-quantum security within the EVM:
 
 ---
 
-## Custom `qor_` Namespace
+## Custom `qor_` Namespace {#custom-qor_-namespace}
 
 QoreChain extends the JSON-RPC with a `qor_` namespace for chain-specific queries:
 

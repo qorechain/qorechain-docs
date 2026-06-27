@@ -101,7 +101,7 @@ qorechaind query rdk list-rollups
 
 ---
 
-## Deploy with the TypeScript RDK (`@qorechain/rdk`)
+## Deploy with the TypeScript RDK (`@qorechain/rdk`) {#deploy-with-the-typescript-rdk-qorechainrdk}
 
 The Rollup Development Kit ships as two public npm packages that drive the same on-chain `x/rdk` module as the CLI, over public RPC/REST/gRPC/JSON-RPC and any cosmjs `OfflineSigner`:
 
@@ -138,7 +138,7 @@ Current published versions: Python `qorechain-rdk` **0.4.0** (PyPI, import `qorr
 The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Pin versions and validate on testnet.
 :::
 
-### Scaffold a project with `create-qorechain-rollup`
+### Scaffold a project with `create-qorechain-rollup` {#scaffold-a-project-with-create-qorechain-rollup}
 
 Each profile has a matching starter template (`defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`). Scaffold one with either form:
 

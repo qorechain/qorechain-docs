@@ -27,7 +27,7 @@ Deploy your own QoreChain-powered rollup. The configuration form lets you name t
 
 A quickstart and reference hub for building on QoreChain in code. The section shows installation steps and copy-ready snippets for connecting, deriving accounts across the three runtimes, reading state, sending transfers, and quantum-safe signing, plus a table of language packages and links to the repository, examples, and explorer. See [QoreChain SDK Overview](/sdk/overview) and [Install](/sdk/install).
 
-## Validator Application
+## Validator Application {#validator-application}
 
 Apply to become a Genesis Validator. The form collects your entity and contact details, desired tier, infrastructure region, hardware information, and motivation, with a compliance acknowledgement. After you submit, the application status is shown — under review, approved, or not approved with a reason — and once approved you can proceed to acquire a validator license. See [Running a Validator](/developer-guide/running-a-validator).
 

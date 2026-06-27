@@ -42,6 +42,6 @@ A block page shows its height, timestamp, proposer, hash, transaction count, gas
 
 An address page shows the address with a scannable QR code, its QOR balance, transaction count, and totals for incoming and outgoing transfers. Below that is the full transaction history for the address — transfers, swaps, faucet claims, and more — each with its amount, time, and status. You can copy the address, download its QR code, and open any transaction for details.
 
-## Validators
+## Validators {#validators}
 
 The validators view lists the network's validators with summary cards for the active validator count, total bonded QOR, and consensus health. The table shows each validator's rank, moniker, voting power, commission, and status (for example active or jailed), plus a post-quantum indicator. A search box filters by validator name or address. To delegate to a validator, see [Staking & Validators](/dashboard/staking-and-validators).

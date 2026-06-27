@@ -26,7 +26,7 @@ Everything in this section is a user how-to: what each page does and how to use 
 | **[Quests](/dashboard/quests)** | Complete guided tasks to learn the network. |
 | **[Tools Hub](/dashboard/tools-hub)** | Reach node, rollup, SDK, and licensing tooling. |
 
-## Connect your wallet
+## Connect your wallet {#connect-your-wallet}
 
 Most actions that change on-chain state — sending tokens, swapping, staking, bridging — require a connected wallet.
 

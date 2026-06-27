@@ -37,7 +37,7 @@ QoreChain has a **fixed total supply of 4,500,000,000 QOR**. New QOR is never mi
 
 This is a **fixed-supply model with a finite emission budget**, not an inflation-of-supply model. Once the emission budget is exhausted, no further reward emission occurs beyond what governance allocates from the remaining budget.
 
-### Staking Reward Schedule
+### Staking Reward Schedule {#staking-reward-schedule}
 
 Staking rewards are distributed from the 590,000,000 QOR emission budget on a declining schedule:
 

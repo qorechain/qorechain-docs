@@ -32,7 +32,7 @@ Submitted → [challenge window expires] → Finalized
 Submitted → [fraud proof submitted] → Challenged → Rejected
 ```
 
-### ZK (Zero-Knowledge) Settlement
+### ZK (Zero-Knowledge) Settlement {#zk-zero-knowledge-settlement}
 
 ZK rollups provide cryptographic validity proofs that guarantee state transition correctness.
 

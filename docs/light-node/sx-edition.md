@@ -58,7 +58,7 @@ The most relevant configuration options, at a usage level:
 
 Delegation defaults enable auto-compound on a `1h` interval and reputation-aware rebalancing — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
 
-## First run: `onboard`
+## First run: `onboard` {#first-run-onboard}
 
 On first launch, `start` will stop and point you at the onboarding wizard if no config file exists yet. Run the wizard:
 
@@ -89,7 +89,7 @@ build/lightnode-sx start
 
 The daemon syncs headers, tracks delegations, and serves telemetry until interrupted. If you intentionally want to start without a config file (local-only, no chain RPC), pass `--skip-onboarding-check`.
 
-## Verify the PQC stack: `selftest`
+## Verify the PQC stack: `selftest` {#verify-the-pqc-stack-selftest}
 
 At any time you can confirm the post-quantum stack is functional:
 

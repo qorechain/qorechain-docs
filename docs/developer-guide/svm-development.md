@@ -27,7 +27,7 @@ The `x/svm` module provides:
 
 ---
 
-## JSON-RPC Server
+## JSON-RPC Server {#json-rpc-server}
 
 The Solana-compatible JSON-RPC server is **started by `qorechaind start`** and is **enabled by default**. It is configured through a `[svm-rpc]` section in `app.toml`:
 

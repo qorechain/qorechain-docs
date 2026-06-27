@@ -1,0 +1,76 @@
+---
+slug: /introduction/key-features
+title: Hauptfunktionen
+sidebar_label: Hauptfunktionen
+sidebar_position: 3
+---
+
+# Hauptfunktionen
+
+Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert nach der Release-Phase, in der sie eingeführt wurde. Die aktuelle Chain-Version ist **v3.1.77**, wobei das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801) seit dem 7. Juni 2026 live ist und ein paralleles Testnet (`qorechain-diana`, EVM-Chain-ID 9800) läuft.
+
+| Funktion                   | Eingeführt in       | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PQC-Hybridsignaturen (standardmäßig erforderlich) | v1.1.0 (Sicherheit)   | Duale Signaturen bei jeder Transaktion auf dem Cosmos-Pfad: eine klassische secp256k1-Signatur (ECDSA) gepaart mit ML-DSA-87 (Dilithium-5). Seit v3.1.71 lautet der Netzwerkstandard **required** (`hybrid_signature_mode = required`, `allow_classical_fallback = false`) — ausschließlich klassische Cosmos-Transaktionen werden abgelehnt; nur Genesis-Gentxs und Transaktionen zur PQC-Schlüsselregistrierung/-migration sind ausgenommen. EVM-Transaktionen verwenden einen separaten `eth_secp256k1`-Pfad und sind nicht betroffen. Drei governance-gesteuerte Durchsetzungsmodi (disabled / optional / required) bleiben verfügbar. Nahtloses Wallet-Onboarding über automatische Registrierung per TX-Erweiterung.                                                                              |
+| SHAKE-256 als Standard-Hash | v1.1.0 (Sicherheit)   | Extendable-Output-Funktion (XOF) der SHA-3-Familie. Seit v3.1.73 ist SHAKE-256 (über das `qorehash`-Paket) der **Standard-Anwendungshash** und vervollständigt die PQC-Grundlage (Dilithium-5 + ML-KEM-1024 + SHAKE-256). Bietet Hashing mit variabler Länge, feste 32-Byte-Ausgabe, Verkettung interner Merkle-Knoten und domänengetrenntes Hashing — alles in reinem Go ohne FFI-Abhängigkeit.                                                                                                                 |
+| TEE- und FL-Schnittstellen | v1.1.0 (Sicherheit)   | Produktionsreife Schnittstellenspezifikationen für die Attestierung von Trusted Execution Environments (SGX, TDX, SEV-SNP, ARM CCA) und für die Koordination von Federated Learning (Aggregationsmethoden FedAvg, FedProx, SCAFFOLD). Ermöglicht KI-Inferenz in Hardware-Enklaven und datenschutzwahrendes verteiltes Modelltraining mit kryptografischen Garantien.                                                                |
+| On-Chain-RL-Konsens (PRISM) | v1.0.0 (Genesis) | Ein Go-natives Festkomma-MLP (73.733 Parameter) führt PPO-Inferenz direkt im Block-Lebenszyklus aus. Die PRISM-Optimierungsschicht stimmt Blockzeit, Gas-Limits und Validator-Pool-Gewichte dynamisch ab, ohne externe Orakel. Deterministische Taylor-Reihen-Mathematik sorgt für identische Ergebnisse über alle Validatoren hinweg. Vier Betriebsmodi: shadow, conservative, autonomous und paused. Schutzschalterschutz für Sicherheit. |
+| Triple-Pool Composite PoS  | v1.0.0 (Genesis)    | Validatoren werden alle 1.000 Blöcke auf der QoreChain Consensus Engine in RPoS- (reputationsgewichtete), DPoS- (delegationsgewichtete) und PoS- (Standard-)Pools klassifiziert. Pool-gewichtete Sortition diversifiziert die Blockerzeugung über reine Stake-Dominanz hinaus. Die benutzerdefinierte Bonding-Kurve berücksichtigt selbst gebundenen Stake, Treuedauer, Reputationsqualität und Protokollphase.                            |
+| QDRW-Governance            | v1.0.0 (Genesis)    | Quadratic Delegation with Reputation Weighting. Die Stimmkraft verwendet eine Quadratwurzelfunktion, gedämpft durch einen sigmoiden Reputationsmultiplikator, was eine Whale-Übernahme verhindert und gleichzeitig langfristige, ehrliche Teilnahme belohnt. Ein 100-facher Stake-Vorteil ergibt etwa die 10-fache Stimmkraft. xQORE-Bestände verdoppeln das Stimmgewicht.                                                                                                               |
+| Burn-Engine                | v1.0.0 (Genesis)    | Zehn verschiedene Burn-Kanäle: Transaktionsgebühren, Governance-Strafen, Slashing, Bridge-Gebühren, Spam-Abschreckung, Epochen-Überschuss, manuelle Burns, Vertrags-Callbacks, Cross-VM-Gebühren und Rollup-Erstellungs-Burns. Eingenommene Gebühren werden aufgeteilt: **37 % an Validatoren, 30 % dauerhaft verbrannt, 20 % an die Treasury, 10 % an Staker und 3 % an Light Nodes**.                                                            |
+| xQORE-Staking              | v1.0.0 (Genesis)    | Sperren Sie QOR, um xQORE im Verhältnis 1:1 zu minten und so doppeltes Governance-Gewicht in QDRW-Abstimmungen zu erhalten. Gestaffelte Ausstiegsstrafen (50 % unter 30 Tagen, 35 % bei 30–90 Tagen, 15 % bei 90–180 Tagen, 0 % nach 180 Tagen) werden über PvP-Rebase an die verbleibenden Inhaber umverteilt — was Überzeugung belohnt und kurzfristiges Kapital bestraft.                                                                                                                                                      |
+| Emissionen mit festem Angebot     | v1.0.0 (Genesis)    | Ein festes Gesamtangebot von 4.500.000.000 QOR (80.000.000 zum TGE verbrannt) mit einem endlichen Staking-Belohnungsbudget von 590.000.000 QOR: Jahr 1 mit 8–12 % APY (127.500.000 QOR), Jahr 2 mit 6–10 % APY (106.250.000 QOR), Jahre 3–4 mit 5–8 % APY (85.000.000 QOR pro Jahr) und Jahr 5+ governance-bestimmt (~186.000.000 QOR verbleibend). In Kombination mit der Burn-Engine konvergiert QOR mit steigendem Transaktionsvolumen in Richtung nettodeflationäres Verhalten. |
+| EVM-Laufzeitumgebung                | v1.0.0 (Genesis)    | Vollständige Ethereum-Kompatibilität mit EIP-1559-Gaspreisbildung, JSON-RPC auf Port 8545 (`eth_`-, `web3_`-, `net_`-, `txpool_`-, `qor_`-Namespaces) und Unterstützung für Standard-Tooling (Hardhat, Foundry, Remix). Stellen Sie Solidity-Verträge mit bestehenden Ethereum-Workflows bereit und interagieren Sie mit ihnen.                                                                                                                    |
+| CosmWasm-Laufzeitumgebung           | v1.0.0 (Genesis)    | WebAssembly-Smart-Contract-Engine für Rust-basierte Verträge. Vollständige Lebenszyklusunterstützung: instantiate, execute, query und migrate. Verträge laufen in einer sandboxgeschützten Wasm-Umgebung mit deterministischer Ausführung.                                                                                                                                                                                       |
+| SVM-Laufzeitumgebung                | v1.0.0 (Genesis)    | BPF-Programmbereitstellung und -ausführung über einen Rust-gestützten Executor. Der Solana-kompatible JSON-RPC-Server auf Port 8899 unterstützt `getAccountInfo`, `getBalance`, `getSlot` und mehr. Bestehende Solana-Clients und -Tooling funktionieren ohne Anpassung.                                                                                                                    |
+| Cross-VM-Bridge            | v1.0.0 (Genesis)    | Nahtlose Interoperabilität über alle drei VMs hinweg. EVM-Verträge rufen CosmWasm über Precompile auf; CosmWasm-Verträge rufen EVM über benutzerdefinierte Nachrichten auf; SVM-Programme nehmen über asynchrones ereignisbasiertes Bridging teil. Synchrone EVM-CosmWasm-Aufrufe und asynchrone SVM-Nachrichtenübermittlung innerhalb einer einzigen Chain.                                                                                                                  |
+| Cross-Chain-Konnektivität   | v1.2.0 (Interop)    | Acht IBC-Kanäle (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective) plus **37 QCB-Konfigurationen für 36 externe Chains** (einschließlich QoreChain selbst als nativer Loopback). PQC-signierte Validator-Attestierungen, chainspezifische Bestätigungstiefen und Schutzschalter-Volumenobergrenzen. Derzeit im Testnet-/Pending-Status — noch nicht produktiv.                               |
+| BTC-Restaking              | v1.2.0 (Interop)    | Integration des Babylon Protocol für Bitcoin-Finalitätsgarantien. Validatoren registrieren BTC-Staking-Positionen (mindestens 100.000 Satoshis). QoreChain-Epochen-Zustands-Roots werden über IBC-relayte Babylon-Epochen periodisch in Bitcoin verankert (Checkpoints) und bieten so eine sekundäre Finalitätsschicht, gestützt durch die BTC-Hashrate.                                                                                                                           |
+| Account Abstraction        | v1.2.0 (Interop)    | Programmierbare Smart Accounts auf der Protokollebene (ähnlich ERC-4337). Drei Kontotypen: Multisig, soziale Wiederherstellung und sessionbasiert. Session-Keys mit granularen Berechtigungen und Ablauf, kontospezifische tägliche und transaktionsbezogene Ausgaberegeln, eingegrenzte Denom-Allowlists und automatische Regeldurchsetzung beim Konsens.                                                                                      |
+| MEV-Schutz             | v1.2.0 (Interop)    | FairBlock-Framework für Threshold Identity-Based Encryption (tIBE) für verschlüsselte Mempools. Transaktionen sind für Block-Proposer kryptografisch undurchsichtig, bis sie aufgenommen wurden, was Front-Running und Sandwich-Angriffe eliminiert. Der FairBlockDecorator-Ante-Handler ist verdrahtet und einsatzbereit; die tIBE-Schwellenwertentschlüsselung wird nach der Bereitstellung der Schlüsselzeremonie aktiviert.                                           |
+| Gas Abstraction            | v1.2.0 (Interop)    | Gaszahlung mit mehreren Token beseitigt die Anforderung, natives QOR für Transaktionsgebühren zu halten. Nutzer können in akzeptierten, per IBC übertragenen Token zahlen: ibc/USDC zu einem Kurs von 1:1 und ibc/ATOM zu einem Kurs von 10:1. Der GasAbstractionDecorator validiert und konvertiert nicht-native Gebühren-Denoms vor dem standardmäßigen Gebührenabzug.                                                                                                      |
+| 5-Lane-Priorisierung      | v1.2.0 (Interop)    | Der Blockplatz wird statisch in fünf Prioritäts-Lanes partitioniert: PQC (Priorität 100, 15 % Platz), MEV (90, 20 %), AI (80, 15 %), Default (50, 40 %) und Free (10, 10 %). Sicherheitskritische Transaktionen können niemals durch hochvolumigen Standardverkehr verdrängt werden.                                                                                                                                                                                     |
+| On-Chain-Liquidität (AMM)   | v1.2.0 (Interop)    | Der native automatisierte Market Maker (`x/amm`) stellt On-Chain-Liquiditätspools und Swaps auf der Protokollebene bereit.                                                                                                                                                                                                                                                                                                                                                                     |
+| RDK-Rollups                | v1.3.0 (Rollups)    | Rollup Development Kit mit vier Settlement-Paradigmen (optimistic, zk, based, sovereign), fünf voreingestellten Profilen (defi, gaming, nft, enterprise, custom), nativem DA-Router mit SHA-256-Blob-Speicher und automatischem Pruning, Bank-Escrow-Lebenszyklus mit konfigurierbarer Erstellungs-Burn-Rate, EndBlocker-Auto-Finalisierung und PRISM-unterstützter Konfiguration über das Konsensmodul. Rollup-Fähigkeiten werden als Host-Chain-Framework bereitgestellt.                          |
+| Chain-Lizenzierung            | v1.3.0 (Rollups)    | Das Modul `x/license` bietet protokollnative Chain-Lizenzierung.                                                                                                                                                                                                                                                                                                                              |
+
+## Versionsverlauf
+
+<details>
+
+<summary>v1.0.0 — Genesis-Release</summary>
+
+Etablierte das Kernprotokoll mit Post-Quanten-Kryptografie (Dilithium-5, ML-KEM-1024), der PRISM-On-Chain-Konsensschicht für Reinforcement Learning, der Triple-VM-Laufzeitumgebung (EVM, CosmWasm, SVM) mit Cross-VM-Nachrichtenübermittlung, der Tokenomics-Engine mit festem Angebot (Burn, xQORE, endliches Emissionsbudget), der Validatorauswahl per Triple-Pool Composite PoS, der quadratischen QDRW-Governance und der KI-Transaktionsverarbeitungspipeline.
+
+</details>
+
+<details>
+
+<summary>v1.1.0 — Sicherheitshärtungs-Release</summary>
+
+Führte die Hybridsignatur-Architektur ein, die eine klassische secp256k1-Signatur (ECDSA) mit ML-DSA-87 paart, mit drei governance-gesteuerten Durchsetzungsmodi, eine SHAKE-256-Post-Quanten-Hash-Grundlage für den zukünftigen Merkle-Tree-Austausch sowie produktionsreife Schnittstellenspezifikationen für die TEE-Attestierung (SGX, TDX, SEV-SNP, ARM CCA) und die Koordination von Federated Learning (FedAvg, FedProx, SCAFFOLD).
+
+</details>
+
+<details>
+
+<summary>v1.2.0 — Interoperabilitäts- und UX-Release</summary>
+
+Fügte Cross-Chain-Konnektivität (8 IBC-Kanäle + 37 QCB-Konfigurationen für 36 externe Chains, derzeit im Testnet-/Pending-Status), BTC-Restaking über Babylon Protocol, Smart-Account-Abstraktion mit Session-Keys und sozialer Wiederherstellung, das FairBlock-MEV-Schutz-Framework, Multi-Token-Gas-Abstraktion, On-Chain-Liquidität (`x/amm`) und 5-Lane-Blockplatz-Priorisierung hinzu.
+
+</details>
+
+<details>
+
+<summary>v1.3.0 — Rollup-Ökosystem-Release</summary>
+
+Lieferte das Rollup Development Kit mit vier Settlement-Paradigmen (optimistic, zk, based, sovereign), fünf voreingestellten Bereitstellungsprofilen (defi, gaming, nft, enterprise, custom), einem nativen DA-Router, Bank-Escrow-Lebenszyklusverwaltung, EndBlocker-gesteuerter Auto-Finalisierung, PRISM-unterstützter Rollup-Konfiguration und Chain-Lizenzierung (`x/license`). Tiefe Integration mit dem Multilayer-Architekturmodul für die automatische Sidechain-Registrierung und Zustandsverankerung.
+
+</details>
+
+## Verwandt
+
+* [Was ist QoreChain](/introduction/what-is-qorechain) — der Plattformüberblick im Kontext.
+* [Tokenomics](/architecture/tokenomics) — das ökonomische Modell hinter QOR.
+* [Bridge-Architektur](/architecture/bridge-architecture) — Cross-Chain-Konnektivität und BTC-Restaking.
+* [Rollups-Überblick](/rollups/overview) — das Rollup Development Kit und die Settlement-Paradigmen.
