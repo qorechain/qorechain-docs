@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "Etiquetas",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "Seguridad poscuántica"
+  },
+  "home.feature.pqc.desc": {
+    "message": "ML-DSA-87 (Dilithium-5) y ML-KEM-1024 desde el génesis, con firmas híbridas secp256k1 + ML-DSA-87 y aplicación controlada por gobernanza."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "Entorno de ejecución triple-VM"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM, CosmWasm y SVM se ejecutan en una sola cadena, con mensajería entre VM entre los tres entornos de ejecución."
+  },
+  "home.feature.prism.title": {
+    "message": "Consenso PRISM"
+  },
+  "home.feature.prism.desc": {
+    "message": "Una capa de optimización por aprendizaje por refuerzo ajusta los parámetros de consenso en el QoreChain Consensus Engine con inferencia determinista y on-chain."
+  },
+  "home.feature.bridge.title": {
+    "message": "Puente entre cadenas"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37 configuraciones de cadena QCB más 8 canales IBC, con atestaciones de validadores firmadas con PQC. Actualmente en testnet."
+  },
+  "home.feature.rdk.title": {
+    "message": "Rollup Development Kit"
+  },
+  "home.feature.rdk.desc": {
+    "message": "Despliega rollups específicos para aplicaciones con cuatro paradigmas de liquidación y cinco perfiles preconfigurados, mediante el SDK @qorechain/rdk o la CLI."
+  },
+  "home.feature.dapps.title": {
+    "message": "Crea dApps"
+  },
+  "home.feature.dapps.desc": {
+    "message": "El SDK de TypeScript se conecta a mainnet mediante RPC, REST, gRPC y JSON-RPC a través de cuentas EVM, CosmWasm y SVM."
+  },
+  "home.meta.title": {
+    "message": "Documentación de QoreChain"
+  },
+  "home.meta.description": {
+    "message": "QoreChain es una blockchain Layer 1 segura frente a la computación cuántica y nativa de IA, con criptografía poscuántica desde el génesis, un entorno de ejecución triple-VM y optimización de consenso PRISM."
+  },
+  "home.hero.eyebrow": {
+    "message": "Mainnet en funcionamiento"
+  },
+  "home.hero.title": {
+    "message": "La Layer 1 {highlight} para la próxima década"
+  },
+  "home.hero.title.highlight": {
+    "message": "segura frente a la computación cuántica"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChain combina criptografía poscuántica desde el génesis con un entorno de ejecución triple-VM — EVM, CosmWasm y SVM — y consenso optimizado con IA. Construida sobre Cosmos SDK v0.53."
+  },
+  "home.hero.cta.primary": {
+    "message": "Comenzar"
+  },
+  "home.hero.cta.secondary": {
+    "message": "¿Qué es QoreChain?"
+  },
+  "home.chip.mainnet": {
+    "message": "mainnet"
+  },
+  "home.chip.evmChainId": {
+    "message": "id de cadena EVM"
+  },
+  "home.chip.token": {
+    "message": "token"
+  },
+  "home.chip.framework": {
+    "message": "framework"
+  },
+  "home.features.kicker": {
+    "message": "Arquitectura"
+  },
+  "home.features.title": {
+    "message": "Diseñada frente a adversarios clásicos y cuánticos"
+  },
+  "home.features.lede": {
+    "message": "Una Layer 1 de propósito general que conserva la experiencia de desarrollo de las herramientas existentes a la vez que añade resistencia cuántica, ejecución multi-VM y optimización de consenso on-chain."
+  },
+  "home.paths.kicker": {
+    "message": "Empieza a explorar"
+  },
+  "home.paths.title": {
+    "message": "Elige tu camino"
+  },
+  "home.path.use.title": {
+    "message": "Usa la red"
+  },
+  "home.path.use.lede": {
+    "message": "Mantén QOR, haz staking, participa en la gobernanza y mueve activos."
+  },
+  "home.path.use.wallet": {
+    "message": "Configura una wallet"
+  },
+  "home.path.use.stake": {
+    "message": "Haz staking y delega"
+  },
+  "home.path.use.bridge": {
+    "message": "Transfiere activos por el puente"
+  },
+  "home.path.use.dashboard": {
+    "message": "Usa el Dashboard"
+  },
+  "home.path.build.title": {
+    "message": "Construye sobre QoreChain"
+  },
+  "home.path.build.lede": {
+    "message": "Publica contratos, dApps y rollups."
+  },
+  "home.path.build.quickstart": {
+    "message": "Inicio rápido para desarrolladores"
+  },
+  "home.path.build.evm": {
+    "message": "Desarrollo en EVM"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "Despliega un rollup"
+  },
+  "home.path.run.title": {
+    "message": "Ejecuta infraestructura"
+  },
+  "home.path.run.lede": {
+    "message": "Opera nodos, validadores y nodos ligeros."
+  },
+  "home.path.run.mainnet": {
+    "message": "Conéctate a mainnet"
+  },
+  "home.path.run.node": {
+    "message": "Ejecuta un nodo"
+  },
+  "home.path.run.validator": {
+    "message": "Ejecuta un validador"
+  },
+  "home.path.run.lightnode": {
+    "message": "Ejecuta un nodo ligero"
+  },
+  "home.cta.title": {
+    "message": "Empieza a construir sobre QoreChain"
+  },
+  "home.cta.lede": {
+    "message": "Desde tu primera transacción hasta un rollup en producción — la documentación cubre todo el camino."
+  },
+  "home.cta.button": {
+    "message": "Lee el inicio rápido"
   }
 }

@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "الوسوم",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "الأمان ما بعد الكمي"
+  },
+  "home.feature.pqc.desc": {
+    "message": "ML-DSA-87 (Dilithium-5) وML-KEM-1024 منذ نشأة الشبكة، مع توقيعات هجينة secp256k1 + ML-DSA-87 وآلية فرض خاضعة لحوكمة الشبكة."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "بيئة تشغيل ثلاثية الأجهزة الافتراضية"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "تعمل EVM وCosmWasm وSVM على سلسلة واحدة، مع تبادل الرسائل بين الأجهزة الافتراضية الثلاثة جميعها."
+  },
+  "home.feature.prism.title": {
+    "message": "إجماع PRISM"
+  },
+  "home.feature.prism.desc": {
+    "message": "طبقة تحسين قائمة على التعلّم المعزّز تضبط مُعاملات الإجماع على محرك إجماع QoreChain باستخدام استدلال حتمي يعمل على السلسلة."
+  },
+  "home.feature.bridge.title": {
+    "message": "جسر متعدد السلاسل"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37 تهيئة سلسلة QCB إضافة إلى 8 قنوات IBC، مع شهادات مُدقّقين موقّعة بتشفير ما بعد الكم. حاليًا في الشبكة التجريبية."
+  },
+  "home.feature.rdk.title": {
+    "message": "عُدّة تطوير التجميعات (Rollup)"
+  },
+  "home.feature.rdk.desc": {
+    "message": "انشر تجميعات (rollups) مخصّصة لكل تطبيق مع أربعة نماذج تسوية وخمسة ملفات إعداد جاهزة، عبر SDK الخاص بـ @qorechain/rdk أو عبر CLI."
+  },
+  "home.feature.dapps.title": {
+    "message": "ابنِ تطبيقات dApps"
+  },
+  "home.feature.dapps.desc": {
+    "message": "يتّصل SDK الخاص بـ TypeScript بالشبكة الرئيسية عبر RPC وREST وgRPC وJSON-RPC عبر حسابات EVM وCosmWasm وSVM."
+  },
+  "home.meta.title": {
+    "message": "توثيق QoreChain"
+  },
+  "home.meta.description": {
+    "message": "QoreChain هي بلوكتشين Layer 1 آمنة كميًا ومبنية أصلًا على الذكاء الاصطناعي، تعتمد تشفير ما بعد الكم منذ نشأة الشبكة، وبيئة تشغيل ثلاثية الأجهزة الافتراضية، وتحسين إجماع PRISM."
+  },
+  "home.hero.eyebrow": {
+    "message": "الشبكة الرئيسية تعمل"
+  },
+  "home.hero.title": {
+    "message": "منصة Layer 1 {highlight} للعقد القادم"
+  },
+  "home.hero.title.highlight": {
+    "message": "الآمنة كميًا"
+  },
+  "home.hero.subtitle": {
+    "message": "تجمع QoreChain بين تشفير ما بعد الكم منذ نشأة الشبكة وبيئة تشغيل ثلاثية الأجهزة الافتراضية — EVM وCosmWasm وSVM — وإجماع مُحسَّن بالذكاء الاصطناعي. مبنية على Cosmos SDK v0.53."
+  },
+  "home.hero.cta.primary": {
+    "message": "ابدأ الآن"
+  },
+  "home.hero.cta.secondary": {
+    "message": "ما هي QoreChain؟"
+  },
+  "home.chip.mainnet": {
+    "message": "الشبكة الرئيسية"
+  },
+  "home.chip.evmChainId": {
+    "message": "معرّف سلسلة EVM"
+  },
+  "home.chip.token": {
+    "message": "الرمز"
+  },
+  "home.chip.framework": {
+    "message": "إطار العمل"
+  },
+  "home.features.kicker": {
+    "message": "البنية"
+  },
+  "home.features.title": {
+    "message": "مُصمَّمة لمواجهة الخصوم التقليديين والكميين"
+  },
+  "home.features.lede": {
+    "message": "منصة Layer 1 للأغراض العامة تحافظ على تجربة المطوّر مع الأدوات الحالية مع إضافة المقاومة الكمية، وتنفيذ متعدد الأجهزة الافتراضية، وتحسين الإجماع على السلسلة."
+  },
+  "home.paths.kicker": {
+    "message": "ابدأ الاستكشاف"
+  },
+  "home.paths.title": {
+    "message": "اختر مسارك"
+  },
+  "home.path.use.title": {
+    "message": "استخدم الشبكة"
+  },
+  "home.path.use.lede": {
+    "message": "احتفظ بـ QOR، وقم بالتخزين، والمشاركة في الحوكمة، ونقل الأصول."
+  },
+  "home.path.use.wallet": {
+    "message": "إعداد محفظة"
+  },
+  "home.path.use.stake": {
+    "message": "التخزين والتفويض"
+  },
+  "home.path.use.bridge": {
+    "message": "نقل الأصول عبر الجسر"
+  },
+  "home.path.use.dashboard": {
+    "message": "استخدام لوحة التحكم"
+  },
+  "home.path.build.title": {
+    "message": "ابنِ على QoreChain"
+  },
+  "home.path.build.lede": {
+    "message": "أطلق العقود وتطبيقات dApps والتجميعات (rollups)."
+  },
+  "home.path.build.quickstart": {
+    "message": "البدء السريع للمطوّرين"
+  },
+  "home.path.build.evm": {
+    "message": "التطوير على EVM"
+  },
+  "home.path.build.sdk": {
+    "message": "SDK الخاص بـ QoreChain"
+  },
+  "home.path.build.rollup": {
+    "message": "نشر تجميعة (rollup)"
+  },
+  "home.path.run.title": {
+    "message": "شغّل البنية التحتية"
+  },
+  "home.path.run.lede": {
+    "message": "شغّل العُقد والمُدقّقين والعُقد الخفيفة."
+  },
+  "home.path.run.mainnet": {
+    "message": "الاتصال بالشبكة الرئيسية"
+  },
+  "home.path.run.node": {
+    "message": "تشغيل عقدة"
+  },
+  "home.path.run.validator": {
+    "message": "تشغيل مُدقّق"
+  },
+  "home.path.run.lightnode": {
+    "message": "تشغيل عقدة خفيفة"
+  },
+  "home.cta.title": {
+    "message": "ابدأ البناء على QoreChain"
+  },
+  "home.cta.lede": {
+    "message": "من معاملتك الأولى إلى تجميعة (rollup) في بيئة الإنتاج — تغطي الوثائق المسار بأكمله."
+  },
+  "home.cta.button": {
+    "message": "اقرأ دليل البدء السريع"
   }
 }

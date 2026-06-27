@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "タグ",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "ポスト量子セキュリティ"
+  },
+  "home.feature.pqc.desc": {
+    "message": "ジェネシス時点でML-DSA-87 (Dilithium-5) とML-KEM-1024を採用し、ハイブリッドなsecp256k1 + ML-DSA-87署名とガバナンス管理による適用を備えています。"
+  },
+  "home.feature.tripleVm.title": {
+    "message": "トリプルVMランタイム"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM、CosmWasm、SVMが単一チェーン上で実行され、3つのランタイム間でクロスVMメッセージングが可能です。"
+  },
+  "home.feature.prism.title": {
+    "message": "PRISMコンセンサス"
+  },
+  "home.feature.prism.desc": {
+    "message": "強化学習による最適化レイヤーが、決定論的なオンチェーン推論を用いてQoreChain Consensus Engineのコンセンサスパラメータを調整します。"
+  },
+  "home.feature.bridge.title": {
+    "message": "クロスチェーンブリッジ"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37のQCBチェーン構成に加え8つのIBCチャネルを備え、PQC署名によるバリデータ証明を行います。現在はテストネットで稼働中です。"
+  },
+  "home.feature.rdk.title": {
+    "message": "ロールアップ開発キット"
+  },
+  "home.feature.rdk.desc": {
+    "message": "@qorechain/rdk SDKまたはCLIを通じて、4つの決済パラダイムと5つのプリセットプロファイルでアプリケーション固有のロールアップをデプロイできます。"
+  },
+  "home.feature.dapps.title": {
+    "message": "dAppsを構築"
+  },
+  "home.feature.dapps.desc": {
+    "message": "TypeScript SDKは、EVM、CosmWasm、SVMの各アカウントにわたり、RPC、REST、gRPC、JSON-RPCを介してメインネットに接続します。"
+  },
+  "home.meta.title": {
+    "message": "QoreChainドキュメント"
+  },
+  "home.meta.description": {
+    "message": "QoreChainは、ジェネシス時点でのポスト量子暗号、トリプルVMランタイム、PRISMコンセンサス最適化を備えた、量子耐性かつAIネイティブなLayer 1ブロックチェーンです。"
+  },
+  "home.hero.eyebrow": {
+    "message": "メインネット稼働中"
+  },
+  "home.hero.title": {
+    "message": "次の10年を支える{highlight}Layer 1"
+  },
+  "home.hero.title.highlight": {
+    "message": "量子耐性"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChainは、ジェネシス時点でのポスト量子暗号と、トリプルVMランタイム（EVM、CosmWasm、SVM）、そしてAIで最適化されたコンセンサスを組み合わせています。Cosmos SDK v0.53上に構築されています。"
+  },
+  "home.hero.cta.primary": {
+    "message": "はじめる"
+  },
+  "home.hero.cta.secondary": {
+    "message": "QoreChainとは？"
+  },
+  "home.chip.mainnet": {
+    "message": "メインネット"
+  },
+  "home.chip.evmChainId": {
+    "message": "EVMチェーンID"
+  },
+  "home.chip.token": {
+    "message": "トークン"
+  },
+  "home.chip.framework": {
+    "message": "フレームワーク"
+  },
+  "home.features.kicker": {
+    "message": "アーキテクチャ"
+  },
+  "home.features.title": {
+    "message": "古典的および量子的な攻撃者に対抗する設計"
+  },
+  "home.features.lede": {
+    "message": "既存ツールの開発者体験を維持しながら、量子耐性、マルチVM実行、オンチェーンのコンセンサス最適化を追加した汎用Layer 1です。"
+  },
+  "home.paths.kicker": {
+    "message": "探索を始める"
+  },
+  "home.paths.title": {
+    "message": "あなたの道を選ぶ"
+  },
+  "home.path.use.title": {
+    "message": "ネットワークを使う"
+  },
+  "home.path.use.lede": {
+    "message": "QORを保有し、ステーキング、ガバナンス、資産の移動を行います。"
+  },
+  "home.path.use.wallet": {
+    "message": "ウォレットをセットアップ"
+  },
+  "home.path.use.stake": {
+    "message": "ステーキングと委任"
+  },
+  "home.path.use.bridge": {
+    "message": "資産をブリッジ"
+  },
+  "home.path.use.dashboard": {
+    "message": "ダッシュボードを使う"
+  },
+  "home.path.build.title": {
+    "message": "QoreChainで構築する"
+  },
+  "home.path.build.lede": {
+    "message": "コントラクト、dApps、ロールアップをリリースします。"
+  },
+  "home.path.build.quickstart": {
+    "message": "開発者向けクイックスタート"
+  },
+  "home.path.build.evm": {
+    "message": "EVM開発"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "ロールアップをデプロイ"
+  },
+  "home.path.run.title": {
+    "message": "インフラを運用する"
+  },
+  "home.path.run.lede": {
+    "message": "ノード、バリデータ、ライトノードを運用します。"
+  },
+  "home.path.run.mainnet": {
+    "message": "メインネットに接続"
+  },
+  "home.path.run.node": {
+    "message": "ノードを実行"
+  },
+  "home.path.run.validator": {
+    "message": "バリデータを実行"
+  },
+  "home.path.run.lightnode": {
+    "message": "ライトノードを実行"
+  },
+  "home.cta.title": {
+    "message": "QoreChainで構築を始める"
+  },
+  "home.cta.lede": {
+    "message": "最初のトランザクションから本番のロールアップまで、ドキュメントが道のり全体をカバーします。"
+  },
+  "home.cta.button": {
+    "message": "クイックスタートを読む"
   }
 }

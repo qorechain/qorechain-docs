@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "Etiketler",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "Post-Kuantum Güvenlik"
+  },
+  "home.feature.pqc.desc": {
+    "message": "Genesis'te ML-DSA-87 (Dilithium-5) ve ML-KEM-1024; hibrit secp256k1 + ML-DSA-87 imzaları ve yönetişim tarafından denetlenen uygulama ile birlikte."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "Üçlü VM Çalışma Zamanı"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM, CosmWasm ve SVM tek bir zincirde çalışır; üç çalışma zamanının tümü arasında VM'ler arası mesajlaşma sağlanır."
+  },
+  "home.feature.prism.title": {
+    "message": "PRISM Konsensüsü"
+  },
+  "home.feature.prism.desc": {
+    "message": "Bir pekiştirmeli öğrenme optimizasyon katmanı, deterministik ve zincir üstü çıkarım ile QoreChain Konsensüs Motoru'ndaki konsensüs parametrelerini ayarlar."
+  },
+  "home.feature.bridge.title": {
+    "message": "Zincirler Arası Köprü"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37 QCB zincir yapılandırması ve 8 IBC kanalı, PQC ile imzalanmış doğrulayıcı onaylarıyla. Şu anda testnet aşamasında."
+  },
+  "home.feature.rdk.title": {
+    "message": "Rollup Geliştirme Kiti"
+  },
+  "home.feature.rdk.desc": {
+    "message": "@qorechain/rdk SDK veya CLI aracılığıyla, dört uzlaşma paradigması ve beş hazır profille uygulamaya özel rollup'lar dağıtın."
+  },
+  "home.feature.dapps.title": {
+    "message": "dApp'ler Geliştirin"
+  },
+  "home.feature.dapps.desc": {
+    "message": "TypeScript SDK; EVM, CosmWasm ve SVM hesapları genelinde RPC, REST, gRPC ve JSON-RPC üzerinden mainnet'e bağlanır."
+  },
+  "home.meta.title": {
+    "message": "QoreChain Dokümantasyonu"
+  },
+  "home.meta.description": {
+    "message": "QoreChain; genesis'te post-kuantum kriptografi, üçlü VM çalışma zamanı ve PRISM konsensüs optimizasyonu sunan, kuantuma dayanıklı ve yapay zeka yerel bir Layer 1 blok zinciridir."
+  },
+  "home.hero.eyebrow": {
+    "message": "Mainnet yayında"
+  },
+  "home.hero.title": {
+    "message": "Önümüzdeki on yıl için {highlight} Layer 1"
+  },
+  "home.hero.title.highlight": {
+    "message": "kuantuma dayanıklı"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChain, genesis'teki post-kuantum kriptografiyi üçlü VM çalışma zamanı — EVM, CosmWasm ve SVM — ve yapay zeka optimizasyonlu konsensüs ile birleştirir. Cosmos SDK v0.53 üzerine inşa edilmiştir."
+  },
+  "home.hero.cta.primary": {
+    "message": "Başlayın"
+  },
+  "home.hero.cta.secondary": {
+    "message": "QoreChain nedir?"
+  },
+  "home.chip.mainnet": {
+    "message": "mainnet"
+  },
+  "home.chip.evmChainId": {
+    "message": "EVM zincir kimliği"
+  },
+  "home.chip.token": {
+    "message": "token"
+  },
+  "home.chip.framework": {
+    "message": "çerçeve"
+  },
+  "home.features.kicker": {
+    "message": "Mimari"
+  },
+  "home.features.title": {
+    "message": "Klasik ve kuantum saldırganlara karşı tasarlandı"
+  },
+  "home.features.lede": {
+    "message": "Mevcut araçların geliştirici deneyimini korurken kuantum direnci, çoklu VM yürütme ve zincir üstü konsensüs optimizasyonu ekleyen genel amaçlı bir Layer 1."
+  },
+  "home.paths.kicker": {
+    "message": "Keşfetmeye başlayın"
+  },
+  "home.paths.title": {
+    "message": "Yolunuzu seçin"
+  },
+  "home.path.use.title": {
+    "message": "Ağı kullanın"
+  },
+  "home.path.use.lede": {
+    "message": "QOR tutun, stake edin, yönetişime katılın ve varlıkları taşıyın."
+  },
+  "home.path.use.wallet": {
+    "message": "Bir cüzdan kurun"
+  },
+  "home.path.use.stake": {
+    "message": "Stake edin ve delege edin"
+  },
+  "home.path.use.bridge": {
+    "message": "Varlıkları köprüleyin"
+  },
+  "home.path.use.dashboard": {
+    "message": "Dashboard'u kullanın"
+  },
+  "home.path.build.title": {
+    "message": "QoreChain üzerinde geliştirin"
+  },
+  "home.path.build.lede": {
+    "message": "Sözleşmeler, dApp'ler ve rollup'lar yayınlayın."
+  },
+  "home.path.build.quickstart": {
+    "message": "Geliştirici hızlı başlangıç"
+  },
+  "home.path.build.evm": {
+    "message": "EVM geliştirme"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "Bir rollup dağıtın"
+  },
+  "home.path.run.title": {
+    "message": "Altyapı çalıştırın"
+  },
+  "home.path.run.lede": {
+    "message": "Düğümleri, doğrulayıcıları ve hafif düğümleri işletin."
+  },
+  "home.path.run.mainnet": {
+    "message": "Mainnet'e bağlanın"
+  },
+  "home.path.run.node": {
+    "message": "Bir düğüm çalıştırın"
+  },
+  "home.path.run.validator": {
+    "message": "Bir doğrulayıcı çalıştırın"
+  },
+  "home.path.run.lightnode": {
+    "message": "Bir hafif düğüm çalıştırın"
+  },
+  "home.cta.title": {
+    "message": "QoreChain üzerinde geliştirmeye başlayın"
+  },
+  "home.cta.lede": {
+    "message": "İlk işleminizden üretime hazır bir rollup'a kadar — dokümanlar tüm yolu kapsar."
+  },
+  "home.cta.button": {
+    "message": "Hızlı başlangıcı okuyun"
   }
 }

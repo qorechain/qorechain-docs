@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "Schlagwörter",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "Post-Quanten-Sicherheit"
+  },
+  "home.feature.pqc.desc": {
+    "message": "ML-DSA-87 (Dilithium-5) und ML-KEM-1024 ab dem Genesis-Block, mit hybriden secp256k1- + ML-DSA-87-Signaturen und governance-gesteuerter Durchsetzung."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "Triple-VM-Laufzeitumgebung"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM, CosmWasm und SVM werden auf einer einzigen Chain ausgeführt, mit VM-übergreifendem Messaging zwischen allen drei Laufzeitumgebungen."
+  },
+  "home.feature.prism.title": {
+    "message": "PRISM-Konsens"
+  },
+  "home.feature.prism.desc": {
+    "message": "Eine auf Reinforcement Learning basierende Optimierungsschicht stimmt die Konsensparameter der QoreChain Consensus Engine mit deterministischer On-Chain-Inferenz ab."
+  },
+  "home.feature.bridge.title": {
+    "message": "Cross-Chain-Bridge"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37 QCB-Chain-Konfigurationen plus 8 IBC-Kanäle, mit PQC-signierten Validator-Attestierungen. Derzeit im Testnet."
+  },
+  "home.feature.rdk.title": {
+    "message": "Rollup Development Kit"
+  },
+  "home.feature.rdk.desc": {
+    "message": "Stellen Sie anwendungsspezifische Rollups mit vier Settlement-Paradigmen und fünf vorkonfigurierten Profilen bereit, über das @qorechain/rdk SDK oder die CLI."
+  },
+  "home.feature.dapps.title": {
+    "message": "dApps entwickeln"
+  },
+  "home.feature.dapps.desc": {
+    "message": "Das TypeScript-SDK verbindet sich mit dem Mainnet über RPC, REST, gRPC und JSON-RPC über EVM-, CosmWasm- und SVM-Konten hinweg."
+  },
+  "home.meta.title": {
+    "message": "QoreChain-Dokumentation"
+  },
+  "home.meta.description": {
+    "message": "QoreChain ist eine quantensichere, KI-native Layer 1 Blockchain mit Post-Quanten-Kryptografie ab dem Genesis-Block, einer Triple-VM-Laufzeitumgebung und PRISM-Konsensoptimierung."
+  },
+  "home.hero.eyebrow": {
+    "message": "Mainnet live"
+  },
+  "home.hero.title": {
+    "message": "Die {highlight} Layer 1 für das nächste Jahrzehnt"
+  },
+  "home.hero.title.highlight": {
+    "message": "quantensichere"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChain kombiniert Post-Quanten-Kryptografie ab dem Genesis-Block mit einer Triple-VM-Laufzeitumgebung — EVM, CosmWasm und SVM — sowie KI-optimiertem Konsens. Aufgebaut auf Cosmos SDK v0.53."
+  },
+  "home.hero.cta.primary": {
+    "message": "Loslegen"
+  },
+  "home.hero.cta.secondary": {
+    "message": "Was ist QoreChain?"
+  },
+  "home.chip.mainnet": {
+    "message": "Mainnet"
+  },
+  "home.chip.evmChainId": {
+    "message": "EVM-Chain-ID"
+  },
+  "home.chip.token": {
+    "message": "Token"
+  },
+  "home.chip.framework": {
+    "message": "Framework"
+  },
+  "home.features.kicker": {
+    "message": "Architektur"
+  },
+  "home.features.title": {
+    "message": "Entwickelt gegen klassische und Quanten-Angreifer"
+  },
+  "home.features.lede": {
+    "message": "Eine universell einsetzbare Layer 1, die die Developer Experience bestehender Tools bewahrt und gleichzeitig Quantenresistenz, Multi-VM-Ausführung und On-Chain-Konsensoptimierung hinzufügt."
+  },
+  "home.paths.kicker": {
+    "message": "Erkundung starten"
+  },
+  "home.paths.title": {
+    "message": "Wählen Sie Ihren Weg"
+  },
+  "home.path.use.title": {
+    "message": "Das Netzwerk nutzen"
+  },
+  "home.path.use.lede": {
+    "message": "QOR halten, staken, mitbestimmen und Assets bewegen."
+  },
+  "home.path.use.wallet": {
+    "message": "Eine Wallet einrichten"
+  },
+  "home.path.use.stake": {
+    "message": "Staken & delegieren"
+  },
+  "home.path.use.bridge": {
+    "message": "Assets bridgen"
+  },
+  "home.path.use.dashboard": {
+    "message": "Das Dashboard nutzen"
+  },
+  "home.path.build.title": {
+    "message": "Auf QoreChain entwickeln"
+  },
+  "home.path.build.lede": {
+    "message": "Contracts, dApps und Rollups ausliefern."
+  },
+  "home.path.build.quickstart": {
+    "message": "Schnellstart für Entwickler"
+  },
+  "home.path.build.evm": {
+    "message": "EVM-Entwicklung"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "Ein Rollup bereitstellen"
+  },
+  "home.path.run.title": {
+    "message": "Infrastruktur betreiben"
+  },
+  "home.path.run.lede": {
+    "message": "Nodes, Validatoren und Light Nodes betreiben."
+  },
+  "home.path.run.mainnet": {
+    "message": "Mit dem Mainnet verbinden"
+  },
+  "home.path.run.node": {
+    "message": "Einen Node betreiben"
+  },
+  "home.path.run.validator": {
+    "message": "Einen Validator betreiben"
+  },
+  "home.path.run.lightnode": {
+    "message": "Einen Light Node betreiben"
+  },
+  "home.cta.title": {
+    "message": "Beginnen Sie, auf QoreChain zu entwickeln"
+  },
+  "home.cta.lede": {
+    "message": "Von Ihrer ersten Transaktion bis zu einem produktiven Rollup — die Dokumentation deckt den gesamten Weg ab."
+  },
+  "home.cta.button": {
+    "message": "Den Schnellstart lesen"
   }
 }

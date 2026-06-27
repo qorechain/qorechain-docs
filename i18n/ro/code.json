@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "Etichete",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "Securitate post-cuantică"
+  },
+  "home.feature.pqc.desc": {
+    "message": "ML-DSA-87 (Dilithium-5) și ML-KEM-1024 încă de la genesis, cu semnături hibride secp256k1 + ML-DSA-87 și aplicare controlată prin guvernanță."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "Runtime cu trei mașini virtuale"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM, CosmWasm și SVM rulează pe un singur lanț, cu mesagerie între cele trei runtime-uri."
+  },
+  "home.feature.prism.title": {
+    "message": "Consens PRISM"
+  },
+  "home.feature.prism.desc": {
+    "message": "Un strat de optimizare prin învățare prin întărire reglează parametrii de consens pe motorul de consens QoreChain, cu inferență deterministă, on-chain."
+  },
+  "home.feature.bridge.title": {
+    "message": "Punte cross-chain"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37 de configurații de lanț QCB plus 8 canale IBC, cu atestări ale validatorilor semnate post-cuantic. În prezent în testnet."
+  },
+  "home.feature.rdk.title": {
+    "message": "Kit de dezvoltare pentru rollup-uri"
+  },
+  "home.feature.rdk.desc": {
+    "message": "Implementează rollup-uri specifice aplicației, cu patru paradigme de decontare și cinci profiluri prestabilite, prin SDK-ul @qorechain/rdk sau prin CLI."
+  },
+  "home.feature.dapps.title": {
+    "message": "Construiește dApps"
+  },
+  "home.feature.dapps.desc": {
+    "message": "SDK-ul TypeScript se conectează la mainnet prin RPC, REST, gRPC și JSON-RPC, pe conturi EVM, CosmWasm și SVM."
+  },
+  "home.meta.title": {
+    "message": "Documentația QoreChain"
+  },
+  "home.meta.description": {
+    "message": "QoreChain este un blockchain Layer 1 sigur cuantic și nativ AI, cu criptografie post-cuantică încă de la genesis, un runtime cu trei mașini virtuale și optimizarea consensului PRISM."
+  },
+  "home.hero.eyebrow": {
+    "message": "Mainnet activ"
+  },
+  "home.hero.title": {
+    "message": "Layer 1 {highlight} pentru deceniul următor"
+  },
+  "home.hero.title.highlight": {
+    "message": "sigur cuantic"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChain îmbină criptografia post-cuantică încă de la genesis cu un runtime cu trei mașini virtuale — EVM, CosmWasm și SVM — și consens optimizat prin AI. Construit pe Cosmos SDK v0.53."
+  },
+  "home.hero.cta.primary": {
+    "message": "Începe acum"
+  },
+  "home.hero.cta.secondary": {
+    "message": "Ce este QoreChain?"
+  },
+  "home.chip.mainnet": {
+    "message": "mainnet"
+  },
+  "home.chip.evmChainId": {
+    "message": "EVM chain id"
+  },
+  "home.chip.token": {
+    "message": "token"
+  },
+  "home.chip.framework": {
+    "message": "cadru de lucru"
+  },
+  "home.features.kicker": {
+    "message": "Arhitectură"
+  },
+  "home.features.title": {
+    "message": "Proiectat împotriva adversarilor clasici și cuantici"
+  },
+  "home.features.lede": {
+    "message": "Un Layer 1 de uz general care păstrează experiența de dezvoltare a uneltelor existente, adăugând totodată rezistență cuantică, execuție pe mai multe mașini virtuale și optimizarea consensului on-chain."
+  },
+  "home.paths.kicker": {
+    "message": "Începe să explorezi"
+  },
+  "home.paths.title": {
+    "message": "Alege-ți calea"
+  },
+  "home.path.use.title": {
+    "message": "Folosește rețeaua"
+  },
+  "home.path.use.lede": {
+    "message": "Deține QOR, fă staking, guvernează și mută active."
+  },
+  "home.path.use.wallet": {
+    "message": "Configurează un portofel"
+  },
+  "home.path.use.stake": {
+    "message": "Stake și delegare"
+  },
+  "home.path.use.bridge": {
+    "message": "Transferă active prin punte"
+  },
+  "home.path.use.dashboard": {
+    "message": "Folosește panoul de control"
+  },
+  "home.path.build.title": {
+    "message": "Construiește pe QoreChain"
+  },
+  "home.path.build.lede": {
+    "message": "Lansează contracte, dApps și rollup-uri."
+  },
+  "home.path.build.quickstart": {
+    "message": "Ghid rapid pentru dezvoltatori"
+  },
+  "home.path.build.evm": {
+    "message": "Dezvoltare EVM"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "Implementează un rollup"
+  },
+  "home.path.run.title": {
+    "message": "Rulează infrastructură"
+  },
+  "home.path.run.lede": {
+    "message": "Operează noduri, validatori și noduri light."
+  },
+  "home.path.run.mainnet": {
+    "message": "Conectează-te la mainnet"
+  },
+  "home.path.run.node": {
+    "message": "Rulează un nod"
+  },
+  "home.path.run.validator": {
+    "message": "Rulează un validator"
+  },
+  "home.path.run.lightnode": {
+    "message": "Rulează un nod light"
+  },
+  "home.cta.title": {
+    "message": "Începe să construiești pe QoreChain"
+  },
+  "home.cta.lede": {
+    "message": "De la prima ta tranzacție până la un rollup de producție — documentația acoperă întregul parcurs."
+  },
+  "home.cta.button": {
+    "message": "Citește ghidul rapid"
   }
 }

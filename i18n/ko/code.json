@@ -360,5 +360,155 @@
   "theme.tags.tagsPageTitle": {
     "message": "태그",
     "description": "The title of the tag list page"
+  },
+  "home.feature.pqc.title": {
+    "message": "포스트 양자 보안"
+  },
+  "home.feature.pqc.desc": {
+    "message": "제네시스부터 ML-DSA-87(Dilithium-5)과 ML-KEM-1024를 적용하며, 하이브리드 secp256k1 + ML-DSA-87 서명과 거버넌스로 제어되는 적용 방식을 갖추고 있습니다."
+  },
+  "home.feature.tripleVm.title": {
+    "message": "트리플 VM 런타임"
+  },
+  "home.feature.tripleVm.desc": {
+    "message": "EVM, CosmWasm, SVM가 단일 체인에서 실행되며, 세 런타임 간의 크로스 VM 메시징을 지원합니다."
+  },
+  "home.feature.prism.title": {
+    "message": "PRISM 합의"
+  },
+  "home.feature.prism.desc": {
+    "message": "강화 학습 기반 최적화 계층이 결정론적 온체인 추론을 통해 QoreChain 합의 엔진의 합의 파라미터를 조정합니다."
+  },
+  "home.feature.bridge.title": {
+    "message": "크로스 체인 브리지"
+  },
+  "home.feature.bridge.desc": {
+    "message": "37개의 QCB 체인 구성과 8개의 IBC 채널을 지원하며, PQC 서명 기반 검증자 증명을 제공합니다. 현재 테스트넷 단계입니다."
+  },
+  "home.feature.rdk.title": {
+    "message": "롤업 개발 키트"
+  },
+  "home.feature.rdk.desc": {
+    "message": "@qorechain/rdk SDK 또는 CLI를 통해 네 가지 정산 패러다임과 다섯 가지 프리셋 프로필로 애플리케이션 전용 롤업을 배포하세요."
+  },
+  "home.feature.dapps.title": {
+    "message": "dApps 구축"
+  },
+  "home.feature.dapps.desc": {
+    "message": "TypeScript SDK는 EVM, CosmWasm, SVM 계정 전반에서 RPC, REST, gRPC, JSON-RPC를 통해 메인넷에 연결됩니다."
+  },
+  "home.meta.title": {
+    "message": "QoreChain 문서"
+  },
+  "home.meta.description": {
+    "message": "QoreChain은 제네시스부터 포스트 양자 암호화, 트리플 VM 런타임, PRISM 합의 최적화를 갖춘 양자 안전(quantum-safe) AI 네이티브 Layer 1 블록체인입니다."
+  },
+  "home.hero.eyebrow": {
+    "message": "메인넷 운영 중"
+  },
+  "home.hero.title": {
+    "message": "다가올 10년을 위한 {highlight} Layer 1"
+  },
+  "home.hero.title.highlight": {
+    "message": "양자 안전(quantum-safe)"
+  },
+  "home.hero.subtitle": {
+    "message": "QoreChain은 제네시스부터 적용되는 포스트 양자 암호화에 트리플 VM 런타임(EVM, CosmWasm, SVM)과 AI 최적화 합의를 결합합니다. Cosmos SDK v0.53를 기반으로 구축되었습니다."
+  },
+  "home.hero.cta.primary": {
+    "message": "시작하기"
+  },
+  "home.hero.cta.secondary": {
+    "message": "QoreChain이란?"
+  },
+  "home.chip.mainnet": {
+    "message": "메인넷"
+  },
+  "home.chip.evmChainId": {
+    "message": "EVM 체인 ID"
+  },
+  "home.chip.token": {
+    "message": "토큰"
+  },
+  "home.chip.framework": {
+    "message": "프레임워크"
+  },
+  "home.features.kicker": {
+    "message": "아키텍처"
+  },
+  "home.features.title": {
+    "message": "고전적 공격자와 양자 공격자 모두에 대응하도록 설계"
+  },
+  "home.features.lede": {
+    "message": "기존 도구의 개발자 경험을 유지하면서 양자 내성, 멀티 VM 실행, 온체인 합의 최적화를 더한 범용 Layer 1입니다."
+  },
+  "home.paths.kicker": {
+    "message": "탐색 시작"
+  },
+  "home.paths.title": {
+    "message": "원하는 경로를 선택하세요"
+  },
+  "home.path.use.title": {
+    "message": "네트워크 사용하기"
+  },
+  "home.path.use.lede": {
+    "message": "QOR를 보유하고, 스테이킹하고, 거버넌스에 참여하고, 자산을 이동하세요."
+  },
+  "home.path.use.wallet": {
+    "message": "지갑 설정하기"
+  },
+  "home.path.use.stake": {
+    "message": "스테이킹 및 위임"
+  },
+  "home.path.use.bridge": {
+    "message": "자산 브리징"
+  },
+  "home.path.use.dashboard": {
+    "message": "대시보드 사용하기"
+  },
+  "home.path.build.title": {
+    "message": "QoreChain 위에서 구축하기"
+  },
+  "home.path.build.lede": {
+    "message": "컨트랙트, dApps, 롤업을 출시하세요."
+  },
+  "home.path.build.quickstart": {
+    "message": "개발자 빠른 시작"
+  },
+  "home.path.build.evm": {
+    "message": "EVM 개발"
+  },
+  "home.path.build.sdk": {
+    "message": "QoreChain SDK"
+  },
+  "home.path.build.rollup": {
+    "message": "롤업 배포하기"
+  },
+  "home.path.run.title": {
+    "message": "인프라 운영하기"
+  },
+  "home.path.run.lede": {
+    "message": "노드, 검증자, 라이트 노드를 운영하세요."
+  },
+  "home.path.run.mainnet": {
+    "message": "메인넷에 연결하기"
+  },
+  "home.path.run.node": {
+    "message": "노드 운영하기"
+  },
+  "home.path.run.validator": {
+    "message": "검증자 운영하기"
+  },
+  "home.path.run.lightnode": {
+    "message": "라이트 노드 운영하기"
+  },
+  "home.cta.title": {
+    "message": "QoreChain 위에서 구축을 시작하세요"
+  },
+  "home.cta.lede": {
+    "message": "첫 트랜잭션부터 프로덕션 롤업까지 — 문서가 전체 과정을 다룹니다."
+  },
+  "home.cta.button": {
+    "message": "빠른 시작 읽기"
   }
 }
