@@ -52,10 +52,17 @@
   --docusaurus-highlighted-code-line-bg: rgba(59, 255, 216, 0.12);
 }
 
-/* Frosted, contained navbar */
+/* Frosted, contained navbar. NOTE: backdrop-filter is desktop-only — on the
+   navbar it creates a containing block that traps the mobile sidebar drawer
+   (a position:fixed descendant of .navbar), breaking the hamburger menu. So we
+   only apply it above the mobile-menu breakpoint (996px). */
 .navbar {
-  backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid rgba(127, 127, 160, 0.16);
+}
+@media (min-width: 997px) {
+  .navbar {
+    backdrop-filter: saturate(180%) blur(12px);
+  }
 }
 
 /* The wordmark ships dark (ink) for light backgrounds; render it white in dark mode
