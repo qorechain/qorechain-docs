@@ -32,6 +32,21 @@ Each rollup is registered with a unique `rollup-id`, backed by a stake bond in Q
 
 ---
 
+## What makes the QoreChain RDK different
+
+Beyond the table-stakes of any rollup kit, the QoreChain RDK exposes three capabilities that depend on QoreChain's Layer 1 and that no kit built on a non-post-quantum, non-AI base layer can offer — plus a watchtower auto-challenger. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java), all currently at **v0.4.0**.
+
+| Differentiator | What it does |
+| -------------- | ------------ |
+| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Turn a settlement anchor into a portable receipt verifiable **fully offline** under a post-quantum (ML-DSA-87 / Dilithium-5) signature — byte-for-byte across all five clients. |
+| **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | Aggregate QoreChain's on-chain AI/RL services (fee-policy agent, recommendations, fraud investigations, circuit breakers) into a read-only, plain-language advisory for one rollup. |
+| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Call a CosmWasm contract from an EVM/Solidity rollup contract through the cross-VM precompile (`0x…0901`). |
+| **[Watchtower](/rollups/watchtower)** | An auto-challenger framework for optimistic rollups that surfaces new batches and challenge-window deadlines and challenges invalid batches against your validity predicate. |
+
+See **[Why QoreChain RDK](/rollups/why)** for the full rationale and code samples.
+
+---
+
 ## The four settlement paradigms
 
 QoreChain RDK supports four distinct settlement modes, each with different trust assumptions, finality characteristics, and proof requirements. The combination of settlement mode and proof system is validated on-chain — an incompatible pairing is rejected at creation. The diagram below maps each settlement mode to its valid proof system.

@@ -105,10 +105,10 @@ qorechaind query rdk list-rollups
 
 The Rollup Development Kit ships as two public npm packages that drive the same on-chain `x/rdk` module as the CLI, over public RPC/REST/gRPC/JSON-RPC and any cosmjs `OfflineSigner`:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.2.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, and typed read clients.
-* **`create-qorechain-rollup`** (`v0.2.0`) — a scaffolder that clones one runnable starter template per profile.
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, typed read clients, and the v0.4 additions — quantum-safe settlement receipts, the QCAI Rollup Copilot, cross-VM calldata helpers, and the watchtower.
+* **`create-qorechain-rollup`** (`v0.4.0`) — a scaffolder that clones one runnable starter template per profile (including the `multivm-rollup` template).
 
-These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.1.0`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands.
+These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.0`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands, plus the v0.4 `receipt`, `advise`, and `watchtower` commands.
 
 #### Python, Go, Rust, and Java clients
 
@@ -125,14 +125,14 @@ cargo add qorechain-rdk
 go get github.com/qorechain/qorechain-rdk/packages/go
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.3.1
+# io.github.qorechain:qorechain-rdk:0.4.0
 ```
 
 ```python
 import qorrdk
 ```
 
-Current published versions: Python `qorechain-rdk` **0.3.1** (PyPI, import `qorrdk`), Rust `qorechain-rdk` **0.3.1** (crates.io), Go module `github.com/qorechain/qorechain-rdk/packages/go`, and Java `io.github.qorechain:qorechain-rdk` **0.3.1** (Maven Central). Live broadcast requires a node endpoint.
+Current published versions: Python `qorechain-rdk` **0.4.0** (PyPI, import `qorrdk`), Rust `qorechain-rdk` **0.4.0** (crates.io), Go module `github.com/qorechain/qorechain-rdk/packages/go`, and Java `io.github.qorechain:qorechain-rdk` **0.4.0** (Maven Central). Live broadcast requires a node endpoint.
 
 :::note
 The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Pin versions and validate on testnet.

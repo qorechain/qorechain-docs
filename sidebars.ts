@@ -114,8 +114,13 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         "rollups/overview",
+        "rollups/why-qorechain-rdk",
         "rollups/preset-profiles",
         "rollups/deploying-a-rollup",
+        "rollups/settlement-receipts",
+        "rollups/qcai-copilot",
+        "rollups/multi-vm",
+        "rollups/watchtower",
         "rollups/data-availability",
         "rollups/zk-stark-withdrawals",
       ],
