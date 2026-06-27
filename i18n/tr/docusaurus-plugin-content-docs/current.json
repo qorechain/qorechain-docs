@@ -1,0 +1,122 @@
+{
+  "version.label": {
+    "message": "Güncel",
+    "description": "The label for version current"
+  },
+  "sidebar.docsSidebar.category.Introduction": {
+    "message": "Giriş",
+    "description": "The label for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Introduction.link.generated-index.description": {
+    "message": "QoreChain’e genel bir bakış için buradan başlayın — nedir, mimarisi ve temel özellikleri.",
+    "description": "The generated-index page description for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started": {
+    "message": "Başlarken",
+    "description": "The label for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started.link.generated-index.description": {
+    "message": "Bir cüzdan kurun, mainnet veya testnet’e bağlanın ve ilk işleminizi gönderin.",
+    "description": "The generated-index page description for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide": {
+    "message": "Kullanıcı Kılavuzu",
+    "description": "The label for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide.link.generated-index.description": {
+    "message": "QoreChain’de günlük işlemler — tokenlar, staking, yönetişim, köprüleme ve gaz soyutlama.",
+    "description": "The generated-index page description for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide": {
+    "message": "Geliştirici Kılavuzu",
+    "description": "The label for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide.link.generated-index.description": {
+    "message": "QoreChain üzerinde geliştirin — EVM, CosmWasm ve SVM geliştirme, VM’ler arası birlikte çalışabilirlik ve node çalıştırma.",
+    "description": "The generated-index page description for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture": {
+    "message": "Mimari",
+    "description": "The label for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture.link.generated-index.description": {
+    "message": "QoreChain’in arka planda nasıl çalıştığı — uzlaşma, kuantum sonrası güvenlik, çoklu VM katmanları, tokenomik ve daha fazlası.",
+    "description": "The generated-index page description for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups": {
+    "message": "Rollup’lar",
+    "description": "The label for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups.link.generated-index.description": {
+    "message": "QoreChain Rollup Development Kit ile rollup’ları dağıtın ve işletin — profiller, veri kullanılabilirliği ve para çekme işlemleri.",
+    "description": "The generated-index page description for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node": {
+    "message": "Light Node",
+    "description": "The label for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node.link.generated-index.description": {
+    "message": "Bir QoreChain light node çalıştırın — SX ve UX sürümleri, kayıt ve lisanslama, ödüller ve izleme.",
+    "description": "The generated-index page description for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK": {
+    "message": "QoreChain SDK",
+    "description": "The label for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK.link.generated-index.description": {
+    "message": "QoreChain üzerinde geliştirme yapmak için herkese açık dApp SDK’sı — kurulum, hızlı başlangıç, kılavuzlar, kavramlar ve referans.",
+    "description": "The generated-index page description for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Guides": {
+    "message": "Kılavuzlar",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Concepts": {
+    "message": "Kavramlar",
+    "description": "The label for category 'Concepts' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Reference": {
+    "message": "Referans",
+    "description": "The label for category 'Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard": {
+    "message": "Dashboard",
+    "description": "The label for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard.link.generated-index.description": {
+    "message": "QoreChain Dashboard — gezgin, cüzdan, alım satım, köprü, sözleşme araçları, staking, faucet, görevler ve araçlar.",
+    "description": "The generated-index page description for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot": {
+    "message": "QCAIA Topluluk Botu",
+    "description": "The label for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot.link.generated-index.description": {
+    "message": "Discord ve Telegram için QCAIA topluluk botu — ne yaptığı ve nasıl kullanılacağı.",
+    "description": "The generated-index page description for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference": {
+    "message": "API Referansı",
+    "description": "The label for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference.link.generated-index.description": {
+    "message": "QoreChain ile programatik olarak etkileşim kurmak için REST, gRPC, JSON-RPC ve WebSocket arayüzleri.",
+    "description": "The generated-index page description for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference": {
+    "message": "CLI Referansı",
+    "description": "The label for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference.link.generated-index.description": {
+    "message": "Node, işlem ve sorgu işlemleri için komut satırı referansı.",
+    "description": "The generated-index page description for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix": {
+    "message": "Ek",
+    "description": "The label for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
+    "message": "Referans materyali — sözlük, zincir parametreleri ve sürüm geçmişi.",
+    "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  }
+}

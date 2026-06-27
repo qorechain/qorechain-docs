@@ -1,0 +1,122 @@
+{
+  "version.label": {
+    "message": "الأحدث",
+    "description": "The label for version current"
+  },
+  "sidebar.docsSidebar.category.Introduction": {
+    "message": "مقدمة",
+    "description": "The label for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Introduction.link.generated-index.description": {
+    "message": "ابدأ من هنا للحصول على نظرة عامة عالية المستوى عن QoreChain — ما هي، وبنيتها المعمارية، وميزاتها الرئيسية.",
+    "description": "The generated-index page description for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started": {
+    "message": "البدء",
+    "description": "The label for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started.link.generated-index.description": {
+    "message": "أنشئ محفظة، واتصل بالشبكة الرئيسية أو شبكة الاختبار، وأرسل أول معاملة لك.",
+    "description": "The generated-index page description for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide": {
+    "message": "دليل المستخدم",
+    "description": "The label for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide.link.generated-index.description": {
+    "message": "العمليات اليومية على QoreChain — الرموز، والـ staking، والحوكمة، والجسور، وتجريد الغاز.",
+    "description": "The generated-index page description for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide": {
+    "message": "دليل المطوّر",
+    "description": "The label for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide.link.generated-index.description": {
+    "message": "ابنِ على QoreChain — تطوير EVM وCosmWasm وSVM، والتشغيل البيني بين الأجهزة الافتراضية، وتشغيل العُقد.",
+    "description": "The generated-index page description for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture": {
+    "message": "البنية المعمارية",
+    "description": "The label for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture.link.generated-index.description": {
+    "message": "كيف تعمل QoreChain من الداخل — الإجماع، والأمان ما بعد الكمي، وطبقات تعدد الأجهزة الافتراضية، واقتصاد الرموز، والمزيد.",
+    "description": "The generated-index page description for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups": {
+    "message": "Rollups",
+    "description": "The label for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups.link.generated-index.description": {
+    "message": "انشر وشغّل الـ rollups باستخدام QoreChain Rollup Development Kit — الملفات التعريفية، وتوافر البيانات، وعمليات السحب.",
+    "description": "The generated-index page description for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node": {
+    "message": "Light Node",
+    "description": "The label for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node.link.generated-index.description": {
+    "message": "شغّل عقدة خفيفة (light node) على QoreChain — إصدارات SX وUX، والتسجيل والترخيص، والمكافآت والمراقبة.",
+    "description": "The generated-index page description for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK": {
+    "message": "QoreChain SDK",
+    "description": "The label for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK.link.generated-index.description": {
+    "message": "حزمة تطوير تطبيقات dApp العامة للبناء على QoreChain — التثبيت، والبدء السريع، والأدلة، والمفاهيم، والمرجع.",
+    "description": "The generated-index page description for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Guides": {
+    "message": "الأدلة",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Concepts": {
+    "message": "المفاهيم",
+    "description": "The label for category 'Concepts' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Reference": {
+    "message": "المرجع",
+    "description": "The label for category 'Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard": {
+    "message": "Dashboard",
+    "description": "The label for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard.link.generated-index.description": {
+    "message": "لوحة تحكم QoreChain — المستكشف، والمحفظة، والتداول، والجسر، وأدوات العقود، والـ staking، والصنبور (faucet)، والمهام، والأدوات.",
+    "description": "The generated-index page description for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot": {
+    "message": "روبوت مجتمع QCAIA",
+    "description": "The label for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot.link.generated-index.description": {
+    "message": "روبوت مجتمع QCAIA لـ Discord وTelegram — ماذا يفعل وكيفية استخدامه.",
+    "description": "The generated-index page description for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference": {
+    "message": "مرجع API",
+    "description": "The label for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference.link.generated-index.description": {
+    "message": "واجهات REST وgRPC وJSON-RPC وWebSocket للتفاعل مع QoreChain برمجيًا.",
+    "description": "The generated-index page description for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference": {
+    "message": "مرجع CLI",
+    "description": "The label for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference.link.generated-index.description": {
+    "message": "مرجع سطر الأوامر لعمليات العُقدة والمعاملات والاستعلامات.",
+    "description": "The generated-index page description for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix": {
+    "message": "الملحق",
+    "description": "The label for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
+    "message": "مواد مرجعية — مسرد المصطلحات، ومعاملات السلسلة، وسجل الإصدارات.",
+    "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  }
+}

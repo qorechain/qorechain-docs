@@ -1,0 +1,122 @@
+{
+  "version.label": {
+    "message": "Attuale",
+    "description": "The label for version current"
+  },
+  "sidebar.docsSidebar.category.Introduction": {
+    "message": "Introduzione",
+    "description": "The label for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Introduction.link.generated-index.description": {
+    "message": "Inizia qui per una panoramica generale di QoreChain: cos’è, la sua architettura e le sue funzionalità principali.",
+    "description": "The generated-index page description for category 'Introduction' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started": {
+    "message": "Per iniziare",
+    "description": "The label for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Getting Started.link.generated-index.description": {
+    "message": "Configura un wallet, connettiti alla mainnet o alla testnet e invia la tua prima transazione.",
+    "description": "The generated-index page description for category 'Getting Started' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide": {
+    "message": "Guida dell’utente",
+    "description": "The label for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.User Guide.link.generated-index.description": {
+    "message": "Operazioni quotidiane su QoreChain: token, staking, governance, bridging e astrazione del gas.",
+    "description": "The generated-index page description for category 'User Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide": {
+    "message": "Guida per sviluppatori",
+    "description": "The label for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Developer Guide.link.generated-index.description": {
+    "message": "Sviluppa su QoreChain: sviluppo EVM, CosmWasm e SVM, interoperabilità tra VM ed esecuzione di nodi.",
+    "description": "The generated-index page description for category 'Developer Guide' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture": {
+    "message": "Architettura",
+    "description": "The label for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Architecture.link.generated-index.description": {
+    "message": "Come funziona QoreChain sotto il cofano: consenso, sicurezza post-quantistica, livelli multi-VM, tokenomics e altro ancora.",
+    "description": "The generated-index page description for category 'Architecture' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups": {
+    "message": "Rollup",
+    "description": "The label for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Rollups.link.generated-index.description": {
+    "message": "Distribuisci e gestisci i rollup con il QoreChain Rollup Development Kit: profili, disponibilità dei dati e prelievi.",
+    "description": "The generated-index page description for category 'Rollups' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node": {
+    "message": "Light Node",
+    "description": "The label for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Light Node.link.generated-index.description": {
+    "message": "Esegui un light node QoreChain: edizioni SX e UX, registrazione e licenze, ricompense e monitoraggio.",
+    "description": "The generated-index page description for category 'Light Node' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK": {
+    "message": "QoreChain SDK",
+    "description": "The label for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QoreChain SDK.link.generated-index.description": {
+    "message": "L’SDK pubblico per dApp per costruire su QoreChain: installazione, avvio rapido, guide, concetti e riferimento.",
+    "description": "The generated-index page description for category 'QoreChain SDK' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Guides": {
+    "message": "Guide",
+    "description": "The label for category 'Guides' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Concepts": {
+    "message": "Concetti",
+    "description": "The label for category 'Concepts' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Reference": {
+    "message": "Riferimento",
+    "description": "The label for category 'Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard": {
+    "message": "Dashboard",
+    "description": "The label for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Dashboard.link.generated-index.description": {
+    "message": "La Dashboard QoreChain: explorer, wallet, trading, bridge, strumenti per i contratti, staking, faucet, quest e strumenti.",
+    "description": "The generated-index page description for category 'Dashboard' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot": {
+    "message": "QCAIA Community Bot",
+    "description": "The label for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.QCAIA Community Bot.link.generated-index.description": {
+    "message": "Il bot della community QCAIA per Discord e Telegram: cosa fa e come usarlo.",
+    "description": "The generated-index page description for category 'QCAIA Community Bot' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference": {
+    "message": "Riferimento API",
+    "description": "The label for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.API Reference.link.generated-index.description": {
+    "message": "Interfacce REST, gRPC, JSON-RPC e WebSocket per interagire con QoreChain in modo programmatico.",
+    "description": "The generated-index page description for category 'API Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference": {
+    "message": "Riferimento CLI",
+    "description": "The label for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.CLI Reference.link.generated-index.description": {
+    "message": "Riferimento da riga di comando per operazioni su nodi, transazioni e query.",
+    "description": "The generated-index page description for category 'CLI Reference' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix": {
+    "message": "Appendice",
+    "description": "The label for category 'Appendix' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Appendix.link.generated-index.description": {
+    "message": "Materiale di riferimento: glossario, parametri della chain e cronologia delle versioni.",
+    "description": "The generated-index page description for category 'Appendix' in sidebar 'docsSidebar'"
+  }
+}
