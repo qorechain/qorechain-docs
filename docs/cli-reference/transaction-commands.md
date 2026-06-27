@@ -326,28 +326,37 @@ qorechaind tx svm create-account <pubkey> <space> [flags]
 Register a new sidechain layer.
 
 ```bash
-qorechaind tx multilayer register-sidechain <layer_id> <name> [flags]
+qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| Flag                | Type   | Description                                 |
-| ------------------- | ------ | ------------------------------------------- |
-| `--anchor-interval` | uint   | Blocks between mandatory anchor submissions |
-| `--stake`           | string | Required stake amount                       |
+| Flag                    | Type   | Description                                          |
+| ----------------------- | ------ | --------------------------------------------------- |
+| `--block-time-ms`       | uint   | Target block time in ms (default 2000)              |
+| `--domains`             | string | Comma-separated supported domains (default `defi`)  |
+| `--max-tx`              | uint   | Max transactions per block (default 1000)           |
+| `--min-validators`      | uint32 | Minimum validator set size (default 1)              |
+| `--settlement-interval` | uint   | Settlement interval in blocks (default 100)         |
+| `--vm-types`            | string | Comma-separated supported VM types (default `evm`)  |
 
 ### register-paychain
 
-Register a new payment channel layer.
+Register a new paychain layer for high-frequency microtransactions.
 
 ```bash
-qorechaind tx multilayer register-paychain <layer_id> <name> [flags]
+qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
+
+| Flag                    | Type | Description                                  |
+| ----------------------- | ---- | -------------------------------------------- |
+| `--max-tx`              | uint | Max transactions per block (default 5000)    |
+| `--settlement-interval` | uint | Settlement interval in blocks (default 50)   |
 
 ### anchor-state
 
-Submit a state anchor for a registered layer.
+Submit a state anchor (settlement) for a registered layer.
 
 ```bash
-qorechaind tx multilayer anchor-state <layer_id> <state-root-hex> <height> [flags]
+qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex> <pqc-agg-sig-hex> [flags]
 ```
 
 ### route-tx
