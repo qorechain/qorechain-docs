@@ -88,7 +88,7 @@ export default function Home(): ReactNode {
         {/* Hero */}
         <header className={styles.hero}>
           <span className={`${styles.eyebrow} ${styles.reveal}`}>
-            <span className={styles.pulse} /> Mainnet live · v3.1.70
+            <span className={styles.pulse} /> Mainnet live · v3.1.77
           </span>
           <h1 className={`${styles.title} ${styles.reveal}`} style={{animationDelay: "0.06s"}}>
             The <span className={styles.grad}>quantum-safe</span> Layer 1 for the next decade
