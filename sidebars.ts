@@ -148,6 +148,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         "sdk/overview",
+        "sdk/why-qorechain",
         "sdk/install",
         "sdk/quickstart",
         {
@@ -159,6 +160,9 @@ const sidebars: SidebarsConfig = {
             "sdk/guides/svm",
             "sdk/guides/cosmwasm",
             "sdk/guides/cross-vm",
+            "sdk/guides/ai-preflight",
+            "sdk/guides/quantum-safe",
+            "sdk/guides/react",
           ],
         },
         {
