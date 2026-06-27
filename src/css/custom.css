@@ -78,6 +78,21 @@
   width: auto;
 }
 
+/* Keep the language switcher (locale dropdown) visible in the mobile navbar,
+   not just inside the hamburger drawer. Docusaurus hides right-side navbar items
+   on mobile; we keep the locale dropdown shown next to the hamburger. */
+@media (max-width: 996px) {
+  .navbar__items--right .navbar__item.dropdown {
+    display: flex;
+    align-items: center;
+  }
+  /* It opens on tap via :focus-within (no hover on touch). */
+  .navbar__items--right .navbar__item.dropdown .dropdown__menu {
+    right: 0;
+    left: auto;
+  }
+}
+
 /* Headings get a touch more presence */
 .markdown h1:first-child {
   --ifm-h1-font-size: 2.6rem;

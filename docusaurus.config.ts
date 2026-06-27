@@ -28,10 +28,28 @@ const config: Config = {
 
   onBrokenLinks: "throw",
 
+  // Locales mirror the QoreChain Dashboard. English is the default (served at the
+  // root); the others are served under /<locale>/. Arabic is right-to-left.
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en", "ar", "de", "es", "fr", "it", "ja", "ko", "ro", "tr"],
+    localeConfigs: {
+      en: { label: "English" },
+      ar: { label: "العربية", direction: "rtl", htmlLang: "ar" },
+      de: { label: "Deutsch", htmlLang: "de" },
+      es: { label: "Español", htmlLang: "es" },
+      fr: { label: "Français", htmlLang: "fr" },
+      it: { label: "Italiano", htmlLang: "it" },
+      ja: { label: "日本語", htmlLang: "ja" },
+      ko: { label: "한국어", htmlLang: "ko" },
+      ro: { label: "Română", htmlLang: "ro" },
+      tr: { label: "Türkçe", htmlLang: "tr" },
+    },
   },
+
+  // Auto-redirect first-time visitors to their browser/OS language (see the
+  // client module); respects a manual choice stored in localStorage.
+  clientModules: ["./src/clientModules/localeRedirect.ts"],
 
   markdown: {
     mermaid: true,
@@ -94,10 +112,15 @@ const config: Config = {
         alt: "QoreChain",
         src: "img/logo.png",
       },
-      // No navbar links: Website/GitHub/Discord/version live in the footer, so
-      // the mobile hamburger drawer shows only the doc sidebar. Search + the
-      // theme toggle are added automatically.
-      items: [],
+      // Only the language switcher lives in the navbar (kept visible on mobile via
+      // custom.css). Website/GitHub/Discord/version are in the footer, so the
+      // mobile hamburger drawer shows only the doc sidebar.
+      items: [
+        {
+          type: "localeDropdown",
+          position: "right",
+        },
+      ],
     },
     footer: {
       style: "dark",
