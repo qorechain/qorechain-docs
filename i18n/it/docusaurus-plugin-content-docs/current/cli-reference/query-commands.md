@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Le query vengono eseguite sul nodo a cui punta `--node`. Usa un endpoint RPC della mainnet **`qorechain-vladi`** (versione della chain **v3.1.77**) per i dati live, oppure un endpoint della testnet **`qorechain-diana`** per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo che esegui tu stesso.
+Le query vengono eseguite sul nodo a cui punta `--node`. Usa un endpoint RPC della mainnet **`qorechain-vladi`** (versione della chain **v3.1.80**) per i dati live, oppure un endpoint della testnet **`qorechain-diana`** per i test. Il valore predefinito `tcp://localhost:26657` punta a un nodo che esegui tu stesso.
 :::
 
 I flag comuni si applicano a ogni sottocomando `query`:

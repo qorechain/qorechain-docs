@@ -10,7 +10,7 @@ sidebar_position: 3
 Alăturați-vă rețelei principale active QoreChain Vladi configurând nodul cu fișierul genesis, partenerii și setările de rețea corecte.
 
 :::note
-Această pagină acoperă rețeaua principală **`qorechain-vladi`** (ID-ul EVM al chain-ului **9801**, hex `0x2649`), activă din **7 iunie 2026 23:59 UTC** și rulând versiunea de chain **v3.1.77** pe Cosmos SDK v0.53. Pentru rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**), vezi [Conectarea la rețeaua de test](/getting-started/connecting-to-testnet) și exersați-vă configurarea acolo înainte de a trece în producție.
+Această pagină acoperă rețeaua principală **`qorechain-vladi`** (ID-ul EVM al chain-ului **9801**, hex `0x2649`), activă din **7 iunie 2026 23:59 UTC** și rulând versiunea de chain **v3.1.80** pe Cosmos SDK v0.53. Pentru rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**), vezi [Conectarea la rețeaua de test](/getting-started/connecting-to-testnet) și exersați-vă configurarea acolo înainte de a trece în producție.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | ID chain          | `qorechain-vladi`                      |
 | ID EVM chain      | `9801` (hex `0x2649`)                  |
-| Versiune chain    | v3.1.77                                |
+| Versiune chain    | v3.1.80                                |
 | Activă din        | 7 iunie 2026 23:59 UTC                 |
 | Token             | QOR (`uqor`, 10^6 micro-unități = 1 QOR) |
 | Prefix cont       | `qor`                                  |

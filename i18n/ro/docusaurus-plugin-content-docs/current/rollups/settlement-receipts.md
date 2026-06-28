@@ -70,7 +70,11 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Citirea ancorelor
 
-Bonurile sunt construite dintr-o nouă interogare **Anchor** on-chain `x/multilayer`. Citirile:
+Bonurile sunt construite din interogarea on-chain **Anchor** din `x/multilayer`,
+disponibilă atât prin gRPC, cât și prin REST începând cu versiunea de lanț
+**v3.1.80** (vezi
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Citirile:
 
 - `getAnchor(layerId)` — ancora pentru un strat.
 - `getLatestAnchor()` — cea mai recentă ancoră.

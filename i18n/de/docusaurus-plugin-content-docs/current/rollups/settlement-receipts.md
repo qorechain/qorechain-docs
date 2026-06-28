@@ -70,7 +70,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Anker lesen
 
-Belege werden aus einer neuen On-Chain-`x/multilayer`-**Anchor**-Abfrage erstellt. Die Lesezugriffe:
+Belege werden aus der On-Chain-`x/multilayer`-**Anchor**-Abfrage erstellt, die seit
+Chain-Version **v3.1.80** sowohl über gRPC als auch über REST verfügbar ist (siehe
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Die Lesezugriffe:
 
 - `getAnchor(layerId)` — der Anker für einen Layer.
 - `getLatestAnchor()` — der jüngste Anker.

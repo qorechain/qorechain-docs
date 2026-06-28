@@ -91,7 +91,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 **ハイブリッド** トランザクションは、古典的な secp256k1 署名と ML-DSA-87 署名の両方を運びます。そのため、古典的な検証のもとで有効なまま、ポスト量子保護を獲得します。ポスト量子部分は、トランザクション上の `PQCHybridSignature` 拡張として運ばれます。
 
 :::caution cosmos パスではハイブリッド署名が必須
-現在のチェーンバージョン（**v3.1.77**）時点で、ネットワークのデフォルトは
+現在のチェーンバージョン（**v3.1.80**）時点で、ネットワークのデフォルトは
 `hybrid_signature_mode = required` かつ `allow_classical_fallback = false` です。
 `buildHybridTx`（`includePqcPublicKey` を伴う）によるハイブリッド署名は、cosmos パスのトランザクションでは **必須** です — 古典的のみの cosmos トランザクションはオンチェーンで拒否されます。EVM トランザクションは別の `eth_secp256k1` パスを使用し、影響を受けません。
 :::

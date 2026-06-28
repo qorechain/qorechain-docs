@@ -10,7 +10,7 @@ sidebar_position: 1
 Référence des commandes `qorechaind` utilisées pour initialiser, configurer et exploiter un nœud QoreChain.
 
 :::note
-QoreChain exécute deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.77**) et le testnet **`qorechain-diana`**. Passez le `--chain-id` approprié pour le réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet.
+QoreChain exécute deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.80**) et le testnet **`qorechain-diana`**. Passez le `--chain-id` approprié pour le réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet.
 :::
 
 ---

@@ -58,13 +58,13 @@ Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EV
 
 ### Docker Compose
 
-Un déploiement en mode nœud uniquement avec Docker Compose. Épinglez le tag de l'image à la version de chaîne en service (**v3.1.77** sur le mainnet) et montez un volume persistant pour les données de la chaîne.
+Un déploiement en mode nœud uniquement avec Docker Compose. Épinglez le tag de l'image à la version de chaîne en service (**v3.1.80** sur le mainnet) et montez un volume persistant pour les données de la chaîne.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez le tag en service (**v3.1.77** sur le mainnet) et suivez les versions officielles pour les mises à niveau coordonnées.
+1. **Épinglez la version de la chaîne.** Exécutez le tag en service (**v3.1.80** sur le mainnet) et suivez les versions officielles pour les mises à niveau coordonnées.
 
 2. **Exécutez des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un redémarrage ou une resynchronisation unique n'interrompe pas le trafic d'intégration.
 

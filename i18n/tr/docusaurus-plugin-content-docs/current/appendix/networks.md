@@ -17,7 +17,7 @@ QoreChain ağları için birleştirilmiş bir referans — zincir tanımlayıcı
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Şu tarihten beri canlı** | 7 Haziran 2026, 23:59 UTC | — |
-| **Zincir sürümü** | v3.1.77 | v3.1.77 |
+| **Zincir sürümü** | v3.1.80 | v3.1.80 |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Bağlantı kılavuzu** | [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) | [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) |
 

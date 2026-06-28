@@ -10,7 +10,7 @@ sidebar_position: 3
 Unisciti alla mainnet QoreChain Vladi attiva configurando il tuo nodo con il file di genesis, i peer e le impostazioni di rete corretti.
 
 :::note
-Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), attiva dal **7 giugno 2026 23:59 UTC** ed eseguita con la versione della chain **v3.1.77** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), vedi [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova la tua configurazione lì prima di andare in produzione.
+Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), attiva dal **7 giugno 2026 23:59 UTC** ed eseguita con la versione della chain **v3.1.80** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), vedi [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova la tua configurazione lì prima di andare in produzione.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Versione chain    | v3.1.77                                |
+| Versione chain    | v3.1.80                                |
 | Attiva dal        | 7 giugno 2026 23:59 UTC                |
 | Token             | QOR (`uqor`, 10^6 micro-unità = 1 QOR) |
 | Prefisso account  | `qor`                                  |

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Caracteristici principale
 
-Tabelul următor enumeră fiecare caracteristică majoră din QoreChain, organizată după faza de lansare în care a fost introdusă. Versiunea actuală a lanțului este **v3.1.77**, cu rețeaua principală (`qorechain-vladi`, EVM chain ID 9801) activă din 7 iunie 2026 și o rețea de test paralelă (`qorechain-diana`, EVM chain ID 9800).
+Tabelul următor enumeră fiecare caracteristică majoră din QoreChain, organizată după faza de lansare în care a fost introdusă. Versiunea actuală a lanțului este **v3.1.80**, cu rețeaua principală (`qorechain-vladi`, EVM chain ID 9801) activă din 7 iunie 2026 și o rețea de test paralelă (`qorechain-diana`, EVM chain ID 9800).
 
 | Caracteristică             | Introdusă în        | Descriere                                                                                                                                                                                                                                                                                                                                                                                        |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

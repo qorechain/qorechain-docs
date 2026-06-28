@@ -51,6 +51,20 @@ MetaMask를 열고 **Settings > Networks > Add Network**로 이동한 후 다음
 
 연결되면 MetaMask를 사용하여 EVM 트랜잭션에 서명하고, 배포된 스마트 컨트랙트와 상호작용하며, QoreChain에서 ERC-20 토큰을 관리할 수 있습니다.
 
+### 단일 호출 네트워크 등록
+
+dApp의 경우, **`@qorechain/wallet-adapter`** 및 **`@qorechain/connect`** 패키지(npm에 게시됨, v0.1.0)가 단일 호출로 QoreChain을 사용자의 지갑에 등록합니다 — EIP-3085를 통해 MetaMask에 네트워크 추가를 요청하고(EVM 레일에서 올바른 **18자리 소수점** 네이티브 QOR 사용), Keplr의 가스 가격 단계를 구성합니다.
+
+```bash
+npm install @qorechain/wallet-adapter @qorechain/connect
+```
+
+```ts
+import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
+
+await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+```
+
 ## Solana 지갑 (SVM)
 
 QoreChain의 SVM 실행 환경은 표준 Solana 도구와 호환됩니다. Solana 호환 지갑이나 라이브러리를 연결하여 SVM 프로그램과 상호작용하세요.
@@ -69,7 +83,7 @@ console.log("Current slot:", slot);
 
 ## PQC 지원 지갑 (Cosmos 경로에서 필수)
 
-QoreChain은 cosmos 트랜잭션 경로에서 하이브리드 포스트 양자 암호화(PQC)를 요구합니다. 현재 체인 버전(**v3.1.77**) 기준으로 네트워크 기본값은 `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`입니다 — 따라서 **모든 cosmos 경로 트랜잭션은 표준 secp256k1 (ECDSA) 서명과 함께 ML-DSA-87 (Dilithium-5) 서명을 포함해야 합니다**. PQC 계정에서 보낸 고전 전용 cosmos 트랜잭션은 거부됩니다.
+QoreChain은 cosmos 트랜잭션 경로에서 하이브리드 포스트 양자 암호화(PQC)를 요구합니다. 현재 체인 버전(**v3.1.80**) 기준으로 네트워크 기본값은 `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`입니다 — 따라서 **모든 cosmos 경로 트랜잭션은 표준 secp256k1 (ECDSA) 서명과 함께 ML-DSA-87 (Dilithium-5) 서명을 포함해야 합니다**. PQC 계정에서 보낸 고전 전용 cosmos 트랜잭션은 거부됩니다.
 
 :::caution Cosmos 트랜잭션은 하이브리드 PQC 확장이 필요합니다
 cosmos 경로에서 일반 고전 트랜잭션을 전송하면 거부됩니다. Dilithium-5 서명을 `PQCHybridSignature` 트랜잭션 확장으로 첨부해야 합니다. 표준 CosmJS / Keplr 도구는 자체적으로 이 확장을 생성하지 않습니다 — `qorechaind tx pqc cosign` CLI 명령어, QoreChain SDK의 하이브리드 서명(아래 참조)을 사용하거나, 코드에서 직접 구성하려면 오픈소스 [**qorechain-pqc**](/developer-guide/post-quantum-signing) 라이브러리(`hybridSignBytes`)를 사용하세요. 유일한 예외는 제네시스 gentx와 PQC 키 등록/마이그레이션 트랜잭션입니다.

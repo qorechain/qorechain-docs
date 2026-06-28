@@ -58,13 +58,13 @@ Un SSD NVMe è fortemente consigliato — lo stato della chain e gli store EVM/S
 
 ### Docker Compose
 
-Un deployment solo nodo con Docker Compose. Fissa il tag dell'immagine alla versione di chain attiva (**v3.1.77** sulla mainnet) e monta un volume persistente per i dati della chain.
+Un deployment solo nodo con Docker Compose. Fissa il tag dell'immagine alla versione di chain attiva (**v3.1.80** sulla mainnet) e monta un volume persistente per i dati della chain.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Migliori pratiche operative
 
-1. **Fissa la versione di chain.** Esegui il tag attivo (**v3.1.77** sulla mainnet) e segui le release ufficiali per gli aggiornamenti coordinati.
+1. **Fissa la versione di chain.** Esegui il tag attivo (**v3.1.80** sulla mainnet) e segui le release ufficiali per gli aggiornamenti coordinati.
 
 2. **Esegui nodi ridondanti.** Mantieni in funzione almeno due nodi dietro un load balancer così che un singolo riavvio o resync non interrompa il traffico di integrazione.
 

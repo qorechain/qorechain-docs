@@ -17,7 +17,7 @@ QoreChain 네트워크에 대한 통합 참조 문서입니다 — 체인 식별
 | **Cosmos 체인 ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM 체인 ID (EIP-155)** | **9801** (16진수 `0x2649`) | **9800** (16진수 `0x2648`) |
 | **가동 시작** | 2026년 6월 7일, 23:59 UTC | — |
-| **체인 버전** | v3.1.77 | v3.1.77 |
+| **체인 버전** | v3.1.80 | v3.1.80 |
 | **프레임워크** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **연결 가이드** | [메인넷 연결하기](/getting-started/connecting-to-mainnet) | [테스트넷 연결하기](/getting-started/connecting-to-testnet) |
 

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain rulează un mediu de execuție pe deplin compatibil EVM pe QoreChain EVM Engine, permițându-vă să implementați și să interacționați cu contracte inteligente Solidity folosind instrumentele cunoscute. Modulul EVM expune o interfață JSON-RPC pe **portul 8545** (WebSocket pe **8546**) care acceptă fluxurile standard de dezvoltare Ethereum.
 
 :::note
-Exemplele de mai jos vizează rețeaua principală (mainnet) **`qorechain-vladi`** (EVM chain ID **9801**), activă din 7 iunie 2026 rulând versiunea de lanț **v3.1.77**. Pentru rețeaua de test (testnet) **`qorechain-diana`**, folosiți EVM chain ID **9800**.
+Exemplele de mai jos vizează rețeaua principală (mainnet) **`qorechain-vladi`** (EVM chain ID **9801**), activă din 7 iunie 2026 rulând versiunea de lanț **v3.1.80**. Pentru rețeaua de test (testnet) **`qorechain-diana`**, folosiți EVM chain ID **9800**.
 :::
 
 ---

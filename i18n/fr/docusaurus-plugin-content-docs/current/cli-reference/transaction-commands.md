@@ -14,22 +14,22 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Définissez `--chain-id qorechain-vladi` pour diffuser sur le mainnet en service (version de chaîne **v3.1.77**), ou `--chain-id qorechain-diana` pour le testnet. S'il est omis, le client utilise le `chain-id` de votre configuration locale.
+Définissez `--chain-id qorechain-vladi` pour diffuser sur le mainnet en production (version de chaîne **v3.1.80**), ou `--chain-id qorechain-diana` pour le testnet. Si ce paramètre est omis, le client utilise le `chain-id` de votre configuration locale.
 :::
 
-Des indicateurs communs s'appliquent à chaque sous-commande `tx` :
+Les indicateurs communs s'appliquent à chaque sous-commande `tx` :
 
-| Indicateur                | Type   | Description                                     |
+| Indicateur          | Type   | Description                                      |
 | ------------------- | ------ | ----------------------------------------------- |
-| `--from`            | string | Nom ou adresse de la clé de signature              |
-| `--chain-id`        | string | Identifiant de la chaîne (par défaut : depuis la configuration)         |
-| `--fees`            | string | Frais de transaction (par ex. `500uqor`)              |
-| `--gas`             | string | Limite de gas ou `auto` pour l'estimation              |
+| `--from`            | string | Nom ou adresse de la clé de signature           |
+| `--chain-id`        | string | Identifiant de chaîne (par défaut : depuis la config) |
+| `--fees`            | string | Frais de transaction (p. ex. `500uqor`)         |
+| `--gas`             | string | Limite de gas ou `auto` pour l'estimation       |
 | `--gas-adjustment`  | float  | Multiplicateur de gas avec `auto` (par défaut : 1.0) |
-| `--keyring-backend` | string | Backend de trousseau : `os`, `file`, `test`           |
-| `--node`            | string | Point d'accès RPC (par défaut : `tcp://localhost:26657`) |
-| `--broadcast-mode`  | string | `sync`, `async` ou `block`                     |
-| `-y`                | bool   | Ignore l'invite de confirmation                        |
+| `--keyring-backend` | string | Backend du trousseau : `os`, `file`, `test`     |
+| `--node`            | string | Point de terminaison RPC (par défaut : `tcp://localhost:26657`) |
+| `--broadcast-mode`  | string | `sync`, `async` ou `block`                      |
+| `-y`                | bool   | Ignorer l'invite de confirmation                |
 
 ---
 
@@ -37,7 +37,7 @@ Des indicateurs communs s'appliquent à chaque sous-commande `tx` :
 
 ### send
 
-Transfère des tokens d'un compte à un autre.
+Transfère des jetons d'un compte à un autre.
 
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount> [flags]
@@ -55,14 +55,14 @@ Crée un nouveau validateur sur le réseau.
 qorechaind tx staking create-validator [flags]
 ```
 
-| Indicateur                           | Type   | Description                                  |
+| Indicateur                     | Type   | Description                                  |
 | ------------------------------ | ------ | -------------------------------------------- |
-| `--amount`                     | string | Montant d'auto-délégation (par ex. `1000000uqor`) |
-| `--pubkey`                     | string | Clé publique de consensus du validateur (JSON)        |
-| `--moniker`                    | string | Nom d'affichage du validateur                       |
-| `--commission-rate`            | string | Taux de commission initial (par ex. `0.10`)       |
-| `--commission-max-rate`        | string | Taux de commission maximal                      |
-| `--commission-max-change-rate` | string | Taux de variation quotidien maximal de la commission         |
+| `--amount`                     | string | Montant d'auto-délégation (p. ex. `1000000uqor`) |
+| `--pubkey`                     | string | Clé publique de consensus du validateur (JSON) |
+| `--moniker`                    | string | Nom d'affichage du validateur                |
+| `--commission-rate`            | string | Taux de commission initial (p. ex. `0.10`)   |
+| `--commission-max-rate`        | string | Taux de commission maximal                   |
+| `--commission-max-change-rate` | string | Taux de variation quotidien maximal de la commission |
 | `--min-self-delegation`        | string | Auto-délégation minimale requise             |
 
 ### edit-validator
@@ -75,7 +75,7 @@ qorechaind tx staking edit-validator [flags]
 
 ### delegate
 
-Délègue des tokens à un validateur.
+Délègue des jetons à un validateur.
 
 ```bash
 qorechaind tx staking delegate <validator_address> <amount> [flags]
@@ -91,7 +91,7 @@ qorechaind tx staking redelegate <src_validator> <dst_validator> <amount> [flags
 
 ### unbond
 
-Effectue le unbonding de tokens depuis un validateur.
+Annule la liaison de jetons d'un validateur.
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount> [flags]
@@ -117,8 +117,8 @@ Retire les récompenses d'un validateur spécifique.
 qorechaind tx distribution withdraw-rewards <validator_address> [flags]
 ```
 
-| Indicateur           | Type | Description                        |
-| -------------- | ---- | ---------------------------------- |
+| Indicateur     | Type | Description                              |
+| -------------- | ---- | ---------------------------------------- |
 | `--commission` | bool | Retire également la commission du validateur |
 
 ---
@@ -133,7 +133,7 @@ Soumet une proposition de gouvernance.
 qorechaind tx gov submit-proposal <proposal_file.json> [flags]
 ```
 
-Le fichier de proposition est un document JSON spécifiant le type de proposition, le titre, la description et les éventuels messages à exécuter.
+Le fichier de proposition est un document JSON spécifiant le type de proposition, le titre, la description et tous les messages à exécuter.
 
 ### vote
 
@@ -157,7 +157,7 @@ qorechaind tx gov deposit <proposal_id> <amount> [flags]
 
 ## pqc
 
-Le chemin de transaction cosmos requiert une signature hybride par défaut (`hybrid_signature_mode = required`). Les commandes `gen-key` et `cosign` produisent la clé Dilithium-5 (ML-DSA-87) et l'extension `PQCHybridSignature` nécessaires pour transiger sur le chemin cosmos aux côtés de la signature classique secp256k1.
+Le chemin de transaction cosmos requiert une signature hybride par défaut (`hybrid_signature_mode = required`). Les commandes `gen-key` et `cosign` produisent la clé Dilithium-5 (ML-DSA-87) et l'extension `PQCHybridSignature` nécessaires pour effectuer des transactions sur le chemin cosmos aux côtés de la signature classique secp256k1.
 
 ### gen-key
 
@@ -169,7 +169,7 @@ qorechaind tx pqc gen-key [flags]
 
 ### cosign
 
-Attache une cosignature Dilithium-5 à une transaction sous forme d'extension `PQCHybridSignature`, produisant une transaction hybride (secp256k1 + ML-DSA-87). Requise pour les transactions du chemin cosmos sous le mode d'application `required` par défaut. Les outils standards CosmJS / relayer doivent produire cette extension pour transiger ; le `buildHybridTx` (avec `includePqcPublicKey`) du SDK QoreChain fait l'équivalent.
+Attache une cosignature Dilithium-5 à une transaction sous forme d'extension `PQCHybridSignature`, produisant une transaction hybride (secp256k1 + ML-DSA-87). Requis pour les transactions du chemin cosmos sous le mode d'application `required` par défaut. Les outils standard CosmJS / relayer doivent produire cette extension pour effectuer des transactions ; la fonction `buildHybridTx` du QoreChain SDK (avec `includePqcPublicKey`) réalise l'équivalent.
 
 ```bash
 qorechaind tx pqc cosign <unsigned_tx_file> [flags]
@@ -191,9 +191,9 @@ Enregistre une clé PQC avec des métadonnées étendues et une attestation.
 qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> [flags]
 ```
 
-| Indicateur            | Type   | Description                    |
+| Indicateur      | Type   | Description                       |
 | --------------- | ------ | ------------------------------ |
-| `--attestation` | string | Données d'attestation TEE (hex)     |
+| `--attestation` | string | Données d'attestation TEE (hex) |
 | `--metadata`    | string | Métadonnées de clé supplémentaires (JSON) |
 
 ### migrate-key
@@ -210,19 +210,19 @@ qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
 
 ### lock
 
-Verrouille des tokens QOR dans une position de staking de gouvernance xQORE.
+Verrouille des jetons QOR dans une position de staking de gouvernance xQORE.
 
 ```bash
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| Indicateur              | Type   | Description                                |
+| Indicateur        | Type   | Description                                |
 | ----------------- | ------ | ------------------------------------------ |
-| `--lock-duration` | string | Durée de verrouillage (par ex. `30d`, `90d`, `180d`) |
+| `--lock-duration` | string | Durée de verrouillage (p. ex. `30d`, `90d`, `180d`) |
 
 ### unlock
 
-Déverrouille du xQORE vers du QOR. Un déverrouillage anticipé peut entraîner des pénalités selon le palier de pénalité.
+Déverrouille xQORE pour revenir à QOR. Un déverrouillage anticipé peut entraîner des pénalités selon le palier de pénalité.
 
 ```bash
 qorechaind tx xqore unlock <amount> [flags]
@@ -234,22 +234,38 @@ qorechaind tx xqore unlock <amount> [flags]
 
 ### deposit
 
-Initie un dépôt de bridge depuis une chaîne externe.
+Initie un dépôt de pont depuis une chaîne externe.
 
 ```bash
 qorechaind tx bridge deposit <chain_id> <amount> <asset> [flags]
 ```
 
-| Indicateur          | Type   | Description                    |
+| Indicateur    | Type   | Description                       |
 | ------------- | ------ | ------------------------------ |
-| `--recipient` | string | Adresse destinataire sur QoreChain |
+| `--recipient` | string | Adresse du destinataire sur QoreChain |
 
 ### withdraw
 
-Initie un retrait de bridge vers une chaîne externe.
+Initie un retrait de pont vers une chaîne externe.
 
 ```bash
 qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> [flags]
+```
+
+### update-chain-config
+
+Active ou reconfigure le pont d'une chaîne en une seule transaction signée (disponible à partir de la version de chaîne **v3.1.80**). Nécessite la clé `bridge_admin` ou une licence `qcb_bridge` — aucune proposition de gouvernance ni mise à niveau de chaîne. Définit l'adresse du contrat, le nombre de confirmations, l'architecture et le statut.
+
+```bash
+qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
+```
+
+### set-verifier-bootstrap
+
+Sélectionne le vérificateur actif d'une chaîne et installe sa racine de confiance (également protégé par `bridge_admin`).
+
+```bash
+qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from bridge-admin
 ```
 
 ---
@@ -264,9 +280,9 @@ Envoie un message inter-VM entre environnements d'exécution (EVM, CosmWasm, SVM
 qorechaind tx crossvm call <target_vm> <contract_address> <payload_hex> [flags]
 ```
 
-| Indicateur          | Type   | Description                          |
+| Indicateur    | Type   | Description                          |
 | ------------- | ------ | ------------------------------------ |
-| `--source-vm` | string | VM source : `evm`, `cosmwasm`, `svm`  |
+| `--source-vm` | string | VM source : `evm`, `cosmwasm`, `svm` |
 | `--gas-limit` | uint   | Limite de gas pour l'exécution inter-VM |
 
 ### process-queue
@@ -283,13 +299,13 @@ qorechaind tx crossvm process-queue [flags]
 
 ### deploy-program
 
-Déploie un programme BPF dans le runtime SVM.
+Déploie un programme BPF sur le runtime SVM.
 
 ```bash
 qorechaind tx svm deploy-program <program_binary_path> [flags]
 ```
 
-| Indicateur           | Type   | Description                  |
+| Indicateur     | Type   | Description                  |
 | -------------- | ------ | ---------------------------- |
 | `--program-id` | string | ID de programme facultatif (base58) |
 
@@ -301,7 +317,7 @@ Exécute une instruction sur un programme SVM déployé.
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| Indicateur         | Type   | Description                                         |
+| Indicateur   | Type   | Description                                         |
 | ------------ | ------ | --------------------------------------------------- |
 | `--accounts` | string | Clés publiques de comptes séparées par des virgules pour l'instruction |
 
@@ -313,7 +329,7 @@ Crée un nouveau compte SVM avec un espace de données alloué.
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| Indicateur      | Type   | Description                                     |
+| Indicateur | Type   | Description                                     |
 | --------- | ------ | ----------------------------------------------- |
 | `--owner` | string | Programme propriétaire (base58, par défaut : programme système) |
 
@@ -329,14 +345,14 @@ Enregistre une nouvelle couche sidechain.
 qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| Indicateur                    | Type   | Description                                          |
+| Indicateur              | Type   | Description                                          |
 | ----------------------- | ------ | --------------------------------------------------- |
-| `--block-time-ms`       | uint   | Temps de bloc cible en ms (par défaut 2000)              |
-| `--domains`             | string | Domaines pris en charge séparés par des virgules (par défaut `defi`)  |
-| `--max-tx`              | uint   | Nombre max de transactions par bloc (par défaut 1000)           |
-| `--min-validators`      | uint32 | Taille minimale de l'ensemble des validateurs (par défaut 1)              |
-| `--settlement-interval` | uint   | Intervalle de règlement en blocs (par défaut 100)         |
-| `--vm-types`            | string | Types de VM pris en charge séparés par des virgules (par défaut `evm`)  |
+| `--block-time-ms`       | uint   | Temps de bloc cible en ms (par défaut 2000)         |
+| `--domains`             | string | Domaines pris en charge séparés par des virgules (par défaut `defi`) |
+| `--max-tx`              | uint   | Nombre max de transactions par bloc (par défaut 1000) |
+| `--min-validators`      | uint32 | Taille minimale de l'ensemble de validateurs (par défaut 1) |
+| `--settlement-interval` | uint   | Intervalle de règlement en blocs (par défaut 100)   |
+| `--vm-types`            | string | Types de VM pris en charge séparés par des virgules (par défaut `evm`) |
 
 ### register-paychain
 
@@ -346,9 +362,9 @@ Enregistre une nouvelle couche paychain pour les microtransactions à haute fré
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| Indicateur                    | Type | Description                                  |
+| Indicateur              | Type | Description                                  |
 | ----------------------- | ---- | -------------------------------------------- |
-| `--max-tx`              | uint | Nombre max de transactions par bloc (par défaut 5000)    |
+| `--max-tx`              | uint | Nombre max de transactions par bloc (par défaut 5000) |
 | `--settlement-interval` | uint | Intervalle de règlement en blocs (par défaut 50)   |
 
 ### anchor-state
@@ -361,15 +377,15 @@ qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex>
 
 ### route-tx
 
-Route une transaction vers la couche optimale.
+Achemine une transaction vers la couche optimale.
 
 ```bash
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| Indicateur             | Type   | Description                       |
+| Indicateur       | Type   | Description                       |
 | ---------------- | ------ | --------------------------------- |
-| `--target-layer` | string | Force le routage vers une couche spécifique |
+| `--target-layer` | string | Force l'acheminement vers une couche spécifique |
 
 ### update-layer-status
 
@@ -383,7 +399,7 @@ Valeurs de statut : `active`, `paused`, `draining`.
 
 ### challenge-anchor
 
-Soumet une contestation par preuve de fraude contre un ancrage d'état.
+Soumet une contestation pour fraude contre un ancrage d'état.
 
 ```bash
 qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [flags]
@@ -395,18 +411,18 @@ qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [
 
 ### create-rollup
 
-Enregistre un nouveau rollup avec le Kit de développement de rollups.
+Enregistre un nouveau rollup avec le Rollup Development Kit.
 
 ```bash
 qorechaind tx rdk create-rollup <rollup_id> [flags]
 ```
 
-| Indicateur                | Type   | Description                                          |
+| Indicateur          | Type   | Description                                          |
 | ------------------- | ------ | ---------------------------------------------------- |
 | `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`       |
 | `--profile`         | string | Préréglage : `defi`, `gaming`, `nft`, `enterprise`, `custom` |
-| `--stake`           | string | Montant du stake de l'opérateur                                |
-| `--da-enabled`      | bool   | Active la disponibilité native des données                      |
+| `--stake`           | string | Montant de stake de l'opérateur                      |
+| `--da-enabled`      | bool   | Active la disponibilité native des données           |
 
 ### submit-batch
 
@@ -418,7 +434,7 @@ qorechaind tx rdk submit-batch <rollup_id> <state_root_hex> <batch_data_path> [f
 
 ### challenge-batch
 
-Soumet une contestation par preuve de fraude contre un lot de règlement (rollups optimistic).
+Soumet une contestation pour fraude contre un lot de règlement (rollups optimistes).
 
 ```bash
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
@@ -426,7 +442,7 @@ qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
 
 ### finalize-batch
 
-Finalise manuellement un lot ayant dépassé la fenêtre de contestation.
+Finalise manuellement un lot ayant passé la fenêtre de contestation.
 
 ```bash
 qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
@@ -457,7 +473,7 @@ qorechaind tx rdk stop-rollup <rollup_id> [flags]
 ```
 
 :::note
-Le retrait de rollup et le règlement inter-couches sont également exposés sous le groupe de transactions `rdk` (par exemple, une commande `execute-withdrawal` qui règle un retrait prouvé contre un lot finalisé). Les arguments et indicateurs exacts dépendent du type de règlement et de la configuration DA de votre rollup ; consultez la documentation du **Kit de développement de rollups** pour la surface de commande faisant autorité avant de construire ces transactions.
+Le retrait de rollup et le règlement inter-couches sont également exposés sous le groupe de transactions `rdk` (par exemple, une commande `execute-withdrawal` qui règle un retrait prouvé contre un lot finalisé). Les arguments et indicateurs exacts dépendent du type de règlement et de la configuration DA de votre rollup ; consultez la documentation du **Rollup Development Kit** pour la surface de commande de référence avant de construire ces transactions.
 :::
 
 ---
@@ -466,7 +482,7 @@ Le retrait de rollup et le règlement inter-couches sont également exposés sou
 
 ### submit-btc-checkpoint
 
-Soumet un checkpoint BTC pour une époque.
+Soumet un point de contrôle BTC pour une époque.
 
 ```bash
 qorechaind tx babylon submit-btc-checkpoint <epoch> <checkpoint_hex> [flags]
@@ -474,13 +490,13 @@ qorechaind tx babylon submit-btc-checkpoint <epoch> <checkpoint_hex> [flags]
 
 ### btc-restake
 
-Restake du BTC via l'intégration Babylon.
+Re-stake du BTC via l'intégration Babylon.
 
 ```bash
 qorechaind tx babylon btc-restake <amount> [flags]
 ```
 
-| Indicateur            | Type   | Description                       |
+| Indicateur      | Type   | Description                       |
 | --------------- | ------ | --------------------------------- |
 | `--btc-tx-hash` | string | Hachage de transaction Bitcoin comme preuve |
 
@@ -496,7 +512,7 @@ Crée un compte abstrait avec des règles de dépense programmables.
 qorechaind tx abstractaccount create [flags]
 ```
 
-| Indicateur               | Type   | Description                       |
+| Indicateur         | Type   | Description                       |
 | ------------------ | ------ | --------------------------------- |
 | `--spending-rules` | string | Fichier JSON définissant les règles de dépense |
 
@@ -526,7 +542,7 @@ Valeurs de mode : `0` (off), `1` (observe), `2` (suggest), `3` (auto).
 
 ### resume-agent
 
-Reprend l'agent PRISM après le déclenchement d'un coupe-circuit.
+Reprend l'agent PRISM après un déclenchement de disjoncteur.
 
 ```bash
 qorechaind tx rlconsensus resume-agent [flags]
@@ -548,8 +564,8 @@ Met à jour la configuration des poids de récompense de l'agent PRISM.
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| Indicateur                  | Type   | Description                  |
+| Indicateur            | Type   | Description                  |
 | --------------------- | ------ | ---------------------------- |
 | `--throughput-weight` | string | Poids pour la récompense de débit |
-| `--latency-weight`    | string | Poids pour la récompense de latence    |
-| `--security-weight`   | string | Poids pour la récompense de sécurité   |
+| `--latency-weight`    | string | Poids pour la récompense de latence |
+| `--security-weight`   | string | Poids pour la récompense de sécurité |

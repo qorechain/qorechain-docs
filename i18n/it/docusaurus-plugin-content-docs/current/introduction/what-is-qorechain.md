@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain è la prima blockchain Layer 1 costruita con crittografia post-quantistica fin dal genesis, elaborazione delle transazioni AI-native e un runtime triple-VM che esegue programmi EVM, CosmWasm e SVM su un'unica chain. Anziché adattare a posteriori la resistenza quantistica a un protocollo esistente, QoreChain è stata progettata da zero per essere sicura contro avversari sia classici che quantistici, offrendo al contempo l'esperienza per gli sviluppatori e l'interoperabilità che ci si aspetta da una moderna blockchain general-purpose.
 
-La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.77**. Una testnet pubblica (`qorechain-diana`, EVM chain ID **9800**) viene eseguita in parallelo per lo staging e i test di integrazione. Il token nativo è **QOR** (visualizzazione) / **uqor** (base, 10^6), con prefissi Bech32 `qor` per gli account e `qorvaloper` per i validatori. La chain è costruita su Cosmos SDK v0.53.
+La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.80**. Una testnet pubblica (`qorechain-diana`, EVM chain ID **9800**) viene eseguita in parallelo per lo staging e i test di integrazione. Il token nativo è **QOR** (visualizzazione) / **uqor** (base, 10^6), con prefissi Bech32 `qor` per gli account e `qorvaloper` per i validatori. La chain è costruita su Cosmos SDK v0.53.
 
 ## Innovazioni Principali
 

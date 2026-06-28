@@ -10,7 +10,7 @@ sidebar_position: 6
 QoreChain étend le QoreChain EVM Engine avec **six contrats précompilés personnalisés** qui exposent directement à Solidity des fonctionnalités au niveau du protocole. Ces précompilés fournissent un accès on-chain à la cryptographie post-quantique, à l'évaluation des risques par IA, à la messagerie cross-VM et aux paramètres de consensus PRISM.
 
 :::note
-Les précompilés sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.77**) et le testnet **`qorechain-diana`** (EVM chain ID **9800**). Tous les exemples utilisent le point de terminaison JSON-RPC sur le **port 8545**.
+Les précompilés sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.80**) et le testnet **`qorechain-diana`** (EVM chain ID **9800**). Tous les exemples utilisent le point de terminaison JSON-RPC sur le **port 8545**.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 3
 Treten Sie dem aktiven QoreChain-Vladi-Mainnet bei, indem Sie Ihren Knoten mit der korrekten Genesis-Datei, den Peers und den Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hex `0x2649`), seit dem **7. Juni 2026 23:59 UTC** aktiv und mit der Chain-Version **v3.1.77** auf Cosmos SDK v0.53 betrieben. Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und üben Sie Ihre Einrichtung dort, bevor Sie live gehen.
+Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hex `0x2649`), seit dem **7. Juni 2026 23:59 UTC** aktiv und mit der Chain-Version **v3.1.80** auf Cosmos SDK v0.53 betrieben. Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und üben Sie Ihre Einrichtung dort, bevor Sie live gehen.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain-ID          | `qorechain-vladi`                      |
 | EVM-Chain-ID      | `9801` (hex `0x2649`)                  |
-| Chain-Version     | v3.1.77                                |
+| Chain-Version     | v3.1.80                                |
 | Aktiv seit        | 7. Juni 2026 23:59 UTC                 |
 | Token             | QOR (`uqor`, 10^6 Mikroeinheiten = 1 QOR) |
 | Konto-Präfix      | `qor`                                  |

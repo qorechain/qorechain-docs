@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-L'espace de noms `qor_` est disponible sur le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif sur la version de chaîne **v3.1.77**) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**). Les exemples ci-dessous supposent un nœud local ; remplacez par le point de terminaison mainnet ou testnet de votre fournisseur pour un accès distant.
+L'espace de noms `qor_` est disponible sur le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif sur la version de chaîne **v3.1.80**) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**). Les exemples ci-dessous supposent un nœud local ; remplacez par le point de terminaison mainnet ou testnet de votre fournisseur pour un accès distant.
 :::
 
 ---

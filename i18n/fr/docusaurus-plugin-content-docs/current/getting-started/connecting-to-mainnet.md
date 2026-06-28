@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en service en configurant votre nœud avec le bon fichier genesis, les bons pairs et les bons paramètres réseau.
 
 :::note
-Cette page concerne le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), en service depuis le **7 juin 2026 23:59 UTC** et exécutant la version de chaîne **v3.1.77** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (EVM chain ID **9800**), voir [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
+Cette page concerne le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), en service depuis le **7 juin 2026 23:59 UTC** et exécutant la version de chaîne **v3.1.80** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (EVM chain ID **9800**), voir [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Version de chaîne | v3.1.77                                |
+| Version de chaîne | v3.1.80                                |
 | En service depuis | 7 juin 2026 23:59 UTC                  |
 | Jeton             | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
 | Préfixe de compte | `qor`                                  |

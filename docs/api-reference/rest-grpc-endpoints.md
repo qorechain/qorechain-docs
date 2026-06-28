@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.77**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; substitute your provider's mainnet or testnet host for remote access.
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.80**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; substitute your provider's mainnet or testnet host for remote access.
 :::
 
 ## Base URLs
@@ -91,7 +91,22 @@ The following shorter-path endpoints remain available:
 | GET    | `/crossvm/v1/pending`      | Lists pending cross-VM messages in queue |
 | GET    | `/crossvm/v1/params`       | Current Cross-VM module parameters       |
 
-## Multilayer Module
+## Multilayer Module {#multilayer-module}
+
+As of chain version **v3.1.80**, the multilayer module's full query service is exposed over REST via grpc-gateway under the `/qorechain/multilayer/v1/...` prefix (previously gRPC-only), including two **state-anchor read queries**: `anchor/{layer_id}` returns the latest settlement anchor for a layer, and `anchors/{layer_id}` returns its anchor history. Each anchor carries an **ML-DSA-87 (Dilithium-5)** signature over its canonical fields, so a client can fetch an anchor and verify it independently — the on-chain basis for the Rollup Development Kit's [settlement receipts](/rollups/settlement-receipts).
+
+| Method | Endpoint                                        | Description                                       |
+| ------ | ----------------------------------------------- | ------------------------------------------------- |
+| GET    | `/qorechain/multilayer/v1/params`               | Current Multilayer module parameters              |
+| GET    | `/qorechain/multilayer/v1/layers`               | Lists all registered layers                       |
+| GET    | `/qorechain/multilayer/v1/layers/{layer_id}`    | Details for a specific layer                      |
+| GET    | `/qorechain/multilayer/v1/anchor/{layer_id}`    | Latest state anchor for a layer                   |
+| GET    | `/qorechain/multilayer/v1/anchors/{layer_id}`   | State-anchor history for a layer                  |
+| GET    | `/qorechain/multilayer/v1/routing-stats`        | Transaction routing statistics across layers      |
+
+A `StateAnchorView` contains the `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, `main_chain_height`, `anchored_at`, `pqc_aggregate_signature`, `transaction_count`, and `compressed_state_proof`. The signed canonical message is `layer_id || layer_height || state_root || validator_set_hash`, verified against the layer creator's registered PQC key.
+
+The following shorter-path endpoints remain available:
 
 | Method | Endpoint                       | Description                                  |
 | ------ | ------------------------------ | -------------------------------------------- |

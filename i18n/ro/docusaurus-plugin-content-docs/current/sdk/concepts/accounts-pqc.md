@@ -106,7 +106,7 @@ totodată protecție post-cuantică. Partea post-cuantică călătorește ca o e
 `PQCHybridSignature` pe tranzacție.
 
 :::caution Semnarea hibridă este necesară pe calea cosmos
-Începând cu versiunea actuală a lanțului (**v3.1.77**), valoarea implicită a
+Începând cu versiunea actuală a lanțului (**v3.1.80**), valoarea implicită a
 rețelei este `hybrid_signature_mode = required` cu `allow_classical_fallback = false`.
 Semnarea hibridă prin `buildHybridTx` (cu `includePqcPublicKey`) este
 **obligatorie** pentru tranzacțiile pe calea cosmos — tranzacțiile cosmos exclusiv

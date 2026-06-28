@@ -18,7 +18,7 @@ QoreChain은 SVM(Solana Virtual Machine) 런타임을 통해 Solana 호환 JSON-
 JSON-RPC 서버는 **`qorechaind start`로 시작**되며 **기본적으로 활성화**되어 `127.0.0.1:8899`에서 수신 대기합니다. `app.toml`의 `[svm-rpc]` 섹션(`enable` + `address`)을 통해 구성됩니다. 새로 시작된 노드는 이미 이 인터페이스를 제공하므로 추가 프로세스가 필요하지 않습니다.
 
 :::note
-Solana 호환 JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(체인 버전 **v3.1.77**에서 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 포트 **8899**로 제공됩니다. 위의 로컬 주소는 직접 운영하는 노드에 적용됩니다. 원격 접속의 경우 공급자의 메인넷 또는 테스트넷 엔드포인트로 대체하세요.
+Solana 호환 JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(체인 버전 **v3.1.80**에서 가동 중)과 **`qorechain-diana`** 테스트넷 모두에서 포트 **8899**로 제공됩니다. 위의 로컬 주소는 직접 운영하는 노드에 적용됩니다. 원격 접속의 경우 공급자의 메인넷 또는 테스트넷 엔드포인트로 대체하세요.
 :::
 
 ---

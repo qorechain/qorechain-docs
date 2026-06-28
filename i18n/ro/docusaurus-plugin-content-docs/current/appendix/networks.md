@@ -17,7 +17,7 @@ O referință consolidată pentru rețelele QoreChain — identificatorii de lan
 | **Cosmos chain ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM chain ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live din** | 7 iunie 2026, 23:59 UTC | — |
-| **Versiunea lanțului** | v3.1.77 | v3.1.77 |
+| **Versiunea lanțului** | v3.1.80 | v3.1.80 |
 | **Cadru** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Ghid de conectare** | [Conectarea la mainnet](/getting-started/connecting-to-mainnet) | [Conectarea la testnet](/getting-started/connecting-to-testnet) |
 

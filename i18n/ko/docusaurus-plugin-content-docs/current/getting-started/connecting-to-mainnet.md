@@ -10,7 +10,7 @@ sidebar_position: 3
 올바른 제네시스 파일, 피어, 네트워크 설정으로 노드를 구성하여 운영 중인 QoreChain Vladi 메인넷에 참여하세요.
 
 :::note
-이 페이지는 **2026년 6월 7일 23:59 UTC**부터 운영 중이며 Cosmos SDK v0.53에서 체인 버전 **v3.1.77**을 실행하는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, hex `0x2649`)을 다룹니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)의 경우 [테스트넷 연결하기](/getting-started/connecting-to-testnet)를 참조하고, 실제 운영에 들어가기 전에 그곳에서 설정을 연습하세요.
+이 페이지는 **2026년 6월 7일 23:59 UTC**부터 운영 중이며 Cosmos SDK v0.53에서 체인 버전 **v3.1.80**을 실행하는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, hex `0x2649`)을 다룹니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)의 경우 [테스트넷 연결하기](/getting-started/connecting-to-testnet)를 참조하고, 실제 운영에 들어가기 전에 그곳에서 설정을 연습하세요.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | 체인 ID           | `qorechain-vladi`                      |
 | EVM 체인 ID       | `9801` (hex `0x2649`)                  |
-| 체인 버전         | v3.1.77                                |
+| 체인 버전         | v3.1.80                                |
 | 운영 시작         | 2026년 6월 7일 23:59 UTC               |
 | 토큰              | QOR (`uqor`, 10^6 마이크로 단위 = 1 QOR) |
 | 계정 접두사       | `qor`                                  |

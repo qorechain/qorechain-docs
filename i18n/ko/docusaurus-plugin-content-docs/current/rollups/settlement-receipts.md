@@ -69,7 +69,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## 앵커 읽기
 
-영수증은 새로운 온체인 `x/multilayer` **Anchor** 쿼리로부터 빌드됩니다. 읽기 작업:
+영수증은 온체인 `x/multilayer` **Anchor** 쿼리로부터 빌드되며, 이 쿼리는 체인
+버전 **v3.1.80**부터 gRPC와 REST 모두에서 사용할 수 있습니다(
+[REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#multilayer-module) 참고).
+읽기 작업:
 
 - `getAnchor(layerId)` — 한 레이어의 앵커.
 - `getLatestAnchor()` — 가장 최근 앵커.

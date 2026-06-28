@@ -58,13 +58,13 @@ Se recomienda encarecidamente un SSD NVMe: el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue solo de nodo con Docker Compose. Fija la etiqueta de imagen a la versión de cadena activa (**v3.1.77** en mainnet) y monta un volumen persistente para los datos de la cadena.
+Un despliegue solo de nodo con Docker Compose. Fija la etiqueta de imagen a la versión de cadena activa (**v3.1.80** en mainnet) y monta un volumen persistente para los datos de la cadena.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.77** en mainnet) y sigue los releases oficiales para actualizaciones coordinadas.
+1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.80** en mainnet) y sigue los releases oficiales para actualizaciones coordinadas.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 

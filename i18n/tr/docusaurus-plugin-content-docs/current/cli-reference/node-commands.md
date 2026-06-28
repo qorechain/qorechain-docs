@@ -10,7 +10,7 @@ sidebar_position: 1
 Bir QoreChain düğümünü başlatmak, yapılandırmak ve işletmek için kullanılan `qorechaind` komutlarına yönelik referans.
 
 :::note
-QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri zincir sürümü **v3.1.77** üzerinde canlı) ve **`qorechain-diana`** test ağı. Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın.
+QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri zincir sürümü **v3.1.80** üzerinde canlı) ve **`qorechain-diana`** test ağı. Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın.
 :::
 
 ---

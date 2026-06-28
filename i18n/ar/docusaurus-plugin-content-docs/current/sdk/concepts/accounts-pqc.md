@@ -102,7 +102,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 الجزء ما بعد الكمومي بوصفه امتداد `PQCHybridSignature` على المعاملة.
 
 :::caution التوقيع الهجين مطلوب على مسار cosmos
-اعتبارًا من إصدار السلسلة الحالي (**v3.1.77**)، فإن الافتراضي للشبكة هو
+اعتبارًا من إصدار السلسلة الحالي (**v3.1.80**)، فإن الافتراضي للشبكة هو
 `hybrid_signature_mode = required` مع `allow_classical_fallback = false`.
 يُعدّ التوقيع الهجين عبر `buildHybridTx` (مع `includePqcPublicKey`) **إلزاميًا**
 لمعاملات مسار cosmos — تُرفض معاملات cosmos الكلاسيكية فقط على السلسلة.

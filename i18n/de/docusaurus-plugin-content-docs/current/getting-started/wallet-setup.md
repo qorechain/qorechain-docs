@@ -51,6 +51,20 @@ MetaMask ermöglicht die Interaktion mit der EVM-Ausführungsumgebung von QoreCh
 
 Sobald die Verbindung hergestellt ist, können Sie MetaMask verwenden, um EVM-Transaktionen zu signieren, mit bereitgestellten Smart Contracts zu interagieren und ERC-20-Token auf QoreChain zu verwalten.
 
+### Netzwerkregistrierung mit einem Aufruf
+
+Für dApps registrieren die Pakete **`@qorechain/wallet-adapter`** und **`@qorechain/connect`** (veröffentlicht auf npm, v0.1.0) QoreChain mit einem einzigen Aufruf in der Wallet des Benutzers — sie fordern MetaMask auf, das Netzwerk per EIP-3085 hinzuzufügen (mit dem korrekten nativen QOR mit **18 Dezimalstellen** auf der EVM-Schiene) und konfigurieren den Gas-Preis-Schritt von Keplr:
+
+```bash
+npm install @qorechain/wallet-adapter @qorechain/connect
+```
+
+```ts
+import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
+
+await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+```
+
 ## Solana-Wallets (SVM)
 
 Die SVM-Ausführungsumgebung von QoreChain ist mit Standard-Solana-Tooling kompatibel. Verbinden Sie eine beliebige Solana-kompatible Wallet oder Bibliothek, um mit SVM-Programmen zu interagieren.
@@ -69,7 +83,7 @@ Dies ermöglicht die Bereitstellung von und Interaktion mit SVM-Programmen, die 
 
 ## PQC-fähige Wallets (auf dem Cosmos-Pfad erforderlich)
 
-QoreChain erfordert hybride Post-Quanten-Kryptografie (PQC) auf dem Cosmos-Transaktionspfad. Ab der aktuellen Chain-Version (**v3.1.77**) lautet der Netzwerkstandard `hybrid_signature_mode = required` mit `allow_classical_fallback = false` — daher **muss jede Transaktion auf dem Cosmos-Pfad eine ML-DSA-87-Signatur (Dilithium-5) zusammen mit der standardmäßigen secp256k1-Signatur (ECDSA) tragen**. Ausschließlich klassische Cosmos-Transaktionen von einem PQC-Konto werden abgelehnt.
+QoreChain erfordert hybride Post-Quanten-Kryptografie (PQC) auf dem Cosmos-Transaktionspfad. Ab der aktuellen Chain-Version (**v3.1.80**) lautet der Netzwerkstandard `hybrid_signature_mode = required` mit `allow_classical_fallback = false` — daher **muss jede Transaktion auf dem Cosmos-Pfad eine ML-DSA-87-Signatur (Dilithium-5) zusammen mit der standardmäßigen secp256k1-Signatur (ECDSA) tragen**. Ausschließlich klassische Cosmos-Transaktionen von einem PQC-Konto werden abgelehnt.
 
 :::caution Cosmos-Transaktionen erfordern die hybride PQC-Erweiterung
 Das Senden einer reinen klassischen Transaktion auf dem Cosmos-Pfad wird abgelehnt. Sie müssen die Dilithium-5-Signatur als `PQCHybridSignature`-Transaktionserweiterung anhängen. Standard-CosmJS-/Keplr-Tooling erzeugt diese Erweiterung nicht von selbst — verwenden Sie den CLI-Befehl `qorechaind tx pqc cosign`, die hybride Signierung des QoreChain SDK (siehe unten) oder, um sie selbst im Code zu erstellen, die Open-Source-Bibliothek [**qorechain-pqc**](/developer-guide/post-quantum-signing) (`hybridSignBytes`). Die einzigen Ausnahmen sind Genesis-Gentxs und Transaktionen zur PQC-Schlüsselregistrierung/-migration.

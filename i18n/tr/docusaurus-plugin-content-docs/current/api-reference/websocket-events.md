@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain, iki WebSocket arayüzü aracılığıyla gerçek zamanlı olay akışı sağlar: EVM uyumlu WebSocket ve QoreChain Uzlaşı Motoru RPC WebSocket.
 
 :::note
-Her iki WebSocket arayüzü de **`qorechain-vladi`** ana ağında (**v3.1.77** zincir sürümünde canlı) ve **`qorechain-diana`** test ağında kullanılabilir. Aşağıdaki yerel uç noktalar kendi çalıştırdığınız bir düğümü varsayar; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı ana makinesini kullanın.
+Her iki WebSocket arayüzü de **`qorechain-vladi`** ana ağında (**v3.1.80** zincir sürümünde canlı) ve **`qorechain-diana`** test ağında kullanılabilir. Aşağıdaki yerel uç noktalar kendi çalıştırdığınız bir düğümü varsayar; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı ana makinesini kullanın.
 :::
 
 ---

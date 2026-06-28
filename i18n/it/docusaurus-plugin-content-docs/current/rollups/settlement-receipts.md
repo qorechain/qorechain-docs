@@ -71,8 +71,11 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Lettura degli anchor
 
-Le ricevute vengono costruite da una nuova query **Anchor** on-chain di
-`x/multilayer`. Le letture:
+Le ricevute vengono costruite dalla query **Anchor** on-chain di `x/multilayer`,
+disponibile sia su gRPC che su REST a partire dalla versione della chain
+**v3.1.80** (vedi
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Le letture:
 
 - `getAnchor(layerId)` — l'anchor per un layer.
 - `getLatestAnchor()` — l'anchor più recente.

@@ -10,7 +10,7 @@ sidebar_position: 4
 Bu kılavuz, QOR sahiplerinin tokenlarını gelişmiş yönetişim gücü için kilitlemesine olanak tanıyan ve uzun vadeli katılımcıları ödüllendiren bir PvP rebase modeline sahip xQORE yönetişim stake etme mekanizmasını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.77** zincir sürümünü çalıştırarak yayında — ana ağda stake ederken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünü çalıştırarak yayında — ana ağda stake ederken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
 :::
 
 ---

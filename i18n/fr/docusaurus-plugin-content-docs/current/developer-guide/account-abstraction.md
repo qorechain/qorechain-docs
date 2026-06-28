@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain fournit une **abstraction de compte au niveau du protocole** via le module `x/abstractaccount`. Cela permet des comptes programmables avec des règles d'authentification flexibles, des clés de session, des limites de dépenses et la récupération sociale — le tout sans nécessiter d'infrastructure de contrat intelligent externe.
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, en service depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.77**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, en service depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.80**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
 :::
 
 ## Aperçu

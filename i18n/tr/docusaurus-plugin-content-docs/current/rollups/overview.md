@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain **Rollup Geliştirme Kiti (RDK)** — `x/rdk` modülü — geliştiricilerin QoreChain üzerinde uzlaşan (settle olan) uygulamaya özel rollup'lar başlatmasını sağlar. Her rollup, kendi blok süresine, sanal makinesine, ücret modeline ve sıralamasına sahip bağımsız bir yürütme ortamıdır; aynı zamanda QoreChain'in güvenlik, kuantum sonrası kriptografi ve veri erişilebilirliği garantilerini devralır.
 
 :::caution
-RDK ve rollup uzlaşma katmanı aktif olarak gelişen bir yetenektir. Bu bölümde anlatılan uzlaşma modlarını, kanıt sistemlerini, ön ayarları ve özellik bazlı olgunluğu değişikliğe tabi tasarım niyeti olarak değerlendirin ve ana ağı (**`qorechain-vladi`**, EVM zincir kimliği **9801**, zincir sürümü **v3.1.77**) hedeflemeden önce herhangi bir dağıtımı **`qorechain-diana`** test ağında doğrulayın.
+RDK ve rollup uzlaşma katmanı aktif olarak gelişen bir yetenektir. Bu bölümde anlatılan uzlaşma modlarını, kanıt sistemlerini, ön ayarları ve özellik bazlı olgunluğu değişikliğe tabi tasarım niyeti olarak değerlendirin ve ana ağı (**`qorechain-vladi`**, EVM zincir kimliği **9801**, zincir sürümü **v3.1.80**) hedeflemeden önce herhangi bir dağıtımı **`qorechain-diana`** test ağında doğrulayın.
 :::
 
 Daha düşük seviyeli modül referansı için — modül parametreleri, yaşam döngüsü iç işleyişi, burn entegrasyonu ve çok katmanlı çapalama (anchoring) — Mimari bölümündeki **[Rollup Geliştirme Kiti](/architecture/rollup-development-kit)** sayfasına bakın. Bu Rollup'lar bölümü, geliştiriciye yönelik nasıl yapılır kılavuzudur: RDK'nın ne olduğu, hangi paradigmanın seçileceği, nasıl dağıtılacağı, veri erişilebilirliğinin nasıl çalıştığı ve para çekme işlemlerinin L2'den L1'e nasıl uzlaştığı.

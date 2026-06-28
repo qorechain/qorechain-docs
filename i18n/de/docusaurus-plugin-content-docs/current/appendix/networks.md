@@ -17,7 +17,7 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **Cosmos-Chain-ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live seit** | 7. Juni 2026, 23:59 UTC | — |
-| **Chain-Version** | v3.1.77 | v3.1.77 |
+| **Chain-Version** | v3.1.80 | v3.1.80 |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Verbindungsanleitung** | [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet) | [Verbindung mit dem Testnet](/getting-started/connecting-to-testnet) |
 

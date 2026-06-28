@@ -70,7 +70,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## قراءة المراسي
 
-تُبنى الإيصالات من استعلام **Anchor** جديد على السلسلة في `x/multilayer`. عمليات القراءة:
+تُبنى الإيصالات من استعلام **Anchor** الخاص بـ `x/multilayer` على السلسلة،
+المتاح عبر كلٍّ من gRPC وREST اعتبارًا من إصدار السلسلة **v3.1.80** (راجع
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+عمليات القراءة:
 
 - `getAnchor(layerId)` — مرساة طبقة ما.
 - `getLatestAnchor()` — أحدث مرساة.

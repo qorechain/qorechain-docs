@@ -70,7 +70,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Leer anclas
 
-Los recibos se construyen a partir de una nueva consulta **Anchor** en cadena de `x/multilayer`. Las lecturas:
+Los recibos se construyen a partir de la consulta **Anchor** en cadena de `x/multilayer`,
+disponible tanto por gRPC como por REST a partir de la versión de cadena **v3.1.80** (consulta
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Las lecturas:
 
 - `getAnchor(layerId)` — el ancla de una capa.
 - `getLatestAnchor()` — el ancla más reciente.

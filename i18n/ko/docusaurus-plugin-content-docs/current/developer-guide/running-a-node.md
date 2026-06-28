@@ -58,13 +58,13 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 저장소는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 이미지 태그를 운영 중인 체인 버전(메인넷의 **v3.1.77**)으로 고정하고 체인 데이터용 영구 볼륨을 마운트하세요.
+Docker Compose를 사용한 노드 전용 배포입니다. 이미지 태그를 운영 중인 체인 버전(메인넷의 **v3.1.80**)으로 고정하고 체인 데이터용 영구 볼륨을 마운트하세요.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## 운영 모범 사례
 
-1. **체인 버전을 고정하세요.** 운영 태그(메인넷의 **v3.1.77**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
+1. **체인 버전을 고정하세요.** 운영 태그(메인넷의 **v3.1.80**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
 
 2. **이중화 노드를 운영하세요.** 단일 재시작이나 리싱크가 통합 트래픽을 중단시키지 않도록 로드 밸런서 뒤에서 최소 두 개의 노드를 운영하세요.
 

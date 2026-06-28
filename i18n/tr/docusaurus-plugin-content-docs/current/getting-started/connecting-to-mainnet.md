@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.77** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada deneyin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.80** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada deneyin.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Zincir kimliği    | `qorechain-vladi`                      |
 | EVM zincir kimliği| `9801` (onaltılık `0x2649`)           |
-| Zincir sürümü     | v3.1.77                                |
+| Zincir sürümü     | v3.1.80                                |
 | Canlı olma tarihi | 7 Haziran 2026 23:59 UTC              |
 | Token             | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
 | Hesap öneki       | `qor`                                  |

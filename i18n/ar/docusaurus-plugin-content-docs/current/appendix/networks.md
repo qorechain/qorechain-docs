@@ -17,7 +17,7 @@ sidebar_position: 4
 | **معرّف سلسلة Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **معرّف سلسلة EVM (EIP-155)** | **9801** (سداسي عشري `0x2649`) | **9800** (سداسي عشري `0x2648`) |
 | **فعّالة منذ** | 7 يونيو 2026، 23:59 UTC | — |
-| **إصدار السلسلة** | v3.1.77 | v3.1.77 |
+| **إصدار السلسلة** | v3.1.80 | v3.1.80 |
 | **إطار العمل** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **دليل الاتصال** | [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) | [الاتصال بالشبكة التجريبية](/getting-started/connecting-to-testnet) |
 

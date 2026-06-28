@@ -10,14 +10,14 @@ sidebar_position: 2
 QoreChain prend en charge plusieurs types de portefeuilles dans ses environnements d'exécution natif, EVM et SVM. Choisissez le portefeuille qui correspond à votre cas d'usage.
 
 :::note
-Les identifiants de chaîne et les points de terminaison RPC ci-dessous ciblent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 ; ses valeurs de connexion de portefeuille sont documentées sur la page distincte **Connexion au mainnet**.
+Les chain IDs et les points de terminaison RPC ci-dessous ciblent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 ; ses valeurs de connexion de portefeuille sont documentées sur la page distincte **Connexion au Mainnet**.
 :::
 
 ## Portefeuille Keplr
 
-Keplr est le portefeuille recommandé pour les transactions natives QoreChain, le staking et la gouvernance.
+Keplr est le portefeuille recommandé pour les transactions QoreChain natives, le staking et la gouvernance.
 
-### Ajouter QoreChain en tant que chaîne personnalisée
+### Ajouter QoreChain comme chaîne personnalisée
 
 Ouvrez Keplr et accédez à **Settings > Add Custom Chain**, puis saisissez :
 
@@ -32,13 +32,13 @@ Ouvrez Keplr et accédez à **Settings > Add Custom Chain**, puis saisissez :
 | Coin Minimal Denom | `uqor`                    |
 | Decimals           | `6`                       |
 
-Après avoir ajouté la chaîne, Keplr génère une adresse `qor1...` pour votre compte. Utilisez cette adresse pour recevoir des jetons QOR de testnet.
+Après avoir ajouté la chaîne, Keplr génère une adresse `qor1...` pour votre compte. Utilisez cette adresse pour recevoir des jetons QOR du testnet.
 
 ## MetaMask (EVM)
 
 MetaMask permet d'interagir avec l'environnement d'exécution EVM de QoreChain — déployer des contrats Solidity, gérer des jetons ERC-20 et utiliser l'outillage Ethereum familier.
 
-### Ajouter QoreChain en tant que réseau personnalisé
+### Ajouter QoreChain comme réseau personnalisé
 
 Ouvrez MetaMask et accédez à **Settings > Networks > Add Network**, puis saisissez :
 
@@ -50,6 +50,20 @@ Ouvrez MetaMask et accédez à **Settings > Networks > Add Network**, puis saisi
 | Currency Symbol | `QOR`                   |
 
 Une fois connecté, vous pouvez utiliser MetaMask pour signer des transactions EVM, interagir avec des contrats intelligents déployés et gérer des jetons ERC-20 sur QoreChain.
+
+### Enregistrement du réseau en un seul appel
+
+Pour les dApps, les packages **`@qorechain/wallet-adapter`** et **`@qorechain/connect`** (publiés sur npm, v0.1.0) enregistrent QoreChain auprès du portefeuille de l'utilisateur en un seul appel — en invitant MetaMask à ajouter le réseau via EIP-3085 (avec le QOR natif correct à **18 décimales** sur le rail EVM) et en configurant le palier de prix du gaz de Keplr :
+
+```bash
+npm install @qorechain/wallet-adapter @qorechain/connect
+```
+
+```ts
+import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
+
+await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+```
 
 ## Portefeuilles Solana (SVM)
 
@@ -69,15 +83,15 @@ Cela permet le déploiement et l'interaction avec les programmes SVM s'exécutan
 
 ## Portefeuilles compatibles PQC (requis sur le chemin Cosmos)
 
-QoreChain exige une cryptographie post-quantique (PQC) hybride sur le chemin de transaction Cosmos. À partir de la version actuelle de la chaîne (**v3.1.77**), la valeur par défaut du réseau est `hybrid_signature_mode = required` avec `allow_classical_fallback = false` — ainsi, **chaque transaction du chemin Cosmos doit comporter une signature ML-DSA-87 (Dilithium-5) en plus de la signature secp256k1 (ECDSA) standard**. Les transactions Cosmos uniquement classiques provenant d'un compte PQC sont rejetées.
+QoreChain requiert une cryptographie post-quantique (PQC) hybride sur le chemin de transaction cosmos. À partir de la version actuelle de la chaîne (**v3.1.80**), la valeur par défaut du réseau est `hybrid_signature_mode = required` avec `allow_classical_fallback = false` — ainsi **chaque transaction du chemin cosmos doit porter une signature ML-DSA-87 (Dilithium-5) en plus de la signature standard secp256k1 (ECDSA)**. Les transactions cosmos uniquement classiques provenant d'un compte PQC sont rejetées.
 
-:::caution Les transactions Cosmos requièrent l'extension hybride PQC
-L'envoi d'une transaction purement classique sur le chemin Cosmos sera rejeté. Vous devez joindre la signature Dilithium-5 en tant qu'extension de transaction `PQCHybridSignature`. L'outillage standard CosmJS / Keplr ne produit pas cette extension par lui-même — utilisez la commande CLI `qorechaind tx pqc cosign`, la signature hybride du QoreChain SDK (voir ci-dessous), ou, pour la construire vous-même dans le code, la bibliothèque open source [**qorechain-pqc**](/developer-guide/post-quantum-signing) (`hybridSignBytes`). Les seules exemptions sont les gentxs de genesis et les transactions d'enregistrement/migration de clé PQC.
+:::caution Les transactions cosmos requièrent l'extension PQC hybride
+L'envoi d'une simple transaction classique sur le chemin cosmos sera rejeté. Vous devez attacher la signature Dilithium-5 comme extension de transaction `PQCHybridSignature`. L'outillage standard CosmJS / Keplr ne produit pas cette extension à lui seul — utilisez la commande CLI `qorechaind tx pqc cosign`, la signature hybride du QoreChain SDK (voir ci-dessous), ou, pour la construire vous-même dans le code, la bibliothèque open source [**qorechain-pqc**](/developer-guide/post-quantum-signing) (`hybridSignBytes`). Les seules exemptions sont les gentxs du genesis et les transactions d'enregistrement/migration de clés PQC.
 :::
 
-### Comment ça fonctionne
+### Fonctionnement
 
-Les portefeuilles joignent une signature PQC ML-DSA-87 en tant qu'extension de transaction, aux côtés de la signature secp256k1 (ECDSA) standard. La signature classique est calculée sur des octets à signer qui excluent l'extension, de sorte qu'elle reste valide pour la vérification classique tandis que la signature PQC assure la résistance quantique.
+Les portefeuilles attachent une signature PQC ML-DSA-87 comme extension de transaction en plus de la signature standard secp256k1 (ECDSA). La signature classique est calculée sur des octets de signature qui excluent l'extension, de sorte qu'elle reste valide pour la vérification classique tandis que la signature PQC assure la résistance quantique.
 
 ### Générer une clé Dilithium-5
 
@@ -89,31 +103,31 @@ qorechaind tx pqc gen-key
 
 ### Enregistrement automatique
 
-Lorsque vous incluez une clé publique PQC dans votre première transaction, QoreChain l'enregistre automatiquement on-chain. Aucune étape d'enregistrement distincte n'est nécessaire. (Les transactions d'enregistrement/migration de clé PQC sont elles-mêmes exemptées de l'exigence hybride, de sorte qu'un compte peut amorcer sa première clé.)
+Lorsque vous incluez une clé publique PQC dans votre première transaction, QoreChain l'enregistre automatiquement on-chain. Aucune étape d'enregistrement distincte n'est nécessaire. (Les transactions d'enregistrement/migration de clés PQC sont elles-mêmes exemptées de l'exigence hybride, de sorte qu'un compte peut amorcer sa première clé.)
 
 ### Signature hybride avec le SDK
 
-Le QoreChain SDK produit des transactions Cosmos conformes via `buildHybridTx` avec `includePqcPublicKey: true`, qui joint l'extension Dilithium-5 et intègre la clé publique pour l'enregistrement automatique. Voir [Comptes SDK et signature PQC](/sdk/concepts/accounts-pqc).
+Le QoreChain SDK produit des transactions cosmos conformes via `buildHybridTx` avec `includePqcPublicKey: true`, qui attache l'extension Dilithium-5 et intègre la clé publique pour l'enregistrement automatique. Voir [Comptes & signature PQC du SDK](/sdk/concepts/accounts-pqc).
 
 ### Modes PQC
 
 Les trois modes d'application restent contrôlés par la gouvernance ; la **valeur par défaut actuelle du réseau est Required** :
 
-| Mode                   | Description                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| **Disabled**           | La vérification PQC est désactivée. Signatures standard uniquement.              |
+| Mode                   | Description                                                             |
+| ---------------------- | ----------------------------------------------------------------------- |
+| **Disabled**           | La vérification PQC est désactivée. Signatures standard uniquement.     |
 | **Optional**           | Les transactions peuvent inclure des signatures PQC. Si présentes, elles sont vérifiées. |
-| **Required** (par défaut) | Toutes les transactions du chemin Cosmos doivent inclure une signature PQC valide. |
+| **Required** (défaut)  | Toutes les transactions du chemin cosmos doivent inclure une signature PQC valide. |
 
-Le mode actif est configuré au niveau de la chaîne et peut être mis à jour via la gouvernance.
+Le mode actif est configuré au niveau de la chaîne et peut être mis à jour par la gouvernance.
 
 :::note EVM / MetaMask non affecté
 Le flux MetaMask (EVM) ci-dessus n'est **pas** affecté par l'exigence hybride. Les transactions EVM utilisent un chemin ante `eth_secp256k1` distinct et n'ont jamais besoin de l'extension PQC.
 :::
 
-## Portefeuille CLI
+## Portefeuille en ligne de commande (CLI)
 
-Le binaire `qorechaind` inclut un système intégré de gestion de clés pour l'usage en ligne de commande.
+Le binaire `qorechaind` inclut un système intégré de gestion des clés pour une utilisation en ligne de commande.
 
 ### Créer une nouvelle clé
 

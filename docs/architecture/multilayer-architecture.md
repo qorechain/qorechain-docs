@@ -170,6 +170,15 @@ Each anchor enters a **challenge period** of **24 hours** (86,400 seconds, confi
 
 After the challenge period expires without a successful dispute, the anchor is considered finalized.
 
+### Reading Anchors
+
+As of chain version **v3.1.80**, anchors are also **readable** through the multilayer query service. Two queries expose anchor state over both gRPC and REST:
+
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returns the latest finalized state anchor for a layer.
+* **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — returns the anchor history for a layer.
+
+Because each anchor carries a Dilithium-5 signature over the canonical message `layer_id || layer_height || state_root || validator_set_hash` (verified against the layer creator's registered PQC key), a client can fetch an anchor and verify it **offline**, without trusting the serving node. This is the on-chain primitive behind the Rollup Development Kit's [quantum-safe settlement receipts](/rollups/settlement-receipts).
+
 ---
 
 ## Cross-Layer Fee Bundling (CLFB)

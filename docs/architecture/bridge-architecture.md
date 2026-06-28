@@ -218,6 +218,21 @@ The bridge module integrates with the AI subsystem for route optimization. For t
 * Security score per path
 * Confidence level of the estimate
 
+## Bridge Administration
+
+### Post-deploy chain activation (no governance)
+
+As of chain version **v3.1.78**, a bridge chain can be activated and reconfigured after deployment with a single signed transaction — no governance proposal and no chain upgrade. A `bridge_admin` key (set in `BridgeConfig.BridgeAdmin` at genesis) or a holder of the `qcb_bridge` license can:
+
+* **`tx bridge update-chain-config`** — set a chain's contract address, confirmation count, architecture, and status (`MsgUpdateChainConfig`).
+* **`tx bridge set-verifier-bootstrap`** — select the active verifier for a chain and install its trust root (`MsgSetVerifierBootstrap`).
+
+This lets an operator bring a connected chain's bridge online — or rotate its verifier — directly, with authorization checked against the bridge admin key.
+
+### Validating connected networks
+
+As of chain version **v3.1.79**, a validator that holds the matching `validator_<chain>` (or `qcb_bridge`) license can run the external network's client on the same node, provisioned automatically under QoreChain's orchestration once the license is activated. Drivers ship for all 37 bridge networks, classified by participation model (permissionless validator, capped/elected/admission, L2 full-node, and non-staking/trust-list). The external network's stake and signing keys are operator-supplied per network. See [Run a Validator](/developer-guide/running-a-validator#connected-networks) for operator steps.
+
 ## REST API Endpoints
 
 As of chain version **v3.1.77**, bridge state is also queryable **read-only over REST** via grpc-gateway under the `/qorechain/bridge/v1/...` prefix (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — previously gRPC-only. These serve real on-chain JSON over HTTP for explorers and light-node telemetry. See [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#bridge-module) for the full list.

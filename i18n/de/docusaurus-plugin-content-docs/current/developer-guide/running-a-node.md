@@ -58,13 +58,13 @@ NVMe SSD wird dringend empfohlen — der Chain-Zustand und die EVM/SVM-Speicher 
 
 ### Docker Compose
 
-Eine reine Node-Bereitstellung mit Docker Compose. Pinnen Sie das Image-Tag auf die aktive Chain-Version (**v3.1.77** auf dem Mainnet) und binden Sie ein persistentes Volume für die Chain-Daten ein.
+Eine reine Node-Bereitstellung mit Docker Compose. Pinnen Sie das Image-Tag auf die aktive Chain-Version (**v3.1.80** auf dem Mainnet) und binden Sie ein persistentes Volume für die Chain-Daten ein.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Führen Sie das aktive Tag aus (**v3.1.77** auf dem Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
+1. **Pinnen Sie die Chain-Version.** Führen Sie das aktive Tag aus (**v3.1.80** auf dem Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder eine Neusynchronisierung den Integrationsverkehr nicht unterbricht.
 

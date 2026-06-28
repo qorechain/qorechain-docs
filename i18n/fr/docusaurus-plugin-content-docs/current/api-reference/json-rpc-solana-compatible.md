@@ -18,7 +18,7 @@ QoreChain fournit une interface JSON-RPC compatible Solana via son runtime SVM (
 Le serveur JSON-RPC est **démarré par `qorechaind start`** et est **activé par défaut**, écoutant sur `127.0.0.1:8899`. Il est configuré via une section `[svm-rpc]` dans `app.toml` (`enable` + `address`). Un nœud fraîchement démarré sert déjà cette interface — aucun processus supplémentaire n'est requis.
 
 :::note
-L'interface JSON-RPC compatible Solana est servie sur le port **8899** à la fois par le mainnet **`qorechain-vladi`** (actif sur la version de chaîne **v3.1.77**) et le testnet **`qorechain-diana`**. L'adresse locale ci-dessus s'applique à un nœud que vous exécutez vous-même ; remplacez par le point de terminaison mainnet ou testnet de votre fournisseur pour un accès distant.
+L'interface JSON-RPC compatible Solana est servie sur le port **8899** à la fois par le mainnet **`qorechain-vladi`** (actif sur la version de chaîne **v3.1.80**) et le testnet **`qorechain-diana`**. L'adresse locale ci-dessus s'applique à un nœud que vous exécutez vous-même ; remplacez par le point de terminaison mainnet ou testnet de votre fournisseur pour un accès distant.
 :::
 
 ---

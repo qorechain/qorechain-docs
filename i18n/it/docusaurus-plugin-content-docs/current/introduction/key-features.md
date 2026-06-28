@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Funzionalità Principali
 
-La tabella seguente elenca tutte le principali funzionalità di QoreChain, organizzate in base alla fase di rilascio in cui sono state introdotte. La versione corrente della chain è **v3.1.77**, con la mainnet (`qorechain-vladi`, EVM chain ID 9801) attiva dal 7 giugno 2026 e una testnet parallela (`qorechain-diana`, EVM chain ID 9800).
+La tabella seguente elenca tutte le principali funzionalità di QoreChain, organizzate in base alla fase di rilascio in cui sono state introdotte. La versione corrente della chain è **v3.1.80**, con la mainnet (`qorechain-vladi`, EVM chain ID 9801) attiva dal 7 giugno 2026 e una testnet parallela (`qorechain-diana`, EVM chain ID 9800).
 
 | Funzionalità               | Introdotta in       | Descrizione                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

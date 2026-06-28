@@ -10,7 +10,7 @@ sidebar_position: 1
 Bu kılavuz, QOR tokenını, token gönderme ve almayı, bakiye sorgulamayı ve QoreChain üzerindeki ücret dağıtım modelini anlamayı kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.77** zincir sürümünü çalıştırarak yayında — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünü çalıştırarak yayında — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
 :::
 
 ## Token Bilgileri

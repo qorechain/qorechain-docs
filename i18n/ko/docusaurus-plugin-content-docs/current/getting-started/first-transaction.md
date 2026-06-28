@@ -36,7 +36,7 @@ qorechaind tx bank send mykey qor1recipient... 1000000uqor \
 이 명령은 수신자 주소로 **1 QOR**(1,000,000 uqor)를 보내며, 500 uqor의 수수료를 지불합니다.
 
 :::caution Cosmos 전송에는 하이브리드 PQC 서명이 필요합니다
-cosmos 경로에서 네트워크 기본값은 `hybrid_signature_mode = required`입니다(현재 체인 버전 **v3.1.77**). 일반 클래식 `tx bank send`는 **거부됩니다** — 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 ML-DSA-87(Dilithium-5) 서명을 포함해야 합니다. `qorechaind tx pqc gen-key`로 Dilithium-5 키를 생성한 다음, `qorechaind tx pqc cosign`으로 하이브리드 공동 서명을 첨부하세요(또는 QoreChain SDK의 `buildHybridTx`로 트랜잭션을 빌드하고 `includePqcPublicKey`를 사용하여 첫 사용 시 키가 자동 등록되도록 하세요). CLI 외부에서 하이브리드 서명을 생성하려면, 오픈소스 [**qorechain-pqc**](/developer-guide/post-quantum-signing) 라이브러리(`hybridSignBytes`)와 QoreChain SDK가 코드에서 동일한 작업을 수행합니다. 전체 하이브리드 흐름은 [지갑 설정](/getting-started/wallet-setup)을 참조하세요.
+cosmos 경로에서 네트워크 기본값은 `hybrid_signature_mode = required`입니다(현재 체인 버전 **v3.1.80**). 일반 클래식 `tx bank send`는 **거부됩니다** — 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 ML-DSA-87(Dilithium-5) 서명을 포함해야 합니다. `qorechaind tx pqc gen-key`로 Dilithium-5 키를 생성한 다음, `qorechaind tx pqc cosign`으로 하이브리드 공동 서명을 첨부하세요(또는 QoreChain SDK의 `buildHybridTx`로 트랜잭션을 빌드하고 `includePqcPublicKey`를 사용하여 첫 사용 시 키가 자동 등록되도록 하세요). CLI 외부에서 하이브리드 서명을 생성하려면, 오픈소스 [**qorechain-pqc**](/developer-guide/post-quantum-signing) 라이브러리(`hybridSignBytes`)와 QoreChain SDK가 코드에서 동일한 작업을 수행합니다. 전체 하이브리드 흐름은 [지갑 설정](/getting-started/wallet-setup)을 참조하세요.
 :::
 
 트랜잭션이 브로드캐스트되기 전에 확인하라는 메시지가 표시됩니다. 확인되면 CLI가 트랜잭션 해시를 반환합니다.

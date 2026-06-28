@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.77**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.80**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,31 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.77 — Current Mainnet Release
+## v3.1.80 — Multilayer State-Anchor Queries (Current Mainnet Release)
+
+**Release focus:** Readable, offline-verifiable settlement anchors for rollups.
+
+* **Anchor read queries** — The `x/multilayer` query service now exposes `Anchor` (the latest state anchor for a layer) and `Anchors` (a layer's anchor history), so clients can fetch a layer's settlement anchor and verify it independently.
+* **REST gateway for multilayer** — Every multilayer query (`params`, `layers`, `layers/{layer_id}`, `anchor/{layer_id}`, `anchors/{layer_id}`, `routing-stats`) is now available over REST in addition to gRPC.
+* **Quantum-safe settlement receipts unblocked** — Each anchor carries an **ML-DSA-87 (Dilithium-5)** signature over its canonical fields, providing the on-chain basis for the Rollup Development Kit's offline settlement-receipt verification.
+
+## v3.1.79 — Validator Auto-Provisioning for Bridge Networks
+
+**Release focus:** Turnkey participation on connected networks for licensed validators.
+
+* **Network driver framework** — A declarative driver framework lets a QoreChain validator that holds the relevant `validator_<chain>` (or `qcb_bridge`) license have the matching external-network client provisioned, configured, and run on the same node under QoreChain orchestration — only once the license is activated.
+* **Drivers for all 37 bridge networks** — Coverage spans every connected network, classified by participation model (permissionless validator, capped/elected/admission, L2 full-node, and non-staking/trust-list roles). External-network stake and signing keys remain operator-supplied per network; QoreChain ships the framework and the enforced license gate.
+
+## v3.1.78 — Pre-Deploy Readiness
+
+**Release focus:** Wallets, bridges, IBC, and licensing all work at launch — with no post-deploy governance.
+
+* **Trustless post-deploy bridge activation** — A `bridge_admin` key (or `qcb_bridge` license holder) can activate any connected chain's bridge with a single signed transaction (`tx bridge update-chain-config` / `set-verifier-bootstrap`) — setting contract address, confirmations, architecture, status, the active verifier, and the verifier trust root — with no governance proposal or chain upgrade.
+* **Validator-network license gate** — The orchestrator now enforces the `validator_<chain>` / `qcb_bridge` license (fail-closed) before starting any external-network client.
+* **Wallet integration packages** — `@qorechain/wallet-adapter` and `@qorechain/connect` published to npm (v0.1.0), adding one-call MetaMask network registration (EIP-3085, **18-decimal** native QOR on the EVM rail) and Keplr gas-price configuration.
+* **IBC turnkey relayer** — Ready-to-run relayer configuration and channel-bootstrap tooling for the eight IBC counterparties, so channels come up post-deploy without bespoke setup.
+
+## v3.1.77 — Bridge & Burn REST Endpoints
 
 **Release focus:** Read-only REST access for cross-chain and supply modules.
 

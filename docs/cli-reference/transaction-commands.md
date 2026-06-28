@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.77**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.80**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
 :::
 
 Common flags apply to every `tx` subcommand:
@@ -250,6 +250,22 @@ Initiate a bridge withdrawal to an external chain.
 
 ```bash
 qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> [flags]
+```
+
+### update-chain-config
+
+Activate or reconfigure a chain's bridge in a single signed transaction (available as of chain version **v3.1.80**). Requires the `bridge_admin` key or a `qcb_bridge` license — no governance proposal or chain upgrade. Sets the contract address, confirmation count, architecture, and status.
+
+```bash
+qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
+```
+
+### set-verifier-bootstrap
+
+Select a chain's active verifier and install its trust root (also `bridge_admin`-gated).
+
+```bash
+qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from bridge-admin
 ```
 
 ---

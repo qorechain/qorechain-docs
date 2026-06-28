@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification system, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.77**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.80**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
 :::
 
 ---
@@ -268,6 +268,27 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 ```
 
 ---
+
+## Validating Connected Networks {#connected-networks}
+
+As of chain version **v3.1.80**, a QoreChain validator can also help validate the networks connected through the [bridge](/architecture/bridge-architecture). This is **license-gated and opt-in**:
+
+1. **Hold the license.** The validator must hold an active `validator_<chain>` (or `qcb_bridge`) license for the target network. The orchestrator refuses to start an external client without it (fail-closed).
+2. **Activation auto-provisions the client.** When the license is activated, QoreChain provisions the matching network's client on your node — downloading the pinned client, rendering its config, and running it under QoreChain's orchestration. Nothing is fetched until activation.
+3. **Supply the network's keys and stake.** The external network's validator/stake and signing keys are **operator-supplied** per network; QoreChain ships the driver framework and the enforced license gate, not your external-chain stake.
+
+Drivers exist for all **37 bridge networks**, classified by how a validator can participate:
+
+| Class | Participation | Examples |
+| ----- | ------------- | -------- |
+| Permissionless validator | Stake and run | Solana, Ethereum, Avalanche, Sui, Aptos, Cardano, Tezos, Algorand, Starknet |
+| Capped / elected / admission | Stake, subject to a cap or election | BSC, Polygon, Polkadot, TRON, Sei, Injective, NEAR, Hedera |
+| L2 full-node | Run a full node (no staking) | Optimism, Base, zkSync Era, Linea, Scroll, Arbitrum |
+| Non-staking / trust-list | Observe / participate without staking | Bitcoin, Filecoin, XRPL, Stellar |
+
+:::note
+Client version pins are best-effort; verify the upstream client release for your target network before a production activation.
+:::
 
 ## Next Steps
 

@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain oferă **abstractizare a conturilor la nivel de protocol** prin modulul `x/abstractaccount`. Acest lucru permite conturi programabile cu reguli de autentificare flexibile, chei de sesiune, limite de cheltuieli și recuperare socială — totul fără a necesita o infrastructură externă de contracte inteligente.
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, rulând versiunea de lanț **v3.1.77**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, rulând versiunea de lanț **v3.1.80**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet.
 :::
 
 ## Prezentare generală

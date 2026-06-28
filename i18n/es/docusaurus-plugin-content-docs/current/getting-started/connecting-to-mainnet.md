@@ -10,7 +10,7 @@ sidebar_position: 3
 Únete a la red principal activa QoreChain Vladi configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red principal **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`), activa desde el **7 de junio de 2026 a las 23:59 UTC** ejecutando la versión de cadena **v3.1.77** sobre Cosmos SDK v0.53. Para la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**), consulta [Conexión a la red de pruebas](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de ponerla en producción.
+Esta página cubre la red principal **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`), activa desde el **7 de junio de 2026 a las 23:59 UTC** ejecutando la versión de cadena **v3.1.80** sobre Cosmos SDK v0.53. Para la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**), consulta [Conexión a la red de pruebas](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de ponerla en producción.
 :::
 
 :::warning
@@ -191,7 +191,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | ID de cadena          | `qorechain-vladi`                      |
 | ID de cadena EVM      | `9801` (hex `0x2649`)                  |
-| Versión de cadena     | v3.1.77                                |
+| Versión de cadena     | v3.1.80                                |
 | Activa desde        | 7 de junio de 2026 23:59 UTC                  |
 | Token             | QOR (`uqor`, 10^6 microunidades = 1 QOR) |
 | Prefijo de cuenta    | `qor`                                  |

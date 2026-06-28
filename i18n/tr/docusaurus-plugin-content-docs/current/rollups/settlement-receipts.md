@@ -70,7 +70,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Çapaları okuma
 
-Makbuzlar, yeni bir zincir üzeri `x/multilayer` **Anchor** sorgusundan oluşturulur. Okumalar:
+Makbuzlar, zincir sürümü **v3.1.80** itibarıyla hem gRPC hem de REST üzerinden
+erişilebilen zincir üzeri `x/multilayer` **Anchor** sorgusundan oluşturulur (bkz.
+[REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Okumalar:
 
 - `getAnchor(layerId)` — bir katman için çapa.
 - `getLatestAnchor()` — en son çapa.

@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain は **CosmWasm** スマートコントラクトをサポートしており、開発者は WebAssembly にコンパイルされる、安全でサンドボックス化されたプログラムを Rust で記述できます。CosmWasm コントラクトは、QoreChain のトリプル VM アーキテクチャ内で EVM および SVM プログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026 年 6 月 7 日より稼働しチェーンバージョン **v3.1.77** を実行している **`qorechain-vladi`** メインネットを使用します。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026 年 6 月 7 日より稼働しチェーンバージョン **v3.1.80** を実行している **`qorechain-vladi`** メインネットを使用します。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
 :::
 
 ---

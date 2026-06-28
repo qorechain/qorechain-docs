@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain ノードの初期化、構成、運用に使用される `qorechaind` コマンドのリファレンス。
 
 :::note
-QoreChain は 2 つのネットワークを運用しています: **`qorechain-vladi`** メインネット (チェーンバージョン **v3.1.77** で 2026 年 6 月 7 日以降稼働) と **`qorechain-diana`** テストネットです。参加するネットワークに合わせて適切な `--chain-id` を渡してください — 以下の例はテストネットを対象としています。メインネットには `--chain-id qorechain-vladi` を使用してください。
+QoreChain は 2 つのネットワークを運用しています: **`qorechain-vladi`** メインネット (チェーンバージョン **v3.1.80** で 2026 年 6 月 7 日以降稼働) と **`qorechain-diana`** テストネットです。参加するネットワークに合わせて適切な `--chain-id` を渡してください — 以下の例はテストネットを対象としています。メインネットには `--chain-id qorechain-vladi` を使用してください。
 :::
 
 ---

@@ -1,35 +1,35 @@
 ---
 slug: /cli-reference/transaction-commands
-title: Comenzi de tranzacție
-sidebar_label: Comenzi de tranzacție
+title: Comenzi de tranzacții
+sidebar_label: Comenzi de tranzacții
 sidebar_position: 2
 ---
 
-# Comenzi de tranzacție
+# Comenzi de tranzacții
 
-Toate comenzile de tranzacție urmează modelul:
+Toate comenzile de tranzacții urmează modelul:
 
 ```bash
 qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Setează `--chain-id qorechain-vladi` pentru a difuza către mainnet-ul live (versiunea de lanț **v3.1.77**) sau `--chain-id qorechain-diana` pentru testnet. Dacă este omis, clientul folosește `chain-id` din configurarea ta locală.
+Setați `--chain-id qorechain-vladi` pentru a difuza pe mainnet-ul live (versiunea de lanț **v3.1.80**) sau `--chain-id qorechain-diana` pentru testnet. Dacă este omis, clientul folosește `chain-id` din configurația dvs. locală.
 :::
 
-Flag-uri comune se aplică fiecărei subcomenzi `tx`:
+Flag-urile comune se aplică fiecărei subcomenzi `tx`:
 
-| Flag                | Tip   | Descriere                                     |
+| Flag                | Tip    | Descriere                                       |
 | ------------------- | ------ | ----------------------------------------------- |
 | `--from`            | string | Numele sau adresa cheii de semnare              |
-| `--chain-id`        | string | Identificatorul lanțului (implicit: din configurare)         |
-| `--fees`            | string | Taxele de tranzacție (de ex., `500uqor`)              |
-| `--gas`             | string | Limita de gas sau `auto` pentru estimare              |
+| `--chain-id`        | string | Identificatorul lanțului (implicit: din configurație) |
+| `--fees`            | string | Taxele tranzacției (de ex., `500uqor`)          |
+| `--gas`             | string | Limita de gas sau `auto` pentru estimare        |
 | `--gas-adjustment`  | float  | Multiplicatorul de gas când se folosește `auto` (implicit: 1.0) |
-| `--keyring-backend` | string | Backend-ul keyring-ului: `os`, `file`, `test`           |
-| `--node`            | string | Endpoint RPC (implicit: `tcp://localhost:26657`) |
+| `--keyring-backend` | string | Backend-ul keyring: `os`, `file`, `test`        |
+| `--node`            | string | Endpoint-ul RPC (implicit: `tcp://localhost:26657`) |
 | `--broadcast-mode`  | string | `sync`, `async` sau `block`                     |
-| `-y`                | bool   | Sare peste solicitarea de confirmare                        |
+| `-y`                | bool   | Omite solicitarea de confirmare                 |
 
 ---
 
@@ -37,7 +37,7 @@ Flag-uri comune se aplică fiecărei subcomenzi `tx`:
 
 ### send
 
-Transferă tokenuri de la un cont la altul.
+Transferă tokenuri dintr-un cont în altul.
 
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount> [flags]
@@ -55,15 +55,15 @@ Creează un nou validator în rețea.
 qorechaind tx staking create-validator [flags]
 ```
 
-| Flag                           | Tip   | Descriere                                  |
+| Flag                           | Tip    | Descriere                                    |
 | ------------------------------ | ------ | -------------------------------------------- |
 | `--amount`                     | string | Suma de auto-delegare (de ex., `1000000uqor`) |
-| `--pubkey`                     | string | Cheia publică de consens a validatorului (JSON)        |
-| `--moniker`                    | string | Numele afișat al validatorului                       |
-| `--commission-rate`            | string | Rata de comision inițială (de ex., `0.10`)       |
+| `--pubkey`                     | string | Cheia publică de consens a validatorului (JSON) |
+| `--moniker`                    | string | Numele afișat al validatorului               |
+| `--commission-rate`            | string | Rata inițială de comision (de ex., `0.10`)   |
 | `--commission-max-rate`        | string | Rata maximă de comision                      |
-| `--commission-max-change-rate` | string | Rata maximă zilnică de modificare a comisionului         |
-| `--min-self-delegation`        | string | Auto-delegarea minimă necesară             |
+| `--commission-max-change-rate` | string | Rata maximă zilnică de modificare a comisionului |
+| `--min-self-delegation`        | string | Auto-delegarea minimă necesară               |
 
 ### edit-validator
 
@@ -91,7 +91,7 @@ qorechaind tx staking redelegate <src_validator> <dst_validator> <amount> [flags
 
 ### unbond
 
-Face unbonding la tokenuri de la un validator.
+Dezleagă tokenurile de la un validator.
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount> [flags]
@@ -117,7 +117,7 @@ Retrage recompensele de la un validator specific.
 qorechaind tx distribution withdraw-rewards <validator_address> [flags]
 ```
 
-| Flag           | Tip | Descriere                        |
+| Flag           | Tip  | Descriere                          |
 | -------------- | ---- | ---------------------------------- |
 | `--commission` | bool | Retrage și comisionul validatorului |
 
@@ -133,11 +133,11 @@ Trimite o propunere de guvernanță.
 qorechaind tx gov submit-proposal <proposal_file.json> [flags]
 ```
 
-Fișierul propunerii este un document JSON care specifică tipul propunerii, titlul, descrierea și orice mesaje de executat.
+Fișierul de propunere este un document JSON care specifică tipul propunerii, titlul, descrierea și orice mesaje de executat.
 
 ### vote
 
-Votează la o propunere activă.
+Votează asupra unei propuneri active.
 
 ```bash
 qorechaind tx gov vote <proposal_id> <option> [flags]
@@ -157,7 +157,7 @@ qorechaind tx gov deposit <proposal_id> <amount> [flags]
 
 ## pqc
 
-Calea de tranzacție cosmos necesită o semnătură hibridă în mod implicit (`hybrid_signature_mode = required`). Comenzile `gen-key` și `cosign` produc cheia Dilithium-5 (ML-DSA-87) și extensia `PQCHybridSignature` necesare pentru a tranzacționa pe calea cosmos alături de semnătura clasică secp256k1.
+Calea de tranzacție cosmos necesită în mod implicit o semnătură hibridă (`hybrid_signature_mode = required`). Comenzile `gen-key` și `cosign` produc cheia Dilithium-5 (ML-DSA-87) și extensia `PQCHybridSignature` necesare pentru a tranzacționa pe calea cosmos alături de semnătura clasică secp256k1.
 
 ### gen-key
 
@@ -169,7 +169,7 @@ qorechaind tx pqc gen-key [flags]
 
 ### cosign
 
-Atașează o co-semnătură Dilithium-5 la o tranzacție ca extensie `PQCHybridSignature`, producând o tranzacție hibridă (secp256k1 + ML-DSA-87). Necesară pentru tranzacțiile pe calea cosmos în modul implicit de impunere `required`. Uneltele standard CosmJS / de releu trebuie să producă această extensie pentru a tranzacționa; metoda `buildHybridTx` a SDK-ului QoreChain (cu `includePqcPublicKey`) face echivalentul.
+Atașează o co-semnătură Dilithium-5 la o tranzacție ca extensie `PQCHybridSignature`, producând o tranzacție hibridă (secp256k1 + ML-DSA-87). Necesară pentru tranzacțiile pe calea cosmos în modul implicit de aplicare `required`. Instrumentele standard CosmJS / relayer trebuie să producă această extensie pentru a tranzacționa; funcția `buildHybridTx` din QoreChain SDK (cu `includePqcPublicKey`) face echivalentul.
 
 ```bash
 qorechaind tx pqc cosign <unsigned_tx_file> [flags]
@@ -191,14 +191,14 @@ qorechaind tx pqc register-key <algorithm> <pubkey_hex> [flags]
 qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> [flags]
 ```
 
-| Flag            | Tip   | Descriere                    |
+| Flag            | Tip    | Descriere                      |
 | --------------- | ------ | ------------------------------ |
 | `--attestation` | string | Date de atestare TEE (hex)     |
 | `--metadata`    | string | Metadate suplimentare ale cheii (JSON) |
 
 ### migrate-key
 
-Migrează o cheie clasică existentă către o pereche de chei hibridă PQC.
+Migrează o cheie clasică existentă la o pereche de chei hibridă PQC.
 
 ```bash
 qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
@@ -216,13 +216,13 @@ Blochează tokenuri QOR într-o poziție de staking de guvernanță xQORE.
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| Flag              | Tip   | Descriere                                |
+| Flag              | Tip    | Descriere                                  |
 | ----------------- | ------ | ------------------------------------------ |
-| `--lock-duration` | string | Durata de blocare (de ex., `30d`, `90d`, `180d`) |
+| `--lock-duration` | string | Durata blocării (de ex., `30d`, `90d`, `180d`) |
 
 ### unlock
 
-Deblochează xQORE înapoi în QOR. Deblocarea timpurie poate atrage penalități în funcție de nivelul de penalitate.
+Deblochează xQORE înapoi în QOR. Deblocarea timpurie poate genera penalizări în funcție de nivelul de penalizare.
 
 ```bash
 qorechaind tx xqore unlock <amount> [flags]
@@ -234,22 +234,38 @@ qorechaind tx xqore unlock <amount> [flags]
 
 ### deposit
 
-Inițiază un depozit de bridge de pe un lanț extern.
+Inițiază un depozit prin punte de pe un lanț extern.
 
 ```bash
 qorechaind tx bridge deposit <chain_id> <amount> <asset> [flags]
 ```
 
-| Flag          | Tip   | Descriere                    |
+| Flag          | Tip    | Descriere                      |
 | ------------- | ------ | ------------------------------ |
 | `--recipient` | string | Adresa destinatarului pe QoreChain |
 
 ### withdraw
 
-Inițiază o retragere de bridge către un lanț extern.
+Inițiază o retragere prin punte către un lanț extern.
 
 ```bash
 qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> [flags]
+```
+
+### update-chain-config
+
+Activează sau reconfigurează puntea unui lanț într-o singură tranzacție semnată (disponibilă începând cu versiunea de lanț **v3.1.80**). Necesită cheia `bridge_admin` sau o licență `qcb_bridge` — fără propunere de guvernanță sau actualizare a lanțului. Setează adresa contractului, numărul de confirmări, arhitectura și statusul.
+
+```bash
+qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
+```
+
+### set-verifier-bootstrap
+
+Selectează verificatorul activ al unui lanț și instalează rădăcina sa de încredere (de asemenea protejată de `bridge_admin`).
+
+```bash
+qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from bridge-admin
 ```
 
 ---
@@ -258,15 +274,15 @@ qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> 
 
 ### call
 
-Trimite un mesaj cross-VM între medii de execuție (EVM, CosmWasm, SVM).
+Trimite un mesaj cross-VM între mediile de execuție (EVM, CosmWasm, SVM).
 
 ```bash
 qorechaind tx crossvm call <target_vm> <contract_address> <payload_hex> [flags]
 ```
 
-| Flag          | Tip   | Descriere                          |
+| Flag          | Tip    | Descriere                            |
 | ------------- | ------ | ------------------------------------ |
-| `--source-vm` | string | VM-ul sursă: `evm`, `cosmwasm`, `svm`  |
+| `--source-vm` | string | VM-ul sursă: `evm`, `cosmwasm`, `svm` |
 | `--gas-limit` | uint   | Limita de gas pentru execuția cross-VM |
 
 ### process-queue
@@ -289,9 +305,9 @@ Implementează un program BPF în runtime-ul SVM.
 qorechaind tx svm deploy-program <program_binary_path> [flags]
 ```
 
-| Flag           | Tip   | Descriere                  |
+| Flag           | Tip    | Descriere                    |
 | -------------- | ------ | ---------------------------- |
-| `--program-id` | string | ID de program opțional (base58) |
+| `--program-id` | string | ID opțional de program (base58) |
 
 ### execute
 
@@ -301,9 +317,9 @@ Execută o instrucțiune pe un program SVM implementat.
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| Flag         | Tip   | Descriere                                         |
+| Flag         | Tip    | Descriere                                           |
 | ------------ | ------ | --------------------------------------------------- |
-| `--accounts` | string | Chei publice de cont separate prin virgulă pentru instrucțiune |
+| `--accounts` | string | Cheile publice ale conturilor separate prin virgulă pentru instrucțiune |
 
 ### create-account
 
@@ -313,7 +329,7 @@ Creează un nou cont SVM cu spațiu de date alocat.
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| Flag      | Tip   | Descriere                                     |
+| Flag      | Tip    | Descriere                                       |
 | --------- | ------ | ----------------------------------------------- |
 | `--owner` | string | Programul proprietar (base58, implicit: programul de sistem) |
 
@@ -329,27 +345,27 @@ qorechaind tx svm create-account <pubkey> <space> [flags]
 qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| Flag                    | Tip   | Descriere                                          |
+| Flag                    | Tip    | Descriere                                           |
 | ----------------------- | ------ | --------------------------------------------------- |
-| `--block-time-ms`       | uint   | Timpul țintă al blocului în ms (implicit 2000)              |
-| `--domains`             | string | Domenii suportate separate prin virgulă (implicit `defi`)  |
-| `--max-tx`              | uint   | Numărul maxim de tranzacții per bloc (implicit 1000)           |
-| `--min-validators`      | uint32 | Dimensiunea minimă a setului de validatori (implicit 1)              |
-| `--settlement-interval` | uint   | Intervalul de decontare în blocuri (implicit 100)         |
-| `--vm-types`            | string | Tipuri de VM suportate separate prin virgulă (implicit `evm`)  |
+| `--block-time-ms`       | uint   | Timpul țintă al blocului în ms (implicit 2000)      |
+| `--domains`             | string | Domeniile suportate separate prin virgulă (implicit `defi`) |
+| `--max-tx`              | uint   | Numărul maxim de tranzacții per bloc (implicit 1000) |
+| `--min-validators`      | uint32 | Dimensiunea minimă a setului de validatori (implicit 1) |
+| `--settlement-interval` | uint   | Intervalul de decontare în blocuri (implicit 100)   |
+| `--vm-types`            | string | Tipurile de VM suportate separate prin virgulă (implicit `evm`) |
 
 ### register-paychain
 
-Înregistrează un nou strat de paychain pentru microtranzacții de frecvență înaltă.
+Înregistrează un nou strat de paychain pentru microtranzacții de înaltă frecvență.
 
 ```bash
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| Flag                    | Tip | Descriere                                  |
+| Flag                    | Tip  | Descriere                                    |
 | ----------------------- | ---- | -------------------------------------------- |
-| `--max-tx`              | uint | Numărul maxim de tranzacții per bloc (implicit 5000)    |
-| `--settlement-interval` | uint | Intervalul de decontare în blocuri (implicit 50)   |
+| `--max-tx`              | uint | Numărul maxim de tranzacții per bloc (implicit 5000) |
+| `--settlement-interval` | uint | Intervalul de decontare în blocuri (implicit 50) |
 
 ### anchor-state
 
@@ -361,29 +377,29 @@ qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex>
 
 ### route-tx
 
-Rutează o tranzacție către stratul optim.
+Direcționează o tranzacție către stratul optim.
 
 ```bash
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| Flag             | Tip   | Descriere                       |
+| Flag             | Tip    | Descriere                         |
 | ---------------- | ------ | --------------------------------- |
-| `--target-layer` | string | Forțează rutarea către un strat specific |
+| `--target-layer` | string | Forțează direcționarea către un strat specific |
 
 ### update-layer-status
 
-Actualizează starea operațională a unui strat (doar operator).
+Actualizează statusul operațional al unui strat (doar operator).
 
 ```bash
 qorechaind tx multilayer update-layer-status <layer_id> <status> [flags]
 ```
 
-Valori de stare: `active`, `paused`, `draining`.
+Valori de status: `active`, `paused`, `draining`.
 
 ### challenge-anchor
 
-Trimite o contestare de fraudă împotriva unei ancorări de stare.
+Trimite o contestație de fraudă împotriva unei ancorări de stare.
 
 ```bash
 qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [flags]
@@ -401,12 +417,12 @@ qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [
 qorechaind tx rdk create-rollup <rollup_id> [flags]
 ```
 
-| Flag                | Tip   | Descriere                                          |
-| ------------------- | ------ | ---------------------------------------------------- |
-| `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`       |
-| `--profile`         | string | Profil prestabilit: `defi`, `gaming`, `nft`, `enterprise`, `custom` |
-| `--stake`           | string | Suma de stake a operatorului                                |
-| `--da-enabled`      | bool   | Activează disponibilitatea nativă a datelor                      |
+| Flag                | Tip    | Descriere                                           |
+| ------------------- | ------ | --------------------------------------------------- |
+| `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`      |
+| `--profile`         | string | Preset: `defi`, `gaming`, `nft`, `enterprise`, `custom` |
+| `--stake`           | string | Suma de stake a operatorului                        |
+| `--da-enabled`      | bool   | Activează disponibilitatea nativă a datelor         |
 
 ### submit-batch
 
@@ -418,7 +434,7 @@ qorechaind tx rdk submit-batch <rollup_id> <state_root_hex> <batch_data_path> [f
 
 ### challenge-batch
 
-Trimite o contestare de fraudă împotriva unui lot de decontare (rollup-uri optimistic).
+Trimite o contestație de fraudă împotriva unui lot de decontare (rollup-uri optimiste).
 
 ```bash
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
@@ -426,7 +442,7 @@ qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
 
 ### finalize-batch
 
-Finalizează manual un lot care a trecut de fereastra de contestare.
+Finalizează manual un lot care a trecut de fereastra de contestație.
 
 ```bash
 qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
@@ -434,7 +450,7 @@ qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
 
 ### pause-rollup
 
-Pune pe pauză un rollup (doar operator).
+Suspendă un rollup (doar operator).
 
 ```bash
 qorechaind tx rdk pause-rollup <rollup_id> [flags]
@@ -442,7 +458,7 @@ qorechaind tx rdk pause-rollup <rollup_id> [flags]
 
 ### resume-rollup
 
-Reia un rollup pus pe pauză (doar operator).
+Reia un rollup suspendat (doar operator).
 
 ```bash
 qorechaind tx rdk resume-rollup <rollup_id> [flags]
@@ -457,7 +473,7 @@ qorechaind tx rdk stop-rollup <rollup_id> [flags]
 ```
 
 :::note
-Retragerea din rollup și decontarea cross-layer sunt, de asemenea, expuse în cadrul grupului de tranzacții `rdk` (de exemplu, o comandă `execute-withdrawal` care decontează o retragere demonstrată față de un lot finalizat). Argumentele și flag-urile exacte depind de tipul de decontare al rollup-ului tău și de configurația DA; vezi documentația **Rollup Development Kit** pentru suprafața oficială de comenzi înainte de a construi aceste tranzacții.
+Retragerea de rollup și decontarea cross-layer sunt de asemenea expuse în grupul de tranzacții `rdk` (de exemplu, o comandă `execute-withdrawal` care decontează o retragere dovedită împotriva unui lot finalizat). Argumentele și flag-urile exacte depind de tipul de decontare al rollup-ului dvs. și de configurația DA; consultați documentația **Rollup Development Kit** pentru suprafața autoritară de comenzi înainte de a construi aceste tranzacții.
 :::
 
 ---
@@ -466,7 +482,7 @@ Retragerea din rollup și decontarea cross-layer sunt, de asemenea, expuse în c
 
 ### submit-btc-checkpoint
 
-Trimite un punct de control (checkpoint) BTC pentru o epocă.
+Trimite un checkpoint BTC pentru o epocă.
 
 ```bash
 qorechaind tx babylon submit-btc-checkpoint <epoch> <checkpoint_hex> [flags]
@@ -474,15 +490,15 @@ qorechaind tx babylon submit-btc-checkpoint <epoch> <checkpoint_hex> [flags]
 
 ### btc-restake
 
-Face restake la BTC prin integrarea Babylon.
+Restake BTC prin integrarea Babylon.
 
 ```bash
 qorechaind tx babylon btc-restake <amount> [flags]
 ```
 
-| Flag            | Tip   | Descriere                       |
+| Flag            | Tip    | Descriere                         |
 | --------------- | ------ | --------------------------------- |
-| `--btc-tx-hash` | string | Hash-ul tranzacției Bitcoin ca demonstrație |
+| `--btc-tx-hash` | string | Hash-ul tranzacției Bitcoin ca dovadă |
 
 ---
 
@@ -490,13 +506,13 @@ qorechaind tx babylon btc-restake <amount> [flags]
 
 ### create
 
-Creează un cont abstract cu reguli de cheltuire programabile.
+Creează un cont abstract cu reguli programabile de cheltuire.
 
 ```bash
 qorechaind tx abstractaccount create [flags]
 ```
 
-| Flag               | Tip   | Descriere                       |
+| Flag               | Tip    | Descriere                         |
 | ------------------ | ------ | --------------------------------- |
 | `--spending-rules` | string | Fișier JSON care definește regulile de cheltuire |
 
@@ -512,7 +528,7 @@ qorechaind tx abstractaccount update-spending-rules <rules_file.json> [flags]
 
 ## rlconsensus
 
-PRISM este stratul de învățare prin întărire care ajustează parametrii de consens. Aceste comenzi controlează agentul PRISM; numele modulului CLI `rlconsensus` și subcomenzile sale sunt păstrate verbatim.
+PRISM este stratul de învățare prin întărire care reglează parametrii de consens. Aceste comenzi controlează agentul PRISM; numele modulului CLI `rlconsensus` și subcomenzile sale sunt păstrate verbatim.
 
 ### set-agent-mode
 
@@ -522,11 +538,11 @@ Setează modul operațional al agentului PRISM (doar guvernanță).
 qorechaind tx rlconsensus set-agent-mode <mode> [flags]
 ```
 
-Valori de mod: `0` (oprit), `1` (observă), `2` (sugerează), `3` (auto).
+Valori de mod: `0` (off), `1` (observe), `2` (suggest), `3` (auto).
 
 ### resume-agent
 
-Reia agentul PRISM după declanșarea unui întrerupător de circuit (circuit breaker).
+Reia agentul PRISM după declanșarea unui întrerupător de circuit.
 
 ```bash
 qorechaind tx rlconsensus resume-agent [flags]
@@ -534,7 +550,7 @@ qorechaind tx rlconsensus resume-agent [flags]
 
 ### update-policy
 
-Actualizează configurația politicii agentului PRISM (doar guvernanță).
+Actualizează configurația de politică a agentului PRISM (doar guvernanță).
 
 ```bash
 qorechaind tx rlconsensus update-policy <policy_file.json> [flags]
@@ -548,8 +564,8 @@ Actualizează configurația ponderilor de recompensă pentru agentul PRISM.
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| Flag                  | Tip   | Descriere                  |
+| Flag                  | Tip    | Descriere                    |
 | --------------------- | ------ | ---------------------------- |
 | `--throughput-weight` | string | Ponderea pentru recompensa de debit |
-| `--latency-weight`    | string | Ponderea pentru recompensa de latență    |
-| `--security-weight`   | string | Ponderea pentru recompensa de securitate   |
+| `--latency-weight`    | string | Ponderea pentru recompensa de latență |
+| `--security-weight`   | string | Ponderea pentru recompensa de securitate |

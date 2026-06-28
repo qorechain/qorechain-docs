@@ -97,7 +97,7 @@ module.exports = function llmsTxtPlugin(context) {
     async postBuild({ siteConfig, outDir }) {
       const siteUrl = (siteConfig.url || "").replace(/\/$/, "");
       // Single-version site: the current docs source lives in docs/.
-      const defaultVersion = "3.1.77";
+      const defaultVersion = "3.1.80";
       const versionedDir = path.join(context.siteDir, "docs");
 
       const files = collectMarkdownFiles(versionedDir);

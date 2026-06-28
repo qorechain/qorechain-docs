@@ -145,7 +145,7 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、チェーンバージョン **v3.1.77** を実行する稼働中ネットワークである `--chain-id qorechain-vladi` に置き換えてください。
+`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、チェーンバージョン **v3.1.80** を実行する稼働中ネットワークである `--chain-id qorechain-vladi` に置き換えてください。
 
 ## Docker ビルド
 

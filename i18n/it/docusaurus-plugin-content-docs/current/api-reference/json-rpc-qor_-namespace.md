@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-Il namespace `qor_` è disponibile sulla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, attiva sulla versione di chain **v3.1.77**) e sulla testnet **`qorechain-diana`** (EVM chain ID **9800**). Gli esempi seguenti presuppongono un nodo locale; per l'accesso remoto sostituisci l'endpoint mainnet o testnet del tuo provider.
+Il namespace `qor_` è disponibile sulla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, attiva sulla versione di chain **v3.1.80**) e sulla testnet **`qorechain-diana`** (EVM chain ID **9800**). Gli esempi seguenti presuppongono un nodo locale; per l'accesso remoto sostituisci l'endpoint mainnet o testnet del tuo provider.
 :::
 
 ---

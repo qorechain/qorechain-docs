@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** (version de chaîne **v3.1.77**) pour des données en direct, ou un point d'accès du testnet **`qorechain-diana`** pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même.
+Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** (version de chaîne **v3.1.80**) pour des données en direct, ou un point d'accès du testnet **`qorechain-diana`** pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même.
 :::
 
 Des indicateurs communs s'appliquent à chaque sous-commande `query` :

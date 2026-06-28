@@ -106,7 +106,7 @@ kazanır. Post-kuantum kısmı, işlemde bir `PQCHybridSignature` uzantısı ola
 alır.
 
 :::caution Cosmos yolunda hibrit imzalama zorunludur
-Mevcut zincir sürümünden (**v3.1.77**) itibaren, ağ varsayılanı
+Mevcut zincir sürümünden (**v3.1.80**) itibaren, ağ varsayılanı
 `hybrid_signature_mode = required` ve `allow_classical_fallback = false`'dur.
 `buildHybridTx` (ile `includePqcPublicKey`) aracılığıyla hibrit imzalama,
 cosmos-yolu işlemleri için **zorunludur** — yalnızca klasik cosmos işlemleri

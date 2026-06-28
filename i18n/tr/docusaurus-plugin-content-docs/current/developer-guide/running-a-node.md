@@ -58,13 +58,13 @@ NVMe SSD şiddetle önerilir — zincir durumu ve EVM/SVM depoları G/Ç yoğund
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. İmaj etiketini yayındaki zincir sürümüne (ana ağda **v3.1.77**) sabitleyin ve zincir verisi için kalıcı bir birim bağlayın.
+Docker Compose ile yalnızca düğüm dağıtımı. İmaj etiketini yayındaki zincir sürümüne (ana ağda **v3.1.80**) sabitleyin ve zincir verisi için kalıcı bir birim bağlayın.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operasyonel En İyi Uygulamalar
 
-1. **Zincir sürümünü sabitleyin.** Yayındaki etiketi (ana ağda **v3.1.77**) çalıştırın ve koordineli yükseltmeler için resmi sürümleri takip edin.
+1. **Zincir sürümünü sabitleyin.** Yayındaki etiketi (ana ağda **v3.1.80**) çalıştırın ve koordineli yükseltmeler için resmi sürümleri takip edin.
 
 2. **Yedekli düğümler çalıştırın.** Tek bir yeniden başlatmanın veya yeniden senkronizasyonun entegrasyon trafiğini kesmemesi için bir yük dengeleyicinin arkasında en az iki düğüm çalıştırın.
 

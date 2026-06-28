@@ -10,7 +10,7 @@ sidebar_position: 3
 Puedes desplegar un rollup específico de aplicación de tres maneras: a través del **Dashboard** (un asistente guiado sin código), a través de la **CLI** de la cadena (`qorechaind`, con control total sobre la transacción on-chain), o de forma programática con el **RDK de TypeScript** (`@qorechain/rdk` más el scaffolder `create-qorechain-rollup`). Esta página cubre las tres opciones, además del ciclo de vida del operador y los comandos de lotes.
 
 :::note
-Los comandos siguientes apuntan a la testnet **`qorechain-diana`**. La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está en producción desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.77** — sustituye el chain ID y los endpoints de mainnet al desplegar en mainnet. Valida cada despliegue primero en testnet.
+Los comandos siguientes apuntan a la testnet **`qorechain-diana`**. La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está en producción desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.80** — sustituye el chain ID y los endpoints de mainnet al desplegar en mainnet. Valida cada despliegue primero en testnet.
 :::
 
 ---

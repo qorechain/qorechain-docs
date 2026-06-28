@@ -58,13 +58,13 @@ NVMe SSD este puternic recomandat — starea lanțului și stocările EVM/SVM su
 
 ### Docker Compose
 
-O implementare doar de tip nod cu Docker Compose. Fixați eticheta imaginii la versiunea de lanț activă (**v3.1.77** pe mainnet) și montați un volum persistent pentru datele lanțului.
+O implementare doar de tip nod cu Docker Compose. Fixați eticheta imaginii la versiunea de lanț activă (**v3.1.80** pe mainnet) și montați un volum persistent pentru datele lanțului.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.77
+    image: qorechain/qorechaind:v3.1.80
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -319,7 +319,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea lanțului.** Rulați eticheta activă (**v3.1.77** pe mainnet) și urmăriți lansările oficiale pentru actualizări coordonate.
+1. **Fixați versiunea lanțului.** Rulați eticheta activă (**v3.1.80** pe mainnet) și urmăriți lansările oficiale pentru actualizări coordonate.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 

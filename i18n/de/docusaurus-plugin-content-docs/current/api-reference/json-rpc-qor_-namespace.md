@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-Der `qor_`-Namespace ist im **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live auf Chain-Version **v3.1.77**) und im **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) verfügbar. Die untenstehenden Beispiele gehen von einem lokalen Node aus; ersetzen Sie für den Fernzugriff den Mainnet- oder Testnet-Endpunkt Ihres Anbieters.
+Der `qor_`-Namespace ist im **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live auf Chain-Version **v3.1.80**) und im **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) verfügbar. Die untenstehenden Beispiele gehen von einem lokalen Node aus; ersetzen Sie für den Fernzugriff den Mainnet- oder Testnet-Endpunkt Ihres Anbieters.
 :::
 
 ---

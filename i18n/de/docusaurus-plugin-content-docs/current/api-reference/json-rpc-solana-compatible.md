@@ -18,7 +18,7 @@ QoreChain stellt über seine SVM-Laufzeitumgebung (Solana Virtual Machine) eine 
 Der JSON-RPC-Server wird **von `qorechaind start` gestartet** und ist **standardmäßig aktiviert**, wobei er auf `127.0.0.1:8899` lauscht. Er wird über einen Abschnitt `[svm-rpc]` in `app.toml` konfiguriert (`enable` + `address`). Ein frisch gestarteter Node stellt diese Schnittstelle bereits bereit — es ist kein zusätzlicher Prozess erforderlich.
 
 :::note
-Die Solana-kompatible JSON-RPC-Schnittstelle wird auf Port **8899** sowohl vom **`qorechain-vladi`**-Mainnet (live auf Chain-Version **v3.1.77**) als auch vom **`qorechain-diana`**-Testnet bereitgestellt. Die obige lokale Adresse gilt für einen Node, den Sie selbst betreiben; ersetzen Sie für den Fernzugriff den Mainnet- oder Testnet-Endpunkt Ihres Anbieters.
+Die Solana-kompatible JSON-RPC-Schnittstelle wird auf Port **8899** sowohl vom **`qorechain-vladi`**-Mainnet (live auf Chain-Version **v3.1.80**) als auch vom **`qorechain-diana`**-Testnet bereitgestellt. Die obige lokale Adresse gilt für einen Node, den Sie selbst betreiben; ersetzen Sie für den Fernzugriff den Mainnet- oder Testnet-Endpunkt Ihres Anbieters.
 :::
 
 ---

@@ -68,7 +68,10 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## アンカーの読み取り
 
-レシートは、新しいオンチェーンの `x/multilayer` **Anchor** クエリから構築されます。読み取りは次のとおりです:
+レシートは、オンチェーンの `x/multilayer` **Anchor** クエリから構築されます。これは
+チェーンバージョン **v3.1.80** 時点で gRPC と REST の両方で利用可能です（
+[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#multilayer-module) を参照）。
+読み取りは次のとおりです:
 
 - `getAnchor(layerId)` — レイヤーのアンカー。
 - `getLatestAnchor()` — 最新のアンカー。

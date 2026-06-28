@@ -103,7 +103,7 @@ acquisendo al contempo protezione post-quantum. La parte post-quantum viaggia co
 estensione `PQCHybridSignature` sulla transazione.
 
 :::caution La firma ibrida è obbligatoria sul percorso cosmos
-A partire dalla versione corrente della chain (**v3.1.77**), il default di rete è
+A partire dalla versione corrente della chain (**v3.1.80**), il default di rete è
 `hybrid_signature_mode = required` con `allow_classical_fallback = false`.
 La firma ibrida tramite `buildHybridTx` (con `includePqcPublicKey`) è **obbligatoria**
 per le transazioni sul percorso cosmos — le transazioni cosmos solo-classiche vengono rifiutate

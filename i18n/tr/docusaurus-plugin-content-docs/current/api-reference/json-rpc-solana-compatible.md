@@ -18,7 +18,7 @@ QoreChain, SVM (Solana Virtual Machine) çalışma zamanı aracılığıyla Sola
 JSON-RPC sunucusu **`qorechaind start` tarafından başlatılır** ve **varsayılan olarak etkindir**, `127.0.0.1:8899` üzerinde dinler. `app.toml` içindeki bir `[svm-rpc]` bölümü (`enable` + `address`) aracılığıyla yapılandırılır. Yeni başlatılan bir düğüm bu arayüzü zaten sunar — ek bir işlem gerekmez.
 
 :::note
-Solana uyumlu JSON-RPC arayüzü, hem **`qorechain-vladi`** ana ağı (**v3.1.77** zincir sürümünde canlı) hem de **`qorechain-diana`** test ağı tarafından **8899** bağlantı noktasında sunulur. Yukarıdaki yerel adres kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
+Solana uyumlu JSON-RPC arayüzü, hem **`qorechain-vladi`** ana ağı (**v3.1.80** zincir sürümünde canlı) hem de **`qorechain-diana`** test ağı tarafından **8899** bağlantı noktasında sunulur. Yukarıdaki yerel adres kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
 :::
 
 ---

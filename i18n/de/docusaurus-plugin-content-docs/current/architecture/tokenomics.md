@@ -23,7 +23,7 @@ QoreChain verwendet ein Wirtschaftsmodell mit **fixem Angebot**, das auf dem nat
 | **Bech32-Präfix**     | `qor` (Konten: `qor1...`, Validatoren: `qorvaloper...`) |
 
 :::note
-Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Chain-Version **v3.1.77**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) teilt sich dasselbe Wirtschaftsmodell.
+Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Chain-Version **v3.1.80**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) teilt sich dasselbe Wirtschaftsmodell.
 :::
 
 ---

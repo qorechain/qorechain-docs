@@ -71,8 +71,11 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 
 ## Lire les ancrages
 
-Les reçus sont construits à partir d'une nouvelle requête **Anchor** on-chain de
-`x/multilayer`. Les lectures :
+Les reçus sont construits à partir de la requête **Anchor** on-chain de
+`x/multilayer`, disponible à la fois via gRPC et REST depuis la version de chaîne
+**v3.1.80** (voir
+[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
+Les lectures :
 
 - `getAnchor(layerId)` — l'ancrage d'une couche.
 - `getLatestAnchor()` — l'ancrage le plus récent.
@@ -93,7 +96,7 @@ qorollup receipt my-roll 7 --verify
 qorollup receipt my-roll 7 --out receipt.json
 ```
 
-Consultez [Déployer un Rollup](/rollups/deploying-a-rollup) pour la CLI opérateur
+Consultez [Deploying a Rollup](/rollups/deploying-a-rollup) pour la CLI opérateur
 `qorollup` complète.
 
 ## Autres langages
