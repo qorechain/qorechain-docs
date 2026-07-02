@@ -138,7 +138,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© QoreChain · v3.1.80<br/>QoreChain Association · CHE-484.963.998 · Rolle, Switzerland · team@qorechain.io`,
+      copyright: `© QoreChain · v3.1.82<br/>QoreChain Association · CHE-484.963.998 · Rolle, Switzerland · team@qorechain.io`,
     },
     prism: {
       theme: prismThemes.github,

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Key Features
 
-The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. The current chain version is **v3.1.80**, with mainnet (`qorechain-vladi`, EVM chain ID 9801) live since 7 June 2026 and a parallel testnet (`qorechain-diana`, EVM chain ID 9800).
+The following table lists every major feature in QoreChain, organized by the release phase in which it was introduced. The current chain version is **v3.1.82**, with mainnet (`qorechain-vladi`, EVM chain ID 9801) live since 7 June 2026 and a parallel testnet (`qorechain-diana`, EVM chain ID 9800).
 
 | Feature                    | Introduced in       | Description                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

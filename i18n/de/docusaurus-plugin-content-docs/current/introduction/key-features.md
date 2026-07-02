@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Hauptfunktionen
 
-Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert nach der Release-Phase, in der sie eingeführt wurde. Die aktuelle Chain-Version ist **v3.1.80**, wobei das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801) seit dem 7. Juni 2026 live ist und ein paralleles Testnet (`qorechain-diana`, EVM-Chain-ID 9800) läuft.
+Die folgende Tabelle listet jede wichtige Funktion in QoreChain auf, organisiert nach der Release-Phase, in der sie eingeführt wurde. Die aktuelle Chain-Version ist **v3.1.82**, wobei das Mainnet (`qorechain-vladi`, EVM-Chain-ID 9801) seit dem 7. Juni 2026 live ist und ein paralleles Testnet (`qorechain-diana`, EVM-Chain-ID 9800) läuft.
 
 | Funktion                   | Eingeführt in       | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

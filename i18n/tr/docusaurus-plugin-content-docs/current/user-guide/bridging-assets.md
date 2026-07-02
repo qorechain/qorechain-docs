@@ -14,7 +14,7 @@ Zincirler arası köprü şu anda **testnet / üretim öncesi** aşamadadır. Ba
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünü çalıştırarak yayında — köprü desteğinin etkinleştirildiği durumlarda **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.82** zincir sürümünü çalıştırarak yayında — köprü desteğinin etkinleştirildiği durumlarda **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 ---

@@ -13,18 +13,37 @@ Join the live QoreChain Diana testnet by configuring your node with the correct 
 This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details.
 :::
 
+## Public Endpoints
+
+If you only need to **query the testnet or broadcast transactions**, use the public endpoints:
+
+| Service | URL |
+|---|---|
+| Consensus RPC | `https://rpc-testnet.qore.host` (WebSocket: `wss://rpc-testnet.qore.host/websocket`) |
+| Cosmos REST (LCD) | `https://api-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm-testnet.qore.host` (chain ID `9800`) |
+| EVM WebSocket | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (read-only) | `https://svm-testnet.qore.host` |
+| Block explorer | [explore.qore.network](https://explore.qore.network) (toggle to Testnet) |
+
+Testnet QOR is available from the [Dashboard Faucet](/dashboard/faucet).
+
 ---
 
 ## Download Genesis
 
-Replace your local genesis file with the official testnet genesis:
+Replace your local genesis file with the official testnet genesis, served live by the chain itself:
 
 ```bash
-curl -o ~/.qorechaind/config/genesis.json \
-  https://raw.githubusercontent.com/qorechain/qorechain-core/main/config/genesis.json
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
+  > ~/.qorechaind/config/genesis.json
 ```
 
 This file defines the initial state of the Diana testnet, including the validator set, token allocations, and module parameters.
+
+:::caution
+The Diana testnet is periodically **re-genesised** (reset to height 0) as pre-release builds roll out. If your node stops syncing after a reset, re-download the genesis and start from a fresh data directory.
+:::
 
 ---
 
@@ -32,13 +51,18 @@ This file defines the initial state of the Diana testnet, including the validato
 
 Edit your node configuration to connect to existing testnet peers.
 
-Open `~/.qorechaind/config/config.toml` and set the `persistent_peers` field:
+Query a current peer directly from the network, then set the `persistent_peers` field in `~/.qorechaind/config/config.toml`:
 
-```toml
-persistent_peers = "node-id@seed1.qorechain.io:26656,node-id@seed2.qorechain.io:26656"
+```bash
+# node id + listen address of the public testnet node
+curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
 ```
 
-Refer to the [QoreChain repository](https://github.com/qorechain/qorechain-core) for the latest peer list.
+Also set the fee floor in `~/.qorechaind/config/app.toml` (the testnet uses the same **0.1uqor** minimum gas price as mainnet):
+
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
 ### Recommended Settings
 

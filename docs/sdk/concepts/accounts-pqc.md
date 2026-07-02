@@ -104,7 +104,7 @@ gaining post-quantum protection. The post-quantum part travels as a
 `PQCHybridSignature` extension on the transaction.
 
 :::caution Hybrid signing is required on the cosmos path
-As of the current chain version (**v3.1.80**), the network default is
+As of the current chain version (**v3.1.82**), the network default is
 `hybrid_signature_mode = required` with `allow_classical_fallback = false`.
 Hybrid signing via `buildHybridTx` (with `includePqcPublicKey`) is **mandatory**
 for cosmos-path transactions — classical-only cosmos transactions are rejected

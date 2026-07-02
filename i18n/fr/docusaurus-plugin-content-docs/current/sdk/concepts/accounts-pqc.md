@@ -107,7 +107,7 @@ post-quantique voyage sous forme d'extension `PQCHybridSignature` sur la
 transaction.
 
 :::caution La signature hybride est requise sur le chemin cosmos
-À partir de la version actuelle de la chaîne (**v3.1.80**), le réseau utilise par
+À partir de la version actuelle de la chaîne (**v3.1.82**), le réseau utilise par
 défaut `hybrid_signature_mode = required` avec `allow_classical_fallback = false`.
 La signature hybride via `buildHybridTx` (avec `includePqcPublicKey`) est
 **obligatoire** pour les transactions du chemin cosmos — les transactions cosmos

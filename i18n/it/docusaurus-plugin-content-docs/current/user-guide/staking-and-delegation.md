@@ -10,7 +10,7 @@ sidebar_position: 2
 Questa guida illustra come delegare token QOR ai validatori, ridelegare tra validatori, svincolare il proprio stake, riscuotere le ricompense e comprendere l'architettura di staking Triple-Pool di QoreChain.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione di chain **v3.1.80** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando fai staking sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione di chain **v3.1.82** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando fai staking sulla mainnet.
 :::
 
 ---

@@ -101,7 +101,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 포스트 양자 부분은 트랜잭션의 `PQCHybridSignature` 확장으로 전달됩니다.
 
 :::caution 코스모스 경로에서는 하이브리드 서명이 필수입니다
-현재 체인 버전(**v3.1.80**) 기준으로, 네트워크 기본값은
+현재 체인 버전(**v3.1.82**) 기준으로, 네트워크 기본값은
 `hybrid_signature_mode = required`이며 `allow_classical_fallback = false`입니다.
 `buildHybridTx`(와 `includePqcPublicKey`)를 통한 하이브리드 서명은 코스모스 경로
 트랜잭션에 **필수**입니다 — 고전 전용 코스모스 트랜잭션은 온체인에서 거부됩니다.

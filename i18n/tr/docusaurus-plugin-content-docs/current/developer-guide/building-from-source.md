@@ -145,7 +145,7 @@ Başarılı bir derlemeden sonra ikili dosyayı doğrulayın:
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için **v3.1.80** zincir sürümünü çalıştıran yayındaki ağ olan `--chain-id qorechain-vladi` ifadesini yerine koyun.
+`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için **v3.1.82** zincir sürümünü çalıştıran yayındaki ağ olan `--chain-id qorechain-vladi` ifadesini yerine koyun.
 
 ## Docker Derlemesi
 

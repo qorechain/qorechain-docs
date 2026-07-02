@@ -11,14 +11,16 @@ QoreChain proporciona una interfaz JSON-RPC compatible con Solana a través de s
 
 ## Conexión
 
-| Transporte | Dirección predeterminada  |
+| Transporte | Dirección |
 | --------- | ------------------------- |
-| HTTP      | `http://127.0.0.1:8899`   |
+| HTTP (nodo propio) | `http://127.0.0.1:8899`   |
+| HTTPS (público, mainnet, solo lectura) | `https://svm.qore.host` |
+| HTTPS (público, testnet, solo lectura) | `https://svm-testnet.qore.host` |
 
-El servidor JSON-RPC lo **inicia `qorechaind start`** y está **habilitado de forma predeterminada**, escuchando en `127.0.0.1:8899`. Se configura mediante una sección `[svm-rpc]` en `app.toml` (`enable` + `address`). Un nodo recién iniciado ya sirve esta interfaz — no se requiere ningún proceso adicional.
+El servidor JSON-RPC es **iniciado por `qorechaind start`** y está **habilitado por defecto**, escuchando en `127.0.0.1:8899`. Se configura mediante una sección `[svm-rpc]` en `app.toml` (`enable` + `address`). Un nodo recién iniciado ya sirve esta interfaz — no se requiere ningún proceso adicional. Los endpoints públicos son de **solo lectura** (el envío de transacciones está deshabilitado en el borde).
 
 :::note
-La interfaz JSON-RPC compatible con Solana se sirve en el puerto **8899** tanto por la red principal **`qorechain-vladi`** (activa en la versión de cadena **v3.1.80**) como por la red de pruebas **`qorechain-diana`**. La dirección local anterior se aplica a un nodo que ejecutes tú mismo; sustituye el endpoint de red principal o de pruebas de tu proveedor para el acceso remoto.
+A partir de la versión de cadena **v3.1.82**, la interfaz SVM sirve el **saldo nativo de QOR** de la cuenta — los mismos fondos unificados visibles en las interfaces Cosmos y EVM — denominado en **lamports** (9 decimales; **1 uqor = 1,000 lamports**). Consulta [QOR nativo en la interfaz SVM](/developer-guide/svm-development#native-qor).
 :::
 
 ---
@@ -27,18 +29,19 @@ La interfaz JSON-RPC compatible con Solana se sirve en el puerto **8899** tanto 
 
 | Método                              | Parámetros               | Descripción                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey` (base58 string) | Devuelve los datos de la cuenta, el propietario, los lamports y el indicador de ejecutable |
-| `getBalance`                        | `pubkey` (base58 string) | Devuelve el saldo en lamports de la clave pública dada         |
-| `getSlot`                           | ninguno                  | Devuelve el número de slot actual                              |
-| `getMinimumBalanceForRentExemption` | `dataLength` (integer)   | Devuelve el saldo mínimo para la exención de renta según el tamaño de los datos |
-| `getVersion`                        | ninguno                  | Devuelve la versión del software del nodo                      |
-| `getHealth`                         | ninguno                  | Devuelve el estado de salud del nodo (`"ok"` si está sano)     |
+| `getAccountInfo`                    | `pubkey` (cadena base58) | Devuelve los datos de la cuenta, el propietario, los lamports y el indicador executable     |
+| `getBalance`                        | `pubkey` (cadena base58) | Devuelve el saldo de QOR nativo en lamports para la clave pública dada |
+| `getSignaturesForAddress`           | `address` (cadena base58) | Devuelve las firmas de transacciones que involucran la dirección (detección de depósitos) |
+| `getSlot`                           | ninguno                  | Devuelve el número de slot actual                                |
+| `getMinimumBalanceForRentExemption` | `dataLength` (entero)    | Devuelve el saldo mínimo para la exención de renta según el tamaño de los datos |
+| `getVersion`                        | ninguno                  | Devuelve la versión del software del nodo                              |
+| `getHealth`                         | ninguno                  | Devuelve el estado de salud del nodo (`"ok"` si está sano)                 |
 
 ---
 
 ## Formato de respuesta
 
-Todas las respuestas siguen la especificación JSON-RPC 2.0. Las respuestas que hacen referencia al estado on-chain incluyen un objeto `context` con el `slot` actual:
+Todas las respuestas siguen la especificación JSON-RPC 2.0. Las respuestas que hacen referencia al estado en cadena incluyen un objeto `context` con el `slot` actual:
 
 ```json
 {
@@ -154,7 +157,7 @@ curl -X POST http://localhost:8899 \
 }
 ```
 
-La cadena de versión `1.18.0-qorechain` indica compatibilidad con la interfaz RPC de Solana 1.18.0 ejecutándose en el entorno de ejecución SVM de QoreChain.
+La cadena de versión `1.18.0-qorechain` indica compatibilidad con la interfaz RPC de Solana 1.18.0 ejecutándose sobre el entorno de ejecución SVM de QoreChain.
 
 ---
 
@@ -193,7 +196,7 @@ if (accountInfo) {
 
 ## Notas
 
-- **Formato de dirección**: las cuentas SVM usan claves públicas codificadas en base58 (formato estándar de Solana), no el prefijo Bech32 `qor1` que usan los módulos nativos del Cosmos SDK.
-- **Puenteo entre VM**: para mover activos entre los entornos de ejecución EVM y SVM, usa el módulo Cross-VM (`x/crossvm`). Consulta los [Comandos de transacción](/cli-reference/transaction-commands) para conocer la sintaxis de `crossvm call`.
-- **Despliegue de programas**: despliega programas BPF a través de la CLI (`qorechaind tx svm deploy-program`) o programáticamente mediante el entorno de ejecución SVM.
-- **Presupuesto de cómputo**: el entorno de ejecución SVM aplica un presupuesto de cómputo de 1.400.000 unidades de cómputo por transacción de forma predeterminada. Esto se puede configurar mediante los parámetros del módulo.
+- **Formato de direcciones**: las cuentas SVM usan claves públicas codificadas en base58 (formato estándar de Solana), no el prefijo Bech32 `qor1` utilizado por los módulos nativos del Cosmos SDK.
+- **Puente entre VMs**: para mover activos entre los entornos de ejecución EVM y SVM, usa el módulo Cross-VM (`x/crossvm`). Consulta los [Comandos de transacción](/cli-reference/transaction-commands) para la sintaxis de `crossvm call`.
+- **Despliegue de programas**: despliega programas BPF mediante la CLI (`qorechaind tx svm deploy-program`) o de forma programática a través del entorno de ejecución SVM.
+- **Presupuesto de cómputo**: el entorno de ejecución SVM aplica por defecto un presupuesto de cómputo de 1,400,000 unidades de cómputo por transacción. Esto es configurable mediante los parámetros del módulo.

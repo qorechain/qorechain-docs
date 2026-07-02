@@ -10,7 +10,7 @@ sidebar_position: 7
 This guide covers QoreChain's gas abstraction feature, which allows users to pay transaction fees in non-native tokens instead of QOR.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.80** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.82** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 ---

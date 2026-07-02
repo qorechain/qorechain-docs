@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.80**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.82**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,24 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.80 — Multilayer State-Anchor Queries (Current Mainnet Release)
+## v3.1.82 — Native QOR on SVM Live + Integrator Enablement (Current Mainnet Release)
+
+**Release focus:** The SVM native-QOR unification running on both networks, plus everything an exchange or integrator needs to connect.
+
+* **Unified native-QOR balance live on all three interfaces** — The SVM unification (v3.1.81) is confirmed live on mainnet and testnet: the same account holds one balance visible as `uqor` (6 decimals) on Cosmos, wei-style 18 decimals on the EVM, and lamports (9 decimals; 1 uqor = 1,000 lamports) on the Solana-compatible interface.
+* **Verified public endpoints** — Public HTTPS endpoints for consensus RPC, REST, EVM JSON-RPC, and SVM JSON-RPC on both networks, plus the public [block explorer](https://explore.qore.network). See [Networks](/appendix/networks).
+* **Downloads** — Versioned node-binary bundles, the mainnet genesis, and fresh chain-data snapshots (with SHA-256 checksums) published at [download.qore.host](https://download.qore.host).
+* **Deterministic post-quantum signing across the client stack** — `@qorechain/pqc` 0.1.1 signs ML-DSA-87 deterministically (FIPS-204 §3.4) in all six language bindings, matching what the chain accepts; `@qorechain/wallet-adapter` 0.1.2 builds on it for hybrid transaction signing.
+* **Integrator guide** — New [Exchange & Integrator Guide](/developer-guide/exchange-integration) covering deposits, withdrawals, and node operations across the three interfaces.
+
+## v3.1.81 — SVM Native-QOR Unification
+
+**Release focus:** Native QOR as a first-class asset on the Solana-compatible interface.
+
+* **Native QOR on SVM** — The SVM runtime now surfaces the account's native QOR balance directly (in lamports), rather than tracking a separate SVM-only balance. `getBalance` and `getSignaturesForAddress` work against native funds, and System Program transfers move native QOR.
+* **SVM address mapping** — An account's SVM address is derived from its 20 account bytes (right-padded to 32 bytes, base58-encoded), so the Cosmos, EVM, and SVM addresses of one key refer to the same funds.
+
+## v3.1.80 — Multilayer State-Anchor Queries
 
 **Release focus:** Readable, offline-verifiable settlement anchors for rollups.
 

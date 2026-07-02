@@ -23,7 +23,7 @@ QoreChain folosește un model economic cu **ofertă fixă**, centrat pe tokenul 
 | **Prefix Bech32**     | `qor` (conturi: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea de lanț **v3.1.80**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) folosește același model economic.
+Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea de lanț **v3.1.82**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) folosește același model economic.
 :::
 
 ---

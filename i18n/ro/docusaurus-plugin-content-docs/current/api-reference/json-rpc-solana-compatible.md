@@ -11,32 +11,35 @@ QoreChain oferă o interfață JSON-RPC compatibilă cu Solana prin runtime-ul s
 
 ## Conexiune
 
-| Transport | Adresă implicită          |
+| Transport | Adresă |
 | --------- | ------------------------- |
-| HTTP      | `http://127.0.0.1:8899`   |
+| HTTP (nod propriu) | `http://127.0.0.1:8899`   |
+| HTTPS (public, mainnet, doar citire) | `https://svm.qore.host` |
+| HTTPS (public, testnet, doar citire) | `https://svm-testnet.qore.host` |
 
-Serverul JSON-RPC este **pornit de `qorechaind start`** și este **activat implicit**, ascultând pe `127.0.0.1:8899`. Este configurat printr-o secțiune `[svm-rpc]` în `app.toml` (`enable` + `address`). Un nod proaspăt pornit servește deja această interfață — nu este necesar niciun proces suplimentar.
+Serverul JSON-RPC este **pornit de `qorechaind start`** și este **activat implicit**, ascultând pe `127.0.0.1:8899`. Este configurat printr-o secțiune `[svm-rpc]` în `app.toml` (`enable` + `address`). Un nod proaspăt pornit servește deja această interfață — nu este necesar niciun proces suplimentar. Endpoint-urile publice sunt **doar pentru citire** (trimiterea tranzacțiilor este dezactivată la nivel de edge).
 
 :::note
-Interfața JSON-RPC compatibilă cu Solana este servită pe portul **8899** atât de mainnet-ul **`qorechain-vladi`** (activ pe versiunea de lanț **v3.1.80**), cât și de testnet-ul **`qorechain-diana`**. Adresa locală de mai sus se aplică unui nod pe care îl rulezi tu însuți; înlocuiește-o cu endpoint-ul de mainnet sau testnet al furnizorului tău pentru acces la distanță.
+Începând cu versiunea de lanț **v3.1.82**, interfața SVM servește **soldul nativ QOR** al contului — aceleași fonduri unificate vizibile pe interfețele Cosmos și EVM — denominat în **lamports** (9 zecimale; **1 uqor = 1.000 lamports**). Vezi [QOR nativ pe interfața SVM](/developer-guide/svm-development#native-qor).
 :::
 
 ---
 
 ## Metode
 
-| Metodă                              | Parametri                | Descriere                                                      |
+| Metodă                              | Parametri               | Descriere                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey` (șir base58)    | Returnează datele contului, proprietarul, lamports și flag-ul executable |
-| `getBalance`                        | `pubkey` (șir base58)    | Returnează soldul în lamports pentru cheia publică dată        |
-| `getSlot`                           | niciunul                 | Returnează numărul slotului curent                            |
-| `getMinimumBalanceForRentExemption` | `dataLength` (întreg)    | Returnează soldul minim pentru scutirea de chirie în funcție de dimensiunea datelor |
-| `getVersion`                        | niciunul                 | Returnează versiunea software a nodului                       |
-| `getHealth`                         | niciunul                 | Returnează starea de sănătate a nodului (`"ok"` dacă este sănătos) |
+| `getAccountInfo`                    | `pubkey` (șir base58) | Returnează datele contului, proprietarul, lamports și indicatorul executable     |
+| `getBalance`                        | `pubkey` (șir base58) | Returnează soldul nativ QOR în lamports pentru cheia publică dată |
+| `getSignaturesForAddress`           | `address` (șir base58) | Returnează semnăturile tranzacțiilor care implică adresa (detectarea depunerilor) |
+| `getSlot`                           | niciunul                     | Returnează numărul slotului curent                                |
+| `getMinimumBalanceForRentExemption` | `dataLength` (număr întreg)   | Returnează soldul minim pentru scutirea de chirie pentru dimensiunea de date dată |
+| `getVersion`                        | niciunul                     | Returnează versiunea software-ului nodului                              |
+| `getHealth`                         | niciunul                     | Returnează starea de sănătate a nodului (`"ok"` dacă este sănătos)                 |
 
 ---
 
-## Formatul răspunsului
+## Formatul răspunsurilor
 
 Toate răspunsurile respectă specificația JSON-RPC 2.0. Răspunsurile care fac referire la starea on-chain includ un obiect `context` cu `slot`-ul curent:
 
@@ -154,13 +157,13 @@ curl -X POST http://localhost:8899 \
 }
 ```
 
-Șirul de versiune `1.18.0-qorechain` indică compatibilitatea cu interfața RPC Solana 1.18.0 care rulează pe runtime-ul SVM al QoreChain.
+Șirul de versiune `1.18.0-qorechain` indică compatibilitatea cu interfața RPC Solana 1.18.0 care rulează pe runtime-ul SVM QoreChain.
 
 ---
 
-## Integrarea @solana/web3.js
+## Integrare cu @solana/web3.js
 
-Aplicațiile Solana existente se pot conecta la QoreChain prin direcționarea obiectului `Connection` către endpoint-ul SVM local:
+Aplicațiile Solana existente se pot conecta la QoreChain direcționând obiectul `Connection` către endpoint-ul SVM local:
 
 ```javascript
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -193,7 +196,7 @@ if (accountInfo) {
 
 ## Note
 
-- **Format adresă**: Conturile SVM folosesc chei publice codate base58 (formatul standard Solana), nu prefixul Bech32 `qor1` folosit de modulele native Cosmos SDK.
-- **Bridging cross-VM**: Pentru a muta active între runtime-urile EVM și SVM, folosește modulul Cross-VM (`x/crossvm`). Vezi [Comenzile de tranzacție](/cli-reference/transaction-commands) pentru sintaxa `crossvm call`.
+- **Formatul adreselor**: Conturile SVM folosesc chei publice codificate base58 (formatul standard Solana), nu prefixul Bech32 `qor1` folosit de modulele native Cosmos SDK.
+- **Punte cross-VM**: Pentru a muta active între runtime-urile EVM și SVM, folosește modulul Cross-VM (`x/crossvm`). Vezi [Comenzile de tranzacție](/cli-reference/transaction-commands) pentru sintaxa `crossvm call`.
 - **Implementarea programelor**: Implementează programe BPF prin CLI (`qorechaind tx svm deploy-program`) sau programatic prin runtime-ul SVM.
-- **Buget de calcul**: Runtime-ul SVM aplică implicit un buget de calcul de 1.400.000 de unități de calcul per tranzacție. Acesta este configurabil prin parametrii modulului.
+- **Buget de calcul**: Runtime-ul SVM impune implicit un buget de calcul de 1.400.000 de unități de calcul per tranzacție. Acesta este configurabil prin parametrii modulului.

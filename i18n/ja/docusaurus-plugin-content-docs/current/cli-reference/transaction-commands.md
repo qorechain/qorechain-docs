@@ -7,28 +7,28 @@ sidebar_position: 2
 
 # トランザクションコマンド
 
-すべてのトランザクションコマンドは次のパターンに従います。
+すべてのトランザクションコマンドは、次のパターンに従います。
 
 ```bash
 qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-ライブメインネット（チェーンバージョン **v3.1.80**）に対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットの場合は `--chain-id qorechain-diana` を設定します。省略した場合、クライアントはローカル設定の `chain-id` を使用します。
+稼働中のメインネット（チェーンバージョン **v3.1.82**）に対してブロードキャストするには `--chain-id qorechain-vladi` を、テストネットに対しては `--chain-id qorechain-diana` を指定してください。省略した場合、クライアントはローカル設定の `chain-id` を使用します。
 :::
 
-共通フラグはすべての `tx` サブコマンドに適用されます。
+共通フラグは、すべての `tx` サブコマンドに適用されます。
 
-| Flag                | Type   | Description                                     |
+| フラグ              | 型     | 説明                                            |
 | ------------------- | ------ | ----------------------------------------------- |
-| `--from`            | string | 署名鍵の名前またはアドレス              |
-| `--chain-id`        | string | チェーン識別子（デフォルト: 設定から）         |
-| `--fees`            | string | トランザクション手数料（例: `500uqor`）              |
-| `--gas`             | string | ガスリミット、または推定の場合は `auto`              |
-| `--gas-adjustment`  | float  | `auto` 使用時のガス乗数（デフォルト: 1.0） |
-| `--keyring-backend` | string | キーリングバックエンド: `os`、`file`、`test`           |
+| `--from`            | string | 署名鍵の名前またはアドレス                      |
+| `--chain-id`        | string | チェーン識別子（デフォルト: 設定から取得）      |
+| `--fees`            | string | トランザクション手数料（例: `500uqor`）         |
+| `--gas`             | string | ガス上限、または見積もりには `auto`             |
+| `--gas-adjustment`  | float  | `auto` 使用時のガス乗数（デフォルト: 1.0）      |
+| `--keyring-backend` | string | キーリングバックエンド: `os`、`file`、`test`    |
 | `--node`            | string | RPC エンドポイント（デフォルト: `tcp://localhost:26657`） |
-| `--broadcast-mode`  | string | `sync`、`async`、または `block`                     |
+| `--broadcast-mode`  | string | `sync`、`async`、または `block`                 |
 | `-y`                | bool   | 確認プロンプトをスキップ                        |
 
 ---
@@ -55,19 +55,19 @@ qorechaind tx bank send <from_address> <to_address> <amount> [flags]
 qorechaind tx staking create-validator [flags]
 ```
 
-| Flag                           | Type   | Description                                  |
+| フラグ                         | 型     | 説明                                         |
 | ------------------------------ | ------ | -------------------------------------------- |
-| `--amount`                     | string | 自己委任額（例: `1000000uqor`） |
-| `--pubkey`                     | string | バリデータコンセンサス公開鍵（JSON）        |
-| `--moniker`                    | string | バリデータ表示名                       |
-| `--commission-rate`            | string | 初期手数料率（例: `0.10`）       |
-| `--commission-max-rate`        | string | 最大手数料率                      |
-| `--commission-max-change-rate` | string | 1日あたりの最大手数料変更率         |
-| `--min-self-delegation`        | string | 必要な最小自己委任額             |
+| `--amount`                     | string | 自己委任額（例: `1000000uqor`）              |
+| `--pubkey`                     | string | バリデータのコンセンサス公開鍵（JSON）       |
+| `--moniker`                    | string | バリデータの表示名                           |
+| `--commission-rate`            | string | 初期コミッション率（例: `0.10`）             |
+| `--commission-max-rate`        | string | 最大コミッション率                           |
+| `--commission-max-change-rate` | string | 1 日あたりの最大コミッション変更率           |
+| `--min-self-delegation`        | string | 必要な最小自己委任額                         |
 
 ### edit-validator
 
-既存のバリデータの説明または手数料を編集します。
+既存のバリデータの説明またはコミッションを編集します。
 
 ```bash
 qorechaind tx staking edit-validator [flags]
@@ -91,7 +91,7 @@ qorechaind tx staking redelegate <src_validator> <dst_validator> <amount> [flags
 
 ### unbond
 
-バリデータからトークンをアンボンドします。
+バリデータからトークンのアンボンドを行います。
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount> [flags]
@@ -103,7 +103,7 @@ qorechaind tx staking unbond <validator_address> <amount> [flags]
 
 ### withdraw-all-rewards
 
-保留中のすべてのステーキング報酬を引き出します。
+保留中のステーキング報酬をすべて引き出します。
 
 ```bash
 qorechaind tx distribution withdraw-all-rewards [flags]
@@ -117,9 +117,9 @@ qorechaind tx distribution withdraw-all-rewards [flags]
 qorechaind tx distribution withdraw-rewards <validator_address> [flags]
 ```
 
-| Flag           | Type | Description                        |
-| -------------- | ---- | ---------------------------------- |
-| `--commission` | bool | バリデータ手数料も引き出す |
+| フラグ         | 型   | 説明                                     |
+| -------------- | ---- | ---------------------------------------- |
+| `--commission` | bool | バリデータのコミッションも併せて引き出す |
 
 ---
 
@@ -157,7 +157,7 @@ qorechaind tx gov deposit <proposal_id> <amount> [flags]
 
 ## pqc
 
-cosmos トランザクションパスでは、デフォルトでハイブリッド署名が必要です（`hybrid_signature_mode = required`）。`gen-key` および `cosign` コマンドは、古典的な secp256k1 署名とともに cosmos パスでトランザクションを行うために必要な Dilithium-5（ML-DSA-87）鍵と `PQCHybridSignature` 拡張を生成します。
+cosmos トランザクションパスでは、デフォルトでハイブリッド署名が必須です（`hybrid_signature_mode = required`）。`gen-key` および `cosign` コマンドは、従来型の secp256k1 署名と併せて cosmos パスでトランザクションを行うために必要な Dilithium-5（ML-DSA-87）鍵と `PQCHybridSignature` 拡張を生成します。
 
 ### gen-key
 
@@ -169,7 +169,7 @@ qorechaind tx pqc gen-key [flags]
 
 ### cosign
 
-トランザクションに Dilithium-5 のコ署名を `PQCHybridSignature` 拡張として付加し、ハイブリッド（secp256k1 + ML-DSA-87）トランザクションを生成します。デフォルトの `required` 強制モードでは、cosmos パストランザクションに必須です。標準的な CosmJS / リレーヤーツールはトランザクションを行うためにこの拡張を生成する必要があります。QoreChain SDK の `buildHybridTx`（`includePqcPublicKey` 付き）は同等の処理を行います。
+トランザクションに Dilithium-5 の副署名を `PQCHybridSignature` 拡張として付加し、ハイブリッド（secp256k1 + ML-DSA-87）トランザクションを生成します。デフォルトの `required` 強制モードでは、cosmos パスのトランザクションに必須です。標準の CosmJS / リレイヤーツールでトランザクションを行うには、この拡張を生成する必要があります。QoreChain SDK の `buildHybridTx`（`includePqcPublicKey` を指定）が同等の処理を行います。
 
 ```bash
 qorechaind tx pqc cosign <unsigned_tx_file> [flags]
@@ -177,7 +177,7 @@ qorechaind tx pqc cosign <unsigned_tx_file> [flags]
 
 ### register-key
 
-アカウントのポスト量子公開鍵を登録します。
+アカウントにポスト量子公開鍵を登録します。
 
 ```bash
 qorechaind tx pqc register-key <algorithm> <pubkey_hex> [flags]
@@ -185,20 +185,20 @@ qorechaind tx pqc register-key <algorithm> <pubkey_hex> [flags]
 
 ### register-key-v2
 
-拡張メタデータとアテステーションを伴う PQC 鍵を登録します。
+拡張メタデータとアテステーション付きで PQC 鍵を登録します。
 
 ```bash
 qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> [flags]
 ```
 
-| Flag            | Type   | Description                    |
-| --------------- | ------ | ------------------------------ |
-| `--attestation` | string | TEE アテステーションデータ（hex）     |
-| `--metadata`    | string | 追加の鍵メタデータ（JSON） |
+| フラグ          | 型     | 説明                                 |
+| --------------- | ------ | ------------------------------------ |
+| `--attestation` | string | TEE アテステーションデータ（hex）    |
+| `--metadata`    | string | 追加の鍵メタデータ（JSON）           |
 
 ### migrate-key
 
-既存の古典的な鍵をハイブリッド PQC 鍵ペアに移行します。
+既存の従来型鍵をハイブリッド PQC 鍵ペアへ移行します。
 
 ```bash
 qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
@@ -216,13 +216,13 @@ QOR トークンを xQORE ガバナンスステーキングポジションにロ
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| Flag              | Type   | Description                                |
+| フラグ            | 型     | 説明                                       |
 | ----------------- | ------ | ------------------------------------------ |
-| `--lock-duration` | string | ロック期間（例: `30d`、`90d`、`180d`） |
+| `--lock-duration` | string | ロック期間（例: `30d`、`90d`、`180d`）     |
 
 ### unlock
 
-xQORE を QOR に戻してアンロックします。早期アンロックは、ペナルティ階層に応じてペナルティが発生する場合があります。
+xQORE を QOR にアンロックして戻します。早期のアンロックは、ペナルティ階層に応じてペナルティが発生する場合があります。
 
 ```bash
 qorechaind tx xqore unlock <amount> [flags]
@@ -240,13 +240,13 @@ qorechaind tx xqore unlock <amount> [flags]
 qorechaind tx bridge deposit <chain_id> <amount> <asset> [flags]
 ```
 
-| Flag          | Type   | Description                    |
-| ------------- | ------ | ------------------------------ |
-| `--recipient` | string | QoreChain 上の受取人アドレス |
+| フラグ        | 型     | 説明                                 |
+| ------------- | ------ | ------------------------------------ |
+| `--recipient` | string | QoreChain 上の受取人アドレス         |
 
 ### withdraw
 
-外部チェーンへのブリッジ引き出しを開始します。
+外部チェーンへのブリッジ出金を開始します。
 
 ```bash
 qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> [flags]
@@ -254,7 +254,7 @@ qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> 
 
 ### update-chain-config
 
-単一の署名済みトランザクションでチェーンのブリッジをアクティブ化または再設定します（チェーンバージョン **v3.1.80** 以降で利用可能）。`bridge_admin` 鍵または `qcb_bridge` ライセンスが必要です。ガバナンス提案やチェーンアップグレードは不要です。コントラクトアドレス、確認回数、アーキテクチャ、およびステータスを設定します。
+チェーンのブリッジを、単一の署名済みトランザクションでアクティブ化または再設定します（チェーンバージョン **v3.1.80** 以降で利用可能）。`bridge_admin` 鍵または `qcb_bridge` ライセンスが必要です — ガバナンス提案やチェーンアップグレードは不要です。コントラクトアドレス、確認数、アーキテクチャ、ステータスを設定します。
 
 ```bash
 qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
@@ -262,7 +262,7 @@ qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
 
 ### set-verifier-bootstrap
 
-チェーンのアクティブな検証者を選択し、そのトラストルートをインストールします（こちらも `bridge_admin` でゲートされています）。
+チェーンのアクティブなベリファイアを選択し、そのトラストルートをインストールします（こちらも `bridge_admin` 権限が必要です）。
 
 ```bash
 qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from bridge-admin
@@ -274,20 +274,20 @@ qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from
 
 ### call
 
-実行環境間（EVM、CosmWasm、SVM）でクロス VM メッセージを送信します。
+実行環境（EVM、CosmWasm、SVM）間でクロス VM メッセージを送信します。
 
 ```bash
 qorechaind tx crossvm call <target_vm> <contract_address> <payload_hex> [flags]
 ```
 
-| Flag          | Type   | Description                          |
-| ------------- | ------ | ------------------------------------ |
-| `--source-vm` | string | ソース VM: `evm`、`cosmwasm`、`svm`  |
-| `--gas-limit` | uint   | クロス VM 実行のガスリミット |
+| フラグ        | 型     | 説明                                     |
+| ------------- | ------ | ---------------------------------------- |
+| `--source-vm` | string | ソース VM: `evm`、`cosmwasm`、`svm`      |
+| `--gas-limit` | uint   | クロス VM 実行のガス上限                 |
 
 ### process-queue
 
-保留中のクロス VM メッセージを手動で処理します（オペレータコマンド）。
+保留中のクロス VM メッセージを手動で処理します（オペレーター用コマンド）。
 
 ```bash
 qorechaind tx crossvm process-queue [flags]
@@ -299,38 +299,38 @@ qorechaind tx crossvm process-queue [flags]
 
 ### deploy-program
 
-BPF プログラムを SVM ランタイムにデプロイします。
+SVM ランタイムに BPF プログラムをデプロイします。
 
 ```bash
 qorechaind tx svm deploy-program <program_binary_path> [flags]
 ```
 
-| Flag           | Type   | Description                  |
-| -------------- | ------ | ---------------------------- |
-| `--program-id` | string | 任意のプログラム ID（base58） |
+| フラグ         | 型     | 説明                                 |
+| -------------- | ------ | ------------------------------------ |
+| `--program-id` | string | 任意のプログラム ID（base58）        |
 
 ### execute
 
-デプロイされた SVM プログラムで命令を実行します。
+デプロイ済みの SVM プログラム上で命令を実行します。
 
 ```bash
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| Flag         | Type   | Description                                         |
-| ------------ | ------ | --------------------------------------------------- |
-| `--accounts` | string | 命令のアカウント公開鍵（カンマ区切り） |
+| フラグ       | 型     | 説明                                                 |
+| ------------ | ------ | ---------------------------------------------------- |
+| `--accounts` | string | 命令に使用するアカウント公開鍵のカンマ区切りリスト   |
 
 ### create-account
 
-割り当てられたデータ領域を持つ新しい SVM アカウントを作成します。
+データ領域を割り当てた新しい SVM アカウントを作成します。
 
 ```bash
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| Flag      | Type   | Description                                     |
-| --------- | ------ | ----------------------------------------------- |
+| フラグ    | 型     | 説明                                                         |
+| --------- | ------ | ------------------------------------------------------------ |
 | `--owner` | string | オーナープログラム（base58、デフォルト: システムプログラム） |
 
 ---
@@ -345,31 +345,31 @@ qorechaind tx svm create-account <pubkey> <space> [flags]
 qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| Flag                    | Type   | Description                                          |
-| ----------------------- | ------ | --------------------------------------------------- |
-| `--block-time-ms`       | uint   | 目標ブロック時間（ms）（デフォルト 2000）              |
-| `--domains`             | string | サポートするドメイン（カンマ区切り）（デフォルト `defi`）  |
-| `--max-tx`              | uint   | ブロックあたりの最大トランザクション数（デフォルト 1000）           |
-| `--min-validators`      | uint32 | 最小バリデータセットサイズ（デフォルト 1）              |
-| `--settlement-interval` | uint   | セトルメント間隔（ブロック数）（デフォルト 100）         |
-| `--vm-types`            | string | サポートする VM タイプ（カンマ区切り）（デフォルト `evm`）  |
+| フラグ                  | 型     | 説明                                                          |
+| ----------------------- | ------ | ------------------------------------------------------------- |
+| `--block-time-ms`       | uint   | 目標ブロック時間（ミリ秒、デフォルト 2000）                   |
+| `--domains`             | string | サポートするドメインのカンマ区切りリスト（デフォルト `defi`） |
+| `--max-tx`              | uint   | ブロックあたりの最大トランザクション数（デフォルト 1000）     |
+| `--min-validators`      | uint32 | 最小バリデータセットサイズ（デフォルト 1）                    |
+| `--settlement-interval` | uint   | セトルメント間隔（ブロック数、デフォルト 100）                |
+| `--vm-types`            | string | サポートする VM タイプのカンマ区切りリスト（デフォルト `evm`） |
 
 ### register-paychain
 
-高頻度のマイクロトランザクション用に新しい paychain レイヤーを登録します。
+高頻度マイクロトランザクション用の新しいペイチェーンレイヤーを登録します。
 
 ```bash
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| Flag                    | Type | Description                                  |
-| ----------------------- | ---- | -------------------------------------------- |
-| `--max-tx`              | uint | ブロックあたりの最大トランザクション数（デフォルト 5000）    |
-| `--settlement-interval` | uint | セトルメント間隔（ブロック数）（デフォルト 50）   |
+| フラグ                  | 型   | 説明                                                      |
+| ----------------------- | ---- | --------------------------------------------------------- |
+| `--max-tx`              | uint | ブロックあたりの最大トランザクション数（デフォルト 5000） |
+| `--settlement-interval` | uint | セトルメント間隔（ブロック数、デフォルト 50）             |
 
 ### anchor-state
 
-登録済みレイヤーのステートアンカー（セトルメント）を送信します。
+登録済みレイヤーの状態アンカー（セトルメント）を提出します。
 
 ```bash
 qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex> <pqc-agg-sig-hex> [flags]
@@ -383,13 +383,13 @@ qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex>
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| Flag             | Type   | Description                       |
-| ---------------- | ------ | --------------------------------- |
-| `--target-layer` | string | 特定のレイヤーへのルーティングを強制 |
+| フラグ           | 型     | 説明                                     |
+| ---------------- | ------ | ---------------------------------------- |
+| `--target-layer` | string | 特定のレイヤーへのルーティングを強制する |
 
 ### update-layer-status
 
-レイヤーの稼働ステータスを更新します（オペレータのみ）。
+レイヤーの運用ステータスを更新します（オペレーターのみ）。
 
 ```bash
 qorechaind tx multilayer update-layer-status <layer_id> <status> [flags]
@@ -399,7 +399,7 @@ qorechaind tx multilayer update-layer-status <layer_id> <status> [flags]
 
 ### challenge-anchor
 
-ステートアンカーに対する不正チャレンジを送信します。
+状態アンカーに対する不正チャレンジを提出します。
 
 ```bash
 qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [flags]
@@ -411,22 +411,22 @@ qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [
 
 ### create-rollup
 
-Rollup Development Kit で新しいロールアップを登録します。
+Rollup Development Kit に新しいロールアップを登録します。
 
 ```bash
 qorechaind tx rdk create-rollup <rollup_id> [flags]
 ```
 
-| Flag                | Type   | Description                                          |
-| ------------------- | ------ | ---------------------------------------------------- |
-| `--settlement-type` | string | `optimistic`、`zk`、`pessimistic`、`sovereign`       |
+| フラグ              | 型     | 説明                                                        |
+| ------------------- | ------ | ----------------------------------------------------------- |
+| `--settlement-type` | string | `optimistic`、`zk`、`pessimistic`、`sovereign`              |
 | `--profile`         | string | プリセット: `defi`、`gaming`、`nft`、`enterprise`、`custom` |
-| `--stake`           | string | オペレータステーク額                                |
-| `--da-enabled`      | bool   | ネイティブデータ可用性を有効化                      |
+| `--stake`           | string | オペレーターのステーク額                                    |
+| `--da-enabled`      | bool   | ネイティブデータ可用性を有効化                              |
 
 ### submit-batch
 
-ロールアップのセトルメントバッチを送信します。
+ロールアップのセトルメントバッチを提出します。
 
 ```bash
 qorechaind tx rdk submit-batch <rollup_id> <state_root_hex> <batch_data_path> [flags]
@@ -434,7 +434,7 @@ qorechaind tx rdk submit-batch <rollup_id> <state_root_hex> <batch_data_path> [f
 
 ### challenge-batch
 
-セトルメントバッチに対する不正チャレンジを送信します（optimistic ロールアップ）。
+セトルメントバッチに対する不正チャレンジを提出します（オプティミスティックロールアップ用）。
 
 ```bash
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
@@ -442,7 +442,7 @@ qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
 
 ### finalize-batch
 
-チャレンジウィンドウを通過したバッチを手動でファイナライズします。
+チャレンジ期間を経過したバッチを手動でファイナライズします。
 
 ```bash
 qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
@@ -450,7 +450,7 @@ qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
 
 ### pause-rollup
 
-ロールアップを一時停止します（オペレータのみ）。
+ロールアップを一時停止します（オペレーターのみ）。
 
 ```bash
 qorechaind tx rdk pause-rollup <rollup_id> [flags]
@@ -458,7 +458,7 @@ qorechaind tx rdk pause-rollup <rollup_id> [flags]
 
 ### resume-rollup
 
-一時停止したロールアップを再開します（オペレータのみ）。
+一時停止中のロールアップを再開します（オペレーターのみ）。
 
 ```bash
 qorechaind tx rdk resume-rollup <rollup_id> [flags]
@@ -466,14 +466,14 @@ qorechaind tx rdk resume-rollup <rollup_id> [flags]
 
 ### stop-rollup
 
-ロールアップを恒久的に停止し、そのステークを解放します（オペレータのみ）。
+ロールアップを恒久的に停止し、そのステークを解放します（オペレーターのみ）。
 
 ```bash
 qorechaind tx rdk stop-rollup <rollup_id> [flags]
 ```
 
 :::note
-ロールアップの引き出しおよびクロスレイヤーセトルメントも `rdk` トランザクショングループの下で公開されています（例: ファイナライズされたバッチに対して証明された引き出しをセトルする `execute-withdrawal` コマンド）。正確な引数とフラグは、ロールアップのセトルメントタイプと DA 設定に依存します。これらのトランザクションを構築する前に、信頼できるコマンド一覧について **Rollup Development Kit** のドキュメントを参照してください。
+ロールアップの出金およびクロスレイヤーセトルメントも `rdk` トランザクショングループの下で公開されています（例えば、ファイナライズ済みバッチに対して証明された出金を確定する `execute-withdrawal` コマンドなど）。正確な引数とフラグは、ロールアップのセトルメントタイプと DA 設定に依存します。これらのトランザクションを構築する前に、正式なコマンド一覧については **Rollup Development Kit** のドキュメントを参照してください。
 :::
 
 ---
@@ -482,7 +482,7 @@ qorechaind tx rdk stop-rollup <rollup_id> [flags]
 
 ### submit-btc-checkpoint
 
-エポックの BTC チェックポイントを送信します。
+エポックの BTC チェックポイントを提出します。
 
 ```bash
 qorechaind tx babylon submit-btc-checkpoint <epoch> <checkpoint_hex> [flags]
@@ -496,8 +496,8 @@ Babylon 統合を介して BTC をリステークします。
 qorechaind tx babylon btc-restake <amount> [flags]
 ```
 
-| Flag            | Type   | Description                       |
-| --------------- | ------ | --------------------------------- |
+| フラグ          | 型     | 説明                                          |
+| --------------- | ------ | --------------------------------------------- |
 | `--btc-tx-hash` | string | 証明としての Bitcoin トランザクションハッシュ |
 
 ---
@@ -512,9 +512,9 @@ qorechaind tx babylon btc-restake <amount> [flags]
 qorechaind tx abstractaccount create [flags]
 ```
 
-| Flag               | Type   | Description                       |
-| ------------------ | ------ | --------------------------------- |
-| `--spending-rules` | string | 支出ルールを定義する JSON ファイル |
+| フラグ             | 型     | 説明                                     |
+| ------------------ | ------ | ---------------------------------------- |
+| `--spending-rules` | string | 支出ルールを定義する JSON ファイル       |
 
 ### update-spending-rules
 
@@ -528,11 +528,11 @@ qorechaind tx abstractaccount update-spending-rules <rules_file.json> [flags]
 
 ## rlconsensus
 
-PRISM はコンセンサスパラメータを調整する強化学習レイヤーです。これらのコマンドは PRISM エージェントを制御します。CLI モジュール名 `rlconsensus` とそのサブコマンドはそのまま保持されます。
+PRISM は、コンセンサスパラメータをチューニングする強化学習レイヤーです。これらのコマンドは PRISM エージェントを制御します。CLI モジュール名 `rlconsensus` とそのサブコマンドは、そのままの表記で維持されています。
 
 ### set-agent-mode
 
-PRISM エージェントの稼働モードを設定します（ガバナンスのみ）。
+PRISM エージェントの動作モードを設定します（ガバナンスのみ）。
 
 ```bash
 qorechaind tx rlconsensus set-agent-mode <mode> [flags]
@@ -564,8 +564,8 @@ PRISM エージェントの報酬重み設定を更新します。
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| Flag                  | Type   | Description                  |
-| --------------------- | ------ | ---------------------------- |
-| `--throughput-weight` | string | スループット報酬の重み |
-| `--latency-weight`    | string | レイテンシ報酬の重み    |
-| `--security-weight`   | string | セキュリティ報酬の重み   |
+| フラグ                | 型     | 説明                       |
+| --------------------- | ------ | -------------------------- |
+| `--throughput-weight` | string | スループット報酬の重み     |
+| `--latency-weight`    | string | レイテンシ報酬の重み       |
+| `--security-weight`   | string | セキュリティ報酬の重み     |

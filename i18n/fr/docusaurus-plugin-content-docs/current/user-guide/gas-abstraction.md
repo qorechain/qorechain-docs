@@ -10,7 +10,7 @@ sidebar_position: 7
 Ce guide couvre la fonctionnalité d'abstraction du gas de QoreChain, qui permet aux utilisateurs de payer les frais de transaction dans des jetons non natifs au lieu de QOR.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.80** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors de transactions sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.82** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors de transactions sur le mainnet.
 :::
 
 ---

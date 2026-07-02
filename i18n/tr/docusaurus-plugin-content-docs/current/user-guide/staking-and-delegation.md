@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR tokenlarını doğrulayıcılara nasıl delege edeceğinizi, doğrulayıcılar arasında nasıl yeniden delege edeceğinizi (redelegate), stake'inizin bağını nasıl çözeceğinizi (unbond), ödülleri nasıl talep edeceğinizi ve QoreChain'in Triple-Pool stake etme mimarisini nasıl anlayacağınızı kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünü çalıştırarak yayında — ana ağda stake ederken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.82** zincir sürümünü çalıştırarak yayında — ana ağda stake ederken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
 :::
 
 ---

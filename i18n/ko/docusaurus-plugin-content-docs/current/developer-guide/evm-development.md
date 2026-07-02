@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 QoreChain EVM Engine 위에서 완전한 EVM 호환 실행 환경을 구동하므로, 익숙한 도구를 사용해 Solidity 스마트 컨트랙트를 배포하고 상호작용할 수 있습니다. EVM 모듈은 표준 이더리움 개발 워크플로를 지원하는 JSON-RPC 인터페이스를 **포트 8545**(WebSocket은 **8546**)에 노출합니다.
 
 :::note
-아래 예제는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 이 메인넷은 2026년 6월 7일부터 체인 버전 **v3.1.80**로 운영 중입니다. **`qorechain-diana`** 테스트넷의 경우 EVM 체인 ID **9800**을 사용하세요.
+아래 예제는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 이 메인넷은 2026년 6월 7일부터 체인 버전 **v3.1.82**로 운영 중입니다. **`qorechain-diana`** 테스트넷의 경우 EVM 체인 ID **9800**을 사용하세요.
 :::
 
 ---

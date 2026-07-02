@@ -17,7 +17,7 @@ QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereu
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, hex `0x2649`, **v3.1.80** zincir sürümünde canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, hex `0x2648`) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
+EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, hex `0x2649`, **v3.1.82** zincir sürümünde canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, hex `0x2648`) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
 :::
 
 ## Desteklenen Ad Alanları

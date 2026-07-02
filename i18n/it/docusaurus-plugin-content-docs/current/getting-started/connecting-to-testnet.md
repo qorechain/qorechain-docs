@@ -1,48 +1,72 @@
 ---
 slug: /getting-started/connecting-to-testnet
-title: Connessione alla testnet
-sidebar_label: Connessione alla testnet
+title: Connessione alla Testnet
+sidebar_label: Connessione alla Testnet
 sidebar_position: 4
 ---
 
-# Connessione alla testnet
+# Connessione alla Testnet
 
-Unisciti alla testnet QoreChain Diana attiva configurando il tuo nodo con il file di genesis, i peer e le impostazioni di rete corretti.
+Unisciti alla testnet Diana di QoreChain configurando il tuo nodo con il file genesis, i peer e le impostazioni di rete corretti.
 
 :::note
-Questa pagina riguarda la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 e ha una propria pagina dedicata **Connessione alla mainnet** con genesis, peer e dettagli di connessione separati.
+Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati.
+:::
+
+## Endpoint Pubblici
+
+Se hai solo bisogno di **interrogare la testnet o trasmettere transazioni**, utilizza gli endpoint pubblici:
+
+| Servizio | URL |
+|---|---|
+| RPC di consenso | `https://rpc-testnet.qore.host` (WebSocket: `wss://rpc-testnet.qore.host/websocket`) |
+| Cosmos REST (LCD) | `https://api-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm-testnet.qore.host` (chain ID `9800`) |
+| EVM WebSocket | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (sola lettura) | `https://svm-testnet.qore.host` |
+| Block explorer | [explore.qore.network](https://explore.qore.network) (passa a Testnet) |
+
+I QOR di testnet sono disponibili tramite il [Faucet della Dashboard](/dashboard/faucet).
+
+---
+
+## Scaricare il Genesis
+
+Sostituisci il tuo file genesis locale con il genesis ufficiale della testnet, servito in tempo reale dalla chain stessa:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
+  > ~/.qorechaind/config/genesis.json
+```
+
+Questo file definisce lo stato iniziale della testnet Diana, incluso il set di validatori, le allocazioni dei token e i parametri dei moduli.
+
+:::caution
+La testnet Diana viene periodicamente **ri-generata** (riportata all'altezza 0) man mano che vengono rilasciate build pre-release. Se il tuo nodo smette di sincronizzarsi dopo un reset, scarica nuovamente il genesis e riparti da una directory dati pulita.
 :::
 
 ---
 
-## Download del genesis
-
-Sostituisci il tuo file di genesis locale con il genesis ufficiale della testnet:
-
-```bash
-curl -o ~/.qorechaind/config/genesis.json \
-  https://raw.githubusercontent.com/qorechain/qorechain-core/main/config/genesis.json
-```
-
-Questo file definisce lo stato iniziale della testnet Diana, incluso il set di validatori, le allocazioni di token e i parametri dei moduli.
-
----
-
-## Configurazione dei peer
+## Configurare i Peer
 
 Modifica la configurazione del tuo nodo per connetterti ai peer esistenti della testnet.
 
-Apri `~/.qorechaind/config/config.toml` e imposta il campo `persistent_peers`:
+Interroga un peer attuale direttamente dalla rete, quindi imposta il campo `persistent_peers` in `~/.qorechaind/config/config.toml`:
 
-```toml
-persistent_peers = "node-id@seed1.qorechain.io:26656,node-id@seed2.qorechain.io:26656"
+```bash
+# node id + listen address of the public testnet node
+curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
 ```
 
-Consulta il [repository QoreChain](https://github.com/qorechain/qorechain-core) per l'elenco dei peer più recente.
+Imposta anche la soglia minima delle commissioni in `~/.qorechaind/config/app.toml` (la testnet utilizza lo stesso prezzo minimo del gas di **0.1uqor** della mainnet):
 
-### Impostazioni consigliate
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
-Potresti anche voler regolare le seguenti impostazioni in `config.toml`:
+### Impostazioni Consigliate
+
+Potresti inoltre voler regolare quanto segue in `config.toml`:
 
 ```toml
 [mempool]
@@ -57,7 +81,7 @@ Questi valori sono ottimizzati per i tempi di blocco e il throughput della testn
 
 ---
 
-## Avvio del nodo
+## Avviare il Nodo
 
 Avvia il tuo nodo per iniziare la sincronizzazione con la rete:
 
@@ -65,22 +89,22 @@ Avvia il tuo nodo per iniziare la sincronizzazione con la rete:
 ./qorechaind start
 ```
 
-Il nodo si connette ai peer e inizia a scaricare i blocchi dal genesis. Il tempo di sincronizzazione iniziale dipende dall'altezza attuale della chain e dalla velocità della tua rete.
+Il nodo si connette ai peer e inizia a scaricare i blocchi a partire dal genesis. Il tempo di sincronizzazione iniziale dipende dall'altezza attuale della chain e dalla velocità della tua rete.
 
 ---
 
-## Verifica dello stato di sincronizzazione
+## Verificare lo Stato di Sincronizzazione
 
-Verifica che il tuo nodo stia raggiungendo l'ultimo blocco:
+Verifica che il tuo nodo si stia allineando all'ultimo blocco:
 
 ```bash
 curl localhost:26657/status | jq '.result.sync_info.catching_up'
 ```
 
-* `true` — Il nodo è ancora in fase di sincronizzazione. Attendi che si allinei.
-* `false` — Il nodo è completamente sincronizzato ed elabora nuovi blocchi.
+* `true` — Il nodo si sta ancora sincronizzando. Attendi che completi l'allineamento.
+* `false` — Il nodo è completamente sincronizzato e sta elaborando nuovi blocchi.
 
-Puoi anche verificare l'altezza dell'ultimo blocco:
+Puoi anche controllare l'altezza dell'ultimo blocco:
 
 ```bash
 curl localhost:26657/status | jq '.result.sync_info.latest_block_height'
@@ -90,7 +114,7 @@ curl localhost:26657/status | jq '.result.sync_info.latest_block_height'
 
 ## Monitoraggio
 
-QoreChain espone diversi endpoint per monitorare lo stato e le prestazioni del nodo.
+QoreChain espone diversi endpoint per monitorare la salute e le prestazioni del nodo.
 
 ### Metriche Prometheus
 
@@ -104,17 +128,17 @@ Queste metriche possono essere raccolte da qualsiasi collector compatibile con P
 
 ### Dashboard Grafana
 
-Se eseguito tramite Docker Compose, Grafana è disponibile all'indirizzo:
+Se esegui il nodo tramite Docker Compose, Grafana è disponibile all'indirizzo:
 
 ```
 http://localhost:3001
 ```
 
-Al primo accesso, imposta le tue credenziali quando richiesto — non lasciare quelle predefinite. Le dashboard preconfigurate visualizzano la produzione dei blocchi, il throughput delle transazioni, le connessioni dei peer e l'utilizzo delle risorse.
+Al primo accesso, imposta le tue credenziali quando richiesto — non lasciare quelle predefinite. Le dashboard preconfigurate mostrano la produzione dei blocchi, il throughput delle transazioni, le connessioni ai peer e l'utilizzo delle risorse.
 
-### Controllo dello stato REST
+### Controllo di Stato REST
 
-L'API REST fornisce un rapido endpoint di stato:
+L'API REST fornisce un endpoint di stato rapido:
 
 ```
 http://localhost:1317
@@ -122,22 +146,22 @@ http://localhost:1317
 
 ---
 
-## Riferimento delle porte
+## Riferimento delle Porte
 
 | Porta   | Protocollo | Descrizione                                        |
-| ------- | --------- | -------------------------------------------------- |
-| `26657` | TCP       | RPC — interroga e trasmetti transazioni            |
-| `26656` | TCP       | P2P — comunicazione di rete peer-to-peer           |
-| `1317`  | HTTP      | API REST — interroga lo stato della chain via HTTP |
-| `9090`  | gRPC      | API gRPC — accesso programmatico alla chain        |
-| `8545`  | HTTP      | EVM JSON-RPC — RPC compatibile con Ethereum (chain ID `9800`) |
-| `8546`  | WebSocket | EVM WebSocket — sottoscrizioni di eventi EVM in tempo reale |
-| `8899`  | HTTP      | SVM RPC — RPC compatibile con Solana               |
-| `26660` | HTTP      | Endpoint delle metriche Prometheus                 |
+| ------- | ---------- | -------------------------------------------------- |
+| `26657` | TCP        | RPC — interrogazione e trasmissione delle transazioni |
+| `26656` | TCP        | P2P — comunicazione di rete peer-to-peer           |
+| `1317`  | HTTP       | REST API — interrogazione dello stato della chain via HTTP |
+| `9090`  | gRPC       | gRPC API — accesso programmatico alla chain        |
+| `8545`  | HTTP       | EVM JSON-RPC — RPC compatibile con Ethereum (chain ID `9800`) |
+| `8546`  | WebSocket  | EVM WebSocket — sottoscrizioni in tempo reale agli eventi EVM |
+| `8899`  | HTTP       | SVM RPC — RPC compatibile con Solana               |
+| `26660` | HTTP       | Endpoint delle metriche Prometheus                 |
 
 ---
 
-## Prossimi passi
+## Prossimi Passi
 
-* [Configurazione del wallet](/getting-started/wallet-setup) — Configura un wallet per la testnet
-* [La tua prima transazione](/getting-started/first-transaction) — Invia il tuo primo trasferimento di QOR
+* [Configurazione del Wallet](/getting-started/wallet-setup) — Configura un wallet per la testnet
+* [La Tua Prima Transazione](/getting-started/first-transaction) — Invia il tuo primo trasferimento di QOR

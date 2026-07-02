@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain, **CosmWasm** akıllı sözleşmelerini destekler ve geliştiricilerin WebAssembly'ye derlenen güvenli, korumalı programları Rust ile yazmasına olanak tanır. CosmWasm sözleşmeleri, QoreChain üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünü çalıştırarak yayında olan **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ifadesini yerine koyun.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri **v3.1.82** zincir sürümünü çalıştırarak yayında olan **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ifadesini yerine koyun.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 1
 Referință pentru comenzile `qorechaind` utilizate pentru inițializarea, configurarea și operarea unui nod QoreChain.
 
 :::note
-QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026 pe versiunea de lanț **v3.1.80**) și testnet-ul **`qorechain-diana`**. Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet.
+QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026 pe versiunea de lanț **v3.1.82**) și testnet-ul **`qorechain-diana`**. Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet.
 :::
 
 ---

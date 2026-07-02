@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain 노드를 초기화, 구성, 운영하는 데 사용되는 `qorechaind` 명령어에 대한 참조입니다.
 
 :::note
-QoreChain은 두 개의 네트워크를 실행합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 체인 버전 **v3.1.80**에서 라이브)과 **`qorechain-diana`** 테스트넷. 참여하려는 네트워크에 맞는 `--chain-id`를 전달하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요.
+QoreChain은 두 개의 네트워크를 실행합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 체인 버전 **v3.1.82**에서 라이브)과 **`qorechain-diana`** 테스트넷. 참여하려는 네트워크에 맞는 `--chain-id`를 전달하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 1
 The QoreChain **Rollup Development Kit (RDK)** — the `x/rdk` module — lets developers launch application-specific rollups that settle on QoreChain. Each rollup is an independent execution environment with its own block time, virtual machine, fee model, and sequencing, while it inherits QoreChain's security, post-quantum cryptography, and data availability guarantees.
 
 :::caution
-The RDK and the rollup settlement layer are an actively evolving capability. Treat the settlement modes, proof systems, presets, and per-feature maturity described across this section as design intent that is subject to change, and validate any deployment on the **`qorechain-diana`** testnet before targeting mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, chain version **v3.1.80**).
+The RDK and the rollup settlement layer are an actively evolving capability. Treat the settlement modes, proof systems, presets, and per-feature maturity described across this section as design intent that is subject to change, and validate any deployment on the **`qorechain-diana`** testnet before targeting mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, chain version **v3.1.82**).
 :::
 
 For the lower-level module reference — module parameters, lifecycle internals, burn integration, and multilayer anchoring — see the **[Rollup Development Kit](/architecture/rollup-development-kit)** page in the Architecture section. This Rollups section is the developer-facing how-to: what the RDK is, which paradigm to choose, how to deploy, how data availability works, and how withdrawals settle from L2 back to L1.

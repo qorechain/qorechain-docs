@@ -11,14 +11,16 @@ QoreChain fournit une interface JSON-RPC compatible Solana via son runtime SVM (
 
 ## Connexion
 
-| Transport | Adresse par défaut        |
+| Transport | Adresse |
 | --------- | ------------------------- |
-| HTTP      | `http://127.0.0.1:8899`   |
+| HTTP (nœud propre) | `http://127.0.0.1:8899`   |
+| HTTPS (public, mainnet, lecture seule) | `https://svm.qore.host` |
+| HTTPS (public, testnet, lecture seule) | `https://svm-testnet.qore.host` |
 
-Le serveur JSON-RPC est **démarré par `qorechaind start`** et est **activé par défaut**, écoutant sur `127.0.0.1:8899`. Il est configuré via une section `[svm-rpc]` dans `app.toml` (`enable` + `address`). Un nœud fraîchement démarré sert déjà cette interface — aucun processus supplémentaire n'est requis.
+Le serveur JSON-RPC est **démarré par `qorechaind start`** et est **activé par défaut**, à l'écoute sur `127.0.0.1:8899`. Il se configure via une section `[svm-rpc]` dans `app.toml` (`enable` + `address`). Un nœud fraîchement démarré sert déjà cette interface — aucun processus supplémentaire n'est requis. Les points de terminaison publics sont en **lecture seule** (la soumission de transactions est désactivée en périphérie).
 
 :::note
-L'interface JSON-RPC compatible Solana est servie sur le port **8899** à la fois par le mainnet **`qorechain-vladi`** (actif sur la version de chaîne **v3.1.80**) et le testnet **`qorechain-diana`**. L'adresse locale ci-dessus s'applique à un nœud que vous exécutez vous-même ; remplacez par le point de terminaison mainnet ou testnet de votre fournisseur pour un accès distant.
+Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde natif QOR** du compte — les mêmes fonds unifiés visibles sur les interfaces Cosmos et EVM — libellé en **lamports** (9 décimales ; **1 uqor = 1 000 lamports**). Voir [QOR natif sur l'interface SVM](/developer-guide/svm-development#native-qor).
 :::
 
 ---
@@ -27,18 +29,19 @@ L'interface JSON-RPC compatible Solana est servie sur le port **8899** à la foi
 
 | Méthode                             | Paramètres               | Description                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey` (chaîne base58) | Renvoie les données du compte, le propriétaire, les lamports et l'indicateur exécutable |
-| `getBalance`                        | `pubkey` (chaîne base58) | Renvoie le solde en lamports pour la clé publique donnée       |
-| `getSlot`                           | aucun                    | Renvoie le numéro de slot actuel                               |
-| `getMinimumBalanceForRentExemption` | `dataLength` (entier)    | Renvoie le solde minimum pour l'exemption de loyer selon la taille des données |
-| `getVersion`                        | aucun                    | Renvoie la version logicielle du nœud                          |
-| `getHealth`                         | aucun                    | Renvoie le statut de santé du nœud (`"ok"` si sain)            |
+| `getAccountInfo`                    | `pubkey` (chaîne base58) | Renvoie les données du compte, le propriétaire, les lamports et l'indicateur executable |
+| `getBalance`                        | `pubkey` (chaîne base58) | Renvoie le solde natif QOR en lamports pour la clé publique donnée |
+| `getSignaturesForAddress`           | `address` (chaîne base58) | Renvoie les signatures de transactions impliquant l'adresse (détection de dépôts) |
+| `getSlot`                           | aucun                    | Renvoie le numéro de slot courant                              |
+| `getMinimumBalanceForRentExemption` | `dataLength` (entier)    | Renvoie le solde minimal pour l'exemption de rent selon la taille des données |
+| `getVersion`                        | aucun                    | Renvoie la version du logiciel du nœud                         |
+| `getHealth`                         | aucun                    | Renvoie l'état de santé du nœud (`"ok"` s'il est sain)         |
 
 ---
 
 ## Format de réponse
 
-Toutes les réponses suivent la spécification JSON-RPC 2.0. Les réponses qui référencent l'état on-chain incluent un objet `context` avec le `slot` actuel :
+Toutes les réponses suivent la spécification JSON-RPC 2.0. Les réponses qui référencent l'état on-chain incluent un objet `context` avec le `slot` courant :
 
 ```json
 {
@@ -191,9 +194,9 @@ if (accountInfo) {
 
 ---
 
-## Notes
+## Remarques
 
 - **Format d'adresse** : les comptes SVM utilisent des clés publiques encodées en base58 (format Solana standard), et non le préfixe Bech32 `qor1` utilisé par les modules natifs Cosmos SDK.
-- **Pontage inter-VM** : pour déplacer des actifs entre les runtimes EVM et SVM, utilisez le module Cross-VM (`x/crossvm`). Consultez les [Commandes de transaction](/cli-reference/transaction-commands) pour la syntaxe `crossvm call`.
-- **Déploiement de programmes** : déployez des programmes BPF via la CLI (`qorechaind tx svm deploy-program`) ou par programmation à travers le runtime SVM.
-- **Budget de calcul** : le runtime SVM applique par défaut un budget de calcul de 1 400 000 unités de calcul par transaction. Cela est configurable via les paramètres du module.
+- **Pont inter-VM** : pour déplacer des actifs entre les runtimes EVM et SVM, utilisez le module Cross-VM (`x/crossvm`). Consultez les [Commandes de transaction](/cli-reference/transaction-commands) pour la syntaxe de `crossvm call`.
+- **Déploiement de programmes** : déployez des programmes BPF via la CLI (`qorechaind tx svm deploy-program`) ou par programmation via le runtime SVM.
+- **Budget de calcul** : le runtime SVM applique par défaut un budget de calcul de 1 400 000 unités de calcul par transaction. Cette valeur est configurable via les paramètres du module.

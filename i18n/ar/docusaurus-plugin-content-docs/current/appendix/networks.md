@@ -7,32 +7,56 @@ sidebar_position: 4
 
 # الشبكات
 
-مرجع موحَّد لشبكات QoreChain — معرّفات السلسلة، ومعرّفات سلسلة EVM، وفئة الرمز، وبادئات العناوين، ومنافذ الخدمة القياسية. للحصول على تفاصيل اتصال العقدة الكاملة (نقاط النهاية العامة، والبذور، ومنشأ الشبكة)، اتبع أدلة الاتصال المرتبطة أدناه؛ يحصل المشغِّلون على نقاط النهاية العامة الحالية والبذور ومنشأ الشبكة من الإصدار الرسمي.
+مرجع موحّد لشبكات QoreChain — معرّفات السلسلة، ومعرّفات سلسلة EVM، وفئة الرمز، وبادئات العناوين، ونقاط النهاية العامة، ومنافذ الخدمات القياسية.
 
-## الشبكات في لمحة
+## نظرة سريعة على الشبكات
 
-| | الشبكة الرئيسية | الشبكة التجريبية |
+| | الشبكة الرئيسية | شبكة الاختبار |
 |---|---|---|
-| **الحالة** | فعّالة | شبكة تجريبية نشطة |
+| **الحالة** | مباشرة | شبكة اختبار نشطة |
 | **معرّف سلسلة Cosmos** | `qorechain-vladi` | `qorechain-diana` |
-| **معرّف سلسلة EVM (EIP-155)** | **9801** (سداسي عشري `0x2649`) | **9800** (سداسي عشري `0x2648`) |
-| **فعّالة منذ** | 7 يونيو 2026، 23:59 UTC | — |
-| **إصدار السلسلة** | v3.1.80 | v3.1.80 |
+| **معرّف سلسلة EVM (EIP-155)** | **9801** (بالنظام الست عشري `0x2649`) | **9800** (بالنظام الست عشري `0x2648`) |
+| **مباشرة منذ** | 7 يونيو 2026، 23:59 بالتوقيت العالمي (UTC) | — |
+| **إصدار السلسلة** | v3.1.82 | v3.1.82 |
 | **إطار العمل** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
-| **دليل الاتصال** | [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) | [الاتصال بالشبكة التجريبية](/getting-started/connecting-to-testnet) |
+| **الحد الأدنى لسعر الغاز** | `0.1uqor` | `0.1uqor` |
+| **دليل الاتصال** | [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) | [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet) |
+
+## نقاط النهاية العامة {#public-endpoints}
+
+تُقدَّم جميع نقاط النهاية العامة عبر HTTPS.
+
+| الخدمة | الشبكة الرئيسية | شبكة الاختبار |
+|---|---|---|
+| RPC الإجماع | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| WebSocket الإجماع | `wss://rpc.qore.host/websocket` | `wss://rpc-testnet.qore.host/websocket` |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (متوافق مع Solana، للقراءة فقط) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+| مستكشف الكتل | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (بدّل إلى شبكة الاختبار) |
+| التنزيلات (الملف الثنائي / genesis / اللقطة) | [download.qore.host](https://download.qore.host) | — |
+
+:::note
+نقاط نهاية SVM العامة **للقراءة فقط** (إرسال المعاملات معطّل عند الحافة)؛ شغّل عقدتك الخاصة لعمليات الكتابة على SVM. لأحمال العمل الكثيفة أو الإنتاجية، شغّل عقدتك الخاصة — راجع [تشغيل عقدة](/developer-guide/running-a-node).
+:::
 
 ## الرمز والعناوين
 
-| العنصر | القيمة |
+| البند | القيمة |
 |---|---|
 | **فئة العرض** | QOR |
 | **الفئة الأساسية** | uqor (1 QOR = 10⁶ uqor) |
-| **بادئة حساب Bech32** | `qor` (مثال `qor1...`) |
-| **بادئة مُصدِّق Bech32** | `qorvaloper` (مثال `qorvaloper1...`) |
+| **المنازل العشرية حسب الواجهة** | Cosmos **6** (`uqor`) · EVM **18** (على نمط wei؛ 1 uqor = 10¹² wei) · SVM **9** (lamports؛ 1 uqor = 1,000 lamports) |
+| **نوع عملة HD (BIP-44)** | `118` |
+| **بادئة حسابات Bech32** | `qor` (مثلًا `qor1...`) |
+| **بادئة المدقّقين Bech32** | `qorvaloper` (مثلًا `qorvaloper1...`) |
+
+تعرض الواجهات الثلاث **رصيد QOR أصليًا موحّدًا واحدًا**: المفتاح نفسه يتحكم في الأموال نفسها عبر أشكال عناوينه `qor1...` (Cosmos) و`0x...` (EVM) وbase58 (SVM).
 
 ## المنافذ القياسية
 
-هذه هي منافذ الخدمة القياسية التي تكشفها عقدة QoreChain. تُنشر أسماء مضيفي نقاط النهاية العامة الفعلية مع الإصدار الرسمي — انظر أدلة الاتصال أعلاه.
+هذه هي منافذ الخدمات القياسية التي تعرضها عقدة QoreChain تشغّلها بنفسك.
 
 | الخدمة | المنفذ |
 |---|---|
@@ -42,25 +66,24 @@ sidebar_position: 4
 | gRPC | 9090 |
 | EVM JSON-RPC | 8545 |
 | EVM JSON-RPC (WebSocket) | 8546 |
-| SVM (متوافق مع Solana) JSON-RPC | 8899 |
+| SVM JSON-RPC (متوافق مع Solana) | 8899 |
 | مقاييس Prometheus | 26660 |
 
 ## نقاط النهاية والوصول
 
-لا تنشر QoreChain أسماء مضيفي RPC/REST/EVM عامة ثابتة في هذا المرجع. بدلًا من ذلك:
-
-- لاتصال العقدة والبذور ومنشأ الشبكة، اتبع [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) أو [الاتصال بالشبكة التجريبية](/getting-started/connecting-to-testnet). يحصل المشغِّلون على نقاط النهاية العامة الحالية والبذور ومنشأ الشبكة من الإصدار الرسمي.
-- للوصول البرمجي من تطبيق، استخدم [QoreChain SDK](/sdk/overview)، الذي يحل تكوين الشبكة نيابةً عنك.
-- **المستكشف** على السلسلة متاح عبر لوحة المعلومات على [dashboard.qorechain.io](https://dashboard.qorechain.io)، و**صنبور** الشبكة التجريبية متاح أيضًا هناك (انظر [صنبور لوحة المعلومات](/dashboard/faucet)).
+- للاتصال بالعقد، والنظراء، وملف genesis، واللقطات، اتبع [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) أو [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet).
+- للوصول البرمجي من تطبيق، استخدم [QoreChain SDK](/sdk/overview) الذي يحلّ إعدادات الشبكة نيابةً عنك.
+- **مستكشف الكتل** العام متاح على [explore.qore.network](https://explore.qore.network)؛ وتتضمن لوحة التحكم على [dashboard.qorechain.io](https://dashboard.qorechain.io) عرض مستكشف خاصًا بها، ويمكن الوصول إلى **صنبور** شبكة الاختبار هناك (راجع [صنبور لوحة التحكم](/dashboard/faucet)).
 - تُنشر هذه الوثائق على [docs.qorechain.io](https://docs.qorechain.io).
 
 ## الإضافة إلى MetaMask
 
-لإضافة شبكة QoreChain إلى محفظة EVM مثل MetaMask، استخدم معرّفات سلسلة EVM أعلاه — **9801** للشبكة الرئيسية و**9800** للشبكة التجريبية — مع نقطة نهاية EVM JSON-RPC للشبكة التي تتصل بها. انظر [إعداد المحفظة](/getting-started/wallet-setup) للإرشادات خطوة بخطوة.
+لإضافة شبكة QoreChain إلى محفظة EVM مثل MetaMask، استخدم معرّفات سلسلة EVM أعلاه — **9801** للشبكة الرئيسية مع `https://evm.qore.host`، و**9800** لشبكة الاختبار مع `https://evm-testnet.qore.host` — مع `https://explore.qore.network` كعنوان URL لمستكشف الكتل. راجع [إعداد المحفظة](/getting-started/wallet-setup) للشرح خطوة بخطوة.
 
 ## ذات صلة
 
-* [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) — انضم إلى شبكة `qorechain-vladi` الفعّالة.
-* [الاتصال بالشبكة التجريبية](/getting-started/connecting-to-testnet) — انضم إلى شبكة Diana التجريبية.
-* [معاملات السلسلة](/appendix/chain-parameters) — التكوين الرسمي للسلسلة.
-* [نظرة عامة على SDK](/sdk/overview) — حل تكوين الشبكة من الكود.
+* [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) — انضم إلى شبكة `qorechain-vladi` المباشرة.
+* [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet) — انضم إلى شبكة اختبار Diana.
+* [دليل المنصات وجهات التكامل](/developer-guide/exchange-integration) — الإيداعات والسحوبات وعمليات العقد لجهات التكامل.
+* [معلمات السلسلة](/appendix/chain-parameters) — إعدادات السلسلة المعتمدة.
+* [نظرة عامة على SDK](/sdk/overview) — حلّ إعدادات الشبكة من الشيفرة.

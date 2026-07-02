@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Características principales
 
-La siguiente tabla enumera todas las características importantes de QoreChain, organizadas según la fase de lanzamiento en la que se introdujeron. La versión actual de la cadena es **v3.1.80**, con la mainnet (`qorechain-vladi`, EVM chain ID 9801) activa desde el 7 de junio de 2026 y una testnet en paralelo (`qorechain-diana`, EVM chain ID 9800).
+La siguiente tabla enumera todas las características importantes de QoreChain, organizadas según la fase de lanzamiento en la que se introdujeron. La versión actual de la cadena es **v3.1.82**, con la mainnet (`qorechain-vladi`, EVM chain ID 9801) activa desde el 7 de junio de 2026 y una testnet en paralelo (`qorechain-diana`, EVM chain ID 9800).
 
 | Característica             | Introducida en      | Descripción                                                                                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -23,7 +23,7 @@ QoreChain utiliza un modelo económico de **suministro fijo** centrado en el tok
 | **Prefijo Bech32**    | `qor` (cuentas: `qor1...`, validadores: `qorvaloper...`) |
 
 :::note
-Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión de cadena **v3.1.80**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) comparte el mismo modelo económico.
+Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión de cadena **v3.1.82**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) comparte el mismo modelo económico.
 :::
 
 ---

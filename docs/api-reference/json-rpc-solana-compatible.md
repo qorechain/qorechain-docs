@@ -11,14 +11,16 @@ QoreChain provides a Solana-compatible JSON-RPC interface through its SVM (Solan
 
 ## Connection
 
-| Transport | Default Address           |
+| Transport | Address |
 | --------- | ------------------------- |
-| HTTP      | `http://127.0.0.1:8899`   |
+| HTTP (own node) | `http://127.0.0.1:8899`   |
+| HTTPS (public, mainnet, read-only) | `https://svm.qore.host` |
+| HTTPS (public, testnet, read-only) | `https://svm-testnet.qore.host` |
 
-The JSON-RPC server is **started by `qorechaind start`** and is **enabled by default**, listening on `127.0.0.1:8899`. It is configured via a `[svm-rpc]` section in `app.toml` (`enable` + `address`). A freshly started node already serves this interface — no extra process is required.
+The JSON-RPC server is **started by `qorechaind start`** and is **enabled by default**, listening on `127.0.0.1:8899`. It is configured via a `[svm-rpc]` section in `app.toml` (`enable` + `address`). A freshly started node already serves this interface — no extra process is required. The public endpoints are **read-only** (transaction submission is disabled at the edge).
 
 :::note
-The Solana-compatible JSON-RPC interface is served on port **8899** by both the **`qorechain-vladi`** mainnet (live on chain version **v3.1.80**) and the **`qorechain-diana`** testnet. The local address above applies to a node you run yourself; substitute your provider's mainnet or testnet endpoint for remote access.
+As of chain version **v3.1.82**, the SVM interface serves the account's **native QOR balance** — the same unified funds visible on the Cosmos and EVM interfaces — denominated in **lamports** (9 decimals; **1 uqor = 1,000 lamports**). See [Native QOR on the SVM Interface](/developer-guide/svm-development#native-qor).
 :::
 
 ---
@@ -28,7 +30,8 @@ The Solana-compatible JSON-RPC interface is served on port **8899** by both the 
 | Method                              | Parameters               | Description                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
 | `getAccountInfo`                    | `pubkey` (base58 string) | Returns account data, owner, lamports, and executable flag     |
-| `getBalance`                        | `pubkey` (base58 string) | Returns the balance in lamports for the given public key       |
+| `getBalance`                        | `pubkey` (base58 string) | Returns the native-QOR balance in lamports for the given public key |
+| `getSignaturesForAddress`           | `address` (base58 string) | Returns transaction signatures involving the address (deposit detection) |
 | `getSlot`                           | none                     | Returns the current slot number                                |
 | `getMinimumBalanceForRentExemption` | `dataLength` (integer)   | Returns the minimum balance for rent exemption given data size |
 | `getVersion`                        | none                     | Returns the node software version                              |

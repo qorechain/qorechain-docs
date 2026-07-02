@@ -10,7 +10,7 @@ sidebar_position: 7
 Acest ghid descrie funcționalitatea de abstractizare a gazului din QoreChain, care le permite utilizatorilor să plătească comisioanele de tranzacție în tokeni non-nativi în loc de QOR.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.80** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când tranzacționezi pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.82** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când tranzacționezi pe mainnet.
 :::
 
 ---

@@ -14,7 +14,7 @@ El puente entre cadenas se encuentra actualmente en una etapa de **testnet / pre
 :::
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.80** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** donde se haya habilitado el soporte del puente.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.82** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** donde se haya habilitado el soporte del puente.
 :::
 
 ---

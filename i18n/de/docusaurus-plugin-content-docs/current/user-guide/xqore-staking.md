@@ -10,7 +10,7 @@ sidebar_position: 4
 Dieser Leitfaden behandelt den xQORE-Governance-Staking-Mechanismus, der es QOR-Inhabern ermöglicht, ihre Token für erweiterte Governance-Macht zu sperren – mit einem PvP-Rebase-Modell, das langfristige Teilnehmer belohnt.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.80** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.82** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
 :::
 
 ---

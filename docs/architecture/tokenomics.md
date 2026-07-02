@@ -23,7 +23,7 @@ QoreChain uses a **fixed-supply** economic model centered on the native **QOR** 
 | **Bech32 prefix**     | `qor` (accounts: `qor1...`, validators: `qorvaloper...`) |
 
 :::note
-The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on chain version **v3.1.80**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) shares the same economic model.
+The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on chain version **v3.1.82**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) shares the same economic model.
 :::
 
 ---

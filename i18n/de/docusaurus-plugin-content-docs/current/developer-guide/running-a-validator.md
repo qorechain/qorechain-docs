@@ -10,20 +10,20 @@ sidebar_position: 9
 Diese Anleitung beschreibt, wie Sie einen Validator im QoreChain-Netzwerk erstellen, das Pool-Klassifizierungssystem verstehen, einen PQC-Schlüssel für quantenresistente Sicherheit registrieren und Ihren Node überwachen.
 
 :::note
-Diese Anleitung richtet sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 mit der Chain-Version **v3.1.80** läuft. Für das Einüben Ihrer Einrichtung vor dem Live-Gang wird das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) empfohlen. Ersetzen Sie die `--chain-id` durch den passenden Wert für Ihr Zielnetzwerk.
+Diese Anleitung bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.82** ausführt. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) wird empfohlen, um Ihr Setup zu proben, bevor Sie live gehen. Ersetzen Sie die `--chain-id` entsprechend Ihrem Zielnetzwerk.
 :::
 
 ---
 
 ## Voraussetzungen
 
-* Ein vollständig synchronisierter `qorechaind`-Node (siehe [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet))
-* Ein Konto mit Guthaben von mindestens **1.000 QOR** (1.000.000.000 uqor) für die anfängliche Selbst-Delegation
+* Ein vollständig synchronisierter `qorechaind`-Node (siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet))
+* Ein Konto mit einem Guthaben von mindestens **1.000 QOR** (1,000,000,000 uqor) für die anfängliche Selbstdelegation
 * Vertrautheit mit dem Modell für [Staking und Delegation](/user-guide/staking-and-delegation)
 
 ---
 
-## Erstellen eines Validators
+## Einen Validator erstellen
 
 ```bash
 qorechaind tx staking create-validator \
@@ -40,17 +40,17 @@ qorechaind tx staking create-validator \
   -y
 ```
 
-| Parameter                      | Beschreibung                                        |
-| ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | Betrag der Selbst-Delegation (Mindest-Stake)       |
-| `--pubkey`                     | Öffentlicher Konsens-Schlüssel des Validators (ed25519) |
-| `--moniker`                    | Menschenlesbarer Name für Ihren Validator          |
-| `--commission-rate`            | Anfänglicher Provisionssatz (z. B. 0.10 = 10 %)    |
-| `--commission-max-rate`        | Maximaler Provisionssatz (nach Erstellung unveränderlich) |
-| `--commission-max-change-rate` | Maximale tägliche Änderungsrate der Provision      |
-| `--min-self-delegation`        | Mindestanzahl an Tokens, die der Betreiber selbst delegieren muss |
+| Parameter                      | Beschreibung                                                     |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `--amount`                     | Selbstdelegationsbetrag (Mindest-Stake)                           |
+| `--pubkey`                     | Öffentlicher Konsensschlüssel des Validators (ed25519)            |
+| `--moniker`                    | Für Menschen lesbarer Name Ihres Validators                       |
+| `--commission-rate`            | Anfänglicher Provisionssatz (z. B. 0.10 = 10 %)                   |
+| `--commission-max-rate`        | Maximaler Provisionssatz (nach der Erstellung unveränderlich)     |
+| `--commission-max-change-rate` | Maximale tägliche Änderungsrate der Provision                     |
+| `--min-self-delegation`        | Mindestanzahl an Token, die der Betreiber selbst delegieren muss  |
 
-Überprüfen Sie nach Bestätigung der Transaktion Ihren Validator:
+Nachdem die Transaktion bestätigt wurde, verifizieren Sie Ihren Validator:
 
 ```bash
 qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
@@ -60,17 +60,17 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 
 ## Pool-Klassifizierung
 
-QoreChain verwendet ein **Drei-Pool-Klassifizierungssystem**, das vom Modul `x/qca` (Quantum Consensus Allocation) verwaltet wird. Alle **1.000 Blöcke** werden die Validatoren anhand ihrer Reputation und ihres Stakes in einen von drei Pools neu eingeordnet:
+QoreChain verwendet ein **Drei-Pool-Klassifizierungssystem**, das vom Modul `x/qca` (Quantum Consensus Allocation) verwaltet wird. Alle **1.000 Blöcke** werden Validatoren basierend auf ihrer Reputation und ihrem Stake in einen von drei Pools neu klassifiziert:
 
-| Pool                                 | Kriterien                                          | Block-Zuteilung |
-| ------------------------------------ | ------------------------------------------------- | ---------------- |
-| **RPoS** (Reputation Proof-of-Stake) | Reputation >= 70. Perzentil UND Stake >= Median   | 40 % der Blöcke  |
-| **DPoS** (Delegated Proof-of-Stake)  | Gesamtdelegation >= 10.000 QOR                     | 35 % der Blöcke  |
+| Pool                                 | Kriterien                                          | Block-Zuteilung  |
+| ------------------------------------ | -------------------------------------------------- | ---------------- |
+| **RPoS** (Reputation Proof-of-Stake) | Reputation >= 70. Perzentil UND Stake >= Median    | 40 % der Blöcke  |
+| **DPoS** (Delegated Proof-of-Stake)  | Gesamtdelegation >= 10,000 QOR                     | 35 % der Blöcke  |
 | **PoS** (Proof-of-Stake)             | Alle übrigen aktiven Validatoren                   | 25 % der Blöcke  |
 
-Innerhalb jedes Pools werden die Block-Proposer mittels **gewichteter Zufallsauswahl** proportional zu ihrem effektiven Stake ausgewählt. Die Klassifizierung stellt sicher, dass sowohl Validatoren mit hoher Reputation als auch solche mit hoher Delegation fair vertreten sind, während kleinere Validatoren weiterhin teilnehmen können.
+Innerhalb jedes Pools werden Block-Proposer per **gewichteter Zufallsauswahl** proportional zu ihrem effektiven Stake ausgewählt. Die Klassifizierung stellt sicher, dass sowohl Validatoren mit hoher Reputation als auch solche mit hoher Delegation fair repräsentiert werden, während kleinere Validatoren weiterhin teilnehmen können.
 
-### Abfrage Ihrer Pool-Klassifizierung
+### Ihre Pool-Klassifizierung abfragen
 
 ```bash
 qorechaind query qca pool-classification $(qorechaind keys show mykey --bech val -a)
@@ -93,59 +93,59 @@ curl -X POST http://localhost:8545 \
 
 ## Bonding-Kurve
 
-Die Staking-Belohnung für einen Validator wird durch eine Bonding-Kurve bestimmt, die mehrere Faktoren berücksichtigt:
+Die Staking-Belohnung eines Validators wird durch eine Bonding-Kurve bestimmt, die mehrere Faktoren einbezieht:
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 ```
 
-| Variable | Beschreibung                                               |
-| -------- | ---------------------------------------------------------- |
-| `R`      | Belohnungsbetrag                                           |
-| `beta`   | Basis-Belohnungssatz                                       |
-| `S`      | Effektiver Stake                                           |
-| `alpha`  | Skalierungskonstante für Loyalität                         |
-| `L`      | Loyalitätsdauer (kontinuierliche Staking-Zeit)            |
-| `Q(r)`   | Reputations-Qualitätsfaktor, Bereich \[0.75 - 1.25]        |
-| `P(t)`   | Protokollphasen-Multiplikator (passt sich über den Netzwerk-Lebenszyklus an) |
+| Variable | Beschreibung                                                              |
+| -------- | -------------------------------------------------------------------------- |
+| `R`      | Belohnungsbetrag                                                            |
+| `beta`   | Basis-Belohnungsrate                                                        |
+| `S`      | Effektiver Stake                                                            |
+| `alpha`  | Skalierungskonstante für Loyalität                                          |
+| `L`      | Loyalitätsdauer (kontinuierliche Staking-Zeit)                              |
+| `Q(r)`   | Reputations-Qualitätsfaktor, Bereich \[0.75 - 1.25]                         |
+| `P(t)`   | Protokollphasen-Multiplikator (passt sich über den Netzwerklebenszyklus an) |
 
 **Wichtige Erkenntnisse:**
 
-* **Bonus für Loyalitätsdauer:** Validatoren, die kontinuierlich staken, erhalten durch den logarithmischen Loyalitätsterm steigende Belohnungen. Dies fördert langfristiges Engagement.
-* **Reputations-Qualitätsfaktor:** Reicht von 0,75 (schlechte Reputation) bis 1,25 (ausgezeichnete Reputation). Die Reputation wird aus Verfügbarkeit, erfolgreichen Proposals, Community-Beteiligung und der Qualität der Transaktionsvalidierung berechnet.
+* **Bonus für Loyalitätsdauer:** Validatoren, die kontinuierlich staken, erhalten über den logarithmischen Loyalitätsterm steigende Belohnungen. Dies schafft Anreize für langfristiges Engagement.
+* **Reputations-Qualitätsfaktor:** Reicht von 0.75 (schlechte Reputation) bis 1.25 (ausgezeichnete Reputation). Die Reputation wird aus Uptime, erfolgreichen Proposals, Community-Beteiligung und der Qualität der Transaktionsvalidierung berechnet.
 * **Protokollphasen-Multiplikator:** Passt sich an, während das Netzwerk verschiedene Phasen durchläuft (Bootstrap, Wachstum, Reife).
 
 ---
 
 ## Progressives Slashing
 
-QoreChain verwendet ein **progressives Slashing**-Modell, das Strafen für Wiederholungstäter eskaliert, Validatoren aber gleichzeitig erlaubt, sich mit der Zeit zu erholen:
+QoreChain verwendet ein Modell des **progressiven Slashings**, das Strafen für Wiederholungstäter eskaliert, während es Validatoren erlaubt, sich mit der Zeit zu erholen:
 
 ```
 penalty = base_rate * escalation^effective_count * severity
 ```
 
-| Parameter                    | Wert           |
-| ---------------------------- | -------------- |
-| Maximale Strafe pro Ereignis | 33 % des Stakes |
-| Zerfalls-Halbwertszeit       | 100.000 Blöcke |
-| Schweregrad bei Ausfallzeit  | 1.0            |
-| Schweregrad bei Doppelsignatur | 2.0          |
-| Schweregrad bei Light-Client-Angriff | 3.0    |
+| Parameter                          | Wert            |
+| ---------------------------------- | --------------- |
+| Maximale Strafe pro Ereignis       | 33 % des Stakes |
+| Halbwertszeit des Abklingens       | 100,000 Blöcke  |
+| Schweregrad Downtime               | 1.0             |
+| Schweregrad Double-Signing         | 2.0             |
+| Schweregrad Light-Client-Angriff   | 3.0             |
 
-1. **Jedes Vergehen erhöht den effektiven Zählerstand.** Jedes Vergehen (Ausfallzeit, Doppelsignatur usw.) erhöht den effektiven Zählerstand des Validators, was sich auf zukünftige Strafen auswirkt.
+1. **Jeder Verstoß erhöht den effektiven Zähler.** Jeder Verstoß (Downtime, Double-Signing usw.) erhöht den effektiven Zähler des Validators, was sich auf künftige Strafen auswirkt.
 
-2. **Die Strafe eskaliert exponentiell.** Die Strafe eskaliert anhand des effektiven Zählerstands gemäß der obigen Formel, sodass Wiederholungstäter deutlich höheren Strafen ausgesetzt sind.
+2. **Die Strafe eskaliert exponentiell.** Die Strafe eskaliert basierend auf dem effektiven Zähler gemäß der obigen Formel, sodass Wiederholungstäter deutlich höhere Strafen erhalten.
 
-3. **Der effektive Zählerstand zerfällt mit der Zeit.** Der effektive Zählerstand zerfällt mit einer Halbwertszeit von 100.000 Blöcken (\~7 Tage bei 6s-Blöcken), wodurch sich Validatoren nach einer Phase guten Verhaltens erholen können.
+3. **Der effektive Zähler klingt mit der Zeit ab.** Der effektive Zähler klingt mit einer Halbwertszeit von 100,000 Blöcken ab (\~7 Tage bei 6-Sekunden-Blöcken), sodass sich Validatoren nach einer Phase guten Verhaltens erholen können.
 
-4. **Einzelereignisse vs. wiederholte Vergehen.** Ein einzelnes versehentliches Ausfallzeit-Ereignis führt zu einer geringen Strafe, während wiederholte Vergehen exponentiell steigende Konsequenzen auslösen.
+4. **Einzelereignisse vs. wiederholte Verstöße.** Ein einzelnes versehentliches Downtime-Ereignis führt zu einer geringen Strafe, während wiederholte Verstöße exponentiell steigende Konsequenzen nach sich ziehen.
 
 ---
 
 ## PQC-Schlüsselregistrierung
 
-Validatoren können optional einen **post-quanten-kryptografischen (PQC) öffentlichen Schlüssel** mit dem ML-DSA-87-Algorithmus registrieren. Dies bietet quantenresistente Sicherheit für die Validator-Identität und kann für hybride Signaturen verwendet werden.
+Validatoren können optional einen **öffentlichen Post-Quanten-Kryptografie-Schlüssel (PQC)** mit dem Algorithmus ML-DSA-87 registrieren. Dies bietet quantenresistente Sicherheit für die Validator-Identität und kann für hybrides Signieren verwendet werden.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
@@ -154,24 +154,24 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
   -y
 ```
 
-| Parameter      | Beschreibung                                      |
-| -------------- | ------------------------------------------------- |
-| `<pubkey-hex>` | 2592-Byte-ML-DSA-87-Public-Key in Hex-Kodierung   |
-| `hybrid`       | Registrierungsmodus (hybrid = sowohl klassisch + PQC) |
+| Parameter      | Beschreibung                                                     |
+| -------------- | ----------------------------------------------------------------- |
+| `<pubkey-hex>` | Öffentlicher ML-DSA-87-Schlüssel mit 2592 Byte in Hex-Kodierung   |
+| `hybrid`       | Registrierungsmodus (hybrid = klassisch + PQC)                    |
 
-Registrierung überprüfen:
+Registrierung verifizieren:
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
 
 :::tip
-**Empfehlung:** Die PQC-Schlüsselregistrierung ist optional, wird aber für Validatoren, die im Mainnet betrieben werden, dringend empfohlen. Sie bietet eine zukunftsorientierte Verteidigung gegen Bedrohungen durch Quantencomputer.
+**Empfehlung:** Die PQC-Schlüsselregistrierung ist optional, wird aber für Validatoren im Mainnet dringend empfohlen. Sie bietet eine zukunftsgerichtete Verteidigung gegen Bedrohungen durch Quantencomputer.
 :::
 
 ---
 
-## Überwachung
+## Monitoring
 
 ### Prometheus-Metriken
 
@@ -183,17 +183,17 @@ http://localhost:26660/metrics
 
 Wichtige zu überwachende Metriken:
 
-| Metrik                          | Beschreibung                                    |
-| ------------------------------- | ----------------------------------------------- |
-| `qorechain_missed_blocks_total` | Gesamtzahl der von Ihrem Validator verpassten Blöcke |
-| `qorechain_validator_uptime`    | Verfügbarkeit in Prozent über die letzten N Blöcke |
-| `qorechain_reputation_score`    | Aktueller Reputationswert                       |
-| `qorechain_pool_classification` | Aktuelle Pool-Zuordnung (0=PoS, 1=DPoS, 2=RPoS) |
-| `qorechain_consecutive_signed`  | Aufeinanderfolgend signierte Blöcke             |
-| `consensus_height`              | Aktuelle Blockhöhe                              |
-| `consensus_rounds`              | Konsensrunden für die aktuelle Höhe            |
+| Metrik                          | Beschreibung                                          |
+| ------------------------------- | ------------------------------------------------------ |
+| `qorechain_missed_blocks_total` | Gesamtzahl der von Ihrem Validator verpassten Blöcke   |
+| `qorechain_validator_uptime`    | Uptime-Prozentsatz über die letzten N Blöcke           |
+| `qorechain_reputation_score`    | Aktueller Reputationswert                              |
+| `qorechain_pool_classification` | Aktuelle Pool-Zuordnung (0=PoS, 1=DPoS, 2=RPoS)        |
+| `qorechain_consecutive_signed`  | Aufeinanderfolgend signierte Blöcke                    |
+| `consensus_height`              | Aktuelle Blockhöhe                                     |
+| `consensus_rounds`              | Konsensrunden für die aktuelle Höhe                    |
 
-### Abfrage des Reputationswerts
+### Reputationswert abfragen
 
 ```bash
 qorechaind query reputation score $(qorechaind keys show mykey --bech val -a)
@@ -212,7 +212,7 @@ curl -X POST http://localhost:8545 \
   }'
 ```
 
-### Zustandsprüfungen
+### Health-Checks
 
 ```bash
 # Node status
@@ -229,19 +229,19 @@ qorechaind query staking validators --status bonded | grep "my-validator"
 
 ## Bewährte Betriebspraktiken
 
-1. **Verwenden Sie eine Sentry-Node-Architektur.** Betreiben Sie Ihren Validator hinter Sentry-Nodes, um ihn vor DDoS-Angriffen zu schützen. Geben Sie nur Sentry-Nodes für das öffentliche Netzwerk frei.
+1. **Verwenden Sie eine Sentry-Node-Architektur.** Betreiben Sie Ihren Validator hinter Sentry-Nodes, um ihn vor DDoS-Angriffen zu schützen. Machen Sie nur Sentry-Nodes im öffentlichen Netzwerk erreichbar.
 
-2. **Richten Sie Benachrichtigungen ein.** Konfigurieren Sie Alarme für verpasste Blöcke, geringe Verfügbarkeit und unerwartete Neustarts. Einige verpasste Blöcke sind normal; anhaltende Ausfälle lösen Slashing aus.
+2. **Richten Sie eine Alarmierung ein.** Konfigurieren Sie Alarme für verpasste Blöcke, niedrige Uptime und unerwartete Neustarts. Einige wenige verpasste Blöcke sind normal; anhaltende Ausfälle lösen Slashing aus.
 
-3. **Halten Sie eine hohe Verfügbarkeit aufrecht.** Das Reputationssystem belohnt konstante Verfügbarkeit. Längere Ausfallzeiten verschlechtern Ihren Reputations-Qualitätsfaktor und verringern die Belohnungen.
+3. **Halten Sie eine hohe Uptime.** Das Reputationssystem belohnt konstante Uptime. Längere Downtime verschlechtert Ihren Reputations-Qualitätsfaktor und reduziert die Belohnungen.
 
-4. **Halten Sie die Software aktuell.** Verfolgen Sie QoreChain-Releases und wenden Sie Updates zeitnah an. Stimmen Sie sich für Chain-Upgrades mit der Validator-Community ab.
+4. **Halten Sie die Software aktuell.** Verfolgen Sie QoreChain-Releases und spielen Sie Updates zeitnah ein. Koordinieren Sie sich bei Chain-Upgrades mit der Validator-Community.
 
-5. **Sichern Sie Ihre Schlüssel.** Verwenden Sie ein Hardware-Sicherheitsmodul (HSM) oder einen Remote-Signer für den Konsens-Schlüssel des Validators. Speichern Sie Schlüssel niemals auf demselben Rechner wie den Node.
+5. **Sichern Sie Ihre Schlüssel.** Verwenden Sie ein Hardware-Sicherheitsmodul (HSM) oder einen Remote-Signer für den Konsensschlüssel des Validators. Speichern Sie Schlüssel niemals auf derselben Maschine wie den Node.
 
 6. **Registrieren Sie einen PQC-Schlüssel.** Machen Sie Ihren Validator zukunftssicher gegen Quantenbedrohungen, indem Sie einen ML-DSA-87-Schlüssel registrieren.
 
-7. **Überwachen Sie Ihren Pool.** Verfolgen Sie Ihre Pool-Klassifizierung alle 1.000 Blöcke. Die Verbesserung Ihrer Reputation kann Sie von PoS zu RPoS bewegen und Ihre Möglichkeiten zum Vorschlagen von Blöcken erheblich erhöhen.
+7. **Überwachen Sie Ihren Pool.** Verfolgen Sie Ihre Pool-Klassifizierung alle 1.000 Blöcke. Eine Verbesserung Ihrer Reputation kann Sie von PoS zu RPoS aufsteigen lassen und Ihre Chancen auf Block-Proposals deutlich erhöhen.
 
 ---
 
@@ -271,27 +271,27 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 
 ## Validierung verbundener Netzwerke {#connected-networks}
 
-Ab der Chain-Version **v3.1.80** kann ein QoreChain-Validator auch bei der Validierung der über die [Bridge](/architecture/bridge-architecture) verbundenen Netzwerke mitwirken. Dies ist **lizenzgesteuert und Opt-in**:
+Seit Chain-Version **v3.1.80** kann ein QoreChain-Validator auch bei der Validierung der über die [Bridge](/architecture/bridge-architecture) verbundenen Netzwerke mitwirken. Dies ist **lizenzgebunden und opt-in**:
 
-1. **Halten Sie die Lizenz.** Der Validator muss eine aktive `validator_<chain>`- (oder `qcb_bridge`-)Lizenz für das Zielnetzwerk besitzen. Der Orchestrator weigert sich, ohne diese einen externen Client zu starten (fail-closed).
-2. **Die Aktivierung stellt den Client automatisch bereit.** Wenn die Lizenz aktiviert wird, stellt QoreChain den Client des passenden Netzwerks auf Ihrem Node bereit — es lädt den gepinnten Client herunter, rendert dessen Konfiguration und betreibt ihn unter der Orchestrierung von QoreChain. Bis zur Aktivierung wird nichts heruntergeladen.
-3. **Stellen Sie die Schlüssel und den Stake des Netzwerks bereit.** Der Validator/Stake und die Signierschlüssel des externen Netzwerks sind pro Netzwerk **vom Betreiber bereitzustellen**; QoreChain liefert das Treiber-Framework und das erzwungene Lizenz-Gate, nicht Ihren Stake auf der externen Chain.
+1. **Lizenz besitzen.** Der Validator muss eine aktive `validator_<chain>`-Lizenz (oder `qcb_bridge`) für das Zielnetzwerk besitzen. Der Orchestrator weigert sich, einen externen Client ohne diese Lizenz zu starten (fail-closed).
+2. **Die Aktivierung provisioniert den Client automatisch.** Wenn die Lizenz aktiviert wird, provisioniert QoreChain den Client des entsprechenden Netzwerks auf Ihrem Node — der gepinnte Client wird heruntergeladen, seine Konfiguration gerendert und er läuft unter der Orchestrierung von QoreChain. Vor der Aktivierung wird nichts abgerufen.
+3. **Schlüssel und Stake des Netzwerks bereitstellen.** Validator-/Stake- und Signierschlüssel des externen Netzwerks werden pro Netzwerk **vom Betreiber bereitgestellt**; QoreChain liefert das Driver-Framework und die erzwungene Lizenzsperre, nicht Ihren Stake auf der externen Chain.
 
-Treiber existieren für alle **37 Bridge-Netzwerke**, klassifiziert danach, wie ein Validator teilnehmen kann:
+Driver existieren für alle **37 Bridge-Netzwerke**, klassifiziert danach, wie ein Validator teilnehmen kann:
 
 | Klasse | Teilnahme | Beispiele |
-| ----- | ------------- | -------- |
-| Erlaubnisfreier Validator | Staken und betreiben | Solana, Ethereum, Avalanche, Sui, Aptos, Cardano, Tezos, Algorand, Starknet |
+| ------ | --------- | --------- |
+| Permissionless-Validator | Staken und betreiben | Solana, Ethereum, Avalanche, Sui, Aptos, Cardano, Tezos, Algorand, Starknet |
 | Begrenzt / gewählt / Zulassung | Staken, vorbehaltlich einer Obergrenze oder Wahl | BSC, Polygon, Polkadot, TRON, Sei, Injective, NEAR, Hedera |
-| L2-Full-Node | Einen Full Node betreiben (kein Staking) | Optimism, Base, zkSync Era, Linea, Scroll, Arbitrum |
+| L2-Full-Node | Full Node betreiben (kein Staking) | Optimism, Base, zkSync Era, Linea, Scroll, Arbitrum |
 | Ohne Staking / Trust-List | Beobachten / ohne Staking teilnehmen | Bitcoin, Filecoin, XRPL, Stellar |
 
 :::note
-Die Pins der Client-Versionen sind Best-Effort; überprüfen Sie das Upstream-Client-Release für Ihr Zielnetzwerk vor einer Produktivaktivierung.
+Die gepinnten Client-Versionen sind Best-Effort; prüfen Sie vor einer Produktionsaktivierung das Upstream-Client-Release für Ihr Zielnetzwerk.
 :::
 
 ## Nächste Schritte
 
-* [Aus dem Quellcode bauen](/developer-guide/building-from-source) — Erstellen Sie das `qorechaind`-Binary
-* [EVM-Entwicklung](/developer-guide/evm-development) — Deployen Sie Smart Contracts auf QoreChain
-* [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Konten für Ihre Validator-Operationen
+* [Aus dem Quellcode bauen](/developer-guide/building-from-source) — Das `qorechaind`-Binary bauen
+* [EVM-Entwicklung](/developer-guide/evm-development) — Smart Contracts auf QoreChain bereitstellen
+* [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Konten für Ihren Validator-Betrieb

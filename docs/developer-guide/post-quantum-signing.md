@@ -50,11 +50,22 @@ Every language exposes the same API, each backed by a different audited implemen
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (static lib + header) | build from the [repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.0` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Availability
-The JavaScript, Rust, Python, Go, and Java bindings are all **published** at version **0.1.0** — install them straight from npm, crates.io, PyPI, the Go module proxy, and Maven Central with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **Java** package is on Maven Central as `io.github.qorechain:qorechain-pqc:0.1.0` (Bouncy Castle backend). The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
+The JavaScript, Rust, Python, Go, and Java bindings are all **published** at version **0.1.1** — install them straight from npm, crates.io, PyPI, the Go module proxy, and Maven Central with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **Java** package is on Maven Central as `io.github.qorechain:qorechain-pqc:0.1.1` (Bouncy Castle backend). The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
 :::
+
+## Deterministic signing (consensus-critical) {#deterministic-signing}
+
+As of version **0.1.1**, `sign()` produces the **deterministic** ML-DSA variant (FIPS-204 §3.4, where the signing randomness is 32 zero bytes) in **all six bindings** — and this is the only variant the chain accepts. QoreChain's transaction verifier **rejects hedged (randomized) ML-DSA signatures**, so a hedged signature fails on-chain even though it verifies cryptographically.
+
+Key facts:
+
+* **Do not change the default.** Deterministic signing is consensus-critical; every binding documents it as such.
+* The deterministic output is **byte-identical across all six bindings** for the same key and message — locked in by shared cross-language test vectors.
+* Hedged signing remains available as an **explicit opt-in** per binding (e.g. `{hedged: true}` in JavaScript, `sign_hedged` in Rust, `mldsaSignHedged` in Java, `sign(..., hedged=True)` in Python) for non-chain use cases — hedged signatures are **not accepted by the chain**.
+* Version 0.1.0 of the JavaScript binding signed hedged by default — if you built transaction tooling against 0.1.0, **upgrade to 0.1.1**; transactions signed with the old default are rejected on-chain.
 
 ## Consistent API
 

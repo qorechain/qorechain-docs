@@ -14,7 +14,7 @@ Le RDK et la couche de règlement des rollups sont une capacité en évolution a
 :::
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.80** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors d'un déploiement sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.82** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors d'un déploiement sur le mainnet.
 :::
 
 ---

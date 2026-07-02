@@ -10,7 +10,7 @@ sidebar_position: 1
 이 가이드에서는 QOR 토큰, 토큰 송수신 방법, 잔액 조회, 그리고 QoreChain의 수수료 분배 모델에 대해 다룹니다.
 
 :::note
-아래 명령은 **`qorechain-diana`** 테스트넷(EVM chain ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM chain ID **9801**)은 체인 버전 **v3.1.80**로 2026년 6월 7일부터 가동 중입니다. 메인넷에서 거래할 때는 **메인넷 연결** 페이지의 메인넷 chain ID 및 엔드포인트로 대체하세요.
+아래 명령은 **`qorechain-diana`** 테스트넷(EVM chain ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM chain ID **9801**)은 체인 버전 **v3.1.82**로 2026년 6월 7일부터 가동 중입니다. 메인넷에서 거래할 때는 **메인넷 연결** 페이지의 메인넷 chain ID 및 엔드포인트로 대체하세요.
 :::
 
 ## 토큰 정보

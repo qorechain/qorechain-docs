@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.80**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.82**. Substitute `--chain-id qorechain-diana` for the testnet.
 :::
 
 ---
@@ -19,11 +19,29 @@ The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026
 
 The `x/svm` module provides:
 
+* **Native QOR as a first-class SVM asset** — the account's unified balance, visible in lamports
 * SBF/BPF program deployment and execution
 * Data account creation and management
 * A Solana-compatible JSON-RPC endpoint
 * Bidirectional address mapping between QoreChain and Solana address formats
 * Compute budget metering and rent-based storage economics
+
+---
+
+## Native QOR on the SVM Interface {#native-qor}
+
+As of chain version **v3.1.82**, the SVM interface is a **first-class native-QOR interface**, not a separate sandbox balance. The account's one unified balance — the same funds visible as `uqor` on the Cosmos interface and as 18-decimal wei on the EVM — appears on the SVM side in **lamports** (9 decimals):
+
+```
+1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports
+```
+
+* **`getBalance` / `getAccountInfo`** return the account's native QOR (in lamports).
+* **`getSignaturesForAddress`** returns the transaction history touching an address — usable for deposit detection with standard Solana tooling.
+* **System Program transfers move native QOR** — a Solana-style transfer instruction moves the same funds a Cosmos `MsgSend` or an EVM transfer would.
+* **SVM address form** — an account's SVM address is its 20 account bytes right-padded to 32 bytes and base58-encoded. All three address forms (`qor1...`, `0x...`, base58) refer to the same account.
+
+The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Run your own node (port 8899) to submit SVM transactions.
 
 ---
 
@@ -54,7 +72,8 @@ The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly 
 | Method                              | Description                               |
 | ----------------------------------- | ----------------------------------------- |
 | `getAccountInfo`                    | Retrieve account data and lamport balance |
-| `getBalance`                        | Get account balance in lamports           |
+| `getBalance`                        | Get account balance in lamports (native QOR) |
+| `getSignaturesForAddress`           | Transaction history for an address        |
 | `getSlot`                           | Current slot number                       |
 | `getMinimumBalanceForRentExemption` | Minimum balance for a given data size     |
 | `getVersion`                        | SVM runtime version info                  |

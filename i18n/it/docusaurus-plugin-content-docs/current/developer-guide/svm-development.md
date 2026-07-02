@@ -7,10 +7,10 @@ sidebar_position: 4
 
 # Sviluppo SVM
 
-QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando i consueti strumenti Solana. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [Server JSON-RPC](#json-rpc-server) di seguito).
+QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando i familiari strumenti di Solana. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [Server JSON-RPC](#json-rpc-server) più sotto).
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 ed eseguita con la versione della chain **v3.1.80**. Sostituisci `--chain-id qorechain-diana` per la testnet.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 con la versione di chain **v3.1.82**. Sostituisci con `--chain-id qorechain-diana` per la testnet.
 :::
 
 ---
@@ -19,17 +19,35 @@ I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giu
 
 Il modulo `x/svm` fornisce:
 
+* **QOR nativo come asset SVM di prima classe** — il saldo unificato dell'account, visibile in lamports
 * Distribuzione ed esecuzione di programmi SBF/BPF
 * Creazione e gestione di account dati
 * Un endpoint JSON-RPC compatibile con Solana
 * Mappatura bidirezionale degli indirizzi tra i formati di indirizzo QoreChain e Solana
-* Misurazione del budget di calcolo ed economia dello storage basata sul rent
+* Misurazione del compute budget ed economia dello storage basata sulla rent
+
+---
+
+## QOR nativo sull'interfaccia SVM {#native-qor}
+
+A partire dalla versione di chain **v3.1.82**, l'interfaccia SVM è un'**interfaccia QOR-nativa di prima classe**, non un saldo sandbox separato. L'unico saldo unificato dell'account — gli stessi fondi visibili come `uqor` sull'interfaccia Cosmos e come wei a 18 decimali sull'EVM — appare sul lato SVM in **lamports** (9 decimali):
+
+```
+1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports
+```
+
+* **`getBalance` / `getAccountInfo`** restituiscono il QOR nativo dell'account (in lamports).
+* **`getSignaturesForAddress`** restituisce la cronologia delle transazioni che toccano un indirizzo — utilizzabile per il rilevamento dei depositi con gli strumenti Solana standard.
+* **I trasferimenti del System Program muovono QOR nativo** — un'istruzione di trasferimento in stile Solana muove gli stessi fondi che muoverebbero un `MsgSend` Cosmos o un trasferimento EVM.
+* **Forma dell'indirizzo SVM** — l'indirizzo SVM di un account è costituito dai suoi 20 byte di account riempiti a destra fino a 32 byte e codificati in base58. Tutte e tre le forme di indirizzo (`qor1...`, `0x...`, base58) fanno riferimento allo stesso account.
+
+Gli endpoint pubblici (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sono **in sola lettura** — l'invio di transazioni è disabilitato all'edge. Esegui il tuo nodo (porta 8899) per inviare transazioni SVM.
 
 ---
 
 ## Server JSON-RPC {#json-rpc-server}
 
-Il server JSON-RPC compatibile con Solana viene **avviato da `qorechaind start`** ed è **abilitato per impostazione predefinita**. Viene configurato tramite una sezione `[svm-rpc]` in `app.toml`:
+Il server JSON-RPC compatibile con Solana viene **avviato da `qorechaind start`** ed è **abilitato per impostazione predefinita**. Si configura tramite una sezione `[svm-rpc]` in `app.toml`:
 
 ```toml
 [svm-rpc]
@@ -39,7 +57,7 @@ enable = true
 address = "127.0.0.1:8899"
 ```
 
-I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi un nodo appena avviato serve già l'interfaccia JSON-RPC Solana sulla porta 8899 — `@solana/web3.js` si connette a `http://127.0.0.1:8899` senza alcuna configurazione aggiuntiva. `getVersion` restituisce `1.18.0-qorechain`, e `getBalance` / `getAccountInfo` restituiscono account SVM on-chain in tempo reale.
+I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi un nodo appena avviato serve già l'interfaccia JSON-RPC di Solana sulla porta 8899 — `@solana/web3.js` si connette a `http://127.0.0.1:8899` senza alcuna configurazione aggiuntiva. `getVersion` riporta `1.18.0-qorechain`, e `getBalance` / `getAccountInfo` restituiscono account SVM on-chain in tempo reale.
 
 | Proprietà     | Valore                    |
 | ------------- | ------------------------- |
@@ -51,24 +69,25 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
 
 ### Metodi supportati
 
-| Metodo                              | Descrizione                                  |
-| ----------------------------------- | -------------------------------------------- |
-| `getAccountInfo`                    | Recupera i dati dell'account e il saldo in lamport |
-| `getBalance`                        | Ottiene il saldo dell'account in lamport     |
-| `getSlot`                           | Numero dello slot corrente                   |
-| `getMinimumBalanceForRentExemption` | Saldo minimo per una determinata dimensione dei dati |
-| `getVersion`                        | Informazioni sulla versione del runtime SVM  |
-| `getHealth`                         | Controllo dello stato dell'endpoint SVM      |
+| Metodo                              | Descrizione                               |
+| ----------------------------------- | ----------------------------------------- |
+| `getAccountInfo`                    | Recupera i dati dell'account e il saldo in lamports |
+| `getBalance`                        | Ottiene il saldo dell'account in lamports (QOR nativo) |
+| `getSignaturesForAddress`           | Cronologia delle transazioni per un indirizzo |
+| `getSlot`                           | Numero di slot corrente                   |
+| `getMinimumBalanceForRentExemption` | Saldo minimo per una data dimensione dei dati |
+| `getVersion`                        | Informazioni sulla versione del runtime SVM |
+| `getHealth`                         | Controllo di integrità per l'endpoint SVM |
 
 ---
 
-## Distribuzione e interazione con i programmi
+## Distribuire e interagire con i programmi
 
 :::info
-**Esecuzione SBF moderna.** Il motore di esecuzione SVM è stato modernizzato su **solana-sbpf 0.21.1**, quindi i programmi SBF appena compilati con l'attuale toolchain Solana (**platform-tools v1.53 / agave 4.x**) vengono sia **distribuiti che eseguiti** su QoreChain — l'esecuzione è pienamente supportata, non solo la distribuzione. Sono supportati i programmi compilati sia con `cargo build-sbf --arch v0` che con `--arch v3`.
+**Esecuzione SBF moderna.** Il motore di esecuzione SVM è stato modernizzato su **solana-sbpf 0.21.1**, quindi i programmi SBF appena compilati con la toolchain Solana corrente (**platform-tools v1.53 / agave 4.x**) vengono sia **distribuiti che eseguiti** su QoreChain — l'esecuzione è pienamente supportata, non solo la distribuzione. Sono supportati i programmi compilati sia con `cargo build-sbf --arch v0` che con `--arch v3`.
 :::
 
-1. **Distribuire un programma SBF** — Compila il tuo programma Solana in un oggetto condiviso SBF con gli attuali platform-tools (v1.53 / agave 4.x), quindi distribuiscilo su QoreChain:
+1. **Distribuire un programma SBF** — Compila il tuo programma Solana in un oggetto condiviso SBF con i platform-tools correnti (v1.53 / agave 4.x), quindi distribuiscilo su QoreChain:
 
    ```bash
    # Build with the current Solana toolchain (--arch v0 or --arch v3)
@@ -84,7 +103,7 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
 
    La risposta della transazione include il **program ID** in formato base58.
 
-2. **Eseguire un'istruzione** — Chiama un programma BPF on-chain con i dati dell'istruzione:
+2. **Eseguire un'istruzione** — Chiama un programma BPF on-chain con dati di istruzione:
 
    ```bash
    # Execute instruction
@@ -96,10 +115,10 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
 
    | Parametro           | Formato           | Descrizione                    |
    | ------------------- | ----------------- | ------------------------------ |
-   | `program-id-base58` | Stringa Base58    | L'indirizzo del programma distribuito |
-   | `data-hex`          | Byte codificati in esadecimale | Dati dell'istruzione serializzati |
+   | `program-id-base58` | Stringa base58    | L'indirizzo del programma distribuito |
+   | `data-hex`          | Byte codificati in esadecimale | Dati di istruzione serializzati |
 
-3. **Creare un account dati** — I programmi spesso necessitano di account per memorizzare lo stato. Creane uno con una dimensione e un proprietario specificati:
+3. **Creare un account dati** — I programmi spesso hanno bisogno di account per memorizzare lo stato. Creane uno con una dimensione e un proprietario specificati:
 
    ```bash
    # Create data account
@@ -109,13 +128,13 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
      -y
    ```
 
-   | Parametro      | Descrizione                                          |
-   | -------------- | ---------------------------------------------------- |
-   | `owner-base58` | Il programma che possiede questo account (base58)    |
-   | `space`        | Dimensione del campo dati in byte                    |
-   | `lamports`     | Saldo iniziale (deve soddisfare il minimo di esenzione dal rent) |
+   | Parametro      | Descrizione                                        |
+   | -------------- | -------------------------------------------------- |
+   | `owner-base58` | Il programma proprietario di questo account (base58) |
+   | `space`        | Dimensione del campo dati in byte                  |
+   | `lamports`     | Saldo iniziale (deve soddisfare il minimo di esenzione dalla rent) |
 
-   Interroga il saldo minimo esente da rent per una determinata dimensione:
+   Interroga il saldo minimo esente da rent per una data dimensione:
 
    ```bash
    # RPC: getMinimumBalanceForRentExemption
@@ -129,7 +148,7 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
      }'
    ```
 
-4. **Utilizzo di @solana/web3.js** — L'SDK JavaScript di Solana funziona direttamente con l'endpoint SVM di QoreChain:
+4. **Utilizzare @solana/web3.js** — L'SDK JavaScript di Solana funziona direttamente con l'endpoint SVM di QoreChain:
 
    ```javascript
    import { Connection, PublicKey } from "@solana/web3.js";
@@ -163,43 +182,43 @@ QoreChain mantiene una **mappatura bidirezionale degli indirizzi** tra indirizzi
 | Direzione     | Esempio                                                    |
 | ------------- | ---------------------------------------------------------- |
 | Da nativo a SVM | `qor1abc...xyz` viene mappato a un indirizzo base58 deterministico |
-| Da SVM a nativo | Gli indirizzi base58 dei programmi vengono rimappati agli equivalenti `qor1...` |
+| Da SVM a nativo | Gli indirizzi base58 dei programmi vengono mappati agli equivalenti `qor1...` |
 
-La mappatura è deterministica ed è gestita dal modulo `x/svm`. Entrambe le rappresentazioni si riferiscono allo stesso account sottostante.
+La mappatura è deterministica ed è gestita dal modulo `x/svm`. Entrambe le rappresentazioni fanno riferimento allo stesso account sottostante.
 
 ---
 
 ## Modello di rent
 
-Il modulo SVM utilizza un **modello di storage basato sul rent** per prevenire il sovraccarico dello stato:
+Il modulo SVM utilizza un **modello di storage basato sulla rent** per prevenire il rigonfiamento dello stato:
 
 | Parametro                  | Valore     |
 | -------------------------- | ---------- |
-| Lamport per byte all'anno  | `3,480`    |
-| Moltiplicatore di esenzione dal rent | `2.0` |
-| Frequenza di riscossione   | Ad ogni epoch |
+| Lamports per byte all'anno | `3,480`    |
+| Moltiplicatore di esenzione dalla rent | `2.0` |
+| Frequenza di riscossione   | Ogni epoca |
 
-* Gli account con un saldo **superiore** a `2 * (data_size * 3480 / seconds_per_year)` in lamport sono **esenti dal rent** e non vengono mai addebitati.
-* Gli account **al di sotto** della soglia di esenzione dal rent vengono addebitati del rent ad ogni epoch. Se il saldo raggiunge lo zero, l'account viene eliminato.
+* Gli account con un saldo **superiore** a `2 * (data_size * 3480 / seconds_per_year)` in lamports sono **esenti da rent** e non vengono mai addebitati.
+* Agli account **al di sotto** della soglia di esenzione dalla rent viene addebitata la rent a ogni epoca. Se il saldo raggiunge lo zero, l'account viene eliminato.
 
 :::info
-**Buona pratica:** Finanzia sempre gli account dati al di sopra del minimo di esenzione dal rent per evitare l'eliminazione imprevista dell'account.
+**Buona pratica:** finanzia sempre gli account dati al di sopra del minimo di esenzione dalla rent per evitare l'eliminazione imprevista dell'account.
 :::
 
 ---
 
-## Budget di calcolo
+## Compute Budget
 
-Ogni esecuzione di istruzione viene misurata con unità di calcolo:
+Ogni esecuzione di istruzione è misurata con unità di calcolo:
 
 | Parametro                                | Valore      |
 | ---------------------------------------- | ----------- |
 | Unità di calcolo massime per istruzione  | `1,400,000` |
-| Profondità massima CPI (cross-program invocation) | `4`  |
+| Profondità massima CPI (invocazione cross-programma) | `4` |
 | Dimensione massima del programma         | `10 MB`     |
 | Dimensione massima dei dati dell'account | `10 MB`     |
 
-I programmi che superano il budget di calcolo vengono arrestati e la transazione viene annullata.
+I programmi che superano il compute budget vengono interrotti e la transazione viene annullata.
 
 ---
 
@@ -219,7 +238,7 @@ I programmi che superano il budget di calcolo vengono arrestati e la transazione
 
 ## Interoperabilità cross-VM
 
-I programmi SVM possono comunicare con i contratti EVM e CosmWasm tramite il percorso **asincrono** dei messaggi cross-VM:
+I programmi SVM possono comunicare con i contratti EVM e CosmWasm attraverso il percorso di messaggi cross-VM **asincrono**:
 
 ```bash
 # Cross-VM call example

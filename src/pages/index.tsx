@@ -142,7 +142,7 @@ export default function Home(): ReactNode {
         <header className={styles.hero}>
           <span className={`${styles.eyebrow} ${styles.reveal}`}>
             <span className={styles.pulse} />{" "}
-            <Translate id="home.hero.eyebrow">Mainnet live</Translate> · v3.1.80
+            <Translate id="home.hero.eyebrow">Mainnet live</Translate> · v3.1.82
           </span>
           <h1 className={`${styles.title} ${styles.reveal}`} style={{animationDelay: "0.06s"}}>
             <Translate

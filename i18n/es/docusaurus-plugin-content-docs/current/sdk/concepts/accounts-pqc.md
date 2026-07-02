@@ -106,7 +106,7 @@ protección post-cuántica. La parte post-cuántica viaja como una extensión
 `PQCHybridSignature` en la transacción.
 
 :::caution La firma híbrida es obligatoria en la ruta cosmos
-A partir de la versión actual de la cadena (**v3.1.80**), el valor predeterminado
+A partir de la versión actual de la cadena (**v3.1.82**), el valor predeterminado
 de la red es `hybrid_signature_mode = required` con
 `allow_classical_fallback = false`. La firma híbrida mediante `buildHybridTx` (con
 `includePqcPublicKey`) es **obligatoria** para las transacciones de la ruta cosmos:

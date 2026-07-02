@@ -7,34 +7,58 @@ sidebar_position: 4
 
 # Ağlar
 
-QoreChain ağları için birleştirilmiş bir referans — zincir tanımlayıcıları, EVM zincir kimlikleri, token denomu, adres önekleri ve standart hizmet portları. Tam düğüm bağlantı ayrıntıları (genel uç noktalar, tohumlar ve genesis) için aşağıda bağlantısı verilen bağlantı kılavuzlarını izleyin; operatörler güncel genel uç noktaları, tohumları ve genesis'i resmi sürümden edinir.
+QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tanımlayıcıları, EVM zincir kimlikleri, token birimi, adres önekleri, genel uç noktalar ve standart servis portları.
 
-## Bir bakışta ağlar
+## Ağlara genel bakış
 
-| | Ana Ağ | Test Ağı |
+| | Mainnet | Testnet |
 |---|---|---|
-| **Durum** | Canlı | Aktif test ağı |
+| **Durum** | Canlı | Aktif testnet |
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
-| **EVM zincir kimliği (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **Şu tarihten beri canlı** | 7 Haziran 2026, 23:59 UTC | — |
-| **Zincir sürümü** | v3.1.80 | v3.1.80 |
+| **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
+| **Canlıya geçiş tarihi** | 7 Haziran 2026, 23:59 UTC | — |
+| **Zincir sürümü** | v3.1.82 | v3.1.82 |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
-| **Bağlantı kılavuzu** | [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) | [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) |
+| **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
+| **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |
+
+## Genel uç noktalar {#public-endpoints}
+
+Tüm genel uç noktalar HTTPS üzerinden sunulur.
+
+| Servis | Mainnet | Testnet |
+|---|---|---|
+| Konsensüs RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| Konsensüs WebSocket | `wss://rpc.qore.host/websocket` | `wss://rpc-testnet.qore.host/websocket` |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (Solana uyumlu, salt okunur) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+| Blok gezgini | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (Testnet'e geçiş yapın) |
+| İndirmeler (ikili dosya / genesis / anlık görüntü) | [download.qore.host](https://download.qore.host) | — |
+
+:::note
+Genel SVM uç noktaları **salt okunurdur** (işlem gönderimi uçta devre dışıdır); SVM yazma işlemleri için kendi düğümünüzü çalıştırın. Yoğun veya üretim iş yükleri için kendi düğümünüzü çalıştırın — bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node).
+:::
 
 ## Token ve adresler
 
 | Öğe | Değer |
 |---|---|
-| **Görüntülenen denom** | QOR |
-| **Temel denom** | uqor (1 QOR = 10⁶ uqor) |
-| **Bech32 hesap öneki** | `qor` (örn. `qor1...`) |
-| **Bech32 doğrulayıcı öneki** | `qorvaloper` (örn. `qorvaloper1...`) |
+| **Görünen birim** | QOR |
+| **Temel birim** | uqor (1 QOR = 10⁶ uqor) |
+| **Arayüze göre ondalık basamaklar** | Cosmos **6** (`uqor`) · EVM **18** (wei tarzı; 1 uqor = 10¹² wei) · SVM **9** (lamports; 1 uqor = 1.000 lamports) |
+| **HD coin türü (BIP-44)** | `118` |
+| **Bech32 hesap öneki** | `qor` (ör. `qor1...`) |
+| **Bech32 doğrulayıcı öneki** | `qorvaloper` (ör. `qorvaloper1...`) |
+
+Üç arayüz **tek bir birleşik yerel QOR bakiyesi** sunar: aynı anahtar, `qor1...` (Cosmos), `0x...` (EVM) ve base58 (SVM) adres biçimleri altında aynı fonları kontrol eder.
 
 ## Standart portlar
 
-Bunlar, bir QoreChain düğümü tarafından açığa çıkarılan standart hizmet portlarıdır. Asıl genel uç nokta ana bilgisayar adları resmi sürümle yayımlanır — yukarıdaki bağlantı kılavuzlarına bakın.
+Bunlar, kendiniz çalıştırdığınız bir QoreChain düğümünün sunduğu standart servis portlarıdır.
 
-| Hizmet | Port |
+| Servis | Port |
 |---|---|
 | Cosmos RPC | 26657 |
 | P2P | 26656 |
@@ -47,20 +71,19 @@ Bunlar, bir QoreChain düğümü tarafından açığa çıkarılan standart hizm
 
 ## Uç noktalar ve erişim
 
-QoreChain, bu referansta sabit genel RPC/REST/EVM ana bilgisayar adları yayımlamaz. Bunun yerine:
-
-- Düğüm bağlantısı, tohumlar ve genesis için [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) veya [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) sayfasını izleyin. Operatörler güncel genel uç noktaları, tohumları ve genesis'i resmi sürümden edinir.
-- Bir uygulamadan programatik erişim için, ağ yapılandırmasını sizin yerinize çözen [QoreChain SDK](/sdk/overview)'i kullanın.
-- Zincir üstü **Explorer**, [dashboard.qorechain.io](https://dashboard.qorechain.io) adresindeki Dashboard üzerinden erişilebilir ve test ağı **Musluğu** da oradan ulaşılabilir (bkz. [Dashboard Musluğu](/dashboard/faucet)).
-- Bu dokümanlar [docs.qorechain.io](https://docs.qorechain.io) adresinde yayımlanır.
+- Düğüm bağlantısı, eşler, genesis ve anlık görüntüler için [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) veya [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) kılavuzunu izleyin.
+- Bir uygulamadan programatik erişim için, ağ yapılandırmasını sizin yerinize çözümleyen [QoreChain SDK](/sdk/overview)'yı kullanın.
+- Genel **blok gezgini** [explore.qore.network](https://explore.qore.network) adresindedir; [dashboard.qorechain.io](https://dashboard.qorechain.io) adresindeki Dashboard kendi gezgin görünümünü içerir ve testnet **Faucet**'ine oradan erişilebilir (bkz. [Dashboard Faucet](/dashboard/faucet)).
+- Bu dokümantasyon [docs.qorechain.io](https://docs.qorechain.io) adresinde yayımlanmaktadır.
 
 ## MetaMask'e ekleme
 
-MetaMask gibi bir EVM cüzdanına bir QoreChain ağı eklemek için, yukarıdaki EVM zincir kimliklerini — ana ağ için **9801** ve test ağı için **9800** — bağlandığınız ağın EVM JSON-RPC uç noktasıyla birlikte kullanın. Adım adım anlatım için bkz. [Cüzdan Kurulumu](/getting-started/wallet-setup).
+Bir QoreChain ağını MetaMask gibi bir EVM cüzdanına eklemek için yukarıdaki EVM zincir kimliklerini kullanın — mainnet için **9801** ile `https://evm.qore.host`, testnet için **9800** ile `https://evm-testnet.qore.host` — blok gezgini URL'si olarak da `https://explore.qore.network` girin. Adım adım yönergeler için [Cüzdan Kurulumu](/getting-started/wallet-setup) sayfasına bakın.
 
-## İlgili
+## İlgili sayfalar
 
-* [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) — canlı `qorechain-vladi` ağına katılın.
-* [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) — Diana test ağına katılın.
+* [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) — canlı `qorechain-vladi` ağına katılın.
+* [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) — Diana testnet'ine katılın.
+* [Borsa ve Entegratör Kılavuzu](/developer-guide/exchange-integration) — entegratörler için para yatırma, çekme ve düğüm operasyonları.
 * [Zincir Parametreleri](/appendix/chain-parameters) — kanonik zincir yapılandırması.
-* [SDK Genel Bakış](/sdk/overview) — ağ yapılandırmasını koddan çözün.
+* [SDK'ya Genel Bakış](/sdk/overview) — ağ yapılandırmasını koddan çözümleyin.

@@ -23,7 +23,7 @@ QoreChain, yerel **QOR** token'ı etrafında merkezlenen **sabit arzlı** bir ek
 | **Bech32 öneki**      | `qor` (hesaplar: `qor1...`, doğrulayıcılar: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan beri zincir sürümü **v3.1.80** üzerinde çalışan **ana ağı** (`qorechain-vladi`, EVM zincir kimliği **9801**) tanımlar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) aynı ekonomik modeli paylaşır.
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan beri zincir sürümü **v3.1.82** üzerinde çalışan **ana ağı** (`qorechain-vladi`, EVM zincir kimliği **9801**) tanımlar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) aynı ekonomik modeli paylaşır.
 :::
 
 ---

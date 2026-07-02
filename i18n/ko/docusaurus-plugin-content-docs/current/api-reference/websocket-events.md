@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain은 두 가지 WebSocket 인터페이스를 통해 실시간 이벤트 스트리밍을 제공합니다: EVM 호환 WebSocket과 QoreChain 합의 엔진 RPC WebSocket입니다.
 
 :::note
-두 WebSocket 인터페이스 모두 **`qorechain-vladi`** 메인넷(체인 버전 **v3.1.80**에서 가동 중)과 **`qorechain-diana`** 테스트넷에서 사용할 수 있습니다. 아래 로컬 엔드포인트는 직접 운영하는 노드를 가정합니다. 원격 접속의 경우 공급자의 메인넷 또는 테스트넷 호스트로 대체하세요.
+두 WebSocket 인터페이스 모두 **`qorechain-vladi`** 메인넷(체인 버전 **v3.1.82**에서 가동 중)과 **`qorechain-diana`** 테스트넷에서 사용할 수 있습니다. 아래 로컬 엔드포인트는 직접 운영하는 노드를 가정합니다. 원격 접속의 경우 공급자의 메인넷 또는 테스트넷 호스트로 대체하세요.
 :::
 
 ---

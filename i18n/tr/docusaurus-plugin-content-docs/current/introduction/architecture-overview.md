@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Mimari Genel Bakış
 
-QoreChain; üç ana süreçten — zincir düğümü, AI sidecar ve blok dizinleyici (indexer) — oluşan, bir Postgres veritabanıyla desteklenen ve Prometheus ile Grafana aracılığıyla izlenen modüler bir blok zinciri düğümüdür. Ana ağ (`qorechain-vladi`, EVM chain ID **9801**), zincir sürümü **v3.1.80** üzerinde 7 Haziran 2026'dan beri yayında; paralel bir test ağı (`qorechain-diana`, EVM chain ID **9800**) da çalışmaktadır. Zincir, Cosmos SDK v0.53 üzerine kuruludur. Aşağıdaki şema, üst düzey bileşen yerleşimini göstermektedir.
+QoreChain; üç ana süreçten — zincir düğümü, AI sidecar ve blok dizinleyici (indexer) — oluşan, bir Postgres veritabanıyla desteklenen ve Prometheus ile Grafana aracılığıyla izlenen modüler bir blok zinciri düğümüdür. Ana ağ (`qorechain-vladi`, EVM chain ID **9801**), zincir sürümü **v3.1.82** üzerinde 7 Haziran 2026'dan beri yayında; paralel bir test ağı (`qorechain-diana`, EVM chain ID **9800**) da çalışmaktadır. Zincir, Cosmos SDK v0.53 üzerine kuruludur. Aşağıdaki şema, üst düzey bileşen yerleşimini göstermektedir.
 
 Aşağıdaki işlem yaşam döngüsü, gönderilen bir işlemin düğüm boyunca nasıl aktığını özetler — AnteHandler dekoratör zincirinden (güvenlik ve ücret kontrolleri) VM yürütmesine ve zincir üzerinde nihai uzlaşıya kadar:
 

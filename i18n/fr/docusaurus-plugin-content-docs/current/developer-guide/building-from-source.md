@@ -145,7 +145,7 @@ Après une compilation réussie, vérifiez le binaire :
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-La commande `init` devrait créer un fichier de genesis et une configuration de nœud dans `~/.qorechaind/` sans erreurs. L'exemple ci-dessus initialise contre le testnet **`qorechain-diana`** — pour le mainnet, remplacez par `--chain-id qorechain-vladi`, le réseau en service exécutant la version de chaîne **v3.1.80**.
+La commande `init` devrait créer un fichier de genesis et une configuration de nœud dans `~/.qorechaind/` sans erreurs. L'exemple ci-dessus initialise contre le testnet **`qorechain-diana`** — pour le mainnet, remplacez par `--chain-id qorechain-vladi`, le réseau en service exécutant la version de chaîne **v3.1.82**.
 
 ## Compilation Docker
 

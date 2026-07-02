@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain; genesis'te kuantum sonrası kriptografi, AI-yerel işlem işleme ve tek bir zincir üzerinde EVM, CosmWasm ile SVM programlarını yürüten üçlü VM çalışma zamanıyla inşa edilmiş ilk Katman 1 (Layer 1) blok zinciridir. QoreChain, mevcut bir protokole kuantum direncini sonradan eklemek yerine, modern genel amaçlı bir blok zincirinden beklenen geliştirici deneyimi ve birlikte çalışabilirliği sunarken hem klasik hem de kuantum saldırganlarına karşı güvenli olacak şekilde sıfırdan tasarlanmıştır.
 
-Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.1.80**'yi çalıştırıyor. Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
+Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.1.82**'yi çalıştırıyor. Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
 
 ## Çekirdek Yenilikler
 

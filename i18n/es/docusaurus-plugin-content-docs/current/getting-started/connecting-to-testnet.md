@@ -13,18 +13,37 @@ sidebar_position: 4
 Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes.
 :::
 
+## Endpoints públicos
+
+Si solo necesitas **consultar la red de pruebas o difundir transacciones**, utiliza los endpoints públicos:
+
+| Servicio | URL |
+|---|---|
+| RPC de consenso | `https://rpc-testnet.qore.host` (WebSocket: `wss://rpc-testnet.qore.host/websocket`) |
+| Cosmos REST (LCD) | `https://api-testnet.qore.host` |
+| JSON-RPC de EVM | `https://evm-testnet.qore.host` (ID de cadena `9800`) |
+| WebSocket de EVM | `wss://evm-ws-testnet.qore.host` |
+| JSON-RPC de SVM (solo lectura) | `https://svm-testnet.qore.host` |
+| Explorador de bloques | [explore.qore.network](https://explore.qore.network) (cambia a Testnet) |
+
+El QOR de la red de pruebas está disponible en el [faucet del panel de control](/dashboard/faucet).
+
 ---
 
 ## Descargar el génesis
 
-Reemplaza tu archivo génesis local por el génesis oficial de la red de pruebas:
+Reemplaza tu archivo génesis local por el génesis oficial de la red de pruebas, servido en vivo por la propia cadena:
 
 ```bash
-curl -o ~/.qorechaind/config/genesis.json \
-  https://raw.githubusercontent.com/qorechain/qorechain-core/main/config/genesis.json
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
+  > ~/.qorechaind/config/genesis.json
 ```
 
 Este archivo define el estado inicial de la red de pruebas Diana, incluido el conjunto de validadores, las asignaciones de tokens y los parámetros de los módulos.
+
+:::caution
+La red de pruebas Diana se **re-genera desde el génesis** periódicamente (se reinicia a la altura 0) a medida que se publican compilaciones preliminares. Si tu nodo deja de sincronizar tras un reinicio, vuelve a descargar el génesis y empieza desde un directorio de datos limpio.
+:::
 
 ---
 
@@ -32,13 +51,18 @@ Este archivo define el estado inicial de la red de pruebas Diana, incluido el co
 
 Edita la configuración de tu nodo para conectarte a los pares existentes de la red de pruebas.
 
-Abre `~/.qorechaind/config/config.toml` y configura el campo `persistent_peers`:
+Consulta un par actual directamente desde la red y luego configura el campo `persistent_peers` en `~/.qorechaind/config/config.toml`:
 
-```toml
-persistent_peers = "node-id@seed1.qorechain.io:26656,node-id@seed2.qorechain.io:26656"
+```bash
+# node id + listen address of the public testnet node
+curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
 ```
 
-Consulta el [repositorio de QoreChain](https://github.com/qorechain/qorechain-core) para obtener la lista de pares más reciente.
+Configura también el precio mínimo de gas en `~/.qorechaind/config/app.toml` (la red de pruebas usa el mismo mínimo de **0.1uqor** que la red principal):
+
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
 ### Ajustes recomendados
 
@@ -124,16 +148,16 @@ http://localhost:1317
 
 ## Referencia de puertos
 
-| Puerto    | Protocolo  | Descripción                                        |
+| Puerto  | Protocolo | Descripción                                        |
 | ------- | --------- | -------------------------------------------------- |
-| `26657` | TCP       | RPC — consultar y difundir transacciones             |
-| `26656` | TCP       | P2P — comunicación de red entre pares           |
-| `1317`  | HTTP      | API REST — consultar el estado de la cadena vía HTTP              |
-| `9090`  | gRPC      | API gRPC — acceso programático a la cadena               |
+| `26657` | TCP       | RPC — consultar y difundir transacciones           |
+| `26656` | TCP       | P2P — comunicación de red entre pares              |
+| `1317`  | HTTP      | API REST — consultar el estado de la cadena vía HTTP |
+| `9090`  | gRPC      | API gRPC — acceso programático a la cadena         |
 | `8545`  | HTTP      | JSON-RPC de EVM — RPC compatible con Ethereum (ID de cadena `9800`) |
-| `8546`  | WebSocket | WebSocket de EVM — suscripciones a eventos EVM en tiempo real  |
-| `8899`  | HTTP      | RPC de SVM — RPC compatible con Solana                    |
-| `26660` | HTTP      | Endpoint de métricas de Prometheus                        |
+| `8546`  | WebSocket | WebSocket de EVM — suscripciones a eventos EVM en tiempo real |
+| `8899`  | HTTP      | RPC de SVM — RPC compatible con Solana             |
+| `26660` | HTTP      | Endpoint de métricas de Prometheus                 |
 
 ---
 

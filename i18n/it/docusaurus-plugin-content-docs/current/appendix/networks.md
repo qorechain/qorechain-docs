@@ -7,60 +7,83 @@ sidebar_position: 4
 
 # Reti
 
-Un riferimento consolidato per le reti di QoreChain — identificatori di chain, EVM chain ID, denominazione del token, prefissi degli indirizzi e porte di servizio standard. Per i dettagli completi di connessione dei nodi (endpoint pubblici, seed e genesis), segui le guide di connessione collegate di seguito; gli operatori ottengono gli endpoint pubblici, i seed e il genesis correnti dalla release ufficiale.
+Un riferimento consolidato per le reti QoreChain — identificatori di chain, chain ID EVM, denominazione del token, prefissi degli indirizzi, endpoint pubblici e porte di servizio standard.
 
-## Reti a colpo d'occhio
+## Le reti in sintesi
 
 | | Mainnet | Testnet |
 |---|---|---|
 | **Stato** | Attiva | Testnet attiva |
-| **Cosmos chain ID** | `qorechain-vladi` | `qorechain-diana` |
-| **EVM chain ID (EIP-155)** | **9801** (esadecimale `0x2649`) | **9800** (esadecimale `0x2648`) |
+| **Chain ID Cosmos** | `qorechain-vladi` | `qorechain-diana` |
+| **Chain ID EVM (EIP-155)** | **9801** (esadecimale `0x2649`) | **9800** (esadecimale `0x2648`) |
 | **Attiva dal** | 7 giugno 2026, 23:59 UTC | — |
-| **Versione della chain** | v3.1.80 | v3.1.80 |
+| **Versione della chain** | v3.1.82 | v3.1.82 |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
-| **Guida di connessione** | [Connessione alla mainnet](/getting-started/connecting-to-mainnet) | [Connessione alla testnet](/getting-started/connecting-to-testnet) |
+| **Prezzo minimo del gas** | `0.1uqor` | `0.1uqor` |
+| **Guida alla connessione** | [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) | [Connessione alla Testnet](/getting-started/connecting-to-testnet) |
+
+## Endpoint pubblici {#public-endpoints}
+
+Tutti gli endpoint pubblici sono serviti tramite HTTPS.
+
+| Servizio | Mainnet | Testnet |
+|---|---|---|
+| RPC di consenso | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| WebSocket di consenso | `wss://rpc.qore.host/websocket` | `wss://rpc-testnet.qore.host/websocket` |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| JSON-RPC EVM | `https://evm.qore.host` | `https://evm-testnet.qore.host` |
+| WebSocket EVM | — | `wss://evm-ws-testnet.qore.host` |
+| JSON-RPC SVM (compatibile Solana, sola lettura) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+| Esploratore di blocchi | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (passare a Testnet) |
+| Download (binario / genesis / snapshot) | [download.qore.host](https://download.qore.host) | — |
+
+:::note
+Gli endpoint SVM pubblici sono in **sola lettura** (l'invio di transazioni è disabilitato a livello di edge); esegui il tuo nodo per le scritture SVM. Per carichi di lavoro intensivi o di produzione, esegui il tuo nodo — vedi [Eseguire un nodo](/developer-guide/running-a-node).
+:::
 
 ## Token e indirizzi
 
-| Elemento | Valore |
+| Voce | Valore |
 |---|---|
-| **Denom di visualizzazione** | QOR |
-| **Denom base** | uqor (1 QOR = 10⁶ uqor) |
-| **Prefisso Bech32 account** | `qor` (ad es. `qor1...`) |
-| **Prefisso Bech32 validatore** | `qorvaloper` (ad es. `qorvaloper1...`) |
+| **Denominazione di visualizzazione** | QOR |
+| **Denominazione base** | uqor (1 QOR = 10⁶ uqor) |
+| **Decimali per interfaccia** | Cosmos **6** (`uqor`) · EVM **18** (in stile wei; 1 uqor = 10¹² wei) · SVM **9** (lamports; 1 uqor = 1.000 lamports) |
+| **Coin type HD (BIP-44)** | `118` |
+| **Prefisso Bech32 degli account** | `qor` (es. `qor1...`) |
+| **Prefisso Bech32 dei validatori** | `qorvaloper` (es. `qorvaloper1...`) |
+
+Le tre interfacce espongono **un unico saldo QOR nativo unificato**: la stessa chiave controlla gli stessi fondi nelle sue forme di indirizzo `qor1...` (Cosmos), `0x...` (EVM) e base58 (SVM).
 
 ## Porte standard
 
-Queste sono le porte di servizio standard esposte da un nodo QoreChain. Gli hostname effettivi degli endpoint pubblici sono pubblicati con la release ufficiale — vedi le guide di connessione sopra.
+Queste sono le porte di servizio standard esposte da un nodo QoreChain che esegui tu stesso.
 
 | Servizio | Porta |
 |---|---|
-| Cosmos RPC | 26657 |
+| RPC Cosmos | 26657 |
 | P2P | 26656 |
 | REST / API | 1317 |
 | gRPC | 9090 |
-| EVM JSON-RPC | 8545 |
-| EVM JSON-RPC (WebSocket) | 8546 |
-| SVM (compatibile Solana) JSON-RPC | 8899 |
+| JSON-RPC EVM | 8545 |
+| JSON-RPC EVM (WebSocket) | 8546 |
+| JSON-RPC SVM (compatibile Solana) | 8899 |
 | Metriche Prometheus | 26660 |
 
 ## Endpoint e accesso
 
-QoreChain non pubblica hostname pubblici fissi RPC/REST/EVM in questo riferimento. Invece:
-
-- Per la connessione dei nodi, i seed e il genesis, segui [Connessione alla mainnet](/getting-started/connecting-to-mainnet) o [Connessione alla testnet](/getting-started/connecting-to-testnet). Gli operatori ottengono gli endpoint pubblici, i seed e il genesis correnti dalla release ufficiale.
-- Per l'accesso programmatico da un'applicazione, usa l'[SDK di QoreChain](/sdk/overview), che risolve la configurazione di rete per te.
-- L'**Explorer** on-chain è disponibile tramite la Dashboard su [dashboard.qorechain.io](https://dashboard.qorechain.io), e il **Faucet** di testnet è anch'esso raggiungibile lì (vedi [Faucet della Dashboard](/dashboard/faucet)).
+- Per la connessione del nodo, i peer, il genesis e gli snapshot, segui [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) o [Connessione alla Testnet](/getting-started/connecting-to-testnet).
+- Per l'accesso programmatico da un'applicazione, usa il [QoreChain SDK](/sdk/overview), che risolve automaticamente la configurazione di rete.
+- L'**esploratore di blocchi** pubblico è disponibile su [explore.qore.network](https://explore.qore.network); la Dashboard su [dashboard.qorechain.io](https://dashboard.qorechain.io) include la propria vista esploratore, e il **Faucet** della testnet è raggiungibile da lì (vedi [Faucet della Dashboard](/dashboard/faucet)).
 - Questa documentazione è pubblicata su [docs.qorechain.io](https://docs.qorechain.io).
 
 ## Aggiungere a MetaMask
 
-Per aggiungere una rete QoreChain a un wallet EVM come MetaMask, usa gli EVM chain ID sopra — **9801** per la mainnet e **9800** per la testnet — insieme all'endpoint EVM JSON-RPC della rete a cui ti stai connettendo. Vedi [Configurazione del wallet](/getting-started/wallet-setup) per la procedura passo passo.
+Per aggiungere una rete QoreChain a un portafoglio EVM come MetaMask, usa i chain ID EVM indicati sopra — **9801** per la mainnet con `https://evm.qore.host` e **9800** per la testnet con `https://evm-testnet.qore.host` — con `https://explore.qore.network` come URL dell'esploratore di blocchi. Vedi [Configurazione del portafoglio](/getting-started/wallet-setup) per la procedura passo passo.
 
 ## Correlati
 
-* [Connessione alla mainnet](/getting-started/connecting-to-mainnet) — unisciti alla rete attiva `qorechain-vladi`.
-* [Connessione alla testnet](/getting-started/connecting-to-testnet) — unisciti alla testnet Diana.
+* [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) — unisciti alla rete live `qorechain-vladi`.
+* [Connessione alla Testnet](/getting-started/connecting-to-testnet) — unisciti alla testnet Diana.
+* [Guida per exchange e integratori](/developer-guide/exchange-integration) — depositi, prelievi e operazioni del nodo per gli integratori.
 * [Parametri della chain](/appendix/chain-parameters) — configurazione canonica della chain.
 * [Panoramica dell'SDK](/sdk/overview) — risolvi la configurazione di rete dal codice.

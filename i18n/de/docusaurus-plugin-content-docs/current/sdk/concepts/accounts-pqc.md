@@ -106,7 +106,7 @@ bleibt und zugleich Post-Quantum-Schutz gewinnt. Der Post-Quantum-Teil reist als
 `PQCHybridSignature`-Erweiterung auf der Transaktion mit.
 
 :::caution Hybride Signierung ist auf dem Cosmos-Pfad erforderlich
-Ab der aktuellen Chain-Version (**v3.1.80**) ist die Netzwerk-Vorgabe
+Ab der aktuellen Chain-Version (**v3.1.82**) ist die Netzwerk-Vorgabe
 `hybrid_signature_mode = required` mit `allow_classical_fallback = false`.
 Hybride Signierung über `buildHybridTx` (mit `includePqcPublicKey`) ist für
 Cosmos-Pfad-Transaktionen **verpflichtend** — rein klassische

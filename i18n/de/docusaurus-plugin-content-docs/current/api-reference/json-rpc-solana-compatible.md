@@ -7,38 +7,41 @@ sidebar_position: 4
 
 # JSON-RPC — Solana-kompatibel
 
-QoreChain stellt über seine SVM-Laufzeitumgebung (Solana Virtual Machine) eine Solana-kompatible JSON-RPC-Schnittstelle bereit, die es bestehenden Solana-Werkzeugen und SDKs ermöglicht, nativ mit QoreChain zu interagieren.
+QoreChain stellt über seine SVM-Laufzeitumgebung (Solana Virtual Machine) eine Solana-kompatible JSON-RPC-Schnittstelle bereit, sodass bestehende Solana-Tools und -SDKs nativ mit QoreChain interagieren können.
 
 ## Verbindung
 
-| Transport | Standardadresse           |
+| Transport | Adresse |
 | --------- | ------------------------- |
-| HTTP      | `http://127.0.0.1:8899`   |
+| HTTP (eigener Node) | `http://127.0.0.1:8899`   |
+| HTTPS (öffentlich, Mainnet, nur lesend) | `https://svm.qore.host` |
+| HTTPS (öffentlich, Testnet, nur lesend) | `https://svm-testnet.qore.host` |
 
-Der JSON-RPC-Server wird **von `qorechaind start` gestartet** und ist **standardmäßig aktiviert**, wobei er auf `127.0.0.1:8899` lauscht. Er wird über einen Abschnitt `[svm-rpc]` in `app.toml` konfiguriert (`enable` + `address`). Ein frisch gestarteter Node stellt diese Schnittstelle bereits bereit — es ist kein zusätzlicher Prozess erforderlich.
+Der JSON-RPC-Server wird **von `qorechaind start` gestartet** und ist **standardmäßig aktiviert**; er lauscht auf `127.0.0.1:8899`. Er wird über einen `[svm-rpc]`-Abschnitt in `app.toml` konfiguriert (`enable` + `address`). Ein frisch gestarteter Node stellt diese Schnittstelle bereits bereit — es ist kein zusätzlicher Prozess erforderlich. Die öffentlichen Endpunkte sind **nur lesend** (das Einreichen von Transaktionen ist am Edge deaktiviert).
 
 :::note
-Die Solana-kompatible JSON-RPC-Schnittstelle wird auf Port **8899** sowohl vom **`qorechain-vladi`**-Mainnet (live auf Chain-Version **v3.1.80**) als auch vom **`qorechain-diana`**-Testnet bereitgestellt. Die obige lokale Adresse gilt für einen Node, den Sie selbst betreiben; ersetzen Sie für den Fernzugriff den Mainnet- oder Testnet-Endpunkt Ihres Anbieters.
+Seit Chain-Version **v3.1.82** liefert die SVM-Schnittstelle das **native QOR-Guthaben** des Kontos — dieselben vereinheitlichten Mittel, die auch über die Cosmos- und EVM-Schnittstellen sichtbar sind — denominiert in **lamports** (9 Dezimalstellen; **1 uqor = 1.000 lamports**). Siehe [Natives QOR auf der SVM-Schnittstelle](/developer-guide/svm-development#native-qor).
 :::
 
 ---
 
 ## Methoden
 
-| Methode                             | Parameter                | Beschreibung                                                          |
-| ----------------------------------- | ------------------------ | -------------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey` (base58 string) | Gibt Kontodaten, Owner, Lamports und das Executable-Flag zurück     |
-| `getBalance`                        | `pubkey` (base58 string) | Gibt den Kontostand in Lamports für den angegebenen Public Key zurück |
-| `getSlot`                           | keine                    | Gibt die aktuelle Slot-Nummer zurück                                |
-| `getMinimumBalanceForRentExemption` | `dataLength` (integer)   | Gibt den Mindestkontostand für die Mietbefreiung bei gegebener Datengröße zurück |
-| `getVersion`                        | keine                    | Gibt die Softwareversion des Nodes zurück                           |
-| `getHealth`                         | keine                    | Gibt den Gesundheitsstatus des Nodes zurück (`"ok"`, wenn gesund)   |
+| Methode                             | Parameter                | Beschreibung                                                   |
+| ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
+| `getAccountInfo`                    | `pubkey` (base58-String) | Gibt Kontodaten, Owner, lamports und das Executable-Flag zurück |
+| `getBalance`                        | `pubkey` (base58-String) | Gibt das native QOR-Guthaben in lamports für den angegebenen öffentlichen Schlüssel zurück |
+| `getSignaturesForAddress`           | `address` (base58-String) | Gibt Transaktionssignaturen zurück, an denen die Adresse beteiligt ist (Einzahlungserkennung) |
+| `getSlot`                           | keine                    | Gibt die aktuelle Slot-Nummer zurück                           |
+| `getMinimumBalanceForRentExemption` | `dataLength` (Integer)   | Gibt das Mindestguthaben für die Rent-Befreiung bei gegebener Datengröße zurück |
+| `getVersion`                        | keine                    | Gibt die Softwareversion des Nodes zurück                      |
+| `getHealth`                         | keine                    | Gibt den Gesundheitsstatus des Nodes zurück (`"ok"`, wenn gesund) |
 
 ---
 
 ## Antwortformat
 
-Alle Antworten folgen der JSON-RPC-2.0-Spezifikation. Antworten, die sich auf On-Chain-State beziehen, enthalten ein `context`-Objekt mit dem aktuellen `slot`:
+Alle Antworten folgen der JSON-RPC-2.0-Spezifikation. Antworten, die sich auf On-Chain-Zustand beziehen, enthalten ein `context`-Objekt mit dem aktuellen `slot`:
 
 ```json
 {
@@ -154,13 +157,13 @@ curl -X POST http://localhost:8899 \
 }
 ```
 
-Die Versionszeichenkette `1.18.0-qorechain` weist auf die Kompatibilität mit der RPC-Schnittstelle von Solana 1.18.0 hin, die auf der QoreChain-SVM-Laufzeitumgebung läuft.
+Der Versionsstring `1.18.0-qorechain` zeigt die Kompatibilität mit der Solana-1.18.0-RPC-Schnittstelle an, die auf der QoreChain-SVM-Laufzeitumgebung läuft.
 
 ---
 
 ## @solana/web3.js-Integration
 
-Bestehende Solana-Anwendungen können sich mit QoreChain verbinden, indem sie das `Connection`-Objekt auf den lokalen SVM-Endpunkt ausrichten:
+Bestehende Solana-Anwendungen können sich mit QoreChain verbinden, indem sie das `Connection`-Objekt auf den lokalen SVM-Endpunkt richten:
 
 ```javascript
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -193,7 +196,7 @@ if (accountInfo) {
 
 ## Hinweise
 
-- **Adressformat**: SVM-Konten verwenden base58-kodierte Public Keys (Standard-Solana-Format), nicht das `qor1`-Bech32-Präfix, das von den nativen Cosmos-SDK-Modulen verwendet wird.
-- **VM-übergreifendes Bridging**: Um Assets zwischen EVM- und SVM-Laufzeitumgebungen zu verschieben, verwenden Sie das Cross-VM-Modul (`x/crossvm`). Siehe die [Transaktionsbefehle](/cli-reference/transaction-commands) für die `crossvm call`-Syntax.
-- **Programmbereitstellung**: Stellen Sie BPF-Programme über die CLI (`qorechaind tx svm deploy-program`) oder programmatisch über die SVM-Laufzeitumgebung bereit.
-- **Compute-Budget**: Die SVM-Laufzeitumgebung setzt standardmäßig ein Compute-Budget von 1.400.000 Compute-Einheiten pro Transaktion durch. Dies ist über Modulparameter konfigurierbar.
+- **Adressformat**: SVM-Konten verwenden base58-codierte öffentliche Schlüssel (Standard-Solana-Format), nicht das `qor1`-Bech32-Präfix, das von den nativen Cosmos SDK-Modulen verwendet wird.
+- **Cross-VM-Bridging**: Um Assets zwischen den EVM- und SVM-Laufzeitumgebungen zu verschieben, verwenden Sie das Cross-VM-Modul (`x/crossvm`). Siehe die [Transaktionsbefehle](/cli-reference/transaction-commands) für die `crossvm call`-Syntax.
+- **Programm-Deployment**: Deployen Sie BPF-Programme über die CLI (`qorechaind tx svm deploy-program`) oder programmatisch über die SVM-Laufzeitumgebung.
+- **Compute-Budget**: Die SVM-Laufzeitumgebung erzwingt standardmäßig ein Compute-Budget von 1.400.000 Compute Units pro Transaktion. Dies ist über Modulparameter konfigurierbar.

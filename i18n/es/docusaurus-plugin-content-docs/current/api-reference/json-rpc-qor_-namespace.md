@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-El espacio de nombres `qor_` está disponible en la red principal **`qorechain-vladi`** (EVM chain ID **9801**, activa en la versión de cadena **v3.1.80**) y en la red de pruebas **`qorechain-diana`** (EVM chain ID **9800**). Los ejemplos siguientes asumen un nodo local; sustituye el endpoint de red principal o de pruebas de tu proveedor para el acceso remoto.
+El espacio de nombres `qor_` está disponible en la red principal **`qorechain-vladi`** (EVM chain ID **9801**, activa en la versión de cadena **v3.1.82**) y en la red de pruebas **`qorechain-diana`** (EVM chain ID **9800**). Los ejemplos siguientes asumen un nodo local; sustituye el endpoint de red principal o de pruebas de tu proveedor para el acceso remoto.
 :::
 
 ---

@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain est conçue avec la **cryptographie post-quantique (PQC) dès le genesis** — et non ajoutée a posteriori sous forme de mise à niveau. Le module `x/pqc` fournit des signatures numériques fondées sur les réseaux euclidiens (lattices) et l'encapsulation de clés comme primitives cryptographiques principales, avec un cadre d'agilité algorithmique contrôlé par la gouvernance pour une résilience à long terme.
 
-La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. À partir de la version de chaîne actuelle (**v3.1.80**), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé.
+La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. À partir de la version de chaîne actuelle (**v3.1.82**), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé.
 
 ## Principes de conception
 

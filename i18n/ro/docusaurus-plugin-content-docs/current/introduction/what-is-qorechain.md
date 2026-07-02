@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain este primul blockchain de tip Layer 1 construit cu criptografie post-cuantică de la geneză, procesare a tranzacțiilor nativă AI și un runtime triplu-VM care execută programe EVM, CosmWasm și SVM pe un singur lanț. În loc să adapteze rezistența cuantică pe un protocol existent, QoreChain a fost proiectat de la zero pentru a fi sigur împotriva adversarilor atât clasici, cât și cuantici, oferind în același timp experiența de dezvoltare și interoperabilitatea așteptate de la un blockchain modern de uz general.
 
-Rețeaua principală (`qorechain-vladi`, EVM chain ID **9801**) este activă din 7 iunie 2026 și rulează versiunea de lanț **v3.1.80**. O rețea de test publică (`qorechain-diana`, EVM chain ID **9800**) rulează în paralel pentru staging și testare de integrare. Token-ul nativ este **QOR** (afișare) / **uqor** (bază, 10^6), cu prefixele Bech32 `qor` pentru conturi și `qorvaloper` pentru validatori. Lanțul este construit pe Cosmos SDK v0.53.
+Rețeaua principală (`qorechain-vladi`, EVM chain ID **9801**) este activă din 7 iunie 2026 și rulează versiunea de lanț **v3.1.82**. O rețea de test publică (`qorechain-diana`, EVM chain ID **9800**) rulează în paralel pentru staging și testare de integrare. Token-ul nativ este **QOR** (afișare) / **uqor** (bază, 10^6), cu prefixele Bech32 `qor` pentru conturi și `qorvaloper` pentru validatori. Lanțul este construit pe Cosmos SDK v0.53.
 
 ## Inovații de bază
 

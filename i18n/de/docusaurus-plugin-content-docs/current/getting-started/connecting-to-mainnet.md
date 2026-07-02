@@ -7,23 +7,51 @@ sidebar_position: 3
 
 # Verbindung zum Mainnet
 
-Treten Sie dem aktiven QoreChain-Vladi-Mainnet bei, indem Sie Ihren Knoten mit der korrekten Genesis-Datei, den Peers und den Netzwerkeinstellungen konfigurieren.
+Treten Sie dem laufenden QoreChain-Vladi-Mainnet bei, indem Sie Ihren Node mit der offiziellen Genesis-Datei, den Peers und den Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hex `0x2649`), seit dem **7. Juni 2026 23:59 UTC** aktiv und mit der Chain-Version **v3.1.80** auf Cosmos SDK v0.53 betrieben. Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und üben Sie Ihre Einrichtung dort, bevor Sie live gehen.
+Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hex `0x2649`), live seit dem **7. Juni 2026, 23:59 UTC**, mit Chain-Version **v3.1.82** auf Cosmos SDK v0.53. Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) — proben Sie dort Ihr Setup, bevor Sie live gehen.
 :::
 
-:::warning
-Mainnet-Seed-Knoten, persistente Peers, die Genesis-URL und ihre SHA-256-Prüfsumme werden mit jedem offiziellen Mainnet-Release veröffentlicht. **Beziehen Sie diese aktuellen Werte immer aus dem offiziellen Mainnet-Repository/-Release** und überprüfen Sie die Genesis-Prüfsumme vor dem Start. Die untenstehenden Platzhalter (`<MAINNET_SEED_NODE_ID>@<host>:26656`, Genesis-URL, Snapshot-URLs) müssen durch die tatsächlich veröffentlichten Werte ersetzt werden — starten Sie keinen Mainnet-Knoten gegen unverifizierte Peers oder Genesis.
-:::
+## Öffentliche Endpunkte
+
+Wenn Sie nur **die Chain abfragen oder Transaktionen senden** möchten, benötigen Sie keinen eigenen Node — die öffentlichen Endpunkte sind:
+
+| Dienst | URL |
+|---|---|
+| Konsensus-RPC | `https://rpc.qore.host` (WebSocket: `wss://rpc.qore.host/websocket`) |
+| Cosmos REST (LCD) | `https://api.qore.host` |
+| EVM JSON-RPC | `https://evm.qore.host` (Chain-ID `9801`) |
+| SVM JSON-RPC (nur lesend) | `https://svm.qore.host` |
+| Block-Explorer | [explore.qore.network](https://explore.qore.network) |
+
+Für hohe Lasten oder Produktions-Workloads (Börsen, Indexer) betreiben Sie einen eigenen Node, wie unten beschrieben.
 
 ---
 
 ## Installation
 
-Installieren Sie die `qorechaind`-Binärdatei entweder durch Erstellen aus dem Quellcode oder durch Abrufen des offiziellen Docker-Images.
+Installieren Sie das `qorechaind`-Binary entweder aus dem offiziellen vorgefertigten Bundle oder durch Kompilieren aus dem Quellcode.
 
-### Aus dem Quellcode erstellen
+### Vorgefertigtes Binary-Bundle (linux/amd64)
+
+Das offizielle Release-Bundle enthält `qorechaind` sowie die erforderlichen Shared Libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`):
+
+```bash
+curl -fsSL https://download.qore.host/qorechaind-v3.1.82-linux-amd64.tar.gz -o qore.tgz
+# Verify the checksum before installing:
+sha256sum qore.tgz
+# 8a88936ccc6d350d8b215488a81584163b3568430064958c50e82a394077cfe9
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+```
+
+Versionierte Bundles werden unter [download.qore.host](https://download.qore.host) veröffentlicht; jedes Release wird mit seiner SHA-256-Prüfsumme ausgeliefert.
+
+### Aus dem Quellcode bauen
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -31,15 +59,15 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Siehe [Aus dem Quellcode erstellen](/developer-guide/building-from-source) für die vollständigen Voraussetzungen (Go 1.26+, CGO, Rust-Toolchain, native Bibliotheken).
+Siehe [Kompilieren aus dem Quellcode](/developer-guide/building-from-source) für die vollständigen Voraussetzungen (Go 1.26+, CGO, Rust-Toolchain, native Bibliotheken).
 
-### Den Knoten initialisieren
+### Node initialisieren
 
 ```bash
-./qorechaind init my-node --chain-id qorechain-vladi
+qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-Dies erstellt die Standardkonfiguration und die Datenverzeichnisse unter `~/.qorechaind/`.
+Dies erstellt die Standard-Konfigurations- und Datenverzeichnisse unter `~/.qorechaind/`.
 
 ---
 
@@ -48,43 +76,38 @@ Dies erstellt die Standardkonfiguration und die Datenverzeichnisse unter `~/.qor
 Ersetzen Sie Ihre lokale Genesis-Datei durch die offizielle Mainnet-Genesis:
 
 ```bash
-curl -o ~/.qorechaind/config/genesis.json \
-  <MAINNET_GENESIS_URL>
+curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
 ```
 
-Überprüfen Sie die Genesis-Prüfsumme gegen den im offiziellen Mainnet-Release veröffentlichten Wert, bevor Sie fortfahren:
+Dieselbe Datei wird auch live von der Chain selbst ausgeliefert — Sie können den Download damit gegenprüfen:
 
 ```bash
-sha256sum ~/.qorechaind/config/genesis.json
-# Compare against <MAINNET_GENESIS_SHA256> from the official release
+curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-Diese Datei definiert den Anfangszustand des Vladi-Mainnets, einschließlich des Genesis-Validatorensatzes, der Token-Zuteilungen (TGE bei Genesis) und der Modulparameter.
-
-:::note
-`<MAINNET_GENESIS_URL>` und `<MAINNET_GENESIS_SHA256>` sind Platzhalter. Beziehen Sie die aktuelle Genesis-URL und ihre SHA-256-Prüfsumme aus dem offiziellen Mainnet-Release/-Repository und überprüfen Sie, dass die Prüfsumme übereinstimmt, bevor Sie Ihren Knoten starten.
-:::
+Diese Datei definiert den Anfangszustand des Vladi-Mainnets, einschließlich des Genesis-Validator-Sets, der Token-Zuteilungen (TGE bei Genesis) und der Modulparameter.
 
 ---
 
 ## Peers konfigurieren
 
-Bearbeiten Sie Ihre Knotenkonfiguration, um sich mit bestehenden Mainnet-Peers zu verbinden.
+Bearbeiten Sie Ihre Node-Konfiguration, um sich mit den öffentlichen Mainnet-Sentry-Nodes zu verbinden.
 
-Öffnen Sie `~/.qorechaind/config/config.toml` und setzen Sie die Felder `seeds` und `persistent_peers`:
+Öffnen Sie `~/.qorechaind/config/config.toml` und setzen Sie das Feld `persistent_peers`:
 
 ```toml
-seeds = "<MAINNET_SEED_NODE_ID>@<host>:26656"
-persistent_peers = "<PEER_NODE_ID_1>@<host1>:26656,<PEER_NODE_ID_2>@<host2>:26656"
+persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
 ```
 
-:::note
-Die obigen Werte für Seed- und persistente Peers sind Platzhalter. Beziehen Sie die aktuelle Mainnet-Seed-Knoten-ID, den Host und den Port aus dem offiziellen Mainnet-Repository/-Release. Verbinden Sie sich nicht mit unverifizierten Peers.
-:::
+Setzen Sie außerdem den Mindest-Gaspreis in `~/.qorechaind/config/app.toml` (die Netzwerk-Gebührenuntergrenze beträgt **0.1uqor**):
+
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
 ### Empfohlene Einstellungen
 
-Möglicherweise möchten Sie auch Folgendes in `config.toml` anpassen:
+Sie können außerdem folgende Werte in `config.toml` anpassen:
 
 ```toml
 [mempool]
@@ -99,30 +122,47 @@ Diese Werte sind auf die Blockzeiten und den Durchsatz des Vladi-Mainnets abgest
 
 ---
 
-## Knoten starten
+## Schneller Bootstrap (Snapshot)
 
-Starten Sie Ihren Knoten, um die Synchronisierung mit dem Netzwerk zu beginnen:
+Die Synchronisierung ab Genesis kann lange dauern. Ein aktueller Chain-Daten-Snapshot wird unter [download.qore.host](https://download.qore.host) veröffentlicht:
 
 ```bash
-./qorechaind start
+curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
+# Verify before extracting:
+sha256sum snapshot.tar.gz
+# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+
+tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
 
-Der Knoten verbindet sich mit Peers und beginnt, Blöcke von der Genesis herunterzuladen. Die anfängliche Synchronisierungszeit hängt von der aktuellen Chain-Höhe und Ihrer Netzwerkgeschwindigkeit ab. Für einen schnelleren Bootstrap verwenden Betreiber typischerweise State Sync oder einen aktuellen Snapshot — siehe [Einen Knoten betreiben](/developer-guide/running-a-node) für den vollständigen State-Sync- und Snapshot-Workflow.
+Snapshots werden unter höhengestempelten Dateinamen veröffentlicht — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten. Alternativ können Sie **State Sync** verwenden — siehe [Betrieb eines Nodes](/developer-guide/running-a-node) für den vollständigen Ablauf.
 
 ---
 
-## Synchronisierungsstatus prüfen
+## Node starten
 
-Überprüfen Sie, ob Ihr Knoten den neuesten Block aufholt:
+Starten Sie Ihren Node, um mit der Synchronisierung mit dem Netzwerk zu beginnen:
+
+```bash
+qorechaind start --minimum-gas-prices=0.1uqor
+```
+
+Der Node verbindet sich mit Peers und beginnt, Blöcke herunterzuladen (ab Genesis oder ab der Snapshot-Höhe, falls Sie einen Snapshot wiederhergestellt haben).
+
+---
+
+## Sync-Status prüfen
+
+Überprüfen Sie, ob Ihr Node zum aktuellsten Block aufholt:
 
 ```bash
 curl localhost:26657/status | jq '.result.sync_info.catching_up'
 ```
 
-* `true` — Der Knoten synchronisiert noch. Warten Sie, bis er aufgeholt hat.
-* `false` — Der Knoten ist vollständig synchronisiert und verarbeitet neue Blöcke.
+* `true` — Der Node synchronisiert noch. Warten Sie, bis er aufgeholt hat.
+* `false` — Der Node ist vollständig synchronisiert und verarbeitet neue Blöcke.
 
-Sie können auch die neueste Blockhöhe prüfen:
+Sie können auch die aktuelle Blockhöhe prüfen:
 
 ```bash
 curl localhost:26657/status | jq '.result.sync_info.latest_block_height'
@@ -136,9 +176,9 @@ curl localhost:26657/status | jq '.result.node_info.network'
 
 ---
 
-## Überwachung
+## Monitoring
 
-QoreChain stellt mehrere Endpunkte zur Überwachung der Knotengesundheit und -leistung bereit.
+QoreChain stellt mehrere Endpunkte zur Überwachung von Node-Zustand und -Leistung bereit.
 
 ### Prometheus-Metriken
 
@@ -148,7 +188,7 @@ Rohmetriken sind verfügbar unter:
 http://localhost:26660/metrics
 ```
 
-Diese Metriken können von jedem Prometheus-kompatiblen Collector abgegriffen werden.
+Diese Metriken können von jedem Prometheus-kompatiblen Collector abgerufen werden.
 
 ### Grafana-Dashboards
 
@@ -158,11 +198,11 @@ Beim Betrieb über Docker Compose ist Grafana verfügbar unter:
 http://localhost:3001
 ```
 
-Legen Sie bei der ersten Anmeldung Ihre eigenen Anmeldedaten fest, wenn Sie dazu aufgefordert werden — belassen Sie nicht die Standardwerte. Vorkonfigurierte Dashboards zeigen Blockproduktion, Transaktionsdurchsatz, Peer-Verbindungen und Ressourcennutzung an.
+Legen Sie beim ersten Login eigene Zugangsdaten fest, wenn Sie dazu aufgefordert werden — belassen Sie nicht die Standardwerte. Vorkonfigurierte Dashboards zeigen Blockproduktion, Transaktionsdurchsatz, Peer-Verbindungen und Ressourcennutzung an.
 
-### REST-Zustandsprüfung
+### REST-Health-Check
 
-Die REST-API bietet einen schnellen Statusendpunkt:
+Die REST-API bietet einen schnellen Status-Endpunkt:
 
 ```
 http://localhost:1317
@@ -170,41 +210,43 @@ http://localhost:1317
 
 ---
 
-## Ports-Referenz
+## Port-Referenz
 
-| Port    | Protokoll | Beschreibung                                            |
+| Port    | Protokoll | Beschreibung                                             |
 | ------- | --------- | ------------------------------------------------------- |
-| `26657` | TCP       | RPC — Transaktionen abfragen und übertragen             |
+| `26657` | TCP       | RPC — Transaktionen abfragen und senden                 |
 | `26656` | TCP       | P2P — Peer-to-Peer-Netzwerkkommunikation                |
 | `1317`  | HTTP      | REST-API — Chain-Zustand per HTTP abfragen              |
 | `9090`  | gRPC      | gRPC-API — programmatischer Chain-Zugriff               |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum-kompatibles RPC (Chain-ID `9801`) |
-| `8546`  | WebSocket | EVM WebSocket — Echtzeit-EVM-Ereignisabonnements        |
+| `8546`  | WebSocket | EVM WebSocket — EVM-Event-Abonnements in Echtzeit       |
 | `8899`  | HTTP      | SVM RPC — Solana-kompatibles RPC                        |
-| `26660` | HTTP      | Prometheus-Metrik-Endpunkt                             |
+| `26660` | HTTP      | Prometheus-Metriken-Endpunkt                            |
 
 ---
 
-## Netzwerkfakten
+## Netzwerkdaten
 
-| Feld              | Wert                                   |
-| ----------------- | -------------------------------------- |
-| Chain-ID          | `qorechain-vladi`                      |
-| EVM-Chain-ID      | `9801` (hex `0x2649`)                  |
-| Chain-Version     | v3.1.80                                |
-| Aktiv seit        | 7. Juni 2026 23:59 UTC                 |
-| Token             | QOR (`uqor`, 10^6 Mikroeinheiten = 1 QOR) |
-| Konto-Präfix      | `qor`                                  |
-| Validator-Präfix  | `qorvaloper`                           |
-| SDK               | Cosmos SDK v0.53                       |
+| Feld               | Wert                                       |
+| ------------------ | ------------------------------------------ |
+| Chain-ID           | `qorechain-vladi`                          |
+| EVM-Chain-ID       | `9801` (hex `0x2649`)                      |
+| Chain-Version      | v3.1.82                                    |
+| Live seit          | 7. Juni 2026, 23:59 UTC                    |
+| Token              | QOR (`uqor`, 10^6 Mikroeinheiten = 1 QOR)  |
+| Mindest-Gaspreis   | `0.1uqor`                                  |
+| Konto-Präfix       | `qor`                                      |
+| Validator-Präfix   | `qorvaloper`                               |
+| SDK                | Cosmos SDK v0.53                           |
 
 ---
 
 ## Nächste Schritte
 
-* [Einen Knoten betreiben](/developer-guide/running-a-node) — Betreiben Sie einen Full-/RPC-Knoten für Börsen und Integratoren
-* [Einen Validator betreiben](/developer-guide/running-a-validator) — Erstellen und betreiben Sie einen Validator
+* [Betrieb eines Nodes](/developer-guide/running-a-node) — Betreiben Sie einen Full-/RPC-Node für Börsen und Integratoren
+* [Leitfaden für Börsen und Integratoren](/developer-guide/exchange-integration) — Einzahlungen, Auszahlungen und Monitoring
+* [Betrieb eines Validators](/developer-guide/running-a-validator) — Erstellen und betreiben Sie einen Validator
 * [Wallet-Einrichtung](/getting-started/wallet-setup) — Konfigurieren Sie eine Wallet für das Mainnet
-* [Ihre erste Transaktion](/getting-started/first-transaction) — Senden Sie Ihren ersten QOR-Transfer
-* [Verbindung zum Testnet](/getting-started/connecting-to-testnet) — Treten Sie dem Diana-Testnet für kostenlose Tests bei
-* [Netzwerke](/appendix/networks) — Chain-IDs, Ports und die vollständige Netzwerkreferenz
+* [Ihre erste Transaktion](/getting-started/first-transaction) — Senden Sie Ihre erste QOR-Überweisung
+* [Verbindung zum Testnet](/getting-started/connecting-to-testnet) — Treten Sie dem Diana-Testnet zum kostenlosen Testen bei
+* [Netzwerke](/appendix/networks) — Chain-IDs, Ports und die vollständige Netzwerk-Referenz

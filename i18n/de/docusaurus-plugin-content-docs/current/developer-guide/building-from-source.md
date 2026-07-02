@@ -145,7 +145,7 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk, das mit der Chain-Version **v3.1.80** läuft.
+Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk, das mit der Chain-Version **v3.1.82** läuft.
 
 ## Docker-Build
 

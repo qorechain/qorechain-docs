@@ -77,6 +77,7 @@ const sidebars: SidebarsConfig = {
         "developer-guide/post-quantum-signing",
         "developer-guide/running-a-validator",
         "developer-guide/running-a-node",
+        "developer-guide/exchange-integration",
       ],
     },
     {

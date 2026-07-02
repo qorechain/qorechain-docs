@@ -23,7 +23,7 @@ QoreChain utilizza un modello economico a **offerta fissa** incentrato sul token
 | **Prefisso Bech32**     | `qor` (account: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Le cifre in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla versione della chain **v3.1.80**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) condivide lo stesso modello economico.
+Le cifre in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla versione della chain **v3.1.82**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) condivide lo stesso modello economico.
 :::
 
 ---

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Temel Özellikler
 
-Aşağıdaki tablo, QoreChain'deki tüm büyük özellikleri, tanıtıldıkları sürüm aşamasına göre düzenlenmiş şekilde listeler. Mevcut zincir sürümü **v3.1.80**'dir; ana ağ (`qorechain-vladi`, EVM chain ID 9801) 7 Haziran 2026'dan beri yayında ve paralel bir test ağı (`qorechain-diana`, EVM chain ID 9800) çalışmaktadır.
+Aşağıdaki tablo, QoreChain'deki tüm büyük özellikleri, tanıtıldıkları sürüm aşamasına göre düzenlenmiş şekilde listeler. Mevcut zincir sürümü **v3.1.82**'dir; ana ağ (`qorechain-vladi`, EVM chain ID 9801) 7 Haziran 2026'dan beri yayında ve paralel bir test ağı (`qorechain-diana`, EVM chain ID 9800) çalışmaktadır.
 
 | Özellik                    | Tanıtıldığı sürüm   | Açıklama                                                                                                                                                                                                                                                                                                                                                                                          |
 | -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

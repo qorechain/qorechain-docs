@@ -10,7 +10,7 @@ sidebar_position: 6
 QoreChain, QoreChain EVM Engine'i protokol düzeyindeki özellikleri doğrudan Solidity'ye sunan **altı özel ön derlenmiş contract** ile genişletir. Bu ön derlemeler; kuantum sonrası kriptografiye, AI risk puanlamasına, VM'ler arası mesajlaşmaya ve PRISM konsensüs parametrelerine zincir üzerinde erişim sağlar.
 
 :::note
-Ön derlemeler, hem **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri **v3.1.80** zincir sürümünde yayında) hem de **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) mevcuttur. Tüm örnekler **8545 portundaki** JSON-RPC uç noktasını kullanır.
+Ön derlemeler, hem **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri **v3.1.82** zincir sürümünde yayında) hem de **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) mevcuttur. Tüm örnekler **8545 portundaki** JSON-RPC uç noktasını kullanır.
 :::
 
 ---

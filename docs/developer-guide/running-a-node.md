@@ -14,7 +14,7 @@ For block production, staking, slashing, and pool classification, see [Running a
 :::
 
 :::warning
-Mainnet seed nodes, persistent peers, the genesis URL/checksum, and snapshot/state-sync RPC endpoints are published with each official mainnet release. **Obtain these current values from the official mainnet repository/release** and verify the genesis checksum before starting. The placeholders below (`<MAINNET_SEED_NODE_ID>@<host>:26656`, `<MAINNET_GENESIS_URL>`, snapshot/state-sync URLs) must be replaced with the real published values.
+Binaries, genesis, and snapshots are published at [download.qore.host](https://download.qore.host) with SHA-256 checksums. **Always verify checksums before installing or extracting**, and verify deposits only against your own synced node.
 :::
 
 ---
@@ -58,13 +58,13 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.80** on mainnet) and mount a persistent volume for chain data.
+A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.82** on mainnet) and mount a persistent volume for chain data.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.80
+    image: qorechain/qorechaind:v3.1.82
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -132,32 +132,30 @@ qorechaind init my-node --chain-id qorechain-vladi
 ### 2. Download and verify genesis
 
 ```bash
-curl -o ~/.qorechaind/config/genesis.json <MAINNET_GENESIS_URL>
-sha256sum ~/.qorechaind/config/genesis.json
-# Compare against <MAINNET_GENESIS_SHA256> from the official release
+curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+
+# Cross-verify against the genesis served live by the chain:
+curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-:::note
-`<MAINNET_GENESIS_URL>` and `<MAINNET_GENESIS_SHA256>` are placeholders — obtain the current genesis URL and checksum from the official mainnet release/repository and verify the checksum before starting.
-:::
+### 3. Configure peers and the fee floor
 
-### 3. Configure seeds and peers
-
-Open `~/.qorechaind/config/config.toml`:
+Open `~/.qorechaind/config/config.toml` and set the public mainnet sentry peers:
 
 ```toml
-seeds = "<MAINNET_SEED_NODE_ID>@<host>:26656"
-persistent_peers = "<PEER_NODE_ID_1>@<host1>:26656,<PEER_NODE_ID_2>@<host2>:26656"
+persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
 ```
 
-:::note
-The seed and peer values are placeholders. Obtain the current mainnet seeds and persistent peers from the official mainnet repository/release.
-:::
+Then set the minimum gas price in `~/.qorechaind/config/app.toml` (network fee floor: **0.1uqor**):
+
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
 ### 4. Start syncing
 
 ```bash
-qorechaind start
+qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 ---
@@ -173,34 +171,33 @@ State sync fetches a recent application state snapshot from trusted RPC servers 
 ```toml
 [statesync]
 enable = true
-rpc_servers = "<STATESYNC_RPC_1>,<STATESYNC_RPC_2>"
+rpc_servers = "https://rpc.qore.host:443,https://rpc.qore.host:443"
 trust_height = <TRUSTED_BLOCK_HEIGHT>
 trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Determine a recent trusted height and hash from a healthy RPC endpoint:
+Determine a recent trusted height and hash from the public RPC:
 
 ```bash
-curl -s <STATESYNC_RPC_1>/block | jq '.result.block.header.height, .result.block_id.hash'
+curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
 ```
-
-:::note
-`<STATESYNC_RPC_1>`, `<STATESYNC_RPC_2>`, `<TRUSTED_BLOCK_HEIGHT>`, and `<TRUSTED_BLOCK_HASH>` are placeholders. Use the state-sync RPC servers published in the official mainnet release, and derive the trust height/hash from a recent block.
-:::
 
 ### Snapshot restore
 
-Alternatively, download a recent chain-data snapshot and extract it over your data directory:
+Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory:
 
 ```bash
-curl -o snapshot.tar.lz4 <MAINNET_SNAPSHOT_URL>
-lz4 -dc snapshot.tar.lz4 | tar -xf - -C ~/.qorechaind/
-qorechaind start
+curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz
+# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+
+tar xzf snapshot.tar.gz -C ~/.qorechaind/
+qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-`<MAINNET_SNAPSHOT_URL>` is a placeholder. Obtain snapshot URLs (and any companion checksum) from the official mainnet release/repository, and verify the checksum before extracting.
+Snapshots are published under **height-stamped filenames** — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting.
 :::
 
 ---
@@ -319,7 +316,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.80** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the live tag (**v3.1.82** on mainnet) and track official releases for coordinated upgrades.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

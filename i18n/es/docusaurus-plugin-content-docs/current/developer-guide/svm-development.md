@@ -7,10 +7,10 @@ sidebar_position: 4
 
 # Desarrollo SVM
 
-QoreChain incluye un entorno de ejecución de **máquina virtual de Solana (SVM)**, que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF utilizando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (consulta [Servidor JSON-RPC](#json-rpc-server) más abajo).
+QoreChain incluye un entorno de ejecución **Solana Virtual Machine (SVM)**, que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF usando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (consulta [Servidor JSON-RPC](#json-rpc-server) más abajo).
 
 :::note
-Los comandos a continuación usan la red principal **`qorechain-vladi`**, activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.80**. Sustituye por `--chain-id qorechain-diana` para la red de pruebas.
+Los comandos que siguen usan la mainnet **`qorechain-vladi`**, activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.82**. Sustituye `--chain-id qorechain-diana` para la testnet.
 :::
 
 ---
@@ -19,11 +19,29 @@ Los comandos a continuación usan la red principal **`qorechain-vladi`**, activa
 
 El módulo `x/svm` proporciona:
 
+* **QOR nativo como activo de primera clase en la SVM** — el saldo unificado de la cuenta, visible en lamports
 * Despliegue y ejecución de programas SBF/BPF
 * Creación y gestión de cuentas de datos
 * Un endpoint JSON-RPC compatible con Solana
 * Mapeo bidireccional de direcciones entre los formatos de dirección de QoreChain y de Solana
-* Medición del presupuesto de cómputo y economía de almacenamiento basada en renta
+* Medición de presupuesto de cómputo y economía de almacenamiento basada en renta
+
+---
+
+## QOR nativo en la interfaz SVM {#native-qor}
+
+Desde la versión de cadena **v3.1.82**, la interfaz SVM es una **interfaz de QOR nativo de primera clase**, no un saldo aislado independiente. El único saldo unificado de la cuenta — los mismos fondos visibles como `uqor` en la interfaz Cosmos y como wei de 18 decimales en la EVM — aparece en el lado SVM en **lamports** (9 decimales):
+
+```
+1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports
+```
+
+* **`getBalance` / `getAccountInfo`** devuelven el QOR nativo de la cuenta (en lamports).
+* **`getSignaturesForAddress`** devuelve el historial de transacciones que afectan a una dirección — utilizable para la detección de depósitos con las herramientas estándar de Solana.
+* **Las transferencias del System Program mueven QOR nativo** — una instrucción de transferencia al estilo de Solana mueve los mismos fondos que movería un `MsgSend` de Cosmos o una transferencia EVM.
+* **Forma de dirección SVM** — la dirección SVM de una cuenta son sus 20 bytes de cuenta rellenados por la derecha hasta 32 bytes y codificados en base58. Las tres formas de dirección (`qor1...`, `0x...`, base58) se refieren a la misma cuenta.
+
+Los endpoints públicos (`https://svm.qore.host`, `https://svm-testnet.qore.host`) son **de solo lectura** — el envío de transacciones está deshabilitado en el borde. Ejecuta tu propio nodo (puerto 8899) para enviar transacciones SVM.
 
 ---
 
@@ -39,7 +57,7 @@ enable = true
 address = "127.0.0.1:8899"
 ```
 
-Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por lo que un nodo recién iniciado ya sirve la interfaz JSON-RPC de Solana en el puerto 8899 — `@solana/web3.js` se conecta en `http://127.0.0.1:8899` sin configuración adicional. `getVersion` reporta `1.18.0-qorechain`, y `getBalance` / `getAccountInfo` devuelven cuentas SVM activas en la cadena.
+Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, así que un nodo recién iniciado ya sirve la interfaz JSON-RPC de Solana en el puerto 8899 — `@solana/web3.js` se conecta en `http://127.0.0.1:8899` sin configuración adicional. `getVersion` reporta `1.18.0-qorechain`, y `getBalance` / `getAccountInfo` devuelven cuentas SVM reales en cadena.
 
 | Propiedad      | Valor                     |
 | ------------- | ------------------------- |
@@ -49,26 +67,27 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
 | Compatibilidad | JSON-RPC de Solana (subconjunto)  |
 | `getVersion`  | `1.18.0-qorechain`        |
 
-### Métodos compatibles
+### Métodos soportados
 
 | Método                              | Descripción                               |
 | ----------------------------------- | ----------------------------------------- |
-| `getAccountInfo`                    | Recupera los datos de la cuenta y el saldo en lamports |
-| `getBalance`                        | Obtiene el saldo de la cuenta en lamports           |
-| `getSlot`                           | Número de slot actual                |
+| `getAccountInfo`                    | Obtener los datos de la cuenta y el saldo en lamports |
+| `getBalance`                        | Obtener el saldo de la cuenta en lamports (QOR nativo) |
+| `getSignaturesForAddress`           | Historial de transacciones de una dirección        |
+| `getSlot`                           | Número de slot actual                       |
 | `getMinimumBalanceForRentExemption` | Saldo mínimo para un tamaño de datos dado     |
-| `getVersion`                        | Información de la versión del runtime SVM                  |
-| `getHealth`                         | Comprobación de estado del endpoint SVM         |
+| `getVersion`                        | Información de versión del runtime SVM                  |
+| `getHealth`                         | Comprobación de salud del endpoint SVM         |
 
 ---
 
 ## Despliegue e interacción con programas
 
 :::info
-**Ejecución SBF moderna.** El motor de ejecución SVM se ha modernizado sobre **solana-sbpf 0.21.1**, por lo que los programas SBF recién compilados con la cadena de herramientas actual de Solana (**platform-tools v1.53 / agave 4.x**) tanto **se despliegan como se ejecutan** en QoreChain — la ejecución es totalmente compatible, no solo el despliegue. Se admiten los programas compilados con `cargo build-sbf --arch v0` o `--arch v3`.
+**Ejecución SBF moderna.** El motor de ejecución SVM se ha modernizado sobre **solana-sbpf 0.21.1**, de modo que los programas SBF recién compilados con la cadena de herramientas actual de Solana (**platform-tools v1.53 / agave 4.x**) se **despliegan y ejecutan** en QoreChain — la ejecución está totalmente soportada, no es solo despliegue. Se admiten programas compilados tanto con `cargo build-sbf --arch v0` como con `--arch v3`.
 :::
 
-1. **Desplegar un programa SBF** — Compila tu programa de Solana a un objeto compartido SBF con las platform-tools actuales (v1.53 / agave 4.x), luego despliégalo en QoreChain:
+1. **Desplegar un programa SBF** — Compila tu programa de Solana a un objeto compartido SBF con las platform-tools actuales (v1.53 / agave 4.x) y luego despliégalo en QoreChain:
 
    ```bash
    # Build with the current Solana toolchain (--arch v0 or --arch v3)
@@ -82,9 +101,9 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
      -y
    ```
 
-   La respuesta de la transacción incluye el **ID del programa** en formato base58.
+   La respuesta de la transacción incluye el **program ID** en formato base58.
 
-2. **Ejecutar una instrucción** — Llama a un programa BPF en la cadena con datos de instrucción:
+2. **Ejecutar una instrucción** — Llama a un programa BPF en cadena con datos de instrucción:
 
    ```bash
    # Execute instruction
@@ -97,9 +116,9 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
    | Parámetro           | Formato            | Descripción                    |
    | ------------------- | ----------------- | ------------------------------ |
    | `program-id-base58` | Cadena base58     | La dirección del programa desplegado |
-   | `data-hex`          | Bytes codificados en hex | Datos de instrucción serializados    |
+   | `data-hex`          | Bytes codificados en hexadecimal | Datos de instrucción serializados    |
 
-3. **Crear una cuenta de datos** — Los programas a menudo necesitan cuentas para almacenar estado. Crea una con un tamaño y propietario especificados:
+3. **Crear una cuenta de datos** — Los programas suelen necesitar cuentas para almacenar estado. Crea una con un tamaño y un propietario especificados:
 
    ```bash
    # Create data account
@@ -111,7 +130,7 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
 
    | Parámetro      | Descripción                                        |
    | -------------- | -------------------------------------------------- |
-   | `owner-base58` | El programa que posee esta cuenta (base58)        |
+   | `owner-base58` | El programa propietario de esta cuenta (base58)        |
    | `space`        | Tamaño del campo de datos en bytes                    |
    | `lamports`     | Saldo inicial (debe cumplir el mínimo de exención de renta) |
 
@@ -129,7 +148,7 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
      }'
    ```
 
-4. **Uso de @solana/web3.js** — El SDK de JavaScript de Solana funciona directamente con el endpoint SVM de QoreChain:
+4. **Usar @solana/web3.js** — El SDK de JavaScript de Solana funciona directamente con el endpoint SVM de QoreChain:
 
    ```javascript
    import { Connection, PublicKey } from "@solana/web3.js";
@@ -158,12 +177,12 @@ Los valores por defecto son `enable = true` y `address = "127.0.0.1:8899"`, por 
 
 ## Mapeo de direcciones
 
-QoreChain mantiene un **mapeo bidireccional de direcciones** entre las direcciones nativas Bech32 (`qor1...`) y las direcciones base58 al estilo de Solana:
+QoreChain mantiene un **mapeo bidireccional de direcciones** entre las direcciones Bech32 nativas (`qor1...`) y las direcciones base58 al estilo de Solana:
 
-| Dirección     | Ejemplo                                                    |
+| Sentido     | Ejemplo                                                    |
 | ------------- | ---------------------------------------------------------- |
 | Nativa a SVM | `qor1abc...xyz` se mapea a una dirección base58 determinista     |
-| SVM a Nativa | Las direcciones de programa base58 se mapean de vuelta a sus equivalentes `qor1...` |
+| SVM a nativa | Las direcciones base58 de programas se mapean de vuelta a sus equivalentes `qor1...` |
 
 El mapeo es determinista y lo gestiona el módulo `x/svm`. Ambas representaciones se refieren a la misma cuenta subyacente.
 
@@ -171,16 +190,16 @@ El mapeo es determinista y lo gestiona el módulo `x/svm`. Ambas representacione
 
 ## Modelo de renta
 
-El módulo SVM usa un **modelo de almacenamiento basado en renta** para prevenir el crecimiento descontrolado del estado:
+El módulo SVM usa un **modelo de almacenamiento basado en renta** para evitar la hinchazón del estado:
 
 | Parámetro                  | Valor      |
 | -------------------------- | ---------- |
 | Lamports por byte por año | `3,480`    |
 | Multiplicador de exención de renta  | `2.0`      |
-| Frecuencia de cobro       | Cada época |
+| Frecuencia de cobro       | Cada epoch |
 
-* Las cuentas con un saldo **superior** a `2 * (data_size * 3480 / seconds_per_year)` en lamports están **exentas de renta** y nunca se les cobra.
-* A las cuentas **por debajo** del umbral de exención de renta se les cobra renta en cada época. Si el saldo llega a cero, la cuenta se purga.
+* Las cuentas con un saldo **por encima** de `2 * (data_size * 3480 / seconds_per_year)` en lamports están **exentas de renta** y nunca se les cobra.
+* A las cuentas **por debajo** del umbral de exención de renta se les cobra renta en cada epoch. Si el saldo llega a cero, la cuenta se purga.
 
 :::info
 **Buena práctica:** Financia siempre las cuentas de datos por encima del mínimo de exención de renta para evitar la eliminación inesperada de la cuenta.
@@ -196,10 +215,10 @@ Cada ejecución de instrucción se mide con unidades de cómputo:
 | ---------------------------------------- | ----------- |
 | Máximo de unidades de cómputo por instrucción        | `1,400,000` |
 | Profundidad máxima de CPI (invocación entre programas) | `4`         |
-| Tamaño máximo del programa                         | `10 MB`     |
+| Tamaño máximo de programa                         | `10 MB`     |
 | Tamaño máximo de datos de cuenta                    | `10 MB`     |
 
-Los programas que superan el presupuesto de cómputo se detienen y la transacción se revierte.
+Los programas que exceden el presupuesto de cómputo se detienen y la transacción se revierte.
 
 ---
 
@@ -217,9 +236,9 @@ Los programas que superan el presupuesto de cómputo se detienen y la transacci�
 
 ---
 
-## Interoperabilidad entre máquinas virtuales
+## Interoperabilidad entre VMs
 
-Los programas SVM pueden comunicarse con contratos EVM y CosmWasm a través de la ruta de mensajes **asíncrona** entre máquinas virtuales:
+Los programas SVM pueden comunicarse con contratos EVM y CosmWasm a través de la ruta de mensajes entre VMs **asíncrona**:
 
 ```bash
 # Cross-VM call example
@@ -232,12 +251,12 @@ qorechaind tx crossvm call \
   -y
 ```
 
-Los mensajes se ponen en cola y los procesa el EndBlocker. Consulta [Interoperabilidad entre máquinas virtuales](/developer-guide/cross-vm-interoperability) para más detalles sobre el ciclo de vida de los mensajes y el comportamiento del tiempo de espera.
+Los mensajes se encolan y los procesa el EndBlocker. Consulta [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para más detalles sobre el ciclo de vida de los mensajes y el comportamiento de los timeouts.
 
 ---
 
 ## Próximos pasos
 
-* [Interoperabilidad entre máquinas virtuales](/developer-guide/cross-vm-interoperability) — Comunicación entre SVM, EVM y CosmWasm
-* [Desarrollo EVM](/developer-guide/evm-development) — Contratos inteligentes en Solidity en QoreChain
+* [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) — Comunicación entre SVM, EVM y CosmWasm
+* [Desarrollo EVM](/developer-guide/evm-development) — Contratos inteligentes en Solidity sobre QoreChain
 * [Desarrollo CosmWasm](/developer-guide/cosmwasm-development) — Contratos WebAssembly basados en Rust

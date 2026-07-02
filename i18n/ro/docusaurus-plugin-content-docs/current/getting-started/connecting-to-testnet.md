@@ -13,18 +13,37 @@ Alăturați-vă rețelei de test active QoreChain Diana configurând nodul cu fi
 Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate.
 :::
 
+## Puncte finale publice
+
+Dacă aveți nevoie doar să **interogați rețeaua de test sau să difuzați tranzacții**, folosiți punctele finale publice:
+
+| Serviciu | URL |
+|---|---|
+| RPC de consens | `https://rpc-testnet.qore.host` (WebSocket: `wss://rpc-testnet.qore.host/websocket`) |
+| Cosmos REST (LCD) | `https://api-testnet.qore.host` |
+| EVM JSON-RPC | `https://evm-testnet.qore.host` (ID chain `9800`) |
+| EVM WebSocket | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (doar citire) | `https://svm-testnet.qore.host` |
+| Explorator de blocuri | [explore.qore.network](https://explore.qore.network) (comutați pe Testnet) |
+
+QOR pentru rețeaua de test este disponibil din [Faucetul din Dashboard](/dashboard/faucet).
+
 ---
 
 ## Descărcarea fișierului genesis
 
-Înlocuiți fișierul genesis local cu fișierul genesis oficial al rețelei de test:
+Înlocuiți fișierul genesis local cu fișierul genesis oficial al rețelei de test, servit în timp real chiar de chain:
 
 ```bash
-curl -o ~/.qorechaind/config/genesis.json \
-  https://raw.githubusercontent.com/qorechain/qorechain-core/main/config/genesis.json
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
+  > ~/.qorechaind/config/genesis.json
 ```
 
 Acest fișier definește starea inițială a rețelei de test Diana, inclusiv setul de validatori, alocările de token-uri și parametrii modulelor.
+
+:::caution
+Rețeaua de test Diana este periodic **re-genesată** (resetată la înălțimea 0) pe măsură ce sunt lansate versiuni pre-release. Dacă nodul dumneavoastră nu se mai sincronizează după o resetare, descărcați din nou fișierul genesis și porniți dintr-un director de date nou.
+:::
 
 ---
 
@@ -32,13 +51,18 @@ Acest fișier definește starea inițială a rețelei de test Diana, inclusiv se
 
 Editați configurația nodului pentru a vă conecta la partenerii existenți ai rețelei de test.
 
-Deschideți `~/.qorechaind/config/config.toml` și setați câmpul `persistent_peers`:
+Interogați un partener curent direct din rețea, apoi setați câmpul `persistent_peers` în `~/.qorechaind/config/config.toml`:
 
-```toml
-persistent_peers = "node-id@seed1.qorechain.io:26656,node-id@seed2.qorechain.io:26656"
+```bash
+# node id + listen address of the public testnet node
+curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
 ```
 
-Consultați [depozitul QoreChain](https://github.com/qorechain/qorechain-core) pentru cea mai recentă listă de parteneri.
+Setați, de asemenea, pragul minim de comisioane în `~/.qorechaind/config/app.toml` (rețeaua de test folosește același preț minim de gas de **0.1uqor** ca rețeaua principală):
+
+```toml
+minimum-gas-prices = "0.1uqor"
+```
 
 ### Setări recomandate
 

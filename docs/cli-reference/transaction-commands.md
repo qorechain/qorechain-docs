@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.80**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.82**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
 :::
 
 Common flags apply to every `tx` subcommand:
