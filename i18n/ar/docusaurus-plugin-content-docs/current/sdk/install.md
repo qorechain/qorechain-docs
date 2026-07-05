@@ -7,12 +7,23 @@ sidebar_position: 2
 
 # التثبيت
 
-ثبّت الـ SDK الخاص بلغتك. إنّ نواة TypeScript (`@qorechain/sdk`) ومحوّلي
-EVM وSVM (`@qorechain/evm`، `@qorechain/svm`) وعدّة React
-(`@qorechain/react`) وعملاء Python وGo وRust وJava جميعها
-**منشورة** في سجلّاتها مع توافق كامل مع السلسلة الأصلية (الرسائل المُصنّفة،
+ثبّت حزمة SDK الخاصة بلغتك. إن النواة المكتوبة بلغة TypeScript‏ (`@qorechain/sdk`)،
+ومحوّلا EVM وSVM‏ (`@qorechain/evm` و`@qorechain/svm`)، وعدّة React‏
+(`@qorechain/react`)، وعملاء Python وGo وRust وJava جميعها
+**منشورة** في سجلّاتها مع تكافؤ كامل مع السلسلة الأصلية (رسائل منمّطة الأنواع،
 والاستعلامات، ودورة حياة المعاملة، ومعاملات PQC الهجينة، واشتراكات
-WebSocket). اختر لغتك أدناه.
+WebSocket). الإصدار الحالي هو **0.7.0**، وهو يضيف الحسابات الموحّدة الأصلية
+بنمط eth، وإصلاح ترميز الامتداد الهجين الحرج على مستوى الإجماع، ومسارات
+المصادقين (انظر [دليل المصادقين](/sdk/guides/authenticators)).
+اختر لغتك أدناه.
+
+:::caution الترقية من 0.6.0 أو ما قبله
+أصلح إصدار SDK **0.6.1** خللًا حرجًا على مستوى الإجماع: كان امتداد جسم المعاملة
+`/qorechain.pqc.v1.PQCHybridSignature` يُسلسل بصيغة JSON
+داخل `Any.value` **وترفضه السلسلة عند CheckTx**. المعاملات الهجينة (PQC +
+كلاسيكية) المبنية بإصدار SDK ‏≤ 0.6.0 تُرفض على السلسلة — قم بالترقية
+إلى 0.6.1 أو أحدث في كل لغة تستخدمها.
+:::
 
 ## TypeScript
 
@@ -22,42 +33,50 @@ WebSocket). اختر لغتك أدناه.
 npm i @qorechain/sdk
 ```
 
-تستهدف Node.js 20+ وتشحن ESM وCommonJS وتعريفات الأنواع.
+تستهدف Node.js 20 فما فوق وتأتي مزوّدة بـ ESM وCommonJS وتعريفات الأنواع.
 
 ### محوّل EVM
 
-`@qorechain/evm` هو محوّل رقيق وآمن من حيث الأنواع فوق [viem](https://viem.sh).
-إنّ viem هو **اعتمادية نظيرة (peer dependency)** — ثبّته معه:
+`@qorechain/evm` هو محوّل خفيف وآمن الأنواع فوق [viem](https://viem.sh).
+تُعد viem **اعتمادية نظيرة (peer dependency)** — ثبّتها معه:
 
 ```bash
 npm i @qorechain/evm viem
 ```
 
-منشور في npm بإصدار `0.5.0`.
+منشور على npm بالإصدار `0.7.0`.
 
 ### محوّل SVM
 
-`@qorechain/svm` هو محوّل رقيق فوق
-[`@solana/web3.js`](https://solana.com/docs/clients/javascript)، وهو
+`@qorechain/svm` هو محوّل خفيف فوق
+[`@solana/web3.js`](https://solana.com/docs/clients/javascript)، وهي
 **اعتمادية نظيرة**:
 
 ```bash
 npm i @qorechain/svm @solana/web3.js
 ```
 
-منشور في npm بإصدار `0.5.0`.
+منشور على npm بالإصدار `0.7.0`.
 
 ### عدّة React
 
-`@qorechain/react` هي طبقة React الرسمية فوق `@qorechain/sdk` — مزوّد،
-وخطّافات (hooks)، ومكوّنا `ConnectButton` / `QuantumSafeBadge`.
-إنّ `react` (>=18) هو اعتمادية نظيرة:
+`@qorechain/react` هي طبقة React الرسمية فوق `@qorechain/sdk` — مزوّد
+(provider)، وخطافات (hooks)، ومكوّنا `ConnectButton` / `QuantumSafeBadge`.
+تُعد `react` (‏>=18) اعتمادية نظيرة:
 
 ```bash
 npm i @qorechain/react
 ```
 
-منشور في npm بإصدار `0.5.0`. انظر [دليل عدّة React](/sdk/guides/react).
+منشورة على npm بالإصدار `0.7.0`. انظر [دليل عدّة React](/sdk/guides/react).
+
+### أداة التهيئة (Scaffolder)
+
+تقوم `create-qorechain-dapp` (على npm، الإصدار `0.7.0`) بتهيئة تطبيق dApp جاهز للتشغيل:
+
+```bash
+npm create qorechain-dapp@latest my-dapp
+```
 
 ## Python
 
@@ -65,10 +84,10 @@ npm i @qorechain/react
 pip install qorechain-sdk
 ```
 
-يتطلّب Python 3.10+. تشحن الحزمة تلميحات الأنواع وعلامة `py.typed`.
+تتطلب Python 3.10 فما فوق. تأتي الحزمة مزوّدة بتلميحات الأنواع وعلامة `py.typed`.
 
-> يُثبَّت التوزيع باسم `qorechain-sdk` (منشور في PyPI بإصدار `0.5.0`)
-> لكنّه **يُستورَد باسم `qorsdk`**:
+> تُثبَّت التوزيعة باسم `qorechain-sdk` (منشورة على PyPI بالإصدار `0.7.0`)
+> لكنها **تُستورد باسم `qorsdk`**:
 >
 > ```python
 > import qorsdk
@@ -80,7 +99,7 @@ pip install qorechain-sdk
 go get github.com/qorechain/qorechain-sdk/packages/go/...
 ```
 
-يتطلّب Go 1.23+. استورد الحزم الفرعية التي تحتاجها، على سبيل المثال:
+تتطلب Go 1.23 فما فوق. استورد الحزم الفرعية التي تحتاجها، على سبيل المثال:
 
 ```go
 import (
@@ -89,7 +108,7 @@ import (
 )
 ```
 
-منشور كوحدة Go قائمة بذاتها بإصدار `packages/go/v0.5.0`.
+منشورة كوحدة Go مستقلة بذاتها (موسومة بـ `packages/go/v0.7.0`).
 
 ## Rust
 
@@ -97,37 +116,41 @@ import (
 cargo add qorechain-sdk
 ```
 
-أو في `Cargo.toml`:
+أو، لتتبّع مصادر `0.7.0` مباشرة من المستودع:
 
 ```toml
 [dependencies]
-qorechain-sdk = "0.5"
+qorechain-sdk = { git = "https://github.com/qorechain/qorechain-sdk" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
-يتطلّب Rust 1.74+. عملاء القراءة غير متزامنين (Tokio).
+تتطلب Rust 1.74 فما فوق. عملاء القراءة غير متزامنين (Tokio). تُستورد الحزمة (crate) باسم
+`qorechain`‏ (`use qorechain;`).
 
-> منشور في crates.io باسم `qorechain-sdk` بإصدار `0.5.0`.
+> منشورة على crates.io باسم `qorechain-sdk`. يقوم الأمر `cargo add qorechain-sdk` بتثبيت
+> **أحدث حزمة منشورة**، وهي حاليًا متأخرة عن إصدار `0.7.0` —
+> ثبّت من crates.io (أحدث إصدار منشور) أو من المستودع للحصول على أحدث
+> واجهة.
 
 ## Java
 
-Maven (`pom.xml`):
+Maven‏ (`pom.xml`):
 
 ```xml
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.5.0</version>
+  <version>0.7.0</version>
 </dependency>
 ```
 
 أو Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.5.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.7.0'
 ```
 
-> منشور في Maven Central باسم `io.github.qorechain:qorechain-sdk:0.5.0`.
+> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk:0.7.0`.
 
 ## التالي
 

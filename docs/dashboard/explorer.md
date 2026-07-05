@@ -40,7 +40,9 @@ A block page shows its height, timestamp, proposer, hash, transaction count, gas
 
 ## Address details
 
-An address page shows the address with a scannable QR code, its QOR balance, transaction count, and totals for incoming and outgoing transfers. Below that is the full transaction history for the address — transfers, swaps, faucet claims, and more — each with its amount, time, and status. You can copy the address, download its QR code, and open any transaction for details.
+A QoreChain address is one account with three encodings — Native (`qor1...`), EVM (`0x...`), and SVM (base58) — and the address page merges the activity from all three rails into a single view of that one identity.
+
+The page shows the address with a scannable QR code, its QOR balance, transaction count, and totals for incoming and outgoing transfers. Below that is the combined transaction history for the address across the Native, EVM, and SVM rails — transfers, contract deployments, PQC key registrations, swaps, faucet claims, and more — each with its amount, time, and status. You can copy the address, download its QR code, and open any transaction for details.
 
 ## Validators {#validators}
 

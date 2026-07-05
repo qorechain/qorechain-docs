@@ -49,10 +49,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  network: "mainnet",
-  endpoints: { rest: "https://api.qore.network" }, // your QoreChain node REST
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "mainnet" });
 
 // Build a portable receipt for batch #42 of "my-rollup".
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
@@ -96,7 +95,7 @@ a warning instead of failing.
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet", endpoints: { rest, evmRpc } });
+const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
 
 const advice = await getRollupAdvice(rdk, "my-rollup");
 

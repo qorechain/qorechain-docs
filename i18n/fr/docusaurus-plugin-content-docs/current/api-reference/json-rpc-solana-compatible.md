@@ -20,7 +20,7 @@ QoreChain fournit une interface JSON-RPC compatible Solana via son runtime SVM (
 Le serveur JSON-RPC est **démarré par `qorechaind start`** et est **activé par défaut**, à l'écoute sur `127.0.0.1:8899`. Il se configure via une section `[svm-rpc]` dans `app.toml` (`enable` + `address`). Un nœud fraîchement démarré sert déjà cette interface — aucun processus supplémentaire n'est requis. Les points de terminaison publics sont en **lecture seule** (la soumission de transactions est désactivée en périphérie).
 
 :::note
-Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde natif QOR** du compte — les mêmes fonds unifiés visibles sur les interfaces Cosmos et EVM — libellé en **lamports** (9 décimales ; **1 uqor = 1 000 lamports**). Voir [QOR natif sur l'interface SVM](/developer-guide/svm-development#native-qor).
+Depuis la version de chaîne **v3.1.85**, l'interface SVM sert le **solde natif QOR** du compte — les mêmes fonds unifiés visibles sur les interfaces Cosmos et EVM — libellé en **lamports** (9 décimales ; **1 uqor = 1 000 lamports**). Voir [QOR natif sur l'interface SVM](/developer-guide/svm-development#native-qor).
 :::
 
 ---

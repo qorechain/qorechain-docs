@@ -7,21 +7,19 @@ sidebar_position: 9
 
 # ウォッチタワー
 
-ウォッチタワーは、オプティミスティックロールアップ向けの自動チャレンジャーフレームワークです。ロールアップの決済バッチを追跡し、新しいバッチとそのチャレンジウィンドウの期限をそれぞれ表面化します。そして、**あなたの**有効性述語がバッチを拒否したときには、それをあなたの `onInvalid` コールバックに引き渡すので、チャレンジを組み込むことができます。
+ウォッチタワーは、オプティミスティックロールアップ向けの自動チャレンジャーフレームワークです。ロールアップの決済バッチを追跡し、新しいバッチとそのチャレンジウィンドウの期限を通知します。そして、**あなたの**有効性述語（validity predicate）がバッチを拒否したときには、それをあなたの `onInvalid` コールバックに引き渡すので、チャレンジを組み込むことができます。
 
-フレームワークは監視と*いつ*行うかの判断を担います。**有効性チェックはあなたが提供します**。ウォッチタワーは、バッチが不正であると自ら判断することは決してありません。あなたの `validate` 関数を呼び出し、その戻り値に基づいて動作します。
+フレームワークは監視と*いつ*行うかの判断を担い、**有効性チェックはあなたが提供します**。ウォッチタワーは、バッチが不正であると自ら判断することは決してありません。あなたの `validate` 関数を呼び出し、その戻り値に基づいて動作します。
 
 ## `watchBatches`
 
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {
@@ -48,7 +46,7 @@ const watcher = watchBatches(rdk, "my-roll", {
 watcher.stop();
 ```
 
-フレームワークは次のものを表面化します。
+フレームワークは次のものを通知します。
 
 - `onBatch` による **新しいバッチ**、
 - `onDeadline` による **チャレンジウィンドウの期限**、そして

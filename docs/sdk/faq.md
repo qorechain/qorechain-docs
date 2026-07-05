@@ -23,9 +23,9 @@ pass an `endpoints` object:
 ```ts
 const client = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example",
-    evmRpc: "https://evm.testnet.example",
+    rest: "https://api-testnet.qore.host",
+    rpc: "https://rpc-testnet.qore.host",
+    evmRpc: "https://evm-testnet.qore.host",
   },
 });
 ```
@@ -60,16 +60,21 @@ fromBase("1500000"); // "1.5"
 ```
 
 Note the EVM runtime represents QOR with **18** decimals (EVM convention), which
-is distinct from the Cosmos `uqor` base of 10^6.
+is distinct from the Native `uqor` base of 10^6.
 
 ## Which packages are published, and where?
 
-All of them. The TypeScript core (`@qorechain/sdk`) and the EVM/SVM adapters
-(`@qorechain/evm`, `@qorechain/svm`) are on npm at `0.3.0`; the Python client is
-on PyPI (`pip install qorechain-sdk` at `0.3.1`, import `qorsdk`); the Rust
-client is on crates.io (`cargo add qorechain-sdk` at `0.3.0`); and the Go client
-is on the module proxy (`go get github.com/qorechain/qorechain-sdk/packages/go/...`).
-See [Install](/sdk/install) for the full per-language commands.
+All of them. The TypeScript core (`@qorechain/sdk`), the EVM/SVM adapters
+(`@qorechain/evm`, `@qorechain/svm`), the React kit (`@qorechain/react`), and
+the `create-qorechain-dapp` scaffolder are on npm at `0.7.0`; the Python client
+is on PyPI (`pip install qorechain-sdk` at `0.7.0`, import `qorsdk`); the Go
+client is on the module proxy
+(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, tag
+`packages/go/v0.7.0`); and the Java client is on Maven Central
+(`io.github.qorechain:qorechain-sdk:0.7.0`). The Rust client is on crates.io
+(`cargo add qorechain-sdk`) at the **latest published crate version**, which
+currently lags 0.7.0 — install from crates.io or from the repo. See
+[Install](/sdk/install) for the full per-language commands.
 
 ## My mnemonic is rejected
 
@@ -79,9 +84,32 @@ account. Re-check the words; use `validateMnemonic` to test a phrase.
 
 ## Hybrid (PQC) transactions
 
-Local ML-DSA-87 sign/verify and the hybrid tx-building helpers are available
-today. Before a hybrid tx PQC-verifies on-chain, the signer's PQC public key
-must be registered (`MsgRegisterPQCKey`), or you must set
-`includePqcPublicKey: true` to embed it for auto-registration. Full hybrid
-submission is being finalized for the live network. See
+Hybrid (classical + ML-DSA-87) submission is **live and required** on the
+Native path — classical-only Native transactions are rejected on-chain (chain
+v3.1.85). Before a hybrid tx PQC-verifies, the signer's PQC public key must be
+registered (`MsgRegisterPQCKeyV2`), or you can set
+`includePqcPublicKey: true` to embed it for auto-registration on first use.
+The chain accepts **only deterministic** ML-DSA-87 signatures (the SDK signs
+deterministically by default since 0.5.1); hedged signatures fail with `pqc`
+code 21 (`hybrid_verify_failed`). See
 [Accounts & PQC signing](/sdk/concepts/accounts-pqc).
+
+## My hybrid transactions fail at CheckTx with a tx parse error
+
+Upgrade the SDK. Versions **0.6.0 and earlier** JSON-serialized the
+`/qorechain.pqc.v1.PQCHybridSignature` tx-body extension, which the chain's tx
+decoder rejects at CheckTx. Since **0.6.1** the extension is protobuf-encoded
+(the value begins with `0x08`) in all five languages — hybrid transactions
+built with older versions are rejected on-chain, in every lane (including
+eth-native).
+
+## My authenticator spend is rejected with `authenticator_replay`
+
+The nonce is wrong. `MsgExecuteEVM.nonce` must be the account's **current** EVM
+nonce (the relayer is a different account, so do **not** add 1);
+`MsgExecuteCosmos.nonce` is the **per-authenticator sequence** for
+`(account, pubkey)`, a separate store counter. Refetch the value and re-sign.
+Other authenticator failures decode via `decodeTxError`: `abstractaccount`
+codes 5 (`spending_limit_exceeded`), 6 (`session_key_expired`), and
+10 (`permission_denied`). See
+[Authenticators & delegated spending](/sdk/guides/authenticators).

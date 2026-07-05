@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.82**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; the public hosted endpoints (`rpc/api/evm/svm.qore.host` and their `-testnet` variants) are listed in [Networks](/appendix/networks#public-endpoints).
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026 on chain version **v3.1.85**) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node; the public hosted endpoints (`rpc/api/evm/svm.qore.host` and their `-testnet` variants) are listed in [Networks](/appendix/networks#public-endpoints).
 :::
 
 ## Base URLs
@@ -190,6 +190,17 @@ The following shorter-path endpoints remain available:
 | GET    | `/babylon/v1/params`             | Current Babylon module parameters        |
 
 ## Abstract Account Module
+
+As of chain version **v3.1.85**, the abstract-account query service is exposed over REST via grpc-gateway under the `/qorechain/abstractaccount/v1/...` prefix, including the **permission schema** used to validate [authenticator](/developer-guide/account-abstraction#authenticators) scopes without hardcoding.
+
+| Method | Endpoint                                              | Description                                            |
+| ------ | ----------------------------------------------------- | ------------------------------------------------------ |
+| GET    | `/qorechain/abstractaccount/v1/config`                | Module configuration (feature-probe: `enabled`)        |
+| GET    | `/qorechain/abstractaccount/v1/accounts`              | Lists abstract accounts                                |
+| GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | Abstract-account state for an address                  |
+| GET    | `/qorechain/abstractaccount/v1/permission_schema`     | Permission taxonomy, msg→permission map, non-delegable msgs |
+
+The following shorter-path endpoints remain available:
 
 | Method | Endpoint                                | Description                                  |
 | ------ | --------------------------------------- | -------------------------------------------- |

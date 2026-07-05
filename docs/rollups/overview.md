@@ -10,7 +10,7 @@ sidebar_position: 1
 The QoreChain **Rollup Development Kit (RDK)** — the `x/rdk` module — lets developers launch application-specific rollups that settle on QoreChain. Each rollup is an independent execution environment with its own block time, virtual machine, fee model, and sequencing, while it inherits QoreChain's security, post-quantum cryptography, and data availability guarantees.
 
 :::caution
-The RDK and the rollup settlement layer are an actively evolving capability. Treat the settlement modes, proof systems, presets, and per-feature maturity described across this section as design intent that is subject to change, and validate any deployment on the **`qorechain-diana`** testnet before targeting mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, chain version **v3.1.82**).
+The RDK and the rollup settlement layer are an actively evolving capability. Treat the settlement modes, proof systems, presets, and per-feature maturity described across this section as design intent that is subject to change, and validate any deployment on the **`qorechain-diana`** testnet before targeting mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, chain version **v3.1.85**).
 :::
 
 For the lower-level module reference — module parameters, lifecycle internals, burn integration, and multilayer anchoring — see the **[Rollup Development Kit](/architecture/rollup-development-kit)** page in the Architecture section. This Rollups section is the developer-facing how-to: what the RDK is, which paradigm to choose, how to deploy, how data availability works, and how withdrawals settle from L2 back to L1.
@@ -34,7 +34,7 @@ Each rollup is registered with a unique `rollup-id`, backed by a stake bond in Q
 
 ## What makes the QoreChain RDK different
 
-Beyond the table-stakes of any rollup kit, the QoreChain RDK exposes three capabilities that depend on QoreChain's Layer 1 and that no kit built on a non-post-quantum, non-AI base layer can offer — plus a watchtower auto-challenger. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java), all currently at **v0.4.0**.
+Beyond the table-stakes of any rollup kit, the QoreChain RDK exposes three capabilities that depend on QoreChain's Layer 1 and that no kit built on a non-post-quantum, non-AI base layer can offer — plus a watchtower auto-challenger. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java), version-aligned at **v0.4.4** on npm, PyPI, and Maven Central (on crates.io, install the latest published release or build from the repo). Since v0.4.2 the `mainnet` and `testnet` presets ship the public `qore.host` endpoints baked in, so `createRdkClient({ network })` reaches the chain with no manual endpoint configuration.
 
 | Differentiator | What it does |
 | -------------- | ------------ |

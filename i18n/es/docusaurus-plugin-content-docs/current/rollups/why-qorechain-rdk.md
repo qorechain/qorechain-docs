@@ -9,39 +9,40 @@ sidebar_position: 2
 
 La mayoría de los kits de desarrollo de rollups son variaciones del mismo tema:
 te ayudan a lanzar una app-chain que liquida en una capa base. El QoreChain RDK
-también hace eso, pero además expone tres cosas que **ningún otro kit de rollups
-puede**, porque dependen de capacidades que residen en la Layer 1 de QoreChain,
-no en las herramientas:
+también hace eso — pero además expone tres cosas que **ningún otro kit de rollups
+puede ofrecer**, porque dependen de capacidades que residen en la Layer 1 de
+QoreChain, no en las herramientas:
 
 - una capa de liquidación **post-cuántica**,
-- primitivas asesoras de **IA/RL on-chain** (QCAI), y
-- un runtime de **triple-VM** con llamadas entre VMs.
+- primitivas de asesoría de **IA/RL on-chain** (QCAI), y
+- un runtime de **triple VM** con llamadas entre VMs.
 
-Si solo necesitas un rollup optimista/zk genérico, cualquier kit servirá. Si
-quieres que la liquidación de tu rollup sea **verificable, segura frente a la
-computación cuántica y consciente de la IA**, este es el único kit capaz de
-expresarlo, en TypeScript, Python, Go, Rust y Java.
+Si solo necesitas un rollup genérico optimista/zk, cualquier kit te sirve. Si
+quieres que la liquidación de tu rollup sea **verificable, resistente a la
+computación cuántica y consciente de la IA**, este es el único kit que puede
+expresarlo — en TypeScript, Python, Go, Rust y Java.
 
 | Diferenciador | Estado | Por qué solo es posible aquí |
 | --- | --- | --- |
-| **Recibos de liquidación seguros frente a la computación cuántica** | 🟢 Único (pionero) | Requiere una L1 post-cuántica — imposible en una capa base sin PQC |
+| **Recibos de liquidación resistentes a la computación cuántica** | 🟢 Único (pionero) | Requiere una L1 post-cuántica — imposible sobre una capa base sin PQC |
 | **QCAI Rollup Copilot** | 🟢 Único a través de la cadena | Envuelve endpoints de IA/RL on-chain exclusivos de QoreChain |
-| **Llamadas multi-VM entre VMs** | 🟡 Distintivo | QoreChain ejecuta EVM + CosmWasm + SVM bajo una sola cadena |
+| **Llamadas entre VMs multi-VM** | 🟡 Distintivo | QoreChain ejecuta EVM + CosmWasm + SVM bajo una sola cadena |
 
 ---
 
-## 1. Recibos de liquidación seguros frente a la computación cuántica
+## 1. Recibos de liquidación resistentes a la computación cuántica
 
-> 🟢 **Único.** Ningún kit de rollups construido sobre una L1 no post-cuántica puede ofrecer esto.
+> 🟢 **Único.** Ningún kit de rollups construido sobre una L1 que no sea
+> post-cuántica puede ofrecer esto.
 
 Cuando tu rollup ancla un lote de liquidación, QoreChain compromete su raíz de
 estado en la Main Chain bajo una firma **post-cuántica (ML-DSA-87 / Dilithium-5,
-FIPS-204)**. El RDK convierte ese anclaje en un **recibo portátil** que cualquiera
-puede verificar **completamente sin conexión**: sin nodo, sin confiar en el kit,
-solo matemáticas.
+FIPS-204)**. El RDK convierte ese anclaje en un **recibo portátil** que
+cualquiera puede verificar **completamente offline** — sin nodo, sin confiar en
+el kit, solo matemáticas.
 
 El recibo demuestra dos cosas: que la raíz de estado del lote es la que fue
-anclada (vinculación) y que el anclaje fue firmado con la clave post-cuántica
+anclada (vinculación), y que el anclaje fue firmado por la clave post-cuántica
 registrada del creador de la capa (autenticidad). La firma cubre el mensaje
 canónico
 `layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash`.
@@ -53,10 +54,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  network: "mainnet",
-  endpoints: { rest: "https://api.qore.network" }, // your QoreChain node REST
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "mainnet" });
 
 // Build a portable receipt for batch #42 of "my-rollup".
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
@@ -69,9 +69,9 @@ console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
 console.log(result.checks.stateRootBinding); // batch root == anchored root
 ```
 
-**Completamente sin conexión**: entrega el recibo y la clave pública del creador
-a cualquiera, en una máquina aislada de la red (air-gapped), y podrá verificarlo
-sin tocar la red:
+**Completamente offline** — entrega el recibo y la clave pública del creador a
+cualquier persona, en una máquina aislada de la red (air-gapped), y podrá
+verificarlo sin tocar la red:
 
 ```ts
 const result = await verifySettlementReceipt(receipt, {
@@ -81,28 +81,29 @@ const result = await verifySettlementReceipt(receipt, {
 ```
 
 El mismo recibo se verifica **byte a byte en los cinco lenguajes** (los clientes
-distintos de TypeScript usan la propia librería `qorechain-pqc` de la cadena), de
-modo que un recibo producido por un servicio en TypeScript se verifica de forma
-idéntica en un auditor en Go o un backend en Java. Consulta
-[Recibos de liquidación seguros frente a la computación cuántica](/rollups/settlement-receipts).
+que no son TypeScript usan la propia biblioteca `qorechain-pqc` de la cadena),
+de modo que un recibo producido por un servicio en TypeScript se verifica de
+forma idéntica en un auditor en Go o en un backend en Java. Consulta
+[Recibos de liquidación resistentes a la computación cuántica](/rollups/settlement-receipts).
 
 ---
 
 ## 2. QCAI Rollup Copilot
 
-> 🟢 **Único a través de la cadena.** Construido sobre endpoints de IA/RL on-chain
-> que otras redes simplemente no tienen.
+> 🟢 **Único a través de la cadena.** Construido sobre endpoints de IA/RL
+> on-chain que otras redes simplemente no tienen.
 
-QoreChain ejecuta servicios de IA/RL a nivel de red on-chain: un agente de política
-de comisiones, recomendaciones de red, investigaciones de fraude, disyuntores
-(circuit breakers). El Copilot los agrega en una única vista revisable y en
-lenguaje claro para un rollup. Es de solo lectura y de mejor esfuerzo: si un
-servicio asesor no es accesible, se degrada a una advertencia en lugar de fallar.
+QoreChain ejecuta servicios de IA/RL a nivel de red on-chain — un agente de
+política de comisiones, recomendaciones de red, investigaciones de fraude,
+disyuntores (circuit breakers). El Copilot los agrega en una única vista
+revisable y en lenguaje sencillo para un rollup. Es de solo lectura y de mejor
+esfuerzo: si un servicio de asesoría no está disponible, se degrada a una
+advertencia en lugar de fallar.
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet", endpoints: { rest, evmRpc } });
+const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
 
 const advice = await getRollupAdvice(rdk, "my-rollup");
 
@@ -124,19 +125,19 @@ Desde la CLI:
 qorollup advise my-rollup
 ```
 
-Otros kits no tienen nada que envolver: los datos asesores son una primitiva de
-QoreChain. Consulta [QCAI Copilot](/rollups/qcai-copilot).
+Los demás kits no tienen nada que envolver — los datos de asesoría son una
+primitiva de QoreChain. Consulta [QCAI Copilot](/rollups/qcai-copilot).
 
 ---
 
-## 3. Llamadas multi-VM entre VMs
+## 3. Llamadas entre VMs multi-VM
 
-> 🟡 **Distintivo.** QoreChain ejecuta EVM, CosmWasm y SVM bajo una sola cadena, con
-> un precompilado que conecta EVM → CosmWasm.
+> 🟡 **Distintivo.** QoreChain ejecuta EVM, CosmWasm y SVM bajo una sola cadena,
+> con un precompile que hace de puente EVM → CosmWasm.
 
 Tu contrato de rollup EVM (Solidity) puede llamar a un contrato **CosmWasm**
-existente a través de un precompilado fijo en `0x…0901`. El RDK construye el
-calldata por ti, de modo que puedes reutilizar un oráculo, un token o un registro
+existente a través de un precompile fijo en `0x…0901`. El RDK construye el
+calldata por ti, de modo que puedes reutilizar un oráculo, token o registro
 CosmWasm desde Solidity sin reimplementarlo.
 
 ```ts
@@ -168,24 +169,25 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 ```
 
 Genera un proyecto inicial con `npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(Solo EVM↔CosmWasm; las llamadas entre VMs de SVM son aparte.) Consulta [Multi-VM](/rollups/multi-vm).
+(Solo EVM↔CosmWasm; las llamadas cruzadas SVM son aparte.) Consulta
+[Multi-VM](/rollups/multi-vm).
 
 ---
 
 ## Todo lo demás que esperarías
 
-Más allá de los diferenciadores, el RDK incluye también lo básico imprescindible:
-cinco clientes de lenguaje publicados y verificados contra vectores dorados (golden
-vectors) compartidos, los cinco perfiles preconfigurados y la matriz de
-compatibilidad completa, gestión de lotes de liquidación y del ciclo de vida,
-disponibilidad de datos nativa, un auto-impugnador **watchtower** para rollups
-optimistas y la CLI del operador `qorollup`.
+Más allá de los diferenciadores, el RDK también incluye lo esencial: cinco
+clientes de lenguaje publicados y verificados contra vectores dorados
+compartidos, los cinco perfiles preconfigurados y la matriz de compatibilidad
+completa, gestión de lotes de liquidación y del ciclo de vida, disponibilidad de
+datos nativa, un auto-retador **watchtower** para rollups optimistas, y la CLI
+de operador `qorollup`.
 
 ## Siguiente
 
-- [Desplegar un Rollup](/rollups/deploying-a-rollup) — instalación por lenguaje y
-  de cero a un rollup en vivo en testnet.
-- [Recibos de liquidación seguros frente a la computación cuántica](/rollups/settlement-receipts) ·
+- [Desplegar un Rollup](/rollups/deploying-a-rollup) — instalación por lenguaje
+  y de cero a un rollup en vivo en testnet.
+- [Recibos de liquidación resistentes a la computación cuántica](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·
   [Watchtower](/rollups/watchtower) — los análisis en profundidad.

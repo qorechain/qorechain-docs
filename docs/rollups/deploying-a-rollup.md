@@ -10,7 +10,7 @@ sidebar_position: 3
 You can deploy an application-specific rollup three ways: through the **Dashboard** (a guided, no-code wizard), through the chain **CLI** (`qorechaind`, full control over the on-chain transaction), or programmatically with the **TypeScript RDK** (`@qorechain/rdk` plus the `create-qorechain-rollup` scaffolder). This page covers all three, plus the operator lifecycle and batch commands.
 
 :::note
-The commands below target the **`qorechain-diana`** testnet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.82** — substitute the mainnet chain ID and endpoints when deploying on mainnet. Validate every deployment on testnet first.
+The commands below target the **`qorechain-diana`** testnet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.85** — substitute the mainnet chain ID and endpoints when deploying on mainnet. Validate every deployment on testnet first.
 :::
 
 ---
@@ -85,7 +85,7 @@ qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
 
 | Flag | Default | Description |
 | ---- | ------- | ----------- |
-| `--vm` | *(empty — use the profile's VM)* | Override the rollup VM type: `evm`, `cosmwasm`, `svm`, or `custom`. Leave unset to apply the preset's VM. |
+| `--vm` | *(empty — use the profile's VM)* | Override the rollup VM type: `evm`, `cosmwasm`, `svm`, or `custom`. Leave unset to apply the preset's VM. (In the RDK clients the Wasm runtime is the **`native`** VM type — QoreChain Native — with `cosmwasm` kept as a legacy alias; `cosmwasm` is the on-wire value, which is what this chain-level flag takes.) |
 
 The `[profile]` argument selects a preset configuration that is applied automatically — see **[Preset Profiles](/rollups/preset-profiles)**. The `[stake-amount]` is the bond in `uqor`.
 
@@ -105,10 +105,20 @@ qorechaind query rdk list-rollups
 
 The Rollup Development Kit ships as two public npm packages that drive the same on-chain `x/rdk` module as the CLI, over public RPC/REST/gRPC/JSON-RPC and any cosmjs `OfflineSigner`:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.0`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, typed read clients, and the v0.4 additions — quantum-safe settlement receipts, the QCAI Rollup Copilot, cross-VM calldata helpers, and the watchtower.
-* **`create-qorechain-rollup`** (`v0.4.0`) — a scaffolder that clones one runnable starter template per profile (including the `multivm-rollup` template).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.4`) — the TypeScript SDK: a config builder with preset profiles, transaction helpers for the rollup and settlement-batch lifecycles, native DA, typed read clients, and the v0.4 additions — quantum-safe settlement receipts, the QCAI Rollup Copilot, cross-VM calldata helpers, and the watchtower.
+* **`create-qorechain-rollup`** (`v0.4.4`) — a scaffolder that clones one runnable starter template per profile (including the `multivm-rollup` template).
 
-These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.0`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands, plus the v0.4 `receipt`, `advise`, and `watchtower` commands.
+These are published to npm. The repo also ships a published operator CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.4`), with `doctor`, `create`, `status`, `watch`, `params`, `suggest`, lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw`, and `faucet` commands, plus the v0.4 `receipt`, `advise`, and `watchtower` commands.
+
+Highlights since the initial v0.4.0 release:
+
+* **v0.4.2 — works against the live network out of the box.** The `mainnet` and `testnet` presets now ship the public `qore.host` endpoints (REST at `api.qore.host` / `api-testnet.qore.host`), so `createRdkClient({ network })` reaches the chain with no manual `endpoints` — override only to target your own node. The same release renamed the Wasm rollup VM identifier to **`native`** (QoreChain Native); `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire — the chain, explorer, and Dashboard are unchanged.
+* **v0.4.3 — hybrid-signature encoding fix** for the TypeScript signing path (see the caution below).
+* **v0.4.4 — tracks `@qorechain/sdk` `^0.7.0`**, the SDK release for the chain **v3.1.85** authenticator lanes, so those capabilities reach the RDK's TypeScript users directly through the SDK. No RDK API change.
+
+:::caution
+**TypeScript users must be on RDK ≥ 0.4.3.** Earlier releases mis-encoded the hybrid PQC transaction extension, so the chain rejected every hybrid-signed transaction. v0.4.3 (via `@qorechain/sdk` ≥ 0.6.1) fixes the encoding. Only the TypeScript hybrid-signing path was affected — the Python, Go, Rust, and Java clients sign classical-only and were never impacted.
+:::
 
 #### Python, Go, Rust, and Java clients
 
@@ -125,17 +135,17 @@ cargo add qorechain-rdk
 go get github.com/qorechain/qorechain-rdk/packages/go
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.4.0
+# io.github.qorechain:qorechain-rdk:0.4.4
 ```
 
 ```python
 import qorrdk
 ```
 
-Current published versions: Python `qorechain-rdk` **0.4.0** (PyPI, import `qorrdk`), Rust `qorechain-rdk` **0.4.0** (crates.io), Go module `github.com/qorechain/qorechain-rdk/packages/go`, and Java `io.github.qorechain:qorechain-rdk` **0.4.0** (Maven Central). Live broadcast requires a node endpoint.
+Current published versions: Python `qorechain-rdk` **0.4.4** (PyPI, import `qorrdk`), Rust `qorechain-rdk` (crates.io — install the latest published release, or build from the repo), Go module `github.com/qorechain/qorechain-rdk/packages/go` (**v0.4.4**), and Java `io.github.qorechain:qorechain-rdk` **0.4.4** (Maven Central). Live broadcast requires a node endpoint.
 
 :::note
-The TypeScript RDK and its templates target the **`qorechain-diana`** testnet and are marked **coming soon** for full end-to-end flows. Pin versions and validate on testnet.
+The TypeScript RDK and its templates default to the **`qorechain-diana`** testnet, and since v0.4.2 the presets reach the live public endpoints out of the box. Pin versions and validate on testnet before mainnet.
 :::
 
 ### Scaffold a project with `create-qorechain-rollup` {#scaffold-a-project-with-create-qorechain-rollup}
@@ -166,6 +176,8 @@ import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qore
 // A config builder pre-filled with the defi preset's defaults; override via .set({ ... }).
 const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
 
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2) —
+// no manual `endpoints` config needed; override to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
 // Read the live module parameters — never hardcode the stake or burn rate.
@@ -177,7 +189,7 @@ const cost = estimateCreationCost({
 console.log(`Stake: ${uqorToQor(cost.stakeUqor)} QOR — burned: ${uqorToQor(cost.burnUqor)} QOR`);
 
 // Connect a signing client with any cosmjs OfflineSigner.
-const tx = await rdk.connectTx(signer, { gasPrice: "0.025uqor" });
+const tx = await rdk.connectTx(signer, { gasPrice: "0.15uqor" }); // the chain enforces a 0.1uqor/gas fee floor
 const msg = config.toCreateMsg(tx.address, { stakeAmount: params.minStakeForRollup });
 
 const res = await tx.createRollup({

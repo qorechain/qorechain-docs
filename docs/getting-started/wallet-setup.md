@@ -71,6 +71,28 @@ import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
 await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
 ```
 
+## One Account, Three Addresses (Unified Accounts) {#unified-accounts}
+
+As of chain version **v3.1.83**, a QoreChain account is **one 20-byte identity with three encodings**: `qor1…` (Native), `0x…` (EVM), and a base58 form (SVM). It holds **one balance** and — for eth-native accounts — **signs on all three lanes with one key**, including the required post-quantum hybrid signature on the Native path.
+
+Generate a unified wallet in code with `@qorechain/wallet-adapter`:
+
+```js
+import { generateQoreWallet } from "@qorechain/wallet-adapter";
+
+const w = await generateQoreWallet();          // or walletFromMnemonic(mnemonic)
+console.log(w.addresses.cosmos);               // qor1...
+console.log(w.addresses.evm);                  // 0x... (same identity)
+console.log(w.addresses.svm);                  // base58 (same identity)
+// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid).
+```
+
+Funds sent to any of the three forms land in the same balance.
+
+## Linked Wallets: Phantom & MetaMask as Spending Keys {#linked-wallets}
+
+As of chain version **v3.1.85**, you don't have to expose your root key to spend from a QoreChain account in a dApp. A **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.
+
 ## Solana Wallets (SVM)
 
 QoreChain's SVM execution environment is compatible with standard Solana tooling, and the account's **native QOR balance is visible directly on the SVM interface** (in lamports, 9 decimals; 1 uqor = 1,000 lamports). Connect any Solana-compatible wallet or library.

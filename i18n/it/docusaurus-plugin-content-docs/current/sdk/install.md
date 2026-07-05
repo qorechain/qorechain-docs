@@ -10,9 +10,21 @@ sidebar_position: 2
 Installa l'SDK per il tuo linguaggio. Il core TypeScript (`@qorechain/sdk`), gli
 adattatori EVM e SVM (`@qorechain/evm`, `@qorechain/svm`), il kit React
 (`@qorechain/react`) e i client Python, Go, Rust e Java sono tutti
-**pubblicati** sui rispettivi registry con piena parità con la catena nativa (messaggi tipizzati,
-query, il ciclo di vita delle tx, transazioni PQC ibride e sottoscrizioni
-WebSocket). Scegli il tuo linguaggio qui sotto.
+**pubblicati** sui rispettivi registry con piena parità con la catena nativa
+(messaggi tipizzati, query, il ciclo di vita delle tx, transazioni PQC ibride e
+sottoscrizioni WebSocket). La release corrente è la **0.7.0**, che aggiunge gli
+account unificati eth-native, la correzione — critica per il consenso — della
+codifica dell'estensione ibrida e le corsie degli authenticator (vedi la
+[guida agli Authenticators](/sdk/guides/authenticators)).
+Scegli il tuo linguaggio qui sotto.
+
+:::caution Aggiornamento dalla 0.6.0 o precedente
+L'SDK **0.6.1** ha corretto un bug critico per il consenso: l'estensione del
+tx-body `/qorechain.pqc.v1.PQCHybridSignature` veniva serializzata in JSON
+dentro `Any.value` e **rifiutata dalla catena a CheckTx**. Le transazioni
+ibride (PQC + classica) costruite con SDK ≤ 0.6.0 vengono rifiutate on-chain —
+aggiorna alla 0.6.1 o successiva in ogni linguaggio che utilizzi.
+:::
 
 ## TypeScript
 
@@ -33,7 +45,7 @@ viem è una **peer dependency** — installalo insieme:
 npm i @qorechain/evm viem
 ```
 
-Pubblicato su npm alla versione `0.5.0`.
+Pubblicato su npm alla versione `0.7.0`.
 
 ### Adattatore SVM
 
@@ -45,7 +57,7 @@ Pubblicato su npm alla versione `0.5.0`.
 npm i @qorechain/svm @solana/web3.js
 ```
 
-Pubblicato su npm alla versione `0.5.0`.
+Pubblicato su npm alla versione `0.7.0`.
 
 ### Kit React
 
@@ -57,7 +69,16 @@ provider, hook e i componenti `ConnectButton` / `QuantumSafeBadge`.
 npm i @qorechain/react
 ```
 
-Pubblicato su npm alla versione `0.5.0`. Vedi la [guida al kit React](/sdk/guides/react).
+Pubblicato su npm alla versione `0.7.0`. Vedi la [guida al kit React](/sdk/guides/react).
+
+### Scaffolder
+
+`create-qorechain-dapp` (npm, `0.7.0`) genera lo scheletro di una dApp pronta
+all'uso:
+
+```bash
+npm create qorechain-dapp@latest my-dapp
+```
 
 ## Python
 
@@ -67,8 +88,8 @@ pip install qorechain-sdk
 
 Richiede Python 3.10+. Il pacchetto include type hint e un marcatore `py.typed`.
 
-> La distribuzione si installa come `qorechain-sdk` (pubblicato su PyPI alla versione `0.5.0`)
-> ma **si importa come `qorsdk`**:
+> La distribuzione si installa come `qorechain-sdk` (pubblicato su PyPI alla
+> versione `0.7.0`) ma **si importa come `qorsdk`**:
 >
 > ```python
 > import qorsdk
@@ -89,7 +110,7 @@ import (
 )
 ```
 
-Pubblicato come modulo Go autonomo a `packages/go/v0.5.0`.
+Pubblicato come modulo Go autonomo (tag `packages/go/v0.7.0`).
 
 ## Rust
 
@@ -97,17 +118,21 @@ Pubblicato come modulo Go autonomo a `packages/go/v0.5.0`.
 cargo add qorechain-sdk
 ```
 
-Oppure in `Cargo.toml`:
+Oppure, per seguire i sorgenti della `0.7.0` direttamente dal repository:
 
 ```toml
 [dependencies]
-qorechain-sdk = "0.5"
+qorechain-sdk = { git = "https://github.com/qorechain/qorechain-sdk" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
-Richiede Rust 1.74+. I client di lettura sono asincroni (Tokio).
+Richiede Rust 1.74+. I client di lettura sono asincroni (Tokio). Il crate si
+importa come `qorechain` (`use qorechain;`).
 
-> Pubblicato su crates.io come `qorechain-sdk` alla versione `0.5.0`.
+> Pubblicato su crates.io come `qorechain-sdk`. `cargo add qorechain-sdk`
+> installa il **crate pubblicato più recente**, che al momento è indietro
+> rispetto alla release `0.7.0` — installa da crates.io (ultima versione
+> pubblicata) oppure dal repository per la superficie più aggiornata.
 
 ## Java
 
@@ -117,17 +142,17 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.5.0</version>
+  <version>0.7.0</version>
 </dependency>
 ```
 
 Oppure Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.5.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.7.0'
 ```
 
-> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk:0.5.0`.
+> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk:0.7.0`.
 
 ## Avanti
 

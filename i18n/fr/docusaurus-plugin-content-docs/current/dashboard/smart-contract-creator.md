@@ -28,6 +28,24 @@ Une fois la génération terminée, le Dashboard affiche le contrat dans une vue
 - **Télécharger** le contrat sous forme de fichier au bon format pour la blockchain que vous avez choisie.
 - **Modifier** le contrat pour l'affiner davantage.
 
+## Déployer votre contrat {#deploy}
+
+### Sur le mainnet (EVM) — déploiement non custodial {#deploy-mainnet}
+
+Le déploiement sur le mainnet est non custodial : le Dashboard compile votre contrat et renvoie des données de déploiement **non signées** — il ne détient jamais vos clés et ne signe jamais en votre nom. Vous signez et diffusez le déploiement dans votre propre portefeuille, puis le Dashboard enregistre le contrat qui en résulte.
+
+1. Ouvrez le contrat que vous souhaitez déployer (un contrat ciblant l'EVM) et sélectionnez **Deploy** sur **Mainnet**. S'il s'agit de votre première action sur le mainnet, acceptez la [reconnaissance unique des risques](/dashboard/overview#risk-acknowledgement).
+2. Connectez **MetaMask** s'il n'est pas déjà connecté — voir [Présentation et premiers pas](/dashboard/overview#connect-your-wallet).
+3. Le Dashboard compile le contrat et transmet la transaction de déploiement non signée à votre portefeuille.
+4. Vérifiez la transaction dans MetaMask — réseau, gas et données — puis confirmez pour la signer et la diffuser vous-même.
+5. Une fois le déploiement confirmé on-chain, le Dashboard enregistre l'adresse du contrat résultant parmi vos contrats sauvegardés.
+
+Sur le mainnet, seuls les déploiements **EVM** sont disponibles de cette manière pour le moment ; les déploiements **Wasm** et **SVM** sont réservés au testnet.
+
+### Sur le testnet — en un clic {#deploy-testnet}
+
+Le flux testnet reste inchangé : le portefeuille de test géré par le Dashboard signe et soumet le déploiement pour vous en un seul clic, ce qui vous permet d'itérer rapidement avec les jetons du [Faucet](/dashboard/faucet) avant de passer au mainnet. Le testnet prend en charge les déploiements EVM, Wasm et SVM.
+
 ## Partager et réutiliser
 
 Chaque contrat généré possède sa propre page que vous pouvez ouvrir ou partager. Si vous ouvrez un contrat qui ne vous appartient pas, vous pouvez le **forker** (fork) pour en démarrer votre propre copie et continuer à partir de là.

@@ -1,22 +1,23 @@
 ---
 slug: /sdk/quickstart
-title: Quickstart
-sidebar_label: Quickstart
+title: Pornire rapidă
+sidebar_label: Pornire rapidă
 sidebar_position: 3
 ---
 
-# Quickstart
+# Pornire rapidă
 
-De la zero la o tranzacție trimisă. Această pagină folosește SDK-ul TypeScript
-(`@qorechain/sdk`); fragmente scurte de conectare-și-citire pentru Python, Go și
-Rust urmează la final.
+De la zero până la o tranzacție trimisă. Această pagină folosește SDK-ul
+TypeScript (`@qorechain/sdk`); scurte fragmente de conectare și citire pentru
+Python, Go și Rust urmează la final.
 
 ## 1. Conectare
 
-`createClient()` rezolvă o rețea și compune clienții de citire, un helper de
-taxe și un punct de intrare lazy pentru semnare. Vizează implicit testnet-ul
-public (`qorechain-diana`). Endpoint-urile implicite indică spre **localhost**,
-așa că transmite `endpoints` pentru a comunica cu un nod real.
+`createClient()` rezolvă o rețea și compune clienții de citire, un helper
+pentru taxe și un punct de intrare pentru semnare inițializat leneș (lazy).
+Vizează implicit testnetul public (`qorechain-diana`). Endpoint-urile implicite
+indică spre **localhost**, așa că transmiteți `endpoints` pentru a comunica cu
+un nod real.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -27,31 +28,32 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-Mainnet-ul (chain id `qorechain-vladi`) este live. Selectează-l și suprascrie
-valorile implicite localhost cu URL-urile nodului tău:
+Mainnetul (chain id `qorechain-vladi`) este live. Selectați-l și suprascrieți
+valorile implicite localhost cu endpoint-urile publice (sau cu propriul
+dumneavoastră nod):
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Derivarea unui cont
 
-Un singur mnemonic derivă conturi native (`qor1…`), EVM (`0x…`) și SVM (base58)
-prin căi de derivare independente.
+Un singur mnemonic derivă conturi native (`qor1…`), EVM (`0x…`) și SVM
+(base58) prin căi de derivare independente.
 
 ```ts
 import {
@@ -62,16 +64,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-Vezi [Conturi și semnare PQC](/sdk/concepts/accounts-pqc) pentru derivarea
-EVM/SVM și tabelul complet de derivare.
+Începând cu 0.6.0 puteți deriva în schimb un **cont unificat eth-native** — o
+singură cheie `eth_secp256k1` redată ca toate cele trei adrese (`qor1…`,
+`0x…`, SVM base58), cu un singur sold partajat:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+Consultați [Conturi & semnare PQC](/sdk/concepts/accounts-pqc) pentru
+derivarea EVM/SVM, conturile unificate și tabelul complet de derivare.
 
 ## 3. Citirea unui sold
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -80,9 +95,9 @@ const tokenomics = await client.qor.getTokenomicsOverview();
 
 ## 4. Trimiterea unui transfer QOR
 
-Derivă un cont nativ, adaptează cheia sa privată într-un semnatar, conectează un
-`TxClient` și trimite tokeni. Folosește `toBase("1.5")` pentru a converti QOR în
-baza `uqor`.
+Derivați un cont nativ, adaptați cheia sa privată într-un semnatar, conectați
+un `TxClient` și trimiteți tokeni. Folosiți `toBase("1.5")` pentru a converti
+QOR în unități de bază `uqor`.
 
 ```ts
 import {
@@ -94,8 +109,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -120,9 +135,17 @@ console.log(result.transactionHash);
 
 `toBase("1.5")` returnează `"1500000"` (QOR are 10^6 unități de bază `uqor`).
 
-## Alte limbaje: conectare și citire
+:::info Semnare hibridă pe rețelele live
+Pe mainnet și testnet calea Native necesită extensia de semnătură **hibridă**
+(clasică + ML-DSA-87) — folosiți `buildHybridTx` /
+`signAndBroadcastHybrid`, sau `signHybridEth` pentru conturile unificate
+eth-native. Consultați
+[Semnare hibridă](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
-Acestea reflectă aceleași presetări de rețea și aceeași suprafață de citire.
+## Alte limbaje: conectare & citire
+
+Acestea reflectă aceleași preseturi de rețea și aceeași suprafață de citire.
 
 ### Python
 
@@ -167,10 +190,15 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## Următorul pas
+## Pașii următori
 
-- [Ghiduri](/sdk/guides/evm) — lucrul cu fiecare VM (EVM, SVM, CosmWasm, cross-VM).
-- [Conturi și semnare PQC](/sdk/concepts/accounts-pqc) — derivare HD și
-  semnare post-cuantică.
-- [Referință rețea și endpoint-uri](/sdk/reference/network).
-- [Exemple](/sdk/examples) — fragmente rulabile pentru fiecare flux de mai sus.
+- [Ghiduri](/sdk/guides/evm) — lucrați cu fiecare VM (EVM, SVM, CosmWasm,
+  cross-VM).
+- [Conturi & semnare PQC](/sdk/concepts/accounts-pqc) — derivare HD, conturi
+  unificate eth-native și semnare post-cuantică.
+- [Authenticators & cheltuieli delegate](/sdk/guides/authenticators) —
+  permiteți unei chei Phantom/MetaMask conectate să cheltuiască printr-un
+  relayer.
+- [Referință rețea & endpoint-uri](/sdk/reference/network).
+- [Exemple](/sdk/examples) — fragmente executabile pentru fiecare flux de mai
+  sus.

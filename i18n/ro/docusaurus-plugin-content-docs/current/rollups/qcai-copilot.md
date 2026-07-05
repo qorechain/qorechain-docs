@@ -22,12 +22,10 @@ este inaccesibil, Copilot se degradează grațios, eliminând acea secțiune și
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    evmRpc: "https://evm.testnet.example", // qor_ JSON-RPC for RL agent reads
-  },
-});
+// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
+// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
+// endpoint config needed; pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const advice = await getRollupAdvice(rdk, "my-roll");
 
@@ -67,5 +65,5 @@ qorollup advise my-roll --json
 ```
 
 `advise` afișează consultanța agregată, cu serviciile inaccesibile scoase la suprafață ca
-avertismente, nu ca erori. Vezi [Deploying a Rollup](/rollups/deploying-a-rollup)
+avertismente, nu ca erori. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup)
 pentru CLI-ul complet de operator `qorollup`.

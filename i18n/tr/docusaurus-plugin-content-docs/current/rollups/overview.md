@@ -7,49 +7,49 @@ sidebar_position: 1
 
 # Rollup'lara Genel Bakış
 
-QoreChain **Rollup Geliştirme Kiti (RDK)** — `x/rdk` modülü — geliştiricilerin QoreChain üzerinde uzlaşan (settle olan) uygulamaya özel rollup'lar başlatmasını sağlar. Her rollup, kendi blok süresine, sanal makinesine, ücret modeline ve sıralamasına sahip bağımsız bir yürütme ortamıdır; aynı zamanda QoreChain'in güvenlik, kuantum sonrası kriptografi ve veri erişilebilirliği garantilerini devralır.
+QoreChain **Rollup Development Kit (RDK)** — yani `x/rdk` modülü — geliştiricilerin QoreChain üzerinde mutabakata (settlement) ulaşan, uygulamaya özel rollup'lar başlatmasına olanak tanır. Her rollup; kendi blok süresi, sanal makinesi, ücret modeli ve sıralamasıyla (sequencing) bağımsız bir yürütme ortamıdır ve aynı zamanda QoreChain'in güvenliğini, post-kuantum kriptografisini ve veri erişilebilirliği (data availability) garantilerini devralır.
 
 :::caution
-RDK ve rollup uzlaşma katmanı aktif olarak gelişen bir yetenektir. Bu bölümde anlatılan uzlaşma modlarını, kanıt sistemlerini, ön ayarları ve özellik bazlı olgunluğu değişikliğe tabi tasarım niyeti olarak değerlendirin ve ana ağı (**`qorechain-vladi`**, EVM zincir kimliği **9801**, zincir sürümü **v3.1.82**) hedeflemeden önce herhangi bir dağıtımı **`qorechain-diana`** test ağında doğrulayın.
+RDK ve rollup mutabakat katmanı aktif olarak gelişmekte olan bir yetenektir. Bu bölümde anlatılan mutabakat modlarını, ispat sistemlerini, hazır profilleri ve özellik bazındaki olgunluk düzeylerini değişebilecek tasarım hedefleri olarak değerlendirin ve herhangi bir dağıtımı ana ağı (**`qorechain-vladi`**, EVM zincir kimliği **9801**, zincir sürümü **v3.1.85**) hedeflemeden önce **`qorechain-diana`** test ağında doğrulayın.
 :::
 
-Daha düşük seviyeli modül referansı için — modül parametreleri, yaşam döngüsü iç işleyişi, burn entegrasyonu ve çok katmanlı çapalama (anchoring) — Mimari bölümündeki **[Rollup Geliştirme Kiti](/architecture/rollup-development-kit)** sayfasına bakın. Bu Rollup'lar bölümü, geliştiriciye yönelik nasıl yapılır kılavuzudur: RDK'nın ne olduğu, hangi paradigmanın seçileceği, nasıl dağıtılacağı, veri erişilebilirliğinin nasıl çalıştığı ve para çekme işlemlerinin L2'den L1'e nasıl uzlaştığı.
+Daha alt seviyedeki modül referansı — modül parametreleri, yaşam döngüsü iç işleyişi, yakım (burn) entegrasyonu ve çok katmanlı çapalama (multilayer anchoring) — için Mimari bölümündeki **[Rollup Development Kit](/architecture/rollup-development-kit)** sayfasına bakın. Bu Rollup'lar bölümü ise geliştiriciye dönük uygulama kılavuzudur: RDK nedir, hangi paradigma seçilmeli, dağıtım nasıl yapılır, veri erişilebilirliği nasıl çalışır ve para çekme işlemleri L2'den L1'e nasıl mutabık kılınır.
 
 ---
 
 ## RDK size ne sağlar
 
-RDK aracılığıyla oluşturulan bir rollup, yapılandırılabilir dört konuyu bir araya getirir:
+RDK ile oluşturulan bir rollup, dört yapılandırılabilir başlığı bir araya getirir:
 
-| Konu | Neyi kontrol eder | Seçenekler |
+| Başlık | Neyi kontrol eder | Seçenekler |
 | ------- | ---------------- | ------- |
-| **Uzlaşma modu** | Rollup'un durum geçişlerinin QoreChain üzerinde nasıl doğrulanıp kesinleştirileceği | `optimistic`, `zk`, `based`, `sovereign` |
-| **Kanıt sistemi** | Uzlaşmayı destekleyen kriptografik veya ekonomik mekanizma | `fraud`, `snark`, `stark`, `none` |
-| **Sıralayıcı modu** | İşlemleri uzlaşmadan önce kimin sıraladığı | `dedicated`, `shared`, `based` |
-| **Veri erişilebilirliği** | İşlem verilerinin, herkesin durumu yeniden oluşturabilmesi için nerede yayınlandığı | `native`, `celestia`, `both` |
+| **Mutabakat modu** | Rollup'ın durum geçişlerinin QoreChain üzerinde nasıl doğrulanıp kesinleştirileceğini | `optimistic`, `zk`, `based`, `sovereign` |
+| **İspat sistemi** | Mutabakatı destekleyen kriptografik veya ekonomik mekanizmayı | `fraud`, `snark`, `stark`, `none` |
+| **Sıralayıcı (sequencer) modu** | İşlemlerin mutabakattan önce kim tarafından sıralanacağını | `dedicated`, `shared`, `based` |
+| **Veri erişilebilirliği** | Herkesin durumu yeniden oluşturabilmesi için işlem verilerinin nerede yayımlanacağını | `native`, `celestia`, `both` |
 
-Her rollup, benzersiz bir `rollup-id` ile kaydedilir, QOR cinsinden bir stake bonosu ile desteklenir ve bir yaşam döngüsü durumu (`pending`, `active`, `paused`, `stopped`) atanır. Tam oluşturma ve yaşam döngüsü akışı için **[Bir Rollup Dağıtma](/rollups/deploying-a-rollup)** sayfasına bakın.
+Her rollup benzersiz bir `rollup-id` ile kaydedilir, QOR cinsinden bir stake teminatıyla desteklenir ve bir yaşam döngüsü durumu (`pending`, `active`, `paused`, `stopped`) atanır. Oluşturma ve yaşam döngüsü akışının tamamı için **[Rollup Dağıtma](/rollups/deploying-a-rollup)** sayfasına bakın.
 
 ---
 
 ## QoreChain RDK'yı farklı kılan nedir
 
-Herhangi bir rollup kitinin temel özelliklerinin ötesinde, QoreChain RDK, QoreChain'in 1. Katmanına dayanan ve kuantum sonrası olmayan, yapay zeka temelli olmayan bir taban katmanı üzerine inşa edilmiş hiçbir kitin sunamayacağı üç yetenek sunar — ayrıca bir gözetleme kulesi (watchtower) otomatik itiraz mekanizması. RDK beş dilde (TypeScript, Python, Go, Rust, Java) gönderilir ve tümü şu anda **v0.4.0** sürümündedir.
+Herhangi bir rollup kitinin standart özelliklerinin ötesinde, QoreChain RDK; QoreChain'in Katman 1'ine bağlı olan ve post-kuantum olmayan, yapay zekâ içermeyen bir temel katman üzerine inşa edilmiş hiçbir kitin sunamayacağı üç yetenek — artı bir watchtower otomatik itiraz (auto-challenger) çerçevesi — sunar. RDK beş dilde (TypeScript, Python, Go, Rust, Java) yayımlanır ve npm, PyPI ile Maven Central üzerinde **v0.4.4** sürümüyle hizalanmıştır (crates.io üzerinde en son yayımlanan sürümü kurun veya depodan derleyin). v0.4.2'den itibaren `mainnet` ve `testnet` hazır profilleri, herkese açık `qore.host` uç noktalarını yerleşik olarak içerir; böylece `createRdkClient({ network })` hiçbir manuel uç nokta yapılandırması gerektirmeden zincire erişir.
 
-| Ayırt edici özellik | Ne yapar |
+| Farklılaştırıcı özellik | Ne yapar |
 | -------------- | ------------ |
-| **[Kuantuma dayanıklı uzlaşma makbuzları](/rollups/settlement-receipts)** | Bir uzlaşma çapasını, kuantum sonrası (ML-DSA-87 / Dilithium-5) bir imza altında **tamamen çevrimdışı** doğrulanabilen taşınabilir bir makbuza dönüştürün — beş istemcinin tamamında bayt bayt aynı. |
-| **[QCAI Rollup Yardımcı Pilotu](/rollups/qcai-copilot)** | QoreChain'in zincir üzerindeki YZ/RL hizmetlerini (ücret politikası ajanı, öneriler, dolandırıcılık soruşturmaları, devre kesiciler) tek bir rollup için salt okunur, sade dille bir tavsiyede toplayın. |
-| **[Çoklu-VM VM'ler arası çağrılar](/rollups/multi-vm)** | VM'ler arası ön derleme (`0x…0901`) aracılığıyla bir EVM/Solidity rollup sözleşmesinden bir CosmWasm sözleşmesini çağırın. |
-| **[Gözetleme Kulesi (Watchtower)](/rollups/watchtower)** | Yeni partileri ve itiraz penceresi son tarihlerini ortaya çıkaran ve geçersiz partilere geçerlilik yükleminize karşı itiraz eden, optimistik rollup'lar için bir otomatik itiraz çerçevesi. |
+| **[Kuantuma dayanıklı mutabakat makbuzları](/rollups/settlement-receipts)** | Bir mutabakat çapasını, post-kuantum (ML-DSA-87 / Dilithium-5) imza altında **tamamen çevrimdışı** doğrulanabilen taşınabilir bir makbuza dönüştürür — beş istemcinin tümünde bayt bayt aynı olacak şekilde. |
+| **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | QoreChain'in zincir üstü AI/RL servislerini (ücret politikası ajanı, öneriler, dolandırıcılık soruşturmaları, devre kesiciler) tek bir rollup için salt okunur, sade dilde bir danışmanlık raporunda toplar. |
+| **[Çoklu-VM çapraz-VM çağrıları](/rollups/multi-vm)** | Bir EVM/Solidity rollup sözleşmesinden, çapraz-VM ön derlemesi (`0x…0901`) aracılığıyla bir CosmWasm sözleşmesini çağırmanızı sağlar. |
+| **[Watchtower](/rollups/watchtower)** | Optimistic rollup'lar için yeni batch'leri ve itiraz penceresi (challenge window) son tarihlerini ortaya çıkaran ve geçersiz batch'lere sizin geçerlilik yüklemenize (validity predicate) göre itiraz eden bir otomatik itiraz çerçevesi. |
 
-Tam gerekçe ve kod örnekleri için **[Neden QoreChain RDK](/rollups/why)** sayfasına bakın.
+Gerekçenin tamamı ve kod örnekleri için **[Neden QoreChain RDK](/rollups/why)** sayfasına bakın.
 
 ---
 
-## Dört uzlaşma paradigması
+## Dört mutabakat paradigması
 
-QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik özelliklerine ve kanıt gereksinimlerine sahip dört farklı uzlaşma modunu destekler. Uzlaşma modu ile kanıt sisteminin birleşimi zincir üzerinde doğrulanır — uyumsuz bir eşleşme oluşturma sırasında reddedilir. Aşağıdaki diyagram, her uzlaşma modunu geçerli kanıt sistemine eşler.
+QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik (finality) özelliklerine ve ispat gereksinimlerine sahip dört ayrı mutabakat modunu destekler. Mutabakat modu ile ispat sistemi kombinasyonu zincir üzerinde doğrulanır — uyumsuz bir eşleşme, oluşturma sırasında reddedilir. Aşağıdaki diyagram, her mutabakat modunu geçerli ispat sistemiyle eşler.
 
 ```mermaid
 flowchart TD
@@ -68,83 +68,83 @@ flowchart TD
 
 ### Optimistic
 
-Optimistik rollup'lar, gönderilen partilerin varsayılan olarak geçerli olduğunu varsayar ve anlaşmazlık çözümü için **dolandırıcılık kanıtlarına (fraud proofs)** dayanır.
+Optimistic rollup'lar, gönderilen batch'lerin varsayılan olarak geçerli olduğunu kabul eder ve uyuşmazlık çözümü için **sahtecilik ispatlarına (fraud proofs)** dayanır.
 
-* **Kanıt sistemi**: `fraud` — etkileşimli dolandırıcılık kanıtları
+* **İspat sistemi**: `fraud` — etkileşimli sahtecilik ispatları
 * **Sıralayıcı**: `dedicated` veya `shared`
-* **Kesinlik**: Yapılandırılabilir bir itiraz penceresi başarılı bir itiraz olmadan sona erene kadar gecikir
-* **Anlaşmazlıklar**: Herkes, pencere içinde gönderilen bir partiye karşı bir dolandırıcılık kanıtı itirazı sunabilir; başarılı bir itiraz partiyi reddeder
+* **Kesinlik**: Yapılandırılabilir itiraz penceresi başarılı bir itiraz olmadan sona erene kadar gecikmelidir
+* **Uyuşmazlıklar**: Pencere içinde herkes, gönderilmiş bir batch'e karşı sahtecilik ispatı itirazı sunabilir; başarılı bir itiraz batch'in reddedilmesine yol açar
 
-### ZK (Sıfır Bilgi)
+### ZK (Sıfır Bilgi / Zero-Knowledge)
 
-ZK rollup'ları, her partiye, yeniden yürütme olmadan durum geçişinin doğruluğunu kanıtlayan kriptografik bir geçerlilik kanıtı ekler.
+ZK rollup'lar her batch'e, durum geçişinin doğruluğunu yeniden yürütme olmadan kanıtlayan kriptografik bir geçerlilik ispatı ekler.
 
-* **Kanıt sistemi**: `snark` (özlü kanıtlar) veya `stark` (şeffaf kanıtlar, güvenilir kurulum gerektirmez)
+* **İspat sistemi**: `snark` (özlü ispatlar) veya `stark` (şeffaf ispatlar, güvenilir kurulum gerektirmez)
 * **Sıralayıcı**: `dedicated` veya `shared`
-* **Kesinlik**: Geçerli kanıt doğrulamasında — itiraz penceresi gerekmez
-* **Olgunluk**: ZK ve STARK doğrulaması hâlâ olgunlaşıyor. ZK uzlaşmasını henüz üretime hazır olmayan bir özellik olarak değerlendirin ve test ağında doğrulayın. Ayrıntılar için **[ZK / STARK ve Para Çekme](/rollups/zk-stark-withdrawals)** sayfasına bakın.
+* **Kesinlik**: Geçerli ispat doğrulandığında — itiraz penceresi gerekmez
+* **Olgunluk**: ZK ve STARK doğrulaması hâlâ olgunlaşmaktadır. ZK mutabakatını henüz üretim düzeyinde sertleştirilmemiş kabul edin ve test ağında doğrulayın. Ayrıntılar için **[ZK / STARK ve Para Çekme](/rollups/zk-stark-withdrawals)** sayfasına bakın.
 
 ### Based
 
-Based rollup'lar, işlem sıralamasını QoreChain (L1) önericilerine devreder ve ana zincirin canlılığını ve sansüre karşı direncini devralır.
+Based rollup'lar, işlem sıralamasını QoreChain (L1) önericilerine (proposers) devrederek ana zincirin canlılığını (liveness) ve sansüre direncini devralır.
 
-* **Kanıt sistemi**: `none` — L1 önericileri sıralama gerçeğinin kaynağıdır
-* **Sıralayıcı**: `based` (gerekli — zincir üzerinde doğrulama ile zorunlu kılınır)
+* **İspat sistemi**: `none` — sıralama gerçeğinin kaynağı L1 önericileridir
+* **Sıralayıcı**: `based` (zorunlu — zincir üstü doğrulamayla uygulanır)
 * **Kesinlik**: Ana zincir onayını takip eder
-* **Ödünleşim**: QoreChain doğrulayıcıları sıralamayı yürüttüğü için en basit operasyonel model; ancak özel sıralayıcı gecikme kontrolü pahasına
+* **Ödünleşim**: QoreChain doğrulayıcıları sıralamayı üstlendiği için en basit operasyonel model; karşılığında özel sıralayıcının sağladığı gecikme kontrolünden vazgeçilir
 
 ### Sovereign
 
-Sovereign rollup'lar kendi konsensüslerini çalıştırır ve kendi kendine sıralanır. Durumu doğrulanabilirlik için QoreChain'e çapalarlar, ancak kesinlik için ana zincire bağımlı değildirler.
+Sovereign rollup'lar kendi konsensüslerini çalıştırır ve kendi kendilerini sıralarlar. Doğrulanabilirlik için durumlarını QoreChain'e çapalar, ancak kesinlik için ana zincire bağımlı değildirler.
 
-* **Kanıt sistemi**: `none`
+* **İspat sistemi**: `none`
 * **Sıralayıcı**: rollup tarafından kendi kendine yönetilir
-* **Kesinlik**: Bağımsız — rollup'un kendi konsensüsü tarafından belirlenir
-* **Durum çapalama**: Durum kökleri şeffaflık için QoreChain'e gönderilir, ancak ana zincir bunları zorunlu kılmaz
+* **Kesinlik**: Bağımsız — rollup'ın kendi konsensüsü tarafından belirlenir
+* **Durum çapalama**: Durum kökleri (state roots) şeffaflık için QoreChain'e gönderilir, ancak ana zincir bunları zorunlu kılmaz
 
 ---
 
-## Kanıt sistemi uyumluluğu
+## İspat sistemi uyumluluğu
 
-Uzlaşma modu, hangi kanıt sistemlerinin geçerli olduğunu kısıtlar. Bu eşleşmeler, bir rollup oluşturulduğunda zorunlu kılınır.
+Mutabakat modu, hangi ispat sistemlerinin geçerli olduğunu kısıtlar. Bu eşleşmeler, rollup oluşturulurken zorunlu tutulur.
 
-| Uzlaşma modu | `fraud` | `snark` | `stark` | `none` |
+| Mutabakat modu | `fraud` | `snark` | `stark` | `none` |
 | --------------- | :-----: | :-----: | :-----: | :----: |
-| **optimistic**  | Gerekli | — | — | — |
+| **optimistic**  | Zorunlu | — | — | — |
 | **zk**          | — | Desteklenir | Desteklenir | — |
-| **based**       | — | — | — | Gerekli |
-| **sovereign**   | — | — | — | Gerekli |
+| **based**       | — | — | — | Zorunlu |
+| **sovereign**   | — | — | — | Zorunlu |
 
 ---
 
 ## Sıralayıcı modları
 
-Sıralayıcı, bir rollup bloğu içindeki işlemleri uzlaşmadan önce kimin sıralayacağını belirler.
+Sıralayıcı, mutabakattan önce işlemlerin bir rollup bloğu içinde kim tarafından sıralanacağını belirler.
 
 | Mod | Kim sıralar | Notlar |
 | ---- | ------------- | ----- |
 | **`dedicated`** | Tek bir belirlenmiş operatör adresi | En düşük gecikme; canlılık ve adil sıralama için operatöre güven gerektirir |
-| **`shared`** | Paylaşılan bir sıralayıcı kümesi | Sıralama küme genelinde dağıtılır; biraz daha yüksek koordinasyon yükü |
-| **`based`** | QoreChain L1 önericileri | Ana zincir doğrulayıcı güvenliğini ve sansüre karşı direnci devralır; `based` uzlaşması için gereklidir |
+| **`shared`** | Paylaşımlı bir sıralayıcı kümesi | Sıralama küme genelinde dağıtılır; koordinasyon yükü biraz daha yüksektir |
+| **`based`** | QoreChain L1 önericileri | Ana zincir doğrulayıcı güvenliğini ve sansüre direnci devralır; `based` mutabakatı için zorunludur |
 
 ---
 
-## Bir paradigma seçme
+## Paradigma seçimi
 
 | Şunu istiyorsanız... | Şunu değerlendirin |
 | -------------- | -------- |
 | QoreChain doğrulayıcılarının sıraladığı en basit operasyonel kurulum | **based** |
 | Kriptografik garantilerle hızlı kesinlik (olgunlaşmakta) | **zk** (`snark` / `stark`) |
-| Ekonomik anlaşmazlık çözümüne sahip iyi anlaşılmış bir model | **optimistic** (`fraud`) |
-| Doğrulanabilirlik için çapalanmış, kendi konsensüsünüzle tam bağımsızlık | **sovereign** |
+| Ekonomik uyuşmazlık çözümüne sahip, iyi anlaşılmış bir model | **optimistic** (`fraud`) |
+| Kendi konsensüsünüzle tam bağımsızlık, doğrulanabilirlik için çapalama | **sovereign** |
 
-Nereden başlayacağınızdan emin değil misiniz? RDK, bu seçenekleri yaygın uygulama kategorileri için bir araya getiren **ön ayar profilleri** içerir — bkz. **[Ön Ayar Profilleri](/rollups/preset-profiles)** — ve kullanım senaryonuzun sade dilde bir açıklamasından bir profil öneren bir `suggest-profile` sorgusu sunar.
+Nereden başlayacağınızdan emin değil misiniz? RDK, yaygın uygulama kategorileri için bu seçimleri paketleyen **hazır profiller** sunar — bkz. **[Hazır Profiller](/rollups/preset-profiles)** — ve kullanım senaryonuzun sade dilde bir açıklamasından profil öneren bir `suggest-profile` sorgusu içerir.
 
-Geliştiriciler için RDK, ayrıca genel TypeScript SDK'sı **`@qorechain/rdk`** ve aynı zincir üzeri modülü koddan çalıştıran **`create-qorechain-rollup`** iskelet oluşturucu olarak da gönderilir — bkz. **[Bir Rollup Dağıtma](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.
+Geliştiriciler için RDK ayrıca herkese açık TypeScript SDK'sı **`@qorechain/rdk`** ve aynı zincir üstü modülü koddan yöneten **`create-qorechain-rollup`** iskele oluşturucusu olarak da yayımlanır — bkz. **[Rollup Dağıtma](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.
 
-## İlgili
+## İlgili sayfalar
 
-* [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) — CLI'dan veya TypeScript RDK'dan bir rollup başlatın.
-* [Ön Ayar Profilleri](/rollups/preset-profiles) — yaygın uygulama kategorileri için tek tıkla paketler.
-* [Veri Erişilebilirliği](/rollups/data-availability) — yerel DA yönlendiricisi ve blob depolama.
-* [ZK / STARK Para Çekme](/rollups/zk-stark-withdrawals) — kanıt destekli para çekme akışları.
+* [Rollup Dağıtma](/rollups/deploying-a-rollup) — CLI'dan veya TypeScript RDK'dan bir rollup başlatın.
+* [Hazır Profiller](/rollups/preset-profiles) — yaygın uygulama kategorileri için tek tıkla kullanılabilen paketler.
+* [Veri Erişilebilirliği](/rollups/data-availability) — yerleşik DA yönlendiricisi ve blob depolama.
+* [ZK / STARK Para Çekme](/rollups/zk-stark-withdrawals) — ispat destekli para çekme akışları.

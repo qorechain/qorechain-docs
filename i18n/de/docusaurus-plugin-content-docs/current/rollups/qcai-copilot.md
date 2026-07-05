@@ -8,26 +8,26 @@ sidebar_position: 7
 # QCAI Rollup Copilot
 
 Der QCAI Rollup Copilot sammelt alles, was die Beratungsdienste des Netzwerks
-über ein Rollup wissen, und fasst es zu einer einzigen Ansicht in einfacher Sprache
-zusammen: eine Live-Gebührenschätzung, Netzwerkempfehlungen, etwaige Betrugsuntersuchungen, die das
-Rollup referenzieren, den Status des Reinforcement-Learning-Agenten sowie eine kurze Liste
-umsetzbarer Vorschläge.
+über ein Rollup wissen, und fasst es zu einer einzigen Ansicht in einfacher
+Sprache zusammen: eine Live-Gebührenschätzung, Netzwerkempfehlungen, etwaige
+Betrugsuntersuchungen, die das Rollup referenzieren, den Status des
+Reinforcement-Learning-Agenten sowie eine kurze Liste umsetzbarer Vorschläge.
 
-Er arbeitet **nach bestem Bemühen (Best-Effort)**. Die Beratungsdienste sind optionale Infrastruktur — falls einer
-nicht erreichbar ist, verschlechtert sich der Copilot kontrolliert, lässt diesen Abschnitt weg und
-protokolliert eine Warnung, anstatt den gesamten Aufruf fehlschlagen zu lassen. Sie erhalten stets ein Ergebnis.
+Er arbeitet **nach bestem Bemühen (Best-Effort)**. Die Beratungsdienste sind
+optionale Infrastruktur — falls einer nicht erreichbar ist, degradiert der
+Copilot kontrolliert: Er lässt den betreffenden Abschnitt weg und protokolliert
+eine Warnung, anstatt den gesamten Aufruf fehlschlagen zu lassen. Sie erhalten
+stets ein Ergebnis.
 
 ## Ein Aufruf: `getRollupAdvice`
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    evmRpc: "https://evm.testnet.example", // qor_ JSON-RPC for RL agent reads
-  },
-});
+// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
+// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
+// endpoint config needed; pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const advice = await getRollupAdvice(rdk, "my-roll");
 
@@ -41,8 +41,9 @@ console.log(advice.warnings);               // services that were unreachable
 
 ## Die zugrunde liegenden Lesezugriffe
 
-`getRollupAdvice` aggregiert eine Reihe schreibgeschützter Methoden, die Sie auch
-direkt aufrufen können. Die beratenden REST-Methoden liegen unter `/qorechain/ai/v1/...`:
+`getRollupAdvice` aggregiert eine Reihe schreibgeschützter Methoden, die Sie
+auch direkt aufrufen können. Die beratenden REST-Methoden liegen unter
+`/qorechain/ai/v1/...`:
 
 - `getFeeEstimate(...)` — aktuelle Gebührenschätzung.
 - `getNetworkRecommendations(...)` — Tuning-Empfehlungen auf Netzwerkebene.
@@ -56,8 +57,9 @@ Die Reinforcement-Learning-Lesezugriffe nutzen den `qor_*`-JSON-RPC-Namensraum:
 - `getRLObservation()` — die jüngste Beobachtung.
 - `getRLReward()` — das jüngste Reward-Signal.
 
-Da dies alles Lesezugriffe sind, benötigt der Copilot lediglich einen REST-Endpunkt (und einen EVM-
-/ `qor_`-JSON-RPC-Endpunkt für die RL-Lesezugriffe) — keinen Signer.
+Da dies alles Lesezugriffe sind, benötigt der Copilot lediglich einen
+REST-Endpunkt (und einen EVM- / `qor_`-JSON-RPC-Endpunkt für die
+RL-Lesezugriffe) — keinen Signer.
 
 ## CLI
 
@@ -67,5 +69,6 @@ qorollup advise my-roll --json
 ```
 
 `advise` gibt die aggregierte Beratung aus, wobei nicht erreichbare Dienste als
-Warnungen statt als Fehler ausgewiesen werden. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup)
-für die vollständige `qorollup`-Betreiber-CLI.
+Warnungen statt als Fehler ausgewiesen werden. Siehe
+[Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für die vollständige
+`qorollup`-Betreiber-CLI.

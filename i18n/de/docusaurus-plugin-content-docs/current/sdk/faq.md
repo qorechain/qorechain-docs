@@ -9,34 +9,36 @@ sidebar_position: 8
 
 ## Ist das Mainnet live?
 
-Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`). Die Testnet-Voreinstellung
-(`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Voreinstellungen liefern localhost-Endpunkt-Standardwerte;
-wähle das Netzwerk mit `createClient({ network: "mainnet" })` und
-überschreibe `endpoints` mit deinen Node-URLs. Siehe
-[Netzwerk & Endpunkte](/sdk/reference/network).
+Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`). Das Testnet-Preset
+(`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Presets werden mit
+Localhost-Endpoint-Standardwerten ausgeliefert; wählen Sie das Netzwerk mit
+`createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` mit den
+URLs Ihres Nodes. Siehe
+[Netzwerk & Endpoints](/sdk/reference/network).
 
-## Warum landen meine Aufrufe bei localhost?
+## Warum gehen meine Aufrufe an localhost?
 
-`createClient()` verwendet standardmäßig **localhost**-Endpunkte. Um mit einem echten Node zu
-kommunizieren, übergib ein `endpoints`-Objekt:
+`createClient()` verwendet standardmäßig **localhost**-Endpoints. Um mit einem
+echten Node zu kommunizieren, übergeben Sie ein `endpoints`-Objekt:
 
 ```ts
 const client = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example",
-    evmRpc: "https://evm.testnet.example",
+    rest: "https://api-testnet.qore.host",
+    rpc: "https://rpc-testnet.qore.host",
+    evmRpc: "https://evm-testnet.qore.host",
   },
 });
 ```
 
-Der Signierpfad (`connectTx`) benötigt den Konsens-**`rpc`**-Endpunkt; CosmWasm-Lesevorgänge
-nutzen ihn ebenfalls. REST-Lesevorgänge verwenden `rest`; EVM- und `qor_`-Aufrufe verwenden `evmRpc`.
+Der Signierpfad (`connectTx`) benötigt den Konsens-Endpoint **`rpc`**;
+CosmWasm-Lesezugriffe verwenden ihn ebenfalls. REST-Lesezugriffe verwenden
+`rest`; EVM- und `qor_`-Aufrufe verwenden `evmRpc`.
 
 ## "Cannot find module 'viem'" / "'@solana/web3.js'"
 
-Dies sind **Peer-Abhängigkeiten** von `@qorechain/evm` bzw. `@qorechain/svm`.
-Installiere sie in deinem Projekt:
+Dies sind **Peer-Dependencies** von `@qorechain/evm` bzw. `@qorechain/svm`.
+Installieren Sie sie in Ihrem Projekt:
 
 ```bash
 npm i @qorechain/evm viem
@@ -45,43 +47,77 @@ npm i @qorechain/svm @solana/web3.js
 
 ## Ein Precompile-Aufruf wirft "feature not present"
 
-Die EVM-Precompiles existieren nur auf Nodes, die die QoreChain EVM Engine ausführen. Auf einem
-einfachen EVM-Node scheitern diese Aufrufe. Wenn du heterogene Nodes ansprichst, umschließe jeden
-Precompile-Aufruf und behandle den Fehler pro Aufruf.
+Die EVM-Precompiles existieren nur auf Nodes, die die QoreChain EVM Engine
+ausführen. Auf einem gewöhnlichen EVM-Node schlagen diese Aufrufe fehl. Wenn Sie
+heterogene Nodes ansprechen, kapseln Sie jeden Precompile-Aufruf und behandeln
+Sie den Fehler pro Aufruf.
 
-## Meine Beträge sind um den Faktor Million daneben
+## Meine Beträge weichen um den Faktor eine Million ab
 
-QOR hat **10^6** Basis-`uqor`-Einheiten. Verwende `toBase` / `fromBase` und führe alle Berechnungen in
-Basiseinheiten durch:
+QOR hat **10^6** Basiseinheiten in `uqor`. Verwenden Sie `toBase` / `fromBase`
+und führen Sie alle Berechnungen in Basiseinheiten durch:
 
 ```ts
 toBase("1.5");       // "1500000"
 fromBase("1500000"); // "1.5"
 ```
 
-Beachte, dass die EVM-Laufzeitumgebung QOR mit **18** Dezimalstellen darstellt (EVM-Konvention), was
-sich von der Cosmos-`uqor`-Basis von 10^6 unterscheidet.
+Beachten Sie, dass die EVM-Laufzeitumgebung QOR mit **18** Dezimalstellen
+darstellt (EVM-Konvention), was sich von der Native-`uqor`-Basis von 10^6
+unterscheidet.
 
 ## Welche Pakete sind veröffentlicht, und wo?
 
-Alle. Der TypeScript-Core (`@qorechain/sdk`) und die EVM/SVM-Adapter
-(`@qorechain/evm`, `@qorechain/svm`) sind auf npm unter `0.3.0`; der Python-Client ist
-auf PyPI (`pip install qorechain-sdk` unter `0.3.1`, Import `qorsdk`); der Rust-Client
-ist auf crates.io (`cargo add qorechain-sdk` unter `0.3.0`); und der Go-Client
-ist auf dem Modul-Proxy (`go get github.com/qorechain/qorechain-sdk/packages/go/...`).
-Siehe [Installation](/sdk/install) für die vollständigen Befehle pro Sprache.
+Alle. Der TypeScript-Core (`@qorechain/sdk`), die EVM/SVM-Adapter
+(`@qorechain/evm`, `@qorechain/svm`), das React-Kit (`@qorechain/react`) und der
+`create-qorechain-dapp`-Scaffolder sind auf npm in Version `0.7.0`; der
+Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version `0.7.0`,
+Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
+(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, Tag
+`packages/go/v0.7.0`); und der Java-Client ist auf Maven Central
+(`io.github.qorechain:qorechain-sdk:0.7.0`). Der Rust-Client ist auf crates.io
+(`cargo add qorechain-sdk`) in der **zuletzt veröffentlichten Crate-Version**,
+die derzeit hinter 0.7.0 zurückliegt — installieren Sie von crates.io oder aus
+dem Repo. Siehe [Installation](/sdk/install) für die vollständigen Befehle pro
+Sprache.
 
-## Mein Mnemonic wird abgelehnt
+## Meine Mnemonic wird abgelehnt
 
-Das SDK validiert sowohl die BIP-39-Wortliste **als auch** die Prüfsumme, bevor ein
-Schlüssel abgeleitet wird, sodass eine vertippte Phrase eine Ausnahme auslöst, statt stillschweigend das falsche
-Konto zu erzeugen. Überprüfe die Wörter erneut; verwende `validateMnemonic`, um eine Phrase zu testen.
+Das SDK validiert sowohl die BIP-39-Wortliste **als auch** die Prüfsumme, bevor
+ein Schlüssel abgeleitet wird — eine Phrase mit Tippfehler löst also einen
+Fehler aus, statt stillschweigend das falsche Konto zu erzeugen. Prüfen Sie die
+Wörter erneut; verwenden Sie `validateMnemonic`, um eine Phrase zu testen.
 
-## Hybride (PQC) Transaktionen
+## Hybride (PQC-)Transaktionen
 
-Lokales ML-DSA-87-Signieren/-Verifizieren und die hybriden Tx-Erstellungs-Helfer sind
-heute verfügbar. Bevor eine hybride Tx on-chain PQC-verifiziert wird, muss der öffentliche
-PQC-Schlüssel des Signierers registriert sein (`MsgRegisterPQCKey`), oder du musst
-`includePqcPublicKey: true` setzen, um ihn zur automatischen Registrierung einzubetten. Die vollständige hybride
-Einreichung wird gerade für das Live-Netzwerk finalisiert. Siehe
+Die hybride Einreichung (klassisch + ML-DSA-87) ist auf dem Native-Pfad **live
+und verpflichtend** — rein klassische Native-Transaktionen werden on-chain
+abgelehnt (Chain v3.1.85). Bevor eine hybride Tx PQC-verifiziert wird, muss der
+öffentliche PQC-Schlüssel des Signierers registriert sein
+(`MsgRegisterPQCKeyV2`), oder Sie setzen `includePqcPublicKey: true`, um ihn für
+die automatische Registrierung bei der ersten Verwendung einzubetten. Die Chain
+akzeptiert **ausschließlich deterministische** ML-DSA-87-Signaturen (das SDK
+signiert seit 0.5.1 standardmäßig deterministisch); hedged-Signaturen schlagen
+mit `pqc`-Code 21 (`hybrid_verify_failed`) fehl. Siehe
 [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
+
+## Meine hybriden Transaktionen scheitern bei CheckTx mit einem Tx-Parse-Fehler
+
+Aktualisieren Sie das SDK. Die Versionen **0.6.0 und früher** haben die
+Tx-Body-Erweiterung `/qorechain.pqc.v1.PQCHybridSignature` JSON-serialisiert,
+was der Tx-Decoder der Chain bei CheckTx ablehnt. Seit **0.6.1** ist die
+Erweiterung protobuf-kodiert (der Wert beginnt mit `0x08`) — in allen fünf
+Sprachen. Hybride Transaktionen, die mit älteren Versionen erstellt wurden,
+werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
+
+## Meine Authenticator-Ausgabe wird mit `authenticator_replay` abgelehnt
+
+Die Nonce ist falsch. `MsgExecuteEVM.nonce` muss die **aktuelle** EVM-Nonce des
+Kontos sein (der Relayer ist ein anderes Konto, also **nicht** 1 addieren);
+`MsgExecuteCosmos.nonce` ist die **Sequenz pro Authenticator** für
+`(account, pubkey)`, ein separater Store-Zähler. Rufen Sie den Wert erneut ab
+und signieren Sie neu. Andere Authenticator-Fehler lassen sich über
+`decodeTxError` dekodieren: `abstractaccount`-Codes 5
+(`spending_limit_exceeded`), 6 (`session_key_expired`) und
+10 (`permission_denied`). Siehe
+[Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators).

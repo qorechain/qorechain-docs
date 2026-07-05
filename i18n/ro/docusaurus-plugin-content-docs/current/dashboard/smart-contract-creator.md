@@ -28,6 +28,24 @@ De aici poți:
 - **Descărca** contractul ca fișier în formatul potrivit pentru blockchain-ul ales.
 - **Edita** contractul pentru a-l rafina în continuare.
 
+## Implementează contractul {#deploy}
+
+### Pe mainnet (EVM) — implementare non-custodială {#deploy-mainnet}
+
+Implementarea pe mainnet este non-custodială: Panoul compilează contractul și returnează date de implementare **nesemnate** — nu îți deține niciodată cheile și nu semnează niciodată în numele tău. Tu semnezi și transmiți implementarea din propriul portofel, iar Panoul înregistrează apoi contractul rezultat.
+
+1. Deschide contractul pe care vrei să îl implementezi (un contract cu țintă EVM) și selectează **Deploy** pe **Mainnet**. Dacă aceasta este prima ta acțiune pe mainnet, acceptă [confirmarea unică a riscurilor](/dashboard/overview#risk-acknowledgement).
+2. Conectează **MetaMask** dacă nu este deja conectat — vezi [Prezentare generală și primii pași](/dashboard/overview#connect-your-wallet).
+3. Panoul compilează contractul și predă tranzacția de implementare nesemnată portofelului tău.
+4. Analizează tranzacția în MetaMask — rețeaua, gas-ul și datele — apoi confirmă pentru a o semna și a o transmite tu însuți.
+5. Odată ce implementarea este confirmată on-chain, Panoul înregistrează adresa contractului rezultat alături de contractele tale salvate.
+
+Pe mainnet, deocamdată doar implementările **EVM** sunt disponibile în acest mod; implementările **Wasm** și **SVM** sunt disponibile doar pe testnet.
+
+### Pe testnet — un singur clic {#deploy-testnet}
+
+Fluxul de testnet rămâne neschimbat: portofelul de test gestionat de panou semnează și trimite implementarea pentru tine cu un singur clic, astfel încât să poți itera rapid cu tokenuri de la [Faucet](/dashboard/faucet) înainte de a trece pe mainnet. Testnet-ul suportă implementări EVM, Wasm și SVM.
+
 ## Partajează și reutilizează
 
 Fiecare contract generat are propria pagină pe care o poți deschide sau partaja. Dacă deschizi un contract pe care nu îl deții, îl poți **fork**-ui pentru a începe propria copie și a continua de acolo.

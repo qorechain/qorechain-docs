@@ -10,7 +10,7 @@ sidebar_position: 9
 Acest ghid acoperă modul în care creezi un validator în rețeaua QoreChain, înțelegerea sistemului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculul cuantic și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**), activ de la 7 iunie 2026, rulând versiunea de chain **v3.1.82**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) este recomandat pentru a-ți repeta configurarea înainte de a intra în producție. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**), activ de la 7 iunie 2026, rulând versiunea de chain **v3.1.85**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) este recomandat pentru a-ți repeta configurarea înainte de a intra în producție. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă.
 :::
 
 ---

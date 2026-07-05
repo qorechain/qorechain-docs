@@ -17,7 +17,7 @@ QoreChain ネットワークの統合リファレンスです — チェーン�
 | **Cosmos チェーン ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM チェーン ID（EIP-155）** | **9801**（16進 `0x2649`） | **9800**（16進 `0x2648`） |
 | **稼働開始** | 2026年6月7日 23:59 UTC | — |
-| **チェーンバージョン** | v3.1.82 | v3.1.82 |
+| **チェーンバージョン** | v3.1.85 | v3.1.85 |
 | **フレームワーク** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **最低ガス価格** | `0.1uqor` | `0.1uqor` |
 | **接続ガイド** | [メインネットへの接続](/getting-started/connecting-to-mainnet) | [テストネットへの接続](/getting-started/connecting-to-testnet) |

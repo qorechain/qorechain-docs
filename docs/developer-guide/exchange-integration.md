@@ -10,7 +10,7 @@ sidebar_position: 11
 Everything an exchange, custodian, or payment integrator needs to list QOR and process deposits and withdrawals: choosing an interface, detecting deposits safely, and signing withdrawals.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.83**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints).
+This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.85**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
 :::
 
 ## Choosing an integration path {#choosing-a-path}
@@ -115,6 +115,29 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
 Then poll `GET /cosmos/tx/v1beta1/txs/{hash}` until it appears in a block with `code == 0`.
 
 For an HSM or a custom signer in another language, use the standalone [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 libraries (npm, PyPI, crates.io, Maven Central, Go) and assemble the same extension. The ML-DSA signature **must be deterministic** (FIPS-204 §3.4) — see [Deterministic signing](/developer-guide/post-quantum-signing#deterministic-signing); the chain rejects hedged signatures.
+
+### Server-side alternative: `@qorechain/chain-bridge` {#chain-bridge}
+
+For a fully server-side hot-wallet worker (no browser wallet involved), **`@qorechain/chain-bridge`** (npm) wraps the whole flow — key derivation, PQC auto-registration on first use, hybrid signing, and broadcast — in one call. It is pure JavaScript (no native addons), suitable for serverless workers:
+
+```js
+import { ChainBridge } from "@qorechain/chain-bridge";
+
+const bridge = new ChainBridge({
+  cosmosRpc: "https://rpc.qore.host",       // or your own node
+  chainId: "qorechain-vladi",
+  signerMnemonic: process.env.HOT_WALLET_MNEMONIC,  // from your secrets manager
+});
+
+// One call: derives the canonical ML-DSA-87 key, auto-registers it if missing,
+// hybrid-signs the MsgSend, and broadcasts. Amounts are in uqor (6 decimals).
+const { txHash } = await bridge.sendTokens({
+  to: "qor1recipient...",
+  amountUqor: "1000000",   // 1 QOR
+});
+```
+
+`chain-bridge` (≥0.1.1) uses the same canonical address-bound PQC derivation as the rest of the stack — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — so the key is recoverable from the mnemonic with `qorechaind tx pqc recover-key`. Accounts registered with older tooling are handled automatically (legacy-key fallback), and can be migrated once to the canonical key with [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
 
 ## Path B — EVM {#path-b-evm}
 

@@ -7,32 +7,33 @@ sidebar_position: 7
 
 # Örnekler
 
-Çalıştırılabilir yedi TypeScript örneği, SDK monorepo'sunun
+Çalıştırılabilir TypeScript örnekleri, SDK monorepo'sunun
 [`examples/`](https://github.com/qorechain/qorechain-sdk/tree/main/examples)
-dizininde yer alır. Her klasör, kendi `README.md`, `.env.example` ve tek bir
-`index.ts` dosyasına sahip, kendi kendine yeterli bir workspace paketidir.
-Uç noktaları ve mnemonic'leri ortam değişkenlerinden, makul localhost
-varsayılanlarıyla okurlar ve ağa bağımlı olanlar, ulaşılabilir bir düğüm
-bulunmadığında bir ipucuyla zarif bir şekilde başarısız olur.
+dizininde bulunur — aşağıdakilerin yanı sıra `ai-preflight`,
+`cross-vm-call`, `react-dapp`, `register-sidechain`, `rollup-lifecycle`,
+`amm-swap`, `connect-keplr`, `evm-nft` ve `subscribe-blocks`. Her klasör,
+kendi `README.md`, `.env.example` dosyaları ve tek bir `index.ts` içeren,
+kendi kendine yeten bir workspace paketidir. Uç noktaları ve mnemonic'leri
+makul localhost varsayılanlarıyla ortam değişkenlerinden okurlar; ağa bağımlı
+olanlar, erişilebilir bir düğüm yoksa bir ipucu vererek düzgün şekilde
+sonlanır.
 
-Depo kökünden bir kez kurun, ardından herhangi bir örneği çalıştırın:
+Depo kökünden bir kez kurulum yapın, ardından herhangi bir örneği çalıştırın:
 
 ```bash
 pnpm install
 pnpm --filter @qorechain/example-pqc-hybrid-sign start
 ```
 
-> Yalnızca test mnemonic'leri veya oluşturulmuş anahtarlar kullanın. Gerçek
-> gizli bilgileri asla commit etmeyin.
+> Yalnızca test mnemonic'leri veya üretilmiş anahtarlar kullanın. Gerçek gizli bilgileri asla commit etmeyin.
 
-Aşağıdaki kod parçacıkları, her örneğin `index.ts` dosyasından
-yoğunlaştırılmıştır. Tam, çalıştırılabilir programlar için bağlantılı kaynağa
-bakın.
+Aşağıdaki kod parçaları, her örneğin `index.ts` dosyasından özetlenmiştir.
+Tam ve çalıştırılabilir program için bağlantısı verilen kaynağa bakın.
 
 ## connect-and-query
 
-Bir istemci oluşturun ve genel zincir durumunu okuyun — yerel bir banka bakiyesi
-ve toplu tokenomics anlık görüntüsü. Ulaşılabilir bir düğüme ihtiyaç duyar.
+Bir istemci oluşturun ve herkese açık zincir durumunu okuyun — yerel bir bank
+bakiyesi ve toplu tokenomik anlık görüntüsü. Erişilebilir bir düğüm gerektirir.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -53,10 +54,9 @@ const overview = await client.qor.getTokenomicsOverview();
 
 ## send-qor
 
-Bir mnemonic'ten yerel bir (`qor1...`) hesap türetin ve bir QOR transferi
-yayınlayın: türet → imzala → simüle et → ücret tahmin et → `bankSend`.
-Ulaşılabilir bir konsensüs RPC'sinin yanı sıra REST ve fonlanmış bir hesaba
-ihtiyaç duyar.
+Bir mnemonic'ten yerel (`qor1...`) bir hesap türetin ve bir QOR transferi
+yayınlayın: türet → imzala → simüle et → ücreti tahmin et → `bankSend`.
+Erişilebilir bir konsensüs RPC'si ile REST ve fonlanmış bir hesap gerektirir.
 
 ```ts
 import {
@@ -82,10 +82,10 @@ console.log(result.transactionHash);
 
 ## svm-transfer
 
-`@qorechain/svm` kullanarak, QoreChain'in Solana uyumlu (SVM) çalışma zamanında
-bir memo talimatıyla bir SOL transferi oluşturun. İşlemi çevrimdışı olarak
-oluşturur ve yazdırır; göndermek için ulaşılabilir bir SVM JSON-RPC ve fonlanmış
-bir hesap gerekir.
+`@qorechain/svm` kullanarak QoreChain'in Solana uyumlu (SVM) çalışma zamanında
+memo talimatı içeren bir SOL transferi oluşturun. İşlemi çevrimdışı oluşturur
+ve yazdırır; gönderim için erişilebilir bir SVM JSON-RPC'si ve fonlanmış bir
+hesap gerekir.
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -111,11 +111,11 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 ## evm-precompile
 
-Salt okunur QoreChain precompile'larını çağırmak ve bir ERC-20 bakiyesini okumak
-için `@qorechain/evm` (viem üzerinde ince bir katman) kullanın. EVM zincir kimliği
-`eth_chainId` aracılığıyla otomatik olarak algılanır. Precompile'ları olmayan bir
-düğümde bu çağrılar "feature not present" hatası fırlatır ve her çağrı için ayrı
-ayrı raporlanır.
+Salt okunur QoreChain precompile'larını çağırmak ve bir ERC-20 bakiyesini
+okumak için `@qorechain/evm` paketini (viem üzerinde ince bir katman) kullanın.
+EVM zincir kimliği `eth_chainId` aracılığıyla otomatik olarak algılanır.
+Precompile'ların bulunmadığı bir düğümde bu çağrılar, her çağrı için ayrı ayrı
+raporlanan "feature not present" hatası fırlatır.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -132,11 +132,11 @@ const bal = await erc20.balanceOf(client.publicClient, token, account);
 
 ## pqc-hybrid-sign
 
-ML-DSA-87 (Dilithium-5, FIPS 204) ile kuantum sonrası imzalama. **Tamamen
-çevrimdışı çalışır — düğüm gerektirmez.** Bölüm 1 bir mesajı imzalar ve doğrular
-(bir kurcalama kontrolüyle); bölüm 2, hem klasik bir secp256k1 imzasını hem de
-ML-DSA-87 imzasını bir `PQCHybridSignature` uzantısı olarak taşıyan hibrit bir
-işlem oluşturur, ardından PQC yarısını yerel olarak doğrular.
+ML-DSA-87 (Dilithium-5, FIPS 204) ile post-kuantum imzalama. **Tamamen
+çevrimdışı çalışır — düğüm gerekmez.** 1. bölüm bir mesajı imzalar ve doğrular
+(kurcalama kontrolüyle birlikte); 2. bölüm, hem klasik bir secp256k1 imzasını
+hem de bir `PQCHybridSignature` uzantısı olarak ML-DSA-87 imzasını taşıyan
+hibrit bir işlem oluşturur, ardından PQC yarısını yerel olarak doğrular.
 
 ```ts
 import {
@@ -168,9 +168,9 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-Dağıtılmış bir CosmWasm sözleşmesine karşı salt okunur bir akıllı sorgu
-çalıştırın. Ulaşılabilir bir konsensüs RPC'sine ve dağıtılmış bir sözleşme
-adresine ihtiyaç duyar.
+Dağıtılmış bir CosmWasm sözleşmesine karşı salt okunur bir smart sorgu
+çalıştırın. Erişilebilir bir konsensüs RPC'si ve dağıtılmış bir sözleşme
+adresi gerektirir.
 
 ```ts
 import {
@@ -193,9 +193,10 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 ## read-tokenomics
 
-Tokenomics durumunu, EVM JSON-RPC uç noktası üzerinden sunulan tipli `qor_*`
-JSON-RPC ad alanı (`client.qor`) aracılığıyla okuyun. Üç okuma bağımsızdır, bu
-nedenle diğerleri kullanılamasa bile her biri raporlanır.
+Tokenomik durumunu, EVM JSON-RPC uç noktası üzerinden sunulan tipli `qor_*`
+JSON-RPC ad alanı (`client.qor`) aracılığıyla okuyun. Üç okuma birbirinden
+bağımsızdır; bu nedenle diğerleri kullanılamıyor olsa bile her biri ayrı ayrı
+raporlanır.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -213,3 +214,69 @@ const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
 [Kaynak](https://github.com/qorechain/qorechain-sdk/tree/main/examples/read-tokenomics)
+
+## unified-wallet
+
+**Birleşik eth-native bir hesap** türetin (SDK 0.6.0): tek bir `eth_secp256k1`
+anahtarı, ortak tek bir bakiyeyle üç QoreChain adresinin tümü olarak sunulur;
+buna adres bağlantılı ML-DSA-87 anahtar çifti de eşlik eder. Tamamen
+çevrimdışı çalışır.
+
+```ts
+import {
+  deriveUnifiedAccount,
+  qoreAddresses,
+  unifiedAccountFromSeed,
+} from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+console.log(account.cosmos); // "qor1…"  — Native lane
+console.log(account.evm);    // "0x…"    — EVM lane
+console.log(account.svm);    // base58   — SVM lane (same 20 bytes)
+
+// Decode any one encoding into all three.
+const all = qoreAddresses({ evm: account.evm });
+
+// Or derive from a raw 32-byte seed instead of a mnemonic.
+const fromSeed = unifiedAccountFromSeed(seed32);
+```
+
+[Kaynak](https://github.com/qorechain/qorechain-sdk/tree/main/examples/unified-wallet)
+
+## authenticator-spend
+
+Native authenticator hattında, relayer tarafından gönderilen bir
+`MsgExecuteCosmos` oluşturun (SDK 0.7.0, zincir v3.1.85): Phantom tarzı bir
+ed25519 anahtarı, alan ayrımlı (domain-separated) kimlik doğrulama özetini
+imzalar ve ortaya çıkan mesaj, bir relayer'ın yayınlamasına hazır hale gelir
+(ücretleri relayer öder; harici anahtar hiçbir zaman bir ML-DSA eş-imzası
+üretmez). Kuru çalıştırma — düğüm gerekmez.
+
+```ts
+import {
+  buildPhantomExecuteCosmos,
+  cosmosAuthSignBytes,
+  qorechainRegistry,
+} from "@qorechain/sdk";
+
+// Show the exact 32-byte digest the wallet signs (byte-exact vs the chain).
+const digest = cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce });
+
+// Build the relayer-ready message: the Phantom wallet signs the digest.
+const msg = await buildPhantomExecuteCosmos({
+  wallet,                 // window.solana in a browser
+  relayer,                // submits + pays fees (a DIFFERENT account)
+  chainId,
+  account,                // the canonical PQC-required owner
+  to,
+  amount: "100uqor",
+  nonce,                  // the per-authenticator sequence
+});
+
+// Prove it encodes via the default registry (what the relayer broadcasts).
+const bytes = qorechainRegistry().encode(msg);
+```
+
+[Kaynak](https://github.com/qorechain/qorechain-sdk/tree/main/examples/authenticator-spend)
+· Ayrıntılı anlatım:
+[Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators)

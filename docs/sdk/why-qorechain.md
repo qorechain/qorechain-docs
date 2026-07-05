@@ -11,10 +11,11 @@ The QoreChain SDK gives you everything a modern multi-chain SDK does — typed
 messages for every module, typed queries, accounts for three VMs from one
 mnemonic, auto-gas, error decoding, subscriptions, wallets, and a React kit.
 
-But three capabilities are **only possible on QoreChain**, because they are built
+But five capabilities are **only possible on QoreChain**, because they are built
 on protocol features no other Layer 1 has: on-chain AI, three co-resident VMs
-with a native bridge, and mandatory post-quantum cryptography. These are the
-reasons to build here.
+with a native bridge, mandatory post-quantum cryptography, one 20-byte identity
+across all three VM lanes, and PQC-safe delegated spending for external wallet
+keys. These are the reasons to build here.
 
 ---
 
@@ -125,9 +126,62 @@ default" is a single call plus a drop-in badge. See
 
 ---
 
+## 4. Unified eth-native accounts — one key, three addresses, one balance
+
+**One `eth_secp256k1` key is one 20-byte identity on all three lanes.** (SDK
+0.6.0, chain v3.1.83.)
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+account.cosmos; // "qor1…"  bech32 — Native lane
+account.evm;    // "0x…"    EIP-55 — EVM lane
+account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
+// A deposit to ANY of the three lands in ONE balance,
+// and the same key spends on every lane (signHybridEth on the Native path).
+```
+
+**Why it's unique:** on multi-VM setups elsewhere, each runtime has its own
+account space and funds get stranded per-lane. QoreChain renders one 20-byte
+identity three ways with one shared balance — a wallet never "has funds on one
+lane but not another". `connectPhantomUnified` even bootstraps this identity
+non-custodially from a Phantom signature. See
+[Unified accounts](/sdk/concepts/accounts-pqc#unified-accounts).
+
+---
+
+## 5. Authenticator lanes — delegated spending without giving up PQC
+
+**A linked Phantom or MetaMask key spends from the canonical PQC-required
+account, under limits, via a relayer.** (SDK 0.7.0, chain v3.1.85.)
+
+```ts
+import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
+
+// The Phantom key signs a domain-separated digest; a relayer pays fees and
+// broadcasts. The external key NEVER produces an ML-DSA co-signature.
+const msg = await buildPhantomExecuteCosmos({
+  wallet: window.solana,
+  relayer: relayerAddress,
+  chainId: "qorechain-vladi",
+  account: canonicalAccount, // the PQC-required owner
+  to: recipient,
+  amount: "100uqor",
+  nonce, // per-authenticator sequence
+});
+```
+
+**Why it's unique:** every spend is bounded by an on-chain permission taxonomy,
+`SpendingRule` limits, and an expiry — least-privilege and revocable — while
+the account itself stays post-quantum protected. See
+[Authenticators & delegated spending](/sdk/guides/authenticators).
+
+---
+
 ## Everything else, too
 
-Beyond the three differentiators, the SDK covers the full chain surface across
+Beyond the five differentiators, the SDK covers the full chain surface across
 **TypeScript, Python, Go, Rust, and Java**: typed composers for every module
 (including sidechains/paychains via `multilayer` and rollups via `rdk`), typed
 queries, the tx lifecycle, subscriptions, browser wallets, and the

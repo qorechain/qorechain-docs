@@ -1,22 +1,23 @@
 ---
 slug: /sdk/quickstart
-title: Quickstart
-sidebar_label: Quickstart
+title: Schnellstart
+sidebar_label: Schnellstart
 sidebar_position: 3
 ---
 
-# Quickstart
+# Schnellstart
 
 Von null bis zur gesendeten Transaktion. Diese Seite verwendet das TypeScript-SDK
-(`@qorechain/sdk`); kurze Verbindungs- und Lese-Snippets für Python, Go und Rust
+(`@qorechain/sdk`); kurze Verbinden-und-Lesen-Snippets für Python, Go und Rust
 folgen am Ende.
 
 ## 1. Verbinden
 
-`createClient()` löst ein Netzwerk auf und stellt die Read-Clients, einen Gebühren-Helfer
-und einen verzögerten Signier-Einstiegspunkt zusammen. Standardmäßig zielt es auf das
-öffentliche Testnet (`qorechain-diana`). Die Standard-Endpunkte zeigen auf **localhost**,
-übergeben Sie also `endpoints`, um mit einem echten Node zu kommunizieren.
+`createClient()` löst ein Netzwerk auf und stellt die Lese-Clients, einen
+Gebühren-Helfer und einen verzögert initialisierten Signier-Einstiegspunkt
+zusammen. Standardmäßig richtet es sich an das öffentliche Testnet
+(`qorechain-diana`). Die Standard-Endpunkte zeigen auf **localhost** — übergeben
+Sie daher `endpoints`, um mit einem echten Node zu kommunizieren.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -27,31 +28,32 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-Das Mainnet (chain id `qorechain-vladi`) ist live. Wählen Sie es aus und überschreiben
-Sie die localhost-Standardwerte mit Ihren Node-URLs:
+Das Mainnet (Chain-ID `qorechain-vladi`) ist live. Wählen Sie es aus und
+überschreiben Sie die localhost-Standardwerte mit den öffentlichen Endpunkten
+(oder Ihrem eigenen Node):
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Ein Konto ableiten
 
-Eine einzige Mnemonic leitet über unabhängige Ableitungspfade native (`qor1…`)-,
-EVM (`0x…`)- und SVM (base58)-Konten ab.
+Eine einzige Mnemonic leitet über unabhängige Ableitungspfade native
+(`qor1…`)-, EVM- (`0x…`) und SVM- (base58) Konten ab.
 
 ```ts
 import {
@@ -62,26 +64,39 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-Siehe [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc) für die EVM-/SVM-Ableitung
-und die vollständige Ableitungstabelle.
+Seit 0.6.0 können Sie stattdessen ein **unified eth-native Konto** ableiten —
+ein einziger `eth_secp256k1`-Schlüssel, der als alle drei Adressen (`qor1…`,
+`0x…`, SVM base58) mit einem gemeinsamen Guthaben dargestellt wird:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+Siehe [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc) für die
+EVM/SVM-Ableitung, Unified Accounts und die vollständige Ableitungstabelle.
 
 ## 3. Ein Guthaben lesen
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
 const tokenomics = await client.qor.getTokenomicsOverview();
 ```
 
-## 4. Einen QOR-Transfer senden
+## 4. Eine QOR-Überweisung senden
 
 Leiten Sie ein natives Konto ab, wandeln Sie dessen privaten Schlüssel in einen
-Signierer um, verbinden Sie einen `TxClient` und senden Sie Token. Verwenden Sie
+Signer um, verbinden Sie einen `TxClient` und senden Sie Token. Verwenden Sie
 `toBase("1.5")`, um QOR in die Basiseinheit `uqor` umzurechnen.
 
 ```ts
@@ -94,8 +109,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,11 +133,18 @@ const result = await tx.bankSend(
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` gibt `"1500000"` zurück (QOR hat 10^6 Basiseinheiten `uqor`).
+`toBase("1.5")` liefert `"1500000"` (QOR hat 10^6 Basiseinheiten in `uqor`).
 
-## Andere Sprachen: verbinden & lesen
+:::info Hybrides Signieren auf den Live-Netzwerken
+Auf Mainnet und Testnet erfordert der native Pfad die **hybride** (klassisch +
+ML-DSA-87) Signatur-Erweiterung — verwenden Sie `buildHybridTx` /
+`signAndBroadcastHybrid` oder `signHybridEth` für unified eth-native Konten.
+Siehe [Hybrides Signieren](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
-Diese spiegeln dieselben Netzwerk-Voreinstellungen und dieselbe Lesefläche wider.
+## Weitere Sprachen: Verbinden & Lesen
+
+Diese spiegeln dieselben Netzwerk-Presets und dieselbe Lese-Oberfläche wider.
 
 ### Python
 
@@ -167,10 +189,12 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## Weiter
+## Nächste Schritte
 
-- [Handbücher](/sdk/guides/evm) – Arbeiten mit jeder VM (EVM, SVM, CosmWasm, VM-übergreifend).
-- [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc) – HD-Ableitung und
-  Post-Quanten-Signierung.
+- [Guides](/sdk/guides/evm) — arbeiten Sie mit jeder VM (EVM, SVM, CosmWasm, Cross-VM).
+- [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc) — HD-Ableitung, unified
+  eth-native Konten und Post-Quanten-Signierung.
+- [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators) — lassen
+  Sie einen verknüpften Phantom-/MetaMask-Schlüssel über einen Relayer ausgeben.
 - [Netzwerk- & Endpunkt-Referenz](/sdk/reference/network).
-- [Beispiele](/sdk/examples) – ausführbare Snippets für jeden der obigen Abläufe.
+- [Beispiele](/sdk/examples) — ausführbare Snippets für jeden der obigen Abläufe.

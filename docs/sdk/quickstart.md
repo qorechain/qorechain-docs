@@ -27,23 +27,23 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
 Mainnet (chain id `qorechain-vladi`) is live. Select it and override the
-localhost defaults with your node URLs:
+localhost defaults with the public endpoints (or your own node):
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
@@ -62,16 +62,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-See [Accounts & PQC signing](/sdk/concepts/accounts-pqc) for EVM/SVM derivation
-and the full derivation table.
+Since 0.6.0 you can instead derive a **unified eth-native account** — one
+`eth_secp256k1` key rendered as all three addresses (`qor1…`, `0x…`, SVM
+base58) with one shared balance:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+See [Accounts & PQC signing](/sdk/concepts/accounts-pqc) for EVM/SVM derivation,
+unified accounts, and the full derivation table.
 
 ## 3. Read a balance
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -93,8 +106,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,6 +131,13 @@ console.log(result.transactionHash);
 ```
 
 `toBase("1.5")` returns `"1500000"` (QOR has 10^6 base `uqor` units).
+
+:::info Hybrid signing on the live networks
+On mainnet and testnet the Native path requires the **hybrid** (classical +
+ML-DSA-87) signature extension — use `buildHybridTx` /
+`signAndBroadcastHybrid`, or `signHybridEth` for unified eth-native accounts.
+See [Hybrid signing](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
 ## Other languages: connect & read
 
@@ -169,7 +189,9 @@ async fn main() -> qorechain::Result<()> {
 ## Next
 
 - [Guides](/sdk/guides/evm) — work with each VM (EVM, SVM, CosmWasm, cross-VM).
-- [Accounts & PQC signing](/sdk/concepts/accounts-pqc) — HD derivation and
-  post-quantum signing.
+- [Accounts & PQC signing](/sdk/concepts/accounts-pqc) — HD derivation, unified
+  eth-native accounts, and post-quantum signing.
+- [Authenticators & delegated spending](/sdk/guides/authenticators) — let a
+  linked Phantom/MetaMask key spend via a relayer.
 - [Network & endpoints reference](/sdk/reference/network).
 - [Examples](/sdk/examples) — runnable snippets for each flow above.

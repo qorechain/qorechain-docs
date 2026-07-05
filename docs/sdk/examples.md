@@ -7,9 +7,12 @@ sidebar_position: 7
 
 # Examples
 
-Seven runnable TypeScript examples live in the
+The runnable TypeScript examples live in the
 [`examples/`](https://github.com/qorechain/qorechain-sdk/tree/main/examples)
-directory of the SDK monorepo. Each folder is a self-contained workspace package
+directory of the SDK monorepo — the ones below plus `ai-preflight`,
+`cross-vm-call`, `react-dapp`, `register-sidechain`, `rollup-lifecycle`,
+`amm-swap`, `connect-keplr`, `evm-nft`, and `subscribe-blocks`. Each folder is
+a self-contained workspace package
 with its own `README.md`, `.env.example`, and a single `index.ts`. They read
 endpoints and mnemonics from environment variables with sane localhost defaults,
 and the network-dependent ones fail gracefully with a hint when no node is
@@ -207,3 +210,67 @@ const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
 [Source](https://github.com/qorechain/qorechain-sdk/tree/main/examples/read-tokenomics)
+
+## unified-wallet
+
+Derive a **unified eth-native account** (SDK 0.6.0): one `eth_secp256k1` key
+rendered as all three QoreChain addresses with one shared balance, plus the
+address-bound ML-DSA-87 keypair. Runs fully offline.
+
+```ts
+import {
+  deriveUnifiedAccount,
+  qoreAddresses,
+  unifiedAccountFromSeed,
+} from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+console.log(account.cosmos); // "qor1…"  — Native lane
+console.log(account.evm);    // "0x…"    — EVM lane
+console.log(account.svm);    // base58   — SVM lane (same 20 bytes)
+
+// Decode any one encoding into all three.
+const all = qoreAddresses({ evm: account.evm });
+
+// Or derive from a raw 32-byte seed instead of a mnemonic.
+const fromSeed = unifiedAccountFromSeed(seed32);
+```
+
+[Source](https://github.com/qorechain/qorechain-sdk/tree/main/examples/unified-wallet)
+
+## authenticator-spend
+
+Build a relayer-submitted `MsgExecuteCosmos` on the Native authenticator lane
+(SDK 0.7.0, chain v3.1.85): a Phantom-style ed25519 key signs the
+domain-separated auth digest, and the resulting message is ready for a relayer
+to broadcast (the relayer pays fees; the external key never produces an ML-DSA
+co-signature). Dry run — no node required.
+
+```ts
+import {
+  buildPhantomExecuteCosmos,
+  cosmosAuthSignBytes,
+  qorechainRegistry,
+} from "@qorechain/sdk";
+
+// Show the exact 32-byte digest the wallet signs (byte-exact vs the chain).
+const digest = cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce });
+
+// Build the relayer-ready message: the Phantom wallet signs the digest.
+const msg = await buildPhantomExecuteCosmos({
+  wallet,                 // window.solana in a browser
+  relayer,                // submits + pays fees (a DIFFERENT account)
+  chainId,
+  account,                // the canonical PQC-required owner
+  to,
+  amount: "100uqor",
+  nonce,                  // the per-authenticator sequence
+});
+
+// Prove it encodes via the default registry (what the relayer broadcasts).
+const bytes = qorechainRegistry().encode(msg);
+```
+
+[Source](https://github.com/qorechain/qorechain-sdk/tree/main/examples/authenticator-spend)
+· Full walkthrough:
+[Authenticators & delegated spending](/sdk/guides/authenticators)

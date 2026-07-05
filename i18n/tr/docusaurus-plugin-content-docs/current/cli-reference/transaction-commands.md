@@ -14,22 +14,22 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Canlı ana ağa (zincir sürümü **v3.1.82**) yayın yapmak için `--chain-id qorechain-vladi`, test ağı için ise `--chain-id qorechain-diana` ayarlayın. Belirtilmezse istemci, yerel yapılandırmanızdaki `chain-id` değerini kullanır.
+Canlı ana ağa (zincir sürümü **v3.1.85**) yayın yapmak için `--chain-id qorechain-vladi`, test ağı için ise `--chain-id qorechain-diana` ayarlayın. Belirtilmezse istemci, yerel yapılandırmanızdaki `chain-id` değerini kullanır.
 :::
 
 Ortak bayraklar tüm `tx` alt komutları için geçerlidir:
 
-| Bayrak              | Tür    | Açıklama                                                  |
-| ------------------- | ------ | --------------------------------------------------------- |
-| `--from`            | string | İmzalayan anahtarın adı veya adresi                        |
-| `--chain-id`        | string | Zincir tanımlayıcısı (varsayılan: yapılandırmadan)         |
-| `--fees`            | string | İşlem ücretleri (örn. `500uqor`)                           |
-| `--gas`             | string | Gas limiti veya tahmin için `auto`                         |
-| `--gas-adjustment`  | float  | `auto` kullanılırken gas çarpanı (varsayılan: 1.0)         |
-| `--keyring-backend` | string | Anahtarlık arka ucu: `os`, `file`, `test`                  |
-| `--node`            | string | RPC uç noktası (varsayılan: `tcp://localhost:26657`)       |
-| `--broadcast-mode`  | string | `sync`, `async` veya `block`                               |
-| `-y`                | bool   | Onay istemini atla                                         |
+| Bayrak              | Tür    | Açıklama                                        |
+| ------------------- | ------ | ----------------------------------------------- |
+| `--from`            | string | İmzalayan anahtarın adı veya adresi             |
+| `--chain-id`        | string | Zincir tanımlayıcısı (varsayılan: yapılandırmadan) |
+| `--fees`            | string | İşlem ücretleri (örn. `500uqor`)                |
+| `--gas`             | string | Gas limiti veya tahmin için `auto`              |
+| `--gas-adjustment`  | float  | `auto` kullanılırken gas çarpanı (varsayılan: 1.0) |
+| `--keyring-backend` | string | Anahtarlık arka ucu: `os`, `file`, `test`       |
+| `--node`            | string | RPC uç noktası (varsayılan: `tcp://localhost:26657`) |
+| `--broadcast-mode`  | string | `sync`, `async` veya `block`                    |
+| `-y`                | bool   | Onay istemini atla                              |
 
 ---
 
@@ -37,7 +37,7 @@ Ortak bayraklar tüm `tx` alt komutları için geçerlidir:
 
 ### send
 
-Bir hesaptan diğerine token aktarır.
+Bir hesaptan diğerine token transferi yapar.
 
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount> [flags]
@@ -55,15 +55,15 @@ Ağda yeni bir doğrulayıcı oluşturur.
 qorechaind tx staking create-validator [flags]
 ```
 
-| Bayrak                         | Tür    | Açıklama                                            |
-| ------------------------------ | ------ | ---------------------------------------------------- |
-| `--amount`                     | string | Öz delegasyon miktarı (örn. `1000000uqor`)            |
-| `--pubkey`                     | string | Doğrulayıcı konsensüs açık anahtarı (JSON)            |
-| `--moniker`                    | string | Doğrulayıcının görünen adı                            |
-| `--commission-rate`            | string | Başlangıç komisyon oranı (örn. `0.10`)                |
-| `--commission-max-rate`        | string | Azami komisyon oranı                                  |
-| `--commission-max-change-rate` | string | Günlük azami komisyon değişim oranı                   |
-| `--min-self-delegation`        | string | Gerekli asgari öz delegasyon                          |
+| Bayrak                         | Tür    | Açıklama                                     |
+| ------------------------------ | ------ | -------------------------------------------- |
+| `--amount`                     | string | Kendi kendine delegasyon miktarı (örn. `1000000uqor`) |
+| `--pubkey`                     | string | Doğrulayıcı konsensüs açık anahtarı (JSON)   |
+| `--moniker`                    | string | Doğrulayıcı görünen adı                      |
+| `--commission-rate`            | string | Başlangıç komisyon oranı (örn. `0.10`)       |
+| `--commission-max-rate`        | string | Maksimum komisyon oranı                      |
+| `--commission-max-change-rate` | string | Günlük maksimum komisyon değişim oranı       |
+| `--min-self-delegation`        | string | Gerekli minimum kendi kendine delegasyon     |
 
 ### edit-validator
 
@@ -91,7 +91,7 @@ qorechaind tx staking redelegate <src_validator> <dst_validator> <amount> [flags
 
 ### unbond
 
-Bir doğrulayıcıdan token çözer (unbond).
+Bir doğrulayıcıdan token bağını çözer.
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount> [flags]
@@ -103,7 +103,7 @@ qorechaind tx staking unbond <validator_address> <amount> [flags]
 
 ### withdraw-all-rewards
 
-Bekleyen tüm staking ödüllerini çeker.
+Bekleyen tüm stake ödüllerini çeker.
 
 ```bash
 qorechaind tx distribution withdraw-all-rewards [flags]
@@ -117,9 +117,9 @@ Belirli bir doğrulayıcıdan ödülleri çeker.
 qorechaind tx distribution withdraw-rewards <validator_address> [flags]
 ```
 
-| Bayrak         | Tür  | Açıklama                                   |
-| -------------- | ---- | ------------------------------------------ |
-| `--commission` | bool | Doğrulayıcı komisyonunu da çeker           |
+| Bayrak         | Tür  | Açıklama                                |
+| -------------- | ---- | --------------------------------------- |
+| `--commission` | bool | Doğrulayıcı komisyonunu da çeker        |
 
 ---
 
@@ -133,7 +133,7 @@ Bir yönetişim önerisi gönderir.
 qorechaind tx gov submit-proposal <proposal_file.json> [flags]
 ```
 
-Öneri dosyası; öneri türünü, başlığı, açıklamayı ve yürütülecek mesajları belirten bir JSON belgesidir.
+Öneri dosyası; öneri türünü, başlığını, açıklamasını ve yürütülecek mesajları belirten bir JSON belgesidir.
 
 ### vote
 
@@ -157,11 +157,11 @@ qorechaind tx gov deposit <proposal_id> <amount> [flags]
 
 ## pqc
 
-Cosmos işlem yolu, varsayılan olarak hibrit imza gerektirir (`hybrid_signature_mode = required`). `gen-key` ve `cosign` komutları, klasik secp256k1 imzasının yanında cosmos yolunda işlem yapmak için gereken Dilithium-5 (ML-DSA-87) anahtarını ve `PQCHybridSignature` uzantısını üretir.
+Cosmos işlem yolu varsayılan olarak hibrit imza gerektirir (`hybrid_signature_mode = required`). `gen-key` ve `cosign` komutları, klasik secp256k1 imzasının yanında cosmos yolunda işlem yapmak için gereken Dilithium-5 (ML-DSA-87) anahtarını ve `PQCHybridSignature` uzantısını üretir.
 
 ### gen-key
 
-Hibrit imzalama için Dilithium-5 (ML-DSA-87) kuantum sonrası anahtar üretir.
+Hibrit imzalama için bir Dilithium-5 (ML-DSA-87) kuantum sonrası anahtarı üretir.
 
 ```bash
 qorechaind tx pqc gen-key [flags]
@@ -169,7 +169,7 @@ qorechaind tx pqc gen-key [flags]
 
 ### cosign
 
-Bir işleme `PQCHybridSignature` uzantısı olarak Dilithium-5 eş imzası ekleyerek hibrit (secp256k1 + ML-DSA-87) bir işlem üretir. Varsayılan `required` zorlama modunda cosmos yolu işlemleri için zorunludur. Standart CosmJS / relayer araçlarının işlem yapabilmesi için bu uzantıyı üretmesi gerekir; QoreChain SDK'sının `buildHybridTx` fonksiyonu (`includePqcPublicKey` ile) eşdeğerini yapar.
+Bir işleme `PQCHybridSignature` uzantısı olarak Dilithium-5 eş-imzası ekleyerek hibrit (secp256k1 + ML-DSA-87) bir işlem üretir. Varsayılan `required` zorlama modunda cosmos yolu işlemleri için gereklidir. Standart CosmJS / relayer araçları işlem yapabilmek için bu uzantıyı üretmelidir; QoreChain SDK'nın `buildHybridTx` fonksiyonu (`includePqcPublicKey` ile) bunun eşdeğerini yapar.
 
 ```bash
 qorechaind tx pqc cosign <unsigned_tx_file> [flags]
@@ -185,24 +185,50 @@ qorechaind tx pqc register-key <algorithm> <pubkey_hex> [flags]
 
 ### register-key-v2
 
-Genişletilmiş meta veriler ve attestation ile bir PQC anahtarı kaydeder.
+Genişletilmiş meta veriler ve doğrulama (attestation) ile bir PQC anahtarı kaydeder.
 
 ```bash
 qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> [flags]
 ```
 
-| Bayrak          | Tür    | Açıklama                          |
-| --------------- | ------ | ---------------------------------- |
-| `--attestation` | string | TEE attestation verisi (hex)       |
-| `--metadata`    | string | Ek anahtar meta verisi (JSON)      |
+| Bayrak          | Tür    | Açıklama                        |
+| --------------- | ------ | ------------------------------- |
+| `--attestation` | string | TEE doğrulama verisi (hex)      |
+| `--metadata`    | string | Ek anahtar meta verisi (JSON)   |
 
 ### migrate-key
 
-Mevcut bir klasik anahtarı hibrit PQC anahtar çiftine taşır.
+Mevcut bir klasik anahtarı hibrit PQC anahtar çiftine geçirir.
 
 ```bash
 qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
 ```
+
+### recover-key
+
+Hesabın ML-DSA-87 anahtarını BIP-39 anımsatıcı sözcüklerinden (stdin'den okunur) deterministik olarak yeniden oluşturur ve yerel olarak saklar (zincir sürümü **v3.1.85** itibarıyla kullanılabilir). Ekosistem standardı olan `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` türetmesini kullanır.
+
+```bash
+qorechaind tx pqc recover-key <name> <address> [flags]
+```
+
+| Bayrak         | Tür    | Açıklama                                                 |
+| -------------- | ------ | -------------------------------------------------------- |
+| `--derivation` | string | `adapter` (kanonik, varsayılan) veya `bridge` (eski `SHAKE-256(mnemonic)`) |
+
+### rotate-key
+
+Hesabın ML-DSA-87 anahtarını **aynı algoritma içinde** döndürür (zincir sürümü **v3.1.85** itibarıyla kullanılabilir) — örn. eski türetmeyle üretilmiş bir anahtarı kanonik türetmeye geçirmek veya ele geçirilmiş bir anahtarı devre dışı bırakmak için. Anımsatıcı sözcükleri stdin'den okur, eski ve yeni anahtarlarla çift imzalar, zarfı eski anahtarla eş-imzalar ve yayınlar. stdout'a yalnızca işlem JSON'unu yazar (bilgilendirme satırları stderr'e gider), bu sayede `-o json` ile birlikte kullanılabilir.
+
+```bash
+qorechaind tx pqc rotate-key [flags]
+```
+
+| Bayrak             | Tür    | Açıklama                                          |
+| ------------------ | ------ | ------------------------------------------------- |
+| `--old-derivation` | string | Halihazırda kayıtlı anahtarın türetmesi (`adapter` \| `bridge`) |
+| `--new-derivation` | string | Yeni anahtarın türetmesi (`adapter` \| `bridge`)  |
+| `--new-random`     | bool   | Bunun yerine yepyeni rastgele bir anahtar üretir  |
 
 ---
 
@@ -210,19 +236,19 @@ qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
 
 ### lock
 
-QOR tokenlarını bir xQORE yönetişim staking pozisyonuna kilitler.
+QOR tokenlarını bir xQORE yönetişim stake pozisyonuna kilitler.
 
 ```bash
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| Bayrak            | Tür    | Açıklama                                       |
-| ----------------- | ------ | ----------------------------------------------- |
-| `--lock-duration` | string | Kilit süresi (örn. `30d`, `90d`, `180d`)        |
+| Bayrak            | Tür    | Açıklama                                     |
+| ----------------- | ------ | -------------------------------------------- |
+| `--lock-duration` | string | Kilit süresi (örn. `30d`, `90d`, `180d`)     |
 
 ### unlock
 
-xQORE'u tekrar QOR'a çevirir. Erken kilit açma, ceza kademesine bağlı olarak cezalara yol açabilir.
+xQORE'u tekrar QOR'a çevirir. Erken kilit açma, ceza kademesine bağlı olarak ceza doğurabilir.
 
 ```bash
 qorechaind tx xqore unlock <amount> [flags]
@@ -240,9 +266,9 @@ Harici bir zincirden köprü yatırma işlemi başlatır.
 qorechaind tx bridge deposit <chain_id> <amount> <asset> [flags]
 ```
 
-| Bayrak        | Tür    | Açıklama                             |
-| ------------- | ------ | ------------------------------------ |
-| `--recipient` | string | QoreChain üzerindeki alıcı adresi    |
+| Bayrak        | Tür    | Açıklama                          |
+| ------------- | ------ | ---------------------------------- |
+| `--recipient` | string | QoreChain üzerindeki alıcı adresi |
 
 ### withdraw
 
@@ -254,7 +280,7 @@ qorechaind tx bridge withdraw <chain_id> <amount> <asset> <destination_address> 
 
 ### update-chain-config
 
-Bir zincirin köprüsünü tek bir imzalı işlemle etkinleştirir veya yeniden yapılandırır (zincir sürümü **v3.1.80** itibarıyla kullanılabilir). `bridge_admin` anahtarı veya bir `qcb_bridge` lisansı gerektirir — yönetişim önerisi ya da zincir yükseltmesi gerekmez. Sözleşme adresini, onay sayısını, mimariyi ve durumu ayarlar.
+Bir zincirin köprüsünü tek bir imzalı işlemle etkinleştirir veya yeniden yapılandırır (zincir sürümü **v3.1.80** itibarıyla kullanılabilir). `bridge_admin` anahtarı veya bir `qcb_bridge` lisansı gerektirir — yönetişim önerisi veya zincir yükseltmesi gerekmez. Sözleşme adresini, onay sayısını, mimariyi ve durumu ayarlar.
 
 ```bash
 qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
@@ -262,7 +288,7 @@ qorechaind tx bridge update-chain-config <chain_id> [flags] --from bridge-admin
 
 ### set-verifier-bootstrap
 
-Bir zincirin aktif doğrulayıcısını (verifier) seçer ve güven kökünü kurar (bu da `bridge_admin` yetkisine tabidir).
+Bir zincirin aktif doğrulayıcısını (verifier) seçer ve güven kökünü kurar (bu komut da `bridge_admin` ile sınırlıdır).
 
 ```bash
 qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from bridge-admin
@@ -274,20 +300,20 @@ qorechaind tx bridge set-verifier-bootstrap <chain_id> <verifier> [flags] --from
 
 ### call
 
-Yürütme ortamları (EVM, CosmWasm, SVM) arasında bir çapraz VM mesajı gönderir.
+Yürütme ortamları (EVM, CosmWasm, SVM) arasında bir cross-VM mesajı gönderir.
 
 ```bash
 qorechaind tx crossvm call <target_vm> <contract_address> <payload_hex> [flags]
 ```
 
-| Bayrak        | Tür    | Açıklama                                  |
-| ------------- | ------ | ------------------------------------------ |
-| `--source-vm` | string | Kaynak VM: `evm`, `cosmwasm`, `svm`        |
-| `--gas-limit` | uint   | Çapraz VM yürütmesi için gas limiti        |
+| Bayrak        | Tür    | Açıklama                              |
+| ------------- | ------ | -------------------------------------- |
+| `--source-vm` | string | Kaynak VM: `evm`, `cosmwasm`, `svm`    |
+| `--gas-limit` | uint   | Cross-VM yürütmesi için gas limiti     |
 
 ### process-queue
 
-Bekleyen çapraz VM mesajlarını elle işler (operatör komutu).
+Bekleyen cross-VM mesajlarını manuel olarak işler (operatör komutu).
 
 ```bash
 qorechaind tx crossvm process-queue [flags]
@@ -305,21 +331,21 @@ SVM çalışma zamanına bir BPF programı dağıtır.
 qorechaind tx svm deploy-program <program_binary_path> [flags]
 ```
 
-| Bayrak         | Tür    | Açıklama                             |
-| -------------- | ------ | ------------------------------------ |
-| `--program-id` | string | İsteğe bağlı program kimliği (base58) |
+| Bayrak         | Tür    | Açıklama                        |
+| -------------- | ------ | -------------------------------- |
+| `--program-id` | string | İsteğe bağlı program ID (base58) |
 
 ### execute
 
-Dağıtılmış bir SVM programında bir talimat yürütür.
+Dağıtılmış bir SVM programı üzerinde bir talimat yürütür.
 
 ```bash
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| Bayrak       | Tür    | Açıklama                                                     |
-| ------------ | ------ | ------------------------------------------------------------ |
-| `--accounts` | string | Talimat için virgülle ayrılmış hesap açık anahtarları         |
+| Bayrak       | Tür    | Açıklama                                              |
+| ------------ | ------ | ------------------------------------------------------ |
+| `--accounts` | string | Talimat için virgülle ayrılmış hesap açık anahtarları  |
 
 ### create-account
 
@@ -329,9 +355,9 @@ Ayrılmış veri alanına sahip yeni bir SVM hesabı oluşturur.
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| Bayrak    | Tür    | Açıklama                                                   |
-| --------- | ------ | ----------------------------------------------------------- |
-| `--owner` | string | Sahip program (base58, varsayılan: sistem programı)         |
+| Bayrak    | Tür    | Açıklama                                              |
+| --------- | ------ | ------------------------------------------------------ |
+| `--owner` | string | Sahip program (base58, varsayılan: sistem programı)    |
 
 ---
 
@@ -345,14 +371,14 @@ Yeni bir yan zincir (sidechain) katmanı kaydeder.
 qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| Bayrak                  | Tür    | Açıklama                                                        |
-| ----------------------- | ------ | ---------------------------------------------------------------- |
-| `--block-time-ms`       | uint   | ms cinsinden hedef blok süresi (varsayılan 2000)                  |
-| `--domains`             | string | Virgülle ayrılmış desteklenen alanlar (varsayılan `defi`)         |
-| `--max-tx`              | uint   | Blok başına azami işlem sayısı (varsayılan 1000)                  |
-| `--min-validators`      | uint32 | Asgari doğrulayıcı kümesi boyutu (varsayılan 1)                   |
-| `--settlement-interval` | uint   | Blok cinsinden mutabakat aralığı (varsayılan 100)                 |
-| `--vm-types`            | string | Virgülle ayrılmış desteklenen VM türleri (varsayılan `evm`)       |
+| Bayrak                  | Tür    | Açıklama                                                 |
+| ----------------------- | ------ | --------------------------------------------------------- |
+| `--block-time-ms`       | uint   | Hedef blok süresi, ms cinsinden (varsayılan 2000)         |
+| `--domains`             | string | Virgülle ayrılmış desteklenen alanlar (varsayılan `defi`) |
+| `--max-tx`              | uint   | Blok başına maksimum işlem sayısı (varsayılan 1000)       |
+| `--min-validators`      | uint32 | Minimum doğrulayıcı kümesi boyutu (varsayılan 1)          |
+| `--settlement-interval` | uint   | Blok cinsinden mutabakat aralığı (varsayılan 100)         |
+| `--vm-types`            | string | Virgülle ayrılmış desteklenen VM türleri (varsayılan `evm`) |
 
 ### register-paychain
 
@@ -362,14 +388,14 @@ Yüksek frekanslı mikro işlemler için yeni bir paychain katmanı kaydeder.
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| Bayrak                  | Tür  | Açıklama                                             |
-| ----------------------- | ---- | ----------------------------------------------------- |
-| `--max-tx`              | uint | Blok başına azami işlem sayısı (varsayılan 5000)       |
-| `--settlement-interval` | uint | Blok cinsinden mutabakat aralığı (varsayılan 50)       |
+| Bayrak                  | Tür  | Açıklama                                            |
+| ----------------------- | ---- | ---------------------------------------------------- |
+| `--max-tx`              | uint | Blok başına maksimum işlem sayısı (varsayılan 5000)   |
+| `--settlement-interval` | uint | Blok cinsinden mutabakat aralığı (varsayılan 50)      |
 
 ### anchor-state
 
-Kayıtlı bir katman için durum sabitlemesi (mutabakat) gönderir.
+Kayıtlı bir katman için durum çapası (mutabakat) gönderir.
 
 ```bash
 qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex> <pqc-agg-sig-hex> [flags]
@@ -383,9 +409,9 @@ Bir işlemi en uygun katmana yönlendirir.
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| Bayrak           | Tür    | Açıklama                                        |
-| ---------------- | ------ | ------------------------------------------------ |
-| `--target-layer` | string | Belirli bir katmana yönlendirmeye zorlar         |
+| Bayrak           | Tür    | Açıklama                                    |
+| ---------------- | ------ | -------------------------------------------- |
+| `--target-layer` | string | Belirli bir katmana yönlendirmeyi zorlar     |
 
 ### update-layer-status
 
@@ -399,7 +425,7 @@ Durum değerleri: `active`, `paused`, `draining`.
 
 ### challenge-anchor
 
-Bir durum sabitlemesine karşı sahtekârlık itirazı gönderir.
+Bir durum çapasına karşı sahtekârlık itirazı gönderir.
 
 ```bash
 qorechaind tx multilayer challenge-anchor <layer_id> <anchor_hash> <proof_hex> [flags]
@@ -417,12 +443,12 @@ Rollup Development Kit ile yeni bir rollup kaydeder.
 qorechaind tx rdk create-rollup <rollup_id> [flags]
 ```
 
-| Bayrak              | Tür    | Açıklama                                                    |
-| ------------------- | ------ | ------------------------------------------------------------ |
-| `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`                |
-| `--profile`         | string | Ön ayar: `defi`, `gaming`, `nft`, `enterprise`, `custom`      |
-| `--stake`           | string | Operatör stake miktarı                                        |
-| `--da-enabled`      | bool   | Yerleşik veri kullanılabilirliğini etkinleştirir              |
+| Bayrak              | Tür    | Açıklama                                                 |
+| ------------------- | ------ | --------------------------------------------------------- |
+| `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`            |
+| `--profile`         | string | Ön ayar: `defi`, `gaming`, `nft`, `enterprise`, `custom`  |
+| `--stake`           | string | Operatör stake miktarı                                    |
+| `--da-enabled`      | bool   | Yerleşik veri kullanılabilirliğini etkinleştirir          |
 
 ### submit-batch
 
@@ -442,7 +468,7 @@ qorechaind tx rdk challenge-batch <rollup_id> <batch_index> <proof_hex> [flags]
 
 ### finalize-batch
 
-İtiraz penceresini geçmiş bir yığını elle kesinleştirir.
+İtiraz penceresini geçmiş bir yığını manuel olarak kesinleştirir.
 
 ```bash
 qorechaind tx rdk finalize-batch <rollup_id> <batch_index> [flags]
@@ -473,7 +499,7 @@ qorechaind tx rdk stop-rollup <rollup_id> [flags]
 ```
 
 :::note
-Rollup para çekme ve katmanlar arası mutabakat işlemleri de `rdk` işlem grubu altında sunulur (örneğin, kesinleşmiş bir yığına karşı kanıtlanan bir para çekme işlemini sonuçlandıran `execute-withdrawal` komutu). Tam argümanlar ve bayraklar, rollup'ınızın mutabakat türüne ve DA yapılandırmasına bağlıdır; bu işlemleri oluşturmadan önce yetkili komut yüzeyi için **Rollup Development Kit** belgelerine bakın.
+Rollup para çekme ve katmanlar arası mutabakat işlemleri de `rdk` işlem grubu altında sunulur (örneğin, kesinleşmiş bir yığına karşı kanıtlanmış bir çekme işlemini sonuçlandıran bir `execute-withdrawal` komutu). Tam argümanlar ve bayraklar, rollup'ınızın mutabakat türüne ve DA yapılandırmasına bağlıdır; bu işlemleri oluşturmadan önce yetkili komut yüzeyi için **Rollup Development Kit** belgelerine bakın.
 :::
 
 ---
@@ -496,9 +522,9 @@ Babylon entegrasyonu üzerinden BTC'yi yeniden stake eder.
 qorechaind tx babylon btc-restake <amount> [flags]
 ```
 
-| Bayrak          | Tür    | Açıklama                                   |
-| --------------- | ------ | ------------------------------------------ |
-| `--btc-tx-hash` | string | Kanıt olarak Bitcoin işlem hash'i          |
+| Bayrak          | Tür    | Açıklama                              |
+| --------------- | ------ | -------------------------------------- |
+| `--btc-tx-hash` | string | Kanıt olarak Bitcoin işlem hash'i      |
 
 ---
 
@@ -506,15 +532,15 @@ qorechaind tx babylon btc-restake <amount> [flags]
 
 ### create
 
-Programlanabilir harcama kurallarına sahip bir soyut hesap (abstract account) oluşturur.
+Programlanabilir harcama kurallarına sahip bir soyut hesap oluşturur.
 
 ```bash
 qorechaind tx abstractaccount create [flags]
 ```
 
-| Bayrak             | Tür    | Açıklama                                       |
-| ------------------ | ------ | ----------------------------------------------- |
-| `--spending-rules` | string | Harcama kurallarını tanımlayan JSON dosyası     |
+| Bayrak             | Tür    | Açıklama                                      |
+| ------------------ | ------ | ---------------------------------------------- |
+| `--spending-rules` | string | Harcama kurallarını tanımlayan JSON dosyası    |
 
 ### update-spending-rules
 
@@ -524,11 +550,29 @@ Mevcut bir soyut hesabın harcama kurallarını günceller.
 qorechaind tx abstractaccount update-spending-rules <rules_file.json> [flags]
 ```
 
+### execute-cosmos
+
+Kanonik bir hesaptan, authenticator tarafından yetkilendirilmiş bir Native-lane bank gönderimini iletir (zincir sürümü **v3.1.85** itibarıyla kullanılabilir). Relayer (`--from`) zarfı imzalar ve ücretini öder; yetkilendirme, bağlı anahtarın yeniden oynatmaya (replay) karşı korumalı imza baytları üzerindeki imzasıdır. Bkz. [Bağlı Cüzdan Authenticator'ları](/developer-guide/account-abstraction#authenticators).
+
+```bash
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> \
+  <auth_pubkey_hex> <auth_signature_hex> <nonce> --from relayer -y
+```
+
+### execute-evm
+
+Kanonik hesabın EVM adresinden, authenticator tarafından yetkilendirilmiş bir EVM çağrısını veya transferini iletir (zincir sürümü **v3.1.85** itibarıyla kullanılabilir). Nonce, hesabın **güncel** EVM nonce değeridir.
+
+```bash
+qorechaind tx abstractaccount execute-evm <account> <to> <value> <data_hex> \
+  <auth_pubkey_hex> <auth_signature_hex> <nonce> --from relayer -y
+```
+
 ---
 
 ## rlconsensus
 
-PRISM, konsensüs parametrelerini ayarlayan pekiştirmeli öğrenme katmanıdır. Bu komutlar PRISM ajanını kontrol eder; CLI modül adı `rlconsensus` ve alt komutları olduğu gibi korunur.
+PRISM, konsensüs parametrelerini ayarlayan pekiştirmeli öğrenme katmanıdır. Bu komutlar PRISM ajanını kontrol eder; CLI modül adı `rlconsensus` ve alt komutları olduğu gibi korunmuştur.
 
 ### set-agent-mode
 
@@ -564,8 +608,8 @@ PRISM ajanı için ödül ağırlığı yapılandırmasını günceller.
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| Bayrak                | Tür    | Açıklama                              |
-| --------------------- | ------ | -------------------------------------- |
-| `--throughput-weight` | string | Verim (throughput) ödülü için ağırlık  |
-| `--latency-weight`    | string | Gecikme ödülü için ağırlık             |
-| `--security-weight`   | string | Güvenlik ödülü için ağırlık            |
+| Bayrak                | Tür    | Açıklama                            |
+| --------------------- | ------ | ------------------------------------ |
+| `--throughput-weight` | string | İş hacmi ödülü için ağırlık          |
+| `--latency-weight`    | string | Gecikme ödülü için ağırlık           |
+| `--security-weight`   | string | Güvenlik ödülü için ağırlık          |

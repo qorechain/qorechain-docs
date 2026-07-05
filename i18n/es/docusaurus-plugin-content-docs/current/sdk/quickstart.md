@@ -1,21 +1,22 @@
 ---
 slug: /sdk/quickstart
-title: Quickstart
-sidebar_label: Quickstart
+title: Inicio rápido
+sidebar_label: Inicio rápido
 sidebar_position: 3
 ---
 
-# Quickstart
+# Inicio rápido
 
 De cero a una transacción enviada. Esta página usa el SDK de TypeScript
-(`@qorechain/sdk`); al final siguen breves fragmentos de conexión y lectura para Python, Go y Rust.
+(`@qorechain/sdk`); al final encontrarás fragmentos breves de conexión y lectura
+para Python, Go y Rust.
 
 ## 1. Conectar
 
-`createClient()` resuelve una red y compone los clientes de lectura, un helper de comisiones,
-y un punto de entrada de firma diferida. Apunta por defecto a la testnet pública
-(`qorechain-diana`). Los endpoints por defecto apuntan a **localhost**, así que
-pasa `endpoints` para comunicarte con un nodo real.
+`createClient()` resuelve una red y compone los clientes de lectura, un asistente
+de comisiones y un punto de entrada de firma con carga diferida. Por defecto
+apunta a la testnet pública (`qorechain-diana`). Los endpoints predeterminados
+apuntan a **localhost**, así que pasa `endpoints` para hablar con un nodo real.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -26,30 +27,31 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-La mainnet (chain id `qorechain-vladi`) está activa. Selecciónala y sobrescribe los
-valores por defecto de localhost con las URL de tu nodo:
+La mainnet (chain id `qorechain-vladi`) está activa. Selecciónala y sustituye los
+valores predeterminados de localhost por los endpoints públicos (o tu propio
+nodo):
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Derivar una cuenta
 
-Un único mnemónico deriva cuentas native (`qor1…`), EVM (`0x…`) y SVM (base58)
+Un único mnemónico deriva cuentas nativas (`qor1…`), EVM (`0x…`) y SVM (base58)
 mediante rutas de derivación independientes.
 
 ```ts
@@ -61,16 +63,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-Consulta [Cuentas y firma PQC](/sdk/concepts/accounts-pqc) para la derivación EVM/SVM
-y la tabla de derivación completa.
+Desde 0.6.0 puedes derivar en su lugar una **cuenta unificada eth-native** — una
+sola clave `eth_secp256k1` representada como las tres direcciones (`qor1…`,
+`0x…`, base58 de SVM) con un único saldo compartido:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+Consulta [Cuentas y firma PQC](/sdk/concepts/accounts-pqc) para la derivación
+EVM/SVM, las cuentas unificadas y la tabla completa de derivación.
 
 ## 3. Leer un saldo
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -79,8 +94,9 @@ const tokenomics = await client.qor.getTokenomicsOverview();
 
 ## 4. Enviar una transferencia de QOR
 
-Deriva una cuenta native, adapta su clave privada a un firmante, conecta un
-`TxClient`, y envía tokens. Usa `toBase("1.5")` para convertir QOR a la base `uqor`.
+Deriva una cuenta nativa, adapta su clave privada a un firmante, conecta un
+`TxClient` y envía tokens. Usa `toBase("1.5")` para convertir QOR a la unidad
+base `uqor`.
 
 ```ts
 import {
@@ -92,8 +108,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,9 +134,17 @@ console.log(result.transactionHash);
 
 `toBase("1.5")` devuelve `"1500000"` (QOR tiene 10^6 unidades base `uqor`).
 
+:::info Firma híbrida en las redes en producción
+En mainnet y testnet la ruta Native requiere la extensión de firma **híbrida**
+(clásica + ML-DSA-87) — usa `buildHybridTx` / `signAndBroadcastHybrid`, o
+`signHybridEth` para cuentas unificadas eth-native. Consulta
+[Firma híbrida](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
+
 ## Otros lenguajes: conectar y leer
 
-Estos reflejan los mismos preajustes de red y la misma superficie de lectura.
+Estos ejemplos replican los mismos presets de red y la misma superficie de
+lectura.
 
 ### Python
 
@@ -165,10 +189,12 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## Siguiente
+## Siguientes pasos
 
 - [Guías](/sdk/guides/evm) — trabaja con cada VM (EVM, SVM, CosmWasm, cross-VM).
-- [Cuentas y firma PQC](/sdk/concepts/accounts-pqc) — derivación HD y
-  firma post-cuántica.
+- [Cuentas y firma PQC](/sdk/concepts/accounts-pqc) — derivación HD, cuentas
+  unificadas eth-native y firma poscuántica.
+- [Authenticators y gasto delegado](/sdk/guides/authenticators) — permite que
+  una clave vinculada de Phantom/MetaMask gaste a través de un relayer.
 - [Referencia de red y endpoints](/sdk/reference/network).
 - [Ejemplos](/sdk/examples) — fragmentos ejecutables para cada flujo anterior.

@@ -5,7 +5,7 @@ sidebar_label: Hızlı Başlangıç
 sidebar_position: 3
 ---
 
-# Hızlı başlangıç
+# Hızlı Başlangıç
 
 Sıfırdan gönderilmiş bir işleme. Bu sayfa TypeScript SDK'sını
 (`@qorechain/sdk`) kullanır; Python, Go ve Rust için kısa bağlan-ve-oku kod
@@ -13,11 +13,11 @@ parçaları sonda yer alır.
 
 ## 1. Bağlanın
 
-`createClient()`, bir ağı çözümler ve okuma istemcilerini, bir ücret yardımcısını
-ve tembel (lazy) bir imzalama giriş noktasını oluşturur. Varsayılan olarak genel
-testnet'i (`qorechain-diana`) hedefler. Varsayılan uç noktalar **localhost**'a
-işaret eder, bu nedenle gerçek bir düğümle konuşmak için `endpoints` parametresini
-geçirin.
+`createClient()`, bir ağı çözümler ve okuma istemcilerini, bir ücret
+yardımcısını ve tembel (lazy) bir imzalama giriş noktasını bir araya getirir.
+Varsayılan olarak genel testnet'i (`qorechain-diana`) hedefler. Varsayılan uç
+noktalar **localhost**'a işaret eder; bu nedenle gerçek bir düğümle konuşmak
+için `endpoints` parametresini geçirin.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -28,31 +28,31 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-Mainnet (chain id `qorechain-vladi`) yayında. Onu seçin ve localhost
-varsayılanlarını kendi düğüm URL'lerinizle geçersiz kılın:
+Mainnet (chain id `qorechain-vladi`) canlıdır. Onu seçin ve localhost
+varsayılanlarını genel uç noktalarla (veya kendi düğümünüzle) geçersiz kılın:
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Bir hesap türetin
 
-Tek bir mnemonic, bağımsız türetme yolları aracılığıyla yerel (`qor1…`), EVM
-(`0x…`) ve SVM (base58) hesaplarını türetir.
+Tek bir anımsatıcı sözcük dizisi (mnemonic), bağımsız türetme yolları
+aracılığıyla native (`qor1…`), EVM (`0x…`) ve SVM (base58) hesaplarını türetir.
 
 ```ts
 import {
@@ -63,16 +63,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-EVM/SVM türetme ve tam türetme tablosu için
-[Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) bölümüne bakın.
+0.6.0 sürümünden itibaren bunun yerine **birleşik eth-native hesap**
+türetebilirsiniz — üç adres olarak da (`qor1…`, `0x…`, SVM base58) sunulan ve
+tek bir ortak bakiyeye sahip tek bir `eth_secp256k1` anahtarı:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+EVM/SVM türetmesi, birleşik hesaplar ve tam türetme tablosu için
+[Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) sayfasına bakın.
 
 ## 3. Bir bakiye okuyun
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -81,8 +94,8 @@ const tokenomics = await client.qor.getTokenomicsOverview();
 
 ## 4. Bir QOR transferi gönderin
 
-Bir yerel hesap türetin, özel anahtarını bir imzalayıcıya uyarlayın, bir
-`TxClient` bağlayın ve token gönderin. QOR'u temel `uqor` birimine dönüştürmek
+Bir native hesap türetin, özel anahtarını bir imzalayıcıya uyarlayın, bir
+`TxClient` bağlayın ve token gönderin. QOR'u taban `uqor` birimine çevirmek
 için `toBase("1.5")` kullanın.
 
 ```ts
@@ -95,8 +108,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -119,7 +132,16 @@ const result = await tx.bankSend(
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")`, `"1500000"` döndürür (QOR'un 10^6 temel `uqor` birimi vardır).
+`toBase("1.5")`, `"1500000"` döndürür (QOR'un taban birimi `uqor`, 10^6
+hassasiyetindedir).
+
+:::info Canlı ağlarda hibrit imzalama
+Mainnet ve testnet üzerinde Native yol, **hibrit** (klasik + ML-DSA-87) imza
+uzantısını gerektirir — `buildHybridTx` / `signAndBroadcastHybrid`
+fonksiyonlarını, birleşik eth-native hesaplar içinse `signHybridEth`
+fonksiyonunu kullanın.
+Bkz. [Hibrit imzalama](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
 ## Diğer diller: bağlan ve oku
 
@@ -168,10 +190,15 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## Sırada
+## Sıradaki adımlar
 
-- [Kılavuzlar](/sdk/guides/evm) — her VM ile çalışın (EVM, SVM, CosmWasm, VM'ler arası).
-- [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) — HD türetme ve
-  kuantum sonrası imzalama.
+- [Kılavuzlar](/sdk/guides/evm) — her bir VM ile çalışın (EVM, SVM, CosmWasm,
+  VM'ler arası).
+- [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) — HD türetme, birleşik
+  eth-native hesaplar ve kuantum sonrası imzalama.
+- [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators) —
+  bağlı bir Phantom/MetaMask anahtarının bir relayer üzerinden harcama
+  yapmasına izin verin.
 - [Ağ ve uç nokta referansı](/sdk/reference/network).
-- [Örnekler](/sdk/examples) — yukarıdaki her akış için çalıştırılabilir kod parçaları.
+- [Örnekler](/sdk/examples) — yukarıdaki her akış için çalıştırılabilir kod
+  parçaları.

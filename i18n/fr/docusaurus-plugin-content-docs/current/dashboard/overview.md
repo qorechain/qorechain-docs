@@ -16,7 +16,7 @@ Tout ce qui se trouve dans cette section est un guide pratique utilisateur : ce 
 | Domaine | À quoi cela sert |
 | --- | --- |
 | **[Explorer](/dashboard/explorer)** | Parcourir les blocs, les transactions, les adresses et les validateurs. |
-| **[Wallet](/dashboard/wallet)** | Consulter les soldes, envoyer et recevoir des QOR, et gérer vos adresses. |
+| **[Wallet](/dashboard/wallet)** | Consulter votre solde et votre historique et recevoir des QOR — avec votre propre portefeuille (non custodial) sur le mainnet, ou un portefeuille de test géré par le dashboard sur le testnet. |
 | **[Trade](/dashboard/trade)** | Échanger des jetons et fournir de la liquidité sur l'AMM on-chain. |
 | **[Bridge](/dashboard/bridge)** | Déplacer des actifs entre QoreChain et d'autres chaînes. |
 | **[Smart Contract Creator](/dashboard/smart-contract-creator)** | Générer des contrats intelligents avec **QCAI** sur 17 blockchains prises en charge. |
@@ -28,15 +28,25 @@ Tout ce qui se trouve dans cette section est un guide pratique utilisateur : ce 
 
 ## Connecter votre portefeuille {#connect-your-wallet}
 
-La plupart des actions qui modifient l'état on-chain — envoi de jetons, swap, staking, bridging — nécessitent un portefeuille connecté.
+La plupart des actions qui modifient l'état on-chain — envoi de jetons, swap, staking, bridging — nécessitent un portefeuille connecté. La façon dont le Dashboard gère les clés dépend du réseau :
 
-1. Ouvrez [dashboard.qorechain.io](https://dashboard.qorechain.io).
-2. Sélectionnez **Connect Wallet**.
-3. Approuvez la connexion dans votre portefeuille.
+- **Le mainnet est non custodial.** Le Dashboard ne détient jamais vos clés mainnet. Vous connectez votre propre portefeuille — **Keplr** pour le rail Native ou **MetaMask** pour le rail EVM — et le Dashboard lit votre solde et votre historique réels depuis la chaîne. Chaque transaction mainnet est signée dans votre propre portefeuille, jamais par le Dashboard.
+- **Le testnet est custodial.** Le Dashboard gère un portefeuille de test pour vous, afin que vous puissiez expérimenter sans aucune configuration et sans aucune valeur réelle en jeu.
+
+Pour vous connecter sur le mainnet :
+
+1. Ouvrez [dashboard.qorechain.io](https://dashboard.qorechain.io) et vérifiez que l'en-tête affiche **Mainnet**.
+2. S'il s'agit de votre première visite sur une page mainnet, lisez et acceptez la reconnaissance des risques unique (voir ci-dessous).
+3. Sélectionnez **Connect Wallet** et choisissez **Keplr** (rail Native) ou **MetaMask** (rail EVM).
+4. Approuvez la connexion dans votre portefeuille.
 
 Une fois connecté, le Dashboard affiche votre adresse (sous forme abrégée) dans l'en-tête et débloque les actions nécessitant une signature. Les pages en lecture seule comme l'Explorer fonctionnent sans connexion.
 
-Les comptes QoreChain utilisent le préfixe bech32 `qor`, donc une adresse connectée ressemble à `qor1...`. Les comptes sont protégés par de la cryptographie résistante au quantique. Consultez [Configuration du portefeuille](/getting-started/wallet-setup) pour des conseils de première configuration.
+Les comptes QoreChain utilisent le préfixe bech32 `qor`, donc une adresse connectée ressemble à `qor1...` — le même compte possède également un encodage EVM (`0x...`) et un encodage SVM (base58). Les comptes sont protégés par de la cryptographie résistante au quantique. Consultez [Configuration du portefeuille](/getting-started/wallet-setup) pour des conseils de première configuration, et [Ajouter QoreChain à votre portefeuille](/dashboard/wallet#add-network) si votre portefeuille ne connaît pas encore le réseau.
+
+### Reconnaissance des risques unique {#risk-acknowledgement}
+
+Avant de pouvoir utiliser une page mainnet, le Dashboard vous demande d'accepter un avertissement unique. Il confirme que vous comprenez que les transactions mainnet déplacent des **fonds réels**, que le Dashboard est **non custodial** (vous seul contrôlez vos clés) et que les transactions on-chain sont **irréversibles**. Vous l'acceptez une seule fois ; ensuite, les pages mainnet s'ouvrent directement.
 
 ## Sélectionner votre réseau
 
@@ -44,8 +54,8 @@ Le Dashboard fonctionne avec deux réseaux. L'en-tête affiche le réseau auquel
 
 | Réseau | ID de la chaîne | Quand l'utiliser |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Réseau en direct pour la valeur réelle et l'usage en production. |
-| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests, avec le [Faucet](/dashboard/faucet) pour les jetons de test. |
+| **Mainnet** | `qorechain-vladi` | Réseau en direct pour la valeur réelle et l'usage en production. Non custodial : vous connectez votre propre portefeuille. |
+| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests, avec un portefeuille de test géré par le dashboard et le [Faucet](/dashboard/faucet) pour les jetons de test. |
 
 Le jeton natif est **QOR** (dénomination de base `uqor`, où 1 QOR = 10^6 uqor). Si vous débutez, commencez sur le testnet, réclamez des jetons au Faucet et essayez un premier transfert avant de passer au mainnet.
 

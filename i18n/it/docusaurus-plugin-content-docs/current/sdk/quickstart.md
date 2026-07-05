@@ -1,22 +1,23 @@
 ---
 slug: /sdk/quickstart
-title: Quickstart
-sidebar_label: Quickstart
+title: Guida rapida
+sidebar_label: Guida rapida
 sidebar_position: 3
 ---
 
-# Quickstart
+# Guida rapida
 
-Da zero a una transazione inviata. Questa pagina usa l'SDK TypeScript
+Da zero a una transazione inviata. Questa pagina utilizza l'SDK TypeScript
 (`@qorechain/sdk`); brevi snippet di connessione e lettura per Python, Go e Rust
-seguono alla fine.
+si trovano alla fine.
 
-## 1. Connettersi
+## 1. Connessione
 
-`createClient()` risolve una rete e compone i client di lettura, un helper per le
-commissioni e un punto di ingresso per la firma lazy. Per impostazione predefinita
-punta alla testnet pubblica (`qorechain-diana`). Gli endpoint predefiniti puntano a
-**localhost**, quindi passa `endpoints` per comunicare con un nodo reale.
+`createClient()` risolve una rete e compone i client di lettura, un helper per
+le commissioni e un punto di ingresso pigro per la firma. Per impostazione
+predefinita punta alla testnet pubblica (`qorechain-diana`). Gli endpoint
+predefiniti puntano a **localhost**, quindi passa `endpoints` per comunicare con
+un nodo reale.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -27,31 +28,31 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-La mainnet (chain id `qorechain-vladi`) è attiva. Selezionala e sovrascrivi i
-valori predefiniti localhost con gli URL del tuo nodo:
+La mainnet (chain id `qorechain-vladi`) è attiva. Selezionala e sostituisci i
+valori predefiniti localhost con gli endpoint pubblici (o con il tuo nodo):
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Derivare un account
 
-Un singolo mnemonic deriva account native (`qor1…`), EVM (`0x…`) e SVM (base58)
-tramite percorsi di derivazione indipendenti.
+Una singola mnemonica deriva account native (`qor1…`), EVM (`0x…`) e SVM
+(base58) tramite percorsi di derivazione indipendenti.
 
 ```ts
 import {
@@ -62,16 +63,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-Vedi [Account e firma PQC](/sdk/concepts/accounts-pqc) per la derivazione EVM/SVM
-e la tabella di derivazione completa.
+A partire dalla 0.6.0 puoi invece derivare un **account unificato eth-native** —
+una sola chiave `eth_secp256k1` rappresentata come tutti e tre gli indirizzi
+(`qor1…`, `0x…`, base58 SVM) con un unico saldo condiviso:
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+Vedi [Account e firma PQC](/sdk/concepts/accounts-pqc) per la derivazione
+EVM/SVM, gli account unificati e la tabella di derivazione completa.
 
 ## 3. Leggere un saldo
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -80,8 +94,9 @@ const tokenomics = await client.qor.getTokenomicsOverview();
 
 ## 4. Inviare un trasferimento QOR
 
-Deriva un account native, adatta la sua chiave privata in un signer, connetti un
-`TxClient` e invia token. Usa `toBase("1.5")` per convertire QOR nell'unità base `uqor`.
+Deriva un account native, adatta la sua chiave privata in un firmatario,
+connetti un `TxClient` e invia i token. Usa `toBase("1.5")` per convertire QOR
+nell'unità base `uqor`.
 
 ```ts
 import {
@@ -93,8 +108,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,6 +133,13 @@ console.log(result.transactionHash);
 ```
 
 `toBase("1.5")` restituisce `"1500000"` (QOR ha 10^6 unità base `uqor`).
+
+:::info Firma ibrida sulle reti live
+Su mainnet e testnet il percorso Native richiede l'estensione di firma
+**ibrida** (classica + ML-DSA-87) — usa `buildHybridTx` /
+`signAndBroadcastHybrid`, oppure `signHybridEth` per gli account unificati
+eth-native. Vedi [Firma ibrida](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
 ## Altri linguaggi: connessione e lettura
 
@@ -168,8 +190,11 @@ async fn main() -> qorechain::Result<()> {
 
 ## Prossimi passi
 
-- [Guide](/sdk/guides/evm) — lavorare con ciascun VM (EVM, SVM, CosmWasm, cross-VM).
-- [Account e firma PQC](/sdk/concepts/accounts-pqc) — derivazione HD e
-  firma post-quantistica.
+- [Guide](/sdk/guides/evm) — lavora con ciascuna VM (EVM, SVM, CosmWasm,
+  cross-VM).
+- [Account e firma PQC](/sdk/concepts/accounts-pqc) — derivazione HD, account
+  unificati eth-native e firma post-quantistica.
+- [Authenticator e spesa delegata](/sdk/guides/authenticators) — consenti a una
+  chiave Phantom/MetaMask collegata di spendere tramite un relayer.
 - [Riferimento rete ed endpoint](/sdk/reference/network).
-- [Esempi](/sdk/examples) — snippet eseguibili per ciascun flusso sopra.
+- [Esempi](/sdk/examples) — snippet eseguibili per ciascun flusso qui sopra.

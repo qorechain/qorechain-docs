@@ -17,7 +17,7 @@ Ağın canlı bir anlık görüntüsünü görmek için Panel'den **Gezgin**'i a
 - **Blok etkinliği** — en son blok yüksekliği, ortalama blok süresi ve bugün üretilen bloklar.
 - **Arz** — toplam bağlı QOR, bağlı oran ve dolaşımdaki arz.
 - **Öne çıkan istatistikler** — toplam işlemler, aktif ve toplam doğrulayıcılar ve toplam adresler.
-- **En son bloklar** — her bloğun yüksekliği, süresi, işlem sayısı ve önericisini içeren canlı bir liste.
+- **En son bloklar** — her bloğun yüksekliği, zamanı, işlem sayısı ve önericisini içeren canlı bir liste.
 - **En son işlemler** — her işlemin karması, türü, bloğu, tutarı ve göndericisini içeren canlı bir liste.
 
 Detay sayfasını açmak için herhangi bir blok veya işlem satırına tıklayın. Her listedeki bir yenileme kontrolü, en yeni girişleri getirir.
@@ -40,7 +40,9 @@ Bir blok sayfası; yüksekliğini, zaman damgasını, önericisini, karmasını,
 
 ## Adres detayları
 
-Bir adres sayfası; adresi taranabilir bir QR koduyla, QOR bakiyesini, işlem sayısını ve gelen ile giden transferlerin toplamlarını gösterir. Bunun altında adresin tüm işlem geçmişi yer alır — transferler, takaslar, musluk talepleri ve daha fazlası — her biri tutarı, süresi ve durumuyla birlikte. Adresi kopyalayabilir, QR kodunu indirebilir ve detaylar için herhangi bir işlemi açabilirsiniz.
+Bir QoreChain adresi, üç kodlamaya sahip tek bir hesaptır — Native (`qor1...`), EVM (`0x...`) ve SVM (base58) — ve adres sayfası, bu üç raydaki etkinliği tek bir kimliğin tek bir görünümünde birleştirir.
+
+Sayfa; adresi taranabilir bir QR koduyla, QOR bakiyesini, işlem sayısını ve gelen ile giden transferlerin toplamlarını gösterir. Bunun altında, adresin Native, EVM ve SVM rayları genelindeki birleşik işlem geçmişi yer alır — transferler, sözleşme dağıtımları, PQC anahtar kayıtları, takaslar, musluk talepleri ve daha fazlası — her biri tutarı, zamanı ve durumuyla birlikte. Adresi kopyalayabilir, QR kodunu indirebilir ve detaylar için herhangi bir işlemi açabilirsiniz.
 
 ## Doğrulayıcılar {#validators}
 

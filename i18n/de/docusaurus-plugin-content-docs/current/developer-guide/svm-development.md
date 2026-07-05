@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, mit der Entwickler SBF/BPF-Programme mit vertrautem Solana-Tooling bereitstellen und ausführen können. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.82** ausführt. Ersetzen Sie für das Testnet `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.85** ausführt. Ersetzen Sie für das Testnet `--chain-id qorechain-diana`.
 :::
 
 ---
@@ -30,7 +30,7 @@ Das `x/svm`-Modul bietet:
 
 ## Natives QOR auf der SVM-Schnittstelle {#native-qor}
 
-Seit Chain-Version **v3.1.82** ist die SVM-Schnittstelle eine **erstklassige Schnittstelle für natives QOR**, kein separates Sandbox-Guthaben. Das eine einheitliche Guthaben des Kontos — dieselben Mittel, die auf der Cosmos-Schnittstelle als `uqor` und auf der EVM als Wei mit 18 Dezimalstellen sichtbar sind — erscheint auf der SVM-Seite in **Lamports** (9 Dezimalstellen):
+Seit Chain-Version **v3.1.85** ist die SVM-Schnittstelle eine **erstklassige Schnittstelle für natives QOR**, kein separates Sandbox-Guthaben. Das eine einheitliche Guthaben des Kontos — dieselben Mittel, die auf der Cosmos-Schnittstelle als `uqor` und auf der EVM als Wei mit 18 Dezimalstellen sichtbar sind — erscheint auf der SVM-Seite in **Lamports** (9 Dezimalstellen):
 
 ```
 1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports

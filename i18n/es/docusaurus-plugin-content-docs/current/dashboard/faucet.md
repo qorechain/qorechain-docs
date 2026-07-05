@@ -9,6 +9,10 @@ sidebar_position: 9
 
 El **Grifo** te da tokens de prueba gratuitos para que puedas probar el Panel sin gastar nada de valor. Es una herramienta **exclusiva de testnet**: úsala en testnet (`qorechain-diana`) para financiar tu dirección antes de probar transferencias, swaps, staking y despliegue de contratos.
 
+:::caution Solo testnet — sin valor real
+El QOR de testnet **no tiene valor real**. El Grifo nunca toca mainnet: no existe un grifo para QOR de mainnet, y nada de lo que reclames aquí puede moverse a mainnet.
+:::
+
 ## Solicitar tokens de prueba
 
 1. Conéctate a **testnet** y abre el **Grifo**.

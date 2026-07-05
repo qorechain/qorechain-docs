@@ -9,6 +9,10 @@ sidebar_position: 9
 
 Il **Faucet** ti fornisce token di test gratuiti così puoi provare la Dashboard senza spendere nulla di valore. È uno strumento **solo per testnet** — usalo sulla testnet (`qorechain-diana`) per finanziare il tuo indirizzo prima di testare trasferimenti, swap, staking e deploy di contratti.
 
+:::caution Solo testnet — nessun valore reale
+Il QOR di testnet **non ha alcun valore reale**. Il Faucet non tocca mai la mainnet: non esiste un faucet per il QOR di mainnet e nulla di ciò che richiedi qui può essere trasferito sulla mainnet.
+:::
+
 ## Richiedere token di test
 
 1. Connettiti alla **testnet** e apri il **Faucet**.

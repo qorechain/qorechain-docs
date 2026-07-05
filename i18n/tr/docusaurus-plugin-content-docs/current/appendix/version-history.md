@@ -7,67 +7,99 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için herkese açık sürüm geçmişi. En son sürüm **v3.1.82** olup, ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) üzerinde çalışmaktadır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**), ön sürüm derlemelerini takip eder.
+QoreChain için herkese açık sürüm geçmişi. En son sürüm **v3.1.85** olup, ana ağ **`qorechain-vladi`** üzerinde çalışmaktadır (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) ön sürüm derlemelerini takip eder.
 
 :::note
-Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Önceki `v1.x` kayıtları, ana ağdan önce gelen test ağı sürüm serisinin tarihsel kaydı olarak korunmaktadır.
+Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı sürüm serisinin tarihsel kaydı olarak korunmaktadır.
 :::
 
 ---
 
-## v3.1.82 — SVM Üzerinde Yerel QOR Canlı + Entegratör Etkinleştirme (Mevcut Ana Ağ Sürümü)
+## v3.1.85 — Bağlı Cüzdanlar Üzerinden Yetkilendirilmiş Harcama (Güncel Sürüm)
 
-**Sürüm odağı:** Her iki ağda çalışan SVM yerel-QOR birleştirmesi ve bir borsa veya entegratörün bağlanmak için ihtiyaç duyduğu her şey.
+**Sürüm odağı:** Bağlı bir harici cüzdan anahtarı (Phantom, MetaMask) artık tek kanonik post-kuantum hesaptan — en az ayrıcalık ilkesine dayalı izinler, harcama limitleri ve anında iptal koruması altında — **harcama** yapabilir.
 
-* **Birleşik yerel-QOR bakiyesi üç arayüzün tümünde canlı** — SVM birleştirmesinin (v3.1.81) ana ağda ve test ağında canlı olduğu doğrulandı: aynı hesap, Cosmos üzerinde `uqor` (6 ondalık), EVM üzerinde wei tarzı 18 ondalık ve Solana uyumlu arayüzde lamports (9 ondalık; 1 uqor = 1,000 lamports) olarak görünen tek bir bakiyeye sahiptir.
-* **Doğrulanmış herkese açık uç noktalar** — Her iki ağda konsensüs RPC, REST, EVM JSON-RPC ve SVM JSON-RPC için herkese açık HTTPS uç noktaları ve herkese açık [blok gezgini](https://explore.qore.network). Bkz. [Ağlar](/appendix/networks).
-* **İndirmeler** — Sürümlendirilmiş düğüm ikili paketleri, ana ağ genesis dosyası ve güncel zincir verisi anlık görüntüleri (SHA-256 sağlama toplamlarıyla birlikte) [download.qore.host](https://download.qore.host) adresinde yayımlanmaktadır.
-* **İstemci yığını genelinde deterministik kuantum sonrası imzalama** — `@qorechain/pqc` 0.1.1, altı dil bağlamasının tümünde ML-DSA-87 imzalarını deterministik olarak (FIPS-204 §3.4) üretir ve zincirin kabul ettiğiyle eşleşir; `@qorechain/wallet-adapter` 0.1.2, hibrit işlem imzalama için bunun üzerine inşa edilmiştir.
-* **Entegratör rehberi** — Üç arayüzde para yatırma, para çekme ve düğüm operasyonlarını kapsayan yeni [Borsa ve Entegratör Rehberi](/developer-guide/exchange-integration).
+* **Authenticator yürütme şeritleri** — İki yeni mesaj, kayıtlı bir authenticator'ın hesap sahibi mevcut olmadan kanonik hesaptan transferleri yetkilendirmesine olanak tanır: **`MsgExecuteEVM`** (hesabın `0x…` adresinden bir EVM çağrısı/transferi) ve **`MsgExecuteCosmos`** (Native şeridinde bir bank gönderimi). Zarfı bir **relayer** gönderir ve ücretini öder — kendi hibrit PQC imzası işlem gereksinimlerini karşılar — authenticator'ın alan-ayrımlı, tekrar-korumalı imza baytları üzerindeki imzası ise yetkilendirmenin kendisidir. Harici anahtarın hiçbir zaman bir ML-DSA eş imzasına ihtiyacı yoktur.
+* **Authenticator olarak MetaMask** — secp256k1 authenticator'lar artık (33 baytlık sıkıştırılmış anahtar biçimine ek olarak) **20 baytlık Ethereum adresleri** ile kaydedilebilir ve **EIP-191 `personal_sign`** aracılığıyla doğrulanabilir; böylece standart bir MetaMask hesabı bağlanabilir ve limitler dahilinde harcama yapabilir.
+* **Üç şeridin tamamında uygulama** — İzin kapsamları ve **SpendingRule** değer limitleri (işlem başına + günlük tavanlar) Native, EVM ve SVM şeritlerinde uygulanır; anahtar yönetimi mesajları hiçbir zaman devredilemez. Ayrı hata kodları, cüzdanların doğru mesajı göstermesini sağlar: `5` harcama limiti aşıldı, `6` authenticator süresi doldu, `10` izin reddedildi, `11` tekrar (replay) reddedildi.
+* **İzin şeması sorgusu** — `GET /qorechain/abstractaccount/v1/permission_schema` (ayrıca gRPC/CLI) kanonik izin taksonomisini (11 izin), mesaj→izin eşlemesini ve devredilemez mesaj listesini döndürür; böylece cüzdanlar kapsamları sabit kodlamadan doğrulayabilir.
+* **Aynı algoritma ile PQC anahtar rotasyonu** — Yeni **`MsgRotatePQCKey`**, bir hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarla çift imzalı); bu, eski türetimle oluşturulmuş anahtarların kanonik adrese bağlı türetime taşınmasını ve ele geçirilmiş bir anahtarın emekliye ayrılmasını mümkün kılar. Yeni CLI komutları: `tx pqc rotate-key` ve `tx pqc recover-key` (bir anımsatıcı ifadeden deterministik anahtar kurtarma).
+* **Kök anahtar işlemleri etkilenmez** — Değişiklikler ekleyicidir; normal cüzdan, borsa ve Keplr akışları değişmemiştir. Düğüm operatörlerinin ağ yükseltme yüksekliğine kadar **v3.1.85** sürümüne geçmesi gerekir.
+
+## v3.1.84 — Authenticator İzinleri ve Harcama Limitleri
+
+**Sürüm odağı:** Yetkilendirilmiş harcamanın arkasındaki izin modeli.
+
+* **Kanonik izin taksonomisi** — On bir izin (`all`, `send`, `delegate`, `withdraw`, `vote`, `evm`, `wasm`, `svm`, `amm`, `ibc`, `deploy`) ve varsayılan-kapalı (fail-closed) bir mesaj→izin eşlemesi: eşlenmemiş bir mesaj türü reddedilir ve anahtar yönetimi mesajları hiçbir zaman devredilemez.
+* **SpendingRule uygulaması** — İşlem başına ve gün başına (UTC) harcama tavanları, izin verilen denom listeleriyle birlikte uygulanır ve her (hesap, authenticator) çifti için kaydedilir.
+* **SVM şeridi yetkilendirmesi** — SVM şeridinde yabancı şemalı bir anahtar (ör. Phantom ed25519) tarafından yetkilendirilen eylemler, aynı merkezi yetkilendirme kapısından geçer.
+
+## v3.1.83 — Üç Arayüzün Tamamında Birleşik Hesap İmzalama
+
+**Sürüm odağı:** Tek anahtar, tek hesap — artık Cosmos, EVM ve SVM arayüzlerinde yalnızca bakiye tutmakla kalmayıp **imzalayabilen** tek bir birleşik kimlik.
+
+* **Tek anahtar her şeritte imzalar** — eth-native olarak oluşturulmuş bir hesap (adres = secp256k1 açık anahtarının keccak değeri) artık EVM işlemlerine ek olarak Cosmos şeridi işlemlerini de `eth_secp256k1` şemasıyla imzalar. `qor1…` (Cosmos), `0x…` (EVM) ve Solana-VM (base58) biçimleri, hem **tek bir bakiye tutan** hem de — post-kuantum hibrit (ML-DSA-87) Cosmos işlemleri dahil — **üç şeridin tamamında harcama yapan** tek bir 20 baytlık kimliktir.
+* **Post-kuantum imzalama değişmedi** — Birleşik hesap yine ML-DSA-87 anahtarını kaydeder ve zincirin gerektirdiği FIPS-204 hibrit imzasını taşır; klasik kısım, coinType-118 şeması yerine `eth_secp256k1` (keccak) şemasıdır. Mevcut coinType-118 hesapları etkilenmez.
+* **Konsensüs açısından tarafsız kademeli yükseltme** — Her iki ağda da **yeniden genesis ve zincir durması olmadan** kademeli bir ikili (binary) yükseltmesi olarak teslim edilmiştir. Hesap bakiyeleri, geçmiş ve genesis değişmemiştir.
+* **İstemci araçları** — `@qorechain/wallet-adapter` 0.1.5, eth-native Cosmos imzalama (`signClassicalEth` / `signHybridEth`), birleşik 3 adres üretimi ve `walletFromSeed` (herhangi bir 32 baytlık tohumdan — ör. bir Phantom imzasından — kanonik hesabı türetme) özelliklerini ekler; `@qorechain/chain-bridge` bir `eth_secp256k1` imzalama yolu kazanır.
+
+:::caution Düğüm operatörleri — yükseltme zorunlu
+Tam düğümler **v3.1.83+** çalıştırmalıdır. 3.1.83 öncesi bir düğüm, eth-native (`eth_secp256k1`) bir işlemin kodunu çözemez ve bir blokta böyle bir işlem göründüğü anda senkronizasyonu durur. Güncel paketi [download.qore.host](https://download.qore.host) adresinden indirin.
+:::
+
+## v3.1.82 — SVM Üzerinde Yerel QOR Canlı + Entegratör Etkinleştirme
+
+**Sürüm odağı:** Her iki ağda da çalışan SVM yerel-QOR birleştirmesi ve bir borsanın ya da entegratörün bağlanmak için ihtiyaç duyduğu her şey.
+
+* **Üç arayüzün tamamında birleşik yerel QOR bakiyesi canlı** — SVM birleştirmesinin (v3.1.81) ana ağ ve test ağında canlı olduğu doğrulanmıştır: aynı hesap, Cosmos'ta `uqor` (6 ondalık), EVM'de wei tarzı 18 ondalık ve Solana uyumlu arayüzde lamports (9 ondalık; 1 uqor = 1.000 lamports) olarak görünen tek bir bakiye tutar.
+* **Doğrulanmış herkese açık uç noktalar** — Her iki ağda konsensüs RPC, REST, EVM JSON-RPC ve SVM JSON-RPC için herkese açık HTTPS uç noktaları ve ayrıca herkese açık [blok gezgini](https://explore.qore.network). Bkz. [Ağlar](/appendix/networks).
+* **İndirmeler** — Sürümlü düğüm ikili paketleri, ana ağ genesis dosyası ve güncel zincir verisi anlık görüntüleri (SHA-256 sağlama toplamlarıyla) [download.qore.host](https://download.qore.host) adresinde yayımlanmaktadır.
+* **İstemci yığını genelinde deterministik post-kuantum imzalama** — `@qorechain/pqc` 0.1.1, altı dil bağlamasının tamamında ML-DSA-87 imzalarını deterministik olarak (FIPS-204 §3.4) üretir ve zincirin kabul ettiğiyle eşleşir; `@qorechain/wallet-adapter` 0.1.2 hibrit işlem imzalama için bunun üzerine inşa edilmiştir.
+* **Entegratör kılavuzu** — Üç arayüz genelinde yatırma, çekme ve düğüm operasyonlarını kapsayan yeni [Borsa ve Entegratör Kılavuzu](/developer-guide/exchange-integration).
 
 ## v3.1.81 — SVM Yerel-QOR Birleştirmesi
 
 **Sürüm odağı:** Solana uyumlu arayüzde birinci sınıf bir varlık olarak yerel QOR.
 
-* **SVM üzerinde yerel QOR** — SVM çalışma zamanı artık ayrı bir SVM'ye özgü bakiye izlemek yerine hesabın yerel QOR bakiyesini doğrudan (lamports cinsinden) sunar. `getBalance` ve `getSignaturesForAddress` yerel fonlar üzerinde çalışır ve System Program transferleri yerel QOR taşır.
+* **SVM üzerinde yerel QOR** — SVM çalışma zamanı artık ayrı bir SVM'ye özgü bakiye izlemek yerine hesabın yerel QOR bakiyesini doğrudan (lamports cinsinden) gösterir. `getBalance` ve `getSignaturesForAddress` yerel fonlara karşı çalışır ve System Program transferleri yerel QOR taşır.
 * **SVM adres eşlemesi** — Bir hesabın SVM adresi, 20 hesap baytından türetilir (sağdan 32 bayta doldurulur, base58 ile kodlanır); böylece tek bir anahtarın Cosmos, EVM ve SVM adresleri aynı fonlara işaret eder.
 
-## v3.1.80 — Çok Katmanlı Durum Çapası Sorguları
+## v3.1.80 — Multilayer Durum Çapası Sorguları
 
-**Sürüm odağı:** Rollup'lar için okunabilir, çevrimdışı doğrulanabilir mutabakat çapaları.
+**Sürüm odağı:** Rollup'lar için okunabilir, çevrimdışı doğrulanabilir uzlaşma (settlement) çapaları.
 
-* **Çapa okuma sorguları** — `x/multilayer` sorgu servisi artık `Anchor` (bir katman için en son durum çapası) ve `Anchors` (bir katmanın çapa geçmişi) sorgularını sunar; böylece istemciler bir katmanın mutabakat çapasını alıp bağımsız olarak doğrulayabilir.
+* **Çapa okuma sorguları** — `x/multilayer` sorgu servisi artık `Anchor` (bir katmanın en son durum çapası) ve `Anchors` (bir katmanın çapa geçmişi) sorgularını sunar; böylece istemciler bir katmanın uzlaşma çapasını çekip bağımsız olarak doğrulayabilir.
 * **Multilayer için REST ağ geçidi** — Her multilayer sorgusu (`params`, `layers`, `layers/{layer_id}`, `anchor/{layer_id}`, `anchors/{layer_id}`, `routing-stats`) artık gRPC'ye ek olarak REST üzerinden de kullanılabilir.
-* **Kuantum güvenli mutabakat makbuzlarının önü açıldı** — Her çapa, kanonik alanları üzerinde bir **ML-DSA-87 (Dilithium-5)** imzası taşır; bu, Rollup Development Kit'in çevrimdışı mutabakat makbuzu doğrulaması için zincir üstü temeli sağlar.
+* **Kuantum güvenli uzlaşma makbuzlarının önü açıldı** — Her çapa, kanonik alanları üzerinde bir **ML-DSA-87 (Dilithium-5)** imzası taşır; bu, Rollup Development Kit'in çevrimdışı uzlaşma makbuzu doğrulaması için zincir üstü temeli sağlar.
 
-## v3.1.79 — Köprü Ağları için Doğrulayıcı Otomatik Sağlama
+## v3.1.79 — Köprü Ağları için Validator Otomatik Tedariki
 
-**Sürüm odağı:** Lisanslı doğrulayıcılar için bağlı ağlarda anahtar teslim katılım.
+**Sürüm odağı:** Lisanslı validator'lar için bağlı ağlarda anahtar teslim katılım.
 
-* **Ağ sürücüsü çerçevesi** — Bildirimsel bir sürücü çerçevesi, ilgili `validator_<chain>` (veya `qcb_bridge`) lisansına sahip bir QoreChain doğrulayıcısının, eşleşen harici ağ istemcisinin aynı düğüm üzerinde QoreChain orkestrasyonu altında sağlanmasını, yapılandırılmasını ve çalıştırılmasını mümkün kılar — ancak yalnızca lisans etkinleştirildikten sonra.
-* **37 köprü ağının tamamı için sürücüler** — Kapsam, katılım modeline göre sınıflandırılmış (izinsiz doğrulayıcı, kotalı/seçimli/kabul esaslı, L2 tam düğüm ve stake gerektirmeyen/güven listesi rolleri) bağlı ağların tamamını içerir. Harici ağ stake'i ve imzalama anahtarları ağ başına operatör tarafından sağlanmaya devam eder; QoreChain, çerçeveyi ve zorunlu kılınan lisans kapısını sunar.
+* **Ağ sürücüsü çerçevesi** — Bildirimsel bir sürücü çerçevesi, ilgili `validator_<chain>` (veya `qcb_bridge`) lisansına sahip bir QoreChain validator'ının, eşleşen harici ağ istemcisinin aynı düğümde QoreChain orkestrasyonu altında tedarik edilmesini, yapılandırılmasını ve çalıştırılmasını sağlar — yalnızca lisans etkinleştirildikten sonra.
+* **37 köprü ağının tamamı için sürücüler** — Kapsam, katılım modeline göre sınıflandırılmış (izinsiz validator, kapasiteli/seçilmiş/kabullü, L2 tam düğüm ve stake gerektirmeyen/güven listesi rolleri) bağlı tüm ağları içerir. Harici ağ stake'i ve imzalama anahtarları ağ başına operatör tarafından sağlanmaya devam eder; QoreChain, çerçeveyi ve uygulanan lisans kapısını sunar.
 
 ## v3.1.78 — Dağıtım Öncesi Hazırlık
 
-**Sürüm odağı:** Cüzdanlar, köprüler, IBC ve lisanslamanın tümü lansmanda çalışır — dağıtım sonrası yönetişim gerektirmeden.
+**Sürüm odağı:** Cüzdanlar, köprüler, IBC ve lisanslama lansmanda çalışır — dağıtım sonrası yönetişim gerektirmeden.
 
-* **Güven gerektirmeyen dağıtım sonrası köprü etkinleştirme** — Bir `bridge_admin` anahtarı (veya `qcb_bridge` lisans sahibi), tek bir imzalı işlemle (`tx bridge update-chain-config` / `set-verifier-bootstrap`) herhangi bir bağlı zincirin köprüsünü etkinleştirebilir — sözleşme adresini, onay sayısını, mimariyi, durumu, etkin doğrulayıcıyı ve doğrulayıcı güven kökünü ayarlayarak — yönetişim önerisi veya zincir yükseltmesi olmadan.
-* **Doğrulayıcı-ağ lisans kapısı** — Orkestratör artık herhangi bir harici ağ istemcisini başlatmadan önce `validator_<chain>` / `qcb_bridge` lisansını (kapalı-güvenli/fail-closed) zorunlu kılar.
-* **Cüzdan entegrasyon paketleri** — `@qorechain/wallet-adapter` ve `@qorechain/connect` npm'de yayımlandı (v0.1.0); tek çağrıyla MetaMask ağ kaydı (EIP-3085, EVM hattında **18 ondalıklı** yerel QOR) ve Keplr gaz fiyatı yapılandırması ekler.
-* **IBC anahtar teslim aktarıcı** — Sekiz IBC karşı tarafı için çalışmaya hazır aktarıcı (relayer) yapılandırması ve kanal önyükleme araçları; böylece kanallar dağıtım sonrasında özel bir kurulum gerektirmeden devreye girer.
+* **Güven gerektirmeyen dağıtım sonrası köprü etkinleştirme** — Bir `bridge_admin` anahtarı (veya `qcb_bridge` lisans sahibi), tek bir imzalı işlemle (`tx bridge update-chain-config` / `set-verifier-bootstrap`) bağlı herhangi bir zincirin köprüsünü etkinleştirebilir — kontrat adresini, onay sayısını, mimariyi, durumu, aktif doğrulayıcıyı ve doğrulayıcı güven kökünü ayarlayarak — yönetişim önerisi veya zincir yükseltmesi olmadan.
+* **Validator ağı lisans kapısı** — Orkestratör artık herhangi bir harici ağ istemcisini başlatmadan önce `validator_<chain>` / `qcb_bridge` lisansını (varsayılan-kapalı olarak) zorunlu kılar.
+* **Cüzdan entegrasyon paketleri** — `@qorechain/wallet-adapter` ve `@qorechain/connect` npm'de yayımlandı (v0.1.0); tek çağrıyla MetaMask ağ kaydı (EIP-3085, EVM rayında **18 ondalıklı** yerel QOR) ve Keplr gaz fiyatı yapılandırması ekler.
+* **IBC anahtar teslim relayer** — Sekiz IBC karşı tarafı için çalışmaya hazır relayer yapılandırması ve kanal önyükleme araçları; böylece kanallar dağıtım sonrasında özel kurulum gerektirmeden devreye girer.
 
-## v3.1.77 — Köprü ve Yakım REST Uç Noktaları
+## v3.1.77 — Köprü ve Yakma REST Uç Noktaları
 
 **Sürüm odağı:** Zincirler arası ve arz modülleri için salt okunur REST erişimi.
 
 * **Köprü REST uç noktaları** — Köprü modülü için salt okunur HTTP sorgu uç noktaları; köprü durumunu gRPC'ye ek olarak standart REST üzerinden sunar.
-* **Yakım REST uç noktaları** — Yakım (burn) modülü için salt okunur HTTP sorgu uç noktaları; ücret dağıtımı ve arz verilerini standart REST üzerinden sorgulanabilir hale getirir.
+* **Yakma REST uç noktaları** — Yakma modülü için salt okunur HTTP sorgu uç noktaları; ücret dağıtımı ve arz verilerini standart REST üzerinden sorgulanabilir hale getirir.
 
 ## v3.1.76 — SVM Araç Zinciri Modernizasyonu
 
 **Sürüm odağı:** Solana Virtual Machine uyumluluk yenilemesi.
 
-* **Güncel araç zinciriyle program desteği** — SVM yürütmesi modernize edildi; böylece güncel Solana araç zinciriyle derlenen programlar QoreChain SVM çalışma zamanında çalışır.
+* **Güncel araç zinciriyle program desteği** — SVM yürütmesi, güncel Solana araç zinciriyle derlenmiş programların QoreChain SVM çalışma zamanında çalışması için modernize edildi.
 
 ## v3.1.75 — Varsayılan Olarak SVM JSON-RPC
 
@@ -77,48 +109,48 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Önceki `v1.x` kayıtla
 
 ## v3.1.74 — Rollup Profil Ön Ayarları
 
-**Sürüm odağı:** Rollup Development Kit kullanılabilirliği ve mutabakat.
+**Sürüm odağı:** Rollup Development Kit kullanılabilirliği ve uzlaşma.
 
-* **Profil ön ayarı uygulama** — Rollup oluşturma artık seçilen profilin ön ayarını (DeFi, oyun, NFT, kurumsal veya tamamen özel) uygular; böylece yeni rollup'lar kullanım senaryolarına uygun makul varsayılanları devralır.
-* **İyimser (optimistic) mutabakat** — İyimser mutabakat yolu (toplu gönderim ve itiraz) uçtan uca çalışır durumdadır.
+* **Profil ön ayarı uygulaması** — Rollup oluşturma artık seçilen profilin ön ayarını (DeFi, oyun, NFT, kurumsal veya tamamen özel) uygular; böylece yeni rollup'lar kullanım senaryolarına uygun makul varsayılanları devralır.
+* **İyimser (optimistic) uzlaşma** — İyimser uzlaşma yolu (toplu gönderim ve itiraz) uçtan uca çalışır durumdadır.
 
-## v3.1.73 — Kuantum Sonrası Karma (Hash) Taban Çizgisi
+## v3.1.73 — Post-Kuantum Hash Taban Çizgisi
 
-**Sürüm odağı:** Varsayılan kuantum sonrası kriptografik taban çizgisinin tamamlanması.
+**Sürüm odağı:** Varsayılan post-kuantum kriptografik taban çizgisinin tamamlanması.
 
-* **Varsayılan karma olarak SHAKE-256** — SHAKE-256 (SHA-3 ailesi), varsayılan uygulama karma fonksiyonu olarak benimsendi; böylece **ML-DSA-87 (Dilithium-5)** imzaları, **ML-KEM-1024** anahtar kapsülleme ve **SHAKE-256** karma işleminden oluşan varsayılan kuantum sonrası taban çizgisi tamamlandı.
+* **Varsayılan hash olarak SHAKE-256** — SHAKE-256 (SHA-3 ailesi) varsayılan uygulama hash'i olarak benimsenmiştir; böylece **ML-DSA-87 (Dilithium-5)** imzaları, **ML-KEM-1024** anahtar kapsülleme ve **SHAKE-256** hash'lemeden oluşan varsayılan post-kuantum taban çizgisi tamamlanmıştır.
 
 ## v3.1.72 — Kararlılık ve Bakım
 
 **Sürüm odağı:** Rutin kararlılık ve derleme hattı bakımı.
 
-* **Kararlılık iyileştirmeleri** — Dışarıdan görünür davranış değişikliği olmaksızın dahili kararlılık, bağımlılık ve derleme hattı bakımı.
+* **Kararlılık iyileştirmeleri** — Dışarıdan görünür davranış değişikliği olmadan iç kararlılık, bağımlılık ve derleme hattı bakımı.
 
 ## v3.1.71 — PQC Hibrit İmzalar Varsayılan Olarak Zorunlu
 
-**Sürüm odağı:** Cosmos işlem yolunda varsayılan olarak açık kuantum sonrası güvenlik.
+**Sürüm odağı:** Cosmos işlem yolunda varsayılan olarak açık post-kuantum güvenliği.
 
-* **Hibrit imzalar varsayılan olarak zorunlu** — Kuantum sonrası hibrit imzalar artık Cosmos işlem yolunda varsayılan olarak zorunludur: her işlem, klasik **secp256k1** imzasının yanında bir kuantum sonrası **ML-DSA-87 (Dilithium-5)** imzası taşır.
-* **Yönetişim kontrollü zorunluluk** — Zorunluluk modu yönetişim kontrolünde kalır; varsayılan değer **zorunlu** (required) olarak ayarlanmıştır.
+* **Hibrit imzalar varsayılan olarak zorunlu** — Post-kuantum hibrit imzalar artık Cosmos işlem yolunda varsayılan olarak zorunludur: her işlem, klasik **secp256k1** imzasının yanında bir post-kuantum **ML-DSA-87 (Dilithium-5)** imzası taşır.
+* **Yönetişim kontrollü zorunluluk** — Zorunluluk modu yönetişim kontrolünde kalmaya devam eder; varsayılan değer **zorunlu (required)** olarak ayarlanmıştır.
 
-## v3.1.70 — Üretim Sağlamlaştırması
+## v3.1.70 — Üretim Sertleştirmesi
 
-**Sürüm odağı:** Canlı ana ağ için üretim sağlamlaştırması ve konsensüs optimizasyonu.
+**Sürüm odağı:** Canlı ana ağ için üretim sertleştirmesi ve konsensüs optimizasyonu.
 
-* **PRISM konsensüs optimizasyonu** — Canlı ağ koşullarında uyarlanabilir parametre ayarı için PRISM pekiştirmeli öğrenme optimizasyon katmanında devam eden iyileştirmeler; devre kesici güvenlik kontrolleriyle birlikte.
-* **Performans ve kararlılık** — Doğrulayıcılar ve tam düğümler genelinde verim, gecikme ve kaynak kullanımı iyileştirmeleri.
-* **Operasyonel araçlar** — Ana ağ operatörleri için geliştirilmiş izleme, sorgulama ve düğüm işletim ergonomisi.
-* **Tokenomics v2.1 uyumu** — Ücret dağıtımı ve emisyon mekanikleri, sabit arzlı, sonlu emisyonlu ekonomik modelle uyumlu hale getirildi.
+* **PRISM konsensüs optimizasyonu** — Canlı ağ koşullarında uyarlanabilir parametre ayarı için PRISM pekiştirmeli öğrenme optimizasyon katmanında devrilme önleyici (circuit-breaker) güvenlik kontrolleriyle sürekli iyileştirmeler.
+* **Performans ve kararlılık** — Validator'lar ve tam düğümler genelinde iş hacmi, gecikme ve kaynak kullanımı iyileştirmeleri.
+* **Operasyonel araçlar** — Ana ağ operatörleri için geliştirilmiş izleme, sorgu ve düğüm işletim ergonomisi.
+* **Tokenomics v2.1 uyumu** — Ücret dağıtımı ve emisyon mekanikleri, sabit arzlı, sonlu emisyonlu ekonomik modelle hizalandı.
 
 ## v3.0.0 — Ana Ağ Genesis'i
 
 **Sürüm odağı:** Ana ağ lansmanı ve token üretim etkinliği.
 
-* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801), **7 Haziran 2026** tarihinde token üretim etkinliği (TGE) genesis'te olacak şekilde başlatıldı.
-* **Beşli ücret bölüşümü** — Protokol ücretlerinin doğrulayıcılar, yakım, hazine, stake edenler ve hafif düğümler arasında dağıtımı (**37 / 30 / 20 / 10 / 3**); hafif düğümlere ayrılmış bir pay ekler.
+* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801) **7 Haziran 2026** tarihinde, token üretim etkinliği (TGE) genesis'te olacak şekilde başlatıldı.
+* **Beşli ücret paylaşımı** — Protokol ücret dağıtımı validator'lar, yakma, hazine, staker'lar ve hafif düğümler arasında (**37 / 30 / 20 / 10 / 3**) yapılır; özel bir hafif düğüm payı eklenmiştir.
 * **Zincir üstü AMM** — Zincir üstü likidite havuzları ve takaslar için yerel otomatik piyasa yapıcı modülü (`x/amm`).
 * **Zincir lisanslama** — Protokol yetkilendirmelerini kaydetmek ve yönetmek için zincir üstü lisans modülü (`x/license`).
-* **Sağlamlaştırılmış mutabakat paradigmaları** — RDK mutabakat modları optimistic, zk, based ve sovereign olarak kesinleştirildi.
+* **Sertleştirilmiş uzlaşma paradigmaları** — RDK uzlaşma modları iyimser (optimistic), zk, based ve egemen (sovereign) olarak sonuçlandırıldı.
 
 ## v1.4.0 — Ana Ağ Öncesi Genişleme
 
@@ -126,57 +158,57 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Önceki `v1.x` kayıtla
 
 * **Genişletilmiş zincirler arası kapsam** — Daha geniş bir harici ağ kümesine ek IBC ve köprü bağlantısı.
 * **Hafif düğüm katılımı** — Hafif düğümler ve ücret payı ödüllerinin altyapısı tanıtıldı.
-* **Sürüm adayı sağlamlaştırması** — Ana ağ genesis'ine hazırlık olarak tüm çekirdek modüllerde kapsamlı test, denetim ve stabilizasyon.
+* **Sürüm adayı sertleştirmesi** — Ana ağ genesis'ine hazırlık olarak tüm çekirdek modüllerde kapsamlı testler, denetimler ve stabilizasyon.
 
 ## v1.3.0 — Rollup Development Kit
 
-**Sürüm odağı:** Egemen (sovereign) ve paylaşımlı güvenlikli rollup dağıtımları için yerel rollup altyapısı.
+**Sürüm odağı:** Egemen ve paylaşımlı güvenlikli rollup dağıtımları için yerel rollup altyapısı.
 
-* **x/rdk modülü** — Dört mutabakat paradigmasına sahip eksiksiz Rollup Development Kit: optimistic, zk, based ve sovereign
+* **x/rdk modülü** — Dört uzlaşma paradigmasıyla tam Rollup Development Kit: iyimser (optimistic), zk, based ve egemen (sovereign)
 * **5 ön ayarlı profil** — DeFi, oyun, NFT, kurumsal ve tamamen özel kullanım senaryoları için önceden yapılandırılmış rollup şablonları
-* **Yerel veri kullanılabilirliği** — Blob depolama, saklama yönetimi ve budama yaşam döngüsüne sahip zincir üstü DA katmanı
-* **EndBlocker otomatik kesinleştirme** — İtiraz penceresi sona erdiğinde operatör müdahalesi gerektirmeyen otomatik toplu kesinleştirme
-* **Yapay zekâ destekli profil seçimi** — Amaçlanan kullanım senaryosuna göre en uygun rollup yapılandırmasını öneren `suggest-profile` sorgusu
-* **Multilayer entegrasyonu** — Rollup'lar, çok katmanlı mimaride katman olarak kaydolur; yönlendirme, çapa ve itiraz mekaniklerini devralır
-* **Banka emanet yaşam döngüsü** — Operatör stake'i rollup çalışması sırasında emanette tutulur ve temiz kapatmada serbest bırakılır ya da slashing durumunda el konur
+* **Yerel veri erişilebilirliği** — Blob depolama, saklama yönetimi ve budama yaşam döngüsüne sahip zincir üstü DA katmanı
+* **EndBlocker otomatik sonuçlandırması** — İtiraz penceresi sona erdiğinde operatör müdahalesi gerektirmeyen otomatik toplu sonuçlandırma
+* **Yapay zeka destekli profil seçimi** — Hedeflenen kullanım senaryosuna göre en uygun rollup yapılandırmasını öneren `suggest-profile` sorgusu
+* **Multilayer entegrasyonu** — Rollup'lar, multilayer mimarisinde katman olarak kaydolur; yönlendirme, çapalama ve itiraz mekaniklerini devralır
+* **Bank emanet yaşam döngüsü** — Operatör stake'i rollup çalışırken emanette tutulur ve temiz kapanışta serbest bırakılır ya da slashing durumunda el konulur
 
 ## v1.2.0 — IBC ve Köprüler
 
 **Sürüm odağı:** Zincirler arası bağlantı ve gelişmiş hesap soyutlamaları.
 
 * **25 zincirler arası bağlantı** — Harici ağlara 8 IBC kanalı ve 17 QoreChain Bridge (QCB) bağlantısı
-* **x/babylon modülü** — Bitcoin sahiplerinin QoreChain staking güvenliğine katılmasını sağlayan BTC restaking entegrasyonu
+* **x/babylon modülü** — Bitcoin sahiplerinin QoreChain staking güvenliğine katılmasını sağlayan BTC yeniden stake etme entegrasyonu
 * **x/abstractaccount modülü** — Programlanabilir harcama kuralları, oturum anahtarları ve özel kimlik doğrulama mantığına sahip akıllı hesap çerçevesi
-* **x/fairblock modülü** — MEV'e dirençli işlem şifrelemesi için Eşik Kimlik Tabanlı Şifreleme (tIBE)
-* **x/gasabstraction modülü** — Yerel QOR, IBC köprülü USDC ve IBC köprülü ATOM'u destekleyen çok tokenli gaz ödemesi
-* **5 şeritli işlem önceliklendirme** — Önceliğe göre sıralanan işlem şeritleri: sistem, yönetişim, staking, köprü ve genel
-* **IBC aktarıcı yapılandırmaları** — Desteklenen tüm IBC kanalları için önceden yapılandırılmış aktarıcı kurulumları
-* **Köprüden yakıma entegrasyon** — Köprü ücretleri, yakım modülünün ücret dağıtımı üzerinden yönlendirilir
+* **x/fairblock modülü** — MEV'e dayanıklı işlem şifrelemesi için Eşik Kimlik Tabanlı Şifreleme (tIBE)
+* **x/gasabstraction modülü** — Yerel QOR, IBC ile köprülenmiş USDC ve IBC ile köprülenmiş ATOM'u destekleyen çok tokenli gaz ödemesi
+* **5 şeritli işlem önceliklendirmesi** — Önceliğe göre sıralanmış işlem şeritleri: sistem, yönetişim, staking, köprü ve genel
+* **IBC relayer yapılandırmaları** — Desteklenen tüm IBC kanalları için önceden yapılandırılmış relayer kurulumları
+* **Köprüden yakmaya entegrasyon** — Köprü ücretleri, yakma modülünün ücret dağıtımı üzerinden yönlendirilir
 
 ## v1.1.0 — PQC Hibrit İmzalar
 
-**Sürüm odağı:** Kuantum sonrası kriptografik güvenlik ve algoritma çevikliği.
+**Sürüm odağı:** Post-kuantum kriptografik güvenlik ve algoritma esnekliği.
 
-* **Çift secp256k1 (ECDSA) + ML-DSA-87 imzaları** — Her işlem, AnteHandler zincirinde doğrulanan hem klasik hem de kuantum sonrası bir imza taşır
+* **Çift secp256k1 (ECDSA) + ML-DSA-87 imzaları** — Her işlem, AnteHandler zincirinde doğrulanan hem klasik hem de post-kuantum bir imza taşır
 * **3 zorunluluk modu** — Yapılandırılabilir hibrit imza zorunluluğu: kapalı (mod 0), esnek (mod 1, PQC isteğe bağlı), zorunlu (mod 2, PQC gerekli)
-* **Otomatik kayıt** — PQC açık anahtarları, ilk hibrit işlemde otomatik olarak kaydedilir; ayrı bir kayıt adımını ortadan kaldırır
-* **SHAKE-256 karma temeli** — PQC ile ilgili tüm karma işlemleri, kuantuma dirençli adres türetimi için SHAKE-256 (SHA-3 ailesi) kullanır
-* **TEE tasdik arayüzleri** — PQC anahtar üretiminin bütünlüğünü kanıtlamak için Güvenilir Yürütme Ortamı (TEE) tasdik desteği
-* **Algoritma çevikliği çerçevesi** — Gelecekteki PQC algoritmalarının zincir yükseltmesi olmadan yönetişim yoluyla eklenmesine olanak tanıyan takılabilir algoritma kayıt defteri
+* **Otomatik kayıt** — PQC açık anahtarları ilk hibrit işlemde otomatik olarak kaydedilir; ayrı bir kayıt adımına gerek kalmaz
+* **SHAKE-256 hash temeli** — Kuantuma dayanıklı adres türetimi için PQC ile ilgili tüm hash işlemleri SHAKE-256 (SHA-3 ailesi) kullanır
+* **TEE doğrulama arayüzleri** — PQC anahtar üretim bütünlüğünü kanıtlamak için Güvenilir Yürütme Ortamı (TEE) doğrulama desteği
+* **Algoritma esnekliği çerçevesi** — Gelecekteki PQC algoritmalarının zincir yükseltmesi olmadan yönetişim yoluyla eklenmesine olanak tanıyan takılabilir algoritma kayıt defteri
 
 ## v1.0.0 — Genesis (Tokenomics Motoru)
 
-**Sürüm odağı:** Eksiksiz tokenomics, çoklu-VM yürütme ve yapay zekâ destekli operasyonlarla ilk protokol lansmanı.
+**Sürüm odağı:** Tam tokenomics, çoklu VM yürütmesi ve yapay zeka destekli operasyonlarla ilk protokol lansmanı.
 
-* **x/burn modülü** — Doğrulayıcılar, yakım, hazine ve stake edenler arasında dörtlü dağıtıma sahip çok kanallı ücret yakım mekanizması
-* **x/xqore modülü** — Kademeli erken kilit açma cezaları ve PvP rebase yeniden dağıtımına sahip yönetişim staking türevi
-* **x/inflation modülü** — Sonlu emisyonlu ekonomik model tarafından yönetilen, yıllık azalmalı, epoch tabanlı emisyon
-* **PRISM konsensüs katmanı** — Devre kesici güvenlik kontrolleriyle dinamik zincir parametresi ayarı için pekiştirmeli öğrenme optimizasyonu (PPO)
-* **Üçlü havuzlu CPoS** — İtibar puanlarıyla ağırlıklandırılmış Emerald, Sapphire ve Ruby doğrulayıcı havuzlarına sahip Sınıflandırılmış Hisse Kanıtı (Classified Proof-of-Stake)
+* **x/burn modülü** — Validator'lar, yakma, hazine ve staker'lar arasında dörtlü dağıtıma sahip çok kanallı ücret yakma mekanizması
+* **x/xqore modülü** — Kademeli erken çıkış cezaları ve PvP rebase yeniden dağıtımına sahip yönetişim staking türevi
+* **x/inflation modülü** — Sonlu emisyonlu ekonomik modelle yönetilen, yıllık azalmalı epoch tabanlı emisyon
+* **PRISM konsensüs katmanı** — Devrilme önleyici (circuit-breaker) güvenlik kontrolleriyle dinamik zincir parametresi ayarı için pekiştirmeli öğrenme optimizasyonu (PPO)
+* **Üç havuzlu CPoS** — İtibar puanlarıyla ağırlıklandırılmış Emerald, Sapphire ve Ruby validator havuzlarına sahip Sınıflandırılmış Hisse Kanıtı (Classified Proof-of-Stake)
 * **QDRW yönetişimi** — Havuzlar arasında ödül dağıtımında yönetişim onaylı ayarlamalara olanak tanıyan Dinamik Ödül Ağırlıklandırma sistemi
-* **EVM + CosmWasm + SVM çalışma zamanları** — Üç eşzamanlı yürütme ortamı: QoreChain EVM Engine, CosmWasm akıllı sözleşmeleri ve Solana Virtual Machine
-* **VM'ler arası köprü** — Tek bir blok içinde EVM, CosmWasm ve SVM çalışma zamanları arasında mesaj iletimi ve varlık transferleri
-* **Kuantum sonrası kriptografi** — Yüksek performanslı bir PQC kütüphanesiyle desteklenen kuantuma dirençli imzalama
-* **QCAI** — Dolandırıcılık tespiti, ücret tahmini ve ağ optimizasyonu için isteğe bağlı zincir dışı yardımcı servise (sidecar) sahip zincir üstü sezgisel analiz
-* **Konteynerleştirilmiş dağıtım** — Yardımcı servis ve blok dizinleyiciyle eksiksiz çok doğrulayıcılı test ağı dağıtımı
-* **Blok dizinleyici** — Tarihsel sorgu ve analitik için kalıcı depolamaya sahip blok dinleyicisi
+* **EVM + CosmWasm + SVM çalışma zamanları** — Eş zamanlı üç yürütme ortamı: QoreChain EVM Engine, CosmWasm akıllı kontratları ve Solana Virtual Machine
+* **Çapraz VM köprüsü** — Tek bir blok içinde EVM, CosmWasm ve SVM çalışma zamanları arasında mesaj iletimi ve varlık transferleri
+* **Post-kuantum kriptografi** — Yüksek performanslı bir PQC kütüphanesiyle desteklenen kuantuma dayanıklı imzalama
+* **QCAI** — Dolandırıcılık tespiti, ücret tahmini ve ağ optimizasyonu için isteğe bağlı zincir dışı sidecar ile zincir üstü sezgisel analiz
+* **Konteynerize dağıtım** — Sidecar servisi ve blok dizinleyici ile tam çok validatorlu test ağı dağıtımı
+* **Blok dizinleyici** — Geçmiş sorgular ve analitik için kalıcı depolamaya sahip blok dinleyicisi

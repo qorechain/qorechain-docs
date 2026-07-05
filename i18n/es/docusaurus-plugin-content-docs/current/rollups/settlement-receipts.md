@@ -38,9 +38,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: { rest: "https://rest.testnet.example" },
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 // Build a portable receipt for one batch.
 const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);

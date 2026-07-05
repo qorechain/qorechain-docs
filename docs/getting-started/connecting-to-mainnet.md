@@ -10,7 +10,7 @@ sidebar_position: 3
 Join the live QoreChain Vladi mainnet by configuring your node with the official genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.82** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
+This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.85** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
 :::
 
 ## Public Endpoints
@@ -38,10 +38,10 @@ Install the `qorechaind` binary either from the official prebuilt bundle or by b
 The official release bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`):
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.82-linux-amd64.tar.gz -o qore.tgz
+curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
 # Verify the checksum before installing:
 sha256sum qore.tgz
-# 8a88936ccc6d350d8b215488a81584163b3568430064958c50e82a394077cfe9
+# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,7 +49,11 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-Versioned bundles are published at [download.qore.host](https://download.qore.host); each release ships with its SHA-256 checksum.
+Versioned bundles are published at [download.qore.host](https://download.qore.host); each release ships with its SHA-256 checksum — always install the **latest** published bundle.
+
+:::caution Keep your node current
+Full nodes must track the network's chain version (currently **v3.1.85**). An outdated node cannot decode newer transaction types (for example, `eth_secp256k1`-signed transactions introduced in v3.1.83) and will stop syncing once one appears in a block.
+:::
 
 ### Build from source
 
@@ -231,7 +235,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Chain version     | v3.1.82                                |
+| Chain version     | v3.1.85                                |
 | Live since        | 7 June 2026 23:59 UTC                  |
 | Token             | QOR (`uqor`, 10^6 micro-units = 1 QOR) |
 | Minimum gas price | `0.1uqor`                              |

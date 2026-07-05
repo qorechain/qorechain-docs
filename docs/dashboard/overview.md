@@ -16,7 +16,7 @@ Everything in this section is a user how-to: what each page does and how to use 
 | Area | What it is for |
 | --- | --- |
 | **[Explorer](/dashboard/explorer)** | Browse blocks, transactions, addresses, and validators. |
-| **[Wallet](/dashboard/wallet)** | View balances, send and receive QOR, and manage your addresses. |
+| **[Wallet](/dashboard/wallet)** | View your balance and history and receive QOR — with your own wallet (non-custodial) on mainnet, or a dashboard-managed test wallet on testnet. |
 | **[Trade](/dashboard/trade)** | Swap tokens and provide liquidity on the on-chain AMM. |
 | **[Bridge](/dashboard/bridge)** | Move assets between QoreChain and other chains. |
 | **[Smart Contract Creator](/dashboard/smart-contract-creator)** | Generate smart contracts with **QCAI** across 17 supported blockchains. |
@@ -28,15 +28,25 @@ Everything in this section is a user how-to: what each page does and how to use 
 
 ## Connect your wallet {#connect-your-wallet}
 
-Most actions that change on-chain state — sending tokens, swapping, staking, bridging — require a connected wallet.
+Most actions that change on-chain state — sending tokens, swapping, staking, bridging — require a connected wallet. How the Dashboard handles keys depends on the network:
 
-1. Open [dashboard.qorechain.io](https://dashboard.qorechain.io).
-2. Select **Connect Wallet**.
-3. Approve the connection in your wallet.
+- **Mainnet is non-custodial.** The Dashboard never holds your mainnet keys. You connect your own wallet — **Keplr** for the Native rail or **MetaMask** for the EVM rail — and the Dashboard reads your real balance and history from the chain. Every mainnet transaction is signed in your own wallet, never by the Dashboard.
+- **Testnet is custodial.** The Dashboard manages a test wallet for you, so you can experiment with zero setup and no real value at risk.
+
+To connect on mainnet:
+
+1. Open [dashboard.qorechain.io](https://dashboard.qorechain.io) and make sure the header shows **Mainnet**.
+2. If this is your first visit to a mainnet page, read and accept the one-time risk acknowledgement (see below).
+3. Select **Connect Wallet** and choose **Keplr** (Native rail) or **MetaMask** (EVM rail).
+4. Approve the connection in your wallet.
 
 Once connected, the Dashboard shows your address (in shortened form) in the header and unlocks the actions that need a signature. Read-only pages such as the Explorer work without connecting.
 
-QoreChain accounts use the `qor` bech32 prefix, so a connected address looks like `qor1...`. Accounts are protected with quantum-safe cryptography. See [Wallet Setup](/getting-started/wallet-setup) for first-time setup guidance.
+QoreChain accounts use the `qor` bech32 prefix, so a connected address looks like `qor1...` — the same account also has an EVM (`0x...`) and an SVM (base58) encoding. Accounts are protected with quantum-safe cryptography. See [Wallet Setup](/getting-started/wallet-setup) for first-time setup guidance, and [Add QoreChain to your wallet](/dashboard/wallet#add-network) if your wallet does not know the network yet.
+
+### One-time risk acknowledgement {#risk-acknowledgement}
+
+Before you can use any mainnet page, the Dashboard asks you to accept a one-time disclaimer. It confirms you understand that mainnet transactions move **real funds**, that the Dashboard is **non-custodial** (only you control your keys), and that on-chain transactions are **irreversible**. You accept it once; after that, mainnet pages open directly.
 
 ## Select your network
 
@@ -44,8 +54,8 @@ The Dashboard works against two networks. The header shows the network you are c
 
 | Network | Chain ID | When to use it |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Live network for real value and production use. |
-| **Testnet** | `qorechain-diana` | Free environment for testing, with the [Faucet](/dashboard/faucet) for test tokens. |
+| **Mainnet** | `qorechain-vladi` | Live network for real value and production use. Non-custodial: you connect your own wallet. |
+| **Testnet** | `qorechain-diana` | Free environment for testing, with a dashboard-managed test wallet and the [Faucet](/dashboard/faucet) for test tokens. |
 
 The native token is **QOR** (base denomination `uqor`, where 1 QOR = 10^6 uqor). If you are new, start on testnet, claim tokens from the Faucet, and try a first transfer before moving to mainnet.
 

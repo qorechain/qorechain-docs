@@ -7,10 +7,10 @@ sidebar_position: 3
 
 # メインネットへの接続
 
-公式のジェネシスファイル、ピア、ネットワーク設定でノードを構成し、稼働中の QoreChain Vladi メインネットに参加しましょう。
+公式のジェネシスファイル、ピア、ネットワーク設定でノードを構成して、稼働中の QoreChain Vladi メインネットに参加しましょう。
 
 :::note
-このページでは **`qorechain-vladi`** メインネット（EVM チェーン ID **9801**、16 進数 `0x2649`）について説明します。このメインネットは **2026 年 6 月 7 日 23:59 UTC** から稼働しており、Cosmos SDK v0.53 上でチェーンバージョン **v3.1.82** を実行しています。**`qorechain-diana`** テストネット（EVM チェーン ID **9800**）については、[テストネットへの接続](/getting-started/connecting-to-testnet)を参照し、本番稼働の前にそちらでセットアップのリハーサルを行ってください。
+このページは **`qorechain-vladi`** メインネット（EVM チェーン ID **9801**、16 進表記 `0x2649`）を対象としています。メインネットは **2026 年 6 月 7 日 23:59 UTC** から稼働しており、Cosmos SDK v0.53 上でチェーンバージョン **v3.1.85** を実行しています。**`qorechain-diana`** テストネット（EVM チェーン ID **9800**）については、[テストネットへの接続](/getting-started/connecting-to-testnet)を参照し、本番稼働の前にそちらでセットアップのリハーサルを行ってください。
 :::
 
 ## パブリックエンドポイント
@@ -20,28 +20,28 @@ sidebar_position: 3
 | サービス | URL |
 |---|---|
 | コンセンサス RPC | `https://rpc.qore.host`（WebSocket: `wss://rpc.qore.host/websocket`） |
-| Cosmos REST（LCD） | `https://api.qore.host` |
+| Cosmos REST (LCD) | `https://api.qore.host` |
 | EVM JSON-RPC | `https://evm.qore.host`（チェーン ID `9801`） |
 | SVM JSON-RPC（読み取り専用） | `https://svm.qore.host` |
 | ブロックエクスプローラー | [explore.qore.network](https://explore.qore.network) |
 
-高負荷または本番環境のワークロード（取引所、インデクサー）の場合は、以下の手順に従って自前のノードを運用してください。
+負荷の高いワークロードや本番用途（取引所、インデクサー）では、以下の手順に従って自前のノードを運用してください。
 
 ---
 
 ## インストール
 
-`qorechaind` バイナリは、公式のビルド済みバンドルからインストールするか、ソースからビルドします。
+`qorechaind` バイナリは、公式のビルド済みバンドルからインストールするか、ソースからビルドしてインストールします。
 
-### ビルド済みバイナリバンドル（linux/amd64）
+### ビルド済みバイナリバンドル (linux/amd64)
 
 公式リリースバンドルには、`qorechaind` と必要な共有ライブラリ（`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`）が含まれています。
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.82-linux-amd64.tar.gz -o qore.tgz
+curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
 # Verify the checksum before installing:
 sha256sum qore.tgz
-# 8a88936ccc6d350d8b215488a81584163b3568430064958c50e82a394077cfe9
+# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,9 +49,13 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-バージョン付きバンドルは [download.qore.host](https://download.qore.host) で公開されており、各リリースには SHA-256 チェックサムが付属しています。
+バージョン付きバンドルは [download.qore.host](https://download.qore.host) で公開されており、各リリースには SHA-256 チェックサムが付属します。必ず**最新**の公開バンドルをインストールしてください。
 
-### ソースからのビルド
+:::caution ノードを常に最新に保つ
+フルノードはネットワークのチェーンバージョン（現在は **v3.1.85**）に追従する必要があります。古いノードは新しいトランザクションタイプ（たとえば v3.1.83 で導入された `eth_secp256k1` 署名のトランザクション）をデコードできず、それがブロックに現れた時点で同期が停止します。
+:::
+
+### ソースからビルド
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -59,7 +63,7 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-すべての前提条件（Go 1.26 以上、CGO、Rust ツールチェーン、ネイティブライブラリ）については、[ソースからのビルド](/developer-guide/building-from-source)を参照してください。
+前提条件の詳細（Go 1.26+、CGO、Rust ツールチェーン、ネイティブライブラリ）については、[ソースからのビルド](/developer-guide/building-from-source)を参照してください。
 
 ### ノードの初期化
 
@@ -67,31 +71,31 @@ CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-これにより、`~/.qorechaind/` 配下にデフォルトの設定ディレクトリとデータディレクトリが作成されます。
+これにより、`~/.qorechaind/` 以下にデフォルトの設定ディレクトリとデータディレクトリが作成されます。
 
 ---
 
 ## ジェネシスのダウンロード
 
-ローカルのジェネシスファイルを公式のメインネットジェネシスに置き換えます。
+ローカルのジェネシスファイルを公式のメインネットジェネシスで置き換えます。
 
 ```bash
 curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
 ```
 
-同じファイルはチェーン自体からもライブで配信されているため、ダウンロードしたファイルと相互検証できます。
+同じファイルはチェーン自身からもライブで配信されているため、ダウンロードしたものと相互検証できます。
 
 ```bash
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-このファイルは、ジェネシスバリデーターセット、トークン配分（ジェネシス時の TGE）、モジュールパラメーターなど、Vladi メインネットの初期状態を定義します。
+このファイルは、ジェネシスバリデータセット、トークン配分（TGE はジェネシス時）、モジュールパラメータを含む、Vladi メインネットの初期状態を定義します。
 
 ---
 
 ## ピアの設定
 
-パブリックなメインネットのセントリーノードに接続するようにノードの設定を編集します。
+パブリックなメインネットのセントリーノードに接続するよう、ノードの設定を編集します。
 
 `~/.qorechaind/config/config.toml` を開き、`persistent_peers` フィールドを設定します。
 
@@ -99,7 +103,7 @@ curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live
 persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
 ```
 
-また、`~/.qorechaind/config/app.toml` で最低ガス価格を設定します（ネットワークの手数料下限は **0.1uqor** です）。
+また、`~/.qorechaind/config/app.toml` で最低ガス価格を設定してください（ネットワークの手数料下限は **0.1uqor** です）。
 
 ```toml
 minimum-gas-prices = "0.1uqor"
@@ -107,7 +111,7 @@ minimum-gas-prices = "0.1uqor"
 
 ### 推奨設定
 
-`config.toml` では、以下の項目も調整することを推奨します。
+`config.toml` では、以下の項目も調整するとよいでしょう。
 
 ```toml
 [mempool]
@@ -118,13 +122,13 @@ timeout_propose = "3s"
 timeout_commit = "5s"
 ```
 
-これらの値は、Vladi メインネットのブロック時間とスループットに合わせて調整されています。
+これらの値は、Vladi メインネットのブロックタイムとスループットに合わせてチューニングされています。
 
 ---
 
 ## 高速ブートストラップ（スナップショット）
 
-ジェネシスからの同期には長い時間がかかることがあります。最新のチェーンデータのスナップショットが [download.qore.host](https://download.qore.host) で公開されています。
+ジェネシスからの同期には長い時間がかかることがあります。最新のチェーンデータスナップショットが [download.qore.host](https://download.qore.host) で公開されています。
 
 ```bash
 curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
@@ -135,7 +139,7 @@ sha256sum snapshot.tar.gz
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
 
-スナップショットはブロック高付きのファイル名で公開されます。最新のものは [download.qore.host](https://download.qore.host) で確認してください。代わりに **state sync** を使用することもできます。完全な手順は[ノードの運用](/developer-guide/running-a-node)を参照してください。
+スナップショットはブロック高付きのファイル名で公開されます。最新のものは [download.qore.host](https://download.qore.host) で確認してください。代わりに**ステートシンク**を使うこともできます。完全な手順は[ノードの運用](/developer-guide/running-a-node)を参照してください。
 
 ---
 
@@ -168,7 +172,7 @@ curl localhost:26657/status | jq '.result.sync_info.catching_up'
 curl localhost:26657/status | jq '.result.sync_info.latest_block_height'
 ```
 
-正しいネットワークに接続していることを確認してください。`network` フィールドが `qorechain-vladi` を返すはずです。
+正しいネットワークに接続していることを確認してください。`network` フィールドは `qorechain-vladi` を返すはずです。
 
 ```bash
 curl localhost:26657/status | jq '.result.node_info.network'
@@ -182,13 +186,13 @@ QoreChain は、ノードの健全性とパフォーマンスを監視するた�
 
 ### Prometheus メトリクス
 
-生のメトリクスは次の場所で利用できます。
+生のメトリクスは次の場所で取得できます。
 
 ```
 http://localhost:26660/metrics
 ```
 
-これらのメトリクスは、Prometheus 互換の任意のコレクターでスクレイピングできます。
+これらのメトリクスは、Prometheus 互換の任意のコレクターでスクレイプできます。
 
 ### Grafana ダッシュボード
 
@@ -198,7 +202,7 @@ Docker Compose で実行している場合、Grafana は次の場所で利用で
 http://localhost:3001
 ```
 
-初回ログイン時に、プロンプトに従って自身の認証情報を設定してください。デフォルトのまま放置しないでください。事前構成されたダッシュボードには、ブロック生成、トランザクションスループット、ピア接続、リソース使用状況が表示されます。
+初回ログイン時に、プロンプトに従って独自の認証情報を設定してください。デフォルトのまま放置してはいけません。事前構成済みのダッシュボードには、ブロック生成、トランザクションスループット、ピア接続、リソース使用状況が表示されます。
 
 ### REST ヘルスチェック
 
@@ -216,10 +220,10 @@ http://localhost:1317
 | ------- | --------- | ------------------------------------------------------- |
 | `26657` | TCP       | RPC — トランザクションのクエリとブロードキャスト                  |
 | `26656` | TCP       | P2P — ピアツーピアのネットワーク通信                |
-| `1317`  | HTTP      | REST API — HTTP 経由でのチェーン状態のクエリ                   |
+| `1317`  | HTTP      | REST API — HTTP 経由でチェーン状態をクエリ                   |
 | `9090`  | gRPC      | gRPC API — プログラムからのチェーンアクセス                    |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum 互換 RPC（チェーン ID `9801`） |
-| `8546`  | WebSocket | EVM WebSocket — リアルタイムの EVM イベント購読       |
+| `8546`  | WebSocket | EVM WebSocket — リアルタイム EVM イベントサブスクリプション       |
 | `8899`  | HTTP      | SVM RPC — Solana 互換 RPC                         |
 | `26660` | HTTP      | Prometheus メトリクスエンドポイント                             |
 
@@ -230,23 +234,23 @@ http://localhost:1317
 | 項目             | 値                                  |
 | ----------------- | -------------------------------------- |
 | チェーン ID          | `qorechain-vladi`                      |
-| EVM チェーン ID      | `9801`（16 進数 `0x2649`）                  |
-| チェーンバージョン     | v3.1.82                                |
+| EVM チェーン ID      | `9801`（16 進表記 `0x2649`）                  |
+| チェーンバージョン     | v3.1.85                                |
 | 稼働開始        | 2026 年 6 月 7 日 23:59 UTC                  |
 | トークン             | QOR（`uqor`、10^6 マイクロ単位 = 1 QOR） |
 | 最低ガス価格 | `0.1uqor`                              |
 | アカウントプレフィックス    | `qor`                                  |
-| バリデータープレフィックス  | `qorvaloper`                           |
+| バリデータプレフィックス  | `qorvaloper`                           |
 | SDK               | Cosmos SDK v0.53                       |
 
 ---
 
 ## 次のステップ
 
-* [ノードの運用](/developer-guide/running-a-node) — 取引所やインテグレーター向けのフル/RPC ノードの運用
+* [ノードの運用](/developer-guide/running-a-node) — 取引所・インテグレーター向けのフル/RPC ノード運用
 * [取引所・インテグレーターガイド](/developer-guide/exchange-integration) — 入金、出金、モニタリング
-* [バリデーターの運用](/developer-guide/running-a-validator) — バリデーターの作成と運用
+* [バリデータの運用](/developer-guide/running-a-validator) — バリデータの作成と運用
 * [ウォレットのセットアップ](/getting-started/wallet-setup) — メインネット用ウォレットの設定
 * [はじめてのトランザクション](/getting-started/first-transaction) — 最初の QOR 送金を実行
-* [テストネットへの接続](/getting-started/connecting-to-testnet) — 無料でテストできる Diana テストネットへの参加
-* [ネットワーク一覧](/appendix/networks) — チェーン ID、ポート、ネットワークの完全なリファレンス
+* [テストネットへの接続](/getting-started/connecting-to-testnet) — 無料でテストできる Diana テストネットに参加
+* [ネットワーク](/appendix/networks) — チェーン ID、ポート、ネットワークの完全なリファレンス

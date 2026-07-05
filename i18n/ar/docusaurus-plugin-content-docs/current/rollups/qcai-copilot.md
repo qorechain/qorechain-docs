@@ -7,27 +7,24 @@ sidebar_position: 7
 
 # مساعد QCAI للـ Rollup
 
-يجمع مساعد QCAI للـ Rollup كل ما تعرفه خدمات الاستشارة في الشبكة
-عن rollup واحد ويطويه في قراءة واحدة بلغة بسيطة: تقدير حي للرسوم،
-وتوصيات الشبكة، وأي تحقيقات احتيال تشير إلى
-الـ rollup، وحالة عميل التعلم المعزّز، وقائمة قصيرة من
-الاقتراحات التي يمكنك التصرف بناءً عليها.
+يجمع مساعد QCAI للـ Rollup ‏(QCAI Rollup Copilot) كل ما تعرفه الخدمات
+الاستشارية في الشبكة عن rollup واحد ويصهره في قراءة واحدة بلغة واضحة: تقدير
+مباشر للرسوم، وتوصيات الشبكة، وأي تحقيقات احتيال تشير إلى هذا الـ rollup،
+وحالة وكيل التعلّم المعزَّز، وقائمة قصيرة من الاقتراحات القابلة للتنفيذ.
 
-وهو يعمل بأفضل جهد ممكن (**best-effort**). خدمات الاستشارة بنية تحتية اختيارية — فإذا تعذّر الوصول إلى إحداها،
-يتدهور المساعد بسلاسة، فيُسقط ذلك القسم
-ويسجّل تحذيرًا بدلًا من فشل الاستدعاء بأكمله. تحصل دائمًا على نتيجة.
+وهو يعمل على مبدأ **أفضل جهد ممكن**. فالخدمات الاستشارية بنية تحتية اختيارية —
+وإذا تعذّر الوصول إلى إحداها، يتدهور أداء المساعد بسلاسة، فيُسقط ذلك القسم
+ويسجّل تحذيرًا بدلًا من إفشال الاستدعاء بأكمله. ستحصل دائمًا على نتيجة.
 
 ## استدعاء واحد: `getRollupAdvice`
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    evmRpc: "https://evm.testnet.example", // qor_ JSON-RPC for RL agent reads
-  },
-});
+// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
+// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
+// endpoint config needed; pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const advice = await getRollupAdvice(rdk, "my-roll");
 
@@ -41,23 +38,23 @@ console.log(advice.warnings);               // services that were unreachable
 
 ## عمليات القراءة الأساسية
 
-تجمّع `getRollupAdvice` مجموعة من الطرق للقراءة فقط يمكنك أيضًا استدعاؤها
-مباشرة. تقع طرق REST الاستشارية تحت `/qorechain/ai/v1/...`:
+تُجمِّع الدالة `getRollupAdvice` مجموعة من دوال القراءة فقط التي يمكنك أيضًا
+استدعاؤها مباشرة. تقع دوال REST الاستشارية تحت المسار `/qorechain/ai/v1/...`:
 
 - `getFeeEstimate(...)` — تقدير الرسوم الحالي.
 - `getNetworkRecommendations(...)` — توصيات الضبط على مستوى الشبكة.
 - `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — التحقيقات
-  المفتوحة وتحقيق واحد حسب المعرّف.
-- `getCircuitBreakers(...)` — حالة قاطع الدارة الاستشارية.
+  المفتوحة، وتحقيق واحد حسب المعرِّف (id).
+- `getCircuitBreakers(...)` — الحالة الاستشارية لقواطع الدارة.
 
-تستخدم عمليات قراءة التعلم المعزّز فضاء أسماء JSON-RPC من نوع `qor_*`:
+أما قراءات التعلّم المعزَّز فتستخدم نطاق أسماء JSON-RPC من النوع `qor_*`:
 
-- `getRLAgentStatus()` — الحالة الراهنة للعميل.
+- `getRLAgentStatus()` — الحالة الحالية للوكيل.
 - `getRLObservation()` — أحدث ملاحظة.
 - `getRLReward()` — أحدث إشارة مكافأة.
 
-ولأن جميعها عمليات قراءة، يحتاج المساعد فقط إلى نقطة نهاية REST (ونقطة نهاية EVM
-/ `qor_` JSON-RPC لعمليات قراءة التعلم المعزّز) — دون أي موقِّع.
+ولأن هذه كلها عمليات قراءة، لا يحتاج المساعد إلا إلى نقطة نهاية REST (ونقطة
+نهاية EVM ‏/ JSON-RPC ‏`qor_` لقراءات التعلّم المعزَّز) — دون أي مُوقِّع.
 
 ## واجهة سطر الأوامر
 
@@ -66,6 +63,6 @@ qorollup advise my-roll
 qorollup advise my-roll --json
 ```
 
-تطبع `advise` الاستشارة المجمّعة، مع إظهار الخدمات التي تعذّر الوصول إليها بصفتها
-تحذيرات بدلًا من أخطاء. راجع [نشر rollup](/rollups/deploying-a-rollup)
-للاطلاع على واجهة سطر أوامر المشغّل `qorollup` الكاملة.
+يطبع الأمر `advise` النصيحة المجمَّعة، مع إظهار الخدمات المتعذَّر الوصول إليها
+كتحذيرات لا كأخطاء. راجع [نشر rollup](/rollups/deploying-a-rollup)
+للاطلاع على واجهة سطر الأوامر الكاملة للمشغّل `qorollup`.

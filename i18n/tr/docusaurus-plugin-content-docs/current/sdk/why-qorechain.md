@@ -1,33 +1,34 @@
 ---
 slug: /sdk/why
-title: QoreChain SDK Neden
-sidebar_label: QoreChain SDK Neden
+title: Neden QoreChain SDK
+sidebar_label: Neden QoreChain SDK
 sidebar_position: 2
 ---
 
-# QoreChain SDK Neden
+# Neden QoreChain SDK
 
-QoreChain SDK, modern bir çok zincirli (multi-chain) SDK'nin sunduğu her şeyi
-size verir — her modül için tipli mesajlar, tipli sorgular, tek bir mnemonic'ten
-üç VM için hesaplar, otomatik gas, hata çözümleme, abonelikler, cüzdanlar ve bir
-React kiti.
+QoreChain SDK, modern bir çoklu zincir SDK'sının sunduğu her şeyi sunar — her
+modül için tipli mesajlar, tipli sorgular, tek bir mnemonic'ten üç VM için
+hesaplar, otomatik gas, hata çözümleme, abonelikler, cüzdanlar ve bir React
+kiti.
 
-Ancak üç yetenek **yalnızca QoreChain üzerinde mümkündür**, çünkü bunlar başka
-hiçbir Layer 1'in sahip olmadığı protokol özellikleri üzerine inşa edilmiştir:
-zincir üstü yapay zeka, yerel bir köprüye sahip üç birlikte yerleşik VM ve
-zorunlu kuantum sonrası kriptografi. Burada geliştirme yapmanın nedenleri
-bunlardır.
+Ancak beş yetenek **yalnızca QoreChain üzerinde mümkündür**, çünkü bunlar başka
+hiçbir Layer 1'de bulunmayan protokol özellikleri üzerine inşa edilmiştir:
+zincir üstü yapay zeka, yerleşik bir köprüye sahip üç eş-yerleşik VM, zorunlu
+post-kuantum kriptografi, üç VM şeridinin tamamında tek bir 20 baytlık kimlik
+ve harici cüzdan anahtarları için PQC-güvenli yetkilendirilmiş harcama. Burada
+geliştirme yapmanın nedenleri bunlardır.
 
 ---
 
-## 1. Yapay zeka destekli ön kontrol risk puanlaması
+## 1. Yapay zeka ile ön kontrol risk puanlaması
 
 **Bir işlemi yayınlamadan önce zincir üstü yapay zeka ile tarayın.**
 
 QoreChain, yapay zeka risk analizini EVM precompile'ları olarak sunar. SDK
-bunları sizin için çağırır ve tek bir çağrıda gas ile birlikte bir risk/anomali
-kararı döndürür — böylece bir cüzdan veya dApp, imzalama *öncesinde* uyarabilir
-(ya da engelleyebilir).
+bunları sizin için çağırır ve tek bir çağrıda gas ile birlikte bir
+risk/anomali kararı döndürür — böylece bir cüzdan veya dApp, imzalamadan
+*önce* uyarabilir (veya engelleyebilir).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -52,23 +53,23 @@ if (!preflight.safe) {
 ```
 
 **Neden benzersiz:** puanlama, deterministik bir precompile olarak *zincirin
-içinde* çalışır (`0x…0B01` adresindeki `aiRiskScore`, `0x…0B02` adresindeki
-`aiAnomalyCheck`). Diğer ağlar yalnızca zincir dışı, deterministik olmayan yapay
-zeka hizmetlerini sonradan ekleyebilir. Bu, bir işlemi imzalanmadan önce zincir
-üstü bir sonuçla yapay zeka ile tarayan ilk SDK'dir. Bkz.
-[Yapay zeka ön kontrolü](/sdk/guides/ai-preflight).
+içinde* çalışır (`aiRiskScore` `0x…0B01` adresinde, `aiAnomalyCheck` `0x…0B02`
+adresinde). Diğer ağlar yalnızca zincir dışı, deterministik olmayan yapay zeka
+servislerini sonradan ekleyebilir. Bu, bir işlemi imzalanmadan önce yapay zeka
+ile tarayan ve zincir üstü bir sonuç veren ilk SDK'dır. Bkz.
+[AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
 ## 2. Birleşik VM'ler arası çağrılar — tek hesap, üç VM, tek işlem
 
-**Herhangi bir VM üzerindeki bir sözleşmeyi çağırın ve üçü arasında atomik olarak
-çağrıları toplu işleyin.**
+**Herhangi bir VM üzerindeki bir sözleşmeyi çağırın ve üç VM'e yayılan
+çağrıları atomik olarak paketleyin.**
 
-QoreChain, aynı zincir üzerinde CosmWasm, EVM ve SVM sözleşmelerini yerel bir
-VM'ler arası köprüyle çalıştırır. SDK, bunlardan herhangi birini çağırmak — ve
-birden fazla VM'ler arası çağrıyı bir kez imzalanan tek bir atomik işlemde
-paketlemek — için tek bir arabirim sunar.
+QoreChain; CosmWasm, EVM ve SVM sözleşmelerini yerleşik bir VM'ler arası
+köprüyle aynı zincir üzerinde çalıştırır. SDK, bunlardan herhangi birini
+çağırmak — ve birden fazla VM'ler arası çağrıyı tek seferde imzalanan tek bir
+atomik işleme paketlemek — için tek bir arayüz sunar.
 
 ```ts
 import { createCrossVMClient } from "@qorechain/sdk";
@@ -90,22 +91,22 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**Neden benzersiz:** QoreChain, üç birlikte yerleşik VM'ye ve yerel bir köprü
-modülüne (`crossvm` + `CrossVMBridge` precompile'ı) sahip tek L1'dir. Tek VM'li
-zincirler "tek hesap, üç VM, tek atomik işlem" ifadesini kuramaz — SDK'lerinin
-sarmalayacağı bir şey yoktur. Bir kez yazın, herhangi bir VM'yi çağırın. Bkz.
-[VM'ler arası çağrılar](/sdk/guides/cross-vm).
+**Neden benzersiz:** QoreChain, üç eş-yerleşik VM'e ve yerleşik bir köprü
+modülüne (`crossvm` + `CrossVMBridge` precompile'ı) sahip tek L1'dir. Tek
+VM'li zincirler "tek hesap, üç VM, tek atomik işlem" ifadesini
+karşılayamaz — SDK'larının saracağı bir şey yoktur. Bir kez yazın, herhangi
+bir VM'i çağırın. Bkz. [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---
 
 ## 3. Varsayılan olarak kuantum güvenli
 
-**Bir imzalayıcıyı tek bir çağrıyla kuantum sonrası korumalı hale getirin.**
+**Bir imzalayıcıyı tek bir çağrıyla post-kuantum korumalı hale getirin.**
 
-QoreChain, hibrit kuantum sonrası imzaları (ML-DSA-87 + klasik) protokol
-düzeyinde zorunlu kılar. SDK, bunları benimsemeyi tek satıra indirger: hibrit
-imzalamayı kontrol edin, kaydedin ve buna geçin — kullanıcılara korunduklarını
-göstermek için bir React rozetiyle.
+QoreChain, hibrit post-kuantum imzaları (ML-DSA-87 + klasik) protokol
+seviyesinde zorunlu kılar. SDK bunları benimsemeyi tek satırlık bir işleme
+dönüştürür: kontrol edin, kaydedin ve hibrit imzalamaya geçin — üstelik
+kullanıcılara korunduklarını gösteren bir React rozetiyle birlikte.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -125,19 +126,76 @@ import { QuantumSafeBadge } from "@qorechain/react";
 <QuantumSafeBadge address={account.address} />
 ```
 
-**Neden benzersiz:** kuantum sonrası kriptografi QoreChain üzerinde yereldir ve
-zorunludur, bir deney değildir. Bu, "varsayılan olarak kuantum güvenli" ifadesinin
-tek bir çağrı ile birlikte hazır bir rozetten ibaret olduğu ilk SDK'dir. Bkz.
-[Kuantum güvenli](/sdk/guides/quantum-safe).
+**Neden benzersiz:** post-kuantum kriptografi QoreChain'de yerleşik ve
+zorunludur, bir deney değildir. Bu, "varsayılan olarak kuantum güvenli"
+özelliğinin tek bir çağrı artı hazır bir rozetten ibaret olduğu ilk SDK'dır.
+Bkz. [Quantum-safe](/sdk/guides/quantum-safe).
 
 ---
 
-## Diğer her şey de
+## 4. Birleşik eth-yerel hesaplar — tek anahtar, üç adres, tek bakiye
 
-Üç ayırt edici özelliğin ötesinde SDK, tüm zincir yüzeyini
-**TypeScript, Python, Go, Rust ve Java** genelinde kapsar: her modül için tipli
-composer'lar (`multilayer` aracılığıyla sidechain'ler/paychain'ler ve `rdk`
-aracılığıyla rollup'lar dahil), tipli sorgular, işlem yaşam döngüsü, abonelikler,
-tarayıcı cüzdanları ve [`@qorechain/react`](/sdk/guides/react) hook kiti.
+**Tek bir `eth_secp256k1` anahtarı, üç şeridin tamamında tek bir 20 baytlık
+kimliktir.** (SDK 0.6.0, zincir v3.1.83.)
 
-Geliştirmeye hazır mısınız? [Hızlı başlangıç](/sdk/quickstart) ile başlayın.
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+account.cosmos; // "qor1…"  bech32 — Native lane
+account.evm;    // "0x…"    EIP-55 — EVM lane
+account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
+// A deposit to ANY of the three lands in ONE balance,
+// and the same key spends on every lane (signHybridEth on the Native path).
+```
+
+**Neden benzersiz:** başka yerlerdeki çoklu VM kurulumlarında her çalışma
+ortamının kendi hesap alanı vardır ve fonlar şerit bazında sıkışıp kalır.
+QoreChain, tek bir 20 baytlık kimliği tek bir ortak bakiyeyle üç farklı
+biçimde sunar — bir cüzdan asla "bir şeritte fonu olup diğerinde olmayan"
+duruma düşmez. `connectPhantomUnified`, bu kimliği bir Phantom imzasından
+saklama gerektirmeyen (non-custodial) biçimde bile başlatabilir. Bkz.
+[Unified accounts](/sdk/concepts/accounts-pqc#unified-accounts).
+
+---
+
+## 5. Authenticator şeritleri — PQC'den vazgeçmeden yetkilendirilmiş harcama
+
+**Bağlı bir Phantom veya MetaMask anahtarı, PQC zorunlu kanonik hesaptan,
+limitler dahilinde ve bir relayer aracılığıyla harcama yapar.** (SDK 0.7.0,
+zincir v3.1.85.)
+
+```ts
+import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
+
+// The Phantom key signs a domain-separated digest; a relayer pays fees and
+// broadcasts. The external key NEVER produces an ML-DSA co-signature.
+const msg = await buildPhantomExecuteCosmos({
+  wallet: window.solana,
+  relayer: relayerAddress,
+  chainId: "qorechain-vladi",
+  account: canonicalAccount, // the PQC-required owner
+  to: recipient,
+  amount: "100uqor",
+  nonce, // per-authenticator sequence
+});
+```
+
+**Neden benzersiz:** her harcama, zincir üstü bir izin taksonomisi,
+`SpendingRule` limitleri ve bir son kullanma süresiyle sınırlandırılır — en
+az ayrıcalık ilkesine uygun ve iptal edilebilir — bu sırada hesabın kendisi
+post-kuantum korumalı kalır. Bkz.
+[Authenticators & delegated spending](/sdk/guides/authenticators).
+
+---
+
+## Ve dahası da var
+
+Beş ayırt edici özelliğin ötesinde SDK, **TypeScript, Python, Go, Rust ve
+Java** genelinde zincirin tüm yüzeyini kapsar: her modül için tipli
+composer'lar (`multilayer` aracılığıyla yan zincirler/paychain'ler ve `rdk`
+aracılığıyla rollup'lar dahil), tipli sorgular, işlem yaşam döngüsü,
+abonelikler, tarayıcı cüzdanları ve
+[`@qorechain/react`](/sdk/guides/react) hooks kiti.
+
+Geliştirmeye hazır mısınız? [Quickstart](/sdk/quickstart) ile başlayın.

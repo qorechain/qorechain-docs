@@ -8,24 +8,27 @@ sidebar_position: 2
 # Por qué el SDK de QoreChain
 
 El SDK de QoreChain te ofrece todo lo que ofrece un SDK multicadena moderno:
-mensajes tipados para cada módulo, consultas tipadas, cuentas para tres VM a partir
-de un solo mnemónico, gas automático, decodificación de errores, suscripciones,
-billeteras y un kit de React.
+mensajes tipados para cada módulo, consultas tipadas, cuentas para tres VMs a
+partir de un solo mnemónico, gas automático, decodificación de errores,
+suscripciones, wallets y un kit para React.
 
-Pero tres capacidades son **solo posibles en QoreChain**, porque están construidas
-sobre características de protocolo que ninguna otra Layer 1 tiene: IA on-chain, tres VM
-co-residentes con un puente nativo, y criptografía poscuántica obligatoria. Estas son las
-razones para construir aquí.
+Pero hay cinco capacidades que **solo son posibles en QoreChain**, porque están
+construidas sobre características de protocolo que ninguna otra Layer 1 tiene:
+IA on-chain, tres VMs co-residentes con un puente nativo, criptografía
+post-cuántica obligatoria, una identidad de 20 bytes en los tres carriles de VM,
+y gasto delegado seguro frente a PQC para claves de wallets externas. Estas son
+las razones para construir aquí.
 
 ---
 
-## 1. Puntuación de riesgo previa al vuelo con IA
+## 1. Evaluación de riesgo con IA antes del envío
 
-**Escanea una transacción con IA on-chain antes de transmitirla.**
+**Analiza una transacción con IA on-chain antes de difundirla.**
 
-QoreChain incluye análisis de riesgo con IA como precompilados de EVM. El SDK los llama por ti
-y devuelve el gas más un veredicto de riesgo/anomalía en una sola llamada — para que una billetera o
-dApp pueda advertir (o bloquear) *antes* de firmar.
+QoreChain incluye análisis de riesgo con IA como precompilados de la EVM. El SDK
+los invoca por ti y devuelve el gas junto con un veredicto de riesgo/anomalía en
+una sola llamada — de modo que un wallet o una dApp puede advertir (o bloquear)
+*antes* de firmar.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -49,21 +52,24 @@ if (!preflight.safe) {
 }
 ```
 
-**Por qué es único:** la puntuación se ejecuta *dentro de la cadena* como un precompilado
-determinista (`aiRiskScore` en `0x…0B01`, `aiAnomalyCheck` en `0x…0B02`). Otras
-redes solo pueden añadir servicios de IA off-chain y no deterministas. Este es el
-primer SDK que examina una transacción con IA antes de que se firme, con un resultado
-on-chain. Consulta [Previo al vuelo con IA](/sdk/guides/ai-preflight).
+**Por qué es único:** la puntuación se ejecuta *dentro de la cadena* como un
+precompilado determinista (`aiRiskScore` en `0x…0B01`, `aiAnomalyCheck` en
+`0x…0B02`). Otras redes solo pueden añadir servicios de IA externos y no
+deterministas. Este es el primer SDK que examina con IA una transacción antes de
+que se firme, con un resultado on-chain. Consulta
+[AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
-## 2. Llamadas cross-VM unificadas — una cuenta, tres VM, una transacción
+## 2. Llamadas cross-VM unificadas — una cuenta, tres VMs, una transacción
 
-**Llama a un contrato en cualquier VM, y agrupa llamadas entre las tres de forma atómica.**
+**Llama a un contrato en cualquier VM, y agrupa llamadas a las tres de forma
+atómica.**
 
 QoreChain ejecuta contratos CosmWasm, EVM y SVM en la misma cadena con un puente
-cross-VM nativo. El SDK expone una sola interfaz para llamar a cualquiera de ellos — y para empaquetar
-varias llamadas cross-VM en una única transacción atómica firmada una sola vez.
+cross-VM nativo. El SDK expone una única interfaz para llamar a cualquiera de
+ellos — y para empaquetar varias llamadas cross-VM en una sola transacción
+atómica firmada una única vez.
 
 ```ts
 import { createCrossVMClient } from "@qorechain/sdk";
@@ -85,21 +91,22 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**Por qué es único:** QoreChain es la única L1 con tres VM co-residentes y un
-módulo de puente nativo (`crossvm` + el precompilado `CrossVMBridge`). Las cadenas
-de una sola VM no pueden expresar "una cuenta, tres VM, una transacción atómica" — sus
-SDK no tienen nada que envolver. Escribe una vez, llama a cualquier VM. Consulta
-[Llamadas cross-VM](/sdk/guides/cross-vm).
+**Por qué es único:** QoreChain es la única L1 con tres VMs co-residentes y un
+módulo de puente nativo (`crossvm` + el precompilado `CrossVMBridge`). Las
+cadenas de una sola VM no pueden expresar "una cuenta, tres VMs, una transacción
+atómica" — sus SDKs no tienen nada que envolver. Escribe una vez, llama a
+cualquier VM. Consulta [Llamadas cross-VM](/sdk/guides/cross-vm).
 
 ---
 
-## 3. Seguro frente a lo cuántico por defecto
+## 3. Seguridad cuántica por defecto
 
-**Haz que un firmante quede protegido frente a lo poscuántico en una sola llamada.**
+**Convierte un firmante en protegido post-cuántico con una sola llamada.**
 
-QoreChain impone firmas poscuánticas híbridas (ML-DSA-87 + clásica) a nivel
-de protocolo. El SDK hace que adoptarlas sea cuestión de una línea: comprueba, registra y
-migra a la firma híbrida — con un distintivo de React para mostrar a los usuarios que están protegidos.
+QoreChain impone firmas híbridas post-cuánticas (ML-DSA-87 + clásica) a nivel de
+protocolo. El SDK convierte su adopción en una sola línea: comprobar, registrar
+y migrar a la firma híbrida — con una insignia de React para mostrar a los
+usuarios que están protegidos.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -119,19 +126,76 @@ import { QuantumSafeBadge } from "@qorechain/react";
 <QuantumSafeBadge address={account.address} />
 ```
 
-**Por qué es único:** la criptografía poscuántica es nativa y obligatoria en
-QoreChain, no un experimento. Este es el primer SDK donde "seguro frente a lo cuántico por
-defecto" es una sola llamada más un distintivo listo para usar. Consulta
-[Seguro frente a lo cuántico](/sdk/guides/quantum-safe).
+**Por qué es único:** la criptografía post-cuántica es nativa y obligatoria en
+QoreChain, no un experimento. Este es el primer SDK donde "seguridad cuántica
+por defecto" es una sola llamada más una insignia lista para usar. Consulta
+[Seguridad cuántica](/sdk/guides/quantum-safe).
 
 ---
 
-## Todo lo demás, también
+## 4. Cuentas eth-nativas unificadas — una clave, tres direcciones, un saldo
 
-Más allá de los tres diferenciadores, el SDK cubre toda la superficie de la cadena en
-**TypeScript, Python, Go, Rust y Java**: compositores tipados para cada módulo
-(incluidas las sidechains/paychains a través de `multilayer` y los rollups a través de `rdk`), consultas tipadas,
-el ciclo de vida de las tx, suscripciones, billeteras de navegador, y el
-kit de hooks [`@qorechain/react`](/sdk/guides/react).
+**Una clave `eth_secp256k1` es una identidad de 20 bytes en los tres carriles.**
+(SDK 0.6.0, cadena v3.1.83.)
 
-¿Listo para construir? Empieza con la [Guía rápida](/sdk/quickstart).
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+account.cosmos; // "qor1…"  bech32 — Native lane
+account.evm;    // "0x…"    EIP-55 — EVM lane
+account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
+// A deposit to ANY of the three lands in ONE balance,
+// and the same key spends on every lane (signHybridEth on the Native path).
+```
+
+**Por qué es único:** en configuraciones multi-VM de otras redes, cada runtime
+tiene su propio espacio de cuentas y los fondos quedan varados por carril.
+QoreChain representa una identidad de 20 bytes de tres maneras con un único
+saldo compartido — un wallet nunca "tiene fondos en un carril pero no en otro".
+`connectPhantomUnified` incluso inicializa esta identidad de forma no custodial
+a partir de una firma de Phantom. Consulta
+[Cuentas unificadas](/sdk/concepts/accounts-pqc#unified-accounts).
+
+---
+
+## 5. Carriles de autenticadores — gasto delegado sin renunciar a PQC
+
+**Una clave vinculada de Phantom o MetaMask gasta desde la cuenta canónica con
+PQC obligatorio, bajo límites, a través de un relayer.** (SDK 0.7.0, cadena
+v3.1.85.)
+
+```ts
+import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
+
+// The Phantom key signs a domain-separated digest; a relayer pays fees and
+// broadcasts. The external key NEVER produces an ML-DSA co-signature.
+const msg = await buildPhantomExecuteCosmos({
+  wallet: window.solana,
+  relayer: relayerAddress,
+  chainId: "qorechain-vladi",
+  account: canonicalAccount, // the PQC-required owner
+  to: recipient,
+  amount: "100uqor",
+  nonce, // per-authenticator sequence
+});
+```
+
+**Por qué es único:** cada gasto está acotado por una taxonomía de permisos
+on-chain, límites de `SpendingRule` y una fecha de expiración — mínimo
+privilegio y revocable — mientras la cuenta en sí permanece protegida
+post-cuánticamente. Consulta
+[Autenticadores y gasto delegado](/sdk/guides/authenticators).
+
+---
+
+## Y todo lo demás, también
+
+Más allá de los cinco diferenciadores, el SDK cubre toda la superficie de la
+cadena en **TypeScript, Python, Go, Rust y Java**: composers tipados para cada
+módulo (incluidas sidechains/paychains mediante `multilayer` y rollups mediante
+`rdk`), consultas tipadas, el ciclo de vida de la transacción, suscripciones,
+wallets de navegador y el kit de hooks
+[`@qorechain/react`](/sdk/guides/react).
+
+¿Listo para construir? Empieza con el [inicio rápido](/sdk/quickstart).

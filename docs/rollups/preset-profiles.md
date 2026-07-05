@@ -29,14 +29,16 @@ Each preset bundles a settlement paradigm (and the proof system its settlement r
 | ------- | ------------------ | --------- | -- | --------- | -- | ----------------- |
 | **`defi`** | zk (SNARK) | dedicated | native | EIP-1559 | EVM | DeFi and AMM-style applications — lending markets, DEXs, and derivatives where fast finality and predictable fees matter |
 | **`gaming`** | based | based | native | flat | custom | High-throughput, low-latency game state and in-game economies |
-| **`nft`** | optimistic (fraud) | dedicated | native (Celestia DA planned) | standard | CosmWasm | NFT minting, marketplaces, and digital collectibles |
+| **`nft`** | optimistic (fraud) | dedicated | native (Celestia DA planned) | standard | QoreChain Native (`native`) | NFT minting, marketplaces, and digital collectibles |
 | **`enterprise`** | based | based | native | subsidized | EVM | Permissioned and consortium deployments with sponsored (subsidized) fees |
 | **`custom`** | fully parameterized (defaults: optimistic / fraud) | fully parameterized | fully parameterized | fully parameterized | fully parameterized (default: EVM) | Every field is user-defined — start from scratch and set each option yourself |
 
 A few constraints follow from the [settlement → proof matrix](/rollups/overview): `optimistic` settlement uses `fraud` proofs, `zk` uses `snark` (or `stark`), and `based` and `sovereign` carry no proof. `based` settlement always pairs with the `based` sequencer mode. The `nft` preset settles natively today with **Celestia DA planned**.
 
+As of RDK v0.4.2, the Wasm VM option (the runtime that executes CosmWasm contracts) is named **`native`** — QoreChain Native. `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire, so the chain, explorer, and Dashboard are unchanged.
+
 :::note
-Per-preset configuration was live-verified on chain version **v3.1.74**, where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + CosmWasm, `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
+Per-preset configuration was live-verified on chain version **v3.1.74**, where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
 :::
 
 Treat the four domain presets as sensible starting points and the **`custom`** profile as the fully open option. The precise bundled parameters can change between releases — query `rdk config` (below) for the authoritative values, then start from the closest preset and refine.

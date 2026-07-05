@@ -7,26 +7,19 @@ sidebar_position: 7
 
 # QCAI ロールアップ Copilot
 
-QCAI ロールアップ Copilot は、ネットワークのアドバイザリーサービスが 1 つのロールアップについて
-知っているすべてを収集し、単一の平易な言葉での読み物にまとめます: ライブの手数料見積もり、
-ネットワークの推奨事項、そのロールアップを参照する不正調査、強化学習エージェントのステータス、
-そしてあなたが実行に移せる短い提案のリストです。
+QCAI ロールアップ Copilot は、ネットワークのアドバイザリサービスが 1 つのロールアップについて把握しているすべての情報を集約し、平易な言葉による単一のレポートにまとめます。内容は、ライブの手数料見積もり、ネットワーク推奨事項、そのロールアップに言及している不正調査、強化学習エージェントのステータス、そしてすぐに実行に移せる提案の短いリストです。
 
-これは **ベストエフォート** です。アドバイザリーサービスはオプションのインフラであり、いずれかが
-到達不能な場合、Copilot は呼び出し全体を失敗させるのではなく、そのセクションを除外して警告を記録し、
-グレースフルに劣化します。常に結果が得られます。
+これは**ベストエフォート**で動作します。アドバイザリサービスは任意のインフラであり、いずれかに到達できない場合でも、Copilot はそのセクションを省略して警告を記録するという形で緩やかに縮退し、呼び出し全体が失敗することはありません。常に結果が返されます。
 
 ## 1 回の呼び出し: `getRollupAdvice`
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    evmRpc: "https://evm.testnet.example", // qor_ JSON-RPC for RL agent reads
-  },
-});
+// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
+// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
+// endpoint config needed; pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const advice = await getRollupAdvice(rdk, "my-roll");
 
@@ -38,25 +31,22 @@ console.log(advice.suggestions);            // plain-language, actionable
 console.log(advice.warnings);               // services that were unreachable
 ```
 
-## 基盤となる読み取り
+## 内部で行われる読み取り
 
-`getRollupAdvice` は、直接呼び出すこともできる読み取り専用メソッドの集合を集約します。
-アドバイザリーの REST メソッドは `/qorechain/ai/v1/...` 配下にあります:
+`getRollupAdvice` は、直接呼び出すこともできる読み取り専用メソッド群を集約したものです。アドバイザリ REST メソッドは `/qorechain/ai/v1/...` 配下にあります。
 
 - `getFeeEstimate(...)` — 現在の手数料見積もり。
 - `getNetworkRecommendations(...)` — ネットワークレベルのチューニング推奨事項。
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — 進行中の
-  調査と、id による単一の調査。
-- `getCircuitBreakers(...)` — アドバイザリーのサーキットブレーカー状態。
+- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — 進行中の調査一覧と、id 指定による単一の調査。
+- `getCircuitBreakers(...)` — アドバイザリのサーキットブレーカー状態。
 
-強化学習の読み取りには `qor_*` JSON-RPC 名前空間を使用します:
+強化学習関連の読み取りには `qor_*` JSON-RPC ネームスペースを使用します。
 
 - `getRLAgentStatus()` — エージェントの現在のステータス。
-- `getRLObservation()` — 最新の観測。
+- `getRLObservation()` — 最新の観測値。
 - `getRLReward()` — 最新の報酬シグナル。
 
-これらはすべて読み取りであるため、Copilot に必要なのは REST エンドポイント（および RL 読み取り用の
-EVM / `qor_` JSON-RPC エンドポイント）のみです — 署名者は不要です。
+これらはすべて読み取り操作であるため、Copilot に必要なのは REST エンドポイント（および RL 読み取り用の EVM / `qor_` JSON-RPC エンドポイント）だけです。署名者は不要です。
 
 ## CLI
 
@@ -65,6 +55,4 @@ qorollup advise my-roll
 qorollup advise my-roll --json
 ```
 
-`advise` は集約されたアドバイスを表示し、到達不能なサービスはエラーではなく警告として表面化します。
-完全な `qorollup` オペレーター CLI については [ロールアップのデプロイ](/rollups/deploying-a-rollup)
-を参照してください。
+`advise` は集約されたアドバイスを出力し、到達できなかったサービスはエラーではなく警告として表示されます。オペレーター向け `qorollup` CLI の全体については[ロールアップのデプロイ](/rollups/deploying-a-rollup)を参照してください。

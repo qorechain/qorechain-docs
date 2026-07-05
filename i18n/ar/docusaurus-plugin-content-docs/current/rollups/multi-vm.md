@@ -8,11 +8,21 @@ sidebar_position: 8
 # متعدد الأجهزة الافتراضية (الاستدعاءات عبر الأجهزة الافتراضية)
 
 يشغّل الـ rollup متعدد الأجهزة الافتراضية طبقة تنفيذ EVM يمكنها استدعاء عقود
-CosmWasm من خلال **precompile مخصص للاستدعاءات عبر الأجهزة الافتراضية**. يوفّر الـ RDK
-أدوات TypeScript لترميز هذه الاستدعاءات وقالب هيكلي للبدء منه.
+CosmWasm على بيئة تشغيل **QoreChain Native** (Wasm) من خلال
+**precompile مخصص للاستدعاءات عبر الأجهزة الافتراضية**. يوفّر الـ RDK أدوات
+TypeScript لترميز هذه الاستدعاءات وقالبًا هيكليًا للبدء منه.
 
-> تغطّي هذه الأدوات **EVM → CosmWasm** فقط. أما SVM فهو وقت تشغيل منفصل و
-> ليس جزءًا من الـ precompile الخاص بالاستدعاءات عبر الأجهزة الافتراضية.
+> تغطّي هذه الأدوات **EVM ← QoreChain Native** (عقود CosmWasm) فقط. أما SVM
+> فهو بيئة تشغيل منفصلة وليس جزءًا من الـ precompile الخاص بالاستدعاءات عبر
+> الأجهزة الافتراضية.
+
+:::note
+اعتبارًا من RDK v0.4.2 أصبح معرّف خيار الجهاز الافتراضي لبيئة تشغيل Wasm هو
+**`native`** ‏(QoreChain Native)؛ ويبقى `cosmwasm` اسمًا بديلًا قديمًا مقبولًا،
+وكلاهما يُترجم إلى `cosmwasm` على مستوى الشبكة — فالسلسلة والمستكشف وواجهة ABI
+الخاصة بالـ precompile للاستدعاءات عبر الأجهزة الافتراضية (`executeCrossVMCall`)
+لم تتغيّر.
+:::
 
 ## الـ precompile
 
@@ -28,7 +38,7 @@ console.log(CROSS_VM_PRECOMPILE); // 0x…0901
 
 تبني الدالة `encodeCrossVmCalldata` بيانات الاستدعاء (calldata) التي يرسلها عقد EVM
 الخاص بك إلى الـ precompile لاستدعاء عقد CosmWasm. وتحسب الدالة `functionSelector`
-محدِّد الـ 4 بايت لتوقيع دالة Solidity.
+المحدِّد المكوَّن من 4 بايتات لتوقيع دالة Solidity.
 
 ```ts
 import { encodeCrossVmCalldata, functionSelector } from "@qorechain/rdk";
@@ -60,12 +70,12 @@ function callCosmwasm(bytes memory calldata_) internal returns (bytes memory) {
 
 ## إنشاء هيكل rollup متعدد الأجهزة الافتراضية
 
-يقوم قالب جديد، `multivm-rollup`، بإنشاء هيكل rollup من نوع EVM مهيّأ لاستدعاء CosmWasm،
-بما في ذلك مقتطف `CrossVmCaller.sol`:
+يقوم قالب جديد، `multivm-rollup`، بإنشاء هيكل rollup من نوع EVM مهيّأ لاستدعاء
+CosmWasm، بما في ذلك مقتطف `CrossVmCaller.sol`:
 
 ```bash
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-راجع [نشر rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب
+راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب
 أداة الإنشاء الهيكلي.

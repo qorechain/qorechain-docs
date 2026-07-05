@@ -1,22 +1,23 @@
 ---
 slug: /sdk/quickstart
-title: Quickstart
-sidebar_label: Quickstart
+title: Démarrage rapide
+sidebar_label: Démarrage rapide
 sidebar_position: 3
 ---
 
-# Quickstart
+# Démarrage rapide
 
 De zéro à une transaction envoyée. Cette page utilise le SDK TypeScript
 (`@qorechain/sdk`) ; de courts extraits de connexion et de lecture pour Python,
-Go et Rust suivent à la fin.
+Go et Rust se trouvent à la fin.
 
 ## 1. Se connecter
 
-`createClient()` résout un réseau et compose les clients de lecture, un helper de
-frais, et un point d'entrée de signature paresseux. Il cible le testnet public
-(`qorechain-diana`) par défaut. Les endpoints par défaut pointent vers
-**localhost**, alors passez `endpoints` pour communiquer avec un vrai nœud.
+`createClient()` résout un réseau et compose les clients de lecture, un
+assistant de frais et un point d'entrée de signature paresseux (lazy). Il cible
+par défaut le testnet public (`qorechain-diana`). Les endpoints par défaut
+pointent vers **localhost** ; passez donc `endpoints` pour dialoguer avec un
+vrai nœud.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -27,31 +28,32 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-Le mainnet (chain id `qorechain-vladi`) est en ligne. Sélectionnez-le et
-remplacez les valeurs localhost par défaut par les URL de votre nœud :
+Le mainnet (chain id `qorechain-vladi`) est en production. Sélectionnez-le et
+remplacez les valeurs par défaut localhost par les endpoints publics (ou votre
+propre nœud) :
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
 ## 2. Dériver un compte
 
-Une seule phrase mnémonique dérive des comptes native (`qor1…`), EVM (`0x…`), et
-SVM (base58) via des chemins de dérivation indépendants.
+Un seul mnémonique dérive des comptes natifs (`qor1…`), EVM (`0x…`) et SVM
+(base58) via des chemins de dérivation indépendants.
 
 ```ts
 import {
@@ -62,16 +64,29 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-Voir [Comptes et signature PQC](/sdk/concepts/accounts-pqc) pour la dérivation
-EVM/SVM et le tableau complet de dérivation.
+Depuis la version 0.6.0, vous pouvez à la place dériver un **compte unifié
+eth-native** — une seule clé `eth_secp256k1` rendue sous les trois adresses
+(`qor1…`, `0x…`, SVM base58) avec un solde unique partagé :
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+Consultez [Comptes et signature PQC](/sdk/concepts/accounts-pqc) pour la
+dérivation EVM/SVM, les comptes unifiés et le tableau de dérivation complet.
 
 ## 3. Lire un solde
 
 ```ts
-// Cosmos bank balances over REST.
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
@@ -80,9 +95,9 @@ const tokenomics = await client.qor.getTokenomicsOverview();
 
 ## 4. Envoyer un transfert de QOR
 
-Dérivez un compte native, adaptez sa clé privée en un signataire, connectez un
-`TxClient`, et envoyez des tokens. Utilisez `toBase("1.5")` pour convertir des
-QOR en `uqor` de base.
+Dérivez un compte natif, adaptez sa clé privée en un signataire, connectez un
+`TxClient` et envoyez des jetons. Utilisez `toBase("1.5")` pour convertir des
+QOR en unités de base `uqor`.
 
 ```ts
 import {
@@ -94,8 +109,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,11 +133,20 @@ const result = await tx.bankSend(
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` renvoie `"1500000"` (QOR comporte 10^6 unités de base `uqor`).
+`toBase("1.5")` renvoie `"1500000"` (le QOR compte 10^6 unités de base `uqor`).
+
+:::info Signature hybride sur les réseaux en production
+Sur le mainnet et le testnet, la voie Native exige l'extension de signature
+**hybride** (classique + ML-DSA-87) — utilisez `buildHybridTx` /
+`signAndBroadcastHybrid`, ou `signHybridEth` pour les comptes unifiés
+eth-native. Consultez
+[Signature hybride](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
 
 ## Autres langages : connexion et lecture
 
-Ceux-ci reflètent les mêmes préréglages réseau et la même surface de lecture.
+Ces extraits reprennent les mêmes préréglages réseau et la même surface de
+lecture.
 
 ### Python
 
@@ -167,10 +191,14 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## Suite
+## Et ensuite
 
-- [Guides](/sdk/guides/evm) — travailler avec chaque VM (EVM, SVM, CosmWasm, cross-VM).
-- [Comptes et signature PQC](/sdk/concepts/accounts-pqc) — dérivation HD et
-  signature post-quantique.
+- [Guides](/sdk/guides/evm) — travaillez avec chaque VM (EVM, SVM, CosmWasm,
+  cross-VM).
+- [Comptes et signature PQC](/sdk/concepts/accounts-pqc) — dérivation HD,
+  comptes unifiés eth-native et signature post-quantique.
+- [Authentificateurs et dépenses déléguées](/sdk/guides/authenticators) —
+  autorisez une clé Phantom/MetaMask liée à dépenser via un relayeur.
 - [Référence réseau et endpoints](/sdk/reference/network).
-- [Exemples](/sdk/examples) — extraits exécutables pour chaque flux ci-dessus.
+- [Exemples](/sdk/examples) — extraits exécutables pour chacun des flux
+  ci-dessus.

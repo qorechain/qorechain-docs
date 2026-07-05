@@ -10,7 +10,7 @@ sidebar_position: 9
 Watchtower, optimistic rollup'lar için otomatik bir itiraz (auto-challenger)
 çerçevesidir. Bir rollup'ın çözüm (settlement) yığınlarını (batch) takip eder,
 her yeni yığını ve itiraz penceresinin son tarihini ortaya çıkarır ve — **sizin**
-geçerlilik yüklemiyle (validity predicate) bir yığını reddettiğinizde — bir
+geçerlilik yükleminiz (validity predicate) bir yığını reddettiğinde — bir
 itirazı devreye sokabilmeniz için onu `onInvalid` geri çağırma fonksiyonunuza
 (callback) iletir.
 
@@ -24,12 +24,10 @@ göre hareket eder.
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {

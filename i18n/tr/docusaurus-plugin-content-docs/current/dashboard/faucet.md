@@ -9,6 +9,10 @@ sidebar_position: 9
 
 **Musluk**, Panel'i değerli hiçbir şey harcamadan deneyebilmeniz için size ücretsiz test token'ları verir. **Yalnızca testnet** için bir araçtır — transferleri, takasları, stake etmeyi ve sözleşme dağıtımını test etmeden önce adresinizi fonlamak için testnet (`qorechain-diana`) üzerinde kullanın.
 
+:::caution Yalnızca testnet — gerçek değer yok
+Testnet QOR'un **gerçek bir değeri yoktur**. Musluk asla mainnet'e dokunmaz: mainnet QOR için bir musluk yoktur ve burada talep ettiğiniz hiçbir şey mainnet'e taşınamaz.
+:::
+
 ## Test token'ları talep etme
 
 1. **Testnet**'e bağlanın ve **Musluk**'u açın.

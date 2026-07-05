@@ -40,7 +40,9 @@ Eine Blockseite zeigt ihre Höhe, ihren Zeitstempel, den Proposer, den Hash, die
 
 ## Adressdetails
 
-Eine Adressseite zeigt die Adresse mit einem scanbaren QR-Code, ihren QOR-Kontostand, die Transaktionsanzahl sowie die Summen für eingehende und ausgehende Transfers. Darunter befindet sich der vollständige Transaktionsverlauf für die Adresse — Transfers, Swaps, Faucet-Bezüge und mehr — jeweils mit Betrag, Zeit und Status. Sie können die Adresse kopieren, ihren QR-Code herunterladen und jede Transaktion für Details öffnen.
+Eine QoreChain-Adresse ist ein einziges Konto mit drei Kodierungen — Native (`qor1...`), EVM (`0x...`) und SVM (base58) — und die Adressseite führt die Aktivität aller drei Schienen zu einer einzigen Ansicht dieser einen Identität zusammen.
+
+Die Seite zeigt die Adresse mit einem scanbaren QR-Code, ihren QOR-Kontostand, die Transaktionsanzahl sowie die Summen für eingehende und ausgehende Transfers. Darunter befindet sich der kombinierte Transaktionsverlauf der Adresse über die Native-, EVM- und SVM-Schienen — Transfers, Contract-Deployments, PQC-Schlüsselregistrierungen, Swaps, Faucet-Bezüge und mehr — jeweils mit Betrag, Zeit und Status. Sie können die Adresse kopieren, ihren QR-Code herunterladen und jede Transaktion für Details öffnen.
 
 ## Validatoren {#validators}
 

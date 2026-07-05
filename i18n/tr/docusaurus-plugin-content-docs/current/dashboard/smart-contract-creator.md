@@ -28,6 +28,24 @@ Buradan şunları yapabilirsiniz:
 - Sözleşmeyi, seçtiğiniz blok zinciri için doğru biçimde bir dosya olarak **Download** edin (indirin).
 - Sözleşmeyi daha da iyileştirmek için **Edit** edin (düzenleyin).
 
+## Sözleşmenizi dağıtın {#deploy}
+
+### Mainnet üzerinde (EVM) — emanetsiz dağıtım {#deploy-mainnet}
+
+Mainnet dağıtımı emanetsizdir (non-custodial): Kontrol Paneli sözleşmenizi derler ve **imzasız** dağıtım verisini döndürür — anahtarlarınızı asla tutmaz ve sizin adınıza asla imza atmaz. Dağıtımı kendi cüzdanınızda imzalayıp yayınlarsınız; ardından Kontrol Paneli ortaya çıkan sözleşmeyi kaydeder.
+
+1. Dağıtmak istediğiniz sözleşmeyi (EVM hedefli bir sözleşme) açın ve **Mainnet** üzerinde **Deploy** öğesini seçin. Bu, ilk mainnet işleminizse [tek seferlik risk onayını](/dashboard/overview#risk-acknowledgement) kabul edin.
+2. Henüz bağlı değilse **MetaMask**'i bağlayın — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet).
+3. Kontrol Paneli sözleşmeyi derler ve imzasız dağıtım işlemini cüzdanınıza iletir.
+4. İşlemi MetaMask'te inceleyin — ağ, gas ve veri — ardından imzalayıp kendiniz yayınlamak için onaylayın.
+5. Dağıtım zincir üzerinde onaylandığında, Kontrol Paneli ortaya çıkan sözleşme adresini kayıtlı sözleşmelerinizin yanına kaydeder.
+
+Mainnet üzerinde şimdilik bu yolla yalnızca **EVM** dağıtımları kullanılabilir; **Wasm** ve **SVM** dağıtımları yalnızca testnet içindir.
+
+### Testnet üzerinde — tek tıkla {#deploy-testnet}
+
+Testnet akışı değişmedi: Kontrol Paneli tarafından yönetilen test cüzdanı, dağıtımı sizin için tek tıkla imzalar ve gönderir; böylece mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla hızlıca yineleme yapabilirsiniz. Testnet; EVM, Wasm ve SVM dağıtımlarını destekler.
+
 ## Paylaşın ve yeniden kullanın
 
 Üretilen her sözleşmenin, açabileceğiniz veya paylaşabileceğiniz kendi sayfası vardır. Size ait olmayan bir sözleşmeyi açarsanız, kendi kopyanızı başlatmak ve oradan devam etmek için onu **fork** edebilirsiniz (çatallayabilirsiniz).

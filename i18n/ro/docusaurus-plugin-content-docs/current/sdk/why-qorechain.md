@@ -9,24 +9,26 @@ sidebar_position: 2
 
 QoreChain SDK îți oferă tot ceea ce oferă un SDK modern multi-chain — mesaje
 tipizate pentru fiecare modul, interogări tipizate, conturi pentru trei VM-uri
-dintr-un singur mnemonic, gaz automat, decodarea erorilor, abonamente, portofele
+dintr-un singur mnemonic, auto-gas, decodarea erorilor, abonamente, portofele
 și un kit React.
 
-Dar trei capabilități sunt **posibile doar pe QoreChain**, deoarece sunt
+Dar cinci capabilități sunt **posibile doar pe QoreChain**, pentru că sunt
 construite pe funcționalități de protocol pe care niciun alt Layer 1 nu le are:
-AI on-chain, trei VM-uri co-rezidente cu o punte nativă și criptografie
-post-cuantică obligatorie. Acestea sunt motivele pentru care merită să construiești aici.
+AI on-chain, trei VM-uri co-rezidente cu un bridge nativ, criptografie
+post-cuantică obligatorie, o singură identitate de 20 de octeți pe toate cele
+trei benzi VM și cheltuieli delegate PQC-safe pentru chei de portofele externe.
+Acestea sunt motivele pentru care merită să construiești aici.
 
 ---
 
-## 1. Scorarea riscului AI înainte de difuzare
+## 1. Scorare de risc AI pre-flight
 
-**Scanează o tranzacție cu AI on-chain înainte să o difuzezi.**
+**Scanează o tranzacție cu AI on-chain înainte de a o difuza.**
 
-QoreChain livrează analiza riscului prin AI sub formă de precompile-uri EVM. SDK-ul
-le apelează pentru tine și returnează gazul plus un verdict de risc/anomalie
-într-un singur apel — astfel încât un portofel sau un dApp poate avertiza (sau bloca)
-*înainte* de semnare.
+QoreChain livrează analiza de risc AI sub formă de precompilări EVM. SDK-ul le
+apelează pentru tine și returnează gas-ul plus un verdict de risc/anomalie
+într-un singur apel — astfel încât un portofel sau un dApp poate avertiza (sau
+bloca) *înainte* de semnare.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -50,22 +52,23 @@ if (!preflight.safe) {
 }
 ```
 
-**De ce este unic:** scorarea rulează *în interiorul lanțului* ca un precompile
-determinist (`aiRiskScore` la `0x…0B01`, `aiAnomalyCheck` la `0x…0B02`). Alte
-rețele pot doar să atașeze servicii AI off-chain, non-deterministe. Acesta este
-primul SDK care verifică prin AI o tranzacție înainte ca aceasta să fie semnată,
-cu un rezultat on-chain. Vezi [AI înainte de difuzare](/sdk/guides/ai-preflight).
+**De ce este unic:** scorarea rulează *în interiorul lanțului* ca precompilare
+deterministă (`aiRiskScore` la `0x…0B01`, `aiAnomalyCheck` la `0x…0B02`). Alte
+rețele pot doar să atașeze servicii AI off-chain, nedeterministe. Acesta este
+primul SDK care verifică o tranzacție cu AI înainte ca aceasta să fie semnată,
+cu un rezultat on-chain. Vezi [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
-## 2. Apeluri unificate cross-VM — un cont, trei VM-uri, o tranzacție
+## 2. Apeluri cross-VM unificate — un cont, trei VM-uri, o singură tranzacție
 
-**Apelează un contract pe orice VM și grupează apeluri pe toate cele trei în mod atomic.**
+**Apelează un contract pe orice VM și grupează apeluri pe toate cele trei în
+mod atomic.**
 
-QoreChain rulează contracte CosmWasm, EVM și SVM pe același lanț cu o punte nativă
-cross-VM. SDK-ul expune o singură interfață pentru a apela oricare dintre ele — și
-pentru a împacheta mai multe apeluri cross-VM într-o singură tranzacție atomică,
-semnată o singură dată.
+QoreChain rulează contracte CosmWasm, EVM și SVM pe același lanț, cu un bridge
+cross-VM nativ. SDK-ul expune o singură interfață pentru a apela oricare dintre
+ele — și pentru a împacheta mai multe apeluri cross-VM într-o singură
+tranzacție atomică, semnată o singură dată.
 
 ```ts
 import { createCrossVMClient } from "@qorechain/sdk";
@@ -87,22 +90,22 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**De ce este unic:** QoreChain este singurul L1 cu trei VM-uri co-rezidente și un
-modul de punte nativă (`crossvm` + precompile-ul `CrossVMBridge`). Lanțurile cu un
-singur VM nu pot exprima „un cont, trei VM-uri, o tranzacție atomică" — SDK-urile
-lor nu au ce înfășura. Scrii o dată, apelezi orice VM. Vezi
+**De ce este unic:** QoreChain este singurul L1 cu trei VM-uri co-rezidente și
+un modul de bridge nativ (`crossvm` + precompilarea `CrossVMBridge`). Lanțurile
+cu un singur VM nu pot exprima „un cont, trei VM-uri, o tranzacție atomică" —
+SDK-urile lor nu au ce să încapsuleze. Scrii o dată, apelezi orice VM. Vezi
 [Apeluri cross-VM](/sdk/guides/cross-vm).
 
 ---
 
-## 3. Sigur cuantic în mod implicit
+## 3. Rezistent la calculul cuantic în mod implicit
 
-**Fă un semnatar protejat post-cuantic într-un singur apel.**
+**Fă un semnatar protejat post-cuantic printr-un singur apel.**
 
-QoreChain impune semnături hibride post-cuantice (ML-DSA-87 + clasice) la nivel de
-protocol. SDK-ul face adoptarea lor o singură linie de cod: verifică, înregistrează
-și migrează la semnarea hibridă — cu un badge React care le arată utilizatorilor că
-sunt protejați.
+QoreChain impune semnături hibride post-cuantice (ML-DSA-87 + clasice) la
+nivelul protocolului. SDK-ul reduce adoptarea lor la o singură linie de cod:
+verifici, înregistrezi și migrezi la semnarea hibridă — cu un badge React care
+le arată utilizatorilor că sunt protejați.
 
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
@@ -123,18 +126,74 @@ import { QuantumSafeBadge } from "@qorechain/react";
 ```
 
 **De ce este unic:** criptografia post-cuantică este nativă și obligatorie pe
-QoreChain, nu un experiment. Acesta este primul SDK în care „sigur cuantic în mod
-implicit" este un singur apel plus un badge gata de integrare. Vezi
-[Sigur cuantic](/sdk/guides/quantum-safe).
+QoreChain, nu un experiment. Acesta este primul SDK în care „rezistent la
+calculul cuantic în mod implicit" înseamnă un singur apel plus un badge gata de
+integrat. Vezi [Quantum-safe](/sdk/guides/quantum-safe).
+
+---
+
+## 4. Conturi eth-native unificate — o cheie, trei adrese, un singur sold
+
+**O cheie `eth_secp256k1` este o singură identitate de 20 de octeți pe toate
+cele trei benzi.** (SDK 0.6.0, chain v3.1.83.)
+
+```ts
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+account.cosmos; // "qor1…"  bech32 — Native lane
+account.evm;    // "0x…"    EIP-55 — EVM lane
+account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
+// A deposit to ANY of the three lands in ONE balance,
+// and the same key spends on every lane (signHybridEth on the Native path).
+```
+
+**De ce este unic:** pe configurațiile multi-VM din altă parte, fiecare runtime
+are propriul spațiu de conturi, iar fondurile rămân blocate pe fiecare bandă.
+QoreChain redă o singură identitate de 20 de octeți în trei moduri, cu un sold
+comun — un portofel nu ajunge niciodată să „aibă fonduri pe o bandă, dar nu pe
+alta". `connectPhantomUnified` chiar inițializează această identitate în mod
+non-custodial dintr-o semnătură Phantom. Vezi
+[Conturi unificate](/sdk/concepts/accounts-pqc#unified-accounts).
+
+---
+
+## 5. Benzi de authenticatori — cheltuieli delegate fără a renunța la PQC
+
+**O cheie Phantom sau MetaMask conectată cheltuiește din contul canonic cu PQC
+obligatoriu, sub limite, printr-un relayer.** (SDK 0.7.0, chain v3.1.85.)
+
+```ts
+import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
+
+// The Phantom key signs a domain-separated digest; a relayer pays fees and
+// broadcasts. The external key NEVER produces an ML-DSA co-signature.
+const msg = await buildPhantomExecuteCosmos({
+  wallet: window.solana,
+  relayer: relayerAddress,
+  chainId: "qorechain-vladi",
+  account: canonicalAccount, // the PQC-required owner
+  to: recipient,
+  amount: "100uqor",
+  nonce, // per-authenticator sequence
+});
+```
+
+**De ce este unic:** fiecare cheltuială este delimitată de o taxonomie de
+permisiuni on-chain, de limitele `SpendingRule` și de o dată de expirare —
+privilegii minime și revocabile — în timp ce contul în sine rămâne protejat
+post-cuantic. Vezi
+[Authenticatori și cheltuieli delegate](/sdk/guides/authenticators).
 
 ---
 
 ## Și tot restul
 
-Dincolo de cei trei factori de diferențiere, SDK-ul acoperă întreaga suprafață a
-lanțului în **TypeScript, Python, Go, Rust și Java**: composere tipizate pentru
-fiecare modul (inclusiv sidechain-uri/paychain-uri prin `multilayer` și rollup-uri
-prin `rdk`), interogări tipizate, ciclul de viață al tranzacției, abonamente,
-portofele de browser și kit-ul de hook-uri [`@qorechain/react`](/sdk/guides/react).
+Dincolo de cei cinci diferențiatori, SDK-ul acoperă întreaga suprafață a
+lanțului în **TypeScript, Python, Go, Rust și Java**: composeri tipizați pentru
+fiecare modul (inclusiv sidechain-uri/paychain-uri prin `multilayer` și
+rollup-uri prin `rdk`), interogări tipizate, ciclul de viață al tranzacțiilor,
+abonamente, portofele de browser și kitul de hook-uri
+[`@qorechain/react`](/sdk/guides/react).
 
-Gata să construiești? Începe cu [Quickstart](/sdk/quickstart).
+Ești gata să construiești? Începe cu [Quickstart](/sdk/quickstart).

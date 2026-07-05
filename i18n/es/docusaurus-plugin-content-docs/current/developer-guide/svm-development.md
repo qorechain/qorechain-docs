@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain incluye un entorno de ejecución **Solana Virtual Machine (SVM)**, que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF usando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (consulta [Servidor JSON-RPC](#json-rpc-server) más abajo).
 
 :::note
-Los comandos que siguen usan la mainnet **`qorechain-vladi`**, activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.82**. Sustituye `--chain-id qorechain-diana` para la testnet.
+Los comandos que siguen usan la mainnet **`qorechain-vladi`**, activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.85**. Sustituye `--chain-id qorechain-diana` para la testnet.
 :::
 
 ---
@@ -30,7 +30,7 @@ El módulo `x/svm` proporciona:
 
 ## QOR nativo en la interfaz SVM {#native-qor}
 
-Desde la versión de cadena **v3.1.82**, la interfaz SVM es una **interfaz de QOR nativo de primera clase**, no un saldo aislado independiente. El único saldo unificado de la cuenta — los mismos fondos visibles como `uqor` en la interfaz Cosmos y como wei de 18 decimales en la EVM — aparece en el lado SVM en **lamports** (9 decimales):
+Desde la versión de cadena **v3.1.85**, la interfaz SVM es una **interfaz de QOR nativo de primera clase**, no un saldo aislado independiente. El único saldo unificado de la cuenta — los mismos fondos visibles como `uqor` en la interfaz Cosmos y como wei de 18 decimales en la EVM — aparece en el lado SVM en **lamports** (9 decimales):
 
 ```
 1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports

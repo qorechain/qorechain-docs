@@ -7,23 +7,23 @@ sidebar_position: 3
 
 # أوامر الاستعلام
 
-تتّبع جميع أوامر الاستعلام النمط:
+تتبع جميع أوامر الاستعلام النمط التالي:
 
 ```bash
 qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-تُنفَّذ الاستعلامات مقابل العُقدة التي يشير إليها `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** (إصدار السلسلة **v3.1.82**) للبيانات الحيّة، أو نقطة نهاية لشبكة الاختبار **`qorechain-diana`** للاختبار. تستهدف القيمة الافتراضية `tcp://localhost:26657` عُقدة تشغّلها بنفسك.
+تُنفَّذ الاستعلامات على العقدة التي يشير إليها الخيار `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** (إصدار السلسلة **v3.1.85**) للحصول على بيانات حية، أو نقطة نهاية شبكة الاختبار **`qorechain-diana`** للاختبار. القيمة الافتراضية `tcp://localhost:26657` تستهدف عقدة تشغّلها بنفسك.
 :::
 
-تنطبق العلامات الشائعة على كل أمر فرعي لـ `query`:
+تنطبق الرايات (Flags) الشائعة على كل أمر فرعي من أوامر `query`:
 
-| العَلَم       | النوع   | الوصف                                     |
-| ---------- | ------ | ----------------------------------------------- |
-| `--node`   | string | نقطة نهاية RPC (الافتراضي: `tcp://localhost:26657`) |
-| `--output` | string | تنسيق الإخراج: `json` أو `text`                 |
-| `--height` | int    | استعلام عن الحالة عند ارتفاع كتلة محدد          |
+| الراية     | النوع  | الوصف                                            |
+| ---------- | ------ | ------------------------------------------------ |
+| `--node`   | string | نقطة نهاية RPC (الافتراضية: `tcp://localhost:26657`) |
+| `--output` | string | تنسيق الإخراج: `json` أو `text`                  |
+| `--height` | int    | الاستعلام عن الحالة عند ارتفاع كتلة محدد         |
 
 ---
 
@@ -31,7 +31,7 @@ qorechaind query <module> <command> [args] [flags]
 
 ### balances
 
-استعلام عن جميع أرصدة حساب.
+الاستعلام عن جميع أرصدة حساب معيّن.
 
 ```bash
 qorechaind query bank balances <address>
@@ -39,7 +39,7 @@ qorechaind query bank balances <address>
 
 ### total
 
-استعلام عن إجمالي معروض جميع الرموز.
+الاستعلام عن إجمالي المعروض من جميع الرموز.
 
 ```bash
 qorechaind query bank total
@@ -51,7 +51,7 @@ qorechaind query bank total
 
 ### validator
 
-استعلام عن مدقق واحد عبر عنوان المشغّل.
+الاستعلام عن مُدقِّق واحد باستخدام عنوان المشغّل.
 
 ```bash
 qorechaind query staking validator <validator_address>
@@ -59,7 +59,7 @@ qorechaind query staking validator <validator_address>
 
 ### validators
 
-سرد جميع المدققين.
+سرد جميع المدقِّقين.
 
 ```bash
 qorechaind query staking validators
@@ -67,7 +67,7 @@ qorechaind query staking validators
 
 ### delegation
 
-استعلام عن تفويض من مفوِّض إلى مدقق.
+الاستعلام عن تفويض من مفوِّض إلى مُدقِّق.
 
 ```bash
 qorechaind query staking delegation <delegator_address> <validator_address>
@@ -75,7 +75,7 @@ qorechaind query staking delegation <delegator_address> <validator_address>
 
 ### delegations
 
-استعلام عن جميع تفويضات مفوِّض ما.
+الاستعلام عن جميع تفويضات مفوِّض معيّن.
 
 ```bash
 qorechaind query staking delegations <delegator_address>
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-استعلام عن تفويض قيد فك الارتباط (unbonding).
+الاستعلام عن تفويض قيد فك الارتباط.
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -95,7 +95,7 @@ qorechaind query staking unbonding-delegation <delegator_address> <validator_add
 
 ### rewards
 
-استعلام عن جميع مكافآت التفويض لمفوِّض ما.
+الاستعلام عن جميع مكافآت التفويض لمفوِّض معيّن.
 
 ```bash
 qorechaind query distribution rewards <delegator_address>
@@ -103,7 +103,7 @@ qorechaind query distribution rewards <delegator_address>
 
 ### commission
 
-استعلام عن عمولة مدقق.
+الاستعلام عن عمولة المُدقِّق.
 
 ```bash
 qorechaind query distribution commission <validator_address>
@@ -115,7 +115,7 @@ qorechaind query distribution commission <validator_address>
 
 ### proposal
 
-استعلام عن مقترح واحد عبر المعرّف.
+الاستعلام عن مقترح واحد باستخدام المعرّف.
 
 ```bash
 qorechaind query gov proposal <proposal_id>
@@ -129,13 +129,13 @@ qorechaind query gov proposal <proposal_id>
 qorechaind query gov proposals [flags]
 ```
 
-| العَلَم       | النوع   | الوصف                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
-| `--status` | string | التصفية حسب الحالة: `deposit_period` و`voting_period` و`passed` و`rejected` |
+| الراية     | النوع  | الوصف                                                                       |
+| ---------- | ------ | --------------------------------------------------------------------------- |
+| `--status` | string | التصفية حسب الحالة: `deposit_period`، `voting_period`، `passed`، `rejected` |
 
 ### votes
 
-استعلام عن الأصوات على مقترح.
+الاستعلام عن الأصوات على مقترح معيّن.
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-استعلام عن حالة تسجيل مفتاح PQC لحساب.
+الاستعلام عن حالة تسجيل مفتاح PQC لحساب معيّن.
 
 ```bash
 qorechaind query pqc account <address>
@@ -163,7 +163,7 @@ qorechaind query pqc algorithms
 
 ### algorithm
 
-استعلام عن تفاصيل خوارزمية PQC محددة.
+الاستعلام عن تفاصيل خوارزمية PQC محددة.
 
 ```bash
 qorechaind query pqc algorithm <algorithm_name>
@@ -171,7 +171,7 @@ qorechaind query pqc algorithm <algorithm_name>
 
 ### stats
 
-استعلام عن إحصاءات تسجيل PQC الإجمالية.
+الاستعلام عن إحصاءات تسجيل PQC المجمَّعة.
 
 ```bash
 qorechaind query pqc stats
@@ -179,7 +179,7 @@ qorechaind query pqc stats
 
 ### params
 
-استعلام عن معلمات وحدة PQC.
+الاستعلام عن معاملات وحدة PQC.
 
 ```bash
 qorechaind query pqc params
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-استعلام عن حالة ترحيل مفتاح PQC لحساب.
+الاستعلام عن حالة ترحيل مفتاح PQC لحساب معيّن.
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-استعلام عن وضع فرض التوقيع الهجين الحالي.
+الاستعلام عن وضع فرض التوقيع الهجين الحالي.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -207,7 +207,7 @@ qorechaind query pqc hybrid-mode
 
 ### position
 
-استعلام عن مركز staking الـ xQORE لعنوان.
+الاستعلام عن مركز التحصيص (staking) في xQORE لعنوان معيّن.
 
 ```bash
 qorechaind query xqore position <address>
@@ -215,7 +215,7 @@ qorechaind query xqore position <address>
 
 ### params
 
-استعلام عن معلمات وحدة xQORE.
+الاستعلام عن معاملات وحدة xQORE.
 
 ```bash
 qorechaind query xqore params
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-استعلام عن إحصاءات الحرق عبر جميع القنوات.
+الاستعلام عن إحصاءات الحرق عبر جميع القنوات.
 
 ```bash
 qorechaind query burn stats
@@ -235,7 +235,7 @@ qorechaind query burn stats
 
 ### params
 
-استعلام عن معلمات وحدة الحرق.
+الاستعلام عن معاملات وحدة الحرق.
 
 ```bash
 qorechaind query burn params
@@ -247,7 +247,7 @@ qorechaind query burn params
 
 ### rate
 
-استعلام عن معدل الإصدار السنوي الحالي.
+الاستعلام عن معدل التضخم السنوي الحالي.
 
 ```bash
 qorechaind query inflation rate
@@ -255,7 +255,7 @@ qorechaind query inflation rate
 
 ### epoch
 
-استعلام عن رقم الحقبة الحالية وتقدّمها.
+الاستعلام عن رقم الحقبة (epoch) الحالية ومدى تقدمها.
 
 ```bash
 qorechaind query inflation epoch
@@ -263,7 +263,7 @@ qorechaind query inflation epoch
 
 ### params
 
-استعلام عن معلمات وحدة الإصدار.
+الاستعلام عن معاملات وحدة التضخم.
 
 ```bash
 qorechaind query inflation params
@@ -275,7 +275,7 @@ qorechaind query inflation params
 
 ### config
 
-استعلام عن تكوين وحدة الذكاء الاصطناعي.
+الاستعلام عن تكوين وحدة الذكاء الاصطناعي.
 
 ```bash
 qorechaind query ai config
@@ -283,7 +283,7 @@ qorechaind query ai config
 
 ### stats
 
-استعلام عن إحصاءات معالجة الذكاء الاصطناعي المجمّعة.
+الاستعلام عن إحصاءات معالجة الذكاء الاصطناعي المجمَّعة.
 
 ```bash
 qorechaind query ai stats
@@ -297,10 +297,10 @@ qorechaind query ai stats
 qorechaind query ai fee-estimate [flags]
 ```
 
-| العَلَم        | النوع   | الوصف                     |
-| ----------- | ------ | ------------------------------- |
-| `--tx-type` | string | نوع المعاملة للتقدير |
-| `--urgency` | string | `low` و`medium` و`high`         |
+| الراية      | النوع  | الوصف                            |
+| ----------- | ------ | -------------------------------- |
+| `--tx-type` | string | نوع المعاملة المستخدم في التقدير |
+| `--urgency` | string | `low`، `medium`، `high`          |
 
 ### investigations
 
@@ -312,7 +312,7 @@ qorechaind query ai investigations
 
 ### recommendations
 
-الحصول على توصيات تحسين الشبكة المُولَّدة بالذكاء الاصطناعي.
+الحصول على توصيات لتحسين الشبكة مولَّدة بالذكاء الاصطناعي.
 
 ```bash
 qorechaind query ai recommendations
@@ -320,7 +320,7 @@ qorechaind query ai recommendations
 
 ### circuit-breakers
 
-استعلام عن حالات قواطع الدائرة (circuit breaker) الحالية.
+الاستعلام عن حالات قواطع الدائرة الحالية.
 
 ```bash
 qorechaind query ai circuit-breakers
@@ -332,7 +332,7 @@ qorechaind query ai circuit-breakers
 
 ### validators
 
-استعلام عن درجات السمعة لجميع المدققين.
+الاستعلام عن درجات السمعة لجميع المدقِّقين.
 
 ```bash
 qorechaind query reputation validators
@@ -340,7 +340,7 @@ qorechaind query reputation validators
 
 ### validator
 
-استعلام عن درجة السمعة لمدقق محدد.
+الاستعلام عن درجة السمعة لمُدقِّق محدد.
 
 ```bash
 qorechaind query reputation validator <validator_address>
@@ -352,7 +352,7 @@ qorechaind query reputation validator <validator_address>
 
 ### chains
 
-سرد جميع سلاسل الجسر المُسجَّلة.
+سرد جميع سلاسل الجسر المسجَّلة.
 
 ```bash
 qorechaind query bridge chains
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-استعلام عن تفاصيل سلسلة مجسورة محددة.
+الاستعلام عن تفاصيل سلسلة مجسورة محددة.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -368,7 +368,7 @@ qorechaind query bridge chain <chain_id>
 
 ### validators
 
-سرد مدققي الجسر النشطين.
+سرد مدقِّقي الجسر النشطين.
 
 ```bash
 qorechaind query bridge validators
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-سرد أحدث عمليات الجسر.
+سرد عمليات الجسر الأخيرة.
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| العَلَم       | النوع   | الوصف                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | التصفية: `pending` و`completed` و`failed` |
-| `--chain`  | string | التصفية حسب معرّف السلسلة                       |
+| الراية     | النوع  | الوصف                                     |
+| ---------- | ------ | ----------------------------------------- |
+| `--status` | string | التصفية: `pending`، `completed`، `failed` |
+| `--chain`  | string | التصفية حسب معرّف السلسلة                 |
 
 ### limits
 
-استعلام عن حدود المعدل لسلسلة مجسورة.
+الاستعلام عن حدود المعدل لسلسلة مجسورة.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-تقدير رسوم الجسر وزمن التحويل.
+تقدير رسوم الجسر ووقت التحويل.
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -409,7 +409,7 @@ qorechaind query bridge estimate <chain_id> <amount> <asset>
 
 ### message
 
-استرجاع رسالة عبر الـ VM عبر المعرّف.
+استرجاع رسالة عابرة للأجهزة الافتراضية (cross-VM) باستخدام المعرّف.
 
 ```bash
 qorechaind query crossvm message <message_id>
@@ -417,7 +417,7 @@ qorechaind query crossvm message <message_id>
 
 ### pending
 
-سرد رسائل عبر الـ VM المعلّقة.
+سرد الرسائل العابرة للأجهزة الافتراضية المعلَّقة.
 
 ```bash
 qorechaind query crossvm pending
@@ -425,7 +425,7 @@ qorechaind query crossvm pending
 
 ### params
 
-استعلام عن معلمات وحدة Cross-VM.
+الاستعلام عن معاملات وحدة Cross-VM.
 
 ```bash
 qorechaind query crossvm params
@@ -437,7 +437,7 @@ qorechaind query crossvm params
 
 ### account
 
-استعلام عن معلومات حساب SVM.
+الاستعلام عن معلومات حساب SVM.
 
 ```bash
 qorechaind query svm account <pubkey>
@@ -445,7 +445,7 @@ qorechaind query svm account <pubkey>
 
 ### program
 
-استعلام عن معلومات برنامج SVM منشور.
+الاستعلام عن معلومات برنامج SVM منشور.
 
 ```bash
 qorechaind query svm program <program_id>
@@ -453,7 +453,7 @@ qorechaind query svm program <program_id>
 
 ### params
 
-استعلام عن معلمات وحدة SVM.
+الاستعلام عن معاملات وحدة SVM.
 
 ```bash
 qorechaind query svm params
@@ -461,7 +461,7 @@ qorechaind query svm params
 
 ### slot
 
-استعلام عن رقم فتحة (slot) SVM الحالية.
+الاستعلام عن رقم فتحة (slot) SVM الحالية.
 
 ```bash
 qorechaind query svm slot
@@ -473,7 +473,7 @@ qorechaind query svm slot
 
 ### layer
 
-استعلام عن تفاصيل طبقة محددة.
+الاستعلام عن تفاصيل طبقة محددة.
 
 ```bash
 qorechaind query multilayer layer <layer_id>
@@ -481,7 +481,7 @@ qorechaind query multilayer layer <layer_id>
 
 ### layers
 
-سرد جميع الطبقات المُسجَّلة.
+سرد جميع الطبقات المسجَّلة.
 
 ```bash
 qorechaind query multilayer layers
@@ -489,7 +489,7 @@ qorechaind query multilayer layers
 
 ### anchor
 
-استعلام عن سجل ربط (anchor) محدد.
+الاستعلام عن سجل إرساء (anchor) محدد.
 
 ```bash
 qorechaind query multilayer anchor <anchor_id>
@@ -497,20 +497,20 @@ qorechaind query multilayer anchor <anchor_id>
 
 ### anchors
 
-سرد أحدث عمليات تقديم الربط.
+سرد عمليات إرسال الإرساء الأخيرة.
 
 ```bash
 qorechaind query multilayer anchors [flags]
 ```
 
-| العَلَم         | النوع   | الوصف               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | التصفية حسب معرّف الطبقة        |
-| `--limit`    | uint   | الحد الأقصى للنتائج المُرجعة |
+| الراية       | النوع  | الوصف                             |
+| ------------ | ------ | --------------------------------- |
+| `--layer-id` | string | التصفية حسب معرّف الطبقة          |
+| `--limit`    | uint   | الحد الأقصى لعدد النتائج المعادة  |
 
 ### routing-stats
 
-استعلام عن إحصاءات توجيه المعاملات عبر الطبقات.
+الاستعلام عن إحصاءات توجيه المعاملات عبر الطبقات.
 
 ```bash
 qorechaind query multilayer routing-stats
@@ -518,7 +518,7 @@ qorechaind query multilayer routing-stats
 
 ### simulate-route
 
-محاكاة توجيه المعاملة دون تنفيذ.
+محاكاة توجيه المعاملة دون تنفيذها.
 
 ```bash
 qorechaind query multilayer simulate-route <tx_data_hex>
@@ -526,7 +526,7 @@ qorechaind query multilayer simulate-route <tx_data_hex>
 
 ### params
 
-استعلام عن معلمات وحدة Multilayer.
+الاستعلام عن معاملات وحدة Multilayer.
 
 ```bash
 qorechaind query multilayer params
@@ -538,7 +538,7 @@ qorechaind query multilayer params
 
 ### rollup
 
-استعلام عن تفاصيل rollup محدد.
+الاستعلام عن تفاصيل تجميع (rollup) محدد.
 
 ```bash
 qorechaind query rdk rollup <rollup_id>
@@ -546,19 +546,19 @@ qorechaind query rdk rollup <rollup_id>
 
 ### rollups
 
-سرد جميع عمليات الـ rollup المُسجَّلة.
+سرد جميع التجميعات المسجَّلة.
 
 ```bash
 qorechaind query rdk rollups
 ```
 
-| العَلَم       | النوع   | الوصف                           |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | التصفية: `active` و`paused` و`stopped` |
+| الراية     | النوع  | الوصف                                  |
+| ---------- | ------ | -------------------------------------- |
+| `--status` | string | التصفية: `active`، `paused`، `stopped` |
 
 ### batch
 
-استعلام عن دفعة تسوية محددة.
+الاستعلام عن دفعة تسوية محددة.
 
 ```bash
 qorechaind query rdk batch <rollup_id> <batch_index>
@@ -566,7 +566,7 @@ qorechaind query rdk batch <rollup_id> <batch_index>
 
 ### latest-batch
 
-استعلام عن أحدث دفعة لـ rollup.
+الاستعلام عن أحدث دفعة لتجميع معيّن.
 
 ```bash
 qorechaind query rdk latest-batch <rollup_id>
@@ -574,7 +574,7 @@ qorechaind query rdk latest-batch <rollup_id>
 
 ### suggest-profile
 
-الحصول على توصية بملف rollup بمساعدة الذكاء الاصطناعي.
+الحصول على توصية بملف تعريف للتجميع بمساعدة الذكاء الاصطناعي.
 
 ```bash
 qorechaind query rdk suggest-profile <use_case>
@@ -582,7 +582,7 @@ qorechaind query rdk suggest-profile <use_case>
 
 ### blob
 
-استعلام عن blob DA محدد.
+الاستعلام عن كتلة بيانات (DA blob) محددة.
 
 ```bash
 qorechaind query rdk blob <rollup_id> <blob_index>
@@ -590,25 +590,25 @@ qorechaind query rdk blob <rollup_id> <blob_index>
 
 ### params
 
-استعلام عن معلمات وحدة RDK.
+الاستعلام عن معاملات وحدة RDK.
 
 ```bash
 qorechaind query rdk params
 ```
 
 :::note
-إثباتات سحب الـ rollup وحالة التسوية قابلة للاستعلام أيضًا ضمن مجموعة `rdk`. وتعتمد أوامر الاستعلام الفرعية ومعاملاتها الدقيقة على نوع تسوية الـ rollup لديك؛ راجع وثائق **مجموعة تطوير الـ Rollup** للاطلاع على سطح استعلام السحب/التسوية المعتمد.
+يمكن أيضًا الاستعلام عن إثباتات سحب التجميعات وحالة التسوية ضمن مجموعة `rdk`. تعتمد الأوامر الفرعية للاستعلام ووسائطها الدقيقة على نوع التسوية الخاص بتجميعك؛ راجع وثائق **Rollup Development Kit** للاطلاع على الواجهة المرجعية لاستعلامات السحب/التسوية.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM هي طبقة التعلّم المعزّز التي تضبط معلمات الإجماع. اسم وحدة CLI `rlconsensus` وأوامره الفرعية محفوظة حرفيًا.
+‏PRISM هي طبقة التعلم المعزَّز التي تضبط معاملات الإجماع. اسم وحدة CLI وهو `rlconsensus` وأوامرها الفرعية محفوظة كما هي حرفيًا.
 
 ### agent-status
 
-استعلام عن حالة ووضع وكيل PRISM الحالي.
+الاستعلام عن حالة وكيل PRISM الحالية ووضعه.
 
 ```bash
 qorechaind query rlconsensus agent-status
@@ -616,7 +616,7 @@ qorechaind query rlconsensus agent-status
 
 ### observation
 
-استعلام عن أحدث متجه ملاحظة (observation vector) لـ PRISM.
+الاستعلام عن أحدث متجه ملاحظات لـ PRISM.
 
 ```bash
 qorechaind query rlconsensus observation
@@ -624,7 +624,7 @@ qorechaind query rlconsensus observation
 
 ### reward
 
-استعلام عن مقاييس مكافأة PRISM التراكمية.
+الاستعلام عن مقاييس مكافآت PRISM التراكمية.
 
 ```bash
 qorechaind query rlconsensus reward
@@ -632,7 +632,7 @@ qorechaind query rlconsensus reward
 
 ### params
 
-استعلام عن معلمات وحدة PRISM Consensus.
+الاستعلام عن معاملات وحدة إجماع PRISM.
 
 ```bash
 qorechaind query rlconsensus params
@@ -640,7 +640,7 @@ qorechaind query rlconsensus params
 
 ### policy
 
-استعلام عن تكوين سياسة PRISM النشطة.
+الاستعلام عن تكوين سياسة PRISM النشطة.
 
 ```bash
 qorechaind query rlconsensus policy
@@ -652,7 +652,7 @@ qorechaind query rlconsensus policy
 
 ### staking
 
-استعلام عن مركز staking الـ BTC لعنوان.
+الاستعلام عن مركز تحصيص BTC لعنوان معيّن.
 
 ```bash
 qorechaind query babylon staking <address>
@@ -660,7 +660,7 @@ qorechaind query babylon staking <address>
 
 ### checkpoint
 
-استعلام عن بيانات نقطة تفتيش (checkpoint) BTC لحقبة معطاة.
+الاستعلام عن بيانات نقطة تحقق BTC لحقبة معيّنة.
 
 ```bash
 qorechaind query babylon checkpoint <epoch>
@@ -668,7 +668,7 @@ qorechaind query babylon checkpoint <epoch>
 
 ### params
 
-استعلام عن معلمات وحدة Babylon.
+الاستعلام عن معاملات وحدة Babylon.
 
 ```bash
 qorechaind query babylon params
@@ -680,7 +680,7 @@ qorechaind query babylon params
 
 ### account
 
-استعلام عن تفاصيل الحساب المجرّد (abstract account).
+الاستعلام عن تفاصيل الحساب المجرَّد.
 
 ```bash
 qorechaind query abstractaccount account <address>
@@ -688,10 +688,28 @@ qorechaind query abstractaccount account <address>
 
 ### params
 
-استعلام عن معلمات وحدة Abstract Account.
+الاستعلام عن معاملات وحدة Abstract Account.
 
 ```bash
 qorechaind query abstractaccount params
+```
+
+### permission-schema
+
+الاستعلام عن التصنيف المعياري لأذونات المصادِقات (authenticators) — الأذونات الأحد عشر، وخريطة الرسالة→الإذن، ورسائل إدارة المفاتيح غير القابلة للتفويض (متاح اعتبارًا من إصدار السلسلة **v3.1.85**؛ ويُقدَّم أيضًا عبر REST على المسار `/qorechain/abstractaccount/v1/permission_schema`).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+أدوات مساعدة لبناء تفويضات المصادِقات خارج حِزم SDK: توليد مفتاح اختباري، أو إنتاج **بايتات التوقيع الدقيقة التي تتحقق منها السلسلة** لإجراء مفوَّض عبر مسار Native أو مسار EVM (متاح اعتبارًا من إصدار السلسلة **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
 ```
 
 ---
@@ -700,7 +718,7 @@ qorechaind query abstractaccount params
 
 ### accepted-tokens
 
-سرد الرموز المقبولة لدفع الغاز.
+سرد الرموز المقبولة لدفع رسوم الغاز.
 
 ```bash
 qorechaind query gasabstraction accepted-tokens
@@ -708,7 +726,7 @@ qorechaind query gasabstraction accepted-tokens
 
 ### params
 
-استعلام عن معلمات وحدة Gas Abstraction.
+الاستعلام عن معاملات وحدة Gas Abstraction.
 
 ```bash
 qorechaind query gasabstraction params
@@ -720,7 +738,7 @@ qorechaind query gasabstraction params
 
 ### config
 
-استعلام عن تكوين تشفير FairBlock.
+الاستعلام عن تكوين تشفير FairBlock.
 
 ```bash
 qorechaind query fairblock config
@@ -728,7 +746,7 @@ qorechaind query fairblock config
 
 ### params
 
-استعلام عن معلمات وحدة FairBlock.
+الاستعلام عن معاملات وحدة FairBlock.
 
 ```bash
 qorechaind query fairblock params

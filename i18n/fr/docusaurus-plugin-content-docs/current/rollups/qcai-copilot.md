@@ -1,34 +1,34 @@
 ---
 slug: /rollups/qcai-copilot
-title: QCAI Rollup Copilot
-sidebar_label: QCAI Copilot
+title: Copilote de rollup QCAI
+sidebar_label: Copilote QCAI
 sidebar_position: 7
 ---
 
-# QCAI Rollup Copilot
+# Copilote de rollup QCAI
 
-Le QCAI Rollup Copilot rassemble tout ce que les services consultatifs du réseau
-savent sur un rollup et le condense en une lecture unique, en langage clair : une
-estimation de frais en direct, des recommandations réseau, toute enquête de fraude
-faisant référence au rollup, le statut de l'agent d'apprentissage par renforcement
-et une courte liste de suggestions sur lesquelles vous pouvez agir.
+Le copilote de rollup QCAI rassemble tout ce que les services consultatifs du
+réseau savent sur un rollup donné et le condense en une lecture unique, en
+langage clair : une estimation des frais en temps réel, des recommandations
+réseau, les éventuelles enquêtes anti-fraude faisant référence au rollup, le
+statut de l'agent d'apprentissage par renforcement, ainsi qu'une courte liste
+de suggestions concrètes que vous pouvez appliquer.
 
-Il fonctionne en **best-effort**. Les services consultatifs sont une infrastructure
-optionnelle — si l'un d'eux est injoignable, le Copilot se dégrade gracieusement,
-en abandonnant cette section et en enregistrant un avertissement plutôt qu'en
-faisant échouer l'ensemble de l'appel. Vous obtenez toujours un résultat.
+Il fonctionne en mode **meilleur effort**. Les services consultatifs sont une
+infrastructure optionnelle — si l'un d'eux est injoignable, le copilote se
+dégrade proprement : il omet la section concernée et enregistre un
+avertissement au lieu de faire échouer l'appel entier. Vous obtenez toujours
+un résultat.
 
 ## Un seul appel : `getRollupAdvice`
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    evmRpc: "https://evm.testnet.example", // qor_ JSON-RPC for RL agent reads
-  },
-});
+// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
+// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
+// endpoint config needed; pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const advice = await getRollupAdvice(rdk, "my-roll");
 
@@ -42,26 +42,27 @@ console.log(advice.warnings);               // services that were unreachable
 
 ## Les lectures sous-jacentes
 
-`getRollupAdvice` agrège un ensemble de méthodes en lecture seule que vous pouvez
-aussi appeler directement. Les méthodes REST consultatives résident sous
-`/qorechain/ai/v1/...` :
+`getRollupAdvice` agrège un ensemble de méthodes en lecture seule que vous
+pouvez également appeler directement. Les méthodes REST consultatives sont
+exposées sous `/qorechain/ai/v1/...` :
 
-- `getFeeEstimate(...)` — estimation de frais actuelle.
-- `getNetworkRecommendations(...)` — recommandations de réglage au niveau réseau.
+- `getFeeEstimate(...)` — estimation actuelle des frais.
+- `getNetworkRecommendations(...)` — recommandations de réglage au niveau du
+  réseau.
 - `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — enquêtes
-  ouvertes et une enquête unique par id.
+  ouvertes et enquête individuelle par id.
 - `getCircuitBreakers(...)` — état consultatif des disjoncteurs.
 
-Les lectures d'apprentissage par renforcement utilisent l'espace de noms JSON-RPC
-`qor_*` :
+Les lectures d'apprentissage par renforcement utilisent l'espace de noms
+JSON-RPC `qor_*` :
 
 - `getRLAgentStatus()` — le statut actuel de l'agent.
 - `getRLObservation()` — la dernière observation.
 - `getRLReward()` — le dernier signal de récompense.
 
-Comme il s'agit uniquement de lectures, le Copilot n'a besoin que d'un point de
-terminaison REST (et d'un point de terminaison EVM / JSON-RPC `qor_` pour les
-lectures RL) — pas de signataire.
+Comme il s'agit exclusivement de lectures, le copilote n'a besoin que d'un
+point de terminaison REST (et d'un point de terminaison EVM / JSON-RPC `qor_`
+pour les lectures RL) — aucun signataire n'est requis.
 
 ## CLI
 
@@ -70,6 +71,7 @@ qorollup advise my-roll
 qorollup advise my-roll --json
 ```
 
-`advise` affiche l'avis agrégé, les services injoignables apparaissant comme des
-avertissements plutôt que comme des erreurs. Consultez [Déployer un Rollup](/rollups/deploying-a-rollup)
-pour la CLI opérateur `qorollup` complète.
+`advise` affiche les conseils agrégés, les services injoignables étant signalés
+comme des avertissements plutôt que comme des erreurs. Consultez
+[Déployer un rollup](/rollups/deploying-a-rollup) pour la CLI opérateur
+`qorollup` complète.

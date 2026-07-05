@@ -7,12 +7,23 @@ sidebar_position: 8
 
 # Multi-VM (VM-übergreifende Aufrufe)
 
-Ein Multi-VM-Rollup betreibt eine EVM-Ausführungsschicht, die über ein dediziertes
-**VM-übergreifendes Precompile** in CosmWasm-Contracts aufrufen kann. Das RDK liefert
-die TypeScript-Werkzeuge, um diese Aufrufe zu kodieren, sowie eine Scaffold-Vorlage als Ausgangspunkt.
+Ein Multi-VM-Rollup betreibt eine EVM-Ausführungsschicht, die über ein
+dediziertes **VM-übergreifendes Precompile** CosmWasm-Contracts auf der
+**QoreChain Native**-Laufzeitumgebung (Wasm) aufrufen kann. Das RDK liefert das
+TypeScript-Tooling zum Kodieren dieser Aufrufe sowie eine Scaffold-Vorlage als
+Ausgangspunkt.
 
-> Diese Werkzeuge decken ausschließlich **EVM → CosmWasm** ab. SVM ist eine eigene Laufzeitumgebung und
-> nicht Teil des VM-übergreifenden Precompiles.
+> Dieses Tooling deckt ausschließlich **EVM → QoreChain Native**
+> (CosmWasm-Contracts) ab. SVM ist eine eigene Laufzeitumgebung und nicht Teil
+> des VM-übergreifenden Precompiles.
+
+:::note
+Seit RDK v0.4.2 lautet der VM-Options-Bezeichner der Wasm-Laufzeitumgebung
+**`native`** (QoreChain Native); `cosmwasm` bleibt als Legacy-Alias weiterhin
+gültig, und beide werden auf Protokollebene auf `cosmwasm` abgebildet — die
+Chain, der Explorer und die ABI des VM-übergreifenden Precompiles
+(`executeCrossVMCall`) bleiben unverändert.
+:::
 
 ## Das Precompile
 
@@ -27,8 +38,8 @@ console.log(CROSS_VM_PRECOMPILE); // 0x…0901
 ## Kodieren eines VM-übergreifenden Aufrufs
 
 `encodeCrossVmCalldata` erstellt die Calldata, die Ihr EVM-Contract an das
-Precompile sendet, um einen CosmWasm-Contract aufzurufen. `functionSelector` berechnet den 4-Byte-
-Selektor für eine Solidity-Funktionssignatur.
+Precompile sendet, um einen CosmWasm-Contract aufzurufen. `functionSelector`
+berechnet den 4-Byte-Selektor für eine Solidity-Funktionssignatur.
 
 ```ts
 import { encodeCrossVmCalldata, functionSelector } from "@qorechain/rdk";
@@ -43,9 +54,9 @@ const selector = functionSelector("callCosmwasm(string,bytes)");
 
 ## Die Solidity-Seite
 
-Aus einem EVM-Contract rufen Sie die Precompile-Adresse mit der kodierten Calldata auf.
-Die Vorlage `multivm-rollup` enthält ein `contracts/CrossVmCaller.sol`-Snippet
-in dieser Art:
+Aus einem EVM-Contract rufen Sie die Precompile-Adresse mit der kodierten
+Calldata auf. Die Vorlage `multivm-rollup` enthält ein
+`contracts/CrossVmCaller.sol`-Snippet in dieser Art:
 
 ```solidity
 // contracts/CrossVmCaller.sol
@@ -58,14 +69,15 @@ function callCosmwasm(bytes memory calldata_) internal returns (bytes memory) {
 }
 ```
 
-## Ein Multi-VM-Rollup gerüsten
+## Ein Multi-VM-Rollup per Scaffold erstellen
 
-Eine neue Vorlage, `multivm-rollup`, gerüstet ein EVM-Rollup, das für den Aufruf von CosmWasm verdrahtet ist,
-einschließlich des `CrossVmCaller.sol`-Snippets:
+Eine neue Vorlage, `multivm-rollup`, erstellt per Scaffold ein EVM-Rollup, das
+für den Aufruf von CosmWasm verdrahtet ist, einschließlich des
+`CrossVmCaller.sol`-Snippets:
 
 ```bash
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-
-Vorlagen.
+Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle
+Scaffolder-Vorlagen.

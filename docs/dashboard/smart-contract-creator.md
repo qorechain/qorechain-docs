@@ -28,6 +28,24 @@ From here you can:
 - **Download** the contract as a file in the right format for your chosen blockchain.
 - **Edit** the contract to refine it further.
 
+## Deploy your contract {#deploy}
+
+### On mainnet (EVM) — non-custodial deploy {#deploy-mainnet}
+
+Mainnet deployment is non-custodial: the Dashboard compiles your contract and returns **unsigned** deployment data — it never holds your keys and never signs on your behalf. You sign and broadcast the deployment in your own wallet, and the Dashboard then records the resulting contract.
+
+1. Open the contract you want to deploy (an EVM-target contract) and select **Deploy** on **Mainnet**. If this is your first mainnet action, accept the [one-time risk acknowledgement](/dashboard/overview#risk-acknowledgement).
+2. Connect **MetaMask** if it is not already connected — see [Overview & Getting Started](/dashboard/overview#connect-your-wallet).
+3. The Dashboard compiles the contract and hands the unsigned deployment transaction to your wallet.
+4. Review the transaction in MetaMask — network, gas, and data — then confirm to sign and broadcast it yourself.
+5. Once the deployment is confirmed on-chain, the Dashboard records the resulting contract address alongside your saved contracts.
+
+On mainnet, only **EVM** deploys are available this way for now; **Wasm** and **SVM** deploys are testnet-only.
+
+### On testnet — one click {#deploy-testnet}
+
+The testnet flow is unchanged: the dashboard-managed test wallet signs and submits the deployment for you in one click, so you can iterate quickly with [Faucet](/dashboard/faucet) tokens before going to mainnet. Testnet supports EVM, Wasm, and SVM deploys.
+
 ## Share and reuse
 
 Each generated contract has its own page you can open or share. If you open a contract you do not own, you can **fork** it to start your own copy and continue from there.

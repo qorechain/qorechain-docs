@@ -10,7 +10,7 @@ sidebar_position: 9
 Diese Anleitung beschreibt, wie Sie einen Validator im QoreChain-Netzwerk erstellen, das Pool-Klassifizierungssystem verstehen, einen PQC-Schlüssel für quantenresistente Sicherheit registrieren und Ihren Node überwachen.
 
 :::note
-Diese Anleitung bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.82** ausführt. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) wird empfohlen, um Ihr Setup zu proben, bevor Sie live gehen. Ersetzen Sie die `--chain-id` entsprechend Ihrem Zielnetzwerk.
+Diese Anleitung bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.85** ausführt. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) wird empfohlen, um Ihr Setup zu proben, bevor Sie live gehen. Ersetzen Sie die `--chain-id` entsprechend Ihrem Zielnetzwerk.
 :::
 
 ---

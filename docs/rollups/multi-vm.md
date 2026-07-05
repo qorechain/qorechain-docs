@@ -8,11 +8,19 @@ sidebar_position: 8
 # Multi-VM (cross-VM calls)
 
 A multi-VM rollup runs an EVM execution layer that can call into CosmWasm
-contracts through a dedicated **cross-VM precompile**. The RDK ships the
-TypeScript tooling to encode those calls and a scaffold template to start from.
+contracts on the **QoreChain Native** (Wasm) runtime through a dedicated
+**cross-VM precompile**. The RDK ships the TypeScript tooling to encode those
+calls and a scaffold template to start from.
 
-> This tooling covers **EVM → CosmWasm** only. SVM is a separate runtime and is
-> not part of the cross-VM precompile.
+> This tooling covers **EVM → QoreChain Native** (CosmWasm contracts) only. SVM
+> is a separate runtime and is not part of the cross-VM precompile.
+
+:::note
+As of RDK v0.4.2 the Wasm runtime's VM option identifier is **`native`**
+(QoreChain Native); `cosmwasm` remains an accepted legacy alias, and both map to
+`cosmwasm` on the wire — the chain, explorer, and the cross-VM precompile ABI
+(`executeCrossVMCall`) are unchanged.
+:::
 
 ## The precompile
 

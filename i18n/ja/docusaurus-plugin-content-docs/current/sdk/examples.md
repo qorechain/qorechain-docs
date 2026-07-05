@@ -7,30 +7,33 @@ sidebar_position: 7
 
 # サンプル
 
-実行可能な 7 つの TypeScript サンプルが、SDK モノレポの
+実行可能な TypeScript サンプルは、SDK モノレポの
 [`examples/`](https://github.com/qorechain/qorechain-sdk/tree/main/examples)
-ディレクトリにあります。各フォルダは独立したワークスペースパッケージであり、
-それぞれ独自の `README.md`、`.env.example`、そして単一の `index.ts` を備えています。これらは
-環境変数からエンドポイントとニーモニックを読み取り、妥当な localhost のデフォルト値を持ちます。
-また、ネットワークに依存するものは、到達可能なノードが存在しない場合にヒントを添えて
-正常に失敗します。
+ディレクトリにあります。以下で紹介するものに加えて、`ai-preflight`、
+`cross-vm-call`、`react-dapp`、`register-sidechain`、`rollup-lifecycle`、
+`amm-swap`、`connect-keplr`、`evm-nft`、`subscribe-blocks` も含まれています。各フォルダは
+自己完結型のワークスペースパッケージで、
+それぞれに `README.md`、`.env.example`、および単一の `index.ts` が用意されています。エンドポイントと
+ニーモニックは環境変数から読み込まれ、妥当な localhost のデフォルト値が設定されており、
+ネットワークに依存するサンプルは、ノードに到達できない場合にヒントを表示して
+適切に失敗するようになっています。
 
-リポジトリのルートから一度インストールすれば、任意のサンプルを実行できます。
+リポジトリのルートで一度インストールすれば、任意のサンプルを実行できます:
 
 ```bash
 pnpm install
 pnpm --filter @qorechain/example-pqc-hybrid-sign start
 ```
 
-> テスト用のニーモニックまたは生成した鍵のみを使用してください。本物のシークレットを決してコミットしないでください。
+> テスト用のニーモニックまたは生成した鍵のみを使用してください。実際のシークレットは絶対にコミットしないでください。
 
-以下のスニペットは、各サンプルの `index.ts` を凝縮したものです。完全で実行可能なプログラムについては、
+以下のスニペットは各サンプルの `index.ts` を要約したものです。完全に実行可能なプログラムについては、
 リンク先のソースを参照してください。
 
 ## connect-and-query
 
-クライアントを作成し、公開されているチェーンの状態を読み取ります。ネイティブの bank 残高と、
-集約されたトークノミクスのスナップショットを取得します。到達可能なノードが必要です。
+クライアントを作成し、公開されているチェーン状態 — ネイティブのバンク残高と
+トークノミクスの集計スナップショット — を読み取ります。到達可能なノードが必要です。
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -51,9 +54,9 @@ const overview = await client.qor.getTokenomicsOverview();
 
 ## send-qor
 
-ニーモニックからネイティブ（`qor1...`）アカウントを導出し、QOR 送金をブロードキャストします。
-derive → sign → simulate → estimate fee → `bankSend` の流れです。到達可能なコンセンサス RPC、
-REST、そして資金を持つアカウントが必要です。
+ニーモニックからネイティブ（`qor1...`）アカウントを導出し、QOR の送金を
+ブロードキャストします: 導出 → 署名 → シミュレーション → 手数料見積もり → `bankSend`。
+到達可能なコンセンサス RPC と REST、および資金のあるアカウントが必要です。
 
 ```ts
 import {
@@ -79,9 +82,9 @@ console.log(result.transactionHash);
 
 ## svm-transfer
 
-`@qorechain/svm` を使って、QoreChain の Solana 互換（SVM）ランタイム上で memo 命令付きの
-SOL 送金を構築します。トランザクションをオフラインで構築して出力します。送信するには、
-到達可能な SVM JSON-RPC と資金を持つアカウントが必要です。
+`@qorechain/svm` を使って、QoreChain の Solana 互換（SVM）ランタイム上で
+メモ命令付きの SOL 送金を構築します。トランザクションの構築と表示は
+オフラインで行われます。送信には到達可能な SVM JSON-RPC と資金のあるアカウントが必要です。
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -107,10 +110,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 ## evm-precompile
 
-`@qorechain/evm`（viem の薄いラッパー層）を使って、読み取り専用の QoreChain プリコンパイルを
-呼び出し、ERC-20 残高を読み取ります。EVM のチェーン ID は `eth_chainId` によって自動検出されます。
-プリコンパイルを持たないノードでは、これらの呼び出しは「feature not present」をスローし、
-呼び出しごとに報告されます。
+`@qorechain/evm`（viem の薄いラッパー）を使って、読み取り専用の QoreChain
+プリコンパイルを呼び出し、ERC-20 残高を読み取ります。EVM チェーン ID は
+`eth_chainId` で自動検出されます。プリコンパイルのないノードでは、該当する呼び出しは
+"feature not present" をスローし、呼び出しごとに報告されます。
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -127,10 +130,11 @@ const bal = await erc20.balanceOf(client.publicClient, token, account);
 
 ## pqc-hybrid-sign
 
-ML-DSA-87（Dilithium-5、FIPS 204）によるポスト量子署名です。**完全にオフラインで動作し、
-ノードは不要です。** パート 1 ではメッセージに署名して検証します（改ざんチェック付き）。
-パート 2 では、古典的な secp256k1 署名と ML-DSA-87 署名の両方を `PQCHybridSignature` 拡張として
-保持するハイブリッドトランザクションを構築し、その後 PQC 部分をローカルで検証します。
+ML-DSA-87（Dilithium-5、FIPS 204）によるポスト量子署名。**完全に
+オフラインで動作 — ノードは不要です。** パート 1 では、メッセージの署名と検証（改ざん
+チェック付き）を行います。パート 2 では、古典的な secp256k1 署名と ML-DSA-87 署名の両方を
+`PQCHybridSignature` 拡張として含むハイブリッドトランザクションを構築し、
+PQC 側をローカルで検証します。
 
 ```ts
 import {
@@ -162,8 +166,8 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-デプロイ済みの CosmWasm コントラクトに対して、読み取り専用のスマートクエリを実行します。
-到達可能なコンセンサス RPC とデプロイ済みのコントラクトアドレスが必要です。
+デプロイ済みの CosmWasm コントラクトに対して読み取り専用のスマートクエリを実行します。
+到達可能なコンセンサス RPC と、デプロイ済みのコントラクトアドレスが必要です。
 
 ```ts
 import {
@@ -186,9 +190,9 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 ## read-tokenomics
 
-EVM JSON-RPC エンドポイント経由で提供される、型付きの `qor_*` JSON-RPC 名前空間
-（`client.qor`）を通じてトークノミクスの状態を読み取ります。3 つの読み取りは
-互いに独立しているため、他が利用できなくてもそれぞれが報告されます。
+型付きの `qor_*` JSON-RPC 名前空間（`client.qor`）を通じてトークノミクスの状態を
+読み取ります。これは EVM JSON-RPC エンドポイント経由で提供されます。3 つの読み取りは
+互いに独立しているため、他が利用できない場合でもそれぞれ個別に報告されます。
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -206,3 +210,67 @@ const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
 [ソース](https://github.com/qorechain/qorechain-sdk/tree/main/examples/read-tokenomics)
+
+## unified-wallet
+
+**統合 eth ネイティブアカウント**を導出します（SDK 0.6.0）: 1 つの `eth_secp256k1` 鍵が、
+1 つの共有残高を持つ QoreChain の 3 つのアドレスすべてとして表現され、さらに
+アドレスに紐付いた ML-DSA-87 鍵ペアも導出されます。完全にオフラインで動作します。
+
+```ts
+import {
+  deriveUnifiedAccount,
+  qoreAddresses,
+  unifiedAccountFromSeed,
+} from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+console.log(account.cosmos); // "qor1…"  — Native lane
+console.log(account.evm);    // "0x…"    — EVM lane
+console.log(account.svm);    // base58   — SVM lane (same 20 bytes)
+
+// Decode any one encoding into all three.
+const all = qoreAddresses({ evm: account.evm });
+
+// Or derive from a raw 32-byte seed instead of a mnemonic.
+const fromSeed = unifiedAccountFromSeed(seed32);
+```
+
+[ソース](https://github.com/qorechain/qorechain-sdk/tree/main/examples/unified-wallet)
+
+## authenticator-spend
+
+Native オーセンティケーターレーン上で、リレイヤーが送信する `MsgExecuteCosmos` を
+構築します（SDK 0.7.0、チェーン v3.1.85）: Phantom 形式の ed25519 鍵が
+ドメイン分離された認証ダイジェストに署名し、生成されたメッセージはリレイヤーが
+ブロードキャストできる状態になります（手数料はリレイヤーが支払い、外部鍵が ML-DSA の
+共同署名を生成することはありません）。ドライラン — ノードは不要です。
+
+```ts
+import {
+  buildPhantomExecuteCosmos,
+  cosmosAuthSignBytes,
+  qorechainRegistry,
+} from "@qorechain/sdk";
+
+// Show the exact 32-byte digest the wallet signs (byte-exact vs the chain).
+const digest = cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce });
+
+// Build the relayer-ready message: the Phantom wallet signs the digest.
+const msg = await buildPhantomExecuteCosmos({
+  wallet,                 // window.solana in a browser
+  relayer,                // submits + pays fees (a DIFFERENT account)
+  chainId,
+  account,                // the canonical PQC-required owner
+  to,
+  amount: "100uqor",
+  nonce,                  // the per-authenticator sequence
+});
+
+// Prove it encodes via the default registry (what the relayer broadcasts).
+const bytes = qorechainRegistry().encode(msg);
+```
+
+[ソース](https://github.com/qorechain/qorechain-sdk/tree/main/examples/authenticator-spend)
+· 完全なウォークスルー:
+[オーセンティケーターと委任支出](/sdk/guides/authenticators)

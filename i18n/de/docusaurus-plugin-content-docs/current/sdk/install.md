@@ -12,7 +12,20 @@ EVM- und SVM-Adapter (`@qorechain/evm`, `@qorechain/svm`), das React-Kit
 (`@qorechain/react`) sowie die Clients für Python, Go, Rust und Java sind allesamt
 in ihren jeweiligen Registries **veröffentlicht** und bieten vollständige Parität mit der
 nativen Chain (typisierte Nachrichten, Abfragen, der Tx-Lebenszyklus, hybride PQC-Transaktionen
-sowie WebSocket-Abonnements). Wählen Sie unten Ihre Sprache.
+sowie WebSocket-Abonnements). Das aktuelle Release ist **0.7.0** und bringt
+vereinheitlichte eth-native Accounts, den konsenskritischen Fix der
+Hybrid-Extension-Kodierung sowie die Authenticator-Lanes (siehe den
+[Authenticators-Leitfaden](/sdk/guides/authenticators)).
+Wählen Sie unten Ihre Sprache.
+
+:::caution Upgrade von 0.6.0 oder früher
+SDK **0.6.1** behob einen konsenskritischen Bug: Die Tx-Body-Extension
+`/qorechain.pqc.v1.PQCHybridSignature` wurde JSON-serialisiert in
+`Any.value` geschrieben und **von der Chain bei CheckTx abgelehnt**. Hybride
+(PQC + klassische) Transaktionen, die mit SDK ≤ 0.6.0 erstellt wurden, werden
+on-chain abgelehnt — aktualisieren Sie in jeder von Ihnen verwendeten Sprache
+auf 0.6.1 oder neuer.
+:::
 
 ## TypeScript
 
@@ -33,7 +46,7 @@ viem ist eine **Peer-Abhängigkeit** — installieren Sie es zusätzlich:
 npm i @qorechain/evm viem
 ```
 
-Veröffentlicht auf npm unter `0.5.0`.
+Veröffentlicht auf npm unter `0.7.0`.
 
 ### SVM-Adapter
 
@@ -45,7 +58,7 @@ Veröffentlicht auf npm unter `0.5.0`.
 npm i @qorechain/svm @solana/web3.js
 ```
 
-Veröffentlicht auf npm unter `0.5.0`.
+Veröffentlicht auf npm unter `0.7.0`.
 
 ### React-Kit
 
@@ -57,7 +70,15 @@ Provider, Hooks sowie die Komponenten `ConnectButton` / `QuantumSafeBadge`.
 npm i @qorechain/react
 ```
 
-Veröffentlicht auf npm unter `0.5.0`. Siehe den [React-Kit-Leitfaden](/sdk/guides/react).
+Veröffentlicht auf npm unter `0.7.0`. Siehe den [React-Kit-Leitfaden](/sdk/guides/react).
+
+### Scaffolder
+
+`create-qorechain-dapp` (npm, `0.7.0`) erzeugt eine sofort lauffähige dApp:
+
+```bash
+npm create qorechain-dapp@latest my-dapp
+```
 
 ## Python
 
@@ -67,7 +88,7 @@ pip install qorechain-sdk
 
 Erfordert Python 3.10+. Das Paket liefert Type Hints und einen `py.typed`-Marker.
 
-> Die Distribution wird als `qorechain-sdk` installiert (veröffentlicht auf PyPI unter `0.5.0`),
+> Die Distribution wird als `qorechain-sdk` installiert (veröffentlicht auf PyPI unter `0.7.0`),
 > wird aber **als `qorsdk` importiert**:
 >
 > ```python
@@ -89,7 +110,7 @@ import (
 )
 ```
 
-Veröffentlicht als eigenständiges Go-Modul unter `packages/go/v0.5.0`.
+Veröffentlicht als eigenständiges Go-Modul (getaggt als `packages/go/v0.7.0`).
 
 ## Rust
 
@@ -97,17 +118,21 @@ Veröffentlicht als eigenständiges Go-Modul unter `packages/go/v0.5.0`.
 cargo add qorechain-sdk
 ```
 
-Oder in `Cargo.toml`:
+Oder, um die `0.7.0`-Quellen direkt aus dem Repository zu verwenden:
 
 ```toml
 [dependencies]
-qorechain-sdk = "0.5"
+qorechain-sdk = { git = "https://github.com/qorechain/qorechain-sdk" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
-Erfordert Rust 1.74+. Die Lese-Clients sind asynchron (Tokio).
+Erfordert Rust 1.74+. Die Lese-Clients sind asynchron (Tokio). Die Crate wird als
+`qorechain` importiert (`use qorechain;`).
 
-> Veröffentlicht auf crates.io als `qorechain-sdk` unter `0.5.0`.
+> Veröffentlicht auf crates.io als `qorechain-sdk`. `cargo add qorechain-sdk`
+> installiert die **zuletzt veröffentlichte Crate**, die derzeit hinter dem
+> `0.7.0`-Release zurückliegt — installieren Sie von crates.io (zuletzt
+> veröffentlicht) oder aus dem Repository, um die neueste API-Oberfläche zu erhalten.
 
 ## Java
 
@@ -117,17 +142,17 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.5.0</version>
+  <version>0.7.0</version>
 </dependency>
 ```
 
 Oder Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.5.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.7.0'
 ```
 
-> Veröffentlicht auf Maven Central als `io.github.qorechain:qorechain-sdk:0.5.0`.
+> Veröffentlicht auf Maven Central als `io.github.qorechain:qorechain-sdk:0.7.0`.
 
 ## Weiter
 

@@ -8,7 +8,7 @@ sidebar_position: 9
 # Watchtower
 
 Watchtower는 옵티미스틱 롤업을 위한 자동 챌린저 프레임워크입니다. 롤업의
-정산 배치를 추적하고, 각 새 배치와 해당 챌린지 윈도우 마감 시각을 노출하며,
+정산 배치를 추적하고, 각 새 배치와 해당 챌린지 윈도우 마감 시각을 알려주며,
 **여러분**의 유효성 술어가 배치를 거부할 때 이를 `onInvalid` 콜백으로 전달하여
 챌린지를 연결할 수 있게 합니다.
 
@@ -21,12 +21,10 @@ Watchtower는 옵티미스틱 롤업을 위한 자동 챌린저 프레임워크�
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {
@@ -53,7 +51,7 @@ const watcher = watchBatches(rdk, "my-roll", {
 watcher.stop();
 ```
 
-프레임워크가 노출하는 것:
+프레임워크가 알려주는 것:
 
 - `onBatch`를 통한 **새 배치**,
 - `onDeadline`을 통한 **챌린지 윈도우 마감**, 그리고

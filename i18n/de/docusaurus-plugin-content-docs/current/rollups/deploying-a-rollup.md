@@ -7,23 +7,23 @@ sidebar_position: 3
 
 # Ein Rollup bereitstellen
 
-Sie können ein anwendungsspezifisches Rollup auf drei Arten bereitstellen: über das **Dashboard** (ein geführter No-Code-Assistent), über die Chain-**CLI** (`qorechaind`, volle Kontrolle über die On-Chain-Transaktion) oder programmatisch mit dem **TypeScript-RDK** (`@qorechain/rdk` plus dem `create-qorechain-rollup`-Scaffolder). Diese Seite behandelt alle drei Wege sowie den Betreiber-Lebenszyklus und die Batch-Befehle.
+Sie können ein anwendungsspezifisches Rollup auf drei Arten bereitstellen: über das **Dashboard** (ein geführter No-Code-Assistent), über die Chain-**CLI** (`qorechaind`, volle Kontrolle über die On-Chain-Transaktion) oder programmatisch mit dem **TypeScript-RDK** (`@qorechain/rdk` plus dem Scaffolder `create-qorechain-rollup`). Diese Seite behandelt alle drei Wege sowie den Operator-Lebenszyklus und die Batch-Befehle.
 
 :::note
-Die folgenden Befehle zielen auf das **`qorechain-diana`**-Testnet ab. Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit der Chain-Version **v3.1.82** — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte, wenn Sie auf dem Mainnet bereitstellen. Validieren Sie jede Bereitstellung zuerst auf dem Testnet.
+Die folgenden Befehle richten sich an das **`qorechain-diana`**-Testnet. Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.85** — ersetzen Sie beim Bereitstellen auf dem Mainnet die Chain-ID und die Endpunkte entsprechend. Validieren Sie jede Bereitstellung zuerst im Testnet.
 :::
 
 ---
 
-## Anforderungen
+## Voraussetzungen
 
-| Anforderung | Details |
+| Voraussetzung | Details |
 | ----------- | ------- |
-| **Mindest-Stake** | Beim Erstellen des Rollups wird ein Stake-Bond in QOR hinterlegt |
-| **Erstellungs-Burn** | Ein Bruchteil des gestakten Betrags wird bei der Erstellung dauerhaft verbrannt; der Rest wird treuhänderisch gehalten und zurückgegeben, wenn das Rollup gestoppt wird |
+| **Mindest-Stake** | Beim Erstellen des Rollups wird ein Stake-Bond in QOR hinterlegt (Escrow) |
+| **Erstellungs-Burn** | Ein Bruchteil des gestakten Betrags wird bei der Erstellung dauerhaft verbrannt; der Rest bleibt im Escrow und wird zurückgegeben, wenn das Rollup gestoppt wird |
 | **Konto** | Ein finanziertes QoreChain-Konto mit ausreichendem Guthaben für den Stake plus Transaktionsgebühren |
 
-Fragen Sie die Live-Modulparameter für den aktuellen Mindest-Stake und die Burn-Rate ab, bevor Sie bereitstellen:
+Fragen Sie vor der Bereitstellung die aktuellen Modulparameter für den derzeitigen Mindest-Stake und die Burn-Rate ab:
 
 ```bash
 qorechaind query rdk config
@@ -33,36 +33,36 @@ qorechaind query rdk config
 
 ## Bereitstellung über das Dashboard (Tools → Rollups)
 
-Das Dashboard bietet unter **Tools → Rollups** einen geführten **Deploy a Rollup**-Assistenten. Es ist der schnellste Weg, um ein anwendungsspezifisches Rollup zu starten, ohne eine Transaktion von Hand zusammenzustellen.
+Das Dashboard bietet unter **Tools → Rollups** einen geführten Assistenten **Deploy a Rollup**. Er ist der schnellste Weg, ein app-spezifisches Rollup zu starten, ohne eine Transaktion von Hand zusammenzubauen.
 
 ### Schritte
 
 1. **Anmelden.** Der Assistent erfordert eine authentifizierte Sitzung, um bereitzustellen und Ihre bestehenden Bereitstellungen aufzulisten.
-2. **Benennen Sie Ihr Rollup.** Geben Sie einen Rollup-Namen ein (2–41 Zeichen: Buchstaben, Zahlen, Leerzeichen, Bindestriche oder Unterstriche).
-3. **Wählen Sie eine virtuelle Maschine.** QoreChain ist eine Triple-VM-Chain, sodass Ihr Rollup eine der folgenden ausführen kann:
-   * **EVM** — Solidity-/Vyper-Verträge mit vollständigem Ethereum-Tooling (Hardhat, Foundry, MetaMask)
-   * **CosmWasm** — Rust-Smart-Contracts auf der Cosmos-SDK-Laufzeitumgebung, mit nativem IBC
-   * **SVM** — die Solana Virtual Machine, für Apps mit paralleler Ausführung und hohem Durchsatz
-4. **Wählen Sie eine Datenverfügbarkeits-Schicht.** Wo Ihr Rollup Transaktionsdaten veröffentlicht, sodass jeder den Zustand rekonstruieren kann: **QoreChain DA**, **Celestia** oder **EigenDA**. Beachten Sie, dass EigenDA eine Option auf Dashboard-Ebene ist, während die On-Chain-`x/rdk`-DA-Backends native, Celestia oder both sind — siehe [Datenverfügbarkeit](/rollups/data-availability).
-5. **Legen Sie ein Gas-Token fest.** Das Token, das zur Bezahlung der Ausführung auf Ihrem Rollup verwendet wird. Standardmäßig **QOR**; geben Sie ein benutzerdefiniertes Symbol ein, um Ihr eigenes natives Token zu verwenden.
-6. **Wählen Sie einen Sequencer.** Wer Transaktionen vor dem Settlement ordnet: **Shared sequencer** (das gemeinsame QoreChain-Set), **Dedicated (single)** (betreiben Sie Ihren eigenen einzelnen Sequencer) oder **Decentralized** (ein berechtigungsfreies Sequencer-Set).
-7. **Wählen Sie ein Settlement-Ziel.** Wo das Rollup seine State-Roots und Validitätsbeweise verankert: **QoreChain mainnet** oder **Ethereum**.
-8. **Bereitstellen.** Senden Sie den Assistenten ab. Die Bereitstellung wird von **The Qore Trust** überprüft, bevor das Rollup live geht, sodass ein frisch eingereichtes Rollup mit dem Status **provisioning** erscheint, bis die Überprüfung abgeschlossen ist.
+2. **Rollup benennen.** Geben Sie einen Rollup-Namen ein (2–41 Zeichen: Buchstaben, Zahlen, Leerzeichen, Bindestriche oder Unterstriche).
+3. **Virtuelle Maschine wählen.** QoreChain ist eine Triple-VM-Chain, Ihr Rollup kann daher auf einer der folgenden laufen:
+   * **EVM** — Solidity-/Vyper-Verträge mit vollem Ethereum-Tooling (Hardhat, Foundry, MetaMask)
+   * **CosmWasm** — Rust-Smart-Contracts auf der Cosmos SDK-Laufzeit, mit nativem IBC
+   * **SVM** — die Solana Virtual Machine, für parallel ausführende Apps mit hohem Durchsatz
+4. **Data-Availability-Layer wählen.** Wo Ihr Rollup Transaktionsdaten veröffentlicht, damit jeder den Zustand rekonstruieren kann: **QoreChain DA**, **Celestia** oder **EigenDA**. Beachten Sie, dass EigenDA eine Option auf Dashboard-Ebene ist, während die On-Chain-DA-Backends von `x/rdk` native, Celestia oder beides sind — siehe [Data Availability](/rollups/data-availability).
+5. **Gas-Token festlegen.** Das Token, mit dem die Ausführung auf Ihrem Rollup bezahlt wird. Standard ist **QOR**; geben Sie ein eigenes Symbol ein, um Ihr eigenes natives Token zu verwenden.
+6. **Sequencer wählen.** Wer Transaktionen vor dem Settlement ordnet: **Shared sequencer** (das gemeinsame QoreChain-Set), **Dedicated (single)** (Sie betreiben einen eigenen einzelnen Sequencer) oder **Decentralized** (ein permissionless Sequencer-Set).
+7. **Settlement-Ziel wählen.** Wo das Rollup seine State-Roots und Validitätsbeweise verankert: **QoreChain-Mainnet** oder **Ethereum**.
+8. **Bereitstellen.** Senden Sie den Assistenten ab. Die Bereitstellung wird von **The Qore Trust** geprüft, bevor das Rollup live geht — ein frisch eingereichtes Rollup erscheint daher mit dem Status **provisioning**, bis die Prüfung abgeschlossen ist.
 
-Ihre eingereichten Rollups erscheinen in der Liste **Your rollups** mit ihrer VM, DA-Schicht, ihrem Gas-Token, Sequencer, Settlement-Ziel und aktuellen Status.
+Ihre eingereichten Rollups erscheinen in der Liste **Your rollups** mit ihrer VM, dem DA-Layer, dem Gas-Token, dem Sequencer, dem Settlement-Ziel und dem aktuellen Status.
 
 :::note
-Der Dashboard-Assistent präsentiert benutzerfreundliche Auswahlmöglichkeiten auf Produktebene und leitet die Bereitstellung durch eine überprüfte Pipeline. Die CLI unten arbeitet direkt gegen die On-Chain-Message-Schnittstelle des `x/rdk`-Moduls. Beide teilen sich dieselben zugrundeliegenden Konzepte (VM, DA, Sequencer, Settlement), legen sie aber auf unterschiedlichen Ebenen offen.
+Der Dashboard-Assistent präsentiert benutzerfreundliche Auswahlmöglichkeiten auf Produktebene und leitet die Bereitstellung durch eine geprüfte Pipeline. Die CLI unten arbeitet direkt gegen die On-Chain-Message-Oberfläche des `x/rdk`-Moduls. Beide teilen dieselben zugrunde liegenden Konzepte (VM, DA, Sequencer, Settlement), stellen sie aber auf unterschiedlichen Abstraktionsebenen bereit.
 :::
 
 ---
 
 ## Bereitstellung über die CLI
 
-Die CLI erstellt das Rollup direkt on-chain. `create-rollup` nimmt drei positionsbezogene Argumente entgegen — die Rollup-ID, ein Profil und den Stake-Betrag (in `uqor`) — plus ein optionales `--vm`-Flag.
+Die CLI erstellt das Rollup direkt on-chain. `create-rollup` nimmt drei Positionsargumente entgegen — die Rollup-ID, ein Profil und den Stake-Betrag (in `uqor`) — plus ein optionales `--vm`-Flag.
 
 :::tip
-Ab der Chain-Version **v3.1.74** **wendet `create-rollup` das Preset des gewählten Profils automatisch an** — Settlement-Modus, Sequencer, DA, Gas-Modell und VM werden alle aus dem Preset übernommen. Sie müssen sie nicht mehr von Hand setzen (zuvor hat die Message eine sovereign-Konfiguration fest kodiert). Das `--vm`-Flag ist jetzt **standardmäßig leer**, sodass die VM des Profils gilt, sofern Sie sie nicht ausdrücklich überschreiben.
+Seit Chain-Version **v3.1.74** wendet `create-rollup` **das Preset des gewählten Profils automatisch an** — Settlement-Modus, Sequencer, DA, Gas-Modell und VM werden alle aus dem Preset übernommen. Sie müssen sie nicht mehr von Hand setzen (zuvor kodierte die Message eine Sovereign-Konfiguration fest). Das `--vm`-Flag ist jetzt **standardmäßig leer**, sodass die VM des Profils gilt, sofern Sie sie nicht explizit überschreiben.
 :::
 
 ```bash
@@ -72,7 +72,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount] \
   --fees 500uqor
 ```
 
-**Beispiel** — ein Rollup aus dem `defi`-Preset erstellen (Settlement, Sequencer, DA und VM stammen alle aus dem Preset; `defi` löst sich zu zk-Settlement auf der EVM auf):
+**Beispiel** — Erstellen eines Rollups aus dem `defi`-Preset (Settlement, Sequencer, DA und VM kommen alle aus dem Preset; `defi` löst sich zu zk-Settlement auf der EVM auf):
 
 ```bash
 qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
@@ -85,11 +85,11 @@ qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
 
 | Flag | Standard | Beschreibung |
 | ---- | ------- | ----------- |
-| `--vm` | *(leer — verwendet die VM des Profils)* | Überschreiben Sie den Rollup-VM-Typ: `evm`, `cosmwasm`, `svm` oder `custom`. Nicht setzen, um die VM des Presets anzuwenden. |
+| `--vm` | *(leer — die VM des Profils wird verwendet)* | Überschreibt den Rollup-VM-Typ: `evm`, `cosmwasm`, `svm` oder `custom`. Nicht setzen, um die VM des Presets anzuwenden. (In den RDK-Clients ist die Wasm-Laufzeit der VM-Typ **`native`** — QoreChain Native — mit `cosmwasm` als beibehaltenem Legacy-Alias; `cosmwasm` ist der On-Wire-Wert, den dieses Chain-Level-Flag entgegennimmt.) |
 
-Das `[profile]`-Argument wählt eine Preset-Konfiguration aus, die automatisch angewendet wird — siehe **[Preset-Profile](/rollups/preset-profiles)**. Der `[stake-amount]` ist der Bond in `uqor`.
+Das Argument `[profile]` wählt eine Preset-Konfiguration aus, die automatisch angewendet wird — siehe **[Preset-Profile](/rollups/preset-profiles)**. Das `[stake-amount]` ist der Bond in `uqor`.
 
-### Überprüfen, was Sie bereitgestellt haben
+### Prüfen, was Sie bereitgestellt haben
 
 ```bash
 # Query a specific rollup by ID
@@ -103,16 +103,26 @@ qorechaind query rdk list-rollups
 
 ## Bereitstellung mit dem TypeScript-RDK (`@qorechain/rdk`) {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-Das Rollup Development Kit wird als zwei öffentliche npm-Pakete ausgeliefert, die dasselbe On-Chain-`x/rdk`-Modul wie die CLI ansteuern, über öffentliches RPC/REST/gRPC/JSON-RPC und jeden cosmjs-`OfflineSigner`:
+Das Rollup Development Kit wird als zwei öffentliche npm-Pakete ausgeliefert, die dasselbe On-Chain-Modul `x/rdk` ansteuern wie die CLI — über öffentliches RPC/REST/gRPC/JSON-RPC und jeden cosmjs-`OfflineSigner`:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.0`) — das TypeScript-SDK: ein Config-Builder mit Preset-Profilen, Transaktions-Helfer für die Rollup- und Settlement-Batch-Lebenszyklen, native DA, typisierte Lese-Clients und die v0.4-Ergänzungen — quantensichere Settlement-Quittungen, der QCAI Rollup Copilot, Cross-VM-Calldata-Helfer und der Watchtower.
-* **`create-qorechain-rollup`** (`v0.4.0`) — ein Scaffolder, der pro Profil eine lauffähige Starter-Vorlage klont (einschließlich der `multivm-rollup`-Vorlage).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.4`) — das TypeScript-SDK: ein Config-Builder mit Preset-Profilen, Transaktions-Helfer für die Rollup- und Settlement-Batch-Lebenszyklen, native DA, typisierte Read-Clients und die v0.4-Neuerungen — quantensichere Settlement-Receipts, der QCAI Rollup Copilot, Cross-VM-Calldata-Helfer und der Watchtower.
+* **`create-qorechain-rollup`** (`v0.4.4`) — ein Scaffolder, der pro Profil ein lauffähiges Starter-Template klont (einschließlich des Templates `multivm-rollup`).
 
-Diese sind auf npm veröffentlicht. Das Repo liefert auch eine veröffentlichte Betreiber-CLI aus, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.0`), mit den Befehlen `doctor`, `create`, `status`, `watch`, `params`, `suggest`, Lebenszyklus (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` und `faucet` sowie den v0.4-Befehlen `receipt`, `advise` und `watchtower`.
+Diese sind auf npm veröffentlicht. Das Repository liefert außerdem eine veröffentlichte Operator-CLI, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.4`), mit den Befehlen `doctor`, `create`, `status`, `watch`, `params`, `suggest`, Lifecycle (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` und `faucet`, plus den v0.4-Befehlen `receipt`, `advise` und `watchtower`.
+
+Highlights seit dem initialen v0.4.0-Release:
+
+* **v0.4.2 — funktioniert out of the box gegen das Live-Netzwerk.** Die Presets `mainnet` und `testnet` liefern jetzt die öffentlichen `qore.host`-Endpunkte mit (REST unter `api.qore.host` / `api-testnet.qore.host`), sodass `createRdkClient({ network })` die Chain ohne manuelle `endpoints` erreicht — überschreiben Sie sie nur, um Ihren eigenen Node anzusteuern. Dasselbe Release benannte den Wasm-Rollup-VM-Bezeichner in **`native`** (QoreChain Native) um; `cosmwasm` bleibt ein akzeptierter Legacy-Alias, und beide werden on-wire auf `cosmwasm` abgebildet — Chain, Explorer und Dashboard sind unverändert.
+* **v0.4.3 — Fix der Hybrid-Signatur-Kodierung** für den TypeScript-Signierpfad (siehe die Warnung unten).
+* **v0.4.4 — folgt `@qorechain/sdk` `^0.7.0`**, dem SDK-Release für die Authenticator-Lanes der Chain **v3.1.85**, sodass diese Fähigkeiten die TypeScript-Nutzer des RDK direkt über das SDK erreichen. Keine RDK-API-Änderung.
+
+:::caution
+**TypeScript-Nutzer müssen RDK ≥ 0.4.3 verwenden.** Frühere Releases kodierten die hybride PQC-Transaktionserweiterung fehlerhaft, sodass die Chain jede hybrid-signierte Transaktion ablehnte. v0.4.3 (über `@qorechain/sdk` ≥ 0.6.1) behebt die Kodierung. Nur der TypeScript-Hybrid-Signierpfad war betroffen — die Python-, Go-, Rust- und Java-Clients signieren rein klassisch und waren nie betroffen.
+:::
 
 #### Python-, Go-, Rust- und Java-Clients
 
-Neben dem TypeScript-Paket stellt das RDK vollständige **Python**-, **Go**-, **Rust**- und **Java**-Clients bereit, die die TypeScript-Schnittstelle spiegeln: der Config-Builder mit Validierung, die fünf Preset-Profile, Denom-/Economics-/bech32-Hilfsfunktionen, Binary-Merkle- und Withdrawal-Proof-Helfer, Rollup-Manifeste, REST- und `qor_`-JSON-RPC-Lese-Clients, Preflight-/Health-Checks, Konten (Mnemonic → `qor`-Adresse) und **Transaktionssignierung + Broadcast** (`SIGN_MODE_DIRECT`). Alle sind gegen gemeinsame sprachübergreifende Golden Vectors verifiziert und in ihren Registries **veröffentlicht**:
+Neben dem TypeScript-Paket stellt das RDK vollständige **Python**-, **Go**-, **Rust**- und **Java**-Clients bereit, die die TypeScript-Oberfläche spiegeln: den Config-Builder mit Validierung, die fünf Preset-Profile, Denom-/Ökonomie-/Bech32-Utilities, Binary-Merkle- und Withdrawal-Proof-Helfer, Rollup-Manifeste, REST- und `qor_`-JSON-RPC-Read-Clients, Preflight-/Health-Checks, Konten (Mnemonic → `qor`-Adresse) sowie **Transaktionssignierung + Broadcast** (`SIGN_MODE_DIRECT`). Alle sind gegen gemeinsame sprachübergreifende Golden Vectors verifiziert und in ihren Registries **veröffentlicht**:
 
 ```bash
 # Python — installs as qorechain-rdk, imports as qorrdk
@@ -125,22 +135,22 @@ cargo add qorechain-rdk
 go get github.com/qorechain/qorechain-rdk/packages/go
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.4.0
+# io.github.qorechain:qorechain-rdk:0.4.4
 ```
 
 ```python
 import qorrdk
 ```
 
-Aktuell veröffentlichte Versionen: Python `qorechain-rdk` **0.4.0** (PyPI, Import `qorrdk`), Rust `qorechain-rdk` **0.4.0** (crates.io), Go-Modul `github.com/qorechain/qorechain-rdk/packages/go` und Java `io.github.qorechain:qorechain-rdk` **0.4.0** (Maven Central). Live-Broadcast erfordert einen Node-Endpunkt.
+Aktuell veröffentlichte Versionen: Python `qorechain-rdk` **0.4.4** (PyPI, Import `qorrdk`), Rust `qorechain-rdk` (crates.io — installieren Sie das neueste veröffentlichte Release oder bauen Sie aus dem Repo), Go-Modul `github.com/qorechain/qorechain-rdk/packages/go` (**v0.4.4**) und Java `io.github.qorechain:qorechain-rdk` **0.4.4** (Maven Central). Live-Broadcast erfordert einen Node-Endpunkt.
 
 :::note
-Das TypeScript-RDK und seine Vorlagen zielen auf das **`qorechain-diana`**-Testnet ab und sind für vollständige End-to-End-Abläufe als **coming soon** markiert. Pinnen Sie Versionen und validieren Sie auf dem Testnet.
+Das TypeScript-RDK und seine Templates verwenden standardmäßig das **`qorechain-diana`**-Testnet, und seit v0.4.2 erreichen die Presets die öffentlichen Live-Endpunkte out of the box. Pinnen Sie Versionen und validieren Sie im Testnet, bevor Sie auf das Mainnet gehen.
 :::
 
 ### Ein Projekt mit `create-qorechain-rollup` scaffolden {#scaffold-a-project-with-create-qorechain-rollup}
 
-Jedes Profil hat eine passende Starter-Vorlage (`defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`). Scaffolden Sie eine mit einer der beiden Formen:
+Jedes Profil hat ein passendes Starter-Template (`defi-rollup`, `gaming-rollup`, `nft-rollup`, `enterprise-rollup`, `custom-rollup`). Scaffolden Sie eines mit einer der beiden Formen:
 
 ```bash
 npm create qorechain-rollup my-rollup
@@ -148,17 +158,17 @@ npm create qorechain-rollup my-rollup
 npx create-qorechain-rollup my-rollup
 ```
 
-Für die nicht-interaktive / CI-Nutzung übergeben Sie die Vorlage und das Netzwerk explizit:
+Für nicht-interaktive Nutzung / CI übergeben Sie Template und Netzwerk explizit:
 
 ```bash
 npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet --yes
 ```
 
-Der Scaffolder gibt die dokumentierten Stake- und Erstellungs-Burn-Kosten sowie die nächsten Schritte aus, um Ihr Rollup zu erstellen und seinen Status zu lesen.
+Der Scaffolder gibt die dokumentierten Kosten für Stake und Erstellungs-Burn sowie die nächsten Schritte aus, um Ihr Rollup zu erstellen und dessen Status auszulesen.
 
 ### Ein Rollup aus Code erstellen
 
-Erstellen Sie eine Config aus einem Preset, lesen Sie den Live-Stake und die Burn-Rate von der Chain und erstellen Sie dann das Rollup mit einem Signing-Client. Der Config-Builder erzwingt bei `validate()` / `build()` die Settlement → Proof-Kompatibilitätsmatrix.
+Bauen Sie eine Config aus einem Preset, lesen Sie den aktuellen Stake und die Burn-Rate von der Chain und erstellen Sie das Rollup dann mit einem Signing-Client. Der Config-Builder erzwingt die Kompatibilitätsmatrix Settlement → Proof bei `validate()` / `build()`.
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -166,6 +176,8 @@ import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qore
 // A config builder pre-filled with the defi preset's defaults; override via .set({ ... }).
 const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
 
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2) —
+// no manual `endpoints` config needed; override to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
 // Read the live module parameters — never hardcode the stake or burn rate.
@@ -177,7 +189,7 @@ const cost = estimateCreationCost({
 console.log(`Stake: ${uqorToQor(cost.stakeUqor)} QOR — burned: ${uqorToQor(cost.burnUqor)} QOR`);
 
 // Connect a signing client with any cosmjs OfflineSigner.
-const tx = await rdk.connectTx(signer, { gasPrice: "0.025uqor" });
+const tx = await rdk.connectTx(signer, { gasPrice: "0.15uqor" }); // the chain enforces a 0.1uqor/gas fee floor
 const msg = config.toCreateMsg(tx.address, { stakeAmount: params.minStakeForRollup });
 
 const res = await tx.createRollup({
@@ -189,11 +201,11 @@ const res = await tx.createRollup({
 console.log(`Submitted: ${res.transactionHash} (code ${res.code})`);
 ```
 
-Nicht sicher, welches Profil passt? `rdk.suggestProfile("a lending protocol with predictable fees")` gibt eine QCAI-gestützte Empfehlung zurück (mit einem dokumentierten Fallback).
+Unsicher, welches Profil passt? `rdk.suggestProfile("a lending protocol with predictable fees")` liefert eine QCAI-gestützte Empfehlung (mit dokumentiertem Fallback).
 
-### Den Lebenszyklus verwalten und Zustand aus Code lesen
+### Lebenszyklus verwalten und Zustand aus Code lesen
 
-Der Signing-Client legt den vollständigen Lebenszyklus offen — `pauseRollup`, `resumeRollup`, `stopRollup`, plus `submitBatch`, `challengeBatch`, `resolveChallenge` und `executeWithdrawal`. Die Lebenszyklus-Übergänge können durch Übergeben von `currentStatus` abgesichert werden.
+Der Signing-Client stellt den vollständigen Lebenszyklus bereit — `pauseRollup`, `resumeRollup`, `stopRollup`, plus `submitBatch`, `challengeBatch`, `resolveChallenge` und `executeWithdrawal`. Die Lebenszyklus-Übergänge können durch Übergabe von `currentStatus` abgesichert werden.
 
 ```ts
 await tx.pauseRollup({ rollupId: "my-defi-rollup", reason: "maintenance" });
@@ -215,11 +227,11 @@ console.log(batch.batchIndex, batch.status, batch.txCount);
 
 ## Lebenszyklus-Verwaltung
 
-Ein Rollup durchläuft die Zustände `pending`, `active`, `paused` und `stopped`. Der Ersteller verwaltet die Übergänge mit den folgenden Befehlen.
+Ein Rollup durchläuft die Zustände `pending`, `active`, `paused` und `stopped`. Der Ersteller steuert die Übergänge mit den folgenden Befehlen.
 
-### Pause
+### Pausieren
 
-Halten Sie das Rollup vorübergehend an. Der Zustand bleibt erhalten und das Rollup kann fortgesetzt werden. Eine Grundangabe (reason) ist erforderlich.
+Hält das Rollup vorübergehend an. Der Zustand bleibt erhalten und das Rollup kann fortgesetzt werden. Eine Begründung (Reason-String) ist erforderlich.
 
 ```bash
 qorechaind tx rdk pause-rollup [rollup-id] [reason] \
@@ -228,9 +240,9 @@ qorechaind tx rdk pause-rollup [rollup-id] [reason] \
   --fees 500uqor
 ```
 
-### Resume
+### Fortsetzen
 
-Setzen Sie ein zuvor pausiertes Rollup fort.
+Setzt ein zuvor pausiertes Rollup fort.
 
 ```bash
 qorechaind tx rdk resume-rollup [rollup-id] \
@@ -239,9 +251,9 @@ qorechaind tx rdk resume-rollup [rollup-id] \
   --fees 500uqor
 ```
 
-### Stop
+### Stoppen
 
-Setzen Sie das Rollup dauerhaft außer Betrieb und geben Sie seinen Stake frei. Das gestakte QOR — abzüglich des einmaligen Erstellungs-Burns — wird an den Ersteller zurückgegeben.
+Legt das Rollup dauerhaft still und gibt seinen Stake frei. Das gestakte QOR — abzüglich des einmaligen Erstellungs-Burns — wird an den Ersteller zurückgegeben.
 
 ```bash
 qorechaind tx rdk stop-rollup [rollup-id] \
@@ -256,13 +268,13 @@ Das Stoppen eines Rollups ist endgültig. Das Rollup kann nach dem Stoppen nicht
 
 ---
 
-## Betreiber-Befehle: Batches und Challenges
+## Operator-Befehle: Batches und Challenges
 
-Rollup-Betreiber reichen Settlement-Batches ein, und Challenger können optimistische Batches anfechten. Diese Befehle untermauern die Settlement-Schicht, die in **[Rollups – Übersicht](/rollups/overview)** und **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)** beschrieben wird.
+Rollup-Operatoren reichen Settlement-Batches ein, und Challenger können optimistische Batches anfechten. Diese Befehle bilden die Grundlage des Settlement-Layers, der in **[Rollups-Überblick](/rollups/overview)** und **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)** beschrieben wird.
 
 ### Einen Batch einreichen
 
-Reichen Sie einen Settlement-Batch für ein Rollup ein. Nimmt die Rollup-ID, einen Batch-Index und eine hex-codierte State-Root entgegen.
+Reicht einen Settlement-Batch für ein Rollup ein. Nimmt die Rollup-ID, einen Batch-Index und eine hex-kodierte State-Root entgegen.
 
 ```bash
 qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
@@ -273,7 +285,7 @@ qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
 
 ### Einen Batch anfechten
 
-Fechten Sie einen eingereichten Batch an (für optimistische Rollups). Nimmt die Rollup-ID und den Batch-Index entgegen; übergeben Sie den Fraud-Proof mit `--proof`. Ab der Chain-Version **v3.1.74** ist der optimistische Pfad **submit-batch → challenge-batch** live und funktioniert end-to-end.
+Fechtet einen eingereichten Batch an (für optimistische Rollups). Nimmt die Rollup-ID und den Batch-Index entgegen; übergeben Sie den Fraud-Proof mit `--proof`. Seit Chain-Version **v3.1.74** ist der optimistische Pfad **submit-batch → challenge-batch** live und funktioniert Ende-zu-Ende.
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \
@@ -285,9 +297,9 @@ qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \
 
 | Flag | Beschreibung |
 | ---- | ----------- |
-| `--proof` | Hex-codierter Fraud-Proof |
+| `--proof` | Hex-kodierter Fraud-Proof |
 
-### Batches überprüfen
+### Batches inspizieren
 
 ```bash
 # Latest batch for a rollup
@@ -307,11 +319,11 @@ qorechaind query rdk batch [rollup-id] --index 42
 | `qorechaind query rdk list-rollups` | Alle registrierten Rollups |
 | `qorechaind query rdk batch [rollup-id]` | Neuester Settlement-Batch (oder `--index`) |
 | `qorechaind query rdk config` | RDK-Modulparameter |
-| `qorechaind query rdk suggest-profile [use-case]` | Ein Preset für einen Anwendungsfall empfehlen |
+| `qorechaind query rdk suggest-profile [use-case]` | Preset-Empfehlung für einen Anwendungsfall |
 
 ---
 
 ## Nächste Schritte
 
-* **[Datenverfügbarkeit](/rollups/data-availability)** — native, Celestia und redundante DA-Backends.
-* **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)** — Proof-Verifizierung und der L2 → L1-Withdrawal-Ablauf über `execute-withdrawal`.
+* **[Data Availability](/rollups/data-availability)** — native, Celestia- und redundante DA-Backends.
+* **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)** — Proof-Verifikation und der L2 → L1-Withdrawal-Flow via `execute-withdrawal`.

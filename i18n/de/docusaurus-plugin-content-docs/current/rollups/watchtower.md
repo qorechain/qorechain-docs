@@ -7,11 +7,11 @@ sidebar_position: 9
 
 # Watchtower
 
-Der Watchtower ist ein Auto-Challenger-Framework für Optimistic Rollups. Es
+Der Watchtower ist ein Auto-Challenger-Framework für Optimistic Rollups. Er
 folgt den Settlement-Batches eines Rollups, macht jeden neuen Batch und dessen
-Challenge-Window-Frist sichtbar und übergibt ihn — wenn **dein** Gültigkeits-
-prädikat einen Batch ablehnt — an deinen `onInvalid`-Callback, sodass du eine
-Challenge anstoßen kannst.
+Challenge-Window-Frist sichtbar und übergibt ihn — wenn **dein**
+Gültigkeitsprädikat einen Batch ablehnt — an deinen `onInvalid`-Callback,
+sodass du eine Challenge anbinden kannst.
 
 Das Framework beobachtet und entscheidet, *wann*; **die Gültigkeitsprüfung
 lieferst du**. Der Watchtower entscheidet niemals von sich aus, dass ein Batch
@@ -23,12 +23,10 @@ dessen, was du zurückgibst.
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {

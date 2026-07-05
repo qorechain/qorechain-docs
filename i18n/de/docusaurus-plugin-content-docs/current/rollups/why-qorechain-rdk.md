@@ -7,44 +7,44 @@ sidebar_position: 2
 
 # Warum QoreChain RDK
 
-Die meisten Rollup-Development-Kits sind Variationen desselben Themas: Sie helfen
-dir, eine App-Chain zu starten, die auf einem Base Layer settlet. Das QoreChain
-RDK macht das ebenfalls — bietet aber zusätzlich drei Dinge, die **kein anderes
-Rollup-Kit kann**, weil sie von Fähigkeiten abhängen, die in QoreChains Layer 1
-liegen und nicht im Tooling:
+Die meisten Rollup Development Kits sind Variationen desselben Themas: Sie helfen
+Ihnen, eine App-Chain zu starten, die auf einer Basisschicht abgewickelt wird. Das
+QoreChain RDK kann das auch — aber es stellt darüber hinaus drei Dinge bereit, die
+**kein anderes Rollup-Kit bieten kann**, weil sie von Fähigkeiten abhängen, die in
+QoreChains Layer 1 leben, nicht im Tooling:
 
-- einen **Post-Quantum**-Settlement-Layer,
-- **On-Chain-KI/RL**-Advisory-Primitive (QCAI) und
-- eine **Triple-VM**-Laufzeit mit VM-übergreifenden Aufrufen.
+- eine **Post-Quanten**-Abwicklungsschicht,
+- **On-Chain-KI/RL**-Beratungsprimitive (QCAI) und
+- eine **Triple-VM**-Laufzeitumgebung mit VM-übergreifenden Aufrufen.
 
-Wenn du nur ein generisches Optimistic-/ZK-Rollup brauchst, genügt jedes Kit.
-Wenn du willst, dass das Settlement deines Rollups **verifizierbar, quantensicher
+Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit.
+Wenn Sie möchten, dass die Abwicklung Ihres Rollups **verifizierbar, quantensicher
 und KI-bewusst** ist, ist dies das einzige Kit, das das ausdrücken kann — in
 TypeScript, Python, Go, Rust und Java.
 
-| Differenzierungsmerkmal | Status | Warum nur hier möglich |
+| Differenzierungsmerkmal | Status | Warum es nur hier möglich ist |
 | --- | --- | --- |
-| **Quantensichere Settlement-Belege** | 🟢 Einzigartig (First-Mover) | Benötigt eine Post-Quantum-L1 — unmöglich auf einem Nicht-PQC-Base-Layer |
-| **QCAI Rollup Copilot** | 🟢 Einzigartig durch die Chain | Umschließt QoreChain-exklusive On-Chain-KI/RL-Endpunkte |
-| **Multi-VM-, VM-übergreifende Aufrufe** | 🟡 Unverwechselbar | QoreChain betreibt EVM + CosmWasm + SVM unter einer Chain |
+| **Quantensichere Abwicklungsquittungen** | 🟢 Einzigartig (First-Mover) | Erfordert eine Post-Quanten-L1 — unmöglich auf einer Basisschicht ohne PQC |
+| **QCAI Rollup Copilot** | 🟢 Einzigartig durch die Chain | Kapselt On-Chain-KI/RL-Endpunkte, die es nur bei QoreChain gibt |
+| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Herausragend | QoreChain betreibt EVM + CosmWasm + SVM unter einer Chain |
 
 ---
 
-## 1. Quantensichere Settlement-Belege
+## 1. Quantensichere Abwicklungsquittungen
 
-> 🟢 **Einzigartig.** Kein Rollup-Kit, das auf einer Nicht-Post-Quantum-L1
-> aufbaut, kann das bieten.
+> 🟢 **Einzigartig.** Kein Rollup-Kit, das auf einer Nicht-Post-Quanten-L1 aufbaut,
+> kann das bieten.
 
-Wenn dein Rollup einen Settlement-Batch verankert, committet QoreChain dessen
-State-Root unter einer **Post-Quantum-Signatur (ML-DSA-87 / Dilithium-5,
-FIPS-204)** auf die Main Chain. Das RDK macht aus diesem Anker einen **portablen
-Beleg**, den jeder **vollständig offline** verifizieren kann — kein Node, kein
-Vertrauen in das Kit, nur Mathematik.
+Wenn Ihr Rollup einen Abwicklungs-Batch verankert, committet QoreChain dessen
+State-Root mit einer **Post-Quanten-Signatur (ML-DSA-87 / Dilithium-5, FIPS-204)**
+auf der Main Chain. Das RDK verwandelt diesen Anker in eine **portable Quittung**,
+die jeder **vollständig offline** verifizieren kann — kein Node, kein Vertrauen in
+das Kit, nur Mathematik.
 
-Der Beleg weist zwei Dinge nach: dass der State-Root des Batches derjenige ist,
-der verankert wurde (Bindung), und dass der Anker mit dem registrierten
-Post-Quantum-Schlüssel des Layer-Erstellers signiert wurde (Authentizität). Die
-Signatur deckt die kanonische Nachricht
+Die Quittung beweist zwei Dinge: Der State-Root des Batches ist derjenige, der
+verankert wurde (Bindung), und der Anker wurde mit dem registrierten
+Post-Quanten-Schlüssel des Layer-Erstellers signiert (Authentizität). Die Signatur
+deckt die kanonische Nachricht
 `layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash`
 ab.
 
@@ -55,10 +55,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  network: "mainnet",
-  endpoints: { rest: "https://api.qore.network" }, // your QoreChain node REST
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "mainnet" });
 
 // Build a portable receipt for batch #42 of "my-rollup".
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
@@ -71,9 +70,9 @@ console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
 console.log(result.checks.stateRootBinding); // batch root == anchored root
 ```
 
-**Vollständig offline** — übergib den Beleg und den öffentlichen Schlüssel des
-Erstellers an jemanden auf einer Air-Gap-Maschine, und er kann ihn verifizieren,
-ohne das Netzwerk anzufassen:
+**Vollständig offline** — geben Sie die Quittung und den öffentlichen Schlüssel des
+Erstellers an eine beliebige Person weiter, auch auf einer Air-Gapped-Maschine, und
+sie kann sie verifizieren, ohne das Netzwerk zu berühren:
 
 ```ts
 const result = await verifySettlementReceipt(receipt, {
@@ -82,30 +81,29 @@ const result = await verifySettlementReceipt(receipt, {
 // result.valid === true, with zero network calls
 ```
 
-Derselbe Beleg verifiziert **byte-für-byte über alle fünf Sprachen hinweg** (die
-Nicht-TypeScript-Clients nutzen die chain-eigene `qorechain-pqc`-Bibliothek),
-sodass ein von einem TypeScript-Dienst erzeugter Beleg in einem Go-Auditor oder
-einem Java-Backend identisch verifiziert. Siehe
-[Quantensichere Settlement-Belege](/rollups/settlement-receipts).
+Dieselbe Quittung verifiziert **Byte für Byte identisch in allen fünf Sprachen**
+(die Nicht-TypeScript-Clients verwenden die chaineigene Bibliothek
+`qorechain-pqc`), sodass eine von einem TypeScript-Dienst erzeugte Quittung in
+einem Go-Auditor oder einem Java-Backend identisch verifiziert wird. Siehe
+[Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts).
 
 ---
 
 ## 2. QCAI Rollup Copilot
 
-> 🟢 **Einzigartig durch die Chain.** Aufgebaut auf On-Chain-KI/RL-Endpunkten,
-> die andere Netzwerke schlicht nicht haben.
+> 🟢 **Einzigartig durch die Chain.** Aufgebaut auf On-Chain-KI/RL-Endpunkten, die
+> andere Netzwerke schlicht nicht haben.
 
 QoreChain betreibt KI/RL-Dienste auf Netzwerkebene on-chain — einen
-Fee-Policy-Agenten, Netzwerkempfehlungen, Betrugsuntersuchungen, Circuit
-Breaker. Der Copilot aggregiert sie zu einer einzigen, überprüfbaren Ansicht in
-Klartext für ein Rollup. Er ist schreibgeschützt und Best-Effort: Ist ein
-Advisory-Dienst nicht erreichbar, degradiert er zu einer Warnung, statt zu
-scheitern.
+Fee-Policy-Agenten, Netzwerkempfehlungen, Betrugsuntersuchungen, Circuit Breaker.
+Der Copilot aggregiert sie zu einer einzigen, überprüfbaren Klartext-Ansicht für
+ein Rollup. Er ist schreibgeschützt und Best-Effort: Ist ein Beratungsdienst nicht
+erreichbar, degradiert er zu einer Warnung, statt fehlzuschlagen.
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet", endpoints: { rest, evmRpc } });
+const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
 
 const advice = await getRollupAdvice(rdk, "my-rollup");
 
@@ -127,20 +125,20 @@ console.log(advice.rlAgentStatus);        // the RL fee/routing agent's state
 qorollup advise my-rollup
 ```
 
-Andere Kits haben nichts zum Umschließen — die Advisory-Daten sind ein
+Andere Kits haben nichts zu kapseln — die Beratungsdaten sind ein
 QoreChain-Primitiv. Siehe [QCAI Copilot](/rollups/qcai-copilot).
 
 ---
 
-## 3. Multi-VM-, VM-übergreifende Aufrufe
+## 3. Multi-VM: VM-übergreifende Aufrufe
 
-> 🟡 **Unverwechselbar.** QoreChain betreibt EVM, CosmWasm und SVM unter einer
-> Chain, mit einem Precompile, der EVM → CosmWasm überbrückt.
+> 🟡 **Herausragend.** QoreChain betreibt EVM, CosmWasm und SVM unter einer Chain,
+> mit einem Precompile, das EVM → CosmWasm überbrückt.
 
-Dein EVM-Rollup-Vertrag (Solidity) kann über ein festes Precompile bei
-`0x…0901` einen bestehenden **CosmWasm**-Vertrag aufrufen. Das RDK baut die
-Calldata für dich, sodass du ein CosmWasm-Orakel, -Token oder -Registry aus
-Solidity wiederverwenden kannst, ohne es neu zu implementieren.
+Ihr EVM-(Solidity-)Rollup-Contract kann einen bestehenden **CosmWasm**-Contract
+über ein festes Precompile unter `0x…0901` aufrufen. Das RDK baut die Calldata für
+Sie, sodass Sie ein CosmWasm-Orakel, einen Token oder ein Register aus Solidity
+heraus wiederverwenden können, ohne es neu zu implementieren.
 
 ```ts
 import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
@@ -154,7 +152,7 @@ const calldata = encodeCrossVmCalldata({
 console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
 ```
 
-Oder direkt aus Solidity auf deinem Rollup:
+Oder direkt aus Solidity auf Ihrem Rollup:
 
 ```solidity
 address constant CROSS_VM_PRECOMPILE = 0x0000000000000000000000000000000000000901;
@@ -170,25 +168,27 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Erzeuge ein Starter-Gerüst mit `npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(Nur EVM↔CosmWasm; SVM-Cross-Calls sind separat.) Siehe [Multi-VM](/rollups/multi-vm).
+Erstellen Sie ein Starter-Gerüst mit
+`npm create qorechain-rollup my-app -- --template multivm-rollup`.
+(Nur EVM↔CosmWasm; SVM-Cross-Calls sind separat.) Siehe
+[Multi-VM](/rollups/multi-vm).
 
 ---
 
-## Alles Weitere, das du erwartest
+## Alles andere, was Sie erwarten würden
 
 Über die Differenzierungsmerkmale hinaus liefert das RDK auch die
 Grundausstattung: fünf veröffentlichte Sprach-Clients, verifiziert gegen
 gemeinsame Golden Vectors, die fünf Preset-Profile und die vollständige
-Kompatibilitätsmatrix, Settlement-Batch- und Lifecycle-Management, native Data
-Availability, einen **Watchtower**-Auto-Challenger für Optimistic Rollups und die
-`qorollup`-Operator-CLI.
+Kompatibilitätsmatrix, Verwaltung von Abwicklungs-Batches und Lebenszyklus, native
+Datenverfügbarkeit, einen **Watchtower**-Auto-Challenger für optimistische Rollups
+und die Operator-CLI `qorollup`.
 
 ## Weiter
 
-- [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) — Installation pro
-  Sprache und von null bis zu einem live laufenden Testnet-Rollup.
-- [Quantensichere Settlement-Belege](/rollups/settlement-receipts) ·
+- [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) — Installation je
+  Sprache und von null zu einem laufenden Testnet-Rollup.
+- [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·
-  [Watchtower](/rollups/watchtower) — die vertieften Betrachtungen.
+  [Watchtower](/rollups/watchtower) — die Deep Dives.

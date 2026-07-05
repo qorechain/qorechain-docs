@@ -14,16 +14,16 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Las consultas se ejecutan contra el nodo al que apunte `--node`. Use un endpoint RPC de la mainnet **`qorechain-vladi`** (versión de cadena **v3.1.82**) para datos en vivo, o un endpoint de la testnet **`qorechain-diana`** para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que usted mismo ejecuta.
+Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** (versión de cadena **v3.1.85**) para datos en vivo, o un endpoint de testnet **`qorechain-diana`** para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo.
 :::
 
-Los flags comunes se aplican a cada subcomando `query`:
+Los flags comunes se aplican a todos los subcomandos de `query`:
 
-| Flag       | Tipo   | Descripción                                     |
-| ---------- | ------ | ----------------------------------------------- |
-| `--node`   | string | Endpoint RPC (por defecto: `tcp://localhost:26657`) |
-| `--output` | string | Formato de salida: `json` o `text`              |
-| `--height` | int    | Consultar el estado en una altura de bloque específica |
+| Flag       | Tipo   | Descripción                                            |
+| ---------- | ------ | ------------------------------------------------------ |
+| `--node`   | string | Endpoint RPC (por defecto: `tcp://localhost:26657`)    |
+| `--output` | string | Formato de salida: `json` o `text`                     |
+| `--height` | int    | Consultar el estado a una altura de bloque específica  |
 
 ---
 
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-Consulta una delegación en proceso de desvinculación.
+Consulta una delegación en proceso de desvinculación (unbonding).
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -129,13 +129,13 @@ Lista todas las propuestas, opcionalmente filtradas por estado.
 qorechaind query gov proposals [flags]
 ```
 
-| Flag       | Tipo   | Descripción                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
+| Flag       | Tipo   | Descripción                                                                 |
+| ---------- | ------ | --------------------------------------------------------------------------- |
 | `--status` | string | Filtrar por estado: `deposit_period`, `voting_period`, `passed`, `rejected` |
 
 ### votes
 
-Consulta los votos sobre una propuesta.
+Consulta los votos de una propuesta.
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-Consulta el estado de registro de la clave PQC de una cuenta.
+Consulta el estado de registro de claves PQC de una cuenta.
 
 ```bash
 qorechaind query pqc account <address>
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-Consulta el estado de migración de la clave PQC de una cuenta.
+Consulta el estado de migración de claves PQC de una cuenta.
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-Consulta el modo actual de imposición de firmas híbridas.
+Consulta el modo actual de aplicación de firmas híbridas.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -207,7 +207,7 @@ qorechaind query pqc hybrid-mode
 
 ### position
 
-Consulta la posición de staking de xQORE de una dirección.
+Consulta la posición de staking xQORE de una dirección.
 
 ```bash
 qorechaind query xqore position <address>
@@ -291,16 +291,16 @@ qorechaind query ai stats
 
 ### fee-estimate
 
-Obtiene una estimación de tarifa de gas asistida por IA.
+Obtén una estimación de comisión de gas asistida por IA.
 
 ```bash
 qorechaind query ai fee-estimate [flags]
 ```
 
-| Flag        | Tipo   | Descripción                     |
-| ----------- | ------ | ------------------------------- |
+| Flag        | Tipo   | Descripción                            |
+| ----------- | ------ | -------------------------------------- |
 | `--tx-type` | string | Tipo de transacción para la estimación |
-| `--urgency` | string | `low`, `medium`, `high`         |
+| `--urgency` | string | `low`, `medium`, `high`                |
 
 ### investigations
 
@@ -312,7 +312,7 @@ qorechaind query ai investigations
 
 ### recommendations
 
-Obtiene recomendaciones de optimización de red generadas por IA.
+Obtén recomendaciones de optimización de red generadas por IA.
 
 ```bash
 qorechaind query ai recommendations
@@ -352,7 +352,7 @@ qorechaind query reputation validator <validator_address>
 
 ### chains
 
-Lista todas las cadenas de bridge registradas.
+Lista todas las cadenas de puente registradas.
 
 ```bash
 qorechaind query bridge chains
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-Consulta los detalles de una cadena con bridge específica.
+Consulta los detalles de una cadena puenteada específica.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -368,7 +368,7 @@ qorechaind query bridge chain <chain_id>
 
 ### validators
 
-Lista los validadores de bridge activos.
+Lista los validadores de puente activos.
 
 ```bash
 qorechaind query bridge validators
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-Lista las operaciones de bridge recientes.
+Lista las operaciones de puente recientes.
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| Flag       | Tipo   | Descripción                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | Filtro: `pending`, `completed`, `failed` |
-| `--chain`  | string | Filtrar por chain ID                     |
+| Flag       | Tipo   | Descripción                               |
+| ---------- | ------ | ----------------------------------------- |
+| `--status` | string | Filtrar: `pending`, `completed`, `failed` |
+| `--chain`  | string | Filtrar por ID de cadena                  |
 
 ### limits
 
-Consulta los límites de tasa de una cadena con bridge.
+Consulta los límites de tasa de una cadena puenteada.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-Estima la tarifa de bridge y el tiempo de transferencia.
+Estima la comisión y el tiempo de transferencia del puente.
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -461,7 +461,7 @@ qorechaind query svm params
 
 ### slot
 
-Consulta el número de slot SVM actual.
+Consulta el número de slot actual de SVM.
 
 ```bash
 qorechaind query svm slot
@@ -503,10 +503,10 @@ Lista los envíos de anclaje recientes.
 qorechaind query multilayer anchors [flags]
 ```
 
-| Flag         | Tipo   | Descripción               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | Filtrar por ID de capa    |
-| `--limit`    | uint   | Máximo de resultados a devolver |
+| Flag         | Tipo   | Descripción                            |
+| ------------ | ------ | -------------------------------------- |
+| `--layer-id` | string | Filtrar por ID de capa                 |
+| `--limit`    | uint   | Número máximo de resultados a devolver |
 
 ### routing-stats
 
@@ -552,9 +552,9 @@ Lista todos los rollups registrados.
 qorechaind query rdk rollups
 ```
 
-| Flag       | Tipo   | Descripción                           |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | Filtro: `active`, `paused`, `stopped` |
+| Flag       | Tipo   | Descripción                            |
+| ---------- | ------ | -------------------------------------- |
+| `--status` | string | Filtrar: `active`, `paused`, `stopped` |
 
 ### batch
 
@@ -574,7 +574,7 @@ qorechaind query rdk latest-batch <rollup_id>
 
 ### suggest-profile
 
-Obtiene una recomendación de perfil de rollup asistida por IA.
+Obtén una recomendación de perfil de rollup asistida por IA.
 
 ```bash
 qorechaind query rdk suggest-profile <use_case>
@@ -597,18 +597,18 @@ qorechaind query rdk params
 ```
 
 :::note
-Las pruebas de retiro de rollups y el estado de liquidación también se pueden consultar bajo el grupo `rdk`. Los subcomandos de consulta exactos y sus argumentos dependen del tipo de liquidación de su rollup; consulte la documentación de **Rollup Development Kit** para conocer la superficie autoritativa de consultas de retiro/liquidación.
+Las pruebas de retiro de rollups y el estado de liquidación también se pueden consultar bajo el grupo `rdk`. Los subcomandos de consulta exactos y sus argumentos dependen del tipo de liquidación de tu rollup; consulta la documentación del **Rollup Development Kit** para conocer la superficie autoritativa de consultas de retiros/liquidación.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM es la capa de aprendizaje por refuerzo que ajusta los parámetros de consenso. El nombre de módulo de la CLI `rlconsensus` y sus subcomandos se conservan textualmente.
+PRISM es la capa de aprendizaje por refuerzo que ajusta los parámetros de consenso. El nombre del módulo CLI `rlconsensus` y sus subcomandos se conservan textualmente.
 
 ### agent-status
 
-Consulta el estado y modo actual del agente PRISM.
+Consulta el estado y el modo actual del agente PRISM.
 
 ```bash
 qorechaind query rlconsensus agent-status
@@ -616,7 +616,7 @@ qorechaind query rlconsensus agent-status
 
 ### observation
 
-Consulta el último vector de observación de PRISM.
+Consulta el vector de observación más reciente de PRISM.
 
 ```bash
 qorechaind query rlconsensus observation
@@ -624,7 +624,7 @@ qorechaind query rlconsensus observation
 
 ### reward
 
-Consulta las métricas acumuladas de recompensa de PRISM.
+Consulta las métricas de recompensa acumulada de PRISM.
 
 ```bash
 qorechaind query rlconsensus reward
@@ -632,7 +632,7 @@ qorechaind query rlconsensus reward
 
 ### params
 
-Consulta los parámetros del módulo PRISM Consensus.
+Consulta los parámetros del módulo de Consenso PRISM.
 
 ```bash
 qorechaind query rlconsensus params
@@ -692,6 +692,24 @@ Consulta los parámetros del módulo Abstract Account.
 
 ```bash
 qorechaind query abstractaccount params
+```
+
+### permission-schema
+
+Consulta la taxonomía canónica de permisos de autenticadores: los 11 permisos, el mapa mensaje→permiso y los mensajes de gestión de claves no delegables (disponible a partir de la versión de cadena **v3.1.85**; también se sirve por REST en `/qorechain/abstractaccount/v1/permission_schema`).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+Utilidades para construir autorizaciones de autenticadores fuera de los SDK: genera una clave de prueba, o produce los **bytes de firma exactos que la cadena verifica** para una acción delegada del carril Native o del carril EVM (disponible a partir de la versión de cadena **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
 ```
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en production en configurant votre nœud avec le fichier genesis officiel, les pairs et les paramètres réseau.
 
 :::note
-Cette page couvre le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026 à 23:59 UTC** et exécutant la version de chaîne **v3.1.82** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**), consultez [Se connecter au testnet](/getting-started/connecting-to-testnet) et répétez-y votre installation avant de passer en production.
+Cette page couvre le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026 à 23:59 UTC** et exécutant la version de chaîne **v3.1.85** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**), consultez [Se connecter au testnet](/getting-started/connecting-to-testnet) et répétez-y votre installation avant de passer en production.
 :::
 
 ## Points de terminaison publics
@@ -25,23 +25,23 @@ Si vous avez uniquement besoin d'**interroger la chaîne ou de diffuser des tran
 | JSON-RPC SVM (lecture seule) | `https://svm.qore.host` |
 | Explorateur de blocs | [explore.qore.network](https://explore.qore.network) |
 
-Pour les charges de travail intensives ou de production (plateformes d'échange, indexeurs), exécutez votre propre nœud comme décrit ci-dessous.
+Pour des charges de travail intensives ou de production (plateformes d'échange, indexeurs), exécutez votre propre nœud comme décrit ci-dessous.
 
 ---
 
 ## Installation
 
-Installez le binaire `qorechaind` soit à partir de l'archive officielle précompilée, soit en compilant depuis les sources.
+Installez le binaire `qorechaind` soit à partir du bundle officiel précompilé, soit en le compilant depuis les sources.
 
-### Archive de binaires précompilés (linux/amd64)
+### Bundle binaire précompilé (linux/amd64)
 
-L'archive de release officielle contient `qorechaind` ainsi que ses bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) :
+Le bundle de release officiel contient `qorechaind` ainsi que les bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) :
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.82-linux-amd64.tar.gz -o qore.tgz
+curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
 # Verify the checksum before installing:
 sha256sum qore.tgz
-# 8a88936ccc6d350d8b215488a81584163b3568430064958c50e82a394077cfe9
+# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,7 +49,11 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-Les archives versionnées sont publiées sur [download.qore.host](https://download.qore.host) ; chaque release est livrée avec sa somme de contrôle SHA-256.
+Les bundles versionnés sont publiés sur [download.qore.host](https://download.qore.host) ; chaque release est livrée avec sa somme de contrôle SHA-256 — installez toujours le **dernier** bundle publié.
+
+:::caution Maintenez votre nœud à jour
+Les nœuds complets doivent suivre la version de chaîne du réseau (actuellement **v3.1.85**). Un nœud obsolète ne peut pas décoder les types de transactions plus récents (par exemple, les transactions signées en `eth_secp256k1` introduites dans la v3.1.83) et cessera de se synchroniser dès qu'une telle transaction apparaîtra dans un bloc.
+:::
 
 ### Compiler depuis les sources
 
@@ -79,13 +83,13 @@ Remplacez votre fichier genesis local par le genesis officiel du mainnet :
 curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
 ```
 
-Le même fichier est également servi en direct par la chaîne elle-même — vous pouvez vérifier le téléchargement en le comparant à celui-ci :
+Le même fichier est également servi en direct par la chaîne elle-même — vous pouvez recouper le téléchargement avec celui-ci :
 
 ```bash
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-Ce fichier définit l'état initial du mainnet Vladi, y compris l'ensemble des validateurs du genesis, les allocations de jetons (TGE au genesis) et les paramètres des modules.
+Ce fichier définit l'état initial du mainnet Vladi, y compris l'ensemble des validateurs genesis, les allocations de jetons (TGE au genesis) et les paramètres des modules.
 
 ---
 
@@ -99,7 +103,7 @@ Ouvrez `~/.qorechaind/config/config.toml` et définissez le champ `persistent_pe
 persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
 ```
 
-Définissez également le prix minimum du gas dans `~/.qorechaind/config/app.toml` (le plancher des frais du réseau est de **0.1uqor**) :
+Définissez également le prix minimum du gas dans `~/.qorechaind/config/app.toml` (le plancher de frais du réseau est de **0.1uqor**) :
 
 ```toml
 minimum-gas-prices = "0.1uqor"
@@ -118,7 +122,7 @@ timeout_propose = "3s"
 timeout_commit = "5s"
 ```
 
-Ces valeurs sont ajustées pour les temps de bloc et le débit du mainnet Vladi.
+Ces valeurs sont optimisées pour les temps de bloc et le débit du mainnet Vladi.
 
 ---
 
@@ -135,7 +139,7 @@ sha256sum snapshot.tar.gz
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
 
-Les snapshots sont publiés sous des noms de fichiers horodatés par hauteur de bloc — consultez [download.qore.host](https://download.qore.host) pour obtenir le plus récent. Vous pouvez également utiliser le **state sync** — consultez [Exécuter un nœud](/developer-guide/running-a-node) pour le processus complet.
+Les snapshots sont publiés sous des noms de fichiers horodatés par hauteur de bloc — consultez [download.qore.host](https://download.qore.host) pour obtenir le plus récent. Vous pouvez également utiliser le **state sync** — consultez [Exécuter un nœud](/developer-guide/running-a-node) pour la procédure complète.
 
 ---
 
@@ -153,7 +157,7 @@ Le nœud se connecte aux pairs et commence à télécharger les blocs (depuis le
 
 ## Vérifier l'état de synchronisation
 
-Vérifiez que votre nœud rattrape le dernier bloc :
+Vérifiez que votre nœud est en train de rattraper le dernier bloc :
 
 ```bash
 curl localhost:26657/status | jq '.result.sync_info.catching_up'
@@ -200,7 +204,7 @@ http://localhost:3001
 
 Lors de la première connexion, définissez vos propres identifiants lorsque vous y êtes invité — ne laissez pas les valeurs par défaut en place. Des tableaux de bord préconfigurés affichent la production de blocs, le débit de transactions, les connexions aux pairs et l'utilisation des ressources.
 
-### Vérification de l'état via REST
+### Vérification de santé REST
 
 L'API REST fournit un point de terminaison de statut rapide :
 
@@ -213,38 +217,38 @@ http://localhost:1317
 ## Référence des ports
 
 | Port    | Protocole | Description                                              |
-| ------- | --------- | ------------------------------------------------------- |
-| `26657` | TCP       | RPC — interroger et diffuser des transactions           |
-| `26656` | TCP       | P2P — communication réseau pair à pair                  |
-| `1317`  | HTTP      | API REST — interroger l'état de la chaîne via HTTP      |
-| `9090`  | gRPC      | API gRPC — accès programmatique à la chaîne             |
+| ------- | --------- | -------------------------------------------------------- |
+| `26657` | TCP       | RPC — interroger et diffuser des transactions            |
+| `26656` | TCP       | P2P — communication réseau pair-à-pair                   |
+| `1317`  | HTTP      | API REST — interroger l'état de la chaîne via HTTP       |
+| `9090`  | gRPC      | API gRPC — accès programmatique à la chaîne              |
 | `8545`  | HTTP      | JSON-RPC EVM — RPC compatible Ethereum (ID de chaîne `9801`) |
 | `8546`  | WebSocket | WebSocket EVM — abonnements aux événements EVM en temps réel |
-| `8899`  | HTTP      | RPC SVM — RPC compatible Solana                         |
-| `26660` | HTTP      | Point de terminaison des métriques Prometheus           |
+| `8899`  | HTTP      | RPC SVM — RPC compatible Solana                           |
+| `26660` | HTTP      | Point de terminaison des métriques Prometheus             |
 
 ---
 
 ## Caractéristiques du réseau
 
-| Champ                   | Valeur                                  |
-| ----------------------- | --------------------------------------- |
-| ID de chaîne            | `qorechain-vladi`                       |
-| ID de chaîne EVM        | `9801` (hex `0x2649`)                   |
-| Version de la chaîne    | v3.1.82                                 |
-| En production depuis    | 7 juin 2026 23:59 UTC                   |
-| Jeton                   | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
-| Prix minimum du gas     | `0.1uqor`                               |
-| Préfixe des comptes     | `qor`                                   |
-| Préfixe des validateurs | `qorvaloper`                            |
-| SDK                     | Cosmos SDK v0.53                        |
+| Champ                   | Valeur                                     |
+| ----------------------- | ------------------------------------------ |
+| ID de chaîne            | `qorechain-vladi`                          |
+| ID de chaîne EVM        | `9801` (hex `0x2649`)                      |
+| Version de chaîne       | v3.1.85                                    |
+| En production depuis    | 7 juin 2026 à 23:59 UTC                    |
+| Jeton                   | QOR (`uqor`, 10^6 micro-unités = 1 QOR)    |
+| Prix minimum du gas     | `0.1uqor`                                  |
+| Préfixe des comptes     | `qor`                                      |
+| Préfixe des validateurs | `qorvaloper`                               |
+| SDK                     | Cosmos SDK v0.53                           |
 
 ---
 
 ## Prochaines étapes
 
 * [Exécuter un nœud](/developer-guide/running-a-node) — Opérer un nœud complet/RPC pour les plateformes d'échange et les intégrateurs
-* [Guide plateformes d'échange et intégrateurs](/developer-guide/exchange-integration) — Dépôts, retraits et surveillance
+* [Guide Exchange & Intégrateurs](/developer-guide/exchange-integration) — Dépôts, retraits et surveillance
 * [Exécuter un validateur](/developer-guide/running-a-validator) — Créer et opérer un validateur
 * [Configuration du portefeuille](/getting-started/wallet-setup) — Configurer un portefeuille pour le mainnet
 * [Votre première transaction](/getting-started/first-transaction) — Envoyer votre premier transfert de QOR

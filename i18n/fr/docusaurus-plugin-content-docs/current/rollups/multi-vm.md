@@ -8,11 +8,20 @@ sidebar_position: 8
 # Multi-VM (appels inter-VM)
 
 Un rollup multi-VM exécute une couche d'exécution EVM capable d'appeler des
-contrats CosmWasm via un **précompilé inter-VM** dédié. Le RDK fournit l'outillage
-TypeScript pour encoder ces appels ainsi qu'un modèle de structure pour démarrer.
+contrats CosmWasm sur le runtime **QoreChain Native** (Wasm) via un
+**précompilé inter-VM** dédié. Le RDK fournit l'outillage TypeScript pour
+encoder ces appels ainsi qu'un modèle de structure (scaffold) pour démarrer.
 
-> Cet outillage couvre **EVM → CosmWasm** uniquement. SVM est un environnement
-> d'exécution distinct et ne fait pas partie du précompilé inter-VM.
+> Cet outillage couvre uniquement **EVM → QoreChain Native** (contrats
+> CosmWasm). La SVM est un environnement d'exécution distinct et ne fait pas
+> partie du précompilé inter-VM.
+
+:::note
+Depuis la version v0.4.2 du RDK, l'identifiant de l'option VM du runtime Wasm
+est **`native`** (QoreChain Native) ; `cosmwasm` reste un alias hérité accepté,
+et les deux correspondent à `cosmwasm` sur le réseau — la chaîne, l'explorateur
+et l'ABI du précompilé inter-VM (`executeCrossVMCall`) restent inchangés.
+:::
 
 ## Le précompilé
 

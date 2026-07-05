@@ -21,12 +21,10 @@ Watchtower never decides on its own that a batch is fraudulent — it calls your
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {

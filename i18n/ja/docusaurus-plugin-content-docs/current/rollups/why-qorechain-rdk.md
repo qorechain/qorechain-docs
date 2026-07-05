@@ -7,29 +7,30 @@ sidebar_position: 2
 
 # なぜ QoreChain RDK なのか
 
-ほとんどのロールアップ開発キットは、同じテーマのバリエーションです。つまり、ベースレイヤーに決済するアプリチェーンの立ち上げを支援するものです。QoreChain RDK もそれを行いますが、加えて **他のどのロールアップキットにもできない** 3 つのことを公開します。なぜなら、それらはツール側ではなく QoreChain のレイヤー 1 に存在する機能に依存しているからです。
+ほとんどのロールアップ開発キットは同じテーマのバリエーションにすぎません。つまり、ベースレイヤーに決済（セトルメント）するアプリチェーンの立ち上げを支援するものです。QoreChain RDK もそれを行いますが、さらに **他のどのロールアップキットにもできない** 3 つの機能を提供します。これらはツーリングではなく、QoreChain の Layer 1 に存在する機能に依存しているためです。
 
-- **ポスト量子** 決済レイヤー、
-- **オンチェーン AI/RL** アドバイザリープリミティブ（QCAI）、そして
+- **ポスト量子（post-quantum）** の決済レイヤー、
+- オンチェーン AI/RL アドバイザリープリミティブ（QCAI）、
 - クロス VM 呼び出しを備えた **トリプル VM** ランタイム。
 
-汎用的なオプティミスティック / zk ロールアップだけが必要であれば、どのキットでも構いません。ロールアップの決済を **検証可能・量子耐性・AI 対応** にしたいのであれば、それを表現できる唯一のキットがこれです。TypeScript、Python、Go、Rust、Java で利用できます。
+汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ロールアップの決済を **検証可能で、量子耐性があり、AI 対応** にしたいなら、それを表現できるのはこのキットだけです — TypeScript、Python、Go、Rust、Java で利用できます。
 
-| 差別化要因 | ステータス | ここでしか実現できない理由 |
+| 差別化要素 | ステータス | ここでしか実現できない理由 |
 | --- | --- | --- |
-| **量子耐性決済レシート** | 🟢 唯一無二（先行者） | ポスト量子 L1 が必要 — 非 PQC のベースレイヤーでは不可能 |
-| **QCAI ロールアップコパイロット** | 🟢 チェーンを通じて唯一無二 | QoreChain 限定のオンチェーン AI/RL エンドポイントをラップ |
-| **マルチ VM クロス VM 呼び出し** | 🟡 際立った特徴 | QoreChain は EVM + CosmWasm + SVM を 1 つのチェーンで実行 |
+| **量子耐性のある決済レシート** | 🟢 唯一無二（ファーストムーバー） | ポスト量子 L1 が必要 — 非 PQC ベースレイヤーでは不可能 |
+| **QCAI Rollup Copilot** | 🟢 チェーンを通じて唯一 | QoreChain 固有のオンチェーン AI/RL エンドポイントをラップ |
+| **マルチ VM のクロス VM 呼び出し** | 🟡 独自性あり | QoreChain は EVM + CosmWasm + SVM を単一チェーン上で実行 |
 
 ---
 
-## 1. 量子耐性決済レシート
+## 1. 量子耐性のある決済レシート
 
-> 🟢 **唯一無二。** 非ポスト量子 L1 上に構築されたロールアップキットでは、これを提供できません。
+> 🟢 **唯一無二。** 非ポスト量子 L1 上に構築されたロールアップキットには提供できません。
 
-ロールアップが決済バッチをアンカーすると、QoreChain はそのステートルートを **ポスト量子（ML-DSA-87 / Dilithium-5、FIPS-204）** 署名のもとでメインチェーンにコミットします。RDK はそのアンカーを、誰もが **完全にオフラインで** 検証できる **ポータブルなレシート** に変換します。ノードも不要、キットへの信頼も不要、ただ数学があるだけです。
+ロールアップが決済バッチをアンカーすると、QoreChain はそのステートルートを **ポスト量子（ML-DSA-87 / Dilithium-5、FIPS-204）** 署名のもとで Main Chain にコミットします。RDK はそのアンカーを、誰でも **完全オフラインで** 検証できる **ポータブルなレシート** に変換します — ノードも不要、キットへの信頼も不要、必要なのは数学だけです。
 
-このレシートは 2 つのことを証明します。バッチのステートルートがアンカーされたものと一致すること（バインディング）、そしてアンカーがレイヤー作成者の登録済みポスト量子鍵で署名されていること（真正性）です。署名は正規メッセージ `layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash` を対象とします。
+レシートは 2 つのことを証明します。バッチのステートルートがアンカーされたものと一致すること（バインディング）、そしてアンカーがレイヤー作成者の登録済みポスト量子鍵で署名されたこと（真正性）です。署名は正規メッセージ
+`layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash` をカバーします。
 
 ```ts
 import {
@@ -38,10 +39,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  network: "mainnet",
-  endpoints: { rest: "https://api.qore.network" }, // your QoreChain node REST
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "mainnet" });
 
 // Build a portable receipt for batch #42 of "my-rollup".
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
@@ -54,7 +54,7 @@ console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
 console.log(result.checks.stateRootBinding); // batch root == anchored root
 ```
 
-**完全にオフライン** — レシートと作成者の公開鍵を誰かに渡せば、エアギャップされたマシン上でも、ネットワークに触れることなく検証できます。
+**完全オフライン** — レシートと作成者の公開鍵を誰かに渡せば、エアギャップ環境のマシンでも、ネットワークに一切触れずに検証できます。
 
 ```ts
 const result = await verifySettlementReceipt(receipt, {
@@ -63,20 +63,20 @@ const result = await verifySettlementReceipt(receipt, {
 // result.valid === true, with zero network calls
 ```
 
-同じレシートは **5 つすべての言語でバイト単位まで一致して検証されます**（TypeScript 以外のクライアントはチェーン自身の `qorechain-pqc` ライブラリを使用します）。そのため、TypeScript サービスで生成されたレシートは、Go の監査ツールや Java のバックエンドでも同一に検証されます。[量子耐性決済レシート](/rollups/settlement-receipts) を参照してください。
+同じレシートは **5 つの言語すべてでバイト単位で同一に** 検証されます（TypeScript 以外のクライアントはチェーン自身の `qorechain-pqc` ライブラリを使用します）。そのため、TypeScript サービスが生成したレシートは、Go の監査ツールでも Java のバックエンドでもまったく同じように検証されます。詳細は [量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
 
 ---
 
-## 2. QCAI ロールアップコパイロット
+## 2. QCAI Rollup Copilot
 
-> 🟢 **チェーンを通じて唯一無二。** 他のネットワークが単純に持たないオンチェーン AI/RL エンドポイント上に構築されています。
+> 🟢 **チェーンを通じて唯一無二。** 他のネットワークには存在しないオンチェーン AI/RL エンドポイントの上に構築されています。
 
-QoreChain はネットワークレベルの AI/RL サービスをオンチェーンで実行します。手数料ポリシーエージェント、ネットワーク推奨、不正調査、サーキットブレーカーなどです。コパイロットはそれらを集約し、1 つのロールアップに対する単一でレビュー可能な平易な言葉のビューにします。読み取り専用かつベストエフォートで、アドバイザリーサービスに到達できない場合は、失敗するのではなく警告へとグレースフルに低下します。
+QoreChain はネットワークレベルの AI/RL サービスをオンチェーンで実行しています — 手数料ポリシーエージェント、ネットワーク推奨、不正調査、サーキットブレーカーなどです。Copilot はこれらを 1 つのロールアップ向けに、レビュー可能で平易な言葉による単一のビューへ集約します。読み取り専用かつベストエフォートで動作し、アドバイザリーサービスに到達できない場合は、失敗する代わりに警告へ縮退します。
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet", endpoints: { rest, evmRpc } });
+const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
 
 const advice = await getRollupAdvice(rdk, "my-rollup");
 
@@ -98,15 +98,15 @@ CLI から:
 qorollup advise my-rollup
 ```
 
-他のキットにはラップする対象がありません — アドバイザリーデータは QoreChain のプリミティブです。[QCAI コパイロット](/rollups/qcai-copilot) を参照してください。
+他のキットにはラップすべき対象がそもそも存在しません — アドバイザリーデータは QoreChain のプリミティブです。詳細は [QCAI Copilot](/rollups/qcai-copilot) を参照してください。
 
 ---
 
-## 3. マルチ VM クロス VM 呼び出し
+## 3. マルチ VM のクロス VM 呼び出し
 
-> 🟡 **際立った特徴。** QoreChain は EVM、CosmWasm、SVM を 1 つのチェーンで実行し、EVM → CosmWasm をブリッジするプリコンパイルを備えています。
+> 🟡 **独自性あり。** QoreChain は EVM、CosmWasm、SVM を単一チェーン上で実行し、EVM → CosmWasm をブリッジするプリコンパイルを備えています。
 
-あなたの EVM（Solidity）ロールアップコントラクトは、`0x…0901` にある固定のプリコンパイルを通じて、既存の **CosmWasm** コントラクトを呼び出すことができます。RDK が代わりにコールデータを構築するため、CosmWasm のオラクル、トークン、レジストリを再実装することなく Solidity から再利用できます。
+EVM（Solidity）のロールアップコントラクトは、`0x…0901` の固定プリコンパイルを通じて既存の **CosmWasm** コントラクトを呼び出せます。RDK が calldata を構築してくれるため、CosmWasm のオラクル、トークン、レジストリを再実装することなく Solidity から再利用できます。
 
 ```ts
 import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
@@ -136,18 +136,18 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-`npm create qorechain-rollup my-app -- --template multivm-rollup` でスターターをスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別です。）[マルチ VM](/rollups/multi-vm) を参照してください。
+スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別枠です。）詳細は [マルチ VM](/rollups/multi-vm) を参照してください。
 
 ---
 
-## 期待されるその他すべて
+## その他の期待どおりの機能
 
-差別化要因を超えて、RDK はテーブルステークスも提供します。共有のゴールデンベクターに対して検証された 5 つの公開言語クライアント、5 つのプリセットプロファイルと完全な互換性マトリックス、決済バッチおよびライフサイクル管理、ネイティブなデータ可用性、オプティミスティックロールアップ向けの **ウォッチタワー** 自動チャレンジャー、そして `qorollup` オペレーター CLI です。
+差別化要素に加えて、RDK は標準装備も一通り揃えています。共有ゴールデンベクターで検証済みの 5 つの公開済み言語クライアント、5 つのプリセットプロファイルと完全な互換性マトリクス、決済バッチとライフサイクルの管理、ネイティブなデータ可用性、optimistic ロールアップ向けの **watchtower** 自動チャレンジャー、そして `qorollup` オペレーター CLI です。
 
-## 次へ
+## 次のステップ
 
-- [ロールアップのデプロイ](/rollups/deploying-a-rollup) — 言語ごとのインストールと、ゼロからライブのテストネットロールアップまで。
-- [量子耐性決済レシート](/rollups/settlement-receipts) ·
-  [QCAI コパイロット](/rollups/qcai-copilot) ·
+- [ロールアップのデプロイ](/rollups/deploying-a-rollup) — 言語ごとのインストール手順と、ゼロからテストネット上で稼働するロールアップまで。
+- [量子耐性のある決済レシート](/rollups/settlement-receipts) ·
+  [QCAI Copilot](/rollups/qcai-copilot) ·
   [マルチ VM](/rollups/multi-vm) ·
-  [ウォッチタワー](/rollups/watchtower) — 詳細な解説。
+  [Watchtower](/rollups/watchtower) — 詳細解説。

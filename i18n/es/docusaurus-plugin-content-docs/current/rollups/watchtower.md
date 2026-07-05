@@ -7,26 +7,25 @@ sidebar_position: 9
 
 # Watchtower
 
-El Watchtower es un framework de auto-impugnación para rollups optimistas. Sigue
-los lotes de liquidación de un rollup, expone cada nuevo lote y la fecha límite de
-su ventana de impugnación y —cuando **tu** predicado de validez rechaza un lote—
-lo entrega a tu callback `onInvalid` para que puedas conectar una impugnación.
+El Watchtower es un framework de desafío automático (auto-challenger) para rollups
+optimistas. Sigue los lotes de liquidación de un rollup, expone cada nuevo lote y
+la fecha límite de su ventana de desafío y — cuando **tu** predicado de validez
+rechaza un lote — se lo entrega a tu callback `onInvalid` para que puedas
+conectar un desafío.
 
-El framework observa y decide *cuándo*; **tú proporcionas la comprobación de
-validez**. El Watchtower nunca decide por sí mismo que un lote es fraudulento:
-llama a tu función `validate` y actúa según lo que devuelvas.
+El framework observa y decide *cuándo*; **tú aportas la comprobación de validez**.
+El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a tu
+función `validate` y actúa según lo que devuelvas.
 
 ## `watchBatches`
 
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {
@@ -56,11 +55,11 @@ watcher.stop();
 El framework expone:
 
 - **nuevos lotes** mediante `onBatch`,
-- **fechas límite de la ventana de impugnación** mediante `onDeadline`, y
-- **lotes inválidos** (en los que tu `validate` devolvió `false`) mediante `onInvalid`.
+- **fechas límite de la ventana de desafío** mediante `onDeadline`, y
+- **lotes inválidos** (aquellos en los que tu `validate` devolvió `false`) mediante `onInvalid`.
 
 Conectar `onInvalid` a `challengeBatch` convierte al Watchtower en un
-auto-impugnador completo; déjalo sin configurar para ejecutarlo en modo de solo
+auto-challenger completo; déjalo sin definir para ejecutarlo en modo de solo
 observación.
 
 ## CLI
@@ -69,7 +68,8 @@ observación.
 qorollup watchtower my-roll
 ```
 
-`watchtower` ejecuta el framework desde la línea de comandos, imprimiendo nuevos
-lotes y fechas límite de la ventana de impugnación hasta que pulses Ctrl-C. Consulta
-[Desplegar un Rollup](/rollups/deploying-a-rollup) para conocer la CLI completa del
+`watchtower` ejecuta el framework desde la línea de comandos, imprimiendo los
+nuevos lotes y las fechas límite de la ventana de desafío hasta que pulses
+Ctrl-C. Consulta
+[Desplegar un Rollup](/rollups/deploying-a-rollup) para ver la CLI completa de
 operador `qorollup`.

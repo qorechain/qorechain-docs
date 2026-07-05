@@ -41,7 +41,7 @@ Güvenlik seviyesini boyut/güvenlik bütçenize göre seçin.
 
 ## Diller ve paketler
 
-Her dil aynı API'yi sunar ve her biri farklı bir denetlenmiş uygulama tarafından desteklenir. Bayt uyumluluğunu garanti eden de budur — bağımsız arka uçlar standart üzerinde hemfikirdir.
+Her dil aynı API'yi sunar ve her biri farklı bir denetlenmiş uygulama tarafından desteklenir. Bayt uyumluluğunu garanti eden şey budur — bağımsız arka uçlar standart üzerinde hemfikirdir.
 
 | Dil | Paket | Kurulum | Arka uç |
 | --- | --- | --- | --- |
@@ -53,23 +53,72 @@ Her dil aynı API'yi sunar ve her biri farklı bir denetlenmiş uygulama tarafı
 | Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Kullanılabilirlik
-JavaScript, Rust, Python, Go ve Java binding'lerinin tümü **0.1.1** sürümünde **yayımlanmıştır** — yukarıdaki komutlarla doğrudan npm, crates.io, PyPI, Go modül proxy'si ve Maven Central üzerinden kurabilirsiniz. Python dağıtımı `qorechain-pqc` olarak kurulur ancak **`qorpqc` olarak import edilir**. **Java** paketi Maven Central'da `io.github.qorechain:qorechain-pqc:0.1.1` olarak bulunur (Bouncy Castle arka ucu). **C** binding'i, [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) deposundan kendinizin derlediği bir statik kütüphane + başlık dosyasıdır.
+JavaScript, Rust, Python, Go ve Java binding'lerinin tamamı **0.1.1** sürümünde **yayımlanmıştır** — yukarıdaki komutlarla doğrudan npm, crates.io, PyPI, Go modül proxy'si ve Maven Central'dan kurabilirsiniz. Python dağıtımı `qorechain-pqc` olarak kurulur ancak **`qorpqc` olarak import edilir**. **Java** paketi Maven Central'da `io.github.qorechain:qorechain-pqc:0.1.1` olarak bulunur (Bouncy Castle arka ucu). **C** binding'i, [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) deposundan derlediğiniz bir statik kütüphane + başlık dosyasıdır.
 :::
 
 ## Deterministik imzalama (konsensüs açısından kritik) {#deterministic-signing}
 
-**0.1.1** sürümünden itibaren `sign()`, **altı binding'in tamamında** **deterministik** ML-DSA varyantını (FIPS-204 §3.4, imzalama rastgeleliğinin 32 sıfır bayt olduğu varyant) üretir — ve zincirin kabul ettiği tek varyant budur. QoreChain'in işlem doğrulayıcısı, **hedged (rastgeleleştirilmiş) ML-DSA imzalarını reddeder**; bu nedenle hedged bir imza, kriptografik olarak doğrulansa bile zincir üzerinde başarısız olur.
+**0.1.1** sürümünden itibaren `sign()`, **altı binding'in tamamında** **deterministik** ML-DSA varyantını üretir (FIPS-204 §3.4; imzalama rastgeleliği 32 sıfır bayttır) — ve zincirin kabul ettiği tek varyant budur. QoreChain'in işlem doğrulayıcısı **hedged (rastgeleleştirilmiş) ML-DSA imzalarını reddeder**; bu nedenle hedged bir imza, kriptografik olarak doğrulansa bile zincir üzerinde başarısız olur.
 
-Temel gerçekler:
+Temel noktalar:
 
 * **Varsayılanı değiştirmeyin.** Deterministik imzalama konsensüs açısından kritiktir; her binding bunu bu şekilde belgeler.
-* Deterministik çıktı, aynı anahtar ve mesaj için **altı binding'in tamamında bayt düzeyinde birebir aynıdır** — ortak diller arası test vektörleriyle sabitlenmiştir.
-* Hedged imzalama, zincir dışı kullanım senaryoları için her binding'de **açıkça tercih edilen (opt-in)** bir seçenek olarak kullanılabilir durumdadır (örn. JavaScript'te `{hedged: true}`, Rust'ta `sign_hedged`, Java'da `mldsaSignHedged`, Python'da `sign(..., hedged=True)`) — hedged imzalar **zincir tarafından kabul edilmez**.
+* Deterministik çıktı, aynı anahtar ve mesaj için **altı binding'in tamamında bayt bayt aynıdır** — ortak diller arası test vektörleriyle sabitlenmiştir.
+* Hedged imzalama, zincir dışı kullanım senaryoları için her binding'de **açıkça tercih edilmesi gereken bir seçenek** olarak mevcuttur (örn. JavaScript'te `{hedged: true}`, Rust'ta `sign_hedged`, Java'da `mldsaSignHedged`, Python'da `sign(..., hedged=True)`) — hedged imzalar **zincir tarafından kabul edilmez**.
 * JavaScript binding'inin 0.1.0 sürümü varsayılan olarak hedged imzalıyordu — işlem araçlarınızı 0.1.0'a göre geliştirdiyseniz **0.1.1'e yükseltin**; eski varsayılanla imzalanan işlemler zincir üzerinde reddedilir.
+
+## Deterministik anahtar türetme ve kurtarma {#key-derivation}
+
+Ekosistem standardı türetme, ML-DSA-87 anahtarını hesaba bağlar; böylece anahtar **yalnızca hesabın mnemonic'inden kurtarılabilir**:
+
+```
+seed = SHAKE-256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic)
+(publicKey, secretKey) = mldsa.keygen(seed)
+```
+
+Yayımlanmış her araç (`@qorechain/wallet-adapter`, `@qorechain/sdk`, `@qorechain/chain-bridge` ≥0.1.1) aynı anahtarı türetir; dolayısıyla bir mnemonic, kullanılan araçtan bağımsız olarak tek bir anahtar üretir. CLI üzerinde bir anahtarı kurtarın (mnemonic stdin'den):
+
+```bash
+qorechaind tx pqc recover-key mykey qor1youraddress...
+# legacy tooling derivation (shake256(mnemonic) only, unbound to the address):
+qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge
+```
+
+## Anahtar rotasyonu (aynı algoritma) {#key-rotation}
+
+Zincir sürümü **v3.1.85** itibarıyla **`MsgRotatePQCKey`**, bir hesabın ML-DSA-87 anahtarını **aynı algoritma içinde** döndürür — daha önce kayıt tek seferlikti ve `MigratePQCKey` yalnızca algoritmalar arası geçiş yapıyordu. Bunu, legacy yöntemle türetilmiş bir anahtarı kanonik, adrese bağlı türetmeye taşımak veya ele geçirilmiş bir anahtarı emekliye ayırmak için kullanın.
+
+Rotasyon **çift imzalıdır**: hem eski hem de yeni anahtar, alan ayrımlı (domain-separated) `"qorechain-pqc-rotate-v1|chainId|algorithm|account|oldPubHex|newPubHex"` mesajını imzalar. Yeniden oynatma (replay) yapısal olarak imkânsızdır — rotasyondan sonra eski anahtar artık kayıtlı anahtarla eşleşmez, bu yüzden aynı mesaj yeniden uygulanamaz. Rotasyon **yalnızca kök anahtarla yapılabilen** bir işlemdir (asla bir [authenticator'a](/developer-guide/account-abstraction#authenticators) devredilemez) ve işlemin kendisi hâlâ *eski* anahtarla hibrit imzalanır; bu da mevcut sahipliği kanıtlar.
+
+Tek adımlı CLI (mnemonic stdin'den; eski anahtarı kurtarır, yenisini türetir veya üretir, çift imzalar, yayınlar):
+
+```bash
+# migrate a legacy-derived key to the canonical derivation:
+qorechaind tx pqc rotate-key --old-derivation bridge --new-derivation adapter \
+  --from mykey --chain-id qorechain-vladi -o json -y
+
+# rotate to a brand-new random key (compromise recovery):
+qorechaind tx pqc rotate-key --old-derivation adapter --new-random \
+  --from mykey --chain-id qorechain-vladi -o json -y
+```
+
+Kod tarafında, `@qorechain/wallet-adapter` (≥0.1.7) ve `@qorechain/sdk` (≥0.7.0) aynı akışı sunar:
+
+```js
+import { rotatePqcKeyMsgFromMnemonic } from "@qorechain/wallet-adapter";
+
+// Builds the dual-signed MsgRotatePQCKey migrating shake256(mnemonic) -> canonical:
+const msg = await rotatePqcKeyMsgFromMnemonic({
+  mnemonic, address: "qor1youraddress...", chainId: "qorechain-vladi",
+});
+// Sign & broadcast with the account's normal hybrid signer (old key cosigns the envelope).
+```
+
+Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21).
 
 ## Tutarlı API
 
-Her dil aynı yüzeyi sunar:
+Her dil aynı yüzeyi sağlar:
 
 ```text
 keygen()                              -> (publicKey, secretKey)
@@ -124,37 +173,37 @@ pqc.MLDSA.Verify(pk, msg, sig) // true
 
 ## Blokzincir yardımcıları
 
-Ham primitiflerin ötesinde, kütüphane entegratörlerin QoreChain hesapları ve işlemleriyle etkileşim kurmak için ihtiyaç duyduğu iki yardımcı sunar.
+Ham primitiflerin ötesinde, kütüphane entegratörlerin QoreChain hesapları ve işlemleriyle etkileşmek için ihtiyaç duyduğu iki yardımcı sunar.
 
 ### `pubkeyHash(pk, len=20)`
 
-Bir **pay-to-pubkey-hash** kayıt yardımcısı. Bir açık anahtarın kısa (20–32 bayt) SHAKE-256 özetini üretir. Desen şudur: hesap durumunda yalnızca `pubkeyHash` değerini saklayın ve tam açık anahtarı işlemin içinde zorunlu kılın. 1–2,5 KB'lık anahtara rağmen hesap durumu son derece küçük kalır.
+Bir **pay-to-pubkey-hash** kayıt yardımcısı. Bir açık anahtarın kısa (20–32 bayt) SHAKE-256 özetini üretir. Desen şudur: hesap durumunda yalnızca `pubkeyHash` değerini saklayın ve tam açık anahtarı işlemin içinde zorunlu kılın. 1–2,5 KB'lık anahtara rağmen hesap durumu küçücük kalır.
 
 ### `hybridSignBytes(bodyWithoutPqcExt, authInfo)`
 
-QoreChain'in cüzdan uyumlu **hibrit uzantı imza baytları (sign-bytes) çerçevelemesi**. Bu, hibrit bir işlemin PQC yarısını oluşturmak üzere ML-DSA-87 (Dilithium-5) ile imzalanması gereken baytları tam olarak üretir.
+QoreChain'in cüzdan uyumlu **hibrit uzantılı imza baytları çerçevelemesi**. Bu, bir hibrit işlemin PQC yarısını oluşturmak üzere ML-DSA-87 (Dilithium-5) ile imzalanması gereken baytların tam olarak kendisini üretir.
 
-Cüzdanların ve entegratörlerin cosmos işlem yolunda **zorunlu hibrit imzayı** üretmek için kullandığı parça budur. Mevcut zincir sürümü itibarıyla hibrit imzalar **varsayılan olarak zorunludur** (`hybrid_signature_mode = required`, `allow_classical_fallback = false`): cosmos yolundaki her işlem, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımak zorundadır. Uygulama (enforcement) modeli için [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security) sayfasına bakın.
+Cüzdanların ve entegratörlerin cosmos işlem yolunda **zorunlu hibrit imzayı** üretmek için kullandığı parça budur. Mevcut zincir sürümü itibarıyla hibrit imzalar **varsayılan olarak zorunludur** (`hybrid_signature_mode = required`, `allow_classical_fallback = false`): her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımak zorundadır. Uygulama (enforcement) modeli için [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security) sayfasına bakın.
 
-Klasik secp256k1 imzası, standart imza baytları üzerinden hesaplanır (bunlar PQC uzantısını **hariç tutar**) ve ML-DSA-87 imzası hesaplanıp `PQCHybridSignature` uzantısı olarak eklenir. Klasik imza baytları uzantıyı hariç tuttuğu için, doğrulayıcı PQC kısmını anlasın ya da anlamasın klasik imza geçerli kalır.
+Klasik secp256k1 imzası, standart imza baytları üzerinde hesaplanır (bunlar PQC uzantısını **hariç tutar**) ve ML-DSA-87 imzası hesaplanıp `PQCHybridSignature` uzantısı olarak eklenir. Klasik imza baytları uzantıyı hariç tuttuğu için, bir doğrulayıcının PQC kısmını anlayıp anlamadığından bağımsız olarak klasik imza geçerli kalır.
 
 Bu hibrit imzayı üretmenin üç yolu vardır:
 
-* **CLI** — `qorechaind tx pqc cosign`, bir işleme Dilithium-5 eş imzasını (cosignature) ekler (`qorechaind tx pqc gen-key` sonrasında). Bkz. [İşlem Komutları](/cli-reference/transaction-commands).
-* **QoreChain SDK** — `buildHybridTx` (`includePqcPublicKey` ile) aynı işlemi TypeScript/Python/Go/Rust'ta yapar. Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
+* **CLI** — `qorechaind tx pqc cosign`, bir işleme Dilithium-5 eş imzasını ekler (`qorechaind tx pqc gen-key` sonrasında). Bkz. [İşlem Komutları](/cli-reference/transaction-commands).
+* **QoreChain SDK** — `buildHybridTx` (`includePqcPublicKey` ile) aynısını TypeScript/Python/Go/Rust'ta yapar. Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
 * **Doğrudan `qorechain-pqc`** — desteklenen altı dilden birinde SDK dışında araç geliştiriyorsanız, imza baytlarını çerçevelemek için `hybridSignBytes` ve Dilithium-5 imzasını üretmek için `mldsa.sign` kullanın.
 
 ## Zincir üzerindeki ayak izini optimize etme
 
-ML-DSA anahtarları ve imzaları klasik standartlara göre büyüktür. Bir standardın baytları sabit olduğundan, zincir üzerindeki ayak izini küçük tutmanın yolu — hiçbiri standardı değiştirmeyen — şu üç kaldıracı kullanmaktır:
+ML-DSA anahtarları ve imzaları, klasik standartlara göre büyüktür. Bir standardın baytları sabit olduğu için, zincir üzerindeki ayak izini küçük tutmanın yolu şu üç kaldıracı kullanmaktır — hiçbiri standardı değiştirmez:
 
-1. **Güvenlik seviyesini bilinçli seçin.** ML-DSA-65 (L3) imzaları, ML-DSA-87 (L5) imzalarından yaklaşık %28 daha küçüktür ve yine de çok güçlüdür; ML-KEM-768 şifreli metinleri 1024'ünkilerden daha küçüktür. Kullanım senaryosuna göre seçim yapın.
-2. **Pay-to-pubkey-hash.** Hesap durumunda yalnızca `pubkeyHash(pk)` değerini (20–32 bayt SHAKE-256) saklayın ve tam açık anahtarı işlemin içinde zorunlu kılın. Anahtar boyutu ne olursa olsun hesap durumu son derece küçük kalır.
-3. **Doğrula-ve-at imzalar.** Bir imza işlemin içinde (blok verisinde) bulunmak zorundadır, ancak kalıcı durum ağacına asla yazılmamalıdır.
+1. **Güvenlik seviyesini bilinçli seçin.** ML-DSA-65 (L3) imzaları, ML-DSA-87 (L5) imzalarından yaklaşık %28 daha küçüktür ve yine de çok güçlüdür; ML-KEM-768 şifreli metinleri 1024'ünkilerden daha küçüktür. Kullanım senaryosuna göre seçin.
+2. **Pay-to-pubkey-hash.** Hesap durumunda yalnızca `pubkeyHash(pk)` değerini (20–32 bayt SHAKE-256) saklayın ve tam açık anahtarı işlemin içinde zorunlu kılın. Anahtar boyutu ne olursa olsun hesap durumu küçücük kalır.
+3. **Doğrula ve at (verify-and-discard) yaklaşımı.** Bir imza işlemin içinde (blok verisinde) bulunmak zorundadır, ancak asla kalıcı durum ağacına yazılmamalıdır.
 
-> **Neden Falcon yok?** FN-DSA (Falcon) daha küçük imzalar sağlardı, ancak bilinçli olarak **hariç tutulmuştur**: FN-DSA, FIPS-206 *taslağıdır* (nihai değildir) ve yalnızca standartlara dayalı bir kütüphane sadece nihai hale gelmiş standartları içerir. FIPS-206 nihai hale geldiğinde yeniden değerlendirilebilir.
+> **Neden Falcon yok?** FN-DSA (Falcon) daha küçük imzalar sağlardı, ancak bilinçli olarak **hariç tutulmuştur**: FN-DSA, FIPS-206 *taslağıdır* (nihai değil) ve yalnızca standartlara dayalı bir kütüphane sadece nihai standartları içerir. FIPS-206 nihai hale geldiğinde yeniden değerlendirilebilir.
 
-## İlgili sayfalar
+## İlgili
 
 * [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security) — zincirin bu primitifleri nasıl kullandığı ve hibrit imzaları nasıl zorunlu kıldığı.
 * [İşlem Komutları](/cli-reference/transaction-commands) — `tx pqc gen-key` / `tx pqc cosign` CLI akışı.

@@ -7,13 +7,21 @@ sidebar_position: 8
 
 # Çoklu-VM (VM'ler arası çağrılar)
 
-Çoklu-VM rollup'u, özel bir **VM'ler arası ön derlemesi (precompile)** aracılığıyla
-CosmWasm sözleşmelerini çağırabilen bir EVM yürütme katmanı çalıştırır. RDK, bu
-çağrıları kodlamak için TypeScript araçlarını ve başlangıç noktası olarak bir iskelet
-şablonu içerir.
+Çoklu-VM rollup'u, özel bir **VM'ler arası ön derleme (precompile)** aracılığıyla
+**QoreChain Native** (Wasm) çalışma zamanındaki CosmWasm sözleşmelerini
+çağırabilen bir EVM yürütme katmanı çalıştırır. RDK, bu çağrıları kodlamak için
+TypeScript araçlarını ve başlangıç noktası olarak bir iskelet şablonu içerir.
 
-> Bu araçlar yalnızca **EVM → CosmWasm** kapsamını içerir. SVM ayrı bir çalışma zamanıdır ve
-> VM'ler arası ön derlemenin bir parçası değildir.
+> Bu araçlar yalnızca **EVM → QoreChain Native** (CosmWasm sözleşmeleri) kapsamını
+> içerir. SVM ayrı bir çalışma zamanıdır ve VM'ler arası ön derlemenin bir parçası
+> değildir.
+
+:::note
+RDK v0.4.2 itibarıyla Wasm çalışma zamanının VM seçenek tanımlayıcısı
+**`native`**'dir (QoreChain Native); `cosmwasm` kabul edilen eski bir takma ad
+olarak kalır ve her ikisi de ağ üzerinde `cosmwasm` olarak eşlenir — zincir,
+gezgin ve VM'ler arası ön derleme ABI'si (`executeCrossVMCall`) değişmemiştir.
+:::
 
 ## Ön derleme (precompile)
 

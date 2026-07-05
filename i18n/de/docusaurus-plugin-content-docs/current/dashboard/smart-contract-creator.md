@@ -7,9 +7,9 @@ sidebar_position: 6
 
 # Smart Contract Creator
 
-Der **Smart Contract Creator** generiert Smart Contracts aus einer Beschreibung in natürlicher Sprache, angetrieben von **QCAI**. Beschreibe, was du möchtest, wähle deine Ziel-Blockchain, und QCAI schreibt den Contract für dich. Es unterstützt **17 blockchains** für KI-Tooling, sodass du das Ökosystem ansprechen kannst, für das du baust.
+Der **Smart Contract Creator** generiert Smart Contracts aus einer Beschreibung in natürlicher Sprache, angetrieben von **QCAI**. Beschreibe, was du möchtest, wähle deine Ziel-Blockchain, und QCAI schreibt den Contract für dich. Es werden **17 Blockchains** für KI-Tooling unterstützt, sodass du das Ökosystem ansprechen kannst, für das du baust.
 
-Wenn du deine Wallet verbindest, kannst du die von dir generierten Contracts speichern und verwalten – siehe [Overview & Getting Started](/dashboard/overview#connect-your-wallet).
+Wenn du deine Wallet verbindest, kannst du die von dir generierten Contracts speichern und verwalten – siehe [Überblick & Erste Schritte](/dashboard/overview#connect-your-wallet).
 
 ## Einen Contract generieren
 
@@ -28,15 +28,33 @@ Von hier aus kannst du:
 - Den Contract als Datei im richtigen Format für deine gewählte Blockchain **herunterladen**.
 - Den Contract **bearbeiten**, um ihn weiter zu verfeinern.
 
+## Deinen Contract deployen {#deploy}
+
+### Auf dem Mainnet (EVM) – Non-Custodial-Deployment {#deploy-mainnet}
+
+Das Mainnet-Deployment ist non-custodial: Das Dashboard kompiliert deinen Contract und liefert **unsignierte** Deployment-Daten zurück – es hält niemals deine Schlüssel und signiert niemals in deinem Namen. Du signierst und sendest das Deployment in deiner eigenen Wallet, und das Dashboard erfasst anschließend den resultierenden Contract.
+
+1. Öffne den Contract, den du deployen möchtest (einen Contract mit EVM-Ziel), und wähle **Deploy** auf **Mainnet**. Wenn dies deine erste Mainnet-Aktion ist, akzeptiere die [einmalige Risikobestätigung](/dashboard/overview#risk-acknowledgement).
+2. Verbinde **MetaMask**, falls es noch nicht verbunden ist – siehe [Überblick & Erste Schritte](/dashboard/overview#connect-your-wallet).
+3. Das Dashboard kompiliert den Contract und übergibt die unsignierte Deployment-Transaktion an deine Wallet.
+4. Überprüfe die Transaktion in MetaMask – Netzwerk, Gas und Daten – und bestätige dann, um sie selbst zu signieren und zu senden.
+5. Sobald das Deployment on-chain bestätigt ist, erfasst das Dashboard die resultierende Contract-Adresse bei deinen gespeicherten Contracts.
+
+Auf dem Mainnet sind auf diesem Weg vorerst nur **EVM**-Deployments verfügbar; **Wasm**- und **SVM**-Deployments gibt es nur auf dem Testnet.
+
+### Auf dem Testnet – mit einem Klick {#deploy-testnet}
+
+Der Testnet-Ablauf ist unverändert: Die vom Dashboard verwaltete Test-Wallet signiert und übermittelt das Deployment für dich mit einem Klick, sodass du mit [Faucet](/dashboard/faucet)-Tokens schnell iterieren kannst, bevor du auf das Mainnet gehst. Das Testnet unterstützt EVM-, Wasm- und SVM-Deployments.
+
 ## Teilen und wiederverwenden
 
 Jeder generierte Contract hat seine eigene Seite, die du öffnen oder teilen kannst. Wenn du einen Contract öffnest, der dir nicht gehört, kannst du ihn **forken**, um eine eigene Kopie zu starten und von dort aus weiterzuarbeiten.
 
 :::tip Immer überprüfen und testen
-Von QCAI generierter Code ist ein guter Ausgangspunkt, aber kein Ersatz für eine Überprüfung. Lies den Contract, teste ihn im [testnet](/getting-started/connecting-to-testnet) und lasse ihn durch den [Contract Auditor](/dashboard/contract-auditor) laufen, bevor du etwas Wertvolles bereitstellst.
+Von QCAI generierter Code ist ein guter Ausgangspunkt, aber kein Ersatz für eine Überprüfung. Lies den Contract, teste ihn im [Testnet](/getting-started/connecting-to-testnet) und lasse ihn durch den [Contract Auditor](/dashboard/contract-auditor) laufen, bevor du etwas Wertvolles deployst.
 :::
 
 ## Verwandt
 
 - [Contract Auditor](/dashboard/contract-auditor) – führe eine QCAI-Sicherheitsanalyse für einen Contract durch.
-- [Developer Guide](/developer-guide/evm-development) – Contracts auf den Laufzeitumgebungen von QoreChain bereitstellen.
+- [Developer Guide](/developer-guide/evm-development) – Contracts in die Laufzeitumgebungen von QoreChain deployen.

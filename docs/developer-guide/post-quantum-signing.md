@@ -67,6 +67,55 @@ Key facts:
 * Hedged signing remains available as an **explicit opt-in** per binding (e.g. `{hedged: true}` in JavaScript, `sign_hedged` in Rust, `mldsaSignHedged` in Java, `sign(..., hedged=True)` in Python) for non-chain use cases — hedged signatures are **not accepted by the chain**.
 * Version 0.1.0 of the JavaScript binding signed hedged by default — if you built transaction tooling against 0.1.0, **upgrade to 0.1.1**; transactions signed with the old default are rejected on-chain.
 
+## Deterministic key derivation & recovery {#key-derivation}
+
+The ecosystem-standard derivation binds the ML-DSA-87 key to the account, so it is **recoverable from the account's mnemonic alone**:
+
+```
+seed = SHAKE-256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic)
+(publicKey, secretKey) = mldsa.keygen(seed)
+```
+
+Every published tool (`@qorechain/wallet-adapter`, `@qorechain/sdk`, `@qorechain/chain-bridge` ≥0.1.1) derives this same key, so one mnemonic produces one key regardless of tooling. Recover a key on the CLI (mnemonic on stdin):
+
+```bash
+qorechaind tx pqc recover-key mykey qor1youraddress...
+# legacy tooling derivation (shake256(mnemonic) only, unbound to the address):
+qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge
+```
+
+## Key rotation (same algorithm) {#key-rotation}
+
+As of chain version **v3.1.85**, **`MsgRotatePQCKey`** rotates an account's ML-DSA-87 key **within the same algorithm** — previously registration was one-shot and `MigratePQCKey` only crossed algorithms. Use it to migrate a legacy-derived key to the canonical address-bound derivation, or to retire a compromised key.
+
+The rotation is **dual-signed**: both the old and the new key sign the domain-separated message `"qorechain-pqc-rotate-v1|chainId|algorithm|account|oldPubHex|newPubHex"`. Replay is structurally impossible — once rotated, the old key no longer matches the registered key, so the same message cannot re-apply. Rotation is a **root-key-only** operation (never delegable to an [authenticator](/developer-guide/account-abstraction#authenticators)), and the transaction itself is still hybrid-signed with the *old* key, proving current ownership.
+
+One-shot CLI (mnemonic on stdin; recovers the old key, derives or generates the new one, dual-signs, broadcasts):
+
+```bash
+# migrate a legacy-derived key to the canonical derivation:
+qorechaind tx pqc rotate-key --old-derivation bridge --new-derivation adapter \
+  --from mykey --chain-id qorechain-vladi -o json -y
+
+# rotate to a brand-new random key (compromise recovery):
+qorechaind tx pqc rotate-key --old-derivation adapter --new-random \
+  --from mykey --chain-id qorechain-vladi -o json -y
+```
+
+In code, `@qorechain/wallet-adapter` (≥0.1.7) and `@qorechain/sdk` (≥0.7.0) expose the same flow:
+
+```js
+import { rotatePqcKeyMsgFromMnemonic } from "@qorechain/wallet-adapter";
+
+// Builds the dual-signed MsgRotatePQCKey migrating shake256(mnemonic) -> canonical:
+const msg = await rotatePqcKeyMsgFromMnemonic({
+  mnemonic, address: "qor1youraddress...", chainId: "qorechain-vladi",
+});
+// Sign & broadcast with the account's normal hybrid signer (old key cosigns the envelope).
+```
+
+After a successful rotation the new key signs (code 0) and the old key is rejected (`pqc` code 21).
+
 ## Consistent API
 
 Every language provides the same surface:

@@ -8,11 +8,20 @@ sidebar_position: 8
 # Multi-VM (apeluri cross-VM)
 
 Un rollup multi-VM rulează un strat de execuție EVM care poate apela contracte
-CosmWasm printr-un **precompil cross-VM** dedicat. RDK include uneltele
-TypeScript pentru a codifica acele apeluri și un șablon de schelet de la care să pornești.
+CosmWasm pe runtime-ul **QoreChain Native** (Wasm) printr-un **precompil
+cross-VM** dedicat. RDK include uneltele TypeScript pentru a codifica acele
+apeluri și un șablon de schelet de la care să pornești.
 
-> Aceste unelte acoperă **doar EVM → CosmWasm**. SVM este un runtime separat și
-> nu face parte din precompilul cross-VM.
+> Aceste unelte acoperă doar **EVM → QoreChain Native** (contracte CosmWasm).
+> SVM este un runtime separat și nu face parte din precompilul cross-VM.
+
+:::note
+Începând cu RDK v0.4.2, identificatorul opțiunii de VM pentru runtime-ul Wasm
+este **`native`** (QoreChain Native); `cosmwasm` rămâne un alias legacy
+acceptat, iar ambele se mapează la `cosmwasm` la nivel de rețea — lanțul,
+exploratorul și ABI-ul precompilului cross-VM (`executeCrossVMCall`) rămân
+neschimbate.
+:::
 
 ## Precompilul
 
@@ -67,5 +76,5 @@ inclusiv fragmentul `CrossVmCaller.sol`:
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Vezi [Deploying a Rollup](/rollups/deploying-a-rollup) pentru toate șabloanele
-generatorului de schelet.
+Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru toate
+șabloanele generatorului de schelet.

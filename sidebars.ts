@@ -169,6 +169,7 @@ const sidebars: SidebarsConfig = {
             "sdk/guides/ai-preflight",
             "sdk/guides/quantum-safe",
             "sdk/guides/react",
+            "sdk/guides/authenticators",
           ],
         },
         {

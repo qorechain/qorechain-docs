@@ -14,43 +14,43 @@ Für Blockproduktion, Staking, Slashing und Pool-Klassifizierung siehe stattdess
 :::
 
 :::warning
-Binaries, Genesis und Snapshots werden unter [download.qore.host](https://download.qore.host) mit SHA-256-Prüfsummen veröffentlicht. **Verifizieren Sie Prüfsummen immer vor der Installation oder dem Entpacken**, und verifizieren Sie Einzahlungen ausschließlich gegen Ihren eigenen synchronisierten Node.
+Binaries, Genesis und Snapshots werden unter [download.qore.host](https://download.qore.host) mit SHA-256-Prüfsummen veröffentlicht. **Verifizieren Sie Prüfsummen immer vor dem Installieren oder Entpacken**, und verifizieren Sie Einzahlungen ausschließlich gegen Ihren eigenen, synchronisierten Node.
 :::
 
 ---
 
 ## Node vs. Validator
 
-| Aspekt              | Reiner Node (dieser Leitfaden)                  | Validator                                  |
-| ------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Konsensschlüssel    | Keiner                                          | ed25519-Konsensschlüssel (muss gesichert werden) |
-| Blockproduktion     | Nein                                            | Ja — schlägt Blöcke vor und signiert sie   |
-| Staking / Slashing  | Nicht zutreffend                                | Selbstdelegation, Slashing-Risiko          |
-| Hauptzweck          | RPC/REST/gRPC/EVM/SVM für Integrationen bereitstellen | Das Netzwerk sichern, Rewards verdienen |
-| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert | Validator hinter Sentry-Nodes verborgen    |
+| Aspekt                | Reiner Node (dieser Leitfaden)                        | Validator                                        |
+| --------------------- | ----------------------------------------------------- | ------------------------------------------------ |
+| Konsensschlüssel      | Keiner                                                 | ed25519-Konsensschlüssel (muss gesichert werden)  |
+| Blockproduktion       | Nein                                                   | Ja — schlägt Blöcke vor und signiert sie          |
+| Staking / Slashing    | Nicht anwendbar                                        | Selbstdelegation, Slashing-Risiko                 |
+| Hauptzweck            | RPC/REST/gRPC/EVM/SVM für Integrationen bereitstellen  | Netzwerk sichern, Rewards verdienen               |
+| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert        | Validator hinter Sentry-Nodes verborgen           |
 
 ---
 
 ## Zielnetzwerke
 
-| Netzwerk | Chain-ID            | EVM-Chain-ID         | Hinweise                       |
-| -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026 |
-| Testnet  | `qorechain-diana`   | `9800`               | Proben Sie Integrationen zuerst hier |
+| Netzwerk | Chain-ID            | EVM-Chain-ID          | Hinweise                           |
+| -------- | ------------------- | --------------------- | ---------------------------------- |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026    |
+| Testnet  | `qorechain-diana`   | `9800`                | Integrationen zuerst hier erproben |
 
-Ersetzen Sie die passende `--chain-id` für Ihr Zielnetzwerk in diesem gesamten Leitfaden. Die Beispiele verwenden standardmäßig das Mainnet.
+Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Beispiele verwenden standardmäßig das Mainnet.
 
 ---
 
 ## Empfohlene Hardware
 
-| Profil                   | CPU      | RAM   | Festplatte (NVMe SSD)   | Netzwerk  |
-| ------------------------ | -------- | ----- | ----------------------- | --------- |
-| Pruned RPC-Node          | 4 Kerne  | 16 GB | 500 GB+                 | 100 Mbps+ |
-| Full-/Archiv-Node        | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit) | 1 Gbps |
-| Börsenintegration        | 8 Kerne  | 32 GB | 2 TB+ mit Reserve       | 1 Gbps    |
+| Profil                    | CPU      | RAM   | Festplatte (NVMe-SSD)        | Netzwerk  |
+| ------------------------- | -------- | ----- | ---------------------------- | --------- |
+| Geprunter RPC-Node        | 4 Kerne  | 16 GB | 500 GB+                      | 100 Mbps+ |
+| Full-/Archive-Node        | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit)  | 1 Gbps    |
+| Börsen-Integration        | 8 Kerne  | 32 GB | 2 TB+ mit Reserve            | 1 Gbps    |
 
-NVMe SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Archiv-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; planen Sie Festplattenkapazität mit Reserve und Monitoring ein.
+Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Archive-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; stellen Sie Speicherplatz mit Reserve und Monitoring bereit.
 
 ---
 
@@ -58,13 +58,13 @@ NVMe SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sin
 
 ### Docker Compose
 
-Ein reines Node-Deployment mit Docker Compose. Pinnen Sie das Image-Tag auf die aktuelle Chain-Version (**v3.1.82** auf dem Mainnet) und mounten Sie ein persistentes Volume für die Chain-Daten.
+Ein reines Node-Deployment mit Docker Compose. Pinnen Sie das Image-Tag auf die live laufende Chain-Version (**v3.1.85** im Mainnet) und mounten Sie ein persistentes Volume für die Chain-Daten.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.82
+    image: qorechain/qorechaind:v3.1.85
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -84,7 +84,7 @@ volumes:
   qorechain-data:
 ```
 
-Initialisieren Sie das Datenverzeichnis einmalig (Genesis- und Peer-Konfiguration werden unten behandelt) und starten Sie dann:
+Initialisieren Sie das Datenverzeichnis einmalig (Genesis- und Peer-Konfiguration werden weiter unten behandelt) und starten Sie dann:
 
 ```bash
 docker compose up -d
@@ -93,7 +93,7 @@ docker compose logs -f qorechain-node
 
 ### systemd
 
-Für eine Bare-Metal-Installation führen Sie `qorechaind` unter systemd aus:
+Für eine Bare-Metal-Installation betreiben Sie `qorechaind` unter systemd:
 
 ```ini
 # /etc/systemd/system/qorechaind.service
@@ -162,7 +162,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ## Schneller Bootstrap
 
-Die Synchronisierung ab Genesis kann lange dauern. Verwenden Sie für Integrationen **State Sync** oder einen **Snapshot** für einen schnellen Kaltstart.
+Die Synchronisierung ab Genesis kann sehr lange dauern. Verwenden Sie für Integrationen **State Sync** oder einen **Snapshot** für einen schnellen Kaltstart.
 
 ### State Sync
 
@@ -177,7 +177,7 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Ermitteln Sie eine aktuelle vertrauenswürdige Höhe und den zugehörigen Hash über das öffentliche RPC:
+Ermitteln Sie eine aktuelle vertrauenswürdige Höhe und deren Hash über den öffentlichen RPC:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -216,11 +216,11 @@ pruning = "default"
 # pruning = "nothing"
 ```
 
-| `pruning`   | Verhalten                                | Anwendungsfall                    |
-| ----------- | ---------------------------------------- | --------------------------------- |
-| `default`   | Behält aktuellen State, prunt den Rest   | RPC-Node, Guthaben-/State-Abfragen |
-| `nothing`   | Behält den gesamten historischen State   | Archiv-Node, vollständige Historie |
-| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte | Angepasste Aufbewahrung     |
+| `pruning`   | Verhalten                                        | Anwendungsfall                        |
+| ----------- | ------------------------------------------------ | ------------------------------------- |
+| `default`   | Behält aktuellen State, prunt den Rest           | RPC-Node, Kontostands-/State-Abfragen |
+| `nothing`   | Behält den gesamten historischen State           | Archive-Node, vollständige Historie   |
+| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte   | Feinabgestimmte Aufbewahrung          |
 
 ### Transaktionsindexierung (`config.toml`)
 
@@ -229,13 +229,13 @@ pruning = "default"
 indexer = "kv"
 ```
 
-Setzen Sie `indexer = "kv"` (oder einen umfangreicheren Indexer), damit Transaktionen per Hash und Event abfragbar sind — unerlässlich für Börsen, die Ein- und Auszahlungen abgleichen. Setzen Sie `indexer = "null"` nur, wenn Sie keine historischen Tx-Abfragen benötigen.
+Setzen Sie `indexer = "kv"` (oder einen umfangreicheren Indexer), damit Transaktionen per Hash und Event abfragbar sind — essenziell für Börsen, die Ein- und Auszahlungen abgleichen. Setzen Sie `indexer = "null"` nur, wenn Sie keine historischen Tx-Abfragen benötigen.
 
 ---
 
 ## Endpunkte für Integrationen bereitstellen
 
-Aktivieren und binden Sie die von Integratoren benötigten API-Server in `app.toml`:
+Aktivieren und binden Sie in `app.toml` die API-Server, die Integratoren benötigen:
 
 ```toml
 [api]
@@ -260,17 +260,17 @@ Und den RPC-Listener in `config.toml`:
 laddr = "tcp://0.0.0.0:26657"
 ```
 
-| Endpunkt     | Port   | Verwendung für                                          |
-| ------------ | ------ | ------------------------------------------------------ |
-| RPC          | `26657` | Broadcasten von Transaktionen, Abfragen von Blöcken/Status |
-| REST         | `1317`  | HTTP-Abfragen des Chain-States                         |
-| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz           |
-| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)    |
-| EVM WS       | `8546`  | EVM-Event-Abonnements                                  |
-| SVM RPC      | `8899`  | Solana-kompatible Integrationen                        |
+| Endpunkt     | Port    | Verwendung für                                              |
+| ------------ | ------- | ----------------------------------------------------------- |
+| RPC          | `26657` | Broadcasting von Transaktionen, Abfragen von Blöcken/Status  |
+| REST         | `1317`  | HTTP-Abfragen des Chain-States                               |
+| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz                 |
+| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)          |
+| EVM WS       | `8546`  | EVM-Event-Subscriptions                                      |
+| SVM RPC      | `8899`  | Solana-kompatible Integrationen                              |
 
 :::warning
-Exponieren Sie RPC, EVM JSON-RPC oder gRPC niemals ohne Reverse Proxy, Rate Limiting, Authentifizierung und Firewall direkt im öffentlichen Internet. Binden Sie an `0.0.0.0` nur hinter einer kontrollierten Ingress-Schicht.
+Exponieren Sie RPC, EVM JSON-RPC oder gRPC niemals direkt ins öffentliche Internet ohne Reverse Proxy, Rate Limiting, Authentifizierung und Firewall. Binden Sie an `0.0.0.0` nur hinter einer kontrollierten Ingress-Schicht.
 :::
 
 ---
@@ -284,7 +284,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 ```
 
 * `true` — synchronisiert noch.
-* `false` — vollständig synchronisiert und stellt den aktuellen State bereit.
+* `false` — vollständig synchronisiert und liefert den aktuellen State.
 
 ```bash
 # Latest height and network
@@ -301,9 +301,9 @@ QoreChain stellt Prometheus-Metriken auf Port **26660** bereit:
 http://localhost:26660/metrics
 ```
 
-Scrapen Sie diese mit einem beliebigen Prometheus-kompatiblen Collector. Wenn Sie den Docker-Compose-Monitoring-Stack betreiben, ist Grafana unter `http://localhost:3001` verfügbar — setzen Sie beim ersten Login eigene Zugangsdaten. Überwachen Sie Blockhöhen-Rückstand, Peer-Anzahl und Ressourcennutzung; alarmieren Sie, wenn `catching_up` dauerhaft `true` bleibt oder die Peer-Anzahl auf null fällt.
+Scrapen Sie diese mit einem beliebigen Prometheus-kompatiblen Collector. Wenn Sie den Docker-Compose-Monitoring-Stack betreiben, ist Grafana unter `http://localhost:3001` erreichbar — legen Sie beim ersten Login eigene Zugangsdaten fest. Überwachen Sie Blockhöhen-Rückstand, Peer-Anzahl und Ressourcennutzung; alarmieren Sie, wenn `catching_up` dauerhaft `true` bleibt oder die Peer-Anzahl auf null fällt.
 
-### EVM-Endpunkt-Check
+### EVM-Endpunkt-Prüfung
 
 ```bash
 curl -s -X POST http://localhost:8545 \
@@ -314,27 +314,27 @@ curl -s -X POST http://localhost:8545 \
 
 ---
 
-## Operative Best Practices
+## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das aktuelle Tag (**v3.1.82** auf dem Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.85** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 
 3. **Verifizieren Sie Genesis und Snapshots.** Validieren Sie die Genesis-SHA-256 und jede Snapshot-Prüfsumme immer gegen das offizielle Release, bevor Sie starten.
 
-4. **Schützen Sie öffentliche Endpunkte.** Setzen Sie vor RPC/EVM/gRPC einen Reverse Proxy, Rate Limiting und eine Firewall. Exponieren Sie niemals unauthentifiziertes Schreib-RPC im Internet.
+4. **Schützen Sie öffentliche Endpunkte.** Stellen Sie RPC/EVM/gRPC einen Reverse Proxy, Rate Limiting und eine Firewall voran. Exponieren Sie niemals unauthentifiziertes Schreib-RPC ins Internet.
 
-5. **Passen Sie Pruning an den Bedarf an.** Verwenden Sie `pruning = "nothing"` plus `tx_index = "kv"` für Börsen, die die vollständige Ein-/Auszahlungshistorie abgleichen; verwenden Sie `default` für leichtgewichtige Abfragen.
+5. **Passen Sie das Pruning an den Bedarf an.** Verwenden Sie `pruning = "nothing"` plus `tx_index = "kv"` für Börsen, die die vollständige Ein-/Auszahlungshistorie abgleichen; verwenden Sie `default` für leichtgewichtige Abfragen.
 
 6. **Überwachen Sie die Synchronisierung kontinuierlich.** Alarmieren Sie bei Blockhöhen-Rückstand, null Peers und einem Node, der in `catching_up` feststeckt.
 
-Für ultraleichten Lesezugriff ohne Betrieb eines Full-Nodes siehe die **Light Node**-Dokumentation.
+Für ultraleichten Lesezugriff ohne den Betrieb eines Full Nodes siehe die **Light Node**-Dokumentation.
 
 ---
 
 ## Nächste Schritte
 
-* [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) — Mainnet-Genesis, Peers und Verbindungsdetails
+* [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet) — Mainnet-Genesis, Peers und Verbindungsdetails
 * [Einen Validator betreiben](/developer-guide/running-a-validator) — Blockproduktions-Aufgaben hinzufügen
 * [Aus dem Quellcode bauen](/developer-guide/building-from-source) — Das `qorechaind`-Binary bauen
-* **Light Node** — Ultraleichter, rein lesender Zugriff (Dokumentation folgt in Kürze)
+* **Light Node** — Ultraleichter Nur-Lese-Zugriff (Dokumentation folgt in Kürze)

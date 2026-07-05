@@ -17,7 +17,7 @@ Une référence consolidée pour les réseaux QoreChain — identifiants de cha�
 | **Chain ID Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **Chain ID EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **En production depuis** | 7 juin 2026, 23h59 UTC | — |
-| **Version de la chaîne** | v3.1.82 | v3.1.82 |
+| **Version de la chaîne** | v3.1.85 | v3.1.85 |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Prix de gaz minimum** | `0.1uqor` | `0.1uqor` |
 | **Guide de connexion** | [Se connecter au Mainnet](/getting-started/connecting-to-mainnet) | [Se connecter au Testnet](/getting-started/connecting-to-testnet) |

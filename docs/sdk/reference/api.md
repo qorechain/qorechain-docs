@@ -38,11 +38,18 @@ The deliberate, supported exports of `@qorechain/sdk`:
 - **Utilities:** `toBase` / `fromBase` (denom), address encoding/validation.
 - **Accounts:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; account types.
+- **Unified accounts (0.6.0):** `deriveUnifiedAccount`,
+  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`,
+  `unifiedAccountFromPhantomSignature`, `connectPhantomUnified`.
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, length constants,
   algorithm IDs/helpers, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
-- **Read clients:** `RestClient`, `JsonRpcClient`, `QorClient`, HTTP helpers
-  (`getJson`, `postJsonRpc`, `buildUrl`, `joinUrl`, `QoreHttpError`).
+- **Read clients:** `RestClient` (incl. `getPermissionSchema`),
+  `JsonRpcClient`, `QorClient`, HTTP helpers (`getJson`, `postJsonRpc`,
+  `buildUrl`, `joinUrl`, `QoreHttpError`); typed query clients for every
+  module, including `amm`, `license`, `abstractaccount`
+  (`permissionSchema`), and the `multilayer` `Anchor`/`Anchors` state-anchor
+  queries.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
@@ -50,7 +57,25 @@ The deliberate, supported exports of `@qorechain/sdk`:
   `uploadCode`.
 - **Transactions:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`,
   `MSG_SEND_TYPE_URL`, hybrid helpers (`encodeHybridExtension`,
-  `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`).
+  `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
+  structured error decoding via `decodeTxError` (incl. `abstractaccount`
+  codes 5/6/10/11 and `pqc` code 21).
+- **eth-native signing (0.6.0):** `signClassicalEth`, `signHybridEth`
+  (secp256k1 over `keccak256(SignDoc)`, pubkey type
+  `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`, plus the ML-DSA-87 hybrid
+  extension), `EthNativeSigner`, `accountAuthInfo`.
+- **Authenticator lanes (0.7.0):** message composers
+  `msg.abstractaccount.registerAuthenticator` / `revokeAuthenticator` /
+  `executeEvm` / `executeCosmos` and `msg.pqc` rotation (also exported
+  standalone as `executeEvmMsg`, `executeCosmosMsg`,
+  `registerEthAuthenticatorMsg`, `revokeAuthenticatorMsg`,
+  `rotatePqcKeyMsg`); byte-exact sign-bytes `evmAuthSignBytes`,
+  `cosmosAuthSignBytes`, `rotationSignBytes`; wallet builders
+  `buildPhantomExecuteEvm` / `buildPhantomExecuteCosmos` (ed25519
+  `signMessage`) and `buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
+  (EIP-191 `personal_sign`); key rotation `rotatePqcKeyMsgFromMnemonic`,
+  `derivePqcLegacy`. See the
+  [Authenticators guide](/sdk/guides/authenticators).
 
 ### `@qorechain/evm`
 
@@ -71,10 +96,15 @@ constants.
 
 | Language | Generated docs | Install |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` at `0.7.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (tag `packages/go/v0.7.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` — latest published crate (0.7.0 from the repo; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.7.0` |
 
 Each package mirrors the same surface (network presets, denom/address
-utilities, HD derivation, PQC primitives, REST + `qor_` JSON-RPC read clients),
-documented inline in the source so the language-native doc tooling renders it.
+utilities, HD derivation — including unified eth-native accounts — PQC
+primitives and hybrid signing, typed messages and queries, the authenticator
+lanes, and REST + `qor_` JSON-RPC read clients), documented inline in the
+source so the language-native doc tooling renders it. The TypeScript wallet
+builders (`buildPhantom*` / `buildMetaMask*`) and the browser-wallet adapters
+are TypeScript-only.

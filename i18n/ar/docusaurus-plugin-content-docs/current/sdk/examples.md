@@ -7,9 +7,12 @@ sidebar_position: 7
 
 # أمثلة
 
-توجد سبعة أمثلة TypeScript قابلة للتشغيل في دليل
+توجد أمثلة TypeScript القابلة للتشغيل في دليل
 [`examples/`](https://github.com/qorechain/qorechain-sdk/tree/main/examples)
-ضمن مستودع SDK الأحادي (monorepo). كل مجلد هو حزمة مساحة عمل قائمة بذاتها
+ضمن مستودع SDK الأحادي (monorepo) — الأمثلة أدناه بالإضافة إلى `ai-preflight`
+و`cross-vm-call` و`react-dapp` و`register-sidechain` و`rollup-lifecycle`
+و`amm-swap` و`connect-keplr` و`evm-nft` و`subscribe-blocks`. كل مجلد هو
+حزمة مساحة عمل قائمة بذاتها
 لها ملف `README.md` الخاص بها، و`.env.example`، وملف `index.ts` واحد. تقرأ هذه الأمثلة
 نقاط النهاية والعبارات الاستذكارية (mnemonics) من متغيرات البيئة مع قيم افتراضية معقولة على localhost،
 وتلك المعتمدة على الشبكة تفشل بسلاسة مع تلميح عندما لا تتوفر عقدة
@@ -29,8 +32,8 @@ pnpm --filter @qorechain/example-pqc-hybrid-sign start
 
 ## connect-and-query
 
-أنشئ عميلًا واقرأ حالة السلسلة العامة — رصيد bank أصلي ولقطة
-التوكينوميكس المجمّعة. يتطلب عقدة يمكن الوصول إليها.
+أنشئ عميلاً واقرأ حالة السلسلة العامة — رصيدًا مصرفيًا أصليًا (native) ولقطة
+اقتصاد الرمز (tokenomics) المجمّعة. يتطلب عقدة يمكن الوصول إليها.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -51,9 +54,9 @@ const overview = await client.qor.getTokenomicsOverview();
 
 ## send-qor
 
-اشتقّ حسابًا أصليًا (`qor1...`) من عبارة استذكارية وبثّ تحويل QOR:
-اشتقاق → توقيع → محاكاة → تقدير الرسوم → `bankSend`. يتطلب
-RPC إجماع يمكن الوصول إليه بالإضافة إلى REST وحساب مموّل.
+اشتق حسابًا أصليًا (`qor1...`) من عبارة استذكارية وابثّ تحويل QOR:
+اشتقاق ← توقيع ← محاكاة ← تقدير الرسوم ← `bankSend`. يتطلب
+RPC إجماع يمكن الوصول إليه بالإضافة إلى REST وحساب مموَّل.
 
 ```ts
 import {
@@ -79,9 +82,9 @@ console.log(result.transactionHash);
 
 ## svm-transfer
 
-أنشئ تحويل SOL مع تعليمة memo على بيئة تشغيل QoreChain المتوافقة مع Solana
-(SVM)، باستخدام `@qorechain/svm`. يبني المعاملة ويطبعها
-دون اتصال؛ يتطلب الإرسال JSON-RPC من نوع SVM يمكن الوصول إليه وحسابًا ممولًا.
+ابنِ تحويل SOL مع تعليمة مذكرة (memo) على بيئة تشغيل QoreChain المتوافقة مع
+Solana ‏(SVM)، باستخدام `@qorechain/svm`. يبني المعاملة ويطبعها
+دون اتصال؛ أما الإرسال فيتطلب SVM JSON-RPC يمكن الوصول إليه وحسابًا مموَّلًا.
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -107,10 +110,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 ## evm-precompile
 
-استخدم `@qorechain/evm` (طبقة رقيقة فوق viem) لاستدعاء precompiles
-للقراءة فقط في QoreChain وقراءة رصيد ERC-20. يُكتشف معرّف سلسلة EVM تلقائيًا عبر
-`eth_chainId`. على عقدة بدون precompiles، تُطلق تلك الاستدعاءات "feature not
-present"، ويُبلَّغ عنها لكل استدعاء على حدة.
+استخدم `@qorechain/evm` (طبقة رقيقة فوق viem) لاستدعاء تجميعات QoreChain المسبقة
+(precompiles) الخاصة بالقراءة فقط وقراءة رصيد ERC-20. يتم اكتشاف معرّف سلسلة EVM تلقائيًا عبر
+`eth_chainId`. على عقدة لا تحتوي على التجميعات المسبقة، ترمي تلك الاستدعاءات الخطأ "feature not
+present"، ويتم الإبلاغ عنه لكل استدعاء على حدة.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -127,11 +130,11 @@ const bal = await erc20.balanceOf(client.publicClient, token, account);
 
 ## pqc-hybrid-sign
 
-التوقيع ما بعد الكمومي باستخدام ML-DSA-87 (Dilithium-5، FIPS 204). **يعمل بالكامل
-دون اتصال — لا حاجة لعقدة.** الجزء 1 يوقّع رسالة ويتحقق منها (مع فحص للعبث)؛
-الجزء 2 يبني معاملة هجينة تحمل توقيع secp256k1 الكلاسيكي
+التوقيع ما بعد الكمومي باستخدام ML-DSA-87 ‏(Dilithium-5، FIPS 204). **يعمل بالكامل
+دون اتصال — لا يتطلب أي عقدة.** الجزء الأول يوقّع رسالة ويتحقق منها (مع فحص
+للتلاعب)؛ والجزء الثاني يبني معاملة هجينة تحمل توقيع secp256k1 كلاسيكيًا
 وتوقيع ML-DSA-87 معًا كامتداد `PQCHybridSignature`، ثم
-يتحقق من النصف PQC محليًا.
+يتحقق محليًا من الشق الخاص بـ PQC.
 
 ```ts
 import {
@@ -163,7 +166,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-شغّل استعلامًا ذكيًا للقراءة فقط على عقد CosmWasm منشور. يتطلب
+نفّذ استعلامًا ذكيًا للقراءة فقط على عقد CosmWasm منشور. يتطلب
 RPC إجماع يمكن الوصول إليه وعنوان عقد منشور.
 
 ```ts
@@ -187,9 +190,9 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 ## read-tokenomics
 
-اقرأ حالة التوكينوميكس عبر مساحة الأسماء المُنمَّطة `qor_*` في JSON-RPC
-(`client.qor`)، المقدَّمة عبر نقطة نهاية EVM JSON-RPC. القراءات الثلاث
-مستقلة، لذا يُبلَّغ عن كل منها حتى وإن كانت الأخرى غير متوفرة.
+اقرأ حالة اقتصاد الرمز عبر مساحة أسماء JSON-RPC المصنّفة الأنواع `qor_*`
+(`client.qor`)، والمقدَّمة عبر نقطة نهاية EVM JSON-RPC. عمليات القراءة الثلاث
+مستقلة، لذا يتم الإبلاغ عن كل واحدة حتى لو كانت الأخريات غير متاحة.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -207,3 +210,67 @@ const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
 [المصدر](https://github.com/qorechain/qorechain-sdk/tree/main/examples/read-tokenomics)
+
+## unified-wallet
+
+اشتق **حسابًا موحّدًا أصلي الإيثيريوم (eth-native)** ‏(SDK 0.6.0): مفتاح `eth_secp256k1` واحد
+يُعرض بجميع عناوين QoreChain الثلاثة مع رصيد واحد مشترك، بالإضافة إلى
+زوج مفاتيح ML-DSA-87 المرتبط بالعنوان. يعمل بالكامل دون اتصال.
+
+```ts
+import {
+  deriveUnifiedAccount,
+  qoreAddresses,
+  unifiedAccountFromSeed,
+} from "@qorechain/sdk";
+
+const account = await deriveUnifiedAccount(mnemonic);
+console.log(account.cosmos); // "qor1…"  — Native lane
+console.log(account.evm);    // "0x…"    — EVM lane
+console.log(account.svm);    // base58   — SVM lane (same 20 bytes)
+
+// Decode any one encoding into all three.
+const all = qoreAddresses({ evm: account.evm });
+
+// Or derive from a raw 32-byte seed instead of a mnemonic.
+const fromSeed = unifiedAccountFromSeed(seed32);
+```
+
+[المصدر](https://github.com/qorechain/qorechain-sdk/tree/main/examples/unified-wallet)
+
+## authenticator-spend
+
+ابنِ رسالة `MsgExecuteCosmos` تُقدَّم عبر مُرحِّل (relayer) على مسار المصادِقات الأصلي
+(SDK 0.7.0، السلسلة v3.1.85): يوقّع مفتاح ed25519 على نمط Phantom
+ملخّص المصادقة المفصول بالنطاق (domain-separated)، وتصبح الرسالة الناتجة جاهزة كي يبثّها
+المُرحِّل (المُرحِّل يدفع الرسوم؛ ولا يُنتج المفتاح الخارجي أبدًا توقيعًا مشتركًا
+بـ ML-DSA). تشغيل تجريبي جاف — لا يتطلب أي عقدة.
+
+```ts
+import {
+  buildPhantomExecuteCosmos,
+  cosmosAuthSignBytes,
+  qorechainRegistry,
+} from "@qorechain/sdk";
+
+// Show the exact 32-byte digest the wallet signs (byte-exact vs the chain).
+const digest = cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce });
+
+// Build the relayer-ready message: the Phantom wallet signs the digest.
+const msg = await buildPhantomExecuteCosmos({
+  wallet,                 // window.solana in a browser
+  relayer,                // submits + pays fees (a DIFFERENT account)
+  chainId,
+  account,                // the canonical PQC-required owner
+  to,
+  amount: "100uqor",
+  nonce,                  // the per-authenticator sequence
+});
+
+// Prove it encodes via the default registry (what the relayer broadcasts).
+const bytes = qorechainRegistry().encode(msg);
+```
+
+[المصدر](https://github.com/qorechain/qorechain-sdk/tree/main/examples/authenticator-spend)
+· الشرح الكامل:
+[المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators)

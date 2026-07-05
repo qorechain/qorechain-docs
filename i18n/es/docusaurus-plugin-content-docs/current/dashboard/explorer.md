@@ -40,7 +40,9 @@ Una página de bloque muestra su altura, marca de tiempo, proponente, hash, recu
 
 ## Detalles de la dirección
 
-Una página de dirección muestra la dirección con un código QR escaneable, su saldo de QOR, el recuento de transacciones y los totales de transferencias entrantes y salientes. Debajo se encuentra el historial completo de transacciones de la dirección — transferencias, swaps, reclamaciones del grifo y más — cada una con su cantidad, hora y estado. Puedes copiar la dirección, descargar su código QR y abrir cualquier transacción para ver sus detalles.
+Una dirección de QoreChain es una sola cuenta con tres codificaciones — Native (`qor1...`), EVM (`0x...`) y SVM (base58) — y la página de la dirección fusiona la actividad de las tres vías en una vista única de esa misma identidad.
+
+La página muestra la dirección con un código QR escaneable, su saldo de QOR, el recuento de transacciones y los totales de transferencias entrantes y salientes. Debajo se encuentra el historial combinado de transacciones de la dirección a través de las vías Native, EVM y SVM — transferencias, despliegues de contratos, registros de claves PQC, swaps, reclamaciones del grifo y más — cada una con su cantidad, hora y estado. Puedes copiar la dirección, descargar su código QR y abrir cualquier transacción para ver sus detalles.
 
 ## Validadores {#validators}
 

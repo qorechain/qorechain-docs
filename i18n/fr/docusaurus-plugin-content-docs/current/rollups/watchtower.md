@@ -11,7 +11,7 @@ La Tour de guet (Watchtower) est un framework de contestation automatique pour
 les rollups optimistes. Elle suit les lots de règlement d'un rollup, fait
 remonter chaque nouveau lot ainsi que l'échéance de sa fenêtre de contestation,
 et — lorsque **votre** prédicat de validité rejette un lot — le transmet à votre
-callback `onInvalid` afin que vous puissiez déclencher une contestation.
+callback `onInvalid` afin que vous puissiez y brancher une contestation.
 
 Le framework observe et décide *quand* ; **c'est vous qui fournissez la
 vérification de validité**. La Tour de guet ne décide jamais d'elle-même qu'un
@@ -23,12 +23,10 @@ vous renvoyez.
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {

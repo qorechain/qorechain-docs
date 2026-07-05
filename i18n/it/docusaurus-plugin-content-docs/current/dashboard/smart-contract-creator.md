@@ -28,6 +28,24 @@ Da qui puoi:
 - **Scaricare** il contratto come file nel formato corretto per la blockchain che hai scelto.
 - **Modificare** il contratto per perfezionarlo ulteriormente.
 
+## Distribuisci il tuo contratto {#deploy}
+
+### Su mainnet (EVM) — deploy non-custodial {#deploy-mainnet}
+
+Il deploy su mainnet è non-custodial: la Dashboard compila il tuo contratto e restituisce i dati di deploy **non firmati** — non detiene mai le tue chiavi e non firma mai per tuo conto. Firmi e trasmetti tu stesso il deploy nel tuo wallet, e la Dashboard registra poi il contratto risultante.
+
+1. Apri il contratto che vuoi distribuire (un contratto con destinazione EVM) e seleziona **Deploy** su **Mainnet**. Se questa è la tua prima azione su mainnet, accetta il [riconoscimento del rischio una tantum](/dashboard/overview#risk-acknowledgement).
+2. Collega **MetaMask** se non è già collegato — vedi [Panoramica e primi passi](/dashboard/overview#connect-your-wallet).
+3. La Dashboard compila il contratto e consegna al tuo wallet la transazione di deploy non firmata.
+4. Esamina la transazione in MetaMask — rete, gas e dati — quindi conferma per firmarla e trasmetterla tu stesso.
+5. Una volta che il deploy è confermato on-chain, la Dashboard registra l'indirizzo del contratto risultante insieme ai tuoi contratti salvati.
+
+Su mainnet, per ora sono disponibili in questo modo solo i deploy **EVM**; i deploy **Wasm** e **SVM** sono disponibili solo su testnet.
+
+### Su testnet — un solo clic {#deploy-testnet}
+
+Il flusso su testnet è invariato: il wallet di test gestito dalla dashboard firma e invia il deploy per te con un solo clic, così puoi iterare rapidamente con i token del [Faucet](/dashboard/faucet) prima di passare alla mainnet. La testnet supporta i deploy EVM, Wasm e SVM.
+
 ## Condividi e riutilizza
 
 Ogni contratto generato ha una propria pagina che puoi aprire o condividere. Se apri un contratto che non possiedi, puoi effettuarne il **fork** per avviare una tua copia e proseguire da lì.

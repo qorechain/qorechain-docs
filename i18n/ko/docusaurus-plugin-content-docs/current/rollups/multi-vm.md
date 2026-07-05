@@ -7,12 +7,20 @@ sidebar_position: 8
 
 # 멀티 VM (크로스 VM 호출)
 
-멀티 VM 롤업은 전용 **크로스 VM 프리컴파일**을 통해 CosmWasm 컨트랙트를
-호출할 수 있는 EVM 실행 레이어를 실행합니다. RDK는 이러한 호출을 인코딩하는
-TypeScript 툴링과 시작점이 될 스캐폴드 템플릿을 함께 제공합니다.
+멀티 VM 롤업은 전용 **크로스 VM 프리컴파일**을 통해 **QoreChain Native**(Wasm)
+런타임의 CosmWasm 컨트랙트를 호출할 수 있는 EVM 실행 레이어를 실행합니다.
+RDK는 이러한 호출을 인코딩하는 TypeScript 툴링과 시작점이 될 스캐폴드
+템플릿을 함께 제공합니다.
 
-> 이 툴링은 **EVM → CosmWasm** 만을 다룹니다. SVM은 별도의 런타임이며
-> 크로스 VM 프리컴파일의 일부가 아닙니다.
+> 이 툴링은 **EVM → QoreChain Native**(CosmWasm 컨트랙트)만을 다룹니다. SVM은
+> 별도의 런타임이며 크로스 VM 프리컴파일의 일부가 아닙니다.
+
+:::note
+RDK v0.4.2부터 Wasm 런타임의 VM 옵션 식별자는 **`native`**(QoreChain Native)입니다.
+`cosmwasm`은 여전히 허용되는 레거시 별칭이며, 두 값 모두 전송 시에는
+`cosmwasm`으로 매핑됩니다 — 체인, 익스플로러, 크로스 VM 프리컴파일
+ABI(`executeCrossVMCall`)는 변경되지 않았습니다.
+:::
 
 ## 프리컴파일
 

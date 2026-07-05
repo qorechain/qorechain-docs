@@ -10,7 +10,7 @@ sidebar_position: 9
 Esta guía explica cómo crear un validador en la red QoreChain, comprender el sistema de clasificación por pools, registrar una clave PQC para obtener seguridad resistente a la computación cuántica y monitorizar tu nodo.
 
 :::note
-Esta guía está dirigida a la red principal **`qorechain-vladi`** (ID de cadena EVM **9801**), activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.82**. Se recomienda la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**) para ensayar tu configuración antes de pasar a producción. Sustituye el `--chain-id` apropiado según tu red de destino.
+Esta guía está dirigida a la red principal **`qorechain-vladi`** (ID de cadena EVM **9801**), activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.85**. Se recomienda la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**) para ensayar tu configuración antes de pasar a producción. Sustituye el `--chain-id` apropiado según tu red de destino.
 :::
 
 ---

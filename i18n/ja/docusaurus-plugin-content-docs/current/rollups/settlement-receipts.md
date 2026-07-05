@@ -17,8 +17,8 @@ sidebar_position: 6
 
 ## 正規アンカーメッセージ
 
-検証では、アンカーフィールドから構築された正規メッセージに対する Dilithium-5 署名を、
-次の正確な順序で連結してチェックします:
+検証では、アンカーフィールドから次の正確な順序で連結して構築された正規メッセージに対する
+Dilithium-5 署名をチェックします:
 
 ```
 layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
@@ -36,9 +36,9 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: { rest: "https://rest.testnet.example" },
-});
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
+// pass `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 // Build a portable receipt for one batch.
 const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);
@@ -69,7 +69,7 @@ const online = await verifySettlementReceipt(receipt, { client: rdk });
 ## アンカーの読み取り
 
 レシートは、オンチェーンの `x/multilayer` **Anchor** クエリから構築されます。これは
-チェーンバージョン **v3.1.80** 時点で gRPC と REST の両方で利用可能です（
+チェーンバージョン **v3.1.80** 以降、gRPC と REST の両方で利用可能です（
 [REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#multilayer-module) を参照）。
 読み取りは次のとおりです:
 

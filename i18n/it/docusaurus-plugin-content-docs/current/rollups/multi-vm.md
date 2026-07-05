@@ -7,12 +7,21 @@ sidebar_position: 8
 
 # Multi-VM (chiamate cross-VM)
 
-Un rollup multi-VM esegue un livello di esecuzione EVM che può chiamare contratti
-CosmWasm tramite un apposito **precompile cross-VM**. L'RDK include gli strumenti
-TypeScript per codificare queste chiamate e un template scaffold da cui partire.
+Un rollup multi-VM esegue un livello di esecuzione EVM in grado di chiamare
+contratti CosmWasm sul runtime **QoreChain Native** (Wasm) tramite un apposito
+**precompile cross-VM**. L'RDK fornisce gli strumenti TypeScript per codificare
+tali chiamate e un template di scaffold da cui partire.
 
-> Questo strumento copre **solo EVM → CosmWasm**. SVM è un runtime separato e non
-> fa parte del precompile cross-VM.
+> Questi strumenti coprono soltanto **EVM → QoreChain Native** (contratti
+> CosmWasm). SVM è un runtime separato e non fa parte del precompile cross-VM.
+
+:::note
+A partire da RDK v0.4.2 l'identificatore dell'opzione VM del runtime Wasm è
+**`native`** (QoreChain Native); `cosmwasm` rimane un alias legacy accettato, ed
+entrambi vengono mappati su `cosmwasm` a livello di protocollo — la chain,
+l'explorer e l'ABI del precompile cross-VM (`executeCrossVMCall`) restano
+invariati.
+:::
 
 ## Il precompile
 
@@ -67,5 +76,5 @@ predisposto per chiamare CosmWasm, incluso lo snippet `CrossVmCaller.sol`:
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Vedi [Deploying a Rollup](/rollups/deploying-a-rollup) per tutti i template dello
-scaffolder.
+Vedi [Distribuire un rollup](/rollups/deploying-a-rollup) per tutti i template
+dello scaffolder.

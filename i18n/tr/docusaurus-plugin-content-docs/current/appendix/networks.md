@@ -17,7 +17,7 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
 | **Canlıya geçiş tarihi** | 7 Haziran 2026, 23:59 UTC | — |
-| **Zincir sürümü** | v3.1.82 | v3.1.82 |
+| **Zincir sürümü** | v3.1.85 | v3.1.85 |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
 | **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |

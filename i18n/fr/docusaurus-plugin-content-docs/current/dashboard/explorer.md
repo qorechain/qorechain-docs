@@ -40,7 +40,9 @@ Une page de bloc affiche sa hauteur, son horodatage, son proposant, son hash, so
 
 ## Détails d'une adresse
 
-Une page d'adresse affiche l'adresse avec un code QR scannable, son solde en QOR, son nombre de transactions et les totaux des transferts entrants et sortants. En dessous se trouve l'historique complet des transactions de l'adresse — transferts, swaps, demandes au faucet, et plus — chacune avec son montant, son heure et son statut. Vous pouvez copier l'adresse, télécharger son code QR et ouvrir toute transaction pour en voir les détails.
+Une adresse QoreChain est un compte unique doté de trois encodages — Native (`qor1...`), EVM (`0x...`) et SVM (base58) — et la page d'adresse fusionne l'activité de ces trois rails en une vue unique de cette même identité.
+
+La page affiche l'adresse avec un code QR scannable, son solde en QOR, son nombre de transactions et les totaux des transferts entrants et sortants. En dessous se trouve l'historique combiné des transactions de l'adresse sur les rails Native, EVM et SVM — transferts, déploiements de contrats, enregistrements de clés PQC, swaps, demandes au faucet, et plus — chacune avec son montant, son heure et son statut. Vous pouvez copier l'adresse, télécharger son code QR et ouvrir toute transaction pour en voir les détails.
 
 ## Validateurs {#validators}
 

@@ -20,7 +20,7 @@ QoreChain stellt über seine SVM-Laufzeitumgebung (Solana Virtual Machine) eine 
 Der JSON-RPC-Server wird **von `qorechaind start` gestartet** und ist **standardmäßig aktiviert**; er lauscht auf `127.0.0.1:8899`. Er wird über einen `[svm-rpc]`-Abschnitt in `app.toml` konfiguriert (`enable` + `address`). Ein frisch gestarteter Node stellt diese Schnittstelle bereits bereit — es ist kein zusätzlicher Prozess erforderlich. Die öffentlichen Endpunkte sind **nur lesend** (das Einreichen von Transaktionen ist am Edge deaktiviert).
 
 :::note
-Seit Chain-Version **v3.1.82** liefert die SVM-Schnittstelle das **native QOR-Guthaben** des Kontos — dieselben vereinheitlichten Mittel, die auch über die Cosmos- und EVM-Schnittstellen sichtbar sind — denominiert in **lamports** (9 Dezimalstellen; **1 uqor = 1.000 lamports**). Siehe [Natives QOR auf der SVM-Schnittstelle](/developer-guide/svm-development#native-qor).
+Seit Chain-Version **v3.1.85** liefert die SVM-Schnittstelle das **native QOR-Guthaben** des Kontos — dieselben vereinheitlichten Mittel, die auch über die Cosmos- und EVM-Schnittstellen sichtbar sind — denominiert in **lamports** (9 Dezimalstellen; **1 uqor = 1.000 lamports**). Siehe [Natives QOR auf der SVM-Schnittstelle](/developer-guide/svm-development#native-qor).
 :::
 
 ---

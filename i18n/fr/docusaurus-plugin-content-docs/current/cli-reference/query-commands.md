@@ -14,16 +14,16 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** (version de chaîne **v3.1.82**) pour des données en direct, ou un point d'accès du testnet **`qorechain-diana`** pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même.
+Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** (version de chaîne **v3.1.85**) pour des données en direct, ou un point d'accès du testnet **`qorechain-diana`** pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même.
 :::
 
 Des indicateurs communs s'appliquent à chaque sous-commande `query` :
 
-| Indicateur       | Type   | Description                                     |
-| ---------- | ------ | ----------------------------------------------- |
-| `--node`   | string | Point d'accès RPC (par défaut : `tcp://localhost:26657`) |
-| `--output` | string | Format de sortie : `json` ou `text`                 |
-| `--height` | int    | Interroge l'état à une hauteur de bloc spécifique          |
+| Indicateur | Type   | Description                                                  |
+| ---------- | ------ | ------------------------------------------------------------ |
+| `--node`   | string | Point d'accès RPC (par défaut : `tcp://localhost:26657`)     |
+| `--output` | string | Format de sortie : `json` ou `text`                          |
+| `--height` | int    | Interroge l'état à une hauteur de bloc spécifique            |
 
 ---
 
@@ -39,7 +39,7 @@ qorechaind query bank balances <address>
 
 ### total
 
-Interroge l'offre totale de tous les tokens.
+Interroge l'offre totale de tous les jetons.
 
 ```bash
 qorechaind query bank total
@@ -51,7 +51,7 @@ qorechaind query bank total
 
 ### validator
 
-Interroge un seul validateur par son adresse d'opérateur.
+Interroge un validateur unique par adresse d'opérateur.
 
 ```bash
 qorechaind query staking validator <validator_address>
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-Interroge une délégation en cours de unbonding.
+Interroge une délégation en cours de retrait (unbonding).
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -115,7 +115,7 @@ qorechaind query distribution commission <validator_address>
 
 ### proposal
 
-Interroge une seule proposition par son ID.
+Interroge une proposition unique par son ID.
 
 ```bash
 qorechaind query gov proposal <proposal_id>
@@ -123,14 +123,14 @@ qorechaind query gov proposal <proposal_id>
 
 ### proposals
 
-Liste toutes les propositions, éventuellement filtrées par statut.
+Liste toutes les propositions, avec un filtrage optionnel par statut.
 
 ```bash
 qorechaind query gov proposals [flags]
 ```
 
-| Indicateur       | Type   | Description                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
+| Indicateur | Type   | Description                                                                 |
+| ---------- | ------ | --------------------------------------------------------------------------- |
 | `--status` | string | Filtre par statut : `deposit_period`, `voting_period`, `passed`, `rejected` |
 
 ### votes
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-Interroge le statut d'enregistrement de clé PQC d'un compte.
+Interroge le statut d'enregistrement de la clé PQC d'un compte.
 
 ```bash
 qorechaind query pqc account <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-Interroge le mode d'application des signatures hybrides actuel.
+Interroge le mode actuel d'application des signatures hybrides.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-Interroge les statistiques de burn sur tous les canaux.
+Interroge les statistiques de destruction (burn) sur l'ensemble des canaux.
 
 ```bash
 qorechaind query burn stats
@@ -291,16 +291,16 @@ qorechaind query ai stats
 
 ### fee-estimate
 
-Obtient une estimation de frais de gas assistée par IA.
+Obtient une estimation des frais de gaz assistée par IA.
 
 ```bash
 qorechaind query ai fee-estimate [flags]
 ```
 
-| Indicateur        | Type   | Description                     |
-| ----------- | ------ | ------------------------------- |
-| `--tx-type` | string | Type de transaction pour l'estimation |
-| `--urgency` | string | `low`, `medium`, `high`         |
+| Indicateur  | Type   | Description                            |
+| ----------- | ------ | -------------------------------------- |
+| `--tx-type` | string | Type de transaction pour l'estimation  |
+| `--urgency` | string | `low`, `medium`, `high`                |
 
 ### investigations
 
@@ -312,7 +312,7 @@ qorechaind query ai investigations
 
 ### recommendations
 
-Obtient des recommandations d'optimisation réseau générées par IA.
+Obtient des recommandations d'optimisation du réseau générées par IA.
 
 ```bash
 qorechaind query ai recommendations
@@ -320,7 +320,7 @@ qorechaind query ai recommendations
 
 ### circuit-breakers
 
-Interroge l'état actuel des coupe-circuits.
+Interroge l'état actuel des disjoncteurs (circuit breakers).
 
 ```bash
 qorechaind query ai circuit-breakers
@@ -352,7 +352,7 @@ qorechaind query reputation validator <validator_address>
 
 ### chains
 
-Liste toutes les chaînes de bridge enregistrées.
+Liste toutes les chaînes de pont enregistrées.
 
 ```bash
 qorechaind query bridge chains
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-Interroge les détails d'une chaîne bridgée spécifique.
+Interroge les détails d'une chaîne pontée spécifique.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -368,7 +368,7 @@ qorechaind query bridge chain <chain_id>
 
 ### validators
 
-Liste les validateurs de bridge actifs.
+Liste les validateurs de pont actifs.
 
 ```bash
 qorechaind query bridge validators
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-Liste les opérations de bridge récentes.
+Liste les opérations de pont récentes.
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| Indicateur       | Type   | Description                              |
-| ---------- | ------ | ---------------------------------------- |
+| Indicateur | Type   | Description                               |
+| ---------- | ------ | ----------------------------------------- |
 | `--status` | string | Filtre : `pending`, `completed`, `failed` |
-| `--chain`  | string | Filtre par chain ID                       |
+| `--chain`  | string | Filtre par ID de chaîne                   |
 
 ### limits
 
-Interroge les limites de débit d'une chaîne bridgée.
+Interroge les limites de débit d'une chaîne pontée.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-Estime les frais de bridge et le temps de transfert.
+Estime les frais de pont et le temps de transfert.
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -409,7 +409,7 @@ qorechaind query bridge estimate <chain_id> <amount> <asset>
 
 ### message
 
-Récupère un message inter-VM par son ID.
+Récupère un message cross-VM par son ID.
 
 ```bash
 qorechaind query crossvm message <message_id>
@@ -417,7 +417,7 @@ qorechaind query crossvm message <message_id>
 
 ### pending
 
-Liste les messages inter-VM en attente.
+Liste les messages cross-VM en attente.
 
 ```bash
 qorechaind query crossvm pending
@@ -503,10 +503,10 @@ Liste les soumissions d'ancrage récentes.
 qorechaind query multilayer anchors [flags]
 ```
 
-| Indicateur         | Type   | Description               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | Filtre par layer ID        |
-| `--limit`    | uint   | Nombre maximal de résultats à renvoyer |
+| Indicateur   | Type   | Description                             |
+| ------------ | ------ | --------------------------------------- |
+| `--layer-id` | string | Filtre par ID de couche                 |
+| `--limit`    | uint   | Nombre maximal de résultats à retourner |
 
 ### routing-stats
 
@@ -552,8 +552,8 @@ Liste tous les rollups enregistrés.
 qorechaind query rdk rollups
 ```
 
-| Indicateur       | Type   | Description                           |
-| ---------- | ------ | ------------------------------------- |
+| Indicateur | Type   | Description                            |
+| ---------- | ------ | -------------------------------------- |
 | `--status` | string | Filtre : `active`, `paused`, `stopped` |
 
 ### batch
@@ -566,7 +566,7 @@ qorechaind query rdk batch <rollup_id> <batch_index>
 
 ### latest-batch
 
-Interroge le dernier lot d'un rollup.
+Interroge le lot le plus récent d'un rollup.
 
 ```bash
 qorechaind query rdk latest-batch <rollup_id>
@@ -597,14 +597,14 @@ qorechaind query rdk params
 ```
 
 :::note
-Les preuves de retrait de rollup et le statut de règlement sont également interrogeables sous le groupe `rdk`. Les sous-commandes de requête exactes et leurs arguments dépendent du type de règlement de votre rollup ; consultez la documentation du **Kit de développement de rollups** pour la surface de requête de retrait/règlement faisant autorité.
+Les preuves de retrait des rollups et le statut de règlement peuvent également être interrogés sous le groupe `rdk`. Les sous-commandes de requête exactes et leurs arguments dépendent du type de règlement de votre rollup ; consultez la documentation du **Rollup Development Kit** pour la surface de requête retrait/règlement faisant autorité.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM est la couche d'apprentissage par renforcement qui ajuste les paramètres de consensus. Le nom de module CLI `rlconsensus` et ses sous-commandes sont conservés tels quels.
+PRISM est la couche d'apprentissage par renforcement qui ajuste les paramètres de consensus. Le nom du module CLI `rlconsensus` et ses sous-commandes sont conservés tels quels.
 
 ### agent-status
 
@@ -616,7 +616,7 @@ qorechaind query rlconsensus agent-status
 
 ### observation
 
-Interroge le dernier vecteur d'observation de PRISM.
+Interroge le dernier vecteur d'observation PRISM.
 
 ```bash
 qorechaind query rlconsensus observation
@@ -660,7 +660,7 @@ qorechaind query babylon staking <address>
 
 ### checkpoint
 
-Interroge les données de checkpoint BTC pour une époque donnée.
+Interroge les données de point de contrôle BTC pour une époque donnée.
 
 ```bash
 qorechaind query babylon checkpoint <epoch>
@@ -694,13 +694,31 @@ Interroge les paramètres du module Abstract Account.
 qorechaind query abstractaccount params
 ```
 
+### permission-schema
+
+Interroge la taxonomie canonique des permissions d'authentificateur — les 11 permissions, la table de correspondance message→permission et les messages de gestion de clés non délégables (disponible depuis la version de chaîne **v3.1.85** ; également servie via REST à `/qorechain/abstractaccount/v1/permission_schema`).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+Utilitaires pour construire des autorisations d'authentificateur en dehors des SDK : générer une clé de test, ou produire les **sign bytes exacts que la chaîne vérifie** pour une action déléguée sur la voie Native ou la voie EVM (disponibles depuis la version de chaîne **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
+```
+
 ---
 
 ## gasabstraction
 
 ### accepted-tokens
 
-Liste les tokens acceptés pour le paiement du gas.
+Liste les jetons acceptés pour le paiement du gaz.
 
 ```bash
 qorechaind query gasabstraction accepted-tokens

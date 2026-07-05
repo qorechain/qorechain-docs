@@ -8,13 +8,13 @@ sidebar_position: 3
 # クイックスタート
 
 ゼロからトランザクション送信まで。このページでは TypeScript SDK
-（`@qorechain/sdk`）を使用します。Python、Go、Rust の接続と読み取りの短い
-スニペットは末尾に続きます。
+（`@qorechain/sdk`）を使用します。Python、Go、Rust での接続と読み取りの短い
+スニペットは末尾に掲載しています。
 
 ## 1. 接続
 
 `createClient()` はネットワークを解決し、読み取りクライアント、手数料ヘルパー、
-遅延署名エントリーポイントを構成します。デフォルトでは公開テストネット
+遅延初期化される署名エントリーポイントを構成します。デフォルトでは公開テストネット
 （`qorechain-diana`）を対象とします。デフォルトのエンドポイントは
 **localhost** を指すため、実際のノードと通信するには `endpoints` を渡してください。
 
@@ -27,31 +27,31 @@ const client = createClient();
 // Point at a real node by overriding endpoints.
 const remote = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // Cosmos REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC (for signing)
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
+    rest: "https://api-testnet.qore.host",   // Native REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
+    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
   },
 });
 ```
 
-メインネット（チェーン ID `qorechain-vladi`）は稼働中です。これを選択し、
-localhost のデフォルトをご自身のノード URL で上書きしてください。
+メインネット（チェーン ID `qorechain-vladi`）は稼働中です。メインネットを選択し、
+localhost のデフォルトを公開エンドポイント（または自前のノード）で上書きしてください：
 
 ```ts
 const main = createClient({
   network: "mainnet",
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```
 
-## 2. アカウントを導出する
+## 2. アカウントの導出
 
-単一のニーモニックから、独立した導出パスを介してネイティブ（`qor1…`）、EVM
-（`0x…`）、SVM（base58）の各アカウントが導出されます。
+1 つのニーモニックから、独立した導出パスを介して Native（`qor1…`）、EVM（`0x…`）、
+SVM（base58）の各アカウントが導出されます。
 
 ```ts
 import {
@@ -62,27 +62,40 @@ import {
 const mnemonic = generateMnemonic(); // 12 words (pass 256 for 24 words)
 
 const native = await deriveNativeAccount(mnemonic);
-console.log(native.address); // "qor1..."  (Cosmos-style secp256k1)
+console.log(native.address); // "qor1..."  (Native secp256k1, coin type 118)
 ```
 
-EVM/SVM の導出と完全な導出テーブルについては
-[アカウントと PQC 署名](/sdk/concepts/accounts-pqc) を参照してください。
-
-## 3. 残高を読み取る
+0.6.0 以降では、代わりに **統合 eth-native アカウント**を導出できます — 1 つの
+`eth_secp256k1` 鍵が 3 つのアドレス（`qor1…`、`0x…`、SVM base58）すべてとして
+表現され、残高は 1 つに共有されます：
 
 ```ts
-// Cosmos bank balances over REST.
+import { deriveUnifiedAccount } from "@qorechain/sdk";
+
+const unified = await deriveUnifiedAccount(mnemonic);
+console.log(unified.cosmos); // "qor1..."
+console.log(unified.evm);    // "0x..."
+console.log(unified.svm);    // base58 (same 20 bytes + 12 zero bytes)
+```
+
+EVM/SVM の導出、統合アカウント、導出パスの完全な一覧表については、
+[アカウントと PQC 署名](/sdk/concepts/accounts-pqc)を参照してください。
+
+## 3. 残高の読み取り
+
+```ts
+// Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
 // A typed qor_ JSON-RPC call.
 const tokenomics = await client.qor.getTokenomicsOverview();
 ```
 
-## 4. QOR 送金を送信する
+## 4. QOR の送金
 
-ネイティブアカウントを導出し、その秘密鍵を署名者にアダプトし、`TxClient` を
-接続してトークンを送信します。`toBase("1.5")` を使用して QOR を基本単位 `uqor` に
-変換します。
+Native アカウントを導出し、その秘密鍵を署名者（signer）に変換し、`TxClient`
+に接続してトークンを送信します。QOR を基本単位の `uqor` に変換するには
+`toBase("1.5")` を使用します。
 
 ```ts
 import {
@@ -94,8 +107,8 @@ import {
 
 const client = createClient({
   endpoints: {
-    rpc: "https://rpc.testnet.example",
-    rest: "https://rest.testnet.example",
+    rpc: "https://rpc-testnet.qore.host",
+    rest: "https://api-testnet.qore.host",
   },
 });
 
@@ -118,12 +131,19 @@ const result = await tx.bankSend(
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` は `"1500000"` を返します（QOR は 10^6 の基本単位 `uqor` を
-持ちます）。
+`toBase("1.5")` は `"1500000"` を返します（QOR の基本単位 `uqor` は 10^6 です）。
 
-## 他の言語: 接続と読み取り
+:::info 稼働中ネットワークでのハイブリッド署名
+メインネットおよびテストネットでは、Native パスに**ハイブリッド**（古典 +
+ML-DSA-87）署名拡張が必須です — `buildHybridTx` /
+`signAndBroadcastHybrid` を使用するか、統合 eth-native アカウントの場合は
+`signHybridEth` を使用してください。
+[ハイブリッド署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照してください。
+:::
 
-これらは同じネットワークプリセットと読み取りインターフェースを反映しています。
+## その他の言語：接続と読み取り
+
+以下は同じネットワークプリセットと読み取り API を提供します。
 
 ### Python
 
@@ -168,10 +188,12 @@ async fn main() -> qorechain::Result<()> {
 }
 ```
 
-## 次へ
+## 次のステップ
 
-- [ガイド](/sdk/guides/evm) — 各 VM（EVM、SVM、CosmWasm、クロス VM）の利用。
-- [アカウントと PQC 署名](/sdk/concepts/accounts-pqc) — HD 導出と
-  ポスト量子署名。
+- [ガイド](/sdk/guides/evm) — 各 VM（EVM、SVM、CosmWasm、クロス VM）の使い方。
+- [アカウントと PQC 署名](/sdk/concepts/accounts-pqc) — HD 導出、統合
+  eth-native アカウント、ポスト量子署名。
+- [オーセンティケータと委任支出](/sdk/guides/authenticators) — リンク済みの
+  Phantom/MetaMask 鍵にリレイヤー経由で支出させる方法。
 - [ネットワークとエンドポイントのリファレンス](/sdk/reference/network)。
-- [サンプル](/sdk/examples) — 上記の各フローの実行可能なスニペット。
+- [サンプル集](/sdk/examples) — 上記の各フローの実行可能なスニペット。

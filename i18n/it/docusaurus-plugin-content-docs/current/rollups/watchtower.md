@@ -8,25 +8,24 @@ sidebar_position: 9
 # Watchtower
 
 Il Watchtower è un framework di auto-challenge per rollup ottimistici. Segue
-i batch di settlement di un rollup, evidenzia ogni nuovo batch e la relativa
-scadenza della finestra di contestazione e — quando il **tuo** predicato di validità rifiuta un batch — lo passa
-alla tua callback `onInvalid` così puoi impostare una contestazione.
+i batch di settlement di un rollup, segnala ogni nuovo batch e la scadenza della
+relativa finestra di challenge e — quando il **tuo** predicato di validità
+rifiuta un batch — lo passa alla tua callback `onInvalid`, così puoi collegare
+una challenge.
 
-Il framework osserva e decide *quando*; **la verifica di validità la fornisci tu**. Il
-Watchtower non decide mai da solo che un batch è fraudolento — chiama la tua
-funzione `validate` e agisce in base a ciò che restituisci.
+Il framework osserva e decide *quando*; **sei tu a fornire il controllo di
+validità**. Il Watchtower non decide mai da solo che un batch è fraudolento —
+chiama la tua funzione `validate` e agisce in base a ciò che restituisci.
 
 ## `watchBatches`
 
 ```ts
 import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
 
-const rdk = createRdkClient({
-  endpoints: {
-    rest: "https://rest.testnet.example",
-    rpc: "https://rpc.testnet.example", // needed to broadcast a challenge
-  },
-});
+// The public qore.host REST + RPC endpoints are baked into the presets
+// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
+// `endpoints` only to target your own node.
+const rdk = createRdkClient({ network: "testnet" });
 
 const watcher = watchBatches(rdk, "my-roll", {
   onBatch: (batch) => {
@@ -53,14 +52,15 @@ const watcher = watchBatches(rdk, "my-roll", {
 watcher.stop();
 ```
 
-Il framework evidenzia:
+Il framework segnala:
 
 - i **nuovi batch** tramite `onBatch`,
-- le **scadenze della finestra di contestazione** tramite `onDeadline`, e
-- i **batch non validi** (per i quali il tuo `validate` ha restituito `false`) tramite `onInvalid`.
+- le **scadenze delle finestre di challenge** tramite `onDeadline` e
+- i **batch non validi** (per i quali la tua `validate` ha restituito `false`) tramite `onInvalid`.
 
 Collegare `onInvalid` a `challengeBatch` trasforma il Watchtower in un
-auto-challenger completo; lascialo non impostato per eseguirlo in modalità di sola osservazione.
+auto-challenger completo; lascialo non impostato per operare in modalità di sola
+osservazione.
 
 ## CLI
 
@@ -68,7 +68,7 @@ auto-challenger completo; lascialo non impostato per eseguirlo in modalità di s
 qorollup watchtower my-roll
 ```
 
-`watchtower` esegue il framework dalla riga di comando, stampando i nuovi batch e
-le scadenze della finestra di contestazione finché non premi Ctrl-C. Vedi
-[Distribuire un Rollup](/rollups/deploying-a-rollup) per la CLI operatore `qorollup`
-completa.
+`watchtower` esegue il framework dalla riga di comando, stampando i nuovi batch
+e le scadenze delle finestre di challenge finché non premi Ctrl-C. Consulta
+[Distribuire un Rollup](/rollups/deploying-a-rollup) per la CLI operatore
+`qorollup` completa.

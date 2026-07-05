@@ -14,16 +14,16 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Abfragen werden gegen den Node ausgeführt, auf den `--node` zeigt. Verwenden Sie für Live-Daten einen **`qorechain-vladi`**-Mainnet-RPC-Endpunkt (Chain-Version **v3.1.82**) oder einen **`qorechain-diana`**-Testnet-Endpunkt zum Testen. Der Standardwert `tcp://localhost:26657` zielt auf einen Node ab, den Sie selbst betreiben.
+Abfragen laufen gegen den Node, auf den `--node` zeigt. Verwenden Sie einen **`qorechain-vladi`**-Mainnet-RPC-Endpunkt (Chain-Version **v3.1.85**) für Live-Daten oder einen **`qorechain-diana`**-Testnet-Endpunkt zum Testen. Der Standardwert `tcp://localhost:26657` zielt auf einen Node, den Sie selbst betreiben.
 :::
 
-Allgemeine Flags gelten für jeden `query`-Unterbefehl:
+Gemeinsame Flags gelten für jeden `query`-Unterbefehl:
 
-| Flag       | Typ   | Beschreibung                                     |
-| ---------- | ------ | ----------------------------------------------- |
-| `--node`   | string | RPC-Endpunkt (Standard: `tcp://localhost:26657`) |
-| `--output` | string | Ausgabeformat: `json` oder `text`                 |
-| `--height` | int    | Zustand bei einer bestimmten Blockhöhe abfragen          |
+| Flag       | Typ    | Beschreibung                                        |
+| ---------- | ------ | --------------------------------------------------- |
+| `--node`   | string | RPC-Endpunkt (Standard: `tcp://localhost:26657`)     |
+| `--output` | string | Ausgabeformat: `json` oder `text`                    |
+| `--height` | int    | Zustand bei einer bestimmten Blockhöhe abfragen      |
 
 ---
 
@@ -31,7 +31,7 @@ Allgemeine Flags gelten für jeden `query`-Unterbefehl:
 
 ### balances
 
-Fragt alle Guthaben für ein Konto ab.
+Alle Kontostände eines Kontos abfragen.
 
 ```bash
 qorechaind query bank balances <address>
@@ -39,7 +39,7 @@ qorechaind query bank balances <address>
 
 ### total
 
-Fragt das Gesamtangebot aller Tokens ab.
+Das Gesamtangebot aller Token abfragen.
 
 ```bash
 qorechaind query bank total
@@ -51,7 +51,7 @@ qorechaind query bank total
 
 ### validator
 
-Fragt einen einzelnen Validator anhand seiner Operator-Adresse ab.
+Einen einzelnen Validator anhand der Operator-Adresse abfragen.
 
 ```bash
 qorechaind query staking validator <validator_address>
@@ -59,7 +59,7 @@ qorechaind query staking validator <validator_address>
 
 ### validators
 
-Listet alle Validatoren auf.
+Alle Validatoren auflisten.
 
 ```bash
 qorechaind query staking validators
@@ -67,7 +67,7 @@ qorechaind query staking validators
 
 ### delegation
 
-Fragt eine Delegation von einem Delegator an einen Validator ab.
+Eine Delegation von einem Delegator an einen Validator abfragen.
 
 ```bash
 qorechaind query staking delegation <delegator_address> <validator_address>
@@ -75,7 +75,7 @@ qorechaind query staking delegation <delegator_address> <validator_address>
 
 ### delegations
 
-Fragt alle Delegationen für einen Delegator ab.
+Alle Delegationen eines Delegators abfragen.
 
 ```bash
 qorechaind query staking delegations <delegator_address>
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-Fragt eine Unbonding-Delegation ab.
+Eine Unbonding-Delegation abfragen.
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -95,7 +95,7 @@ qorechaind query staking unbonding-delegation <delegator_address> <validator_add
 
 ### rewards
 
-Fragt alle Delegationsbelohnungen für einen Delegator ab.
+Alle Delegations-Rewards eines Delegators abfragen.
 
 ```bash
 qorechaind query distribution rewards <delegator_address>
@@ -103,7 +103,7 @@ qorechaind query distribution rewards <delegator_address>
 
 ### commission
 
-Fragt die Validator-Provision ab.
+Die Kommission eines Validators abfragen.
 
 ```bash
 qorechaind query distribution commission <validator_address>
@@ -115,7 +115,7 @@ qorechaind query distribution commission <validator_address>
 
 ### proposal
 
-Fragt einen einzelnen Vorschlag anhand seiner ID ab.
+Ein einzelnes Proposal anhand seiner ID abfragen.
 
 ```bash
 qorechaind query gov proposal <proposal_id>
@@ -123,19 +123,19 @@ qorechaind query gov proposal <proposal_id>
 
 ### proposals
 
-Listet alle Vorschläge auf, optional nach Status gefiltert.
+Alle Proposals auflisten, optional nach Status gefiltert.
 
 ```bash
 qorechaind query gov proposals [flags]
 ```
 
-| Flag       | Typ   | Beschreibung                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
-| `--status` | string | Nach Status filtern: `deposit_period`, `voting_period`, `passed`, `rejected` |
+| Flag       | Typ    | Beschreibung                                                                    |
+| ---------- | ------ | ------------------------------------------------------------------------------- |
+| `--status` | string | Nach Status filtern: `deposit_period`, `voting_period`, `passed`, `rejected`     |
 
 ### votes
 
-Fragt Stimmen zu einem Vorschlag ab.
+Stimmen zu einem Proposal abfragen.
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-Fragt den PQC-Schlüsselregistrierungsstatus für ein Konto ab.
+Den PQC-Schlüsselregistrierungsstatus eines Kontos abfragen.
 
 ```bash
 qorechaind query pqc account <address>
@@ -155,7 +155,7 @@ qorechaind query pqc account <address>
 
 ### algorithms
 
-Listet alle unterstützten PQC-Algorithmen auf.
+Alle unterstützten PQC-Algorithmen auflisten.
 
 ```bash
 qorechaind query pqc algorithms
@@ -163,7 +163,7 @@ qorechaind query pqc algorithms
 
 ### algorithm
 
-Fragt Details zu einem bestimmten PQC-Algorithmus ab.
+Details zu einem bestimmten PQC-Algorithmus abfragen.
 
 ```bash
 qorechaind query pqc algorithm <algorithm_name>
@@ -171,7 +171,7 @@ qorechaind query pqc algorithm <algorithm_name>
 
 ### stats
 
-Fragt aggregierte PQC-Registrierungsstatistiken ab.
+Aggregierte PQC-Registrierungsstatistiken abfragen.
 
 ```bash
 qorechaind query pqc stats
@@ -179,7 +179,7 @@ qorechaind query pqc stats
 
 ### params
 
-Fragt die Parameter des PQC-Moduls ab.
+Parameter des PQC-Moduls abfragen.
 
 ```bash
 qorechaind query pqc params
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-Fragt den PQC-Schlüsselmigrationsstatus für ein Konto ab.
+Den PQC-Schlüsselmigrationsstatus eines Kontos abfragen.
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-Fragt den aktuellen Durchsetzungsmodus für Hybridsignaturen ab.
+Den aktuellen Durchsetzungsmodus für hybride Signaturen abfragen.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -207,7 +207,7 @@ qorechaind query pqc hybrid-mode
 
 ### position
 
-Fragt die xQORE-Staking-Position für eine Adresse ab.
+Die xQORE-Staking-Position einer Adresse abfragen.
 
 ```bash
 qorechaind query xqore position <address>
@@ -215,7 +215,7 @@ qorechaind query xqore position <address>
 
 ### params
 
-Fragt die Parameter des xQORE-Moduls ab.
+Parameter des xQORE-Moduls abfragen.
 
 ```bash
 qorechaind query xqore params
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-Fragt Burn-Statistiken über alle Kanäle hinweg ab.
+Burn-Statistiken über alle Kanäle hinweg abfragen.
 
 ```bash
 qorechaind query burn stats
@@ -235,7 +235,7 @@ qorechaind query burn stats
 
 ### params
 
-Fragt die Parameter des Burn-Moduls ab.
+Parameter des Burn-Moduls abfragen.
 
 ```bash
 qorechaind query burn params
@@ -247,7 +247,7 @@ qorechaind query burn params
 
 ### rate
 
-Fragt die aktuelle annualisierte Inflationsrate ab.
+Die aktuelle annualisierte Inflationsrate abfragen.
 
 ```bash
 qorechaind query inflation rate
@@ -255,7 +255,7 @@ qorechaind query inflation rate
 
 ### epoch
 
-Fragt die aktuelle Epochennummer und den Fortschritt ab.
+Die aktuelle Epochennummer und den Fortschritt abfragen.
 
 ```bash
 qorechaind query inflation epoch
@@ -263,7 +263,7 @@ qorechaind query inflation epoch
 
 ### params
 
-Fragt die Parameter des Inflation-Moduls ab.
+Parameter des Inflation-Moduls abfragen.
 
 ```bash
 qorechaind query inflation params
@@ -275,7 +275,7 @@ qorechaind query inflation params
 
 ### config
 
-Fragt die Konfiguration des KI-Moduls ab.
+Die Konfiguration des AI-Moduls abfragen.
 
 ```bash
 qorechaind query ai config
@@ -283,7 +283,7 @@ qorechaind query ai config
 
 ### stats
 
-Fragt aggregierte KI-Verarbeitungsstatistiken ab.
+Aggregierte AI-Verarbeitungsstatistiken abfragen.
 
 ```bash
 qorechaind query ai stats
@@ -291,20 +291,20 @@ qorechaind query ai stats
 
 ### fee-estimate
 
-Ruft eine KI-gestützte Gas-Gebührenschätzung ab.
+Eine KI-gestützte Gasgebührenschätzung abrufen.
 
 ```bash
 qorechaind query ai fee-estimate [flags]
 ```
 
-| Flag        | Typ   | Beschreibung                     |
-| ----------- | ------ | ------------------------------- |
-| `--tx-type` | string | Transaktionstyp für die Schätzung |
-| `--urgency` | string | `low`, `medium`, `high`         |
+| Flag        | Typ    | Beschreibung                        |
+| ----------- | ------ | ----------------------------------- |
+| `--tx-type` | string | Transaktionstyp für die Schätzung   |
+| `--urgency` | string | `low`, `medium`, `high`             |
 
 ### investigations
 
-Listet aktive Betrugsuntersuchungen auf.
+Aktive Betrugsermittlungen auflisten.
 
 ```bash
 qorechaind query ai investigations
@@ -312,7 +312,7 @@ qorechaind query ai investigations
 
 ### recommendations
 
-Ruft KI-generierte Empfehlungen zur Netzwerkoptimierung ab.
+KI-generierte Empfehlungen zur Netzwerkoptimierung abrufen.
 
 ```bash
 qorechaind query ai recommendations
@@ -320,7 +320,7 @@ qorechaind query ai recommendations
 
 ### circuit-breakers
 
-Fragt die aktuellen Zustände der Circuit Breaker ab.
+Die aktuellen Circuit-Breaker-Zustände abfragen.
 
 ```bash
 qorechaind query ai circuit-breakers
@@ -332,7 +332,7 @@ qorechaind query ai circuit-breakers
 
 ### validators
 
-Fragt Reputationswerte für alle Validatoren ab.
+Reputationswerte aller Validatoren abfragen.
 
 ```bash
 qorechaind query reputation validators
@@ -340,7 +340,7 @@ qorechaind query reputation validators
 
 ### validator
 
-Fragt den Reputationswert für einen bestimmten Validator ab.
+Den Reputationswert eines bestimmten Validators abfragen.
 
 ```bash
 qorechaind query reputation validator <validator_address>
@@ -352,7 +352,7 @@ qorechaind query reputation validator <validator_address>
 
 ### chains
 
-Listet alle registrierten Bridge-Chains auf.
+Alle registrierten Bridge-Chains auflisten.
 
 ```bash
 qorechaind query bridge chains
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-Fragt Details zu einer bestimmten gebridgeten Chain ab.
+Details zu einer bestimmten gebridgten Chain abfragen.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -368,7 +368,7 @@ qorechaind query bridge chain <chain_id>
 
 ### validators
 
-Listet aktive Bridge-Validatoren auf.
+Aktive Bridge-Validatoren auflisten.
 
 ```bash
 qorechaind query bridge validators
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-Listet aktuelle Bridge-Operationen auf.
+Aktuelle Bridge-Operationen auflisten.
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| Flag       | Typ   | Beschreibung                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | Filter: `pending`, `completed`, `failed` |
-| `--chain`  | string | Nach Chain-ID filtern                       |
+| Flag       | Typ    | Beschreibung                                 |
+| ---------- | ------ | -------------------------------------------- |
+| `--status` | string | Filter: `pending`, `completed`, `failed`     |
+| `--chain`  | string | Nach Chain-ID filtern                        |
 
 ### limits
 
-Fragt die Rate-Limits für eine gebridgete Chain ab.
+Rate-Limits für eine gebridgte Chain abfragen.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-Schätzt Bridge-Gebühr und Übertragungszeit.
+Bridge-Gebühr und Transferdauer schätzen.
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -409,7 +409,7 @@ qorechaind query bridge estimate <chain_id> <amount> <asset>
 
 ### message
 
-Ruft eine Cross-VM-Nachricht anhand ihrer ID ab.
+Eine Cross-VM-Nachricht anhand ihrer ID abrufen.
 
 ```bash
 qorechaind query crossvm message <message_id>
@@ -417,7 +417,7 @@ qorechaind query crossvm message <message_id>
 
 ### pending
 
-Listet ausstehende Cross-VM-Nachrichten auf.
+Ausstehende Cross-VM-Nachrichten auflisten.
 
 ```bash
 qorechaind query crossvm pending
@@ -425,7 +425,7 @@ qorechaind query crossvm pending
 
 ### params
 
-Fragt die Parameter des Cross-VM-Moduls ab.
+Parameter des Cross-VM-Moduls abfragen.
 
 ```bash
 qorechaind query crossvm params
@@ -437,7 +437,7 @@ qorechaind query crossvm params
 
 ### account
 
-Fragt SVM-Kontoinformationen ab.
+SVM-Kontoinformationen abfragen.
 
 ```bash
 qorechaind query svm account <pubkey>
@@ -445,7 +445,7 @@ qorechaind query svm account <pubkey>
 
 ### program
 
-Fragt Informationen zu einem bereitgestellten SVM-Programm ab.
+Informationen zu einem bereitgestellten SVM-Programm abfragen.
 
 ```bash
 qorechaind query svm program <program_id>
@@ -453,7 +453,7 @@ qorechaind query svm program <program_id>
 
 ### params
 
-Fragt die Parameter des SVM-Moduls ab.
+Parameter des SVM-Moduls abfragen.
 
 ```bash
 qorechaind query svm params
@@ -461,7 +461,7 @@ qorechaind query svm params
 
 ### slot
 
-Fragt die aktuelle SVM-Slot-Nummer ab.
+Die aktuelle SVM-Slot-Nummer abfragen.
 
 ```bash
 qorechaind query svm slot
@@ -473,7 +473,7 @@ qorechaind query svm slot
 
 ### layer
 
-Fragt Details zu einer bestimmten Schicht ab.
+Details zu einem bestimmten Layer abfragen.
 
 ```bash
 qorechaind query multilayer layer <layer_id>
@@ -481,7 +481,7 @@ qorechaind query multilayer layer <layer_id>
 
 ### layers
 
-Listet alle registrierten Schichten auf.
+Alle registrierten Layer auflisten.
 
 ```bash
 qorechaind query multilayer layers
@@ -489,7 +489,7 @@ qorechaind query multilayer layers
 
 ### anchor
 
-Fragt einen bestimmten Anchor-Datensatz ab.
+Einen bestimmten Anchor-Eintrag abfragen.
 
 ```bash
 qorechaind query multilayer anchor <anchor_id>
@@ -497,20 +497,20 @@ qorechaind query multilayer anchor <anchor_id>
 
 ### anchors
 
-Listet aktuelle Anchor-Übermittlungen auf.
+Aktuelle Anchor-Einreichungen auflisten.
 
 ```bash
 qorechaind query multilayer anchors [flags]
 ```
 
-| Flag         | Typ   | Beschreibung               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | Nach Layer-ID filtern        |
-| `--limit`    | uint   | Maximale Anzahl zurückzugebender Ergebnisse |
+| Flag         | Typ    | Beschreibung                       |
+| ------------ | ------ | ---------------------------------- |
+| `--layer-id` | string | Nach Layer-ID filtern              |
+| `--limit`    | uint   | Maximale Anzahl der Ergebnisse     |
 
 ### routing-stats
 
-Fragt Transaktions-Routing-Statistiken über Schichten hinweg ab.
+Transaktions-Routing-Statistiken über alle Layer hinweg abfragen.
 
 ```bash
 qorechaind query multilayer routing-stats
@@ -518,7 +518,7 @@ qorechaind query multilayer routing-stats
 
 ### simulate-route
 
-Simuliert das Transaktions-Routing ohne Ausführung.
+Transaktions-Routing ohne Ausführung simulieren.
 
 ```bash
 qorechaind query multilayer simulate-route <tx_data_hex>
@@ -526,7 +526,7 @@ qorechaind query multilayer simulate-route <tx_data_hex>
 
 ### params
 
-Fragt die Parameter des Multilayer-Moduls ab.
+Parameter des Multilayer-Moduls abfragen.
 
 ```bash
 qorechaind query multilayer params
@@ -538,7 +538,7 @@ qorechaind query multilayer params
 
 ### rollup
 
-Fragt Details zu einem bestimmten Rollup ab.
+Details zu einem bestimmten Rollup abfragen.
 
 ```bash
 qorechaind query rdk rollup <rollup_id>
@@ -546,19 +546,19 @@ qorechaind query rdk rollup <rollup_id>
 
 ### rollups
 
-Listet alle registrierten Rollups auf.
+Alle registrierten Rollups auflisten.
 
 ```bash
 qorechaind query rdk rollups
 ```
 
-| Flag       | Typ   | Beschreibung                           |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | Filter: `active`, `paused`, `stopped` |
+| Flag       | Typ    | Beschreibung                              |
+| ---------- | ------ | ----------------------------------------- |
+| `--status` | string | Filter: `active`, `paused`, `stopped`     |
 
 ### batch
 
-Fragt einen bestimmten Settlement-Batch ab.
+Einen bestimmten Settlement-Batch abfragen.
 
 ```bash
 qorechaind query rdk batch <rollup_id> <batch_index>
@@ -566,7 +566,7 @@ qorechaind query rdk batch <rollup_id> <batch_index>
 
 ### latest-batch
 
-Fragt den neuesten Batch für ein Rollup ab.
+Den neuesten Batch eines Rollups abfragen.
 
 ```bash
 qorechaind query rdk latest-batch <rollup_id>
@@ -574,7 +574,7 @@ qorechaind query rdk latest-batch <rollup_id>
 
 ### suggest-profile
 
-Ruft eine KI-gestützte Empfehlung für ein Rollup-Profil ab.
+Eine KI-gestützte Rollup-Profilempfehlung abrufen.
 
 ```bash
 qorechaind query rdk suggest-profile <use_case>
@@ -582,7 +582,7 @@ qorechaind query rdk suggest-profile <use_case>
 
 ### blob
 
-Fragt einen bestimmten DA-Blob ab.
+Einen bestimmten DA-Blob abfragen.
 
 ```bash
 qorechaind query rdk blob <rollup_id> <blob_index>
@@ -590,25 +590,25 @@ qorechaind query rdk blob <rollup_id> <blob_index>
 
 ### params
 
-Fragt die Parameter des RDK-Moduls ab.
+Parameter des RDK-Moduls abfragen.
 
 ```bash
 qorechaind query rdk params
 ```
 
 :::note
-Rollup-Withdrawal-Beweise und Settlement-Status sind ebenfalls unter der `rdk`-Gruppe abfragbar. Die genauen Query-Unterbefehle und Argumente hängen vom Settlement-Typ Ihres Rollups ab; siehe die **Rollup Development Kit**-Dokumentation für die maßgebliche Query-Oberfläche für Withdrawal/Settlement.
+Rollup-Auszahlungsnachweise und der Settlement-Status sind ebenfalls unter der `rdk`-Gruppe abfragbar. Die genauen Query-Unterbefehle und Argumente hängen vom Settlement-Typ Ihres Rollups ab; die maßgebliche Auszahlungs-/Settlement-Query-Oberfläche finden Sie in der Dokumentation zum **Rollup Development Kit**.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM ist die Reinforcement-Learning-Schicht, die Konsensparameter abstimmt. Der CLI-Modulname `rlconsensus` und seine Unterbefehle werden wortwörtlich beibehalten.
+PRISM ist die Reinforcement-Learning-Schicht, die Konsensparameter feinabstimmt. Der CLI-Modulname `rlconsensus` und seine Unterbefehle bleiben unverändert erhalten.
 
 ### agent-status
 
-Fragt den aktuellen Status und Modus des PRISM-Agenten ab.
+Den aktuellen Status und Modus des PRISM-Agenten abfragen.
 
 ```bash
 qorechaind query rlconsensus agent-status
@@ -616,7 +616,7 @@ qorechaind query rlconsensus agent-status
 
 ### observation
 
-Fragt den neuesten PRISM-Beobachtungsvektor ab.
+Den neuesten PRISM-Beobachtungsvektor abfragen.
 
 ```bash
 qorechaind query rlconsensus observation
@@ -624,7 +624,7 @@ qorechaind query rlconsensus observation
 
 ### reward
 
-Fragt kumulative PRISM-Belohnungsmetriken ab.
+Kumulative PRISM-Reward-Metriken abfragen.
 
 ```bash
 qorechaind query rlconsensus reward
@@ -632,7 +632,7 @@ qorechaind query rlconsensus reward
 
 ### params
 
-Fragt die Parameter des PRISM-Consensus-Moduls ab.
+Parameter des PRISM-Consensus-Moduls abfragen.
 
 ```bash
 qorechaind query rlconsensus params
@@ -640,7 +640,7 @@ qorechaind query rlconsensus params
 
 ### policy
 
-Fragt die aktive PRISM-Policy-Konfiguration ab.
+Die aktive PRISM-Policy-Konfiguration abfragen.
 
 ```bash
 qorechaind query rlconsensus policy
@@ -652,7 +652,7 @@ qorechaind query rlconsensus policy
 
 ### staking
 
-Fragt die BTC-Staking-Position für eine Adresse ab.
+Die BTC-Staking-Position einer Adresse abfragen.
 
 ```bash
 qorechaind query babylon staking <address>
@@ -660,7 +660,7 @@ qorechaind query babylon staking <address>
 
 ### checkpoint
 
-Fragt BTC-Checkpoint-Daten für eine bestimmte Epoche ab.
+BTC-Checkpoint-Daten für eine bestimmte Epoche abfragen.
 
 ```bash
 qorechaind query babylon checkpoint <epoch>
@@ -668,7 +668,7 @@ qorechaind query babylon checkpoint <epoch>
 
 ### params
 
-Fragt die Parameter des Babylon-Moduls ab.
+Parameter des Babylon-Moduls abfragen.
 
 ```bash
 qorechaind query babylon params
@@ -680,7 +680,7 @@ qorechaind query babylon params
 
 ### account
 
-Fragt Details zu einem Abstract Account ab.
+Details eines Abstract Accounts abfragen.
 
 ```bash
 qorechaind query abstractaccount account <address>
@@ -688,10 +688,28 @@ qorechaind query abstractaccount account <address>
 
 ### params
 
-Fragt die Parameter des Abstract-Account-Moduls ab.
+Parameter des Abstract-Account-Moduls abfragen.
 
 ```bash
 qorechaind query abstractaccount params
+```
+
+### permission-schema
+
+Die kanonische Authenticator-Berechtigungstaxonomie abfragen — die 11 Berechtigungen, die Zuordnung von Nachricht zu Berechtigung sowie die nicht delegierbaren Schlüsselverwaltungsnachrichten (verfügbar ab Chain-Version **v3.1.85**; ebenfalls über REST unter `/qorechain/abstractaccount/v1/permission_schema` bereitgestellt).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+Hilfsbefehle zum Erstellen von Authenticator-Autorisierungen außerhalb der SDKs: einen Testschlüssel generieren oder die **exakten Sign-Bytes, die die Chain verifiziert**, für eine delegierte Aktion auf der Native-Lane oder EVM-Lane erzeugen (verfügbar ab Chain-Version **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
 ```
 
 ---
@@ -700,7 +718,7 @@ qorechaind query abstractaccount params
 
 ### accepted-tokens
 
-Listet die für die Gas-Zahlung akzeptierten Tokens auf.
+Token auflisten, die für die Gaszahlung akzeptiert werden.
 
 ```bash
 qorechaind query gasabstraction accepted-tokens
@@ -708,7 +726,7 @@ qorechaind query gasabstraction accepted-tokens
 
 ### params
 
-Fragt die Parameter des Gas-Abstraction-Moduls ab.
+Parameter des Gas-Abstraction-Moduls abfragen.
 
 ```bash
 qorechaind query gasabstraction params
@@ -720,7 +738,7 @@ qorechaind query gasabstraction params
 
 ### config
 
-Fragt die FairBlock-Verschlüsselungskonfiguration ab.
+Die FairBlock-Verschlüsselungskonfiguration abfragen.
 
 ```bash
 qorechaind query fairblock config
@@ -728,7 +746,7 @@ qorechaind query fairblock config
 
 ### params
 
-Fragt die Parameter des FairBlock-Moduls ab.
+Parameter des FairBlock-Moduls abfragen.
 
 ```bash
 qorechaind query fairblock params

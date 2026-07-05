@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.82**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
+Set `--chain-id qorechain-vladi` to broadcast against the live mainnet (chain version **v3.1.85**), or `--chain-id qorechain-diana` for the testnet. If omitted, the client uses the `chain-id` from your local config.
 :::
 
 Common flags apply to every `tx` subcommand:
@@ -203,6 +203,32 @@ Migrate an existing classical key to a hybrid PQC key pair.
 ```bash
 qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
 ```
+
+### recover-key
+
+Deterministically reconstruct the account's ML-DSA-87 key from its BIP-39 mnemonic (read from stdin) and store it locally (available as of chain version **v3.1.85**). Uses the ecosystem-standard derivation `SHAKE-256("qorechain:pqc:v1|address|mnemonic")`.
+
+```bash
+qorechaind tx pqc recover-key <name> <address> [flags]
+```
+
+| Flag           | Type   | Description                                              |
+| -------------- | ------ | -------------------------------------------------------- |
+| `--derivation` | string | `adapter` (canonical, default) or `bridge` (legacy `SHAKE-256(mnemonic)`) |
+
+### rotate-key
+
+Rotate the account's ML-DSA-87 key **within the same algorithm** (available as of chain version **v3.1.85**) — e.g. migrate a legacy-derived key to the canonical derivation, or retire a compromised key. Reads the mnemonic from stdin, dual-signs with the old and new keys, cosigns the envelope with the old key, and broadcasts. Emits only the transaction JSON on stdout (informational lines go to stderr), so it composes with `-o json`.
+
+```bash
+qorechaind tx pqc rotate-key [flags]
+```
+
+| Flag               | Type   | Description                                      |
+| ------------------ | ------ | ------------------------------------------------ |
+| `--old-derivation` | string | Derivation of the currently registered key (`adapter` \| `bridge`) |
+| `--new-derivation` | string | Derivation of the new key (`adapter` \| `bridge`) |
+| `--new-random`     | bool   | Generate a fresh random key instead              |
 
 ---
 
@@ -522,6 +548,24 @@ Update the spending rules for an existing abstract account.
 
 ```bash
 qorechaind tx abstractaccount update-spending-rules <rules_file.json> [flags]
+```
+
+### execute-cosmos
+
+Relay an authenticator-authorized Native-lane bank send from a canonical account (available as of chain version **v3.1.85**). The relayer (`--from`) signs and pays for the envelope; the linked key's signature over the replay-bound sign bytes is the authorization. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators).
+
+```bash
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> \
+  <auth_pubkey_hex> <auth_signature_hex> <nonce> --from relayer -y
+```
+
+### execute-evm
+
+Relay an authenticator-authorized EVM call or transfer from the canonical account's EVM address (available as of chain version **v3.1.85**). The nonce is the account's **current** EVM nonce.
+
+```bash
+qorechaind tx abstractaccount execute-evm <account> <to> <value> <data_hex> \
+  <auth_pubkey_hex> <auth_signature_hex> <nonce> --from relayer -y
 ```
 
 ---

@@ -7,23 +7,23 @@ sidebar_position: 3
 
 # クエリコマンド
 
-すべてのクエリコマンドは次のパターンに従います:
+すべてのクエリコマンドは次のパターンに従います。
 
 ```bash
 qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-クエリは `--node` が指す任意のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネット RPC エンドポイント (チェーンバージョン **v3.1.82**) を使用し、テスト用には **`qorechain-diana`** テストネットエンドポイントを使用してください。デフォルトの `tcp://localhost:26657` は、自分で実行するノードを対象とします。
+クエリは `--node` が指すノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント（チェーンバージョン **v3.1.85**）を、テストには **`qorechain-diana`** テストネットのエンドポイントを使用してください。デフォルトの `tcp://localhost:26657` は自分で運用するノードを対象とします。
 :::
 
-共通フラグはすべての `query` サブコマンドに適用されます:
+共通フラグはすべての `query` サブコマンドに適用されます。
 
-| フラグ     | 型     | 説明                                     |
+| フラグ     | 型     | 説明                                            |
 | ---------- | ------ | ----------------------------------------------- |
-| `--node`   | string | RPC エンドポイント (デフォルト: `tcp://localhost:26657`) |
-| `--output` | string | 出力形式: `json` または `text`                 |
-| `--height` | int    | 特定のブロックの高さで状態をクエリする          |
+| `--node`   | string | RPC エンドポイント（デフォルト: `tcp://localhost:26657`） |
+| `--output` | string | 出力形式: `json` または `text`                  |
+| `--height` | int    | 特定のブロック高の状態をクエリ                  |
 
 ---
 
@@ -39,7 +39,7 @@ qorechaind query bank balances <address>
 
 ### total
 
-すべてのトークンの総供給量をクエリします。
+全トークンの総供給量をクエリします。
 
 ```bash
 qorechaind query bank total
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-アンボンディングデリゲーションをクエリします。
+アンボンディング中のデリゲーションをクエリします。
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -115,7 +115,7 @@ qorechaind query distribution commission <validator_address>
 
 ### proposal
 
-ID で単一の提案をクエリします。
+ID で単一のプロポーザルをクエリします。
 
 ```bash
 qorechaind query gov proposal <proposal_id>
@@ -123,19 +123,19 @@ qorechaind query gov proposal <proposal_id>
 
 ### proposals
 
-すべての提案を一覧表示します。オプションでステータスでフィルタリングできます。
+すべてのプロポーザルを一覧表示します。ステータスによるフィルタリングも可能です。
 
 ```bash
 qorechaind query gov proposals [flags]
 ```
 
-| フラグ     | 型     | 説明                                                               |
+| フラグ     | 型     | 説明                                                                       |
 | ---------- | ------ | ------------------------------------------------------------------------- |
 | `--status` | string | ステータスでフィルタ: `deposit_period`、`voting_period`、`passed`、`rejected` |
 
 ### votes
 
-提案への投票をクエリします。
+プロポーザルへの投票をクエリします。
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-アカウントの PQC キー登録ステータスをクエリします。
+アカウントの PQC 鍵登録ステータスをクエリします。
 
 ```bash
 qorechaind query pqc account <address>
@@ -171,7 +171,7 @@ qorechaind query pqc algorithm <algorithm_name>
 
 ### stats
 
-集計された PQC 登録統計をクエリします。
+PQC 登録の集計統計をクエリします。
 
 ```bash
 qorechaind query pqc stats
@@ -179,7 +179,7 @@ qorechaind query pqc stats
 
 ### params
 
-PQC モジュールパラメータをクエリします。
+PQC モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query pqc params
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-アカウントの PQC キー移行ステータスをクエリします。
+アカウントの PQC 鍵マイグレーションステータスをクエリします。
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-現在のハイブリッド署名強制モードをクエリします。
+現在のハイブリッド署名の強制モードをクエリします。
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -215,7 +215,7 @@ qorechaind query xqore position <address>
 
 ### params
 
-xQORE モジュールパラメータをクエリします。
+xQORE モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query xqore params
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-すべてのチャネルにわたるバーン統計をクエリします。
+全チャネルにわたるバーン統計をクエリします。
 
 ```bash
 qorechaind query burn stats
@@ -235,7 +235,7 @@ qorechaind query burn stats
 
 ### params
 
-バーンモジュールパラメータをクエリします。
+burn モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query burn params
@@ -247,7 +247,7 @@ qorechaind query burn params
 
 ### rate
 
-現在の年率換算インフレーションレートをクエリします。
+現在の年率換算インフレ率をクエリします。
 
 ```bash
 qorechaind query inflation rate
@@ -263,7 +263,7 @@ qorechaind query inflation epoch
 
 ### params
 
-インフレーションモジュールパラメータをクエリします。
+inflation モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query inflation params
@@ -275,7 +275,7 @@ qorechaind query inflation params
 
 ### config
 
-AI モジュール構成をクエリします。
+AI モジュールの構成をクエリします。
 
 ```bash
 qorechaind query ai config
@@ -291,20 +291,20 @@ qorechaind query ai stats
 
 ### fee-estimate
 
-AI 支援によるガス手数料の見積もりを取得します。
+AI 支援によるガス料金の見積もりを取得します。
 
 ```bash
 qorechaind query ai fee-estimate [flags]
 ```
 
-| フラグ      | 型     | 説明                     |
-| ----------- | ------ | ------------------------------- |
-| `--tx-type` | string | 見積もり用のトランザクションタイプ |
-| `--urgency` | string | `low`、`medium`、`high`         |
+| フラグ      | 型     | 説明                                |
+| ----------- | ------ | ----------------------------------- |
+| `--tx-type` | string | 見積もり対象のトランザクションタイプ |
+| `--urgency` | string | `low`、`medium`、`high`             |
 
 ### investigations
 
-アクティブな不正調査を一覧表示します。
+進行中の不正調査を一覧表示します。
 
 ```bash
 qorechaind query ai investigations
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-特定のブリッジ済みチェーンの詳細をクエリします。
+特定のブリッジ対象チェーンの詳細をクエリします。
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-最近のブリッジ操作を一覧表示します。
+最近のブリッジオペレーションを一覧表示します。
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| フラグ     | 型     | 説明                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | フィルタ: `pending`、`completed`、`failed` |
-| `--chain`  | string | チェーン ID でフィルタ                       |
+| フラグ     | 型     | 説明                                        |
+| ---------- | ------ | ------------------------------------------- |
+| `--status` | string | フィルタ: `pending`、`completed`、`failed`  |
+| `--chain`  | string | チェーン ID でフィルタ                      |
 
 ### limits
 
-ブリッジ済みチェーンのレート制限をクエリします。
+ブリッジ対象チェーンのレート制限をクエリします。
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-ブリッジ手数料と送金時間を見積もります。
+ブリッジ手数料と転送時間を見積もります。
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -425,7 +425,7 @@ qorechaind query crossvm pending
 
 ### params
 
-Cross-VM モジュールパラメータをクエリします。
+Cross-VM モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query crossvm params
@@ -445,7 +445,7 @@ qorechaind query svm account <pubkey>
 
 ### program
 
-デプロイされた SVM プログラム情報をクエリします。
+デプロイ済みの SVM プログラム情報をクエリします。
 
 ```bash
 qorechaind query svm program <program_id>
@@ -453,7 +453,7 @@ qorechaind query svm program <program_id>
 
 ### params
 
-SVM モジュールパラメータをクエリします。
+SVM モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query svm params
@@ -497,20 +497,20 @@ qorechaind query multilayer anchor <anchor_id>
 
 ### anchors
 
-最近のアンカー提出を一覧表示します。
+最近のアンカー送信を一覧表示します。
 
 ```bash
 qorechaind query multilayer anchors [flags]
 ```
 
-| フラグ       | 型     | 説明               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | レイヤー ID でフィルタ        |
-| `--limit`    | uint   | 返す結果の最大数 |
+| フラグ       | 型     | 説明                     |
+| ------------ | ------ | ------------------------ |
+| `--layer-id` | string | レイヤー ID でフィルタ   |
+| `--limit`    | uint   | 返される結果の最大数     |
 
 ### routing-stats
 
-レイヤー全体のトランザクションルーティング統計をクエリします。
+レイヤー間のトランザクションルーティング統計をクエリします。
 
 ```bash
 qorechaind query multilayer routing-stats
@@ -526,7 +526,7 @@ qorechaind query multilayer simulate-route <tx_data_hex>
 
 ### params
 
-Multilayer モジュールパラメータをクエリします。
+Multilayer モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query multilayer params
@@ -552,13 +552,13 @@ qorechaind query rdk rollup <rollup_id>
 qorechaind query rdk rollups
 ```
 
-| フラグ     | 型     | 説明                            |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | フィルタ: `active`、`paused`、`stopped` |
+| フラグ     | 型     | 説明                                     |
+| ---------- | ------ | ---------------------------------------- |
+| `--status` | string | フィルタ: `active`、`paused`、`stopped`  |
 
 ### batch
 
-特定の決済バッチをクエリします。
+特定のセトルメントバッチをクエリします。
 
 ```bash
 qorechaind query rdk batch <rollup_id> <batch_index>
@@ -582,7 +582,7 @@ qorechaind query rdk suggest-profile <use_case>
 
 ### blob
 
-特定の DA blob をクエリします。
+特定の DA ブロブをクエリします。
 
 ```bash
 qorechaind query rdk blob <rollup_id> <blob_index>
@@ -590,21 +590,21 @@ qorechaind query rdk blob <rollup_id> <blob_index>
 
 ### params
 
-RDK モジュールパラメータをクエリします。
+RDK モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query rdk params
 ```
 
 :::note
-ロールアップの引き出し証明と決済ステータスも `rdk` グループの下でクエリ可能です。正確なクエリサブコマンドと引数は、ロールアップの決済タイプによって異なります。権威ある引き出し/決済クエリの全体像については、**ロールアップ開発キット**のドキュメントを参照してください。
+ロールアップの出金証明とセトルメントステータスも `rdk` グループの下でクエリできます。正確なクエリサブコマンドと引数は、ロールアップのセトルメントタイプによって異なります。出金/セトルメントクエリの正式な仕様については、**Rollup Development Kit** のドキュメントを参照してください。
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM はコンセンサスパラメータを調整する強化学習レイヤーです。CLI モジュール名 `rlconsensus` とそのサブコマンドはそのまま保持されます。
+PRISM はコンセンサスパラメーターをチューニングする強化学習レイヤーです。CLI モジュール名 `rlconsensus` とそのサブコマンドはそのまま保持されています。
 
 ### agent-status
 
@@ -624,7 +624,7 @@ qorechaind query rlconsensus observation
 
 ### reward
 
-累積 PRISM 報酬メトリクスをクエリします。
+PRISM の累積報酬メトリクスをクエリします。
 
 ```bash
 qorechaind query rlconsensus reward
@@ -632,7 +632,7 @@ qorechaind query rlconsensus reward
 
 ### params
 
-PRISM コンセンサスモジュールパラメータをクエリします。
+PRISM Consensus モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query rlconsensus params
@@ -668,7 +668,7 @@ qorechaind query babylon checkpoint <epoch>
 
 ### params
 
-Babylon モジュールパラメータをクエリします。
+Babylon モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query babylon params
@@ -680,7 +680,7 @@ qorechaind query babylon params
 
 ### account
 
-抽象アカウントの詳細をクエリします。
+アブストラクトアカウントの詳細をクエリします。
 
 ```bash
 qorechaind query abstractaccount account <address>
@@ -688,10 +688,28 @@ qorechaind query abstractaccount account <address>
 
 ### params
 
-Abstract Account モジュールパラメータをクエリします。
+Abstract Account モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query abstractaccount params
+```
+
+### permission-schema
+
+正規のオーセンティケーター権限タクソノミーをクエリします — 11 種類の権限、メッセージ→権限のマップ、および委任不可の鍵管理メッセージです（チェーンバージョン **v3.1.85** 以降で利用可能。REST の `/qorechain/abstractaccount/v1/permission_schema` でも提供されます）。
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+SDK を使わずにオーセンティケーター認可を構築するためのヘルパーです。テスト鍵を生成するか、Native レーンまたは EVM レーンの委任アクションに対して**チェーンが検証する正確な署名バイト列**を生成します（チェーンバージョン **v3.1.85** 以降で利用可能）。
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
 ```
 
 ---
@@ -708,7 +726,7 @@ qorechaind query gasabstraction accepted-tokens
 
 ### params
 
-Gas Abstraction モジュールパラメータをクエリします。
+Gas Abstraction モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query gasabstraction params
@@ -728,7 +746,7 @@ qorechaind query fairblock config
 
 ### params
 
-FairBlock モジュールパラメータをクエリします。
+FairBlock モジュールのパラメーターをクエリします。
 
 ```bash
 qorechaind query fairblock params

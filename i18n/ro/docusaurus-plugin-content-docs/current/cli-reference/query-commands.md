@@ -14,16 +14,16 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează față de orice nod către care indică `--node`. Folosește un endpoint RPC al mainnet-ului **`qorechain-vladi`** (versiunea de lanț **v3.1.82**) pentru date live sau un endpoint al testnet-ului **`qorechain-diana`** pentru testare. Valoarea implicită `tcp://localhost:26657` vizează un nod pe care îl rulezi tu însuți.
+Interogările rulează pe nodul indicat de `--node`. Folosiți un endpoint RPC de mainnet **`qorechain-vladi`** (versiunea de lanț **v3.1.85**) pentru date live sau un endpoint de testnet **`qorechain-diana`** pentru testare. Valoarea implicită `tcp://localhost:26657` vizează un nod pe care îl rulați dumneavoastră.
 :::
 
-Flag-uri comune se aplică fiecărei subcomenzi `query`:
+Flag-urile comune se aplică fiecărei subcomenzi `query`:
 
-| Flag       | Tip   | Descriere                                     |
-| ---------- | ------ | ----------------------------------------------- |
+| Flag       | Tip    | Descriere                                        |
+| ---------- | ------ | ------------------------------------------------ |
 | `--node`   | string | Endpoint RPC (implicit: `tcp://localhost:26657`) |
-| `--output` | string | Format de ieșire: `json` sau `text`                 |
-| `--height` | int    | Interoghează starea la o anumită înălțime de bloc          |
+| `--output` | string | Formatul de ieșire: `json` sau `text`            |
+| `--height` | int    | Interoghează starea la o anumită înălțime de bloc |
 
 ---
 
@@ -31,7 +31,7 @@ Flag-uri comune se aplică fiecărei subcomenzi `query`:
 
 ### balances
 
-Interoghează toate soldurile pentru un cont.
+Interoghează toate soldurile unui cont.
 
 ```bash
 qorechaind query bank balances <address>
@@ -75,7 +75,7 @@ qorechaind query staking delegation <delegator_address> <validator_address>
 
 ### delegations
 
-Interoghează toate delegările pentru un delegator.
+Interoghează toate delegările unui delegator.
 
 ```bash
 qorechaind query staking delegations <delegator_address>
@@ -83,7 +83,7 @@ qorechaind query staking delegations <delegator_address>
 
 ### unbonding-delegation
 
-Interoghează o delegare în curs de unbonding.
+Interoghează o delegare în curs de dezlegare (unbonding).
 
 ```bash
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
@@ -95,7 +95,7 @@ qorechaind query staking unbonding-delegation <delegator_address> <validator_add
 
 ### rewards
 
-Interoghează toate recompensele de delegare pentru un delegator.
+Interoghează toate recompensele de delegare ale unui delegator.
 
 ```bash
 qorechaind query distribution rewards <delegator_address>
@@ -129,13 +129,13 @@ Listează toate propunerile, opțional filtrate după stare.
 qorechaind query gov proposals [flags]
 ```
 
-| Flag       | Tip   | Descriere                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
-| `--status` | string | Filtrează după stare: `deposit_period`, `voting_period`, `passed`, `rejected` |
+| Flag       | Tip    | Descriere                                                                    |
+| ---------- | ------ | ---------------------------------------------------------------------------- |
+| `--status` | string | Filtrare după stare: `deposit_period`, `voting_period`, `passed`, `rejected` |
 
 ### votes
 
-Interoghează voturile pentru o propunere.
+Interoghează voturile asupra unei propuneri.
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -163,7 +163,7 @@ qorechaind query pqc algorithms
 
 ### algorithm
 
-Interoghează detaliile pentru un algoritm PQC specific.
+Interoghează detaliile unui anumit algoritm PQC.
 
 ```bash
 qorechaind query pqc algorithm <algorithm_name>
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-Interoghează starea de migrare a cheii PQC pentru un cont.
+Interoghează starea migrării cheii PQC pentru un cont.
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-Interoghează modul curent de impunere a semnăturii hibride.
+Interoghează modul curent de aplicare a semnăturilor hibride.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-Interoghează statisticile de ardere pe toate canalele.
+Interoghează statisticile de ardere (burn) pe toate canalele.
 
 ```bash
 qorechaind query burn stats
@@ -255,7 +255,7 @@ qorechaind query inflation rate
 
 ### epoch
 
-Interoghează numărul epocii curente și progresul.
+Interoghează numărul epocii curente și progresul acesteia.
 
 ```bash
 qorechaind query inflation epoch
@@ -263,7 +263,7 @@ qorechaind query inflation epoch
 
 ### params
 
-Interoghează parametrii modulului inflation.
+Interoghează parametrii modulului de inflație.
 
 ```bash
 qorechaind query inflation params
@@ -297,14 +297,14 @@ Obține o estimare a taxei de gas asistată de AI.
 qorechaind query ai fee-estimate [flags]
 ```
 
-| Flag        | Tip   | Descriere                     |
-| ----------- | ------ | ------------------------------- |
+| Flag        | Tip    | Descriere                           |
+| ----------- | ------ | ----------------------------------- |
 | `--tx-type` | string | Tipul de tranzacție pentru estimare |
-| `--urgency` | string | `low`, `medium`, `high`         |
+| `--urgency` | string | `low`, `medium`, `high`             |
 
 ### investigations
 
-Listează investigațiile active de fraudă.
+Listează investigațiile de fraudă active.
 
 ```bash
 qorechaind query ai investigations
@@ -320,7 +320,7 @@ qorechaind query ai recommendations
 
 ### circuit-breakers
 
-Interoghează stările curente ale întrerupătoarelor de circuit (circuit breaker).
+Interoghează stările curente ale circuit breaker-elor.
 
 ```bash
 qorechaind query ai circuit-breakers
@@ -332,7 +332,7 @@ qorechaind query ai circuit-breakers
 
 ### validators
 
-Interoghează scorurile de reputație pentru toți validatorii.
+Interoghează scorurile de reputație ale tuturor validatorilor.
 
 ```bash
 qorechaind query reputation validators
@@ -340,7 +340,7 @@ qorechaind query reputation validators
 
 ### validator
 
-Interoghează scorul de reputație pentru un validator specific.
+Interoghează scorul de reputație al unui anumit validator.
 
 ```bash
 qorechaind query reputation validator <validator_address>
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-Interoghează detaliile pentru un lanț punte specific.
+Interoghează detaliile unui anumit lanț conectat prin bridge.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -376,20 +376,20 @@ qorechaind query bridge validators
 
 ### operations
 
-Listează operațiunile recente de bridge.
+Listează operațiunile de bridge recente.
 
 ```bash
 qorechaind query bridge operations
 ```
 
-| Flag       | Tip   | Descriere                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | Filtru: `pending`, `completed`, `failed` |
-| `--chain`  | string | Filtrează după chain ID                       |
+| Flag       | Tip    | Descriere                                  |
+| ---------- | ------ | ------------------------------------------ |
+| `--status` | string | Filtrare: `pending`, `completed`, `failed` |
+| `--chain`  | string | Filtrare după ID-ul lanțului               |
 
 ### limits
 
-Interoghează limitele de rată pentru un lanț punte.
+Interoghează limitele de rată pentru un lanț conectat prin bridge.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -409,7 +409,7 @@ qorechaind query bridge estimate <chain_id> <amount> <asset>
 
 ### message
 
-Recuperează un mesaj cross-VM după ID.
+Preia un mesaj cross-VM după ID.
 
 ```bash
 qorechaind query crossvm message <message_id>
@@ -437,7 +437,7 @@ qorechaind query crossvm params
 
 ### account
 
-Interoghează informațiile despre un cont SVM.
+Interoghează informațiile unui cont SVM.
 
 ```bash
 qorechaind query svm account <pubkey>
@@ -445,7 +445,7 @@ qorechaind query svm account <pubkey>
 
 ### program
 
-Interoghează informațiile despre un program SVM implementat.
+Interoghează informațiile unui program SVM implementat.
 
 ```bash
 qorechaind query svm program <program_id>
@@ -473,7 +473,7 @@ qorechaind query svm slot
 
 ### layer
 
-Interoghează detaliile pentru un strat specific.
+Interoghează detaliile unui anumit strat (layer).
 
 ```bash
 qorechaind query multilayer layer <layer_id>
@@ -489,7 +489,7 @@ qorechaind query multilayer layers
 
 ### anchor
 
-Interoghează o înregistrare de ancorare specifică.
+Interoghează o anumită înregistrare de ancorare.
 
 ```bash
 qorechaind query multilayer anchor <anchor_id>
@@ -497,20 +497,20 @@ qorechaind query multilayer anchor <anchor_id>
 
 ### anchors
 
-Listează trimiterile recente de ancorare.
+Listează trimiterile de ancorare recente.
 
 ```bash
 qorechaind query multilayer anchors [flags]
 ```
 
-| Flag         | Tip   | Descriere               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | Filtrează după ID-ul stratului        |
-| `--limit`    | uint   | Numărul maxim de rezultate de returnat |
+| Flag         | Tip    | Descriere                            |
+| ------------ | ------ | ------------------------------------ |
+| `--layer-id` | string | Filtrare după ID-ul stratului        |
+| `--limit`    | uint   | Numărul maxim de rezultate returnate |
 
 ### routing-stats
 
-Interoghează statisticile de rutare a tranzacțiilor pe straturi.
+Interoghează statisticile de rutare a tranzacțiilor între straturi.
 
 ```bash
 qorechaind query multilayer routing-stats
@@ -538,7 +538,7 @@ qorechaind query multilayer params
 
 ### rollup
 
-Interoghează detaliile pentru un rollup specific.
+Interoghează detaliile unui anumit rollup.
 
 ```bash
 qorechaind query rdk rollup <rollup_id>
@@ -552,13 +552,13 @@ Listează toate rollup-urile înregistrate.
 qorechaind query rdk rollups
 ```
 
-| Flag       | Tip   | Descriere                           |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | Filtru: `active`, `paused`, `stopped` |
+| Flag       | Tip    | Descriere                               |
+| ---------- | ------ | --------------------------------------- |
+| `--status` | string | Filtrare: `active`, `paused`, `stopped` |
 
 ### batch
 
-Interoghează un lot de decontare specific.
+Interoghează un anumit lot (batch) de decontare.
 
 ```bash
 qorechaind query rdk batch <rollup_id> <batch_index>
@@ -566,7 +566,7 @@ qorechaind query rdk batch <rollup_id> <batch_index>
 
 ### latest-batch
 
-Interoghează ultimul lot pentru un rollup.
+Interoghează cel mai recent lot pentru un rollup.
 
 ```bash
 qorechaind query rdk latest-batch <rollup_id>
@@ -582,7 +582,7 @@ qorechaind query rdk suggest-profile <use_case>
 
 ### blob
 
-Interoghează un blob DA specific.
+Interoghează un anumit blob DA.
 
 ```bash
 qorechaind query rdk blob <rollup_id> <blob_index>
@@ -597,14 +597,14 @@ qorechaind query rdk params
 ```
 
 :::note
-Demonstrațiile de retragere a rollup-ului și starea de decontare pot fi, de asemenea, interogate în cadrul grupului `rdk`. Subcomenzile și argumentele exacte de interogare depind de tipul de decontare al rollup-ului tău; vezi documentația **Rollup Development Kit** pentru suprafața oficială de interogare a retragerii/decontării.
+Dovezile de retragere ale rollup-urilor și starea decontării pot fi interogate tot în grupul `rdk`. Subcomenzile de interogare exacte și argumentele lor depind de tipul de decontare al rollup-ului dumneavoastră; consultați documentația **Rollup Development Kit** pentru suprafața autoritativă de interogare a retragerilor/decontărilor.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM este stratul de învățare prin întărire care ajustează parametrii de consens. Numele modulului CLI `rlconsensus` și subcomenzile sale sunt păstrate verbatim.
+PRISM este stratul de învățare prin întărire (reinforcement learning) care ajustează parametrii de consens. Numele modulului CLI `rlconsensus` și subcomenzile sale sunt păstrate ca atare.
 
 ### agent-status
 
@@ -640,7 +640,7 @@ qorechaind query rlconsensus params
 
 ### policy
 
-Interoghează configurația activă a politicii PRISM.
+Interoghează configurația politicii PRISM active.
 
 ```bash
 qorechaind query rlconsensus policy
@@ -660,7 +660,7 @@ qorechaind query babylon staking <address>
 
 ### checkpoint
 
-Interoghează datele punctului de control (checkpoint) BTC pentru o epocă dată.
+Interoghează datele de checkpoint BTC pentru o anumită epocă.
 
 ```bash
 qorechaind query babylon checkpoint <epoch>
@@ -694,13 +694,31 @@ Interoghează parametrii modulului Abstract Account.
 qorechaind query abstractaccount params
 ```
 
+### permission-schema
+
+Interoghează taxonomia canonică a permisiunilor pentru autentificatori — cele 11 permisiuni, maparea mesaj→permisiune și mesajele de administrare a cheilor care nu pot fi delegate (disponibilă începând cu versiunea de lanț **v3.1.85**; servită și prin REST la `/qorechain/abstractaccount/v1/permission_schema`).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+Utilitare pentru construirea autorizărilor de autentificator în afara SDK-urilor: generați o cheie de test sau produceți **exact octeții de semnat pe care lanțul îi verifică** pentru o acțiune delegată pe banda Native sau pe banda EVM (disponibile începând cu versiunea de lanț **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
+```
+
 ---
 
 ## gasabstraction
 
 ### accepted-tokens
 
-Listează tokenurile acceptate pentru plata gasului.
+Listează tokenurile acceptate pentru plata gas-ului.
 
 ```bash
 qorechaind query gasabstraction accepted-tokens

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint (chain version **v3.1.82**) for live data, or a **`qorechain-diana`** testnet endpoint for testing. The default `tcp://localhost:26657` targets a node you run yourself.
+Queries run against whichever node `--node` points to. Use a **`qorechain-vladi`** mainnet RPC endpoint (chain version **v3.1.85**) for live data, or a **`qorechain-diana`** testnet endpoint for testing. The default `tcp://localhost:26657` targets a node you run yourself.
 :::
 
 Common flags apply to every `query` subcommand:
@@ -692,6 +692,24 @@ Query Abstract Account module parameters.
 
 ```bash
 qorechaind query abstractaccount params
+```
+
+### permission-schema
+
+Query the canonical authenticator permission taxonomy — the 11 permissions, the message→permission map, and the non-delegable key-management messages (available as of chain version **v3.1.85**; also served over REST at `/qorechain/abstractaccount/v1/permission_schema`).
+
+```bash
+qorechaind query abstractaccount permission-schema
+```
+
+### auth-keygen / auth-sign-cosmos / auth-sign-evm
+
+Helpers for building authenticator authorizations outside the SDKs: generate a test key, or produce the **exact sign bytes the chain verifies** for a Native-lane or EVM-lane delegated action (available as of chain version **v3.1.85**).
+
+```bash
+qorechaind query abstractaccount auth-keygen
+qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
+qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
 ```
 
 ---

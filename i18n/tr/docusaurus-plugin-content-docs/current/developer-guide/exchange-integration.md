@@ -7,37 +7,37 @@ sidebar_position: 11
 
 # Borsa ve Entegratör Rehberi
 
-Bir borsanın, saklama kuruluşunun (custodian) veya ödeme entegratörünün QOR'u listelemek, para yatırma ve çekme işlemlerini gerçekleştirmek için ihtiyaç duyduğu her şey: bir arayüz seçmek, yatırılan tutarları güvenli biçimde tespit etmek ve çekim işlemlerini imzalamak.
+Bir borsanın, saklama kuruluşunun veya ödeme entegratörünün QOR'u listelemek ve yatırma/çekme işlemlerini gerçekleştirmek için ihtiyaç duyduğu her şey: bir arayüz seçmek, yatırmaları güvenli şekilde tespit etmek ve çekimleri imzalamak.
 
 :::note
-Bu rehber **`qorechain-vladi`** ana ağını (zincir sürümü **v3.1.82**) hedefler. Akışın tamamını önce **`qorechain-diana`** test ağında prova edin — her iki ağın uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasındadır.
+Bu rehber **`qorechain-vladi`** ana ağını (zincir sürümü **v3.1.85**) hedefler. Akışın tamamını önce **`qorechain-diana`** test ağında prova edin — her iki ağın uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasındadır. Kendi tam düğümünüzü çalıştırıyorsanız onu güncel zincir sürümünde tutun — güncel olmayan bir düğüm daha yeni işlem türlerini çözümleyemez ve senkronizasyonu durur.
 :::
 
-## Entegrasyon yolu seçimi {#choosing-a-path}
+## Bir entegrasyon yolu seçmek {#choosing-a-path}
 
-QoreChain, üç arayüz üzerinden sunulan **tek bir birleşik yerel QOR bakiyesine** sahip tek bir zincirdir. **Aynı özel anahtar, aynı fonları** bir Cosmos (`qor1...`), bir EVM (`0x...`) ve bir SVM (base58) adresi altında kontrol eder — yığınınıza (stack) hangisi uyuyorsa onu seçin.
+QoreChain, üç arayüz üzerinden sunulan **tek bir birleşik yerel QOR bakiyesine** sahip tek bir zincirdir. **Aynı özel anahtar aynı fonları kontrol eder** — Cosmos (`qor1...`), EVM (`0x...`) ve SVM (base58) adresi altında; teknoloji yığınınıza hangisi uyuyorsa o arayüzü seçin.
 
 | | **A) Cosmos (yerel)** | **B) EVM** | **C) SVM (Solana VM)** |
 |---|---|---|---|
 | Adres | `qor1...` (bech32) | `0x...` (Ethereum) | Solana base58 (aynı anahtar) |
 | Ondalık basamak (yerel QOR) | **6** (`uqor`) | **18** (wei tarzı) | **9** (lamports; 1 uqor = 1.000 lamports) |
 | Araçlar | Cosmos SDK / CosmJS | **Standart Ethereum** (ethers/web3, MetaMask) | `@solana/web3.js` |
-| Çekim imzalama | **Hibrit PQC zorunlu** (ML-DSA-87 + secp256k1) | **Standart secp256k1 / EIP-155 — PQC yok** | Cosmos tx'i ile veya düğüm üzerinde gönderim |
-| Memo / etiket desteği | **Evet** (paylaşılan adres + memo) | Hayır (kullanıcı başına bir adres) | Hayır (kullanıcı başına bir adres) |
+| Çekim imzalama | **Hibrit PQC zorunlu** (ML-DSA-87 + secp256k1) | **Standart secp256k1 / EIP-155 — PQC yok** | Cosmos işlemi veya düğüm üzerinden gönderim ile |
+| Memo / etiket desteği | **Evet** (paylaşımlı adres + memo) | Hayır (kullanıcı başına bir adres) | Hayır (kullanıcı başına bir adres) |
 | Yatırma tespiti | `MsgSend` olaylarını tara | `eth_getBlockByNumber` ile blokları tara | `getBalance` / `getSignaturesForAddress` |
-| En uygun olduğu senaryo | Cosmos yerlisi platformlar | **Mevcut EVM entegrasyonu olan platformlar** | Solana araçları kullanan platformlar |
+| En uygun olduğu durum | Cosmos-yerlisi platformlar | **Halihazırda EVM entegrasyonu olan platformlar** | Solana araçları kullanan platformlar |
 
-**Öneri:** halihazırda EVM zincirlerini destekliyorsanız, en az emek gerektiren entegrasyon **Yol B (EVM)**'dir — standart Ethereum araçları kullanılır ve **çekim işlemleri post-kuantum imzalama gerektirmez** (EVM ante yolu muaftır). Yol A (Cosmos), memo tabanlı paylaşılan yatırma adresleriyle yerel rotadır. Yol C (SVM) de tam teşekküllü bir yerel QOR arayüzüdür — özellikle Solana araçlarını tercih ediyorsanız onu seçin.
+**Öneri:** halihazırda EVM zincirlerini destekliyorsanız, en az çaba gerektiren entegrasyon **B Yolu (EVM)**'dir — standart Ethereum araçları kullanılır ve **çekimler için kuantum sonrası imzalama gerekmez** (EVM ante yolu muaftır). A Yolu (Cosmos), memo tabanlı paylaşımlı yatırma adresleriyle yerel rotadır. C Yolu (SVM) da tam bir yerel QOR arayüzüdür — özellikle Solana araçlarını tercih ediyorsanız onu seçin.
 
 Üç arayüz **birbirini dışlamaz** — aynı anahtarın `0x`, `qor1` veya SVM biçimine gönderilen fonlar aynı bakiyedir.
 
-## Kendi düğümünüzü çalıştırma {#node}
+## Düğümünüzü çalıştırma {#node}
 
-Üretim ortamındaki entegrasyonlar, yatırılan tutarları üçüncü taraf bir uç noktaya değil, **kendi senkronize düğümlerine** karşı doğrulamalıdır. [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) sayfasını izleyin — önceden derlenmiş ikili (binary) paketini (SHA-256 sağlama toplamlarıyla birlikte), genesis dosyasını, herkese açık eşleri (peer), ücret tabanını (`0.1uqor`) ve yayımlanan zincir verisi anlık görüntüsü (snapshot) ile hızlı bir başlangıcı kapsar. Doğrulayıcı olmayan bir tam düğüm çalıştırmak için lisans gerekmez.
+Üretim entegrasyonları, yatırmaları üçüncü taraf bir uç noktaya değil, **kendi senkronize düğümlerine** karşı doğrulamalıdır. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) sayfasını izleyin — önceden derlenmiş ikili paketi (SHA-256 sağlama toplamlarıyla), genesis'i, herkese açık eşleri, ücret tabanını (`0.1uqor`) ve yayımlanan zincir verisi anlık görüntüsü ile hızlı başlatmayı kapsar. Doğrulayıcı olmayan bir tam düğüm çalıştırmak için lisans gerekmez.
 
-QoreChain **anında kesinliğe** (finality) sahip olduğundan (reorg yoktur), **1 onay nihaidir**; 1–2 blok beklemek rahat bir operasyonel pay sağlar.
+QoreChain **anlık kesinliğe** sahip olduğundan (reorg yok), **1 onay kesindir**; 1–2 blok beklemek rahat bir operasyonel pay sağlar.
 
-## Yol A — Cosmos (yerel) {#path-a-cosmos}
+## A Yolu — Cosmos (yerel) {#path-a-cosmos}
 
 Temel REST URL'si: `https://api.qore.host` (veya kendi düğümünüzde `http://localhost:1317`).
 
@@ -57,23 +57,23 @@ curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='q
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
 ```
 
-### Sahte yatırmalara karşı kontrol listesi {#anti-fake-deposit}
+### Sahte yatırmaya karşı kontrol listesi {#anti-fake-deposit}
 
-Bir yatırmayı **yalnızca** aşağıdakilerin **tümü** sağlandığında hesaba geçirin:
+Bir yatırmayı **yalnızca** aşağıdakilerin **tümü** geçerliyse hesaba geçirin:
 
-1. **`tx_response.code == 0`** — işlem başarılı olmuştur; başarısız bir tx'i asla hesaba geçirmeyin.
-2. Mesaj **`/cosmos.bank.v1beta1.MsgSend`** olmalıdır (veya bir `MsgMultiSend` çıktısı) — bir sözleşme çağrısı ya da başka bir modül değil.
-3. **`to_address`** sizin yatırma adresinize eşit olmalı ve (paylaşılan adres modelinde) **`memo`** kullanıcıyla eşleşmelidir.
+1. **`tx_response.code == 0`** — işlem başarılı olmuştur; başarısız bir işlemi asla hesaba geçirmeyin.
+2. Mesaj **`/cosmos.bank.v1beta1.MsgSend`** (veya bir `MsgMultiSend` çıktısı) olmalıdır — bir sözleşme çağrısı veya başka bir modül değil.
+3. **`to_address`** sizin yatırma adresinize eşit olmalı ve (paylaşımlı adres modelinde) **`memo`** kullanıcıyla eşleşmelidir.
 4. **`denom == "uqor"`** olmalı ve `amount` hesaba geçirilecek değer olmalıdır (uqor → QOR için ÷ 10⁶). Diğer tüm denom'ları reddedin.
-5. Tx **kesinleşmiş (committed) bir blokta** olmalıdır (`height` mevcut ve en son kesinleşen yükseklikten ≤). Kesinlik anındadır — 1 onay nihaidir; pay bırakmak için 1–2 blok bekleyin.
-6. Tutarı **transfer olaylarından** (`coin_received` / `coin_spent`) yeniden hesaplayın ve mesajdaki tutarla çapraz kontrol edin — asla tek bir alana veya yalnızca memo'ya güvenmeyin.
-7. Tx hash'inin var olduğunu, **kendi** senkronize düğümünüze karşı `GET /cosmos/tx/v1beta1/txs/{hash}` ile doğrulayın.
+5. İşlem **kesinleşmiş bir blokta** olmalıdır (`height` mevcut ve ≤ en son kesinleşmiş yükseklik). Kesinlik anlıktır — 1 onay kesindir; pay için 1–2 blok bekleyin.
+6. Tutarı **transfer olaylarından** (`coin_received` / `coin_spent`) yeniden hesaplayın ve mesaj tutarıyla karşılaştırarak doğrulayın — asla tek bir alana veya yalnızca memo'ya güvenmeyin.
+7. İşlem karmasının var olduğunu `GET /cosmos/tx/v1beta1/txs/{hash}` ile **kendi** senkronize düğümünüze karşı doğrulayın.
 
 ### Çekimler — hibrit PQC imzalama {#cosmos-withdrawals}
 
-Mainnet, cosmos işlemlerinde **post-kuantum imzaları** zorunlu kılar (`allow_classical_fallback = false`): her çekim işlemi bir **hibrit imza** gerektirir — ML-DSA-87 (Dilithium-5, FIPS-204) **artı** secp256k1. Yatırmalar bunu **gerektirmez** (yalnızca zinciri izlersiniz).
+Ana ağ, cosmos işlemlerinde **kuantum sonrası imzaları** zorunlu kılar (`allow_classical_fallback = false`): her çekim bir **hibrit imza** gerektirir — ML-DSA-87 (Dilithium-5, FIPS-204) **artı** secp256k1. Yatırmalar için buna gerek **yoktur** (yalnızca zinciri izlersiniz).
 
-İmzalama kütüphanesi [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm) olup, FIPS-204 ilkelleri (primitives) için `@qorechain/pqc` paketini de getirir:
+İmzalama kütüphanesi, FIPS-204 ilkelerini sağlayan `@qorechain/pqc` paketini de içeren [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm) paketidir:
 
 ```bash
 npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
@@ -82,9 +82,9 @@ npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-type
 
 İmzalama **iki adımlı** bir akıştır (`qorechaind tx pqc cosign` komutunu yansıtır):
 
-**Adım 1 — sıcak cüzdan (hot wallet) başına bir kez: ML-DSA-87 anahtarını kaydedin.** Bu tek seferlik kayıt işlemi **klasik imzalıdır** (bootstrap muafiyeti): mesaj `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`, içeriği `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. ML-DSA anahtarını, mevcut gizli değerinizden geri kurtarılabilir olması için deterministik biçimde türetin — örn. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, ardından `mldsa.keygen(seed)` — ve seed'i sıcak cüzdan anahtarınızla birlikte saklayın.
+**Adım 1 — sıcak cüzdan başına bir kez: ML-DSA-87 anahtarını kaydedin.** Bu tek seferlik kayıt işlemi **klasik olarak imzalanır** (önyükleme muafiyeti): mesaj `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`, içeriği `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. ML-DSA anahtarını, mevcut gizli bilginizden geri türetilebilir olması için deterministik şekilde türetin — örn. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, ardından `mldsa.keygen(seed)` — ve seed'i sıcak cüzdan anahtarınızın yanında saklayın.
 
-**Adım 2 — bundan sonraki her çekim: `MsgSend`'i hibrit imzalayın.** Adaptör, ML-DSA-87 imzasını normal secp256k1 `signDirect` işleminden *önce* bir tx-body uzantısının içine gömer; böylece mevcut imzalayıcınız değişmeden kalır:
+**Adım 2 — sonrasındaki her çekim: `MsgSend`'i hibrit olarak imzalayın.** Adaptör, ML-DSA-87 imzasını normal secp256k1 `signDirect` çağrısından *önce* bir tx-body uzantısına gömer; böylece mevcut imzalayıcınız değişmeden kalır:
 
 ```js
 import { QoreChainSigner } from "@qorechain/wallet-adapter";
@@ -102,7 +102,7 @@ const txBytes = await signer.signHybrid({
   sequence });
 ```
 
-İmzalı baytları yayınlayın (broadcast):
+İmzalanan baytları yayınlayın:
 
 ```bash
 curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
@@ -112,21 +112,44 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
 # code 8 "classical fallback not allowed" => step 1 not done yet for this account
 ```
 
-Ardından, işlem `code == 0` ile bir blokta görünene kadar `GET /cosmos/tx/v1beta1/txs/{hash}` uç noktasını sorgulayın.
+Ardından işlem bir blokta `code == 0` ile görünene kadar `GET /cosmos/tx/v1beta1/txs/{hash}` uç noktasını sorgulayın.
 
-Bir HSM veya başka bir dildeki özel bir imzalayıcı için, bağımsız [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 kütüphanelerini (npm, PyPI, crates.io, Maven Central, Go) kullanın ve aynı uzantıyı oluşturun. ML-DSA imzası **deterministik olmalıdır** (FIPS-204 §3.4) — bkz. [Deterministik imzalama](/developer-guide/post-quantum-signing#deterministic-signing); zincir, hedged imzaları reddeder.
+Bir HSM veya başka bir dilde özel bir imzalayıcı için, bağımsız [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 kütüphanelerini (npm, PyPI, crates.io, Maven Central, Go) kullanın ve aynı uzantıyı oluşturun. ML-DSA imzası **deterministik olmalıdır** (FIPS-204 §3.4) — bkz. [Deterministik imzalama](/developer-guide/post-quantum-signing#deterministic-signing); zincir hedged (rastgelelikli) imzaları reddeder.
 
-## Yol B — EVM {#path-b-evm}
+### Sunucu tarafı alternatif: `@qorechain/chain-bridge` {#chain-bridge}
+
+Tamamen sunucu tarafında çalışan bir sıcak cüzdan işçisi için (tarayıcı cüzdanı olmadan), **`@qorechain/chain-bridge`** (npm) tüm akışı — anahtar türetme, ilk kullanımda otomatik PQC kaydı, hibrit imzalama ve yayınlama — tek bir çağrıda toplar. Saf JavaScript'tir (yerel eklenti yoktur), sunucusuz işçiler için uygundur:
+
+```js
+import { ChainBridge } from "@qorechain/chain-bridge";
+
+const bridge = new ChainBridge({
+  cosmosRpc: "https://rpc.qore.host",       // or your own node
+  chainId: "qorechain-vladi",
+  signerMnemonic: process.env.HOT_WALLET_MNEMONIC,  // from your secrets manager
+});
+
+// One call: derives the canonical ML-DSA-87 key, auto-registers it if missing,
+// hybrid-signs the MsgSend, and broadcasts. Amounts are in uqor (6 decimals).
+const { txHash } = await bridge.sendTokens({
+  to: "qor1recipient...",
+  amountUqor: "1000000",   // 1 QOR
+});
+```
+
+`chain-bridge` (≥0.1.1), yığının geri kalanıyla aynı kanonik, adrese bağlı PQC türetmesini kullanır — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — dolayısıyla anahtar, `qorechaind tx pqc recover-key` ile mnemonic'ten geri elde edilebilir. Daha eski araçlarla kaydedilmiş hesaplar otomatik olarak ele alınır (eski anahtar yedeği) ve [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) ile bir kez kanonik anahtara taşınabilir.
+
+## B Yolu — EVM {#path-b-evm}
 
 `https://evm.qore.host` (zincir kimliği **9801**) veya kendi düğümünüzün 8545 portu üzerinden standart Ethereum entegrasyonu.
 
-* **Ondalık basamaklar:** EVM rayında yerel QOR **18 ondalık basamaklıdır** (1 uqor = 10¹² wei). Bunu yanlış almak, yatırmaları 10¹² kat hatalı hesaba geçirir.
-* **Yatırmalar:** adreslerinize yapılan yerel transferler için `eth_getBlockByNumber` ile blokları tarayın; `eth_getTransactionReceipt` (`status == 0x1`) ile doğrulayın.
+* **Ondalık basamaklar:** yerel QOR, EVM hattında **18 ondalık basamaklıdır** (1 uqor = 10¹² wei). Bunu yanlış almak, yatırmaları 10¹² kat hatalı hesaba geçirir.
+* **Yatırmalar:** adreslerinize gelen yerel transferler için blokları `eth_getBlockByNumber` ile tarayın; `eth_getTransactionReceipt` (`status == 0x1`) ile doğrulayın.
 * **Çekimler:** standart secp256k1 / EIP-155 imzalama — EVM ante yolunda **PQC gerekmez**. Herhangi bir Ethereum imzalama yığını değişiklik olmadan çalışır.
-* **Sahte yatırmalara karşı:** makbuz (receipt) durumunu, taşınan değerin (indekslemediğiniz bir ERC-20 olayı değil) **yerel** bir transfer olduğunu doğrulayın ve kendi düğümünüzle teyit edin.
-* **Adres eşlemesi:** `0x` adresi ile `qor1` adresi aynı hesabın iki kodlamasıdır — fonlar ortaktır. Bkz. [EVM Geliştirme](/developer-guide/evm-development).
+* **Sahte yatırmaya karşı:** makbuz durumunu doğrulayın, taşınan değerin **yerel** bir transfer olduğunu (endekslemediğiniz bir ERC-20 olayı olmadığını) doğrulayın ve kendi düğümünüze karşı teyit edin.
+* **Adres eşlemesi:** `0x` adresi ve `qor1` adresi aynı hesabın iki farklı kodlamasıdır — fonlar ortaktır. Bkz. [EVM Geliştirme](/developer-guide/evm-development).
 
-## Yol C — SVM (Solana uyumlu) {#path-c-svm}
+## C Yolu — SVM (Solana uyumlu) {#path-c-svm}
 
 v3.1.82 itibarıyla SVM arayüzü **yerel QOR** sunar (bkz. [SVM Arayüzünde Yerel QOR](/developer-guide/svm-development#native-qor)):
 
@@ -136,15 +159,15 @@ v3.1.82 itibarıyla SVM arayüzü **yerel QOR** sunar (bkz. [SVM Arayüzünde Ye
 
 ## Akış özeti {#flow-summary}
 
-| İşlem | Yol | İmza gerekli mi? |
+| İşlem | Yol | İmzalama gerekli mi? |
 |---|---|---|
-| **Yatırma** (kullanıcı → platform) | Senkronize düğümünüzde adresinize yapılan transferleri izleyin (Cosmos'ta + memo) | Hayır — yalnızca izleme |
+| **Yatırma** (kullanıcı → platform) | Adresinize gelen transferler için senkronize düğümünüzü izleyin (Cosmos'ta + memo) | Hayır — yalnızca izleme |
 | **Çekim** (platform → kullanıcı) | Transferi oluşturun, çevrimdışı imzalayın, yayınlayın | Cosmos: hibrit PQC · EVM: standart secp256k1 |
-| **Bakiye / süpürme (sweep)** | REST / EVM / SVM bakiye sorgusu + transfer | Yalnızca süpürme için imzalayın |
+| **Bakiye / süpürme** | REST / EVM / SVM bakiye sorgusu + transfer | Yalnızca süpürme için imzalayın |
 
 ## İlgili sayfalar
 
-* [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) — düğüm kurulumu, indirmeler, snapshot
-* [Düğüm Çalıştırma](/developer-guide/running-a-node) — dağıtım, budama (pruning), indeksleme
-* [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing) — hibrit çekimlerin arkasındaki FIPS-204 kütüphaneleri
+* [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) — düğüm kurulumu, indirmeler, anlık görüntü
+* [Düğüm Çalıştırma](/developer-guide/running-a-node) — dağıtım, budama, endeksleme
+* [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) — hibrit çekimlerin arkasındaki FIPS-204 kütüphaneleri
 * [Ağlar](/appendix/networks) — zincir kimlikleri, uç noktalar, arayüz başına ondalık basamaklar

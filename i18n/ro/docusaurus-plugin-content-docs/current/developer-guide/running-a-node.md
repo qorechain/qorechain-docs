@@ -7,50 +7,50 @@ sidebar_position: 10
 
 # Rularea unui nod
 
-Acest ghid acoperă rularea unei implementări QoreChain **doar-nod** — un nod complet sau RPC care sincronizează lanțul și expune endpoint-uri pentru integrare, **fără** atribuții de validator. Se adresează exchange-urilor (CEX), backend-urilor de portofele, indexerelor și integratorilor care au nevoie de acces fiabil de citire/scriere la rețea, dar nu semnează blocuri.
+Acest ghid acoperă rularea unei implementări QoreChain de tip **doar nod** — un nod complet sau RPC care sincronizează lanțul și expune endpoint-uri pentru integrare, **fără** atribuții de validator. Se adresează burselor (CEX), backend-urilor de portofele, indexatoarelor și integratorilor care au nevoie de acces fiabil de citire/scriere la rețea, dar nu semnează blocuri.
 
 :::note
-Pentru producerea de blocuri, staking, slashing și clasificarea pool-urilor, consultați în schimb [Rularea unui validator](/developer-guide/running-a-validator). O implementare doar-nod nu deține niciodată o cheie de consens de validator și nu apare niciodată în setul activ.
+Pentru producerea de blocuri, staking, slashing și clasificarea pool-urilor, consultați în schimb [Rularea unui validator](/developer-guide/running-a-validator). O implementare de tip doar nod nu deține niciodată o cheie de consens de validator și nu apare niciodată în setul activ.
 :::
 
 :::warning
-Binarele, genesis-ul și snapshot-urile sunt publicate la [download.qore.host](https://download.qore.host) cu sume de control SHA-256. **Verificați întotdeauna sumele de control înainte de instalare sau extragere** și verificați depunerile doar pe propriul nod sincronizat.
+Binarele, genesis-ul și snapshot-urile sunt publicate la [download.qore.host](https://download.qore.host) cu sume de control SHA-256. **Verificați întotdeauna sumele de control înainte de instalare sau extragere** și verificați depunerile doar față de propriul nod sincronizat.
 :::
 
 ---
 
 ## Nod vs Validator
 
-| Aspect              | Doar-nod (acest ghid)                           | Validator                                  |
-| ------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Cheie de consens    | Niciuna                                         | cheie de consens ed25519 (trebuie securizată) |
-| Producere de blocuri | Nu                                             | Da — propune și semnează blocuri           |
-| Staking / slashing  | Nu se aplică                                    | Auto-delegare, risc de slashing            |
-| Scop principal      | Servește RPC/REST/gRPC/EVM/SVM integrărilor     | Securizează rețeaua, câștigă recompense    |
-| Expunere publică    | Endpoint-urile RPC/EVM sunt de regulă expuse    | Validatorul e ascuns în spatele nodurilor sentry |
+| Aspect                | Doar nod (acest ghid)                            | Validator                                    |
+| --------------------- | ------------------------------------------------ | -------------------------------------------- |
+| Cheie de consens      | Niciuna                                          | Cheie de consens ed25519 (trebuie securizată) |
+| Producere de blocuri  | Nu                                               | Da — propune și semnează blocuri             |
+| Staking / slashing    | Nu se aplică                                     | Auto-delegare, risc de slashing              |
+| Scop principal        | Servește RPC/REST/gRPC/EVM/SVM pentru integrări  | Securizează rețeaua, câștigă recompense      |
+| Expunere publică      | Endpoint-urile RPC/EVM sunt de regulă expuse     | Validatorul este ascuns în spatele nodurilor sentinelă |
 
 ---
 
 ## Rețele țintă
 
-| Rețea    | Chain ID            | EVM chain ID         | Note                           |
-| -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 7 iun. 2026 |
-| Testnet  | `qorechain-diana`   | `9800`               | Exersați integrările aici mai întâi |
+| Rețea    | Chain ID            | EVM chain ID          | Note                             |
+| -------- | ------------------- | --------------------- | -------------------------------- |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — activă din 7 iun. 2026 |
+| Testnet  | `qorechain-diana`   | `9800`                | Exersați integrările mai întâi aici |
 
-Înlocuiți `--chain-id` cu valoarea potrivită pentru rețeaua dvs. țintă pe parcursul acestui ghid. Exemplele folosesc implicit mainnet.
+Înlocuiți `--chain-id` cu valoarea potrivită rețelei dumneavoastră țintă pe parcursul acestui ghid. Exemplele folosesc implicit mainnet.
 
 ---
 
 ## Hardware recomandat
 
-| Profil                   | CPU      | RAM   | Disc (SSD NVMe)         | Rețea     |
-| ------------------------ | -------- | ----- | ----------------------- | --------- |
-| Nod RPC cu pruning       | 4 nuclee | 16 GB | 500 GB+                 | 100 Mbps+ |
-| Nod complet/arhivă       | 8 nuclee | 32 GB | 2 TB+ (crește în timp)  | 1 Gbps    |
-| Integrare exchange       | 8 nuclee | 32 GB | 2 TB+ cu rezervă        | 1 Gbps    |
+| Profil                    | CPU      | RAM   | Disc (SSD NVMe)          | Rețea     |
+| ------------------------- | -------- | ----- | ------------------------ | --------- |
+| Nod RPC cu pruning        | 4 nuclee | 16 GB | 500 GB+                  | 100 Mbps+ |
+| Nod complet/arhivă        | 8 nuclee | 32 GB | 2 TB+ (crește în timp)   | 1 Gbps    |
+| Integrare pentru burse    | 8 nuclee | 32 GB | 2 TB+ cu spațiu de rezervă | 1 Gbps  |
 
-SSD-ul NVMe este puternic recomandat — starea lanțului și store-urile EVM/SVM sunt intensive la I/O. Nodurile de arhivă (fără pruning, indexare completă a tranzacțiilor) cresc continuu; provizionați discul cu rezervă și monitorizare.
+SSD-ul NVMe este puternic recomandat — starea lanțului și store-urile EVM/SVM sunt intensive la I/O. Nodurile de arhivă (fără pruning, indexare completă a tranzacțiilor) cresc continuu; provizionați discul cu spațiu de rezervă și monitorizare.
 
 ---
 
@@ -58,13 +58,13 @@ SSD-ul NVMe este puternic recomandat — starea lanțului și store-urile EVM/SV
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Fixați tag-ul imaginii la versiunea live a lanțului (**v3.1.82** pe mainnet) și montați un volum persistent pentru datele lanțului.
+O implementare de tip doar nod cu Docker Compose. Fixați tag-ul imaginii la versiunea live a lanțului (**v3.1.85** pe mainnet) și montați un volum persistent pentru datele lanțului.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.82
+    image: qorechain/qorechaind:v3.1.85
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -140,7 +140,7 @@ curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live
 
 ### 3. Configurați peer-ii și pragul minim de comision
 
-Deschideți `~/.qorechaind/config/config.toml` și setați peer-ii sentry publici de mainnet:
+Deschideți `~/.qorechaind/config/config.toml` și setați peer-ii sentinelă publici de pe mainnet:
 
 ```toml
 persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
@@ -166,7 +166,7 @@ Sincronizarea de la genesis poate dura mult timp. Pentru integrări, folosiți *
 
 ### State sync
 
-State sync preia un snapshot recent al stării aplicației de la servere RPC de încredere, în loc să reia fiecare bloc. Configurați secțiunea `[statesync]` din `config.toml`:
+State sync preia un snapshot recent al stării aplicației de la servere RPC de încredere, în loc să reproducă fiecare bloc. Configurați secțiunea `[statesync]` din `config.toml`:
 
 ```toml
 [statesync]
@@ -177,7 +177,7 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Determinați o înălțime și un hash de încredere recente de pe RPC-ul public:
+Determinați o înălțime și un hash de încredere recente de la RPC-ul public:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,7 +185,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restaurare din snapshot
 
-Alternativ, descărcați snapshot-ul publicat cu datele lanțului, verificați suma sa de control și extrageți-l peste directorul de date:
+Alternativ, descărcați snapshot-ul publicat cu datele lanțului, verificați-i suma de control și extrageți-l peste directorul dumneavoastră de date:
 
 ```bash
 curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
@@ -204,7 +204,7 @@ Snapshot-urile sunt publicate sub **nume de fișiere marcate cu înălțimea blo
 
 ## Pruning și indexare
 
-Reglați pruning-ul și indexarea tranzacțiilor pentru a se potrivi integrării dvs. Exchange-urile care au nevoie de istoricul complet al tranzacțiilor ar trebui să ruleze cu pruning minim și cu un indexer de tranzacții activat.
+Ajustați pruning-ul și indexarea tranzacțiilor pentru a se potrivi integrării dumneavoastră. Bursele care au nevoie de istoricul complet al tranzacțiilor ar trebui să ruleze cu pruning minim și cu un indexator de tranzacții activat.
 
 ### Pruning (`app.toml`)
 
@@ -216,11 +216,11 @@ pruning = "default"
 # pruning = "nothing"
 ```
 
-| `pruning`   | Comportament                             | Caz de utilizare                  |
-| ----------- | ---------------------------------------- | --------------------------------- |
-| `default`   | Păstrează starea recentă, elimină restul | Nod RPC, interogări de solduri/stare |
-| `nothing`   | Păstrează întreaga stare istorică        | Nod de arhivă, istoric complet    |
-| `custom`    | Valori keep/interval definite de operator | Retenție reglată                  |
+| `pruning`   | Comportament                                    | Caz de utilizare                    |
+| ----------- | ----------------------------------------------- | ----------------------------------- |
+| `default`   | Păstrează starea recentă, elimină restul        | Nod RPC, interogări de sold/stare   |
+| `nothing`   | Păstrează întreaga stare istorică               | Nod de arhivă, istoric complet      |
+| `custom`    | Valori keep/interval definite de operator       | Retenție ajustată                   |
 
 ### Indexarea tranzacțiilor (`config.toml`)
 
@@ -229,7 +229,7 @@ pruning = "default"
 indexer = "kv"
 ```
 
-Setați `indexer = "kv"` (sau un indexer mai bogat) astfel încât tranzacțiile să poată fi interogate după hash și eveniment — esențial pentru exchange-urile care reconciliază depuneri și retrageri. Setați `indexer = "null"` doar dacă nu aveți nevoie de interogări istorice de tranzacții.
+Setați `indexer = "kv"` (sau un indexator mai bogat) astfel încât tranzacțiile să poată fi interogate după hash și eveniment — esențial pentru bursele care reconciliază depunerile și retragerile. Setați `indexer = "null"` doar dacă nu aveți nevoie de interogări istorice ale tranzacțiilor.
 
 ---
 
@@ -260,14 +260,14 @@ api = "eth,net,web3,qor"
 laddr = "tcp://0.0.0.0:26657"
 ```
 
-| Endpoint     | Port   | Utilizat pentru                                        |
-| ------------ | ------ | ------------------------------------------------------ |
-| RPC          | `26657` | Difuzarea tranzacțiilor, interogarea blocurilor/stării |
-| REST         | `1317`  | Interogări HTTP ale stării lanțului                    |
-| gRPC         | `9090`  | Acces programatic de mare debit                        |
-| EVM JSON-RPC | `8545`  | Integrări compatibile Ethereum (chain ID `9801`)       |
-| EVM WS       | `8546`  | Abonamente la evenimente EVM                           |
-| SVM RPC      | `8899`  | Integrări compatibile Solana                           |
+| Endpoint     | Port    | Utilizare pentru                                        |
+| ------------ | ------- | ------------------------------------------------------- |
+| RPC          | `26657` | Difuzarea tranzacțiilor, interogarea blocurilor/stării  |
+| REST         | `1317`  | Interogări HTTP ale stării lanțului                     |
+| gRPC         | `9090`  | Acces programatic de mare debit                         |
+| EVM JSON-RPC | `8545`  | Integrări compatibile Ethereum (chain ID `9801`)        |
+| EVM WS       | `8546`  | Abonamente la evenimente EVM                            |
+| SVM RPC      | `8899`  | Integrări compatibile Solana                            |
 
 :::warning
 Nu expuneți niciodată RPC, EVM JSON-RPC sau gRPC direct pe internetul public fără un reverse proxy, limitare de rată, autentificare și un firewall. Legați la `0.0.0.0` doar în spatele unui strat de ingress controlat.
@@ -301,7 +301,7 @@ QoreChain expune metrici Prometheus pe portul **26660**:
 http://localhost:26660/metrics
 ```
 
-Colectați aceste metrici cu orice colector compatibil Prometheus. Dacă rulați stiva de monitorizare Docker Compose, Grafana este disponibilă la `http://localhost:3001` — setați propriile credențiale la prima autentificare. Urmăriți întârzierea înălțimii blocurilor, numărul de peer-i și utilizarea resurselor; alertați când `catching_up` rămâne `true` sau numărul de peer-i scade la zero.
+Colectați-le cu orice colector compatibil Prometheus. Dacă rulați stack-ul de monitorizare Docker Compose, Grafana este disponibilă la `http://localhost:3001` — setați-vă propriile credențiale la prima autentificare. Urmăriți întârzierea înălțimii blocurilor, numărul de peer-i și utilizarea resurselor; alertați când `catching_up` rămâne `true` sau numărul de peer-i scade la zero.
 
 ### Verificarea endpoint-ului EVM
 
@@ -316,25 +316,25 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea lanțului.** Rulați tag-ul live (**v3.1.82** pe mainnet) și urmăriți release-urile oficiale pentru upgrade-uri coordonate.
+1. **Fixați versiunea lanțului.** Rulați tag-ul live (**v3.1.85** pe mainnet) și urmăriți lansările oficiale pentru upgrade-uri coordonate.
 
-2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
+2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât un singur restart sau o resincronizare să nu întrerupă traficul de integrare.
 
-3. **Verificați genesis-ul și snapshot-urile.** Validați întotdeauna SHA-256 al genesis-ului și orice sumă de control de snapshot față de release-ul oficial înainte de pornire.
+3. **Verificați genesis-ul și snapshot-urile.** Validați întotdeauna SHA-256-ul genesis-ului și orice sumă de control a snapshot-urilor față de lansarea oficială înainte de pornire.
 
-4. **Protejați endpoint-urile publice.** Puneți RPC/EVM/gRPC în spatele unui reverse proxy, cu limitare de rată și firewall. Nu expuneți niciodată RPC de scriere neautentificat pe internet.
+4. **Protejați endpoint-urile publice.** Puneți RPC/EVM/gRPC în spatele unui reverse proxy, al limitării de rată și al unui firewall. Nu expuneți niciodată pe internet un RPC de scriere neautentificat.
 
-5. **Potriviți pruning-ul cu nevoile.** Folosiți `pruning = "nothing"` plus `tx_index = "kv"` pentru exchange-urile care reconciliază istoricul complet de depuneri/retrageri; folosiți `default` pentru interogări ușoare.
+5. **Potriviți pruning-ul cu nevoia.** Folosiți `pruning = "nothing"` plus `tx_index = "kv"` pentru bursele care reconciliază istoricul complet al depunerilor/retragerilor; folosiți `default` pentru interogări ușoare.
 
-6. **Monitorizați sincronizarea continuu.** Alertați la întârzieri ale înălțimii blocurilor, la zero peer-i și la un nod blocat în `catching_up`.
+6. **Monitorizați sincronizarea în mod continuu.** Alertați la întârzierea înălțimii blocurilor, la zero peer-i și la un nod blocat în `catching_up`.
 
 Pentru acces de citire ultra-ușor fără a rula un nod complet, consultați documentația **Light Node**.
 
 ---
 
-## Pași următori
+## Pașii următori
 
-* [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — Genesis-ul de mainnet, peer-ii și detaliile de conectare
+* [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — Genesis-ul mainnet, peer-ii și detaliile de conectare
 * [Rularea unui validator](/developer-guide/running-a-validator) — Adăugați atribuții de producere a blocurilor
 * [Compilarea din sursă](/developer-guide/building-from-source) — Compilați binarul `qorechaind`
-* **Light Node** — Acces read-only ultra-ușor (documentație în curând)
+* **Light Node** — Acces de citire ultra-ușor (documentație în curând)

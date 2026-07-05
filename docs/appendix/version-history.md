@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.83**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.85**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,26 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.83 — Unified Account Signing Across All Three Interfaces (Current Mainnet Release)
+## v3.1.85 — Delegated Spending via Linked Wallets (Current Release)
+
+**Release focus:** A linked external wallet key (Phantom, MetaMask) can now **spend** from the one canonical post-quantum account — under least-privilege permissions, spending limits, and instant revocation.
+
+* **Authenticator execution lanes** — Two new messages let a registered authenticator authorize transfers from the canonical account without the account owner being present: **`MsgExecuteEVM`** (an EVM call/transfer from the account's `0x…` address) and **`MsgExecuteCosmos`** (a Native-lane bank send). A **relayer** submits and pays for the envelope — its own hybrid PQC signature satisfies the transaction requirements — while the authenticator's signature over domain-separated, replay-bound sign bytes is the authorization. The external key never needs an ML-DSA co-signature.
+* **MetaMask as an authenticator** — secp256k1 authenticators can now be registered by their **20-byte Ethereum address** and verified via **EIP-191 `personal_sign`** (in addition to the 33-byte compressed-key form), so a standard MetaMask account can be linked and spend under limits.
+* **Enforcement on all three lanes** — Permission scopes and **SpendingRule** value limits (per-transaction + daily caps) are enforced on the Native, EVM, and SVM lanes; key-management messages are never delegable. Distinct error codes let wallets show the right message: `5` spending limit exceeded, `6` authenticator expired, `10` permission denied, `11` replay rejected.
+* **Permission schema query** — `GET /qorechain/abstractaccount/v1/permission_schema` (also gRPC/CLI) returns the canonical permission taxonomy (11 permissions), the message→permission map, and the non-delegable message list, so wallets validate scopes without hardcoding.
+* **Same-algorithm PQC key rotation** — New **`MsgRotatePQCKey`** rotates an account's ML-DSA-87 key within the same algorithm (dual-signed by the old and new keys), enabling migration of legacy-derived keys to the canonical address-bound derivation and retirement of a compromised key. New CLI: `tx pqc rotate-key` and `tx pqc recover-key` (deterministic key recovery from a mnemonic).
+* **Root-key transactions unaffected** — The changes are additive; normal wallet, exchange, and Keplr flows are unchanged. Node operators must be on **v3.1.85** by the network upgrade height.
+
+## v3.1.84 — Authenticator Permissions & Spending Limits
+
+**Release focus:** The permission model behind delegated spending.
+
+* **Canonical permission taxonomy** — Eleven permissions (`all`, `send`, `delegate`, `withdraw`, `vote`, `evm`, `wasm`, `svm`, `amm`, `ibc`, `deploy`) with a fail-closed message→permission map: a message type that is not mapped is denied, and key-management messages can never be delegated.
+* **SpendingRule enforcement** — Per-transaction and per-day (UTC) spending caps with allowed-denom lists are enforced and recorded per (account, authenticator) pair.
+* **SVM lane authorization** — Actions authorized by a foreign-scheme key (e.g. Phantom ed25519) on the SVM lane route through the same central authorization gate.
+
+## v3.1.83 — Unified Account Signing Across All Three Interfaces
 
 **Release focus:** One key, one account — a single unified identity that can now **sign**, not just hold a balance, on the Cosmos, EVM, and SVM interfaces.
 
