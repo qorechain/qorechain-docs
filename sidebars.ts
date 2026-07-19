@@ -220,6 +220,27 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "QoreX Wallet",
+      link: {
+        type: "generated-index",
+        slug: "/qorex",
+        description:
+          "QoreX — the official non-custodial, quantum-safe wallet for QoreChain: mobile app and browser extension. Set up, send and receive, stake, recover, and connect to dApps.",
+      },
+      items: [
+        "qorex/overview",
+        "qorex/getting-started",
+        "qorex/send-and-receive",
+        "qorex/portfolio-and-staking",
+        "qorex/security-and-recovery",
+        "qorex/account-and-dashboard",
+        "qorex/dapp-browser",
+        "qorex/browser-extension",
+        "qorex/troubleshooting",
+      ],
+    },
+    {
+      type: "category",
       label: "QCAIA Community Bot",
       link: {
         type: "generated-index",
