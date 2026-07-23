@@ -7,7 +7,7 @@ sidebar_position: 8
 
 # Browser Extension
 
-The QoreX **browser extension** (Chrome and Firefox; a Safari version is on the way with identical functionality) is the **dApp connector** for desktop. It lets websites discover your wallet and turns every request into an explicit approval. It pairs conceptually with the mobile app and does **not** include staking, portfolio, or account features — those live in the app.
+The QoreX **browser extension** is the **dApp connector** for desktop. It runs on **Chrome and Firefox**, and a **Safari** build ships from the same codebase (packaged with Apple's Safari web-extension wrapper — on Safari, approvals open in a browser tab rather than a popup window). It lets websites discover your wallet and turns every request into an explicit approval. It pairs conceptually with the mobile app and does **not** include staking, portfolio, or account features — those live in the app.
 
 ## Set up
 

@@ -11,7 +11,7 @@ QoreX uygulaması ve uzantısı için sık sorulan sorular ve hızlı çözümle
 
 | Belirti | Neden / çözüm |
 |---|---|
-| Katılım sırasında **"Önce cihazınızı güvenceye alın"** | Sistem ayarlarınızda Face ID / bir parmak izi kaydedin, ardından uygulamaya geri dönün. Cüzdan yalnızca biyometrik korumalı bir cihazda oluşturulabilir. |
+| Katılım sırasında **"Önce cihazınızı güvenceye alın"** | Sistem ayarlarınızda Face ID / bir parmak izi **veya bir ekran kilidi (PIN / desen)** ayarlayın, ardından geri dönün. Bir cüzdan yalnızca güçlü bir kilit açma faktörüne sahip bir cihazda oluşturulabilir. Android'de, tek başına 2D yüz kilidi *zayıf* bir biyometriktir — nitelik kazandıran şey onun arkasındaki PIN'dir. |
 | **Oturum açma sayfası kapandı** / "Bu oturum açma denemesinin süresi doldu" | Önceki bir deneme yarıda kaldı — yalnızca tekrar oturum açmaya dokunun. |
 | Google / Dashboard ile oturum açtıktan sonra **"Geçiş anahtarı ekle"** yok | Beklenen durum: geçiş anahtarları yalnızca e-posta kodu hesaplarına eklenir ([Hesap ve Dashboard](/qorex/account-and-dashboard#sign-in) sayfasındaki nota bakın). |
 | **"Kullanıcı adları yakında"** | @handle kayıt defterine geçici olarak ulaşılamıyor. Cüzdanınız bundan etkilenmez; kayıt defteri geri döndüğünde kullanıcı adları otomatik olarak etkinleşir. |

@@ -44,6 +44,7 @@ With the Dashboard connected:
 
 - **Connect with QoreX** on the Dashboard pairs it to your wallet via a `qorex://connect` deep link plus a signed ownership proof.
 - **Transfers initiated on the Dashboard** arrive in QoreX as `qorex://tx` requests. They are decoded, shown to you in full, and signed **only in the app** after biometric approval — and only from the app's own derived address.
+- If a Connect or transfer request arrives while you are **not signed in**, QoreX offers an inline **"Sign in to Dashboard"** step so you can continue without hitting a dead end.
 - **Your addresses (Settings)** — lists every account derived from this wallet, plus **read-only** addresses you linked from other wallets (Keplr / MetaMask / Phantom). Read-only entries are labeled with the wallet that created them; trying to send from one explains that you must send from the wallet that created it.
 
 ## Next steps

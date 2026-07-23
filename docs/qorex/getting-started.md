@@ -11,9 +11,16 @@ This page walks through installing the mobile app and creating, restoring, or li
 
 ## Before you begin: secure your device
 
-A QoreX wallet can only be created or imported when your device has **biometric protection** enrolled — Face ID / Touch ID on iOS, or a fingerprint / equivalent strong factor on Android. This is what protects your keys in the hardware vault.
+A QoreX wallet can only be created or imported when your device has a **strong unlock factor** set up. This is what protects your keys in the hardware vault. Any of the following qualifies:
 
-If no biometric is enrolled, the create/import buttons stay disabled and the screen explains what to turn on. Enroll Face ID or a fingerprint in your system settings, then return to QoreX.
+- **iOS** — Face ID or Touch ID.
+- **Android** — a Class-3 biometric (fingerprint, iris, or 3D face unlock) **or** a device screen lock (PIN, pattern, or password).
+
+:::note Android 2D face unlock
+Camera-based 2D face unlock (found on some devices, e.g. certain Samsung models) counts as a *weak* biometric. If that is all you have, QoreX relies on the **PIN / pattern** behind it — and the system sheet offers it automatically, so you are still covered.
+:::
+
+If no strong factor is enrolled, the create/import buttons stay disabled and the screen explains what to turn on. Set up Face ID, a fingerprint, or a screen lock in your system settings, then return to QoreX.
 
 ## First launch
 

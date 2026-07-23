@@ -11,7 +11,7 @@ Common questions and quick fixes for the QoreX app and extension.
 
 | Symptom | Cause / fix |
 |---|---|
-| **"Secure your device first"** at onboarding | Enroll Face ID / a fingerprint in your system settings, then return to the app. A wallet can only be created on a biometric-protected device. |
+| **"Secure your device first"** at onboarding | Set up Face ID / a fingerprint **or a screen lock (PIN / pattern)** in your system settings, then return. A wallet can only be created on a device with a strong unlock factor. On Android, 2D face unlock alone is a *weak* biometric — the PIN behind it is what qualifies. |
 | **Sign-in sheet closed** / "That sign-in attempt expired" | A previous attempt was abandoned — just tap sign-in again. |
 | **"Add a passkey" missing** after Google / Dashboard sign-in | Expected: passkeys attach only to email-code accounts (see the note in [Account & Dashboard](/qorex/account-and-dashboard#sign-in)). |
 | **"Handles coming soon"** | The @handle registry is temporarily unreachable. Your wallet is unaffected; handles light up automatically when it returns. |
