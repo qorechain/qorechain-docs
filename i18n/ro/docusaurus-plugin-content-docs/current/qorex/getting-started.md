@@ -10,12 +10,8 @@ sidebar_position: 2
 Această pagină te ghidează prin instalarea **aplicației mobile** și prin crearea, restaurarea sau conectarea portofelului tău. Pentru portofelul de desktop, vezi [Extensia de browser](/qorex/browser-extension), care este disponibilă pe Chrome, Firefox și Safari.
 
 :::note Disponibilitate pe mobil
-Aplicația mobilă QoreX se află în prezent în testare publică:
-
-- **Android** — disponibilă pentru **testare publică** pe Google Play.
-- **iOS** — disponibilă pentru testare prin **TestFlight** dacă vrei să o încerci.
-
-Găsești linkurile actuale pe [qorechain.io](https://qorechain.io).
+- **Android** — disponibilă pe Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — disponibilă pentru testare prin **TestFlight** dacă vrei să o încerci; lansarea în App Store este încă în evaluare. Găsești linkul de invitație actual pe [qorechain.io](https://qorechain.io).
 :::
 
 ## Înainte de a începe: securizează-ți dispozitivul
@@ -56,7 +52,7 @@ Oricine îți are cele 24 de cuvinte îți controlează fondurile, iar nimeni �
 
 ### 3. Conectează de pe alt dispozitiv
 
-Dacă ai deja QoreX pe alt telefon sau tabletă, poți muta portofelul dintr-o parte în alta cu **niciun server și fără tastare** — vezi [Conectează un dispozitiv nou](/qorex/security-and-recovery#link-device). Alege **Conectează de pe alt dispozitiv** pe dispozitivul nou pentru a începe.
+Dacă ai deja QoreX pe alt telefon sau tabletă, poți muta portofelul dintr-un dispozitiv în altul **fără niciun server și fără să tastezi nimic** — vezi [Conectează un dispozitiv nou](/qorex/security-and-recovery#link-device). Alege **Conectează de pe alt dispozitiv** pe dispozitivul nou pentru a începe.
 
 ## Opțional: revendică un @handle
 

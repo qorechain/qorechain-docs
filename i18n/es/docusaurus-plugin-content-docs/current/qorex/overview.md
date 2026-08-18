@@ -12,7 +12,7 @@ sidebar_position: 1
 QoreX se compone de dos partes que funcionan juntas:
 
 - **Extensión de navegador**: el monedero de escritorio, **disponible y público en Chrome, Firefox y Safari (macOS)**. Es un monedero independiente (crear/importar, guardar y enviar QOR) y el conector que permite a cualquier sitio web descubrir QoreX y convertir cada solicitud en una aprobación explícita. Consulta [Extensión de navegador](/qorex/browser-extension).
-- **Aplicación móvil** (Android e iOS): el monedero completo: crear/restaurar, enviar y recibir QOR resistente a la computación cuántica, redes externas, staking, portafolio, recuperación y un navegador de dApps integrado en la app. Actualmente en pruebas públicas (consulta la disponibilidad más abajo).
+- **Aplicación móvil** (Android e iOS): el monedero completo: crear/restaurar, enviar y recibir QOR resistente a la computación cuántica, redes externas, staking, portafolio, recuperación y un navegador de dApps integrado en la app. **En Google Play** para Android; en TestFlight para iOS (consulta la disponibilidad más abajo).
 
 ## Disponibilidad por plataforma
 
@@ -21,11 +21,11 @@ QoreX se compone de dos partes que funcionan juntas:
 | Crear / importar un monedero | ✅ | ✅ (independiente) |
 | Enviar y recibir QOR (poscuántico) | ✅ | ✅ (desde el popup) |
 | Redes externas (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (envío desde el popup) |
-| Staking, Portafolio, Escáner Q-Day, Recuperación, Legacy | ✅ | — |
+| Staking, Portafolio, Q-Day Scanner, Recuperación, Legacy | ✅ | — |
 | Conexiones a dApps | ✅ (navegador integrado) | ✅ (cualquier sitio web) |
 | Cuenta (@handle, solicitudes de pago) | ✅ | — |
 | Vinculación multidispositivo | ✅ | — |
-| Emparejamiento con el dashboard | ✅ | ✅ (conexión + transferencias propuestas, v0.1.5) |
+| Emparejamiento con el Dashboard | ✅ | ✅ (conexión + transferencias propuestas, v0.1.5) |
 
 ## Por qué QoreX es diferente
 
@@ -44,8 +44,8 @@ QoreX se compone de dos partes que funcionan juntas:
 
 :::note Descarga y disponibilidad
 - **Extensión de navegador**: disponible y pública: instálala desde la [Chrome Web Store, Firefox Add-ons o la Mac App Store (Safari)](/qorex/browser-extension#install).
-- **Aplicación Android**: disponible para **pruebas públicas** en Google Play.
-- **Aplicación iOS**: disponible para pruebas mediante **TestFlight** si quieres probarla.
+- **Aplicación Android**: disponible en Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **Aplicación iOS**: disponible para pruebas mediante **TestFlight** si quieres probarla; la publicación en la App Store sigue en revisión. Encuentra el enlace de invitación actual en [qorechain.io](https://qorechain.io).
 
-Encuentra los enlaces oficiales y actuales en [qorechain.io](https://qorechain.io), e instala QoreX únicamente desde un listado oficial.
+Instala QoreX únicamente desde un listado oficial de una tienda.
 :::

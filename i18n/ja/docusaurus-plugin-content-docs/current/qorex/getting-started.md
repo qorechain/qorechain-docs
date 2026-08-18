@@ -7,15 +7,11 @@ sidebar_position: 2
 
 # QoreX をはじめる
 
-このページでは、**モバイルアプリ**のインストールと、ウォレットの作成・復元・連携の手順を説明します。デスクトップウォレットについては、Chrome、Firefox、Safari で利用できる [ブラウザ拡張機能](/qorex/browser-extension) を参照してください。
+このページでは、**モバイルアプリ**のインストールと、ウォレットの作成・復元・連携の手順を説明します。デスクトップウォレットについては、Chrome、Firefox、Safari で提供中の [ブラウザ拡張機能](/qorex/browser-extension) を参照してください。
 
 :::note モバイルの提供状況
-QoreX モバイルアプリは現在、公開テスト中です。
-
-- **Android** — Google Play で**公開テスト**として利用できます。
-- **iOS** — お試しになりたい場合は **TestFlight** 経由でテストに参加できます。
-
-最新のリンクは [qorechain.io](https://qorechain.io) でご確認ください。
+- **Android** — Google Play で提供中です: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — お試しになりたい場合は **TestFlight** 経由でテストに参加できます。App Store 版は現在審査中です。最新の招待リンクは [qorechain.io](https://qorechain.io) でご確認ください。
 :::
 
 ## はじめる前に: デバイスを保護する

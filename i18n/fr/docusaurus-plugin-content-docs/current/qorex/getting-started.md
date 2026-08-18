@@ -10,12 +10,8 @@ sidebar_position: 2
 Cette page décrit l'installation de l'**application mobile** ainsi que la création, la restauration ou le rattachement de votre portefeuille. Pour le portefeuille de bureau, consultez l'[extension de navigateur](/qorex/browser-extension), disponible sur Chrome, Firefox et Safari.
 
 :::note Disponibilité mobile
-L'application mobile QoreX est actuellement en test public :
-
-- **Android** — disponible en **test public** sur Google Play.
-- **iOS** — disponible en test via **TestFlight** si vous souhaitez l'essayer.
-
-Retrouvez les liens actuels sur [qorechain.io](https://qorechain.io).
+- **Android** — disponible sur Google Play : https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — disponible en test via **TestFlight** si vous souhaitez l'essayer ; la version App Store est encore en cours d'examen. Retrouvez le lien d'invitation actuel sur [qorechain.io](https://qorechain.io).
 :::
 
 ## Avant de commencer : sécurisez votre appareil

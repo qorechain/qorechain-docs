@@ -27,7 +27,7 @@ Store reviews land at different times, so the published version currently differ
 |---|---|
 | **Firefox** | **0.1.5** |
 | **Chrome / Chromium** | **0.1.3** (0.1.5 submitted, in review) |
-| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` version numbering |
+| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.0**; the build carrying extension 0.1.5 is in review |
 
 **0.1.5** adds [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
 
