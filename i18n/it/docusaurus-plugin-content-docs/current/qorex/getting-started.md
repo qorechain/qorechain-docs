@@ -11,7 +11,7 @@ Questa pagina illustra l'installazione dell'**app mobile** e la creazione, il ri
 
 :::note Disponibilità su mobile
 - **Android** — disponibile su Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — disponibile per il test tramite **TestFlight** se desideri provarla; la pubblicazione su App Store è ancora in revisione. Trovi il link di invito aggiornato su [qorechain.io](https://qorechain.io).
+- **iOS** — disponibile per il test tramite **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — la pubblicazione su App Store è ancora in revisione.
 :::
 
 ## Prima di iniziare: metti in sicurezza il tuo dispositivo

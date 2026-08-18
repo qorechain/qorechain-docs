@@ -11,7 +11,7 @@ This page walks through installing the **mobile app** and creating, restoring, o
 
 :::note Mobile availability
 - **Android** — available on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — available for testing via **TestFlight** if you'd like to try it; the App Store release is still in review. Find the current invite link on [qorechain.io](https://qorechain.io).
+- **iOS** — available for testing via **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — the App Store release is still in review.
 :::
 
 ## Before you begin: secure your device

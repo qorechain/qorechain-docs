@@ -45,7 +45,7 @@ QoreX comes in two parts that work together:
 :::note Download & availability
 - **Browser extension** — live and public: install it from the [Chrome Web Store, Firefox Add-ons, or the Mac App Store (Safari)](/qorex/browser-extension#install).
 - **Android app** — available on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS app** — available for testing via **TestFlight** if you'd like to try it; the App Store release is still in review. Find the current invite link on [qorechain.io](https://qorechain.io).
+- **iOS app** — available for testing via **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — the App Store release is still in review.
 
 Only install QoreX from an official store listing.
 :::

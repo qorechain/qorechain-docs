@@ -11,7 +11,7 @@ Această pagină te ghidează prin instalarea **aplicației mobile** și prin cr
 
 :::note Disponibilitate pe mobil
 - **Android** — disponibilă pe Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — disponibilă pentru testare prin **TestFlight** dacă vrei să o încerci; lansarea în App Store este încă în evaluare. Găsești linkul de invitație actual pe [qorechain.io](https://qorechain.io).
+- **iOS** — disponibilă pentru testare prin **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — lansarea în App Store este încă în evaluare.
 :::
 
 ## Înainte de a începe: securizează-ți dispozitivul
