@@ -7,7 +7,16 @@ sidebar_position: 2
 
 # Getting Started with QoreX
 
-This page walks through installing the mobile app and creating, restoring, or linking your wallet.
+This page walks through installing the **mobile app** and creating, restoring, or linking your wallet. For the desktop wallet, see the [Browser Extension](/qorex/browser-extension), which is live on Chrome, Firefox, and Safari.
+
+:::note Mobile availability
+The QoreX mobile app is currently in public testing:
+
+- **Android** — available for **public testing** on Google Play.
+- **iOS** — available for testing via **TestFlight** if you'd like to try it.
+
+Find the current links on [qorechain.io](https://qorechain.io).
+:::
 
 ## Before you begin: secure your device
 

@@ -7,39 +7,45 @@ sidebar_position: 1
 
 # Portofelul QoreX
 
-**QoreX** este portofelul oficial **non-custodial** pentru **QoreChain**, Layer 1 rezistent cuantic (mainnet `qorechain-vladi`). Cheile tale private sunt generate și stocate **doar pe dispozitivul tău** — QoreChain Association nu are niciodată acces la fondurile tale, iar aplicațiile colectează **zero date**. Fiecare transfer de QOR pe banda Native poartă o **semnătură hibridă post-cuantică** (ML-DSA-87, NIST FIPS-204, împerecheată cu secp256k1), astfel încât fondurile tale sunt protejate atât împotriva atacatorilor clasici, cât și a celor cuantici.
+**QoreX** este portofelul **non-custodial** oficial pentru **QoreChain**, Layer 1-ul rezistent la calcul cuantic (mainnet `qorechain-vladi`). Cheile tale private sunt generate și stocate **doar pe dispozitivul tău** — QoreChain Association nu are niciodată acces la fondurile tale, iar aplicațiile nu colectează **niciun fel de date**. Fiecare transfer de QOR pe canalul Native poartă o **semnătură hibridă post-cuantică** (ML-DSA-87, NIST FIPS-204, împerecheată cu secp256k1), astfel încât fondurile tale sunt protejate atât împotriva atacatorilor clasici, cât și a celor cuantici.
 
-QoreX vine în două componente care lucrează împreună:
+QoreX este alcătuit din două componente care lucrează împreună:
 
-- **Aplicația mobilă** (iOS și Android) — portofelul complet: creare/restaurare, trimitere și primire de QOR rezistent cuantic, rețele externe, staking, portofoliu, recuperare și un browser dApp integrat în aplicație.
-- **Extensia de browser** (Chrome și Firefox, cu Safari din același cod sursă) — conectorul dApp pentru desktop: permite site-urilor web să îți descopere portofelul și transformă fiecare cerere într-o aprobare explicită.
+- **Extensia de browser** — portofelul pentru desktop, **live și public pe Chrome, Firefox și Safari (macOS)**. Este un portofel de sine stătător (creare/import, păstrare și trimitere de QOR) și conectorul care permite oricărui site web să descopere QoreX și să transforme fiecare cerere într-o aprobare explicită. Vezi [Extensia de browser](/qorex/browser-extension).
+- **Aplicația mobilă** (Android și iOS) — portofelul complet: creare/restaurare, trimitere și primire de QOR rezistent la calcul cuantic, rețele externe, staking, portofoliu, recuperare și un browser de dApp-uri integrat. În prezent în testare publică (vezi disponibilitatea mai jos).
 
 ## Disponibilitate pe platforme
 
-| Capabilitate | Aplicația iOS/Android | Extensia Chrome/Firefox |
+| Capabilitate | Aplicația mobilă (Android și iOS) | Extensia de browser |
 |---|---|---|
-| Creare / restaurare / conectare portofel | ✅ | — (se împerechează cu aplicația) |
-| Trimitere și primire de QOR (post-cuantic) | ✅ | prin semnare dApp |
-| Rețele externe (ETH / BNB / POL / ARB / SOL + tokenuri) | ✅ | ✅ (trimitere din popup) |
+| Creare / import portofel | ✅ | ✅ (de sine stătător) |
+| Trimitere și primire QOR (post-cuantic) | ✅ | ✅ (din popup) |
+| Rețele externe (ETH / BNB / POL / ARB / SOL + tokenuri) | ✅ | prin semnare dApp |
 | Staking, Portofoliu, Q-Day Scanner, Recuperare, Legacy | ✅ | — |
-| Conexiuni dApp | ✅ (browser în aplicație) | ✅ (orice site web) |
-| Cont (@handle, cereri de plată, legătură cu Dashboard) | ✅ | — |
+| Conexiuni dApp | ✅ (browser integrat) | ✅ (orice site web) |
+| Cont (@handle, cereri de plată) | ✅ | — |
+| Asociere între mai multe dispozitive | ✅ | — |
+| Împerechere cu dashboard-ul | ✅ | ✅ (conectare + transferuri propuse, v0.1.5) |
 
 ## De ce este QoreX diferit
 
-- **Rezistent cuantic în mod implicit** — transferurile de QOR pe banda Native poartă întotdeauna o semnătură hibridă ML-DSA-87 + secp256k1. Orice element clasic (lanțuri externe) este etichetat clar, niciodată în tăcere.
-- **Cu adevărat non-custodial** — cheile sunt generate pe dispozitiv și stau într-un seif susținut hardware (Secure Enclave pe iOS, StrongBox pe Android) sau într-un seif criptat (extensia). Nu îți părăsesc niciodată dispozitivul.
-- **Fără colectare de date** — nicio analiză, urmărire sau reclame în vreo aplicație QoreX. O autentificare opțională în cont adaugă facilități (vezi [Cont și Dashboard](/qorex/account-and-dashboard)), dar portofelul nu depinde niciodată de ea.
-- **Un singur sold unificat** — QOR-ul tău este un singur sold pe benzile Native, EVM și SVM; QoreX îl afișează ca o singură cifră.
-- **Mai multe căi de recuperare** — o frază de recuperare de 24 de cuvinte (întotdeauna), recuperare socială opțională cu tutori și un timelock de 48 de ore, moștenire Legacy opțională și conectarea comodă a mai multor dispozitive.
+- **Rezistent la calcul cuantic în mod implicit** — transferurile de QOR pe canalul Native poartă întotdeauna o semnătură hibridă ML-DSA-87 + secp256k1. Orice element clasic (lanțuri externe) este etichetat clar, niciodată în mod tăcut.
+- **Cu adevărat non-custodial** — cheile sunt generate pe dispozitiv și trăiesc într-un seif securizat hardware (Secure Enclave pe iOS, StrongBox pe Android) sau într-un seif criptat (extensia). Ele nu părăsesc niciodată dispozitivul tău.
+- **Fără colectare de date** — nicio analiză, urmărire sau reclamă în vreo aplicație QoreX. O autentificare opțională într-un cont adaugă facilități (vezi [Cont și Dashboard](/qorex/account-and-dashboard)), dar portofelul nu depinde niciodată de aceasta.
+- **Un singur sold unificat** — QOR-ul tău este un singur sold peste canalele Native, EVM și SVM; QoreX îl afișează ca o singură valoare.
+- **Multiple căi de recuperare** — o frază de recuperare de 24 de cuvinte (întotdeauna), recuperare socială opțională cu gardieni și un timelock de 48 de ore, moștenire Legacy opțională și asociere convenabilă între mai multe dispozitive.
 
 ## Începe
 
 - Ești nou în QoreX? Începe cu [Primii pași](/qorex/getting-started) pentru a-ți crea sau restaura portofelul.
-- Apoi învață să [Trimiți și primești](/qorex/send-and-receive) QOR rezistent cuantic.
-- Configurează-ți plasa de siguranță în [Securitate și recuperare](/qorex/security-and-recovery).
+- Apoi învață să [Trimiți și să primești](/qorex/send-and-receive) QOR rezistent la calcul cuantic.
+- Configurează-ți plasa de siguranță în [Securitate și Recuperare](/qorex/security-and-recovery).
 - Pe desktop, instalează [Extensia de browser](/qorex/browser-extension).
 
 :::note Descărcare și disponibilitate
-QoreX **1.0** este în curs de lansare pe magazinele de aplicații — aplicațiile iOS și Android (App Store și Google Play) și extensia de browser (Chrome Web Store, Firefox Add-ons și o versiune Safari). Unele ținte pot fi încă în coada de verificare a unui magazin la un moment dat. Găsește întotdeauna linkurile oficiale, actuale de descărcare pe [qorechain.io](https://qorechain.io) și instalează QoreX doar dintr-un listing oficial de magazin.
+- **Extensia de browser** — live și publică: instaleaz-o din [Chrome Web Store, Firefox Add-ons sau Mac App Store (Safari)](/qorex/browser-extension#install).
+- **Aplicația Android** — disponibilă pentru **testare publică** pe Google Play.
+- **Aplicația iOS** — disponibilă pentru testare prin **TestFlight** dacă vrei să o încerci.
+
+Găsește linkurile curente și oficiale pe [qorechain.io](https://qorechain.io) și instalează QoreX doar dintr-o listare oficială.
 :::

@@ -11,19 +11,21 @@ sidebar_position: 1
 
 QoreX comes in two parts that work together:
 
-- **Mobile app** (iOS & Android) — the full wallet: create/restore, send & receive quantum-safe QOR, external networks, staking, portfolio, recovery, and an in-app dApp browser.
-- **Browser extension** (Chrome & Firefox, with Safari from the same codebase) — the dApp connector for desktop: it lets websites discover your wallet and turns every request into an explicit approval.
+- **Browser extension** — the desktop wallet, **live and public on Chrome, Firefox, and Safari (macOS)**. It is a standalone wallet (create/import, hold and send QOR) and the connector that lets any website discover QoreX and turn every request into an explicit approval. See [Browser Extension](/qorex/browser-extension).
+- **Mobile app** (Android & iOS) — the full wallet: create/restore, send & receive quantum-safe QOR, external networks, staking, portfolio, recovery, and an in-app dApp browser. Currently in public testing (see availability below).
 
 ## Platform availability
 
-| Capability | iOS/Android app | Chrome/Firefox extension |
+| Capability | Mobile app (Android & iOS) | Browser extension |
 |---|---|---|
-| Create / restore / link a wallet | ✅ | — (pairs with the app) |
-| Send & receive QOR (post-quantum) | ✅ | via dApp signing |
-| External networks (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | ✅ (send from the popup) |
+| Create / import a wallet | ✅ | ✅ (standalone) |
+| Send & receive QOR (post-quantum) | ✅ | ✅ (from the popup) |
+| External networks (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | via dApp signing |
 | Staking, Portfolio, Q-Day Scanner, Recovery, Legacy | ✅ | — |
 | dApp connections | ✅ (in-app browser) | ✅ (any website) |
-| Account (@handle, payment requests, Dashboard link) | ✅ | — |
+| Account (@handle, payment requests) | ✅ | — |
+| Multi-device linking | ✅ | — |
+| Dashboard pairing | ✅ | ✅ (connect + proposed transfers, v0.1.5) |
 
 ## Why QoreX is different
 
@@ -41,5 +43,9 @@ QoreX comes in two parts that work together:
 - On desktop, install the [Browser Extension](/qorex/browser-extension).
 
 :::note Download & availability
-QoreX **1.0** is rolling out across the app stores — the iOS and Android apps (App Store and Google Play) and the browser extension (Chrome Web Store, Firefox Add-ons, and a Safari build). Some targets may still be in a store's review queue at any given moment. Always find the current, official download links on [qorechain.io](https://qorechain.io), and only install QoreX from an official store listing.
+- **Browser extension** — live and public: install it from the [Chrome Web Store, Firefox Add-ons, or the Mac App Store (Safari)](/qorex/browser-extension#install).
+- **Android app** — available for **public testing** on Google Play.
+- **iOS app** — available for testing via **TestFlight** if you'd like to try it.
+
+Find the current, official links on [qorechain.io](https://qorechain.io), and only install QoreX from an official listing.
 :::

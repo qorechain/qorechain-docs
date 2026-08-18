@@ -7,51 +7,60 @@ sidebar_position: 2
 
 # Erste Schritte mit QoreX
 
-Diese Seite führt durch die Installation der mobilen App sowie das Erstellen, Wiederherstellen oder Verknüpfen deiner Wallet.
+Diese Seite führt durch die Installation der **mobilen App** sowie durch das Erstellen, Wiederherstellen oder Verknüpfen deiner Wallet. Für die Desktop-Wallet siehe die [Browser-Erweiterung](/qorex/browser-extension), die auf Chrome, Firefox und Safari verfügbar ist.
 
-## Bevor du beginnst: sichere dein Gerät
+:::note Verfügbarkeit auf Mobilgeräten
+Die mobile QoreX-App befindet sich derzeit im öffentlichen Test:
 
-Eine QoreX-Wallet kann nur erstellt oder importiert werden, wenn auf deinem Gerät ein **starker Entsperrfaktor** eingerichtet ist. Dieser schützt deine Schlüssel im Hardware-Tresor. Jede der folgenden Optionen erfüllt die Anforderung:
+- **Android** — verfügbar für den **öffentlichen Test** über Google Play.
+- **iOS** — verfügbar zum Testen über **TestFlight**, falls du sie ausprobieren möchtest.
 
-- **iOS** — Face ID oder Touch ID.
-- **Android** — eine Class-3-Biometrie (Fingerabdruck, Iris oder 3D-Gesichtsentsperrung) **oder** eine Bildschirmsperre des Geräts (PIN, pattern oder password).
-
-:::note Android 2D-Gesichtsentsperrung
-Die kamerabasierte 2D-Gesichtsentsperrung (auf manchen Geräten zu finden, z. B. bestimmten Samsung-Modellen) gilt als *schwache* Biometrie. Wenn du nur diese hast, verlässt sich QoreX auf die dahinterliegende **PIN / pattern** — und die Systemabfrage bietet sie automatisch an, sodass du weiterhin geschützt bist.
+Die aktuellen Links findest du auf [qorechain.io](https://qorechain.io).
 :::
 
-Wenn kein starker Faktor eingerichtet ist, bleiben die Schaltflächen zum Erstellen/Importieren deaktiviert und der Bildschirm erklärt, was du aktivieren musst. Richte Face ID, einen Fingerabdruck oder eine Bildschirmsperre in deinen Systemeinstellungen ein und kehre dann zu QoreX zurück.
+## Bevor du beginnst: Sichere dein Gerät
+
+Eine QoreX-Wallet kann nur dann erstellt oder importiert werden, wenn auf deinem Gerät ein **starker Entsperrfaktor** eingerichtet ist. Genau das schützt deine Schlüssel im Hardware-Tresor. Jedes der folgenden Kriterien genügt:
+
+- **iOS** — Face ID oder Touch ID.
+- **Android** — eine Class-3-Biometrie (Fingerabdruck, Iris oder 3D-Gesichtserkennung) **oder** eine Geräte-Bildschirmsperre (PIN, Muster oder Passwort).
+
+:::note Android 2D-Gesichtserkennung
+Kamerabasierte 2D-Gesichtserkennung (auf manchen Geräten zu finden, z. B. bestimmten Samsung-Modellen) gilt als *schwache* Biometrie. Wenn das alles ist, was du hast, greift QoreX auf die dahinterliegende **PIN / das Muster** zurück — und das System-Sheet bietet dies automatisch an, sodass du trotzdem abgesichert bist.
+:::
+
+Ist kein starker Faktor eingerichtet, bleiben die Schaltflächen zum Erstellen/Importieren deaktiviert und der Bildschirm erklärt, was du aktivieren musst. Richte Face ID, einen Fingerabdruck oder eine Bildschirmsperre in deinen Systemeinstellungen ein und kehre dann zu QoreX zurück.
 
 ## Erster Start
 
-Die App öffnet sich **nur dann** auf dem Onboarding-Bildschirm, wenn auf dem Gerät noch keine Wallet vorhanden ist. Sobald du eine Wallet hast, führt jeder spätere Start direkt zum Tab Home (Wallet). Das Ansehen von Guthaben erfordert keine Biometrie; **das Signieren einer Transaktion immer**.
+Die App öffnet den Onboarding-Bildschirm **nur, wenn auf dem Gerät keine Wallet vorhanden ist**. Sobald du eine Wallet hast, führt jeder spätere Start direkt zum Tab Start (Wallet). Das Anzeigen von Guthaben erfordert keine Biometrie; **das Signieren einer Transaktion immer**.
 
-Du hast drei Möglichkeiten der Einrichtung:
+Du hast drei Möglichkeiten zur Einrichtung:
 
 ### 1. Eine neue Wallet erstellen
 
-1. Tippe auf **Create a new wallet**.
-2. QoreX generiert eine **24-Wörter-Wiederherstellungsphrase** auf deinem Gerät (256-Bit-Entropie) und leitet daraus deine QoreChain-Identität ab — coin type 118, eine `qor1…`-Adresse (deine ETH- und SOL-Konten stammen aus demselben Seed).
+1. Tippe auf **Neue Wallet erstellen**.
+2. QoreX generiert auf deinem Gerät eine **24-Wörter-Wiederherstellungsphrase** (256-Bit-Entropie) und leitet daraus deine QoreChain-Identität ab — coin type 118, eine `qor1…`-Adresse (deine ETH- und SOL-Konten stammen aus demselben Seed).
 3. **Schreibe die 24 Wörter auf** und bewahre sie offline auf. Diese Phrase ist die **einzige** Möglichkeit, deine Wallet wiederherzustellen, falls du das Gerät verlierst.
 4. Bestätige die Phrase; QoreX versiegelt sie im hardwaregestützten, biometrisch geschützten Tresor.
 
 :::caution Deine Wiederherstellungsphrase ist alles
-Jeder mit deinen 24 Wörtern kontrolliert deine Gelder, und niemand — auch nicht die QoreChain Association — kann sie für dich wiederherstellen. Gib deine Phrase niemals auf einer Website ein, teile sie nicht und speichere sie nicht in einem Screenshot oder einer Cloud-Notiz.
+Jeder, der deine 24 Wörter besitzt, kontrolliert dein Guthaben, und niemand — auch nicht die QoreChain Association — kann es für dich wiederherstellen. Gib deine Phrase niemals auf einer Website ein, teile sie nicht und speichere sie nicht in einem Screenshot oder einer Cloud-Notiz.
 :::
 
 ### 2. Eine bestehende Wallet wiederherstellen
 
-1. Tippe auf **Restore existing wallet**.
-2. Gib deine 24 Wörter der Reihe nach ein.
+1. Tippe auf **Bestehende Wallet wiederherstellen**.
+2. Gib deine 24 Wörter in der richtigen Reihenfolge ein.
 3. QoreX leitet dieselben Adressen erneut ab — deine Wallet sieht auf jedem Gerät identisch aus.
 
 ### 3. Von einem anderen Gerät verknüpfen
 
-Wenn du QoreX bereits auf einem anderen Smartphone oder Tablet hast, kannst du die Wallet **ohne Server und ohne Tippen** übertragen — siehe [Ein neues Gerät verknüpfen](/qorex/security-and-recovery#link-device). Wähle auf dem neuen Gerät **Link from another device**, um zu beginnen.
+Wenn du QoreX bereits auf einem anderen Telefon oder Tablet hast, kannst du die Wallet **ohne Server und ohne Tippen** übertragen — siehe [Ein neues Gerät verknüpfen](/qorex/security-and-recovery#link-device). Wähle auf dem neuen Gerät **Von einem anderen Gerät verknüpfen**, um zu beginnen.
 
-## Optional: einen @handle beanspruchen
+## Optional: Ein @handle beanspruchen
 
-Nachdem deine Wallet erstellt wurde, kannst du einen eindeutigen **@handle** (zum Beispiel `@liviu`) beanspruchen, damit dir Leute unter deinem Namen statt einer `qor1…`-Adresse senden können. Dies ist optional und kann übersprungen werden — deine Wallet hängt niemals davon ab. Siehe [Account & Dashboard](/qorex/account-and-dashboard#handle).
+Nachdem deine Wallet erstellt wurde, kannst du ein eindeutiges **@handle** beanspruchen (zum Beispiel `@liviu`), damit Leute dir per Name statt an eine `qor1…`-Adresse senden können. Dies ist optional und überspringbar — deine Wallet hängt niemals davon ab. Siehe [Konto & Dashboard](/qorex/account-and-dashboard#handle).
 
 ## Nächste Schritte
 

@@ -7,39 +7,45 @@ sidebar_position: 1
 
 # QoreX Cüzdanı
 
-**QoreX**, kuantum güvenli Katman 1 olan **QoreChain** için resmi **saklama gerektirmeyen (non-custodial)** cüzdandır (ana ağ `qorechain-vladi`). Özel anahtarlarınız **yalnızca cihazınızda** oluşturulur ve saklanır — QoreChain Association hiçbir zaman fonlarınıza erişemez ve uygulamalar **hiçbir veri** toplamaz. Native hattındaki her QOR transferi bir **hibrit post-kuantum imza** (ML-DSA-87, NIST FIPS-204, secp256k1 ile eşleştirilmiş) taşır; böylece fonlarınız hem klasik hem de kuantum saldırganlara karşı korunur.
+**QoreX**, kuantuma dayanıklı Katman 1 olan **QoreChain** (ana ağ `qorechain-vladi`) için resmi **saklama gerektirmeyen (non-custodial)** cüzdandır. Özel anahtarlarınız **yalnızca cihazınızda** oluşturulur ve saklanır — QoreChain Association hiçbir zaman fonlarınıza erişemez ve uygulamalar **hiçbir veri** toplamaz. Native hattındaki her QOR transferi bir **hibrit post-kuantum imza** (ML-DSA-87, NIST FIPS-204, secp256k1 ile eşleştirilmiş) taşır, böylece fonlarınız hem klasik hem de kuantum saldırganlara karşı korunur.
 
-QoreX, birlikte çalışan iki bölümden oluşur:
+QoreX, birlikte çalışan iki parçadan oluşur:
 
-- **Mobil uygulama** (iOS ve Android) — tam cüzdan: oluşturma/geri yükleme, kuantum güvenli QOR gönderme ve alma, harici ağlar, staking, portföy, kurtarma ve uygulama içi dApp tarayıcısı.
-- **Tarayıcı uzantısı** (Chrome ve Firefox, aynı kod tabanından Safari ile birlikte) — masaüstü için dApp bağlayıcısı: web sitelerinin cüzdanınızı keşfetmesini sağlar ve her isteği açık bir onaya dönüştürür.
+- **Tarayıcı eklentisi** — masaüstü cüzdanı, **Chrome, Firefox ve Safari (macOS) üzerinde canlı ve herkese açık**. Bağımsız bir cüzdandır (oluştur/içe aktar, QOR tut ve gönder) ve herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık bir onaya dönüştürmesini sağlayan bağlayıcıdır. Bkz. [Tarayıcı Eklentisi](/qorex/browser-extension).
+- **Mobil uygulama** (Android & iOS) — tam cüzdan: oluştur/geri yükle, kuantuma dayanıklı QOR gönder ve al, harici ağlar, staking, portföy, kurtarma ve uygulama içi dApp tarayıcısı. Şu anda herkese açık testte (aşağıdaki kullanılabilirliğe bakın).
 
 ## Platform kullanılabilirliği
 
-| Yetenek | iOS/Android uygulaması | Chrome/Firefox uzantısı |
+| Yetenek | Mobil uygulama (Android & iOS) | Tarayıcı eklentisi |
 |---|---|---|
-| Cüzdan oluşturma / geri yükleme / bağlama | ✅ | — (uygulama ile eşleşir) |
-| QOR gönderme ve alma (post-kuantum) | ✅ | dApp imzalama yoluyla |
-| Harici ağlar (ETH / BNB / POL / ARB / SOL + tokenlar) | ✅ | ✅ (açılır pencereden gönderme) |
-| Staking, Portföy, Q-Day Scanner, Kurtarma, Miras (Legacy) | ✅ | — |
+| Cüzdan oluştur / içe aktar | ✅ | ✅ (bağımsız) |
+| QOR gönder ve al (post-kuantum) | ✅ | ✅ (açılır pencereden) |
+| Harici ağlar (ETH / BNB / POL / ARB / SOL + tokenlar) | ✅ | dApp imzalama ile |
+| Staking, Portföy, Q-Day Tarayıcı, Kurtarma, Miras | ✅ | — |
 | dApp bağlantıları | ✅ (uygulama içi tarayıcı) | ✅ (herhangi bir web sitesi) |
-| Hesap (@handle, ödeme talepleri, Dashboard bağlantısı) | ✅ | — |
+| Hesap (@handle, ödeme talepleri) | ✅ | — |
+| Çoklu cihaz bağlama | ✅ | — |
+| Dashboard eşleştirme | ✅ | ✅ (bağlantı + önerilen transferler, v0.1.5) |
 
-## QoreX neden farklı
+## QoreX'i farklı kılan nedir
 
-- **Varsayılan olarak kuantum güvenli** — Native hattındaki QOR transferleri her zaman bir ML-DSA-87 + secp256k1 hibrit imzası taşır. Klasik olan her şey (harici zincirler) açıkça etiketlenir, asla sessizce geçmez.
-- **Gerçekten saklama gerektirmez (non-custodial)** — anahtarlar cihaz üzerinde oluşturulur ve donanım destekli bir kasada (iOS'ta Secure Enclave, Android'de StrongBox) veya şifreli bir kasada (uzantı) tutulur. Cihazınızdan asla ayrılmazlar.
-- **Veri toplama yok** — hiçbir QoreX uygulamasında analiz, takip veya reklam yoktur. İsteğe bağlı bir hesap girişi kolaylıklar ekler ([Hesap ve Dashboard](/qorex/account-and-dashboard) bölümüne bakın) ancak cüzdan asla buna bağımlı değildir.
+- **Varsayılan olarak kuantuma dayanıklı** — Native hattındaki QOR transferleri her zaman bir ML-DSA-87 + secp256k1 hibrit imza taşır. Klasik olan her şey (harici zincirler) açıkça etiketlenir, asla sessizce geçmez.
+- **Gerçekten saklama gerektirmeyen** — anahtarlar cihaz üzerinde oluşturulur ve donanım destekli bir kasada (iOS'ta Secure Enclave, Android'de StrongBox) veya şifreli bir kasada (eklenti) tutulur. Asla cihazınızdan ayrılmazlar.
+- **Veri toplama yok** — hiçbir QoreX uygulamasında analitik, izleme veya reklam yoktur. İsteğe bağlı bir hesap oturumu bazı kolaylıklar ekler (bkz. [Hesap & Dashboard](/qorex/account-and-dashboard)) ancak cüzdan hiçbir zaman buna bağımlı değildir.
 - **Tek birleşik bakiye** — QOR'unuz Native, EVM ve SVM hatları boyunca tek bir bakiyedir; QoreX bunu tek bir rakam olarak gösterir.
-- **Birden çok kurtarma yolu** — 24 kelimelik bir kurtarma ifadesi (her zaman), muhafızlarla (guardian) ve 48 saatlik bir zaman kilidiyle isteğe bağlı sosyal kurtarma, isteğe bağlı Legacy miras ve kullanışlı çok cihazlı bağlama.
+- **Birden fazla kurtarma yolu** — 24 kelimelik bir kurtarma cümlesi (her zaman), koruyucularla isteğe bağlı sosyal kurtarma ve 48 saatlik bir zaman kilidi, isteğe bağlı Miras devri ve pratik çoklu cihaz bağlama.
 
 ## Başlarken
 
 - QoreX'te yeni misiniz? Cüzdanınızı oluşturmak veya geri yüklemek için [Başlarken](/qorex/getting-started) ile başlayın.
-- Ardından kuantum güvenli QOR [Gönderme ve Alma](/qorex/send-and-receive) işlemini öğrenin.
-- [Güvenlik ve Kurtarma](/qorex/security-and-recovery) bölümünde güvenlik ağınızı kurun.
-- Masaüstünde [Tarayıcı Uzantısı](/qorex/browser-extension)'nı yükleyin.
+- Ardından kuantuma dayanıklı QOR'u [Gönder & Al](/qorex/send-and-receive) öğrenin.
+- Güvenlik ağınızı [Güvenlik & Kurtarma](/qorex/security-and-recovery) bölümünde kurun.
+- Masaüstünde, [Tarayıcı Eklentisi](/qorex/browser-extension)'ni kurun.
 
-:::note İndirme ve kullanılabilirlik
-QoreX **1.0**, uygulama mağazalarında yayına alınıyor — iOS ve Android uygulamaları (App Store ve Google Play) ve tarayıcı uzantısı (Chrome Web Store, Firefox Add-ons ve bir Safari yapısı). Herhangi bir anda bazı hedefler hâlâ bir mağazanın inceleme sırasında olabilir. Güncel, resmi indirme bağlantılarını her zaman [qorechain.io](https://qorechain.io) üzerinde bulun ve QoreX'i yalnızca resmi bir mağaza listesinden yükleyin.
+:::note İndirme & kullanılabilirlik
+- **Tarayıcı eklentisi** — canlı ve herkese açık: [Chrome Web Store, Firefox Add-ons veya Mac App Store (Safari)](/qorex/browser-extension#install) üzerinden kurun.
+- **Android uygulaması** — Google Play üzerinde **herkese açık test** için mevcut.
+- **iOS uygulaması** — denemek isterseniz **TestFlight** aracılığıyla test için mevcut.
+
+Güncel ve resmi bağlantıları [qorechain.io](https://qorechain.io) adresinde bulabilirsiniz ve QoreX'i yalnızca resmi bir listeden kurun.
 :::

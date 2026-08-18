@@ -17,7 +17,7 @@ Common questions and quick fixes for the QoreX app and extension.
 | **"Handles coming soon"** | The @handle registry is temporarily unreachable. Your wallet is unaffected; handles light up automatically when it returns. |
 | **"Wrong code or damaged QR"** during device linking | Re-check the 10-character code (the alphabet omits look-alikes: no 0/O/1/I/L) and rescan. Both artifacts are one-time. |
 | **Camera screen says permission needed** | iOS: Settings → QoreX → Camera. Android: App info → Permissions → Camera. |
-| **Extension: "No wallet yet"** | The extension pairs with a wallet created in the QoreX mobile app — create one there first. |
+| **Extension: no wallet on first open** | The extension is a **standalone** wallet — open the popup and choose **Create wallet** or **Import wallet**. It does not require the mobile app. |
 | **Send from a read-only address refused** | That address belongs to another wallet (the label shows which). QoreX can only sign for its own derived accounts — send from the wallet that owns it. |
 | **Testnet badge showing** | Settings → **"Use testnet (developers)"** is on. Turn it off to return to mainnet. |
 | **Swap button is disabled** | Expected for now — Swap turns on automatically once pool liquidity is available; no app update is needed. |

@@ -7,39 +7,45 @@ sidebar_position: 1
 
 # Monedero QoreX
 
-**QoreX** es el monedero oficial **no custodial** de **QoreChain**, la Layer 1 resistente a la computación cuántica (mainnet `qorechain-vladi`). Tus claves privadas se generan y almacenan **únicamente en tu dispositivo**: QoreChain Association nunca tiene acceso a tus fondos y las aplicaciones no recopilan **ningún dato**. Cada transferencia de QOR en el carril Native lleva una **firma híbrida post-cuántica** (ML-DSA-87, NIST FIPS-204, combinada con secp256k1), de modo que tus fondos quedan protegidos frente a atacantes tanto clásicos como cuánticos.
+**QoreX** es el monedero **sin custodia** oficial de **QoreChain**, la Layer 1 resistente a la computación cuántica (mainnet `qorechain-vladi`). Tus claves privadas se generan y se almacenan **únicamente en tu dispositivo**: QoreChain Association nunca tiene acceso a tus fondos y las aplicaciones no recopilan **ningún dato**. Cada transferencia de QOR en el carril Nativo lleva una **firma híbrida poscuántica** (ML-DSA-87, NIST FIPS-204, combinada con secp256k1), de modo que tus fondos están protegidos frente a atacantes tanto clásicos como cuánticos.
 
 QoreX se compone de dos partes que funcionan juntas:
 
-- **Aplicación móvil** (iOS y Android): el monedero completo: crear/restaurar, enviar y recibir QOR resistente a la computación cuántica, redes externas, staking, cartera, recuperación y un navegador de dApps integrado en la aplicación.
-- **Extensión de navegador** (Chrome y Firefox, con Safari desde el mismo código base): el conector de dApps para escritorio: permite que los sitios web detecten tu monedero y convierte cada solicitud en una aprobación explícita.
+- **Extensión de navegador**: el monedero de escritorio, **disponible y público en Chrome, Firefox y Safari (macOS)**. Es un monedero independiente (crear/importar, guardar y enviar QOR) y el conector que permite a cualquier sitio web descubrir QoreX y convertir cada solicitud en una aprobación explícita. Consulta [Extensión de navegador](/qorex/browser-extension).
+- **Aplicación móvil** (Android e iOS): el monedero completo: crear/restaurar, enviar y recibir QOR resistente a la computación cuántica, redes externas, staking, portafolio, recuperación y un navegador de dApps integrado en la app. Actualmente en pruebas públicas (consulta la disponibilidad más abajo).
 
 ## Disponibilidad por plataforma
 
-| Función | App iOS/Android | Extensión Chrome/Firefox |
+| Funcionalidad | Aplicación móvil (Android e iOS) | Extensión de navegador |
 |---|---|---|
-| Crear / restaurar / vincular un monedero | ✅ | — (se empareja con la app) |
-| Enviar y recibir QOR (post-cuántico) | ✅ | mediante firma de dApp |
-| Redes externas (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | ✅ (envío desde el popup) |
-| Staking, Cartera, Q-Day Scanner, Recuperación, Legado | ✅ | — |
-| Conexiones con dApps | ✅ (navegador integrado) | ✅ (cualquier sitio web) |
-| Cuenta (@handle, solicitudes de pago, enlace con Dashboard) | ✅ | — |
+| Crear / importar un monedero | ✅ | ✅ (independiente) |
+| Enviar y recibir QOR (poscuántico) | ✅ | ✅ (desde el popup) |
+| Redes externas (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | mediante firma de dApp |
+| Staking, Portafolio, Escáner Q-Day, Recuperación, Legado | ✅ | — |
+| Conexiones a dApps | ✅ (navegador integrado) | ✅ (cualquier sitio web) |
+| Cuenta (@handle, solicitudes de pago) | ✅ | — |
+| Vinculación multidispositivo | ✅ | — |
+| Emparejamiento con el dashboard | ✅ | ✅ (conexión + transferencias propuestas, v0.1.5) |
 
 ## Por qué QoreX es diferente
 
-- **Resistente a la computación cuántica de forma predeterminada**: las transferencias de QOR en el carril Native siempre llevan una firma híbrida ML-DSA-87 + secp256k1. Cualquier operación clásica (cadenas externas) se identifica claramente, nunca de forma silenciosa.
-- **Verdaderamente no custodial**: las claves se generan en el dispositivo y residen en un baúl respaldado por hardware (Secure Enclave en iOS, StrongBox en Android) o en un baúl cifrado (extensión). Nunca salen de tu dispositivo.
-- **Sin recopilación de datos**: ninguna aplicación de QoreX incluye analíticas, seguimiento ni anuncios. Un inicio de sesión de cuenta opcional añade comodidades (consulta [Cuenta y Dashboard](/qorex/account-and-dashboard)), pero el monedero nunca depende de él.
-- **Un saldo unificado**: tu QOR es un único saldo en los carriles Native, EVM y SVM; QoreX lo muestra como una sola cifra.
+- **Resistente a la computación cuántica de forma predeterminada**: las transferencias de QOR en el carril Nativo siempre llevan una firma híbrida ML-DSA-87 + secp256k1. Todo lo clásico (cadenas externas) se etiqueta con claridad, nunca de forma silenciosa.
+- **Verdaderamente sin custodia**: las claves se generan en el dispositivo y residen en una bóveda respaldada por hardware (Secure Enclave en iOS, StrongBox en Android) o en una bóveda cifrada (extensión). Nunca abandonan tu dispositivo.
+- **Sin recopilación de datos**: sin analítica, seguimiento ni anuncios en ninguna app de QoreX. Un inicio de sesión de cuenta opcional añade comodidades (consulta [Cuenta y Dashboard](/qorex/account-and-dashboard)), pero el monedero nunca depende de ello.
+- **Un único saldo unificado**: tu QOR es un solo saldo a través de los carriles Nativo, EVM y SVM; QoreX lo muestra como una única cifra.
 - **Múltiples vías de recuperación**: una frase de recuperación de 24 palabras (siempre), recuperación social opcional con guardianes y un bloqueo temporal de 48 horas, herencia Legado opcional y una cómoda vinculación multidispositivo.
 
 ## Primeros pasos
 
-- ¿Nuevo en QoreX? Empieza por [Primeros pasos](/qorex/getting-started) para crear o restaurar tu monedero.
-- Después aprende a [Enviar y recibir](/qorex/send-and-receive) QOR resistente a la computación cuántica.
-- Configura tu red de seguridad en [Seguridad y recuperación](/qorex/security-and-recovery).
-- En escritorio, instala la [Extensión de navegador](/qorex/browser-extension).
+- ¿Es tu primera vez con QoreX? Empieza por [Primeros pasos](/qorex/getting-started) para crear o restaurar tu monedero.
+- Después aprende a [Enviar y Recibir](/qorex/send-and-receive) QOR resistente a la computación cuántica.
+- Configura tu red de seguridad en [Seguridad y Recuperación](/qorex/security-and-recovery).
+- En el escritorio, instala la [Extensión de navegador](/qorex/browser-extension).
 
 :::note Descarga y disponibilidad
-QoreX **1.0** se está lanzando en las tiendas de aplicaciones: las apps de iOS y Android (App Store y Google Play) y la extensión de navegador (Chrome Web Store, Firefox Add-ons y una compilación para Safari). Es posible que algunos destinos sigan en la cola de revisión de una tienda en un momento dado. Encuentra siempre los enlaces de descarga oficiales y vigentes en [qorechain.io](https://qorechain.io), e instala QoreX únicamente desde una ficha de tienda oficial.
+- **Extensión de navegador**: disponible y pública: instálala desde la [Chrome Web Store, Firefox Add-ons o la Mac App Store (Safari)](/qorex/browser-extension#install).
+- **Aplicación Android**: disponible para **pruebas públicas** en Google Play.
+- **Aplicación iOS**: disponible para pruebas mediante **TestFlight** si quieres probarla.
+
+Encuentra los enlaces oficiales y actuales en [qorechain.io](https://qorechain.io), e instala QoreX únicamente desde un listado oficial.
 :::
