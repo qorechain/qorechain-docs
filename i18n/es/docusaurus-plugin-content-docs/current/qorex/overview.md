@@ -20,8 +20,8 @@ QoreX se compone de dos partes que funcionan juntas:
 |---|---|---|
 | Crear / importar un monedero | ✅ | ✅ (independiente) |
 | Enviar y recibir QOR (poscuántico) | ✅ | ✅ (desde el popup) |
-| Redes externas (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | mediante firma de dApp |
-| Staking, Portafolio, Escáner Q-Day, Recuperación, Legado | ✅ | — |
+| Redes externas (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (envío desde el popup) |
+| Staking, Portafolio, Escáner Q-Day, Recuperación, Legacy | ✅ | — |
 | Conexiones a dApps | ✅ (navegador integrado) | ✅ (cualquier sitio web) |
 | Cuenta (@handle, solicitudes de pago) | ✅ | — |
 | Vinculación multidispositivo | ✅ | — |
@@ -33,7 +33,7 @@ QoreX se compone de dos partes que funcionan juntas:
 - **Verdaderamente sin custodia**: las claves se generan en el dispositivo y residen en una bóveda respaldada por hardware (Secure Enclave en iOS, StrongBox en Android) o en una bóveda cifrada (extensión). Nunca abandonan tu dispositivo.
 - **Sin recopilación de datos**: sin analítica, seguimiento ni anuncios en ninguna app de QoreX. Un inicio de sesión de cuenta opcional añade comodidades (consulta [Cuenta y Dashboard](/qorex/account-and-dashboard)), pero el monedero nunca depende de ello.
 - **Un único saldo unificado**: tu QOR es un solo saldo a través de los carriles Nativo, EVM y SVM; QoreX lo muestra como una única cifra.
-- **Múltiples vías de recuperación**: una frase de recuperación de 24 palabras (siempre), recuperación social opcional con guardianes y un bloqueo temporal de 48 horas, herencia Legado opcional y una cómoda vinculación multidispositivo.
+- **Múltiples vías de recuperación**: una frase de recuperación de 24 palabras (siempre), recuperación social opcional con guardianes y un bloqueo temporal de 48 horas, herencia Legacy opcional y una cómoda vinculación multidispositivo.
 
 ## Primeros pasos
 

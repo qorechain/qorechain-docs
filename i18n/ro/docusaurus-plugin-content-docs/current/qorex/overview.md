@@ -1,11 +1,11 @@
 ---
 slug: /qorex/overview
-title: Portofelul QoreX
+title: QoreX Wallet
 sidebar_label: Prezentare generală
 sidebar_position: 1
 ---
 
-# Portofelul QoreX
+# QoreX Wallet
 
 **QoreX** este portofelul **non-custodial** oficial pentru **QoreChain**, Layer 1-ul rezistent la calcul cuantic (mainnet `qorechain-vladi`). Cheile tale private sunt generate și stocate **doar pe dispozitivul tău** — QoreChain Association nu are niciodată acces la fondurile tale, iar aplicațiile nu colectează **niciun fel de date**. Fiecare transfer de QOR pe canalul Native poartă o **semnătură hibridă post-cuantică** (ML-DSA-87, NIST FIPS-204, împerecheată cu secp256k1), astfel încât fondurile tale sunt protejate atât împotriva atacatorilor clasici, cât și a celor cuantici.
 
@@ -20,7 +20,7 @@ QoreX este alcătuit din două componente care lucrează împreună:
 |---|---|---|
 | Creare / import portofel | ✅ | ✅ (de sine stătător) |
 | Trimitere și primire QOR (post-cuantic) | ✅ | ✅ (din popup) |
-| Rețele externe (ETH / BNB / POL / ARB / SOL + tokenuri) | ✅ | prin semnare dApp |
+| Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
 | Staking, Portofoliu, Q-Day Scanner, Recuperare, Legacy | ✅ | — |
 | Conexiuni dApp | ✅ (browser integrat) | ✅ (orice site web) |
 | Cont (@handle, cereri de plată) | ✅ | — |

@@ -20,7 +20,7 @@ QoreX comes in two parts that work together:
 |---|---|---|
 | Create / import a wallet | ✅ | ✅ (standalone) |
 | Send & receive QOR (post-quantum) | ✅ | ✅ (from the popup) |
-| External networks (ETH / BNB / POL / ARB / SOL + tokens) | ✅ | via dApp signing |
+| External networks (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (send from the popup) |
 | Staking, Portfolio, Q-Day Scanner, Recovery, Legacy | ✅ | — |
 | dApp connections | ✅ (in-app browser) | ✅ (any website) |
 | Account (@handle, payment requests) | ✅ | — |

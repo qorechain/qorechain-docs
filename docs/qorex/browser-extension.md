@@ -19,7 +19,19 @@ It is **live and public** on three stores.
 | **Firefox** | https://addons.mozilla.org/firefox/addon/qorex/ |
 | **Safari (macOS 10.14 or later)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
 
-The current public build is **0.1.3**. Version **0.1.5** is rolling out now; it adds the [Dashboard connection bridge](#dashboard-bridge). The permission surface is unchanged across these versions.
+### Which version is live where {#versions}
+
+Store reviews land at different times, so the published version currently differs per browser:
+
+| Browser | Published version |
+|---|---|
+| **Firefox** | **0.1.5** |
+| **Chrome / Chromium** | **0.1.3** (0.1.5 submitted, in review) |
+| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` version numbering |
+
+**0.1.5** adds [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
+
+**The permission surface is identical in 0.1.3 and 0.1.5** — see [What permissions QoreX asks for](#permissions).
 
 :::note
 On Safari, approvals open in a browser tab rather than a popup window — the extension is packaged with Apple's Safari web-extension wrapper from the same codebase.
@@ -34,6 +46,18 @@ Open the popup and choose:
 
 The extension holds its own keys; it does not require the mobile app. You can also export your mnemonic from the popup. Keys never leave the device.
 
+### Send on external networks {#send-external}
+
+Besides QOR on the Native lane, the popup can send assets on external networks, all derived from the same recovery phrase:
+
+| Kind | Networks | Bundled tokens |
+|---|---|---|
+| EVM | Ethereum, BNB Chain, Polygon, Arbitrum | ERC-20 entries (USDT, USDC, DAI where applicable) |
+| SVM | Solana | SPL entries (USDC, USDT) |
+| Cosmos | Cosmos Hub, Osmosis, Celestia | IBC entry (USDC on Osmosis); optional memo field |
+
+Before an external transfer goes out you must tick an explicit acknowledgement: **"External networks accept only classical signatures — unlike your QOR, this transfer is NOT quantum-safe."** External chains cannot carry a post-quantum signature, and QoreX never hides that.
+
 ## Supported wallet standards {#standards}
 
 QoreX exposes three interfaces, all injected on the page as `window.qorex` (`{ evm, native, svm }`) and discovered through the [`@qorechain/connect`](/sdk/overview) detection contracts.
@@ -43,9 +67,12 @@ QoreX exposes three interfaces, all injected on the page as `window.qorex` (`{ e
 | **EIP-1193** | The Ethereum provider JavaScript API (`request(...)`, events). | Your existing ethers.js / viem / web3.js code talks to QoreX's EVM lane unchanged; numeric error codes (e.g. `4902`) are forwarded verbatim. |
 | **EIP-6963** | Multi-wallet provider discovery (announce / request events). | QoreX announces itself alongside every other wallet — it **never overwrites `window.ethereum`** — so the user picks QoreX per site with no conflicts. |
 | **Keplr-pattern `signDirect`** | A Cosmos `OfflineDirectSigner`-shaped provider on `window.qorex.native`. | Cosmos-style dApps sign QoreChain **Native-lane** transactions the same way they would with Keplr; the post-quantum layer is pre-applied (see [Post-quantum signing](#pqc)). |
+| **Solana Wallet Standard** *(from 0.1.5)* | Native wallet discovery for Solana dApps (`wallet-standard:register-wallet` / `app-ready`). | Solana dApps **auto-detect QoreX** — no custom integration. Features: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; chain `solana:mainnet`; both `legacy` and `v0` transactions. |
 
-:::note SVM (Solana-compatible)
-An SVM provider is exposed on `window.qorex.svm` with `connect` / `signAndSendTransaction` / `signMessage`. QoreX does **not** yet register through the Solana **Wallet Standard** discovery protocol, so Solana dApps that rely on Wallet-Standard auto-discovery will not detect QoreX automatically — reach it through `window.qorex.svm` directly for now.
+:::note Reaching the SVM lane directly
+The same interface is also available on `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Wallet-Standard auto-discovery and the fully implemented SVM lane arrive with **0.1.5** — so today they are available on **Firefox**, and on Chrome once 0.1.5 clears review (see [which version is live where](#versions)).
+
+Solana approvals show the decoded payload (recipient and lamports for System transfers, and the program list), reject transactions that do not list your wallet as a signer, and mark the signature as **classical** — see [Post-quantum signing](#pqc).
 :::
 
 ## Security & permissions {#security}
@@ -53,7 +80,11 @@ An SVM provider is exposed on `window.qorex.svm` with `connect` / `signAndSendTr
 QoreX is built to be verifiable, not just trusted:
 
 - **Vault** — your keys are sealed with **AES-256-GCM**. The password path derives its key with **Argon2id** (RFC 9106, memory-hard: 64 MiB, t=3, p=1), so an exfiltrated vault blob resists GPU/ASIC cracking. (Legacy PBKDF2 blobs remain openable and re-seal to Argon2id on next unlock.)
-- **Passkey unlock (optional)** — where your authenticator supports the **WebAuthn PRF** extension, QoreX can unlock the vault from the passkey's 32-byte PRF output instead of a typed password.
+- **Passkey unlock (optional, from 0.1.5)** — where your authenticator supports the **WebAuthn PRF** extension, QoreX can unlock the vault from the passkey's 32-byte PRF output instead of a typed password. Your password always remains a fallback.
+
+  :::note Where passkey unlock appears
+  QoreX feature-detects WebAuthn and only shows **Enable passkey unlock** where the browser exposes it to extension pages — that is **Chrome and Edge**. On **Firefox** the option is hidden, because Firefox does not expose WebAuthn to extension pages. Combined with the [version skew](#versions), this means that today a Firefox user has Wallet Standard but not passkey unlock, and a Chrome user has neither until 0.1.5 clears review. This is expected, not a bug.
+  :::
 - **Manifest V3 + strict CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. There is **no remote code loading** after install and no `wasm-unsafe-eval`.
 - **No account, no telemetry** — no analytics, no tracking, no remote logging, no sign-up, and no email. The Firefox listing declares data collection as `none`.
 

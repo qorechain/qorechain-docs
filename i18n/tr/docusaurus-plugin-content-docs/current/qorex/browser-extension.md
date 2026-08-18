@@ -1,13 +1,13 @@
 ---
 slug: /qorex/browser-extension
-title: QoreX Tarayıcı Uzantısı
-sidebar_label: Tarayıcı Uzantısı
+title: QoreX Tarayıcı Eklentisi
+sidebar_label: Tarayıcı Eklentisi
 sidebar_position: 2
 ---
 
-# QoreX Tarayıcı Uzantısı
+# QoreX Tarayıcı Eklentisi
 
-QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. Kendi başına çalışan bir **bağımsız cüzdandır** — bir cüzdan oluşturun veya içe aktarın, QOR tutun ve gönderin, dApp'lere bağlanın — ve herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık, çözümlenmiş bir onaya dönüştürmesini sağlayan parçadır.
+QoreX **tarayıcı eklentisi**, masaüstü QoreChain cüzdanıdır. **Bağımsız bir cüzdandır** — cüzdan oluşturabilir veya içe aktarabilir, QOR tutup gönderebilir ve dApp'lere bağlanabilirsiniz — ve herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık, çözümlenmiş bir onaya dönüştürmesini sağlayan parçadır.
 
 Üç mağazada **yayında ve herkese açıktır**.
 
@@ -17,51 +17,82 @@ QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. Kendi baş�
 |---|---|
 | **Chrome ve Chromium tarayıcıları** (Brave, Edge, Arc, Opera) | https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg |
 | **Firefox** | https://addons.mozilla.org/firefox/addon/qorex/ |
-| **Safari (macOS 10.14 veya sonrası)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
+| **Safari (macOS 10.14 veya üzeri)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
 
-Mevcut herkese açık sürüm **0.1.3**'tür. **0.1.5** sürümü şu anda yayına alınıyor; bu sürüm [Kontrol Paneli bağlantı köprüsünü](#dashboard-bridge) ekler. İzin yüzeyi bu sürümler arasında değişmemiştir.
+### Hangi sürüm nerede yayında {#versions}
+
+Mağaza incelemeleri farklı zamanlarda tamamlandığı için yayımlanan sürüm şu anda tarayıcıya göre değişiyor:
+
+| Tarayıcı | Yayımlanan sürüm |
+|---|---|
+| **Firefox** | **0.1.5** |
+| **Chrome / Chromium** | **0.1.3** (0.1.5 gönderildi, incelemede) |
+| **Safari (macOS)** | kendi `1.x` sürüm numaralandırmasını kullanan **QoreX Wallet** macOS uygulamasının içinde dağıtılır |
+
+**0.1.5** şunları ekler: [Solana Wallet Standard keşfi](#standards), [parola anahtarıyla kilit açma](#security), tamamen uygulanmış bir [SVM dApp hattı](#standards) ve [Dashboard bağlantı köprüsü](#dashboard-bridge). (Sürüm 0.1.4 hiçbir zaman yayımlanmadı — içerdiği değişiklikler kullanıcılara 0.1.5 ile ulaşıyor.)
+
+**İzin yüzeyi 0.1.3 ve 0.1.5 sürümlerinde aynıdır** — bkz. [QoreX hangi izinleri istiyor](#permissions).
 
 :::note
-Safari'de onaylar bir açılır pencere yerine bir tarayıcı sekmesinde açılır — uzantı, aynı kod tabanından Apple'ın Safari web uzantısı sarmalayıcısı ile paketlenmiştir.
+Safari'de onaylar açılır pencere yerine bir tarayıcı sekmesinde açılır — eklenti, aynı kod tabanından Apple'ın Safari web eklentisi sarmalayıcısıyla paketlenmiştir.
 :::
 
-## Cüzdan oluşturun veya geri yükleyin {#wallet}
+## Cüzdan oluşturma veya geri yükleme {#wallet}
 
-Açılır pencereyi açın ve şunu seçin:
+Açılır pencereyi açın ve seçin:
 
-- **Cüzdan oluştur** — cihazınızda yeni bir 24 kelimelik kurtarma ifadesi (256 bit entropi) üretir, QoreChain kimliğinizi türetir ve bunu bir parola (ve isteğe bağlı olarak bir geçiş anahtarı — bkz. [Güvenlik](#security)) altında kasada mühürler.
-- **Cüzdan içe aktar** — mevcut bir 24 kelimelik ifadeden geri yükleyin.
+- **Cüzdan oluştur** — cihazınızda yeni bir 24 kelimelik kurtarma ifadesi üretir (256 bit entropi), QoreChain kimliğinizi türetir ve bunu bir parolayla (ve isteğe bağlı olarak bir parola anahtarıyla — bkz. [Güvenlik](#security)) kasada mühürler.
+- **Cüzdanı içe aktar** — mevcut bir 24 kelimelik ifadeden geri yükleyin.
 
-Uzantı kendi anahtarlarını tutar; mobil uygulamayı gerektirmez. Anımsatıcınızı (mnemonic) açılır pencereden dışa da aktarabilirsiniz. Anahtarlar cihazdan asla çıkmaz.
+Eklenti kendi anahtarlarını tutar; mobil uygulamayı gerektirmez. Anımsatıcı ifadenizi de açılır pencereden dışa aktarabilirsiniz. Anahtarlar cihazdan asla çıkmaz.
+
+### Harici ağlarda gönderim {#send-external}
+
+Native hattındaki QOR'un yanı sıra açılır pencere, tamamı aynı kurtarma ifadesinden türetilen harici ağlarda da varlık gönderebilir:
+
+| Tür | Ağlar | Paketlenmiş tokenlar |
+|---|---|---|
+| EVM | Ethereum, BNB Chain, Polygon, Arbitrum | ERC-20 kayıtları (uygun olduğu yerlerde USDT, USDC, DAI) |
+| SVM | Solana | SPL kayıtları (USDC, USDT) |
+| Cosmos | Cosmos Hub, Osmosis, Celestia | IBC kaydı (Osmosis üzerinde USDC); isteğe bağlı memo alanı |
+
+Harici bir transfer gönderilmeden önce açık bir onay kutusunu işaretlemeniz gerekir: **"Harici ağlar yalnızca klasik imzaları kabul eder — QOR'unuzun aksine, bu transfer kuantum güvenli DEĞİLDİR."** Harici zincirler post-kuantum bir imza taşıyamaz ve QoreX bunu asla gizlemez.
 
 ## Desteklenen cüzdan standartları {#standards}
 
-QoreX, tümü sayfaya `window.qorex` (`{ evm, native, svm }`) olarak enjekte edilen ve [`@qorechain/connect`](/sdk/overview) algılama sözleşmeleri aracılığıyla keşfedilen üç arayüz sunar.
+QoreX üç arayüz sunar; hepsi sayfaya `window.qorex` (`{ evm, native, svm }`) olarak enjekte edilir ve [`@qorechain/connect`](/sdk/overview) algılama sözleşmeleri üzerinden keşfedilir.
 
-| Standart | Nedir | Bir geliştirici olarak sizin için ne anlama gelir |
+| Standart | Nedir | Geliştirici olarak sizin için ne anlama gelir |
 |---|---|---|
-| **EIP-1193** | Ethereum sağlayıcı JavaScript API'si (`request(...)`, olaylar). | Mevcut ethers.js / viem / web3.js kodunuz QoreX'in EVM şeridiyle değişmeden konuşur; sayısal hata kodları (ör. `4902`) olduğu gibi iletilir. |
-| **EIP-6963** | Çoklu cüzdan sağlayıcı keşfi (duyur / iste olayları). | QoreX, diğer her cüzdanın yanında kendini duyurur — **asla `window.ethereum`'un üzerine yazmaz** — böylece kullanıcı her sitede QoreX'i çakışma olmadan seçer. |
-| **Keplr-tarzı `signDirect`** | `window.qorex.native` üzerinde bir Cosmos `OfflineDirectSigner` biçimli sağlayıcı. | Cosmos tarzı dApp'ler, QoreChain **Native-şeridi** işlemlerini tıpkı Keplr ile yapacakları gibi imzalar; kuantum sonrası katman önceden uygulanır (bkz. [Kuantum sonrası imzalama](#pqc)). |
+| **EIP-1193** | Ethereum sağlayıcı JavaScript API'si (`request(...)`, olaylar). | Mevcut ethers.js / viem / web3.js kodunuz QoreX'in EVM hattıyla değişiklik gerekmeden konuşur; sayısal hata kodları (örn. `4902`) birebir iletilir. |
+| **EIP-6963** | Çok cüzdanlı sağlayıcı keşfi (duyuru / istek olayları). | QoreX kendini diğer tüm cüzdanların yanında duyurur — **`window.ethereum` nesnesinin üzerine asla yazmaz** — böylece kullanıcı her sitede çakışma olmadan QoreX'i seçebilir. |
+| **Keplr desenli `signDirect`** | `window.qorex.native` üzerinde `OfflineDirectSigner` biçiminde bir Cosmos sağlayıcısı. | Cosmos tarzı dApp'ler QoreChain **Native hattı** işlemlerini Keplr ile yapacakları gibi imzalar; post-kuantum katman önceden uygulanır (bkz. [Post-kuantum imzalama](#pqc)). |
+| **Solana Wallet Standard** *(0.1.5'ten itibaren)* | Solana dApp'leri için yerel cüzdan keşfi (`wallet-standard:register-wallet` / `app-ready`). | Solana dApp'leri **QoreX'i otomatik algılar** — özel entegrasyon gerekmez. Özellikler: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; zincir `solana:mainnet`; hem `legacy` hem `v0` işlemleri. |
 
-:::note SVM (Solana uyumlu)
-`window.qorex.svm` üzerinde `connect` / `signAndSendTransaction` / `signMessage` ile bir SVM sağlayıcısı sunulur. QoreX henüz Solana **Wallet Standard** keşif protokolü üzerinden kayıt olmaz, bu nedenle Wallet-Standard otomatik keşfine dayanan Solana dApp'leri QoreX'i otomatik olarak algılamaz — şimdilik doğrudan `window.qorex.svm` üzerinden erişin.
+:::note SVM hattına doğrudan erişim
+Aynı arayüz `window.qorex.svm` üzerinde de kullanılabilir (`connect` / `signAndSendTransaction` / `signMessage`). Wallet-Standard otomatik keşfi ve tamamen uygulanmış SVM hattı **0.1.5** ile geliyor — yani bugün **Firefox** üzerinde, Chrome'da ise 0.1.5 incelemeden geçtiğinde kullanılabilir olacak (bkz. [hangi sürüm nerede yayında](#versions)).
+
+Solana onayları çözümlenmiş yükü gösterir (System transferleri için alıcı ve lamports, ayrıca program listesi), cüzdanınızı imzalayan olarak listelemeyen işlemleri reddeder ve imzayı **klasik** olarak işaretler — bkz. [Post-kuantum imzalama](#pqc).
 :::
 
 ## Güvenlik ve izinler {#security}
 
-QoreX yalnızca güvenilmek için değil, doğrulanabilir olmak için tasarlanmıştır:
+QoreX yalnızca güvenilmek için değil, doğrulanabilir olmak için inşa edilmiştir:
 
-- **Kasa** — anahtarlarınız **AES-256-GCM** ile mühürlenir. Parola yolu anahtarını **Argon2id** (RFC 9106, belleğe duyarlı: 64 MiB, t=3, p=1) ile türetir, böylece dışarı sızdırılan bir kasa bloğu GPU/ASIC kırmaya direnir. (Eski PBKDF2 blokları açılabilir kalır ve bir sonraki kilit açımında Argon2id'ye yeniden mühürlenir.)
-- **Geçiş anahtarı ile kilit açma (isteğe bağlı)** — kimlik doğrulayıcınızın **WebAuthn PRF** uzantısını desteklediği yerlerde, QoreX kasanın kilidini yazılan bir parola yerine geçiş anahtarının 32 baytlık PRF çıktısından açabilir.
-- **Manifest V3 + katı CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Kurulumdan sonra **uzaktan kod yükleme yoktur** ve `wasm-unsafe-eval` yoktur.
-- **Hesap yok, telemetri yok** — analiz yok, izleme yok, uzaktan günlükleme yok, kayıt yok ve e-posta yok. Firefox listelemesi veri toplamayı `none` olarak beyan eder.
+- **Kasa** — anahtarlarınız **AES-256-GCM** ile mühürlenir. Parola yolu anahtarını **Argon2id** ile türetir (RFC 9106, bellek yoğun: 64 MiB, t=3, p=1); böylece dışarı sızdırılmış bir kasa verisi GPU/ASIC kırma girişimlerine direnir. (Eski PBKDF2 verileri açılabilir olmayı sürdürür ve bir sonraki kilit açmada yeniden Argon2id ile mühürlenir.)
+- **Parola anahtarıyla kilit açma (isteğe bağlı, 0.1.5'ten itibaren)** — kimlik doğrulayıcınız **WebAuthn PRF** uzantısını destekliyorsa QoreX, kasayı yazılan bir parola yerine parola anahtarının 32 baytlık PRF çıktısıyla açabilir. Parolanız her zaman yedek seçenek olarak kalır.
 
-### QoreX hangi izinleri ister ve neden {#permissions}
+  :::note Parola anahtarıyla kilit açma nerede görünür
+  QoreX WebAuthn desteğini otomatik algılar ve **Parola anahtarıyla kilit açmayı etkinleştir** seçeneğini yalnızca tarayıcının bunu eklenti sayfalarına sunduğu yerlerde gösterir — yani **Chrome ve Edge** üzerinde. **Firefox** üzerinde seçenek gizlidir, çünkü Firefox WebAuthn'u eklenti sayfalarına sunmaz. [Sürüm farkıyla](#versions) birleştiğinde bu, bugün bir Firefox kullanıcısının Wallet Standard'a sahip olduğu ama parola anahtarıyla kilit açmaya sahip olmadığı, bir Chrome kullanıcısının ise 0.1.5 incelemeden geçene kadar ikisine de sahip olmadığı anlamına gelir. Bu beklenen bir durumdur, hata değildir.
+  :::
+- **Manifest V3 + katı CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Kurulumdan sonra **uzaktan kod yüklemesi yoktur** ve `wasm-unsafe-eval` kullanılmaz.
+- **Hesap yok, telemetri yok** — analitik yok, izleme yok, uzaktan günlükleme yok, kayıt yok ve e-posta yok. Firefox listelemesi veri toplamayı `none` olarak beyan eder.
 
-Bu bölüm var çünkü Firefox listelemesi **"Tüm web sitelerindeki verilerinize erişme"** iznini yüzeye çıkarır; bu, hiç ana bilgisayar izni beyan etmeyen bir cüzdanla çelişkili görünebilir. İşte manifestten alınan tam, düzenlenmemiş gerçek.
+### QoreX hangi izinleri istiyor ve neden {#permissions}
 
-Uzantının `manifest.json` dosyası şunları beyan eder:
+Bu bölüm, Firefox listelemesinin **"Tüm web sitelerindeki verilerinize erişme"** iznini göstermesi nedeniyle vardır; bu, hiçbir sunucu izni beyan etmeyen bir cüzdanla çelişkili görünebilir. İşte manifest dosyasındaki tam, değiştirilmemiş gerçek.
+
+Eklentinin `manifest.json` dosyası şunları beyan eder:
 
 ```json
 "permissions": ["storage"],
@@ -71,17 +102,17 @@ Uzantının `manifest.json` dosyası şunları beyan eder:
 ]
 ```
 
-- **`permissions: ["storage"]`** — tek API izni. Şifrelenmiş kasayı ve köken başına bağlantı onaylarınızı, uzantı depolamasında **yerel olarak** saklar.
-- **`host_permissions: []`** — QoreX **hiçbir** ana bilgisayar izni beyan etmez. Adınıza rastgele sitelere kökenler arası ağ istekleri yapma yeteneğini istemez.
-- **`content_scripts` `<all_urls>` ile eşleşir** — Firefox'un *"Tüm web sitelerindeki verilerinize erişme."* demesinin dürüst nedeni budur. QoreX, **her sayfaya** küçük bir sağlayıcı betiği (`content.js` → `inpage.js`) enjekte eder. Tüm sitelerde çalışan bir içerik betiği teknik olarak sayfayı okuyabilir *(can)* ve tarayıcılar bu yeteneği tam olarak bu ifadeyle tanımlar — ister `host_permissions`'tan ister bir içerik betiği eşleşmesinden gelsin.
+- **`permissions: ["storage"]`** — tek API izni. Şifrelenmiş kasayı ve köken bazlı bağlantı onaylarınızı **yerel olarak**, eklenti depolamasında saklar.
+- **`host_permissions: []`** — QoreX **hiçbir** sunucu izni beyan etmez. Sizin adınıza rastgele sitelere kökenler arası ağ istekleri yapma yetkisini talep etmez.
+- **`content_scripts` içinde `<all_urls>` eşleşmesi** — Firefox'un *"Tüm web sitelerindeki verilerinize erişme"* demesinin dürüst nedeni budur. QoreX **her sayfaya** küçük bir sağlayıcı betiği (`content.js` → `inpage.js`) enjekte eder. Tüm sitelerde çalışan bir içerik betiği teknik olarak sayfayı okuyabilir ve tarayıcılar bu yeteneği tam olarak bu ifadeyle tanımlar — ister `host_permissions` üzerinden gelsin, ister bir içerik betiği eşleşmesinden.
 
-**İçerik betiği neden her yerde çalışır.** Böylece **herhangi** bir dApp, önce site başına erişim vermenize gerek kalmadan cüzdanı EIP-6963 aracılığıyla keşfedebilir. MetaMask, Keplr, Phantom ve enjekte edilen diğer her cüzdan böyle çalışır: enjekte edilen sağlayıcı, ziyaret ettiğiniz herhangi bir sitede, sayfanın betikleri çalışmadan önce (`document_start`) mevcut olmalıdır.
+**İçerik betiği neden her yerde çalışır.** **Herhangi bir** dApp'in, siz önce site bazlı erişim vermeden cüzdanı EIP-6963 üzerinden keşfedebilmesi için. MetaMask, Keplr, Phantom ve diğer tüm enjekte edilen cüzdanlar böyle çalışır: enjekte edilen sağlayıcı, ziyaret ettiğiniz her sitede, sayfanın betikleri çalışmadan önce (`document_start`) hazır olmalıdır.
 
-**Bu betiğin ne yaptığı — ve ne yapmadığı.** Yalnızca cüzdan mesajlarını köprüler (sağlayıcıyı duyurur, bağlan/imzala isteklerini hizmet çalışanına iletir, sonucu döndürür). Bu cüzdan istekleri dışında sayfa içeriğini okumaz, bir sunucuya bir şey göndermez veya uzaktan kod yüklemez — ve ana bilgisayar izinleri olmadığı için rastgele kökenler arası veri getiremez. Bunların tümü doğrulanabilir: uzantı CSP ile kilitlidir, hiçbir analiz içermez ve Firefox paketi yeniden üretilebilir bir kaynak zip'i içerir.
+**Bu betik ne yapar — ve ne yapmaz.** Yalnızca cüzdan mesajlarını köprüler (sağlayıcıyı duyurur, bağlanma/imzalama isteklerini servis çalışanına iletir, sonucu döndürür). Bu cüzdan isteklerinin ötesinde sayfa içeriğini **okumaz**, bir sunucuya hiçbir şey göndermez, uzaktan kod yüklemez — ve sunucu izni bulunmadığı için rastgele kökenler arası veri çekemez. Bunların tümü doğrulanabilir: eklenti CSP ile kilitlidir, hiçbir analitik içermez ve Firefox paketi yeniden üretilebilir bir kaynak zip dosyası içerir.
 
-## Bir dApp'i QoreX'e bağlayın {#connect}
+## Bir dApp'i QoreX'e bağlama {#connect}
 
-Bir dApp, QoreX'in EVM şeridini **EIP-6963** aracılığıyla keşfeder. Duyur-ve-iste, ardından döndürülen EIP-1193 sağlayıcısını kullanın:
+Bir dApp, QoreX'in EVM hattını **EIP-6963** üzerinden keşfeder. Duyur-ve-iste, ardından dönen EIP-1193 sağlayıcısını kullanın:
 
 ```ts
 import type { EIP6963ProviderDetail } from "./types";
@@ -105,19 +136,19 @@ if (qorex) {
 }
 ```
 
-QoreChain **Native** şeridi için, `window.qorex.native` (`enable`, `getKey`, `signDirect`) üzerindeki Keplr-tarzı sağlayıcıyı kullanın. Üst düzey [`@qorechain/connect`](/sdk/overview) paketi bu algılamayı sizin için sarmalar.
+QoreChain **Native** hattı için `window.qorex.native` adresindeki Keplr desenli sağlayıcıyı kullanın (`enable`, `getKey`, `signDirect`). Üst seviye [`@qorechain/connect`](/sdk/overview) paketi bu algılamayı sizin için sarmalar.
 
-Onaylar **köken başınadır**: bir siteye ilk bağlantı, kökeni gösteren bir onay açılır penceresi açar, onaylamak yalnızca genel adresinizi açığa çıkarır ve bir sitenin onayı başka bir siteye hiçbir şey vermez.
+Onaylar **köken bazlıdır**: bir siteye ilk bağlantı, kökeni gösteren bir onay penceresi açar, onaylamak yalnızca genel adresinizi açığa çıkarır ve bir sitenin onayı başka bir siteye hiçbir yetki vermez.
 
-### Kontrol paneli köprüsü (v0.1.5) {#dashboard-bridge}
+### Dashboard köprüsü (v0.1.5) {#dashboard-bridge}
 
-0.1.5 sürümü, yalnızca **`dashboard.qorechain.io`** ile sınırlı bir köprü ekler: `window.qorex.native.connectProof(sessionId)`, *QoreX ile Bağlan* eşleştirme kanıtını imzalar (arka uç imzayı yeniden doğrular) ve `executeTransfer({ to, amountUqor, memo })`, Kontrol Paneli tarafından önerilen bir QOR transferini onaylar ve yayınlar, `txHash` döndürür. Bu yöntemler başka herhangi bir kökende reddedilir.
+Sürüm 0.1.5, yalnızca **`dashboard.qorechain.io` ile sınırlı** bir köprü ekler: `window.qorex.native.connectProof(sessionId)` *Connect with QoreX* eşleştirme kanıtını imzalar (arka uç imzayı yeniden doğrular) ve `executeTransfer({ to, amountUqor, memo })` Dashboard tarafından önerilen bir QOR transferini onaylayıp yayınlar, ardından `txHash` değerini döndürür. Bu yöntemler başka herhangi bir kökende reddedilir.
 
-## Kuantum sonrası imzalama {#pqc}
+## Post-kuantum imzalama {#pqc}
 
-QoreX'in kendisinin başlattığı her QOR transferi bir **hibrit kuantum sonrası imza** ile imzalanır — klasik secp256k1 imzasının yanında **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) — `@qorechain/sdk` içindeki tam hibrit hattı kullanılarak. **Bir açma/kapama düğmesi yoktur**: QoreChain bunu gerektirir ve QoreX bir Native-şeridi QOR transferini asla bu olmadan göndermez.
+QoreX'in kendi başlattığı her QOR transferi, `@qorechain/sdk` içindeki tam hibrit hat kullanılarak **hibrit post-kuantum imzayla** — klasik secp256k1 imzasının yanında **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) — imzalanır. **Bunun için bir anahtar/kapatma seçeneği yoktur**: QoreChain bunu zorunlu kılar ve QoreX bir Native hattı QOR transferini asla bu olmadan göndermez.
 
-- **dApp tarafından başlatılan Native imzalama** — qorechain-connect akışı üzerine kurulu dApp'ler, `signDirect` çağrılmadan önce PQC uzantısını (`/qorechain.pqc.v1.PQCHybridSignature`) işlem gövdesine önceden katmanlar; QoreX klasik yarısını katkı olarak sağlar ve **kör imzalamayı reddeder**, yükü çözümler ve PQC katmanının mevcut olup olmadığını işaretler.
-- **Klasik istekler her zaman etiketlenir** — bir istek PQC katmanı taşımıyorsa veya harici bir zinciri (ETH/BNB/vb., PQC taşıyamayan) hedefliyorsa, QoreX sessizce düşürme yapmak yerine açık bir uyarı gösterir.
+- **dApp tarafından başlatılan Native imzalama** — qorechain-connect akışı üzerine kurulu dApp'ler, `signDirect` çağrılmadan önce PQC uzantısını (`/qorechain.pqc.v1.PQCHybridSignature`) işlem gövdesine önceden katmanlar; QoreX klasik yarıyı katar ve **kör imzalamayı reddeder**, yükü çözümleyip PQC katmanının mevcut olup olmadığını işaretler.
+- **Klasik istekler her zaman etiketlenir** — bir istek PQC katmanı taşımıyorsa ya da harici bir zinciri hedefliyorsa (PQC taşıyamayan ETH/BNB vb.), QoreX sessizce düşürmek yerine açık bir uyarı gösterir.
 
-**Bunun işlem boyutu için anlamı.** ML-DSA-87 büyük bir imzadır: imza **4,627 bytes** ve genel anahtar **2,592 bytes**'tır (FIPS-204 tarafından sabitlenmiştir). Bir hibrit QoreChain işlemi bu nedenle tamamen klasik olandan birkaç kilobayt daha büyüktür. İşlemleri kendiniz oluşturup yayınlıyorsanız, arabelleklerinizi ve ücret tahminlerinizi fazladan baytlar için boyutlandırın; QoreChain'in gaz muhasebesi bunları zaten bekler. Temel öğeler ve deterministik imzalama gereksinimi için [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) bölümüne bakın.
+**Bunun işlem boyutu açısından anlamı.** ML-DSA-87 büyük bir imzadır: imza **4,627 bytes**, genel anahtar ise **2,592 bytes** boyutundadır (FIPS-204 tarafından sabitlenmiştir). Dolayısıyla hibrit bir QoreChain işlemi, tamamen klasik bir işleme göre birkaç kilobayt daha büyüktür. İşlemleri kendiniz oluşturup yayınlıyorsanız, arabelleklerinizi ve ücret tahminlerinizi bu ek baytlara göre boyutlandırın; QoreChain'in gas hesaplaması bunları zaten bekler. İlkel yapılar ve deterministik imzalama gereksinimi için bkz. [Post-Quantum Signing](/developer-guide/post-quantum-signing).

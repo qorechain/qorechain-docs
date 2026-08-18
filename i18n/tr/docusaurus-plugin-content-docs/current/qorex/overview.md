@@ -20,7 +20,7 @@ QoreX, birlikte çalışan iki parçadan oluşur:
 |---|---|---|
 | Cüzdan oluştur / içe aktar | ✅ | ✅ (bağımsız) |
 | QOR gönder ve al (post-kuantum) | ✅ | ✅ (açılır pencereden) |
-| Harici ağlar (ETH / BNB / POL / ARB / SOL + tokenlar) | ✅ | dApp imzalama ile |
+| Harici ağlar (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokenlar) | ✅ | ✅ (açılır pencereden gönderim) |
 | Staking, Portföy, Q-Day Tarayıcı, Kurtarma, Miras | ✅ | — |
 | dApp bağlantıları | ✅ (uygulama içi tarayıcı) | ✅ (herhangi bir web sitesi) |
 | Hesap (@handle, ödeme talepleri) | ✅ | — |
