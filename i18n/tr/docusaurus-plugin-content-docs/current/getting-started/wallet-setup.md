@@ -95,6 +95,10 @@ Zincir sürümü **v3.1.85** itibarıyla, bir dApp içinde QoreChain hesabınız
 
 ## Solana Cüzdanları (SVM)
 
+:::caution SVM işlem gönderimi şu anda devre dışı
+SVM yürütme hattı, **işlem gönderimi için ağ genelinde şu anda devre dışıdır** — QoreChain'e karşı bir Solana uyumlu cüzdan üzerinden şu anda işlem göndermeyin. Bakiye/slot okuma yine de çalışıyor olabilir; güncel durum için [SVM Geliştirme](/developer-guide/svm-development) sayfasına bakın.
+:::
+
 QoreChain'in SVM yürütme ortamı standart Solana araçlarıyla uyumludur ve hesabın **native QOR bakiyesi doğrudan SVM arayüzünde görünür** (lamports cinsinden, 9 ondalık; 1 uqor = 1.000 lamports). Solana uyumlu herhangi bir cüzdanı veya kütüphaneyi bağlayabilirsiniz.
 
 ### @solana/web3.js Kullanımı

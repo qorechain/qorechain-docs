@@ -12,20 +12,23 @@ sidebar_position: 1
 QoreX는 함께 작동하는 두 부분으로 구성됩니다:
 
 - **브라우저 확장 프로그램** — 데스크톱 지갑으로, **Chrome, Firefox, Safari(macOS)에서 공개적으로 서비스 중**입니다. 독립 실행형 지갑(생성/가져오기, QOR 보관 및 전송)이자, 모든 웹사이트가 QoreX를 발견하고 모든 요청을 명시적인 승인 절차로 전환하도록 해주는 커넥터입니다. [브라우저 확장 프로그램](/qorex/browser-extension)을 참고하세요.
-- **모바일 앱**(Android 및 iOS) — 완전한 형태의 지갑입니다: 생성/복원, 양자 내성 QOR 송수신, 외부 네트워크, 스테이킹, 포트폴리오, 복구, 그리고 앱 내 dApp 브라우저를 제공합니다. Android는 **Google Play**에서, iOS는 TestFlight에서 제공됩니다(아래 이용 가능 여부 참고).
+- **모바일 앱**(Android 및 iOS) — 완전한 형태의 지갑입니다: 생성/복원, 양자 내성 QOR 송수신, 외부 네트워크, 스테이킹, 포트폴리오, 복구, 그리고 앱 내 dApp 브라우저를 제공합니다. Android는 **Google Play**에서, iOS는 **App Store**에서 이용할 수 있습니다(아래 이용 가능 여부 참고).
 
-## 플랫폼별 이용 가능 여부
+## 플랫폼별 이용 가능 여부 {#platform-availability}
 
 | 기능 | 모바일 앱 (Android 및 iOS) | 브라우저 확장 프로그램 |
 |---|---|---|
-| 지갑 생성 / 가져오기 | ✅ | ✅ (독립 실행형) |
-| QOR 송수신 (포스트 퀀텀) | ✅ | ✅ (팝업에서) |
-| 외부 네트워크 (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + 토큰) | ✅ | ✅ (팝업에서 전송) |
+| 지갑 생성 / 가져오기 | ✅ | ✅ (독립 실행형, 계정 1개) |
+| 하나의 복구 문구로 여러 계정 관리 | ✅ (최대 20개) | — (계정 1개) |
+| QOR 송수신 (포스트 퀀텀) | ✅ | ✅ (팝업에서, 수신 QR 코드 포함) |
+| @handle 결제 / 청구 | ✅ | ✅ |
+| 외부 네트워크 (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + 토큰) | ✅ | ✅ (팝업에서 전송) |
+| 인터페이스 언어 (10개 언어) | ✅ (휴대폰 설정을 따름) | ✅ (브라우저 설정을 따름) |
 | 스테이킹, 포트폴리오, Q-Day Scanner, 복구, Legacy | ✅ | — |
 | dApp 연결 | ✅ (인앱 브라우저) | ✅ (모든 웹사이트) |
-| 계정 (@handle, 결제 요청) | ✅ | — |
+| 계정 로그인 및 결제 요청 | ✅ | — |
 | 다중 기기 연결 | ✅ | — |
-| Dashboard 페어링 | ✅ | ✅ (연결 + 제안된 전송, v0.1.5) |
+| Dashboard 페어링 | ✅ | ✅ (연결 + 제안된 전송) |
 
 ## QoreX가 다른 이유
 
@@ -43,9 +46,23 @@ QoreX는 함께 작동하는 두 부분으로 구성됩니다:
 - 데스크톱에서는 [브라우저 확장 프로그램](/qorex/browser-extension)을 설치하세요.
 
 :::note 다운로드 및 이용 가능 여부
-- **브라우저 확장 프로그램** — 공개적으로 서비스 중입니다: [Chrome Web Store, Firefox Add-ons 또는 Mac App Store (Safari)](/qorex/browser-extension#install)에서 설치하세요.
-- **Android 앱** — Google Play에서 이용할 수 있습니다: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS 앱** — **TestFlight**를 통해 테스트용으로 이용할 수 있습니다: https://testflight.apple.com/join/Xa9D7vgR — App Store 출시는 아직 심사 중입니다.
+- **브라우저 확장 프로그램** — 공개적으로 서비스 중입니다: [Chrome Web Store, Firefox Add-ons, 또는 Mac App Store (Safari)](/qorex/browser-extension#install)에서 설치하세요. [어느 버전이 어디에서 제공되는지](/qorex/browser-extension#versions) 확인하세요 — 최신 기능은 일부 브라우저에 아직 순차 배포 중일 수 있습니다.
+- **Android 앱** — Google Play에서 정식 서비스 중입니다: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS 앱** — **App Store**에서 서비스 중입니다: https://apps.apple.com/us/app/qorex-wallet/id6791256626.
 
-QoreX는 반드시 공식 스토어 등록 페이지에서만 설치하세요.
+스토어 심사는 각자의 일정에 따라 진행되므로, 최신 릴리스가 한 스토어에는 다른 스토어보다 먼저 반영될 수 있습니다 — 정확한 현재 상황은 아래 [어느 버전이 어디에서 제공되는지](#platform-availability)를 참고하세요. 항상 공식 스토어 등록 페이지에서만 설치하세요.
+:::
+
+:::note 어느 버전이 어디에서 제공되는지
+스토어 승인은 플랫폼마다 시점이 다르므로, 아래 버전이 플랫폼별로 잠시 차이가 날 수 있습니다:
+
+| 플랫폼 | 실제 서비스 버전 |
+|---|---|
+| Android | 1.0.3 |
+| iOS | 1.0 (업데이트 심사 중) |
+| Firefox | 0.1.9 |
+| Chrome | 0.1.5 (0.1.9 심사 중) |
+| Safari (macOS) | 1.1, 확장 프로그램 0.1.5 포함 (업데이트 심사 중) |
+
+이 페이지는 QoreX의 현재 기능 세트를 설명합니다 — 이전 빌드를 서비스 중인 스토어도 사용자의 별도 조치 없이 자동으로 최신 버전을 따라잡습니다.
 :::

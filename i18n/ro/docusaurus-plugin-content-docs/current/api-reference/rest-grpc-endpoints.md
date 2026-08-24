@@ -18,7 +18,7 @@ QoreChain expune trei interfețe principale pentru acces programatic:
 Toate punctele finale REST returnează JSON. Punctele finale gRPC folosesc Protocol Buffers și pot fi consumate cu orice client gRPC. Interfața RPC oferă interogări la nivel de consens și difuzarea tranzacțiilor.
 
 :::note
-Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026, pe versiunea de chain **v3.1.85**), cât și pe testnet-ul **`qorechain-diana`**. URL-urile de bază de mai jos presupun un nod care rulează local; punctele finale publice găzduite (`rpc/api/evm/svm.qore.host` și variantele lor `-testnet`) sunt listate în [Rețele](/appendix/networks#public-endpoints).
+Aceste interfețe sunt disponibile atât pe mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026, pe versiunea de chain **v3.1.92**), cât și pe testnet-ul **`qorechain-diana`**. URL-urile de bază de mai jos presupun un nod care rulează local; punctele finale publice găzduite (`rpc/api/evm/svm.qore.host` și variantele lor `-testnet`) sunt listate în [Rețele](/appendix/networks#public-endpoints).
 :::
 
 ## URL-uri de bază

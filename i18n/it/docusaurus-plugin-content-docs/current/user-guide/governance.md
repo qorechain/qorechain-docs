@@ -10,7 +10,7 @@ sidebar_position: 3
 Questa guida illustra come funziona la governance on-chain su QoreChain, incluso il sistema di voto Quadratic Delegation-Reputation Weighted (QDRW), come presentare proposte e come votare.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.85** — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.92** — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
 :::
 
 ---
@@ -23,17 +23,17 @@ QoreChain utilizza la formula **Quadratic Delegation-Reputation Weighted (QDRW)*
 VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
 ```
 
-| Variabile                 | Descrizione                                                                                                                      |
+| Variabile                  | Descrizione                                                                                                                      |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `VP`                      | Potere di voto effettivo                                                                                                        |
-| `staked`                  | Totale dei token QOR messi in stake dal votante                                                                                 |
-| `xQORE`                   | Quantità di token di governance xQORE detenuti (vedi [Staking di xQORE](/user-guide/xqore-staking))                             |
-| `r`                       | Punteggio di reputazione del votante, normalizzato a \[0, 1]                                                                    |
-| `ReputationMultiplier(r)` | Funzione sigmoidea che mappa la reputazione a un moltiplicatore nell'intervallo \[0.5, 2.0]                                     |
+| `VP`                      | Potere di voto effettivo                                                                                                          |
+| `staked`                  | Totale dei token QOR messi in stake dal votante                                                                                             |
+| `xQORE`                   | Quantità di token di governance xQORE detenuti (vedi [Staking di xQORE](/user-guide/xqore-staking))                                          |
+| `r`                       | Punteggio di reputazione del votante, normalizzato a \[0, 1]                                                                                  |
+| `ReputationMultiplier(r)` | Funzione sigmoidea che mappa la reputazione a un moltiplicatore nell'intervallo \[0.5, 2.0]                                                     |
 
 ### Proprietà principali
 
-* **Smorzamento quadratico:** Un detentore con 100 volte lo stake di un altro votante ottiene solo \~10 volte il potere di voto, non 100 volte. Questo garantisce che l'influenza sulla governance cresca in modo sub-lineare con la ricchezza.
+* **Smorzamento quadratico:** Un detentore con 100 volte lo stake di un altro votante ottiene solo \~10 volte il potere di voto, non 100 volte. Questo garantisce che l'influenza sulla governance cresca in modo sub-lineare rispetto alla ricchezza.
 * **Bonus xQORE:** I token xQORE contano con **peso 2x** all'interno della radice quadrata, conferendo un vantaggio significativo ai partecipanti impegnati nella governance.
 * **Moltiplicatore di reputazione:** Mappa il punteggio di reputazione del votante da \[0, 1] a un moltiplicatore in \[0.5, 2.0] utilizzando una curva sigmoidea. I partecipanti con reputazione elevata possono raddoppiare il proprio potere di voto effettivo, mentre i partecipanti con bassa reputazione vedono la propria influenza dimezzata.
 

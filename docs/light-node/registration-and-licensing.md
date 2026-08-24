@@ -46,12 +46,14 @@ On-chain heartbeats are opt-in in the daemon: enable the `[heartbeat]` section i
 
 ## Registering and licensing via the Dashboard
 
-You can also register a node and obtain a license through the QoreChain Dashboard, which provides a guided flow instead of constructing chain commands by hand.
+You can also bring a node up and check its licensing status through the QoreChain Dashboard's **Tools** page. Running the node and joining its rewards program are two different things, and the Dashboard keeps them separate rather than presenting one guided sign-up flow:
 
-- Register your node from **Tools → Node Registration**.
-- Obtain or renew a license from **Tools → Buy License**.
+1. **Bring your node up (Tools → Light Node, step 1).** This needs no license and no on-chain check of any kind, and it's shown to every visitor before anything else. It reads the current network manifest live and walks through downloading and verifying the binary, initializing the node with genesis, pointing `config.toml` at the network's peers, and state-syncing instead of syncing from genesis.
+2. **Check your rewards-program status (Tools → Light Node).** Joining the light-node reward share is a separate, on-chain-gated step: it requires an active `lightnode_operator` license granted on-chain, a minimum of QOR delegated — counted as your total across all the validators you delegate to, not per validator, and read live from staking rather than self-declared — and a small on-chain registration fee. **Enrollment is not open yet**, and buying a license through **Buy License** does not open it early — there is nothing to sign up for today. Until it opens, this tab shows the requirement as a status to check rather than a form to submit. Run and sync your node in the meantime; uptime from before enrollment opens is expected to count once it does.
+3. **Register once your license is granted on-chain (Tools → Light Node).** A license purchased through **Buy License** is recorded on our side first; the grant that makes it recognized on-chain is a separate step, and registration refuses until that grant lands. Once it has, this tab replaces the status panel with a registration form: your operator address (`qor1…`), a moniker, and a public endpoint URL, plus an acknowledgement of the stake commitment.
+4. **Confirm and bond stake.** After you submit, the Dashboard shows a confirmation summary of the registration (moniker, operator address, endpoint, stake intent, status). Bond the acknowledged stake from your operator address once eligibility opens.
 
-The Dashboard flow walks you through associating your operator key, choosing the node type and network, and completing the on-chain registration. Use it if you prefer a UI over the CLI, or to manage licensing alongside registration in one place.
+Use the Dashboard flow if you prefer a UI over the CLI, or to manage licensing and registration together in one place. The `lightnode-sx register` command above remains available for anyone who prefers to construct and review the transaction themselves — on-chain registration and reward-program eligibility are governed by the chain the same way regardless of which path you use.
 
 ## Where to go next
 

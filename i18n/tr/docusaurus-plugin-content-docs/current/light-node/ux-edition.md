@@ -13,12 +13,14 @@ UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabir
 
 ## Kurulum
 
+Derlenmiş ikili dosyalar **hiçbir yerel bağımlılık olmadan beş platformda** doğrudan çalışır — Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — her biri yaklaşık 16 MB.
+
 ### Kaynaktan derleme
 
-UX sürümü **Go 1.26.1** gerektirir ve kuantum sonrası yerel kitaplık için CGO etkin olarak derlenir:
+UX sürümü **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile yazılmış bir uygulamadır (CGO yok, yerel kitaplık yok):
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-ux ./cmd/lightnode-ux/
+go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
 Bu, `build/lightnode-ux` üretir.
@@ -55,6 +57,10 @@ http://localhost:8420
 
 :::caution Compose bağlantı noktası eşlemenizi kontrol edin
 Başka yerlerdeki bazı metinler dashboard için 8080 bağlantı noktasına atıfta bulunur. Yetkili değer **8420**'dir — imajın gerçekte sunduğu ve daemon'un varsayılan olarak bağlandığı budur. Kendi `docker-compose.yml` dosyanızı veya bir ters proxy'yi uyarlarsanız, 8080'e değil **8420**'ye eşleyin.
+:::
+
+:::danger Dashboard'un hiçbir kimlik doğrulaması yoktur
+8420 numaralı bağlantı noktası yalnızca localhost'ta değil, **tüm arabirimlerde** dinler ve dashboard'un **girişi ve erişim kontrolü yoktur**. Ağınızda bu bağlantı noktasına ulaşabilen herkes yapılandırmanızı, delegasyonlarınızı ve ödüllerinizi okuyabilir. **Bunu herkese açık şekilde ifşa etmeyin.** Tamamen güvenilir bir özel ağ dışında herhangi bir yerde çalıştırmadan önce, yalnızca loopback'e bağlayın veya kimlik doğrulaması gerektiren bir ters proxy'nin arkasına yerleştirin.
 :::
 
 ## Dashboard neleri gösterir

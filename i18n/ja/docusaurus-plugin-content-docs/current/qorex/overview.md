@@ -12,20 +12,23 @@ sidebar_position: 1
 QoreX は、連携して動作する2つの要素で構成されています。
 
 - **ブラウザ拡張機能** — デスクトップ向けウォレットで、**Chrome、Firefox、Safari（macOS）で公開・提供中** です。単体で完結するウォレット（作成／インポート、QOR の保有と送金）であると同時に、あらゆるウェブサイトが QoreX を検出し、すべてのリクエストを明示的な承認に変えるためのコネクタでもあります。[ブラウザ拡張機能](/qorex/browser-extension)をご覧ください。
-- **モバイルアプリ**（Android・iOS） — フル機能のウォレットです。作成／復元、耐量子 QOR の送受信、外部ネットワーク、ステーキング、ポートフォリオ、リカバリー、アプリ内 dApp ブラウザを備えています。Android は **Google Play** で、iOS は TestFlight で提供しています（提供状況は下記を参照）。
+- **モバイルアプリ**（Android・iOS） — フル機能のウォレットです。作成／復元、耐量子 QOR の送受信、外部ネットワーク、ステーキング、ポートフォリオ、リカバリー、アプリ内 dApp ブラウザを備えています。Android は **Google Play**、iOS は **App Store** で提供しています（提供状況は下記を参照）。
 
-## 対応プラットフォーム
+## 対応プラットフォーム {#platform-availability}
 
 | 機能 | モバイルアプリ（Android・iOS） | ブラウザ拡張機能 |
 |---|---|---|
-| ウォレットの作成／インポート | ✅ | ✅（単体で利用可能） |
-| QOR の送受信（耐量子） | ✅ | ✅（ポップアップから） |
-| 外部ネットワーク（Ethereum、BNB Chain、Polygon、Arbitrum、Solana、Cosmos Hub、Osmosis、Celestia＋各種トークン） | ✅ | ✅（ポップアップから送金） |
+| ウォレットの作成／インポート | ✅ | ✅（単体、1アカウント） |
+| 1つのリカバリーフレーズから複数アカウントを作成 | ✅（最大20個） | —（1アカウントのみ） |
+| QOR の送受信（耐量子） | ✅ | ✅（ポップアップから、受取用QRコード含む） |
+| @handle の支払い／取得 | ✅ | ✅ |
+| 外部ネットワーク（Ethereum、BNB Chain、Polygon、Arbitrum、Base、OP Mainnet、Avalanche、Solana、Cosmos Hub、Osmosis、Celestia＋各種トークン） | ✅ | ✅（ポップアップから送金） |
+| インターフェース言語（10言語） | ✅（端末の設定に従う） | ✅（ブラウザの設定に従う） |
 | ステーキング、ポートフォリオ、Q-Day Scanner、リカバリー、Legacy | ✅ | — |
 | dApp 接続 | ✅（アプリ内ブラウザ） | ✅（あらゆるウェブサイト） |
-| アカウント（@handle、支払いリクエスト） | ✅ | — |
+| アカウントサインインと支払いリクエスト | ✅ | — |
 | 複数端末のリンク | ✅ | — |
-| Dashboard とのペアリング | ✅ | ✅（接続＋送金提案、v0.1.5） |
+| Dashboard とのペアリング | ✅ | ✅（接続＋送金提案） |
 
 ## QoreX が他と違う理由
 
@@ -43,9 +46,23 @@ QoreX は、連携して動作する2つの要素で構成されています。
 - デスクトップでは、[ブラウザ拡張機能](/qorex/browser-extension)をインストールしてください。
 
 :::note ダウンロードと提供状況
-- **ブラウザ拡張機能** — 公開・提供中です。[Chrome Web Store、Firefox Add-ons、または Mac App Store（Safari）](/qorex/browser-extension#install)からインストールしてください。
-- **Android アプリ** — Google Play で提供中: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS アプリ** — **TestFlight** 経由でテスト用に提供中: https://testflight.apple.com/join/Xa9D7vgR — App Store 版は現在審査中です。
+- **ブラウザ拡張機能** — 公開・提供中です。[Chrome Web Store、Firefox Add-ons、または Mac App Store（Safari）](/qorex/browser-extension#install)からインストールしてください。[各ブラウザでの提供バージョン](/qorex/browser-extension#versions)をご確認ください — 新機能は一部のブラウザにまだ展開中の場合があります。
+- **Android アプリ** — Google Play で本番提供中です: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS アプリ** — **App Store** で提供中です: https://apps.apple.com/us/app/qorex-wallet/id6791256626。
 
-QoreX は必ず公式ストアの掲載ページからインストールしてください。
+ストアの審査は各ストアごとのスケジュールで進むため、最新リリースが一部のストアに先行して反映されることがあります。正確な現在の状況は、下記の[各プラットフォームでの提供バージョン](#platform-availability)をご覧ください。必ず公式のストア掲載ページからインストールしてください。
+:::
+
+:::note 各プラットフォームで提供中のバージョン
+ストアの承認タイミングはプラットフォームごとに異なるため、以下のバージョンは短期間ずれることがあります。
+
+| プラットフォーム | 提供中バージョン |
+|---|---|
+| Android | 1.0.3 |
+| iOS | 1.0（更新版は審査中） |
+| Firefox | 0.1.9 |
+| Chrome | 0.1.5（0.1.9 は審査中） |
+| Safari（macOS） | 1.1（拡張機能 0.1.5 を内蔵、更新版は審査中） |
+
+このページは QoreX の現在の機能セットを説明しています — 古いビルドを提供しているストアも、特に操作不要で自動的に最新版に追いつきます。
 :::

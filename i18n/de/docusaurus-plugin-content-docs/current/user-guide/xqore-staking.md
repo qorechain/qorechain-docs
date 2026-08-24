@@ -7,29 +7,29 @@ sidebar_position: 4
 
 # xQORE-Staking
 
-Dieser Leitfaden behandelt den xQORE-Governance-Staking-Mechanismus, der es QOR-Inhabern ermöglicht, ihre Token für erweiterte Governance-Macht zu sperren – mit einem PvP-Rebase-Modell, das langfristige Teilnehmer belohnt.
+Dieser Leitfaden beschreibt den xQORE-Governance-Staking-Mechanismus, mit dem QOR-Inhaber ihre Token für erweiterte Governance-Macht sperren können, unterstützt durch ein PvP-Rebase-Modell, das langfristige Teilnehmer belohnt.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.85** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 mit Chain-Version **v3.1.92** produktiv — ersetzen Sie beim Staking auf dem Mainnet die Chain-ID und die Endpunkte durch die Angaben auf der Seite **Connecting to Mainnet**.
 :::
 
 ---
 
 ## Überblick
 
-xQORE ist der Governance-Staking-Token von QoreChain. Wenn du QOR sperrst, erhältst du xQORE im **Verhältnis 1:1**. Das Halten von xQORE bietet einen erheblichen Vorteil in der Governance: xQORE-Token zählen mit **doppeltem Gewicht** in der QDRW-Stimmrechtsformel (siehe [Governance](/user-guide/governance)).
+xQORE ist das Governance-Staking-Token von QoreChain. Wenn Sie QOR sperren, erhalten Sie xQORE im Verhältnis **1:1**. Der Besitz von xQORE verschafft einen erheblichen Vorteil bei der Governance: xQORE-Token zählen mit **doppeltem Gewicht** in der QDRW-Stimmkraft-Formel (siehe [Governance](/user-guide/governance)).
 
 ```
 VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
 ```
 
-Das bedeutet, dass das Sperren von QOR in xQORE seine Governance-Wirkung gegenüber regulärem Staking allein effektiv verdoppelt.
+Das bedeutet, dass das Sperren von QOR zu xQORE dessen Governance-Wirkung im Vergleich zu reinem Staking effektiv verdoppelt.
 
 ---
 
 ## QOR für xQORE sperren
 
-Sperre QOR-Token, um xQORE im Verhältnis 1:1 zu prägen:
+Sperren Sie QOR-Token, um xQORE im Verhältnis 1:1 zu prägen:
 
 ```bash
 qorechaind tx xqore lock <amount>uqor \
@@ -38,7 +38,7 @@ qorechaind tx xqore lock <amount>uqor \
   --fees 500uqor
 ```
 
-**Beispiel:** Sperre 1.000 QOR:
+**Beispiel:** 1.000 QOR sperren:
 
 ```bash
 qorechaind tx xqore lock 1000000000uqor \
@@ -47,13 +47,13 @@ qorechaind tx xqore lock 1000000000uqor \
   --fees 500uqor
 ```
 
-Nach dieser Transaktion hält dein Konto 1.000.000.000 uxqore (1.000 xQORE).
+Nach dieser Transaktion hält Ihr Konto 1.000.000.000 uxqore (1.000 xQORE).
 
 ---
 
 ## xQORE entsperren
 
-Verbrenne xQORE, um QOR zurückzuerhalten. Je nachdem, wie lange die Token gesperrt waren, kann eine **Ausstiegsstrafe** anfallen:
+Verbrennen Sie xQORE, um QOR zurückzuerhalten. Je nachdem, wie lange die Token gesperrt waren, kann eine **Ausstiegsstrafe (Exit Penalty)** anfallen:
 
 ```bash
 qorechaind tx xqore unlock <amount>uqor \
@@ -62,7 +62,7 @@ qorechaind tx xqore unlock <amount>uqor \
   --fees 500uqor
 ```
 
-**Beispiel:** Entsperre 500 xQORE:
+**Beispiel:** 500 xQORE entsperren:
 
 ```bash
 qorechaind tx xqore unlock 500000000uqor \
@@ -75,37 +75,37 @@ qorechaind tx xqore unlock 500000000uqor \
 
 ## Zeitplan der Ausstiegsstrafe
 
-Eine vorzeitige Abhebung aus xQORE zieht eine Strafe nach sich. Je länger du hältst, desto geringer die Strafe:
+Ein vorzeitiger Ausstieg aus xQORE zieht eine Strafe nach sich. Je länger Sie halten, desto niedriger die Strafe:
 
-| Sperrdauer         | Ausstiegsstrafe |
-| ------------------ | ------------ |
-| Weniger als 30 Tage | **50 %**     |
-| 30 bis 90 Tage     | **35 %**     |
-| 90 bis 180 Tage    | **15 %**     |
-| Mehr als 180 Tage  | **0 %**      |
+| Sperrdauer          | Ausstiegsstrafe |
+| -------------------- | ---------------- |
+| Weniger als 30 Tage  | **50 %**         |
+| 30 bis 90 Tage       | **35 %**         |
+| 90 bis 180 Tage      | **15 %**         |
+| Mehr als 180 Tage    | **0 %**          |
 
-**Beispiel:** Wenn du 1.000 QOR gesperrt hast und nach 45 Tagen entsperrst, erhältst du 650 QOR (35 % Strafe angewendet). Die verbleibenden 350 QOR werden über den PvP-Rebase-Mechanismus an andere xQORE-Inhaber umverteilt.
+**Beispiel:** Wenn Sie 1.000 QOR gesperrt haben und nach 45 Tagen entsperren, erhalten Sie 650 QOR (35 % Strafe angewendet). Die verbleibenden 350 QOR werden über den PvP-Rebase-Mechanismus an die übrigen xQORE-Inhaber umverteilt.
 
 ---
 
 ## PvP-Rebase-Mechanismus
 
-Bei vorzeitigen Ausstiegen erhobene Strafen werden **nicht verbrannt**. Stattdessen werden sie anteilig an alle verbleibenden xQORE-Inhaber umverteilt. Dadurch entsteht eine „Player vs Player“-Dynamik, bei der geduldige Inhaber von der Ungeduld anderer profitieren.
+Strafen aus vorzeitigen Ausstiegen werden **nicht verbrannt**. Stattdessen werden sie anteilig an alle verbleibenden xQORE-Inhaber umverteilt. Dadurch entsteht eine „Player vs Player"-Dynamik, bei der geduldige Halter von der Ungeduld anderer profitieren.
 
 So funktioniert es:
 
-1. Ein Nutzer entsperrt xQORE vor der 180-tägigen Null-Strafen-Schwelle.
-2. Die Ausstiegsstrafe wird von seinen zurückgegebenen QOR abgezogen.
+1. Ein Nutzer entsperrt xQORE vor Ablauf der 180-Tage-Schwelle für Strafenfreiheit.
+2. Die Ausstiegsstrafe wird vom zurückerhaltenen QOR abgezogen.
 3. Der Strafbetrag wird anteilig auf alle verbleibenden xQORE-Positionen verteilt.
-4. Die einforderbaren QOR pro xQORE jedes verbleibenden Inhabers erhöhen sich.
+4. Der beanspruchbare QOR-Betrag pro xQORE steigt für jeden verbleibenden Inhaber.
 
-Dieser Mechanismus schafft Anreize für langfristiges Governance-Engagement und belohnt Inhaber, die ihre Positionen halten.
+Dieser Mechanismus fördert langfristiges Engagement in der Governance und belohnt Inhaber, die ihre Positionen halten.
 
 ---
 
-## Deine Position abfragen
+## Ihre Position abfragen
 
-Prüfe deine aktuelle xQORE-Position, die Sperrdauer und die anwendbare Ausstiegsstrafe:
+Prüfen Sie Ihre aktuelle xQORE-Position, Sperrdauer und die geltende Ausstiegsstrafe:
 
 ```bash
 qorechaind query xqore position <address>
@@ -133,7 +133,7 @@ position:
 
 ## JSON-RPC-Zugriff
 
-Für Anwendungen, die über JSON-RPC mit QoreChain integriert sind, kann die xQORE-Position folgendermaßen abgefragt werden:
+Für Anwendungen, die über JSON-RPC mit QoreChain integrieren, kann die xQORE-Position abgefragt werden mit:
 
 ```
 qor_getXQOREPosition
@@ -170,8 +170,8 @@ qor_getXQOREPosition
 
 ## Tipps
 
-* Sperre QOR rechtzeitig vor wichtigen Governance-Abstimmungen in xQORE, um deine Stimmkraft zu maximieren.
+* Sperren Sie QOR rechtzeitig vor wichtigen Governance-Abstimmungen in xQORE, um Ihre Stimmkraft zu maximieren.
 * Die 180-Tage-Schwelle für strafenfreie Ausstiege belohnt geduldige Governance-Teilnehmer.
-* Beobachte die PvP-Rebase-Zuwächse. Wenn andere vorzeitig aussteigen, gewinnt deine Position an Wert.
-* xQORE ist nicht übertragbar. Es kann nur durch das Sperren von QOR geprägt und durch Entsperren verbrannt werden.
-* Berücksichtige die Ausstiegsstrafe sorgfältig, bevor du sperrst. Kurzfristige Sperren tragen erhebliche Strafen.
+* Behalten Sie die PvP-Rebase-Zuwächse im Blick. Wenn andere vorzeitig aussteigen, wächst der Wert Ihrer Position.
+* xQORE ist nicht übertragbar. Es kann nur durch das Sperren von QOR geprägt und durch das Entsperren verbrannt werden.
+* Überlegen Sie die Ausstiegsstrafe sorgfältig, bevor Sie sperren. Kurzfristige Sperrungen sind mit erheblichen Strafen verbunden.

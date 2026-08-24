@@ -10,10 +10,14 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.1.85** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (mainnet) kullanır. Test ağı (testnet) için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (mainnet) kullanır. Test ağı (testnet) için `--chain-id qorechain-diana` kullanın.
 :::
 
 ---
+
+:::caution SVM işlem gönderimi şu anda devre dışı
+v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın.
+:::
 
 ## Genel Bakış
 
@@ -41,7 +45,7 @@ Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.1.85** zin
 * **System Program transferleri yerel QOR taşır** — Solana tarzı bir transfer talimatı, bir Cosmos `MsgSend` veya bir EVM transferinin taşıyacağı aynı fonları taşır.
 * **SVM adres biçimi** — bir hesabın SVM adresi, hesabın 20 baytının sağdan 32 bayta doldurulup base58 ile kodlanmış halidir. Üç adres biçiminin tümü (`qor1...`, `0x...`, base58) aynı hesaba işaret eder.
 
-Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) **salt okunurdur** — işlem gönderimi uç noktada (edge) devre dışıdır. SVM işlemleri göndermek için kendi düğümünüzü (port 8899) çalıştırın.
+Genel uç noktalar (`https://svm.qore.host`, `https://svm-testnet.qore.host`) **salt okunurdur** — işlem gönderimi uç noktada (edge) devre dışıdır. Normal koşullarda SVM işlemleri göndermek için kendi düğümünüzü (port 8899) çalıştırırdınız, ancak yukarıdaki uyarıyı unutmayın: `x/svm` işlem hattının kendisi, kendi düğümünüz dahil, şu anda ağ genelinde devre dışıdır.
 
 ---
 
@@ -69,15 +73,15 @@ Varsayılan değerler `enable = true` ve `address = "127.0.0.1:8899"` olduğunda
 
 ### Desteklenen Metodlar
 
-| Metod                               | Açıklama                                             |
-| ----------------------------------- | ---------------------------------------------------- |
-| `getAccountInfo`                    | Hesap verilerini ve lamport bakiyesini alır          |
-| `getBalance`                        | Hesap bakiyesini lamports cinsinden alır (yerel QOR) |
-| `getSignaturesForAddress`           | Bir adres için işlem geçmişi                         |
-| `getSlot`                           | Geçerli slot numarası                                |
-| `getMinimumBalanceForRentExemption` | Belirli bir veri boyutu için minimum bakiye          |
-| `getVersion`                        | SVM çalışma zamanı sürüm bilgisi                     |
-| `getHealth`                         | SVM uç noktası için sağlık kontrolü                  |
+| Metod                                | Açıklama                                             |
+| ------------------------------------ | ----------------------------------------------------- |
+| `getAccountInfo`                     | Hesap verilerini ve lamport bakiyesini alır          |
+| `getBalance`                         | Hesap bakiyesini lamports cinsinden alır (yerel QOR) |
+| `getSignaturesForAddress`            | Bir adres için işlem geçmişi                         |
+| `getSlot`                            | Geçerli slot numarası                                |
+| `getMinimumBalanceForRentExemption`  | Belirli bir veri boyutu için minimum bakiye          |
+| `getVersion`                         | SVM çalışma zamanı sürüm bilgisi                     |
+| `getHealth`                          | SVM uç noktası için sağlık kontrolü                  |
 
 ---
 
@@ -192,11 +196,11 @@ Eşleme deterministiktir ve `x/svm` modülü tarafından yönetilir. Her iki gö
 
 SVM modülü, durum şişmesini (state bloat) önlemek için **kira tabanlı bir depolama modeli** kullanır:
 
-| Parametre                   | Değer     |
-| --------------------------- | --------- |
-| Bayt başına yıllık lamports | `3,480`   |
-| Kira muafiyeti çarpanı      | `2.0`     |
-| Tahsilat sıklığı            | Her epoch |
+| Parametre                    | Değer     |
+| ----------------------------- | --------- |
+| Bayt başına yıllık lamports  | `3,480`   |
+| Kira muafiyeti çarpanı       | `2.0`     |
+| Tahsilat sıklığı             | Her epoch |
 
 * Bakiyesi lamports cinsinden `2 * (data_size * 3480 / seconds_per_year)` değerinin **üzerinde** olan hesaplar **kiradan muaftır** ve asla ücretlendirilmez.
 * Kira muafiyeti eşiğinin **altındaki** hesaplardan her epoch'ta kira tahsil edilir. Bakiye sıfıra ulaşırsa hesap silinir.
@@ -211,12 +215,12 @@ SVM modülü, durum şişmesini (state bloat) önlemek için **kira tabanlı bir
 
 Her talimat yürütmesi hesaplama birimleriyle (compute units) ölçülür:
 
-| Parametre                                       | Değer       |
-| ----------------------------------------------- | ----------- |
-| Talimat başına maksimum hesaplama birimi        | `1,400,000` |
-| Maksimum CPI (programlar arası çağrı) derinliği | `4`         |
-| Maksimum program boyutu                         | `10 MB`     |
-| Maksimum hesap verisi boyutu                    | `10 MB`     |
+| Parametre                                        | Değer       |
+| ------------------------------------------------- | ----------- |
+| Talimat başına maksimum hesaplama birimi          | `1,400,000` |
+| Maksimum CPI (programlar arası çağrı) derinliği   | `4`         |
+| Maksimum program boyutu                           | `10 MB`     |
+| Maksimum hesap verisi boyutu                      | `10 MB`     |
 
 Hesaplama bütçesini aşan programlar durdurulur ve işlem geri alınır.
 

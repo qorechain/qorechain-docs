@@ -30,17 +30,31 @@ Tout ce qui se trouve dans cette section est un guide pratique utilisateur : ce 
 
 La plupart des actions qui modifient l'état on-chain — envoi de jetons, swap, staking, bridging — nécessitent un portefeuille connecté. La façon dont le Dashboard gère les clés dépend du réseau :
 
-- **Le mainnet est non custodial.** Le Dashboard ne détient jamais vos clés mainnet. Vous connectez votre propre portefeuille — **Keplr** pour le rail Native ou **MetaMask** pour le rail EVM — et le Dashboard lit votre solde et votre historique réels depuis la chaîne. Chaque transaction mainnet est signée dans votre propre portefeuille, jamais par le Dashboard.
+- **Le mainnet est non custodial.** Le Dashboard ne détient jamais vos clés mainnet. Vous connectez votre propre portefeuille — **QoreX** (le portefeuille officiel de QoreChain, extension ou application), **Keplr**, ou **MetaMask** — et le Dashboard lit votre solde et votre historique réels depuis la chaîne. Chaque transaction mainnet est signée dans votre propre portefeuille, jamais par le Dashboard. L'envoi et le staking sur le **rail Native nécessitent QoreX**, car les comptes QoreChain signent avec une signature hybride post-quantique que seul QoreX produit aujourd'hui ; Keplr peut tout de même se connecter pour consulter votre solde sur le rail Native. **MetaMask** signe et envoie de façon autonome sur le **rail EVM**.
 - **Le testnet est custodial.** Le Dashboard gère un portefeuille de test pour vous, afin que vous puissiez expérimenter sans aucune configuration et sans aucune valeur réelle en jeu.
 
-Pour vous connecter sur le mainnet :
+### Se connecter avec QoreX (recommandé) {#connect-qorex}
+
+QoreX est le portefeuille officiel de QoreChain. La carte **Connect with QoreX** du Dashboard prend en charge à la fois l'extension de navigateur et l'application mobile depuis le même point d'entrée.
+
+1. Ouvrez [dashboard.qorechain.io](https://dashboard.qorechain.io) et vérifiez que l'en-tête affiche **Mainnet**.
+2. S'il s'agit de votre première visite sur une page mainnet, lisez et acceptez la [reconnaissance des risques unique](#risk-acknowledgement).
+3. Sélectionnez **Connect Wallet** (ou **Connect with QoreX** sur la carte du portefeuille).
+4. Si l'extension de navigateur QoreX est installée et détectée dans ce navigateur, le Dashboard demande **« Comment souhaitez-vous vous connecter ? »** avec deux options, **Browser extension** et **QoreX app**. Choisissez-en une — le choix est enregistré, donc les visites suivantes ne redemandent plus cette question (un lien **Use a different method** est toujours disponible si vous souhaitez changer de méthode plus tard). Si aucune extension n'est détectée, le Dashboard passe directement au parcours de l'application.
+   - **Browser extension** : la fenêtre contextuelle propre à l'extension s'ouvre, affichant `dashboard.qorechain.io` comme site demandant la connexion. Vérifiez-la et approuvez — cela signe une preuve unique que vous possédez votre adresse `qor1...` (aucun fonds ne se déplace). L'appariement se termine immédiatement, dans la même session de navigateur.
+   - **QoreX app** : le Dashboard affiche un code QR (avec un lien **Open QoreX** qui ouvre directement l'application si vous naviguez depuis le même téléphone). Ouvrez l'application QoreX, scannez le code QR (ou appuyez sur le lien), vérifiez la demande d'appariement affichant l'origine du Dashboard, et approuvez-la avec votre confirmation biométrique. Le Dashboard interroge en arrière-plan et termine automatiquement l'appariement une fois que vous avez approuvé.
+5. Une fois approuvé, le Dashboard affiche votre adresse `qor1...` et débloque les actions nécessitant une signature.
+
+Consultez [Wallet](/dashboard/wallet#mainnet) pour le guide complet de connexion et d'envoi par type de portefeuille, ainsi que la page [Account & Dashboard](/qorex/account-and-dashboard#dashboard) de la documentation QoreX pour la vue côté portefeuille du même appariement.
+
+### Se connecter avec Keplr ou MetaMask
 
 1. Ouvrez [dashboard.qorechain.io](https://dashboard.qorechain.io) et vérifiez que l'en-tête affiche **Mainnet**.
 2. S'il s'agit de votre première visite sur une page mainnet, lisez et acceptez la reconnaissance des risques unique (voir ci-dessous).
-3. Sélectionnez **Connect Wallet** et choisissez **Keplr** (rail Native) ou **MetaMask** (rail EVM).
+3. Sélectionnez **Connect Wallet** et choisissez **Keplr** ou **MetaMask**.
 4. Approuvez la connexion dans votre portefeuille.
 
-Une fois connecté, le Dashboard affiche votre adresse (sous forme abrégée) dans l'en-tête et débloque les actions nécessitant une signature. Les pages en lecture seule comme l'Explorer fonctionnent sans connexion.
+Une fois connecté, le Dashboard affiche votre adresse (sous forme abrégée) dans l'en-tête. MetaMask débloque l'envoi et les autres actions signées directement sur le rail EVM. Keplr débloque la consultation de votre solde et de votre historique sur le rail Native — l'envoi et le staking sur ce rail passent par QoreX (voir ci-dessus), car les comptes QoreChain signent avec une signature hybride post-quantique. Les pages en lecture seule comme l'Explorer fonctionnent sans connexion.
 
 Les comptes QoreChain utilisent le préfixe bech32 `qor`, donc une adresse connectée ressemble à `qor1...` — le même compte possède également un encodage EVM (`0x...`) et un encodage SVM (base58). Les comptes sont protégés par de la cryptographie résistante au quantique. Consultez [Configuration du portefeuille](/getting-started/wallet-setup) pour des conseils de première configuration, et [Ajouter QoreChain à votre portefeuille](/dashboard/wallet#add-network) si votre portefeuille ne connaît pas encore le réseau.
 

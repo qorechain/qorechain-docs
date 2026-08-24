@@ -7,10 +7,10 @@ sidebar_position: 6
 
 # EVM 프리컴파일
 
-QoreChain은 프로토콜 수준의 기능을 Solidity에 직접 노출하는 **6개의 커스텀 프리컴파일 컨트랙트**로 QoreChain EVM Engine을 확장합니다. 이 프리컴파일들은 양자내성 암호, AI 위험 점수, 크로스-VM 메시징, PRISM 합의 매개변수에 대한 온체인 접근을 제공합니다.
+QoreChain은 QoreChain EVM 엔진을 **6개의 커스텀 프리컴파일 컨트랙트**로 확장하여 프로토콜 수준의 기능을 Solidity에 직접 노출합니다. 이 프리컴파일들은 포스트 퀀텀 암호화, AI 리스크 스코어링, 크로스 VM 메시징, PRISM 합의 파라미터에 대한 온체인 접근을 제공합니다.
 
 :::note
-프리컴파일은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 체인 버전 **v3.1.82**로 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**) 모두에서 사용할 수 있습니다. 모든 예제는 **포트 8545**의 JSON-RPC 엔드포인트를 사용합니다.
+프리컴파일은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 체인 버전 **v3.1.92**로 2026년 6월 7일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**) 양쪽에서 모두 사용할 수 있습니다. 모든 예제는 **포트 8545**의 JSON-RPC 엔드포인트를 사용합니다.
 :::
 
 ---
@@ -19,12 +19,12 @@ QoreChain은 프로토콜 수준의 기능을 Solidity에 직접 노출하는 **
 
 | 프리컴파일              | 주소                                      | 기본 가스        | 설명                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | 동기식 크로스-VM 호출 (EVM에서 CosmWasm으로)     |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | ML-DSA-87 양자내성 서명 검증         |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | 동기식 크로스 VM 호출(EVM에서 CosmWasm으로)     |
+| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 바이트당 8 | ML-DSA-87 포스트 퀀텀 서명 검증         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | 계정에 등록된 PQC 키가 있는지 확인     |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 위험 점수 조회 |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | 전송이 이상으로 플래그되는지 확인      |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | 현재 PRISM 튜닝 합의 매개변수 읽기    |
+| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 리스크 스코어 조회 |
+| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | 전송이 이상 거래로 플래그되는지 확인      |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | 현재 PRISM 튜닝 합의 파라미터 조회    |
 
 ---
 
@@ -116,7 +116,7 @@ interface IQoreConsensus {
 
 ## 사용 예제
 
-### PQC Verify — 양자내성 서명 검증
+### PQC Verify — 포스트 퀀텀 서명 검증
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -139,9 +139,9 @@ contract PQCVerifier {
 }
 ```
 
-**가스 비용:** 25,000 기본 + 입력 데이터 바이트당 8 가스. 일반적인 ML-DSA-87 검증(2592 + 4627 + 메시지 바이트)의 경우 약 80,000~90,000 가스를 예상하세요.
+**가스 비용:** 기본 25,000 + 입력 데이터 바이트당 8 가스. 일반적인 ML-DSA-87 검증(2592 + 4627 + 메시지 바이트)의 경우 약 80,000~90,000 가스가 소요됩니다.
 
-### PQC Key Status — 계정 등록 확인
+### PQC Key Status — 계정 등록 여부 확인
 
 ```solidity
 contract PQCChecker {
@@ -154,9 +154,9 @@ contract PQCChecker {
 }
 ```
 
-**가스 비용:** 2,500 고정.
+**가스 비용:** 정액 2,500.
 
-### AI Risk Score — 트랜잭션 위험 평가
+### AI Risk Score — 트랜잭션 리스크 평가
 
 ```solidity
 import "./interfaces/IQoreAI.sol";
@@ -175,9 +175,9 @@ contract RiskGate {
 }
 ```
 
-**위험 수준:**
+**리스크 레벨:**
 
-| 수준    | 값 | 점수 범위 (bps) |
+| 레벨    | 값 | 스코어 범위(bps) |
 | -------- | ----- | ----------------- |
 | SAFE     | 0     | 0 - 1000          |
 | LOW      | 1     | 1001 - 3000       |
@@ -185,9 +185,9 @@ contract RiskGate {
 | HIGH     | 3     | 6001 - 8500       |
 | CRITICAL | 4     | 8501 - 10000      |
 
-**가스 비용:** 50,000 고정.
+**가스 비용:** 정액 50,000.
 
-### AI Anomaly Check — 의심스러운 전송 플래그
+### AI Anomaly Check — 의심스러운 전송 플래그 처리
 
 ```solidity
 contract AnomalyGuard {
@@ -203,9 +203,9 @@ contract AnomalyGuard {
 }
 ```
 
-**가스 비용:** 40,000 고정.
+**가스 비용:** 정액 40,000.
 
-### PRISM Consensus Params — 합의 상태 읽기
+### PRISM Consensus Params — 합의 상태 조회
 
 ```solidity
 contract ConsensusReader {
@@ -225,7 +225,7 @@ contract ConsensusReader {
 }
 ```
 
-**가스 비용:** 1,500 고정.
+**가스 비용:** 정액 1,500.
 
 ### CrossVM Bridge — EVM에서 CosmWasm 호출
 
@@ -249,13 +249,13 @@ contract CrossVMExample {
 }
 ```
 
-**가스 비용:** 50,000 기본 + 대상 컨트랙트 실행 비용. 자세한 내용은 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
+**가스 비용:** 기본 50,000 + 대상 컨트랙트 실행 비용. 자세한 내용은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 
 ---
 
 ## 인터페이스 파일 위치
 
-Solidity 인터페이스 파일은 직접 임포트할 수 있도록 리포지토리에서 제공됩니다:
+Solidity 인터페이스 파일은 직접 임포트할 수 있도록 저장소에 제공됩니다.
 
 ```
 contracts/
@@ -266,14 +266,14 @@ contracts/
     ICrossVM.sol
 ```
 
-Hardhat 또는 Foundry 프로젝트에 설치하세요:
+Hardhat 또는 Foundry 프로젝트에 다음과 같이 설치하세요.
 
 ```bash
 # Copy interfaces to your project
 cp -r contracts/interfaces/ my-project/contracts/interfaces/
 ```
 
-또는 Solidity 파일에서 임포트 경로로 참조하세요:
+또는 Solidity 파일에서 임포트 경로를 통해 참조하세요.
 
 ```solidity
 import "./interfaces/IQorePQC.sol";
@@ -285,6 +285,6 @@ import "./interfaces/IQoreConsensus.sol";
 
 ## 다음 단계
 
-* [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — 전체 크로스-VM 메시징 문서
-* [EVM 개발](/developer-guide/evm-development) — Solidity 컨트랙트 배포
-* [계정 추상화](/developer-guide/account-abstraction) — 세션 키를 갖춘 프로그래밍 가능한 계정
+* [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability) — 크로스 VM 메시징 전체 문서
+* [EVM 개발](/developer-guide/evm-development) — Solidity 컨트랙트 배포하기
+* [계정 추상화](/developer-guide/account-abstraction) — 세션 키를 사용하는 프로그래머블 계정

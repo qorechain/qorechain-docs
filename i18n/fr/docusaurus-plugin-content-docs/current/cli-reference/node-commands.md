@@ -7,29 +7,29 @@ sidebar_position: 1
 
 # Commandes de nœud
 
-Référence des commandes `qorechaind` utilisées pour initialiser, configurer et exploiter un nœud QoreChain.
+Référence des commandes `qorechaind` utilisées pour initialiser, configurer et faire fonctionner un nœud QoreChain.
 
 :::note
-QoreChain exécute deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.85**) et le testnet **`qorechain-diana`**. Passez le `--chain-id` approprié pour le réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet.
+QoreChain exploite deux réseaux : le mainnet **`qorechain-vladi`** (en service depuis le 7 juin 2026, en version de chaîne **v3.1.92**) et le testnet **`qorechain-diana`**. Indiquez le `--chain-id` correspondant au réseau que vous souhaitez rejoindre — les exemples ci-dessous ciblent le testnet ; utilisez `--chain-id qorechain-vladi` pour le mainnet.
 :::
 
 ---
 
 ## init
 
-Initialise un nouveau nœud avec le moniker indiqué.
+Initialise un nouveau nœud avec le moniker donné.
 
 ```bash
 qorechaind init <moniker> --chain-id qorechain-diana
 ```
 
-| Indicateur          | Type   | Description                                    |
+| Flag          | Type   | Description                                    |
 | ------------- | ------ | ---------------------------------------------- |
-| `--chain-id`  | string | Identifiant de la chaîne (requis)                    |
-| `--home`      | string | Répertoire personnel du nœud (par défaut : `~/.qorechaind`) |
-| `--overwrite` | bool   | Écrase les fichiers genesis et de configuration existants    |
+| `--chain-id`  | string | Identifiant de la chaîne (obligatoire)         |
+| `--home`      | string | Répertoire home du nœud (par défaut : `~/.qorechaind`) |
+| `--overwrite` | bool   | Écrase les fichiers de genesis et de configuration existants |
 
-Crée la structure de répertoires sous `--home` avec `config/`, `data/` et un `genesis.json` initial.
+Crée l'arborescence de répertoires sous `--home` avec `config/`, `data/`, et un `genesis.json` initial.
 
 ---
 
@@ -41,15 +41,15 @@ Démarre le nœud et commence la synchronisation ou la production de blocs.
 qorechaind start [flags]
 ```
 
-| Indicateur                   | Type   | Description                                          |
-| ---------------------- | ------ | ---------------------------------------------------- |
-| `--home`               | string | Répertoire personnel du nœud                                  |
-| `--minimum-gas-prices` | string | Prix de gas minimaux à accepter (par ex. `0.001uqor`)     |
+| Flag                   | Type   | Description                                          |
+| ---------------------- | ------ | ----------------------------------------------------- |
+| `--home`               | string | Répertoire home du nœud                               |
+| `--minimum-gas-prices` | string | Prix de gas minimum à accepter (ex. : `0.001uqor`)     |
 | `--pruning`            | string | Stratégie d'élagage : `default`, `nothing`, `everything` |
-| `--halt-height`        | uint   | Arrête le nœud à cette hauteur de bloc                   |
-| `--halt-time`          | uint   | Arrête le nœud à cet horodatage Unix                 |
-| `--log_level`          | string | Verbosité des journaux : `info`, `debug`, `warn`, `error`      |
-| `--trace`              | bool   | Active la trace de pile complète en cas d'erreur                    |
+| `--halt-height`        | uint   | Arrête le nœud à cette hauteur de bloc                |
+| `--halt-time`          | uint   | Arrête le nœud à cet horodatage Unix                  |
+| `--log_level`          | string | Verbosité des journaux : `info`, `debug`, `warn`, `error` |
+| `--trace`              | bool   | Active la trace de pile complète en cas d'erreur       |
 
 ---
 
@@ -61,7 +61,7 @@ Affiche la version du binaire `qorechaind` et les informations de build.
 qorechaind version
 ```
 
-Utilisez `--long` pour des détails de build étendus, y compris la version de Go, le hachage de commit et les tags de build :
+Utilisez `--long` pour des détails de build étendus, incluant la version de Go, le hash de commit et les tags de build :
 
 ```bash
 qorechaind version --long
@@ -71,15 +71,15 @@ qorechaind version --long
 
 ## status
 
-Interroge le nœud en cours d'exécution sur son statut actuel, notamment l'état de synchronisation, la dernière hauteur de bloc et les informations de consensus.
+Interroge le nœud en cours d'exécution sur son état actuel, incluant l'état de synchronisation, la dernière hauteur de bloc et les informations de consensus.
 
 ```bash
 qorechaind status
 ```
 
-| Indicateur     | Type   | Description                                     |
-| -------- | ------ | ----------------------------------------------- |
-| `--node` | string | Point d'accès RPC (par défaut : `tcp://localhost:26657`) |
+| Flag     | Type   | Description                                     |
+| -------- | ------ | ------------------------------------------------ |
+| `--node` | string | Point de terminaison RPC (par défaut : `tcp://localhost:26657`) |
 
 Renvoie du JSON avec les sections `node_info`, `sync_info` et `validator_info`.
 
@@ -95,7 +95,7 @@ Lit ou écrit des valeurs dans la configuration du nœud.
 qorechaind config set <key> <value>
 ```
 
-### Lire une valeur de configuration
+### Obtenir une valeur de configuration
 
 ```bash
 qorechaind config get <key>
@@ -107,7 +107,7 @@ Les clés de configuration courantes incluent `chain-id`, `keyring-backend`, `ou
 
 ## keys
 
-Gère le trousseau local pour signer les transactions.
+Gère le trousseau de clés local pour signer les transactions.
 
 ### Ajouter une nouvelle clé
 
@@ -115,13 +115,13 @@ Gère le trousseau local pour signer les transactions.
 qorechaind keys add <name> [flags]
 ```
 
-| Indicateur                   | Type   | Description                                     |
-| ---------------------- | ------ | ----------------------------------------------- |
-| `--keyring-backend`    | string | Backend : `os`, `file`, `test`                   |
+| Flag                   | Type   | Description                                     |
+| ---------------------- | ------ | ------------------------------------------------ |
+| `--keyring-backend`    | string | Backend : `os`, `file`, `test`                    |
 | `--algo`               | string | Algorithme de clé : `secp256k1` (par défaut), `ed25519` |
-| `--recover`            | bool   | Récupère la clé à partir d'un mnémonique                       |
-| `--multisig`           | string | Liste de clés séparées par des virgules pour le multisig       |
-| `--multisig-threshold` | uint   | Nombre minimal de signatures requis                     |
+| `--recover`            | bool   | Récupère la clé à partir d'une phrase mnémonique  |
+| `--multisig`           | string | Liste de clés séparées par des virgules pour le multisig |
+| `--multisig-threshold` | uint   | Nombre minimum de signatures requises             |
 
 ### Lister toutes les clés
 
@@ -135,11 +135,11 @@ qorechaind keys list --keyring-backend <backend>
 qorechaind keys show <name> [flags]
 ```
 
-| Indicateur        | Type   | Description                         |
-| ----------- | ------ | ----------------------------------- |
-| `--bech`    | string | Format de sortie : `acc`, `val`, `cons` |
-| `--address` | bool   | Affiche uniquement l'adresse                   |
-| `--pubkey`  | bool   | Affiche uniquement la clé publique                |
+| Flag        | Type   | Description                              |
+| ----------- | ------ | ------------------------------------------ |
+| `--bech`    | string | Format de sortie : `acc`, `val`, `cons`     |
+| `--address` | bool   | Affiche uniquement l'adresse               |
+| `--pubkey`  | bool   | Affiche uniquement la clé publique         |
 
 ### Supprimer une clé
 
@@ -147,7 +147,7 @@ qorechaind keys show <name> [flags]
 qorechaind keys delete <name> --keyring-backend <backend>
 ```
 
-### Exporter une clé (chiffrée par armure)
+### Exporter une clé (chiffrée par armor)
 
 ```bash
 qorechaind keys export <name>
@@ -171,10 +171,10 @@ Gère le fichier genesis.
 qorechaind genesis add-genesis-account <address> <coins> [flags]
 ```
 
-| Indicateur                 | Type   | Description                       |
-| -------------------- | ------ | --------------------------------- |
-| `--vesting-amount`   | string | Montant du vesting                    |
-| `--vesting-end-time` | int    | Heure de fin du vesting (horodatage Unix) |
+| Flag                 | Type   | Description                              |
+| -------------------- | ------ | ------------------------------------------ |
+| `--vesting-amount`   | string | Montant de vesting                         |
+| `--vesting-end-time` | int    | Date de fin de vesting (horodatage Unix)   |
 
 ### Créer une transaction genesis
 
@@ -182,12 +182,12 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 qorechaind genesis gentx <key-name> <stake-amount> [flags]
 ```
 
-| Indicateur                    | Type   | Description             |
-| ----------------------- | ------ | ----------------------- |
+| Flag                    | Type   | Description                  |
+| ----------------------- | ------ | ------------------------------ |
 | `--chain-id`            | string | Identifiant de la chaîne        |
-| `--moniker`             | string | Moniker du validateur       |
-| `--commission-rate`     | string | Taux de commission initial |
-| `--commission-max-rate` | string | Taux de commission maximal |
+| `--moniker`             | string | Moniker du validateur           |
+| `--commission-rate`     | string | Taux de commission initial      |
+| `--commission-max-rate` | string | Taux de commission maximum      |
 
 ### Collecter les transactions genesis
 
@@ -213,15 +213,15 @@ Ces sous-commandes interagissent avec la couche du moteur de consensus de QoreCh
 qorechaind comet show-validator
 ```
 
-Affiche la clé publique de consensus au format JSON. Utilisée pour vérifier l'identité d'un validateur.
+Affiche la clé publique de consensus au format JSON. Utilisée pour vérifier l'identité du validateur.
 
-### Afficher l'ID du nœud
+### Afficher l'identifiant du nœud
 
 ```bash
 qorechaind comet show-node-id
 ```
 
-Affiche l'identifiant de nœud P2P (encodé en hexadécimal). Utilisé pour la configuration des pairs persistants.
+Affiche l'identifiant P2P du nœud (encodé en hexadécimal). Utilisé pour la configuration des pairs persistants.
 
 ---
 
@@ -233,25 +233,25 @@ Exporte l'état actuel de la chaîne sous forme de fichier genesis JSON. Utile p
 qorechaind export [flags]
 ```
 
-| Indicateur                | Type   | Description                               |
-| ------------------- | ------ | ----------------------------------------- |
+| Flag                | Type   | Description                                    |
+| ------------------- | ------ | ------------------------------------------------ |
 | `--for-zero-height` | bool   | Prépare l'export pour un redémarrage à la hauteur 0 |
 | `--height`          | int    | Exporte l'état à une hauteur de bloc spécifique   |
-| `--home`            | string | Répertoire personnel du nœud                       |
+| `--home`            | string | Répertoire home du nœud                           |
 
 ---
 
 ## rollback
 
-Annule l'état de la chaîne d'un bloc. Utile pour récupérer après une défaillance de consensus.
+Fait revenir l'état de la chaîne d'un bloc en arrière. Utile pour se remettre d'un échec de consensus.
 
 ```bash
 qorechaind rollback [flags]
 ```
 
-| Indicateur     | Type   | Description                                        |
-| -------- | ------ | -------------------------------------------------- |
-| `--hard` | bool   | Supprime également le dernier bloc du magasin de blocs |
-| `--home` | string | Répertoire personnel du nœud                                |
+| Flag     | Type   | Description                                             |
+| -------- | ------ | ---------------------------------------------------------- |
+| `--hard` | bool   | Supprime également le dernier bloc du magasin de blocs      |
+| `--home` | string | Répertoire home du nœud                                     |
 
-Cette commande annule à la fois l'état applicatif et l'état de consensus. À utiliser avec précaution, car elle est irréversible.
+Cette commande fait revenir en arrière à la fois l'état de l'application et l'état du consensus. À utiliser avec prudence, car elle ne peut pas être annulée.

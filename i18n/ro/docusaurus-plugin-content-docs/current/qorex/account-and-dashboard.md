@@ -22,11 +22,21 @@ Te poți autentifica din **Sign in** aflat în fila Home sau în timpul configur
 Oferta de passkey apare doar după autentificarea cu **cod pe e-mail**. Când te autentifici cu un furnizor de identitate (Google sau Dashboard), acel furnizor își gestionează propria autentificare, așa că o passkey nu poate fi atașată acelor conturi.
 :::
 
+## Mai multe conturi dintr-o singură frază {#accounts}
+
+Settings → **Your accounts** îți permite să creezi, comuți și redenumești până la **20 de conturi**, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă distinctă `qor1…`, cu propriul sold și — pentru că un handle se leagă de o **adresă**, nu de portofel în ansamblu — propriul @handle opțional. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri. Extensia de browser nu are această funcție; ea gestionează exact un singur cont.
+
 ## @handle {#handle}
 
 Revendică un nume unic (de exemplu `@liviu`) legat de adresa ta prin **semnături duble** (o semnătură ed25519 de registru + propria ta semnătură secp256k1). Oricine poate apoi trimite către @handle-ul tău. Rezolvarea este **verify-then-pin** (trust-on-first-use), astfel încât, dacă cheia unui handle este schimbată vreodată pe tăcute, QoreX semnalează acest lucru.
 
+Pentru că un handle se leagă de o adresă, nu de portofelul tău, revendicarea unuia este **per adresă** — dacă ai [mai multe conturi](#accounts), fiecare poate avea propriul @handle, iar revendicarea unuia pentru un cont nu dă automat un nume și celorlalte. Extensia de browser poate, de asemenea, revendica un handle pentru propria sa adresă unică, direct din popup.
+
 Dacă registrul de handle-uri este temporar inaccesibil, ecranul se reduce la **„Handles coming soon”** și restul continuă să funcționeze; handle-urile se reactivează automat când registrul revine.
+
+:::note Revendicarea unui handle vs. asocierea cu Dashboard
+Acestea sunt două acțiuni separate, fără legătură între ele. Revendicarea unui @handle le permite **altor persoane să îți trimită după nume** — nu face nimic altceva în plus. Asocierea cu Dashboard (mai jos) conectează portofelul tău la un cont Dashboard, astfel încât cele două să poată afișa aceleași date. Poți face oricare dintre ele fără cealaltă.
+:::
 
 ## Cont asociat {#linked-account}
 
@@ -43,7 +53,7 @@ Autentificarea *prin* **Continue with Dashboard** le leagă implicit — nu mai 
 Cu Dashboard conectat:
 
 - **Connect with QoreX** din Dashboard îl asociază cu portofelul tău printr-un deep link `qorex://connect` plus o dovadă de proprietate semnată.
-- **Transferurile inițiate în Dashboard** ajung în QoreX ca cereri `qorex://tx`. Sunt decodate, afișate integral și semnate **doar în aplicație** după aprobarea biometrică — și numai de la adresa derivată proprie a aplicației.
+- **Transferurile inițiate în Dashboard** ajung în QoreX ca cereri `qorex://tx`. Sunt decodate, afișate integral și semnate **doar în aplicație** după aprobarea biometrică — și numai de la adresa derivată proprie a aplicației. Pentru că o adresă `qor1…` este la fel de validă atât pe mainnet, cât și pe testnet, fiecare cerere inițiată din Dashboard specifică rețeaua vizată, iar QoreX refuză să acționeze asupra ei dacă aceasta nu corespunde rețelei la care ești conectat în prezent — nu comută niciodată rețeaua în numele unei cereri.
 - Dacă o cerere de Connect sau de transfer sosește în timp ce **nu ești autentificat**, QoreX îți oferă un pas integrat **„Sign in to Dashboard”** ca să poți continua fără să te blochezi.
 - **Your addresses (Settings)** — listează fiecare cont derivat din acest portofel, plus adresele **read-only** pe care le-ai legat din alte portofele (Keplr / MetaMask / Phantom). Intrările read-only sunt etichetate cu portofelul care le-a creat; dacă încerci să trimiți de la una, ți se explică faptul că trebuie să trimiți din portofelul care a creat-o.
 

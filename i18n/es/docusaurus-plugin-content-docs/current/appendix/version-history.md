@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historial de versiones
 
-Historial de versiones público de QoreChain. La versión más reciente es **v3.1.85**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
+Historial de versiones público de QoreChain. La versión más reciente es **v3.1.92**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
 
 :::note
 Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet.
@@ -15,7 +15,26 @@ Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entrada
 
 ---
 
-## v3.1.85 — Gasto delegado mediante wallets vinculadas (versión actual)
+## v3.1.92 — Fiabilidad de sincronización de nodos (versión actual)
+
+**Enfoque de la versión:** Incorporación de nodos más fiable a partir de snapshots y del archivo de cadena publicado.
+
+* **Corrección de sincronización de snapshots y archivo** — Se resolvió un problema por el cual un nodo que se restauraba a partir de un snapshot de state-sync o del archivo de cadena publicado podía no completar la sincronización más allá de ciertos bloques históricos. La incorporación por cualquiera de las dos vías ahora se completa de forma fiable.
+
+## v3.1.90 — Contabilización del uptime de nodos ligeros
+
+**Enfoque de la versión:** El uptime medido para la elegibilidad de recompensas de nodos ligeros ahora se acumula de forma consistente a lo largo del tiempo.
+
+* **Acumulación progresiva del uptime** — El uptime de elegibilidad para recompensas de un nodo ligero ahora se calcula acumulando de forma progresiva su recuento esperado de heartbeats desde su propio registro, según el intervalo de heartbeat vigente en cada momento, en lugar de recalcular todo su historial bajo el intervalo actualmente vigente. Por lo tanto, un cambio de gobernanza en el intervalo de heartbeat afecta el uptime únicamente hacia adelante, y nunca vuelve a calificar retroactivamente el desempeño pasado de un nodo.
+
+## v3.1.86 — Salvaguarda de recuperación de validadores
+
+**Enfoque de la versión:** Un validador ya no puede quedar bloqueado permanentemente para recuperarse de una cárcel por inactividad.
+
+* **Corrección del bloqueo de cárcel** — Una cuenta de operador de validador sin clave post-cuántica registrada ahora siempre puede enviar `MsgUnjail` para recuperarse de una cárcel por inactividad, incluso cuando la aplicación de firmas híbridas está establecida como requerida con el respaldo clásico desactivado. Anteriormente, dicha cuenta no tenía ninguna vía de recuperación, ya que salir de la cárcel requería enviar una transacción que tenía bloqueada.
+* **Snapshots de state-sync** — La generación de snapshots está habilitada en toda la red, lo que permite a los nuevos validadores y nodos completos incorporarse rápidamente mediante state sync en lugar de una reproducción histórica completa.
+
+## v3.1.85 — Gasto delegado mediante wallets vinculadas
 
 **Enfoque de la versión:** Una clave de wallet externa vinculada (Phantom, MetaMask) ahora puede **gastar** desde la única cuenta canónica post-cuántica — bajo permisos de mínimo privilegio, límites de gasto y revocación instantánea.
 

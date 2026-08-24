@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.1.85**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
+Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.1.92**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
 
 :::note
 Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet.
@@ -15,7 +15,26 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 
 ---
 
-## v3.1.85 — Spesa delegata tramite wallet collegati (release corrente)
+## v3.1.92 — Affidabilità della sincronizzazione dei nodi (release corrente)
+
+**Focus della release:** onboarding dei nodi più affidabile da snapshot e dall'archivio della chain pubblicato.
+
+* **Correzione della sincronizzazione da snapshot e archivio** — Risolto un problema per cui un nodo che si ripristinava da uno snapshot di state-sync o dall'archivio della chain pubblicato poteva non riuscire a completare la sincronizzazione oltre determinati blocchi storici. L'onboarding tramite entrambi i percorsi ora si completa in modo affidabile.
+
+## v3.1.90 — Conteggio dell'uptime dei light node
+
+**Focus della release:** l'uptime misurato per l'idoneità alle ricompense dei light node ora si accumula in modo coerente nel tempo.
+
+* **Uptime ad accumulo progressivo** — L'uptime rilevante per l'idoneità alle ricompense di un light node viene ora calcolato accumulando in avanti il numero atteso di heartbeat a partire dalla sua registrazione, in base all'intervallo di heartbeat in vigore in ciascun momento, anziché ricalcolando l'intera cronologia secondo l'intervallo attualmente in vigore. Una modifica di governance all'intervallo di heartbeat influisce quindi sull'uptime solo da quel momento in avanti, e non rivaluta mai retroattivamente le prestazioni passate di un nodo.
+
+## v3.1.86 — Salvaguardia del recupero dei validatori
+
+**Focus della release:** un validatore non può più restare bloccato in modo permanente nel recupero da una jail per downtime.
+
+* **Correzione del blocco da jail** — Un account operatore di validatore senza chiave post-quantistica registrata può ora sempre inviare `MsgUnjail` per recuperare da una jail per downtime, anche quando l'enforcement delle firme ibride è impostato su required con il fallback classico disabilitato. In precedenza, un simile account non aveva alcun percorso di recupero, poiché l'unjailing stesso richiedeva l'invio di una transazione che gli era impedito di inviare.
+* **Snapshot di state-sync** — La generazione di snapshot è abilitata su tutta la rete, permettendo a nuovi validatori e full node di unirsi rapidamente tramite state sync invece che tramite un replay storico completo.
+
+## v3.1.85 — Spesa delegata tramite wallet collegati
 
 **Focus della release:** una chiave di wallet esterno collegata (Phantom, MetaMask) può ora **spendere** dall'unico account canonico post-quantistico — con permessi a privilegio minimo, limiti di spesa e revoca istantanea.
 

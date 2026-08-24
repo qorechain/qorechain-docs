@@ -11,17 +11,19 @@ The **SX (Server eXperience)** edition is the headless light node: a daemon plus
 
 ## Install
 
-You can build the binary from source or run it with Docker.
+Prebuilt binaries are the easiest path — the light node client runs natively on **five platforms with zero native dependencies**: Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64). Each binary is roughly 16 MB — download it and run it, no separate libraries to install.
+
+You can also build the binary from source or run it with Docker.
 
 ### Build from source
 
-The light node requires **Go 1.26.1** and builds with CGO enabled, because the post-quantum cryptography uses a native library (`libqorepqc`).
+The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-Go implementation (no CGO, no native library), so cross-compiling for any of the five supported platforms works the same way any other Go binary does:
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-sx ./cmd/lightnode-sx/
+go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`.
+This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker
 

@@ -1,30 +1,30 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: Desarrollo en CosmWasm
-sidebar_label: Desarrollo en CosmWasm
+title: Desarrollo con CosmWasm
+sidebar_label: Desarrollo con CosmWasm
 sidebar_position: 3
 ---
 
-# Desarrollo en CosmWasm
+# Desarrollo con CosmWasm
 
-QoreChain admite contratos inteligentes **CosmWasm**, lo que permite a los desarrolladores escribir programas seguros y aislados en sandbox en Rust que compilan a WebAssembly. Los contratos CosmWasm se ejecutan junto a los programas EVM y SVM dentro de la arquitectura de triple VM de QoreChain.
+QoreChain admite contratos inteligentes **CosmWasm**, lo que permite a los desarrolladores escribir programas seguros y aislados (sandboxed) en Rust que se compilan a WebAssembly. Los contratos CosmWasm se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`**, en funcionamiento desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.85**. Sustituye por `--chain-id qorechain-diana` para la testnet.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`**, activa desde el 7 de junio de 2026 y ejecutando la versión de cadena **v3.1.92**. Sustituya `--chain-id qorechain-diana` para la testnet.
 :::
 
 ---
 
 ## Requisitos previos
 
-| Dependencia                | Versión       | Propósito                      |
+| Dependencia                 | Versión       | Propósito                        |
 | -------------------------- | ------------- | ------------------------------ |
-| **Rust**                   | Última estable | Compilación de contratos       |
-| **wasm32-unknown-unknown** | target        | Objetivo de compilación a WebAssembly |
-| **cargo-generate**         | Última         | Andamiaje de proyectos         |
-| **cosmwasm-std**           | 1.5+          | Librería estándar de CosmWasm  |
+| **Rust**                   | Última estable | Compilación de contratos           |
+| **wasm32-unknown-unknown** | target        | Objetivo de compilación de WebAssembly |
+| **cargo-generate**         | Última        | Estructura inicial del proyecto            |
+| **cosmwasm-std**           | 1.5+          | Biblioteca estándar de CosmWasm      |
 
-Instala el target de Wasm:
+Instale el objetivo Wasm:
 
 ```bash
 rustup target add wasm32-unknown-unknown
@@ -36,7 +36,7 @@ rustup target add wasm32-unknown-unknown
 
 Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compilar), **Store** (almacenar), **Instantiate** (instanciar), **Execute** (ejecutar) y **Query** (consultar).
 
-1. **Build** — Compila tu contrato a WebAssembly optimizado:
+1. **Build** — Compile su contrato a WebAssembly optimizado:
 
    ```bash
    cd my-contract
@@ -51,7 +51,7 @@ Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compil
 
    El archivo `.wasm` optimizado estará en el directorio `artifacts/`.
 
-2. **Store** — Sube el contrato compilado a la cadena:
+2. **Store** — Suba el contrato compilado a la cadena:
 
    ```bash
    qorechaind tx wasm store contract.wasm \
@@ -61,13 +61,13 @@ Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compil
      -y
    ```
 
-   Tras confirmarse la transacción, consulta el ID de código almacenado:
+   Después de que la transacción se confirme, consulte el ID de código almacenado:
 
    ```bash
    qorechaind query wasm list-code
    ```
 
-3. **Instantiate** — Crea una nueva instancia de contrato a partir de un ID de código almacenado:
+3. **Instantiate** — Cree una nueva instancia de contrato a partir de un ID de código almacenado:
 
    ```bash
    qorechaind tx wasm instantiate <code-id> \
@@ -83,17 +83,17 @@ Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compil
    | Flag                | Descripción                                    |
    | ------------------- | ---------------------------------------------- |
    | `<code-id>`         | ID numérico devuelto por la transacción de almacenamiento |
-   | `--label`           | Etiqueta legible para esta instancia           |
-   | `--no-admin`        | Sin dirección de administrador (el contrato es inmutable) |
-   | `--admin <address>` | Establece un administrador que puede migrar el contrato |
+   | `--label`           | Etiqueta legible para esta instancia         |
+   | `--no-admin`        | Sin dirección de administrador (el contrato es inmutable)       |
+   | `--admin <address>` | Establece un administrador que puede migrar el contrato      |
 
-   Recupera la dirección del contrato:
+   Recupere la dirección del contrato:
 
    ```bash
    qorechaind query wasm list-contracts-by-code <code-id>
    ```
 
-4. **Execute** — Llama al punto de entrada execute de un contrato para cambiar su estado:
+4. **Execute** — Invoque el punto de entrada de ejecución de un contrato para cambiar el estado:
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -103,7 +103,7 @@ Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compil
      -y
    ```
 
-   Ejecutar con fondos adjuntos:
+   Ejecute con fondos adjuntos:
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -113,14 +113,14 @@ Los contratos CosmWasm siguen un ciclo de vida de cinco pasos: **Build** (compil
      -y
    ```
 
-5. **Query** — Lee el estado del contrato sin enviar una transacción:
+5. **Query** — Lea el estado del contrato sin enviar una transacción:
 
    ```bash
    qorechaind query wasm contract-state smart <contract-addr> \
      '{"get_count": {}}'
    ```
 
-   Las respuestas de las consultas se devuelven como JSON.
+   Las respuestas de las consultas se devuelven en formato JSON.
 
 ---
 
@@ -193,9 +193,9 @@ pub fn query(
 
 ---
 
-## Llamadas entre VM
+## Llamadas entre VMs
 
-Los contratos CosmWasm pueden interactuar con contratos desplegados en la EVM y la SVM a través del módulo `x/crossvm`. Las llamadas entre VM desde CosmWasm usan la ruta de mensajes **asíncrona**:
+Los contratos CosmWasm pueden interactuar con contratos desplegados en EVM y SVM a través del módulo `x/crossvm`. Las llamadas entre VMs desde CosmWasm usan la ruta de mensajes **asíncrona**:
 
 ```rust
 use cosmwasm_std::{CosmosMsg, CustomMsg};
@@ -211,13 +211,13 @@ let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
 Ok(Response::new().add_message(cross_vm_msg))
 ```
 
-El mensaje se envía a una cola y lo procesa el EndBlocker en el siguiente bloque. Consulta [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) para conocer el ciclo de vida completo del mensaje.
+El mensaje se envía a una cola y es procesado por el EndBlocker en el siguiente bloque. Consulte [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el ciclo de vida completo del mensaje.
 
 ---
 
 ## Integración con módulos
 
-Los contratos CosmWasm pueden interactuar con los módulos del Cosmos SDK a través del paso de mensajes estándar:
+Los contratos CosmWasm pueden interactuar con los módulos del Cosmos SDK mediante el paso de mensajes estándar:
 
 ```rust
 // Send native tokens via the bank module
@@ -241,7 +241,7 @@ let delegate_msg = StakingMsg::Delegate {
 
 ---
 
-## Migración de contratos
+## Migración del contrato
 
 Si el contrato se instanció con una dirección `--admin`, el administrador puede migrarlo a un nuevo ID de código:
 
@@ -252,12 +252,12 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   -y
 ```
 
-Esto llama al punto de entrada `migrate` en el nuevo código con el estado existente del contrato.
+Esto invoca el punto de entrada `migrate` en el nuevo código con el estado existente del contrato.
 
 ---
 
 ## Próximos pasos
 
-* [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) — Llama a contratos EVM y SVM desde CosmWasm
-* [Desarrollo en SVM](/developer-guide/svm-development) — Despliega programas BPF en QoreChain
-* [Precompilados de EVM](/developer-guide/evm-precompiles) — Accede a funcionalidades de PQC e IA desde Solidity
+* [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) — Llame a contratos EVM y SVM desde CosmWasm
+* [Desarrollo con SVM](/developer-guide/svm-development) — Despliegue programas BPF en QoreChain
+* [Precompilados EVM](/developer-guide/evm-precompiles) — Acceda a funciones PQC y de IA desde Solidity

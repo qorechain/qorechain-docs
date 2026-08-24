@@ -7,15 +7,17 @@ sidebar_position: 5
 
 # Recompensas y monitoreo
 
-Un nodo ligero **gana recompensas** y, a la vez, **necesita mantenerse en buen estado** para seguir ganándolas. Esta página cubre la participación del 3 % de recompensa para nodos ligeros, cómo funcionan el staking delegado y el auto-compounding, y cómo monitorear el nodo.
+Un nodo ligero tanto **gana recompensas** como **necesita mantenerse en buen estado** para seguir ganándolas. Esta página cubre la participación del 3 % de recompensa para nodos ligeros, cómo funcionan el staking delegado y el auto-compounding, y cómo monitorear el nodo.
 
 ## La participación del 3 % de la recompensa por bloque
 
 La distribución de comisiones de QoreChain reserva una **participación fija del 3 % para los nodos ligeros** que sirven datos de la red. Este es uno de los cinco destinos en el reparto de recompensas del protocolo — validadores (37 %), quemado (30 %), tesorería (20 %), stakers (10 %) y **nodos ligeros (3 %)** — aplicado en la cadena. Consulta [Tokenómica](/architecture/tokenomics) para el desglose completo.
 
-Para ser elegible para esta participación, un nodo debe estar **registrado en la cadena y demostrando activamente su actividad** mediante pruebas de heartbeat. Un nodo registrado pero desconectado no gana la participación. Consulta [Registro y licencias](/light-node/registration-and-licensing) para ver cómo funcionan el registro y los heartbeats.
+Para ser elegible para esta participación, un nodo necesita tres cosas, verificadas en la cadena y no autodeclaradas: una licencia `lightnode_operator` activa, un mínimo de **1,000 QOR delegados** — contados como tu total en todos los validadores a los que delegas, no por validador — y una tarifa de registro en la cadena de **1 QOR**. La participación también tiene un límite a nivel de red de **10,000 nodos ligeros**. Consulta [Registro y licencias](/light-node/registration-and-licensing) para ver cómo funcionan el registro y las licencias, incluido el estado actual de la inscripción en el programa de recompensas.
 
-*Elegibilidad para recompensas: regístrate en la cadena, demuestra actividad mediante heartbeats para alcanzar el estado activo, gana la participación del 3 % y luego compóntela automáticamente en stake.*
+Una vez registrado y delegado, mantener la elegibilidad es cuestión de seguir activo. Un nodo necesita al menos un **80 % de tiempo de actividad**, y debe seguir enviando pruebas de actividad por heartbeat en un intervalo de aproximadamente **1,000 bloques (~39 minutos)**, con un **período de gracia de ~100 bloques (~4 minutos)** tras un heartbeat perdido antes de que se marque como inactivo. Un nodo marcado como inactivo deja de ganar la participación hasta que vuelve a demostrar actividad.
+
+*Elegibilidad para recompensas: mantén una licencia activa en la cadena y el stake delegado mínimo, regístrate y luego sigue demostrando actividad mediante heartbeats para mantenerte por encima de los umbrales de tiempo de actividad e intervalo de heartbeat que mantienen fluyendo la participación.*
 
 ```mermaid
 flowchart LR
@@ -74,7 +76,7 @@ La edición UX muestra los mismos datos en vivo en sus vistas **Overview**, **Ne
 
 ### Estado de sincronización y heartbeat
 
-El comando `status` informa el ID de cadena, la altura del último bloque, si la cadena está poniéndose al día y la altura sincronizada del cliente ligero junto con su estado de sincronización. Un nodo registrado, sincronizado y en funcionamiento sigue enviando **pruebas de actividad por heartbeat** y, por lo tanto, se mantiene elegible para la participación de recompensa. Estos heartbeats se producen mediante un **canal de transacción cofirmado con PQC** (híbrido Dilithium-5 / ML-DSA-87), coherente con el valor por defecto PQC-required de la cadena — consulta [Registro y licencias](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) para ver cómo funciona el canal y cómo habilitar los heartbeats en la cadena. Si `status` muestra que el nodo está estancado o que no sincroniza, puede estar fallando en demostrar su actividad — investiga antes de que se vea afectada la elegibilidad.
+El comando `status` informa el ID de cadena, la altura del último bloque, si la cadena está poniéndose al día, y la altura sincronizada del cliente ligero junto con su estado de sincronización. Un nodo que está registrado, sincronizado y en funcionamiento continúa enviando **pruebas de actividad por heartbeat** y, por lo tanto, se mantiene elegible para la participación de recompensa. Estos heartbeats se producen mediante un **canal de transacción cofirmado con PQC** (híbrido Dilithium-5 / ML-DSA-87), coherente con el valor por defecto que exige PQC en la cadena — consulta [Registro y licencias](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) para ver cómo funciona el canal y cómo habilitar los heartbeats en la cadena. Si `status` muestra que el nodo está estancado o no está sincronizando, puede estar fallando en demostrar su actividad — investiga antes de que se vea afectada la elegibilidad.
 
 ### Estado del autotest
 
@@ -84,7 +86,7 @@ Si sospechas que hay un problema con el stack criptográfico, ejecuta el autotes
 lightnode-sx selftest
 ```
 
-Ejecuta keygen → firma → verificación → detección de manipulación (cinco comprobaciones) y sale con código distinto de cero ante cualquier fallo. Esta es la forma más rápida de descartar una biblioteca `libqorepqc` rota o ausente al diagnosticar problemas del nodo. Consulta [Edición SX](/light-node/sx-edition) para el desglose completo del autotest.
+Ejecuta keygen → firma → verificación → detección de manipulación (cinco comprobaciones) y sale con un código distinto de cero ante cualquier fallo. Esta es la forma más rápida de descartar un problema en el stack de firma post-cuántica al diagnosticar problemas del nodo. Consulta [Edición SX](/light-node/sx-edition) para el desglose completo del autotest.
 
 ## A dónde ir después
 

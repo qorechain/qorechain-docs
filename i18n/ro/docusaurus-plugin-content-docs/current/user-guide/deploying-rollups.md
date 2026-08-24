@@ -1,63 +1,63 @@
 ---
 slug: /user-guide/deploying-rollups
-title: Implementarea rollup-urilor
-sidebar_label: Implementarea rollup-urilor
+title: Implementarea Rollup-urilor
+sidebar_label: Implementarea Rollup-urilor
 sidebar_position: 6
 ---
 
-# Implementarea rollup-urilor
+# Implementarea Rollup-urilor
 
-Acest ghid descrie cum să implementezi rollup-uri specifice aplicațiilor pe QoreChain folosind Rollup Development Kit (RDK). RDK oferă profiluri presetate pentru cazuri de utilizare comune și personalizare completă pentru implementări avansate.
+Acest ghid acoperă modul de implementare a rollup-urilor specifice aplicațiilor pe QoreChain folosind Rollup Development Kit (RDK). RDK oferă profiluri predefinite pentru cazurile de utilizare comune și personalizare completă pentru implementările avansate.
 
 :::caution
-RDK și stratul de decontare a rollup-urilor sunt o capabilitate aflată în evoluție activă. Tratează parametrii, presetările și maturitatea funcționalităților individuale de mai jos ca fiind supuse modificărilor și validează implementările pe **`qorechain-diana`** înainte de a ținti mainnet-ul.
+RDK și stratul de decontare (settlement) al rollup-urilor reprezintă o capabilitate în evoluție activă. Tratați parametrii, profilurile predefinite și maturitatea funcțiilor individuale de mai jos ca fiind supuse schimbării și validați implementările pe **`qorechain-diana`** înainte de a viza mainnet-ul.
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.85** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când implementezi pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (chain ID EVM **9800**). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de chain **v3.1.92** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când implementați pe mainnet.
 :::
 
 ---
 
 ## Prezentare generală
 
-RDK-ul QoreChain permite dezvoltatorilor să lanseze rollup-uri suverane care se decontează pe QoreChain. Fiecare rollup este un mediu de execuție independent cu propriul timp de bloc, mașină virtuală și model de comision, moștenind în același timp garanțiile QoreChain privind securitatea și disponibilitatea datelor.
+RDK-ul QoreChain permite dezvoltatorilor să lanseze rollup-uri suverane care se decontează pe QoreChain. Fiecare rollup este un mediu de execuție independent, cu propriul timp de bloc, mașină virtuală și model de taxe, moștenind în același timp garanțiile de securitate și disponibilitate a datelor ale QoreChain.
 
 ---
 
-## Profiluri presetate
+## Profiluri predefinite
 
-RDK-ul vine cu cinci profiluri presetate, fiecare reglat pentru o categorie comună de aplicații:
+RDK vine cu cinci profiluri predefinite, fiecare ajustat pentru o categorie comună de aplicații:
 
-| Profil         | Decontare (dovadă)  | Secvențiator | DA              | Model de gaz | VM       | Caz de utilizare vizat |
+| Profil         | Decontare (proof)   | Sequencer | DA              | Model de gas | VM       | Caz de utilizare vizat |
 | -------------- | ------------------- | --------- | --------------- | ------------ | -------- | ----------------- |
-| **defi**       | zk (SNARK)          | dedicat   | nativ           | EIP-1559     | EVM      | Aplicații DeFi/AMM (împrumuturi, DEX-uri, instrumente derivate) |
-| **gaming**     | based               | based     | nativ           | fix          | custom   | Stare de joc cu debit mare și experiențe în timp real |
-| **nft**        | optimistic (fraudă) | dedicat   | nativ (Celestia DA planificat) | standard | CosmWasm | Sarcini de creare NFT și de tip marketplace |
-| **enterprise** | based               | based     | nativ           | subvenționat | EVM      | Implementări cu permisiuni și de consorțiu cu comisioane sponsorizate |
-| **custom**     | complet parametrizabil | complet parametrizabil | complet parametrizabil | complet parametrizabil | complet parametrizabil | Setezi singur fiecare câmp |
+| **defi**       | zk (SNARK)          | dedicated | native          | EIP-1559     | EVM      | Aplicații DeFi/AMM (lending, DEX-uri, derivate) |
+| **gaming**     | based               | based     | native          | flat         | custom   | Stare de joc cu debit ridicat și experiențe în timp real |
+| **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA planificat) | standard | CosmWasm | Sarcini de mint și marketplace pentru NFT-uri |
+| **enterprise** | based               | based     | native          | subsidized   | EVM      | Implementări permisionate și de consorțiu cu taxe sponsorizate |
+| **custom**     | complet parametrizat | complet parametrizat | complet parametrizat | complet parametrizat | complet parametrizat | Setați fiecare câmp singur |
 
 :::note
-Valorile pe presetare de mai sus corespund valorilor implicite ale profilurilor livrate în `@qorechain/rdk`. Configurația exactă poate evolua pe măsură ce RDK-ul se maturizează — interoghează valorile autoritare cu `qorechaind query rdk config` (sau `RdkClient.params()`) și reține că decontarea `based` se asociază întotdeauna cu modul de secvențiator `based`.
+Valorile per-profil de mai sus corespund valorilor implicite din profilurile pachetului `@qorechain/rdk` livrat. Configurația exactă poate evolua pe măsură ce RDK se maturizează — interogați valorile autoritare cu `qorechaind query rdk config` (sau `RdkClient.params()`) și rețineți că decontarea `based` este întotdeauna asociată cu modul sequencer `based`.
 :::
 
 ---
 
 ## Cerințe
 
-Înainte de a implementa un rollup, asigură-te că îndeplinești următoarele cerințe:
+Înainte de a implementa un rollup, asigurați-vă că îndepliniți următoarele cerințe:
 
-| Cerință           | Detalii                                                                                |
-| ----------------- | -------------------------------------------------------------------------------------- |
-| **Stake minim**   | 10.000 QOR (10.000.000.000 uqor)                                                       |
-| **Ardere la creare** | 1% din suma puse în stake este ars permanent la crearea rollup-ului                  |
-| **Cont**          | Un cont QoreChain finanțat cu sold suficient pentru stake plus comisioanele de tranzacție |
+| Cerință              | Detalii                                                                                 |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **Miză minimă** | 10.000 QOR (10.000.000.000 uqor)                                                       |
+| **Ardere la creare** | 1% din suma stakuită este arsă permanent la crearea rollup-ului                    |
+| **Cont**       | Un cont QoreChain alimentat, cu sold suficient pentru miză plus taxele de tranzacție |
 
 ---
 
-## Crearea unui rollup dintr-o presetare
+## Crearea unui rollup dintr-un profil predefinit
 
-Implementează un rollup folosind unul dintre profilurile presetate:
+Implementați un rollup folosind unul dintre profilurile predefinite:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -68,7 +68,7 @@ qorechaind tx rdk create-rollup \
   --fees 500uqor
 ```
 
-**Exemplu:** Implementează un rollup de gaming:
+**Exemplu:** Implementarea unui rollup de gaming:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -83,7 +83,7 @@ qorechaind tx rdk create-rollup \
 
 ## Crearea unui rollup personalizat
 
-Pentru control complet asupra parametrilor rollup-ului, folosește profilul `custom` și specifică fiecare opțiune:
+Pentru control complet asupra parametrilor rollup-ului, folosiți profilul `custom` și specificați fiecare opțiune:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -101,19 +101,19 @@ qorechaind tx rdk create-rollup \
 
 **Parametri personalizați:**
 
-| Parametru      | Opțiuni                                       | Descriere                          |
+| Parametru      | Opțiuni                                       | Descriere                        |
 | -------------- | --------------------------------------------- | ---------------------------------- |
-| `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Cum sunt verificate tranzițiile de stare |
-| `--sequencer`  | `dedicated`, `shared`, `based`                | Strategia de ordonare a tranzacțiilor |
-| `--da-backend` | `native`, `external`                          | Stratul de disponibilitate a datelor |
-| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Mediul de execuție                 |
-| `--block-time` | Întreg (milisecunde)                          | Intervalul țintă de producere a blocurilor |
+| `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Modul în care sunt verificate tranzițiile de stare |
+| `--sequencer`  | `dedicated`, `shared`, `based`                | Strategia de ordonare a tranzacțiilor      |
+| `--da-backend` | `native`, `external`                          | Stratul de disponibilitate a datelor            |
+| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Mediul de execuție              |
+| `--block-time` | Număr întreg (milisecunde)                        | Intervalul țintă de producere a blocurilor   |
 
 ---
 
-## Trimiterea loturilor
+## Trimiterea batch-urilor
 
-Operatorii de rollup trimit loturi de tranzacții către QoreChain pentru decontare:
+Operatorii de rollup trimit batch-uri de tranzacții către QoreChain pentru decontare:
 
 ```bash
 qorechaind tx rdk submit-batch \
@@ -143,7 +143,7 @@ qorechaind tx rdk submit-batch \
 
 Operatorii de rollup pot gestiona ciclul de viață al implementărilor lor:
 
-1. **Pune un rollup pe pauză** — Oprește temporar producerea blocurilor. Starea rollup-ului este păstrată și poate fi reluată.
+1. **Pausarea unui rollup** — Oprește temporar producerea de blocuri. Starea rollup-ului este păstrată și poate fi reluată.
 
    ```bash
    qorechaind tx rdk pause-rollup \
@@ -153,7 +153,7 @@ Operatorii de rollup pot gestiona ciclul de viață al implementărilor lor:
      --fees 500uqor
    ```
 
-2. **Reia un rollup** — Reia producerea blocurilor pe un rollup pus pe pauză:
+2. **Reluarea unui rollup** — Reia producerea de blocuri pe un rollup pausat:
 
    ```bash
    qorechaind tx rdk resume-rollup \
@@ -163,7 +163,7 @@ Operatorii de rollup pot gestiona ciclul de viață al implementărilor lor:
      --fees 500uqor
    ```
 
-3. **Oprește un rollup (permanent)** — Oprește permanent un rollup. Această acțiune este **ireversibilă**.
+3. **Oprirea unui rollup (permanentă)** — Oprește permanent un rollup. Această acțiune este **ireversibilă**.
 
    ```bash
    qorechaind tx rdk stop-rollup \
@@ -174,26 +174,26 @@ Operatorii de rollup pot gestiona ciclul de viață al implementărilor lor:
    ```
 
 :::danger
-Oprirea unui rollup este permanentă. Toată starea asociată este arhivată, dar rollup-ul nu poate fi repornit. QOR-ul pus în stake (minus arderea la creare) este returnat operatorului.
+Oprirea unui rollup este permanentă. Toată starea asociată este arhivată, dar rollup-ul nu poate fi repornit. QOR stakuit (minus arderea la creare) este returnat operatorului.
 :::
 
 ---
 
 ## Interogarea rollup-urilor
 
-Obține detalii despre un anumit rollup:
+Obțineți detalii despre un rollup specific:
 
 ```bash
 qorechaind query rdk rollup <rollup_id>
 ```
 
-Listează toate rollup-urile de pe QoreChain:
+Listați toate rollup-urile de pe QoreChain:
 
 ```bash
 qorechaind query rdk rollups
 ```
 
-**Exemplu de ieșire:**
+**Exemplu de rezultat:**
 
 ```yaml
 rollup:
@@ -212,13 +212,13 @@ rollup:
 
 ## Sugestie de profil asistată de QCAI
 
-Nu ești sigur ce profil se potrivește cazului tău de utilizare? Folosește instrumentul de sugestie asistat de QCAI:
+Nu sunteți sigur care profil se potrivește cazului dumneavoastră de utilizare? Folosiți instrumentul de sugestie asistat de QCAI:
 
 ```bash
 qorechaind query rdk suggest-profile --use-case "defi lending protocol"
 ```
 
-**Exemplu de ieșire:**
+**Exemplu de rezultat:**
 
 ```yaml
 suggested_profile: defi
@@ -227,14 +227,14 @@ reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality,
 alternative_profile: enterprise
 ```
 
-Această comandă îți analizează descrierea și recomandă cel mai potrivit profil presetat, împreună cu o explicație.
+Această comandă analizează descrierea dumneavoastră și recomandă cel mai potrivit profil predefinit, împreună cu o explicație.
 
 ---
 
 ## Sfaturi
 
-* Începe cu un profil presetat și personalizează ulterior. Presetările sunt optimizate pentru cazurile lor de utilizare țintă.
-* Arderea la creare de 1% este un cost unic aplicat stake-ului minim la momentul implementării.
-* Folosește decontarea `based` dacă vrei cea mai simplă configurare, cu validatorii QoreChain ocupându-se de secvențiere.
-* Monitorizează îndeaproape trimiterea loturilor. Lacunele în trimiterea loturilor pot declanșa alerte din partea rețelei.
-* Comanda `suggest-profile` este un punct de plecare util, dar revizuiește recomandarea în raport cu cerințele tale specifice.
+* Începeți cu un profil predefinit și personalizați ulterior. Profilurile predefinite sunt optimizate pentru cazurile lor de utilizare țintă.
+* Arderea de 1% la creare este un cost unic aplicat mizei minime la momentul implementării.
+* Folosiți decontarea `based` dacă doriți cea mai simplă configurare, cu validatorii QoreChain gestionând secvențierea.
+* Monitorizați îndeaproape trimiterile de batch-uri. Întreruperile în trimiterea batch-urilor pot declanșa alerte din partea rețelei.
+* Comanda `suggest-profile` este un punct de plecare util, dar verificați recomandarea în raport cu cerințele dumneavoastră specifice.

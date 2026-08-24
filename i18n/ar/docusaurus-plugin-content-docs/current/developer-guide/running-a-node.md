@@ -17,6 +17,19 @@ sidebar_position: 10
 تُنشر الملفات الثنائية وملف التكوين الأولي (genesis) واللقطات على [download.qore.host](https://download.qore.host) مع مجاميع تحقق SHA-256. **تحقّق دائماً من مجاميع التحقق قبل التثبيت أو الاستخراج**، وتحقّق من الإيداعات فقط عبر عقدتك المُزامنة الخاصة.
 :::
 
+:::note مصدر الحقيقة: البيان (manifest) الحي
+يُنشر الملف الثنائي الحالي وملف genesis والنظراء (peers) والبذور (seeds) ونقطة الثقة لمزامنة الحالة كبيان بصيغة JSON، يُحدَّث بشكل حي — لا تُدرِج إصدار ملف ثنائي أو مجموع تحقق أو اسم ملف لقطة بشكل ثابت في نصوص التثبيت لديك، لأنها تصبح قديمة بمجرد صدور إصدار جديد:
+
+- الشبكة الرئيسية: `https://download.qore.host/mainnet/latest.json`
+- شبكة الاختبار: `https://download.qore.host/testnet/latest.json`
+
+تشمل حقول البيان `binary` (رابط + sha256)، و`genesis` (رابط + sha256 + sizeBytes)، و`peers`، و`seeds`، و`p2pPort`، و`stateSync` (نقطة ثقة تُحدَّث كل ساعة)، و`minCompatible`. تجلب خطوات التثبيت والانضمام أدناه هذا البيان وتستخدم قيمه الحالية.
+:::
+
+:::caution مطلوب الإصدار v3.1.92 أو أحدث لعقدة تنضم من جديد
+العقدة التي تُزامن من ملف genesis أو تُعيد التشغيل من أرشيف/لقطة يجب أن تكون على **الإصدار v3.1.92 أو أحدث** — الإصدارات الأقدم (حتى لو لم يُحدَّث حقل `minCompatible` في البيان بعد ليعكس ذلك) ستتوقف عند أول كتلة تحتوي على معاملة أثناء إعادة التشغيل، بسبب خلل في قياس الغاز (gas-metering) تم إصلاحه الآن. شغّل دائماً الملف الثنائي الحالي من البيان أعلاه.
+:::
+
 ---
 
 ## العقدة مقابل المدقّق
@@ -58,13 +71,13 @@ sidebar_position: 10
 
 ### Docker Compose
 
-نشر بعقدة فقط باستخدام Docker Compose. ثبّت وسم الصورة على إصدار السلسلة الحي (**v3.1.85** على الشبكة الرئيسية) واربط وحدة تخزين دائمة لبيانات السلسلة.
+نشر بعقدة فقط باستخدام Docker Compose. ثبّت وسم الصورة على إصدار السلسلة الحي (**v3.1.92** على الشبكة الرئيسية) واربط وحدة تخزين دائمة لبيانات السلسلة.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -129,21 +142,42 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. تنزيل ملف genesis والتحقق منه
+### 2. جلب البيان (manifest)
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+استخدم هذا الملف كمصدر لقيم الملف الثنائي وملف genesis والنظراء في الخطوات أدناه — تحقّق من `jq -r .minCompatible latest.json` لكن تذكّر أن **الحد الأدنى v3.1.92** أعلاه يبقى سارياً حتى لو تأخر هذا الحقل عن التحديث.
+
+### 3. تنزيل ملف genesis والتحقق منه
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. تكوين النظراء والحد الأدنى للرسوم
+### 4. تكوين النظراء والحد الأدنى للرسوم
 
-افتح `~/.qorechaind/config/config.toml` وعيّن نظراء الحراسة (sentry) العامة للشبكة الرئيسية:
+اقرأ النظراء (peers) والبذور (seeds) الحالية من البيان بدلاً من تثبيت معرّفات العقد والمضيفين بشكل ثابت — فهذه القيم تتغيّر دورياً:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+افتح `~/.qorechaind/config/config.toml` وعيّن `persistent_peers` (و`seeds`) على تلك القيم:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 ثم عيّن الحد الأدنى لسعر الغاز في `~/.qorechaind/config/app.toml` (الحد الأدنى لرسوم الشبكة: **0.1uqor**):
@@ -152,7 +186,7 @@ persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. بدء المزامنة
+### 5. بدء المزامنة
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-حدّد ارتفاعاً وتجزئة (hash) حديثين موثوقين من RPC العام:
+خذ `trust_height` / `trust_hash` من حقل `stateSync` في البيان — يُحدَّث كل ساعة، لذا فهو المصدر المفضّل:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+كبديل احتياطي، يمكنك اشتقاق ارتفاع وتجزئة (hash) موثوقين بنفسك من RPC العام:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### الاستعادة من لقطة
 
-بدلاً من ذلك، نزّل لقطة بيانات السلسلة المنشورة، وتحقّق من مجموع التحقق الخاص بها، ثم استخرجها فوق دليل البيانات لديك:
+بدلاً من ذلك، نزّل لقطة بيانات السلسلة المنشورة، وتحقّق من مجموع التحقق الخاص بها، ثم استخرجها فوق دليل البيانات لديك. لا يحمل البيان حالياً مؤشراً للقطة، لذا تحقّق من القائمة الحية على [download.qore.host](https://download.qore.host) للحصول على اسم الملف ومجموع التحقق الحاليين بدلاً من تثبيت أحدهما بشكل ثابت:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-تُنشر اللقطات بأسماء ملفات **موسومة بارتفاع الكتلة** — راجع [download.qore.host](https://download.qore.host) للحصول على أحدث لقطة ومجموع التحقق SHA-256 الخاص بها، وتحقّق دائماً قبل الاستخراج.
+تُنشر اللقطات بأسماء ملفات **موسومة بارتفاع الكتلة** تتغيّر بانتظام — راجع [download.qore.host](https://download.qore.host) للحصول على أحدث لقطة ومجموع التحقق SHA-256 الخاص بها، وتحقّق دائماً قبل الاستخراج. تذكّر أن **الحد الأدنى v3.1.92** أعلاه ينطبق أيضاً على إعادة التشغيل من لقطة.
 :::
 
 ---
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## أفضل الممارسات التشغيلية
 
-1. **ثبّت إصدار السلسلة.** شغّل الوسم الحي (**v3.1.85** على الشبكة الرئيسية) وتابع الإصدارات الرسمية للترقيات المنسّقة.
+1. **ثبّت إصدار السلسلة.** شغّل الوسم الحي (**v3.1.92** على الشبكة الرئيسية) وتابع الإصدارات الرسمية للترقيات المنسّقة.
 
 2. **شغّل عقداً متكررة.** شغّل عقدتين على الأقل خلف موزّع أحمال حتى لا تؤدي إعادة تشغيل أو إعادة مزامنة واحدة إلى انقطاع حركة التكامل.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **راقب المزامنة باستمرار.** فعّل التنبيهات عند تأخر ارتفاع الكتل، وانعدام النظراء، وبقاء العقدة عالقة في `catching_up`.
 
 للوصول للقراءة فائق الخفة دون تشغيل عقدة كاملة، راجع وثائق **العقدة الخفيفة (Light Node)**.
+
+---
+
+## استكشاف الأخطاء وإصلاحها
+
+### العقدة المتوقفة قبل الترقية لا تستأنف بعد تبديل الملف الثنائي
+
+إذا كانت عقدتك متوقفة أو عالقة بالفعل **قبل** ترقية ملفها الثنائي، فإن مجرد وضع الملف الثنائي الجديد وإعادة التشغيل لا يكفي — فالعقدة تحتفظ بنتائج ABCI قديمة مخبأة (cached) من التشغيل السابق ولن تُعيد تنفيذ الكتلة التي تسببت في التوقف. تراجع (rollback) بشكل صريح قبل إعادة التشغيل:
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+الأمر هو `qorechaind rollback` (أمر فرعي من المستوى الأعلى) — لا يوجد أمر فرعي `comet rollback` ولا علامة `--hard` له.
+
+### تعطّل استعادة اللقطة في حلقة تكرار بسبب غياب `priv_validator_state.json`
+
+لا يتضمن الأرشيف/اللقطة المنشورة `data/priv_validator_state.json`، وترفض العقدة البدء بدونه. إذا كان مفقوداً بعد استعادة لقطة، أنشئه — لكن **فقط إذا لم يكن موجوداً بالفعل**. لا تستبدل أبداً ملفاً حقيقياً: فعلى المدقّق، يُعدّ هذا الملف حارس مانع التوقيع المزدوج (anti-double-signing)، والكتابة فوقه تُخاطر بتوقيع مزدوج (double-sign).
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

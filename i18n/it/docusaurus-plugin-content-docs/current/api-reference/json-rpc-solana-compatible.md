@@ -7,7 +7,11 @@ sidebar_position: 4
 
 # JSON-RPC — Compatibile con Solana
 
-QoreChain fornisce un'interfaccia JSON-RPC compatibile con Solana tramite il proprio runtime SVM (Solana Virtual Machine), consentendo agli strumenti e agli SDK Solana esistenti di interagire nativamente con QoreChain.
+QoreChain fornisce un'interfaccia JSON-RPC compatibile con Solana tramite il proprio runtime SVM (Solana Virtual Machine), consentendo agli strumenti e agli SDK Solana esistenti di interagire con QoreChain in modo nativo.
+
+:::caution L'invio di transazioni SVM è attualmente disabilitato
+A partire dalla versione della chain v3.1.89 (22 agosto), a seguito di un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione restituisce `code 11, "SVM module is disabled"`. Questo vale a livello di rete, non solo sugli endpoint pubblici di sola lettura. I metodi in stile lettura elencati nella tabella sottostante (ad es. `getBalance`, `getAccountInfo`) potrebbero comunque rispondere, ma non tentare un'integrazione live che invii transazioni SVM finché la lane non viene riaperta.
+:::
 
 ## Connessione
 
@@ -17,10 +21,10 @@ QoreChain fornisce un'interfaccia JSON-RPC compatibile con Solana tramite il pro
 | HTTPS (pubblico, mainnet, sola lettura) | `https://svm.qore.host` |
 | HTTPS (pubblico, testnet, sola lettura) | `https://svm-testnet.qore.host` |
 
-Il server JSON-RPC viene **avviato da `qorechaind start`** ed è **abilitato per impostazione predefinita**, in ascolto su `127.0.0.1:8899`. Si configura tramite una sezione `[svm-rpc]` in `app.toml` (`enable` + `address`). Un nodo appena avviato serve già questa interfaccia — non è richiesto alcun processo aggiuntivo. Gli endpoint pubblici sono **in sola lettura** (l'invio di transazioni è disabilitato a livello di edge).
+Il server JSON-RPC viene **avviato da `qorechaind start`** ed è **abilitato di default**, in ascolto su `127.0.0.1:8899`. Viene configurato tramite una sezione `[svm-rpc]` in `app.toml` (`enable` + `address`). Un nodo appena avviato serve già questa interfaccia — non è richiesto alcun processo aggiuntivo. Gli endpoint pubblici sono **di sola lettura** (l'invio di transazioni è disabilitato al margine).
 
 :::note
-A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM espone il **saldo nativo in QOR** dell'account — gli stessi fondi unificati visibili sulle interfacce Cosmos ed EVM — denominato in **lamports** (9 decimali; **1 uqor = 1,000 lamports**). Consulta [QOR nativo sull'interfaccia SVM](/developer-guide/svm-development#native-qor).
+A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM espone il **saldo QOR nativo** dell'account — gli stessi fondi unificati visibili sulle interfacce Cosmos ed EVM — denominato in **lamport** (9 decimali; **1 uqor = 1.000 lamport**). Vedi [QOR nativo sull'interfaccia SVM](/developer-guide/svm-development#native-qor).
 :::
 
 ---
@@ -29,17 +33,17 @@ A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM espone il **
 
 | Metodo                              | Parametri               | Descrizione                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey` (stringa base58) | Restituisce i dati dell'account, il proprietario, i lamports e il flag executable     |
-| `getBalance`                        | `pubkey` (stringa base58) | Restituisce il saldo in QOR nativo, espresso in lamports, per la chiave pubblica indicata |
-| `getSignaturesForAddress`           | `address` (stringa base58) | Restituisce le firme delle transazioni che coinvolgono l'indirizzo (rilevamento dei depositi) |
-| `getSlot`                           | nessuno                     | Restituisce il numero di slot corrente                                |
+| `getAccountInfo`                    | `pubkey` (stringa base58) | Restituisce i dati dell'account, il proprietario, i lamport e il flag eseguibile |
+| `getBalance`                        | `pubkey` (stringa base58) | Restituisce il saldo QOR nativo in lamport per la chiave pubblica indicata |
+| `getSignaturesForAddress`           | `address` (stringa base58) | Restituisce le firme delle transazioni che coinvolgono l'indirizzo (rilevamento depositi) |
+| `getSlot`                           | nessuno                     | Restituisce il numero dello slot corrente                                |
 | `getMinimumBalanceForRentExemption` | `dataLength` (intero)   | Restituisce il saldo minimo per l'esenzione dal rent in base alla dimensione dei dati |
 | `getVersion`                        | nessuno                     | Restituisce la versione del software del nodo                              |
-| `getHealth`                         | nessuno                     | Restituisce lo stato di salute del nodo (`"ok"` se integro)                 |
+| `getHealth`                         | nessuno                     | Restituisce lo stato di salute del nodo (`"ok"` se in salute)                 |
 
 ---
 
-## Formato delle risposte
+## Formato della risposta
 
 Tutte le risposte seguono la specifica JSON-RPC 2.0. Le risposte che fanno riferimento allo stato on-chain includono un oggetto `context` con lo `slot` corrente:
 
@@ -197,6 +201,6 @@ if (accountInfo) {
 ## Note
 
 - **Formato degli indirizzi**: gli account SVM utilizzano chiavi pubbliche codificate in base58 (formato Solana standard), non il prefisso Bech32 `qor1` usato dai moduli nativi del Cosmos SDK.
-- **Bridging cross-VM**: per spostare asset tra i runtime EVM e SVM, utilizza il modulo Cross-VM (`x/crossvm`). Consulta i [Comandi di transazione](/cli-reference/transaction-commands) per la sintassi di `crossvm call`.
-- **Deploy dei programmi**: distribuisci i programmi BPF tramite la CLI (`qorechaind tx svm deploy-program`) o in modo programmatico attraverso il runtime SVM.
-- **Compute budget**: il runtime SVM applica per impostazione predefinita un compute budget di 1,400,000 unità di calcolo per transazione. Questo valore è configurabile tramite i parametri del modulo.
+- **Bridging cross-VM**: per spostare asset tra i runtime EVM e SVM, usa il modulo Cross-VM (`x/crossvm`). Vedi i [Comandi di transazione](/cli-reference/transaction-commands) per la sintassi di `crossvm call`.
+- **Deploy dei programmi**: esegui il deploy dei programmi BPF tramite la CLI (`qorechaind tx svm deploy-program`) oppure programmaticamente tramite il runtime SVM.
+- **Compute budget**: il runtime SVM applica per default un compute budget di 1.400.000 compute unit per transazione. È configurabile tramite i parametri del modulo.

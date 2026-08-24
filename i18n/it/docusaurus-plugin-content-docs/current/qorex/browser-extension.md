@@ -1,98 +1,137 @@
 ---
 slug: /qorex/browser-extension
-title: Estensione per browser QoreX
-sidebar_label: Estensione per browser
+title: Estensione Browser QoreX
+sidebar_label: Estensione Browser
 sidebar_position: 2
 ---
 
-# Estensione per browser QoreX
+# Estensione Browser QoreX
 
-L'**estensione per browser** QoreX è il wallet QoreChain per desktop. È un **wallet autonomo** — crea o importa un wallet, custodisci e invia QOR, connettiti alle dApp — ed è il componente che permette a qualunque sito di rilevare QoreX e di trasformare ogni richiesta in un'approvazione esplicita e decodificata.
+L'**estensione browser** QoreX è il wallet desktop di QoreChain. È un **wallet autonomo** — crea o importa un wallet, detieni e invia QOR, e connettiti alle dApp — ed è l'elemento che permette a qualsiasi sito web di rilevare QoreX e trasformare ogni richiesta in un'approvazione esplicita e decodificata.
 
-È **pubblica e disponibile** su tre store.
+È **live e pubblica** su tre store.
 
 ## Installazione {#install}
 
 | Browser | Installazione |
 |---|---|
-| **Chrome e browser Chromium** (Brave, Edge, Arc, Opera) | https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg |
+| **Chrome e browser basati su Chromium** (Brave, Edge, Arc, Opera) | https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg |
 | **Firefox** | https://addons.mozilla.org/firefox/addon/qorex/ |
 | **Safari (macOS 10.14 o successivo)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
 
-### Quale versione è attiva e dove {#versions}
+### Quale versione è live dove {#versions}
 
-Le revisioni degli store avvengono in momenti diversi, quindi al momento la versione pubblicata varia da browser a browser:
+Le revisioni degli store arrivano in momenti diversi, quindi la versione pubblicata attualmente differisce per browser:
 
 | Browser | Versione pubblicata |
 |---|---|
-| **Firefox** | **0.1.5** |
-| **Chrome / Chromium** | **0.1.3** (0.1.5 inviata, in revisione) |
-| **Safari (macOS)** | distribuita all'interno dell'app macOS **QoreX Wallet**, che usa una propria numerazione `1.x` — al momento il Mac App Store serve la **1.0**; la build che contiene l'estensione 0.1.5 è in revisione |
+| **Firefox** | **0.1.8** (0.1.9 inviata, in revisione) |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 inviata, in revisione) |
+| **Safari (macOS)** | è distribuita all'interno dell'app macOS **QoreX Wallet**, che usa una propria numerazione `1.x` — il Mac App Store attualmente serve **1.1** (include l'estensione 0.1.5); la **1.2** (che include 0.1.9) è stata inviata ed è in revisione |
 
-La **0.1.5** aggiunge il [rilevamento tramite Solana Wallet Standard](#standards), lo [sblocco con passkey](#security), una [corsia dApp SVM](#standards) pienamente implementata e il [ponte di connessione con la Dashboard](#dashboard-bridge). (La versione 0.1.4 non è mai stata pubblicata — le sue modifiche arrivano agli utenti con la 0.1.5.)
+Le funzionalità più recenti potrebbero non essere ancora live nel tuo browser — controlla la tabella sopra prima di assumere che qualcosa descritto qui sia disponibile.
 
-**La superficie dei permessi è identica nella 0.1.3 e nella 0.1.5** — vedi [Quali permessi chiede QoreX](#permissions).
+**0.1.5** ha aggiunto il [rilevamento Solana Wallet Standard](#standards), lo [sblocco con passkey](#security), una [lane dApp SVM](#standards) completamente implementata e il [bridge di connessione con la Dashboard](#dashboard-bridge). (La versione 0.1.4 non è mai stata pubblicata — le sue modifiche raggiungono gli utenti con la 0.1.5.)
+
+**0.1.6–0.1.9** hanno aggiunto, in ordine: invii con gestione del vesting che rifiutano onestamente quando i fondi non sono disponibili; l'indirizzo dell'account e il saldo in tempo reale mostrati direttamente nella schermata principale del popup; e, nella **0.1.9**, il [pagamento di un @handle](#handle-send) direttamente dalla schermata Invia, una [schermata Ricevi con codice QR dell'indirizzo](#receive), un [selettore di lingua](#language) (dieci lingue, in linea con il set dell'app mobile) e la rimozione di una confusa "prossima data di sblocco" dal [saldo in vesting](#vesting).
+
+**La superficie dei permessi non è cambiata dalla 0.1.3** — vedi [Quali permessi richiede QoreX](#permissions).
 
 :::note
-Su Safari le approvazioni si aprono in una scheda del browser anziché in una finestra popup — l'estensione è impacchettata con il wrapper Apple per estensioni web Safari a partire dalla stessa base di codice.
+Su Safari, le approvazioni si aprono in una scheda del browser anziché in una finestra popup — l'estensione è confezionata con il wrapper web-extension di Safari di Apple, a partire dalla stessa base di codice.
 :::
 
-## Creare o ripristinare un wallet {#wallet}
+## Crea o ripristina un wallet {#wallet}
 
 Apri il popup e scegli:
 
-- **Crea wallet** — genera sul tuo dispositivo una nuova frase di recupero di 24 parole (256 bit di entropia), deriva la tua identità QoreChain e la sigilla nel vault protetto da una password (e, facoltativamente, da una passkey — vedi [Sicurezza](#security)).
-- **Importa wallet** — ripristina da una frase di 24 parole già esistente.
+- **Crea wallet** — genera una nuova recovery phrase di 24 parole sul tuo dispositivo (entropia a 256 bit), deriva la tua identità QoreChain e la sigilla nel vault sotto una password (e, opzionalmente, una passkey — vedi [Sicurezza](#security)).
+- **Importa wallet** — ripristina da una recovery phrase di 24 parole esistente.
 
-L'estensione custodisce le proprie chiavi; non richiede l'app mobile. Puoi anche esportare la tua frase mnemonica dal popup. Le chiavi non lasciano mai il dispositivo.
+L'estensione conserva le proprie chiavi; non richiede l'app mobile. Puoi anche esportare la tua mnemonic dal popup. Le chiavi non lasciano mai il dispositivo.
 
-### Inviare su reti esterne {#send-external}
+:::note Un account per profilo del browser
+A differenza dell'app mobile, che può contenere più account QoreChain da un'unica recovery phrase, l'estensione gestisce esattamente **un** account. Staking, Portfolio, Q-Day Scanner, recovery sociale, Legacy Protocol, richieste di pagamento e collegamento dei dispositivi sono funzioni esclusive dell'app mobile — vedi [QoreX Wallet](/qorex/overview#platform-availability) per il confronto completo.
+:::
 
-Oltre a QOR sulla corsia Native, il popup può inviare asset su reti esterne, tutte derivate dalla stessa frase di recupero:
+## Il tuo account, saldo e @handle {#account}
+
+La schermata principale del popup mostra il tuo indirizzo `qor1…` (tocca per copiare) e il tuo saldo QOR in tempo reale, così non devi aprire un block explorer per verificare nessuno dei due.
+
+### Saldi in vesting (bloccati) {#vesting}
+
+Se il tuo account detiene QOR in vesting (ad esempio un'allocazione TGE non ancora rilasciata), il saldo si divide in **disponibile ora** e **ancora bloccato**, e un invio che supera l'importo disponibile viene rifiutato prima di raggiungere la rete, invece di fallire on-chain dopo aver comunque pagato una commissione. QoreX deliberatamente **non** mostra una "prossima data di sblocco" qui: una vesting schedule può essere modificata dalla governance, quindi una data sulla scheda del saldo si leggerebbe come una promessa che QoreX non può garantire. La divisione disponibile-vs-bloccato è ciò che rimane accurato.
+
+### Rivendica un @handle
+
+Dal popup puoi rivendicare un **@handle** unico (ad esempio `@liviu`) per l'indirizzo di questo account, allo stesso modo dell'app mobile. La rivendicazione viene firmata con la chiave dell'account e si lega a quell'indirizzo, così l'app mobile e la Dashboard possono risolverlo quando qualcuno ti invia fondi. Vedi [@handle](/qorex/account-and-dashboard#handle) per come gli handle sono legati agli indirizzi (non a un wallet nel suo insieme).
+
+## Invia a un @handle {#handle-send}
+
+Dalla 0.1.9 puoi pagare un @handle registrato direttamente, invece di cercare un indirizzo:
+
+1. Apri il popup e tocca **Invia**.
+2. Nel campo destinatario, digita `@` seguito dall'handle (ad esempio `@liviu`) invece di un indirizzo `qor1…`.
+3. QoreX risolve l'handle e ti mostra l'**indirizzo risolto** prima che tu firmi qualsiasi cosa — controlla sempre che corrisponda a ciò che ti aspetti.
+4. Inserisci l'importo e conferma.
+
+La risoluzione viene verificata in due modi prima che QoreX la utilizzi: un'attestazione del registry controllata rispetto a una trust key integrata nell'estensione, e la firma del proprietario dell'handle sulla rivendicazione stessa. Una risposta che fallisce uno dei due controlli viene rifiutata del tutto — QoreX non ripiega mai sulla visualizzazione di un indirizzo non verificato. La prima volta che paghi un determinato handle, QoreX ricorda (fissa) l'indirizzo a cui si è risolto; se in seguito quell'handle si risolve a un indirizzo **diverso**, QoreX si ferma e ti mostra sia il vecchio che il nuovo indirizzo per intero, così puoi decidere se procedere.
+
+## Ricevi {#receive}
+
+Tocca **Ricevi** nel popup per mostrare il tuo indirizzo `qor1…` come codice QR (con l'icona QoreChain incorporata) accanto a un pulsante di copia — scansionalo da un telefono o incolla direttamente l'indirizzo.
+
+### Invio su reti esterne {#send-external}
+
+Oltre a QOR sulla lane Nativa, il popup può inviare asset su reti esterne, tutte derivate dalla stessa recovery phrase:
 
 | Tipo | Reti | Token inclusi |
 |---|---|---|
-| EVM | Ethereum, BNB Chain, Polygon, Arbitrum | voci ERC-20 (USDT, USDC, DAI dove applicabile) |
-| SVM | Solana | voci SPL (USDC, USDT) |
-| Cosmos | Cosmos Hub, Osmosis, Celestia | voce IBC (USDC su Osmosis); campo memo facoltativo |
+| EVM | Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche C-Chain | Voci ERC-20 (USDC e USDT su tutte le chain EVM, DAI su Ethereum) |
+| SVM | Solana | Voci SPL (USDC, USDT) |
+| Cosmos | Cosmos Hub, Osmosis, Celestia | Noble USDC via IBC; campo memo opzionale |
 
-Prima che un trasferimento esterno venga inviato devi spuntare una presa d'atto esplicita: **"Le reti esterne accettano solo firme classiche — a differenza dei tuoi QOR, questo trasferimento NON è quantum-safe."** Le chain esterne non possono trasportare una firma post-quantistica, e QoreX non lo nasconde mai.
+Prima che un trasferimento esterno venga inviato devi spuntare una presa d'atto esplicita: **"Le reti esterne accettano solo firme classiche — a differenza del tuo QOR, questo trasferimento NON è quantum-safe."** Le chain esterne non possono trasportare una firma post-quantistica, e QoreX non lo nasconde mai.
 
-## Standard di wallet supportati {#standards}
+## Standard wallet supportati {#standards}
 
-QoreX espone tre interfacce, tutte iniettate nella pagina come `window.qorex` (`{ evm, native, svm }`) e rilevabili tramite i contratti di detection di [`@qorechain/connect`](/sdk/overview).
+QoreX espone tre interfacce, tutte iniettate nella pagina come `window.qorex` (`{ evm, native, svm }`) e rilevabili tramite i contratti di rilevamento di [`@qorechain/connect`](/sdk/overview).
 
-| Standard | Che cos'è | Che cosa significa per te che sviluppi |
+| Standard | Cos'è | Cosa significa per te come sviluppatore |
 |---|---|---|
-| **EIP-1193** | L'API JavaScript del provider Ethereum (`request(...)`, eventi). | Il tuo codice ethers.js / viem / web3.js già esistente dialoga con la corsia EVM di QoreX senza modifiche; i codici di errore numerici (per es. `4902`) vengono inoltrati alla lettera. |
-| **EIP-6963** | Rilevamento di provider multi-wallet (eventi announce / request). | QoreX si annuncia accanto a ogni altro wallet — **non sovrascrive mai `window.ethereum`** — così l'utente sceglie QoreX sito per sito senza conflitti. |
-| **`signDirect` in stile Keplr** | Un provider con la forma di un `OfflineDirectSigner` Cosmos su `window.qorex.native`. | Le dApp in stile Cosmos firmano le transazioni della **corsia Native** di QoreChain esattamente come farebbero con Keplr; il livello post-quantistico è già applicato (vedi [Firma post-quantistica](#pqc)). |
-| **Solana Wallet Standard** *(dalla 0.1.5)* | Rilevamento nativo del wallet per le dApp Solana (`wallet-standard:register-wallet` / `app-ready`). | Le dApp Solana **rilevano QoreX automaticamente** — nessuna integrazione personalizzata. Funzionalità: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; chain `solana:mainnet`; transazioni sia `legacy` sia `v0`. |
+| **EIP-1193** | La JavaScript API del provider Ethereum (`request(...)`, eventi). | Il tuo codice ethers.js / viem / web3.js esistente comunica con la lane EVM di QoreX senza modifiche; i codici di errore numerici (es. `4902`) vengono inoltrati testualmente. |
+| **EIP-6963** | Rilevamento multi-wallet dei provider (eventi announce / request). | QoreX si annuncia insieme a ogni altro wallet — **non sovrascrive mai `window.ethereum`** — così l'utente sceglie QoreX per ogni sito senza conflitti. |
+| **`signDirect` in stile Keplr** | Un provider a forma di `OfflineDirectSigner` Cosmos su `window.qorex.native`. | Le dApp in stile Cosmos firmano le transazioni della lane **Nativa** di QoreChain nello stesso modo in cui lo farebbero con Keplr; il layer post-quantistico è pre-applicato (vedi [Firma post-quantistica](#pqc)). |
+| **Solana Wallet Standard** *(dalla 0.1.5)* | Rilevamento wallet nativo per le dApp Solana (`wallet-standard:register-wallet` / `app-ready`). | Le dApp Solana **rilevano automaticamente QoreX** — nessuna integrazione personalizzata. Funzionalità: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; chain `solana:mainnet`; transazioni sia `legacy` che `v0`. |
 
-:::note Raggiungere direttamente la corsia SVM
-La stessa interfaccia è disponibile anche su `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Il rilevamento automatico Wallet-Standard e la corsia SVM pienamente implementata arrivano con la **0.1.5** — quindi oggi sono disponibili su **Firefox**, e su Chrome non appena la 0.1.5 supererà la revisione (vedi [quale versione è attiva e dove](#versions)).
+:::note Raggiungere direttamente la lane SVM
+La stessa interfaccia è disponibile anche su `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Il rilevamento automatico Wallet-Standard e la lane SVM completamente implementata sono stati rilasciati nella **0.1.5** e sono live sia su Chrome che su Firefox (vedi [quale versione è live dove](#versions)).
 
-Le approvazioni Solana mostrano il payload decodificato (destinatario e lamports per i trasferimenti System, e l'elenco dei programmi), rifiutano le transazioni che non indicano il tuo wallet come firmatario e contrassegnano la firma come **classica** — vedi [Firma post-quantistica](#pqc).
+Le approvazioni Solana mostrano il payload decodificato (destinatario e lamport per i trasferimenti System, e l'elenco dei programmi), rifiutano le transazioni che non elencano il tuo wallet come firmatario, e contrassegnano la firma come **classica** — vedi [Firma post-quantistica](#pqc).
 :::
+
+## Lingua {#language}
+
+L'estensione parla le stesse dieci lingue dell'app mobile, della dashboard e del sito: inglese, rumeno, tedesco, spagnolo, francese, italiano, turco, arabo, giapponese e coreano. Per impostazione predefinita segue la lingua del **browser** (ricadendo sull'inglese per qualsiasi altra lingua) — nota che questa è una fonte diversa rispetto all'app mobile, che segue la lingua del **telefono**, quindi le due possono mostrare lingue diverse se il tuo telefono e il tuo browser sono impostati diversamente. Un selettore nella schermata principale del popup ti permette di sovrascrivere la lingua rilevata in qualsiasi momento; passare all'arabo ribalta immediatamente il popup da destra a sinistra, non solo il testo.
 
 ## Sicurezza e permessi {#security}
 
-QoreX è costruito per essere verificabile, non semplicemente per essere creduto sulla parola:
+QoreX è costruito per essere verificabile, non solo per essere ritenuto affidabile:
 
-- **Vault** — le tue chiavi sono sigillate con **AES-256-GCM**. Il percorso con password deriva la propria chiave con **Argon2id** (RFC 9106, memory-hard: 64 MiB, t=3, p=1), così un blob del vault esfiltrato resiste al cracking con GPU/ASIC. (I vecchi blob PBKDF2 restano apribili e vengono risigillati con Argon2id al primo sblocco successivo.)
-- **Sblocco con passkey (facoltativo, dalla 0.1.5)** — dove il tuo autenticatore supporta l'estensione **WebAuthn PRF**, QoreX può sbloccare il vault a partire dall'output PRF di 32 byte della passkey anziché da una password digitata. La tua password resta sempre disponibile come riserva.
+- **Vault** — le tue chiavi sono sigillate con **AES-256-GCM**. Il percorso della password deriva la propria chiave con **Argon2id** (RFC 9106, memory-hard: 64 MiB, t=3, p=1), così un blob del vault esfiltrato resiste al cracking su GPU/ASIC. (I blob legacy PBKDF2 restano apribili e si ri-sigillano in Argon2id al prossimo sblocco.)
+- **Sblocco con passkey (opzionale, dalla 0.1.5)** — dove il tuo authenticator supporta l'estensione **WebAuthn PRF**, QoreX può sbloccare il vault a partire dall'output PRF a 32 byte della passkey invece di una password digitata. La tua password rimane sempre un fallback.
 
-  :::note Dove compare lo sblocco con passkey
-  QoreX rileva le funzionalità WebAuthn e mostra **Abilita sblocco con passkey** solo dove il browser le espone alle pagine dell'estensione — cioè su **Chrome ed Edge**. Su **Firefox** l'opzione è nascosta, perché Firefox non espone WebAuthn alle pagine delle estensioni. Combinato con il [disallineamento di versione](#versions), questo significa che oggi un utente Firefox ha Wallet Standard ma non lo sblocco con passkey, mentre un utente Chrome non ha né l'uno né l'altro finché la 0.1.5 non supererà la revisione. È il comportamento previsto, non un bug.
+  :::note Dove appare lo sblocco con passkey
+  QoreX rileva automaticamente WebAuthn e mostra l'opzione **Abilita sblocco con passkey** solo dove il browser la espone alle pagine dell'estensione — cioè **Chrome ed Edge**. Su **Firefox** l'opzione è nascosta, perché Firefox non espone WebAuthn alle pagine delle estensioni. Questo è previsto, non un bug.
   :::
-- **Manifest V3 + CSP rigorosa** — `script-src 'self'; object-src 'self'; base-uri 'self'`. **Non viene caricato alcun codice remoto** dopo l'installazione e non è presente `wasm-unsafe-eval`.
-- **Nessun account, nessuna telemetria** — niente analytics, niente tracciamento, niente logging remoto, niente registrazione e niente email. La scheda su Firefox dichiara la raccolta dati come `none`.
+- **Manifest V3 + CSP rigorosa** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Non c'è **nessun caricamento di codice remoto** dopo l'installazione e nessun `wasm-unsafe-eval`.
+- **Nessun account, nessuna telemetria** — nessuna analisi, nessun tracciamento, nessun logging remoto, nessuna registrazione e nessuna email. La scheda di Firefox dichiara la raccolta dati come `none`.
 
-### Quali permessi chiede QoreX, e perché {#permissions}
+### Quali permessi richiede QoreX, e perché {#permissions}
 
-Questa sezione esiste perché la scheda su Firefox mostra il permesso **"Accedere ai tuoi dati per tutti i siti web"**, che può sembrare in contrasto con un wallet che non dichiara alcun permesso host. Ecco la verità esatta e non ritoccata, presa dal manifest.
+Questa sezione esiste perché la scheda di Firefox mostra il permesso **"Accedere ai tuoi dati per tutti i siti web"**, che può sembrare in contrasto con un wallet che non dichiara alcun host permission. Ecco la verità esatta e non modificata, tratta dal manifest.
 
-Il file `manifest.json` dell'estensione dichiara:
+Il `manifest.json` dell'estensione dichiara:
 
 ```json
 "permissions": ["storage"],
@@ -102,17 +141,17 @@ Il file `manifest.json` dell'estensione dichiara:
 ]
 ```
 
-- **`permissions: ["storage"]`** — l'unico permesso di API. Memorizza il vault cifrato e le tue approvazioni di connessione per singola origine **in locale**, nello storage dell'estensione.
-- **`host_permissions: []`** — QoreX **non** dichiara alcun permesso host. Non richiede la possibilità di effettuare richieste di rete cross-origin verso siti arbitrari per tuo conto.
-- **`content_scripts` con corrispondenza `<all_urls>`** — è questa la ragione onesta per cui Firefox dice *"Accedere ai tuoi dati per tutti i siti web."* QoreX inietta un piccolo script provider (`content.js` → `inpage.js`) in **ogni pagina**. Uno script di contenuto che gira su tutti i siti *può* tecnicamente leggere la pagina, e i browser descrivono questa capacità proprio con quella formulazione — che derivi da `host_permissions` o da una corrispondenza di uno script di contenuto.
+- **`permissions: ["storage"]`** — l'unico permesso API. Memorizza il vault cifrato e le tue approvazioni di connessione per-origine **localmente**, nello storage dell'estensione.
+- **`host_permissions: []`** — QoreX non dichiara **nessun** host permission. Non richiede la capacità di effettuare richieste di rete cross-origin verso siti arbitrari per tuo conto.
+- **`content_scripts` con match `<all_urls>`** — questa è la ragione onesta per cui Firefox dice *"Accedere ai tuoi dati per tutti i siti web."* QoreX inietta un piccolo script provider (`content.js` → `inpage.js`) in **ogni pagina**. Un content script che gira su tutti i siti *può* tecnicamente leggere la pagina, e i browser descrivono questa capacità con quella dicitura esatta — che provenga da `host_permissions` o da un match di content script.
 
-**Perché lo script di contenuto gira ovunque.** Perché **qualunque** dApp possa rilevare il wallet tramite EIP-6963 senza che tu debba prima concedere l'accesso sito per sito. È così che funzionano MetaMask, Keplr, Phantom e ogni altro wallet iniettato: il provider iniettato deve essere presente prima che vengano eseguiti gli script della pagina (`document_start`), su qualunque sito tu visiti.
+**Perché il content script gira ovunque.** Affinché **qualsiasi** dApp possa rilevare il wallet tramite EIP-6963 senza che tu debba prima concedere l'accesso per-sito. È così che funzionano MetaMask, Keplr, Phantom e ogni altro wallet iniettato: il provider iniettato deve essere presente prima che gli script della pagina vengano eseguiti (`document_start`), su qualsiasi sito tu visiti.
 
-**Che cosa fa quello script — e che cosa non fa.** Si limita a fare da ponte per i messaggi del wallet (annunciare il provider, inoltrare le richieste di connessione/firma al service worker, restituire il risultato). **Non** legge il contenuto della pagina oltre a quelle richieste del wallet, non invia nulla a un server e non carica codice remoto — e non può recuperare dati cross-origin arbitrari perché non ci sono permessi host. Tutto questo è verificabile: l'estensione è vincolata dalla CSP, non include analytics e il pacchetto per Firefox comprende uno zip dei sorgenti riproducibile.
+**Cosa fa quello script — e cosa non fa.** Fa solo da ponte per i messaggi del wallet (annuncia il provider, inoltra le richieste di connessione/firma al service worker, restituisce il risultato). Non legge il contenuto della pagina oltre a quelle richieste del wallet, non invia nulla a un server, né carica codice remoto — e non può recuperare dati arbitrari cross-origin perché non ci sono host permission. Tutto questo è verificabile: l'estensione è bloccata da CSP, non include analytics, e il pacchetto di Firefox include uno zip sorgente riproducibile.
 
 ## Connettere una dApp a QoreX {#connect}
 
-Una dApp rileva la corsia EVM di QoreX tramite **EIP-6963**. Announce-and-request, poi si usa il provider EIP-1193 restituito:
+Una dApp rileva la lane EVM di QoreX tramite **EIP-6963**. Announce-and-request, poi usa il provider EIP-1193 restituito:
 
 ```ts
 import type { EIP6963ProviderDetail } from "./types";
@@ -136,19 +175,21 @@ if (qorex) {
 }
 ```
 
-Per la corsia **Native** di QoreChain, usa il provider in stile Keplr disponibile su `window.qorex.native` (`enable`, `getKey`, `signDirect`). Il pacchetto di più alto livello [`@qorechain/connect`](/sdk/overview) incapsula questo rilevamento al posto tuo.
+Per la lane **Nativa** di QoreChain, usa il provider in stile Keplr su `window.qorex.native` (`enable`, `getKey`, `signDirect`). Il pacchetto di livello superiore [`@qorechain/connect`](/sdk/overview) racchiude questo rilevamento per te.
 
-Le approvazioni sono **per singola origine**: la prima connessione a un sito apre un popup di approvazione che mostra l'origine, l'approvazione rivela soltanto il tuo indirizzo pubblico e l'approvazione di un sito non concede nulla a un altro.
+Le approvazioni sono **per-origine**: la prima connessione a un sito apre un popup di approvazione che mostra l'origine, l'approvazione rivela solo il tuo indirizzo pubblico, e l'approvazione di un sito non concede nulla a un altro.
 
-### Ponte con la Dashboard (v0.1.5) {#dashboard-bridge}
+### Bridge con la Dashboard (v0.1.5) {#dashboard-bridge}
 
-La versione 0.1.5 aggiunge un ponte limitato **esclusivamente a `dashboard.qorechain.io`**: `window.qorex.native.connectProof(sessionId)` firma la prova di pairing *Connect with QoreX* (il backend riverifica la firma), mentre `executeTransfer({ to, amountUqor, memo })` approva e trasmette un trasferimento di QOR proposto dalla Dashboard, restituendo il `txHash`. Questi metodi vengono rifiutati su qualsiasi altra origine.
+La versione 0.1.5 aggiunge un bridge limitato esclusivamente a **`dashboard.qorechain.io`**: `window.qorex.native.connectProof(sessionId)` firma la prova di pairing *Connect with QoreX* (il backend riverifica la firma), e `executeTransfer({ to, amountUqor, memo })` approva e trasmette un trasferimento QOR proposto dalla Dashboard, restituendo il `txHash`. Questi metodi vengono rifiutati su qualsiasi altra origine.
+
+Poiché un indirizzo `qor1…` è ugualmente valido su mainnet e su testnet, una richiesta proposta dalla Dashboard indica quale rete ha come target, e QoreX rifiuta di agire su di essa se questa non corrisponde alla rete a cui l'estensione è attualmente connessa — non passerà mai da una rete all'altra per conto di una richiesta.
 
 ## Firma post-quantistica {#pqc}
 
-Ogni trasferimento di QOR avviato da QoreX stesso è firmato con una **firma ibrida post-quantistica** — **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) accanto alla firma classica secp256k1 — usando l'intera pipeline ibrida di `@qorechain/sdk`. **Non esiste alcun interruttore**: QoreChain la richiede e QoreX non invia mai un trasferimento di QOR sulla corsia Native senza di essa.
+Ogni trasferimento QOR che QoreX stessa avvia viene firmato con una **firma ibrida post-quantistica** — **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) insieme alla firma classica secp256k1 — usando la pipeline ibrida completa in `@qorechain/sdk`. **Non c'è alcun interruttore**: QoreChain la richiede e QoreX non invia mai un trasferimento QOR sulla lane Nativa senza di essa.
 
-- **Firma Native avviata da una dApp** — le dApp costruite sul flusso qorechain-connect applicano in anticipo l'estensione PQC (`/qorechain.pqc.v1.PQCHybridSignature`) nel corpo della transazione prima di chiamare `signDirect`; QoreX contribuisce con la metà classica e **rifiuta di firmare alla cieca**, decodificando il payload e segnalando se il livello PQC è presente.
-- **Le richieste classiche sono sempre etichettate** — se una richiesta non porta con sé un livello PQC, oppure ha come destinazione una chain esterna (ETH/BNB/ecc., che non possono trasportare PQC), QoreX mostra un avviso esplicito invece di effettuare un declassamento silenzioso.
+- **Firma Nativa avviata da una dApp** — le dApp costruite sul flusso qorechain-connect pre-inseriscono l'estensione PQC (`/qorechain.pqc.v1.PQCHybridSignature`) nel corpo della transazione prima di chiamare `signDirect`; QoreX contribuisce la metà classica e **rifiuta di firmare alla cieca**, decodificando il payload e segnalando se il layer PQC è presente.
+- **Le richieste classiche sono sempre etichettate** — se una richiesta non porta alcun layer PQC, o ha come target una chain esterna (ETH/BNB/ecc., che non può trasportare PQC), QoreX mostra un avviso esplicito invece di effettuare un downgrade silenzioso.
 
-**Che cosa significa per la dimensione delle transazioni.** ML-DSA-87 produce una firma di grandi dimensioni: la firma occupa **4,627 byte** e la chiave pubblica **2,592 byte** (valori fissati da FIPS-204). Una transazione QoreChain ibrida è quindi più grande di diversi kilobyte rispetto a una puramente classica. Se costruisci e trasmetti transazioni per conto tuo, dimensiona i buffer e le stime delle commissioni tenendo conto dei byte aggiuntivi; la contabilizzazione del gas di QoreChain li mette già in conto. Vedi [Firma post-quantistica](/developer-guide/post-quantum-signing) per le primitive e il requisito di firma deterministica.
+**Cosa significa questo per la dimensione delle transazioni.** ML-DSA-87 è una firma grande: la firma è di **4,627 bytes** e la chiave pubblica di **2,592 bytes** (fissate da FIPS-204). Una transazione QoreChain ibrida è quindi di diversi kilobyte più grande di una puramente classica. Se costruisci e trasmetti transazioni tu stesso, dimensiona i tuoi buffer e le stime delle commissioni per i byte aggiuntivi; il gas accounting di QoreChain già li prevede. Vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing) per i primitivi e il requisito di firma deterministica.

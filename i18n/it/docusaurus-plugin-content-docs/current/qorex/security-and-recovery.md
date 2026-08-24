@@ -9,6 +9,21 @@ sidebar_position: 5
 
 Tutto ciò che riguarda la protezione e il recupero del tuo wallet si trova in **Settings → Security dashboard**. Anche la scheda Home mostra una card **Backup health** che continua ad avvisarti finché il recupero sociale non è configurato.
 
+## Esegui subito il backup — nessuno può recuperare un wallet perso al posto tuo {#back-up-now}
+
+:::danger Leggi questo prima di finanziare il tuo wallet
+QoreX è **non-custodial**: le tue chiavi esistono solo sul tuo dispositivo, e QoreChain Association non ne possiede una copia, non ha una chiave master e non ha alcun modo di reimpostare o ripristinare il tuo wallet. **Non esiste una procedura di "password dimenticata", nessun ticket di assistenza e nessuna possibilità di intervento da parte del servizio clienti** — se perdi l'accesso alle tue chiavi senza avere un backup, i fondi sono persi, in modo permanente e irreversibile. Questo vale per ogni wallet non-custodial, non è una limitazione di QoreX, ma vale la pena dirlo chiaramente.
+
+**Fai almeno una di queste cose — subito dopo aver creato il tuo wallet, non più tardi:**
+
+1. **Scrivi la tua frase di recupero di 24 parole** e conservala offline e in un luogo durevole (non uno screenshot, non una nota sincronizzata sul cloud, non un messaggio a te stesso). È l'unica cosa in grado di ripristinare il tuo wallet su qualsiasi dispositivo, in qualsiasi momento.
+2. **Configura il [recupero sociale](#social-recovery)** con guardian di cui ti fidi. Questo ti permette di recuperare il tuo wallet anche se perdi la frase, senza che un singolo guardian possa mai accedere da solo ai tuoi fondi.
+
+Fare entrambe le cose è l'opzione più sicura — la frase ti protegge se cambi dispositivo o l'app non è disponibile; i guardian ti proteggono se perdi la frase stessa.
+
+**Disinstallare l'app elimina le tue chiavi da quel dispositivo.** Il vault dell'app mobile e il vault dell'estensione del browser vivono ciascuno solo sul dispositivo che li ha creati. Disinstallare l'app, ripristinare il telefono o rimuovere/cancellare l'estensione elimina quella copia — senza backup e senza un dispositivo collegato, il tuo wallet non può essere recuperato da nessuno, QoreChain inclusa.
+:::
+
 ## Chiave post-quantistica {#pqc-key}
 
 La Security dashboard mostra lo stato on-chain in tempo reale della tua chiave post-quantistica: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. L'algoritmo è **ML-DSA-87** (deterministico, ibrido con secp256k1).

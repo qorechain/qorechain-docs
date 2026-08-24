@@ -14,7 +14,7 @@ Le RDK et la couche de règlement des rollups sont une capacité en évolution a
 :::
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.85** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors d'un déploiement sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors d'un déploiement sur le mainnet.
 :::
 
 ---
@@ -29,12 +29,12 @@ Le RDK de QoreChain permet aux développeurs de lancer des rollups souverains qu
 
 Le RDK est livré avec cinq profils prédéfinis, chacun réglé pour une catégorie d'application courante :
 
-| Profil         | Règlement (preuve)  | Séquenceur | DA              | Modèle de gas | VM       | Cas d'usage prévu |
-| -------------- | ------------------- | ---------- | --------------- | ------------- | -------- | ----------------- |
-| **defi**       | zk (SNARK)          | dédié      | natif           | EIP-1559      | EVM      | Applications DeFi/AMM (prêt, DEX, dérivés) |
-| **gaming**     | based               | based      | natif           | forfaitaire   | custom   | État de jeu à haut débit et expériences en temps réel |
-| **nft**        | optimistic (fraude) | dédié      | natif (DA Celestia prévue) | standard | CosmWasm | Charges de travail de frappe et de place de marché NFT |
-| **enterprise** | based               | based      | natif           | subventionné  | EVM      | Déploiements avec permissions et consortiums avec frais sponsorisés |
+| Profil        | Règlement (preuve)  | Séquenceur | DA              | Modèle de gas | VM       | Cas d'usage prévu |
+| -------------- | ------------------- | --------- | --------------- | ------------ | -------- | ----------------- |
+| **defi**       | zk (SNARK)          | dédié | natif          | EIP-1559     | EVM      | Applications DeFi/AMM (prêt, DEX, dérivés) |
+| **gaming**     | based               | based     | natif           | forfaitaire         | custom   | État de jeu à haut débit et expériences en temps réel |
+| **nft**        | optimistic (fraude)  | dédié | natif (DA Celestia prévue) | standard | CosmWasm | Charges de travail de frappe et de place de marché NFT |
+| **enterprise** | based               | based     | natif          | subventionné   | EVM      | Déploiements avec permissions et consortiums, avec frais sponsorisés |
 | **custom**     | entièrement paramétré | entièrement paramétré | entièrement paramétré | entièrement paramétré | entièrement paramétré | Définissez chaque champ vous-même |
 
 :::note
@@ -47,15 +47,15 @@ Les valeurs par profil ci-dessus correspondent aux valeurs par défaut des profi
 
 Avant de déployer un rollup, assurez-vous de remplir les conditions suivantes :
 
-| Prérequis           | Détails                                                                                 |
-| ------------------- | -------------------------------------------------------------------------------------- |
-| **Mise minimale**   | 10 000 QOR (10 000 000 000 uqor)                                                       |
-| **Brûlage de création** | 1 % du montant misé est définitivement brûlé lors de la création du rollup          |
-| **Compte**          | Un compte QoreChain approvisionné avec un solde suffisant pour la mise plus les frais de transaction |
+| Prérequis       | Détails                                                                                |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **Mise minimale** | 10 000 QOR (10 000 000 000 uqor)                                                       |
+| **Brûlage à la création** | 1 % du montant misé est définitivement brûlé lors de la création du rollup                       |
+| **Compte**       | Un compte QoreChain approvisionné, avec un solde suffisant pour couvrir la mise et les frais de transaction |
 
 ---
 
-## Création d'un rollup à partir d'un profil prédéfini
+## Créer un rollup à partir d'un profil prédéfini
 
 Déployez un rollup en utilisant l'un des profils prédéfinis :
 
@@ -68,7 +68,7 @@ qorechaind tx rdk create-rollup \
   --fees 500uqor
 ```
 
-**Exemple :** Déployer un rollup de jeu :
+**Exemple :** déployer un rollup de jeu :
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -81,7 +81,7 @@ qorechaind tx rdk create-rollup \
 
 ---
 
-## Création d'un rollup personnalisé
+## Créer un rollup personnalisé
 
 Pour un contrôle total sur les paramètres du rollup, utilisez le profil `custom` et spécifiez chaque option :
 
@@ -101,17 +101,17 @@ qorechaind tx rdk create-rollup \
 
 **Paramètres personnalisés :**
 
-| Paramètre      | Options                                       | Description                              |
-| -------------- | --------------------------------------------- | ---------------------------------------- |
+| Paramètre      | Options                                       | Description                        |
+| -------------- | --------------------------------------------- | ---------------------------------- |
 | `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Comment les transitions d'état sont vérifiées |
-| `--sequencer`  | `dedicated`, `shared`, `based`                | Stratégie d'ordonnancement des transactions |
-| `--da-backend` | `native`, `external`                          | Couche de disponibilité des données      |
-| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Environnement d'exécution                |
+| `--sequencer`  | `dedicated`, `shared`, `based`                | Stratégie d'ordonnancement des transactions      |
+| `--da-backend` | `native`, `external`                          | Couche de disponibilité des données            |
+| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Environnement d'exécution              |
 | `--block-time` | Entier (millisecondes)                        | Intervalle cible de production de blocs   |
 
 ---
 
-## Soumission de lots
+## Soumettre des lots
 
 Les opérateurs de rollups soumettent des lots de transactions à QoreChain pour règlement :
 
@@ -174,12 +174,12 @@ Les opérateurs de rollups peuvent gérer le cycle de vie de leurs déploiements
    ```
 
 :::danger
-L'arrêt d'un rollup est permanent. Tout l'état associé est archivé mais le rollup ne peut pas être redémarré. Les QOR misés (moins le brûlage de création) sont restitués à l'opérateur.
+L'arrêt d'un rollup est permanent. L'ensemble de l'état associé est archivé, mais le rollup ne peut pas être redémarré. Le QOR misé (moins le brûlage à la création) est restitué à l'opérateur.
 :::
 
 ---
 
-## Interrogation des rollups
+## Interroger les rollups
 
 Obtenez les détails d'un rollup spécifique :
 
@@ -212,7 +212,7 @@ rollup:
 
 ## Suggestion de profil assistée par QCAI
 
-Vous ne savez pas quel profil convient à votre cas d'usage ? Utilisez l'outil de suggestion assisté par QCAI :
+Vous ne savez pas quel profil convient à votre cas d'usage ? Utilisez l'outil de suggestion assistée par QCAI :
 
 ```bash
 qorechaind query rdk suggest-profile --use-case "defi lending protocol"
@@ -227,14 +227,14 @@ reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality,
 alternative_profile: enterprise
 ```
 
-Cette commande analyse votre description et recommande le profil prédéfini le plus adapté accompagné d'une explication.
+Cette commande analyse votre description et recommande le profil prédéfini le plus adapté, accompagné d'une explication.
 
 ---
 
-## Conseils
+## Astuces
 
-* Commencez par un profil prédéfini et personnalisez ensuite. Les profils prédéfinis sont optimisés pour leurs cas d'usage cibles.
-* Le brûlage de création de 1 % est un coût unique appliqué à la mise minimale au moment du déploiement.
-* Utilisez le règlement `based` si vous souhaitez la configuration la plus simple avec les validateurs QoreChain gérant le séquençage.
-* Surveillez de près les soumissions de lots. Les interruptions dans la soumission de lots peuvent déclencher des alertes du réseau.
-* La commande `suggest-profile` est un point de départ utile, mais comparez la recommandation à vos exigences spécifiques.
+* Commencez par un profil prédéfini et personnalisez-le ensuite. Les profils prédéfinis sont optimisés pour leurs cas d'usage cibles.
+* Le brûlage à la création de 1 % est un coût unique appliqué à la mise minimale au moment du déploiement.
+* Utilisez le règlement `based` si vous voulez la configuration la plus simple, avec les validateurs QoreChain qui gèrent le séquençage.
+* Surveillez de près les soumissions de lots. Des interruptions dans la soumission des lots peuvent déclencher des alertes sur le réseau.
+* La commande `suggest-profile` est un bon point de départ, mais comparez toujours la recommandation à vos exigences spécifiques.

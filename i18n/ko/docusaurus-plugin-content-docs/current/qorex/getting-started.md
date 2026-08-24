@@ -10,8 +10,8 @@ sidebar_position: 2
 이 페이지에서는 **모바일 앱**을 설치하고 지갑을 생성, 복구 또는 연결하는 과정을 안내합니다. 데스크톱 지갑은 [브라우저 확장 프로그램](/qorex/browser-extension) 문서를 참고하세요. Chrome, Firefox, Safari에서 이용할 수 있습니다.
 
 :::note 모바일 이용 가능 여부
-- **Android** — Google Play에서 이용 가능: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — **TestFlight**를 통해 테스트용으로 이용 가능: https://testflight.apple.com/join/Xa9D7vgR — App Store 출시는 아직 심사 중입니다.
+- **Android** — Google Play에서 정식 서비스 중: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — App Store에서 정식 서비스 중: https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
 ## 시작하기 전에: 기기를 보호하세요
@@ -41,7 +41,7 @@ QoreX 지갑은 기기에 **강력한 잠금 해제 수단**이 설정되어 있
 4. 문구를 확인하면 QoreX가 하드웨어 기반의 생체 인증으로 보호되는 보관소에 이를 봉인합니다.
 
 :::caution 복구 문구가 전부입니다
-24개 단어를 가진 사람은 누구나 자금을 통제할 수 있으며, QoreChain Association을 포함해 그 누구도 대신 복구해 줄 수 없습니다. 절대로 문구를 웹사이트에 입력하거나, 공유하거나, 스크린샷 또는 클라우드 메모에 저장하지 마세요.
+24개 단어를 가진 사람은 누구나 당신의 자금을 통제할 수 있으며, QoreChain Association을 포함해 그 누구도 대신 복구해 줄 수 없습니다. 절대로 문구를 웹사이트에 입력하거나, 공유하거나, 스크린샷 또는 클라우드 메모에 저장하지 마세요. **QoreX를 삭제(제거)하면 해당 기기에 저장된 키도 함께 삭제됩니다** — 직접 적어 둔 문구(또는 미리 설정해 둔 [소셜 복구](/qorex/security-and-recovery#social-recovery))가 없다면, 앱 삭제는 곧 영구적인 접근 상실을 의미합니다. 지갑에 자금을 넣기 전에 미리 백업하세요, 넣은 뒤가 아니라.
 :::
 
 ### 2. 기존 지갑 복구
@@ -56,7 +56,11 @@ QoreX 지갑은 기기에 **강력한 잠금 해제 수단**이 설정되어 있
 
 ## 선택 사항: @handle 등록
 
-지갑을 만든 뒤에는 고유한 **@handle**(예: `@liviu`)을 등록해서 `qor1…` 주소 대신 이름으로 송금을 받을 수 있습니다. 이는 선택 사항이며 건너뛸 수 있습니다 — 지갑이 여기에 의존하는 일은 없습니다. [계정 및 Dashboard](/qorex/account-and-dashboard#handle)를 참고하세요.
+지갑을 만든 뒤에는 고유한 **@handle**(예: `@liviu`)을 등록해서 `qor1…` 주소 대신 이름으로 송금을 받을 수 있습니다. 이는 선택 사항이며 건너뛸 수 있습니다 — 지갑이 여기에 의존하는 일은 없습니다. handle은 지갑 전체가 아니라 특정 주소에 연결되므로, 계정을 두 개 이상 갖게 되는 순간부터 중요해집니다 — [하나의 문구에서 나오는 여러 계정](/qorex/account-and-dashboard#accounts)과 [@handle](/qorex/account-and-dashboard#handle)을 참고하세요.
+
+## 언어
+
+QoreX는 영어, 루마니아어, 독일어, 스페인어, 프랑스어, 이탈리아어, 터키어, 아랍어, 일본어, 한국어 등 10개 언어로 제공되며, 휴대폰의 언어 설정을 자동으로 따르고 그 외 언어는 영어로 대체됩니다. **설정 → 언어**에서 언제든 감지된 언어를 재정의할 수 있으며, 아랍어를 선택하면 인터페이스도 오른쪽에서 왼쪽으로 바뀝니다.
 
 ## 다음 단계
 

@@ -7,24 +7,24 @@ sidebar_position: 6
 
 # EVM-Precompiles
 
-QoreChain erweitert die QoreChain EVM Engine um **sechs benutzerdefinierte vorkompilierte Contracts**, die Funktionen auf Protokollebene direkt für Solidity bereitstellen. Diese Precompiles bieten On-Chain-Zugriff auf Post-Quanten-Kryptografie, KI-Risikobewertung, Cross-VM-Messaging und PRISM-Konsensparameter.
+QoreChain erweitert die QoreChain-EVM-Engine um **sechs benutzerdefinierte precompiled Contracts**, die Protokollfunktionen auf Protokollebene direkt für Solidity zugänglich machen. Diese Precompiles bieten On-Chain-Zugriff auf Post-Quanten-Kryptografie, KI-Risikobewertung, Cross-VM-Messaging und PRISM-Konsensparameter.
 
 :::note
-Precompiles sind sowohl auf dem **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, seit dem 7. Juni 2026 mit Chain-Version **v3.1.85** in Betrieb) als auch auf dem **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) verfügbar. Alle Beispiele verwenden den JSON-RPC-Endpunkt auf **Port 8545**.
+Die Precompiles sind sowohl im **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit 7. Juni 2026 auf Chain-Version **v3.1.92**) als auch im **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) verfügbar. Alle Beispiele verwenden den JSON-RPC-Endpunkt auf **Port 8545**.
 :::
 
 ---
 
-## Precompile-Adresszuordnung
+## Adresskarte der Precompiles
 
-| Precompile              | Adresse                                      | Basis-Gas       | Beschreibung                                     |
-| ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50.000          | Synchrone Cross-VM-Aufrufe (EVM zu CosmWasm)     |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/Byte | ML-DSA-87-Post-Quanten-Signaturen verifizieren   |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2.500           | Prüfen, ob ein Konto einen registrierten PQC-Schlüssel hat |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50.000          | KI-generierten Risikowert für Transaktionsdaten abrufen |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40.000          | Prüfen, ob ein Transfer als anomal markiert ist  |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1.500        | Aktuelle PRISM-abgestimmte Konsensparameter lesen |
+| Precompile               | Adresse                                       | Basis-Gas        | Beschreibung                                        |
+| ------------------------ | ---------------------------------------------- | ----------------- | ---------------------------------------------------- |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000            | Synchrone Cross-VM-Aufrufe (EVM zu CosmWasm)         |
+| **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/Byte   | Verifiziert ML-DSA-87-Post-Quanten-Signaturen        |
+| **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500             | Prüft, ob ein Konto einen registrierten PQC-Schlüssel hat |
+| **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000            | Ruft den KI-generierten Risikoscore für Transaktionsdaten ab |
+| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40.000            | Prüft, ob ein Transfer als anomal markiert ist       |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1.500          | Liest die aktuellen PRISM-abgestimmten Konsensparameter |
 
 ---
 
@@ -114,9 +114,9 @@ interface IQoreConsensus {
 
 ---
 
-## Verwendungsbeispiele
+## Anwendungsbeispiele
 
-### PQC Verify — Eine Post-Quanten-Signatur verifizieren
+### PQC Verify — Verifizierung einer Post-Quanten-Signatur
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -139,9 +139,9 @@ contract PQCVerifier {
 }
 ```
 
-**Gaskosten:** 25.000 Basis + 8 Gas pro Byte Eingabedaten. Für eine typische ML-DSA-87-Verifikation (2592 + 4627 + Nachrichtenbytes) sind ungefähr 80.000–90.000 Gas zu erwarten.
+**Gaskosten:** 25.000 Basis + 8 Gas pro Byte Eingabedaten. Für eine typische ML-DSA-87-Verifizierung (2592 + 4627 + Nachrichten-Bytes) sind ungefähr 80.000-90.000 Gas zu erwarten.
 
-### PQC Key Status — Kontoregistrierung prüfen
+### PQC Key Status — Prüfung der Kontoregistrierung
 
 ```solidity
 contract PQCChecker {
@@ -156,7 +156,7 @@ contract PQCChecker {
 
 **Gaskosten:** 2.500 pauschal.
 
-### AI Risk Score — Transaktionsrisiko bewerten
+### AI Risk Score — Bewertung des Transaktionsrisikos
 
 ```solidity
 import "./interfaces/IQoreAI.sol";
@@ -177,17 +177,17 @@ contract RiskGate {
 
 **Risikostufen:**
 
-| Stufe    | Wert  | Wertebereich (bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| Stufe    | Wert  | Score-Bereich (bps) |
+| -------- | ----- | -------------------- |
+| SAFE     | 0     | 0 - 1000              |
+| LOW      | 1     | 1001 - 3000            |
+| MEDIUM   | 2     | 3001 - 6000            |
+| HIGH     | 3     | 6001 - 8500            |
+| CRITICAL | 4     | 8501 - 10000           |
 
 **Gaskosten:** 50.000 pauschal.
 
-### AI Anomaly Check — Verdächtige Transfers markieren
+### AI Anomaly Check — Markierung verdächtiger Transfers
 
 ```solidity
 contract AnomalyGuard {
@@ -205,7 +205,7 @@ contract AnomalyGuard {
 
 **Gaskosten:** 40.000 pauschal.
 
-### PRISM Consensus Params — Konsenszustand lesen
+### PRISM Consensus Params — Auslesen des Konsensstatus
 
 ```solidity
 contract ConsensusReader {
@@ -227,7 +227,7 @@ contract ConsensusReader {
 
 **Gaskosten:** 1.500 pauschal.
 
-### CrossVM Bridge — CosmWasm von der EVM aus aufrufen
+### CrossVM Bridge — Aufruf von CosmWasm aus der EVM
 
 ```solidity
 interface ICrossVM {
@@ -249,13 +249,13 @@ contract CrossVMExample {
 }
 ```
 
-**Gaskosten:** 50.000 Basis + Ausführungskosten des Ziel-Contracts. Einzelheiten siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
+**Gaskosten:** 50.000 Basis + Ausführungskosten des Ziel-Contracts. Details siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
 
 ---
 
 ## Speicherorte der Schnittstellendateien
 
-Die Solidity-Schnittstellendateien stehen im Repository zum direkten Import zur Verfügung:
+Die Solidity-Schnittstellendateien stehen im Repository für den direkten Import zur Verfügung:
 
 ```
 contracts/
@@ -287,4 +287,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — Vollständige Dokumentation zum Cross-VM-Messaging
 * [EVM-Entwicklung](/developer-guide/evm-development) — Bereitstellung von Solidity-Contracts
-* [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Konten mit Session-Schlüsseln
+* [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Konten mit Session-Keys

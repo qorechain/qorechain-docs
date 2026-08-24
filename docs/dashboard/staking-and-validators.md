@@ -7,46 +7,97 @@ sidebar_position: 8
 
 # Staking & Validators
 
-The **Validators** page lets you review the network's validators and stake your QOR by delegating to them. Delegating helps secure the network and earns staking rewards. For the concepts behind delegation and rewards, see [Staking & Delegation](/user-guide/staking-and-delegation).
+The **Validators** page (`/validators`) lets you review the network's validators — it is a read-only browser, with no wallet connection and no delegate button on it. The actual staking actions (delegate, undelegate, claim) live on the **Wallet** page instead, under its **Stake / Delegate** and **Rewards** tabs, once your QoreX wallet is connected there. Delegating helps secure the network and earns staking rewards. For the concepts behind delegation and rewards, see [Staking & Delegation](/user-guide/staking-and-delegation).
 
-Connect your wallet to stake — see [Overview & Getting Started](/dashboard/overview#connect-your-wallet).
+QoreChain staking is signed post-quantum, so the dashboard never holds a key that could sign a delegation. Every staking action below works the same way: you compose the request on the dashboard (which validator, how much), then approve and sign it **in your connected QoreX wallet** — the app or browser extension — exactly like the [Send flow](/dashboard/wallet#mainnet). The dashboard sends only the parameters through a `qorex://tx?...` link; QoreX reconstructs, signs, and broadcasts the actual transaction itself. Connect your wallet first — see [Use the Wallet on mainnet](/dashboard/wallet#mainnet).
+
+Staking, delegation, and validation happen exclusively on the native (Cosmos) lane, using the hybrid post-quantum signature — never through an EVM precompile. This is a permanent security property, not a temporary gap: the EVM lane runs a single ante decorator, so the validator-license, minimum-self-bond, and PQC checks that live in the native lane's ante would all be bypassed if staking were exposed there. A MetaMask-linked address can send and receive QOR (see [Use the Wallet on mainnet](/dashboard/wallet#mainnet)), but it cannot stake — only a QoreX-connected address can.
 
 ## Review validators
 
-The page opens with summary cards for the active validator count, total bonded QOR, average commission, and average uptime. Below that is the validator list. Each validator shows:
+The page opens with summary cards for the active validator count, total bonded QOR, average commission, and average uptime. Below that is the validator list. Each validator row shows:
 
 - A **rank** and the validator's **moniker** (name), with its address and a copy button.
 - **Voting power** — the validator's bonded stake and its share of the total.
 - **Commission** — the percentage the validator keeps from rewards.
 - **APY** — the annual yield estimate for delegating.
 - **Status** — for example active or jailed.
-- Operational details such as region, uptime, blocks proposed, software version, and last seen.
+- Operational details: region, uptime, blocks proposed, software version, and last seen.
 
 A search box filters the list by validator name or address.
+
+This page is for comparing validators only. To actually delegate to one, go to the **Wallet** page — see below.
 
 ## Choose a validator
 
 When picking a validator to delegate to, consider:
 
 - **Commission** — a lower rate leaves more rewards for you, but sustainable operators need a reasonable cut.
-- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning.
-- **Voting power** — spreading stake across validators supports decentralization.
+- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning. A validator jails when it misses signing on more than 5% of blocks within a 10,000-block window (roughly six hours) — it earns nothing, for you or itself, until it fixes the problem and unjails.
+- **Voting power** — spreading stake across validators supports decentralization. On the Delegate panel, validators are listed smallest-first for exactly this reason.
 
-## Delegate, redelegate, and claim
+## Delegate, redelegate, undelegate, and claim rewards
 
-With a wallet connected, you can:
+All four actions live on the **Wallet** page (`/dashboard/wallet`), not on the Validators page. Open the wallet, connect QoreX if you haven't already (see [Use the Wallet on mainnet](/dashboard/wallet#mainnet)), then use the **Stake / Delegate** tab for delegating and undelegating, and the **Rewards** tab for claiming.
 
-- **Delegate** QOR to a validator to begin earning rewards.
-- **Redelegate** your stake from one validator to another.
-- **Undelegate** to begin withdrawing your stake.
-- **Claim rewards** that have accrued from your delegations.
+### Delegate {#delegate}
+
+1. On the **Wallet** page, select the **Stake / Delegate** tab.
+2. In the **Delegate QOR** panel, check the info box at the top — it shows your currently bonded total against the light-node stake threshold, and whether you already meet it. This threshold is checked against your **total delegated stake across all validators combined**, not per validator, so a shortfall can be split between them — there's no way to "delegate to a light node" directly, since delegation always targets a validator and light-node eligibility is a separate check on your total.
+3. Open the **Validator** dropdown and choose one. Validators are listed smallest-stake-first.
+4. Enter an **Amount (QOR)**.
+5. Read the note under the amount field: unbonding takes 21 days, and once bonded the QOR cannot be moved or sold until that period passes.
+6. If the panel shows a warning that this address doesn't have enough spendable QOR to cover the fee, send a little spendable QOR to it first — vesting or bonded coins cannot pay the fee. The **Continue in QoreX** button stays disabled until this is resolved.
+7. Click **Continue in QoreX** (it reads **Preparing…** while the request is being created).
+8. The panel now shows **Approve it in QoreX** with an **Open QoreX** link and a request ID. QoreX will show you the validator and amount before signing — nothing is sent until you approve it there.
+9. Open QoreX (the link/deeplink does this) and approve the delegation. QoreX builds, signs, and broadcasts the transaction; the dashboard never sees your key.
+
+### Redelegate {#redelegate}
+
+The underlying request contract already supports moving a bond directly from one validator to another (`redelegate`, with a source and a destination validator that must differ) — the same non-custodial, QoreX-signed pattern as delegate and undelegate. As of this writing, though, the dashboard does not yet expose a dedicated Redelegate panel or button for it.
+
+Until that panel ships, move a stake to a different validator in two steps using the flows on this page:
+
+1. **[Undelegate](#undelegate)** the amount from the validator you want to leave.
+2. Wait out the unbonding period shown in that flow — the QOR is not movable or earning during this time.
+3. Once the unbonded QOR is spendable again, **[Delegate](#delegate)** it to the new validator.
+
+This takes longer than a direct redelegation would (no bonding rewards during the 21-day unbonding window), so treat it as a temporary path, not the intended one. It's also worth knowing, fee-wise, that a direct redelegation is normally the most expensive of these staking operations, and that the undelegate step in this workaround already costs noticeably more than a plain delegate on its own — the chain measures gas per operation rather than charging a flat fee, and writing an unbonding-queue entry is real extra work. Delegating alone remains the cheapest of the three.
+
+### Undelegate {#undelegate}
+
+Exiting a delegation is now available on the dashboard — for a while it was possible to delegate but not to unbond from here at all, so if you remember it being missing, that's why.
+
+:::caution 21-day unbonding period
+Undelegated QOR does not arrive today. It sits in a **21-day unbonding period** first, during which it earns no rewards and cannot be moved or sold. The panel states this twice on purpose — once as its subtitle, once again right above the confirm button — because someone reaching for this screen in a hurry (a falling market, a jailed validator) is exactly who most needs to see it before signing.
+:::
+
+1. On the **Wallet** page, select the **Stake / Delegate** tab and scroll to the **Unbond QOR** panel, below Delegate. Its subtitle already restates the 21-day unbonding warning above.
+2. If you have no active delegations from this address, the panel says so and stops here.
+3. Open the **Unbond from** dropdown and pick the delegation to reduce — it lists only validators you're actually delegated to, each showing the bonded amount.
+4. Enter an **Amount (QOR)** to unbond, or click **Unbond all `<amount>` QOR** to fill in the full bonded amount for that validator.
+5. If you enter more than is bonded to that validator, the panel tells you so and blocks submission.
+6. Immediately above the confirm button, the warning appears a second time: the QOR arrives in 21 days, not today, and earns nothing until then. This is deliberate repetition, not a docs typo — read it again before continuing.
+7. If the address can't cover the fee (bonded coins can't pay it — you need a little spendable QOR here first), the panel warns you and disables the button.
+8. Click **Continue in QoreX** (**Preparing…** while the request is created).
+9. The panel shows **Approve it in QoreX** with an **Open QoreX** link and a request ID — QoreX displays the validator and amount before you sign.
+10. Open QoreX and approve. It signs and broadcasts the undelegation; the QOR becomes spendable again only after the 21-day unbonding period ends.
+
+### Claim rewards {#claim}
+
+1. On the **Wallet** page, select the **Rewards** tab.
+2. The **Staking rewards** panel reads your accrued rewards across every validator you're delegated to. If nothing is staked from this address, it says so and there is nothing to claim.
+3. Otherwise it shows the total waiting to be claimed, plus a line per validator with the amount accrued there. Rewards accrue continuously and are never lost by waiting — there's no deadline.
+4. Click **Claim in QoreX**. This is claim-all: it claims the accrued rewards from every validator shown, in one request — there is no per-validator claim button.
+5. Approve the claim in QoreX (via the **Open QoreX** link) to sign and broadcast it.
 
 :::note Unbonding period
-Undelegated QOR goes through an unbonding period before it becomes spendable again, during which it does not earn rewards. See [Staking & Delegation](/user-guide/staking-and-delegation) for details.
+Undelegated QOR goes through a 21-day unbonding period before it becomes spendable again, during which it does not earn rewards. See [Staking & Delegation](/user-guide/staking-and-delegation) for details.
 :::
 
 ## Related
 
 - [Staking & Delegation](/user-guide/staking-and-delegation) — full staking concepts.
+- [Use the Wallet on mainnet](/dashboard/wallet#mainnet) — connect QoreX before staking.
 - [Explorer Validators](/dashboard/explorer#validators) — browse validators without a wallet.
 - [Tools Hub](/dashboard/tools-hub) — apply to run your own validator.

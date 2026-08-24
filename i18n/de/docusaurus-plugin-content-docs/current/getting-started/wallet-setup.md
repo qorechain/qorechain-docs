@@ -95,6 +95,10 @@ Seit Chain-Version **v3.1.85** müssen Sie Ihren Root-Schlüssel nicht mehr prei
 
 ## Solana-Wallets (SVM)
 
+:::caution Einreichen von SVM-Transaktionen derzeit deaktiviert
+Die SVM-Ausführungsschiene ist **derzeit netzwerkweit für das Einreichen von Transaktionen deaktiviert** — senden Sie aktuell keine Transaktionen über ein Solana-kompatibles Wallet an QoreChain. Das Lesen von Guthaben/Slots funktioniert möglicherweise weiterhin; den aktuellen Status finden Sie unter [SVM-Entwicklung](/developer-guide/svm-development).
+:::
+
 Die SVM-Ausführungsumgebung von QoreChain ist mit standardmäßigem Solana-Tooling kompatibel, und das **native QOR-Guthaben des Kontos ist direkt auf der SVM-Schnittstelle sichtbar** (in lamports, 9 Dezimalstellen; 1 uqor = 1.000 lamports). Verbinden Sie ein beliebiges Solana-kompatibles Wallet oder eine entsprechende Bibliothek.
 
 ### Verwendung von @solana/web3.js

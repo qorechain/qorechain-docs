@@ -7,24 +7,24 @@ sidebar_position: 6
 
 # Précompilés EVM
 
-QoreChain étend le QoreChain EVM Engine avec **six contrats précompilés personnalisés** qui exposent directement à Solidity des fonctionnalités au niveau du protocole. Ces précompilés fournissent un accès on-chain à la cryptographie post-quantique, à l'évaluation des risques par IA, à la messagerie cross-VM et aux paramètres de consensus PRISM.
+QoreChain étend le QoreChain EVM Engine avec **six contrats précompilés personnalisés** qui exposent des fonctionnalités au niveau du protocole directement à Solidity. Ces précompilés fournissent un accès on-chain à la cryptographie post-quantique, au scoring de risque par IA, à la messagerie inter-VM et aux paramètres du consensus PRISM.
 
 :::note
-Les précompilés sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en service depuis le 7 juin 2026 sur la version de chaîne **v3.1.85**) et le testnet **`qorechain-diana`** (EVM chain ID **9800**). Tous les exemples utilisent le point de terminaison JSON-RPC sur le **port 8545**.
+Les précompilés sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, en production depuis le 7 juin 2026 sur la version de chaîne **v3.1.92**) et sur le testnet **`qorechain-diana`** (chain ID EVM **9800**). Tous les exemples utilisent le point de terminaison JSON-RPC sur le **port 8545**.
 :::
 
 ---
 
-## Carte des adresses de précompilés
+## Carte des adresses des précompilés
 
-| Précompilé              | Adresse                                      | Gas de base     | Description                                      |
-| ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | Appels cross-VM synchrones (EVM vers CosmWasm)   |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | Vérifie les signatures post-quantiques ML-DSA-87 |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Vérifie si un compte possède une clé PQC enregistrée |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | Obtient un score de risque généré par IA pour des données de transaction |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | Vérifie si un transfert est signalé comme anormal |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | Lit les paramètres de consensus actuels ajustés par PRISM |
+| Précompilé               | Adresse                                      | Gas de base      | Description                                              |
+| ------------------------ | --------------------------------------------- | --------------- | --------------------------------------------------------- |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50 000          | Appels synchrones inter-VM (EVM vers CosmWasm)             |
+| **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25 000 + 8/octet | Vérifie les signatures post-quantiques ML-DSA-87           |
+| **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2 500           | Vérifie si un compte possède une clé PQC enregistrée       |
+| **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50 000          | Récupère le score de risque généré par IA pour une transaction |
+| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40 000          | Vérifie si un transfert est signalé comme anormal           |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1 500        | Lit les paramètres de consensus actuels réglés par PRISM    |
 
 ---
 
@@ -139,7 +139,7 @@ contract PQCVerifier {
 }
 ```
 
-**Coût en gas :** 25,000 de base + 8 de gas par octet de données d'entrée. Pour une vérification ML-DSA-87 typique (2592 + 4627 + octets du message), prévoyez environ 80,000 à 90,000 de gas.
+**Coût en gas :** 25 000 de base + 8 gas par octet de données en entrée. Pour une vérification ML-DSA-87 typique (2592 + 4627 + octets du message), comptez environ 80 000 à 90 000 gas.
 
 ### PQC Key Status — Vérifier l'enregistrement d'un compte
 
@@ -154,7 +154,7 @@ contract PQCChecker {
 }
 ```
 
-**Coût en gas :** 2,500 forfaitaire.
+**Coût en gas :** 2 500 forfaitaire.
 
 ### AI Risk Score — Évaluer le risque d'une transaction
 
@@ -177,15 +177,15 @@ contract RiskGate {
 
 **Niveaux de risque :**
 
-| Niveau   | Valeur | Plage de score (bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| Niveau   | Valeur | Plage de score (pb) |
+| -------- | ------ | -------------------- |
+| SAFE     | 0      | 0 - 1000              |
+| LOW      | 1      | 1001 - 3000            |
+| MEDIUM   | 2      | 3001 - 6000            |
+| HIGH     | 3      | 6001 - 8500            |
+| CRITICAL | 4      | 8501 - 10000           |
 
-**Coût en gas :** 50,000 forfaitaire.
+**Coût en gas :** 50 000 forfaitaire.
 
 ### AI Anomaly Check — Signaler les transferts suspects
 
@@ -203,7 +203,7 @@ contract AnomalyGuard {
 }
 ```
 
-**Coût en gas :** 40,000 forfaitaire.
+**Coût en gas :** 40 000 forfaitaire.
 
 ### PRISM Consensus Params — Lire l'état du consensus
 
@@ -225,7 +225,7 @@ contract ConsensusReader {
 }
 ```
 
-**Coût en gas :** 1,500 forfaitaire.
+**Coût en gas :** 1 500 forfaitaire.
 
 ### CrossVM Bridge — Appeler CosmWasm depuis l'EVM
 
@@ -249,13 +249,13 @@ contract CrossVMExample {
 }
 ```
 
-**Coût en gas :** 50,000 de base + coût d'exécution du contrat cible. Voir [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) pour plus de détails.
+**Coût en gas :** 50 000 de base + coût d'exécution du contrat cible. Voir [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) pour plus de détails.
 
 ---
 
-## Emplacements des fichiers d'interface
+## Emplacement des fichiers d'interface
 
-Les fichiers d'interface Solidity sont disponibles dans le dépôt pour import direct :
+Les fichiers d'interface Solidity sont disponibles dans le dépôt pour une importation directe :
 
 ```
 contracts/
@@ -285,6 +285,6 @@ import "./interfaces/IQoreConsensus.sol";
 
 ## Étapes suivantes
 
-* [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) — Documentation complète sur la messagerie cross-VM
-* [Développement EVM](/developer-guide/evm-development) — Déploiement de contrats Solidity
+* [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Documentation complète sur la messagerie inter-VM
+* [Développement EVM](/developer-guide/evm-development) — Déployer des contrats Solidity
 * [Abstraction de compte](/developer-guide/account-abstraction) — Comptes programmables avec clés de session

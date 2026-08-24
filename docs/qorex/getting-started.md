@@ -10,8 +10,8 @@ sidebar_position: 2
 This page walks through installing the **mobile app** and creating, restoring, or linking your wallet. For the desktop wallet, see the [Browser Extension](/qorex/browser-extension), which is live on Chrome, Firefox, and Safari.
 
 :::note Mobile availability
-- **Android** — available on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — available for testing via **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — the App Store release is still in review.
+- **Android** — live in production on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — live on the App Store: https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
 ## Before you begin: secure your device
@@ -41,7 +41,7 @@ You have three ways to set up:
 4. Confirm the phrase; QoreX seals it in the hardware-backed, biometric-gated vault.
 
 :::caution Your recovery phrase is everything
-Anyone with your 24 words controls your funds, and no one — including QoreChain Association — can recover them for you. Never type your phrase into a website, share it, or store it in a screenshot or cloud note.
+Anyone with your 24 words controls your funds, and no one — including QoreChain Association — can recover them for you. Never type your phrase into a website, share it, or store it in a screenshot or cloud note. **Uninstalling QoreX deletes the keys stored on that device** — without your written phrase (or [social recovery](/qorex/security-and-recovery#social-recovery) set up beforehand), an uninstall means permanent loss of access. Back up before you fund the wallet, not after.
 :::
 
 ### 2. Restore an existing wallet
@@ -56,7 +56,11 @@ If you already have QoreX on another phone or tablet, you can move the wallet ac
 
 ## Optional: claim an @handle
 
-After your wallet is created you can claim a unique **@handle** (for example `@liviu`) so people can send to you by name instead of a `qor1…` address. This is optional and skippable — your wallet never depends on it. See [Account & Dashboard](/qorex/account-and-dashboard#handle).
+After your wallet is created you can claim a unique **@handle** (for example `@liviu`) so people can send to you by name instead of a `qor1…` address. This is optional and skippable — your wallet never depends on it. A handle binds to a specific address rather than to the wallet as a whole, which matters once you have more than one account — see [Several accounts from one phrase](/qorex/account-and-dashboard#accounts) and [@handle](/qorex/account-and-dashboard#handle).
+
+## Language
+
+QoreX ships in ten languages — English, Romanian, German, Spanish, French, Italian, Turkish, Arabic, Japanese, and Korean — and follows your phone's language automatically, falling back to English for anything else. You can override the detected language anytime from **Settings → Language**; choosing Arabic also switches the interface to right-to-left.
 
 ## Next steps
 

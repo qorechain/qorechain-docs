@@ -7,57 +7,57 @@ sidebar_position: 6
 
 # Rollups bereitstellen
 
-Dieser Leitfaden beschreibt, wie Sie anwendungsspezifische Rollups auf QoreChain mit dem Rollup Development Kit (RDK) bereitstellen. Das RDK bietet voreingestellte Profile für gängige Anwendungsfälle sowie vollständige Anpassung für fortgeschrittene Bereitstellungen.
+Diese Anleitung beschreibt, wie Sie anwendungsspezifische Rollups auf QoreChain mit dem Rollup Development Kit (RDK) bereitstellen. Das RDK bietet voreingestellte Profile für gängige Anwendungsfälle sowie vollständige Anpassungsmöglichkeiten für fortgeschrittene Deployments.
 
 :::caution
-Das RDK und die Rollup-Settlement-Schicht sind eine sich aktiv weiterentwickelnde Funktion. Behandeln Sie die nachfolgenden Parameter, Presets und den Reifegrad einzelner Funktionen als änderbar und validieren Sie Bereitstellungen auf **`qorechain-diana`**, bevor Sie das Mainnet anvisieren.
+Das RDK und die Rollup-Abwicklungsschicht sind eine sich aktiv weiterentwickelnde Fähigkeit. Betrachten Sie die Parameter, Presets und den Reifegrad der einzelnen unten aufgeführten Funktionen als veränderlich und validieren Sie Deployments auf **`qorechain-diana`**, bevor Sie das Mainnet anvisieren.
 :::
 
 :::note
-Die nachfolgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit der Chain-Version **v3.1.85** — ersetzen Sie die Mainnet-Chain-ID und die Endpunkte aus der Seite **Mit dem Mainnet verbinden**, wenn Sie auf dem Mainnet bereitstellen.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.92** — ersetzen Sie beim Deployment auf dem Mainnet die Chain-ID und die Endpunkte anhand der Seite **Connecting to Mainnet**.
 :::
 
 ---
 
-## Überblick
+## Übersicht
 
-Das QoreChain RDK ermöglicht Entwicklern den Start souveräner Rollups, die auf QoreChain abgewickelt werden. Jedes Rollup ist eine eigenständige Ausführungsumgebung mit eigener Blockzeit, eigener virtueller Maschine und eigenem Gebührenmodell und erbt dabei die Sicherheits- und Datenverfügbarkeitsgarantien von QoreChain.
+Das QoreChain-RDK ermöglicht Entwicklern den Start souveräner Rollups, die auf QoreChain abgewickelt werden. Jeder Rollup ist eine eigenständige Ausführungsumgebung mit eigener Blockzeit, virtueller Maschine und eigenem Gebührenmodell, während er gleichzeitig die Sicherheits- und Datenverfügbarkeitsgarantien von QoreChain erbt.
 
 ---
 
 ## Voreingestellte Profile
 
-Das RDK wird mit fünf voreingestellten Profilen ausgeliefert, die jeweils auf eine gängige Anwendungskategorie abgestimmt sind:
+Das RDK wird mit fünf voreingestellten Profilen ausgeliefert, die jeweils auf eine gängige Anwendungskategorie zugeschnitten sind:
 
-| Profil         | Settlement (Proof)  | Sequencer | DA              | Gas-Modell   | VM       | Vorgesehener Anwendungsfall |
+| Profil        | Abwicklung (Nachweis)  | Sequenzer | DA              | Gasmodell    | VM       | Vorgesehener Anwendungsfall |
 | -------------- | ------------------- | --------- | --------------- | ------------ | -------- | ----------------- |
-| **defi**       | zk (SNARK)          | dediziert | native          | EIP-1559     | EVM      | DeFi-/AMM-Anwendungen (Lending, DEXs, Derivate) |
-| **gaming**     | based               | based     | native          | flach        | custom   | Spielzustand mit hohem Durchsatz und Echtzeit-Erlebnisse |
-| **nft**        | optimistic (Fraud)  | dediziert | native (Celestia DA geplant) | standard | CosmWasm | NFT-Minting- und Marktplatz-Workloads |
-| **enterprise** | based               | based     | native          | subventioniert | EVM    | Permissioned- und Konsortium-Bereitstellungen mit gesponserten Gebühren |
-| **custom**     | vollständig parametrisiert | vollständig parametrisiert | vollständig parametrisiert | vollständig parametrisiert | vollständig parametrisiert | Jedes Feld selbst festlegen |
+| **defi**       | zk (SNARK)          | dedicated | native          | EIP-1559     | EVM      | DeFi-/AMM-Anwendungen (Lending, DEXs, Derivate) |
+| **gaming**     | based               | based     | native          | flat         | custom   | Hochdurchsatz-Spielzustände und Echtzeiterlebnisse |
+| **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA geplant) | standard | CosmWasm | NFT-Minting- und Marktplatz-Workloads |
+| **enterprise** | based               | based     | native          | subsidized   | EVM      | Berechtigte und Konsortial-Deployments mit gesponserten Gebühren |
+| **custom**     | fully parameterized | fully parameterized | fully parameterized | fully parameterized | fully parameterized | Jedes Feld selbst festlegen |
 
 :::note
-Die obigen Pro-Preset-Werte entsprechen den ausgelieferten `@qorechain/rdk`-Profilstandards. Die genaue Konfiguration kann sich mit zunehmender Reife des RDK ändern — fragen Sie die maßgeblichen Werte mit `qorechaind query rdk config` (oder `RdkClient.params()`) ab, und beachten Sie, dass `based`-Settlement stets mit dem `based`-Sequencer-Modus gepaart wird.
+Die oben genannten Werte je Preset entsprechen den ausgelieferten Profil-Standardwerten von `@qorechain/rdk`. Die genaue Konfiguration kann sich im Zuge der Weiterentwicklung des RDK ändern — fragen Sie die maßgeblichen Werte mit `qorechaind query rdk config` ab (oder `RdkClient.params()`), und beachten Sie, dass die `based`-Abwicklung immer mit dem `based`-Sequenzer-Modus gepaart ist.
 :::
 
 ---
 
 ## Voraussetzungen
 
-Bevor Sie ein Rollup bereitstellen, stellen Sie sicher, dass Sie die folgenden Voraussetzungen erfüllen:
+Stellen Sie vor der Bereitstellung eines Rollups sicher, dass Sie die folgenden Voraussetzungen erfüllen:
 
-| Voraussetzung     | Details                                                                                |
+| Anforderung       | Details                                                                                |
 | ----------------- | -------------------------------------------------------------------------------------- |
-| **Mindest-Stake** | 10.000 QOR (10.000.000.000 uqor)                                                        |
-| **Erstellungs-Burn** | 1 % des gestakten Betrags wird bei der Rollup-Erstellung dauerhaft verbrannt        |
-| **Konto**         | Ein finanziertes QoreChain-Konto mit ausreichendem Guthaben für den Stake plus Transaktionsgebühren |
+| **Mindesteinsatz** | 10.000 QOR (10.000.000.000 uqor)                                                       |
+| **Erstellungs-Burn** | 1 % des eingesetzten Betrags werden bei der Rollup-Erstellung dauerhaft verbrannt                       |
+| **Konto**       | Ein finanziertes QoreChain-Konto mit ausreichendem Guthaben für den Einsatz zuzüglich Transaktionsgebühren |
 
 ---
 
-## Ein Rollup aus einem Preset erstellen
+## Einen Rollup aus einem Preset erstellen
 
-Stellen Sie ein Rollup mit einem der voreingestellten Profile bereit:
+Stellen Sie einen Rollup mithilfe eines der voreingestellten Profile bereit:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -68,7 +68,7 @@ qorechaind tx rdk create-rollup \
   --fees 500uqor
 ```
 
-**Beispiel:** Stellen Sie ein Gaming-Rollup bereit:
+**Beispiel:** Einen Gaming-Rollup bereitstellen:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -81,9 +81,9 @@ qorechaind tx rdk create-rollup \
 
 ---
 
-## Ein benutzerdefiniertes Rollup erstellen
+## Einen benutzerdefinierten Rollup erstellen
 
-Für die volle Kontrolle über die Rollup-Parameter verwenden Sie das `custom`-Profil und geben jede Option an:
+Für die volle Kontrolle über die Rollup-Parameter verwenden Sie das Profil `custom` und legen jede Option einzeln fest:
 
 ```bash
 qorechaind tx rdk create-rollup \
@@ -101,13 +101,13 @@ qorechaind tx rdk create-rollup \
 
 **Benutzerdefinierte Parameter:**
 
-| Parameter      | Optionen                                      | Beschreibung                       |
+| Parameter      | Optionen                                       | Beschreibung                        |
 | -------------- | --------------------------------------------- | ---------------------------------- |
 | `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Wie Zustandsübergänge verifiziert werden |
-| `--sequencer`  | `dedicated`, `shared`, `based`                | Strategie zur Transaktionsreihenfolge |
-| `--da-backend` | `native`, `external`                          | Datenverfügbarkeitsschicht         |
-| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Ausführungsumgebung                |
-| `--block-time` | Ganzzahl (Millisekunden)                      | Ziel-Intervall der Blockproduktion |
+| `--sequencer`  | `dedicated`, `shared`, `based`                | Strategie zur Transaktionsreihenfolge      |
+| `--da-backend` | `native`, `external`                          | Datenverfügbarkeits-Schicht            |
+| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Ausführungsumgebung              |
+| `--block-time` | Ganzzahl (Millisekunden)                        | Angestrebtes Blockproduktionsintervall   |
 
 ---
 
@@ -141,9 +141,9 @@ qorechaind tx rdk submit-batch \
 
 ## Verwaltung des Rollup-Lebenszyklus
 
-Rollup-Betreiber können den Lebenszyklus ihrer Bereitstellungen verwalten:
+Rollup-Betreiber können den Lebenszyklus ihrer Deployments verwalten:
 
-1. **Ein Rollup pausieren** — Halten Sie die Blockproduktion vorübergehend an. Der Rollup-Zustand bleibt erhalten und kann fortgesetzt werden.
+1. **Einen Rollup pausieren** — Die Blockproduktion vorübergehend anhalten. Der Rollup-Zustand bleibt erhalten und kann fortgesetzt werden.
 
    ```bash
    qorechaind tx rdk pause-rollup \
@@ -153,7 +153,7 @@ Rollup-Betreiber können den Lebenszyklus ihrer Bereitstellungen verwalten:
      --fees 500uqor
    ```
 
-2. **Ein Rollup fortsetzen** — Setzen Sie die Blockproduktion eines pausierten Rollups fort:
+2. **Einen Rollup fortsetzen** — Die Blockproduktion eines pausierten Rollups fortsetzen:
 
    ```bash
    qorechaind tx rdk resume-rollup \
@@ -163,7 +163,7 @@ Rollup-Betreiber können den Lebenszyklus ihrer Bereitstellungen verwalten:
      --fees 500uqor
    ```
 
-3. **Ein Rollup stoppen (dauerhaft)** — Stoppen Sie ein Rollup dauerhaft. Diese Aktion ist **unumkehrbar**.
+3. **Einen Rollup stoppen (dauerhaft)** — Einen Rollup dauerhaft stoppen. Diese Aktion ist **unumkehrbar**.
 
    ```bash
    qorechaind tx rdk stop-rollup \
@@ -174,20 +174,20 @@ Rollup-Betreiber können den Lebenszyklus ihrer Bereitstellungen verwalten:
    ```
 
 :::danger
-Das Stoppen eines Rollups ist dauerhaft. Der gesamte zugehörige Zustand wird archiviert, aber das Rollup kann nicht neu gestartet werden. Der gestakte QOR (abzüglich des Erstellungs-Burns) wird an den Betreiber zurückgegeben.
+Das Stoppen eines Rollups ist endgültig. Der gesamte zugehörige Zustand wird archiviert, aber der Rollup kann nicht neu gestartet werden. Der eingesetzte QOR-Betrag (abzüglich des Erstellungs-Burns) wird an den Betreiber zurückerstattet.
 :::
 
 ---
 
 ## Rollups abfragen
 
-Rufen Sie Details zu einem bestimmten Rollup ab:
+Details zu einem bestimmten Rollup abrufen:
 
 ```bash
 qorechaind query rdk rollup <rollup_id>
 ```
 
-Listen Sie alle Rollups auf QoreChain auf:
+Alle Rollups auf QoreChain auflisten:
 
 ```bash
 qorechaind query rdk rollups
@@ -210,9 +210,9 @@ rollup:
 
 ---
 
-## QCAI-gestützte Profilempfehlung
+## QCAI-gestützter Profilvorschlag
 
-Sie sind sich nicht sicher, welches Profil zu Ihrem Anwendungsfall passt? Verwenden Sie das QCAI-gestützte Empfehlungstool:
+Nicht sicher, welches Profil zu Ihrem Anwendungsfall passt? Nutzen Sie das QCAI-gestützte Vorschlagstool:
 
 ```bash
 qorechaind query rdk suggest-profile --use-case "defi lending protocol"
@@ -227,14 +227,14 @@ reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality,
 alternative_profile: enterprise
 ```
 
-Dieser Befehl analysiert Ihre Beschreibung und empfiehlt das am besten geeignete voreingestellte Profil zusammen mit einer Erklärung.
+Dieser Befehl analysiert Ihre Beschreibung und empfiehlt das am besten geeignete voreingestellte Profil samt Begründung.
 
 ---
 
 ## Tipps
 
-* Beginnen Sie mit einem voreingestellten Profil und passen Sie es später an. Presets sind für ihre jeweiligen Anwendungsfälle optimiert.
-* Der Erstellungs-Burn von 1 % ist eine einmalige Kosten, die zum Bereitstellungszeitpunkt auf den Mindest-Stake angewendet wird.
-* Verwenden Sie `based`-Settlement, wenn Sie das einfachste Setup wünschen, bei dem QoreChain-Validatoren das Sequencing übernehmen.
-* Überwachen Sie Batch-Einreichungen genau. Lücken bei der Batch-Einreichung können Warnungen des Netzwerks auslösen.
-* Der `suggest-profile`-Befehl ist ein hilfreicher Ausgangspunkt, aber prüfen Sie die Empfehlung anhand Ihrer spezifischen Anforderungen.
+* Beginnen Sie mit einem voreingestellten Profil und passen Sie es später an. Presets sind für ihre jeweiligen Zielanwendungsfälle optimiert.
+* Der 1 %ige Erstellungs-Burn ist eine einmalige Gebühr, die bei der Bereitstellung auf den Mindesteinsatz angewendet wird.
+* Verwenden Sie die `based`-Abwicklung, wenn Sie die einfachste Einrichtung wünschen, bei der QoreChain-Validatoren die Sequenzierung übernehmen.
+* Überwachen Sie Batch-Einreichungen genau. Lücken bei der Batch-Einreichung können Warnmeldungen des Netzwerks auslösen.
+* Der Befehl `suggest-profile` ist ein hilfreicher Ausgangspunkt, überprüfen Sie die Empfehlung aber anhand Ihrer spezifischen Anforderungen.

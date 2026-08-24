@@ -9,7 +9,7 @@ sidebar_position: 1
 
 QoreChain es la primera blockchain de Capa 1 construida con criptografía poscuántica desde el génesis, procesamiento de transacciones nativo de IA y un entorno de ejecución triple-VM que ejecuta programas EVM, CosmWasm y SVM en una sola cadena. En lugar de adaptar la resistencia cuántica a un protocolo existente, QoreChain se diseñó desde cero para ser segura frente a adversarios tanto clásicos como cuánticos, al tiempo que ofrece la experiencia de desarrollo y la interoperabilidad que se espera de una blockchain moderna de propósito general.
 
-La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión de cadena **v3.1.85**. Una testnet pública (`qorechain-diana`, EVM chain ID **9800**) se ejecuta en paralelo para pruebas de staging e integración. El token nativo es **QOR** (visualización) / **uqor** (base, 10^6), con prefijos Bech32 `qor` para cuentas y `qorvaloper` para validadores. La cadena está construida sobre Cosmos SDK v0.53.
+La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión de cadena **v3.1.92**. Una testnet pública (`qorechain-diana`, EVM chain ID **9800**) se ejecuta en paralelo para pruebas de staging e integración. El token nativo es **QOR** (visualización) / **uqor** (base, 10^6), con prefijos Bech32 `qor` para cuentas y `qorvaloper` para validadores. La cadena está construida sobre Cosmos SDK v0.53.
 
 ## Innovaciones principales
 
@@ -19,7 +19,7 @@ QoreChain usa ML-DSA-87 (Dilithium-5) estandarizado por NIST para firmas digital
 
 ### 2. Procesamiento nativo de IA
 
-Un agente de aprendizaje por refuerzo on-chain (PPO MLP con 73.733 parámetros) ejecuta inferencia determinista de punto fijo directamente en el ciclo de vida del bloque, ajustando dinámicamente parámetros de consenso como el tiempo de bloque, los límites de gas y los pesos de los pools de validadores. Esta capa de optimización lleva la marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). La detección estadística de anomalías mediante isolation forest y la puntuación de riesgo multidimensional evalúan cada transacción en la cadena del ante handler, marcando patrones fraudulentos antes de la ejecución. La optimización dinámica de comisiones ajusta las comisiones base en función de las condiciones de red en tiempo real. Toda la inferencia de IA es totalmente determinista en todos los validadores: entradas idénticas producen salidas idénticas sin dependencia de oráculos externos.
+Un agente de aprendizaje por refuerzo on-chain (PPO MLP con 73,733 parámetros) ejecuta inferencia determinista de punto fijo directamente en el ciclo de vida del bloque, ajustando dinámicamente parámetros de consenso como el tiempo de bloque, los límites de gas y los pesos de los pools de validadores. Esta capa de optimización lleva la marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). La detección estadística de anomalías mediante isolation forest y la puntuación de riesgo multidimensional evalúan cada transacción en la cadena del ante handler, marcando patrones fraudulentos antes de la ejecución. La optimización dinámica de comisiones ajusta las comisiones base en función de las condiciones de red en tiempo real. Toda la inferencia de IA es totalmente determinista en todos los validadores: entradas idénticas producen salidas idénticas sin dependencia de oráculos externos.
 
 ### 3. Entorno de ejecución triple-VM
 
@@ -35,14 +35,14 @@ La mensajería entre VMs permite que los tres entornos de ejecución se comuniqu
 
 Diez canales de quema distintos (comisiones de transacción, penalizaciones de gobernanza, slashing, comisiones de puente, disuasión de spam, exceso de época, quemas manuales, callbacks de contratos, comisiones entre VMs y quemas por creación de rollups) alimentan un módulo central de contabilidad de quemas. Las comisiones recaudadas se reparten **37% a los validadores, 30% quemado de forma permanente, 20% a la tesorería, 10% a los stakers y 3% a los nodos ligeros**. El mecanismo de staking de gobernanza xQORE permite a los usuarios bloquear QOR para obtener el doble de peso de gobernanza con redistribución por rebase PvP: las penalizaciones por salida anticipada se redistribuyen a los titulares restantes, recompensando la convicción.
 
-QoreChain usa un modelo de **suministro fijo** con un presupuesto de emisión finito en lugar de inflación porcentual perpetua. El suministro total es fijo en **4.500.000.000 QOR**, de los cuales **80.000.000 (1,78%)** se quemaron en el TGE. Las recompensas de staking se pagan desde un pool dedicado de **590.000.000 QOR** sobre un calendario plurianual:
+QoreChain usa un modelo de **suministro fijo** con un presupuesto de emisión finito en lugar de inflación porcentual perpetua. El suministro total es fijo en **4,500,000,000 QOR**, de los cuales **80,000,000 (1.78%)** se quemaron en el TGE. Las recompensas de staking se pagan desde un pool dedicado de **590,000,000 QOR** sobre un calendario plurianual:
 
 | Periodo | APY objetivo | Presupuesto de emisión |
 | --- | --- | --- |
-| Año 1 | 8–12% | 127.500.000 QOR |
-| Año 2 | 6–10% | 106.250.000 QOR |
-| Años 3–4 | 5–8% | 85.000.000 QOR por año |
-| Año 5+ | Determinado por gobernanza | ~186.000.000 QOR restantes |
+| Año 1 | 8–12% | 127,500,000 QOR |
+| Año 2 | 6–10% | 106,250,000 QOR |
+| Años 3–4 | 5–8% | 85,000,000 QOR por año |
+| Año 5+ | Determinado por gobernanza | ~186,000,000 QOR restantes |
 
 Combinado con los diez canales de quema, el diseño de suministro fijo converge hacia un comportamiento netamente deflacionario a medida que crece el volumen de transacciones.
 
@@ -76,7 +76,7 @@ Las cuentas inteligentes con tres tipos programables (multifirma, recuperación 
 
 ## Ecosistema
 
-QoreChain incluye **más de 45 módulos de génesis, incluidos más de 20 módulos personalizados**, que abarcan seguridad (pqc), IA (ai, reputation, rlconsensus), consenso (qca), máquinas virtuales (vm, svm, crossvm), tokenomics (burn, xqore, inflation), liquidez (amm), licenciamiento (license), puentes (bridge, babylon, multilayer), extensiones de gobernanza (abstractaccount, fairblock, gasabstraction) y rollups (rdk). Entre las incorporaciones recientes se incluyen `x/amm` para AMM / liquidez on-chain y `x/license` para licenciamiento de cadenas. La cadena sigue una arquitectura open-core: la capa de protocolo es totalmente de código abierto, con extensiones propietarias opcionales para despliegues empresariales.
+QoreChain incluye **45+ módulos de génesis, incluidos 20+ módulos personalizados**, que abarcan seguridad (pqc), IA (ai, reputation, rlconsensus), consenso (qca), máquinas virtuales (vm, svm, crossvm), tokenomics (burn, xqore, inflation), liquidez (amm), licenciamiento (license), puentes (bridge, babylon, multilayer), extensiones de gobernanza (abstractaccount, fairblock, gasabstraction) y rollups (rdk). Entre las incorporaciones recientes se incluyen `x/amm` para AMM / liquidez on-chain y `x/license` para licenciamiento de cadenas. La cadena sigue una arquitectura open-core: la capa de protocolo es totalmente de código abierto, con extensiones propietarias opcionales para despliegues empresariales.
 
 ## Relacionado
 

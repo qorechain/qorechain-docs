@@ -1,7 +1,7 @@
 ---
 slug: /light-node/registration-and-licensing
 title: Enregistrement et licences
-sidebar_label: Enregistrement et licences
+sidebar_label: Enregistrement & Licences
 sidebar_position: 4
 ---
 
@@ -40,18 +40,20 @@ En pratique, cela signifie qu'un nœud enregistré et maintenu en fonctionnement
 
 ### Pipeline de heartbeat co-signé PQC {#pqc-cosigned-heartbeat-pipeline}
 
-QoreChain est **PQC par défaut (obligatoire)**, de sorte que la transaction de vivacité par heartbeat est produite via un pipeline post-quantique co-signé plutôt que par une signature purement classique. Le démon construit le heartbeat non signé, puis le co-signe avec une signature **hybride Dilithium-5 (ML-DSA-87)** avant diffusion — la même posture post-quantique que la chaîne impose à chaque transaction. Le nœud soumet un heartbeat par fenêtre `interval_blocks` (correspondant au paramètre `heartbeat_interval` de la chaîne), en se cadençant sur la hauteur de bloc pour éviter les rejets de soumission anticipée.
+QoreChain est **PQC obligatoire par défaut**, de sorte que la transaction de vivacité par heartbeat est produite via un pipeline post-quantique co-signé plutôt que par une signature purement classique. Le démon construit le heartbeat non signé, puis le co-signe avec une signature **hybride Dilithium-5 (ML-DSA-87)** avant diffusion — la même posture post-quantique que la chaîne impose à chaque transaction. Le nœud soumet un heartbeat par fenêtre `interval_blocks` (correspondant au paramètre `heartbeat_interval` de la chaîne), en se cadençant sur la hauteur de bloc pour éviter les rejets de soumission anticipée.
 
 Les heartbeats on-chain sont en opt-in dans le démon : activez la section `[heartbeat]` dans la configuration du nœud (`enabled = true`) et pointez `qorechaind_path` vers un binaire `qorechaind`, qui exécute le flux génération-puis-co-signature. Lorsque ceci n'est pas configuré, le nœud fonctionne sans soumettre de heartbeats on-chain et l'opérateur peut soumettre la vivacité manuellement à l'aide des commandes de chaîne affichées.
 
-## Enregistrement et licences via le Dashboard
+## Enregistrement et licence via le Dashboard
 
-Vous pouvez également enregistrer un nœud et obtenir une licence via le Dashboard QoreChain, qui propose un parcours guidé au lieu de construire les commandes de chaîne à la main.
+Vous pouvez aussi mettre un nœud en route et vérifier son statut de licence depuis la page **Tools** du Dashboard QoreChain. Faire tourner le nœud et rejoindre son programme de récompenses sont deux choses distinctes, et le Dashboard les garde séparées plutôt que de proposer un parcours d'inscription unique et guidé :
 
-- Enregistrez votre nœud depuis **Tools → Node Registration**.
-- Obtenez ou renouvelez une licence depuis **Tools → Buy License**.
+1. **Mettez votre nœud en route (Tools → Light Node, étape 1).** Cette étape ne nécessite ni licence ni vérification on-chain d'aucune sorte, et elle est présentée à chaque visiteur avant tout le reste. Elle lit en direct le manifeste réseau actuel et vous guide à travers le téléchargement et la vérification du binaire, l'initialisation du nœud avec le genesis, le pointage de `config.toml` vers les pairs du réseau, et la synchronisation par state-sync plutôt qu'une synchronisation depuis le genesis.
+2. **Vérifiez le statut de votre programme de récompenses (Tools → Light Node).** Rejoindre la part de récompense des nœuds légers est une étape distincte, verrouillée on-chain : elle exige une licence `lightnode_operator` active accordée on-chain, un minimum de QOR délégué — comptabilisé comme votre total sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur, et lu en direct depuis le staking plutôt que déclaré par vous-même — ainsi qu'un petit frais d'enregistrement on-chain. **L'inscription n'est pas encore ouverte**, et acheter une licence via **Buy License** ne l'ouvre pas par anticipation — il n'y a rien à quoi s'inscrire aujourd'hui. En attendant, faites tourner votre nœud et gardez-le synchronisé ; le temps de fonctionnement accumulé avant l'ouverture de l'inscription devrait être pris en compte une fois celle-ci ouverte.
+3. **Enregistrez-vous une fois votre licence accordée on-chain (Tools → Light Node).** Une licence achetée via **Buy License** est d'abord enregistrée de notre côté ; l'octroi qui la fait reconnaître on-chain est une étape distincte, et l'enregistrement est refusé tant que cet octroi n'est pas arrivé. Une fois qu'il l'est, cet onglet remplace le panneau de statut par un formulaire d'enregistrement : votre adresse d'opérateur (`qor1…`), un moniker, et une URL de point de terminaison public, ainsi qu'une confirmation de l'engagement de stake.
+4. **Confirmez et bondez le stake.** Après votre soumission, le Dashboard affiche un résumé de confirmation de l'enregistrement (moniker, adresse d'opérateur, point de terminaison, intention de stake, statut). Bondez le stake confirmé depuis votre adresse d'opérateur une fois l'éligibilité ouverte.
 
-Le parcours du Dashboard vous guide pour associer votre clé d'opérateur, choisir le type de nœud et le réseau, et finaliser l'enregistrement on-chain. Utilisez-le si vous préférez une interface graphique à la CLI, ou pour gérer les licences en même temps que l'enregistrement au même endroit.
+Utilisez le parcours du Dashboard si vous préférez une interface graphique à la CLI, ou pour gérer la licence et l'enregistrement ensemble au même endroit. La commande `lightnode-sx register` présentée plus haut reste disponible pour quiconque préfère construire et examiner lui-même la transaction — l'enregistrement on-chain et l'éligibilité au programme de récompenses sont régis par la chaîne de la même manière, quel que soit le chemin utilisé.
 
 ## Pour aller plus loin
 

@@ -9,6 +9,21 @@ sidebar_position: 5
 
 Everything about protecting and recovering your wallet lives in **Settings → Security dashboard**. The Home tab also shows a **Backup health** card that keeps warning until social recovery is set up.
 
+## Back up now — nobody can recover a lost wallet for you {#back-up-now}
+
+:::danger Read this before you fund your wallet
+QoreX is **non-custodial**: your keys exist only on your own device, and QoreChain Association has no copy of them, no master key, and no way to reset or restore your wallet. **There is no "forgot password" flow, no support ticket, and no customer-service override** — if you lose access to your keys with no backup in place, the funds are gone, permanently and irreversibly. This is true of every non-custodial wallet, not a QoreX limitation, but it is worth stating plainly.
+
+**Do at least one of these — right after you create your wallet, not later:**
+
+1. **Write down your 24-word recovery phrase** and store it somewhere offline and durable (not a screenshot, not a note synced to the cloud, not a message to yourself). It is the only thing that can restore your wallet on any device, at any time.
+2. **Set up [social recovery](#social-recovery)** with guardians you trust. This lets you recover your wallet even if you lose the phrase, without any single guardian ever being able to access your funds alone.
+
+Doing both is the safest option — the phrase covers you if you switch devices or the app is unavailable; guardians cover you if you lose the phrase itself.
+
+**Uninstalling the app deletes your keys from that device.** The mobile app's vault and the browser extension's vault each live only on the device that created them. Uninstalling the app, resetting the phone, or removing/clearing the extension deletes that copy — with no backup and no linked device, your wallet cannot be recovered by anyone, including QoreChain.
+:::
+
 ## Post-quantum key {#pqc-key}
 
 The Security dashboard shows the live on-chain state of your post-quantum key: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. The algorithm is **ML-DSA-87** (deterministic, hybrid with secp256k1).

@@ -17,7 +17,7 @@ A consolidated reference for the QoreChain networks — chain identifiers, EVM c
 | **Cosmos chain ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM chain ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live since** | 7 June 2026, 23:59 UTC | — |
-| **Chain version** | v3.1.85 | v3.1.85 |
+| **Chain version** | v3.1.92 | v3.1.92 |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gas price** | `0.1uqor` | `0.1uqor` |
 | **Connection guide** | [Connecting to Mainnet](/getting-started/connecting-to-mainnet) | [Connecting to Testnet](/getting-started/connecting-to-testnet) |
@@ -39,6 +39,10 @@ All public endpoints are served over HTTPS.
 
 :::note
 The public SVM endpoints are **read-only** (transaction submission is disabled at the edge); run your own node for SVM writes. For heavy or production workloads, run your own node — see [Running a Node](/developer-guide/running-a-node).
+:::
+
+:::caution SVM transaction lane currently disabled
+Beyond the public endpoints being read-only, the SVM execution lane is **currently disabled network-wide for transaction submission** (since chain version v3.1.89, 22 August) — this includes submission via your own node, not just the public `svm.qore.host` / `svm-testnet.qore.host` endpoints. See [SVM Development](/developer-guide/svm-development) for details. Use the Cosmos or EVM interfaces until the lane reopens.
 :::
 
 ## Token and addresses

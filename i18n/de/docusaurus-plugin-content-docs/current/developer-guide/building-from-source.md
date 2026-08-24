@@ -1,7 +1,7 @@
 ---
 slug: /developer-guide/building-from-source
-title: Building from Source
-sidebar_label: Building from Source
+title: Aus dem Quellcode bauen
+sidebar_label: Aus dem Quellcode bauen
 sidebar_position: 1
 ---
 
@@ -145,7 +145,7 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk, das mit der Chain-Version **v3.1.85** läuft.
+Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk, das mit der Chain-Version **v3.1.92** läuft.
 
 ## Docker-Build
 

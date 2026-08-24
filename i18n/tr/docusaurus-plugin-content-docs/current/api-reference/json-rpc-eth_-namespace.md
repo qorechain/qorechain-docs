@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # JSON-RPC — eth_ Ad Alanı
 
-QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereum araçlarının (MetaMask, Hardhat, Foundry, ethers.js, web3.js) zincirle herhangi bir değişiklik olmadan etkileşime girmesini sağlar.
+QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereum araçlarının (MetaMask, Hardhat, Foundry, ethers.js, web3.js) zincirle herhangi bir değişiklik yapılmadan etkileşime girmesine olanak tanır.
 
 ## Bağlantı
 
@@ -17,55 +17,55 @@ QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereu
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, hex `0x2649`, **v3.1.85** zincir sürümünde canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, hex `0x2648`) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
+EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, onaltılık `0x2649`, **v3.1.92** zincir sürümünde canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, onaltılık `0x2648`) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
 :::
 
 ## Desteklenen Ad Alanları
 
 | Ad Alanı  | Açıklama                                                                                                       |
-| --------- | -------------------------------------------------------------------------------------------------------------- |
-| `eth_`    | Temel Ethereum JSON-RPC yöntemleri                                                                             |
-| `web3_`   | Yardımcı yöntemler (istemci sürümü, karma alma)                                                                |
-| `net_`    | Ağ durumu yöntemleri                                                                                           |
-| `txpool_` | İşlem havuzu incelemesi                                                                                        |
-| `qor_`    | QoreChain'e özgü uzantılar (bkz. [qor_ Ad Alanı](/api-reference/json-rpc-qor_-namespace))                      |
+| --------- | --------------------------------------------------------------------------------------------------------------- |
+| `eth_`    | Temel Ethereum JSON-RPC yöntemleri                                                                              |
+| `web3_`   | Yardımcı yöntemler (istemci sürümü, hashleme)                                                                   |
+| `net_`    | Ağ durumu yöntemleri                                                                                            |
+| `txpool_` | İşlem havuzu incelemesi                                                                                         |
+| `qor_`    | QoreChain'e özgü uzantılar (bkz. [qor_ Ad Alanı](/api-reference/json-rpc-qor_-namespace))                       |
 
 ## eth_ Yöntemleri
 
-| Yöntem                      | Parametreler                                     | Açıklama                                             |
-| --------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
-| `eth_blockNumber`           | yok                                              | En son blok numarasını döndürür                      |
-| `eth_getBalance`            | `address`, `blockNumber`                         | Bir adresin bakiyesini wei cinsinden döndürür        |
-| `eth_getTransactionCount`   | `address`, `blockNumber`                         | Bir adres için nonce'u (işlem sayısı) döndürür       |
-| `eth_sendRawTransaction`    | `signedTxData`                                   | Yayımlanmak üzere imzalı bir işlem gönderir          |
-| `eth_call`                  | `callObject`, `blockNumber`                      | EVM'e karşı salt okunur bir çağrı yürütür            |
-| `eth_estimateGas`           | `callObject`                                     | Bir işlem için gereken gazı tahmin eder              |
-| `eth_getBlockByNumber`      | `blockNumber`, `fullTx` (bool)                   | Numaraya göre blok verisini döndürür                 |
-| `eth_getTransactionByHash`  | `txHash`                                         | Karmaya göre işlem verisini döndürür                 |
-| `eth_getTransactionReceipt` | `txHash`                                         | Madenciliği yapılmış bir işlemin makbuzunu döndürür  |
-| `eth_getLogs`               | `filterObject`                                   | Bir filtreyle eşleşen günlükleri döndürür            |
-| `eth_chainId`               | yok                                              | Zincir kimliğini döndürür (hex kodlu)                |
-| `eth_gasPrice`              | yok                                              | Mevcut gaz fiyatını wei cinsinden döndürür           |
-| `eth_feeHistory`            | `blockCount`, `newestBlock`, `rewardPercentiles` | Geçmiş ücret verisini döndürür (EIP-1559)            |
+| Yöntem                       | Parametreler                                      | Açıklama                                                  |
+| ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| `eth_blockNumber`            | yok                                                | En son blok numarasını döndürür                            |
+| `eth_getBalance`             | `address`, `blockNumber`                           | Bir adresin bakiyesini wei cinsinden döndürür               |
+| `eth_getTransactionCount`    | `address`, `blockNumber`                           | Bir adres için nonce'u (işlem sayısını) döndürür             |
+| `eth_sendRawTransaction`     | `signedTxData`                                     | İmzalanmış bir işlemi yayın için gönderir                   |
+| `eth_call`                   | `callObject`, `blockNumber`                        | EVM'e karşı salt okunur bir çağrı yürütür                   |
+| `eth_estimateGas`            | `callObject`                                       | Bir işlem için gereken gazı tahmin eder                     |
+| `eth_getBlockByNumber`       | `blockNumber`, `fullTx` (bool)                     | Numaraya göre blok verisini döndürür                        |
+| `eth_getTransactionByHash`   | `txHash`                                           | Hash'e göre işlem verisini döndürür                          |
+| `eth_getTransactionReceipt`  | `txHash`                                           | Madenciliği yapılmış bir işlem için makbuzu döndürür         |
+| `eth_getLogs`                | `filterObject`                                     | Bir filtreyle eşleşen günlükleri döndürür                    |
+| `eth_chainId`                | yok                                                | Zincir kimliğini döndürür (onaltılık kodlanmış)              |
+| `eth_gasPrice`               | yok                                                | Geçerli gaz fiyatını wei cinsinden döndürür                  |
+| `eth_feeHistory`             | `blockCount`, `newestBlock`, `rewardPercentiles`   | Geçmiş ücret verilerini döndürür (EIP-1559)                  |
 
 ## web3_ Yöntemleri
 
-| Yöntem               | Parametreler | Açıklama                                  |
-| -------------------- | ------------ | ----------------------------------------- |
-| `web3_clientVersion` | yok          | İstemci sürümü dizesini döndürür          |
-| `web3_sha3`          | `data` (hex) | Girdinin Keccak-256 karmasını döndürür    |
+| Yöntem                | Parametreler | Açıklama                                    |
+| --------------------- | ------------ | -------------------------------------------- |
+| `web3_clientVersion`  | yok          | İstemci sürüm dizesini döndürür               |
+| `web3_sha3`           | `data` (hex) | Girdinin Keccak-256 hash'ini döndürür         |
 
 ## net_ Yöntemleri
 
-| Yöntem          | Parametreler | Açıklama                                       |
-| --------------- | ------------ | ---------------------------------------------- |
-| `net_version`   | yok          | Ağ kimliğini döndürür                          |
-| `net_listening` | yok          | Düğüm dinliyorsa `true` döndürür               |
-| `net_peerCount` | yok          | Bağlı eş sayısını döndürür (hex)               |
+| Yöntem            | Parametreler | Açıklama                                        |
+| ------------------ | ------------ | ------------------------------------------------- |
+| `net_version`       | yok          | Ağ kimliğini döndürür                             |
+| `net_listening`     | yok          | Düğüm dinliyorsa `true` döndürür                  |
+| `net_peerCount`     | yok          | Bağlı eş sayısını döndürür (onaltılık)             |
 
 ## Yapılandırma
 
-JSON-RPC sunucusunu `app.toml` dosyasında etkinleştirin ve yapılandırın:
+JSON-RPC sunucusunu `app.toml` içinde etkinleştirin ve yapılandırın:
 
 ```toml
 [json-rpc]
@@ -194,9 +194,9 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 
 :::info
 
-- Zincir kimliği bir hex dizesi olarak döndürülür. Cüzdan yapılandırması için ondalığa çevirin — `0x2649`, **9801**'dir (ana ağ), `0x2648` ise **9800**'dür (test ağı).
-- Gaz fiyatlandırması EIP-1559 modelini izler. Temel ücret ve öncelik ücreti tahmini için `eth_feeHistory` kullanın.
-- Kabul edilen blok etiketleri: `"latest"`, `"earliest"`, `"pending"` veya bir hex blok numarası.
+- Zincir kimliği onaltılık bir dize olarak döndürülür. Cüzdan yapılandırması için ondalığa dönüştürün — `0x2649` = **9801** (ana ağ), `0x2648` = **9800** (test ağı).
+- Gaz fiyatlandırması EIP-1559 modelini izler. Baz ücret ve öncelik ücreti tahmini için `eth_feeHistory` kullanın.
+- Kabul edilen blok etiketleri: `"latest"`, `"earliest"`, `"pending"` veya onaltılık bir blok numarası.
 - Filtre sınırlamaları: `eth_getLogs`, sorgu başına `filter-cap` sonuçla sınırlıdır (varsayılan 10.000). Büyük veri kümeleri için daha dar blok aralıkları kullanın.
 
 :::

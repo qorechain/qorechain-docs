@@ -7,9 +7,9 @@ sidebar_position: 2
 
 # アーキテクチャ概要
 
-QoreChain は、3 つの主要プロセス（チェーンノード、AI サイドカー、ブロックインデクサー）で構成されるモジュラーなブロックチェーンノードであり、Postgres データベースを基盤とし、Prometheus と Grafana を介して監視されます。メインネット（`qorechain-vladi`、EVM チェーン ID **9801**）は、チェーンバージョン **v3.1.85** 上で 2026 年 6 月 7 日から稼働しており、並行してテストネット（`qorechain-diana`、EVM チェーン ID **9800**）も稼働しています。チェーンは Cosmos SDK v0.53 上に構築されています。次の図は、高レベルのコンポーネントレイアウトを示しています。
+QoreChainは、チェーンノード、AIサイドカー、ブロックインデクサーという3つの主要プロセスで構成されたモジュール型ブロックチェーンノードであり、Postgresデータベースを裏側に持ち、PrometheusおよびGrafanaによって監視されています。メインネット（`qorechain-vladi`、EVMチェーンID **9801**）は2026年6月7日以降チェーンバージョン **v3.1.92** で稼働しており、並行してテストネット（`qorechain-diana`、EVMチェーンID **9800**）も運用されています。チェーンはCosmos SDK v0.53上に構築されています。以下の図はコンポーネントの高レベルな配置を示しています。
 
-以下のトランザクションライフサイクルは、送信されたトランザクションがノードを通じてどのように流れるかを要約したものです。AnteHandler デコレーターチェーン（セキュリティおよび手数料チェック）から VM 実行とオンチェーン決済へと進みます:
+以下のトランザクションライフサイクルは、送信されたトランザクションがAnteHandlerデコレータチェーン（セキュリティおよび手数料チェック）からVM実行、オンチェーンでの確定に至るまで、ノードをどのように流れていくかを要約したものです。
 
 ```mermaid
 flowchart LR
@@ -114,80 +114,80 @@ flowchart LR
 
 ## ノードコンポーネント
 
-QoreChain は、それぞれ独自の Go モジュールとバイナリを持つ 3 つの協調するプロセスとして実行されます:
+QoreChainは、それぞれが独自のGoモジュールとバイナリを持つ3つの協調プロセスとして動作します。
 
-| コンポーネント     | 説明                                                                                                                                                                                                                                                                                                  | 場所                      |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
-| **qorechain-node** | コアブロックチェーンノード。QoreChain コンセンサスエンジンを実行し、すべてのカスタムモジュールを実行し、3 つすべての VM ランタイムを管理し、RPC、REST、gRPC、JSON-RPC エンドポイントを公開します。                                                                                                       | `qorechain-core/`         |
-| **ai-sidecar**     | QCAI バックエンドを基盤とした高度な AI 推論機能を提供する gRPC サービス。サイドカーは、自然言語分析や複雑なパターン認識など、オンチェーン RL エージェントの範囲を超える推論リクエストを処理します。ポート 50051 で gRPC を介してノードと通信します。                                                       | `qorechain-core/sidecar/` |
-| **block-indexer**  | ノードの RPC エンドポイントから新しいブロックとトランザクションをサブスクライブする WebSocket リスナーであり、イベントを解析し、エクスプローラーや API による高速クエリのために構造化データを Postgres データベースに書き込みます。                                                                       | `qorechain-core/indexer/` |
+| コンポーネント          | 説明                                                                                                                                                                                                                                                                                                          | 場所                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **qorechain-node** | コアとなるブロックチェーンノード。QoreChain Consensus Engineを実行し、すべてのカスタムモジュールを実行し、3つすべてのVMランタイムを管理し、RPC、REST、gRPC、JSON-RPCの各エンドポイントを公開します。                                                                                                                      | `qorechain-core/`         |
+| **ai-sidecar**     | QCAI Backendを背後に持つ、高度なAI推論機能を提供するgRPCサービス。このサイドカーは、オンチェーンのRLエージェントの守備範囲を超える推論リクエスト（自然言語解析や複雑なパターン認識など）を処理します。ノードとはポート50051上のgRPCで通信します。 | `qorechain-core/sidecar/` |
+| **block-indexer**  | ノードのRPCエンドポイントから新しいブロックとトランザクションを購読するWebSocketリスナー。イベントを解析し、エクスプローラーやAPIによる高速なクエリのために構造化データをPostgresデータベースへ書き込みます。                                                                                                          | `qorechain-core/indexer/` |
 
 ## ポート
 
-| ポート | プロトコル     | サービス                                                                          |
+| ポート  | プロトコル       | サービス                                                                           |
 | ----- | -------------- | --------------------------------------------------------------------------------- |
-| 26657 | HTTP/WebSocket | QoreChain コンセンサスエンジン RPC（ブロック、トランザクション、コンセンサス状態）  |
-| 1317  | HTTP           | REST API（クエリエンドポイント、トランザクションブロードキャスト）                 |
-| 9090  | gRPC           | gRPC クエリおよびトランザクションエンドポイント                                    |
-| 8545  | HTTP           | EVM JSON-RPC（`eth_`、`web3_`、`net_`、`txpool_`、`qor_` 名前空間）               |
-| 8546  | WebSocket      | EVM JSON-RPC（WebSocket サブスクリプション）                                       |
-| 8899  | HTTP           | SVM JSON-RPC（Solana 互換: `getAccountInfo`、`getBalance`、`getSlot` など）        |
-| 50051 | gRPC           | AI サイドカー（ノードからの推論リクエスト）                                        |
-| 5432  | TCP            | Postgres（ブロックインデクサーストレージ）                                         |
-| 9091  | HTTP           | Prometheus メトリクス                                                              |
-| 3000  | HTTP           | Grafana ダッシュボード                                                             |
+| 26657 | HTTP/WebSocket | QoreChain Consensus Engine RPC（ブロック、トランザクション、コンセンサス状態）            |
+| 1317  | HTTP           | REST API（クエリエンドポイント、トランザクションのブロードキャスト）                                 |
+| 9090  | gRPC           | gRPCクエリおよびトランザクションエンドポイント                                              |
+| 8545  | HTTP           | EVM JSON-RPC（`eth_`、`web3_`、`net_`、`txpool_`、`qor_` の各名前空間）              |
+| 8546  | WebSocket      | EVM JSON-RPC（WebSocketサブスクリプション）                                            |
+| 8899  | HTTP           | SVM JSON-RPC（Solana互換：`getAccountInfo`、`getBalance`、`getSlot` など） |
+| 50051 | gRPC           | AIサイドカー（ノードからの推論リクエスト）                                     |
+| 5432  | TCP            | Postgres（ブロックインデクサーのストレージ）                                                |
+| 9091  | HTTP           | Prometheusメトリクス                                                                |
+| 3000  | HTTP           | Grafanaダッシュボード                                                                |
 
 ## モジュールマップ
 
-QoreChain は、**20 以上のカスタムモジュールを含む 45 以上のジェネシスモジュール**を登録しており、機能別にグループ化されています:
+QoreChainは **20以上のカスタムモジュールを含む45以上のジェネシスモジュール** を機能別にグループ化して登録しています。
 
 **セキュリティ**
 
-* `x/pqc` — ポスト量子暗号: Dilithium-5、ML-KEM-1024、ハイブリッド secp256k1（ECDSA）+ ML-DSA-87、SHAKE-256、アルゴリズムアジリティ
+* `x/pqc` — ポスト量子暗号：Dilithium-5、ML-KEM-1024、secp256k1（ECDSA）+ ML-DSA-87のハイブリッド、SHAKE-256、アルゴリズムアジリティ
 
-**AI と機械学習**
+**AIと機械学習**
 
-* `x/ai` — トランザクションルーティング、異常検知、不正検知、手数料最適化、TEE アテステーション、連合学習
-* `x/reputation` — 時間的減衰を伴う多要素バリデーター評判スコアリング
-* `x/rlconsensus` — オンチェーン RL エージェント（PPO MLP）、動的コンセンサスチューニング、サーキットブレーカー、ロールアップアドバイザリー — PRISM 最適化レイヤー
+* `x/ai` — トランザクションルーティング、異常検知、不正検知、手数料最適化、TEEアテステーション、連合学習
+* `x/reputation` — 時間的減衰を伴う多要素バリデータレピュテーションスコアリング
+* `x/rlconsensus` — オンチェーンRLエージェント（PPO MLP）、動的コンセンサスチューニング、サーキットブレーカー、ロールアップアドバイザリ — PRISM最適化レイヤー
 
 **コンセンサス**
 
-* `x/qca` — QoreChain コンセンサスエンジン上のトリプルプール複合 PoS（RPoS/DPoS/PoS）、カスタムボンディングカーブ、累進的スラッシング、QDRW ガバナンス
+* `x/qca` — QoreChain Consensus Engine上のトリプルプール複合PoS（RPoS/DPoS/PoS）、カスタムボンディングカーブ、段階的スラッシング、QDRWガバナンス
 
 **仮想マシン**
 
-* `x/vm` — VM ルーティングとライフサイクル管理
-* `x/svm` — SVM ランタイム: BPF デプロイ/実行、レント徴収、Solana 互換 RPC
-* `x/crossvm` — クロス VM 通信: EVM-CosmWasm プリコンパイル + SVM 非同期イベント
+* `x/vm` — VMルーティングとライフサイクル管理
+* `x/svm` — SVMランタイム：BPFのデプロイ/実行、レント徴収、Solana互換RPC
+* `x/crossvm` — クロスVM通信：EVM-CosmWasmプリコンパイル + SVM非同期イベント
 
 **トークノミクスと流動性**
 
-* `x/burn` — 10 のバーンチャネル、EndBlocker 手数料分配（37/30/20/10/3 の分割）
-* `x/xqore` — ガバナンスブースト型ステーキング: ロック/アンロック、段階的離脱ペナルティ、PvP リベース
-* `x/inflation` — 複数年スケジュールにわたる有限ステーキング報酬予算からの固定供給発行
+* `x/burn` — 10のバーンチャネル、EndBlockerでの手数料分配（37/30/20/10/3の配分）
+* `x/xqore` — ガバナンスブーストステーキング：ロック/アンロック、段階的な出口ペナルティ、PvPリベース
+* `x/inflation` — 複数年スケジュールの有限ステーキング報酬予算からの固定供給発行
 * `x/amm` — オンチェーン流動性 / 自動マーケットメーカー
 
 **ブリッジと相互運用性**
 
-* `x/bridge` — あらゆる主要チェーンタイプにわたる 37 の QCB 設定（36 の外部チェーン + QoreChain ループバック）、PQC 署名アテステーション、サーキットブレーカー
-* `x/babylon` — Babylon Protocol を介した BTC リステーキング、エポックチェックポイント
-* `x/multilayer` — サイドチェーン/ペイチェーン/ロールアップレイヤー管理、状態アンカリング
+* `x/bridge` — あらゆる主要チェーンタイプにまたがる37のQCB設定（外部チェーン36 + QoreChainループバック）、PQC署名付きアテステーション、サーキットブレーカー
+* `x/babylon` — Babylon ProtocolによるBTCリステーキング、エポックチェックポイント
+* `x/multilayer` — サイドチェーン/ペイチェーン/ロールアップのレイヤー管理、状態アンカリング
 
 **ガバナンスとライセンス拡張**
 
-* `x/abstractaccount` — スマートアカウント: マルチシグ、ソーシャルリカバリー、セッションキー、支出ルール
-* `x/fairblock` — MEV 保護: しきい値 IBE 暗号化メンプールフレームワーク
-* `x/gasabstraction` — マルチトークンガス支払い: ibc/USDC、ibc/ATOM 手数料変換
+* `x/abstractaccount` — スマートアカウント：マルチシグ、ソーシャルリカバリー、セッションキー、支出ルール
+* `x/fairblock` — MEV保護：しきい値IBE暗号化メンプールフレームワーク
+* `x/gasabstraction` — マルチトークンガス支払い：ibc/USDC、ibc/ATOMの手数料変換
 * `x/license` — チェーンライセンス
 
 **ロールアップ**
 
-* `x/rdk` — Rollup Development Kit: 4 つの決済モード（optimistic、zk、based、sovereign）、プリセットプロファイル、ネイティブ DA、bank エスクロー
+* `x/rdk` — Rollup Development Kit：4つの決済モード（optimistic、zk、based、sovereign）、プリセットプロファイル、ネイティブDA、銀行エスクロー
 
-## AnteHandler チェーン
+## AnteHandlerチェーン
 
-すべてのトランザクションは、実行前に次のデコレーターチェーンを通過します。デコレーターは順番に実行され、いずれのデコレーターもトランザクションを拒否できます。
+すべてのトランザクションは、実行前に以下のデコレータチェーンを通過します。デコレータは順番に実行され、いずれのデコレータもトランザクションを拒否できます。
 
 ```
 SetUpContext
@@ -213,40 +213,40 @@ SetUpContext
                                         → IncrementSequence
 ```
 
-主要なデコレーターは次の順序で実行されます（各デコレーターは順番に実行され、トランザクションを拒否できます）:
+主要なデコレータは以下の順序で実行されます（各デコレータは順番に実行され、トランザクションを拒否できます）。
 
-1. **PQCVerify** — モジュール `x/pqc`。PQC フラグ付きトランザクションの Dilithium-5 署名を検証します。
-2. **PQCHybridVerify** — モジュール `x/pqc`。デュアル secp256k1（ECDSA）+ ML-DSA-87 ハイブリッド署名を検証します。
-3. **AIAnomaly** — モジュール `x/ai`。アイソレーションフォレスト異常検知とリスクスコアリングを実行します。
-4. **FairBlock** — モジュール `x/fairblock`。MEV 保護のために tIBE 暗号化トランザクションを処理します。
-5. **SVMComputeBudget** — モジュール `x/svm`。SVM プログラムの計算ユニットを検証し割り当てます。
-6. **SVMDeductFee** — モジュール `x/svm`。SVM 固有の実行手数料を控除します。
+1. **PQCVerify** — モジュール `x/pqc`。PQCフラグ付きトランザクションのDilithium-5署名を検証します。
+2. **PQCHybridVerify** — モジュール `x/pqc`。secp256k1（ECDSA）+ ML-DSA-87のデュアルハイブリッド署名を検証します。
+3. **AIAnomaly** — モジュール `x/ai`。分離フォレストによる異常検知とリスクスコアリングを実行します。
+4. **FairBlock** — モジュール `x/fairblock`。MEV保護のためtIBE暗号化トランザクションを処理します。
+5. **SVMComputeBudget** — モジュール `x/svm`。SVMプログラム向けの計算ユニットを検証・割り当てます。
+6. **SVMDeductFee** — モジュール `x/svm`。SVM固有の実行手数料を控除します。
 7. **GasAbstraction** — モジュール `x/gasabstraction`。控除前に非ネイティブ手数料トークン（USDC、ATOM）を変換します。
 
-## Docker Compose スタック
+## Docker Composeスタック
 
-完全な開発スタックは、共有ブリッジネットワーク（`qorechain-net`）上の 6 サービスの Docker Compose デプロイとして実行されます:
+フル開発スタックは、共有ブリッジネットワーク（`qorechain-net`）上で6つのサービスからなるDocker Composeデプロイメントとして動作します。
 
-| サービス         | イメージ                   | 目的                                                |
+| サービス          | イメージ                      | 用途                                             |
 | ---------------- | -------------------------- | --------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | すべてのモジュール、VM、RPC エンドポイントを備えたチェーンノード |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | AI 推論サービス（gRPC + QCAI バックエンド）          |
-| `block-indexer`  | `qorechain-indexer:latest` | ブロック/トランザクションインデクサー（WebSocket + Postgres） |
-| `postgres`       | `postgres:16-alpine`       | ブロックインデクサー用のデータベース                |
-| `prometheus`     | `prom/prometheus:latest`   | メトリクスの収集と保存                              |
-| `grafana`        | `grafana/grafana:latest`   | 監視ダッシュボードとアラート                        |
+| `qorechain-node` | `qorechain-core:latest`    | すべてのモジュール、VM、RPCエンドポイントを備えたチェーンノード |
+| `ai-sidecar`     | `qorechain-sidecar:latest` | AI推論サービス（gRPC + QCAI Backend）          |
+| `block-indexer`  | `qorechain-indexer:latest` | ブロック/トランザクションインデクサー（WebSocket + Postgres）    |
+| `postgres`       | `postgres:16-alpine`       | ブロックインデクサー用データベース                      |
+| `prometheus`     | `prom/prometheus:latest`   | メトリクスの収集と保存                                 |
+| `grafana`        | `grafana/grafana:latest`   | 監視ダッシュボードとアラート                            |
 
-完全なスタックを起動します:
+フルスタックを起動します。
 
 ```bash
 docker compose up -d
 ```
 
-すべての永続データは、名前付き Docker ボリュームに保存されます: `node-data`、`postgres-data`、`prometheus-data`、`grafana-data`。
+すべての永続データは、名前付きDockerボリューム `node-data`、`postgres-data`、`prometheus-data`、`grafana-data` に保存されます。
 
-## 関連項目
+## 関連ドキュメント
 
-* [Multilayer Architecture](/architecture/multilayer-architecture) — サイドチェーン登録と状態アンカリング。
-* [Consensus Mechanism](/architecture/consensus-mechanism) — ブロック生成、ファイナリティ、スラッシング。
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI 駆動のパラメータ最適化。
-* [Post-Quantum Security](/architecture/post-quantum-security) — スタック全体にわたる Dilithium-5 署名。
+* [Multilayer Architecture](/architecture/multilayer-architecture) — サイドチェーンの登録と状態アンカリング
+* [Consensus Mechanism](/architecture/consensus-mechanism) — ブロック生成、ファイナリティ、スラッシング
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI駆動のパラメータ最適化
+* [Post-Quantum Security](/architecture/post-quantum-security) — スタック全体にわたるDilithium-5署名

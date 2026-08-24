@@ -17,6 +17,19 @@ sidebar_position: 10
 바이너리, 제네시스, 스냅샷은 SHA-256 체크섬과 함께 [download.qore.host](https://download.qore.host)에 게시됩니다. **설치하거나 압축을 풀기 전에 항상 체크섬을 검증하고**, 입금은 반드시 직접 동기화한 자신의 노드에서만 검증하세요.
 :::
 
+:::note 신뢰할 수 있는 출처: 라이브 매니페스트
+현재 바이너리, 제네시스, 피어, 시드, 스테이트 싱크 신뢰 지점은 실시간으로 갱신되는 JSON 매니페스트로 게시됩니다 — 새 릴리스가 나오는 즉시 오래된 정보가 되어버리므로, 설치 스크립트에 바이너리 버전, 체크섬, 스냅샷 파일명을 하드코딩하지 마세요:
+
+- 메인넷: `https://download.qore.host/mainnet/latest.json`
+- 테스트넷: `https://download.qore.host/testnet/latest.json`
+
+매니페스트의 필드에는 `binary`(URL + sha256), `genesis`(URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync`(매시간 갱신되는 신뢰 지점), `minCompatible`이 포함됩니다. 아래의 설치 및 참여 단계는 이 매니페스트를 가져와 그 안의 현재 값을 사용합니다.
+:::
+
+:::caution 새로 참여하는 노드는 v3.1.92 이상 필요
+제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 **v3.1.92 이상**이어야 합니다 — 이전 버전은 (매니페스트의 `minCompatible` 필드가 아직 이를 반영하도록 업데이트되지 않았더라도) 이제는 수정된 가스 미터링 버그로 인해 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈춥니다. 항상 위 매니페스트의 현재 바이너리를 실행하세요.
+:::
+
 ---
 
 ## 노드 vs 밸리데이터
@@ -58,13 +71,13 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 스토어는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 이미지 태그를 라이브 체인 버전(메인넷 기준 **v3.1.85**)에 고정하고, 체인 데이터용 영구 볼륨을 마운트하세요.
+Docker Compose를 사용한 노드 전용 배포입니다. 이미지 태그를 라이브 체인 버전(메인넷 기준 **v3.1.92**)에 고정하고, 체인 데이터용 영구 볼륨을 마운트하세요.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -129,21 +142,42 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. 제네시스 다운로드 및 검증
+### 2. 매니페스트 가져오기
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+아래 단계에서 바이너리, 제네시스, 피어 값의 출처로 이 파일을 사용하세요 — `jq -r .minCompatible latest.json`으로 확인하되, 이 필드가 아직 반영되지 않았더라도 위의 **v3.1.92 최소 버전**은 그대로 유효하다는 점을 기억하세요.
+
+### 3. 제네시스 다운로드 및 검증
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. 피어 및 수수료 하한 구성
+### 4. 피어 및 수수료 하한 구성
 
-`~/.qorechaind/config/config.toml`을 열고 공개 메인넷 센트리 피어를 설정하세요:
+노드 ID와 호스트를 하드코딩하는 대신 매니페스트에서 현재 피어와 시드를 읽어오세요 — 이 값들은 계속 바뀝니다:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml`을 열고 `persistent_peers`(및 `seeds`)를 위 값으로 설정하세요:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 그다음 `~/.qorechaind/config/app.toml`에서 최소 가스 가격을 설정하세요(네트워크 수수료 하한: **0.1uqor**):
@@ -152,7 +186,7 @@ persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. 동기화 시작
+### 5. 동기화 시작
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-공개 RPC에서 최근의 신뢰할 수 있는 높이와 해시를 확인하세요:
+`trust_height` / `trust_hash`는 매니페스트의 `stateSync` 필드에서 가져오세요 — 매시간 갱신되므로 우선적으로 사용해야 할 출처입니다:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+대안/폴백으로, 공개 RPC에서 직접 신뢰할 수 있는 높이와 해시를 구할 수도 있습니다:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### 스냅샷 복원
 
-또는 게시된 체인 데이터 스냅샷을 다운로드하고 체크섬을 검증한 뒤 데이터 디렉터리 위에 압축을 풀 수도 있습니다:
+또는 게시된 체인 데이터 스냅샷을 다운로드하고 체크섬을 검증한 뒤 데이터 디렉터리 위에 압축을 풀 수도 있습니다. 매니페스트는 현재 스냅샷 포인터를 담고 있지 않으므로, 파일명이나 체크섬을 하드코딩하지 말고 [download.qore.host](https://download.qore.host)의 실시간 목록에서 현재 파일명과 체크섬을 확인하세요:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-스냅샷은 **블록 높이가 표기된 파일명**으로 게시됩니다 — [download.qore.host](https://download.qore.host)에서 최신 스냅샷과 SHA-256 체크섬을 확인하고, 압축을 풀기 전에 항상 검증하세요.
+스냅샷은 정기적으로 바뀌는 **블록 높이가 표기된 파일명**으로 게시됩니다 — [download.qore.host](https://download.qore.host)에서 최신 스냅샷과 SHA-256 체크섬을 확인하고, 압축을 풀기 전에 항상 검증하세요. 위의 **v3.1.92 최소 버전** 요건은 스냅샷에서 리플레이하는 경우에도 동일하게 적용된다는 점을 기억하세요.
 :::
 
 ---
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## 운영 모범 사례
 
-1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.85**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
+1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.92**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
 
 2. **이중화된 노드를 운영하세요.** 로드 밸런서 뒤에 최소 두 대의 노드를 운영해 단일 노드의 재시작이나 재동기화가 통합 트래픽을 중단시키지 않도록 하세요.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **동기화를 지속적으로 모니터링하세요.** 블록 높이 지연, 피어 0개, `catching_up`에 멈춰 있는 노드에 대해 알림을 설정하세요.
 
 풀 노드를 실행하지 않고 초경량 읽기 접근이 필요하다면 **라이트 노드(Light Node)** 문서를 참조하세요.
+
+---
+
+## 문제 해결
+
+### 업그레이드 전에 멈춘 노드가 바이너리 교체 후에도 재개되지 않는 경우
+
+바이너리를 업그레이드하기 **전에** 노드가 이미 멈췄거나 정지된 상태였다면, 새 바이너리를 넣고 재시작하는 것만으로는 충분하지 않습니다 — 노드에는 이전 실행에서 캐시된 오래된 ABCI 결과가 남아 있어 정지를 유발했던 블록을 다시 실행하지 않습니다. 재시작하기 전에 명시적으로 롤백하세요:
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+이 명령은 `qorechaind rollback`(최상위 서브커맨드)입니다 — `comet rollback` 서브커맨드는 존재하지 않으며, 여기에는 `--hard` 플래그도 없습니다.
+
+### `priv_validator_state.json`이 없어 스냅샷 복원이 크래시 루프에 빠지는 경우
+
+게시된 아카이브/스냅샷에는 `data/priv_validator_state.json`이 포함되어 있지 **않으며**, 이 파일이 없으면 노드가 시작을 거부합니다. 스냅샷 복원 후 이 파일이 없다면 직접 생성하세요 — 단, **아직 존재하지 않는 경우에만** 그렇게 하세요. 실제 파일을 절대 덮어쓰지 마세요: 밸리데이터에서 이 파일은 이중 서명 방지 장치이며, 이를 손상시키면 이중 서명 위험이 발생합니다.
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

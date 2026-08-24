@@ -30,17 +30,31 @@ Todo lo que hay en esta sección es una guía práctica para el usuario: qué ha
 
 La mayoría de las acciones que modifican el estado on-chain — enviar tokens, intercambiar, hacer staking, usar el bridge — requieren un monedero conectado. La forma en que el Panel gestiona las claves depende de la red:
 
-- **Mainnet es no custodio.** El Panel nunca guarda tus claves de mainnet. Conectas tu propio monedero — **Keplr** para el raíl Native o **MetaMask** para el raíl EVM — y el Panel lee tu saldo y tu historial reales desde la cadena. Cada transacción en mainnet se firma en tu propio monedero, nunca en el Panel.
+- **Mainnet es no custodio.** El Panel nunca guarda tus claves de mainnet. Conectas tu propio monedero — **QoreX** (el monedero oficial de QoreChain, como extensión o como app), **Keplr** o **MetaMask** — y el Panel lee tu saldo y tu historial reales desde la cadena. Cada transacción en mainnet se firma en tu propio monedero, nunca en el Panel. Enviar y hacer staking en el **raíl Native requieren QoreX**, ya que las cuentas de QoreChain firman con una firma híbrida post-cuántica que hoy solo QoreX puede generar; Keplr aún puede conectarse para consultar tu saldo en el raíl Native. **MetaMask** firma y envía de forma independiente en el **raíl EVM**.
 - **Testnet es custodio.** El Panel gestiona un monedero de prueba por ti, para que puedas experimentar sin configuración alguna y sin poner en riesgo valor real.
 
-Para conectarte en mainnet:
+### Conecta con QoreX (recomendado) {#connect-qorex}
+
+QoreX es el monedero oficial de QoreChain. La tarjeta **Connect with QoreX** del Panel admite tanto la extensión de navegador como la app móvil desde el mismo punto de entrada.
+
+1. Abre [dashboard.qorechain.io](https://dashboard.qorechain.io) y asegúrate de que la cabecera muestre **Mainnet**.
+2. Si es tu primera visita a una página de mainnet, lee y acepta el [reconocimiento de riesgos único](#risk-acknowledgement).
+3. Selecciona **Connect Wallet** (o **Connect with QoreX** en la tarjeta del monedero).
+4. Si la extensión de navegador de QoreX está instalada y se detecta en este navegador, el Panel te pregunta **"How do you want to connect?"** con dos opciones, **Browser extension** y **QoreX app**. Elige una — la elección se guarda, de modo que las visitas posteriores omiten esta pregunta (siempre hay disponible un enlace **Use a different method** si quieres cambiar más adelante). Si no se detecta ninguna extensión, el Panel va directo al flujo de la app.
+   - **Browser extension**: se abre la ventana emergente propia de la extensión, mostrando `dashboard.qorechain.io` como el sitio que solicita la conexión. Revísala y apruébala — esto firma una prueba única de que eres dueño de tu dirección `qor1...` (no se mueven fondos). El emparejamiento se completa de inmediato, en la misma sesión del navegador.
+   - **QoreX app**: el Panel muestra un código QR (con un enlace **Open QoreX** que abre la app directamente si estás navegando desde el mismo teléfono). Abre la app de QoreX, escanea el código QR (o toca el enlace), revisa la solicitud de emparejamiento que muestra el origen del Panel, y apruébala con tu confirmación biométrica. El Panel sondea en segundo plano y termina el emparejamiento automáticamente en cuanto apruebas.
+5. Una vez aprobado, el Panel muestra tu dirección `qor1...` y desbloquea las acciones que requieren una firma.
+
+Consulta [Monedero](/dashboard/wallet#mainnet) para ver el recorrido completo de conexión y envío según el tipo de monedero, y la página [Cuenta y Panel](/qorex/account-and-dashboard#dashboard) de la documentación de QoreX para ver el emparejamiento desde el lado del monedero.
+
+### Conecta con Keplr o MetaMask
 
 1. Abre [dashboard.qorechain.io](https://dashboard.qorechain.io) y asegúrate de que la cabecera muestre **Mainnet**.
 2. Si es tu primera visita a una página de mainnet, lee y acepta el reconocimiento de riesgos único (ver más abajo).
-3. Selecciona **Connect Wallet** y elige **Keplr** (raíl Native) o **MetaMask** (raíl EVM).
+3. Selecciona **Connect Wallet** y elige **Keplr** o **MetaMask**.
 4. Aprueba la conexión en tu monedero.
 
-Una vez conectado, el Panel muestra tu dirección (en forma abreviada) en la cabecera y desbloquea las acciones que requieren una firma. Las páginas de solo lectura, como el Explorador, funcionan sin necesidad de conectarse.
+Una vez conectado, el Panel muestra tu dirección (en forma abreviada) en la cabecera. MetaMask desbloquea el envío y otras acciones firmadas directamente en el raíl EVM. Keplr desbloquea la consulta de tu saldo e historial en el raíl Native — enviar y hacer staking ahí pasan por QoreX (ver más arriba), ya que las cuentas de QoreChain firman con una firma híbrida post-cuántica. Las páginas de solo lectura, como el Explorador, funcionan sin necesidad de conectarse.
 
 Las cuentas de QoreChain usan el prefijo bech32 `qor`, por lo que una dirección conectada tiene la forma `qor1...` — la misma cuenta también tiene una codificación EVM (`0x...`) y una SVM (base58). Las cuentas están protegidas con criptografía resistente a la computación cuántica. Consulta [Configuración del monedero](/getting-started/wallet-setup) para obtener orientación en la configuración inicial, y [Añadir QoreChain a tu monedero](/dashboard/wallet#add-network) si tu monedero aún no conoce la red.
 

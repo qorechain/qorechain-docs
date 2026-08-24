@@ -13,12 +13,14 @@ L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et 
 
 ## Installation
 
+Les binaires précompilés s'exécutent nativement sur **cinq plateformes sans aucune dépendance native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — chacun pesant environ 16 Mo.
+
 ### Compiler depuis les sources
 
-L'édition UX nécessite **Go 1.26.1** et se compile avec CGO activé pour la bibliothèque native post-quantique :
+L'édition UX nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une implémentation en pur Go (pas de CGO, pas de bibliothèque native) :
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-ux ./cmd/lightnode-ux/
+go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
 Cela produit `build/lightnode-ux`.
@@ -55,6 +57,10 @@ http://localhost:8420
 
 :::caution Vérifiez votre mappage de port dans Compose
 Certains textes ailleurs font référence au port 8080 pour le dashboard. La valeur de référence est **8420** — c'est ce que l'image expose réellement et ce à quoi le démon se lie par défaut. Si vous adaptez votre propre `docker-compose.yml` ou un reverse proxy, mappez vers **8420**, et non 8080.
+:::
+
+:::danger Le dashboard ne dispose d'aucune authentification
+Le port 8420 écoute sur **toutes les interfaces**, pas seulement en local, et le dashboard n'a **ni connexion ni contrôle d'accès**. Quiconque peut atteindre ce port sur votre réseau peut lire votre configuration, vos délégations et vos récompenses. **Ne l'exposez pas publiquement.** Liez-le uniquement à l'interface de boucle locale (loopback), ou placez-le derrière un reverse proxy exigeant une authentification, avant de l'exécuter sur autre chose qu'un réseau privé entièrement fiable.
 :::
 
 ## Ce que montre le dashboard

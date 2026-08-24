@@ -17,6 +17,19 @@ For block production, staking, slashing, and pool classification, see [Running a
 Binaries, genesis, and snapshots are published at [download.qore.host](https://download.qore.host) with SHA-256 checksums. **Always verify checksums before installing or extracting**, and verify deposits only against your own synced node.
 :::
 
+:::note Source of truth: the live manifest
+The current binary, genesis, peers, seeds, and a state-sync trust point are published as a JSON manifest, refreshed live — don't hardcode a binary version, checksum, or snapshot filename in your install scripts, since they go stale as soon as a new release ships:
+
+- Mainnet: `https://download.qore.host/mainnet/latest.json`
+- Testnet: `https://download.qore.host/testnet/latest.json`
+
+The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
+:::
+
+:::caution v3.1.92 or later required for a node joining fresh
+A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.92 or later** — earlier versions (even if the manifest's `minCompatible` field hasn't been updated yet to reflect this) will halt at the first block containing a transaction during replay, due to a now-fixed gas-metering bug. Always run the current binary from the manifest above.
+:::
+
 ---
 
 ## Node vs Validator
@@ -58,13 +71,13 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.85** on mainnet) and mount a persistent volume for chain data.
+A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.92** on mainnet) and mount a persistent volume for chain data.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -129,21 +142,42 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Download and verify genesis
+### 2. Fetch the manifest
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+Use this file as the source for the binary, genesis, and peer values in the steps below — check `jq -r .minCompatible latest.json` but remember the **v3.1.92 floor** above holds even if that field lags behind.
+
+### 3. Download and verify genesis
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. Configure peers and the fee floor
+### 4. Configure peers and the fee floor
 
-Open `~/.qorechaind/config/config.toml` and set the public mainnet sentry peers:
+Read the current peers and seeds from the manifest rather than hardcoding node IDs and hosts — these rotate:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Open `~/.qorechaind/config/config.toml` and set `persistent_peers` (and `seeds`) to those values:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Then set the minimum gas price in `~/.qorechaind/config/app.toml` (network fee floor: **0.1uqor**):
@@ -152,7 +186,7 @@ Then set the minimum gas price in `~/.qorechaind/config/app.toml` (network fee f
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. Start syncing
+### 5. Start syncing
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Determine a recent trusted height and hash from the public RPC:
+Take `trust_height` / `trust_hash` from the manifest's `stateSync` field — it's refreshed hourly, so it's the preferred source:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+As a fallback/alternative, you can derive a trusted height and hash yourself from the public RPC:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot restore
 
-Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory:
+Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. The manifest does not currently carry a snapshot pointer, so check the live listing at [download.qore.host](https://download.qore.host) for the current filename and checksum rather than hardcoding one:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots are published under **height-stamped filenames** — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting.
+Snapshots are published under **height-stamped filenames** that change regularly — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting. Remember the **v3.1.92 minimum** above applies to replay from a snapshot too.
 :::
 
 ---
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.85** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the live tag (**v3.1.92** on mainnet) and track official releases for coordinated upgrades.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **Monitor sync continuously.** Alert on block-height lag, zero peers, and a node stuck in `catching_up`.
 
 For ultra-light read access without running a full node, see the **Light Node** documentation.
+
+---
+
+## Troubleshooting
+
+### A node halted before the upgrade doesn't resume after a binary swap
+
+If your node was already halted or stuck **before** you upgraded its binary, simply dropping in the new binary and restarting is not enough — the node has stale ABCI results cached from the old run and won't re-execute the block that caused the halt. Roll back explicitly before restarting:
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+The command is `qorechaind rollback` (a top-level subcommand) — there is no `comet rollback` subcommand and no `--hard` flag for it.
+
+### Snapshot restore crash-loops on a missing `priv_validator_state.json`
+
+A published archive/snapshot does **not** include `data/priv_validator_state.json`, and the node refuses to start without it. If it's missing after a snapshot restore, create it — but **only if it doesn't already exist**. Never overwrite a real one: on a validator this file is the anti-double-signing guard, and clobbering it risks a double-sign.
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

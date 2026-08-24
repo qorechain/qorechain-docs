@@ -13,12 +13,14 @@ The UX edition is the right choice for desktop use and for operators who prefer 
 
 ## Install
 
+Prebuilt binaries run natively on **five platforms with zero native dependencies** — Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — each about 16 MB.
+
 ### Build from source
 
-The UX edition requires **Go 1.26.1** and builds with CGO enabled for the post-quantum native library:
+The UX edition requires **Go 1.26.1**. Its post-quantum cryptography is a pure-Go implementation (no CGO, no native library):
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-ux ./cmd/lightnode-ux/
+go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
 This produces `build/lightnode-ux`.
@@ -55,6 +57,10 @@ http://localhost:8420
 
 :::caution Check your compose port mapping
 Some prose elsewhere references port 8080 for the dashboard. The authoritative value is **8420** — that is what the image actually exposes and what the daemon binds by default. If you adapt your own `docker-compose.yml` or a reverse proxy, map to **8420**, not 8080.
+:::
+
+:::danger The dashboard has no authentication
+Port 8420 listens on **all interfaces**, not just localhost, and the dashboard has **no login and no access control**. Anyone who can reach the port on your network can read your configuration, delegations, and rewards. **Do not expose it publicly.** Bind it to loopback only, or put it behind a reverse proxy that requires authentication, before running it on anything other than a fully trusted private network.
 :::
 
 ## What the dashboard shows

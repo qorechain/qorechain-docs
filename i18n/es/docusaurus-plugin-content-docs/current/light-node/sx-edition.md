@@ -11,17 +11,19 @@ La edición **SX (Server eXperience)** es el nodo ligero sin interfaz: un daemon
 
 ## Instalación
 
-Puedes compilar el binario desde el código fuente o ejecutarlo con Docker.
+Los binarios precompilados son la vía más sencilla — el cliente de nodo ligero se ejecuta de forma nativa en **cinco plataformas sin dependencias nativas**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64). Cada binario pesa aproximadamente 16 MB — descárgalo y ejecútalo, sin bibliotecas separadas que instalar.
+
+También puedes compilar el binario desde el código fuente o ejecutarlo con Docker.
 
 ### Compilar desde el código fuente
 
-El nodo ligero requiere **Go 1.26.1** y se compila con CGO habilitado, porque la criptografía poscuántica usa una biblioteca nativa (`libqorepqc`).
+El nodo ligero requiere **Go 1.26.1**. Su criptografía poscuántica es una implementación en Go puro (sin CGO, sin biblioteca nativa), por lo que la compilación cruzada para cualquiera de las cinco plataformas soportadas funciona igual que con cualquier otro binario de Go:
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-sx ./cmd/lightnode-sx/
+go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Esto produce `build/lightnode-sx`. Ejecútalo directamente o cópialo en tu `PATH`.
+Esto produce `build/lightnode-sx`. Ejecútalo directamente o cópialo en tu `PATH`. Antes de registrarte, verifica el stack de firma poscuántica con [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker
 

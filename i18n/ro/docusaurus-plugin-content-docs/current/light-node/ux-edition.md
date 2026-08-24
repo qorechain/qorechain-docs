@@ -13,12 +13,14 @@ Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru oper
 
 ## Instalare
 
+Binarele precompilate rulează nativ pe **cinci platforme fără nicio dependență nativă** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — fiecare de aproximativ 16 MB.
+
 ### Construire din sursă
 
-Ediția UX necesită **Go 1.26.1** și se construiește cu CGO activat pentru biblioteca nativă post-cuantică:
+Ediția UX necesită **Go 1.26.1**. Criptografia sa post-cuantică este o implementare pur-Go (fără CGO, fără bibliotecă nativă):
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-ux ./cmd/lightnode-ux/
+go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
 Aceasta produce `build/lightnode-ux`.
@@ -55,6 +57,10 @@ http://localhost:8420
 
 :::caution Verifică maparea portului din compose
 Unele texte din alte locuri fac referire la portul 8080 pentru dashboard. Valoarea autoritativă este **8420** — aceasta este ceea ce imaginea expune efectiv și la ce se leagă daemon-ul în mod implicit. Dacă îți adaptezi propriul `docker-compose.yml` sau un reverse proxy, mapează la **8420**, nu la 8080.
+:::
+
+:::danger Dashboard-ul nu are nicio autentificare
+Portul 8420 ascultă pe **toate interfețele**, nu doar pe localhost, iar dashboard-ul **nu are nicio autentificare și niciun control al accesului**. Oricine poate ajunge la acest port în rețeaua ta îți poate citi configurația, delegările și recompensele. **Nu îl expune public.** Leagă-l doar de loopback sau pune-l în spatele unui reverse proxy care impune autentificare, înainte de a-l rula pe orice altceva decât o rețea privată complet de încredere.
 :::
 
 ## Ce afișează dashboard-ul

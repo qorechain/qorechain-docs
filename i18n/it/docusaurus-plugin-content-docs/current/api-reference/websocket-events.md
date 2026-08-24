@@ -7,10 +7,10 @@ sidebar_position: 5
 
 # Eventi WebSocket
 
-QoreChain fornisce lo streaming di eventi in tempo reale tramite due interfacce WebSocket: la WebSocket compatibile con l'EVM e la WebSocket RPC del QoreChain Consensus Engine.
+QoreChain fornisce lo streaming di eventi in tempo reale attraverso due interfacce WebSocket: il WebSocket compatibile con EVM e il WebSocket RPC del Consensus Engine di QoreChain.
 
 :::note
-Entrambe le interfacce WebSocket sono disponibili sulla mainnet **`qorechain-vladi`** (attiva sulla versione di chain **v3.1.85**) e sulla testnet **`qorechain-diana`**. Gli endpoint locali sotto indicati presuppongono un nodo che gestisci tu stesso; per l'accesso remoto sostituisci l'host mainnet o testnet del tuo provider.
+Entrambe le interfacce WebSocket sono disponibili sulla mainnet **`qorechain-vladi`** (in funzione sulla versione della chain **v3.1.92**) e sulla testnet **`qorechain-diana`**. Gli endpoint locali riportati di seguito presuppongono un nodo gestito da voi stessi; per l'accesso remoto sostituiteli con l'host mainnet o testnet del vostro provider.
 :::
 
 ---
@@ -19,18 +19,18 @@ Entrambe le interfacce WebSocket sono disponibili sulla mainnet **`qorechain-vla
 
 **Endpoint:** `ws://localhost:8546`
 
-La WebSocket EVM supporta il metodo standard `eth_subscribe` per lo streaming di eventi in tempo reale compatibile con gli strumenti di Ethereum.
+Il WebSocket EVM supporta il metodo standard `eth_subscribe` per lo streaming di eventi in tempo reale, compatibile con gli strumenti dell'ecosistema Ethereum.
 
 ### Tipi di sottoscrizione
 
-| Sottoscrizione           | Descrizione                                      |
-| ------------------------ | ------------------------------------------------ |
+| Sottoscrizione            | Descrizione                                              |
+| ------------------------ | --------------------------------------------------------- |
 | `newHeads`               | Emette un header ogni volta che viene aggiunto un nuovo blocco |
-| `logs`                   | Emette i log corrispondenti a un filtro opzionale |
-| `newPendingTransactions` | Emette gli hash delle transazioni che entrano nel mempool |
-| `syncing`                | Emette aggiornamenti sullo stato di sincronizzazione |
+| `logs`                   | Emette i log corrispondenti a un filtro opzionale          |
+| `newPendingTransactions` | Emette gli hash delle transazioni in ingresso nel mempool  |
+| `syncing`                | Emette aggiornamenti sullo stato di sincronizzazione       |
 
-### Sottoscrizione ai nuovi blocchi
+### Sottoscrivere i nuovi blocchi
 
 ```json
 {
@@ -41,7 +41,7 @@ La WebSocket EVM supporta il metodo standard `eth_subscribe` per lo streaming di
 }
 ```
 
-### Sottoscrizione ai log con filtro
+### Sottoscrivere i log con filtro
 
 ```json
 {
@@ -58,7 +58,7 @@ La WebSocket EVM supporta il metodo standard `eth_subscribe` per lo streaming di
 }
 ```
 
-### Annullamento della sottoscrizione
+### Annullare la sottoscrizione
 
 ```json
 {
@@ -75,9 +75,9 @@ La WebSocket EVM supporta il metodo standard `eth_subscribe` per lo streaming di
 
 **Endpoint:** `ws://localhost:26657/websocket`
 
-La WebSocket RPC utilizza il sistema di sottoscrizione agli eventi del QoreChain Consensus Engine. I client si sottoscrivono con una stringa di query che filtra gli eventi per tipo e attributi.
+Il WebSocket RPC utilizza il sistema di sottoscrizione eventi del Consensus Engine di QoreChain. I client si sottoscrivono con una stringa di query che filtra gli eventi per tipo e attributi.
 
-### Sottoscrizione a tutti i nuovi blocchi
+### Sottoscrivere tutti i nuovi blocchi
 
 ```json
 {
@@ -90,7 +90,7 @@ La WebSocket RPC utilizza il sistema di sottoscrizione agli eventi del QoreChain
 }
 ```
 
-### Sottoscrizione a tutte le transazioni
+### Sottoscrivere tutte le transazioni
 
 ```json
 {
@@ -103,9 +103,9 @@ La WebSocket RPC utilizza il sistema di sottoscrizione agli eventi del QoreChain
 }
 ```
 
-### Sottoscrizione a eventi specifici di un modulo
+### Sottoscrivere eventi specifici di un modulo
 
-Filtra per tipo di evento per ricevere solo gli eventi di un modulo specifico:
+Filtrate per tipo di evento per ricevere solo gli eventi provenienti da un modulo specifico:
 
 ```json
 {
@@ -118,7 +118,7 @@ Filtra per tipo di evento per ricevere solo gli eventi di un modulo specifico:
 }
 ```
 
-### Annullamento della sottoscrizione
+### Annullare la sottoscrizione
 
 ```json
 {
@@ -137,79 +137,79 @@ Filtra per tipo di evento per ricevere solo gli eventi di un modulo specifico:
 
 ### Modulo PQC
 
-| Tipo di evento             | Attributi chiave                                     | Descrizione                                   |
-| -------------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `pqc_hybrid_verify`        | `address`, `algorithm`, `result` (pass/fail), `mode` | Emesso a ogni verifica di firma ibrida        |
+| Tipo di evento              | Attributi chiave                                     | Descrizione                                          |
+| --------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| `pqc_hybrid_verify`        | `address`, `algorithm`, `result` (pass/fail), `mode` | Emesso a ogni verifica di firma ibrida                |
 | `pqc_hybrid_auto_register` | `address`, `algorithm`, `pubkey_hash`                | Emesso quando una chiave PQC viene registrata automaticamente |
 
 ### Modulo AI
 
-| Tipo di evento    | Attributi chiave                                                   | Descrizione                                      |
-| ----------------- | ------------------------------------------------------------------- | ------------------------------------------------ |
+| Tipo di evento     | Attributi chiave                                                     | Descrizione                                            |
+| ----------------- | ------------------------------------------------------------------- | -------------------------------------------------------- |
 | `fraud_alert`     | `severity` (low/medium/high/critical), `address`, `reason`, `score` | Emesso quando viene rilevata una frode in una transazione |
-| `circuit_breaker` | `module`, `action` (tripped/reset), `threshold`, `value`            | Emesso quando un circuit breaker AI cambia stato |
+| `circuit_breaker` | `module`, `action` (tripped/reset), `threshold`, `value`            | Emesso quando un circuit breaker AI cambia stato          |
 
 ### Modulo Bridge
 
-| Tipo di evento         | Attributi chiave                                               | Descrizione                                             |
-| ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------- |
-| `deposit_completed`    | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Emesso quando un deposito bridge in entrata viene confermato |
-| `withdrawal_completed` | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Emesso quando un prelievo bridge in uscita viene confermato |
+| Tipo di evento          | Attributi chiave                                                | Descrizione                                              |
+| ---------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `deposit_completed`    | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Emesso quando un deposito in ingresso sul bridge è confermato |
+| `withdrawal_completed` | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Emesso quando un prelievo in uscita dal bridge è confermato   |
 
 ### Modulo Cross-VM
 
-| Tipo di evento     | Attributi chiave                                                | Descrizione                                           |
-| ------------------ | ---------------------------------------------------------------- | ----------------------------------------------------- |
-| `crossvm_request`  | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash` | Emesso quando viene avviata una chiamata cross-VM     |
-| `crossvm_response` | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`    | Emesso quando una chiamata cross-VM si completa       |
-| `crossvm_timeout`  | `message_id`, `source_vm`, `target_vm`, `queued_at_height`       | Emesso quando un messaggio cross-VM supera il timeout della coda |
+| Tipo di evento      | Attributi chiave                                                    | Descrizione                                              |
+| ------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `crossvm_request`  | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash` | Emesso quando viene avviata una chiamata cross-VM            |
+| `crossvm_response` | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`    | Emesso quando una chiamata cross-VM si completa               |
+| `crossvm_timeout`  | `message_id`, `source_vm`, `target_vm`, `queued_at_height`       | Emesso quando un messaggio cross-VM supera il timeout di coda |
 
 ### Modulo Multilayer
 
-| Tipo di evento         | Attributi chiave                                              | Descrizione                                     |
-| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
-| `anchor_submitted`     | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter` | Emesso quando viene inviato un anchor di stato di un layer |
-| `layer_status_changed` | `layer_id`, `previous_status`, `new_status`, `reason`          | Emesso quando un layer cambia stato operativo   |
+| Tipo di evento          | Attributi chiave                                                | Descrizione                                          |
+| ---------------------- | -------------------------------------------------------------------- | -------------------------------------------------------- |
+| `anchor_submitted`     | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter` | Emesso quando viene inviato un anchor di stato del layer |
+| `layer_status_changed` | `layer_id`, `previous_status`, `new_status`, `reason`          | Emesso quando un layer cambia stato operativo             |
 
 ### Modulo RDK
 
-| Tipo di evento    | Attributi chiave                                      | Descrizione                                      |
-| ----------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| `rollup_created`  | `rollup_id`, `operator`, `settlement_type`, `profile` | Emesso quando viene registrato un nuovo rollup   |
-| `batch_submitted` | `rollup_id`, `batch_index`, `state_root`, `tx_count`  | Emesso quando viene inviato un batch di settlement |
-| `batch_finalized` | `rollup_id`, `batch_index`, `finalized_at_height`     | Emesso quando un batch supera la sua finestra di challenge |
-| `da_blob_stored`  | `rollup_id`, `blob_index`, `size_bytes`, `commitment` | Emesso quando un blob DA viene memorizzato       |
-| `da_blob_pruned`  | `rollup_id`, `blob_index`, `pruned_at_height`         | Emesso quando un blob DA viene eliminato dopo la ritenzione |
+| Tipo di evento    | Attributi chiave                                        | Descrizione                                              |
+| ----------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
+| `rollup_created`  | `rollup_id`, `operator`, `settlement_type`, `profile` | Emesso quando viene registrato un nuovo rollup                |
+| `batch_submitted` | `rollup_id`, `batch_index`, `state_root`, `tx_count`  | Emesso quando viene inviato un batch di settlement             |
+| `batch_finalized` | `rollup_id`, `batch_index`, `finalized_at_height`     | Emesso quando un batch supera la finestra di contestazione     |
+| `da_blob_stored`  | `rollup_id`, `blob_index`, `size_bytes`, `commitment` | Emesso quando un blob DA viene memorizzato                     |
+| `da_blob_pruned`  | `rollup_id`, `blob_index`, `pruned_at_height`         | Emesso quando un blob DA viene eliminato dopo il periodo di conservazione |
 
 ### Modulo Burn
 
-| Tipo di evento    | Attributi chiave                                                                    | Descrizione                                 |
-| ----------------- | ----------------------------------------------------------------------------------- | ------------------------------------------- |
+| Tipo di evento    | Attributi chiave                                                                     | Descrizione                                     |
+| ----------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | `fee_distributed` | `total_fees`, `validator_amount`, `burn_amount`, `treasury_amount`, `staker_amount` | Emesso quando le commissioni raccolte vengono distribuite |
 | `tokens_burned`   | `amount`, `channel`, `block_height`                                                 | Emesso quando i token vengono bruciati in modo permanente |
 
 ### Modulo xQORE
 
-| Tipo di evento   | Attributi chiave                                              | Descrizione                                |
-| ---------------- | -------------------------------------------------------------- | ------------------------------------------ |
-| `xqore_locked`   | `address`, `amount`, `lock_duration`, `tier`                   | Emesso quando QOR viene bloccato in xQORE  |
-| `xqore_unlocked` | `address`, `amount`, `penalty_applied`, `penalty_amount`       | Emesso quando xQORE viene sbloccato nuovamente in QOR |
-| `pvp_rebase`     | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count` | Emesso durante la distribuzione del rebase PvP |
+| Tipo di evento   | Attributi chiave                                                | Descrizione                                        |
+| ---------------- | -------------------------------------------------------------------- | ------------------------------------------------------ |
+| `xqore_locked`   | `address`, `amount`, `lock_duration`, `tier`                   | Emesso quando QOR viene bloccato in xQORE               |
+| `xqore_unlocked` | `address`, `amount`, `penalty_applied`, `penalty_amount`       | Emesso quando xQORE viene sbloccato e riconvertito in QOR |
+| `pvp_rebase`     | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count` | Emesso durante la distribuzione del rebase PvP           |
 
 ### Modulo Inflation
 
-| Tipo di evento | Attributi chiave                                          | Descrizione                                |
-| -------------- | ---------------------------------------------------------- | ------------------------------------------ |
-| `epoch_minted` | `epoch`, `minted_amount`, `inflation_rate`, `block_height` | Emesso alla fine di ogni epoca di inflazione |
+| Tipo di evento | Attributi chiave                                              | Descrizione                                    |
+| -------------- | ------------------------------------------------------------------ | -------------------------------------------------- |
+| `epoch_minted` | `epoch`, `minted_amount`, `inflation_rate`, `block_height` | Emesso al termine di ogni epoca di inflazione       |
 
 ### Modulo RL Consensus
 
-Gli aggiustamenti dei parametri PRISM e l'attività dei circuit breaker vengono emessi tramite questo modulo.
+Le regolazioni dei parametri PRISM e l'attività del circuit breaker vengono emesse tramite questo modulo.
 
-| Tipo di evento              | Attributi chiave                                              | Descrizione                                                |
-| --------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| `rl_action_applied`         | `action_type`, `param_key`, `old_value`, `new_value`, `reward` | Emesso quando l'agente PRISM applica un aggiustamento di parametro |
-| `circuit_breaker_triggered` | `reason`, `param_key`, `attempted_value`, `limit`              | Emesso quando il circuit breaker PRISM blocca un'azione    |
+| Tipo di evento               | Attributi chiave                                                | Descrizione                                                    |
+| --------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `rl_action_applied`         | `action_type`, `param_key`, `old_value`, `new_value`, `reward` | Emesso quando l'agente PRISM applica una regolazione di parametro    |
+| `circuit_breaker_triggered` | `reason`, `param_key`, `attempted_value`, `limit`              | Emesso quando il circuit breaker PRISM blocca un'azione              |
 
 ---
 
@@ -237,7 +237,7 @@ provider.on(filter, (log) => {
 });
 ```
 
-### WebSocket RPC di QoreChain (nativa)
+### WebSocket RPC di QoreChain (nativo)
 
 ```javascript
 const ws = new WebSocket("ws://localhost:26657/websocket");
@@ -272,6 +272,6 @@ ws.onmessage = (event) => {
 
 ## Note
 
-- **Limiti di connessione**: il numero massimo predefinito di connessioni WebSocket è illimitato (`max-open-connections = 0`). Imposta un limite in `app.toml` per i deployment di produzione.
-- **Buffer degli eventi**: la WebSocket RPC bufferizza fino a 200 eventi per sottoscrizione. Se il client rimane indietro, gli eventi più vecchi vengono scartati.
+- **Limiti di connessione**: il numero massimo predefinito di connessioni WebSocket è illimitato (`max-open-connections = 0`). Impostate un limite in `app.toml` per gli ambienti di produzione.
+- **Buffer degli eventi**: il WebSocket RPC memorizza in buffer fino a 200 eventi per sottoscrizione. Se il client rimane indietro, gli eventi più vecchi vengono scartati.
 - **Riconnessione**: i client dovrebbero implementare la riconnessione automatica con backoff esponenziale, poiché le connessioni WebSocket possono essere interrotte durante i riavvii o gli aggiornamenti del nodo.

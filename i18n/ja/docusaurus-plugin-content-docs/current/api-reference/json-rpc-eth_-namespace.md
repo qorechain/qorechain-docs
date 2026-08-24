@@ -7,65 +7,65 @@ sidebar_position: 3
 
 # JSON-RPC — eth_ 名前空間
 
-QoreChain は完全に EVM 互換の JSON-RPC インターフェースを実装しており、標準的な Ethereum ツール（MetaMask、Hardhat、Foundry、ethers.js、web3.js）が変更なしでチェーンとやり取りできます。
+QoreChainは完全にEVM互換のJSON-RPCインターフェースを実装しており、標準的なEthereumツール(MetaMask、Hardhat、Foundry、ethers.js、web3.js)が変更なしにチェーンと連携できます。
 
 ## 接続
 
-| トランスポート | デフォルトアドレス      |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
+| トランスポート | デフォルトアドレス       |
+| --------------- | ------------------------ |
+| HTTP             | `http://localhost:8545` |
+| WebSocket        | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC インターフェースは、**`qorechain-vladi`** メインネット（EVM チェーン ID **9801**、16進 `0x2649`、チェーンバージョン **v3.1.85** で稼働中）と **`qorechain-diana`** テストネット（EVM チェーン ID **9800**、16進 `0x2648`）によって提供されます。上記のローカルアドレスは自分で運用するノードに適用されます。リモートアクセスの場合は、プロバイダーのメインネットまたはテストネットのエンドポイントに置き換えてください。
+EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 **0x2649**、チェーンバージョン **v3.1.92** で稼働中)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 **0x2648**)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。リモートアクセスの場合は、お使いのプロバイダーのメインネットまたはテストネットのエンドポイントに置き換えてください。
 :::
 
 ## サポートされている名前空間
 
-| 名前空間 | 説明                                                                                                    |
-| --------- | -------------------------------------------------------------------------------------------------------------- |
-| `eth_`    | コア Ethereum JSON-RPC メソッド                                                                                 |
-| `web3_`   | ユーティリティメソッド（クライアントバージョン、ハッシュ化）                                                                      |
-| `net_`    | ネットワークステータスメソッド                                                                                         |
-| `txpool_` | トランザクションプールの検査                                                                                    |
-| `qor_`    | QoreChain 固有の拡張機能（[qor_ 名前空間](/api-reference/json-rpc-qor_-namespace) を参照）                   |
+| 名前空間  | 説明                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------ |
+| `eth_`    | Ethereumのコアとなる JSON-RPC メソッド                                                     |
+| `web3_`   | ユーティリティメソッド(クライアントバージョン、ハッシュ化)                               |
+| `net_`    | ネットワークステータスメソッド                                                             |
+| `txpool_` | トランザクションプールの検査                                                               |
+| `qor_`    | QoreChain固有の拡張機能([qor_ 名前空間](/api-reference/json-rpc-qor_-namespace)を参照)   |
 
 ## eth_ メソッド
 
-| メソッド                      | パラメータ                                       | 説明                                          |
-| --------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
-| `eth_blockNumber`           | なし                                             | 最新のブロック番号を返します                      |
-| `eth_getBalance`            | `address`, `blockNumber`                         | アドレスの残高を wei 単位で返します             |
-| `eth_getTransactionCount`   | `address`, `blockNumber`                         | アドレスの nonce（トランザクション数）を返します |
-| `eth_sendRawTransaction`    | `signedTxData`                                   | 署名済みトランザクションをブロードキャストのために送信します           |
-| `eth_call`                  | `callObject`, `blockNumber`                      | EVM に対して読み取り専用の呼び出しを実行します            |
-| `eth_estimateGas`           | `callObject`                                     | トランザクションに必要なガスを見積もります         |
-| `eth_getBlockByNumber`      | `blockNumber`, `fullTx` (bool)                   | 番号でブロックデータを返します                         |
-| `eth_getTransactionByHash`  | `txHash`                                         | ハッシュでトランザクションデータを返します                   |
-| `eth_getTransactionReceipt` | `txHash`                                         | マイニングされたトランザクションのレシートを返します          |
-| `eth_getLogs`               | `filterObject`                                   | フィルターに一致するログを返します                  |
-| `eth_chainId`               | なし                                             | チェーン ID（16進エンコード）を返します                   |
-| `eth_gasPrice`              | なし                                             | 現在のガス価格を wei 単位で返します                 |
-| `eth_feeHistory`            | `blockCount`, `newestBlock`, `rewardPercentiles` | 過去の手数料データを返します（EIP-1559）               |
+| メソッド                     | パラメータ                                        | 説明                                                     |
+| ---------------------------- | -------------------------------------------------- | -------------------------------------------------------- |
+| `eth_blockNumber`            | なし                                                | 最新のブロック番号を返す                                 |
+| `eth_getBalance`              | `address`、`blockNumber`                          | アドレスの残高をwei単位で返す                             |
+| `eth_getTransactionCount`    | `address`、`blockNumber`                          | アドレスのナンス(トランザクション数)を返す               |
+| `eth_sendRawTransaction`     | `signedTxData`                                     | 署名済みトランザクションをブロードキャスト用に送信する    |
+| `eth_call`                   | `callObject`、`blockNumber`                       | EVMに対して読み取り専用の呼び出しを実行する                |
+| `eth_estimateGas`            | `callObject`                                       | トランザクションに必要なガス量を見積もる                   |
+| `eth_getBlockByNumber`       | `blockNumber`、`fullTx`(真偽値)                  | 番号によりブロックデータを返す                             |
+| `eth_getTransactionByHash`   | `txHash`                                           | ハッシュによりトランザクションデータを返す                 |
+| `eth_getTransactionReceipt`  | `txHash`                                           | マイニングされたトランザクションのレシートを返す           |
+| `eth_getLogs`                | `filterObject`                                     | フィルタに一致するログを返す                               |
+| `eth_chainId`                | なし                                                | チェーンID(16進数エンコード)を返す                       |
+| `eth_gasPrice`                | なし                                                | 現在のガス価格をwei単位で返す                             |
+| `eth_feeHistory`             | `blockCount`、`newestBlock`、`rewardPercentiles`  | 過去の手数料データを返す(EIP-1559)                        |
 
 ## web3_ メソッド
 
-| メソッド               | パラメータ   | 説明                              |
-| -------------------- | ------------ | ---------------------------------------- |
-| `web3_clientVersion` | なし         | クライアントバージョン文字列を返します        |
-| `web3_sha3`          | `data` (hex) | 入力の Keccak-256 ハッシュを返します |
+| メソッド              | パラメータ    | 説明                                        |
+| ---------------------- | -------------- | ------------------------------------------- |
+| `web3_clientVersion`  | なし           | クライアントのバージョン文字列を返す        |
+| `web3_sha3`           | `data`(16進数) | 入力のKeccak-256ハッシュを返す              |
 
 ## net_ メソッド
 
-| メソッド          | パラメータ | 説明                                 |
-| --------------- | ---------- | ------------------------------------------- |
-| `net_version`   | なし       | ネットワーク ID を返します                      |
-| `net_listening` | なし       | ノードがリッスンしている場合は `true` を返します     |
-| `net_peerCount` | なし       | 接続されているピアの数（16進）を返します |
+| メソッド          | パラメータ | 説明                                     |
+| ------------------ | ---------- | ---------------------------------------- |
+| `net_version`      | なし       | ネットワークIDを返す                     |
+| `net_listening`    | なし       | ノードがリッスン中であれば `true` を返す |
+| `net_peerCount`    | なし       | 接続中のピア数(16進数)を返す           |
 
 ## 設定
 
-`app.toml` で JSON-RPC サーバーを有効化および設定します。
+`app.toml` でJSON-RPCサーバーを有効化・設定します。
 
 ```toml
 [json-rpc]
@@ -139,7 +139,7 @@ curl -X POST http://localhost:8545 \
   }'
 ```
 
-レスポンス（メインネット `qorechain-vladi`、チェーン ID 9801）:
+レスポンス(メインネット `qorechain-vladi`、チェーンID 9801):
 
 ```json
 {
@@ -149,7 +149,7 @@ curl -X POST http://localhost:8545 \
 }
 ```
 
-`qorechain-diana` テストネット（チェーン ID 9800）では、このメソッドは `"0x2648"` を返します。
+`qorechain-diana` テストネット(チェーンID 9800)では、このメソッドは `"0x2648"` を返します。
 
 ### eth_getBalance
 
@@ -194,9 +194,9 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 
 :::info
 
-- チェーン ID は16進文字列として返されます。ウォレットの設定では10進数に変換してください。`0x2649` は **9801**（メインネット）、`0x2648` は **9800**（テストネット）です。
-- ガス価格は EIP-1559 モデルに従います。基本手数料と優先手数料の見積もりには `eth_feeHistory` を使用してください。
-- 受け付けられるブロックタグ: `"latest"`、`"earliest"`、`"pending"`、または16進のブロック番号。
-- フィルターの制限: `eth_getLogs` はクエリごとに `filter-cap` の結果数に制限されます（デフォルト 10,000）。大規模なデータセットには、より狭いブロック範囲を使用してください。
+- チェーンIDは16進数文字列で返されます。ウォレット設定用に10進数へ変換してください — `0x2649` は **9801**(メインネット)、`0x2648` は **9800**(テストネット)です。
+- ガス価格はEIP-1559モデルに従います。基本手数料と優先手数料の見積もりには `eth_feeHistory` を使用してください。
+- 受け付けられるブロックタグ: `"latest"`、`"earliest"`、`"pending"`、または16進数のブロック番号。
+- フィルタの制限: `eth_getLogs` は1クエリあたり `filter-cap` 件(デフォルト10,000件)に制限されます。大量のデータセットにはより狭いブロック範囲を使用してください。
 
 :::

@@ -7,15 +7,17 @@ sidebar_position: 5
 
 # Recompense și monitorizare
 
-Un nod light atât **câștigă recompense**, cât și **trebuie să rămână sănătos** pentru a continua să le câștige. Această pagină descrie cota de recompensă de 3% pentru nodurile light, cum funcționează staking-ul delegat și auto-compunerea și cum să monitorizezi nodul.
+Un light node atât **câștigă recompense**, cât și **trebuie să rămână sănătos** pentru a continua să le câștige. Această pagină acoperă cota de 3% din recompensele pentru light nodes, modul în care funcționează delegarea stake-ului și auto-compunerea, precum și modul de monitorizare a nodului.
 
-## Cota de 3% din recompensa de bloc
+## Cota de 3% din recompensa pe bloc
 
-Distribuția taxelor în QoreChain rezervă o **cotă fixă de 3% pentru nodurile light** care servesc date de rețea. Aceasta este una dintre cele cinci destinații din împărțirea recompenselor protocolului — validatori (37%), ars (30%), trezorerie (20%), stakeri (10%) și **noduri light (3%)** — impusă on-chain. Vezi [Tokenomics](/architecture/tokenomics) pentru defalcarea completă.
+Distribuția comisioanelor din QoreChain rezervă o cotă fixă de **3% pentru light nodes** care furnizează date de rețea. Aceasta este una dintre cele cinci destinații din împărțirea recompenselor protocolului — validatori (37%), arse (30%), trezorerie (20%), stakeri (10%) și **light nodes (3%)** — impusă on-chain. Consultați [Tokenomics](/architecture/tokenomics) pentru detalierea completă.
 
-Pentru a fi eligibil pentru această cotă, un nod trebuie să fie **înregistrat on-chain și să demonstreze activ liveness** prin dovezi de heartbeat. Un nod care este înregistrat, dar offline nu câștigă cota. Vezi [Înregistrare și licențiere](/light-node/registration-and-licensing) pentru cum funcționează înregistrarea și heartbeat-urile.
+Pentru a fi eligibil pentru această cotă, un nod are nevoie de trei lucruri, verificate on-chain, nu auto-declarate: o licență activă `lightnode_operator`, un minimum de **1.000 QOR delegați** — calculat ca total pe toți validatorii cărora le delegați, nu per validator — și o taxă de înregistrare on-chain de **1 QOR**. Participarea este de asemenea plafonată la nivel de rețea la **10.000 de light nodes**. Consultați [Registration and Licensing](/light-node/registration-and-licensing) pentru modul în care funcționează înregistrarea și licențierea, inclusiv stadiul actual al înscrierii în programul de recompense.
 
-*Eligibilitate pentru recompense: înregistrează-te on-chain, demonstrează liveness prin heartbeat-uri pentru a ajunge la statusul activ, câștigă cota de 3%, apoi compune-o automat în stake.*
+Odată înregistrat și cu stake delegat, menținerea eligibilității ține de a rămâne activ. Un nod are nevoie de cel puțin **80% uptime** și trebuie să continue să trimită dovezi de liveness prin heartbeat la un interval de aproximativ **1.000 de blocuri (~39 de minute)**, cu o perioadă de grație de **~100 de blocuri (~4 minute)** după un heartbeat ratat, înainte de a fi marcat inactiv. Un nod marcat inactiv nu mai câștigă cota până când dovedește din nou liveness.
+
+*Eligibilitate pentru recompense: dețineți o licență activă on-chain și stake-ul minim delegat, înregistrați-vă, apoi continuați să dovediți liveness prin heartbeat-uri pentru a rămâne peste pragurile de uptime și de interval al heartbeat-ului care mențin cota activă.*
 
 ```mermaid
 flowchart LR
@@ -31,21 +33,21 @@ flowchart LR
 
 ## Cum funcționează recompensele
 
-Dincolo de cota pentru nodurile light, nodul gestionează stake-ul delegat și recompensele de staking pe care acesta le produce. Comportamentul este determinat de secțiunea `[delegation]` din `config.toml`.
+Pe lângă cota light-node, nodul gestionează stake-ul delegat și recompensele de staking pe care acesta le produce. Comportamentul este controlat de secțiunea `[delegation]` din `config.toml`.
 
 ### Staking delegat cu împărțire pe mai mulți validatori
 
-Poți delega către **mai mulți validatori** în loc să concentrezi stake-ul pe unul singur. Nodul urmărește fiecare delegare și cota de stake atribuită fiecărui validator folosind **ponderi de împărțire** configurabile, astfel încât să poți distribui riscul în întreg setul.
+Puteți delega către **mai mulți validatori** în loc să concentrați stake-ul pe unul singur. Nodul urmărește fiecare delegare și cota de stake alocată fiecărui validator folosind **ponderi de împărțire (split weights)** configurabile, astfel încât să puteți distribui riscul pe întregul set.
 
 ### Auto-compunerea recompenselor
 
-Nodul poate **revendica recompense și le poate re-delega automat** la un interval configurabil. În mod implicit, auto-compunerea este activată la un interval de `1h`, cu un prag minim de recompensă (în `uqor`) care trebuie să se acumuleze înainte de a fi declanșată o revendicare. Compunerea transformă recompensele câștigate în stake suplimentar fără intervenție manuală.
+Nodul poate **revendica recompensele și le poate re-delega automat** la un interval configurabil. Implicit, auto-compunerea este activată la un interval de `1h`, cu un prag minim de recompensă (în `uqor`) care trebuie acumulat înainte ca o revendicare să fie declanșată. Compunerea transformă recompensele câștigate în stake suplimentar fără intervenție manuală.
 
-### Reechilibrare conștientă de reputație
+### Rebalansare bazată pe reputație
 
-Când reechilibrarea este activată, nodul poate **muta delegarea către validatori cu reputație mai mare** automat, sub rezerva unui scor minim de reputație configurabil. Astfel, stake-ul rămâne la lucru cu validatori care performează bine, în loc să fie lăsat la unii care s-au degradat.
+Când rebalansarea este activată, nodul poate **muta delegarea automat către validatori cu reputație mai mare**, sub rezerva unui scor minim de reputație configurabil. Astfel stake-ul continuă să lucreze cu validatori care performează bine, în loc să rămână la cei a căror performanță a scăzut.
 
-### Inspectarea recompenselor și delegărilor
+### Inspectarea recompenselor și a delegărilor
 
 Ediția SX expune comenzi pentru a inspecta această stare:
 
@@ -59,34 +61,34 @@ lightnode-sx validators   # the bonded validator set
 
 ## Monitorizare
 
-Menținerea nodului sănătos este ceea ce îl păstrează eligibil pentru recompense. Există trei lucruri pe care merită să le urmărești.
+Menținerea nodului sănătos este ceea ce îl păstrează eligibil pentru recompense. Există trei lucruri care merită urmărite.
 
 ### Telemetrie
 
-Telemetria în timp real acoperă validatorii, consensul/rețeaua, bridge-ul și tokenomics, fiecare reîmprospătat la propriul interval (configurat sub `[telemetry]` în `config.toml`). Din CLI:
+Telemetria în timp real acoperă validatorii, consensul/rețeaua, bridge-ul și tokenomics, fiecare fiind reîmprospătat la propriul interval (configurat sub `[telemetry]` în `config.toml`). Din CLI:
 
 ```bash
 lightnode-sx status    # node and light-client sync status
 lightnode-sx network   # recent synced headers and latest height
 ```
 
-Ediția UX afișează aceleași date în direct în vizualizările sale **Overview**, **Network**, **Bridge** și **Tokenomics** — vezi [Ediția UX](/light-node/ux-edition).
+Ediția UX afișează aceleași date live în vizualizările **Overview**, **Network**, **Bridge** și **Tokenomics** — consultați [UX Edition](/light-node/ux-edition).
 
-### Sănătatea sincronizării și a heartbeat-ului
+### Starea de sincronizare și de heartbeat
 
-Comanda `status` raportează ID-ul chain-ului, ultima înălțime a blocului, dacă chain-ul recuperează (catching up) și înălțimea sincronizată a light client-ului, precum și starea de sincronizare. Un nod care este înregistrat, sincronizat și în funcțiune continuă să trimită **dovezi de liveness prin heartbeat** și astfel rămâne eligibil pentru cota de recompensă. Aceste heartbeat-uri sunt produse printr-un **pipeline de tranzacții co-semnat PQC** (hibrid Dilithium-5 / ML-DSA-87), în concordanță cu setarea implicită PQC obligatorie a chain-ului — vezi [Înregistrare și licențiere](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pentru cum funcționează pipeline-ul și cum să activezi heartbeat-urile on-chain. Dacă `status` arată că nodul este blocat sau nu se sincronizează, este posibil să nu reușească să demonstreze liveness — investighează înainte ca eligibilitatea să fie afectată.
+Comanda `status` raportează ID-ul lanțului, înălțimea celui mai recent bloc, dacă lanțul este în curs de recuperare (catching up) și înălțimea sincronizată, respectiv starea de sincronizare a light client-ului. Un nod care este înregistrat, sincronizat și în funcțiune continuă să trimită **dovezi de liveness prin heartbeat** și astfel rămâne eligibil pentru cota de recompense. Aceste heartbeat-uri sunt produse printr-un **pipeline de tranzacții co-semnate PQC** (hibrid Dilithium-5 / ML-DSA-87), în concordanță cu setarea implicită a lanțului care impune PQC — consultați [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pentru modul în care funcționează pipeline-ul și cum se activează heartbeat-urile on-chain. Dacă `status` arată nodul blocat sau nesincronizat, este posibil să nu reușească să dovedească liveness — investigați înainte ca eligibilitatea să fie afectată.
 
-### Sănătate prin self-test
+### Starea autotestării
 
-Dacă suspectezi o problemă cu stiva criptografică, rulează self-test-ul PQC oricând:
+Dacă suspectați o problemă cu stiva criptografică, rulați oricând autotestul PQC:
 
 ```bash
 lightnode-sx selftest
 ```
 
-Acesta rulează keygen → semnare → verificare → detectarea modificărilor (cinci verificări) și iese cu cod diferit de zero la orice eșec. Acesta este cel mai rapid mod de a exclude o bibliotecă `libqorepqc` defectă sau lipsă atunci când diagnostichezi probleme ale nodului. Vezi [Ediția SX](/light-node/sx-edition) pentru defalcarea completă a self-test-ului.
+Acesta rulează keygen → sign → verify → tamper-detection (cinci verificări) și iese cu cod diferit de zero la orice eșec. Este cea mai rapidă modalitate de a exclude o problemă la stiva de semnare post-cuantică atunci când diagnosticați probleme ale nodului. Consultați [SX Edition](/light-node/sx-edition) pentru detalierea completă a autotestului.
 
-## Unde să mergi mai departe
+## Unde continuați
 
-- [Înregistrare și licențiere](/light-node/registration-and-licensing) — înregistrează-te și rămâi activ.
+- [Registration and Licensing](/light-node/registration-and-licensing) — înregistrați-vă și rămâneți activ.
 - [Tokenomics](/architecture/tokenomics) — modelul complet de recompense și ardere.

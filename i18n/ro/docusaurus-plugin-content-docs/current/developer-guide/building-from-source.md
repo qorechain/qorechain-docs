@@ -7,19 +7,19 @@ sidebar_position: 1
 
 # Compilare din sursă
 
-Acest ghid te conduce prin procesul de compilare a binarului `qorechaind` din sursă, acoperind atât build-ul comunitar (open-core), cât și build-ul proprietar complet.
+Acest ghid vă parcurge procesul de compilare a binarului `qorechaind` din sursă, acoperind atât build-ul comunitar (open-core), cât și build-ul proprietar complet.
 
-## Cerințe prealabile
+## Cerințe preliminare
 
-| Dependență         | Versiune minimă           | Note                                              |
-| ------------------ | ------------------------- | ------------------------------------------------- |
-| **Go**             | 1.26+                     | Necesar pentru toate build-urile                  |
-| **CGO**            | Activat (`CGO_ENABLED=1`) | Necesar pentru punțile FFI PQC și SVM             |
-| **Toolchain Rust** | Cea mai recentă versiune stabilă | Necesar pentru a compila `libqorepqc` și `libqoresvm` |
-| **Make**           | 3.81+                     | Automatizarea build-ului                          |
-| **Git**            | 2.x                       | Descărcarea sursei                                |
+| Dependință          | Versiune minimă           | Note                                              |
+| ------------------- | -------------------------- | -------------------------------------------------- |
+| **Go**              | 1.26+                      | Necesar pentru toate build-urile                   |
+| **CGO**             | Activat (`CGO_ENABLED=1`)  | Necesar pentru punțile FFI PQC și SVM              |
+| **Toolchain Rust**  | Ultima versiune stabilă    | Necesar pentru compilarea `libqorepqc` și `libqoresvm` |
+| **Make**            | 3.81+                      | Automatizarea build-ului                           |
+| **Git**             | 2.x                        | Preluarea (checkout) sursei                        |
 
-Verifică-ți mediul:
+Verificați mediul de lucru:
 
 ```bash
 go version        # go1.26.x or later
@@ -29,16 +29,16 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Fiecare invocare `go build`, `go test` și `go run` **trebuie** să aibă setat `CGO_ENABLED=1`. Modulele PQC și SVM folosesc punți FFI care necesită cgo.
+Fiecare invocare `go build`, `go test` și `go run` **trebuie** să aibă `CGO_ENABLED=1` setat. Modulele PQC și SVM folosesc punți FFI care necesită cgo.
 :::
 
 ## Biblioteci native
 
-QoreChain depinde de două biblioteci native compilate în Rust, care sunt încărcate în timpul rulării.
+QoreChain depinde de două biblioteci native construite în Rust, care sunt încărcate la runtime.
 
-### libqorepqc (criptografie post-cuantică)
+### libqorepqc (Criptografie Post-Cuantică)
 
-Biblioteca PQC oferă generarea de chei, semnarea și verificarea ML-DSA-87 (Dilithium-5) printr-o interfață FFI compatibilă cu C.
+Biblioteca PQC oferă generare de chei, semnare și verificare ML-DSA-87 (Dilithium-5) printr-o interfață FFI compatibilă C.
 
 ```bash
 cd rust/qorepqc
@@ -47,13 +47,13 @@ cargo build --release
 
 Biblioteca compilată este plasată în `lib/{os}_{arch}/`:
 
-| Platformă   | Fișier bibliotecă  | Director            |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
+| Platformă    | Fișier bibliotecă  | Director             |
+| ------------ | ------------------- | --------------------- |
+| macOS arm64  | `libqorepqc.dylib`  | `lib/darwin_arm64/`   |
+| Linux amd64  | `libqorepqc.so`     | `lib/linux_amd64/`    |
+| Linux arm64  | `libqorepqc.so`     | `lib/linux_arm64/`    |
 
-### libqoresvm (runtime SVM)
+### libqoresvm (Runtime SVM)
 
 Biblioteca SVM oferă mediul de execuție a programelor BPF pentru modulul x/svm.
 
@@ -62,11 +62,11 @@ cd rust/qoresvm
 cargo build --release
 ```
 
-Rezultatul respectă aceeași convenție `lib/{os}_{arch}/` ca mai sus (`libqoresvm.dylib` pe macOS, `libqoresvm.so` pe Linux).
+Rezultatul urmează aceeași convenție `lib/{os}_{arch}/` ca mai sus (`libqoresvm.dylib` pe macOS, `libqoresvm.so` pe Linux).
 
-### Setarea căii bibliotecilor
+### Setarea căii bibliotecii
 
-Bibliotecile native trebuie să poată fi descoperite în timpul rulării. Setează variabila de mediu corespunzătoare platformei tale:
+Bibliotecile native trebuie să poată fi găsite la runtime. Setați variabila de mediu corespunzătoare platformei dvs.:
 
 **macOS:**
 
@@ -81,47 +81,47 @@ export LD_LIBRARY_PATH=$(pwd)/lib/linux_amd64:$LD_LIBRARY_PATH
 ```
 
 :::info
-Sfat: Adaugă exportul în profilul shell-ului tău (`~/.bashrc`, `~/.zshrc`) ca să persiste între sesiuni.
+Sfat: Adăugați exportul în profilul shell-ului (`~/.bashrc`, `~/.zshrc`) pentru ca acesta să persiste între sesiuni.
 :::
 
-## Arhitectura open-core
+## Arhitectura Open-Core
 
 QoreChain urmează un model **open-core**:
 
-* **Build comunitar** — Conține interfețele complete ale modulelor, comenzile CLI, definițiile protobuf și tipurile de mesaje pentru fiecare modul QoreChain (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm etc.). Keeper-ele pentru modulele proprietare folosesc **implementări stub** care returnează valori implicite sigure sau răspunsuri no-op. Acest lucru permite uneltelor terțe, portofelelor și indexatoarelor să se integreze cu toate API-urile QoreChain fără a necesita cod proprietar.
-* **Build complet (proprietar)** — Activează implementările complete ale keeper-elor în spatele tag-ului de build `proprietary`. Acesta include logica reală de detectare a anomaliilor prin AI, reglarea parametrilor de consens PRISM, scorul avansat de reputație și toate funcțiile de nivel de producție.
+* **Build-ul comunitar** — Conține interfețele complete ale modulelor, comenzile CLI, definițiile protobuf și tipurile de mesaje pentru fiecare modul QoreChain (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm etc.). Keeperii pentru modulele proprietare folosesc **implementări stub** care returnează valori implicite sigure sau răspunsuri no-op. Acest lucru permite instrumentelor terțe, portofelelor și indexatoarelor să se integreze cu toate API-urile QoreChain fără a necesita cod proprietar.
+* **Build-ul complet (proprietar)** — Activează implementările complete ale keeperilor din spatele tag-ului de build `proprietary`. Acesta include logica reală de detectare a anomaliilor prin AI, ajustarea parametrilor de consens PRISM, scorarea avansată a reputației și toate funcționalitățile de nivel producție.
 
-Ambele build-uri produc același nume de binar `qorechaind` și expun comenzi CLI și endpoint-uri gRPC/REST identice. Diferența constă în comportamentul la rulare al logicii keeper-elor din spatele acestor interfețe.
+Ambele build-uri produc același nume de binar `qorechaind` și expun comenzi CLI și endpoint-uri gRPC/REST identice. Diferența constă în comportamentul la runtime al logicii keeperilor din spatele acestor interfețe.
 
-## Build comunitar
+## Build-ul Comunitar
 
 ```bash
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Acesta compilează toate interfețele publice de module cu keeper-e stub pentru funcțiile proprietare. Binarul rezultat este complet funcțional pentru:
+Aceasta compilează toate interfețele publice ale modulelor cu keeperi stub pentru funcționalitățile proprietare. Binarul rezultat este complet funcțional pentru:
 
 * Rularea unui nod validator
 * Trimiterea și interogarea tranzacțiilor
 * Interacțiunea cu VM-urile EVM, CosmWasm și SVM
-* Construirea de integrări și unelte terțe
+* Construirea integrărilor și instrumentelor terțe
 * Dezvoltare și testare locală
 
-## Build complet (proprietar)
+## Build-ul Complet (Proprietar)
 
 ```bash
 CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
 ```
 
-Indicatorul `-tags proprietary` activează implementările complete ale keeper-elor, care nu fac parte din arborele de surse public.
+Flag-ul `-tags proprietary` activează implementările complete ale keeperilor, care nu fac parte din arborele de surse public.
 
-## Rularea testelor
+## Rularea Testelor
 
 ```bash
 CGO_ENABLED=1 go test ./... -count=1
 ```
 
-Indicatorul `-count=1` dezactivează cache-ul de teste, asigurând o rulare curată de fiecare dată. Testele individuale ale pachetelor pot fi rulate cu:
+Flag-ul `-count=1` dezactivează cache-ul testelor, asigurând o rulare curată de fiecare dată. Testele pentru pachete individuale pot fi rulate cu:
 
 ```bash
 CGO_ENABLED=1 go test ./x/pqc/... -count=1 -v
@@ -129,72 +129,72 @@ CGO_ENABLED=1 go test ./x/ai/... -count=1 -v
 CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ```
 
-Rulează separat testele bibliotecilor Rust:
+Rulați separat testele bibliotecilor Rust:
 
 ```bash
 cd rust/qorepqc && cargo test
 cd rust/qoresvm && cargo test
 ```
 
-## Verificarea build-ului
+## Verificarea Build-ului
 
-După un build reușit, verifică binarul:
+După o compilare reușită, verificați binarul:
 
 ```bash
 ./qorechaind version
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Comanda `init` ar trebui să creeze un fișier genesis și configurația nodului în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează în raport cu testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiește cu `--chain-id qorechain-vladi`, rețeaua activă care rulează versiunea de lanț **v3.1.85**.
+Comanda `init` ar trebui să creeze un fișier genesis și o configurație de nod în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează pe testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiți cu `--chain-id qorechain-vladi`, rețeaua live care rulează versiunea de chain **v3.1.92**.
 
 ## Build Docker
 
-Pentru build-uri containerizate, este furnizat un Dockerfile în rădăcina depozitului:
+Pentru build-uri containerizate, un Dockerfile este furnizat la rădăcina repository-ului:
 
 ```bash
 docker build -t qorechaind:latest .
 ```
 
-Imaginea Docker gestionează automat toată compilarea bibliotecilor native și configurarea căilor. Vezi ghidul [Quickstart](/getting-started/quickstart) pentru rularea unui nod cu Docker Compose.
+Imaginea Docker gestionează automat compilarea tuturor bibliotecilor native și configurarea căilor. Consultați ghidul [Quickstart](/getting-started/quickstart) pentru rularea unui nod cu Docker Compose.
 
 ## Depanare
 
 <details>
 
-<summary>cgo: C compiler not found</summary>
+<summary>cgo: compilatorul C nu a fost găsit</summary>
 
-Instalează uneltele CLI Xcode (macOS) sau `build-essential` (Linux)
-
-</details>
-
-<details>
-
-<summary>cannot find -lqorepqc</summary>
-
-Compilează mai întâi bibliotecile Rust și setează `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH`
+Instalați Xcode CLI tools (macOS) sau `build-essential` (Linux)
 
 </details>
 
 <details>
 
-<summary>undefined: sonic.*</summary>
+<summary>nu se găsește -lqorepqc</summary>
 
-Asigură-te că `go.sum` este actualizat: `go mod tidy`
-
-</details>
-
-<details>
-
-<summary>signal: killed during build</summary>
-
-Mărește memoria disponibilă (frecvent în Docker cu limite mici)
+Compilați mai întâi bibliotecile Rust și setați `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH`
 
 </details>
 
 <details>
 
-<summary>PQC tests fail with size mismatch</summary>
+<summary>nedefinit: sonic.*</summary>
 
-Verifică faptul că folosești `pqcrypto v0.5.0+` (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bytes)
+Asigurați-vă că `go.sum` este actualizat: `go mod tidy`
+
+</details>
+
+<details>
+
+<summary>signal: killed în timpul build-ului</summary>
+
+Măriți memoria disponibilă (frecvent în Docker cu limite reduse)
+
+</details>
+
+<details>
+
+<summary>Testele PQC eșuează cu nepotrivire de dimensiuni</summary>
+
+Verificați că folosiți `pqcrypto v0.5.0+` (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bytes)
 
 </details>

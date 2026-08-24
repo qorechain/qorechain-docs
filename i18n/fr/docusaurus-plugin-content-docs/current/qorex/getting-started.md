@@ -10,8 +10,8 @@ sidebar_position: 2
 Cette page décrit l'installation de l'**application mobile** ainsi que la création, la restauration ou la liaison de votre portefeuille. Pour le portefeuille de bureau, consultez l'[Extension de navigateur](/qorex/browser-extension), disponible sur Chrome, Firefox et Safari.
 
 :::note Disponibilité mobile
-- **Android** — disponible sur Google Play : https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — disponible pour les tests via **TestFlight** : https://testflight.apple.com/join/Xa9D7vgR — la version App Store est encore en cours d'examen.
+- **Android** — disponible en production sur Google Play : https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — disponible sur l'App Store : https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
 ## Avant de commencer : sécurisez votre appareil
@@ -41,7 +41,7 @@ Vous disposez de trois façons de démarrer :
 4. Confirmez la phrase ; QoreX la scelle dans le coffre matériel protégé par la biométrie.
 
 :::caution Votre phrase de récupération est essentielle
-Toute personne détenant vos 24 mots contrôle vos fonds, et personne — y compris QoreChain Association — ne peut les récupérer à votre place. Ne saisissez jamais votre phrase sur un site web, ne la partagez pas et ne la stockez pas dans une capture d'écran ou une note dans le cloud.
+Toute personne détenant vos 24 mots contrôle vos fonds, et personne — y compris QoreChain Association — ne peut les récupérer à votre place. Ne saisissez jamais votre phrase sur un site web, ne la partagez pas et ne la stockez pas dans une capture d'écran ou une note dans le cloud. **Désinstaller QoreX supprime les clés stockées sur cet appareil** — sans votre phrase écrite (ou sans [récupération sociale](/qorex/security-and-recovery#social-recovery) configurée au préalable), une désinstallation entraîne une perte d'accès définitive. Faites votre sauvegarde avant d'alimenter le portefeuille, pas après.
 :::
 
 ### 2. Restaurer un portefeuille existant
@@ -56,10 +56,14 @@ Si vous avez déjà QoreX sur un autre téléphone ou une tablette, vous pouvez 
 
 ## Facultatif : réclamer un @handle
 
-Une fois votre portefeuille créé, vous pouvez réclamer un **@handle** unique (par exemple `@liviu`) afin que l'on puisse vous envoyer des fonds par nom plutôt qu'à une adresse `qor1…`. C'est facultatif et vous pouvez passer cette étape — votre portefeuille n'en dépend jamais. Voir [Compte et Dashboard](/qorex/account-and-dashboard#handle).
+Une fois votre portefeuille créé, vous pouvez réclamer un **@handle** unique (par exemple `@liviu`) afin que l'on puisse vous envoyer des fonds par nom plutôt qu'à une adresse `qor1…`. C'est facultatif et vous pouvez passer cette étape — votre portefeuille n'en dépend jamais. Un handle est associé à une adresse précise plutôt qu'au portefeuille dans son ensemble, ce qui compte dès que vous avez plus d'un compte — voir [Plusieurs comptes issus d'une seule phrase](/qorex/account-and-dashboard#accounts) et [@handle](/qorex/account-and-dashboard#handle).
+
+## Langue
+
+QoreX est disponible en dix langues — anglais, roumain, allemand, espagnol, français, italien, turc, arabe, japonais et coréen — et suit automatiquement la langue de votre téléphone, avec repli sur l'anglais pour toute autre langue. Vous pouvez modifier la langue détectée à tout moment depuis **Paramètres → Langue** ; le choix de l'arabe bascule aussi l'interface en mode droite-à-gauche.
 
 ## Étapes suivantes
 
 - [Envoyer et recevoir](/qorex/send-and-receive) — effectuez votre premier transfert résistant au quantique.
 - [Sécurité et récupération](/qorex/security-and-recovery) — configurez la récupération sociale pour ne jamais rester bloqué.
-- [Portefeuille d'actifs et staking](/qorex/portfolio-and-staking) — suivez vos actifs et recevez des récompenses de staking.
+- [Portefeuille d'actifs et staking](/qorex/portfolio-and-staking) — suivez vos actifs et gagnez des récompenses de staking.

@@ -13,9 +13,11 @@ A light node both **earns rewards** and **needs to stay healthy** to keep earnin
 
 QoreChain's fee distribution reserves a fixed **3% share for light nodes** that serve network data. This is one of the five destinations in the protocol's reward split — validators (37%), burned (30%), treasury (20%), stakers (10%), and **light nodes (3%)** — enforced on-chain. See [Tokenomics](/architecture/tokenomics) for the full breakdown.
 
-To be eligible for this share, a node must be **registered on-chain and actively proving liveness** via heartbeat proofs. A node that is registered but offline does not earn the share. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration and heartbeats work.
+To be eligible for this share, a node needs three things, checked on-chain rather than self-declared: an active `lightnode_operator` license, a minimum of **1,000 QOR delegated** — counted as your total across all the validators you delegate to, not per validator — and a **1 QOR** on-chain registration fee. Participation is also capped network-wide at **10,000 light nodes**. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration and licensing work, including the current status of reward-program enrollment.
 
-*Reward eligibility: register on-chain, prove liveness via heartbeats to reach active status, earn the 3% share, then auto-compound it into stake.*
+Once registered and delegated, staying eligible is a matter of staying live. A node needs at least **80% uptime**, and must keep submitting heartbeat liveness proofs on a roughly **1,000-block (~39 minute) interval**, with a **~100-block (~4 minute) grace period** after a missed heartbeat before it's marked inactive. A node marked inactive stops earning the share until it proves liveness again.
+
+*Reward eligibility: hold an active on-chain license and the minimum delegated stake, register, then keep proving liveness via heartbeats to stay above the uptime and heartbeat-interval thresholds that keep the share flowing.*
 
 ```mermaid
 flowchart LR
@@ -84,7 +86,7 @@ If you suspect a problem with the cryptographic stack, run the PQC self-test at 
 lightnode-sx selftest
 ```
 
-It runs keygen → sign → verify → tamper-detection (five checks) and exits non-zero on any failure. This is the fastest way to rule out a broken or missing `libqorepqc` library when diagnosing node issues. See [SX Edition](/light-node/sx-edition) for the full self-test breakdown.
+It runs keygen → sign → verify → tamper-detection (five checks) and exits non-zero on any failure. This is the fastest way to rule out a problem with the post-quantum signing stack when diagnosing node issues. See [SX Edition](/light-node/sx-edition) for the full self-test breakdown.
 
 ## Where to go next
 

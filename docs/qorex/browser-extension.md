@@ -25,13 +25,17 @@ Store reviews land at different times, so the published version currently differ
 
 | Browser | Published version |
 |---|---|
-| **Firefox** | **0.1.5** |
-| **Chrome / Chromium** | **0.1.3** (0.1.5 submitted, in review) |
-| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.0**; the build carrying extension 0.1.5 is in review |
+| **Firefox** | **0.1.8** (0.1.9 submitted, in review) |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 submitted, in review) |
+| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.1** (carries extension 0.1.5); **1.2** (carrying 0.1.9) is submitted and in review |
 
-**0.1.5** adds [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
+Newer features may not be live in your browser yet — check the table above before assuming something described here is available.
 
-**The permission surface is identical in 0.1.3 and 0.1.5** — see [What permissions QoreX asks for](#permissions).
+**0.1.5** added [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
+
+**0.1.6–0.1.9** added, in order: vesting-aware sends with honest bank-refusal messages; the account address and live balance shown directly on the popup home; and, in **0.1.9**, [paying an @handle](#handle-send) straight from Send, a [Receive screen with an address QR code](#receive), a [language picker](#language) (ten languages, matching the mobile app's set), and the removal of a confusing "next unlock date" from the [vesting balance](#vesting).
+
+**The permission surface has not changed since 0.1.3** — see [What permissions QoreX asks for](#permissions).
 
 :::note
 On Safari, approvals open in a browser tab rather than a popup window — the extension is packaged with Apple's Safari web-extension wrapper from the same codebase.
@@ -46,15 +50,46 @@ Open the popup and choose:
 
 The extension holds its own keys; it does not require the mobile app. You can also export your mnemonic from the popup. Keys never leave the device.
 
+:::note One account per browser profile
+Unlike the mobile app, which can hold several QoreChain accounts from one recovery phrase, the extension manages exactly **one** account. Staking, Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests, and device linking are mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability) for the full comparison.
+:::
+
+## Your account, balance & @handle {#account}
+
+The popup's idle screen shows your `qor1…` address (tap to copy) and your live QOR balance, so you don't need to open a block explorer to check either.
+
+### Vesting (locked) balances {#vesting}
+
+If your account holds vesting QOR (for example, an unreleased TGE allocation), the balance splits into **available now** and **still locked**, and a send that exceeds the available amount is refused before it reaches the network rather than failing on-chain after taking a fee. QoreX deliberately does **not** show a "next unlock date" here: a vesting schedule can be amended by governance, so a date on the balance card would read as a promise QoreX can't guarantee. The available-vs-locked split is what stays accurate.
+
+### Claim an @handle
+
+From the popup you can claim a unique **@handle** (for example `@liviu`) for this account's address, the same as in the mobile app. The claim is signed with the account's own key and binds to that address, so the mobile app and the Dashboard can resolve it when someone sends to you. See [@handle](/qorex/account-and-dashboard#handle) for how handles are bound to addresses (not to a wallet as a whole).
+
+## Send to an @handle {#handle-send}
+
+Since 0.1.9 you can pay a registered @handle directly instead of looking up an address:
+
+1. Open the popup and tap **Send**.
+2. In the recipient field, type `@` followed by the handle (for example `@liviu`) instead of a `qor1…` address.
+3. QoreX resolves the handle and shows you the **resolved address** before you sign anything — always check this against what you expect.
+4. Enter the amount and confirm.
+
+Resolution is verified two ways before QoreX will use it: a registry attestation checked against a trust key built into the extension, and the handle owner's own signature over the claim. A response that fails either check is rejected outright — QoreX does not fall back to showing an unverified address. The first time you pay a given handle, QoreX remembers (pins) the address it resolved to; if that handle later resolves to a **different** address, QoreX stops and shows you both the old and new address in full so you can decide whether to continue.
+
+## Receive {#receive}
+
+Tap **Receive** in the popup to show your `qor1…` address as a QR code (with the QoreChain icon embedded) alongside a copy button — scan it from a phone or paste the address directly.
+
 ### Send on external networks {#send-external}
 
 Besides QOR on the Native lane, the popup can send assets on external networks, all derived from the same recovery phrase:
 
 | Kind | Networks | Bundled tokens |
 |---|---|---|
-| EVM | Ethereum, BNB Chain, Polygon, Arbitrum | ERC-20 entries (USDT, USDC, DAI where applicable) |
+| EVM | Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche C-Chain | ERC-20 entries (USDC and USDT across the EVM chains, DAI on Ethereum) |
 | SVM | Solana | SPL entries (USDC, USDT) |
-| Cosmos | Cosmos Hub, Osmosis, Celestia | IBC entry (USDC on Osmosis); optional memo field |
+| Cosmos | Cosmos Hub, Osmosis, Celestia | Noble USDC over IBC; optional memo field |
 
 Before an external transfer goes out you must tick an explicit acknowledgement: **"External networks accept only classical signatures — unlike your QOR, this transfer is NOT quantum-safe."** External chains cannot carry a post-quantum signature, and QoreX never hides that.
 
@@ -70,10 +105,14 @@ QoreX exposes three interfaces, all injected on the page as `window.qorex` (`{ e
 | **Solana Wallet Standard** *(from 0.1.5)* | Native wallet discovery for Solana dApps (`wallet-standard:register-wallet` / `app-ready`). | Solana dApps **auto-detect QoreX** — no custom integration. Features: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; chain `solana:mainnet`; both `legacy` and `v0` transactions. |
 
 :::note Reaching the SVM lane directly
-The same interface is also available on `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Wallet-Standard auto-discovery and the fully implemented SVM lane arrive with **0.1.5** — so today they are available on **Firefox**, and on Chrome once 0.1.5 clears review (see [which version is live where](#versions)).
+The same interface is also available on `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Wallet-Standard auto-discovery and the fully implemented SVM lane shipped in **0.1.5** and are live on both Chrome and Firefox (see [which version is live where](#versions)).
 
 Solana approvals show the decoded payload (recipient and lamports for System transfers, and the program list), reject transactions that do not list your wallet as a signer, and mark the signature as **classical** — see [Post-quantum signing](#pqc).
 :::
+
+## Language {#language}
+
+The extension speaks the same ten languages as the mobile app, dashboard, and site: English, Romanian, German, Spanish, French, Italian, Turkish, Arabic, Japanese, and Korean. It follows your **browser's** language by default (falling back to English for anything else) — note this is a different source than the mobile app, which follows the **phone's** language, so the two can show different languages if your phone and browser are set differently. A picker on the popup's idle screen lets you override the detected language at any time; switching to Arabic flips the popup to right-to-left immediately, not just the text.
 
 ## Security & permissions {#security}
 
@@ -83,7 +122,7 @@ QoreX is built to be verifiable, not just trusted:
 - **Passkey unlock (optional, from 0.1.5)** — where your authenticator supports the **WebAuthn PRF** extension, QoreX can unlock the vault from the passkey's 32-byte PRF output instead of a typed password. Your password always remains a fallback.
 
   :::note Where passkey unlock appears
-  QoreX feature-detects WebAuthn and only shows **Enable passkey unlock** where the browser exposes it to extension pages — that is **Chrome and Edge**. On **Firefox** the option is hidden, because Firefox does not expose WebAuthn to extension pages. Combined with the [version skew](#versions), this means that today a Firefox user has Wallet Standard but not passkey unlock, and a Chrome user has neither until 0.1.5 clears review. This is expected, not a bug.
+  QoreX feature-detects WebAuthn and only shows **Enable passkey unlock** where the browser exposes it to extension pages — that is **Chrome and Edge**. On **Firefox** the option is hidden, because Firefox does not expose WebAuthn to extension pages. This is expected, not a bug.
   :::
 - **Manifest V3 + strict CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. There is **no remote code loading** after install and no `wasm-unsafe-eval`.
 - **No account, no telemetry** — no analytics, no tracking, no remote logging, no sign-up, and no email. The Firefox listing declares data collection as `none`.
@@ -143,6 +182,8 @@ Approvals are **per-origin**: the first connection to a site opens an approval p
 ### Dashboard bridge (v0.1.5) {#dashboard-bridge}
 
 Version 0.1.5 adds a bridge scoped to **`dashboard.qorechain.io` only**: `window.qorex.native.connectProof(sessionId)` signs the *Connect with QoreX* pairing proof (the backend re-verifies the signature), and `executeTransfer({ to, amountUqor, memo })` approves and broadcasts a Dashboard-proposed QOR transfer, returning the `txHash`. These methods are refused on any other origin.
+
+Because a `qor1…` address is equally valid on mainnet and testnet, a Dashboard-proposed request states which network it targets, and QoreX refuses to act on it if that doesn't match the network the extension is currently connected to — it will never switch networks on a request's behalf.
 
 ## Post-quantum signing {#pqc}
 

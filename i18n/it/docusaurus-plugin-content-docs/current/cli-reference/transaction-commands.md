@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva (versione della chain **v3.1.85**), oppure `--chain-id qorechain-diana` per la testnet. Se omesso, il client usa il `chain-id` della tua configurazione locale.
+Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva (versione della chain **v3.1.92**), oppure `--chain-id qorechain-diana` per la testnet. Se omesso, il client usa il `chain-id` della tua configurazione locale.
 :::
 
 I flag comuni si applicano a ogni sottocomando `tx`:
@@ -56,7 +56,7 @@ qorechaind tx staking create-validator [flags]
 ```
 
 | Flag                           | Tipo   | Descrizione                                  |
-| ------------------------------ | ------ | -------------------------------------------- |
+| ------------------------------ | ------ | --------------------------------------------- |
 | `--amount`                     | string | Importo di auto-delega (es. `1000000uqor`)   |
 | `--pubkey`                     | string | Chiave pubblica di consenso del validator (JSON) |
 | `--moniker`                    | string | Nome visualizzato del validator              |
@@ -192,7 +192,7 @@ qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> [flags]
 ```
 
 | Flag            | Tipo   | Descrizione                             |
-| --------------- | ------ | --------------------------------------- |
+| --------------- | ------ | ---------------------------------------- |
 | `--attestation` | string | Dati di attestazione TEE (hex)          |
 | `--metadata`    | string | Metadati aggiuntivi della chiave (JSON) |
 
@@ -213,7 +213,7 @@ qorechaind tx pqc recover-key <name> <address> [flags]
 ```
 
 | Flag           | Tipo   | Descrizione                                              |
-| -------------- | ------ | -------------------------------------------------------- |
+| -------------- | ------ | ---------------------------------------------------------- |
 | `--derivation` | string | `adapter` (canonica, predefinita) oppure `bridge` (legacy `SHAKE-256(mnemonic)`) |
 
 ### rotate-key
@@ -225,7 +225,7 @@ qorechaind tx pqc rotate-key [flags]
 ```
 
 | Flag               | Tipo   | Descrizione                                      |
-| ------------------ | ------ | ------------------------------------------------ |
+| ------------------ | ------ | -------------------------------------------------- |
 | `--old-derivation` | string | Derivazione della chiave attualmente registrata (`adapter` \| `bridge`) |
 | `--new-derivation` | string | Derivazione della nuova chiave (`adapter` \| `bridge`) |
 | `--new-random`     | bool   | Genera invece una nuova chiave casuale           |
@@ -242,9 +242,9 @@ Blocca token QOR in una posizione di staking di governance xQORE.
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| Flag              | Tipo   | Descrizione                                    |
-| ----------------- | ------ | ---------------------------------------------- |
-| `--lock-duration` | string | Durata del blocco (es. `30d`, `90d`, `180d`)   |
+| Flag              | Tipo   | Descrizione                                |
+| ----------------- | ------ | -------------------------------------------- |
+| `--lock-duration` | string | Durata del blocco (es. `30d`, `90d`, `180d`) |
 
 ### unlock
 
@@ -266,8 +266,8 @@ Avvia un deposito bridge da una chain esterna.
 qorechaind tx bridge deposit <chain_id> <amount> <asset> [flags]
 ```
 
-| Flag          | Tipo   | Descrizione                             |
-| ------------- | ------ | --------------------------------------- |
+| Flag          | Tipo   | Descrizione                    |
+| ------------- | ------ | --------------------------------- |
 | `--recipient` | string | Indirizzo del destinatario su QoreChain |
 
 ### withdraw
@@ -306,9 +306,9 @@ Invia un messaggio cross-VM tra ambienti di esecuzione (EVM, CosmWasm, SVM).
 qorechaind tx crossvm call <target_vm> <contract_address> <payload_hex> [flags]
 ```
 
-| Flag          | Tipo   | Descrizione                             |
-| ------------- | ------ | --------------------------------------- |
-| `--source-vm` | string | VM di origine: `evm`, `cosmwasm`, `svm` |
+| Flag          | Tipo   | Descrizione                          |
+| ------------- | ------ | -------------------------------------- |
+| `--source-vm` | string | VM di origine: `evm`, `cosmwasm`, `svm`  |
 | `--gas-limit` | uint   | Limite di gas per l'esecuzione cross-VM |
 
 ### process-queue
@@ -331,9 +331,9 @@ Esegue il deploy di un programma BPF nel runtime SVM.
 qorechaind tx svm deploy-program <program_binary_path> [flags]
 ```
 
-| Flag           | Tipo   | Descrizione                          |
-| -------------- | ------ | ------------------------------------ |
-| `--program-id` | string | ID del programma opzionale (base58)  |
+| Flag           | Tipo   | Descrizione                  |
+| -------------- | ------ | --------------------------------- |
+| `--program-id` | string | ID del programma opzionale (base58) |
 
 ### execute
 
@@ -343,9 +343,9 @@ Esegue un'istruzione su un programma SVM già deployato.
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| Flag         | Tipo   | Descrizione                                                 |
-| ------------ | ------ | ----------------------------------------------------------- |
-| `--accounts` | string | Pubkey degli account per l'istruzione, separate da virgola  |
+| Flag         | Tipo   | Descrizione                                         |
+| ------------ | ------ | ------------------------------------------------------ |
+| `--accounts` | string | Pubkey degli account per l'istruzione, separate da virgola |
 
 ### create-account
 
@@ -355,8 +355,8 @@ Crea un nuovo account SVM con spazio dati allocato.
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| Flag      | Tipo   | Descrizione                                                  |
-| --------- | ------ | ------------------------------------------------------------ |
+| Flag      | Tipo   | Descrizione                                     |
+| --------- | ------ | ---------------------------------------------------- |
 | `--owner` | string | Programma proprietario (base58, predefinito: system program) |
 
 ---
@@ -374,7 +374,7 @@ qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 | Flag                    | Tipo   | Descrizione                                          |
 | ----------------------- | ------ | --------------------------------------------------- |
 | `--block-time-ms`       | uint   | Tempo di blocco target in ms (predefinito 2000)      |
-| `--domains`             | string | Domini supportati separati da virgola (predefinito `defi`) |
+| `--domains`             | string | Domini supportati separati da virgola (predefinito `defi`)  |
 | `--max-tx`              | uint   | Numero massimo di transazioni per blocco (predefinito 1000) |
 | `--min-validators`      | uint32 | Dimensione minima del set di validator (predefinito 1) |
 | `--settlement-interval` | uint   | Intervallo di settlement in blocchi (predefinito 100) |
@@ -388,10 +388,10 @@ Registra un nuovo layer paychain per microtransazioni ad alta frequenza.
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| Flag                    | Tipo | Descrizione                                                 |
-| ----------------------- | ---- | ------------------------------------------------------------ |
-| `--max-tx`              | uint | Numero massimo di transazioni per blocco (predefinito 5000)  |
-| `--settlement-interval` | uint | Intervallo di settlement in blocchi (predefinito 50)         |
+| Flag                    | Tipo | Descrizione                                  |
+| ----------------------- | ---- | ------------------------------------------------ |
+| `--max-tx`              | uint | Numero massimo di transazioni per blocco (predefinito 5000)    |
+| `--settlement-interval` | uint | Intervallo di settlement in blocchi (predefinito 50)   |
 
 ### anchor-state
 
@@ -409,8 +409,8 @@ Instrada una transazione verso il layer ottimale.
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| Flag             | Tipo   | Descrizione                                    |
-| ---------------- | ------ | ---------------------------------------------- |
+| Flag             | Tipo   | Descrizione                       |
+| ---------------- | ------ | -------------------------------------- |
 | `--target-layer` | string | Forza l'instradamento verso un layer specifico |
 
 ### update-layer-status
@@ -522,8 +522,8 @@ Esegue il restaking di BTC tramite l'integrazione Babylon.
 qorechaind tx babylon btc-restake <amount> [flags]
 ```
 
-| Flag            | Tipo   | Descrizione                               |
-| --------------- | ------ | ----------------------------------------- |
+| Flag            | Tipo   | Descrizione                       |
+| --------------- | ------ | ------------------------------------ |
 | `--btc-tx-hash` | string | Hash della transazione Bitcoin come prova |
 
 ---
@@ -538,8 +538,8 @@ Crea un abstract account con regole di spesa programmabili.
 qorechaind tx abstractaccount create [flags]
 ```
 
-| Flag               | Tipo   | Descrizione                                |
-| ------------------ | ------ | ------------------------------------------ |
+| Flag               | Tipo   | Descrizione                       |
+| ------------------ | ------ | -------------------------------------- |
 | `--spending-rules` | string | File JSON che definisce le regole di spesa |
 
 ### update-spending-rules
@@ -608,8 +608,8 @@ Aggiorna la configurazione dei pesi delle ricompense per l'agente PRISM.
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| Flag                  | Tipo   | Descrizione                          |
-| --------------------- | ------ | ------------------------------------ |
+| Flag                  | Tipo   | Descrizione                  |
+| --------------------- | ------ | ------------------------------- |
 | `--throughput-weight` | string | Peso per la ricompensa di throughput |
 | `--latency-weight`    | string | Peso per la ricompensa di latenza    |
 | `--security-weight`   | string | Peso per la ricompensa di sicurezza  |

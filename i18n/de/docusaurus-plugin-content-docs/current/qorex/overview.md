@@ -12,22 +12,25 @@ sidebar_position: 1
 QoreX besteht aus zwei Teilen, die zusammenarbeiten:
 
 - **Browser-Erweiterung** — die Desktop-Wallet, **live und öffentlich verfügbar für Chrome, Firefox und Safari (macOS)**. Sie ist eine eigenständige Wallet (erstellen/importieren, QOR halten und senden) und zugleich der Konnektor, über den jede Website QoreX erkennen und jede Anfrage in eine ausdrückliche Freigabe verwandeln kann. Siehe [Browser-Erweiterung](/qorex/browser-extension).
-- **Mobile App** (Android & iOS) — die vollständige Wallet: erstellen/wiederherstellen, quantensicheres QOR senden & empfangen, externe Netzwerke, Staking, Portfolio, Wiederherstellung und ein integrierter dApp-Browser. **Auf Google Play** für Android; über TestFlight für iOS (siehe Verfügbarkeit unten).
+- **Mobile App** (Android & iOS) — die vollständige Wallet: erstellen/wiederherstellen, quantensicheres QOR senden & empfangen, externe Netzwerke, Staking, Portfolio, Wiederherstellung und ein integrierter dApp-Browser. **Auf Google Play** für Android und **im App Store** für iOS (siehe Verfügbarkeit unten).
 
-## Plattform-Verfügbarkeit
+## Plattform-Verfügbarkeit {#platform-availability}
 
 | Funktion | Mobile App (Android & iOS) | Browser-Erweiterung |
 |---|---|---|
-| Wallet erstellen / importieren | ✅ | ✅ (eigenständig) |
-| QOR senden & empfangen (post-quanten) | ✅ | ✅ (aus dem Popup) |
-| Externe Netzwerke (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + Token) | ✅ | ✅ (Senden aus dem Popup) |
+| Wallet erstellen / importieren | ✅ | ✅ (eigenständig, ein Konto) |
+| Mehrere Konten aus einer Wiederherstellungsphrase | ✅ (bis zu 20) | — (ein Konto) |
+| QOR senden & empfangen (post-quanten) | ✅ | ✅ (aus dem Popup, inkl. Empfangs-QR) |
+| Ein @handle bezahlen / beanspruchen | ✅ | ✅ |
+| Externe Netzwerke (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + Token) | ✅ | ✅ (Senden aus dem Popup) |
+| Oberflächensprache (10 Sprachen) | ✅ (folgt dem Telefon) | ✅ (folgt dem Browser) |
 | Staking, Portfolio, Q-Day Scanner, Wiederherstellung, Legacy | ✅ | — |
 | dApp-Verbindungen | ✅ (integrierter Browser) | ✅ (jede Website) |
-| Konto (@handle, Zahlungsanfragen) | ✅ | — |
+| Konto-Anmeldung & Zahlungsanfragen | ✅ | — |
 | Verknüpfung mehrerer Geräte | ✅ | — |
-| Kopplung mit dem Dashboard | ✅ | ✅ (Verbinden + vorgeschlagene Überweisungen, v0.1.5) |
+| Dashboard-Kopplung | ✅ | ✅ (Verbinden + vorgeschlagene Überweisungen) |
 
-## Was QoreX anders macht
+## Warum QoreX anders ist
 
 - **Standardmäßig quantensicher** — QOR-Überweisungen auf der Native-Lane tragen immer eine hybride Signatur aus ML-DSA-87 + secp256k1. Alles Klassische (externe Chains) wird eindeutig gekennzeichnet, niemals stillschweigend.
 - **Wirklich nicht-verwahrend** — Schlüssel werden auf dem Gerät erzeugt und liegen in einem hardwaregestützten Tresor (Secure Enclave unter iOS, StrongBox unter Android) oder in einem verschlüsselten Tresor (Erweiterung). Sie verlassen dein Gerät niemals.
@@ -43,9 +46,23 @@ QoreX besteht aus zwei Teilen, die zusammenarbeiten:
 - Installiere auf dem Desktop die [Browser-Erweiterung](/qorex/browser-extension).
 
 :::note Download & Verfügbarkeit
-- **Browser-Erweiterung** — live und öffentlich verfügbar: installiere sie über den [Chrome Web Store, Firefox Add-ons oder den Mac App Store (Safari)](/qorex/browser-extension#install).
-- **Android-App** — verfügbar bei Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS-App** — zum Testen verfügbar über **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — die Veröffentlichung im App Store befindet sich noch in Prüfung.
+- **Browser-Erweiterung** — live und öffentlich verfügbar: installiere sie über den [Chrome Web Store, Firefox Add-ons oder den Mac App Store (Safari)](/qorex/browser-extension#install). Siehe [welche Version wo live ist](/qorex/browser-extension#versions) — neuere Funktionen werden in manchen Browsern möglicherweise noch ausgerollt.
+- **Android-App** — live im Produktivbetrieb bei Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS-App** — live im **App Store**: https://apps.apple.com/us/app/qorex-wallet/id6791256626.
 
-Installiere QoreX ausschließlich über einen offiziellen Store-Eintrag.
+Die Store-Prüfung läuft nach ihrem eigenen Zeitplan, sodass die neueste Version manchmal einen Store vor dem anderen erreicht — das genaue aktuelle Bild findest du unter [welche Version wo live ist](#platform-availability) weiter unten. Installiere immer über einen offiziellen Store-Eintrag.
+:::
+
+:::note Welche Version wo live ist
+Store-Freigaben treffen zu unterschiedlichen Zeiten ein, daher kann sich die untenstehende Version je nach Plattform kurzzeitig unterscheiden:
+
+| Plattform | Live-Version |
+|---|---|
+| Android | 1.0.3 |
+| iOS | 1.0 (ein Update befindet sich in Prüfung) |
+| Firefox | 0.1.9 |
+| Chrome | 0.1.5 (0.1.9 befindet sich in Prüfung) |
+| Safari (macOS) | 1.1, mit Erweiterung 0.1.5 (ein Update befindet sich in Prüfung) |
+
+Diese Seite beschreibt den aktuellen Funktionsumfang von QoreX — ein Store, der noch eine ältere Version ausliefert, wird automatisch aktualisiert, ohne dass du etwas tun musst.
 :::

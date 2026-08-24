@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Establece `--chain-id qorechain-vladi` para transmitir contra la mainnet en vivo (versión de la cadena **v3.1.85**), o `--chain-id qorechain-diana` para la testnet. Si se omite, el cliente usa el `chain-id` de tu configuración local.
+Establece `--chain-id qorechain-vladi` para transmitir contra la mainnet en vivo (versión de la cadena **v3.1.92**), o `--chain-id qorechain-diana` para la testnet. Si se omite, el cliente usa el `chain-id` de tu configuración local.
 :::
 
 Las flags comunes se aplican a todos los subcomandos `tx`:

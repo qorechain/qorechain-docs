@@ -12,20 +12,23 @@ sidebar_position: 1
 QoreX comes in two parts that work together:
 
 - **Browser extension** — the desktop wallet, **live and public on Chrome, Firefox, and Safari (macOS)**. It is a standalone wallet (create/import, hold and send QOR) and the connector that lets any website discover QoreX and turn every request into an explicit approval. See [Browser Extension](/qorex/browser-extension).
-- **Mobile app** (Android & iOS) — the full wallet: create/restore, send & receive quantum-safe QOR, external networks, staking, portfolio, recovery, and an in-app dApp browser. **On Google Play** for Android; on TestFlight for iOS (see availability below).
+- **Mobile app** (Android & iOS) — the full wallet: create/restore, send & receive quantum-safe QOR, external networks, staking, portfolio, recovery, and an in-app dApp browser. **On Google Play** for Android, and **on the App Store** for iOS (see availability below).
 
-## Platform availability
+## Platform availability {#platform-availability}
 
 | Capability | Mobile app (Android & iOS) | Browser extension |
 |---|---|---|
-| Create / import a wallet | ✅ | ✅ (standalone) |
-| Send & receive QOR (post-quantum) | ✅ | ✅ (from the popup) |
-| External networks (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (send from the popup) |
+| Create / import a wallet | ✅ | ✅ (standalone, one account) |
+| Several accounts from one recovery phrase | ✅ (up to 20) | — (one account) |
+| Send & receive QOR (post-quantum) | ✅ | ✅ (from the popup, incl. Receive QR) |
+| Pay / claim an @handle | ✅ | ✅ |
+| External networks (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (send from the popup) |
+| Interface language (10 languages) | ✅ (follows the phone) | ✅ (follows the browser) |
 | Staking, Portfolio, Q-Day Scanner, Recovery, Legacy | ✅ | — |
 | dApp connections | ✅ (in-app browser) | ✅ (any website) |
-| Account (@handle, payment requests) | ✅ | — |
+| Account sign-in & payment requests | ✅ | — |
 | Multi-device linking | ✅ | — |
-| Dashboard pairing | ✅ | ✅ (connect + proposed transfers, v0.1.5) |
+| Dashboard pairing | ✅ | ✅ (connect + proposed transfers) |
 
 ## Why QoreX is different
 
@@ -43,9 +46,23 @@ QoreX comes in two parts that work together:
 - On desktop, install the [Browser Extension](/qorex/browser-extension).
 
 :::note Download & availability
-- **Browser extension** — live and public: install it from the [Chrome Web Store, Firefox Add-ons, or the Mac App Store (Safari)](/qorex/browser-extension#install).
-- **Android app** — available on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS app** — available for testing via **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — the App Store release is still in review.
+- **Browser extension** — live and public: install it from the [Chrome Web Store, Firefox Add-ons, or the Mac App Store (Safari)](/qorex/browser-extension#install). See [which version is live where](/qorex/browser-extension#versions) — newer features may still be rolling out to some browsers.
+- **Android app** — live in production on Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS app** — live on the **App Store**: https://apps.apple.com/us/app/qorex-wallet/id6791256626.
 
-Only install QoreX from an official store listing.
+Store review runs on its own schedule, so the newest release sometimes reaches one store before another — see [which version is live where](#platform-availability) below for the exact current picture. Always install from an official store listing.
+:::
+
+:::note Which version is live where
+Store approvals land at different times, so the version below can differ briefly by platform:
+
+| Platform | Live version |
+|---|---|
+| Android | 1.0.3 |
+| iOS | 1.0 (an update is in review) |
+| Firefox | 0.1.9 |
+| Chrome | 0.1.5 (0.1.9 is in review) |
+| Safari (macOS) | 1.1, carrying extension 0.1.5 (an update is in review) |
+
+This page describes QoreX's current feature set — a store still serving an older build will catch up automatically with no action from you.
 :::

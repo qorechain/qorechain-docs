@@ -13,9 +13,11 @@ Ein Light Node **verdient Belohnungen** und **muss gesund bleiben**, um sie weit
 
 Die Gebührenverteilung von QoreChain reserviert einen festen **3%-Anteil für Light Nodes**, die Netzwerkdaten bereitstellen. Dies ist eines der fünf Ziele in der Belohnungsaufteilung des Protokolls — Validatoren (37%), verbrannt (30%), Treasury (20%), Staker (10%) und **Light Nodes (3%)** — on-chain erzwungen. Siehe [Tokenomics](/architecture/tokenomics) für die vollständige Aufschlüsselung.
 
-Um für diesen Anteil berechtigt zu sein, muss ein Node **on-chain registriert sein und seine Aktivität aktiv nachweisen** über Heartbeat-Nachweise. Ein Node, der registriert, aber offline ist, verdient den Anteil nicht. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie Registrierung und Heartbeats funktionieren.
+Um für diesen Anteil berechtigt zu sein, benötigt ein Node drei Dinge, die on-chain geprüft werden statt nur selbst angegeben zu sein: eine aktive `lightnode_operator`-Lizenz, mindestens **1,000 QOR delegiert** — gezählt als deine Gesamtsumme über alle Validatoren, an die du delegierst, nicht pro Validator — sowie eine On-Chain-Registrierungsgebühr von **1 QOR**. Die Teilnahme ist zudem netzwerkweit auf **10,000 Light Nodes** begrenzt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie Registrierung und Lizenzierung funktionieren, einschließlich des aktuellen Status der Anmeldung zum Belohnungsprogramm.
 
-*Belohnungsberechtigung: on-chain registrieren, Aktivität über Heartbeats nachweisen, um den Aktiv-Status zu erreichen, den 3%-Anteil verdienen und ihn dann automatisch in Stake reinvestieren.*
+Sobald registriert und delegiert, ist aktiv zu bleiben, was über die weitere Berechtigung entscheidet. Ein Node benötigt mindestens **80% Uptime** und muss weiterhin Heartbeat-Liveness-Nachweise in einem Intervall von etwa **1,000 Blöcken (~39 Minuten)** einreichen, mit einer **Kulanzfrist von ~100 Blöcken (~4 Minuten)** nach einem verpassten Heartbeat, bevor er als inaktiv markiert wird. Ein als inaktiv markierter Node verdient den Anteil nicht mehr, bis er seine Aktivität erneut nachweist.
+
+*Belohnungsberechtigung: eine aktive On-Chain-Lizenz und den minimal delegierten Stake halten, registrieren und dann die Aktivität fortlaufend über Heartbeats nachweisen, um über den Uptime- und Heartbeat-Intervall-Schwellenwerten zu bleiben, die den Anteil am Fließen halten.*
 
 ```mermaid
 flowchart LR
@@ -84,7 +86,7 @@ Wenn du ein Problem mit dem kryptografischen Stack vermutest, führe den PQC-Sel
 lightnode-sx selftest
 ```
 
-Er führt Keygen → Sign → Verify → Manipulationserkennung aus (fünf Prüfungen) und beendet sich bei jedem Fehler mit einem Exit-Code ungleich null. Dies ist der schnellste Weg, eine defekte oder fehlende `libqorepqc`-Bibliothek bei der Diagnose von Node-Problemen auszuschließen. Siehe [SX-Edition](/light-node/sx-edition) für die vollständige Aufschlüsselung des Selbsttests.
+Er führt Keygen → Sign → Verify → Manipulationserkennung aus (fünf Prüfungen) und beendet sich bei jedem Fehler mit einem Exit-Code ungleich null. Dies ist der schnellste Weg, ein Problem mit dem Post-Quantum-Signaturstack bei der Diagnose von Node-Problemen auszuschließen. Siehe [SX-Edition](/light-node/sx-edition) für die vollständige Aufschlüsselung des Selbsttests.
 
 ## Wie es weitergeht
 

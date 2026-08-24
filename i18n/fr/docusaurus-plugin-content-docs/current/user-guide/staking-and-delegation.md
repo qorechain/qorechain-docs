@@ -7,15 +7,15 @@ sidebar_position: 2
 
 # Staking et délégation
 
-Ce guide explique comment déléguer des jetons QOR à des validateurs, redéléguer entre validateurs, débonder votre stake, réclamer des récompenses et comprendre l'architecture de staking Triple-Pool de QoreChain.
+Ce guide explique comment déléguer des tokens QOR à des validateurs, redéléguer entre validateurs, désengager votre mise, réclamer vos récompenses, et comprendre l'architecture de staking à triple pool de QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.85** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous faites du staking sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
 ---
 
-## Délégation de jetons
+## Déléguer des tokens
 
 Déléguez des QOR à un validateur pour gagner des récompenses de staking et participer à la sécurité du réseau :
 
@@ -37,9 +37,9 @@ qorechaind tx staking delegate qorvaloper1abc...xyz 100000000uqor \
 
 ---
 
-## Redélégation
+## Redéléguer
 
-Déplacez votre délégation d'un validateur à un autre sans attendre la période de débonding :
+Déplacez votre délégation d'un validateur à un autre sans attendre la période de désengagement :
 
 ```bash
 qorechaind tx staking redelegate <source_validator> <destination_validator> <amount>uqor \
@@ -58,14 +58,14 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
 ```
 
 :::caution
-Vous ne pouvez pas redéléguer des jetons qui sont déjà en transit de redélégation. Attendez que la redélégation en cours soit terminée avant d'en lancer une autre.
+Vous ne pouvez pas redéléguer des tokens déjà en transit dans une redélégation. Attendez que la redélégation en cours soit terminée avant d'en lancer une autre.
 :::
 
 ---
 
-## Débonding
+## Désengagement (unbonding)
 
-Retirez vos jetons délégués d'un validateur. Le débonding prend **21 jours** à se terminer ; pendant cette période, les jetons ne génèrent pas de récompenses et ne peuvent pas être transférés.
+Retirez vos tokens délégués d'un validateur. Le désengagement prend **21 jours** pour se terminer ; pendant cette période, les tokens ne génèrent pas de récompenses et ne peuvent pas être transférés.
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount>uqor \
@@ -83,13 +83,13 @@ qorechaind tx staking unbond qorvaloper1abc...xyz 25000000uqor \
   --fees 500uqor
 ```
 
-Après la période de débonding de 21 jours, les jetons sont automatiquement restitués à votre compte.
+Après la période de désengagement de 21 jours, les tokens sont automatiquement restitués sur votre compte.
 
 ---
 
-## Réclamation des récompenses
+## Réclamer les récompenses
 
-Retirez toutes les récompenses de staking accumulées auprès de chaque validateur auquel vous avez délégué :
+Retirez toutes les récompenses de staking accumulées auprès de tous les validateurs auxquels vous avez délégué :
 
 ```bash
 qorechaind tx distribution withdraw-all-rewards \
@@ -98,7 +98,7 @@ qorechaind tx distribution withdraw-all-rewards \
   --fees 500uqor
 ```
 
-Pour retirer les récompenses d'un validateur spécifique uniquement :
+Pour retirer les récompenses d'un seul validateur spécifique :
 
 ```bash
 qorechaind tx distribution withdraw-rewards <validator_address> \
@@ -107,27 +107,27 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Les récompenses de staking sont financées par le pool de staking de 590M QOR du protocole, conformément au calendrier Tokenomics v2.1, ainsi que par la part des stakers (10 %) de chaque frais de transaction.
+Les récompenses de staking sont financées par le pool de staking du protocole de 590M QOR selon le calendrier Tokenomics v2.1, en plus de la part des validateurs (10 %) sur chaque frais de transaction.
 
 ---
 
-## Classification Triple-Pool
+## Classification à triple pool
 
-QoreChain utilise un modèle de staking **Triple-Pool** qui classe les validateurs en trois pools selon leur réputation et leurs niveaux de délégation. Chaque pool reçoit une part pondérée des récompenses de bloc.
+QoreChain utilise un modèle de staking à **triple pool** qui classe les validateurs dans trois pools selon leur réputation et leur niveau de délégation. Chaque pool reçoit une part pondérée des récompenses de bloc.
 
-| Pool                                 | Critères d'entrée                                              | Pondération de récompense |
-| ------------------------------------ | ----------------------------------------------------------- | ------------- |
-| **RPoS** (Reputation Proof of Stake) | Score de réputation >= 70e percentile **ET** stake >= médiane | 40 %           |
-| **DPoS** (Delegated Proof of Stake)  | Délégation totale >= 10 000 QOR                              | 35 %           |
-| **PoS** (Proof of Stake)             | Tous les autres validateurs                                    | 25 %           |
+| Pool                                  | Critères d'entrée                                                  | Poids de récompense |
+| -------------------------------------- | -------------------------------------------------------------------- | -------------- |
+| **RPoS** (Reputation Proof of Stake)   | Score de réputation >= 70e percentile **ET** mise >= médiane         | 40%           |
+| **DPoS** (Delegated Proof of Stake)    | Délégation totale >= 10,000 QOR                                      | 35%           |
+| **PoS** (Proof of Stake)               | Tous les autres validateurs                                          | 25%           |
 
-Les validateurs sont reclassés à chaque limite d'epoch. Un validateur qui construit une solide réputation et accumule un stake suffisant est promu dans le pool RPoS, gagnant ainsi la plus grande part de récompenses.
+Les validateurs sont reclassés à chaque limite d'époque. Un validateur qui bâtit une solide réputation et accumule une mise suffisante est promu dans le pool RPoS, ce qui lui permet de bénéficier de la part de récompense la plus élevée.
 
 ---
 
-## Récompenses par courbe de bonding
+## Récompenses par courbe de liaison (bonding curve)
 
-Les récompenses de staking individuelles sont calculées à l'aide de la formule de courbe de bonding de QoreChain :
+Les récompenses de staking individuelles sont calculées à l'aide de la formule de courbe de liaison de QoreChain :
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
@@ -135,21 +135,21 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 | Variable | Description                                                          |
 | -------- | -------------------------------------------------------------------- |
-| `R`      | Montant de récompense pour la période                                 |
-| `beta`   | Taux de récompense de base (paramètre de protocole)                                |
-| `S`      | Montant staké                                                        |
-| `alpha`  | Coefficient de fidélité (paramètre de protocole)                             |
-| `L`      | Durée de verrouillage en epochs                                              |
+| `R`      | Montant de la récompense pour la période                             |
+| `beta`   | Taux de récompense de base (paramètre du protocole)                  |
+| `S`      | Montant misé                                                         |
+| `alpha`  | Coefficient de fidélité (paramètre du protocole)                     |
+| `L`      | Durée de blocage en époques                                          |
 | `Q(r)`   | Multiplicateur de qualité dérivé du score de réputation `r` du validateur |
-| `P(t)`   | Multiplicateur de pool au temps `t` (40 %, 35 % ou 25 % selon le pool)     |
+| `P(t)`   | Multiplicateur de pool au temps `t` (40%, 35% ou 25% selon le pool)   |
 
-Des durées de verrouillage plus longues et des scores de réputation plus élevés donnent lieu à des récompenses proportionnellement plus importantes, incitant à l'engagement à long terme et au bon comportement des validateurs.
+Des durées de blocage plus longues et des scores de réputation plus élevés se traduisent par des récompenses proportionnellement plus importantes, encourageant ainsi l'engagement à long terme et le bon comportement des validateurs.
 
 ---
 
-## Consultation des informations sur un validateur
+## Interroger les informations d'un validateur
 
-Recherchez les détails de n'importe quel validateur :
+Consultez les détails d'un validateur :
 
 ```bash
 qorechaind query staking validator <validator_operator_address>
@@ -161,13 +161,13 @@ qorechaind query staking validator <validator_operator_address>
 qorechaind query staking validator qorvaloper1abc...xyz
 ```
 
-Listez tous les validateurs actifs :
+Lister tous les validateurs actifs :
 
 ```bash
 qorechaind query staking validators --status bonded
 ```
 
-Interrogez vos délégations actuelles :
+Interroger vos délégations actuelles :
 
 ```bash
 qorechaind query staking delegations <delegator_address>
@@ -177,9 +177,9 @@ qorechaind query staking delegations <delegator_address>
 
 :::tip
 
-* Déléguer à des validateurs du **pool RPoS** procure les récompenses les plus élevées en raison de la pondération de pool de 40 %.
-* Construire la réputation d'un validateur prend du temps. Tenez compte du parcours du validateur avant de déléguer.
-* La redélégation est instantanée mais comporte des restrictions de cooldown. Planifiez soigneusement vos mouvements.
-* La période de débonding de 21 jours est une mesure de sécurité. Pendant cette période, des événements de slashing peuvent toujours affecter vos jetons.
+* Déléguer à des validateurs du **pool RPoS** rapporte les meilleures récompenses grâce au poids de pool de 40%.
+* Bâtir la réputation d'un validateur prend du temps. Examinez son historique avant de déléguer.
+* La redélégation est instantanée mais soumise à des restrictions de délai. Planifiez vos mouvements avec soin.
+* La période de désengagement de 21 jours est une mesure de sécurité. Pendant cette période, des événements de slashing peuvent encore affecter vos tokens.
 
 :::

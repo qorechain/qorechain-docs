@@ -7,24 +7,24 @@ sidebar_position: 6
 
 # Precompilate EVM
 
-QoreChain extinde QoreChain EVM Engine cu **șase contracte precompilate personalizate** care expun direct în Solidity funcții la nivel de protocol. Aceste precompilate oferă acces on-chain la criptografia post-cuantică, scorarea riscului cu AI, mesageria cross-VM și parametrii de consens PRISM.
+QoreChain extinde motorul QoreChain EVM Engine cu **șase contracte precompilate personalizate** care expun funcționalități la nivel de protocol direct în Solidity. Aceste precompilate oferă acces on-chain la criptografie post-cuantică, scoring de risc bazat pe AI, mesagerie cross-VM și parametrii de consens PRISM.
 
 :::note
-Precompilatele sunt disponibile atât pe rețeaua principală (mainnet) **`qorechain-vladi`** (EVM chain ID **9801**, activă din 7 iunie 2026 pe versiunea de lanț **v3.1.85**), cât și pe rețeaua de test (testnet) **`qorechain-diana`** (EVM chain ID **9800**). Toate exemplele folosesc endpoint-ul JSON-RPC pe **portul 8545**.
+Precompilatele sunt disponibile atât pe rețeaua mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026 pe versiunea de chain **v3.1.92**), cât și pe rețeaua testnet **`qorechain-diana`** (ID chain EVM **9800**). Toate exemplele folosesc endpoint-ul JSON-RPC pe **portul 8545**.
 :::
 
 ---
 
 ## Harta adreselor precompilatelor
 
-| Precompilat             | Adresă                                       | Gaz de bază     | Descriere                                        |
-| ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | Apeluri cross-VM sincrone (EVM către CosmWasm)   |
-| **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | Verifică semnături post-cuantice ML-DSA-87        |
-| **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Verifică dacă un cont are o cheie PQC înregistrată |
-| **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | Obține scorul de risc generat de AI pentru datele tranzacției |
-| **AI Anomaly Check**    | `0x0000000000000000000000000000000000000B02` | 40,000          | Verifică dacă un transfer este marcat ca anomal  |
-| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1,500        | Citește parametrii de consens curenți reglați de PRISM |
+| Precompilat              | Adresă                                      | Gaz de bază      | Descriere                                          |
+| ------------------------ | -------------------------------------------- | --------------- | --------------------------------------------------- |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000          | Apeluri sincrone cross-VM (de la EVM la CosmWasm)   |
+| **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
+| **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
+| **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
+| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40.000          | Verifică dacă un transfer este marcat drept anomal  |
+| **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1.500        | Citește parametrii de consens curenți, ajustați de PRISM |
 
 ---
 
@@ -139,9 +139,9 @@ contract PQCVerifier {
 }
 ```
 
-**Cost de gaz:** 25,000 de bază + 8 gaz per octet de date de intrare. Pentru o verificare tipică ML-DSA-87 (2592 + 4627 + octeții mesajului), așteptați-vă la aproximativ 80,000-90,000 de gaz.
+**Cost de gaz:** 25.000 de bază + 8 gaz per octet de date de intrare. Pentru o verificare tipică ML-DSA-87 (2592 + 4627 + octeții mesajului), se estimează aproximativ 80.000-90.000 gaz.
 
-### PQC Key Status — Verificarea înregistrării contului
+### PQC Key Status — Verificarea înregistrării unui cont
 
 ```solidity
 contract PQCChecker {
@@ -154,9 +154,9 @@ contract PQCChecker {
 }
 ```
 
-**Cost de gaz:** 2,500 fix.
+**Cost de gaz:** 2.500, fix.
 
-### AI Risk Score — Evaluarea riscului tranzacției
+### AI Risk Score — Evaluarea riscului unei tranzacții
 
 ```solidity
 import "./interfaces/IQoreAI.sol";
@@ -178,14 +178,14 @@ contract RiskGate {
 **Niveluri de risc:**
 
 | Nivel    | Valoare | Interval scor (bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| -------- | ------- | -------------------- |
+| SAFE     | 0       | 0 - 1000              |
+| LOW      | 1       | 1001 - 3000            |
+| MEDIUM   | 2       | 3001 - 6000            |
+| HIGH     | 3       | 6001 - 8500            |
+| CRITICAL | 4       | 8501 - 10000           |
 
-**Cost de gaz:** 50,000 fix.
+**Cost de gaz:** 50.000, fix.
 
 ### AI Anomaly Check — Marcarea transferurilor suspecte
 
@@ -203,9 +203,9 @@ contract AnomalyGuard {
 }
 ```
 
-**Cost de gaz:** 40,000 fix.
+**Cost de gaz:** 40.000, fix.
 
-### PRISM Consensus Params — Citirea stării de consens
+### PRISM Consensus Params — Citirea stării consensului
 
 ```solidity
 contract ConsensusReader {
@@ -225,7 +225,7 @@ contract ConsensusReader {
 }
 ```
 
-**Cost de gaz:** 1,500 fix.
+**Cost de gaz:** 1.500, fix.
 
 ### CrossVM Bridge — Apelarea CosmWasm din EVM
 
@@ -249,13 +249,13 @@ contract CrossVMExample {
 }
 ```
 
-**Cost de gaz:** 50,000 de bază + costul de execuție al contractului țintă. Vedeți [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
+**Cost de gaz:** 50.000 de bază + costul de execuție al contractului țintă. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
 
 ---
 
 ## Locațiile fișierelor de interfață
 
-Fișierele de interfață Solidity sunt disponibile în depozit pentru import direct:
+Fișierele de interfață Solidity sunt disponibile în repository pentru import direct:
 
 ```
 contracts/
@@ -266,14 +266,14 @@ contracts/
     ICrossVM.sol
 ```
 
-Instalați-le în proiectul dvs. Hardhat sau Foundry:
+Instalează-le în proiectul tău Hardhat sau Foundry:
 
 ```bash
 # Copy interfaces to your project
 cp -r contracts/interfaces/ my-project/contracts/interfaces/
 ```
 
-Sau referențiați-le prin calea de import în fișierele dvs. Solidity:
+Sau referențiază-le prin calea de import în fișierele tale Solidity:
 
 ```solidity
 import "./interfaces/IQorePQC.sol";
@@ -283,8 +283,8 @@ import "./interfaces/IQoreConsensus.sol";
 
 ---
 
-## Pașii următori
+## Pași următori
 
-* [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) — Documentația completă a mesageriei cross-VM
+* [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Documentația completă a mesageriei cross-VM
 * [Dezvoltare EVM](/developer-guide/evm-development) — Implementarea contractelor Solidity
-* [Abstractizarea conturilor](/developer-guide/account-abstraction) — Conturi programabile cu chei de sesiune
+* [Abstractizarea contului](/developer-guide/account-abstraction) — Conturi programabile cu chei de sesiune

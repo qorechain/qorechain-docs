@@ -46,12 +46,14 @@ Heartbeat-urile on-chain sunt opționale în daemon: activează secțiunea `[hea
 
 ## Înregistrare și licențiere prin Dashboard
 
-Poți, de asemenea, să înregistrezi un nod și să obții o licență prin QoreChain Dashboard, care oferă un flux ghidat în loc să construiești comenzi de chain manual.
+Poți, de asemenea, să pornești un nod și să verifici starea licențierii lui prin pagina **Tools** din QoreChain Dashboard. Rularea nodului și înscrierea în programul de recompense sunt două lucruri diferite, iar Dashboard-ul le păstrează separate, în loc să prezinte un singur flux ghidat de înscriere:
 
-- Înregistrează-ți nodul din **Tools → Node Registration**.
-- Obține sau reînnoiește o licență din **Tools → Buy License**.
+1. **Pornește-ți nodul (Tools → Light Node, pasul 1).** Acest pas nu necesită nicio licență și nicio verificare on-chain de niciun fel, și este afișat fiecărui vizitator înaintea oricărui altceva. Citește manifestul curent al rețelei în timp real și te ghidează prin descărcarea și verificarea binarului, inițializarea nodului cu genesis, direcționarea `config.toml` către peer-ii rețelei și state-sync în loc de sincronizare de la genesis.
+2. **Verifică starea ta în programul de recompense (Tools → Light Node).** Înscrierea în cota de recompensă pentru nodurile light este un pas separat, condiționat on-chain: necesită o licență `lightnode_operator` activă, acordată on-chain, un minim de QOR delegat — numărat ca total al tău pe toți validatorii cărora le delegi, nu per validator, și citit în timp real din staking, nu auto-declarat — și o mică taxă de înregistrare on-chain. **Înscrierea nu este deschisă încă**, iar cumpărarea unei licențe prin **Buy License** nu o deschide mai devreme — nu există nimic la care să te înscrii astăzi. Până se deschide, acest tab afișează cerința ca pe o stare de verificat, nu ca pe un formular de trimis. Rulează-ți și sincronizează-ți nodul între timp; timpul de funcționare (uptime) de dinainte ca înscrierea să se deschidă este de așteptat să conteze odată ce aceasta se deschide.
+3. **Înregistrează-te odată ce licența ta este acordată on-chain (Tools → Light Node).** O licență cumpărată prin **Buy License** este înregistrată mai întâi pe partea noastră; acordarea care o face recunoscută on-chain este un pas separat, iar înregistrarea este refuzată până când acea acordare are loc. Odată ce s-a întâmplat, acest tab înlocuiește panoul de stare cu un formular de înregistrare: adresa ta de operator (`qor1…`), un moniker și un URL de endpoint public, plus o confirmare a angajamentului de stake.
+4. **Confirmă și pune stake-ul (bond).** După ce trimiți, Dashboard-ul afișează un rezumat de confirmare al înregistrării (moniker, adresă de operator, endpoint, intenția de stake, stare). Pune (bond) stake-ul confirmat din adresa ta de operator odată ce eligibilitatea se deschide.
 
-Fluxul din Dashboard te ghidează prin asocierea cheii tale de operator, alegerea tipului de nod și a rețelei și finalizarea înregistrării on-chain. Folosește-l dacă preferi o interfață grafică în locul CLI-ului sau pentru a gestiona licențierea împreună cu înregistrarea într-un singur loc.
+Folosește fluxul din Dashboard dacă preferi o interfață grafică în locul CLI-ului, sau pentru a gestiona licențierea și înregistrarea împreună, într-un singur loc. Comanda `lightnode-sx register` de mai sus rămâne disponibilă pentru oricine preferă să construiască și să examineze tranzacția singur — înregistrarea on-chain și eligibilitatea pentru programul de recompense sunt guvernate de chain în același mod, indiferent de calea folosită.
 
 ## Unde să mergi mai departe
 

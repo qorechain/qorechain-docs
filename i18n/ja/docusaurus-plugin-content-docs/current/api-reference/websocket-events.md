@@ -7,10 +7,10 @@ sidebar_position: 5
 
 # WebSocket イベント
 
-QoreChain は、2つの WebSocket インターフェースを通じてリアルタイムのイベントストリーミングを提供します。EVM 互換の WebSocket と、QoreChain コンセンサスエンジン RPC WebSocket です。
+QoreChainは、2つのWebSocketインターフェース、すなわちEVM互換WebSocketとQoreChain Consensus Engine RPC WebSocketを通じてリアルタイムのイベントストリーミングを提供します。
 
 :::note
-両方の WebSocket インターフェースは、**`qorechain-vladi`** メインネット（チェーンバージョン **v3.1.85** で稼働中）と **`qorechain-diana`** テストネットで利用できます。以下のローカルエンドポイントは自分で運用するノードを前提としています。リモートアクセスの場合は、プロバイダーのメインネットまたはテストネットのホストに置き換えてください。
+どちらのWebSocketインターフェースも、**`qorechain-vladi`** メインネット(チェーンバージョン **v3.1.92** で稼働中)と **`qorechain-diana`** テストネットの両方で利用できます。以下のローカルエンドポイントは、自分で運用するノードを前提としています。リモートアクセスの場合は、ご利用のプロバイダーのメインネットまたはテストネットのホストに置き換えてください。
 :::
 
 ---
@@ -19,18 +19,18 @@ QoreChain は、2つの WebSocket インターフェースを通じてリアル�
 
 **エンドポイント:** `ws://localhost:8546`
 
-EVM WebSocket は、Ethereum ツールと互換性のあるリアルタイムイベントストリーミングのための標準的な `eth_subscribe` メソッドをサポートします。
+EVM WebSocketは、Ethereumツールと互換性のあるリアルタイムイベントストリーミング用の標準`eth_subscribe`メソッドをサポートします。
 
-### サブスクリプションタイプ
+### サブスクリプションの種類
 
-| サブスクリプション             | 説明                                      |
-| ------------------------ | ------------------------------------------------ |
-| `newHeads`               | 新しいブロックが追加されるたびにヘッダーを発行します |
-| `logs`                   | オプションのフィルターに一致するログを発行します           |
-| `newPendingTransactions` | mempool に入るトランザクションハッシュを発行します    |
-| `syncing`                | 同期ステータスの更新を発行します                        |
+| サブスクリプション        | 説明                                              |
+| ------------------------- | ------------------------------------------------- |
+| `newHeads`                | 新しいブロックが追加されるたびにヘッダーを発行     |
+| `logs`                    | オプションのフィルタに一致するログを発行           |
+| `newPendingTransactions`  | メモリプールに入るトランザクションハッシュを発行   |
+| `syncing`                 | 同期状態の更新を発行                               |
 
-### 新しいブロックのサブスクライブ
+### 新しいブロックへのサブスクライブ
 
 ```json
 {
@@ -41,7 +41,7 @@ EVM WebSocket は、Ethereum ツールと互換性のあるリアルタイムイ
 }
 ```
 
-### フィルター付きでログをサブスクライブ
+### フィルタ付きでログにサブスクライブ
 
 ```json
 {
@@ -58,7 +58,7 @@ EVM WebSocket は、Ethereum ツールと互換性のあるリアルタイムイ
 }
 ```
 
-### サブスクライブ解除
+### サブスクリプション解除
 
 ```json
 {
@@ -75,9 +75,9 @@ EVM WebSocket は、Ethereum ツールと互換性のあるリアルタイムイ
 
 **エンドポイント:** `ws://localhost:26657/websocket`
 
-RPC WebSocket は、QoreChain コンセンサスエンジンのイベントサブスクリプションシステムを使用します。クライアントは、タイプと属性でイベントをフィルタリングするクエリ文字列を使ってサブスクライブします。
+RPC WebSocketはQoreChain Consensus Engineのイベントサブスクリプションシステムを使用します。クライアントは、イベントの種類と属性でフィルタするクエリ文字列を使ってサブスクライブします。
 
-### すべての新しいブロックをサブスクライブ
+### すべての新しいブロックへのサブスクライブ
 
 ```json
 {
@@ -90,7 +90,7 @@ RPC WebSocket は、QoreChain コンセンサスエンジンのイベントサ�
 }
 ```
 
-### すべてのトランザクションをサブスクライブ
+### すべてのトランザクションへのサブスクライブ
 
 ```json
 {
@@ -103,9 +103,9 @@ RPC WebSocket は、QoreChain コンセンサスエンジンのイベントサ�
 }
 ```
 
-### モジュール固有のイベントをサブスクライブ
+### モジュール固有イベントへのサブスクライブ
 
-イベントタイプでフィルタリングして、特定のモジュールからのイベントのみを受信します。
+イベントタイプでフィルタすることで、特定のモジュールからのイベントのみを受信できます。
 
 ```json
 {
@@ -118,7 +118,7 @@ RPC WebSocket は、QoreChain コンセンサスエンジンのイベントサ�
 }
 ```
 
-### サブスクライブ解除
+### サブスクリプション解除
 
 ```json
 {
@@ -135,87 +135,87 @@ RPC WebSocket は、QoreChain コンセンサスエンジンのイベントサ�
 
 ## モジュールイベントリファレンス
 
-### PQC モジュール
+### PQCモジュール
 
-| イベントタイプ                 | 主な属性                                       | 説明                                   |
-| -------------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `pqc_hybrid_verify`        | `address`, `algorithm`, `result` (pass/fail), `mode` | 各ハイブリッド署名検証時に発行されます |
-| `pqc_hybrid_auto_register` | `address`, `algorithm`, `pubkey_hash`                | PQC キーが自動登録されたときに発行されます     |
+| イベントタイプ              | 主な属性                                              | 説明                                             |
+| --------------------------- | ------------------------------------------------------ | ------------------------------------------------ |
+| `pqc_hybrid_verify`         | `address`、`algorithm`、`result`(pass/fail)、`mode`    | ハイブリッド署名の検証ごとに発行                  |
+| `pqc_hybrid_auto_register`  | `address`、`algorithm`、`pubkey_hash`                   | PQC鍵が自動登録された際に発行                     |
 
-### AI モジュール
+### AIモジュール
 
-| イベントタイプ        | 主な属性                                                      | 説明                                      |
-| ----------------- | ------------------------------------------------------------------- | ------------------------------------------------ |
-| `fraud_alert`     | `severity` (low/medium/high/critical), `address`, `reason`, `score` | トランザクションで不正が検出されたときに発行されます  |
-| `circuit_breaker` | `module`, `action` (tripped/reset), `threshold`, `value`            | AI サーキットブレーカーが状態を変更したときに発行されます |
+| イベントタイプ     | 主な属性                                                              | 説明                                              |
+| ------------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
+| `fraud_alert`       | `severity`(low/medium/high/critical)、`address`、`reason`、`score`     | トランザクションで不正が検出された際に発行         |
+| `circuit_breaker`   | `module`、`action`(tripped/reset)、`threshold`、`value`                | AIサーキットブレーカーの状態が変化した際に発行     |
 
-### ブリッジモジュール
+### Bridgeモジュール
 
-| イベントタイプ             | 主な属性                                                  | 説明                                             |
-| ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------- |
-| `deposit_completed`    | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | インバウンドのブリッジデポジットが確認されたときに発行されます     |
-| `withdrawal_completed` | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | アウトバウンドのブリッジ出金が確認されたときに発行されます |
+| イベントタイプ           | 主な属性                                                          | 説明                                                     |
+| -------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `deposit_completed`        | `chain_id`、`sender`、`recipient`、`amount`、`asset`、`tx_hash`      | インバウンドのブリッジ入金が確認された際に発行             |
+| `withdrawal_completed`     | `chain_id`、`sender`、`recipient`、`amount`、`asset`、`tx_hash`      | アウトバウンドのブリッジ出金が確認された際に発行           |
 
-### クロス VM モジュール
+### Cross-VMモジュール
 
-| イベントタイプ         | 主な属性                                                   | 説明                                           |
-| ------------------ | ---------------------------------------------------------------- | ----------------------------------------------------- |
-| `crossvm_request`  | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash` | クロス VM 呼び出しが開始されたときに発行されます             |
-| `crossvm_response` | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`    | クロス VM 呼び出しが完了したときに発行されます                |
-| `crossvm_timeout`  | `message_id`, `source_vm`, `target_vm`, `queued_at_height`       | クロス VM メッセージがキューのタイムアウトを超えたときに発行されます |
+| イベントタイプ       | 主な属性                                                             | 説明                                                    |
+| ---------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------- |
+| `crossvm_request`      | `message_id`、`source_vm`、`target_vm`、`sender`、`payload_hash`         | クロスVM呼び出しが開始された際に発行                       |
+| `crossvm_response`     | `message_id`、`source_vm`、`target_vm`、`success`、`gas_used`            | クロスVM呼び出しが完了した際に発行                          |
+| `crossvm_timeout`      | `message_id`、`source_vm`、`target_vm`、`queued_at_height`               | クロスVMメッセージがキューのタイムアウトを超えた際に発行     |
 
-### マルチレイヤーモジュール
+### Multilayerモジュール
 
-| イベントタイプ             | 主な属性                                                 | 説明                                     |
-| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
-| `anchor_submitted`     | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter` | レイヤー状態アンカーが提出されたときに発行されます  |
-| `layer_status_changed` | `layer_id`, `previous_status`, `new_status`, `reason`          | レイヤーが稼働ステータスを変更したときに発行されます |
+| イベントタイプ           | 主な属性                                                       | 説明                                             |
+| --------------------------- | ------------------------------------------------------------------ | -------------------------------------------------- |
+| `anchor_submitted`          | `layer_id`、`layer_type`、`anchor_hash`、`height`、`submitter`     | レイヤーのステートアンカーが送信された際に発行     |
+| `layer_status_changed`      | `layer_id`、`previous_status`、`new_status`、`reason`              | レイヤーの稼働ステータスが変化した際に発行         |
 
-### RDK モジュール
+### RDKモジュール
 
-| イベントタイプ        | 主な属性                                        | 説明                                      |
-| ----------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| `rollup_created`  | `rollup_id`, `operator`, `settlement_type`, `profile` | 新しいロールアップが登録されたときに発行されます          |
-| `batch_submitted` | `rollup_id`, `batch_index`, `state_root`, `tx_count`  | 決済バッチが提出されたときに発行されます     |
-| `batch_finalized` | `rollup_id`, `batch_index`, `finalized_at_height`     | バッチがチャレンジウィンドウを通過したときに発行されます |
-| `da_blob_stored`  | `rollup_id`, `blob_index`, `size_bytes`, `commitment` | DA ブロブが保存されたときに発行されます                 |
-| `da_blob_pruned`  | `rollup_id`, `blob_index`, `pruned_at_height`         | 保持期間後に DA ブロブがプルーニングされたときに発行されます |
+| イベントタイプ     | 主な属性                                              | 説明                                              |
+| --------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
+| `rollup_created`      | `rollup_id`、`operator`、`settlement_type`、`profile`      | 新しいロールアップが登録された際に発行             |
+| `batch_submitted`     | `rollup_id`、`batch_index`、`state_root`、`tx_count`       | 決済バッチが送信された際に発行                     |
+| `batch_finalized`     | `rollup_id`、`batch_index`、`finalized_at_height`          | バッチがチャレンジウィンドウを通過した際に発行     |
+| `da_blob_stored`      | `rollup_id`、`blob_index`、`size_bytes`、`commitment`      | DAブロブが保存された際に発行                       |
+| `da_blob_pruned`      | `rollup_id`、`blob_index`、`pruned_at_height`              | 保持期間経過後にDAブロブが削除された際に発行       |
 
-### バーンモジュール
+### Burnモジュール
 
-| イベントタイプ        | 主な属性                                                                      | 説明                                 |
-| ----------------- | ----------------------------------------------------------------------------------- | ------------------------------------------- |
-| `fee_distributed` | `total_fees`, `validator_amount`, `burn_amount`, `treasury_amount`, `staker_amount` | 収集された手数料が分配されたときに発行されます |
-| `tokens_burned`   | `amount`, `channel`, `block_height`                                                 | トークンが永久にバーンされたときに発行されます  |
+| イベントタイプ     | 主な属性                                                                             | 説明                                       |
+| --------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `fee_distributed`     | `total_fees`、`validator_amount`、`burn_amount`、`treasury_amount`、`staker_amount`      | 徴収された手数料が分配された際に発行         |
+| `tokens_burned`       | `amount`、`channel`、`block_height`                                                       | トークンが恒久的にバーンされた際に発行       |
 
-### xQORE モジュール
+### xQOREモジュール
 
-| イベントタイプ       | 主な属性                                                 | 説明                                |
-| ---------------- | -------------------------------------------------------------- | ------------------------------------------ |
-| `xqore_locked`   | `address`, `amount`, `lock_duration`, `tier`                   | QOR が xQORE にロックされたときに発行されます      |
-| `xqore_unlocked` | `address`, `amount`, `penalty_applied`, `penalty_amount`       | xQORE が QOR に戻ってアンロックされたときに発行されます |
-| `pvp_rebase`     | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count` | PvP リベース分配時に発行されます     |
+| イベントタイプ    | 主な属性                                                        | 説明                                       |
+| -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
+| `xqore_locked`       | `address`、`amount`、`lock_duration`、`tier`                          | QORがxQOREにロックされた際に発行             |
+| `xqore_unlocked`     | `address`、`amount`、`penalty_applied`、`penalty_amount`              | xQOREがQORへとアンロックされた際に発行       |
+| `pvp_rebase`         | `epoch`、`total_penalty`、`rebase_amount`、`beneficiary_count`        | PvPリベース分配の際に発行                    |
 
-### インフレーションモジュール
+### Inflationモジュール
 
-| イベントタイプ     | 主な属性                                             | 説明                                |
-| -------------- | ---------------------------------------------------------- | ------------------------------------------ |
-| `epoch_minted` | `epoch`, `minted_amount`, `inflation_rate`, `block_height` | 各インフレエポックの終わりに発行されます |
+| イベントタイプ  | 主な属性                                                       | 説明                                    |
+| ------------------ | ---------------------------------------------------------------- | ----------------------------------------- |
+| `epoch_minted`     | `epoch`、`minted_amount`、`inflation_rate`、`block_height`       | 各インフレーションエポックの終了時に発行 |
 
-### RL コンセンサスモジュール
+### RL Consensusモジュール
 
-PRISM パラメータの調整とサーキットブレーカーの動作は、このモジュールを通じて発行されます。
+PRISMのパラメータ調整とサーキットブレーカーの動作は、このモジュールを通じて発行されます。
 
-| イベントタイプ                  | 主な属性                                                 | 説明                                                |
-| --------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| `rl_action_applied`         | `action_type`, `param_key`, `old_value`, `new_value`, `reward` | PRISM エージェントがパラメータ調整を適用したときに発行されます |
-| `circuit_breaker_triggered` | `reason`, `param_key`, `attempted_value`, `limit`              | PRISM サーキットブレーカーがアクションをブロックしたときに発行されます |
+| イベントタイプ                | 主な属性                                                          | 説明                                                        |
+| -------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `rl_action_applied`              | `action_type`、`param_key`、`old_value`、`new_value`、`reward`         | PRISMエージェントがパラメータ調整を適用した際に発行             |
+| `circuit_breaker_triggered`      | `reason`、`param_key`、`attempted_value`、`limit`                      | PRISMサーキットブレーカーがアクションをブロックした際に発行     |
 
 ---
 
-## JavaScript クライアントの例
+## JavaScriptクライアントの例
 
-### EVM WebSocket（ethers.js）
+### EVM WebSocket(ethers.js)
 
 ```javascript
 import { ethers } from "ethers";
@@ -237,7 +237,7 @@ provider.on(filter, (log) => {
 });
 ```
 
-### QoreChain RPC WebSocket（ネイティブ）
+### QoreChain RPC WebSocket(ネイティブ)
 
 ```javascript
 const ws = new WebSocket("ws://localhost:26657/websocket");
@@ -270,8 +270,8 @@ ws.onmessage = (event) => {
 
 ---
 
-## 注記
+## 補足
 
-- **接続制限**: WebSocket 接続のデフォルトの最大数は無制限です（`max-open-connections = 0`）。本番デプロイでは `app.toml` で制限を設定してください。
-- **イベントバッファ**: RPC WebSocket は、サブスクリプションごとに最大 200 件のイベントをバッファリングします。クライアントが遅れた場合、古いイベントは破棄されます。
-- **再接続**: WebSocket 接続はノードの再起動やアップグレード中に中断される可能性があるため、クライアントは指数バックオフを用いた自動再接続を実装する必要があります。
+- **接続数の上限**: WebSocket接続数のデフォルトの上限は無制限です(`max-open-connections = 0`)。本番環境では`app.toml`で上限を設定してください。
+- **イベントバッファ**: RPC WebSocketは、サブスクリプションごとに最大200件のイベントをバッファします。クライアントの処理が追いつかない場合、古いイベントは破棄されます。
+- **再接続**: ノードの再起動やアップグレード中にWebSocket接続が中断されることがあるため、クライアントは指数バックオフによる自動再接続を実装する必要があります。

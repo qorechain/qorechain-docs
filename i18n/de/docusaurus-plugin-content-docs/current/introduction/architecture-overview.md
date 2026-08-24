@@ -1,15 +1,15 @@
 ---
 slug: /introduction/architecture-overview
-title: Architekturüberblick
-sidebar_label: Architekturüberblick
+title: Architektur-Überblick
+sidebar_label: Architektur-Überblick
 sidebar_position: 2
 ---
 
-# Architekturüberblick
+# Architektur-Überblick
 
-QoreChain ist ein modularer Blockchain-Knoten, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — gestützt durch eine Postgres-Datenbank und überwacht über Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 in Chain-Version **v3.1.85** live, mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**). Die Chain ist auf dem Cosmos SDK v0.53 aufgebaut. Das folgende Diagramm zeigt das übergeordnete Komponentenlayout.
+QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Chain-Version **v3.1.92**, mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
 
-Der nachstehende Transaktionslebenszyklus fasst zusammen, wie eine eingereichte Transaktion durch den Knoten fließt — von der AnteHandler-Decorator-Kette (Sicherheits- und Gebührenprüfungen) über die VM-Ausführung bis zur On-Chain-Abwicklung:
+Der nachfolgende Transaktions-Lebenszyklus fasst zusammen, wie eine übermittelte Transaktion durch den Node läuft — von der AnteHandler-Decorator-Kette (Sicherheits- und Gebührenprüfungen) über die VM-Ausführung bis zur On-Chain-Abwicklung:
 
 ```mermaid
 flowchart LR
@@ -112,82 +112,82 @@ flowchart LR
    └───────────┘   └──────────┘
 ```
 
-## Knotenkomponenten
+## Node-Komponenten
 
-QoreChain läuft als drei kooperierende Prozesse, jeder mit seinem eigenen Go-Modul und seiner eigenen Binärdatei:
+QoreChain läuft als drei zusammenarbeitende Prozesse, jeder mit eigenem Go-Modul und eigener Binary:
 
-| Komponente         | Beschreibung                                                                                                                                                                                                                                                                                                                  | Speicherort               |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| **qorechain-node** | Der zentrale Blockchain-Knoten. Führt die QoreChain Consensus Engine aus, führt alle benutzerdefinierten Module aus, verwaltet alle drei VM-Laufzeitumgebungen und stellt RPC-, REST-, gRPC- und JSON-RPC-Endpunkte bereit.                                                                                                    | `qorechain-core/`         |
-| **ai-sidecar**     | Ein gRPC-Dienst, der erweiterte KI-Inferenzfähigkeiten bereitstellt, gestützt durch das QCAI-Backend. Der Sidecar verarbeitet Inferenzanfragen, die den Umfang des On-Chain-RL-Agenten überschreiten, wie etwa Analyse natürlicher Sprache und komplexe Mustererkennung. Kommuniziert mit dem Knoten über gRPC auf Port 50051. | `qorechain-core/sidecar/` |
-| **block-indexer**  | Ein WebSocket-Listener, der neue Blöcke und Transaktionen vom RPC-Endpunkt des Knotens abonniert, Ereignisse parst und strukturierte Daten in eine Postgres-Datenbank schreibt, um eine schnelle Abfrage durch Explorer und APIs zu ermöglichen.                                                                               | `qorechain-core/indexer/` |
+| Komponente          | Beschreibung                                                                                                                                                                                                                                                                                          | Ort                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **qorechain-node** | Der zentrale Blockchain-Node. Betreibt die QoreChain Consensus Engine, führt alle Custom-Module aus, verwaltet alle drei VM-Laufzeiten und stellt RPC-, REST-, gRPC- und JSON-RPC-Endpunkte bereit.                                                                                                                      | `qorechain-core/`         |
+| **ai-sidecar**     | Ein gRPC-Dienst, der erweiterte KI-Inferenz-Fähigkeiten bereitstellt, gestützt durch das QCAI-Backend. Der Sidecar behandelt Inferenz-Anfragen, die über den Umfang des On-Chain-RL-Agenten hinausgehen, etwa Analyse natürlicher Sprache und komplexe Mustererkennung. Kommuniziert mit dem Node per gRPC auf Port 50051. | `qorechain-core/sidecar/` |
+| **block-indexer**  | Ein WebSocket-Listener, der neue Blöcke und Transaktionen vom RPC-Endpunkt des Nodes abonniert, Events parst und strukturierte Daten in eine Postgres-Datenbank schreibt, für schnelle Abfragen durch Explorer und APIs.                                                                                                          | `qorechain-core/indexer/` |
 
 ## Ports
 
-| Port  | Protokoll      | Dienst                                                                            |
+| Port  | Protokoll       | Dienst                                                                           |
 | ----- | -------------- | --------------------------------------------------------------------------------- |
-| 26657 | HTTP/WebSocket | QoreChain Consensus Engine RPC (Blöcke, Transaktionen, Konsenszustand)            |
-| 1317  | HTTP           | REST API (Abfrage-Endpunkte, Transaktions-Broadcast)                              |
-| 9090  | gRPC           | gRPC-Abfrage- und Transaktions-Endpunkte                                          |
-| 8545  | HTTP           | EVM JSON-RPC (`eth_`-, `web3_`-, `net_`-, `txpool_`-, `qor_`-Namespaces)          |
-| 8546  | WebSocket      | EVM JSON-RPC (WebSocket-Abonnements)                                              |
+| 26657 | HTTP/WebSocket | QoreChain Consensus Engine RPC (Blöcke, Transaktionen, Konsensstatus)            |
+| 1317  | HTTP           | REST-API (Abfrage-Endpunkte, Transaktions-Broadcast)                                 |
+| 9090  | gRPC           | gRPC-Abfrage- und Transaktions-Endpunkte                                              |
+| 8545  | HTTP           | EVM JSON-RPC (`eth_`, `web3_`, `net_`, `txpool_`, `qor_` Namespaces)              |
+| 8546  | WebSocket      | EVM JSON-RPC (WebSocket-Subscriptions)                                            |
 | 8899  | HTTP           | SVM JSON-RPC (Solana-kompatibel: `getAccountInfo`, `getBalance`, `getSlot`, usw.) |
-| 50051 | gRPC           | AI-Sidecar (Inferenzanfragen vom Knoten)                                          |
-| 5432  | TCP            | Postgres (Speicher des Block-Indexers)                                            |
-| 9091  | HTTP           | Prometheus-Metriken                                                               |
+| 50051 | gRPC           | AI-Sidecar (Inferenz-Anfragen vom Node)                                     |
+| 5432  | TCP            | Postgres (Speicher des Block-Indexers)                                                  |
+| 9091  | HTTP           | Prometheus-Metriken                                                                |
 | 3000  | HTTP           | Grafana-Dashboards                                                                |
 
-## Modulübersicht
+## Modul-Übersicht
 
-QoreChain registriert **mehr als 45 Genesis-Module einschließlich mehr als 20 benutzerdefinierter Module**, gruppiert nach Funktion:
+QoreChain registriert **45+ Genesis-Module, davon 20+ Custom-Module**, gruppiert nach Funktion:
 
 **Sicherheit**
 
 * `x/pqc` — Post-Quanten-Kryptografie: Dilithium-5, ML-KEM-1024, hybrides secp256k1 (ECDSA) + ML-DSA-87, SHAKE-256, Algorithmus-Agilität
 
-**KI und maschinelles Lernen**
+**KI und Machine Learning**
 
 * `x/ai` — Transaktions-Routing, Anomalieerkennung, Betrugserkennung, Gebührenoptimierung, TEE-Attestierung, föderiertes Lernen
-* `x/reputation` — Mehrfaktor-Reputationsbewertung von Validatoren mit zeitlichem Verfall
-* `x/rlconsensus` — On-Chain-RL-Agent (PPO MLP), dynamisches Konsens-Tuning, Schutzschalter, Rollup-Beratung — die PRISM-Optimierungsschicht
+* `x/reputation` — Multi-Faktor-Reputationsbewertung für Validatoren mit zeitlichem Abklingen
+* `x/rlconsensus` — On-Chain-RL-Agent (PPO MLP), dynamische Konsens-Feinabstimmung, Circuit Breaker, Rollup-Beratung — die PRISM-Optimierungsschicht
 
 **Konsens**
 
-* `x/qca` — Triple-Pool Composite PoS (RPoS/DPoS/PoS) auf der QoreChain Consensus Engine, benutzerdefinierte Bonding-Kurve, progressives Slashing, QDRW-Governance
+* `x/qca` — Triple-Pool Composite PoS (RPoS/DPoS/PoS) auf der QoreChain Consensus Engine, eigene Bonding-Curve, progressives Slashing, QDRW-Governance
 
 **Virtuelle Maschinen**
 
-* `x/vm` — VM-Routing und Lebenszyklusverwaltung
-* `x/svm` — SVM-Laufzeitumgebung: BPF-Bereitstellung/-Ausführung, Mieteinzug, Solana-kompatibles RPC
-* `x/crossvm` — Cross-VM-Kommunikation: EVM-CosmWasm-Precompile + SVM-Async-Ereignisse
+* `x/vm` — VM-Routing und Lifecycle-Management
+* `x/svm` — SVM-Laufzeit: BPF-Deployment/-Ausführung, Rent-Erhebung, Solana-kompatible RPC
+* `x/crossvm` — Cross-VM-Kommunikation: EVM-CosmWasm-Precompile + asynchrone SVM-Events
 
 **Tokenomics und Liquidität**
 
-* `x/burn` — 10 Burn-Kanäle, EndBlocker-Gebührenverteilung (Aufteilung 37/30/20/10/3)
+* `x/burn` — 10 Burn-Kanäle, EndBlocker-Gebührenverteilung (37/30/20/10/3-Split)
 * `x/xqore` — Governance-verstärktes Staking: Lock/Unlock, gestaffelte Ausstiegsstrafen, PvP-Rebase
-* `x/inflation` — Emission mit festem Angebot aus einem endlichen Staking-Belohnungsbudget nach einem mehrjährigen Zeitplan
+* `x/inflation` — Fixe Emission mit begrenztem Angebot aus einem endlichen Staking-Reward-Budget über einen Mehrjahresplan
 * `x/amm` — On-Chain-Liquidität / automatisierter Market Maker
 
 **Bridges und Interoperabilität**
 
-* `x/bridge` — 37 QCB-Konfigurationen (36 externe Chains + QoreChain-Loopback) über jeden wichtigen Chain-Typ hinweg, PQC-signierte Attestierungen, Schutzschalter
+* `x/bridge` — 37 QCB-Konfigurationen (36 externe Chains + QoreChain-Loopback) über jeden wichtigen Chain-Typ hinweg, PQC-signierte Attestierungen, Circuit Breaker
 * `x/babylon` — BTC-Restaking über Babylon Protocol, Epochen-Checkpoints
-* `x/multilayer` — Verwaltung von Sidechain-/Paychain-/Rollup-Schichten, Zustandsverankerung
+* `x/multilayer` — Verwaltung der Sidechain-/Paychain-/Rollup-Schicht, State-Anchoring
 
-**Governance- und Lizenzierungserweiterungen**
+**Governance- und Lizenz-Erweiterungen**
 
-* `x/abstractaccount` — Smart Accounts: Multisig, soziale Wiederherstellung, Session-Keys, Ausgaberegeln
-* `x/fairblock` — MEV-Schutz: Threshold-IBE-Framework für verschlüsselten Mempool
-* `x/gasabstraction` — Gaszahlung mit mehreren Token: ibc/USDC-, ibc/ATOM-Gebührenkonvertierung
+* `x/abstractaccount` — Smart Accounts: Multisig, Social Recovery, Session Keys, Spending Rules
+* `x/fairblock` — MEV-Schutz: Threshold-IBE-verschlüsseltes Mempool-Framework
+* `x/gasabstraction` — Gebührenzahlung mit mehreren Token: ibc/USDC-, ibc/ATOM-Gebührenkonvertierung
 * `x/license` — Chain-Lizenzierung
 
 **Rollups**
 
-* `x/rdk` — Rollup Development Kit: 4 Settlement-Modi (optimistic, zk, based, sovereign), voreingestellte Profile, native DA, Bank-Escrow
+* `x/rdk` — Rollup Development Kit: 4 Settlement-Modi (optimistic, zk, based, sovereign), vorgefertigte Profile, native DA, Bank-Escrow
 
 ## AnteHandler-Kette
 
-Jede Transaktion durchläuft vor der Ausführung die folgende Decorator-Kette. Die Decorators laufen in Reihenfolge ab; jeder Decorator kann die Transaktion ablehnen.
+Jede Transaktion durchläuft vor der Ausführung die folgende Decorator-Kette. Die Decorators laufen der Reihe nach; jeder Decorator kann die Transaktion ablehnen.
 
 ```
 SetUpContext
@@ -213,28 +213,28 @@ SetUpContext
                                         → IncrementSequence
 ```
 
-Die wichtigsten Decorators laufen in folgender Reihenfolge ab (jeder Decorator läuft der Reihe nach und kann eine Transaktion ablehnen):
+Die wichtigsten Decorators laufen in folgender Reihenfolge (jeder Decorator läuft der Reihe nach und kann eine Transaktion ablehnen):
 
-1. **PQCVerify** — Modul `x/pqc`. Verifiziert Dilithium-5-Signaturen bei PQC-markierten Transaktionen.
-2. **PQCHybridVerify** — Modul `x/pqc`. Verifiziert duale hybride Signaturen aus secp256k1 (ECDSA) + ML-DSA-87.
+1. **PQCVerify** — Modul `x/pqc`. Verifiziert Dilithium-5-Signaturen bei PQC-gekennzeichneten Transaktionen.
+2. **PQCHybridVerify** — Modul `x/pqc`. Verifiziert duale secp256k1 (ECDSA) + ML-DSA-87 Hybrid-Signaturen.
 3. **AIAnomaly** — Modul `x/ai`. Führt Isolation-Forest-Anomalieerkennung und Risikobewertung durch.
 4. **FairBlock** — Modul `x/fairblock`. Verarbeitet tIBE-verschlüsselte Transaktionen zum MEV-Schutz.
-5. **SVMComputeBudget** — Modul `x/svm`. Validiert und weist Recheneinheiten für SVM-Programme zu.
+5. **SVMComputeBudget** — Modul `x/svm`. Validiert und reserviert Compute-Units für SVM-Programme.
 6. **SVMDeductFee** — Modul `x/svm`. Zieht SVM-spezifische Ausführungsgebühren ab.
-7. **GasAbstraction** — Modul `x/gasabstraction`. Konvertiert nicht-native Gebührentoken (USDC, ATOM) vor dem Abzug.
+7. **GasAbstraction** — Modul `x/gasabstraction`. Konvertiert nicht-native Gebühren-Token (USDC, ATOM) vor dem Abzug.
 
 ## Docker-Compose-Stack
 
-Der vollständige Entwicklungs-Stack läuft als Docker-Compose-Bereitstellung mit sechs Diensten in einem gemeinsamen Bridge-Netzwerk (`qorechain-net`):
+Der vollständige Entwicklungs-Stack läuft als sechs-teiliges Docker-Compose-Deployment auf einem gemeinsamen Bridge-Netzwerk (`qorechain-net`):
 
-| Dienst           | Image                      | Zweck                                                       |
-| ---------------- | -------------------------- | ---------------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | Chain-Knoten mit allen Modulen, VMs und RPC-Endpunkten     |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | KI-Inferenzdienst (gRPC + QCAI-Backend)                    |
-| `block-indexer`  | `qorechain-indexer:latest` | Block-/Transaktions-Indexer (WebSocket + Postgres)         |
-| `postgres`       | `postgres:16-alpine`       | Datenbank für den Block-Indexer                            |
-| `prometheus`     | `prom/prometheus:latest`   | Metrikerfassung und -speicherung                           |
-| `grafana`        | `grafana/grafana:latest`   | Überwachungs-Dashboards und Alarmierung                    |
+| Dienst          | Image                      | Zweck                                             |
+| ---------------- | -------------------------- | --------------------------------------------------- |
+| `qorechain-node` | `qorechain-core:latest`    | Chain-Node mit allen Modulen, VMs und RPC-Endpunkten |
+| `ai-sidecar`     | `qorechain-sidecar:latest` | KI-Inferenzdienst (gRPC + QCAI-Backend)          |
+| `block-indexer`  | `qorechain-indexer:latest` | Block-/Transaktions-Indexer (WebSocket + Postgres)    |
+| `postgres`       | `postgres:16-alpine`       | Datenbank für den Block-Indexer                      |
+| `prometheus`     | `prom/prometheus:latest`   | Metrikerfassung und -speicherung                      |
+| `grafana`        | `grafana/grafana:latest`   | Monitoring-Dashboards und Alerting                  |
 
 Den vollständigen Stack starten:
 
@@ -244,9 +244,9 @@ docker compose up -d
 
 Alle persistenten Daten werden in benannten Docker-Volumes gespeichert: `node-data`, `postgres-data`, `prometheus-data` und `grafana-data`.
 
-## Verwandt
+## Siehe auch
 
-* [Multilayer-Architektur](/architecture/multilayer-architecture) — Sidechain-Registrierung und Zustandsverankerung.
-* [Konsensmechanismus](/architecture/consensus-mechanism) — Blockerzeugung, Finalität und Slashing.
+* [Multilayer-Architektur](/architecture/multilayer-architecture) — Sidechain-Registrierung und State-Anchoring.
+* [Konsensmechanismus](/architecture/consensus-mechanism) — Blockproduktion, Finalität und Slashing.
 * [PRISM Consensus Engine](/architecture/prism-consensus-engine) — KI-gesteuerte Parameteroptimierung.
-* [Post-Quanten-Sicherheit](/architecture/post-quantum-security) — Dilithium-5-Signaturen über den gesamten Stack.
+* [Post-Quanten-Sicherheit](/architecture/post-quantum-security) — Dilithium-5-Signaturen im gesamten Stack.

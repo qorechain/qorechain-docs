@@ -10,7 +10,7 @@ sidebar_position: 2
 Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, redelegarea între validatori, debondarea stake-ului, revendicarea recompenselor și înțelegerea arhitecturii de staking Triple-Pool a QoreChain.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026, rulând versiunea de chain **v3.1.85** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026, rulând versiunea de chain **v3.1.92** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
 ---
@@ -115,10 +115,10 @@ Recompensele de staking sunt finanțate din pool-ul de staking de 590M QOR al pr
 
 QoreChain folosește un model de staking **Triple-Pool** care clasifică validatorii în trei pool-uri în funcție de reputația și nivelurile lor de delegare. Fiecare pool primește o cotă ponderată din recompensele de bloc.
 
-| Pool                                 | Criterii de intrare                                          | Pondere recompensă |
+| Pool                                 | Criterii de intrare                                              | Pondere recompensă |
 | ------------------------------------ | ----------------------------------------------------------- | ------------- |
-| **RPoS** (Reputation Proof of Stake) | Scor de reputație >= percentila 70 **ȘI** stake >= mediană  | 40%           |
-| **DPoS** (Delegated Proof of Stake)  | Delegare totală >= 10.000 QOR                               | 35%           |
+| **RPoS** (Reputation Proof of Stake) | Scor de reputație >= percentila 70 **ȘI** stake >= mediană | 40%           |
+| **DPoS** (Delegated Proof of Stake)  | Delegare totală >= 10.000 QOR                              | 35%           |
 | **PoS** (Proof of Stake)             | Toți ceilalți validatori                                    | 25%           |
 
 Validatorii sunt reclasificați la fiecare graniță de epocă. Un validator care își construiește o reputație solidă și acumulează stake suficient este promovat în pool-ul RPoS, câștigând cea mai mare cotă de recompensă.
@@ -141,7 +141,7 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 | `alpha`  | Coeficient de loialitate (parametru de protocol)                     |
 | `L`      | Durata blocării în epoci                                             |
 | `Q(r)`   | Multiplicator de calitate derivat din scorul de reputație `r` al validatorului |
-| `P(t)`   | Multiplicator de pool la momentul `t` (40%, 35% sau 25% în funcție de pool)     |
+| `P(t)`   | Multiplicator de pool la momentul `t` (40%, 35% sau 25% în funcție de pool) |
 
 Duratele de blocare mai lungi și scorurile de reputație mai mari conduc la recompense proporțional mai mari, stimulând angajamentul pe termen lung și comportamentul corect al validatorilor.
 

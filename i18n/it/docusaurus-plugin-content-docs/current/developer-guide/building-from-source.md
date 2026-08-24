@@ -1,23 +1,23 @@
 ---
 slug: /developer-guide/building-from-source
-title: Building from Source
-sidebar_label: Building from Source
+title: Compilazione dai sorgenti
+sidebar_label: Compilazione dai sorgenti
 sidebar_position: 1
 ---
 
-# Building from Source
+# Compilazione dai sorgenti
 
-Questa guida ti accompagna nella compilazione del binario `qorechaind` dai sorgenti, coprendo sia la build della community (open-core) sia la build proprietaria completa.
+Questa guida ti accompagna nella compilazione del binario `qorechaind` a partire dai sorgenti, illustrando sia la build della community (open-core) sia la build proprietaria completa.
 
 ## Prerequisiti
 
-| Dipendenza         | Versione minima           | Note                                              |
-| ------------------ | ------------------------- | ------------------------------------------------- |
-| **Go**             | 1.26+                     | Richiesto per tutte le build                      |
-| **CGO**            | Abilitato (`CGO_ENABLED=1`) | Richiesto per i bridge FFI di PQC e SVM         |
-| **Toolchain Rust** | Ultima versione stabile   | Richiesto per compilare `libqorepqc` e `libqoresvm` |
-| **Make**           | 3.81+                     | Automazione della build                           |
-| **Git**            | 2.x                       | Checkout dei sorgenti                             |
+| Dipendenza         | Versione minima            | Note                                                |
+| ------------------ | --------------------------- | ---------------------------------------------------- |
+| **Go**              | 1.26+                       | Richiesto per tutte le build                         |
+| **CGO**             | Abilitato (`CGO_ENABLED=1`) | Richiesto per i bridge FFI di PQC e SVM              |
+| **Toolchain Rust**  | Ultima versione stabile     | Richiesto per compilare `libqorepqc` e `libqoresvm`  |
+| **Make**            | 3.81+                       | Automazione della build                              |
+| **Git**             | 2.x                         | Checkout dei sorgenti                                |
 
 Verifica il tuo ambiente:
 
@@ -34,7 +34,7 @@ Ogni invocazione di `go build`, `go test` e `go run` **deve** avere `CGO_ENABLED
 
 ## Librerie native
 
-QoreChain dipende da due librerie native compilate in Rust che vengono caricate a runtime.
+QoreChain dipende da due librerie native compilate in Rust, che vengono caricate a runtime.
 
 ### libqorepqc (crittografia post-quantistica)
 
@@ -47,11 +47,11 @@ cargo build --release
 
 La libreria compilata viene collocata in `lib/{os}_{arch}/`:
 
-| Piattaforma | File della libreria | Directory           |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
+| Piattaforma  | File della libreria | Directory            |
+| ------------ | -------------------- | --------------------- |
+| macOS arm64  | `libqorepqc.dylib`  | `lib/darwin_arm64/`  |
+| Linux amd64  | `libqorepqc.so`     | `lib/linux_amd64/`   |
+| Linux arm64  | `libqorepqc.so`     | `lib/linux_arm64/`   |
 
 ### libqoresvm (runtime SVM)
 
@@ -62,7 +62,7 @@ cd rust/qoresvm
 cargo build --release
 ```
 
-L'output segue la stessa convenzione `lib/{os}_{arch}/` di cui sopra (`libqoresvm.dylib` su macOS, `libqoresvm.so` su Linux).
+L'output segue la stessa convenzione `lib/{os}_{arch}/` descritta sopra (`libqoresvm.dylib` su macOS, `libqoresvm.so` su Linux).
 
 ### Impostazione del percorso delle librerie
 
@@ -89,9 +89,9 @@ Suggerimento: aggiungi l'export al profilo della tua shell (`~/.bashrc`, `~/.zsh
 QoreChain segue un modello **open-core**:
 
 * **Build della community** — Contiene le interfacce complete dei moduli, i comandi CLI, le definizioni protobuf e i tipi di messaggio per ogni modulo di QoreChain (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm, ecc.). I keeper dei moduli proprietari utilizzano **implementazioni stub** che restituiscono valori predefiniti sicuri o risposte no-op. Questo consente a strumenti, wallet e indexer di terze parti di integrarsi con tutte le API di QoreChain senza richiedere codice proprietario.
-* **Build completa (proprietaria)** — Abilita le implementazioni complete dei keeper dietro il build tag `proprietary`. Questo include la vera logica di rilevamento delle anomalie tramite AI, l'ottimizzazione dei parametri di consenso PRISM, lo scoring avanzato della reputazione e tutte le funzionalità di livello produzione.
+* **Build completa (proprietaria)** — Abilita le implementazioni complete dei keeper dietro il build tag `proprietary`. Questa include la logica reale di rilevamento delle anomalie basata su AI, l'ottimizzazione dei parametri di consenso PRISM, lo scoring avanzato della reputazione e tutte le funzionalità di livello produzione.
 
-Entrambe le build producono lo stesso nome di binario `qorechaind` ed espongono comandi CLI ed endpoint gRPC/REST identici. La differenza sta nel comportamento a runtime della logica dei keeper dietro tali interfacce.
+Entrambe le build producono un binario con lo stesso nome, `qorechaind`, ed espongono comandi CLI ed endpoint gRPC/REST identici. La differenza sta nel comportamento a runtime della logica dei keeper dietro tali interfacce.
 
 ## Build della community
 
@@ -99,7 +99,7 @@ Entrambe le build producono lo stesso nome di binario `qorechaind` ed espongono 
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Questo compila tutte le interfacce dei moduli pubblici con keeper stub per le funzionalità proprietarie. Il binario risultante è pienamente funzionale per:
+Questa build compila tutte le interfacce dei moduli pubblici con keeper stub per le funzionalità proprietarie. Il binario risultante è pienamente funzionale per:
 
 * Eseguire un nodo validator
 * Inviare e interrogare transazioni
@@ -145,7 +145,7 @@ Dopo una build riuscita, verifica il binario:
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Il comando `init` dovrebbe creare un file genesis e la configurazione del nodo in `~/.qorechaind/` senza errori. L'esempio sopra inizializza rispetto alla testnet **`qorechain-diana`** — per la mainnet, sostituisci `--chain-id qorechain-vladi`, la rete attiva che esegue la versione di chain **v3.1.85**.
+Il comando `init` dovrebbe creare un file genesis e la configurazione del nodo in `~/.qorechaind/` senza errori. L'esempio sopra inizializza rispetto alla testnet **`qorechain-diana`** — per la mainnet, sostituisci con `--chain-id qorechain-vladi`, la rete attiva che esegue la versione di chain **v3.1.92**.
 
 ## Build con Docker
 
@@ -163,7 +163,7 @@ L'immagine Docker gestisce automaticamente tutta la compilazione delle librerie 
 
 <summary>cgo: C compiler not found</summary>
 
-Installa gli strumenti CLI di Xcode (macOS) o `build-essential` (Linux)
+Installa gli strumenti CLI di Xcode (macOS) oppure `build-essential` (Linux)
 
 </details>
 
@@ -187,7 +187,7 @@ Assicurati che `go.sum` sia aggiornato: `go mod tidy`
 
 <summary>signal: killed during build</summary>
 
-Aumenta la memoria disponibile (comune in Docker con limiti bassi)
+Aumenta la memoria disponibile (situazione comune in Docker con limiti bassi)
 
 </details>
 

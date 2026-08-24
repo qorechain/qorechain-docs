@@ -7,29 +7,29 @@ sidebar_position: 4
 
 # Staking xQORE
 
-Ce guide couvre le mécanisme de staking de gouvernance xQORE, qui permet aux détenteurs de QOR de verrouiller leurs jetons pour un pouvoir de gouvernance accru, avec un modèle de rebase PvP qui récompense les participants de long terme.
+Ce guide couvre le mécanisme de staking de gouvernance xQORE, qui permet aux détenteurs de QOR de verrouiller leurs tokens pour obtenir un pouvoir de gouvernance renforcé, avec un modèle de rebase PvP qui récompense les participants sur le long terme.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.85** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous faites du staking sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au Mainnet** lors d'un staking sur mainnet.
 :::
 
 ---
 
 ## Vue d'ensemble
 
-xQORE est le jeton de staking de gouvernance de QoreChain. Lorsque vous verrouillez du QOR, vous recevez du xQORE selon un **ratio 1:1**. Détenir du xQORE procure un avantage significatif en gouvernance : les jetons xQORE comptent à **double pondération** dans la formule de pouvoir de vote QDRW (voir [Gouvernance](/user-guide/governance)).
+xQORE est le token de staking de gouvernance de QoreChain. Lorsque vous verrouillez du QOR, vous recevez du xQORE selon un **ratio de 1:1**. Détenir du xQORE offre un avantage significatif en matière de gouvernance : les tokens xQORE comptent avec un **poids double** dans la formule de pouvoir de vote QDRW (voir [Gouvernance](/user-guide/governance)).
 
 ```
 VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
 ```
 
-Cela signifie que verrouiller du QOR en xQORE double effectivement son impact de gouvernance par rapport au staking ordinaire seul.
+Cela signifie que verrouiller du QOR en xQORE double effectivement son impact en gouvernance par rapport au staking classique seul.
 
 ---
 
-## Verrouillage de QOR en xQORE
+## Verrouiller du QOR pour obtenir du xQORE
 
-Verrouillez des jetons QOR pour frapper du xQORE selon un ratio 1:1 :
+Verrouillez des tokens QOR pour émettre du xQORE selon un ratio de 1:1 :
 
 ```bash
 qorechaind tx xqore lock <amount>uqor \
@@ -51,9 +51,9 @@ Après cette transaction, votre compte détiendra 1 000 000 000 uxqore (1 000 xQ
 
 ---
 
-## Déverrouillage de xQORE
+## Déverrouiller du xQORE
 
-Brûlez du xQORE pour récupérer du QOR. Une **pénalité de sortie** peut s'appliquer selon la durée pendant laquelle les jetons ont été verrouillés :
+Brûlez du xQORE pour récupérer du QOR. Une **pénalité de sortie** peut s'appliquer selon la durée pendant laquelle les tokens ont été verrouillés :
 
 ```bash
 qorechaind tx xqore unlock <amount>uqor \
@@ -73,37 +73,37 @@ qorechaind tx xqore unlock 500000000uqor \
 
 ---
 
-## Barème des pénalités de sortie
+## Barème de pénalité de sortie
 
-Un retrait anticipé du xQORE entraîne une pénalité. Plus vous conservez longtemps, plus la pénalité est faible :
+Un retrait anticipé du xQORE entraîne une pénalité. Plus vous conservez vos tokens longtemps, plus la pénalité est faible :
 
-| Durée de verrouillage      | Pénalité de sortie |
-| ------------------ | ------------ |
-| Moins de 30 jours  | **50 %**      |
-| 30 à 90 jours      | **35 %**      |
-| 90 à 180 jours     | **15 %**      |
-| Plus de 180 jours | **0 %**       |
+| Durée de verrouillage | Pénalité de sortie |
+| ---------------------- | ------------------- |
+| Moins de 30 jours      | **50%**              |
+| 30 à 90 jours          | **35%**              |
+| 90 à 180 jours         | **15%**              |
+| Plus de 180 jours      | **0%**               |
 
-**Exemple :** Si vous avez verrouillé 1 000 QOR et déverrouillez après 45 jours, vous recevez 650 QOR (pénalité de 35 % appliquée). Les 350 QOR restants sont redistribués aux autres détenteurs de xQORE via le mécanisme de rebase PvP.
+**Exemple :** Si vous avez verrouillé 1 000 QOR et déverrouillez après 45 jours, vous recevez 650 QOR (pénalité de 35% appliquée). Les 350 QOR restants sont redistribués aux autres détenteurs de xQORE via le mécanisme de rebase PvP.
 
 ---
 
 ## Mécanisme de rebase PvP
 
-Les pénalités collectées lors des sorties anticipées ne sont **pas brûlées**. Elles sont au contraire redistribuées proportionnellement à tous les détenteurs de xQORE restants. Cela crée une dynamique « Player vs Player » où les détenteurs patients profitent de l'impatience des autres.
+Les pénalités collectées lors des sorties anticipées ne sont **pas brûlées**. Elles sont au contraire redistribuées proportionnellement à tous les détenteurs de xQORE restants. Cela crée une dynamique « joueur contre joueur » où les détenteurs patients profitent de l'impatience des autres.
 
 Fonctionnement :
 
-1. Un utilisateur déverrouille du xQORE avant le seuil de pénalité nulle de 180 jours.
-2. La pénalité de sortie est déduite de son QOR restitué.
-3. Le montant de la pénalité est distribué proportionnellement à toutes les positions xQORE restantes.
+1. Un utilisateur déverrouille du xQORE avant d'atteindre le seuil de 180 jours de pénalité nulle.
+2. La pénalité de sortie est déduite du QOR qui lui est retourné.
+3. Le montant de la pénalité est distribué proportionnellement entre toutes les positions xQORE restantes.
 4. Le QOR réclamable par xQORE de chaque détenteur restant augmente.
 
-Ce mécanisme incite à l'engagement de gouvernance à long terme et récompense les détenteurs qui maintiennent leurs positions.
+Ce mécanisme incite à un engagement de gouvernance sur le long terme et récompense les détenteurs qui maintiennent leurs positions.
 
 ---
 
-## Consultation de votre position
+## Consulter votre position
 
 Vérifiez votre position xQORE actuelle, la durée de verrouillage et la pénalité de sortie applicable :
 
@@ -117,7 +117,7 @@ qorechaind query xqore position <address>
 qorechaind query xqore position qor1abc...xyz
 ```
 
-**Exemple de sortie :**
+**Exemple de résultat :**
 
 ```yaml
 position:
@@ -133,7 +133,7 @@ position:
 
 ## Accès JSON-RPC
 
-Pour les applications intégrant QoreChain via JSON-RPC, la position xQORE peut être interrogée à l'aide de :
+Pour les applications s'intégrant à QoreChain via JSON-RPC, la position xQORE peut être consultée à l'aide de :
 
 ```
 qor_getXQOREPosition
@@ -168,10 +168,10 @@ qor_getXQOREPosition
 
 ---
 
-## Astuces
+## Conseils
 
 * Verrouillez du QOR en xQORE bien avant les votes de gouvernance importants pour maximiser votre pouvoir de vote.
-* Le seuil de 180 jours pour les sorties sans pénalité récompense les participants patients à la gouvernance.
-* Surveillez les accruals de rebase PvP. À mesure que d'autres sortent prématurément, votre position prend de la valeur.
-* Le xQORE est non transférable. Il ne peut être frappé qu'en verrouillant du QOR et brûlé qu'en déverrouillant.
-* Examinez attentivement la pénalité de sortie avant de verrouiller. Les verrouillages à court terme comportent des pénalités importantes.
+* Le seuil de 180 jours pour une sortie sans pénalité récompense les participants patients à la gouvernance.
+* Surveillez les accumulations de rebase PvP. Lorsque d'autres sortent tôt, votre position gagne en valeur.
+* xQORE n'est pas transférable. Il ne peut être émis qu'en verrouillant du QOR et brûlé qu'en le déverrouillant.
+* Réfléchissez attentivement à la pénalité de sortie avant de verrouiller. Les verrouillages de courte durée entraînent des pénalités importantes.

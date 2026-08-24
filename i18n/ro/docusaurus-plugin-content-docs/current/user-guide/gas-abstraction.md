@@ -1,58 +1,58 @@
 ---
 slug: /user-guide/gas-abstraction
-title: Abstractizarea gazului
-sidebar_label: Abstractizarea gazului
+title: Abstractizare Gas
+sidebar_label: Abstractizare Gas
 sidebar_position: 7
 ---
 
-# Abstractizarea gazului
+# Abstractizare Gas
 
-Acest ghid descrie funcționalitatea de abstractizare a gazului din QoreChain, care le permite utilizatorilor să plătească comisioanele de tranzacție în tokeni non-nativi în loc de QOR.
+Acest ghid descrie funcția de abstractizare a gazului din QoreChain, care le permite utilizatorilor să plătească taxele de tranzacție în tokenuri non-native, în loc de QOR.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.85** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când tranzacționezi pe mainnet.
+Comenzile de mai jos folosesc rețeaua de testare **`qorechain-diana`** (ID lanț EVM **9800**). Rețeaua principală (**`qorechain-vladi`**, ID lanț EVM **9801**) rulează live din 7 iunie 2026, folosind versiunea de lanț **v3.1.92** — înlocuiți ID-ul lanțului și punctele de acces (endpoints) ale rețelei principale din pagina **Connecting to Mainnet** atunci când tranzacționați pe rețeaua principală.
 :::
 
 ---
 
 ## Prezentare generală
 
-Abstractizarea gazului elimină cerința de a deține tokeni QOR pentru a plăti comisioanele de tranzacție. Utilizatorii care dețin tokeni alternativi acceptați (cum ar fi USDC sau ATOM transferați prin IBC) pot folosi acei tokeni direct ca plată a comisionului. Protocolul convertește automat suma comisionului în echivalentul ei nativ înainte de procesare.
+Abstractizarea gazului elimină cerința de a deține tokenuri QOR pentru plata taxelor de tranzacție. Utilizatorii care dețin tokenuri alternative acceptate (precum USDC sau ATOM transferate prin IBC) pot folosi aceste tokenuri direct pentru plata taxelor. Protocolul convertește automat suma taxei în echivalentul său nativ înainte de procesare.
 
 ---
 
-## Tokeni acceptați
+## Tokenuri acceptate
 
-Următorii tokeni sunt acceptați pentru plata comisioanelor:
+Următoarele tokenuri sunt acceptate pentru plata taxelor:
 
-| Token              | Denominare   | Rată de conversie | Exemplu de comision  |
-| ------------------ | ------------ | --------------- | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (nativ)     | `--fees 500uqor`     |
-| **USDC** (prin IBC) | `ibc/USDC`  | 1.0             | `--fees 500ibc/USDC` |
-| **ATOM** (prin IBC) | `ibc/ATOM`  | 10.0            | `--fees 50ibc/ATOM`  |
+| Token              | Denominare | Rată de conversie | Exemplu de taxă      |
+| ------------------ | ---------- | ------------------ | --------------------- |
+| **QOR**            | `uqor`       | 1.0 (nativă)    | `--fees 500uqor`     |
+| **USDC** (prin IBC) | `ibc/USDC`   | 1.0             | `--fees 500ibc/USDC` |
+| **ATOM** (prin IBC) | `ibc/ATOM`   | 10.0            | `--fees 50ibc/ATOM`  |
 
 :::note
-Ratele de conversie reflectă raportul de schimb definit de protocol, nu prețurile de piață. O rată de 10.0 pentru ATOM înseamnă că 1 unitate de ibc/ATOM este echivalentă cu 10 unități de uqor în scopuri de comision.
+Ratele de conversie reflectă raportul de schimb definit de protocol, nu prețurile de piață. O rată de 10.0 pentru ATOM înseamnă că 1 unitate de ibc/ATOM este echivalentă cu 10 unități de uqor în scopul plății taxelor.
 :::
 
 ---
 
 ## Cum funcționează
 
-`GasAbstractionDecorator` din QoreChain este integrat în pipeline-ul de procesare a tranzacțiilor. Când o tranzacție include comisioane într-o denominare non-nativă, se întâmplă următoarele:
+`GasAbstractionDecorator` din QoreChain este integrat în fluxul de procesare a tranzacțiilor. Atunci când o tranzacție include taxe într-o denominare non-nativă, se întâmplă următoarele:
 
-1. **Inspectarea comisionului** — Decoratorul verifică denominarea comisionului specificată în tranzacție.
-2. **Căutarea ratei** — Dacă denominarea se află în lista de tokeni acceptați, protocolul caută rata de conversie corespunzătoare.
-3. **Conversie** — Suma comisionului este convertită în echivalentul ei nativ uqor folosind rata de conversie.
-4. **Procesare standard** — Comisionul convertit este transmis handler-ului standard `DeductFee` pentru deducerea din contul expeditorului. Conversia este transparentă pentru restul pipeline-ului de tranzacții. Toată procesarea ulterioară a comisioanelor (distribuirea către validatori, arderea, alocarea către trezorerie, recompensele pentru stakeri și recompensele pentru nodurile light) operează pe echivalentul nativ uqor.
+1. **Verificarea taxei** — Decoratorul verifică denominarea taxei specificată în tranzacție.
+2. **Căutarea ratei** — Dacă denominarea se află în lista tokenurilor acceptate, protocolul caută rata de conversie corespunzătoare.
+3. **Conversia** — Suma taxei este convertită în echivalentul său nativ în uqor, folosind rata de conversie.
+4. **Procesarea standard** — Taxa convertită este transmisă către handler-ul standard `DeductFee` pentru a fi dedusă din contul expeditorului. Conversia este transparentă pentru restul fluxului de procesare a tranzacției. Toată procesarea ulterioară a taxei (distribuirea către validatori, arderea, alocarea către trezorerie, recompensele stakerilor și recompensele nodurilor ușoare) operează pe echivalentul nativ în uqor.
 
 ---
 
 ## Exemple de utilizare
 
-### Plata comisioanelor în USDC
+### Plata taxelor în USDC
 
-Trimite un transfer de tokeni cu comisioane plătite în USDC:
+Trimiteți un transfer de tokenuri cu taxele plătite în USDC:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
@@ -62,9 +62,9 @@ qorechaind tx bank send mykey qor1recipient... 5000000uqor \
 
 Deoarece USDC are o rată de conversie de 1.0, 500 ibc/USDC este echivalent cu 500 uqor.
 
-### Plata comisioanelor în ATOM
+### Plata taxelor în ATOM
 
-Trimite un transfer de tokeni cu comisioane plătite în ATOM:
+Trimiteți un transfer de tokenuri cu taxele plătite în ATOM:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
@@ -76,15 +76,15 @@ Deoarece ATOM are o rată de conversie de 10.0, 50 ibc/ATOM este echivalent cu 5
 
 ---
 
-## Interogarea tokenilor acceptați
+## Interogarea tokenurilor acceptate
 
-Obține lista tokenilor acceptați în prezent pentru abstractizarea gazului, împreună cu ratele lor de conversie:
+Recuperați lista tokenurilor acceptate în prezent pentru abstractizarea gazului, împreună cu ratele lor de conversie:
 
 ```bash
 qorechaind query gasabstraction accepted-tokens
 ```
 
-**Exemplu de ieșire:**
+**Exemplu de rezultat:**
 
 ```yaml
 accepted_tokens:
@@ -98,9 +98,9 @@ accepted_tokens:
 
 ---
 
-## Acces prin JSON-RPC
+## Acces JSON-RPC
 
-Pentru aplicațiile care se integrează prin JSON-RPC, interoghează configurația abstractizării gazului:
+Pentru aplicațiile care se integrează prin JSON-RPC, interogați configurația abstractizării gazului:
 
 ```
 qor_getGasAbstractionConfig
@@ -137,9 +137,9 @@ qor_getGasAbstractionConfig
 
 :::tip
 
-* Abstractizarea gazului este ideală pentru utilizatorii care provin din alte ecosisteme și care s-ar putea să nu dețină încă QOR.
-* Ratele de conversie sunt stabilite prin guvernanță și pot fi actualizate prin propuneri de modificare a parametrilor.
-* Dacă deții mai mulți tokeni acceptați, oricare dintre ei poate fi folosit pentru comisioane la orice tip de tranzacție.
-* Tokenul efectiv specificat în `--fees` este dedus din contul tău. Conversia este folosită doar pentru a valida că comisionul îndeplinește cerința minimă.
+* Abstractizarea gazului este ideală pentru utilizatorii care se alătură din alte ecosisteme și care s-ar putea să nu dețină încă QOR.
+* Ratele de conversie sunt stabilite prin guvernanță și pot fi actualizate prin propuneri de schimbare a parametrilor.
+* Dacă dețineți mai multe tokenuri acceptate, oricare dintre ele poate fi folosit pentru taxe, pe orice tip de tranzacție.
+* Tokenul efectiv specificat în `--fees` este dedus din contul dvs. Conversia este folosită doar pentru a valida că taxa îndeplinește cerința minimă.
 
 :::

@@ -22,11 +22,21 @@ Sie können sich über **Anmelden** auf dem Home-Tab oder während des Onboardin
 Das Passkey-Angebot erscheint nur nach der Anmeldung per **E-Mail-Code**. Wenn Sie sich mit einem Identitätsanbieter (Google oder Dashboard) anmelden, verwaltet dieser Anbieter seine eigene Authentifizierung, sodass diesen Konten kein Passkey zugeordnet werden kann.
 :::
 
+## Mehrere Konten aus einer Phrase {#accounts}
+
+Einstellungen → **Ihre Konten** lässt Sie bis zu **20 Konten** erstellen, wechseln und umbenennen, die alle von derselben 24-Wort-Wiederherstellungsphrase abgeleitet sind (es gibt nichts Zusätzliches zu sichern). Jedes Konto ist eine eigene, unterscheidbare `qor1…`-Adresse mit eigenem Guthaben und — weil ein Handle an eine **Adresse** gebunden ist, nicht an die Wallet als Ganzes — auch mit einem eigenen optionalen @handle. Welches Konto gerade aktiv ist, bestimmt, welches Konto Senden, Empfangen, Staking und der dApp-Browser verwenden. Die Browser-Erweiterung verfügt nicht über diese Funktion; sie verwaltet genau ein Konto.
+
 ## @handle {#handle}
 
 Beanspruchen Sie einen eindeutigen Namen (zum Beispiel `@liviu`), der durch **doppelte Signaturen** an Ihre Adresse gebunden wird (eine ed25519-Signatur der Registry + Ihre eigene secp256k1-Signatur). Jeder kann dann an Ihren @handle senden. Die Auflösung erfolgt nach dem Prinzip **verify-then-pin** (Trust-on-First-Use), sodass QoreX es meldet, falls der Schlüssel eines Handles jemals stillschweigend geändert wird.
 
+Weil ein Handle an eine Adresse gebunden ist und nicht an Ihre Wallet, erfolgt die Beanspruchung **pro Adresse** — wenn Sie [mehrere Konten](#accounts) haben, kann jedes sein eigenes @handle tragen, und die Beanspruchung eines Handles für ein Konto gibt den anderen nicht automatisch einen Namen. Die Browser-Erweiterung kann ebenfalls einen Handle für ihre eigene einzelne Adresse beanspruchen, direkt aus dem Popup heraus.
+
 Wenn die Handle-Registry vorübergehend nicht erreichbar ist, wird der Bildschirm auf **„Handles demnächst verfügbar"** heruntergestuft und alles andere funktioniert weiter; Handles werden automatisch wieder aktiv, sobald die Registry zurückkehrt.
+
+:::note Beanspruchung eines Handles vs. Verknüpfung mit dem Dashboard
+Dies sind zwei getrennte, voneinander unabhängige Aktionen. Die Beanspruchung eines @handle ermöglicht es **anderen Personen, Ihnen unter Ihrem Namen zu senden** — mehr bewirkt sie von sich aus nicht. Die Verknüpfung mit dem Dashboard (unten) verbindet Ihre Wallet mit einem Dashboard-Konto, sodass beide dieselben Daten anzeigen können. Sie können das eine tun, ohne das andere zu tun.
+:::
 
 ## Verknüpftes Konto {#linked-account}
 
@@ -43,7 +53,7 @@ Die Anmeldung *über* **Mit Dashboard fortfahren** verknüpft beide implizit —
 Wenn das Dashboard verbunden ist:
 
 - **Connect with QoreX** auf dem Dashboard koppelt es über einen `qorex://connect` Deep Link plus einen signierten Eigentumsnachweis mit Ihrer Wallet.
-- **Auf dem Dashboard initiierte Überweisungen** treffen in QoreX als `qorex://tx`-Anfragen ein. Sie werden dekodiert, Ihnen vollständig angezeigt und **nur in der App** nach biometrischer Freigabe signiert — und nur von der eigenen abgeleiteten Adresse der App.
+- **Auf dem Dashboard initiierte Überweisungen** treffen in QoreX als `qorex://tx`-Anfragen ein. Sie werden dekodiert, Ihnen vollständig angezeigt und **nur in der App** nach biometrischer Freigabe signiert — und nur von der eigenen abgeleiteten Adresse der App. Weil eine `qor1…`-Adresse auf Mainnet und Testnet gleichermaßen gültig ist, gibt jede vom Dashboard initiierte Anfrage an, welches Netzwerk sie anspricht, und QoreX verweigert die Ausführung, falls dies nicht mit dem Netzwerk übereinstimmt, mit dem Sie gerade verbunden sind — es wechselt niemals im Auftrag einer Anfrage das Netzwerk.
 - Wenn eine Connect- oder Überweisungsanfrage eintrifft, während Sie **nicht angemeldet** sind, bietet QoreX einen eingebetteten Schritt **„Am Dashboard anmelden"** an, damit Sie fortfahren können, ohne in eine Sackgasse zu geraten.
 - **Ihre Adressen (Einstellungen)** — listet jedes von dieser Wallet abgeleitete Konto sowie **schreibgeschützte** Adressen auf, die Sie aus anderen Wallets verknüpft haben (Keplr / MetaMask / Phantom). Schreibgeschützte Einträge sind mit der Wallet gekennzeichnet, die sie erstellt hat; beim Versuch, von einer solchen zu senden, wird erklärt, dass Sie von der Wallet senden müssen, die sie erstellt hat.
 

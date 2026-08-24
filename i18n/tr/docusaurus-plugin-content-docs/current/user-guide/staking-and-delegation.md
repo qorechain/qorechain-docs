@@ -1,23 +1,23 @@
 ---
 slug: /user-guide/staking-and-delegation
-title: Stake Etme ve Delegasyon
-sidebar_label: Stake Etme ve Delegasyon
+title: Stake ve Delegasyon
+sidebar_label: Stake ve Delegasyon
 sidebar_position: 2
 ---
 
-# Stake Etme ve Delegasyon
+# Stake ve Delegasyon
 
-Bu kılavuz, QOR tokenlarını doğrulayıcılara nasıl delege edeceğinizi, doğrulayıcılar arasında nasıl yeniden delege edeceğinizi (redelegate), stake'inizin bağını nasıl çözeceğinizi (unbond), ödülleri nasıl talep edeceğinizi ve QoreChain'in Triple-Pool stake etme mimarisini nasıl anlayacağınızı kapsar.
+Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in Üçlü Havuz (Triple-Pool) stake mimarisini anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM chain ID **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.85** zincir sürümünü çalıştırarak yayında — ana ağda stake ederken **Ana Ağa Bağlanma** sayfasındaki ana ağ chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri **v3.1.92** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 ---
 
 ## Token Delege Etme
 
-Stake etme ödülleri kazanmak ve ağ güvenliğine katılmak için bir doğrulayıcıya QOR delege edin:
+Stake ödülleri kazanmak ve ağ güvenliğine katılmak için QOR'u bir doğrulayıcıya delege edin:
 
 ```bash
 qorechaind tx staking delegate <validator_address> <amount>uqor \
@@ -37,9 +37,9 @@ qorechaind tx staking delegate qorvaloper1abc...xyz 100000000uqor \
 
 ---
 
-## Yeniden Delege Etme
+## Yeniden Delege Etme (Redelegation)
 
-Bağ çözme süresini beklemeden delegasyonunuzu bir doğrulayıcıdan diğerine taşıyın:
+Çözülme (unbonding) süresini beklemeden delegasyonunuzu bir doğrulayıcıdan diğerine taşıyın:
 
 ```bash
 qorechaind tx staking redelegate <source_validator> <destination_validator> <amount>uqor \
@@ -58,14 +58,14 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
 ```
 
 :::caution
-Zaten bir yeniden delege etme aktarımında olan tokenları yeniden delege edemezsiniz. Başka bir tane başlatmadan önce mevcut yeniden delege etme işleminin tamamlanmasını bekleyin.
+Zaten bir yeniden delegasyon transiti içinde olan token'ları tekrar yeniden delege edemezsiniz. Bir sonrakini başlatmadan önce mevcut yeniden delegasyonun tamamlanmasını bekleyin.
 :::
 
 ---
 
-## Bağ Çözme
+## Çözülme (Unbonding)
 
-Delege ettiğiniz tokenları bir doğrulayıcıdan geri çekin. Bağ çözme işleminin tamamlanması **21 gün** sürer ve bu süre boyunca tokenlar ödül kazanmaz ve transfer edilemez.
+Delege edilmiş token'larınızı bir doğrulayıcıdan geri çekin. Çözülme süresi **21 gün** sürer; bu süre boyunca token'lar ödül kazanmaz ve transfer edilemez.
 
 ```bash
 qorechaind tx staking unbond <validator_address> <amount>uqor \
@@ -83,13 +83,13 @@ qorechaind tx staking unbond qorvaloper1abc...xyz 25000000uqor \
   --fees 500uqor
 ```
 
-21 günlük bağ çözme süresinden sonra, tokenlar otomatik olarak hesabınıza iade edilir.
+21 günlük çözülme süresinin ardından token'lar otomatik olarak hesabınıza geri döner.
 
 ---
 
 ## Ödülleri Talep Etme
 
-Delege ettiğiniz her doğrulayıcıdan birikmiş tüm stake etme ödüllerini geri çekin:
+Delege ettiğiniz her doğrulayıcıdan birikmiş tüm stake ödüllerini çekin:
 
 ```bash
 qorechaind tx distribution withdraw-all-rewards \
@@ -98,7 +98,7 @@ qorechaind tx distribution withdraw-all-rewards \
   --fees 500uqor
 ```
 
-Yalnızca belirli bir doğrulayıcıdan ödülleri geri çekmek için:
+Yalnızca belirli bir doğrulayıcıdan ödül çekmek için:
 
 ```bash
 qorechaind tx distribution withdraw-rewards <validator_address> \
@@ -107,49 +107,49 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Stake etme ödülleri, her işlem ücretinin stake eden payı (%10) ile birlikte, Tokenomics v2.1 takvimi kapsamında protokolün 590M QOR stake etme havuzundan finanse edilir.
+Stake ödülleri, Tokenomics v2.1 takvimi kapsamında protokolün 590M QOR'luk stake havuzundan ve her işlem ücretinin doğrulayıcı payından (%10) finanse edilir.
 
 ---
 
-## Triple-Pool Sınıflandırması
+## Üçlü Havuz (Triple-Pool) Sınıflandırması
 
-QoreChain, doğrulayıcıları itibarlarına ve delegasyon seviyelerine göre üç havuza sınıflandıran bir **Triple-Pool** stake etme modeli kullanır. Her havuz, blok ödüllerinden ağırlıklı bir pay alır.
+QoreChain, doğrulayıcıları itibar (reputation) ve delegasyon seviyelerine göre üç havuza ayıran bir **Üçlü Havuz** stake modeli kullanır. Her havuz, blok ödüllerinden ağırlıklı bir pay alır.
 
-| Havuz                                | Giriş Kriterleri                                              | Ödül Ağırlığı |
-| ------------------------------------ | ----------------------------------------------------------- | ------------- |
-| **RPoS** (Reputation Proof of Stake) | İtibar puanı >= 70. yüzdelik dilim **VE** stake >= medyan | 40%           |
-| **DPoS** (Delegated Proof of Stake)  | Toplam delegasyon >= 10.000 QOR                              | 35%           |
-| **PoS** (Proof of Stake)             | Kalan tüm doğrulayıcılar                                    | 25%           |
+| Havuz                                 | Giriş Kriteri                                                | Ödül Ağırlığı |
+| ------------------------------------- | ------------------------------------------------------------- | -------------- |
+| **RPoS** (Reputation Proof of Stake)  | İtibar puanı >= 70. yüzdelik dilim **VE** stake >= medyan     | %40            |
+| **DPoS** (Delegated Proof of Stake)   | Toplam delegasyon >= 10.000 QOR                                | %35            |
+| **PoS** (Proof of Stake)              | Kalan tüm doğrulayıcılar                                       | %25            |
 
-Doğrulayıcılar her epoch sınırında yeniden sınıflandırılır. Güçlü bir itibar oluşturan ve yeterli stake biriktiren bir doğrulayıcı, en yüksek ödül payını kazanarak RPoS havuzuna yükseltilir.
+Doğrulayıcılar her epoch sınırında yeniden sınıflandırılır. Güçlü bir itibar oluşturan ve yeterli stake biriktiren bir doğrulayıcı, en yüksek ödül payını kazanarak RPoS havuzuna terfi ettirilir.
 
 ---
 
-## Bağlanma Eğrisi Ödülleri
+## Bonding Curve Ödülleri
 
-Bireysel stake etme ödülleri, QoreChain'in bağlanma eğrisi formülü kullanılarak hesaplanır:
+Bireysel stake ödülleri, QoreChain'in bonding curve formülü kullanılarak hesaplanır:
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 ```
 
-| Değişken | Açıklama                                                          |
-| -------- | -------------------------------------------------------------------- |
-| `R`      | Dönem için ödül miktarı                                         |
-| `beta`   | Temel ödül oranı (protokol parametresi)                                |
-| `S`      | Stake edilen miktar                                                        |
-| `alpha`  | Sadakat katsayısı (protokol parametresi)                             |
-| `L`      | Epoch cinsinden kilit süresi                                              |
-| `Q(r)`   | Doğrulayıcının itibar puanından `r` türetilen kalite çarpanı |
-| `P(t)`   | `t` zamanındaki havuz çarpanı (havuza bağlı olarak %40, %35 veya %25)     |
+| Değişken | Açıklama                                                              |
+| -------- | ----------------------------------------------------------------------- |
+| `R`      | Dönem için ödül miktarı                                                 |
+| `beta`   | Temel ödül oranı (protokol parametresi)                                 |
+| `S`      | Stake edilen miktar                                                     |
+| `alpha`  | Sadakat katsayısı (protokol parametresi)                                |
+| `L`      | Epoch cinsinden kilit süresi                                            |
+| `Q(r)`   | Doğrulayıcının `r` itibar puanından türetilen kalite çarpanı            |
+| `P(t)`   | `t` anındaki havuz çarpanı (havuza bağlı olarak %40, %35 veya %25)      |
 
-Daha uzun kilit süreleri ve daha yüksek itibar puanları orantılı olarak daha büyük ödüllerle sonuçlanır; bu, uzun vadeli bağlılığı ve iyi doğrulayıcı davranışını teşvik eder.
+Daha uzun kilit süreleri ve daha yüksek itibar puanları, orantılı olarak daha büyük ödüllerle sonuçlanır; bu da uzun vadeli taahhüdü ve iyi doğrulayıcı davranışını teşvik eder.
 
 ---
 
-## Doğrulayıcı Bilgilerini Sorgulama
+## Doğrulayıcı Bilgisi Sorgulama
 
-Herhangi bir doğrulayıcı hakkındaki ayrıntıları arayın:
+Herhangi bir doğrulayıcı hakkındaki ayrıntılara bakın:
 
 ```bash
 qorechaind query staking validator <validator_operator_address>
@@ -177,9 +177,9 @@ qorechaind query staking delegations <delegator_address>
 
 :::tip
 
-* **RPoS havuzundaki** doğrulayıcılara delege etmek, %40 havuz ağırlığı nedeniyle en yüksek ödülleri sağlar.
-* Doğrulayıcı itibarı oluşturmak zaman alır. Delege etmeden önce doğrulayıcının geçmiş performansını göz önünde bulundurun.
-* Yeniden delege etme anlıktır ancak bekleme süresi kısıtlamaları vardır. Hamlelerinizi dikkatlice planlayın.
-* 21 günlük bağ çözme süresi bir güvenlik önlemidir. Bu süre zarfında slashing olayları tokenlarınızı hâlâ etkileyebilir.
+* **RPoS havuzundaki** doğrulayıcılara delege etmek, %40'lık havuz ağırlığı nedeniyle en yüksek ödülleri sağlar.
+* Doğrulayıcı itibarının oluşması zaman alır. Delege etmeden önce doğrulayıcının geçmiş performansını göz önünde bulundurun.
+* Yeniden delegasyon anında gerçekleşir ancak bekleme süresi kısıtlamalarına tabidir. Hareketlerinizi buna göre planlayın.
+* 21 günlük çözülme süresi bir güvenlik önlemidir. Bu süre boyunca slashing (cezalandırma) olayları token'larınızı yine de etkileyebilir.
 
 :::

@@ -10,7 +10,7 @@ sidebar_position: 11
 Todo lo que un exchange, un custodio o un integrador de pagos necesita para listar QOR y procesar depósitos y retiros: elegir una interfaz, detectar depósitos de forma segura y firmar retiros.
 
 :::note
-Esta guía se centra en la mainnet **`qorechain-vladi`** (versión de la cadena **v3.1.85**). Ensaye primero el flujo completo en la testnet **`qorechain-diana`** — los endpoints de ambas redes están en [Redes](/appendix/networks#public-endpoints). Si opera su propio nodo completo, manténgalo en la versión de cadena actual — un nodo desactualizado no puede decodificar los tipos de transacción más recientes y deja de sincronizarse.
+Esta guía se centra en la mainnet **`qorechain-vladi`** (versión de la cadena **v3.1.92**). Ensaye primero el flujo completo en la testnet **`qorechain-diana`** — los endpoints de ambas redes están en [Redes](/appendix/networks#public-endpoints). Si opera su propio nodo completo, manténgalo en la versión de cadena actual — un nodo desactualizado no puede decodificar los tipos de transacción más recientes y deja de sincronizarse.
 :::
 
 ## Elegir una ruta de integración {#choosing-a-path}
@@ -27,7 +27,7 @@ QoreChain es una única cadena con **un saldo nativo de QOR unificado** expuesto
 | Detección de depósitos | escanear eventos `MsgSend` | escanear bloques con `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
 | Ideal para | Plataformas nativas de Cosmos | **Plataformas con integración EVM existente** | Plataformas con herramientas de Solana |
 
-**Recomendación:** si ya soporta cadenas EVM, la **Ruta B (EVM)** es la integración de menor esfuerzo — herramientas Ethereum estándar, y **los retiros no requieren firma post-cuántica** (la ruta ante de la EVM está exenta). La Ruta A (Cosmos) es la vía nativa con direcciones de depósito compartidas basadas en memo. La Ruta C (SVM) también es una interfaz completa de QOR nativo — elíjala si prefiere específicamente las herramientas de Solana.
+**Recomendación:** si ya soporta cadenas EVM, la **Ruta B (EVM)** es la integración de menor esfuerzo — herramientas Ethereum estándar, y **los retiros no requieren firma post-cuántica** (la ruta ante de la EVM está exenta). La Ruta A (Cosmos) es la vía nativa con direcciones de depósito compartidas basadas en memo. La Ruta C (SVM) es, sobre el papel, una interfaz completa de QOR nativo, pero **su carril de transacciones está actualmente deshabilitado en toda la red** (consulte [Ruta C](#path-c-svm)) — use la Ruta A o la Ruta B hasta que se reabra.
 
 Las tres interfaces **no son mutuamente excluyentes** — los fondos enviados a la forma `0x`, `qor1` o SVM de la misma clave son el mismo saldo.
 
@@ -150,6 +150,10 @@ Integración Ethereum estándar contra `https://evm.qore.host` (chain ID **9801*
 * **Mapeo de direcciones:** la dirección `0x` y la dirección `qor1` son dos codificaciones de la misma cuenta — los fondos son compartidos. Consulte [Desarrollo EVM](/developer-guide/evm-development).
 
 ## Ruta C — SVM (compatible con Solana) {#path-c-svm}
+
+:::caution Ruta SVM actualmente deshabilitada
+El carril de ejecución SVM está **actualmente deshabilitado en toda la red para el envío de transacciones**, a partir de la versión de cadena v3.1.89 (22 de agosto) — cualquier transacción enviada a él devuelve `code 11, "SVM module is disabled"`. **No** ponga en marcha un carril de depósitos/retiros sobre la Ruta C hasta que el carril se reabra. Use en su lugar la **Ruta A (Cosmos)** o la **Ruta B (EVM)**. Los endpoints de lectura (p. ej. `getBalance`) pueden seguir respondiendo, pero no construya detección de depósitos ni flujos de retiro contra SVM mientras el envío de transacciones esté deshabilitado.
+:::
 
 A partir de la v3.1.82 la interfaz SVM sirve **QOR nativo** (consulte [QOR nativo en la interfaz SVM](/developer-guide/svm-development#native-qor)):
 

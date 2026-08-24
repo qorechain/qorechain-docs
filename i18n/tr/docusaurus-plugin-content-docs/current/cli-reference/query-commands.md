@@ -7,23 +7,23 @@ sidebar_position: 3
 
 # Sorgu Komutları
 
-Tüm sorgu komutları şu kalıbı izler:
+Tüm sorgu komutları şu deseni izler:
 
 ```bash
 qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Sorgular, `--node` bayrağının işaret ettiği düğüme karşı çalıştırılır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (zincir sürümü **v3.1.85**), test için ise bir **`qorechain-diana`** test ağı uç noktası kullanın. Varsayılan `tcp://localhost:26657`, kendi çalıştırdığınız bir düğümü hedefler.
+Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** mainnet RPC uç noktası (zincir sürümü **v3.1.92**) veya test için bir **`qorechain-diana`** testnet uç noktası kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler.
 :::
 
 Ortak bayraklar her `query` alt komutu için geçerlidir:
 
-| Bayrak     | Tür    | Açıklama                                            |
-| ---------- | ------ | --------------------------------------------------- |
+| Bayrak     | Tür    | Açıklama                                        |
+| ---------- | ------ | ----------------------------------------------- |
 | `--node`   | string | RPC uç noktası (varsayılan: `tcp://localhost:26657`) |
-| `--output` | string | Çıktı biçimi: `json` veya `text`                    |
-| `--height` | int    | Belirli bir blok yüksekliğindeki durumu sorgular    |
+| `--output` | string | Çıktı biçimi: `json` veya `text`                |
+| `--height` | int    | Belirli bir blok yüksekliğinde durumu sorgula   |
 
 ---
 
@@ -39,7 +39,7 @@ qorechaind query bank balances <address>
 
 ### total
 
-Tüm tokenlerin toplam arzını sorgular.
+Tüm token'ların toplam arzını sorgular.
 
 ```bash
 qorechaind query bank total
@@ -115,7 +115,7 @@ qorechaind query distribution commission <validator_address>
 
 ### proposal
 
-Kimliğine (ID) göre tek bir öneriyi sorgular.
+ID'ye göre tek bir teklifi sorgular.
 
 ```bash
 qorechaind query gov proposal <proposal_id>
@@ -123,19 +123,19 @@ qorechaind query gov proposal <proposal_id>
 
 ### proposals
 
-Tüm önerileri listeler; isteğe bağlı olarak duruma göre filtreler.
+İsteğe bağlı olarak duruma göre filtrelenmiş tüm teklifleri listeler.
 
 ```bash
 qorechaind query gov proposals [flags]
 ```
 
-| Bayrak     | Tür    | Açıklama                                                                       |
-| ---------- | ------ | ------------------------------------------------------------------------------ |
-| `--status` | string | Duruma göre filtreler: `deposit_period`, `voting_period`, `passed`, `rejected` |
+| Bayrak     | Tür    | Açıklama                                                                  |
+| ---------- | ------ | -------------------------------------------------------------------------- |
+| `--status` | string | Duruma göre filtrele: `deposit_period`, `voting_period`, `passed`, `rejected` |
 
 ### votes
 
-Bir öneri üzerindeki oyları sorgular.
+Bir teklife verilen oyları sorgular.
 
 ```bash
 qorechaind query gov votes <proposal_id>
@@ -147,7 +147,7 @@ qorechaind query gov votes <proposal_id>
 
 ### account
 
-Bir hesabın PQC anahtar kayıt durumunu sorgular.
+Bir hesap için PQC anahtar kayıt durumunu sorgular.
 
 ```bash
 qorechaind query pqc account <address>
@@ -171,7 +171,7 @@ qorechaind query pqc algorithm <algorithm_name>
 
 ### stats
 
-Toplu PQC kayıt istatistiklerini sorgular.
+Toplam PQC kayıt istatistiklerini sorgular.
 
 ```bash
 qorechaind query pqc stats
@@ -187,7 +187,7 @@ qorechaind query pqc params
 
 ### migration
 
-Bir hesabın PQC anahtar geçiş (migration) durumunu sorgular.
+Bir hesap için PQC anahtar geçiş durumunu sorgular.
 
 ```bash
 qorechaind query pqc migration <address>
@@ -195,7 +195,7 @@ qorechaind query pqc migration <address>
 
 ### hybrid-mode
 
-Geçerli hibrit imza zorunluluk modunu sorgular.
+Geçerli hibrit imza zorunluluğu modunu sorgular.
 
 ```bash
 qorechaind query pqc hybrid-mode
@@ -207,7 +207,7 @@ qorechaind query pqc hybrid-mode
 
 ### position
 
-Bir adresin xQORE stake pozisyonunu sorgular.
+Bir adres için xQORE staking pozisyonunu sorgular.
 
 ```bash
 qorechaind query xqore position <address>
@@ -227,7 +227,7 @@ qorechaind query xqore params
 
 ### stats
 
-Tüm kanallardaki yakım (burn) istatistiklerini sorgular.
+Tüm kanallar genelinde yakma (burn) istatistiklerini sorgular.
 
 ```bash
 qorechaind query burn stats
@@ -255,7 +255,7 @@ qorechaind query inflation rate
 
 ### epoch
 
-Geçerli dönem (epoch) numarasını ve ilerlemesini sorgular.
+Geçerli epoch numarasını ve ilerlemesini sorgular.
 
 ```bash
 qorechaind query inflation epoch
@@ -263,7 +263,7 @@ qorechaind query inflation epoch
 
 ### params
 
-Enflasyon modülü parametrelerini sorgular.
+Inflation modülü parametrelerini sorgular.
 
 ```bash
 qorechaind query inflation params
@@ -283,7 +283,7 @@ qorechaind query ai config
 
 ### stats
 
-Toplulaştırılmış AI işleme istatistiklerini sorgular.
+Toplanmış AI işleme istatistiklerini sorgular.
 
 ```bash
 qorechaind query ai stats
@@ -297,14 +297,14 @@ AI destekli bir gas ücreti tahmini alır.
 qorechaind query ai fee-estimate [flags]
 ```
 
-| Bayrak      | Tür    | Açıklama                       |
-| ----------- | ------ | ------------------------------ |
-| `--tx-type` | string | Tahmin için işlem türü         |
-| `--urgency` | string | `low`, `medium`, `high`        |
+| Bayrak      | Tür    | Açıklama                          |
+| ----------- | ------ | ---------------------------------- |
+| `--tx-type` | string | Tahmin için işlem türü             |
+| `--urgency` | string | `low`, `medium`, `high`            |
 
 ### investigations
 
-Etkin dolandırıcılık soruşturmalarını listeler.
+Aktif dolandırıcılık soruşturmalarını listeler.
 
 ```bash
 qorechaind query ai investigations
@@ -312,7 +312,7 @@ qorechaind query ai investigations
 
 ### recommendations
 
-AI tarafından üretilen ağ optimizasyonu önerilerini alır.
+AI tarafından üretilen ağ optimizasyon önerilerini alır.
 
 ```bash
 qorechaind query ai recommendations
@@ -332,7 +332,7 @@ qorechaind query ai circuit-breakers
 
 ### validators
 
-Tüm doğrulayıcıların itibar puanlarını sorgular.
+Tüm doğrulayıcılar için itibar puanlarını sorgular.
 
 ```bash
 qorechaind query reputation validators
@@ -340,7 +340,7 @@ qorechaind query reputation validators
 
 ### validator
 
-Belirli bir doğrulayıcının itibar puanını sorgular.
+Belirli bir doğrulayıcı için itibar puanını sorgular.
 
 ```bash
 qorechaind query reputation validator <validator_address>
@@ -360,7 +360,7 @@ qorechaind query bridge chains
 
 ### chain
 
-Köprülenmiş belirli bir zincirin ayrıntılarını sorgular.
+Belirli bir köprülenmiş zincirin ayrıntılarını sorgular.
 
 ```bash
 qorechaind query bridge chain <chain_id>
@@ -368,7 +368,7 @@ qorechaind query bridge chain <chain_id>
 
 ### validators
 
-Etkin köprü doğrulayıcılarını listeler.
+Aktif köprü doğrulayıcılarını listeler.
 
 ```bash
 qorechaind query bridge validators
@@ -382,14 +382,14 @@ Son köprü işlemlerini listeler.
 qorechaind query bridge operations
 ```
 
-| Bayrak     | Tür    | Açıklama                                 |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | Filtre: `pending`, `completed`, `failed` |
-| `--chain`  | string | Zincir kimliğine göre filtreler          |
+| Bayrak     | Tür    | Açıklama                                  |
+| ---------- | ------ | -------------------------------------------- |
+| `--status` | string | Filtre: `pending`, `completed`, `failed`  |
+| `--chain`  | string | Zincir ID'sine göre filtrele              |
 
 ### limits
 
-Köprülenmiş bir zincirin hız sınırlarını sorgular.
+Köprülenmiş bir zincir için hız (rate) limitlerini sorgular.
 
 ```bash
 qorechaind query bridge limits <chain_id>
@@ -397,7 +397,7 @@ qorechaind query bridge limits <chain_id>
 
 ### estimate
 
-Köprü ücretini ve aktarım süresini tahmin eder.
+Köprü ücretini ve transfer süresini tahmin eder.
 
 ```bash
 qorechaind query bridge estimate <chain_id> <amount> <asset>
@@ -409,7 +409,7 @@ qorechaind query bridge estimate <chain_id> <amount> <asset>
 
 ### message
 
-Kimliğine göre bir cross-VM mesajını getirir.
+ID'ye göre bir cross-VM mesajını alır.
 
 ```bash
 qorechaind query crossvm message <message_id>
@@ -445,7 +445,7 @@ qorechaind query svm account <pubkey>
 
 ### program
 
-Dağıtılmış (deploy edilmiş) SVM programı bilgilerini sorgular.
+Dağıtılmış bir SVM programının bilgilerini sorgular.
 
 ```bash
 qorechaind query svm program <program_id>
@@ -489,7 +489,7 @@ qorechaind query multilayer layers
 
 ### anchor
 
-Belirli bir çapa (anchor) kaydını sorgular.
+Belirli bir anchor kaydını sorgular.
 
 ```bash
 qorechaind query multilayer anchor <anchor_id>
@@ -497,20 +497,20 @@ qorechaind query multilayer anchor <anchor_id>
 
 ### anchors
 
-Son çapa gönderimlerini listeler.
+Son anchor gönderimlerini listeler.
 
 ```bash
 qorechaind query multilayer anchors [flags]
 ```
 
-| Bayrak       | Tür    | Açıklama                           |
-| ------------ | ------ | ---------------------------------- |
-| `--layer-id` | string | Katman kimliğine göre filtreler    |
-| `--limit`    | uint   | Döndürülecek en fazla sonuç sayısı |
+| Bayrak       | Tür    | Açıklama                     |
+| ------------ | ------ | ------------------------------ |
+| `--layer-id` | string | Katman ID'sine göre filtrele  |
+| `--limit`    | uint   | Döndürülecek azami sonuç sayısı |
 
 ### routing-stats
 
-Katmanlar arası işlem yönlendirme istatistiklerini sorgular.
+Katmanlar genelinde işlem yönlendirme istatistiklerini sorgular.
 
 ```bash
 qorechaind query multilayer routing-stats
@@ -553,12 +553,12 @@ qorechaind query rdk rollups
 ```
 
 | Bayrak     | Tür    | Açıklama                              |
-| ---------- | ------ | ------------------------------------- |
+| ---------- | ------ | ---------------------------------------- |
 | `--status` | string | Filtre: `active`, `paused`, `stopped` |
 
 ### batch
 
-Belirli bir mutabakat (settlement) yığınını sorgular.
+Belirli bir yerleşim (settlement) grubunu (batch) sorgular.
 
 ```bash
 qorechaind query rdk batch <rollup_id> <batch_index>
@@ -566,7 +566,7 @@ qorechaind query rdk batch <rollup_id> <batch_index>
 
 ### latest-batch
 
-Bir rollup için en son yığını sorgular.
+Bir rollup için en son grubu (batch) sorgular.
 
 ```bash
 qorechaind query rdk latest-batch <rollup_id>
@@ -597,14 +597,14 @@ qorechaind query rdk params
 ```
 
 :::note
-Rollup çekim kanıtları ve mutabakat durumu da `rdk` grubu altında sorgulanabilir. Sorgu alt komutlarının ve argümanlarının tam biçimi, rollup'ınızın mutabakat türüne bağlıdır; yetkili çekim/mutabakat sorgu yüzeyi için **Rollup Development Kit** belgelerine bakın.
+Rollup para çekme (withdrawal) kanıtları ve yerleşim (settlement) durumu da `rdk` grubu altında sorgulanabilir. Kesin sorgu alt komutları ve argümanları rollup'ınızın yerleşim türüne bağlıdır; yetkili para çekme/yerleşim sorgu yüzeyi için **Rollup Development Kit** belgelerine bakın.
 :::
 
 ---
 
 ## rlconsensus
 
-PRISM, mutabakat parametrelerini ayarlayan pekiştirmeli öğrenme katmanıdır. CLI modül adı `rlconsensus` ve alt komutları olduğu gibi korunmuştur.
+PRISM, konsensüs parametrelerini ayarlayan pekiştirmeli öğrenme (reinforcement-learning) katmanıdır. CLI modül adı `rlconsensus` ve alt komutları olduğu gibi korunmuştur.
 
 ### agent-status
 
@@ -640,7 +640,7 @@ qorechaind query rlconsensus params
 
 ### policy
 
-Etkin PRISM politika yapılandırmasını sorgular.
+Aktif PRISM politika yapılandırmasını sorgular.
 
 ```bash
 qorechaind query rlconsensus policy
@@ -652,7 +652,7 @@ qorechaind query rlconsensus policy
 
 ### staking
 
-Bir adresin BTC stake pozisyonunu sorgular.
+Bir adres için BTC staking pozisyonunu sorgular.
 
 ```bash
 qorechaind query babylon staking <address>
@@ -660,7 +660,7 @@ qorechaind query babylon staking <address>
 
 ### checkpoint
 
-Belirli bir dönem (epoch) için BTC kontrol noktası verilerini sorgular.
+Belirli bir epoch için BTC checkpoint verilerini sorgular.
 
 ```bash
 qorechaind query babylon checkpoint <epoch>
@@ -696,7 +696,7 @@ qorechaind query abstractaccount params
 
 ### permission-schema
 
-Kanonik kimlik doğrulayıcı (authenticator) izin taksonomisini sorgular — 11 izin, mesaj→izin eşlemesi ve devredilemeyen anahtar yönetimi mesajları (zincir sürümü **v3.1.85** itibarıyla kullanılabilir; ayrıca REST üzerinden `/qorechain/abstractaccount/v1/permission_schema` yolunda sunulur).
+Kanonik authenticator izin taksonomisini sorgular — 11 izin, mesaj→izin eşlemesi ve devredilemeyen (non-delegable) anahtar yönetimi mesajları (zincir sürümü **v3.1.85**'ten itibaren kullanılabilir; ayrıca `/qorechain/abstractaccount/v1/permission_schema` üzerinden REST ile de sunulur).
 
 ```bash
 qorechaind query abstractaccount permission-schema
@@ -704,7 +704,7 @@ qorechaind query abstractaccount permission-schema
 
 ### auth-keygen / auth-sign-cosmos / auth-sign-evm
 
-SDK'lar dışında kimlik doğrulayıcı yetkilendirmeleri oluşturmak için yardımcılar: bir test anahtarı üretin veya Native şeridi ya da EVM şeridi üzerinden devredilmiş bir eylem için **zincirin doğruladığı imza baytlarının birebir aynısını** üretin (zincir sürümü **v3.1.85** itibarıyla kullanılabilir).
+SDK'lar dışında authenticator yetkilendirmeleri oluşturmak için yardımcılar: bir test anahtarı üretir veya bir Native-lane ya da EVM-lane delege edilmiş işlem için **zincirin doğruladığı tam imza baytlarını (sign bytes)** üretir (zincir sürümü **v3.1.85**'ten itibaren kullanılabilir).
 
 ```bash
 qorechaind query abstractaccount auth-keygen
@@ -718,7 +718,7 @@ qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex>
 
 ### accepted-tokens
 
-Gas ödemesi için kabul edilen tokenleri listeler.
+Gas ödemesi için kabul edilen token'ları listeler.
 
 ```bash
 qorechaind query gasabstraction accepted-tokens

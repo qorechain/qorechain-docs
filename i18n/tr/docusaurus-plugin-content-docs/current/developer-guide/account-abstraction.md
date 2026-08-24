@@ -7,23 +7,23 @@ sidebar_position: 7
 
 # Hesap Soyutlama
 
-QoreChain, `x/abstractaccount` modülü aracılığıyla **protokol düzeyinde hesap soyutlama** sağlar. Bu, esnek kimlik doğrulama kuralları, oturum anahtarları, harcama limitleri ve sosyal kurtarma özelliklerine sahip programlanabilir hesapları — harici akıllı sözleşme altyapısı gerektirmeden — mümkün kılar.
+QoreChain, `x/abstractaccount` modülü aracılığıyla **protokol düzeyinde hesap soyutlama** sağlar. Bu, harici akıllı sözleşme altyapısına ihtiyaç duymadan esnek kimlik doğrulama kuralları, oturum anahtarları, harcama limitleri ve sosyal kurtarma ile programlanabilir hesapları mümkün kılar.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana yayında olan ve zincir sürümü **v3.1.85** ile çalışan **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 ## Genel Bakış
 
-Geleneksel blokzincir hesapları tek bir özel anahtar tarafından kontrol edilir. Hesap soyutlama, "bir işlemi kimin yetkilendirebileceği" kavramını tek bir kriptografik anahtardan ayırarak şunları mümkün kılar:
+Geleneksel blok zinciri hesapları tek bir özel anahtar tarafından kontrol edilir. Hesap soyutlama, "bir işlemi kimin yetkilendirebileceği" kavramını tek bir kriptografik anahtardan ayırarak şunları mümkün kılar:
 
-* Yapılandırılabilir eşikli imzalamaya sahip **multisig hesaplar**
-* Vasi (guardian) tabanlı anahtar kurtarma özellikli **sosyal kurtarma hesapları**
-* dApp'ler için ayrıntılı, süre sınırlı izinlere sahip **oturum tabanlı hesaplar**
+* Yapılandırılabilir eşik imzalamaya sahip **çoklu imza hesapları**
+* Vasi tabanlı anahtar kurtarmaya sahip **sosyal kurtarma hesapları**
+* dApp'ler için ayrıntılı, süreli izinlere sahip **oturum tabanlı hesaplar**
 
-`x/abstractaccount` modülü bu yetenekleri protokol katmanında uygular; bu da her üç VM'de (EVM, CosmWasm, SVM) çalıştıkları ve yerel gas verimliliğinden yararlandıkları anlamına gelir.
+`x/abstractaccount` modülü bu yetenekleri protokol katmanında uygular; bu da bunların her üç VM'de (EVM, CosmWasm, SVM) çalıştığı ve doğal gaz verimliliğinden yararlandığı anlamına gelir.
 
-*Oturum tabanlı bir dApp akışı: kapsamı belirlenmiş bir oturum anahtarı işlemi imzalar, modül bunu oturum ve harcama kurallarına göre doğrular, ardından yürütür.*
+*Oturum tabanlı bir dApp akışı: kapsamlandırılmış bir oturum anahtarı bir işlemi imzalar, modül bunu oturum ve harcama kurallarına göre doğrular, ardından yürütür.*
 
 ```mermaid
 flowchart TD
@@ -38,11 +38,11 @@ flowchart TD
 
 ## Hesap Türleri
 
-| Tür               | Açıklama                                        | Kullanım Senaryosu                      |
-| ----------------- | ------------------------------------------------ | ---------------------------------------- |
-| `multisig`        | M-of-N eşikli imzalama                           | DAO hazineleri, paylaşımlı cüzdanlar     |
-| `social_recovery` | Vasi destekli anahtar kurtarma                   | Tüketici cüzdanları, kullanıcı kazanımı  |
-| `session_based`   | Kısıtlamalı yetkilendirilmiş oturum anahtarları  | dApp oturumları, mobil cüzdanlar         |
+| Tür               | Açıklama                                | Kullanım Alanı                  |
+| ----------------- | ---------------------------------------- | ------------------------------- |
+| `multisig`        | M-of-N eşik imzalama                     | DAO hazineleri, paylaşılan cüzdanlar |
+| `social_recovery` | Vasi destekli anahtar kurtarma           | Tüketici cüzdanları, kayıt süreci |
+| `session_based`   | Kısıtlamalı, devredilmiş oturum anahtarları | dApp oturumları, mobil cüzdanlar |
 
 ## Soyut Hesap Oluşturma
 
@@ -56,7 +56,7 @@ qorechaind tx abstractaccount create \
   -y
 ```
 
-### Multisig Hesap
+### Çoklu İmza Hesabı
 
 ```bash
 qorechaind tx abstractaccount create \
@@ -82,16 +82,16 @@ qorechaind tx abstractaccount create \
 
 ## Oturum Anahtarları
 
-Oturum anahtarları, `session_based` hesap türünün temel taşıdır. İkincil bir anahtara **geçici, kapsamı belirlenmiş izinler** vermenizi sağlarlar — birincil anahtarınızı açığa çıkarmak istemediğiniz dApp etkileşimleri için idealdir.
+Oturum anahtarları, `session_based` hesap türünün temel taşıdır. Birincil anahtarınızı ortaya çıkarmak istemediğiniz dApp etkileşimleri için ideal olan, ikincil bir anahtara **geçici, kapsamlandırılmış izinler** vermenizi sağlar.
 
-### Temel Özellikler
+### Anahtar Özellikleri
 
-| Özellik                      | Açıklama                                                  |
-| ---------------------------- | ---------------------------------------------------------- |
-| **İzinler**                  | Oturum anahtarının hangi mesaj türlerini imzalayabileceği   |
-| **Süre sonu**                | Yapılandırılabilir bir süre sonunda otomatik sona erme      |
-| **Harcama limitleri**        | Oturum anahtarının harcayabileceği azami tutarlar           |
-| **İzin verilen sözleşmeler** | Etkileşimleri belirli sözleşme adresleriyle sınırlama       |
+| Özellik                | Açıklama                                                |
+| ----------------------- | -------------------------------------------------------- |
+| **İzinler**              | Oturum anahtarının imzalayabileceği mesaj türleri         |
+| **Süre sonu**            | Yapılandırılabilir bir süre sonunda otomatik sona erme    |
+| **Harcama limitleri**    | Oturum anahtarının harcayabileceği maksimum tutarlar       |
+| **İzin verilen sözleşmeler** | Etkileşimleri belirli sözleşme adresleriyle kısıtlama |
 
 ### Oturum Anahtarı Verme
 
@@ -122,13 +122,13 @@ qorechaind query abstractaccount sessions <account-address>
 
 ## Harcama Kuralları
 
-Harcama kuralları, hesap türünden bağımsız olarak soyut hesaplara finansal koruma bariyerleri ekler:
+Harcama kuralları, hesap türünden bağımsız olarak soyut hesaplara finansal korumalar ekler:
 
-| Kural            | Açıklama                                                |
-| ---------------- | -------------------------------------------------------- |
-| `daily_limit`    | 24 saatlik kayan pencere başına azami toplam harcama      |
-| `per_tx_limit`   | İşlem başına azami harcama                                |
-| `allowed_denoms` | Hangi token birimlerinin harcanabileceğini sınırlama      |
+| Kural             | Açıklama                                            |
+| ------------------ | ------------------------------------------------------ |
+| `daily_limit`      | 24 saatlik kayan pencere başına maksimum toplam harcama |
+| `per_tx_limit`     | Tek bir işlem başına maksimum harcama                    |
+| `allowed_denoms`   | Harcanabilecek token birimlerini kısıtlar                |
 
 ### Harcama Kurallarını Ayarlama
 
@@ -168,13 +168,13 @@ qorechaind query abstractaccount spending-rules <account-address>
 }
 ```
 
-## Bağlı Cüzdan Kimlik Doğrulayıcıları — Yetkilendirilmiş Harcama {#authenticators}
+## Bağlı Cüzdan Kimlik Doğrulayıcıları — Devredilmiş Harcama {#authenticators}
 
-Zincir sürümü **v3.1.85** itibarıyla (v3.1.84 izin modeli üzerine inşa edilmiştir), **bağlı bir harici cüzdan anahtarı** — bir Phantom (ed25519) anahtarı veya bir MetaMask (secp256k1) hesabı — en az ayrıcalık ilkesine dayalı, harcama limitli ve iptal edilebilir koşullar altında **kanonik post-kuantum hesaptan harcama yapabilir**. Harici anahtar hiçbir zaman bir ML-DSA imzası üretmez; bir **relayer** işlem zarfını gönderir ve ücretini öder (relayer'ın kendi hibrit PQC imzası zincirin imzalama gereksinimlerini karşılar); kimlik doğrulayıcının **alan ayrımlı, tekrara karşı bağlı imza baytları** üzerindeki imzası ise yetkilendirmenin kendisidir.
+**v3.1.85** zincir sürümünden itibaren (v3.1.84 izin modeli üzerine inşa edilerek), **bağlı bir harici cüzdan anahtarı** — bir Phantom (ed25519) anahtarı ya da bir MetaMask (secp256k1) hesabı — en az ayrıcalık, harcama limitli ve iptal edilebilir koşullar altında **kanonik post-kuantum hesaptan harcama yapabilir**. Harici anahtar hiçbir zaman bir ML-DSA imzası üretmez; bir **röle (relayer)** işlem zarfını gönderir ve ödemesini yapar (röle'nin kendi hibrit PQC imzası zincirin imzalama gereksinimlerini karşılar), kimlik doğrulayıcının **alan ayrımlı, tekrar oynatmaya karşı bağlanmış imza baytları** üzerindeki imzası ise yetkilendirmeyi oluşturur.
 
 ### Kimlik doğrulayıcı kaydetme {#register-authenticator}
 
-Hesap sahibi, harici anahtarı `MsgRegisterAuthenticator` ile (sıradan bir kök anahtar işlemi) kaydeder; ona bir şema, izinler, bir süre sonu ve isteğe bağlı harcama limitleri verir:
+Hesap sahibi, harici anahtarı `MsgRegisterAuthenticator` ile kaydeder (sıradan bir kök anahtar işlemi); bu işlemde bir şema, izinler, bir süre sonu ve isteğe bağlı harcama limitleri belirtilir:
 
 ```js
 import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
@@ -190,43 +190,43 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-Bir Phantom anahtarı da aynı şekilde `scheme: "ed25519"` ve Phantom açık anahtarı ile kaydedilir. İptal işlemi `MsgRevokeAuthenticator` aracılığıyla anında gerçekleşir.
+Bir Phantom anahtarı, `scheme: "ed25519"` ve Phantom ortak anahtarı ile aynı şekilde kaydedilir. İptal işlemi `MsgRevokeAuthenticator` ile anında gerçekleşir.
 
 ### İzin taksonomisi {#permission-taxonomy}
 
-Kayıtlı bir kimlik doğrulayıcının neler yapabileceğini on bir kanonik izin belirler. Eşleme **varsayılan-kapalı** (fail-closed) çalışır: eşlemesi olmayan bir mesaj türü reddedilir.
+Bir kimlik doğrulayıcının kaydedilmesi durumunda ne yapabileceğini on bir kurallı izin belirler. Eşleme **fail-closed**'dır: eşlemesi olmayan bir mesaj türü reddedilir.
 
-| İzin | Verdiği yetki |
+| İzin | Sağladığı Yetki |
 | --- | --- |
-| `send` | Native şeritte banka transferleri |
+| `send` | Native-lane banka transferleri |
 | `delegate` / `withdraw` / `vote` | Stake etme, ödül çekme, yönetişim |
-| `evm` / `wasm` / `svm` | İlgili VM şeridinde yürütme |
+| `evm` / `wasm` / `svm` | İlgili VM hattında yürütme |
 | `amm` / `ibc` / `deploy` | AMM işlemleri, IBC transferleri, sözleşme dağıtımı |
-| `all` | *Yetkilendirilebilir* herhangi bir mesaj |
+| `all` | Devredilebilir herhangi bir mesaj |
 
-**Anahtar yönetimi mesajları hiçbir zaman yetkilendirilemez** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, PQC anahtar kaydı/geçişi ve `MsgRotatePQCKey` her zaman kök anahtarı gerektirir; böylece bağlı bir anahtar kendi ayrıcalıklarını asla yükseltemez.
+**Anahtar yönetimi mesajları asla devredilemez** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, PQC anahtar kaydı/geçişi ve `MsgRotatePQCKey` her zaman kök anahtarı gerektirir; böylece bağlı bir anahtar kendi ayrıcalıklarını asla yükseltemez.
 
-Taksonomiyi sabit kodlamak yerine (sapma tespiti için `schema_version` içeren) canlı halini okuyun:
+Sabit kodlamak yerine (kayma tespiti için `schema_version` içeren) canlı taksonomiyi okuyun:
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | jq
 # or: qorechaind query abstractaccount permission-schema
 ```
 
-### Bağlı anahtar aracılığıyla harcama {#execute-messages}
+### Bağlı bir anahtarla harcama yapma {#execute-messages}
 
-Kimlik doğrulayıcı tarafından yetkilendirilen eylemleri iki mesaj taşır. Her ikisinde de işlemin imzalayanı/ücret ödeyeni relayer'dır; kimlik doğrulayıcının imzası mesajın içinde taşınır.
+Kimlik doğrulayıcı tarafından yetkilendirilen eylemleri iki mesaj taşır. Her ikisinde de röle, işlemin imzalayıcısı/ücret ödeyicisidir; kimlik doğrulayıcının imzası mesajın içinde taşınır.
 
-**`MsgExecuteEVM`** — **kanonik hesabın `0x…` adresinden** yapılan bir EVM çağrısı veya transferi. Kimlik doğrulayıcı `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` değerini imzalar (tüm alanlar uzunluk önekli). Tekrar-saldırısı koruması, hesabın kendi EVM nonce değeridir.
+**`MsgExecuteEVM`** — **kanonik hesabın `0x…` adresinden** yapılan bir EVM çağrısı veya transferi. Kimlik doğrulayıcı `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` değerini imzalar (tüm alanlar uzunluk ön ekli). Tekrar oynatma koruması hesabın kendi EVM nonce'udur.
 
-**`MsgExecuteCosmos`** — kanonik hesaptan Native şeritte bir banka gönderimi. Kimlik doğrulayıcı `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)` değerini imzalar. Tekrar-saldırısı koruması, modül tarafından tutulan **kimlik doğrulayıcı başına bir sıra numarasıdır** (banka gönderimi hesap nonce değerini artırmaz). Kendine gönderimler reddedilir.
+**`MsgExecuteCosmos`** — kanonik hesaptan yapılan bir Native-lane banka gönderimi. Kimlik doğrulayıcı `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)` değerini imzalar. Tekrar oynatma koruması, modül tarafından tutulan **kimlik doğrulayıcı başına bir sıra numarasıdır** (bir banka gönderimi hesabın nonce'unu artırmaz). Kendine gönderimler reddedilir.
 
 :::caution Nonce kuralları
-* `MsgExecuteEVM.nonce` = hesabın **mevcut** EVM nonce değeri (`eth_getTransactionCount(account0x, "latest")`). Üretimde relayer *farklı* bir hesaptır, bu nedenle +1 **eklemeyin**. Eskimiş bir nonce imzalamak `11` kodunu döndürür.
-* `MsgExecuteCosmos.nonce` = kimlik doğrulayıcı başına sıra numarası (hesabın kimlik doğrulayıcı durumunu sorgulayın), hesabın Cosmos sıra numarası **değildir**.
+* `MsgExecuteEVM.nonce` = hesabın **mevcut** EVM nonce'u (`eth_getTransactionCount(account0x, "latest")`). Üretimde röle *farklı* bir hesap olduğundan, +1 **eklemeyin**. Eski bir nonce'un imzalanması `11` kodunu döndürür.
+* `MsgExecuteCosmos.nonce` = kimlik doğrulayıcı başına sıra numarası (hesabın kimlik doğrulayıcı durumunu sorgulayın), hesabın Cosmos sıra numarası **değil**.
 :::
 
-**Phantom örneği** (tarayıcı: Phantom imzalar, arka ucunuz iletir):
+**Phantom örneği** (tarayıcı: Phantom imzalar, arka ucunuz röleler):
 
 ```js
 import { buildPhantomExecuteCosmos } from "@qorechain/wallet-adapter";
@@ -261,7 +261,7 @@ const msg = await buildMetaMaskExecuteEvm({
 // against the registered 20-byte address.
 ```
 
-Aynı oluşturucular beş dilin tamamı için [QoreChain SDK](/sdk/guides/authenticators) içinde mevcuttur; ayrıca CLI eşdeğerleri de vardır:
+Aynı oluşturucular, beş dilin tümü için [QoreChain SDK](/sdk/guides/authenticators)'da ve buna karşılık gelen CLI komutlarında da mevcuttur:
 
 ```bash
 # Produce the exact sign bytes the chain verifies (for custom signers):
@@ -275,20 +275,20 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 
 ### Hata kodları {#authenticator-errors}
 
-Uygulama başarısızlıkları, cüzdanların doğru mesajı gösterebilmesi için ayrı kodlar döndürür (codespace `abstractaccount`):
+Uygulama hataları, cüzdanların doğru mesajı gösterebilmesi için ayrı kodlar döndürür (kod alanı `abstractaccount`):
 
-| Kod | Anlamı | Cüzdan UX |
+| Kod | Anlamı | Cüzdan Arayüzü |
 | --- | --- | --- |
-| `5` | Harcama limiti aşıldı (işlem başına veya günlük) | Kalan harcama hakkını gösterin |
+| `5` | Harcama limiti aşıldı (işlem başına veya günlük) | Kalan izni gösterin |
 | `6` | Kimlik doğrulayıcının süresi doldu | "Süresi doldu — cüzdanınızı yeniden bağlayın" |
-| `10` | İzin reddedildi (kapsam veya yetkilendirilemez mesaj) | Eksik izni gösterin |
-| `11` | Tekrar reddedildi (eskimiş nonce/sıra numarası) | Nonce değerini yeniden sorgulayın ve yeniden imzalayın |
+| `10` | İzin reddedildi (kapsam veya devredilemeyen mesaj) | Eksik izni gösterin |
+| `11` | Tekrar oynatma reddedildi (eski nonce/sıra numarası) | Nonce'u yeniden sorgulayın ve yeniden imzalayın |
 
-(Codespace `pqc` kodu `21` = hibrit imza doğrulaması başarısız — bu bir yetkilendirme sorunu değil, relayer tarafında bir imzalama sorunudur.)
+(Kod alanı `pqc`, kod `21` = hibrit imza doğrulaması başarısız oldu — bir yetkilendirme sorunu değil, röle tarafında bir imzalama sorunu.)
 
 ### REST sorguları {#abstractaccount-rest}
 
-**v3.1.85** itibarıyla modülün okuma sorguları REST üzerinden de sunulmaktadır:
+**v3.1.85** sürümünden itibaren modülün okuma sorguları REST üzerinden de sunulur:
 
 ```
 GET /qorechain/abstractaccount/v1/config
@@ -343,7 +343,7 @@ curl -X POST http://localhost:8545 \
 
 Hesap sahibi birincil anahtarına erişimini kaybederse, vasiler bir anahtar rotasyonunu yetkilendirebilir.
 
-1. **Sahip kayıp anahtarı bildirir (veya bir vasi başlatır):**
+1. **Sahip kayıp anahtarı bildirir (ya da bir vasi süreci başlatır):**
 
    ```bash
    qorechaind tx abstractaccount initiate-recovery \
@@ -353,7 +353,7 @@ Hesap sahibi birincil anahtarına erişimini kaybederse, vasiler bir anahtar rot
      -y
    ```
 
-2. **Ek vasiler onaylar** (`recovery_threshold` değerine ulaşılmalıdır):
+2. **Ek vasiler onaylar** (`recovery_threshold` karşılanmalıdır):
 
    ```bash
    qorechaind tx abstractaccount approve-recovery \
@@ -363,25 +363,25 @@ Hesap sahibi birincil anahtarına erişimini kaybederse, vasiler bir anahtar rot
      -y
    ```
 
-3. Eşiğe ulaşıldığında **kurtarma otomatik olarak yürütülür**. Bir **zaman kilidi süresi** (varsayılan: 48 saat), asıl sahibe sahte bir kurtarma girişimini iptal etme şansı verir.
+3. Eşik karşılandığında **kurtarma otomatik olarak yürütülür**. Bir **zaman kilidi süresi** (varsayılan: 48 saat), orijinal sahibe hileli bir kurtarma girişimini iptal etme fırsatı tanır.
 
 ## dApp'lerle Entegrasyon
 
 Oturum anahtarları sorunsuz dApp deneyimleri sağlar:
 
-1. **Kullanıcı cüzdanını bağlar** ve dApp'in sözleşmesine kapsamı belirlenmiş bir oturum anahtarı oluşturur
-2. **dApp, oturum anahtarını kullanarak** kullanıcı adına işlemler gönderir
-3. **Tekrarlanan imzalama yok** — oturum anahtarı, izinleri dahilinde yetkilendirmeyi kendisi yönetir
-4. **Oturum otomatik olarak sona erer** veya kullanıcı istediği zaman iptal eder
+1. **Kullanıcı cüzdanını bağlar** ve dApp'in sözleşmesine kapsamlandırılmış bir oturum anahtarı oluşturur
+2. **dApp, oturum anahtarını kullanır** ve kullanıcı adına işlemler gönderir
+3. **Tekrar tekrar imzalama gerekmez** — oturum anahtarı, kendi izinleri dahilinde yetkilendirmeyi yönetir
+4. **Oturum otomatik olarak sona erer** ya da kullanıcı istediği zaman iptal edebilir
 
-Bu desen özellikle şunlar için kullanışlıdır:
+Bu model özellikle şunlar için kullanışlıdır:
 
 * Tekrarlanan biyometrik istemlerin rahatsız edici olduğu mobil cüzdanlar
-* Hızlı işlem imzalamaya ihtiyaç duyan oyun dApp'leri
-* Birden fazla ardışık işlem yürüten DeFi protokolleri
+* Hızlı işlem imzalama gerektiren oyun dApp'leri
+* Birden çok ardışık işlem yürüten DeFi protokolleri
 
 ## Sonraki Adımlar
 
-* [Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator) — Bir doğrulayıcı düğümü kurun ve işletin
-* [EVM Geliştirme](/developer-guide/evm-development) — Soyut hesapları Solidity dApp'leriyle entegre edin
+* [Validator Çalıştırma](/developer-guide/running-a-validator) — Bir validator düğümü kurma ve işletme
+* [EVM Geliştirme](/developer-guide/evm-development) — Soyut hesapları Solidity dApp'leriyle entegre etme
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — Soyut hesaplarla VM'ler arası mesajlaşma

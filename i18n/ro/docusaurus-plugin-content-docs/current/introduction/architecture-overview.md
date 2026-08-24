@@ -7,9 +7,9 @@ sidebar_position: 2
 
 # Prezentare generală a arhitecturii
 
-QoreChain este un nod blockchain modular compus din trei procese principale — nodul de lanț, sidecar-ul AI și indexatorul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Rețeaua principală (`qorechain-vladi`, EVM chain ID **9801**) este activă din 7 iunie 2026 pe versiunea de lanț **v3.1.85**, alături de o rețea de test paralelă (`qorechain-diana`, EVM chain ID **9800**). Lanțul este construit pe Cosmos SDK v0.53. Diagrama următoare prezintă structura componentelor la nivel înalt.
+QoreChain este un nod blockchain modular compus din trei procese principale — nodul de chain, sidecar-ul AI și indexerul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Mainnet-ul (`qorechain-vladi`, EVM chain ID **9801**) rulează live din 7 iunie 2026 pe versiunea de chain **v3.1.92**, alături de un testnet paralel (`qorechain-diana`, EVM chain ID **9800**). Chain-ul este construit pe Cosmos SDK v0.53. Diagrama de mai jos arată dispunerea componentelor la nivel înalt.
 
-Ciclul de viață al tranzacției de mai jos rezumă modul în care o tranzacție trimisă circulă prin nod — de la lanțul de decoratori AnteHandler (verificări de securitate și taxe) la execuția VM și decontarea pe lanț:
+Ciclul de viață al tranzacției de mai jos rezumă modul în care o tranzacție trimisă traversează nodul — de la lanțul de decoratori AnteHandler (verificări de securitate și taxe) până la execuția în VM și decontarea on-chain:
 
 ```mermaid
 flowchart LR
@@ -114,80 +114,80 @@ flowchart LR
 
 ## Componentele nodului
 
-QoreChain rulează ca trei procese cooperante, fiecare cu propriul modul Go și binar:
+QoreChain rulează sub forma a trei procese care cooperează, fiecare cu propriul modul Go și binar propriu:
 
-| Componentă         | Descriere                                                                                                                                                                                                                                                                                                                                                                                              | Locație                   |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| **qorechain-node** | Nodul blockchain principal. Rulează QoreChain Consensus Engine, execută toate modulele personalizate, gestionează toate cele trei runtime-uri VM și expune puncte finale RPC, REST, gRPC și JSON-RPC.                                                                                                                                                                                                  | `qorechain-core/`         |
-| **ai-sidecar**     | Un serviciu gRPC care oferă capabilități avansate de inferență AI susținute de QCAI Backend. Sidecar-ul gestionează cereri de inferență care depășesc domeniul de aplicare al agentului RL pe lanț, cum ar fi analiza limbajului natural și recunoașterea de tipare complexe. Comunică cu nodul prin gRPC pe portul 50051.                                                                            | `qorechain-core/sidecar/` |
-| **block-indexer**  | Un ascultător WebSocket care se abonează la blocuri și tranzacții noi de la punctul final RPC al nodului, analizează evenimentele și scrie date structurate într-o bază de date Postgres pentru interogare rapidă de către exploratoare și API-uri.                                                                                                                                                    | `qorechain-core/indexer/` |
+| Componentă          | Descriere                                                                                                                                                                                                                                                                                          | Locație                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **qorechain-node** | Nodul central al blockchain-ului. Rulează motorul de consens QoreChain, execută toate modulele custom, gestionează toate cele trei runtime-uri de VM și expune endpoint-uri RPC, REST, gRPC și JSON-RPC.                                                                                                                      | `qorechain-core/`         |
+| **ai-sidecar**     | Un serviciu gRPC care oferă capabilități avansate de inferență AI, susținute de QCAI Backend. Sidecar-ul gestionează cererile de inferență care depășesc scopul agentului RL de pe chain, cum ar fi analiza limbajului natural și recunoașterea de tipare complexe. Comunică cu nodul prin gRPC pe portul 50051. | `qorechain-core/sidecar/` |
+| **block-indexer**  | Un listener WebSocket care se abonează la blocurile și tranzacțiile noi de la endpoint-ul RPC al nodului, parsează evenimentele și scrie date structurate într-o bază de date Postgres pentru interogare rapidă de către explorere și API-uri.                                                                                                          | `qorechain-core/indexer/` |
 
 ## Porturi
 
-| Port  | Protocol       | Serviciu                                                                          |
+| Port  | Protocol       | Serviciu                                                                           |
 | ----- | -------------- | --------------------------------------------------------------------------------- |
-| 26657 | HTTP/WebSocket | QoreChain Consensus Engine RPC (blocuri, tranzacții, stare de consens)            |
-| 1317  | HTTP           | REST API (puncte finale de interogare, difuzare tranzacții)                       |
-| 9090  | gRPC           | Puncte finale gRPC de interogare și tranzacții                                    |
-| 8545  | HTTP           | EVM JSON-RPC (spațiile de nume `eth_`, `web3_`, `net_`, `txpool_`, `qor_`)        |
-| 8546  | WebSocket      | EVM JSON-RPC (abonamente WebSocket)                                               |
-| 8899  | HTTP           | SVM JSON-RPC (compatibil Solana: `getAccountInfo`, `getBalance`, `getSlot`, etc.) |
-| 50051 | gRPC           | AI Sidecar (cereri de inferență de la nod)                                        |
-| 5432  | TCP            | Postgres (stocarea indexatorului de blocuri)                                      |
+| 26657 | HTTP/WebSocket | RPC-ul motorului de consens QoreChain (blocuri, tranzacții, stare consens)            |
+| 1317  | HTTP           | API REST (endpoint-uri de interogare, broadcast tranzacții)                                 |
+| 9090  | gRPC           | Endpoint-uri gRPC pentru interogări și tranzacții                                              |
+| 8545  | HTTP           | EVM JSON-RPC (namespace-uri `eth_`, `web3_`, `net_`, `txpool_`, `qor_`)              |
+| 8546  | WebSocket      | EVM JSON-RPC (subscripții WebSocket)                                            |
+| 8899  | HTTP           | SVM JSON-RPC (compatibil Solana: `getAccountInfo`, `getBalance`, `getSlot` etc.) |
+| 50051 | gRPC           | Sidecar AI (cereri de inferență de la nod)                                     |
+| 5432  | TCP            | Postgres (stocare pentru indexerul de blocuri)                                                  |
 | 9091  | HTTP           | Metrici Prometheus                                                                |
-| 3000  | HTTP           | Tablouri de bord Grafana                                                          |
+| 3000  | HTTP           | Dashboard-uri Grafana                                                                |
 
 ## Harta modulelor
 
-QoreChain înregistrează **peste 45 de module de geneză, inclusiv peste 20 de module personalizate**, grupate după funcție:
+QoreChain înregistrează **45+ module la genesis, dintre care 20+ module custom**, grupate după funcție:
 
 **Securitate**
 
-* `x/pqc` — Criptografie post-cuantică: Dilithium-5, ML-KEM-1024, hibrid secp256k1 (ECDSA) + ML-DSA-87, SHAKE-256, agilitate algoritmică
+* `x/pqc` — Criptografie post-cuantică: Dilithium-5, ML-KEM-1024, hibrid secp256k1 (ECDSA) + ML-DSA-87, SHAKE-256, agilitate a algoritmilor
 
-**AI și învățare automată**
+**AI și Machine Learning**
 
-* `x/ai` — Rutarea tranzacțiilor, detectarea anomaliilor, detectarea fraudei, optimizarea taxelor, atestarea TEE, învățare federată
-* `x/reputation` — Scorarea reputației validatorilor pe baza mai multor factori cu decădere temporală
-* `x/rlconsensus` — Agent RL pe lanț (PPO MLP), reglarea dinamică a consensului, întrerupător de circuit, consultanță pentru rollup-uri — stratul de optimizare PRISM
+* `x/ai` — Rutare tranzacții, detecție anomalii, detecție fraudă, optimizare taxe, atestare TEE, învățare federată
+* `x/reputation` — Scoring de reputație a validatorilor pe bază de factori multipli, cu decădere temporală
+* `x/rlconsensus` — Agent RL on-chain (PPO MLP), ajustare dinamică a consensului, circuit breaker, consultanță pentru rollup-uri — stratul de optimizare PRISM
 
 **Consens**
 
-* `x/qca` — Triple-Pool Composite PoS (RPoS/DPoS/PoS) pe QoreChain Consensus Engine, curbă de legare personalizată, slashing progresiv, guvernanță QDRW
+* `x/qca` — Composite PoS cu trei pool-uri (RPoS/DPoS/PoS) pe motorul de consens QoreChain, curbă de bonding custom, slashing progresiv, guvernanță QDRW
 
 **Mașini virtuale**
 
-* `x/vm` — Rutarea VM și gestionarea ciclului de viață
-* `x/svm` — Runtime SVM: implementare/execuție BPF, colectare de chirie, RPC compatibil Solana
-* `x/crossvm` — Comunicare între VM-uri: precompilare EVM-CosmWasm + evenimente asincrone SVM
+* `x/vm` — Rutare și gestionare a ciclului de viață al VM-urilor
+* `x/svm` — Runtime SVM: deployment/execuție BPF, colectare de rent, RPC compatibil Solana
+* `x/crossvm` — Comunicare cross-VM: precompile EVM-CosmWasm + evenimente asincrone SVM
 
-**Tokenomică și lichiditate**
+**Tokenomics și lichiditate**
 
-* `x/burn` — 10 canale de ardere, distribuția taxelor prin EndBlocker (împărțire 37/30/20/10/3)
-* `x/xqore` — Staking impulsionat de guvernanță: lock/unlock, penalizări de ieșire graduale, rebase PvP
-* `x/inflation` — Emisie cu ofertă fixă dintr-un buget finit de recompense pentru staking pe un program multianual
-* `x/amm` — Lichiditate pe lanț / formator automat de piață
+* `x/burn` — 10 canale de burn, distribuție a taxelor în EndBlocker (împărțire 37/30/20/10/3)
+* `x/xqore` — Staking cu bonus de guvernanță: lock/unlock, penalități de ieșire graduale, rebase PvP
+* `x/inflation` — Emisiune cu ofertă fixă dintr-un buget finit de recompense de staking, pe un calendar multianual
+* `x/amm` — Lichiditate on-chain / automated market maker
 
 **Punți și interoperabilitate**
 
-* `x/bridge` — 37 de configurații QCB (36 de lanțuri externe + buclă internă QoreChain) pe fiecare tip major de lanț, atestări semnate PQC, întrerupătoare de circuit
-* `x/babylon` — Restaking BTC prin Babylon Protocol, puncte de control pe epoci
-* `x/multilayer` — Gestionarea straturilor de sidechain/paychain/rollup, ancorarea stării
+* `x/bridge` — 37 de configurații QCB (36 de chain-uri externe + loopback QoreChain) acoperind fiecare tip major de chain, atestări semnate PQC, circuit breaker-e
+* `x/babylon` — Restaking BTC prin Babylon Protocol, checkpoint-uri de epocă
+* `x/multilayer` — Gestionare a stratului de sidechain/paychain/rollup, ancorare de stare
 
-**Extensii de guvernanță și licențiere**
+**Guvernanță și extensii de licențiere**
 
 * `x/abstractaccount` — Conturi inteligente: multisig, recuperare socială, chei de sesiune, reguli de cheltuire
-* `x/fairblock` — Protecție MEV: cadru de mempool criptat cu IBE de prag
-* `x/gasabstraction` — Plata taxelor de gaz cu mai multe token-uri: conversie de taxe ibc/USDC, ibc/ATOM
-* `x/license` — Licențiere de lanț
+* `x/fairblock` — Protecție MEV: framework de mempool criptat prin IBE cu prag
+* `x/gasabstraction` — Plată de gas cu token multiplu: conversie taxe ibc/USDC, ibc/ATOM
+* `x/license` — Licențiere chain
 
 **Rollup-uri**
 
-* `x/rdk` — Rollup Development Kit: 4 moduri de decontare (optimistic, zk, based, sovereign), profiluri presetate, DA nativ, escrow bancar
+* `x/rdk` — Rollup Development Kit: 4 moduri de decontare (optimistic, zk, based, sovereign), profile presetate, DA nativ, escrow în bank
 
 ## Lanțul AnteHandler
 
-Fiecare tranzacție trece prin următorul lanț de decoratori înainte de execuție. Decoratorii rulează în ordine; orice decorator poate respinge tranzacția.
+Fiecare tranzacție trece prin următorul lanț de decoratori înainte de execuție. Decoratorii rulează în ordine; oricare dintre ei poate respinge tranzacția.
 
 ```
 SetUpContext
@@ -217,26 +217,26 @@ Decoratorii cheie rulează în următoarea secvență (fiecare decorator ruleaz�
 
 1. **PQCVerify** — Modulul `x/pqc`. Verifică semnăturile Dilithium-5 pe tranzacțiile marcate PQC.
 2. **PQCHybridVerify** — Modulul `x/pqc`. Verifică semnăturile hibride duale secp256k1 (ECDSA) + ML-DSA-87.
-3. **AIAnomaly** — Modulul `x/ai`. Rulează detectarea anomaliilor prin isolation forest și scorarea riscului.
-4. **FairBlock** — Modulul `x/fairblock`. Procesează tranzacțiile criptate tIBE pentru protecția MEV.
+3. **AIAnomaly** — Modulul `x/ai`. Rulează detecția de anomalii prin isolation forest și scoring de risc.
+4. **FairBlock** — Modulul `x/fairblock`. Procesează tranzacțiile criptate tIBE pentru protecție MEV.
 5. **SVMComputeBudget** — Modulul `x/svm`. Validează și alocă unități de calcul pentru programele SVM.
 6. **SVMDeductFee** — Modulul `x/svm`. Deduce taxele de execuție specifice SVM.
 7. **GasAbstraction** — Modulul `x/gasabstraction`. Convertește token-urile de taxă non-native (USDC, ATOM) înainte de deducere.
 
-## Stiva Docker Compose
+## Stack-ul Docker Compose
 
-Stiva completă de dezvoltare rulează ca o implementare Docker Compose cu șase servicii pe o rețea bridge partajată (`qorechain-net`):
+Stack-ul complet de dezvoltare rulează ca un deployment Docker Compose cu șase servicii, pe o rețea bridge partajată (`qorechain-net`):
 
-| Serviciu         | Imagine                    | Scop                                                  |
-| ---------------- | -------------------------- | ----------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | Nod de lanț cu toate modulele, VM-urile și punctele finale RPC |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | Serviciu de inferență AI (gRPC + QCAI Backend)        |
-| `block-indexer`  | `qorechain-indexer:latest` | Indexator de blocuri/tranzacții (WebSocket + Postgres) |
-| `postgres`       | `postgres:16-alpine`       | Bază de date pentru indexatorul de blocuri            |
-| `prometheus`     | `prom/prometheus:latest`   | Colectarea și stocarea metricilor                     |
-| `grafana`        | `grafana/grafana:latest`   | Tablouri de bord de monitorizare și alertare          |
+| Serviciu          | Imagine                      | Scop                                             |
+| ---------------- | -------------------------- | --------------------------------------------------- |
+| `qorechain-node` | `qorechain-core:latest`    | Nodul de chain cu toate modulele, VM-urile și endpoint-urile RPC |
+| `ai-sidecar`     | `qorechain-sidecar:latest` | Serviciu de inferență AI (gRPC + QCAI Backend)          |
+| `block-indexer`  | `qorechain-indexer:latest` | Indexer de blocuri/tranzacții (WebSocket + Postgres)    |
+| `postgres`       | `postgres:16-alpine`       | Baza de date pentru indexerul de blocuri                      |
+| `prometheus`     | `prom/prometheus:latest`   | Colectare și stocare de metrici                       |
+| `grafana`        | `grafana/grafana:latest`   | Dashboard-uri de monitorizare și alertare               |
 
-Porniți stiva completă:
+Pornește stack-ul complet:
 
 ```bash
 docker compose up -d
@@ -244,9 +244,9 @@ docker compose up -d
 
 Toate datele persistente sunt stocate în volume Docker denumite: `node-data`, `postgres-data`, `prometheus-data` și `grafana-data`.
 
-## Conexe
+## Legături
 
-* [Arhitectura multistrat](/architecture/multilayer-architecture) — înregistrarea sidechain-urilor și ancorarea stării.
-* [Mecanismul de consens](/architecture/consensus-mechanism) — producția de blocuri, finalitatea și slashing.
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — optimizarea parametrilor bazată pe AI.
-* [Securitate post-cuantică](/architecture/post-quantum-security) — semnături Dilithium-5 în întreaga stivă.
+* [Arhitectură multilayer](/architecture/multilayer-architecture) — înregistrarea sidechain-urilor și ancorarea stării.
+* [Mecanism de consens](/architecture/consensus-mechanism) — producția de blocuri, finalitatea și slashing-ul.
+* [Motorul de consens PRISM](/architecture/prism-consensus-engine) — optimizarea parametrilor asistată de AI.
+* [Securitate post-cuantică](/architecture/post-quantum-security) — semnături Dilithium-5 pe tot stack-ul.

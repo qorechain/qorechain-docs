@@ -1,21 +1,23 @@
 ---
 slug: /light-node/rewards-and-monitoring
-title: Récompenses et supervision
-sidebar_label: Récompenses et supervision
+title: Récompenses et surveillance
+sidebar_label: Récompenses et surveillance
 sidebar_position: 5
 ---
 
-# Récompenses et supervision
+# Récompenses et surveillance
 
-Un nœud léger à la fois **gagne des récompenses** et **doit rester en bonne santé** pour continuer à en gagner. Cette page traite de la part de récompense de 3 % réservée aux nœuds légers, du fonctionnement du staking délégué et de l'auto-capitalisation, ainsi que de la supervision du nœud.
+Un light node **gagne des récompenses** tout en devant **rester en bonne santé** pour continuer à les gagner. Cette page couvre la part de 3 % des récompenses de bloc réservée aux light nodes, le fonctionnement du staking délégué et de la capitalisation automatique, ainsi que la surveillance du nœud.
 
 ## La part de 3 % des récompenses de bloc
 
-La distribution des frais de QoreChain réserve une **part fixe de 3 % aux nœuds légers** qui servent les données du réseau. C'est l'une des cinq destinations de la répartition des récompenses du protocole — validateurs (37 %), brûlé (30 %), trésorerie (20 %), stakers (10 %) et **nœuds légers (3 %)** — appliquée on-chain. Voir [Tokenomics](/architecture/tokenomics) pour la ventilation complète.
+La distribution des frais de QoreChain réserve une part fixe de **3 % aux light nodes** qui servent des données réseau. C'est l'une des cinq destinations de la répartition des récompenses du protocole — validateurs (37 %), brûlés (30 %), trésorerie (20 %), stakers (10 %) et **light nodes (3 %)** — appliquée on-chain. Voir [Tokenomics](/architecture/tokenomics) pour la répartition complète.
 
-Pour être éligible à cette part, un nœud doit être **enregistré on-chain et prouver activement sa vivacité** via des preuves de heartbeat. Un nœud enregistré mais hors ligne ne gagne pas la part. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour comprendre le fonctionnement de l'enregistrement et des heartbeats.
+Pour être éligible à cette part, un nœud doit remplir trois conditions, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active, un minimum de **1 000 QOR délégués** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur — et des frais d'enregistrement on-chain de **1 QOR**. La participation est également plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et des licences, y compris le statut actuel de l'inscription au programme de récompenses.
 
-*Éligibilité aux récompenses : enregistrez-vous on-chain, prouvez votre vivacité via les heartbeats pour atteindre le statut actif, gagnez la part de 3 %, puis capitalisez-la automatiquement dans votre stake.*
+Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle d'environ **1 000 blocs (~39 minutes)**, avec une période de grâce d'environ **100 blocs (~4 minutes)** après un heartbeat manqué avant d'être marqué inactif. Un nœud marqué inactif cesse de gagner la part tant qu'il ne prouve pas à nouveau sa vivacité.
+
+*Éligibilité aux récompenses : détenir une licence on-chain active et le stake délégué minimum, s'enregistrer, puis continuer à prouver sa vivacité via des heartbeats pour rester au-dessus des seuils de disponibilité et d'intervalle de heartbeat qui maintiennent le versement de la part.*
 
 ```mermaid
 flowchart LR
@@ -31,21 +33,21 @@ flowchart LR
 
 ## Fonctionnement des récompenses
 
-Au-delà de la part des nœuds légers, le nœud gère le stake délégué et les récompenses de staking qu'il produit. Le comportement est piloté par la section `[delegation]` de `config.toml`.
+Au-delà de la part réservée aux light nodes, le nœud gère le stake délégué et les récompenses de staking qu'il produit. Le comportement est piloté par la section `[delegation]` de `config.toml`.
 
 ### Staking délégué avec répartition multi-validateurs
 
-Vous pouvez déléguer sur **plusieurs validateurs** plutôt que de concentrer le stake sur un seul. Le nœud suit chaque délégation et la part de stake attribuée à chaque validateur à l'aide de **poids de répartition** configurables, ce qui vous permet de répartir le risque sur l'ensemble.
+Vous pouvez déléguer sur **plusieurs validateurs** plutôt que de concentrer le stake sur un seul. Le nœud suit chaque délégation et la part de stake attribuée à chaque validateur à l'aide de **poids de répartition** configurables, ce qui permet de répartir le risque sur l'ensemble.
 
-### Auto-capitalisation des récompenses
+### Capitalisation automatique des récompenses
 
-Le nœud peut **percevoir les récompenses et les redéléguer automatiquement** selon un intervalle configurable. Par défaut, l'auto-capitalisation est activée avec un intervalle de `1h`, avec un seuil de récompense minimal (en `uqor`) qui doit s'accumuler avant qu'une perception ne soit déclenchée. La capitalisation transforme les récompenses gagnées en stake supplémentaire sans intervention manuelle.
+Le nœud peut **réclamer les récompenses et les re-déléguer automatiquement** selon un intervalle configurable. Par défaut, la capitalisation automatique est activée sur un intervalle de `1h`, avec un seuil minimal de récompense (en `uqor`) devant s'accumuler avant qu'une réclamation ne soit déclenchée. La capitalisation transforme les récompenses gagnées en stake supplémentaire sans intervention manuelle.
 
 ### Rééquilibrage tenant compte de la réputation
 
-Lorsque le rééquilibrage est activé, le nœud peut **déplacer automatiquement la délégation vers des validateurs de meilleure réputation**, sous réserve d'un score de réputation minimal configurable. Cela maintient le stake actif auprès de validateurs performants plutôt que de le laisser auprès de ceux dont les performances se sont dégradées.
+Lorsque le rééquilibrage est activé, le nœud peut **déplacer la délégation vers des validateurs à réputation plus élevée** automatiquement, sous réserve d'un score de réputation minimal configurable. Cela permet de garder le stake actif auprès des validateurs qui performent bien plutôt que de le laisser auprès de ceux dont la performance s'est dégradée.
 
-### Inspecter les récompenses et les délégations
+### Inspection des récompenses et des délégations
 
 L'édition SX expose des commandes pour inspecter cet état :
 
@@ -55,38 +57,38 @@ lightnode-sx rewards      # pending staking rewards (uqor)
 lightnode-sx validators   # the bonded validator set
 ```
 
-Dans l'édition UX, la vue **Delegation** affiche les mêmes informations de délégation et de récompense dans le navigateur.
+Dans l'édition UX, la vue **Delegation** affiche les mêmes informations de délégation et de récompenses dans le navigateur.
 
-## Supervision
+## Surveillance
 
-Maintenir le nœud en bonne santé est ce qui le garde éligible aux récompenses. Trois éléments méritent d'être surveillés.
+Maintenir le nœud en bonne santé est ce qui le maintient éligible aux récompenses. Trois points méritent d'être surveillés.
 
 ### Télémétrie
 
-La télémétrie en temps réel couvre les validateurs, le consensus/réseau, le pont (bridge) et la tokenomics, chacun rafraîchi à son propre intervalle (configuré sous `[telemetry]` dans `config.toml`). Depuis la CLI :
+La télémétrie en temps réel couvre les validateurs, le consensus/réseau, le bridge et la tokenomics, chacun étant actualisé selon son propre intervalle (configuré sous `[telemetry]` dans `config.toml`). Depuis la CLI :
 
 ```bash
 lightnode-sx status    # node and light-client sync status
 lightnode-sx network   # recent synced headers and latest height
 ```
 
-L'édition UX présente les mêmes données en direct dans ses vues **Overview**, **Network**, **Bridge** et **Tokenomics** — voir [Édition UX](/light-node/ux-edition).
+L'édition UX affiche les mêmes données en direct dans ses vues **Overview**, **Network**, **Bridge** et **Tokenomics** — voir [Édition UX](/light-node/ux-edition).
 
-### Santé de la synchronisation et du heartbeat
+### Santé de la synchronisation et des heartbeats
 
-La commande `status` indique l'ID de chaîne, la dernière hauteur de bloc, si la chaîne est en cours de rattrapage, ainsi que la hauteur synchronisée du client léger et son état de synchronisation. Un nœud enregistré, synchronisé et en fonctionnement continue de soumettre des **preuves de vivacité par heartbeat** et reste ainsi éligible à la part de récompense. Ces heartbeats sont produits via un **pipeline de transaction co-signé PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le réglage PQC obligatoire par défaut de la chaîne — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour comprendre le fonctionnement du pipeline et activer les heartbeats on-chain. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il peut être en train d'échouer à prouver sa vivacité — enquêtez avant que l'éligibilité ne soit affectée.
+La commande `status` indique l'ID de la chaîne, la hauteur de bloc la plus récente, si la chaîne est en train de rattraper son retard, ainsi que la hauteur synchronisée et l'état de synchronisation du light client. Un nœud enregistré, synchronisé et en cours d'exécution continue à soumettre des **preuves de vivacité (heartbeats)** et reste ainsi éligible à la part de récompenses. Ces heartbeats sont produits via un **pipeline de transactions co-signées PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le défaut de la chaîne exigeant la PQC — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour le fonctionnement du pipeline et la manière d'activer les heartbeats on-chain. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il se peut qu'il échoue à prouver sa vivacité — investiguez avant que l'éligibilité ne soit affectée.
 
-### Santé via l'auto-test
+### Santé de l'auto-test
 
-Si vous soupçonnez un problème avec la pile cryptographique, exécutez l'auto-test PQC à tout moment :
+Si vous suspectez un problème avec la pile cryptographique, exécutez l'auto-test PQC à tout moment :
 
 ```bash
 lightnode-sx selftest
 ```
 
-Il exécute keygen → signature → vérification → détection d'altération (cinq vérifications) et se termine avec un code non nul en cas d'échec. C'est le moyen le plus rapide d'écarter une bibliothèque `libqorepqc` cassée ou manquante lors du diagnostic de problèmes de nœud. Voir [Édition SX](/light-node/sx-edition) pour le détail complet de l'auto-test.
+Il exécute génération de clés → signature → vérification → détection d'altération (cinq vérifications) et se termine avec un code non nul en cas d'échec. C'est le moyen le plus rapide d'écarter un problème avec la pile de signature post-quantique lors du diagnostic des problèmes de nœud. Voir [Édition SX](/light-node/sx-edition) pour le détail complet de l'auto-test.
 
-## Pour aller plus loin
+## Où aller ensuite
 
 - [Enregistrement et licences](/light-node/registration-and-licensing) — s'enregistrer et rester actif.
-- [Tokenomics](/architecture/tokenomics) — le modèle complet de récompense et de burn.
+- [Tokenomics](/architecture/tokenomics) — le modèle complet de récompenses et de burn.

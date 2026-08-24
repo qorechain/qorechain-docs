@@ -11,13 +11,13 @@ Bu kılavuz, hem topluluk (açık çekirdek) derlemesini hem de tam tescilli der
 
 ## Önkoşullar
 
-| Bağımlılık         | Minimum Sürüm             | Notlar                                            |
-| ------------------ | ------------------------- | ------------------------------------------------- |
-| **Go**             | 1.26+                     | Tüm derlemeler için gereklidir                    |
-| **CGO**            | Etkin (`CGO_ENABLED=1`)   | PQC ve SVM FFI köprüleri için gereklidir          |
-| **Rust araç zinciri** | En son kararlı sürüm   | `libqorepqc` ve `libqoresvm` derlemek için gereklidir |
-| **Make**           | 3.81+                     | Derleme otomasyonu                                |
-| **Git**            | 2.x                       | Kaynak çekme                                      |
+| Bağımlılık            | Minimum Sürüm              | Notlar                                                |
+| --------------------- | --------------------------- | ------------------------------------------------------ |
+| **Go**                 | 1.26+                       | Tüm derlemeler için gereklidir                          |
+| **CGO**                | Etkin (`CGO_ENABLED=1`)     | PQC ve SVM FFI köprüleri için gereklidir                |
+| **Rust araç zinciri**  | En son kararlı sürüm        | `libqorepqc` ve `libqoresvm` derlemek için gereklidir   |
+| **Make**               | 3.81+                       | Derleme otomasyonu                                      |
+| **Git**                | 2.x                          | Kaynak çekme                                            |
 
 Ortamınızı doğrulayın:
 
@@ -47,11 +47,11 @@ cargo build --release
 
 Derlenmiş kütüphane `lib/{os}_{arch}/` dizinine yerleştirilir:
 
-| Platform    | Kütüphane Dosyası  | Dizin               |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
+| Platform    | Kütüphane Dosyası  | Dizin                |
+| ----------- | ------------------ | -------------------- |
+| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/`  |
+| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`   |
+| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`   |
 
 ### libqoresvm (SVM Çalışma Zamanı)
 
@@ -81,17 +81,17 @@ export LD_LIBRARY_PATH=$(pwd)/lib/linux_amd64:$LD_LIBRARY_PATH
 ```
 
 :::info
-İpucu: Oturumlar arasında kalıcı olması için dışa aktarmayı kabuk profilinize (`~/.bashrc`, `~/.zshrc`) ekleyin.
+İpucu: Oturumlar arasında kalıcı olması için dışa aktarma komutunu kabuk profilinize (`~/.bashrc`, `~/.zshrc`) ekleyin.
 :::
 
 ## Açık Çekirdek Mimarisi
 
 QoreChain bir **açık çekirdek** modelini izler:
 
-* **Topluluk derlemesi** — Her QoreChain modülü için tüm modül arabirimlerini, CLI komutlarını, protobuf tanımlarını ve mesaj türlerini içerir (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm vb.). Tescilli modüllerin keeper'ları, güvenli varsayılanlar veya no-op yanıtlar döndüren **stub uygulamaları** kullanır. Bu, üçüncü taraf araçların, cüzdanların ve indeksleyicilerin tescilli kod gerektirmeden tüm QoreChain API'leriyle entegre olmasını sağlar.
-* **Tam (tescilli) derleme** — `proprietary` derleme etiketinin arkasındaki eksiksiz keeper uygulamalarını etkinleştirir. Bu, gerçek AI anomali algılama mantığını, PRISM uzlaşma parametre ayarlamasını, gelişmiş itibar puanlamasını ve tüm üretim düzeyindeki özellikleri içerir.
+* **Topluluk derlemesi** — Her QoreChain modülü için (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm vb.) tüm modül arabirimlerini, CLI komutlarını, protobuf tanımlarını ve mesaj türlerini içerir. Tescilli modüllerin keeper'ları, güvenli varsayılan değerler veya no-op yanıtlar döndüren **stub uygulamaları** kullanır. Bu sayede üçüncü taraf araçlar, cüzdanlar ve indeksleyiciler, tescilli koda ihtiyaç duymadan tüm QoreChain API'leriyle entegre olabilir.
+* **Tam (tescilli) derleme** — `proprietary` derleme etiketinin arkasındaki eksiksiz keeper uygulamalarını devreye alır. Buna gerçek AI anomali tespit mantığı, PRISM konsensüs parametre ayarlaması, gelişmiş itibar puanlaması ve tüm üretim düzeyindeki özellikler dahildir.
 
-Her iki derleme de aynı `qorechaind` ikili dosya adını üretir ve özdeş CLI komutlarını ve gRPC/REST uç noktalarını sunar. Fark, bu arabirimlerin arkasındaki keeper mantığının çalışma zamanı davranışındadır.
+Her iki derleme de aynı `qorechaind` ikili dosya adını üretir ve birebir aynı CLI komutlarını ve gRPC/REST uç noktalarını sunar. Fark, bu arabirimlerin arkasındaki keeper mantığının çalışma zamanı davranışındadır.
 
 ## Topluluk Derlemesi
 
@@ -99,11 +99,11 @@ Her iki derleme de aynı `qorechaind` ikili dosya adını üretir ve özdeş CLI
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Bu, tescilli özellikler için stub keeper'larla tüm genel modül arabirimlerini derler. Ortaya çıkan ikili dosya şunlar için tamamen işlevseldir:
+Bu komut, tescilli özellikler için stub keeper'larla birlikte tüm genel modül arabirimlerini derler. Ortaya çıkan ikili dosya şunlar için tamamen işlevseldir:
 
 * Bir doğrulayıcı düğümü çalıştırma
 * İşlem gönderme ve sorgulama
-* EVM, CosmWasm ve SVM VM'leriyle etkileşim
+* EVM, CosmWasm ve SVM sanal makineleriyle etkileşim
 * Üçüncü taraf entegrasyonları ve araçları oluşturma
 * Yerel geliştirme ve test
 
@@ -113,7 +113,7 @@ Bu, tescilli özellikler için stub keeper'larla tüm genel modül arabirimlerin
 CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
 ```
 
-`-tags proprietary` bayrağı, tam keeper uygulamalarını etkinleştirir; bunlar herkese açık kaynak ağacının parçası değildir.
+`-tags proprietary` bayrağı, herkese açık kaynak ağacının parçası olmayan tam keeper uygulamalarını devreye alır.
 
 ## Testleri Çalıştırma
 
@@ -121,7 +121,7 @@ CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
 CGO_ENABLED=1 go test ./... -count=1
 ```
 
-`-count=1` bayrağı test önbelleğini devre dışı bırakarak her seferinde temiz bir çalışma sağlar. Tek tek paket testleri şu şekilde çalıştırılabilir:
+`-count=1` bayrağı test önbelleklemesini devre dışı bırakarak her seferinde temiz bir çalışma sağlar. Tek tek paket testleri şu şekilde çalıştırılabilir:
 
 ```bash
 CGO_ENABLED=1 go test ./x/pqc/... -count=1 -v
@@ -138,18 +138,18 @@ cd rust/qoresvm && cargo test
 
 ## Derleme Doğrulaması
 
-Başarılı bir derlemeden sonra ikili dosyayı doğrulayın:
+Başarılı bir derlemenin ardından ikili dosyayı doğrulayın:
 
 ```bash
 ./qorechaind version
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için **v3.1.85** zincir sürümünü çalıştıran yayındaki ağ olan `--chain-id qorechain-vladi` ifadesini yerine koyun.
+`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için, **v3.1.92** zincir sürümünü çalıştıran canlı ağ olan `--chain-id qorechain-vladi` değerini kullanın.
 
 ## Docker Derlemesi
 
-Konteynerli derlemeler için, depo kök dizininde bir Dockerfile sağlanır:
+Konteynerleştirilmiş derlemeler için depo kök dizininde bir Dockerfile sağlanmıştır:
 
 ```bash
 docker build -t qorechaind:latest .
@@ -163,7 +163,7 @@ Docker imajı, tüm yerel kütüphane derlemesini ve yol yapılandırmasını ot
 
 <summary>cgo: C compiler not found</summary>
 
-Xcode CLI araçlarını (macOS) veya `build-essential` (Linux) yükleyin
+Xcode CLI araçlarını (macOS) veya `build-essential` paketini (Linux) yükleyin
 
 </details>
 
@@ -171,7 +171,7 @@ Xcode CLI araçlarını (macOS) veya `build-essential` (Linux) yükleyin
 
 <summary>cannot find -lqorepqc</summary>
 
-Önce Rust kütüphanelerini derleyin ve `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` ayarını yapın
+Önce Rust kütüphanelerini derleyin ve `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` değişkenini ayarlayın
 
 </details>
 
@@ -187,7 +187,7 @@ Xcode CLI araçlarını (macOS) veya `build-essential` (Linux) yükleyin
 
 <summary>signal: killed during build</summary>
 
-Kullanılabilir belleği artırın (düşük limitli Docker'da yaygındır)
+Kullanılabilir belleği artırın (düşük bellek limitli Docker ortamlarında sık görülür)
 
 </details>
 
@@ -195,6 +195,6 @@ Kullanılabilir belleği artırın (düşük limitli Docker'da yaygındır)
 
 <summary>PQC tests fail with size mismatch</summary>
 
-`pqcrypto v0.5.0+` kullandığınızı doğrulayın (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bayt)
+`pqcrypto v0.5.0+` sürümünü kullandığınızı doğrulayın (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bayt)
 
 </details>

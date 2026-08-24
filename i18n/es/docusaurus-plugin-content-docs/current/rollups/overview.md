@@ -10,7 +10,7 @@ sidebar_position: 1
 El **Rollup Development Kit (RDK)** de QoreChain — el módulo `x/rdk` — permite a los desarrolladores lanzar rollups específicos de aplicación que liquidan en QoreChain. Cada rollup es un entorno de ejecución independiente con su propio tiempo de bloque, máquina virtual, modelo de comisiones y secuenciación, al tiempo que hereda las garantías de seguridad, criptografía poscuántica y disponibilidad de datos de QoreChain.
 
 :::caution
-El RDK y la capa de liquidación de rollups son una capacidad en evolución activa. Trate los modos de liquidación, los sistemas de prueba, los presets y la madurez de cada característica descritos a lo largo de esta sección como una intención de diseño sujeta a cambios, y valide cualquier despliegue en la testnet **`qorechain-diana`** antes de apuntar a mainnet (**`qorechain-vladi`**, chain ID de EVM **9801**, versión de la cadena **v3.1.85**).
+El RDK y la capa de liquidación de rollups son una capacidad en evolución activa. Trate los modos de liquidación, los sistemas de prueba, los presets y la madurez de cada característica descritos a lo largo de esta sección como una intención de diseño sujeta a cambios, y valide cualquier despliegue en la testnet **`qorechain-diana`** antes de apuntar a mainnet (**`qorechain-vladi`**, chain ID de EVM **9801**, versión de la cadena **v3.1.92**).
 :::
 
 Para la referencia del módulo de bajo nivel — parámetros del módulo, detalles internos del ciclo de vida, integración de quema y anclaje multicapa — consulte la página **[Rollup Development Kit](/architecture/rollup-development-kit)** en la sección de Arquitectura. Esta sección de Rollups es la guía práctica orientada al desarrollador: qué es el RDK, qué paradigma elegir, cómo desplegar, cómo funciona la disponibilidad de datos y cómo se liquidan los retiros de L2 de vuelta a L1.
@@ -109,7 +109,7 @@ Los rollups soberanos ejecutan su propio consenso y se autosecuencian. Anclan su
 El modo de liquidación restringe qué sistemas de prueba son válidos. Estos emparejamientos se aplican cuando se crea un rollup.
 
 | Modo de liquidación | `fraud` | `snark` | `stark` | `none` |
-| ------------------- | :-----: | :-----: | :-----: | :----: |
+| --------------- | :-----: | :-----: | :-----: | :----: |
 | **optimistic**  | Obligatorio | — | — | — |
 | **zk**          | — | Admitido | Admitido | — |
 | **based**       | — | — | — | Obligatorio |
@@ -122,7 +122,7 @@ El modo de liquidación restringe qué sistemas de prueba son válidos. Estos em
 El secuenciador determina quién ordena las transacciones dentro de un bloque del rollup antes de la liquidación.
 
 | Modo | Quién secuencia | Notas |
-| ---- | --------------- | ----- |
+| ---- | ------------- | ----- |
 | **`dedicated`** | Una única dirección de operador designada | Latencia mínima; requiere confianza en el operador para la vivacidad y el ordenamiento justo |
 | **`shared`** | Un conjunto de secuenciadores compartido | Ordenamiento distribuido entre el conjunto; sobrecarga de coordinación ligeramente mayor |
 | **`based`** | Los proposers L1 de QoreChain | Hereda la seguridad de los validadores y la resistencia a la censura de la cadena anfitriona; obligatorio para la liquidación `based` |
@@ -132,7 +132,7 @@ El secuenciador determina quién ordena las transacciones dentro de un bloque de
 ## Elegir un paradigma
 
 | Si desea... | Considere |
-| ----------- | --------- |
+| -------------- | -------- |
 | La configuración operativa más simple, con los validadores de QoreChain secuenciando | **based** |
 | Finalidad rápida con garantías criptográficas (en maduración) | **zk** (`snark` / `stark`) |
 | Un modelo bien entendido con resolución económica de disputas | **optimistic** (`fraud`) |

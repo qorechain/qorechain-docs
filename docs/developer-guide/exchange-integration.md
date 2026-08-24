@@ -10,7 +10,7 @@ sidebar_position: 11
 Everything an exchange, custodian, or payment integrator needs to list QOR and process deposits and withdrawals: choosing an interface, detecting deposits safely, and signing withdrawals.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.85**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
+This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.92**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
 :::
 
 ## Choosing an integration path {#choosing-a-path}
@@ -27,7 +27,7 @@ QoreChain is a single chain with **one unified native-QOR balance** exposed thro
 | Deposit detection | scan `MsgSend` events | scan blocks via `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
 | Best for | Cosmos-native platforms | **Platforms with existing EVM integration** | Solana-tooling platforms |
 
-**Recommendation:** if you already support EVM chains, **Path B (EVM)** is the least-effort integration — standard Ethereum tooling, and **withdrawals do not require post-quantum signing** (the EVM ante path is exempt). Path A (Cosmos) is the native route with memo-based shared deposit addresses. Path C (SVM) is a full native-QOR interface too — choose it if you specifically prefer Solana tooling.
+**Recommendation:** if you already support EVM chains, **Path B (EVM)** is the least-effort integration — standard Ethereum tooling, and **withdrawals do not require post-quantum signing** (the EVM ante path is exempt). Path A (Cosmos) is the native route with memo-based shared deposit addresses. Path C (SVM) is a full native-QOR interface on paper, but **its transaction lane is currently disabled network-wide** (see [Path C](#path-c-svm)) — use Path A or Path B until it reopens.
 
 The three interfaces are **not mutually exclusive** — funds sent to the `0x`, `qor1`, or SVM form of the same key are the same balance.
 
@@ -150,6 +150,10 @@ Standard Ethereum integration against `https://evm.qore.host` (chain ID **9801**
 * **Address mapping:** the `0x` address and the `qor1` address are two encodings of the same account — funds are shared. See [EVM Development](/developer-guide/evm-development).
 
 ## Path C — SVM (Solana-compatible) {#path-c-svm}
+
+:::caution SVM lane currently disabled
+The SVM execution lane is **currently disabled network-wide for transaction submission** as of chain version v3.1.89 (22 August) — any transaction to it returns `code 11, "SVM module is disabled"`. Do **not** stand up a deposit/withdrawal rail on Path C until the lane reopens. Use **Path A (Cosmos)** or **Path B (EVM)** instead. Read endpoints (e.g. `getBalance`) may still respond, but do not build deposit detection or withdrawal flows against SVM while transaction submission is disabled.
+:::
 
 As of v3.1.82 the SVM interface serves **native QOR** (see [Native QOR on the SVM Interface](/developer-guide/svm-development#native-qor)):
 

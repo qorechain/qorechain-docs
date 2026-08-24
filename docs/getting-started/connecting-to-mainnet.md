@@ -10,7 +10,7 @@ sidebar_position: 3
 Join the live QoreChain Vladi mainnet by configuring your node with the official genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.85** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
+This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.92** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
 :::
 
 ## Public Endpoints
@@ -35,13 +35,16 @@ Install the `qorechaind` binary either from the official prebuilt bundle or by b
 
 ### Prebuilt binary bundle (linux/amd64)
 
-The official release bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`):
+The canonical source of truth for the current binary is the **mainnet manifest**, a JSON file refreshed live at `https://download.qore.host/mainnet/latest.json`. It carries the current binary URL and SHA-256, the current genesis URL/SHA-256/size, the current peers and seeds, the P2P port, a state-sync trust point, and the minimum compatible chain version. Fetch it and use its values rather than hardcoding a binary version or checksum in your install scripts — those go stale as soon as a new release ships:
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
-# Verify the checksum before installing:
-sha256sum qore.tgz
-# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,10 +52,10 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-Versioned bundles are published at [download.qore.host](https://download.qore.host); each release ships with its SHA-256 checksum — always install the **latest** published bundle.
+The bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Keep your node current
-Full nodes must track the network's chain version (currently **v3.1.85**). An outdated node cannot decode newer transaction types (for example, `eth_secp256k1`-signed transactions introduced in v3.1.83) and will stop syncing once one appears in a block.
+:::caution Keep your node current — v3.1.92 or later required for a fresh sync
+Full nodes must track the network's live chain version — always install the binary the manifest points to, don't pin an old one. Separately from the manifest's `minCompatible` field, **v3.1.92 or later is required for a node that is joining fresh (from genesis) or recovering from a halt** — earlier versions cannot complete a full sync due to a now-fixed gas-metering bug that halts replay at the first block containing a transaction. A node already caught up and running an earlier version should still upgrade at the next opportunity, since an outdated node cannot decode newer transaction types and will stop syncing once one appears in a block.
 :::
 
 ### Build from source
@@ -77,10 +80,14 @@ This creates the default configuration and data directories under `~/.qorechaind
 
 ## Download Genesis
 
-Replace your local genesis file with the official mainnet genesis:
+Replace your local genesis file with the official mainnet genesis, using the URL and SHA-256 from the manifest fetched above:
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 ```
 
 The same file is also served live by the chain itself — you can cross-verify the download against it:
@@ -95,12 +102,18 @@ This file defines the initial state of the Vladi mainnet, including the genesis 
 
 ## Configure Peers
 
-Edit your node configuration to connect to the public mainnet sentry nodes.
+Edit your node configuration to connect to the public mainnet sentry nodes. Read the current peer and seed lists from the manifest rather than hardcoding node IDs and hosts — these rotate:
 
-Open `~/.qorechaind/config/config.toml` and set the `persistent_peers` field:
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Open `~/.qorechaind/config/config.toml` and set the `persistent_peers` (and `seeds`) fields to those values:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Also set the minimum gas price in `~/.qorechaind/config/app.toml` (the network fee floor is **0.1uqor**):
@@ -126,20 +139,26 @@ These values are tuned for the Vladi mainnet's block times and throughput.
 
 ---
 
-## Fast Bootstrap (Snapshot)
+## Fast Bootstrap (Snapshot or State Sync)
 
-Syncing from genesis can take a long time. A fresh chain-data snapshot is published at [download.qore.host](https://download.qore.host):
+Syncing from genesis can take a long time. The manifest's `stateSync` field carries a trust height/hash pair refreshed hourly — use it to configure state sync rather than looking up a height manually:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-# Verify before extracting:
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Then set the `[statesync]` section of `config.toml` with those values — see [Running a Node](/developer-guide/running-a-node) for the full workflow, including a manual RPC-based fallback if you need to derive a trust point yourself.
+
+A chain-data snapshot is also published at [download.qore.host](https://download.qore.host). Check the current listing there for the latest snapshot filename and its published checksum — don't hardcode a filename or height, since a new snapshot supersedes the old one on a regular basis:
+
+```bash
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
-
-Snapshots are published under height-stamped filenames — check [download.qore.host](https://download.qore.host) for the most recent one. Alternatively use **state sync** — see [Running a Node](/developer-guide/running-a-node) for the full workflow.
 
 ---
 
@@ -235,7 +254,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Chain version     | v3.1.85                                |
+| Chain version     | v3.1.92                                |
 | Live since        | 7 June 2026 23:59 UTC                  |
 | Token             | QOR (`uqor`, 10^6 micro-units = 1 QOR) |
 | Minimum gas price | `0.1uqor`                              |

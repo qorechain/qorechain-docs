@@ -10,7 +10,7 @@ sidebar_position: 3
 Unisciti alla mainnet QoreChain Vladi attiva configurando il tuo nodo con il file genesis ufficiale, i peer e le impostazioni di rete.
 
 :::note
-Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, esadecimale `0x2649`), attiva dal **7 giugno 2026 alle 23:59 UTC** ed eseguita con la versione della chain **v3.1.85** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), consulta [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova lì la tua configurazione prima di andare in produzione.
+Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, esadecimale `0x2649`), attiva dal **7 giugno 2026 alle 23:59 UTC** ed eseguita con la versione della chain **v3.1.92** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), consulta [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova lì la tua configurazione prima di andare in produzione.
 :::
 
 ## Endpoint pubblici
@@ -35,13 +35,16 @@ Installa il binario `qorechaind` dal bundle precompilato ufficiale oppure compil
 
 ### Bundle binario precompilato (linux/amd64)
 
-Il bundle di rilascio ufficiale contiene `qorechaind` più le librerie condivise richieste (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`):
+La fonte canonica di verità per il binario attuale è il **manifest della mainnet**, un file JSON aggiornato in tempo reale su `https://download.qore.host/mainnet/latest.json`. Contiene l'URL e lo SHA-256 del binario corrente, l'URL/SHA-256/dimensione del genesis corrente, i peer e i seed attuali, la porta P2P, un punto di fiducia per lo state sync e la versione minima compatibile della chain. Recuperalo e usa i suoi valori invece di scrivere in modo fisso una versione del binario o un checksum nei tuoi script di installazione — diventerebbero obsoleti non appena viene rilasciata una nuova release:
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
-# Verify the checksum before installing:
-sha256sum qore.tgz
-# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,10 +52,10 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-I bundle versionati sono pubblicati su [download.qore.host](https://download.qore.host); ogni release viene distribuita con il proprio checksum SHA-256 — installa sempre il bundle **più recente** pubblicato.
+Il bundle contiene `qorechaind` più le librerie condivise richieste (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Mantieni il nodo aggiornato
-I full node devono seguire la versione della chain della rete (attualmente **v3.1.85**). Un nodo obsoleto non può decodificare i tipi di transazione più recenti (ad esempio le transazioni firmate con `eth_secp256k1` introdotte nella v3.1.83) e smetterà di sincronizzarsi non appena una di esse comparirà in un blocco.
+:::caution Mantieni il nodo aggiornato — per una sincronizzazione da zero è richiesta la v3.1.92 o successiva
+I full node devono seguire la versione della chain attualmente in esecuzione sulla rete — installa sempre il binario indicato dal manifest, non fissarne uno vecchio. A parte il campo `minCompatible` del manifest, **per un nodo che si unisce da zero (dal genesis) o che sta recuperando da un arresto è richiesta la v3.1.92 o successiva** — le versioni precedenti non riescono a completare una sincronizzazione completa a causa di un bug (ora corretto) nella misurazione del gas che blocca il replay al primo blocco contenente una transazione. Un nodo già allineato che esegue una versione precedente dovrebbe comunque aggiornarsi alla prima occasione utile, poiché un nodo obsoleto non può decodificare i tipi di transazione più recenti e smetterà di sincronizzarsi non appena una di esse comparirà in un blocco.
 :::
 
 ### Compilazione dal codice sorgente
@@ -77,10 +80,14 @@ Questo comando crea le directory predefinite di configurazione e dei dati in `~/
 
 ## Download del genesis
 
-Sostituisci il tuo file genesis locale con il genesis ufficiale della mainnet:
+Sostituisci il tuo file genesis locale con il genesis ufficiale della mainnet, usando l'URL e lo SHA-256 ottenuti dal manifest recuperato in precedenza:
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 ```
 
 Lo stesso file è servito in tempo reale anche dalla chain stessa — puoi verificare in modo incrociato il download confrontandolo con esso:
@@ -95,12 +102,18 @@ Questo file definisce lo stato iniziale della mainnet Vladi, incluso il set di v
 
 ## Configurazione dei peer
 
-Modifica la configurazione del tuo nodo per connetterti ai sentry node pubblici della mainnet.
+Modifica la configurazione del tuo nodo per connetterti ai sentry node pubblici della mainnet. Leggi gli elenchi attuali di peer e seed dal manifest invece di scrivere in modo fisso ID nodo e host — questi ruotano nel tempo:
 
-Apri `~/.qorechaind/config/config.toml` e imposta il campo `persistent_peers`:
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Apri `~/.qorechaind/config/config.toml` e imposta i campi `persistent_peers` (e `seeds`) su questi valori:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Imposta anche il prezzo minimo del gas in `~/.qorechaind/config/app.toml` (la soglia minima delle commissioni di rete è **0.1uqor**):
@@ -126,20 +139,26 @@ Questi valori sono ottimizzati per i tempi di blocco e il throughput della mainn
 
 ---
 
-## Bootstrap rapido (snapshot)
+## Bootstrap rapido (snapshot o state sync)
 
-La sincronizzazione dal genesis può richiedere molto tempo. Uno snapshot recente dei dati della chain è pubblicato su [download.qore.host](https://download.qore.host):
+La sincronizzazione dal genesis può richiedere molto tempo. Il campo `stateSync` del manifest contiene una coppia altezza/hash di fiducia aggiornata ogni ora — usala per configurare lo state sync invece di individuare manualmente un'altezza:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-# Verify before extracting:
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Imposta poi la sezione `[statesync]` di `config.toml` con questi valori — consulta [Eseguire un nodo](/developer-guide/running-a-node) per la procedura completa, incluso un metodo alternativo manuale basato su RPC nel caso tu debba ricavare da solo un punto di fiducia.
+
+Uno snapshot dei dati della chain è pubblicato anche su [download.qore.host](https://download.qore.host). Controlla l'elenco attuale lì per il nome file dell'ultimo snapshot e il suo checksum pubblicato — non fissare in modo statico un nome file o un'altezza, poiché un nuovo snapshot sostituisce periodicamente quello precedente:
+
+```bash
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
-
-Gli snapshot sono pubblicati con nomi di file contrassegnati dall'altezza di blocco — controlla [download.qore.host](https://download.qore.host) per il più recente. In alternativa usa lo **state sync** — consulta [Eseguire un nodo](/developer-guide/running-a-node) per la procedura completa.
 
 ---
 
@@ -232,10 +251,10 @@ http://localhost:1317
 ## Dati della rete
 
 | Campo                   | Valore                                 |
-| ----------------------- | -------------------------------------- |
+| ----------------------- | --------------------------------------- |
 | Chain ID                | `qorechain-vladi`                      |
 | EVM chain ID            | `9801` (esadecimale `0x2649`)          |
-| Versione della chain    | v3.1.85                                |
+| Versione della chain    | v3.1.92                                |
 | Attiva dal              | 7 giugno 2026 23:59 UTC                |
 | Token                   | QOR (`uqor`, 10^6 micro-unità = 1 QOR) |
 | Prezzo minimo del gas   | `0.1uqor`                              |

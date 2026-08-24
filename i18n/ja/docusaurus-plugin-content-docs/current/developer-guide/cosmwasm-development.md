@@ -1,30 +1,30 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: CosmWasm 開発
-sidebar_label: CosmWasm 開発
+title: CosmWasm開発
+sidebar_label: CosmWasm開発
 sidebar_position: 3
 ---
 
-# CosmWasm 開発
+# CosmWasm開発
 
-QoreChain は **CosmWasm** スマートコントラクトをサポートしており、開発者は WebAssembly にコンパイルされる、安全でサンドボックス化されたプログラムを Rust で記述できます。CosmWasm コントラクトは、QoreChain のトリプル VM アーキテクチャ内で EVM および SVM プログラムと並行して実行されます。
+QoreChainは**CosmWasm**スマートコントラクトをサポートしており、開発者はRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルできます。CosmWasmコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026 年 6 月 7 日より稼働しチェーンバージョン **v3.1.85** を実行している **`qorechain-vladi`** メインネットを使用します。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（チェーンバージョン**v3.1.92**）を対象としています。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
 :::
 
 ---
 
 ## 前提条件
 
-| 依存関係                 | バージョン       | 目的                        |
+| 依存関係                      | バージョン         | 用途                            |
 | -------------------------- | ------------- | ------------------------------ |
 | **Rust**                   | 最新の安定版 | コントラクトのコンパイル           |
-| **wasm32-unknown-unknown** | target        | WebAssembly コンパイルターゲット |
-| **cargo-generate**         | 最新        | プロジェクトのスキャフォールディング            |
-| **cosmwasm-std**           | 1.5+          | CosmWasm 標準ライブラリ      |
+| **wasm32-unknown-unknown** | ターゲット        | WebAssemblyコンパイルターゲット |
+| **cargo-generate**         | 最新版          | プロジェクトの雛形生成            |
+| **cosmwasm-std**           | 1.5以上          | CosmWasm標準ライブラリ      |
 
-Wasm ターゲットをインストールします。
+Wasmターゲットをインストールします。
 
 ```bash
 rustup target add wasm32-unknown-unknown
@@ -34,9 +34,9 @@ rustup target add wasm32-unknown-unknown
 
 ## コントラクトのライフサイクル
 
-CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタンス化**、**実行**、**照会**という 5 つのステップのライフサイクルに従います。
+CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**、**Instantiate（インスタンス化）**、**Execute（実行）**、**Query（クエリ）**という5段階のライフサイクルに従います。
 
-1. **ビルド** — コントラクトを最適化された WebAssembly にコンパイルします。
+1. **Build** — コントラクトを最適化されたWebAssemblyにコンパイルします。
 
    ```bash
    cd my-contract
@@ -49,9 +49,9 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
      cosmwasm/rust-optimizer:0.15.0
    ```
 
-   最適化された `.wasm` ファイルは `artifacts/` ディレクトリに格納されます。
+   最適化された `.wasm` ファイルは `artifacts/` ディレクトリに生成されます。
 
-2. **ストア** — コンパイルしたコントラクトをチェーンにアップロードします。
+2. **Store** — コンパイル済みコントラクトをチェーンにアップロードします。
 
    ```bash
    qorechaind tx wasm store contract.wasm \
@@ -61,13 +61,13 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
      -y
    ```
 
-   トランザクションが確定したら、保存されたコード ID を照会します。
+   トランザクションが確定した後、保存されたコードIDを照会します。
 
    ```bash
    qorechaind query wasm list-code
    ```
 
-3. **インスタンス化** — 保存されたコード ID から新しいコントラクトインスタンスを作成します。
+3. **Instantiate** — 保存済みのコードIDから新しいコントラクトインスタンスを作成します。
 
    ```bash
    qorechaind tx wasm instantiate <code-id> \
@@ -82,10 +82,10 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
 
    | フラグ                | 説明                                    |
    | ------------------- | ---------------------------------------------- |
-   | `<code-id>`         | ストアトランザクションから返された数値 ID |
-   | `--label`           | このインスタンスの人間が読めるラベル         |
-   | `--no-admin`        | 管理者アドレスなし（コントラクトは変更不可）       |
-   | `--admin <address>` | コントラクトをマイグレートできる管理者を設定      |
+   | `<code-id>`         | store トランザクションから返される数値ID |
+   | `--label`           | このインスタンスの人間可読なラベル         |
+   | `--no-admin`        | 管理者アドレスなし（コントラクトはイミュータブル）       |
+   | `--admin <address>` | コントラクトの移行が可能な管理者を設定      |
 
    コントラクトアドレスを取得します。
 
@@ -93,7 +93,7 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
    qorechaind query wasm list-contracts-by-code <code-id>
    ```
 
-4. **実行** — コントラクトの実行エントリポイントを呼び出して状態を変更します。
+4. **Execute** — コントラクトのexecuteエントリーポイントを呼び出し、状態を変更します。
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -103,7 +103,7 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
      -y
    ```
 
-   資金を添えて実行する場合:
+   資金を添えて実行する場合。
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -113,18 +113,18 @@ CosmWasm コントラクトは、**ビルド**、**ストア**、**インスタ�
      -y
    ```
 
-5. **照会** — トランザクションを送信せずにコントラクトの状態を読み取ります。
+5. **Query** — トランザクションを送信せずにコントラクトの状態を読み取ります。
 
    ```bash
    qorechaind query wasm contract-state smart <contract-addr> \
      '{"get_count": {}}'
    ```
 
-   照会のレスポンスは JSON として返されます。
+   クエリの応答はJSONとして返されます。
 
 ---
 
-## 便利な照会
+## よく使うクエリ
 
 ```bash
 # List all stored code
@@ -148,9 +148,9 @@ qorechaind query wasm contract-history <contract-addr>
 
 ---
 
-## コントラクトの構造
+## コントラクト構造
 
-典型的な CosmWasm コントラクトには 3 つのエントリポイントがあります。
+典型的なCosmWasmコントラクトには、3つのエントリーポイントがあります。
 
 ```rust
 use cosmwasm_std::{
@@ -193,9 +193,9 @@ pub fn query(
 
 ---
 
-## クロス VM 呼び出し
+## クロスVM呼び出し
 
-CosmWasm コントラクトは、`x/crossvm` モジュールを通じて EVM および SVM 上にデプロイされたコントラクトとやり取りできます。CosmWasm からのクロス VM 呼び出しは**非同期**メッセージパスを使用します。
+CosmWasmコントラクトは、`x/crossvm` モジュールを通じてEVMおよびSVM上にデプロイされたコントラクトと連携できます。CosmWasmからのクロスVM呼び出しは**非同期**メッセージパスを使用します。
 
 ```rust
 use cosmwasm_std::{CosmosMsg, CustomMsg};
@@ -211,13 +211,13 @@ let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
 Ok(Response::new().add_message(cross_vm_msg))
 ```
 
-メッセージはキューに送信され、次のブロックの EndBlocker で処理されます。メッセージの完全なライフサイクルについては、[クロス VM 相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+メッセージはキューに送信され、次のブロックでEndBlockerによって処理されます。メッセージの完全なライフサイクルについては、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
 
 ---
 
-## モジュール統合
+## モジュール連携
 
-CosmWasm コントラクトは、標準的なメッセージパッシングを通じて Cosmos SDK モジュールとやり取りできます。
+CosmWasmコントラクトは、標準的なメッセージパッシングを通じてCosmos SDKモジュールと連携できます。
 
 ```rust
 // Send native tokens via the bank module
@@ -241,9 +241,9 @@ let delegate_msg = StakingMsg::Delegate {
 
 ---
 
-## コントラクトのマイグレーション
+## コントラクトの移行
 
-コントラクトが `--admin` アドレスを指定してインスタンス化された場合、管理者はそれを新しいコード ID にマイグレートできます。
+コントラクトが `--admin` アドレス付きでインスタンス化されていた場合、管理者はそれを新しいコードIDに移行できます。
 
 ```bash
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
@@ -252,12 +252,12 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   -y
 ```
 
-これは、既存のコントラクト状態を用いて新しいコードの `migrate` エントリポイントを呼び出します。
+これにより、既存のコントラクト状態を保持したまま、新しいコードの `migrate` エントリーポイントが呼び出されます。
 
 ---
 
 ## 次のステップ
 
-* [クロス VM 相互運用性](/developer-guide/cross-vm-interoperability) — CosmWasm から EVM および SVM コントラクトを呼び出す
-* [SVM 開発](/developer-guide/svm-development) — QoreChain への BPF プログラムのデプロイ
-* [EVM プリコンパイル](/developer-guide/evm-precompiles) — Solidity から PQC および AI 機能にアクセスする
+* [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — CosmWasmからEVMおよびSVMコントラクトを呼び出す
+* [SVM開発](/developer-guide/svm-development) — QoreChain上にBPFプログラムをデプロイする
+* [EVMプリコンパイル](/developer-guide/evm-precompiles) — SolidityからPQCおよびAI機能にアクセスする

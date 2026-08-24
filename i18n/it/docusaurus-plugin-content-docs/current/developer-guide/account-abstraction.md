@@ -1,29 +1,29 @@
 ---
 slug: /developer-guide/account-abstraction
-title: Account Abstraction
-sidebar_label: Account Abstraction
+title: Astrazione dell'Account
+sidebar_label: Astrazione dell'Account
 sidebar_position: 7
 ---
 
-# Account Abstraction
+# Astrazione dell'Account
 
-QoreChain fornisce l'**account abstraction a livello di protocollo** tramite il modulo `x/abstractaccount`. Questo consente account programmabili con regole di autenticazione flessibili, session key, limiti di spesa e recupero sociale — il tutto senza richiedere un'infrastruttura esterna di smart contract.
+QoreChain offre **astrazione dell'account a livello di protocollo** tramite il modulo `x/abstractaccount`. Questo abilita account programmabili con regole di autenticazione flessibili, chiavi di sessione, limiti di spesa e recupero sociale — tutto senza richiedere un'infrastruttura di smart contract esterna.
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026, che esegue la versione di chain **v3.1.85**. Sostituisci `--chain-id qorechain-diana` per la testnet.
+I comandi seguenti usano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 e in esecuzione sulla versione della chain **v3.1.92**. Sostituisci con `--chain-id qorechain-diana` per la testnet.
 :::
 
 ## Panoramica
 
-Gli account blockchain tradizionali sono controllati da un'unica chiave privata. L'account abstraction disaccoppia il concetto di "chi può autorizzare una transazione" da una singola chiave crittografica, consentendo:
+Gli account blockchain tradizionali sono controllati da una singola chiave privata. L'astrazione dell'account disaccoppia il concetto di "chi può autorizzare una transazione" da un'unica chiave crittografica, abilitando:
 
 * **Account multisig** con firma a soglia configurabile
-* **Account con recupero sociale** con recupero della chiave basato su guardiani
+* **Account con recupero sociale** basati su guardiani per il recupero della chiave
 * **Account basati su sessione** con permessi granulari e a tempo limitato per le dApp
 
-Il modulo `x/abstractaccount` implementa queste funzionalità a livello di protocollo: funzionano quindi su tutte e tre le VM (EVM, CosmWasm, SVM) e beneficiano dell'efficienza nativa del gas.
+Il modulo `x/abstractaccount` implementa queste funzionalità a livello di protocollo, il che significa che funzionano su tutte e tre le VM (EVM, CosmWasm, SVM) e beneficiano dell'efficienza nativa del gas.
 
-*Un flusso dApp basato su sessione: una session key con ambito limitato firma una transazione, il modulo la convalida rispetto alla sessione e alle regole di spesa, quindi la esegue.*
+*Un flusso dApp basato su sessione: una chiave di sessione con ambito limitato firma una transazione, il modulo la valida rispetto alla sessione e alle regole di spesa, quindi la esegue.*
 
 ```mermaid
 flowchart TD
@@ -36,17 +36,17 @@ flowchart TD
     E --> F["Session expires<br/>or owner revokes"]
 ```
 
-## Tipi di account
+## Tipi di Account
 
-| Tipo              | Descrizione                                  | Caso d'uso                       |
-| ----------------- | -------------------------------------------- | -------------------------------- |
-| `multisig`        | Firma a soglia M-di-N                        | Tesorerie DAO, wallet condivisi  |
-| `social_recovery` | Recupero della chiave assistito da guardiani | Wallet consumer, onboarding      |
-| `session_based`   | Session key delegate con vincoli             | Sessioni dApp, wallet mobili     |
+| Tipo               | Descrizione                              | Caso d'uso                        |
+| ----------------- | --------------------------------------- | ------------------------------ |
+| `multisig`        | Firma a soglia M-su-N                   | Tesorerie DAO, wallet condivisi |
+| `social_recovery` | Recupero chiave assistito da guardiani  | Wallet consumer, onboarding    |
+| `session_based`   | Chiavi di sessione delegate con vincoli | Sessioni dApp, wallet mobili   |
 
-## Creare un account astratto
+## Creazione di un Account Astratto
 
-### Account basato su sessione
+### Account Basato su Sessione
 
 ```bash
 qorechaind tx abstractaccount create \
@@ -56,7 +56,7 @@ qorechaind tx abstractaccount create \
   -y
 ```
 
-### Account multisig
+### Account Multisig
 
 ```bash
 qorechaind tx abstractaccount create \
@@ -68,7 +68,7 @@ qorechaind tx abstractaccount create \
   -y
 ```
 
-### Account con recupero sociale
+### Account con Recupero Sociale
 
 ```bash
 qorechaind tx abstractaccount create \
@@ -80,20 +80,20 @@ qorechaind tx abstractaccount create \
   -y
 ```
 
-## Session key
+## Chiavi di Sessione
 
-Le session key sono il cuore del tipo di account `session_based`. Permettono di concedere **permessi temporanei e con ambito limitato** a una chiave secondaria — l'ideale per le interazioni con le dApp in cui non vuoi esporre la tua chiave primaria.
+Le chiavi di sessione sono il fondamento del tipo di account `session_based`. Permettono di concedere **permessi temporanei e con ambito limitato** a una chiave secondaria — perfette per le interazioni con le dApp quando non si vuole esporre la chiave primaria.
 
-### Proprietà principali
+### Proprietà della Chiave
 
-| Proprietà                | Descrizione                                               |
-| ------------------------ | --------------------------------------------------------- |
-| **Permessi**             | Quali tipi di messaggio la session key può firmare        |
-| **Scadenza**             | Scadenza automatica dopo una durata configurabile         |
-| **Limiti di spesa**      | Importi massimi che la session key può spendere           |
-| **Contratti consentiti** | Limita le interazioni a specifici indirizzi di contratto  |
+| Proprietà              | Descrizione                                          |
+| --------------------- | ---------------------------------------------------- |
+| **Permessi**       | Quali tipi di messaggio la chiave di sessione può firmare         |
+| **Scadenza**            | Scadenza automatica dopo una durata configurabile   |
+| **Limiti di spesa**   | Importi massimi che la chiave di sessione può spendere            |
+| **Contratti consentiti** | Limita le interazioni a indirizzi di contratto specifici |
 
-### Concedere una session key
+### Concedere una Chiave di Sessione
 
 ```bash
 qorechaind tx abstractaccount grant-session \
@@ -105,7 +105,7 @@ qorechaind tx abstractaccount grant-session \
   -y
 ```
 
-### Revocare una session key
+### Revocare una Chiave di Sessione
 
 ```bash
 qorechaind tx abstractaccount revoke-session \
@@ -114,23 +114,23 @@ qorechaind tx abstractaccount revoke-session \
   -y
 ```
 
-### Elencare le sessioni attive
+### Elenco delle Sessioni Attive
 
 ```bash
 qorechaind query abstractaccount sessions <account-address>
 ```
 
-## Regole di spesa
+## Regole di Spesa
 
-Le regole di spesa aggiungono barriere finanziarie agli account astratti, indipendentemente dal tipo di account:
+Le regole di spesa aggiungono limiti finanziari agli account astratti, indipendentemente dal tipo di account:
 
-| Regola           | Descrizione                                              |
-| ---------------- | -------------------------------------------------------- |
-| `daily_limit`    | Spesa totale massima per finestra mobile di 24 ore       |
-| `per_tx_limit`   | Spesa massima per singola transazione                    |
+| Regola             | Descrizione                                     |
+| ---------------- | ----------------------------------------------- |
+| `daily_limit`    | Spesa totale massima in una finestra mobile di 24 ore  |
+| `per_tx_limit`   | Spesa massima per singola transazione        |
 | `allowed_denoms` | Limita quali denominazioni di token possono essere spese |
 
-### Impostare le regole di spesa
+### Impostare le Regole di Spesa
 
 ```bash
 qorechaind tx abstractaccount update-spending-rules \
@@ -141,13 +141,13 @@ qorechaind tx abstractaccount update-spending-rules \
   -y
 ```
 
-### Interrogare le regole correnti
+### Interrogare le Regole Correnti
 
 ```bash
 qorechaind query abstractaccount spending-rules <account-address>
 ```
 
-### Esempio di risposta
+### Esempio di Risposta
 
 ```json
 {
@@ -168,13 +168,13 @@ qorechaind query abstractaccount spending-rules <account-address>
 }
 ```
 
-## Authenticator da wallet collegati — Spesa delegata {#authenticators}
+## Autenticatori di Wallet Collegati — Spesa Delegata {#authenticators}
 
-A partire dalla versione di chain **v3.1.85** (che si basa sul modello di permessi della v3.1.84), una **chiave di un wallet esterno collegato** — una chiave Phantom (ed25519) o un account MetaMask (secp256k1) — può **spendere dall'account post-quantistico canonico** secondo termini a privilegio minimo, con limiti di spesa e revocabili. La chiave esterna non produce mai una firma ML-DSA; un **relayer** invia e paga l'involucro della transazione (la firma PQC ibrida propria del relayer soddisfa i requisiti di firma della chain), mentre la firma dell'authenticator su **sign bytes con separazione di dominio e vincolo anti-replay** costituisce l'autorizzazione.
+A partire dalla versione della chain **v3.1.85** (basata sul modello di permessi v3.1.84), una **chiave di wallet esterno collegata** — una chiave Phantom (ed25519) o un account MetaMask (secp256k1) — può **spendere dall'account post-quantistico canonico** con termini a privilegio minimo, con limite di spesa e revocabili. La chiave esterna non produce mai una firma ML-DSA; un **relayer** invia e paga la busta della transazione (la firma PQC ibrida propria del relayer soddisfa i requisiti di firma della chain), mentre la firma dell'autenticatore sui **byte di firma separati per dominio e vincolati contro il replay** costituisce l'autorizzazione.
 
-### Registrare un authenticator {#register-authenticator}
+### Registrare un autenticatore {#register-authenticator}
 
-Il proprietario dell'account registra la chiave esterna con `MsgRegisterAuthenticator` (una normale transazione con la chiave root), assegnandole uno schema, dei permessi, una scadenza e limiti di spesa facoltativi:
+Il proprietario dell'account registra la chiave esterna con `MsgRegisterAuthenticator` (una normale transazione con la chiave root), assegnandole uno schema, dei permessi, una scadenza e limiti di spesa opzionali:
 
 ```js
 import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
@@ -190,23 +190,23 @@ const msg = registerEthAuthenticatorMsg({
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-Una chiave Phantom si registra allo stesso modo con `scheme: "ed25519"` e la chiave pubblica Phantom. La revoca è istantanea tramite `MsgRevokeAuthenticator`.
+Una chiave Phantom viene registrata allo stesso modo con `scheme: "ed25519"` e la chiave pubblica Phantom. La revoca è istantanea tramite `MsgRevokeAuthenticator`.
 
 ### Tassonomia dei permessi {#permission-taxonomy}
 
-Undici permessi canonici regolano ciò che un authenticator registrato può fare. La mappa è **fail-closed**: un tipo di messaggio privo di mappatura viene rifiutato.
+Undici permessi canonici regolano ciò che un autenticatore registrato può fare. La mappatura è **a chiusura predefinita (fail-closed)**: un tipo di messaggio senza mappatura viene negato.
 
 | Permesso | Concede |
 | --- | --- |
-| `send` | Trasferimenti bank sulla corsia nativa |
+| `send` | Trasferimenti bancari sul lane nativo |
 | `delegate` / `withdraw` / `vote` | Staking, prelievo delle ricompense, governance |
-| `evm` / `wasm` / `svm` | Esecuzione sulla rispettiva corsia VM |
+| `evm` / `wasm` / `svm` | Esecuzione sul rispettivo lane VM |
 | `amm` / `ibc` / `deploy` | Operazioni AMM, trasferimenti IBC, deployment di contratti |
 | `all` | Qualsiasi messaggio *delegabile* |
 
-**I messaggi di gestione delle chiavi non sono mai delegabili** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, la registrazione/migrazione delle chiavi PQC e `MsgRotatePQCKey` richiedono sempre la chiave root, quindi una chiave collegata non può mai elevare i propri privilegi.
+**I messaggi di gestione delle chiavi non sono mai delegabili** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, la registrazione/migrazione della chiave PQC e `MsgRotatePQCKey` richiedono sempre la chiave root, così una chiave collegata non può mai elevare i propri privilegi.
 
-Leggi la tassonomia live (con `schema_version` per il rilevamento delle derive) invece di codificarla a mano:
+Leggi la tassonomia live (con `schema_version` per il rilevamento delle deviazioni) invece di codificarla staticamente:
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | jq
@@ -215,15 +215,15 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 ### Spendere tramite una chiave collegata {#execute-messages}
 
-Due messaggi trasportano le azioni autorizzate dall'authenticator. In entrambi, il relayer è il firmatario/pagatore delle fee della transazione; la firma dell'authenticator viaggia all'interno del messaggio.
+Due messaggi trasportano azioni autorizzate dall'autenticatore. In entrambi, il relayer è il firmatario/pagatore delle commissioni della transazione; la firma dell'autenticatore viaggia all'interno del messaggio.
 
-**`MsgExecuteEVM`** — una chiamata o un trasferimento EVM **dall'indirizzo `0x…` dell'account canonico**. L'authenticator firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (tutti i campi con prefisso di lunghezza). La protezione anti-replay è il nonce EVM proprio dell'account.
+**`MsgExecuteEVM`** — una chiamata EVM o un trasferimento **dall'indirizzo `0x…` dell'account canonico**. L'autenticatore firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (tutti i campi con prefisso di lunghezza). La protezione dal replay è il nonce EVM proprio dell'account.
 
-**`MsgExecuteCosmos`** — un invio bank sulla corsia nativa dall'account canonico. L'authenticator firma `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. La protezione anti-replay è una **sequenza per-authenticator** mantenuta dal modulo (un invio bank non incrementa il nonce dell'account). Gli invii a sé stessi vengono rifiutati.
+**`MsgExecuteCosmos`** — un invio bancario sul lane nativo dall'account canonico. L'autenticatore firma `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. La protezione dal replay è una **sequenza per-autenticatore** mantenuta dal modulo (un invio bancario non incrementa il nonce dell'account). Gli auto-invii vengono rifiutati.
 
 :::caution Regole sul nonce
 * `MsgExecuteEVM.nonce` = il nonce EVM **corrente** dell'account (`eth_getTransactionCount(account0x, "latest")`). In produzione il relayer è un account *diverso*, quindi **non** aggiungere +1. Firmare un nonce obsoleto restituisce il codice `11`.
-* `MsgExecuteCosmos.nonce` = la sequenza per-authenticator (interroga lo stato dell'authenticator dell'account), **non** la sequenza Cosmos dell'account.
+* `MsgExecuteCosmos.nonce` = la sequenza per-autenticatore (interroga lo stato dell'autenticatore dell'account), **non** la sequenza Cosmos dell'account.
 :::
 
 **Esempio Phantom** (browser: Phantom firma, il tuo backend inoltra):
@@ -244,7 +244,7 @@ const msg = await buildPhantomExecuteCosmos({
 // (hybrid PQC) and broadcasts. The transfer moves the OWNER's funds.
 ```
 
-**Esempio MetaMask** (`personal_sign` EIP-191 dall'indirizzo collegato di 20 byte):
+**Esempio MetaMask** (`personal_sign` EIP-191 dall'indirizzo collegato a 20 byte):
 
 ```js
 import { buildMetaMaskExecuteEvm } from "@qorechain/wallet-adapter";
@@ -261,7 +261,7 @@ const msg = await buildMetaMaskExecuteEvm({
 // against the registered 20-byte address.
 ```
 
-Gli stessi builder esistono nel [QoreChain SDK](/sdk/guides/authenticators) per tutti e cinque i linguaggi, oltre agli equivalenti CLI:
+Gli stessi builder esistono nell'[SDK di QoreChain](/sdk/guides/authenticators) per tutti e cinque i linguaggi, oltre agli equivalenti da riga di comando:
 
 ```bash
 # Produce the exact sign bytes the chain verifies (for custom signers):
@@ -275,20 +275,20 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 
 ### Codici di errore {#authenticator-errors}
 
-Gli errori di enforcement restituiscono codici distinti (codespace `abstractaccount`), così i wallet possono mostrare il messaggio giusto:
+I fallimenti di enforcement restituiscono codici distinti (codespace `abstractaccount`) così i wallet possono mostrare il messaggio corretto:
 
 | Codice | Significato | UX del wallet |
 | --- | --- | --- |
-| `5` | Limite di spesa superato (per transazione o giornaliero) | Mostra la disponibilità residua |
-| `6` | Authenticator scaduto | "Scaduto — ricollega il tuo wallet" |
-| `10` | Permesso negato (fuori ambito o msg non delegabile) | Mostra il permesso mancante |
-| `11` | Replay rifiutato (nonce/sequenza obsoleti) | Interroga di nuovo il nonce e firma di nuovo |
+| `5` | Limite di spesa superato (per transazione o giornaliero) | Mostra l'allowance residua |
+| `6` | Autenticatore scaduto | "Scaduto — ricollega il tuo wallet" |
+| `10` | Permesso negato (ambito o messaggio non delegabile) | Mostra il permesso mancante |
+| `11` | Replay rifiutato (nonce/sequenza obsoleti) | Interroga di nuovo il nonce e ri-firma |
 
-(Il codice `21` del codespace `pqc` = verifica della firma ibrida fallita — un problema di firma lato relayer, non di autorizzazione.)
+(Codespace `pqc` codice `21` = verifica della firma ibrida fallita — un problema di firma lato relayer, non di autorizzazione.)
 
 ### Query REST {#abstractaccount-rest}
 
-A partire dalla **v3.1.85** le query di lettura del modulo sono servite anche via REST:
+A partire dalla **v3.1.85** le query in lettura del modulo sono servite anche via REST:
 
 ```
 GET /qorechain/abstractaccount/v1/config
@@ -297,7 +297,7 @@ GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
 ```
 
-## Interrogare gli account astratti
+## Interrogare gli Account Astratti
 
 ### CLI
 
@@ -322,7 +322,7 @@ curl -X POST http://localhost:8545 \
   }'
 ```
 
-### Esempio di risposta dell'account
+### Esempio di Risposta dell'Account
 
 ```json
 {
@@ -339,11 +339,11 @@ curl -X POST http://localhost:8545 \
 }
 ```
 
-## Flusso di recupero sociale
+## Flusso di Recupero Sociale
 
 Se il proprietario dell'account perde l'accesso alla propria chiave primaria, i guardiani possono autorizzare una rotazione della chiave.
 
-1. **Il proprietario segnala la chiave persa (oppure un guardiano avvia la procedura):**
+1. **Il proprietario segnala la chiave persa (oppure un guardiano avvia il processo):**
 
    ```bash
    qorechaind tx abstractaccount initiate-recovery \
@@ -353,7 +353,7 @@ Se il proprietario dell'account perde l'accesso alla propria chiave primaria, i 
      -y
    ```
 
-2. **Altri guardiani approvano** (deve essere raggiunta la `recovery_threshold`):
+2. **Ulteriori guardiani approvano** (deve essere raggiunta la `recovery_threshold`):
 
    ```bash
    qorechaind tx abstractaccount approve-recovery \
@@ -367,21 +367,21 @@ Se il proprietario dell'account perde l'accesso alla propria chiave primaria, i 
 
 ## Integrazione con le dApp
 
-Le session key consentono esperienze dApp senza attriti:
+Le chiavi di sessione abilitano esperienze dApp fluide:
 
-1. **L'utente connette il wallet** e crea una session key limitata al contratto della dApp
-2. **La dApp usa la session key** per inviare transazioni per conto dell'utente
-3. **Nessuna firma ripetuta** — la session key gestisce l'autorizzazione entro i suoi permessi
+1. **L'utente collega il wallet** e crea una chiave di sessione con ambito limitato al contratto della dApp
+2. **La dApp usa la chiave di sessione** per inviare transazioni per conto dell'utente
+3. **Nessuna firma ripetuta** — la chiave di sessione gestisce l'autorizzazione entro i propri permessi
 4. **La sessione scade** automaticamente, oppure l'utente la revoca in qualsiasi momento
 
 Questo schema è particolarmente utile per:
 
-* Wallet mobili in cui richieste biometriche ripetute risultano invasive
-* dApp di gaming che richiedono firme di transazione rapide
-* Protocolli DeFi che eseguono più operazioni sequenziali
+* Wallet mobili dove le richieste biometriche ripetute sono fastidiose
+* dApp di gaming che necessitano di firma rapida delle transazioni
+* Protocolli DeFi che eseguono operazioni sequenziali multiple
 
-## Prossimi passi
+## Prossimi Passi
 
-* [Eseguire un validatore](/developer-guide/running-a-validator) — Configura e gestisci un nodo validatore
-* [Sviluppo EVM](/developer-guide/evm-development) — Integra gli account astratti con dApp in Solidity
-* [Interoperabilità cross-VM](/developer-guide/cross-vm-interoperability) — Messaggistica cross-VM con account astratti
+* [Gestire un Validatore](/developer-guide/running-a-validator) — Configura e gestisci un nodo validatore
+* [Sviluppo EVM](/developer-guide/evm-development) — Integra gli account astratti con le dApp Solidity
+* [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) — Messaggistica cross-VM con account astratti

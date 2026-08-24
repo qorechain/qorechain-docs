@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü resmi genesis dosyası, eşler (peers) ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.85** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.92** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
 :::
 
 ## Genel Erişime Açık Uç Noktalar
@@ -35,13 +35,16 @@ Yoğun veya üretim düzeyindeki iş yükleri (borsalar, indeksleyiciler) için 
 
 ### Önceden derlenmiş ikili paket (linux/amd64)
 
-Resmi sürüm paketi, `qorechaind` ile birlikte gerekli paylaşılan kitaplıkları (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir:
+Güncel ikili dosya için asıl doğruluk kaynağı, `https://download.qore.host/mainnet/latest.json` adresinde canlı olarak güncellenen bir JSON dosyası olan **ana ağ manifestosu**dur. Bu dosya; güncel ikili dosya URL'sini ve SHA-256 değerini, güncel genesis URL'si/SHA-256/boyutunu, güncel eşleri (peers) ve tohum düğümlerini (seeds), P2P portunu, bir durum senkronizasyonu (state-sync) güven noktasını ve minimum uyumlu zincir sürümünü içerir. Kurulum betiklerinizde bir ikili dosya sürümünü veya sağlama toplamını sabit kodlamak yerine bu dosyayı indirip değerlerini kullanın — yeni bir sürüm yayımlanır yayımlanmaz bunlar eskir:
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
-# Verify the checksum before installing:
-sha256sum qore.tgz
-# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,10 +52,10 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-Sürümlü paketler [download.qore.host](https://download.qore.host) adresinde yayımlanır; her sürüm SHA-256 sağlama toplamıyla birlikte gelir — her zaman yayımlanmış **en güncel** paketi kurun.
+Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir.
 
-:::caution Düğümünüzü güncel tutun
-Tam düğümler, ağın zincir sürümünü (şu anda **v3.1.85**) takip etmek zorundadır. Güncel olmayan bir düğüm, daha yeni işlem türlerini (örneğin v3.1.83 ile gelen `eth_secp256k1` imzalı işlemleri) çözümleyemez ve bir blokta böyle bir işlem göründüğü anda senkronizasyonu durdurur.
+:::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.92 veya üzeri gerekli
+Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Manifestonun `minCompatible` alanından bağımsız olarak, **genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için v3.1.92 veya üzeri gereklidir** — daha eski sürümler, işlem içeren ilk blokta yeniden oynatmayı (replay) durduran, artık düzeltilmiş bir gaz ölçüm hatası nedeniyle tam senkronizasyonu tamamlayamaz. Zaten yetişmiş durumda olan ve daha eski bir sürüm çalıştıran bir düğüm de bir sonraki fırsatta yükseltilmelidir, çünkü güncel olmayan bir düğüm daha yeni işlem türlerini çözümleyemez ve bir blokta böyle bir işlem göründüğü anda senkronizasyonu durdurur.
 :::
 
 ### Kaynak koddan derleme
@@ -77,10 +80,14 @@ Bu komut, `~/.qorechaind/` altında varsayılan yapılandırma ve veri dizinleri
 
 ## Genesis Dosyasını İndirme
 
-Yerel genesis dosyanızı resmi ana ağ genesis dosyasıyla değiştirin:
+Yerel genesis dosyanızı, yukarıda getirilen manifestodaki URL ve SHA-256 değerlerini kullanarak resmi ana ağ genesis dosyasıyla değiştirin:
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 ```
 
 Aynı dosya zincirin kendisi tarafından da canlı olarak sunulur — indirdiğiniz dosyayı bununla çapraz doğrulayabilirsiniz:
@@ -89,18 +96,24 @@ Aynı dosya zincirin kendisi tarafından da canlı olarak sunulur — indirdiği
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-Bu dosya; genesis doğrulayıcı kümesi, token tahsisleri (TGE genesis'te) ve modül parametreleri dahil olmak üzere Vladi ana ağının başlangıç durumunu tanımlar.
+Bu dosya; genesis doğrulayıcı kümesi, token tahsisleri (genesis'te TGE) ve modül parametreleri dahil olmak üzere Vladi ana ağının başlangıç durumunu tanımlar.
 
 ---
 
 ## Eşleri (Peers) Yapılandırma
 
-Genel erişime açık ana ağ sentry düğümlerine bağlanmak için düğüm yapılandırmanızı düzenleyin.
+Genel erişime açık ana ağ sentry düğümlerine bağlanmak için düğüm yapılandırmanızı düzenleyin. Düğüm kimliklerini ve adreslerini sabit kodlamak yerine güncel eş (peer) ve tohum (seed) listelerini manifestodan okuyun — bunlar zaman zaman değişir:
 
-`~/.qorechaind/config/config.toml` dosyasını açın ve `persistent_peers` alanını ayarlayın:
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml` dosyasını açın ve `persistent_peers` (ve `seeds`) alanlarını bu değerlere ayarlayın:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Ayrıca `~/.qorechaind/config/app.toml` dosyasında asgari gaz fiyatını ayarlayın (ağın ücret tabanı **0.1uqor**'dur):
@@ -126,20 +139,26 @@ Bu değerler, Vladi ana ağının blok süreleri ve işlem hacmine göre ayarlan
 
 ---
 
-## Hızlı Başlatma (Anlık Görüntü)
+## Hızlı Başlatma (Anlık Görüntü veya State Sync)
 
-Genesis'ten senkronize olmak uzun sürebilir. Güncel bir zincir verisi anlık görüntüsü (snapshot) [download.qore.host](https://download.qore.host) adresinde yayımlanır:
+Genesis'ten senkronize olmak uzun sürebilir. Manifestonun `stateSync` alanı, saatlik olarak güncellenen bir güven yüksekliği/karma (hash) çiftini taşır — bir yüksekliği elle aramak yerine state sync'i yapılandırmak için bunu kullanın:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-# Verify before extracting:
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Ardından `config.toml` dosyasının `[statesync]` bölümünü bu değerlerle ayarlayın — güven noktasını kendiniz türetmeniz gerekirse elle RPC tabanlı bir yedek yöntem dahil olmak üzere tam iş akışı için [Düğüm Çalıştırma](/developer-guide/running-a-node) sayfasına bakın.
+
+[download.qore.host](https://download.qore.host) adresinde bir zincir verisi anlık görüntüsü (snapshot) de yayımlanır. En güncel anlık görüntü dosya adı ve yayımlanan sağlama toplamı için oradaki güncel listeyi kontrol edin — bir dosya adını veya yüksekliği sabit kodlamayın, çünkü düzenli aralıklarla yeni bir anlık görüntü eskisinin yerini alır:
+
+```bash
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
-
-Anlık görüntüler, blok yüksekliği damgalı dosya adlarıyla yayımlanır — en güncel olanı için [download.qore.host](https://download.qore.host) adresini kontrol edin. Alternatif olarak **state sync** kullanın — tam iş akışı için [Düğüm Çalıştırma](/developer-guide/running-a-node) sayfasına bakın.
 
 ---
 
@@ -216,32 +235,32 @@ http://localhost:1317
 
 ## Port Referansı
 
-| Port    | Protokol  | Açıklama                                                   |
-| ------- | --------- | ---------------------------------------------------------- |
-| `26657` | TCP       | RPC — işlemleri sorgulama ve yayınlama                      |
-| `26656` | TCP       | P2P — eşler arası ağ iletişimi                              |
-| `1317`  | HTTP      | REST API — zincir durumunu HTTP üzerinden sorgulama         |
-| `9090`  | gRPC      | gRPC API — zincire programatik erişim                       |
-| `8545`  | HTTP      | EVM JSON-RPC — Ethereum uyumlu RPC (zincir kimliği `9801`)  |
-| `8546`  | WebSocket | EVM WebSocket — gerçek zamanlı EVM olay abonelikleri        |
-| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC                                 |
-| `26660` | HTTP      | Prometheus metrik uç noktası                                |
+| Port    | Protokol  | Açıklama                                                 |
+| ------- | --------- | ------------------------------------------------------- |
+| `26657` | TCP       | RPC — işlemleri sorgulama ve yayınlama                   |
+| `26656` | TCP       | P2P — eşler arası ağ iletişimi                           |
+| `1317`  | HTTP      | REST API — zincir durumunu HTTP üzerinden sorgulama      |
+| `9090`  | gRPC      | gRPC API — zincire programatik erişim                    |
+| `8545`  | HTTP      | EVM JSON-RPC — Ethereum uyumlu RPC (zincir kimliği `9801`) |
+| `8546`  | WebSocket | EVM WebSocket — gerçek zamanlı EVM olay abonelikleri     |
+| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC                              |
+| `26660` | HTTP      | Prometheus metrik uç noktası                             |
 
 ---
 
 ## Ağ Bilgileri
 
-| Alan                  | Değer                                       |
-| --------------------- | ------------------------------------------- |
-| Zincir kimliği        | `qorechain-vladi`                           |
-| EVM zincir kimliği    | `9801` (onaltılık `0x2649`)                 |
-| Zincir sürümü         | v3.1.85                                     |
-| Canlıya geçiş tarihi  | 7 Haziran 2026 23:59 UTC                    |
-| Token                 | QOR (`uqor`, 10^6 mikro birim = 1 QOR)      |
-| Asgari gaz fiyatı     | `0.1uqor`                                   |
-| Hesap ön eki          | `qor`                                       |
-| Doğrulayıcı ön eki    | `qorvaloper`                                |
-| SDK                   | Cosmos SDK v0.53                            |
+| Alan              | Değer                                  |
+| ----------------- | --------------------------------------- |
+| Zincir kimliği     | `qorechain-vladi`                      |
+| EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
+| Zincir sürümü      | v3.1.92                                |
+| Canlıya geçiş tarihi | 7 Haziran 2026 23:59 UTC             |
+| Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
+| Asgari gaz fiyatı  | `0.1uqor`                              |
+| Hesap ön eki       | `qor`                                  |
+| Doğrulayıcı ön eki | `qorvaloper`                           |
+| SDK                | Cosmos SDK v0.53                       |
 
 ---
 

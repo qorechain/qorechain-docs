@@ -10,7 +10,7 @@ sidebar_position: 3
 انضم إلى شبكة QoreChain Vladi الرئيسية المباشرة عبر تهيئة العقدة الخاصة بك باستخدام ملف التكوين الأصلي (genesis) الرسمي والنظراء وإعدادات الشبكة.
 
 :::note
-تغطي هذه الصفحة الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، بالنظام السداسي عشري `0x2649`)، وهي تعمل مباشرةً منذ **7 يونيو 2026 الساعة 23:59 بالتوقيت العالمي المنسق (UTC)** وتشغّل إصدار السلسلة **v3.1.85** على Cosmos SDK v0.53. أما شبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**)، فراجع [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet) وجرّب إعدادك هناك قبل الانطلاق على الشبكة المباشرة.
+تغطي هذه الصفحة الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، بالنظام السداسي عشري `0x2649`)، وهي تعمل مباشرةً منذ **7 يونيو 2026 الساعة 23:59 بالتوقيت العالمي المنسق (UTC)** وتشغّل إصدار السلسلة **v3.1.92** على Cosmos SDK v0.53. أما شبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**)، فراجع [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet) وجرّب إعدادك هناك قبل الانطلاق على الشبكة المباشرة.
 :::
 
 ## نقاط النهاية العامة
@@ -35,13 +35,16 @@ sidebar_position: 3
 
 ### حزمة الملف التنفيذي المبنية مسبقاً (linux/amd64)
 
-تحتوي حزمة الإصدار الرسمية على `qorechaind` بالإضافة إلى المكتبات المشتركة المطلوبة (`libqorepqc.so`، `libqoresvm.so`، `libwasmvm.x86_64.so`):
+المصدر المرجعي الموثوق للملف التنفيذي الحالي هو **بيان الشبكة الرئيسية** (mainnet manifest)، وهو ملف JSON يُحدَّث مباشرةً على العنوان `https://download.qore.host/mainnet/latest.json`. يحمل هذا الملف رابط الملف التنفيذي الحالي ومجموع التحقق SHA-256 الخاص به، ورابط ملف genesis الحالي ومجموع التحقق SHA-256 الخاص به وحجمه، وقوائم النظراء (peers) والبذور (seeds) الحالية، ومنفذ P2P، ونقطة ثقة لمزامنة الحالة (state-sync)، والحد الأدنى لإصدار السلسلة المتوافق. اجلب هذا الملف واستخدم قيمه بدلاً من ترميز إصدار الملف التنفيذي أو مجموع التحقق مباشرةً في نصوص التثبيت البرمجية — فتلك القيم تصبح قديمة بمجرد صدور إصدار جديد:
 
 ```bash
-curl -fsSL https://download.qore.host/qorechaind-v3.1.83-linux-amd64.tar.gz -o qore.tgz
-# Verify the checksum before installing:
-sha256sum qore.tgz
-# fa035b3699e92d755f47445cbf7dde4e1f6c224343008546aa159b7eb46a805c
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
 
 tar xzf qore.tgz
 sudo install -m0755 qorechaind /usr/local/bin/
@@ -49,10 +52,10 @@ sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
 export LD_LIBRARY_PATH=/opt/qorechain/lib
 ```
 
-تُنشر الحزم المرقّمة بالإصدارات على [download.qore.host](https://download.qore.host)؛ ويأتي كل إصدار مع مجموع التحقق SHA-256 الخاص به — احرص دائماً على تثبيت **أحدث** حزمة منشورة.
+تحتوي الحزمة على `qorechaind` بالإضافة إلى المكتبات المشتركة المطلوبة (`libqorepqc.so`، `libqoresvm.so`، `libwasmvm.x86_64.so`).
 
-:::caution حافظ على تحديث عقدتك
-يجب على العقد الكاملة مواكبة إصدار سلسلة الشبكة (حالياً **v3.1.85**). لا تستطيع العقدة القديمة فك ترميز أنواع المعاملات الأحدث (على سبيل المثال، المعاملات الموقّعة بـ `eth_secp256k1` التي أُدخلت في v3.1.83) وستتوقف عن المزامنة فور ظهور إحداها في كتلة.
+:::caution حافظ على تحديث عقدتك — يلزم الإصدار v3.1.92 أو أحدث لإجراء مزامنة جديدة
+يجب على العقد الكاملة مواكبة إصدار السلسلة المباشر للشبكة — ثبّت دائماً الملف التنفيذي الذي يشير إليه البيان (manifest)، ولا تُثبّت إصداراً قديماً بشكل ثابت. وبمعزل عن حقل `minCompatible` في البيان، **يلزم الإصدار v3.1.92 أو أحدث للعقدة التي تنضم من جديد (من genesis) أو التي تتعافى من توقف** — إذ لا تستطيع الإصدارات الأقدم إتمام مزامنة كاملة بسبب خلل في قياس الغاز (gas-metering) تم إصلاحه الآن، وكان يوقف إعادة التشغيل (replay) عند أول كتلة تحتوي على معاملة. أما العقدة التي أتمت المزامنة بالفعل وتعمل بإصدار أقدم، فينبغي لها أيضاً الترقية في أقرب فرصة، إذ لا تستطيع العقدة القديمة فك ترميز أنواع المعاملات الأحدث وستتوقف عن المزامنة فور ظهور إحداها في كتلة.
 :::
 
 ### البناء من الشيفرة المصدرية
@@ -77,10 +80,14 @@ qorechaind init my-node --chain-id qorechain-vladi
 
 ## تنزيل ملف Genesis
 
-استبدل ملف genesis المحلي لديك بملف genesis الرسمي للشبكة الرئيسية:
+استبدل ملف genesis المحلي لديك بملف genesis الرسمي للشبكة الرئيسية، باستخدام الرابط ومجموع التحقق SHA-256 من البيان الذي جلبته أعلاه:
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 ```
 
 يُقدَّم الملف نفسه مباشرةً من السلسلة ذاتها أيضاً — ويمكنك التحقق المتقاطع من الملف المنزَّل مقابله:
@@ -95,12 +102,18 @@ curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live
 
 ## تكوين النظراء
 
-عدّل تكوين عقدتك للاتصال بعقد الحراسة (sentry) العامة للشبكة الرئيسية.
+عدّل تكوين عقدتك للاتصال بعقد الحراسة (sentry) العامة للشبكة الرئيسية. اقرأ قوائم النظراء والبذور الحالية من البيان بدلاً من ترميز معرّفات العقد والمضيفين مباشرةً — فهذه القيم تتغيّر دورياً:
 
-افتح `~/.qorechaind/config/config.toml` واضبط الحقل `persistent_peers`:
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+افتح `~/.qorechaind/config/config.toml` واضبط الحقلين `persistent_peers` (و`seeds`) على هاتين القيمتين:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 اضبط أيضاً الحد الأدنى لسعر الغاز في `~/.qorechaind/config/app.toml` (الحد الأدنى لرسوم الشبكة هو **0.1uqor**):
@@ -126,20 +139,26 @@ timeout_commit = "5s"
 
 ---
 
-## الإقلاع السريع (لقطة البيانات)
+## الإقلاع السريع (اللقطة أو مزامنة الحالة)
 
-قد تستغرق المزامنة من genesis وقتاً طويلاً. تُنشر لقطة حديثة لبيانات السلسلة على [download.qore.host](https://download.qore.host):
+قد تستغرق المزامنة من genesis وقتاً طويلاً. يحمل حقل `stateSync` في البيان زوجاً من ارتفاع الثقة (trust height) وتجزئة الثقة (trust hash) يُحدَّث كل ساعة — استخدمه لتكوين مزامنة الحالة (state sync) بدلاً من البحث عن ارتفاع يدوياً:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-# Verify before extracting:
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+ثم اضبط قسم `[statesync]` في `config.toml` بهاتين القيمتين — راجع [تشغيل عقدة](/developer-guide/running-a-node) للاطلاع على سير العمل الكامل، بما في ذلك بديل احتياطي يدوي قائم على RPC إذا احتجت إلى اشتقاق نقطة ثقة بنفسك.
+
+تُنشر أيضاً لقطة لبيانات السلسلة على [download.qore.host](https://download.qore.host). تحقق من القائمة الحالية هناك للحصول على اسم أحدث ملف لقطة ومجموع التحقق المنشور الخاص به — لا تُرمّز اسم ملف أو ارتفاعاً بشكل ثابت، إذ تحل كل لقطة جديدة محل القديمة بشكل دوري:
+
+```bash
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
-
-تُنشر اللقطات بأسماء ملفات مختومة بارتفاع الكتلة — تحقق من [download.qore.host](https://download.qore.host) للحصول على أحدثها. بدلاً من ذلك، استخدم **state sync** — راجع [تشغيل عقدة](/developer-guide/running-a-node) للاطلاع على سير العمل الكامل.
 
 ---
 
@@ -231,11 +250,11 @@ http://localhost:1317
 
 ## حقائق الشبكة
 
-| الحقل             | القيمة                                 |
+| الحقل             | القيمة                                  |
 | ----------------- | -------------------------------------- |
 | معرّف السلسلة | `qorechain-vladi`                      |
 | معرّف سلسلة EVM | `9801` (بالنظام السداسي عشري `0x2649`) |
-| إصدار السلسلة | v3.1.85                                |
+| إصدار السلسلة | v3.1.92                                |
 | مباشرة منذ | 7 يونيو 2026 الساعة 23:59 بالتوقيت العالمي المنسق (UTC) |
 | الرمز | QOR (‏`uqor`، ‏10^6 وحدة دقيقة = 1 QOR) |
 | الحد الأدنى لسعر الغاز | `0.1uqor`                              |

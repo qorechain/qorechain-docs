@@ -92,7 +92,7 @@ Wörter erneut; verwenden Sie `validateMnemonic`, um eine Phrase zu testen.
 
 Die hybride Einreichung (klassisch + ML-DSA-87) ist auf dem Native-Pfad **live
 und verpflichtend** — rein klassische Native-Transaktionen werden on-chain
-abgelehnt (Chain v3.1.85). Bevor eine hybride Tx PQC-verifiziert wird, muss der
+abgelehnt (Chain v3.1.92). Bevor eine hybride Tx PQC-verifiziert wird, muss der
 öffentliche PQC-Schlüssel des Signierers registriert sein
 (`MsgRegisterPQCKeyV2`), oder Sie setzen `includePqcPublicKey: true`, um ihn für
 die automatische Registrierung bei der ersten Verwendung einzubetten. Die Chain

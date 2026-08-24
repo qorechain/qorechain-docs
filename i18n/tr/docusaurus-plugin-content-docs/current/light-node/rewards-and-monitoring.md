@@ -7,15 +7,17 @@ sidebar_position: 5
 
 # Ödüller ve İzleme
 
-Bir hafif düğüm hem **ödül kazanır** hem de bunları kazanmaya devam etmek için **sağlıklı kalması gerekir**. Bu sayfa, %3 hafif düğüm ödül payını, delege edilmiş stake ve otomatik bileşiklendirmenin nasıl çalıştığını ve düğümün nasıl izleneceğini kapsar.
+Bir hafif node hem **ödül kazanır** hem de bu ödülleri kazanmaya devam edebilmek için **sağlıklı kalması gerekir**. Bu sayfa %3'lük hafif-node ödül payını, delege edilmiş stake'in ve otomatik bileşiklemenin nasıl çalıştığını ve node'un nasıl izleneceğini ele alır.
 
-## %3 blok ödül payı
+## %3 blok-ödülü payı
 
-QoreChain'in ücret dağıtımı, ağ verilerini sunan **hafif düğümler için sabit bir %3 pay** ayırır. Bu, protokolün ödül bölüşümündeki beş hedeften biridir — doğrulayıcılar (%37), yakılan (%30), hazine (%20), stake edenler (%10) ve **hafif düğümler (%3)** — ve zincir üzerinde uygulanır. Tam ayrıntı için [Tokenomik](/architecture/tokenomics) bölümüne bakın.
+QoreChain'in ücret dağıtımı, ağ verisi sunan hafif node'lar için sabit bir **%3 pay** ayırır. Bu, protokolün ödül dağılımındaki beş hedeften biridir — validatörler (%37), yakılan (%30), hazine (%20), staker'lar (%10) ve **hafif node'lar (%3)** — ve zincir üzerinde uygulanır. Tam döküm için bkz. [Tokenomics](/architecture/tokenomics).
 
-Bu paya hak kazanmak için bir düğümün **zincir üzerinde kayıtlı olması ve kalp atışı kanıtları aracılığıyla canlılığı etkin biçimde kanıtlaması** gerekir. Kayıtlı ancak çevrimdışı olan bir düğüm bu payı kazanmaz. Kayıt ve kalp atışlarının nasıl çalıştığını öğrenmek için [Kayıt ve Lisanslama](/light-node/registration-and-licensing) bölümüne bakın.
+Bu paya hak kazanmak için bir node'un, kendi beyanına değil zincir üzerindeki kontrole dayanan üç şeye ihtiyacı vardır: aktif bir `lightnode_operator` lisansı, minimum **1.000 QOR delege edilmiş stake** — delege ettiğiniz tüm validatörler genelindeki toplamınız olarak sayılır, validatör başına değil — ve zincir üzerinde **1 QOR**'luk bir kayıt ücreti. Katılım ayrıca ağ genelinde **10.000 hafif node** ile sınırlandırılmıştır. Kayıt ve lisanslamanın nasıl işlediğine, ödül programına kayıt sürecinin güncel durumu da dahil olmak üzere, [Kayıt ve Lisanslama](/light-node/registration-and-licensing) sayfasından bakabilirsiniz.
 
-*Ödül uygunluğu: zincir üzerinde kaydolun, etkin duruma ulaşmak için kalp atışlarıyla canlılığı kanıtlayın, %3 payı kazanın, ardından bunu otomatik olarak stake'e bileşiklendirin.*
+Kayıt ve delegasyon tamamlandıktan sonra, uygun kalmak canlı kalmakla ilgili bir meseledir. Bir node'un en az **%80 çalışma süresine (uptime)** sahip olması ve yaklaşık **1.000 blokluk (~39 dakika) bir aralıkta** heartbeat canlılık kanıtları göndermeye devam etmesi gerekir; kaçırılan bir heartbeat'ten sonra node etkin değil olarak işaretlenmeden önce **~100 bloktan (~4 dakika)** oluşan bir tolerans süresi vardır. Etkin değil olarak işaretlenen bir node, canlılığını yeniden kanıtlayana kadar bu paydan kazanmayı durdurur.
+
+*Ödül uygunluğu: aktif bir zincir üzerindeki lisansı ve minimum delege edilmiş stake'i elinde tutmak, kayıt olmak, ardından payın akmaya devam etmesini sağlayan uptime ve heartbeat-aralığı eşiklerinin üzerinde kalmak için heartbeat'ler aracılığıyla canlılığı kanıtlamaya devam etmektir.*
 
 ```mermaid
 flowchart LR
@@ -29,25 +31,25 @@ flowchart LR
     G --> D
 ```
 
-## Ödüller nasıl çalışır
+## Ödüller nasıl işler
 
-Hafif düğüm payının ötesinde, düğüm delege edilmiş stake'i ve onun ürettiği staking ödüllerini yönetir. Davranış, `config.toml` dosyasının `[delegation]` bölümüyle yönlendirilir.
+Hafif-node payının ötesinde, node delege edilmiş stake'i ve bunun ürettiği staking ödüllerini de yönetir. Bu davranış, `config.toml` dosyasının `[delegation]` bölümü tarafından yönlendirilir.
 
-### Çoklu doğrulayıcı bölünmesiyle delege stake
+### Çoklu-validatör dağılımıyla delege edilmiş staking
 
-Stake'i tek bir doğrulayıcıda yoğunlaştırmak yerine **birden çok doğrulayıcıya** delege edebilirsiniz. Düğüm, her delegasyonu ve her doğrulayıcıya atanan stake payını yapılandırılabilir **bölünme ağırlıkları** kullanarak izler; böylece riski set genelinde dağıtabilirsiniz.
+Stake'i tek bir validatörde yoğunlaştırmak yerine **birden fazla validatöre** delege edebilirsiniz. Node, her delegasyonu ve her validatöre atanan stake payını yapılandırılabilir **bölüştürme ağırlıkları (split weights)** kullanarak takip eder, böylece riski küme genelinde dağıtabilirsiniz.
 
-### Ödülleri otomatik bileşiklendirme
+### Otomatik bileşikleme (auto-compound) ödülleri
 
-Düğüm, yapılandırılabilir bir aralıkta **ödülleri talep edip bunları otomatik olarak yeniden delege edebilir**. Otomatik bileşiklendirme varsayılan olarak `1h` aralığında etkindir ve bir talep tetiklenmeden önce birikmesi gereken minimum bir ödül eşiği (`uqor` cinsinden) vardır. Bileşiklendirme, kazanılan ödülleri manuel müdahale olmadan ek stake'e dönüştürür.
+Node, yapılandırılabilir bir aralıkta **ödülleri talep edip otomatik olarak yeniden delege edebilir**. Varsayılan olarak otomatik bileşikleme `1h` aralığıyla etkindir ve bir talebin tetiklenmesi için birikmesi gereken minimum bir ödül eşiği (`uqor` cinsinden) vardır. Bileşikleme, kazanılan ödülleri manuel müdahale olmadan ek stake'e dönüştürür.
 
 ### İtibar farkındalıklı yeniden dengeleme
 
-Yeniden dengeleme etkinleştirildiğinde, düğüm yapılandırılabilir bir minimum itibar puanına tabi olarak **delegasyonu daha yüksek itibarlı doğrulayıcılara doğru otomatik olarak kaydırabilir**. Bu, stake'i bozulmuş doğrulayıcılarda bırakmak yerine iyi performans gösteren doğrulayıcılarda çalışır tutar.
+Yeniden dengeleme etkinleştirildiğinde, node yapılandırılabilir bir minimum itibar puanına tabi olarak delegasyonu **daha yüksek itibarlı validatörlere doğru otomatik olarak kaydırabilir**. Bu, stake'in performansı düşen validatörlerde bırakılmak yerine iyi performans gösteren validatörlerle çalışmaya devam etmesini sağlar.
 
 ### Ödülleri ve delegasyonları inceleme
 
-SX sürümü, bu durumu incelemek için komutlar sunar:
+SX sürümü bu durumu incelemek için komutlar sunar:
 
 ```bash
 lightnode-sx delegation   # current delegations and their split
@@ -55,38 +57,38 @@ lightnode-sx rewards      # pending staking rewards (uqor)
 lightnode-sx validators   # the bonded validator set
 ```
 
-UX sürümünde, **Delegation** görünümü aynı delegasyon ve ödül bilgilerini tarayıcıda gösterir.
+UX sürümünde, **Delegation** görünümü aynı delegasyon ve ödül bilgisini tarayıcıda gösterir.
 
 ## İzleme
 
-Düğümü sağlıklı tutmak, onun ödüllere hak kazanmaya devam etmesini sağlar. İzlemeye değer üç şey vardır.
+Node'u sağlıklı tutmak, onu ödüllere uygun tutan şeydir. İzlenmeye değer üç şey vardır.
 
 ### Telemetri
 
-Gerçek zamanlı telemetri doğrulayıcıları, mutabakat/ağı, köprüyü ve tokenomiği kapsar; her biri kendi aralığında yenilenir (`config.toml` içinde `[telemetry]` altında yapılandırılır). CLI'den:
+Gerçek zamanlı telemetri; validatörleri, konsensüsü/ağı, köprüyü ve tokenomiği kapsar; her biri kendi aralığında yenilenir (`config.toml` içindeki `[telemetry]` altında yapılandırılır). CLI üzerinden:
 
 ```bash
 lightnode-sx status    # node and light-client sync status
 lightnode-sx network   # recent synced headers and latest height
 ```
 
-UX sürümü aynı verileri **Overview**, **Network**, **Bridge** ve **Tokenomics** görünümleri genelinde canlı olarak yüzeye çıkarır — bkz. [UX Sürümü](/light-node/ux-edition).
+UX sürümü aynı veriyi **Overview**, **Network**, **Bridge** ve **Tokenomics** görünümlerinde canlı olarak sunar — bkz. [UX Edition](/light-node/ux-edition).
 
-### Eşitleme ve kalp atışı sağlığı
+### Senkronizasyon ve heartbeat sağlığı
 
-`status` komutu zincir kimliğini, en son blok yüksekliğini, zincirin yetişip yetişmediğini ve hafif istemcinin eşitlenmiş yüksekliğini ve eşitleme durumunu raporlar. Kayıtlı, eşitlenmiş ve çalışan bir düğüm **kalp atışı canlılık kanıtları** göndermeye devam eder ve böylece ödül payına hak kazanmayı sürdürür. Bu kalp atışları, zincirin PQC-gerektiren varsayılanıyla tutarlı olarak bir **PQC ile birlikte imzalanmış işlem hattı** (hibrit Dilithium-5 / ML-DSA-87) aracılığıyla üretilir — işlem hattının nasıl çalıştığını ve zincir üzerinde kalp atışlarını nasıl etkinleştireceğinizi öğrenmek için [Kayıt ve Lisanslama](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) bölümüne bakın. Eğer `status`, düğümün takıldığını veya eşitlenmediğini gösteriyorsa, canlılığı kanıtlamada başarısız oluyor olabilir — hak kazanma durumu etkilenmeden önce araştırın.
+`status` komutu zincir kimliğini, en son blok yüksekliğini, zincirin yetişip yetişmediğini ve hafif istemcinin senkronize olduğu yüksekliği ile senkronizasyon durumunu bildirir. Kayıtlı, senkronize ve çalışan bir node, **heartbeat canlılık kanıtları** göndermeye devam eder ve böylece ödül payına uygun kalır. Bu heartbeat'ler, zincirin varsayılan olarak PQC gerektirmesiyle tutarlı biçimde bir **PQC-eş-imzalı (PQC-cosigned) işlem hattı** (hibrit Dilithium-5 / ML-DSA-87) aracılığıyla üretilir — hattın nasıl çalıştığı ve zincir üzerinde heartbeat'lerin nasıl etkinleştirileceği için bkz. [Kayıt ve Lisanslama](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline). `status` node'un takıldığını veya senkronize olmadığını gösteriyorsa, canlılığını kanıtlamakta başarısız olabilir — uygunluk etkilenmeden önce araştırın.
 
-### Kendi kendine test sağlığı
+### Öz-test sağlığı
 
-Kriptografik yığında bir sorun olduğundan şüpheleniyorsanız, PQC kendi kendine testini istediğiniz zaman çalıştırın:
+Kriptografik yığında bir sorundan şüpheleniyorsanız, PQC öz-testini istediğiniz zaman çalıştırabilirsiniz:
 
 ```bash
 lightnode-sx selftest
 ```
 
-Bu, keygen → imzalama → doğrulama → kurcalama tespiti (beş kontrol) çalıştırır ve herhangi bir hatada sıfırdan farklı çıkar. Bu, düğüm sorunlarını tanılarken bozuk veya eksik bir `libqorepqc` kitaplığını ekarte etmenin en hızlı yoludur. Tam kendi kendine test dökümü için [SX Sürümü](/light-node/sx-edition) bölümüne bakın.
+Bu, anahtar üretimi → imzalama → doğrulama → kurcalama tespiti (beş kontrol) sırasını çalıştırır ve herhangi bir başarısızlıkta sıfırdan farklı bir kodla çıkar. Bu, node sorunlarını teşhis ederken post-kuantum imzalama yığınındaki bir sorunu ekarte etmenin en hızlı yoludur. Tam öz-test dökümü için bkz. [SX Edition](/light-node/sx-edition).
 
-## Sonraki adımlar
+## Sırada ne var
 
-- [Kayıt ve Lisanslama](/light-node/registration-and-licensing) — kaydolun ve canlı kalın.
-- [Tokenomik](/architecture/tokenomics) — tam ödül ve yakma modeli.
+- [Kayıt ve Lisanslama](/light-node/registration-and-licensing) — kayıt olun ve canlı kalın.
+- [Tokenomics](/architecture/tokenomics) — tam ödül ve yakma modeli.

@@ -89,7 +89,7 @@ las palabras; usa `validateMnemonic` para probar una frase.
 
 El envío híbrido (clásico + ML-DSA-87) está **en funcionamiento y es
 obligatorio** en la ruta Native: las transacciones Native solo clásicas son
-rechazadas en la cadena (chain v3.1.85). Antes de que una transacción híbrida se
+rechazadas en la cadena (chain v3.1.92). Antes de que una transacción híbrida se
 verifique con PQC, la clave pública PQC del firmante debe estar registrada
 (`MsgRegisterPQCKeyV2`), o puedes establecer `includePqcPublicKey: true` para
 incrustarla y permitir el registro automático en el primer uso. La cadena acepta

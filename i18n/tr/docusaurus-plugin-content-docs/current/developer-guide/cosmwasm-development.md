@@ -7,24 +7,24 @@ sidebar_position: 3
 
 # CosmWasm Geliştirme
 
-QoreChain, **CosmWasm** akıllı sözleşmelerini destekler ve geliştiricilerin WebAssembly'ye derlenen güvenli, korumalı programları Rust ile yazmasına olanak tanır. CosmWasm sözleşmeleri, QoreChain üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
+QoreChain, geliştiricilerin WebAssembly'ye derlenen güvenli, sandbox'lanmış Rust programları yazmasına olanak tanıyan **CosmWasm** akıllı sözleşmelerini destekler. CosmWasm sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri **v3.1.85** zincir sürümünü çalıştırarak yayında olan **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ifadesini yerine koyun.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 ---
 
 ## Önkoşullar
 
-| Bağımlılık                 | Sürüm         | Amaç                           |
-| -------------------------- | ------------- | ------------------------------ |
-| **Rust**                   | En son kararlı sürüm | Sözleşme derlemesi      |
-| **wasm32-unknown-unknown** | hedef         | WebAssembly derleme hedefi     |
-| **cargo-generate**         | En son        | Proje iskeleti oluşturma       |
-| **cosmwasm-std**           | 1.5+          | CosmWasm standart kütüphanesi  |
+| Bağımlılık                 | Sürüm                   | Amaç                            |
+| --------------------------- | ------------------------ | -------------------------------- |
+| **Rust**                    | En güncel kararlı sürüm  | Sözleşme derlemesi               |
+| **wasm32-unknown-unknown**  | hedef                    | WebAssembly derleme hedefi       |
+| **cargo-generate**          | En güncel                | Proje iskeleti oluşturma         |
+| **cosmwasm-std**            | 1.5+                     | CosmWasm standart kütüphanesi    |
 
-Wasm hedefini yükleyin:
+Wasm hedefini kurun:
 
 ```bash
 rustup target add wasm32-unknown-unknown
@@ -34,9 +34,9 @@ rustup target add wasm32-unknown-unknown
 
 ## Sözleşme Yaşam Döngüsü
 
-CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, **Depolama**, **Örnekleme**, **Yürütme** ve **Sorgulama**.
+CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (Build)**, **Depolama (Store)**, **Örnekleme (Instantiate)**, **Çalıştırma (Execute)** ve **Sorgulama (Query)**.
 
-1. **Derleme** — Sözleşmenizi optimize edilmiş WebAssembly'ye derleyin:
+1. **Derleme (Build)** — Sözleşmenizi optimize edilmiş WebAssembly'ye derleyin:
 
    ```bash
    cd my-contract
@@ -51,7 +51,7 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
 
    Optimize edilmiş `.wasm` dosyası `artifacts/` dizininde olacaktır.
 
-2. **Depolama** — Derlenmiş sözleşmeyi zincire yükleyin:
+2. **Depolama (Store)** — Derlenmiş sözleşmeyi zincire yükleyin:
 
    ```bash
    qorechaind tx wasm store contract.wasm \
@@ -61,13 +61,13 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
      -y
    ```
 
-   İşlem onaylandıktan sonra, depolanan kod ID'sini sorgulayın:
+   İşlem onaylandıktan sonra, depolanan kod kimliğini (code ID) sorgulayın:
 
    ```bash
    qorechaind query wasm list-code
    ```
 
-3. **Örnekleme** — Depolanan bir kod ID'sinden yeni bir sözleşme örneği oluşturun:
+3. **Örnekleme (Instantiate)** — Depolanan bir kod kimliğinden yeni bir sözleşme örneği oluşturun:
 
    ```bash
    qorechaind tx wasm instantiate <code-id> \
@@ -80,12 +80,12 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
      -y
    ```
 
-   | Bayrak              | Açıklama                                       |
-   | ------------------- | ---------------------------------------------- |
-   | `<code-id>`         | Depolama işleminden döndürülen sayısal ID      |
-   | `--label`           | Bu örnek için insan tarafından okunabilir etiket |
-   | `--no-admin`        | Yönetici adresi yok (sözleşme değişmezdir)     |
-   | `--admin <address>` | Sözleşmeyi taşıyabilecek bir yönetici ayarla   |
+   | Bayrak               | Açıklama                                          |
+   | --------------------- | -------------------------------------------------- |
+   | `<code-id>`           | Depolama işleminden dönen sayısal kimlik           |
+   | `--label`             | Bu örnek için insan tarafından okunabilir etiket   |
+   | `--no-admin`          | Yönetici adresi yok (sözleşme değiştirilemez)      |
+   | `--admin <address>`   | Sözleşmeyi geçirebilecek bir yönetici belirler     |
 
    Sözleşme adresini alın:
 
@@ -93,7 +93,7 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
    qorechaind query wasm list-contracts-by-code <code-id>
    ```
 
-4. **Yürütme** — Durumu değiştirmek için bir sözleşmenin yürütme giriş noktasını çağırın:
+4. **Çalıştırma (Execute)** — Durumu değiştirmek için bir sözleşmenin execute giriş noktasını çağırın:
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -103,7 +103,7 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
      -y
    ```
 
-   Fon ekli olarak yürütün:
+   Fon ekleyerek çalıştırma:
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
@@ -113,7 +113,7 @@ CosmWasm sözleşmeleri beş adımlı bir yaşam döngüsü izler: **Derleme**, 
      -y
    ```
 
-5. **Sorgulama** — Bir işlem göndermeden sözleşme durumunu okuyun:
+5. **Sorgulama (Query)** — Bir işlem göndermeden sözleşme durumunu okuyun:
 
    ```bash
    qorechaind query wasm contract-state smart <contract-addr> \
@@ -195,7 +195,7 @@ pub fn query(
 
 ## VM'ler Arası Çağrılar
 
-CosmWasm sözleşmeleri, `x/crossvm` modülü aracılığıyla EVM ve SVM üzerinde dağıtılan sözleşmelerle etkileşime girebilir. CosmWasm'dan VM'ler arası çağrılar **asenkron** mesaj yolunu kullanır:
+CosmWasm sözleşmeleri, `x/crossvm` modülü aracılığıyla EVM ve SVM üzerinde dağıtılan sözleşmelerle etkileşime girebilir. CosmWasm'dan yapılan VM'ler arası çağrılar **asenkron** mesaj yolunu kullanır:
 
 ```rust
 use cosmwasm_std::{CosmosMsg, CustomMsg};
@@ -211,13 +211,13 @@ let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
 Ok(Response::new().add_message(cross_vm_msg))
 ```
 
-Mesaj bir kuyruğa gönderilir ve sonraki blokta EndBlocker tarafından işlenir. Eksiksiz mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+Mesaj bir kuyruğa gönderilir ve bir sonraki blokta EndBlocker tarafından işlenir. Tam mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
 
 ---
 
 ## Modül Entegrasyonu
 
-CosmWasm sözleşmeleri, standart mesaj iletimi aracılığıyla Cosmos SDK modülleriyle etkileşime girebilir:
+CosmWasm sözleşmeleri, standart mesaj iletimi yoluyla Cosmos SDK modülleriyle etkileşime girebilir:
 
 ```rust
 // Send native tokens via the bank module
@@ -241,9 +241,9 @@ let delegate_msg = StakingMsg::Delegate {
 
 ---
 
-## Sözleşme Taşıma
+## Sözleşme Geçişi
 
-Sözleşme bir `--admin` adresiyle örneklendirildiyse, yönetici onu yeni bir kod ID'sine taşıyabilir:
+Sözleşme bir `--admin` adresiyle örneklendiyse, yönetici onu yeni bir kod kimliğine geçirebilir:
 
 ```bash
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
@@ -252,7 +252,7 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   -y
 ```
 
-Bu, yeni koddaki `migrate` giriş noktasını mevcut sözleşme durumuyla çağırır.
+Bu, mevcut sözleşme durumuyla yeni kod üzerindeki `migrate` giriş noktasını çağırır.
 
 ---
 
@@ -260,4 +260,4 @@ Bu, yeni koddaki `migrate` giriş noktasını mevcut sözleşme durumuyla çağ�
 
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — CosmWasm'dan EVM ve SVM sözleşmelerini çağırın
 * [SVM Geliştirme](/developer-guide/svm-development) — QoreChain üzerinde BPF programları dağıtın
-* [EVM Önderlenmiş İşlevleri](/developer-guide/evm-precompiles) — Solidity'den PQC ve AI özelliklerine erişin
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Solidity'den PQC ve AI özelliklerine erişin

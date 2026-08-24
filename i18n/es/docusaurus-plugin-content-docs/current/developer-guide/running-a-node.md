@@ -17,14 +17,27 @@ Para la producción de bloques, staking, slashing y clasificación de pools, con
 Los binarios, el génesis y los snapshots se publican en [download.qore.host](https://download.qore.host) con checksums SHA-256. **Verifica siempre los checksums antes de instalar o extraer**, y verifica los depósitos únicamente contra tu propio nodo sincronizado.
 :::
 
+:::note Fuente de la verdad: el manifiesto en vivo
+El binario actual, el génesis, los peers, las seeds y un punto de confianza para state sync se publican como un manifiesto JSON, actualizado en vivo — no fijes de forma rígida (hardcode) una versión de binario, un checksum o un nombre de archivo de snapshot en tus scripts de instalación, ya que quedan desactualizados en cuanto se publica un nuevo lanzamiento:
+
+- Mainnet: `https://download.qore.host/mainnet/latest.json`
+- Testnet: `https://download.qore.host/testnet/latest.json`
+
+Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punto de confianza actualizado cada hora) y `minCompatible`. Los pasos de instalación y unión a la red que siguen obtienen este manifiesto y usan sus valores actuales.
+:::
+
+:::caution Se requiere v3.1.92 o posterior para un nodo que se une desde cero
+Un nodo que sincroniza desde el génesis o reproduce desde un archivo/snapshot debe estar en **v3.1.92 o posterior** — las versiones anteriores (incluso si el campo `minCompatible` del manifiesto todavía no se ha actualizado para reflejar esto) se detendrán en el primer bloque que contenga una transacción durante la reproducción, debido a un error de medición de gas ahora corregido. Ejecuta siempre el binario actual indicado en el manifiesto anterior.
+:::
+
 ---
 
 ## Nodo vs Validador
 
 | Aspecto               | Solo nodo (esta guía)                              | Validador                                     |
-| --------------------- | -------------------------------------------------- | --------------------------------------------- |
+| --------------------- | --------------------------------------------------- | --------------------------------------------- |
 | Clave de consenso     | Ninguna                                            | Clave de consenso ed25519 (debe protegerse)   |
-| Producción de bloques | No                                                 | Sí — propone y firma bloques                  |
+| Producción de bloques | No                                                  | Sí — propone y firma bloques                  |
 | Staking / slashing    | No aplica                                          | Autodelegación, riesgo de slashing            |
 | Propósito principal   | Servir RPC/REST/gRPC/EVM/SVM a las integraciones   | Asegurar la red, obtener recompensas          |
 | Exposición pública    | Endpoints RPC/EVM normalmente expuestos            | Validador oculto detrás de nodos centinela    |
@@ -34,9 +47,9 @@ Los binarios, el génesis y los snapshots se publican en [download.qore.host](ht
 ## Redes objetivo
 
 | Red      | Chain ID            | EVM chain ID          | Notas                              |
-| -------- | ------------------- | --------------------- | ---------------------------------- |
+| -------- | ------------------- | ---------------------- | ----------------------------------- |
 | Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 7 de junio de 2026 |
-| Testnet  | `qorechain-diana`   | `9800`                | Ensaya aquí primero tus integraciones |
+| Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones |
 
 Sustituye el `--chain-id` apropiado para tu red objetivo a lo largo de esta guía. Los ejemplos usan mainnet por defecto.
 
@@ -45,10 +58,10 @@ Sustituye el `--chain-id` apropiado para tu red objetivo a lo largo de esta guí
 ## Hardware recomendado
 
 | Perfil                     | CPU       | RAM   | Disco (SSD NVMe)               | Red       |
-| -------------------------- | --------- | ----- | ------------------------------ | --------- |
-| Nodo RPC con pruning       | 4 núcleos | 16 GB | 500 GB+                        | 100 Mbps+ |
-| Nodo completo/de archivo   | 8 núcleos | 32 GB | 2 TB+ (crece con el tiempo)    | 1 Gbps    |
-| Integración de exchange    | 8 núcleos | 32 GB | 2 TB+ con margen               | 1 Gbps    |
+| --------------------------- | --------- | ----- | -------------------------------- | --------- |
+| Nodo RPC con pruning        | 4 núcleos | 16 GB | 500 GB+                          | 100 Mbps+ |
+| Nodo completo/de archivo    | 8 núcleos | 32 GB | 2 TB+ (crece con el tiempo)      | 1 Gbps    |
+| Integración de exchange     | 8 núcleos | 32 GB | 2 TB+ con margen                 | 1 Gbps    |
 
 Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacenes EVM/SVM son intensivos en E/S. Los nodos de archivo (sin pruning, indexación completa de tx) crecen continuamente; aprovisiona disco con margen y monitorización.
 
@@ -58,13 +71,13 @@ Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue de solo nodo con Docker Compose. Fija la etiqueta de la imagen a la versión activa de la cadena (**v3.1.85** en mainnet) y monta un volumen persistente para los datos de la cadena.
+Un despliegue de solo nodo con Docker Compose. Fija la etiqueta de la imagen a la versión activa de la cadena (**v3.1.92** en mainnet) y monta un volumen persistente para los datos de la cadena.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -129,21 +142,42 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Descargar y verificar el génesis
+### 2. Obtener el manifiesto
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+Usa este archivo como fuente para los valores de binario, génesis y peers en los pasos siguientes — comprueba `jq -r .minCompatible latest.json`, pero recuerda que el **suelo de v3.1.92** indicado arriba se mantiene aunque ese campo vaya con retraso.
+
+### 3. Descargar y verificar el génesis
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. Configurar los peers y el suelo de comisiones
+### 4. Configurar los peers y el suelo de comisiones
 
-Abre `~/.qorechaind/config/config.toml` y establece los peers centinela públicos de mainnet:
+Lee los peers y las seeds actuales desde el manifiesto en lugar de fijar de forma rígida los IDs de nodo y los hosts — estos rotan:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Abre `~/.qorechaind/config/config.toml` y establece `persistent_peers` (y `seeds`) con esos valores:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Después establece el precio mínimo de gas en `~/.qorechaind/config/app.toml` (suelo de comisiones de la red: **0.1uqor**):
@@ -152,7 +186,7 @@ Después establece el precio mínimo de gas en `~/.qorechaind/config/app.toml` (
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. Comenzar la sincronización
+### 5. Comenzar la sincronización
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Determina una altura y un hash de confianza recientes desde el RPC público:
+Toma `trust_height` / `trust_hash` del campo `stateSync` del manifiesto — se actualiza cada hora, por lo que es la fuente preferida:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Como alternativa o respaldo, puedes obtener tú mismo una altura y un hash de confianza desde el RPC público:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restauración desde snapshot
 
-Alternativamente, descarga el snapshot publicado de los datos de la cadena, verifica su checksum y extráelo sobre tu directorio de datos:
+Alternativamente, descarga el snapshot publicado de los datos de la cadena, verifica su checksum y extráelo sobre tu directorio de datos. El manifiesto no incluye actualmente un puntero al snapshot, así que consulta el listado en vivo en [download.qore.host](https://download.qore.host) para obtener el nombre de archivo y el checksum actuales en lugar de fijarlos de forma rígida:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Los snapshots se publican con **nombres de archivo que incluyen la altura** — consulta [download.qore.host](https://download.qore.host) para obtener el snapshot más reciente y su checksum SHA-256, y verifica siempre antes de extraer.
+Los snapshots se publican con **nombres de archivo que incluyen la altura** y cambian regularmente — consulta [download.qore.host](https://download.qore.host) para obtener el snapshot más reciente y su checksum SHA-256, y verifica siempre antes de extraer. Recuerda que el **mínimo de v3.1.92** indicado arriba también aplica a la reproducción desde un snapshot.
 :::
 
 ---
@@ -217,7 +258,7 @@ pruning = "default"
 ```
 
 | `pruning`   | Comportamiento                                    | Caso de uso                            |
-| ----------- | ------------------------------------------------- | -------------------------------------- |
+| ----------- | ---------------------------------------------------- | --------------------------------------- |
 | `default`   | Mantiene el estado reciente, poda el resto        | Nodo RPC, consultas de saldo/estado    |
 | `nothing`   | Mantiene todo el estado histórico                 | Nodo de archivo, historial completo    |
 | `custom`    | Valores de retención/intervalo definidos por el operador | Retención ajustada              |
@@ -261,7 +302,7 @@ laddr = "tcp://0.0.0.0:26657"
 ```
 
 | Endpoint     | Puerto  | Uso                                                        |
-| ------------ | ------- | ---------------------------------------------------------- |
+| ------------ | ------- | ------------------------------------------------------------ |
 | RPC          | `26657` | Difusión de transacciones, consulta de bloques/estado      |
 | REST         | `1317`  | Consultas HTTP del estado de la cadena                     |
 | gRPC         | `9090`  | Acceso programático de alto rendimiento                    |
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.85** en mainnet) y sigue los lanzamientos oficiales para las actualizaciones coordinadas.
+1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.92** en mainnet) y sigue los lanzamientos oficiales para las actualizaciones coordinadas.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **Monitoriza la sincronización de forma continua.** Genera alertas por retraso en la altura de bloque, cero peers y un nodo atascado en `catching_up`.
 
 Para acceso de lectura ultraligero sin ejecutar un nodo completo, consulta la documentación de **Light Node**.
+
+---
+
+## Solución de problemas
+
+### Un nodo que estaba detenido antes de la actualización no se reanuda tras cambiar el binario
+
+Si tu nodo ya estaba detenido o atascado **antes** de que actualizaras su binario, simplemente colocar el binario nuevo y reiniciar no es suficiente — el nodo tiene resultados ABCI obsoletos en caché de la ejecución anterior y no volverá a ejecutar el bloque que causó la detención. Haz un rollback explícito antes de reiniciar:
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+El comando es `qorechaind rollback` (un subcomando de nivel superior) — no existe un subcomando `comet rollback` ni un flag `--hard` para él.
+
+### La restauración desde snapshot entra en bucle de fallos por falta de `priv_validator_state.json`
+
+Un archivo/snapshot publicado **no** incluye `data/priv_validator_state.json`, y el nodo se niega a arrancar sin él. Si falta después de una restauración desde snapshot, créalo — pero **solo si todavía no existe**. Nunca sobrescribas uno real: en un validador, este archivo es la salvaguarda contra el doble firmado, y sobrescribirlo arriesga un doble firmado.
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

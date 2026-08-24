@@ -17,7 +17,7 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **Cosmos-Chain-ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live seit** | 7. Juni 2026, 23:59 UTC | — |
-| **Chain-Version** | v3.1.85 | v3.1.85 |
+| **Chain-Version** | v3.1.92 | v3.1.92 |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimaler Gaspreis** | `0.1uqor` | `0.1uqor` |
 | **Verbindungsanleitung** | [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) | [Verbindung zum Testnet](/getting-started/connecting-to-testnet) |
@@ -39,6 +39,10 @@ Alle öffentlichen Endpunkte werden über HTTPS bereitgestellt.
 
 :::note
 Die öffentlichen SVM-Endpunkte sind **nur lesend** (das Einreichen von Transaktionen ist am Edge deaktiviert); betreiben Sie für SVM-Schreibzugriffe einen eigenen Node. Für umfangreiche oder produktive Workloads sollten Sie einen eigenen Node betreiben — siehe [Betrieb eines Nodes](/developer-guide/running-a-node).
+:::
+
+:::caution SVM-Transaktionspfad derzeit deaktiviert
+Über die reine Lesbarkeit der öffentlichen Endpunkte hinaus ist der SVM-Ausführungspfad **derzeit netzwerkweit für das Einreichen von Transaktionen deaktiviert** (seit Chain-Version v3.1.89, 22. August) — dies gilt auch für das Einreichen über einen eigenen Node, nicht nur über die öffentlichen Endpunkte `svm.qore.host` / `svm-testnet.qore.host`. Details siehe [SVM-Entwicklung](/developer-guide/svm-development). Verwenden Sie bis zur Wiedereröffnung des Pfads die Cosmos- oder EVM-Schnittstellen.
 :::
 
 ## Token und Adressen

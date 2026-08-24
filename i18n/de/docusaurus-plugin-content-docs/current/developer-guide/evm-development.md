@@ -7,24 +7,24 @@ sidebar_position: 2
 
 # EVM-Entwicklung
 
-QoreChain betreibt eine vollständig EVM-kompatible Ausführungsumgebung auf der QoreChain EVM Engine, die es Ihnen ermöglicht, Solidity-Smart-Contracts mit vertrauten Werkzeugen bereitzustellen und mit ihnen zu interagieren. Das EVM-Modul stellt eine JSON-RPC-Schnittstelle auf **Port 8545** (WebSocket auf **8546**) bereit, die Standard-Ethereum-Entwicklungsabläufe unterstützt.
+QoreChain betreibt eine vollständig EVM-kompatible Ausführungsumgebung auf der QoreChain EVM Engine und ermöglicht es, Solidity-Smart-Contracts mit vertrauten Werkzeugen bereitzustellen und mit ihnen zu interagieren. Das EVM-Modul stellt eine JSON-RPC-Schnittstelle auf **Port 8545** bereit (WebSocket auf **8546**), die gängige Ethereum-Entwicklungsworkflows unterstützt.
 
 :::note
-Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 mit Chain-Version **v3.1.85** in Betrieb ist. Verwenden Sie für das **`qorechain-diana`**-Testnet die EVM-Chain-ID **9800**.
+Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und Chain-Version **v3.1.92** ausführt. Für das **`qorechain-diana`**-Testnet verwenden Sie die EVM-Chain-ID **9800**.
 :::
 
 ---
 
 ## JSON-RPC-Endpunkt
 
-| Eigenschaft           | Wert                                       |
-| -------------------- | ------------------------------------------ |
-| Standard-URL          | `http://localhost:8545`                    |
-| WebSocket-URL         | `ws://localhost:8546`                      |
+| Eigenschaft            | Wert                                       |
+| ----------------------- | ------------------------------------------ |
+| Standard-URL            | `http://localhost:8545`                    |
+| WebSocket-URL           | `ws://localhost:8546`                      |
 | Unterstützte Namespaces | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
-| Chain-ID (Mainnet)    | `9801` (`qorechain-vladi`)                 |
-| Chain-ID (Testnet)    | `9800` (`qorechain-diana`)                 |
-| Währungssymbol        | `QOR`                                      |
+| Chain-ID (Mainnet)      | `9801` (`qorechain-vladi`)                 |
+| Chain-ID (Testnet)      | `9800` (`qorechain-diana`)                 |
+| Währungssymbol          | `QOR`                                      |
 
 Der `qor_`-Namespace stellt QoreChain-spezifische Methoden bereit. Siehe [Benutzerdefinierter Namespace](#custom-qor_-namespace) weiter unten.
 
@@ -34,13 +34,13 @@ Der `qor_`-Namespace stellt QoreChain-spezifische Methoden bereit. Siehe [Benutz
 
 Fügen Sie QoreChain als benutzerdefiniertes Netzwerk in MetaMask hinzu:
 
-| Feld               | Mainnet-Wert              | Testnet-Wert            |
-| ------------------ | ------------------------- | ----------------------- |
-| Netzwerkname       | QoreChain (qorechain-vladi) | QoreChain Diana       |
-| RPC-URL            | `http://localhost:8545`   | `http://localhost:8545` |
-| Chain-ID           | `9801`                    | `9800`                  |
-| Währungssymbol     | `QOR`                     | `QOR`                   |
-| Block-Explorer-URL | *(verwenden Sie den offiziellen Mainnet-Explorer)* | *(für lokales Testnet leer lassen)* |
+| Feld                | Mainnet-Wert                | Testnet-Wert             |
+| -------------------- | ---------------------------- | ------------------------- |
+| Netzwerkname          | QoreChain (qorechain-vladi)  | QoreChain Diana          |
+| RPC-URL               | `http://localhost:8545`      | `http://localhost:8545`  |
+| Chain-ID              | `9801`                       | `9800`                    |
+| Währungssymbol        | `QOR`                        | `QOR`                     |
+| Block-Explorer-URL    | *(den offiziellen Mainnet-Explorer verwenden)* | *(für das lokale Testnet leer lassen)* |
 
 ---
 
@@ -63,13 +63,13 @@ module.exports = {
 };
 ```
 
-Stellen Sie einen Contract bereit:
+Einen Contract bereitstellen:
 
 ```bash
 npx hardhat run scripts/deploy.js --network qorechain
 ```
 
-Führen Sie Tests gegen die QoreChain EVM aus:
+Tests gegen die QoreChain-EVM ausführen:
 
 ```bash
 npx hardhat test --network qorechain
@@ -79,7 +79,7 @@ npx hardhat test --network qorechain
 
 ## Foundry
 
-Erstellen und deployen Sie einen Contract mit Foundry:
+Einen Contract mit Foundry erstellen und bereitstellen:
 
 ```bash
 # Create a new project
@@ -133,29 +133,29 @@ await tx.wait();
 
 QoreChain verwendet für EVM-Transaktionen ein **dynamisches EIP-1559-Basisgebührenmodell**:
 
-* Die Basisgebühr passt sich pro Block anhand der Auslastung an
+* Die Basisgebühr passt sich pro Block je nach Auslastung an
 * Nutzer können `maxFeePerGas` und `maxPriorityFeePerGas` festlegen
 * Prioritätsgebühren gehen an den Block-Proposer
 
-### Stückelungsbrücke
+### Denominierungs-Brücke
 
-Der native QOR-Token hat **6 Nachkommastellen** (`uqor`), während die EVM **18 Nachkommastellen** erwartet. Das Modul `x/precisebank` übernimmt die nahtlose Umrechnung:
+Das native QOR-Token hat **6 Dezimalstellen** (`uqor`), während die EVM **18 Dezimalstellen** erwartet. Das Modul `x/precisebank` übernimmt die nahtlose Umrechnung:
 
-| Kontext       | Stückelung   | Dezimalstellen | Beispiel               |
-| ------------ | ------------ | -------- | ---------------------- |
-| Native Chain | `uqor`       | 6        | `1000000 uqor = 1 QOR` |
-| EVM          | wei          | 18       | `1e18 wei = 1 QOR`     |
+| Kontext        | Denomination | Dezimalstellen | Beispiel                |
+| --------------- | ------------ | --------------- | ------------------------ |
+| Native Chain     | `uqor`       | 6                | `1000000 uqor = 1 QOR`  |
+| EVM              | wei          | 18               | `1e18 wei = 1 QOR`      |
 
-Diese Umrechnung ist transparent — wenn Sie ein Guthaben über `eth_getBalance` abfragen, wird die Antwort in wei mit 18 Dezimalstellen ausgedrückt. Wenn dasselbe Konto über das native Bank-Modul abgefragt wird, erscheint das Guthaben in `uqor` mit 6 Dezimalstellen.
+Diese Umrechnung ist transparent — wenn Sie ein Guthaben über `eth_getBalance` abfragen, wird die Antwort mit 18 Dezimalstellen in wei angegeben. Wird dasselbe Konto über das native Bank-Modul abgefragt, erscheint das Guthaben mit 6 Dezimalstellen in `uqor`.
 
 ---
 
 ## ERC-20-Token-Paare
 
-Das Modul `x/erc20` ermöglicht die automatische Registrierung von **Token-Paaren** zwischen nativen Cosmos-SDK-Stückelungen und ERC-20-Contracts:
+Das Modul `x/erc20` bietet die automatische Registrierung von **Token-Paaren** zwischen nativen Cosmos-SDK-Denominationen und ERC-20-Contracts:
 
-* Native Tokens können innerhalb von EVM-Contracts als ERC-20s verwendet werden
-* Auf der EVM bereitgestellte ERC-20-Tokens können in native Stückelungen umgewandelt werden
+* Native Token können innerhalb von EVM-Contracts als ERC-20-Token verwendet werden
+* Auf der EVM bereitgestellte ERC-20-Token können in native Denominationen umgewandelt werden
 * Die Umwandlung ist bidirektional und wird auf Protokollebene abgewickelt
 
 ```bash
@@ -171,30 +171,30 @@ qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from myk
 
 ---
 
-## PQC- und EVM-Kompatibilität
+## PQC und EVM-Kompatibilität
 
-EVM-Transaktionen verwenden **klassische ECDSA-Signaturen (secp256k1)** für volle Kompatibilität mit bestehenden Ethereum-Werkzeugen, -Wallets und -Bibliotheken. Dadurch funktionieren MetaMask, Hardhat, Foundry, ethers.js und alle gängigen EVM-Werkzeuge ohne Anpassung.
+EVM-Transaktionen verwenden **klassische ECDSA-Signaturen (secp256k1)** für volle Kompatibilität mit bestehenden Ethereum-Werkzeugen, Wallets und Bibliotheken. Dadurch funktionieren MetaMask, Hardhat, Foundry, ethers.js und alle Standard-EVM-Werkzeuge ohne Anpassung.
 
-Für Post-Quanten-Sicherheit innerhalb der EVM:
+Für post-quantensichere Sicherheit innerhalb der EVM:
 
 * Verwenden Sie das **PQC-Verify-Precompile** (`0x0000...0A01`), um ML-DSA-87-Signaturen on-chain aus Solidity heraus zu verifizieren. Siehe [EVM-Precompiles](/developer-guide/evm-precompiles).
-* **Cross-VM-Nachrichten** von der EVM zu CosmWasm oder SVM können auf der Cosmos-SDK-Transaktionsebene PQC-signiert werden.
+* **Cross-VM-Nachrichten** von der EVM zu CosmWasm oder SVM können auf der Transaktionsebene des Cosmos SDK PQC-signiert werden.
 * Konten können optional PQC-öffentliche Schlüssel über `x/pqc` für hybride Sicherheit registrieren.
 
 ---
 
 ## Benutzerdefinierter `qor_`-Namespace {#custom-qor_-namespace}
 
-QoreChain erweitert das JSON-RPC um einen `qor_`-Namespace für chain-spezifische Abfragen:
+QoreChain erweitert JSON-RPC um einen `qor_`-Namespace für kettenspezifische Abfragen:
 
-| Methode                     | Beschreibung                                                      |
+| Methode                      | Beschreibung                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
-| `qor_getPQCKeyStatus`       | Prüfen, ob ein Konto einen registrierten PQC-öffentlichen Schlüssel hat |
-| `qor_getAIStats`            | KI-Engine-Statistiken abrufen (Anomaliezahlen, Risikoverteilung)  |
-| `qor_getCrossVMMessage`     | Status einer Cross-VM-Nachricht anhand der ID abfragen            |
-| `qor_getPoolClassification` | Validator-Pool-Klassifikation abrufen (RPoS/DPoS/PoS)             |
-| `qor_getReputationScore`    | Reputationswert eines Validators abfragen                         |
-| `qor_getAbstractAccount`    | Konfiguration eines abstrakten Kontos abrufen                     |
+| `qor_getPQCKeyStatus`       | Prüft, ob ein Konto einen registrierten PQC-öffentlichen Schlüssel besitzt |
+| `qor_getAIStats`            | Ruft Statistiken der KI-Engine ab (Anomaliezahlen, Risikoverteilung) |
+| `qor_getCrossVMMessage`     | Fragt den Status einer Cross-VM-Nachricht anhand ihrer ID ab       |
+| `qor_getPoolClassification` | Ruft die Validator-Pool-Klassifizierung ab (RPoS/DPoS/PoS)         |
+| `qor_getReputationScore`    | Fragt den Reputationswert eines Validators ab                     |
+| `qor_getAbstractAccount`    | Ruft die Konfiguration eines abstrakten Kontos ab                 |
 
 Beispiel mit `curl`:
 
@@ -215,4 +215,4 @@ curl -X POST http://localhost:8545 \
 
 * [EVM-Precompiles](/developer-guide/evm-precompiles) — Zugriff auf PQC-, KI- und Cross-VM-Funktionen aus Solidity
 * [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — CosmWasm- und SVM-Contracts von der EVM aus aufrufen
-* [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Konten mit Session-Schlüsseln
+* [Kontenabstraktion](/developer-guide/account-abstraction) — Programmierbare Konten mit Session-Keys

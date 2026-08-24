@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # JSON-RPC — Spațiul de nume qor_
 
-Spațiul de nume `qor_` oferă metode JSON-RPC specifice QoreChain pentru interogarea stării criptografiei post-cuantice, a analizei AI, a mesageriei cross-VM, a stării pe mai multe straturi, a operațiunilor de bridge, a tokenomics-ului, a infrastructurii de rollup și a stării consensului PRISM.
+Spațiul de nume `qor_` oferă metode JSON-RPC specifice QoreChain pentru interogarea stării criptografiei post-cuantice, a analizelor AI, a mesageriei cross-VM, a stării multi-layer, a operațiunilor de bridge, a tokenomics, a infrastructurii de rollup și a stării consensului PRISM.
 
 ## Conexiune
 
@@ -16,7 +16,7 @@ Spațiul de nume `qor_` oferă metode JSON-RPC specifice QoreChain pentru intero
 | HTTP      | `http://localhost:8545` |
 | WebSocket | `ws://localhost:8546`   |
 
-Spațiul de nume `qor_` este servit alături de `eth_`, `web3_`, `net_` și `txpool_` pe aceleași porturi. Activează-l în `app.toml`:
+Spațiul de nume `qor_` este servit alături de `eth_`, `web3_`, `net_` și `txpool_` pe aceleași porturi. Activați-l în `app.toml`:
 
 ```toml
 [json-rpc]
@@ -24,40 +24,40 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-Spațiul de nume `qor_` este disponibil pe mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, activ pe versiunea de lanț **v3.1.85**) și pe testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Exemplele de mai jos presupun un nod local; înlocuiește cu endpoint-ul de mainnet sau testnet al furnizorului tău pentru acces la distanță.
+Spațiul de nume `qor_` este disponibil pe mainnet-ul **`qorechain-vladi`** (ID de chain EVM **9801**, live pe versiunea de chain **v3.1.92**) și pe testnet-ul **`qorechain-diana`** (ID de chain EVM **9800**). Exemplele de mai jos presupun un nod local; înlocuiți cu endpoint-ul de mainnet sau testnet al furnizorului dvs. pentru acces la distanță.
 :::
 
 ---
 
 ## Metode
 
-| Metodă                        | Parametri                               | Descriere                                               |
-| ----------------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `qor_getPQCKeyStatus`         | `address` (string)                      | Returnează starea înregistrării cheii PQC pentru un cont |
-| `qor_getHybridSignatureMode`  | niciunul                                | Returnează modul curent de aplicare a semnăturii hibride |
-| `qor_getAIStats`              | niciunul                                | Returnează statistici agregate de procesare ale modulului AI |
-| `qor_getCrossVMMessage`       | `messageId` (string)                    | Recuperează un mesaj cross-VM după ID-ul său             |
-| `qor_getReputationScore`      | `validator` (string)                    | Returnează scorul de reputație pentru o adresă de validator |
-| `qor_getLayerInfo`            | `layerId` (string)                      | Returnează metadatele și starea unui strat înregistrat   |
-| `qor_getBridgeStatus`         | `chainId` (string)                      | Returnează starea bridge-ului și totalurile blocate pentru un lanț |
-| `qor_getRLAgentStatus`        | niciunul                                | Returnează modul curent al agentului PRISM și starea operațională |
-| `qor_getRLObservation`        | niciunul                                | Returnează cel mai recent vector de observație PRISM     |
-| `qor_getRLReward`             | niciunul                                | Returnează metricile cumulative de recompensă PRISM      |
-| `qor_getPoolClassification`   | `validator` (string)                    | Returnează clasificarea pool-ului CPoS pentru un validator |
-| `qor_getBurnStats`            | niciunul                                | Returnează statistici de ardere pe toate canalele        |
-| `qor_getXQOREPosition`        | `address` (string)                      | Returnează poziția de staking xQORE pentru o adresă      |
-| `qor_getInflationRate`        | niciunul                                | Returnează rata de inflație curentă anualizată           |
-| `qor_getTokenomicsOverview`   | niciunul                                | Returnează o privire de ansamblu combinată asupra arderii, inflației și ofertei |
-| `qor_getRollupStatus`         | `rollupId` (string)                     | Returnează starea și configurația unui rollup specific   |
-| `qor_listRollups`             | niciunul                                | Returnează o listă cu toate rollup-urile înregistrate    |
-| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | Returnează un lot de decontare specific pentru un rollup |
+| Metodă                        | Parametri                               | Descriere                                                      |
+| ----------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `qor_getPQCKeyStatus`         | `address` (string)                      | Returnează starea de înregistrare a cheii PQC pentru un cont   |
+| `qor_getHybridSignatureMode`  | niciunul                                | Returnează modul curent de aplicare a semnăturii hibride       |
+| `qor_getAIStats`              | niciunul                                | Returnează statistici agregate de procesare ale modulului AI   |
+| `qor_getCrossVMMessage`       | `messageId` (string)                    | Preia un mesaj cross-VM după ID-ul său                         |
+| `qor_getReputationScore`      | `validator` (string)                    | Returnează scorul de reputație pentru o adresă de validator    |
+| `qor_getLayerInfo`            | `layerId` (string)                      | Returnează metadate și starea pentru un layer înregistrat      |
+| `qor_getBridgeStatus`         | `chainId` (string)                      | Returnează starea bridge-ului și totalurile blocate pentru un chain |
+| `qor_getRLAgentStatus`        | niciunul                                | Returnează modul curent și starea operațională a agentului PRISM |
+| `qor_getRLObservation`        | niciunul                                | Returnează cel mai recent vector de observație PRISM           |
+| `qor_getRLReward`             | niciunul                                | Returnează metricile cumulate de recompensă PRISM               |
+| `qor_getPoolClassification`   | `validator` (string)                    | Returnează clasificarea pool-ului CPoS pentru un validator     |
+| `qor_getBurnStats`            | niciunul                                | Returnează statisticile de burn pe toate canalele               |
+| `qor_getXQOREPosition`        | `address` (string)                      | Returnează poziția de staking xQORE pentru o adresă             |
+| `qor_getInflationRate`        | niciunul                                | Returnează rata anualizată curentă a inflației                 |
+| `qor_getTokenomicsOverview`   | niciunul                                | Returnează o privire de ansamblu combinată asupra burn-ului, inflației și supply-ului |
+| `qor_getRollupStatus`         | `rollupId` (string)                     | Returnează starea și configurația pentru un rollup specific    |
+| `qor_listRollups`             | niciunul                                | Returnează o listă cu toate rollup-urile înregistrate           |
+| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | Returnează un batch de settlement specific pentru un rollup    |
 | `qor_suggestRollupProfile`    | `useCase` (string)                      | Recomandare de profil de rollup asistată de AI pentru un caz de utilizare |
-| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | Returnează starea unui blob DA specific                  |
-| `qor_getBTCStakingPosition`   | `address` (string)                      | Returnează poziția de staking BTC prin modulul Babylon   |
+| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | Returnează starea unui blob DA specific                        |
+| `qor_getBTCStakingPosition`   | `address` (string)                      | Returnează poziția de staking BTC via modulul Babylon           |
 | `qor_getAbstractAccount`      | `address` (string)                      | Returnează detaliile contului abstract și regulile de cheltuire |
-| `qor_getFairBlockStatus`      | niciunul                                | Returnează starea și configurația criptării FairBlock    |
-| `qor_getGasAbstractionConfig` | niciunul                                | Returnează tokenurile acceptate și parametrii de abstractizare a gas-ului |
-| `qor_getLaneConfiguration`    | niciunul                                | Returnează configurația de prioritizare a TX pe 5 benzi  |
+| `qor_getFairBlockStatus`      | niciunul                                | Returnează starea și configurația criptării FairBlock          |
+| `qor_getGasAbstractionConfig` | niciunul                                | Returnează token-urile acceptate și parametrii de abstractizare a gazului |
+| `qor_getLaneConfiguration`    | niciunul                                | Returnează configurația de prioritizare TX pe 5 lane-uri       |
 
 ---
 
@@ -172,11 +172,11 @@ curl -X POST http://localhost:8545 \
 
 ## Coduri de eroare
 
-| Cod    | Mesaj            | Descriere                             |
-| ------ | ---------------- | ------------------------------------- |
-| -32600 | Invalid Request  | Cerere JSON-RPC malformată            |
-| -32601 | Method not found | Metoda nu există                      |
-| -32602 | Invalid params   | Parametri lipsă sau invalizi          |
-| -32603 | Internal error   | Eroare de procesare pe partea serverului |
-| -32000 | Module disabled  | Modulul interogat nu este activat     |
-| -32001 | Entity not found | Resursa solicitată nu există          |
+| Cod    | Mesaj             | Descriere                                  |
+| ------ | ------------------ | ------------------------------------------- |
+| -32600 | Invalid Request     | Cerere JSON-RPC malformată                  |
+| -32601 | Method not found    | Metoda nu există                            |
+| -32602 | Invalid params      | Parametri lipsă sau invalizi                |
+| -32603 | Internal error      | Eroare de procesare pe partea de server     |
+| -32000 | Module disabled     | Modulul interogat nu este activat           |
+| -32001 | Entity not found    | Resursa solicitată nu există                |

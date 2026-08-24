@@ -8,16 +8,16 @@ sidebar_position: 2
 # Konten & PQC-Signierung
 
 QoreChain-Konten werden aus einer einzigen BIP-39-Mnemonic abgeleitet. Es gibt
-zwei Kontenmodelle, die beide vollständig unterstützt werden:
+zwei Kontomodelle, die beide vollständig unterstützt werden:
 
-- **HD-Ableitung pro Lane (Legacy/Standard)** — dieselbe Mnemonic liefert über
-  unabhängige Ableitungspfade ein natives Konto (Coin-Type 118), ein EVM-Konto
-  (Coin-Type 60) und ein SVM-Konto (Coin-Type 501). Drei Schlüssel, drei
-  Adressen.
-- **Vereinheitlichte eth-native Konten** (SDK 0.6.0, Chain v3.1.83) — EIN
-  `eth_secp256k1`-Schlüssel ist EINE 20-Byte-Identität, dargestellt in allen
-  drei Adress-Kodierungen, mit einem gemeinsamen Guthaben. Siehe
-  [Vereinheitlichte Konten](#unified-accounts).
+- **Pro-Lane-HD-Ableitung (Legacy/Standard)** — dieselbe Mnemonic erzeugt über
+  unabhängige Ableitungspfade ein Native-Konto (Coin-Type 118), ein
+  EVM-Konto (Coin-Type 60) und ein SVM-Konto (Coin-Type 501). Drei Schlüssel,
+  drei Adressen.
+- **Unified Eth-native-Konten** (SDK 0.6.0, Chain v3.1.83) — EIN
+  `eth_secp256k1`-Schlüssel ist EINE 20-Byte-Identität, die als alle drei
+  Adresscodierungen dargestellt wird, mit einem gemeinsamen Guthaben. Siehe
+  [Unified Accounts](#unified-accounts).
 
 ## HD-Ableitung (Legacy/Standard, Coin-Type 118)
 
@@ -42,10 +42,10 @@ const svm = await deriveSvmAccount(mnemonic);
 console.log(svm.address); // base58 ed25519 public key
 ```
 
-Die Mnemonic wird validiert (Wörter **und** Prüfsumme), bevor ein Schlüssel
-abgeleitet wird — ein Tippfehler löst also einen Fehler aus, statt stillschweigend
-ein falsches Konto zu erzeugen. Mit `validateMnemonic(mnemonic)` können Sie
-explizit validieren.
+Die Mnemonic wird (Wörter **und** Prüfsumme) validiert, bevor irgendein
+Schlüssel abgeleitet wird, sodass ein Tippfehler einen Fehler auslöst, statt
+stillschweigend ein falsches Konto zu erzeugen. Sie können explizit mit
+`validateMnemonic(mnemonic)` validieren.
 
 ### Ableitungsschemata
 
@@ -55,43 +55,43 @@ explizit validieren.
 | evm | secp256k1 | `m/44'/60'/0'/0/{i}` | `0x` + `keccak256(pubkey)[-20:]`, EIP-55 |
 | svm | ed25519 | `m/44'/501'/{i}'/0'` | base58 des 32-Byte-Public-Keys |
 
-Übergeben Sie einen Kontenindex, um weitere Konten abzuleiten. In TypeScript:
+Übergeben Sie einen Kontoindex, um weitere Konten abzuleiten. In TypeScript:
 
 ```ts
 const second = await deriveNativeAccount(mnemonic, { accountIndex: 1 });
 ```
 
-In Python/Go/Rust ist der Index ein positionales Argument
+In Python/Go/Rust ist der Index ein Positionsargument
 (`derive_native_account(mnemonic, 1)` / `DeriveNativeAccount(mnemonic, 1)` /
 `derive_native_account(&mnemonic, 1)`).
 
 ### Hinweis zu Known-Answer-Tests
 
-Die Ableitungsschemata sind deterministisch und durch Known-Answer-Tests in
-allen vier SDKs abgedeckt, sodass dieselbe Mnemonic in TypeScript, Python, Go
-und Rust identische Adressen erzeugt. Sie können also in einer Sprache ableiten
-und in einer anderen verifizieren.
+Die Ableitungsschemata sind deterministisch und werden in allen vier SDKs
+durch Known-Answer-Tests abgedeckt, sodass dieselbe Mnemonic in TypeScript,
+Python, Go und Rust identische Adressen erzeugt. Dadurch können Sie in einer
+Sprache ableiten und in einer anderen verifizieren.
 
-> Diese Ableitung pro Lane (`deriveNativeAccount` mit Coin-Type 118, plus
+> Diese Pro-Lane-Ableitung (`deriveNativeAccount` mit Coin-Type 118, plus
 > `deriveEvmAccount` / `deriveSvmAccount`) ist das **Legacy-/Standard**-Modell
-> und bleibt unterstützt und unverändert. Die vereinheitlichten Konten unten
-> sind ein zusätzliches, optionales Identitätsmodell.
+> und bleibt unverändert unterstützt. Die Unified Accounts weiter unten sind
+> ein zusätzliches, optionales Identitätsmodell.
 
-## Vereinheitlichte Konten (eth-native) {#unified-accounts}
+## Unified Accounts (Eth-native) {#unified-accounts}
 
 Seit SDK **0.6.0** (Chain v3.1.83) leitet `deriveUnifiedAccount(mnemonic, index = 0)`
 EINEN `eth_secp256k1`-Schlüssel auf dem Ethereum-HD-Pfad `m/44'/60'/0'/0/{index}`
-ab, dessen 20 Adress-Bytes (`keccak256(pubkey)[12:]`) DIESELBE Identität in drei
-Darstellungen sind:
+ab, dessen 20 Adressbytes (`keccak256(pubkey)[12:]`) DIESELBE Identität sind,
+die auf drei Arten dargestellt wird:
 
-| Lane | Kodierung |
+| Lane | Codierung |
 | --- | --- |
-| Native | bech32 mit dem Präfix `qor` (`qor1…`) |
-| EVM | `0x` + EIP-55 Mixed-Case-Prüfsummen-Hex |
-| SVM | base58 der 20 Bytes, rechts mit 12 Null-Bytes aufgefüllt (32 Bytes) |
+| Native | bech32 mit dem `qor`-Präfix (`qor1…`) |
+| EVM | `0x` + EIP-55-Mixed-Case-Prüfsummen-Hex |
+| SVM | base58 der 20 Bytes, rechts aufgefüllt mit 12 Null-Bytes (32 Bytes) |
 
-Eine Einzahlung an **eine beliebige** der drei landet in **einem** Guthaben,
-und der Schlüssel kann auf jeder Lane ausgeben:
+Eine Einzahlung auf **eine beliebige** der drei Lanes landet in **einem**
+Guthaben, und der Schlüssel gibt auf jeder Lane aus:
 
 ```ts
 import {
@@ -118,8 +118,8 @@ all.svm;    // base58
 const same = addressesFrom20(account.addressBytes);
 ```
 
-`unifiedAccountFromSeed(seed32)` leistet dasselbe ausgehend von einem rohen
-32-Byte-secp256k1-Privatschlüssel.
+`unifiedAccountFromSeed(seed32)` macht dasselbe ausgehend von einem rohen
+32-Byte-secp256k1-Private-Key.
 
 ### Die PQC-Seed-Ableitung
 
@@ -130,18 +130,18 @@ Das ML-DSA-87-Schlüsselpaar des Kontos wird deterministisch und
 pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 ```
 
-Es ist somit aus `{ address, mnemonic }` wiederherstellbar und in allen
-Sprach-SDKs von QoreChain identisch. (Bei `unifiedAccountFromSeed` ist der
-Mnemonic-Platzhalter `"seed:" + hex(seed32)`.)
+sodass es aus `{ address, mnemonic }` wiederherstellbar und über alle
+Sprach-SDKs von QoreChain identisch ist. (Bei `unifiedAccountFromSeed` lautet
+der Mnemonic-Slot `"seed:" + hex(seed32)`.)
 
-### Senden auf der Native-Lane mit dem eth-Schlüssel
+### Senden auf der Native-Lane mit dem Eth-Key
 
-Ein vereinheitlichtes Konto signiert Transaktionen auf dem Native-Pfad mit dem
-`eth_secp256k1`-Schema: Die klassische Signatur ist secp256k1 über **keccak256**
-der SignDoc-Bytes (nicht sha256), und der Public Key in `SignerInfo` verwendet
-die Typ-URL `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`. Der Hybrid-Pfad
-(`signHybridEth`) hängt zusätzlich die ML-DSA-87-`PQCHybridSignature`-Extension
-an — auf den Live-Netzwerken erforderlich:
+Ein Unified Account signiert Transaktionen auf dem Native-Pfad mit dem
+`eth_secp256k1`-Schema: Die klassische Signatur ist secp256k1 über
+**keccak256** der SignDoc-Bytes (nicht sha256), und der `SignerInfo`-Public-Key
+verwendet die Type-URL `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`. Der
+Hybrid-Pfad (`signHybridEth`) hängt zusätzlich die ML-DSA-87-`PQCHybridSignature`-
+Erweiterung an — auf den Live-Netzwerken erforderlich:
 
 ```ts
 import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
@@ -160,29 +160,30 @@ await signer.bankSend(
 
 Für Kontrolle auf niedrigerer Ebene liefern `signHybridEth(params)` /
 `signClassicalEth(params)` die zusammengesetzten `TxRaw`-Bytes und die
-Signatur-Artefakte, und `accountAuthInfo(baseAccount)` liest `account_number` /
-`sequence` aus einem Konto, dessen On-Chain-Pubkey die
-`eth_secp256k1`-Typ-URL verwendet. Der rein klassische Pfad ist für die
-einmalige, vom Bootstrap ausgenommene `MsgRegisterPQCKeyV2` gedacht; verwenden
-Sie für alles andere Hybrid.
+Signier-Artefakte, und `accountAuthInfo(baseAccount)` liest `account_number` /
+`sequence` aus einem Konto, dessen On-Chain-Pubkey die Type-URL
+`eth_secp256k1` verwendet. Der rein klassische Pfad ist für die einmalige, vom
+Bootstrap ausgenommene `MsgRegisterPQCKeyV2` gedacht; verwenden Sie für alles
+andere Hybrid.
 
-:::caution Für Hybrid-Transaktionen auf SDK 0.6.1+ upgraden
+:::caution Auf SDK 0.6.1+ aktualisieren für Hybrid-Transaktionen
 SDK **0.6.1** hat einen konsenskritischen Kodierungsfehler behoben: Die
-Tx-Body-Extension `/qorechain.pqc.v1.PQCHybridSignature` wurde als JSON in
-`Any.value` serialisiert, und die Chain **lehnte diese Transaktionen bei
-CheckTx ab** (ein Tx-Parse-Fehler). Sie wird nun in allen fünf Sprachen als
-Protobuf kodiert (der Extension-Wert beginnt mit `0x08`). Jede
-Hybrid-Transaktion — einschließlich der eth-nativen Lane —, die mit SDK ≤ 0.6.0
-gebaut wurde, wird on-chain abgelehnt: Upgraden Sie auf 0.6.1 oder neuer.
+Tx-Body-Erweiterung `/qorechain.pqc.v1.PQCHybridSignature` wurde
+JSON-serialisiert in `Any.value` abgelegt, und die Chain **lehnte diese
+Transaktionen bei CheckTx ab** (ein Tx-Parse-Fehler). Sie ist jetzt in allen
+fünf Sprachen protobuf-kodiert (der Erweiterungswert beginnt mit `0x08`). Jede
+mit SDK ≤ 0.6.0 erstellte Hybrid-Transaktion — einschließlich der
+Eth-native-Lane — wird On-Chain abgelehnt: aktualisieren Sie auf 0.6.1 oder
+neuer.
 :::
 
-### Phantom (P1a): ein vereinheitlichtes Konto ohne Schlüssel-Export
+### Phantom (P1a): ein Unified Account ohne Export eines Schlüssels
 
-`connectPhantomUnified()` (TypeScript) leitet ein kanonisches,
-**non-custodial** vereinheitlichtes Konto aus einer deterministischen
-Phantom-Signatur ab: Der Nutzer signiert eine feste, domänen-separierte
-Nachricht mit dem ed25519-Schlüssel von Phantom, und
-`shake256(signature, 32)` dient als Seed für das Konto.
+`connectPhantomUnified()` (TypeScript) leitet aus einer deterministischen
+Phantom-Signatur einen kanonischen, **non-custodial** Unified Account ab: Der
+Nutzer signiert eine feste, domänengetrennte Nachricht mit dem
+ed25519-Schlüssel von Phantom, und `shake256(signature, 32)` erzeugt den Seed
+für das Konto.
 
 ```ts
 import {
@@ -197,16 +198,16 @@ const account = await connectPhantomUnified();
 const same = unifiedAccountFromPhantomSignature(signatureBytes);
 ```
 
-Das abgeleitete Konto ist ein eigener kanonischer Schlüssel, getrennt vom
-ed25519-Schlüssel von Phantom — Phantom sieht die abgeleiteten
-secp256k1-/PQC-Geheimnisse nie. Wie der Phantom-Schlüssel selbst innerhalb von
-Limits aus dem Konto ausgeben kann, erfahren Sie unter
+Das abgeleitete Konto ist ein eigenständiger kanonischer Schlüssel, getrennt
+vom ed25519-Schlüssel von Phantom — Phantom bekommt die abgeleiteten
+secp256k1/PQC-Geheimnisse nie zu sehen. Damit der Phantom-Schlüssel selbst
+unter Limits vom Konto ausgeben kann, siehe
 [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators).
 
-## Post-Quanten-Kryptographie (PQC)
+## Post-Quanten-Kryptografie (PQC)
 
-QoreChain unterstützt **ML-DSA-87**-Signaturen (Dilithium-5, FIPS 204). Das SDK
-stellt die Primitive direkt bereit.
+QoreChain unterstützt **ML-DSA-87**-Signaturen (Dilithium-5, FIPS 204). Das
+SDK stellt die Primitiven direkt bereit.
 
 ```ts
 import {
@@ -224,41 +225,41 @@ const signature = pqcSign(keypair.secretKey, message);
 const ok = pqcVerify(keypair.publicKey, message, signature);
 ```
 
-Die exportierten Längenkonstanten (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
+Mit den exportierten Längenkonstanten (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
 `ML_DSA_87_SECRET_KEY_LENGTH`, `ML_DSA_87_SIGNATURE_LENGTH`,
-`ML_DSA_87_SEED_LENGTH`) ermöglichen die Validierung von Puffergrößen.
+`ML_DSA_87_SEED_LENGTH`) können Sie Puffergrößen validieren.
 
-> Unter der Haube stammen die PQC-Primitive aus [**qorechain-pqc**](/developer-guide/post-quantum-signing) — der quelloffenen, rein standardbasierten Bibliothek, die auditierte FIPS-204/203/202-Implementierungen hinter einer konsistenten API in sechs Sprachen kapselt (JavaScript/TypeScript, Rust, Go, C, Python, Java). Greifen Sie direkt darauf zurück, wenn Sie die rohen Primitive oder das `hybridSignBytes`-Framing außerhalb des SDK benötigen.
+> Darunter stammen die PQC-Primitiven aus [**qorechain-pqc**](/developer-guide/post-quantum-signing) — der Open-Source-Bibliothek, die ausschließlich auf Standards setzt und geprüfte FIPS-204/203/202-Implementierungen hinter einer einheitlichen API in sechs Sprachen (JavaScript/TypeScript, Rust, Go, C, Python, Java) kapselt. Greifen Sie direkt darauf zu, wenn Sie die rohen Primitiven oder das `hybridSignBytes`-Framing außerhalb des SDK benötigen.
 
-### Steckbare Signer
+### Austauschbare Signer (Pluggable Signers)
 
-Für die Komposition stellt das SDK eine `Signer`-Abstraktion samt den
-Implementierungen `PqcSigner` und `HybridSigner` sowie ein
-`SignatureMode`-Enum bereit. Verwenden Sie diese, wenn Sie PQC-Signierung in
-Ihren eigenen Ablauf einbinden möchten, statt die Primitive direkt aufzurufen.
+Zur Komposition stellt das SDK eine `Signer`-Abstraktion sowie die
+Implementierungen `PqcSigner` und `HybridSigner` und ein `SignatureMode`-Enum
+bereit. Verwenden Sie diese, wenn Sie PQC-Signierung in Ihren eigenen Ablauf
+einklinken möchten, statt die Primitiven direkt aufzurufen.
 
 ## Hybrid-Signierung {#hybrid-signing}
 
-Eine **Hybrid**-Transaktion trägt sowohl eine klassische secp256k1-Signatur als
-auch eine ML-DSA-87-Signatur; sie bleibt damit unter klassischer Verifikation
-gültig und erhält zugleich Post-Quanten-Schutz. Der Post-Quanten-Teil reist als
-`PQCHybridSignature`-Extension in der Transaktion mit.
+Eine **Hybrid**-Transaktion trägt sowohl eine klassische secp256k1-Signatur
+als auch eine ML-DSA-87-Signatur, sodass sie unter klassischer Verifikation
+gültig bleibt und gleichzeitig Post-Quanten-Schutz erhält. Der Post-Quanten-
+Teil wird als `PQCHybridSignature`-Erweiterung an der Transaktion mitgeführt.
 
 :::caution Hybrid-Signierung ist auf dem Native-Pfad erforderlich
-Ab der aktuellen Chain-Version (**v3.1.85**) ist der Netzwerk-Standard
+Stand der aktuellen Chain-Version (**v3.1.92**) ist die Netzwerk-Voreinstellung
 `hybrid_signature_mode = required` mit `allow_classical_fallback = false`.
 Hybrid-Signierung über `buildHybridTx` (mit `includePqcPublicKey`) — oder
-`signHybridEth` für vereinheitlichte eth-native Konten — ist für
-Transaktionen auf dem Native-Pfad **verpflichtend**; rein klassische
-Native-Transaktionen werden on-chain abgelehnt. EVM-Transaktionen nutzen einen
-separaten `eth_secp256k1`-Pfad und sind nicht betroffen.
+`signHybridEth` für Unified-Eth-native-Konten — ist für Transaktionen auf dem
+Native-Pfad **zwingend erforderlich**; rein klassische Native-Transaktionen
+werden On-Chain abgelehnt. EVM-Transaktionen verwenden einen separaten
+`eth_secp256k1`-Pfad und sind davon nicht betroffen.
 :::
 
 :::caution Hybrid-Transaktionen mit SDK ≤ 0.6.0 werden abgelehnt
-Das Release 0.6.1 hat die Kodierung der `PQCHybridSignature`-Extension
-korrigiert (JSON → Protobuf, konsenskritisch). Hybrid-Transaktionen, die mit
-SDK 0.6.0 oder früher gebaut wurden, scheitern bei CheckTx mit einem
-Tx-Parse-Fehler — upgraden Sie auf 0.6.1+.
+Das Release 0.6.1 hat die Kodierung der `PQCHybridSignature`-Erweiterung
+korrigiert (JSON → protobuf, konsenskritisch). Mit SDK 0.6.0 oder älter
+erstellte Hybrid-Transaktionen scheitern bei CheckTx mit einem
+Tx-Parse-Fehler — aktualisieren Sie auf 0.6.1+.
 :::
 
 ```ts
@@ -278,41 +279,41 @@ const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
 
 ### On-Chain-Voraussetzung
 
-Bevor eine Hybrid-Transaktion on-chain PQC-verifiziert wird, muss der
-PQC-Public-Key des Signierers über das `MsgRegisterPQCKey` der Chain
-**registriert** sein — *es sei denn*, Sie setzen `includePqcPublicKey: true`;
-dann wird der Schlüssel in die Extension eingebettet, sodass die Chain ihn bei
-der ersten Verwendung automatisch registrieren kann.
+Damit eine Hybrid-Transaktion On-Chain PQC-verifiziert werden kann, muss der
+PQC-Public-Key des Signers über die `MsgRegisterPQCKey` der Chain
+**registriert** sein — *es sei denn*, Sie setzen `includePqcPublicKey: true`,
+wodurch der Schlüssel in die Erweiterung eingebettet wird, sodass die Chain
+ihn bei der ersten Verwendung automatisch registrieren kann.
 
 ### Hybrid-Tx-Vertrag (auf hoher Ebene)
 
 Die Transaktion wird klassisch über die Standard-Sign-Bytes signiert (die die
-PQC-Extension **ausschließen**), und die ML-DSA-87-Signatur wird berechnet und
-als `PQCHybridSignature`-Extension angehängt. Da die klassischen Sign-Bytes die
-Extension ausschließen, bleibt die klassische Signatur gültig — unabhängig
-davon, ob ein Verifizierer den PQC-Teil versteht. Die Low-Level-Helfer
-(`encodeHybridExtension`, `attachHybridExtension`,
-`buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`) und die
-End-to-End-Builder (`buildHybridTx`, `signAndBroadcastHybrid`) werden für
+PQC-Erweiterung **ausschließen**), und die ML-DSA-87-Signatur wird berechnet
+und als `PQCHybridSignature`-Erweiterung angehängt. Da die klassischen
+Sign-Bytes die Erweiterung ausschließen, bleibt die klassische Signatur
+gültig, unabhängig davon, ob ein Verifizierer den PQC-Teil versteht. Die
+Low-Level-Hilfsfunktionen (`encodeHybridExtension`, `attachHybridExtension`,
+`buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`) sowie die
+End-to-End-Builder (`buildHybridTx`, `signAndBroadcastHybrid`) sind für
 fortgeschrittene Anwendungsfälle exportiert.
 
-> Die Einreichung von Hybrid-Transaktionen ist im Live-Netzwerk der
-> erforderliche Pfad für Cosmos-Transaktionen. Die lokalen
-> Sign-/Verify-Primitive und Tx-Building-Helfer sind heute verfügbar.
+> Die Übermittlung von Hybrid-Transaktionen ist der erforderliche Pfad im
+> Live-Netzwerk für Cosmos-Transaktionen. Die lokalen Sign-/Verify-Primitiven
+> und Tx-Building-Hilfsfunktionen stehen bereits heute zur Verfügung.
 
 ## PQC-Schlüsselrotation
 
-Seit SDK 0.7.0 kann ein Konto seinen ML-DSA-87-Schlüssel zu einem neuen
-Schlüssel des **gleichen Algorithmus** rotieren — kanonisch die Migration eines
-Legacy-`shake256(mnemonic)`-Schlüssels zum adressgebundenen
+Seit SDK 0.7.0 kann ein Konto seinen ML-DSA-87-Schlüssel auf einen neuen
+Schlüssel **desselben Algorithmus** rotieren — dies migriert kanonisch einen
+alten `shake256(mnemonic)`-Schlüssel auf den adressgebundenen
 `shake256("qorechain:pqc:v1|addr|mnemonic")`-Schlüssel — über
-`rotatePqcKeyMsgFromMnemonic` (beide Schlüssel signieren die Rotations-Bytes
+`rotatePqcKeyMsgFromMnemonic` (beide Schlüssel signieren die Rotationsbytes
 gemeinsam). Ein vollständiges Beispiel finden Sie unter
 [Schlüsselrotation](/sdk/guides/authenticators#key-rotation) im
 Authenticators-Guide.
 
 ## Algorithmus-Identifikatoren
 
-Das SDK exportiert Algorithmus-IDs und Helfer für Arbeit auf Protokollebene:
-`AlgorithmUnspecified`, `AlgorithmDilithium5`, `AlgorithmMLKEM1024`,
-`algorithmName(id)` und `isSignatureAlgorithm(id)`.
+Das SDK exportiert Algorithmus-IDs und Hilfsfunktionen für die Arbeit auf
+Protokollebene: `AlgorithmUnspecified`, `AlgorithmDilithium5`,
+`AlgorithmMLKEM1024`, `algorithmName(id)` und `isSignatureAlgorithm(id)`.

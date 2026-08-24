@@ -18,7 +18,7 @@ QoreChain은 프로그래밍 방식 접근을 위해 세 가지 기본 인터페
 모든 REST 엔드포인트는 JSON을 반환합니다. gRPC 엔드포인트는 Protocol Buffers를 사용하며 어떤 gRPC 클라이언트로도 사용할 수 있습니다. RPC 인터페이스는 합의 수준의 조회와 트랜잭션 브로드캐스트를 제공합니다.
 
 :::note
-이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중, 체인 버전 **v3.1.85**)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트(`rpc/api/evm/svm.qore.host` 및 해당 `-testnet` 변형)는 [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다.
+이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중, 체인 버전 **v3.1.92**)과 **`qorechain-diana`** 테스트넷 모두에서 사용할 수 있습니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트(`rpc/api/evm/svm.qore.host` 및 해당 `-testnet` 변형)는 [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다.
 :::
 
 ## 기본 URL

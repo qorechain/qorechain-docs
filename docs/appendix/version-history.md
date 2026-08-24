@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.85**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.92**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,26 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.85 — Delegated Spending via Linked Wallets (Current Release)
+## v3.1.92 — Node Synchronization Reliability (Current Release)
+
+**Release focus:** More reliable node onboarding from snapshots and the published chain archive.
+
+* **Snapshot and archive sync fix** — Resolved an issue where a node restoring from a state-sync snapshot or the published chain archive could fail to complete sync past certain historical blocks. Onboarding via either path now completes reliably.
+
+## v3.1.90 — Light-Node Uptime Accounting
+
+**Release focus:** Uptime measured for light-node reward eligibility now accrues consistently over time.
+
+* **Forward-accruing uptime** — A light node's reward-eligibility uptime is now computed by accruing its expected heartbeat count forward from its own registration, at whatever heartbeat interval was in force at each point in time, rather than by recomputing its entire history under whichever interval is currently in force. A governance change to the heartbeat interval therefore affects uptime going forward only, and never retroactively re-rates a node's past performance.
+
+## v3.1.86 — Validator Recovery Safeguard
+
+**Release focus:** A validator can no longer be permanently locked out of recovering from a downtime jail.
+
+* **Jail-lock fix** — A validator operator account with no post-quantum key registered can now always submit `MsgUnjail` to recover from a downtime jail, even when hybrid-signature enforcement is set to required with classical fallback disabled. Previously, such an account had no path to recovery, since unjailing itself required sending a transaction it was blocked from sending.
+* **State-sync snapshots** — Snapshot generation is enabled network-wide, letting new validators and full nodes fast-join via state sync instead of a full historical replay.
+
+## v3.1.85 — Delegated Spending via Linked Wallets
 
 **Release focus:** A linked external wallet key (Phantom, MetaMask) can now **spend** from the one canonical post-quantum account — under least-privilege permissions, spending limits, and instant revocation.
 

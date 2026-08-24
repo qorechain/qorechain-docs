@@ -14,12 +14,12 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-라이브 메인넷(체인 버전 **v3.1.85**)에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 생략하면 클라이언트는 로컬 설정의 `chain-id`를 사용합니다.
+라이브 메인넷(체인 버전 **v3.1.92**)에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 생략하면 클라이언트는 로컬 설정의 `chain-id`를 사용합니다.
 :::
 
 공통 플래그는 모든 `tx` 하위 명령어에 적용됩니다:
 
-| 플래그              | 타입   | 설명                                            |
+| 플래그              | 타입   | 설명                                             |
 | ------------------- | ------ | ----------------------------------------------- |
 | `--from`            | string | 서명 키의 이름 또는 주소                        |
 | `--chain-id`        | string | 체인 식별자 (기본값: 설정에서 가져옴)           |
@@ -55,7 +55,7 @@ qorechaind tx bank send <from_address> <to_address> <amount> [flags]
 qorechaind tx staking create-validator [flags]
 ```
 
-| 플래그                         | 타입   | 설명                                         |
+| 플래그                          | 타입   | 설명                                          |
 | ------------------------------ | ------ | -------------------------------------------- |
 | `--amount`                     | string | 자기 위임 수량 (예: `1000000uqor`)           |
 | `--pubkey`                     | string | 검증인 합의 공개 키 (JSON)                   |
@@ -212,23 +212,23 @@ qorechaind tx pqc migrate-key <algorithm> <pqc_pubkey_hex> [flags]
 qorechaind tx pqc recover-key <name> <address> [flags]
 ```
 
-| 플래그         | 타입   | 설명                                                     |
+| 플래그         | 타입   | 설명                                                       |
 | -------------- | ------ | -------------------------------------------------------- |
 | `--derivation` | string | `adapter`(표준, 기본값) 또는 `bridge`(레거시 `SHAKE-256(mnemonic)`) |
 
 ### rotate-key
 
-계정의 ML-DSA-87 키를 **동일한 알고리즘 내에서** 교체합니다(체인 버전 **v3.1.85**부터 사용 가능). 예를 들어 레거시 방식으로 파생된 키를 표준 파생 방식으로 마이그레이션하거나 유출된 키를 폐기할 때 사용합니다. stdin에서 니모닉을 읽고, 이전 키와 새 키로 이중 서명한 뒤, 이전 키로 봉투(envelope)에 공동 서명하고 브로드캐스트합니다. stdout에는 트랜잭션 JSON만 출력하므로(안내 메시지는 stderr로 출력) `-o json`과 조합할 수 있습니다.
+계정의 ML-DSA-87 키를 **동일한 알고리즘 내에서** 교체합니다(체인 버전 **v3.1.85**부터 사용 가능) — 예를 들어 레거시 방식으로 파생된 키를 표준 파생 방식으로 마이그레이션하거나 유출된 키를 폐기할 때 사용합니다. stdin에서 니모닉을 읽고, 이전 키와 새 키로 이중 서명한 뒤, 이전 키로 봉투(envelope)에 공동 서명하고 브로드캐스트합니다. stdout에는 트랜잭션 JSON만 출력하므로(안내 메시지는 stderr로 출력) `-o json`과 조합할 수 있습니다.
 
 ```bash
 qorechaind tx pqc rotate-key [flags]
 ```
 
-| 플래그             | 타입   | 설명                                             |
+| 플래그             | 타입   | 설명                                              |
 | ------------------ | ------ | ------------------------------------------------ |
 | `--old-derivation` | string | 현재 등록된 키의 파생 방식 (`adapter` \| `bridge`) |
-| `--new-derivation` | string | 새 키의 파생 방식 (`adapter` \| `bridge`)        |
-| `--new-random`     | bool   | 대신 새로운 무작위 키를 생성                     |
+| `--new-derivation` | string | 새 키의 파생 방식 (`adapter` \| `bridge`)         |
+| `--new-random`     | bool   | 대신 새로운 무작위 키를 생성                      |
 
 ---
 
@@ -242,7 +242,7 @@ QOR 토큰을 xQORE 거버넌스 스테이킹 포지션에 잠급니다.
 qorechaind tx xqore lock <amount> [flags]
 ```
 
-| 플래그            | 타입   | 설명                                       |
+| 플래그             | 타입   | 설명                                        |
 | ----------------- | ------ | ------------------------------------------ |
 | `--lock-duration` | string | 잠금 기간 (예: `30d`, `90d`, `180d`)       |
 
@@ -343,9 +343,9 @@ qorechaind tx svm deploy-program <program_binary_path> [flags]
 qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 ```
 
-| 플래그       | 타입   | 설명                                                |
+| 플래그       | 타입   | 설명                                                 |
 | ------------ | ------ | --------------------------------------------------- |
-| `--accounts` | string | 명령에 사용할 계정 공개 키 목록 (쉼표로 구분)       |
+| `--accounts` | string | 명령에 사용할 계정 공개 키 목록 (쉼표로 구분)        |
 
 ### create-account
 
@@ -355,7 +355,7 @@ qorechaind tx svm execute <program_id> <instruction_data_hex> [flags]
 qorechaind tx svm create-account <pubkey> <space> [flags]
 ```
 
-| 플래그    | 타입   | 설명                                            |
+| 플래그    | 타입   | 설명                                             |
 | --------- | ------ | ----------------------------------------------- |
 | `--owner` | string | 소유자 프로그램 (base58, 기본값: 시스템 프로그램) |
 
@@ -371,14 +371,14 @@ qorechaind tx svm create-account <pubkey> <space> [flags]
 qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 ```
 
-| 플래그                  | 타입   | 설명                                                |
+| 플래그                   | 타입   | 설명                                                  |
 | ----------------------- | ------ | --------------------------------------------------- |
-| `--block-time-ms`       | uint   | 목표 블록 시간(ms) (기본값 2000)                    |
-| `--domains`             | string | 지원 도메인 목록, 쉼표로 구분 (기본값 `defi`)       |
-| `--max-tx`              | uint   | 블록당 최대 트랜잭션 수 (기본값 1000)               |
-| `--min-validators`      | uint32 | 최소 검증인 집합 크기 (기본값 1)                    |
-| `--settlement-interval` | uint   | 블록 단위 정산 간격 (기본값 100)                    |
-| `--vm-types`            | string | 지원 VM 유형 목록, 쉼표로 구분 (기본값 `evm`)       |
+| `--block-time-ms`       | uint   | 목표 블록 시간(ms) (기본값 2000)                      |
+| `--domains`             | string | 지원 도메인 목록, 쉼표로 구분 (기본값 `defi`)         |
+| `--max-tx`              | uint   | 블록당 최대 트랜잭션 수 (기본값 1000)                 |
+| `--min-validators`      | uint32 | 최소 검증인 집합 크기 (기본값 1)                      |
+| `--settlement-interval` | uint   | 블록 단위 정산 간격 (기본값 100)                      |
+| `--vm-types`            | string | 지원 VM 유형 목록, 쉼표로 구분 (기본값 `evm`)         |
 
 ### register-paychain
 
@@ -388,10 +388,10 @@ qorechaind tx multilayer register-sidechain <layer-id> <description> [flags]
 qorechaind tx multilayer register-paychain <layer-id> <description> [flags]
 ```
 
-| 플래그                  | 타입 | 설명                                       |
-| ----------------------- | ---- | ------------------------------------------ |
-| `--max-tx`              | uint | 블록당 최대 트랜잭션 수 (기본값 5000)      |
-| `--settlement-interval` | uint | 블록 단위 정산 간격 (기본값 50)            |
+| 플래그                   | 타입 | 설명                                        |
+| ----------------------- | ---- | ------------------------------------------- |
+| `--max-tx`              | uint | 블록당 최대 트랜잭션 수 (기본값 5000)       |
+| `--settlement-interval` | uint | 블록 단위 정산 간격 (기본값 50)             |
 
 ### anchor-state
 
@@ -409,7 +409,7 @@ qorechaind tx multilayer anchor-state <layer-id> <layer-height> <state-root-hex>
 qorechaind tx multilayer route-tx <tx_data_hex> [flags]
 ```
 
-| 플래그           | 타입   | 설명                                |
+| 플래그            | 타입   | 설명                                |
 | ---------------- | ------ | ----------------------------------- |
 | `--target-layer` | string | 특정 레이어로 강제 라우팅           |
 
@@ -443,12 +443,12 @@ Rollup Development Kit에 새 롤업을 등록합니다.
 qorechaind tx rdk create-rollup <rollup_id> [flags]
 ```
 
-| 플래그              | 타입   | 설명                                                 |
+| 플래그               | 타입   | 설명                                                  |
 | ------------------- | ------ | ---------------------------------------------------- |
 | `--settlement-type` | string | `optimistic`, `zk`, `pessimistic`, `sovereign`       |
 | `--profile`         | string | 프리셋: `defi`, `gaming`, `nft`, `enterprise`, `custom` |
-| `--stake`           | string | 운영자 스테이크 수량                                 |
-| `--da-enabled`      | bool   | 네이티브 데이터 가용성 활성화                        |
+| `--stake`           | string | 운영자 스테이크 수량                                  |
+| `--da-enabled`      | bool   | 네이티브 데이터 가용성 활성화                          |
 
 ### submit-batch
 
@@ -538,7 +538,7 @@ qorechaind tx babylon btc-restake <amount> [flags]
 qorechaind tx abstractaccount create [flags]
 ```
 
-| 플래그             | 타입   | 설명                                |
+| 플래그              | 타입   | 설명                                |
 | ------------------ | ------ | ----------------------------------- |
 | `--spending-rules` | string | 지출 규칙을 정의하는 JSON 파일      |
 
@@ -608,7 +608,7 @@ PRISM 에이전트의 보상 가중치 구성을 업데이트합니다.
 qorechaind tx rlconsensus update-reward-weights [flags]
 ```
 
-| 플래그                | 타입   | 설명                          |
+| 플래그                 | 타입   | 설명                          |
 | --------------------- | ------ | ----------------------------- |
 | `--throughput-weight` | string | 처리량 보상 가중치            |
 | `--latency-weight`    | string | 지연 시간 보상 가중치         |

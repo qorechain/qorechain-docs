@@ -7,24 +7,24 @@ sidebar_position: 2
 
 # EVM Geliştirme
 
-QoreChain, QoreChain EVM Engine üzerinde tamamen EVM uyumlu bir yürütme ortamı çalıştırır; bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtabilir ve onlarla etkileşime geçebilirsiniz. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546**) sunar.
+QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri **v3.1.85** zincir sürümünü çalıştırarak yayında olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler. **`qorechain-diana`** test ağı için EVM zincir kimliği **9800** kullanın.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı için EVM zincir kimliği **9800**'ü kullanın.
 :::
 
 ---
 
 ## JSON-RPC Uç Noktası
 
-| Özellik              | Değer                                      |
-| -------------------- | ------------------------------------------ |
-| Varsayılan URL       | `http://localhost:8545`                    |
-| WebSocket URL        | `ws://localhost:8546`                      |
+| Özellik               | Değer                                      |
+| ---------------------- | ------------------------------------------ |
+| Varsayılan URL          | `http://localhost:8545`                    |
+| WebSocket URL           | `ws://localhost:8546`                      |
 | Desteklenen ad alanları | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
-| Zincir Kimliği (ana ağ)   | `9801` (`qorechain-vladi`)                 |
-| Zincir Kimliği (test ağı)   | `9800` (`qorechain-diana`)                 |
-| Para birimi sembolü      | `QOR`                                      |
+| Zincir kimliği (ana ağ) | `9801` (`qorechain-vladi`)                 |
+| Zincir kimliği (test ağı) | `9800` (`qorechain-diana`)               |
+| Para birimi sembolü     | `QOR`                                      |
 
 `qor_` ad alanı, QoreChain'e özgü yöntemler sağlar. Aşağıdaki [Özel Ad Alanı](#custom-qor_-namespace) bölümüne bakın.
 
@@ -32,15 +32,15 @@ Aşağıdaki örnekler, 7 Haziran 2026'dan beri **v3.1.85** zincir sürümünü 
 
 ## Cüzdan Yapılandırması (MetaMask)
 
-QoreChain'i MetaMask'te özel bir ağ olarak ekleyin:
+QoreChain'i MetaMask'e özel bir ağ olarak ekleyin:
 
-| Alan               | Ana Ağ Değeri             | Test Ağı Değeri         |
-| ------------------ | ------------------------- | ----------------------- |
-| Ağ Adı       | QoreChain (qorechain-vladi) | QoreChain Diana       |
-| RPC URL            | `http://localhost:8545`   | `http://localhost:8545` |
-| Zincir Kimliği           | `9801`                    | `9800`                  |
-| Para Birimi Sembolü    | `QOR`                     | `QOR`                   |
-| Blok Gezgini URL | *(resmi ana ağ gezginini kullanın)* | *(yerel test ağı için boş bırakın)* |
+| Alan                | Ana Ağ Değeri              | Test Ağı Değeri         |
+| ------------------- | -------------------------- | ------------------------ |
+| Ağ Adı               | QoreChain (qorechain-vladi) | QoreChain Diana         |
+| RPC URL              | `http://localhost:8545`    | `http://localhost:8545` |
+| Zincir Kimliği       | `9801`                     | `9800`                   |
+| Para Birimi Sembolü  | `QOR`                      | `QOR`                    |
+| Blok Gezgini URL'si  | *(resmi ana ağ gezginini kullanın)* | *(yerel test ağı için boş bırakın)* |
 
 ---
 
@@ -129,34 +129,34 @@ await tx.wait();
 
 ---
 
-## Gaz Modeli
+## Gas Modeli
 
-QoreChain, EVM işlemleri için **EIP-1559 dinamik temel ücret** modeli kullanır:
+QoreChain, EVM işlemleri için **EIP-1559 dinamik taban ücreti** modelini kullanır:
 
-* Temel ücret, kullanıma göre blok başına ayarlanır
+* Taban ücret, kullanım oranına göre blok başına ayarlanır
 * Kullanıcılar `maxFeePerGas` ve `maxPriorityFeePerGas` değerlerini belirleyebilir
-* Öncelik ücretleri blok önericisine gider
+* Öncelik ücretleri blok önerene gider
 
 ### Birim Köprüsü
 
-Yerel QOR jetonu **6 ondalık basamağa** (`uqor`) sahipken, EVM **18 ondalık basamak** bekler. `x/precisebank` modülü sorunsuz dönüşümü yönetir:
+Yerel QOR token'ının **6 ondalık basamağı** vardır (`uqor`), EVM ise **18 ondalık basamak** bekler. `x/precisebank` modülü bu dönüşümü sorunsuz şekilde yönetir:
 
-| Bağlam      | Birim | Ondalık | Örnek                |
-| ------------ | ------------ | -------- | ---------------------- |
-| Yerel zincir | `uqor`       | 6        | `1000000 uqor = 1 QOR` |
-| EVM          | wei          | 18       | `1e18 wei = 1 QOR`     |
+| Bağlam        | Birim  | Ondalık | Örnek                   |
+| ------------- | ------ | ------- | ------------------------ |
+| Yerel zincir  | `uqor` | 6       | `1000000 uqor = 1 QOR`  |
+| EVM           | wei    | 18      | `1e18 wei = 1 QOR`      |
 
-Bu dönüşüm şeffaftır — bir bakiyeyi `eth_getBalance` aracılığıyla kontrol ettiğinizde, yanıt 18 ondalıklı wei cinsindendir. Aynı hesap yerel bank modülü aracılığıyla sorgulandığında, bakiye 6 ondalıklı `uqor` cinsinde görünür.
+Bu dönüşüm şeffaftır — `eth_getBalance` ile bir bakiyeyi kontrol ettiğinizde yanıt 18 ondalıklı wei cinsinden gelir. Aynı hesap yerel banka modülü üzerinden sorgulandığında bakiye 6 ondalıklı `uqor` cinsinden görünür.
 
 ---
 
-## ERC-20 Jeton Çiftleri
+## ERC-20 Token Çiftleri
 
-`x/erc20` modülü, yerel Cosmos SDK birimleri ile ERC-20 sözleşmeleri arasında **jeton çiftlerinin** otomatik kaydını sağlar:
+`x/erc20` modülü, yerel Cosmos SDK birimleri ile ERC-20 sözleşmeleri arasında **token çiftlerinin** otomatik olarak kaydedilmesini sağlar:
 
-* Yerel jetonlar, EVM sözleşmeleri içinde ERC-20 olarak kullanılabilir
-* EVM üzerinde dağıtılan ERC-20 jetonları yerel birimlere dönüştürülebilir
-* Dönüşüm çift yönlüdür ve protokol düzeyinde yönetilir
+* Yerel token'lar EVM sözleşmeleri içinde ERC-20 olarak kullanılabilir
+* EVM üzerinde dağıtılan ERC-20 token'ları yerel birimlere dönüştürülebilir
+* Dönüşüm çift yönlüdür ve protokol seviyesinde gerçekleştirilir
 
 ```bash
 # Register a new token pair (governance proposal)
@@ -173,28 +173,28 @@ qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from myk
 
 ## PQC ve EVM Uyumluluğu
 
-EVM işlemleri, mevcut Ethereum araçları, cüzdanları ve kütüphaneleriyle tam uyumluluk için **klasik ECDSA (secp256k1)** imzaları kullanır. Bu, MetaMask, Hardhat, Foundry, ethers.js ve tüm standart EVM araçlarının değişiklik yapılmadan çalışmasını sağlar.
+EVM işlemleri, mevcut Ethereum araçları, cüzdanları ve kütüphaneleriyle tam uyumluluk için **klasik ECDSA (secp256k1)** imzalarını kullanır. Bu, MetaMask, Hardhat, Foundry, ethers.js ve tüm standart EVM araçlarının değişiklik yapılmadan çalışmasını sağlar.
 
-EVM içinde kuantum sonrası güvenlik için:
+EVM içinde kuantum-sonrası güvenlik için:
 
-* Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulamak için **PQC Verify ön derleme contract'ını** (`0x0000...0A01`) kullanın. [EVM Ön Derlemeleri](/developer-guide/evm-precompiles) bölümüne bakın.
-* EVM'den CosmWasm veya SVM'ye gönderilen **VM'ler arası mesajlar**, Cosmos SDK işlem katmanında PQC ile imzalanabilir.
-* Hesaplar, hibrit güvenlik için isteğe bağlı olarak `x/pqc` aracılığıyla PQC açık anahtarları kaydedebilir.
+* Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulamak üzere **PQC Verify precompile'ını** (`0x0000...0A01`) kullanın. Bkz. [EVM Precompile'ları](/developer-guide/evm-precompiles).
+* EVM'den CosmWasm veya SVM'ye giden **VM'ler arası mesajlar**, Cosmos SDK işlem katmanında PQC ile imzalanabilir.
+* Hesaplar, hibrit güvenlik için isteğe bağlı olarak `x/pqc` üzerinden PQC genel anahtarları kaydedebilir.
 
 ---
 
 ## Özel `qor_` Ad Alanı {#custom-qor_-namespace}
 
-QoreChain, JSON-RPC'yi zincire özgü sorgular için bir `qor_` ad alanıyla genişletir:
+QoreChain, zincire özgü sorgular için JSON-RPC'yi bir `qor_` ad alanıyla genişletir:
 
-| Yöntem                      | Açıklama                                                       |
-| --------------------------- | ----------------------------------------------------------------- |
-| `qor_getPQCKeyStatus`       | Bir hesabın kayıtlı bir PQC açık anahtarı olup olmadığını kontrol eder               |
-| `qor_getAIStats`            | AI motoru istatistiklerini alır (anomali sayıları, risk dağılımı) |
-| `qor_getCrossVMMessage`     | VM'ler arası bir mesajın durumunu kimliğine göre sorgular                  |
-| `qor_getPoolClassification` | Doğrulayıcı havuz sınıflandırmasını alır (RPoS/DPoS/PoS)                 |
-| `qor_getReputationScore`    | Bir doğrulayıcının itibar puanını sorgular                   |
-| `qor_getAbstractAccount`    | Soyut hesap yapılandırmasını alır                   |
+| Yöntem                       | Açıklama                                                          |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `qor_getPQCKeyStatus`         | Bir hesabın kayıtlı bir PQC genel anahtarı olup olmadığını kontrol eder |
+| `qor_getAIStats`              | Yapay zeka motoru istatistiklerini alır (anomali sayıları, risk dağılımı) |
+| `qor_getCrossVMMessage`       | Bir VM'ler arası mesajın durumunu kimliğine göre sorgular          |
+| `qor_getPoolClassification`   | Doğrulayıcı havuzu sınıflandırmasını alır (RPoS/DPoS/PoS)          |
+| `qor_getReputationScore`      | Bir doğrulayıcının itibar puanını sorgular                          |
+| `qor_getAbstractAccount`      | Soyut hesap yapılandırmasını alır                                   |
 
 `curl` ile örnek:
 
@@ -213,6 +213,6 @@ curl -X POST http://localhost:8545 \
 
 ## Sonraki Adımlar
 
-* [EVM Ön Derlemeleri](/developer-guide/evm-precompiles) — Solidity'den PQC, AI ve VM'ler arası özelliklere erişin
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Solidity'den PQC, yapay zeka ve VM'ler arası özelliklere erişin
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — EVM'den CosmWasm ve SVM sözleşmelerini çağırın
-* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Oturum anahtarlı programlanabilir hesaplar
+* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Oturum anahtarlarıyla programlanabilir hesaplar

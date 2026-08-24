@@ -11,17 +11,19 @@ Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon p
 
 ## Installation
 
-Du kannst die Binärdatei aus dem Quellcode bauen oder sie mit Docker ausführen.
+Vorgefertigte Binärdateien sind der einfachste Weg — der Light-Node-Client läuft nativ auf **fünf Plattformen ohne native Abhängigkeiten**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64). Jede Binärdatei ist etwa 16 MB groß — herunterladen und ausführen, keine separaten Bibliotheken zu installieren.
+
+Du kannst die Binärdatei auch aus dem Quellcode bauen oder sie mit Docker ausführen.
 
 ### Aus dem Quellcode bauen
 
-Der Light Node benötigt **Go 1.26.1** und wird mit aktiviertem CGO gebaut, da die Post-Quantum-Kryptografie eine native Bibliothek (`libqorepqc`) verwendet.
+Der Light Node benötigt **Go 1.26.1**. Seine Post-Quantum-Kryptografie ist eine reine Go-Implementierung (kein CGO, keine native Bibliothek), sodass das Cross-Compiling für jede der fünf unterstützten Plattformen genauso funktioniert wie bei jeder anderen Go-Binärdatei:
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-sx ./cmd/lightnode-sx/
+go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Dies erzeugt `build/lightnode-sx`. Führe es direkt aus oder kopiere es in deinen `PATH`.
+Dies erzeugt `build/lightnode-sx`. Führe es direkt aus oder kopiere es in deinen `PATH`. Prüfe vor der Registrierung den Post-Quantum-Signatur-Stack mit [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker
 
@@ -31,7 +33,7 @@ Ein Docker-Setup wird bereitgestellt. Der SX-Dienst baut aus `Dockerfile.sx`:
 docker compose up lightnode-sx
 ```
 
-Der SX-Container speichert seine Daten in einem benannten Volume, das unter `/root/.qorechain-lightnode` eingehängt ist, und liest die Chain-RPC-Adresse aus der Umgebungsvariable `QORECHAIN_RPC_ADDR`.
+Der SX-Container speichert seine Daten dauerhaft in einem benannten Volume, das unter `/root/.qorechain-lightnode` eingehängt ist, und liest die Chain-RPC-Adresse aus der Umgebungsvariable `QORECHAIN_RPC_ADDR`.
 
 ## Konfiguration
 

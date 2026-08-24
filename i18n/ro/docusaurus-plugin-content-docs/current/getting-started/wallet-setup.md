@@ -95,6 +95,10 @@ Fondurile trimise către oricare dintre cele trei forme ajung în același sold.
 
 ## Portofele Solana (SVM)
 
+:::caution Trimiterea tranzacțiilor SVM este dezactivată momentan
+Calea de execuție SVM este **dezactivată în prezent la nivelul întregii rețele pentru trimiterea tranzacțiilor** — nu trimite tranzacții printr-un portofel compatibil cu Solana către QoreChain în acest moment. Citirea soldurilor/slot-urilor poate funcționa în continuare; vezi [SVM Development](/developer-guide/svm-development) pentru stadiul actual.
+:::
+
 Mediul de execuție SVM al QoreChain este compatibil cu instrumentele standard Solana, iar **soldul nativ QOR al contului este vizibil direct pe interfața SVM** (în lamports, 9 zecimale; 1 uqor = 1.000 lamports). Conectează orice portofel sau bibliotecă compatibilă cu Solana.
 
 ### Utilizarea @solana/web3.js

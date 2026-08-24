@@ -23,7 +23,7 @@ QoreChain utilizza un modello economico a **offerta fissa** incentrato sul token
 | **Prefisso Bech32**     | `qor` (account: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Le cifre in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla versione della chain **v3.1.85**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) condivide lo stesso modello economico.
+Le cifre riportate in questa pagina descrivono la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live dal 7 giugno 2026 sulla versione della chain **v3.1.92**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) condivide lo stesso modello economico.
 :::
 
 ---
@@ -102,7 +102,7 @@ Le quote sono imposte on-chain e devono sempre ammontare esattamente al 100%.
 | Parametro              | Predefinito                    | Descrizione                              |
 | ---------------------- | -------------------------- | ---------------------------------------- |
 | `gas_burn_rate`        | 0.30                       | Frazione delle gas fee bruciate (30%)        |
-| `contract_create_fee`  | 100.000.000 uqor (100 QOR) | Commissione di burn fissa per la creazione di contratto      |
+| `contract_create_fee`  | 100,000,000 uqor (100 QOR) | Commissione di burn fissa per la creazione di contratto      |
 | `ai_service_burn_rate` | 0.50                       | Frazione delle commissioni dei servizi IA bruciate (50%) |
 | `bridge_burn_rate`     | 1.00                       | Frazione delle commissioni del bridge bruciate (100%)    |
 | `failed_tx_burn_rate`  | 0.10                       | Frazione del gas delle TX fallite bruciato (10%)   |
@@ -146,9 +146,9 @@ Questo crea una dinamica a somma positiva per i detentori a lungo termine: ogni 
 | Parametro               | Predefinito                | Descrizione                               |
 | ----------------------- | ---------------------- | ----------------------------------------- |
 | `governance_multiplier` | 2.0                    | Moltiplicatore del potere di voto per i detentori di xQORE |
-| `min_lock_amount`       | 1.000.000 uqor (1 QOR) | QOR minimo richiesto per il blocco              |
+| `min_lock_amount`       | 1,000,000 uqor (1 QOR) | QOR minimo richiesto per il blocco              |
 | `penalty_burn_rate`     | 0.50                   | Frazione delle penali di uscita bruciate (50%)   |
-| `rebase_interval`       | 100 blocchi             | Blocchi tra gli eventi di rebase PvP          |
+| `rebase_interval`       | 100 blocks             | Blocchi tra gli eventi di rebase PvP          |
 | `enabled`               | true                   | Flag di attivazione del modulo                    |
 
 ---
@@ -169,7 +169,7 @@ Nonostante il nome del modulo, il modulo `x/inflation` **non** gonfia l'offerta 
 | Parametro      | Predefinito          | Descrizione                                                |
 | -------------- | ---------------- | ---------------------------------------------------------- |
 | `schedule`     | declining        | Budget di emissione indicizzato per periodo (vedi il programma delle ricompense di staking) |
-| `epoch_length` | 17.280 blocchi    | Blocchi per epoca di emissione                                  |
+| `epoch_length` | 17,280 blocks    | Blocchi per epoca di emissione                                  |
 | `enabled`      | true             | Flag di attivazione del modulo                            |
 
 ---

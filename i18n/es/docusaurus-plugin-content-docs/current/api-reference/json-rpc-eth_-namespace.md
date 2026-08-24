@@ -7,61 +7,61 @@ sidebar_position: 3
 
 # JSON-RPC — Espacio de nombres eth_
 
-QoreChain implementa una interfaz JSON-RPC totalmente compatible con la EVM, lo que permite que las herramientas estándar de Ethereum (MetaMask, Hardhat, Foundry, ethers.js, web3.js) interactúen con la cadena sin modificaciones.
+QoreChain implementa una interfaz JSON-RPC totalmente compatible con EVM, lo que permite que las herramientas estándar de Ethereum (MetaMask, Hardhat, Foundry, ethers.js, web3.js) interactúen con la cadena sin modificaciones.
 
 ## Conexión
 
 | Transporte | Dirección predeterminada |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
+| ---------- | ------------------------ |
+| HTTP       | `http://localhost:8545`  |
+| WebSocket  | `ws://localhost:8546`    |
 
 :::note
-La interfaz JSON-RPC de la EVM la sirve la red principal **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, activa en la versión de cadena **v3.1.85**) y la red de pruebas **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo; sustituye el endpoint de red principal o de pruebas de tu proveedor para el acceso remoto.
+La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`, en producción con la versión de cadena **v3.1.92**) y la testnet **`qorechain-diana`** (ID de cadena EVM **9800**, hex `0x2648`). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo; sustituye por el endpoint de mainnet o testnet de tu proveedor para el acceso remoto.
 :::
 
 ## Espacios de nombres compatibles
 
-| Espacio de nombres | Descripción                                                                                                    |
-| --------- | -------------------------------------------------------------------------------------------------------------- |
-| `eth_`    | Métodos principales de JSON-RPC de Ethereum                                                                    |
-| `web3_`   | Métodos de utilidad (versión del cliente, hashing)                                                             |
-| `net_`    | Métodos de estado de la red                                                                                    |
-| `txpool_` | Inspección del pool de transacciones                                                                           |
-| `qor_`    | Extensiones específicas de QoreChain (consulta [Espacio de nombres qor_](/api-reference/json-rpc-qor_-namespace)) |
+| Espacio de nombres | Descripción                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `eth_`               | Métodos JSON-RPC principales de Ethereum                                                                 |
+| `web3_`              | Métodos de utilidad (versión del cliente, hashing)                                                       |
+| `net_`               | Métodos de estado de la red                                                                              |
+| `txpool_`            | Inspección del pool de transacciones                                                                     |
+| `qor_`               | Extensiones específicas de QoreChain (consulta [Espacio de nombres qor_](/api-reference/json-rpc-qor_-namespace)) |
 
 ## Métodos eth_
 
-| Método                      | Parámetros                                       | Descripción                                          |
-| --------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
-| `eth_blockNumber`           | ninguno                                          | Devuelve el número del bloque más reciente            |
-| `eth_getBalance`            | `address`, `blockNumber`                         | Devuelve el saldo de una dirección en wei            |
-| `eth_getTransactionCount`   | `address`, `blockNumber`                         | Devuelve el nonce (recuento de transacciones) de una dirección |
-| `eth_sendRawTransaction`    | `signedTxData`                                   | Envía una transacción firmada para su difusión        |
-| `eth_call`                  | `callObject`, `blockNumber`                      | Ejecuta una llamada de solo lectura contra la EVM     |
-| `eth_estimateGas`           | `callObject`                                     | Estima el gas necesario para una transacción          |
-| `eth_getBlockByNumber`      | `blockNumber`, `fullTx` (bool)                   | Devuelve los datos de un bloque por número            |
-| `eth_getTransactionByHash`  | `txHash`                                         | Devuelve los datos de una transacción por hash        |
-| `eth_getTransactionReceipt` | `txHash`                                         | Devuelve el recibo de una transacción minada          |
-| `eth_getLogs`               | `filterObject`                                   | Devuelve los logs que coinciden con un filtro         |
-| `eth_chainId`               | ninguno                                          | Devuelve el chain ID (codificado en hex)              |
-| `eth_gasPrice`              | ninguno                                          | Devuelve el precio actual del gas en wei              |
-| `eth_feeHistory`            | `blockCount`, `newestBlock`, `rewardPercentiles` | Devuelve datos históricos de comisiones (EIP-1559)    |
+| Método                       | Parámetros                                        | Descripción                                                  |
+| ---------------------------- | -------------------------------------------------- | -------------------------------------------------------------- |
+| `eth_blockNumber`            | ninguno                                            | Devuelve el número del último bloque                          |
+| `eth_getBalance`             | `address`, `blockNumber`                           | Devuelve el saldo de una dirección en wei                     |
+| `eth_getTransactionCount`    | `address`, `blockNumber`                           | Devuelve el nonce (número de transacciones) de una dirección  |
+| `eth_sendRawTransaction`     | `signedTxData`                                     | Envía una transacción firmada para su difusión                |
+| `eth_call`                   | `callObject`, `blockNumber`                        | Ejecuta una llamada de solo lectura contra la EVM              |
+| `eth_estimateGas`            | `callObject`                                       | Estima el gas necesario para una transacción                  |
+| `eth_getBlockByNumber`       | `blockNumber`, `fullTx` (bool)                     | Devuelve los datos de un bloque por número                    |
+| `eth_getTransactionByHash`   | `txHash`                                           | Devuelve los datos de una transacción por hash                |
+| `eth_getTransactionReceipt`  | `txHash`                                           | Devuelve el recibo de una transacción minada                  |
+| `eth_getLogs`                | `filterObject`                                     | Devuelve los logs que coinciden con un filtro                 |
+| `eth_chainId`                | ninguno                                            | Devuelve el ID de cadena (codificado en hex)                   |
+| `eth_gasPrice`               | ninguno                                            | Devuelve el precio de gas actual en wei                       |
+| `eth_feeHistory`             | `blockCount`, `newestBlock`, `rewardPercentiles`   | Devuelve el historial de tarifas (EIP-1559)                    |
 
 ## Métodos web3_
 
-| Método               | Parámetros   | Descripción                              |
-| -------------------- | ------------ | ---------------------------------------- |
-| `web3_clientVersion` | ninguno      | Devuelve la cadena de versión del cliente |
-| `web3_sha3`          | `data` (hex) | Devuelve el hash Keccak-256 de la entrada |
+| Método                | Parámetros    | Descripción                                     |
+| ---------------------- | -------------- | ------------------------------------------------ |
+| `web3_clientVersion`   | ninguno        | Devuelve la cadena de versión del cliente        |
+| `web3_sha3`            | `data` (hex)   | Devuelve el hash Keccak-256 de la entrada        |
 
 ## Métodos net_
 
-| Método          | Parámetros | Descripción                                 |
-| --------------- | ---------- | ------------------------------------------- |
-| `net_version`   | ninguno    | Devuelve el ID de red                       |
-| `net_listening` | ninguno    | Devuelve `true` si el nodo está escuchando  |
-| `net_peerCount` | ninguno    | Devuelve el número de pares conectados (hex) |
+| Método            | Parámetros | Descripción                                        |
+| ------------------ | ----------- | ---------------------------------------------------- |
+| `net_version`       | ninguno     | Devuelve el ID de red                                |
+| `net_listening`     | ninguno     | Devuelve `true` si el nodo está escuchando           |
+| `net_peerCount`     | ninguno     | Devuelve el número de peers conectados (hex)         |
 
 ## Configuración
 
@@ -139,7 +139,7 @@ curl -X POST http://localhost:8545 \
   }'
 ```
 
-Respuesta (red principal `qorechain-vladi`, chain ID 9801):
+Respuesta (mainnet `qorechain-vladi`, ID de cadena 9801):
 
 ```json
 {
@@ -149,7 +149,7 @@ Respuesta (red principal `qorechain-vladi`, chain ID 9801):
 }
 ```
 
-En la red de pruebas `qorechain-diana` (chain ID 9800) este método devuelve `"0x2648"`.
+En la testnet `qorechain-diana` (ID de cadena 9800), este método devuelve `"0x2648"`.
 
 ### eth_getBalance
 
@@ -194,9 +194,9 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 
 :::info
 
-- El chain ID se devuelve como una cadena hex. Conviértelo a decimal para configurar la billetera — `0x2649` es **9801** (red principal), `0x2648` es **9800** (red de pruebas).
-- La fijación de precios del gas sigue el modelo EIP-1559. Usa `eth_feeHistory` para estimar la comisión base y la comisión de prioridad.
+- El ID de cadena se devuelve como una cadena hexadecimal. Conviértelo a decimal para la configuración de la wallet — `0x2649` es **9801** (mainnet), `0x2648` es **9800** (testnet).
+- La fijación del precio del gas sigue el modelo EIP-1559. Usa `eth_feeHistory` para estimar la tarifa base y la tarifa de prioridad.
 - Etiquetas de bloque aceptadas: `"latest"`, `"earliest"`, `"pending"`, o un número de bloque en hex.
-- Limitaciones de filtro: `eth_getLogs` está limitado a `filter-cap` resultados por consulta (predeterminado 10.000). Usa rangos de bloques más reducidos para conjuntos de datos grandes.
+- Limitaciones de filtro: `eth_getLogs` está limitado a `filter-cap` resultados por consulta (predeterminado 10,000). Usa rangos de bloques más estrechos para conjuntos de datos grandes.
 
 :::

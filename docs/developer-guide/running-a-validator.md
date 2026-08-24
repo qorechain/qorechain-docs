@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification system, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.85**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.92**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
 :::
 
 ---
@@ -143,14 +143,14 @@ penalty = base_rate * escalation^effective_count * severity
 
 ---
 
-## PQC Key Registration
+## PQC Key Registration {#pqc-key-registration}
 
-Validators can optionally register a **post-quantum cryptographic (PQC) public key** using the ML-DSA-87 algorithm. This provides quantum-resistant security for validator identity and can be used for hybrid signing.
+Register your **post-quantum cryptographic (PQC) public key** — ML-DSA-87 — **before** applying for a validator license or running `create-validator`. This is **not optional and not automatic**: the chain requires a hybrid PQC signature on every cosmos-path transaction, `MsgCreateValidator` is not one of the exempted message types, and — unlike a regular account, which registers its key automatically on its first transaction — a validator must run this command itself, on its own node, ahead of time.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
@@ -159,15 +159,15 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
 | `<pubkey-hex>` | 2592-byte ML-DSA-87 public key in hex encoding    |
 | `hybrid`       | Registration mode (hybrid = both classical + PQC) |
 
+:::caution Set `--gas` explicitly
+The ML-DSA-87 public key is 2,592 bytes, and writing it on-chain exceeds the default 200,000 gas limit. Without `--gas 600000` (or higher), the transaction fails with an opaque `out of gas in location: WritePerByte` error.
+:::
+
 Verify registration:
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**Recommendation:** PQC key registration is optional but strongly recommended for validators operating on the mainnet. It provides a forward-looking defense against quantum computing threats.
-:::
 
 ---
 

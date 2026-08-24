@@ -11,21 +11,24 @@ sidebar_position: 1
 
 QoreX are două componente care funcționează împreună:
 
-- **Extensia de browser** — portofelul pentru desktop, **disponibil public pe Chrome, Firefox și Safari (macOS)**. Este un portofel de sine stătător (creezi/imporți, păstrezi și trimiți QOR) și totodată conectorul care permite oricărui site să descopere QoreX și transformă fiecare cerere într-o aprobare explicită. Vezi [Extensia de browser](/qorex/browser-extension).
-- **Aplicația mobilă** (Android și iOS) — portofelul complet: creare/restaurare, trimitere și primire de QOR rezistent cuantic, rețele externe, staking, portofoliu, recuperare și un browser de dApp-uri integrat. **Pe Google Play** pentru Android; pe TestFlight pentru iOS (vezi disponibilitatea mai jos).
+- **Extensia de browser** — portofelul pentru desktop, **disponibilă public pe Chrome, Firefox și Safari (macOS)**. Este un portofel de sine stătător (creezi/imporți, păstrezi și trimiți QOR) și totodată conectorul care permite oricărui site să descopere QoreX și transformă fiecare cerere într-o aprobare explicită. Vezi [Extensia de browser](/qorex/browser-extension).
+- **Aplicația mobilă** (Android și iOS) — portofelul complet: creare/restaurare, trimitere și primire de QOR rezistent cuantic, rețele externe, staking, portofoliu, recuperare și un browser de dApp-uri integrat. **Pe Google Play** pentru Android, și **pe App Store** pentru iOS (vezi disponibilitatea mai jos).
 
-## Disponibilitate pe platforme
+## Disponibilitate pe platforme {#platform-availability}
 
 | Funcționalitate | Aplicația mobilă (Android și iOS) | Extensia de browser |
 |---|---|---|
-| Creare / import de portofel | ✅ | ✅ (de sine stătător) |
-| Trimitere și primire de QOR (post-cuantic) | ✅ | ✅ (din popup) |
-| Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
+| Creare / import de portofel | ✅ | ✅ (de sine stătător, un singur cont) |
+| Mai multe conturi dintr-o singură frază de recuperare | ✅ (până la 20) | — (un singur cont) |
+| Trimitere și primire de QOR (post-cuantic) | ✅ | ✅ (din popup, incl. Receive QR) |
+| Plată / revendicare @handle | ✅ | ✅ |
+| Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
+| Limba interfeței (10 limbi) | ✅ (urmează limba telefonului) | ✅ (urmează limba browserului) |
 | Staking, Portofoliu, Q-Day Scanner, Recuperare, Legacy | ✅ | — |
 | Conexiuni cu dApp-uri | ✅ (browser integrat) | ✅ (orice site) |
-| Cont (@handle, cereri de plată) | ✅ | — |
+| Autentificare în cont și cereri de plată | ✅ | — |
 | Asociere pe mai multe dispozitive | ✅ | — |
-| Împerechere cu Dashboard | ✅ | ✅ (conectare + transferuri propuse, v0.1.5) |
+| Împerechere cu Dashboard | ✅ | ✅ (conectare + transferuri propuse) |
 
 ## De ce este QoreX diferit
 
@@ -43,9 +46,23 @@ QoreX are două componente care funcționează împreună:
 - Pe desktop, instalează [Extensia de browser](/qorex/browser-extension).
 
 :::note Descărcare și disponibilitate
-- **Extensia de browser** — disponibilă public: instaleaz-o din [Chrome Web Store, Firefox Add-ons sau Mac App Store (Safari)](/qorex/browser-extension#install).
-- **Aplicația Android** — disponibilă pe Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **Aplicația iOS** — disponibilă pentru testare prin **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — lansarea în App Store este încă în curs de evaluare.
+- **Extensia de browser** — disponibilă public: instaleaz-o din [Chrome Web Store, Firefox Add-ons sau Mac App Store (Safari)](/qorex/browser-extension#install). Vezi [ce versiune este disponibilă unde](/qorex/browser-extension#versions) — funcționalitățile mai noi pot fi încă în curs de lansare pe unele browsere.
+- **Aplicația Android** — disponibilă în producție pe Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **Aplicația iOS** — disponibilă pe **App Store**: https://apps.apple.com/us/app/qorex-wallet/id6791256626.
 
-Instalează QoreX doar dintr-un magazin oficial.
+Revizuirea din magazine se desfășoară după propriul program, astfel încât cea mai nouă versiune ajunge uneori într-un magazin înaintea altuia — vezi [ce versiune este disponibilă unde](#platform-availability) mai jos pentru imaginea exactă, curentă. Instalează întotdeauna dintr-o listare oficială de magazin.
+:::
+
+:::note Ce versiune este disponibilă unde
+Aprobările din magazine ajung la momente diferite, astfel încât versiunea de mai jos poate diferi ușor de la o platformă la alta:
+
+| Platformă | Versiune activă |
+|---|---|
+| Android | 1.0.3 |
+| iOS | 1.0 (o actualizare este în evaluare) |
+| Firefox | 0.1.9 |
+| Chrome | 0.1.5 (0.1.9 este în evaluare) |
+| Safari (macOS) | 1.1, cu extensia 0.1.5 (o actualizare este în evaluare) |
+
+Această pagină descrie setul curent de funcționalități al QoreX — un magazin care încă servește o versiune mai veche se va actualiza automat, fără nicio acțiune din partea ta.
 :::

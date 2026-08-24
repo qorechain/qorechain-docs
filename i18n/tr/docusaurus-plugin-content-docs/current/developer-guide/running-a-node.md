@@ -17,6 +17,19 @@ Blok üretimi, staking, slashing ve havuz sınıflandırması için bunun yerine
 İkili dosyalar (binary), genesis ve anlık görüntüler (snapshot) SHA-256 sağlama toplamlarıyla birlikte [download.qore.host](https://download.qore.host) adresinde yayınlanır. **Kurmadan veya arşivi açmadan önce sağlama toplamlarını her zaman doğrulayın** ve yatırılan tutarları (deposit) yalnızca kendi senkronize düğümünüze karşı doğrulayın.
 :::
 
+:::note Tek doğru kaynak: canlı manifesto
+Güncel ikili dosya, genesis, eşler (peers), tohum düğümler (seeds) ve bir state-sync güven noktası, canlı olarak yenilenen bir JSON manifestosu olarak yayınlanır — kurulum betiklerinizde bir ikili dosya sürümünü, sağlama toplamını veya anlık görüntü dosya adını sabit kodlamayın, çünkü yeni bir sürüm çıkar çıkmaz bunlar güncelliğini yitirir:
+
+- Mainnet: `https://download.qore.host/mainnet/latest.json`
+- Testnet: `https://download.qore.host/testnet/latest.json`
+
+Manifestonun alanları şunları içerir: `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (saatlik yenilenen bir güven noktası) ve `minCompatible`. Aşağıdaki kurulum ve katılım adımları bu manifestoyu alır ve güncel değerlerini kullanır.
+:::
+
+:::caution Yeni katılan bir düğüm için v3.1.92 veya üzeri gerekir
+Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün **v3.1.92 veya üzeri** bir sürümde olması gerekir — daha eski sürümler (manifestonun `minCompatible` alanı henüz bunu yansıtacak şekilde güncellenmemiş olsa bile), artık düzeltilmiş bir gaz ölçümleme (gas-metering) hatası nedeniyle, yeniden oynatma sırasında işlem içeren ilk blokta duracaktır. Her zaman yukarıdaki manifestodan gelen güncel ikili dosyayı çalıştırın.
+:::
+
 ---
 
 ## Düğüm ve Doğrulayıcı Karşılaştırması
@@ -58,13 +71,13 @@ NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yo�
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. İmaj etiketini canlı zincir sürümüne sabitleyin (mainnet'te **v3.1.85**) ve zincir verisi için kalıcı bir volume bağlayın.
+Docker Compose ile yalnızca düğüm dağıtımı. İmaj etiketini canlı zincir sürümüne sabitleyin (mainnet'te **v3.1.92**) ve zincir verisi için kalıcı bir volume bağlayın.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -123,27 +136,48 @@ sudo journalctl -u qorechaind -f
 
 ## Ağa Katılma
 
-### 1. Başlatma (init)
+### 1. Başlatma
 
 ```bash
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Genesis'i indirin ve doğrulayın
+### 2. Manifestoyu alın
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+Aşağıdaki adımlarda ikili dosya, genesis ve eş değerleri için bu dosyayı kaynak olarak kullanın — `jq -r .minCompatible latest.json` çıktısını kontrol edin, ancak bu alan geride kalmış olsa bile yukarıdaki **v3.1.92 tabanının** geçerli olduğunu unutmayın.
+
+### 3. Genesis'i indirin ve doğrulayın
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. Eşleri (peer) ve ücret tabanını yapılandırın
+### 4. Eşleri ve ücret tabanını yapılandırın
 
-`~/.qorechaind/config/config.toml` dosyasını açın ve genele açık mainnet sentry eşlerini ayarlayın:
+Düğüm kimliklerini ve adresleri sabit kodlamak yerine güncel eşleri ve tohum düğümleri manifestodan okuyun — bunlar zaman içinde değişir:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml` dosyasını açın ve `persistent_peers` (ve `seeds`) değerlerini bu değerlere ayarlayın:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Ardından `~/.qorechaind/config/app.toml` dosyasında asgari gaz fiyatını ayarlayın (ağ ücret tabanı: **0.1uqor**):
@@ -152,7 +186,7 @@ Ardından `~/.qorechaind/config/app.toml` dosyasında asgari gaz fiyatını ayar
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. Senkronizasyonu başlatın
+### 5. Senkronizasyonu başlatın
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -160,9 +194,9 @@ qorechaind start --minimum-gas-prices=0.1uqor
 
 ---
 
-## Hızlı Başlatma (Fast Bootstrap)
+## Hızlı Başlatma
 
-Genesis'ten senkronize olmak uzun sürebilir. Entegrasyonlarda hızlı bir soğuk başlangıç için **state sync** veya **anlık görüntü (snapshot)** kullanın.
+Genesis'ten senkronize olmak uzun sürebilir. Entegrasyonlarda hızlı bir soğuk başlangıç için **state sync** veya bir **anlık görüntü (snapshot)** kullanın.
 
 ### State sync
 
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Güncel bir güvenilir yükseklik ve hash değerini genele açık RPC'den alın:
+`trust_height` / `trust_hash` değerlerini manifestonun `stateSync` alanından alın — bu alan saatlik olarak yenilenir, dolayısıyla tercih edilen kaynaktır:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Yedek/alternatif olarak, güvenilir bir yükseklik ve hash değerini genele açık RPC'den kendiniz türetebilirsiniz:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Anlık görüntüden geri yükleme
 
-Alternatif olarak, yayınlanan zincir verisi anlık görüntüsünü indirin, sağlama toplamını doğrulayın ve veri dizininizin üzerine açın:
+Alternatif olarak, yayınlanan zincir verisi anlık görüntüsünü indirin, sağlama toplamını doğrulayın ve veri dizininizin üzerine açın. Manifesto şu anda bir anlık görüntü işaretçisi taşımadığından, bir dosya adını sabit kodlamak yerine güncel dosya adı ve sağlama toplamı için [download.qore.host](https://download.qore.host) adresindeki canlı listeyi kontrol edin:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Anlık görüntüler **blok yüksekliği damgalı dosya adlarıyla** yayınlanır — en güncel anlık görüntü ve SHA-256 sağlama toplamı için [download.qore.host](https://download.qore.host) adresini kontrol edin ve arşivi açmadan önce her zaman doğrulayın.
+Anlık görüntüler düzenli olarak değişen **blok yüksekliği damgalı dosya adlarıyla** yayınlanır — en güncel anlık görüntü ve SHA-256 sağlama toplamı için [download.qore.host](https://download.qore.host) adresini kontrol edin ve arşivi açmadan önce her zaman doğrulayın. Yukarıdaki **v3.1.92 asgari** koşulunun bir anlık görüntüden yeniden oynatma için de geçerli olduğunu unutmayın.
 :::
 
 ---
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operasyonel En İyi Uygulamalar
 
-1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.85**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
+1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.92**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
 
 2. **Yedekli düğümler çalıştırın.** Tek bir yeniden başlatma veya yeniden senkronizasyonun entegrasyon trafiğini kesintiye uğratmaması için bir yük dengeleyicinin (load balancer) arkasında en az iki düğüm işletin.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **Senkronizasyonu sürekli izleyin.** Blok yüksekliği gecikmesi, sıfır eş ve `catching_up` durumunda takılı kalan düğüm için uyarı kurun.
 
 Tam bir düğüm çalıştırmadan ultra hafif okuma erişimi için **Light Node** dokümantasyonuna bakın.
+
+---
+
+## Sorun Giderme
+
+### Yükseltmeden önce duran bir düğüm, ikili dosya değişiminden sonra devam etmiyor
+
+Düğümünüz ikili dosyasını yükseltmeden **önce** zaten durmuş veya takılı kalmışsa, yeni ikili dosyayı yerleştirip yeniden başlatmak tek başına yeterli değildir — düğümde eski çalıştırmadan kalan bayat ABCI sonuçları önbelleğe alınmıştır ve durmaya neden olan bloğu yeniden yürütmez. Yeniden başlatmadan önce açıkça geri alın (rollback):
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+Komut `qorechaind rollback`'tir (üst düzey bir alt komut) — bir `comet rollback` alt komutu yoktur ve bunun için bir `--hard` bayrağı bulunmaz.
+
+### Eksik bir `priv_validator_state.json` nedeniyle anlık görüntü geri yükleme çökme döngüsüne giriyor
+
+Yayınlanan bir arşiv/anlık görüntü `data/priv_validator_state.json` dosyasını **içermez** ve düğüm bu dosya olmadan başlamayı reddeder. Bir anlık görüntü geri yüklemesinden sonra bu dosya eksikse, oluşturun — ancak **yalnızca zaten mevcut değilse**. Gerçek bir dosyanın üzerine asla yazmayın: bir doğrulayıcıda bu dosya çift imzalamaya (double-signing) karşı koruma sağlar ve üzerine yazmak çift imzalama riski taşır.
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

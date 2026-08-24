@@ -1,31 +1,31 @@
 ---
 slug: /getting-started/first-transaction
-title: 最初のトランザクション
-sidebar_label: 最初のトランザクション
+title: はじめてのトランザクション
+sidebar_label: はじめてのトランザクション
 sidebar_position: 5
 ---
 
-# 最初のトランザクション
+# はじめてのトランザクション
 
-このガイドでは、QOR トークンの送金、トランザクションの照会、そしてネイティブ、EVM、SVM の各インターフェースを通じた QoreChain との対話について説明します。
+このガイドでは、QOR トークンの送金、トランザクションの照会、そして QoreChain のネイティブ、EVM、SVM の各インターフェースを通じた操作について説明します。
 
 :::note
-以下のコマンドは **`qorechain-diana`** テストネット（EVM チェーン ID **9800**）を使用します。メインネット（**`qorechain-vladi`**、EVM チェーン ID **9801**）は 2026 年 6 月 7 日から稼働しています。メインネットでトランザクションを行う場合は、**メインネットへの接続** ページのメインネットチェーン ID とエンドポイントに置き換えてください。
+以下のコマンドは **`qorechain-diana`** テストネット(EVM チェーン ID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVM チェーン ID **9801**)は2026年6月7日から稼働しています — メインネットで取引する場合は、**Connecting to Mainnet** ページに記載のメインネットのチェーン ID とエンドポイントに置き換えてください。
 :::
 
-## 残高の確認
+## 残高を確認する
 
-トークンを送金する前に、アカウント残高を確認します。
+トークンを送信する前に、アカウントの残高を確認してください:
 
 ```bash
 qorechaind query bank balances qor1youraddress... --output json
 ```
 
-レスポンスには、アカウントが保有するすべてのトークン額面が含まれます。QOR 残高は `uqor`（マイクロ QOR）で表示され、**1 QOR = 1,000,000 uqor** です。
+レスポンスには、そのアカウントが保有するすべてのトークン単位(デノミネーション)が含まれます。QOR の残高は `uqor`(マイクロ QOR)単位で表示され、**1 QOR = 1,000,000 uqor** です。
 
-## QOR の送金
+## QOR を送信する
 
-自分のキーから別のアドレスにトークンを送金します。
+自分の鍵から別のアドレスへトークンを送金します:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
@@ -33,39 +33,39 @@ qorechaind tx bank send mykey qor1recipient... 1000000uqor \
   --fees 500uqor
 ```
 
-これにより、500 uqor の手数料を支払って、受取人アドレスに **1 QOR**（1,000,000 uqor）が送金されます。
+これは受信者アドレスへ **1 QOR**(1,000,000 uqor)を送金し、手数料として 500 uqor を支払います。
 
 :::caution Cosmos の送金にはハイブリッド PQC 署名が必要です
-cosmos パスでは、ネットワークのデフォルトは `hybrid_signature_mode = required` です（現在のチェーンバージョン **v3.1.85**）。プレーンな従来型の `tx bank send` は **拒否されます**。すべての cosmos パストランザクションは、secp256k1 署名とともに ML-DSA-87（Dilithium-5）署名を持つ必要があります。`qorechaind tx pqc gen-key` で Dilithium-5 キーを生成し、`qorechaind tx pqc cosign` でハイブリッド共署名を添付してください（または、QoreChain SDK の `buildHybridTx` でトランザクションをビルドし、`includePqcPublicKey` を使用して初回使用時にキーが自動登録されるようにします）。CLI 外でハイブリッド署名を生成するには、オープンソースの [**qorechain-pqc**](/developer-guide/post-quantum-signing) ライブラリ（`hybridSignBytes`）と QoreChain SDK がコード内で同等の処理を行います。完全なハイブリッドフローについては、[ウォレットのセットアップ](/getting-started/wallet-setup) を参照してください。
+cosmos パスでは、ネットワークのデフォルトは `hybrid_signature_mode = required` です(現在のチェーンバージョン **v3.1.92**)。通常の従来型 `tx bank send` は**拒否されます** — cosmos パスのすべてのトランザクションは、secp256k1 署名に加えて ML-DSA-87(Dilithium-5)署名を持たなければなりません。`qorechaind tx pqc gen-key` で Dilithium-5 鍵を生成し、`qorechaind tx pqc cosign` でハイブリッド共同署名を付加してください(あるいは QoreChain SDK の `buildHybridTx` を使い、`includePqcPublicKey` を指定してトランザクションを構築すれば、初回利用時に鍵が自動登録されます)。CLI を使わずにハイブリッド署名を生成するには、オープンソースの [**qorechain-pqc**](/developer-guide/post-quantum-signing) ライブラリ(`hybridSignBytes`)や QoreChain SDK がコード上で同等の処理を提供します。ハイブリッドフローの全体については [ウォレットのセットアップ](/getting-started/wallet-setup) を参照してください。
 :::
 
-ブロードキャストされる前にトランザクションの確認を求められます。確認されると、CLI はトランザクションハッシュを返します。
+トランザクションがブロードキャストされる前に、確認を求められます。確認すると、CLI はトランザクションハッシュを返します。
 
-## トランザクションの照会
+## トランザクションを照会する
 
-完了したトランザクションをそのハッシュで検索します。
+ハッシュを使って完了したトランザクションを検索します:
 
 ```bash
 qorechaind query tx <txhash>
 ```
 
-出力には、トランザクションのステータス、使用されたガス、ブロック高さ、および実行中に発行されたすべてのイベントが含まれます。
+出力には、トランザクションのステータス、使用ガス量、ブロック高、および実行中に発行されたすべてのイベントが含まれます。
 
-JSON 出力の場合は次のようにします。
+JSON 形式で出力する場合:
 
 ```bash
 qorechaind query tx <txhash> --output json
 ```
 
-## JSON-RPC（EVM）の使用
+## JSON-RPC を使用する(EVM)
 
 QoreChain の EVM 実行環境は、ポート `8545` で標準的な Ethereum JSON-RPC インターフェースを公開しています。
 
 :::note
-EVM トランザクションは cosmos パスのハイブリッド PQC 要件の **影響を受けません**。これらは別個の `eth_secp256k1` ante パスを使用するため、標準的な Ethereum 署名（MetaMask、ethers.js など）は PQC 拡張なしで動作します。
+EVM のトランザクションは、cosmos パスのハイブリッド PQC 要件の**影響を受けません**。EVM は独立した `eth_secp256k1` ante パスを使用するため、標準的な Ethereum の署名(MetaMask、ethers.js など)は PQC 拡張なしでそのまま機能します。
 :::
 
-### 最新のブロック番号の取得
+### 最新のブロック番号を取得する
 
 ```bash
 curl -s -X POST http://localhost:8545 \
@@ -78,7 +78,7 @@ curl -s -X POST http://localhost:8545 \
   }' | jq '.result'
 ```
 
-### アカウント残高の取得
+### アカウント残高を取得する
 
 ```bash
 curl -s -X POST http://localhost:8545 \
@@ -91,13 +91,13 @@ curl -s -X POST http://localhost:8545 \
   }' | jq '.result'
 ```
 
-残高は、最小額面の 16 進エンコード値として返されます。
+残高は、最小単位の 16 進数エンコード値として返されます。
 
-## SVM RPC の使用
+## SVM RPC を使用する
 
 QoreChain の SVM 実行環境は、ポート `8899` で Solana 互換の RPC インターフェースを公開しています。
 
-### 現在のスロットの取得
+### 現在のスロットを取得する
 
 ```bash
 curl -s -X POST http://localhost:8899 \
@@ -109,7 +109,7 @@ curl -s -X POST http://localhost:8899 \
   }' | jq '.result'
 ```
 
-### アカウント残高の取得
+### アカウント残高を取得する
 
 ```bash
 curl -s -X POST http://localhost:8899 \
@@ -122,22 +122,22 @@ curl -s -X POST http://localhost:8899 \
   }' | jq '.result'
 ```
 
-## 一般的な CLI パターン
+## よく使う CLI パターン
 
-`qorechaind` CLI を使用する際、これらのフラグが頻繁に使われます。
+`qorechaind` CLI を使用する際、以下のフラグがよく使われます:
 
-| フラグ               | 説明                          | 例                              |
-| ------------------ | ----------------------------- | ------------------------------ |
-| `--chain-id`       | 対象のチェーンを指定            | `--chain-id qorechain-diana`   |
-| `--fees`           | uqor 単位のトランザクション手数料 | `--fees 500uqor`               |
-| `--from`           | 署名キー名またはアドレス         | `--from mykey`                 |
-| `--output`         | レスポンス形式                  | `--output json`                |
-| `--node`           | 接続先の RPC エンドポイント       | `--node tcp://localhost:26657` |
-| `--gas`            | トランザクションのガス上限       | `--gas auto`                   |
-| `--gas-adjustment` | 推定ガスの乗数                  | `--gas-adjustment 1.3`         |
-| `-y`               | 確認プロンプトをスキップ         | `-y`                           |
+| Flag               | Description                    | Example                        |
+| ------------------ | ------------------------------ | ------------------------------ |
+| `--chain-id`       | 対象チェーンを指定します           | `--chain-id qorechain-diana`   |
+| `--fees`           | uqor 単位のトランザクション手数料   | `--fees 500uqor`               |
+| `--from`           | 署名に使う鍵の名前またはアドレス    | `--from mykey`                 |
+| `--output`         | レスポンスの形式                  | `--output json`                |
+| `--node`           | 接続する RPC エンドポイント        | `--node tcp://localhost:26657` |
+| `--gas`            | トランザクションのガス上限         | `--gas auto`                   |
+| `--gas-adjustment` | 推定ガス量の倍率                  | `--gas-adjustment 1.3`         |
+| `-y`               | 確認プロンプトをスキップします      | `-y`                           |
 
-### 例: 一般的なフラグをすべて使用した完全なコマンド
+### 例:よく使うフラグをすべて含むコマンド
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 500000uqor \
@@ -150,8 +150,8 @@ qorechaind tx bank send mykey qor1recipient... 500000uqor \
 
 ## 次のステップ
 
-最初のトランザクションを送信したので、QoreChain が提供する他の機能を探ってみましょう。
+はじめてのトランザクションを送信できたので、QoreChain が提供するその他の機能も見てみましょう:
 
-* **ステーキングと委任** — QOR をステーキングして報酬を獲得する
-* **アセットのブリッジング** — チェーン間でアセットを移動する
+* **ステーキングとデリゲーション** — QOR をステークして報酬を獲得する
+* **アセットのブリッジ** — チェーン間でアセットを移動する
 * **EVM 開発** — QoreChain 上に Solidity スマートコントラクトをデプロイする

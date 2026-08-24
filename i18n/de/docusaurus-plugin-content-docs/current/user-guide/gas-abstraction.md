@@ -10,7 +10,7 @@ sidebar_position: 7
 Dieser Leitfaden beschreibt die Gas-Abstraktionsfunktion von QoreChain, die es Nutzern ermöglicht, Transaktionsgebühren in nicht-nativen Token statt in QOR zu bezahlen.
 
 :::note
-Die nachfolgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit der Chain-Version **v3.1.85** — ersetzen Sie die Mainnet-Chain-ID und die Endpunkte aus der Seite **Mit dem Mainnet verbinden**, wenn Sie auf dem Mainnet transagieren.
+Die nachfolgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit der Chain-Version **v3.1.92** — ersetzen Sie die Mainnet-Chain-ID und die Endpunkte aus der Seite **Mit dem Mainnet verbinden**, wenn Sie auf dem Mainnet transagieren.
 :::
 
 ---
@@ -25,11 +25,11 @@ Die Gas-Abstraktion beseitigt die Anforderung, QOR-Token zur Bezahlung von Trans
 
 Die folgenden Token werden zur Gebührenzahlung akzeptiert:
 
-| Token              | Denomination | Umrechnungskurs | Beispielgebühr       |
-| ------------------ | ------------ | --------------- | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (nativ)     | `--fees 500uqor`     |
-| **USDC** (via IBC) | `ibc/USDC`   | 1.0             | `--fees 500ibc/USDC` |
-| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0            | `--fees 50ibc/ATOM`  |
+| Token              | Denomination | Umrechnungskurs | Beispielgebühr        |
+| ------------------ | ------------ | ---------------- | --------------------- |
+| **QOR**            | `uqor`       | 1.0 (nativ)       | `--fees 500uqor`      |
+| **USDC** (via IBC) | `ibc/USDC`   | 1.0               | `--fees 500ibc/USDC`  |
+| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0              | `--fees 50ibc/ATOM`   |
 
 :::note
 Umrechnungskurse spiegeln das protokolldefinierte Tauschverhältnis wider, nicht die Marktpreise. Ein Kurs von 10.0 für ATOM bedeutet, dass 1 Einheit ibc/ATOM zu Gebührenzwecken 10 Einheiten uqor entspricht.

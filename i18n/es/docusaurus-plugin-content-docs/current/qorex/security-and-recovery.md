@@ -9,6 +9,21 @@ sidebar_position: 5
 
 Todo lo relacionado con proteger y recuperar tu monedero se encuentra en **Ajustes → Panel de seguridad**. La pestaña Inicio también muestra una tarjeta de **Estado de la copia de seguridad** que sigue avisando hasta que se configura la recuperación social.
 
+## Haz una copia de seguridad ahora — nadie puede recuperar un monedero perdido por ti {#back-up-now}
+
+:::danger Lee esto antes de financiar tu monedero
+QoreX es **sin custodia**: tus claves existen únicamente en tu propio dispositivo, y QoreChain Association no tiene ninguna copia de ellas, ninguna clave maestra ni ninguna forma de restablecer o restaurar tu monedero. **No existe un flujo de "olvidé mi contraseña", ni un ticket de soporte, ni una anulación por parte de atención al cliente**: si pierdes el acceso a tus claves sin tener una copia de seguridad, los fondos se pierden, de forma permanente e irreversible. Esto es así en todo monedero sin custodia, no es una limitación de QoreX, pero merece la pena decirlo con claridad.
+
+**Haz al menos una de estas dos cosas — justo después de crear tu monedero, no más tarde:**
+
+1. **Anota tu frase de recuperación de 24 palabras** y guárdala en algún lugar sin conexión y duradero (no una captura de pantalla, no una nota sincronizada con la nube, no un mensaje a ti mismo). Es lo único que puede restaurar tu monedero en cualquier dispositivo, en cualquier momento.
+2. **Configura la [recuperación social](#social-recovery)** con guardianes de tu confianza. Esto te permite recuperar tu monedero incluso si pierdes la frase, sin que ningún guardián por sí solo pueda acceder jamás a tus fondos.
+
+Hacer ambas cosas es la opción más segura: la frase te protege si cambias de dispositivo o la aplicación no está disponible; los guardianes te protegen si pierdes la propia frase.
+
+**Desinstalar la aplicación elimina tus claves de ese dispositivo.** La bóveda de la aplicación móvil y la bóveda de la extensión del navegador residen únicamente en el dispositivo que las creó. Desinstalar la aplicación, restablecer el teléfono o eliminar/borrar la extensión elimina esa copia: sin una copia de seguridad y sin un dispositivo vinculado, nadie puede recuperar tu monedero, ni siquiera QoreChain.
+:::
+
 ## Clave post-cuántica {#pqc-key}
 
 El Panel de seguridad muestra el estado en cadena en vivo de tu clave post-cuántica: **"Se registra con tu primera transferencia"** → **"Registrada en cadena ✓"**. El algoritmo es **ML-DSA-87** (determinista, híbrido con secp256k1).

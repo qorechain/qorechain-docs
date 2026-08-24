@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Visión general de la arquitectura
 
-QoreChain es un nodo de blockchain modular compuesto por tres procesos principales —el nodo de cadena, el sidecar de IA y el indexador de bloques— respaldados por una base de datos Postgres y monitorizados mediante Prometheus y Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 con la versión de cadena **v3.1.85**, junto con una testnet en paralelo (`qorechain-diana`, EVM chain ID **9800**). La cadena está construida sobre Cosmos SDK v0.53. El siguiente diagrama muestra la disposición de los componentes a alto nivel.
+QoreChain es un nodo de blockchain modular compuesto por tres procesos principales —el nodo de cadena, el sidecar de IA y el indexador de bloques— respaldados por una base de datos Postgres y monitorizados mediante Prometheus y Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 con la versión de cadena **v3.1.92**, junto con una testnet en paralelo (`qorechain-diana`, EVM chain ID **9800**). La cadena está construida sobre Cosmos SDK v0.53. El siguiente diagrama muestra la disposición de los componentes a alto nivel.
 
 El ciclo de vida de las transacciones que se muestra a continuación resume cómo fluye una transacción enviada a través del nodo: desde la cadena de decoradores del AnteHandler (comprobaciones de seguridad y comisiones) hasta la ejecución en la VM y la liquidación on-chain:
 
@@ -116,11 +116,11 @@ flowchart LR
 
 QoreChain se ejecuta como tres procesos cooperantes, cada uno con su propio módulo Go y binario:
 
-| Componente         | Descripción                                                                                                                                                                                                                                                                                          | Ubicación                  |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| **qorechain-node** | El nodo principal de la blockchain. Ejecuta el QoreChain Consensus Engine, ejecuta todos los módulos personalizados, gestiona los tres entornos de ejecución de VM y expone endpoints RPC, REST, gRPC y JSON-RPC.                                                                                      | `qorechain-core/`         |
+| Componente          | Descripción                                                                                                                                                                                                                                                                                          | Ubicación                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **qorechain-node** | El nodo principal de la blockchain. Ejecuta el QoreChain Consensus Engine, ejecuta todos los módulos personalizados, gestiona los tres entornos de ejecución de VM y expone endpoints RPC, REST, gRPC y JSON-RPC.                                                                                   | `qorechain-core/`         |
 | **ai-sidecar**     | Un servicio gRPC que proporciona capacidades avanzadas de inferencia de IA respaldadas por el QCAI Backend. El sidecar gestiona las solicitudes de inferencia que superan el alcance del agente RL on-chain, como el análisis de lenguaje natural y el reconocimiento de patrones complejos. Se comunica con el nodo a través de gRPC en el puerto 50051. | `qorechain-core/sidecar/` |
-| **block-indexer**  | Un listener de WebSocket que se suscribe a nuevos bloques y transacciones desde el endpoint RPC del nodo, analiza eventos y escribe datos estructurados en una base de datos Postgres para consultas rápidas por parte de exploradores y APIs.                                                          | `qorechain-core/indexer/` |
+| **block-indexer**  | Un listener de WebSocket que se suscribe a nuevos bloques y transacciones desde el endpoint RPC del nodo, analiza eventos y escribe datos estructurados en una base de datos Postgres para consultas rápidas por parte de exploradores y APIs.                                                     | `qorechain-core/indexer/` |
 
 ## Puertos
 
@@ -227,14 +227,14 @@ Los decoradores clave se ejecutan en la siguiente secuencia (cada decorador se e
 
 El stack de desarrollo completo se ejecuta como un despliegue de Docker Compose de seis servicios sobre una red bridge compartida (`qorechain-net`):
 
-| Servicio         | Imagen                      | Propósito                                            |
+| Servicio          | Imagen                      | Propósito                                             |
 | ---------------- | -------------------------- | --------------------------------------------------- |
 | `qorechain-node` | `qorechain-core:latest`    | Nodo de cadena con todos los módulos, VMs y endpoints RPC |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | Servicio de inferencia de IA (gRPC + QCAI Backend)  |
+| `ai-sidecar`     | `qorechain-sidecar:latest` | Servicio de inferencia de IA (gRPC + QCAI Backend)   |
 | `block-indexer`  | `qorechain-indexer:latest` | Indexador de bloques/transacciones (WebSocket + Postgres) |
-| `postgres`       | `postgres:16-alpine`       | Base de datos para el indexador de bloques          |
-| `prometheus`     | `prom/prometheus:latest`   | Recopilación y almacenamiento de métricas           |
-| `grafana`        | `grafana/grafana:latest`   | Paneles de monitorización y alertas                 |
+| `postgres`       | `postgres:16-alpine`       | Base de datos para el indexador de bloques           |
+| `prometheus`     | `prom/prometheus:latest`   | Recopilación y almacenamiento de métricas            |
+| `grafana`        | `grafana/grafana:latest`   | Paneles de monitorización y alertas                  |
 
 Inicia el stack completo:
 

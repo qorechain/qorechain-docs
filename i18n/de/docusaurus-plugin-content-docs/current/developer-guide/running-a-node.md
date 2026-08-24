@@ -17,26 +17,39 @@ Für Blockproduktion, Staking, Slashing und Pool-Klassifizierung siehe stattdess
 Binaries, Genesis und Snapshots werden unter [download.qore.host](https://download.qore.host) mit SHA-256-Prüfsummen veröffentlicht. **Verifizieren Sie Prüfsummen immer vor dem Installieren oder Entpacken**, und verifizieren Sie Einzahlungen ausschließlich gegen Ihren eigenen, synchronisierten Node.
 :::
 
+:::note Source of truth: das Live-Manifest
+Das aktuelle Binary, Genesis, Peers, Seeds und ein State-Sync-Trust-Point werden als JSON-Manifest veröffentlicht, das live aktualisiert wird — hinterlegen Sie in Ihren Installationsskripten keine fest codierte Binary-Version, Prüfsumme oder Snapshot-Dateinamen, da diese veralten, sobald ein neues Release erscheint:
+
+- Mainnet: `https://download.qore.host/mainnet/latest.json`
+- Testnet: `https://download.qore.host/testnet/latest.json`
+
+Die Felder des Manifests umfassen `binary` (URL + sha256), `genesis` (URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (ein stündlich aktualisierter Trust-Point) und `minCompatible`. Die Installations- und Beitrittsschritte unten rufen dieses Manifest ab und verwenden dessen aktuelle Werte.
+:::
+
+:::caution v3.1.92 oder höher für einen frisch beitretenden Node erforderlich
+Ein Node, der ab Genesis synchronisiert oder aus einem Archiv/Snapshot repliziert, muss auf **v3.1.92 oder höher** sein — ältere Versionen (selbst wenn das Feld `minCompatible` des Manifests noch nicht entsprechend aktualisiert wurde) halten beim Replay am ersten Block mit einer Transaktion an, aufgrund eines mittlerweile behobenen Gas-Metering-Bugs. Betreiben Sie immer das aktuelle Binary aus dem obigen Manifest.
+:::
+
 ---
 
 ## Node vs. Validator
 
-| Aspekt                | Reiner Node (dieser Leitfaden)                        | Validator                                        |
-| --------------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| Konsensschlüssel      | Keiner                                                 | ed25519-Konsensschlüssel (muss gesichert werden)  |
-| Blockproduktion       | Nein                                                   | Ja — schlägt Blöcke vor und signiert sie          |
-| Staking / Slashing    | Nicht anwendbar                                        | Selbstdelegation, Slashing-Risiko                 |
-| Hauptzweck            | RPC/REST/gRPC/EVM/SVM für Integrationen bereitstellen  | Netzwerk sichern, Rewards verdienen               |
-| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert        | Validator hinter Sentry-Nodes verborgen           |
+| Aspekt              | Reiner Node (dieser Leitfaden)                          | Validator                                        |
+| -------------------- | ----------------------------------------------------- | ------------------------------------------------ |
+| Konsensschlüssel     | Keiner                                                 | ed25519-Konsensschlüssel (muss gesichert werden)  |
+| Blockproduktion      | Nein                                                   | Ja — schlägt Blöcke vor und signiert sie          |
+| Staking / Slashing   | Nicht anwendbar                                        | Selbstdelegation, Slashing-Risiko                 |
+| Hauptzweck           | RPC/REST/gRPC/EVM/SVM für Integrationen bereitstellen  | Netzwerk sichern, Rewards verdienen               |
+| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert       | Validator hinter Sentry-Nodes verborgen           |
 
 ---
 
 ## Zielnetzwerke
 
 | Netzwerk | Chain-ID            | EVM-Chain-ID          | Hinweise                           |
-| -------- | ------------------- | --------------------- | ---------------------------------- |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026    |
-| Testnet  | `qorechain-diana`   | `9800`                | Integrationen zuerst hier erproben |
+| -------- | ------------------- | --------------------- | ----------------------------------- |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026     |
+| Testnet  | `qorechain-diana`   | `9800`                | Integrationen zuerst hier erproben  |
 
 Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Beispiele verwenden standardmäßig das Mainnet.
 
@@ -45,10 +58,10 @@ Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zi
 ## Empfohlene Hardware
 
 | Profil                    | CPU      | RAM   | Festplatte (NVMe-SSD)        | Netzwerk  |
-| ------------------------- | -------- | ----- | ---------------------------- | --------- |
-| Geprunter RPC-Node        | 4 Kerne  | 16 GB | 500 GB+                      | 100 Mbps+ |
-| Full-/Archive-Node        | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit)  | 1 Gbps    |
-| Börsen-Integration        | 8 Kerne  | 32 GB | 2 TB+ mit Reserve            | 1 Gbps    |
+| ------------------------- | -------- | ----- | ----------------------------- | --------- |
+| Geprunter RPC-Node        | 4 Kerne  | 16 GB | 500 GB+                       | 100 Mbps+ |
+| Full-/Archive-Node        | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit)   | 1 Gbps    |
+| Börsen-Integration        | 8 Kerne  | 32 GB | 2 TB+ mit Reserve             | 1 Gbps    |
 
 Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Archive-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; stellen Sie Speicherplatz mit Reserve und Monitoring bereit.
 
@@ -58,13 +71,13 @@ Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Store
 
 ### Docker Compose
 
-Ein reines Node-Deployment mit Docker Compose. Pinnen Sie das Image-Tag auf die live laufende Chain-Version (**v3.1.85** im Mainnet) und mounten Sie ein persistentes Volume für die Chain-Daten.
+Ein reines Node-Deployment mit Docker Compose. Pinnen Sie das Image-Tag auf die live laufende Chain-Version (**v3.1.92** im Mainnet) und mounten Sie ein persistentes Volume für die Chain-Daten.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.85
+    image: qorechain/qorechaind:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -129,21 +142,42 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Genesis herunterladen und verifizieren
+### 2. Manifest abrufen
 
 ```bash
-curl -fsSL https://download.qore.host/genesis.json -o ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+# testnet: https://download.qore.host/testnet/latest.json
+```
+
+Verwenden Sie diese Datei als Quelle für die Binary-, Genesis- und Peer-Werte in den folgenden Schritten — prüfen Sie `jq -r .minCompatible latest.json`, denken Sie aber daran, dass die **v3.1.92-Untergrenze** oben auch dann gilt, wenn dieses Feld hinterherhinkt.
+
+### 3. Genesis herunterladen und verifizieren
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
 # Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
-### 3. Peers und die Gebührenuntergrenze konfigurieren
+### 4. Peers und die Gebührenuntergrenze konfigurieren
 
-Öffnen Sie `~/.qorechaind/config/config.toml` und setzen Sie die öffentlichen Mainnet-Sentry-Peers:
+Lesen Sie die aktuellen Peers und Seeds aus dem Manifest, statt Node-IDs und Hosts fest zu codieren — diese rotieren:
+
+```bash
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Öffnen Sie `~/.qorechaind/config/config.toml` und setzen Sie `persistent_peers` (und `seeds`) auf diese Werte:
 
 ```toml
-persistent_peers = "0c9b83801ad519671daf19387b6635f72cb9ddd3@44.200.237.4:26656,83cab9ae05d17073c4e45c25d2422b25fff71fe7@35.174.136.254:26656"
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Setzen Sie anschließend den minimalen Gaspreis in `~/.qorechaind/config/app.toml` (Netzwerk-Gebührenuntergrenze: **0.1uqor**):
@@ -152,7 +186,7 @@ Setzen Sie anschließend den minimalen Gaspreis in `~/.qorechaind/config/app.tom
 minimum-gas-prices = "0.1uqor"
 ```
 
-### 4. Synchronisierung starten
+### 5. Synchronisierung starten
 
 ```bash
 qorechaind start --minimum-gas-prices=0.1uqor
@@ -177,7 +211,14 @@ trust_hash = "<TRUSTED_BLOCK_HASH>"
 trust_period = "168h0m0s"
 ```
 
-Ermitteln Sie eine aktuelle vertrauenswürdige Höhe und deren Hash über den öffentlichen RPC:
+Entnehmen Sie `trust_height` / `trust_hash` dem Feld `stateSync` des Manifests — es wird stündlich aktualisiert und ist damit die bevorzugte Quelle:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Als Fallback/Alternative können Sie eine vertrauenswürdige Höhe und deren Hash selbst über den öffentlichen RPC ableiten:
 
 ```bash
 curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .result.block_id.hash'
@@ -185,19 +226,19 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot-Wiederherstellung
 
-Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis:
+Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis. Das Manifest führt derzeit keinen Snapshot-Verweis, prüfen Sie daher die Live-Auflistung unter [download.qore.host](https://download.qore.host) auf den aktuellen Dateinamen und die aktuelle Prüfsumme, statt sie fest zu codieren:
 
 ```bash
-curl -fsSL https://download.qore.host/qore-vladi-snapshot-90833.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz
-# ebe469796ad96e692877846c7bfd8513d773321c77e415b1358790b7c4e53396
+# Substitute the current filename and checksum from the download.qore.host listing
+curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
+sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots werden unter **höhengestempelten Dateinamen** veröffentlicht — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten Snapshot und dessen SHA-256-Prüfsumme, und verifizieren Sie immer vor dem Entpacken.
+Snapshots werden unter **höhengestempelten Dateinamen** veröffentlicht, die regelmäßig wechseln — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten Snapshot und dessen SHA-256-Prüfsumme, und verifizieren Sie immer vor dem Entpacken. Denken Sie daran, dass das **v3.1.92-Minimum** oben auch für den Replay aus einem Snapshot gilt.
 :::
 
 ---
@@ -217,10 +258,10 @@ pruning = "default"
 ```
 
 | `pruning`   | Verhalten                                        | Anwendungsfall                        |
-| ----------- | ------------------------------------------------ | ------------------------------------- |
-| `default`   | Behält aktuellen State, prunt den Rest           | RPC-Node, Kontostands-/State-Abfragen |
-| `nothing`   | Behält den gesamten historischen State           | Archive-Node, vollständige Historie   |
-| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte   | Feinabgestimmte Aufbewahrung          |
+| ----------- | ------------------------------------------------ | -------------------------------------- |
+| `default`   | Behält aktuellen State, prunt den Rest           | RPC-Node, Kontostands-/State-Abfragen  |
+| `nothing`   | Behält den gesamten historischen State           | Archive-Node, vollständige Historie    |
+| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte   | Feinabgestimmte Aufbewahrung           |
 
 ### Transaktionsindexierung (`config.toml`)
 
@@ -260,14 +301,14 @@ Und den RPC-Listener in `config.toml`:
 laddr = "tcp://0.0.0.0:26657"
 ```
 
-| Endpunkt     | Port    | Verwendung für                                              |
-| ------------ | ------- | ----------------------------------------------------------- |
-| RPC          | `26657` | Broadcasting von Transaktionen, Abfragen von Blöcken/Status  |
-| REST         | `1317`  | HTTP-Abfragen des Chain-States                               |
-| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz                 |
-| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)          |
-| EVM WS       | `8546`  | EVM-Event-Subscriptions                                      |
-| SVM RPC      | `8899`  | Solana-kompatible Integrationen                              |
+| Endpunkt     | Port    | Verwendung für                                               |
+| ------------ | ------- | -------------------------------------------------------------- |
+| RPC          | `26657` | Broadcasting von Transaktionen, Abfragen von Blöcken/Status    |
+| REST         | `1317`  | HTTP-Abfragen des Chain-States                                 |
+| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz                   |
+| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)             |
+| EVM WS       | `8546`  | EVM-Event-Subscriptions                                        |
+| SVM RPC      | `8899`  | Solana-kompatible Integrationen                                 |
 
 :::warning
 Exponieren Sie RPC, EVM JSON-RPC oder gRPC niemals direkt ins öffentliche Internet ohne Reverse Proxy, Rate Limiting, Authentifizierung und Firewall. Binden Sie an `0.0.0.0` nur hinter einer kontrollierten Ingress-Schicht.
@@ -316,7 +357,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.85** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.92** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 
@@ -329,6 +370,29 @@ curl -s -X POST http://localhost:8545 \
 6. **Überwachen Sie die Synchronisierung kontinuierlich.** Alarmieren Sie bei Blockhöhen-Rückstand, null Peers und einem Node, der in `catching_up` feststeckt.
 
 Für ultraleichten Lesezugriff ohne den Betrieb eines Full Nodes siehe die **Light Node**-Dokumentation.
+
+---
+
+## Fehlerbehebung
+
+### Ein bereits vor dem Upgrade angehaltener Node läuft nach einem Binary-Wechsel nicht weiter
+
+Wenn Ihr Node **bereits vor** dem Upgrade seines Binaries angehalten hatte oder feststeckte, reicht es nicht aus, einfach das neue Binary einzusetzen und neu zu starten — der Node hat veraltete ABCI-Ergebnisse aus dem alten Lauf im Cache und führt den Block, der das Anhalten verursacht hat, nicht erneut aus. Setzen Sie explizit zurück, bevor Sie neu starten:
+
+```bash
+qorechaind rollback --home <HOME>
+systemctl restart <unit>
+```
+
+Der Befehl lautet `qorechaind rollback` (ein Top-Level-Subcommand) — es gibt kein Subcommand `comet rollback` und keine `--hard`-Flag dafür.
+
+### Snapshot-Wiederherstellung landet in einer Crash-Loop wegen einer fehlenden `priv_validator_state.json`
+
+Ein veröffentlichtes Archiv/Snapshot enthält **nicht** `data/priv_validator_state.json`, und der Node verweigert ohne diese Datei den Start. Falls sie nach einer Snapshot-Wiederherstellung fehlt, erstellen Sie sie — aber **nur, wenn noch keine existiert**. Überschreiben Sie niemals eine echte: Auf einem Validator ist diese Datei die Anti-Double-Signing-Sicherung, und ein Überschreiben riskiert ein Double-Sign.
+
+```bash
+echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
+```
 
 ---
 

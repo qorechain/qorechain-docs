@@ -11,17 +11,19 @@ sidebar_position: 2
 
 ## Kurulum
 
-İkili dosyayı kaynaktan derleyebilir veya Docker ile çalıştırabilirsiniz.
+Önceden derlenmiş ikili dosyalar en kolay yoldur — hafif düğüm istemcisi **beş platformda, hiçbir yerel bağımlılık olmadan** doğal olarak çalışır: Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64). Her ikili dosya yaklaşık 16 MB'tır — indirin ve çalıştırın, kurulacak ayrı bir kitaplık yoktur.
+
+İkili dosyayı kaynaktan da derleyebilir veya Docker ile çalıştırabilirsiniz.
 
 ### Kaynaktan derleme
 
-Hafif düğüm **Go 1.26.1** gerektirir ve CGO etkin olarak derlenir; çünkü kuantum sonrası kriptografi yerel bir kitaplık (`libqorepqc`) kullanır.
+Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile uygulanmıştır (CGO yok, yerel kitaplık yok), bu nedenle desteklenen beş platformdan herhangi biri için çapraz derleme, herhangi bir Go ikili dosyasıyla aynı şekilde çalışır:
 
 ```bash
-CGO_ENABLED=1 go build -o build/lightnode-sx ./cmd/lightnode-sx/
+go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın.
+Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
 
 ### Docker
 

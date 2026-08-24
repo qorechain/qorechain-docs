@@ -1,90 +1,90 @@
 ---
 slug: /developer-guide/exchange-integration
-title: Ghid pentru burse și integratori
-sidebar_label: Integrare pentru burse
+title: Ghid pentru Exchange-uri și Integratori
+sidebar_label: Integrare Exchange
 sidebar_position: 11
 ---
 
-# Ghid pentru burse și integratori
+# Ghid pentru Exchange-uri și Integratori
 
-Tot ce are nevoie o bursă, un custode sau un integrator de plăți pentru a lista QOR și a procesa depuneri și retrageri: alegerea unei interfețe, detectarea în siguranță a depunerilor și semnarea retragerilor.
+Tot ce are nevoie un exchange, un custode sau un integrator de plăți pentru a lista QOR și a procesa depuneri și retrageri: alegerea unei interfețe, detectarea sigură a depunerilor și semnarea retragerilor.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (versiunea de lanț **v3.1.85**). Repetați mai întâi întregul flux pe testnet-ul **`qorechain-diana`** — endpoint-urile pentru ambele rețele se găsesc în [Rețele](/appendix/networks#public-endpoints). Dacă rulați propriul nod complet, mențineți-l pe versiunea curentă a lanțului — un nod învechit nu poate decoda tipurile de tranzacții mai noi și se oprește din sincronizare.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (versiune chain **v3.1.92**). Repetați întregul flux mai întâi pe testnet-ul **`qorechain-diana`** — endpoint-urile pentru ambele rețele se află în [Rețele](/appendix/networks#public-endpoints). Dacă rulați propriul full node, mențineți-l la versiunea curentă a chain-ului — un nod învechit nu poate decoda tipurile de tranzacții mai noi și se oprește din sincronizare.
 :::
 
 ## Alegerea unei căi de integrare {#choosing-a-path}
 
-QoreChain este un singur lanț cu **un singur sold nativ QOR unificat**, expus prin trei interfețe. **Aceeași cheie privată controlează aceleași fonduri** sub o adresă Cosmos (`qor1...`), una EVM (`0x...`) și una SVM (base58) — alegeți interfața care se potrivește cel mai bine stack-ului vostru.
+QoreChain este un singur chain cu **un singur sold nativ QOR unificat**, expus prin trei interfețe. **Aceeași cheie privată controlează aceleași fonduri** printr-o adresă Cosmos (`qor1...`), o adresă EVM (`0x...`) și o adresă SVM (base58) — alegeți interfața care se potrivește stack-ului vostru.
 
 | | **A) Cosmos (nativ)** | **B) EVM** | **C) SVM (Solana VM)** |
 |---|---|---|---|
 | Adresă | `qor1...` (bech32) | `0x...` (Ethereum) | Solana base58 (aceeași cheie) |
 | Zecimale (QOR nativ) | **6** (`uqor`) | **18** (stil wei) | **9** (lamports; 1 uqor = 1.000 lamports) |
-| Instrumente | Cosmos SDK / CosmJS | **Ethereum standard** (ethers/web3, MetaMask) | `@solana/web3.js` |
-| Semnarea retragerilor | **PQC hibrid obligatoriu** (ML-DSA-87 + secp256k1) | **secp256k1 standard / EIP-155 — fără PQC** | prin tranzacție Cosmos sau trimitere direct pe nod |
+| Tooling | Cosmos SDK / CosmJS | **Ethereum standard** (ethers/web3, MetaMask) | `@solana/web3.js` |
+| Semnare retrageri | **PQC hibrid obligatoriu** (ML-DSA-87 + secp256k1) | **secp256k1 / EIP-155 standard — fără PQC** | prin tx Cosmos sau submisie pe nod |
 | Suport memo / tag | **Da** (adresă partajată + memo) | Nu (o adresă per utilizator) | Nu (o adresă per utilizator) |
-| Detectarea depunerilor | scanați evenimentele `MsgSend` | scanați blocurile prin `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
-| Ideal pentru | Platforme native Cosmos | **Platforme cu integrare EVM existentă** | Platforme cu instrumente Solana |
+| Detectare depuneri | scanare evenimente `MsgSend` | scanare blocuri via `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
+| Recomandat pentru | Platforme native Cosmos | **Platforme cu integrare EVM existentă** | Platforme cu tooling Solana |
 
-**Recomandare:** dacă suportați deja lanțuri EVM, **Calea B (EVM)** este integrarea cu cel mai mic efort — instrumente Ethereum standard, iar **retragerile nu necesită semnare post-cuantică** (calea ante EVM este exceptată). Calea A (Cosmos) este ruta nativă, cu adrese de depunere partajate pe bază de memo. Calea C (SVM) este și ea o interfață completă pentru QOR nativ — alegeți-o dacă preferați în mod special instrumentele Solana.
+**Recomandare:** dacă susțineți deja chain-uri EVM, **Calea B (EVM)** este integrarea cu cel mai puțin efort — tooling Ethereum standard, iar **retragerile nu necesită semnare post-cuantică** (calea ante EVM este exceptată). Calea A (Cosmos) este ruta nativă, cu adrese de depunere partajate bazate pe memo. Calea C (SVM) este, pe hârtie, o interfață nativă QOR completă, dar **lane-ul său de tranzacții este momentan dezactivat la nivel de întreagă rețea** (vezi [Calea C](#path-c-svm)) — folosiți Calea A sau Calea B până la redeschidere.
 
 Cele trei interfețe **nu se exclud reciproc** — fondurile trimise către forma `0x`, `qor1` sau SVM a aceleiași chei reprezintă același sold.
 
-## Rularea propriului nod {#node}
+## Rularea nodului vostru {#node}
 
-Integrările de producție ar trebui să verifice depunerile pe **propriul nod sincronizat**, nu pe un endpoint terț. Urmați [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — acoperă pachetul de binare precompilate (cu sume de control SHA-256), genesis-ul, peer-ii publici, pragul minim de comision (`0.1uqor`) și un bootstrap rapid prin snapshot-ul publicat al datelor lanțului. Nu este necesară nicio licență pentru a rula un nod complet fără rol de validator.
+Integrările de producție ar trebui să verifice depunerile față de **propriul nod sincronizat**, nu față de un endpoint terț. Urmați [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — acolo găsiți pachetul binar preconstruit (cu sume de control SHA-256), genesis-ul, peer-ii publici, pragul minim de taxă (`0.1uqor`) și un bootstrap rapid via snapshot-ul publicat al datelor chain-ului. Nu este necesară nicio licență pentru a rula un full node nevalidator.
 
 Deoarece QoreChain are **finalitate instantanee** (fără reorganizări), **1 confirmare este finală**; așteptarea a 1–2 blocuri oferă o marjă operațională confortabilă.
 
 ## Calea A — Cosmos (nativ) {#path-a-cosmos}
 
-URL-ul REST de bază: `https://api.qore.host` (sau `http://localhost:1317` pe nodul vostru).
+URL de bază REST: `https://api.qore.host` (sau `http://localhost:1317` pe nodul vostru).
 
-### Monitorizarea depunerilor
+### Urmărirea depunerilor
 
 ```bash
-# latest height
+# ultima înălțime (height)
 curl -s https://rpc.qore.host/status | jq -r .result.sync_info.latest_block_height
 
-# all txs in a height (deposit scanning)
+# toate tx-urile dintr-un height (scanare depuneri)
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs/block/{HEIGHT}" | jq '.txs'
 
-# incoming transfers to an address
+# transferuri primite către o adresă
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&pagination.limit=50" | jq '.tx_responses[].txhash'
 
-# balance (uqor — divide by 1e6 for QOR)
+# sold (uqor — împărțiți la 1e6 pentru QOR)
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
 ```
 
-### Lista de verificare anti-depuneri false {#anti-fake-deposit}
+### Checklist anti-depunere-falsă {#anti-fake-deposit}
 
-Creditați o depunere **doar** atunci când **toate** condițiile de mai jos sunt îndeplinite:
+Creditați o depunere **doar** când **toate** condițiile de mai jos sunt îndeplinite:
 
-1. **`tx_response.code == 0`** — tranzacția a reușit; nu creditați niciodată o tranzacție eșuată.
-2. Mesajul este **`/cosmos.bank.v1beta1.MsgSend`** (sau un output al unui `MsgMultiSend`) — nu un apel de contract sau alt modul.
-3. **`to_address`** este egal cu adresa voastră de depunere, iar (în modelul cu adresă partajată) **`memo`**-ul corespunde utilizatorului.
-4. **`denom == "uqor"`** și `amount` este valoarea creditată (uqor → ÷ 10⁶ pentru QOR). Respingeți orice alt denom.
-5. Tranzacția se află într-un **bloc confirmat** (`height` prezent și ≤ ultima înălțime confirmată). Finalitatea este instantanee — 1 confirmare este finală; așteptați 1–2 blocuri pentru marjă.
-6. Recalculați suma din **evenimentele de transfer** (`coin_received` / `coin_spent`) și verificați-o încrucișat cu suma din mesaj — nu vă bazați niciodată pe un singur câmp sau doar pe memo.
-7. Verificați că hash-ul tranzacției există prin `GET /cosmos/tx/v1beta1/txs/{hash}` pe **propriul** nod sincronizat.
+1. **`tx_response.code == 0`** — tranzacția a reușit; nu creditați niciodată un tx eșuat.
+2. Mesajul este **`/cosmos.bank.v1beta1.MsgSend`** (sau un output de `MsgMultiSend`) — nu un apel de contract sau alt modul.
+3. **`to_address`** este egal cu adresa voastră de depunere, iar (în modelul de adresă partajată) **`memo`**-ul corespunde utilizatorului.
+4. **`denom == "uqor"`**, iar `amount` este valoarea creditată (uqor → ÷ 10⁶ pentru QOR). Respingeți orice alt denom.
+5. Tranzacția se află într-un **bloc confirmat (committed)** (`height` prezent și ≤ ultima înălțime confirmată). Finalitatea este instantanee — 1 confirmare este finală; așteptați 1–2 blocuri pentru marjă.
+6. Recalculați suma din **evenimentele de transfer** (`coin_received` / `coin_spent`) și verificați-o încrucișat față de suma din mesaj — nu aveți încredere niciodată doar într-un singur câmp sau doar în memo.
+7. Verificați că hash-ul tranzacției există via `GET /cosmos/tx/v1beta1/txs/{hash}` față de **propriul vostru** nod sincronizat.
 
-### Retrageri — semnare hibridă PQC {#cosmos-withdrawals}
+### Retrageri — semnare PQC hibridă {#cosmos-withdrawals}
 
-Mainnet-ul impune **semnături post-cuantice** pe tranzacțiile cosmos (`allow_classical_fallback = false`): fiecare retragere are nevoie de o **semnătură hibridă** — ML-DSA-87 (Dilithium-5, FIPS-204) **plus** secp256k1. Depunerile **nu** au nevoie de aceasta (voi doar monitorizați lanțul).
+Mainnet-ul impune **semnături post-cuantice** pe tranzacțiile cosmos (`allow_classical_fallback = false`): fiecare retragere are nevoie de o **semnătură hibridă** — ML-DSA-87 (Dilithium-5, FIPS-204) **plus** secp256k1. Depunerile **nu** necesită acest lucru (doar urmăriți chain-ul).
 
-Biblioteca de semnare este [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm), care aduce ca dependență `@qorechain/pqc` pentru primitivele FIPS-204:
+Biblioteca de semnare este [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm), care aduce `@qorechain/pqc` pentru primitivele FIPS-204:
 
 ```bash
 npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
-# pin cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
+# fixați cosmjs-types la 0.9.x — 0.10 strică importurile de subpath folosite de adapter
 ```
 
 Semnarea este un flux în **doi pași** (oglindind `qorechaind tx pqc cosign`):
 
-**Pasul 1 — o singură dată per hot wallet: înregistrați cheia sa ML-DSA-87.** Această tranzacție unică de înregistrare este **semnată clasic** (excepție de bootstrap): mesajul `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` cu `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Derivați cheia ML-DSA în mod determinist, astfel încât să fie recuperabilă din secretul vostru existent — de ex. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, apoi `mldsa.keygen(seed)` — și stocați seed-ul alături de cheia hot wallet-ului.
+**Pasul 1 — o singură dată per hot wallet: înregistrați cheia sa ML-DSA-87.** Această tranzacție de înregistrare unică este **semnată clasic** (excepție de bootstrap): mesajul `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` cu `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Derivați cheia ML-DSA determinist, astfel încât să poată fi recuperată din secretul vostru existent — de exemplu `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, apoi `mldsa.keygen(seed)` — și stocați seed-ul alături de cheia hot wallet-ului.
 
-**Pasul 2 — la fiecare retragere de după aceea: semnați hibrid `MsgSend`-ul.** Adaptorul integrează semnătura ML-DSA-87 într-o extensie a corpului tranzacției *înainte* de `signDirect`-ul secp256k1 obișnuit, astfel încât semnatarul vostru existent rămâne neschimbat:
+**Pasul 2 — pentru fiecare retragere ulterioară: semnați hibrid `MsgSend`-ul.** Adapterul încorporează semnătura ML-DSA-87 într-o extensie de tx-body *înainte* de `signDirect`-ul obișnuit secp256k1, astfel încât signer-ul vostru existent rămâne neschimbat:
 
 ```js
 import { QoreChainSigner } from "@qorechain/wallet-adapter";
@@ -102,7 +102,7 @@ const txBytes = await signer.signHybrid({
   sequence });
 ```
 
-Difuzați octeții semnați:
+Difuzați (broadcast) bytes-ii semnați:
 
 ```bash
 curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
@@ -112,13 +112,13 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
 # code 8 "classical fallback not allowed" => step 1 not done yet for this account
 ```
 
-Apoi interogați `GET /cosmos/tx/v1beta1/txs/{hash}` până când tranzacția apare într-un bloc cu `code == 0`.
+Apoi interogați periodic `GET /cosmos/tx/v1beta1/txs/{hash}` până apare într-un bloc cu `code == 0`.
 
-Pentru un HSM sau un semnatar personalizat în alt limbaj, folosiți bibliotecile FIPS-204 independente [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) (npm, PyPI, crates.io, Maven Central, Go) și asamblați aceeași extensie. Semnătura ML-DSA **trebuie să fie deterministă** (FIPS-204 §3.4) — vedeți [Semnarea deterministă](/developer-guide/post-quantum-signing#deterministic-signing); lanțul respinge semnăturile hedged.
+Pentru un HSM sau un signer custom în alt limbaj, folosiți bibliotecile FIPS-204 de sine stătătoare [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) (npm, PyPI, crates.io, Maven Central, Go) și asamblați aceeași extensie. Semnătura ML-DSA **trebuie să fie deterministă** (FIPS-204 §3.4) — vezi [Semnare deterministă](/developer-guide/post-quantum-signing#deterministic-signing); chain-ul respinge semnăturile hedged.
 
-### Alternativa server-side: `@qorechain/chain-bridge` {#chain-bridge}
+### Alternativă server-side: `@qorechain/chain-bridge` {#chain-bridge}
 
-Pentru un worker hot-wallet complet server-side (fără portofel de browser implicat), **`@qorechain/chain-bridge`** (npm) încapsulează întregul flux — derivarea cheii, auto-înregistrarea PQC la prima utilizare, semnarea hibridă și difuzarea — într-un singur apel. Este JavaScript pur (fără add-on-uri native), potrivit pentru workeri serverless:
+Pentru un worker hot-wallet complet server-side (fără niciun wallet de browser implicat), **`@qorechain/chain-bridge`** (npm) încapsulează întregul flux — derivarea cheii, auto-înregistrarea PQC la prima utilizare, semnarea hibridă și broadcast-ul — într-un singur apel. Este JavaScript pur (fără addon-uri native), potrivit pentru worker-e serverless:
 
 ```js
 import { ChainBridge } from "@qorechain/chain-bridge";
@@ -137,37 +137,41 @@ const { txHash } = await bridge.sendTokens({
 });
 ```
 
-`chain-bridge` (≥0.1.1) folosește aceeași derivare PQC canonică, legată de adresă, ca restul stack-ului — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — astfel încât cheia este recuperabilă din mnemonic cu `qorechaind tx pqc recover-key`. Conturile înregistrate cu instrumente mai vechi sunt gestionate automat (fallback pe cheia legacy) și pot fi migrate o singură dată către cheia canonică cu [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
+`chain-bridge` (≥0.1.1) folosește aceeași derivare PQC canonică legată de adresă ca restul stack-ului — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — astfel încât cheia poate fi recuperată din mnemonic cu `qorechaind tx pqc recover-key`. Conturile înregistrate cu tooling mai vechi sunt gestionate automat (fallback pe cheia legacy) și pot fi migrate o singură dată la cheia canonică cu [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
 
 ## Calea B — EVM {#path-b-evm}
 
-Integrare Ethereum standard pe `https://evm.qore.host` (chain ID **9801**) sau pe portul 8545 al propriului nod.
+Integrare Ethereum standard față de `https://evm.qore.host` (chain ID **9801**) sau portul 8545 al propriului vostru nod.
 
-* **Zecimale:** QOR-ul nativ are **18 zecimale** pe interfața EVM (1 uqor = 10¹² wei). O greșeală aici creditează depunerile eronat cu un factor de 10¹².
+* **Zecimale:** QOR nativ are **18 zecimale** pe rail-ul EVM (1 uqor = 10¹² wei). Greșirea acestei conversii duce la creditarea eronată a depunerilor cu un factor de 10¹².
 * **Depuneri:** scanați blocurile cu `eth_getBlockByNumber` pentru transferuri native către adresele voastre; confirmați cu `eth_getTransactionReceipt` (`status == 0x1`).
 * **Retrageri:** semnare standard secp256k1 / EIP-155 — **fără PQC necesar** pe calea ante EVM. Orice stack de semnare Ethereum funcționează neschimbat.
-* **Anti-depuneri false:** verificați statusul chitanței, că valoarea mutată este un transfer **nativ** (nu un eveniment ERC-20 pe care nu îl indexați) și confirmați pe propriul nod.
-* **Maparea adreselor:** adresa `0x` și adresa `qor1` sunt două codificări ale aceluiași cont — fondurile sunt partajate. Vedeți [Dezvoltare EVM](/developer-guide/evm-development).
+* **Anti-depunere-falsă:** verificați statusul receipt-ului, că valoarea mutată este un transfer **nativ** (nu un eveniment ERC-20 pe care nu îl indexați), și confirmați față de propriul vostru nod.
+* **Maparea adreselor:** adresa `0x` și adresa `qor1` sunt două codificări ale aceluiași cont — fondurile sunt partajate. Vezi [Dezvoltare EVM](/developer-guide/evm-development).
 
 ## Calea C — SVM (compatibil Solana) {#path-c-svm}
 
-Începând cu v3.1.82, interfața SVM servește **QOR nativ** (vedeți [QOR nativ pe interfața SVM](/developer-guide/svm-development#native-qor)):
+:::caution Lane-ul SVM este momentan dezactivat
+Lane-ul de execuție SVM este **momentan dezactivat la nivel de întreagă rețea pentru submisia de tranzacții**, începând cu versiunea chain v3.1.89 (22 august) — orice tranzacție trimisă către el returnează `code 11, "SVM module is disabled"`. **Nu** construiți un rail de depunere/retragere pe Calea C până când lane-ul se redeschide. Folosiți în schimb **Calea A (Cosmos)** sau **Calea B (EVM)**. Endpoint-urile de citire (de exemplu `getBalance`) pot continua să răspundă, dar nu construiți detectare de depuneri sau fluxuri de retragere pe SVM cât timp submisia de tranzacții este dezactivată.
+:::
+
+Începând cu v3.1.82, interfața SVM servește **QOR nativ** (vezi [QOR nativ pe interfața SVM](/developer-guide/svm-development#native-qor)):
 
 * **Solduri:** `getBalance` returnează lamports (÷ 10⁹ pentru QOR; 1 uqor = 1.000 lamports).
-* **Depuneri:** `getSignaturesForAddress` oferă istoricul de tranzacții al unei adrese; transferurile System Program mută QOR nativ.
-* Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sunt **doar pentru citire**; trimiteți tranzacțiile prin propriul nod.
+* **Depuneri:** `getSignaturesForAddress` oferă istoricul de tranzacții pentru o adresă; transferurile System Program mută QOR nativ.
+* Endpoint-urile publice (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sunt **doar pentru citire**; trimiteți tranzacțiile prin propriul vostru nod.
 
-## Rezumatul fluxurilor {#flow-summary}
+## Rezumatul fluxului {#flow-summary}
 
-| Operațiune | Cale | Este necesară semnarea? |
+| Operațiune | Cale | Necesită semnare? |
 |---|---|---|
-| **Depunere** (utilizator → platformă) | Monitorizați pe nodul vostru sincronizat transferurile către adresa voastră (+ memo pe Cosmos) | Nu — doar monitorizare |
-| **Retragere** (platformă → utilizator) | Construiți transferul, semnați offline, difuzați | Cosmos: PQC hibrid · EVM: secp256k1 standard |
-| **Sold / sweep** | Interogare de sold REST / EVM / SVM + transfer | Semnați doar pentru sweep |
+| **Depunere** (utilizator → platformă) | Urmăriți propriul nod sincronizat pentru transferuri către adresa voastră (+ memo pe Cosmos) | Nu — doar monitorizare |
+| **Retragere** (platformă → utilizator) | Construiți transferul, semnați offline, difuzați (broadcast) | Cosmos: PQC hibrid · EVM: secp256k1 standard |
+| **Sold / sweep** | Interogare sold REST / EVM / SVM + transfer | Semnare doar pentru sweep |
 
-## Pagini conexe
+## Related
 
-* [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — configurarea nodului, descărcări, snapshot
-* [Rularea unui nod](/developer-guide/running-a-node) — deployment, pruning, indexare
-* [Semnarea post-cuantică](/developer-guide/post-quantum-signing) — bibliotecile FIPS-204 din spatele retragerilor hibride
+* [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — configurare nod, descărcări, snapshot
+* [Rularea unui Nod](/developer-guide/running-a-node) — deployment, pruning, indexare
+* [Semnare Post-Cuantică](/developer-guide/post-quantum-signing) — bibliotecile FIPS-204 din spatele retragerilor hibride
 * [Rețele](/appendix/networks) — chain ID-uri, endpoint-uri, zecimale per interfață

@@ -23,14 +23,14 @@ Abre Keplr y ve a **Settings > Add Custom Chain**, luego introduce:
 
 | Campo              | Mainnet                    | Testnet                          |
 | ------------------ | -------------------------- | -------------------------------- |
-| Nombre de la cadena | `QoreChain`                | `QoreChain Diana Testnet`        |
+| Chain Name         | `QoreChain`                | `QoreChain Diana Testnet`        |
 | Chain ID           | `qorechain-vladi`          | `qorechain-diana`                |
-| URL RPC            | `https://rpc.qore.host`    | `https://rpc-testnet.qore.host`  |
-| URL REST           | `https://api.qore.host`    | `https://api-testnet.qore.host`  |
-| Prefijo Bech32     | `qor`                      | `qor`                            |
-| Denominación de la moneda | `QOR`               | `QOR`                            |
-| Denominación mínima de la moneda | `uqor`       | `uqor`                           |
-| Decimales          | `6`                        | `6`                              |
+| RPC URL            | `https://rpc.qore.host`    | `https://rpc-testnet.qore.host`  |
+| REST URL           | `https://api.qore.host`    | `https://api-testnet.qore.host`  |
+| Bech32 Prefix      | `qor`                      | `qor`                            |
+| Coin Denom         | `QOR`                      | `QOR`                            |
+| Coin Minimal Denom | `uqor`                     | `uqor`                           |
+| Decimals           | `6`                        | `6`                              |
 | Coin Type (BIP-44) | `118`                      | `118`                            |
 
 Después de añadir la cadena, Keplr genera una dirección `qor1...` para tu cuenta.
@@ -49,11 +49,11 @@ Abre MetaMask y ve a **Settings > Networks > Add Network**, luego introduce:
 
 | Campo              | Mainnet                   | Testnet                          |
 | ------------------ | ------------------------- | -------------------------------- |
-| Nombre de la red   | `QoreChain`               | `QoreChain Diana Testnet`        |
-| URL RPC            | `https://evm.qore.host`   | `https://evm-testnet.qore.host`  |
+| Network Name       | `QoreChain`               | `QoreChain Diana Testnet`        |
+| RPC URL            | `https://evm.qore.host`   | `https://evm-testnet.qore.host`  |
 | Chain ID           | `9801`                    | `9800`                           |
-| Símbolo de la moneda | `QOR`                   | `QOR`                            |
-| URL del explorador de bloques | `https://explore.qore.network` | `https://explore.qore.network` |
+| Currency Symbol    | `QOR`                     | `QOR`                            |
+| Block Explorer URL | `https://explore.qore.network` | `https://explore.qore.network` |
 
 El QOR nativo tiene **18 decimales** en la interfaz EVM (estilo wei). Una vez conectado, puedes usar MetaMask para firmar transacciones EVM, interactuar con contratos inteligentes desplegados y gestionar tokens ERC-20 en QoreChain.
 
@@ -94,6 +94,10 @@ Los fondos enviados a cualquiera de las tres formas llegan al mismo saldo.
 A partir de la versión de cadena **v3.1.85**, no es necesario exponer tu clave raíz para gastar desde una cuenta de QoreChain en una dApp. Una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.
 
 ## Billeteras de Solana (SVM)
+
+:::caution El envío de transacciones SVM está actualmente desactivado
+El carril de ejecución SVM está **actualmente desactivado en toda la red para el envío de transacciones** — no envíes transacciones a través de una billetera compatible con Solana contra QoreChain en este momento. La lectura de saldos/slots puede seguir funcionando; consulta [Desarrollo SVM](/developer-guide/svm-development) para conocer el estado actual.
+:::
 
 El entorno de ejecución SVM de QoreChain es compatible con las herramientas estándar de Solana, y el **saldo nativo de QOR de la cuenta es visible directamente en la interfaz SVM** (en lamports, 9 decimales; 1 uqor = 1,000 lamports). Conecta cualquier billetera o biblioteca compatible con Solana.
 

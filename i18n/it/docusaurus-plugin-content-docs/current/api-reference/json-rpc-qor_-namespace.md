@@ -5,9 +5,9 @@ sidebar_label: JSON-RPC — Namespace qor_
 sidebar_position: 2
 ---
 
-# JSON-RPC — Namespace qor_
+# JSON-RPC — qor_ Namespace
 
-Il namespace `qor_` fornisce metodi JSON-RPC specifici di QoreChain per interrogare lo stato della crittografia post-quantistica, le analisi AI, la messaggistica cross-VM, lo stato multi-livello, le operazioni di bridge, la tokenomics, l'infrastruttura di rollup e lo stato del consenso PRISM.
+Il namespace `qor_` fornisce metodi JSON-RPC specifici di QoreChain per interrogare lo stato della crittografia post-quantistica, le analitiche AI, la messaggistica cross-VM, lo stato multi-layer, le operazioni di bridge, la tokenomics, l'infrastruttura di rollup e lo stato del consenso PRISM.
 
 ## Connessione
 
@@ -16,7 +16,7 @@ Il namespace `qor_` fornisce metodi JSON-RPC specifici di QoreChain per interrog
 | HTTP      | `http://localhost:8545` |
 | WebSocket | `ws://localhost:8546`   |
 
-Il namespace `qor_` è servito insieme a `eth_`, `web3_`, `net_` e `txpool_` sulle stesse porte. Abilitalo in `app.toml`:
+Il namespace `qor_` viene servito insieme a `eth_`, `web3_`, `net_` e `txpool_` sulle stesse porte. Abilitalo in `app.toml`:
 
 ```toml
 [json-rpc]
@@ -24,40 +24,40 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-Il namespace `qor_` è disponibile sulla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, attiva sulla versione di chain **v3.1.85**) e sulla testnet **`qorechain-diana`** (EVM chain ID **9800**). Gli esempi seguenti presuppongono un nodo locale; per l'accesso remoto sostituisci l'endpoint mainnet o testnet del tuo provider.
+Il namespace `qor_` è disponibile sulla mainnet **`qorechain-vladi`** (EVM chain ID **9801**, in esecuzione sulla versione della chain **v3.1.92**) e sulla testnet **`qorechain-diana`** (EVM chain ID **9800**). Gli esempi seguenti presuppongono un nodo locale; sostituisci l'endpoint mainnet o testnet del tuo provider per l'accesso remoto.
 :::
 
 ---
 
 ## Metodi
 
-| Metodo                        | Parametri                               | Descrizione                                              |
-| ----------------------------- | --------------------------------------- | -------------------------------------------------------- |
+| Metodo                        | Parametri                               | Descrizione                                                        |
+| ----------------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
 | `qor_getPQCKeyStatus`         | `address` (string)                      | Restituisce lo stato di registrazione della chiave PQC per un account |
-| `qor_getHybridSignatureMode`  | nessuno                                  | Restituisce la modalità corrente di applicazione delle firme ibride |
-| `qor_getAIStats`              | nessuno                                  | Restituisce le statistiche aggregate di elaborazione del modulo AI |
-| `qor_getCrossVMMessage`       | `messageId` (string)                    | Recupera un messaggio cross-VM tramite il suo ID        |
-| `qor_getReputationScore`      | `validator` (string)                    | Restituisce il punteggio di reputazione per un indirizzo validatore |
-| `qor_getLayerInfo`            | `layerId` (string)                      | Restituisce i metadati e lo stato di un layer registrato |
-| `qor_getBridgeStatus`         | `chainId` (string)                      | Restituisce lo stato del bridge e i totali bloccati per una chain |
-| `qor_getRLAgentStatus`        | nessuno                                  | Restituisce la modalità corrente dell'agente PRISM e lo stato operativo |
-| `qor_getRLObservation`        | nessuno                                  | Restituisce l'ultimo vettore di osservazione PRISM      |
-| `qor_getRLReward`             | nessuno                                  | Restituisce le metriche cumulative di reward PRISM      |
-| `qor_getPoolClassification`   | `validator` (string)                    | Restituisce la classificazione del pool CPoS per un validatore |
-| `qor_getBurnStats`            | nessuno                                  | Restituisce le statistiche di burn su tutti i canali    |
-| `qor_getXQOREPosition`        | `address` (string)                      | Restituisce la posizione di staking xQORE per un indirizzo |
-| `qor_getInflationRate`        | nessuno                                  | Restituisce il tasso di inflazione annualizzato corrente |
-| `qor_getTokenomicsOverview`   | nessuno                                  | Restituisce una panoramica combinata di burn, inflazione e supply |
-| `qor_getRollupStatus`         | `rollupId` (string)                     | Restituisce lo stato e la configurazione di un rollup specifico |
-| `qor_listRollups`             | nessuno                                  | Restituisce un elenco di tutti i rollup registrati      |
-| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | Restituisce un batch di settlement specifico per un rollup |
-| `qor_suggestRollupProfile`    | `useCase` (string)                      | Raccomandazione del profilo di rollup assistita da AI per un caso d'uso |
-| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | Restituisce lo stato di un blob DA specifico            |
-| `qor_getBTCStakingPosition`   | `address` (string)                      | Restituisce la posizione di staking BTC tramite il modulo Babylon |
-| `qor_getAbstractAccount`      | `address` (string)                      | Restituisce i dettagli dell'account astratto e le regole di spesa |
-| `qor_getFairBlockStatus`      | nessuno                                  | Restituisce lo stato di cifratura FairBlock e la configurazione |
-| `qor_getGasAbstractionConfig` | nessuno                                  | Restituisce i token accettati e i parametri di gas abstraction |
-| `qor_getLaneConfiguration`    | nessuno                                  | Restituisce la configurazione di prioritizzazione delle TX a 5 corsie |
+| `qor_getHybridSignatureMode`  | none                                    | Restituisce la modalità di applicazione della firma ibrida corrente |
+| `qor_getAIStats`              | none                                    | Restituisce le statistiche aggregate di elaborazione del modulo AI |
+| `qor_getCrossVMMessage`       | `messageId` (string)                    | Recupera un messaggio cross-VM tramite il suo ID                   |
+| `qor_getReputationScore`      | `validator` (string)                    | Restituisce il punteggio di reputazione per un indirizzo di validatore |
+| `qor_getLayerInfo`            | `layerId` (string)                      | Restituisce metadati e stato di un layer registrato                |
+| `qor_getBridgeStatus`         | `chainId` (string)                      | Restituisce lo stato del bridge e i totali bloccati per una chain  |
+| `qor_getRLAgentStatus`        | none                                    | Restituisce la modalità corrente dell'agente PRISM e lo stato operativo |
+| `qor_getRLObservation`        | none                                    | Restituisce l'ultimo vettore di osservazione PRISM                 |
+| `qor_getRLReward`             | none                                    | Restituisce le metriche cumulative di reward di PRISM              |
+| `qor_getPoolClassification`   | `validator` (string)                    | Restituisce la classificazione del pool CPoS per un validatore     |
+| `qor_getBurnStats`            | none                                    | Restituisce le statistiche di burn su tutti i canali                |
+| `qor_getXQOREPosition`        | `address` (string)                      | Restituisce la posizione di staking xQORE per un indirizzo         |
+| `qor_getInflationRate`        | none                                    | Restituisce il tasso di inflazione annualizzato corrente            |
+| `qor_getTokenomicsOverview`   | none                                    | Restituisce una panoramica combinata di burn, inflazione e supply  |
+| `qor_getRollupStatus`         | `rollupId` (string)                     | Restituisce stato e configurazione di un rollup specifico          |
+| `qor_listRollups`             | none                                    | Restituisce un elenco di tutti i rollup registrati                 |
+| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | Restituisce un batch di settlement specifico per un rollup         |
+| `qor_suggestRollupProfile`    | `useCase` (string)                      | Raccomandazione del profilo rollup assistita da AI per un caso d'uso |
+| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | Restituisce lo stato di un blob DA specifico                       |
+| `qor_getBTCStakingPosition`   | `address` (string)                      | Restituisce la posizione di staking BTC tramite il modulo Babylon  |
+| `qor_getAbstractAccount`      | `address` (string)                      | Restituisce i dettagli dell'account astratto e le regole di spesa  |
+| `qor_getFairBlockStatus`      | none                                    | Restituisce lo stato e la configurazione della crittografia FairBlock |
+| `qor_getGasAbstractionConfig` | none                                    | Restituisce i token accettati e i parametri di gas abstraction     |
+| `qor_getLaneConfiguration`    | none                                    | Restituisce la configurazione di prioritizzazione delle TX a 5 corsie |
 
 ---
 
@@ -172,11 +172,11 @@ curl -X POST http://localhost:8545 \
 
 ## Codici di errore
 
-| Codice | Messaggio        | Descrizione                           |
-| ------ | ---------------- | ------------------------------------- |
-| -32600 | Invalid Request  | Richiesta JSON-RPC malformata         |
-| -32601 | Method not found | Il metodo non esiste                  |
-| -32602 | Invalid params   | Parametri mancanti o non validi       |
-| -32603 | Internal error   | Errore di elaborazione lato server    |
-| -32000 | Module disabled  | Il modulo interrogato non è abilitato |
-| -32001 | Entity not found | La risorsa richiesta non esiste       |
+| Codice | Messaggio         | Descrizione                             |
+| ------ | ----------------- | ---------------------------------------- |
+| -32600 | Invalid Request    | Richiesta JSON-RPC malformata            |
+| -32601 | Method not found   | Il metodo non esiste                     |
+| -32602 | Invalid params     | Parametri mancanti o non validi          |
+| -32603 | Internal error     | Errore di elaborazione lato server       |
+| -32000 | Module disabled    | Il modulo interrogato non è abilitato    |
+| -32001 | Entity not found   | La risorsa richiesta non esiste          |

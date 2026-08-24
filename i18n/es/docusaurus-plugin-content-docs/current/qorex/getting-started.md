@@ -10,8 +10,8 @@ sidebar_position: 2
 Esta página explica cómo instalar la **aplicación móvil** y cómo crear, restaurar o vincular tu monedero. Para el monedero de escritorio, consulta la [Extensión de navegador](/qorex/browser-extension), que ya está disponible en Chrome, Firefox y Safari.
 
 :::note Disponibilidad en móvil
-- **Android** — disponible en Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS** — disponible para pruebas mediante **TestFlight**: https://testflight.apple.com/join/Xa9D7vgR — la publicación en la App Store sigue en revisión.
+- **Android** — disponible en producción en Google Play: https://play.google.com/store/apps/details?id=network.qore.qorex
+- **iOS** — disponible en la App Store: https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
 ## Antes de empezar: protege tu dispositivo
@@ -41,7 +41,7 @@ Tienes tres formas de configurarlo:
 4. Confirma la frase; QoreX la sella en la bóveda respaldada por hardware y protegida por biometría.
 
 :::caution Tu frase de recuperación lo es todo
-Cualquiera que tenga tus 24 palabras controla tus fondos, y nadie — ni siquiera QoreChain Association — puede recuperarlos por ti. Nunca escribas tu frase en un sitio web, no la compartas ni la guardes en una captura de pantalla o en una nota en la nube.
+Cualquiera que tenga tus 24 palabras controla tus fondos, y nadie — ni siquiera QoreChain Association — puede recuperarlos por ti. Nunca escribas tu frase en un sitio web, no la compartas ni la guardes en una captura de pantalla o en una nota en la nube. **Desinstalar QoreX elimina las claves almacenadas en ese dispositivo** — sin tu frase escrita (o [recuperación social](/qorex/security-and-recovery#social-recovery) configurada de antemano), desinstalar la app supone la pérdida permanente del acceso. Haz la copia de seguridad antes de fondear el monedero, no después.
 :::
 
 ### 2. Restaurar un monedero existente
@@ -56,7 +56,11 @@ Si ya tienes QoreX en otro teléfono o tableta, puedes trasladar el monedero **s
 
 ## Opcional: reclama un @handle
 
-Después de crear tu monedero puedes reclamar un **@handle** único (por ejemplo `@liviu`) para que la gente pueda enviarte fondos por nombre en lugar de usar una dirección `qor1…`. Es opcional y se puede omitir — tu monedero nunca depende de ello. Consulta [Cuenta y Dashboard](/qorex/account-and-dashboard#handle).
+Después de crear tu monedero puedes reclamar un **@handle** único (por ejemplo `@liviu`) para que la gente pueda enviarte fondos por nombre en lugar de usar una dirección `qor1…`. Es opcional y se puede omitir — tu monedero nunca depende de ello. Un handle se vincula a una dirección concreta y no al monedero en su conjunto, algo que importa en cuanto tienes más de una cuenta — consulta [Varias cuentas a partir de una frase](/qorex/account-and-dashboard#accounts) y [@handle](/qorex/account-and-dashboard#handle).
+
+## Idioma
+
+QoreX está disponible en diez idiomas — inglés, rumano, alemán, español, francés, italiano, turco, árabe, japonés y coreano — y sigue automáticamente el idioma de tu teléfono, recurriendo al inglés para cualquier otro caso. Puedes cambiar el idioma detectado en cualquier momento desde **Ajustes → Idioma**; elegir árabe también cambia la interfaz a derecha a izquierda.
 
 ## Siguientes pasos
 

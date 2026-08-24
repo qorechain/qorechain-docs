@@ -10,7 +10,7 @@ sidebar_position: 3
 Esta guía explica cómo funciona la gobernanza on-chain en QoreChain, incluido el sistema de votación Quadratic Delegation-Reputation Weighted (QDRW), cómo presentar propuestas y cómo votar.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.85** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión de cadena **v3.1.92** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
 :::
 
 ---
@@ -107,7 +107,7 @@ QoreChain admite los siguientes tipos de propuesta de gobernanza:
 
 | Tipo                 | Descripción                                                                                     |
 | -------------------- | ----------------------------------------------------------------------------------------------- |
-| **Texto**            | Una propuesta de señalización sin ejecución automática on-chain. Se usa para sondeos de sentimiento de la comunidad. |
+| **Texto**             | Una propuesta de señalización sin ejecución automática on-chain. Se usa para sondeos de sentimiento de la comunidad. |
 | **Cambio de parámetro** | Modifica uno o más parámetros de protocolo on-chain (por ejemplo, máximo de validadores, tasa de emisión). |
 | **Actualización de software** | Programa una actualización coordinada de la cadena a una altura de bloque especificada.   |
 | **Gasto comunitario** | Solicita fondos de la tesorería comunitaria para una dirección de destinatario especificada.   |

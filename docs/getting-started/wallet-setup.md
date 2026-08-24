@@ -95,6 +95,10 @@ As of chain version **v3.1.85**, you don't have to expose your root key to spend
 
 ## Solana Wallets (SVM)
 
+:::caution SVM transaction submission is currently disabled
+The SVM execution lane is **currently disabled network-wide for transaction submission** — do not send transactions through a Solana-compatible wallet against QoreChain right now. Reading balances/slots may still work; see [SVM Development](/developer-guide/svm-development) for the current status.
+:::
+
 QoreChain's SVM execution environment is compatible with standard Solana tooling, and the account's **native QOR balance is visible directly on the SVM interface** (in lamports, 9 decimals; 1 uqor = 1,000 lamports). Connect any Solana-compatible wallet or library.
 
 ### Using @solana/web3.js

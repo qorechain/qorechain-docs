@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** (versión de cadena **v3.1.85**) para datos en vivo, o un endpoint de testnet **`qorechain-diana`** para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo.
+Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** (versión de cadena **v3.1.92**) para datos en vivo, o un endpoint de testnet **`qorechain-diana`** para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo.
 :::
 
 Los flags comunes se aplican a todos los subcomandos de `query`:
@@ -383,7 +383,7 @@ qorechaind query bridge operations
 ```
 
 | Flag       | Tipo   | Descripción                               |
-| ---------- | ------ | ----------------------------------------- |
+| ---------- | ------ | ------------------------------------------ |
 | `--status` | string | Filtrar: `pending`, `completed`, `failed` |
 | `--chain`  | string | Filtrar por ID de cadena                  |
 
@@ -504,7 +504,7 @@ qorechaind query multilayer anchors [flags]
 ```
 
 | Flag         | Tipo   | Descripción                            |
-| ------------ | ------ | -------------------------------------- |
+| ------------ | ------ | --------------------------------------- |
 | `--layer-id` | string | Filtrar por ID de capa                 |
 | `--limit`    | uint   | Número máximo de resultados a devolver |
 
@@ -553,7 +553,7 @@ qorechaind query rdk rollups
 ```
 
 | Flag       | Tipo   | Descripción                            |
-| ---------- | ------ | -------------------------------------- |
+| ---------- | ------ | --------------------------------------- |
 | `--status` | string | Filtrar: `active`, `paused`, `stopped` |
 
 ### batch

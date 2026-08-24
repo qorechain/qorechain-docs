@@ -1,41 +1,41 @@
 ---
 slug: /developer-guide/exchange-integration
-title: Leitfaden für Börsen & Integratoren
-sidebar_label: Börsen-Integration
+title: Exchange- & Integrator-Leitfaden
+sidebar_label: Exchange-Integration
 sidebar_position: 11
 ---
 
-# Leitfaden für Börsen & Integratoren
+# Exchange- & Integrator-Leitfaden
 
-Alles, was eine Börse, ein Verwahrer oder ein Zahlungsintegrator benötigt, um QOR zu listen und Einzahlungen sowie Auszahlungen abzuwickeln: die Wahl einer Schnittstelle, das sichere Erkennen von Einzahlungen und das Signieren von Auszahlungen.
+Alles, was eine Börse, ein Verwahrer oder ein Zahlungsintegrator benötigt, um QOR zu listen und Einzahlungen sowie Auszahlungen zu verarbeiten: die Wahl einer Schnittstelle, das sichere Erkennen von Einzahlungen und das Signieren von Auszahlungen.
 
 :::note
-Dieser Leitfaden richtet sich an das **`qorechain-vladi`**-Mainnet (Chain-Version **v3.1.85**). Proben Sie den vollständigen Ablauf zuerst im **`qorechain-diana`**-Testnet — die Endpunkte beider Netzwerke finden Sie unter [Netzwerke](/appendix/networks#public-endpoints). Wenn Sie einen eigenen Full Node betreiben, halten Sie ihn auf der aktuellen Chain-Version — ein veralteter Node kann neuere Transaktionstypen nicht dekodieren und stoppt die Synchronisation.
+Dieser Leitfaden richtet sich an das **`qorechain-vladi`**-Mainnet (Chain-Version **v3.1.92**). Üben Sie den gesamten Ablauf zunächst im **`qorechain-diana`**-Testnet — die Endpunkte für beide Netzwerke finden Sie unter [Networks](/appendix/networks#public-endpoints). Wenn Sie einen eigenen Full Node betreiben, halten Sie ihn auf der aktuellen Chain-Version — ein veralteter Node kann neuere Transaktionstypen nicht dekodieren und stoppt die Synchronisierung.
 :::
 
 ## Wahl des Integrationspfads {#choosing-a-path}
 
-QoreChain ist eine einzelne Chain mit **einem einheitlichen nativen QOR-Guthaben**, das über drei Schnittstellen zugänglich ist. Der **gleiche private Schlüssel kontrolliert dieselben Gelder** unter einer Cosmos- (`qor1...`), einer EVM- (`0x...`) und einer SVM-Adresse (base58) — wählen Sie die Schnittstelle, die zu Ihrem Stack passt.
+QoreChain ist eine einzige Chain mit **einem einheitlichen nativen QOR-Guthaben**, das über drei Schnittstellen zugänglich ist. **Derselbe private Schlüssel kontrolliert dieselben Mittel** unter einer Cosmos-Adresse (`qor1...`), einer EVM-Adresse (`0x...`) und einer SVM-Adresse (base58) — wählen Sie die Schnittstelle, die zu Ihrem Stack passt.
 
 | | **A) Cosmos (nativ)** | **B) EVM** | **C) SVM (Solana VM)** |
 |---|---|---|---|
 | Adresse | `qor1...` (bech32) | `0x...` (Ethereum) | Solana base58 (gleicher Schlüssel) |
-| Dezimalstellen (natives QOR) | **6** (`uqor`) | **18** (wei-artig) | **9** (lamports; 1 uqor = 1.000 lamports) |
+| Dezimalstellen (natives QOR) | **6** (`uqor`) | **18** (im Wei-Stil) | **9** (Lamports; 1 uqor = 1,000 Lamports) |
 | Tooling | Cosmos SDK / CosmJS | **Standard-Ethereum** (ethers/web3, MetaMask) | `@solana/web3.js` |
-| Auszahlungs-Signierung | **Hybrides PQC erforderlich** (ML-DSA-87 + secp256k1) | **Standard secp256k1 / EIP-155 — kein PQC** | über Cosmos-Tx oder Einreichung am eigenen Node |
+| Auszahlungssignierung | **Hybrid-PQC erforderlich** (ML-DSA-87 + secp256k1) | **Standard-secp256k1 / EIP-155 — kein PQC** | über Cosmos-Tx oder On-Node-Einreichung |
 | Memo-/Tag-Unterstützung | **Ja** (gemeinsame Adresse + Memo) | Nein (eine Adresse pro Nutzer) | Nein (eine Adresse pro Nutzer) |
-| Einzahlungserkennung | `MsgSend`-Events scannen | Blöcke via `eth_getBlockByNumber` scannen | `getBalance` / `getSignaturesForAddress` |
+| Einzahlungserkennung | `MsgSend`-Events scannen | Blöcke per `eth_getBlockByNumber` scannen | `getBalance` / `getSignaturesForAddress` |
 | Am besten geeignet für | Cosmos-native Plattformen | **Plattformen mit bestehender EVM-Integration** | Plattformen mit Solana-Tooling |
 
-**Empfehlung:** Wenn Sie bereits EVM-Chains unterstützen, ist **Pfad B (EVM)** die Integration mit dem geringsten Aufwand — Standard-Ethereum-Tooling, und **Auszahlungen erfordern keine Post-Quanten-Signierung** (der EVM-Ante-Pfad ist ausgenommen). Pfad A (Cosmos) ist der native Weg mit memo-basierten gemeinsamen Einzahlungsadressen. Pfad C (SVM) ist ebenfalls eine vollwertige native QOR-Schnittstelle — wählen Sie ihn, wenn Sie gezielt Solana-Tooling bevorzugen.
+**Empfehlung:** Wenn Sie bereits EVM-Chains unterstützen, ist **Pfad B (EVM)** die Integration mit dem geringsten Aufwand — Standard-Ethereum-Tooling, und **Auszahlungen erfordern keine Post-Quanten-Signierung** (der EVM-Ante-Pfad ist davon ausgenommen). Pfad A (Cosmos) ist der native Weg mit memo-basierten gemeinsamen Einzahlungsadressen. Pfad C (SVM) ist auf dem Papier eine vollständige native-QOR-Schnittstelle, aber **seine Transaktions-Lane ist derzeit netzwerkweit deaktiviert** (siehe [Path C](#path-c-svm)) — verwenden Sie bis zur Wiedereröffnung Pfad A oder Pfad B.
 
-Die drei Schnittstellen schließen sich **nicht gegenseitig aus** — Gelder, die an die `0x`-, `qor1`- oder SVM-Form desselben Schlüssels gesendet werden, sind dasselbe Guthaben.
+Die drei Schnittstellen schließen sich **nicht gegenseitig aus** — Mittel, die an die `0x`-, `qor1`- oder SVM-Form desselben Schlüssels gesendet werden, sind dasselbe Guthaben.
 
-## Betrieb Ihres Nodes {#node}
+## Betrieb des eigenen Node {#node}
 
-Produktive Integrationen sollten Einzahlungen gegen ihren **eigenen synchronisierten Node** verifizieren, nicht gegen einen Drittanbieter-Endpunkt. Folgen Sie [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) — dort werden das vorgefertigte Binary-Bundle (mit SHA-256-Prüfsummen), die Genesis, öffentliche Peers, die Gebührenuntergrenze (`0.1uqor`) und ein schnelles Bootstrapping über den veröffentlichten Chain-Daten-Snapshot behandelt. Für den Betrieb eines nicht-validierenden Full Nodes ist keine Lizenz erforderlich.
+Produktions-Integrationen sollten Einzahlungen gegen ihren **eigenen synchronisierten Node** verifizieren, nicht gegen einen Drittanbieter-Endpunkt. Folgen Sie [Connecting to Mainnet](/getting-started/connecting-to-mainnet) — dort werden das vorgefertigte Binary-Bundle (mit SHA-256-Prüfsummen), das Genesis, die öffentlichen Peers, die Gebührenuntergrenze (`0.1uqor`) und ein schneller Bootstrap über den veröffentlichten Chain-Data-Snapshot behandelt. Für den Betrieb eines nicht validierenden Full Node ist keine Lizenz erforderlich.
 
-Da QoreChain **sofortige Finalität** besitzt (keine Reorgs), ist **1 Bestätigung final**; das Abwarten von 1–2 Blöcken bietet eine komfortable operative Sicherheitsmarge.
+Da QoreChain **sofortige Finalität** besitzt (keine Reorgs), ist **1 Bestätigung final**; das Abwarten von 1–2 Blöcken bietet einen komfortablen operativen Spielraum.
 
 ## Pfad A — Cosmos (nativ) {#path-a-cosmos}
 
@@ -59,32 +59,32 @@ curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?den
 
 ### Checkliste gegen gefälschte Einzahlungen {#anti-fake-deposit}
 
-Schreiben Sie eine Einzahlung **nur** gut, wenn **alle** der folgenden Bedingungen erfüllt sind:
+Buchen Sie eine Einzahlung **nur** gut, wenn **alle** der folgenden Bedingungen erfüllt sind:
 
-1. **`tx_response.code == 0`** — die Transaktion war erfolgreich; schreiben Sie niemals eine fehlgeschlagene Tx gut.
-2. Die Nachricht ist **`/cosmos.bank.v1beta1.MsgSend`** (oder ein `MsgMultiSend`-Output) — kein Contract-Aufruf und kein anderes Modul.
-3. Die **`to_address`** entspricht Ihrer Einzahlungsadresse, und (beim Modell mit gemeinsamer Adresse) das **`memo`** passt zum Nutzer.
-4. Das **`denom == "uqor"`** und der `amount` ist der gutzuschreibende Wert (uqor → ÷ 10⁶ für QOR). Lehnen Sie jedes andere denom ab.
-5. Die Tx befindet sich in einem **committeten Block** (`height` vorhanden und ≤ der zuletzt committeten Höhe). Die Finalität ist sofortig — 1 Bestätigung ist final; warten Sie zur Sicherheit 1–2 Blöcke.
-6. Berechnen Sie den Betrag aus den **Transfer-Events** (`coin_received` / `coin_spent`) neu und gleichen Sie ihn mit dem Betrag in der Nachricht ab — vertrauen Sie niemals einem einzelnen Feld oder allein dem Memo.
-7. Verifizieren Sie, dass der Tx-Hash über `GET /cosmos/tx/v1beta1/txs/{hash}` gegen Ihren **eigenen** synchronisierten Node existiert.
+1. **`tx_response.code == 0`** — die Transaktion war erfolgreich; buchen Sie niemals eine fehlgeschlagene Tx gut.
+2. Die Message ist **`/cosmos.bank.v1beta1.MsgSend`** (oder ein `MsgMultiSend`-Output) — kein Contract-Aufruf und kein anderes Modul.
+3. Die **`to_address`** entspricht Ihrer Einzahlungsadresse, und (beim Modell der gemeinsamen Adresse) stimmt das **`memo`** mit dem Nutzer überein.
+4. Das **`denom == "uqor"`** und der `amount` ist der gutgeschriebene Wert (uqor → ÷ 10⁶ für QOR). Lehnen Sie jede andere Denom ab.
+5. Die Tx befindet sich in einem **committeten Block** (`height` vorhanden und ≤ der aktuellsten committeten Höhe). Die Finalität ist sofort — 1 Bestätigung ist final; warten Sie 1–2 Blöcke für zusätzlichen Spielraum.
+6. Berechnen Sie den Betrag anhand der **Transfer-Events** (`coin_received` / `coin_spent`) neu und gleichen Sie ihn mit dem Message-Betrag ab — verlassen Sie sich niemals allein auf ein einzelnes Feld oder das Memo.
+7. Überprüfen Sie über `GET /cosmos/tx/v1beta1/txs/{hash}` gegen Ihren **eigenen** synchronisierten Node, dass der Tx-Hash existiert.
 
-### Auszahlungen — hybride PQC-Signierung {#cosmos-withdrawals}
+### Auszahlungen — Hybrid-PQC-Signierung {#cosmos-withdrawals}
 
-Das Mainnet erzwingt **Post-Quanten-Signaturen** auf Cosmos-Transaktionen (`allow_classical_fallback = false`): Jede Auszahlung benötigt eine **hybride Signatur** — ML-DSA-87 (Dilithium-5, FIPS-204) **plus** secp256k1. Einzahlungen benötigen dies **nicht** (Sie beobachten die Chain nur).
+Das Mainnet erzwingt **Post-Quanten-Signaturen** bei Cosmos-Transaktionen (`allow_classical_fallback = false`): Jede Auszahlung benötigt eine **Hybrid-Signatur** — ML-DSA-87 (Dilithium-5, FIPS-204) **plus** secp256k1. Einzahlungen benötigen dies **nicht** (Sie beobachten die Chain nur).
 
-Die Signierbibliothek ist [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm), die `@qorechain/pqc` für die FIPS-204-Primitiven einbindet:
+Die Signierbibliothek ist [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm), die für die FIPS-204-Primitive `@qorechain/pqc` einbindet:
 
 ```bash
 npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
 # pin cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
 ```
 
-Die Signierung ist ein **zweistufiger** Ablauf (analog zu `qorechaind tx pqc cosign`):
+Die Signierung erfolgt in einem **zweistufigen** Ablauf (analog zu `qorechaind tx pqc cosign`):
 
-**Schritt 1 — einmalig pro Hot Wallet: den ML-DSA-87-Schlüssel registrieren.** Diese einmalige Registrierungstransaktion wird **klassisch signiert** (Bootstrap-Ausnahme): Nachricht `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` mit `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Leiten Sie den ML-DSA-Schlüssel deterministisch ab, damit er aus Ihrem bestehenden Secret wiederherstellbar ist — z. B. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, dann `mldsa.keygen(seed)` — und speichern Sie den Seed zusammen mit Ihrem Hot-Wallet-Schlüssel.
+**Schritt 1 — einmalig pro Hot Wallet: den ML-DSA-87-Schlüssel registrieren.** Diese einzelne Registrierungstransaktion wird **klassisch signiert** (Bootstrap-Ausnahme): Message `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` mit `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Leiten Sie den ML-DSA-Schlüssel deterministisch ab, damit er aus Ihrem vorhandenen Secret wiederherstellbar ist — z. B. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, dann `mldsa.keygen(seed)` — und speichern Sie den Seed zusammen mit Ihrem Hot-Wallet-Schlüssel.
 
-**Schritt 2 — jede weitere Auszahlung: das `MsgSend` hybrid signieren.** Der Adapter bettet die ML-DSA-87-Signatur *vor* dem normalen secp256k1-`signDirect` in eine Tx-Body-Extension ein, sodass Ihr bestehender Signer unverändert bleibt:
+**Schritt 2 — bei jeder weiteren Auszahlung: die `MsgSend` hybrid signieren.** Der Adapter bettet die ML-DSA-87-Signatur *vor* dem normalen secp256k1-`signDirect` in eine Tx-Body-Extension ein, sodass Ihr vorhandener Signer unverändert bleibt:
 
 ```js
 import { QoreChainSigner } from "@qorechain/wallet-adapter";
@@ -102,7 +102,7 @@ const txBytes = await signer.signHybrid({
   sequence });
 ```
 
-Senden Sie die signierten Bytes:
+Übertragen Sie die signierten Bytes:
 
 ```bash
 curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
@@ -112,13 +112,13 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
 # code 8 "classical fallback not allowed" => step 1 not done yet for this account
 ```
 
-Fragen Sie anschließend `GET /cosmos/tx/v1beta1/txs/{hash}` per Polling ab, bis die Transaktion mit `code == 0` in einem Block erscheint.
+Fragen Sie anschließend per Polling `GET /cosmos/tx/v1beta1/txs/{hash}` ab, bis sie mit `code == 0` in einem Block erscheint.
 
-Für ein HSM oder einen eigenen Signer in einer anderen Sprache verwenden Sie die eigenständigen [**`qorechain-pqc`**](/developer-guide/post-quantum-signing)-FIPS-204-Bibliotheken (npm, PyPI, crates.io, Maven Central, Go) und bauen dieselbe Extension zusammen. Die ML-DSA-Signatur **muss deterministisch sein** (FIPS-204 §3.4) — siehe [Deterministisches Signieren](/developer-guide/post-quantum-signing#deterministic-signing); die Chain lehnt hedged Signaturen ab.
+Für ein HSM oder einen eigenen Signer in einer anderen Sprache verwenden Sie die eigenständigen [**`qorechain-pqc`**](/developer-guide/post-quantum-signing)-FIPS-204-Bibliotheken (npm, PyPI, crates.io, Maven Central, Go) und bauen Sie dieselbe Extension zusammen. Die ML-DSA-Signatur **muss deterministisch sein** (FIPS-204 §3.4) — siehe [Deterministic signing](/developer-guide/post-quantum-signing#deterministic-signing); die Chain lehnt gehedgte Signaturen ab.
 
 ### Serverseitige Alternative: `@qorechain/chain-bridge` {#chain-bridge}
 
-Für einen vollständig serverseitigen Hot-Wallet-Worker (ohne Browser-Wallet) kapselt **`@qorechain/chain-bridge`** (npm) den gesamten Ablauf — Schlüsselableitung, automatische PQC-Registrierung bei der ersten Nutzung, hybride Signierung und Broadcast — in einem einzigen Aufruf. Das Paket ist reines JavaScript (keine nativen Addons) und eignet sich für Serverless-Worker:
+Für einen vollständig serverseitigen Hot-Wallet-Worker (ohne Browser-Wallet) fasst **`@qorechain/chain-bridge`** (npm) den gesamten Ablauf — Schlüsselableitung, automatische PQC-Registrierung bei der ersten Nutzung, Hybrid-Signierung und Broadcast — in einem einzigen Aufruf zusammen. Es ist reines JavaScript (keine nativen Addons) und eignet sich für serverlose Worker:
 
 ```js
 import { ChainBridge } from "@qorechain/chain-bridge";
@@ -137,37 +137,41 @@ const { txHash } = await bridge.sendTokens({
 });
 ```
 
-`chain-bridge` (≥0.1.1) verwendet dieselbe kanonische adressgebundene PQC-Ableitung wie der Rest des Stacks — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — sodass der Schlüssel mit `qorechaind tx pqc recover-key` aus der Mnemonic wiederherstellbar ist. Konten, die mit älterem Tooling registriert wurden, werden automatisch behandelt (Legacy-Key-Fallback) und können einmalig mit [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) auf den kanonischen Schlüssel migriert werden.
+`chain-bridge` (≥0.1.1) verwendet dieselbe kanonische, adressgebundene PQC-Ableitung wie der Rest des Stacks — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — sodass der Schlüssel mit `qorechaind tx pqc recover-key` aus der Mnemonic wiederhergestellt werden kann. Konten, die mit älterem Tooling registriert wurden, werden automatisch behandelt (Legacy-Key-Fallback) und können einmalig mit [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) auf den kanonischen Schlüssel migriert werden.
 
 ## Pfad B — EVM {#path-b-evm}
 
-Standard-Ethereum-Integration gegen `https://evm.qore.host` (Chain-ID **9801**) oder Port 8545 Ihres eigenen Nodes.
+Standard-Ethereum-Integration gegen `https://evm.qore.host` (Chain-ID **9801**) oder den Port 8545 Ihres eigenen Node.
 
-* **Dezimalstellen:** Natives QOR hat auf der EVM-Schiene **18 Dezimalstellen** (1 uqor = 10¹² wei). Ein Fehler hier führt zu falsch gutgeschriebenen Einzahlungen um den Faktor 10¹².
+* **Dezimalstellen:** Natives QOR hat auf der EVM-Schiene **18 Dezimalstellen** (1 uqor = 10¹² Wei). Ein Fehler hier führt zu einer um den Faktor 10¹² falschen Gutschrift von Einzahlungen.
 * **Einzahlungen:** Scannen Sie Blöcke mit `eth_getBlockByNumber` nach nativen Transfers an Ihre Adressen; bestätigen Sie mit `eth_getTransactionReceipt` (`status == 0x1`).
-* **Auszahlungen:** Standard-Signierung mit secp256k1 / EIP-155 — **kein PQC erforderlich** auf dem EVM-Ante-Pfad. Jeder Ethereum-Signing-Stack funktioniert unverändert.
-* **Schutz vor gefälschten Einzahlungen:** Verifizieren Sie den Receipt-Status, dass der bewegte Wert ein **nativer** Transfer ist (kein ERC-20-Event, das Sie nicht indexieren), und bestätigen Sie gegen Ihren eigenen Node.
-* **Adress-Mapping:** Die `0x`-Adresse und die `qor1`-Adresse sind zwei Kodierungen desselben Kontos — die Gelder werden geteilt. Siehe [EVM-Entwicklung](/developer-guide/evm-development).
+* **Auszahlungen:** Standard-secp256k1-/EIP-155-Signierung — auf dem EVM-Ante-Pfad ist **kein PQC erforderlich**. Jeder Ethereum-Signing-Stack funktioniert unverändert.
+* **Schutz vor gefälschten Einzahlungen:** Überprüfen Sie den Receipt-Status, dass es sich beim übertragenen Wert um einen **nativen** Transfer handelt (nicht um ein ERC-20-Event, das Sie nicht indexieren), und bestätigen Sie dies gegen Ihren eigenen Node.
+* **Adresszuordnung:** Die `0x`-Adresse und die `qor1`-Adresse sind zwei Kodierungen desselben Kontos — die Mittel werden gemeinsam genutzt. Siehe [EVM Development](/developer-guide/evm-development).
 
 ## Pfad C — SVM (Solana-kompatibel) {#path-c-svm}
 
-Seit v3.1.82 bedient die SVM-Schnittstelle **natives QOR** (siehe [Natives QOR auf der SVM-Schnittstelle](/developer-guide/svm-development#native-qor)):
+:::caution SVM-Lane derzeit deaktiviert
+Die SVM-Ausführungs-Lane ist **derzeit netzwerkweit für die Transaktionseinreichung deaktiviert**, seit Chain-Version v3.1.89 (22. August) — jede Transaktion dorthin liefert `code 11, "SVM module is disabled"` zurück. Bauen Sie **keine** Einzahlungs-/Auszahlungsschiene auf Pfad C auf, bevor die Lane wieder geöffnet wird. Verwenden Sie stattdessen **Pfad A (Cosmos)** oder **Pfad B (EVM)**. Lesende Endpunkte (z. B. `getBalance`) antworten unter Umständen weiterhin, aber bauen Sie keine Einzahlungserkennung oder Auszahlungsabläufe gegen SVM, solange die Transaktionseinreichung deaktiviert ist.
+:::
 
-* **Guthaben:** `getBalance` liefert lamports (÷ 10⁹ für QOR; 1 uqor = 1.000 lamports).
-* **Einzahlungen:** `getSignaturesForAddress` liefert die Transaktionshistorie einer Adresse; System-Program-Transfers bewegen natives QOR.
-* Die öffentlichen Endpunkte (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sind **schreibgeschützt**; reichen Sie Transaktionen über Ihren eigenen Node ein.
+Seit v3.1.82 stellt die SVM-Schnittstelle **natives QOR** bereit (siehe [Native QOR on the SVM Interface](/developer-guide/svm-development#native-qor)):
 
-## Ablauf-Zusammenfassung {#flow-summary}
+* **Guthaben:** `getBalance` liefert Lamports zurück (÷ 10⁹ für QOR; 1 uqor = 1,000 Lamports).
+* **Einzahlungen:** `getSignaturesForAddress` liefert die Transaktionshistorie für eine Adresse; System-Program-Transfers bewegen natives QOR.
+* Öffentliche Endpunkte (`https://svm.qore.host`, `https://svm-testnet.qore.host`) sind **nur lesend**; reichen Sie Transaktionen über Ihren eigenen Node ein.
 
-| Vorgang | Pfad | Signierung nötig? |
+## Ablaufübersicht {#flow-summary}
+
+| Vorgang | Pfad | Signierung erforderlich? |
 |---|---|---|
 | **Einzahlung** (Nutzer → Plattform) | Beobachten Sie Ihren synchronisierten Node auf Transfers an Ihre Adresse (+ Memo bei Cosmos) | Nein — nur Überwachung |
-| **Auszahlung** (Plattform → Nutzer) | Transfer erstellen, offline signieren, broadcasten | Cosmos: hybrides PQC · EVM: Standard secp256k1 |
-| **Guthaben / Sweep** | REST-/EVM-/SVM-Guthabenabfrage + Transfer | Signieren nur für den Sweep |
+| **Auszahlung** (Plattform → Nutzer) | Transfer erstellen, offline signieren, übertragen | Cosmos: Hybrid-PQC · EVM: Standard-secp256k1 |
+| **Guthaben / Sweep** | REST-/EVM-/SVM-Guthabenabfrage + Transfer | Nur für den Sweep signieren |
 
-## Verwandte Themen
+## Weiterführende Links
 
-* [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) — Node-Einrichtung, Downloads, Snapshot
-* [Betrieb eines Nodes](/developer-guide/running-a-node) — Deployment, Pruning, Indexierung
-* [Post-Quanten-Signierung](/developer-guide/post-quantum-signing) — die FIPS-204-Bibliotheken hinter hybriden Auszahlungen
-* [Netzwerke](/appendix/networks) — Chain-IDs, Endpunkte, Dezimalstellen pro Schnittstelle
+* [Connecting to Mainnet](/getting-started/connecting-to-mainnet) — Node-Setup, Downloads, Snapshot
+* [Running a Node](/developer-guide/running-a-node) — Deployment, Pruning, Indexing
+* [Post-Quantum Signing](/developer-guide/post-quantum-signing) — die FIPS-204-Bibliotheken hinter Hybrid-Auszahlungen
+* [Networks](/appendix/networks) — Chain-IDs, Endpunkte, Dezimalstellen pro Schnittstelle

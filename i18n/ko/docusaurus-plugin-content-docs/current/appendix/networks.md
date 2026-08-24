@@ -17,7 +17,7 @@ QoreChain 네트워크에 대한 통합 레퍼런스 — 체인 식별자, EVM �
 | **Cosmos 체인 ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM 체인 ID (EIP-155)** | **9801** (16진수 `0x2649`) | **9800** (16진수 `0x2648`) |
 | **라이브 시작** | 2026년 6월 7일 23:59 UTC | — |
-| **체인 버전** | v3.1.85 | v3.1.85 |
+| **체인 버전** | v3.1.92 | v3.1.92 |
 | **프레임워크** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **최소 가스 가격** | `0.1uqor` | `0.1uqor` |
 | **연결 가이드** | [메인넷에 연결하기](/getting-started/connecting-to-mainnet) | [테스트넷에 연결하기](/getting-started/connecting-to-testnet) |
@@ -39,6 +39,10 @@ QoreChain 네트워크에 대한 통합 레퍼런스 — 체인 식별자, EVM �
 
 :::note
 퍼블릭 SVM 엔드포인트는 **읽기 전용**입니다(트랜잭션 제출은 엣지에서 비활성화되어 있습니다). SVM 쓰기가 필요하면 자체 노드를 운영하세요. 대규모 또는 프로덕션 워크로드의 경우에도 자체 노드 운영을 권장합니다 — [노드 실행하기](/developer-guide/running-a-node)를 참고하세요.
+:::
+
+:::caution SVM 트랜잭션 레인 현재 비활성화됨
+퍼블릭 엔드포인트가 읽기 전용인 것과 별개로, SVM 실행 레인은 트랜잭션 제출에 대해 **현재 네트워크 전체에서 비활성화**되어 있습니다(체인 버전 v3.1.89부터, 8월 22일). 여기에는 퍼블릭 `svm.qore.host` / `svm-testnet.qore.host` 엔드포인트뿐 아니라 자체 노드를 통한 제출도 포함됩니다. 자세한 내용은 [SVM 개발](/developer-guide/svm-development)을 참고하세요. 레인이 다시 열릴 때까지는 Cosmos 또는 EVM 인터페이스를 사용하세요.
 :::
 
 ## 토큰 및 주소

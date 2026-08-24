@@ -10,10 +10,14 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.85**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.92**. Substitute `--chain-id qorechain-diana` for the testnet.
 :::
 
 ---
+
+:::caution SVM transaction submission is currently disabled
+As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens.
+:::
 
 ## Overview
 
@@ -41,7 +45,7 @@ As of chain version **v3.1.82**, the SVM interface is a **first-class native-QOR
 * **System Program transfers move native QOR** — a Solana-style transfer instruction moves the same funds a Cosmos `MsgSend` or an EVM transfer would.
 * **SVM address form** — an account's SVM address is its 20 account bytes right-padded to 32 bytes and base58-encoded. All three address forms (`qor1...`, `0x...`, base58) refer to the same account.
 
-The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Run your own node (port 8899) to submit SVM transactions.
+The public endpoints (`https://svm.qore.host`, `https://svm-testnet.qore.host`) are **read-only** — transaction submission is disabled at the edge. Ordinarily you would run your own node (port 8899) to submit SVM transactions, but see the caution above: the `x/svm` transaction lane itself is currently disabled network-wide, including on your own node.
 
 ---
 

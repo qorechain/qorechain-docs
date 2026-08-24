@@ -7,28 +7,28 @@ sidebar_position: 5
 
 # WebSocket Olayları
 
-QoreChain, iki WebSocket arayüzü aracılığıyla gerçek zamanlı olay akışı sağlar: EVM uyumlu WebSocket ve QoreChain Uzlaşı Motoru RPC WebSocket.
+QoreChain, iki WebSocket arayüzü üzerinden gerçek zamanlı olay akışı sağlar: EVM uyumlu WebSocket ve QoreChain Consensus Engine RPC WebSocket'i.
 
 :::note
-Her iki WebSocket arayüzü de **`qorechain-vladi`** ana ağında (**v3.1.85** zincir sürümünde canlı) ve **`qorechain-diana`** test ağında kullanılabilir. Aşağıdaki yerel uç noktalar kendi çalıştırdığınız bir düğümü varsayar; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı ana makinesini kullanın.
+Her iki WebSocket arayüzü de **`qorechain-vladi`** mainnet'inde (zincir sürümü **v3.1.92** ile canlı) ve **`qorechain-diana`** testnet'inde kullanılabilir. Aşağıdaki yerel uç noktalar, kendi işlettiğiniz bir düğümü varsayar; uzaktan erişim için sağlayıcınızın mainnet veya testnet ana bilgisayarını kullanın.
 :::
 
 ---
 
 ## EVM WebSocket
 
-**Uç Nokta:** `ws://localhost:8546`
+**Uç nokta:** `ws://localhost:8546`
 
-EVM WebSocket, Ethereum araçlarıyla uyumlu gerçek zamanlı olay akışı için standart `eth_subscribe` yöntemini destekler.
+EVM WebSocket'i, Ethereum araçlarıyla uyumlu gerçek zamanlı olay akışı için standart `eth_subscribe` metodunu destekler.
 
 ### Abonelik Türleri
 
-| Abonelik                 | Açıklama                                          |
-| ------------------------ | ------------------------------------------------ |
-| `newHeads`               | Her yeni blok eklendiğinde bir başlık yayar      |
-| `logs`                   | İsteğe bağlı bir filtreyle eşleşen günlükleri yayar |
-| `newPendingTransactions` | Mempool'a giren işlem karmalarını yayar          |
-| `syncing`                | Senkronizasyon durumu güncellemelerini yayar     |
+| Abonelik                 | Açıklama                                              |
+| ------------------------ | ------------------------------------------------------ |
+| `newHeads`               | Her yeni blok eklendiğinde bir başlık yayınlar        |
+| `logs`                   | İsteğe bağlı bir filtreyle eşleşen logları yayınlar    |
+| `newPendingTransactions` | Mempool'a giren işlem hash'lerini yayınlar             |
+| `syncing`                | Senkronizasyon durumu güncellemelerini yayınlar        |
 
 ### Yeni Bloklara Abone Olma
 
@@ -41,7 +41,7 @@ EVM WebSocket, Ethereum araçlarıyla uyumlu gerçek zamanlı olay akışı içi
 }
 ```
 
-### Filtreyle Günlüklere Abone Olma
+### Filtreli Loglara Abone Olma
 
 ```json
 {
@@ -73,9 +73,9 @@ EVM WebSocket, Ethereum araçlarıyla uyumlu gerçek zamanlı olay akışı içi
 
 ## QoreChain RPC WebSocket
 
-**Uç Nokta:** `ws://localhost:26657/websocket`
+**Uç nokta:** `ws://localhost:26657/websocket`
 
-RPC WebSocket, QoreChain Uzlaşı Motoru olay abonelik sistemini kullanır. İstemciler, olayları türe ve özniteliklere göre filtreleyen bir sorgu dizesiyle abone olur.
+RPC WebSocket'i, QoreChain Consensus Engine olay abonelik sistemini kullanır. İstemciler, olayları türe ve niteliklere göre filtreleyen bir sorgu dizesiyle abone olur.
 
 ### Tüm Yeni Bloklara Abone Olma
 
@@ -105,7 +105,7 @@ RPC WebSocket, QoreChain Uzlaşı Motoru olay abonelik sistemini kullanır. İst
 
 ### Modüle Özgü Olaylara Abone Olma
 
-Yalnızca belirli bir modülden olayları almak için olay türüne göre filtreleyin:
+Yalnızca belirli bir modülden gelen olayları almak için olay türüne göre filtreleyin:
 
 ```json
 {
@@ -137,79 +137,79 @@ Yalnızca belirli bir modülden olayları almak için olay türüne göre filtre
 
 ### PQC Modülü
 
-| Olay Türü                  | Anahtar Öznitelikler                                 | Açıklama                                       |
-| -------------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `pqc_hybrid_verify`        | `address`, `algorithm`, `result` (pass/fail), `mode` | Her hibrit imza doğrulamasında yayılır        |
-| `pqc_hybrid_auto_register` | `address`, `algorithm`, `pubkey_hash`                | Bir PQC anahtarı otomatik kaydedildiğinde yayılır |
+| Olay Türü                  | Anahtar Nitelikler                                    | Açıklama                                          |
+| --------------------------- | ------------------------------------------------------ | -------------------------------------------------- |
+| `pqc_hybrid_verify`         | `address`, `algorithm`, `result` (pass/fail), `mode`   | Her hibrit imza doğrulamasında yayınlanır          |
+| `pqc_hybrid_auto_register`  | `address`, `algorithm`, `pubkey_hash`                  | Bir PQC anahtarı otomatik kaydedildiğinde yayınlanır |
 
 ### AI Modülü
 
-| Olay Türü         | Anahtar Öznitelikler                                                | Açıklama                                          |
-| ----------------- | ------------------------------------------------------------------- | ------------------------------------------------ |
-| `fraud_alert`     | `severity` (low/medium/high/critical), `address`, `reason`, `score` | Bir işlemde dolandırıcılık tespit edildiğinde yayılır |
-| `circuit_breaker` | `module`, `action` (tripped/reset), `threshold`, `value`            | Bir AI devre kesicisi durum değiştirdiğinde yayılır |
+| Olay Türü         | Anahtar Nitelikler                                                    | Açıklama                                              |
+| ------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------- |
+| `fraud_alert`      | `severity` (low/medium/high/critical), `address`, `reason`, `score`    | Bir işlemde dolandırıcılık tespit edildiğinde yayınlanır |
+| `circuit_breaker`  | `module`, `action` (tripped/reset), `threshold`, `value`               | Bir AI devre kesici durum değiştirdiğinde yayınlanır      |
 
-### Köprü Modülü
+### Bridge Modülü
 
-| Olay Türü              | Anahtar Öznitelikler                                           | Açıklama                                                |
-| ---------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
-| `deposit_completed`    | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Gelen bir köprü yatırımı onaylandığında yayılır         |
-| `withdrawal_completed` | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash` | Giden bir köprü çekimi onaylandığında yayılır           |
+| Olay Türü               | Anahtar Nitelikler                                                | Açıklama                                                    |
+| ------------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `deposit_completed`     | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash`      | Gelen bir köprü yatırması onaylandığında yayınlanır          |
+| `withdrawal_completed`  | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash`      | Giden bir köprü çekimi onaylandığında yayınlanır             |
 
 ### Cross-VM Modülü
 
-| Olay Türü          | Anahtar Öznitelikler                                            | Açıklama                                               |
-| ------------------ | --------------------------------------------------------------- | ----------------------------------------------------- |
-| `crossvm_request`  | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash` | Bir VM'ler arası çağrı başlatıldığında yayılır        |
-| `crossvm_response` | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`    | Bir VM'ler arası çağrı tamamlandığında yayılır        |
-| `crossvm_timeout`  | `message_id`, `source_vm`, `target_vm`, `queued_at_height`       | Bir VM'ler arası mesaj kuyruk zaman aşımını aştığında yayılır |
+| Olay Türü           | Anahtar Nitelikler                                                 | Açıklama                                                  |
+| --------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `crossvm_request`    | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash`      | Bir cross-VM çağrısı başlatıldığında yayınlanır              |
+| `crossvm_response`   | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`         | Bir cross-VM çağrısı tamamlandığında yayınlanır              |
+| `crossvm_timeout`    | `message_id`, `source_vm`, `target_vm`, `queued_at_height`            | Bir cross-VM mesajı sıra zaman aşımını aştığında yayınlanır  |
 
 ### Multilayer Modülü
 
-| Olay Türü              | Anahtar Öznitelikler                                          | Açıklama                                         |
-| ---------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
-| `anchor_submitted`     | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter` | Bir katman durum bağlaması gönderildiğinde yayılır |
-| `layer_status_changed` | `layer_id`, `previous_status`, `new_status`, `reason`          | Bir katman işletim durumunu değiştirdiğinde yayılır |
+| Olay Türü               | Anahtar Nitelikler                                              | Açıklama                                              |
+| ------------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `anchor_submitted`      | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter`      | Bir katman durum çapası gönderildiğinde yayınlanır      |
+| `layer_status_changed`  | `layer_id`, `previous_status`, `new_status`, `reason`                | Bir katman operasyonel durumunu değiştirdiğinde yayınlanır |
 
 ### RDK Modülü
 
-| Olay Türü         | Anahtar Öznitelikler                                  | Açıklama                                          |
-| ----------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| `rollup_created`  | `rollup_id`, `operator`, `settlement_type`, `profile` | Yeni bir rollup kaydedildiğinde yayılır          |
-| `batch_submitted` | `rollup_id`, `batch_index`, `state_root`, `tx_count`  | Bir uzlaşma toplu işlemi gönderildiğinde yayılır |
-| `batch_finalized` | `rollup_id`, `batch_index`, `finalized_at_height`     | Bir toplu işlem itiraz penceresini geçtiğinde yayılır |
-| `da_blob_stored`  | `rollup_id`, `blob_index`, `size_bytes`, `commitment` | Bir DA blob'u depolandığında yayılır             |
-| `da_blob_pruned`  | `rollup_id`, `blob_index`, `pruned_at_height`         | Bir DA blob'u saklama süresinden sonra budandığında yayılır |
+| Olay Türü          | Anahtar Nitelikler                                     | Açıklama                                                  |
+| -------------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
+| `rollup_created`    | `rollup_id`, `operator`, `settlement_type`, `profile`     | Yeni bir rollup kaydedildiğinde yayınlanır                   |
+| `batch_submitted`   | `rollup_id`, `batch_index`, `state_root`, `tx_count`       | Bir mutabakat toplu işi gönderildiğinde yayınlanır            |
+| `batch_finalized`   | `rollup_id`, `batch_index`, `finalized_at_height`          | Bir toplu iş itiraz penceresini geçtiğinde yayınlanır        |
+| `da_blob_stored`    | `rollup_id`, `blob_index`, `size_bytes`, `commitment`      | Bir DA blob'u depolandığında yayınlanır                      |
+| `da_blob_pruned`    | `rollup_id`, `blob_index`, `pruned_at_height`               | Bir DA blob'u saklama süresinin ardından budandığında yayınlanır |
 
 ### Burn Modülü
 
-| Olay Türü         | Anahtar Öznitelikler                                                                | Açıklama                                    |
-| ----------------- | ----------------------------------------------------------------------------------- | ------------------------------------------- |
-| `fee_distributed` | `total_fees`, `validator_amount`, `burn_amount`, `treasury_amount`, `staker_amount` | Toplanan ücretler dağıtıldığında yayılır    |
-| `tokens_burned`   | `amount`, `channel`, `block_height`                                                 | Tokenlar kalıcı olarak yakıldığında yayılır |
+| Olay Türü          | Anahtar Nitelikler                                                                  | Açıklama                                        |
+| -------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `fee_distributed`  | `total_fees`, `validator_amount`, `burn_amount`, `treasury_amount`, `staker_amount`   | Toplanan ücretler dağıtıldığında yayınlanır         |
+| `tokens_burned`    | `amount`, `channel`, `block_height`                                                    | Token'lar kalıcı olarak yakıldığında yayınlanır     |
 
 ### xQORE Modülü
 
-| Olay Türü        | Anahtar Öznitelikler                                          | Açıklama                                    |
-| ---------------- | ------------------------------------------------------------- | ------------------------------------------- |
-| `xqore_locked`   | `address`, `amount`, `lock_duration`, `tier`                  | QOR, xQORE'a kilitlendiğinde yayılır        |
-| `xqore_unlocked` | `address`, `amount`, `penalty_applied`, `penalty_amount`      | xQORE, QOR'a geri kilidi açıldığında yayılır |
-| `pvp_rebase`     | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count` | PvP yeniden tabanlama dağıtımı sırasında yayılır |
+| Olay Türü         | Anahtar Nitelikler                                              | Açıklama                                        |
+| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| `xqore_locked`     | `address`, `amount`, `lock_duration`, `tier`                          | QOR, xQORE'a kilitlendiğinde yayınlanır                |
+| `xqore_unlocked`   | `address`, `amount`, `penalty_applied`, `penalty_amount`               | xQORE, QOR'a geri kilidi açıldığında yayınlanır        |
+| `pvp_rebase`       | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count`         | PvP rebase dağıtımı sırasında yayınlanır               |
 
 ### Inflation Modülü
 
-| Olay Türü      | Anahtar Öznitelikler                                       | Açıklama                                    |
-| -------------- | ---------------------------------------------------------- | ------------------------------------------- |
-| `epoch_minted` | `epoch`, `minted_amount`, `inflation_rate`, `block_height` | Her enflasyon epoch'unun sonunda yayılır    |
+| Olay Türü      | Anahtar Nitelikler                                          | Açıklama                                        |
+| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------ |
+| `epoch_minted`  | `epoch`, `minted_amount`, `inflation_rate`, `block_height`       | Her enflasyon epoch'unun sonunda yayınlanır             |
 
-### RL Uzlaşı Modülü
+### RL Consensus Modülü
 
-PRISM parametre ayarlamaları ve devre kesici etkinliği bu modül aracılığıyla yayılır.
+PRISM parametre ayarlamaları ve devre kesici etkinliği bu modül üzerinden yayınlanır.
 
-| Olay Türü                   | Anahtar Öznitelikler                                          | Açıklama                                                   |
-| --------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------- |
-| `rl_action_applied`         | `action_type`, `param_key`, `old_value`, `new_value`, `reward` | PRISM ajanı bir parametre ayarlaması uyguladığında yayılır |
-| `circuit_breaker_triggered` | `reason`, `param_key`, `attempted_value`, `limit`              | PRISM devre kesicisi bir eylemi engellediğinde yayılır     |
+| Olay Türü                    | Anahtar Nitelikler                                                | Açıklama                                                        |
+| ------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `rl_action_applied`           | `action_type`, `param_key`, `old_value`, `new_value`, `reward`        | PRISM ajanı bir parametre ayarlaması uyguladığında yayınlanır        |
+| `circuit_breaker_triggered`   | `reason`, `param_key`, `attempted_value`, `limit`                      | PRISM devre kesicisi bir eylemi engellediğinde yayınlanır             |
 
 ---
 
@@ -237,7 +237,7 @@ provider.on(filter, (log) => {
 });
 ```
 
-### QoreChain RPC WebSocket (Yerel)
+### QoreChain RPC WebSocket (Native)
 
 ```javascript
 const ws = new WebSocket("ws://localhost:26657/websocket");
@@ -272,6 +272,6 @@ ws.onmessage = (event) => {
 
 ## Notlar
 
-- **Bağlantı sınırları**: Varsayılan maksimum WebSocket bağlantısı sayısı sınırsızdır (`max-open-connections = 0`). Üretim dağıtımları için `app.toml` dosyasında bir sınır belirleyin.
-- **Olay tamponu**: RPC WebSocket, abonelik başına en fazla 200 olayı tamponlar. İstemci geride kalırsa, eski olaylar atılır.
-- **Yeniden bağlanma**: İstemciler, WebSocket bağlantıları düğüm yeniden başlatmaları veya yükseltmeleri sırasında kesilebileceğinden, üstel geri çekilmeli otomatik yeniden bağlanma uygulamalıdır.
+- **Bağlantı limitleri**: Varsayılan maksimum WebSocket bağlantı sayısı sınırsızdır (`max-open-connections = 0`). Üretim dağıtımları için `app.toml` içinde bir limit belirleyin.
+- **Olay arabelleği**: RPC WebSocket'i, abonelik başına en fazla 200 olayı arabelleğe alır. İstemci geride kalırsa, eski olaylar düşürülür.
+- **Yeniden bağlanma**: İstemciler, düğüm yeniden başlatmaları veya yükseltmeleri sırasında WebSocket bağlantılarının kesintiye uğrayabileceğini göz önünde bulundurarak üstel geri çekilmeli otomatik yeniden bağlanma uygulamalıdır.

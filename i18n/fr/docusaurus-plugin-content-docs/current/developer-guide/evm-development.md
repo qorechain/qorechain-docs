@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain exécute un environnement d'exécution entièrement compatible EVM sur le QoreChain EVM Engine, ce qui vous permet de déployer des contrats intelligents Solidity et d'interagir avec eux à l'aide d'outils familiers. Le module EVM expose une interface JSON-RPC sur le **port 8545** (WebSocket sur le **8546**) qui prend en charge les flux de travail de développement Ethereum standard.
 
 :::note
-Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), en service depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.85**. Pour le testnet **`qorechain-diana`**, utilisez l'EVM chain ID **9800**.
+Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), en service depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.92**. Pour le testnet **`qorechain-diana`**, utilisez l'EVM chain ID **9800**.
 :::
 
 ---
@@ -188,7 +188,7 @@ Pour la sécurité post-quantique au sein de l'EVM :
 QoreChain étend le JSON-RPC avec un espace de noms `qor_` pour les requêtes spécifiques à la chaîne :
 
 | Méthode                     | Description                                                       |
-| --------------------------- | ----------------------------------------------------------------- |
+| --------------------------- | ------------------------------------------------------------------- |
 | `qor_getPQCKeyStatus`       | Vérifie si un compte possède une clé publique PQC enregistrée     |
 | `qor_getAIStats`            | Récupère les statistiques du moteur d'IA (nombre d'anomalies, distribution des risques) |
 | `qor_getCrossVMMessage`     | Interroge le statut d'un message cross-VM par ID                  |

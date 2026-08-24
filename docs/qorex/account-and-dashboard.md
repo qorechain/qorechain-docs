@@ -22,11 +22,21 @@ You can sign in from **Sign in** on the Home tab, or during onboarding. Methods:
 The passkey offer appears only after **email-code** sign-in. When you sign in with an identity provider (Google or Dashboard), that provider manages its own authentication, so a passkey cannot be attached to those accounts.
 :::
 
+## Several accounts from one phrase {#accounts}
+
+Settings → **Your accounts** lets you create, switch, and rename up to **20 accounts**, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own distinct `qor1…` address with its own balance, and — because a handle binds to an **address**, not to the wallet as a whole — its own optional @handle. Whichever account is active is the one Send, Receive, Staking, and the dApp browser use. The browser extension does not have this feature; it manages exactly one account.
+
 ## @handle {#handle}
 
 Claim a unique name (for example `@liviu`) bound to your address by **dual signatures** (a registry ed25519 signature + your own secp256k1 signature). Anyone can then send to your @handle. Resolution is **verify-then-pin** (trust-on-first-use), so if a handle's key is ever silently changed, QoreX flags it.
 
+Because a handle binds to an address rather than to your wallet, claiming one is **per address** — if you have [several accounts](#accounts), each can carry its own @handle, and claiming one for an account doesn't automatically give the others a name. The browser extension can also claim a handle for its own single address, straight from the popup.
+
 If the handle registry is temporarily unreachable, the screen degrades to **"Handles coming soon"** and everything else keeps working; handles light up again automatically when the registry returns.
+
+:::note Claiming a handle vs. linking to the Dashboard
+These are two separate, unrelated actions. Claiming an @handle lets **other people send to you by name** — it does nothing on its own beyond that. Linking to the Dashboard (below) connects your wallet to a Dashboard account so the two can show the same data. You can do either without the other.
+:::
 
 ## Linked account {#linked-account}
 
@@ -43,7 +53,7 @@ Signing in *via* **Continue with Dashboard** links the two implicitly — there 
 With the Dashboard connected:
 
 - **Connect with QoreX** on the Dashboard pairs it to your wallet via a `qorex://connect` deep link plus a signed ownership proof.
-- **Transfers initiated on the Dashboard** arrive in QoreX as `qorex://tx` requests. They are decoded, shown to you in full, and signed **only in the app** after biometric approval — and only from the app's own derived address.
+- **Transfers initiated on the Dashboard** arrive in QoreX as `qorex://tx` requests. They are decoded, shown to you in full, and signed **only in the app** after biometric approval — and only from the app's own derived address. Because a `qor1…` address is equally valid on mainnet and testnet, every Dashboard-initiated request states which network it targets, and QoreX refuses to act on it if that doesn't match the network you're currently connected to — it never switches networks on a request's behalf.
 - If a Connect or transfer request arrives while you are **not signed in**, QoreX offers an inline **"Sign in to Dashboard"** step so you can continue without hitting a dead end.
 - **Your addresses (Settings)** — lists every account derived from this wallet, plus **read-only** addresses you linked from other wallets (Keplr / MetaMask / Phantom). Read-only entries are labeled with the wallet that created them; trying to send from one explains that you must send from the wallet that created it.
 

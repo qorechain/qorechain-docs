@@ -17,7 +17,7 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
 | **Canlıya geçiş tarihi** | 7 Haziran 2026, 23:59 UTC | — |
-| **Zincir sürümü** | v3.1.85 | v3.1.85 |
+| **Zincir sürümü** | v3.1.92 | v3.1.92 |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
 | **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |
@@ -39,6 +39,10 @@ Tüm genel uç noktalar HTTPS üzerinden sunulur.
 
 :::note
 Genel SVM uç noktaları **salt okunurdur** (işlem gönderimi uçta devre dışıdır); SVM yazma işlemleri için kendi düğümünüzü çalıştırın. Yoğun veya üretim iş yükleri için kendi düğümünüzü çalıştırın — bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node).
+:::
+
+:::caution SVM işlem hattı şu anda devre dışı
+Genel uç noktaların salt okunur olmasının ötesinde, SVM yürütme hattı **şu anda ağ genelinde işlem gönderimi için devre dışıdır** (v3.1.89 zincir sürümünden bu yana, 22 Ağustos) — bu yalnızca genel `svm.qore.host` / `svm-testnet.qore.host` uç noktalarını değil, kendi düğümünüz üzerinden yapılan gönderimi de kapsar. Ayrıntılar için bkz. [SVM Geliştirme](/developer-guide/svm-development). Hat yeniden açılana kadar Cosmos veya EVM arayüzlerini kullanın.
 :::
 
 ## Token ve adresler

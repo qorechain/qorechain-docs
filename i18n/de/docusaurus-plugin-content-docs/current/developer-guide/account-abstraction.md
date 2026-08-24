@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain bietet **Account Abstraction auf Protokollebene** über das Modul `x/abstractaccount`. Dies ermöglicht programmierbare Konten mit flexiblen Authentifizierungsregeln, Session Keys, Ausgabenlimits und Social Recovery — ganz ohne externe Smart-Contract-Infrastruktur.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, live seit dem 7. Juni 2026 mit der Chain-Version **v3.1.85**. Ersetzen Sie für das Testnet `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, live seit dem 7. Juni 2026 mit der Chain-Version **v3.1.92**. Ersetzen Sie für das Testnet `--chain-id qorechain-diana`.
 :::
 
 ## Überblick
