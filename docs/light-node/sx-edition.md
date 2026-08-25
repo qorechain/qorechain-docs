@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Edition — Server Daemon
 
-The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This is the light node's **v3.1.1** line (its own version, separate from the chain version).
+The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This is the light node's **v3.1.2** line (its own version, separate from the chain version).
 
 ## Install
 
@@ -50,13 +50,17 @@ The most relevant configuration options, at a usage level:
 | --- | --- |
 | `chain_id` | The network identifier (for example `qorechain-diana` on testnet, `qorechain-vladi` on mainnet). |
 | `rpc_addr` | The chain RPC endpoint the daemon connects to. Leave empty to run in **local-only mode**. |
-| `primary_addr` / `witness_addrs` | The primary and witness RPC endpoints used by the skipping light client. |
+| `primary_addr` / `witness_addrs` | The primary RPC endpoint, and the witness endpoints its reported header is corroborated against — see [Why run a light node](/light-node/overview#why-run-a-light-node). At least one distinct, reachable witness is what moves `Assurance` from `trusted-single-source` to `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | Light-client trust window (for example `168h`) and allowed clock drift. |
 | `data_dir` | Where the node stores its database and headers. |
 | `keyring_backend` / `key_name` | Keyring backend (`file` or `os`) and the operator key name. |
 | `[delegation]` | Auto-compound on/off, compound interval, minimum reward to claim, validator set, split weights, rebalancing, and minimum reputation. |
 | `[telemetry]` | Whether telemetry is enabled and the refresh intervals for validators, network, bridge, and tokenomics. |
 | `log_level` / `log_format` | Logging verbosity (`debug`, `info`, `warn`, `error`) and format (`text` or `json`). |
+
+:::note Witness endpoints are validated at startup
+A witness on the same host as the primary is refused — a compromised endpoint would simply agree with itself, so it corroborates nothing. A plaintext `http://` witness on a remote host is also refused, since an attacker who can rewrite that connection can answer as every witness at once; loopback `http://` is fine. Point witnesses at RPC endpoints you have independent reasons to trust.
+:::
 
 Delegation defaults enable auto-compound on a `1h` interval and reputation-aware rebalancing — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
 

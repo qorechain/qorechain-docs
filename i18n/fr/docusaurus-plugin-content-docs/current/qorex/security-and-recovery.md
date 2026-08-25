@@ -16,7 +16,7 @@ QoreX est **non-custodial** : vos clés n'existent que sur votre propre appareil
 
 **Faites au moins l'une de ces actions — juste après avoir créé votre portefeuille, pas plus tard :**
 
-1. **Notez votre phrase de récupération de 24 mots** et conservez-la hors ligne, dans un endroit durable (pas une capture d'écran, pas une note synchronisée dans le cloud, pas un message que vous vous envoyez). C'est la seule chose capable de restaurer votre portefeuille, sur n'importe quel appareil, à tout moment.
+1. **Notez votre phrase de récupération de 24 mots** et conservez-la hors ligne, dans un endroit durable (pas une capture d'écran, pas une note synchronisée dans le cloud, pas un message que vous vous envoyez). C'est la seule chose capable de restaurer votre portefeuille, sur n'importe quel appareil, à tout moment — sur mobile, la restauration directe à partir de la phrase nécessite la version **1.0.4 ou ultérieure** (les versions antérieures ne proposent que le parcours par gardien ; voir [Restaurer un portefeuille existant](/qorex/getting-started#2-restore-an-existing-wallet)). L'extension restaure toujours directement à partir de la phrase, à toutes les versions.
 2. **Configurez la [récupération sociale](#social-recovery)** avec des gardiens en qui vous avez confiance. Cela vous permet de récupérer votre portefeuille même si vous perdez la phrase, sans qu'aucun gardien pris isolément ne puisse jamais accéder à vos fonds.
 
 Faire les deux est l'option la plus sûre — la phrase vous couvre si vous changez d'appareil ou si l'application est indisponible ; les gardiens vous couvrent si vous perdez la phrase elle-même.

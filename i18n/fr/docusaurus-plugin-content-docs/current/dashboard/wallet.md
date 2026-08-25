@@ -47,6 +47,8 @@ Si votre portefeuille n'a pas encore QoreChain configuré, ajoutez-le d'abord �
 
 Vous pouvez lier plus d'une adresse QoreX au même compte Dashboard — par exemple une depuis une extension Firefox et une depuis Chrome, ou un téléphone et un ordinateur portable. Sélectionnez **Add another wallet** pour répéter le processus avec une deuxième adresse ; chaque adresse liée peut recevoir sa propre étiquette, et l'une d'elles est marquée par défaut pour l'envoi, le tout depuis l'onglet **Connect Wallets**.
 
+**Changer de portefeuille depuis l'onglet Wallet.** Dès que plus d'un portefeuille est rattaché — QoreX et MetaMask, ou deux adresses QoreX —, une rangée de puces de portefeuille apparaît en haut de l'onglet **Wallet** lui-même, une par portefeuille rattaché, avec celle du portefeuille actif marquée. Cliquez sur une puce pour changer le portefeuille dont vous consultez le solde et l'historique, sans quitter l'onglet ni aller sur **Connect Wallets**. La rangée est masquée lorsqu'un seul portefeuille est rattaché, puisqu'un sélecteur n'aurait alors rien à faire.
+
 ### Se connecter avec QoreX — application mobile {#connect-qorex-app}
 
 1. Sur la page Wallet, repérez la carte **QoreX wallet** et sélectionnez **Connect with QoreX**.

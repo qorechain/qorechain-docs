@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Light-Node-Überblick
 
-Die **QoreChain Light Node** ist ein leichtgewichtiger Client, der dem QoreChain-Netzwerk folgt, ohne einen vollständigen Validator- oder Archivknoten zu betreiben. Anstatt jede Transaktion erneut abzuspielen, verifiziert sie Block-Header kryptografisch, verfolgt Delegationen und Belohnungen und streamt Live-Netzwerk-Telemetrie — alles aus einer kleinen, eigenständigen Binärdatei.
+Die **QoreChain Light Node** ist ein leichtgewichtiger Client, der dem QoreChain-Netzwerk folgt, ohne einen vollständigen Validator- oder Archivknoten zu betreiben. Anstatt jede Transaktion erneut abzuspielen, gleicht sie Block-Header über mehrere RPC-Endpunkte hinweg ab, verfolgt Delegationen und Belohnungen und streamt Live-Netzwerk-Telemetrie — alles aus einer kleinen, eigenständigen Binärdatei.
 
 Der Betrieb einer Light Node ermöglicht es Ihnen, an der Ökonomie des Netzwerks teilzunehmen und seinen Zustand zu beobachten, ohne die Speicher-, Bandbreiten- und Betriebskosten eines vollständigen Knotens.
 
 ## Eine eigene Versionslinie
 
-Die Light Node wird in ihrer **eigenen Versionslinie — derzeit v3.1.1** — ausgeliefert, die sich von der **Chain-Release-Version unterscheidet** (die Chain befindet sich auf einem separaten `v3.x`-Track). Die v3.1.1-Linie der Light Node ist mit `qorechain-core` abgestimmt: Sie fügt eine Regressionssuite für Post-Quanten-Kryptografie (PQC) hinzu (Keygen, Sign, Verify und Tamper-Detection), die das Signaturverifizierungsverhalten des Cores absichert und in Continuous Integration ausführt.
+Die Light Node wird in ihrer **eigenen Versionslinie — derzeit v3.1.2** — ausgeliefert, die sich von der **Chain-Release-Version unterscheidet** (die Chain befindet sich auf einem separaten `v3.x`-Track). Binärdateien werden mit einem **SHA-256-Checksum-Manifest** veröffentlicht — siehe [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) für das Download-Muster — und v3.1.2 ist die erste Version, deren Windows- und macOS-Binärdateien Keygen/Sign/Verify tatsächlich bestehen (frühere Builds stammten aus der Zeit vor einem Wechsel der Rust-Bibliothek und schlugen auf diesen Plattformen stillschweigend fehl). Sie ist derzeit im **Testnet**-Release-Channel freigegeben; der Mainnet-Channel wird absichtlich zurückgehalten, um vor der Freigabe eine längere Bewährungsphase zu durchlaufen — falls ein Mainnet-Download-Link einen 404-Fehler liefert, liegt das daran, nicht an einem defekten Link.
 
-Wenn Sie Dokumentation oder Release-Notes lesen, behandeln Sie die Version der Light Node (v3.1.1) und die Version der Chain als zwei separate Zahlen, die zufällig eine Hauptserie teilen.
+Wenn Sie Dokumentation oder Release-Notes lesen, behandeln Sie die Version der Light Node (v3.1.2) und die Version der Chain als zwei separate Zahlen, die zufällig eine Hauptserie teilen.
 
-## Warum eine Light Node betreiben
+## Warum eine Light Node betreiben {#why-run-a-light-node}
 
 - **Verdienen Sie einen Anteil an den Block-Belohnungen.** Aktive, registrierte Light Nodes sind für den unten beschriebenen **3%-Light-Node-Belohnungsanteil** berechtigt.
-- **Verifizieren Sie die Chain selbst.** Der Knoten führt eine Header-Verifizierung mit einem Skipping-Light-Client durch, sodass Sie eine kryptografische Zusicherung des Chain-Zustands erhalten, ohne einer entfernten API zu vertrauen.
+- **Überprüfen Sie den Chain-Zustand, der Ihnen angezeigt wird.** Der Knoten ruft die neueste Höhe parallel von seinem primären RPC-Endpunkt und von jedem konfigurierten Witness-Endpunkt ab und speichert einen Header nur, wenn diese sich über den Block-Hash einig sind — das erhöht die Hürde vom Vertrauen in einen einzelnen Endpunkt hin zur Notwendigkeit, dass alle konfigurierten Endpunkte gleichzeitig kompromittiert sein müssten. Dies ist ein Abgleich über unabhängige Quellen, **keine vollständige kryptografische Konsensverifizierung** (keine Prüfung von Validatoren-Set oder Commit-Signaturen) — der Knoten meldet, in welchem Modus er läuft, über seinen `Assurance`-Status (`trusted-single-source` ohne konfigurierte Witnesses oder `corroborated-across-sources` mit mindestens einem).
 - **Delegieren und automatisch verzinsen.** Verwalten Sie delegierten Stake über mehrere Validatoren hinweg, aufgeteilt nach Gewichtung, und verzinsen Sie Belohnungen automatisch.
 - **Beobachten Sie das Netzwerk live.** Echtzeit-Telemetrie deckt Validatoren, Konsens, die Bridge und Tokenomics ab.
 - **Post-Quanten ab dem ersten Tag.** Schlüssel und Signaturen verwenden Dilithium-5 (ML-DSA-87).
@@ -47,7 +47,7 @@ Um für diesen Anteil berechtigt zu sein, muss eine Light Node **on-chain regist
 
 ## Kernfunktionen auf einen Blick
 
-- **Skipping-Light-Client** — verifiziert Header, ohne vollständige Blöcke herunterzuladen, und synchronisiert sich schnell, selbst aus einem Cold Start.
+- **Header-Abgleich aus mehreren Quellen** — überprüft den neuesten Block-Hash gegen jeden konfigurierten Witness-Endpunkt, bevor er vertraut wird, ohne vollständige Blöcke herunterzuladen, und synchronisiert sich schnell, selbst aus einem Cold Start.
 - **Delegiertes Staking** — staken Sie über mehrere Validatoren hinweg mit konfigurierbaren Aufteilungsgewichten.
 - **Auto-Compound-Belohnungen** — beanspruchen und re-delegieren Sie Belohnungen in einem konfigurierbaren Intervall.
 - **Reputationsbewusstes Rebalancing** — verschieben Sie die Delegation automatisch hin zu Validatoren mit höherer Reputation.

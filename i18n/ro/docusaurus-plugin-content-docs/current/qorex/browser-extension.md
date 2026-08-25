@@ -25,15 +25,17 @@ Recenziile magazinelor ajung în momente diferite, astfel încât versiunea publ
 
 | Browser | Versiune publicată |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 trimisă, în curs de revizuire) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 trimisă, în curs de revizuire) |
-| **Safari (macOS)** | livrată în interiorul aplicației macOS **QoreX Wallet**, care folosește propria numerotare `1.x` — Mac App Store servește în prezent **1.1** (conține extensia 0.1.5); **1.2** (conținând 0.1.9) este trimisă și în curs de revizuire |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 trimisă, încă în curs de revizuire; listarea este blocată pentru trimiteri noi până când acea revizuire se încheie, așa că 0.2.2 nu a fost încă trimisă acolo) |
+| **Safari (macOS)** | livrată în interiorul aplicației macOS **QoreX Wallet**, care folosește propria numerotare `1.x` — Mac App Store servește în prezent **1.3** (conține extensia **0.2.2**) |
 
-Este posibil ca funcțiile mai noi să nu fie încă live în browserul tău — verifică tabelul de mai sus înainte de a presupune că ceva descris aici este disponibil.
+Este posibil ca funcțiile mai noi să nu fie încă live în browserul tău — verifică tabelul de mai sus înainte de a presupune că ceva descris aici este disponibil. Dacă Dashboard-ul îți spune că extensia ta trebuie actualizată, înseamnă că acțiunea respectivă are o versiune minimă specifică (de obicei 0.2.2, pentru staking) — nu că build-ul tău este în general vechi.
 
 **0.1.5** a adăugat [descoperirea prin Solana Wallet Standard](#standards), [deblocarea cu passkey](#security), o [lane SVM pentru dApp](#standards) complet implementată și [puntea de conectare cu Dashboard-ul](#dashboard-bridge). (Versiunea 0.1.4 nu a fost niciodată publicată — modificările ei ajung la utilizatori odată cu 0.1.5.)
 
 **0.1.6–0.1.9** au adăugat, în ordine: trimiteri care țin cont de vesting, cu mesaje sincere de refuz din partea băncii; adresa contului și soldul live afișate direct pe ecranul principal al popup-ului; și, în **0.1.9**, [plata către un @handle](#handle-send) direct din Send, un [ecran Receive cu cod QR al adresei](#receive), un [selector de limbă](#language) (zece limbi, potrivind setul aplicației mobile) și eliminarea unei confuze "date a următoarei deblocări" din [soldul de vesting](#vesting).
+
+**0.2.2** a adăugat [staking, direct din extensie](#stake) — propriul ecran Stake (validatori cu comision, totalul tău în stake, recompensele în așteptare și delegare / unstake / revendicare); [mai multe conturi dintr-o singură frază de recuperare](#wallet), la fel ca aplicația mobilă; corecția care permite butonului de staking al **Dashboard-ului** să ajungă efectiv la extensie (un portofel creat doar în extensie nu putea anterior să facă staking prin Dashboard deloc — vezi [puntea către Dashboard](#dashboard-bridge)); revendicarea funcțională a @handle-ului din browser; și numărul de build afișat în subsolul popup-ului.
 
 **Suprafața de permisiuni nu s-a schimbat din versiunea 0.1.3** — vezi [Ce permisiuni cere QoreX](#permissions).
 
@@ -50,8 +52,8 @@ Deschide popup-ul și alege:
 
 Extensia deține propriile chei; nu necesită aplicația mobilă. Poți, de asemenea, exporta mnemonica din popup. Cheile nu părăsesc niciodată dispozitivul.
 
-:::note Un cont per profil de browser
-Spre deosebire de aplicația mobilă, care poate deține mai multe conturi QoreChain dintr-o singură frază de recuperare, extensia gestionează exact **un** cont. Staking, Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, cererile de plată și asocierea dispozitivelor sunt disponibile doar pe mobil — vezi [QoreX Wallet](/qorex/overview#platform-availability) pentru comparația completă.
+:::note Mai multe conturi dintr-o singură frază (din 0.2.2)
+Extensia poate acum crea și comuta între mai multe conturi din aceeași frază de recuperare, la fel ca aplicația mobilă — fraza pe care ai notat-o deja restaurează fiecare dintre ele. Comutarea mută totul odată cu ea: trimiterea, staking-ul, primirea și @handle-ul tău urmează întotdeauna contul activ. Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, cererile de plată și asocierea dispozitivelor rămân disponibile doar pe mobil — vezi [QoreX Wallet](/qorex/overview#platform-availability) pentru comparația completă.
 :::
 
 ## Contul, soldul și @handle-ul tău {#account}
@@ -80,6 +82,25 @@ Rezolvarea este verificată în două moduri înainte ca QoreX să o folosească
 ## Receive {#receive}
 
 Atinge **Receive** în popup pentru a-ți afișa adresa `qor1…` sub formă de cod QR (cu pictograma QoreChain integrată), alături de un buton de copiere — scaneaz-o de pe un telefon sau lipește adresa direct.
+
+## Fă staking din extensie {#stake}
+
+Începând cu **0.2.2**, popup-ul are propriul ecran **Stake** — un portofel creat doar în extensie nu mai are nevoie de aplicația mobilă pentru a câștiga recompense din staking.
+
+1. Deschide popup-ul și mergi la **Stake**.
+2. Ecranul listează validatorii activi cu comisionul lor, totalul tău aflat curent în stake și orice recompense în așteptare de revendicat. Validatorii pe care rețeaua i-a **întemnițat (jailed)** sunt excluși din listă — delegarea către unul dintre ei nu este niciodată ceea ce vrei.
+3. Pentru a delega, alege un validator și o sumă, apoi confirmă. QoreX semnează cu semnătura hibridă post-cuantică obligatorie, la fel ca la o trimitere.
+4. **Unstake** și **claim** funcționează din același ecran. Unstake-ul pornește perioada de unbonding de 21 de zile — vezi [Staking & Delegation](/user-guide/staking-and-delegation) pentru ce înseamnă asta.
+
+Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM.
+
+### Aprobarea unei cereri de staking din Dashboard {#stake-dashboard}
+
+[Dashboard-ul](/dashboard/staking-and-validators) QoreChain compune cererile de staking, dar nu le poate semna — cheia ta nu părăsește niciodată seiful extensiei. Când apeși **Continue in QoreX** pe Dashboard, cererea se deschide în extensie pentru ca tu să o verifici (validator și sumă) și să o aprobi, exact ca la o trimitere. Această conexiune a fost întreruptă în 0.2.1 (extensia se raporta ca "prea veche" chiar și atunci când era cel mai nou build publicat — problema reală era un pas intern lipsă, nu vechimea versiunii); a fost corectată începând cu **0.2.2**. Dacă folosești un build mai vechi, vezi [ce versiune este live unde](#versions).
+
+:::note Dacă o tranzacție apare ca „retrogradată" (downgraded) în loc de reușită
+Dashboard-ul afișează ocazional o tranzacție ca **downgraded**, în loc de un succes curat. Asta înseamnă că fondurile tale s-au mutat, dar stratul de semnătură post-cuantică nu a fost găsit on-chain pentru acea tranzacție — nu este ceva ce ai făcut greșit și nu este ceva ce poți repara din partea ta. Este o eroare de partea noastră; te rugăm să o raportezi echipei de suport ca să putem investiga. Mesajul rămâne deliberat pe ecran, în loc să dispară, ca să ai timp să-l citești și să-l raportezi.
+:::
 
 ### Trimiterea pe rețele externe {#send-external}
 
@@ -179,9 +200,11 @@ Pentru lane-ul **Native** al QoreChain, folosește furnizorul în stil Keplr de 
 
 Aprobările sunt **per origine**: prima conexiune la un site deschide un popup de aprobare care arată originea, aprobarea dezvăluie doar adresa ta publică, iar aprobarea unui site nu acordă nimic altui site.
 
-### Puntea către Dashboard (v0.1.5) {#dashboard-bridge}
+### Puntea către Dashboard (v0.1.5, extinsă în v0.2.2) {#dashboard-bridge}
 
 Versiunea 0.1.5 adaugă o punte limitată strict la **`dashboard.qorechain.io`**: `window.qorex.native.connectProof(sessionId)` semnează dovada de asociere *Connect with QoreX* (back-end-ul re-verifică semnătura), iar `executeTransfer({ to, amountUqor, memo })` aprobă și transmite un transfer de QOR propus de Dashboard, returnând `txHash`. Aceste metode sunt refuzate pe orice altă origine.
+
+**0.2.2** adaugă `native:executeRequest`, care acceptă o cerere întreagă propusă de Dashboard — inclusiv [staking](#stake-dashboard) — validată față de același parser comun pe care QoreX îl folosește peste tot: refuzată la o nepotrivire de rețea, o origine străină, o adresă care nu este a ta, un tip de cerere necunoscut sau o cerere de staking care conține un `toAddress` (cererile de staking nu au unul).
 
 Deoarece o adresă `qor1…` este la fel de validă atât pe mainnet, cât și pe testnet, o cerere propusă de Dashboard specifică rețeaua vizată, iar QoreX refuză să acționeze asupra ei dacă aceasta nu se potrivește cu rețeaua la care extensia este conectată în prezent — nu va comuta niciodată rețele în numele unei cereri.
 

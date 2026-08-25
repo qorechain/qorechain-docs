@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Édition SX — Démon serveur
 
-L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Il s'agit de la ligne **v3.1.1** du light node (sa propre version, distincte de la version de la chaîne).
+L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Il s'agit de la ligne **v3.1.2** du light node (sa propre version, distincte de la version de la chaîne).
 
 ## Installation
 
@@ -50,13 +50,17 @@ Les options de configuration les plus pertinentes, au niveau de l'usage :
 | --- | --- |
 | `chain_id` | L'identifiant du réseau (par exemple `qorechain-diana` sur le testnet, `qorechain-vladi` sur le mainnet). |
 | `rpc_addr` | Le point de terminaison RPC de la chaîne auquel le démon se connecte. Laissez vide pour fonctionner en **mode local uniquement**. |
-| `primary_addr` / `witness_addrs` | Les points de terminaison RPC primaire et témoins utilisés par le light client à sauts (skipping light client). |
+| `primary_addr` / `witness_addrs` | Le point de terminaison RPC primaire, et les points de terminaison témoins par rapport auxquels son en-tête rapporté est corroboré — voir [Pourquoi exécuter un light node](/light-node/overview#why-run-a-light-node). Au moins un témoin distinct et joignable est ce qui fait passer `Assurance` de `trusted-single-source` à `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | Fenêtre de confiance du light client (par exemple `168h`) et dérive d'horloge autorisée. |
 | `data_dir` | L'emplacement où le nœud stocke sa base de données et ses en-têtes. |
 | `keyring_backend` / `key_name` | Backend de trousseau de clés (`file` ou `os`) et nom de la clé de l'opérateur. |
 | `[delegation]` | Auto-compound activé/désactivé, intervalle de compoundage, récompense minimale à réclamer, ensemble de validateurs, pondérations de répartition, rééquilibrage et réputation minimale. |
 | `[telemetry]` | Activation de la télémétrie et intervalles de rafraîchissement pour les validateurs, le réseau, le pont et la tokenomics. |
 | `log_level` / `log_format` | Verbosité des journaux (`debug`, `info`, `warn`, `error`) et format (`text` ou `json`). |
+
+:::note Les points de terminaison témoins sont validés au démarrage
+Un témoin situé sur le même hôte que le primaire est refusé — un point de terminaison compromis se contenterait de confirmer sa propre version, ce qui ne corrobore rien. Un témoin en `http://` en clair sur un hôte distant est également refusé, car un attaquant capable de réécrire cette connexion peut répondre à la place de tous les témoins à la fois ; un `http://` en boucle locale (loopback) est autorisé. Pointez les témoins vers des points de terminaison RPC en lesquels vous avez des raisons indépendantes de faire confiance.
+:::
 
 Les valeurs par défaut de la délégation activent l'auto-compound sur un intervalle de `1h` ainsi que le rééquilibrage tenant compte de la réputation — voir [Récompenses et surveillance](/light-node/rewards-and-monitoring) pour le détail de leur fonctionnement.
 

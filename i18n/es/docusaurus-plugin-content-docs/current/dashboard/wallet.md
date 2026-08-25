@@ -47,6 +47,8 @@ Si tu monedero todavía no tiene QoreChain configurado, añádelo primero — co
 
 Puedes vincular más de una dirección de QoreX a la misma cuenta del Panel — por ejemplo una de una extensión de Firefox y otra de Chrome, o un teléfono y un portátil. Selecciona **Add another wallet** para repetir el flujo con una segunda dirección; a cada dirección vinculada se le puede asignar su propia etiqueta, y una se marca como predeterminada para enviar, ambas cosas desde la pestaña **Conectar monederos**.
 
+**Cambiar entre monederos en la pestaña Monedero.** En cuanto hay más de un monedero vinculado — QoreX y MetaMask, o dos direcciones de QoreX — aparece una fila de chips de monedero en la parte superior de la propia pestaña **Monedero**, uno por cada monedero vinculado, con el activo marcado. Haz clic en un chip para cambiar de qué monedero estás viendo el saldo y el historial, sin salir de la pestaña ni ir a **Conectar monederos**. La fila se oculta cuando solo hay un monedero vinculado, ya que un selector no tendría nada que hacer.
+
 ### Conéctate con QoreX — app móvil {#connect-qorex-app}
 
 1. En la página Monedero, busca la tarjeta **QoreX wallet** y selecciona **Connect with QoreX**.

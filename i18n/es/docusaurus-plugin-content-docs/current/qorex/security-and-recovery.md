@@ -16,7 +16,7 @@ QoreX es **sin custodia**: tus claves existen únicamente en tu propio dispositi
 
 **Haz al menos una de estas dos cosas — justo después de crear tu monedero, no más tarde:**
 
-1. **Anota tu frase de recuperación de 24 palabras** y guárdala en algún lugar sin conexión y duradero (no una captura de pantalla, no una nota sincronizada con la nube, no un mensaje a ti mismo). Es lo único que puede restaurar tu monedero en cualquier dispositivo, en cualquier momento.
+1. **Anota tu frase de recuperación de 24 palabras** y guárdala en algún lugar sin conexión y duradero (no una captura de pantalla, no una nota sincronizada con la nube, no un mensaje a ti mismo). Es lo único que puede restaurar tu monedero en cualquier dispositivo, en cualquier momento — en móvil, restaurar directamente desde la frase requiere la versión **1.0.4 o posterior** (las compilaciones anteriores solo ofrecen la vía del guardián; consulta [Restaurar un monedero existente](/qorex/getting-started#2-restore-an-existing-wallet)). La extensión siempre restaura directamente desde la frase, en todas las versiones.
 2. **Configura la [recuperación social](#social-recovery)** con guardianes de tu confianza. Esto te permite recuperar tu monedero incluso si pierdes la frase, sin que ningún guardián por sí solo pueda acceder jamás a tus fondos.
 
 Hacer ambas cosas es la opción más segura: la frase te protege si cambias de dispositivo o la aplicación no está disponible; los guardianes te protegen si pierdes la propia frase.

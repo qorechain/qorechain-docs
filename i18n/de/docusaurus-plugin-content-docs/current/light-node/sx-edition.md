@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX-Edition — Server-Daemon
 
-Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon plus eine vollständige Management-CLI, gebaut für Server und Automatisierung. Die Binärdatei ist `lightnode-sx`. Dies ist die **v3.1.1**-Linie des Light Nodes (seine eigene Version, getrennt von der Chain-Version).
+Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon plus eine vollständige Management-CLI, gebaut für Server und Automatisierung. Die Binärdatei ist `lightnode-sx`. Dies ist die **v3.1.2**-Linie des Light Nodes (seine eigene Version, getrennt von der Chain-Version).
 
 ## Installation
 
@@ -50,13 +50,17 @@ Die relevantesten Konfigurationsoptionen auf Nutzungsebene:
 | --- | --- |
 | `chain_id` | Der Netzwerk-Identifikator (zum Beispiel `qorechain-diana` im Testnet, `qorechain-vladi` im Mainnet). |
 | `rpc_addr` | Der Chain-RPC-Endpunkt, mit dem sich der Daemon verbindet. Leer lassen, um im **Local-only-Modus** zu laufen. |
-| `primary_addr` / `witness_addrs` | Die vom Skipping-Light-Client verwendeten Primary- und Witness-RPC-Endpunkte. |
+| `primary_addr` / `witness_addrs` | Der primäre RPC-Endpunkt und die Witness-Endpunkte, gegen die sein gemeldeter Header abgeglichen wird — siehe [Warum einen Light Node betreiben](/light-node/overview#why-run-a-light-node). Mindestens ein eigenständiger, erreichbarer Witness bewirkt, dass `Assurance` von `trusted-single-source` zu `corroborated-across-sources` wechselt. |
 | `trust_period` / `max_clock_drift` | Vertrauensfenster des Light Clients (zum Beispiel `168h`) und zulässige Taktabweichung (Clock Drift). |
 | `data_dir` | Wo der Node seine Datenbank und Header speichert. |
 | `keyring_backend` / `key_name` | Keyring-Backend (`file` oder `os`) und der Name des Operator-Schlüssels. |
 | `[delegation]` | Auto-Compound an/aus, Compound-Intervall, Mindestbelohnung für das Einfordern, Validatorenmenge, Aufteilungsgewichte, Rebalancing und Mindestreputation. |
 | `[telemetry]` | Ob Telemetrie aktiviert ist und die Aktualisierungsintervalle für Validatoren, Netzwerk, Bridge und Tokenomics. |
 | `log_level` / `log_format` | Logging-Ausführlichkeit (`debug`, `info`, `warn`, `error`) und Format (`text` oder `json`). |
+
+:::note Witness-Endpunkte werden beim Start validiert
+Ein Witness auf demselben Host wie der Primary wird abgelehnt — ein kompromittierter Endpunkt würde sich einfach selbst bestätigen und damit nichts korroborieren. Ein Klartext-`http://`-Witness auf einem entfernten Host wird ebenfalls abgelehnt, da ein Angreifer, der diese Verbindung umschreiben kann, als jeder Witness gleichzeitig antworten könnte; Loopback-`http://` ist unbedenklich. Richte Witnesses auf RPC-Endpunkte, denen du aus unabhängigen Gründen vertraust.
+:::
 
 Die Delegations-Standardwerte aktivieren Auto-Compound mit einem Intervall von `1h` und reputationsbewusstes Rebalancing — siehe [Belohnungen und Überwachung](/light-node/rewards-and-monitoring) dazu, was diese bewirken.
 

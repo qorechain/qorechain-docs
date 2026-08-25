@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Ediția SX — Daemon Server
 
-Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Aceasta este linia **v3.1.1** a light node-ului (versiune proprie, separată de versiunea lanțului).
+Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Aceasta este linia **v3.1.2** a light node-ului (versiune proprie, separată de versiunea lanțului).
 
 ## Instalare
 
@@ -50,13 +50,17 @@ Cele mai relevante opțiuni de configurare, la nivel de utilizare:
 | --- | --- |
 | `chain_id` | Identificatorul rețelei (de exemplu `qorechain-diana` pe testnet, `qorechain-vladi` pe mainnet). |
 | `rpc_addr` | Endpoint-ul RPC al lanțului la care se conectează daemon-ul. Lasă-l gol pentru a rula în **modul local-only**. |
-| `primary_addr` / `witness_addrs` | Endpoint-urile RPC primar și martor folosite de clientul light care sare peste headere (skipping light client). |
+| `primary_addr` / `witness_addrs` | Endpoint-ul RPC primar și endpoint-urile martor (witness) față de care headerul raportat de acesta este verificat prin corroborare — vezi [De ce să rulezi un light node](/light-node/overview#why-run-a-light-node). Cel puțin un martor distinct și accesibil este ceea ce mută `Assurance` din `trusted-single-source` în `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | Fereastra de încredere a clientului light (de exemplu `168h`) și deriva de ceas permisă. |
 | `data_dir` | Unde stochează nodul baza de date și headerele. |
 | `keyring_backend` / `key_name` | Backend-ul keyring-ului (`file` sau `os`) și numele cheii operatorului. |
 | `[delegation]` | Auto-compunere activă/inactivă, interval de compunere, recompensa minimă de revendicat, setul de validatori, ponderile de împărțire, reechilibrarea și reputația minimă. |
 | `[telemetry]` | Dacă telemetria este activată și intervalele de reîmprospătare pentru validatori, rețea, punte (bridge) și tokenomică. |
 | `log_level` / `log_format` | Nivelul de detaliere al jurnalizării (`debug`, `info`, `warn`, `error`) și formatul (`text` sau `json`). |
+
+:::note Endpoint-urile martor sunt validate la pornire
+Un martor aflat pe aceeași gazdă cu endpoint-ul primar este refuzat — un endpoint compromis pur și simplu s-ar confirma pe sine, deci nu corroborează nimic. Un martor `http://` necriptat pe o gazdă la distanță este de asemenea refuzat, deoarece un atacator care poate rescrie acea conexiune poate răspunde ca oricare martor deodată; `http://` pe loopback este acceptabil. Îndreaptă martorii către endpoint-uri RPC în care ai motive independente să ai încredere.
+:::
 
 Valorile implicite de delegare activează auto-compunerea la un interval de `1h` și reechilibrarea bazată pe reputație — vezi [Recompense și Monitorizare](/light-node/rewards-and-monitoring) pentru ce anume fac acestea.
 

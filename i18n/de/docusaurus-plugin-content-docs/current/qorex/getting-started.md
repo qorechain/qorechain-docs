@@ -44,11 +44,16 @@ Es gibt drei Möglichkeiten zur Einrichtung:
 Jeder, der Ihre 24 Wörter kennt, kontrolliert Ihre Guthaben, und niemand — auch nicht die QoreChain Association — kann sie für Sie wiederherstellen. Geben Sie Ihre Phrase niemals auf einer Website ein, teilen Sie sie nicht und speichern Sie sie nicht als Screenshot oder in einer Cloud-Notiz. **Das Deinstallieren von QoreX löscht die auf diesem Gerät gespeicherten Schlüssel** — ohne Ihre schriftliche Phrase (oder eine vorher eingerichtete [Social Recovery](/qorex/security-and-recovery#social-recovery)) bedeutet eine Deinstallation den dauerhaften Verlust des Zugriffs. Sichern Sie die Phrase, bevor Sie die Wallet aufladen, nicht danach.
 :::
 
-### 2. Vorhandene Wallet wiederherstellen
+### 2. Vorhandene Wallet wiederherstellen {#2-restore-an-existing-wallet}
 
 1. Tippen Sie auf **Vorhandene Wallet wiederherstellen**.
-2. Geben Sie Ihre 24 Wörter in der richtigen Reihenfolge ein.
-3. QoreX leitet dieselben Adressen erneut ab — Ihre Wallet sieht auf jedem Gerät identisch aus.
+2. Wählen Sie **Wiederherstellungsphrase** (wenn Sie Ihre 24 Wörter aufgeschrieben haben) oder **Social Recovery** (wenn Sie Guardians eingerichtet haben und die Phrase nicht mehr besitzen — siehe [Social Recovery](/qorex/security-and-recovery#social-recovery)).
+3. Für den Weg über die Wiederherstellungsphrase: Geben Sie Ihre 24 Wörter in der richtigen Reihenfolge ein. QoreX normalisiert Groß-/Kleinschreibung und versehentliche Leerzeichen, prüft die Phrase und teilt Ihnen klar mit, wenn ein Wort nicht stimmt, statt eine allgemeine Fehlermeldung anzuzeigen.
+4. QoreX leitet dieselben Adressen erneut ab — Ihre Wallet sieht auf jedem Gerät identisch aus.
+
+:::note Versionsanforderung
+Die direkte Wiederherstellung über Ihre Wiederherstellungsphrase erfordert QoreX Mobile **1.0.4 oder höher**. Bei einer älteren Version bietet **Vorhandene Wallet wiederherstellen** nur den Guardian-Weg an — siehe [welche Version wo verfügbar ist](/qorex/overview#platform-availability) und aktualisieren Sie bei Bedarf.
+:::
 
 ### 3. Von einem anderen Gerät verknüpfen
 

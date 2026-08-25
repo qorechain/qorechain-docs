@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Panoramica del Light Node
 
-Il **QoreChain Light Node** è un client leggero che segue la rete QoreChain senza eseguire un nodo validatore o di archivio completo. Anziché rieseguire ogni transazione, verifica crittograficamente gli header dei blocchi, traccia le deleghe e le ricompense e trasmette in streaming la telemetria di rete in tempo reale — il tutto da un binario piccolo e autosufficiente.
+Il **QoreChain Light Node** è un client leggero che segue la rete QoreChain senza eseguire un nodo validatore o di archivio completo. Anziché rieseguire ogni transazione, verifica gli header dei blocchi confrontandoli tra più endpoint RPC, traccia le deleghe e le ricompense e trasmette in streaming la telemetria di rete in tempo reale — il tutto da un binario piccolo e autosufficiente.
 
 Eseguire un light node ti consente di partecipare all'economia della rete e di osservarne lo stato senza i costi di archiviazione, banda e operativi di un nodo completo.
 
 ## La sua linea di versione dedicata
 
-Il light node viene rilasciato sulla sua **linea di versione dedicata — attualmente v3.1.1** — che è **distinta dalla versione di rilascio della chain** (la chain è su un track `v3.x` separato). La linea v3.1.1 del light node è allineata con `qorechain-core`: aggiunge una suite di regressione per la crittografia post-quantistica (PQC) (keygen, sign, verify e rilevamento di manomissioni) che protegge il comportamento di verifica delle firme del core e la esegue in integrazione continua.
+Il light node viene rilasciato sulla sua **linea di versione dedicata — attualmente v3.1.2** — che è **distinta dalla versione di rilascio della chain** (la chain è su un track `v3.x` separato). I binari vengono pubblicati con un **manifest di checksum SHA-256** — vedi [Connessione al Mainnet](/getting-started/connecting-to-mainnet) per lo schema di download — e la v3.1.2 è la prima release i cui binari Windows e macOS superano effettivamente keygen/sign/verify (le build precedenti erano antecedenti a una sostituzione della libreria Rust e fallivano silenziosamente su quelle piattaforme). Al momento è promossa sul canale di rilascio **testnet**; il canale mainnet è tenuto intenzionalmente indietro per un periodo di rodaggio più lungo prima della promozione — se un link di download mainnet restituisce 404, è per questo motivo, non per un link rotto.
 
-Quando leggi la documentazione o le note di rilascio, considera la versione del light node (v3.1.1) e la versione della chain come due numeri separati che casualmente condividono una serie major.
+Quando leggi la documentazione o le note di rilascio, considera la versione del light node (v3.1.2) e la versione della chain come due numeri separati che casualmente condividono una serie major.
 
-## Perché eseguire un light node
+## Perché eseguire un light node {#why-run-a-light-node}
 
 - **Guadagna una quota delle ricompense di blocco.** I light node attivi e registrati sono idonei alla **quota di ricompensa del 3% per i light node** descritta di seguito.
-- **Verifica la chain tu stesso.** Il nodo esegue la verifica degli header con un light client di tipo skipping, così ottieni la garanzia crittografica dello stato della chain senza fidarti di un'API remota.
+- **Verifica lo stato della chain che ti viene mostrato.** Il nodo recupera l'ultima altezza dal suo endpoint RPC primario e da ogni endpoint testimone configurato in parallelo, e memorizza un header solo quando concordano sull'hash del blocco — alzando l'asticella dal fidarsi di un singolo endpoint al richiedere che ogni endpoint configurato sia compromesso contemporaneamente. Si tratta di un confronto tra fonti indipendenti, **non di una verifica crittografica completa del consenso** (nessun controllo del validator-set o delle firme di commit) — il nodo segnala in quale modalità sta operando tramite il suo stato `Assurance` (`trusted-single-source` se non sono configurati testimoni, oppure `corroborated-across-sources` se ne è configurato almeno uno).
 - **Delega e auto-compounding.** Gestisci lo stake delegato su più validatori, suddiviso per peso, e capitalizza automaticamente le ricompense.
 - **Osserva la rete in tempo reale.** La telemetria in tempo reale copre validatori, consenso, bridge e tokenomics.
 - **Post-quantistico fin dal primo giorno.** Le chiavi e le firme utilizzano Dilithium-5 (ML-DSA-87).
@@ -47,9 +47,9 @@ Per essere idoneo a questa quota, un light node deve essere **registrato on-chai
 
 ## Funzionalità principali in sintesi
 
-- **Light client skipping** — verifica gli header senza scaricare i blocchi completi, sincronizzandosi rapidamente anche da un avvio a freddo.
+- **Confronto degli header multi-fonte** — confronta l'ultimo hash di blocco con ogni endpoint testimone configurato prima di fidarsene, senza scaricare i blocchi completi, sincronizzandosi rapidamente anche da un avvio a freddo.
 - **Staking delegato** — fai staking su più validatori con pesi di suddivisione configurabili.
-- **Ricompense auto-compounding** — riscuoti e ridelegabili le ricompense a un intervallo configurabile.
+- **Ricompense auto-compounding** — riscuoti e ridelega le ricompense a un intervallo configurabile.
 - **Ribilanciamento basato sulla reputazione** — sposta automaticamente la delega verso validatori con reputazione più alta.
 - **Telemetria in tempo reale** — validatori, consenso, bridge e tokenomics, aggiornati a intervalli indipendenti.
 - **Registrazione on-chain** — con prove di liveness heartbeat che mantengono il nodo idoneo alle ricompense.

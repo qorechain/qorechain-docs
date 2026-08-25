@@ -44,11 +44,16 @@ Hai tre modi per configurare il wallet:
 Chiunque possieda le tue 24 parole controlla i tuoi fondi, e nessuno — inclusa QoreChain Association — può recuperarli per te. Non digitare mai la tua frase su un sito web, non condividerla e non conservarla in uno screenshot o in una nota su cloud. **Disinstallare QoreX elimina le chiavi memorizzate su quel dispositivo** — senza la tua frase scritta (o il [recupero sociale](/qorex/security-and-recovery#social-recovery) configurato in anticipo), una disinstallazione significa perdita permanente dell'accesso. Esegui il backup prima di finanziare il wallet, non dopo.
 :::
 
-### 2. Ripristina un wallet esistente
+### 2. Ripristina un wallet esistente {#2-restore-an-existing-wallet}
 
 1. Tocca **Ripristina wallet esistente**.
-2. Digita le tue 24 parole in ordine.
-3. QoreX ri-deriva gli stessi indirizzi — il tuo wallet appare identico su qualsiasi dispositivo.
+2. Scegli **Frase di recupero** (se hai scritto le tue 24 parole) oppure **Recupero sociale** (se hai configurato dei guardiani e non hai più la frase — vedi [Recupero sociale](/qorex/security-and-recovery#social-recovery)).
+3. Per il percorso con la frase di recupero: digita le tue 24 parole in ordine. QoreX normalizza maiuscole/minuscole e spazi superflui, verifica la frase e ti segnala chiaramente se una parola non è corretta, invece di mostrare un errore generico.
+4. QoreX ri-deriva gli stessi indirizzi — il tuo wallet appare identico su qualsiasi dispositivo.
+
+:::note Requisito di versione
+Il ripristino diretto dalla frase di recupero richiede QoreX mobile **1.0.4 o successivo**. Su una build precedente, **Ripristina wallet esistente** offre solo il percorso con guardiani — vedi [quale versione è disponibile dove](/qorex/overview#platform-availability) e aggiorna se necessario.
+:::
 
 ### 3. Collega da un altro dispositivo
 

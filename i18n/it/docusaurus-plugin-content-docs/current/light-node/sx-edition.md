@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Edizione SX — Server Daemon
 
-L'edizione **SX (Server eXperience)** è il light node headless: un daemon più una CLI di gestione completa, pensato per server e automazione. Il binario è `lightnode-sx`. Questa è la linea **v3.1.1** del light node (versione propria, separata dalla versione della chain).
+L'edizione **SX (Server eXperience)** è il light node headless: un daemon più una CLI di gestione completa, pensato per server e automazione. Il binario è `lightnode-sx`. Questa è la linea **v3.1.2** del light node (versione propria, separata dalla versione della chain).
 
 ## Installazione
 
@@ -50,13 +50,17 @@ Le opzioni di configurazione più rilevanti, a livello d'uso:
 | --- | --- |
 | `chain_id` | L'identificatore della rete (ad esempio `qorechain-diana` su testnet, `qorechain-vladi` su mainnet). |
 | `rpc_addr` | L'endpoint RPC della chain a cui si connette il daemon. Lascia vuoto per eseguire in **modalità solo locale**. |
-| `primary_addr` / `witness_addrs` | Gli endpoint RPC primario e testimone usati dal light client a salto (skipping). |
+| `primary_addr` / `witness_addrs` | L'endpoint RPC primario, e gli endpoint testimone rispetto ai quali viene corroborato l'header riportato — vedi [Perché eseguire un light node](/light-node/overview#why-run-a-light-node). Avere almeno un testimone distinto e raggiungibile è ciò che fa passare `Assurance` da `trusted-single-source` a `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | Finestra di fiducia del light client (ad esempio `168h`) e deriva di clock consentita. |
 | `data_dir` | Dove il node memorizza il proprio database e gli header. |
 | `keyring_backend` / `key_name` | Backend del keyring (`file` o `os`) e nome della chiave dell'operatore. |
 | `[delegation]` | Auto-compound attivo/disattivo, intervallo di compounding, reward minima da riscattare, insieme dei validatori, pesi di suddivisione, ribilanciamento e reputazione minima. |
 | `[telemetry]` | Se la telemetria è abilitata e gli intervalli di aggiornamento per validatori, rete, bridge e tokenomics. |
 | `log_level` / `log_format` | Verbosità del logging (`debug`, `info`, `warn`, `error`) e formato (`text` o `json`). |
+
+:::note Gli endpoint testimone vengono validati all'avvio
+Un testimone sullo stesso host del primario viene rifiutato — un endpoint compromesso concorderebbe semplicemente con se stesso, quindi non corrobora nulla. Anche un testimone in chiaro `http://` su un host remoto viene rifiutato, poiché un attaccante in grado di riscrivere quella connessione può rispondere come se fosse ogni testimone contemporaneamente; `http://` in loopback va bene. Punta i testimoni verso endpoint RPC di cui hai motivi indipendenti per fidarti.
+:::
 
 I valori predefiniti di delegazione abilitano l'auto-compound con un intervallo di `1h` e il ribilanciamento basato sulla reputazione — per cosa fanno, vedi [Reward e Monitoraggio](/light-node/rewards-and-monitoring).
 

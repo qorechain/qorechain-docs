@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Edizione UX — Dashboard web
 
-L'edizione **UX (User eXperience)** esegue lo stesso daemon del light node dell'edizione SX, ma aggiunge una **dashboard web integrata** così da poter monitorare il nodo e la rete in un browser. Il binario è `lightnode-ux`. Come l'edizione SX, questa è la linea **v3.1.1** del light node (la sua versione, distinta dalla versione della chain).
+L'edizione **UX (User eXperience)** esegue lo stesso daemon del light node dell'edizione SX, ma aggiunge una **dashboard web integrata** così da poter monitorare il nodo e la rete in un browser. Il binario è `lightnode-ux`. Come l'edizione SX, questa è la linea **v3.1.2** del light node (la sua versione, distinta dalla versione della chain).
 
 L'edizione UX è la scelta giusta per l'uso da desktop e per gli operatori che preferiscono un'interfaccia visiva alla riga di comando.
 
@@ -59,8 +59,8 @@ http://localhost:8420
 Alcuni testi altrove fanno riferimento alla porta 8080 per la dashboard. Il valore autoritativo è **8420** — è ciò che l'immagine espone effettivamente e a cui il daemon si lega per impostazione predefinita. Se adatti il tuo `docker-compose.yml` o un reverse proxy, mappa su **8420**, non su 8080.
 :::
 
-:::danger La dashboard non ha alcuna autenticazione
-La porta 8420 resta in ascolto su **tutte le interfacce**, non solo su localhost, e la dashboard **non ha login né alcun controllo di accesso**. Chiunque possa raggiungere la porta sulla tua rete può leggere la tua configurazione, le tue deleghe e le tue ricompense. **Non esporla pubblicamente.** Vincolala solo al loopback, oppure mettila dietro un reverse proxy che richieda autenticazione, prima di eseguirla su qualsiasi rete che non sia una rete privata pienamente affidabile.
+:::caution Nessuna rotta della dashboard esegue autenticazione
+Niente dietro la porta 8420 ha un login o un controllo di accesso — chiunque possa raggiungerla può leggere la tua configurazione, le tue deleghe e le tue ricompense; nessuna chiave privata viene mai servita. Il binario ora **per impostazione predefinita si lega solo al loopback** (`127.0.0.1:8420`) invece che a tutte le interfacce, e stampa un avviso all'avvio se lo hai configurato per rimanere in ascolto più ampiamente — ma l'avviso non è un rifiuto e non aggiunge autenticazione. Se allarghi deliberatamente il bind (ad esempio per raggiungerlo da un'altra macchina, o perché stai pubblicando la porta da Docker), mettilo dietro un reverse proxy che richieda autenticazione invece di esporlo direttamente. La connessione WebSocket di telemetria verifica anche l'`Origin` del browser, dato che un bind di rete ampio da solo non impedisce a un'altra pagina aperta nello stesso browser di connettersi.
 :::
 
 ## Cosa mostra la dashboard

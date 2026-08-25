@@ -44,11 +44,16 @@ Vous disposez de trois façons de démarrer :
 Toute personne détenant vos 24 mots contrôle vos fonds, et personne — y compris QoreChain Association — ne peut les récupérer à votre place. Ne saisissez jamais votre phrase sur un site web, ne la partagez pas et ne la stockez pas dans une capture d'écran ou une note dans le cloud. **Désinstaller QoreX supprime les clés stockées sur cet appareil** — sans votre phrase écrite (ou sans [récupération sociale](/qorex/security-and-recovery#social-recovery) configurée au préalable), une désinstallation entraîne une perte d'accès définitive. Faites votre sauvegarde avant d'alimenter le portefeuille, pas après.
 :::
 
-### 2. Restaurer un portefeuille existant
+### 2. Restaurer un portefeuille existant {#2-restore-an-existing-wallet}
 
 1. Appuyez sur **Restaurer un portefeuille existant**.
-2. Saisissez vos 24 mots dans l'ordre.
-3. QoreX dérive à nouveau les mêmes adresses — votre portefeuille est identique sur n'importe quel appareil.
+2. Choisissez **Phrase de récupération** (si vous avez noté vos 24 mots) ou **Récupération sociale** (si vous avez configuré des garants et que vous n'avez plus la phrase — voir [Récupération sociale](/qorex/security-and-recovery#social-recovery)).
+3. Pour le parcours par phrase de récupération : saisissez vos 24 mots dans l'ordre. QoreX normalise la casse et les espaces superflus, vérifie la phrase et vous indique clairement si un mot ne correspond pas, plutôt que d'afficher une erreur générique.
+4. QoreX dérive à nouveau les mêmes adresses — votre portefeuille est identique sur n'importe quel appareil.
+
+:::note Version requise
+Restaurer directement à partir de votre phrase de récupération nécessite QoreX mobile **1.0.4 ou ultérieur**. Sur une version plus ancienne, **Restaurer un portefeuille existant** ne propose que le parcours par garants — voir [quelle version est disponible où](/qorex/overview#platform-availability) et effectuez la mise à jour si nécessaire.
+:::
 
 ### 3. Lier depuis un autre appareil
 

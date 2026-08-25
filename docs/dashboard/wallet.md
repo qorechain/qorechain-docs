@@ -47,6 +47,8 @@ If your wallet does not have QoreChain configured yet, add it first — see [Add
 
 You can link more than one QoreX address to the same Dashboard account — for example one from a Firefox extension and one from Chrome, or a phone and a laptop. Select **Add another wallet** to repeat the flow with a second address; each linked address can be given its own label and one is marked default for sending, both from the **Connect Wallets** tab.
 
+**Switching between wallets on the Wallet tab.** Once more than one wallet is attached — QoreX and MetaMask, or two QoreX addresses — a row of wallet chips appears at the top of the **Wallet** tab itself, one per attached wallet, with the active one marked. Click a chip to switch which wallet's balance and history you're looking at, without leaving the tab or going to **Connect Wallets**. The row is hidden when only one wallet is attached, since a picker would have nothing to do.
+
 ### Connect with QoreX — mobile app {#connect-qorex-app}
 
 1. On the Wallet page, find the **QoreX wallet** card and select **Connect with QoreX**.

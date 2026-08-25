@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Prezentare generală a nodului light
 
-**QoreChain Light Node** este un client ușor care urmărește rețeaua QoreChain fără a rula un validator complet sau un nod de arhivă. În loc să reia fiecare tranzacție, verifică criptografic anteturile de bloc, urmărește delegările și recompensele și transmite în flux telemetria de rețea în timp real — totul dintr-un binar mic, autonom.
+**QoreChain Light Node** este un client ușor care urmărește rețeaua QoreChain fără a rula un validator complet sau un nod de arhivă. În loc să reia fiecare tranzacție, verifică prin coroborare anteturile de bloc pe mai multe puncte finale RPC, urmărește delegările și recompensele și transmite în flux telemetria de rețea în timp real — totul dintr-un binar mic, autonom.
 
 Rularea unui nod light vă permite să participați la economia rețelei și să observați starea acesteia fără costurile de stocare, lățime de bandă și operaționale ale unui nod complet.
 
 ## Propria sa linie de versiune
 
-Nodul light este livrat pe **propria sa linie de versiune — în prezent v3.1.1** — care este **distinctă de versiunea de lansare a lanțului** (lanțul se află pe o pistă separată `v3.x`). Linia v3.1.1 a nodului light este aliniată cu `qorechain-core`: adaugă o suită de regresie pentru criptografie post-cuantică (PQC) (keygen, sign, verify și detectarea modificărilor) care protejează comportamentul de verificare a semnăturilor al nucleului și o rulează în integrare continuă.
+Nodul light este livrat pe **propria sa linie de versiune — în prezent v3.1.2** — care este **distinctă de versiunea de lansare a lanțului** (lanțul se află pe o pistă separată `v3.x`). Binarele sunt publicate cu un **manifest de sumă de control SHA-256** — vezi [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) pentru modelul de descărcare — iar v3.1.2 este prima versiune ale cărei binare pentru Windows și macOS chiar trec de keygen/sign/verify (versiunile anterioare precedau o înlocuire a unei biblioteci Rust și eșuau silențios pe aceste platforme). În prezent este promovată pe canalul de lansare **testnet**; canalul mainnet este ținut în mod intenționat pe loc pentru o perioadă mai lungă de rodaj înainte de promovare — dacă un link de descărcare pentru mainnet returnează 404, acesta este motivul, nu un link stricat.
 
-Când citiți documentația sau notele de lansare, tratați versiunea nodului light (v3.1.1) și versiunea lanțului ca două numere separate care se întâmplă să împartă o serie majoră.
+Când citiți documentația sau notele de lansare, tratați versiunea nodului light (v3.1.2) și versiunea lanțului ca două numere separate care se întâmplă să împartă o serie majoră.
 
-## De ce să rulați un nod light
+## De ce să rulați un nod light {#why-run-a-light-node}
 
 - **Câștigați o parte din recompensele de bloc.** Nodurile light active și înregistrate sunt eligibile pentru **partea de 3% din recompense pentru nodurile light** descrisă mai jos.
-- **Verificați singur lanțul.** Nodul efectuează verificarea anteturilor cu un client light cu sărire, astfel încât obțineți asigurare criptografică a stării lanțului fără a avea încredere într-un API la distanță.
+- **Verificați prin coroborare starea lanțului care vi se arată.** Nodul preia cea mai recentă înălțime de la punctul său final RPC principal și de la fiecare punct final martor configurat, în paralel, și stochează un antet doar atunci când acestea sunt de acord asupra hash-ului blocului — ridicând ștacheta de la a avea încredere într-un singur punct final la a necesita compromiterea simultană a fiecărui punct final configurat. Aceasta este coroborare între surse independente, **nu verificare criptografică completă de consens** (nu se verifică setul de validatori sau semnăturile de commit) — nodul raportează în ce mod rulează prin starea sa `Assurance` (`trusted-single-source` când nu este configurat niciun martor, sau `corroborated-across-sources` cu cel puțin unul).
 - **Delegați și auto-compuneți.** Gestionați miza delegată între mai mulți validatori, împărțită după pondere, și compuneți recompensele automat.
 - **Urmăriți rețeaua în direct.** Telemetria în timp real acoperă validatorii, consensul, puntea și tokenomica.
 - **Post-cuantic din prima zi.** Cheile și semnăturile folosesc Dilithium-5 (ML-DSA-87).
@@ -47,7 +47,7 @@ Pentru a fi eligibil pentru această parte, un nod light trebuie să fie **înre
 
 ## Caracteristici de bază dintr-o privire
 
-- **Client light cu sărire** — verifică anteturile fără a descărca blocuri complete, sincronizându-se rapid chiar și de la o pornire la rece.
+- **Coroborarea anteturilor din surse multiple** — verifică prin coroborare cel mai recent hash de bloc cu fiecare punct final martor configurat înainte de a-l considera de încredere, fără a descărca blocuri complete, sincronizându-se rapid chiar și de la o pornire la rece.
 - **Staking delegat** — mizați între mai mulți validatori cu ponderi de împărțire configurabile.
 - **Auto-compunerea recompenselor** — revendicați și redelegați recompensele la un interval configurabil.
 - **Reechilibrare conștientă de reputație** — mutați delegarea automat către validatorii cu reputație mai mare.

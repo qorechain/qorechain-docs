@@ -18,17 +18,22 @@ QoreX are două componente care funcționează împreună:
 
 | Funcționalitate | Aplicația mobilă (Android și iOS) | Extensia de browser |
 |---|---|---|
-| Creare / import de portofel | ✅ | ✅ (de sine stătător, un singur cont) |
-| Mai multe conturi dintr-o singură frază de recuperare | ✅ (până la 20) | — (un singur cont) |
+| Creare / import de portofel | ✅ | ✅ (de sine stătător) |
+| Mai multe conturi dintr-o singură frază de recuperare | ✅ (până la 20) | ✅ *(din 0.2.2)* |
 | Trimitere și primire de QOR (post-cuantic) | ✅ | ✅ (din popup, incl. Receive QR) |
 | Plată / revendicare @handle | ✅ | ✅ |
+| Staking (delegare, retragere din delegare, revendicare) | ✅ | ✅ *(din 0.2.2 — propriul ecran de Stake, și poate aproba o cerere de staking trimisă de Dashboard)* |
 | Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
 | Limba interfeței (10 limbi) | ✅ (urmează limba telefonului) | ✅ (urmează limba browserului) |
-| Staking, Portofoliu, Q-Day Scanner, Recuperare, Legacy | ✅ | — |
+| Portofoliu, Q-Day Scanner, Recuperare socială, Legacy | ✅ | — |
 | Conexiuni cu dApp-uri | ✅ (browser integrat) | ✅ (orice site) |
 | Autentificare în cont și cereri de plată | ✅ | — |
 | Asociere pe mai multe dispozitive | ✅ | — |
-| Împerechere cu Dashboard | ✅ | ✅ (conectare + transferuri propuse) |
+| Împerechere cu Dashboard | ✅ | ✅ (conectare + transferuri propuse, incl. staking) |
+
+:::note Staking-ul din extensie necesită 0.2.2 sau o versiune mai nouă
+Dacă extensia ta este mai veche de 0.2.2, butonul de staking din Dashboard poate raporta că extensia trebuie actualizată chiar dacă rulezi o versiune recentă — remedierea care conectează cererea de staking din Dashboard la extensie a apărut în 0.2.2. Verifică [ce versiune este disponibilă unde](/qorex/browser-extension#versions); dacă magazinul tău nu a publicat încă 0.2.2, aprobarea staking-ului va începe să funcționeze de îndată ce o face, fără nicio acțiune din partea ta.
+:::
 
 ## De ce este QoreX diferit
 
@@ -58,11 +63,11 @@ Aprobările din magazine ajung la momente diferite, astfel încât versiunea de 
 
 | Platformă | Versiune activă |
 |---|---|
-| Android | 1.0.3 |
-| iOS | 1.0 (o actualizare este în evaluare) |
-| Firefox | 0.1.9 |
-| Chrome | 0.1.5 (0.1.9 este în evaluare) |
-| Safari (macOS) | 1.1, cu extensia 0.1.5 (o actualizare este în evaluare) |
+| Android | 1.0.4 |
+| iOS | 1.0.2 (o actualizare este în evaluare) |
+| Firefox | 0.2.2 |
+| Chrome | 0.1.5 (0.1.9 este în evaluare; o trimitere ulterioară 0.2.2 urmează după ce acea evaluare se încheie) |
+| Safari (macOS) | 1.3, cu extensia 0.2.2 |
 
 Această pagină descrie setul curent de funcționalități al QoreX — un magazin care încă servește o versiune mai veche se va actualiza automat, fără nicio acțiune din partea ta.
 :::

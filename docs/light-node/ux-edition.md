@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web Dashboard
 
-The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this is the light node's **v3.1.1** line (its own version, separate from the chain version).
+The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this is the light node's **v3.1.2** line (its own version, separate from the chain version).
 
 The UX edition is the right choice for desktop use and for operators who prefer a visual interface over the command line.
 
@@ -59,8 +59,8 @@ http://localhost:8420
 Some prose elsewhere references port 8080 for the dashboard. The authoritative value is **8420** — that is what the image actually exposes and what the daemon binds by default. If you adapt your own `docker-compose.yml` or a reverse proxy, map to **8420**, not 8080.
 :::
 
-:::danger The dashboard has no authentication
-Port 8420 listens on **all interfaces**, not just localhost, and the dashboard has **no login and no access control**. Anyone who can reach the port on your network can read your configuration, delegations, and rewards. **Do not expose it publicly.** Bind it to loopback only, or put it behind a reverse proxy that requires authentication, before running it on anything other than a fully trusted private network.
+:::caution No route on the dashboard authenticates
+Nothing behind port 8420 has a login or access control — anyone who can reach it can read your configuration, delegations, and rewards; no private key is ever served. The binary now **defaults to loopback only** (`127.0.0.1:8420`) rather than all interfaces, and prints a warning at startup if you've configured it to listen more widely — but the warning is not a refusal, and it does not add authentication. If you deliberately widen the bind (for example to reach it from another machine, or because you're publishing the port from Docker), put it behind a reverse proxy that requires authentication rather than exposing it directly. The WebSocket telemetry connection also checks the browser's `Origin`, since a wide network bind alone doesn't stop another page open in the same browser from connecting.
 :::
 
 ## What the dashboard shows

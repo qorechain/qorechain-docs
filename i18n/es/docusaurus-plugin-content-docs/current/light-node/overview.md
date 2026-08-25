@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Visión general del nodo ligero
 
-El **nodo ligero de QoreChain** es un cliente ligero que sigue la red QoreChain sin ejecutar un validador completo ni un nodo de archivo. En lugar de reproducir cada transacción, verifica criptográficamente las cabeceras de bloque, hace seguimiento de delegaciones y recompensas, y transmite telemetría de red en vivo, todo desde un binario pequeño y autónomo.
+El **nodo ligero de QoreChain** es un cliente ligero que sigue la red QoreChain sin ejecutar un validador completo ni un nodo de archivo. En lugar de reproducir cada transacción, corrobora las cabeceras de bloque entre múltiples endpoints RPC, hace seguimiento de delegaciones y recompensas, y transmite telemetría de red en vivo, todo desde un binario pequeño y autónomo.
 
 Ejecutar un nodo ligero te permite participar en la economía de la red y observar su estado sin el coste de almacenamiento, ancho de banda y operación de un nodo completo.
 
 ## Su propia línea de versiones
 
-El nodo ligero se distribuye en su **propia línea de versiones —actualmente v3.1.1—**, que es **distinta de la versión de lanzamiento de la cadena** (la cadena va en una pista `v3.x` independiente). La línea v3.1.1 del nodo ligero está alineada con `qorechain-core`: añade una suite de regresión de criptografía poscuántica (PQC) (keygen, sign, verify y detección de manipulación) que protege el comportamiento de verificación de firmas del núcleo y la ejecuta en integración continua.
+El nodo ligero se distribuye en su **propia línea de versiones —actualmente v3.1.2—**, que es **distinta de la versión de lanzamiento de la cadena** (la cadena va en una pista `v3.x` independiente). Los binarios se publican con un **manifiesto de checksum SHA-256** — consulta [Conexión a Mainnet](/getting-started/connecting-to-mainnet) para el patrón de descarga — y v3.1.2 es la primera versión cuyos binarios de Windows y macOS realmente pasan keygen/sign/verify (las compilaciones anteriores eran previas a una sustitución de biblioteca de Rust y fallaban silenciosamente en esas plataformas). Actualmente está promovida en el canal de lanzamiento de **testnet**; el canal de mainnet se mantiene deliberadamente a la espera de un periodo de maduración más largo antes de promoverla — si un enlace de descarga de mainnet da 404, es por eso, no por un enlace roto.
 
-Cuando leas documentación o notas de versión, trata la versión del nodo ligero (v3.1.1) y la versión de la cadena como dos números separados que coinciden en compartir una serie mayor.
+Cuando leas documentación o notas de versión, trata la versión del nodo ligero (v3.1.2) y la versión de la cadena como dos números separados que coinciden en compartir una serie mayor.
 
-## Por qué ejecutar un nodo ligero
+## Por qué ejecutar un nodo ligero {#why-run-a-light-node}
 
 - **Gana una parte de las recompensas de bloque.** Los nodos ligeros activos y registrados son elegibles para la **parte del 3% de recompensas para nodos ligeros** que se describe a continuación.
-- **Verifica la cadena tú mismo.** El nodo realiza la verificación de cabeceras con un cliente ligero con salto (skipping), por lo que obtienes garantía criptográfica del estado de la cadena sin confiar en una API remota.
+- **Verifica de forma cruzada el estado de la cadena que se te muestra.** El nodo obtiene la altura más reciente de su endpoint RPC primario y de cada endpoint testigo configurado en paralelo, y solo almacena una cabecera cuando coinciden en el hash del bloque — elevando el nivel de exigencia de confiar en un único endpoint a necesitar que todos los endpoints configurados estén comprometidos a la vez. Esto es corroboración entre fuentes independientes, **no verificación criptográfica de consenso completa** (no hay comprobación del conjunto de validadores ni de las firmas de commit) — el nodo informa de en qué modo está funcionando mediante su estado `Assurance` (`trusted-single-source` si no hay testigos configurados, o `corroborated-across-sources` si hay al menos uno).
 - **Delega y autocompone.** Gestiona el stake delegado entre múltiples validadores, repartido por peso, y compón las recompensas automáticamente.
 - **Observa la red en vivo.** La telemetría en tiempo real cubre validadores, consenso, el puente y los tokenomics.
 - **Poscuántico desde el primer día.** Las claves y firmas usan Dilithium-5 (ML-DSA-87).
@@ -47,7 +47,7 @@ Para ser elegible para esta parte, un nodo ligero debe estar **registrado on-cha
 
 ## Características principales de un vistazo
 
-- **Cliente ligero con salto** — verifica cabeceras sin descargar bloques completos, sincronizando rápidamente incluso desde un arranque en frío.
+- **Corroboración de cabeceras multi-fuente** — verifica de forma cruzada el hash del último bloque frente a cada endpoint testigo configurado antes de confiar en él, sin descargar bloques completos, sincronizando rápidamente incluso desde un arranque en frío.
 - **Staking delegado** — haz staking entre múltiples validadores con pesos de reparto configurables.
 - **Recompensas con autocomposición** — reclama y vuelve a delegar las recompensas en un intervalo configurable.
 - **Rebalanceo consciente de la reputación** — desplaza la delegación hacia validadores de mayor reputación automáticamente.

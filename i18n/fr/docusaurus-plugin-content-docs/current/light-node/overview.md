@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Vue d'ensemble du nœud léger
 
-Le **nœud léger QoreChain** est un client léger qui suit le réseau QoreChain sans exécuter un validateur complet ni un nœud d'archive. Au lieu de rejouer chaque transaction, il vérifie cryptographiquement les en-têtes de blocs, suit les délégations et les récompenses, et diffuse en direct la télémétrie du réseau — le tout à partir d'un petit binaire autonome.
+Le **nœud léger QoreChain** est un client léger qui suit le réseau QoreChain sans exécuter un validateur complet ni un nœud d'archive. Au lieu de rejouer chaque transaction, il corrobore les en-têtes de blocs sur plusieurs points de terminaison RPC, suit les délégations et les récompenses, et diffuse en direct la télémétrie du réseau — le tout à partir d'un petit binaire autonome.
 
 Exécuter un nœud léger vous permet de participer à l'économie du réseau et d'observer son état sans le stockage, la bande passante et le coût opérationnel d'un nœud complet.
 
 ## Sa propre ligne de version
 
-Le nœud léger est livré sur sa **propre ligne de version — actuellement v3.1.1** — qui est **distincte de la version de publication de la chaîne** (la chaîne suit une piste `v3.x` distincte). La ligne v3.1.1 du nœud léger est alignée sur `qorechain-core` : elle ajoute une suite de régression de cryptographie post-quantique (PQC) (génération de clés, signature, vérification et détection de falsification) qui protège le comportement de vérification de signature du cœur et l'exécute en intégration continue.
+Le nœud léger est livré sur sa **propre ligne de version — actuellement v3.1.2** — qui est **distincte de la version de publication de la chaîne** (la chaîne suit une piste `v3.x` distincte). Les binaires sont publiés avec un **manifeste de sommes de contrôle SHA-256** — voir [Connexion au Mainnet](/getting-started/connecting-to-mainnet) pour le schéma de téléchargement — et la v3.1.2 est la première version dont les binaires Windows et macOS réussissent réellement les opérations de génération de clés/signature/vérification (les versions antérieures précédaient un remplacement de bibliothèque Rust et échouaient silencieusement sur ces plateformes). Elle est actuellement promue sur le canal de publication **testnet** ; le canal mainnet est intentionnellement retenu pour une période de rodage plus longue avant promotion — si un lien de téléchargement mainnet renvoie une erreur 404, c'est la raison, et non un lien cassé.
 
-Lorsque vous lisez la documentation ou les notes de version, considérez la version du nœud léger (v3.1.1) et la version de la chaîne comme deux numéros distincts qui se trouvent partager une série majeure.
+Lorsque vous lisez la documentation ou les notes de version, considérez la version du nœud léger (v3.1.2) et la version de la chaîne comme deux numéros distincts qui se trouvent partager une série majeure.
 
-## Pourquoi exécuter un nœud léger
+## Pourquoi exécuter un nœud léger {#why-run-a-light-node}
 
 - **Gagnez une part des récompenses de blocs.** Les nœuds légers actifs et enregistrés sont éligibles à la **part de récompense de 3 % des nœuds légers** décrite ci-dessous.
-- **Vérifiez la chaîne par vous-même.** Le nœud effectue la vérification des en-têtes avec un client léger à saut, vous obtenez donc une assurance cryptographique de l'état de la chaîne sans faire confiance à une API distante.
+- **Vérifiez par recoupement l'état de la chaîne qui vous est présenté.** Le nœud récupère la dernière hauteur depuis son point de terminaison RPC principal et depuis chaque point de terminaison témoin configuré en parallèle, et ne stocke un en-tête que lorsqu'ils s'accordent sur le hachage de bloc — ce qui élève l'exigence : il ne suffit plus de faire confiance à un seul point de terminaison, il faut désormais que tous les points de terminaison configurés soient compromis simultanément. Il s'agit d'une corroboration entre sources indépendantes, **pas d'une vérification cryptographique complète du consensus** (aucune vérification de l'ensemble des validateurs ni des signatures de commit) — le nœud indique le mode dans lequel il fonctionne via son statut `Assurance` (`trusted-single-source` sans témoin configuré, ou `corroborated-across-sources` avec au moins un témoin).
 - **Déléguez et auto-composez.** Gérez la mise déléguée sur plusieurs validateurs, répartie par poids, et composez automatiquement les récompenses.
 - **Surveillez le réseau en direct.** La télémétrie en temps réel couvre les validateurs, le consensus, le pont et la tokenomics.
 - **Post-quantique dès le premier jour.** Les clés et les signatures utilisent Dilithium-5 (ML-DSA-87).
@@ -47,7 +47,7 @@ Pour être éligible à cette part, un nœud léger doit être **enregistré on-
 
 ## Fonctionnalités principales en un coup d'œil
 
-- **Client léger à saut** — vérifie les en-têtes sans télécharger les blocs complets, se synchronisant rapidement même depuis un démarrage à froid.
+- **Corroboration d'en-têtes multi-sources** — vérifie par recoupement le dernier hachage de bloc auprès de chaque point de terminaison témoin configuré avant de lui faire confiance, sans télécharger les blocs complets, se synchronisant rapidement même depuis un démarrage à froid.
 - **Staking délégué** — misez sur plusieurs validateurs avec des poids de répartition configurables.
 - **Récompenses à auto-composition** — réclamez et re-déléguez les récompenses selon un intervalle configurable.
 - **Rééquilibrage tenant compte de la réputation** — déplacez automatiquement la délégation vers les validateurs à plus haute réputation.

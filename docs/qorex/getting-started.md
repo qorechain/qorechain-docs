@@ -44,11 +44,16 @@ You have three ways to set up:
 Anyone with your 24 words controls your funds, and no one — including QoreChain Association — can recover them for you. Never type your phrase into a website, share it, or store it in a screenshot or cloud note. **Uninstalling QoreX deletes the keys stored on that device** — without your written phrase (or [social recovery](/qorex/security-and-recovery#social-recovery) set up beforehand), an uninstall means permanent loss of access. Back up before you fund the wallet, not after.
 :::
 
-### 2. Restore an existing wallet
+### 2. Restore an existing wallet {#2-restore-an-existing-wallet}
 
 1. Tap **Restore existing wallet**.
-2. Type your 24 words in order.
-3. QoreX re-derives the same addresses — your wallet looks identical on any device.
+2. Choose **Recovery phrase** (if you wrote down your 24 words) or **Social recovery** (if you set up guardians and no longer have the phrase — see [Social recovery](/qorex/security-and-recovery#social-recovery)).
+3. For the recovery-phrase path: type your 24 words in order. QoreX normalizes case and stray spacing, checks the phrase, and tells you plainly if a word doesn't check out rather than a generic error.
+4. QoreX re-derives the same addresses — your wallet looks identical on any device.
+
+:::note Version requirement
+Restoring directly from your recovery phrase needs QoreX mobile **1.0.4 or later**. On an older build, **Restore existing wallet** only offers the guardian path — see [which version is live where](/qorex/overview#platform-availability) and update if needed.
+:::
 
 ### 3. Link from another device
 

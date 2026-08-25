@@ -47,6 +47,8 @@ Cüzdanınızda QoreChain henüz yapılandırılmamışsa önce ekleyin — bkz.
 
 Aynı Dashboard hesabına birden fazla QoreX adresi bağlayabilirsiniz — örneğin biri bir Firefox uzantısından, diğeri Chrome'dan, ya da bir telefon ve bir dizüstü bilgisayardan. Akışı ikinci bir adresle tekrarlamak için **Add another wallet** seçeneğini seçin; bağlı her adrese kendi etiketi verilebilir ve **Connect Wallets** sekmesinden biri gönderim için varsayılan olarak işaretlenir.
 
+**Wallet sekmesinde cüzdanlar arasında geçiş yapma.** Birden fazla cüzdan bağlandığında — QoreX ve MetaMask, ya da iki QoreX adresi — **Wallet** sekmesinin en üstünde, bağlı her cüzdan için bir tane olmak üzere bir dizi cüzdan çipi belirir ve etkin olan işaretlenir. Hangi cüzdanın bakiyesine ve geçmişine baktığınızı, sekmeden veya **Connect Wallets**'tan ayrılmadan değiştirmek için bir çipe tıklayın. Yalnızca tek bir cüzdan bağlıyken bu satır gizlenir, çünkü seçici yapacak bir şey bulamaz.
+
 ### QoreX ile bağlanma — mobil uygulama {#connect-qorex-app}
 
 1. Cüzdan sayfasında **QoreX wallet** kartını bulun ve **Connect with QoreX** seçeneğini seçin.

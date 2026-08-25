@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Hafif Düğüme Genel Bakış
 
-**QoreChain Hafif Düğümü (Light Node)**, tam bir doğrulayıcı veya arşiv düğümü çalıştırmadan QoreChain ağını takip eden hafif bir istemcidir. Her işlemi yeniden oynatmak yerine, blok başlıklarını kriptografik olarak doğrular, delegasyonları ve ödülleri izler ve canlı ağ telemetrisini akıtır — hepsi küçük, kendi kendine yeten bir ikili dosyadan.
+**QoreChain Hafif Düğümü (Light Node)**, tam bir doğrulayıcı veya arşiv düğümü çalıştırmadan QoreChain ağını takip eden hafif bir istemcidir. Her işlemi yeniden oynatmak yerine, blok başlıklarını birden fazla RPC uç noktası üzerinden doğrular, delegasyonları ve ödülleri izler ve canlı ağ telemetrisini akıtır — hepsi küçük, kendi kendine yeten bir ikili dosyadan.
 
 Bir hafif düğüm çalıştırmak, tam bir düğümün depolama, bant genişliği ve operasyonel maliyeti olmadan ağın ekonomisine katılmanızı ve durumunu gözlemlemenizi sağlar.
 
 ## Kendine ait sürüm hattı
 
-Hafif düğüm, **zincir sürüm sürümünden ayrı** olan **kendi sürüm hattıyla — şu anda v3.1.1** — gönderilir (zincir ayrı bir `v3.x` hattındadır). Hafif düğümün v3.1.1 hattı, `qorechain-core` ile hizalanmıştır: çekirdeğin imza doğrulama davranışını koruyan ve bunu sürekli entegrasyonda çalıştıran bir kuantum sonrası kriptografi (PQC) regresyon paketi (anahtar oluşturma, imzalama, doğrulama ve kurcalama tespiti) ekler.
+Hafif düğüm, **zincir sürüm numarasından ayrı** olan **kendi sürüm hattıyla — şu anda v3.1.2** — gönderilir (zincir ayrı bir `v3.x` hattındadır). İkili dosyalar bir **SHA-256 sağlama toplamı (checksum) manifestiyle** yayınlanır — indirme deseni için bkz. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) — ve v3.1.2, Windows ve macOS ikili dosyalarının anahtar oluşturma/imzalama/doğrulama işlemlerini gerçekten geçtiği ilk sürümdür (önceki derlemeler bir Rust kitaplığı değişiminden öncesine aitti ve bu platformlarda sessizce başarısız oluyordu). Şu anda **testnet** yayın kanalında sunuluyor; mainnet kanalı, terfi öncesinde daha uzun bir olgunlaşma süresi için bilinçli olarak geride tutuluyor — bir mainnet indirme bağlantısı 404 hatası verirse, bunun sebebi bozuk bir bağlantı değil, budur.
 
-Belgeleri veya sürüm notlarını okurken, hafif düğümün sürümünü (v3.1.1) ve zincirin sürümünü, aynı ana seriyi paylaşan iki ayrı sayı olarak değerlendirin.
+Belgeleri veya sürüm notlarını okurken, hafif düğümün sürümünü (v3.1.2) ve zincirin sürümünü, aynı ana seriyi paylaşan iki ayrı sayı olarak değerlendirin.
 
-## Neden bir hafif düğüm çalıştırmalı
+## Neden bir hafif düğüm çalıştırmalı {#why-run-a-light-node}
 
 - **Blok ödüllerinden pay kazanın.** Aktif, kayıtlı hafif düğümler, aşağıda açıklanan **%3 hafif düğüm ödül payına** hak kazanır.
-- **Zinciri kendiniz doğrulayın.** Düğüm, atlamalı (skipping) hafif istemci ile başlık doğrulaması yapar; böylece uzak bir API'ye güvenmeden zincir durumunun kriptografik güvencesini elde edersiniz.
+- **Size gösterilen zincir durumunu çapraz kontrol edin.** Düğüm, en son yüksekliği hem birincil RPC uç noktasından hem de yapılandırılmış her tanık (witness) uç noktasından paralel olarak alır ve bir başlığı yalnızca blok karması (hash) üzerinde hepsi anlaştığında saklar — bu, tek bir uç noktaya güvenmekten, yapılandırılmış tüm uç noktaların aynı anda ele geçirilmesini gerektirmeye kadar çıtayı yükseltir. Bu, bağımsız kaynaklar arasında bir doğrulamadır (corroboration), **tam kriptografik uzlaşı doğrulaması değildir** (doğrulayıcı kümesi veya commit-imza kontrolü yapılmaz) — düğüm hangi modda çalıştığını `Assurance` durumu aracılığıyla bildirir (tanık yapılandırılmamışsa `trusted-single-source`, en az bir tanık varsa `corroborated-across-sources`).
 - **Delege edin ve otomatik bileşik (auto-compound) yapın.** Birden fazla doğrulayıcı genelinde delege edilen stake'i yönetin, ağırlığa göre bölün ve ödülleri otomatik olarak bileşik haline getirin.
 - **Ağı canlı izleyin.** Gerçek zamanlı telemetri; doğrulayıcıları, uzlaşıyı, köprüyü ve tokenomiği kapsar.
 - **İlk günden kuantum sonrası.** Anahtarlar ve imzalar Dilithium-5 (ML-DSA-87) kullanır.
@@ -47,7 +47,7 @@ Bu paya hak kazanmak için bir hafif düğümün **zincir üzerinde kayıtlı ol
 
 ## Bir bakışta çekirdek özellikler
 
-- **Atlamalı (skipping) hafif istemci** — tam blokları indirmeden başlıkları doğrular, soğuk bir başlangıçtan bile hızlıca senkronize olur.
+- **Çoklu kaynaktan başlık doğrulaması** — bir başlığa güvenmeden önce en son blok karmasını yapılandırılmış her tanık uç noktasına karşı çapraz kontrol eder, tam blokları indirmeden, soğuk bir başlangıçtan bile hızlıca senkronize olur.
 - **Delege stake** — yapılandırılabilir bölüşüm ağırlıklarıyla birden fazla doğrulayıcı genelinde stake edin.
 - **Otomatik bileşik ödüller** — ödülleri yapılandırılabilir bir aralıkta talep edin ve yeniden delege edin.
 - **İtibar farkındalıklı yeniden dengeleme** — delegasyonu otomatik olarak daha yüksek itibarlı doğrulayıcılara kaydırın.

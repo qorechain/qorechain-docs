@@ -47,6 +47,8 @@ Dacă portofelul tău nu are încă QoreChain configurat, adaugă-l mai întâi 
 
 Poți lega mai mult de o adresă QoreX la același cont Dashboard — de exemplu una dintr-o extensie Firefox și una din Chrome, sau un telefon și un laptop. Selectează **Add another wallet** pentru a repeta fluxul cu o a doua adresă; fiecărei adrese legate i se poate atribui propria etichetă, iar una este marcată drept implicită pentru trimitere, ambele din fila **Connect Wallets**.
 
+**Comutarea între portofele în fila Wallet.** Odată ce este atașat mai mult de un portofel — QoreX și MetaMask, sau două adrese QoreX — în partea de sus a filei **Wallet** apare un rând de chip-uri de portofel, câte unul pentru fiecare portofel atașat, cu cel activ marcat. Dă clic pe un chip pentru a schimba al cărui portofel sold și istoric te uiți, fără a părăsi fila sau a merge la **Connect Wallets**. Rândul este ascuns când este atașat un singur portofel, deoarece un selector nu ar avea ce să facă.
+
 ### Conectează-te cu QoreX — aplicația mobilă {#connect-qorex-app}
 
 1. În pagina Portofel, găsește cardul **QoreX wallet** și selectează **Connect with QoreX**.

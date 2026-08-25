@@ -16,7 +16,7 @@ QoreX è **non-custodial**: le tue chiavi esistono solo sul tuo dispositivo, e Q
 
 **Fai almeno una di queste cose — subito dopo aver creato il tuo wallet, non più tardi:**
 
-1. **Scrivi la tua frase di recupero di 24 parole** e conservala offline e in un luogo durevole (non uno screenshot, non una nota sincronizzata sul cloud, non un messaggio a te stesso). È l'unica cosa in grado di ripristinare il tuo wallet su qualsiasi dispositivo, in qualsiasi momento.
+1. **Scrivi la tua frase di recupero di 24 parole** e conservala offline e in un luogo durevole (non uno screenshot, non una nota sincronizzata sul cloud, non un messaggio a te stesso). È l'unica cosa in grado di ripristinare il tuo wallet su qualsiasi dispositivo, in qualsiasi momento — su mobile, il ripristino diretto dalla frase richiede la versione **1.0.4 o successiva** (le build precedenti offrono solo il percorso tramite guardian; vedi [Ripristinare un wallet esistente](/qorex/getting-started#2-restore-an-existing-wallet)). L'estensione ripristina sempre direttamente dalla frase, in ogni versione.
 2. **Configura il [recupero sociale](#social-recovery)** con guardian di cui ti fidi. Questo ti permette di recuperare il tuo wallet anche se perdi la frase, senza che un singolo guardian possa mai accedere da solo ai tuoi fondi.
 
 Fare entrambe le cose è l'opzione più sicura — la frase ti protegge se cambi dispositivo o l'app non è disponibile; i guardian ti proteggono se perdi la frase stessa.

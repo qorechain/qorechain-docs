@@ -16,7 +16,7 @@ QoreX **saklayıcısızdır (non-custodial)**: anahtarlarınız yalnızca kendi 
 
 **Aşağıdakilerden en az birini yapın — cüzdanınızı oluşturduktan hemen sonra, sonraya bırakmadan:**
 
-1. **24 kelimelik kurtarma ifadenizi yazıya dökün** ve çevrimdışı, dayanıklı bir yerde saklayın (bir ekran görüntüsü değil, buluta senkronize bir not değil, kendinize gönderilen bir mesaj değil). Cüzdanınızı herhangi bir cihazda, herhangi bir zamanda geri yükleyebilecek tek şeydir.
+1. **24 kelimelik kurtarma ifadenizi yazıya dökün** ve çevrimdışı, dayanıklı bir yerde saklayın (bir ekran görüntüsü değil, buluta senkronize bir not değil, kendinize gönderilen bir mesaj değil). Cüzdanınızı herhangi bir cihazda, herhangi bir zamanda geri yükleyebilecek tek şeydir — mobilde, doğrudan ifadeden geri yükleme **1.0.4 veya sonrası** sürümü gerektirir (daha eski sürümler yalnızca vasi yolunu sunar; bkz. [Mevcut bir cüzdanı geri yükleyin](/qorex/getting-started#2-restore-an-existing-wallet)). Eklenti, her sürümde doğrudan ifadeden geri yüklemeyi her zaman destekler.
 2. Güvendiğiniz vasilerle **[sosyal kurtarma](#social-recovery)** kurun. Bu, ifadeyi kaybetseniz bile cüzdanınızı kurtarmanızı sağlar, ve hiçbir tek vasi tek başına fonlarınıza erişemez.
 
 İkisini birden yapmak en güvenli seçenektir — ifade, cihaz değiştirdiğinizde veya uygulama kullanılamaz olduğunda sizi korur; vasiler ise ifadenin kendisini kaybettiğinizde sizi korur.

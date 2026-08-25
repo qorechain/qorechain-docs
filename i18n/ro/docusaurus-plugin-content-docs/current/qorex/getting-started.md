@@ -44,11 +44,16 @@ Ai trei moduri de configurare:
 Oricine deține cele 24 de cuvinte controlează fondurile tale, iar nimeni — inclusiv QoreChain Association — nu ți le poate recupera. Nu introduce niciodată fraza pe un site web, nu o distribui și nu o stoca într-o captură de ecran sau într-o notă din cloud. **Dezinstalarea QoreX șterge cheile stocate pe acel dispozitiv** — fără fraza scrisă (sau fără [recuperarea socială](/qorex/security-and-recovery#social-recovery) configurată în prealabil), o dezinstalare înseamnă pierderea permanentă a accesului. Fă backup înainte de a alimenta portofelul, nu după.
 :::
 
-### 2. Restaurează un portofel existent
+### 2. Restaurează un portofel existent {#2-restore-an-existing-wallet}
 
 1. Atinge **Restaurează un portofel existent**.
-2. Introdu cele 24 de cuvinte în ordine.
-3. QoreX rederivă aceleași adrese — portofelul tău arată identic pe orice dispozitiv.
+2. Alege **Frază de recuperare** (dacă ai notat cele 24 de cuvinte) sau **Recuperare socială** (dacă ai configurat garanți și nu mai deții fraza — vezi [Recuperare socială](/qorex/security-and-recovery#social-recovery)).
+3. Pentru calea cu frază de recuperare: introdu cele 24 de cuvinte în ordine. QoreX normalizează scrierea cu majuscule/minuscule și spațierea, verifică fraza și te anunță clar dacă un cuvânt nu corespunde, în loc de o eroare generică.
+4. QoreX rederivă aceleași adrese — portofelul tău arată identic pe orice dispozitiv.
+
+:::note Cerință de versiune
+Restaurarea directă din fraza de recuperare necesită QoreX mobile **1.0.4 sau ulterior**. Pe o versiune mai veche, **Restaurează un portofel existent** oferă doar calea cu garanți — vezi [ce versiune este live unde](/qorex/overview#platform-availability) și actualizează dacă este necesar.
+:::
 
 ### 3. Conectează-te de pe alt dispozitiv
 

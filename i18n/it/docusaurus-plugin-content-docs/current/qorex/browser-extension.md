@@ -25,15 +25,17 @@ Le revisioni degli store arrivano in momenti diversi, quindi la versione pubblic
 
 | Browser | Versione pubblicata |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 inviata, in revisione) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 inviata, in revisione) |
-| **Safari (macOS)** | è distribuita all'interno dell'app macOS **QoreX Wallet**, che usa una propria numerazione `1.x` — il Mac App Store attualmente serve **1.1** (include l'estensione 0.1.5); la **1.2** (che include 0.1.9) è stata inviata ed è in revisione |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 inviata, ancora in revisione; la scheda è bloccata a nuovi invii finché quella revisione non si conclude, quindi la 0.2.2 non è ancora stata inviata lì) |
+| **Safari (macOS)** | è distribuita all'interno dell'app macOS **QoreX Wallet**, che usa una propria numerazione `1.x` — il Mac App Store attualmente serve **1.3** (include l'estensione **0.2.2**) |
 
-Le funzionalità più recenti potrebbero non essere ancora live nel tuo browser — controlla la tabella sopra prima di assumere che qualcosa descritto qui sia disponibile.
+Le funzionalità più recenti potrebbero non essere ancora live nel tuo browser — controlla la tabella sopra prima di assumere che qualcosa descritto qui sia disponibile. Se la Dashboard ti dice che la tua estensione deve essere aggiornata, significa che quell'azione richiede una versione minima specifica (di solito la 0.2.2, per lo staking) — non che la tua build sia in generale vecchia.
 
 **0.1.5** ha aggiunto il [rilevamento Solana Wallet Standard](#standards), lo [sblocco con passkey](#security), una [lane dApp SVM](#standards) completamente implementata e il [bridge di connessione con la Dashboard](#dashboard-bridge). (La versione 0.1.4 non è mai stata pubblicata — le sue modifiche raggiungono gli utenti con la 0.1.5.)
 
 **0.1.6–0.1.9** hanno aggiunto, in ordine: invii con gestione del vesting che rifiutano onestamente quando i fondi non sono disponibili; l'indirizzo dell'account e il saldo in tempo reale mostrati direttamente nella schermata principale del popup; e, nella **0.1.9**, il [pagamento di un @handle](#handle-send) direttamente dalla schermata Invia, una [schermata Ricevi con codice QR dell'indirizzo](#receive), un [selettore di lingua](#language) (dieci lingue, in linea con il set dell'app mobile) e la rimozione di una confusa "prossima data di sblocco" dal [saldo in vesting](#vesting).
+
+**0.2.2** ha aggiunto [lo staking, direttamente dall'estensione](#stake) — una propria schermata Stake (validatori con commissione, il tuo totale in staking, le ricompense in attesa, e delega / unstake / riscossione); [più account da un'unica recovery phrase](#wallet), come nell'app mobile; la correzione che permette al pulsante di staking della **Dashboard** di raggiungere davvero l'estensione (un wallet creato solo nell'estensione in precedenza non poteva fare staking tramite la Dashboard — vedi [Bridge con la Dashboard](#dashboard-bridge)); la rivendicazione funzionante di @handle dal browser; e il numero di build mostrato in fondo al popup.
 
 **La superficie dei permessi non è cambiata dalla 0.1.3** — vedi [Quali permessi richiede QoreX](#permissions).
 
@@ -50,8 +52,8 @@ Apri il popup e scegli:
 
 L'estensione conserva le proprie chiavi; non richiede l'app mobile. Puoi anche esportare la tua mnemonic dal popup. Le chiavi non lasciano mai il dispositivo.
 
-:::note Un account per profilo del browser
-A differenza dell'app mobile, che può contenere più account QoreChain da un'unica recovery phrase, l'estensione gestisce esattamente **un** account. Staking, Portfolio, Q-Day Scanner, recovery sociale, Legacy Protocol, richieste di pagamento e collegamento dei dispositivi sono funzioni esclusive dell'app mobile — vedi [QoreX Wallet](/qorex/overview#platform-availability) per il confronto completo.
+:::note Più account da un'unica phrase (dalla 0.2.2)
+L'estensione può ora creare e alternare tra più account dalla stessa recovery phrase, come nell'app mobile — la phrase che hai già annotato ripristina ognuno di essi. Il cambio account sposta tutto con sé: invio, staking, ricezione e il tuo @handle seguono tutti l'account attivo in quel momento. Portfolio, Q-Day Scanner, recovery sociale, Legacy Protocol, richieste di pagamento e collegamento dei dispositivi restano esclusivi dell'app mobile — vedi [QoreX Wallet](/qorex/overview#platform-availability) per il confronto completo.
 :::
 
 ## Il tuo account, saldo e @handle {#account}
@@ -80,6 +82,25 @@ La risoluzione viene verificata in due modi prima che QoreX la utilizzi: un'atte
 ## Ricevi {#receive}
 
 Tocca **Ricevi** nel popup per mostrare il tuo indirizzo `qor1…` come codice QR (con l'icona QoreChain incorporata) accanto a un pulsante di copia — scansionalo da un telefono o incolla direttamente l'indirizzo.
+
+## Stake dall'estensione {#stake}
+
+Dalla **0.2.2**, il popup ha una propria schermata **Stake** — un wallet creato solo nell'estensione non ha più bisogno dell'app mobile per guadagnare ricompense di staking.
+
+1. Apri il popup e vai su **Stake**.
+2. La schermata elenca i validatori attivi con la loro commissione, il tuo totale attualmente in staking e le ricompense in attesa di riscossione. I validatori che la rete ha messo in **jail** sono esclusi dall'elenco — delegare a uno di essi non è mai ciò che vuoi.
+3. Per delegare, scegli un validatore e un importo, poi conferma. QoreX firma con la firma ibrida post-quantistica obbligatoria, allo stesso modo di un Invio.
+4. **Unstake** e **riscossione** funzionano dalla stessa schermata. L'unstake avvia il periodo di unbonding di 21 giorni — vedi [Staking e Delega](/user-guide/staking-and-delegation) per cosa significa.
+
+Lo staking, la delega e le ricompense avvengono esclusivamente sulla lane **Nativa**, mai tramite un precompile EVM.
+
+### Approvare una richiesta di staking dalla Dashboard {#stake-dashboard}
+
+La [Dashboard](/dashboard/staking-and-validators) di QoreChain compone le richieste di staking ma non può firmarle — la tua chiave non lascia mai il vault dell'estensione. Quando clicchi **Continua in QoreX** sulla Dashboard, la richiesta si apre nell'estensione perché tu la esamini (validatore e importo) e la approvi, esattamente come un Invio. Questa connessione si era rotta nella 0.2.1 (l'estensione si segnalava come "troppo vecchia" anche quando era la build pubblicata più recente — il problema reale era un passaggio interno mancante, non una versione obsoleta); è stata corretta a partire dalla **0.2.2**. Se usi una build più vecchia, vedi [quale versione è live dove](#versions).
+
+:::note Se una transazione viene mostrata come "downgraded" invece che riuscita
+La Dashboard a volte mostra una transazione come **downgraded** invece di un successo netto. Significa che i tuoi fondi si sono spostati, ma il layer di firma post-quantistica non è stato trovato on-chain per quella transazione — non è qualcosa che hai fatto tu di sbagliato e non è qualcosa che puoi risolvere dal tuo lato. È un difetto dal nostro lato; ti preghiamo di segnalarlo al supporto così possiamo indagare. Il messaggio resta a schermo deliberatamente invece di sparire, così hai il tempo di leggerlo e segnalarlo.
+:::
 
 ### Invio su reti esterne {#send-external}
 
@@ -179,9 +200,11 @@ Per la lane **Nativa** di QoreChain, usa il provider in stile Keplr su `window.q
 
 Le approvazioni sono **per-origine**: la prima connessione a un sito apre un popup di approvazione che mostra l'origine, l'approvazione rivela solo il tuo indirizzo pubblico, e l'approvazione di un sito non concede nulla a un altro.
 
-### Bridge con la Dashboard (v0.1.5) {#dashboard-bridge}
+### Bridge con la Dashboard (v0.1.5, esteso nella v0.2.2) {#dashboard-bridge}
 
 La versione 0.1.5 aggiunge un bridge limitato esclusivamente a **`dashboard.qorechain.io`**: `window.qorex.native.connectProof(sessionId)` firma la prova di pairing *Connect with QoreX* (il backend riverifica la firma), e `executeTransfer({ to, amountUqor, memo })` approva e trasmette un trasferimento QOR proposto dalla Dashboard, restituendo il `txHash`. Questi metodi vengono rifiutati su qualsiasi altra origine.
+
+La **0.2.2** aggiunge `native:executeRequest`, che accetta un'intera richiesta proposta dalla Dashboard — incluso lo [staking](#stake-dashboard) — validata rispetto allo stesso parser condiviso che QoreX usa ovunque: viene rifiutata in caso di rete non corrispondente, origine estranea, indirizzo che non è il tuo, tipo di richiesta sconosciuto, oppure una richiesta di staking che porta un `toAddress` (le richieste di staking non ne hanno uno).
 
 Poiché un indirizzo `qor1…` è ugualmente valido su mainnet e su testnet, una richiesta proposta dalla Dashboard indica quale rete ha come target, e QoreX rifiuta di agire su di essa se questa non corrisponde alla rete a cui l'estensione è attualmente connessa — non passerà mai da una rete all'altra per conto di una richiesta.
 
@@ -192,4 +215,4 @@ Ogni trasferimento QOR che QoreX stessa avvia viene firmato con una **firma ibri
 - **Firma Nativa avviata da una dApp** — le dApp costruite sul flusso qorechain-connect pre-inseriscono l'estensione PQC (`/qorechain.pqc.v1.PQCHybridSignature`) nel corpo della transazione prima di chiamare `signDirect`; QoreX contribuisce la metà classica e **rifiuta di firmare alla cieca**, decodificando il payload e segnalando se il layer PQC è presente.
 - **Le richieste classiche sono sempre etichettate** — se una richiesta non porta alcun layer PQC, o ha come target una chain esterna (ETH/BNB/ecc., che non può trasportare PQC), QoreX mostra un avviso esplicito invece di effettuare un downgrade silenzioso.
 
-**Cosa significa questo per la dimensione delle transazioni.** ML-DSA-87 è una firma grande: la firma è di **4,627 bytes** e la chiave pubblica di **2,592 bytes** (fissate da FIPS-204). Una transazione QoreChain ibrida è quindi di diversi kilobyte più grande di una puramente classica. Se costruisci e trasmetti transazioni tu stesso, dimensiona i tuoi buffer e le stime delle commissioni per i byte aggiuntivi; il gas accounting di QoreChain già li prevede. Vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing) per i primitivi e il requisito di firma deterministica.
+**Cosa significa questo per la dimensione delle transazioni.** ML-DSA-87 è una firma grande: la firma è di **4.627 byte** e la chiave pubblica di **2.592 byte** (fissate da FIPS-204). Una transazione QoreChain ibrida è quindi di diversi kilobyte più grande di una puramente classica. Se costruisci e trasmetti transazioni tu stesso, dimensiona i tuoi buffer e le stime delle commissioni per i byte aggiuntivi; il gas accounting di QoreChain già li prevede. Vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing) per i primitivi e il requisito di firma deterministica.

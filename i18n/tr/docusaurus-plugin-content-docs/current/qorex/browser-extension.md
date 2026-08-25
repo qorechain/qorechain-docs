@@ -25,15 +25,17 @@ Mağaza incelemeleri farklı zamanlarda sonuçlandığı için yayınlanan sür�
 
 | Tarayıcı | Yayınlanan sürüm |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 gönderildi, incelemede) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 gönderildi, incelemede) |
-| **Safari (macOS)** | kendi `1.x` numaralandırmasını kullanan **QoreX Wallet** macOS uygulamasının içinde dağıtılır — Mac App Store şu anda **1.1** sürümünü sunuyor (0.1.5 uzantısını taşır); **1.2** (0.1.9 taşıyan) gönderildi ve incelemede |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 gönderildi, hâlâ incelemede; bu inceleme sonuçlanana kadar listeleme yeni gönderimlere kapalı, dolayısıyla 0.2.2 orada henüz gönderilmedi) |
+| **Safari (macOS)** | kendi `1.x` numaralandırmasını kullanan **QoreX Wallet** macOS uygulamasının içinde dağıtılır — Mac App Store şu anda **1.3** sürümünü sunuyor (0.2.2 uzantısını taşır) |
 
-Daha yeni özellikler tarayıcınızda henüz yayında olmayabilir — burada açıklanan bir şeyin kullanılabilir olduğunu varsaymadan önce yukarıdaki tabloyu kontrol edin.
+Daha yeni özellikler tarayıcınızda henüz yayında olmayabilir — burada açıklanan bir şeyin kullanılabilir olduğunu varsaymadan önce yukarıdaki tabloyu kontrol edin. Dashboard, uzantınızın güncellenmesi gerektiğini söylüyorsa, bu genel olarak sürümünüzün eski olduğu anlamına gelmez; söz konusu işlem için (genellikle staking için 0.2.2) belirli bir minimum sürüm gerektiği anlamına gelir.
 
 **0.1.5** sürümü [Solana Wallet Standard keşfini](#standards), [geçiş anahtarıyla kilit açmayı](#security), tamamen uygulanmış bir [SVM dApp hattını](#standards) ve [Dashboard bağlantı köprüsünü](#dashboard-bridge) ekledi. (0.1.4 sürümü hiç yayınlanmadı — içerdiği değişiklikler kullanıcılara 0.1.5 ile ulaşıyor.)
 
 **0.1.6–0.1.9** sürümleri sırasıyla şunları ekledi: dürüst banka-reddi mesajlarıyla vesting'i gözeten gönderimler; açılır pencerenin ana ekranında doğrudan gösterilen hesap adresi ve anlık bakiye; ve **0.1.9**'da, Send ekranından doğrudan [bir @handle'a ödeme yapma](#handle-send), adres QR kodlu bir [Receive ekranı](#receive), bir [dil seçici](#language) (mobil uygulamayla aynı on dil) ve [vesting bakiyesinden](#vesting) kafa karıştırıcı "sonraki kilit açılma tarihi"nin kaldırılması.
+
+**0.2.2** sürümü [uzantının kendisinden staking'i](#stake) ekledi — komisyonlu validatörleri, staking'e ayrılmış toplamınızı, bekleyen ödülleri ve delegasyon/unstake/talep işlemlerini içeren kendi Stake ekranı; mobil uygulamayla aynı şekilde [tek bir kurtarma ifadesinden birden fazla hesap](#wallet); **Dashboard**'un staking düğmesinin uzantıya gerçekten ulaşmasını sağlayan düzeltme (yalnızca uzantıda oluşturulmuş bir cüzdan daha önce Dashboard üzerinden hiç staking yapamıyordu — bkz. [Dashboard köprüsü](#dashboard-bridge)); tarayıcıdan çalışan @handle talep etme; ve açılır pencerenin altında gösterilen derleme numarası.
 
 **İzin yüzeyi 0.1.3'ten bu yana değişmedi** — bkz. [QoreX hangi izinleri istiyor](#permissions).
 
@@ -50,8 +52,8 @@ Açılır pencereyi açın ve seçin:
 
 Uzantı kendi anahtarlarını tutar; mobil uygulamaya ihtiyaç duymaz. Anımsatıcı ifadenizi de açılır pencereden dışa aktarabilirsiniz. Anahtarlar cihazdan asla ayrılmaz.
 
-:::note Tarayıcı profili başına bir hesap
-Bir kurtarma ifadesinden birden fazla QoreChain hesabı tutabilen mobil uygulamanın aksine, uzantı tam olarak **bir** hesap yönetir. Staking, Portfolio, Q-Day Scanner, sosyal kurtarma, Legacy Protocol, ödeme istekleri ve cihaz bağlama yalnızca mobilde bulunur — tam karşılaştırma için bkz. [QoreX Wallet](/qorex/overview#platform-availability).
+:::note Aynı ifadeden birden fazla hesap (0.2.2'den itibaren)
+Uzantı artık mobil uygulamayla aynı şekilde, aynı kurtarma ifadesinden birden fazla hesap oluşturabilir ve bunlar arasında geçiş yapabilir — zaten yazdığınız ifade bunların hepsini geri yükler. Geçiş yapmak her şeyi beraberinde taşır: gönderim, staking, alım ve @handle'ınız hangi hesap etkinse onu izler. Portfolio, Q-Day Scanner, sosyal kurtarma, Legacy Protocol, ödeme istekleri ve cihaz bağlama yalnızca mobilde kalmaya devam ediyor — tam karşılaştırma için bkz. [QoreX Wallet](/qorex/overview#platform-availability).
 :::
 
 ## Hesabınız, bakiyeniz ve @handle {#account}
@@ -80,6 +82,25 @@ Açılır pencereden, mobil uygulamada olduğu gibi, bu hesabın adresi için be
 ## Al {#receive}
 
 Açılır pencerede **Al**'a dokunarak `qor1…` adresinizi (QoreChain simgesi gömülü) bir QR kod olarak bir kopyalama düğmesiyle birlikte gösterin — bir telefondan tarayın veya adresi doğrudan yapıştırın.
+
+## Uzantıdan staking {#stake}
+
+**0.2.2**'den itibaren, açılır pencerenin kendi **Stake** ekranı var — yalnızca uzantıda oluşturulmuş bir cüzdanın artık staking ödülü kazanmak için mobil uygulamaya ihtiyacı yok.
+
+1. Açılır pencereyi açın ve **Stake**'e gidin.
+2. Ekran, komisyonlarıyla birlikte aktif validatörleri, o anda staking'e ayrılmış toplamınızı ve talep edilmeyi bekleyen ödülleri listeler. Ağın **hapse attığı (jailed)** validatörler listeden çıkarılır — bunlardan birine delege etmek asla istediğiniz şey değildir.
+3. Delege etmek için bir validatör ve bir tutar seçin, ardından onaylayın. QoreX, tıpkı bir Gönder işlemi gibi, zorunlu hibrit post-kuantum imzayla imzalar.
+4. **Unstake** ve **talep et** aynı ekrandan çalışır. Unstake işlemi 21 günlük unbonding süresini başlatır — bunun ne anlama geldiği için bkz. [Staking ve Delegasyon](/user-guide/staking-and-delegation).
+
+Staking, delegasyon ve ödüller yalnızca **Native** hattında gerçekleşir, hiçbir zaman bir EVM precompile üzerinden değil.
+
+### Bir Dashboard staking isteğini onaylama {#stake-dashboard}
+
+QoreChain [Dashboard](/dashboard/staking-and-validators)'u staking istekleri oluşturur ama bunları imzalayamaz — anahtarınız hiçbir zaman uzantının kasasından çıkmaz. Dashboard'da **QoreX'te Devam Et**'e tıkladığınızda, istek uzantıda açılır ve siz onu (validatör ve tutar) inceleyip tıpkı bir Gönder işlemi gibi onaylarsınız. Bu bağlantı 0.2.1'de bozulmuştu (uzantı, yayınlanan en yeni derleme olmasına rağmen kendisini "çok eski" olarak bildiriyordu — gerçek sorun sürüm eskiliği değil, eksik bir dahili adımdı); **0.2.2** itibarıyla düzeltildi. Daha eski bir derlemedeyseniz, bkz. [hangi sürüm nerede yayında](#versions).
+
+:::note Bir işlem "başarılı" yerine "düşürülmüş (downgraded)" gösteriliyorsa
+Dashboard bazen bir işlemi temiz bir başarı yerine **düşürülmüş** olarak gösterir. Bu, paranızın hareket ettiği ama o işlem için post-kuantum imza katmanının zincirde bulunamadığı anlamına gelir — bu sizin yaptığınız bir şey değildir ve kendi tarafınızdan düzeltebileceğiniz bir şey de değildir. Bu bizim tarafımızdaki bir hatadır; lütfen incelememiz için destek ekibine bildirin. Mesaj, okuyup bildirmeniz için zamanınız olsun diye bilerek ekranda kalır, kaybolmaz.
+:::
 
 ### Harici ağlarda gönderim {#send-external}
 
@@ -179,9 +200,11 @@ QoreChain **Native** hattı için `window.qorex.native` adresindeki Keplr desenl
 
 Onaylar **köken başınadır**: bir siteye ilk bağlantı, kökeni gösteren bir onay penceresi açar, onaylamak yalnızca genel adresinizi açığa çıkarır ve bir sitenin onayı bir başkasına hiçbir yetki vermez.
 
-### Dashboard köprüsü (v0.1.5) {#dashboard-bridge}
+### Dashboard köprüsü (v0.1.5, v0.2.2'de genişletildi) {#dashboard-bridge}
 
 0.1.5 sürümü, yalnızca **`dashboard.qorechain.io`** ile sınırlı bir köprü ekler: `window.qorex.native.connectProof(sessionId)`, *Connect with QoreX* eşleştirme kanıtını imzalar (arka uç imzayı yeniden doğrular) ve `executeTransfer({ to, amountUqor, memo })`, Dashboard tarafından önerilen bir QOR transferini onaylayıp yayınlar ve `txHash` değerini döndürür. Bu yöntemler diğer tüm kökenlerde reddedilir.
+
+**0.2.2** sürümü, [staking](#stake-dashboard) dahil olmak üzere Dashboard tarafından önerilen bütün bir isteği kabul eden `native:executeRequest`'i ekler; bu, QoreX'in başka her yerde kullandığı aynı paylaşılan ayrıştırıcıya karşı doğrulanır: bir ağ uyuşmazlığında, yabancı bir kökende, size ait olmayan bir adreste, bilinmeyen bir istek türünde veya bir `toAddress` taşıyan bir staking isteğinde (staking isteklerinin bir tanesi yoktur) reddedilir.
 
 Bir `qor1…` adresi mainnet ve testnette eşit derecede geçerli olduğundan, Dashboard tarafından önerilen bir istek hangi ağı hedeflediğini belirtir ve bu, uzantının o anda bağlı olduğu ağla eşleşmiyorsa QoreX bu isteğe göre hareket etmeyi reddeder — bir isteğin adına asla ağ değiştirmez.
 

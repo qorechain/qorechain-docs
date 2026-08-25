@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Ediția UX — Dashboard web
 
-Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, aceasta este linia **v3.1.1** a nodului light (versiunea sa proprie, separată de versiunea chain-ului).
+Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, aceasta este linia **v3.1.2** a nodului light (versiunea sa proprie, separată de versiunea chain-ului).
 
 Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru operatorii care preferă o interfață vizuală în locul liniei de comandă.
 
@@ -59,8 +59,8 @@ http://localhost:8420
 Unele texte din alte locuri fac referire la portul 8080 pentru dashboard. Valoarea autoritativă este **8420** — aceasta este ceea ce imaginea expune efectiv și la ce se leagă daemon-ul în mod implicit. Dacă îți adaptezi propriul `docker-compose.yml` sau un reverse proxy, mapează la **8420**, nu la 8080.
 :::
 
-:::danger Dashboard-ul nu are nicio autentificare
-Portul 8420 ascultă pe **toate interfețele**, nu doar pe localhost, iar dashboard-ul **nu are nicio autentificare și niciun control al accesului**. Oricine poate ajunge la acest port în rețeaua ta îți poate citi configurația, delegările și recompensele. **Nu îl expune public.** Leagă-l doar de loopback sau pune-l în spatele unui reverse proxy care impune autentificare, înainte de a-l rula pe orice altceva decât o rețea privată complet de încredere.
+:::caution Nicio rută a dashboard-ului nu autentifică
+Nimic din spatele portului 8420 nu are autentificare sau control al accesului — oricine poate ajunge la el poate citi configurația, delegările și recompensele tale; nicio cheie privată nu este servită vreodată. Binarul acum **implicit ascultă doar pe loopback** (`127.0.0.1:8420`) în loc de toate interfețele, și afișează un avertisment la pornire dacă l-ai configurat să asculte mai larg — dar avertismentul nu este un refuz, și nu adaugă autentificare. Dacă lărgești în mod deliberat legarea (de exemplu pentru a-l accesa de pe altă mașină, sau pentru că publici portul din Docker), pune-l în spatele unui reverse proxy care impune autentificare, în loc să-l expui direct. Conexiunea de telemetrie WebSocket verifică de asemenea `Origin`-ul browserului, întrucât o legare de rețea largă, singură, nu împiedică o altă pagină deschisă în același browser să se conecteze.
 :::
 
 ## Ce afișează dashboard-ul

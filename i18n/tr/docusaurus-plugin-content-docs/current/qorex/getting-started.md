@@ -44,11 +44,16 @@ Kurulum için üç yolunuz var:
 24 kelimenize sahip olan herkes fonlarınızı kontrol eder ve QoreChain Association dahil hiç kimse bunları sizin için kurtaramaz. İfadenizi asla bir web sitesine yazmayın, paylaşmayın veya bir ekran görüntüsünde ya da bulut notunda saklamayın. **QoreX'i kaldırmak, o cihazda saklanan anahtarları siler** — yazılı ifadeniz (veya önceden kurulmuş [sosyal kurtarma](/qorex/security-and-recovery#social-recovery)) olmadan, kaldırma işlemi erişimin kalıcı olarak kaybı anlamına gelir. Cüzdanı fonlamadan önce yedekleyin, sonra değil.
 :::
 
-### 2. Mevcut bir cüzdanı geri yükleyin
+### 2. Mevcut bir cüzdanı geri yükleyin {#2-restore-an-existing-wallet}
 
 1. **Mevcut cüzdanı geri yükle**'ye dokunun.
-2. 24 kelimenizi sırayla yazın.
-3. QoreX aynı adresleri yeniden türetir — cüzdanınız herhangi bir cihazda aynı görünür.
+2. **Kurtarma ifadesi**'ni (24 kelimenizi yazmışsanız) veya **Sosyal kurtarma**'yı (koruyucular kurduysanız ve artık ifadeye sahip değilseniz — bkz. [Sosyal kurtarma](/qorex/security-and-recovery#social-recovery)) seçin.
+3. Kurtarma ifadesi yolunda: 24 kelimenizi sırayla yazın. QoreX büyük/küçük harf ve gereksiz boşlukları normalleştirir, ifadeyi kontrol eder ve bir kelime doğrulanmazsa genel bir hata yerine açıkça bunu belirtir.
+4. QoreX aynı adresleri yeniden türetir — cüzdanınız herhangi bir cihazda aynı görünür.
+
+:::note Sürüm gereksinimi
+Kurtarma ifadenizden doğrudan geri yükleme, QoreX mobil **1.0.4 veya üzeri** gerektirir. Daha eski bir sürümde, **Mevcut cüzdanı geri yükle** yalnızca koruyucu yolunu sunar — bkz. [hangi sürüm nerede yayında](/qorex/overview#platform-availability) ve gerekirse güncelleyin.
+:::
 
 ### 3. Başka bir cihazdan bağlayın
 

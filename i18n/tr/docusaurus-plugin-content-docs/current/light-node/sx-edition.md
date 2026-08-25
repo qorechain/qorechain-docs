@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Sürümü — Sunucu Daemon'u
 
-**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu, hafif düğümün **v3.1.1** hattıdır (zincir sürümünden ayrı, kendi sürümü).
+**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu, hafif düğümün **v3.1.2** hattıdır (zincir sürümünden ayrı, kendi sürümü).
 
 ## Kurulum
 
@@ -50,13 +50,17 @@ Kullanım düzeyinde en ilgili yapılandırma seçenekleri:
 | --- | --- |
 | `chain_id` | Ağ tanımlayıcısı (örneğin testnet'te `qorechain-diana`, mainnet'te `qorechain-vladi`). |
 | `rpc_addr` | Daemon'un bağlandığı zincir RPC uç noktası. **Yalnızca yerel modda** çalıştırmak için boş bırakın. |
-| `primary_addr` / `witness_addrs` | Atlama hafif istemcisi tarafından kullanılan birincil ve tanık RPC uç noktaları. |
+| `primary_addr` / `witness_addrs` | Birincil RPC uç noktası ve raporladığı başlığın doğrulandığı tanık uç noktaları — bkz. [Neden hafif düğüm çalıştırılır](/light-node/overview#why-run-a-light-node). En az bir farklı, erişilebilir tanık, `Assurance` değerini `trusted-single-source`'tan `corroborated-across-sources`'a taşıyan şeydir. |
 | `trust_period` / `max_clock_drift` | Hafif istemci güven penceresi (örneğin `168h`) ve izin verilen saat kayması. |
 | `data_dir` | Düğümün veritabanını ve başlıklarını sakladığı yer. |
 | `keyring_backend` / `key_name` | Anahtarlık arka ucu (`file` veya `os`) ve operatör anahtar adı. |
 | `[delegation]` | Otomatik bileşiklendirme açık/kapalı, bileşiklendirme aralığı, talep için minimum ödül, doğrulayıcı kümesi, bölünme ağırlıkları, yeniden dengeleme ve minimum itibar. |
 | `[telemetry]` | Telemetrinin etkin olup olmadığı ve doğrulayıcılar, ağ, köprü ve tokenomik için yenileme aralıkları. |
 | `log_level` / `log_format` | Günlük ayrıntı düzeyi (`debug`, `info`, `warn`, `error`) ve biçim (`text` veya `json`). |
+
+:::note Tanık uç noktaları başlangıçta doğrulanır
+Birincil ile aynı ana bilgisayardaki bir tanık reddedilir — güvenliği ihlal edilmiş bir uç nokta yalnızca kendisiyle aynı fikirde olur, dolayısıyla hiçbir şeyi doğrulamaz. Uzak bir ana bilgisayardaki düz metin `http://` tanığı da reddedilir, çünkü o bağlantıyı yeniden yazabilen bir saldırgan aynı anda her tanık gibi yanıt verebilir; loopback `http://` sorun değildir. Tanıkları, bağımsız olarak güvenmek için nedenleriniz olan RPC uç noktalarına yönlendirin.
+:::
 
 Delegasyon varsayılanları, `1h` aralığında otomatik bileşiklendirmeyi ve itibar farkındalıklı yeniden dengelemeyi etkinleştirir — bunların ne yaptığını öğrenmek için [Ödüller ve İzleme](/light-node/rewards-and-monitoring) bölümüne bakın.
 

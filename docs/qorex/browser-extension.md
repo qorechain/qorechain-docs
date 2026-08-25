@@ -25,15 +25,17 @@ Store reviews land at different times, so the published version currently differ
 
 | Browser | Published version |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 submitted, in review) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 submitted, in review) |
-| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.1** (carries extension 0.1.5); **1.2** (carrying 0.1.9) is submitted and in review |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 submitted, still in review; the listing is locked to new submissions until that review clears, so 0.2.2 hasn't been submitted there yet) |
+| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.3** (carries extension **0.2.2**) |
 
-Newer features may not be live in your browser yet — check the table above before assuming something described here is available.
+Newer features may not be live in your browser yet — check the table above before assuming something described here is available. If the Dashboard tells you your extension needs updating, it means a specific minimum version for that action (usually 0.2.2, for staking) — not that your build is generally old.
 
 **0.1.5** added [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
 
 **0.1.6–0.1.9** added, in order: vesting-aware sends with honest bank-refusal messages; the account address and live balance shown directly on the popup home; and, in **0.1.9**, [paying an @handle](#handle-send) straight from Send, a [Receive screen with an address QR code](#receive), a [language picker](#language) (ten languages, matching the mobile app's set), and the removal of a confusing "next unlock date" from the [vesting balance](#vesting).
+
+**0.2.2** added [staking, from the extension itself](#stake) — its own Stake screen (validators with commission, your staked total, waiting rewards, and delegate / unstake / claim); [several accounts from one recovery phrase](#wallet), the same as the mobile app; the fix that lets the **Dashboard's** staking button actually reach the extension (a wallet created only in the extension previously couldn't stake through the Dashboard at all — see [Dashboard bridge](#dashboard-bridge)); working @handle claiming from the browser; and the build number shown at the foot of the popup.
 
 **The permission surface has not changed since 0.1.3** — see [What permissions QoreX asks for](#permissions).
 
@@ -50,8 +52,8 @@ Open the popup and choose:
 
 The extension holds its own keys; it does not require the mobile app. You can also export your mnemonic from the popup. Keys never leave the device.
 
-:::note One account per browser profile
-Unlike the mobile app, which can hold several QoreChain accounts from one recovery phrase, the extension manages exactly **one** account. Staking, Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests, and device linking are mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability) for the full comparison.
+:::note Several accounts from one phrase (from 0.2.2)
+The extension can now create and switch between several accounts from the same recovery phrase, the same as the mobile app — the phrase you already wrote down restores every one of them. Switching moves everything with it: sending, staking, receiving, and your @handle all follow whichever account is active. Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests, and device linking remain mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability) for the full comparison.
 :::
 
 ## Your account, balance & @handle {#account}
@@ -80,6 +82,25 @@ Resolution is verified two ways before QoreX will use it: a registry attestation
 ## Receive {#receive}
 
 Tap **Receive** in the popup to show your `qor1…` address as a QR code (with the QoreChain icon embedded) alongside a copy button — scan it from a phone or paste the address directly.
+
+## Stake from the extension {#stake}
+
+Since **0.2.2**, the popup has its own **Stake** screen — a wallet created only in the extension no longer needs the mobile app to earn staking rewards.
+
+1. Open the popup and go to **Stake**.
+2. The screen lists active validators with their commission, your currently staked total, and any rewards waiting to be claimed. Validators the network has **jailed** are left out of the list — delegating to one is never what you want.
+3. To delegate, pick a validator and an amount, then confirm. QoreX signs with the mandatory hybrid post-quantum signature, the same as a Send.
+4. **Unstake** and **claim** work from the same screen. Unstaking starts the 21-day unbonding period — see [Staking & Delegation](/user-guide/staking-and-delegation) for what that means.
+
+Staking, delegation, and rewards happen exclusively on the **Native** lane, never through an EVM precompile.
+
+### Approving a Dashboard staking request {#stake-dashboard}
+
+The QoreChain [Dashboard](/dashboard/staking-and-validators) composes staking requests but cannot sign them — your key never leaves the extension's vault. When you click **Continue in QoreX** on the Dashboard, the request opens in the extension for you to review (validator and amount) and approve, exactly like a Send. This connection was broken in 0.2.1 (the extension reported itself as "too old" even when it was the newest published build — the real issue was a missing internal hop, not version staleness); it's fixed as of **0.2.2**. If you're on an older build, see [which version is live where](#versions).
+
+:::note If a transaction shows as "downgraded" instead of successful
+The Dashboard occasionally shows a transaction as **downgraded** rather than a clean success. This means your funds moved, but the post-quantum signature layer wasn't found on chain for that transaction — it is not something you did wrong and not something you can fix from your side. It's a fault on our side; please report it to support so we can investigate. The message stays on screen deliberately rather than clearing, so you have time to read and report it.
+:::
 
 ### Send on external networks {#send-external}
 
@@ -179,9 +200,11 @@ For the QoreChain **Native** lane, use the Keplr-pattern provider at `window.qor
 
 Approvals are **per-origin**: the first connection to a site opens an approval popup showing the origin, approving reveals only your public address, and one site's approval grants nothing to another.
 
-### Dashboard bridge (v0.1.5) {#dashboard-bridge}
+### Dashboard bridge (v0.1.5, extended in v0.2.2) {#dashboard-bridge}
 
 Version 0.1.5 adds a bridge scoped to **`dashboard.qorechain.io` only**: `window.qorex.native.connectProof(sessionId)` signs the *Connect with QoreX* pairing proof (the backend re-verifies the signature), and `executeTransfer({ to, amountUqor, memo })` approves and broadcasts a Dashboard-proposed QOR transfer, returning the `txHash`. These methods are refused on any other origin.
+
+**0.2.2** adds `native:executeRequest`, which accepts a whole Dashboard-proposed request — including [staking](#stake-dashboard) — validated against the same shared parser QoreX uses everywhere else: refused on a network mismatch, a foreign origin, an address that isn't yours, an unknown request kind, or a staking request that carries a `toAddress` (staking requests don't have one).
 
 Because a `qor1…` address is equally valid on mainnet and testnet, a Dashboard-proposed request states which network it targets, and QoreX refuses to act on it if that doesn't match the network the extension is currently connected to — it will never switch networks on a request's behalf.
 

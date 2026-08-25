@@ -9,7 +9,7 @@ sidebar_position: 8
 
 **Validators** 페이지(`/validators`)에서는 네트워크의 검증인을 조회할 수 있습니다 — 이는 읽기 전용 브라우저로, 지갑 연결이나 위임 버튼이 없습니다. 실제 스테이킹 작업(위임, 위임 해제, 보상 청구)은 대신 **Wallet** 페이지에서, QoreX 지갑이 연결된 후 **Stake / Delegate**와 **Rewards** 탭 아래에서 이루어집니다. 위임은 네트워크 보안에 기여하며 스테이킹 보상을 얻을 수 있게 해줍니다. 위임과 보상의 개념에 대해서는 [Staking & Delegation](/user-guide/staking-and-delegation)을 참고하세요.
 
-QoreChain 스테이킹은 포스트 양자 방식으로 서명되므로, 대시보드는 위임에 서명할 수 있는 키를 절대 보관하지 않습니다. 아래의 모든 스테이킹 작업은 동일한 방식으로 동작합니다. 대시보드에서 요청(어떤 검증인에게, 얼마를)을 구성한 다음, [Send flow](/dashboard/wallet#mainnet)와 정확히 동일하게 **연결된 QoreX 지갑** — 앱 또는 브라우저 확장 프로그램 — 에서 승인하고 서명합니다. 대시보드는 `qorex://tx?...` 링크를 통해 매개변수만 전송하며, QoreX가 실제 트랜잭션을 재구성하고 서명하고 브로드캐스트합니다. 먼저 지갑을 연결하세요 — [Use the Wallet on mainnet](/dashboard/wallet#mainnet)을 참고하세요.
+QoreChain 스테이킹은 포스트 양자 방식으로 서명되므로, 대시보드는 위임에 서명할 수 있는 키를 절대 보관하지 않습니다. 아래의 모든 스테이킹 작업은 동일한 방식으로 동작합니다. 대시보드에서 요청(어떤 검증인에게, 얼마를)을 구성한 다음, [Send flow](/dashboard/wallet#mainnet)와 정확히 동일하게 **연결된 QoreX 지갑** — 앱, 또는 **버전 0.2.2 이상**의 브라우저 확장 프로그램(어느 버전이 어디에 배포되어 있는지는 [플랫폼별 배포 현황](/qorex/overview#platform-availability)을 참고하세요; 이보다 이전 버전의 확장 프로그램에서는 조용히 실패하는 대신 대시보드가 업데이트를 요청합니다) — 에서 승인하고 서명합니다. 대시보드는 `qorex://tx?...` 링크를 통해 매개변수만 전송하며, QoreX가 실제 트랜잭션을 재구성하고 서명하고 브로드캐스트합니다. 먼저 지갑을 연결하세요 — [Use the Wallet on mainnet](/dashboard/wallet#mainnet)을 참고하세요.
 
 스테이킹, 위임, 검증은 하이브리드 포스트 양자 서명을 사용하여 오직 네이티브(Cosmos) 레인에서만 이루어지며 — EVM 프리컴파일을 통해서는 절대 이루어지지 않습니다. 이는 일시적인 공백이 아니라 영구적인 보안 속성입니다. EVM 레인은 단 하나의 ante 데코레이터만 실행하므로, 네이티브 레인의 ante에 있는 검증인 라이선스, 최소 자기 지분, PQC 검사가 만약 스테이킹이 그쪽에 노출된다면 모두 우회될 것입니다. MetaMask로 연결된 주소는 QOR을 보내고 받을 수 있지만([Use the Wallet on mainnet](/dashboard/wallet#mainnet) 참고), 스테이킹은 할 수 없습니다 — 오직 QoreX로 연결된 주소만 스테이킹할 수 있습니다.
 

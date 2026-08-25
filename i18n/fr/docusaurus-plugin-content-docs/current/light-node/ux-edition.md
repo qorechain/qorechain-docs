@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Édition UX — dashboard web
 
-L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme l'édition SX, il s'agit de la lignée **v3.1.1** du nœud léger (sa propre version, distincte de la version de la chaîne).
+L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme l'édition SX, il s'agit de la lignée **v3.1.2** du nœud léger (sa propre version, distincte de la version de la chaîne).
 
 L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et pour les opérateurs qui préfèrent une interface visuelle à la ligne de commande.
 
@@ -59,8 +59,8 @@ http://localhost:8420
 Certains textes ailleurs font référence au port 8080 pour le dashboard. La valeur de référence est **8420** — c'est ce que l'image expose réellement et ce à quoi le démon se lie par défaut. Si vous adaptez votre propre `docker-compose.yml` ou un reverse proxy, mappez vers **8420**, et non 8080.
 :::
 
-:::danger Le dashboard ne dispose d'aucune authentification
-Le port 8420 écoute sur **toutes les interfaces**, pas seulement en local, et le dashboard n'a **ni connexion ni contrôle d'accès**. Quiconque peut atteindre ce port sur votre réseau peut lire votre configuration, vos délégations et vos récompenses. **Ne l'exposez pas publiquement.** Liez-le uniquement à l'interface de boucle locale (loopback), ou placez-le derrière un reverse proxy exigeant une authentification, avant de l'exécuter sur autre chose qu'un réseau privé entièrement fiable.
+:::caution Aucune route du dashboard ne s'authentifie
+Rien derrière le port 8420 ne dispose de connexion ni de contrôle d'accès — quiconque peut atteindre ce port peut lire votre configuration, vos délégations et vos récompenses ; aucune clé privée n'est jamais servie. Le binaire se lie désormais **par défaut à la boucle locale uniquement** (`127.0.0.1:8420`) plutôt qu'à toutes les interfaces, et affiche un avertissement au démarrage si vous l'avez configuré pour écouter plus largement — mais cet avertissement n'est pas un refus, et il n'ajoute pas d'authentification. Si vous élargissez délibérément la liaison (par exemple pour l'atteindre depuis une autre machine, ou parce que vous publiez le port depuis Docker), placez-le derrière un reverse proxy exigeant une authentification plutôt que de l'exposer directement. La connexion WebSocket de télémétrie vérifie également l'`Origin` du navigateur, car une liaison réseau large ne suffit pas à elle seule à empêcher une autre page ouverte dans le même navigateur de s'y connecter.
 :::
 
 ## Ce que montre le dashboard

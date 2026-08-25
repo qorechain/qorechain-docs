@@ -16,7 +16,7 @@ QoreX este **non-custodial**: cheile tale există doar pe propriul dispozitiv, i
 
 **Fă cel puțin unul dintre următoarele — imediat după ce îți creezi portofelul, nu mai târziu:**
 
-1. **Notează-ți fraza de recuperare din 24 de cuvinte** și păstreaz-o undeva offline și durabil (nu o captură de ecran, nu o notiță sincronizată în cloud, nu un mesaj trimis ție însuți). Este singurul lucru care îți poate restaura portofelul pe orice dispozitiv, oricând.
+1. **Notează-ți fraza de recuperare din 24 de cuvinte** și păstreaz-o undeva offline și durabil (nu o captură de ecran, nu o notiță sincronizată în cloud, nu un mesaj trimis ție însuți). Este singurul lucru care îți poate restaura portofelul pe orice dispozitiv, oricând — pe mobil, restaurarea directă din frază necesită versiunea **1.0.4 sau ulterioară** (build-urile mai vechi oferă doar calea prin gardian; vezi [Restaurează un portofel existent](/qorex/getting-started#2-restore-an-existing-wallet)). Extensia restaurează întotdeauna direct din frază, la orice versiune.
 2. **Configurează [recuperarea socială](#social-recovery)** cu gardieni în care ai încredere. Astfel îți poți recupera portofelul chiar dacă pierzi fraza, fără ca vreun gardian, singur, să poată accesa vreodată fondurile tale.
 
 Cel mai sigur este să faci ambele — fraza te acoperă dacă schimbi dispozitivul sau aplicația este indisponibilă; gardienii te acoperă dacă pierzi chiar fraza.

@@ -7,20 +7,20 @@ sidebar_position: 1
 
 # Light Node Overview
 
-The **QoreChain Light Node** is a lightweight client that follows the QoreChain network without running a full validator or archive node. Instead of replaying every transaction, it verifies block headers cryptographically, tracks delegations and rewards, and streams live network telemetry — all from a small, self-contained binary.
+The **QoreChain Light Node** is a lightweight client that follows the QoreChain network without running a full validator or archive node. Instead of replaying every transaction, it corroborates block headers across multiple RPC endpoints, tracks delegations and rewards, and streams live network telemetry — all from a small, self-contained binary.
 
 Running a light node lets you participate in the network's economics and observe its state without the storage, bandwidth, and operational cost of a full node.
 
 ## Its own version line
 
-The light node ships on its **own version line — currently v3.1.1** — which is **distinct from the chain release version** (the chain is on a separate `v3.x` track). The light node's v3.1.1 line is aligned with `qorechain-core`: it adds a post-quantum cryptography (PQC) regression suite (keygen, sign, verify, and tamper-detection) that guards the core's signature-verification behaviour and runs it in continuous integration.
+The light node ships on its **own version line — currently v3.1.2** — which is **distinct from the chain release version** (the chain is on a separate `v3.x` track). Binaries are published with a **SHA-256 checksum manifest** — see [Connecting to Mainnet](/getting-started/connecting-to-mainnet) for the download pattern — and v3.1.2 is the first release whose Windows and macOS binaries actually pass keygen/sign/verify (earlier builds predated a Rust-library swap and silently failed on those platforms). It's currently promoted on the **testnet** release channel; the mainnet channel is intentionally held back for a longer soak before promotion — if a mainnet download link 404s, that's why, not a broken link.
 
-When you read documentation or release notes, treat the light node's version (v3.1.1) and the chain's version as two separate numbers that happen to share a major series.
+When you read documentation or release notes, treat the light node's version (v3.1.2) and the chain's version as two separate numbers that happen to share a major series.
 
-## Why run a light node
+## Why run a light node {#why-run-a-light-node}
 
 - **Earn a share of block rewards.** Active, registered light nodes are eligible for the **3% light-node reward share** described below.
-- **Verify the chain yourself.** The node performs header verification with a skipping light client, so you get cryptographic assurance of chain state without trusting a remote API.
+- **Cross-check the chain state you're shown.** The node fetches the latest height from its primary RPC endpoint and from every configured witness endpoint in parallel, and only stores a header when they agree on the block hash — raising the bar from trusting one endpoint to needing every configured endpoint compromised at once. This is corroboration across independent sources, **not full cryptographic consensus verification** (no validator-set or commit-signature checking) — the node reports which mode it's running via its `Assurance` status (`trusted-single-source` with no witnesses configured, or `corroborated-across-sources` with at least one).
 - **Delegate and auto-compound.** Manage delegated stake across multiple validators, split by weight, and compound rewards automatically.
 - **Watch the network live.** Real-time telemetry covers validators, consensus, the bridge, and tokenomics.
 - **Post-quantum from day one.** Keys and signatures use Dilithium-5 (ML-DSA-87).
@@ -47,7 +47,7 @@ To be eligible for this share a light node must be **registered on-chain and act
 
 ## Core features at a glance
 
-- **Skipping light client** — verifies headers without downloading full blocks, syncing quickly even from a cold start.
+- **Multi-source header corroboration** — cross-checks the latest block hash against every configured witness endpoint before trusting it, without downloading full blocks, syncing quickly even from a cold start.
 - **Delegated staking** — stake across multiple validators with configurable split weights.
 - **Auto-compound rewards** — claim and re-delegate rewards on a configurable interval.
 - **Reputation-aware rebalancing** — shift delegation toward higher-reputation validators automatically.

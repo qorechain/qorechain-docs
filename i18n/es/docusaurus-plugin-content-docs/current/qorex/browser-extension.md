@@ -25,15 +25,17 @@ Las revisiones de cada tienda se completan en momentos distintos, así que la ve
 
 | Navegador | Versión publicada |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 enviada, en revisión) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 enviada, en revisión) |
-| **Safari (macOS)** | se distribuye dentro de la app de macOS **QoreX Wallet**, que usa su propia numeración `1.x` — la Mac App Store actualmente sirve la **1.1** (incluye la extensión 0.1.5); la **1.2** (que incluye 0.1.9) está enviada y en revisión |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 enviada, aún en revisión; la ficha está bloqueada para nuevos envíos hasta que esa revisión se apruebe, así que 0.2.2 aún no se ha enviado allí) |
+| **Safari (macOS)** | se distribuye dentro de la app de macOS **QoreX Wallet**, que usa su propia numeración `1.x` — la Mac App Store actualmente sirve la **1.3** (incluye la extensión **0.2.2**) |
 
-Es posible que las funciones más nuevas aún no estén activas en tu navegador — consulta la tabla anterior antes de asumir que algo descrito aquí ya está disponible.
+Es posible que las funciones más nuevas aún no estén activas en tu navegador — consulta la tabla anterior antes de asumir que algo descrito aquí ya está disponible. Si el Dashboard te indica que tu extensión necesita actualizarse, significa que hay una versión mínima concreta requerida para esa acción (normalmente 0.2.2, para staking) — no que tu build sea generalmente antigua.
 
 **0.1.5** añadió el [descubrimiento vía Solana Wallet Standard](#standards), el [desbloqueo con passkey](#security), un [carril dApp SVM](#standards) totalmente implementado y el [puente de conexión con el Dashboard](#dashboard-bridge). (La versión 0.1.4 nunca se publicó — sus cambios llegan a los usuarios con 0.1.5.)
 
 **0.1.6–0.1.9** añadieron, en orden: envíos conscientes del vesting con mensajes honestos de rechazo bancario; la dirección de la cuenta y el saldo en vivo mostrados directamente en el inicio del popup; y, en **0.1.9**, [pagar a un @handle](#handle-send) directamente desde Enviar, una [pantalla de Recibir con código QR de la dirección](#receive), un [selector de idioma](#language) (diez idiomas, igual que el conjunto de la app móvil), y la eliminación de una confusa "próxima fecha de desbloqueo" del [saldo en vesting](#vesting).
+
+**0.2.2** añadió [staking, desde la propia extensión](#stake) — su propia pantalla de Stake (validadores con comisión, tu total en staking, recompensas pendientes y delegar / retirar de staking / reclamar); [varias cuentas a partir de una misma frase de recuperación](#wallet), igual que la app móvil; la corrección que permite que el botón de staking del **Dashboard** llegue realmente a la extensión (una wallet creada solo en la extensión antes no podía hacer staking a través del Dashboard en absoluto — ver [puente del Dashboard](#dashboard-bridge)); el reclamo funcional de @handle desde el navegador; y el número de build mostrado al pie del popup.
 
 **La superficie de permisos no ha cambiado desde 0.1.3** — ver [Qué permisos solicita QoreX](#permissions).
 
@@ -50,8 +52,8 @@ Abre el popup y elige:
 
 La extensión mantiene sus propias claves; no requiere la app móvil. También puedes exportar tu mnemónico desde el popup. Las claves nunca salen del dispositivo.
 
-:::note Una cuenta por perfil de navegador
-A diferencia de la app móvil, que puede contener varias cuentas de QoreChain a partir de una misma frase de recuperación, la extensión gestiona exactamente **una** cuenta. Staking, Portafolio, Q-Day Scanner, recuperación social, Legacy Protocol, solicitudes de pago y vinculación de dispositivos son exclusivos de la app móvil — ver [QoreX Wallet](/qorex/overview#platform-availability) para la comparación completa.
+:::note Varias cuentas a partir de una misma frase (desde 0.2.2)
+La extensión ahora puede crear y alternar entre varias cuentas a partir de la misma frase de recuperación, igual que la app móvil — la frase que ya anotaste restaura todas ellas. Cambiar de cuenta mueve todo con ella: envíos, staking, recepción y tu @handle siguen a la cuenta que esté activa. Portafolio, Q-Day Scanner, recuperación social, Legacy Protocol, solicitudes de pago y vinculación de dispositivos siguen siendo exclusivos de la app móvil — ver [QoreX Wallet](/qorex/overview#platform-availability) para la comparación completa.
 :::
 
 ## Tu cuenta, saldo y @handle {#account}
@@ -80,6 +82,25 @@ La resolución se verifica de dos maneras antes de que QoreX la use: una atestac
 ## Recibir {#receive}
 
 Toca **Recibir** en el popup para mostrar tu dirección `qor1…` como un código QR (con el ícono de QoreChain incrustado) junto a un botón de copiar — escanéalo desde un teléfono o pega la dirección directamente.
+
+## Hacer staking desde la extensión {#stake}
+
+Desde **0.2.2**, el popup tiene su propia pantalla de **Stake** — una wallet creada solo en la extensión ya no necesita la app móvil para obtener recompensas de staking.
+
+1. Abre el popup y ve a **Stake**.
+2. La pantalla lista los validadores activos con su comisión, tu total actual en staking y cualquier recompensa pendiente de reclamar. Los validadores que la red ha **encarcelado (jailed)** quedan fuera de la lista — delegar a uno de ellos nunca es lo que quieres.
+3. Para delegar, elige un validador y un monto, luego confirma. QoreX firma con la firma híbrida post-cuántica obligatoria, igual que un Envío.
+4. **Retirar de staking (unstake)** y **reclamar** funcionan desde la misma pantalla. Retirar de staking inicia el período de desbonding de 21 días — ver [Staking y Delegación](/user-guide/staking-and-delegation) para saber qué significa eso.
+
+El staking, la delegación y las recompensas ocurren exclusivamente en el carril **Nativo**, nunca a través de un precompilado EVM.
+
+### Aprobar una solicitud de staking del Dashboard {#stake-dashboard}
+
+El [Dashboard](/dashboard/staking-and-validators) de QoreChain compone las solicitudes de staking pero no puede firmarlas — tu clave nunca sale de la bóveda de la extensión. Al hacer clic en **Continuar en QoreX** en el Dashboard, la solicitud se abre en la extensión para que la revises (validador y monto) y la apruebes, exactamente igual que un Envío. Esta conexión estaba rota en 0.2.1 (la extensión se reportaba a sí misma como "demasiado antigua" incluso siendo el build publicado más reciente — el problema real era un salto interno faltante, no una versión desactualizada); está corregida desde **0.2.2**. Si tienes un build anterior, consulta [qué versión está activa en cada uno](#versions).
+
+:::note Si una transacción aparece como "degradada" en lugar de exitosa
+El Dashboard ocasionalmente muestra una transacción como **degradada (downgraded)** en lugar de un éxito limpio. Esto significa que tus fondos se movieron, pero la capa de firma post-cuántica no se encontró en cadena para esa transacción — no es algo que hayas hecho mal ni algo que puedas arreglar de tu lado. Es un fallo de nuestro lado; por favor repórtalo a soporte para que podamos investigarlo. El mensaje permanece en pantalla deliberadamente en lugar de desaparecer, para que tengas tiempo de leerlo y reportarlo.
+:::
 
 ### Enviar en redes externas {#send-external}
 
@@ -179,9 +200,11 @@ Para el carril **Nativo** de QoreChain, usa el proveedor al estilo Keplr en `win
 
 Las aprobaciones son **por origen**: la primera conexión a un sitio abre un popup de aprobación que muestra el origen, aprobar revela únicamente tu dirección pública, y la aprobación de un sitio no concede nada a otro.
 
-### Puente del Dashboard (v0.1.5) {#dashboard-bridge}
+### Puente del Dashboard (v0.1.5, ampliado en v0.2.2) {#dashboard-bridge}
 
 La versión 0.1.5 añade un puente limitado exclusivamente a **`dashboard.qorechain.io`**: `window.qorex.native.connectProof(sessionId)` firma la prueba de emparejamiento *Connect with QoreX* (el backend reverifica la firma), y `executeTransfer({ to, amountUqor, memo })` aprueba y transmite una transferencia de QOR propuesta por el Dashboard, devolviendo el `txHash`. Estos métodos se rechazan en cualquier otro origen.
+
+**0.2.2** añade `native:executeRequest`, que acepta una solicitud completa propuesta por el Dashboard — incluyendo [staking](#stake-dashboard) — validada contra el mismo parser compartido que QoreX usa en todas partes: se rechaza ante un desajuste de red, un origen ajeno, una dirección que no es la tuya, un tipo de solicitud desconocido, o una solicitud de staking que lleve un `toAddress` (las solicitudes de staking no tienen uno).
 
 Dado que una dirección `qor1…` es igualmente válida en mainnet y en testnet, una solicitud propuesta por el Dashboard indica a qué red apunta, y QoreX se niega a actuar sobre ella si eso no coincide con la red a la que la extensión está conectada actualmente — nunca cambiará de red por cuenta propia a partir de una solicitud.
 

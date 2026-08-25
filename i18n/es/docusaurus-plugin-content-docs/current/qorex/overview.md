@@ -18,17 +18,22 @@ QoreX se compone de dos partes que funcionan juntas:
 
 | Funcionalidad | Aplicación móvil (Android e iOS) | Extensión de navegador |
 |---|---|---|
-| Crear / importar un monedero | ✅ | ✅ (autónoma, una cuenta) |
-| Varias cuentas a partir de una sola frase de recuperación | ✅ (hasta 20) | — (una cuenta) |
+| Crear / importar un monedero | ✅ | ✅ (autónoma) |
+| Varias cuentas a partir de una sola frase de recuperación | ✅ (hasta 20) | ✅ *(desde 0.2.2)* |
 | Enviar y recibir QOR (poscuántico) | ✅ | ✅ (desde la ventana emergente, incluye QR para recibir) |
 | Pagar / reclamar un @handle | ✅ | ✅ |
+| Staking (delegar, deshacer delegación, reclamar) | ✅ | ✅ *(desde 0.2.2 — su propia pantalla de Staking, y puede aprobar una solicitud de staking que envíe el Dashboard)* |
 | Redes externas (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (envío desde la ventana emergente) |
 | Idioma de la interfaz (10 idiomas) | ✅ (sigue el idioma del teléfono) | ✅ (sigue el idioma del navegador) |
-| Staking, Portafolio, Q-Day Scanner, Recuperación, Legacy | ✅ | — |
+| Portafolio, Q-Day Scanner, Recuperación social, Legacy | ✅ | — |
 | Conexiones con dApps | ✅ (navegador integrado) | ✅ (cualquier sitio web) |
 | Inicio de sesión de cuenta y solicitudes de pago | ✅ | — |
 | Vinculación de varios dispositivos | ✅ | — |
-| Emparejamiento con el Dashboard | ✅ | ✅ (conexión + transferencias propuestas) |
+| Emparejamiento con el Dashboard | ✅ | ✅ (conexión + transferencias propuestas, incl. staking) |
+
+:::note El staking de la extensión necesita 0.2.2 o posterior
+Si tu extensión es anterior a 0.2.2, es posible que el botón de staking del Dashboard indique que la extensión necesita actualizarse aunque estés usando una versión reciente — la corrección que conecta la solicitud de staking del Dashboard con la extensión se publicó en la 0.2.2. Consulta [qué versión está disponible en cada plataforma](/qorex/browser-extension#versions); si tu tienda todavía no ha publicado la 0.2.2, la aprobación de staking empezará a funcionar en cuanto lo haga, sin que tengas que hacer nada.
+:::
 
 ## Por qué QoreX es diferente
 
@@ -58,11 +63,11 @@ Las aprobaciones de las tiendas llegan en momentos distintos, así que la versi�
 
 | Plataforma | Versión disponible |
 |---|---|
-| Android | 1.0.3 |
-| iOS | 1.0 (hay una actualización en revisión) |
-| Firefox | 0.1.9 |
-| Chrome | 0.1.5 (0.1.9 está en revisión) |
-| Safari (macOS) | 1.1, con la extensión 0.1.5 (hay una actualización en revisión) |
+| Android | 1.0.4 |
+| iOS | 1.0.2 (hay una actualización en revisión) |
+| Firefox | 0.2.2 |
+| Chrome | 0.1.5 (0.1.9 está en revisión; una vez que se apruebe seguirá una presentación posterior de la 0.2.2) |
+| Safari (macOS) | 1.3, con la extensión 0.2.2 |
 
 Esta página describe el conjunto de funciones actual de QoreX — una tienda que todavía sirva una versión anterior se pondrá al día automáticamente sin que tengas que hacer nada.
 :::

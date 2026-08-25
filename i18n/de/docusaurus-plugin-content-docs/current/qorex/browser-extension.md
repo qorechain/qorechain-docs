@@ -25,15 +25,17 @@ Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher unterscheidet sich 
 
 | Browser | Veröffentlichte Version |
 |---|---|
-| **Firefox** | **0.1.8** (0.1.9 eingereicht, in Prüfung) |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 eingereicht, in Prüfung) |
-| **Safari (macOS)** | läuft innerhalb der **QoreX Wallet**-macOS-App, die ihre eigene `1.x`-Nummerierung verwendet — der Mac App Store liefert derzeit **1.1** (enthält Erweiterung 0.1.5); **1.2** (mit 0.1.9) ist eingereicht und in Prüfung |
+| **Firefox** | **0.2.2** |
+| **Chrome / Chromium** | **0.1.5** (0.1.9 eingereicht, noch in Prüfung; der Eintrag ist bis zum Abschluss dieser Prüfung für neue Einreichungen gesperrt, daher wurde 0.2.2 dort noch nicht eingereicht) |
+| **Safari (macOS)** | läuft innerhalb der **QoreX Wallet**-macOS-App, die ihre eigene `1.x`-Nummerierung verwendet — der Mac App Store liefert derzeit **1.3** (enthält Erweiterung **0.2.2**) |
 
-Neuere Funktionen sind in Ihrem Browser möglicherweise noch nicht live — prüfen Sie die Tabelle oben, bevor Sie annehmen, dass etwas hier Beschriebenes verfügbar ist.
+Neuere Funktionen sind in Ihrem Browser möglicherweise noch nicht live — prüfen Sie die Tabelle oben, bevor Sie annehmen, dass etwas hier Beschriebenes verfügbar ist. Wenn das Dashboard Ihnen mitteilt, dass Ihre Erweiterung aktualisiert werden muss, bedeutet das eine bestimmte Mindestversion für diese Aktion (üblicherweise 0.2.2, für Staking) — nicht, dass Ihr Build allgemein veraltet ist.
 
 **0.1.5** fügte [Solana Wallet Standard Discovery](#standards), [Passkey-Entsperrung](#security), eine vollständig implementierte [SVM-dApp-Lane](#standards) und die [Dashboard-Verbindungsbrücke](#dashboard-bridge) hinzu. (Version 0.1.4 wurde nie veröffentlicht — ihre Änderungen erreichen Nutzer mit 0.1.5.)
 
 **0.1.6–0.1.9** fügten in dieser Reihenfolge hinzu: Vesting-bewusste Sendungen mit ehrlichen Bank-Ablehnungsmeldungen; die Kontoadresse und das Live-Guthaben direkt auf der Popup-Startseite; und in **0.1.9** [das Bezahlen eines @Handles](#handle-send) direkt aus „Senden", einen [Empfangsbildschirm mit QR-Code der Adresse](#receive), eine [Sprachauswahl](#language) (zehn Sprachen, passend zum Sprachumfang der mobilen App) sowie die Entfernung eines verwirrenden „nächsten Freischaltdatums" aus dem [Vesting-Guthaben](#vesting).
+
+**0.2.2** fügte [Staking direkt aus der Erweiterung](#stake) hinzu — einen eigenen Stake-Bildschirm (Validatoren mit Provision, Ihr gesamtes gestaktes Guthaben, wartende Rewards sowie Delegieren / Unstaken / Beanspruchen); [mehrere Konten aus einer Wiederherstellungsphrase](#wallet), genau wie in der mobilen App; die Behebung, die es der Staking-Schaltfläche des **Dashboards** erst ermöglicht, die Erweiterung tatsächlich zu erreichen (eine nur in der Erweiterung erstellte Wallet konnte zuvor über das Dashboard gar nicht staken — siehe [Dashboard-Brücke](#dashboard-bridge)); funktionierendes @Handle-Beanspruchen aus dem Browser; sowie die am Fuß des Popups angezeigte Build-Nummer.
 
 **Die Berechtigungsoberfläche hat sich seit 0.1.3 nicht geändert** — siehe [Welche Berechtigungen QoreX anfragt](#permissions).
 
@@ -50,8 +52,8 @@ Unter Safari öffnen sich Genehmigungen in einem Browser-Tab statt in einem Popu
 
 Die Erweiterung verwaltet ihre eigenen Schlüssel; sie benötigt nicht die mobile App. Sie können Ihre Mnemonic auch aus dem Popup exportieren. Schlüssel verlassen niemals das Gerät.
 
-:::note Ein Konto pro Browserprofil
-Anders als die mobile App, die mehrere QoreChain-Konten aus einer Wiederherstellungsphrase verwalten kann, verwaltet die Erweiterung genau **ein** Konto. Staking, Portfolio, Q-Day Scanner, soziale Wiederherstellung, Legacy-Protokoll, Zahlungsanfragen und Geräteverknüpfung sind nur in der mobilen App verfügbar — siehe [QoreX Wallet](/qorex/overview#platform-availability) für den vollständigen Vergleich.
+:::note Mehrere Konten aus einer Phrase (ab 0.2.2)
+Die Erweiterung kann jetzt mehrere Konten aus derselben Wiederherstellungsphrase erstellen und zwischen ihnen wechseln, genau wie die mobile App — die Phrase, die Sie bereits notiert haben, stellt jedes davon wieder her. Der Wechsel nimmt alles mit: Senden, Staking, Empfangen und Ihr @Handle folgen jeweils dem gerade aktiven Konto. Portfolio, Q-Day Scanner, soziale Wiederherstellung, Legacy-Protokoll, Zahlungsanfragen und Geräteverknüpfung bleiben nur in der mobilen App verfügbar — siehe [QoreX Wallet](/qorex/overview#platform-availability) für den vollständigen Vergleich.
 :::
 
 ## Ihr Konto, Guthaben & @Handle {#account}
@@ -80,6 +82,25 @@ Die Auflösung wird auf zwei Arten verifiziert, bevor QoreX sie verwendet: eine 
 ## Empfangen {#receive}
 
 Tippen Sie im Popup auf **Empfangen**, um Ihre `qor1…`-Adresse als QR-Code (mit eingebettetem QoreChain-Icon) zusammen mit einer Kopieren-Schaltfläche anzuzeigen — scannen Sie ihn von einem Telefon oder fügen Sie die Adresse direkt ein.
+
+## Aus der Erweiterung staken {#stake}
+
+Seit **0.2.2** hat das Popup einen eigenen **Stake**-Bildschirm — eine nur in der Erweiterung erstellte Wallet benötigt nicht mehr die mobile App, um Staking-Rewards zu verdienen.
+
+1. Öffnen Sie das Popup und wechseln Sie zu **Stake**.
+2. Der Bildschirm listet aktive Validatoren mit ihrer Provision, Ihr aktuell gestaktes Gesamtguthaben sowie alle wartenden, noch zu beanspruchenden Rewards auf. Validatoren, die das Netzwerk **inhaftiert** hat, werden aus der Liste ausgeschlossen — an einen davon zu delegieren ist nie das, was Sie wollen.
+3. Um zu delegieren, wählen Sie einen Validator und einen Betrag und bestätigen dann. QoreX signiert mit der obligatorischen hybriden Post-Quanten-Signatur, genau wie bei einer Sendung.
+4. **Unstaken** und **Beanspruchen** funktionieren vom selben Bildschirm aus. Unstaken startet die 21-tägige Unbonding-Periode — siehe [Staking & Delegation](/user-guide/staking-and-delegation) für die Bedeutung.
+
+Staking, Delegation und Rewards finden ausschließlich auf der **Native**-Lane statt, niemals über ein EVM-Precompile.
+
+### Eine Dashboard-Staking-Anfrage genehmigen {#stake-dashboard}
+
+Das QoreChain-[Dashboard](/dashboard/staking-and-validators) stellt Staking-Anfragen zusammen, kann sie aber nicht signieren — Ihr Schlüssel verlässt niemals den Tresor der Erweiterung. Wenn Sie im Dashboard auf **Weiter in QoreX** klicken, öffnet sich die Anfrage in der Erweiterung, damit Sie sie prüfen (Validator und Betrag) und genehmigen können, genau wie bei einer Sendung. Diese Verbindung war in 0.2.1 defekt (die Erweiterung meldete sich selbst als „zu alt", obwohl sie der neueste veröffentlichte Build war — das eigentliche Problem war ein fehlender interner Zwischenschritt, nicht Versionsveraltung); sie ist ab **0.2.2** behoben. Falls Sie einen älteren Build verwenden, siehe [welche Version wo verfügbar ist](#versions).
+
+:::note Wenn eine Transaktion als „herabgestuft" statt erfolgreich angezeigt wird
+Das Dashboard zeigt eine Transaktion gelegentlich als **herabgestuft** statt als sauberen Erfolg an. Das bedeutet, dass Ihre Gelder bewegt wurden, die Post-Quanten-Signaturschicht für diese Transaktion jedoch on-chain nicht gefunden wurde — das ist nichts, was Sie falsch gemacht haben, und nichts, was Sie von Ihrer Seite aus beheben können. Es ist ein Fehler auf unserer Seite; bitte melden Sie ihn dem Support, damit wir es untersuchen können. Die Meldung bleibt absichtlich auf dem Bildschirm stehen, statt zu verschwinden, damit Sie Zeit haben, sie zu lesen und zu melden.
+:::
 
 ### Auf externen Netzwerken senden {#send-external}
 
@@ -179,9 +200,11 @@ Für die QoreChain-**Native**-Lane verwenden Sie den Keplr-Muster-Provider unter
 
 Genehmigungen sind **pro Ursprung**: Die erste Verbindung zu einer Website öffnet ein Genehmigungs-Popup, das den Ursprung anzeigt, die Genehmigung gibt nur Ihre öffentliche Adresse preis, und die Genehmigung einer Website gewährt einer anderen nichts.
 
-### Dashboard-Brücke (v0.1.5) {#dashboard-bridge}
+### Dashboard-Brücke (v0.1.5, erweitert in v0.2.2) {#dashboard-bridge}
 
 Version 0.1.5 fügt eine Brücke hinzu, die ausschließlich auf **`dashboard.qorechain.io`** beschränkt ist: `window.qorex.native.connectProof(sessionId)` signiert den *Connect-with-QoreX*-Pairing-Beweis (das Backend verifiziert die Signatur erneut), und `executeTransfer({ to, amountUqor, memo })` genehmigt und überträgt einen vom Dashboard vorgeschlagenen QOR-Transfer und gibt den `txHash` zurück. Diese Methoden werden bei jedem anderen Ursprung abgelehnt.
+
+**0.2.2** fügt `native:executeRequest` hinzu, das eine gesamte vom Dashboard vorgeschlagene Anfrage entgegennimmt — einschließlich [Staking](#stake-dashboard) — validiert gegen denselben gemeinsamen Parser, den QoreX überall sonst verwendet: abgelehnt bei einer Netzwerk-Fehlübereinstimmung, einem fremden Ursprung, einer Adresse, die nicht Ihnen gehört, einer unbekannten Anfrageart oder einer Staking-Anfrage, die eine `toAddress` trägt (Staking-Anfragen haben keine).
 
 Da eine `qor1…`-Adresse sowohl auf dem Mainnet als auch auf dem Testnet gleichermaßen gültig ist, gibt eine vom Dashboard vorgeschlagene Anfrage an, welches Netzwerk sie anvisiert, und QoreX weigert sich, danach zu handeln, wenn dies nicht mit dem Netzwerk übereinstimmt, mit dem die Erweiterung gerade verbunden ist — sie wechselt niemals im Auftrag einer Anfrage das Netzwerk.
 

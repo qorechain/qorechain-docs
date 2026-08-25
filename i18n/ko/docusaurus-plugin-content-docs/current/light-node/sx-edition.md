@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX 에디션 — 서버 데몬
 
-**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 이는 라이트 노드 자체의 **v3.1.1** 버전 라인이며, 체인 버전과는 별개입니다.
+**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 이는 라이트 노드 자체의 **v3.1.2** 버전 라인이며, 체인 버전과는 별개입니다.
 
 ## 설치
 
@@ -50,13 +50,17 @@ SX 컨테이너는 `/root/.qorechain-lightnode`에 마운트된 네임드 볼륨
 | --- | --- |
 | `chain_id` | 네트워크 식별자(예: 테스트넷은 `qorechain-diana`, 메인넷은 `qorechain-vladi`). |
 | `rpc_addr` | 데몬이 연결하는 체인 RPC 엔드포인트. 비워 두면 **로컬 전용 모드**로 동작합니다. |
-| `primary_addr` / `witness_addrs` | 스키핑 라이트 클라이언트가 사용하는 primary 및 witness RPC 엔드포인트. |
+| `primary_addr` / `witness_addrs` | primary RPC 엔드포인트와, 이 노드가 보고하는 헤더를 대조 검증하는 데 사용되는 witness 엔드포인트 — [왜 라이트 노드를 운영하는가](/light-node/overview#why-run-a-light-node) 참고. `Assurance`가 `trusted-single-source`에서 `corroborated-across-sources`로 바뀌려면 서로 구별되고 접근 가능한 witness가 최소 하나 있어야 합니다. |
 | `trust_period` / `max_clock_drift` | 라이트 클라이언트 신뢰 구간(예: `168h`)과 허용 시계 편차(clock drift). |
 | `data_dir` | 노드가 데이터베이스와 헤더를 저장하는 위치. |
 | `keyring_backend` / `key_name` | 키링 백엔드(`file` 또는 `os`)와 운영자 키 이름. |
 | `[delegation]` | 자동 복리 사용 여부, 복리 주기, 청구 최소 보상, 검증인 세트, 분배 가중치, 리밸런싱, 최소 평판. |
 | `[telemetry]` | 텔레메트리 사용 여부와 검증인·네트워크·브리지·토크노믹스에 대한 갱신 주기. |
 | `log_level` / `log_format` | 로그 상세도(`debug`, `info`, `warn`, `error`)와 형식(`text` 또는 `json`). |
+
+:::note witness 엔드포인트는 시작 시 검증됩니다
+primary와 동일한 호스트에 있는 witness는 거부됩니다 — 손상된 엔드포인트라면 스스로에게 동의할 뿐이므로 아무것도 대조 검증하지 못하기 때문입니다. 원격 호스트의 평문 `http://` witness 역시 거부됩니다. 해당 연결을 재작성할 수 있는 공격자라면 모든 witness인 척 응답할 수 있기 때문입니다. 루프백 `http://`는 문제없습니다. witness는 독립적으로 신뢰할 근거가 있는 RPC 엔드포인트를 가리키도록 지정하세요.
+:::
 
 Delegation 기본값은 `1h` 주기의 자동 복리와 평판 인지 리밸런싱을 활성화합니다 — 이 항목들의 동작 방식은 [보상 및 모니터링](/light-node/rewards-and-monitoring)을 참고하세요.
 

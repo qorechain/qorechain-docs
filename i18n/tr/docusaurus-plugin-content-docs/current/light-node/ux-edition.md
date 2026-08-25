@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu da hafif düğümün **v3.1.1** hattıdır (zincir sürümünden ayrı, kendi sürümü).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu da hafif düğümün **v3.1.2** hattıdır (zincir sürümünden ayrı, kendi sürümü).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
@@ -59,8 +59,8 @@ http://localhost:8420
 Başka yerlerdeki bazı metinler dashboard için 8080 bağlantı noktasına atıfta bulunur. Yetkili değer **8420**'dir — imajın gerçekte sunduğu ve daemon'un varsayılan olarak bağlandığı budur. Kendi `docker-compose.yml` dosyanızı veya bir ters proxy'yi uyarlarsanız, 8080'e değil **8420**'ye eşleyin.
 :::
 
-:::danger Dashboard'un hiçbir kimlik doğrulaması yoktur
-8420 numaralı bağlantı noktası yalnızca localhost'ta değil, **tüm arabirimlerde** dinler ve dashboard'un **girişi ve erişim kontrolü yoktur**. Ağınızda bu bağlantı noktasına ulaşabilen herkes yapılandırmanızı, delegasyonlarınızı ve ödüllerinizi okuyabilir. **Bunu herkese açık şekilde ifşa etmeyin.** Tamamen güvenilir bir özel ağ dışında herhangi bir yerde çalıştırmadan önce, yalnızca loopback'e bağlayın veya kimlik doğrulaması gerektiren bir ters proxy'nin arkasına yerleştirin.
+:::caution Dashboard'daki hiçbir rota kimlik doğrulaması yapmaz
+8420 numaralı bağlantı noktasının arkasındaki hiçbir şeyde giriş veya erişim kontrolü yoktur — oraya ulaşabilen herkes yapılandırmanızı, delegasyonlarınızı ve ödüllerinizi okuyabilir; hiçbir özel anahtar asla sunulmaz. İkili dosya artık tüm arabirimler yerine **varsayılan olarak yalnızca loopback'e** bağlanır (`127.0.0.1:8420`) ve daha geniş dinleyecek şekilde yapılandırdıysanız başlangıçta bir uyarı yazdırır — ancak bu uyarı bir reddetme değildir ve kimlik doğrulaması eklemez. Bağı kasıtlı olarak genişletiyorsanız (örneğin başka bir makineden erişmek için veya bağlantı noktasını Docker'dan yayınladığınız için), doğrudan açığa çıkarmak yerine kimlik doğrulaması gerektiren bir ters proxy'nin arkasına yerleştirin. WebSocket telemetri bağlantısı da tarayıcının `Origin` bilgisini kontrol eder, çünkü geniş bir ağ bağı tek başına aynı tarayıcıda açık başka bir sayfanın bağlanmasını engellemez.
 :::
 
 ## Dashboard neleri gösterir

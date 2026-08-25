@@ -16,7 +16,7 @@ QoreX ist **non-custodial**: Deine Schlüssel existieren ausschließlich auf dei
 
 **Mach mindestens eines davon — direkt nach dem Erstellen deiner Wallet, nicht später:**
 
-1. **Schreibe deine 24-Wörter-Wiederherstellungsphrase auf** und bewahre sie offline und dauerhaft auf (kein Screenshot, keine mit der Cloud synchronisierte Notiz, keine Nachricht an dich selbst). Sie ist das Einzige, das deine Wallet auf jedem Gerät und zu jeder Zeit wiederherstellen kann.
+1. **Schreibe deine 24-Wörter-Wiederherstellungsphrase auf** und bewahre sie offline und dauerhaft auf (kein Screenshot, keine mit der Cloud synchronisierte Notiz, keine Nachricht an dich selbst). Sie ist das Einzige, das deine Wallet auf jedem Gerät und zu jeder Zeit wiederherstellen kann — auf Mobilgeräten erfordert die direkte Wiederherstellung aus der Phrase Version **1.0.4 oder neuer** (ältere Builds bieten nur den Guardian-Weg an; siehe [Eine bestehende Wallet wiederherstellen](/qorex/getting-started#2-restore-an-existing-wallet)). Die Erweiterung stellt in jeder Version stets direkt aus der Phrase wieder her.
 2. **Richte [soziale Wiederherstellung](#social-recovery)** mit Guardians ein, denen du vertraust. So kannst du deine Wallet auch dann wiederherstellen, wenn du die Phrase verlierst — ohne dass ein einzelner Guardian jemals allein auf deine Gelder zugreifen könnte.
 
 Beides zu tun ist die sicherste Option — die Phrase schützt dich, wenn du das Gerät wechselst oder die App nicht verfügbar ist; die Guardians schützen dich, wenn du die Phrase selbst verlierst.

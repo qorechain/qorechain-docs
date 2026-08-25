@@ -18,17 +18,22 @@ QoreX comes in two parts that work together:
 
 | Capability | Mobile app (Android & iOS) | Browser extension |
 |---|---|---|
-| Create / import a wallet | ✅ | ✅ (standalone, one account) |
-| Several accounts from one recovery phrase | ✅ (up to 20) | — (one account) |
+| Create / import a wallet | ✅ | ✅ (standalone) |
+| Several accounts from one recovery phrase | ✅ (up to 20) | ✅ *(from 0.2.2)* |
 | Send & receive QOR (post-quantum) | ✅ | ✅ (from the popup, incl. Receive QR) |
 | Pay / claim an @handle | ✅ | ✅ |
+| Staking (delegate, undelegate, claim) | ✅ | ✅ *(from 0.2.2 — its own Stake screen, and it can approve a staking request the Dashboard sends over)* |
 | External networks (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (send from the popup) |
 | Interface language (10 languages) | ✅ (follows the phone) | ✅ (follows the browser) |
-| Staking, Portfolio, Q-Day Scanner, Recovery, Legacy | ✅ | — |
+| Portfolio, Q-Day Scanner, Social Recovery, Legacy | ✅ | — |
 | dApp connections | ✅ (in-app browser) | ✅ (any website) |
 | Account sign-in & payment requests | ✅ | — |
 | Multi-device linking | ✅ | — |
-| Dashboard pairing | ✅ | ✅ (connect + proposed transfers) |
+| Dashboard pairing | ✅ | ✅ (connect + proposed transfers, incl. staking) |
+
+:::note Extension staking needs 0.2.2 or later
+If your extension is older than 0.2.2, the Dashboard's staking button may report that the extension needs updating even though you're on a recent build — the fix that connects the Dashboard's staking request to the extension shipped in 0.2.2. Check [which version is live where](/qorex/browser-extension#versions); if your store hasn't pushed 0.2.2 yet, staking approval will start working as soon as it does, with no action from you.
+:::
 
 ## Why QoreX is different
 
@@ -58,11 +63,11 @@ Store approvals land at different times, so the version below can differ briefly
 
 | Platform | Live version |
 |---|---|
-| Android | 1.0.3 |
-| iOS | 1.0 (an update is in review) |
-| Firefox | 0.1.9 |
-| Chrome | 0.1.5 (0.1.9 is in review) |
-| Safari (macOS) | 1.1, carrying extension 0.1.5 (an update is in review) |
+| Android | 1.0.4 |
+| iOS | 1.0.2 (an update is in review) |
+| Firefox | 0.2.2 |
+| Chrome | 0.1.5 (0.1.9 is in review; a later 0.2.2 submission follows once that review clears) |
+| Safari (macOS) | 1.3, carrying extension 0.2.2 |
 
 This page describes QoreX's current feature set — a store still serving an older build will catch up automatically with no action from you.
 :::

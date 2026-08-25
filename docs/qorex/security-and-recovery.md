@@ -16,7 +16,7 @@ QoreX is **non-custodial**: your keys exist only on your own device, and QoreCha
 
 **Do at least one of these — right after you create your wallet, not later:**
 
-1. **Write down your 24-word recovery phrase** and store it somewhere offline and durable (not a screenshot, not a note synced to the cloud, not a message to yourself). It is the only thing that can restore your wallet on any device, at any time.
+1. **Write down your 24-word recovery phrase** and store it somewhere offline and durable (not a screenshot, not a note synced to the cloud, not a message to yourself). It is the only thing that can restore your wallet on any device, at any time — on mobile, restoring directly from the phrase needs version **1.0.4 or later** (older builds only offer the guardian path; see [Restore an existing wallet](/qorex/getting-started#2-restore-an-existing-wallet)). The extension always restores from the phrase directly, at every version.
 2. **Set up [social recovery](#social-recovery)** with guardians you trust. This lets you recover your wallet even if you lose the phrase, without any single guardian ever being able to access your funds alone.
 
 Doing both is the safest option — the phrase covers you if you switch devices or the app is unavailable; guardians cover you if you lose the phrase itself.
