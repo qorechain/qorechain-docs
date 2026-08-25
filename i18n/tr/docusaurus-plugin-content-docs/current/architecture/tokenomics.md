@@ -39,6 +39,10 @@ Bu, bir arz-enflasyonu modeli değil, **sonlu bir emisyon bütçesine sahip sabi
 
 ### Staking Ödül Takvimi {#staking-reward-schedule}
 
+:::note Bu takvimde yönetişim tarafından onaylanmış bir değişiklik beklemede
+Kabul edilmiş bir yönetişim önerisi, bu bütçe içindeki emisyonun serbest bırakılma şeklini değiştiriyor; bu değişiklik hemen değil, gelecekteki bir blok yüksekliğinde yürürlüğe girecek. Aşağıdaki rakamlar değişiklik-öncesi takvimdir — belirli bir sayıya güvenmeden önce değişikliğin yürürlüğe girip girmediğini [Sürüm Geçmişi](/appendix/version-history) sayfasından kontrol edin ve şu anda başka bir yerde gördüğünüz herhangi bir APY veya günlük emisyon rakamını, bu gerçekleşene kadar geçici olarak değerlendirin.
+:::
+
 Staking ödülleri, 590.000.000 QOR'luk emisyon bütçesinden azalan bir takvime göre dağıtılır:
 
 | Dönem       | Hedef APY                | Emisyon Bütçesi                  |

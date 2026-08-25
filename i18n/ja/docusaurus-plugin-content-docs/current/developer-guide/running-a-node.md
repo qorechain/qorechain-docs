@@ -27,7 +27,9 @@ sidebar_position: 10
 :::
 
 :::caution 新規参加ノードにはv3.1.92以降が必須
-ジェネシスから同期する、またはアーカイブ/スナップショットからリプレイするノードは**v3.1.92以降**である必要があります——それより古いバージョンでは(マニフェストの`minCompatible`フィールドがまだこの点を反映するように更新されていない場合でも)、修正済みとなったガス計測のバグにより、リプレイ中にトランザクションを含む最初のブロックで停止します。常に上記マニフェストの現行バイナリを実行してください。
+ジェネシスから同期する、またはアーカイブ/スナップショットからリプレイするノードは**v3.1.92以降**である必要があります——それより古いバージョンでは(マニフェストの`minCompatible`フィールドがまだこの点を反映するように更新されていない場合でも)、修正済みとなったガス計測のバグにより、リプレイ中にトランザクションを含む最初のブロックで停止します。
+
+**マニフェスト自体がこの下限より遅れている場合があります**——マニフェストはまずテストネットで、猶予期間を置いてからメインネットで昇格されるため、本稿執筆時点でメインネットマニフェストの`binary.url`はまだv3.1.92より前のビルドを指しています。`binary.url`を信頼する前にマニフェストの`"version"`フィールドを確認してください。それがv3.1.92より古い場合は、マニフェストではなく[qorechain-core GitHub リリース](https://github.com/qorechain/qorechain-core/releases)からバイナリを取得する(そこで公開されているチェックサムを同様に確認する)か、ソースからビルドしてください。
 :::
 
 ---
@@ -71,13 +73,19 @@ NVMe SSDを強く推奨します——チェーンの状態およびEVM/SVMス�
 
 ### Docker Compose
 
-Docker Composeによるノードのみのデプロイです。イメージタグは稼働中のチェーンバージョン(メインネットでは**v3.1.92**)に固定し、チェーンデータ用に永続ボリュームをマウントしてください。
+Docker Composeによるノードのみのデプロイです。まだ公開されている`qorechaind`イメージは存在しないため、リポジトリの`Dockerfile`から自分でビルドし、稼働中のチェーンバージョン(メインネットでは**v3.1.92**)にタグを合わせ、チェーンデータ用に永続ボリュームをマウントしてください。
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

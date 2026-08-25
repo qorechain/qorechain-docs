@@ -9,15 +9,22 @@ sidebar_position: 2
 
 The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This is the light node's **v3.1.2** line (its own version, separate from the chain version).
 
-## Install
+## Install {#install}
 
-Prebuilt binaries are the easiest path — the light node client runs natively on **five platforms with zero native dependencies**: Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64). Each binary is roughly 16 MB — download it and run it, no separate libraries to install.
+Prebuilt binaries are the easiest path — the light node client runs natively on **six platforms with zero native dependencies**: Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — 12 binaries in total across the SX and UX editions. Each binary is roughly 16 MB — download it and run it, no separate libraries to install.
+
+**Verify the checksum before you run it.** The release manifest at `https://download.qore.host/<net>/lightnode/latest.json` carries a `sha256` for every binary, plus a separate `SHA256SUMS` file over the whole release. Recompute the hash of what you downloaded and compare it against the manifest's value — this isn't a footnote, it's the difference between running the binary that was actually built and running whatever landed at that URL:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# or: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 You can also build the binary from source or run it with Docker.
 
 ### Build from source
 
-The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-Go implementation (no CGO, no native library), so cross-compiling for any of the five supported platforms works the same way any other Go binary does:
+The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-Go implementation (no CGO, no native library), so cross-compiling for any of the six supported platforms works the same way any other Go binary does:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

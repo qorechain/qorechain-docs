@@ -27,7 +27,9 @@ Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 
 :::
 
 :::caution v3.1.92 sau mai nou necesar pentru un nod care se alătură de la zero
-Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.92 sau mai nou** — versiunile mai vechi (chiar dacă câmpul `minCompatible` al manifestului nu a fost încă actualizat pentru a reflecta acest lucru) se vor opri la primul bloc care conține o tranzacție în timpul redării, din cauza unui bug de măsurare a gazului acum remediat. Rulați întotdeauna binarul curent din manifestul de mai sus.
+Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.92 sau mai nou** — versiunile mai vechi (chiar dacă câmpul `minCompatible` al manifestului nu a fost încă actualizat pentru a reflecta acest lucru) se vor opri la primul bloc care conține o tranzacție în timpul redării, din cauza unui bug de măsurare a gazului acum remediat.
+
+**Manifestul însuși poate rămâne în urma acestui prag** — este promovat mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj, iar la momentul redactării acestui text, câmpul `binary.url` al manifestului de mainnet încă indică o versiune anterioară v3.1.92. Verificați câmpul `"version"` al manifestului înainte de a avea încredere în `binary.url`; dacă este în urma v3.1.92, luați binarul din [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) în schimb (verificându-i suma de control publicată în același mod) sau compilați din sursă, în loc de a folosi manifestul.
 :::
 
 ---
@@ -71,13 +73,19 @@ Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM 
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Fixați tag-ul imaginii la versiunea de lanț curentă (**v3.1.92** pe mainnet) și montați un volum persistent pentru datele lanțului.
+O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.92** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

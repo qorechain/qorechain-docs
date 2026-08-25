@@ -33,7 +33,7 @@ Diese Seite dient ausschließlich dem Vergleich von Validatoren. Um tatsächlich
 Wenn du einen Validator zum Delegieren auswählst, beachte Folgendes:
 
 - **Provision** – ein niedrigerer Satz lässt dir mehr Belohnungen, aber nachhaltig arbeitende Betreiber brauchen einen angemessenen Anteil.
-- **Verfügbarkeit und Status** – bevorzuge aktive Validatoren mit hoher Verfügbarkeit; ein gesperrter (jailed) Validator verdient nichts. Ein Validator wird gesperrt, wenn er das Signieren bei mehr als 5% der Blöcke innerhalb eines 10,000-Block-Fensters (etwa sechs Stunden) verpasst – er verdient dann nichts, weder für dich noch für sich selbst, bis er das Problem behebt und die Sperre aufgehoben wird (unjail).
+- **Verfügbarkeit und Status** – bevorzuge aktive Validatoren mit hoher Verfügbarkeit; ein gesperrter (jailed) Validator verdient nichts. Ein Validator wird gesperrt, wenn er das Signieren bei mehr als 5% der Blöcke innerhalb eines 10,000-Block-Fensters (etwa sechs Stunden bis zum Erreichen dieser Schwelle) verpasst – er verdient dann nichts, weder für dich noch für sich selbst, bis er das Problem behebt und die Sperre aufgehoben wird (unjail). Eine Downtime-Sperre dauert fest **600 Sekunden (10 Minuten)** und kostet den Validator **1% seines Stakes**; Double-Signing ist ein separates, schwerwiegenderes Vergehen, das mit **5%** geslasht wird. Diese Werte sind die aktuell live geltenden Chain-Parameter – behandle jeden anderswo gesehenen älteren Wert als überholt.
 - **Voting Power** – das Verteilen des Stakes auf mehrere Validatoren unterstützt die Dezentralisierung. Im Delegate-Panel werden die Validatoren genau aus diesem Grund nach der kleinsten Größe zuerst aufgelistet.
 
 ## Delegieren, Umdelegieren, Delegierung aufheben und Belohnungen einfordern

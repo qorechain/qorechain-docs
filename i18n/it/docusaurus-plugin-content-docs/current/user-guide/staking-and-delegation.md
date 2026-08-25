@@ -13,6 +13,12 @@ Questa guida illustra come delegare token QOR ai validatori, ridelegare tra vali
 I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.92** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando esegui lo staking su mainnet.
 :::
 
+## C'è un periodo di vincolo? {#lock-in-period}
+
+**Oggi**, no — non c'è una durata da scegliere, perché qui lo staking non viene offerto in periodi fissi come spesso accade su un exchange. La delega resta attiva con le ricompense che iniziano a maturare dal blocco successivo, per tutto il tempo che desideri, finché non decidi di annullarla; non c'è nulla che scada e nulla da rinnovare. Il **periodo di unbonding di 21 giorni** citato in tutta questa guida non è un vincolo che accetti in anticipo — inizia soltanto quando *richiedi* l'unbonding, e si applica solo al QOR che stai ritirando. Spostare una delega tra validatori (ridelega) evita del tutto questa attesa, poiché lo stake non lascia mai il pool bonded. Il bonus di "fedeltà" menzionato più avanti nella [curva di bonding](#bonding-curve) è invece un effetto sul tasso di ricompensa legato a *da quanto tempo sei rimasto delegato finora* — è automatico e non prevede anch'esso alcuna durata da selezionare, cresce semplicemente più a lungo non fai l'unbonding.
+
+Questo descrive il comportamento attuale della chain, non una garanzia permanente — un periodo minimo di staking è un parametro che la governance potrebbe introdurre in futuro, allo stesso modo in cui qualsiasi altro parametro di staking descritto in questa pagina può cambiare tramite voto. Se ciò dovesse accadere, il wallet mostrerà l'attesa risultante (l'eventuale minimo più i 21 giorni di unbonding) prima di confermare una delega, e questa pagina verrà aggiornata di conseguenza.
+
 ---
 
 ## Delegare Token
@@ -125,7 +131,7 @@ I validatori vengono riclassificati a ogni confine di epoca. Un validatore che c
 
 ---
 
-## Ricompense a Curva di Bonding
+## Ricompense a Curva di Bonding {#bonding-curve}
 
 Le ricompense di staking individuali vengono calcolate utilizzando la formula a curva di bonding di QoreChain:
 

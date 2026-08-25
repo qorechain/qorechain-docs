@@ -13,7 +13,7 @@ La edición UX es la opción adecuada para uso en escritorio y para operadores q
 
 ## Instalación
 
-Los binarios precompilados se ejecutan de forma nativa en **cinco plataformas sin dependencias nativas** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64) — cada uno con un tamaño aproximado de 16 MB.
+Los binarios precompilados se ejecutan de forma nativa en **seis plataformas sin dependencias nativas** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64) — cada uno con un tamaño aproximado de 16 MB. Verifica el checksum de la descarga contra el manifiesto antes de ejecutarlo — consulta [Edición SX](/light-node/sx-edition#install) para saber cómo.
 
 ### Compilar desde el código fuente
 

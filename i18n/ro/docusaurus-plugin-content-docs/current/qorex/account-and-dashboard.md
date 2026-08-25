@@ -24,7 +24,7 @@ Oferta de passkey apare doar după autentificarea cu **cod pe e-mail**. Când te
 
 ## Mai multe conturi dintr-o singură frază {#accounts}
 
-Settings → **Your accounts** îți permite să creezi, comuți și redenumești până la **20 de conturi**, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă distinctă `qor1…`, cu propriul sold și — pentru că un handle se leagă de o **adresă**, nu de portofel în ansamblu — propriul @handle opțional. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri. Extensia de browser nu are această funcție; ea gestionează exact un singur cont.
+Settings → **Your accounts** (găsit și sub numele **Addresses**) îți permite să creezi, comuți și redenumești până la **20 de conturi**, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă distinctă `qor1…`, cu propriul sold și — pentru că un handle se leagă de o **adresă**, nu de portofel în ansamblu — propriul @handle opțional. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri. Începând cu versiunea **0.2.2**, extensia de browser are și ea această funcție — vezi [Mai multe conturi dintr-o singură frază](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

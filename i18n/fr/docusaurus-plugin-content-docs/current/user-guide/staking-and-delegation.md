@@ -13,6 +13,12 @@ Ce guide explique comment déléguer des tokens QOR à des validateurs, redélé
 Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
+## Existe-t-il une période de blocage ? {#lock-in-period}
+
+**Aujourd'hui**, non — il n'y a pas de durée à choisir, car le staking n'est pas proposé ici sous forme de durées fixes comme c'est souvent le cas sur une plateforme d'échange. La délégation reste active, avec des récompenses versées dès le bloc suivant, aussi longtemps que vous le souhaitez, jusqu'à ce que vous décidiez de la désengager ; rien n'expire et rien n'est à renouveler. La **période de désengagement de 21 jours** mentionnée tout au long de ce guide n'est pas un blocage que vous acceptez à l'avance — elle ne débute qu'une fois que vous *demandez* le désengagement, et ne s'applique qu'au QOR que vous retirez. Déplacer une délégation d'un validateur à un autre (redélégation) évite entièrement cette attente, puisque la mise ne quitte jamais le pool lié. Le bonus de « fidélité » mentionné plus bas dans la [courbe de liaison](#bonding-curve) est un effet sur le taux de récompense lié à *la durée pendant laquelle vous êtes resté délégué jusqu'à présent* — il est automatique et n'a lui non plus aucune durée à choisir : il augmente simplement plus vous restez sans désengager.
+
+Ceci décrit le comportement actuel de la chaîne, et non une garantie permanente — une durée minimale de staking est un paramètre que la gouvernance pourrait introduire à l'avenir, de la même manière que tout autre paramètre de staking sur cette page peut être modifié par vote. Si cela devait arriver, le wallet affichera le délai résultant (toute durée minimale plus les 21 jours de désengagement) avant que vous ne confirmiez une délégation, et cette page sera mise à jour en conséquence.
+
 ---
 
 ## Déléguer des tokens
@@ -125,7 +131,7 @@ Les validateurs sont reclassés à chaque limite d'époque. Un validateur qui b�
 
 ---
 
-## Récompenses par courbe de liaison (bonding curve)
+## Récompenses par courbe de liaison (bonding curve) {#bonding-curve}
 
 Les récompenses de staking individuelles sont calculées à l'aide de la formule de courbe de liaison de QoreChain :
 

@@ -24,7 +24,7 @@ Passkey teklifi yalnızca **e-posta koduyla** oturum açtıktan sonra görünür
 
 ## Tek bir ifadeden birden fazla hesap {#accounts}
 
-Ayarlar → **Hesaplarınız**, hepsi aynı 24 kelimelik kurtarma ifadesinden türetilen (ayrıca yedeklenmesi gereken hiçbir şey yoktur) **20 hesaba** kadar oluşturmanıza, aralarında geçiş yapmanıza ve bunları yeniden adlandırmanıza olanak tanır. Her hesap, kendi bakiyesine sahip, ayrı bir `qor1…` adresidir; bir handle cüzdanın tamamına değil bir **adrese** bağlı olduğundan, her hesabın kendi isteğe bağlı @handle'ı da olabilir. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur. Tarayıcı eklentisinde bu özellik yoktur; yalnızca tek bir hesabı yönetir.
+Ayarlar → **Hesaplarınız** (**Adresler** olarak da bulunabilir), hepsi aynı 24 kelimelik kurtarma ifadesinden türetilen (ayrıca yedeklenmesi gereken hiçbir şey yoktur) **20 hesaba** kadar oluşturmanıza, aralarında geçiş yapmanıza ve bunları yeniden adlandırmanıza olanak tanır. Her hesap, kendi bakiyesine sahip, ayrı bir `qor1…` adresidir; bir handle cüzdanın tamamına değil bir **adrese** bağlı olduğundan, her hesabın kendi isteğe bağlı @handle'ı da olabilir. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur. **0.2.2** sürümünden itibaren tarayıcı eklentisi de bu özelliğe sahiptir — bkz. [Tek bir ifadeden birden fazla hesap](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

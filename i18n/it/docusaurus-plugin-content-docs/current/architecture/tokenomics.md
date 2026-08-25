@@ -39,6 +39,10 @@ Questo è un **modello a offerta fissa con un budget di emissione finito**, non 
 
 ### Programma delle ricompense di staking {#staking-reward-schedule}
 
+:::note È in sospeso una modifica a questo programma approvata dalla governance
+Una proposta di governance approvata modifica il modo in cui l'emissione viene rilasciata all'interno di questo budget, con effetto a un'altezza di blocco futura anziché immediatamente. Le cifre riportate di seguito sono il programma precedente alla modifica: consulta la [Cronologia delle versioni](/appendix/version-history) per verificare se la modifica è entrata in vigore prima di fare affidamento su un numero specifico, e considera provvisoria qualsiasi cifra di APY o di emissione giornaliera citata altrove finché la modifica non è effettiva.
+:::
+
 Le ricompense di staking sono distribuite dal budget di emissione di 590.000.000 QOR secondo un programma decrescente:
 
 | Periodo      | APY target              | Budget di emissione                  |

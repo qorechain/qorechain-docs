@@ -13,6 +13,12 @@ Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen
 Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.92** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
 :::
 
+## Gibt es eine Sperrfrist? {#lock-in-period}
+
+**Heute** nicht — es gibt keine Laufzeit auszuwählen, denn Staking wird hier nicht in festen Zeiträumen angeboten, wie es an einer Börse oft üblich ist. Die Delegation bleibt aktiv, wobei ab dem nächsten Block Belohnungen fließen, so lange du möchtest, bis du dich entscheidest, sie aufzuheben; nichts läuft ab und nichts muss verlängert werden. Die **21-tägige Entbindungsperiode**, auf die in diesem Leitfaden immer wieder verwiesen wird, ist keine Sperrfrist, der du im Voraus zustimmst — sie beginnt erst, wenn du *tatsächlich* die Entbindung beantragst, und betrifft nur das QOR, das du entnimmst. Eine Delegation zwischen Validatoren zu verschieben (Neudelegation) umgeht diese Wartezeit vollständig, da der Stake den gebundenen Pool nie verlässt. Der im [Bonding-Curve](#bonding-curve) weiter unten erwähnte „Treue“-Bonus ist ein Effekt auf die Belohnungsrate, der davon abhängt, *wie lange du bisher delegiert geblieben bist* — auch er ist automatisch und hat keine auswählbare Laufzeit, er wächst einfach, je länger du nicht entbindest.
+
+Dies beschreibt das aktuelle Chain-Verhalten, keine dauerhafte Garantie — eine Mindest-Staking-Dauer ist ein Parameter, den die Governance in Zukunft einführen könnte, genau wie jeder andere Staking-Parameter auf dieser Seite per Abstimmung geändert werden kann. Sollte das jemals geschehen, zeigt die Wallet die daraus resultierende Wartezeit (jedes Minimum zuzüglich der 21-tägigen Entbindung) an, bevor du eine Delegation bestätigst, und diese Seite wird entsprechend aktualisiert.
+
 ---
 
 ## Token delegieren
@@ -125,7 +131,7 @@ Validatoren werden an jeder Epoch-Grenze neu klassifiziert. Ein Validator, der e
 
 ---
 
-## Bonding-Curve-Belohnungen
+## Bonding-Curve-Belohnungen {#bonding-curve}
 
 Individuelle Staking-Belohnungen werden mit der Bonding-Curve-Formel von QoreChain berechnet:
 

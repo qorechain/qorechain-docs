@@ -13,7 +13,7 @@ UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabir
 
 ## Kurulum
 
-Derlenmiş ikili dosyalar **hiçbir yerel bağımlılık olmadan beş platformda** doğrudan çalışır — Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — her biri yaklaşık 16 MB.
+Derlenmiş ikili dosyalar **hiçbir yerel bağımlılık olmadan altı platformda** doğrudan çalışır — Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — her biri yaklaşık 16 MB. Çalıştırmadan önce indirmenin sağlama toplamını manifestle doğrulayın — nasıl yapılacağı için bkz. [SX Sürümü](/light-node/sx-edition#install).
 
 ### Kaynaktan derleme
 

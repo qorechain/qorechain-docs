@@ -24,7 +24,7 @@ Tu **primera** transferencia también registra automáticamente tu clave poscuá
 2. QoreX busca el handle y te muestra la **dirección `qor1…` resuelta** antes de que confirmes nada.
 3. Comprueba la dirección resuelta, introduce el importe y confirma como de costumbre.
 
-QoreX solo acepta una resolución que supere **ambas** comprobaciones que realiza: una atestación del registro verificada frente a una clave de confianza fijada en la app, y la propia firma del propietario del handle sobre la reclamación. Si falla cualquiera de las dos comprobaciones, se produce un error en lugar de recurrir a una dirección no verificada. La primera vez que pagas a un handle determinado, QoreX recuerda la dirección a la que se resolvió; si la dirección de ese handle cambia alguna vez, QoreX se detiene antes de firmar y te muestra la dirección antigua y la nueva una junto a la otra para que decidas si quieres continuar. La extensión de navegador resuelve y paga handles de la misma manera — consulta [Enviar a un @handle](/qorex/browser-extension#handle-send).
+QoreX solo acepta una resolución que supere **ambas** comprobaciones que realiza: una atestación del registro verificada frente a una clave de confianza fijada en la app, y la propia firma del propietario del handle sobre la reclamación. Si falla cualquiera de las dos comprobaciones, se produce un error en lugar de recurrir a una dirección no verificada. La primera vez que pagas a un handle determinado, QoreX recuerda la dirección a la que se resolvió; si la dirección de ese handle cambia alguna vez, QoreX se detiene antes de firmar y te muestra la dirección antigua y la nueva una junto a la otra para que decidas si quieres continuar. Esta memoria es **por dispositivo** — pagar al mismo handle por primera vez desde otro teléfono o una instalación nueva lo muestra como nuevo también ahí, lo cual es lo esperado, no un error. La extensión de navegador resuelve y paga handles de la misma manera (su memoria es **por navegador**, así que un navegador o equipo distinto lo verá como nuevo) — consulta [Enviar a un @handle](/qorex/browser-extension#handle-send).
 
 ### Enviar QOR en proceso de consolidación (bloqueado) {#vesting}
 
@@ -33,6 +33,10 @@ Si parte de tu saldo todavía está en proceso de **consolidación (vesting)** �
 ## Recibir QOR
 
 Toca **Recibir** para mostrar tu dirección `qor1…` como un código QR (con el icono de QoreChain incrustado) y un botón de copiar. Comparte cualquiera de los dos con el remitente.
+
+:::note Recibir un activo de red externa por primera vez
+La pantalla **Recibir** solo muestra una red en la que ya tienes saldo — así que si nunca has tenido ETH, todavía no habrá ahí una opción de ETH para elegir. Tu dirección EVM existe desde el momento en que existe tu wallet (se deriva de la misma frase de recuperación) y es la misma dirección en Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet y Avalanche — encuéntrala y cópiala desde **Ajustes → Direcciones** y comparte esa en su lugar. Una vez que llegue una transferencia, esa red aparecerá en Recibir a partir de entonces.
+:::
 
 ## Solicitar un pago
 

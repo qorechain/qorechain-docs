@@ -27,7 +27,9 @@ The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 +
 :::
 
 :::caution v3.1.92 or later required for a node joining fresh
-A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.92 or later** — earlier versions (even if the manifest's `minCompatible` field hasn't been updated yet to reflect this) will halt at the first block containing a transaction during replay, due to a now-fixed gas-metering bug. Always run the current binary from the manifest above.
+A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.92 or later** — earlier versions (even if the manifest's `minCompatible` field hasn't been updated yet to reflect this) will halt at the first block containing a transaction during replay, due to a now-fixed gas-metering bug.
+
+**The manifest can itself lag behind this floor** — it's promoted testnet-first, mainnet after a soak period, and at the time of writing the mainnet manifest's `binary.url` still points to a pre-v3.1.92 build. Check the manifest's `"version"` field before trusting `binary.url`; if it's behind v3.1.92, get the binary from the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) instead (checking its published checksum the same way) or build from source, rather than the manifest.
 :::
 
 ---
@@ -71,13 +73,19 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. Pin the image tag to the live chain version (**v3.1.92** on mainnet) and mount a persistent volume for chain data.
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.92** on mainnet), then mount a persistent volume for chain data:
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

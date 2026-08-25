@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain proporciona una interfaz JSON-RPC compatible con Solana a través de su entorno de ejecución SVM (Solana Virtual Machine), lo que permite que las herramientas y los SDK existentes de Solana interactúen con QoreChain de forma nativa.
 
 :::caution El envío de transacciones SVM está actualmente deshabilitado
-A partir de la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el lane de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción devuelve `code 11, "SVM module is disabled"`. Esto se aplica en toda la red, no solo en los endpoints públicos de solo lectura. Los métodos de tipo lectura de la tabla siguiente (p. ej. `getBalance`, `getAccountInfo`) pueden seguir respondiendo, pero no intentes una integración en producción que envíe transacciones SVM hasta que el lane vuelva a abrirse.
+A partir de la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el lane de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción devuelve `code 11, "SVM module is disabled"`. Esto se aplica en toda la red, no solo en los endpoints públicos de solo lectura. Los métodos de tipo lectura de la tabla siguiente (p. ej. `getBalance`, `getAccountInfo`) pueden seguir respondiendo, pero no intentes una integración en vivo que envíe transacciones SVM hasta que el lane vuelva a abrirse — se trata de una deshabilitación en tiempo de compilación, no de un parámetro en tiempo de ejecución, por lo que no puede reactivarse mediante una votación de gobernanza; se espera que permanezca deshabilitado hasta que una auditoría externa lo apruebe.
 :::
 
 ## Conexión

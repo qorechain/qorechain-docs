@@ -13,9 +13,21 @@ Ein Light Node **verdient Belohnungen** und **muss gesund bleiben**, um sie weit
 
 Die Gebührenverteilung von QoreChain reserviert einen festen **3%-Anteil für Light Nodes**, die Netzwerkdaten bereitstellen. Dies ist eines der fünf Ziele in der Belohnungsaufteilung des Protokolls — Validatoren (37%), verbrannt (30%), Treasury (20%), Staker (10%) und **Light Nodes (3%)** — on-chain erzwungen. Siehe [Tokenomics](/architecture/tokenomics) für die vollständige Aufschlüsselung.
 
-Um für diesen Anteil berechtigt zu sein, benötigt ein Node drei Dinge, die on-chain geprüft werden statt nur selbst angegeben zu sein: eine aktive `lightnode_operator`-Lizenz, mindestens **1,000 QOR delegiert** — gezählt als deine Gesamtsumme über alle Validatoren, an die du delegierst, nicht pro Validator — sowie eine On-Chain-Registrierungsgebühr von **1 QOR**. Die Teilnahme ist zudem netzwerkweit auf **10,000 Light Nodes** begrenzt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie Registrierung und Lizenzierung funktionieren, einschließlich des aktuellen Status der Anmeldung zum Belohnungsprogramm.
+Um für diesen Anteil berechtigt zu sein, benötigt ein Node drei Dinge, die on-chain geprüft werden statt nur selbst angegeben zu sein: eine aktive `lightnode_operator`-Lizenz, mindestens **1.000 QOR delegiert** — gezählt als deine Gesamtsumme über alle Validatoren, an die du delegierst, nicht pro Validator — sowie eine On-Chain-Registrierungsgebühr von **1 QOR**. Die Teilnahme ist zudem netzwerkweit auf **10.000 Light Nodes** begrenzt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie Registrierung und Lizenzierung funktionieren, einschließlich des aktuellen Status der Anmeldung zum Belohnungsprogramm.
 
-Sobald registriert und delegiert, ist aktiv zu bleiben, was über die weitere Berechtigung entscheidet. Ein Node benötigt mindestens **80% Uptime** und muss weiterhin Heartbeat-Liveness-Nachweise in einem Intervall von etwa **1,000 Blöcken (~39 Minuten)** einreichen, mit einer **Kulanzfrist von ~100 Blöcken (~4 Minuten)** nach einem verpassten Heartbeat, bevor er als inaktiv markiert wird. Ein als inaktiv markierter Node verdient den Anteil nicht mehr, bis er seine Aktivität erneut nachweist.
+Sobald registriert und delegiert, ist aktiv zu bleiben, was über die weitere Berechtigung entscheidet. Ein Node benötigt mindestens **80% Uptime** und muss weiterhin Heartbeat-Liveness-Nachweise in einem Intervall von etwa **1.000 Blöcken (~39 Minuten)** einreichen.
+
+**Das Einreichungsfenster ist an beiden Enden eng, nicht nur auf der späten Seite.** Ein Heartbeat wird nur zwischen etwa **deinem zuletzt akzeptierten Heartbeat + 1.000 Blöcken und +1.100 Blöcken** akzeptiert (etwa 4 Minuten, einmal alle ~39 Minuten) — reichst du zu früh ein, wird er genauso abgelehnt wie bei zu später Einreichung.
+
+**Ein verpasstes Fenster kostet Uptime, nicht deine Registrierung.** Ein Node, der das Fenster verpasst, wird als inaktiv markiert und verdient den Anteil nicht mehr, aber schon der nächste erfolgreiche Heartbeat reaktiviert ihn — eine erneute Registrierung ist nicht nötig. Beachte außerdem, dass der interne Zähler des Daemons in Richtung des nächsten Heartbeats weiterläuft, selbst wenn ein Einreichungsversuch fehlschlägt, und bei einem Neustart zurückgesetzt wird — ein Node kann also ohne Verschulden des Betreibers als inaktiv markiert werden; prüfe `status`, statt anzunehmen, dass eine Inaktiv-Markierung auf eine Fehlkonfiguration hindeutet.
+
+:::note Was ein Heartbeat tatsächlich beweist
+Ein erfolgreicher Heartbeat beweist, dass der Schlüssel des Betreibers rechtzeitig signiert hat — er beweist nicht, dass ein Node durchgehend die vollständige Software ausführt. Behandle ihn als Liveness-Signatur, nicht als „verifiziert als aktiver Node".
+:::
+
+:::note `last_heartbeat` ist eine Blockhöhe, keine Zeitangabe
+Fragst du den On-Chain-Datensatz eines Nodes direkt ab, ist `last_heartbeat` eine Blockhöhe, und ein Wert von `0` bedeutet, dass der Node noch nie einen Heartbeat gesendet hat — die Chain meldet in diesem Fall stattdessen seine `registered_at`-Höhe. Liest man dies als naive Berechnung der verstrichenen Zeit, wirkt ein frisch registrierter Node so, als sei er um Millionen Blöcke überfällig.
+:::
 
 *Belohnungsberechtigung: eine aktive On-Chain-Lizenz und den minimal delegierten Stake halten, registrieren und dann die Aktivität fortlaufend über Heartbeats nachweisen, um über den Uptime- und Heartbeat-Intervall-Schwellenwerten zu bleiben, die den Anteil am Fließen halten.*
 

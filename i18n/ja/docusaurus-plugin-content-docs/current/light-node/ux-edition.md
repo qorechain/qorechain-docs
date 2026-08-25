@@ -1,6 +1,6 @@
 ---
 slug: /light-node/ux-edition
-title: UX エディション（Web ダッシュボード）
+title: UX エディション(Web ダッシュボード)
 sidebar_label: UX エディション
 sidebar_position: 3
 ---
@@ -13,7 +13,7 @@ UX エディションは、デスクトップでの利用や、コマンドラ�
 
 ## インストール
 
-プリビルドされたバイナリは**ネイティブ依存関係ゼロの5つのプラットフォーム**でネイティブに動作します — Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64)。各バイナリはおよそ16 MBです。
+プリビルドされたバイナリは**ネイティブ依存関係ゼロの6つのプラットフォーム**でネイティブに動作します — Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64)。各バイナリはおよそ16 MBです。実行する前に、ダウンロードしたファイルのチェックサムをマニフェストと照合して検証してください — 方法は[SX エディション](/light-node/sx-edition#install)を参照してください。
 
 ### ソースからのビルド
 

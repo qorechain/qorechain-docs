@@ -33,7 +33,7 @@ Esta página sirve solo para comparar validadores. Para delegar realmente en uno
 Al elegir un validador en el que delegar, ten en cuenta:
 
 - **Comisión** — una tarifa más baja deja más recompensas para ti, pero los operadores sostenibles necesitan una parte razonable.
-- **Tiempo de actividad y estado** — favorece a los validadores activos con buen tiempo de actividad; un validador encarcelado no genera ingresos. Un validador se encarcela cuando falla al firmar en más del 5% de los bloques dentro de una ventana de 10.000 bloques (aproximadamente seis horas) — no genera nada, ni para ti ni para sí mismo, hasta que corrige el problema y sale de la cárcel (unjail).
+- **Tiempo de actividad y estado** — favorece a los validadores activos con buen tiempo de actividad; un validador encarcelado no genera ingresos. Un validador se encarcela cuando falla al firmar en más del 5% de los bloques dentro de una ventana de 10.000 bloques (aproximadamente seis horas para acumularse) — no genera nada, ni para ti ni para sí mismo, hasta que sale de la cárcel (unjail). Un encarcelamiento por inactividad dura un tiempo fijo de **600 segundos (10 minutos)** y le cuesta al validador el **1% de su stake**; la doble firma (double-signing) es una infracción distinta, más grave, que penaliza con un **5%**. Estas cifras son los parámetros actuales y en vivo de la cadena — considera cualquier cifra más antigua que veas en otro lugar como superada.
 - **Poder de voto** — distribuir el stake entre varios validadores favorece la descentralización. En el panel de Delegar, los validadores se listan de menor a mayor precisamente por este motivo.
 
 ## Delegar, redelegar, anular delegación y reclamar recompensas

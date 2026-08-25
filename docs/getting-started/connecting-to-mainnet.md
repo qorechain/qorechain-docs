@@ -56,6 +56,8 @@ The bundle contains `qorechaind` plus its required shared libraries (`libqorepqc
 
 :::caution Keep your node current — v3.1.92 or later required for a fresh sync
 Full nodes must track the network's live chain version — always install the binary the manifest points to, don't pin an old one. Separately from the manifest's `minCompatible` field, **v3.1.92 or later is required for a node that is joining fresh (from genesis) or recovering from a halt** — earlier versions cannot complete a full sync due to a now-fixed gas-metering bug that halts replay at the first block containing a transaction. A node already caught up and running an earlier version should still upgrade at the next opportunity, since an outdated node cannot decode newer transaction types and will stop syncing once one appears in a block.
+
+**Check what the manifest is actually serving before you trust it.** The manifest is promoted deliberately — testnet first, mainnet after a soak period — so it can lag behind the version floor above; at the time of writing the mainnet manifest itself still points to a pre-v3.1.92 binary, which is exactly the build this caution says not to use for a fresh sync. Compare the manifest's `"version"` field against v3.1.92 before relying on its `binary.url`; if it's still behind, get v3.1.92 (or later) from the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) instead (verify the tag's checksum the same way), or [build from source](/developer-guide/building-from-source).
 :::
 
 ### Build from source

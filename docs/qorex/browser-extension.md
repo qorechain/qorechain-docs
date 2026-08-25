@@ -77,7 +77,7 @@ Since 0.1.9 you can pay a registered @handle directly instead of looking up an a
 3. QoreX resolves the handle and shows you the **resolved address** before you sign anything — always check this against what you expect.
 4. Enter the amount and confirm.
 
-Resolution is verified two ways before QoreX will use it: a registry attestation checked against a trust key built into the extension, and the handle owner's own signature over the claim. A response that fails either check is rejected outright — QoreX does not fall back to showing an unverified address. The first time you pay a given handle, QoreX remembers (pins) the address it resolved to; if that handle later resolves to a **different** address, QoreX stops and shows you both the old and new address in full so you can decide whether to continue.
+Resolution is verified two ways before QoreX will use it: a registry attestation checked against a trust key built into the extension, and the handle owner's own signature over the claim. A response that fails either check is rejected outright — QoreX does not fall back to showing an unverified address. The first time you pay a given handle, QoreX remembers (pins) the address it resolved to; if that handle later resolves to a **different** address, QoreX stops and shows you both the old and new address in full so you can decide whether to continue. This memory lives **per browser** — paying the same handle for the first time from a different browser or computer shows it as new there too. That's expected, not an error.
 
 ## Receive {#receive}
 

@@ -56,6 +56,8 @@ Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`lib
 
 :::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.92 veya üzeri gerekli
 Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Manifestonun `minCompatible` alanından bağımsız olarak, **genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için v3.1.92 veya üzeri gereklidir** — daha eski sürümler, işlem içeren ilk blokta yeniden oynatmayı (replay) durduran, artık düzeltilmiş bir gaz ölçüm hatası nedeniyle tam senkronizasyonu tamamlayamaz. Zaten yetişmiş durumda olan ve daha eski bir sürüm çalıştıran bir düğüm de bir sonraki fırsatta yükseltilmelidir, çünkü güncel olmayan bir düğüm daha yeni işlem türlerini çözümleyemez ve bir blokta böyle bir işlem göründüğü anda senkronizasyonu durdurur.
+
+**Manifestonun gerçekte neyi sunduğunu güvenmeden önce kontrol edin.** Manifesto kasıtlı olarak kademeli yayına alınır — önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ — bu nedenle yukarıdaki sürüm eşiğinin gerisinde kalabilir; bu yazının yazıldığı sırada ana ağ manifestosunun kendisi hâlâ v3.1.92 öncesi bir ikili dosyayı işaret etmektedir ki bu, bu uyarının taze bir senkronizasyon için kullanılmamasını söylediği derlemenin ta kendisidir. `binary.url` değerine güvenmeden önce manifestonun `"version"` alanını v3.1.92 ile karşılaştırın; hâlâ gerideyse, [qorechain-core GitHub sürümleri](https://github.com/qorechain/qorechain-core/releases) sayfasından v3.1.92 (veya sonrasını) edinin (etiketin sağlama toplamını aynı şekilde doğrulayın) ya da [kaynak koddan derleyin](/developer-guide/building-from-source).
 :::
 
 ### Kaynak koddan derleme

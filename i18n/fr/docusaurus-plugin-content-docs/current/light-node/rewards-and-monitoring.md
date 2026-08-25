@@ -15,7 +15,19 @@ La distribution des frais de QoreChain réserve une part fixe de **3 % aux light
 
 Pour être éligible à cette part, un nœud doit remplir trois conditions, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active, un minimum de **1 000 QOR délégués** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur — et des frais d'enregistrement on-chain de **1 QOR**. La participation est également plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et des licences, y compris le statut actuel de l'inscription au programme de récompenses.
 
-Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle d'environ **1 000 blocs (~39 minutes)**, avec une période de grâce d'environ **100 blocs (~4 minutes)** après un heartbeat manqué avant d'être marqué inactif. Un nœud marqué inactif cesse de gagner la part tant qu'il ne prouve pas à nouveau sa vivacité.
+Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle d'environ **1 000 blocs (~39 minutes)**.
+
+**La fenêtre de soumission est étroite des deux côtés, pas seulement du côté tardif.** Un heartbeat n'est accepté qu'entre environ **votre dernier heartbeat accepté + 1 000 blocs et +1 100 blocs** (environ 4 minutes, une fois toutes les ~39 minutes) — le soumettre trop tôt le fait rejeter tout comme le soumettre trop tard.
+
+**Manquer la fenêtre coûte de la disponibilité, pas votre enregistrement.** Un nœud qui manque la fenêtre est marqué inactif et cesse de gagner la part, mais le tout prochain heartbeat réussi le réactive — il n'y a pas de réenregistrement à effectuer. Notez également que le compteur interne du daemon vers le prochain heartbeat continue d'avancer même si une tentative de soumission échoue, et se réinitialise au redémarrage, si bien qu'un nœud peut se retrouver marqué inactif sans faute de la part de l'opérateur ; vérifiez `status` plutôt que de supposer qu'une marque inactive signifie qu'une configuration est erronée.
+
+:::note Ce qu'un heartbeat prouve réellement
+Un heartbeat réussi prouve que la clé de l'opérateur a signé à temps — il ne prouve pas qu'un nœud exécute en continu l'intégralité du logiciel. Considérez-le comme une signature de vivacité, et non comme une « vérification qu'il s'agit d'un nœud actif ».
+:::
+
+:::note `last_heartbeat` est une hauteur de bloc, pas un horodatage
+Si vous interrogez directement l'enregistrement on-chain d'un nœud, `last_heartbeat` est une hauteur de bloc, et une valeur de `0` signifie que le nœud n'en a encore jamais envoyé — la chaîne indique alors sa hauteur `registered_at` en remplacement. Le lire comme un calcul naïf de temps écoulé fait apparaître un nœud fraîchement enregistré comme s'il avait des millions de blocs de retard.
+:::
 
 *Éligibilité aux récompenses : détenir une licence on-chain active et le stake délégué minimum, s'enregistrer, puis continuer à prouver sa vivacité via des heartbeats pour rester au-dessus des seuils de disponibilité et d'intervalle de heartbeat qui maintiennent le versement de la part.*
 

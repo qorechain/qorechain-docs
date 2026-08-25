@@ -9,15 +9,22 @@ sidebar_position: 2
 
 **SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 이는 라이트 노드 자체의 **v3.1.2** 버전 라인이며, 체인 버전과는 별개입니다.
 
-## 설치
+## 설치 {#install}
 
-미리 빌드된 바이너리를 사용하는 것이 가장 쉬운 방법입니다 — 라이트 노드 클라이언트는 **네이티브 의존성 없이 다섯 개 플랫폼**에서 네이티브로 실행됩니다: Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64). 각 바이너리는 약 16MB이며, 다운로드해서 바로 실행하면 됩니다. 별도로 설치해야 할 라이브러리가 없습니다.
+미리 빌드된 바이너리를 사용하는 것이 가장 쉬운 방법입니다 — 라이트 노드 클라이언트는 **네이티브 의존성 없이 여섯 개 플랫폼**에서 네이티브로 실행됩니다: Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64) — SX와 UX 에디션을 합쳐 총 12개의 바이너리입니다. 각 바이너리는 약 16MB이며, 다운로드해서 바로 실행하면 됩니다. 별도로 설치해야 할 라이브러리가 없습니다.
+
+**실행 전에 체크섬을 검증하세요.** `https://download.qore.host/<net>/lightnode/latest.json`의 릴리스 매니페스트에는 모든 바이너리에 대한 `sha256` 값이 담겨 있으며, 전체 릴리스에 대한 별도의 `SHA256SUMS` 파일도 제공됩니다. 다운로드한 파일의 해시를 직접 계산해 매니페스트의 값과 대조하세요 — 이는 부차적인 절차가 아니라, 실제로 빌드된 바이너리를 실행하는 것과 해당 URL에 어쩌다 존재하는 무언가를 실행하는 것의 차이를 가르는 절차입니다.
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# or: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 소스에서 바이너리를 직접 빌드하거나 Docker로 실행할 수도 있습니다.
 
 ### 소스에서 빌드
 
-라이트 노드는 **Go 1.26.1**을 필요로 합니다. 이 노드의 양자내성 암호(post-quantum cryptography)는 순수 Go로 구현되어 있어(CGO 없음, 네이티브 라이브러리 없음), 다섯 개 지원 플랫폼 중 어느 곳으로 크로스 컴파일하더라도 다른 Go 바이너리와 동일한 방식으로 동작합니다.
+라이트 노드는 **Go 1.26.1**을 필요로 합니다. 이 노드의 양자내성 암호(post-quantum cryptography)는 순수 Go로 구현되어 있어(CGO 없음, 네이티브 라이브러리 없음), 여섯 개 지원 플랫폼 중 어느 곳으로 크로스 컴파일하더라도 다른 Go 바이너리와 동일한 방식으로 동작합니다.
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

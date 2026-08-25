@@ -13,7 +13,7 @@ UX 에디션은 데스크톱 사용과, 명령줄보다 시각적 인터페이�
 
 ## 설치
 
-사전 빌드된 바이너리는 **네이티브 의존성 없이 다섯 개 플랫폼**에서 네이티브로 실행됩니다 — Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64) — 각각 약 16MB입니다.
+사전 빌드된 바이너리는 **네이티브 의존성 없이 여섯 개 플랫폼**에서 네이티브로 실행됩니다 — Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64) — 각각 약 16MB입니다. 실행하기 전에 다운로드한 파일의 체크섬을 매니페스트와 대조하여 검증하세요 — 방법은 [SX 에디션](/light-node/sx-edition#install)을 참고하세요.
 
 ### 소스에서 빌드
 

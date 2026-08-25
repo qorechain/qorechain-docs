@@ -24,7 +24,7 @@ Das Passkey-Angebot erscheint nur nach der Anmeldung per **E-Mail-Code**. Wenn S
 
 ## Mehrere Konten aus einer Phrase {#accounts}
 
-Einstellungen → **Ihre Konten** lässt Sie bis zu **20 Konten** erstellen, wechseln und umbenennen, die alle von derselben 24-Wort-Wiederherstellungsphrase abgeleitet sind (es gibt nichts Zusätzliches zu sichern). Jedes Konto ist eine eigene, unterscheidbare `qor1…`-Adresse mit eigenem Guthaben und — weil ein Handle an eine **Adresse** gebunden ist, nicht an die Wallet als Ganzes — auch mit einem eigenen optionalen @handle. Welches Konto gerade aktiv ist, bestimmt, welches Konto Senden, Empfangen, Staking und der dApp-Browser verwenden. Die Browser-Erweiterung verfügt nicht über diese Funktion; sie verwaltet genau ein Konto.
+Einstellungen → **Ihre Konten** (auch auffindbar als **Adressen**) lässt Sie bis zu **20 Konten** erstellen, wechseln und umbenennen, die alle von derselben 24-Wort-Wiederherstellungsphrase abgeleitet sind (es gibt nichts Zusätzliches zu sichern). Jedes Konto ist eine eigene, unterscheidbare `qor1…`-Adresse mit eigenem Guthaben und — weil ein Handle an eine **Adresse** gebunden ist, nicht an die Wallet als Ganzes — auch mit einem eigenen optionalen @handle. Welches Konto gerade aktiv ist, bestimmt, welches Konto Senden, Empfangen, Staking und der dApp-Browser verwenden. Seit **0.2.2** verfügt auch die Browser-Erweiterung über diese Funktion — siehe [Mehrere Konten aus einer Phrase](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

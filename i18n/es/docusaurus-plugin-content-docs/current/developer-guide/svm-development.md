@@ -16,7 +16,7 @@ Los comandos siguientes usan la mainnet **`qorechain-vladi`**, activa desde el 7
 ---
 
 :::caution El envío de transacciones SVM está actualmente deshabilitado
-Desde la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el carril de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción enviada a `x/svm` (despliegue de programas, ejecución de instrucciones, creación de cuentas, transferencias) devuelve `code 11, "SVM module is disabled"`. Esto se aplica tanto a su propio nodo como a los endpoints públicos. Los métodos RPC de solo lectura pueden seguir respondiendo, pero no construya ni ensaye una integración SVM en producción hasta que el carril vuelva a abrirse.
+Desde la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el carril de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción enviada a `x/svm` (despliegue de programas, ejecución de instrucciones, creación de cuentas, transferencias) devuelve `code 11, "SVM module is disabled"`. Esto se aplica tanto a su propio nodo como a los endpoints públicos. Los métodos RPC de solo lectura pueden seguir respondiendo, pero no construya ni ensaye una integración SVM en producción hasta que el carril vuelva a abrirse — se trata de una deshabilitación en tiempo de compilación, no de un parámetro en tiempo de ejecución, por lo que no puede reactivarse mediante una votación de gobernanza; se espera que permanezca deshabilitado hasta que una auditoría externa lo autorice.
 :::
 
 ## Visión general

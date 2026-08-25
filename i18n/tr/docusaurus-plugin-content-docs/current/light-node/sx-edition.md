@@ -9,15 +9,22 @@ sidebar_position: 2
 
 **SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu, hafif düğümün **v3.1.2** hattıdır (zincir sürümünden ayrı, kendi sürümü).
 
-## Kurulum
+## Kurulum {#install}
 
-Önceden derlenmiş ikili dosyalar en kolay yoldur — hafif düğüm istemcisi **beş platformda, hiçbir yerel bağımlılık olmadan** doğal olarak çalışır: Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64). Her ikili dosya yaklaşık 16 MB'tır — indirin ve çalıştırın, kurulacak ayrı bir kitaplık yoktur.
+Önceden derlenmiş ikili dosyalar en kolay yoldur — hafif düğüm istemcisi **altı platformda, hiçbir yerel bağımlılık olmadan** doğal olarak çalışır: Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — SX ve UX sürümleri genelinde toplam 12 ikili dosya. Her ikili dosya yaklaşık 16 MB'tır — indirin ve çalıştırın, kurulacak ayrı bir kitaplık yoktur.
+
+**Çalıştırmadan önce sağlama toplamını doğrulayın.** `https://download.qore.host/<net>/lightnode/latest.json` adresindeki sürüm manifestosu her ikili dosya için bir `sha256` değeri taşır, ayrıca tüm sürümü kapsayan ayrı bir `SHA256SUMS` dosyası vardır. İndirdiğiniz dosyanın karma değerini yeniden hesaplayın ve manifestodaki değerle karşılaştırın — bu bir dipnot değildir, gerçekten derlenen ikili dosyayı çalıştırmakla o URL'ye her ne indiyse onu çalıştırmak arasındaki farktır:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# veya: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 İkili dosyayı kaynaktan da derleyebilir veya Docker ile çalıştırabilirsiniz.
 
 ### Kaynaktan derleme
 
-Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile uygulanmıştır (CGO yok, yerel kitaplık yok), bu nedenle desteklenen beş platformdan herhangi biri için çapraz derleme, herhangi bir Go ikili dosyasıyla aynı şekilde çalışır:
+Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile uygulanmıştır (CGO yok, yerel kitaplık yok), bu nedenle desteklenen altı platformdan herhangi biri için çapraz derleme, herhangi bir Go ikili dosyasıyla aynı şekilde çalışır:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

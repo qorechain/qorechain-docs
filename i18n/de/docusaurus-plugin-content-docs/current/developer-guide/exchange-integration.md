@@ -152,7 +152,7 @@ Standard-Ethereum-Integration gegen `https://evm.qore.host` (Chain-ID **9801**) 
 ## Pfad C — SVM (Solana-kompatibel) {#path-c-svm}
 
 :::caution SVM-Lane derzeit deaktiviert
-Die SVM-Ausführungs-Lane ist **derzeit netzwerkweit für die Transaktionseinreichung deaktiviert**, seit Chain-Version v3.1.89 (22. August) — jede Transaktion dorthin liefert `code 11, "SVM module is disabled"` zurück. Bauen Sie **keine** Einzahlungs-/Auszahlungsschiene auf Pfad C auf, bevor die Lane wieder geöffnet wird. Verwenden Sie stattdessen **Pfad A (Cosmos)** oder **Pfad B (EVM)**. Lesende Endpunkte (z. B. `getBalance`) antworten unter Umständen weiterhin, aber bauen Sie keine Einzahlungserkennung oder Auszahlungsabläufe gegen SVM, solange die Transaktionseinreichung deaktiviert ist.
+Die SVM-Ausführungs-Lane ist **derzeit netzwerkweit für die Transaktionseinreichung deaktiviert**, seit Chain-Version v3.1.89 (22. August) — jede Transaktion dorthin liefert `code 11, "SVM module is disabled"` zurück. Bauen Sie **keine** Einzahlungs-/Auszahlungsschiene auf Pfad C auf, bevor die Lane wieder geöffnet wird — dies ist eine zur Kompilierzeit festgelegte Deaktivierung, kein Laufzeitparameter, sie kann also nicht per Governance-Abstimmung wieder aktiviert werden; es wird erwartet, dass sie deaktiviert bleibt, bis ein externes Audit sie freigibt. Verwenden Sie stattdessen **Pfad A (Cosmos)** oder **Pfad B (EVM)**. Lesende Endpunkte (z. B. `getBalance`) antworten unter Umständen weiterhin, aber bauen Sie keine Einzahlungserkennung oder Auszahlungsabläufe gegen SVM, solange die Transaktionseinreichung deaktiviert ist.
 :::
 
 Seit v3.1.82 stellt die SVM-Schnittstelle **natives QOR** bereit (siehe [Native QOR on the SVM Interface](/developer-guide/svm-development#native-qor)):

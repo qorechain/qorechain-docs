@@ -15,7 +15,19 @@ La distribuzione delle commissioni di QoreChain riserva una quota fissa del **3%
 
 Per essere idoneo a questa quota, un nodo deve soddisfare tre condizioni, verificate on-chain e non auto-dichiarate: una licenza `lightnode_operator` attiva, un minimo di **1.000 QOR delegati** — conteggiati come totale su tutti i validatori a cui deleghi, non per singolo validatore — e una commissione di registrazione on-chain di **1 QOR**. La partecipazione è inoltre limitata a livello di rete a **10.000 light node**. Vedi [Registrazione e Licenze](/light-node/registration-and-licensing) per come funzionano registrazione e licenza, incluso lo stato attuale dell'iscrizione al programma di ricompense.
 
-Una volta registrato e con la delega attiva, restare idonei è solo questione di restare attivi. Un nodo deve mantenere almeno l'**80% di uptime**, e deve continuare a inviare prove di liveness tramite heartbeat a un intervallo di circa **1.000 blocchi (~39 minuti)**, con un periodo di grazia di circa **100 blocchi (~4 minuti)** dopo un heartbeat mancato prima di essere marcato come inattivo. Un nodo marcato come inattivo smette di guadagnare la quota finché non dimostra nuovamente la propria liveness.
+Una volta registrato e con la delega attiva, restare idonei è solo questione di restare attivi. Un nodo deve mantenere almeno l'**80% di uptime**, e deve continuare a inviare prove di liveness tramite heartbeat a un intervallo di circa **1.000 blocchi (~39 minuti)**.
+
+**La finestra di invio è stretta su entrambi i lati, non solo su quello tardivo.** Un heartbeat viene accettato solo tra circa **il tuo ultimo heartbeat accettato + 1.000 blocchi e +1.100 blocchi** (circa 4 minuti, una volta ogni ~39 minuti) — inviarlo troppo presto viene rifiutato tanto quanto inviarlo troppo tardi.
+
+**Mancare la finestra costa uptime, non la registrazione.** Un nodo che manca la finestra viene marcato come inattivo e smette di guadagnare la quota, ma il successivo heartbeat andato a buon fine lo riattiva — non c'è alcuna ri-registrazione da fare. Nota inoltre che il contatore interno del daemon verso il prossimo heartbeat continua ad avanzare anche se un tentativo di invio fallisce, e si azzera al riavvio, per cui un nodo può ritrovarsi marcato come inattivo senza colpa dell'operatore — controlla `status` invece di presumere che una marcatura di inattività indichi una configurazione errata.
+
+:::note Cosa dimostra davvero un heartbeat
+Un heartbeat andato a buon fine dimostra che la chiave dell'operatore ha firmato in tempo — non dimostra che un nodo stia eseguendo ininterrottamente l'intero software. Trattalo come una firma di liveness, non come "verificato come nodo attivo".
+:::
+
+:::note `last_heartbeat` è un'altezza di blocco, non un timestamp
+Se interroghi direttamente il record on-chain di un nodo, `last_heartbeat` è un'altezza di blocco, e un valore di `0` significa che il nodo non ne ha ancora mai inviato uno — in quel caso la chain riporta come sostituto la sua altezza `registered_at`. Leggerlo come un ingenuo calcolo di tempo trascorso fa sembrare un nodo appena registrato come se fosse in ritardo di milioni di blocchi.
+:::
 
 *Idoneità alla ricompensa: possedere una licenza on-chain attiva e lo stake minimo delegato, registrarsi, e poi continuare a dimostrare la liveness tramite heartbeat per restare sopra le soglie di uptime e di intervallo heartbeat che mantengono attiva l'erogazione della quota.*
 

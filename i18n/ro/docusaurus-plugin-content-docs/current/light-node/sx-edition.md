@@ -9,15 +9,22 @@ sidebar_position: 2
 
 Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Aceasta este linia **v3.1.2** a light node-ului (versiune proprie, separată de versiunea lanțului).
 
-## Instalare
+## Instalare {#install}
 
-Binarele precompilate sunt calea cea mai simplă — clientul light node rulează nativ pe **cinci platforme, fără dependențe native**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64). Fiecare binar are aproximativ 16 MB — îl descarci și îl rulezi, fără biblioteci separate de instalat.
+Binarele precompilate sunt calea cea mai simplă — clientul light node rulează nativ pe **șase platforme, fără dependențe native**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — în total 12 binare, între edițiile SX și UX. Fiecare binar are aproximativ 16 MB — îl descarci și îl rulezi, fără biblioteci separate de instalat.
+
+**Verifică suma de control (checksum) înainte de a-l rula.** Manifestul de release de la `https://download.qore.host/<net>/lightnode/latest.json` conține un `sha256` pentru fiecare binar, plus un fișier separat `SHA256SUMS` pentru întregul release. Recalculează hash-ul a ceea ce ai descărcat și compară-l cu valoarea din manifest — aceasta nu este o notă de subsol, ci diferența dintre a rula binarul care a fost efectiv construit și a rula orice a ajuns la acel URL:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# or: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 De asemenea, poți construi binarul din sursă sau îl poți rula cu Docker.
 
 ### Construire din sursă
 
-Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o implementare pur Go (fără CGO, fără bibliotecă nativă), astfel încât compilarea încrucișată pentru oricare dintre cele cinci platforme suportate funcționează la fel ca pentru orice alt binar Go:
+Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o implementare pur Go (fără CGO, fără bibliotecă nativă), astfel încât compilarea încrucișată pentru oricare dintre cele șase platforme suportate funcționează la fel ca pentru orice alt binar Go:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

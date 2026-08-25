@@ -15,7 +15,19 @@ Distribuția comisioanelor din QoreChain rezervă o cotă fixă de **3% pentru l
 
 Pentru a fi eligibil pentru această cotă, un nod are nevoie de trei lucruri, verificate on-chain, nu auto-declarate: o licență activă `lightnode_operator`, un minimum de **1.000 QOR delegați** — calculat ca total pe toți validatorii cărora le delegați, nu per validator — și o taxă de înregistrare on-chain de **1 QOR**. Participarea este de asemenea plafonată la nivel de rețea la **10.000 de light nodes**. Consultați [Registration and Licensing](/light-node/registration-and-licensing) pentru modul în care funcționează înregistrarea și licențierea, inclusiv stadiul actual al înscrierii în programul de recompense.
 
-Odată înregistrat și cu stake delegat, menținerea eligibilității ține de a rămâne activ. Un nod are nevoie de cel puțin **80% uptime** și trebuie să continue să trimită dovezi de liveness prin heartbeat la un interval de aproximativ **1.000 de blocuri (~39 de minute)**, cu o perioadă de grație de **~100 de blocuri (~4 minute)** după un heartbeat ratat, înainte de a fi marcat inactiv. Un nod marcat inactiv nu mai câștigă cota până când dovedește din nou liveness.
+Odată înregistrat și cu stake delegat, menținerea eligibilității ține de a rămâne activ. Un nod are nevoie de cel puțin **80% uptime** și trebuie să continue să trimită dovezi de liveness prin heartbeat la un interval de aproximativ **1.000 de blocuri (~39 de minute)**.
+
+**Fereastra de trimitere este îngustă la ambele capete, nu doar în partea de întârziere.** Un heartbeat este acceptat doar între aproximativ **ultimul heartbeat acceptat + 1.000 de blocuri și +1.100 de blocuri** (aproximativ 4 minute, o dată la fiecare ~39 de minute) — dacă trimiteți prea devreme, este respins la fel ca atunci când trimiteți prea târziu.
+
+**Ratarea ferestrei costă uptime, nu înregistrarea.** Un nod care ratează fereastra este marcat inactiv și încetează să mai câștige cota, dar chiar următorul heartbeat reușit îl reactivează — nu este nevoie de re-înregistrare. De reținut și că propriul contor intern al daemonului către următorul heartbeat continuă să avanseze chiar dacă o încercare de trimitere eșuează și se resetează la restart, astfel încât un nod poate ajunge marcat inactiv fără nicio vină a operatorului; verificați `status` în loc să presupuneți că o marcare inactivă înseamnă că ceva este configurat greșit.
+
+:::note Ce dovedește de fapt un heartbeat
+Un heartbeat reușit dovedește că cheia operatorului a semnat la timp — nu dovedește că un nod rulează continuu software-ul complet. Tratați-l ca pe o semnătură de liveness, nu ca pe o „verificare a unui nod activ”.
+:::
+
+:::note `last_heartbeat` este o înălțime de bloc, nu un timestamp
+Dacă interogați direct înregistrarea on-chain a unui nod, `last_heartbeat` este o înălțime de bloc, iar o valoare de `0` înseamnă că nodul nu a trimis niciodată încă unul — lanțul raportează în acest caz înălțimea sa `registered_at` ca înlocuitor. Citirea acesteia ca un calcul naiv de timp scurs face ca un nod proaspăt înregistrat să pară cu milioane de blocuri întârziat.
+:::
 
 *Eligibilitate pentru recompense: dețineți o licență activă on-chain și stake-ul minim delegat, înregistrați-vă, apoi continuați să dovediți liveness prin heartbeat-uri pentru a rămâne peste pragurile de uptime și de interval al heartbeat-ului care mențin cota activă.*
 

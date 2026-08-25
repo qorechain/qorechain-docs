@@ -24,7 +24,7 @@ La proposta della passkey compare solo dopo l'accesso con **codice via email**. 
 
 ## Più account da una sola frase {#accounts}
 
-Impostazioni → **Your accounts** ti permette di creare, cambiare e rinominare fino a **20 account**, tutti derivati dalla stessa frase di recupero di 24 parole (non c'è nient'altro da salvare come backup). Ogni account è un indirizzo `qor1…` distinto con il proprio saldo e — poiché un handle è legato a un **indirizzo**, non al wallet nel suo insieme — con il proprio @handle opzionale. L'account attivo in un dato momento è quello usato da Send, Receive, Staking e dal browser dApp. L'estensione per browser non ha questa funzionalità: gestisce esattamente un solo account.
+Impostazioni → **Your accounts** ti permette di creare, cambiare e rinominare fino a **20 account**, tutti derivati dalla stessa frase di recupero di 24 parole (non c'è nient'altro da salvare come backup). Ogni account è un indirizzo `qor1…` distinto con il proprio saldo e — poiché un handle è legato a un **indirizzo**, non al wallet nel suo insieme — con il proprio @handle opzionale. L'account attivo in un dato momento è quello usato da Send, Receive, Staking e dal browser dApp. A partire dalla **0.2.2**, anche l'estensione per browser ha questa funzionalità — vedi [Più account da una sola frase](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

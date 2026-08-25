@@ -13,6 +13,12 @@ Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğ
 Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri **v3.1.92** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
+## Bağlayıcı bir süre var mı? {#lock-in-period}
+
+**Bugün itibarıyla**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıda [bonding curve](#bonding-curve) bölümünde bahsedilen "sadakat" bonusu, *şu ana kadar ne kadar süredir delege kaldığınıza* bağlı bir ödül oranı etkisidir — o da otomatiktir ve seçilecek bir vadesi yoktur, undelegate etmediğiniz sürece basitçe büyür.
+
+Bu, mevcut zincir davranışını tanımlar, kalıcı bir garanti değildir — minimum bir stake süresi, bu sayfadaki diğer herhangi bir stake parametresinin oylamayla değişebileceği gibi, gelecekte governance tarafından getirilebilecek bir parametredir. Bu gerçekleşirse, cüzdan bir delegasyonu onaylamadan önce ortaya çıkan bekleme süresini (varsa minimum süre artı 21 günlük çözülme) gösterecek ve bu sayfa buna uygun şekilde güncellenecektir.
+
 ---
 
 ## Token Delege Etme
@@ -125,7 +131,7 @@ Doğrulayıcılar her epoch sınırında yeniden sınıflandırılır. Güçlü 
 
 ---
 
-## Bonding Curve Ödülleri
+## Bonding Curve Ödülleri {#bonding-curve}
 
 Bireysel stake ödülleri, QoreChain'in bonding curve formülü kullanılarak hesaplanır:
 

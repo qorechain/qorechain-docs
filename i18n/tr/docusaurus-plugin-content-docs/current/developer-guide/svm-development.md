@@ -16,7 +16,7 @@ Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.1.92** zin
 ---
 
 :::caution SVM işlem gönderimi şu anda devre dışı
-v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın.
+v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın — bu bir çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, bu nedenle bir yönetişim (governance) oylamasıyla tekrar açılamaz; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
 :::
 
 ## Genel Bakış

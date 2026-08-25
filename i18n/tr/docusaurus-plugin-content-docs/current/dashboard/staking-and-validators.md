@@ -33,7 +33,7 @@ Bu sayfa yalnızca doğrulayıcıları karşılaştırmak içindir. Birine gerç
 Delegasyon yapacağınız bir doğrulayıcı seçerken şunları göz önünde bulundurun:
 
 - **Komisyon** — daha düşük bir oran size daha fazla ödül bırakır, ancak sürdürülebilir operatörlerin makul bir pay alması gerekir.
-- **Çalışma süresi ve durum** — güçlü çalışma süresine sahip aktif doğrulayıcıları tercih edin; jailed bir doğrulayıcı kazanç sağlamaz. Bir doğrulayıcı, 10.000 bloktan oluşan bir pencere (kabaca altı saat) içinde blokların %5'inden fazlasını imzalamayı kaçırdığında jail'e girer — bu durumu düzeltip jail'den çıkana kadar ne sizin ne de kendisi için hiçbir kazanç elde etmez.
+- **Çalışma süresi ve durum** — güçlü çalışma süresine sahip aktif doğrulayıcıları tercih edin; jailed bir doğrulayıcı kazanç sağlamaz. Bir doğrulayıcı, 10.000 bloktan oluşan bir pencere (kabaca altı saat) içinde blokların %5'inden fazlasını imzalamayı kaçırdığında jail'e girer — jail'den çıkana kadar ne sizin ne de kendisi için hiçbir kazanç elde etmez. Bir downtime jail'i sabit **600 saniye (10 dakika)** sürer ve doğrulayıcıya stake'inin **%1**'ine mal olur; double-signing ise ayrı ve daha ciddi bir ihlaldir ve **%5** kesinti uygular. Bu rakamlar zincirin canlı, güncel parametreleridir — başka bir yerde gördüğünüz daha eski bir rakamı geçersiz sayın.
 - **Oy gücü** — stake'i birden fazla doğrulayıcıya yaymak ademi merkeziyetçiliği destekler. Delegate panelinde doğrulayıcılar tam da bu nedenle en küçükten en büyüğe sıralanır.
 
 ## Delegasyon yap, yeniden delegasyon yap, delegasyonu geri çek ve ödül talep et

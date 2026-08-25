@@ -24,7 +24,7 @@ Ihre **erste** Überweisung registriert außerdem automatisch Ihren Post-Quantum
 2. QoreX schlägt das Handle nach und zeigt Ihnen die **aufgelöste `qor1…`-Adresse**, bevor Sie irgendetwas bestätigen.
 3. Überprüfen Sie die aufgelöste Adresse, geben Sie den Betrag ein und bestätigen Sie wie gewohnt.
 
-QoreX akzeptiert eine Auflösung nur, wenn sie **beide** durchgeführten Prüfungen besteht: eine Registry-Attestierung, die gegen einen in der App fest hinterlegten Trust-Key verifiziert wird, und die eigene Signatur des Handle-Besitzers über den Anspruch. Scheitert eine der beiden Prüfungen, wirft QoreX einen Fehler, statt auf eine unverifizierte Adresse zurückzufallen. Beim ersten Mal, dass Sie an ein bestimmtes Handle zahlen, merkt sich QoreX die aufgelöste Adresse; sollte sich die Adresse dieses Handles jemals ändern, stoppt QoreX vor dem Signieren und zeigt Ihnen die alte und die neue Adresse nebeneinander, damit Sie entscheiden können, ob Sie fortfahren möchten. Die Browser-Erweiterung löst Handles auf und bezahlt sie auf dieselbe Weise — siehe [Senden an ein @Handle](/qorex/browser-extension#handle-send).
+QoreX akzeptiert eine Auflösung nur, wenn sie **beide** durchgeführten Prüfungen besteht: eine Registry-Attestierung, die gegen einen in der App fest hinterlegten Trust-Key verifiziert wird, und die eigene Signatur des Handle-Besitzers über den Anspruch. Scheitert eine der beiden Prüfungen, wirft QoreX einen Fehler, statt auf eine unverifizierte Adresse zurückzufallen. Beim ersten Mal, dass Sie an ein bestimmtes Handle zahlen, merkt sich QoreX die aufgelöste Adresse; sollte sich die Adresse dieses Handles jemals ändern, stoppt QoreX vor dem Signieren und zeigt Ihnen die alte und die neue Adresse nebeneinander, damit Sie entscheiden können, ob Sie fortfahren möchten. Dieses Gedächtnis gilt **pro Gerät** — zahlen Sie erstmals an dasselbe Handle von einem anderen Telefon oder einer frischen Installation aus, erscheint es auch dort als neu, was erwartet ist und kein Fehler. Die Browser-Erweiterung löst Handles auf und bezahlt sie auf dieselbe Weise (ihr Gedächtnis gilt **pro Browser**, sodass ein anderer Browser oder Computer es als neu ansieht) — siehe [Senden an ein @Handle](/qorex/browser-extension#handle-send).
 
 ### Vesting-(gesperrtes) QOR senden {#vesting}
 
@@ -33,6 +33,10 @@ Wenn ein Teil Ihres Guthabens noch **vestet** — zum Beispiel eine noch nicht f
 ## QOR empfangen
 
 Tippen Sie auf **Empfangen**, um Ihre `qor1…`-Adresse als QR-Code (mit eingebettetem QoreChain-Icon) und eine Kopieren-Schaltfläche anzuzeigen. Teilen Sie eines von beidem mit dem Absender.
+
+:::note Erstmaliger Empfang eines Assets eines externen Netzwerks
+Der Bildschirm **Empfangen** zeigt nur ein Netzwerk, auf dem Sie bereits ein Guthaben halten — wenn Sie also noch nie ETH gehalten haben, gibt es dort noch keine ETH-Option zur Auswahl. Ihre EVM-Adresse existiert bereits ab dem Moment, in dem Ihre Wallet existiert (sie wird aus derselben Recovery-Phrase abgeleitet) und ist über Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet und Avalanche hinweg dieselbe Adresse — finden und kopieren Sie sie stattdessen unter **Einstellungen → Adressen** und teilen Sie diese. Sobald eine Überweisung eingeht, erscheint dieses Netzwerk fortan unter Empfangen.
+:::
 
 ## Eine Zahlung anfordern
 

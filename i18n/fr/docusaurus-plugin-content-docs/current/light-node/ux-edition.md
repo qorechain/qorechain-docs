@@ -13,7 +13,7 @@ L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et 
 
 ## Installation
 
-Les binaires précompilés s'exécutent nativement sur **cinq plateformes sans aucune dépendance native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — chacun pesant environ 16 Mo.
+Les binaires précompilés s'exécutent nativement sur **six plateformes sans aucune dépendance native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — chacun pesant environ 16 Mo. Vérifiez la somme de contrôle du téléchargement par rapport au manifeste avant de l'exécuter — voir [Édition SX](/light-node/sx-edition#install) pour la marche à suivre.
 
 ### Compiler depuis les sources
 

@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## Slashing
+
+Bu yazının hazırlandığı sırada geçerli olan ve canlı olarak sorgulanabilen temel ihlal cezaları:
+
+```bash
+qorechaind query slashing params
+```
+
+| Parametre | Değer |
+| --- | --- |
+| İmzalanan blok penceresi | 10.000 blok (yaklaşık 6 saatte birikir) |
+| Pencere başına gereken minimum imza | %95 (bu değerin altı hapse atılır) |
+| Çevrimdışı kalma hapis süresi | 600 saniye (10 dakika) |
+| Çevrimdışı kalma slashing oranı | Stake'in %1'i |
+| Çifte imza slashing oranı | Stake'in %5'i |
+
+Hapse atılma, sabit cezalı 10 dakikalık bir zaman aşımıdır — aşağıdaki kademeli modelden ayrıdır; o model, tekrarlayan ihlaller üzerine daha uzun bir zaman ufkunda ek, artan sonuçlar katmanlar.
+
 ## Kademeli Slashing
 
 QoreChain, tekrarlayan ihlallerde cezaları kademeli olarak artıran, ancak doğrulayıcıların zamanla toparlanmasına da izin veren bir **kademeli slashing** modeli kullanır:
@@ -145,12 +163,12 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC Anahtar Kaydı {#pqc-key-registration}
 
-Doğrulayıcılar, isteğe bağlı olarak ML-DSA-87 algoritmasını kullanan bir **post-kuantum kriptografik (PQC) açık anahtarı** kaydedebilir. Bu, doğrulayıcı kimliği için kuantuma dayanıklı güvenlik sağlar ve hibrit imzalama için kullanılabilir.
+**Post-kuantum kriptografik (PQC) açık anahtarınızı** — ML-DSA-87 — bir doğrulayıcı lisansına başvurmadan veya `create-validator` komutunu çalıştırmadan **önce** kaydedin. Bu **isteğe bağlı değildir ve otomatik gerçekleşmez**: zincir, her cosmos-yolu işleminde hibrit bir PQC imzası zorunlu kılar, `MsgCreateValidator` muaf tutulan mesaj türlerinden biri değildir ve — ilk işleminde anahtarını otomatik olarak kaydeden normal bir hesabın aksine — bir doğrulayıcının bu komutu önceden, kendi düğümünde, bizzat çalıştırması gerekir.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
@@ -159,15 +177,15 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
 | `<pubkey-hex>` | Hex kodlamasında 2592 bayt uzunluğunda ML-DSA-87 açık anahtarı |
 | `hybrid`       | Kayıt modu (hybrid = hem klasik hem PQC)                  |
 
+:::caution `--gas` değerini açıkça belirtin
+ML-DSA-87 açık anahtarı 2.592 bayt uzunluğundadır ve bunu zincir üzerine yazmak varsayılan 200.000 gas limitini aşar. `--gas 600000` (veya daha yüksek) belirtilmeden işlem, belirsiz bir `out of gas in location: WritePerByte` hatasıyla başarısız olur.
+:::
+
 Kaydı doğrulayın:
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**Öneri:** PQC anahtar kaydı isteğe bağlıdır ancak ana ağda çalışan doğrulayıcılar için şiddetle önerilir. Kuantum bilişim tehditlerine karşı ileriye dönük bir savunma sağlar.
-:::
 
 ---
 

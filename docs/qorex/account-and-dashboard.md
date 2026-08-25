@@ -24,7 +24,7 @@ The passkey offer appears only after **email-code** sign-in. When you sign in wi
 
 ## Several accounts from one phrase {#accounts}
 
-Settings → **Your accounts** lets you create, switch, and rename up to **20 accounts**, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own distinct `qor1…` address with its own balance, and — because a handle binds to an **address**, not to the wallet as a whole — its own optional @handle. Whichever account is active is the one Send, Receive, Staking, and the dApp browser use. The browser extension does not have this feature; it manages exactly one account.
+Settings → **Your accounts** (also findable as **Addresses**) lets you create, switch, and rename up to **20 accounts**, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own distinct `qor1…` address with its own balance, and — because a handle binds to an **address**, not to the wallet as a whole — its own optional @handle. Whichever account is active is the one Send, Receive, Staking, and the dApp browser use. Since **0.2.2**, the browser extension has this feature too — see [Several accounts from one phrase](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

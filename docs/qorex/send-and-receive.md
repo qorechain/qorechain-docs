@@ -24,7 +24,7 @@ Your **first** transfer also registers your post-quantum key on-chain automatica
 2. QoreX looks the handle up and shows you the **resolved `qor1…` address** before you confirm anything.
 3. Check the resolved address, enter the amount, and confirm as usual.
 
-QoreX only accepts a resolution that passes **both** checks it performs: a registry attestation verified against a trust key pinned in the app, and the handle owner's own signature over the claim. Failing either check throws an error rather than falling back to an unverified address. The first time you pay a given handle, QoreX remembers the address it resolved to; if that handle's address ever changes, QoreX stops before signing and shows you the old and new address side by side so you can decide whether to continue. The browser extension resolves and pays handles the same way — see [Send to an @handle](/qorex/browser-extension#handle-send).
+QoreX only accepts a resolution that passes **both** checks it performs: a registry attestation verified against a trust key pinned in the app, and the handle owner's own signature over the claim. Failing either check throws an error rather than falling back to an unverified address. The first time you pay a given handle, QoreX remembers the address it resolved to; if that handle's address ever changes, QoreX stops before signing and shows you the old and new address side by side so you can decide whether to continue. This memory is **per device** — paying the same handle for the first time from a different phone or a fresh install shows it as new there too, which is expected, not an error. The browser extension resolves and pays handles the same way (its memory is **per browser**, so a different browser or computer sees it as new) — see [Send to an @handle](/qorex/browser-extension#handle-send).
 
 ### Sending vesting (locked) QOR {#vesting}
 
@@ -33,6 +33,10 @@ If part of your balance is still **vesting** — for example an unreleased TGE a
 ## Receive QOR
 
 Tap **Receive** to show your `qor1…` address as a QR code (with the QoreChain icon embedded) and a copy button. Share either with the sender.
+
+:::note Receiving an external-network asset for the first time
+The **Receive** screen only shows a network you already hold a balance on — so if you've never held any ETH, there's no ETH option to pick there yet. Your EVM address exists from the moment your wallet does (it's derived from the same recovery phrase) and is the same address across Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, and Avalanche — find and copy it from **Settings → Addresses** and share that instead. Once a transfer lands, that network appears in Receive going forward.
+:::
 
 ## Request a payment
 

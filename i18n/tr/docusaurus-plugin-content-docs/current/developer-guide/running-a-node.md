@@ -27,7 +27,9 @@ Manifestonun alanları şunları içerir: `binary` (url + sha256), `genesis` (ur
 :::
 
 :::caution Yeni katılan bir düğüm için v3.1.92 veya üzeri gerekir
-Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün **v3.1.92 veya üzeri** bir sürümde olması gerekir — daha eski sürümler (manifestonun `minCompatible` alanı henüz bunu yansıtacak şekilde güncellenmemiş olsa bile), artık düzeltilmiş bir gaz ölçümleme (gas-metering) hatası nedeniyle, yeniden oynatma sırasında işlem içeren ilk blokta duracaktır. Her zaman yukarıdaki manifestodan gelen güncel ikili dosyayı çalıştırın.
+Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün **v3.1.92 veya üzeri** bir sürümde olması gerekir — daha eski sürümler (manifestonun `minCompatible` alanı henüz bunu yansıtacak şekilde güncellenmemiş olsa bile), artık düzeltilmiş bir gaz ölçümleme (gas-metering) hatası nedeniyle, yeniden oynatma sırasında işlem içeren ilk blokta duracaktır.
+
+**Manifestonun kendisi bu tabanın gerisinde kalabilir** — önce testnet'e, ardından bir dinlenme (soak) süresinin sonunda mainnet'e yükseltilir ve bu satırların yazıldığı sırada mainnet manifestosundaki `binary.url` alanı hâlâ v3.1.92 öncesi bir derlemeyi göstermektedir. `binary.url`'e güvenmeden önce manifestonun `"version"` alanını kontrol edin; v3.1.92'nin gerisindeyse, ikili dosyayı manifesto yerine [qorechain-core GitHub sürümlerinden](https://github.com/qorechain/qorechain-core/releases) alın (yayınlanan sağlama toplamını aynı şekilde kontrol ederek) ya da kaynaktan derleyin.
 :::
 
 ---
@@ -71,13 +73,19 @@ NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yo�
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. İmaj etiketini canlı zincir sürümüne sabitleyin (mainnet'te **v3.1.92**) ve zincir verisi için kalıcı bir volume bağlayın.
+Docker Compose ile yalnızca düğüm dağıtımı. Şu an çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok — kendi imajınızı depodaki `Dockerfile`'dan derleyip canlı zincir sürümüne (mainnet'te **v3.1.92**) etiketleyin, ardından zincir verisi için kalıcı bir volume bağlayın:
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -258,7 +266,7 @@ pruning = "default"
 ```
 
 | `pruning`   | Davranış                                 | Kullanım senaryosu                |
-| ----------- | ---------------------------------------- | --------------------------------- |
+| ----------- | ----------------------------------------- | --------------------------------- |
 | `default`   | Güncel durumu tutar, gerisini budar      | RPC düğümü, bakiye/durum sorguları |
 | `nothing`   | Tüm geçmiş durumu tutar                  | Arşiv düğümü, tam geçmiş          |
 | `custom`    | Operatör tanımlı keep/interval değerleri | Özelleştirilmiş saklama           |

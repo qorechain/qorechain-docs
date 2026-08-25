@@ -9,15 +9,22 @@ sidebar_position: 2
 
 La edición **SX (Server eXperience)** es el nodo ligero sin interfaz: un daemon más una CLI de gestión completa, diseñada para servidores y automatización. El binario es `lightnode-sx`. Esta es la línea **v3.1.2** del nodo ligero (su propia versión, separada de la versión de la cadena).
 
-## Instalación
+## Instalación {#install}
 
-Los binarios precompilados son la vía más sencilla — el cliente de nodo ligero se ejecuta de forma nativa en **cinco plataformas sin dependencias nativas**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64). Cada binario pesa aproximadamente 16 MB — descárgalo y ejecútalo, sin bibliotecas separadas que instalar.
+Los binarios precompilados son la vía más sencilla — el cliente de nodo ligero se ejecuta de forma nativa en **seis plataformas sin dependencias nativas**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64) — 12 binarios en total entre las ediciones SX y UX. Cada binario pesa aproximadamente 16 MB — descárgalo y ejecútalo, sin bibliotecas separadas que instalar.
+
+**Verifica la suma de comprobación antes de ejecutarlo.** El manifiesto de la versión en `https://download.qore.host/<net>/lightnode/latest.json` incluye un `sha256` para cada binario, además de un archivo `SHA256SUMS` independiente para toda la versión. Recalcula el hash de lo que descargaste y compáralo con el valor del manifiesto — esto no es una nota al pie, es la diferencia entre ejecutar el binario que realmente se compiló y ejecutar lo que sea que haya terminado en esa URL:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# o: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 También puedes compilar el binario desde el código fuente o ejecutarlo con Docker.
 
 ### Compilar desde el código fuente
 
-El nodo ligero requiere **Go 1.26.1**. Su criptografía poscuántica es una implementación en Go puro (sin CGO, sin biblioteca nativa), por lo que la compilación cruzada para cualquiera de las cinco plataformas soportadas funciona igual que con cualquier otro binario de Go:
+El nodo ligero requiere **Go 1.26.1**. Su criptografía poscuántica es una implementación en Go puro (sin CGO, sin biblioteca nativa), por lo que la compilación cruzada para cualquiera de las seis plataformas soportadas funciona igual que con cualquier otro binario de Go:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

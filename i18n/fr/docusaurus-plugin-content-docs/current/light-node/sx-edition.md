@@ -9,15 +9,22 @@ sidebar_position: 2
 
 L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Il s'agit de la ligne **v3.1.2** du light node (sa propre version, distincte de la version de la chaîne).
 
-## Installation
+## Installation {#install}
 
-Les binaires précompilés constituent la voie la plus simple — le client light node s'exécute nativement sur **cinq plateformes sans aucune dépendance native** : Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64). Chaque binaire pèse environ 16 Mo — il suffit de le télécharger et de l'exécuter, sans bibliothèques séparées à installer.
+Les binaires précompilés constituent la voie la plus simple — le client light node s'exécute nativement sur **six plateformes sans aucune dépendance native** : Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — soit 12 binaires au total pour les éditions SX et UX. Chaque binaire pèse environ 16 Mo — il suffit de le télécharger et de l'exécuter, sans bibliothèques séparées à installer.
+
+**Vérifiez la somme de contrôle avant de l'exécuter.** Le manifeste de version à `https://download.qore.host/<net>/lightnode/latest.json` contient un `sha256` pour chaque binaire, ainsi qu'un fichier `SHA256SUMS` distinct couvrant l'ensemble de la version. Recalculez le hash de ce que vous avez téléchargé et comparez-le à la valeur du manifeste — ce n'est pas un détail secondaire, c'est ce qui distingue l'exécution du binaire réellement compilé de l'exécution de tout ce qui se trouvait à cette URL :
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# ou : certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 Vous pouvez aussi compiler le binaire depuis les sources ou l'exécuter avec Docker.
 
 ### Compiler depuis les sources
 
-Le light node nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une implémentation pure Go (pas de CGO, pas de bibliothèque native), donc la compilation croisée pour l'une des cinq plateformes prises en charge fonctionne exactement comme pour tout autre binaire Go :
+Le light node nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une implémentation pure Go (pas de CGO, pas de bibliothèque native), donc la compilation croisée pour l'une des six plateformes prises en charge fonctionne exactement comme pour tout autre binaire Go :
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

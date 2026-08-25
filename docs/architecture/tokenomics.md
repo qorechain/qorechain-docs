@@ -39,6 +39,10 @@ This is a **fixed-supply model with a finite emission budget**, not an inflation
 
 ### Staking Reward Schedule {#staking-reward-schedule}
 
+:::note A governance-approved change to this schedule is pending
+A passed governance proposal changes how emission is released within this budget, taking effect at a future block height rather than immediately. The figures below are the pre-change schedule — check [Version History](/appendix/version-history) for whether the change has taken effect before relying on a specific number, and treat any APY or per-day emission figure you see quoted elsewhere right now as provisional until it does.
+:::
+
 Staking rewards are distributed from the 590,000,000 QOR emission budget on a declining schedule:
 
 | Period      | Target APY              | Emission Budget                  |

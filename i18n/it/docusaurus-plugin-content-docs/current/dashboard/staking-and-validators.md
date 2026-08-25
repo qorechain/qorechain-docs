@@ -33,7 +33,7 @@ Questa pagina serve solo a confrontare i validatori. Per delegare effettivamente
 Nello scegliere un validatore a cui delegare, considera:
 
 - **Commissione** — un tasso più basso lascia più ricompense a te, ma gli operatori sostenibili hanno bisogno di una quota ragionevole.
-- **Uptime e stato** — preferisci validatori attivi con un uptime solido; un validatore jailed non sta guadagnando nulla. Un validatore finisce in jail quando manca la firma su più del 5% dei blocchi in una finestra di 10.000 blocchi (circa sei ore) — non guadagna nulla, né per te né per sé stesso, finché non risolve il problema ed esce dallo stato di jail (unjail).
+- **Uptime e stato** — preferisci validatori attivi con un uptime solido; un validatore jailed non sta guadagnando nulla. Un validatore finisce in jail quando manca la firma su più del 5% dei blocchi in una finestra di 10.000 blocchi (circa sei ore per accumularsi) — non guadagna nulla, né per te né per sé stesso, finché non esce dallo stato di jail (unjail). Un jailing per downtime dura un tempo fisso di **600 secondi (10 minuti)** e costa al validatore l'**1% del suo stake**; il double-signing è un'infrazione separata, più grave, che comporta uno slashing del **5%**. Questi valori sono i parametri della chain attualmente in vigore — considera superato qualsiasi valore diverso trovato altrove.
 - **Potere di voto** — distribuire lo stake tra più validatori favorisce la decentralizzazione. Nel pannello Delegate, i validatori sono elencati partendo dal più piccolo proprio per questo motivo.
 
 ## Delegare, ridelegare, revocare la delega e riscuotere le ricompense

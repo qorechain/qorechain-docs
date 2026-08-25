@@ -15,7 +15,19 @@ QoreChain's fee distribution reserves a fixed **3% share for light nodes** that 
 
 To be eligible for this share, a node needs three things, checked on-chain rather than self-declared: an active `lightnode_operator` license, a minimum of **1,000 QOR delegated** — counted as your total across all the validators you delegate to, not per validator — and a **1 QOR** on-chain registration fee. Participation is also capped network-wide at **10,000 light nodes**. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration and licensing work, including the current status of reward-program enrollment.
 
-Once registered and delegated, staying eligible is a matter of staying live. A node needs at least **80% uptime**, and must keep submitting heartbeat liveness proofs on a roughly **1,000-block (~39 minute) interval**, with a **~100-block (~4 minute) grace period** after a missed heartbeat before it's marked inactive. A node marked inactive stops earning the share until it proves liveness again.
+Once registered and delegated, staying eligible is a matter of staying live. A node needs at least **80% uptime**, and must keep submitting heartbeat liveness proofs on a roughly **1,000-block (~39 minute) interval**.
+
+**The submission window is narrow on both ends, not just the late side.** A heartbeat is only accepted between roughly **your last accepted heartbeat + 1,000 blocks and +1,100 blocks** (about 4 minutes, once every ~39 minutes) — submit too early and it's rejected the same as submitting too late.
+
+**Missing the window costs uptime, not your registration.** A node that misses is marked inactive and stops earning the share, but the very next successful heartbeat reactivates it — there's no re-registration to do. Note too that the daemon's own internal counter toward the next heartbeat keeps advancing even if a submission attempt fails, and resets on restart, so a node can end up marked inactive through no fault of the operator; check `status` rather than assuming an inactive mark means something is configured wrong.
+
+:::note What a heartbeat actually proves
+A successful heartbeat proves the operator's key signed on time — it does not prove a node is continuously running the full software. Treat it as a liveness signature, not as "verified as an active node."
+:::
+
+:::note `last_heartbeat` is a block height, not a timestamp
+If you query a node's on-chain record directly, `last_heartbeat` is a block height, and a value of `0` means the node has never yet sent one — the chain reports its `registered_at` height as a substitute in that case. Reading it as a naive elapsed-time calculation makes a freshly registered node look like it's millions of blocks overdue.
+:::
 
 *Reward eligibility: hold an active on-chain license and the minimum delegated stake, register, then keep proving liveness via heartbeats to stay above the uptime and heartbeat-interval thresholds that keep the share flowing.*
 

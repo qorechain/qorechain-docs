@@ -7,24 +7,24 @@ sidebar_position: 4
 
 # JSON-RPC — Solana 互換
 
-QoreChain は、SVM（Solana Virtual Machine）ランタイムを通じて Solana 互換の JSON-RPC インターフェースを提供しており、既存の Solana ツールや SDK が QoreChain とネイティブに連携できます。
+QoreChain は、SVM(Solana Virtual Machine)ランタイムを通じて Solana 互換の JSON-RPC インターフェースを提供しており、既存の Solana ツールや SDK が QoreChain とネイティブに連携できます。
 
 :::caution SVM トランザクション送信は現在無効です
-チェーンバージョン v3.1.89（8月22日）以降、インシデントを受けて、SVM 実行レーンは**トランザクション送信についてネットワーク全体で無効化**されています — トランザクションを送信すると `code 11, "SVM module is disabled"` が返されます。これはパブリックな読み取り専用エンドポイントに限らず、ネットワーク全体に適用されます。下の表にある読み取り系メソッド（`getBalance`、`getAccountInfo` など）は引き続き応答する場合がありますが、このレーンが再開されるまでは SVM トランザクションを送信するライブ連携を試みないでください。
+チェーンバージョン v3.1.89(8月22日)以降、インシデントを受けて、SVM 実行レーンは**トランザクション送信についてネットワーク全体で無効化**されています — トランザクションを送信すると `code 11, "SVM module is disabled"` が返されます。これはパブリックな読み取り専用エンドポイントに限らず、ネットワーク全体に適用されます。下の表にある読み取り系メソッド(`getBalance`、`getAccountInfo` など)は引き続き応答する場合がありますが、このレーンが再開されるまでは SVM トランザクションを送信するライブ連携を試みないでください — これはコンパイル時の無効化であり、ランタイムパラメータではないため、ガバナンス投票によって再度有効にすることはできません。外部監査によって問題がないと確認されるまで無効のままとなる見込みです。
 :::
 
 ## 接続
 
 | トランスポート | アドレス |
 | --------- | ------------------------- |
-| HTTP（自前ノード） | `http://127.0.0.1:8899`   |
-| HTTPS（パブリック、メインネット、読み取り専用） | `https://svm.qore.host` |
-| HTTPS（パブリック、テストネット、読み取り専用） | `https://svm-testnet.qore.host` |
+| HTTP(自前ノード) | `http://127.0.0.1:8899`   |
+| HTTPS(パブリック、メインネット、読み取り専用) | `https://svm.qore.host` |
+| HTTPS(パブリック、テストネット、読み取り専用) | `https://svm-testnet.qore.host` |
 
-JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デフォルトで有効**になっており、`127.0.0.1:8899` でリッスンします。設定は `app.toml` の `[svm-rpc]` セクション（`enable` + `address`）で行います。起動したばかりのノードはすでにこのインターフェースを提供しており、追加のプロセスは不要です。パブリックエンドポイントは**読み取り専用**です（トランザクションの送信はエッジで無効化されています）。
+JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デフォルトで有効**になっており、`127.0.0.1:8899` でリッスンします。設定は `app.toml` の `[svm-rpc]` セクション(`enable` + `address`)で行います。起動したばかりのノードはすでにこのインターフェースを提供しており、追加のプロセスは不要です。パブリックエンドポイントは**読み取り専用**です(トランザクションの送信はエッジで無効化されています)。
 
 :::note
-チェーンバージョン **v3.1.82** 以降、SVM インターフェースはアカウントの**ネイティブ QOR 残高**（Cosmos および EVM インターフェースで見えるものと同一の統合資金）を **lamports** 建て（小数点以下 9 桁、**1 uqor = 1,000 lamports**）で提供します。詳細は [SVM インターフェース上のネイティブ QOR](/developer-guide/svm-development#native-qor) を参照してください。
+チェーンバージョン **v3.1.82** 以降、SVM インターフェースはアカウントの**ネイティブ QOR 残高**(Cosmos および EVM インターフェースで見えるものと同一の統合資金)を **lamports** 建て(小数点以下 9 桁、**1 uqor = 1,000 lamports**)で提供します。詳細は [SVM インターフェース上のネイティブ QOR](/developer-guide/svm-development#native-qor) を参照してください。
 :::
 
 ---
@@ -33,13 +33,13 @@ JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デ
 
 | メソッド                              | パラメータ               | 説明                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `getAccountInfo`                    | `pubkey`（base58 文字列） | アカウントのデータ、所有者、lamports、実行可能フラグを返します     |
-| `getBalance`                        | `pubkey`（base58 文字列） | 指定した公開鍵のネイティブ QOR 残高を lamports 単位で返します |
-| `getSignaturesForAddress`           | `address`（base58 文字列） | 指定アドレスが関与するトランザクション署名を返します（入金検知用） |
+| `getAccountInfo`                    | `pubkey`(base58 文字列) | アカウントのデータ、所有者、lamports、実行可能フラグを返します     |
+| `getBalance`                        | `pubkey`(base58 文字列) | 指定した公開鍵のネイティブ QOR 残高を lamports 単位で返します |
+| `getSignaturesForAddress`           | `address`(base58 文字列) | 指定アドレスが関与するトランザクション署名を返します(入金検知用) |
 | `getSlot`                           | なし                     | 現在のスロット番号を返します                                |
-| `getMinimumBalanceForRentExemption` | `dataLength`（整数）   | 指定したデータサイズに対するレント免除の最小残高を返します |
+| `getMinimumBalanceForRentExemption` | `dataLength`(整数)   | 指定したデータサイズに対するレント免除の最小残高を返します |
 | `getVersion`                        | なし                     | ノードのソフトウェアバージョンを返します                              |
-| `getHealth`                         | なし                     | ノードのヘルス状態を返します（正常な場合は `"ok"`）                 |
+| `getHealth`                         | なし                     | ノードのヘルス状態を返します(正常な場合は `"ok"`)                 |
 
 ---
 
@@ -200,7 +200,7 @@ if (accountInfo) {
 
 ## 注意事項
 
-- **アドレス形式**: SVM アカウントは base58 エンコードされた公開鍵（標準的な Solana 形式）を使用し、ネイティブの Cosmos SDK モジュールで使われる `qor1` Bech32 プレフィックスは使用しません。
-- **クロス VM ブリッジ**: EVM ランタイムと SVM ランタイムの間で資産を移動するには、Cross-VM モジュール（`x/crossvm`）を使用します。`crossvm call` の構文については[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
-- **プログラムのデプロイ**: BPF プログラムは CLI（`qorechaind tx svm deploy-program`）またはプログラムから SVM ランタイムを通じてデプロイできます。
+- **アドレス形式**: SVM アカウントは base58 エンコードされた公開鍵(標準的な Solana 形式)を使用し、ネイティブの Cosmos SDK モジュールで使われる `qor1` Bech32 プレフィックスは使用しません。
+- **クロス VM ブリッジ**: EVM ランタイムと SVM ランタイムの間で資産を移動するには、Cross-VM モジュール(`x/crossvm`)を使用します。`crossvm call` の構文については[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
+- **プログラムのデプロイ**: BPF プログラムは CLI(`qorechaind tx svm deploy-program`)またはプログラムから SVM ランタイムを通じてデプロイできます。
 - **コンピュートバジェット**: SVM ランタイムはデフォルトでトランザクションあたり 1,400,000 コンピュートユニットのコンピュートバジェットを適用します。この値はモジュールパラメータで設定可能です。

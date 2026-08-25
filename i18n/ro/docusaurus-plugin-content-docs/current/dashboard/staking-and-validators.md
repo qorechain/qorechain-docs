@@ -33,7 +33,7 @@ Această pagină servește doar pentru compararea validatorilor. Pentru a delega
 Când alegi un validator la care să delegi, ia în considerare:
 
 - **Comisionul** — o rată mai mică lasă mai multe recompense pentru tine, dar operatorii sustenabili au nevoie de o cotă rezonabilă.
-- **Uptime și status** — preferă validatorii activi cu uptime solid; un validator întemnițat (jailed) nu produce recompense. Un validator este întemnițat atunci când ratează semnarea a peste 5% din blocuri într-o fereastră de 10.000 de blocuri (aproximativ șase ore) — nu câștigă nimic, nici pentru tine, nici pentru el, până când rezolvă problema și iese din întemnițare.
+- **Uptime și status** — preferă validatorii activi cu uptime solid; un validator întemnițat (jailed) nu produce recompense. Un validator este întemnițat atunci când ratează semnarea a peste 5% din blocuri într-o fereastră de 10.000 de blocuri (aproximativ șase ore pentru a se acumula) — nu câștigă nimic, nici pentru tine, nici pentru el, până când iese din întemnițare. O întemnițare pentru downtime durează un interval fix de **600 de secunde (10 minute)** și îl costă pe validator **1% din stake-ul său**; dublarea semnăturii (double-signing) este o abatere separată, mai gravă, care taie **5%**. Aceste cifre sunt parametrii live, actuali ai lanțului — tratează orice cifră mai veche pe care o vezi altundeva ca fiind depășită.
 - **Puterea de vot** — distribuirea stake-ului între mai mulți validatori susține descentralizarea. În panoul Delegate, validatorii sunt listați de la cel mai mic la cel mai mare, exact din acest motiv.
 
 ## Delegă, redelegă, anulează delegarea și revendică recompense

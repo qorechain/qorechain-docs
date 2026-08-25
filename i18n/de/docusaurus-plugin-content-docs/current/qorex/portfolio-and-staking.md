@@ -27,6 +27,14 @@ Das Staking von QOR trägt zur Absicherung von QoreChain bei und bringt Ihnen Be
 3. Geben Sie einen Betrag ein und **delegieren** Sie mit biometrischer Bestätigung.
 4. Beanspruchen Sie Belohnungen vom selben Bildschirm aus, sobald sie anfallen.
 
+:::note Heute keine Bindungsfrist — gewartet wird nur beim Ausstieg
+Es gibt keinen festen Zeitraum, den Sie wählen müssten, denn im Moment existiert keiner: Eine Delegation bleibt aktiv, wobei Belohnungen ab dem nächsten Block fließen, bis Sie das Undelegieren beantragen — es gibt kein Ablaufdatum zum Verlängern und keine Mindest-Stakingdauer. Die einzige Wartezeit gilt beim Ausstieg: Sobald Sie undelegieren, verbleibt dieses QOR für eine 21-tägige Unbonding-Periode, in der es weder Erträge bringt noch bewegt werden kann, bevor es wieder in Ihrem verfügbaren Guthaben erscheint. Wenn Sie eine Delegation stattdessen zu einem anderen Validator verschieben (redelegieren), entfällt diese Wartezeit vollständig. Dies beschreibt das aktuelle Verhalten der Chain, keine dauerhafte Garantie — siehe [Gibt es eine Bindungsfrist?](/user-guide/staking-and-delegation#lock-in-period) für weitere Informationen.
+:::
+
+:::note Dieser Bildschirm hat noch keine eigene Undelegieren-Schaltfläche
+Dieser Stake-Bildschirm deckt nur Delegieren und Beanspruchen ab. Um direkt von einem QoreX-Bildschirm aus zu undelegieren, verwenden Sie stattdessen den [Stake-Bildschirm der Browser-Erweiterung](/qorex/browser-extension#stake) — oder undelegieren Sie über das [Dashboard](/dashboard/staking-and-validators#delegate), das die Anfrage an die verbundene QoreX-Instanz sendet, App eingeschlossen, damit Sie sie dort bestätigen.
+:::
+
 ### Earn
 
 Die **Earn**-Ansicht fasst Ihre aktiven Positionen und Ihre Rendite an einem Ort zusammen.

@@ -39,6 +39,10 @@ Dies ist ein **Modell mit fixem Angebot und einem endlichen Emissionsbudget**, k
 
 ### Staking-Belohnungszeitplan {#staking-reward-schedule}
 
+:::note Eine per Governance genehmigte Änderung dieses Zeitplans steht noch aus
+Ein angenommener Governance-Vorschlag ändert, wie die Emission innerhalb dieses Budgets freigegeben wird; dies tritt zu einer zukünftigen Blockhöhe in Kraft, nicht sofort. Die folgenden Zahlen sind der Zeitplan vor der Änderung — prüfen Sie in der [Versionshistorie](/appendix/version-history), ob die Änderung bereits in Kraft getreten ist, bevor Sie sich auf eine bestimmte Zahl verlassen, und behandeln Sie jede andernorts derzeit genannte APY- oder Tagesemissionszahl als vorläufig, bis dies der Fall ist.
+:::
+
 Staking-Belohnungen werden aus dem Emissionsbudget von 590.000.000 QOR nach einem abnehmenden Zeitplan verteilt:
 
 | Zeitraum    | Ziel-APY               | Emissionsbudget             |

@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## 슬래싱
+
+기본 위반 처벌 기준이며, 이 문서 작성 시점 기준으로 실시간 조회가 가능합니다.
+
+```bash
+qorechaind query slashing params
+```
+
+| 매개변수 | 값 |
+| --- | --- |
+| 서명 확인 윈도우 | 10,000블록 (누적까지 약 6시간) |
+| 윈도우당 최소 서명 비율 | 95% (미달 시 감금) |
+| 다운타임 감금 시간 | 600초 (10분) |
+| 다운타임 슬래싱 비율 | 스테이크의 1% |
+| 이중 서명 슬래싱 비율 | 스테이크의 5% |
+
+감금은 고정된 10분의 타임아웃과 고정된 처벌로 이루어지며, 아래의 점진적 모델과는 별개입니다. 점진적 모델은 더 긴 시간대에 걸쳐 반복 위반에 대해 추가로 확대되는 처벌을 누적 적용합니다.
+
 ## 점진적 슬래싱
 
 QoreChain은 반복 위반자에 대한 처벌을 점진적으로 강화하면서도 시간이 지나면 밸리데이터가 회복할 수 있도록 하는 **점진적 슬래싱** 모델을 사용합니다.
@@ -145,12 +163,12 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC 키 등록 {#pqc-key-registration}
 
-밸리데이터는 선택적으로 ML-DSA-87 알고리즘을 사용하는 **양자내성 암호화(PQC) 공개 키**를 등록할 수 있습니다. 이는 밸리데이터 아이덴티티에 양자내성 보안을 제공하며, 하이브리드 서명에도 사용할 수 있습니다.
+밸리데이터 라이선스를 신청하거나 `create-validator`를 실행하기 **전에** **양자내성 암호화(PQC) 공개 키**(ML-DSA-87)를 등록하세요. 이는 **선택 사항이 아니며 자동으로 처리되지도 않습니다.** 체인은 모든 코스모스 경로 트랜잭션에 하이브리드 PQC 서명을 요구하며, `MsgCreateValidator`는 예외 대상 메시지 유형에 포함되지 않습니다. 그리고 첫 트랜잭션 시 키가 자동으로 등록되는 일반 계정과 달리, 밸리데이터는 자신의 노드에서 사전에 직접 이 명령을 실행해야 합니다.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
@@ -159,15 +177,15 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
 | `<pubkey-hex>` | 16진수로 인코딩된 2592바이트 ML-DSA-87 공개 키    |
 | `hybrid`       | 등록 모드 (hybrid = 기존 방식 + PQC 모두 사용)    |
 
+:::caution `--gas`를 명시적으로 지정하세요
+ML-DSA-87 공개 키는 2,592바이트이며, 이를 온체인에 기록하면 기본 가스 한도인 200,000을 초과합니다. `--gas 600000`(또는 그 이상)을 지정하지 않으면 트랜잭션이 `out of gas in location: WritePerByte`라는 알기 어려운 오류와 함께 실패합니다.
+:::
+
 등록을 확인하세요.
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**권장 사항:** PQC 키 등록은 선택 사항이지만, 메인넷에서 운영하는 밸리데이터에게는 강력히 권장됩니다. 양자 컴퓨팅 위협에 대비한 선제적인 방어 수단을 제공합니다.
-:::
 
 ---
 
@@ -295,3 +313,4 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 * [소스에서 빌드하기](/developer-guide/building-from-source) — `qorechaind` 바이너리 빌드하기
 * [EVM 개발](/developer-guide/evm-development) — QoreChain에 스마트 컨트랙트 배포하기
 * [계정 추상화](/developer-guide/account-abstraction) — 밸리데이터 운영을 위한 프로그래머블 계정
+

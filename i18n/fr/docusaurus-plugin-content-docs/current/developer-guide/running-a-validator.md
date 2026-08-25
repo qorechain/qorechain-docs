@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## Slashing
+
+Les pénalités de base pour infraction, consultables en direct et à jour au moment de la rédaction :
+
+```bash
+qorechaind query slashing params
+```
+
+| Paramètre | Valeur |
+| --- | --- |
+| Fenêtre de blocs signés | 10,000 blocs (environ 6 heures pour s'accumuler) |
+| Minimum signé par fenêtre | 95% (jail en dessous de ce seuil) |
+| Durée de jail pour indisponibilité | 600 secondes (10 minutes) |
+| Fraction de slashing pour indisponibilité | 1% de la mise |
+| Fraction de slashing pour double signature | 5% de la mise |
+
+Le jail est un délai fixe de 10 minutes avec une pénalité fixe — il est distinct du modèle progressif ci-dessous, qui superpose des conséquences supplémentaires et croissantes aux infractions répétées sur un horizon plus long.
+
 ## Slashing progressif
 
 QoreChain utilise un modèle de **slashing progressif** qui aggrave les pénalités pour les récidivistes tout en permettant aux validateurs de se rétablir avec le temps :
@@ -145,12 +163,12 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## Enregistrement de la clé PQC {#pqc-key-registration}
 
-Les validateurs peuvent facultativement enregistrer une **clé publique post-quantique (PQC)** en utilisant l'algorithme ML-DSA-87. Cela fournit une sécurité résistante au quantique pour l'identité du validateur et peut être utilisé pour la signature hybride.
+Enregistrez votre **clé publique post-quantique (PQC)** — ML-DSA-87 — **avant** de demander une licence de validateur ou d'exécuter `create-validator`. Ceci n'est **ni optionnel ni automatique** : la chaîne exige une signature PQC hybride sur chaque transaction de type cosmos, `MsgCreateValidator` ne fait pas partie des types de message exemptés, et — contrairement à un compte ordinaire, qui enregistre automatiquement sa clé lors de sa première transaction — un validateur doit exécuter lui-même cette commande, sur son propre nœud, au préalable.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
@@ -159,15 +177,15 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
 | `<pubkey-hex>` | Clé publique ML-DSA-87 de 2592 octets encodée en hexadécimal |
 | `hybrid`       | Mode d'enregistrement (hybrid = classique + PQC)  |
 
+:::caution Définir `--gas` explicitement
+La clé publique ML-DSA-87 fait 2 592 octets, et son écriture sur la chaîne dépasse la limite de gas par défaut de 200 000. Sans `--gas 600000` (ou plus), la transaction échoue avec une erreur opaque `out of gas in location: WritePerByte`.
+:::
+
 Vérifier l'enregistrement :
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**Recommandation :** L'enregistrement d'une clé PQC est facultatif mais fortement recommandé pour les validateurs opérant sur le mainnet. Il offre une défense anticipée contre les menaces liées à l'informatique quantique.
-:::
 
 ---
 

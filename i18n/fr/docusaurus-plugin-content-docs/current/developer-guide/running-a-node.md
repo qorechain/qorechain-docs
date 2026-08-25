@@ -27,7 +27,9 @@ Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha25
 :::
 
 :::caution v3.1.92 ou ultérieure requise pour un nœud rejoignant le réseau à neuf
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/un snapshot doit être en **v3.1.92 ou ultérieure** — les versions antérieures (même si le champ `minCompatible` du manifeste n'a pas encore été mis à jour pour refléter cela) s'arrêteront au premier bloc contenant une transaction pendant le rejeu, en raison d'un bug de mesure du gaz désormais corrigé. Exécutez toujours le binaire actuel indiqué dans le manifeste ci-dessus.
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/un snapshot doit être en **v3.1.92 ou ultérieure** — les versions antérieures (même si le champ `minCompatible` du manifeste n'a pas encore été mis à jour pour refléter cela) s'arrêteront au premier bloc contenant une transaction pendant le rejeu, en raison d'un bug de mesure du gaz désormais corrigé.
+
+**Le manifeste lui-même peut être en retard par rapport à ce plancher** — il est promu d'abord sur testnet, puis sur mainnet après une période de rodage, et au moment de la rédaction, le champ `binary.url` du manifeste mainnet pointe encore vers une build antérieure à v3.1.92. Vérifiez le champ `"version"` du manifeste avant de faire confiance à `binary.url` ; s'il est en retard par rapport à v3.1.92, récupérez le binaire depuis les [releases GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) à la place (en vérifiant sa somme de contrôle publiée de la même manière) ou construisez-le depuis les sources, plutôt que d'utiliser le manifeste.
 :::
 
 ---
@@ -71,13 +73,19 @@ Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EV
 
 ### Docker Compose
 
-Un déploiement nœud uniquement avec Docker Compose. Épinglez le tag d'image à la version de chaîne en direct (**v3.1.92** sur mainnet) et montez un volume persistant pour les données de la chaîne.
+Un déploiement nœud uniquement avec Docker Compose. Il n'existe pas encore d'image `qorechaind` publiée publiquement à récupérer — construisez-en une vous-même à partir du `Dockerfile` du dépôt et étiquetez-la avec la version de chaîne en direct (**v3.1.92** sur mainnet), puis montez un volume persistant pour les données de la chaîne :
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

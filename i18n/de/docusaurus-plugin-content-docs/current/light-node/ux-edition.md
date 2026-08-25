@@ -13,7 +13,7 @@ Die UX-Edition ist die richtige Wahl für den Desktop-Einsatz und für Betreiber
 
 ## Installation
 
-Vorgefertigte Binärdateien laufen nativ auf **fünf Plattformen ohne native Abhängigkeiten** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64) — jeweils etwa 16 MB groß.
+Vorgefertigte Binärdateien laufen nativ auf **sechs Plattformen ohne native Abhängigkeiten** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64) — jeweils etwa 16 MB groß. Prüfe die Prüfsumme des Downloads gegen das Manifest, bevor du ihn ausführst — siehe [SX Edition](/light-node/sx-edition#install) für die Vorgehensweise.
 
 ### Aus dem Quellcode bauen
 

@@ -152,7 +152,7 @@ Integrare Ethereum standard față de `https://evm.qore.host` (chain ID **9801**
 ## Calea C — SVM (compatibil Solana) {#path-c-svm}
 
 :::caution Lane-ul SVM este momentan dezactivat
-Lane-ul de execuție SVM este **momentan dezactivat la nivel de întreagă rețea pentru submisia de tranzacții**, începând cu versiunea chain v3.1.89 (22 august) — orice tranzacție trimisă către el returnează `code 11, "SVM module is disabled"`. **Nu** construiți un rail de depunere/retragere pe Calea C până când lane-ul se redeschide. Folosiți în schimb **Calea A (Cosmos)** sau **Calea B (EVM)**. Endpoint-urile de citire (de exemplu `getBalance`) pot continua să răspundă, dar nu construiți detectare de depuneri sau fluxuri de retragere pe SVM cât timp submisia de tranzacții este dezactivată.
+Lane-ul de execuție SVM este **momentan dezactivat la nivel de întreagă rețea pentru submisia de tranzacții**, începând cu versiunea chain v3.1.89 (22 august) — orice tranzacție trimisă către el returnează `code 11, "SVM module is disabled"`. **Nu** construiți un rail de depunere/retragere pe Calea C până când lane-ul se redeschide — aceasta este o dezactivare la compilare, nu un parametru runtime, deci nu poate fi reactivată printr-un vot de guvernanță; se așteaptă să rămână dezactivată până când un audit extern o validează. Folosiți în schimb **Calea A (Cosmos)** sau **Calea B (EVM)**. Endpoint-urile de citire (de exemplu `getBalance`) pot continua să răspundă, dar nu construiți detectare de depuneri sau fluxuri de retragere pe SVM cât timp submisia de tranzacții este dezactivată.
 :::
 
 Începând cu v3.1.82, interfața SVM servește **QOR nativ** (vezi [QOR nativ pe interfața SVM](/developer-guide/svm-development#native-qor)):

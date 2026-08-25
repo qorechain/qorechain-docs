@@ -24,7 +24,7 @@ Votre **premier** transfert enregistre aussi automatiquement votre clé post-qua
 2. QoreX recherche le handle et vous montre **l'adresse `qor1…` résolue** avant que vous confirmiez quoi que ce soit.
 3. Vérifiez l'adresse résolue, saisissez le montant, et confirmez comme d'habitude.
 
-QoreX n'accepte une résolution que si elle passe **les deux** vérifications qu'il effectue : une attestation du registre vérifiée par rapport à une clé de confiance épinglée dans l'application, et la propre signature du propriétaire du handle sur la revendication. Si l'une des deux vérifications échoue, une erreur est déclenchée plutôt qu'un repli vers une adresse non vérifiée. La première fois que vous payez un handle donné, QoreX mémorise l'adresse vers laquelle il a été résolu ; si l'adresse de ce handle venait un jour à changer, QoreX s'arrête avant de signer et vous montre l'ancienne et la nouvelle adresse côte à côte afin que vous puissiez décider de continuer ou non. L'extension de navigateur résout et paie les handles de la même façon — voir [Envoyer à un @handle](/qorex/browser-extension#handle-send).
+QoreX n'accepte une résolution que si elle passe **les deux** vérifications qu'il effectue : une attestation du registre vérifiée par rapport à une clé de confiance épinglée dans l'application, et la propre signature du propriétaire du handle sur la revendication. Si l'une des deux vérifications échoue, une erreur est déclenchée plutôt qu'un repli vers une adresse non vérifiée. La première fois que vous payez un handle donné, QoreX mémorise l'adresse vers laquelle il a été résolu ; si l'adresse de ce handle venait un jour à changer, QoreX s'arrête avant de signer et vous montre l'ancienne et la nouvelle adresse côte à côte afin que vous puissiez décider de continuer ou non. Cette mémoire est **propre à chaque appareil** — payer le même handle pour la première fois depuis un autre téléphone ou une installation neuve le fera apparaître comme nouveau là aussi, ce qui est normal et non une erreur. L'extension de navigateur résout et paie les handles de la même façon (sa mémoire est **propre à chaque navigateur**, donc un autre navigateur ou ordinateur le verra comme nouveau) — voir [Envoyer à un @handle](/qorex/browser-extension#handle-send).
 
 ### Envoi de QOR en vesting (verrouillés) {#vesting}
 
@@ -33,6 +33,10 @@ Si une partie de votre solde est encore en **vesting** — par exemple une alloc
 ## Recevoir des QOR
 
 Appuyez sur **Recevoir** pour afficher votre adresse `qor1…` sous forme de code QR (avec l'icône QoreChain intégrée) et un bouton de copie. Partagez l'un ou l'autre avec l'expéditeur.
+
+:::note Recevoir un actif d'un réseau externe pour la première fois
+L'écran **Recevoir** n'affiche que les réseaux sur lesquels vous détenez déjà un solde — donc si vous n'avez jamais détenu d'ETH, aucune option ETH n'y apparaît encore. Votre adresse EVM existe dès la création de votre portefeuille (elle est dérivée de la même phrase de récupération) et elle est identique sur Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet et Avalanche — trouvez-la et copiez-la depuis **Paramètres → Adresses** et partagez-la à la place. Une fois qu'un transfert arrive, ce réseau apparaît ensuite dans Recevoir.
+:::
 
 ## Demander un paiement
 

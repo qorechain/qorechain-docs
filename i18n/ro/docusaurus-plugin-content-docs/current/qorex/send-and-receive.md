@@ -24,7 +24,7 @@ Fila Acasă (Portofel) este punctul tău de plecare. Aceasta afișează un **ecu
 2. QoreX caută handle-ul și îți arată **adresa `qor1…` rezolvată** înainte să confirmi orice.
 3. Verifică adresa rezolvată, introdu suma și confirmă ca de obicei.
 
-QoreX acceptă doar o rezolvare care trece **ambele** verificări pe care le efectuează: o atestare a registrului verificată față de o cheie de încredere fixată în aplicație și semnătura proprie a proprietarului handle-ului asupra revendicării. Eșuarea oricăreia dintre verificări declanșează o eroare, în loc să revină la o adresă neverificată. Prima dată când plătești un anumit handle, QoreX reține adresa la care a rezolvat; dacă adresa acelui handle se schimbă vreodată, QoreX se oprește înainte de semnare și îți arată adresa veche și cea nouă una lângă alta, pentru ca tu să decizi dacă vrei să continui. Extensia de browser rezolvă și plătește handle-urile în același mod — vezi [Trimite către un @handle](/qorex/browser-extension#handle-send).
+QoreX acceptă doar o rezolvare care trece **ambele** verificări pe care le efectuează: o atestare a registrului verificată față de o cheie de încredere fixată în aplicație și semnătura proprie a proprietarului handle-ului asupra revendicării. Eșuarea oricăreia dintre verificări declanșează o eroare, în loc să revină la o adresă neverificată. Prima dată când plătești un anumit handle, QoreX reține adresa la care a rezolvat; dacă adresa acelui handle se schimbă vreodată, QoreX se oprește înainte de semnare și îți arată adresa veche și cea nouă una lângă alta, pentru ca tu să decizi dacă vrei să continui. Această memorie este **per dispozitiv** — plătirea aceluiași handle pentru prima dată de pe un alt telefon sau după o instalare nouă îl arată ca nou și acolo, ceea ce este normal, nu o eroare. Extensia de browser rezolvă și plătește handle-urile în același mod (memoria ei este **per browser**, deci un browser sau un computer diferit îl vede ca nou) — vezi [Trimite către un @handle](/qorex/browser-extension#handle-send).
 
 ### Trimiterea QOR blocat (vesting) {#vesting}
 
@@ -33,6 +33,10 @@ Dacă o parte din soldul tău este încă în **vesting** — de exemplu o aloca
 ## Primește QOR
 
 Atinge **Primește** pentru a-ți afișa adresa `qor1…` sub formă de cod QR (cu pictograma QoreChain încorporată) și un buton de copiere. Partajează oricare dintre ele cu expeditorul.
+
+:::note Primirea unui activ dintr-o rețea externă pentru prima dată
+Ecranul **Primește** afișează doar o rețea pe care ai deja un sold — deci dacă nu ai deținut niciodată ETH, nu există încă o opțiune ETH de ales acolo. Adresa ta EVM există din momentul în care există portofelul tău (este derivată din aceeași frază de recuperare) și este aceeași adresă pe Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet și Avalanche — găsește-o și copiaz-o din **Setări → Adrese** și partajeaz-o pe aceea în loc. Odată ce un transfer ajunge, acea rețea apare de atunci înainte în Primește.
+:::
 
 ## Solicită o plată
 

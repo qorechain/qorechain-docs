@@ -27,7 +27,9 @@ sidebar_position: 10
 :::
 
 :::caution 새로 참여하는 노드는 v3.1.92 이상 필요
-제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 **v3.1.92 이상**이어야 합니다 — 이전 버전은 (매니페스트의 `minCompatible` 필드가 아직 이를 반영하도록 업데이트되지 않았더라도) 이제는 수정된 가스 미터링 버그로 인해 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈춥니다. 항상 위 매니페스트의 현재 바이너리를 실행하세요.
+제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 **v3.1.92 이상**이어야 합니다 — 이전 버전은 (매니페스트의 `minCompatible` 필드가 아직 이를 반영하도록 업데이트되지 않았더라도) 이제는 수정된 가스 미터링 버그로 인해 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈춥니다.
+
+**매니페스트 자체가 이 기준보다 뒤처져 있을 수 있습니다** — 테스트넷에 먼저 승격된 뒤 숙성 기간을 거쳐 메인넷에 반영되는데, 이 글을 쓰는 시점에도 메인넷 매니페스트의 `binary.url`은 여전히 v3.1.92 이전 빌드를 가리키고 있습니다. `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하세요 — v3.1.92보다 낮다면 매니페스트 대신 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)에서 바이너리를 받거나(게시된 체크섬을 동일한 방식으로 확인하고) 소스에서 직접 빌드하세요.
 :::
 
 ---
@@ -71,13 +73,19 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 스토어는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 이미지 태그를 라이브 체인 버전(메인넷 기준 **v3.1.92**)에 고정하고, 체인 데이터용 영구 볼륨을 마운트하세요.
+Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.92**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

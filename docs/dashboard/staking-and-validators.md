@@ -33,7 +33,7 @@ This page is for comparing validators only. To actually delegate to one, go to t
 When picking a validator to delegate to, consider:
 
 - **Commission** — a lower rate leaves more rewards for you, but sustainable operators need a reasonable cut.
-- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning. A validator jails when it misses signing on more than 5% of blocks within a 10,000-block window (roughly six hours) — it earns nothing, for you or itself, until it fixes the problem and unjails.
+- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning. A validator jails when it misses signing on more than 5% of blocks within a 10,000-block window (roughly six hours to accumulate) — it earns nothing, for you or itself, until it unjails. A downtime jailing lasts a fixed **600 seconds (10 minutes)** and costs the validator **1% of its stake**; double-signing is a separate, more serious infraction that slashes **5%**. These figures are the live, current chain parameters — treat any older figure you see elsewhere as superseded.
 - **Voting power** — spreading stake across validators supports decentralization. On the Delegate panel, validators are listed smallest-first for exactly this reason.
 
 ## Delegate, redelegate, undelegate, and claim rewards

@@ -27,6 +27,14 @@ Le staking de QOR contribue à sécuriser QoreChain et vous rapporte des récomp
 3. Saisissez un montant et **déléguez** avec confirmation biométrique.
 4. Réclamez vos récompenses depuis le même écran dès qu'elles s'accumulent.
 
+:::note Aucune période de blocage aujourd'hui — l'attente ne concerne que la sortie
+Il n'y a pas de durée fixe à choisir, car il n'y en a aucune pour l'instant : la délégation reste active, avec des récompenses qui affluent dès le bloc suivant, jusqu'à ce que vous demandiez à annuler la délégation — il n'y a pas d'échéance à renouveler ni de durée minimale de staking. La seule période d'attente concerne la sortie : une fois la délégation annulée, ces QOR entrent dans une période de déblocage (unbonding) de 21 jours, sans rien rapporter et immobilisés, avant de revenir dans votre solde disponible. Déplacer une délégation vers un autre validateur (redelegate) permet en revanche d'éviter entièrement cette attente. Cela décrit le comportement actuel de la chaîne, pas une garantie permanente — voir [Y a-t-il une période de blocage ?](/user-guide/staking-and-delegation#lock-in-period) pour en savoir plus.
+:::
+
+:::note Cet écran n'a pas encore son propre bouton Annuler la délégation
+Cet écran Stake couvre uniquement la délégation et la réclamation des récompenses. Pour annuler une délégation directement depuis un écran QoreX, utilisez plutôt l'[écran Stake de l'extension de navigateur](/qorex/browser-extension#stake) — ou annulez la délégation via le [Dashboard](/dashboard/staking-and-validators#delegate), qui envoie la demande au QoreX que vous avez connecté, y compris l'application, pour que vous l'approuviez.
+:::
+
 ### Earn
 
 La vue **Earn** récapitule vos positions actives et votre rendement au même endroit.

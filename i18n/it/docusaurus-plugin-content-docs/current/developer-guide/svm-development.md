@@ -16,7 +16,7 @@ I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giu
 ---
 
 :::caution L'invio di transazioni SVM è attualmente disabilitato
-A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta.
+A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
 :::
 
 ## Panoramica

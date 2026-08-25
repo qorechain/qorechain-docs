@@ -27,6 +27,14 @@ QOR stake etmek, QoreChain'i güvence altına almaya yardımcı olur ve size öd
 3. Bir tutar girin ve biyometrik onayla **delege edin**.
 4. Ödüller biriktikçe aynı ekrandan talep edin.
 
+:::note Bugün kilitlenme süresi yok — bekleme yalnızca çıkışta
+Seçilecek sabit bir süre yok, çünkü şu anda böyle bir şey yok: delegasyon, siz undelegate etmeyi talep edene kadar bir sonraki bloktan itibaren ödüller akarak aktif kalır — yenilenmesi gereken bir son kullanma tarihi ve minimum stake süresi yoktur. Tek bekleme süresi çıkışta yaşanır: undelegate ettiğinizde, o QOR harcanabilir bakiyenize dönmeden önce 21 günlük bir unbonding sürecine girer; bu süre boyunca hiçbir ödül kazanmaz ve taşınamaz. Bir delegasyonu farklı bir doğrulayıcıya taşımak (redelegate) ise bu bekleme süresini tamamen atlar. Bu, kalıcı bir garanti değil, zincirin bugünkü davranışını tanımlar — daha fazlası için [Kilitlenme süresi var mı?](/user-guide/staking-and-delegation#lock-in-period) sayfasına bakın.
+:::
+
+:::note Bu ekranda henüz kendi Undelegate düğmesi yok
+Bu Stake ekranı yalnızca delegasyon ve talep işlemlerini kapsar. Bir QoreX ekranından doğrudan undelegate etmek için [tarayıcı uzantısının Stake ekranını](/qorex/browser-extension#stake) kullanın — veya isteği bağlı olduğunuz QoreX'e (uygulama dahil) onaylamanız için gönderen [Dashboard](/dashboard/staking-and-validators#delegate) üzerinden undelegate edin.
+:::
+
 ### Kazanç
 
 **Kazanç** görünümü, aktif pozisyonlarınızı ve getirinizi tek bir yerde özetler.

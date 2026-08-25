@@ -24,7 +24,7 @@ La proposition de passkey n'apparaît qu'après une connexion par **code e-mail*
 
 ## Plusieurs comptes à partir d'une seule phrase {#accounts}
 
-Paramètres → **Vos comptes** vous permet de créer, changer et renommer jusqu'à **20 comptes**, tous dérivés de la même phrase de récupération à 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte possède sa propre adresse distincte `qor1…` avec son propre solde et — comme un handle se lie à une **adresse**, et non au portefeuille dans son ensemble — son propre @handle optionnel. Le compte actif est celui utilisé par Envoyer, Recevoir, le Staking et le navigateur dApp. L'extension de navigateur ne dispose pas de cette fonctionnalité ; elle gère exactement un seul compte.
+Paramètres → **Vos comptes** (également accessible sous **Adresses**) vous permet de créer, changer et renommer jusqu'à **20 comptes**, tous dérivés de la même phrase de récupération à 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte possède sa propre adresse distincte `qor1…` avec son propre solde et — comme un handle se lie à une **adresse**, et non au portefeuille dans son ensemble — son propre @handle optionnel. Le compte actif est celui utilisé par Envoyer, Recevoir, le Staking et le navigateur dApp. Depuis la **0.2.2**, l'extension de navigateur dispose également de cette fonctionnalité — voir [Plusieurs comptes à partir d'une seule phrase](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

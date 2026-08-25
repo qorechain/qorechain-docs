@@ -15,7 +15,19 @@ QoreChain'in ücret dağıtımı, ağ verisi sunan hafif node'lar için sabit bi
 
 Bu paya hak kazanmak için bir node'un, kendi beyanına değil zincir üzerindeki kontrole dayanan üç şeye ihtiyacı vardır: aktif bir `lightnode_operator` lisansı, minimum **1.000 QOR delege edilmiş stake** — delege ettiğiniz tüm validatörler genelindeki toplamınız olarak sayılır, validatör başına değil — ve zincir üzerinde **1 QOR**'luk bir kayıt ücreti. Katılım ayrıca ağ genelinde **10.000 hafif node** ile sınırlandırılmıştır. Kayıt ve lisanslamanın nasıl işlediğine, ödül programına kayıt sürecinin güncel durumu da dahil olmak üzere, [Kayıt ve Lisanslama](/light-node/registration-and-licensing) sayfasından bakabilirsiniz.
 
-Kayıt ve delegasyon tamamlandıktan sonra, uygun kalmak canlı kalmakla ilgili bir meseledir. Bir node'un en az **%80 çalışma süresine (uptime)** sahip olması ve yaklaşık **1.000 blokluk (~39 dakika) bir aralıkta** heartbeat canlılık kanıtları göndermeye devam etmesi gerekir; kaçırılan bir heartbeat'ten sonra node etkin değil olarak işaretlenmeden önce **~100 bloktan (~4 dakika)** oluşan bir tolerans süresi vardır. Etkin değil olarak işaretlenen bir node, canlılığını yeniden kanıtlayana kadar bu paydan kazanmayı durdurur.
+Kayıt ve delegasyon tamamlandıktan sonra, uygun kalmak canlı kalmakla ilgili bir meseledir. Bir node'un en az **%80 çalışma süresine (uptime)** sahip olması ve yaklaşık **1.000 blokluk (~39 dakika) bir aralıkta** heartbeat canlılık kanıtları göndermeye devam etmesi gerekir.
+
+**Gönderim penceresi yalnızca geç tarafta değil, her iki uçta da dardır.** Bir heartbeat yalnızca **son kabul edilen heartbeat'inizden itibaren yaklaşık +1.000 blok ile +1.100 blok arasında** kabul edilir (yaklaşık 4 dakika, her ~39 dakikada bir) — çok erken göndermek de çok geç göndermek gibi reddedilir.
+
+**Pencereyi kaçırmak uptime'a mal olur, kaydınıza değil.** Pencereyi kaçıran bir node etkin değil olarak işaretlenir ve paydan kazanmayı durdurur, ancak bir sonraki başarılı heartbeat node'u hemen yeniden etkinleştirir — yapılacak bir yeniden kayıt yoktur. Ayrıca şunu da unutmayın: daemon'un bir sonraki heartbeat'e doğru işleyen kendi dahili sayacı, bir gönderim denemesi başarısız olsa bile ilerlemeye devam eder ve yeniden başlatmada sıfırlanır; bu yüzden bir node, operatörün hiçbir hatası olmadan etkin değil olarak işaretlenmiş olabilir — etkin değil işaretini bir şeylerin yanlış yapılandırıldığı anlamına geldiğini varsaymak yerine `status` komutunu kontrol edin.
+
+:::note Bir heartbeat gerçekte neyi kanıtlar
+Başarılı bir heartbeat, operatörün anahtarının zamanında imzaladığını kanıtlar — bir node'un yazılımın tamamını kesintisiz çalıştırdığını kanıtlamaz. Bunu "etkin bir node olarak doğrulandı" değil, bir canlılık imzası olarak değerlendirin.
+:::
+
+:::note `last_heartbeat` bir blok yüksekliğidir, zaman damgası değil
+Bir node'un zincir üzerindeki kaydını doğrudan sorgularsanız, `last_heartbeat` bir blok yüksekliğidir ve `0` değeri, node'un henüz hiç heartbeat göndermediği anlamına gelir — bu durumda zincir, yerine `registered_at` yüksekliğini bildirir. Bunu saf bir geçen-zaman hesaplaması olarak okumak, yeni kayıt olmuş bir node'un milyonlarca blok gecikmiş gibi görünmesine yol açar.
+:::
 
 *Ödül uygunluğu: aktif bir zincir üzerindeki lisansı ve minimum delege edilmiş stake'i elinde tutmak, kayıt olmak, ardından payın akmaya devam etmesini sağlayan uptime ve heartbeat-aralığı eşiklerinin üzerinde kalmak için heartbeat'ler aracılığıyla canlılığı kanıtlamaya devam etmektir.*
 

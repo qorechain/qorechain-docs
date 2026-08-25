@@ -13,7 +13,7 @@ The UX edition is the right choice for desktop use and for operators who prefer 
 
 ## Install
 
-Prebuilt binaries run natively on **five platforms with zero native dependencies** — Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — each about 16 MB.
+Prebuilt binaries run natively on **six platforms with zero native dependencies** — Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — each about 16 MB. Verify the download's checksum against the manifest before running it — see [SX Edition](/light-node/sx-edition#install) for how.
 
 ### Build from source
 

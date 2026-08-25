@@ -13,7 +13,7 @@ Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru oper
 
 ## Instalare
 
-Binarele precompilate rulează nativ pe **cinci platforme fără nicio dependență nativă** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — fiecare de aproximativ 16 MB.
+Binarele precompilate rulează nativ pe **șase platforme fără nicio dependență nativă** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — fiecare de aproximativ 16 MB. Verifică suma de control (checksum) a descărcării față de manifest înainte de a o rula — vezi [Ediția SX](/light-node/sx-edition#install) pentru cum se face.
 
 ### Construire din sursă
 

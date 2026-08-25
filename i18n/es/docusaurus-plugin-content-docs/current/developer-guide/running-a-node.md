@@ -27,7 +27,9 @@ Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha
 :::
 
 :::caution Se requiere v3.1.92 o posterior para un nodo que se une desde cero
-Un nodo que sincroniza desde el génesis o reproduce desde un archivo/snapshot debe estar en **v3.1.92 o posterior** — las versiones anteriores (incluso si el campo `minCompatible` del manifiesto todavía no se ha actualizado para reflejar esto) se detendrán en el primer bloque que contenga una transacción durante la reproducción, debido a un error de medición de gas ahora corregido. Ejecuta siempre el binario actual indicado en el manifiesto anterior.
+Un nodo que sincroniza desde el génesis o reproduce desde un archivo/snapshot debe estar en **v3.1.92 o posterior** — las versiones anteriores (incluso si el campo `minCompatible` del manifiesto todavía no se ha actualizado para reflejar esto) se detendrán en el primer bloque que contenga una transacción durante la reproducción, debido a un error de medición de gas ahora corregido.
+
+**El propio manifiesto puede ir por detrás de este mínimo** — se promueve primero en testnet, y en mainnet tras un período de rodaje, y en el momento de escribir esto el `binary.url` del manifiesto de mainnet todavía apunta a una compilación anterior a v3.1.92. Comprueba el campo `"version"` del manifiesto antes de confiar en `binary.url`; si va por detrás de v3.1.92, obtén el binario de los [lanzamientos de qorechain-core en GitHub](https://github.com/qorechain/qorechain-core/releases) en su lugar (comprobando su checksum publicado de la misma manera) o compílalo desde el código fuente, en lugar de usar el manifiesto.
 :::
 
 ---
@@ -71,13 +73,19 @@ Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue de solo nodo con Docker Compose. Fija la etiqueta de la imagen a la versión activa de la cadena (**v3.1.92** en mainnet) y monta un volumen persistente para los datos de la cadena.
+Un despliegue de solo nodo con Docker Compose. Todavía no hay una imagen `qorechaind` publicada públicamente — compila una tú mismo a partir del `Dockerfile` del repositorio y etiquétala con la versión activa de la cadena (**v3.1.92** en mainnet), luego monta un volumen persistente para los datos de la cadena:
+
+```bash
+git clone https://github.com/qorechain/qorechain-core.git
+cd qorechain-core
+docker build -t qorechain-node:v3.1.92 .
+```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain/qorechaind:v3.1.92
+    image: qorechain-node:v3.1.92
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]

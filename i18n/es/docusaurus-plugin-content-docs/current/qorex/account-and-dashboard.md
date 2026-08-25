@@ -24,7 +24,7 @@ La oferta de passkey solo aparece después de iniciar sesión con **código por 
 
 ## Varias cuentas a partir de una frase {#accounts}
 
-Settings → **Your accounts** te permite crear, cambiar y renombrar hasta **20 cuentas**, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta tiene su propia dirección `qor1…` distinta con su propio saldo y —dado que un handle se vincula a una **dirección**, no al monedero en su conjunto— su propio @handle opcional. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps. La extensión de navegador no tiene esta función: gestiona exactamente una cuenta.
+Settings → **Your accounts** (también encontrable como **Addresses**) te permite crear, cambiar y renombrar hasta **20 cuentas**, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta tiene su propia dirección `qor1…` distinta con su propio saldo y —dado que un handle se vincula a una **dirección**, no al monedero en su conjunto— su propio @handle opcional. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps. Desde la versión **0.2.2**, la extensión de navegador también cuenta con esta función; consulta [Varias cuentas a partir de una frase](/qorex/browser-extension#wallet).
 
 ## @handle {#handle}
 

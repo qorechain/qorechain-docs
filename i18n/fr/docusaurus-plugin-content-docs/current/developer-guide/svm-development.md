@@ -16,7 +16,7 @@ Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, en service 
 ---
 
 :::caution La soumission de transactions SVM est actuellement désactivée
-Depuis la version de chaîne v3.1.89 (22 août), à la suite d'un incident, la voie d'exécution SVM est **désactivée sur l'ensemble du réseau pour la soumission de transactions** — toute transaction envoyée à `x/svm` (déploiement de programme, exécution d'instruction, création de compte, transferts) renvoie `code 11, "SVM module is disabled"`. Cela s'applique aussi bien à votre propre nœud qu'aux points de terminaison publics. Les méthodes RPC de type lecture peuvent encore répondre, mais ne construisez ni ne répétez d'intégration SVM en conditions réelles tant que la voie n'est pas rouverte.
+Depuis la version de chaîne v3.1.89 (22 août), à la suite d'un incident, la voie d'exécution SVM est **désactivée sur l'ensemble du réseau pour la soumission de transactions** — toute transaction envoyée à `x/svm` (déploiement de programme, exécution d'instruction, création de compte, transferts) renvoie `code 11, "SVM module is disabled"`. Cela s'applique aussi bien à votre propre nœud qu'aux points de terminaison publics. Les méthodes RPC de type lecture peuvent encore répondre, mais ne construisez ni ne répétez d'intégration SVM en conditions réelles tant que la voie n'est pas rouverte — il s'agit d'une désactivation au moment de la compilation, et non d'un paramètre d'exécution, elle ne peut donc pas être réactivée par un vote de gouvernance ; elle devrait rester désactivée jusqu'à ce qu'un audit externe la valide.
 :::
 
 ## Vue d'ensemble

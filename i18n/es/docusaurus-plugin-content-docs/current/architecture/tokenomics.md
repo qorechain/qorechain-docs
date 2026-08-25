@@ -39,6 +39,10 @@ Este es un **modelo de suministro fijo con un presupuesto de emisión finito**, 
 
 ### Calendario de recompensas de staking {#staking-reward-schedule}
 
+:::note Hay un cambio de gobernanza aprobado pendiente para este calendario
+Una propuesta de gobernanza aprobada cambia la forma en que se libera la emisión dentro de este presupuesto, y entrará en vigor en una altura de bloque futura en lugar de inmediatamente. Las cifras siguientes corresponden al calendario previo al cambio: consulta el [Historial de versiones](/appendix/version-history) para saber si el cambio ya ha entrado en vigor antes de basarte en una cifra concreta, y trata cualquier valor de APY o de emisión diaria que veas citado en otro lugar en este momento como provisional hasta que así sea.
+:::
+
 Las recompensas de staking se distribuyen a partir del presupuesto de emisión de 590.000.000 QOR según un calendario decreciente:
 
 | Período     | APY objetivo            | Presupuesto de emisión           |
@@ -144,7 +148,7 @@ Esto crea una dinámica de suma positiva para los poseedores a largo plazo: cada
 ### Parámetros de xQORE
 
 | Parámetro               | Por defecto            | Descripción                               |
-| ----------------------- | ---------------------- | ----------------------------------------- |
+| ----------------------- | ---------------------- | ------------------------------------------ |
 | `governance_multiplier` | 2.0                    | Multiplicador de poder de voto para poseedores de xQORE |
 | `min_lock_amount`       | 1.000.000 uqor (1 QOR) | QOR mínimo requerido para bloquear        |
 | `penalty_burn_rate`     | 0.50                   | Fracción de penalizaciones por salida quemada (50%) |

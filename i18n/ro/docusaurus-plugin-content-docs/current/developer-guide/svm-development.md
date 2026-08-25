@@ -16,7 +16,7 @@ Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`**, live din 7
 ---
 
 :::caution Trimiterea de tranzacții SVM este momentan dezactivată
-Începând cu versiunea de chain v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** — orice tranzacție trimisă către `x/svm` (implementare de programe, execuție de instrucțiuni, creare de conturi, transferuri) returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică atât nodului propriu, cât și endpoint-urilor publice. Metodele RPC de tip citire pot răspunde în continuare, dar nu construiți și nu repetați o integrare SVM live până când lane-ul nu se redeschide.
+Începând cu versiunea de chain v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivelul întregii rețele pentru trimiterea de tranzacții** — orice tranzacție trimisă către `x/svm` (implementare de programe, execuție de instrucțiuni, creare de conturi, transferuri) returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică atât nodului propriu, cât și endpoint-urilor publice. Metodele RPC de tip citire pot răspunde în continuare, dar nu construiți și nu repetați o integrare SVM live până când lane-ul nu se redeschide — este o dezactivare la momentul compilării, nu un parametru de runtime, deci nu poate fi repornit printr-un vot de guvernanță; se așteaptă să rămână dezactivat până când un audit extern îl aprobă.
 :::
 
 ## Prezentare generală

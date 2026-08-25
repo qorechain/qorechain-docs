@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## Slashing
+
+Penalizările de bază pentru încălcări, interogabile live și valabile la momentul redactării:
+
+```bash
+qorechaind query slashing params
+```
+
+| Parametru | Valoare |
+| --- | --- |
+| Fereastra de blocuri semnate | 10.000 de blocuri (aproximativ 6 ore pentru a se acumula) |
+| Minim semnat per fereastră | 95% (sub acest prag validatorul este băgat la închisoare/jailed) |
+| Durata de închisoare (jail) pentru downtime | 600 de secunde (10 minute) |
+| Fracțiunea de slash pentru downtime | 1% din stake |
+| Fracțiunea de slash pentru double-sign | 5% din stake |
+
+Băgarea la închisoare (jailing) este un timeout fix de 10 minute cu o penalizare fixă — este separată de modelul progresiv de mai jos, care adaugă consecințe suplimentare, escaladate, peste încălcările repetate, pe un orizont de timp mai lung.
+
 ## Slashing Progresiv
 
 QoreChain folosește un model de **slashing progresiv**, care escaladează penalizările pentru cei care încalcă regulile în mod repetat, permițând în același timp validatorilor să își revină în timp:
@@ -145,12 +163,12 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## Înregistrarea Cheii PQC {#pqc-key-registration}
 
-Validatorii pot înregistra opțional o **cheie publică post-cuantică (PQC)** folosind algoritmul ML-DSA-87. Aceasta oferă securitate rezistentă la calculatoarele cuantice pentru identitatea validatorului și poate fi folosită pentru semnare hibridă.
+Înregistrează-ți **cheia publică post-cuantică (PQC)** — ML-DSA-87 — **înainte** de a solicita o licență de validator sau de a rula `create-validator`. Acest lucru **nu este opțional și nu este automat**: chain-ul impune o semnătură hibridă PQC pe fiecare tranzacție de pe calea cosmos, `MsgCreateValidator` nu se numără printre tipurile de mesaje exceptate, iar — spre deosebire de un cont obișnuit, care își înregistrează cheia automat la prima tranzacție — un validator trebuie să ruleze el însuși această comandă, pe propriul nod, din timp.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
@@ -159,15 +177,15 @@ qorechaind tx pqc register-key <pubkey-hex> hybrid \
 | `<pubkey-hex>` | Cheie publică ML-DSA-87 de 2592 de bytes, codificată hex   |
 | `hybrid`       | Modul de înregistrare (hybrid = atât clasic, cât și PQC)   |
 
+:::caution Setează `--gas` explicit
+Cheia publică ML-DSA-87 are 2.592 de bytes, iar scrierea ei pe chain depășește limita implicită de gas de 200.000. Fără `--gas 600000` (sau mai mult), tranzacția eșuează cu o eroare opacă `out of gas in location: WritePerByte`.
+:::
+
 Verifică înregistrarea:
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**Recomandare:** Înregistrarea cheii PQC este opțională, dar puternic recomandată pentru validatorii care operează pe mainnet. Oferă o apărare orientată spre viitor împotriva amenințărilor reprezentate de calculul cuantic.
-:::
 
 ---
 
@@ -295,3 +313,4 @@ Fixările (pin-urile) de versiune ale clienților sunt best-effort; verifică la
 * [Construirea din Sursă](/developer-guide/building-from-source) — Construiește binarul `qorechaind`
 * [Dezvoltare EVM](/developer-guide/evm-development) — Implementează contracte inteligente pe QoreChain
 * [Abstractizarea Contului](/developer-guide/account-abstraction) — Conturi programabile pentru operațiunile validatorului tău
+

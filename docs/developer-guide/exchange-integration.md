@@ -152,7 +152,7 @@ Standard Ethereum integration against `https://evm.qore.host` (chain ID **9801**
 ## Path C — SVM (Solana-compatible) {#path-c-svm}
 
 :::caution SVM lane currently disabled
-The SVM execution lane is **currently disabled network-wide for transaction submission** as of chain version v3.1.89 (22 August) — any transaction to it returns `code 11, "SVM module is disabled"`. Do **not** stand up a deposit/withdrawal rail on Path C until the lane reopens. Use **Path A (Cosmos)** or **Path B (EVM)** instead. Read endpoints (e.g. `getBalance`) may still respond, but do not build deposit detection or withdrawal flows against SVM while transaction submission is disabled.
+The SVM execution lane is **currently disabled network-wide for transaction submission** as of chain version v3.1.89 (22 August) — any transaction to it returns `code 11, "SVM module is disabled"`. Do **not** stand up a deposit/withdrawal rail on Path C until the lane reopens — this is a compile-time disable, not a runtime parameter, so it cannot be turned back on by a governance vote; it's expected to stay off until an external audit clears it. Use **Path A (Cosmos)** or **Path B (EVM)** instead. Read endpoints (e.g. `getBalance`) may still respond, but do not build deposit detection or withdrawal flows against SVM while transaction submission is disabled.
 :::
 
 As of v3.1.82 the SVM interface serves **native QOR** (see [Native QOR on the SVM Interface](/developer-guide/svm-development#native-qor)):

@@ -77,7 +77,7 @@ Din popup poți revendica un **@handle** unic (de exemplu `@liviu`) pentru adres
 3. QoreX rezolvă handle-ul și îți arată **adresa rezolvată** înainte să semnezi orice — verifică mereu aceasta față de ce te aștepți.
 4. Introdu suma și confirmă.
 
-Rezolvarea este verificată în două moduri înainte ca QoreX să o folosească: o atestare de registru verificată față de o cheie de încredere integrată în extensie, și semnătura proprie a proprietarului handle-ului peste revendicare. Un răspuns care eșuează la oricare dintre verificări este respins categoric — QoreX nu recurge la afișarea unei adrese neverificate. Prima dată când plătești un anumit handle, QoreX reține (fixează) adresa la care s-a rezolvat; dacă acel handle se rezolvă ulterior la o adresă **diferită**, QoreX se oprește și îți arată integral atât adresa veche, cât și cea nouă, ca să poți decide dacă vrei să continui.
+Rezolvarea este verificată în două moduri înainte ca QoreX să o folosească: o atestare de registru verificată față de o cheie de încredere integrată în extensie, și semnătura proprie a proprietarului handle-ului peste revendicare. Un răspuns care eșuează la oricare dintre verificări este respins categoric — QoreX nu recurge la afișarea unei adrese neverificate. Prima dată când plătești un anumit handle, QoreX reține (fixează) adresa la care s-a rezolvat; dacă acel handle se rezolvă ulterior la o adresă **diferită**, QoreX se oprește și îți arată integral atât adresa veche, cât și cea nouă, ca să poți decide dacă vrei să continui. Această memorare există **per browser** — plătirea aceluiași handle pentru prima dată dintr-un alt browser sau computer îl arată ca nou și acolo. Este comportamentul așteptat, nu o eroare.
 
 ## Receive {#receive}
 

@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## Slashing
+
+The base infraction penalties, queryable live and current as of this writing:
+
+```bash
+qorechaind query slashing params
+```
+
+| Parameter | Value |
+| --- | --- |
+| Signed-blocks window | 10,000 blocks (roughly 6 hours to accumulate) |
+| Minimum signed per window | 95% (jails below this) |
+| Downtime jail duration | 600 seconds (10 minutes) |
+| Downtime slash fraction | 1% of stake |
+| Double-sign slash fraction | 5% of stake |
+
+Jailing is a fixed 10-minute timeout with a fixed penalty — it is separate from the progressive model below, which layers additional, escalating consequences on top of repeat offenses over a longer horizon.
+
 ## Progressive Slashing
 
 QoreChain uses a **progressive slashing** model that escalates penalties for repeat offenders while allowing validators to recover over time:

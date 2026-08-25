@@ -9,15 +9,22 @@ sidebar_position: 2
 
 Die **SX-Edition (Server eXperience)** ist der headless Light Node: ein Daemon plus eine vollständige Management-CLI, gebaut für Server und Automatisierung. Die Binärdatei ist `lightnode-sx`. Dies ist die **v3.1.2**-Linie des Light Nodes (seine eigene Version, getrennt von der Chain-Version).
 
-## Installation
+## Installation {#install}
 
-Vorgefertigte Binärdateien sind der einfachste Weg — der Light-Node-Client läuft nativ auf **fünf Plattformen ohne native Abhängigkeiten**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64). Jede Binärdatei ist etwa 16 MB groß — herunterladen und ausführen, keine separaten Bibliotheken zu installieren.
+Vorgefertigte Binärdateien sind der einfachste Weg — der Light-Node-Client läuft nativ auf **sechs Plattformen ohne native Abhängigkeiten**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64) — insgesamt 12 Binärdateien über die SX- und UX-Editionen hinweg. Jede Binärdatei ist etwa 16 MB groß — herunterladen und ausführen, keine separaten Bibliotheken zu installieren.
+
+**Prüfe die Prüfsumme, bevor du sie ausführst.** Das Release-Manifest unter `https://download.qore.host/<net>/lightnode/latest.json` enthält einen `sha256`-Wert für jede Binärdatei sowie eine separate `SHA256SUMS`-Datei über das gesamte Release. Berechne den Hash der heruntergeladenen Datei neu und vergleiche ihn mit dem Wert im Manifest — das ist keine Randnotiz, sondern der Unterschied zwischen dem Ausführen der tatsächlich gebauten Binärdatei und dem Ausführen von irgendetwas, das an dieser URL gelandet ist:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# oder: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 Du kannst die Binärdatei auch aus dem Quellcode bauen oder sie mit Docker ausführen.
 
 ### Aus dem Quellcode bauen
 
-Der Light Node benötigt **Go 1.26.1**. Seine Post-Quantum-Kryptografie ist eine reine Go-Implementierung (kein CGO, keine native Bibliothek), sodass das Cross-Compiling für jede der fünf unterstützten Plattformen genauso funktioniert wie bei jeder anderen Go-Binärdatei:
+Der Light Node benötigt **Go 1.26.1**. Seine Post-Quantum-Kryptografie ist eine reine Go-Implementierung (kein CGO, keine native Bibliothek), sodass das Cross-Compiling für jede der sechs unterstützten Plattformen genauso funktioniert wie bei jeder anderen Go-Binärdatei:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

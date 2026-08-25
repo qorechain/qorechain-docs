@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, SVM (Solana Virtual Machine) çalışma zamanı üzerinden Solana ile uyumlu bir JSON-RPC arayüzü sunar ve mevcut Solana araçlarının ve SDK'larının QoreChain ile doğrudan etkileşime girmesini sağlar.
 
 :::caution SVM işlem gönderimi şu anda devre dışı
-Zincir sürümü v3.1.89 (22 Ağustos) itibarıyla, yaşanan bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — herhangi bir işlem `code 11, "SVM module is disabled"` hatası döndürür. Bu durum yalnızca genel salt okunur uç noktalarda değil, ağ genelinde geçerlidir. Aşağıdaki tablodaki okuma tipi yöntemler (örn. `getBalance`, `getAccountInfo`) yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar SVM işlemi gönderen canlı bir entegrasyon denemeyin.
+Zincir sürümü v3.1.89 (22 Ağustos) itibarıyla, yaşanan bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — herhangi bir işlem `code 11, "SVM module is disabled"` hatası döndürür. Bu durum yalnızca genel salt okunur uç noktalarda değil, ağ genelinde geçerlidir. Aşağıdaki tablodaki okuma tipi yöntemler (örn. `getBalance`, `getAccountInfo`) yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar SVM işlemi gönderen canlı bir entegrasyon denemeyin — bu, çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, dolayısıyla bir yönetişim oylamasıyla yeniden açılamaz; harici bir denetim onay verene kadar kapalı kalması beklenmektedir.
 :::
 
 ## Bağlantı

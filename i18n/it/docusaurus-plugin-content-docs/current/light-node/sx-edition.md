@@ -9,15 +9,22 @@ sidebar_position: 2
 
 L'edizione **SX (Server eXperience)** è il light node headless: un daemon più una CLI di gestione completa, pensato per server e automazione. Il binario è `lightnode-sx`. Questa è la linea **v3.1.2** del light node (versione propria, separata dalla versione della chain).
 
-## Installazione
+## Installazione {#install}
 
-I binari precompilati sono il percorso più semplice — il client del light node gira nativamente su **cinque piattaforme senza dipendenze native**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64). Ogni binario pesa circa 16 MB — scaricalo ed eseguilo, senza librerie separate da installare.
+I binari precompilati sono il percorso più semplice — il client del light node gira nativamente su **sei piattaforme senza dipendenze native**: Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64) — 12 binari in totale tra le edizioni SX e UX. Ogni binario pesa circa 16 MB — scaricalo ed eseguilo, senza librerie separate da installare.
+
+**Verifica il checksum prima di eseguirlo.** Il manifest della release su `https://download.qore.host/<net>/lightnode/latest.json` riporta uno `sha256` per ogni binario, oltre a un file `SHA256SUMS` separato per l'intera release. Ricalcola l'hash di ciò che hai scaricato e confrontalo con il valore del manifest — non è una nota a margine, è la differenza tra eseguire il binario effettivamente compilato ed eseguire qualunque cosa sia finita a quell'URL:
+
+```bash
+shasum -a 256 lightnode-sx-<platform>   # macOS/Linux
+# or: certutil -hashfile lightnode-sx-<platform>.exe SHA256   # Windows
+```
 
 Puoi anche compilare il binario dal sorgente o eseguirlo con Docker.
 
 ### Compilazione dal sorgente
 
-Il light node richiede **Go 1.26.1**. La sua crittografia post-quantistica è un'implementazione pure-Go (nessun CGO, nessuna libreria nativa), quindi la cross-compilazione per una qualsiasi delle cinque piattaforme supportate funziona come per qualunque altro binario Go:
+Il light node richiede **Go 1.26.1**. La sua crittografia post-quantistica è un'implementazione pure-Go (nessun CGO, nessuna libreria nativa), quindi la cross-compilazione per una qualsiasi delle sei piattaforme supportate funziona come per qualunque altro binario Go:
 
 ```bash
 go build -o build/lightnode-sx ./cmd/lightnode-sx/

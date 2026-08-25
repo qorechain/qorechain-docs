@@ -13,6 +13,12 @@ Acest ghid acoperă modul de delegare a token-urilor QOR către validatori, rede
 Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026, rulând versiunea de chain **v3.1.92** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când faceți staking pe mainnet.
 :::
 
+## Există o perioadă de blocare? {#lock-in-period}
+
+**Astăzi**, nu — nu există un termen de ales, pentru că staking-ul nu se vinde în durate fixe aici, așa cum se întâmplă adesea pe un exchange. Delegarea rămâne activă, cu recompense care curg din blocul următor, atât timp cât doriți, până când alegeți să anulați delegarea (undelegate); nimic nu expiră și nimic nu trebuie reînnoit. **Perioada de debondare de 21 de zile** la care se face referire pe tot parcursul acestui ghid nu este o blocare pe care o acceptați din start — ea începe doar din momentul în care *cereți* anularea delegării și se aplică doar la QOR-ul pe care îl retrageți. Mutarea unei delegări între validatori (redelegate) evită complet această așteptare, deoarece stake-ul nu părăsește niciodată pool-ul bonded. Bonusul de „loialitate" menționat mai jos la [curba de bonding](#bonding-curve) este un efect asupra ratei de recompensă legat de *cât timp ați rămas delegat până acum* — este automat și nu are nici el un termen de ales, ci pur și simplu crește cu cât nu anulați delegarea mai mult timp.
+
+Aceasta descrie comportamentul actual al chain-ului, nu o garanție permanentă — o perioadă minimă de staking este un parametru pe care guvernanța l-ar putea introduce pe viitor, la fel cum orice alt parametru de staking de pe această pagină poate fi modificat prin vot. Dacă se va întâmpla vreodată acest lucru, portofelul va afișa așteptarea rezultată (orice minim plus debondarea de 21 de zile) înainte de a confirma o delegare, iar această pagină va fi actualizată în consecință.
+
 ---
 
 ## Delegarea token-urilor
@@ -125,7 +131,7 @@ Validatorii sunt reclasificați la fiecare graniță de epocă. Un validator car
 
 ---
 
-## Recompense pe curba de bonding
+## Recompense pe curba de bonding {#bonding-curve}
 
 Recompensele individuale de staking sunt calculate folosind formula curbei de bonding a QoreChain:
 

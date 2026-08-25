@@ -16,7 +16,7 @@ Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, das seit dem 
 ---
 
 :::caution Übermittlung von SVM-Transaktionen derzeit deaktiviert
-Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert** — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist.
+Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert** — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist — dies ist eine Deaktivierung zur Kompilierzeit, kein Laufzeitparameter, sodass sie nicht durch eine Governance-Abstimmung wieder aktiviert werden kann; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
 :::
 
 ## Übersicht

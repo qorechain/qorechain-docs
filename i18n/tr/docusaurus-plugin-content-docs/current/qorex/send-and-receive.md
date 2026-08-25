@@ -24,7 +24,7 @@ Ana Sayfa (Cüzdan) sekmesi başlangıç noktanızdır. Bir **ağ rozeti** (vars
 2. QoreX kullanıcı adını arar ve herhangi bir şeyi onaylamadan önce size **çözümlenen `qor1…` adresini** gösterir.
 3. Çözümlenen adresi kontrol edin, tutarı girin ve her zamanki gibi onaylayın.
 
-QoreX yalnızca gerçekleştirdiği **her iki** denetimi de geçen bir çözümlemeyi kabul eder: uygulamada sabitlenmiş bir güven anahtarına karşı doğrulanan bir kayıt defteri onayı ve kullanıcı adı sahibinin iddia üzerindeki kendi imzası. Denetimlerden biri bile başarısız olursa, doğrulanmamış bir adrese geri dönmek yerine bir hata verir. Belirli bir kullanıcı adına ilk kez ödeme yaptığınızda, QoreX çözümlediği adresi hatırlar; o kullanıcı adının adresi bir gün değişirse, QoreX imzalamadan önce durur ve devam edip etmeyeceğinize karar verebilmeniz için eski ve yeni adresi yan yana gösterir. Tarayıcı eklentisi de kullanıcı adlarını aynı şekilde çözümler ve öder — bkz. [@kullanıcı adına gönderim](/qorex/browser-extension#handle-send).
+QoreX yalnızca gerçekleştirdiği **her iki** denetimi de geçen bir çözümlemeyi kabul eder: uygulamada sabitlenmiş bir güven anahtarına karşı doğrulanan bir kayıt defteri onayı ve kullanıcı adı sahibinin iddia üzerindeki kendi imzası. Denetimlerden biri bile başarısız olursa, doğrulanmamış bir adrese geri dönmek yerine bir hata verir. Belirli bir kullanıcı adına ilk kez ödeme yaptığınızda, QoreX çözümlediği adresi hatırlar; o kullanıcı adının adresi bir gün değişirse, QoreX imzalamadan önce durur ve devam edip etmeyeceğinize karar verebilmeniz için eski ve yeni adresi yan yana gösterir. Bu hafıza **cihaza özeldir** — aynı kullanıcı adına farklı bir telefondan veya yeni bir kurulumdan ilk kez ödeme yapmak orada da yeni olarak gösterilir; bu beklenen bir durumdur, hata değildir. Tarayıcı eklentisi de kullanıcı adlarını aynı şekilde çözümler ve öder (hafızası **tarayıcıya özeldir**, dolayısıyla farklı bir tarayıcı veya bilgisayar onu yeni olarak görür) — bkz. [@kullanıcı adına gönderim](/qorex/browser-extension#handle-send).
 
 ### Vesting (kilitli) QOR gönderimi {#vesting}
 
@@ -33,6 +33,10 @@ Bakiyenizin bir kısmı hâlâ **vesting** aşamasındaysa — örneğin serbest
 ## QOR al
 
 `qor1…` adresinizi (QoreChain simgesi gömülü) bir QR kodu ve bir kopyalama düğmesiyle göstermek için **Al**'a dokunun. İkisinden birini gönderenle paylaşın.
+
+:::note Harici bir ağ varlığını ilk kez alma
+**Al** ekranı yalnızca zaten bakiyenizin bulunduğu bir ağı gösterir — yani hiç ETH tutmadıysanız, orada henüz seçilecek bir ETH seçeneği yoktur. EVM adresiniz cüzdanınız var olduğu andan itibaren mevcuttur (aynı kurtarma ifadesinden türetilir) ve Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet ve Avalanche genelinde aynı adrestir — onu **Ayarlar → Adresler**'den bulup kopyalayın ve bunun yerine onu paylaşın. Bir transfer ulaştığında, o ağ bundan böyle Al ekranında görünür.
+:::
 
 ## Ödeme talep et
 

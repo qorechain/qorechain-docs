@@ -39,6 +39,10 @@ Il s'agit d'un **modèle à offre fixe avec un budget d'émission fini**, et non
 
 ### Barème des récompenses de staking {#staking-reward-schedule}
 
+:::note Une modification de ce barème, approuvée par la gouvernance, est en attente
+Une proposition de gouvernance adoptée modifie la façon dont l'émission est libérée au sein de ce budget, prenant effet à une hauteur de bloc future plutôt qu'immédiatement. Les chiffres ci-dessous correspondent au barème antérieur au changement — consultez [l'historique des versions](/appendix/version-history) pour savoir si le changement a pris effet avant de vous fier à un chiffre précis, et considérez tout chiffre d'APY ou d'émission journalière cité ailleurs actuellement comme provisoire tant qu'il n'a pas pris effet.
+:::
+
 Les récompenses de staking sont distribuées à partir du budget d'émission de 590 000 000 QOR selon un barème dégressif :
 
 | Période      | APY cible              | Budget d'émission                  |

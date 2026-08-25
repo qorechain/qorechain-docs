@@ -40,15 +40,15 @@ qorechaind tx staking create-validator \
   -y
 ```
 
-| Parameter                      | Beschreibung                                              |
-| ------------------------------ | ----------------------------------------------------------|
-| `--amount`                     | Self-Delegation-Betrag (Mindest-Stake)                    |
-| `--pubkey`                     | Konsens-Public-Key des Validators (ed25519)                |
-| `--moniker`                    | Menschenlesbarer Name für Ihren Validator                  |
-| `--commission-rate`            | Anfängliche Provisionsrate (z. B. 0,10 = 10 %)             |
-| `--commission-max-rate`        | Maximale Provisionsrate (nach Erstellung unveränderlich)   |
+| Parameter                      | Beschreibung                                        |
+| ------------------------------ | -------------------------------------------------- |
+| `--amount`                     | Self-Delegation-Betrag (Mindest-Stake)             |
+| `--pubkey`                     | Konsens-Public-Key des Validators (ed25519)           |
+| `--moniker`                    | Menschenlesbarer Name für Ihren Validator             |
+| `--commission-rate`            | Anfängliche Provisionsrate (z. B. 0,10 = 10 %)         |
+| `--commission-max-rate`        | Maximale Provisionsrate (nach Erstellung unveränderlich) |
 | `--commission-max-change-rate` | Maximale tägliche Änderungsrate der Provision              |
-| `--min-self-delegation`        | Mindestanzahl an Token, die der Betreiber selbst delegieren muss |
+| `--min-self-delegation`        | Mindestanzahl an Token, die der Betreiber selbst delegieren muss     |
 
 Prüfen Sie nach Bestätigung der Transaktion Ihren Validator:
 
@@ -62,11 +62,11 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 
 QoreChain verwendet ein **dreistufiges Pool-Klassifizierungssystem**, das vom Modul `x/qca` (Quantum Consensus Allocation) verwaltet wird. Alle **1.000 Blöcke** werden Validatoren anhand ihrer Reputation und ihres Stakes in einen von drei Pools neu eingeteilt:
 
-| Pool                                  | Kriterien                                                | Block-Zuteilung |
-| -------------------------------------- | --------------------------------------------------------- | ---------------- |
-| **RPoS** (Reputation Proof-of-Stake)   | Reputation >= 70. Perzentil UND Stake >= Median            | 40 % der Blöcke   |
-| **DPoS** (Delegated Proof-of-Stake)    | Gesamtdelegation >= 10.000 QOR                             | 35 % der Blöcke   |
-| **PoS** (Proof-of-Stake)               | Alle übrigen aktiven Validatoren                           | 25 % der Blöcke   |
+| Pool                                 | Kriterien                                          | Block-Zuteilung |
+| ------------------------------------ | ------------------------------------------------- | ---------------- |
+| **RPoS** (Reputation Proof-of-Stake) | Reputation >= 70. Perzentil UND Stake >= Median | 40 % der Blöcke    |
+| **DPoS** (Delegated Proof-of-Stake)  | Gesamtdelegation >= 10.000 QOR                    | 35 % der Blöcke    |
+| **PoS** (Proof-of-Stake)             | Alle übrigen aktiven Validatoren                   | 25 % der Blöcke    |
 
 Innerhalb jedes Pools werden Blockvorschläger mittels **gewichteter Zufallsauswahl** proportional zu ihrem effektiven Stake ausgewählt. Die Klassifizierung stellt sicher, dass sowohl Validatoren mit hoher Reputation als auch solche mit hoher Delegation fair repräsentiert werden, während kleinere Validatoren weiterhin teilnehmen können.
 
@@ -99,9 +99,9 @@ Die Staking-Belohnung eines Validators wird durch eine Bonding-Kurve bestimmt, d
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 ```
 
-| Variable | Beschreibung                                                       |
-| -------- | -------------------------------------------------------------------|
-| `R`      | Belohnungsbetrag                                                    |
+| Variable | Beschreibung                                                |
+| -------- | ---------------------------------------------------------- |
+| `R`      | Belohnungsbetrag                                              |
 | `beta`   | Basis-Belohnungsrate                                                |
 | `S`      | Effektiver Stake                                                    |
 | `alpha`  | Skalierungskonstante für Loyalität                                  |
@@ -117,6 +117,24 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 ---
 
+## Slashing
+
+Die Basis-Strafen für Verstöße, live abfragbar und zum Zeitpunkt der Erstellung dieses Textes aktuell:
+
+```bash
+qorechaind query slashing params
+```
+
+| Parameter | Wert |
+| --- | --- |
+| Fenster für signierte Blöcke | 10.000 Blöcke (etwa 6 Stunden Ansammlungszeit) |
+| Mindestanteil signierter Blöcke | 95 % (darunter erfolgt Jailing) |
+| Downtime-Jail-Dauer | 600 Sekunden (10 Minuten) |
+| Downtime-Slash-Anteil | 1 % des Stakes |
+| Double-Sign-Slash-Anteil | 5 % des Stakes |
+
+Jailing ist ein fester 10-Minuten-Timeout mit einer festen Strafe — es ist unabhängig von dem progressiven Modell unten, das zusätzliche, eskalierende Konsequenzen für wiederholte Verstöße über einen längeren Zeithorizont darüberlegt.
+
 ## Progressives Slashing
 
 QoreChain verwendet ein **progressives Slashing**-Modell, das Strafen für wiederholte Verstöße eskaliert, Validatoren aber zugleich erlaubt, sich mit der Zeit zu erholen:
@@ -125,13 +143,13 @@ QoreChain verwendet ein **progressives Slashing**-Modell, das Strafen für wiede
 penalty = base_rate * escalation^effective_count * severity
 ```
 
-| Parameter                        | Wert            |
-| --------------------------------- | ---------------- |
-| Maximale Strafe pro Ereignis       | 33 % des Stakes   |
-| Halbwertszeit des Verfalls         | 100.000 Blöcke    |
-| Schweregrad Downtime               | 1,0               |
-| Schweregrad Double-Sign            | 2,0               |
-| Schweregrad Light-Client-Angriff   | 3,0               |
+| Parameter                    | Wert          |
+| ---------------------------- | -------------- |
+| Maximale Strafe pro Ereignis    | 33 % des Stakes   |
+| Halbwertszeit des Verfalls              | 100.000 Blöcke |
+| Schweregrad Downtime            | 1,0            |
+| Schweregrad Double-Sign         | 2,0            |
+| Schweregrad Light-Client-Angriff | 3,0            |
 
 1. **Jeder Verstoß erhöht den effektiven Zähler.** Jeder Verstoß (Downtime, Double-Signing usw.) erhöht den effektiven Zähler des Validators, der sich auf zukünftige Strafen auswirkt.
 
@@ -145,29 +163,29 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC-Schlüsselregistrierung {#pqc-key-registration}
 
-Validatoren können optional einen **post-quantenkryptografischen (PQC) Public Key** mit dem Algorithmus ML-DSA-87 registrieren. Dies bietet quantenresistente Sicherheit für die Validator-Identität und kann für hybrides Signieren verwendet werden.
+Registrieren Sie Ihren **post-quantenkryptografischen (PQC) Public Key** — ML-DSA-87 — **bevor** Sie eine Validator-Lizenz beantragen oder `create-validator` ausführen. Dies ist **nicht optional und nicht automatisch**: Die Chain verlangt eine hybride PQC-Signatur für jede Cosmos-Pfad-Transaktion, `MsgCreateValidator` gehört nicht zu den ausgenommenen Nachrichtentypen, und — anders als bei einem regulären Konto, das seinen Schlüssel automatisch bei der ersten Transaktion registriert — muss ein Validator diesen Befehl selbst, auf seinem eigenen Node, im Voraus ausführen.
 
 ```bash
 qorechaind tx pqc register-key <pubkey-hex> hybrid \
   --from mykey \
-  --gas auto \
+  --gas 600000 \
   -y
 ```
 
-| Parameter      | Beschreibung                                                |
-| -------------- | -------------------------------------------------------------|
-| `<pubkey-hex>` | 2592-Byte-ML-DSA-87-Public-Key in Hex-Kodierung               |
-| `hybrid`       | Registrierungsmodus (hybrid = sowohl klassisch als auch PQC)  |
+| Parameter      | Beschreibung                                       |
+| -------------- | ------------------------------------------------- |
+| `<pubkey-hex>` | 2592-Byte-ML-DSA-87-Public-Key in Hex-Kodierung    |
+| `hybrid`       | Registrierungsmodus (hybrid = sowohl klassisch als auch PQC) |
+
+:::caution `--gas` explizit setzen
+Der ML-DSA-87-Public-Key ist 2.592 Byte groß, und das Schreiben auf die Chain überschreitet das Standard-Gaslimit von 200.000. Ohne `--gas 600000` (oder höher) schlägt die Transaktion mit einem kryptischen `out of gas in location: WritePerByte`-Fehler fehl.
+:::
 
 Registrierung überprüfen:
 
 ```bash
 qorechaind query pqc key <account-address>
 ```
-
-:::tip
-**Empfehlung:** Die PQC-Schlüsselregistrierung ist optional, wird aber für Validatoren im Mainnet dringend empfohlen. Sie bietet eine zukunftsgerichtete Verteidigung gegen Bedrohungen durch Quantencomputer.
-:::
 
 ---
 
@@ -183,15 +201,15 @@ http://localhost:26660/metrics
 
 Wichtige zu überwachende Metriken:
 
-| Metrik                           | Beschreibung                                             |
-| ---------------------------------- | ----------------------------------------------------------|
-| `qorechain_missed_blocks_total`    | Gesamtzahl der von Ihrem Validator verpassten Blöcke        |
-| `qorechain_validator_uptime`       | Uptime-Prozentsatz über die letzten N Blöcke                |
-| `qorechain_reputation_score`       | Aktueller Reputationswert                                   |
-| `qorechain_pool_classification`    | Aktuelle Pool-Zuordnung (0=PoS, 1=DPoS, 2=RPoS)              |
-| `qorechain_consecutive_signed`     | Aufeinanderfolgend signierte Blöcke                          |
-| `consensus_height`                 | Aktuelle Blockhöhe                                           |
-| `consensus_rounds`                 | Konsensrunden für die aktuelle Höhe                          |
+| Metrik                          | Beschreibung                                     |
+| -------------------------------- | ----------------------------------------------- |
+| `qorechain_missed_blocks_total`  | Gesamtzahl der von Ihrem Validator verpassten Blöcke |
+| `qorechain_validator_uptime`     | Uptime-Prozentsatz über die letzten N Blöcke        |
+| `qorechain_reputation_score`     | Aktueller Reputationswert                        |
+| `qorechain_pool_classification`  | Aktuelle Pool-Zuordnung (0=PoS, 1=DPoS, 2=RPoS) |
+| `qorechain_consecutive_signed`   | Aufeinanderfolgend signierte Blöcke              |
+| `consensus_height`               | Aktuelle Blockhöhe                               |
+| `consensus_rounds`               | Konsensrunden für die aktuelle Höhe              |
 
 ### Reputationswert abfragen
 

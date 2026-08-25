@@ -13,6 +13,12 @@ This guide covers how to delegate QOR tokens to validators, redelegate between v
 The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.92** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
+## Is there a lock-in period? {#lock-in-period}
+
+**Today**, no — there's no term to pick, because staking isn't sold in fixed durations here the way it often is on an exchange. Delegating stays active with rewards flowing from the next block, for as long as you want, until you choose to undelegate; there's nothing expiring and nothing to renew. The **21-day unbonding period** you'll see referenced throughout this guide is not a lock-in you agree to up front — it only starts once you *ask* to undelegate, and only applies to the QOR you're taking out. Moving a delegation between validators (redelegate) skips that wait entirely, since the stake never leaves the bonded pool. The "loyalty" bonus mentioned in the [bonding curve](#bonding-curve) further down is a reward-rate effect of *how long you've stayed delegated so far* — it's automatic and has no term to select either, it simply grows the longer you don't undelegate.
+
+This describes current chain behavior, not a permanent guarantee — a minimum staking period is a parameter governance could introduce in the future, the same way any other staking parameter on this page can change by vote. If that ever happens, the wallet will show the resulting wait (any minimum plus the 21-day unbonding) before you confirm a delegation, and this page will be updated to match.
+
 ---
 
 ## Delegating Tokens
@@ -125,7 +131,7 @@ Validators are reclassified at every epoch boundary. A validator that builds a s
 
 ---
 
-## Bonding Curve Rewards
+## Bonding Curve Rewards {#bonding-curve}
 
 Individual staking rewards are computed using QoreChain's bonding curve formula:
 
