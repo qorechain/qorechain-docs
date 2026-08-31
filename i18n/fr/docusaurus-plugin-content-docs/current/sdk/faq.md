@@ -94,7 +94,7 @@ mots ; utilisez `validateMnemonic` pour tester une phrase.
 
 La soumission hybride (classique + ML-DSA-87) est **en ligne et obligatoire**
 sur le chemin Native — les transactions Native purement classiques sont
-rejetées on-chain (chaîne v3.1.92). Avant qu'une transaction hybride ne soit
+rejetées on-chain (chaîne v3.1.95). Avant qu'une transaction hybride ne soit
 vérifiée par PQC, la clé publique PQC du signataire doit être enregistrée
 (`MsgRegisterPQCKeyV2`), ou vous pouvez définir
 `includePqcPublicKey: true` pour l'intégrer en vue d'un

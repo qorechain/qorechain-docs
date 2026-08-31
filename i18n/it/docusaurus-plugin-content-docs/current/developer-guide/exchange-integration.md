@@ -10,7 +10,7 @@ sidebar_position: 11
 Tutto ciò di cui un exchange, un custode o un integratore di pagamenti ha bisogno per quotare QOR ed elaborare depositi e prelievi: scegliere un'interfaccia, rilevare i depositi in modo sicuro e firmare i prelievi.
 
 :::note
-Questa guida si riferisce alla mainnet **`qorechain-vladi`** (versione della chain **v3.1.92**). Prova prima l'intero flusso sulla testnet **`qorechain-diana`** — gli endpoint di entrambe le reti sono in [Reti](/appendix/networks#public-endpoints). Se gestisci un tuo full node, mantienilo sulla versione corrente della chain — un nodo non aggiornato non riesce a decodificare i tipi di transazione più recenti e smette di sincronizzarsi.
+Questa guida si riferisce alla mainnet **`qorechain-vladi`** (versione della chain **v3.1.95**). Prova prima l'intero flusso sulla testnet **`qorechain-diana`** — gli endpoint di entrambe le reti sono in [Reti](/appendix/networks#public-endpoints). Se gestisci un tuo full node, mantienilo sulla versione corrente della chain — un nodo non aggiornato non riesce a decodificare i tipi di transazione più recenti e smette di sincronizzarsi.
 :::
 
 ## Scegliere un percorso di integrazione {#choosing-a-path}

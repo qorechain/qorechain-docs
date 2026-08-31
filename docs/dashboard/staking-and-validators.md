@@ -15,12 +15,16 @@ Staking, delegation, and validation happen exclusively on the native (Cosmos) la
 
 ## Review validators
 
+:::caution On mainnet, this page currently shows testnet validators
+The **Validators** page on mainnet is showing the testnet validator set (4 nodes) rather than the actual mainnet set (8 nodes) — a backend data issue, not something wrong with your connection or account. Don't use this page to decide who mainnet's validators are; use the [block explorer](https://explore.qore.network) or a direct chain query (`qorechaind query staking validators`) instead. This is purely an informational mismatch, though: the **Delegate** validator picker on the [Wallet page's Stake tab](/dashboard/wallet#mainnet) reads a different, correct route straight from the chain, so you cannot actually pick or delegate to a validator that doesn't exist on mainnet — you'll just see a different (and correct) list once you get there.
+:::
+
 The page opens with summary cards for the active validator count, total bonded QOR, average commission, and average uptime. Below that is the validator list. Each validator row shows:
 
 - A **rank** and the validator's **moniker** (name), with its address and a copy button.
 - **Voting power** — the validator's bonded stake and its share of the total.
 - **Commission** — the percentage the validator keeps from rewards.
-- **APY** — the annual yield estimate for delegating.
+- **APY** — shown as an em dash (—) rather than a number. QoreChain's emission comes from a custom module the standard yield-estimation endpoint can't see, so a computed figure here would be a guess dressed up as data; showing it as unavailable was a deliberate fix, not a bug. There is currently no endpoint for computing a live, chain-backed staking APY — treat any specific percentage you see quoted elsewhere as unverified, and don't assume a number that appears here later is automatically correct: the underlying formula assumes the standard Cosmos inflation path, which isn't how this chain's emission actually reaches stakers, and would need to be checked against the real mechanism before being trusted.
 - **Status** — for example active or jailed.
 - Operational details: region, uptime, blocks proposed, software version, and last seen.
 
@@ -54,15 +58,15 @@ All four actions live on the **Wallet** page (`/dashboard/wallet`), not on the V
 
 ### Redelegate {#redelegate}
 
-The underlying request contract already supports moving a bond directly from one validator to another (`redelegate`, with a source and a destination validator that must differ) — the same non-custodial, QoreX-signed pattern as delegate and undelegate. As of this writing, though, the dashboard does not yet expose a dedicated Redelegate panel or button for it.
+The dashboard itself does not have a dedicated Redelegate panel — but you don't need one anymore. **QoreX itself now moves stake between validators directly** (app 1.0.8+ and extension 0.2.6+): no 21-day unbonding wait, no lost rewards, and it can even split a move across several destination validators in one transaction. Open **Stake** in QoreX, tap the validator you want to leave, and choose where the stake should go — see [Move stake between validators](/qorex/portfolio-and-staking#move-stake) for the full walkthrough. This is a better answer than anything the dashboard's own request contract could offer, so use QoreX directly for this rather than the workaround below.
 
-Until that panel ships, move a stake to a different validator in two steps using the flows on this page:
+If you're on an older QoreX build without this feature yet, move a stake to a different validator in two steps using the flows on this page instead:
 
 1. **[Undelegate](#undelegate)** the amount from the validator you want to leave.
 2. Wait out the unbonding period shown in that flow — the QOR is not movable or earning during this time.
 3. Once the unbonded QOR is spendable again, **[Delegate](#delegate)** it to the new validator.
 
-This takes longer than a direct redelegation would (no bonding rewards during the 21-day unbonding window), so treat it as a temporary path, not the intended one. It's also worth knowing, fee-wise, that a direct redelegation is normally the most expensive of these staking operations, and that the undelegate step in this workaround already costs noticeably more than a plain delegate on its own — the chain measures gas per operation rather than charging a flat fee, and writing an unbonding-queue entry is real extra work. Delegating alone remains the cheapest of the three.
+This workaround costs 21 days of lost rewards and more in fees than a direct move, so update QoreX rather than relying on it if you can.
 
 ### Undelegate {#undelegate}
 

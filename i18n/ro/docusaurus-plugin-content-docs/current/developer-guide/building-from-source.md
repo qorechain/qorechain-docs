@@ -145,7 +145,7 @@ După o compilare reușită, verificați binarul:
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Comanda `init` ar trebui să creeze un fișier genesis și o configurație de nod în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează pe testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiți cu `--chain-id qorechain-vladi`, rețeaua live care rulează versiunea de chain **v3.1.92**.
+Comanda `init` ar trebui să creeze un fișier genesis și o configurație de nod în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează pe testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiți cu `--chain-id qorechain-vladi`, rețeaua live care rulează versiunea de chain **v3.1.95**.
 
 ## Build Docker
 

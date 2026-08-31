@@ -15,12 +15,16 @@ Stake, delegasyon ve doğrulama işlemleri yalnızca ve sadece native (Cosmos) h
 
 ## Doğrulayıcıları inceleyin
 
+:::caution Mainnet'te bu sayfa şu anda testnet doğrulayıcılarını gösteriyor
+Mainnet'teki **Validators** sayfası, gerçek mainnet setini (8 node) değil testnet doğrulayıcı setini (4 node) gösteriyor — bu bir backend veri sorunu, bağlantınız veya hesabınızla ilgili bir şey değil. Mainnet'in doğrulayıcılarının kim olduğuna karar vermek için bu sayfayı kullanmayın; bunun yerine [block explorer'ı](https://explore.qore.network) veya doğrudan bir zincir sorgusu (`qorechaind query staking validators`) kullanın. Ancak bu yalnızca bilgi düzeyinde bir tutarsızlıktır: [Wallet sayfasının Stake sekmesindeki](/dashboard/wallet#mainnet) **Delegate** doğrulayıcı seçicisi, zincirden doğrudan farklı ve doğru bir rotayı okur, dolayısıyla mainnet'te var olmayan bir doğrulayıcıyı gerçekte seçemez veya ona delegasyon yapamazsınız — oraya vardığınızda yalnızca farklı (ve doğru) bir liste görürsünüz.
+:::
+
 Sayfa; aktif doğrulayıcı sayısı, toplam bonded QOR, ortalama komisyon ve ortalama çalışma süresi için özet kartlarıyla açılır. Bunun altında doğrulayıcı listesi yer alır. Her doğrulayıcı satırı şunları gösterir:
 
 - Bir **sıra** ve doğrulayıcının **moniker'ı** (adı), adresi ve bir kopyalama düğmesiyle birlikte.
 - **Oy gücü** — doğrulayıcının bonded stake'i ve toplam içindeki payı.
 - **Komisyon** — doğrulayıcının ödüllerden aldığı yüzde.
-- **APY** — delegasyon için tahmini yıllık getiri.
+- **APY** — bir sayı yerine bir em dash (—) olarak gösterilir. QoreChain'in emisyonu, standart getiri-tahmin uç noktasının göremediği özel bir modülden gelir, dolayısıyla burada hesaplanmış bir rakam, veri kılığına girmiş bir tahmin olurdu; bunun kullanılamaz olarak gösterilmesi bir hata değil, bilinçli bir düzeltmedir. Şu anda canlı, zincir tarafından desteklenen bir stake APY'si hesaplayan bir uç nokta yoktur — başka bir yerde gördüğünüz belirli bir yüzdeyi doğrulanmamış kabul edin ve burada ileride görünecek bir rakamın otomatik olarak doğru olduğunu varsaymayın: altta yatan formül, standart Cosmos enflasyon yolunu varsayar; oysa bu zincirin emisyonu stake edenlere gerçekte bu şekilde ulaşmaz ve güvenilmeden önce gerçek mekanizmaya karşı kontrol edilmesi gerekir.
 - **Durum** — örneğin aktif veya jailed (hapsedilmiş).
 - İşletimsel ayrıntılar: bölge, çalışma süresi, önerilen bloklar, yazılım sürümü ve son görülme.
 
@@ -54,15 +58,15 @@ Bu dört işlemin tamamı Validators sayfasında değil, **Wallet** sayfasında 
 
 ### Yeniden delegasyon yap {#redelegate}
 
-Altta yatan istek sözleşmesi, bir bond'u bir doğrulayıcıdan doğrudan başka bir doğrulayıcıya taşımayı zaten destekler (`redelegate`, birbirinden farklı olması gereken bir kaynak ve bir hedef doğrulayıcı ile) — delegasyon ve delegasyon geri çekme ile aynı, non-custodial, QoreX ile imzalanan model. Bu yazının yazıldığı sırada dashboard bunun için henüz özel bir Redelegate paneli veya düğmesi sunmuyor.
+Dashboard'ın kendisinde özel bir Redelegate paneli yok — ama artık buna ihtiyacınız yok. **QoreX'in kendisi artık stake'i doğrulayıcılar arasında doğrudan taşıyabiliyor** (uygulama 1.0.8+ ve eklenti 0.2.6+): 21 günlük unbonding beklemesi yok, kayıp ödül yok, hatta tek bir işlemde bir taşımayı birden fazla hedef doğrulayıcıya bölebiliyor. QoreX'te **Stake**'i açın, ayrılmak istediğiniz doğrulayıcıya dokunun ve stake'in nereye gideceğini seçin — tam anlatım için bkz. [Stake'i doğrulayıcılar arasında taşıma](/qorex/portfolio-and-staking#move-stake). Bu, dashboard'ın kendi istek sözleşmesinin sunabileceği herhangi bir şeyden daha iyi bir çözümdür, bu yüzden aşağıdaki geçici çözüm yerine bunun için doğrudan QoreX'i kullanın.
 
-O panel yayınlanana kadar, bu sayfadaki akışları kullanarak bir stake'i farklı bir doğrulayıcıya iki adımda taşıyın:
+Henüz bu özelliğe sahip olmayan eski bir QoreX sürümündeyseniz, bu sayfadaki akışları kullanarak bir stake'i farklı bir doğrulayıcıya iki adımda taşıyın:
 
 1. Ayrılmak istediğiniz doğrulayıcıdan tutarı **[Delegasyonu geri çekin](#undelegate)**.
 2. O akışta gösterilen unbonding süresinin dolmasını bekleyin — bu süre boyunca QOR taşınamaz veya kazanç sağlamaz.
 3. Unbonded QOR tekrar harcanabilir hale geldiğinde, onu yeni doğrulayıcıya **[delege edin](#delegate)**.
 
-Bu, doğrudan bir yeniden delegasyondan daha uzun sürer (21 günlük unbonding penceresi boyunca bonding ödülü yoktur), bu yüzden bunu asıl amaçlanan yol değil, geçici bir yol olarak görün. Ücret açısından da şunu bilmekte fayda var: doğrudan bir yeniden delegasyon normalde bu stake işlemlerinin en pahalısıdır ve bu geçici çözümdeki delegasyonu geri çekme adımı, tek başına düz bir delegasyondan zaten belirgin şekilde daha pahalıya mal olur — zincir sabit bir ücret almak yerine işlem başına gas ölçer ve bir unbonding-kuyruğu girdisi yazmak gerçek anlamda ekstra iştir. Yalnızca delegasyon yapmak bu üçü arasında en ucuz olanı olmaya devam eder.
+Bu geçici çözüm 21 günlük kayıp ödüle ve doğrudan bir taşımadan daha fazla ücrete mal olur, bu yüzden mümkünse buna güvenmek yerine QoreX'i güncelleyin.
 
 ### Delegasyonu geri çek {#undelegate}
 

@@ -18,7 +18,7 @@ QoreChain, programatik erişim için üç temel arayüz sunar:
 Tüm REST uç noktaları JSON döndürür. gRPC uç noktaları Protocol Buffers kullanır ve herhangi bir gRPC istemcisiyle tüketilebilir. RPC arayüzü, konsensüs düzeyinde sorgular ve işlem yayını sağlar.
 
 :::note
-Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri **v3.1.92** zincir sürümüyle canlı) hem de **`qorechain-diana`** test ağında kullanılabilir. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar; herkese açık barındırılan uç noktalar (`rpc/api/evm/svm.qore.host` ve `-testnet` varyantları) [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Bu arayüzler hem **`qorechain-vladi`** ana ağında (7 Haziran 2026'dan beri **v3.1.95** zincir sürümüyle canlı) hem de **`qorechain-diana`** test ağında kullanılabilir. Aşağıdaki temel URL'ler yerel olarak çalışan bir düğüm varsayar; herkese açık barındırılan uç noktalar (`rpc/api/evm/svm.qore.host` ve `-testnet` varyantları) [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## Temel URL'ler

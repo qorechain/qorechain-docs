@@ -14,7 +14,7 @@ RDK și stratul de decontare (settlement) al rollup-urilor reprezintă o capabil
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (chain ID EVM **9800**). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de chain **v3.1.92** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când implementați pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (chain ID EVM **9800**). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de chain **v3.1.95** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când implementați pe mainnet.
 :::
 
 ---

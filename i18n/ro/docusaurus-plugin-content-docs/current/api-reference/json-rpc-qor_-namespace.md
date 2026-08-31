@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-Spațiul de nume `qor_` este disponibil pe mainnet-ul **`qorechain-vladi`** (ID de chain EVM **9801**, live pe versiunea de chain **v3.1.92**) și pe testnet-ul **`qorechain-diana`** (ID de chain EVM **9800**). Exemplele de mai jos presupun un nod local; înlocuiți cu endpoint-ul de mainnet sau testnet al furnizorului dvs. pentru acces la distanță.
+Spațiul de nume `qor_` este disponibil pe mainnet-ul **`qorechain-vladi`** (ID de chain EVM **9801**, live pe versiunea de chain **v3.1.95**) și pe testnet-ul **`qorechain-diana`** (ID de chain EVM **9800**). Exemplele de mai jos presupun un nod local; înlocuiți cu endpoint-ul de mainnet sau testnet al furnizorului dvs. pentru acces la distanță.
 :::
 
 ---

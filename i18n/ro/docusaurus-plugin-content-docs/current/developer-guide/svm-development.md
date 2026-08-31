@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un mediu de execuție **Solana Virtual Machine (SVM)**, care permite dezvoltatorilor să implementeze și să execute programe SBF/BPF folosind uneltele Solana cu care sunt deja obișnuiți. Modulul SVM expune o interfață JSON-RPC compatibilă cu Solana pe **portul 8899**, pe care `qorechaind start` o pornește automat (vezi [Server JSON-RPC](#json-rpc-server) mai jos).
 
 :::note
-Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`**, live din 7 iunie 2026, rulând versiunea de chain **v3.1.92**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet.
+Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`**, live din 7 iunie 2026, rulând versiunea de chain **v3.1.95**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet.
 :::
 
 ---

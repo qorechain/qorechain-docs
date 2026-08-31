@@ -10,7 +10,7 @@ sidebar_position: 9
 Ce guide explique comment créer un validateur sur le réseau QoreChain, comprendre le système de classification des pools, enregistrer une clé PQC pour une sécurité résistante au quantique, et surveiller votre nœud.
 
 :::note
-Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.92**. Le testnet **`qorechain-diana`** (EVM chain ID **9800**) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible.
+Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.95**. Le testnet **`qorechain-diana`** (EVM chain ID **9800**) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible.
 :::
 
 ---
@@ -18,16 +18,26 @@ Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif d
 ## Prérequis
 
 * Un nœud `qorechaind` entièrement synchronisé (voir [Connexion au testnet](/getting-started/connecting-to-testnet))
-* Un compte approvisionné avec au moins **1,000 QOR** (1,000,000,000 uqor) pour l'auto-délégation initiale
+* Un compte approvisionné avec au moins **100 000 QOR** (100 000 000 000 uqor) pour l'auto-délégation initiale — ce minimum est appliqué on-chain et `create-validator` est rejeté en dessous de ce seuil
+* Une **licence `validator_operator`** active sur votre compte — voir la note ci-dessous ; sans elle, `create-validator` échoue avec `ErrUnauthorized` quel que soit le montant de QOR auto-misé
 * Une bonne connaissance du modèle de [Staking et délégation](/user-guide/staking-and-delegation)
 
 ---
 
 ## Création d'un validateur
 
+### Verrou de licence : `validator_operator` {#validator-license-gate}
+
+`create-validator` est soumis à deux contrôles indépendants, tous deux appliqués on-chain, et vous avez besoin des deux — une auto-mise importante ne suffit pas à elle seule :
+
+1. **Auto-mise minimale de 100 000 QOR.**
+2. **Une licence `validator_operator` active** sur le compte qui soumet la transaction.
+
+Le champ `expires_at` d'une licence est une **hauteur de bloc**, pas une date ni une durée — `0` signifie sans expiration. Si elle est absente ou expirée, `create-validator` échoue avec `ErrUnauthorized`, quel que soit le montant auto-misé ; c'est la cause la plus fréquente d'un échec inexpliqué malgré un compte bien approvisionné. Ce verrou existe précisément parce que le lane d'exécution EVM ne peut ni le voir ni l'appliquer (un seul décorateur ante à cet endroit le contournerait entièrement) — c'est l'une des raisons pour lesquelles le staking et la validation restent exclusivement sur le lane natif.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -42,7 +52,7 @@ qorechaind tx staking create-validator \
 
 | Paramètre                      | Description                                        |
 | ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | Montant de l'auto-délégation (mise minimale)       |
+| `--amount`                     | Montant de l'auto-délégation — **minimum 100 000 QOR** (`100000000000uqor`) |
 | `--pubkey`                     | Clé publique de consensus du validateur (ed25519)  |
 | `--moniker`                    | Nom lisible pour votre validateur                  |
 | `--commission-rate`            | Taux de commission initial (par ex., 0.10 = 10%)   |

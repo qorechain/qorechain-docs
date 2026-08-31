@@ -10,7 +10,7 @@ sidebar_position: 3
 Vous pouvez déployer un rollup spécifique à une application de trois façons : via le **Dashboard** (un assistant guidé, sans code), via la **CLI** de la chaîne (`qorechaind`, contrôle total sur la transaction on-chain), ou de façon programmatique avec le **RDK TypeScript** (`@qorechain/rdk` plus le générateur `create-qorechain-rollup`). Cette page couvre les trois méthodes, ainsi que le cycle de vie de l'opérateur et les commandes de batch.
 
 :::note
-Les commandes ci-dessous ciblent le testnet **`qorechain-diana`**. Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — substituez le chain ID et les endpoints du mainnet lors d'un déploiement sur mainnet. Validez chaque déploiement sur testnet d'abord.
+Les commandes ci-dessous ciblent le testnet **`qorechain-diana`**. Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.95** — substituez le chain ID et les endpoints du mainnet lors d'un déploiement sur mainnet. Validez chaque déploiement sur testnet d'abord.
 :::
 
 ---

@@ -26,10 +26,8 @@ Binarul curent, genesis-ul, peers, seeds și un punct de încredere pentru state
 Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punct de încredere actualizat orar) și `minCompatible`. Pașii de instalare și conectare de mai jos preiau acest manifest și folosesc valorile lui curente.
 :::
 
-:::caution v3.1.92 sau mai nou necesar pentru un nod care se alătură de la zero
-Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.92 sau mai nou** — versiunile mai vechi (chiar dacă câmpul `minCompatible` al manifestului nu a fost încă actualizat pentru a reflecta acest lucru) se vor opri la primul bloc care conține o tranzacție în timpul redării, din cauza unui bug de măsurare a gazului acum remediat.
-
-**Manifestul însuși poate rămâne în urma acestui prag** — este promovat mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj, iar la momentul redactării acestui text, câmpul `binary.url` al manifestului de mainnet încă indică o versiune anterioară v3.1.92. Verificați câmpul `"version"` al manifestului înainte de a avea încredere în `binary.url`; dacă este în urma v3.1.92, luați binarul din [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) în schimb (verificându-i suma de control publicată în același mod) sau compilați din sursă, în loc de a folosi manifestul.
+:::caution v3.1.94 sau mai nou necesar pentru un nod care se alătură de la zero
+Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.94 sau mai nou**, din două motive care se cumulează: v3.1.92 a remediat un bug de măsurare a gazului care altfel oprește redarea la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pe emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acelui upgrade se oprește din nou încercând să redea starea dincolo de aceeași înălțime. v3.1.95 este versiunea curentă recomandată (o actualizare de securitate continuă, care nu rupe consensul); `minCompatible` este `3.1.94`. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas anterior în urma acestui prag — verificați câmpul său `"version"` înainte de a avea încredere în `binary.url`, și treceți la [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) sau compilați din sursă dacă este în urmă.
 :::
 
 ---
@@ -73,19 +71,19 @@ Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM 
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.92** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
+O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.95** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Folosiți acest fișier ca sursă pentru valorile de binar, genesis și peer din pașii de mai jos — verificați `jq -r .minCompatible latest.json`, dar rețineți că **pragul v3.1.92** de mai sus rămâne valabil chiar dacă acel câmp este în urmă.
+Folosiți acest fișier ca sursă pentru valorile de binar, genesis și peer din pașii de mai jos — verificați `jq -r .minCompatible latest.json`, dar rețineți că **pragul v3.1.94** de mai sus rămâne valabil chiar dacă acel câmp este în urmă.
 
 ### 3. Descărcați și verificați genesis-ul
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Instantaneele sunt publicate sub **nume de fișiere marcate cu înălțimea blocului**, care se schimbă regulat — verificați [download.qore.host](https://download.qore.host) pentru cel mai recent instantaneu și suma sa de control SHA-256 și verificați întotdeauna înainte de a extrage. Rețineți că **minimul v3.1.92** de mai sus se aplică și redării dintr-un instantaneu.
+Instantaneele sunt publicate sub **nume de fișiere marcate cu înălțimea blocului**, care se schimbă regulat — verificați [download.qore.host](https://download.qore.host) pentru cel mai recent instantaneu și suma sa de control SHA-256 și verificați întotdeauna înainte de a extrage. Rețineți că **minimul v3.1.94** de mai sus se aplică și redării dintr-un instantaneu.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea de lanț.** Rulați tag-ul live (**v3.1.92** pe mainnet) și urmăriți versiunile oficiale pentru upgrade-uri coordonate.
+1. **Fixați versiunea de lanț.** Rulați tag-ul live (**v3.1.95** pe mainnet) și urmăriți versiunile oficiale pentru upgrade-uri coordonate.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 

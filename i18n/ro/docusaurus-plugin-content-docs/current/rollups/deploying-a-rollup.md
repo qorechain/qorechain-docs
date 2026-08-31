@@ -10,7 +10,7 @@ sidebar_position: 3
 Poți implementa un rollup specific aplicației în trei moduri: prin **Dashboard** (un asistent ghidat, fără cod), prin **CLI**-ul lanțului (`qorechaind`, control total asupra tranzacției on-chain) sau programatic cu **RDK-ul TypeScript** (`@qorechain/rdk` plus schela `create-qorechain-rollup`). Această pagină acoperă toate cele trei moduri, plus ciclul de viață al operatorului și comenzile de batch.
 
 :::note
-Comenzile de mai jos vizează testnetul **`qorechain-diana`**. Mainnetul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de lanț **v3.1.92** — înlocuiește chain ID-ul și endpoint-urile cu cele de mainnet atunci când implementezi pe mainnet. Validează fiecare implementare mai întâi pe testnet.
+Comenzile de mai jos vizează testnetul **`qorechain-diana`**. Mainnetul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de lanț **v3.1.95** — înlocuiește chain ID-ul și endpoint-urile cu cele de mainnet atunci când implementezi pe mainnet. Validează fiecare implementare mai întâi pe testnet.
 :::
 
 ---

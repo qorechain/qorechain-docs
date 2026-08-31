@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü resmi genesis dosyası, eşler (peers) ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.92** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.95** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
 :::
 
 ## Genel Erişime Açık Uç Noktalar
@@ -54,10 +54,8 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir.
 
-:::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.92 veya üzeri gerekli
-Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Manifestonun `minCompatible` alanından bağımsız olarak, **genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için v3.1.92 veya üzeri gereklidir** — daha eski sürümler, işlem içeren ilk blokta yeniden oynatmayı (replay) durduran, artık düzeltilmiş bir gaz ölçüm hatası nedeniyle tam senkronizasyonu tamamlayamaz. Zaten yetişmiş durumda olan ve daha eski bir sürüm çalıştıran bir düğüm de bir sonraki fırsatta yükseltilmelidir, çünkü güncel olmayan bir düğüm daha yeni işlem türlerini çözümleyemez ve bir blokta böyle bir işlem göründüğü anda senkronizasyonu durdurur.
-
-**Manifestonun gerçekte neyi sunduğunu güvenmeden önce kontrol edin.** Manifesto kasıtlı olarak kademeli yayına alınır — önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ — bu nedenle yukarıdaki sürüm eşiğinin gerisinde kalabilir; bu yazının yazıldığı sırada ana ağ manifestosunun kendisi hâlâ v3.1.92 öncesi bir ikili dosyayı işaret etmektedir ki bu, bu uyarının taze bir senkronizasyon için kullanılmamasını söylediği derlemenin ta kendisidir. `binary.url` değerine güvenmeden önce manifestonun `"version"` alanını v3.1.92 ile karşılaştırın; hâlâ gerideyse, [qorechain-core GitHub sürümleri](https://github.com/qorechain/qorechain-core/releases) sayfasından v3.1.92 (veya sonrasını) edinin (etiketin sağlama toplamını aynı şekilde doğrulayın) ya da [kaynak koddan derleyin](/developer-guide/building-from-source).
+:::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.94 veya üzeri gerekli
+Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için eşik, üst üste yığılmış iki bağımsız nedenden dolayı **v3.1.94 veya üzeridir**: v3.1.92, aksi takdirde işlem içeren ilk blokta yeniden oynatmayı (replay) durduran bir gaz ölçüm hatasını düzeltti ve o zamandan beri ana ağ, v3.1.94 yönetişim (governance) yükseltmesini geçti (emisyon üzerinde 2.122.074 yüksekliğinde uygulanan sabit bir üst sınır) — bu yükseltmenin işleyicisinden yoksun bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.95 mevcut önerilen sürümdür (sürekli bir güvenlik güncellemesi; `minCompatible` değeri `3.1.94`'tür). `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` alanını mevcut eşikle karşılaştırın — manifesto kasıtlı olarak kademeli yayına alınır (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ) ve daha önce sürüm eşiğinin gerisinde kalmıştır.
 :::
 
 ### Kaynak koddan derleme
@@ -256,7 +254,7 @@ http://localhost:1317
 | ----------------- | --------------------------------------- |
 | Zincir kimliği     | `qorechain-vladi`                      |
 | EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
-| Zincir sürümü      | v3.1.92                                |
+| Zincir sürümü      | v3.1.95                                |
 | Canlıya geçiş tarihi | 7 Haziran 2026 23:59 UTC             |
 | Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
 | Asgari gaz fiyatı  | `0.1uqor`                              |

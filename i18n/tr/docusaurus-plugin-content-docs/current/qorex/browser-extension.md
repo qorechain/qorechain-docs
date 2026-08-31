@@ -25,11 +25,11 @@ Mağaza incelemeleri farklı zamanlarda sonuçlandığı için yayınlanan sür�
 
 | Tarayıcı | Yayınlanan sürüm |
 |---|---|
-| **Firefox** | **0.2.2** |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 gönderildi, hâlâ incelemede; bu inceleme sonuçlanana kadar listeleme yeni gönderimlere kapalı, dolayısıyla 0.2.2 orada henüz gönderilmedi) |
-| **Safari (macOS)** | kendi `1.x` numaralandırmasını kullanan **QoreX Wallet** macOS uygulamasının içinde dağıtılır — Mac App Store şu anda **1.3** sürümünü sunuyor (0.2.2 uzantısını taşır) |
+| **Firefox** | **0.2.6** |
+| **Safari (macOS)** | kendi `1.x` numaralandırmasını kullanan **QoreX Wallet** macOS uygulamasının içinde dağıtılır — Mac App Store şu anda **1.6** sürümünü sunuyor (0.2.6 uzantısını taşır) |
+| **Chrome / Chromium** | Ağustos ayı sonu itibarıyla uzun bir mağaza incelemesinde takılı kalmıştı — burada bir sayıya güvenmek yerine güncel sürümü doğrudan [Chrome Web Store listelemesinden](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) kontrol edin |
 
-Daha yeni özellikler tarayıcınızda henüz yayında olmayabilir — burada açıklanan bir şeyin kullanılabilir olduğunu varsaymadan önce yukarıdaki tabloyu kontrol edin. Dashboard, uzantınızın güncellenmesi gerektiğini söylüyorsa, bu genel olarak sürümünüzün eski olduğu anlamına gelmez; söz konusu işlem için (genellikle staking için 0.2.2) belirli bir minimum sürüm gerektiği anlamına gelir.
+Daha yeni özellikler tarayıcınızda henüz yayında olmayabilir — burada açıklanan bir şeyin kullanılabilir olduğunu varsaymadan önce yukarıdaki tabloyu kontrol edin. Dashboard, uzantınızın güncellenmesi gerektiğini söylüyorsa, bu söz konusu işlem için belirli bir minimum sürüm gerektiği anlamına gelir (örneğin staking için 0.2.2) — genel olarak derlemenizin eski olduğu anlamına gelmez.
 
 **0.1.5** sürümü [Solana Wallet Standard keşfini](#standards), [geçiş anahtarıyla kilit açmayı](#security), tamamen uygulanmış bir [SVM dApp hattını](#standards) ve [Dashboard bağlantı köprüsünü](#dashboard-bridge) ekledi. (0.1.4 sürümü hiç yayınlanmadı — içerdiği değişiklikler kullanıcılara 0.1.5 ile ulaşıyor.)
 
@@ -77,7 +77,7 @@ Açılır pencereden, mobil uygulamada olduğu gibi, bu hesabın adresi için be
 3. QoreX handle'ı çözümler ve herhangi bir şey imzalamadan önce size **çözümlenmiş adresi** gösterir — bunu her zaman beklediğinizle karşılaştırın.
 4. Tutarı girin ve onaylayın.
 
-Çözümleme, QoreX onu kullanmadan önce iki şekilde doğrulanır: uzantıya gömülü bir güven anahtarına karşı kontrol edilen bir kayıt defteri onayı ve handle sahibinin talep üzerindeki kendi imzası. Bu kontrollerden herhangi birini geçemeyen bir yanıt doğrudan reddedilir — QoreX doğrulanmamış bir adresi göstermeye geri düşmez. Belirli bir handle'a ilk kez ödeme yaptığınızda QoreX çözümlediği adresi hatırlar (sabitler); o handle daha sonra **farklı** bir adrese çözümlenirse QoreX durur ve devam edip etmeyeceğinize karar verebilmeniz için hem eski hem yeni adresi tam olarak gösterir.
+Çözümleme, QoreX onu kullanmadan önce iki şekilde doğrulanır: uzantıya gömülü bir güven anahtarına karşı kontrol edilen bir kayıt defteri onayı ve handle sahibinin talep üzerindeki kendi imzası. Bu kontrollerden herhangi birini geçemeyen bir yanıt doğrudan reddedilir — QoreX doğrulanmamış bir adresi göstermeye geri düşmez. Belirli bir handle'a ilk kez ödeme yaptığınızda QoreX çözümlediği adresi hatırlar (sabitler); o handle daha sonra **farklı** bir adrese çözümlenirse QoreX durur ve devam edip etmeyeceğinize karar verebilmeniz için hem eski hem yeni adresi tam olarak gösterir. Bu hafıza **tarayıcı başına** yaşar — aynı handle'a farklı bir tarayıcıdan veya bilgisayardan ilk kez ödeme yapmak orada da yeni olarak gösterilir. Bu beklenen bir durumdur, hata değildir.
 
 ## Al {#receive}
 
@@ -91,6 +91,7 @@ Açılır pencerede **Al**'a dokunarak `qor1…` adresinizi (QoreChain simgesi g
 2. Ekran, komisyonlarıyla birlikte aktif validatörleri, o anda staking'e ayrılmış toplamınızı ve talep edilmeyi bekleyen ödülleri listeler. Ağın **hapse attığı (jailed)** validatörler listeden çıkarılır — bunlardan birine delege etmek asla istediğiniz şey değildir.
 3. Delege etmek için bir validatör ve bir tutar seçin, ardından onaylayın. QoreX, tıpkı bir Gönder işlemi gibi, zorunlu hibrit post-kuantum imzayla imzalar.
 4. **Unstake** ve **talep et** aynı ekrandan çalışır. Unstake işlemi 21 günlük unbonding süresini başlatır — bunun ne anlama geldiği için bkz. [Staking ve Delegasyon](/user-guide/staking-and-delegation).
+5. **0.2.6**'dan itibaren, **stake'inizi başka bir validatöre taşıyabilirsiniz** de (redelegate) — unbonding beklemesi yok, ceza yok ve ödüller tüm süreç boyunca akmaya devam ediyor. Nasıl çalıştığı için bkz. [Stake'i validatörler arasında taşıma](/qorex/portfolio-and-staking#move-stake) (mekanik, uygulama ile uzantı arasında aynıdır).
 
 Staking, delegasyon ve ödüller yalnızca **Native** hattında gerçekleşir, hiçbir zaman bir EVM precompile üzerinden değil.
 

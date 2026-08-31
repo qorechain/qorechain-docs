@@ -24,7 +24,9 @@ La proposition de passkey n'apparaît qu'après une connexion par **code e-mail*
 
 ## Plusieurs comptes à partir d'une seule phrase {#accounts}
 
-Paramètres → **Vos comptes** (également accessible sous **Adresses**) vous permet de créer, changer et renommer jusqu'à **20 comptes**, tous dérivés de la même phrase de récupération à 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte possède sa propre adresse distincte `qor1…` avec son propre solde et — comme un handle se lie à une **adresse**, et non au portefeuille dans son ensemble — son propre @handle optionnel. Le compte actif est celui utilisé par Envoyer, Recevoir, le Staking et le navigateur dApp. Depuis la **0.2.2**, l'extension de navigateur dispose également de cette fonctionnalité — voir [Plusieurs comptes à partir d'une seule phrase](/qorex/browser-extension#wallet).
+Paramètres → **Vos comptes** (également accessible sous **Adresses**) vous permet de créer, changer et renommer jusqu'à **20 comptes**, tous dérivés de la même phrase de récupération à 24 mots (il n'y a rien de plus à sauvegarder). Chaque compte possède sa propre adresse distincte `qor1…` avec son propre solde et — comme un handle se lie à une **adresse**, et non au portefeuille dans son ensemble — son propre @handle optionnel. Le compte actif est celui utilisé par Envoyer, Recevoir, le Staking et le navigateur dApp — changer de compte déplace tout avec lui, et l'application indique sur quel compte vous êtes dès qu'il en existe plus d'un. Depuis la **0.2.2**, l'extension de navigateur dispose également de cette fonctionnalité — voir [Plusieurs comptes à partir d'une seule phrase](/qorex/browser-extension#wallet).
+
+Une seule phrase de récupération restaure tous les comptes, mais chaque compte enregistre sa propre clé post-quantique ML-DSA-87 on-chain la première fois qu'il effectue une transaction — comme pour un portefeuille classique à compte unique — de sorte qu'ouvrir et utiliser un nouveau compte entraîne le coût d'enregistrement de clé propre à ce compte, payé une seule fois.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ Ce sont deux actions distinctes et sans rapport. Réserver un @handle permet **a
 **Paramètres → Compte lié** connecte votre portefeuille QoreX et votre compte Dashboard dans les deux sens :
 
 1. Saisissez le code à 8 caractères affiché par le Dashboard, **ou** générez-en un dans QoreX (valable 10 minutes) et saisissez-le dans le Dashboard.
-2. Une fois liés, votre @handle et vos adresses connectées apparaissent des deux côtés.
-3. Dissociez à tout moment.
+2. Si vous avez [plusieurs comptes](#accounts), la fenêtre d'approbation propre à QoreX vous laisse choisir **lequel** se lie — elle ne présuppose pas le compte actuellement actif.
+3. Une fois liés, votre @handle et vos adresses connectées apparaissent des deux côtés.
+4. Dissociez à tout moment.
 
 Se connecter *via* **Continuer avec le Dashboard** lie les deux implicitement — il n'y a rien de plus à faire.
 

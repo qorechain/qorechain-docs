@@ -10,7 +10,7 @@ sidebar_position: 11
 Todo lo que un exchange, un custodio o un integrador de pagos necesita para listar QOR y procesar depósitos y retiros: elegir una interfaz, detectar depósitos de forma segura y firmar retiros.
 
 :::note
-Esta guía se centra en la mainnet **`qorechain-vladi`** (versión de la cadena **v3.1.92**). Ensaye primero el flujo completo en la testnet **`qorechain-diana`** — los endpoints de ambas redes están en [Redes](/appendix/networks#public-endpoints). Si opera su propio nodo completo, manténgalo en la versión de cadena actual — un nodo desactualizado no puede decodificar los tipos de transacción más recientes y deja de sincronizarse.
+Esta guía se centra en la mainnet **`qorechain-vladi`** (versión de la cadena **v3.1.95**). Ensaye primero el flujo completo en la testnet **`qorechain-diana`** — los endpoints de ambas redes están en [Redes](/appendix/networks#public-endpoints). Si opera su propio nodo completo, manténgalo en la versión de cadena actual — un nodo desactualizado no puede decodificar los tipos de transacción más recientes y deja de sincronizarse.
 :::
 
 ## Elegir una ruta de integración {#choosing-a-path}

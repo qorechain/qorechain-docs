@@ -18,7 +18,7 @@ QoreChain はプログラムからのアクセス向けに、3つの主要なイ
 すべての REST エンドポイントは JSON を返します。gRPC エンドポイントは Protocol Buffers を使用し、任意の gRPC クライアントで利用できます。RPC インターフェースはコンセンサスレベルのクエリとトランザクションのブロードキャストを提供します。
 
 :::note
-これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日よりチェーンバージョン **v3.1.92** で稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイント（`rpc/api/evm/svm.qore.host` およびその `-testnet` バリアント）については [ネットワーク](/appendix/networks#public-endpoints) を参照してください。
+これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日よりチェーンバージョン **v3.1.95** で稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイント（`rpc/api/evm/svm.qore.host` およびその `-testnet` バリアント）については [ネットワーク](/appendix/networks#public-endpoints) を参照してください。
 :::
 
 ## ベース URL

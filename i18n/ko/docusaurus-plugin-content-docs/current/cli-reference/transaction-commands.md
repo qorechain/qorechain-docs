@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-라이브 메인넷(체인 버전 **v3.1.92**)에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 생략하면 클라이언트는 로컬 설정의 `chain-id`를 사용합니다.
+라이브 메인넷(체인 버전 **v3.1.95**)에 브로드캐스트하려면 `--chain-id qorechain-vladi`를, 테스트넷에는 `--chain-id qorechain-diana`를 설정하세요. 생략하면 클라이언트는 로컬 설정의 `chain-id`를 사용합니다.
 :::
 
 공통 플래그는 모든 `tx` 하위 명령어에 적용됩니다:

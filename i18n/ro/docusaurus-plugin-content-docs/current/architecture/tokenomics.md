@@ -23,7 +23,7 @@ QoreChain folosește un model economic cu **ofertă fixă**, centrat pe tokenul 
 | **Prefix Bech32**     | `qor` (conturi: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea de lanț **v3.1.92**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) folosește același model economic.
+Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea de lanț **v3.1.95**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**) folosește același model economic.
 :::
 
 ---
@@ -39,8 +39,8 @@ Acesta este un **model cu ofertă fixă și un buget de emisie finit**, nu un mo
 
 ### Programul recompenselor de staking {#staking-reward-schedule}
 
-:::note O modificare a acestui program, aprobată de guvernanță, este în așteptare
-O propunere de guvernanță adoptată modifică modul în care este eliberată emisia în cadrul acestui buget, urmând să intre în vigoare la o înălțime de bloc viitoare, nu imediat. Cifrele de mai jos reprezintă programul dinaintea modificării — verifică [Istoricul versiunilor](/appendix/version-history) pentru a vedea dacă modificarea a intrat deja în vigoare înainte de a te baza pe o valoare anume, și tratează orice cifră de APY sau de emisie zilnică citată în altă parte chiar acum ca fiind provizorie până atunci.
+:::note Emisia a fost plafonată de guvernanță pe 26 august 2026
+Programul descrescător de mai jos a fost designul original, țintit către o rețea matură cu cea mai mare parte din ofertă legată prin staking (bonded). Măsurat în raport cu rețeaua așa cum stătea de fapt — aproximativ 6,8M QOR bonded, mult sub acea țintă — el plătea în jur de 20% din stake-ul bonded *pe zi*. Propunerea de guvernanță #4 a trecut cu 100% din stake-ul bonded și s-a aplicat la înălțimea 2.122.074 (2026-08-26 03:27 UTC, versiunea de lanț v3.1.94): emisia per epocă a scăzut de la 2.153.583 QOR la **16.239 QOR**, sub un nou plafon dur, cumulativ, de **114.285.714 QOR** pentru acest modul — o decizie de design, nu o remediere de bug. Până la intrarea în vigoare a plafonului, **104.680.531 QOR (91,6%) fuseseră deja emiși** sub vechiul program; la noua rată, se estimează că soldul rămas va dura încă aproximativ **1 an și 11 luni**, după care acest modul încetează definitiv să mai emită, iar recompensele validatorilor/stakerilor provin doar din taxele de tranzacție (vezi [Distribuția taxelor](#fee-distribution) mai jos). Tabelul de mai jos este păstrat ca referință a designului original — nu mai descrie rata de plată live.
 :::
 
 Recompensele de staking sunt distribuite din bugetul de emisie de 590.000.000 QOR pe un program descrescător:
@@ -52,7 +52,7 @@ Recompensele de staking sunt distribuite din bugetul de emisie de 590.000.000 QO
 | Anii 3–4   | 5–8% APY                | 85.000.000 QOR pe an          |
 | Anul 5+     | Determinat de guvernanță   | ~186.000.000 QOR rămași       |
 
-Intervalele APY sunt ținte care depind de raportul de bonding; cifrele bugetului de emisie sunt plafoanele dure pentru QOR eliberat către stakeri în fiecare perioadă. Din Anul 5 încolo, cei ~186.000.000 QOR rămași sunt eliberați la o rată stabilită de guvernanță.
+Intervalele de APY au fost țintele de design originale per perioadă; ele nu reprezintă rata de plată live acum că emisia este plafonată conform descrierii de mai sus. QoreChain nu expune momentan un endpoint de interogare pentru calcularea unei cifre de APY live — tratează orice procent specific de randament de staking pe care îl vezi citat (inclusiv, istoric, pe această pagină) ca fiind neverificabil în raport cu lanțul de astăzi, nu ca pe o cifră pe care să te bazezi în planificare.
 
 ---
 
@@ -75,7 +75,7 @@ Modulul `x/burn` implementează un sistem de ardere a tokenurilor cu 10 canale. 
 | 9  | `tge`              | Token generation event     | Arderi unice la genesis (80.000.000 QOR)       |
 | 10 | `rollup_create`    | Implementare de rollup          | 1% din stake-ul de creare a rollup-ului ars            |
 
-### Distribuția taxelor
+### Distribuția taxelor {#fee-distribution}
 
 Toate taxele de tranzacție colectate de rețea sunt împărțite între cinci destinații, după cum se arată mai jos. Cotele sunt impuse on-chain și însumează întotdeauna exact 100%.
 
@@ -100,6 +100,10 @@ Toate taxele de tranzacție colectate de rețea sunt împărțite între cinci d
 | **Light Nodes** | 3%    | Distribuite nodurilor light pentru servirea datelor rețelei                  |
 
 Cotele sunt impuse on-chain și trebuie să însumeze întotdeauna exact 100%.
+
+:::note Acestea sunt cotele configurate, nu o măsurătoare live confirmată
+Tabelul de mai sus reflectă parametrii configurați ai modulului `x/burn`. Un efort de măsurare pe starea live a lanțului a constatat că cota efectivă combinată, ajunsă efectiv la validatori și stakeri împreună, este mai mică decât cei 47% pe care aceste două rânduri îi însumează. Nu am reconciliat încă independent această discrepanță, așa că această pagină prezintă valorile de design configurate, fără să afirme vreuna dintre cele două cifre drept cea live confirmată — interoghează direct parametrii și statisticile `x/burn` (vezi [Endpointuri REST/gRPC](/api-reference/rest-grpc-endpoints)) dacă cazul tău de utilizare depinde de cota exactă curentă.
+:::
 
 ### Parametrii de ardere
 

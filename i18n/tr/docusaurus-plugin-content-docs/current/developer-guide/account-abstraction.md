@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain, `x/abstractaccount` modülü aracılığıyla **protokol düzeyinde hesap soyutlama** sağlar. Bu, harici akıllı sözleşme altyapısına ihtiyaç duymadan esnek kimlik doğrulama kuralları, oturum anahtarları, harcama limitleri ve sosyal kurtarma ile programlanabilir hesapları mümkün kılar.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve **v3.1.95** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 ## Genel Bakış

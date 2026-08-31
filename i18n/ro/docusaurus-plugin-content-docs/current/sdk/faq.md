@@ -90,7 +90,7 @@ cuvintele; folosiți `validateMnemonic` pentru a testa o frază.
 
 Trimiterea hibridă (clasic + ML-DSA-87) este **activă și obligatorie** pe calea
 Native — tranzacțiile Native doar clasice sunt respinse on-chain (chain
-v3.1.92). Înainte ca o tranzacție hibridă să treacă verificarea PQC, cheia
+v3.1.95). Înainte ca o tranzacție hibridă să treacă verificarea PQC, cheia
 publică PQC a semnatarului trebuie să fie înregistrată
 (`MsgRegisterPQCKeyV2`), sau puteți seta `includePqcPublicKey: true` pentru a o
 încorpora în vederea înregistrării automate la prima utilizare. Lanțul acceptă

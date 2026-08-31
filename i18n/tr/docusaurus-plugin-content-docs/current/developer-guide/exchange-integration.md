@@ -10,7 +10,7 @@ sidebar_position: 11
 Bir borsanın, saklama kuruluşunun (custodian) veya ödeme entegratörünün QOR'u listelemek ve para yatırma/çekme işlemlerini gerçekleştirmek için ihtiyaç duyacağı her şey: bir arayüz seçmek, yatırmaları güvenli şekilde tespit etmek ve çekim işlemlerini imzalamak.
 
 :::note
-Bu rehber **`qorechain-vladi`** mainnet'ini (zincir sürümü **v3.1.92**) hedefler. Önce tüm akışı **`qorechain-diana`** testnet'inde prova edin — her iki ağın uç noktaları da [Ağlar](/appendix/networks#public-endpoints) sayfasındadır. Kendi tam düğümünüzü (full node) çalıştırıyorsanız, onu güncel zincir sürümünde tutun — güncel olmayan bir düğüm daha yeni işlem türlerini çözemez ve senkronizasyonu durur.
+Bu rehber **`qorechain-vladi`** mainnet'ini (zincir sürümü **v3.1.95**) hedefler. Önce tüm akışı **`qorechain-diana`** testnet'inde prova edin — her iki ağın uç noktaları da [Ağlar](/appendix/networks#public-endpoints) sayfasındadır. Kendi tam düğümünüzü (full node) çalıştırıyorsanız, onu güncel zincir sürümünde tutun — güncel olmayan bir düğüm daha yeni işlem türlerini çözemez ve senkronizasyonu durur.
 :::
 
 ## Entegrasyon yolu seçme {#choosing-a-path}

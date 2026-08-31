@@ -18,7 +18,7 @@ QoreChain stellt drei primäre Schnittstellen für den programmatischen Zugriff 
 Alle REST-Endpunkte liefern JSON zurück. gRPC-Endpunkte verwenden Protocol Buffers und können mit jedem gRPC-Client genutzt werden. Die RPC-Schnittstelle stellt Abfragen auf Konsensebene sowie das Broadcasten von Transaktionen bereit.
 
 :::note
-Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026 unter Chain-Version **v3.1.92**) als auch im **`qorechain-diana`**-Testnet verfügbar. Die unten angegebenen Basis-URLs gehen von einem lokal laufenden Node aus; die öffentlich gehosteten Endpunkte (`rpc/api/evm/svm.qore.host` und ihre `-testnet`-Varianten) sind unter [Networks](/appendix/networks#public-endpoints) aufgeführt.
+Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026 unter Chain-Version **v3.1.95**) als auch im **`qorechain-diana`**-Testnet verfügbar. Die unten angegebenen Basis-URLs gehen von einem lokal laufenden Node aus; die öffentlich gehosteten Endpunkte (`rpc/api/evm/svm.qore.host` und ihre `-testnet`-Varianten) sind unter [Networks](/appendix/networks#public-endpoints) aufgeführt.
 :::
 
 ## Basis-URLs

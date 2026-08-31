@@ -10,7 +10,7 @@ sidebar_position: 11
 Alles, was eine Börse, ein Verwahrer oder ein Zahlungsintegrator benötigt, um QOR zu listen und Einzahlungen sowie Auszahlungen zu verarbeiten: die Wahl einer Schnittstelle, das sichere Erkennen von Einzahlungen und das Signieren von Auszahlungen.
 
 :::note
-Dieser Leitfaden richtet sich an das **`qorechain-vladi`**-Mainnet (Chain-Version **v3.1.92**). Üben Sie den gesamten Ablauf zunächst im **`qorechain-diana`**-Testnet — die Endpunkte für beide Netzwerke finden Sie unter [Networks](/appendix/networks#public-endpoints). Wenn Sie einen eigenen Full Node betreiben, halten Sie ihn auf der aktuellen Chain-Version — ein veralteter Node kann neuere Transaktionstypen nicht dekodieren und stoppt die Synchronisierung.
+Dieser Leitfaden richtet sich an das **`qorechain-vladi`**-Mainnet (Chain-Version **v3.1.95**). Üben Sie den gesamten Ablauf zunächst im **`qorechain-diana`**-Testnet — die Endpunkte für beide Netzwerke finden Sie unter [Networks](/appendix/networks#public-endpoints). Wenn Sie einen eigenen Full Node betreiben, halten Sie ihn auf der aktuellen Chain-Version — ein veralteter Node kann neuere Transaktionstypen nicht dekodieren und stoppt die Synchronisierung.
 :::
 
 ## Wahl des Integrationspfads {#choosing-a-path}

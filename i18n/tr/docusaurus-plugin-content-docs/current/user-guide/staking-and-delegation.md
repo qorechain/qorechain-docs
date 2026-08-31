@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in Üçlü Havuz (Triple-Pool) stake mimarisini anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri **v3.1.92** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri **v3.1.95** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 ## Bağlayıcı bir süre var mı? {#lock-in-period}
@@ -63,8 +63,10 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
   --fees 500uqor
 ```
 
-:::caution
-Zaten bir yeniden delegasyon transiti içinde olan token'ları tekrar yeniden delege edemezsiniz. Bir sonrakini başlatmadan önce mevcut yeniden delegasyonun tamamlanmasını bekleyin.
+Yeniden delege etmenin **kendine ait hiçbir cezası ve hiçbir kilidi yoktur** — stake hiçbir zaman bonded havuzdan ayrılmaz, ödül kazanmayı hiç durdurmaz ve istediğiniz zaman tekrar taşınabilir. 21 günlük çözülme süresine hiç tabi değildir; bu süre yalnızca `unbond` için geçerlidir.
+
+:::caution Gerçek sınır bir bekleme süresi değil, bir sayaçtır
+Bir delegatör, tam olarak aynı (delegatör, kaynak doğrulayıcı, hedef doğrulayıcı) rotası için aynı anda en fazla **7 adet devam eden (in-flight) yeniden delegasyon kaydına** sahip olabilir — her kayıt olgunlaştıkça kendiliğinden temizlenir ve bir yer açar. Bu, normal kullanımın pratikte hiç ulaşmayacağı bir tavan sınırıdır, "tekrar yeniden delege etmeden önce bekleyin" kuralı değildir; başka doğrulayıcılara veya başka doğrulayıcılardan serbestçe yeniden delege edebilir, ya da bir yer açıldığında aynı rotayı tekrar kullanabilirsiniz.
 :::
 
 ---
@@ -113,7 +115,7 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Stake ödülleri, Tokenomics v2.1 takvimi kapsamında protokolün 590M QOR'luk stake havuzundan ve her işlem ücretinin doğrulayıcı payından (%10) finanse edilir.
+Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmış emisyon bütçesi (güncel sınır için, 26 Ağustos 2026'daki governance değişikliğinden bu yana yürürlükte olan haliyle [Tokenomics](/architecture/tokenomics#staking-reward-schedule) sayfasına bakın) ve her işlem ücretinin staker payı.
 
 ---
 
@@ -185,7 +187,7 @@ qorechaind query staking delegations <delegator_address>
 
 * **RPoS havuzundaki** doğrulayıcılara delege etmek, %40'lık havuz ağırlığı nedeniyle en yüksek ödülleri sağlar.
 * Doğrulayıcı itibarının oluşması zaman alır. Delege etmeden önce doğrulayıcının geçmiş performansını göz önünde bulundurun.
-* Yeniden delegasyon anında gerçekleşir ancak bekleme süresi kısıtlamalarına tabidir. Hareketlerinizi buna göre planlayın.
+* Yeniden delegasyon anındadır, cezası ve kilidi yoktur — tek sınır, normal kullanımın ulaşmayacağı, tam olarak aynı rota üzerindeki eş zamanlı yeniden delegasyonlar için 7 kayıtlık bir tavandır.
 * 21 günlük çözülme süresi bir güvenlik önlemidir. Bu süre boyunca slashing (cezalandırma) olayları token'larınızı yine de etkileyebilir.
 
 :::

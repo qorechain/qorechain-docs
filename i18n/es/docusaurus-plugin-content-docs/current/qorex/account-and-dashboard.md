@@ -24,7 +24,9 @@ La oferta de passkey solo aparece después de iniciar sesión con **código por 
 
 ## Varias cuentas a partir de una frase {#accounts}
 
-Settings → **Your accounts** (también encontrable como **Addresses**) te permite crear, cambiar y renombrar hasta **20 cuentas**, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta tiene su propia dirección `qor1…` distinta con su propio saldo y —dado que un handle se vincula a una **dirección**, no al monedero en su conjunto— su propio @handle opcional. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps. Desde la versión **0.2.2**, la extensión de navegador también cuenta con esta función; consulta [Varias cuentas a partir de una frase](/qorex/browser-extension#wallet).
+Settings → **Your accounts** (también encontrable como **Addresses**) te permite crear, cambiar y renombrar hasta **20 cuentas**, todas derivadas de la misma frase de recuperación de 24 palabras (no hay nada adicional que respaldar). Cada cuenta tiene su propia dirección `qor1…` distinta con su propio saldo y —dado que un handle se vincula a una **dirección**, no al monedero en su conjunto— su propio @handle opcional. La cuenta que esté activa es la que usan Send, Receive, Staking y el navegador de dApps: cambiar de cuenta lo mueve todo con ella, y la app muestra en qué cuenta estás siempre que exista más de una. Desde la versión **0.2.2**, la extensión de navegador también cuenta con esta función; consulta [Varias cuentas a partir de una frase](/qorex/browser-extension#wallet).
+
+Una sola frase de recuperación restaura todas las cuentas, pero cada cuenta registra su propia clave post-cuántica ML-DSA-87 en la cadena la primera vez que realiza una transacción —igual que un monedero normal de una sola cuenta—, por lo que abrir y usar una cuenta nueva conlleva el coste de registro de clave único propio de esa cuenta.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ Se trata de dos acciones separadas y no relacionadas. Reclamar un @handle permit
 **Settings → Linked account** conecta tu monedero QoreX y tu cuenta de Dashboard en ambos sentidos:
 
 1. Introduce el código de 8 caracteres que muestra el Dashboard, **o** genera uno en QoreX (válido 10 minutos) e introdúcelo en el Dashboard.
-2. Una vez vinculado, tu @handle y tus direcciones conectadas aparecen en ambos.
-3. Desvincula cuando quieras.
+2. Si tienes [varias cuentas](#accounts), la propia ventana de aprobación de QoreX te permite elegir **cuál** se vincula: no asume que es la cuenta actualmente activa.
+3. Una vez vinculado, tu @handle y tus direcciones conectadas aparecen en ambos.
+4. Desvincula cuando quieras.
 
 Iniciar sesión *mediante* **Continue with Dashboard** vincula ambos de forma implícita: no hay nada adicional que hacer.
 

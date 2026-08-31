@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und die Triple-Pool-Staking-Architektur von QoreChain verstehst.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.92** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.95** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet herstellen**.
 :::
 
 ## Gibt es eine Sperrfrist? {#lock-in-period}
@@ -63,8 +63,10 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
   --fees 500uqor
 ```
 
-:::caution
-Du kannst keine Token neu delegieren, die sich bereits in einem Neudelegations-Transit befinden. Warte, bis die aktuelle Neudelegation abgeschlossen ist, bevor du eine weitere startest.
+Die Neudelegation ist **weder mit einer Strafe noch mit einer eigenen Sperre verbunden** — der Stake verlässt den gebundenen Pool nie, hört nie auf, Erträge zu erwirtschaften, und kann jederzeit erneut verschoben werden. Sie unterliegt überhaupt nicht der 21-tägigen Entbindungsperiode; diese gilt ausschließlich für `unbond`.
+
+:::caution Die eigentliche Grenze ist eine Anzahl, keine Abklingzeit
+Ein Delegator kann höchstens **7 gleichzeitig laufende Neudelegations-Einträge** für exakt dieselbe Route (Delegator, Quell-Validator, Ziel-Validator) haben — jeder Eintrag löst sich mit seiner Fälligkeit von selbst auf und gibt so einen Slot frei. Dies ist eine Obergrenze, die bei normaler Nutzung praktisch nie erreicht wird, und keine Regel im Sinne von „warte, bevor du erneut neu delegieren kannst“; du kannst jederzeit frei zu oder von anderen Validatoren neu delegieren oder dieselbe Route erneut nutzen, sobald ein Slot frei wird.
 :::
 
 ---
@@ -113,7 +115,7 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Staking-Belohnungen werden aus dem 590-Mio.-QOR-Staking-Pool des Protokolls gemäß dem Tokenomics-v2.1-Zeitplan finanziert, zusammen mit dem Staker-Anteil (10 %) jeder Transaktionsgebühr.
+Staking-Belohnungen werden aus zwei Quellen finanziert: dem gedeckelten Emissionsbudget des Protokolls (siehe [Tokenomics](/architecture/tokenomics#staking-reward-schedule) für die aktuelle Obergrenze, gültig seit einer Governance-Änderung vom 26. August 2026) und dem Staker-Anteil jeder Transaktionsgebühr.
 
 ---
 
@@ -185,7 +187,7 @@ qorechaind query staking delegations <delegator_address>
 
 * Die Delegation an Validatoren im **RPoS-Pool** bringt aufgrund der 40-%-Pool-Gewichtung die höchsten Belohnungen.
 * Der Aufbau der Validator-Reputation braucht Zeit. Berücksichtige die Erfolgsbilanz des Validators, bevor du delegierst.
-* Neudelegation erfolgt sofort, hat aber Abklingbeschränkungen. Plane deine Schritte sorgfältig.
+* Die Neudelegation erfolgt sofort, ohne Strafe und ohne Sperre — die einzige Grenze ist eine Obergrenze von 7 gleichzeitigen Neudelegationen entlang exakt derselben Route, die bei normaler Nutzung nicht erreicht wird.
 * Die 21-tägige Entbindungsperiode ist eine Sicherheitsmaßnahme. Während dieser Zeit können Slashing-Ereignisse deine Token weiterhin betreffen.
 
 :::

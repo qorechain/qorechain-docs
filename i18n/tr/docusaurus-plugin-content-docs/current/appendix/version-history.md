@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. En son sürüm **v3.1.92**'dir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) yayın öncesi derlemeleri takip eder.
+QoreChain için genel sürüm geçmişi. En son sürüm **v3.1.95**'tir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) yayın öncesi derlemeleri takip eder.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır.
@@ -15,7 +15,21 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ---
 
-## v3.1.92 — Düğüm Senkronizasyon Güvenilirliği (Mevcut Sürüm)
+## v3.1.95 — Cosmos EVM Sertleştirmesi (Mevcut Sürüm)
+
+**Sürüm odağı:** EVM bakiye muhasebesi kütüphanesine yönelik kademeli güvenlik güncellemesi.
+
+* **Taşma sertleştirmesi** — Bir EVM bakiye-güncelleme yolu, artık aşırı bir taşma durumunda sessizce sarmalanmak yerine güvenli bir şekilde başarısız oluyor. Konsensüsü bozmayan, kademeli bir güncelleme olarak sunuldu — hiçbir yönetişim oylaması veya koordineli durdurma yüksekliği gerekmedi.
+
+## v3.1.94 — Emisyon Tavanı ve Yönetimsel Mesaj Sertleştirmesi
+
+**Sürüm odağı:** Stake ödülü emisyonunu gerçek ağ koşullarıyla uyumlu hale getirmek ve yetkili yönetimsel mesajlar üzerindeki yetkilendirme denetimlerini sıkılaştırmak.
+
+* **Emisyon tavanı** — Tam bonded-stake desteğiyle kabul edilip 2.122.074 yüksekliğinde (26 Ağustos 2026) uygulanan bir yönetişim önerisi, orijinal azalan emisyon takvimini, sert ve kümülatif bir tavan altında dönem başına sabit bir tutarla değiştirdi. Orijinal takvim, çok daha olgun, tamamen bonded bir ağ için kalibre edilmişti; gerçek bonded stake'e karşı, amaçlanandan çok daha hızlı ödeme yapıyordu. Güncel rakamlar ve kalan pist için bkz. [Tokenomics](/architecture/tokenomics#staking-reward-schedule).
+* **Yönetimsel mesaj sertleştirmesi** — Bir dizi yetkili, yetki-korumalı yönetimsel mesajın imzalayanı artık mesajın kendisinde taşınan bir değere güvenmek yerine yönetişim modülünün kendi adresine karşı doğrulanıyor.
+* Ayrıca, doğrudan bu sürüme güncelleme yapan herhangi bir düğüm için v3.1.92'deki düğüm devreye alma güvenilirliği düzeltmesini de taşıyor.
+
+## v3.1.92 — Düğüm Senkronizasyon Güvenilirliği
 
 **Sürüm odağı:** Anlık görüntülerden ve yayınlanan zincir arşivinden daha güvenilir düğüm devreye alma.
 

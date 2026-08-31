@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.1.92** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı için EVM zincir kimliği **9800**'ü kullanın.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.1.95** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı için EVM zincir kimliği **9800**'ü kullanın.
 :::
 
 ---

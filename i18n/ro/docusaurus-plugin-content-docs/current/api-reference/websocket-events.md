@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain oferă transmiterea evenimentelor în timp real prin două interfețe WebSocket: WebSocket-ul compatibil EVM și WebSocket-ul RPC al Motorului de Consens QoreChain.
 
 :::note
-Ambele interfețe WebSocket sunt disponibile pe mainnet-ul **`qorechain-vladi`** (live la versiunea de chain **v3.1.92**) și pe testnet-ul **`qorechain-diana`**. Endpoint-urile locale de mai jos presupun un nod pe care îl rulezi tu însuți; înlocuiește-le cu host-ul mainnet sau testnet al furnizorului tău pentru acces la distanță.
+Ambele interfețe WebSocket sunt disponibile pe mainnet-ul **`qorechain-vladi`** (live la versiunea de chain **v3.1.95**) și pe testnet-ul **`qorechain-diana`**. Endpoint-urile locale de mai jos presupun un nod pe care îl rulezi tu însuți; înlocuiește-le cu host-ul mainnet sau testnet al furnizorului tău pentru acces la distanță.
 :::
 
 ---

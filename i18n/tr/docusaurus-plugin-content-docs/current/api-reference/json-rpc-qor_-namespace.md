@@ -24,7 +24,7 @@ api = "eth,web3,net,txpool,qor"
 ```
 
 :::note
-`qor_` ad alanı, **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, zincir sürümü **v3.1.92** üzerinde canlı) ve **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) kullanılabilir. Aşağıdaki örnekler yerel bir düğüm varsayar; uzaktan erişim için bunu sağlayıcınızın ana ağ veya test ağı uç noktasıyla değiştirin.
+`qor_` ad alanı, **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, zincir sürümü **v3.1.95** üzerinde canlı) ve **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) kullanılabilir. Aşağıdaki örnekler yerel bir düğüm varsayar; uzaktan erişim için bunu sağlayıcınızın ana ağ veya test ağı uç noktasıyla değiştirin.
 :::
 
 ---

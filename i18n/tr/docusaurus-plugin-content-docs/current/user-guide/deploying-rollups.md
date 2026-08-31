@@ -14,7 +14,7 @@ RDK ve rollup uzlaşma (settlement) katmanı, aktif olarak gelişmekte olan bir 
 :::
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**), 7 Haziran 2026'dan bu yana **v3.1.92** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde dağıtım yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**), 7 Haziran 2026'dan bu yana **v3.1.95** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde dağıtım yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ---

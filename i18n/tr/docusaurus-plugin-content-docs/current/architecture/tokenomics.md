@@ -23,7 +23,7 @@ QoreChain, yerel **QOR** token'ı merkeze alan **sabit arzlı** bir ekonomik mod
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.1.92** zincir sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'i (EVM zincir ID **9800**) aynı ekonomik modeli paylaşır.
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.1.95** zincir sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'i (EVM zincir ID **9800**) aynı ekonomik modeli paylaşır.
 :::
 
 ---
@@ -39,8 +39,8 @@ Bu, bir arz-enflasyonu modeli değil, **sonlu bir emisyon bütçesine sahip sabi
 
 ### Staking Ödül Takvimi {#staking-reward-schedule}
 
-:::note Bu takvimde yönetişim tarafından onaylanmış bir değişiklik beklemede
-Kabul edilmiş bir yönetişim önerisi, bu bütçe içindeki emisyonun serbest bırakılma şeklini değiştiriyor; bu değişiklik hemen değil, gelecekteki bir blok yüksekliğinde yürürlüğe girecek. Aşağıdaki rakamlar değişiklik-öncesi takvimdir — belirli bir sayıya güvenmeden önce değişikliğin yürürlüğe girip girmediğini [Sürüm Geçmişi](/appendix/version-history) sayfasından kontrol edin ve şu anda başka bir yerde gördüğünüz herhangi bir APY veya günlük emisyon rakamını, bu gerçekleşene kadar geçici olarak değerlendirin.
+:::note Emisyon, 26 Ağustos 2026'da yönetişim tarafından sınırlandırıldı
+Aşağıdaki azalan takvim, arzın büyük kısmının bağlandığı (bonded) olgun bir ağ hedeflenerek tasarlanmış orijinal tasarımdı. Ağın fiilen bulunduğu durumla — hedefin çok altında, yaklaşık 6,8M QOR bağlı — kıyaslandığında, bağlı stake'in *günlük* olarak yaklaşık %20'sini ödüyordu. Yönetişim önerisi #4, bağlı stake'in %100'ü ile kabul edildi ve 2.122.074 blok yüksekliğinde (2026-08-26 03:27 UTC, zincir sürümü v3.1.94) uygulandı: epoch başına emisyon 2.153.583 QOR'dan **16.239 QOR**'a düştü ve bu modül için yeni, sabit, kümülatif bir **114.285.714 QOR** üst sınırı getirildi — bu bir hata düzeltmesi değil, bir tasarım kararıdır. Sınır yürürlüğe girdiğinde, eski takvim altında zaten **104.680.531 QOR (%91,6) emisyona uğramıştı**; yeni oranda, kalan bakiyenin yaklaşık **1 yıl 11 ay** daha yeteceği tahmin ediliyor; bu sürenin sonunda bu modül kalıcı olarak emisyonu durduracak ve validatör/staker ödülleri yalnızca işlem ücretlerinden gelecek (aşağıdaki [Ücret Dağılımı](#fee-distribution) bölümüne bakın). Aşağıdaki tablo, orijinal tasarım referansı olarak korunmaktadır — artık canlı ödeme oranını tanımlamamaktadır.
 :::
 
 Staking ödülleri, 590.000.000 QOR'luk emisyon bütçesinden azalan bir takvime göre dağıtılır:
@@ -52,7 +52,7 @@ Staking ödülleri, 590.000.000 QOR'luk emisyon bütçesinden azalan bir takvime
 | Yıl 3–4     | %5–8 APY                 | Yıl başına 85.000.000 QOR        |
 | Yıl 5+      | Yönetişim tarafından belirlenir | ~186.000.000 QOR kalan     |
 
-APY aralıkları, bağlı (bonded) orana bağlı hedeflerdir; emisyon bütçesi rakamları ise her dönemde stakerlara serbest bırakılan QOR üzerindeki kesin üst sınırlardır. 5. Yıldan itibaren, kalan ~186.000.000 QOR yönetişim tarafından belirlenen bir oranda serbest bırakılır.
+APY aralıkları, orijinal dönem başına tasarım hedefleriydi; emisyon yukarıda açıklandığı şekilde sınırlandırıldığı için artık canlı ödeme oranını yansıtmıyorlar. QoreChain şu anda canlı bir APY rakamının hesaplanabileceği bir sorgu uç noktası sunmamaktadır — bu sayfada dahil olmak üzere gördüğünüz herhangi bir belirli staking getiri yüzdesini, bugün zincire karşı doğrulanamaz olarak ve plan yapılacak bir sayı olarak değil, öyle değerlendirin.
 
 ---
 
@@ -75,7 +75,7 @@ APY aralıkları, bağlı (bonded) orana bağlı hedeflerdir; emisyon bütçesi 
 | 9  | `tge`               | Token üretim etkinliği          | Tek seferlik genesis yakmaları (80.000.000 QOR) |
 | 10 | `rollup_create`     | Rollup dağıtımı                 | Rollup oluşturma stake'inin %1'i yakılır        |
 
-### Ücret Dağılımı
+### Ücret Dağılımı {#fee-distribution}
 
 Ağ tarafından toplanan tüm işlem ücretleri, aşağıda gösterildiği gibi beş hedefe bölünür. Paylar zincir üzerinde uygulanır ve her zaman tam olarak %100'e ulaşır.
 
@@ -100,6 +100,10 @@ Ağ tarafından toplanan tüm işlem ücretleri beş hedefe bölünür:
 | **Light Node'lar**  | %3   | Ağ verisi sunan light node'lara dağıtılır                                |
 
 Paylar zincir üzerinde uygulanır ve her zaman tam olarak %100'e ulaşmalıdır.
+
+:::note Bunlar yapılandırılmış paylardır, doğrulanmış canlı bir ölçüm değildir
+Yukarıdaki tablo, `x/burn`'ün yapılandırılmış parametrelerini yansıtır. Canlı zincir durumuna karşı yapılan bir ölçüm çalışması, validatörlere ve stakerlara birlikte fiilen ulaşan etkin toplam payın, bu iki satırın toplamı olan %47'nin altında kaldığını buldu. Bu farkı henüz bağımsız olarak uzlaştırmadık, bu nedenle bu sayfa iki rakamdan birinin doğrulanmış canlı değer olduğunu iddia etmek yerine yapılandırılmış tasarım değerlerini belirtmektedir — kullanım durumunuz kesin güncel dağılıma bağlıysa `x/burn` parametrelerini ve istatistiklerini doğrudan sorgulayın (bkz. [REST/gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints)).
+:::
 
 ### Yakma Parametreleri
 

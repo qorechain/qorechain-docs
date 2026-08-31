@@ -10,7 +10,7 @@ sidebar_position: 7
 Esta guía cubre la función de abstracción de gas de QoreChain, que permite a los usuarios pagar las comisiones de transacción en tokens no nativos en lugar de QOR.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). La mainnet (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.92** — sustituya el ID de cadena y los endpoints de mainnet de la página **Conectando a Mainnet** al transaccionar en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). La mainnet (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.95** — sustituya el ID de cadena y los endpoints de mainnet de la página **Conectando a Mainnet** al transaccionar en mainnet.
 :::
 
 ---

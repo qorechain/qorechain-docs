@@ -10,7 +10,7 @@ sidebar_position: 11
 Tot ce are nevoie un exchange, un custode sau un integrator de plăți pentru a lista QOR și a procesa depuneri și retrageri: alegerea unei interfețe, detectarea sigură a depunerilor și semnarea retragerilor.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (versiune chain **v3.1.92**). Repetați întregul flux mai întâi pe testnet-ul **`qorechain-diana`** — endpoint-urile pentru ambele rețele se află în [Rețele](/appendix/networks#public-endpoints). Dacă rulați propriul full node, mențineți-l la versiunea curentă a chain-ului — un nod învechit nu poate decoda tipurile de tranzacții mai noi și se oprește din sincronizare.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (versiune chain **v3.1.95**). Repetați întregul flux mai întâi pe testnet-ul **`qorechain-diana`** — endpoint-urile pentru ambele rețele se află în [Rețele](/appendix/networks#public-endpoints). Dacă rulați propriul full node, mențineți-l la versiunea curentă a chain-ului — un nod învechit nu poate decoda tipurile de tranzacții mai noi și se oprește din sincronizare.
 :::
 
 ## Alegerea unei căi de integrare {#choosing-a-path}

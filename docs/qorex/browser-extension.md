@@ -25,11 +25,11 @@ Store reviews land at different times, so the published version currently differ
 
 | Browser | Published version |
 |---|---|
-| **Firefox** | **0.2.2** |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 submitted, still in review; the listing is locked to new submissions until that review clears, so 0.2.2 hasn't been submitted there yet) |
-| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.3** (carries extension **0.2.2**) |
+| **Firefox** | **0.2.6** |
+| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.6** (carries extension **0.2.6**) |
+| **Chrome / Chromium** | Had been stuck behind a long store review as of late August — check the [Chrome Web Store listing](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) directly for its current version rather than trusting a number here |
 
-Newer features may not be live in your browser yet — check the table above before assuming something described here is available. If the Dashboard tells you your extension needs updating, it means a specific minimum version for that action (usually 0.2.2, for staking) — not that your build is generally old.
+Newer features may not be live in your browser yet — check the table above before assuming something described here is available. If the Dashboard tells you your extension needs updating, it means a specific minimum version for that action (for example 0.2.2, for staking) — not that your build is generally old.
 
 **0.1.5** added [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
 
@@ -91,6 +91,7 @@ Since **0.2.2**, the popup has its own **Stake** screen — a wallet created onl
 2. The screen lists active validators with their commission, your currently staked total, and any rewards waiting to be claimed. Validators the network has **jailed** are left out of the list — delegating to one is never what you want.
 3. To delegate, pick a validator and an amount, then confirm. QoreX signs with the mandatory hybrid post-quantum signature, the same as a Send.
 4. **Unstake** and **claim** work from the same screen. Unstaking starts the 21-day unbonding period — see [Staking & Delegation](/user-guide/staking-and-delegation) for what that means.
+5. Since **0.2.6**, you can also **move stake to a different validator** (redelegate) — no unbonding wait, no penalty, and rewards keep flowing the whole way across. See [Move stake between validators](/qorex/portfolio-and-staking#move-stake) for how it works (the mechanics are identical between the app and the extension).
 
 Staking, delegation, and rewards happen exclusively on the **Native** lane, never through an EVM precompile.
 

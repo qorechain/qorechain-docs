@@ -23,7 +23,7 @@ QoreChain utilise un modèle économique à **offre fixe** centré sur le jeton 
 | **Préfixe Bech32**     | `qor` (comptes : `qor1...`, validateurs : `qorvaloper...`) |
 
 :::note
-Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version de chaîne **v3.1.92**. Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**) partage le même modèle économique.
+Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version de chaîne **v3.1.95**. Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**) partage le même modèle économique.
 :::
 
 ---
@@ -39,8 +39,8 @@ Il s'agit d'un **modèle à offre fixe avec un budget d'émission fini**, et non
 
 ### Barème des récompenses de staking {#staking-reward-schedule}
 
-:::note Une modification de ce barème, approuvée par la gouvernance, est en attente
-Une proposition de gouvernance adoptée modifie la façon dont l'émission est libérée au sein de ce budget, prenant effet à une hauteur de bloc future plutôt qu'immédiatement. Les chiffres ci-dessous correspondent au barème antérieur au changement — consultez [l'historique des versions](/appendix/version-history) pour savoir si le changement a pris effet avant de vous fier à un chiffre précis, et considérez tout chiffre d'APY ou d'émission journalière cité ailleurs actuellement comme provisoire tant qu'il n'a pas pris effet.
+:::note L'émission a été plafonnée par la gouvernance le 26 août 2026
+Le barème dégressif ci-dessous était la conception d'origine, visant un réseau mature avec la majeure partie de l'offre bondée. Rapporté au réseau tel qu'il se présentait réellement — environ 6,8 M QOR bondés, bien en-deçà de cette cible — il versait environ 20 % de la mise bondée *par jour*. La proposition de gouvernance n°4 a été adoptée avec 100 % de la mise bondée et appliquée à la hauteur de bloc 2 122 074 (2026-08-26 03:27 UTC, version de chaîne v3.1.94) : l'émission par époque est passée de 2 153 583 QOR à **16 239 QOR**, sous un nouveau plafond cumulatif strict de **114 285 714 QOR** pour ce module — une décision de conception, pas un correctif de bug. Au moment où le plafond a pris effet, **104 680 531 QOR (91,6 %) avaient déjà été émis** selon l'ancien barème ; au nouveau rythme, le solde restant devrait durer encore environ **1 an et 11 mois**, après quoi ce module cesse d'émettre définitivement et les récompenses des validateurs/stakers proviennent uniquement des frais de transaction (voir [Répartition des frais](#fee-distribution) ci-dessous). Le tableau ci-dessous est conservé comme référence de la conception d'origine — il ne décrit plus le taux de versement actuellement en vigueur.
 :::
 
 Les récompenses de staking sont distribuées à partir du budget d'émission de 590 000 000 QOR selon un barème dégressif :
@@ -52,7 +52,7 @@ Les récompenses de staking sont distribuées à partir du budget d'émission de
 | Années 3–4   | 5–8 % APY                | 85 000 000 QOR par an          |
 | Année 5+     | Déterminé par la gouvernance   | ~186 000 000 QOR restants       |
 
-Les fourchettes d'APY sont des cibles qui dépendent du ratio de jetons délégués ; les chiffres du budget d'émission sont les plafonds durs de QOR libérés aux stakers pour chaque période. À partir de l'Année 5, les ~186 000 000 QOR restants sont libérés à un rythme fixé par la gouvernance.
+Les fourchettes d'APY étaient les cibles de conception d'origine par période ; elles ne reflètent plus le taux de versement actuellement en vigueur depuis le plafonnement de l'émission décrit ci-dessus. QoreChain n'expose actuellement aucun point d'accès permettant de calculer un chiffre d'APY en direct — considérez tout pourcentage de rendement de staking spécifique que vous voyez cité (y compris sur cette page, historiquement) comme invérifiable par rapport à la chaîne aujourd'hui, et non comme un chiffre sur lequel planifier.
 
 ---
 
@@ -75,7 +75,7 @@ Le module `x/burn` implémente un système de burn de jetons à 10 canaux. Chaqu
 | 9  | `tge`              | Token generation event     | Burns de genèse ponctuels (80 000 000 QOR)       |
 | 10 | `rollup_create`    | Déploiement de rollup          | 1 % de la mise de création de rollup brûlée            |
 
-### Répartition des frais
+### Répartition des frais {#fee-distribution}
 
 Tous les frais de transaction collectés par le réseau sont répartis entre cinq destinations, comme indiqué ci-dessous. Les parts sont appliquées on-chain et totalisent toujours exactement 100 %.
 
@@ -100,6 +100,10 @@ Tous les frais de transaction collectés par le réseau sont répartis entre cin
 | **Nœuds légers** | 3 %    | Distribués aux nœuds légers pour la mise à disposition des données du réseau                  |
 
 Les parts sont appliquées on-chain et doivent toujours totaliser exactement 100 %.
+
+:::note Ce sont les répartitions configurées, pas une mesure confirmée en conditions réelles
+Le tableau ci-dessus reflète les paramètres configurés de `x/burn`. Un effort de mesure sur l'état réel de la chaîne a constaté que la part combinée effectivement perçue par les validateurs et les stakers ensemble était inférieure aux 47 % que ces deux lignes totalisent. Cet écart n'a pas encore été réconcilié de manière indépendante ; cette page indique donc les valeurs de conception configurées plutôt que d'affirmer que l'un ou l'autre chiffre est la valeur en direct confirmée — interrogez directement les paramètres et statistiques de `x/burn` (voir [Points d'accès REST/gRPC](/api-reference/rest-grpc-endpoints)) si votre cas d'usage dépend de la répartition exacte actuelle.
+:::
 
 ### Paramètres de burn
 

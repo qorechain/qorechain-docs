@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en production en configurant votre nœud avec le fichier genesis officiel, les pairs et les paramètres réseau.
 
 :::note
-Cette page couvre le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026 à 23:59 UTC** et exécutant la version de chaîne **v3.1.92** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**), consultez [Se connecter au testnet](/getting-started/connecting-to-testnet) et répétez-y votre installation avant de passer en production.
+Cette page couvre le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026 à 23:59 UTC** et exécutant la version de chaîne **v3.1.95** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**), consultez [Se connecter au testnet](/getting-started/connecting-to-testnet) et répétez-y votre installation avant de passer en production.
 :::
 
 ## Points de terminaison publics
@@ -54,10 +54,8 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Le bundle contient `qorechaind` ainsi que ses bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Gardez votre nœud à jour — v3.1.92 ou supérieure requise pour une synchronisation depuis zéro
-Les nœuds complets doivent suivre la version de chaîne en production du réseau — installez toujours le binaire vers lequel pointe le manifeste, ne figez pas une ancienne version. Indépendamment du champ `minCompatible` du manifeste, **la version v3.1.92 ou supérieure est requise pour un nœud qui rejoint le réseau depuis zéro (depuis le genesis) ou qui se rétablit après un arrêt** — les versions antérieures ne peuvent pas achever une synchronisation complète en raison d'un bug de mesure du gas désormais corrigé, qui bloque le replay dès le premier bloc contenant une transaction. Un nœud déjà à jour et exécutant une version antérieure devrait tout de même être mis à niveau à la prochaine occasion, car un nœud obsolète ne peut pas décoder les types de transactions plus récents et cessera de se synchroniser dès qu'une telle transaction apparaîtra dans un bloc.
-
-**Vérifiez ce que le manifeste sert réellement avant de lui faire confiance.** Le manifeste est promu de manière délibérée — d'abord sur le testnet, puis sur le mainnet après une période de rodage — il peut donc être en retard par rapport au plancher de version ci-dessus ; au moment de la rédaction, le manifeste mainnet lui-même pointe encore vers un binaire antérieur à la v3.1.92, soit exactement la build que cet avertissement déconseille d'utiliser pour une synchronisation depuis zéro. Comparez le champ `"version"` du manifeste à la v3.1.92 avant de vous fier à son `binary.url` ; s'il est encore en retard, récupérez la v3.1.92 (ou une version ultérieure) depuis les [releases GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) (vérifiez la somme de contrôle du tag de la même manière), ou [compilez depuis les sources](/developer-guide/building-from-source).
+:::caution Gardez votre nœud à jour — v3.1.94 ou supérieure requise pour une synchronisation depuis zéro
+Les nœuds complets doivent suivre la version de chaîne en production du réseau — installez toujours le binaire vers lequel pointe le manifeste, ne figez pas une ancienne version. Le plancher pour un nœud qui rejoint le réseau depuis zéro (depuis le genesis) ou qui se rétablit après un arrêt est **v3.1.94 ou supérieure**, pour deux raisons indépendantes qui s'empilent : la v3.1.92 a corrigé un bug de mesure du gas qui bloquait sinon le replay dès le premier bloc contenant une transaction, et le mainnet a depuis franchi la mise à niveau de gouvernance v3.1.94 (un plafond strict sur l'émission, appliqué à la hauteur 2 122 074) — un nœud sans le gestionnaire de cette mise à niveau se bloque de nouveau en tentant de rejouer au-delà de cette même hauteur. La v3.1.95 est la version actuellement recommandée (une mise à jour de sécurité continue ; `minCompatible` vaut `3.1.94`). Vérifiez toujours le champ `"version"` du manifeste par rapport au plancher actuel avant de faire confiance à `binary.url` — le manifeste est promu de manière délibérée (d'abord sur le testnet, puis sur le mainnet après une période de rodage) et a déjà accusé un retard par rapport au plancher de version.
 :::
 
 ### Compiler depuis les sources
@@ -256,7 +254,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | ID de chaîne          | `qorechain-vladi`                      |
 | ID de chaîne EVM      | `9801` (hex `0x2649`)                  |
-| Version de chaîne     | v3.1.92                                |
+| Version de chaîne     | v3.1.95                                |
 | En production depuis        | 7 juin 2026 23:59 UTC                  |
 | Jeton             | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
 | Prix minimum du gas | `0.1uqor`                              |

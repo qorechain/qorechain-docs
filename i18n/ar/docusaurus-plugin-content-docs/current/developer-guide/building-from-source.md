@@ -145,7 +145,7 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-يجب أن ينشئ أمر `init` ملف تكوين البداية (genesis) وتهيئة العقدة في `~/.qorechaind/` دون أخطاء. يُهيّئ المثال أعلاه الشبكة مقابل شبكة الاختبار **`qorechain-diana`** — أما للشبكة الرئيسية، فاستبدل ذلك بـ `--chain-id qorechain-vladi`، الشبكة الحية التي تعمل بإصدار السلسلة **v3.1.92**.
+يجب أن ينشئ أمر `init` ملف تكوين البداية (genesis) وتهيئة العقدة في `~/.qorechaind/` دون أخطاء. يُهيّئ المثال أعلاه الشبكة مقابل شبكة الاختبار **`qorechain-diana`** — أما للشبكة الرئيسية، فاستبدل ذلك بـ `--chain-id qorechain-vladi`، الشبكة الحية التي تعمل بإصدار السلسلة **v3.1.95**.
 
 ## بناء Docker
 

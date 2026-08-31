@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Définissez `--chain-id qorechain-vladi` pour diffuser vers le mainnet en production (version de chaîne **v3.1.92**), ou `--chain-id qorechain-diana` pour le testnet. Si omis, le client utilise le `chain-id` de votre configuration locale.
+Définissez `--chain-id qorechain-vladi` pour diffuser vers le mainnet en production (version de chaîne **v3.1.95**), ou `--chain-id qorechain-diana` pour le testnet. Si omis, le client utilise le `chain-id` de votre configuration locale.
 :::
 
 Les drapeaux communs s'appliquent à chaque sous-commande `tx` :

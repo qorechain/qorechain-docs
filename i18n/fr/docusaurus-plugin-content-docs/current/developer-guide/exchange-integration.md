@@ -10,7 +10,7 @@ sidebar_position: 11
 Tout ce dont un exchange, un dépositaire (custodian) ou un intégrateur de paiement a besoin pour lister QOR et traiter les dépôts et retraits : choisir une interface, détecter les dépôts en toute sécurité et signer les retraits.
 
 :::note
-Ce guide cible le mainnet **`qorechain-vladi`** (version de chaîne **v3.1.92**). Répétez d'abord le flux complet sur le testnet **`qorechain-diana`** — les points de terminaison des deux réseaux se trouvent dans [Réseaux](/appendix/networks#public-endpoints). Si vous exécutez votre propre nœud complet, maintenez-le à jour avec la version de chaîne actuelle — un nœud obsolète ne peut pas décoder les nouveaux types de transactions et cesse de se synchroniser.
+Ce guide cible le mainnet **`qorechain-vladi`** (version de chaîne **v3.1.95**). Répétez d'abord le flux complet sur le testnet **`qorechain-diana`** — les points de terminaison des deux réseaux se trouvent dans [Réseaux](/appendix/networks#public-endpoints). Si vous exécutez votre propre nœud complet, maintenez-le à jour avec la version de chaîne actuelle — un nœud obsolète ne peut pas décoder les nouveaux types de transactions et cesse de se synchroniser.
 :::
 
 ## Choisir un chemin d'intégration {#choosing-a-path}

@@ -10,7 +10,7 @@ sidebar_position: 3
 Puoi distribuire un rollup specifico per applicazione in tre modi: tramite la **Dashboard** (una procedura guidata senza codice), tramite la **CLI** della chain (`qorechaind`, con pieno controllo sulla transazione on-chain), oppure programmaticamente con l'**RDK TypeScript** (`@qorechain/rdk` più lo scaffolder `create-qorechain-rollup`). Questa pagina copre tutti e tre i metodi, oltre al ciclo di vita dell'operatore e ai comandi per i batch.
 
 :::note
-I comandi seguenti fanno riferimento alla testnet **`qorechain-diana`**. La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.92** — sostituisci il chain ID e gli endpoint della mainnet quando distribuisci su mainnet. Valida sempre ogni distribuzione prima su testnet.
+I comandi seguenti fanno riferimento alla testnet **`qorechain-diana`**. La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.95** — sostituisci il chain ID e gli endpoint della mainnet quando distribuisci su mainnet. Valida sempre ogni distribuzione prima su testnet.
 :::
 
 ---

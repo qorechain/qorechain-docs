@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert, einschließlich des Quadratic Delegation-Reputation Weighted (QDRW) Voting-Systems, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live mit Chain-Version **v3.1.92** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live mit Chain-Version **v3.1.95** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 2
 This guide covers how to delegate QOR tokens to validators, redelegate between validators, unbond your stake, claim rewards, and understand QoreChain's Triple-Pool staking architecture.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.92** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.95** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 ## Is there a lock-in period? {#lock-in-period}
@@ -63,8 +63,10 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
   --fees 500uqor
 ```
 
-:::caution
-You cannot redelegate tokens that are already in a redelegation transit. Wait for the current redelegation to complete before initiating another.
+Redelegating has **no penalty and no lock of its own** — the stake never leaves the bonded pool, never stops earning, and can be moved again at any time. It is not subject to the 21-day unbonding period at all; that applies only to `unbond`.
+
+:::caution The real limit is a count, not a cooldown
+A delegator can have at most **7 simultaneous in-flight redelegation entries** for the exact same (delegator, source validator, destination validator) route — each entry clears on its own as it matures, freeing a slot. This is a ceiling normal use essentially never reaches, not a "wait before you can redelegate again" rule; you can freely redelegate to or from other validators, or along the same route again once a slot frees up.
 :::
 
 ---
@@ -113,7 +115,7 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Staking rewards are funded from the protocol's 590M QOR staking pool under the Tokenomics v2.1 schedule, alongside the staker share (10%) of every transaction fee.
+Staking rewards are funded from two sources: the protocol's capped emission budget (see [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current cap, in effect since a 26 August 2026 governance change) and the staker share of every transaction fee.
 
 ---
 
@@ -185,7 +187,7 @@ qorechaind query staking delegations <delegator_address>
 
 * Delegating to validators in the **RPoS pool** yields the highest rewards due to the 40% pool weight.
 * Building validator reputation takes time. Consider the validator's track record before delegating.
-* Redelegation is instant but has cooldown restrictions. Plan your moves carefully.
+* Redelegation is instant, with no penalty and no lock — the only limit is a 7-entry cap on simultaneous redelegations along the exact same route, which normal use won't hit.
 * The 21-day unbonding period is a security measure. During this time, slashing events can still affect your tokens.
 
 :::

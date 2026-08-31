@@ -243,7 +243,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 전달됩니다.
 
 :::caution Native 경로에서는 하이브리드 서명이 필수입니다
-현재 체인 버전(**v3.1.92**) 기준으로, 네트워크 기본값은
+현재 체인 버전(**v3.1.95**) 기준으로, 네트워크 기본값은
 `hybrid_signature_mode = required`이며 `allow_classical_fallback = false`입니다.
 `buildHybridTx`(`includePqcPublicKey` 사용)를 통한 하이브리드 서명 —
 또는 통합 eth-네이티브 계정의 경우 `signHybridEth` — 는 Native 경로

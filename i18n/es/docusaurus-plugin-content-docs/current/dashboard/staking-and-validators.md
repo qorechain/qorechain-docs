@@ -15,12 +15,16 @@ El staking, la delegación y la validación ocurren exclusivamente en el carril 
 
 ## Revisar validadores
 
+:::caution En mainnet, esta página muestra actualmente validadores de testnet
+La página **Validadores** en mainnet está mostrando el conjunto de validadores de testnet (4 nodos) en lugar del conjunto real de mainnet (8 nodos) — un problema de datos del backend, no algo mal con tu conexión o tu cuenta. No uses esta página para decidir quiénes son los validadores de mainnet; usa en su lugar el [explorador de bloques](https://explore.qore.network) o una consulta directa a la cadena (`qorechaind query staking validators`). Sin embargo, este desajuste es puramente informativo: el selector de validadores de **Delegar** en la [pestaña Stake de la página Billetera](/dashboard/wallet#mainnet) lee una ruta distinta, correcta, directamente desde la cadena, así que en realidad no puedes elegir ni delegar a un validador que no exista en mainnet — simplemente verás una lista diferente (y correcta) cuando llegues allí.
+:::
+
 La página se abre con tarjetas de resumen del número de validadores activos, el total de QOR vinculados (bonded), la comisión media y el tiempo de actividad medio. Debajo está la lista de validadores. Cada fila de validador muestra:
 
 - Un **rango** y el **moniker** (nombre) del validador, con su dirección y un botón de copiar.
 - **Poder de voto** — el stake vinculado del validador y su participación en el total.
 - **Comisión** — el porcentaje que el validador retiene de las recompensas.
-- **APY** — la estimación de rendimiento anual por delegar.
+- **APY** — se muestra como una raya (—) en lugar de un número. La emisión de QoreChain proviene de un módulo personalizado que el endpoint estándar de estimación de rendimiento no puede ver, así que una cifra calculada aquí sería una suposición disfrazada de dato; mostrarla como no disponible fue una corrección deliberada, no un error. Actualmente no existe un endpoint para calcular un APY de staking en vivo y respaldado por la cadena — trata cualquier porcentaje concreto que veas citado en otro lugar como no verificado, y no supongas que un número que aparezca aquí más adelante sea automáticamente correcto: la fórmula subyacente asume la vía de inflación estándar de Cosmos, que no es como la emisión de esta cadena llega realmente a quienes hacen staking, y habría que comprobarla contra el mecanismo real antes de confiar en ella.
 - **Estado** — por ejemplo, activo o encarcelado (jailed).
 - Detalles operativos: región, tiempo de actividad, bloques propuestos, versión del software y última vez visto.
 
@@ -54,15 +58,15 @@ Las cuatro acciones están en la página **Billetera** (`/dashboard/wallet`), no
 
 ### Redelegar {#redelegate}
 
-El contrato de solicitud subyacente ya admite mover un bono directamente de un validador a otro (`redelegate`, con un validador de origen y uno de destino que deben ser distintos) — el mismo patrón no custodial firmado por QoreX que delegar y anular delegación. A fecha de esta redacción, sin embargo, el panel aún no expone un panel o botón dedicado de Redelegar para ello.
+El panel en sí no tiene un panel dedicado de Redelegar — pero ya no lo necesitas. **QoreX ahora mueve el stake entre validadores directamente** (app 1.0.8+ y extensión 0.2.6+): sin espera de desvinculación de 21 días, sin recompensas perdidas, e incluso puede repartir un movimiento entre varios validadores de destino en una sola transacción. Abre **Stake** en QoreX, toca el validador que quieres dejar y elige a dónde debe ir el stake — consulta [Mover stake entre validadores](/qorex/portfolio-and-staking#move-stake) para el recorrido completo. Esta es una mejor solución que cualquier cosa que el propio contrato de solicitud del panel pudiera ofrecer, así que usa QoreX directamente para esto en lugar de la solución alternativa de abajo.
 
-Hasta que ese panel se publique, mueve un stake a un validador distinto en dos pasos usando los flujos de esta página:
+Si tienes una compilación de QoreX anterior sin esta función todavía, mueve un stake a un validador distinto en dos pasos usando los flujos de esta página en su lugar:
 
 1. **[Anula la delegación](#undelegate)** del importe en el validador que quieres dejar.
 2. Espera el periodo de desvinculación mostrado en ese flujo — los QOR no son movibles ni generan ingresos durante este tiempo.
 3. Una vez que los QOR desvinculados vuelvan a estar disponibles, **[delégalos](#delegate)** al nuevo validador.
 
-Esto lleva más tiempo que una redelegación directa (sin recompensas de bonding durante la ventana de desvinculación de 21 días), así que trátalo como una vía temporal, no como la prevista. También conviene saber, en cuanto a comisiones, que una redelegación directa suele ser la más cara de estas operaciones de staking, y que el paso de anular delegación en este método alternativo ya cuesta notablemente más que una simple delegación por sí sola — la cadena mide el gas por operación en lugar de cobrar una tarifa plana, y escribir una entrada en la cola de desvinculación es trabajo extra real. Delegar por sí solo sigue siendo la más barata de las tres.
+Esta solución alternativa cuesta 21 días de recompensas perdidas y más en comisiones que un movimiento directo, así que actualiza QoreX en lugar de depender de ella si puedes.
 
 ### Anular delegación {#undelegate}
 

@@ -15,12 +15,16 @@ Staking-ul, delegarea și validarea au loc exclusiv pe lane-ul nativ (Cosmos), f
 
 ## Analizează validatorii
 
+:::caution Pe mainnet, această pagină arată în prezent validatori de testnet
+Pagina **Validatori** de pe mainnet afișează setul de validatori de testnet (4 noduri) în loc de setul real de mainnet (8 noduri) — este o problemă de date pe partea de backend, nu ceva greșit legat de conexiunea sau contul tău. Nu folosi această pagină pentru a decide cine sunt validatorii mainnet-ului; folosește în schimb [explorerul de blocuri](https://explore.qore.network) sau o interogare directă a lanțului (`qorechaind query staking validators`). Totuși, este vorba doar de o discrepanță informativă: selectorul de validatori din panoul **Delegate** de pe [tab-ul Stake al paginii Portofel](/dashboard/wallet#mainnet) citește o rută diferită, corectă, direct din lanț, așa că nu poți alege sau delega efectiv la un validator care nu există pe mainnet — vei vedea pur și simplu o listă diferită (și corectă) odată ajuns acolo.
+:::
+
 Pagina se deschide cu carduri sumar pentru numărul de validatori activi, totalul QOR blocat, comisionul mediu și uptime-ul mediu. Sub acestea se află lista de validatori. Fiecare rând de validator arată:
 
 - Un **rang** și **moniker-ul** (numele) validatorului, cu adresa sa și un buton de copiere.
 - **Putere de vot** — stake-ul blocat al validatorului și cota sa din total.
 - **Comision** — procentul pe care validatorul îl reține din recompense.
-- **APY** — estimarea randamentului anual pentru delegare.
+- **APY** — afișat ca o linie orizontală (—) în loc de un număr. Emisia QoreChain provine dintr-un modul personalizat pe care endpoint-ul standard de estimare a randamentului nu îl poate vedea, așa că o cifră calculată aici ar fi o presupunere deghizată în date; afișarea ei ca indisponibilă a fost o corecție deliberată, nu un bug. În prezent nu există un endpoint pentru calcularea unui APY de staking live, susținut de datele lanțului — tratează orice procent specific pe care îl vezi menționat altundeva ca fiind neverificat, și nu presupune că o cifră care apare aici mai târziu este automat corectă: formula de bază presupune traseul standard de inflație Cosmos, care nu este modul în care emisia acestui lanț ajunge de fapt la stakeri, și ar trebui verificată în raport cu mecanismul real înainte de a fi luată ca atare.
 - **Status** — de exemplu activ sau întemnițat (jailed).
 - Detalii operaționale: regiune, uptime, blocuri propuse, versiune software și ultima activitate.
 
@@ -54,15 +58,15 @@ Toate cele patru acțiuni se află pe pagina **Portofel** (`/dashboard/wallet`),
 
 ### Redelegă {#redelegate}
 
-Contractul de cerere de bază acceptă deja mutarea directă a unei legături (bond) de la un validator la altul (`redelegate`, cu un validator sursă și unul destinație, care trebuie să fie diferiți) — același model non-custodial, semnat prin QoreX, ca la delegare și anularea delegării. La momentul redactării acestui text, dashboard-ul nu expune încă un panou dedicat de Redelegare sau un buton pentru asta.
+Dashboard-ul în sine nu are un panou dedicat de Redelegare — dar nu mai ai nevoie de unul. **QoreX poate acum muta el însuși stake-ul între validatori direct** (aplicația 1.0.8+ și extensia 0.2.6+): fără cele 21 de zile de așteptare pentru eliberare, fără recompense pierdute, și poate chiar împărți o mutare către mai mulți validatori destinație într-o singură tranzacție. Deschide **Stake** în QoreX, atinge validatorul pe care vrei să-l părăsești și alege unde ar trebui să meargă stake-ul — vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake) pentru ghidul complet. Acesta este un răspuns mai bun decât orice ar putea oferi contractul propriu de cerere al dashboard-ului, așa că folosește QoreX direct pentru asta, în loc de soluția temporară de mai jos.
 
-Până când acel panou va fi lansat, mută un stake la un alt validator în doi pași, folosind fluxurile de pe această pagină:
+Dacă folosești o versiune mai veche de QoreX, fără această funcție încă, mută un stake la un alt validator în doi pași, folosind fluxurile de pe această pagină:
 
 1. **[Anulează delegarea](#undelegate)** sumei de la validatorul pe care vrei să-l părăsești.
 2. Așteaptă perioada de eliberare (unbonding) arătată în acel flux — QOR-ul nu este mobil și nu produce recompense în acest timp.
 3. Odată ce QOR-ul eliberat devine din nou disponibil, **[deleg-ă-l](#delegate)** la noul validator.
 
-Aceasta durează mai mult decât ar dura o redelegare directă (fără recompense de blocare în timpul ferestrei de eliberare de 21 de zile), așa că tratează-o ca pe o soluție temporară, nu ca pe cea intenționată. Merită menționat, din punctul de vedere al comisioanelor, că o redelegare directă este de regulă cea mai scumpă dintre aceste operațiuni de staking, iar pasul de anulare a delegării din această soluție temporară costă deja vizibil mai mult decât o simplă delegare de una singură — rețeaua măsoară gazul pe operațiune, nu percepe un comision fix, iar scrierea unei intrări în coada de eliberare este muncă suplimentară reală. Delegarea simplă rămâne cea mai ieftină dintre cele trei.
+Această soluție temporară costă 21 de zile de recompense pierdute și mai mult în comisioane decât o mutare directă, așa că actualizează QoreX în loc să te bazezi pe ea, dacă poți.
 
 ### Anulează delegarea {#undelegate}
 

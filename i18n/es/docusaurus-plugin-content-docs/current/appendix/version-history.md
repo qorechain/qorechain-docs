@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historial de versiones
 
-Historial de versiones público de QoreChain. La versión más reciente es **v3.1.92**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
+Historial de versiones público de QoreChain. La versión más reciente es **v3.1.95**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
 
 :::note
 Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet.
@@ -15,7 +15,21 @@ Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entrada
 
 ---
 
-## v3.1.92 — Fiabilidad de sincronización de nodos (versión actual)
+## v3.1.95 — Endurecimiento de Cosmos EVM (versión actual)
+
+**Enfoque de la versión:** Actualización de seguridad progresiva de la biblioteca de contabilidad de saldos EVM.
+
+* **Endurecimiento frente a overflow** — Una ruta de actualización de saldo EVM ahora falla de forma segura en lugar de desbordarse silenciosamente ante una condición extrema de overflow. Se entrega como una actualización progresiva que no rompe el consenso — no se requirió voto de gobernanza ni altura de detención coordinada.
+
+## v3.1.94 — Tope de emisión y endurecimiento de mensajes administrativos
+
+**Enfoque de la versión:** Alinear la emisión de recompensas de staking con las condiciones reales de la red, y reforzar las verificaciones de autorización en mensajes administrativos privilegiados.
+
+* **Tope de emisión** — Una propuesta de gobernanza, aprobada con el pleno respaldo del stake bonded y aplicada en la altura 2,122,074 (26 de agosto de 2026), sustituyó el calendario de emisión decreciente original por un monto fijo por época bajo un tope acumulativo estricto. El calendario original había sido calibrado para una red mucho más madura y totalmente bonded; frente al stake bonded real, estaba pagando mucho más rápido de lo previsto. Consulte [Tokenomics](/architecture/tokenomics#staking-reward-schedule) para conocer las cifras actuales y el margen restante.
+* **Endurecimiento de mensajes administrativos** — Un conjunto de mensajes administrativos privilegiados, protegidos por autoridad, ahora verifican a su firmante contra la propia dirección del módulo de gobernanza en lugar de confiar en un valor transportado en el propio mensaje.
+* También incorpora la corrección de fiabilidad de incorporación de nodos de la v3.1.92, para cualquier nodo que actualice directamente a esta versión.
+
+## v3.1.92 — Fiabilidad de sincronización de nodos
 
 **Enfoque de la versión:** Incorporación de nodos más fiable a partir de snapshots y del archivo de cadena publicado.
 

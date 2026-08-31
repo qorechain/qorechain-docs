@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.92**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.1.95**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
@@ -15,7 +15,21 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
-## v3.1.92 — Node Synchronization Reliability (Current Release)
+## v3.1.95 — Cosmos EVM Hardening (Current Release)
+
+**Release focus:** Rolling security update to the EVM balance-accounting library.
+
+* **Overflow hardening** — An EVM balance-update path now fails safely instead of silently wrapping on an extreme overflow condition. Ships as a rolling, non-consensus-breaking update — no governance vote or coordinated halt height was required.
+
+## v3.1.94 — Emission Cap and Administrative Message Hardening
+
+**Release focus:** Bring staking-reward emission in line with actual network conditions, and tighten authorization checks on privileged administrative messages.
+
+* **Emission cap** — A governance proposal, passed with full bonded-stake support and applied at height 2,122,074 (26 August 2026), replaced the original decaying emission schedule with a fixed per-epoch amount under a hard, cumulative cap. The original schedule had been calibrated for a much more mature, fully-bonded network; against actual bonded stake it was paying out far faster than intended. See [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current numbers and remaining runway.
+* **Administrative message hardening** — A set of privileged, authority-gated administrative messages now have their signer verified against the governance module's own address rather than trusting a value carried in the message itself.
+* Also carries the node-onboarding reliability fix from v3.1.92, for any node updating directly to this release.
+
+## v3.1.92 — Node Synchronization Reliability
 
 **Release focus:** More reliable node onboarding from snapshots and the published chain archive.
 

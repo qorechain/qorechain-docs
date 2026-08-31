@@ -24,7 +24,9 @@ Das Passkey-Angebot erscheint nur nach der Anmeldung per **E-Mail-Code**. Wenn S
 
 ## Mehrere Konten aus einer Phrase {#accounts}
 
-Einstellungen → **Ihre Konten** (auch auffindbar als **Adressen**) lässt Sie bis zu **20 Konten** erstellen, wechseln und umbenennen, die alle von derselben 24-Wort-Wiederherstellungsphrase abgeleitet sind (es gibt nichts Zusätzliches zu sichern). Jedes Konto ist eine eigene, unterscheidbare `qor1…`-Adresse mit eigenem Guthaben und — weil ein Handle an eine **Adresse** gebunden ist, nicht an die Wallet als Ganzes — auch mit einem eigenen optionalen @handle. Welches Konto gerade aktiv ist, bestimmt, welches Konto Senden, Empfangen, Staking und der dApp-Browser verwenden. Seit **0.2.2** verfügt auch die Browser-Erweiterung über diese Funktion — siehe [Mehrere Konten aus einer Phrase](/qorex/browser-extension#wallet).
+Einstellungen → **Ihre Konten** (auch auffindbar als **Adressen**) lässt Sie bis zu **20 Konten** erstellen, wechseln und umbenennen, die alle von derselben 24-Wort-Wiederherstellungsphrase abgeleitet sind (es gibt nichts Zusätzliches zu sichern). Jedes Konto ist eine eigene, unterscheidbare `qor1…`-Adresse mit eigenem Guthaben und — weil ein Handle an eine **Adresse** gebunden ist, nicht an die Wallet als Ganzes — auch mit einem eigenen optionalen @handle. Welches Konto gerade aktiv ist, bestimmt, welches Konto Senden, Empfangen, Staking und der dApp-Browser verwenden — der Wechsel nimmt alles mit, und die App zeigt an, auf welchem Konto Sie sich befinden, sobald mehr als eines existiert. Seit **0.2.2** verfügt auch die Browser-Erweiterung über diese Funktion — siehe [Mehrere Konten aus einer Phrase](/qorex/browser-extension#wallet).
+
+Eine Wiederherstellungsphrase stellt alle Konten wieder her, aber jedes Konto registriert bei seiner ersten Transaktion seinen eigenen ML-DSA-87-Post-Quanten-Schlüssel on-chain — genau wie bei einer gewöhnlichen Einzelkonto-Wallet — sodass das Öffnen und Nutzen eines neuen Kontos die einmaligen Schlüsselregistrierungskosten dieses Kontos mit sich bringt.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ Dies sind zwei getrennte, voneinander unabhängige Aktionen. Die Beanspruchung e
 **Einstellungen → Verknüpftes Konto** verbindet Ihre QoreX-Wallet und Ihr Dashboard-Konto in beide Richtungen:
 
 1. Geben Sie den vom Dashboard angezeigten 8-stelligen Code ein **oder** erzeugen Sie einen in QoreX (10 Minuten gültig) und geben Sie ihn im Dashboard ein.
-2. Nach der Verknüpfung erscheinen Ihr @handle und die verbundenen Adressen auf beiden.
-3. Jederzeit trennbar.
+2. Wenn Sie [mehrere Konten](#accounts) haben, lässt Sie das eigene Bestätigungsfenster von QoreX auswählen, **welches Konto** verknüpft wird — es geht nicht einfach vom gerade aktiven Konto aus.
+3. Nach der Verknüpfung erscheinen Ihr @handle und die verbundenen Adressen auf beiden.
+4. Jederzeit trennbar.
 
 Die Anmeldung *über* **Mit Dashboard fortfahren** verknüpft beide implizit — es ist nichts Weiteres zu tun.
 

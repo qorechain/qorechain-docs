@@ -24,7 +24,9 @@ La proposta della passkey compare solo dopo l'accesso con **codice via email**. 
 
 ## Più account da una sola frase {#accounts}
 
-Impostazioni → **Your accounts** ti permette di creare, cambiare e rinominare fino a **20 account**, tutti derivati dalla stessa frase di recupero di 24 parole (non c'è nient'altro da salvare come backup). Ogni account è un indirizzo `qor1…` distinto con il proprio saldo e — poiché un handle è legato a un **indirizzo**, non al wallet nel suo insieme — con il proprio @handle opzionale. L'account attivo in un dato momento è quello usato da Send, Receive, Staking e dal browser dApp. A partire dalla **0.2.2**, anche l'estensione per browser ha questa funzionalità — vedi [Più account da una sola frase](/qorex/browser-extension#wallet).
+Impostazioni → **Your accounts** (trovabile anche come **Addresses**) ti permette di creare, cambiare e rinominare fino a **20 account**, tutti derivati dalla stessa frase di recupero di 24 parole (non c'è nient'altro da salvare come backup). Ogni account è un indirizzo `qor1…` distinto con il proprio saldo e — poiché un handle è legato a un **indirizzo**, non al wallet nel suo insieme — con il proprio @handle opzionale. L'account attivo è quello usato da Send, Receive, Staking e dal browser dApp — cambiare account sposta tutto insieme a esso, e l'app mostra su quale account ti trovi ogni volta che ne esiste più di uno. A partire dalla **0.2.2**, anche l'estensione per browser ha questa funzionalità — vedi [Più account da una sola frase](/qorex/browser-extension#wallet).
+
+Una sola frase di recupero ripristina tutti gli account, ma ciascun account registra on-chain la propria chiave post-quantistica ML-DSA-87 la prima volta che effettua una transazione — proprio come un wallet a singolo account — quindi aprire e usare un nuovo account comporta il costo una tantum di registrazione della chiave relativo a quell'account.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ Si tratta di due azioni separate e indipendenti. Rivendicare un @handle permette
 **Impostazioni → Linked account** collega il tuo wallet QoreX e il tuo account Dashboard in entrambe le direzioni:
 
 1. Inserisci il codice di 8 caratteri mostrato dalla Dashboard, **oppure** genera un codice in QoreX (valido 10 minuti) e digitalo nella Dashboard.
-2. Una volta collegati, il tuo @handle e gli indirizzi connessi compaiono su entrambi.
-3. Puoi scollegare in qualsiasi momento.
+2. Se hai [più account](#accounts), la finestra di approvazione di QoreX stessa ti permette di scegliere **quale** collegare — non presume che sia quello attualmente attivo.
+3. Una volta collegati, il tuo @handle e gli indirizzi connessi compaiono su entrambi.
+4. Puoi scollegare in qualsiasi momento.
 
 Accedere *tramite* **Continue with Dashboard** collega implicitamente i due — non c'è nient'altro da fare.
 

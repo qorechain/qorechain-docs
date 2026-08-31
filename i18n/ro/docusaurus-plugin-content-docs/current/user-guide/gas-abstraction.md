@@ -10,7 +10,7 @@ sidebar_position: 7
 Acest ghid descrie funcția de abstractizare a gazului din QoreChain, care le permite utilizatorilor să plătească taxele de tranzacție în tokenuri non-native, în loc de QOR.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de testare **`qorechain-diana`** (ID lanț EVM **9800**). Rețeaua principală (**`qorechain-vladi`**, ID lanț EVM **9801**) rulează live din 7 iunie 2026, folosind versiunea de lanț **v3.1.92** — înlocuiți ID-ul lanțului și punctele de acces (endpoints) ale rețelei principale din pagina **Connecting to Mainnet** atunci când tranzacționați pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de testare **`qorechain-diana`** (ID lanț EVM **9800**). Rețeaua principală (**`qorechain-vladi`**, ID lanț EVM **9801**) rulează live din 7 iunie 2026, folosind versiunea de lanț **v3.1.95** — înlocuiți ID-ul lanțului și punctele de acces (endpoints) ale rețelei principale din pagina **Connecting to Mainnet** atunci când tranzacționați pe rețeaua principală.
 :::
 
 ---

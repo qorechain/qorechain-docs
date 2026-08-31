@@ -26,10 +26,8 @@ sidebar_position: 10
 매니페스트의 필드에는 `binary`(URL + sha256), `genesis`(URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync`(매시간 갱신되는 신뢰 지점), `minCompatible`이 포함됩니다. 아래의 설치 및 참여 단계는 이 매니페스트를 가져와 그 안의 현재 값을 사용합니다.
 :::
 
-:::caution 새로 참여하는 노드는 v3.1.92 이상 필요
-제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 **v3.1.92 이상**이어야 합니다 — 이전 버전은 (매니페스트의 `minCompatible` 필드가 아직 이를 반영하도록 업데이트되지 않았더라도) 이제는 수정된 가스 미터링 버그로 인해 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈춥니다.
-
-**매니페스트 자체가 이 기준보다 뒤처져 있을 수 있습니다** — 테스트넷에 먼저 승격된 뒤 숙성 기간을 거쳐 메인넷에 반영되는데, 이 글을 쓰는 시점에도 메인넷 매니페스트의 `binary.url`은 여전히 v3.1.92 이전 빌드를 가리키고 있습니다. `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하세요 — v3.1.92보다 낮다면 매니페스트 대신 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)에서 바이너리를 받거나(게시된 체크섬을 동일한 방식으로 확인하고) 소스에서 직접 빌드하세요.
+:::caution 새로 참여하는 노드는 v3.1.94 이상 필요
+제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 두 가지 이유가 겹쳐서 **v3.1.94 이상**이어야 합니다. 첫째, v3.1.92에서 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈추는 가스 미터링 버그가 수정되었습니다. 둘째, 메인넷은 그 이후 v3.1.94 거버넌스 업그레이드(발행량 상한을 높이 2,122,074에서 적용)를 통과했습니다 — 이 업그레이드의 핸들러가 없는 노드는 동일한 높이를 리플레이하려 할 때 다시 멈춥니다. v3.1.95가 현재 권장 버전이며(합의를 깨지 않는 지속적인 보안 업데이트), `minCompatible`은 `3.1.94`입니다. 매니페스트는 의도적으로 단계적으로 승격되며(테스트넷 먼저, 숙성 기간 후 메인넷) 과거에 이 최소 기준보다 뒤처진 적이 있습니다 — `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하고, 뒤처져 있다면 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)를 사용하거나 소스에서 직접 빌드하세요.
 :::
 
 ---
@@ -73,19 +71,19 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 스토어는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.92**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
+Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.95**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-아래 단계에서 바이너리, 제네시스, 피어 값의 출처로 이 파일을 사용하세요 — `jq -r .minCompatible latest.json`으로 확인하되, 이 필드가 아직 반영되지 않았더라도 위의 **v3.1.92 최소 버전**은 그대로 유효하다는 점을 기억하세요.
+아래 단계에서 바이너리, 제네시스, 피어 값의 출처로 이 파일을 사용하세요 — `jq -r .minCompatible latest.json`으로 확인하되, 이 필드가 뒤처져 있더라도 위의 **v3.1.94 최소 기준**은 그대로 유효하다는 점을 기억하세요.
 
 ### 3. 제네시스 다운로드 및 검증
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-스냅샷은 정기적으로 바뀌는 **블록 높이가 표기된 파일명**으로 게시됩니다 — [download.qore.host](https://download.qore.host)에서 최신 스냅샷과 SHA-256 체크섬을 확인하고, 압축을 풀기 전에 항상 검증하세요. 위의 **v3.1.92 최소 버전** 요건은 스냅샷에서 리플레이하는 경우에도 동일하게 적용된다는 점을 기억하세요.
+스냅샷은 정기적으로 바뀌는 **블록 높이가 표기된 파일명**으로 게시됩니다 — [download.qore.host](https://download.qore.host)에서 최신 스냅샷과 SHA-256 체크섬을 확인하고, 압축을 풀기 전에 항상 검증하세요. 위의 **v3.1.94 최소 기준**은 스냅샷에서 리플레이하는 경우에도 동일하게 적용된다는 점을 기억하세요.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## 운영 모범 사례
 
-1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.92**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
+1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.95**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
 
 2. **이중화된 노드를 운영하세요.** 로드 밸런서 뒤에 최소 두 대의 노드를 운영해 단일 노드의 재시작이나 재동기화가 통합 트래픽을 중단시키지 않도록 하세요.
 

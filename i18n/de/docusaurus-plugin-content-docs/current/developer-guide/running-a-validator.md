@@ -10,7 +10,7 @@ sidebar_position: 9
 Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Pool-Klassifizierungssystem versteht, einen PQC-Schlüssel für quantenresistente Sicherheit registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 mit der Chain-Version **v3.1.92** läuft. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 mit der Chain-Version **v3.1.95** läuft. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein.
 :::
 
 ---
@@ -18,16 +18,26 @@ Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-I
 ## Voraussetzungen
 
 * Ein vollständig synchronisierter `qorechaind`-Node (siehe [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet))
-* Ein finanziertes Konto mit mindestens **1.000 QOR** (1.000.000.000 uqor) für die anfängliche Self-Delegation
+* Ein finanziertes Konto mit mindestens **100.000 QOR** (100.000.000.000 uqor) für die anfängliche Self-Delegation — dieses Minimum wird on-chain erzwungen, und `create-validator` wird darunter abgelehnt
+* Eine aktive **`validator_operator`-Lizenz** auf Ihrem Konto — siehe den Hinweis unten; ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl, unabhängig davon, wie viel QOR Sie self-bonden
 * Vertrautheit mit dem Modell [Staking und Delegation](/user-guide/staking-and-delegation)
 
 ---
 
 ## Einen Validator erstellen
 
+### Lizenzsperre: `validator_operator` {#validator-license-gate}
+
+`create-validator` wird durch zwei unabhängige, jeweils on-chain erzwungene Prüfungen abgesichert, und Sie benötigen beide — ein großer Self-Bond allein genügt nicht:
+
+1. **Mindest-Self-Bond von 100.000 QOR.**
+2. **Eine aktive `validator_operator`-Lizenz** auf dem Konto, das die Transaktion einreicht.
+
+Das `expires_at` einer Lizenz ist eine **Blockhöhe**, kein Datum und keine Dauer — `0` bedeutet keine Ablauffrist. Fehlt die Lizenz oder ist sie abgelaufen, schlägt `create-validator` mit `ErrUnauthorized` fehl, egal wie viel Sie self-bonden; dies ist der mit Abstand häufigste Grund, warum ein gut finanzierter Versuch scheitert und unerklärlich wirkt. Diese Sperre existiert gerade deshalb, weil die EVM-Ausführungsebene sie weder sehen noch durchsetzen kann (ein einzelner Ante-Decorator dort würde sie vollständig umgehen) — das ist einer der Gründe, warum Staking und Validierung ausschließlich auf der nativen Lane verbleiben.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -42,7 +52,7 @@ qorechaind tx staking create-validator \
 
 | Parameter                      | Beschreibung                                        |
 | ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | Self-Delegation-Betrag (Mindest-Stake)             |
+| `--amount`                     | Self-Delegation-Betrag — **mindestens 100.000 QOR** (`100000000000uqor`) |
 | `--pubkey`                     | Konsens-Public-Key des Validators (ed25519)           |
 | `--moniker`                    | Menschenlesbarer Name für Ihren Validator             |
 | `--commission-rate`            | Anfängliche Provisionsrate (z. B. 0,10 = 10 %)         |
@@ -313,3 +323,4 @@ Die Client-Versionsfestlegungen erfolgen nach bestem Wissen; überprüfen Sie vo
 * [Aus dem Quellcode erstellen](/developer-guide/building-from-source) — Das `qorechaind`-Binary erstellen
 * [EVM-Entwicklung](/developer-guide/evm-development) — Smart Contracts auf QoreChain bereitstellen
 * [Account Abstraction](/developer-guide/account-abstraction) — Programmierbare Accounts für Ihre Validator-Operationen
+

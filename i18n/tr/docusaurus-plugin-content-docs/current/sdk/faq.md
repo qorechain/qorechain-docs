@@ -90,7 +90,7 @@ bir ifadeyi test etmek için `validateMnemonic` kullanın.
 
 Hibrit (klasik + ML-DSA-87) gönderim Native yolunda **yayında ve zorunludur** —
 yalnızca klasik imzalı Native işlemler zincir üzerinde reddedilir (zincir
-v3.1.92). Bir hibrit işlemin PQC doğrulamasından geçebilmesi için imzalayanın
+v3.1.95). Bir hibrit işlemin PQC doğrulamasından geçebilmesi için imzalayanın
 PQC açık anahtarının kayıtlı olması gerekir (`MsgRegisterPQCKeyV2`); ya da ilk
 kullanımda otomatik kayıt için anahtarı gömmek üzere
 `includePqcPublicKey: true` ayarlayabilirsiniz.

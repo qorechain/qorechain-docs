@@ -63,11 +63,13 @@ QoreX는 함께 동작하는 두 부분으로 구성됩니다.
 
 | 플랫폼 | 배포 중인 버전 |
 |---|---|
-| Android | 1.0.4 |
-| iOS | 1.0.2 (업데이트 심사 중) |
-| Firefox | 0.2.2 |
-| Chrome | 0.1.5 (0.1.9 심사 중; 해당 심사가 완료되면 이후 0.2.2 제출이 이어짐) |
-| Safari(macOS) | 1.3, 확장 프로그램 0.2.2 포함 |
+| Android | 1.0.8 |
+| iOS | 1.0.8 |
+| Firefox | 0.2.6 |
+| Safari(macOS) | 1.6, 확장 프로그램 0.2.6 포함 |
+| Chrome | 8월 말 기준으로 장기간 스토어 심사에 묶여 있었습니다 — 여기 적힌 숫자를 믿기보다는 [Chrome Web Store 목록](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg)에서 현재 버전을 직접 확인하세요 |
+
+1.0.8 / 0.2.6에서는 21일 언본딩 대기 없이 **스테이킹된 QOR을 검증인 간에 이동**(재위임)하는 기능이 추가되었습니다 — [검증인 간 스테이크 이동](/qorex/portfolio-and-staking#move-stake) 참고.
 
 이 페이지는 QoreX의 현재 기능 세트를 설명합니다 — 이전 빌드를 서비스 중인 스토어도 사용자가 별도로 조치하지 않아도 자동으로 따라잡습니다.
 :::

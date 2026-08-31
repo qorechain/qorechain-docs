@@ -14,7 +14,7 @@ Il bridge cross-chain si trova attualmente in fase di **testnet / pre-produzione
 :::
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.92** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet**, dove il supporto al bridge è stato abilitato.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.95** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet**, dove il supporto al bridge è stato abilitato.
 :::
 
 ---

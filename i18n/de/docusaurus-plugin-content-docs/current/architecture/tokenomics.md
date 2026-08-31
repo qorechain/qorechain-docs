@@ -23,7 +23,7 @@ QoreChain verwendet ein Wirtschaftsmodell mit **fixem Angebot**, das auf dem nat
 | **Bech32-Präfix**       | `qor` (Konten: `qor1...`, Validatoren: `qorvaloper...`)    |
 
 :::note
-Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Chain-Version **v3.1.92**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) teilt sich dasselbe Wirtschaftsmodell.
+Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Chain-Version **v3.1.95**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) teilt sich dasselbe Wirtschaftsmodell.
 :::
 
 ---
@@ -39,8 +39,8 @@ Dies ist ein **Modell mit fixem Angebot und einem endlichen Emissionsbudget**, k
 
 ### Staking-Belohnungszeitplan {#staking-reward-schedule}
 
-:::note Eine per Governance genehmigte Änderung dieses Zeitplans steht noch aus
-Ein angenommener Governance-Vorschlag ändert, wie die Emission innerhalb dieses Budgets freigegeben wird; dies tritt zu einer zukünftigen Blockhöhe in Kraft, nicht sofort. Die folgenden Zahlen sind der Zeitplan vor der Änderung — prüfen Sie in der [Versionshistorie](/appendix/version-history), ob die Änderung bereits in Kraft getreten ist, bevor Sie sich auf eine bestimmte Zahl verlassen, und behandeln Sie jede andernorts derzeit genannte APY- oder Tagesemissionszahl als vorläufig, bis dies der Fall ist.
+:::note Die Emission wurde am 26. August 2026 per Governance gedeckelt
+Der unten abgebildete abnehmende Zeitplan war das ursprüngliche Design, ausgelegt auf ein ausgereiftes Netzwerk mit dem Großteil des Angebots gebondet. Gemessen am Netzwerk, wie es tatsächlich stand — rund 6,8 Mio. QOR gebondet, weit unter diesem Zielwert — zahlte er rund 20 % des gebondeten Stakes *pro Tag* aus. Governance-Vorschlag #4 wurde mit 100 % des gebondeten Stakes angenommen und trat bei Höhe 2.122.074 (2026-08-26, 03:27 UTC, Chain-Version v3.1.94) in Kraft: Die Emission pro Epoche sank von 2.153.583 QOR auf **16.239 QOR**, unter einer neuen harten, kumulativen Obergrenze von **114.285.714 QOR** für dieses Modul — eine Design-Entscheidung, kein Bugfix. Zum Zeitpunkt des Inkrafttretens der Obergrenze waren unter dem alten Zeitplan bereits **104.680.531 QOR (91,6 %) emittiert worden**; beim neuen Satz wird das verbleibende Guthaben voraussichtlich noch etwa **1 Jahr und 11 Monate** reichen, danach stellt dieses Modul die Emission dauerhaft ein, und Validator-/Staker-Belohnungen stammen dann allein aus Transaktionsgebühren (siehe [Gebührenverteilung](#fee-distribution) unten). Die Tabelle unten bleibt als Referenz für das ursprüngliche Design erhalten — sie beschreibt nicht mehr die aktuell live gültige Auszahlungsrate.
 :::
 
 Staking-Belohnungen werden aus dem Emissionsbudget von 590.000.000 QOR nach einem abnehmenden Zeitplan verteilt:
@@ -52,7 +52,7 @@ Staking-Belohnungen werden aus dem Emissionsbudget von 590.000.000 QOR nach eine
 | Jahre 3–4   | 5–8 % APY               | 85.000.000 QOR pro Jahr          |
 | Jahr 5+     | Von der Governance festgelegt | ~186.000.000 QOR verbleibend |
 
-Die APY-Bereiche sind Zielwerte, die vom Bonded-Verhältnis abhängen; die Emissionsbudget-Zahlen sind die festen Obergrenzen für QOR, das in jedem Zeitraum an Staker ausgeschüttet wird. Ab Jahr 5 werden die verbleibenden ~186.000.000 QOR mit einer von der Governance festgelegten Rate freigegeben.
+Die APY-Bereiche waren die ursprünglichen Zielwerte je Zeitraum im Design; sie entsprechen nicht der aktuell live gültigen Auszahlungsrate, seit die Emission wie oben beschrieben gedeckelt wurde. QoreChain stellt derzeit keinen Abfrage-Endpunkt bereit, um eine live gültige APY-Zahl zu berechnen — behandeln Sie jede spezifische Staking-Rendite-Prozentzahl, die Sie sehen (auch auf dieser Seite, historisch), als gegenüber der Chain heute nicht verifizierbar und nicht als Zahl, mit der geplant werden sollte.
 
 ---
 
@@ -75,7 +75,7 @@ Das `x/burn`-Modul implementiert ein 10-Kanal-Token-Burn-System. Jeder verbrannt
 | 9  | `tge`               | Token Generation Event        | Einmalige Genesis-Burns (80.000.000 QOR)          |
 | 10 | `rollup_create`     | Rollup-Deployment             | 1 % des Rollup-Erstellungs-Stakes wird verbrannt  |
 
-### Gebührenverteilung
+### Gebührenverteilung {#fee-distribution}
 
 Alle vom Netzwerk eingenommenen Transaktionsgebühren werden auf fünf Empfänger aufgeteilt, wie unten dargestellt. Die Anteile werden on-chain erzwungen und ergeben immer exakt 100 %.
 
@@ -100,6 +100,10 @@ Alle vom Netzwerk eingenommenen Transaktionsgebühren werden auf fünf Empfänge
 | **Light Nodes**  | 3 %    | An Light Nodes für die Bereitstellung von Netzwerkdaten verteilt        |
 
 Die Anteile werden on-chain erzwungen und müssen immer exakt 100 % ergeben.
+
+:::note Dies sind die konfigurierten Aufteilungen, keine bestätigte Live-Messung
+Die obige Tabelle spiegelt die konfigurierten Parameter von `x/burn` wider. Eine Messung anhand des Live-Chain-Zustands ergab, dass der tatsächlich effektive kombinierte Anteil, der bei Validatoren und Stakern gemeinsam ankommt, niedriger liegt als die 47 %, die diese beiden Zeilen zusammen ergeben. Wir haben diese Diskrepanz noch nicht unabhängig geklärt, daher gibt diese Seite die konfigurierten Design-Werte an, statt eine der beiden Zahlen als bestätigt live gültig zu behaupten — fragen Sie die `x/burn`-Parameter und -Statistiken direkt ab (siehe [REST/gRPC-Endpunkte](/api-reference/rest-grpc-endpoints)), wenn Ihr Anwendungsfall von der exakten aktuellen Aufteilung abhängt.
+:::
 
 ### Burn-Parameter
 

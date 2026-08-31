@@ -243,7 +243,7 @@ sonrası koruma kazanır. Kuantum sonrası kısım, işlem üzerinde bir
 `PQCHybridSignature` uzantısı olarak taşınır.
 
 :::caution Native yolda hibrit imzalama zorunludur
-Güncel zincir sürümünden (**v3.1.92**) itibaren ağ varsayılanı
+Güncel zincir sürümünden (**v3.1.95**) itibaren ağ varsayılanı
 `hybrid_signature_mode = required` ve `allow_classical_fallback = false`
 şeklindedir. `buildHybridTx` üzerinden (`includePqcPublicKey` ile) hibrit
 imzalama — veya birleşik eth-native hesaplar için `signHybridEth` —

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Cea mai recentă versiune este **v3.1.92**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) urmărește build-urile pre-lansare.
+Istoricul public al versiunilor QoreChain. Cea mai recentă versiune este **v3.1.95**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) urmărește build-urile pre-lansare.
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul.
@@ -15,7 +15,21 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 
 ---
 
-## v3.1.92 — Fiabilitatea sincronizării nodurilor (versiunea curentă)
+## v3.1.95 — Consolidare EVM Cosmos (versiunea curentă)
+
+**Focus lansare:** Actualizare de securitate în flux (rolling) pentru biblioteca de contabilizare a soldurilor EVM.
+
+* **Consolidare la overflow** — O cale de actualizare a soldului EVM eșuează acum în siguranță, în loc să se înfășoare (wrap) silențios la o condiție extremă de overflow. Livrată ca actualizare în flux (rolling), fără a rupe consensul — nu a fost necesar niciun vot de guvernanță sau înălțime de oprire coordonată.
+
+## v3.1.94 — Plafon de emisiune și consolidarea mesajelor administrative
+
+**Focus lansare:** Aducerea emisiunii recompenselor de staking în linie cu condițiile reale ale rețelei și strângerea verificărilor de autorizare pe mesajele administrative privilegiate.
+
+* **Plafon de emisiune** — O propunere de guvernanță, adoptată cu susținerea integrală a stake-ului bonded și aplicată la înălțimea 2.122.074 (26 august 2026), a înlocuit programul original de emisiune în declin cu o sumă fixă per epocă, sub un plafon cumulativ dur. Programul original fusese calibrat pentru o rețea mult mai matură, complet bonded; raportat la stake-ul bonded real, plătea mult mai rapid decât se intenționase. Vezi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pentru cifrele curente și autonomia (runway) rămasă.
+* **Consolidarea mesajelor administrative** — Un set de mesaje administrative privilegiate, controlate prin autoritate, își verifică acum semnatarul față de adresa proprie a modulului de guvernanță, în loc să aibă încredere într-o valoare purtată în mesajul însuși.
+* De asemenea, include corecția de fiabilitate la onboarding-ul nodurilor din v3.1.92, pentru orice nod care face upgrade direct la această versiune.
+
+## v3.1.92 — Fiabilitatea sincronizării nodurilor
 
 **Focus lansare:** Onboarding mai fiabil al nodurilor din snapshot-uri și din arhiva publică a chain-ului.
 

@@ -10,7 +10,7 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma sistemini anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğüminizi izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.1.92** zincir sürümünü çalıştırır. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.1.95** zincir sürümünü çalıştırır. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın.
 :::
 
 ---
@@ -18,16 +18,26 @@ Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) he
 ## Ön Koşullar
 
 * Tam olarak senkronize edilmiş bir `qorechaind` düğümü (bkz. [Test Ağına Bağlanma](/getting-started/connecting-to-testnet))
-* İlk öz-delegasyon için en az **1.000 QOR** (1.000.000.000 uqor) bakiyeli, fonlanmış bir hesap
+* İlk öz-delegasyon için en az **100.000 QOR** (100.000.000.000 uqor) bakiyeli, fonlanmış bir hesap — bu minimum zincir üzerinde zorunlu kılınır ve bunun altında `create-validator` reddedilir
+* Hesabınızda etkin bir **`validator_operator` lisansı** — aşağıdaki nota bakın; bu lisans olmadan, ne kadar QOR öz-bağlarsanız bağlayın, `create-validator` `ErrUnauthorized` hatasıyla başarısız olur
 * [Staking ve Delegasyon](/user-guide/staking-and-delegation) modeline aşinalık
 
 ---
 
 ## Doğrulayıcı Oluşturma
 
+### Lisans kontrolü: `validator_operator` {#validator-license-gate}
+
+`create-validator`, ikisi de zincir üzerinde uygulanan iki bağımsız kontrolle kısıtlanır ve ikisine de ihtiyacınız vardır — yalnızca büyük bir öz-bağlama yeterli değildir:
+
+1. **Minimum 100.000 QOR öz-bağlama.**
+2. İşlemi gönderen hesapta **etkin bir `validator_operator` lisansı**.
+
+Bir lisansın `expires_at` değeri bir **tarih veya süre değil, bir blok yüksekliğidir** — `0` süresiz geçerlilik anlamına gelir. Lisans eksik veya süresi dolmuşsa, ne kadar öz-bağlama yaparsanız yapın `create-validator` `ErrUnauthorized` hatasıyla başarısız olur; iyi fonlanmış bir denemenin açıklanamaz görünüp başarısız olmasının en yaygın tek nedeni budur. Bu kontrol, özellikle EVM yürütme yolunun bunu görüp uygulayamaması nedeniyle vardır (oradaki tek bir ante dekoratörü bunu tamamen atlar) — staking ve doğrulamanın yalnızca Native yolunda kalmasının nedenlerinden biri de budur.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -42,7 +52,7 @@ qorechaind tx staking create-validator \
 
 | Parametre                      | Açıklama                                              |
 | ------------------------------ | ------------------------------------------------------ |
-| `--amount`                     | Öz-delegasyon miktarı (minimum stake)                  |
+| `--amount`                     | Öz-delegasyon miktarı — **minimum 100.000 QOR** (`100000000000uqor`) |
 | `--pubkey`                     | Doğrulayıcı konsensüs açık anahtarı (ed25519)          |
 | `--moniker`                    | Doğrulayıcınız için okunabilir ad                       |
 | `--commission-rate`            | Başlangıç komisyon oranı (ör. 0.10 = %10)              |

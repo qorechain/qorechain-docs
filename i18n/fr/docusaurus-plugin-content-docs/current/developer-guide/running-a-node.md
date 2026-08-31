@@ -26,10 +26,8 @@ Le binaire actuel, le genesis, les pairs, les seeds et un point de confiance de 
 Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un point de confiance actualisé toutes les heures) et `minCompatible`. Les étapes d'installation et de connexion ci-dessous récupèrent ce manifeste et utilisent ses valeurs actuelles.
 :::
 
-:::caution v3.1.92 ou ultérieure requise pour un nœud rejoignant le réseau à neuf
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/un snapshot doit être en **v3.1.92 ou ultérieure** — les versions antérieures (même si le champ `minCompatible` du manifeste n'a pas encore été mis à jour pour refléter cela) s'arrêteront au premier bloc contenant une transaction pendant le rejeu, en raison d'un bug de mesure du gaz désormais corrigé.
-
-**Le manifeste lui-même peut être en retard par rapport à ce plancher** — il est promu d'abord sur testnet, puis sur mainnet après une période de rodage, et au moment de la rédaction, le champ `binary.url` du manifeste mainnet pointe encore vers une build antérieure à v3.1.92. Vérifiez le champ `"version"` du manifeste avant de faire confiance à `binary.url` ; s'il est en retard par rapport à v3.1.92, récupérez le binaire depuis les [releases GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) à la place (en vérifiant sa somme de contrôle publiée de la même manière) ou construisez-le depuis les sources, plutôt que d'utiliser le manifeste.
+:::caution v3.1.94 ou ultérieure requise pour un nœud rejoignant le réseau à neuf
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/un snapshot doit être en **v3.1.94 ou ultérieure**, pour deux raisons cumulées : la v3.1.92 a corrigé un bug de mesure du gaz qui bloquait sinon le rejeu au premier bloc contenant une transaction, et le mainnet a depuis franchi la mise à niveau de gouvernance v3.1.94 (un plafond strict sur l'émission, appliqué à la hauteur 2 122 074) — un nœud sans le gestionnaire de cette mise à niveau s'arrête à nouveau en essayant de rejouer au-delà de cette même hauteur. La v3.1.95 est la version actuellement recommandée (une mise à jour de sécurité continue, sans rupture de consensus) ; `minCompatible` vaut `3.1.94`. Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) et a déjà pris du retard par rapport à ce plancher — vérifiez son champ `"version"` avant de faire confiance à `binary.url`, et repliez-vous sur les [releases GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) ou sur une construction depuis les sources s'il est en retard.
 :::
 
 ---
@@ -73,19 +71,19 @@ Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EV
 
 ### Docker Compose
 
-Un déploiement nœud uniquement avec Docker Compose. Il n'existe pas encore d'image `qorechaind` publiée publiquement à récupérer — construisez-en une vous-même à partir du `Dockerfile` du dépôt et étiquetez-la avec la version de chaîne en direct (**v3.1.92** sur mainnet), puis montez un volume persistant pour les données de la chaîne :
+Un déploiement nœud uniquement avec Docker Compose. Il n'existe pas encore d'image `qorechaind` publiée publiquement à récupérer — construisez-en une vous-même à partir du `Dockerfile` du dépôt et étiquetez-la avec la version de chaîne en direct (**v3.1.95** sur mainnet), puis montez un volume persistant pour les données de la chaîne :
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Utilisez ce fichier comme source pour les valeurs du binaire, du genesis et des pairs dans les étapes ci-dessous — vérifiez `jq -r .minCompatible latest.json`, mais rappelez-vous que le **plancher v3.1.92** ci-dessus s'applique même si ce champ est en retard.
+Utilisez ce fichier comme source pour les valeurs du binaire, du genesis et des pairs dans les étapes ci-dessous — vérifiez `jq -r .minCompatible latest.json`, mais rappelez-vous que le **plancher v3.1.94** ci-dessus s'applique même si ce champ est en retard.
 
 ### 3. Télécharger et vérifier le genesis
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Les snapshots sont publiés sous des **noms de fichiers horodatés par hauteur** qui changent régulièrement — consultez [download.qore.host](https://download.qore.host) pour le snapshot le plus récent et sa somme de contrôle SHA-256, et vérifiez toujours avant d'extraire. N'oubliez pas que le **minimum v3.1.92** ci-dessus s'applique aussi au rejeu depuis un snapshot.
+Les snapshots sont publiés sous des **noms de fichiers horodatés par hauteur** qui changent régulièrement — consultez [download.qore.host](https://download.qore.host) pour le snapshot le plus récent et sa somme de contrôle SHA-256, et vérifiez toujours avant d'extraire. N'oubliez pas que le **minimum v3.1.94** ci-dessus s'applique aussi au rejeu depuis un snapshot.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez le tag en direct (**v3.1.92** sur mainnet) et suivez les versions officielles pour les mises à niveau coordonnées.
+1. **Épinglez la version de la chaîne.** Exécutez le tag en direct (**v3.1.95** sur mainnet) et suivez les versions officielles pour les mises à niveau coordonnées.
 
 2. **Faites tourner des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un simple redémarrage ou une resynchronisation n'interrompe pas le trafic d'intégration.
 

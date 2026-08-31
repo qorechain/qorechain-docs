@@ -23,7 +23,7 @@ QoreChain uses a **fixed-supply** economic model centered on the native **QOR** 
 | **Bech32 prefix**     | `qor` (accounts: `qor1...`, validators: `qorvaloper...`) |
 
 :::note
-The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on chain version **v3.1.92**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) shares the same economic model.
+The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on chain version **v3.1.95**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) shares the same economic model.
 :::
 
 ---
@@ -39,8 +39,8 @@ This is a **fixed-supply model with a finite emission budget**, not an inflation
 
 ### Staking Reward Schedule {#staking-reward-schedule}
 
-:::note A governance-approved change to this schedule is pending
-A passed governance proposal changes how emission is released within this budget, taking effect at a future block height rather than immediately. The figures below are the pre-change schedule — check [Version History](/appendix/version-history) for whether the change has taken effect before relying on a specific number, and treat any APY or per-day emission figure you see quoted elsewhere right now as provisional until it does.
+:::note Emission was capped by governance on 26 August 2026
+The declining schedule below was the original design, targeted at a mature network with most of the supply bonded. Measured against the network as it actually stood — roughly 6.8M QOR bonded, far below that target — it was paying out around 20% of bonded stake *per day*. Governance proposal #4 passed with 100% of bonded stake and applied at height 2,122,074 (2026-08-26 03:27 UTC, chain version v3.1.94): per-epoch emission dropped from 2,153,583 QOR to **16,239 QOR**, under a new hard, cumulative cap of **114,285,714 QOR** for this module — a design decision, not a bug fix. By the time the cap took effect, **104,680,531 QOR (91.6%) had already been emitted** under the old schedule; at the new rate, the remaining balance is expected to last roughly another **1 year 11 months**, after which this module stops emitting permanently and validator/staker rewards come from transaction fees alone (see [Fee Distribution](#fee-distribution) below). The table below is retained as the original design reference — it no longer describes the live payout rate.
 :::
 
 Staking rewards are distributed from the 590,000,000 QOR emission budget on a declining schedule:
@@ -52,7 +52,7 @@ Staking rewards are distributed from the 590,000,000 QOR emission budget on a de
 | Years 3–4   | 5–8% APY                | 85,000,000 QOR per year          |
 | Year 5+     | Governance-determined   | ~186,000,000 QOR remaining       |
 
-APY ranges are targets that depend on the bonded ratio; the emission budget figures are the hard caps on QOR released to stakers in each period. From Year 5 onward, the remaining ~186,000,000 QOR is released at a rate set by governance.
+APY ranges were the original per-period design targets; they are not the live payout rate now that emission is capped as described above. QoreChain does not currently expose a query endpoint for computing a live APY figure — treat any specific staking-return percentage you see quoted (including on this page, historically) as unverifiable against the chain today, not as a number to plan around.
 
 ---
 
@@ -75,7 +75,7 @@ The `x/burn` module implements a 10-channel token burn system. Every burned toke
 | 9  | `tge`              | Token generation event     | One-time genesis burns (80,000,000 QOR)       |
 | 10 | `rollup_create`    | Rollup deployment          | 1% of rollup creation stake burned            |
 
-### Fee Distribution
+### Fee Distribution {#fee-distribution}
 
 All transaction fees collected by the network are split across five destinations, as shown below. The shares are enforced on-chain and always sum to exactly 100%.
 
@@ -100,6 +100,10 @@ All transaction fees collected by the network are split across five destinations
 | **Light Nodes** | 3%    | Distributed to light nodes for serving network data                  |
 
 The shares are enforced on-chain and must always sum to exactly 100%.
+
+:::note These are the configured splits, not a confirmed live measurement
+The table above reflects `x/burn`'s configured parameters. A measurement effort against live chain state found the effective combined share actually reaching validators and stakers together running lower than the 47% these two rows sum to. We have not independently reconciled that discrepancy yet, so this page states the configured design values rather than asserting either figure as the confirmed live one — query `x/burn` parameters and stats directly (see [REST/gRPC Endpoints](/api-reference/rest-grpc-endpoints)) if your use case depends on the exact current split.
+:::
 
 ### Burn Parameters
 

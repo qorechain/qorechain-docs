@@ -17,7 +17,7 @@ QoreChain 네트워크에 대한 통합 레퍼런스 — 체인 식별자, EVM �
 | **Cosmos 체인 ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM 체인 ID (EIP-155)** | **9801** (16진수 `0x2649`) | **9800** (16진수 `0x2648`) |
 | **라이브 시작** | 2026년 6월 7일 23:59 UTC | — |
-| **체인 버전** | v3.1.92 | v3.1.92 |
+| **체인 버전** | v3.1.95 | v3.1.95 |
 | **프레임워크** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **최소 가스 가격** | `0.1uqor` | `0.1uqor` |
 | **연결 가이드** | [메인넷에 연결하기](/getting-started/connecting-to-mainnet) | [테스트넷에 연결하기](/getting-started/connecting-to-testnet) |

@@ -15,12 +15,16 @@ Staking, delega e validazione avvengono esclusivamente sulla lane nativa (Cosmos
 
 ## Consultare i validatori
 
+:::caution Su mainnet, questa pagina mostra attualmente i validatori del testnet
+La pagina **Validators** su mainnet mostra il set di validatori del testnet (4 nodi) anziché il set effettivo di mainnet (8 nodi) — un problema di dati lato backend, non qualcosa di sbagliato nella tua connessione o nel tuo account. Non usare questa pagina per capire chi sono i validatori di mainnet; usa invece l'[explorer](https://explore.qore.network) o una query diretta alla chain (`qorechaind query staking validators`). Si tratta comunque solo di un disallineamento informativo: il selettore di validatori del pannello **Delegate** nella [scheda Stake della pagina Wallet](/dashboard/wallet#mainnet) legge una rotta diversa e corretta, direttamente dalla chain, quindi non puoi in pratica scegliere né delegare a un validatore che non esiste su mainnet — una volta lì vedrai semplicemente un elenco diverso (e corretto).
+:::
+
 La pagina si apre con schede riepilogative per il numero di validatori attivi, il totale di QOR vincolato (bonded), la commissione media e l'uptime medio. Sotto si trova l'elenco dei validatori. Ogni riga di un validatore mostra:
 
 - Un **rango** e il **moniker** (nome) del validatore, con il suo indirizzo e un pulsante di copia.
 - **Potere di voto** — lo stake vincolato del validatore e la sua quota sul totale.
 - **Commissione** — la percentuale che il validatore trattiene dalle ricompense.
-- **APY** — la stima del rendimento annuo per chi delega.
+- **APY** — mostrato come un trattino lungo (—) anziché come un numero. L'emissione di QoreChain proviene da un modulo personalizzato che l'endpoint standard di stima del rendimento non può vedere, quindi una cifra calcolata qui sarebbe una stima travestita da dato; mostrarla come non disponibile è stata una correzione deliberata, non un bug. Al momento non esiste un endpoint per calcolare un APY di staking live e verificato dalla chain — considera come non verificata qualsiasi percentuale specifica riportata altrove, e non dare per scontato che un numero eventualmente mostrato qui in futuro sia automaticamente corretto: la formula sottostante presuppone il percorso di inflazione standard di Cosmos, che non è il modo in cui l'emissione di questa chain arriva realmente a chi fa staking, e andrebbe verificata rispetto al meccanismo reale prima di essere considerata attendibile.
 - **Stato** — ad esempio attivo o jailed (in stato di penalità).
 - Dettagli operativi: regione, uptime, blocchi proposti, versione del software e ultimo avvistamento.
 
@@ -33,7 +37,7 @@ Questa pagina serve solo a confrontare i validatori. Per delegare effettivamente
 Nello scegliere un validatore a cui delegare, considera:
 
 - **Commissione** — un tasso più basso lascia più ricompense a te, ma gli operatori sostenibili hanno bisogno di una quota ragionevole.
-- **Uptime e stato** — preferisci validatori attivi con un uptime solido; un validatore jailed non sta guadagnando nulla. Un validatore finisce in jail quando manca la firma su più del 5% dei blocchi in una finestra di 10.000 blocchi (circa sei ore per accumularsi) — non guadagna nulla, né per te né per sé stesso, finché non esce dallo stato di jail (unjail). Un jailing per downtime dura un tempo fisso di **600 secondi (10 minuti)** e costa al validatore l'**1% del suo stake**; il double-signing è un'infrazione separata, più grave, che comporta uno slashing del **5%**. Questi valori sono i parametri della chain attualmente in vigore — considera superato qualsiasi valore diverso trovato altrove.
+- **Uptime e stato** — preferisci validatori attivi con un uptime solido; un validatore jailed non sta guadagnando nulla. Un validatore finisce in jail quando manca la firma su più del 5% dei blocchi in una finestra di 10.000 blocchi (circa sei ore per accumularsi) — non guadagna nulla, né per te né per sé stesso, finché non esce dallo stato di jail (unjail). Un jailing per downtime dura un tempo fisso di **600 secondi (10 minuti)** e costa al validatore l'**1% del suo stake**; il double-signing è un'infrazione separata, più grave, che comporta uno slashing del **5%**. Questi valori sono i parametri della chain attualmente in vigore, live — considera superato qualsiasi valore diverso trovato altrove.
 - **Potere di voto** — distribuire lo stake tra più validatori favorisce la decentralizzazione. Nel pannello Delegate, i validatori sono elencati partendo dal più piccolo proprio per questo motivo.
 
 ## Delegare, ridelegare, revocare la delega e riscuotere le ricompense
@@ -54,15 +58,15 @@ Tutte e quattro le azioni si trovano nella pagina **Wallet** (`/dashboard/wallet
 
 ### Ridelegare {#redelegate}
 
-Il contratto di richiesta sottostante supporta già lo spostamento diretto di un bond da un validatore a un altro (`redelegate`, con un validatore di origine e uno di destinazione che devono essere diversi) — con lo stesso schema non-custodiale, firmato tramite QoreX, di delega e revoca della delega. Al momento della stesura di questo documento, tuttavia, il dashboard non espone ancora un pannello Redelegate dedicato né un pulsante per questa operazione.
+Il dashboard in sé non ha un pannello Redelegate dedicato — ma non ne serve più uno. **QoreX stesso ora sposta lo stake direttamente tra validatori** (app 1.0.8+ ed estensione 0.2.6+): niente attesa di 21 giorni di unbonding, nessuna ricompensa persa, e può persino suddividere uno spostamento su più validatori di destinazione in un'unica transazione. Apri **Stake** in QoreX, tocca il validatore da cui vuoi uscire e scegli dove far confluire lo stake — vedi [Spostare lo stake tra validatori](/qorex/portfolio-and-staking#move-stake) per la procedura completa. Questa è una soluzione migliore di qualsiasi cosa possa offrire il contratto di richiesta del dashboard, quindi usa direttamente QoreX per questa operazione anziché il metodo alternativo indicato sotto.
 
-Finché quel pannello non viene rilasciato, sposta uno stake verso un validatore diverso in due passaggi usando i flussi presenti su questa pagina:
+Se hai ancora una build di QoreX più vecchia priva di questa funzione, sposta uno stake verso un validatore diverso in due passaggi usando i flussi presenti su questa pagina:
 
 1. **[Revoca la delega](#undelegate)** dell'importo dal validatore che vuoi lasciare.
 2. Attendi il periodo di unbonding indicato in quel flusso — il QOR non è spostabile né produce rendimento durante questo periodo.
 3. Una volta che il QOR svincolato torna spendibile, **[delegalo](#delegate)** al nuovo validatore.
 
-Questo richiede più tempo di una ridelega diretta (nessuna ricompensa da bonding durante la finestra di unbonding di 21 giorni), quindi consideralo un percorso temporaneo, non quello previsto. Vale anche la pena sapere, dal punto di vista delle commissioni, che una ridelega diretta è normalmente la più costosa tra queste operazioni di staking, e che il passaggio di revoca della delega in questa soluzione temporanea costa già sensibilmente di più di una semplice delega presa da sola — la chain misura il gas per operazione anziché applicare una tariffa fissa, e scrivere una voce nella coda di unbonding comporta un lavoro extra reale. Delegare da solo resta il più economico dei tre.
+Questo metodo alternativo costa 21 giorni di ricompense perse e più commissioni rispetto a uno spostamento diretto, quindi aggiorna QoreX invece di affidartici, se puoi.
 
 ### Revocare la delega {#undelegate}
 

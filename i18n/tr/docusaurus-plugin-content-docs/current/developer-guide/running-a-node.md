@@ -26,10 +26,8 @@ Güncel ikili dosya, genesis, eşler (peers), tohum düğümler (seeds) ve bir s
 Manifestonun alanları şunları içerir: `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (saatlik yenilenen bir güven noktası) ve `minCompatible`. Aşağıdaki kurulum ve katılım adımları bu manifestoyu alır ve güncel değerlerini kullanır.
 :::
 
-:::caution Yeni katılan bir düğüm için v3.1.92 veya üzeri gerekir
-Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün **v3.1.92 veya üzeri** bir sürümde olması gerekir — daha eski sürümler (manifestonun `minCompatible` alanı henüz bunu yansıtacak şekilde güncellenmemiş olsa bile), artık düzeltilmiş bir gaz ölçümleme (gas-metering) hatası nedeniyle, yeniden oynatma sırasında işlem içeren ilk blokta duracaktır.
-
-**Manifestonun kendisi bu tabanın gerisinde kalabilir** — önce testnet'e, ardından bir dinlenme (soak) süresinin sonunda mainnet'e yükseltilir ve bu satırların yazıldığı sırada mainnet manifestosundaki `binary.url` alanı hâlâ v3.1.92 öncesi bir derlemeyi göstermektedir. `binary.url`'e güvenmeden önce manifestonun `"version"` alanını kontrol edin; v3.1.92'nin gerisindeyse, ikili dosyayı manifesto yerine [qorechain-core GitHub sürümlerinden](https://github.com/qorechain/qorechain-core/releases) alın (yayınlanan sağlama toplamını aynı şekilde kontrol ederek) ya da kaynaktan derleyin.
+:::caution Yeni katılan bir düğüm için v3.1.94 veya üzeri gerekir
+Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün, üst üste binen iki nedenden dolayı **v3.1.94 veya üzeri** bir sürümde olması gerekir: v3.1.92, aksi halde yeniden oynatmayı işlem içeren ilk blokta durduran bir gaz ölçümleme (gas-metering) hatasını düzeltti ve mainnet o zamandan beri v3.1.94 yönetişim (governance) yükseltmesini geçirdi (2.122.074 yüksekliğinde uygulanan, emisyon üzerinde sabit bir tavan) — bu yükseltmenin işleyicisine (handler) sahip olmayan bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.95, güncel önerilen sürümdür (konsensüsü bozmayan, sürekli bir güvenlik güncellemesi); `minCompatible` değeri `3.1.94`'tür. Manifesto kasıtlı olarak kademeli yükseltilir (önce testnet'e, ardından bir dinlenme/soak süresinin sonunda mainnet'e) ve daha önce bu tabanın gerisinde kalmıştır — `binary.url`'e güvenmeden önce manifestonun `"version"` alanını kontrol edin ve gerisinde kalmışsa [qorechain-core GitHub sürümlerine](https://github.com/qorechain/qorechain-core/releases) ya da kaynaktan derlemeye başvurun.
 :::
 
 ---
@@ -73,19 +71,19 @@ NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yo�
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. Şu an çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok — kendi imajınızı depodaki `Dockerfile`'dan derleyip canlı zincir sürümüne (mainnet'te **v3.1.92**) etiketleyin, ardından zincir verisi için kalıcı bir volume bağlayın:
+Docker Compose ile yalnızca düğüm dağıtımı. Şu an çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok — kendi imajınızı depodaki `Dockerfile`'dan derleyip canlı zincir sürümüne (mainnet'te **v3.1.95**) etiketleyin, ardından zincir verisi için kalıcı bir volume bağlayın:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Aşağıdaki adımlarda ikili dosya, genesis ve eş değerleri için bu dosyayı kaynak olarak kullanın — `jq -r .minCompatible latest.json` çıktısını kontrol edin, ancak bu alan geride kalmış olsa bile yukarıdaki **v3.1.92 tabanının** geçerli olduğunu unutmayın.
+Aşağıdaki adımlarda ikili dosya, genesis ve eş değerleri için bu dosyayı kaynak olarak kullanın — `jq -r .minCompatible latest.json` çıktısını kontrol edin, ancak bu alan geride kalmış olsa bile yukarıdaki **v3.1.94 tabanının** geçerli olduğunu unutmayın.
 
 ### 3. Genesis'i indirin ve doğrulayın
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Anlık görüntüler düzenli olarak değişen **blok yüksekliği damgalı dosya adlarıyla** yayınlanır — en güncel anlık görüntü ve SHA-256 sağlama toplamı için [download.qore.host](https://download.qore.host) adresini kontrol edin ve arşivi açmadan önce her zaman doğrulayın. Yukarıdaki **v3.1.92 asgari** koşulunun bir anlık görüntüden yeniden oynatma için de geçerli olduğunu unutmayın.
+Anlık görüntüler düzenli olarak değişen **blok yüksekliği damgalı dosya adlarıyla** yayınlanır — en güncel anlık görüntü ve SHA-256 sağlama toplamı için [download.qore.host](https://download.qore.host) adresini kontrol edin ve arşivi açmadan önce her zaman doğrulayın. Yukarıdaki **v3.1.94 asgari** koşulunun bir anlık görüntüden yeniden oynatma için de geçerli olduğunu unutmayın.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operasyonel En İyi Uygulamalar
 
-1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.92**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
+1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.95**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
 
 2. **Yedekli düğümler çalıştırın.** Tek bir yeniden başlatma veya yeniden senkronizasyonun entegrasyon trafiğini kesintiye uğratmaması için bir yük dengeleyicinin (load balancer) arkasında en az iki düğüm işletin.
 

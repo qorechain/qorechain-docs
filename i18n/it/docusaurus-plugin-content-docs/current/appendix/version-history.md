@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.1.92**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
+Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.1.95**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
 
 :::note
 Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet.
@@ -15,7 +15,21 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 
 ---
 
-## v3.1.92 — Affidabilità della sincronizzazione dei nodi (release corrente)
+## v3.1.95 — Hardening EVM Cosmos (release corrente)
+
+**Focus della release:** aggiornamento di sicurezza rolling alla libreria di contabilità dei saldi EVM.
+
+* **Hardening dell'overflow** — Un percorso di aggiornamento dei saldi EVM ora fallisce in modo sicuro invece di eseguire un wrap silenzioso in una condizione di overflow estremo. Distribuito come aggiornamento rolling che non rompe il consenso — non è stata richiesta alcuna votazione di governance né un halt coordinato ad una determinata altezza.
+
+## v3.1.94 — Cap di emissione e hardening dei messaggi amministrativi
+
+**Focus della release:** allineare l'emissione delle ricompense di staking alle reali condizioni della rete, e irrigidire i controlli di autorizzazione sui messaggi amministrativi privilegiati.
+
+* **Cap di emissione** — Una proposta di governance, approvata con il pieno supporto dello stake bonded e applicata all'altezza 2.122.074 (26 agosto 2026), ha sostituito il programma di emissione a decadimento originale con un importo fisso per epoca sotto un cap cumulativo rigido. Il programma originale era stato calibrato per una rete molto più matura e completamente bonded; rispetto allo stake bonded reale stava erogando molto più velocemente del previsto. Vedi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) per i numeri attuali e la runway residua.
+* **Hardening dei messaggi amministrativi** — Un insieme di messaggi amministrativi privilegiati, protetti da authority, ora verifica il firmatario rispetto all'indirizzo proprio del modulo di governance, invece di fidarsi di un valore trasportato nel messaggio stesso.
+* Include inoltre la correzione di affidabilità dell'onboarding dei nodi della v3.1.92, per qualsiasi nodo che effettui l'upgrade direttamente a questa release.
+
+## v3.1.92 — Affidabilità della sincronizzazione dei nodi
 
 **Focus della release:** onboarding dei nodi più affidabile da snapshot e dall'archivio della chain pubblicato.
 

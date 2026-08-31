@@ -15,12 +15,16 @@ Staking, Delegation und Validierung finden ausschließlich auf der Native-Schien
 
 ## Validatoren überprüfen
 
+:::caution Auf dem Mainnet zeigt diese Seite derzeit Testnet-Validatoren
+Die Seite **Validators** auf dem Mainnet zeigt das Testnet-Validatoren-Set (4 Nodes) anstelle des tatsächlichen Mainnet-Sets (8 Nodes) – ein Backend-Datenproblem, nichts, was mit deiner Verbindung oder deinem Konto zu tun hat. Verwende diese Seite nicht, um zu entscheiden, wer die Validatoren des Mainnets sind; nutze stattdessen den [Block-Explorer](https://explore.qore.network) oder eine direkte Chain-Abfrage (`qorechaind query staking validators`). Es handelt sich jedoch rein um eine informative Diskrepanz: Der Validator-Auswahldialog im **Delegate**-Panel auf dem [Stake-Tab der Wallet-Seite](/dashboard/wallet#mainnet) liest eine andere, korrekte Route direkt von der Chain, sodass du dort tatsächlich keinen Validator auswählen oder an ihn delegieren kannst, der auf dem Mainnet gar nicht existiert – du siehst dort einfach eine andere (und korrekte) Liste, sobald du hinkommst.
+:::
+
 Die Seite öffnet sich mit Übersichtskarten zur Anzahl der aktiven Validatoren, zur insgesamt gebundenen QOR-Menge, zur durchschnittlichen Provision und zur durchschnittlichen Verfügbarkeit. Darunter befindet sich die Validatorenliste. Jede Validator-Zeile zeigt:
 
 - Einen **Rang** und den **Moniker** (Namen) des Validators, mit seiner Adresse und einer Kopier-Schaltfläche.
 - **Voting Power** – der gebundene Stake des Validators und sein Anteil an der Gesamtmenge.
 - **Provision** – der Prozentsatz, den der Validator von den Belohnungen einbehält.
-- **APY** – die geschätzte Jahresrendite für das Delegieren.
+- **APY** – wird als Gedankenstrich (—) statt als Zahl angezeigt. QoreChains Emission stammt aus einem eigenen Modul, das der standardmäßige Endpunkt zur Renditeschätzung nicht sehen kann, sodass eine hier berechnete Zahl nur eine als Daten verkleidete Vermutung wäre – die Anzeige als „nicht verfügbar" war eine bewusste Korrektur, kein Bug. Es gibt derzeit keinen Endpunkt, um eine live, auf der Chain basierende Staking-APY zu berechnen – behandle jeden anderswo angegebenen konkreten Prozentsatz als unverifiziert, und geh nicht davon aus, dass eine hier später erscheinende Zahl automatisch korrekt ist: Die zugrunde liegende Formel setzt den standardmäßigen Cosmos-Inflationspfad voraus, was nicht der Art entspricht, wie die Emission dieser Chain tatsächlich zu den Stakern gelangt, und müsste erst gegen den tatsächlichen Mechanismus geprüft werden, bevor man ihr vertraut.
 - **Status** – zum Beispiel aktiv oder gesperrt (jailed).
 - Betriebsdetails: Region, Verfügbarkeit, vorgeschlagene Blöcke, Softwareversion und zuletzt gesehen.
 
@@ -33,7 +37,7 @@ Diese Seite dient ausschließlich dem Vergleich von Validatoren. Um tatsächlich
 Wenn du einen Validator zum Delegieren auswählst, beachte Folgendes:
 
 - **Provision** – ein niedrigerer Satz lässt dir mehr Belohnungen, aber nachhaltig arbeitende Betreiber brauchen einen angemessenen Anteil.
-- **Verfügbarkeit und Status** – bevorzuge aktive Validatoren mit hoher Verfügbarkeit; ein gesperrter (jailed) Validator verdient nichts. Ein Validator wird gesperrt, wenn er das Signieren bei mehr als 5% der Blöcke innerhalb eines 10,000-Block-Fensters (etwa sechs Stunden bis zum Erreichen dieser Schwelle) verpasst – er verdient dann nichts, weder für dich noch für sich selbst, bis er das Problem behebt und die Sperre aufgehoben wird (unjail). Eine Downtime-Sperre dauert fest **600 Sekunden (10 Minuten)** und kostet den Validator **1% seines Stakes**; Double-Signing ist ein separates, schwerwiegenderes Vergehen, das mit **5%** geslasht wird. Diese Werte sind die aktuell live geltenden Chain-Parameter – behandle jeden anderswo gesehenen älteren Wert als überholt.
+- **Verfügbarkeit und Status** – bevorzuge aktive Validatoren mit hoher Verfügbarkeit; ein gesperrter (jailed) Validator verdient nichts. Ein Validator wird gesperrt, wenn er das Signieren bei mehr als 5% der Blöcke innerhalb eines 10.000-Block-Fensters verpasst (was etwa sechs Stunden dauert, um sich anzusammeln) – er verdient dann nichts, weder für dich noch für sich selbst, bis er entsperrt wird (unjail). Eine Downtime-Sperre dauert fest **600 Sekunden (10 Minuten)** und kostet den Validator **1% seines Stakes**; Double-Signing ist ein separates, schwerwiegenderes Vergehen, das mit **5%** geslasht wird. Diese Werte sind die aktuell live geltenden Chain-Parameter – behandle jeden anderswo gesehenen älteren Wert als überholt.
 - **Voting Power** – das Verteilen des Stakes auf mehrere Validatoren unterstützt die Dezentralisierung. Im Delegate-Panel werden die Validatoren genau aus diesem Grund nach der kleinsten Größe zuerst aufgelistet.
 
 ## Delegieren, Umdelegieren, Delegierung aufheben und Belohnungen einfordern
@@ -43,7 +47,7 @@ Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/dashboard/wallet`),
 ### Delegieren {#delegate}
 
 1. Wähle auf der Seite **Wallet** den Tab **Stake / Delegate**.
-2. Prüfe im Panel **Delegate QOR** die Infobox oben – sie zeigt deinen aktuell gebundenen Gesamtbetrag im Vergleich zur Light-Node-Stake-Schwelle und ob du sie bereits erreichst. Diese Schwelle wird gegen deinen **insgesamt delegierten Stake über alle Validatoren hinweg** geprüft, nicht pro Validator, sodass ein Fehlbetrag auf mehrere verteilt werden kann – es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren“, da Delegation immer auf einen Validator zielt und die Light-Node-Berechtigung eine separate Prüfung deines Gesamtbetrags ist.
+2. Prüfe im Panel **Delegate QOR** die Infobox oben – sie zeigt deinen aktuell gebundenen Gesamtbetrag im Vergleich zur Light-Node-Stake-Schwelle und ob du sie bereits erreichst. Diese Schwelle wird gegen deinen **insgesamt delegierten Stake über alle Validatoren hinweg** geprüft, nicht pro Validator, sodass ein Fehlbetrag auf mehrere verteilt werden kann – es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren", da Delegation immer auf einen Validator zielt und die Light-Node-Berechtigung eine separate Prüfung deines Gesamtbetrags ist.
 3. Öffne das Dropdown **Validator** und wähle einen aus. Validatoren werden nach dem kleinsten Stake zuerst aufgelistet.
 4. Gib einen **Amount (QOR)** ein.
 5. Lies den Hinweis unter dem Betragsfeld: Das Unbonding dauert 21 Tage, und sobald QOR gebunden ist, kann es bis zum Ablauf dieser Frist weder bewegt noch verkauft werden.
@@ -54,15 +58,15 @@ Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/dashboard/wallet`),
 
 ### Umdelegieren {#redelegate}
 
-Der zugrunde liegende Request-Vertrag unterstützt bereits das direkte Verschieben eines Bonds von einem Validator zu einem anderen (`redelegate`, mit einem Quell- und einem Ziel-Validator, die sich unterscheiden müssen) – nach demselben nicht-verwahrenden, QoreX-signierten Muster wie beim Delegieren und beim Aufheben der Delegierung. Zum Zeitpunkt der Erstellung dieses Textes stellt das Dashboard dafür jedoch noch kein eigenes Redelegate-Panel oder eine entsprechende Schaltfläche bereit.
+Das Dashboard selbst hat kein eigenes Redelegate-Panel – das brauchst du aber auch nicht mehr. **QoreX selbst verschiebt Stake inzwischen direkt zwischen Validatoren** (App ab 1.0.8, Erweiterung ab 0.2.6): keine 21-tägige Unbonding-Wartezeit, keine verlorenen Belohnungen, und es kann eine Verschiebung sogar in einer einzigen Transaktion auf mehrere Ziel-Validatoren aufteilen. Öffne **Stake** in QoreX, tippe auf den Validator, den du verlassen möchtest, und wähle, wohin der Stake gehen soll – die vollständige Anleitung findest du unter [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake). Das ist eine bessere Lösung als alles, was der eigene Request-Vertrag des Dashboards bieten könnte – verwende dafür also direkt QoreX statt des unten stehenden Workarounds.
 
-Bis dieses Panel verfügbar ist, verschiebe einen Stake in zwei Schritten mithilfe der Abläufe auf dieser Seite zu einem anderen Validator:
+Falls du noch eine ältere QoreX-Version ohne diese Funktion nutzt, verschiebe einen Stake stattdessen in zwei Schritten mithilfe der Abläufe auf dieser Seite zu einem anderen Validator:
 
 1. Hebe die **[Delegierung auf](#undelegate)** für den Betrag beim Validator, den du verlassen möchtest.
 2. Warte die in diesem Ablauf angezeigte Unbonding-Frist ab – das QOR ist während dieser Zeit weder bewegbar noch verdient es etwas.
 3. Sobald das entbundene QOR wieder verfügbar (spendable) ist, **[delegiere](#delegate)** es an den neuen Validator.
 
-Das dauert länger, als eine direkte Umdelegierung dauern würde (keine Bonding-Belohnungen während des 21-tägigen Unbonding-Fensters) – behandle diesen Weg also als vorübergehende Lösung, nicht als den vorgesehenen. Gebührenmäßig ist außerdem wissenswert, dass eine direkte Umdelegierung normalerweise die teuerste dieser Staking-Operationen ist und dass bereits der Schritt „Delegierung aufheben" in diesem Workaround spürbar mehr kostet als ein einfaches Delegieren allein – die Chain misst Gas pro Operation, statt eine Pauschalgebühr zu berechnen, und das Schreiben eines Unbonding-Queue-Eintrags ist echter Mehraufwand. Das reine Delegieren bleibt die günstigste der drei Operationen.
+Dieser Workaround kostet 21 Tage entgangene Belohnungen und mehr an Gebühren als eine direkte Verschiebung – aktualisiere daher QoreX, statt dich darauf zu verlassen, sofern möglich.
 
 ### Delegierung aufheben {#undelegate}
 

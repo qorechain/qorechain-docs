@@ -14,7 +14,7 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live (versiunea de chain **v3.1.92**), sau `--chain-id qorechain-diana` pentru testnet. Dacă este omis, clientul folosește `chain-id`-ul din configurația locală.
+Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live (versiunea de chain **v3.1.95**), sau `--chain-id qorechain-diana` pentru testnet. Dacă este omis, clientul folosește `chain-id`-ul din configurația locală.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `tx`:

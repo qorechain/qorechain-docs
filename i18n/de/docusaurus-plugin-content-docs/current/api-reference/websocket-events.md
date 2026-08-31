@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain bietet Echtzeit-Event-Streaming über zwei WebSocket-Schnittstellen: den EVM-kompatiblen WebSocket und den QoreChain-Consensus-Engine-RPC-WebSocket.
 
 :::note
-Beide WebSocket-Schnittstellen sind auf dem **`qorechain-vladi`**-Mainnet (läuft auf Chain-Version **v3.1.92**) und dem **`qorechain-diana`**-Testnet verfügbar. Die folgenden lokalen Endpunkte setzen einen selbst betriebenen Node voraus; ersetzen Sie sie für den Remote-Zugriff durch den Mainnet- oder Testnet-Host Ihres Anbieters.
+Beide WebSocket-Schnittstellen sind auf dem **`qorechain-vladi`**-Mainnet (läuft auf Chain-Version **v3.1.95**) und dem **`qorechain-diana`**-Testnet verfügbar. Die folgenden lokalen Endpunkte setzen einen selbst betriebenen Node voraus; ersetzen Sie sie für den Remote-Zugriff durch den Mainnet- oder Testnet-Host Ihres Anbieters.
 :::
 
 ---

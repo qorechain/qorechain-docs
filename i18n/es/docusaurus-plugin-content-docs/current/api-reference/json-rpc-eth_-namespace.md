@@ -17,7 +17,7 @@ QoreChain implementa una interfaz JSON-RPC totalmente compatible con EVM, lo que
 | WebSocket  | `ws://localhost:8546`    |
 
 :::note
-La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`, en producción con la versión de cadena **v3.1.92**) y la testnet **`qorechain-diana`** (ID de cadena EVM **9800**, hex `0x2648`). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo; sustituye por el endpoint de mainnet o testnet de tu proveedor para el acceso remoto.
+La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`, en producción con la versión de cadena **v3.1.95**) y la testnet **`qorechain-diana`** (ID de cadena EVM **9800**, hex `0x2648`). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo; sustituye por el endpoint de mainnet o testnet de tu proveedor para el acceso remoto.
 :::
 
 ## Espacios de nombres compatibles

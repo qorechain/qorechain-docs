@@ -63,11 +63,13 @@ Les approbations des stores arrivent à des moments différents, la version ci-d
 
 | Plateforme | Version disponible |
 |---|---|
-| Android | 1.0.4 |
-| iOS | 1.0.2 (une mise à jour est en cours d'examen) |
-| Firefox | 0.2.2 |
-| Chrome | 0.1.5 (la version 0.1.9 est en cours d'examen ; une soumission 0.2.2 ultérieure suivra une fois cet examen terminé) |
-| Safari (macOS) | 1.3, intégrant l'extension 0.2.2 |
+| Android | 1.0.8 |
+| iOS | 1.0.8 |
+| Firefox | 0.2.6 |
+| Safari (macOS) | 1.6, intégrant l'extension 0.2.6 |
+| Chrome | Est resté bloqué derrière un long examen du store jusqu'à fin août — consultez directement la [fiche du Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pour connaître sa version actuelle plutôt que de se fier à un numéro indiqué ici |
+
+Les versions 1.0.8 / 0.2.6 ont ajouté le **déplacement de QOR déjà stakés entre validateurs** (redélégation) sans attendre les 21 jours de déblocage — voir [Déplacer un stake entre validateurs](/qorex/portfolio-and-staking#move-stake).
 
 Cette page décrit l'ensemble des fonctionnalités actuel de QoreX — un store qui sert encore une version plus ancienne rattrapera son retard automatiquement, sans aucune action de votre part.
 :::

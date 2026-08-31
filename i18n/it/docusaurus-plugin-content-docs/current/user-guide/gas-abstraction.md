@@ -10,7 +10,7 @@ sidebar_position: 7
 Questa guida illustra la funzionalità di astrazione del gas di QoreChain, che consente agli utenti di pagare le commissioni di transazione in token non nativi invece che in QOR.
 
 :::note
-I comandi riportati di seguito utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.92** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando effettui transazioni sulla mainnet.
+I comandi riportati di seguito utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.95** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando effettui transazioni sulla mainnet.
 :::
 
 ---

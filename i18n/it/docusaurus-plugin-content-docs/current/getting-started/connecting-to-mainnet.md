@@ -10,7 +10,7 @@ sidebar_position: 3
 Unisciti alla mainnet QoreChain Vladi attiva configurando il tuo nodo con il file genesis ufficiale, i peer e le impostazioni di rete.
 
 :::note
-Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, esadecimale `0x2649`), attiva dal **7 giugno 2026 alle 23:59 UTC** ed eseguita con la versione della chain **v3.1.92** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), consulta [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova lì la tua configurazione prima di andare in produzione.
+Questa pagina riguarda la mainnet **`qorechain-vladi`** (EVM chain ID **9801**, esadecimale `0x2649`), attiva dal **7 giugno 2026 alle 23:59 UTC** ed eseguita con la versione della chain **v3.1.95** su Cosmos SDK v0.53. Per la testnet **`qorechain-diana`** (EVM chain ID **9800**), consulta [Connessione alla testnet](/getting-started/connecting-to-testnet) e prova lì la tua configurazione prima di andare in produzione.
 :::
 
 ## Endpoint pubblici
@@ -54,10 +54,8 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Il bundle contiene `qorechaind` più le librerie condivise richieste (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Mantieni il nodo aggiornato — per una sincronizzazione da zero è richiesta la v3.1.92 o successiva
-I full node devono seguire la versione della chain attualmente in esecuzione sulla rete — installa sempre il binario indicato dal manifest, non fissarne uno vecchio. A parte il campo `minCompatible` del manifest, **per un nodo che si unisce da zero (dal genesis) o che sta recuperando da un arresto è richiesta la v3.1.92 o successiva** — le versioni precedenti non riescono a completare una sincronizzazione completa a causa di un bug (ora corretto) nella misurazione del gas che blocca il replay al primo blocco contenente una transazione. Un nodo già allineato che esegue una versione precedente dovrebbe comunque aggiornarsi alla prima occasione utile, poiché un nodo obsoleto non può decodificare i tipi di transazione più recenti e smetterà di sincronizzarsi non appena una di esse comparirà in un blocco.
-
-**Verifica cosa sta effettivamente servendo il manifest prima di fidartene.** Il manifest viene promosso in modo deliberato — prima sulla testnet, poi sulla mainnet dopo un periodo di rodaggio — quindi può restare indietro rispetto alla soglia di versione indicata sopra; al momento della stesura, il manifest della mainnet punta ancora a un binario precedente alla v3.1.92, che è esattamente la build che questo avviso indica di non usare per una sincronizzazione da zero. Confronta il campo `"version"` del manifest con la v3.1.92 prima di affidarti al suo `binary.url`; se risulta ancora indietro, ottieni la v3.1.92 (o successiva) dalle [release GitHub di qorechain-core](https://github.com/qorechain/qorechain-core/releases) (verificando il checksum del tag nello stesso modo), oppure [compila dal codice sorgente](/developer-guide/building-from-source).
+:::caution Mantieni il nodo aggiornato — per una sincronizzazione da zero è richiesta la v3.1.94 o successiva
+I full node devono seguire la versione della chain attualmente in esecuzione sulla rete — installa sempre il binario indicato dal manifest, non fissarne uno vecchio. La soglia per un nodo che si unisce da zero (dal genesis) o che sta recuperando da un arresto è **v3.1.94 o successiva**, per due motivi indipendenti e cumulativi: la v3.1.92 ha corretto un bug nella misurazione del gas che altrimenti blocca il replay al primo blocco contenente una transazione, e nel frattempo la mainnet ha superato l'aggiornamento di governance v3.1.94 (un tetto massimo all'emissione, applicato all'altezza 2.122.074) — un nodo privo del gestore di questo aggiornamento si blocca di nuovo tentando di rieseguire il replay oltre quella stessa altezza. La v3.1.95 è la versione attualmente consigliata (un aggiornamento di sicurezza incrementale; `minCompatible` è `3.1.94`). Verifica sempre il campo `"version"` del manifest rispetto alla soglia attuale prima di fidarti di `binary.url` — il manifest viene promosso in modo deliberato (prima sulla testnet, poi sulla mainnet dopo un periodo di rodaggio) e in passato è rimasto indietro rispetto alla soglia di versione.
 :::
 
 ### Compilazione dal codice sorgente
@@ -256,7 +254,7 @@ http://localhost:1317
 | ----------------------- | --------------------------------------- |
 | Chain ID                | `qorechain-vladi`                      |
 | EVM chain ID            | `9801` (esadecimale `0x2649`)          |
-| Versione della chain    | v3.1.92                                |
+| Versione della chain    | v3.1.95                                |
 | Attiva dal              | 7 giugno 2026 23:59 UTC                |
 | Token                   | QOR (`uqor`, 10^6 micro-unità = 1 QOR) |
 | Prezzo minimo del gas   | `0.1uqor`                              |

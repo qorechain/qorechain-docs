@@ -26,10 +26,8 @@ The current binary, genesis, peers, seeds, and a state-sync trust point are publ
 The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
 :::
 
-:::caution v3.1.92 or later required for a node joining fresh
-A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.92 or later** — earlier versions (even if the manifest's `minCompatible` field hasn't been updated yet to reflect this) will halt at the first block containing a transaction during replay, due to a now-fixed gas-metering bug.
-
-**The manifest can itself lag behind this floor** — it's promoted testnet-first, mainnet after a soak period, and at the time of writing the mainnet manifest's `binary.url` still points to a pre-v3.1.92 build. Check the manifest's `"version"` field before trusting `binary.url`; if it's behind v3.1.92, get the binary from the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) instead (checking its published checksum the same way) or build from source, rather than the manifest.
+:::caution v3.1.94 or later required for a node joining fresh
+A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.94 or later**, for two stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.95 is the current recommended version (a rolling, non-consensus-breaking security update); `minCompatible` is `3.1.94`. The manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind this floor — check its `"version"` field before trusting `binary.url`, and fall back to the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) or building from source if it's behind.
 :::
 
 ---
@@ -73,19 +71,19 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.92** on mainnet), then mount a persistent volume for chain data:
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.95** on mainnet), then mount a persistent volume for chain data:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Use this file as the source for the binary, genesis, and peer values in the steps below — check `jq -r .minCompatible latest.json` but remember the **v3.1.92 floor** above holds even if that field lags behind.
+Use this file as the source for the binary, genesis, and peer values in the steps below — check `jq -r .minCompatible latest.json` but remember the **v3.1.94 floor** above holds even if that field lags behind.
 
 ### 3. Download and verify genesis
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots are published under **height-stamped filenames** that change regularly — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting. Remember the **v3.1.92 minimum** above applies to replay from a snapshot too.
+Snapshots are published under **height-stamped filenames** that change regularly — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting. Remember the **v3.1.94 minimum** above applies to replay from a snapshot too.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.92** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the live tag (**v3.1.95** on mainnet) and track official releases for coordinated upgrades.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

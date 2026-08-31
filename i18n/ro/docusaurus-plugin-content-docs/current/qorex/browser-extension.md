@@ -25,11 +25,11 @@ Recenziile magazinelor ajung în momente diferite, astfel încât versiunea publ
 
 | Browser | Versiune publicată |
 |---|---|
-| **Firefox** | **0.2.2** |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 trimisă, încă în curs de revizuire; listarea este blocată pentru trimiteri noi până când acea revizuire se încheie, așa că 0.2.2 nu a fost încă trimisă acolo) |
-| **Safari (macOS)** | livrată în interiorul aplicației macOS **QoreX Wallet**, care folosește propria numerotare `1.x` — Mac App Store servește în prezent **1.3** (conține extensia **0.2.2**) |
+| **Firefox** | **0.2.6** |
+| **Safari (macOS)** | livrată în interiorul aplicației macOS **QoreX Wallet**, care folosește propria numerotare `1.x` — Mac App Store servește în prezent **1.6** (conține extensia **0.2.6**) |
+| **Chrome / Chromium** | A rămas blocată în spatele unei revizuiri îndelungate a magazinului, la finalul lunii august — verifică direct [listarea din Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pentru versiunea ei curentă, în loc să te bazezi pe un număr scris aici |
 
-Este posibil ca funcțiile mai noi să nu fie încă live în browserul tău — verifică tabelul de mai sus înainte de a presupune că ceva descris aici este disponibil. Dacă Dashboard-ul îți spune că extensia ta trebuie actualizată, înseamnă că acțiunea respectivă are o versiune minimă specifică (de obicei 0.2.2, pentru staking) — nu că build-ul tău este în general vechi.
+Este posibil ca funcțiile mai noi să nu fie încă live în browserul tău — verifică tabelul de mai sus înainte de a presupune că ceva descris aici este disponibil. Dacă Dashboard-ul îți spune că extensia ta trebuie actualizată, înseamnă că acțiunea respectivă are o versiune minimă specifică (de exemplu 0.2.2, pentru staking) — nu că build-ul tău este în general vechi.
 
 **0.1.5** a adăugat [descoperirea prin Solana Wallet Standard](#standards), [deblocarea cu passkey](#security), o [lane SVM pentru dApp](#standards) complet implementată și [puntea de conectare cu Dashboard-ul](#dashboard-bridge). (Versiunea 0.1.4 nu a fost niciodată publicată — modificările ei ajung la utilizatori odată cu 0.1.5.)
 
@@ -91,6 +91,7 @@ Atinge **Receive** în popup pentru a-ți afișa adresa `qor1…` sub formă de 
 2. Ecranul listează validatorii activi cu comisionul lor, totalul tău aflat curent în stake și orice recompense în așteptare de revendicat. Validatorii pe care rețeaua i-a **întemnițat (jailed)** sunt excluși din listă — delegarea către unul dintre ei nu este niciodată ceea ce vrei.
 3. Pentru a delega, alege un validator și o sumă, apoi confirmă. QoreX semnează cu semnătura hibridă post-cuantică obligatorie, la fel ca la o trimitere.
 4. **Unstake** și **claim** funcționează din același ecran. Unstake-ul pornește perioada de unbonding de 21 de zile — vezi [Staking & Delegation](/user-guide/staking-and-delegation) pentru ce înseamnă asta.
+5. Începând cu **0.2.6**, poți de asemenea **muta stake-ul la un alt validator** (redelegare) — fără așteptare de unbonding, fără penalizare, iar recompensele continuă să curgă pe tot parcursul. Vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake) pentru cum funcționează (mecanismul este identic între aplicație și extensie).
 
 Staking-ul, delegarea și recompensele au loc exclusiv pe lane-ul **Native**, niciodată printr-un precompile EVM.
 

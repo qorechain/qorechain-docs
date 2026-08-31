@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** (versiune de chain **v3.1.92**) pentru date live, sau un endpoint testnet **`qorechain-diana`** pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți.
+Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** (versiune de chain **v3.1.95**) pentru date live, sau un endpoint testnet **`qorechain-diana`** pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `query`:

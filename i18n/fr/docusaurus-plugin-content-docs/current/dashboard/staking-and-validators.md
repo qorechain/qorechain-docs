@@ -15,12 +15,16 @@ Le staking, la délégation et la validation s'effectuent exclusivement sur le r
 
 ## Examiner les validateurs
 
+:::caution Sur le mainnet, cette page affiche actuellement les validateurs du testnet
+La page **Validateurs** sur le mainnet affiche l'ensemble des validateurs du testnet (4 nœuds) plutôt que l'ensemble réel du mainnet (8 nœuds) — un problème côté données du backend, et non un souci de votre connexion ou de votre compte. N'utilisez pas cette page pour déterminer qui sont les validateurs du mainnet ; utilisez plutôt l'[explorateur de blocs](https://explore.qore.network) ou une requête directe sur la chaîne (`qorechaind query staking validators`). Il s'agit toutefois d'une simple divergence informative : le sélecteur de validateur du panneau **Delegate**, sur l'[onglet Stake de la page Portefeuille](/dashboard/wallet#mainnet), lit une route différente et correcte, directement depuis la chaîne — vous ne pouvez donc pas réellement choisir ou déléguer à un validateur qui n'existe pas sur le mainnet : vous y verrez simplement une liste différente (et correcte) une fois arrivé là-bas.
+:::
+
 La page s'ouvre sur des cartes récapitulatives indiquant le nombre de validateurs actifs, le total de QOR liés (bonded), la commission moyenne et la disponibilité (uptime) moyenne. En dessous se trouve la liste des validateurs. Chaque ligne de validateur affiche :
 
 - Un **rang** et le **moniker** (nom) du validateur, avec son adresse et un bouton de copie.
 - Le **pouvoir de vote** (voting power) — le stake lié du validateur et sa part du total.
 - La **commission** — le pourcentage que le validateur conserve sur les récompenses.
-- L'**APY** — l'estimation du rendement annuel de la délégation.
+- L'**APY** — affiché sous forme d'un tiret cadratin (—) plutôt qu'un chiffre. L'émission de QoreChain provient d'un module personnalisé que le point de terminaison standard d'estimation de rendement ne peut pas voir, si bien qu'un chiffre calculé ici ne serait qu'une estimation déguisée en donnée fiable ; afficher cette valeur comme indisponible est une correction délibérée, pas un bug. Il n'existe actuellement aucun point de terminaison permettant de calculer un APY de staking en direct et vérifié par la chaîne — considérez tout pourcentage précis cité ailleurs comme non vérifié, et ne présumez pas qu'un chiffre qui apparaîtrait ici plus tard serait automatiquement correct : la formule sous-jacente suppose le mécanisme d'inflation Cosmos standard, ce qui ne correspond pas à la façon dont l'émission de cette chaîne parvient réellement aux stakers, et devrait être vérifiée par rapport au mécanisme réel avant d'être considérée comme fiable.
 - Le **statut** — par exemple actif ou jailed.
 - Des détails opérationnels : région, disponibilité (uptime), blocs proposés, version du logiciel et dernière activité.
 
@@ -54,15 +58,15 @@ Ces quatre actions se trouvent toutes sur la page **Portefeuille** (`/dashboard/
 
 ### Redéléguer {#redelegate}
 
-Le contrat de requête sous-jacent prend déjà en charge le déplacement direct d'un bond d'un validateur à un autre (`redelegate`, avec un validateur source et un validateur de destination qui doivent être différents) — selon le même schéma non custodial et signé via QoreX que pour déléguer et annuler une délégation. Au moment de la rédaction, toutefois, le dashboard n'expose pas encore de panneau ou de bouton Redelegate dédié pour cela.
+Le dashboard lui-même ne dispose pas d'un panneau Redelegate dédié — mais ce n'est plus nécessaire. **QoreX déplace désormais lui-même le stake directement d'un validateur à un autre** (application 1.0.8+ et extension 0.2.6+) : pas d'attente de déliaison de 21 jours, pas de récompenses perdues, et il peut même répartir un déplacement sur plusieurs validateurs de destination en une seule transaction. Ouvrez **Stake** dans QoreX, appuyez sur le validateur que vous souhaitez quitter, et choisissez la destination du stake — voir [Déplacer un stake entre validateurs](/qorex/portfolio-and-staking#move-stake) pour le déroulé complet. C'est une meilleure solution que tout ce que le contrat de requête propre au dashboard pourrait offrir : utilisez donc directement QoreX pour cela plutôt que le contournement ci-dessous.
 
-En attendant que ce panneau soit disponible, déplacez un stake vers un autre validateur en deux étapes, à l'aide des flux de cette page :
+Si vous utilisez encore une version de QoreX plus ancienne, sans cette fonctionnalité, déplacez un stake vers un autre validateur en deux étapes, à l'aide des flux de cette page :
 
 1. **[Annulez la délégation](#undelegate)** du montant depuis le validateur que vous souhaitez quitter.
 2. Patientez pendant la période de déliaison (unbonding) indiquée dans ce flux — les QOR ne sont ni déplaçables ni rémunérateurs pendant ce temps.
 3. Une fois les QOR déliés (unbonded) à nouveau disponibles (spendable), **[déléguez-les](#delegate)** au nouveau validateur.
 
-Cela prend plus de temps qu'une redélégation directe (pas de récompenses de liaison pendant la fenêtre de déliaison de 21 jours) ; considérez donc ce chemin comme temporaire, pas comme la solution prévue. Il est aussi utile de savoir, côté frais, qu'une redélégation directe est normalement la plus coûteuse de ces opérations de staking, et que l'étape d'annulation de délégation de ce contournement coûte déjà sensiblement plus cher qu'une simple délégation à elle seule — la chaîne mesure le gaz par opération plutôt que de facturer des frais fixes, et l'écriture d'une entrée dans la file de déliaison représente un travail supplémentaire réel. Déléguer seul reste la moins chère des trois opérations.
+Ce contournement coûte 21 jours de récompenses perdues et davantage de frais qu'un déplacement direct — mettez donc à jour QoreX plutôt que de vous appuyer dessus si vous le pouvez.
 
 ### Annuler une délégation {#undelegate}
 

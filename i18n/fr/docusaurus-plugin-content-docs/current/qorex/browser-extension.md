@@ -25,11 +25,11 @@ Les revues des boutiques n'arrivent pas au même moment, donc la version publié
 
 | Navigateur | Version publiée |
 |---|---|
-| **Firefox** | **0.2.2** |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 soumise, toujours en revue ; la fiche est verrouillée à toute nouvelle soumission tant que cette revue n'est pas terminée, donc la 0.2.2 n'y a pas encore été soumise) |
-| **Safari (macOS)** | livrée à l'intérieur de l'app macOS **QoreX Wallet**, qui utilise sa propre numérotation `1.x` — le Mac App Store sert actuellement la **1.3** (qui embarque l'extension **0.2.2**) |
+| **Firefox** | **0.2.6** |
+| **Safari (macOS)** | livrée à l'intérieur de l'app macOS **QoreX Wallet**, qui utilise sa propre numérotation `1.x` — le Mac App Store sert actuellement la **1.6** (qui embarque l'extension **0.2.6**) |
+| **Chrome / Chromium** | Était bloquée derrière une longue revue de la boutique fin août — consultez directement la [fiche du Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pour connaître sa version actuelle plutôt que de vous fier à un numéro donné ici |
 
-Il se peut que des fonctionnalités plus récentes ne soient pas encore en ligne dans votre navigateur — vérifiez le tableau ci-dessus avant de supposer que quelque chose de décrit ici est disponible. Si le Dashboard vous indique que votre extension a besoin d'être mise à jour, cela signifie qu'une version minimale spécifique est requise pour cette action (généralement 0.2.2, pour le staking) — et non que votre version est globalement ancienne.
+Il se peut que des fonctionnalités plus récentes ne soient pas encore en ligne dans votre navigateur — vérifiez le tableau ci-dessus avant de supposer que quelque chose de décrit ici est disponible. Si le Dashboard vous indique que votre extension a besoin d'être mise à jour, cela signifie qu'une version minimale spécifique est requise pour cette action (par exemple 0.2.2, pour le staking) — et non que votre version est globalement ancienne.
 
 **La 0.1.5** a ajouté la [découverte via Solana Wallet Standard](#standards), le [déverrouillage par clé d'accès (passkey)](#security), une [voie dApp SVM](#standards) pleinement implémentée, et le [pont de connexion au Dashboard](#dashboard-bridge). (La version 0.1.4 n'a jamais été publiée — ses changements atteignent les utilisateurs via la 0.1.5.)
 
@@ -91,6 +91,7 @@ Depuis la **0.2.2**, le popup dispose de son propre écran **Stake** — un port
 2. L'écran liste les validateurs actifs avec leur commission, votre total actuellement staké, et toute récompense en attente de réclamation. Les validateurs que le réseau a **jailés** (mis en prison) sont exclus de la liste — déléguer à l'un d'eux n'est jamais souhaitable.
 3. Pour déléguer, choisissez un validateur et un montant, puis confirmez. QoreX signe avec la signature post-quantique hybride obligatoire, comme pour un envoi.
 4. **Unstake** (annuler le staking) et **claim** (réclamer) fonctionnent depuis le même écran. L'unstaking démarre la période de déliaison (unbonding) de 21 jours — voir [Staking & Délégation](/user-guide/staking-and-delegation) pour ce que cela signifie.
+5. Depuis la **0.2.6**, vous pouvez aussi **déplacer votre stake vers un autre validateur** (redélégation) — pas d'attente de déliaison, pas de pénalité, et les récompenses continuent de s'accumuler tout au long du transfert. Voir [Déplacer le stake entre validateurs](/qorex/portfolio-and-staking#move-stake) pour son fonctionnement (le mécanisme est identique entre l'app et l'extension).
 
 Le staking, la délégation et les récompenses se déroulent exclusivement sur la voie **Native**, jamais via un précompilé EVM.
 

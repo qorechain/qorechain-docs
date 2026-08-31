@@ -25,11 +25,11 @@ Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher unterscheidet sich 
 
 | Browser | Veröffentlichte Version |
 |---|---|
-| **Firefox** | **0.2.2** |
-| **Chrome / Chromium** | **0.1.5** (0.1.9 eingereicht, noch in Prüfung; der Eintrag ist bis zum Abschluss dieser Prüfung für neue Einreichungen gesperrt, daher wurde 0.2.2 dort noch nicht eingereicht) |
-| **Safari (macOS)** | läuft innerhalb der **QoreX Wallet**-macOS-App, die ihre eigene `1.x`-Nummerierung verwendet — der Mac App Store liefert derzeit **1.3** (enthält Erweiterung **0.2.2**) |
+| **Firefox** | **0.2.6** |
+| **Safari (macOS)** | läuft innerhalb der **QoreX Wallet**-macOS-App, die ihre eigene `1.x`-Nummerierung verwendet — der Mac App Store liefert derzeit **1.6** (enthält Erweiterung **0.2.6**) |
+| **Chrome / Chromium** | Stand Ende August in einem langwierigen Store-Review-Prozess festhängend — prüfen Sie den aktuellen Stand direkt im [Chrome Web Store-Eintrag](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg), statt einer Versionsangabe hier zu vertrauen |
 
-Neuere Funktionen sind in Ihrem Browser möglicherweise noch nicht live — prüfen Sie die Tabelle oben, bevor Sie annehmen, dass etwas hier Beschriebenes verfügbar ist. Wenn das Dashboard Ihnen mitteilt, dass Ihre Erweiterung aktualisiert werden muss, bedeutet das eine bestimmte Mindestversion für diese Aktion (üblicherweise 0.2.2, für Staking) — nicht, dass Ihr Build allgemein veraltet ist.
+Neuere Funktionen sind in Ihrem Browser möglicherweise noch nicht live — prüfen Sie die Tabelle oben, bevor Sie annehmen, dass etwas hier Beschriebenes verfügbar ist. Wenn das Dashboard Ihnen mitteilt, dass Ihre Erweiterung aktualisiert werden muss, bedeutet das eine bestimmte Mindestversion für diese Aktion (zum Beispiel 0.2.2, für Staking) — nicht, dass Ihr Build allgemein veraltet ist.
 
 **0.1.5** fügte [Solana Wallet Standard Discovery](#standards), [Passkey-Entsperrung](#security), eine vollständig implementierte [SVM-dApp-Lane](#standards) und die [Dashboard-Verbindungsbrücke](#dashboard-bridge) hinzu. (Version 0.1.4 wurde nie veröffentlicht — ihre Änderungen erreichen Nutzer mit 0.1.5.)
 
@@ -77,7 +77,7 @@ Seit 0.1.9 können Sie ein registriertes @Handle direkt bezahlen, statt eine Adr
 3. QoreX löst das Handle auf und zeigt Ihnen die **aufgelöste Adresse**, bevor Sie irgendetwas signieren — prüfen Sie diese immer gegen Ihre Erwartung.
 4. Betrag eingeben und bestätigen.
 
-Die Auflösung wird auf zwei Arten verifiziert, bevor QoreX sie verwendet: eine Registry-Attestierung, die gegen einen fest in die Erweiterung eingebauten Vertrauensschlüssel geprüft wird, sowie die eigene Signatur des Handle-Inhabers über die Beanspruchung. Eine Antwort, die eine der beiden Prüfungen nicht besteht, wird rundweg abgelehnt — QoreX greift nicht auf die Anzeige einer unverifizierten Adresse zurück. Beim ersten Mal, dass Sie ein bestimmtes Handle bezahlen, merkt sich QoreX (pinnt) die aufgelöste Adresse; wenn dieses Handle später auf eine **andere** Adresse aufgelöst wird, stoppt QoreX und zeigt Ihnen sowohl die alte als auch die neue Adresse vollständig an, damit Sie entscheiden können, ob Sie fortfahren möchten.
+Die Auflösung wird auf zwei Arten verifiziert, bevor QoreX sie verwendet: eine Registry-Attestierung, die gegen einen fest in die Erweiterung eingebauten Vertrauensschlüssel geprüft wird, sowie die eigene Signatur des Handle-Inhabers über die Beanspruchung. Eine Antwort, die eine der beiden Prüfungen nicht besteht, wird rundweg abgelehnt — QoreX greift nicht auf die Anzeige einer unverifizierten Adresse zurück. Beim ersten Mal, dass Sie ein bestimmtes Handle bezahlen, merkt sich QoreX (pinnt) die aufgelöste Adresse; wenn dieses Handle später auf eine **andere** Adresse aufgelöst wird, stoppt QoreX und zeigt Ihnen sowohl die alte als auch die neue Adresse vollständig an, damit Sie entscheiden können, ob Sie fortfahren möchten. Dieses Gedächtnis lebt **pro Browser** — wenn Sie dasselbe Handle zum ersten Mal aus einem anderen Browser oder Computer bezahlen, wird es dort ebenfalls als neu angezeigt. Das ist erwartet, kein Fehler.
 
 ## Empfangen {#receive}
 
@@ -91,6 +91,7 @@ Seit **0.2.2** hat das Popup einen eigenen **Stake**-Bildschirm — eine nur in 
 2. Der Bildschirm listet aktive Validatoren mit ihrer Provision, Ihr aktuell gestaktes Gesamtguthaben sowie alle wartenden, noch zu beanspruchenden Rewards auf. Validatoren, die das Netzwerk **inhaftiert** hat, werden aus der Liste ausgeschlossen — an einen davon zu delegieren ist nie das, was Sie wollen.
 3. Um zu delegieren, wählen Sie einen Validator und einen Betrag und bestätigen dann. QoreX signiert mit der obligatorischen hybriden Post-Quanten-Signatur, genau wie bei einer Sendung.
 4. **Unstaken** und **Beanspruchen** funktionieren vom selben Bildschirm aus. Unstaken startet die 21-tägige Unbonding-Periode — siehe [Staking & Delegation](/user-guide/staking-and-delegation) für die Bedeutung.
+5. Seit **0.2.6** können Sie außerdem **Stake zu einem anderen Validator verschieben** (redelegieren) — keine Unbonding-Wartezeit, keine Strafe, und Rewards fließen den ganzen Weg über weiter. Siehe [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake) für die Funktionsweise (die Mechanik ist zwischen App und Erweiterung identisch).
 
 Staking, Delegation und Rewards finden ausschließlich auf der **Native**-Lane statt, niemals über ein EVM-Precompile.
 

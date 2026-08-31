@@ -26,10 +26,8 @@ Das aktuelle Binary, Genesis, Peers, Seeds und ein State-Sync-Trust-Point werden
 Die Felder des Manifests umfassen `binary` (URL + sha256), `genesis` (URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (ein stündlich aktualisierter Trust-Point) und `minCompatible`. Die Installations- und Beitrittsschritte unten rufen dieses Manifest ab und verwenden dessen aktuelle Werte.
 :::
 
-:::caution v3.1.92 oder höher für einen frisch beitretenden Node erforderlich
-Ein Node, der ab Genesis synchronisiert oder aus einem Archiv/Snapshot repliziert, muss auf **v3.1.92 oder höher** sein — ältere Versionen (selbst wenn das Feld `minCompatible` des Manifests noch nicht entsprechend aktualisiert wurde) halten beim Replay am ersten Block mit einer Transaktion an, aufgrund eines mittlerweile behobenen Gas-Metering-Bugs.
-
-**Das Manifest selbst kann hinter dieser Untergrenze zurückliegen** — es wird zuerst im Testnet und erst nach einer Einlaufphase im Mainnet befördert, und zum Zeitpunkt der Erstellung dieses Textes zeigt das `binary.url`-Feld des Mainnet-Manifests noch auf einen Build vor v3.1.92. Prüfen Sie das `"version"`-Feld des Manifests, bevor Sie `binary.url` vertrauen; liegt es hinter v3.1.92, beziehen Sie das Binary stattdessen von den [qorechain-core GitHub Releases](https://github.com/qorechain/qorechain-core/releases) (prüfen Sie dessen veröffentlichte Prüfsumme auf dieselbe Weise) oder bauen Sie aus dem Quellcode, statt sich auf das Manifest zu verlassen.
+:::caution v3.1.94 oder höher für einen frisch beitretenden Node erforderlich
+Ein Node, der ab Genesis synchronisiert oder aus einem Archiv/Snapshot repliziert, muss aus zwei sich überlagernden Gründen auf **v3.1.94 oder höher** sein: v3.1.92 behob einen Gas-Metering-Bug, der den Replay andernfalls am ersten Block mit einer Transaktion anhält, und das Mainnet hat inzwischen das Governance-Upgrade v3.1.94 durchlaufen (eine harte Obergrenze für die Emission, angewendet bei Höhe 2.122.074) — ein Node ohne den Handler dieses Upgrades hält beim Versuch, über dieselbe Höhe hinaus zu replizieren, erneut an. v3.1.95 ist die aktuell empfohlene Version (ein laufendes, nicht-konsensbrechendes Sicherheitsupdate); `minCompatible` ist `3.1.94`. Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase) und lag bereits hinter dieser Untergrenze zurück — prüfen Sie sein Feld `"version"`, bevor Sie `binary.url` vertrauen, und weichen Sie andernfalls auf die [qorechain-core GitHub Releases](https://github.com/qorechain/qorechain-core/releases) oder das Bauen aus dem Quellcode aus.
 :::
 
 ---
@@ -73,19 +71,19 @@ Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Store
 
 ### Docker Compose
 
-Ein reines Node-Deployment mit Docker Compose. Es gibt derzeit noch kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen — bauen Sie eines selbst aus dem `Dockerfile` des Repositorys und taggen Sie es auf die live laufende Chain-Version (**v3.1.92** im Mainnet), und mounten Sie dann ein persistentes Volume für die Chain-Daten:
+Ein reines Node-Deployment mit Docker Compose. Es gibt derzeit noch kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen — bauen Sie eines selbst aus dem `Dockerfile` des Repositorys und taggen Sie es auf die live laufende Chain-Version (**v3.1.95** im Mainnet), und mounten Sie dann ein persistentes Volume für die Chain-Daten:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.92 .
+docker build -t qorechain-node:v3.1.95 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.92
+    image: qorechain-node:v3.1.95
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -157,7 +155,7 @@ curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Verwenden Sie diese Datei als Quelle für die Binary-, Genesis- und Peer-Werte in den folgenden Schritten — prüfen Sie `jq -r .minCompatible latest.json`, denken Sie aber daran, dass die **v3.1.92-Untergrenze** oben auch dann gilt, wenn dieses Feld hinterherhinkt.
+Verwenden Sie diese Datei als Quelle für die Binary-, Genesis- und Peer-Werte in den folgenden Schritten — prüfen Sie `jq -r .minCompatible latest.json`, denken Sie aber daran, dass die **v3.1.94-Untergrenze** oben auch dann gilt, wenn dieses Feld hinterherhinkt.
 
 ### 3. Genesis herunterladen und verifizieren
 
@@ -246,7 +244,7 @@ qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots werden unter **höhengestempelten Dateinamen** veröffentlicht, die regelmäßig wechseln — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten Snapshot und dessen SHA-256-Prüfsumme, und verifizieren Sie immer vor dem Entpacken. Denken Sie daran, dass das **v3.1.92-Minimum** oben auch für den Replay aus einem Snapshot gilt.
+Snapshots werden unter **höhengestempelten Dateinamen** veröffentlicht, die regelmäßig wechseln — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten Snapshot und dessen SHA-256-Prüfsumme, und verifizieren Sie immer vor dem Entpacken. Denken Sie daran, dass das **v3.1.94-Minimum** oben auch für den Replay aus einem Snapshot gilt.
 :::
 
 ---
@@ -365,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.92** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.95** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 

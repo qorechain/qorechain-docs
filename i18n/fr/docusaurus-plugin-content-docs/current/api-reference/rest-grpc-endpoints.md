@@ -18,7 +18,7 @@ QoreChain expose trois interfaces principales pour un accès programmatique :
 Tous les points de terminaison REST renvoient du JSON. Les points de terminaison gRPC utilisent Protocol Buffers et peuvent être consommés avec n'importe quel client gRPC. L'interface RPC fournit des requêtes au niveau du consensus et la diffusion de transactions.
 
 :::note
-Ces interfaces sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026 sur la version de chaîne **v3.1.92**) et sur le testnet **`qorechain-diana`**. Les URL de base ci-dessous supposent un nœud exécuté localement ; les points de terminaison hébergés publics (`rpc/api/evm/svm.qore.host` et leurs variantes `-testnet`) sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
+Ces interfaces sont disponibles à la fois sur le mainnet **`qorechain-vladi`** (en production depuis le 7 juin 2026 sur la version de chaîne **v3.1.95**) et sur le testnet **`qorechain-diana`**. Les URL de base ci-dessous supposent un nœud exécuté localement ; les points de terminaison hébergés publics (`rpc/api/evm/svm.qore.host` et leurs variantes `-testnet`) sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
 :::
 
 ## URL de base

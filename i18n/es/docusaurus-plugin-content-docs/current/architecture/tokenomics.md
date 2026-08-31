@@ -13,7 +13,7 @@ QoreChain utiliza un modelo económico de **suministro fijo** centrado en el tok
 
 ## Conceptos básicos del token
 
-| Propiedad             | Valor                                                    |
+| Propiedad              | Valor                                                    |
 | --------------------- | -------------------------------------------------------- |
 | **Token de visualización** | QOR                                                 |
 | **Denominación base** | uqor                                                     |
@@ -23,7 +23,7 @@ QoreChain utiliza un modelo económico de **suministro fijo** centrado en el tok
 | **Prefijo Bech32**    | `qor` (cuentas: `qor1...`, validadores: `qorvaloper...`) |
 
 :::note
-Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión de cadena **v3.1.92**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) comparte el mismo modelo económico.
+Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión de cadena **v3.1.95**. La testnet **`qorechain-diana`** (EVM chain ID **9800**) comparte el mismo modelo económico.
 :::
 
 ---
@@ -39,8 +39,8 @@ Este es un **modelo de suministro fijo con un presupuesto de emisión finito**, 
 
 ### Calendario de recompensas de staking {#staking-reward-schedule}
 
-:::note Hay un cambio de gobernanza aprobado pendiente para este calendario
-Una propuesta de gobernanza aprobada cambia la forma en que se libera la emisión dentro de este presupuesto, y entrará en vigor en una altura de bloque futura en lugar de inmediatamente. Las cifras siguientes corresponden al calendario previo al cambio: consulta el [Historial de versiones](/appendix/version-history) para saber si el cambio ya ha entrado en vigor antes de basarte en una cifra concreta, y trata cualquier valor de APY o de emisión diaria que veas citado en otro lugar en este momento como provisional hasta que así sea.
+:::note La emisión fue limitada por la gobernanza el 26 de agosto de 2026
+El calendario decreciente que aparece a continuación era el diseño original, orientado a una red madura con la mayor parte del suministro en staking. Medido frente a la red tal como se encontraba realmente — aproximadamente 6,8M de QOR en staking, muy por debajo de ese objetivo — estaba pagando alrededor del 20% del stake en staking *por día*. La propuesta de gobernanza n.º 4 se aprobó con el 100% del stake en staking y se aplicó en la altura 2.122.074 (2026-08-26 03:27 UTC, versión de cadena v3.1.94): la emisión por época pasó de 2.153.583 QOR a **16.239 QOR**, bajo un nuevo límite acumulado estricto de **114.285.714 QOR** para este módulo — una decisión de diseño, no una corrección de errores. Para cuando el límite entró en vigor, ya se habían emitido **104.680.531 QOR (91,6%)** bajo el calendario anterior; al nuevo ritmo, se espera que el saldo restante dure aproximadamente **1 año y 11 meses más**, tras lo cual este módulo deja de emitir de forma permanente y las recompensas de validadores y stakers provienen únicamente de las tarifas de transacción (ver [Distribución de tarifas](#fee-distribution) más abajo). La tabla siguiente se conserva como referencia del diseño original — ya no describe la tasa de pago en vivo.
 :::
 
 Las recompensas de staking se distribuyen a partir del presupuesto de emisión de 590.000.000 QOR según un calendario decreciente:
@@ -52,7 +52,7 @@ Las recompensas de staking se distribuyen a partir del presupuesto de emisión d
 | Años 3–4    | 5–8% APY                | 85.000.000 QOR por año           |
 | Año 5+      | Determinado por gobernanza | ~186.000.000 QOR restantes    |
 
-Los rangos de APY son objetivos que dependen de la proporción de tokens en staking; las cifras del presupuesto de emisión son los límites estrictos de QOR liberado a los stakers en cada período. A partir del año 5, los ~186.000.000 QOR restantes se liberan a una tasa establecida por la gobernanza.
+Los rangos de APY fueron los objetivos de diseño originales por período; ya no son la tasa de pago en vivo ahora que la emisión está limitada como se describe arriba. QoreChain actualmente no expone un endpoint de consulta para calcular una cifra de APY en vivo — trata cualquier porcentaje concreto de retorno de staking que veas citado (incluso en esta página, históricamente) como no verificable frente a la cadena hoy, no como una cifra sobre la que planificar.
 
 ---
 
@@ -75,7 +75,7 @@ El módulo `x/burn` implementa un sistema de quema de tokens de 10 canales. Cada
 | 9  | `tge`              | Token generation event     | Quemas únicas en génesis (80.000.000 QOR)     |
 | 10 | `rollup_create`    | Despliegue de rollup       | Se quema el 1% del stake de creación del rollup |
 
-### Distribución de tarifas
+### Distribución de tarifas {#fee-distribution}
 
 Todas las tarifas de transacción recaudadas por la red se reparten entre cinco destinos, como se muestra a continuación. Los porcentajes se imponen on-chain y siempre suman exactamente el 100%.
 
@@ -100,6 +100,10 @@ Todas las tarifas de transacción recaudadas por la red se reparten entre cinco 
 | **Light Nodes** | 3%    | Distribuido a los light nodes por servir datos de la red             |
 
 Los porcentajes se imponen on-chain y siempre deben sumar exactamente el 100%.
+
+:::note Estos son los porcentajes configurados, no una medición confirmada en vivo
+La tabla anterior refleja los parámetros configurados de `x/burn`. Un esfuerzo de medición contra el estado en vivo de la cadena encontró que el porcentaje combinado efectivo que realmente llega a validadores y stakers juntos es inferior al 47% que suman estas dos filas. Aún no hemos conciliado esa discrepancia de forma independiente, por lo que esta página indica los valores de diseño configurados en lugar de afirmar que alguna de las dos cifras es la confirmada en vivo — consulta los parámetros y estadísticas de `x/burn` directamente (ver [Endpoints REST/gRPC](/api-reference/rest-grpc-endpoints)) si tu caso de uso depende del porcentaje exacto actual.
+:::
 
 ### Parámetros de quema
 

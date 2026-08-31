@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historique des versions
 
-Historique public des versions de QoreChain. La dernière version est **v3.1.92**, en cours d'exécution sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) suit les versions de pré-publication.
+Historique public des versions de QoreChain. La dernière version est **v3.1.95**, en cours d'exécution sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) suit les versions de pré-publication.
 
 :::note
 Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les entrées `v1.x` antérieures sont conservées comme trace historique de la lignée de versions testnet qui a précédé le mainnet.
@@ -15,7 +15,21 @@ Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les ent
 
 ---
 
-## v3.1.92 — Fiabilité de la synchronisation des nœuds (version actuelle)
+## v3.1.95 — Durcissement de l'EVM Cosmos (version actuelle)
+
+**Axe de la version :** Mise à jour de sécurité progressive de la bibliothèque de comptabilité des soldes EVM.
+
+* **Durcissement contre les dépassements** — Un chemin de mise à jour de solde EVM échoue désormais de manière sûre au lieu de boucler silencieusement (wrap) en cas de condition de dépassement extrême. Livré sous forme de mise à jour progressive, sans rupture de consensus — aucun vote de gouvernance ni hauteur d'arrêt coordonné n'a été nécessaire.
+
+## v3.1.94 — Plafonnement de l'émission et durcissement des messages administratifs
+
+**Axe de la version :** Aligner l'émission des récompenses de staking sur les conditions réelles du réseau, et renforcer les contrôles d'autorisation sur les messages administratifs privilégiés.
+
+* **Plafonnement de l'émission** — Une proposition de gouvernance, adoptée avec le plein soutien du stake bonded et appliquée à la hauteur 2 122 074 (26 août 2026), a remplacé le calendrier d'émission décroissant d'origine par un montant fixe par époque sous un plafond cumulatif strict. Le calendrier d'origine avait été calibré pour un réseau bien plus mature et entièrement bonded ; rapporté au stake bonded réel, il versait des récompenses bien plus vite que prévu. Voir [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pour les chiffres actuels et la marge restante.
+* **Durcissement des messages administratifs** — Un ensemble de messages administratifs privilégiés, protégés par autorité, font désormais vérifier leur signataire par rapport à l'adresse propre du module de gouvernance plutôt que de faire confiance à une valeur portée par le message lui-même.
+* Intègre également la correction de fiabilité de l'intégration des nœuds de la v3.1.92, pour tout nœud passant directement à cette version.
+
+## v3.1.92 — Fiabilité de la synchronisation des nœuds
 
 **Axe de la version :** Intégration plus fiable des nœuds à partir des snapshots et de l'archive de chaîne publiée.
 

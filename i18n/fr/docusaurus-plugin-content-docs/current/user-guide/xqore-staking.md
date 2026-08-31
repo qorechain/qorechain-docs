@@ -10,7 +10,7 @@ sidebar_position: 4
 Ce guide couvre le mécanisme de staking de gouvernance xQORE, qui permet aux détenteurs de QOR de verrouiller leurs tokens pour obtenir un pouvoir de gouvernance renforcé, avec un modèle de rebase PvP qui récompense les participants sur le long terme.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au Mainnet** lors d'un staking sur mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.95** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au Mainnet** lors d'un staking sur mainnet.
 :::
 
 ---

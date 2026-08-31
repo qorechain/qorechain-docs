@@ -24,7 +24,9 @@ Passkey teklifi yalnızca **e-posta koduyla** oturum açtıktan sonra görünür
 
 ## Tek bir ifadeden birden fazla hesap {#accounts}
 
-Ayarlar → **Hesaplarınız** (**Adresler** olarak da bulunabilir), hepsi aynı 24 kelimelik kurtarma ifadesinden türetilen (ayrıca yedeklenmesi gereken hiçbir şey yoktur) **20 hesaba** kadar oluşturmanıza, aralarında geçiş yapmanıza ve bunları yeniden adlandırmanıza olanak tanır. Her hesap, kendi bakiyesine sahip, ayrı bir `qor1…` adresidir; bir handle cüzdanın tamamına değil bir **adrese** bağlı olduğundan, her hesabın kendi isteğe bağlı @handle'ı da olabilir. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur. **0.2.2** sürümünden itibaren tarayıcı eklentisi de bu özelliğe sahiptir — bkz. [Tek bir ifadeden birden fazla hesap](/qorex/browser-extension#wallet).
+Ayarlar → **Hesaplarınız** (**Adresler** olarak da bulunabilir), hepsi aynı 24 kelimelik kurtarma ifadesinden türetilen (ayrıca yedeklenmesi gereken hiçbir şey yoktur) **20 hesaba** kadar oluşturmanıza, aralarında geçiş yapmanıza ve bunları yeniden adlandırmanıza olanak tanır. Her hesap, kendi bakiyesine sahip, ayrı bir `qor1…` adresidir; bir handle cüzdanın tamamına değil bir **adrese** bağlı olduğundan, her hesabın kendi isteğe bağlı @handle'ı da olabilir. Hangi hesap etkinse Gönder, Al, Staking ve dApp tarayıcısı tarafından kullanılan hesap odur — geçiş yapmak her şeyi beraberinde taşır ve birden fazla hesap var olduğunda uygulama hangi hesapta olduğunuzu gösterir. **0.2.2** sürümünden itibaren tarayıcı eklentisi de bu özelliğe sahiptir — bkz. [Tek bir ifadeden birden fazla hesap](/qorex/browser-extension#wallet).
+
+Tek bir kurtarma ifadesi her hesabı geri yükler, ancak her hesap ilk işlem yaptığında kendi ML-DSA-87 kuantum-sonrası anahtarını zincir üzerinde kaydeder — tıpkı normal tek hesaplı bir cüzdan gibi — bu nedenle yeni bir hesabı açmak ve kullanmak, o hesaba özgü tek seferlik anahtar kaydı maliyetini de beraberinde getirir.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ Bunlar birbiriyle ilgisi olmayan iki ayrı eylemdir. Bir @handle talep etmek **b
 **Ayarlar → Bağlı hesap**, QoreX cüzdanınızı ve Dashboard hesabınızı çift yönlü olarak bağlar:
 
 1. Dashboard'da gösterilen 8 karakterli kodu girin **veya** QoreX'te bir kod oluşturun (10 dakika geçerlidir) ve bunu Dashboard'a yazın.
-2. Bağlandıktan sonra @handle'ınız ve bağlı adresleriniz her ikisinde de görünür.
-3. Bağlantıyı istediğiniz zaman kaldırabilirsiniz.
+2. [Birden fazla hesabınız](#accounts) varsa, QoreX'in kendi onay penceresi hangi hesabın bağlanacağını seçmenizi sağlar — o anda etkin olan hesabı varsaymaz.
+3. Bağlandıktan sonra @handle'ınız ve bağlı adresleriniz her ikisinde de görünür.
+4. Bağlantıyı istediğiniz zaman kaldırabilirsiniz.
 
 **Dashboard ile devam et** üzerinden oturum açmak ikisini örtük olarak bağlar — ayrıca yapmanız gereken bir şey yoktur.
 
@@ -53,7 +56,7 @@ Bunlar birbiriyle ilgisi olmayan iki ayrı eylemdir. Bir @handle talep etmek **b
 Dashboard bağlıyken:
 
 - Dashboard'daki **QoreX ile bağlan**, onu bir `qorex://connect` derin bağlantısı ve imzalı bir sahiplik kanıtı aracılığıyla cüzdanınızla eşleştirir.
-- **Dashboard'da başlatılan transferler** QoreX'e `qorex://tx` istekleri olarak ulaşır. Bunlar çözülür, size eksiksiz olarak gösterilir ve biyometrik onaydan sonra **yalnızca uygulama içinde**, yalnızca uygulamanın kendi türetilmiş adresinden imzalanır. Bir `qor1…` adresi mainnet ve testnet üzerinde eşit derecede geçerli olduğundan, Dashboard tarafından başlatılan her istek hangi ağı hedeflediğini belirtir ve bu, o anda bağlı olduğunuz ağla eşleşmiyorsa QoreX isteği uygulamayı reddeder — bir isteğin adına asla ağ değiştirmez.
+- **Dashboard'da başlatılan transferler** QoreX'e `qorex://tx` istekleri olarak ulaşır. Bunlar çözülür, size eksiksiz olarak gösterilir ve biyometrik onaydan sonra **yalnızca uygulama içinde**, yalnızca uygulamanın kendi türetilmiş adresinden imzalanır. Bir `qor1…` adresi mainnet ve testnet üzerinde eşit derecede geçerli olduğundan, Dashboard tarafından başlatılan her istek hangi ağı hedeflediğini belirtir ve bu, o anda bağlı olduğunuz ağla eşleşmiyorsa QoreX isteği reddeder — bir isteğin adına asla ağ değiştirmez.
 - Siz **oturum açmamışken** bir Bağlan veya transfer isteği gelirse, QoreX çıkmaza girmeden devam edebilmeniz için satır içi bir **"Dashboard'a oturum aç"** adımı sunar.
 - **Adresleriniz (Ayarlar)** — bu cüzdandan türetilen her hesabı ve diğer cüzdanlardan (Keplr / MetaMask / Phantom) bağladığınız **salt okunur** adresleri listeler. Salt okunur girişler, onları oluşturan cüzdanla etiketlenir; bunlardan biri üzerinden gönderim yapmaya çalışmak, onu oluşturan cüzdandan göndermeniz gerektiğini açıklar.
 

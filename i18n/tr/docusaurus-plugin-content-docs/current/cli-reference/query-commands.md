@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** mainnet RPC uç noktası (zincir sürümü **v3.1.92**) veya test için bir **`qorechain-diana`** testnet uç noktası kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler.
+Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** mainnet RPC uç noktası (zincir sürümü **v3.1.95**) veya test için bir **`qorechain-diana`** testnet uç noktası kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler.
 :::
 
 Ortak bayraklar her `query` alt komutu için geçerlidir:

@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification system, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.92**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.95**. The **`qorechain-diana`** testnet (EVM chain ID **9800**) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network.
 :::
 
 ---
@@ -18,16 +18,26 @@ This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), li
 ## Prerequisites
 
 * A fully synced `qorechaind` node (see [Connecting to Testnet](/getting-started/connecting-to-testnet))
-* A funded account with at least **1,000 QOR** (1,000,000,000 uqor) for the initial self-delegation
+* A funded account with at least **100,000 QOR** (100,000,000,000 uqor) for the initial self-delegation — this minimum is enforced on-chain and `create-validator` is rejected below it
+* An active **`validator_operator` license** on your account — see the note below; without it, `create-validator` fails with `ErrUnauthorized` regardless of how much QOR you self-bond
 * Familiarity with the [Staking and Delegation](/user-guide/staking-and-delegation) model
 
 ---
 
 ## Creating a Validator
 
+### License gate: `validator_operator` {#validator-license-gate}
+
+`create-validator` is gated by two independent checks, both enforced on-chain, and you need both — a large self-bond alone is not enough:
+
+1. **Minimum self-bond of 100,000 QOR.**
+2. **An active `validator_operator` license** on the account submitting the transaction.
+
+A license's `expires_at` is a **block height**, not a date or duration — `0` means no expiry. Missing or expired, and `create-validator` fails with `ErrUnauthorized`, no matter how much you self-bond; this is the single most common reason a well-funded attempt fails and looks unexplained. This gate exists specifically because the EVM execution lane cannot see or enforce it (a single ante decorator there would bypass it entirely) — it is one of the reasons staking and validation stay exclusively on the Native lane.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -42,7 +52,7 @@ qorechaind tx staking create-validator \
 
 | Parameter                      | Description                                        |
 | ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | Self-delegation amount (minimum stake)             |
+| `--amount`                     | Self-delegation amount — **100,000 QOR minimum** (`100000000000uqor`) |
 | `--pubkey`                     | Validator consensus public key (ed25519)           |
 | `--moniker`                    | Human-readable name for your validator             |
 | `--commission-rate`            | Initial commission rate (e.g., 0.10 = 10%)         |

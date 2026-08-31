@@ -24,7 +24,9 @@ The passkey offer appears only after **email-code** sign-in. When you sign in wi
 
 ## Several accounts from one phrase {#accounts}
 
-Settings → **Your accounts** (also findable as **Addresses**) lets you create, switch, and rename up to **20 accounts**, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own distinct `qor1…` address with its own balance, and — because a handle binds to an **address**, not to the wallet as a whole — its own optional @handle. Whichever account is active is the one Send, Receive, Staking, and the dApp browser use. Since **0.2.2**, the browser extension has this feature too — see [Several accounts from one phrase](/qorex/browser-extension#wallet).
+Settings → **Your accounts** (also findable as **Addresses**) lets you create, switch, and rename up to **20 accounts**, all derived from the same 24-word recovery phrase (there is nothing extra to back up). Each account is its own distinct `qor1…` address with its own balance, and — because a handle binds to an **address**, not to the wallet as a whole — its own optional @handle. Whichever account is active is the one Send, Receive, Staking, and the dApp browser use — switching moves everything with it, and the app shows which account you're on whenever more than one exists. Since **0.2.2**, the browser extension has this feature too — see [Several accounts from one phrase](/qorex/browser-extension#wallet).
+
+One recovery phrase restores every account, but each account registers its own ML-DSA-87 post-quantum key on-chain the first time it transacts — same as a regular single-account wallet — so opening and using a new account carries that account's own one-time key-registration cost.
 
 ## @handle {#handle}
 
@@ -43,8 +45,9 @@ These are two separate, unrelated actions. Claiming an @handle lets **other peop
 **Settings → Linked account** connects your QoreX wallet and your Dashboard account both ways:
 
 1. Enter the 8-character code shown by the Dashboard, **or** mint one in QoreX (valid 10 minutes) and type it into the Dashboard.
-2. Once linked, your @handle and connected addresses appear on both.
-3. Unlink anytime.
+2. If you have [several accounts](#accounts), QoreX's own approval window lets you pick **which one** links — it doesn't assume the currently active account.
+3. Once linked, your @handle and connected addresses appear on both.
+4. Unlink anytime.
 
 Signing in *via* **Continue with Dashboard** links the two implicitly — there is nothing extra to do.
 

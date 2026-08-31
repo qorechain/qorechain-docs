@@ -14,7 +14,7 @@ Das RDK und die Rollup-Abwicklungsschicht sind eine sich aktiv weiterentwickelnd
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.92** — ersetzen Sie beim Deployment auf dem Mainnet die Chain-ID und die Endpunkte anhand der Seite **Connecting to Mainnet**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit Chain-Version **v3.1.95** — ersetzen Sie beim Deployment auf dem Mainnet die Chain-ID und die Endpunkte anhand der Seite **Connecting to Mainnet**.
 :::
 
 ---

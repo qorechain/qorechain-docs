@@ -36,7 +36,7 @@ qorechaind tx bank send mykey qor1recipient... 1000000uqor \
 これは受信者アドレスへ **1 QOR**(1,000,000 uqor)を送金し、手数料として 500 uqor を支払います。
 
 :::caution Cosmos の送金にはハイブリッド PQC 署名が必要です
-cosmos パスでは、ネットワークのデフォルトは `hybrid_signature_mode = required` です(現在のチェーンバージョン **v3.1.92**)。通常の従来型 `tx bank send` は**拒否されます** — cosmos パスのすべてのトランザクションは、secp256k1 署名に加えて ML-DSA-87(Dilithium-5)署名を持たなければなりません。`qorechaind tx pqc gen-key` で Dilithium-5 鍵を生成し、`qorechaind tx pqc cosign` でハイブリッド共同署名を付加してください(あるいは QoreChain SDK の `buildHybridTx` を使い、`includePqcPublicKey` を指定してトランザクションを構築すれば、初回利用時に鍵が自動登録されます)。CLI を使わずにハイブリッド署名を生成するには、オープンソースの [**qorechain-pqc**](/developer-guide/post-quantum-signing) ライブラリ(`hybridSignBytes`)や QoreChain SDK がコード上で同等の処理を提供します。ハイブリッドフローの全体については [ウォレットのセットアップ](/getting-started/wallet-setup) を参照してください。
+cosmos パスでは、ネットワークのデフォルトは `hybrid_signature_mode = required` です(現在のチェーンバージョン **v3.1.95**)。通常の従来型 `tx bank send` は**拒否されます** — cosmos パスのすべてのトランザクションは、secp256k1 署名に加えて ML-DSA-87(Dilithium-5)署名を持たなければなりません。`qorechaind tx pqc gen-key` で Dilithium-5 鍵を生成し、`qorechaind tx pqc cosign` でハイブリッド共同署名を付加してください(あるいは QoreChain SDK の `buildHybridTx` を使い、`includePqcPublicKey` を指定してトランザクションを構築すれば、初回利用時に鍵が自動登録されます)。CLI を使わずにハイブリッド署名を生成するには、オープンソースの [**qorechain-pqc**](/developer-guide/post-quantum-signing) ライブラリ(`hybridSignBytes`)や QoreChain SDK がコード上で同等の処理を提供します。ハイブリッドフローの全体については [ウォレットのセットアップ](/getting-started/wallet-setup) を参照してください。
 :::
 
 トランザクションがブロードキャストされる前に、確認を求められます。確認すると、CLI はトランザクションハッシュを返します。

@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain ofrece **abstracción de cuentas a nivel de protocolo** mediante el módulo `x/abstractaccount`. Esto permite cuentas programables con reglas de autenticación flexibles, claves de sesión, límites de gasto y recuperación social — todo sin requerir infraestructura externa de contratos inteligentes.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`**, en funcionamiento desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.92**. Sustituye por `--chain-id qorechain-diana` para la testnet.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`**, en funcionamiento desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.95**. Sustituye por `--chain-id qorechain-diana` para la testnet.
 :::
 
 ## Visión general
@@ -39,7 +39,7 @@ flowchart TD
 ## Tipos de cuenta
 
 | Tipo              | Descripción                                        | Caso de uso                                    |
-| ----------------- | -------------------------------------------------- | ---------------------------------------------- |
+| ----------------- | --------------------------------------------------- | ----------------------------------------------- |
 | `multisig`        | Firma por umbral M-de-N                            | Tesorerías de DAO, carteras compartidas        |
 | `social_recovery` | Recuperación de claves asistida por guardianes     | Carteras de consumo, incorporación de usuarios |
 | `session_based`   | Claves de sesión delegadas con restricciones       | Sesiones de dApp, carteras móviles             |

@@ -24,7 +24,9 @@ Oferta de passkey apare doar după autentificarea cu **cod pe e-mail**. Când te
 
 ## Mai multe conturi dintr-o singură frază {#accounts}
 
-Settings → **Your accounts** (găsit și sub numele **Addresses**) îți permite să creezi, comuți și redenumești până la **20 de conturi**, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă distinctă `qor1…`, cu propriul sold și — pentru că un handle se leagă de o **adresă**, nu de portofel în ansamblu — propriul @handle opțional. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri. Începând cu versiunea **0.2.2**, extensia de browser are și ea această funcție — vezi [Mai multe conturi dintr-o singură frază](/qorex/browser-extension#wallet).
+Settings → **Your accounts** (găsit și sub numele **Addresses**) îți permite să creezi, comuți și redenumești până la **20 de conturi**, toate derivate din aceeași frază de recuperare de 24 de cuvinte (nu mai există nimic suplimentar de salvat). Fiecare cont este propria sa adresă distinctă `qor1…`, cu propriul sold și — pentru că un handle se leagă de o **adresă**, nu de portofel în ansamblu — propriul @handle opțional. Contul activ la un moment dat este cel folosit de Send, Receive, Staking și de browserul de dApp-uri — comutarea mută totul odată cu el, iar aplicația arată pe ce cont te afli ori de câte ori există mai mult de unul. Începând cu versiunea **0.2.2**, extensia de browser are și ea această funcție — vezi [Mai multe conturi dintr-o singură frază](/qorex/browser-extension#wallet).
+
+O singură frază de recuperare restaurează toate conturile, dar fiecare cont își înregistrează propria cheie post-cuantică ML-DSA-87 pe blockchain la prima tranzacție — la fel ca la un portofel obișnuit cu un singur cont — astfel încât deschiderea și folosirea unui cont nou presupune costul de înregistrare a cheii, specific acelui cont.
 
 ## @handle {#handle}
 
@@ -42,9 +44,10 @@ Acestea sunt două acțiuni separate, fără legătură între ele. Revendicarea
 
 **Settings → Linked account** conectează portofelul tău QoreX și contul tău Dashboard în ambele sensuri:
 
-1. Introdu codul de 8 caractere afișat de Dashboard **sau** generează unul în QoreX (valabil 10 minute) și tastează-l în Dashboard.
-2. După asociere, @handle-ul tău și adresele conectate apar pe amândouă.
-3. Poți dezasocia oricând.
+1. Introdu codul de 8 caractere afișat de Dashboard, **sau** generează unul în QoreX (valabil 10 minute) și tastează-l în Dashboard.
+2. Dacă ai [mai multe conturi](#accounts), fereastra proprie de aprobare a QoreX îți permite să alegi **care anume** se asociază — nu presupune că e vorba de contul activ în prezent.
+3. Odată asociat, @handle-ul tău și adresele conectate apar pe amândouă.
+4. Poți dezasocia oricând.
 
 Autentificarea *prin* **Continue with Dashboard** le leagă implicit — nu mai ai nimic suplimentar de făcut.
 

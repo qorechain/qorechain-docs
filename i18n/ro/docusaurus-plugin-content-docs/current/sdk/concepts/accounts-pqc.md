@@ -251,7 +251,7 @@ timp ce câștigă protecție post-cuantică. Partea post-cuantică călătoreș
 o extensie `PQCHybridSignature` pe tranzacție.
 
 :::caution Semnarea hibridă este obligatorie pe calea Native
-Începând cu versiunea curentă a chain-ului (**v3.1.92**), valoarea implicită
+Începând cu versiunea curentă a chain-ului (**v3.1.95**), valoarea implicită
 a rețelei este `hybrid_signature_mode = required`, cu
 `allow_classical_fallback = false`. Semnarea hibridă prin `buildHybridTx` (cu
 `includePqcPublicKey`) — sau `signHybridEth` pentru conturile unificate

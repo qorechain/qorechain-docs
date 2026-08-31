@@ -10,7 +10,7 @@ sidebar_position: 3
 Uygulamaya özel bir rollup'ı üç şekilde dağıtabilirsiniz: **Dashboard** üzerinden (rehberli, kod yazmayı gerektirmeyen bir sihirbaz), zincir **CLI**'si üzerinden (`qorechaind`, zincir üstü işlem üzerinde tam kontrol) veya programatik olarak **TypeScript RDK** ile (`@qorechain/rdk` artı `create-qorechain-rollup` iskelet oluşturucu). Bu sayfa her üçünü de, operatör yaşam döngüsünü ve toplu (batch) komutları kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını hedef alır. Mainnet (**`qorechain-vladi`**, EVM zincir ID **9801**) 7 Haziran 2026'dan beri **v3.1.92** zincir sürümünü çalıştırarak canlıdır — mainnet'te dağıtım yaparken mainnet zincir ID'sini ve uç noktalarını kullanın. Her dağıtımı önce test ağında doğrulayın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını hedef alır. Mainnet (**`qorechain-vladi`**, EVM zincir ID **9801**) 7 Haziran 2026'dan beri **v3.1.95** zincir sürümünü çalıştırarak canlıdır — mainnet'te dağıtım yaparken mainnet zincir ID'sini ve uç noktalarını kullanın. Her dağıtımı önce test ağında doğrulayın.
 :::
 
 ---

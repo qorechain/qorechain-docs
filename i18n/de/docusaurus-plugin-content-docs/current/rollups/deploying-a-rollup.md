@@ -10,7 +10,7 @@ sidebar_position: 3
 Sie können einen anwendungsspezifischen Rollup auf drei Arten bereitstellen: über das **Dashboard** (ein geführter No-Code-Assistent), über die Chain-**CLI** (`qorechaind`, volle Kontrolle über die On-Chain-Transaktion) oder programmgesteuert mit dem **TypeScript-RDK** (`@qorechain/rdk` plus dem `create-qorechain-rollup`-Scaffolder). Diese Seite behandelt alle drei Wege sowie den Betreiber-Lebenszyklus und die Batch-Befehle.
 
 :::note
-Die folgenden Befehle richten sich an das **`qorechain-diana`**-Testnet. Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live mit Chain-Version **v3.1.92** — ersetzen Sie beim Deployment auf dem Mainnet die Chain-ID und die Endpunkte entsprechend. Validieren Sie jedes Deployment zuerst auf dem Testnet.
+Die folgenden Befehle richten sich an das **`qorechain-diana`**-Testnet. Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live mit Chain-Version **v3.1.95** — ersetzen Sie beim Deployment auf dem Mainnet die Chain-ID und die Endpunkte entsprechend. Validieren Sie jedes Deployment zuerst auf dem Testnet.
 :::
 
 ---

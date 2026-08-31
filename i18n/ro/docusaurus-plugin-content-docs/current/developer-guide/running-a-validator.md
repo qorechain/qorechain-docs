@@ -10,7 +10,7 @@ sidebar_position: 9
 Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea sistemului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculatoarele cuantice și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de chain **v3.1.92**. Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de chain **v3.1.95**. Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă.
 :::
 
 ---
@@ -18,16 +18,26 @@ Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), ac
 ## Cerințe preliminare
 
 * Un nod `qorechaind` complet sincronizat (vezi [Conectarea la Testnet](/getting-started/connecting-to-testnet))
-* Un cont alimentat cu cel puțin **1.000 QOR** (1.000.000.000 uqor) pentru auto-delegarea inițială
+* Un cont alimentat cu cel puțin **100.000 QOR** (100.000.000.000 uqor) pentru auto-delegarea inițială — acest minim este impus on-chain, iar `create-validator` este respins sub acest prag
+* O **licență `validator_operator`** activă pe contul tău — vezi nota de mai jos; fără ea, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult QOR auto-bondezi
 * Familiaritate cu modelul [Staking și Delegare](/user-guide/staking-and-delegation)
 
 ---
 
 ## Crearea unui Validator
 
+### Poarta de licență: `validator_operator` {#validator-license-gate}
+
+`create-validator` este condiționat de două verificări independente, ambele impuse on-chain, și ai nevoie de amândouă — un auto-bond mare, de unul singur, nu este suficient:
+
+1. **Auto-bond minim de 100.000 QOR.**
+2. **O licență `validator_operator` activă** pe contul care trimite tranzacția.
+
+Câmpul `expires_at` al unei licențe este o **înălțime de bloc**, nu o dată sau o durată — `0` înseamnă fără expirare. Dacă lipsește sau a expirat, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult auto-bondezi; acesta este cel mai frecvent motiv pentru care o încercare bine finanțată eșuează și pare inexplicabilă. Această poartă există special pentru că lane-ul de execuție EVM nu o poate vedea sau impune (un singur decorator ante acolo ar ocoli-o complet) — este unul dintre motivele pentru care staking-ul și validarea rămân exclusiv pe lane-ul Nativ.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -41,8 +51,8 @@ qorechaind tx staking create-validator \
 ```
 
 | Parametru                      | Descriere                                                |
-| ------------------------------ | --------------------------------------------------------- |
-| `--amount`                     | Suma auto-delegată (stake minim)                          |
+| ------------------------------- | --------------------------------------------------------- |
+| `--amount`                     | Suma auto-delegată — **minimum 100.000 QOR** (`100000000000uqor`) |
 | `--pubkey`                     | Cheia publică de consens a validatorului (ed25519)         |
 | `--moniker`                    | Numele lizibil al validatorului tău                        |
 | `--commission-rate`            | Rata de comision inițială (ex., 0.10 = 10%)                |
@@ -313,4 +323,3 @@ Fixările (pin-urile) de versiune ale clienților sunt best-effort; verifică la
 * [Construirea din Sursă](/developer-guide/building-from-source) — Construiește binarul `qorechaind`
 * [Dezvoltare EVM](/developer-guide/evm-development) — Implementează contracte inteligente pe QoreChain
 * [Abstractizarea Contului](/developer-guide/account-abstraction) — Conturi programabile pentru operațiunile validatorului tău
-

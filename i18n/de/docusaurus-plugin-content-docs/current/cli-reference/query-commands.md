@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Abfragen laufen gegen den Node, auf den `--node` zeigt. Verwenden Sie einen **`qorechain-vladi`**-Mainnet-RPC-Endpunkt (Chain-Version **v3.1.92**) für Live-Daten oder einen **`qorechain-diana`**-Testnet-Endpunkt zum Testen. Der Standardwert `tcp://localhost:26657` zielt auf einen Node, den Sie selbst betreiben.
+Abfragen laufen gegen den Node, auf den `--node` zeigt. Verwenden Sie einen **`qorechain-vladi`**-Mainnet-RPC-Endpunkt (Chain-Version **v3.1.95**) für Live-Daten oder einen **`qorechain-diana`**-Testnet-Endpunkt zum Testen. Der Standardwert `tcp://localhost:26657` zielt auf einen Node, den Sie selbst betreiben.
 :::
 
 Gemeinsame Flags gelten für jeden `query`-Unterbefehl:

@@ -63,11 +63,13 @@ Las aprobaciones de las tiendas llegan en momentos distintos, así que la versi�
 
 | Plataforma | Versión disponible |
 |---|---|
-| Android | 1.0.4 |
-| iOS | 1.0.2 (hay una actualización en revisión) |
-| Firefox | 0.2.2 |
-| Chrome | 0.1.5 (0.1.9 está en revisión; una vez que se apruebe seguirá una presentación posterior de la 0.2.2) |
-| Safari (macOS) | 1.3, con la extensión 0.2.2 |
+| Android | 1.0.8 |
+| iOS | 1.0.8 |
+| Firefox | 0.2.6 |
+| Safari (macOS) | 1.6, con la extensión 0.2.6 |
+| Chrome | Llevaba atascada en una revisión larga de la tienda a finales de agosto — consulta directamente la [ficha de Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) para conocer su versión actual en lugar de fiarte de un número aquí |
+
+La 1.0.8 / 0.2.6 añadió la posibilidad de **mover QOR en staking entre validadores** (redelegación) sin la espera de desbloqueo de 21 días — consulta [Mover el staking entre validadores](/qorex/portfolio-and-staking#move-stake).
 
 Esta página describe el conjunto de funciones actual de QoreX — una tienda que todavía sirva una versión anterior se pondrá al día automáticamente sin que tengas que hacer nada.
 :::

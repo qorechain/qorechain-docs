@@ -86,7 +86,7 @@ account. Re-check the words; use `validateMnemonic` to test a phrase.
 
 Hybrid (classical + ML-DSA-87) submission is **live and required** on the
 Native path — classical-only Native transactions are rejected on-chain (chain
-v3.1.92). Before a hybrid tx PQC-verifies, the signer's PQC public key must be
+v3.1.95). Before a hybrid tx PQC-verifies, the signer's PQC public key must be
 registered (`MsgRegisterPQCKeyV2`), or you can set
 `includePqcPublicKey: true` to embed it for auto-registration on first use.
 The chain accepts **only deterministic** ML-DSA-87 signatures (the SDK signs

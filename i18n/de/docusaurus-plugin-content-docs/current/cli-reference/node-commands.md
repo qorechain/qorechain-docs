@@ -10,7 +10,7 @@ sidebar_position: 1
 Referenz für `qorechaind`-Befehle zum Initialisieren, Konfigurieren und Betreiben eines QoreChain-Node.
 
 :::note
-QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026 auf Chain-Version **v3.1.92**) und das **`qorechain-diana`**-Testnet. Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet.
+QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026 auf Chain-Version **v3.1.95**) und das **`qorechain-diana`**-Testnet. Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet.
 :::
 
 ---

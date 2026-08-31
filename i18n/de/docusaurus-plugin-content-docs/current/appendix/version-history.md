@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Versionshistorie
 
-Öffentliche Versionshistorie für QoreChain. Die aktuelle Version ist **v3.1.92**, im Einsatz auf dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) verfolgt Vorab-Builds.
+Öffentliche Versionshistorie für QoreChain. Die aktuelle Version ist **v3.1.95**, im Einsatz auf dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) verfolgt Vorab-Builds.
 
 :::note
 Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten.
@@ -15,7 +15,21 @@ Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf ho
 
 ---
 
-## v3.1.92 — Zuverlässigkeit der Node-Synchronisation (aktuelle Version)
+## v3.1.95 — Cosmos-EVM-Härtung (aktuelle Version)
+
+**Release-Schwerpunkt:** Rollierendes Sicherheitsupdate für die EVM-Guthaben-Buchhaltungsbibliothek.
+
+* **Overflow-Härtung** — Ein EVM-Guthaben-Update-Pfad schlägt nun bei einer extremen Overflow-Bedingung sicher fehl, statt stillschweigend zu wrappen. Ausgeliefert als rollierendes, nicht konsensbrechendes Update — es war weder eine Governance-Abstimmung noch ein koordinierter Halt-Height erforderlich.
+
+## v3.1.94 — Härtung der Emissionsobergrenze und administrativer Nachrichten
+
+**Release-Schwerpunkt:** Die Staking-Belohnungs-Emission an die tatsächlichen Netzwerkbedingungen anpassen und die Autorisierungsprüfungen bei privilegierten administrativen Nachrichten verschärfen.
+
+* **Emissionsobergrenze** — Ein Governance-Proposal, das mit vollständiger Unterstützung des gebundenen Stakes verabschiedet und bei Height 2.122.074 (26. August 2026) angewendet wurde, ersetzte den ursprünglichen abklingenden Emissionsplan durch einen festen Betrag pro Epoche unter einer harten, kumulativen Obergrenze. Der ursprüngliche Plan war auf ein deutlich reiferes, vollständig gebundenes Netzwerk kalibriert; gemessen am tatsächlich gebundenen Stake zahlte er weit schneller aus als beabsichtigt. Siehe [Tokenomics](/architecture/tokenomics#staking-reward-schedule) für die aktuellen Zahlen und die verbleibende Reichweite.
+* **Härtung administrativer Nachrichten** — Eine Reihe privilegierter, autoritätsgesteuerter administrativer Nachrichten überprüft ihren Signierer nun gegen die eigene Adresse des Governance-Moduls, statt einem in der Nachricht selbst mitgeführten Wert zu vertrauen.
+* Enthält außerdem den Node-Onboarding-Zuverlässigkeits-Fix aus v3.1.92, für jeden Node, der direkt auf diese Version aktualisiert.
+
+## v3.1.92 — Zuverlässigkeit der Node-Synchronisation
 
 **Release-Schwerpunkt:** Zuverlässigeres Node-Onboarding aus Snapshots und dem veröffentlichten Chain-Archiv.
 

@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain offre **astrazione dell'account a livello di protocollo** tramite il modulo `x/abstractaccount`. Questo abilita account programmabili con regole di autenticazione flessibili, chiavi di sessione, limiti di spesa e recupero sociale — tutto senza richiedere un'infrastruttura di smart contract esterna.
 
 :::note
-I comandi seguenti usano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 e in esecuzione sulla versione della chain **v3.1.92**. Sostituisci con `--chain-id qorechain-diana` per la testnet.
+I comandi seguenti usano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 e in esecuzione sulla versione della chain **v3.1.95**. Sostituisci con `--chain-id qorechain-diana` per la testnet.
 :::
 
 ## Panoramica

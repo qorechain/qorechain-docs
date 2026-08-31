@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain fornisce lo streaming di eventi in tempo reale attraverso due interfacce WebSocket: il WebSocket compatibile con EVM e il WebSocket RPC del Consensus Engine di QoreChain.
 
 :::note
-Entrambe le interfacce WebSocket sono disponibili sulla mainnet **`qorechain-vladi`** (in funzione sulla versione della chain **v3.1.92**) e sulla testnet **`qorechain-diana`**. Gli endpoint locali riportati di seguito presuppongono un nodo gestito da voi stessi; per l'accesso remoto sostituiteli con l'host mainnet o testnet del vostro provider.
+Entrambe le interfacce WebSocket sono disponibili sulla mainnet **`qorechain-vladi`** (in funzione sulla versione della chain **v3.1.95**) e sulla testnet **`qorechain-diana`**. Gli endpoint locali riportati di seguito presuppongono un nodo gestito da voi stessi; per l'accesso remoto sostituiteli con l'host mainnet o testnet del vostro provider.
 :::
 
 ---

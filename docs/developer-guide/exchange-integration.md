@@ -10,7 +10,7 @@ sidebar_position: 11
 Everything an exchange, custodian, or payment integrator needs to list QOR and process deposits and withdrawals: choosing an interface, detecting deposits safely, and signing withdrawals.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.92**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
+This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.95**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
 :::
 
 ## Choosing an integration path {#choosing-a-path}

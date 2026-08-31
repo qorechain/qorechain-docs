@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(체인 버전 **v3.1.92**)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다.
+쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(체인 버전 **v3.1.95**)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다.
 :::
 
 공통 플래그는 모든 `query` 하위 명령어에 적용됩니다.

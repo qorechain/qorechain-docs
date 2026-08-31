@@ -10,7 +10,7 @@ sidebar_position: 2
 Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender la arquitectura de staking Triple-Pool de QoreChain.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.92** — sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.95** — sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
 :::
 
 ## ¿Existe un período de bloqueo? {#lock-in-period}
@@ -63,8 +63,10 @@ qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqo
   --fees 500uqor
 ```
 
-:::caution
-No puedes redelegar tokens que ya están en tránsito de redelegación. Espera a que la redelegación actual se complete antes de iniciar otra.
+Redelegar **no tiene penalización ni bloqueo propio** — el stake nunca sale del pool bonded, nunca deja de generar recompensas y puede volver a moverse en cualquier momento. No está sujeto en absoluto al período de unbonding de 21 días; eso solo se aplica a `unbond`.
+
+:::caution El verdadero límite es un recuento, no un enfriamiento
+Un delegador puede tener como máximo **7 entradas de redelegación simultáneas en curso** para exactamente la misma ruta (delegador, validador origen, validador destino) — cada entrada se libera por sí sola al madurar, liberando un cupo. Este es un tope que el uso normal prácticamente nunca alcanza, no una regla de "espera antes de poder redelegar de nuevo"; puedes redelegar libremente hacia o desde otros validadores, o repetir la misma ruta una vez que se libere un cupo.
 :::
 
 ---
@@ -113,7 +115,7 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --fees 500uqor
 ```
 
-Las recompensas de staking se financian desde el pool de staking del protocolo de 590M QOR bajo el calendario de Tokenomics v2.1, junto con la parte del staker (10%) de cada comisión de transacción.
+Las recompensas de staking se financian desde dos fuentes: el presupuesto de emisión limitado del protocolo (consulta [Tokenomics](/architecture/tokenomics#staking-reward-schedule) para el tope actual, vigente desde un cambio de gobernanza del 26 de agosto de 2026) y la parte del staker de cada comisión de transacción.
 
 ---
 
@@ -185,7 +187,7 @@ qorechaind query staking delegations <delegator_address>
 
 * Delegar a validadores del **pool RPoS** produce las recompensas más altas debido al peso de pool del 40%.
 * Construir la reputación de un validador lleva tiempo. Considera el historial del validador antes de delegar.
-* La redelegación es instantánea pero tiene restricciones de enfriamiento (cooldown). Planifica tus movimientos con cuidado.
+* La redelegación es instantánea, sin penalización y sin bloqueo — el único límite es un tope de 7 entradas para redelegaciones simultáneas por la misma ruta exacta, algo que el uso normal no alcanzará.
 * El período de unbonding de 21 días es una medida de seguridad. Durante este tiempo, los eventos de slashing aún pueden afectar tus tokens.
 
 :::

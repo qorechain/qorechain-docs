@@ -10,7 +10,7 @@ sidebar_position: 1
 Ce guide couvre le jeton QOR, l'envoi et la réception de jetons, la consultation des soldes, ainsi que le modèle de répartition des frais sur QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.92** — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.95** — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
 :::
 
 ## Informations sur le jeton

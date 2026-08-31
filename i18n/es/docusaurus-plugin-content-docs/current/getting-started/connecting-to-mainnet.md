@@ -10,7 +10,7 @@ sidebar_position: 3
 Únete a la mainnet activa de QoreChain Vladi configurando tu nodo con el archivo genesis oficial, los peers y los ajustes de red.
 
 :::note
-Esta página cubre la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), activa desde el **7 de junio de 2026 23:59 UTC** y ejecutando la versión de cadena **v3.1.92** sobre Cosmos SDK v0.53. Para la testnet **`qorechain-diana`** (chain ID EVM **9800**), consulta [Conexión a la Testnet](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de pasar a producción.
+Esta página cubre la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), activa desde el **7 de junio de 2026 23:59 UTC** y ejecutando la versión de cadena **v3.1.95** sobre Cosmos SDK v0.53. Para la testnet **`qorechain-diana`** (chain ID EVM **9800**), consulta [Conexión a la Testnet](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de pasar a producción.
 :::
 
 ## Endpoints públicos
@@ -54,10 +54,8 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 El paquete contiene `qorechaind` junto con sus bibliotecas compartidas necesarias (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Mantén tu nodo actualizado — se requiere v3.1.92 o superior para una sincronización nueva
-Los nodos completos deben seguir la versión de cadena activa en la red: instala siempre el binario que indica el manifiesto, no fijes uno antiguo. Aparte del campo `minCompatible` del manifiesto, **se requiere v3.1.92 o superior para un nodo que se une desde cero (desde el genesis) o que se recupera de una interrupción**: las versiones anteriores no pueden completar una sincronización completa debido a un error de medición de gas ya corregido que detiene la reproducción en el primer bloque que contiene una transacción. Un nodo que ya está al día y ejecuta una versión anterior debería igualmente actualizarse en la primera oportunidad, ya que un nodo desactualizado no puede decodificar los tipos de transacción más nuevos y dejará de sincronizar en cuanto aparezca uno en un bloque.
-
-**Comprueba qué está sirviendo realmente el manifiesto antes de confiar en él.** El manifiesto se promueve de forma deliberada (primero en testnet, en mainnet después de un período de estabilización), por lo que puede quedar por detrás del piso de versión indicado arriba; al momento de escribir esto, el propio manifiesto de mainnet todavía apunta a un binario anterior a v3.1.92, que es exactamente la versión que esta advertencia dice que no debes usar para una sincronización nueva. Compara el campo `"version"` del manifiesto con v3.1.92 antes de confiar en su `binary.url`; si sigue estando por detrás, obtén v3.1.92 (o posterior) desde las [publicaciones de GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) en su lugar (verifica el checksum del tag de la misma manera), o [compílalo desde el código fuente](/developer-guide/building-from-source).
+:::caution Mantén tu nodo actualizado — se requiere v3.1.94 o superior para una sincronización nueva
+Los nodos completos deben seguir la versión de cadena activa en la red: instala siempre el binario que indica el manifiesto, no fijes uno antiguo. El piso para un nodo que se une desde cero (desde el genesis) o que se recupera de una interrupción es **v3.1.94 o superior**, por dos razones independientes y acumulativas: v3.1.92 corrigió un error de medición de gas que, de lo contrario, detiene la reproducción en el primer bloque que contiene una transacción, y la mainnet ya ha superado la actualización de gobernanza v3.1.94 (un tope máximo de emisión, aplicado en la altura 2.122.074); un nodo sin el handler de esa actualización vuelve a detenerse al intentar reproducir esa misma altura. v3.1.95 es la versión recomendada actualmente (una actualización de seguridad continua; `minCompatible` es `3.1.94`). Compara siempre el campo `"version"` del manifiesto con el piso actual antes de confiar en `binary.url`: el manifiesto se promueve de forma deliberada (primero en testnet, en mainnet después de un período de estabilización) y en el pasado ha quedado por detrás del piso de versión.
 :::
 
 ### Compilar desde el código fuente
@@ -256,7 +254,7 @@ http://localhost:1317
 | --------------------- | --------------------------------------- |
 | Chain ID              | `qorechain-vladi`                       |
 | Chain ID EVM           | `9801` (hex `0x2649`)                   |
-| Versión de cadena     | v3.1.92                                 |
+| Versión de cadena     | v3.1.95                                 |
 | Activa desde          | 7 de junio de 2026 23:59 UTC            |
 | Token                  | QOR (`uqor`, 10^6 micro-unidades = 1 QOR) |
 | Precio mínimo de gas  | `0.1uqor`                               |

@@ -10,7 +10,7 @@ sidebar_position: 9
 이 가이드는 QoreChain 네트워크에서 밸리데이터를 생성하는 방법, 풀 분류 시스템 이해하기, 양자내성 보안을 위한 PQC 키 등록, 노드 모니터링 방법을 다룹니다.
 
 :::note
-이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 7일부터 체인 버전 **v3.1.92**로 운영되고 있습니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)은 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요.
+이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 7일부터 체인 버전 **v3.1.95**로 운영되고 있습니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)은 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요.
 :::
 
 ---
@@ -18,16 +18,26 @@ sidebar_position: 9
 ## 사전 준비 사항
 
 * 완전히 동기화된 `qorechaind` 노드 (참고: [테스트넷에 연결하기](/getting-started/connecting-to-testnet))
-* 초기 셀프 위임을 위해 최소 **1,000 QOR**(1,000,000,000 uqor)가 있는 자금이 있는 계정
+* 초기 셀프 위임을 위해 최소 **100,000 QOR**(100,000,000,000 uqor)가 있는 자금이 있는 계정 — 이 최소값은 온체인에서 강제되며, 미달 시 `create-validator`가 거부됩니다
+* 계정에 활성화된 **`validator_operator` 라이선스** — 아래 참고 사항을 확인하세요. 라이선스가 없으면 얼마나 많은 QOR을 셀프 본딩하든 상관없이 `create-validator`가 `ErrUnauthorized`로 실패합니다
 * [스테이킹과 위임](/user-guide/staking-and-delegation) 모델에 대한 이해
 
 ---
 
 ## 밸리데이터 생성하기
 
+### 라이선스 게이트: `validator_operator` {#validator-license-gate}
+
+`create-validator`는 온체인에서 강제되는 두 가지 독립적인 검사로 게이트되며, 둘 다 필요합니다 — 큰 규모의 셀프 본딩만으로는 충분하지 않습니다.
+
+1. **최소 100,000 QOR 셀프 본딩.**
+2. **트랜잭션을 제출하는 계정에 활성화된 `validator_operator` 라이선스.**
+
+라이선스의 `expires_at`은 날짜나 기간이 아니라 **블록 높이**입니다 — `0`은 만료 없음을 의미합니다. 라이선스가 없거나 만료된 경우, 셀프 본딩 금액과 무관하게 `create-validator`는 `ErrUnauthorized`로 실패합니다. 이는 자금이 충분한데도 원인을 알 수 없이 실패하는 가장 흔한 이유입니다. 이 게이트가 존재하는 이유는 EVM 실행 레인이 이를 확인하거나 강제할 수 없기 때문입니다(그곳의 단일 ante 데코레이터로는 완전히 우회될 수 있습니다) — 이는 스테이킹과 검증이 오직 Native 레인에만 남아 있는 이유 중 하나입니다.
+
 ```bash
 qorechaind tx staking create-validator \
-  --amount 1000000000uqor \
+  --amount 100000000000uqor \
   --pubkey $(qorechaind comet show-validator) \
   --moniker "my-validator" \
   --commission-rate 0.10 \
@@ -42,7 +52,7 @@ qorechaind tx staking create-validator \
 
 | 매개변수                       | 설명                                                |
 | ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | 셀프 위임 금액 (최소 스테이크)                     |
+| `--amount`                     | 셀프 위임 금액 — **최소 100,000 QOR**(`100000000000uqor`) |
 | `--pubkey`                     | 밸리데이터 합의 공개 키 (ed25519)                  |
 | `--moniker`                    | 밸리데이터의 사람이 읽을 수 있는 이름              |
 | `--commission-rate`            | 초기 수수료율 (예: 0.10 = 10%)                     |
@@ -313,4 +323,3 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 * [소스에서 빌드하기](/developer-guide/building-from-source) — `qorechaind` 바이너리 빌드하기
 * [EVM 개발](/developer-guide/evm-development) — QoreChain에 스마트 컨트랙트 배포하기
 * [계정 추상화](/developer-guide/account-abstraction) — 밸리데이터 운영을 위한 프로그래머블 계정
-

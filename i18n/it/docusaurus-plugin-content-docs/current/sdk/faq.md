@@ -90,7 +90,7 @@ Ricontrolla le parole; usa `validateMnemonic` per testare una frase.
 
 L'invio ibrido (classico + ML-DSA-87) è **attivo e obbligatorio** sul percorso
 Native — le transazioni Native solo classiche vengono rifiutate on-chain
-(chain v3.1.92). Prima che una tx ibrida superi la verifica PQC, la chiave
+(chain v3.1.95). Prima che una tx ibrida superi la verifica PQC, la chiave
 pubblica PQC del firmatario deve essere registrata
 (`MsgRegisterPQCKeyV2`), oppure puoi impostare
 `includePqcPublicKey: true` per incorporarla e ottenere la registrazione
