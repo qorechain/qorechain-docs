@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü resmi genesis dosyası, eşler (peers) ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.95** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.97** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
 :::
 
 ## Genel Erişime Açık Uç Noktalar
@@ -55,7 +55,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir.
 
 :::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.94 veya üzeri gerekli
-Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için eşik, üst üste yığılmış iki bağımsız nedenden dolayı **v3.1.94 veya üzeridir**: v3.1.92, aksi takdirde işlem içeren ilk blokta yeniden oynatmayı (replay) durduran bir gaz ölçüm hatasını düzeltti ve o zamandan beri ana ağ, v3.1.94 yönetişim (governance) yükseltmesini geçti (emisyon üzerinde 2.122.074 yüksekliğinde uygulanan sabit bir üst sınır) — bu yükseltmenin işleyicisinden yoksun bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.95 mevcut önerilen sürümdür (sürekli bir güvenlik güncellemesi; `minCompatible` değeri `3.1.94`'tür). `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` alanını mevcut eşikle karşılaştırın — manifesto kasıtlı olarak kademeli yayına alınır (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ) ve daha önce sürüm eşiğinin gerisinde kalmıştır.
+Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için eşik, üst üste yığılmış iki bağımsız nedenden dolayı **v3.1.94 veya üzeridir**: v3.1.92, aksi takdirde işlem içeren ilk blokta yeniden oynatmayı (replay) durduran bir gaz ölçüm hatasını düzeltti ve o zamandan beri ana ağ, v3.1.94 yönetişim (governance) yükseltmesini geçti (emisyon üzerinde 2.122.074 yüksekliğinde uygulanan sabit bir üst sınır) — bu yükseltmenin işleyicisinden yoksun bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.97 mevcut önerilen sürümdür (sürekli bir güvenlik güncellemesi; `minCompatible` değeri `3.1.94`'tür). `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` alanını mevcut eşikle karşılaştırın — manifesto kasıtlı olarak kademeli yayına alınır (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ) ve daha önce sürüm eşiğinin gerisinde kalmıştır.
 :::
 
 ### Kaynak koddan derleme
@@ -254,7 +254,7 @@ http://localhost:1317
 | ----------------- | --------------------------------------- |
 | Zincir kimliği     | `qorechain-vladi`                      |
 | EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
-| Zincir sürümü      | v3.1.95                                |
+| Zincir sürümü      | v3.1.97                                |
 | Canlıya geçiş tarihi | 7 Haziran 2026 23:59 UTC             |
 | Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
 | Asgari gaz fiyatı  | `0.1uqor`                              |

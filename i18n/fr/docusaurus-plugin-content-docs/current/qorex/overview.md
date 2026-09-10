@@ -63,13 +63,13 @@ Les approbations des stores arrivent à des moments différents, la version ci-d
 
 | Plateforme | Version disponible |
 |---|---|
-| Android | 1.0.8 |
-| iOS | 1.0.8 |
+| Android | 1.0.9 |
+| iOS | 1.0.9 |
 | Firefox | 0.2.6 |
 | Safari (macOS) | 1.6, intégrant l'extension 0.2.6 |
 | Chrome | Est resté bloqué derrière un long examen du store jusqu'à fin août — consultez directement la [fiche du Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pour connaître sa version actuelle plutôt que de se fier à un numéro indiqué ici |
 
-Les versions 1.0.8 / 0.2.6 ont ajouté le **déplacement de QOR déjà stakés entre validateurs** (redélégation) sans attendre les 21 jours de déblocage — voir [Déplacer un stake entre validateurs](/qorex/portfolio-and-staking#move-stake).
+Les versions 1.0.8 / 0.2.6 ont ajouté le **déplacement de QOR déjà stakés entre validateurs** (redélégation) sans attendre les 21 jours de déblocage — voir [Déplacer un stake entre validateurs](/qorex/portfolio-and-staking#move-stake). **1.0.9** (mobile uniquement) a corrigé un bug où un compte financé pouvait momentanément disparaître de « Vos comptes » — voir [Dépannage](/qorex/troubleshooting) — et a amélioré l'affichage et la saisie des montants.
 
 Cette page décrit l'ensemble des fonctionnalités actuel de QoreX — un store qui sert encore une version plus ancienne rattrapera son retard automatiquement, sans aucune action de votre part.
 :::

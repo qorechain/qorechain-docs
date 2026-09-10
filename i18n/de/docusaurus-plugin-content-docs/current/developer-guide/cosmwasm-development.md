@@ -10,7 +10,18 @@ sidebar_position: 3
 QoreChain unterstützt **CosmWasm**-Smart-Contracts und ermöglicht es Entwicklern, sichere, sandboxed Programme in Rust zu schreiben, die zu WebAssembly kompiliert werden. CosmWasm-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, live seit dem 7. Juni 2026, auf dem die Chain-Version **v3.1.95** läuft. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, live seit dem 7. Juni 2026, auf dem die Chain-Version **v3.1.97** läuft. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet.
+:::
+
+:::caution Code-Upload und Instanziierung erfordern derzeit eine explizite Berechtigung
+Zum Zeitpunkt der Erstellung dieses Dokuments sind `code_upload_access` und `instantiate_default_permission` sowohl im **Mainnet als auch im Testnet** auf **`Nobody`** gesetzt — das bedeutet, `MsgStoreCode` und `MsgInstantiateContract` stehen standardmäßig nicht beliebigen Accounts offen, im Einklang mit einer branchenweiten CosmWasm-Sicherheitswarnung. Sie benötigen eine Governance-Entscheidung, um Ihrem Account (oder einer bestimmten Adressliste) die Upload-/Instanziierungsberechtigung zu erteilen, bevor die untenstehenden Schritte gelingen — prüfen Sie zunächst die aktuellen Live-Parameter, da genau diese Einstellung durch Governance geändert werden kann:
+
+```bash
+qorechaind query wasm params
+# or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
+```
+
+Diese Einschränkung betrifft bereits instanziierte Contracts nicht — `execute` und `query` gegen einen bestehenden Contract funktionieren unabhängig von dieser Einstellung normal.
 :::
 
 ---

@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Historique des versions
 
-Historique public des versions de QoreChain. La dernière version est **v3.1.95**, en cours d'exécution sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) suit les versions de pré-publication.
+Historique public des versions de QoreChain. La dernière version taguée est **v3.1.97**, en cours d'exécution sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) suit les versions de pré-publication.
 
 :::note
-Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les entrées `v1.x` antérieures sont conservées comme trace historique de la lignée de versions testnet qui a précédé le mainnet.
+Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les entrées `v1.x` antérieures sont conservées comme trace historique de la lignée de versions testnet qui a précédé le mainnet. Le manifeste de version ([Se connecter au mainnet](/getting-started/connecting-to-mainnet)) est promu séparément du tag et peut avoir un décalage par rapport à celui-ci — vérifiez-le directement pour savoir ce qu'une nouvelle installation télécharge réellement.
 :::
 
 ---
 
-## v3.1.95 — Durcissement de l'EVM Cosmos (version actuelle)
+## v3.1.96 + v3.1.97 — Verrouillage de l'accès CosmWasm
+
+**Axe de la version :** Fermer le téléversement et l'instanciation permissionless de code de contrat, suite à un avis de sécurité CosmWasm à l'échelle de l'industrie.
+
+* **Le téléversement et l'instanciation de contrats nécessitent désormais une permission explicite.** `code_upload_access` et `instantiate_default_permission` sont réglés sur `Nobody` sur le mainnet comme sur le testnet — vérifié en production, indépendamment de celui de ces deux tags qu'exécute un nœud donné, puisqu'il s'agit d'un paramètre on-chain plutôt que d'une règle appliquée seulement par les binaires les plus récents. Voir [Développement CosmWasm](/developer-guide/cosmwasm-development) pour ce que cela signifie si vous développez un contrat. Les contrats déjà instanciés ne sont pas affectés — `execute` et `query` fonctionnent comme avant.
+* **Builds de version à adresse indépendante de la position (PIE)**, conformément aux recommandations de durcissement du même avis, de sorte que l'adresse mémoire qu'un exploit devrait deviner est randomisée par processus. Les binaires à liaison dynamique n'ont nécessité qu'un seul indicateur de build ; vérifié comme n'affectant pas l'état.
+
+## v3.1.95 — Durcissement de l'EVM Cosmos
 
 **Axe de la version :** Mise à jour de sécurité progressive de la bibliothèque de comptabilité des soldes EVM.
 

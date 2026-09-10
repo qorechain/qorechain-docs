@@ -25,6 +25,7 @@ Common questions and quick fixes for the QoreX app and extension.
 | **Testnet badge showing** | Settings → **"Use testnet (developers)"** is on. Turn it off to return to mainnet. |
 | **Swap button is disabled** | Expected for now — Swap turns on automatically once pool liquidity is available; no app update is needed. |
 | **I uninstalled the app / removed the extension and now see no wallet** | The vault lived only on that device or in that browser. If you had backed up your 24-word phrase, restore with it. If you had set up [social recovery](/qorex/security-and-recovery#social-recovery), start a recovery with your guardians. Without either, the wallet cannot be recovered — see [Back up now](/qorex/security-and-recovery#back-up-now) to protect any new wallet immediately. |
+| **A funded account disappeared from "Your accounts"** | Nothing is lost — every account re-derives from your recovery phrase, so this is a display issue, not data loss. This was a real, now-fixed bug on mobile builds before **1.0.9**: a momentary failed read from the device's secure storage (most likely right at unlock) could show a shortened account list. Update to 1.0.9 or later; if you're already current and this happens, closing and reopening the app should bring it back — tapping "add an account" would create a **new** one rather than restore the missing one, so avoid that until the existing account reappears. |
 
 ## Still stuck?
 

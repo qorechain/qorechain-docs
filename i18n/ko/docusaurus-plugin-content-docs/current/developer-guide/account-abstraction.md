@@ -10,7 +10,7 @@ sidebar_position: 7
 QoreChain은 `x/abstractaccount` 모듈을 통해 **프로토콜 수준의 계정 추상화**를 제공합니다. 이를 통해 외부 스마트 컨트랙트 인프라 없이도 유연한 인증 규칙, 세션 키, 지출 한도, 소셜 복구 기능을 갖춘 프로그래머블 계정을 사용할 수 있습니다.
 
 :::note
-아래 명령어는 2026년 6월 7일부터 운영 중이며 체인 버전 **v3.1.95**를 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 테스트넷을 사용하려면 `--chain-id qorechain-diana`로 대체하십시오.
+아래 명령어는 2026년 6월 7일부터 운영 중이며 체인 버전 **v3.1.97**을 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 테스트넷을 사용하려면 `--chain-id qorechain-diana`로 대체하십시오.
 :::
 
 ## 개요
@@ -385,3 +385,4 @@ curl -X POST http://localhost:8545 \
 * [검증자 노드 운영](/developer-guide/running-a-validator) — 검증자 노드 설정 및 운영
 * [EVM 개발](/developer-guide/evm-development) — Solidity dApp과 추상 계정 통합
 * [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — 추상 계정을 활용한 크로스-VM 메시징
+

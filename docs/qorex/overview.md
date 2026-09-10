@@ -63,13 +63,13 @@ Store approvals land at different times, so the version below can differ briefly
 
 | Platform | Live version |
 |---|---|
-| Android | 1.0.8 |
-| iOS | 1.0.8 |
+| Android | 1.0.9 |
+| iOS | 1.0.9 |
 | Firefox | 0.2.6 |
 | Safari (macOS) | 1.6, carrying extension 0.2.6 |
 | Chrome | Had been stuck behind a long store review as of late August — check the [Chrome Web Store listing](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) directly for its current version rather than trusting a number here |
 
-1.0.8 / 0.2.6 added **moving staked QOR between validators** (redelegate) without the 21-day unbonding wait — see [Move stake between validators](/qorex/portfolio-and-staking#move-stake).
+1.0.8 / 0.2.6 added **moving staked QOR between validators** (redelegate) without the 21-day unbonding wait — see [Move stake between validators](/qorex/portfolio-and-staking#move-stake). **1.0.9** (mobile only) fixed a bug where a funded account could momentarily disappear from "Your accounts" — see [Troubleshooting](/qorex/troubleshooting) — and improved how amounts are displayed and typed.
 
 This page describes QoreX's current feature set — a store still serving an older build will catch up automatically with no action from you.
 :::

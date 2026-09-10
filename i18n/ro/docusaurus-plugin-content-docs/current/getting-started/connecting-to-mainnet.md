@@ -10,7 +10,7 @@ sidebar_position: 3
 Alătură-te mainnet-ului live QoreChain Vladi configurându-ți nodul cu fișierul genesis oficial, peers și setările de rețea.
 
 :::note
-Această pagină acoperă mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), live din **7 iunie 2026 23:59 UTC**, rulând versiunea de chain **v3.1.95** pe Cosmos SDK v0.53. Pentru testnet-ul **`qorechain-diana`** (EVM chain ID **9800**), vezi [Conectarea la Testnet](/getting-started/connecting-to-testnet) și repetă configurarea acolo înainte de a trece live.
+Această pagină acoperă mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), live din **7 iunie 2026 23:59 UTC**, rulând versiunea de chain **v3.1.97** pe Cosmos SDK v0.53. Pentru testnet-ul **`qorechain-diana`** (EVM chain ID **9800**), vezi [Conectarea la Testnet](/getting-started/connecting-to-testnet) și repetă configurarea acolo înainte de a trece live.
 :::
 
 ## Endpoint-uri publice
@@ -55,7 +55,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 Pachetul conține `qorechaind` plus bibliotecile partajate necesare (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
 :::caution Menține-ți nodul actualizat — v3.1.94 sau o versiune mai nouă este necesară pentru o sincronizare de la zero
-Nodurile complete trebuie să urmărească versiunea de chain live a rețelei — instalează întotdeauna binarul indicat de manifest, nu fixa unul vechi. Pragul pentru un nod care se alătură de la zero (din genesis) sau care se recuperează după o oprire este **v3.1.94 sau o versiune mai nouă**, din două motive independente, care se cumulează: v3.1.92 a remediat un bug de gas-metering care altfel oprește replay-ul la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pentru emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acestui upgrade se oprește din nou încercând să facă replay peste aceeași înălțime. v3.1.95 este versiunea recomandată curentă (o actualizare de securitate incrementală; `minCompatible` este `3.1.94`). Compară întotdeauna câmpul `"version"` al manifestului cu pragul curent înainte de a avea încredere în `binary.url` — manifestul este promovat în mod deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas în urma pragului de versiune în trecut.
+Nodurile complete trebuie să urmărească versiunea de chain live a rețelei — instalează întotdeauna binarul indicat de manifest, nu fixa unul vechi. Pragul pentru un nod care se alătură de la zero (din genesis) sau care se recuperează după o oprire este **v3.1.94 sau o versiune mai nouă**, din două motive independente, care se cumulează: v3.1.92 a remediat un bug de gas-metering care altfel oprește replay-ul la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pentru emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acestui upgrade se oprește din nou încercând să facă replay peste aceeași înălțime. v3.1.97 este versiunea recomandată curentă (actualizări de securitate continue; `minCompatible` este `3.1.94`). Compară întotdeauna câmpul `"version"` al manifestului cu pragul curent înainte de a avea încredere în `binary.url` — manifestul este promovat în mod deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas în urma pragului de versiune în trecut.
 :::
 
 ### Construire din sursă
@@ -254,7 +254,7 @@ http://localhost:1317
 | ------------------ | --------------------------------------- |
 | Chain ID           | `qorechain-vladi`                      |
 | EVM chain ID       | `9801` (hex `0x2649`)                  |
-| Versiune de chain  | v3.1.95                                |
+| Versiune de chain  | v3.1.97                                |
 | Live din           | 7 iunie 2026 23:59 UTC                 |
 | Token              | QOR (`uqor`, 10^6 micro-unități = 1 QOR) |
 | Preț minim gas     | `0.1uqor`                              |

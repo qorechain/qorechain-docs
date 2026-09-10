@@ -63,13 +63,13 @@ Store-Freigaben treffen zu unterschiedlichen Zeiten ein, daher kann sich die unt
 
 | Plattform | Live-Version |
 |---|---|
-| Android | 1.0.8 |
-| iOS | 1.0.8 |
+| Android | 1.0.9 |
+| iOS | 1.0.9 |
 | Firefox | 0.2.6 |
 | Safari (macOS) | 1.6, mit Erweiterung 0.2.6 |
 | Chrome | Steckte Ende August in einer längeren Store-Prüfung fest — prüfe die aktuelle Version direkt im [Chrome Web Store-Eintrag](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg), statt dich auf eine hier genannte Zahl zu verlassen |
 
-1.0.8 / 0.2.6 fügten das **Verschieben von gestaktem QOR zwischen Validatoren** (Redelegate) hinzu, ohne die 21-tägige Unbonding-Wartezeit — siehe [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake).
+1.0.8 / 0.2.6 fügten das **Verschieben von gestaktem QOR zwischen Validatoren** (Redelegate) hinzu, ohne die 21-tägige Unbonding-Wartezeit — siehe [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake). **1.0.9** (nur mobil) behob einen Fehler, bei dem ein finanziertes Konto kurzzeitig aus „Deine Konten" verschwinden konnte — siehe [Fehlerbehebung](/qorex/troubleshooting) — und verbesserte die Anzeige und Eingabe von Beträgen.
 
 Diese Seite beschreibt den aktuellen Funktionsumfang von QoreX — ein Store, der noch eine ältere Version ausliefert, wird automatisch aktualisiert, ohne dass du etwas tun musst.
 :::

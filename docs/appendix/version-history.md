@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.1.95**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest tagged release is **v3.1.97**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
 
 :::note
-Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet.
+Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
 :::
 
 ---
 
-## v3.1.95 — Cosmos EVM Hardening (Current Release)
+## v3.1.96 + v3.1.97 — CosmWasm Access Lockdown
+
+**Release focus:** Close permissionless contract code upload and instantiation, following an industry-wide CosmWasm security advisory.
+
+* **Contract upload and instantiation now require explicit permission.** `code_upload_access` and `instantiate_default_permission` are set to `Nobody` on both mainnet and testnet — verified live, independent of which of these two tags a given node is running, since it's an on-chain parameter rather than something only the newer binaries enforce. See [CosmWasm Development](/developer-guide/cosmwasm-development) for what this means if you're building a contract. Already-instantiated contracts are unaffected — `execute` and `query` work as before.
+* **Position-independent (PIE) release builds**, per the same advisory's hardening guidance, so the memory address an exploit would need to guess is randomized per process. Dynamically linked binaries only needed one build flag; verified not to be state-breaking.
+
+## v3.1.95 — Cosmos EVM Hardening
 
 **Release focus:** Rolling security update to the EVM balance-accounting library.
 

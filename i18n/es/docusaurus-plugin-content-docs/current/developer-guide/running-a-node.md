@@ -27,7 +27,7 @@ Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha
 :::
 
 :::caution Se requiere v3.1.94 o posterior para un nodo que se une desde cero
-Un nodo que sincroniza desde el génesis o reproduce desde un archivo/snapshot debe estar en **v3.1.94 o posterior**, por dos razones acumuladas: v3.1.92 corrigió un error de medición de gas que de otro modo detiene la reproducción en el primer bloque que contenga una transacción, y mainnet ya ha superado la actualización de gobernanza v3.1.94 (un tope máximo de emisión, aplicado en la altura 2,122,074) — un nodo sin el manejador de esa actualización se detiene de nuevo al intentar reproducir más allá de esa misma altura. v3.1.95 es la versión recomendada actual (una actualización de seguridad continua, sin ruptura de consenso); `minCompatible` es `3.1.94`. El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje) y anteriormente ha ido por detrás de este mínimo — comprueba su campo `"version"` antes de confiar en `binary.url`, y recurre a los [lanzamientos de qorechain-core en GitHub](https://github.com/qorechain/qorechain-core/releases) o a compilar desde el código fuente si va por detrás.
+Un nodo que sincroniza desde el génesis o reproduce desde un archivo/snapshot debe estar en **v3.1.94 o posterior**, por dos razones acumuladas: v3.1.92 corrigió un error de medición de gas que de otro modo detiene la reproducción en el primer bloque que contenga una transacción, y mainnet ya ha superado la actualización de gobernanza v3.1.94 (un tope máximo de emisión, aplicado en la altura 2,122,074) — un nodo sin el manejador de esa actualización se detiene de nuevo al intentar reproducir más allá de esa misma altura. v3.1.97 es la versión recomendada actual (una actualización de seguridad continua, sin ruptura de consenso); `minCompatible` es `3.1.94`. El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje) y anteriormente ha ido por detrás de este mínimo — comprueba su campo `"version"` antes de confiar en `binary.url`, y recurre a los [lanzamientos de qorechain-core en GitHub](https://github.com/qorechain/qorechain-core/releases) o a compilar desde el código fuente si va por detrás.
 :::
 
 ---
@@ -71,19 +71,19 @@ Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue de solo nodo con Docker Compose. Todavía no hay una imagen `qorechaind` publicada públicamente — compila una tú mismo a partir del `Dockerfile` del repositorio y etiquétala con la versión activa de la cadena (**v3.1.95** en mainnet), luego monta un volumen persistente para los datos de la cadena:
+Un despliegue de solo nodo con Docker Compose. Todavía no hay una imagen `qorechaind` publicada públicamente — compila una tú mismo a partir del `Dockerfile` del repositorio y etiquétala con la versión activa de la cadena (**v3.1.97** en mainnet), luego monta un volumen persistente para los datos de la cadena:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.95** en mainnet) y sigue los lanzamientos oficiales para las actualizaciones coordinadas.
+1. **Fija la versión de la cadena.** Ejecuta la etiqueta activa (**v3.1.97** en mainnet) y sigue los lanzamientos oficiales para las actualizaciones coordinadas.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 

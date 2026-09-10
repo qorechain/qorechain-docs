@@ -10,7 +10,18 @@ sidebar_position: 3
 QoreChain prend en charge les contrats intelligents **CosmWasm**, permettant aux développeurs d'écrire des programmes sécurisés et isolés (sandboxed) en Rust qui compilent vers WebAssembly. Les contrats CosmWasm s'exécutent aux côtés des programmes EVM et SVM au sein de l'architecture triple-VM de QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, actif depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.95**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, actif depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.97**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
+:::
+
+:::caution Le téléversement et l'instanciation de code nécessitent actuellement une permission explicite
+Au moment de la rédaction, `code_upload_access` et `instantiate_default_permission` sont tous deux définis sur **`Nobody`** à la fois sur **le mainnet et le testnet** — ce qui signifie que `MsgStoreCode` et `MsgInstantiateContract` ne sont pas ouverts par défaut à des comptes arbitraires, suite à une alerte de sécurité CosmWasm à l'échelle de l'industrie. Vous devrez obtenir de la gouvernance qu'elle accorde à votre compte (ou à une liste d'adresses spécifique) la permission de téléversement/instanciation avant que les étapes ci-dessous ne puissent réussir — vérifiez d'abord les paramètres en vigueur, car c'est exactement le type de réglage que la gouvernance peut modifier :
+
+```bash
+qorechaind query wasm params
+# or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
+```
+
+Cette restriction n'affecte pas les contrats déjà instanciés — `execute` et `query` sur un contrat existant fonctionnent normalement quel que soit ce réglage.
 :::
 
 ---

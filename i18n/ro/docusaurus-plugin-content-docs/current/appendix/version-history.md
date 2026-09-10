@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Cea mai recentă versiune este **v3.1.95**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) urmărește build-urile pre-lansare.
+Istoricul public al versiunilor QoreChain. Cea mai recentă versiune etichetată este **v3.1.97**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) urmărește build-urile pre-lansare.
 
 :::note
-Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul.
+Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
 :::
 
 ---
 
-## v3.1.95 — Consolidare EVM Cosmos (versiunea curentă)
+## v3.1.96 + v3.1.97 — Blocarea accesului CosmWasm
+
+**Focus lansare:** Închiderea încărcării și instanțierii permisionless de cod de contract, în urma unui avertisment de securitate CosmWasm la nivel de industrie.
+
+* **Încărcarea și instanțierea contractelor necesită acum permisiune explicită.** `code_upload_access` și `instantiate_default_permission` sunt setate la `Nobody` atât pe mainnet, cât și pe testnet — verificat live, indiferent de care dintre aceste două taguri rulează un anumit nod, deoarece este un parametru on-chain, nu ceva aplicat doar de binarele mai noi. Vezi [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) pentru ce înseamnă acest lucru dacă dezvoltați un contract. Contractele deja instanțiate rămân neafectate — `execute` și `query` funcționează ca înainte.
+* **Build-uri de lansare cu poziție independentă (PIE)**, conform aceluiași ghid de întărire (hardening) din avertisment, astfel încât adresa de memorie pe care ar trebui să o ghicească un exploit este randomizată per proces. Binarele legate dinamic au avut nevoie doar de un flag de build; verificat că nu rupe starea (state-breaking).
+
+## v3.1.95 — Consolidare EVM Cosmos
 
 **Focus lansare:** Actualizare de securitate în flux (rolling) pentru biblioteca de contabilizare a soldurilor EVM.
 

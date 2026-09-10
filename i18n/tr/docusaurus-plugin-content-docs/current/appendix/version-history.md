@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. En son sürüm **v3.1.95**'tir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) yayın öncesi derlemeleri takip eder.
+QoreChain için genel sürüm geçmişi. En son etiketlenen sürüm **v3.1.97**'dir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) yayın öncesi derlemeleri takip eder.
 
 :::note
-Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır.
+Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
 :::
 
 ---
 
-## v3.1.95 — Cosmos EVM Sertleştirmesi (Mevcut Sürüm)
+## v3.1.96 + v3.1.97 — CosmWasm Erişim Kilidi
+
+**Sürüm odağı:** Endüstri genelindeki bir CosmWasm güvenlik uyarısının ardından, izinsiz sözleşme kodu yükleme ve örnekleme (instantiation) kapatılıyor.
+
+* **Sözleşme yükleme ve örnekleme artık açık izin gerektiriyor.** `code_upload_access` ve `instantiate_default_permission`, hem ana ağda hem de test ağında `Nobody` olarak ayarlandı — canlı olarak doğrulandı, bu iki etiketten hangisinin bir düğümde çalıştığından bağımsız olarak, çünkü bu yalnızca daha yeni ikili dosyaların uyguladığı bir şey değil, zincir üzerinde bir parametre. Bir sözleşme geliştiriyorsanız bunun ne anlama geldiği için bkz. [CosmWasm Geliştirme](/developer-guide/cosmwasm-development). Zaten örneklenmiş sözleşmeler etkilenmez — `execute` ve `query` eskisi gibi çalışır.
+* Aynı uyarının sertleştirme rehberliğine uygun olarak **konum-bağımsız (PIE) yayın derlemeleri**, böylece bir istismarın tahmin etmesi gereken bellek adresi süreç başına rastgeleleştirilir. Dinamik bağlantılı ikili dosyalar yalnızca bir derleme bayrağına ihtiyaç duydu; durumu bozmadığı doğrulandı.
+
+## v3.1.95 — Cosmos EVM Sertleştirmesi
 
 **Sürüm odağı:** EVM bakiye muhasebesi kütüphanesine yönelik kademeli güvenlik güncellemesi.
 

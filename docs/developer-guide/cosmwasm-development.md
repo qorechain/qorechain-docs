@@ -10,7 +10,18 @@ sidebar_position: 3
 QoreChain supports **CosmWasm** smart contracts, enabling developers to write secure, sandboxed programs in Rust that compile to WebAssembly. CosmWasm contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.95**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.97**. Substitute `--chain-id qorechain-diana` for the testnet.
+:::
+
+:::caution Code upload and instantiation currently require explicit permission
+As of this writing, `code_upload_access` and `instantiate_default_permission` are both set to **`Nobody`** on **both mainnet and testnet** — meaning `MsgStoreCode` and `MsgInstantiateContract` are not open to arbitrary accounts by default, following an industry-wide CosmWasm security advisory. You'll need governance to grant your account (or a specific address list) upload/instantiate permission before the steps below will succeed — check the live parameters first, since this is exactly the kind of setting governance can change:
+
+```bash
+qorechaind query wasm params
+# or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
+```
+
+This restriction doesn't affect already-instantiated contracts — `execute` and `query` against an existing contract work normally regardless of this setting.
 :::
 
 ---

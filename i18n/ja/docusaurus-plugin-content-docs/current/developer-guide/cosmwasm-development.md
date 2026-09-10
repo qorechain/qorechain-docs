@@ -10,7 +10,18 @@ sidebar_position: 3
 QoreChainは**CosmWasm**スマートコントラクトをサポートしており、開発者はRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルできます。CosmWasmコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（チェーンバージョン**v3.1.95**）を対象としています。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（チェーンバージョン**v3.1.97**）を対象としています。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
+:::
+
+:::caution コードのアップロードとインスタンス化には現在、明示的な権限が必要です
+本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、業界全体のCosmWasmセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください。
+
+```bash
+qorechaind query wasm params
+# or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
+```
+
+この制限は、既にインスタンス化済みのコントラクトには影響しません — 既存のコントラクトに対する `execute` と `query` は、この設定にかかわらず通常どおり動作します。
 :::
 
 ---

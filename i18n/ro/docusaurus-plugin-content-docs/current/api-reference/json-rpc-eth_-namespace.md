@@ -17,7 +17,7 @@ QoreChain implementează o interfață JSON-RPC complet compatibilă cu EVM, per
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, activ pe versiunea de lanț **v3.1.95**) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți; înlocuiește-le cu endpoint-ul de mainnet sau testnet al furnizorului tău pentru acces la distanță.
+Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, activ pe versiunea de lanț **v3.1.97**) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți; înlocuiește-le cu endpoint-ul de mainnet sau testnet al furnizorului tău pentru acces la distanță.
 :::
 
 ## Spații de nume acceptate
@@ -51,14 +51,14 @@ Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM c
 ## Metode web3_
 
 | Metodă               | Parametri    | Descriere                                |
-| -------------------- | ------------ | ---------------------------------------- |
+| -------------------- | ------------ | ----------------------------------------- |
 | `web3_clientVersion` | niciunul     | Returnează șirul cu versiunea clientului |
 | `web3_sha3`          | `data` (hex) | Returnează hash-ul Keccak-256 al intrării |
 
 ## Metode net_
 
 | Metodă          | Parametri  | Descriere                                   |
-| --------------- | ---------- | ------------------------------------------- |
+| --------------- | ---------- | -------------------------------------------- |
 | `net_version`   | niciunul   | Returnează ID-ul rețelei                    |
 | `net_listening` | niciunul   | Returnează `true` dacă nodul ascultă        |
 | `net_peerCount` | niciunul   | Returnează numărul de peers conectați (hex) |

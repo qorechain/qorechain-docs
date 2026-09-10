@@ -27,7 +27,7 @@ sidebar_position: 10
 :::
 
 :::caution 새로 참여하는 노드는 v3.1.94 이상 필요
-제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 두 가지 이유가 겹쳐서 **v3.1.94 이상**이어야 합니다. 첫째, v3.1.92에서 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈추는 가스 미터링 버그가 수정되었습니다. 둘째, 메인넷은 그 이후 v3.1.94 거버넌스 업그레이드(발행량 상한을 높이 2,122,074에서 적용)를 통과했습니다 — 이 업그레이드의 핸들러가 없는 노드는 동일한 높이를 리플레이하려 할 때 다시 멈춥니다. v3.1.95가 현재 권장 버전이며(합의를 깨지 않는 지속적인 보안 업데이트), `minCompatible`은 `3.1.94`입니다. 매니페스트는 의도적으로 단계적으로 승격되며(테스트넷 먼저, 숙성 기간 후 메인넷) 과거에 이 최소 기준보다 뒤처진 적이 있습니다 — `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하고, 뒤처져 있다면 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)를 사용하거나 소스에서 직접 빌드하세요.
+제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 두 가지 이유가 겹쳐서 **v3.1.94 이상**이어야 합니다. 첫째, v3.1.92에서 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈추는 가스 미터링 버그가 수정되었습니다. 둘째, 메인넷은 그 이후 v3.1.94 거버넌스 업그레이드(발행량 상한을 높이 2,122,074에서 적용)를 통과했습니다 — 이 업그레이드의 핸들러가 없는 노드는 동일한 높이를 리플레이하려 할 때 다시 멈춥니다. v3.1.97이 현재 권장 버전이며(합의를 깨지 않는 지속적인 보안 업데이트), `minCompatible`은 `3.1.94`입니다. 매니페스트는 의도적으로 단계적으로 승격되며(테스트넷 먼저, 숙성 기간 후 메인넷) 과거에 이 최소 기준보다 뒤처진 적이 있습니다 — `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하고, 뒤처져 있다면 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)를 사용하거나 소스에서 직접 빌드하세요.
 :::
 
 ---
@@ -71,19 +71,19 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 스토어는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.95**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
+Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.97**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## 운영 모범 사례
 
-1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.95**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
+1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.97**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
 
 2. **이중화된 노드를 운영하세요.** 로드 밸런서 뒤에 최소 두 대의 노드를 운영해 단일 노드의 재시작이나 재동기화가 통합 트래픽을 중단시키지 않도록 하세요.
 

@@ -27,7 +27,7 @@ The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 +
 :::
 
 :::caution v3.1.94 or later required for a node joining fresh
-A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.94 or later**, for two stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.95 is the current recommended version (a rolling, non-consensus-breaking security update); `minCompatible` is `3.1.94`. The manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind this floor — check its `"version"` field before trusting `binary.url`, and fall back to the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) or building from source if it's behind.
+A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.94 or later**, for two stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.97 is the current recommended version (rolling, non-consensus-breaking security updates); `minCompatible` is `3.1.94`. The manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind this floor — check its `"version"` field before trusting `binary.url`, and fall back to the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) or building from source if it's behind.
 :::
 
 ---
@@ -71,19 +71,19 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.95** on mainnet), then mount a persistent volume for chain data:
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.97** on mainnet), then mount a persistent volume for chain data:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.95** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the live tag (**v3.1.97** on mainnet) and track official releases for coordinated upgrades.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

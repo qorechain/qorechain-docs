@@ -27,7 +27,7 @@ Manifestonun alanları şunları içerir: `binary` (url + sha256), `genesis` (ur
 :::
 
 :::caution Yeni katılan bir düğüm için v3.1.94 veya üzeri gerekir
-Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün, üst üste binen iki nedenden dolayı **v3.1.94 veya üzeri** bir sürümde olması gerekir: v3.1.92, aksi halde yeniden oynatmayı işlem içeren ilk blokta durduran bir gaz ölçümleme (gas-metering) hatasını düzeltti ve mainnet o zamandan beri v3.1.94 yönetişim (governance) yükseltmesini geçirdi (2.122.074 yüksekliğinde uygulanan, emisyon üzerinde sabit bir tavan) — bu yükseltmenin işleyicisine (handler) sahip olmayan bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.95, güncel önerilen sürümdür (konsensüsü bozmayan, sürekli bir güvenlik güncellemesi); `minCompatible` değeri `3.1.94`'tür. Manifesto kasıtlı olarak kademeli yükseltilir (önce testnet'e, ardından bir dinlenme/soak süresinin sonunda mainnet'e) ve daha önce bu tabanın gerisinde kalmıştır — `binary.url`'e güvenmeden önce manifestonun `"version"` alanını kontrol edin ve gerisinde kalmışsa [qorechain-core GitHub sürümlerine](https://github.com/qorechain/qorechain-core/releases) ya da kaynaktan derlemeye başvurun.
+Genesis'ten senkronize olan veya bir arşiv/anlık görüntüden yeniden oynatma (replay) yapan bir düğümün, üst üste binen iki nedenden dolayı **v3.1.94 veya üzeri** bir sürümde olması gerekir: v3.1.92, aksi halde yeniden oynatmayı işlem içeren ilk blokta durduran bir gaz ölçümleme (gas-metering) hatasını düzeltti ve mainnet o zamandan beri v3.1.94 yönetişim (governance) yükseltmesini geçirdi (2.122.074 yüksekliğinde uygulanan, emisyon üzerinde sabit bir tavan) — bu yükseltmenin işleyicisine (handler) sahip olmayan bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.97, güncel önerilen sürümdür (konsensüsü bozmayan, sürekli bir güvenlik güncellemesi); `minCompatible` değeri `3.1.94`'tür. Manifesto kasıtlı olarak kademeli yükseltilir (önce testnet'e, ardından bir dinlenme/soak süresinin sonunda mainnet'e) ve daha önce bu tabanın gerisinde kalmıştır — `binary.url`'e güvenmeden önce manifestonun `"version"` alanını kontrol edin ve gerisinde kalmışsa [qorechain-core GitHub sürümlerine](https://github.com/qorechain/qorechain-core/releases) ya da kaynaktan derlemeye başvurun.
 :::
 
 ---
@@ -71,19 +71,19 @@ NVMe SSD şiddetle önerilir — zincir durumu (state) ile EVM/SVM depoları yo�
 
 ### Docker Compose
 
-Docker Compose ile yalnızca düğüm dağıtımı. Şu an çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok — kendi imajınızı depodaki `Dockerfile`'dan derleyip canlı zincir sürümüne (mainnet'te **v3.1.95**) etiketleyin, ardından zincir verisi için kalıcı bir volume bağlayın:
+Docker Compose ile yalnızca düğüm dağıtımı. Şu an çekilebilecek genele açık, yayınlanmış bir `qorechaind` imajı yok — kendi imajınızı depodaki `Dockerfile`'dan derleyip canlı zincir sürümüne (mainnet'te **v3.1.97**) etiketleyin, ardından zincir verisi için kalıcı bir volume bağlayın:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operasyonel En İyi Uygulamalar
 
-1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.95**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
+1. **Zincir sürümünü sabitleyin.** Canlı etiketi çalıştırın (mainnet'te **v3.1.97**) ve koordineli yükseltmeler için resmi sürümleri takip edin.
 
 2. **Yedekli düğümler çalıştırın.** Tek bir yeniden başlatma veya yeniden senkronizasyonun entegrasyon trafiğini kesintiye uğratmaması için bir yük dengeleyicinin (load balancer) arkasında en az iki düğüm işletin.
 

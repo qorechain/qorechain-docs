@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.1.95**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
+Cronologia pubblica delle versioni di QoreChain. L'ultima release taggata è la **v3.1.97**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
 
 :::note
-Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet.
+Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet. Il manifest di release ([Connessione alla Mainnet](/getting-started/connecting-to-mainnet)) viene promosso separatamente dal tagging e può essere in ritardo rispetto a un tag di un certo periodo — verificalo direttamente per sapere cosa scarica realmente una nuova installazione.
 :::
 
 ---
 
-## v3.1.95 — Hardening EVM Cosmos (release corrente)
+## v3.1.96 + v3.1.97 — Blocco degli accessi CosmWasm
+
+**Focus della release:** chiudere l'upload e l'istanziazione permissionless del codice contratto, a seguito di un advisory di sicurezza CosmWasm a livello di settore.
+
+* **L'upload e l'istanziazione dei contratti richiedono ora un permesso esplicito.** `code_upload_access` e `instantiate_default_permission` sono impostati su `Nobody` sia su mainnet sia su testnet — verificato live, indipendentemente da quale dei due tag un dato nodo stia eseguendo, poiché si tratta di un parametro on-chain e non di qualcosa che solo i binari più recenti applicano. Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development) per capire cosa significa questo se stai sviluppando un contratto. I contratti già istanziati non sono interessati — `execute` e `query` funzionano come prima.
+* **Build di release a indirizzo di posizione indipendente (PIE)**, secondo le linee guida di hardening dello stesso advisory, così l'indirizzo di memoria che un exploit dovrebbe indovinare viene randomizzato per ogni processo. I binari con linking dinamico hanno richiesto un solo flag di build; verificato che non rompe lo stato.
+
+## v3.1.95 — Hardening EVM Cosmos
 
 **Focus della release:** aggiornamento di sicurezza rolling alla libreria di contabilità dei saldi EVM.
 

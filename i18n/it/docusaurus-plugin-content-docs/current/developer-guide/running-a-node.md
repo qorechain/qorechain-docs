@@ -27,7 +27,7 @@ I campi del manifest includono `binary` (url + sha256), `genesis` (url + sha256 
 :::
 
 :::caution v3.1.94 o successiva richiesta per un nodo che si unisce da zero
-Un nodo che si sincronizza dal genesis o che effettua il replay da un archivio/snapshot deve essere sulla versione **v3.1.94 o successiva**, per due motivi che si sommano: la v3.1.92 ha corretto un bug nel gas-metering che altrimenti blocca il replay al primo blocco contenente una transazione, e la mainnet ha nel frattempo superato l'upgrade di governance v3.1.94 (un tetto massimo fisso sull'emissione, applicato all'altezza 2.122.074) — un nodo privo del gestore di quell'upgrade si blocca di nuovo tentando di rieseguire il replay oltre quella stessa altezza. La v3.1.95 è la versione attualmente consigliata (un aggiornamento di sicurezza continuo, che non rompe il consenso); `minCompatible` è `3.1.94`. Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione) e in passato è rimasto indietro rispetto a questo limite minimo — controlla il campo `"version"` prima di fidarti di `binary.url`, e se è indietro ripiega sulle [release GitHub di qorechain-core](https://github.com/qorechain/qorechain-core/releases) o sulla compilazione dal codice sorgente.
+Un nodo che si sincronizza dal genesis o che effettua il replay da un archivio/snapshot deve essere sulla versione **v3.1.94 o successiva**, per due motivi che si sommano: la v3.1.92 ha corretto un bug nel gas-metering che altrimenti blocca il replay al primo blocco contenente una transazione, e la mainnet ha nel frattempo superato l'upgrade di governance v3.1.94 (un tetto massimo fisso sull'emissione, applicato all'altezza 2.122.074) — un nodo privo del gestore di quell'upgrade si blocca di nuovo tentando di rieseguire il replay oltre quella stessa altezza. La v3.1.97 è la versione attualmente consigliata (aggiornamenti di sicurezza continui, che non rompono il consenso); `minCompatible` è `3.1.94`. Il manifest viene promosso deliberatamente (prima sulla testnet, poi sulla mainnet dopo un periodo di stabilizzazione) e in passato è rimasto indietro rispetto a questo limite minimo — controlla il campo `"version"` prima di fidarti di `binary.url`, e se è indietro ripiega sulle [release GitHub di qorechain-core](https://github.com/qorechain/qorechain-core/releases) o sulla compilazione dal codice sorgente.
 :::
 
 ---
@@ -71,19 +71,19 @@ Un SSD NVMe è vivamente consigliato — lo stato della chain e gli store EVM/SV
 
 ### Docker Compose
 
-Un deployment solo nodo con Docker Compose. Non esiste ancora un'immagine `qorechaind` pubblicata pubblicamente da scaricare — compilala tu stesso a partire dal `Dockerfile` del repository e taggala con la versione live della chain (**v3.1.95** su mainnet), poi monta un volume persistente per i dati della chain:
+Un deployment solo nodo con Docker Compose. Non esiste ancora un'immagine `qorechaind` pubblicata pubblicamente da scaricare — compilala tu stesso a partire dal `Dockerfile` del repository e taggala con la versione live della chain (**v3.1.97** su mainnet), poi monta un volume persistente per i dati della chain:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Best practice operative
 
-1. **Fissa la versione della chain.** Esegui il tag live (**v3.1.95** su mainnet) e segui le release ufficiali per gli aggiornamenti coordinati.
+1. **Fissa la versione della chain.** Esegui il tag live (**v3.1.97** su mainnet) e segui le release ufficiali per gli aggiornamenti coordinati.
 
 2. **Esegui nodi ridondanti.** Gestisci almeno due nodi dietro un load balancer in modo che un singolo riavvio o una risincronizzazione non interrompano il traffico di integrazione.
 

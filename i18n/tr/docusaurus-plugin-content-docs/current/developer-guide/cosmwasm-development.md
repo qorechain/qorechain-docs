@@ -10,7 +10,18 @@ sidebar_position: 3
 QoreChain, geliştiricilerin WebAssembly'ye derlenen güvenli, sandbox'lanmış Rust programları yazmasına olanak tanıyan **CosmWasm** akıllı sözleşmelerini destekler. CosmWasm sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.1.95** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.1.97** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` kullanın.
+:::
+
+:::caution Kod yükleme ve örnekleme şu anda açık izin gerektirir
+Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, sektör genelindeki bir CosmWasm güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır:
+
+```bash
+qorechaind query wasm params
+# or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
+```
+
+Bu kısıtlama, zaten örneklenmiş sözleşmeleri etkilemez — mevcut bir sözleşmeye karşı `execute` ve `query` bu ayardan bağımsız olarak normal şekilde çalışır.
 :::
 
 ---

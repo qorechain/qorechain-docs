@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Historial de versiones
 
-Historial de versiones público de QoreChain. La versión más reciente es **v3.1.95**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
+Historial de versiones público de QoreChain. La versión etiquetada más reciente es **v3.1.97**, en ejecución en la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) sigue las compilaciones previas al lanzamiento.
 
 :::note
-Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet.
+Las entradas siguientes son resúmenes de capacidades de alto nivel. Las entradas anteriores `v1.x` se conservan como registro histórico de la línea de versiones de testnet que precedió a la mainnet. El manifiesto de la versión ([Conexión a mainnet](/getting-started/connecting-to-mainnet)) se publica por separado del etiquetado y puede ir con retraso respecto a un tag durante algún tiempo — consúltelo directamente para saber qué descarga realmente una instalación nueva.
 :::
 
 ---
 
-## v3.1.95 — Endurecimiento de Cosmos EVM (versión actual)
+## v3.1.96 + v3.1.97 — Bloqueo de acceso de CosmWasm
+
+**Enfoque de la versión:** Cerrar la subida e instanciación de código de contratos sin permiso, tras un aviso de seguridad de CosmWasm a nivel de toda la industria.
+
+* **La subida e instanciación de contratos ahora requieren permiso explícito.** `code_upload_access` e `instantiate_default_permission` se establecen en `Nobody` tanto en mainnet como en testnet — verificado en producción, independientemente de cuál de estos dos tags esté ejecutando un nodo dado, ya que es un parámetro en cadena y no algo que solo apliquen los binarios más recientes. Consulte [Desarrollo con CosmWasm](/developer-guide/cosmwasm-development) para saber qué significa esto si está construyendo un contrato. Los contratos ya instanciados no se ven afectados — `execute` y `query` funcionan como antes.
+* **Compilaciones de versión con posición independiente (PIE)**, siguiendo la misma guía de endurecimiento del aviso, de modo que la dirección de memoria que un exploit necesitaría adivinar se aleatoriza por proceso. Los binarios enlazados dinámicamente solo necesitaron un flag de compilación; verificado que no rompe el estado.
+
+## v3.1.95 — Endurecimiento de Cosmos EVM
 
 **Enfoque de la versión:** Actualización de seguridad progresiva de la biblioteca de contabilidad de saldos EVM.
 

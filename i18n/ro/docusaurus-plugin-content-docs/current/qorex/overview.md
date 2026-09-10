@@ -63,13 +63,13 @@ Aprobările din magazine ajung la momente diferite, astfel încât versiunea de 
 
 | Platformă | Versiune activă |
 |---|---|
-| Android | 1.0.8 |
-| iOS | 1.0.8 |
+| Android | 1.0.9 |
+| iOS | 1.0.9 |
 | Firefox | 0.2.6 |
 | Safari (macOS) | 1.6, cu extensia 0.2.6 |
 | Chrome | A rămas blocat într-o evaluare lungă a magazinului, la finalul lunii august — verifică direct [listarea din Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pentru versiunea sa curentă, în loc să te bazezi pe un număr indicat aici |
 
-1.0.8 / 0.2.6 a adăugat **mutarea QOR aflat la staking între validatori** (redelegare) fără cei 21 de zile de așteptare pentru unbonding — vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake).
+1.0.8 / 0.2.6 a adăugat **mutarea QOR aflat la staking între validatori** (redelegare) fără cei 21 de zile de așteptare pentru unbonding — vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake). **1.0.9** (doar mobil) a corectat o eroare prin care un cont alimentat putea dispărea momentan din „Conturile tale" — vezi [Depanare](/qorex/troubleshooting) — și a îmbunătățit modul în care sumele sunt afișate și introduse.
 
 Această pagină descrie setul curent de funcționalități al QoreX — un magazin care încă servește o versiune mai veche se va actualiza automat, fără nicio acțiune din partea ta.
 :::

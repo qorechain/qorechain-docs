@@ -7,15 +7,22 @@ sidebar_position: 3
 
 # Versionshistorie
 
-Öffentliche Versionshistorie für QoreChain. Die aktuelle Version ist **v3.1.95**, im Einsatz auf dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) verfolgt Vorab-Builds.
+Öffentliche Versionshistorie für QoreChain. Die aktuelle getaggte Version ist **v3.1.97**, im Einsatz auf dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) verfolgt Vorab-Builds.
 
 :::note
-Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten.
+Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten. Das Release-Manifest ([Verbindung zum Mainnet](/getting-started/connecting-to-mainnet)) wird separat vom Taggen freigegeben und kann einem Tag zeitlich etwas hinterherhinken — prüfen Sie es direkt, um zu sehen, was eine frische Installation tatsächlich herunterlädt.
 :::
 
 ---
 
-## v3.1.95 — Cosmos-EVM-Härtung (aktuelle Version)
+## v3.1.96 + v3.1.97 — Sperrung des CosmWasm-Zugriffs
+
+**Release-Schwerpunkt:** Schließung des permissionless Contract-Uploads und der Instanziierung, im Anschluss an eine branchenweite CosmWasm-Sicherheitswarnung.
+
+* **Contract-Upload und -Instanziierung erfordern nun eine explizite Berechtigung.** `code_upload_access` und `instantiate_default_permission` sind sowohl auf dem Mainnet als auch auf dem Testnet auf `Nobody` gesetzt — verifiziert live, unabhängig davon, welchen der beiden Tags ein gegebener Node ausführt, da es sich um einen On-Chain-Parameter handelt und nicht um etwas, das nur von den neueren Binaries erzwungen wird. Siehe [CosmWasm-Entwicklung](/developer-guide/cosmwasm-development) dafür, was das für Sie bedeutet, wenn Sie einen Contract entwickeln. Bereits instanziierte Contracts sind davon nicht betroffen — `execute` und `query` funktionieren wie zuvor.
+* **Position-Independent (PIE) Release-Builds**, gemäß der Härtungsvorgabe derselben Warnung, sodass die Speicheradresse, die ein Exploit erraten müsste, pro Prozess randomisiert wird. Dynamisch gelinkte Binaries benötigten dafür nur ein einziges Build-Flag; verifiziert als nicht konsensbrechend.
+
+## v3.1.95 — Cosmos-EVM-Härtung
 
 **Release-Schwerpunkt:** Rollierendes Sicherheitsupdate für die EVM-Guthaben-Buchhaltungsbibliothek.
 

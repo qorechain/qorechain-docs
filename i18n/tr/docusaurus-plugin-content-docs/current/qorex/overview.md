@@ -63,13 +63,13 @@ Mağaza onayları farklı zamanlarda gerçekleşir, bu yüzden aşağıdaki sür
 
 | Platform | Canlı sürüm |
 |---|---|
-| Android | 1.0.8 |
-| iOS | 1.0.8 |
+| Android | 1.0.9 |
+| iOS | 1.0.9 |
 | Firefox | 0.2.6 |
 | Safari (macOS) | 1.6, eklenti 0.2.6 ile birlikte |
 | Chrome | Ağustos sonu itibarıyla uzun bir mağaza incelemesinde bekliyordu — buradaki bir sayıya güvenmek yerine güncel sürümü doğrudan [Chrome Web Store listesinden](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) kontrol edin |
 
-1.0.8 / 0.2.6, 21 günlük unbonding beklemesi olmadan **stake edilmiş QOR'u validatörler arasında taşımayı** (redelege) ekledi — bkz. [Stake'i validatörler arasında taşı](/qorex/portfolio-and-staking#move-stake).
+1.0.8 / 0.2.6, 21 günlük unbonding beklemesi olmadan **stake edilmiş QOR'u validatörler arasında taşımayı** (redelege) ekledi — bkz. [Stake'i validatörler arasında taşı](/qorex/portfolio-and-staking#move-stake). **1.0.9** (yalnızca mobil), fonlanmış bir hesabın "Hesaplarınız" listesinden anlık olarak kaybolduğu bir hatayı düzeltti — bkz. [Sorun Giderme](/qorex/troubleshooting) — ve tutarların gösterilme ve yazılma biçimini iyileştirdi.
 
 Bu sayfa QoreX'in mevcut özellik setini anlatır — hâlâ eski bir sürümü sunan bir mağaza, sizin tarafınızdan hiçbir işlem gerekmeden otomatik olarak yetişecektir.
 :::

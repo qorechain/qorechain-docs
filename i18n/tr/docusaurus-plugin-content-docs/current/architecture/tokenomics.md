@@ -23,7 +23,7 @@ QoreChain, yerel **QOR** token'ı merkeze alan **sabit arzlı** bir ekonomik mod
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.1.95** zincir sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'i (EVM zincir ID **9800**) aynı ekonomik modeli paylaşır.
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.1.97** zincir sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'i (EVM zincir ID **9800**) aynı ekonomik modeli paylaşır.
 :::
 
 ---

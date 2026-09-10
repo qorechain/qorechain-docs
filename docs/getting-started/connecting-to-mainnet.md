@@ -10,7 +10,7 @@ sidebar_position: 3
 Join the live QoreChain Vladi mainnet by configuring your node with the official genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.95** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
+This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026 23:59 UTC** running chain version **v3.1.97** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
 :::
 
 ## Public Endpoints
@@ -55,7 +55,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 The bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
 :::caution Keep your node current — v3.1.94 or later required for a fresh sync
-Full nodes must track the network's live chain version — always install the binary the manifest points to, don't pin an old one. The floor for a node joining fresh (from genesis) or recovering from a halt is **v3.1.94 or later**, for two independent, stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.95 is the current recommended version (a rolling security update; `minCompatible` is `3.1.94`). Always check the manifest's `"version"` field against the current floor before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind the version floor.
+Full nodes must track the network's live chain version — always install the binary the manifest points to, don't pin an old one. The floor for a node joining fresh (from genesis) or recovering from a halt is **v3.1.94 or later**, for two independent, stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.97 is the current recommended version (rolling security updates; `minCompatible` is `3.1.94`). Always check the manifest's `"version"` field against the current floor before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind the version floor.
 :::
 
 ### Build from source
@@ -254,7 +254,7 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Chain version     | v3.1.95                                |
+| Chain version     | v3.1.97                                |
 | Live since        | 7 June 2026 23:59 UTC                  |
 | Token             | QOR (`uqor`, 10^6 micro-units = 1 QOR) |
 | Minimum gas price | `0.1uqor`                              |

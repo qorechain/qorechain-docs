@@ -27,7 +27,7 @@ Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 
 :::
 
 :::caution v3.1.94 sau mai nou necesar pentru un nod care se alătură de la zero
-Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.94 sau mai nou**, din două motive care se cumulează: v3.1.92 a remediat un bug de măsurare a gazului care altfel oprește redarea la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pe emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acelui upgrade se oprește din nou încercând să redea starea dincolo de aceeași înălțime. v3.1.95 este versiunea curentă recomandată (o actualizare de securitate continuă, care nu rupe consensul); `minCompatible` este `3.1.94`. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas anterior în urma acestui prag — verificați câmpul său `"version"` înainte de a avea încredere în `binary.url`, și treceți la [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) sau compilați din sursă dacă este în urmă.
+Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.94 sau mai nou**, din două motive care se cumulează: v3.1.92 a remediat un bug de măsurare a gazului care altfel oprește redarea la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pe emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acelui upgrade se oprește din nou încercând să redea starea dincolo de aceeași înălțime. v3.1.97 este versiunea curentă recomandată (actualizări de securitate continue, care nu rup consensul); `minCompatible` este `3.1.94`. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas anterior în urma acestui prag — verificați câmpul său `"version"` înainte de a avea încredere în `binary.url`, și treceți la [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) sau compilați din sursă dacă este în urmă.
 :::
 
 ---
@@ -71,19 +71,19 @@ Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM 
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.95** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
+O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.97** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
 cd qorechain-core
-docker build -t qorechain-node:v3.1.95 .
+docker build -t qorechain-node:v3.1.97 .
 ```
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.95
+    image: qorechain-node:v3.1.97
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -363,7 +363,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea de lanț.** Rulați tag-ul live (**v3.1.95** pe mainnet) și urmăriți versiunile oficiale pentru upgrade-uri coordonate.
+1. **Fixați versiunea de lanț.** Rulați tag-ul live (**v3.1.97** pe mainnet) și urmăriți versiunile oficiale pentru upgrade-uri coordonate.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 
