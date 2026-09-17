@@ -13,23 +13,28 @@ To earn the [3% light-node reward share](/light-node/rewards-and-monitoring), a 
 
 Registration records your light node on the chain so the protocol knows it exists, what type it is (`sx` or `ux`), and which operator key controls it. Once registered and live, the node becomes eligible for the light-node reward share.
 
-### Generating the registration command
+### Generating the registration commands
 
-The SX edition can print the exact chain command to register this node. Run:
+Registration is made from your **operator address**: a funded `qor1…` account created with `qorechaind` (or any Cosmos wallet), which also receives the rewards. The node's own Dilithium-5 key has no address; it becomes the account's post-quantum key. Put the address in `config.toml` as `operator_address`, then run:
 
 ```bash
 lightnode-sx register
 ```
 
-This reads your operator key from the keyring and prints a ready-to-run `qorechaind` transaction along with your operator address, node type, and version. The command takes two optional flags:
+This reads the node key from the keyring and prints, filled in with your values:
+
+1. **Once only**, the command that attaches the node key to the operator account as its post-quantum key (`qorechaind tx pqc register-key-v2 <pubkey> hybrid --from operator …`), after exporting the key into `qorechaind`'s key directory with `lightnode-sx keys export`. Skip it if the account already has a post-quantum key (`GET /qorechain/pqc/v1/account/<address>` says `found: true`).
+2. The registration itself: `qorechaind tx lightnode register <type> <version> --from operator --generate-only > register.json`, then `qorechaind tx pqc cosign register.json --from operator --pqc-key <key>`. The chain requires the post-quantum co-signature on every transaction, so registration is a generate-then-cosign pair.
+
+The command takes two optional flags:
 
 - `--type` — the node type, `sx` or `ux` (defaults to `sx`).
 - `--version` — the node version to register (defaults to the binary's own version).
 
-The printed command registers the node under the `x/lightnode` module on-chain. Submit it with a funded operator account on the network you are joining (testnet `qorechain-diana` or mainnet `qorechain-vladi`).
+Submit on the network you are joining (testnet `qorechain-diana` or mainnet `qorechain-vladi`). Registration requires an active `lightnode_operator` licence granted on the operator address; the chain refuses it otherwise.
 
 :::note
-`lightnode-sx register` **prints** the registration transaction for you to review and submit — it does not broadcast on its own. This keeps you in control of when and how the node is registered.
+`lightnode-sx register` **prints** the commands for you to review and run — it does not broadcast on its own. This keeps you in control of when and how the node is registered.
 :::
 
 ## Heartbeat liveness proofs

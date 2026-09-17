@@ -120,6 +120,26 @@ lightnode-sx selftest
 
 If any check fails, the binary exits non-zero with diagnostic output. This is the same test the onboarding wizard runs as its first step, and it is handy for pre-deployment verification and support diagnostics.
 
+## The operator wallet {#operator-wallet}
+
+The node's Dilithium-5 key is **not** a wallet. On QoreChain a post-quantum key is attached to an account; it does not create one. That is why `keys list` shows no address for it. Your **operator address** is an ordinary funded `qor1…` account, created with `qorechaind`, that the node is registered from and that receives the light-node rewards. The node key becomes that account's post-quantum key.
+
+Set it up once:
+
+```bash
+# 1. Create and fund the operator account (any Cosmos wallet works; qorechaind shown)
+qorechaind keys add operator
+qorechaind keys show operator -a          # -> qor1..., fund it with a little QOR for fees
+
+# 2. Tell the node which account it belongs to
+#    config.toml:  operator_address = "qor1..."
+
+# 3. Let the node print the two chain commands (attach the key, register the node)
+lightnode-sx register
+```
+
+`register` prints, filled in with your values: the `qorechaind tx pqc register-key-v2 … hybrid` command that attaches the node key to the account (once), and the `tx lightnode register … --generate-only` plus `tx pqc cosign` pair that registers the node. The chain requires the post-quantum co-signature on every transaction, which is why registration is two commands and not one. Registration also requires an active `lightnode_operator` licence on the operator address; without it the chain refuses the transaction.
+
 ## Management commands
 
 The SX CLI includes commands for inspecting node state and managing keys:
@@ -127,11 +147,12 @@ The SX CLI includes commands for inspecting node state and managing keys:
 | Command | Purpose |
 | --- | --- |
 | `status` | Show node and light-client sync status (chain ID, latest height, catch-up state). |
-| `keys create <name>` | Create a new Dilithium-5 key. |
-| `keys list` | List keys in the keyring. |
+| `keys create <name>` | Create a new Dilithium-5 node key and print its public key. |
+| `keys list` | List keys in the keyring (name, type, address if any, public key). |
+| `keys show <name>` | Print a key's type and full public key. |
 | `keys import <name> <hex-privkey>` | Import a hex-encoded private key. |
-| `keys export <name>` | Export a private key in hex. |
-| `register` | Print the on-chain registration command for this node — see [Registration and Licensing](/light-node/registration-and-licensing). |
+| `keys export <name>` | Export a private key in hex (the same format `qorechaind` reads from `~/.qorechaind/pqc/`). |
+| `register` | Print the chain commands that attach the node key to your operator account and register the node — see [Registration and Licensing](/light-node/registration-and-licensing). |
 | `validators` | List bonded validators. |
 | `delegation` | Show current delegations from the local database. |
 | `rewards` | Show pending staking rewards. |
