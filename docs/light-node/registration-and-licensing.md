@@ -21,7 +21,17 @@ Registration is made from your **operator address**: a funded `qor1…` account 
 lightnode-sx register
 ```
 
-This reads the node key from the keyring and prints, filled in with your values:
+Before printing anything, the command asks the chain whether `operator_address` holds an active `lightnode_operator` licence. It does this because the chain refuses a registration without one, and there is no point in handing you commands that will be refused. Without a licence it stops with:
+
+```text
+operator address qor1... has no lightnode_operator licence. Buy one at
+https://dashboard.qorechain.io -> Tools -> Buy License, and enter this operator
+address there; the on-chain grant follows and register works once it lands.
+```
+
+A licence bought on the Dashboard is granted on-chain in a separate step, so `register` can still say "no licence" for a while after the purchase; `lightnode-sx status` shows the same `Licence:` line and flips to `active` when the grant lands. A node that is already registered is reported as such instead of being registered twice.
+
+With an active licence, the command reads the node key from the keyring and prints, filled in with your values:
 
 1. **Once only**, the command that attaches the node key to the operator account as its post-quantum key (`qorechaind tx pqc register-key-v2 <pubkey> hybrid --from operator …`), after exporting the key into `qorechaind`'s key directory with `lightnode-sx keys export`. Skip it if the account already has a post-quantum key (`GET /qorechain/pqc/v1/account/<address>` says `found: true`).
 2. The registration itself: `qorechaind tx lightnode register <type> <version> --from operator --generate-only > register.json`, then `qorechaind tx pqc cosign register.json --from operator --pqc-key <key>`. The chain requires the post-quantum co-signature on every transaction, so registration is a generate-then-cosign pair.
@@ -47,7 +57,7 @@ In practice this means a node that is registered and kept running (and synced) m
 
 QoreChain is **PQC-required by default**, so the heartbeat liveness transaction is produced through a post-quantum co-signed pipeline rather than a classical-only signature. The daemon builds the unsigned heartbeat, then co-signs it with a **hybrid Dilithium-5 (ML-DSA-87)** signature before broadcast — the same post-quantum posture the chain enforces for every transaction. The node submits one heartbeat per `interval_blocks` window (matching the chain's `heartbeat_interval` parameter), pacing itself by block height to avoid early-submission rejections.
 
-On-chain heartbeats are opt-in in the daemon: enable the `[heartbeat]` section in the node config (`enabled = true`) and point `qorechaind_path` at a `qorechaind` binary, which performs the generate-then-co-sign flow. When this is not configured, the node runs without submitting on-chain heartbeats and the operator can submit liveness manually with the printed chain commands.
+On-chain heartbeats are on by default. The daemon needs three things to send them: `operator_address` in the config, a `qorechaind` binary (on `PATH` or at `[heartbeat] qorechaind_path`; the SX Docker image ships it), and the `qorechaind` home holding the operator key and the exported node key (`qorechaind_home`, default `~/.qorechaind`). It paces itself by the chain's own `last_heartbeat` for the node, so a restart neither sends a duplicate nor waits a whole interval. Until the node is registered, it does not heartbeat; it logs why instead, once per state change: no licence (with where to buy one) or licence active but not registered (run `lightnode-sx register`). `lightnode-sx status` shows `Signer:`, `Licence:` and `Registration:` lines so the reason is visible without reading logs. When the signer is missing, the node still runs and syncs; it just cannot stay active on chain, and `status` says so.
 
 ## Registering and licensing via the Dashboard
 

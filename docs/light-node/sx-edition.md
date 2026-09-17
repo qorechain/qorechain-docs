@@ -37,10 +37,15 @@ This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`
 A Docker setup is provided. The SX service builds from `Dockerfile.sx`:
 
 ```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host \
+QORE_LIGHTNODE_KEYRING_PASSPHRASE='...' \
+QORE_LIGHTNODE_QORECHAIND_PASSPHRASE='...' \
 docker compose up lightnode-sx
 ```
 
 The SX container persists its data in a named volume mounted at `/root/.qorechain-lightnode` and reads the chain RPC address from the `QORECHAIN_RPC_ADDR` environment variable.
+
+The image also carries the released `qorechaind` (linux/amd64, downloaded from the release channel at build time and checked against a pinned digest). The daemon drives it to sign heartbeats and reward claims, so a container node stays active on chain without a second install. For that it needs the operator wallet: mount your `qorechaind` home (the keyring holding the operator key, plus the exported node key under `pqc/<key_name>.dilithium`) at `/root/.qorechaind`; `docker-compose.yml` mounts `~/.qorechaind` by default, or set `QORECHAIND_HOME`. The two passphrases are the node keyring's and the `qorechaind` keyring's; the second is piped to `qorechaind` on stdin and never appears on a command line. See [The operator wallet](#operator-wallet).
 
 ## Configure
 
@@ -60,8 +65,11 @@ The most relevant configuration options, at a usage level:
 | `primary_addr` / `witness_addrs` | The primary RPC endpoint, and the witness endpoints its reported header is corroborated against — see [Why run a light node](/light-node/overview#why-run-a-light-node). At least one distinct, reachable witness is what moves `Assurance` from `trusted-single-source` to `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | Light-client trust window (for example `168h`) and allowed clock drift. |
 | `data_dir` | Where the node stores its database and headers. |
-| `keyring_backend` / `key_name` | Keyring backend (`file` or `os`) and the operator key name. |
-| `[delegation]` | Auto-compound on/off, compound interval, minimum reward to claim, validator set, split weights, rebalancing, and minimum reputation. |
+| `keyring_backend` / `key_name` | Keyring backend (`file` or `os`) and the node key name. |
+| `operator_address` | The account this node belongs to (`qor1...`); validated at load. Required for `register`, `status` and heartbeats. See [The operator wallet](#operator-wallet). |
+| `api_addr` | The REST endpoint. Derived from `rpc_addr` when empty (port 26657 becomes 1317; `rpc.` hosts become `api.`), so it is only needed for endpoints that follow neither convention. |
+| `[heartbeat]` | On by default. `qorechaind_path` (empty means `qorechaind` on `PATH`; the Docker image ships it), `qorechaind_home` (empty means `~/.qorechaind`), `interval_blocks` (match the chain's `heartbeat_interval`, 1000), fees and gas. |
+| `[delegation]` | `auto_claim` (off by default: claims accrued light-node rewards to the operator wallet through the signer; the node never re-delegates from the server), the check interval, minimum reward to claim, validator set, split weights, rebalancing, and minimum reputation. |
 | `[telemetry]` | Whether telemetry is enabled and the refresh intervals for validators, network, bridge, and tokenomics. |
 | `log_level` / `log_format` | Logging verbosity (`debug`, `info`, `warn`, `error`) and format (`text` or `json`). |
 
@@ -69,7 +77,7 @@ The most relevant configuration options, at a usage level:
 A witness on the same host as the primary is refused — a compromised endpoint would simply agree with itself, so it corroborates nothing. A plaintext `http://` witness on a remote host is also refused, since an attacker who can rewrite that connection can answer as every witness at once; loopback `http://` is fine. Point witnesses at RPC endpoints you have independent reasons to trust.
 :::
 
-Delegation defaults enable auto-compound on a `1h` interval and reputation-aware rebalancing — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
+Delegation defaults enable reputation-aware rebalancing alerts and leave `auto_claim` off — see [Rewards and Monitoring](/light-node/rewards-and-monitoring) for what these do.
 
 ## First run: `onboard` {#first-run-onboard}
 
