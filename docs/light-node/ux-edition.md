@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # UX Edition — Web Dashboard
 
-The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this is the light node's **v3.1.2** line (its own version, separate from the chain version).
+The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this is the light node's **v3.1.3** line (its own version, separate from the chain version).
 
 The UX edition is the right choice for desktop use and for operators who prefer a visual interface over the command line.
 
 ## Install
 
-Prebuilt binaries run natively on **six platforms with zero native dependencies** — Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — each about 16 MB. Verify the download's checksum against the manifest before running it — see [SX Edition](/light-node/sx-edition#install) for how.
+Prebuilt binaries run natively on **six platforms with zero native dependencies** — Linux (amd64, arm64), macOS (Intel, Apple Silicon), and Windows (amd64, arm64) — each about 11–12 MB. Verify the download's checksum against the manifest before running it — see [SX Edition](/light-node/sx-edition#install) for how.
 
 ### Build from source
 
@@ -27,13 +27,24 @@ This produces `build/lightnode-ux`.
 
 ### Docker
 
-The UX service builds from `Dockerfile.ux`:
+The UX service builds from `Dockerfile.ux` in the source repository (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.4` or newer). The container needs a `config.toml` in its data volume before it will start; the setup wizard lives in the SX binary, so create the config with the SX edition first (see [SX Edition](/light-node/sx-edition#first-run-onboard)) and copy it into the volume. Inside a container the dashboard must listen on all container interfaces, so set this in that config and publish the port on the host's loopback only:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-The UX container persists data in a named volume at `/root/.qorechain-lightnode` and reads the chain RPC address from the `QORECHAIN_RPC_ADDR` environment variable.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+The UX container persists data in a named volume at `/root/.qorechain-lightnode` and reads the chain RPC address from the `QORECHAIN_RPC_ADDR` environment variable. The UX image does not include the `qorechaind` signer, so a UX container cannot send on-chain heartbeats; run a registered node with the SX edition.
 
 ## Run
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 This launches the daemon and the embedded dashboard server together. The UX edition always enables the dashboard. On startup the binary prints the dashboard URL.
 
-The UX edition shares its setup with the SX edition: it reads the same `config.toml` from `~/.qorechain-lightnode` and uses the same Dilithium-5 keyring. If you have not configured the node yet, run the SX wizard first (`lightnode-sx onboard`) to write the config and import or generate your key — see [SX Edition](/light-node/sx-edition).
+The UX edition shares its setup with the SX edition: it reads the same `config.toml` from `~/.qorechain-lightnode` and uses the same Dilithium-5 keyring. If you have not configured the node yet, run the SX wizard first (`lightnode-sx onboard`) to write the config and import or generate your key — see [SX Edition](/light-node/sx-edition). The UX binary only has the `start` and `version` commands; use `lightnode-sx` for `register`, `status` and `keys`. The daemon inside the UX edition sends heartbeats the same way as the SX edition when a `qorechaind` signer is available.
 
 ## The web dashboard on port 8420
 
@@ -69,7 +80,7 @@ The dashboard is organized into the following views:
 
 - **Overview** — block height and at-a-glance node status.
 - **Validators** — the bonded validator set.
-- **Delegation** — your current delegations and their split.
+- **Delegation** — the delegations mirrored from your operator account (see the known limitation in [Rewards and Monitoring](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — live network telemetry and recently synced headers.
 - **Bridge** — cross-chain bridge telemetry.
 - **Tokenomics** — token economics telemetry.
@@ -85,9 +96,9 @@ If the node has **no chain RPC endpoint configured**, the dashboard runs in **lo
 lightnode-sx onboard
 ```
 
-The wizard runs the PQC self-test, asks for your chain endpoint, and imports or generates your validator key. Once an endpoint is configured, restart the node and the dashboard begins showing live chain data.
+The wizard runs the PQC self-test, asks for your chain endpoint, and imports or generates your node key. Once an endpoint is configured, restart the node and the dashboard begins showing live chain data.
 
 ## Where to go next
 
 - [Registration and Licensing](/light-node/registration-and-licensing) — register the node on-chain.
-- [Rewards and Monitoring](/light-node/rewards-and-monitoring) — earn the 3% light-node share and monitor node health.
+- [Rewards and Monitoring](/light-node/rewards-and-monitoring) — how the 3% light-node share is credited and claimed, and how to monitor node health.

@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # UX 에디션 — 웹 대시보드
 
-**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 이는 라이트 노드의 **v3.1.2** 계열입니다(체인 버전과는 별개인 자체 버전).
+**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 이는 라이트 노드의 **v3.1.3** 계열입니다(체인 버전과는 별개인 자체 버전).
 
 UX 에디션은 데스크톱 사용과, 명령줄보다 시각적 인터페이스를 선호하는 운영자에게 적합한 선택입니다.
 
 ## 설치
 
-사전 빌드된 바이너리는 **네이티브 의존성 없이 여섯 개 플랫폼**에서 네이티브로 실행됩니다 — Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64) — 각각 약 16MB입니다. 실행하기 전에 다운로드한 파일의 체크섬을 매니페스트와 대조하여 검증하세요 — 방법은 [SX 에디션](/light-node/sx-edition#install)을 참고하세요.
+사전 빌드된 바이너리는 **네이티브 의존성 없이 여섯 개 플랫폼**에서 네이티브로 실행됩니다 — Linux(amd64, arm64), macOS(Intel, Apple Silicon), Windows(amd64, arm64) — 각각 약 11–12MB입니다. 실행하기 전에 다운로드한 파일의 체크섬을 매니페스트와 대조하여 검증하세요 — 방법은 [SX 에디션](/light-node/sx-edition#install)을 참고하세요.
 
 ### 소스에서 빌드
 
@@ -27,13 +27,24 @@ go build -o build/lightnode-ux ./cmd/lightnode-ux/
 
 ### Docker
 
-UX 서비스는 `Dockerfile.ux`에서 빌드됩니다:
+UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 태그 `v3.1.4` 이상)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. 설정 마법사는 SX 바이너리에 있으므로, 먼저 SX 에디션으로 설정을 만든 다음([SX 에디션](/light-node/sx-edition#first-run-onboard) 참고) 볼륨에 복사하세요. 컨테이너 내부에서는 대시보드가 모든 컨테이너 인터페이스에서 수신 대기해야 하므로, 해당 설정에 다음을 지정하고 포트는 호스트의 루프백에서만 게시하세요:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-UX 컨테이너는 `/root/.qorechain-lightnode`의 명명된 볼륨에 데이터를 영속화하며, `QORECHAIN_RPC_ADDR` 환경 변수에서 체인 RPC 주소를 읽습니다.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+UX 컨테이너는 `/root/.qorechain-lightnode`의 명명된 볼륨에 데이터를 영속화하며, `QORECHAIN_RPC_ADDR` 환경 변수에서 체인 RPC 주소를 읽습니다. UX 이미지에는 `qorechaind` 서명기가 포함되어 있지 않으므로 UX 컨테이너는 온체인 하트비트를 보낼 수 없습니다. 등록된 노드는 SX 에디션으로 실행하세요.
 
 ## 실행
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 이는 데몬과 내장 대시보드 서버를 함께 실행합니다. UX 에디션은 항상 대시보드를 활성화합니다. 시작 시 바이너리는 대시보드 URL을 출력합니다.
 
-UX 에디션은 SX 에디션과 설정을 공유합니다: `~/.qorechain-lightnode`에서 동일한 `config.toml`을 읽고 동일한 Dilithium-5 키링을 사용합니다. 아직 노드를 구성하지 않았다면, 먼저 SX 마법사(`lightnode-sx onboard`)를 실행하여 설정을 작성하고 키를 가져오거나 생성하세요 — [SX 에디션](/light-node/sx-edition)을 참고하세요.
+UX 에디션은 SX 에디션과 설정을 공유합니다: `~/.qorechain-lightnode`에서 동일한 `config.toml`을 읽고 동일한 Dilithium-5 키링을 사용합니다. 아직 노드를 구성하지 않았다면, 먼저 SX 마법사(`lightnode-sx onboard`)를 실행하여 설정을 작성하고 키를 가져오거나 생성하세요 — [SX 에디션](/light-node/sx-edition)을 참고하세요. UX 바이너리에는 `start`와 `version` 명령만 있습니다. `register`, `status`, `keys`에는 `lightnode-sx`를 사용하세요. UX 에디션 내부의 데몬은 `qorechaind` 서명기를 사용할 수 있을 때 SX 에디션과 동일한 방식으로 하트비트를 보냅니다.
 
 ## 포트 8420의 웹 대시보드
 
@@ -69,7 +80,7 @@ http://localhost:8420
 
 - **Overview** — 블록 높이와 한눈에 보는 노드 상태.
 - **Validators** — 본딩된 검증자 집합.
-- **Delegation** — 현재 위임과 그 분할.
+- **Delegation** — 운영자 계정에서 미러링된 위임([보상 및 모니터링](/light-node/rewards-and-monitoring#how-rewards-work)의 알려진 제한 사항 참고).
 - **Network** — 실시간 네트워크 텔레메트리와 최근 동기화된 헤더.
 - **Bridge** — 크로스체인 브리지 텔레메트리.
 - **Tokenomics** — 토큰 이코노믹스 텔레메트리.
@@ -85,9 +96,9 @@ http://localhost:8420
 lightnode-sx onboard
 ```
 
-마법사는 PQC 셀프 테스트를 실행하고, 체인 엔드포인트를 요청하며, 검증자 키를 가져오거나 생성합니다. 엔드포인트가 구성되면 노드를 재시작하면 대시보드가 실시간 체인 데이터를 표시하기 시작합니다.
+마법사는 PQC 셀프 테스트를 실행하고, 체인 엔드포인트를 요청하며, 노드 키를 가져오거나 생성합니다. 엔드포인트가 구성되면 노드를 재시작하면 대시보드가 실시간 체인 데이터를 표시하기 시작합니다.
 
 ## 다음으로 갈 곳
 
 - [등록 및 라이선싱](/light-node/registration-and-licensing) — 노드를 온체인에 등록하기.
-- [보상 및 모니터링](/light-node/rewards-and-monitoring) — 3% 라이트 노드 분배분을 얻고 노드 상태를 모니터링하기.
+- [보상 및 모니터링](/light-node/rewards-and-monitoring) — 3% 라이트 노드 분배분이 어떻게 적립되고 청구되는지, 그리고 노드 상태를 모니터링하는 방법.

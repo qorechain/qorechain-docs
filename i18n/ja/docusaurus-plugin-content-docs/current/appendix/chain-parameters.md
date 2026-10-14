@@ -7,239 +7,374 @@ sidebar_position: 2
 
 # チェーンパラメータ
 
-QoreChain ジェネシスで設定可能なすべてのモジュールパラメータの統合リファレンスです。パラメータはモジュールごとにグループ化されており、実行時に `qorechaind query <module> params` でクエリできます。
+QoreChain ネットワークのモジュールパラメータを、モジュールごとにまとめた統合リファレンスです。モジュールに params クエリがある場合、パラメータは `qorechaind query <module> params` で取得できます（`pqc`、`amm`、`crossvm`、`lightnode`、`multilayer`、`reputation`、`rlconsensus`。`ai`、`qca`、`rdk`、`bridge`、`abstractaccount`、`gasabstraction` は `config` を使用し、`gasabstraction` はテストネットでのみクエリ可能です）。REST では、[REST / gRPC リファレンス](/api-reference/rest-grpc-endpoints)に記載されたルートに限り取得できます。`ai`、`qca`、`reputation`、`crossvm`、`rlconsensus`、`fairblock`、`xqore` では REST を利用できません。
 
 :::note
-表示されている値はデプロイ済みのジェネシスデフォルト値です。特に記載のない限り、パラメータはメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）およびテストネット **`qorechain-diana`**（EVM チェーン ID **9800**）に適用されます。
+表示されている値は 2026 年 10 月 14 日にライブで読み取ったものです（ガバナンス提案によって変更された場合を除き、メインネットのジェネシス値です。変更されたものは明記しています）。パラメータはメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）およびテストネット **`qorechain-diana`**（EVM チェーン ID **9800**）に適用され、特に記載のない限り両ネットワークで同一です。ブロック数で示した期間は、計測されたメインネットのブロック時間（約 3.2 秒）で換算しています（テストネットは約 1 秒ごとに 1 ブロックを生成します）。
 :::
 
 ---
 
 ## PQC モジュール (`x/pqc`)
 
-| パラメータ                   | 型     | デフォルト値          | 説明                                                            |
-| --------------------------- | ------ | ---------------------- | ---------------------------------------------------------------------- |
-| `hybrid_signature_mode`     | uint   | `2` (required)         | 強制モード: 0=無効, 1=任意, 2=必須（現在のデフォルト） |
-| `allow_classical_fallback`  | bool   | `false`                | 古典暗号のみのフォールバックは閉鎖。Cosmos トランザクションはハイブリッドである必要がある           |
-| `algorithm_registry`        | array  | ML-DSA-87, ML-KEM-1024 | サイズ制約付きで登録された PQC アルゴリズム                        |
-| `auto_register_enabled`     | bool   | `true`                 | 最初のハイブリッドトランザクションで PQC 鍵を自動登録                              |
-| `migration_deadline_height` | uint64 | `0`                    | 古典暗号のみの鍵が拒否されるブロック高（0=無効） |
-| `migration_grace_period`    | uint64 | `100000`               | 移行期限前の警告ブロック数                            |
+| パラメータ                  | 値                         | 説明                                                                     |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `pqc_primary`              | `true`                     | ポスト量子署名が主たる方式                                               |
+| `allow_classical_fallback` | `false`                    | 古典暗号のみのフォールバックは閉鎖。Cosmos レーンのトランザクションはハイブリッドである必要がある |
+| `min_security_level`       | `5`                        | 登録されるアルゴリズムの最低 NIST セキュリティレベル                     |
+| `default_migration_blocks` | `1,000,000`                | ガバナンスで開始されるアルゴリズム移行のデフォルト期間（≈3.2 秒のブロックで約 37 日） |
+| `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
+| `hybrid_signature_mode`    | `2`（必須）                | 強制モード: 0=無効, 1=任意, 2=必須                                       |
+
+アルゴリズムレジストリ（id 1 `dilithium5`、id 2 `mlkem1024`）はパラメータではなくチェーンの状態です。鍵は `MsgRegisterPQCKey` で明示的に登録します。自動登録はありません。
 
 ---
 
 ## AI モジュール (`x/ai`)
 
-| パラメータ                  | 型     | デフォルト値 | 説明                                       |
-| -------------------------- | ------ | ------------- | ------------------------------------------------- |
-| `anomaly_weight_volume`    | string | `0.30`        | 不正スコアリングにおけるボリューム異常の重み        |
-| `anomaly_weight_velocity`  | string | `0.25`        | 不正スコアリングにおける速度異常の重み      |
-| `anomaly_weight_pattern`   | string | `0.25`        | 不正スコアリングにおけるパターン異常の重み       |
-| `anomaly_weight_network`   | string | `0.20`        | 不正スコアリングにおけるネットワークグラフ異常の重み |
-| `fraud_threshold_low`      | string | `0.30`        | 低重大度アラートのスコアしきい値            |
-| `fraud_threshold_medium`   | string | `0.55`        | 中重大度アラートのスコアしきい値         |
-| `fraud_threshold_high`     | string | `0.75`        | 高重大度アラートのスコアしきい値           |
-| `fraud_threshold_critical` | string | `0.90`        | 緊急重大度アラートのスコアしきい値       |
-| `circuit_breaker_enabled`  | bool   | `true`        | QCAI サーキットブレーカーを有効化                      |
+モジュールの設定（`qorechaind query ai config`）:
+
+| パラメータ           | 値                     | 説明                                                                        |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| `anomaly_threshold` | `0.7`                  | アンテハンドラーがトランザクションをフラグ付けする異常スコアのしきい値     |
+| `routing_strategy`  | `reputation_weighted`  | ルーティング戦略                                                            |
+| `risk_threshold`    | `0.8`                  | リスクスコアのしきい値                                                      |
+| `max_tx_per_minute` | `600`                  | Cosmos レーンにおける送信者ごとのトランザクション上限。30 ブロックのウィンドウで集計（≈3.2 秒のブロックで約 96 秒。名称は歴史的なもの）。v3.2.0 以降で適用。デフォルトは 10 |
+
+[AI エンジン](/architecture/ai-engine)のページで説明している不正スコアリングの重みと重大度しきい値は、検出器の定数であり、モジュールパラメータではありません。
 
 ---
 
 ## レピュテーションモジュール (`x/reputation`)
 
-| パラメータ      | 型     | デフォルト値 | 説明                                          |
-| -------------- | ------ | ------------- | ---------------------------------------------------- |
-| `alpha`        | string | `0.30`        | レピュテーション式における稼働率スコア (S\_i) の重み |
-| `beta`         | string | `0.25`        | 参加スコア (P\_i) の重み                |
-| `gamma`        | string | `0.25`        | コミュニティスコア (C\_i) の重み                   |
-| `delta`        | string | `0.20`        | 在任期間スコア (T\_i) の重み                       |
-| `decay_lambda` | string | `0.01`        | 過去スコアに対する指数的な時間減衰係数  |
+| パラメータ   | 値     | 説明                                                 |
+| ----------- | ------ | ---------------------------------------------------- |
+| `alpha`     | `0.30` | レピュテーション式における稼働率スコア (S\_i) の重み |
+| `beta`      | `0.35` | 参加スコア (P\_i) の重み                             |
+| `gamma`     | `0.20` | コミュニティスコア (C\_i) の重み                     |
+| `delta`     | `0.15` | 在任期間スコア (T\_i) の重み                         |
+| `lambda`    | `1000` | 過去スコアに対する時間減衰のスケール                 |
+| `min_score` | `0.10` | レピュテーションスコアの下限                         |
 
-レピュテーション式: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i`（エポックごとに指数的な時間減衰が適用される）。
+レピュテーション式: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i`（過去スコアには時間減衰が適用される）。
 
 ---
 
 ## QCA モジュール (`x/qca`)
 
-| パラメータ                      | 型     | デフォルト値 | 説明                                    |
-| ------------------------------ | ------ | ------------- | ---------------------------------------------- |
-| `emerald_pool_weight`          | string | `0.50`        | Emerald プールのブロック提案重み         |
-| `sapphire_pool_weight`         | string | `0.30`        | Sapphire プールのブロック提案重み        |
-| `ruby_pool_weight`             | string | `0.20`        | Ruby プールのブロック提案重み            |
-| `emerald_min_reputation`       | string | `0.80`        | Emerald プールの最低レピュテーションスコア      |
-| `sapphire_min_reputation`      | string | `0.50`        | Sapphire プールの最低レピュテーションスコア     |
-| `bonding_curve_base_rate`      | string | `0.05`        | ステーキングボンディングカーブの基本レート            |
-| `bonding_curve_multiplier`     | string | `1.50`        | ボンディングカーブ進行の乗数       |
-| `slashing_downtime_window`     | int64  | `10000`       | ダウンタイムを評価するブロック数                      |
-| `slashing_downtime_threshold`  | string | `0.05`        | スラッシング前の最低署名ブロック割合 |
-| `slashing_downtime_penalty`    | string | `0.01`        | ダウンタイムに対するスラッシュ割合                   |
-| `slashing_double_sign_penalty` | string | `0.05`        | 二重署名に対するスラッシュ割合              |
-| `qdrw_enabled`                 | bool   | `true`        | 動的報酬重み付けを有効化                |
-| `qdrw_throughput_weight`       | string | `0.40`        | スループット指標に対する QDRW 重み              |
-| `qdrw_latency_weight`          | string | `0.30`        | レイテンシ指標に対する QDRW 重み                 |
-| `qdrw_security_weight`         | string | `0.20`        | セキュリティ指標に対する QDRW 重み                |
-| `qdrw_decentralization_weight` | string | `0.10`        | 分散化指標に対する QDRW 重み        |
-| `qdrw_adjustment_cap`          | string | `0.10`        | 単一エポックあたりの最大 QDRW 調整           |
-| `qdrw_adjustment_interval`     | int64  | `100`         | QDRW 調整間のブロック数                |
+:::note 実装済み、未稼働
+トリプルプール CPoS のロジックは `x/qca` に実装されており、これらのパラメータもオンチェーンにありますが、**ブロック生成、報酬、スラッシング、ガバナンスの集計にはまだ接続されていません**。実際に有効なスラッシングは標準の `x/slashing` モジュールのものです（[ステーキング、スラッシング、ガバナンス、手数料、EVM](#core-modules)を参照）。[コンセンサスメカニズム](/architecture/consensus-mechanism)を参照してください。
+:::
+
+設定（`qorechaind query qca config`）:
+
+| パラメータ                       | 値                  | 説明                                                  |
+| ------------------------------- | ------------------- | ----------------------------------------------------- |
+| `use_reputation_weighting`      | `true`              | レピュテーション重み付けのジェネシス設定              |
+| `min_reputation_score`          | `0.1`               | 最低レピュテーションスコア                            |
+| `pool_classification_interval`  | `1000` ブロック     | プール分類の間隔（ブロック数）                        |
+| `pool_weight_rpos`              | `0.40`              | RPoS プールの提案重み                                 |
+| `pool_weight_dpos`              | `0.35`              | DPoS プールの提案重み                                 |
+| `pool_min_delegation_dpos`      | `10,000,000,000 uqor` | DPoS プールの最低デリゲーション（10,000 QOR）       |
+| `pool_rep_percentile_rpos`      | `70`                | RPoS プールのレピュテーションパーセンタイル           |
+| `bonding_alpha`                 | `0.1`               | ボンディングカーブのパラメータ                        |
+| `bonding_beta`                  | `1.0`               | ボンディングカーブのパラメータ                        |
+| `bonding_phase_multiplier`      | `1.5`               | ボンディングカーブのフェーズ乗数                      |
+| `slashing_base_rate`            | `0.01`              | 累進スラッシングの基本レート                          |
+| `slashing_escalation_factor`    | `1.5`               | 累進スラッシングのエスカレーション係数                |
+| `slashing_max_penalty`          | `0.33`              | 累進スラッシングの最大ペナルティ                      |
+| `slashing_decay_halflife`       | `100,000` ブロック  | 累進スラッシングの減衰半減期                          |
+| `qdrw_enabled`                  | `false`             | QDRW 集計は無効                                       |
+| `qdrw_xqore_multiplier`         | `2.0`               | QDRW 式における xQORE の重み                          |
+| `qdrw_rep_min_multiplier`       | `0.5`               | レピュテーション乗数の下限                            |
+| `qdrw_rep_max_multiplier`       | `2.0`               | レピュテーション乗数の上限                            |
 
 ---
 
 ## Burn モジュール (`x/burn`)
 
-| パラメータ           | 型     | デフォルト値 | 説明                                       |
-| ------------------- | ------ | ------------- | ------------------------------------------------- |
-| `burn_enabled`      | bool   | `true`        | 手数料バーンメカニズムを有効化                         |
-| `validator_share`   | string | `0.37`        | ブロックバリデータに分配される手数料の割合  |
-| `burn_share`        | string | `0.30`        | 恒久的にバーンされる手数料の割合               |
-| `treasury_share`    | string | `0.20`        | コミュニティトレジャリーに送られる手数料の割合       |
-| `staker_share`      | string | `0.10`        | デリゲーターに分配される手数料の割合       |
-| `light_node_share`  | string | `0.03`        | ライトノードに分配される手数料の割合       |
+| パラメータ              | 値                           | 説明                                                  |
+| ---------------------- | ---------------------------- | ----------------------------------------------------- |
+| `gas_burn_rate`        | `0.30`                       | フィーコレクターからバーンされる割合                  |
+| `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | コントラクト作成時の定額バーン手数料                  |
+| `ai_service_burn_rate` | `0.50`                       | AI サービス手数料のうちバーンされる割合               |
+| `bridge_burn_rate`     | `1.00`                       | ブリッジ手数料のうちバーンされる割合                  |
+| `failed_tx_burn_rate`  | `0.10`                       | 失敗したトランザクションのガスのうちバーンされる割合  |
+| `validator_share`      | `0.37`                       | バリデータに分配される割合                            |
+| `treasury_share`       | `0.20`                       | トレジャリーに送られる割合                            |
+| `staker_share`         | `0.10`                       | ステーカーに分配される割合                            |
+| `light_node_share`     | `0.03`                       | ライトノードに分配される割合                          |
+| `enabled`              | `true`                       | モジュール有効化フラグ                                |
 
-各割合の合計は `1.00` でなければなりません。手数料の分配はバリデータ、バーン、トレジャリー、ステーカー、ライトノードに対して **37 / 30 / 20 / 10 / 3** です。
+手数料の分配はバリデータ、バーン、トレジャリー、ステーカー、ライトノードに対して **37 / 30 / 20 / 10 / 3** で、各割合の合計は `1.00` でなければなりません。`milestone_burn_schedule` も存在します。[トークノミクス](/architecture/tokenomics)を参照してください。
 
 ---
 
 ## xQORE モジュール (`x/xqore`)
 
-| パラメータ            | 型     | デフォルト値 | 説明                                   |
-| -------------------- | ------ | ------------- | --------------------------------------------- |
-| `min_lock_amount`    | string | `1000000uqor` | xQORE としてロックする最低額               |
-| `min_lock_duration`  | string | `7d`          | 最短ロック期間                         |
-| `max_lock_duration`  | string | `365d`        | 最長ロック期間                         |
-| `penalty_tier_1_pct` | string | `0.50`        | 早期アンロックペナルティ: ロック経過の 0-25%   |
-| `penalty_tier_2_pct` | string | `0.30`        | 早期アンロックペナルティ: ロック経過の 25-50%  |
-| `penalty_tier_3_pct` | string | `0.15`        | 早期アンロックペナルティ: ロック経過の 50-75%  |
-| `penalty_tier_4_pct` | string | `0.05`        | 早期アンロックペナルティ: ロック経過の 75-100% |
-| `pvp_rebase_enabled` | bool   | `true`        | PvP リベース再分配を有効化              |
+:::caution オンチェーンではまだ利用不可
+xQORE モジュールのアカウンティングは存在しますが、ロックおよびアンロックのトランザクション、クエリ、CLI コマンドは**まだ稼働中のネットワークに接続されていません**。現時点では QOR をロックできず、xQORE も発行されていません。以下の値はジェネシス設定です。
+:::
+
+| パラメータ                 | 値                     | 説明                                                 |
+| ------------------------- | ---------------------- | ---------------------------------------------------- |
+| `governance_multiplier`   | `2.0`                  | xQORE 保有者の投票力乗数                             |
+| `min_lock_amount`         | `1,000,000 uqor`       | ロックの最低額（1 QOR）                              |
+| `penalty_burn_rate`       | `0.0`                  | 早期退出ペナルティのうちバーンされる割合（すべて再分配される） |
+| `rebase_interval`         | `100` ブロック         | PvP リベースイベントの間隔（ブロック数）             |
+| `enabled`                 | `true`                 | モジュール有効化フラグ                               |
+
+退出ペナルティ: 50 %（ロック期間が 30 日未満）、35 %（30〜90 日）、15 %（90〜180 日）、0 %（180 日超）。ロック乗数: ロック期間 0 / 90 / 180 / 365 / 730 日に対して 1.0 / 1.2 / 1.4 / 1.7 / 2.0。
 
 ---
 
 ## Inflation モジュール (`x/inflation`)
 
-| パラメータ         | 型     | デフォルト値          | 説明                                      |
-| ----------------- | ------ | ---------------------- | ------------------------------------------------ |
-| `epoch_length`    | uint64 | `100`                  | インフレーションエポックあたりのブロック数                       |
-| `blocks_per_year` | uint64 | `6311520`              | 年間推定ブロック数（レート計算用） |
-| `initial_rate`    | string | `0.08`                 | 初期年率換算発行レートパラメータ       |
-| `rate_decay`      | string | `0.05`                 | 毎年適用される減衰係数                   |
-| `min_rate`        | string | `0.02`                 | 発行レートの下限パラメータ                     |
-| `max_supply`      | string | `1000000000000000uqor` | 最大トークン供給上限                          |
+| パラメータ              | 値                      | 説明                                                  |
+| ---------------------- | ----------------------- | ----------------------------------------------------- |
+| `emission_mode`        | `fixed`                 | `schedule`（レガシー）または `fixed`（v3.1.94 以降）  |
+| `fixed_epoch_emission` | `16,239,000,000 uqor` (16,239 QOR) | fixed モードでエポックごとにミントされる量 |
+| `max_total_emission`   | `114,285,714,000,000 uqor` (114,285,714 QOR) | 累積の絶対上限          |
+| `epoch_length`         | `43,200` ブロック       | エポックあたりのブロック数（≈3.2 秒のブロックで約 38.6 時間） |
+| `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | レガシーの年次レート。fixed モードでは未使用      |
+| `enabled`              | `true`                  | モジュール有効化フラグ                                |
 
-:::note
-上記の `x/inflation` パラメータはデプロイ済みのメカニズムデフォルト値です。正規の **トークノミクス v2.1** 経済モデルの下では、QoreChain は **固定供給** であり、ステーキングおよびエコシステム報酬の資金となる **有限の発行予算（590M プール）** を持ちます。`initial_rate` / `rate_decay` / `min_rate` の値は、その有限予算内で発行がどのようにスケジュールされるかを管理するメカニズムの詳細であり、総供給量に対する無制限の割合インフレーションでは **ありません**。
-:::
+このモジュールは、上限に達するまでこの発行量をフィーコレクターにミントします。[トークノミクス](/architecture/tokenomics#supply-and-emission)を参照してください。メインネットでは、これらの値は REST ルートで公開されていません。
 
 ---
 
 ## RL コンセンサスモジュール (`x/rlconsensus`)
 
-`x/rlconsensus` モジュールは、QoreChain コンセンサスエンジンの強化学習最適化レイヤーである **PRISM** を実装します。
+`x/rlconsensus` モジュールは、強化学習による最適化レイヤーである **PRISM** を実装します。両ネットワークとも観測モードで、ポリシーの重みがロードされていないため、何も調整しません。PRISM の 4 つの制御メッセージは、メインネットではサーキットブレーカーによって無効化されています（[サーキットブレーカーの状況](#circuit-breaker)を参照）。
 
-| パラメータ                    | 型     | デフォルト値 | 説明                                     |
-| ---------------------------- | ------ | ------------- | ----------------------------------------------- |
-| `observation_interval`       | uint64 | `10`          | PRISM 観測サンプル間のブロック数        |
-| `agent_mode`                 | uint   | `0`           | エージェントモード: 0=オフ, 1=観測, 2=提案, 3=自動 |
-| `circuit_breaker_enabled`    | bool   | `true`        | PRISM サーキットブレーカーを有効化                     |
-| `circuit_breaker_max_change` | string | `0.10`        | アクションあたりの最大パラメータ変更 (10%)       |
-| `circuit_breaker_cooldown`   | uint64 | `100`         | サーキットブレーカー作動後の待機ブロック数      |
-| `reward_throughput_weight`   | string | `0.40`        | スループットに対する報酬重み                    |
-| `reward_latency_weight`      | string | `0.30`        | レイテンシに対する報酬重み                       |
-| `reward_security_weight`     | string | `0.20`        | セキュリティに対する報酬重み                      |
-| `reward_stability_weight`    | string | `0.10`        | 安定性に対する報酬重み                     |
-| `ppo_learning_rate`          | string | `0.0003`      | PPO 学習率                          |
-| `ppo_clip_range`             | string | `0.20`        | PPO クリッピング範囲                            |
+| パラメータ                        | 値             | 説明                                                          |
+| -------------------------------- | -------------- | ------------------------------------------------------------- |
+| `enabled`                        | `true`         | モジュール有効化フラグ                                        |
+| `observation_interval`           | `10`           | PRISM 観測サンプル間のブロック数                              |
+| `agent_mode`                     | `1` (conservative) | エージェントモード: 0=shadow, 1=conservative, 2=autonomous, 3=paused |
+| `max_change_conservative`        | `0.10`         | conservative モードでのアクションあたりの最大パラメータ変更   |
+| `max_change_autonomous`          | `0.25`         | autonomous モードでのアクションあたりの最大パラメータ変更     |
+| `circuit_breaker_window`         | `50`           | サーキットブレーカーのウィンドウ                              |
+| `circuit_breaker_threshold`      | `0.50`         | サーキットブレーカーのしきい値                                |
+| `reward_weight_throughput`       | `0.30`         | スループットに対する報酬重み                                  |
+| `reward_weight_finality`         | `0.25`         | ファイナリティに対する報酬重み                                |
+| `reward_weight_decentralization` | `0.20`         | 分散化に対する報酬重み                                        |
+| `reward_weight_mev`              | `0.15`         | MEV に対する報酬重み                                          |
+| `reward_weight_failed_txs`       | `0.10`         | 失敗したトランザクションに対する報酬重み                      |
+| `default_block_time_ms`          | `5000`         | 観測ベースラインにおけるデフォルトのブロック時間（実際のブロック時間ではない） |
+| `default_base_gas_price`         | `100`          | 観測ベースラインにおけるデフォルトの基本ガス価格              |
+| `default_validator_set_size`     | `100`          | 観測ベースラインにおけるデフォルトのバリデータセットサイズ    |
 
 ---
 
 ## Bridge モジュール (`x/bridge`)
 
-| パラメータ                       | 型     | デフォルト値 | 説明                                     |
-| ------------------------------- | ------ | ------------- | ----------------------------------------------- |
-| `min_confirmations_ibc`         | uint64 | `1`           | IBC 転送の最小確認数         |
-| `min_confirmations_ethereum`    | uint64 | `12`          | Ethereum ブリッジの最小確認数       |
-| `min_confirmations_bitcoin`     | uint64 | `6`           | Bitcoin ブリッジの最小確認数        |
-| `circuit_breaker_enabled`       | bool   | `true`        | ブリッジサーキットブレーカーを有効化                   |
-| `circuit_breaker_max_daily_usd` | string | `10000000`    | 1 日あたりの最大ブリッジ量（USD 換算）    |
-| `circuit_breaker_max_single_tx` | string | `1000000`     | 単一転送の最大額（USD 換算） |
+:::caution 未稼働
+37 件のチェーン設定はすべて `pending` ステータスで、ブリッジバリデータは登録されておらず、ブリッジ操作は作成されておらず、どちらのネットワークでも IBC チャネルは開かれていません。[ブリッジアーキテクチャ](/architecture/bridge-architecture)を参照してください。
+:::
+
+`GET /qorechain/bridge/v1/config`:
+
+| パラメータ                  | 値                          | 説明                                              |
+| -------------------------- | --------------------------- | ------------------------------------------------- |
+| `min_validators`           | `10`                        | アテステーションセットに必要なバリデータ数        |
+| `attestation_threshold`    | `7`                         | 必要なアテステーション数                          |
+| `challenge_period_secs`    | `86400`                     | チャレンジ期間（24 時間）                         |
+| `large_transfer_threshold` | `100,000,000,000 uqor` (100,000 QOR) | この額を超える転送はチャレンジ期間の経過を待つ |
+| `enabled`                  | `true`                      | モジュール有効化フラグ                            |
+
+チェーンごとの設定（`min_confirmations`、`max_single_transfer`、`daily_limit`）は、モジュールパラメータではなく各チェーン設定に含まれます。
 
 ---
 
 ## Multilayer モジュール (`x/multilayer`)
 
-| パラメータ                   | 型     | デフォルト値      | 説明                                       |
-| --------------------------- | ------ | ------------------ | ------------------------------------------------- |
-| `max_sidechains`            | uint   | `10`               | 登録可能なサイドチェーンの最大数           |
-| `max_paychains`             | uint   | `50`               | 登録可能なペイチェーンの最大数            |
-| `anchor_interval_sidechain` | uint64 | `100`              | サイドチェーンの必須アンカー間隔（ブロック） |
-| `anchor_interval_paychain`  | uint64 | `50`               | ペイチェーンの必須アンカー間隔（ブロック）  |
-| `challenge_period`          | string | `7d`               | アンカーに対する不正チャレンジ期間          |
-| `min_sidechain_stake`       | string | `1000000000uqor` | サイドチェーン登録の最低ステーク（1,000 QOR） |
-| `min_paychain_stake`        | string | `100000000uqor`  | ペイチェーン登録の最低ステーク（100 QOR）    |
-| `routing_threshold`         | string | `0.80`             | 自動ルーティングをトリガーする負荷しきい値       |
+| パラメータ                      | 値               | 説明                                              |
+| ------------------------------ | ---------------- | ------------------------------------------------- |
+| `max_sidechains`               | `10`             | 登録可能なサイドチェーンの最大数                  |
+| `max_paychains`                | `50`             | 登録可能なペイチェーンの最大数                    |
+| `min_anchor_interval`          | `100`            | 最小アンカー間隔（ブロック）                      |
+| `max_anchor_interval`          | `1000`           | 最大アンカー間隔（ブロック）                      |
+| `default_challenge_period`     | `86400` s        | デフォルトのチャレンジ期間（1 日）                |
+| `min_sidechain_stake`          | `1,000,000,000`  | サイドチェーン登録の最低ステーク（1,000 QOR）     |
+| `min_paychain_stake`           | `100,000,000`    | ペイチェーン登録の最低ステーク（100 QOR）         |
+| `routing_enabled`              | `true`           | クロスレイヤールーティングが有効                  |
+| `routing_confidence_threshold` | `0.6`            | 自動ルーティングの信頼度しきい値                  |
+| `cross_layer_fee_bundling`     | `true`           | 1 回の手数料支払いで複数のレイヤーをカバーできる  |
 
 ---
 
 ## Cross-VM モジュール (`x/crossvm`)
 
-| パラメータ          | 型     | デフォルト値 | 説明                                    |
-| ------------------ | ------ | ------------- | ---------------------------------------------- |
-| `max_message_size` | uint64 | `65536`       | クロス VM メッセージの最大サイズ（バイト、64 KB） |
-| `max_queue_size`   | uint   | `1000`        | クロス VM キュー内の保留メッセージの最大数 |
-| `queue_timeout`    | uint64 | `100`         | 保留メッセージがタイムアウトするまでのブロック数   |
+| パラメータ             | 値      | 説明                                           |
+| --------------------- | ------- | ---------------------------------------------- |
+| `max_message_size`    | `65536` | クロス VM メッセージの最大サイズ（バイト、64 KB） |
+| `max_queue_size`      | `1000`  | クロス VM キュー内の保留メッセージの最大数     |
+| `queue_timeout_blocks`| `100`   | 保留メッセージがタイムアウトするまでのブロック数 |
+| `enabled`             | `true`  | モジュール有効化フラグ                         |
+
+`MsgCrossVMCall` は、メインネットではサーキットブレーカーによって無効化されています（テストネットでは有効）。
 
 ---
 
 ## SVM モジュール (`x/svm`)
 
-| パラメータ                     | 型     | デフォルト値 | 説明                                  |
-| ----------------------------- | ------ | ------------- | -------------------------------------------- |
-| `max_program_size`            | uint64 | `10485760`    | プログラムバイナリの最大サイズ（バイト、10 MB） |
-| `compute_budget`              | uint64 | `1400000`     | トランザクションあたりのデフォルト計算ユニット（1.4M） |
-| `rent_lamports_per_byte_year` | uint64 | `3480`        | バイトあたりの年間レントコスト（lamports）        |
-| `rent_exemption_threshold`    | string | `2.0`         | 免除に必要なレント年数         |
-| `max_accounts_per_tx`         | uint   | `64`          | トランザクションあたりの参照可能アカウントの最大数  |
+ジェネシス値:
+
+| パラメータ               | 値           | 説明                                         |
+| ----------------------- | ------------ | -------------------------------------------- |
+| `max_program_size`      | `10485760`   | プログラムバイナリの最大サイズ（バイト、10 MB） |
+| `max_account_data_size` | `10485760`   | アカウントデータの最大サイズ（バイト、10 MB） |
+| `compute_budget_max`    | `1400000`    | トランザクションあたりの最大計算ユニット（1.4M） |
+| `lamports_per_byte`     | `3480`       | バイトあたりのレントコスト（lamports）       |
+| `rent_exemption_multi`  | `2.0`        | 免除に必要なレント年数                       |
+| `enabled`               | `true`       | モジュール有効化フラグ                       |
+| `svm_slot_offset`       | `0`          | スロットオフセット                           |
+| `default_sig_scheme`    | `0`          | デフォルトの署名方式                         |
+| `max_cpi`               | `4`          | クロスプログラム呼び出しの最大深度           |
+
+SVM トランザクションレーンはネットワーク全体で無効化されています（[ネットワーク](/appendix/networks)を参照）。
 
 ---
 
 ## RDK モジュール (`x/rdk`)
 
-| パラメータ             | 型     | デフォルト値                      | 説明                              |
-| --------------------- | ------ | ---------------------------------- | ---------------------------------------- |
-| `max_rollups`         | uint   | `100`                              | 登録可能なロールアップの最大数               |
-| `min_stake`           | string | `10000000000uqor`                  | オペレーターの最低ステーク（10,000 QOR）      |
-| `burn_rate`           | string | `0.01`                             | バーンされるロールアップ手数料の割合（1%）    |
-| `challenge_window`    | string | `7d`                               | 不正チャレンジウィンドウの期間   |
-| `max_blob_size`       | uint64 | `2097152`                          | DA ブロブの最大サイズ（バイト、2 MB）     |
-| `blob_retention`      | uint64 | `432000`                           | プルーニング前に DA ブロブを保持するブロック数 |
-| `max_batches_pending` | uint   | `10`                               | ロールアップあたりの未確定バッチの最大数   |
-| `auto_finalize`       | bool   | `true`                             | EndBlocker 自動確定を有効化      |
-| `settlement_types`    | array  | optimistic, zk, based, sovereign   | 許可される決済パラダイム             |
-| `preset_profiles`     | array  | defi, gaming, nft, enterprise, custom | 利用可能なロールアッププリセット              |
+`qorechaind query rdk config`:
+
+| パラメータ                   | 値                   | 説明                                          |
+| --------------------------- | -------------------- | --------------------------------------------- |
+| `max_rollups`               | `100`                | 登録可能なロールアップの最大数                |
+| `min_stake_for_rollup`      | `10,000,000,000 uqor`| オペレーターの最低ステーク（10,000 QOR）      |
+| `rollup_creation_burn_rate` | `0.01`               | 作成ステークのうちバーンされる割合（1%）      |
+| `default_challenge_window`  | `604,800` s          | デフォルトのチャレンジウィンドウ（7 日）      |
+| `max_da_blob_size`          | `2,097,152`          | DA ブロブの最大サイズ（バイト、2 MB）         |
+| `blob_retention_blocks`     | `432,000`            | DA ブロブを保持するブロック数（≈3.2 秒のブロックで約 16 日） |
+| `max_batches_per_block`     | `10`                 | 1 ブロックで処理されるバッチの最大数          |
+
+どちらのネットワークでも、ロールアップはまだ作成されていません。
 
 ---
 
 ## FairBlock モジュール (`x/fairblock`)
 
-| パラメータ            | 型     | デフォルト値 | 説明                                 |
-| -------------------- | ------ | ------------- | ------------------------------------------- |
-| `enabled`            | bool   | `false`       | FairBlock tIBE 暗号化を有効化            |
-| `tibe_threshold`     | uint   | `2`           | 必要な復号鍵シェアの最小数      |
-| `decryption_delay`   | uint64 | `1`           | 確定後、復号までのブロック数 |
-| `max_encrypted_size` | uint64 | `4096`        | 暗号化ペイロードの最大サイズ（バイト）     |
+ジェネシス値（このモジュールにはクエリサービスがないため、ライブで再読み取りできません）:
+
+| パラメータ            | 値      | 説明                                        |
+| -------------------- | ------- | ------------------------------------------- |
+| `enabled`            | `false` | FairBlock tIBE 暗号化は無効                 |
+| `tibe_threshold`     | `5`     | 必要な復号鍵シェアの最小数                  |
+| `decryption_delay`   | `3`     | 確定後、復号までのブロック数                |
+| `max_encrypted_size` | `65536` | 暗号化ペイロードの最大サイズ（バイト）      |
 
 ---
 
 ## ガス抽象化モジュール (`x/gasabstraction`)
 
-| パラメータ         | 型    | デフォルト値 | 説明                                           |
-| ----------------- | ----- | ------------- | ----------------------------------------------------- |
-| `accepted_tokens` | array | （下記参照）   | 変換レート付きでガス支払いに受け入れられるトークン |
+ジェネシス設定（`enabled = true`、`native_denom = uqor`）:
 
-**デフォルトで受け入れられるトークン:**
+| トークンデノム | 変換レート      | 説明                   |
+| ------------- | --------------- | ---------------------- |
+| `uqor`        | `1.0`           | ネイティブ QOR トークン（1:1） |
+| `ibc/USDC`    | `1.0`           | IBC ブリッジ USDC      |
+| `ibc/ATOM`    | `10.0`          | IBC ブリッジ ATOM      |
 
-| トークンデノム | 変換レート | 説明            |
-| ----------- | --------------- | ---------------------- |
-| `uqor`      | `1.0`           | ネイティブ QOR トークン（1:1） |
-| `ibc/USDC`  | `1.0`           | IBC ブリッジ USDC       |
-| `ibc/ATOM`  | `10.0`          | IBC ブリッジ ATOM       |
+変換レートは、そのトークンで支払われた手数料を換算する際に使われるレートです。
 
-変換レートは、トークン単位あたりのガスユニット数を表します。レートが高いほど、各トークン単位がより多くのガスをカバーします。
+:::note IBC チャネルは開かれていません
+どちらのネットワークでも IBC チャネルは開かれていないため、`ibc/USDC` や `ibc/ATOM` はまだ存在し得ません。手数料は `uqor` で支払われます。手数料の経路は v3.2.2 で見直されました（テストネットのみ）。
+:::
+
+---
+
+## ライトノードモジュール (`x/lightnode`)
+
+| パラメータ                | 値                 | 説明                                                 |
+| ------------------------ | ------------------ | ---------------------------------------------------- |
+| `registration_fee`       | `1,000,000 uqor` (1 QOR) | ライトノード登録の手数料                       |
+| `heartbeat_interval`     | `1000` ブロック    | 必須ハートビートの間隔（≈3.2 秒のブロックで約 54 分） |
+| `min_delegated_stake`    | `1,000,000,000 uqor` (1,000 QOR) | オペレーターがデリゲートする最低ステーク |
+| `reward_share`           | `0.03`             | ライトノード向けに確保されるフィーコレクターの割合   |
+| `min_uptime_for_rewards` | `0.80`             | 報酬の受給資格に必要な最低稼働率                     |
+| `max_light_nodes`        | `10,000`           | 登録可能なライトノードの最大数                       |
+| `heartbeat_grace_period` | `100` ブロック     | ハートビートが遅れた場合の猶予期間                   |
+
+報酬のアカウンティングは稼働しています（`GET /qorechain/lightnode/v1/reward_pool` は、2026 年 10 月 14 日時点で `max_reward_per_block_per_node` が 1,713 uqor であると報告しています）が、登録は現在閉鎖されており、登録済みのライトノードはありません。[トークノミクス](/architecture/tokenomics#stranded-and-reserve)を参照してください。
+
+---
+
+## AMM モジュール (`x/amm`)
+
+| パラメータ               | 値                            | 説明                                |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| `swap_fee_bps`          | `30`                          | スワップ手数料（0.30%）             |
+| `protocol_fee_bps`      | `10`                          | プロトコル手数料の割合（0.10%）     |
+| `min_liquidity`         | `1000`                        | 最小流動性                          |
+| `max_pools_per_creator` | `50`                          | 作成者あたりの最大プール数          |
+| `lp_token_decimals`     | `6`                           | LP トークンの小数桁数               |
+| `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | プール作成の手数料                  |
+| `max_swap_impact_bps`   | `500`                         | スワップの最大価格インパクト（5%）  |
+| `enabled`               | `true`                        | モジュール有効化フラグ              |
+
+メインネットでもテストネットでも、プールはまだ存在せず、`MsgPausePool` / `MsgResumePool` はメインネットで無効化されています。
+
+---
+
+## スマートアカウント (`x/abstractaccount`)
+
+:::caution 両ネットワークで無効
+`enabled` は `false` です。無効の間は、オーセンティケーターの登録、オーセンティケーター経由の実行、スマートアカウントの作成はすべて拒否されます。これらの機能を前提に構築する前に、`GET /qorechain/abstractaccount/v1/config` を確認してください。
+:::
+
+| パラメータ             | 値       | 説明                             |
+| --------------------- | -------- | -------------------------------- |
+| `enabled`             | `false`  | モジュール有効化フラグ           |
+| `max_session_keys`    | `10`     | アカウントあたりのセッションキーの最大数 |
+| `max_spending_rules`  | `5`      | 支出ルールの最大数               |
+| `default_session_ttl` | `86400` s| セッションキーのデフォルトの有効期間 |
+
+---
+
+## ステーキング、スラッシング、ガバナンス、手数料、EVM {#core-modules}
+
+標準の Cosmos SDK モジュールと EVM モジュールで、ライブで読み取った値です（特に記載のない限り両ネットワークで同一）。
+
+| モジュール | パラメータ | 値 |
+| --- | --- | --- |
+| ステーキング | `unbonding_time` | 1,814,400 s（21 日） |
+| | `max_validators` | 100 |
+| | `max_entries` | 7 |
+| | `historical_entries` | 10,000 |
+| | `bond_denom` | `uqor` |
+| | `min_commission_rate` | 0 |
+| スラッシング | `signed_blocks_window` | 10,000 ブロック（≈3.2 秒のブロックで約 8.9 時間） |
+| | `min_signed_per_window` | 5 %（ウィンドウの 5 % 未満しか署名しないバリデータはジェイルされる） |
+| | `downtime_jail_duration` | 600 s |
+| | `slash_fraction_downtime` | 1 % |
+| | `slash_fraction_double_sign` | 5 % |
+| ガバナンス | `min_deposit` | 10,000,000 uqor（10 QOR） |
+| | `max_deposit_period` / `voting_period` | それぞれ 172,800 s（2 日） |
+| | `quorum` / `threshold` / `veto_threshold` | 0.334 / 0.5 / 0.334 |
+| | `expedited_voting_period` / `expedited_min_deposit` / `expedited_threshold` | 86,400 s / 50 QOR / 0.667 |
+| | `burn_vote_veto` | `true` |
+| ディストリビューション | `community_tax` | 0.02 |
+| フィーマーケット | `min_gas_price` | ガスあたり 0.1 uqor |
+| | `base_fee_change_denominator` / `elasticity_multiplier` | 8 / 2 |
+| | `no_base_fee` | `false` |
+| EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor`（18 桁） |
+| | コントラクトの作成 / 呼び出しアクセス | パーミッションレス |
+| | `active_static_precompiles` | 空（有効な EVM プリコンパイルはなし） |
+| | `history_serve_window` | 8,192 |
+| ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
+| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+
+---
+
+## サーキットブレーカーの状況 {#circuit-breaker}
+
+チェーンは、ファウンデーション運用アカウントとガバナンスが制御する Cosmos SDK のサーキットブレーカーを使って、個別のメッセージタイプを無効化できます。無効化されたメッセージタイプは、すべてのレーンでアンテハンドラーにより拒否されます。最新のリストは `GET /cosmos/circuit/v1/disable_list` にあります。
+
+**メインネット（2026 年 10 月 14 日、16 件）:** ベスティングアカウントの作成（`MsgCreateVestingAccount`、`MsgCreatePermanentLockedAccount`、`MsgCreatePeriodicVestingAccount`）、CosmWasm の `MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2`、AMM の `MsgPausePool`、`MsgResumePool`、`crossvm.MsgCrossVMCall`、`multilayer.MsgUpdateLayerStatus`、`pqc.MsgDeprecateAlgorithm`、`pqc.MsgDisableAlgorithm`、そして PRISM の 4 つの制御メッセージ（`MsgSetAgentMode`、`MsgUpdatePolicy`、`MsgUpdateRewardWeights`、`MsgResumeAgent`）。EVM レーン（`MsgEthereumTx`）は**開放**されています。9 月 16 日から 25 日まで無効化されていましたが、v3.2.0 アップグレードで再開されました。
+
+**テストネット:** CosmWasm の 3 つのメッセージのみ。
+
+標準の bank、staking、governance、distribution、authz、`x/pqc` 登録メッセージをすべて含め、それ以外のメッセージタイプはすべて有効です。このリストはガバナンスによって制御され、変更される可能性があるため、必ずクエリして確認してください。

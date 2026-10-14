@@ -9,6 +9,10 @@ sidebar_position: 12
 
 Modulul `x/rdk` oferă un Rollup Development Kit (RDK) cuprinzător, care permite dezvoltatorilor să implementeze rollup-uri specifice aplicațiilor pe QoreChain. Suportă patru paradigme de decontare, mai multe moduri de secvențiere, backend-uri de disponibilitate a datelor conectabile și optimizare a configurației asistată de AI.
 
+:::caution Capabilitate în stadiu incipient
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.1**) și pe testnet, dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele**. Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
+:::
+
 ---
 
 ## Paradigme de decontare
@@ -20,10 +24,10 @@ QoreChain RDK suportă patru moduri distincte de decontare — **optimistic**, *
 Rollup-urile optimiste presupun că tranzacțiile sunt valide în mod implicit și se bazează pe demonstrații de fraudă pentru rezolvarea disputelor.
 
 * **Sistem de demonstrare**: Demonstrații de fraudă interactive
-* **Fereastră de contestare**: 7 zile (604.800 secunde), configurabilă per rollup
-* **Garanție de contestare**: 1.000 QOR (1.000.000.000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă
+* **Fereastră de contestare**: 604.800 „secunde” (implicit), convertite de lanț în blocuri la un raport fix de 6 secunde per bloc — **100.800 de blocuri**. Timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3,2 s de pe mainnet), așa că planificați în blocuri, nu în zile.
+* **Garanție de contestare**: 1.000 QOR (1.000.000.000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă (profilurile `nft` și `custom`; profilurile `defi`, `gaming` și `enterprise` nu setează nicio garanție deoarece nu au fereastră de contestare)
 * **Finalitate**: Întârziată până la expirarea ferestrei de contestare fără o contestare validă
-* **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută
+* **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: creatorul rollup-ului rezolvă mai întâi contestarea (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Ciclul de viață al lotului**:
 
@@ -36,11 +40,11 @@ Submitted → [fraud proof submitted] → Challenged → Rejected
 
 Rollup-urile ZK oferă demonstrații criptografice de validitate care garantează corectitudinea tranziției de stare.
 
-* **Sistem de demonstrare**: SNARK (Groth16, PLONK) sau STARK (transparent, fără setup de încredere)
+* **Sistem de demonstrare**: SNARK (Groth16 peste BLS12-381) sau STARK (transparent, fără setup de încredere)
 * **Finalitate**: Instantanee la verificarea demonstrației — nu este necesară o fereastră de contestare
 * **Dimensiune maximă a demonstrației**: 1 MB (1.048.576 octeți)
 * **Adâncime de recursivitate**: Adâncime configurabilă a agregării demonstrațiilor (implicit: 1)
-* **Maturitate**: În versiunea curentă, decontarea ZK folosește o verificare stub care acceptă orice demonstrație ne-goală. Verificarea completă a demonstrațiilor SNARK/STARK este o îmbunătățire planificată și ar trebui tratată ca nefiind încă pregătită pentru producție.
+* **Maturitate**: Loturile SNARK sunt verificate on-chain (Groth16 peste BLS12-381) față de o cheie de verificare stocată împreună cu rollup-ul. Un rollup creat prin `create-rollup` nu are în prezent o cheie de verificare, deci loturile ZK nu pot fi încă finalizate de la un capăt la altul. Verificarea STARK este experimentală: este opt-in și verifică un circuit de demonstrație, nu propria tranziție de stare a rollup-ului dumneavoastră. Tratați decontarea ZK ca nefiind pregătită pentru producție.
 
 **Ciclul de viață al lotului**:
 
@@ -84,7 +88,7 @@ Rollup-urile sovereign operează cu un consens independent și își secvențiaz
 | **Based**       |           -- |        -- |        -- | Necesar |
 | **Sovereign**   |           -- |        -- |        -- | Necesar |
 
-Verificarea completă a demonstrațiilor STARK și ZK este încă în curs de maturizare; vezi nota de maturitate [Decontare ZK](#zk-zero-knowledge-settlement) de mai sus.
+Verificarea STARK este experimentală, iar decontarea ZK nu este pregătită pentru producție; vezi nota de maturitate [Decontare ZK](#zk-zero-knowledge-settlement) de mai sus.
 
 ---
 
@@ -108,6 +112,10 @@ Profilul `custom` lasă fiecare câmp la latitudinea ta. Valorile exacte grupate
 
 Secvențiatorul determină cine ordonează tranzacțiile în cadrul unui bloc de rollup.
 
+:::note Ce este impus în prezent
+On-chain, un lot poate fi trimis doar de adresa de secvențiator configurată a rollup-ului sau, când nu este setată niciuna (cazul tuturor profilurilor prestabilite), de creatorul acestuia. Modurile `shared` și `based` sunt înregistrate în configurația rollup-ului, dar QoreChain nu admite încă o listă de secvențiatori partajați sau proponenți L1 ca trimițători de loturi; aceste moduri descriu designul intenționat.
+:::
+
 ### Secvențiator dedicat
 
 Un singur operator secvențiază toate tranzacțiile rollup-ului.
@@ -120,6 +128,7 @@ Un singur operator secvențiază toate tranzacțiile rollup-ului.
 
 Un set de secvențiatori ordonează colectiv tranzacțiile.
 
+* **Stare**: o etichetă în prezent — lista nu este încă admisă on-chain (vezi nota de mai sus)
 * **Dimensiunea minimă a setului**: Configurabilă (implicit: 1)
 * **Latență**: Ușor mai mare din cauza coordonării între mai multe părți
 * **Încredere**: Distribuită în cadrul setului de secvențiatori
@@ -128,6 +137,7 @@ Un set de secvențiatori ordonează colectiv tranzacțiile.
 
 Proponenții L1 QoreChain secvențiază tranzacțiile rollup-ului.
 
+* **Stare**: o etichetă în prezent — proponenții L1 nu sunt încă admiși ca trimițători de loturi (vezi nota de mai sus)
 * **Întârziere de includere**: Blocuri configurabile înainte de includerea forțată (implicit: 10)
 * **Cotă din taxa de prioritate**: Procent configurabil din taxele de prioritate plătite proponenților L1
 * **Încredere**: Moștenește securitatea setului de validatori al QoreChain și rezistența la cenzură
@@ -141,12 +151,16 @@ Proponenții L1 QoreChain secvențiază tranzacțiile rollup-ului.
 
 Stocare de blob-uri în KV-store on-chain în interiorul QoreChain.
 
+:::caution Încă nu există o modalitate publică de a publica un blob
+Modulul definește stocarea, păstrarea și curățarea blob-urilor, dar în versiunile actuale nu există niciun mesaj de tranzacție pentru publicarea unui blob. Un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat deoarece nu poate fi stocat niciun blob corespunzător. Vezi [Disponibilitatea datelor](/rollups/data-availability).
+:::
+
 | Parametru            | Valoare                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Dimensiune maximă a blob-ului**    | 2 MB (2.097.152 octeți)                                                                              |
-| **Perioadă de păstrare** | 432.000 blocuri (\~30 de zile la blocuri de 6 secunde)                                                       |
+| **Perioadă de păstrare** | 432.000 de blocuri (aproximativ 16 zile la blocurile actuale de ≈3,2 s de pe mainnet; cifra se modifică odată cu timpul blocurilor) |
 | **Auto-curățare (pruning)**     | Blob-urile expirate sunt curățate în `EndBlocker` — datele sunt eliminate, dar metadatele de commitment sunt păstrate  |
-| **Commitment**       | Hash SHA-256 al datelor blob-ului                                                                           |
+| **Commitment**       | Hash SHAKE-256 (32 de octeți) al datelor blob-ului                                                  |
 
 ### Celestia DA
 
@@ -181,7 +195,7 @@ Pending → Active → Paused → Active → Stopped
 | **Paused**  | Oprit temporar de creator (poate fi reluat)                   |
 | **Stopped** | Dezafectat permanent — garanția de stake returnată creatorului  |
 
-La creare, starea rollup-ului este setată la `Active` imediat după ce escrow-ul de stake și înregistrarea stratului au reușit.
+La creare, starea rollup-ului este setată la `Active` imediat după ce escrow-ul de stake și arderea la creare au reușit (înregistrarea stratului este încercată, dar nu este fatală). Doar creatorul poate pune în pauză, relua sau opri un rollup (impus începând cu versiunea de lanț v3.2.0).
 
 ---
 
@@ -205,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mod de decontare | Declanșator de finalizare                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | Fereastra de contestare expiră (\~7 zile) fără o contestare validă |
+| **Optimistic**  | 100.800 de blocuri după trimitere (fereastra implicită) fără contestare |
 | **ZK**          | Instantaneu la depunerea unei demonstrații valide                           |
 | **Based**       | 2 blocuri L1 după trimitere                                |
 | **Sovereign**   | Niciunul — gestionat de propriul consens al rollup-ului                |
@@ -221,9 +235,9 @@ Auto-finalizarea este executată în `EndBlocker` pentru rollup-urile optimistic
 | `max_rollups`               |                              100 | Numărul maxim de rollup-uri care pot fi înregistrate |
 | `min_stake_for_rollup`      | 10.000.000.000 uqor (10.000 QOR) | Stake minim necesar pentru a crea un rollup        |
 | `rollup_creation_burn_rate` |                        0,01 (1%) | Fracțiunea din stake-ul de creare ars prin `x/burn`   |
-| `default_challenge_window`  |         604.800 secunde (7 zile) | Fereastra implicită de contestare optimistă              |
+| `default_challenge_window`  | 604.800 (convertit în 100.800 de blocuri) | Fereastra implicită de contestare optimistă              |
 | `max_da_blob_size`          |           2.097.152 octeți (2 MB) | Dimensiunea maximă a blob-ului de disponibilitate a datelor              |
-| `blob_retention_blocks`     |              432.000 (\~30 de zile) | Blocuri înainte ca blob-urile DA să fie curățate                |
+| `blob_retention_blocks`     |                   432.000 de blocuri | Blocuri înainte ca blob-urile DA să fie curățate                |
 | `max_batches_per_block`     |                               10 | Numărul maxim de loturi de decontare procesate per bloc   |
 
 ---
@@ -232,29 +246,27 @@ Auto-finalizarea este executată în `EndBlocker` pentru rollup-urile optimistic
 
 Modulul RDK se integrează cu `x/multilayer` pentru gestionarea stării între straturi:
 
-### Înregistrarea stratului
+### Înregistrarea stratului {#layer-registration}
 
-Când un rollup este creat, acesta este înregistrat automat ca strat de sidechain prin `RegisterSidechain`. Înregistrarea include:
+Când un rollup este creat, modulul înregistrează un strat pentru acesta prin `RegisterSidechain`, deci on-chain tipul stratului este **`sidechain`**, începe în starea `proposed`, se numără în limita de sidechain-uri multilayer (`max_sidechains`, implicit **10**) și blochează `min_sidechain_stake` al creatorului (1.000 QOR). Înregistrarea include:
 
 * ID-ul stratului (corespunde ID-ului rollup-ului)
 * Timpul țintă al blocului și numărul maxim de tranzacții per bloc
 * Tipurile de VM și domeniile suportate
 * Intervalul de decontare
 
-Înregistrarea este **non-fatală**: dacă înregistrarea `x/multilayer` eșuează, rollup-ul este totuși creat și un avertisment este înregistrat.
+Înregistrarea este **non-fatală**: dacă eșuează (sold insuficient sau limită atinsă), rollup-ul este totuși creat, dar nu are strat și nu poate fi ancorat.
 
-### Ancorarea stării
+### Ancorarea stării {#state-anchoring}
 
-Fiecare lot de decontare trimis către RDK este ancorat la `x/multilayer` prin `AnchorState`. Acest lucru înregistrează:
+Un lot de decontare poate fi ancorat la `x/multilayer`, care înregistrează ID-ul stratului, înălțimea stratului (indexul lotului), rădăcina de stare, hash-ul setului de validatori și numărul de tranzacții sub o semnătură post-cuantică a creatorului rollup-ului.
 
-* ID-ul stratului și înălțimea stratului (indexul lotului)
-* Rădăcina de stare
-* Numărul de tranzacții
+* **Pe mainnet astăzi:** loturile sunt decontate, dar **nu** sunt ancorate — RDK nu furnizează semnătura creatorului pe care o necesită ancora, deci pasul de ancorare nu reușește și nu a fost scrisă nicio ancoră. Ancorarea este non-fatală: nu împiedică niciodată procesarea lotului.
 
-Ancorarea este **non-fatală**: eșecurile sunt înregistrate, dar nu împiedică procesarea lotului.
+Vezi [Chitanțe de decontare](/rollups/settlement-receipts) pentru ce dovedește și ce nu dovedește o ancoră.
 
 ---
 
 ## Integrarea Burn
 
-La crearea unui rollup, **1% din suma de stake** este ars prin modulul `x/burn` prin canalul de ardere `rollup_create`. De exemplu, crearea unui rollup cu stake-ul minim de 10.000 QOR arde permanent 100 QOR. Restul de 9.900 QOR este păstrat în escrow și returnat când rollup-ul este oprit.
+La crearea unui rollup, **1% din suma de stake** este ars prin modulul `x/burn` prin canalul de ardere `rollup_create`. De exemplu, crearea unui rollup cu stake-ul minim de 10.000 QOR arde permanent 100 QOR. Restul de 9.900 QOR este păstrat în escrow și returnat când rollup-ul este oprit. Arderea la creare este impusă începând cu versiunea de lanț v3.2.0; versiunile anterioare nu o aplicau.

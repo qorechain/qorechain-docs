@@ -7,166 +7,136 @@ sidebar_position: 5
 
 # Transfert d'actifs par pont
 
-Ce guide explique comment déplacer des actifs entre QoreChain et d'autres réseaux blockchain. La couche d'interopérabilité de QoreChain comprend **37 configurations QCB (QoreChain Bridge)** (y compris un bouclage QoreChain) pour les réseaux hétérogènes, plus **8 canaux IBC** pour les chaînes de l'écosystème Cosmos.
+Ce guide décrit la manière dont le déplacement d'actifs entre QoreChain et d'autres réseaux blockchain est conçu pour fonctionner. La couche d'interopérabilité de QoreChain repose sur **37 configurations de chaînes** (36 chaînes externes plus Injective, atteinte via IBC) et jusqu'à **8 contreparties IBC** pour les chaînes de l'écosystème Cosmos.
 
-:::caution
-Le pont cross-chain est actuellement en phase de **testnet / pré-production**. La disponibilité des connexions, les actifs pris en charge et les paramètres de finalité sont susceptibles de changer et ne doivent pas être considérés comme prêts pour la production. Validez tous les transferts sur **`qorechain-diana`** avant de vous y fier.
+:::caution Pas en service sur aucun des deux réseaux
+Le module de pont est déployé sur le mainnet et le testnet, mais **aucune route de pont n'est active** : les 37 configurations de chaînes sont au statut `pending` sans contrat de pont défini, aucun validateur de pont n'est enregistré, aucune opération de pont n'a jamais été créée, et il n'existe ni canal ni client IBC. Tout ce qui suit décrit la conception prévue. N'envoyez pas d'actifs en comptant sur leur transfert par pont. Voir [Architecture du Pont](/architecture/bridge-architecture) pour le tableau de statut actuel.
 :::
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.97** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** là où la prise en charge du pont a été activée.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.1**. Substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** une fois qu'une route est activée.
 :::
 
 ---
 
 ## Aperçu des connexions
 
-QoreChain fournit deux protocoles de pont :
+QoreChain est conçu pour fournir deux protocoles de pont :
 
 | Protocole                                 | Connexions        | Cas d'usage                                                                 |
 | ---------------------------------------- | ------------------ | ------------------------------------------------------------------------ |
-| **IBC** (Inter-Blockchain Communication) | 8 canaux         | Interopérabilité native avec les chaînes compatibles IBC                          |
-| **QCB** (QoreChain Bridge)               | 37 configurations  | Transferts cross-chain avec des réseaux non-IBC via des attestations sécurisées par PQC |
+| **IBC** (Inter-Blockchain Communication) | jusqu'à 8 canaux (aucun ouvert)   | Interopérabilité native avec les chaînes compatibles IBC                          |
+| **QCB** (QoreChain Bridge)               | 37 configurations (toutes en attente) | Transferts cross-chain avec des réseaux non-IBC via des attestations sécurisées par PQC |
 
-Une énumération complète de chaque configuration QCB et canal IBC se trouve sur la page **Architecture du Pont**. Ce guide se concentre sur l'utilisation quotidienne du pont.
+Une énumération complète de chaque configuration de chaîne se trouve sur la page **Architecture du Pont**. Ce guide se concentre sur la manière dont un transfert par pont est conçu pour fonctionner.
 
 ---
 
-## Canaux IBC
+## IBC
 
-Les chaînes compatibles IBC suivantes ont établi des canaux avec QoreChain :
-
-| Chaîne                | Canal     | Statut |
-| -------------------- | ----------- | ------ |
-| Cosmos Hub           | `channel-0` | Actif |
-| Osmosis              | `channel-1` | Actif |
-| Noble                | `channel-2` | Actif |
-| Celestia             | `channel-3` | Actif |
-| Stride               | `channel-4` | Actif |
-| Akash                | `channel-5` | Actif |
-| Babylon              | `channel-6` | Actif |
-| QoreChain (bouclage) | `channel-7` | Actif |
-
-Les transferts IBC utilisent le module standard `ibc-transfer` :
-
-```bash
-qorechaind tx ibc-transfer transfer transfer <channel> <recipient> <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+IBC fait partie de la conception (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), mais **aucun canal ni client IBC n'existe encore sur l'un ou l'autre réseau**, il n'y a donc rien à transférer. Cette page listera les canaux une fois qu'ils seront ouverts.
 
 ---
 
 ## Points de terminaison du pont QCB
 
-Le QoreChain Bridge se connecte à des chaînes externes couvrant plusieurs types d'écosystèmes. Une sélection représentative des réseaux pris en charge :
+Le QoreChain Bridge est conçu pour se connecter à des chaînes externes couvrant plusieurs types d'écosystèmes. Une sélection représentative des connexions prévues (chacune est `pending` aujourd'hui) :
 
-| Chaîne     | Type de chaîne | Actifs pris en charge |
-| --------- | ---------- | ---------------- |
-| Ethereum  | EVM        | ETH, USDC, WBTC  |
-| BSC       | EVM        | BNB, USDC        |
-| Solana    | Solana     | SOL, USDC        |
-| Avalanche | EVM        | AVAX, USDC       |
-| Polygon   | EVM        | MATIC, USDC      |
-| Arbitrum  | EVM        | ETH, ARB, USDC   |
-| TON       | TON        | TON              |
-| Sui       | Sui Move   | SUI              |
-| Optimism  | EVM        | ETH, USDC, OP    |
-| Base      | EVM        | ETH, USDC        |
-| Aptos     | Aptos      | APT, USDC        |
-| Bitcoin   | Bitcoin    | BTC              |
-| NEAR      | NEAR       | NEAR, USDC       |
-| Cardano   | Cardano    | ADA              |
-| Polkadot  | Polkadot   | DOT              |
-| Tezos     | Tezos      | XTZ              |
-| Tron      | Tron       | TRX, USDT        |
+| Chaîne     | Type de chaîne |
+| --------- | ---------- |
+| Ethereum  | EVM        |
+| BSC       | EVM        |
+| Solana    | Solana     |
+| Avalanche | EVM        |
+| Polygon   | EVM        |
+| Arbitrum  | EVM        |
+| TON       | TON        |
+| Sui       | Sui Move   |
+| Optimism  | EVM        |
+| Base      | EVM        |
+| Aptos     | Aptos      |
+| Bitcoin   | Bitcoin    |
+| NEAR      | NEAR       |
+| Cardano   | Cardano    |
+| Polkadot  | Polkadot   |
+| Tezos     | Tezos      |
+| Tron      | Tron       |
 
-Consultez la page **Architecture du Pont** pour la liste complète des configurations QCB et leur statut de déploiement actuel.
+Aucune liste d'actifs n'est publiée : les configurations de chaînes ne comportent pas encore de registre d'actifs. Consultez la page **Architecture du Pont** pour la liste complète des configurations de chaînes.
 
 ---
 
 ## Flux de dépôt (chaîne externe vers QoreChain)
 
-Le dépôt d'actifs depuis une chaîne externe vers QoreChain suit cette séquence :
+La séquence prévue pour un dépôt depuis une chaîne externe vers QoreChain :
 
 1. **Verrouillage** — Verrouillez les jetons sur la chaîne externe en les envoyant au contrat ou à l'adresse du pont QCB.
 2. **Attestation** — Les validateurs du pont observent la transaction de verrouillage et produisent des attestations signées par PQC.
 3. **Seuil** — Une fois **7 sur 10** attestations de validateurs collectées, le pont finalise le dépôt.
 4. **Émission** — Les jetons enveloppés (wrapped) équivalents sont émis sur QoreChain et crédités sur votre adresse `qor1...`.
 
-**Commande CLI :**
-
-```bash
-qorechaind tx bridge deposit \
-  --chain ethereum \
-  --amount 1000000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+Il n'existe aucune commande « démarrer un dépôt » exécutable par l'utilisateur : vous verrouillez sur la chaîne externe, et les attestations des validateurs du pont créditent votre compte. (La commande `qorechaind tx bridge deposit` de la chaîne crédite un dépôt déjà attesté et nécessite des signatures de validateurs du pont ; ce n'est pas la manière dont un utilisateur démarre un dépôt.)
 
 ---
 
 ## Flux de retrait (QoreChain vers chaîne externe)
 
-Le retrait d'actifs depuis QoreChain vers une chaîne externe :
+La séquence prévue pour un retrait de QoreChain vers une chaîne externe :
 
 1. **Brûlage** — Brûlez les jetons enveloppés (wrapped) sur QoreChain.
 2. **Attestation** — Les validateurs du pont observent le brûlage et produisent des attestations signées par PQC.
 3. **Seuil** — Une fois **7 sur 10** attestations collectées, le retrait est finalisé.
 4. **Déverrouillage** — Les jetons d'origine sont libérés sur la chaîne externe vers l'adresse de destination spécifiée.
 
-**Commande CLI :**
+**Commande CLI** (bloquée aujourd'hui : aucune chaîne n'est active, la transaction serait donc refusée) :
 
 ```bash
-qorechaind tx bridge withdraw \
-  --chain ethereum \
-  --amount 1000000 \
-  --to 0xYourEthereumAddress \
+# 1. Build the unsigned transaction
+qorechaind tx bridge withdraw [destination-chain] [destination-address] [asset] [amount] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 300000 --fees 30000uqor \
+  --generate-only > withdraw.json
+
+# 2. Attach the post-quantum co-signature and broadcast
+qorechaind tx pqc cosign withdraw.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
+
+Chaque transaction de la voie native nécessite la co-signature post-quantique hybride et des frais d'au moins 0,1 uqor par unité de gas ; voir [Première transaction](/getting-started/first-transaction).
 
 ---
 
 ## Modèle de sécurité
 
-Le QoreChain Bridge est sécurisé par plusieurs couches de défense :
+Le QoreChain Bridge est conçu pour être sécurisé par plusieurs couches de défense :
 
 | Mécanisme                    | Description                                                                                                                                           |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multisig PQC 7-sur-10**     | Chaque opération de pont nécessite des attestations d'au moins 7 des 10 validateurs du pont, chacun utilisant des signatures cryptographiques post-quantiques.               |
-| **Période de contestation de 24 heures** | Les retraits dépassant un seuil configurable entrent dans une fenêtre de contestation de 24 heures pendant laquelle les validateurs ou les observateurs peuvent signaler des transactions frauduleuses. |
+| **Période de contestation de 24 heures** | Les transferts dépassant le seuil de gros transfert (100 000 QOR) entrent dans une fenêtre de contestation de 24 heures pendant laquelle les validateurs ou les observateurs peuvent signaler des transactions frauduleuses. |
 | **Disjoncteurs**         | Des limiteurs de débit automatisés interrompent les opérations du pont en cas de volume anormal ou de schémas suspects détectés. Les opérations du pont reprennent après une revue manuelle.  |
 
 ---
 
 ## Interroger le statut du pont
 
-Vérifiez le statut d'une opération de pont en attente :
+Lisez l'état du pont :
 
 ```bash
-qorechaind query bridge pending-deposits --address <your_qor_address>
+qorechaind query bridge config
+qorechaind query bridge chains
+qorechaind query bridge chain ethereum
+qorechaind query bridge validators
+qorechaind query bridge operations
+qorechaind query bridge operation [id]
 ```
 
-```bash
-qorechaind query bridge pending-withdrawals --address <your_qor_address>
-```
-
-Listez toutes les connexions de pont actives :
-
-```bash
-qorechaind query bridge connections
-```
+Les mêmes données sont disponibles via REST sous `/qorechain/bridge/v1/` (voir [Architecture du Pont](/architecture/bridge-architecture#rest-api-endpoints)).
 
 ---
 
 ## Astuces
 
-* Les dépôts par pont se finalisent généralement en quelques minutes une fois les 7 attestations sur 10 requises rassemblées.
-* Les retraits importants déclenchent automatiquement la période de contestation de 24 heures. Anticipez pour les transferts urgents.
 * Vérifiez toujours que le format de l'adresse de destination correspond à la chaîne cible (par ex. `0x...` pour les chaînes EVM, base58 pour Solana).
-* Les transferts IBC sont généralement plus rapides que les transferts QCB car ils utilisent une communication native au niveau du protocole.
+* Les transferts importants (au-delà de 100 000 QOR) sont conçus pour déclencher automatiquement la période de contestation de 24 heures.
 * Les frais de pont sont brûlés via le canal de brûlage `bridge_fee` (voir [Opérations sur les jetons](/user-guide/token-operations)).

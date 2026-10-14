@@ -10,7 +10,11 @@ sidebar_position: 1
 Esta guía cubre el token QOR, cómo enviar y recibir tokens, consultar saldos y comprender el modelo de distribución de comisiones en QoreChain.
 
 :::note
-Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.97** — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
+Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 29 de junio de 2026 en la línea v3.2 (versión de nodo **v3.2.1**; la testnet ejecuta **v3.2.2**) — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
+:::
+
+:::caution Firma con `tx pqc cosign`
+La mainnet y la testnet exigen una firma híbrida post-cuántica en cada transacción de la lane Cosmos, por lo que los comandos de esta página no se difunden tal como están escritos. Añade `--generate-only > tx.json` a un comando y luego ejecuta `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Consulta [Firma híbrida](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/overview) y el [Dashboard](/dashboard/overview) realizan esta firma por ti.
 :::
 
 ## Información del Token
@@ -32,7 +36,7 @@ Para transferir tokens QOR de una cuenta a otra:
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Ejemplo:** Enviar 5 QOR (5,000,000 uqor) a otra dirección:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 También puedes usar un nombre de clave en lugar de una dirección sin procesar para el remitente:
@@ -48,7 +52,7 @@ También puedes usar un nombre de clave en lugar de una dirección sin procesar 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## Consultar Saldos
@@ -85,33 +89,39 @@ Las comisiones de transacción en QoreChain se distribuyen entre cinco destinos 
 | Destino     | Cuota | Propósito                                                         |
 | --------------- | ----- | --------------------------------------------------------------- |
 | **Validadores**  | 37%   | Recompensa a los productores de bloques y asegura la red                 |
-| **Quemado**      | 30%   | Eliminado permanentemente del suministro, creando presión deflacionaria |
+| **Quemado**      | 30%   | Eliminado permanentemente del suministro |
 | **Tesorería**    | 20%   | Financia el desarrollo del protocolo y las subvenciones del ecosistema                 |
 | **Stakers**     | 10%   | Distribuido proporcionalmente entre todos los delegadores                    |
-| **Nodos Ligeros** | 3%    | Recompensa a los operadores de nodos ligeros que sirven datos de la red            |
+| **Nodos Ligeros** | 3%    | Reservado para las recompensas de nodos ligeros (consulta la nota siguiente)            |
+
+El reparto se aplica a todo lo que entra en el fee collector, que contiene las comisiones de transacción y la emisión de staking acuñada en cada época. La cuota de nodos ligeros se acumula en una reserva; el registro de recompensas de nodos ligeros todavía no está abierto, por lo que actualmente no se paga a ningún nodo con ella (consulta [Nodo Ligero](/light-node/overview)). Desde la actualización v3.2.0, la cuota de los stakers se paga como una recompensa de staking normal (consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canales de Quema
 
-QoreChain implementa un mecanismo de quema multicanal. Los tokens QOR se eliminan permanentemente de la circulación a través de 10 canales distintos:
+El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a través de cualquiera de ellas se elimina permanentemente de la circulación. En mainnet, hasta ahora solo el canal de comisiones de gas ha registrado quemas; los demás están definidos pero no han registrado nada.
 
 | Canal              | Descripción                                                         |
 | -------------------- | ------------------------------------------------------------------- |
-| `tx_fee`             | La porción de quema del 30% de cada comisión de transacción                       |
-| `governance_penalty` | Quemado cuando las propuestas de gobernanza no alcanzan el quórum o son vetadas |
-| `slashing_burn`      | Porción quemada de los stakes de validadores sancionados (slashed)                          |
-| `bridge_fee`         | Comisión quemada en transferencias del bridge entre cadenas                             |
-| `spam_deterrent`     | Quema adicional aplicada a transacciones marcadas como spam                |
-| `epoch_excess`       | Emisiones excedentes por encima del objetivo, quemadas en los límites de época           |
-| `manual_burn`        | Quemas de tokens iniciadas por la comunidad mediante propuesta de gobernanza               |
-| `contract_callback`  | Comisiones quemadas en ejecuciones de callback de smart contracts                   |
-| `cross_vm_fee`       | Quemado al ejecutar llamadas cross-VM (p. ej., EVM a CosmWasm)        |
-| `rollup_create`      | 1% del stake mínimo quemado al desplegar un nuevo rollup          |
+| `gas_fee`          | Se quema el 30% de todas las comisiones de gas                                  |
+| `contract_create`  | Comisión fija de 100 QOR quemada por cada creación de contrato (inactivo: la subida de CosmWasm está cerrada) |
+| `ai_service`       | Se quema el 50% de las comisiones de servicios de IA (inactivo: las comisiones de servicios de IA no están activas) |
+| `bridge_fee`       | Se quema el 100% de las comisiones del bridge (inactivo: el bridge no está activo) |
+| `treasury_buyback` | Recompra y quema periódica desde la tesorería                                  |
+| `failed_tx`        | Gas de transacciones fallidas; la cadena lo aplica desde v3.2.2 (hasta ahora solo en testnet) |
+| `xqore_penalty`    | Penalizaciones de salida anticipada de xQORE canalizadas mediante quema (xQORE no está activo) |
+| `auto_buyback`     | Quemas automatizadas a nivel de protocolo (inactivo)                           |
+| `tge`              | Reservado; la quema del TGE ocurrió antes del génesis y este canal no registra nada |
+| `rollup_create`    | Se quema el 1% del stake de creación del rollup                                |
+| `milestone`        | Quemas programadas en recuentos acumulados fijos de transacciones (todavía ninguna activada) |
+| `amm`              | Reservado para comisiones de protocolo del AMM (ninguna registrada)            |
 
-Puedes consultar el importe total quemado en todos los canales:
+El módulo de quema no tiene consulta por CLI; lee la quema acumulada por fuente desde REST:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+La respuesta lista `total_burned` y `burns_by_source` (en uqor). El suministro total actual se obtiene con `qorechaind query bank total-supply-of uqor`.
 
 ## Consejos
 
@@ -122,7 +132,7 @@ Verifica siempre dos veces las direcciones de los destinatarios antes de enviar 
 :::tip
 
 * Usa el flag `--dry-run` para simular una transacción sin difundirla.
-* Usa `--gas auto` para que el nodo estime el gas necesario para tu transacción.
-* La comisión mínima para una transferencia estándar es de **500 uqor**.
+* Establece `--gas` explícitamente (400,000 es suficiente para una transferencia con firma híbrida).
+* El mínimo de comisión es de **0.1 uqor por unidad de gas**, por lo que un límite de gas de 400,000 requiere al menos **40,000 uqor**.
 
 :::

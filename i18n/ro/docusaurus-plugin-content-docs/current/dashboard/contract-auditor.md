@@ -11,8 +11,8 @@ sidebar_position: 7
 
 ## Rulează un audit
 
-1. Deschide **Auditorul** și furnizează contractul pe care vrei să-l analizezi.
-2. Pornește auditul. QCAI analizează contractul și produce un raport.
+1. Autentifică-te, deschide **AI Audit** și lipește contractul în **Contract Source Code**. Opțional, setează **Blockchain** (implicit **Auto-detect from code**) și un **Name**.
+2. Selectează **Run Security Audit**. QCAI analizează contractul și produce un raport; **Export PDF** îl salvează.
 
 ## Citește raportul
 
@@ -31,7 +31,7 @@ Acolo unde este cazul, raportul include și secțiuni pentru recomandări genera
 
 ## Revizuiește auditurile anterioare
 
-Lista de audituri afișează rapoartele tale anterioare într-un tabel cu numele contractului, blockchainul, nivelul de risc, scorul de securitate și momentul creării fiecăruia. O casetă de căutare filtrează după numele contractului sau blockchain. Selectează orice rând pentru a redeschide raportul complet și folosește linkul propriu al paginii raportului pentru a-l partaja.
+Lista de audituri afișează rapoartele tale anterioare într-un tabel cu numele contractului, blockchainul, nivelul de risc, scorul de securitate și momentul creării fiecăruia. O casetă de căutare filtrează după numele contractului sau blockchain. Selectează orice rând pentru a redeschide raportul complet. Rapoartele sunt **private în mod implicit**; pe un raport pe care îl deții, un comutator din partea de sus afișează „This report is private” — activează-l pentru a face raportul public, astfel încât oricine are linkul să îl poată citi (numele și IP-ul tău nu sunt afișate niciodată), și dezactivează-l pentru a-l face din nou privat.
 
 :::tip Auditează înainte de a face deploy
 Rulează un audit ca ultim pas înainte de deploy și reia-l după orice modificare. Tratează constatările ca o îndrumare de verificat, nu ca o garanție automată — combină raportul cu propriile teste pe [testnet](/getting-started/connecting-to-testnet).

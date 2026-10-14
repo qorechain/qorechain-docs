@@ -16,11 +16,15 @@ sidebar_position: 4
 | **الحالة** | مباشرة | شبكة اختبار نشطة |
 | **معرّف سلسلة Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **معرّف سلسلة EVM (EIP-155)** | **9801** (بالنظام الست عشري `0x2649`) | **9800** (بالنظام الست عشري `0x2648`) |
-| **مباشرة منذ** | 7 يونيو 2026، 23:59 بالتوقيت العالمي (UTC) | — |
-| **إصدار السلسلة** | v3.1.97 | v3.1.97 |
+| **مباشرة منذ** | 29 يونيو 2026، 17:03 بالتوقيت العالمي (UTC) (كتلة genesis) | 1 يوليو 2026 (مستمرة منذ ذلك الحين؛ دون إعادة ضبط) |
+| **إصدار السلسلة** | v3.2.1 (بقواعد الإجماع الخاصة بـ v3.2.0) | v3.2.2 |
+| **زمن الكتلة (المتوسط المقاس)** | نحو 3.2 ثانية | نحو 1.0 ثانية |
+| **ملف بيان الإصدار** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **إطار العمل** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **الحد الأدنى لسعر الغاز** | `0.1uqor` | `0.1uqor` |
 | **دليل الاتصال** | [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) | [الاتصال بشبكة الاختبار](/getting-started/connecting-to-testnet) |
+
+يُعدّ ملفا البيان المرجع المعتمد للإصدار الذي ينبغي أن تشغّله أي عقدة جديدة. يحمل بيان شبكة الاختبار (v3.2.2) ارتفاع ترقية لأن شبكة الاختبار تتلقى ترقيات منسّقة عبر الحوكمة، بينما إصدار الشبكة الرئيسية v3.2.1 إصدار متدرّج محلي على مستوى العقدة فوق قواعد الإجماع الخاصة بـ v3.2.0.
 
 ## نقاط النهاية العامة {#public-endpoints}
 
@@ -35,10 +39,14 @@ sidebar_position: 4
 | EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
 | SVM JSON-RPC (متوافق مع Solana، للقراءة فقط) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | مستكشف الكتل | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (بدّل إلى شبكة الاختبار) |
-| التنزيلات (الملف الثنائي / genesis / اللقطة) | [download.qore.host](https://download.qore.host) | — |
+| التنزيلات (الملف الثنائي / genesis / اللقطة) | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-نقاط نهاية SVM العامة **للقراءة فقط** (إرسال المعاملات معطّل عند الحافة)؛ شغّل عقدتك الخاصة لعمليات الكتابة على SVM. لأحمال العمل الكثيفة أو الإنتاجية، شغّل عقدتك الخاصة — راجع [تشغيل عقدة](/developer-guide/running-a-node).
+نقاط نهاية SVM العامة **للقراءة فقط** (إرسال المعاملات معطّل عند الحافة)؛ شغّل عقدتك الخاصة لعمليات الكتابة على SVM. لأحمال العمل الكثيفة أو الإنتاجية، شغّل عقدتك الخاصة — راجع [تشغيل عقدة](/developer-guide/running-a-node). لا توجد نقطة نهاية gRPC عامة ولا WebSocket عام لـ EVM على الشبكة الرئيسية. على نقاط نهاية EVM العامة، يقبل `eth_getLogs` ما يصل إلى 10,000 كتلة كحد أقصى في كل استعلام، و`txpool_content` معطّل (تخدم العقدة المستضافة ذاتيًا فضاء الأسماء بالكامل)؛ راجع [فضاء أسماء eth_](/api-reference/json-rpc-eth_-namespace).
+:::
+
+:::tip
+إذا تلقّى سكربت الخطأ `403 Forbidden` من نقطة نهاية عامة، فاضبط ترويسة `User-Agent` صراحةً (وكيل `urllib` الافتراضي في Python محظور؛ أما عملاء `requests` و`curl` وNode وGo فتعمل كما هي).
 :::
 
 :::caution مسار معاملات SVM معطّل حاليًا

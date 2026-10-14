@@ -16,26 +16,14 @@ Elle est **en ligne et publique** sur trois boutiques.
 | Navigateur | Installation |
 |---|---|
 | **Chrome et navigateurs Chromium** (Brave, Edge, Arc, Opera) | https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg |
-| **Firefox** | https://addons.mozilla.org/firefox/addon/qorex/ |
-| **Safari (macOS 10.14 ou ultérieur)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
+| **Firefox** (Firefox 140 ou ultérieur) | https://addons.mozilla.org/firefox/addon/qorex/ |
+| **Safari (macOS 12 ou ultérieur)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
 
 ### Quelle version est en ligne où {#versions}
 
-Les revues des boutiques n'arrivent pas au même moment, donc la version publiée diffère actuellement selon le navigateur :
+Au **15 octobre 2026** : **Chrome 0.3.6**, **Firefox 0.3.7** (une version corrective après la 0.3.6), et **Safari** dans l'app macOS **QoreX Wallet** (**1.7.6**, qui embarque l'extension 0.3.6 ; le Mac App Store utilise sa propre numérotation `1.x`). Les revues des boutiques n'arrivent pas au même moment, donc une boutique peut brièvement servir une version plus ancienne ou plus récente ; la fiche de la boutique affiche toujours sa version actuelle. Cette page décrit l'ensemble de fonctionnalités de la 0.3.6. Voir aussi [Quelle version est en ligne où](/qorex/overview#versions).
 
-| Navigateur | Version publiée |
-|---|---|
-| **Firefox** | **0.2.6** |
-| **Safari (macOS)** | livrée à l'intérieur de l'app macOS **QoreX Wallet**, qui utilise sa propre numérotation `1.x` — le Mac App Store sert actuellement la **1.6** (qui embarque l'extension **0.2.6**) |
-| **Chrome / Chromium** | Était bloquée derrière une longue revue de la boutique fin août — consultez directement la [fiche du Chrome Web Store](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) pour connaître sa version actuelle plutôt que de vous fier à un numéro donné ici |
-
-Il se peut que des fonctionnalités plus récentes ne soient pas encore en ligne dans votre navigateur — vérifiez le tableau ci-dessus avant de supposer que quelque chose de décrit ici est disponible. Si le Dashboard vous indique que votre extension a besoin d'être mise à jour, cela signifie qu'une version minimale spécifique est requise pour cette action (par exemple 0.2.2, pour le staking) — et non que votre version est globalement ancienne.
-
-**La 0.1.5** a ajouté la [découverte via Solana Wallet Standard](#standards), le [déverrouillage par clé d'accès (passkey)](#security), une [voie dApp SVM](#standards) pleinement implémentée, et le [pont de connexion au Dashboard](#dashboard-bridge). (La version 0.1.4 n'a jamais été publiée — ses changements atteignent les utilisateurs via la 0.1.5.)
-
-**Les versions 0.1.6 à 0.1.9** ont ajouté, dans l'ordre : des envois tenant compte du vesting avec des messages de refus bancaire honnêtes ; l'adresse du compte et le solde en direct affichés directement sur l'accueil du popup ; et, dans la **0.1.9**, le [paiement d'un @handle](#handle-send) directement depuis Envoyer, un [écran Recevoir avec un code QR d'adresse](#receive), un [sélecteur de langue](#language) (dix langues, correspondant à l'ensemble de l'app mobile), et la suppression d'une « prochaine date de déblocage » source de confusion sur le [solde de vesting](#vesting).
-
-**La 0.2.2** a ajouté le [staking, directement depuis l'extension](#stake) — son propre écran Stake (validateurs avec leur commission, votre total staké, les récompenses en attente, et délégation / unstaking / réclamation) ; [plusieurs comptes à partir d'une seule phrase de récupération](#wallet), comme sur l'app mobile ; la correction qui permet au bouton de staking du **Dashboard** d'atteindre réellement l'extension (un portefeuille créé uniquement dans l'extension ne pouvait auparavant pas staker du tout via le Dashboard — voir [Pont Dashboard](#dashboard-bridge)) ; la réclamation d'@handle fonctionnelle depuis le navigateur ; et le numéro de build affiché au bas du popup.
+Depuis la 0.2.6, l'extension a gagné : [plusieurs portefeuilles avec un seul mot de passe](#wallets), un [compte de type Ethereum que vous ajoutez à la main](#coin60), [Claim & restake](#stake), une liste **Unstaking en cours**, l'[ajout d'un jeton par contrat](#custom-tokens), [Recevoir sur n'importe quel réseau](#receive), les [Sites connectés avec Révoquer](#connected-sites), la [fenêtre d'accès EVM](#evm-window), [`signAndBroadcast` pour les dApps](#sign-and-broadcast), et des écrans d'approbation qui montrent chaque message, les frais et l'expiration.
 
 **La surface de permissions n'a pas changé depuis la 0.1.3** — voir [Quelles permissions QoreX demande](#permissions).
 
@@ -47,14 +35,25 @@ Sur Safari, les approbations s'ouvrent dans un onglet de navigateur plutôt que 
 
 Ouvrez le popup et choisissez :
 
-- **Créer un portefeuille** — génère une nouvelle phrase de récupération de 24 mots sur votre appareil (entropie 256 bits), dérive votre identité QoreChain, et la scelle dans le coffre-fort sous un mot de passe (et, en option, une clé d'accès — voir [Sécurité](#security)).
-- **Importer un portefeuille** — restaure à partir d'une phrase de 24 mots existante.
+- **Créer un nouveau portefeuille** — choisissez un mot de passe (au moins 8 caractères) ; QoreX génère une nouvelle phrase de récupération de 24 mots sur votre appareil (entropie 256 bits), dérive votre identité QoreChain, et la scelle dans le coffre-fort sous ce mot de passe (et, en option, une clé d'accès — voir [Sécurité](#security)). Les 24 mots ne sont affichés qu'**une seule fois** — notez-les, cochez *J'ai conservé ma phrase de récupération en lieu sûr*, puis continuez. Vous pouvez les afficher de nouveau plus tard avec **Révéler la phrase de récupération** dans le popup (mot de passe requis).
+- **Importer une phrase de récupération** — restaure à partir d'une phrase existante. Une phrase de moins de 24 mots restaure normalement vos fonds, mais QoreX vous avertit que votre clé post-quantique n'a alors que la robustesse de la phrase ; pour une robustesse maximale, créez un nouveau portefeuille de 24 mots et déplacez-y vos fonds.
 
-L'extension détient ses propres clés ; elle ne nécessite pas l'app mobile. Vous pouvez aussi exporter votre mnémonique depuis le popup. Les clés ne quittent jamais l'appareil.
-
-:::note Plusieurs comptes à partir d'une seule phrase (depuis la 0.2.2)
-L'extension peut désormais créer et basculer entre plusieurs comptes à partir de la même phrase de récupération, comme sur l'app mobile — la phrase que vous avez déjà notée restaure chacun d'eux. Changer de compte déplace tout avec lui : l'envoi, le staking, la réception et votre @handle suivent tous le compte actif. Le Portfolio, le Q-Day Scanner, la récupération sociale, le Legacy Protocol, les demandes de paiement et la liaison d'appareils restent réservés au mobile — voir [QoreX Wallet](/qorex/overview#platform-availability) pour la comparaison complète.
+:::danger Notez la phrase avant de continuer
+Le coffre-fort de l'extension n'existe que dans ce navigateur. **Supprimer l'extension, effacer ses données ou réinitialiser le navigateur supprime vos clés**, et personne — y compris QoreChain Association — ne peut les restaurer. Sans vos 24 mots notés, vos fonds sont perdus à jamais. Voir [Sauvegarder maintenant](/qorex/security-and-recovery#back-up-now).
 :::
+
+L'extension détient ses propres clés ; elle ne nécessite pas l'app mobile. Les clés ne quittent jamais l'appareil.
+
+## Plusieurs portefeuilles et comptes {#wallets}
+
+- **Portefeuilles** (depuis la 0.3.3) — l'écran **Portefeuilles** du popup (« Portefeuilles dans ce navigateur ») liste tous les portefeuilles de ce navigateur. Chacun a sa propre phrase de récupération ; **un seul mot de passe** les déverrouille tous, et changer de portefeuille modifie celui que QoreX affiche et avec lequel il signe (rien ne bouge sur la chaîne). **Ajoutez** un portefeuille en en créant un nouveau (sa phrase est affichée une seule fois) ou en en restaurant un ; votre mot de passe est demandé une fois pour resceller le coffre-fort. Ajouter ou supprimer un portefeuille désactive le **déverrouillage par clé d'accès** — réactivez-le depuis l'écran d'accueil. Pour en supprimer un, appuyez sur *Supprimer de ce navigateur* et saisissez votre mot de passe ; le dernier portefeuille ne peut pas être supprimé depuis cet écran. La suppression efface cette clé du navigateur — seule sa phrase de récupération la ramène.
+- **Comptes** (depuis la 0.2.2) — **Vos comptes** crée plusieurs comptes à partir de la même phrase et permet de basculer entre eux (jusqu'à 20 par portefeuille ; ils sont numérotés et ne peuvent pas être renommés). Restaurer la phrase que vous avez notée ramène le **Compte 1** ; ajoutez de nouveau les autres avec **Ajouter un compte**. Changer de compte déplace tout avec lui : l'envoi, le staking, la réception et votre @handle suivent le compte actif.
+
+### Compte de type Ethereum {#coin60}
+
+Depuis la 0.3.2, **Ajouter un compte Ethereum (coin 60)** (sur l'écran **Vos comptes**) ajoute le compte d'une phrase utilisée pour la première fois dans MetaMask ou sur le Dashboard ; voir [Restaurer une phrase depuis MetaMask ou le Dashboard](/qorex/getting-started#restore-dashboard). Son adresse 0x est celle que MetaMask affiche pour les mêmes mots. Les handles ne sont pas proposés sur ce compte.
+
+Le Portfolio, le Q-Day Scanner, la récupération sociale, le Legacy Protocol, les demandes de paiement et la liaison d'appareils restent réservés au mobile — voir [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Votre compte, solde et @handle {#account}
 
@@ -66,7 +65,7 @@ Si votre compte détient des QOR en vesting (par exemple une allocation TGE non 
 
 ### Réclamer un @handle
 
-Depuis le popup, vous pouvez réclamer un **@handle** unique (par exemple `@liviu`) pour l'adresse de ce compte, comme dans l'app mobile. La réclamation est signée avec la clé propre au compte et se lie à cette adresse, afin que l'app mobile et le Dashboard puissent la résoudre lorsque quelqu'un vous envoie des fonds. Voir [@handle](/qorex/account-and-dashboard#handle) pour savoir comment les handles sont liés aux adresses (et non à un portefeuille dans son ensemble).
+Certaines versions de l'extension vous permettent de réclamer un **@handle** unique (par exemple `@liviu`) pour l'adresse de ce compte depuis le popup, comme dans l'app mobile ; si votre popup ne le propose pas, réclamez-le depuis l'app mobile (la réclamation n'est pas proposée sur les comptes de type Ethereum). La réclamation est signée avec la clé propre au compte et se lie à cette adresse, afin que l'app mobile et le Dashboard puissent la résoudre lorsque quelqu'un vous envoie des fonds. Voir [@handle](/qorex/account-and-dashboard#handle) pour savoir comment les handles sont liés aux adresses (et non à un portefeuille dans son ensemble).
 
 ## Envoyer vers un @handle {#handle-send}
 
@@ -83,21 +82,24 @@ La résolution est vérifiée de deux façons avant que QoreX ne l'utilise : une
 
 Appuyez sur **Recevoir** dans le popup pour afficher votre adresse `qor1…` sous forme de code QR (avec l'icône QoreChain intégrée) accompagné d'un bouton de copie — scannez-le depuis un téléphone ou collez directement l'adresse.
 
+**Sélecteur de réseau.** Recevoir peut aussi afficher l'adresse pour Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis et Celestia, chacune avec un avertissement « uniquement ce réseau » (QoreChain reste en premier).
+
 ## Staker depuis l'extension {#stake}
 
 Depuis la **0.2.2**, le popup dispose de son propre écran **Stake** — un portefeuille créé uniquement dans l'extension n'a plus besoin de l'app mobile pour gagner des récompenses de staking.
 
 1. Ouvrez le popup et allez dans **Stake**.
 2. L'écran liste les validateurs actifs avec leur commission, votre total actuellement staké, et toute récompense en attente de réclamation. Les validateurs que le réseau a **jailés** (mis en prison) sont exclus de la liste — déléguer à l'un d'eux n'est jamais souhaitable.
-3. Pour déléguer, choisissez un validateur et un montant, puis confirmez. QoreX signe avec la signature post-quantique hybride obligatoire, comme pour un envoi.
-4. **Unstake** (annuler le staking) et **claim** (réclamer) fonctionnent depuis le même écran. L'unstaking démarre la période de déliaison (unbonding) de 21 jours — voir [Staking & Délégation](/user-guide/staking-and-delegation) pour ce que cela signifie.
-5. Depuis la **0.2.6**, vous pouvez aussi **déplacer votre stake vers un autre validateur** (redélégation) — pas d'attente de déliaison, pas de pénalité, et les récompenses continuent de s'accumuler tout au long du transfert. Voir [Déplacer le stake entre validateurs](/qorex/portfolio-and-staking#move-stake) pour son fonctionnement (le mécanisme est identique entre l'app et l'extension).
+3. Pour déléguer, choisissez un validateur et un montant, puis confirmez. QoreX signe avec la signature post-quantique hybride obligatoire, comme pour un envoi. Pendant que vous saisissez, il vous avertit si le montant laisserait moins que les frais d'une transaction (vous ne pourriez plus unstaker ni réclamer tant que le compte ne détient pas de nouveau des QOR). Avec plusieurs comptes, choisissez celui qui stake depuis le sélecteur de compte de l'écran Stake.
+4. **Claim** (réclamer) collecte les récompenses ; **Claim & restake** les recompose vers les validateurs qui les ont générées en une seule transaction. QoreX vérifie d'abord que vos QOR **déverrouillés** peuvent payer les frais (ils sont payés avant l'arrivée des récompenses) et vous le signale si ce n'est pas le cas.
+5. **Unstake** (annuler le staking) démarre la période de déliaison (unbonding) de 21 jours et le montant apparaît sous **Unstaking en cours** avec le temps restant — voir [Staking & Délégation](/user-guide/staking-and-delegation).
+6. **Déplacer le stake** déplace le stake vers un ou plusieurs autres validateurs (redélégation) — pas d'attente de déliaison, pas de pénalité, et les récompenses continuent de s'accumuler. Voir [Déplacer le stake entre validateurs](/qorex/portfolio-and-staking#move-stake).
 
 Le staking, la délégation et les récompenses se déroulent exclusivement sur la voie **Native**, jamais via un précompilé EVM.
 
 ### Approuver une requête de staking du Dashboard {#stake-dashboard}
 
-Le [Dashboard](/dashboard/staking-and-validators) QoreChain compose les requêtes de staking mais ne peut pas les signer — votre clé ne quitte jamais le coffre-fort de l'extension. Lorsque vous cliquez sur **Continuer dans QoreX** sur le Dashboard, la requête s'ouvre dans l'extension pour que vous la révisiez (validateur et montant) et l'approuviez, exactement comme pour un envoi. Cette connexion était rompue en 0.2.1 (l'extension se signalait comme « trop ancienne » alors même qu'elle était la version publiée la plus récente — le vrai problème était un maillon interne manquant, pas une version obsolète) ; c'est corrigé depuis la **0.2.2**. Si vous êtes sur une version plus ancienne, voir [quelle version est en ligne où](#versions).
+Le [Dashboard](/dashboard/staking-and-validators) QoreChain compose les requêtes de staking mais ne peut pas les signer — votre clé ne quitte jamais le coffre-fort de l'extension. Lorsque vous cliquez sur **Continuer dans QoreX** sur le Dashboard, la requête s'ouvre dans l'extension pour que vous la révisiez (validateur et montant) et l'approuviez, exactement comme pour un envoi.
 
 :::note Si une transaction s'affiche comme « rétrogradée » plutôt que réussie
 Le Dashboard affiche parfois une transaction comme **rétrogradée** plutôt que comme un succès net. Cela signifie que vos fonds se sont bien déplacés, mais que la couche de signature post-quantique n'a pas été trouvée sur la chaîne pour cette transaction — ce n'est pas quelque chose que vous avez mal fait, ni quelque chose que vous pouvez corriger de votre côté. C'est un défaut de notre côté ; merci de le signaler au support afin que nous puissions enquêter. Le message reste délibérément affiché à l'écran plutôt que de s'effacer, afin que vous ayez le temps de le lire et de le signaler.
@@ -105,7 +107,7 @@ Le Dashboard affiche parfois une transaction comme **rétrogradée** plutôt que
 
 ### Envoyer sur des réseaux externes {#send-external}
 
-Outre les QOR sur la voie Native, le popup peut envoyer des actifs sur des réseaux externes, tous dérivés de la même phrase de récupération :
+Outre les QOR sur la voie Native, le popup peut envoyer des actifs sur des réseaux externes, tous dérivés de la même phrase de récupération (pour les réseaux EVM, il affiche les **frais réseau maximaux** — « Frais réseau : au plus … » — avant que vous confirmiez) :
 
 | Type | Réseaux | Jetons intégrés |
 |---|---|---|
@@ -121,16 +123,28 @@ QoreX expose trois interfaces, toutes injectées sur la page en tant que `window
 
 | Standard | Ce que c'est | Ce que cela signifie pour vous en tant que développeur |
 |---|---|---|
-| **EIP-1193** | L'API JavaScript du fournisseur Ethereum (`request(...)`, événements). | Votre code ethers.js / viem / web3.js existant communique avec la voie EVM de QoreX sans modification ; les codes d'erreur numériques (par exemple `4902`) sont transmis tels quels. |
+| **EIP-1193** | L'API JavaScript du fournisseur Ethereum (`request(...)`, événements). | Le fournisseur EVM de QoreX répond aux requêtes de compte et de réseau — `eth_requestAccounts`, `eth_accounts`, `eth_chainId` et `wallet_switchEthereumChain` (toute autre chaîne renvoie le code standard `4902`). Il ne signe **pas** et n'envoie **pas** encore de transactions ni de messages EVM : les autres méthodes renvoient « EVM method … not yet supported ». Utilisez MetaMask ou un autre portefeuille EVM pour les transactions de la voie EVM (qui nécessitent désormais aussi une [fenêtre d'accès EVM](#evm-window) ouverte). |
 | **EIP-6963** | Découverte de fournisseur multi-portefeuille (événements announce / request). | QoreX s'annonce aux côtés de tous les autres portefeuilles — il **n'écrase jamais `window.ethereum`** — de sorte que l'utilisateur choisit QoreX par site sans conflit. |
-| **`signDirect` façon Keplr** | Un fournisseur au format `OfflineDirectSigner` de Cosmos, sur `window.qorex.native`. | Les dApps de style Cosmos signent les transactions de la **voie Native** de QoreChain de la même manière qu'avec Keplr ; la couche post-quantique est pré-appliquée (voir [Signature post-quantique](#pqc)). |
+| **Fournisseur Native (façon Keplr)** | `window.qorex.native` : `enable`, `getKey`, `signDirect` et `signAndBroadcast`, plus une liste `capabilities`. Ce n'est **pas** un remplaçant complet de Keplr — QoreX ne crée pas d'alias `window.keplr` et n'a ni `getOfflineSigner`, ni `signAmino`, ni `sendTx`. | Pour envoyer une transaction QoreChain, appelez **`signAndBroadcast`** (voir [Envoyer une transaction QoreChain](#sign-and-broadcast)) : QoreX montre les messages décodés et les frais, ajoute la signature post-quantique hybride que seul le portefeuille peut produire, puis diffuse. `signDirect` sur QoreChain est refusé à moins que la transaction ne porte déjà une couche résistante au quantique valide. |
 | **Solana Wallet Standard** *(depuis la 0.1.5)* | Découverte native de portefeuille pour les dApps Solana (`wallet-standard:register-wallet` / `app-ready`). | Les dApps Solana **détectent automatiquement QoreX** — aucune intégration personnalisée nécessaire. Fonctionnalités : `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction` ; chaîne `solana:mainnet` ; transactions `legacy` et `v0`. |
 
 :::note Atteindre directement la voie SVM
 La même interface est aussi disponible sur `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). La découverte automatique via Wallet-Standard et la voie SVM pleinement implémentée sont sorties en **0.1.5** et sont en ligne à la fois sur Chrome et Firefox (voir [quelle version est en ligne où](#versions)).
 
-Les approbations Solana affichent la charge utile décodée (destinataire et lamports pour les transferts System, et la liste des programmes), rejettent les transactions qui ne listent pas votre portefeuille comme signataire, et marquent la signature comme **classique** — voir [Signature post-quantique](#pqc).
+Les approbations Solana affichent **une ligne par instruction**, décodée lorsque QoreX le peut : transferts de SOL (destinataire et lamports), transferts de jetons SPL, **« AUTORISER la DÉPENSE de vos jetons »** (approve), **« CÉDER le contrôle du compte »** (set authority) et fermeture d'un compte de jeton — et indiquent « instruction que QoreX ne peut pas lire » pour tout le reste, avec le programme. Une requête qui inclut une instruction approve ou set authority est titrée « veut un pouvoir sur vos jetons Solana — lisez chaque ligne ci-dessous ». Les transactions qui ne listent pas votre portefeuille comme signataire sont rejetées, `signMessage` ne signera pas des octets qui sont en réalité une transaction, et la signature est marquée **classique** — voir [Signature post-quantique](#pqc).
 :::
+
+## Pièces et jetons {#custom-tokens}
+
+L'écran **Pièces et jetons** du popup vous permet d'ajouter un **jeton ERC-20 par son contrat** : choisissez le réseau, collez l'adresse du contrat, **Vérifier le contrat**. QoreX lit le nom et les décimales du jeton depuis le contrat lui-même — et les relit en arrière-plan lorsque vous l'ajoutez, plutôt que de se fier au popup — puis les affiche avec un rappel que n'importe qui peut créer un jeton avec n'importe quel nom. Le jeton apparaît ensuite dans **Envoyer sur des réseaux externes**. Il refuse les jetons intégrés, les doublons, les réseaux non EVM, les adresses invalides, les contrats illisibles et les contrats qui empruntent le nom d'un jeton intégré.
+
+## Sites connectés {#connected-sites}
+
+**Sites connectés** dans le popup liste chaque site que ce portefeuille a approuvé — un site peut voir l'adresse de ce portefeuille et vous demander de signer. Appuyez sur **Révoquer** pour en retirer un. Les approbations sont conservées **par portefeuille** : un site approuvé pour un portefeuille ne peut pas lire l'adresse d'un autre portefeuille après que vous avez changé.
+
+## Fenêtre d'accès EVM {#evm-window}
+
+L'écran **Fenêtre d'accès EVM** du popup ouvre et ferme la fenêtre qui permet à un compte d'envoyer sur la voie EVM de QoreChain (v3.2.0 et ultérieures) — le même écran que dans l'app. Voir [Fenêtre d'accès EVM](/qorex/security-and-recovery#evm-window).
 
 ## Langue {#language}
 
@@ -160,11 +174,15 @@ Le `manifest.json` de l'extension déclare :
 "host_permissions": [],
 "content_scripts": [
   { "matches": ["<all_urls>"], "js": ["dist/content.js"], "run_at": "document_start" }
+],
+"web_accessible_resources": [
+  { "resources": ["dist/inpage.js"], "matches": ["<all_urls>"], "use_dynamic_url": true }
 ]
 ```
 
 - **`permissions: ["storage"]`** — la seule permission d'API. Elle stocke le coffre-fort chiffré et vos approbations de connexion par origine **localement**, dans le stockage de l'extension.
 - **`host_permissions: []`** — QoreX ne déclare **aucune** permission d'hôte. Elle ne demande pas la capacité de faire des requêtes réseau inter-origines vers des sites arbitraires en votre nom.
+- **`web_accessible_resources`** — permet aux pages de charger le propre `inpage.js` de QoreX, le petit script qui expose le fournisseur. `use_dynamic_url` lui donne une adresse propre à chaque session, afin que les sites ne puissent pas identifier l'extension par empreinte en sondant sa présence.
 - **`content_scripts` correspond à `<all_urls>`** — c'est la raison honnête pour laquelle Firefox indique *« Accéder à vos données pour tous les sites web »*. QoreX injecte un petit script fournisseur (`content.js` → `inpage.js`) dans **chaque page**. Un content script qui s'exécute sur tous les sites *peut* techniquement lire la page, et les navigateurs décrivent cette capacité avec exactement ce libellé — qu'elle provienne de `host_permissions` ou d'une correspondance de content script.
 
 **Pourquoi le content script s'exécute partout.** Afin que **n'importe quelle** dApp puisse découvrir le portefeuille via EIP-6963 sans que vous ayez d'abord à accorder un accès site par site. C'est ainsi que fonctionnent MetaMask, Keplr, Phantom et tout autre portefeuille injecté : le fournisseur injecté doit être présent avant que les scripts de la page ne s'exécutent (`document_start`), quel que soit le site que vous visitez.
@@ -173,7 +191,7 @@ Le `manifest.json` de l'extension déclare :
 
 ## Connecter une dApp à QoreX {#connect}
 
-Une dApp découvre la voie EVM de QoreX via **EIP-6963**. Annoncer-puis-demander, puis utiliser le fournisseur EIP-1193 retourné :
+Une dApp découvre QoreX via **EIP-6963**. Annoncer-puis-demander, puis utiliser le fournisseur EIP-1193 retourné (qui ne répond qu'aux requêtes de compte et de réseau — voir le tableau ci-dessus) :
 
 ```ts
 import type { EIP6963ProviderDetail } from "./types";
@@ -197,23 +215,48 @@ if (qorex) {
 }
 ```
 
-Pour la voie **Native** de QoreChain, utilisez le fournisseur façon Keplr sur `window.qorex.native` (`enable`, `getKey`, `signDirect`). Le package de plus haut niveau [`@qorechain/connect`](/sdk/overview) enveloppe cette détection pour vous.
+Pour la voie **Native** de QoreChain, utilisez le fournisseur sur `window.qorex.native` (`enable`, `getKey`, `signAndBroadcast`, `signDirect` ; lisez `capabilities` pour voir ce que cette version prend en charge). Le package de plus haut niveau [`@qorechain/connect`](/sdk/overview) enveloppe cette détection pour vous.
 
-Les approbations sont **par origine** : la première connexion à un site ouvre un popup d'approbation montrant l'origine, l'approbation ne révèle que votre adresse publique, et l'approbation d'un site n'accorde rien à un autre.
+Les approbations sont **par origine** : la première connexion à un site ouvre un popup d'approbation montrant l'origine, l'approbation ne révèle que votre adresse publique, et l'approbation d'un site n'accorde rien à un autre. Les approbations sont conservées par portefeuille, persistent jusqu'à ce que vous les révoquiez sous **Sites connectés**, et un site peut avoir une requête en attente (trois en tout) ; changer de portefeuille ou verrouiller répond « non » aux requêtes en attente. Voir [Ce que montre la fenêtre d'approbation](/qorex/security-and-recovery#approvals).
 
 ### Pont Dashboard (v0.1.5, étendu en v0.2.2) {#dashboard-bridge}
 
 La version 0.1.5 ajoute un pont limité à **`dashboard.qorechain.io` uniquement** : `window.qorex.native.connectProof(sessionId)` signe la preuve d'appairage *Connect with QoreX* (le backend revérifie la signature), et `executeTransfer({ to, amountUqor, memo })` approuve et diffuse un transfert QOR proposé par le Dashboard, en retournant le `txHash`. Ces méthodes sont refusées sur toute autre origine.
 
-**La 0.2.2** ajoute `native:executeRequest`, qui accepte une requête complète proposée par le Dashboard — y compris pour le [staking](#stake-dashboard) — validée par rapport au même analyseur partagé que QoreX utilise partout ailleurs : refusée en cas d'incompatibilité de réseau, d'origine étrangère, d'adresse qui n'est pas la vôtre, de type de requête inconnu, ou de requête de staking portant un `toAddress` (les requêtes de staking n'en ont pas).
+**La 0.2.2** ajoute `native:executeRequest`, qui accepte une requête complète proposée par le Dashboard — y compris pour le [staking](#stake-dashboard) — validée par rapport au même analyseur partagé que QoreX utilise partout ailleurs : refusée en cas d'incompatibilité de réseau, d'origine étrangère, d'adresse qui n'est pas la vôtre, de type de requête inconnu, ou de requête de staking portant un `toAddress` (les requêtes de staking n'en ont pas). Les types de requête sont send, delegate, undelegate, redelegate et claim ; une requête Connect vous permet de choisir lequel de vos comptes lier, et `listAccounts()` renvoie vos comptes (en lecture seule).
 
 Comme une adresse `qor1…` est également valide sur le mainnet et le testnet, une requête proposée par le Dashboard indique le réseau qu'elle cible, et QoreX refuse d'agir dessus si cela ne correspond pas au réseau auquel l'extension est actuellement connectée — elle ne changera jamais de réseau au nom d'une requête.
+
+## Envoyer une transaction QoreChain depuis une dApp : `signAndBroadcast` {#sign-and-broadcast}
+
+Chaque transaction QoreChain issue d'un compte disposant d'une clé post-quantique enregistrée nécessite une signature hybride — secp256k1 **et** ML-DSA-87 — et seul le portefeuille détient la clé ML-DSA, donc une page ne peut pas la construire. Envoyez les messages ; QoreX fait le reste : il montre les messages décodés et les frais, construit la transaction pour le compte sélectionné par l'utilisateur, ajoute la signature hybride (en enregistrant d'abord la clé post-quantique du compte s'il s'agit de sa première transaction), diffuse, et se résout avec le résultat. Disponible à partir de l'extension **0.3.5** et de l'app **1.1.5** (toutes les versions des boutiques aujourd'hui).
+
+```js
+const provider = window.qorex.native;
+if (!provider.capabilities?.includes("signAndBroadcast")) {
+  throw new Error("Please update QoreX");
+}
+await provider.enable("qorechain-vladi");            // connect, once per site
+
+const res = await provider.signAndBroadcast({
+  chainId: "qorechain-vladi",                        // must be the wallet's active network
+  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: msgSendBytes }],  // protobuf bytes: Uint8Array, number[] or base64
+  memo: "",                                          // optional, up to 256 bytes
+  gasLimit: 300000,                                  // optional
+});
+// → { txHash, code, height?, shield }
+```
+
+- `chainId` doit être égal au réseau actif du portefeuille (`qorechain-vladi` sur le mainnet). Une dApp ne peut pas changer de réseau ; seul l'utilisateur le peut.
+- De 1 à 32 messages par appel ; les octets des messages sont signés exactement tels qu'envoyés.
+- Les frais (`gasLimit` × le prix du gas du réseau) sont affichés avant l'approbation. Un rejet lève `QoreX: signature rejected`.
+- La gestion des clés post-quantiques (enregistrer, migrer, faire pivoter — y compris dans un `MsgExec` authz) est refusée : le portefeuille gère lui-même la clé du compte.
 
 ## Signature post-quantique {#pqc}
 
 Chaque transfert de QOR initié par QoreX lui-même est signé avec une **signature post-quantique hybride** — **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) aux côtés de la signature classique secp256k1 — en utilisant le pipeline hybride complet dans `@qorechain/sdk`. **Il n'y a pas de bascule** : QoreChain l'exige et QoreX n'envoie jamais un transfert QOR sur la voie Native sans elle.
 
-- **Signature Native initiée par une dApp** — les dApps construites sur le flux qorechain-connect pré-superposent l'extension PQC (`/qorechain.pqc.v1.PQCHybridSignature`) dans le corps de la transaction avant d'appeler `signDirect` ; QoreX apporte la moitié classique et **refuse de signer à l'aveugle**, décodant la charge utile et indiquant si la couche PQC est présente.
-- **Les requêtes classiques sont toujours étiquetées** — si une requête ne porte aucune couche PQC, ou cible une chaîne externe (ETH/BNB/etc., qui ne peut pas porter de PQC), QoreX affiche un avertissement explicite plutôt que de rétrograder silencieusement.
+- **Signature Native initiée par une dApp** — utilisez [`signAndBroadcast`](#sign-and-broadcast) : QoreX décode chaque message, montre les frais et ajoute lui-même la couche résistante au quantique. `signDirect` signe une transaction construite par la page et, sur QoreChain, est **refusé** à moins que cette transaction ne porte déjà une couche résistante au quantique valide (et refusé pour les comptes de type Ethereum, qui utilisent `signAndBroadcast`). QoreX ne signe jamais à l'aveugle : une requête qu'il ne peut pas décoder est refusée, et il ne signe jamais une transaction QoreChain uniquement classique.
+- **Les signatures classiques sont toujours étiquetées** — les transferts sur des réseaux externes (ETH, BNB, Solana, …) ne peuvent pas porter de signature post-quantique ; QoreX vous fait cocher une reconnaissance explicite et les marque comme classiques plutôt que de rétrograder silencieusement.
 
 **Ce que cela signifie pour la taille des transactions.** ML-DSA-87 est une signature volumineuse : la signature fait **4 627 octets** et la clé publique **2 592 octets** (fixé par FIPS-204). Une transaction QoreChain hybride est donc plusieurs kilo-octets plus grande qu'une transaction purement classique. Si vous construisez et diffusez des transactions vous-même, dimensionnez vos tampons et estimations de frais en conséquence ; la comptabilité de gaz de QoreChain les anticipe déjà. Voir [Signature post-quantique](/developer-guide/post-quantum-signing) pour les primitives et l'exigence de signature déterministe.

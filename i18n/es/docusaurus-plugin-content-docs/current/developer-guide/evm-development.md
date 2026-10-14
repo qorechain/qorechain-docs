@@ -10,7 +10,11 @@ sidebar_position: 2
 QoreChain ejecuta un entorno de ejecución totalmente compatible con EVM sobre el QoreChain EVM Engine, lo que te permite desplegar e interactuar con contratos inteligentes en Solidity usando herramientas conocidas. El módulo EVM expone una interfaz JSON-RPC en el **puerto 8545** (WebSocket en el **8546**) que admite los flujos de trabajo estándar de desarrollo de Ethereum.
 
 :::note
-Los ejemplos siguientes apuntan a la mainnet **`qorechain-vladi`** (EVM chain ID **9801**), activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.97**. Para la testnet **`qorechain-diana`**, usa el EVM chain ID **9800**.
+Los ejemplos siguientes apuntan a la mainnet **`qorechain-vladi`** (EVM chain ID **9801**), activa desde el 29 de junio de 2026, que ejecuta la versión de nodo **v3.2.1** (reglas de consenso de la actualización v3.2.0). Para la testnet **`qorechain-diana`** (v3.2.2), usa el EVM chain ID **9800**. Los ejemplos de código usan `http://localhost:8545` para un nodo que ejecutas tú mismo; el endpoint público de mainnet es `https://evm.qore.host` y el de testnet es `https://evm-testnet.qore.host`.
+:::
+
+:::caution Una transacción EVM necesita una clave PQC registrada y una ventana de autorización abierta
+Desde la actualización v3.2.0 (altura 2,981,742 en mainnet, altura 5,920,000 en testnet), el carril EVM admite una transacción solo de una cuenta que tenga **(1) una clave poscuántica ML-DSA-87 registrada** y **(2) una ventana de autorización EVM abierta** que aún tenga espacio para ella. Firmas con herramientas habituales (MetaMask, ethers.js, Hardhat, Foundry), pero sin una clave registrada y una ventana abierta `eth_sendRawTransaction` es rechazada (codespace `pqc`, códigos 26, 27 o 28). Las lecturas, `eth_call` y la estimación de gas no necesitan ninguna de las dos cosas. Consulta [Ventana de autorización EVM](#evm-window) más abajo y la guía paso a paso en [Tu primera transacción](/getting-started/first-transaction#evm-window).
 :::
 
 ---
@@ -21,12 +25,12 @@ Los ejemplos siguientes apuntan a la mainnet **`qorechain-vladi`** (EVM chain ID
 | -------------------- | ------------------------------------------ |
 | URL por defecto       | `http://localhost:8545`                    |
 | URL de WebSocket      | `ws://localhost:8546`                      |
-| Espacios de nombres admitidos | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
+| Espacios de nombres admitidos | `eth_`, `web3_`, `net_`, `txpool_` |
 | Chain ID (mainnet)   | `9801` (`qorechain-vladi`)                 |
 | Chain ID (testnet)   | `9800` (`qorechain-diana`)                 |
 | Símbolo de la moneda      | `QOR`                                      |
 
-El espacio de nombres `qor_` proporciona métodos específicos de QoreChain. Consulta [Espacio de nombres personalizado](#custom-qor_-namespace) más abajo.
+Las lecturas específicas de QoreChain se sirven por REST (`api.qore.host`); el espacio de nombres JSON-RPC `qor_` descrito [más abajo](#custom-qor_-namespace) **no está habilitado** en los endpoints públicos ni en la configuración predeterminada del nodo.
 
 ---
 
@@ -37,10 +41,12 @@ Añade QoreChain como red personalizada en MetaMask:
 | Campo              | Valor de mainnet             | Valor de testnet           |
 | ------------------ | ------------------------- | ----------------------- |
 | Nombre de la red       | QoreChain (qorechain-vladi) | QoreChain Diana       |
-| URL de RPC            | `http://localhost:8545`   | `http://localhost:8545` |
+| URL de RPC            | `https://evm.qore.host`   | `https://evm-testnet.qore.host` |
 | Chain ID           | `9801`                    | `9800`                  |
 | Símbolo de la moneda    | `QOR`                     | `QOR`                   |
-| URL del explorador de bloques | *(usa el explorador oficial de mainnet)* | *(déjalo en blanco para la testnet local)* |
+| URL del explorador de bloques | `https://explore.qore.network` | *(opcional)* |
+
+Enviar desde MetaMask requiere además una clave PQC registrada y una [ventana de autorización EVM](#evm-window) abierta en la cuenta.
 
 ---
 
@@ -63,7 +69,7 @@ module.exports = {
 };
 ```
 
-Despliega un contrato:
+Despliega un contrato (la cuenta que despliega necesita una clave PQC registrada y una [ventana de autorización](#evm-window) abierta; un despliegue cuenta como una transacción EVM dentro de la ventana):
 
 ```bash
 npx hardhat run scripts/deploy.js --network qorechain
@@ -152,40 +158,83 @@ Esta conversión es transparente: cuando consultas un saldo mediante `eth_getBal
 
 ## Pares de tokens ERC-20
 
-El módulo `x/erc20` proporciona el registro automático de **pares de tokens** entre denominaciones nativas de Cosmos SDK y contratos ERC-20:
+El módulo `x/erc20` proporciona **pares de tokens** entre denominaciones nativas de Cosmos SDK y contratos ERC-20:
 
 * Los tokens nativos pueden usarse dentro de contratos EVM como ERC-20
 * Los tokens ERC-20 desplegados en el EVM pueden convertirse a denominaciones nativas
 * La conversión es bidireccional y se gestiona a nivel de protocolo
 
 ```bash
-# Register a new token pair (governance proposal)
-qorechaind tx erc20 register-coin <denom> --from mykey
+# Register a native ERC-20 contract as a token pair (permissioned: `permissionless_registration` is false)
+qorechaind tx erc20 register-erc20 <contract-addr> --from mykey
 
 # Convert native tokens to ERC-20
-qorechaind tx erc20 convert-coin 1000000uqor --from mykey
+qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40000uqor
 
 # Convert ERC-20 back to native
-qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey
+qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
+
+Estas son transacciones del carril Cosmos: en las redes en vivo también necesitan la cofirma híbrida poscuántica (constrúyelas con `--generate-only` y luego `qorechaind tx pqc cosign`; consulta [Firma poscuántica](/developer-guide/post-quantum-signing)). Los pares de tokens se registran bajo una política con permisos y todavía no existe ninguno en mainnet.
 
 ---
 
 ## PQC y compatibilidad con EVM
 
-Las transacciones EVM utilizan firmas **ECDSA clásicas (secp256k1)** para una compatibilidad total con las herramientas, carteras y bibliotecas existentes de Ethereum. Esto garantiza que MetaMask, Hardhat, Foundry, ethers.js y todas las herramientas estándar de EVM funcionen sin modificaciones.
+Las transacciones EVM se firman con **ECDSA clásico (secp256k1)**, de modo que MetaMask, Hardhat, Foundry, ethers.js y otras herramientas estándar las construyen y firman sin modificaciones. Lo que cambió en la **v3.2.0** es la *admisión*: una transacción solo se acepta si su remitente tiene una clave poscuántica registrada y una ventana de autorización vigente (siguiente sección). Registrar una clave y abrir una ventana son transacciones del carril Cosmos y necesitan la firma híbrida (ML-DSA-87 + secp256k1).
 
-Para seguridad poscuántica dentro del EVM:
+Para seguridad poscuántica dentro de los contratos:
 
-* Usa el **precompilado PQC Verify** (`0x0000...0A01`) para verificar firmas ML-DSA-87 en cadena desde Solidity. Consulta [Precompilados EVM](/developer-guide/evm-precompiles).
-* Los **mensajes entre VM** desde el EVM hacia CosmWasm o SVM pueden firmarse con PQC en la capa de transacciones de Cosmos SDK.
-* Las cuentas pueden registrar opcionalmente claves públicas PQC mediante `x/pqc` para seguridad híbrida.
+* El **precompilado PQC Verify** (`0x0000...0A01`) verificará firmas ML-DSA-87 en cadena desde Solidity una vez que se active; **todavía no está activo** en mainnet ni en testnet. Consulta [Precompilados EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
+* Los **mensajes entre VM** desde el EVM hacia CosmWasm o SVM son transacciones del carril Cosmos y llevan la firma híbrida como cualquier otra; consulta [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) para ver su disponibilidad actual.
+
+---
+
+## Ventana de autorización EVM {#evm-window}
+
+Una firma poscuántica no puede viajar *con* una transacción de Ethereum (carteras como MetaMask no pueden adjuntar una segunda firma), así que viaja *antes* que ella. La cuenta abre una ventana acotada con el mensaje del carril Cosmos `MsgOpenEVMWindow`; el carril EVM admite entonces solo las transacciones cubiertas por una ventana vigente. Una clave clásica robada por sí sola no puede abrir una ventana, de modo que solo puede mover lo que permita una ventana ya abierta.
+
+| Límite      | Rango              | Significado |
+| ----------- | ------------------ | ------- |
+| `blocks`    | 1 – 17,280         | Cuánto tiempo permanece abierta la ventana, contado en bloques desde el bloque que la abre |
+| `max-txs`   | 1 – 1,000          | Cuántas transacciones EVM admite |
+| `max-value` | mayor que 0, en `uqor` | Salida total que admite: el valor transferido **más** la comisión máxima que podría pagar cada transacción (límite de gas × comisión máxima por gas), convertido a `uqor` y redondeado hacia arriba |
+
+El límite que se agote primero cierra la ventana. Todos los campos son obligatorios; abrir una ventana sustituye a la existente; una transacción que se admite y luego falla consume igualmente su hueco y su presupuesto de valor; los despliegues de contratos cuentan como cualquier otra transacción. `blocks` es un número de bloques, no una duración: 17,280 bloques son unas 15 horas en mainnet (unos 3.2 s por bloque) y unas 5 horas en testnet (unos 1.0 s por bloque).
+
+**Pasos** (el recorrido completo está en [Tu primera transacción](/getting-started/first-transaction#evm-window)):
+
+1. Registra tu clave ML-DSA-87 una sola vez (`tx pqc register-key-v2` o `register-key`, con `--gas 600000 --fees 60000uqor`; esta única transacción está exenta del requisito híbrido, de modo que una cuenta nueva puede arrancar). Consulta [Firma poscuántica](/developer-guide/post-quantum-signing#pqc-key-registration).
+2. Abre una ventana. Es una transacción del carril Cosmos, así que produce la transacción sin firmar y cofírmala con tu clave ML-DSA (`max-value` acepta `uqor` o `qor`; `1000qor` son 1,000 QOR):
+
+   ```bash
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
+   qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+   ```
+
+3. Comprueba lo que queda: `qorechaind query pqc evm-window <address>` o `GET /qorechain/pqc/v1/evm_window/{address}` (responde `found: false` cuando no hay ninguna).
+4. Envía tus transacciones EVM con normalidad. Abrir una ventana es una transacción del carril Cosmos y avanza el número de secuencia de la cuenta, que es también su nonce EVM, así que lee el nonce **después** de que la ventana esté abierta y firma entonces.
+
+Cierra una ventana antes de tiempo con `qorechaind tx pqc close-evm-window` (mismo patrón de `--generate-only` y `cosign`), por ejemplo si sospechas que la clave clásica está expuesta: lo que la ventana aún admitía se rechaza a partir del siguiente bloque.
+
+| Rechazo (codespace `pqc`) | Significado |
+| ------------------------- | ------- |
+| código 26 | No hay ventana abierta para el remitente, o el remitente no tiene clave PQC registrada |
+| código 27 | La ventana ha caducado o se ha agotado (el mensaje indica qué límite) |
+| código 28 | Límites de ventana no válidos al abrirla, o no hay clave registrada en ese momento |
+
+Con el SDK de TypeScript (0.8.2 y posteriores): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` y `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
 
 ---
 
 ## Espacio de nombres personalizado `qor_` {#custom-qor_-namespace}
 
 QoreChain amplía el JSON-RPC con un espacio de nombres `qor_` para consultas específicas de la cadena:
+
+:::warning Todavía no se sirve
+Ninguna compilación publicada del nodo sirve aún el espacio de nombres `qor_`: `rpc_modules` en los endpoints públicos lista solo `eth`, `net`, `rpc`, `txpool` y `web3`, y todos los métodos siguientes devuelven `-32601` (método no encontrado) en mainnet, testnet y nodos propios con la configuración predeterminada (`eth`, `net`, `web3`, `txpool`). Consulta [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace) para ver el estado y las alternativas REST (por ejemplo `GET /qorechain/pqc/v1/account/{address}` para el estado de la clave PQC).
+:::
 
 | Método                      | Descripción                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
@@ -213,6 +262,6 @@ curl -X POST http://localhost:8545 \
 
 ## Próximos pasos
 
-* [Precompilados EVM](/developer-guide/evm-precompiles) — Accede a funciones de PQC, IA y entre VM desde Solidity
-* [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) — Llama a contratos CosmWasm y SVM desde el EVM
-* [Abstracción de cuentas](/developer-guide/account-abstraction) — Cuentas programables con claves de sesión
+* [Precompilados EVM](/developer-guide/evm-precompiles) — Referencia de las interfaces de precompilados reservadas (todavía no activas en las redes públicas)
+* [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) — Llamadas entre VM y su disponibilidad actual
+* [Abstracción de cuentas](/developer-guide/account-abstraction) — Autenticadores de carteras vinculadas y reglas de gasto (módulo actualmente desactivado)

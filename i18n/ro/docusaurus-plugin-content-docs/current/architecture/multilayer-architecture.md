@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain implementează o **arhitectură ierarhică de lanțuri pe 4 niveluri** prin modulul `x/multilayer`. Lanțul principal servește drept rădăcină de decontare și de încredere, în timp ce straturile subsidiare (sidechain-uri, paychain-uri și rollup-uri) gestionează sarcini de lucru specializate, cu compromisuri diferite de performanță și securitate.
 
+:::caution Capabilitate în stadiu incipient
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.1**) și pe testnet, dar **încă nu există niciun strat și nicio ancoră în niciuna dintre rețele**. Tot ce urmează descrie modulul așa cum a fost construit; parametrii sunt valorile live.
+:::
+
 ---
 
 ## Prezentare generală a sistemului
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ Lanțul principal este rădăcina de încredere pentru întregul ecosistem QoreC
 
 | Proprietate | Valoare                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
-| Consens     | CPoS complet Triple-Pool (vezi [Mecanismul de consens](/architecture/consensus-mechanism)) |
+| Consens     | Consens QoreChain (vezi [Mecanismul de consens](/architecture/consensus-mechanism) pentru ce este conectat astăzi) |
 | Securitate  | Securizat cu PQC, prin semnături Dilithium-5                                     |
 | Rol         | Strat de decontare, stocarea ancorelor de stare, motorul de rutare QCAI, rădăcina de încredere |
-| Timp de bloc | \~5 secunde                                                                    |
+| Timp de bloc | Depinde de rețea: aproximativ 3,2 secunde pe mainnet, aproximativ 1,0 secundă pe testnet (măsurat în octombrie 2026) |
 
 Toate straturile subsidiare își ancorează periodic rădăcinile de stare la lanțul principal prin Scheme de Angajament Ierarhic (HCS).
 
@@ -89,14 +93,14 @@ Paychain-urile sunt optimizate pentru **microtranzacții de frecvență ridicat�
 
 ### Rollup-uri
 
-Rollup-urile sunt **lanțuri specifice aplicațiilor** implementate prin Rollup Development Kit (`x/rdk`). Acestea se înregistrează ca tip de strat rollup în cadrul modulului multilayer.
+Rollup-urile sunt **lanțuri specifice aplicațiilor** implementate prin Rollup Development Kit (`x/rdk`). Când este creat un rollup, RDK înregistrează pentru el un strat în modulul multilayer (ca strat de tip `sidechain`, vezi mai jos).
 
 | Parametru               | Valoare                                     |
 | ----------------------- | ------------------------------------------- |
 | Moduri de decontare     | 4 (optimistic, zk, based, sovereign)        |
-| Rollup-uri active maxime | 100                                        |
-| Miză minimă a creatorului | 10,000 QOR                                |
-| Tip de strat            | `rollup`                                    |
+| Rollup-uri înregistrate maxime | 100 (`max_rollups`); dar pot exista simultan doar 10 straturi de tip sidechain (`max_sidechains`), deci cel mult 10 rollup-uri pot avea un strat ancorabil |
+| Miză minimă a creatorului | 10,000 QOR pentru rollup, plus 1,000 QOR miză de înregistrare a stratului (`min_sidechain_stake`) |
+| Tip de strat            | Rollup-urile înregistrate prin RDK folosesc tipul de strat `sidechain` (tipul de strat `rollup` este definit, dar încă nefolosit de `x/rdk`) |
 | Domenii vizate          | DeFi, Gaming, NFT, Enterprise               |
 
 Implementarea și configurarea rollup-urilor sunt tratate în detaliu în [Rollup Development Kit](/architecture/rollup-development-kit).
@@ -162,7 +166,7 @@ Ancorele sunt trimise către lanțul principal prin `MsgAnchorState`. Keeper-ul 
 
 1. **Stratul există și este activ** — Keeper-ul verifică dacă stratul există în stare și are în prezent statusul `active`.
 2. **Intervalul minim de ancorare a trecut** — Keeper-ul verifică dacă au trecut cel puțin `min_anchor_interval` blocuri (implicit: 100) de la ultima ancoră pentru acest strat.
-3. **Semnătura agregată PQC** — Keeper-ul se asigură că semnătura agregată PQC este prezentă și validă pentru datele ancorei.
+3. **Semnătura agregată PQC** — Keeper-ul se asigură că semnătura agregată PQC este prezentă și validă pentru datele ancorei. Semnătura este verificată față de cheia ML-DSA-87 înregistrată a **creatorului stratului**; o ancoră este refuzată atunci când creatorul nu are nicio cheie înregistrată.
 
 ### Perioada de contestare
 
@@ -170,14 +174,14 @@ Fiecare ancoră intră într-o **perioadă de contestare** de **24 de ore** (86,
 
 După expirarea perioadei de contestare fără o contestație reușită, ancora este considerată finalizată.
 
-### Citirea ancorelor
+### Citirea ancorelor {#reading-anchors}
 
-Începând cu versiunea de lanț **v3.1.80**, ancorele sunt, de asemenea, **lizibile** prin serviciul de interogare multilayer. Două interogări expun starea ancorei atât prin gRPC, cât și prin REST:
+Ancorele sunt **lizibile** prin serviciul de interogare multilayer. Două interogări expun starea ancorei atât prin gRPC, cât și prin REST:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returnează cea mai recentă ancoră de stare finalizată pentru un strat.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returnează cea mai recentă ancoră de stare pentru un strat.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — returnează istoricul ancorelor pentru un strat.
 
-Deoarece fiecare ancoră poartă o semnătură Dilithium-5 peste mesajul canonic `layer_id || layer_height || state_root || validator_set_hash` (verificată față de cheia PQC înregistrată a creatorului stratului), un client poate prelua o ancoră și o poate verifica **offline**, fără a avea încredere în nodul care o servește. Aceasta este primitiva on-chain din spatele [chitanțelor de decontare rezistente cuantic](/rollups/settlement-receipts) ale Rollup Development Kit.
+Fiecare ancoră poartă o semnătură Dilithium-5 a creatorului stratului peste mesajul `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. O versiune mai nouă a lanțului schimbă mesajul semnat, deci clienții nu ar trebui să îl codifice fix în cod. O semnătură dovedește că cheia înregistrată a creatorului a semnat acei octeți; dacă ancora există este o întrebare pentru lanț, așa că un verificator ar trebui să citească ancora de la un nod în care are încredere. În prezent nu există niciun strat și nicio ancoră în niciuna dintre rețele. Aceasta este primitiva on-chain din spatele [chitanțelor de decontare](/rollups/settlement-receipts) ale Rollup Development Kit.
 
 ---
 

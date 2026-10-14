@@ -17,7 +17,11 @@ Pools follow familiar AMM pricing curves:
 All amounts use QoreChain's native units. The staking and fee token is **QOR**, whose base denom is **uqor** (1 QOR = 10^6 uqor). Pool participants and addresses use the `qor` bech32 prefix.
 
 :::note
-Commands below use `qorechaind`. Append the usual transaction flags (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) for your environment — for example `--chain-id qorechain-vladi` against mainnet.
+Commands below use `qorechaind`. Append the usual transaction flags (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) for your environment — for example `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` against mainnet (the network fee floor is 0.1 uqor per unit of gas). Every `tx amm` command is a Cosmos-lane transaction, so it needs the hybrid post-quantum signature: add `--generate-only > tx.json`, then run `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (see [First Transaction](/getting-started/first-transaction#send-qor)).
+:::
+
+:::caution No pools exist yet
+The AMM module is live on mainnet and the testnet, but **no pools have been created yet**, and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
 :::
 
 ## Pools and LP shares
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Pausing and resuming a pool
 
-Pools can be paused and resumed by the pool authority (the address passed via `--from`). A paused pool rejects swaps and liquidity changes until it is resumed — useful for incident response or coordinated maintenance.
+Pools can be paused and resumed by the governance authority. On mainnet these two messages are currently switched off by the circuit breaker. A paused pool rejects swaps and liquidity changes until it is resumed — useful for incident response or coordinated maintenance.
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## Command summary
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | Burn LP tokens and withdraw reserves |
 | `swap-exact-in` | Swap a fixed input amount |
 | `swap-exact-out` | Swap to a fixed output amount |
-| `pause-pool` | Pause a pool (authority) |
-| `resume-pool` | Resume a paused pool (authority) |
+| `pause-pool` | Pause a pool (governance authority; switched off on mainnet) |
+| `resume-pool` | Resume a paused pool (governance authority; switched off on mainnet) |
 
 **Queries** (`qorechaind query amm …`):
 

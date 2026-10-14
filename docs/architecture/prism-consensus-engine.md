@@ -7,7 +7,11 @@ sidebar_position: 2
 
 # PRISM Consensus Engine
 
-QoreChain embeds **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), a reinforcement-learning optimization layer, directly into the consensus layer via the `x/rlconsensus` module. PRISM observes chain metrics every N blocks, runs inference through a fixed-point neural network, and proposes consensus parameter adjustments — all deterministically, with no floating-point arithmetic in consensus-critical paths.
+QoreChain embeds **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), a reinforcement-learning optimization layer, directly into the consensus layer via the `x/rlconsensus` module. PRISM observes chain metrics every N blocks and is designed to run inference through a fixed-point neural network and propose consensus parameter adjustments — all deterministically, with no floating-point arithmetic in consensus-critical paths.
+
+:::note Current status (October 2026)
+On both mainnet and testnet the agent is in `conservative` mode, collects an observation and a reward every 10 blocks, and has **no policy weights loaded**: it has taken 0 steps and applies no parameter change. Block time is determined by the validators' node configuration, not by PRISM. Loading a policy and changing the mode are governance actions that are currently disabled on mainnet by the circuit breaker.
+:::
 
 *The PRISM optimization loop: observe chain state, run policy inference, clamp and apply parameter changes, then feed the result back.*
 
@@ -71,7 +75,7 @@ All MLP computations use `int64` values scaled by `FixedPointScale = 10^8`. This
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: Pade approximant `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)` for `|x| <= 2.5*SCALE`, clamped to +/- SCALE otherwise
 
-Policy weights are stored on-chain as a flattened `[]int64` vector and can be updated via governance proposal.
+Policy weights are designed to be stored on-chain as a flattened `[]int64` vector and updated via governance proposal. No policy is loaded on the live networks today.
 
 ---
 
@@ -153,11 +157,11 @@ The reward weights are governance-configurable and must sum to exactly 1.0.
 
 ## PRISM Modes
 
-PRISM operates in one of four modes, controllable via governance:
+PRISM operates in one of four modes, controllable via governance (the mode-change message is currently switched off on mainnet):
 
 | Mode             | ID | Max Change | Behavior                                                                                   |
 | ---------------- | -- | ---------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | 0%         | Observe and log recommendations only. No parameters are changed. This is the default mode. |
+| **Shadow**       | 0  | 0%         | Observe and log recommendations only. No parameters are changed. Default in code; the live networks run Conservative (genesis setting). |
 | **Conservative** | 1  | +/- 10%    | Apply parameter changes within tight bounds. Suitable for initial live deployment.         |
 | **Autonomous**   | 2  | +/- 25%    | Apply parameter changes within wider bounds. For mature networks with validated policies.  |
 | **Paused**       | 3  | 0%         | PRISM is completely idle. No observations are collected and no inference runs.             |
@@ -228,12 +232,12 @@ All functions operate on `cosmossdk.io/math.LegacyDec` values, ensuring identica
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | Enable PRISM                                          |
 | `observation_interval`           | uint64    | `10`         | Blocks between observation collections               |
-| `agent_mode`                     | PrismMode | `0` (Shadow) | Current operating mode                               |
+| `agent_mode`                     | PrismMode | `1` (Conservative) on both networks | Current operating mode                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Maximum parameter change in Conservative mode        |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Maximum parameter change in Autonomous mode          |
 | `circuit_breaker_window`         | uint64    | `50`         | Number of recent blocks monitored by circuit breaker |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Minimum healthy block fraction before trigger        |
-| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms)                       |
+| `default_block_time_ms`          | int64     | `5000`       | Default target block time (ms) used as the observation baseline; the live block time is about 3.2 s on mainnet and 1.0 s on testnet |
 | `default_base_gas_price`         | LegacyDec | `100`        | Default base gas price                               |
 | `default_validator_set_size`     | uint64    | `100`        | Default target validator set size                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Reward weight for throughput improvement             |

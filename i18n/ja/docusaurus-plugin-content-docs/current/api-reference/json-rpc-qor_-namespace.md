@@ -7,176 +7,62 @@ sidebar_position: 2
 
 # JSON-RPC — qor_ 名前空間
 
-`qor_` 名前空間は、耐量子暗号のステータス、AI 分析、クロス VM メッセージング、マルチレイヤー状態、ブリッジ操作、トークノミクス、ロールアップ基盤、および PRISM コンセンサス状態を照会するための QoreChain 固有の JSON-RPC メソッドを提供します。
+`qor_` 名前空間は、耐量子暗号のステータス、AI 分析、クロス VM メッセージング、マルチレイヤー状態、ブリッジ操作、トークノミクス、ロールアップ基盤、および PRISM コンセンサス状態を照会するための QoreChain 固有の JSON-RPC メソッドを提供するよう設計されました。
 
-## 接続
+:::warning まだ提供されていません
+**リリース済みのノードビルドは、まだ `qor_` 名前空間を提供していません**（メインネット `qorechain-vladi`、テストネット `qorechain-diana`、自分で運用するノードのいずれも）。公開 EVM エンドポイントでは、`rpc_modules` に `eth`、`net`、`rpc`、`txpool`、`web3` のみが表示され、両ネットワークで**すべての `qor_` メソッドが `-32601`（method not found）を返します**。メソッドはノードのソースコードには実装されていますが JSON-RPC サーバーには登録されていないため、`app.toml` の `api` リストに `qor` を追加しても効果はありません。この名前空間の登録はノードのリリースで予定されており、リリース時にこのページでどのリリースかをお知らせします。
 
-| トランスポート | デフォルトアドレス       |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
-
-`qor_` 名前空間は、同じポート上で `eth_`、`web3_`、`net_`、`txpool_` とともに提供されます。`app.toml` で有効化してください。
-
-```toml
-[json-rpc]
-api = "eth,web3,net,txpool,qor"
-```
-
-:::note
-`qor_` 名前空間は、**`qorechain-vladi`** メインネット（EVM チェーン ID **9801**、チェーンバージョン **v3.1.97** で稼働中）と **`qorechain-diana`** テストネット（EVM チェーン ID **9800**）で利用できます。以下の例はローカルノードを前提としています。リモートアクセスの場合は、プロバイダーのメインネットまたはテストネットのエンドポイントに置き換えてください。
+現時点では `qor_` メソッドを前提に開発しないでください。該当するものがある場合は、下の表にある REST ルートを使用してください。`client.qor.*` ヘルパーを公開しているクライアントライブラリはこれらと同じメソッドをラップしているため、それらのヘルパーも同様に失敗します。
 :::
 
----
+ご自身で確認することもできます。
 
-## メソッド
+```bash
+curl -s -X POST https://evm.qore.host \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"rpc_modules","params":[],"id":1}'
+```
 
-| メソッド                        | パラメータ                              | 説明                                              |
-| ----------------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `qor_getPQCKeyStatus`         | `address` (string)                      | アカウントの PQC キー登録ステータスを返します       |
-| `qor_getHybridSignatureMode`  | なし                                    | 現在のハイブリッド署名強制モードを返します        |
-| `qor_getAIStats`              | なし                                    | 集約された AI モジュール処理統計を返します       |
-| `qor_getCrossVMMessage`       | `messageId` (string)                    | ID を指定してクロス VM メッセージを取得します                   |
-| `qor_getReputationScore`      | `validator` (string)                    | バリデーターアドレスのレピュテーションスコアを返します         |
-| `qor_getLayerInfo`            | `layerId` (string)                      | 登録済みレイヤーのメタデータとステータスを返します       |
-| `qor_getBridgeStatus`         | `chainId` (string)                      | あるチェーンのブリッジステータスとロック総量を返します         |
-| `qor_getRLAgentStatus`        | なし                                    | 現在の PRISM エージェントモードと稼働状況を返します  |
-| `qor_getRLObservation`        | なし                                    | 最新の PRISM 観測ベクトルを返します             |
-| `qor_getRLReward`             | なし                                    | 累積 PRISM 報酬指標を返します                |
-| `qor_getPoolClassification`   | `validator` (string)                    | バリデーターの CPoS プール分類を返します         |
-| `qor_getBurnStats`            | なし                                    | 全チャネルにわたるバーン統計を返します              |
-| `qor_getXQOREPosition`        | `address` (string)                      | あるアドレスの xQORE ステーキングポジションを返します            |
-| `qor_getInflationRate`        | なし                                    | 現在の年率インフレ率を返します                |
-| `qor_getTokenomicsOverview`   | なし                                    | バーン、インフレ、供給量を統合した概要を返します    |
-| `qor_getRollupStatus`         | `rollupId` (string)                     | 特定のロールアップのステータスと設定を返します   |
-| `qor_listRollups`             | なし                                    | 登録済みロールアップの一覧を返します                 |
-| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | ロールアップの特定の決済バッチを返します         |
-| `qor_suggestRollupProfile`    | `useCase` (string)                      | ユースケースに応じた AI 支援によるロールアッププロファイル推奨 |
-| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | 特定の DA ブロブのステータスを返します             |
-| `qor_getBTCStakingPosition`   | `address` (string)                      | Babylon モジュール経由の BTC ステーキングポジションを返します     |
-| `qor_getAbstractAccount`      | `address` (string)                      | アブストラクトアカウントの詳細と支出ルールを返します       |
-| `qor_getFairBlockStatus`      | なし                                    | FairBlock 暗号化のステータスと設定を返します    |
-| `qor_getGasAbstractionConfig` | なし                                    | 受け入れ可能なトークンとガスアブストラクションのパラメータを返します   |
-| `qor_getLaneConfiguration`    | なし                                    | 5 レーン TX 優先度付け設定を返します       |
+```json
+{"jsonrpc":"2.0","id":1,"result":{"eth":"1.0","net":"1.0","rpc":"1.0","txpool":"1.0","web3":"1.0"}}
+```
 
 ---
 
-## 使用例
+## 予定されているメソッドと現在使用すべきもの
 
-### qor_getBurnStats
+| 予定されているメソッド                | 現在使用すべきもの |
+| ----------------------------- | ----------------- |
+| `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}`（`found`、`account.key_type`、`account.created_at_height`）。[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照してください。 |
+| `qor_getHybridSignatureMode`  | 公開されているクエリルートはありません。 |
+| `qor_getAIStats`              | 自分で運用するノード上の gRPC `qorechain.ai.v1.Query/Stats`。REST ルートはありません。 |
+| `qor_getCrossVMMessage`       | 自分で運用するノード上の gRPC `qorechain.crossvm.v1.Query/Message`。REST ルートはありません。 |
+| `qor_getReputationScore`      | 公開されているクエリルートはありません（レピュテーションモジュールが公開しているのは gRPC の `Params` のみです）。 |
+| `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` および `anchor/{layer_id}`。[マルチレイヤーモジュール](/api-reference/rest-grpc-endpoints#multilayer-module)を参照してください。 |
+| `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`。[ブリッジモジュール](/api-reference/rest-grpc-endpoints#bridge-module)を参照してください。ブリッジはまだ稼働していません。 |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | 自分で運用するノード上の gRPC `qorechain.rlconsensus.v1.Query`（`AgentStatus`、`Observation`、`Reward`）。REST ルートはありません。 |
+| `qor_getPoolClassification`   | 公開されているクエリルートはありません。 |
+| `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`。[バーンモジュール](/api-reference/rest-grpc-endpoints#burn-module)を参照してください。 |
+| `qor_getXQOREPosition`        | なし。xQORE は稼働していません（[xQORE ステーキング](/user-guide/xqore-staking)を参照）。 |
+| `qor_getInflationRate`        | メインネットで公開されているクエリルートはありません。 |
+| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats` と `GET /cosmos/bank/v1beta1/supply` を組み合わせます。 |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | 自分で運用するノード上の gRPC `qorechain.rdk.v1.Query`（`Rollup`、`Rollups`、`Batch`、`LatestBatch`）または CLI。`/qorechain/rdk/v1/...` の REST ルートはメインネットでは提供されていません。 |
+| `qor_suggestRollupProfile`    | 公開サービスはありません。[プリセットプロファイル](/rollups/preset-profiles)を参照してください。 |
+| `qor_getBTCStakingPosition`   | なし。BTC リステーキングモジュールにはまだクエリサービスがありません。 |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`。アブストラクトアカウントは現在、両ネットワークで無効です。 |
+| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | なし。 |
 
-**リクエスト:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getBurnStats",
-    "params": [],
-    "id": 1
-  }'
-```
-
-**レスポンス:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "total_burned": "1250000000",
-    "total_distributed": "4750000000",
-    "channels": {
-      "validator_share": "0.40",
-      "burn_share": "0.30",
-      "treasury_share": "0.20",
-      "staker_share": "0.10"
-    },
-    "last_block_burned": "342891"
-  }
-}
-```
-
-### qor_getRLAgentStatus
-
-**リクエスト:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRLAgentStatus",
-    "params": [],
-    "id": 2
-  }'
-```
-
-**レスポンス:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "agent_mode": "observe",
-    "observation_interval": 10,
-    "circuit_breaker": {
-      "active": false,
-      "max_param_change": "0.10",
-      "cooldown_blocks": 100
-    },
-    "last_observation_block": "342885",
-    "cumulative_reward": "18.742"
-  }
-}
-```
-
-### qor_getRollupStatus
-
-**リクエスト:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRollupStatus",
-    "params": ["rollup-001"],
-    "id": 3
-  }'
-```
-
-**レスポンス:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 3,
-  "result": {
-    "rollup_id": "rollup-001",
-    "status": "active",
-    "settlement_type": "optimistic",
-    "operator": "qor1abc123...",
-    "total_batches": 147,
-    "last_finalized_batch": 145,
-    "pending_batches": 2,
-    "stake": "10000000000uqor",
-    "created_at_height": 100230
-  }
-}
-```
+アカウントの EVM レーンの状態（登録済みの PQC 鍵と認可ウィンドウ）については、`GET /qorechain/pqc/v1/account/{address}` と `GET /qorechain/pqc/v1/evm_window/{address}` を使用してください。
 
 ---
 
 ## エラーコード
 
+この名前空間を提供しているノードでは、エラーは標準の JSON-RPC 2.0 コードに従います。現時点では、`qor_` メソッドの呼び出しは `-32601` で失敗します。
+
 | コード   | メッセージ          | 説明                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | 不正な形式の JSON-RPC リクエスト            |
-| -32601 | Method not found | メソッドが存在しません             |
+| -32601 | Method not found | メソッドが存在しない、またはノードが `qor_` 名前空間を提供していません（現在リリース済みのすべてのビルド） |
 | -32602 | Invalid params   | パラメータが欠落しているか無効です         |
 | -32603 | Internal error   | サーバー側の処理エラー          |
-| -32000 | Module disabled  | 照会対象のモジュールが有効化されていません     |
-| -32001 | Entity not found | 要求されたリソースが存在しません |

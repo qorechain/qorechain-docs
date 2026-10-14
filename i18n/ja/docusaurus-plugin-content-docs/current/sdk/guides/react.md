@@ -15,7 +15,22 @@ sidebar_position: 7
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react`（>=18）はピア依存です。`@qorechain/sdk` は直接の依存です。
+`react`（>=18）はピア依存です。`@qorechain/sdk` は直接の依存で、キットと同じバージョンに
+固定されています。`@qorechain/react` は **0.8.3 以降**を使用してください。0.8.0 は SDK 0.8.0 に
+固定されており、これはメインネットで誤ったハイブリッド形式で署名します。また、それ以前の 0.8.x
+リリースでは、アドレス変更後に古い残高やステータスが表示されることがあります。
+
+:::caution React キットのライブネットワークにおける制限（0.8.x）
+`useTx` は接続中のウォレットの従来型署名のみで送信しますが、ライブネットワークはこれを
+拒否します（Native パスはハイブリッド ML-DSA-87 拡張を必要とします）。そのため、
+`send` / `sendTokens` ではメインネットでもテストネットでもトランザクションを確定できません。送信には SDK の
+[ハイブリッドビルダー](/sdk/concepts/accounts-pqc#hybrid-signing)を使用してください。
+`usePqcStatus` と `<QuantumSafeBadge/>` は `qor_getPQCKeyStatus` を読み取りますが、
+公開エンドポイントはこれを提供していません
+（[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照）。そのため、
+`*.qore.host` に対して鍵を確認することはできません。残高の読み取り（`useBalance`）と
+ウォレット接続は動作します。
+:::
 
 ## プロバイダー
 
@@ -31,9 +46,9 @@ function Root() {
       config={{
         network: "testnet",
         endpoints: {
-          rpc: "https://rpc.testnet.example",
-          rest: "https://rest.testnet.example",
-          evmRpc: "https://evm.testnet.example",
+          rpc: "https://rpc-testnet.qore.host",
+          rest: "https://api-testnet.qore.host",
+          evmRpc: "https://evm-testnet.qore.host",
         },
       }}
     >

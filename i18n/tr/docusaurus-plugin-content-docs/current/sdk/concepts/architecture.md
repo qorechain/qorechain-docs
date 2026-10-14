@@ -29,14 +29,21 @@ SDK, bir node ile birkaç uç nokta aracılığıyla iletişim kurar:
 - **Cosmos REST (LCD)** — banka bakiyeleri, hesap bilgileri, modül sorguları.
 - **Konsensüs RPC (Consensus RPC)** — yerel işlemleri imzalamak/yayınlamak ve
   CosmWasm okuma istemcisi için kullanılır.
-- **EVM JSON-RPC** — standart `eth_*` çağrıları artı QoreChain `qor_*`
-  ad alanı (namespace) ve EVM precompile'ları.
-- **SVM JSON-RPC** — SVM çalışma zamanı için Solana uyumlu RPC.
+- **EVM JSON-RPC** — herkese açık uç noktalarda standart `eth_*`, `net_*`, `web3_*`
+  ve `txpool_*` çağrıları. QoreChain `qor_*` ad alanı (namespace) ve EVM
+  precompile'ları orada henüz kullanılamıyor (aşağıya bakın).
+- **SVM JSON-RPC** — SVM çalışma zamanı için Solana uyumlu RPC (herkese açık
+  uç noktalarda salt okunur; SVM işlem gönderimi ağ genelinde devre dışıdır).
 
-`qor_*` JSON-RPC ad alanı, tokenomik, PQC anahtar durumu, hibrit-imza modu, VM'ler
-arası mesajlar ve ağ istatistikleri gibi QoreChain'e özgü okumaları açığa çıkarır.
-TypeScript'te bunlar `client.qor` (`QorClient`) üzerinde tiplenmiş metotlardır;
-aynı yüzey Python, Go ve Rust SDK'larında da bulunur.
+Etkinleştiren node'larda `qor_*` JSON-RPC ad alanı, tokenomik, PQC anahtar durumu,
+hibrit-imza modu, VM'ler arası mesajlar ve ağ istatistikleri gibi QoreChain'e özgü
+okumaları açığa çıkarır. TypeScript'te bunlar `client.qor` (`QorClient`) üzerinde
+tiplenmiş metotlardır; aynı yüzey Python, Go ve Rust SDK'larında da bulunur.
+Herkese açık uç noktalarda bunun yerine REST rotalarını kullanın (örneğin PQC anahtar
+durumu için `GET /qorechain/pqc/v1/account/{address}` ve yakım istatistikleri için
+`GET /qorechain/burn/v1/stats`).
+
+> **Henüz sunulmuyor:** yayımlanmış hiçbir node sürümü `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bugün her herkese açık uç noktada her `qor_*` çağrısı `-32601` (metot bulunamadı) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ## Token'lar ve birimler
 
@@ -73,8 +80,10 @@ Türetme yolları için bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-p
 
 QoreChain'in `x/crossvm` modülü, bir VM'deki sözleşmelerin başka bir VM'de
 eylemleri tetiklemesine olanak tanır. EVM→native yolu, **VM'ler arası köprü
-precompile'ı** (`@qorechain/evm`) aracılığıyla zincir üstünde çalışır ve SDK,
-mesaj durumunu izlemek için tiplenmiş REST okuma yardımcılarının
+precompile'ı** (`@qorechain/evm`; herkese açık ağlarda henüz etkin değil)
+aracılığıyla zincir üstünde çalışır ve SDK, tiplenmiş REST okuma yardımcılarının
 (`getCrossVmMessage`, `getPendingCrossVmMessages`, `getCrossVmParams`) yanı sıra
-`client.qor.getCrossVMMessage(...)`'i sağlar. Bkz.
+mesaj durumunu izlemek için `client.qor.getCrossVmMessage(...)`'i sağlar. Herkese
+açık uç noktalarda REST yardımcıları ve `client.qor` sunulmaz; mesajları
+`connectQueryClients(rpc).crossvm` ile okuyun. Bkz.
 [VM'ler arası kılavuz](/sdk/guides/cross-vm).

@@ -16,6 +16,20 @@ y revocables, **sin que la clave externa produzca jamás una co-firma ML-DSA**.
 Esta es la contraparte en el SDK del módulo de
 [abstracción de cuentas](/developer-guide/account-abstraction) de la cadena.
 
+:::danger No disponible en las redes en vivo
+El módulo `x/abstractaccount` está **desactivado** en `qorechain-vladi` y
+`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` devuelve
+`"enabled": false`). Desde la cadena v3.2.0 ese indicador se aplica en todas las
+rutas (crear una cuenta abstracta, vincular un authenticator, y tanto
+`MsgExecuteEVM` como `MsgExecuteCosmos`), y la cadena las rechaza con
+`abstract account module is
+disabled` (código 9). Ninguna transacción puede activarlo. Todo lo que sigue
+describe las interfaces del módulo solo como referencia: no construyas un flujo
+de clave vinculada ni de gasto delegado en las redes en vivo hasta que el módulo
+esté activado, y comprueba el indicador antes de ofrecer cualquier flujo de ese
+tipo.
+:::
+
 ## El modelo de relayer
 
 Un **relayer** envía la transacción y paga las comisiones. La propia firma
@@ -92,6 +106,18 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution Una regla limita una clave solo cuando existe
+La cadena resuelve el límite en este orden: la regla propia del authenticator si
+está definida y `enabled`; si no, la primera regla `enabled` de la cuenta; si no,
+**ninguna, y entonces no hay límite**. Una regla almacenada con `enabled: false`
+equivale a ningún límite, no a un límite cero. `MsgRegisterAuthenticator` no
+lleva ninguna regla, así que una clave vinculada solo con ese mensaje queda
+limitada únicamente por una regla a nivel de cuenta. Define una regla de forma
+deliberada con `MsgUpdateSpendingRules` y registra solo los permisos que la
+clave necesita. Un límite acota el daño que puede causar una clave vinculada; no
+sustituye revocar la clave.
+:::
+
 Para desactivar una clave al instante, el propietario difunde
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
@@ -134,33 +160,47 @@ await fetch("/api/relay", {
 });
 ```
 
-**Servidor (el relayer):** firma el sobre con su **propia** cuenta (híbrida,
-como es habitual en la ruta Nativa) y paga las comisiones. La firma del
-authenticator dentro del mensaje es la autorización para gastar desde la cuenta
-del propietario.
+**Servidor (el relayer):** firma el sobre con su **propia** cuenta por la ruta
+híbrida (`signAndBroadcastHybrid`, pasando `rest`) y paga las comisiones. La
+clave ML-DSA-87 del relayer debe estar registrada, como la de cualquier cuenta.
+La firma del authenticator dentro del mensaje es la autorización para gastar
+desde la cuenta del propietario.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -333,10 +373,12 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed` significa, en la mayoría de los casos, una firma
-ML-DSA-87 **hedged** (no determinista) — la cadena solo acepta firmas
-deterministas. También es lo que verás si un SDK anterior a 0.6.1 codificó en
-JSON la extensión híbrida (actualiza — ver
+`hybrid_verify_failed` significa que la firma ML-DSA-87 no se verificó. La firma
+hedged no es la causa (la cadena acepta por igual firmas ML-DSA-87 hedged y
+deterministas); ver
+[Solución de problemas del código 21](/developer-guide/post-quantum-signing#code-21).
+También es lo que verás si un SDK anterior a 0.6.1 codificó en JSON la extensión
+híbrida (actualiza - ver
 [Cuentas y firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 ## Rotación de claves {#key-rotation}

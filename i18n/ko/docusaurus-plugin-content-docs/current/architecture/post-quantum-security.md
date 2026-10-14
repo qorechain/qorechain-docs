@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain은 **제네시스 단계부터 포스트 양자 암호화(PQC)**를 기반으로 구축되었으며 — 업그레이드로 사후 적용된 것이 아닙니다. `x/pqc` 모듈은 격자 기반 디지털 서명과 키 캡슐화를 기본 암호화 프리미티브로 제공하며, 장기적 회복력을 위한 거버넌스 제어 알고리즘 민첩성 프레임워크를 갖추고 있습니다.
 
-전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 현재 체인 버전(**v3.1.85**) 기준으로, cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다.
+전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 라이브 네트워크(v3.2.x)에서는 cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다.
 
 ## 설계 원칙
 
@@ -49,9 +49,9 @@ PQC 작업은 격자 기반 서명, 검증, 키 캡슐화를 QoreChain 런타임
 
 이와 동일한 프리미티브 — ML-DSA (FIPS-204), ML-KEM (FIPS-203), SHAKE-256 (FIPS-202) — 은 오픈소스 [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc) 라이브러리를 통해 지갑 및 통합자에게 제공되며, 이 라이브러리는 6개 언어(JavaScript/TypeScript, Rust, Go, C, Python, Java)에 걸쳐 일관되고 바이트 호환되는 단일 API를 제공합니다. [Post-Quantum Signing](/developer-guide/post-quantum-signing)을 참조하세요.
 
-## 키 등록
+## 키 등록 {#key-registration}
 
-계정은 `MsgRegisterPQCKey`(레거시, 기본값 Dilithium-5) 또는 `MsgRegisterPQCKeyV2`(알고리즘 인식)를 통해 PQC 키를 등록합니다. 각 메시지는 다음을 포함합니다:
+계정은 `MsgRegisterPQCKey`(레거시, 기본값 Dilithium-5) 또는 `MsgRegisterPQCKeyV2`(알고리즘 인식)를 통해 PQC 키를 명시적으로 등록합니다. 체인이 스스로 키를 등록하는 일은 없으며, CLI 흐름은 `qorechaind tx pqc gen-key <name>` 다음에 `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>`입니다([First Transaction](/getting-started/first-transaction#register-pqc-key) 참조). 각 메시지는 다음을 포함합니다:
 
 * **Sender**: 키를 등록하는 계정 주소.
 * **PublicKey**: PQC 공개 키 바이트.
@@ -61,40 +61,59 @@ PQC 작업은 격자 기반 서명, 검증, 키 캡슐화를 QoreChain 런타임
 | 키 유형           | 설명                                                                      |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | 고전적(ECDSA) 및 PQC 키 모두. 트랜잭션은 이중 서명을 포함합니다.            |
-| `pqc_only`       | PQC 키 전용. 고전적 서명은 필요하지 않습니다.                              |
+| `pqc_only`       | `hybrid`와 동일하게 등록됩니다: 고전적 secp256k1 서명은 여전히 표준 서명 검사로 검증되며, PQC 서명도 추가로 필요합니다. |
 | `classical_only` | 고전적 키 전용. PQC 보호 없음(권장하지 않음).                              |
 
 ## 하이브리드 서명
 
 하이브리드 서명 시스템은 cosmos 경로 트랜잭션이 고전적 서명과 PQC 서명을 **둘 다** 동시에 포함하도록 요구합니다. 이는 심층 방어를 제공합니다: 한 기법이 깨지더라도 다른 기법이 트랜잭션을 보호합니다.
 
-`hybrid_signature_mode = required`라는 네트워크 기본값에서, 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 Dilithium-5 확장을 포함해야 합니다. 유일한 예외(부트스트랩용)는 **제네시스 gentxs(높이 0)**와 **PQC 키 등록/마이그레이션 트랜잭션**(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`)으로, 계정이 첫 PQC 키를 등록할 수 있도록 고전적 전용이 허용됩니다.
+`hybrid_signature_mode = required`라는 네트워크 기본값에서, 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 Dilithium-5 확장을 포함해야 합니다. 유일한 예외(부트스트랩용)는 **제네시스 gentxs(높이 0)**와 **PQC 키 등록/마이그레이션 트랜잭션**(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`)으로, 계정이 첫 PQC 키를 등록할 수 있도록 고전적 전용이 허용되며, 등록된 키가 없는 운영자 계정의 unjail도 마찬가지입니다.
 
-**EVM 트랜잭션은 영향을 받지 않습니다.** EVM 트랜잭션은 별도의 `eth_secp256k1` ante 경로(QoreChain EVM Engine 경로)에서 인증되며 하이브리드 PQC 확장을 절대 요구하지 않습니다. 하이브리드 요구사항은 cosmos 트랜잭션 경로에만 적용됩니다.
+**EVM 레인은 대신 인가 윈도우로 보호됩니다.** EVM 트랜잭션은 두 번째(ML-DSA) 서명을 담을 수 없습니다 — 표준 지갑은 이더리움 트랜잭션에 secp256k1 서명 하나만 하며, 다른 서명을 첨부할 방법을 제공하지 않습니다. 그래서 포스트 양자 인가는 트랜잭션보다 *앞서* 전달됩니다: 계정이 일반적인 하이브리드 서명을 담은 Cosmos 레인 메시지(`MsgOpenEVMWindow`)로 제한된 **EVM 인가 윈도우**를 열고, 이후 EVM 레인은 유효한 윈도우가 적용되는 트랜잭션만 허용합니다. v3.2.0부터 EVM 트랜잭션은 발신자가 (1) 등록된 포스트 양자 키를 가지고 있고 (2) 블록, 트랜잭션, 금액이 남아 있는 유효한 윈도우를 가지고 있지 않으면 거부됩니다. 윈도우 내에서는 검사가 트랜잭션이 아니라 체인 상태를 읽기 때문에 일반적인 MetaMask/ethers/Hardhat 트랜잭션이 수정 없이 동작합니다. [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)를 참조하세요.
 
 ### 공동 서명 흐름
 
-규정에 맞는 cosmos 트랜잭션을 생성하려면, 고전적 secp256k1 서명이 표준 서명 바이트(PQC 확장을 제외함)에 대해 계산되고, Dilithium-5 서명이 계산되어 `PQCHybridSignature` 확장으로 첨부됩니다. 표준 CosmJS / 릴레이어 도구는 cosmos 경로에서 트랜잭션을 처리하기 위해 이 확장을 생성해야 합니다. 현재 이것은 다음을 통해 수행됩니다:
+규정에 맞는 cosmos 트랜잭션을 생성하려면, 고전적 secp256k1 서명은 표준 서명 바이트(PQC 확장을 제외함)에 대해 계산되고, Dilithium-5 서명은 v2 서명 바이트(아래 [서명 바이트 (v2)](#sign-bytes-v2) 참조)에 대해 계산되어 `PQCHybridSignature` 확장으로 첨부됩니다. 표준 CosmJS / 릴레이어 도구는 cosmos 경로에서 트랜잭션을 처리하기 위해 이 확장을 생성해야 합니다. 현재 이것은 다음을 통해 수행됩니다:
 
-* `qorechaind tx pqc gen-key` — Dilithium-5 키를 생성합니다.
-* `qorechaind tx pqc cosign` — Dilithium-5 공동 서명을 트랜잭션에 첨부합니다.
-* QoreChain SDK의 하이브리드 서명 — `includePqcPublicKey`와 함께 `buildHybridTx`(첫 사용 시 자동 등록을 위해 PQC 공개 키를 임베드함).
+* `qorechaind tx pqc gen-key <name>` — Dilithium-5 키를 생성합니다.
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — `--generate-only`로 만든 트랜잭션에 Dilithium-5 공동 서명을 첨부합니다.
+* QoreChain SDK의 하이브리드 서명 — `buildHybridTx`. 계정의 키는 이미 `MsgRegisterPQCKey`로 등록되어 있어야 합니다.
+* [QoreX](/qorex/overview) — 두 가지를 모두 대신 처리해 줍니다.
 
 *secp256k1(ECDSA)과 ML-DSA-87(Dilithium-5)로 서명된 트랜잭션은 체인 전체 강제 모드 하에서 ante 핸들러에 의해 검증됩니다.*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### 서명 바이트 (v2) {#sign-bytes-v2}
+
+ML-DSA 서명은 도메인 태그가 붙고 체인에 바인딩된 바이트를 대상으로 합니다. v3.2.0부터 체인은 **오직** 이 형식만 검증합니다:
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+여기서 `B0`는 PQC 확장 **없이** 직렬화된 트랜잭션 본문이고 `authInfo`는 AuthInfo 바이트 그대로입니다(`‖`는 연결, 길이는 빅엔디언). 도메인 태그는 다른 맥락(로그인 챌린지, 메시지 서명 요청)에서 만들어진 서명이 트랜잭션 서명으로 유효해지는 것을 막으며, 체인 ID를 바인딩하면 포스트 양자 서명 자체가 다른 네트워크에서는 무효가 됩니다. 첫 번째 형식(`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`)은 업그레이드 높이 이전에만 검증되었으며, 두 형식을 모두 수락하는 블록은 없습니다. 키 마이그레이션과 브리지 어테스테이션 페이로드도 동일한 도메인 태그, 체인 바인딩 방식으로 옮겨졌습니다.
+
+**내 네트워크는 어느 형식을 검증하나요?** 업그레이드가 적용되었는지 노드에 물어보세요:
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+(`"height":"0"`은 적용되지 않았다는 뜻입니다.) CLI는 `--sign-bytes auto`로 이를 수행하며, SDK 0.8.x와 wallet-adapter 0.2.x도 동일하게 동작하고 테스트넷의 이 변경 사항 사전 적용 버전도 인식합니다. 잘못된 형식을 사용하는 클라이언트는 체인이 거부하는 다이제스트를 생성하며 — 안전하게 실패합니다(fails closed).
 
 ### TX 확장 형식
 
@@ -108,7 +127,7 @@ PQC 서명은 타입 URL `/qorechain.pqc.v1.PQCHybridSignature`를 가진 **TX �
 }
 ```
 
-`pqc_public_key` 필드는 선택 사항입니다. 존재하고 계정에 등록된 PQC 키가 없는 경우, ante 핸들러는 첫 사용 시 키를 **자동 등록**합니다.
+`pqc_public_key` 필드는 선택 사항이며 참고용입니다. 키는 명시적인 등록 메시지로만 등록됩니다([키 등록](#key-registration) 참조).
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ PQC 서명은 타입 URL `/qorechain.pqc.v1.PQCHybridSignature`를 가진 **TX �
 | 시나리오  | 계정에 PQC 키 있음 | 확장 존재 | 확장 내 공개 키       | 결과                                                |
 | -------- | ------------------- | ----------------- | ----------------------- | --------------------------------------------------- |
 | Path 1   | 예                  | 예                | --                      | 등록된 키에 대해 PQC 서명 검증                        |
-| Path 2   | 아니오              | 예                | 예                      | 키 자동 등록, 서명 검증                              |
 | Path 3a  | 아니오              | 아니오            | --                      | **Optional 모드**: 고전적 전용 트랜잭션 허용         |
 | Path 3b  | 아니오              | 아니오            | --                      | **Required 모드**: 트랜잭션 거부                     |
 | Path 4   | 예                  | 아니오            | --                      | 표준 PQCVerifyDecorator에 의해 처리됨                |
+
+계정이 하이브리드 서명 트랜잭션을 보내기 전에 `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2`로 키가 등록되어 있어야 하며, 확장의 `pqc_public_key` 필드는 아무것도 등록하지 않습니다.
 
 ### 하이브리드 서명 모드
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### 이중 서명 마이그레이션
 
-알고리즘이 폐기되면, **마이그레이션 기간**이 시작됩니다(기본값: 1,000,000 블록, 블록당 6초 기준 약 69일). 이 기간 동안:
+알고리즘이 폐기되면, **마이그레이션 기간**이 시작됩니다(기본값: 1,000,000 블록 — 메인넷의 현재 블록 시간 약 3.2초 기준 약 37일). 이 기간 동안:
 
 1. 폐기된 알고리즘을 사용하는 키를 가진 계정은 대체 알고리즘으로 마이그레이션해야 합니다.
 2. 마이그레이션에는 이중 서명(`MsgMigratePQCKey`)이 필요합니다: 이전 키에서 하나, 새 키에서 하나로, 둘 다의 소유권을 증명합니다.
 3. 마이그레이션 기간 내내 두 알고리즘 모두 검증을 위해 수락됩니다.
 
-### 거버넌스 메시지
+### 메시지
 
 | 메시지                  | 설명                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | 레지스트리에 새 PQC 알고리즘 추가를 제안합니다. 전체 `AlgorithmInfo`(이름, 카테고리, NIST 레벨, 키 크기)를 포함합니다. 거버넌스를 통해 제출되어야 합니다.            |
-| `MsgDeprecateAlgorithm` | 알고리즘에 대한 폐기 프로세스를 시작합니다. 대체 알고리즘과 블록 단위 마이그레이션 기간을 지정합니다.                                                                |
-| `MsgDisableAlgorithm`   | 알고리즘을 즉시 긴급 비활성화합니다. 이유 문자열이 필요합니다. 암호화 취약점이 발견되었을 때 사용됩니다.                                                            |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | 계정의 PQC 키를 등록합니다([키 등록](#key-registration) 참조). 새 계정이 부트스트랩할 수 있도록 고전적 서명이 허용될 수 있습니다.                  |
+| `MsgMigratePQCKey`      | 마이그레이션 기간 중 한 알고리즘의 키에서 다른 알고리즘의 키로의 이중 서명 마이그레이션.                                                                              |
+| `MsgRotatePQCKey`       | 계정의 ML-DSA-87 키를 동일한 알고리즘 내에서 교체합니다(이전 키와 새 키의 이중 서명; `tx pqc rotate-key`).                                         |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM 인가 윈도우를 열거나 닫습니다(v3.2.0); [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)를 참조하세요.                  |
+| `MsgDeprecateAlgorithm` | 거버넌스 메시지: 알고리즘에 대한 폐기 프로세스를 시작합니다. 대체 알고리즘과 블록 단위 마이그레이션 기간을 지정합니다.                          |
+| `MsgDisableAlgorithm`   | 거버넌스 메시지: 알고리즘을 즉시 긴급 비활성화합니다. 이유 문자열이 필요합니다. 암호화 취약점이 발견되었을 때 사용됩니다.                |
+
+`MsgDeprecateAlgorithm`과 `MsgDisableAlgorithm`은 현재 메인넷에서 서킷 브레이커에 의해 꺼져 있습니다([Chain Parameters](/appendix/chain-parameters#circuit-breaker) 참조).
 
 ### 확장성
 
-새 알고리즘을 추가하려면 다음이 필요합니다:
-
-1. 통합된 서명 및 검증 인터페이스 뒤에서 암호화 백엔드에 알고리즘을 구현.
-2. 알고리즘 메타데이터와 함께 `MsgAddAlgorithm` 거버넌스 제안 제출.
-3. 승인되면, 알고리즘이 키 등록 및 검증에 사용 가능해집니다.
+알고리즘을 추가하려면 통합된 서명 및 검증 인터페이스 뒤에서 이를 구현하는 소프트웨어 릴리스가 필요하며, 레지스트리와 폐기/비활성화 수명 주기는 거버넌스로 제어됩니다.
 
 ## SHAKE-256 해시
 

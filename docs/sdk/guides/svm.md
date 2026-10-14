@@ -18,13 +18,24 @@ builders.
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution SVM transaction submission is disabled
+The SVM execution lane is disabled network-wide for transaction submission
+(`code 11, "SVM module is disabled"`), and the public SVM RPC endpoints are
+read-only. Reads (`getBalance`, `getAccountInfo`, `getSlot`,
+`getSignaturesForAddress`, `getMinimumBalanceForRentExemption`,
+`getLatestBlockhash`) work. Do not build a transfer or program-deployment flow on
+SVM yet: the build, sign and send helpers below are the client library surface
+and cannot land a transaction on the public networks today. See
+[SVM Development](/developer-guide/svm-development).
+:::
+
 ## Create a client
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -47,13 +58,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## Transfer SOL
 
-Build an unsigned transfer, then send it (sending needs a reachable node and a
-funded account):
+Build an unsigned transfer (offline). Sending is shown for completeness, but it
+cannot succeed on the public networks while the SVM transaction lane is disabled:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

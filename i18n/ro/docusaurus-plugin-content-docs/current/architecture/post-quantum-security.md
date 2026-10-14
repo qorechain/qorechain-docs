@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain este construit cu **criptografie post-cuantică (PQC) de la genesis** — nu adăugată ulterior ca actualizare. Modulul `x/pqc` oferă semnături digitale bazate pe rețele (lattice) și încapsulare de chei drept primitive criptografice principale, cu un cadru de agilitate a algoritmilor controlat prin guvernanță pentru reziliență pe termen lung.
 
-Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Începând cu versiunea curentă a lanțului (**v3.1.82**), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă.
+Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă.
 
 ## Principii de proiectare
 
@@ -49,9 +49,9 @@ Toate operațiunile de semnare și verificare sunt deterministe și produc rezul
 
 Aceleași primitive — ML-DSA (FIPS-204), ML-KEM (FIPS-203) și SHAKE-256 (FIPS-202) — sunt disponibile pentru portofele și integratori prin biblioteca open-source [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc), care oferă un API consecvent și compatibil la nivel de octet în șase limbaje (JavaScript/TypeScript, Rust, Go, C, Python, Java). Consultați [Post-Quantum Signing](/developer-guide/post-quantum-signing).
 
-## Înregistrarea cheilor
+## Înregistrarea cheilor {#key-registration}
 
-Conturile înregistrează chei PQC prin `MsgRegisterPQCKey` (legacy, implicit Dilithium-5) sau `MsgRegisterPQCKeyV2` (conștient de algoritm). Fiecare mesaj include:
+Conturile înregistrează chei PQC în mod explicit prin `MsgRegisterPQCKey` (legacy, implicit Dilithium-5) sau `MsgRegisterPQCKeyV2` (conștient de algoritm); lanțul nu înregistrează niciodată o cheie de unul singur, iar fluxul CLI este `qorechaind tx pqc gen-key <name>` urmat de `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>` (vezi [First Transaction](/getting-started/first-transaction#register-pqc-key)). Fiecare mesaj include:
 
 * **Sender**: Adresa contului care înregistrează cheia.
 * **PublicKey**: Octeții cheii publice PQC.
@@ -61,40 +61,59 @@ Conturile înregistrează chei PQC prin `MsgRegisterPQCKey` (legacy, implicit Di
 | Tip de cheie         | Descriere                                                              |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Atât chei clasice (ECDSA), cât și PQC. Tranzacțiile poartă semnături duble. |
-| `pqc_only`       | Doar cheie PQC. Semnătura clasică nu este necesară.                       |
+| `pqc_only`       | Înregistrat ca `hybrid`: semnătura clasică secp256k1 este în continuare verificată de verificările standard de semnătură, iar semnătura PQC este necesară și ea. |
 | `classical_only` | Doar cheie clasică. Fără protecție PQC (nerecomandat).                 |
 
 ## Semnături hibride
 
 Sistemul de semnături hibride necesită ca tranzacțiile de pe calea cosmos să poarte **atât** o semnătură clasică, **cât și** o semnătură PQC simultan. Aceasta oferă apărare în profunzime: chiar dacă o schemă este spartă, cealaltă protejează tranzacția.
 
-Cu valoarea implicită a rețelei `hybrid_signature_mode = required`, fiecare tranzacție de pe calea cosmos trebuie să includă extensia Dilithium-5 alături de semnătura secp256k1. Singurele excepții (pentru bootstrap) sunt **gentx-urile de genesis (înălțimea 0)** și **tranzacțiile de înregistrare/migrare a cheilor PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), cărora li se permite să fie exclusiv clasice pentru ca conturile să își poată înregistra prima cheie PQC.
+Cu valoarea implicită a rețelei `hybrid_signature_mode = required`, fiecare tranzacție de pe calea cosmos trebuie să includă extensia Dilithium-5 alături de semnătura secp256k1. Singurele excepții (pentru bootstrap) sunt **gentx-urile de genesis (înălțimea 0)** și **tranzacțiile de înregistrare/migrare a cheilor PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), cărora li se permite să fie exclusiv clasice pentru ca conturile să își poată înregistra prima cheie PQC, precum și o deblocare (unjail) de la un cont de operator care nu are nicio cheie înregistrată.
 
-**Tranzacțiile EVM nu sunt afectate.** Tranzacțiile EVM sunt autentificate pe o cale ante `eth_secp256k1` separată (calea QoreChain EVM Engine) și nu necesită niciodată extensia hibridă PQC. Cerința hibridă se aplică numai căii de tranzacții cosmos.
+**Calea EVM este protejată în schimb de o fereastră de autorizare.** O tranzacție EVM nu poate purta o a doua semnătură (ML-DSA) — portofelele standard semnează o singură semnătură secp256k1 peste o tranzacție Ethereum și nu oferă nicio posibilitate de a atașa alta. Astfel, autorizarea post-cuantică circulă *înaintea* tranzacției: contul deschide o **fereastră de autorizare EVM** limitată printr-un mesaj de pe calea Cosmos (`MsgOpenEVMWindow`), care poartă semnătura hibridă obișnuită, iar calea EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. Începând cu v3.2.0, o tranzacție EVM este refuzată dacă expeditorul ei nu (1) are o cheie post-cuantică înregistrată și (2) are o fereastră activă cu blocuri, tranzacții și valoare rămase. În interiorul unei ferestre, o tranzacție obișnuită MetaMask/ethers/Hardhat funcționează nemodificată, deoarece verificarea citește starea lanțului, nu tranzacția. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 
 ### Fluxul de cosemnare
 
-Pentru a produce o tranzacție cosmos conformă, semnătura clasică secp256k1 este calculată peste octeții de semnare standard (care exclud extensia PQC), iar o semnătură Dilithium-5 este calculată și atașată ca extensie `PQCHybridSignature`. Instrumentele standard CosmJS / relayer trebuie să producă această extensie pentru a tranzacționa pe calea cosmos. Astăzi acest lucru se face prin:
+Pentru a produce o tranzacție cosmos conformă, semnătura clasică secp256k1 este calculată peste octeții de semnare standard (care exclud extensia PQC), iar o semnătură Dilithium-5 este calculată peste octeții semnați v2 (vezi [Octeți semnați (v2)](#sign-bytes-v2) mai jos) și atașată ca extensie `PQCHybridSignature`. Instrumentele standard CosmJS / relayer trebuie să producă această extensie pentru a tranzacționa pe calea cosmos. Astăzi acest lucru se face prin:
 
-* `qorechaind tx pqc gen-key` — generează o cheie Dilithium-5.
-* `qorechaind tx pqc cosign` — atașează cosemnătura Dilithium-5 la o tranzacție.
-* Semnarea hibridă a QoreChain SDK — `buildHybridTx` cu `includePqcPublicKey` (încorporează cheia publică PQC pentru auto-înregistrare la prima utilizare).
+* `qorechaind tx pqc gen-key <name>` — generează o cheie Dilithium-5.
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — atașează cosemnătura Dilithium-5 la o tranzacție construită cu `--generate-only`.
+* Semnarea hibridă a QoreChain SDK — `buildHybridTx`. Cheia contului trebuie să fie deja înregistrată cu `MsgRegisterPQCKey`.
+* [QoreX](/qorex/overview), care le face pe amândouă pentru tine.
 
 *O tranzacție semnată cu secp256k1 (ECDSA) plus ML-DSA-87 (Dilithium-5), verificată de gestionarul ante în modul de impunere la nivel de lanț.*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### Octeți semnați (v2) {#sign-bytes-v2}
+
+Semnătura ML-DSA acoperă octeți etichetați cu domeniu și legați de lanț. Începând cu v3.2.0, lanțul verifică **doar** această formă:
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+unde `B0` este corpul tranzacției serializat **fără** extensia PQC, iar `authInfo` sunt octeții AuthInfo exact așa cum sunt (`‖` este concatenare, lungimile sunt big-endian). Eticheta de domeniu împiedică o semnătură făcută într-un alt context (o provocare de autentificare, o cerere de semnare a unui mesaj) să fie validă ca semnătură de tranzacție, iar legarea de chain ID face ca semnătura post-cuantică în sine să fie invalidă pe orice altă rețea. Prima formă (`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`) a fost verificată doar sub înălțimea de upgrade; niciun bloc nu le acceptă pe amândouă. Payload-urile de migrare a cheilor și de atestare a bridge-ului au trecut la aceeași schemă etichetată cu domeniu și legată de lanț.
+
+**Ce formă verifică rețeaua mea?** Întreabă nodul dacă upgrade-ul a fost aplicat:
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+(`"height":"0"` înseamnă neaplicat.) CLI face acest lucru cu `--sign-bytes auto`; SDK 0.8.x și wallet-adapter 0.2.x fac la fel și recunosc, de asemenea, previzualizarea anterioară a modificării de pe testnet. Un client pe forma greșită produce un digest pe care lanțul îl respinge — eșuează în siguranță (fail closed).
 
 ### Formatul extensiei TX
 
@@ -108,7 +127,7 @@ Semnăturile PQC sunt atașate tranzacțiilor ca **extensie TX** cu URL-ul de ti
 }
 ```
 
-Câmpul `pqc_public_key` este opțional. Dacă este prezent și contul nu are o cheie PQC înregistrată, gestionarul ante va **auto-înregistra** cheia la prima utilizare.
+Câmpul `pqc_public_key` este opțional și cu caracter informativ; cheile sunt înregistrate doar printr-un mesaj explicit de înregistrare (vezi [Înregistrarea cheilor](#key-registration)).
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ Gestionarul ante `PQCHybridVerifyDecorator` procesează semnăturile hibride cu 
 | Scenariu | Contul are cheie PQC | Extensie prezentă | Cheie publică în extensie | Rezultat                                              |
 | -------- | ------------------- | ----------------- | ----------------------- | --------------------------------------------------- |
 | Path 1   | Da                 | Da               | --                      | Verifică semnătura PQC în raport cu cheia înregistrată         |
-| Path 2   | Nu                  | Da               | Da                     | Auto-înregistrează cheia, verifică semnătura                 |
 | Path 3a  | Nu                  | Nu                | --                      | **Modul Optional**: Permite tranzacția exclusiv clasică |
 | Path 3b  | Nu                  | Nu                | --                      | **Modul Required**: Respinge tranzacția               |
 | Path 4   | Da                 | Nu                | --                      | Gestionat de PQCVerifyDecorator standard          |
+
+O cheie trebuie să fie înregistrată cu `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` înainte ca contul să trimită tranzacții semnate hibrid; câmpul `pqc_public_key` al extensiei nu înregistrează nimic.
 
 ### Moduri de semnătură hibridă
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### Migrare cu semnătură dublă
 
-Când un algoritm este retras, începe o **perioadă de migrare** (implicit: 1,000,000 de blocuri, aproximativ 69 de zile la 6s/bloc). În această perioadă:
+Când un algoritm este retras, începe o **perioadă de migrare** (implicit: 1,000,000 de blocuri — aproximativ 37 de zile la timpul actual de bloc al mainnet-ului, ≈3.2 s). În această perioadă:
 
 1. Conturile cu chei care folosesc algoritmul retras trebuie să migreze la cel de înlocuire.
 2. Migrarea necesită semnături duble (`MsgMigratePQCKey`): una de la cheia veche și una de la cheia nouă, dovedind deținerea ambelor.
 3. Ambii algoritmi sunt acceptați pentru verificare pe toată durata perioadei de migrare.
 
-### Mesaje de guvernanță
+### Mesaje
 
 | Mesaj                 | Descriere                                                                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | Propune adăugarea unui nou algoritm PQC în registru. Include `AlgorithmInfo` complet (nume, categorie, nivel NIST, dimensiuni ale cheilor). Trebuie trimis prin guvernanță. |
-| `MsgDeprecateAlgorithm` | Începe procesul de retragere a unui algoritm. Specifică algoritmul de înlocuire și perioada de migrare în blocuri.                                              |
-| `MsgDisableAlgorithm`   | Dezactivează de urgență un algoritm imediat. Necesită un șir de motiv. Folosit când se descoperă o vulnerabilitate criptografică.                                     |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Înregistrează cheia PQC a unui cont (vezi [Înregistrarea cheilor](#key-registration)). Poate fi semnat clasic, astfel încât un cont nou să poată face bootstrap. |
+| `MsgMigratePQCKey`      | Migrare cu semnătură dublă de la cheia unui algoritm la cea a altuia în timpul unei perioade de migrare.                                                         |
+| `MsgRotatePQCKey`       | Rotește cheia ML-DSA-87 a contului în cadrul aceluiași algoritm (semnat dublu de cheia veche și cea nouă; `tx pqc rotate-key`).                                  |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Deschide sau închide fereastra de autorizare EVM (v3.2.0); vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).                  |
+| `MsgDeprecateAlgorithm` | Mesaj de guvernanță: începe procesul de retragere a unui algoritm. Specifică algoritmul de înlocuire și perioada de migrare în blocuri.                          |
+| `MsgDisableAlgorithm`   | Mesaj de guvernanță: dezactivează de urgență un algoritm imediat. Necesită un șir de motiv. Folosit când se descoperă o vulnerabilitate criptografică.           |
+
+`MsgDeprecateAlgorithm` și `MsgDisableAlgorithm` sunt în prezent dezactivate pe mainnet de întrerupătorul de circuit (circuit breaker) (vezi [Chain Parameters](/appendix/chain-parameters#circuit-breaker)).
 
 ### Extensibilitate
 
-Adăugarea unui nou algoritm necesită:
-
-1. Implementarea algoritmului în backend-ul criptografic, în spatele interfeței unificate de semnare și verificare.
-2. Trimiterea unei propuneri de guvernanță `MsgAddAlgorithm` cu metadatele algoritmului.
-3. Odată aprobat, algoritmul devine disponibil pentru înregistrarea și verificarea cheilor.
+Adăugarea unui algoritm necesită o versiune de software care îl implementează în spatele interfeței unificate de semnare și verificare; registrul și ciclul de viață de retragere/dezactivare sunt controlate prin guvernanță.
 
 ## Hash SHAKE-256
 

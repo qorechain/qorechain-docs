@@ -17,7 +17,11 @@ sidebar_position: 8
 모든 금액은 QoreChain의 네이티브 단위를 사용합니다. 스테이킹 및 수수료 토큰은 **QOR**이며, 기본 denom은 **uqor**입니다(1 QOR = 10^6 uqor). 풀 참여자와 주소는 `qor` bech32 접두사를 사용합니다.
 
 :::note
-아래 명령어는 `qorechaind`를 사용합니다. 사용 환경에 맞는 일반적인 트랜잭션 플래그(`--from`, `--chain-id`, `--gas`, `--fees`, `--node`)를 추가하세요 — 예를 들어 메인넷에 대해서는 `--chain-id qorechain-vladi`.
+아래 명령어는 `qorechaind`를 사용합니다. 사용 환경에 맞는 일반적인 트랜잭션 플래그(`--from`, `--chain-id`, `--gas`, `--fees`, `--node`)를 추가하세요 — 예를 들어 메인넷에 대해서는 `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor`(네트워크 수수료 하한은 가스 단위당 0.1 uqor입니다). 모든 `tx amm` 명령은 Cosmos 레인 트랜잭션이므로 하이브리드 포스트 퀀텀 서명이 필요합니다. `--generate-only > tx.json`을 추가한 다음 `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>`를 실행하세요([첫 트랜잭션](/getting-started/first-transaction#send-qor) 참고).
+:::
+
+:::caution 아직 존재하는 풀이 없습니다
+AMM 모듈은 메인넷과 테스트넷에서 라이브 상태이지만, **아직 생성된 풀이 없으며**, 아래 예시의 denom(`uusdc`, `uusdt`)은 설명용입니다. 현재 네트워크에는 그러한 자산이 존재하지 않습니다. 풀이 생길 때까지 모든 스왑 또는 유동성 추가 명령은 풀을 찾을 수 없다는 오류와 함께 실패합니다.
 :::
 
 ## 풀과 LP 지분
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## 풀 일시 중지 및 재개
 
-풀은 풀 권한(`--from`을 통해 전달된 주소)에 의해 일시 중지 및 재개될 수 있습니다. 일시 중지된 풀은 재개될 때까지 스왑과 유동성 변경을 거부합니다 — 인시던트 대응이나 조정된 유지 보수에 유용합니다.
+풀은 거버넌스 권한에 의해 일시 중지 및 재개될 수 있습니다. 메인넷에서는 이 두 메시지가 현재 서킷 브레이커에 의해 꺼져 있습니다. 일시 중지된 풀은 재개될 때까지 스왑과 유동성 변경을 거부합니다 — 인시던트 대응이나 조정된 유지 보수에 유용합니다.
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## 명령어 요약
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | LP 토큰 소각 및 준비금 인출 |
 | `swap-exact-in` | 고정된 입력 금액 스왑 |
 | `swap-exact-out` | 고정된 출력 금액으로 스왑 |
-| `pause-pool` | 풀 일시 중지 (권한) |
-| `resume-pool` | 일시 중지된 풀 재개 (권한) |
+| `pause-pool` | 풀 일시 중지 (거버넌스 권한, 메인넷에서는 꺼져 있음) |
+| `resume-pool` | 일시 중지된 풀 재개 (거버넌스 권한, 메인넷에서는 꺼져 있음) |
 
 **쿼리** (`qorechaind query amm …`):
 

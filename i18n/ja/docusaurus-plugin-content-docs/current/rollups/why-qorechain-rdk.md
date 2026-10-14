@@ -7,106 +7,66 @@ sidebar_position: 2
 
 # なぜ QoreChain RDK なのか
 
-ほとんどのロールアップ開発キットは同じテーマのバリエーションにすぎません。つまり、ベースレイヤーに決済（セトルメント）するアプリチェーンの立ち上げを支援するものです。QoreChain RDK もそれを行いますが、さらに **他のどのロールアップキットにもできない** 3 つの機能を提供します。これらはツーリングではなく、QoreChain の Layer 1 に存在する機能に依存しているためです。
+ほとんどのロールアップ開発キットは同じテーマのバリエーションにすぎません。つまり、ベースレイヤーに決済（セトルメント）するアプリチェーンの立ち上げを支援するものです。QoreChain RDK もそれを行いますが、さらに QoreChain 固有の 3 つの機能を追加します。これらはツーリングではなく、QoreChain の Layer 1 を軸に構築されています。
 
 - **ポスト量子（post-quantum）** の決済レイヤー、
 - オンチェーン AI/RL アドバイザリープリミティブ（QCAI）、
 - クロス VM 呼び出しを備えた **トリプル VM** ランタイム。
 
-汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ロールアップの決済を **検証可能で、量子耐性があり、AI 対応** にしたいなら、それを表現できるのはこのキットだけです — TypeScript、Python、Go、Rust、Java で利用できます。
+:::caution 初期段階: ステータス列をお読みください
+どちらのネットワークにも、まだロールアップは作成されていません。下の表は、現時点で動作するものを示しています。汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ここで説明する機能は、RDK が TypeScript、Python、Go、Rust、Java で上乗せするものです。
+:::
 
-| 差別化要素 | ステータス | ここでしか実現できない理由 |
+| 機能 | ステータス | 依存するもの |
 | --- | --- | --- |
-| **量子耐性のある決済レシート** | 🟢 唯一無二（ファーストムーバー） | ポスト量子 L1 が必要 — 非 PQC ベースレイヤーでは不可能 |
-| **QCAI Rollup Copilot** | 🟢 チェーンを通じて唯一 | QoreChain 固有のオンチェーン AI/RL エンドポイントをラップ |
-| **マルチ VM のクロス VM 呼び出し** | 🟡 独自性あり | QoreChain は EVM + CosmWasm + SVM を単一チェーン上で実行 |
+| **量子耐性のある決済レシート** | 🟡 初期段階 | アンカーは Main Chain のポスト量子方式である ML-DSA-87 で署名されます。アンカーはまだ存在しません |
+| **QCAI Rollup Copilot** | 🟡 公開エンドポイントではまだ利用不可 | 現在、公開エンドポイントが公開していないオンチェーン AI/RL アドバイザリーサービス |
+| **マルチ VM のクロス VM 呼び出し** | 🟡 稼働中のネットワークではまだ利用不可 | 有効化されていないクロス VM プリコンパイルがあり、CosmWasm のアップロードは閉じられています |
 
 ---
 
 ## 1. 量子耐性のある決済レシート
 
-> 🟢 **唯一無二。** 非ポスト量子 L1 上に構築されたロールアップキットには提供できません。
+> 🟡 **QoreChain のポスト量子ベースレイヤー上に構築された設計。** 決済アンカーは、Main Chain と同じ方式である ML-DSA-87（Dilithium-5、FIPS-204）で署名されます。初期段階: どちらのネットワークにも、まだアンカーは存在しません。
 
-ロールアップが決済バッチをアンカーすると、QoreChain はそのステートルートを **ポスト量子（ML-DSA-87 / Dilithium-5、FIPS-204）** 署名のもとで Main Chain にコミットします。RDK はそのアンカーを、誰でも **完全オフラインで** 検証できる **ポータブルなレシート** に変換します — ノードも不要、キットへの信頼も不要、必要なのは数学だけです。
-
-レシートは 2 つのことを証明します。バッチのステートルートがアンカーされたものと一致すること（バインディング）、そしてアンカーがレイヤー作成者の登録済みポスト量子鍵で署名されたこと（真正性）です。署名は正規メッセージ
-`layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash` をカバーします。
+ロールアップの作成者が決済バッチをアンカーすると、そのアンカーはオンチェーンに登録されたポスト量子鍵で署名されます。RDK はそのアンカーを **ポータブルなレシート** としてパッケージ化でき、検証者は QoreChain ノードから該当する主張を読み直して、ロールアップ、バッチ、アンカー、作成者の鍵のすべてがチェーンの保持する内容と一致することを確認します。
 
 ```ts
-import {
-  createRdkClient,
-  buildSettlementReceipt,
-  verifySettlementReceipt,
-} from "@qorechain/rdk";
+import { createRdkClient, buildSettlementReceipt, verifySettlementReceipt } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
-const rdk = createRdkClient({ network: "mainnet" });
-
-// Build a portable receipt for batch #42 of "my-rollup".
+const rdk = createRdkClient({ network: "testnet" });
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
-// → { algorithm: "ML-DSA-87", stateRoot, layerHeight, pqcSignature, creator, ... }
-
-// Verify it — fetches the creator's PQC key from the chain.
 const result = await verifySettlementReceipt(receipt, { client: rdk });
-console.log(result.valid);                 // true
-console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
-console.log(result.checks.stateRootBinding); // batch root == anchored root
+console.log(result.valid);
 ```
 
-**完全オフライン** — レシートと作成者の公開鍵を誰かに渡せば、エアギャップ環境のマシンでも、ネットワークに一切触れずに検証できます。
-
-```ts
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "a1b2…", // the layer creator's ML-DSA-87 key (hex)
-});
-// result.valid === true, with zero network calls
-```
-
-同じレシートは **5 つの言語すべてでバイト単位で同一に** 検証されます（TypeScript 以外のクライアントはチェーン自身の `qorechain-pqc` ライブラリを使用します）。そのため、TypeScript サービスが生成したレシートは、Go の監査ツールでも Java のバックエンドでもまったく同じように検証されます。詳細は [量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
+レシートが何を証明し、何を証明しないのかについては、[量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
 
 ---
 
 ## 2. QCAI Rollup Copilot
 
-> 🟢 **チェーンを通じて唯一無二。** 他のネットワークには存在しないオンチェーン AI/RL エンドポイントの上に構築されています。
+> 🟡 **公開エンドポイントではまだ利用できません。**
 
-QoreChain はネットワークレベルの AI/RL サービスをオンチェーンで実行しています — 手数料ポリシーエージェント、ネットワーク推奨、不正調査、サーキットブレーカーなどです。Copilot はこれらを 1 つのロールアップ向けに、レビュー可能で平易な言葉による単一のビューへ集約します。読み取り専用かつベストエフォートで動作し、アドバイザリーサービスに到達できない場合は、失敗する代わりに警告へ縮退します。
+Copilot は、ネットワークのアドバイザリーサービス（手数料ポリシーエージェント、推奨、不正調査）を、1 つのロールアップ向けに読み取り専用で平易な言葉による単一のビューへ集約することを目的としています。ベストエフォートで動作し、サービスに到達できない場合は、失敗する代わりに警告へ縮退します。これらのサービスは現在、公開エンドポイントでは公開されていないため、すべてのセクションが警告として返されます。
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
-
+const rdk = createRdkClient({ network: "testnet" });
 const advice = await getRollupAdvice(rdk, "my-rollup");
-
-for (const s of advice.suggestions) {
-  console.log(`[${s.level}] ${s.message}`);
-  // [action] 2 open fraud investigation(s) reference this rollup …
-  // [warn]   QCAI reports network congestion — consider raising the fee …
-  // [info]   A live QCAI fee estimate is available …
-}
-
-console.log(advice.feeEstimate);          // live QCAI fee estimate
-console.log(advice.fraudInvestigations);  // investigations touching this rollup
-console.log(advice.rlAgentStatus);        // the RL fee/routing agent's state
+console.log(advice.warnings); // services that could not be reached
 ```
 
-CLI から:
-
-```bash
-qorollup advise my-rollup
-```
-
-他のキットにはラップすべき対象がそもそも存在しません — アドバイザリーデータは QoreChain のプリミティブです。詳細は [QCAI Copilot](/rollups/qcai-copilot) を参照してください。
+CLI から: `qorollup advise my-rollup`。詳細は [QCAI Copilot](/rollups/qcai-copilot) を参照してください。
 
 ---
 
 ## 3. マルチ VM のクロス VM 呼び出し
 
-> 🟡 **独自性あり。** QoreChain は EVM、CosmWasm、SVM を単一チェーン上で実行し、EVM → CosmWasm をブリッジするプリコンパイルを備えています。
+> 🟡 **稼働中のネットワークではまだ利用できません** — プリコンパイルは有効化されておらず、CosmWasm のアップロードは閉じられています。[マルチ VM](/rollups/multi-vm) を参照してください。
 
-EVM（Solidity）のロールアップコントラクトは、`0x…0901` の固定プリコンパイルを通じて既存の **CosmWasm** コントラクトを呼び出せます。RDK が calldata を構築してくれるため、CosmWasm のオラクル、トークン、レジストリを再実装することなく Solidity から再利用できます。
+RDK には、EVM（Solidity）コントラクトから **CosmWasm** コントラクトへの呼び出しを、`0x…0901` の固定プリコンパイル経由でエンコードするヘルパーが含まれています。このプリコンパイルは、メインネットでもテストネットでも **有効ではありません**（[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status) を参照）。
 
 ```ts
 import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
@@ -136,17 +96,17 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別枠です。）詳細は [マルチ VM](/rollups/multi-vm) を参照してください。
+スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別枠です。）
 
 ---
 
 ## その他の期待どおりの機能
 
-差別化要素に加えて、RDK は標準装備も一通り揃えています。共有ゴールデンベクターで検証済みの 5 つの公開済み言語クライアント、5 つのプリセットプロファイルと完全な互換性マトリクス、決済バッチとライフサイクルの管理、ネイティブなデータ可用性、optimistic ロールアップ向けの **watchtower** 自動チャレンジャー、そして `qorollup` オペレーター CLI です。
+これらの機能に加えて、RDK は標準装備も一通り揃えています。共有ゴールデンベクターで検証済みの 5 つの公開済み言語クライアント、5 つのプリセットプロファイルと完全な互換性マトリクス、決済バッチとライフサイクルの管理、ネイティブなデータ可用性ストレージ（そのステータス注記を参照）、optimistic ロールアップ向けの **watchtower** 自動チャレンジャー、そして `qorollup` オペレーター CLI です。
 
 ## 次のステップ
 
-- [ロールアップのデプロイ](/rollups/deploying-a-rollup) — 言語ごとのインストール手順と、ゼロからテストネット上で稼働するロールアップまで。
+- [ロールアップのデプロイ](/rollups/deploying-a-rollup) — 言語ごとのインストール手順と、テストネット上のロールアップに至る CLI の手順。
 - [量子耐性のある決済レシート](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [マルチ VM](/rollups/multi-vm) ·

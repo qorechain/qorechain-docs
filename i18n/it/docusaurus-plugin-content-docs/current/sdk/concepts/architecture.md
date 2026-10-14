@@ -28,14 +28,21 @@ L'SDK comunica con un nodo attraverso diversi endpoint:
 - **Cosmos REST (LCD)** — saldi bank, info account, query dei moduli.
 - **Consensus RPC** — usato per firmare/trasmettere transazioni native e per
   il read client CosmWasm.
-- **EVM JSON-RPC** — chiamate `eth_*` standard più il namespace QoreChain `qor_*`
-  e i precompile EVM.
-- **SVM JSON-RPC** — RPC compatibile con Solana per il runtime SVM.
+- **EVM JSON-RPC** — chiamate standard `eth_*`, `net_*`, `web3_*` e `txpool_*` sugli
+  endpoint pubblici. Il namespace QoreChain `qor_*` e i precompile EVM non sono
+  ancora disponibili lì (vedi sotto).
+- **SVM JSON-RPC** — RPC compatibile con Solana per il runtime SVM (sola lettura
+  sugli endpoint pubblici; l'invio di transazioni SVM è disabilitato su tutta la rete).
 
-Il namespace JSON-RPC `qor_*` espone letture specifiche di QoreChain come
-tokenomics, stato delle chiavi PQC, modalità di firma ibrida, messaggi cross-VM e
-statistiche di rete. In TypeScript questi sono metodi tipizzati su `client.qor`
-(`QorClient`); la stessa superficie esiste negli SDK Python, Go e Rust.
+Sui nodi che lo abilitano, il namespace JSON-RPC `qor_*` espone letture specifiche
+di QoreChain come tokenomics, stato delle chiavi PQC, modalità di firma ibrida,
+messaggi cross-VM e statistiche di rete. In TypeScript questi sono metodi
+tipizzati su `client.qor` (`QorClient`); la stessa superficie esiste negli SDK
+Python, Go e Rust. Sugli endpoint pubblici usa invece le route REST (ad esempio
+`GET /qorechain/pqc/v1/account/{address}` per lo stato delle chiavi PQC e
+`GET /qorechain/burn/v1/stats` per le statistiche di burn).
+
+> **Non ancora servito:** nessuna build di nodo rilasciata serve il namespace JSON-RPC `qor_`, quindi oggi ogni chiamata `qor_*` restituisce `-32601` (metodo non trovato) su ogni endpoint pubblico. Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ## Token & denominazioni
 
@@ -72,7 +79,9 @@ Vedi [Account & firma PQC](/sdk/concepts/accounts-pqc) per i percorsi di derivaz
 
 Il modulo `x/crossvm` di QoreChain permette ai contratti su una VM di attivare azioni su
 un'altra. Il percorso EVM→native viene eseguito on-chain attraverso il **precompile del bridge
-cross-VM** (`@qorechain/evm`), e l'SDK fornisce helper di lettura REST tipizzati
+cross-VM** (`@qorechain/evm`; non ancora attivo sulle reti pubbliche), e l'SDK fornisce helper di lettura REST tipizzati
 (`getCrossVmMessage`, `getPendingCrossVmMessages`, `getCrossVmParams`) più
-`client.qor.getCrossVMMessage(...)` per tracciare lo stato dei messaggi. Vedi la
+`client.qor.getCrossVmMessage(...)` per tracciare lo stato dei messaggi. Sugli
+endpoint pubblici gli helper REST e `client.qor` non sono serviti; leggi i messaggi con
+`connectQueryClients(rpc).crossvm`. Vedi la
 [guida cross-VM](/sdk/guides/cross-vm).

@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain provides a Solana-compatible JSON-RPC interface through its SVM (Solana Virtual Machine) runtime, enabling existing Solana tooling and SDKs to interact with QoreChain natively.
 
 :::caution SVM transaction submission is currently disabled
-As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** — any transaction returns `code 11, "SVM module is disabled"`. This applies network-wide, not just at the public read-only endpoints. Read-style methods in the table below (e.g. `getBalance`, `getAccountInfo`) may still respond, but do not attempt a live integration that submits SVM transactions until the lane reopens — this is a compile-time disable, not a runtime parameter, so it cannot be turned back on by a governance vote; it's expected to stay off until an external audit clears it.
+As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** — any transaction returns `code 11, "SVM module is disabled"`. This applies network-wide, not just at the public read-only endpoints. Read-style methods in the table below (e.g. `getBalance`, `getAccountInfo`) respond normally on the public endpoints, but do not attempt a live integration that submits SVM transactions until the lane reopens — this is a compile-time disable, not a runtime parameter, so it cannot be turned back on by a governance vote; it's expected to stay off until an external audit clears it.
 :::
 
 ## Connection
@@ -40,6 +40,16 @@ As of chain version **v3.1.82**, the SVM interface serves the account's **native
 | `getMinimumBalanceForRentExemption` | `dataLength` (integer)   | Returns the minimum balance for rent exemption given data size |
 | `getVersion`                        | none                     | Returns the node software version                              |
 | `getHealth`                         | none                     | Returns node health status (`"ok"` if healthy)                 |
+| `getBlockHeight`                    | none                     | Returns the current block height                               |
+| `getLatestBlockhash`                | none                     | Returns a recent blockhash and `lastValidBlockHeight`          |
+| `getRecentBlockhash`                | none                     | Legacy form of `getLatestBlockhash`                            |
+| `getFeeForMessage`                  | `message` (base64)       | Returns the fee for a message (lamports)                       |
+| `getMultipleAccounts`               | `pubkeys` (array)        | Returns several accounts in one call                           |
+| `getProgramAccounts`                | `programId` (base58)     | Returns the accounts owned by a program                        |
+| `getTokenAccountsByOwner`           | `owner`, filter          | Returns token accounts for an owner                            |
+| `getTokenAccountsByDelegate`        | `delegate`, filter       | Returns token accounts for a delegate                          |
+
+Methods outside this list, such as `getGenesisHash` and `getEpochInfo`, return `-32601 method not found`. `getTransaction` is accepted but currently answers with an envelope that has no `result` field, so do not rely on it. The slot reported by `getSlot` tracks the chain's block height.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

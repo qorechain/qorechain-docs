@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # MEV-Schutz (FairBlock)
 
-Das Modul `x/fairblock` implementiert die Verteidigung von QoreChain gegen Maximal-Extractable-Value-(MEV-)Angriffe mithilfe von Threshold-Identity-Based-Encryption. In Kombination mit einem 5-Lane-System zur Transaktionspriorisierung entsteht eine umfassende Anti-MEV-Architektur, die Nutzer vor Front-Running, Sandwich-Angriffen und anderen Formen der mempool-basierten Wertabschöpfung schützt.
+Das Modul `x/fairblock` ist das Design von QoreChain zur Abwehr von Maximal-Extractable-Value-(MEV-)Angriffen mithilfe von Threshold-Identity-Based-Encryption. In Kombination mit einem 5-Lane-System zur Transaktionspriorisierung soll es eine Anti-MEV-Architektur bilden, die Nutzer vor Front-Running, Sandwich-Angriffen und anderen Formen der mempool-basierten Wertabschöpfung schützt.
+
+:::note Aktueller Stand (Oktober 2026)
+FairBlock ist **sowohl im Mainnet als auch im Testnet deaktiviert** (`enabled = false`), und die 5-Lane-Definitionen sind reine Konfiguration: Blockraum-Lanes werden vom aktiven Mempool bzw. Proposal-Handler nicht durchgesetzt. Diese Seite beschreibt das beabsichtigte Design.
+:::
 
 ## Das MEV-Problem
 
@@ -53,7 +57,7 @@ Validatoren steuern Entschlüsselungsanteile für übernommene Transaktionen bei
 
 ## Implementierungsstatus
 
-Im aktuellen Testnet-Release ist das FairBlock-Modul eine **Stub-Implementierung**:
+In beiden aktiven Netzwerken (Mainnet und Testnet) ist das FairBlock-Modul eine **Stub-Implementierung**:
 
 * Der Ante-Handler `FairBlockDecorator` ist in die Transaktionsverarbeitungs-Pipeline eingebunden, **leitet** jedoch alle Transaktionen ohne Änderung **durch**.
 * Wenn `enabled` auf `false` gesetzt ist (der Standard), delegiert der Decorator sofort an den nächsten Handler in der Kette.
@@ -101,14 +105,12 @@ Gas-abstrahierte und gesponserte Transaktionen. Diese Lane ermöglicht gebühren
 
 ### Implementierungsstatus
 
-Die Lane-Konfiguration ist im aktuellen Testnet-Release **nur datenbasiert**. Die Lane-Definitionen (Priorität, Blockraum-Anteil) werden bei der Anwendungsinitialisierung registriert, aber die tatsächliche Mempool-Umordnung über `PrepareProposal` und `ProcessProposal` ist ein zukünftiger Meilenstein. Derzeit werden alle Transaktionen unabhängig von der Lane-Zuweisung in Standardreihenfolge verarbeitet.
+Die Lane-Konfiguration ist in den aktiven Netzwerken **nur datenbasiert**. Die Lane-Definitionen (Priorität, Blockraum-Anteil) werden bei der Anwendungsinitialisierung registriert, aber die tatsächliche Mempool-Umordnung über `PrepareProposal` und `ProcessProposal` ist ein zukünftiger Meilenstein. Derzeit werden alle Transaktionen unabhängig von der Lane-Zuweisung in Standardreihenfolge verarbeitet.
 
-## Kombinierter Anti-MEV-Effekt
+## Kombinierter Anti-MEV-Effekt (Design)
 
 1. **Schicht 1: Verschlüsselung (tIBE)** — Transaktionen werden verschlüsselt, bevor sie in den Mempool gelangen. Proposer können den Inhalt nicht lesen, sodass es keine Information zum Abschöpfen gibt.
 2. **Schicht 2: Priorisierung (Lanes)** — Verschlüsselte MEV-Lane-Transaktionen erhalten 20% reservierten Blockraum. Priorität 90 stellt die Aufnahme selbst bei Überlastung sicher.
 3. **Schicht 3: Threshold-Entschlüsselung** — Erst nach der Block-Übernahme geben Validatoren Entschlüsselungsanteile preis. Die Schwellenanforderung verhindert, dass ein einzelner Validator frühzeitig entschlüsselt.
 
-Ergebnis: Die Informationsasymmetrie wird in jeder Phase des Transaktionslebenszyklus eliminiert, von der Übertragung bis zur Ausführung.
-
-Dieser Ansatz ist zeitverzögerter Entschlüsselung oder Commit-Reveal-Verfahren mit einer einzelnen Partei strikt überlegen, da die Schwellenanforderung das Vertrauen auf die gesamte Validatorenmenge verteilt.
+Beabsichtigtes Ergebnis: Sobald FairBlock aktiviert ist, wird die Informationsasymmetrie in jeder Phase des Transaktionslebenszyklus eliminiert, von der Übertragung bis zur Ausführung. Die Schwellenanforderung verteilt das Vertrauen auf die gesamte Validatorenmenge, was zeitverzögerte Entschlüsselung oder Commit-Reveal-Verfahren mit einer einzelnen Partei nicht leisten.

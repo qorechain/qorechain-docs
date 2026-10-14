@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain est conçue avec la **cryptographie post-quantique (PQC) dès le genesis** — et non ajoutée a posteriori sous forme de mise à niveau. Le module `x/pqc` fournit des signatures numériques fondées sur les réseaux euclidiens (lattices) et l'encapsulation de clés comme primitives cryptographiques principales, avec un cadre d'agilité algorithmique contrôlé par la gouvernance pour une résilience à long terme.
 
-La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. À partir de la version de chaîne actuelle (**v3.1.82**), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé.
+La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. Sur les réseaux en production (v3.2.x), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé.
 
 ## Principes de conception
 
@@ -23,7 +23,7 @@ La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE
 | Algorithme      | Standard             | Catégorie            | Niveau NIST | Clé publique | Clé privée  | Signature / Chiffré | Secret partagé |
 | --------------- | -------------------- | -------------------- | ----------- | ------------ | ----------- | ------------------- | -------------- |
 | **Dilithium-5** | ML-DSA-87 (FIPS 204) | Signature            | 5           | 2,592 bytes  | 4,896 bytes | 4,627 bytes         | --             |
-| **ML-KEM-1024** | FIPS 203             | Encapsulation de clés | 5           | 1,568 bytes  | 3,168 bytes | 1,568 bytes         | 32 bytes       |
+| **ML-KEM-1024** | FIPS 203             | Encapsulation de clés | 5          | 1,568 bytes  | 3,168 bytes | 1,568 bytes         | 32 bytes       |
 
 Les deux algorithmes opèrent au **niveau de sécurité NIST 5**, la catégorie de sécurité standardisée la plus élevée, offrant une protection équivalente à AES-256 contre les adversaires classiques comme quantiques.
 
@@ -49,9 +49,9 @@ Toutes les opérations de signature et de vérification sont déterministes et p
 
 Ces mêmes primitives — ML-DSA (FIPS-204), ML-KEM (FIPS-203) et SHAKE-256 (FIPS-202) — sont disponibles pour les portefeuilles et les intégrateurs via la bibliothèque open source [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc), qui fournit une API unique, cohérente et compatible octet par octet à travers six langages (JavaScript/TypeScript, Rust, Go, C, Python, Java). Voir [Signature post-quantique](/developer-guide/post-quantum-signing).
 
-## Enregistrement des clés
+## Enregistrement des clés {#key-registration}
 
-Les comptes enregistrent des clés PQC via `MsgRegisterPQCKey` (legacy, par défaut Dilithium-5) ou `MsgRegisterPQCKeyV2` (agnostique à l'algorithme). Chaque message comprend :
+Les comptes enregistrent explicitement leurs clés PQC via `MsgRegisterPQCKey` (legacy, par défaut Dilithium-5) ou `MsgRegisterPQCKeyV2` (agnostique à l'algorithme) ; la chaîne n'enregistre jamais une clé de sa propre initiative, et le flux CLI est `qorechaind tx pqc gen-key <name>` suivi de `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>` (voir [Première transaction](/getting-started/first-transaction#register-pqc-key)). Chaque message comprend :
 
 * **Sender** : L'adresse du compte qui enregistre la clé.
 * **PublicKey** : Les octets de la clé publique PQC.
@@ -61,40 +61,59 @@ Les comptes enregistrent des clés PQC via `MsgRegisterPQCKey` (legacy, par déf
 | Type de clé      | Description                                                              |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Clés classique (ECDSA) et PQC. Les transactions portent des doubles signatures. |
-| `pqc_only`       | Clé PQC uniquement. La signature classique n'est pas requise.            |
+| `pqc_only`       | Enregistrée comme `hybrid` : la signature classique secp256k1 est toujours vérifiée par les contrôles de signature standard, et la signature PQC est également requise. |
 | `classical_only` | Clé classique uniquement. Aucune protection PQC (non recommandé).        |
 
 ## Signatures hybrides
 
 Le système de signatures hybrides exige que les transactions du chemin cosmos portent **à la fois** une signature classique et une signature PQC simultanément. Cela offre une défense en profondeur : même si l'un des schémas est cassé, l'autre protège la transaction.
 
-Avec la valeur par défaut du réseau `hybrid_signature_mode = required`, chaque transaction du chemin cosmos doit inclure l'extension Dilithium-5 aux côtés de la signature secp256k1. Les seules exemptions (pour le bootstrap) sont les **gentxs de genesis (hauteur 0)** et les **transactions d'enregistrement/migration de clé PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), qui sont autorisées à être purement classiques afin que les comptes puissent enregistrer leur première clé PQC.
+Avec la valeur par défaut du réseau `hybrid_signature_mode = required`, chaque transaction du chemin cosmos doit inclure l'extension Dilithium-5 aux côtés de la signature secp256k1. Les seules exemptions (pour le bootstrap) sont les **gentxs de genesis (hauteur 0)** et les **transactions d'enregistrement/migration de clé PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), qui sont autorisées à être purement classiques afin que les comptes puissent enregistrer leur première clé PQC, ainsi qu'un unjail depuis un compte opérateur qui n'a aucune clé enregistrée.
 
-**Les transactions EVM ne sont pas concernées.** Les transactions EVM sont authentifiées sur un chemin ante `eth_secp256k1` distinct (le chemin du QoreChain EVM Engine) et ne requièrent jamais l'extension hybride PQC. L'exigence hybride ne s'applique qu'au chemin de transaction cosmos.
+**La voie EVM est protégée par une fenêtre d'autorisation à la place.** Une transaction EVM ne peut pas porter de seconde signature (ML-DSA) — les portefeuilles standard produisent une seule signature secp256k1 sur une transaction Ethereum et n'offrent aucun moyen d'en joindre une autre. L'autorisation post-quantique voyage donc *en amont* de la transaction : le compte ouvre une **fenêtre d'autorisation EVM** bornée au moyen d'un message de la voie Cosmos (`MsgOpenEVMWindow`), qui porte la signature hybride ordinaire, et la voie EVM n'admet alors que les transactions couvertes par une fenêtre active. Depuis v3.2.0, une transaction EVM est refusée sauf si son expéditeur (1) possède une clé post-quantique enregistrée et (2) dispose d'une fenêtre active avec des blocs, des transactions et de la valeur restants. À l'intérieur d'une fenêtre, une transaction MetaMask/ethers/Hardhat ordinaire fonctionne sans modification, car le contrôle lit l'état de la chaîne, et non la transaction. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
 
 ### Flux de cosignature
 
-Pour produire une transaction cosmos conforme, la signature classique secp256k1 est calculée sur les sign bytes standard (qui excluent l'extension PQC), et une signature Dilithium-5 est calculée et attachée comme extension `PQCHybridSignature`. Les outils standard CosmJS / relayer doivent produire cette extension pour transiger sur le chemin cosmos. Aujourd'hui, cela se fait via :
+Pour produire une transaction cosmos conforme, la signature classique secp256k1 est calculée sur les sign bytes standard (qui excluent l'extension PQC), et une signature Dilithium-5 est calculée sur les octets signés v2 (voir [Octets signés (v2)](#sign-bytes-v2) ci-dessous) puis attachée comme extension `PQCHybridSignature`. Les outils standard CosmJS / relayer doivent produire cette extension pour transiger sur le chemin cosmos. Aujourd'hui, cela se fait via :
 
-* `qorechaind tx pqc gen-key` — générer une clé Dilithium-5.
-* `qorechaind tx pqc cosign` — attacher la cosignature Dilithium-5 à une transaction.
-* La signature hybride du SDK QoreChain — `buildHybridTx` avec `includePqcPublicKey` (intègre la clé publique PQC pour l'auto-enregistrement à la première utilisation).
+* `qorechaind tx pqc gen-key <name>` — générer une clé Dilithium-5.
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — attacher la cosignature Dilithium-5 à une transaction construite avec `--generate-only`.
+* La signature hybride du SDK QoreChain — `buildHybridTx`. La clé du compte doit déjà être enregistrée avec `MsgRegisterPQCKey`.
+* [QoreX](/qorex/overview), qui fait les deux à votre place.
 
 *Une transaction signée avec secp256k1 (ECDSA) plus ML-DSA-87 (Dilithium-5), vérifiée par l'ante handler sous le mode d'application à l'échelle de la chaîne.*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### Octets signés (v2) {#sign-bytes-v2}
+
+La signature ML-DSA couvre des octets balisés par domaine et liés à la chaîne. Depuis v3.2.0, la chaîne vérifie **uniquement** cette forme :
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+où `B0` est le corps de la transaction sérialisé **sans** l'extension PQC et `authInfo` correspond aux octets AuthInfo tels quels (`‖` désigne la concaténation, les longueurs sont en big-endian). Le tag de domaine empêche qu'une signature produite dans un autre contexte (un challenge de connexion, une demande de signature de message) soit valide comme signature de transaction, et la liaison à l'ID de chaîne rend la signature post-quantique elle-même invalide sur tout autre réseau. La première forme (`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`) n'était vérifiée qu'en dessous de la hauteur de mise à niveau ; aucun bloc n'accepte les deux. Les charges utiles de migration de clé et d'attestation de bridge sont passées au même schéma balisé par domaine et lié à la chaîne.
+
+**Quelle forme mon réseau vérifie-t-il ?** Demandez au nœud si la mise à niveau a été appliquée :
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+(`"height":"0"` signifie non appliquée.) La CLI le fait avec `--sign-bytes auto` ; le SDK 0.8.x et wallet-adapter 0.2.x font de même, et reconnaissent aussi l'aperçu antérieur de ce changement sur le testnet. Un client sur la mauvaise forme produit un condensat que la chaîne rejette — il échoue en mode fermé.
 
 ### Format de l'extension de TX
 
@@ -108,7 +127,7 @@ Les signatures PQC sont attachées aux transactions comme une **extension de TX*
 }
 ```
 
-Le champ `pqc_public_key` est optionnel. S'il est présent et que le compte n'a pas de clé PQC enregistrée, l'ante handler procédera à un **auto-enregistrement** de la clé à la première utilisation.
+Le champ `pqc_public_key` est optionnel et purement informatif ; les clés ne sont enregistrées que par un message d'enregistrement explicite (voir [Enregistrement des clés](#key-registration)).
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ L'ante handler `PQCHybridVerifyDecorator` traite les signatures hybrides avec un
 | Scénario | Le compte a une clé PQC | Extension présente | Clé publique dans l'extension | Résultat                                            |
 | -------- | ----------------------- | ------------------ | ----------------------------- | --------------------------------------------------- |
 | Path 1   | Oui                     | Oui                | --                            | Vérifie la signature PQC contre la clé enregistrée  |
-| Path 2   | Non                     | Oui                | Oui                           | Auto-enregistre la clé, vérifie la signature        |
 | Path 3a  | Non                     | Non                | --                            | **Mode Optional** : Autorise une transaction purement classique |
 | Path 3b  | Non                     | Non                | --                            | **Mode Required** : Rejette la transaction          |
 | Path 4   | Oui                     | Non                | --                            | Géré par le PQCVerifyDecorator standard             |
+
+Une clé doit être enregistrée avec `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` avant que le compte n'envoie des transactions signées en hybride ; le champ `pqc_public_key` de l'extension n'enregistre rien.
 
 ### Modes de signature hybride
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### Migration par double signature
 
-Lorsqu'un algorithme est déprécié, une **période de migration** commence (par défaut : 1,000,000 blocs, soit environ 69 jours à 6 s/bloc). Pendant cette période :
+Lorsqu'un algorithme est déprécié, une **période de migration** commence (par défaut : 1,000,000 blocs — environ 37 jours avec le temps de bloc actuel du mainnet, ≈3,2 s). Pendant cette période :
 
 1. Les comptes dont les clés utilisent l'algorithme déprécié doivent migrer vers le remplacement.
 2. La migration requiert des doubles signatures (`MsgMigratePQCKey`) : une de l'ancienne clé et une de la nouvelle clé, prouvant la possession des deux.
 3. Les deux algorithmes sont acceptés pour la vérification tout au long de la période de migration.
 
-### Messages de gouvernance
+### Messages
 
 | Message                 | Description                                                                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | Propose l'ajout d'un nouvel algorithme PQC au registre. Inclut les `AlgorithmInfo` complètes (nom, catégorie, niveau NIST, tailles de clé). Doit être soumis via la gouvernance. |
-| `MsgDeprecateAlgorithm` | Démarre le processus de dépréciation d'un algorithme. Spécifie l'algorithme de remplacement et la période de migration en blocs.                                  |
-| `MsgDisableAlgorithm`   | Désactive un algorithme immédiatement en urgence. Requiert une chaîne de motif. Utilisé lorsqu'une vulnérabilité cryptographique est découverte.                 |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Enregistre la clé PQC d'un compte (voir [Enregistrement des clés](#key-registration)). Peut être signé de façon classique afin qu'un nouveau compte puisse s'amorcer. |
+| `MsgMigratePQCKey`      | Migration à double signature d'une clé d'un algorithme vers celle d'un autre pendant une période de migration.                                                    |
+| `MsgRotatePQCKey`       | Fait pivoter la clé ML-DSA-87 du compte au sein du même algorithme (double signature par l'ancienne et la nouvelle clé ; `tx pqc rotate-key`).                    |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Ouvre ou ferme la fenêtre d'autorisation EVM (v3.2.0) ; voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window). |
+| `MsgDeprecateAlgorithm` | Message de gouvernance : démarre le processus de dépréciation d'un algorithme. Spécifie l'algorithme de remplacement et la période de migration en blocs.         |
+| `MsgDisableAlgorithm`   | Message de gouvernance : désactive un algorithme immédiatement en urgence. Requiert une chaîne de motif. Utilisé lorsqu'une vulnérabilité cryptographique est découverte. |
+
+`MsgDeprecateAlgorithm` et `MsgDisableAlgorithm` sont actuellement désactivés sur le mainnet par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)).
 
 ### Extensibilité
 
-L'ajout d'un nouvel algorithme requiert :
-
-1. L'implémentation de l'algorithme dans le backend cryptographique derrière l'interface unifiée de signature et de vérification.
-2. La soumission d'une proposition de gouvernance `MsgAddAlgorithm` avec les métadonnées de l'algorithme.
-3. Une fois approuvé, l'algorithme devient disponible pour l'enregistrement de clés et la vérification.
+L'ajout d'un algorithme requiert une version logicielle qui l'implémente derrière l'interface unifiée de signature et de vérification ; le registre et le cycle de vie de dépréciation/désactivation sont contrôlés par la gouvernance.
 
 ## Hachage SHAKE-256
 

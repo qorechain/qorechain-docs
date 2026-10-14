@@ -12,6 +12,11 @@ sidebar_position: 8
 これはチェーン側の
 [アカウント抽象化](/developer-guide/account-abstraction)モジュールに対応する SDK 側の機能です。
 
+:::danger 稼働中のネットワークでは利用できません
+`x/abstractaccount` モジュールは `qorechain-vladi` および `qorechain-diana` で**無効**です（`GET /qorechain/abstractaccount/v1/config` は `"enabled": false` を返します）。チェーン v3.2.0 以降、このフラグはすべてのパス（抽象アカウントの作成、オーセンティケーターのリンク、`MsgExecuteEVM` / `MsgExecuteCosmos` の両方）で強制され、チェーンは `abstract account
+module is disabled`（コード 9）でそれらを拒否します。トランザクションでこれを有効にすることはできません。以下の内容はすべて、参照用にモジュールのインターフェースを説明するものです。モジュールが有効になるまでは、稼働中のネットワーク上でリンクキーや委任支出のフローを構築しないでください。また、そのようなフローを提供する前にフラグを確認してください。
+:::
+
 ## リレイヤーモデル
 
 **リレイヤー**がトランザクションを送信し、手数料を支払います。リレイヤー自身のハイブリッド（クラシカル + ML-DSA-87）署名がエンベロープの ante ハンドラーを満たすため、正準アカウントの PQC 署名はオンチェーンでは**不要**です。代わりに、認可はドメイン分離されリプレイ拘束された **sign-bytes** ダイジェストに対するリンク済みキーの署名によって行われます。
@@ -78,6 +83,10 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution ルールがキーを制限するのは、ルールが存在する場合のみです
+チェーンは次の順序で上限を解決します。オーセンティケーター自身のルールが設定されていて `enabled` であればそれ、そうでなければアカウントの最初の `enabled` なルール、それもなければ**なし、つまり上限は存在しません**。`enabled: false` で保存されたルールは、上限ゼロではなく上限なしです。`MsgRegisterAuthenticator` はルールを持たないため、このメッセージだけでリンクされたキーは、アカウントレベルのルールによってのみ制限されます。`MsgUpdateSpendingRules` で意図的にルールを設定し、キーが必要とするパーミッションだけを登録してください。上限はリンク済みキーが与えうる被害を抑えるものであり、キーの失効に代わるものではありません。
+:::
+
 キーを即座に無効化するには、オーナーが
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })` をブロードキャストします。
@@ -117,30 +126,43 @@ await fetch("/api/relay", {
 });
 ```
 
-**サーバー側（リレイヤー）:** リレイヤーは**自身の**アカウントでエンベロープに署名し（Native パスの通常どおりハイブリッド）、手数料を支払います。メッセージ内のオーセンティケーターの署名が、オーナーのアカウントから支出するための認可となります。
+**サーバー側（リレイヤー）:** リレイヤーは**自身の**アカウントで、ハイブリッドパス（`signAndBroadcastHybrid`、`rest` を渡す）を使ってエンベロープに署名し、手数料を支払います。リレイヤーの ML-DSA-87 キーは、他のアカウントと同様に登録されている必要があります。メッセージ内のオーセンティケーターの署名が、オーナーのアカウントから支出するための認可となります。
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -302,8 +324,9 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed` の最も一般的な原因は、**hedged**（非決定的）な
-ML-DSA-87 署名です — チェーンは決定的（deterministic）署名のみを受け入れます。また、0.6.1 より前の SDK がハイブリッド拡張を JSON エンコードした場合にも表示されます（アップグレードしてください —
+`hybrid_verify_failed` は ML-DSA-87 署名が検証されなかったことを意味します。hedged 署名は原因ではありません
+（チェーンは hedged と決定的な ML-DSA-87 署名を同様に受け入れます）。
+[コード 21 のトラブルシューティング](/developer-guide/post-quantum-signing#code-21) を参照してください。また、0.6.1 より前の SDK がハイブリッド拡張を JSON エンコードした場合にも表示されます（アップグレードしてください。
 [アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
 
 ## キーローテーション {#key-rotation}

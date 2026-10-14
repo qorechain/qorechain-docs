@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Această pagină acoperă două subiecte conexe: **sistemele de demonstrații ZK** (`snark` și `stark`) folosite de rollup-urile decontate prin ZK și **fluxul de retragere L2 → L1** care mută fondurile dintr-un rollup înapoi în QoreChain odată ce un lot este finalizat.
 
-:::caution
-Verificarea ZK și STARK este o parte aflată în plină maturizare a RDK. Tratează sistemele de demonstrații și fluxul de retragere descrise aici ca intenție de proiectare, validează pe testnet-ul **`qorechain-diana`** și nu presupune garanții criptografice consolidate pentru producție pe mainnet deocamdată.
+:::caution Capabilitate în etapă timpurie
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele, așa că nici verificarea demonstrațiilor, nici fluxul de retragere descrise aici nu au fost exersate pe un rollup live. Verificarea SNARK există, dar un rollup creat prin `create-rollup` nu poate încă finaliza un lot ZK, iar verificarea STARK este experimentală. Validează pe testnet-ul **`qorechain-diana`** și nu presupune garanții consolidate pentru producție pe mainnet.
 :::
 
 ---
@@ -21,8 +21,8 @@ Un rollup decontat prin ZK (modul de decontare `zk`) atașează o demonstrație 
 
 | Sistem de demonstrații | Caracteristici |
 | ------------ | --------------- |
-| **`snark`** | Demonstrații succinte |
-| **`stark`** | Demonstrații transparente — fără setup de încredere (trusted setup) |
+| **`snark`** | Demonstrații succinte (Groth16 peste BLS12-381), verificate on-chain față de cheia de verificare a rollup-ului |
+| **`stark`** | Demonstrații transparente, fără setup de încredere (trusted setup) — experimental; opt-in și legat de un circuit demonstrativ |
 
 Modul de decontare `zk` necesită fie `snark`, fie `stark`; asocierea este impusă on-chain atunci când rollup-ul este creat. Prin contrast, decontarea `optimistic` folosește sistemul de demonstrații `fraud`, iar decontările `based` și `sovereign` folosesc `none`. Vezi **[Prezentare generală a rollup-urilor](/rollups/overview)** pentru întreaga matrice de compatibilitate.
 
@@ -32,7 +32,7 @@ Spre deosebire de rollup-urile optimiste — care așteaptă scurgerea unei fere
 
 ### Maturitate
 
-Verificarea demonstrațiilor ZK și STARK este încă în maturizare. Tratează decontarea ZK ca **neconsolidată încă pentru producție**: prototipează și validează pe testnet și urmărește notele de lansare ale RDK pentru starea verificării complete a demonstrațiilor înainte de a te baza pe ea pentru rollup-uri de valoare pe mainnet.
+Loturile SNARK sunt verificate on-chain (Groth16 peste BLS12-381) față de o cheie de verificare stocată împreună cu rollup-ul. Un rollup creat prin `create-rollup` nu poartă în prezent o cheie de verificare, deci loturile ZK nu pot fi încă finalizate de la cap la cap. Verificarea STARK este experimentală: este opt-in și verifică un circuit demonstrativ, nu tranziția de stare proprie a rollup-ului tău. Tratează decontarea ZK ca nepregătită pentru producție și urmărește notele de lansare ale RDK înainte de a te baza pe ea pentru rollup-uri de valoare pe mainnet.
 
 ---
 
@@ -52,7 +52,7 @@ Pentru modul în care loturile sunt trimise și finalizate — inclusiv `submit-
 
 ## Executarea unei retrageri: `execute-withdrawal`
 
-Comanda `execute-withdrawal` finalizează o retragere L2 → L1 față de rădăcina de retrageri a unui lot finalizat. Aceasta dovedește că o frunză de retragere este angajată în acea rădăcină și plătește destinatarul din escrow-ul modulului rdk. Acțiunea este **fără permisiuni (permissionless)** — oricine poate trimite o demonstrație validă.
+Comanda `execute-withdrawal` finalizează o retragere L2 → L1 față de rădăcina de retrageri a unui lot finalizat. Aceasta dovedește că o frunză de retragere este angajată în acea rădăcină și plătește destinatarul din escrow-ul modulului rdk. Acțiunea este **fără permisiuni (permissionless)** — oricine poate trimite o demonstrație validă. Ca orice tranzacție pe lane-ul nativ, necesită co-semnătura post-cuantică hibridă, așa că construiește-o cu `--generate-only` și co-semn-o (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup)). Retragerile nu au fost încă exersate pe un rollup live; tratează fluxul ca netestat.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Argumente poziționale:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Hash-uri Merkle de frați (siblings) în format hex, separate prin virgulă, ordonate de la frunză la rădăcină, care dovedesc că frunza de retragere este angajată în rădăcina de retrageri a lotului |
 
-Valoarea `--proof` este demonstrația de incluziune: hash-urile de frați de-a lungul căii de la frunza de retragere până la rădăcina de retrageri angajată a lotului. Modulul recalculează rădăcina din frunză și frații furnizați și o verifică față de rădăcina angajată a lotului finalizat înainte de a elibera fondurile din escrow.
+Valoarea `--proof` este demonstrația de incluziune: hash-urile de frați de-a lungul căii de la frunza de retragere până la rădăcina de retrageri angajată a lotului. Modulul recalculează rădăcina din frunză și frații furnizați și o verifică față de rădăcina angajată a lotului finalizat înainte de a plăti.
+
+### Codificarea frunzelor și a nodurilor {#leaf-and-node-encoding}
+
+* **Frunză** = SHAKE-256 (32 de octeți) din `rollup_id`, un octet `0x00`, indexul retragerii (8 octeți big-endian), șirul `recipient`, `0x00`, șirul `denom`, `0x00` și `amount` (8 octeți big-endian).
+* **Părinte** = SHAKE-256 din `left || right`. La fiecare nivel, bitul corespunzător din indexul retragerii decide partea: `0` înseamnă că frunza (sau hash-ul curent) este nodul din stânga.
+* Fiecare hash de frate trebuie să aibă exact 32 de octeți.
+
+:::caution Helperele Merkle generice nu se potrivesc
+Helperele generice `binaryMerkleRoot` / `binaryMerkleProof` ale RDK folosesc implicit SHA-256 cu noduri impare duplicate. Suprascrie hash-ul și codificarea frunzelor conform regulilor de mai sus, altfel demonstrația nu se va verifica on-chain.
+:::
+
+### De unde provin fondurile {#where-the-funds-come-from}
+
+O retragere este plătită din **stake-ul aflat în escrow al rollup-ului însuși** (stake-ul minus arderea de la creare). Modulul ține un registru pe fiecare rollup, astfel încât o retragere dovedită pentru un rollup nu poate fi plătită din stake-ul altui rollup. Modulul nu are niciun mesaj de depunere L1 → L2, deci aceasta nu este o punte (bridge) pentru fondurile utilizatorilor.
 
 ---
 

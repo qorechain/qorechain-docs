@@ -7,16 +7,18 @@ sidebar_position: 3
 
 # Send & Receive
 
-The Home (Wallet) tab is your starting point. It shows a **network badge** (MAINNET by default, or TESTNET if you enabled the developer toggle), your **total balance** (tap to hide/show), and the main actions: **Send · Receive · Swap · Stake**. Your asset list shows **QOR** (Native + post-quantum 🛡, one unified balance across the Native/EVM/SVM lanes) and **All networks** (a unified view across ETH, BNB, POL, ARB, and the other [external networks](#external-networks-tokens) QoreX supports).
+The Home (Wallet) tab is your starting point. It shows a **network badge** (MAINNET by default, or TESTNET if you enabled the developer toggle), your **total balance** (tap to hide/show), and the main actions: **Send · Receive · Swap · Stake** (**Swap** is not shown on iOS). Your asset list shows **QOR** (Native + post-quantum 🛡, one unified balance across the Native/EVM/SVM lanes) and **All networks** (a unified view across ETH, BNB, POL, ARB, and the other [external networks](#external-networks-tokens) QoreX supports).
 
 ## Send quantum-safe QOR
 
 1. Tap **Send**.
 2. Enter the recipient as a `qor1…` address **or** an **@handle**. A handle is resolved and cryptographically verified (registry signature + owner signature + trust-on-first-use pinning); if a handle's key ever changes silently, QoreX shows an explicit warning.
-3. Enter the amount. The preview shows the recipient, amount, fee, and the **Shield** state — the post-quantum protection level of the signature.
+3. Enter the amount. The preview shows the recipient, amount, the **Network fee**, and the **Shield** state — the post-quantum protection level of the signature.
 4. Confirm with **biometric** approval. QoreX signs the transfer with the mandatory hybrid post-quantum signature (ML-DSA-87 + secp256k1) and broadcasts it on the Native lane.
 
-Your **first** transfer also registers your post-quantum key on-chain automatically — you can see this in [Security & Recovery](/qorex/security-and-recovery#pqc-key). No separate step is needed.
+On the first screen, **Ask QoreX** lets you type a request such as "send 50 QOR to @maria" and fills the form for you; you still review and confirm with biometrics as usual. Simple requests are read on your device; one it cannot read that way may be sent to QoreChain's QCAI service to turn into a draft. The assistant never signs and never sees your keys. Recent recipients appear as chips.
+
+QoreChain does not register your post-quantum key by itself — QoreX does it for you as part of your **first** transfer (a small one-time network fee), and you can see the state in [Security & Recovery](/qorex/security-and-recovery#pqc-key). No separate step is needed in QoreX.
 
 ### Send to an @handle, step by step {#handle-send}
 
@@ -30,13 +32,26 @@ QoreX only accepts a resolution that passes **both** checks it performs: a regis
 
 If part of your balance is still **vesting** — for example an unreleased TGE allocation — your total is split into **available now** and **still locked**. You can only send the available portion; QoreX refuses an over-spend attempt itself rather than letting the network reject it after taking a fee. The locked portion becomes spendable gradually as the vesting schedule unlocks it. This split is shown wherever your balance appears — Home, Send, and Asset detail.
 
-## Receive QOR
+## Receive {#receive}
 
-Tap **Receive** to show your `qor1…` address as a QR code (with the QoreChain icon embedded) and a copy button. Share either with the sender.
+Tap **Receive**. QoreChain is selected first — your `qor1…` address (and your @handle, if you have one) as a QR code with the QoreChain icon, plus **Copy** and **Share**. Anything sent to it arrives with quantum-safe protection.
 
-:::note Receiving an external-network asset for the first time
-The **Receive** screen only shows a network you already hold a balance on — so if you've never held any ETH, there's no ETH option to pick there yet. Your EVM address exists from the moment your wallet does (it's derived from the same recovery phrase) and is the same address across Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, and Avalanche — find and copy it from **Settings → Addresses** and share that instead. Once a transfer lands, that network appears in Receive going forward.
-:::
+To receive on another network, use the **Network** picker at the top: Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis and Celestia each show **their own address** and the warning *"Send only \{coin\} or tokens on \{network\} to this address. Coins sent from another network can be lost."* All EVM networks share one `0x…` address. Your EVM and Solana addresses are derived from your recovery phrase, so QoreX asks for one biometric confirmation (**Show the address**) before it shows them. Other networks cannot carry post-quantum signatures — see [External networks](#external-networks-tokens).
+
+In the browser extension, **Receive** has the same network picker.
+
+## Coins and tokens {#coins-and-tokens}
+
+A coin with no row has no address to receive it on. To see a coin or token on **Portfolio** *before* you hold any, open Portfolio → **+ Coin or token** and switch it on (in the extension: **Coins and tokens**). A coin pinned at zero opens **Receive** on its network when tapped. Settings → **Coins and networks** lists everything the wallet can hold today.
+
+**Add a token by contract** (EVM networks only):
+
+1. Portfolio → **+ Coin or token** → **Add a token by contract** (extension: **Coins and tokens** → *Add a token by contract*).
+2. Pick the **Network**, paste the **Contract address (0x…)** and tap **Check contract**.
+3. QoreX reads the symbol and decimals from the contract itself and shows *"The contract says: \{symbol\} · \{decimals\} decimals"*. Anyone can create a token and give it any name — QoreX does not vouch for it, so make sure it is the contract you meant.
+4. Tap **Add \{symbol\}**. It is marked *Added by you* and can be sent like the bundled tokens. Remove it any time.
+
+QoreX refuses a token that is already bundled, one you already added, a non-EVM network, a bad address, a contract that does not answer as a token, and a contract that uses the name of a token QoreX already ships on that network (a likely copy).
 
 ## Request a payment
 
@@ -47,7 +62,7 @@ Tap **Request** (requires [sign-in](/qorex/account-and-dashboard#sign-in)) to cr
 From **All networks** (or Send-external) you can send **ETH, BNB, POL, AVAX, and SOL** natively, plus ETH on **Arbitrum, Base, and OP Mainnet**, and **ATOM, OSMO, and TIA** on Cosmos, plus **ERC-20**, **SPL**, and **IBC** tokens — USDC and USDT across the EVM chains and Solana, DAI on Ethereum, and Noble USDC over IBC — all derived from the same recovery phrase (ETH uses `m/44'/60'`, SOL uses its standard path, and SPL uses associated token accounts).
 
 :::caution External chains are classical-only
-Other blockchains cannot carry post-quantum signatures. When you send on an external network, QoreX states this explicitly (the transfer uses a classical signature and the **Shield** shows the downgrade). Your **QOR** always stays on the protected Native lane. Cosmos-based external sends support an optional memo.
+Other blockchains cannot carry post-quantum signatures. When you send on an external network, QoreX states this explicitly (the transfer uses a classical signature and the **Shield** shows the downgrade). Your **QOR** always stays on the protected Native lane. Cosmos-based external sends support an optional memo. For EVM networks QoreX also shows the **maximum network fee** before you confirm — "Network fee: at most \{fee\}. Check it before you confirm." — and signs with exactly that figure.
 :::
 
 ## Swap
@@ -55,8 +70,14 @@ Other blockchains cannot carry post-quantum signatures. When you send on an exte
 The **Swap** tab is wired to QoreChain's on-chain AMM but stays disabled — the button reads **"Swap — coming with pool liquidity"** — until liquidity and the remote feature flag turn it on. When that happens it lights up automatically; **no app update is needed**.
 
 :::note iOS
-The Swap tab does not appear at all in the App Store build — Apple treats an in-app token exchange as a regulated service. Swap remains available (once enabled) on Android and in the browser extension.
+The Swap tab does not appear at all in the App Store build — Apple treats an in-app token exchange as a regulated service. Swap remains available (once enabled) on Android only. The browser extension has no Swap screen.
 :::
+
+## Home screen extras {#home-extras}
+
+- **Home-screen widget** (Android and iPhone) — add **QoreX** from your phone's widget picker. It shows your QOR balance for the account in use, shows dots instead of the amount while privacy mode is on, refreshes itself about every 30 minutes, and opens the app when tapped. Anyone who can see your home screen can see the widget, so turn privacy mode on (tap your balance) if that matters.
+- **Push notifications** (mobile, mainnet) — the bell on Home → **Notifications** has a **Push notifications** switch: *"Get a notification when QOR arrives, even with the app closed. Our server watches only your public addresses; Apple and Google see no amount or address."* The notification text is just "QOR received". Turning the switch off removes your device from the server. If notifications are off for QoreX in your phone's settings, turn them on there first. Delivery has been tested end to end on Android; on iPhone, treat it as best effort and keep checking the in-app **Notifications** list.
+- **Search and tour** — see [Find your way around](/qorex/getting-started#find-your-way).
 
 ## Next steps
 

@@ -9,9 +9,19 @@ sidebar_position: 1
 
 The QoreChain **Rollup Development Kit (RDK)** — the `x/rdk` module — lets developers launch application-specific rollups that settle on QoreChain. Each rollup is an independent execution environment with its own block time, virtual machine, fee model, and sequencing, while it inherits QoreChain's security, post-quantum cryptography, and data availability guarantees.
 
-:::caution
-The RDK and the rollup settlement layer are an actively evolving capability. Treat the settlement modes, proof systems, presets, and per-feature maturity described across this section as design intent that is subject to change, and validate any deployment on the **`qorechain-diana`** testnet before targeting mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, chain version **v3.1.97**).
+:::caution Early-stage capability
+The RDK is deployed on both networks, but **no rollup has been created on either one yet**, so the flows described in this section have not been exercised by third parties. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.1**; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs a newer release (**v3.2.2**), so details can differ there. This section describes mainnet behaviour. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
 :::
+
+## What exists today {#what-exists-today}
+
+| | Status |
+|---|---|
+| Rollups registered (mainnet and testnet) | None |
+| `x/rdk` module and its parameters | Deployed on both networks; read them with `qorechaind query rdk config` |
+| RDK queries | Available through the CLI and gRPC. The `/qorechain/rdk/v1/…` REST routes are not served on mainnet, so REST-based reads (including the TypeScript `rdk.params()`) do not work against mainnet |
+| Settlement anchors written by the RDK | None. Settlement batches are recorded, but the RDK does not write anchors to `x/multilayer` on mainnet yet |
+| Rollup layers registered in `x/multilayer` | None |
 
 For the lower-level module reference — module parameters, lifecycle internals, burn integration, and multilayer anchoring — see the **[Rollup Development Kit](/architecture/rollup-development-kit)** page in the Architecture section. This Rollups section is the developer-facing how-to: what the RDK is, which paradigm to choose, how to deploy, how data availability works, and how withdrawals settle from L2 back to L1.
 
@@ -34,14 +44,14 @@ Each rollup is registered with a unique `rollup-id`, backed by a stake bond in Q
 
 ## What makes the QoreChain RDK different
 
-Beyond the table-stakes of any rollup kit, the QoreChain RDK exposes three capabilities that depend on QoreChain's Layer 1 and that no kit built on a non-post-quantum, non-AI base layer can offer — plus a watchtower auto-challenger. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java), version-aligned at **v0.4.4** on npm, PyPI, and Maven Central (on crates.io, install the latest published release or build from the repo). Since v0.4.2 the `mainnet` and `testnet` presets ship the public `qore.host` endpoints baked in, so `createRdkClient({ network })` reaches the chain with no manual endpoint configuration.
+Beyond the table-stakes of any rollup kit, the QoreChain RDK includes three QoreChain-specific capabilities that are built around QoreChain's Layer 1 — plus a watchtower auto-challenger. Their status differs; the table says what works today. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java). Current published versions: npm **0.4.4**, PyPI **0.5.0**, Go **v0.5.0**, crates.io **0.4.4**, Maven Central **0.4.4**. Since v0.4.2 the `mainnet` and `testnet` presets ship the public `qore.host` endpoints baked in, so `createRdkClient({ network })` needs no manual endpoint configuration (note that its REST reads work only where the RDK REST routes are served; mainnet does not serve them today).
 
 | Differentiator | What it does |
 | -------------- | ------------ |
-| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Turn a settlement anchor into a portable receipt verifiable **fully offline** under a post-quantum (ML-DSA-87 / Dilithium-5) signature — byte-for-byte across all five clients. |
-| **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | Aggregate QoreChain's on-chain AI/RL services (fee-policy agent, recommendations, fraud investigations, circuit breakers) into a read-only, plain-language advisory for one rollup. |
-| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Call a CosmWasm contract from an EVM/Solidity rollup contract through the cross-VM precompile (`0x…0901`). |
-| **[Watchtower](/rollups/watchtower)** | An auto-challenger framework for optimistic rollups that surfaces new batches and challenge-window deadlines and challenges invalid batches against your validity predicate. |
+| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Package a settlement anchor as a portable receipt that carries a post-quantum (ML-DSA-87 / Dilithium-5) signature. Early stage: no anchors exist yet, and a receipt is a claim that must be checked against chain state. |
+| **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | A read-only advisory helper for one rollup (fee estimate, recommendations, fraud investigations). The advisory services it reads are not exposed on the public endpoints yet. |
+| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Tooling to encode an EVM → CosmWasm call through the cross-VM precompile (`0x…0901`). The precompile is not activated on the live networks yet. |
+| **[Watchtower](/rollups/watchtower)** | An auto-challenger framework for optimistic rollups that surfaces new batches and challenge-window deadlines and challenges invalid batches against your validity predicate. It needs the RDK REST routes, which mainnet does not serve today. |
 
 See **[Why QoreChain RDK](/rollups/why)** for the full rationale and code samples.
 
@@ -73,7 +83,8 @@ Optimistic rollups assume submitted batches are valid by default and rely on **f
 * **Proof system**: `fraud` — interactive fraud proofs
 * **Sequencer**: `dedicated` or `shared`
 * **Finality**: Delayed until a configurable challenge window expires with no successful challenge
-* **Disputes**: Anyone may submit a fraud-proof challenge against a submitted batch within the window; a successful challenge rejects the batch
+* **Disputes**: Anyone may challenge a submitted batch within the window by posting a bond and a fraud proof. A challenge freezes the batch; the rollup creator then resolves it, and the chain checks the proof itself — upheld fraud rejects the batch and pays the challenger, a dismissed challenge returns the batch to `submitted`. See [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
+* **Window length**: the default window is 604,800 "seconds", which the chain converts to blocks at a fixed 6 seconds per block — **100,800 blocks**. Real elapsed time follows actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks), so plan in blocks, not days.
 
 ### ZK (Zero-Knowledge)
 
@@ -82,7 +93,7 @@ ZK rollups attach a cryptographic validity proof to each batch, proving state-tr
 * **Proof system**: `snark` (succinct proofs) or `stark` (transparent proofs, no trusted setup)
 * **Sequencer**: `dedicated` or `shared`
 * **Finality**: On valid proof verification — no challenge window required
-* **Maturity**: ZK and STARK verification are still maturing. Treat ZK settlement as not yet production-hardened and validate on testnet. See **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)** for details.
+* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. A rollup created through `create-rollup` does not currently carry a verifying key, so ZK batches cannot yet be finalised end to end. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready. See **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)**.
 
 ### Based
 
@@ -92,6 +103,7 @@ Based rollups delegate transaction sequencing to QoreChain (L1) proposers, inher
 * **Sequencer**: `based` (required — enforced by on-chain validation)
 * **Finality**: Follows host-chain confirmation
 * **Trade-off**: Simplest operational model, since QoreChain validators handle sequencing, at the cost of dedicated-sequencer latency control
+* **Status today**: `based` is recorded in the rollup configuration, but QoreChain does not yet admit L1 proposers as batch submitters — the rollup creator submits (see [Sequencer modes](#sequencer-modes))
 
 ### Sovereign
 
@@ -117,7 +129,7 @@ The settlement mode constrains which proof systems are valid. These pairings are
 
 ---
 
-## Sequencer modes
+## Sequencer modes {#sequencer-modes}
 
 The sequencer determines who orders transactions within a rollup block before settlement.
 
@@ -127,6 +139,10 @@ The sequencer determines who orders transactions within a rollup block before se
 | **`shared`** | A shared sequencer set | Ordering distributed across the set; slightly higher coordination overhead |
 | **`based`** | QoreChain L1 proposers | Inherits host-chain validator security and censorship resistance; required for `based` settlement |
 
+:::note What is enforced today
+On-chain, a batch may be submitted only by the rollup's configured sequencer address or, when none is set (every preset), by its creator. The `shared` and `based` modes are recorded in the rollup configuration, but QoreChain does not yet admit a shared sequencer roster or L1 proposers as batch submitters; those modes describe the intended design.
+:::
+
 ---
 
 ## Choosing a paradigm
@@ -134,11 +150,11 @@ The sequencer determines who orders transactions within a rollup block before se
 | If you want... | Consider |
 | -------------- | -------- |
 | The simplest operational setup, with QoreChain validators sequencing | **based** |
-| Fast finality with cryptographic guarantees (maturing) | **zk** (`snark` / `stark`) |
+| Fast finality with cryptographic guarantees (not production-ready yet) | **zk** (`snark` / `stark`) |
 | A well-understood model with economic dispute resolution | **optimistic** (`fraud`) |
 | Full independence with your own consensus, anchored for verifiability | **sovereign** |
 
-Not sure where to start? The RDK ships **preset profiles** that bundle these choices for common application categories — see **[Preset Profiles](/rollups/preset-profiles)** — and a `suggest-profile` query that recommends one from a plain-language description of your use case.
+Not sure where to start? The RDK ships **preset profiles** that bundle these choices for common application categories — see **[Preset Profiles](/rollups/preset-profiles)** — and, when the advisory RPC is available, a `suggest-profile` helper (currently it returns a fixed `defi` fallback, so choose from the profile table).
 
 For developers, the RDK also ships as the public TypeScript SDK **`@qorechain/rdk`** plus the **`create-qorechain-rollup`** scaffolder, which drive the same on-chain module from code — see **[Deploying a Rollup](/rollups/deploying-a-rollup#deploy-with-the-typescript-rdk-qorechainrdk)**.
 

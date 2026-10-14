@@ -9,136 +9,90 @@ sidebar_position: 2
 
 Die meisten Rollup Development Kits sind Variationen desselben Themas: Sie helfen
 Ihnen, eine App-Chain zu starten, die auf einer Basisschicht abgewickelt wird. Das
-QoreChain RDK kann das auch — aber es stellt darüber hinaus drei Dinge bereit, die
-**kein anderes Rollup-Kit bieten kann**, weil sie von Fähigkeiten abhängen, die in
-QoreChains Layer 1 leben, nicht im Tooling:
+QoreChain RDK kann das auch und ergänzt es um drei QoreChain-spezifische
+Fähigkeiten, die um QoreChains Layer 1 herum gebaut sind und nicht um das Tooling:
 
 - eine **Post-Quanten**-Abwicklungsschicht,
 - **On-Chain-KI/RL**-Beratungsprimitive (QCAI) und
 - eine **Triple-VM**-Laufzeitumgebung mit VM-übergreifenden Aufrufen.
 
-Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit.
-Wenn Sie möchten, dass die Abwicklung Ihres Rollups **verifizierbar, quantensicher
-und KI-bewusst** ist, ist dies das einzige Kit, das das ausdrücken kann — in
-TypeScript, Python, Go, Rust und Java.
+:::caution Frühe Phase: Lesen Sie die Statusspalte
+Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt. Die folgende
+Tabelle gibt an, was heute funktioniert. Wenn Sie nur ein generisches
+optimistisches/zk-Rollup benötigen, tut es jedes Kit; die hier genannten
+Fähigkeiten sind das, was das RDK obendrauf bietet — in TypeScript, Python, Go,
+Rust und Java.
+:::
 
-| Differenzierungsmerkmal | Status | Warum es nur hier möglich ist |
+| Fähigkeit | Status | Wovon sie abhängt |
 | --- | --- | --- |
-| **Quantensichere Abwicklungsquittungen** | 🟢 Einzigartig (First-Mover) | Erfordert eine Post-Quanten-L1 — unmöglich auf einer Basisschicht ohne PQC |
-| **QCAI Rollup Copilot** | 🟢 Einzigartig durch die Chain | Kapselt On-Chain-KI/RL-Endpunkte, die es nur bei QoreChain gibt |
-| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Herausragend | QoreChain betreibt EVM + CosmWasm + SVM unter einer Chain |
+| **Quantensichere Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker |
+| **QCAI Rollup Copilot** | 🟡 Auf den öffentlichen Endpunkten noch nicht verfügbar | On-Chain-KI/RL-Beratungsdienste, die die öffentlichen Endpunkte heute nicht bereitstellen |
+| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist, und der CosmWasm-Upload ist geschlossen |
 
 ---
 
 ## 1. Quantensichere Abwicklungsquittungen
 
-> 🟢 **Einzigartig.** Kein Rollup-Kit, das auf einer Nicht-Post-Quanten-L1 aufbaut,
-> kann das bieten.
+> 🟡 **Design auf Basis der Post-Quanten-Basisschicht von QoreChain.**
+> Abwicklungs-Anker werden mit ML-DSA-87 (Dilithium-5, FIPS-204) signiert, demselben
+> Schema, das die Main Chain verwendet. Frühe Phase: Auf keinem der beiden
+> Netzwerke existieren bisher Anker.
 
-Wenn Ihr Rollup einen Abwicklungs-Batch verankert, committet QoreChain dessen
-State-Root mit einer **Post-Quanten-Signatur (ML-DSA-87 / Dilithium-5, FIPS-204)**
-auf der Main Chain. Das RDK verwandelt diesen Anker in eine **portable Quittung**,
-die jeder **vollständig offline** verifizieren kann — kein Node, kein Vertrauen in
-das Kit, nur Mathematik.
-
-Die Quittung beweist zwei Dinge: Der State-Root des Batches ist derjenige, der
-verankert wurde (Bindung), und der Anker wurde mit dem registrierten
-Post-Quanten-Schlüssel des Layer-Erstellers signiert (Authentizität). Die Signatur
-deckt die kanonische Nachricht
-`layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash`
-ab.
+Wenn der Ersteller Ihres Rollups einen Abwicklungs-Batch verankert, wird der Anker
+mit einem on-chain registrierten Post-Quanten-Schlüssel signiert. Das RDK kann
+diesen Anker als **portable Quittung** verpacken, und ein Verifizierer liest die
+Aussage erneut von einem QoreChain-Node, um zu bestätigen, dass Rollup, Batch,
+Anker und der Schlüssel des Erstellers mit dem übereinstimmen, was die Chain
+speichert.
 
 ```ts
-import {
-  createRdkClient,
-  buildSettlementReceipt,
-  verifySettlementReceipt,
-} from "@qorechain/rdk";
+import { createRdkClient, buildSettlementReceipt, verifySettlementReceipt } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
-const rdk = createRdkClient({ network: "mainnet" });
-
-// Build a portable receipt for batch #42 of "my-rollup".
+const rdk = createRdkClient({ network: "testnet" });
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
-// → { algorithm: "ML-DSA-87", stateRoot, layerHeight, pqcSignature, creator, ... }
-
-// Verify it — fetches the creator's PQC key from the chain.
 const result = await verifySettlementReceipt(receipt, { client: rdk });
-console.log(result.valid);                 // true
-console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
-console.log(result.checks.stateRootBinding); // batch root == anchored root
+console.log(result.valid);
 ```
 
-**Vollständig offline** — geben Sie die Quittung und den öffentlichen Schlüssel des
-Erstellers an eine beliebige Person weiter, auch auf einer Air-Gapped-Maschine, und
-sie kann sie verifizieren, ohne das Netzwerk zu berühren:
-
-```ts
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "a1b2…", // the layer creator's ML-DSA-87 key (hex)
-});
-// result.valid === true, with zero network calls
-```
-
-Dieselbe Quittung verifiziert **Byte für Byte identisch in allen fünf Sprachen**
-(die Nicht-TypeScript-Clients verwenden die chaineigene Bibliothek
-`qorechain-pqc`), sodass eine von einem TypeScript-Dienst erzeugte Quittung in
-einem Go-Auditor oder einem Java-Backend identisch verifiziert wird. Siehe
-[Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts).
+Siehe [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts), was
+eine Quittung beweist und was nicht.
 
 ---
 
 ## 2. QCAI Rollup Copilot
 
-> 🟢 **Einzigartig durch die Chain.** Aufgebaut auf On-Chain-KI/RL-Endpunkten, die
-> andere Netzwerke schlicht nicht haben.
+> 🟡 **Auf den öffentlichen Endpunkten noch nicht verfügbar.**
 
-QoreChain betreibt KI/RL-Dienste auf Netzwerkebene on-chain — einen
-Fee-Policy-Agenten, Netzwerkempfehlungen, Betrugsuntersuchungen, Circuit Breaker.
-Der Copilot aggregiert sie zu einer einzigen, überprüfbaren Klartext-Ansicht für
-ein Rollup. Er ist schreibgeschützt und Best-Effort: Ist ein Beratungsdienst nicht
-erreichbar, degradiert er zu einer Warnung, statt fehlzuschlagen.
+Der Copilot soll die Beratungsdienste des Netzwerks (einen Fee-Policy-Agenten,
+Empfehlungen, Betrugsuntersuchungen) zu einer einzigen, schreibgeschützten
+Klartext-Ansicht für ein Rollup zusammenfassen. Er arbeitet nach dem
+Best-Effort-Prinzip: Ist ein Dienst nicht erreichbar, degradiert er zu einer
+Warnung, statt fehlzuschlagen. Diese Dienste werden auf den öffentlichen
+Endpunkten heute nicht bereitgestellt, daher kommt jeder Abschnitt als Warnung
+zurück.
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
-
+const rdk = createRdkClient({ network: "testnet" });
 const advice = await getRollupAdvice(rdk, "my-rollup");
-
-for (const s of advice.suggestions) {
-  console.log(`[${s.level}] ${s.message}`);
-  // [action] 2 open fraud investigation(s) reference this rollup …
-  // [warn]   QCAI reports network congestion — consider raising the fee …
-  // [info]   A live QCAI fee estimate is available …
-}
-
-console.log(advice.feeEstimate);          // live QCAI fee estimate
-console.log(advice.fraudInvestigations);  // investigations touching this rollup
-console.log(advice.rlAgentStatus);        // the RL fee/routing agent's state
+console.log(advice.warnings); // services that could not be reached
 ```
 
-Über die CLI:
-
-```bash
-qorollup advise my-rollup
-```
-
-Andere Kits haben nichts zu kapseln — die Beratungsdaten sind ein
-QoreChain-Primitiv. Siehe [QCAI Copilot](/rollups/qcai-copilot).
+Über die CLI: `qorollup advise my-rollup`. Siehe [QCAI Copilot](/rollups/qcai-copilot).
 
 ---
 
 ## 3. Multi-VM: VM-übergreifende Aufrufe
 
-> 🟡 **Herausragend.** QoreChain betreibt EVM, CosmWasm und SVM unter einer Chain,
-> mit einem Precompile, das EVM → CosmWasm überbrückt.
+> 🟡 **Auf den Live-Netzwerken noch nicht nutzbar** — das Precompile ist nicht
+> aktiviert und der CosmWasm-Upload ist geschlossen. Siehe [Multi-VM](/rollups/multi-vm).
 
-Ihr EVM-(Solidity-)Rollup-Contract kann einen bestehenden **CosmWasm**-Contract
-über ein festes Precompile unter `0x…0901` aufrufen. Das RDK baut die Calldata für
-Sie, sodass Sie ein CosmWasm-Orakel, einen Token oder ein Register aus Solidity
-heraus wiederverwenden können, ohne es neu zu implementieren.
+Das RDK enthält Helfer, die einen Aufruf von einem EVM-(Solidity-)Contract an einen
+**CosmWasm**-Contract über ein festes Precompile unter `0x…0901` kodieren. Dieses
+Precompile ist im Mainnet und im Testnet **nicht aktiv** (siehe
+[EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
 import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
@@ -168,26 +122,24 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Erstellen Sie ein Starter-Gerüst mit
-`npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(Nur EVM↔CosmWasm; SVM-Cross-Calls sind separat.) Siehe
-[Multi-VM](/rollups/multi-vm).
+Erstellen Sie ein Starter-Gerüst mit `npm create qorechain-rollup my-app -- --template multivm-rollup`.
+(Nur EVM↔CosmWasm; SVM-Cross-Calls sind separat.)
 
 ---
 
 ## Alles andere, was Sie erwarten würden
 
-Über die Differenzierungsmerkmale hinaus liefert das RDK auch die
-Grundausstattung: fünf veröffentlichte Sprach-Clients, verifiziert gegen
-gemeinsame Golden Vectors, die fünf Preset-Profile und die vollständige
-Kompatibilitätsmatrix, Verwaltung von Abwicklungs-Batches und Lebenszyklus, native
-Datenverfügbarkeit, einen **Watchtower**-Auto-Challenger für optimistische Rollups
-und die Operator-CLI `qorollup`.
+Über diese Fähigkeiten hinaus liefert das RDK auch die Grundausstattung: fünf
+veröffentlichte Sprach-Clients, verifiziert gegen gemeinsame Golden Vectors, die
+fünf Preset-Profile und die vollständige Kompatibilitätsmatrix, Verwaltung von
+Abwicklungs-Batches und Lebenszyklus, native Datenverfügbarkeits-Speicherung
+(siehe ihren Statushinweis), einen **Watchtower**-Auto-Challenger für
+optimistische Rollups und die Operator-CLI `qorollup`.
 
 ## Weiter
 
 - [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) — Installation je
-  Sprache und von null zu einem laufenden Testnet-Rollup.
+  Sprache und der CLI-Weg zu einem Testnet-Rollup.
 - [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [Multi-VM](/rollups/multi-vm) ·

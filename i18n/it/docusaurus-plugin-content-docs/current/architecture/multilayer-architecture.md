@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain implementa un'**architettura gerarchica a 4 livelli** tramite il modulo `x/multilayer`. La main chain funge da radice di regolamento e di fiducia, mentre i livelli sussidiari (sidechain, paychain e rollup) gestiscono carichi di lavoro specializzati con diversi compromessi tra prestazioni e sicurezza.
 
+:::caution Funzionalità in fase iniziale
+Il modulo è distribuito sulla mainnet (versione di chain **v3.2.1**) e sulla testnet, ma **su nessuna delle due reti esiste ancora alcun livello né alcun anchor**. Tutto ciò che segue descrive il modulo così come è stato realizzato; i parametri sono i valori attivi.
+:::
+
 ---
 
 ## Panoramica del sistema
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ La main chain è la radice di fiducia per l'intero ecosistema QoreChain.
 
 | Proprietà   | Valore                                                                          |
 | ----------- | ------------------------------------------------------------------------------ |
-| Consenso    | Full Triple-Pool CPoS (vedi [Meccanismo di consenso](/architecture/consensus-mechanism)) |
+| Consenso    | Consenso QoreChain (vedi [Meccanismo di consenso](/architecture/consensus-mechanism) per ciò che è attivo oggi) |
 | Sicurezza   | Protetta con PQC tramite firme Dilithium-5                                     |
 | Ruolo       | Livello di regolamento, archiviazione degli state anchor, QCAI routing engine, radice di fiducia |
-| Tempo di blocco | \~5 secondi                                                                |
+| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,0 secondo sulla testnet (misurato a ottobre 2026) |
 
 Tutti i livelli sussidiari ancorano periodicamente le proprie state root alla main chain tramite gli Hierarchical Commitment Schemes (HCS).
 
@@ -89,14 +93,14 @@ Le paychain sono ottimizzate per **microtransazioni ad alta frequenza** con late
 
 ### Rollup
 
-I rollup sono **chain specifiche per applicazione** distribuite tramite il Rollup Development Kit (`x/rdk`). Si registrano come tipo di livello rollup all'interno del modulo multilayer.
+I rollup sono **chain specifiche per applicazione** distribuite tramite il Rollup Development Kit (`x/rdk`). Quando viene creato un rollup, l'RDK registra per esso un livello nel modulo multilayer (come livello di tipo `sidechain`, vedi sotto).
 
 | Parametro                 | Valore                                      |
 | ------------------------- | ------------------------------------------- |
 | Modalità di regolamento   | 4 (optimistic, zk, based, sovereign)        |
-| Rollup attivi massimi     | 100                                         |
-| Stake minimo del creatore | 10,000 QOR                                  |
-| Tipo di livello           | `rollup`                                    |
+| Rollup registrati massimi | 100 (`max_rollups`); ma possono esistere contemporaneamente solo 10 livelli di tipo sidechain (`max_sidechains`), quindi al massimo 10 rollup possono avere un livello ancorabile |
+| Stake minimo del creatore | 10,000 QOR per il rollup, più 1,000 QOR di stake per la registrazione del livello (`min_sidechain_stake`) |
+| Tipo di livello           | I rollup registrati tramite l'RDK usano il tipo di livello `sidechain` (il tipo di livello `rollup` è definito ma non ancora utilizzato da `x/rdk`) |
 | Domini di destinazione    | DeFi, Gaming, NFT, Enterprise               |
 
 Il deployment e la configurazione dei rollup sono trattati in dettaglio nel [Rollup Development Kit](/architecture/rollup-development-kit).
@@ -162,7 +166,7 @@ Gli anchor vengono inviati alla main chain tramite `MsgAnchorState`. Il keeper c
 
 1. **Il livello esiste ed è attivo** — Il keeper verifica che il livello esista nello stato e abbia attualmente stato `active`.
 2. **Intervallo minimo tra anchor trascorso** — Il keeper controlla che siano trascorsi almeno `min_anchor_interval` blocchi (predefinito: 100) dall'ultimo anchor per questo livello.
-3. **Firma aggregata PQC** — Il keeper garantisce che la firma aggregata PQC sia presente e valida per i dati dell'anchor.
+3. **Firma aggregata PQC** — Il keeper garantisce che la firma aggregata PQC sia presente e valida per i dati dell'anchor. La firma viene verificata rispetto alla chiave ML-DSA-87 registrata del **creatore del livello**; un anchor viene rifiutato se il creatore non ha alcuna chiave registrata.
 
 ### Periodo di contestazione
 
@@ -170,14 +174,14 @@ Ogni anchor entra in un **periodo di contestazione** di **24 ore** (86,400 secon
 
 Una volta scaduto il periodo di contestazione senza una contestazione andata a buon fine, l'anchor è considerato finalizzato.
 
-### Lettura degli anchor
+### Lettura degli anchor {#reading-anchors}
 
-A partire dalla versione della chain **v3.1.80**, gli anchor sono anche **leggibili** tramite il servizio di query multilayer. Due query espongono lo stato degli anchor sia su gRPC che su REST:
+Gli anchor sono **leggibili** tramite il servizio di query multilayer. Due query espongono lo stato degli anchor sia su gRPC che su REST:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — restituisce l'ultimo state anchor finalizzato per un livello.
-* **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — restituisce la cronologia degli anchor per un livello.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — restituisce l'ultimo state anchor di un livello.
+* **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — restituisce la cronologia degli anchor di un livello.
 
-Poiché ogni anchor porta una firma Dilithium-5 sul messaggio canonico `layer_id || layer_height || state_root || validator_set_hash` (verificata rispetto alla chiave PQC registrata del creatore del livello), un client può recuperare un anchor e verificarlo **offline**, senza fidarsi del nodo che lo serve. Questa è la primitiva on-chain alla base delle [ricevute di regolamento quantum-safe](/rollups/settlement-receipts) del Rollup Development Kit.
+Ogni anchor porta una firma Dilithium-5 del creatore del livello sul messaggio `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Una release più recente della chain modifica il messaggio firmato, quindi i client non devono inserirlo nel codice in modo fisso. Una firma dimostra che la chiave registrata del creatore ha firmato quei byte; stabilire se l'anchor esista è una questione che spetta alla chain, quindi un verificatore deve leggere l'anchor da un nodo di cui si fida. Su nessuna delle due reti esiste ancora alcun livello né alcun anchor. Questa è la primitiva on-chain alla base delle [ricevute di regolamento](/rollups/settlement-receipts) del Rollup Development Kit.
 
 ---
 

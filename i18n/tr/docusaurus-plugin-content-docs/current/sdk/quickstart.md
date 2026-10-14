@@ -17,7 +17,8 @@ parçaları sonda yer alır.
 yardımcısını ve tembel (lazy) bir imzalama giriş noktasını bir araya getirir.
 Varsayılan olarak genel testnet'i (`qorechain-diana`) hedefler. Varsayılan uç
 noktalar **localhost**'a işaret eder; bu nedenle gerçek bir düğümle konuşmak
-için `endpoints` parametresini geçirin.
+için `endpoints` parametresini geçirin. Genel uç noktalar [ağ
+referansında](/sdk/reference/network#public-endpoints) listelenmiştir.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -25,12 +26,12 @@ import { createClient } from "@qorechain/sdk";
 // Testnet (chain id "qorechain-diana"), default localhost endpoints.
 const client = createClient();
 
-// Point at a real node by overriding endpoints.
+// Point at the public testnet by overriding endpoints.
 const remote = createClient({
   endpoints: {
     rest: "https://api-testnet.qore.host",   // Native REST (LCD)
     rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
+    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
   },
 });
 ```
@@ -88,46 +89,113 @@ EVM/SVM türetmesi, birleşik hesaplar ve tam türetme tablosu için
 // Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
-// A typed qor_ JSON-RPC call.
-const tokenomics = await client.qor.getTokenomicsOverview();
+// Any REST route works through the typed escape hatch, for example the burn
+// statistics.
+const burn = await client.rest.getBurnStats();
 ```
 
-## 4. Bir QOR transferi gönderin
+`client.qor` (tipli `qor_` JSON-RPC çağrıları) genel uç noktalarda
+kullanılamaz: yayımlanmış hiçbir düğüm sürümü bu ad alanını sunmaz, bu yüzden
+her çağrı `-32601` (method not found) döndürür. Bunun yerine REST üzerinden
+okuyun. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
-Bir native hesap türetin, özel anahtarını bir imzalayıcıya uyarlayın, bir
-`TxClient` bağlayın ve token gönderin. QOR'u taban `uqor` birimine çevirmek
-için `toBase("1.5")` kullanın.
+## 4. Bir QOR transferi gönderin {#send-qor}
+
+Mainnet ve testnet üzerinde her Native yol işlemi **hibrit** (klasik secp256k1
+artı ML-DSA-87) imza taşımalıdır ve hesabın ML-DSA-87 anahtarı önce
+**zincir üzerinde kaydedilmiş** olmalıdır. Kayıt açıkça yapılır: ilk işlemde
+otomatik kayıt yoktur. Düz bir `tx.bankSend` (yalnızca klasik imza) canlı ağlar
+tarafından reddedilir. Aşağıdaki iki adım **SDK 0.8.3 veya üstünü**
+(`derivePqcCanonical`; genel olarak hibrit gönderimler için 0.8.1 veya üstü) ve
+bakiyesi olan bir hesabı gerektirir:
+
+```bash
+npm i @qorechain/sdk @cosmjs/stargate
+```
+
+### 4a. Kuantum sonrası anahtarınızı kaydedin (bir kez)
+
+Kayıt klasik imzalıdır ve hibrit gereklilikten muaftır; böylece yeni bir hesap
+ilk anahtarını başlatabilir. Ücreti hesap öder: 2.592 baytlık anahtar yaklaşık
+600.000 gas limiti gerektirir.
 
 ```ts
 import {
   createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const REST = "https://api-testnet.qore.host";
+const RPC = "https://rpc-testnet.qore.host";
+
+const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
+
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const tx = await client.connectTx(signer);
+
+// The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+
+// Read the status over REST (the default status source needs `qor_`).
+const { found } = await client.rest.get<{ found: boolean }>(
+  `/qorechain/pqc/v1/account/${account.address}`,
+);
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  ecdsaPubkey: account.publicKey,
+  status: { registered: found },          // skips the transaction when already registered
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+### 4b. Hibrit imzayla gönderin
+
+`signAndBroadcastHybrid` işlemi oluşturur, imzalar ve yayınlar. SDK'nın ağa
+hangi sign-bytes biçimini doğruladığını sorabilmesi için `rest` parametresini
+geçirin (bkz. [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
+QOR'u taban `uqor` birimine çevirmek için `toBase("1.5")` kullanın. Ağın asgari
+gas fiyatı gas birimi başına 0,1 uqor'dur; dolayısıyla 400.000'lik bir gas
+limiti en az 40.000 uqor ücret gerektirir.
+
+```ts
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
   toBase,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  endpoints: {
-    rpc: "https://rpc-testnet.qore.host",
-    rest: "https://api-testnet.qore.host",
-  },
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address); // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipientaddress...",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: client.network.chainId,
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
 });
-
-const account = await deriveNativeAccount(mnemonic);
-
-// Adapt the raw secp256k1 key into an offline signer bound to the "qor" prefix.
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-
-// Connect a tx client at the consensus RPC endpoint.
-const tx = await client.connectTx(signer);
-
-// Estimate a fee, then send 1.5 QOR.
-const fee = await client.fees.estimate(); // or "fast" | "normal" | "slow"
-const result = await tx.bankSend(
-  "qor1recipientaddress...",
-  [{ denom: "uqor", amount: toBase("1.5") }],
-  { fee },
-);
 
 console.log(result.transactionHash);
 ```
@@ -135,44 +203,69 @@ console.log(result.transactionHash);
 `toBase("1.5")`, `"1500000"` döndürür (QOR'un taban birimi `uqor`, 10^6
 hassasiyetindedir).
 
-:::info Canlı ağlarda hibrit imzalama
-Mainnet ve testnet üzerinde Native yol, **hibrit** (klasik + ML-DSA-87) imza
-uzantısını gerektirir — `buildHybridTx` / `signAndBroadcastHybrid`
-fonksiyonlarını, birleşik eth-native hesaplar içinse `signHybridEth`
-fonksiyonunu kullanın.
-Bkz. [Hibrit imzalama](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::info Birleşik hesaplar
+Birleşik bir eth-native hesap (`deriveUnifiedAccount`) için bunun yerine
+`EthNativeSigner` kullanın; kayıt ve gönderim örnekleri
+[Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)
+sayfasındadır.
+:::
+
+:::note Klasik gönderimler yalnızca yerel ve geliştirme düğümlerinde çalışır
+Klasik `client.connectTx(signer)` artı `tx.bankSend(...)` yolu hâlâ mevcuttur
+ve `ensurePqcRegistered` tek seferlik kayıt işlemi için bu yolu kullanır.
+Hibrit uzantıyı gerektirmeyen bir düğümde (yerel bir geliştirme düğümü) sıradan
+transferleri de bu yolla gönderebilir. Genel ağlar bunu reddeder.
 :::
 
 ## Diğer diller: bağlan ve oku
 
-Bunlar aynı ağ ön ayarlarını ve okuma yüzeyini yansıtır.
+Bunlar aynı ağ ön ayarlarını ve okuma yüzeyini yansıtır. Genel testnet uç
+noktalarını kullanırlar; mainnet için `"mainnet"` ve mainnet URL'lerini geçirin.
 
 ### Python
 
 ```python
-from qorechain import create_client
+from qorsdk import create_client
 
-client = create_client()  # testnet preset (localhost endpoints)
+client = create_client(
+    network="testnet",
+    endpoints={
+        "rest": "https://api-testnet.qore.host",
+        "rpc": "https://rpc-testnet.qore.host",
+        "evm_rpc": "https://evm-testnet.qore.host",
+    },
+)
 print(client.network.chain_id)  # "qorechain-diana"
 
 balances = client.rest.get_all_balances("qor1...")
-stats = client.qor.get_ai_stats()
+burn = client.rest.get_burn_stats()
 client.close()
 ```
 
 ### Go
 
 ```go
-import "github.com/qorechain/qorechain-sdk/packages/go/qorechain/client"
+import (
+    "fmt"
 
-c, err := client.CreateClient(client.Options{}) // defaults to "testnet"
+    "github.com/qorechain/qorechain-sdk/packages/go/qorechain/client"
+)
+
+c, err := client.CreateClient(client.Options{
+    Network: "testnet",
+    Endpoints: client.EndpointOverrides{
+        REST:   "https://api-testnet.qore.host",
+        RPC:    "https://rpc-testnet.qore.host",
+        EVMRPC: "https://evm-testnet.qore.host",
+    },
+})
 if err != nil {
     panic(err)
 }
 fmt.Println(c.Network.ChainID) // qorechain-diana
 
 balances, err := c.REST.GetAllBalances("qor1...")
-stats, err := c.Qor.GetAIStats()
+burn, err := c.REST.GetBurnStats()
 ```
 
 ### Rust
@@ -182,10 +275,15 @@ use qorechain::ClientBuilder;
 
 #[tokio::main]
 async fn main() -> qorechain::Result<()> {
-    let client = ClientBuilder::new().build()?; // defaults to "testnet"
+    let client = ClientBuilder::new()
+        .network("testnet")
+        .rest("https://api-testnet.qore.host")
+        .rpc("https://rpc-testnet.qore.host")
+        .evm_rpc("https://evm-testnet.qore.host")
+        .build()?;
     let balances = client.rest.get_all_balances("qor1...").await?;
-    let stats = client.qor.get_ai_stats().await?;
-    let _ = (balances, stats);
+    let burn = client.rest.get_burn_stats().await?;
+    let _ = (balances, burn);
     Ok(())
 }
 ```

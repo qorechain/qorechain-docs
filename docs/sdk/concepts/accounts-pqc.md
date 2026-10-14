@@ -88,8 +88,10 @@ three ways:
 | EVM | `0x` + EIP-55 mixed-case checksum hex |
 | SVM | base58 of the 20 bytes right-padded with 12 zero bytes (32 bytes) |
 
-A deposit to **any** of the three lands in **one** balance, and the key spends
-on every lane:
+A deposit to **any** of the three lands in **one** balance, and the one key is
+the signer on every lane (on the EVM lane inside an
+[authorization window](/sdk/guides/evm#evm-window); the SVM transaction lane is
+currently disabled network-wide, so SVM is read-only today):
 
 ```ts
 import {
@@ -104,7 +106,8 @@ account.cosmos;       // "qor1…"   bech32, Native lane
 account.evm;          // "0x…"     EIP-55 hex, EVM lane
 account.svm;          // "<base58>" 32-byte SVM address (addr20 + 12 zero bytes)
 account.addressBytes; // the raw 20 bytes shared by all three
-account.publicKey;    // 33-byte compressed secp256k1 public key
+account.publicKey;    // "0x…" hex string of the 33-byte compressed secp256k1 key
+account.privateKey;   // "0x…" hex string (a secret: never log or commit it)
 account.pqc;          // { publicKey, secretKey } — ML-DSA-87, derived below
 
 // Decode any ONE encoding into all three:
@@ -130,7 +133,9 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 
 so it is recoverable from `{ address, mnemonic }` and identical across all of
 QoreChain's language SDKs. (For `unifiedAccountFromSeed`, the mnemonic slot is
-`"seed:" + hex(seed32)`.)
+`"seed:" + hex(seed32)`.) Since SDK 0.8.3 `derivePqcCanonical(account, mnemonic)`
+first resolves `account` to its lower-case `qor1…` form (`canonicalAccount`), so
+an upper-case bech32 or the `0x` form of the same account yields the same key.
 
 ### Sending on the Native lane with the eth key
 
@@ -138,30 +143,80 @@ A unified account signs Native-path transactions with the `eth_secp256k1`
 scheme: the classical signature is secp256k1 over **keccak256** of the SignDoc
 bytes (not sha256), and the `SignerInfo` public key uses the type URL
 `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`. The hybrid path
-(`signHybridEth`) additionally attaches the ML-DSA-87 `PQCHybridSignature`
-extension — required on the live networks:
+(`signHybridEth`, or `EthNativeSigner` with its default `signMode: "hybrid"`)
+additionally attaches the ML-DSA-87 `PQCHybridSignature` extension, which is
+required on the live networks.
+
+Two things are needed before the first hybrid send. First, the account's ML-DSA-87
+key must be **registered** (once). Registration is the one classical-signed,
+hybrid-exempt transaction: sign it with `signMode: "classical"`. The account's
+`publicKey` is a `0x` hex string, so decode it to bytes for `ecdsaPubkey`. Second,
+pass `rest` to the signer so it can ask the network which
+[sign-bytes form](#sign-bytes-versions) it verifies (on `qorechain-vladi` and
+`qorechain-diana` it throws instead of guessing). Needs SDK 0.8.1 or later and
+`npm i @cosmjs/stargate`:
 
 ```ts
-import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  buildRegisterPqcKeyMsg,
+  toBase,
+} from "@qorechain/sdk";
 
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+const CHAIN_ID = "qorechain-vladi";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
 const account = await deriveUnifiedAccount(mnemonic);
-const signer = new EthNativeSigner(account); // signMode: "hybrid" by default
 
-// `transport` is anything with broadcastTx (e.g. a connected client).
-await signer.bankSend(
+// The REST account record carries the number and sequence (the account must
+// exist, that is, have received funds).
+async function authInfo() {
+  const { account: base } = await client.rest.get<{
+    account: { account_number: string; sequence: string };
+  }>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+  return { accountNumber: BigInt(base.account_number), sequence: BigInt(base.sequence) };
+}
+
+// 1) Register the ML-DSA-87 key once (classical-signed, exempt from the hybrid rule).
+const classical = new EthNativeSigner(account, { signMode: "classical" });
+await classical.signAndBroadcast(transport, {
+  chainId: CHAIN_ID,
+  ...(await authInfo()),
+  messages: [
+    buildRegisterPqcKeyMsg(account.cosmos, {
+      pqcKeypair: account.pqc,
+      ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+    }),
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
+});
+
+// 2) Send with the hybrid signature (the default signMode).
+const signer = new EthNativeSigner(account, { rest: REST });
+const res = await signer.bankSend(
   transport,
   "qor1recipient…",
-  [{ denom: "uqor", amount: "1000000" }], // 1 QOR
-  { chainId: "qorechain-vladi", accountNumber, sequence, fee },
+  [{ denom: "uqor", amount: toBase("1.5") }],
+  {
+    chainId: CHAIN_ID,
+    ...(await authInfo()),
+    fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  },
 );
+console.log(res.transactionHash);
 ```
 
 For lower-level control, `signHybridEth(params)` / `signClassicalEth(params)`
 return the assembled `TxRaw` bytes and the signing artifacts, and
-`accountAuthInfo(baseAccount)` reads `account_number` / `sequence` from an
-account whose on-chain pubkey uses the `eth_secp256k1` type URL. The
-classical-only path is for the one-time, bootstrap-exempt
-`MsgRegisterPQCKeyV2`; use hybrid for everything else.
+`accountAuthInfo(baseAccount)` reads `account_number` / `sequence` from a
+protobuf `BaseAccount` whose on-chain pubkey uses the `eth_secp256k1` type URL
+(a REST JSON account needs its fields mapped first, as `authInfo` does above).
 
 :::caution Upgrade to SDK 0.6.1+ for hybrid transactions
 SDK **0.6.1** fixed a consensus-critical encoding bug: the
@@ -173,30 +228,16 @@ eth-native lane — built with SDK ≤ 0.6.0 is rejected on-chain: upgrade to
 0.6.1 or later.
 :::
 
-### Phantom (P1a): a unified account without exporting a key
+### Phantom and other external wallets {#phantom}
 
-`connectPhantomUnified()` (TypeScript) derives a canonical, **non-custodial**
-unified account from a deterministic Phantom signature: the user signs a fixed,
-domain-separated message with Phantom's ed25519 key, and
-`shake256(signature, 32)` seeds the account.
+:::danger Removed in SDK 0.8.0
+SDK 0.6.0 to 0.7.0 shipped `connectPhantomUnified()` and `unifiedAccountFromPhantomSignature()` (removed in 0.8.0; Python and Rust: `unified_account_from_phantom_signature`, Go: `unified.UnifiedAccountFromPhantomSignature`, Java: `UnifiedAccounts.unifiedAccountFromPhantomSignature`), which derived an account's spend key from a Phantom signature over the fixed message `QoreChain unified account derivation v1` followed by the wallet's base58 public key.
+An ed25519 signature is deterministic and any website can ask the wallet to sign that same message, so anyone who ever obtained the signature can rebuild the account's secp256k1 and ML-DSA keys. Both functions now throw.
 
-```ts
-import {
-  connectPhantomUnified,
-  unifiedAccountFromPhantomSignature,
-} from "@qorechain/sdk";
+If you created an account this way, treat it as compromised now: create a fresh mnemonic account, move the funds to it, and then link Phantom to the new account as an authenticator (below). The old account cannot be repaired, because its address is bound to the exposed key and a PQC key rotation replaces only the post-quantum half. Use SDK 0.8.2 or later.
+:::
 
-// In the browser (uses window.solana):
-const account = await connectPhantomUnified();
-
-// Or, given a raw signature you already have:
-const same = unifiedAccountFromPhantomSignature(signatureBytes);
-```
-
-The derived account is a separate canonical key from the Phantom ed25519 key —
-Phantom never sees the derived secp256k1/PQC secrets. To let the Phantom key
-itself spend from the account under limits, see
-[Authenticators & delegated spending](/sdk/guides/authenticators).
+To let a Phantom (or MetaMask) key spend from an account, use the **authenticator lanes**: register the wallet key with `MsgRegisterAuthenticator`, then spend from the canonical PQC account through `MsgExecuteCosmos` / `MsgExecuteEVM` under a permission and a `SpendingRule`. The account keeps its own mnemonic-derived keys, and the wallet key can be revoked at any time. See [Authenticators & delegated spending](/sdk/guides/authenticators). Note that the `abstractaccount` module behind these lanes is currently switched off on both networks (`GET /qorechain/abstractaccount/v1/config` shows `enabled: false`), so a wallet key cannot be linked yet; until it can, use the fresh mnemonic account directly.
 
 ## Post-quantum cryptography (PQC)
 
@@ -228,7 +269,8 @@ The exported length constants (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
 ### Pluggable signers
 
 For composition, the SDK provides a `Signer` abstraction plus `PqcSigner` and
-`HybridSigner` implementations, and a `SignatureMode` enum. Use these when you
+`HybridSigner` implementations, and a `SignatureMode` type (`"classical" | "pqc" |
+"hybrid"`). Use these when you
 want to plug PQC signing into your own flow rather than calling the primitives
 directly.
 
@@ -240,13 +282,15 @@ gaining post-quantum protection. The post-quantum part travels as a
 `PQCHybridSignature` extension on the transaction.
 
 :::caution Hybrid signing is required on the Native path
-As of the current chain version (**v3.1.97**), the network default is
-`hybrid_signature_mode = required` with `allow_classical_fallback = false`.
-Hybrid signing via `buildHybridTx` (with `includePqcPublicKey`) — or
-`signHybridEth` for unified eth-native accounts — is **mandatory** for
-Native-path transactions; classical-only Native transactions are rejected
-on-chain. EVM transactions use a separate `eth_secp256k1` path and are
-unaffected.
+As of chain version **v3.2.0** (the version both networks run), the network
+default is `hybrid_signature_mode = required` with
+`allow_classical_fallback = false`. Hybrid signing via `buildHybridTx` /
+`signAndBroadcastHybrid` (pass `rest`), or `signHybridEth` / `EthNativeSigner`
+for unified eth-native accounts, is **mandatory** for Native-path transactions;
+classical-only Native transactions are rejected on-chain. EVM transactions are a
+separate lane, but since v3.2.0 they are admitted only from an account with a
+registered ML-DSA-87 key and an open
+[authorization window](/sdk/guides/evm#evm-window).
 :::
 
 :::caution SDK ≤ 0.6.0 hybrid transactions are rejected
@@ -255,27 +299,86 @@ The 0.6.1 release fixed the encoding of the `PQCHybridSignature` extension
 0.6.0 or earlier fail at CheckTx with a tx parse error — upgrade to 0.6.1+.
 :::
 
+The end-to-end builder for a coin-type-118 account is `signAndBroadcastHybrid`
+(or `buildHybridTx` to build without broadcasting). It needs the classical signer,
+the account's ML-DSA-87 keypair, the account number and sequence, and `rest`.
+SDK 0.8.3 or later, `npm i @cosmjs/stargate`:
+
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  buildHybridTx,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
+  toBase,
 } from "@qorechain/sdk";
 
-const account = await deriveNativeAccount(mnemonic);
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// buildHybridTx assembles a tx with BOTH a classical signature and an
-// ML-DSA-87 signature attached as a PQCHybridSignature extension.
-// (See packages/ts and the pqc-hybrid-sign example for the full call.)
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address);            // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipient…",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,        // lets the SDK pick the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ### On-chain prerequisite
 
-Before a hybrid transaction will PQC-verify on-chain, the signer's PQC public
-key must be **registered** via the chain's `MsgRegisterPQCKey` — *unless* you set
-`includePqcPublicKey: true`, which embeds the key in the extension so the chain
-can auto-register it on first use.
+Before a hybrid transaction will PQC-verify, the signer's PQC public key must be
+**registered** with `MsgRegisterPQCKeyV2` (classical-signed, hybrid-exempt). The
+SDK's `ensurePqcRegistered` / `buildRegisterPqcKeyMsg`, `qorechaind tx pqc
+register-key`, or a QoreChain wallet do it. `includePqcPublicKey: true` only
+embeds the key in the extension; it does **not** register it, and the chain does
+not register a key on first use.
+
+### Which sign-bytes form? {#sign-bytes-versions}
+
+The ML-DSA-87 half of a hybrid transaction is signed over one of two byte forms,
+and a network verifies exactly one at any height:
+
+```text
+v1: BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+v2: "qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+```
+
+`B0` is the transaction body without the PQC extension and `A` the `AuthInfo`
+bytes. `qorechain-vladi` and `qorechain-diana` both verify **v2**. The switch was
+recorded under the upgrade name `v3.2.0` on mainnet and under `v3.1.98` (then
+`v3.2.0`) on the testnet, so a client must ask
+`GET /cosmos/upgrade/v1beta1/applied_plan/{name}` for **both** names and use v2 if
+either height is above zero. The SDK does this for you: every hybrid builder takes
+`signBytesVersion` (`"auto"` by default, or `"v1"` / `"v2"`), and `"auto"` needs the
+network's REST URL (`rest`) on these two chains: it throws rather than guess. The
+high-level paths re-resolve and retry once when the chain refuses the signature
+with `pqc` code 21. In unit tests pass `signBytesVersion` explicitly so the test
+does not depend on a live node. See also
+[Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21).
 
 ### Hybrid tx contract (high level)
 

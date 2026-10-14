@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain は、SVM(Solana Virtual Machine)ランタイムを通じて Solana 互換の JSON-RPC インターフェースを提供しており、既存の Solana ツールや SDK が QoreChain とネイティブに連携できます。
 
 :::caution SVM トランザクション送信は現在無効です
-チェーンバージョン v3.1.89(8月22日)以降、インシデントを受けて、SVM 実行レーンは**トランザクション送信についてネットワーク全体で無効化**されています — トランザクションを送信すると `code 11, "SVM module is disabled"` が返されます。これはパブリックな読み取り専用エンドポイントに限らず、ネットワーク全体に適用されます。下の表にある読み取り系メソッド(`getBalance`、`getAccountInfo` など)は引き続き応答する場合がありますが、このレーンが再開されるまでは SVM トランザクションを送信するライブ連携を試みないでください — これはコンパイル時の無効化であり、ランタイムパラメータではないため、ガバナンス投票によって再度有効にすることはできません。外部監査によって問題がないと確認されるまで無効のままとなる見込みです。
+チェーンバージョン v3.1.89(8月22日)以降、インシデントを受けて、SVM 実行レーンは**トランザクション送信についてネットワーク全体で無効化**されています — トランザクションを送信すると `code 11, "SVM module is disabled"` が返されます。これはパブリックな読み取り専用エンドポイントに限らず、ネットワーク全体に適用されます。下の表にある読み取り系メソッド(`getBalance`、`getAccountInfo` など)はパブリックエンドポイントで通常どおり応答しますが、このレーンが再開されるまでは SVM トランザクションを送信するライブ連携を試みないでください — これはコンパイル時の無効化であり、ランタイムパラメータではないため、ガバナンス投票によって再度有効にすることはできません。外部監査によって問題がないと確認されるまで無効のままとなる見込みです。
 :::
 
 ## 接続
@@ -40,6 +40,16 @@ JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デ
 | `getMinimumBalanceForRentExemption` | `dataLength`(整数)   | 指定したデータサイズに対するレント免除の最小残高を返します |
 | `getVersion`                        | なし                     | ノードのソフトウェアバージョンを返します                              |
 | `getHealth`                         | なし                     | ノードのヘルス状態を返します(正常な場合は `"ok"`)                 |
+| `getBlockHeight`                    | なし                     | 現在のブロック高を返します                                |
+| `getLatestBlockhash`                | なし                     | 最近のブロックハッシュと `lastValidBlockHeight` を返します          |
+| `getRecentBlockhash`                | なし                     | `getLatestBlockhash` のレガシー形式                            |
+| `getFeeForMessage`                  | `message`(base64)       | メッセージの手数料を返します(lamports)                       |
+| `getMultipleAccounts`               | `pubkeys`(配列)        | 複数のアカウントを 1 回の呼び出しで返します                           |
+| `getProgramAccounts`                | `programId`(base58)     | プログラムが所有するアカウントを返します                        |
+| `getTokenAccountsByOwner`           | `owner`、フィルター          | 所有者のトークンアカウントを返します                            |
+| `getTokenAccountsByDelegate`        | `delegate`、フィルター       | デリゲートのトークンアカウントを返します                          |
+
+`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

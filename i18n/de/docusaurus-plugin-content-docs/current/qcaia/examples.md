@@ -21,7 +21,7 @@ Diese Antworten sind **illustrativ** — kurze, allgemeinverständliche Paraphra
 
 **QCAIA antwortet:**
 
-> QoreChain's bridge lets you move assets between QoreChain and other networks. It combines QCB transfers with IBC for cross-chain connectivity, with IBC support rolling out on testnet first. For the full design, see the bridge documentation.
+> Die Bridge von QoreChain ist dafür ausgelegt, Assets zwischen QoreChain und anderen Netzwerken zu bewegen, und kombiniert QCB-Transfers mit IBC. Sie ist noch nicht live: Alle Chain-Konfigurationen stehen noch aus, und in keinem der beiden Netzwerke ist ein IBC-Channel geöffnet. Das vollständige Design finden Sie in der Bridge-Dokumentation.
 
 _Mehr erfahren: [Bridge-Architektur](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _Mehr erfahren: [Bridge-Architektur](/architecture/bridge-architecture)._
 
 **QCAIA antwortet:**
 
-> PRISM is QoreChain's reinforcement-learning optimization layer. It continuously tunes the network for performance and efficiency as conditions change. You can read the deep dive in the PRISM documentation.
+> PRISM ist die Reinforcement-Learning-Optimierungsschicht von QoreChain, die dafür ausgelegt ist, Netzwerkparameter bei sich ändernden Bedingungen abzustimmen. Heute läuft sie im Beobachtungsmodus: Sie zeichnet Beobachtungen auf, aber es ist noch keine trainierte Policy geladen. Den ausführlichen Einblick finden Sie in der PRISM-Dokumentation.
 
 _Mehr erfahren: [PRISM-Konsens-Engine](/architecture/prism-consensus-engine)._
 
@@ -49,7 +49,7 @@ _Mehr erfahren: [PRISM-Konsens-Engine](/architecture/prism-consensus-engine)._
 
 **QCAIA antwortet:**
 
-> Transaction fees on QoreChain are split across several destinations: 37% / 30% / 20% / 10% / 3%. This spreads value across the people and functions that keep the network running. See the tokenomics documentation for the breakdown of each share.
+> Transaktionsgebühren auf QoreChain werden auf mehrere Ziele aufgeteilt: 37 % / 30 % / 20 % / 10 % / 3 %. So verteilt sich der Wert auf die Menschen und Funktionen, die das Netzwerk am Laufen halten. Die Aufschlüsselung der einzelnen Anteile finden Sie in der Tokenomics-Dokumentation.
 
 ## Beispiel 4 — Mehrsprachigkeit (Spanisch)
 
@@ -77,7 +77,7 @@ Dasselbe funktioniert in Telegram — schreiben Sie Ihre Frage einfach in Ihrer 
 
 **QCAIA antwortet:**
 
-> I'm QCAIA, the QoreChain AI Assistant (beta). Ask me about QoreChain's technology, tokenomics, team, and ecosystem on Discord or Telegram. Try `/ask` followed by your question, or use `/tokenomics` for a quick QOR summary.
+> Ich bin QCAIA, der QoreChain-KI-Assistent (Beta). Fragen Sie mich auf Discord oder Telegram nach der Technologie, der Tokenomics, dem Team und dem Ökosystem von QoreChain. Probieren Sie `/ask` gefolgt von Ihrer Frage, oder nutzen Sie `/tokenomics` für eine schnelle QOR-Zusammenfassung.
 
 ---
 

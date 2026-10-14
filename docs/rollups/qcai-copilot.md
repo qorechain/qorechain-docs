@@ -7,63 +7,31 @@ sidebar_position: 7
 
 # QCAI Rollup Copilot
 
-The QCAI Rollup Copilot gathers everything the network's advisory services know
-about one rollup and folds it into a single, plain-language read: a live fee
-estimate, network recommendations, any fraud investigations that reference the
-rollup, the reinforcement-learning agent's status, and a short list of
-suggestions you can act on.
+The QCAI Rollup Copilot in the RDK is a read-only helper that **tries** to gather the network's advisory data for one rollup — a fee estimate, network recommendations, fraud investigations that reference the rollup, the reinforcement-learning agent's status — and fold it into one plain-language read with a short list of suggestions.
 
-It is **best-effort**. The advisory services are optional infrastructure — if one
-is unreachable, the Copilot degrades gracefully, dropping that section and
-recording a warning instead of failing the whole call. You always get a result.
+:::caution Not available on the public endpoints
+The advisory services it reads (`/qorechain/ai/v1/…` REST routes and the `qor_*` JSON-RPC namespace) are **not served** by the public `qore.host` endpoints on mainnet or testnet at present, so every section comes back as a warning. The Copilot is best-effort by design: it never fails, but an empty result does **not** mean the rollup was checked and found healthy. Do not use it as a safety signal until those services are exposed. See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace).
+:::
 
-## One call: `getRollupAdvice`
+## One call: `getRollupAdvice` {#one-call-getrollupadvice}
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
-// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
-// endpoint config needed; pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
+const advice = await getRollupAdvice(rdk, "my-rollup");
 
-const advice = await getRollupAdvice(rdk, "my-roll");
-
-console.log(advice.feeEstimate);            // live fee estimate (if reachable)
-console.log(advice.networkRecommendations); // tuning recommendations
-console.log(advice.fraudInvestigations);    // investigations referencing this rollup
-console.log(advice.rlAgentStatus);          // RL agent status (qor_ JSON-RPC)
-console.log(advice.suggestions);            // plain-language, actionable
-console.log(advice.warnings);               // services that were unreachable
+console.log(advice.warnings);    // services that could not be reached (all of them today)
+console.log(advice.suggestions); // plain-language suggestions, when data is available
 ```
 
-## The underlying reads
+The result also carries `feeEstimate`, `networkRecommendations`, `fraudInvestigations` and `rlAgentStatus` when the corresponding service answers.
 
-`getRollupAdvice` aggregates a set of read-only methods you can also call
-directly. The advisory REST methods live under `/qorechain/ai/v1/...`:
-
-- `getFeeEstimate(...)` — current fee estimate.
-- `getNetworkRecommendations(...)` — network-level tuning recommendations.
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — open
-  investigations and a single investigation by id.
-- `getCircuitBreakers(...)` — advisory circuit-breaker state.
-
-The reinforcement-learning reads use the `qor_*` JSON-RPC namespace:
-
-- `getRLAgentStatus()` — the agent's current status.
-- `getRLObservation()` — the latest observation.
-- `getRLReward()` — the latest reward signal.
-
-Because these are all reads, the Copilot needs only a REST endpoint (and an EVM
-/ `qor_` JSON-RPC endpoint for the RL reads) — no signer.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-qorollup advise my-roll
-qorollup advise my-roll --json
+qorollup advise my-rollup
+qorollup advise my-rollup --json
 ```
 
-`advise` prints the aggregated advice, with unreachable services surfaced as
-warnings rather than errors. See [Deploying a Rollup](/rollups/deploying-a-rollup)
-for the full `qorollup` operator CLI.
+Unreachable services are listed as warnings rather than errors, and the human-readable output can still print a "no issues flagged" line when nothing was reachable — read the warnings. See [Deploying a Rollup](/rollups/deploying-a-rollup) for the `qorollup` operator CLI.

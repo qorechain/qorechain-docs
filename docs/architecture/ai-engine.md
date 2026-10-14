@@ -15,7 +15,7 @@ The QCAI (QoreChain AI) engine operates across three layers:
 
 | Layer                 | Scope                                                  | Execution                | Deterministic |
 | --------------------- | ------------------------------------------------------ | ------------------------ | ------------- |
-| **Consensus Level**   | Block production, parameter tuning                     | On-chain (x/rlconsensus) | Yes           |
+| **Consensus Level**   | Block production, parameter tuning                     | On-chain (x/rlconsensus) — observation only today | Yes           |
 | **Network Level**     | Transaction routing, fraud detection, fee optimization | On-chain (x/ai)          | Yes           |
 | **Application Level** | Contract generation, auditing, deep analysis           | Off-chain (sidecar)      | No            |
 
@@ -106,7 +106,7 @@ The fee optimizer predicts network congestion and suggests optimal fees for desi
 | `normal` | 1.0x            | 3-5 blocks             |
 | `slow`   | 0.5x            | 6-10 blocks            |
 
-The final fee incorporates a **congestion multiplier** (1.0x at 0% congestion, up to 5.0x at 100% congestion) and a **trend premium** when predicted congestion exceeds current congestion. The minimum fee floor is 500 uqor (0.0005 QOR).
+The final fee incorporates a **congestion multiplier** (1.0x at 0% congestion, up to 5.0x at 100% congestion) and a **trend premium** when predicted congestion exceeds current congestion. The estimator's own minimum fee is a legacy constant of 500 uqor; it is not exposed on the live networks, and the fee that a transaction actually has to pay is set by the network floor of 0.1 uqor per unit of gas (see [First Transaction](/getting-started/first-transaction#send-qor)).
 
 ## Network Optimizer
 
@@ -167,6 +167,10 @@ Two precompiled contracts expose on-chain AI capabilities to EVM smart contracts
 | `aiRiskScore`    | `0x0B01` | Returns a risk score (0-100) for a given address or transaction hash  |
 | `aiAnomalyCheck` | `0x0B02` | Returns a boolean anomaly flag and confidence score for a transaction |
 
+:::warning Not active yet
+These precompiles are **not active** on mainnet (`qorechain-vladi`) or testnet (`qorechain-diana`); a call returns empty data. They will be activated only after they get a read-only, fixed-point scoring path. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Important**: EVM precompiles use the **deterministic heuristic engine only**. They never call the sidecar, ensuring all EVM execution remains fully deterministic and reproducible.
 
 ## TEE Attestation
@@ -214,17 +218,12 @@ Each round is configured with minimum/maximum participants, timeout, learning ra
 
 Federated learning is currently at the interface specification stage. Implementation is planned for a future release.
 
-## REST Endpoints
+## Queries
 
-| Endpoint                         | Description                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Returns fee estimates for fast, normal, and slow urgency tiers |
-| `/ai/v1/fraud/investigations`    | Lists active and resolved fraud investigations                 |
-| `/ai/v1/network/recommendations` | Returns current network parameter optimization recommendations |
-| `/ai/v1/circuit-breakers`        | Lists active circuit breaker states for contracts              |
+`qorechaind query ai config` and `qorechaind query ai stats` (gRPC) are the module's queries. The module has no REST routes today: the `/ai/v1/...` fee-estimate, fraud-investigation, network-recommendation and circuit-breaker routes are not served on mainnet or testnet.
 
 ## Related
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — the AI layer driving consensus optimization.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — the AI layer designed for consensus optimization (observation only today).
 * [Smart Contract Creator](/dashboard/smart-contract-creator) — AI-assisted contract generation in the Dashboard.
 * [Contract Auditor](/dashboard/contract-auditor) — AI-assisted contract security review.

@@ -10,7 +10,7 @@ sidebar_position: 11
 كل ما تحتاجه منصة تداول أو جهة حفظ أو جهة تكامل مدفوعات لإدراج QOR ومعالجة الإيداعات والسحوبات: اختيار الواجهة المناسبة، واكتشاف الإيداعات بأمان، وتوقيع السحوبات.
 
 :::note
-يستهدف هذا الدليل الشبكة الرئيسية **`qorechain-vladi`** (إصدار السلسلة **v3.1.97**). تدرّب على التدفق الكامل أولاً على شبكة الاختبار **`qorechain-diana`** — نقاط النهاية لكلتا الشبكتين موجودة في [الشبكات](/appendix/networks#public-endpoints). إذا كنت تشغّل عقدتك الكاملة الخاصة، فأبقِها على إصدار السلسلة الحالي — فالعقدة القديمة لا تستطيع فك ترميز أنواع المعاملات الأحدث وتتوقف عن المزامنة.
+يستهدف هذا الدليل الشبكة الرئيسية **`qorechain-vladi`** (قيد التشغيل منذ 29 يونيو 2026؛ إصدار العقدة **v3.2.1**، مع قواعد الإجماع الخاصة بترقية v3.2.0). تدرّب على التدفق الكامل أولاً على شبكة الاختبار **`qorechain-diana`** (v3.2.2) — نقاط النهاية لكلتا الشبكتين موجودة في [الشبكات](/appendix/networks#public-endpoints). إذا كنت تشغّل عقدتك الكاملة الخاصة، فأبقِها على الإصدار الذي يوصي به بيان التنزيل ولا تنزل أبداً عن قيمة `minCompatible` فيه (تحتاج عقدة جديدة على الشبكة الرئيسية إلى v3.2.0 أو أحدث) — فالعقدة القديمة لا تستطيع مواكبة ترقيات السلسلة وتتوقف عن المزامنة.
 :::
 
 ## اختيار مسار التكامل {#choosing-a-path}
@@ -22,12 +22,12 @@ QoreChain سلسلة واحدة برصيد **QOR أصلي موحّد واحد** 
 | العنوان | `qor1...` (bech32) | `0x...` (Ethereum) | ترميز base58 الخاص بـ Solana (المفتاح نفسه) |
 | الخانات العشرية (QOR الأصلي) | **6** (`uqor`) | **18** (على غرار wei) | **9** (lamports؛ 1 uqor = 1,000 lamports) |
 | الأدوات | Cosmos SDK / CosmJS | **أدوات Ethereum القياسية** (ethers/web3، MetaMask) | `@solana/web3.js` |
-| توقيع السحوبات | **يلزم توقيع PQC هجين** (ML-DSA-87 + secp256k1) | **secp256k1 قياسي / EIP-155 — بدون PQC** | عبر معاملة Cosmos أو الإرسال المباشر على العقدة |
+| توقيع السحوبات | **يلزم توقيع PQC هجين** (ML-DSA-87 + secp256k1) | **secp256k1 قياسي / EIP-155، لكن فقط داخل نافذة تفويض PQC مفتوحة** (مفتاح ML-DSA مسجَّل + نافذة تُفتح برسالة Cosmos موقّعة توقيعاً هجيناً) | عبر معاملة Cosmos أو الإرسال المباشر على العقدة (المسار معطَّل حالياً) |
 | دعم الحقل التعريفي (memo / tag) | **نعم** (عنوان مشترك + memo) | لا (عنوان لكل مستخدم) | لا (عنوان لكل مستخدم) |
 | اكتشاف الإيداعات | فحص أحداث `MsgSend` | فحص الكتل عبر `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
 | الأنسب لـ | المنصات المبنية على Cosmos | **المنصات التي لديها تكامل EVM قائم** | المنصات التي تعتمد أدوات Solana |
 
-**التوصية:** إذا كنت تدعم بالفعل سلاسل EVM، فإن **المسار ب (EVM)** هو التكامل الأقل جهدًا — أدوات Ethereum قياسية، و**السحوبات لا تتطلب توقيعًا ما بعد كمّي** (مسار ante الخاص بـ EVM معفى). المسار أ (Cosmos) هو المسار الأصلي مع عناوين إيداع مشتركة قائمة على الـ memo. المسار ج (SVM) هو واجهة كاملة لـ QOR الأصلي من الناحية النظرية، لكن **مسار معاملاته معطَّل حاليًا على مستوى الشبكة بأكملها** (انظر [المسار ج](#path-c-svm)) — استخدم المسار أ أو المسار ب إلى أن يُعاد فتحه.
+**التوصية:** استخدم **المسار أ (Cosmos)** للسحوبات؛ فهو المسار الأصلي ويوفّر عناوين إيداع مشتركة قائمة على الـ memo. ومنذ v3.2.0 يتطلب مسار EVM (المسار ب) أيضاً مفتاح ML-DSA-87 مسجَّلاً و**نافذة تفويض EVM** مفتوحة ومحدودة لا يمكن فتحها إلا برسالة في مسار Cosmos موقّعة توقيعاً هجيناً، لذا يحتاج مسار سحب عبر EVM إلى حزمة التوقيع ما بعد الكمّي نفسها المطلوبة في المسار أ **بالإضافة إلى** إدارة النوافذ (انظر [المسار ب](#path-b-evm) و[نافذة تفويض EVM](/developer-guide/evm-development#evm-window)). يبقى المسار ب مناسباً لـ **اكتشاف الإيداعات** باستخدام أدوات Ethereum القياسية. المسار ج (SVM) هو واجهة كاملة لـ QOR الأصلي من الناحية النظرية، لكن **مسار معاملاته معطَّل حالياً على مستوى الشبكة بأكملها** (انظر [المسار ج](#path-c-svm)) — استخدم المسار أ، أو المسار ب لاكتشاف الإيداعات، إلى أن يُعاد فتحه.
 
 الواجهات الثلاث **ليست متنافية** — الأموال المرسلة إلى صيغة `0x` أو `qor1` أو SVM لنفس المفتاح هي الرصيد نفسه.
 
@@ -51,7 +51,7 @@ curl -s https://rpc.qore.host/status | jq -r .result.sync_info.latest_block_heig
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs/block/{HEIGHT}" | jq '.txs'
 
 # incoming transfers to an address
-curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&pagination.limit=50" | jq '.tx_responses[].txhash'
+curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&limit=50" | jq '.tx_responses[].txhash'
 
 # balance (uqor — divide by 1e6 for QOR)
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
@@ -76,13 +76,13 @@ curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?den
 مكتبة التوقيع هي [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm)، والتي تجلب معها `@qorechain/pqc` للأوليات المشفّرة الخاصة بـ FIPS-204:
 
 ```bash
-npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
-# pin cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
+npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing@0.32 @cosmjs/stargate@0.32 cosmjs-types@0.9.0
+# pin the cosmjs packages to 0.32 (the adapter's peer range) and cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
 ```
 
 التوقيع يتم عبر تدفق من **خطوتين** (يحاكي `qorechaind tx pqc cosign`):
 
-**الخطوة 1 — مرة واحدة لكل محفظة ساخنة: تسجيل مفتاح ML-DSA-87 الخاص بها.** معاملة التسجيل الوحيدة هذه **موقّعة كلاسيكيًا** (إعفاء الإقلاع الأولي): الرسالة `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` مع `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. اشتق مفتاح ML-DSA بشكل حتمي بحيث يكون قابلًا للاسترداد من سرّك الحالي — مثلًا `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` ثم `mldsa.keygen(seed)` — واحفظ الـ seed إلى جانب مفتاح محفظتك الساخنة.
+**الخطوة 1 — مرة واحدة لكل محفظة ساخنة: تسجيل مفتاح ML-DSA-87 الخاص بها.** معاملة التسجيل الوحيدة هذه **موقّعة كلاسيكيًا** (إعفاء الإقلاع الأولي): الرسالة `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` مع `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. اشتق مفتاح ML-DSA بشكل حتمي بحيث يكون قابلًا للاسترداد من سرّك الحالي — مثلًا `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` ثم `mldsa.keygen(seed)` — واحفظ الـ seed إلى جانب مفتاح محفظتك الساخنة. التسجيل صريح: لا شيء يسجّل المفتاح نيابةً عنك عند ظهور أول معاملة هجينة، والمفتاح المضمَّن داخل معاملة لا يُعدّ مسجَّلاً. حدّد الغاز صراحةً (يحتاج المفتاح البالغ حجمه 2,592 بايت إلى أكثر من القيمة الافتراضية 200,000؛ استخدم `--gas 600000` في سطر الأوامر، وحدّ غاز قدره 600,000 في الشيفرة، ورسماً لا يقل عن الغاز × 0.1 uqor، أي 60,000 uqor).
 
 **الخطوة 2 — كل سحب بعد ذلك: توقيع `MsgSend` توقيعًا هجينًا.** يدمج المحوّل توقيع ML-DSA-87 داخل امتداد لجسم المعاملة *قبل* توقيع secp256k1 العادي عبر `signDirect`، فيبقى مُوقِّعك الحالي دون تغيير:
 
@@ -93,6 +93,7 @@ import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx.js";
 // pqc = { publicKey, secretKey } from mldsa.keygen(seed)
 // accountNumber + sequence from the auth query
 const signer = new QoreChainSigner({ wallet, chainId: "qorechain-vladi",
+  rest: "https://api.qore.host",   // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   address, pubkeySecp256k1, accountNumber, pqc });
 const txBytes = await signer.signHybrid({
   messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -109,50 +110,53 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
   -H 'Content-Type: application/json' \
   -d '{"tx_bytes":"<base64-signed-tx>","mode":"BROADCAST_MODE_SYNC"}' | jq .tx_response.code
 # 0 => accepted into the mempool
-# code 8 "classical fallback not allowed" => step 1 not done yet for this account
+# code 20 "hybrid PQC signature required" => the transaction carries no PQC extension
+#   (a classical-only transaction is refused; only the key registration itself is exempt)
+# code 21 => the PQC half did not verify (wrong key or sign-bytes form), see the troubleshooting link below
 ```
 
 ثم استعلم دوريًا عبر `GET /cosmos/tx/v1beta1/txs/{hash}` حتى تظهر المعاملة في كتلة مع `code == 0`.
 
-إذا كنت تستخدم HSM أو مُوقِّعًا مخصصًا بلغة أخرى، فاستخدم مكتبات [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) المستقلة الخاصة بـ FIPS-204 (npm وPyPI وcrates.io وMaven Central وGo) وركّب الامتداد نفسه. **يجب أن يكون** توقيع ML-DSA **حتميًا** (FIPS-204 §3.4) — انظر [التوقيع الحتمي](/developer-guide/post-quantum-signing#deterministic-signing)؛ فالسلسلة ترفض التوقيعات العشوائية (hedged).
+إذا كنت تستخدم HSM أو مُوقِّعًا مخصصًا بلغة أخرى، فاستخدم مكتبات [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) المستقلة الخاصة بـ FIPS-204 (npm وPyPI وcrates.io وMaven Central وGo) وركّب الامتداد نفسه. تقبل السلسلة أي توقيع ML-DSA-87 صالح وفق FIPS-204، سواء كان مُحوَّطًا (hedged) أو حتميًا؛ والتوقيع الحتمي (FIPS-204 §3.4، وهو الافتراضي في المكتبات) يمنحك توقيعًا وتجزئة معاملة قابلين لإعادة الإنتاج. انظر [التوقيع الحتمي](/developer-guide/post-quantum-signing#deterministic-signing)، و[استكشاف أخطاء الرمز 21](/developer-guide/post-quantum-signing#code-21) إذا رُفضت معاملة هجينة.
 
 ### البديل على جانب الخادم: `@qorechain/chain-bridge` {#chain-bridge}
 
-لعامل محفظة ساخنة يعمل بالكامل على جانب الخادم (دون أي محفظة متصفح)، تغلّف حزمة **`@qorechain/chain-bridge`** (npm) التدفق بأكمله — اشتقاق المفاتيح، والتسجيل التلقائي لمفتاح PQC عند أول استخدام، والتوقيع الهجين، والبث — في استدعاء واحد. وهي JavaScript خالص (بدون إضافات أصلية)، ومناسبة للعوامل بلا خوادم (serverless):
+لعامل محفظة ساخنة يعمل بالكامل على جانب الخادم (دون أي محفظة متصفح)، تغلّف حزمة **`@qorechain/chain-bridge`** (npm) التدفق بأكمله — اشتقاق المفاتيح، والتوقيع الهجين، والبث — في استدعاء واحد. وهي JavaScript خالص (بدون إضافات أصلية)، ومناسبة للعوامل بلا خوادم (serverless):
 
 ```js
 import { ChainBridge } from "@qorechain/chain-bridge";
 
 const bridge = new ChainBridge({
   cosmosRpc: "https://rpc.qore.host",       // or your own node
+  cosmosRest: "https://api.qore.host",      // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   chainId: "qorechain-vladi",
   signerMnemonic: process.env.HOT_WALLET_MNEMONIC,  // from your secrets manager
 });
 
-// One call: derives the canonical ML-DSA-87 key, auto-registers it if missing,
-// hybrid-signs the MsgSend, and broadcasts. Amounts are in uqor (6 decimals).
+// One call: derives the canonical ML-DSA-87 key, hybrid-signs the MsgSend, and broadcasts.
+// Amounts are in uqor (6 decimals). Register the key beforehand with bridge.registerPqc({ mnemonic }).
 const { txHash } = await bridge.sendTokens({
   to: "qor1recipient...",
   amountUqor: "1000000",   // 1 QOR
 });
 ```
 
-تستخدم `chain-bridge` (≥0.1.1) نفس اشتقاق PQC القانوني المرتبط بالعنوان المستخدم في بقية الحزم — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — لذا فالمفتاح قابل للاسترداد من العبارة الاسترجاعية (mnemonic) عبر `qorechaind tx pqc recover-key`. الحسابات المسجَّلة بأدوات أقدم تُعالَج تلقائيًا (الرجوع إلى المفتاح القديم)، ويمكن ترحيلها مرة واحدة إلى المفتاح القانوني عبر [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
+إذا لم يكن للحساب مفتاح مسجَّل بعد، فإن المكتبة نفسها ترسل معاملة `MsgRegisterPQCKeyV2` الصريحة وتعيد المحاولة مرة واحدة؛ وهذا سلوك المكتبة لا سلوك السلسلة، لذا ينبغي لمسار المحفظة الساخنة تسجيل المفتاح مسبقاً والتأكد منه (`GET /qorechain/pqc/v1/account/{address}`) قبل أول سحب. تستخدم `chain-bridge` (≥0.1.1) نفس اشتقاق PQC القانوني المرتبط بالعنوان المستخدم في بقية الحزم — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — لذا فالمفتاح قابل للاسترداد من العبارة الاسترجاعية (mnemonic) عبر `qorechaind tx pqc recover-key`. الحسابات المسجَّلة بأدوات أقدم تُعالَج تلقائيًا (الرجوع إلى المفتاح القديم)، ويمكن ترحيلها مرة واحدة إلى المفتاح القانوني عبر [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
 
 ## المسار ب — EVM {#path-b-evm}
 
 تكامل Ethereum قياسي مقابل `https://evm.qore.host` (معرّف السلسلة **9801**) أو المنفذ 8545 على عقدتك الخاصة.
 
 * **الخانات العشرية:** يمتلك QOR الأصلي **18 خانة عشرية** على مسار EVM (1 uqor = 10¹² wei). الخطأ في هذا يؤدي إلى تقييد الإيداعات بشكل خاطئ بمعامل 10¹².
-* **الإيداعات:** افحص الكتل عبر `eth_getBlockByNumber` بحثًا عن التحويلات الأصلية إلى عناوينك؛ وأكّدها عبر `eth_getTransactionReceipt` (‏`status == 0x1`).
-* **السحوبات:** توقيع secp256k1 قياسي / EIP-155 — **لا يلزم PQC** على مسار ante الخاص بـ EVM. أي حزمة توقيع Ethereum تعمل دون تغيير.
+* **الإيداعات:** افحص الكتل عبر `eth_getBlockByNumber` بحثًا عن التحويلات الأصلية إلى عناوينك؛ وأكّدها عبر `eth_getTransactionReceipt` (‏`status == 0x1`). معاملات EVM الخاصة بالمودِعين تخضع بدورها لقاعدة النافذة، لذا لا يستطيع مستخدم لا يملك حسابه مفتاحاً مسجَّلاً أو نافذة مفتوحة إرسال إيداع من مسار EVM (ويمكنه استخدام مسار Cosmos بدلاً من ذلك).
+* **السحوبات:** توقيع secp256k1 قياسي / EIP-155، **لكن فقط من حساب لديه مفتاح ML-DSA-87 مسجَّل ونافذة تفويض EVM مفتوحة** (منذ v3.2.0؛ انظر [نافذة تفويض EVM](/developer-guide/evm-development#evm-window) والشرح التفصيلي في [معاملتك الأولى](/getting-started/first-transaction#evm-window)). تُرفض أي معاملة خارج النافذة (النطاق `pqc`، الرموز 26 أو 27 أو 28). يجب فتح النافذة بمعاملة في مسار Cosmos موقّعة توقيعاً هجيناً، لذا لا يُلغي المسار ب الحاجة إلى التوقيع ما بعد الكمّي؛ حدّد `max-value` بحيث يغطي القيمة بالإضافة إلى الرسوم القصوى (حد الغاز × الحد الأقصى للرسوم لكل وحدة غاز) لكل سحب تتوقعه داخل النافذة، وراقب `GET /qorechain/pqc/v1/evm_window/{address}` كي لا تنفد النافذة من المحفظة الساخنة في منتصف الدفعة. يؤدي فتح النافذة إلى زيادة رقم تسلسل الحساب، وهو أيضاً nonce الخاص بـ EVM، لذا اقرأ الـ nonce بعد فتح النافذة.
 * **مكافحة الإيداعات المزيفة:** تحقق من حالة الإيصال، ومن أن القيمة المنقولة هي تحويل **أصلي** (وليست حدث ERC-20 لا تُفهرسه)، وأكّد ذلك مقابل عقدتك الخاصة.
 * **مطابقة العناوين:** عنوان `0x` وعنوان `qor1` هما ترميزان للحساب نفسه — والأموال مشتركة. انظر [تطوير EVM](/developer-guide/evm-development).
 
 ## المسار ج — SVM (متوافق مع Solana) {#path-c-svm}
 
 :::caution مسار SVM معطَّل حاليًا
-مسار تنفيذ SVM **معطَّل حاليًا على مستوى الشبكة بأكملها بالنسبة لإرسال المعاملات** اعتبارًا من إصدار السلسلة v3.1.89 (22 أغسطس) — أي معاملة تُرسَل إليه تُعيد `code 11, "SVM module is disabled"`. **لا** تُنشئ مسار إيداع/سحب على المسار ج إلى أن يُعاد فتح هذا المسار. استخدم **المسار أ (Cosmos)** أو **المسار ب (EVM)** بدلاً من ذلك. قد تظل نقاط نهاية القراءة (مثل `getBalance`) تستجيب، لكن لا تبنِ اكتشاف الإيداعات أو تدفقات السحب مقابل SVM أثناء تعطيل إرسال المعاملات.
+مسار تنفيذ SVM **معطَّل حاليًا على مستوى الشبكة بأكملها بالنسبة لإرسال المعاملات** اعتبارًا من إصدار السلسلة v3.1.89 (22 أغسطس) — أي معاملة تُرسَل إليه تُعيد `code 11, "SVM module is disabled"`. **لا** تُنشئ مسار إيداع/سحب على المسار ج إلى أن يُعاد فتح هذا المسار — هذا تعطيل عند وقت الترجمة وليس معاملاً وقت التشغيل، لذا لا يمكن إعادة تشغيله بتصويت حوكمة؛ ويُتوقع أن يبقى معطَّلاً إلى أن يجيزه تدقيق خارجي. استخدم **المسار أ (Cosmos)** أو **المسار ب (EVM)** بدلاً من ذلك. قد تظل نقاط نهاية القراءة (مثل `getBalance`) تستجيب، لكن لا تبنِ اكتشاف الإيداعات أو تدفقات السحب مقابل SVM أثناء تعطيل إرسال المعاملات.
 :::
 
 اعتبارًا من الإصدار v3.1.82 تخدم واجهة SVM عملة **QOR الأصلية** (انظر [QOR الأصلي على واجهة SVM](/developer-guide/svm-development#native-qor)):
@@ -166,7 +170,7 @@ const { txHash } = await bridge.sendTokens({
 | العملية | المسار | هل يلزم التوقيع؟ |
 |---|---|---|
 | **الإيداع** (المستخدم ← المنصة) | راقب عقدتك المتزامنة بحثًا عن تحويلات إلى عنوانك (+ الـ memo على Cosmos) | لا — مراقبة فقط |
-| **السحب** (المنصة ← المستخدم) | ابنِ التحويل، وقّع دون اتصال، ثم ابثّ المعاملة | Cosmos: توقيع PQC هجين · EVM: secp256k1 قياسي |
+| **السحب** (المنصة ← المستخدم) | ابنِ التحويل، وقّع دون اتصال، ثم ابثّ المعاملة | Cosmos: توقيع PQC هجين · EVM: secp256k1 قياسي داخل نافذة مفوَّضة بـ PQC |
 | **الرصيد / التجميع** | استعلام رصيد عبر REST / EVM / SVM + تحويل | التوقيع مطلوب لعملية التجميع فقط |
 
 ## مواضيع ذات صلة

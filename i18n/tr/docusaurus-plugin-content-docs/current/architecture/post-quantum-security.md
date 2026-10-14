@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain, **kuantum sonrası kriptografi (post-quantum cryptography, PQC) ile genesis'te** inşa edilmiştir — sonradan bir yükseltme olarak eklenmemiştir. `x/pqc` modülü, uzun vadeli dayanıklılık için yönetişim kontrollü bir algoritma çevikliği çerçevesiyle birlikte birincil kriptografik ilkeller olarak kafes tabanlı dijital imzalar ve anahtar kapsülleme sağlar.
 
-Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Mevcut zincir sürümü itibarıyla (**v3.1.82**), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır.
+Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır.
 
 ## Tasarım İlkeleri
 
@@ -49,9 +49,9 @@ Tüm imzalama ve doğrulama işlemleri deterministiktir ve her doğrulayıcı d�
 
 Bu aynı ilkeller — ML-DSA (FIPS-204), ML-KEM (FIPS-203) ve SHAKE-256 (FIPS-202) — altı dilde (JavaScript/TypeScript, Rust, Go, C, Python, Java) tek tutarlı, bayt uyumlu bir API sağlayan açık kaynaklı [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc) kütüphanesi aracılığıyla cüzdanlar ve entegrasyon yapanlar için kullanılabilir. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) sayfasına bakın.
 
-## Anahtar Kaydı
+## Anahtar Kaydı {#key-registration}
 
-Hesaplar, PQC anahtarlarını `MsgRegisterPQCKey` (eski, varsayılan olarak Dilithium-5) veya `MsgRegisterPQCKeyV2` (algoritmaya duyarlı) aracılığıyla kaydeder. Her mesaj şunları içerir:
+Hesaplar, PQC anahtarlarını `MsgRegisterPQCKey` (eski, varsayılan olarak Dilithium-5) veya `MsgRegisterPQCKeyV2` (algoritmaya duyarlı) aracılığıyla açıkça kaydeder; zincir hiçbir zaman kendi başına bir anahtar kaydetmez ve CLI akışı `qorechaind tx pqc gen-key <name>` ve ardından `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>` şeklindedir (bkz. [İlk İşlem](/getting-started/first-transaction#register-pqc-key)). Her mesaj şunları içerir:
 
 * **Sender**: Anahtarı kaydeden hesap adresi.
 * **PublicKey**: PQC genel anahtar baytları.
@@ -61,40 +61,59 @@ Hesaplar, PQC anahtarlarını `MsgRegisterPQCKey` (eski, varsayılan olarak Dili
 | Anahtar Türü     | Açıklama                                                                 |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Hem klasik (ECDSA) hem de PQC anahtarları. İşlemler çift imza taşır.     |
-| `pqc_only`       | Yalnızca PQC anahtarı. Klasik imza gerekli değildir.                     |
+| `pqc_only`       | `hybrid` gibi kaydedilir: klasik secp256k1 imzası yine standart imza kontrolleriyle doğrulanır ve PQC imzası da ayrıca gereklidir. |
 | `classical_only` | Yalnızca klasik anahtar. PQC koruması yok (önerilmez).                   |
 
 ## Hibrit İmzalar
 
 Hibrit imza sistemi, cosmos yolu işlemlerinin aynı anda **hem** bir klasik imza **hem de** bir PQC imzası taşımasını gerektirir. Bu, derinlemesine savunma sağlar: bir şema kırılsa bile diğeri işlemi korur.
 
-`hybrid_signature_mode = required` ağ varsayılanıyla, her cosmos yolu işlemi secp256k1 imzasının yanında Dilithium-5 uzantısını içermelidir. Tek istisnalar (önyükleme için) **genesis gentx'leri (yükseklik 0)** ve hesapların ilk PQC anahtarlarını kaydedebilmesi için yalnızca klasik olmalarına izin verilen **PQC anahtar kaydı/geçiş işlemleridir** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`).
+`hybrid_signature_mode = required` ağ varsayılanıyla, her cosmos yolu işlemi secp256k1 imzasının yanında Dilithium-5 uzantısını içermelidir. Tek istisnalar (önyükleme için) **genesis gentx'leri (yükseklik 0)** ve hesapların ilk PQC anahtarlarını kaydedebilmesi için yalnızca klasik olmalarına izin verilen **PQC anahtar kaydı/geçiş işlemleridir** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`); bunlara ek olarak kayıtlı anahtarı olmayan bir operatör hesabından yapılan unjail işlemi de istisnadır.
 
-**EVM işlemleri etkilenmez.** EVM işlemleri ayrı bir `eth_secp256k1` ante yolunda (QoreChain EVM Motoru yolu) kimlik doğrulaması yapılır ve asla hibrit PQC uzantısı gerektirmez. Hibrit gereksinimi yalnızca cosmos işlem yoluna uygulanır.
+**EVM yolu bunun yerine bir yetkilendirme penceresiyle korunur.** Bir EVM işlemi ikinci bir (ML-DSA) imza taşıyamaz — standart cüzdanlar bir Ethereum işlemi üzerinde tek bir secp256k1 imzası atar ve bir başkasını eklemenin yolunu sunmaz. Bu yüzden kuantum sonrası yetkilendirme işlemin *önünde* ilerler: hesap, sıradan hibrit imzayı taşıyan bir Cosmos yolu mesajıyla (`MsgOpenEVMWindow`) sınırlı bir **EVM yetkilendirme penceresi** açar ve EVM yolu daha sonra yalnızca canlı bir pencerenin kapsadığı işlemleri kabul eder. v3.2.0'dan itibaren bir EVM işlemi, göndericisinin (1) kayıtlı bir kuantum sonrası anahtarı ve (2) blok, işlem ve değer hakkı kalan canlı bir penceresi yoksa reddedilir. Bir pencere içinde sıradan bir MetaMask/ethers/Hardhat işlemi değiştirilmeden çalışır, çünkü kontrol işlemi değil zincir durumunu okur. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 
 ### Eş İmzalama Akışı
 
-Uyumlu bir cosmos işlemi üretmek için, klasik secp256k1 imzası standart imza baytları üzerinden hesaplanır (bunlar PQC uzantısını hariç tutar) ve bir Dilithium-5 imzası hesaplanarak `PQCHybridSignature` uzantısı olarak eklenir. Standart CosmJS / aktarıcı araçları, cosmos yolunda işlem yapmak için bu uzantıyı üretmelidir. Bugün bu şu şekilde yapılır:
+Uyumlu bir cosmos işlemi üretmek için, klasik secp256k1 imzası standart imza baytları üzerinden hesaplanır (bunlar PQC uzantısını hariç tutar) ve bir Dilithium-5 imzası v2 imzalı baytlar üzerinden hesaplanarak (aşağıdaki [İmzalanan baytlar (v2)](#sign-bytes-v2) bölümüne bakın) `PQCHybridSignature` uzantısı olarak eklenir. Standart CosmJS / aktarıcı araçları, cosmos yolunda işlem yapmak için bu uzantıyı üretmelidir. Bugün bu şu şekilde yapılır:
 
-* `qorechaind tx pqc gen-key` — bir Dilithium-5 anahtarı üret.
-* `qorechaind tx pqc cosign` — bir işleme Dilithium-5 eş imzasını ekle.
-* QoreChain SDK'sının hibrit imzalaması — `includePqcPublicKey` ile `buildHybridTx` (ilk kullanımda otomatik kayıt için PQC genel anahtarını gömer).
+* `qorechaind tx pqc gen-key <name>` — bir Dilithium-5 anahtarı üret.
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — `--generate-only` ile oluşturulmuş bir işleme Dilithium-5 eş imzasını ekle.
+* QoreChain SDK'sının hibrit imzalaması — `buildHybridTx`. Hesabın anahtarı daha önce `MsgRegisterPQCKey` ile kaydedilmiş olmalıdır.
+* Her ikisini de sizin için yapan [QoreX](/qorex/overview).
 
 *secp256k1 (ECDSA) artı ML-DSA-87 (Dilithium-5) ile imzalanmış, zincir genelinde uygulama modu altında ante işleyici tarafından doğrulanan bir işlem.*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### İmzalanan baytlar (v2) {#sign-bytes-v2}
+
+ML-DSA imzası, alan etiketli ve zincire bağlı baytları kapsar. v3.2.0'dan itibaren zincir **yalnızca** bu biçimi doğrular:
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+Burada `B0`, PQC uzantısı **olmadan** serileştirilmiş işlem gövdesidir ve `authInfo` AuthInfo baytlarının olduğu gibi kendisidir (`‖` birleştirmedir, uzunluklar big-endian'dır). Alan etiketi, başka bir bağlamda (bir oturum açma sınaması, bir mesaj imzalama isteği) atılmış bir imzanın işlem imzası olarak geçerli olmasını engeller; zincir kimliğini bağlamak ise kuantum sonrası imzanın kendisini başka herhangi bir ağda geçersiz kılar. İlk biçim (`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`) yalnızca yükseltme yüksekliğinin altında doğrulanıyordu; hiçbir blok ikisini birden kabul etmez. Anahtar geçişi ve köprü kanıtlama yükleri de aynı alan etiketli, zincire bağlı şemaya taşındı.
+
+**Ağım hangi biçimi doğruluyor?** Düğüme yükseltmenin uygulanıp uygulanmadığını sorun:
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+(`"height":"0"` uygulanmadığı anlamına gelir.) CLI bunu `--sign-bytes auto` ile yapar; SDK 0.8.x ve wallet-adapter 0.2.x de aynısını yapar ve ayrıca testnet'in bu değişikliğin önceki önizlemesini de tanır. Yanlış biçimdeki bir istemci zincirin reddettiği bir özet üretir — güvenli biçimde başarısız olur (fails closed).
 
 ### TX Uzantı Formatı
 
@@ -108,7 +127,7 @@ PQC imzaları, işlemlere `/qorechain.pqc.v1.PQCHybridSignature` tür URL'sine s
 }
 ```
 
-`pqc_public_key` alanı isteğe bağlıdır. Mevcutsa ve hesabın kayıtlı bir PQC anahtarı yoksa, ante işleyici anahtarı ilk kullanımda **otomatik kaydeder**.
+`pqc_public_key` alanı isteğe bağlıdır ve bilgilendirme amaçlıdır; anahtarlar yalnızca açık bir kayıt mesajıyla kaydedilir (bkz. [Anahtar Kaydı](#key-registration)).
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ PQC imzaları, işlemlere `/qorechain.pqc.v1.PQCHybridSignature` tür URL'sine s
 | Senaryo  | Hesabın PQC Anahtarı Var | Uzantı Mevcut | Uzantıda Genel Anahtar | Sonuç                                                |
 | -------- | ------------------------ | ------------- | ---------------------- | --------------------------------------------------- |
 | Yol 1    | Evet                     | Evet          | --                     | PQC imzasını kayıtlı anahtara karşı doğrula          |
-| Yol 2    | Hayır                    | Evet          | Evet                   | Anahtarı otomatik kaydet, imzayı doğrula             |
 | Yol 3a   | Hayır                    | Hayır         | --                     | **Optional modu**: Yalnızca klasik işleme izin ver  |
 | Yol 3b   | Hayır                    | Hayır         | --                     | **Required modu**: İşlemi reddet                     |
 | Yol 4    | Evet                     | Hayır         | --                     | Standart PQCVerifyDecorator tarafından işlenir       |
+
+Hesap hibrit imzalı işlemler göndermeden önce bir anahtar `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` ile kaydedilmelidir; uzantının `pqc_public_key` alanı hiçbir şey kaydetmez.
 
 ### Hibrit İmza Modları
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### Çift İmza Geçişi
 
-Bir algoritma kullanımdan kaldırıldığında, bir **geçiş süresi** başlar (varsayılan: 1,000,000 blok, 6s/blokta yaklaşık 69 gün). Bu süre boyunca:
+Bir algoritma kullanımdan kaldırıldığında, bir **geçiş süresi** başlar (varsayılan: 1,000,000 blok — mainnet'in mevcut ≈3.2 s blok süresinde yaklaşık 37 gün). Bu süre boyunca:
 
 1. Kullanımdan kaldırılan algoritmayı kullanan anahtarlara sahip hesaplar, yedeğe geçmelidir.
 2. Geçiş, çift imza gerektirir (`MsgMigratePQCKey`): biri eski anahtardan, biri yeni anahtardan, her ikisinin de sahipliğini kanıtlar.
 3. Geçiş süresi boyunca her iki algoritma da doğrulama için kabul edilir.
 
-### Yönetişim Mesajları
+### Mesajlar
 
 | Mesaj                   | Açıklama                                                                                                                                                          |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | Kayıt defterine yeni bir PQC algoritması eklemeyi önerir. Tam `AlgorithmInfo` (ad, kategori, NIST düzeyi, anahtar boyutları) içerir. Yönetişim aracılığıyla gönderilmelidir. |
-| `MsgDeprecateAlgorithm` | Bir algoritma için kullanımdan kaldırma sürecini başlatır. Yedek algoritmayı ve blok cinsinden geçiş süresini belirtir.                                          |
-| `MsgDisableAlgorithm`   | Bir algoritmayı hemen acil olarak devre dışı bırakır. Bir gerekçe dizesi gerektirir. Bir kriptografik güvenlik açığı keşfedildiğinde kullanılır.                  |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Bir hesabın PQC anahtarını kaydeder (bkz. [Anahtar Kaydı](#key-registration)). Yeni bir hesabın önyükleme yapabilmesi için klasik olarak imzalanabilir. |
+| `MsgMigratePQCKey`      | Bir geçiş süresi boyunca bir algoritmanın anahtarından diğerine çift imzalı geçiş.                                                                                |
+| `MsgRotatePQCKey`       | Hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarca çift imzalı; `tx pqc rotate-key`).                                         |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM yetkilendirme penceresini açar veya kapatır (v3.2.0); bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).                  |
+| `MsgDeprecateAlgorithm` | Yönetişim mesajı: bir algoritma için kullanımdan kaldırma sürecini başlatır. Yedek algoritmayı ve blok cinsinden geçiş süresini belirtir.                         |
+| `MsgDisableAlgorithm`   | Yönetişim mesajı: bir algoritmayı hemen acil olarak devre dışı bırakır. Bir gerekçe dizesi gerektirir. Bir kriptografik güvenlik açığı keşfedildiğinde kullanılır. |
+
+`MsgDeprecateAlgorithm` ve `MsgDisableAlgorithm` şu anda mainnet'te devre kesici (circuit breaker) tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)).
 
 ### Genişletilebilirlik
 
-Yeni bir algoritma eklemek şunları gerektirir:
-
-1. Algoritmayı, birleşik imzalama ve doğrulama arayüzü arkasındaki kriptografik arka uçta uygulamak.
-2. Algoritma meta verisiyle bir `MsgAddAlgorithm` yönetişim önerisi göndermek.
-3. Onaylandığında, algoritma anahtar kaydı ve doğrulama için kullanılabilir hale gelir.
+Bir algoritma eklemek, onu birleşik imzalama ve doğrulama arayüzünün arkasında uygulayan bir yazılım sürümü gerektirir; kayıt defteri ile kullanımdan kaldırma/devre dışı bırakma yaşam döngüsü yönetişim kontrollüdür.
 
 ## SHAKE-256 Hash
 

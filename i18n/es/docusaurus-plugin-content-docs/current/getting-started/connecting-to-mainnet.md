@@ -10,7 +10,7 @@ sidebar_position: 3
 Únete a la mainnet activa de QoreChain Vladi configurando tu nodo con el archivo genesis oficial, los peers y los ajustes de red.
 
 :::note
-Esta página cubre la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), activa desde el **7 de junio de 2026 23:59 UTC** y ejecutando la versión de cadena **v3.1.97** sobre Cosmos SDK v0.53. Para la testnet **`qorechain-diana`** (chain ID EVM **9800**), consulta [Conexión a la Testnet](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de pasar a producción.
+Esta página cubre la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), activa desde el **29 de junio de 2026** (bloque genesis a las 17:03 UTC) y ejecutando la versión **v3.2.1** sobre Cosmos SDK v0.53. Para la testnet **`qorechain-diana`** (chain ID EVM **9800**), consulta [Conexión a la Testnet](/getting-started/connecting-to-testnet) y ensaya allí tu configuración antes de pasar a producción.
 :::
 
 ## Endpoints públicos
@@ -54,11 +54,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 El paquete contiene `qorechaind` junto con sus bibliotecas compartidas necesarias (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Mantén tu nodo actualizado — se requiere v3.1.94 o superior para una sincronización nueva
-Los nodos completos deben seguir la versión de cadena activa en la red: instala siempre el binario que indica el manifiesto, no fijes uno antiguo. El piso para un nodo que se une desde cero (desde el genesis) o que se recupera de una interrupción es **v3.1.94 o superior**, por dos razones independientes y acumulativas: v3.1.92 corrigió un error de medición de gas que, de lo contrario, detiene la reproducción en el primer bloque que contiene una transacción, y la mainnet ya ha superado la actualización de gobernanza v3.1.94 (un tope máximo de emisión, aplicado en la altura 2.122.074); un nodo sin el handler de esa actualización vuelve a detenerse al intentar reproducir esa misma altura. v3.1.97 es la versión recomendada actualmente (una actualización de seguridad continua; `minCompatible` es `3.1.94`). Compara siempre el campo `"version"` del manifiesto con el piso actual antes de confiar en `binary.url`: el manifiesto se promueve de forma deliberada (primero en testnet, en mainnet después de un período de estabilización) y en el pasado ha quedado por detrás del piso de versión.
+:::caution Mantén tu nodo actualizado — se requiere v3.2.0 o superior
+Los nodos completos deben seguir la versión activa de la red: instala siempre el binario que indica el manifiesto, no fijes uno antiguo. El manifiesto actual es **v3.2.1** con `minCompatible` **3.2.0**. La mainnet ha aplicado dos actualizaciones de gobernanza que todo nodo debe procesar: **v3.1.94** en la altura 2.122.074 (el tope de emisión) y **v3.2.0** en la altura 2.981.742 (la ventana de autorización EVM y los bytes de firma híbrida v2). Por tanto, un nodo que se une desde cero necesita un binario v3.2.x; prefiere el state sync (más abajo) a reproducir desde el genesis. El snapshot de datos de la cadena publicado es anterior a ambas alturas de actualización, así que un nodo restaurado a partir de él debe reproducirlas con un binario v3.2.x.
+
+v3.2.1 es una versión local del nodo (sin altura de actualización ni votación de gobernanza): los nodos con v3.2.0 siguen la cadena, pero se recomienda actualizar. Tras cambiar a v3.2.1 establece `evm-chain-id = 9801` en `app.toml` (un valor distinto se registra como error) y mantén el reloj del sistema sincronizado por NTP: un nodo se detiene si su reloj se desvía más de 60 segundos. Comprueba siempre los campos `"version"` y `"minCompatible"` del manifiesto antes de confiar en `binary.url`: el manifiesto se promueve de forma deliberada (primero en testnet, en mainnet después de un período de estabilización).
 :::
 
-### Compilar desde el código fuente
+:::caution Hay una actualización coordinada de la mainnet programada — léelo antes de iniciar o reiniciar un nodo
+La propuesta de gobernanza **7** de la mainnet (acelerada, votación hasta el 15 de octubre de 2026 21:24 UTC) aplicaría **v3.2.2** en la altura **3.556.788**, aproximadamente dos días después del 14 de octubre a unos 3,2 s por bloque. El texto de la propuesta dice: permanece en v3.2.1 (o v3.2.0) hasta esa altura; el nodo se detiene allí y lo reinicias con v3.2.2; la firma de transacciones no cambia. **Que ocurra o no depende de la votación**: comprueba el resultado (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, campo `status`) y los campos `version` y `upgradeHeight` del [manifiesto de mainnet](https://download.qore.host/mainnet/latest.json) antes de cambiar cualquier binario. No instales v3.2.2 antes de tiempo: un nodo que lo lleve antes de la altura también se detiene. Si la propuesta fracasa o la altura ya pasó, esta nota deja de aplicarse.
+:::
+
+### Compilar desde el código fuente (solo desarrollo)
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -66,7 +72,7 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Consulta [Compilación desde el código fuente](/developer-guide/building-from-source) para ver todos los requisitos previos (Go 1.26+, CGO, toolchain de Rust, bibliotecas nativas).
+Esto compila el binario de la comunidad con keepers stub y sin firmante poscuántico, que no puede reproducir el estado de consenso de las redes ni crear transacciones con firma híbrida. Para ejecutar un nodo en mainnet, instala el binario de la versión indicado arriba. Consulta [Compilación desde el código fuente](/developer-guide/building-from-source) para ver todos los requisitos previos (Go 1.26+, CGO, bibliotecas nativas).
 
 ### Inicializar el nodo
 
@@ -124,18 +130,12 @@ minimum-gas-prices = "0.1uqor"
 
 ### Ajustes recomendados
 
-También puedes querer ajustar lo siguiente en `config.toml`:
+Un nodo completo no elige el tiempo de bloque: lo eligen los validadores (la mainnet produce actualmente un bloque cada 3,2 segundos aproximadamente). Deja los timeouts de consenso en sus valores por defecto, a menos que operes un validador y el grupo de validadores te haya dado valores. Un ajuste útil de mempool para un nodo RPC público, en `config.toml`:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
-
-Estos valores están ajustados para los tiempos de bloque y el throughput de la mainnet Vladi.
 
 ---
 
@@ -150,12 +150,14 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Luego establece la sección `[statesync]` de `config.toml` con esos valores; consulta [Ejecutar un nodo](/developer-guide/running-a-node) para ver el flujo completo, incluyendo un método manual basado en RPC como alternativa si necesitas derivar tú mismo un punto de confianza.
 
-También se publica un snapshot de los datos de la cadena en [download.qore.host](https://download.qore.host). Consulta el listado actual allí para obtener el nombre de archivo del snapshot más reciente y su checksum publicado; no fijes un nombre de archivo o una altura, ya que un nuevo snapshot sustituye al anterior de forma periódica:
+El manifiesto también incluye un snapshot de los datos de la cadena (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Lee los valores del manifiesto en lugar de fijar un nombre de archivo o una altura, ya que un nuevo snapshot sustituye al anterior. El snapshot es grande (decenas de gigabytes) y, tal como se publicó en octubre de 2026, se tomó en la altura 1.966.629 (21 de agosto de 2026), antes de las alturas de actualización v3.1.94 y v3.2.0, por lo que un nodo restaurado a partir de él reproduce ambas actualizaciones y debe ejecutar un binario v3.2.x; el state sync suele ser más rápido:
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
+SNAPSHOT_SHA256=$(jq -r .snapshot.sha256 latest.json)
+
+curl -fsSL "$SNAPSHOT_URL" -o snapshot.tar.gz
+echo "${SNAPSHOT_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
@@ -243,7 +245,7 @@ http://localhost:1317
 | `9090`  | gRPC      | API gRPC — acceso programático a la cadena                |
 | `8545`  | HTTP      | JSON-RPC EVM — RPC compatible con Ethereum (chain ID `9801`) |
 | `8546`  | WebSocket | WebSocket EVM — suscripciones a eventos EVM en tiempo real |
-| `8899`  | HTTP      | RPC SVM — RPC compatible con Solana                       |
+| `8899`  | HTTP      | RPC SVM — RPC compatible con Solana (solo lectura; el carril de transacciones SVM está deshabilitado) |
 | `26660` | HTTP      | Endpoint de métricas de Prometheus                        |
 
 ---
@@ -254,8 +256,9 @@ http://localhost:1317
 | --------------------- | --------------------------------------- |
 | Chain ID              | `qorechain-vladi`                       |
 | Chain ID EVM           | `9801` (hex `0x2649`)                   |
-| Versión de cadena     | v3.1.97                                 |
-| Activa desde          | 7 de junio de 2026 23:59 UTC            |
+| Versión de cadena     | v3.2.1 (reglas de consenso de v3.2.0)   |
+| Activa desde          | 29 de junio de 2026 17:03 UTC (bloque genesis) |
+| Tiempo de bloque      | unos 3,2 segundos (promedio medido)     |
 | Token                  | QOR (`uqor`, 10^6 micro-unidades = 1 QOR) |
 | Precio mínimo de gas  | `0.1uqor`                               |
 | Prefijo de cuenta     | `qor`                                   |

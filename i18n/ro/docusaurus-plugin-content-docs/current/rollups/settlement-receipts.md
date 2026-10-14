@@ -7,30 +7,31 @@ sidebar_position: 6
 
 # Bonuri de decontare rezistente cuantic
 
-Un **bon de decontare** este o dovadă portabilă și autonomă că un lot de
-decontare al unui rollup a fost ancorat în Main Chain sub o semnătură
-post-cuantică. El leagă un lot specific de ancora on-chain care a consemnat
-starea rollup-ului la acea înălțime și poate fi verificat **complet offline**
-— fără nod, fără încredere în calea de rețea a verificatorului.
+Un **bon de decontare** este o înregistrare portabilă care atestă că un lot de decontare al unui rollup a fost ancorat în Main Chain sub o semnătură post-cuantică. Acesta indică rollup-ul, lotul și ancora și poartă semnătura **ML-DSA-87** (Dilithium-5, FIPS-204) a ancorei, aceeași schemă pe care o folosește Main Chain.
 
-Semnătura ancorei este **ML-DSA-87** (Dilithium-5, FIPS-204), aceeași schemă
-post-cuantică pe care o folosește Main Chain, astfel încât un bon moștenește
-integritatea rezistentă cuantic a lanțului de bază.
+:::caution Fază incipientă: nu există încă ancore
+Bonurile depind de ancore, iar **niciun rollup și nicio ancoră nu există încă în niciuna dintre rețele**. Pe mainnet, RDK nu scrie încă ancore: loturile de decontare sunt înregistrate, dar pasul de ancorare este omis. Tratează această pagină ca pe o descriere a designului și a componentelor de bază, nu a unui serviciu pe care te poți baza astăzi.
+:::
 
-## Mesajul canonic al ancorei
+## Un bon este o afirmație, nu o dovadă {#a-receipt-is-a-claim}
 
-Verificarea validează o semnătură Dilithium-5 asupra unui mesaj canonic
-construit din câmpurile ancorei, concatenate exact în această ordine:
+Fiecare câmp dintr-un bon este furnizat de cel care ți-l înmânează. Verificarea semnăturii față de o cheie care ți-a fost dată arată că cineva care deține acea cheie a semnat acei octeți; nu arată că QoreChain a ancorat ceva. Un verificator are, așadar, nevoie de un client conectat la un nod QoreChain în care are încredere și reia citirea afirmației din starea lanțului: rollup-ul și layer-ul său, lotul și state root-ul său, ancora și cheia post-cuantică înregistrată a creatorului.
+
+## Ce semnează ancora {#what-the-anchor-signs}
+
+Semnătura ancorei este realizată cu cheia ML-DSA-87 înregistrată a **creatorului rollup-ului**. Pe mainnet astăzi, mesajul semnat este
 
 ```
 layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
 ```
 
-`anchorSignBytes(...)` produce acești octeți; verificatorul îi reconstruiește
-din bon și validează semnătura față de cheia ML-DSA-87 înregistrată a
-creatorului layer-ului.
+O versiune mai nouă a lanțului modifică mesajul semnat, așa că nu îl codifica fix în cod: citește octeții de semnare pentru rețeaua țintă. O ancoră este un obiect la nivel de layer: nu indică rollup-ul sau lotul, deci un verificator le leagă prin citiri din lanț (vezi [Arhitectura Multilayer](/architecture/multilayer-architecture#reading-anchors)).
 
-## Construire și verificare (TypeScript)
+## Citirea ancorelor {#reading-anchors}
+
+Ancorele pot fi citite prin REST și gRPC (`/qorechain/multilayer/v1/anchor/{layer_id}` pentru cea mai recentă ancoră și `/qorechain/multilayer/v1/anchors/{layer_id}` pentru istoric), iar cheia post-cuantică înregistrată a unui cont la `/qorechain/pqc/v1/account/{address}`. Loturile unui rollup se citesc cu `qorechaind query rdk batch [rollup-id]` (rutele REST RDK nu sunt servite astăzi pe mainnet).
+
+## Construire și verificare (TypeScript) {#build-and-verify}
 
 ```ts
 import {
@@ -39,70 +40,27 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-// Build a portable receipt for one batch.
-const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);
+// Build a receipt for one batch (throws if no anchor covers the batch yet).
+const receipt = await buildSettlementReceipt(rdk, "my-rollup", 7);
 
-// Persist it, ship it, hand it to a counterparty — it is self-contained JSON.
-
-// Verify fully offline. With no client, you must supply the creator's key.
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "<layer creator ML-DSA-87 public key>",
-});
-
-console.log(result.valid); // true when the signature and the batch↔anchor binding both hold
+// Verify it against chain state — pass a client; a receipt on its own proves nothing.
+const result = await verifySettlementReceipt(receipt, { client: rdk });
+console.log(result.valid);
 ```
 
-Dacă transmiteți un `client` în locul lui `creatorPublicKey` (sau alături de
-acesta), verificarea preia de pe lanț cheia ML-DSA-87 înregistrată a creatorului
-layer-ului (`getPqcAccount(address)`). Verificarea validează apoi două lucruri:
+Transmite un `client` la fiecare verificare. Folosește ultima versiune publicată a clientului tău RDK: API-ul bonurilor și verificările sale s-au schimbat între versiuni, iar clienții Python, Go, Rust și Java expun aceeași suprafață de construire/verificare (aceștia efectuează verificarea ML-DSA-87 prin biblioteca [`qorechain-pqc`](https://github.com/qorechain)).
 
-1. **semnătura Dilithium-5** asupra mesajului canonic al ancorei și
-2. **legătura lot ↔ ancoră prin state-root** — faptul că lotul pe care îl
-   dețineți este cel consemnat de ancoră.
+:::note Limitări actuale ale clientului
+Clienții RDK publicați caută cheia creatorului printr-o cale pe care lanțul activ nu o servește, așa că verificarea online nu se finalizează încă pe rețelele active. Până când o versiune de client rezolvă acest lucru, folosește un bon doar ca înregistrare de verificat prin comparație cu ancora pe care o citești de pe propriul nod.
+:::
 
-```ts
-// Online verification: fetch the creator's PQC key from the chain.
-const online = await verifySettlementReceipt(receipt, { client: rdk });
-```
-
-## Citirea ancorelor
-
-Bonurile sunt construite din interogarea on-chain **Anchor** a modulului
-`x/multilayer`, disponibilă atât prin gRPC, cât și prin REST începând cu
-versiunea de lanț **v3.1.80** (vezi
-[REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#multilayer-module)).
-Citirile:
-
-- `getAnchor(layerId)` — ancora pentru un layer.
-- `getLatestAnchor()` — cea mai recentă ancoră.
-- `getAnchors(layerId)` — istoricul ancorelor pentru un layer.
-- `getPqcAccount(address)` — un cont post-cuantic înregistrat (cheia sa
-  ML-DSA-87), folosit pentru verificarea semnăturii creatorului.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-# Build a receipt and print it.
-qorollup receipt my-roll 7
-
-# Build, then verify it inline.
-qorollup receipt my-roll 7 --verify
-
-# Build and write it to a file.
-qorollup receipt my-roll 7 --out receipt.json
+qorollup receipt my-rollup 7                 # build and print
+qorollup receipt my-rollup 7 --out receipt.json
 ```
 
-Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru CLI-ul
-complet de operator `qorollup`.
-
-## Alte limbaje
-
-Clienții Python, Go, Rust și Java (JVM) expun aceeași suprafață de
-construire/verificare. Aceștia efectuează verificarea ML-DSA-87 prin biblioteca
-[`qorechain-pqc`](https://github.com/qorechain), nu printr-o implementare
-JavaScript inclusă; instalați-o alături de clientul RDK pentru limbajul
-dumneavoastră.
+Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru CLI-ul complet de operator `qorollup`.

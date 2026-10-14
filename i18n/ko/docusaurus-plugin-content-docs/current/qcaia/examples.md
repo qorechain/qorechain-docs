@@ -21,7 +21,7 @@ sidebar_position: 4
 
 **QCAIA 답변:**
 
-> QoreChain의 브리지는 QoreChain과 다른 네트워크 간에 자산을 이동할 수 있게 해줍니다. QCB 전송과 IBC를 결합하여 크로스체인 연결성을 제공하며, IBC 지원은 먼저 테스트넷에서 출시됩니다. 전체 설계는 브리지 문서를 참조하세요.
+> QoreChain의 브리지는 QoreChain과 다른 네트워크 간에 자산을 이동하도록 설계되었으며, QCB 전송과 IBC를 결합합니다. 아직 라이브 상태가 아닙니다. 모든 체인 구성이 보류 중이며 어느 네트워크에서도 열린 IBC 채널이 없습니다. 전체 설계는 브리지 문서를 참조하세요.
 
 _자세히 알아보기: [Bridge Architecture](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _자세히 알아보기: [Bridge Architecture](/architecture/bridge-architecture
 
 **QCAIA 답변:**
 
-> PRISM은 QoreChain의 강화학습 최적화 계층입니다. 조건이 변화함에 따라 성능과 효율을 위해 네트워크를 지속적으로 튜닝합니다. PRISM 문서에서 심층 분석을 읽어볼 수 있습니다.
+> PRISM은 QoreChain의 강화학습 최적화 계층으로, 조건이 변화함에 따라 네트워크 파라미터를 튜닝하도록 설계되었습니다. 현재는 관찰 모드로 실행됩니다. 관찰 내용은 기록하지만 학습된 정책은 아직 로드되지 않았습니다. PRISM 문서에서 심층 분석을 읽어볼 수 있습니다.
 
 _자세히 알아보기: [PRISM Consensus Engine](/architecture/prism-consensus-engine)._
 

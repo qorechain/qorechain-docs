@@ -40,8 +40,7 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
 - **Account:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; tipi di account.
 - **Account unificati (0.6.0):** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`,
-  `unifiedAccountFromPhantomSignature`, `connectPhantomUnified`.
+  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature` e `connectPhantomUnified` sono state rimosse nella 0.8.0 e lanciano un errore.)
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, costanti di lunghezza,
   ID/helper degli algoritmi, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -50,7 +49,14 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   `buildUrl`, `joinUrl`, `QoreHttpError`); client di query tipizzati per ogni
   modulo, inclusi `amm`, `license`, `abstractaccount`
   (`permissionSchema`) e le query di state-anchor `Anchor`/`Anchors` del
-  modulo `multilayer`.
+  modulo `multilayer`. Sugli endpoint pubblici alcuni helper REST tipizzati
+  chiamano route che il gateway non serve: `getAiStats`, `getFeeEstimate`,
+  `getXqorePosition`, `getInflationRate`, `getReputation` e `getPqcAccount`
+  (che chiama un percorso `accounts` al plurale; la route servita è il
+  percorso singolare `/qorechain/pqc/v1/account/{address}`, raggiungibile con
+  `rest.get(...)`).
+  `getBurnStats`, `getAllBalances`, `getBridgeChains` e `getPermissionSchema`
+  funzionano.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
@@ -76,14 +82,31 @@ Gli export deliberati e supportati di `@qorechain/sdk`:
   ed25519) e `buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
   (`personal_sign` EIP-191); rotazione delle chiavi
   `rotatePqcKeyMsgFromMnemonic`, `derivePqcLegacy`. Vedi la
-  [guida agli Authenticator](/sdk/guides/authenticators).
+  [guida agli Authenticator](/sdk/guides/authenticators) (il modulo alla base
+  di queste corsie oggi è disattivato su entrambe le reti).
+- **Sign-bytes ibridi (0.8.0+):** l'opzione `signBytesVersion`
+  (`"auto" | "v1" | "v2"`) su `buildHybridTx`, `signAndBroadcastHybrid`,
+  `signHybridEth` e `EthNativeSigner`; `resolveSignBytesVersion`,
+  `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
+  `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
+- **Finestra di autorizzazione EVM (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
+  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
+  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. Vedi
+  [Finestra di autorizzazione EVM](/sdk/guides/evm#evm-window).
+- **Derivazione PQC canonica (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
+  `canonicalAccount(account)`; il messaggio di registrazione PQC è
+  `buildRegisterPqcKeyMsg` (usato da `ensurePqcRegistered`).
 
 ### `@qorechain/evm`
 
 `createEvmClient`, `evmAccountFromPrivateKey`, gli helper `erc20`, i wrapper
 per contratti (`deployContract`, `readContract`, `writeContract`), i binding
-`precompiles`, `PRECOMPILE_ADDRESSES` e le ABI (`ERC20_ABI`, `IQORE_PQC_ABI`,
-`IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`).
+`precompiles`, gli helper basati sui precompile `simulateWithRiskScore`,
+`aiRiskScore` e `aiAnomalyCheck`, `PRECOMPILE_ADDRESSES` e le ABI
+(`ERC20_ABI`, `IQORE_PQC_ABI`, `IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`). I
+binding e gli helper basati sui precompile non sono attivi sulle reti
+pubbliche (vedi
+[Precompile EVM](/developer-guide/evm-precompiles#network-status)).
 
 ### `@qorechain/svm`
 
@@ -97,10 +120,10 @@ program-id.
 
 | Linguaggio | Documentazione generata | Installazione |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.7.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (tag `packages/go/v0.7.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` — ultimo crate pubblicato (0.7.0 dal repo; import `qorechain`) |
-| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.7.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring sull'API pubblica | `pip install qorechain-sdk` alla `0.8.3` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (tag `packages/go/v0.8.4`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; import `qorechain`) |
+| Java | Javadoc su Maven Central | `io.github.qorechain:qorechain-sdk:0.8.3` |
 
 Ogni pacchetto rispecchia la stessa superficie (preset di rete, utility per
 denom/indirizzi, derivazione HD — inclusi gli account unificati eth-native —

@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain은 `x/multilayer` 모듈을 통해 **4계층 계층형 체인 아키텍처**를 구현합니다. 메인 체인은 정산 및 신뢰 루트 역할을 하며, 하위 레이어(사이드체인, 페이체인, 롤업)는 서로 다른 성능 및 보안 트레이드오프를 가지고 특화된 워크로드를 처리합니다.
 
+:::caution 초기 단계 기능
+이 모듈은 메인넷(체인 버전 **v3.2.1**)과 테스트넷에 배포되어 있지만, **두 네트워크 모두에 아직 레이어와 앵커가 존재하지 않습니다**. 아래 내용은 구현된 모듈을 설명하며, 매개변수는 실제 운영 값입니다.
+:::
+
 ---
 
 ## 시스템 개요
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ flowchart TD
 
 | 속성       | 값                                                                             |
 | ---------- | ------------------------------------------------------------------------------ |
-| 합의       | 전체 트리플 풀 CPoS ([합의 메커니즘](/architecture/consensus-mechanism) 참조)  |
+| 합의       | QoreChain 합의 (현재 연결된 내용은 [합의 메커니즘](/architecture/consensus-mechanism) 참조) |
 | 보안       | Dilithium-5 서명으로 PQC 보안 적용                                             |
 | 역할       | 정산 레이어, 상태 앵커 저장, QCAI 라우팅 엔진, 신뢰 루트                       |
-| 블록 시간  | \~5초                                                                          |
+| 블록 시간  | 네트워크에 따라 다름: 메인넷 약 3.2초, 테스트넷 약 1.0초 (2026년 10월 측정)     |
 
 모든 하위 레이어는 계층적 커밋먼트 스킴(HCS)을 통해 주기적으로 자신의 상태 루트를 메인 체인에 앵커링합니다.
 
@@ -89,14 +93,14 @@ flowchart TD
 
 ### 롤업
 
-롤업은 Rollup Development Kit(`x/rdk`)을 통해 배포되는 **애플리케이션 특화 체인**입니다. 멀티레이어 모듈 내에서 롤업 레이어 유형으로 등록됩니다.
+롤업은 Rollup Development Kit(`x/rdk`)을 통해 배포되는 **애플리케이션 특화 체인**입니다. 롤업이 생성되면 RDK는 멀티레이어 모듈에 해당 롤업을 위한 레이어를 등록합니다(아래에서 설명하듯 `sidechain` 유형의 레이어로 등록됩니다).
 
 | 매개변수               | 값                                          |
 | ---------------------- | ------------------------------------------- |
 | 정산 모드              | 4 (optimistic, zk, based, sovereign)        |
-| 최대 활성 롤업 수      | 100                                         |
-| 최소 생성자 스테이크   | 10,000 QOR                                  |
-| 레이어 유형            | `rollup`                                    |
+| 최대 등록 롤업 수      | 100 (`max_rollups`). 다만 동시에 존재할 수 있는 사이드체인 유형 레이어는 10개(`max_sidechains`)뿐이므로, 앵커링 가능한 레이어를 가질 수 있는 롤업은 최대 10개입니다 |
+| 최소 생성자 스테이크   | 롤업에 10,000 QOR, 그리고 레이어 등록 스테이크 1,000 QOR(`min_sidechain_stake`) |
+| 레이어 유형            | RDK를 통해 등록된 롤업은 `sidechain` 레이어 유형을 사용합니다(`rollup` 레이어 유형은 정의되어 있지만 `x/rdk`에서는 아직 사용되지 않습니다) |
 | 대상 도메인            | DeFi, Gaming, NFT, Enterprise               |
 
 롤업 배포 및 구성은 [Rollup Development Kit](/architecture/rollup-development-kit)에서 자세히 다룹니다.
@@ -162,7 +166,7 @@ Score = w_congestion * (1 - Congestion) + w_capability * Capability + w_cost * (
 
 1. **레이어 존재 및 활성 여부** — 키퍼는 레이어가 상태에 존재하며 현재 `active` 상태인지 확인합니다.
 2. **최소 앵커 간격 경과** — 키퍼는 이 레이어의 마지막 앵커 이후 최소 `min_anchor_interval` 블록(기본값: 100)이 경과했는지 확인합니다.
-3. **PQC 집계 서명** — 키퍼는 PQC 집계 서명이 존재하며 앵커 데이터에 대해 유효한지 확인합니다.
+3. **PQC 집계 서명** — 키퍼는 PQC 집계 서명이 존재하며 앵커 데이터에 대해 유효한지 확인합니다. 서명은 **레이어 생성자**가 등록한 ML-DSA-87 키로 검증되며, 생성자에게 등록된 키가 없으면 앵커는 거부됩니다.
 
 ### 챌린지 기간
 
@@ -170,14 +174,14 @@ Score = w_congestion * (1 - Congestion) + w_capability * Capability + w_cost * (
 
 챌린지 기간이 성공적인 이의 제기 없이 만료되면 앵커는 최종 확정된 것으로 간주됩니다.
 
-### 앵커 읽기
+### 앵커 읽기 {#reading-anchors}
 
-체인 버전 **v3.1.80**부터 앵커는 멀티레이어 쿼리 서비스를 통해 **읽기**도 가능합니다. 두 가지 쿼리가 gRPC와 REST 모두에서 앵커 상태를 노출합니다:
+앵커는 멀티레이어 쿼리 서비스를 통해 **읽을 수** 있습니다. 두 가지 쿼리가 gRPC와 REST 모두에서 앵커 상태를 노출합니다:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — 레이어의 가장 최근 최종 확정된 상태 앵커를 반환합니다.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — 레이어의 가장 최근 상태 앵커를 반환합니다.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — 레이어의 앵커 이력을 반환합니다.
 
-각 앵커는 정규 메시지 `layer_id || layer_height || state_root || validator_set_hash`에 대한 Dilithium-5 서명을 포함하므로(레이어 생성자가 등록한 PQC 키로 검증), 클라이언트는 앵커를 가져와 서빙 노드를 신뢰하지 않고도 **오프라인**으로 검증할 수 있습니다. 이것은 Rollup Development Kit의 [양자 안전 정산 영수증](/rollups/settlement-receipts) 뒤에 있는 온체인 프리미티브입니다.
+각 앵커는 메시지 `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`에 대한 레이어 생성자의 Dilithium-5 서명을 포함합니다. 이후 체인 릴리스에서 서명 대상 메시지가 변경되므로 클라이언트는 이를 하드코딩해서는 안 됩니다. 서명은 등록된 생성자 키가 해당 바이트에 서명했음을 증명할 뿐이며, 앵커가 실제로 존재하는지는 체인에 물어야 할 문제이므로 검증자는 신뢰하는 노드에서 앵커를 읽어야 합니다. 현재 두 네트워크 어디에도 레이어나 앵커가 존재하지 않습니다. 이것은 Rollup Development Kit의 [정산 영수증](/rollups/settlement-receipts) 뒤에 있는 온체인 프리미티브입니다.
 
 ---
 

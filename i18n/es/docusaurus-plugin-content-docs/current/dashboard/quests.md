@@ -9,7 +9,7 @@ sidebar_position: 10
 
 Las **Misiones** son tareas guiadas que te enseñan a usar QoreChain a medida que las completas. Cada misión agrupa uno o más pasos —como financiar tu billetera, hacer una transferencia o probar un intercambio— y te recompensa por terminarla. Las misiones son una forma práctica de aprender la red característica por característica.
 
-Conecta tu billetera para que se registre tu progreso —consulta [Resumen y primeros pasos](/dashboard/overview#connect-your-wallet).
+Inicia sesión para que se registre tu progreso —consulta [Iniciar sesión](/dashboard/overview#sign-in). Algunas misiones también implican una billetera; consulta [Conectar tu billetera](/dashboard/overview#connect-your-wallet).
 
 ## Explorar misiones
 
@@ -36,5 +36,5 @@ Algunas misiones se reinician con una periodicidad diaria o semanal. Para esas, 
 
 ## Relacionado
 
-- [Resumen y primeros pasos](/dashboard/overview) — conecta tu billetera antes de empezar las misiones.
+- [Resumen y primeros pasos](/dashboard/overview) — inicia sesión y conecta tu billetera antes de empezar las misiones.
 - [Faucet](/dashboard/faucet) — financia una billetera de testnet para las misiones que implican transacciones.

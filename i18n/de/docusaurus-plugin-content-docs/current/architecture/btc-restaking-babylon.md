@@ -7,7 +7,11 @@ sidebar_position: 11
 
 # BTC-Restaking (Babylon)
 
-Das `x/babylon`-Modul integriert QoreChain mit dem Babylon-Protokoll, um die Proof-of-Work-Finalitätsgarantien von Bitcoin zu erben. Durch BTC-Restaking gewinnt QoreChain eine sekundäre Finalitätsschicht, die durch Bitcoins Hashrate gestützt wird — ohne dass Änderungen am Bitcoin-Protokoll selbst erforderlich sind.
+Das `x/babylon`-Modul ist dafür ausgelegt, QoreChain mit dem Babylon-Protokoll zu integrieren, um die Proof-of-Work-Finalitätsgarantien von Bitcoin zu erben. Durch BTC-Restaking würde QoreChain eine sekundäre Finalitätsschicht gewinnen, die durch Bitcoins Hashrate gestützt wird — ohne dass Änderungen am Bitcoin-Protokoll selbst erforderlich sind.
+
+:::caution Entwurfsphase
+Die Babylon-Integration ist spezifiziert, ihre Transaktionen sind jedoch **auf den Live-Netzwerken nicht aktiviert**: Das Modul ist in der Genesis-Konfiguration deaktiviert (`enabled = false`), besitzt keinen Transaktionsdienst, keinen Abfragedienst, keine CLI und keine REST-Routen, und auf keinem der beiden Netzwerke ist ein IBC-Kanal (auch nicht zu Babylon) geöffnet. Alles Folgende beschreibt das beabsichtigte Design; die Message-Namen, REST-Pfade und CLI-Befehle sind heute nicht verfügbar.
+:::
 
 ## Überblick
 
@@ -21,13 +25,13 @@ Dies bietet einen Schutz gegen Long-Range-Angriffe und Equivocation, der in Bitc
 
 ## BTC-Staking-Positionen
 
-Nutzer können BTC-Staking-Positionen auf QoreChain registrieren, indem sie eine `MsgBTCRestake`-Transaktion einreichen, die auf eine Bitcoin-Staking-Transaktion verweist.
+Nutzer würden BTC-Staking-Positionen auf QoreChain registrieren, indem sie eine `MsgBTCRestake`-Transaktion einreichen, die auf eine Bitcoin-Staking-Transaktion verweist.
 
 ### Registrierungsanforderungen
 
 | Parameter               | Wert                          | Beschreibung                                       |
 | ----------------------- | ----------------------------- | ------------------------------------------------- |
-| **Mindest-Stake**       | 100.000 Satoshis (0,001 BTC)  | Minimal erforderliche BTC pro Staking-Position    |
+| **Mindest-Stake**       | 100,000 Satoshis (0.001 BTC)  | Minimal erforderliche BTC pro Staking-Position    |
 | **Unbonding-Periode**   | 144 BTC-Blöcke (\~1 Tag)      | Wartezeit, bevor gestaketes BTC abgehoben werden kann |
 | **Checkpoint-Intervall**| Alle 10 QoreChain-Epochen     | Wie oft der Zustand zu Babylon gecheckpointed wird |
 
@@ -91,7 +95,7 @@ Die Babylon-Integration bietet eine **sekundäre Finalitätsgarantie**, die Qore
 
 | Finalitätsschicht | Quelle                     | Geschwindigkeit | Sicherheit                              |
 | ----------------- | -------------------------- | --------------- | --------------------------------------- |
-| **Primär**        | QoreChain Consensus Engine | \~5 Sekunden    | Gestützt durch QOR-Stake + PQC-Signaturen |
+| **Primär**        | QoreChain Consensus Engine | \~3 Sekunden    | Gestützt durch QOR-Stake + PQC-Signaturen |
 | **Sekundär**      | Babylon + Bitcoin          | \~60 Minuten    | Gestützt durch Bitcoins kumulative Hashrate |
 
 Die sekundäre Schicht ist besonders wertvoll für:
@@ -105,7 +109,7 @@ Die sekundäre Schicht ist besonders wertvoll für:
 | Parameter             | Standard         | Beschreibung                               |
 | --------------------- | ---------------- | ------------------------------------------ |
 | `enabled`             | `false`          | Hauptschalter für BTC-Restaking-Funktionen |
-| `min_stake_amount`    | 100.000 Satoshis | Minimale BTC pro Staking-Position          |
+| `min_stake_amount`    | 100,000 Satoshis | Minimale BTC pro Staking-Position          |
 | `unbonding_period`    | 144 BTC-Blöcke   | BTC-denominierte Unbonding-Dauer           |
 | `checkpoint_interval` | 10 Epochen       | Epochen zwischen Babylon-Checkpoints       |
 | `babylon_chain_id`    | `bbn-1`          | Chain-ID des verbundenen Babylon-Netzwerks |
@@ -121,7 +125,9 @@ Das Modul gibt die folgenden On-Chain-Ereignisse aus:
 | `btc_checkpoint`         | epoch, checkpoint\_id                    | Epoch-Checkpoint an Babylon eingereicht        |
 | `babylon_epoch_complete` | epoch                                    | Babylon-Epoche mit Bitcoin-Zeitstempel finalisiert |
 
-## API-Endpunkte
+## API-Endpunkte (geplant)
+
+Keiner der Endpunkte oder Befehle in diesem Abschnitt wird heute auf den Live-Netzwerken bereitgestellt oder ist dort verfügbar.
 
 ### REST
 
@@ -133,11 +139,13 @@ Das Modul gibt die folgenden On-Chain-Ereignisse aus:
 
 ### JSON-RPC
 
+> **Noch nicht bereitgestellt:** Kein veröffentlichter Node-Build stellt den JSON-RPC-Namespace `qor_` bereit, daher liefert dieser Aufruf heute auf jedem öffentlichen Endpunkt `-32601` (Methode nicht gefunden) zurück. Siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace).
+
 | Methode                     | Parameter          | Beschreibung                                                    |
 | --------------------------- | ------------------ | -------------------------------------------------------------- |
 | `qor_getBTCStakingPosition` | `address` (string) | Gibt die BTC-Staking-Position für die angegebene QoreChain-Adresse zurück |
 
-## CLI-Befehle
+## CLI-Befehle (geplant)
 
 ### Abfragebefehle
 

@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.1.97** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (mainnet) kullanır. Test ağı (testnet) için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 29 Haziran 2026'dan bu yana canlı olan ve **v3.2.1** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.2 çalıştıran test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
 :::
 
 ---
 
 :::caution SVM işlem gönderimi şu anda devre dışı
-v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın — bu bir çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, bu nedenle bir yönetişim (governance) oylamasıyla tekrar açılamaz; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
+v3.1.89 zincir sürümünden itibaren (22 Ağustos), bir olayın ardından SVM yürütme hattı hem `qorechain-vladi` hem de `qorechain-diana` üzerinde **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — `x/svm`'e gönderilen herhangi bir işlem (program dağıtımı, talimat yürütmesi, hesap oluşturma, transferler) `code 11, "SVM module is disabled"` hatası döndürür. Bu durum hem kendi düğümünüz hem de genel uç noktalar için geçerlidir. Okuma türü RPC metodları yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar canlı bir SVM entegrasyonu kurmayın veya provasını yapmayın — bu bir çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, bu nedenle bir yönetişim (governance) oylamasıyla tekrar açılamaz; harici bir denetim onaylayana kadar kapalı kalması beklenmektedir.
 :::
 
 ## Genel Bakış
@@ -100,12 +100,11 @@ Varsayılan değerler `enable = true` ve `address = "127.0.0.1:8899"` olduğunda
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   İşlem yanıtı, base58 biçimindeki **program kimliğini (program ID)** içerir.
+   Hattın etkin olduğu bir ağda her `tx svm` komutu bir Cosmos hattı işlemidir: `tx.json` dosyasını `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` ile imzalayıp yayınlayın ve açık bir gaz limiti belirleyin; ücret en az gaz × 0.1 uqor olmalıdır. İşlem yanıtı, base58 biçimindeki **program kimliğini (program ID)** içerir.
 
 2. **Bir Talimat Çalıştırın** — Zincir üzerindeki bir BPF programını talimat verisiyle çağırın:
 
@@ -113,8 +112,8 @@ Varsayılan değerler `enable = true` ve `address = "127.0.0.1:8899"` olduğunda
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parametre           | Biçim             | Açıklama                       |
@@ -128,8 +127,8 @@ Varsayılan değerler `enable = true` ve `address = "127.0.0.1:8899"` olduğunda
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parametre      | Açıklama                                                      |
@@ -242,20 +241,7 @@ Hesaplama bütçesini aşan programlar durdurulur ve işlem geri alınır.
 
 ## VM'ler Arası Birlikte Çalışabilirlik
 
-SVM programları, **asenkron** VM'ler arası mesaj yolu üzerinden EVM ve CosmWasm sözleşmeleriyle iletişim kurabilir:
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-Mesajlar kuyruğa alınır ve EndBlocker tarafından işlenir. Mesaj yaşam döngüsü ve zaman aşımı davranışıyla ilgili ayrıntılar için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
+SVM programları, `x/crossvm` modülünün `MsgCrossVMCall` mesajı aracılığıyla EVM ve CosmWasm sözleşmeleriyle iletişim kurmak üzere tasarlanmıştır (kaynak hattı zincir kendisi belirler). SVM hattı işlemler için devre dışı olduğundan ve `MsgCrossVMCall` ana ağda kapalı olduğundan, bugün çalışan bir SVM VM'ler arası yolu yoktur. Güncel durum, mesaj yaşam döngüsü ve zaman aşımı davranışı için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
 
 ---
 

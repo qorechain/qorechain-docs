@@ -16,6 +16,18 @@ ML-DSA co-signature**.
 This is the SDK counterpart of the chain's
 [account abstraction](/developer-guide/account-abstraction) module.
 
+:::danger Not available on the live networks
+The `x/abstractaccount` module is **disabled** on `qorechain-vladi` and
+`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returns
+`"enabled": false`). From chain v3.2.0 that flag is enforced on every path
+(creating an abstract account, linking an authenticator, and both `MsgExecuteEVM` /
+`MsgExecuteCosmos`), and the chain refuses them with `abstract account module is
+disabled` (code 9). No transaction can switch it on. Everything below describes the
+module's interfaces for reference: do not build a linked-key or delegated-spending
+flow on the live networks until the module is enabled, and check the flag before
+offering any such flow.
+:::
+
 ## The relayer model
 
 A **relayer** submits the transaction and pays the fees. The relayer's own
@@ -90,6 +102,17 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution A rule bounds a key only when one exists
+The chain resolves the limit in this order: the authenticator's own rule if it is
+set and `enabled`; otherwise the first `enabled` rule on the account; otherwise
+**none, and then there is no limit**. A rule stored with `enabled: false` is no
+limit, not a zero limit. `MsgRegisterAuthenticator` carries no rule, so a key linked
+by that message alone is bounded only by an account-level rule. Set a rule
+deliberately with `MsgUpdateSpendingRules`, and register only the permissions the
+key needs. A limit bounds the damage a linked key can do; it does not replace
+revoking the key.
+:::
+
 To disable a key instantly, the owner broadcasts
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
@@ -131,32 +154,47 @@ await fetch("/api/relay", {
 });
 ```
 
-**Server (the relayer):** signs the envelope with its **own** account (hybrid,
-as usual on the Native path) and pays the fees. The authenticator's signature
-inside the message is the authorization to spend from the owner's account.
+**Server (the relayer):** signs the envelope with its **own** account using the
+hybrid path (`signAndBroadcastHybrid`, passing `rest`) and pays the fees. The
+relayer's ML-DSA-87 key must be registered, like any account's. The
+authenticator's signature inside the message is the authorization to spend from the
+owner's account.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -328,8 +366,10 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed` most commonly means a **hedged** (non-deterministic)
-ML-DSA-87 signature — the chain accepts only deterministic signatures. It is
+`hybrid_verify_failed` means the ML-DSA-87 signature did not verify. It is not
+caused by hedged signing (the chain accepts hedged and deterministic ML-DSA-87
+signatures alike); see
+[Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21). It is
 also what you see if a pre-0.6.1 SDK JSON-encoded the hybrid extension
 (upgrade — see
 [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).

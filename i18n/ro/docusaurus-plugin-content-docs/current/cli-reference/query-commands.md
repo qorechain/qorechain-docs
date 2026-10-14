@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** (versiune de chain **v3.1.97**) pentru date live, sau un endpoint testnet **`qorechain-diana`** pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți.
+Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.1, iar testnet-ul v3.2.2; testnet-ul poate servi câteva rute suplimentare pe care mainnet-ul încă nu le are, așa că o interogare care funcționează acolo poate returna `Not Implemented` pe mainnet.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `query`:
@@ -25,409 +25,186 @@ Flag-urile comune se aplică fiecărei subcomenzi `query`:
 | `--output` | string | Format de ieșire: `json` sau `text`               |
 | `--height` | int    | Interoghează starea la o anumită înălțime de bloc |
 
+Nu orice modul are o interogare CLI. Acolo unde lipsește o comandă, folosește endpoint-ul REST (`https://api.qore.host/...`); consultă [REST API](/api-reference/rest-grpc-endpoints).
+
 ---
 
 ## bank
 
-### balances
-
-Interoghează toate soldurile pentru un cont.
-
 ```bash
 qorechaind query bank balances <address>
+qorechaind query bank total-supply
+qorechaind query bank total-supply-of uqor
+qorechaind query bank spendable-balances <address>
 ```
 
-### total
-
-Interoghează oferta totală a tuturor tokenurilor.
-
-```bash
-qorechaind query bank total
-```
+(Nu există `query bank total`.)
 
 ---
 
 ## staking
 
-### validator
-
-Interoghează un singur validator după adresa de operator.
-
 ```bash
 qorechaind query staking validator <validator_address>
-```
-
-### validators
-
-Listează toți validatorii.
-
-```bash
 qorechaind query staking validators
-```
-
-### delegation
-
-Interoghează o delegare de la un delegator către un validator.
-
-```bash
+qorechaind query staking validators --status BOND_STATUS_BONDED
 qorechaind query staking delegation <delegator_address> <validator_address>
-```
-
-### delegations
-
-Interoghează toate delegările unui delegator.
-
-```bash
 qorechaind query staking delegations <delegator_address>
-```
-
-### unbonding-delegation
-
-Interoghează o delegare aflată în proces de unbonding.
-
-```bash
+qorechaind query staking delegations-to <validator_address>
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
+qorechaind query staking unbonding-delegations <delegator_address>
+qorechaind query staking redelegation <delegator_address> <src_validator> <dst_validator>
+qorechaind query staking params
+qorechaind query staking pool
 ```
+
+`--status` primește numele complet al enum-ului: `BOND_STATUS_BONDED`, `BOND_STATUS_UNBONDING` sau `BOND_STATUS_UNBONDED` (`--status bonded` este respins).
 
 ---
 
 ## distribution
 
-### rewards
-
-Interoghează toate recompensele de delegare pentru un delegator.
-
 ```bash
 qorechaind query distribution rewards <delegator_address>
-```
-
-### commission
-
-Interoghează comisionul unui validator.
-
-```bash
 qorechaind query distribution commission <validator_address>
+qorechaind query distribution validator-outstanding-rewards <validator_address>
+qorechaind query distribution community-pool
+qorechaind query distribution params
 ```
 
 ---
 
 ## gov
 
-### proposal
-
-Interoghează o singură propunere după ID.
-
 ```bash
+qorechaind query gov proposals
+qorechaind query gov proposals --proposal-status voting-period
 qorechaind query gov proposal <proposal_id>
-```
-
-### proposals
-
-Listează toate propunerile, opțional filtrate după status.
-
-```bash
-qorechaind query gov proposals [flags]
-```
-
-| Flag       | Tip    | Descriere                                                                  |
-| ---------- | ------ | --------------------------------------------------------------------------- |
-| `--status` | string | Filtrează după status: `deposit_period`, `voting_period`, `passed`, `rejected` |
-
-### votes
-
-Interoghează voturile pentru o propunere.
-
-```bash
 qorechaind query gov votes <proposal_id>
+qorechaind query gov vote <proposal_id> <voter_address>
+qorechaind query gov tally <proposal_id>
+qorechaind query gov params
+```
+
+`--proposal-status` acceptă `deposit-period`, `voting-period`, `passed`, `rejected` sau `failed`. Alte filtre: `--voter`, `--depositor`.
+
+---
+
+## tx
+
+```bash
+qorechaind query tx <txhash>
+qorechaind query txs --query "message.sender='<address>'"
 ```
 
 ---
 
 ## pqc
 
-### account
-
-Interoghează statusul de înregistrare a cheii PQC pentru un cont.
-
 ```bash
 qorechaind query pqc account <address>
-```
-
-### algorithms
-
-Listează toți algoritmii PQC suportați.
-
-```bash
 qorechaind query pqc algorithms
-```
-
-### algorithm
-
-Interoghează detaliile unui algoritm PQC specific.
-
-```bash
-qorechaind query pqc algorithm <algorithm_name>
-```
-
-### stats
-
-Interoghează statisticile agregate de înregistrare PQC.
-
-```bash
+qorechaind query pqc algorithm dilithium5
 qorechaind query pqc stats
-```
-
-### params
-
-Interoghează parametrii modulului PQC.
-
-```bash
 qorechaind query pqc params
-```
-
-### migration
-
-Interoghează statusul migrării cheii PQC pentru un cont.
-
-```bash
-qorechaind query pqc migration <address>
-```
-
-### hybrid-mode
-
-Interoghează modul curent de aplicare a semnăturilor hibride.
-
-```bash
+qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
+qorechaind query pqc evm-window <address>
 ```
 
----
-
-## xqore
-
-### position
-
-Interoghează poziția de staking xQORE pentru o adresă.
-
-```bash
-qorechaind query xqore position <address>
-```
-
-### params
-
-Interoghează parametrii modulului xQORE.
-
-```bash
-qorechaind query xqore params
-```
+- `algorithm` primește un nume de algoritm (`dilithium5`, `mlkem1024`) sau un ID numeric.
+- `migration` primește un **ID de algoritm** (de exemplu `1`), nu o adresă, și raportează `No active migration` când nu rulează nicio migrare.
+- `evm-window` arată dacă adresa are o fereastră de autorizare deschisă pe lane-ul EVM și câte blocuri, tranzacții și câtă valoare au rămas (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## burn
 
-### stats
-
-Interoghează statisticile de burn pe toate canalele.
+Modulul burn nu are interogare CLI. Folosește REST:
 
 ```bash
-qorechaind query burn stats
+curl -s https://api.qore.host/qorechain/burn/v1/params
+curl -s https://api.qore.host/qorechain/burn/v1/stats
+curl -s https://api.qore.host/qorechain/burn/v1/records
+curl -s https://api.qore.host/qorechain/burn/v1/milestone
+curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-### params
-
-Interoghează parametrii modulului burn.
-
-```bash
-qorechaind query burn params
-```
+`stranded_rewards` raportează partea stakerilor care a fost depusă în modulul distribution fără să acopere vreo cerere, așa cum a fost înregistrată la upgrade-ul v3.2.0 (`reserved`, `released`, `snapshot_height`). Poate fi eliberată numai printr-un vot de guvernanță.
 
 ---
 
-## inflation
+## mint și inflation
 
-### rate
-
-Interoghează rata anualizată curentă a inflației.
-
-```bash
-qorechaind query inflation rate
-```
-
-### epoch
-
-Interoghează numărul epocii curente și progresul acesteia.
-
-```bash
-qorechaind query inflation epoch
-```
-
-### params
-
-Interoghează parametrii modulului inflation.
-
-```bash
-qorechaind query inflation params
-```
+`qorechaind query mint params|inflation|annual-provisions` citește modulul mint standard, a cărui rată este `0` pe ambele rețele; **nu** raportează programul de emisie al protocolului. Nu există comanda `query inflation`.
 
 ---
 
 ## ai
 
-### config
-
-Interoghează configurația modulului AI.
-
 ```bash
 qorechaind query ai config
-```
-
-### stats
-
-Interoghează statisticile agregate de procesare AI.
-
-```bash
 qorechaind query ai stats
-```
-
-### fee-estimate
-
-Obține o estimare a taxei de gas asistată de AI.
-
-```bash
-qorechaind query ai fee-estimate [flags]
-```
-
-| Flag        | Tip    | Descriere                            |
-| ----------- | ------ | -------------------------------------- |
-| `--tx-type` | string | Tipul de tranzacție pentru estimare    |
-| `--urgency` | string | `low`, `medium`, `high`                |
-
-### investigations
-
-Listează investigațiile de fraudă active.
-
-```bash
-qorechaind query ai investigations
-```
-
-### recommendations
-
-Obține recomandări de optimizare a rețelei generate de AI.
-
-```bash
-qorechaind query ai recommendations
-```
-
-### circuit-breakers
-
-Interoghează stările curente ale circuit breaker-elor.
-
-```bash
-qorechaind query ai circuit-breakers
 ```
 
 ---
 
-## reputation
-
-### validators
-
-Interoghează scorurile de reputație pentru toți validatorii.
+## reputation și qca
 
 ```bash
-qorechaind query reputation validators
+qorechaind query reputation params
+qorechaind query qca config
 ```
 
-### validator
+Nu există interogări de reputație per validator sau de clasificare a pool-urilor.
 
-Interoghează scorul de reputație pentru un validator specific.
+---
+
+## lightnode
 
 ```bash
-qorechaind query reputation validator <validator_address>
+qorechaind query lightnode params
+qorechaind query lightnode stats
+qorechaind query lightnode light-nodes
+qorechaind query lightnode light-node <operator_address>
+qorechaind query lightnode rewards <operator_address>
+qorechaind query lightnode reward-pool
 ```
+
+`reward-pool` arată cum se împarte soldul de recompense al modulului în `reserved`, `outstanding`, `payable` și `distributable`.
+
+---
+
+## license
+
+```bash
+qorechaind query license check <grantee_address> <feature_id>
+qorechaind query license holders <feature_id>
+qorechaind query license list <grantee_address>
+```
+
+`check` returnează o eroare `NotFound` când beneficiarul nu deține nicio licență pentru funcționalitate.
 
 ---
 
 ## bridge
 
-### chains
-
-Listează toate lanțurile bridge înregistrate.
-
 ```bash
+qorechaind query bridge config
 qorechaind query bridge chains
-```
-
-### chain
-
-Interoghează detaliile unui lanț bridge specific.
-
-```bash
 qorechaind query bridge chain <chain_id>
-```
-
-### validators
-
-Listează validatorii bridge activi.
-
-```bash
 qorechaind query bridge validators
-```
-
-### operations
-
-Listează operațiunile bridge recente.
-
-```bash
 qorechaind query bridge operations
-```
-
-| Flag       | Tip    | Descriere                                 |
-| ---------- | ------ | -------------------------------------------|
-| `--status` | string | Filtru: `pending`, `completed`, `failed`   |
-| `--chain`  | string | Filtrează după ID-ul lanțului              |
-
-### limits
-
-Interoghează limitele de rată pentru un lanț bridge.
-
-```bash
-qorechaind query bridge limits <chain_id>
-```
-
-### estimate
-
-Estimează taxa de bridge și timpul de transfer.
-
-```bash
-qorechaind query bridge estimate <chain_id> <amount> <asset>
+qorechaind query bridge operation <operation_id>
 ```
 
 ---
 
 ## crossvm
 
-### message
-
-Preia un mesaj cross-VM după ID.
-
 ```bash
 qorechaind query crossvm message <message_id>
-```
-
-### pending
-
-Listează mesajele cross-VM în așteptare.
-
-```bash
 qorechaind query crossvm pending
-```
-
-### params
-
-Interoghează parametrii modulului Cross-VM.
-
-```bash
 qorechaind query crossvm params
 ```
 
@@ -435,35 +212,10 @@ qorechaind query crossvm params
 
 ## svm
 
-### account
-
-Interoghează informațiile despre un cont SVM.
-
 ```bash
-qorechaind query svm account <pubkey>
-```
-
-### program
-
-Interoghează informațiile despre un program SVM implementat.
-
-```bash
-qorechaind query svm program <program_id>
-```
-
-### params
-
-Interoghează parametrii modulului SVM.
-
-```bash
+qorechaind query svm account <base58_address>
+qorechaind query svm program <base58_address>
 qorechaind query svm params
-```
-
-### slot
-
-Interoghează numărul curent al slotului SVM.
-
-```bash
 qorechaind query svm slot
 ```
 
@@ -471,64 +223,10 @@ qorechaind query svm slot
 
 ## multilayer
 
-### layer
-
-Interoghează detaliile unui layer specific.
-
 ```bash
 qorechaind query multilayer layer <layer_id>
-```
-
-### layers
-
-Listează toate layerele înregistrate.
-
-```bash
 qorechaind query multilayer layers
-```
-
-### anchor
-
-Interoghează o înregistrare de anchor specifică.
-
-```bash
-qorechaind query multilayer anchor <anchor_id>
-```
-
-### anchors
-
-Listează trimiterile recente de anchor.
-
-```bash
-qorechaind query multilayer anchors [flags]
-```
-
-| Flag         | Tip    | Descriere                       |
-| ------------ | ------ | --------------------------------- |
-| `--layer-id` | string | Filtrează după ID-ul layerului    |
-| `--limit`    | uint   | Numărul maxim de rezultate        |
-
-### routing-stats
-
-Interoghează statisticile de rutare a tranzacțiilor pe toate layerele.
-
-```bash
 qorechaind query multilayer routing-stats
-```
-
-### simulate-route
-
-Simulează rutarea unei tranzacții fără execuție.
-
-```bash
-qorechaind query multilayer simulate-route <tx_data_hex>
-```
-
-### params
-
-Interoghează parametrii modulului Multilayer.
-
-```bash
 qorechaind query multilayer params
 ```
 
@@ -536,218 +234,79 @@ qorechaind query multilayer params
 
 ## rdk
 
-### rollup
-
-Interoghează detaliile unui rollup specific.
-
 ```bash
+qorechaind query rdk config
 qorechaind query rdk rollup <rollup_id>
+qorechaind query rdk list-rollups
+qorechaind query rdk batch <rollup_id>            # latest batch
+qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-### rollups
-
-Listează toate rollup-urile înregistrate.
-
-```bash
-qorechaind query rdk rollups
-```
-
-| Flag       | Tip    | Descriere                              |
-| ---------- | ------ | ----------------------------------------|
-| `--status` | string | Filtru: `active`, `paused`, `stopped`   |
-
-### batch
-
-Interoghează un batch de settlement specific.
-
-```bash
-qorechaind query rdk batch <rollup_id> <batch_index>
-```
-
-### latest-batch
-
-Interoghează cel mai recent batch pentru un rollup.
-
-```bash
-qorechaind query rdk latest-batch <rollup_id>
-```
-
-### suggest-profile
-
-Obține o recomandare de profil de rollup asistată de AI.
-
-```bash
-qorechaind query rdk suggest-profile <use_case>
-```
-
-### blob
-
-Interoghează un blob DA specific.
-
-```bash
-qorechaind query rdk blob <rollup_id> <blob_index>
-```
-
-### params
-
-Interoghează parametrii modulului RDK.
-
-```bash
-qorechaind query rdk params
-```
-
-:::note
-Dovezile de retragere (withdrawal proofs) ale rollup-urilor și statusul de settlement pot fi interogate tot sub grupul `rdk`. Subcomenzile de interogare exacte și argumentele lor depind de tipul de settlement al rollup-ului tău; vezi documentația **Rollup Development Kit** pentru suprafața de interogare withdrawal/settlement autoritativă.
-:::
+`config` arată parametrii modulului (stake minim, rata de ardere la creare, fereastra de contestare, limitele DA). `suggest-profile <use_case>` nu interoghează chain-ul; doar afișează o trimitere către o metodă JSON-RPC pe care endpoint-urile publice nu o servesc, așa că alege un profil din [Profiluri presetate](/rollups/preset-profiles).
 
 ---
 
 ## rlconsensus
 
-PRISM este stratul de reinforcement learning care ajustează parametrii de consens. Numele modulului CLI `rlconsensus` și subcomenzile sale sunt păstrate verbatim.
-
-### agent-status
-
-Interoghează statusul și modul curent al agentului PRISM.
-
 ```bash
 qorechaind query rlconsensus agent-status
-```
-
-### observation
-
-Interoghează cel mai recent vector de observație PRISM.
-
-```bash
 qorechaind query rlconsensus observation
-```
-
-### reward
-
-Interoghează metricile cumulate de recompensă PRISM.
-
-```bash
 qorechaind query rlconsensus reward
-```
-
-### params
-
-Interoghează parametrii modulului PRISM Consensus.
-
-```bash
 qorechaind query rlconsensus params
-```
-
-### policy
-
-Interoghează configurația politicii PRISM active.
-
-```bash
 qorechaind query rlconsensus policy
-```
-
----
-
-## babylon
-
-### staking
-
-Interoghează poziția de staking BTC pentru o adresă.
-
-```bash
-qorechaind query babylon staking <address>
-```
-
-### checkpoint
-
-Interoghează datele de checkpoint BTC pentru o epocă dată.
-
-```bash
-qorechaind query babylon checkpoint <epoch>
-```
-
-### params
-
-Interoghează parametrii modulului Babylon.
-
-```bash
-qorechaind query babylon params
 ```
 
 ---
 
 ## abstractaccount
 
-### account
-
-Interoghează detaliile unui cont abstract.
+Modulul de conturi abstracte este în prezent oprit pe ambele rețele (`config.enabled` este `false`), deci aceste interogări nu returnează conturi.
 
 ```bash
+qorechaind query abstractaccount config
+qorechaind query abstractaccount accounts
 qorechaind query abstractaccount account <address>
-```
-
-### params
-
-Interoghează parametrii modulului Abstract Account.
-
-```bash
-qorechaind query abstractaccount params
-```
-
-### permission-schema
-
-Interoghează taxonomia canonică de permisiuni pentru autenticatori — cele 11 permisiuni, maparea mesaj→permisiune și mesajele de gestionare a cheilor care nu pot fi delegate (disponibil începând cu versiunea de chain **v3.1.85**; servit de asemenea prin REST la `/qorechain/abstractaccount/v1/permission_schema`).
-
-```bash
 qorechaind query abstractaccount permission-schema
 ```
 
-### auth-keygen / auth-sign-cosmos / auth-sign-evm
-
-Utilitare pentru construirea autorizărilor de autenticator în afara SDK-urilor: generează o cheie de test, sau produce **exact bytes de semnat pe care chain-ul îi verifică** pentru o acțiune delegată pe lane-ul Native sau EVM (disponibil începând cu versiunea de chain **v3.1.85**).
-
-```bash
-qorechaind query abstractaccount auth-keygen
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
-```
+`auth-keygen`, `auth-sign-cosmos <chain_id> <account> <to> <amount> <nonce>` și `auth-sign-evm <chain_id> <account> <to_0x> <value_wei> <data_hex> <nonce>` construiesc offline semnături de autentificator. Seed-ul autentificatorului nu este niciodată un argument: este citit din `--seed-file <file>` (sau `-` pentru stdin), din variabila de mediu `QORE_AUTH_SEED` sau dintr-un prompt fără ecou, iar `auth-keygen` îl scrie într-un fișier nou `0600` (`--out`) în loc să îl afișeze.
 
 ---
 
 ## gasabstraction
 
-### accepted-tokens
+Mainnet-ul nu servește încă interogări de abstractizare a gazului (`qorechaind query gasabstraction ...` afișează textul de ajutor, iar ruta REST returnează `Not Implemented`). Taxele se plătesc doar în `uqor`; consultă [Abstractizarea Gazului](/user-guide/gas-abstraction).
 
-Listează tokenurile acceptate pentru plata gas-ului.
+---
 
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-### params
-
-Interoghează parametrii modulului Gas Abstraction.
+## circuit, feemarket, upgrade
 
 ```bash
-qorechaind query gasabstraction params
+qorechaind query circuit disabled-list        # message types switched off network-wide
+qorechaind query feemarket params
+qorechaind query feemarket base-fee
+qorechaind query upgrade plan
+qorechaind query upgrade applied <upgrade_name>
+qorechaind query upgrade module-versions
 ```
 
 ---
 
-## fairblock
-
-### config
-
-Interoghează configurația de criptare FairBlock.
+## evm, erc20, wasm
 
 ```bash
-qorechaind query fairblock config
+qorechaind query evm params
+qorechaind query evm balance-bank <0x_address> uqor
+qorechaind query erc20 token-pairs
+qorechaind query wasm params
+qorechaind query wasm list-code
+qorechaind query wasm list-contract-by-code <code_id>
+qorechaind query wasm contract <contract_address>
+qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
 
-### params
+---
 
-Interoghează parametrii modulului FairBlock.
+## Module fără CLI
 
-```bash
-qorechaind query fairblock params
-```
+`xqore`, `babylon` și `fairblock` nu au comenzi de tranzacție sau de interogare. Nu pot fi folosite în prezent din CLI sau printr-un API public.

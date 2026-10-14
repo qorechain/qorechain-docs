@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest tagged release is **v3.1.97**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026). The testnet **`qorechain-diana`** (EVM chain ID **9800**) tracks pre-release builds.
+Public version history for QoreChain. The latest release is **v3.2.1**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 29 June 2026) with the consensus rules of **v3.2.0** (applied at height 2,981,742). The testnet **`qorechain-diana`** (EVM chain ID **9800**) currently runs **v3.2.2**, which is applied there by governance and is not yet on mainnet.
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,11 +15,34 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ---
 
+## v3.2.1 — Node Hardening
+
+**Release focus:** A node-local security release for mainnet (14 October 2026): **no upgrade height, no consensus change and no governance vote**. Nodes on v3.2.0 keep following the chain.
+
+* Hardens the public API's resource limits, bounds the EVM JSON-RPC and the mempool, and gossips promoted EVM transactions.
+* Pins the EVM chain ID in the node configuration and cross-checks it against the Cosmos chain ID; operators must set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error).
+* Updates the consensus-engine dependency; keep the system clock NTP-synchronised (a skew of more than 60 seconds stops the node).
+* Recommended for every operator; `minCompatible` in the mainnet manifest is 3.2.0.
+
+The testnet currently runs v3.2.2, applied by governance at height 6,905,034; it is a testnet-only release for now and its changes are not part of mainnet. Mainnet governance proposal 7 (in its voting period when this was written) would schedule v3.2.2 on mainnet at height 3,556,788 — see [Connecting to Mainnet](/getting-started/connecting-to-mainnet) for the operator steps and how to check the outcome.
+
+## v3.2.0 — EVM Authorisation Window and Accounting Fixes
+
+**Release focus:** Make the post-quantum requirement true on every lane, and close two accounting gaps. Applied on mainnet by governance proposal #6 at height **2,981,742** (25 September 2026, 12:07 UTC); applied on the testnet at height 5,920,000.
+
+* **EVM authorisation window (breaking for EVM wallets).** An EVM transaction is now admitted only from an account that has a registered ML-DSA-87 key **and** an open window. The window is opened with a Cosmos-lane message (`MsgOpenEVMWindow`, post-quantum signed) and bounded by blocks (≤ 17,280), transactions (≤ 1,000) and total value (transferred value plus the maximum fee of each transaction); `MsgCloseEVMWindow` revokes it. Standard Ethereum signing is unchanged inside a window. The EVM lane, which had been switched off on mainnet on the circuit breaker since 16 September, was reopened in the same block the rule took effect. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+* **Hybrid signature v2.** Post-quantum signatures are now over domain-tagged, chain-bound sign-bytes; the first form is refused from the upgrade height. Clients check the node's applied upgrade plans to choose the form; the CLI (`--sign-bytes auto`), SDK 0.8.x and wallet-adapter 0.2.x do this. Key-migration and bridge-attestation payloads moved to the same scheme. See [Post-Quantum Security](/architecture/post-quantum-security#sign-bytes-v2).
+* **Staker share paid.** The 10 % staker share of the fee split was being deposited where it backed no claim; from this upgrade it is paid as a normal staking reward. The amount already accumulated (6,693,045.92 QOR on mainnet) is recorded on chain (`GET /qorechain/burn/v1/stranded_rewards`) and can move only by a governance vote (`MsgReleaseStrandedRewards`). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+* **Light-node reward reserve.** The 3 % light-node share that accumulated while no node was eligible (3,156,009.33 QOR on mainnet) is recorded as a reserve (`GET /qorechain/lightnode/v1/reward_pool`), excluded from distribution and movable only by governance; distribution afterwards pays only what accrued since the previous run, bounded per node per block. Light-node registration remains closed.
+* **Per-sender transaction limit** is now enforced (600 transactions per 30 blocks per sender, so relayers can operate).
+* **Upgrade module version map** now lists every module (48), fixing a gap that would have affected later migrations.
+* Also: bridge module account and attestation payloads hardened, proposed blocks validated, rollup settlement restricted to the rollup's sequencer with per-rollup escrow and an effective creation burn, multilayer creator stake locked at registration and returned on decommission, the smart-account `enabled` flag enforced on every path, and validator-admission and vesting-creation paths closed to authz nesting.
+
 ## v3.1.96 + v3.1.97 — CosmWasm Access Lockdown
 
 **Release focus:** Close permissionless contract code upload and instantiation, following an industry-wide CosmWasm security advisory.
 
-* **Contract upload and instantiation now require explicit permission.** `code_upload_access` and `instantiate_default_permission` are set to `Nobody` on both mainnet and testnet — verified live, independent of which of these two tags a given node is running, since it's an on-chain parameter rather than something only the newer binaries enforce. See [CosmWasm Development](/developer-guide/cosmwasm-development) for what this means if you're building a contract. Already-instantiated contracts are unaffected — `execute` and `query` work as before.
+* **Contract upload and instantiation now require explicit permission.** `code_upload_access` and `instantiate_default_permission` are set to `Nobody` on both mainnet and testnet — verified live, independent of which of these two tags a given node is running, since it's an on-chain parameter rather than something only the newer binaries enforce. See [CosmWasm Development](/developer-guide/cosmwasm-development) for what this means if you're building a contract. Already-instantiated contracts are unaffected — `execute` and `query` work as before. Both networks also have the three CosmWasm upload and instantiate messages switched off on the circuit breaker.
 * **Position-independent (PIE) release builds**, per the same advisory's hardening guidance, so the memory address an exploit would need to guess is randomized per process. Dynamically linked binaries only needed one build flag; verified not to be state-breaking.
 
 ## v3.1.95 — Cosmos EVM Hardening
@@ -32,7 +55,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 **Release focus:** Bring staking-reward emission in line with actual network conditions, and tighten authorization checks on privileged administrative messages.
 
-* **Emission cap** — A governance proposal, passed with full bonded-stake support and applied at height 2,122,074 (26 August 2026), replaced the original decaying emission schedule with a fixed per-epoch amount under a hard, cumulative cap. The original schedule had been calibrated for a much more mature, fully-bonded network; against actual bonded stake it was paying out far faster than intended. See [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current numbers and remaining runway.
+* **Emission cap** — A governance proposal, passed with full bonded-stake support and applied at height 2,122,074 (26 August 2026), replaced the original decaying emission schedule with a fixed per-epoch amount under a hard, cumulative cap. The original schedule had been calibrated for a much more mature, fully-bonded network; against actual bonded stake it was paying out far faster than intended. See [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current numbers.
 * **Administrative message hardening** — A set of privileged, authority-gated administrative messages now have their signer verified against the governance module's own address rather than trusting a value carried in the message itself.
 * Also carries the node-onboarding reliability fix from v3.1.92, for any node updating directly to this release.
 
@@ -64,7 +87,8 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 * **Enforcement on all three lanes** — Permission scopes and **SpendingRule** value limits (per-transaction + daily caps) are enforced on the Native, EVM, and SVM lanes; key-management messages are never delegable. Distinct error codes let wallets show the right message: `5` spending limit exceeded, `6` authenticator expired, `10` permission denied, `11` replay rejected.
 * **Permission schema query** — `GET /qorechain/abstractaccount/v1/permission_schema` (also gRPC/CLI) returns the canonical permission taxonomy (11 permissions), the message→permission map, and the non-delegable message list, so wallets validate scopes without hardcoding.
 * **Same-algorithm PQC key rotation** — New **`MsgRotatePQCKey`** rotates an account's ML-DSA-87 key within the same algorithm (dual-signed by the old and new keys), enabling migration of legacy-derived keys to the canonical address-bound derivation and retirement of a compromised key. New CLI: `tx pqc rotate-key` and `tx pqc recover-key` (deterministic key recovery from a mnemonic).
-* **Root-key transactions unaffected** — The changes are additive; normal wallet, exchange, and Keplr flows are unchanged. Node operators must be on **v3.1.85** by the network upgrade height.
+* **Root-key transactions unaffected** — The changes are additive; normal wallet and exchange flows are unchanged. Node operators must be on **v3.1.85** by the network upgrade height.
+* **Current status** — The smart-account and linked-wallet features are implemented but currently **switched off** on both networks (`abstractaccount.enabled = false`); from v3.2.0 every authenticator path is refused while the flag is off. Check `GET /qorechain/abstractaccount/v1/config` before offering a linking flow.
 
 ## v3.1.84 — Authenticator Permissions & Spending Limits
 
@@ -180,13 +204,13 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 * **PRISM consensus optimization** — Continued improvements to the PRISM reinforcement-learning optimization layer for adaptive parameter tuning under live network conditions, with circuit-breaker safety controls.
 * **Performance and stability** — Throughput, latency, and resource-usage refinements across validators and full nodes.
 * **Operational tooling** — Improved monitoring, query, and node-operation ergonomics for mainnet operators.
-* **Tokenomics v2.1 alignment** — Fee distribution and emission mechanics aligned with the fixed-supply, finite-emission economic model.
+* **Tokenomics v2.1 alignment** — Fee distribution and emission mechanics aligned with the finite, capped-emission economic model (later refined by the v3.1.94 emission cap).
 
 ## v3.0.0 — Mainnet Genesis
 
 **Release focus:** Mainnet launch and token generation event.
 
-* **Mainnet genesis** — QoreChain mainnet (`qorechain-vladi`, EVM chain ID 9801) launched on **7 June 2026**, with the token generation event (TGE) at genesis.
+* **Mainnet genesis** — QoreChain mainnet (`qorechain-vladi`, EVM chain ID 9801) launched on **29 June 2026**, with the token generation event (TGE) at genesis.
 * **Five-way fee split** — Protocol fee distribution across validators, burn, treasury, stakers, and light nodes (**37 / 30 / 20 / 10 / 3**), adding a dedicated light-node share.
 * **On-chain AMM** — Native automated-market-maker module (`x/amm`) for on-chain liquidity pools and swaps.
 * **Chain licensing** — On-chain license module (`x/license`) for registering and managing protocol entitlements.
@@ -216,12 +240,12 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 
 **Release focus:** Cross-chain connectivity and advanced account abstractions.
 
-* **25 cross-chain connections** — 8 IBC channels and 17 QoreChain Bridge (QCB) connections to external networks
+* *(Designed; the cross-chain layer is still pending — see [Bridge Architecture](/architecture/bridge-architecture).)* **25 cross-chain connections** — 8 IBC channels and 17 QoreChain Bridge (QCB) connections to external networks
 * **x/babylon module** — BTC restaking integration enabling Bitcoin holders to participate in QoreChain staking security
 * **x/abstractaccount module** — Smart account framework with programmable spending rules, session keys, and custom authentication logic
 * **x/fairblock module** — Threshold Identity-Based Encryption (tIBE) for MEV-resistant transaction encryption
-* **x/gasabstraction module** — Multi-token gas payment supporting native QOR, IBC-bridged USDC, and IBC-bridged ATOM
-* **5-lane TX prioritization** — Transaction lanes ordered by priority: system, governance, staking, bridge, and general
+* **x/gasabstraction module** — Multi-token gas payment design supporting native QOR, IBC-bridged USDC, and IBC-bridged ATOM (no IBC channel is open yet)
+* **5-lane TX prioritization** — Lane definitions for block-space prioritisation (configuration only; not enforced by the live mempool)
 * **IBC relayer configurations** — Pre-configured relayer setups for all supported IBC channels
 * **Bridge-to-burn integration** — Bridge fees are routed through the burn module's fee distribution
 
@@ -231,7 +255,7 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 
 * **Dual secp256k1 (ECDSA) + ML-DSA-87 signatures** — Every transaction carries both a classical and a post-quantum signature, verified in the AnteHandler chain
 * **3 enforcement modes** — Configurable hybrid signature enforcement: off (mode 0), permissive (mode 1, PQC optional), mandatory (mode 2, PQC required)
-* **Auto-registration** — PQC public keys are automatically registered on the first hybrid transaction, eliminating a separate registration step
+* **Key registration** — Early builds auto-registered a PQC public key on the first hybrid transaction; that behaviour was removed, and a key is now registered explicitly with `MsgRegisterPQCKey` (see [First Transaction](/getting-started/first-transaction#register-pqc-key))
 * **SHAKE-256 hash foundation** — All PQC-related hashing operations use SHAKE-256 (SHA-3 family) for quantum-resistant address derivation
 * **TEE attestation interfaces** — Trusted Execution Environment attestation support for proving PQC key generation integrity
 * **Algorithm agility framework** — Pluggable algorithm registry allowing future PQC algorithms to be added via governance without a chain upgrade
@@ -242,10 +266,10 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 
 * **x/burn module** — Multi-channel fee burn mechanism with a four-way distribution across validators, burn, treasury, and stakers
 * **x/xqore module** — Governance staking derivative with tiered early-unlock penalties and PvP rebase redistribution
-* **x/inflation module** — Epoch-based emission with annual decay, governed by the finite-emission economic model
+* **x/inflation module** — Epoch-based emission with annual decay (replaced in v3.1.94 by a fixed per-epoch amount under a hard cumulative cap)
 * **PRISM consensus layer** — Reinforcement-learning optimization (PPO) for dynamic chain parameter tuning with circuit-breaker safety controls
-* **Triple-pool CPoS** — Classified Proof-of-Stake with Emerald, Sapphire, and Ruby validator pools weighted by reputation scores
-* **QDRW governance** — Dynamic Reward Weighting system allowing governance-approved adjustments to reward distribution across pools
+* **Triple-pool CPoS** — Composite Proof-of-Stake with RPoS, DPoS and PoS validator pools weighted by reputation scores (implemented in `x/qca`; not yet wired into block production)
+* **QDRW governance** — Quadratic Delegation with Reputation Weighting voting-power formula (implemented; disabled on the live networks)
 * **EVM + CosmWasm + SVM runtimes** — Three concurrent execution environments: the QoreChain EVM Engine, CosmWasm smart contracts, and the Solana Virtual Machine
 * **Cross-VM bridge** — Message passing and asset transfers between EVM, CosmWasm, and SVM runtimes within a single block
 * **Post-quantum cryptography** — Quantum-resistant signing backed by a high-performance PQC library

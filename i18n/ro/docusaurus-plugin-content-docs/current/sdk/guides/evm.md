@@ -26,7 +26,7 @@ chain-id-ul EVM prin `eth_chainId`, cu excepția cazului în care transmiți `ch
 import { createEvmClient } from "@qorechain/evm";
 
 const client = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" }, // mainnet: https://evm.qore.host
 });
 
 console.log(await client.getChainId());
@@ -34,7 +34,8 @@ console.log(await client.getChainId());
 ```
 
 Poți de asemenea să transmiți direct `rpcUrl` (mutual exclusiv cu `endpoints`), un
-`wsUrl` / `endpoints.evmWs` pentru WebSocket, un `chainId` explicit și `decimals`
+`wsUrl` / `endpoints.evmWs` pentru WebSocket (`wss://evm-ws-testnet.qore.host` pe
+testnet), un `chainId` explicit și `decimals`
 (implicit 18, convenția EVM pentru QOR — distinctă de baza Cosmos `uqor`
 de 10^6).
 
@@ -77,11 +78,97 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 // const hash = await writeContract(walletClient, { address, abi, functionName, args });
 ```
 
+## Fereastra de autorizare EVM (lanț v3.2.0) {#evm-window}
+
+Începând cu versiunea de lanț **v3.2.0** (mainnet de la blocul 2,981,742, testnet de la
+blocul 5,920,000), banda EVM admite o tranzacție doar de la un cont care are o
+**cheie ML-DSA-87 înregistrată** și o **fereastră de autorizare deschisă**. Citirile
+(`eth_call`, solduri, chitanțe) și estimarea gazului funcționează fără una, iar
+portofelele și bibliotecile precum MetaMask, viem, ethers, Hardhat și Foundry semnează
+ca până acum; ceea ce se schimbă este că autorizarea post-cuantică călătorește *înaintea*
+tranzacției, ca mesaj de bandă Native semnat hibrid. Regulile la nivel de lanț, limitele,
+formele CLI și codurile de refuz se găsesc în
+[Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+
+Cu SDK **0.8.2 sau mai nou** poți deschide o fereastră din cod. Înregistrarea cheii
+(o singură dată) este descrisă în [Quantum-safe](/sdk/guides/quantum-safe); exemplul
+de mai jos deschide apoi o fereastră pentru un cont eth-native unificat (`npm i @cosmjs/stargate`):
+
+```ts
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  openEvmWindowMsg,
+  fetchEvmWindow,
+  classifyEvmWindowRejection,
+} from "@qorechain/sdk";
+
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
+const account = await deriveUnifiedAccount(mnemonic);
+const signer = new EthNativeSigner(account, { rest: REST }); // hybrid: the window needs the ML-DSA key
+
+const { account: base } = await client.rest.get<{
+  account: { account_number: string; sequence: string };
+}>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+
+const open = openEvmWindowMsg({
+  sender: account.cosmos,
+  blocks: 7200,         // 1 … 17,280 blocks (a block count, not a duration)
+  maxTxs: 20,           // 1 … 1,000 transactions
+  maxValue: "1000000000", // uqor: transferred value PLUS the maximum fee of each transaction
+});
+
+await signer.signAndBroadcast(transport, {
+  chainId: "qorechain-vladi",
+  accountNumber: BigInt(base.account_number),
+  sequence: BigInt(base.sequence),
+  messages: [open],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+});
+
+const w = await fetchEvmWindow({ rest: REST, address: account.cosmos });
+console.log(w.live); // true while the window admits at least one more transaction
+```
+
+Deschiderea unei ferestre avansează nonce-ul contului (o singură identitate: secvența
+Cosmos este nonce-ul EVM), așa că citește nonce-ul EVM **după** ce fereastra este
+deschisă și abia apoi semnează tranzacția EVM. `maxValue` limitează valoarea **plus**
+taxa maximă (limita de gaz înmulțită cu plafonul taxei) a fiecărei tranzacții: un
+transfer de 1,000 uqor cu 21,000 de gaz la 112.5 gwei consumă 3,363 uqor din fereastră.
+Deschide o fereastră doar când utilizatorul o cere; nu deschide niciodată una automat.
+
+Când banda EVM refuză o tranzacție, `classifyEvmWindowRejection(err)` îți spune
+de ce:
+
+```ts
+try {
+  // send the EVM transaction (viem, ethers, ...)
+} catch (err) {
+  const why = classifyEvmWindowRejection(err);
+  // "no-pqc-key" | "no-window" | "exhausted" | "invalid" | undefined
+}
+```
+
+`closeEvmWindowMsg` construiește mesajul de închidere corespunzător, iar
+`MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele.
+
 ## Precompile
 
-QoreChain expune precompile apelabile prin contract la adrese fixe. Spațiul de nume
+QoreChain definește precompile apelabile din contracte la adrese fixe. Spațiul de nume
 `precompiles` oferă legături tipizate, iar adresele și ABI-urile sunt
 exportate.
+
+> **Încă inactive.** Precompilele QoreChain sunt compilate în nod, dar
+> nu sunt încă activate pe mainnet (`qorechain-vladi`) sau pe testnet
+> (`qorechain-diana`): un apel returnează date goale, deci aceste helpere
+> aruncă eroare și pe rețelele publice, în prezent. Vezi
+> [Precompile EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
 
 | Precompilă | Funcție | Adresă |
 | --- | --- | --- |
@@ -95,15 +182,18 @@ exportate.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read live consensus parameters.
+// Read consensus parameters (once 0x…0C01 is active).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
 const status = await precompiles.pqcKeyStatus(client.publicClient, account);
 
-// QCAI helpers.
-const score = await precompiles.aiRiskScore(client.publicClient, /* args */);
-const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, /* args */);
+// QCAI helpers: raw calldata for the risk score, an args object for the anomaly check.
+const score = await precompiles.aiRiskScore(client.publicClient, "0xa9059cbb...");
+const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, {
+  sender: account,
+  amount: 1_000_000_000_000_000_000n, // 1 QOR in wei
+});
 
 console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 ```
@@ -111,7 +201,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 ABI-urile precompilelor sunt exportate ca `IQORE_PQC_ABI`, `IQORE_AI_ABI` și
 `IQORE_CONSENSUS_ABI`.
 
-> Pe un nod fără precompilele QoreChain, aceste apeluri aruncă o eroare „feature not
-> present”. Tratează acest lucru per apel dacă vizezi noduri eterogene.
+> Acolo unde o precompilă nu este activă (în prezent: orice rețea publică), sau pe un
+> nod fără precompilele QoreChain, aceste apeluri aruncă o eroare „feature not
+> present”. Tratează acest lucru per apel.
 
 Vezi [exemplul](/sdk/examples) `evm-precompile` pentru o versiune executabilă.

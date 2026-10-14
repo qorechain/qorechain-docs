@@ -7,35 +7,33 @@ sidebar_position: 3
 
 # Guvernanță
 
-Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain, inclusiv sistemul de vot Quadratic Delegation-Reputation Weighted (QDRW), cum să trimiți propuneri și cum să votezi.
+Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.97** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 29 iunie 2026 pe linia v3.2 (versiunea de nod **v3.2.1**; testnet-ul rulează **v3.2.2**) — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+:::
+
+:::caution Semnează cu `tx pqc cosign`
+Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pentru fiecare tranzacție pe lane-ul Cosmos, așa că comenzile de pe această pagină nu se transmit așa cum sunt scrise. Adaugă `--generate-only > tx.json` la o comandă, apoi rulează `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Vezi [Semnarea hibridă](/cli-reference/transaction-commands#hybrid-signing).
 :::
 
 ---
 
-## Puterea de vot: formula QDRW
+## Puterea de vot {#voting-power}
 
-QoreChain folosește formula **Quadratic Delegation-Reputation Weighted (QDRW)** pentru a calcula puterea de vot. Acest sistem previne dominația balenelor, recompensând în același timp participanții care au obținut scoruri de reputație ridicate și care s-au angajat în guvernanță prin staking xQORE.
+Propunerile sunt numărate pe baza **stake-ului bonded**: fiecare QOR pe care l-ai delegat unui validator bonded contează ca o unitate de putere de vot, fără multiplicator. Dacă nu votezi tu însuți, delegarea ta urmează votul validatorului tău; dacă îți exprimi propriul vot, acesta îl înlocuiește pe cel al validatorului pentru stake-ul tău. O propunere trece atunci când sunt îndeplinite toate condițiile următoare:
 
-```
-VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
-```
+| Regulă    | Valoare curentă | Semnificație                                                                |
+| --------- | --------------- | --------------------------------------------------------------------------- |
+| Cvorum    | 33.4%           | Partea din stake-ul bonded care trebuie să voteze                           |
+| Prag      | 50%             | Partea de „yes" dintre voturile care nu se abțin, necesară pentru a trece   |
+| Veto      | 33.4%           | Dacă „no with veto" atinge această pondere, propunerea este respinsă și depozitul ei este ars |
 
-| Variabilă                 | Descriere                                                                                                                       |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `VP`                      | Puterea de vot efectivă                                                                                                         |
-| `staked`                  | Totalul tokenilor QOR puse în stake de către votant                                                                             |
-| `xQORE`                   | Cantitatea de tokeni de guvernanță xQORE deținuți (vezi [Staking xQORE](/user-guide/xqore-staking))                            |
-| `r`                       | Scorul de reputație al votantului, normalizat la \[0, 1]                                                                        |
-| `ReputationMultiplier(r)` | Funcție sigmoidă care mapează reputația la un multiplicator în intervalul \[0.5, 2.0]                                          |
+Aceste valori au fost citite din lanț la 14 octombrie 2026; confirmă-le cu `qorechaind query gov params`, deoarece guvernanța le poate modifica.
 
-### Proprietăți cheie
-
-* **Amortizare cuadratică:** Un deținător cu un stake de 100x față de alt votant câștigă doar \~10x putere de vot, nu 100x. Acest lucru asigură că influența în guvernanță crește sub-liniar cu averea.
-* **Bonus xQORE:** Tokenii xQORE contează cu **greutate 2x** în interiorul rădăcinii pătrate, oferind un avantaj semnificativ participanților angajați în guvernanță.
-* **Multiplicator de reputație:** Mapează scorul de reputație al votantului de la \[0, 1] la un multiplicator în \[0.5, 2.0] folosind o curbă sigmoidă. Participanții cu reputație ridicată își pot dubla puterea de vot efectivă, în timp ce participanții cu reputație scăzută își văd influența înjumătățită.
+:::note QDRW este proiectat, dar nu este activ
+Designul QoreChain include o formulă de putere de vot **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, care ar atenua stake-urile mari și ar pondera reputația. Este implementată în modulul `x/qca`, dar este **dezactivată** pe ambele rețele (`qdrw_enabled` este `false` în `qorechaind query qca config`) și nu face parte din numărătoarea de guvernanță, deci nu afectează niciun vot în prezent. xQORE nu este nici el activ (vezi [Staking xQORE](/user-guide/xqore-staking)).
+:::
 
 ---
 
@@ -47,26 +45,36 @@ Orice deținător de QOR poate trimite o propunere de guvernanță. Este necesar
 qorechaind tx gov submit-proposal <proposal_file.json> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-**Exemplu de fișier de propunere** (`proposal.json`):
+**Exemplu de fișier de propunere** (`proposal.json`). O propunere este o listă de mesaje pe care modulul de guvernanță le execută dacă trece, plus un titlu, un rezumat și un depozit. Aceasta ridică numărul maxim de validatori de la 100 la 150; `authority` este contul de modul al guvernanței (`qorechaind query auth module-account gov`):
 
 ```json
 {
-  "title": "Increase Maximum Validator Count",
-  "description": "This proposal increases the maximum active validator set from 100 to 150 to improve decentralization.",
-  "type": "parameter_change",
-  "changes": [
+  "messages": [
     {
-      "subspace": "staking",
-      "key": "MaxValidators",
-      "value": "150"
+      "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+      "authority": "qor10d07y265gmmuvt4z0w9aw880jnsr700jwfyxr3",
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 150,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "uqor",
+        "min_commission_rate": "0.000000000000000000"
+      }
     }
   ],
-  "deposit": "10000000uqor"
+  "metadata": "",
+  "deposit": "10000000uqor",
+  "title": "Increase maximum validator count",
+  "summary": "Raise the active validator set from 100 to 150 to improve decentralization.",
+  "expedited": false
 }
 ```
+
+`MsgUpdateParams` înlocuiește întregul set de parametri, așa că copiază valorile curente din `qorechaind query staking params` și modifică doar câmpul pe care îl vizezi. O propunere doar text (de semnalizare) folosește `"messages": []`. `qorechaind tx gov draft-proposal` generează un schelet.
 
 ---
 
@@ -78,17 +86,17 @@ Odată ce o propunere intră în perioada de vot, orice staker poate vota:
 qorechaind tx gov vote <proposal_id> <option> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Opțiuni de vot:**
 
-| Opțiune        | Descriere                                                                                              |
+| Opțiune        | Descriere                                                                                                |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
-| `yes`          | Susține propunerea                                                                                     |
+| `yes`          | Susține propunerea                                                                                       |
 | `no`           | Se opune propunerii                                                                                      |
-| `abstain`      | Recunoaște propunerea fără a lua o poziție                                                       |
-| `no_with_veto` | Se opune propunerii și semnalează că nu ar fi trebuit trimisă (arde depozitul dacă pragul este atins) |
+| `abstain`      | Recunoaște propunerea fără a lua o poziție                                                               |
+| `no_with_veto` | Se opune propunerii și semnalează că nu ar fi trebuit trimisă (arde depozitul dacă pragul este atins)    |
 
 **Exemplu:**
 
@@ -96,21 +104,22 @@ qorechaind tx gov vote <proposal_id> <option> \
 qorechaind tx gov vote 1 yes \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
 
 ## Tipuri de propuneri
 
-QoreChain suportă următoarele tipuri de propuneri de guvernanță:
+O propunere conține zero sau mai multe mesaje care se execută dacă trece. Cazuri frecvente:
 
-| Tip                  | Descriere                                                                                     |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| **Text**             | O propunere de semnalizare fără execuție automată on-chain. Folosită pentru verificări de opinie a comunității. |
-| **Modificare de parametru** | Modifică unul sau mai mulți parametri de protocol on-chain (de exemplu, numărul maxim de validatori, rata de emisie).        |
-| **Actualizare software** | Programează o actualizare coordonată a lanțului la o anumită înălțime de bloc.                              |
-| **Cheltuială comunitară**  | Solicită fonduri din trezoreria comunității pentru o adresă de destinatar specificată.                   |
+| Tip                         | Descriere                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Text**                    | O propunere de semnalizare fără mesaje și fără execuție automată on-chain. Folosită pentru verificări de opinie a comunității. |
+| **Modificare de parametri** | Mesajul `MsgUpdateParams` al unui modul, trimis de contul de modul al guvernanței. Înlocuiește întregul set de parametri al acelui modul. |
+| **Actualizare software**    | Un mesaj `MsgSoftwareUpgrade` care programează o actualizare coordonată a lanțului la o anumită înălțime de bloc. |
+| **Cheltuială comunitară**   | Un mesaj `MsgCommunityPoolSpend` care trimite fonduri din community pool către o adresă de destinatar. |
+| **Expedited (accelerată)**  | Setează `"expedited": true` pentru o perioadă de vot mai scurtă, cu un depozit și un prag de trecere mai mari (vezi mai jos). |
 
 ---
 
@@ -152,21 +161,21 @@ qorechaind query gov params
 
 Parametrii cheie includ:
 
-| Parametru            | Descriere                                                        |
-| -------------------- | ---------------------------------------------------------------- |
-| `min_deposit`        | Depozitul minim necesar pentru ca o propunere să intre la vot   |
-| `max_deposit_period` | Fereastra de timp pentru atingerea depozitului minim            |
-| `voting_period`      | Durata perioadei de vot odată ce o propunere este activă        |
-| `quorum`             | Participarea minimă necesară pentru un vot valid                |
-| `threshold`          | Procentul minim de „yes" pentru a trece (excluzând abținerile)  |
-| `veto_threshold`     | Procentul minim de „no with veto" pentru a respinge și arde depozitul |
+| Parametru            | Descriere                                                        | Valoare curentă (14 oct. 2026) |
+| -------------------- | ---------------------------------------------------------------- | ------------------------------ |
+| `min_deposit`        | Depozitul minim necesar pentru ca o propunere să intre la vot    | 10 QOR (`10000000uqor`)        |
+| `max_deposit_period` | Fereastra de timp pentru atingerea depozitului minim             | 2 zile                         |
+| `voting_period`      | Durata perioadei de vot odată ce o propunere este activă         | 2 zile                         |
+| `quorum`             | Participarea minimă necesară pentru un vot valid                 | 0.334                          |
+| `threshold`          | Procentul minim de „yes" pentru a trece (excluzând abținerile)   | 0.5                            |
+| `veto_threshold`     | Procentul minim de „no with veto" pentru a respinge și arde depozitul | 0.334                     |
+| `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Perioada de vot, pragul de trecere și depozitul pentru propunerile accelerate | 1 zi / 0.667 / 50 QOR |
 
 ---
 
 :::tip
 
-* Construiește-ți reputația înainte de voturile majore de guvernanță pentru a maximiza multiplicatorul puterii tale de vot.
-* Blochează QOR în xQORE pentru un bonus de greutate 2x în guvernanță în interiorul formulei QDRW.
+* Votează înainte de încheierea perioadei de vot; votul tău este numărat doar dacă este exprimat cât timp propunerea se află în perioada de vot.
 * Folosește `no_with_veto` cu grijă. Dacă pragul de veto este atins, depozitul propunerii este ars.
 * Propunerile care nu ating depozitul minim în perioada de depozit sunt eliminate automat.
 

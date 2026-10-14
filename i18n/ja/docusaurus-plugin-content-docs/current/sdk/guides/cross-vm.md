@@ -7,20 +7,36 @@ sidebar_position: 4
 
 # クロス VM ガイド
 
-QoreChain は **EVM、SVM、CosmWasm を並行して実行**しており、`x/crossvm` モジュールにより、
-1 つのネイティブアカウントがそれらのいずれのコントラクトも呼び出せます。SDK は、これらの呼び出しを
-構築、署名、ブロードキャストするための高レベルな `createCrossVMClient` ヘルパーを提供します。
-これには、複数の呼び出しを **3 つすべての VM にまたがる 1 つのアトミックトランザクション**に
-パッキングする機能も含まれます。さらに、メッセージの状態を追跡するための型付き読み取りヘルパーも
-提供します。*EVM 内部から*開始される EVM→ネイティブのルーティングは、依然として `@qorechain/evm` の
-**クロス VM ブリッジプリコンパイル**を通じてオンチェーンで実行されます。
+QoreChain は **EVM、SVM、CosmWasm を並行して**実行し、`x/crossvm`
+モジュールによって、単一のネイティブアカウントがそのいずれのコントラクトも呼び出せます。SDK は
+これらの呼び出しを構築・署名・ブロードキャストするための高レベルヘルパー `createCrossVMClient` を提供しており、
+複数の呼び出しを**3 つの VM すべてにまたがる 1 つのアトミックなトランザクション**にまとめることもできます。
+さらに、メッセージの状態を追跡するための型付き読み取りヘルパーもあります。*EVM 内部から*
+開始される EVM→ネイティブのルーティングは、引き続き `@qorechain/evm` の**クロス VM ブリッジ
+プリコンパイル**を介してオンチェーンで実行されます。
+
+:::caution 現時点で動作するもの
+クロス VM 呼び出しは、対象レーンが利用可能な範囲でのみ利用できます:
+
+- `MsgCrossVMCall` は **メインネット**ではチェーンのサーキットブレーカーによって無効化されています
+  （`GET /cosmos/circuit/v1/disable_list` に `/qorechain.crossvm.v1.MsgCrossVMCall` が列挙されています）。
+  テストネットでは有効です。
+- SVM のトランザクションレーンはネットワーク全体で無効化されており、CosmWasm のアップロードと
+  インスタンス化は許可制です（メインネットにはコントラクトがありません）。また、EVM
+  ブリッジプリコンパイルは有効ではありません（
+  [EVM プリコンパイル](/developer-guide/evm-precompiles#network-status)を参照）。
+- 以下の型付き REST 読み取りヘルパーは、公開ゲートウェイが提供していないルートを呼び出します。
+  代わりに `connectQueryClients(rpc).crossvm` でメッセージを読み取ってください。
+- すべての Native パスのトランザクションと同様に、クロス VM 呼び出しもハイブリッド署名を
+  持たなければなりません（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
+:::
 
 ## 統合されたクロス VM 呼び出し
 
-`createCrossVMClient` は `MsgCrossVMCall`（タイプ URL
-`/qorechain.crossvm.v1.MsgCrossVMCall`）をラップするため、`{ typeUrl, value }` を手作業で構築したり、
-ペイロードを自分でエンコードしたりする必要は一切ありません。クライアントの送信者は、接続された
-`TxClient` のアドレスです。`sourceVm` はデフォルトで `"evm"` です。
+`createCrossVMClient` は `MsgCrossVMCall`（型 URL
+`/qorechain.crossvm.v1.MsgCrossVMCall`）をラップするため、`{ typeUrl,
+value }` を手作業で組み立てたり、ペイロードを自分でエンコードしたりする必要はありません。クライアントの送信者は、接続された
+`TxClient` のアドレスです。`sourceVm` のデフォルトは `"evm"` です。
 
 ```ts
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
@@ -38,12 +54,12 @@ const { messageId, result } = await xvm.call({
 });
 ```
 
-`VMType` は `"evm" | "cosmwasm" | "svm"` のいずれかです（`VM_TYPES` 配列としても
-エクスポートされています）。
+`VMType` は `"evm" | "cosmwasm" | "svm"` のいずれかです（`VM_TYPES`
+配列としてもエクスポートされています）。
 
 ### VM ごとのペイロードエンコーディング
 
-呼び出しごとに、ペイロードの形を厳密に **1 つ**選んでください。
+呼び出しごとに、ペイロードの形を**1 つだけ**選んでください:
 
 | 形 | エンコーディング |
 |---|---|
@@ -52,14 +68,15 @@ const { messageId, result } = await xvm.call({
 | `{ cosmwasm: object }` | `JSON.stringify` した後 UTF-8 バイト列に変換（CosmWasm の execute-msg の慣例） |
 | `{ svm: { data: Uint8Array \| Hex } }` | 生のバイト列（SVM 命令ブロブ） |
 
-EVM のパスは `viem` を遅延インポートするため、オプションの `viem` ピアは、実際に `{ evm: ... }`
-ペイロードを使用する場合にのみ必要です。
+EVM パスは `viem` を遅延インポートするため、オプションのピア依存 `viem` は、
+`{ evm: ... }` ペイロードを実際に使用するときにのみ必要です。
 
 ### 構築のみ（オフライン）
 
-`buildCall` はブロードキャストせずに `EncodeObject` を返します。検査、手作業でのバッチ処理、
-別の場所での署名に便利です。（EVM ペイロードは非同期に ABI エンコードされるため、それらについては
-`call`/`callAtomic` を使用するか、事前にエンコードして `{ payload }` を渡してください。）
+`buildCall` はブロードキャストせずに `EncodeObject` を返します。検査、手動でのバッチ処理、
+あるいは別の場所での署名に便利です。（EVM ペイロードは
+非同期で ABI エンコードされるため、それらには `call`/`callAtomic` を使うか、事前にエンコードして
+`{ payload }` を渡してください。）
 
 ```ts
 const msg = xvm.buildCall({
@@ -71,10 +88,10 @@ const msg = xvm.buildCall({
 
 ## アトミックなトリプル VM トランザクション
 
-`callAtomic` は複数の `MsgCrossVMCall` メッセージを **1 つのトランザクションボディ**に
-パッキングするため、それらは単一の署名のもとでアトミックに実行されます。これがトリプル VM の
-目玉機能です。1 つの署名で、EVM + SVM + CosmWasm にまたがる呼び出しが、すべて同時に成立するか、
-まったく成立しないかのいずれかになります。
+`callAtomic` は複数の `MsgCrossVMCall` メッセージを **1 つのトランザクション
+本体**にまとめ、1 つの署名のもとでアトミックに実行します。これがトリプル VM の
+目玉機能です。1 つの署名で、EVM + SVM + CosmWasm にまたがる呼び出しがすべて同時に成功するか、
+まったく成功しないかのどちらかになります:
 
 ```ts
 const { messageIds, result } = await xvm.callAtomic([
@@ -90,21 +107,32 @@ const { messageIds, result } = await xvm.callAtomic([
 
 ## メッセージの読み戻し
 
-`getMessage` は ID でクロス VM メッセージを読み取り、型付きクエリクライアントを優先的に使用し、
-`qor_getCrossVMMessage` JSON-RPC メソッドにフォールバックします。
+`getMessage` は ID でクロス VM メッセージを読み取り、型付きクエリクライアントを優先し、
+`qor_getCrossVMMessage` JSON-RPC メソッド（公開エンドポイントは
+提供していません）にフォールバックします。コンセンサス RPC 経由で読み取る
+型付きクエリクライアントを渡してください:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## クロス VM メッセージの状態を読み取る
 
-`@qorechain/sdk` は `x/crossvm` 上の型付き REST ラッパーをエクスポートします。
+`@qorechain/sdk` は `x/crossvm` の上に型付き REST ラッパーをエクスポートしています。これらは
+`/qorechain/crossvm/v1/{message/{id},pending,params}` を呼び出しますが、公開ゲートウェイは
+これを**提供しておらず**（`api.qore.host` と `api-testnet.qore.host` では `Not Implemented`）、
+そのため公開エンドポイントに対しては `QoreHttpError` を投げます。これらは
+それらのルートを公開しているノード向けです。公開ネットワークでは、上記の `connectQueryClients` を使用してください。
 
 ```ts
 import {
@@ -115,7 +143,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -128,19 +156,22 @@ const pending = await getPendingCrossVmMessages(client.rest);
 const params = await getCrossVmParams(client.rest);
 ```
 
-これらは型付きの形を返します。`CrossVmMessage`、`CrossVmMessageResponse`、
-`PendingCrossVmMessagesResponse`、`CrossVmParamsResponse` です。
+これらは型付きの形を返します: `CrossVmMessage`、`CrossVmMessageResponse`、
+`PendingCrossVmMessagesResponse`、`CrossVmParamsResponse`。
 
-`qor_` JSON-RPC 名前空間を通じてメッセージを読み取ることもできます。
+ノードが提供するようになれば、`qor_` JSON-RPC 名前空間を通じてメッセージを
+読み取ることもできます:
+
+> **まだ提供されていません:** リリース済みのノードビルドで `qor_` JSON-RPC 名前空間を提供しているものはないため、この呼び出しは現時点ですべての公開エンドポイントで `-32601`（メソッドが見つかりません）を返します。[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## EVM ブリッジプリコンパイル
 
-EVM→ネイティブのルーティングは、`@qorechain/evm` で公開されているクロス VM ブリッジ
-プリコンパイルを通じてオンチェーンで実行されます。
+EVM→ネイティブのルーティングは、`@qorechain/evm` で公開されている
+クロス VM ブリッジプリコンパイルを介してオンチェーンで実行されます:
 
 ```ts
 import { PRECOMPILE_ADDRESSES } from "@qorechain/evm";
@@ -149,7 +180,11 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-そのアドレスにある Solidity コントラクトから（または viem 経由で）プリコンパイルを呼び出して
-メッセージをネイティブレイヤーにルーティングし、その後、上記の読み取りヘルパーでその状態を
-追跡してください。完全なプリコンパイル一覧については [EVM ガイド](/sdk/guides/evm) を
-参照してください。
+> **有効ではありません。** クロス VM ブリッジプリコンパイルはメインネットでもテストネットでも
+> 有効ではなく、現在の形では有効化されません。まず再構築が進められています。
+> 現時点で `0x…0901` を呼び出しても空のデータが返るだけで、何もルーティングされません。
+> [EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照してください。
+
+有効になれば、Solidity コントラクト（または viem）がそのアドレスのプリコンパイルを呼び出して
+ネイティブレイヤーへメッセージをルーティングし、上記の読み取りヘルパーでその状態を追跡します。
+プリコンパイルの完全な一覧は [EVM ガイド](/sdk/guides/evm)を参照してください。

@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChainは、プロトコルレベルの機能をSolidityに直接公開する **6つのカスタムプリコンパイル済みコントラクト** でQoreChain EVM Engineを拡張しています。これらのプリコンパイルは、ポスト量子暗号、AIリスクスコアリング、クロスVMメッセージング、そしてPRISMコンセンサスパラメータへのオンチェーンアクセスを提供します。
 
-:::note
-プリコンパイルは、**`qorechain-vladi`** メインネット（EVMチェーンID **9801**、2026年6月7日よりチェーンバージョン **v3.1.97** で稼働中）と **`qorechain-diana`** テストネット（EVMチェーンID **9800**）の両方で利用できます。すべての例は **ポート8545** のJSON-RPCエンドポイントを使用します。
+:::warning メインネットとテストネットではまだ有効化されていません
+以下の 6 つの QoreChain プリコンパイルは**ノードにコンパイルされていますが、まだ有効化されていません**。対象は **`qorechain-vladi`** メインネット（EVM チェーン ID **9801**）と **`qorechain-diana`** テストネット（EVM チェーン ID **9800**）の両方です。EVM は `active_static_precompiles` パラメータに記載されたアドレスだけをディスパッチし、このリストは両ネットワークで空です。チェーンアップグレードで有効化されるまで、これらのアドレスへの呼び出しは**成功し、空のデータ（`0x`）を返します**。リバートもエラーも返しません。いずれかに頼る前に、[ネットワークの状況](#network-status)を確認してください。
 :::
+
+## ネットワークの状況 {#network-status}
+
+| プリコンパイル | アドレス | `qorechain-vladi` (メインネット) | `qorechain-diana` (テストネット) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | 未有効化 | 未有効化 |
+| PQC Key Status | `0x…0A02` | 未有効化 | 未有効化 |
+| AI Risk Score | `0x…0B01` | 未有効化 | 未有効化 |
+| AI Anomaly Check | `0x…0B02` | 未有効化 | 未有効化 |
+| PRISM Consensus Params | `0x…0C01` | 未有効化 | 未有効化 |
+| CrossVM Bridge | `0x…0901` | 未有効化 | 未有効化 |
+
+有効化にはチェーンアップグレードが必要で、段階的に行う予定です。まず読み取り専用のPQCとコンセンサスのプリコンパイル、次に読み取り専用の固定小数点パスが整った段階でAIの2つ、そしてCrossVMブリッジはジャーナリング、価値チェック、クロスVMサーキットブレーカーを備えて再構築された後にのみ有効化されます。この表は、いずれかを有効化するアップグレードと同じ作業で更新されます。
+
+現在のリストはご自身で確認できます(空の場合はどれも有効化されていません):
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### 空の戻りデータへの備え {#guard}
+
+無効なアドレス(またはQoreChain以外のアドレス)はデータなしで成功を返すため、低レベル呼び出しの生の戻りバイトは、長さを確認せずに読み取らないでください。`abi.decode` と型付きインターフェース呼び出しは空データでリバートしますが、これは安全な結果です。手書きの低レベル呼び出しでは、明示的に確認する必要があります。
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+これらのアドレスに価値を送らないでください。payableではなく、無効なプリコンパイルのアドレスに送られた価値はそこに残り、回収する手段はありません。
 
 ---
 
 ## プリコンパイルアドレスマップ
 
+ガスの数値は、プリコンパイルが有効化された後にノードが課金する額です(per byte は呼び出し入力の1バイトあたりを意味します)。
+
 | プリコンパイル          | アドレス                                      | ベースガス        | 説明                                             |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | 同期的なクロスVM呼び出し（EVMからCosmWasm）        |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | 同期的なクロスVM呼び出し（EVMからCosmWasm）        |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | ML-DSA-87ポスト量子署名を検証                      |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | アカウントに登録済みのPQC鍵があるかを確認          |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | トランザクションデータのAI生成リスクスコアを取得    |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**ガスコスト:** ベース25,000 + 入力データ1バイトあたり8ガス。一般的なML-DSA-87検証（2592 + 4627 + メッセージのバイト数）では、おおよそ80,000〜90,000ガスを見込んでください。
+**ガスコスト:** ベース25,000 + 入力データ1バイトあたり8ガス。入力はABIエンコードされた呼び出し(公開鍵2592バイト、署名4627バイト、メッセージ、さらにABIオフセットとパディング)であるため、一般的なML-DSA-87検証のコストはおおよそ85,000〜90,000ガスです。
 
 ### PQC Key Status — アカウント登録を確認する
 
@@ -156,7 +191,7 @@ contract PQCChecker {
 
 **ガスコスト:** 一律2,500。
 
-### AI Risk Score — トランザクションリスクを評価する
+### AI Risk Score — トランザクションのリスクを評価する
 
 ```solidity
 import "./interfaces/IQoreAI.sol";
@@ -177,17 +212,19 @@ contract RiskGate {
 
 **リスクレベル:**
 
-| レベル    | 値    | スコア範囲（bps）  |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| レベル   | 値 |
+| -------- | ----- |
+| SAFE     | 0     |
+| LOW      | 1     |
+| MEDIUM   | 2     |
+| HIGH     | 3     |
+| CRITICAL | 4     |
+
+レベルは、AIエンジンがそのトランザクションに付けた重大度ラベルに由来します。スコアはベーシスポイント(0 - 10000)で返されます。スコア範囲とレベルの間に固定の対応関係はないため、スコアのしきい値ではなく `level` に基づいて判定してください。
 
 **ガスコスト:** 一律50,000。
 
-### AI Anomaly Check — 不審な送金をフラグ付けする
+### AI Anomaly Check — 不審な送金にフラグを立てる
 
 ```solidity
 contract AnomalyGuard {
@@ -227,35 +264,25 @@ contract ConsensusReader {
 
 **ガスコスト:** 一律1,500。
 
+:::note
+現在のノードビルドでは、`rlConsensusParams` はライブのPRISMチューニング値ではなく、固定のプレースホルダーのデフォルト値を返します(たとえば、実測のブロック時間 — メインネットで約3.2秒、テストネットで約1.0秒 — は報告されません)。これをライブのコンセンサスパラメータに接続することは、有効化作業の一部です。
+:::
+
 ### CrossVM Bridge — EVMからCosmWasmを呼び出す
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+CrossVMブリッジのプリコンパイルは、現在の形では有効化**されません**。呼び出し元コントラクトでのリバートがCosmWasm側も取り消すように、価値の転送が拒否されるように、EVMからEVMへの再入が拒否されるように、そしてクロスVMサーキットブレーカーが適用されるように、再構築されています。それまでは、EVMからCosmWasmへの同期パスは存在しません。`MsgCrossVMCall` メッセージパス(これ自体も現在メインネットでは無効化されています)については、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+ノードはcalldataを `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`(4バイトのセレクター、続いてABIエンコードされた引数)としてデコードします。ドキュメント化されている用途はEVMからCosmWasmへの呼び出しですが、再構築に伴いABIは変更される可能性があります。
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**ガスコスト:** ベース50,000 + 対象コントラクトの実行コスト。詳細は[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+**ガスコスト:** ベース50,000 + 入力1バイトあたり4ガス、さらに対象コントラクトの実行コスト。詳細は[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
 
 ---
 
 ## インターフェースファイルの場所
 
-Solidityインターフェースファイルは、直接インポートできるようにリポジトリ内で利用できます。
+Solidityのインターフェースファイルは、直接インポートできるようにリポジトリで公開されています。
 
 ```
 contracts/
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 HardhatまたはFoundryプロジェクトにインストールします。
@@ -273,7 +299,7 @@ HardhatまたはFoundryプロジェクトにインストールします。
 cp -r contracts/interfaces/ my-project/contracts/interfaces/
 ```
 
-あるいは、Solidityファイル内でインポートパスを介して参照します。
+または、Solidityファイル内でインポートパスを使って参照します。
 
 ```solidity
 import "./interfaces/IQorePQC.sol";
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — クロスVMメッセージングの完全なドキュメント
 * [EVM開発](/developer-guide/evm-development) — Solidityコントラクトのデプロイ
-* [アカウントアブストラクション](/developer-guide/account-abstraction) — セッションキーを備えたプログラマブルアカウント
+* [アカウントアブストラクション](/developer-guide/account-abstraction) — リンク済みウォレットのオーセンティケーターと支出ルール(モジュールは現在無効)

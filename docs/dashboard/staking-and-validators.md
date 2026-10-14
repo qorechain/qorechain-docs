@@ -9,14 +9,14 @@ sidebar_position: 8
 
 The **Validators** page (`/validators`) lets you review the network's validators — it is a read-only browser, with no wallet connection and no delegate button on it. The actual staking actions (delegate, undelegate, claim) live on the **Wallet** page instead, under its **Stake / Delegate** and **Rewards** tabs, once your QoreX wallet is connected there. Delegating helps secure the network and earns staking rewards. For the concepts behind delegation and rewards, see [Staking & Delegation](/user-guide/staking-and-delegation).
 
-QoreChain staking is signed post-quantum, so the dashboard never holds a key that could sign a delegation. Every staking action below works the same way: you compose the request on the dashboard (which validator, how much), then approve and sign it **in your connected QoreX wallet** — the app, or the browser extension on **version 0.2.2 or later** (see [which version is live where](/qorex/overview#platform-availability); on an older extension build the Dashboard will ask you to update rather than silently failing) — exactly like the [Send flow](/dashboard/wallet#mainnet). The dashboard sends only the parameters through a `qorex://tx?...` link; QoreX reconstructs, signs, and broadcasts the actual transaction itself. Connect your wallet first — see [Use the Wallet on mainnet](/dashboard/wallet#mainnet).
+QoreChain staking is signed post-quantum, so the dashboard never holds a key that could sign a delegation. Every staking action below works the same way: you compose the request on the dashboard (which validator, how much), then approve and sign it **in your connected QoreX wallet** — the app or the browser extension (see [which version is live where](/qorex/overview#platform-availability)) — exactly like the [Send flow](/dashboard/wallet#mainnet). The dashboard sends only the parameters through a `qorex://tx?...` link; QoreX reconstructs, signs, and broadcasts the actual transaction itself. Connect your wallet first — see [Use the Wallet on mainnet](/dashboard/wallet#mainnet).
 
-Staking, delegation, and validation happen exclusively on the native (Cosmos) lane, using the hybrid post-quantum signature — never through an EVM precompile. This is a permanent security property, not a temporary gap: the EVM lane runs a single ante decorator, so the validator-license, minimum-self-bond, and PQC checks that live in the native lane's ante would all be bypassed if staking were exposed there. A MetaMask-linked address can send and receive QOR (see [Use the Wallet on mainnet](/dashboard/wallet#mainnet)), but it cannot stake — only a QoreX-connected address can.
+Staking, delegation, and validation happen exclusively on the native (Cosmos) lane, using the hybrid post-quantum signature — never through an EVM precompile. This is a permanent security property, not a temporary gap: the EVM lane runs a single ante decorator, so the validator-license, minimum-self-bond, and PQC checks that live in the native lane's ante would all be bypassed if staking were exposed there. A MetaMask-linked address can receive QOR and, with an open EVM window, send it (see [Sending with MetaMask](/dashboard/wallet#send-metamask)), but it cannot stake — only a QoreX-connected address can.
 
 ## Review validators
 
-:::caution On mainnet, this page currently shows testnet validators
-The **Validators** page on mainnet is showing the testnet validator set (4 nodes) rather than the actual mainnet set (8 nodes) — a backend data issue, not something wrong with your connection or account. Don't use this page to decide who mainnet's validators are; use the [block explorer](https://explore.qore.network) or a direct chain query (`qorechaind query staking validators`) instead. This is purely an informational mismatch, though: the **Delegate** validator picker on the [Wallet page's Stake tab](/dashboard/wallet#mainnet) reads a different, correct route straight from the chain, so you cannot actually pick or delegate to a validator that doesn't exist on mainnet — you'll just see a different (and correct) list once you get there.
+:::caution On mainnet, this page currently shows the testnet validator set
+The **Validators** page (`/validators`) is showing the **testnet** validator set while the Dashboard is on mainnet — a backend data issue, not something wrong with your connection or account. The numbers on the summary cards (active validators, bonded QOR, block height) are testnet's too. Don't use this page to decide who mainnet's validators are; use the [block explorer](https://explore.qore.network) or a direct chain query (`qorechaind query staking validators`) instead. This is purely an informational mismatch, though: the **Delegate** validator picker on the [Wallet page's Stake tab](/dashboard/wallet#mainnet) reads a different, correct route straight from the chain, so you cannot actually pick or delegate to a validator that doesn't exist on mainnet — you'll just see a different (and correct) list once you get there.
 :::
 
 The page opens with summary cards for the active validator count, total bonded QOR, average commission, and average uptime. Below that is the validator list. Each validator row shows:
@@ -24,7 +24,7 @@ The page opens with summary cards for the active validator count, total bonded Q
 - A **rank** and the validator's **moniker** (name), with its address and a copy button.
 - **Voting power** — the validator's bonded stake and its share of the total.
 - **Commission** — the percentage the validator keeps from rewards.
-- **APY** — shown as an em dash (—) rather than a number. QoreChain's emission comes from a custom module the standard yield-estimation endpoint can't see, so a computed figure here would be a guess dressed up as data; showing it as unavailable was a deliberate fix, not a bug. There is currently no endpoint for computing a live, chain-backed staking APY — treat any specific percentage you see quoted elsewhere as unverified, and don't assume a number that appears here later is automatically correct: the underlying formula assumes the standard Cosmos inflation path, which isn't how this chain's emission actually reaches stakers, and would need to be checked against the real mechanism before being trusted.
+- **APY** — shown as an em dash (—): the Dashboard does not publish a computed staking yield, so treat any percentage quoted elsewhere as unverified.
 - **Status** — for example active or jailed.
 - Operational details: region, uptime, blocks proposed, software version, and last seen.
 
@@ -37,23 +37,23 @@ This page is for comparing validators only. To actually delegate to one, go to t
 When picking a validator to delegate to, consider:
 
 - **Commission** — a lower rate leaves more rewards for you, but sustainable operators need a reasonable cut.
-- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning. A validator jails when it misses signing on more than 5% of blocks within a 10,000-block window (roughly six hours to accumulate) — it earns nothing, for you or itself, until it unjails. A downtime jailing lasts a fixed **600 seconds (10 minutes)** and costs the validator **1% of its stake**; double-signing is a separate, more serious infraction that slashes **5%**. These figures are the live, current chain parameters — treat any older figure you see elsewhere as superseded.
-- **Voting power** — spreading stake across validators supports decentralization. On the Delegate panel, validators are listed smallest-first for exactly this reason.
+- **Uptime and status** — favor active validators with strong uptime; a jailed validator is not earning. A validator is jailed when it signs fewer than 5% of the blocks in a 10,000-block window — in other words it has missed more than 95% of them, which takes roughly 8.5 hours of being offline on mainnet (about 3.2 seconds per block; block times differ on testnet) — it earns nothing, for you or itself, until it unjails. A downtime jailing lasts a fixed **600 seconds (10 minutes)** and costs the validator **1% of its stake**; double-signing is a separate, more serious infraction that slashes **5%**. These figures are the live, current chain parameters — treat any older figure you see elsewhere as superseded.
+- **Voting power** — spreading stake across validators supports decentralization. On the Delegate panel the first slot rotates among the smaller half of the validators — the largest can never hold it — and the rest are listed smallest first, for exactly this reason.
 
 ## Delegate, redelegate, undelegate, and claim rewards
 
-All four actions live on the **Wallet** page (`/dashboard/wallet`), not on the Validators page. Open the wallet, connect QoreX if you haven't already (see [Use the Wallet on mainnet](/dashboard/wallet#mainnet)), then use the **Stake / Delegate** tab for delegating and undelegating, and the **Rewards** tab for claiming.
+All four actions live on the **Wallet** page (`/wallet`), not on the Validators page. Open the wallet, connect QoreX if you haven't already (see [Use the Wallet on mainnet](/dashboard/wallet#mainnet)), then use the **Stake / Delegate** tab for delegating and undelegating, and the **Rewards** tab for claiming.
 
 ### Delegate {#delegate}
 
 1. On the **Wallet** page, select the **Stake / Delegate** tab.
 2. In the **Delegate QOR** panel, check the info box at the top — it shows your currently bonded total against the light-node stake threshold, and whether you already meet it. This threshold is checked against your **total delegated stake across all validators combined**, not per validator, so a shortfall can be split between them — there's no way to "delegate to a light node" directly, since delegation always targets a validator and light-node eligibility is a separate check on your total.
-3. Open the **Validator** dropdown and choose one. Validators are listed smallest-stake-first.
+3. Open the **Validator** dropdown and choose one. The first entry is drawn at random from the smaller half of the validators and can change when you reload; the rest are listed smallest-stake-first. Jailed validators are not offered.
 4. Enter an **Amount (QOR)**.
 5. Read the note under the amount field: unbonding takes 21 days, and once bonded the QOR cannot be moved or sold until that period passes.
 6. If the panel shows a warning that this address doesn't have enough spendable QOR to cover the fee, send a little spendable QOR to it first — vesting or bonded coins cannot pay the fee. The **Continue in QoreX** button stays disabled until this is resolved.
 7. Click **Continue in QoreX** (it reads **Preparing…** while the request is being created).
-8. The panel now shows **Approve it in QoreX** with an **Open QoreX** link and a request ID. QoreX will show you the validator and amount before signing — nothing is sent until you approve it there.
+8. The panel now shows **Approve it in QoreX** with an **Open QoreX** link and a request ID. QoreX will show you the validator and amount before signing — nothing is sent until you approve it there. If the QoreX browser extension is detected, an **Approve in the browser extension** button is offered as well.
 9. Open QoreX (the link/deeplink does this) and approve the delegation. QoreX builds, signs, and broadcasts the transaction; the dashboard never sees your key.
 
 ### Redelegate {#redelegate}
@@ -84,7 +84,7 @@ Undelegated QOR does not arrive today. It sits in a **21-day unbonding period** 
 6. Immediately above the confirm button, the warning appears a second time: the QOR arrives in 21 days, not today, and earns nothing until then. This is deliberate repetition, not a docs typo — read it again before continuing.
 7. If the address can't cover the fee (bonded coins can't pay it — you need a little spendable QOR here first), the panel warns you and disables the button.
 8. Click **Continue in QoreX** (**Preparing…** while the request is created).
-9. The panel shows **Approve it in QoreX** with an **Open QoreX** link and a request ID — QoreX displays the validator and amount before you sign.
+9. The panel shows **Approve it in QoreX** with an **Open QoreX** link and a request ID — QoreX displays the validator and amount before you sign. If the QoreX browser extension is detected, an **Approve in the browser extension** button is offered as well.
 10. Open QoreX and approve. It signs and broadcasts the undelegation; the QOR becomes spendable again only after the 21-day unbonding period ends.
 
 ### Claim rewards {#claim}
@@ -93,7 +93,7 @@ Undelegated QOR does not arrive today. It sits in a **21-day unbonding period** 
 2. The **Staking rewards** panel reads your accrued rewards across every validator you're delegated to. If nothing is staked from this address, it says so and there is nothing to claim.
 3. Otherwise it shows the total waiting to be claimed, plus a line per validator with the amount accrued there. Rewards accrue continuously and are never lost by waiting — there's no deadline.
 4. Click **Claim in QoreX**. This is claim-all: it claims the accrued rewards from every validator shown, in one request — there is no per-validator claim button.
-5. Approve the claim in QoreX (via the **Open QoreX** link) to sign and broadcast it.
+5. Approve the claim in QoreX (via the **Open QoreX** link) to sign and broadcast it. If the QoreX browser extension is detected, an **Approve in the browser extension** button is offered as well.
 
 :::note Unbonding period
 Undelegated QOR goes through a 21-day unbonding period before it becomes spendable again, during which it does not earn rewards. See [Staking & Delegation](/user-guide/staking-and-delegation) for details.

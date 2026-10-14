@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain met en œuvre une **architecture de chaînes hiérarchique à 4 niveaux** via le module `x/multilayer`. La chaîne principale sert de racine de règlement et de confiance, tandis que les couches subsidiaires (sidechains, paychains et rollups) prennent en charge des charges de travail spécialisées avec différents compromis de performance et de sécurité.
 
+:::caution Capacité à un stade précoce
+Le module est déployé sur le mainnet (version de chaîne **v3.2.1**) et sur le testnet, mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau**. Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur.
+:::
+
 ---
 
 ## Vue d'ensemble du système
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ La chaîne principale est la racine de confiance de l'ensemble de l'écosystème
 
 | Propriété       | Valeur                                                                          |
 | --------------- | ------------------------------------------------------------------------------ |
-| Consensus       | CPoS Triple-Pool complet (voir [Mécanisme de consensus](/architecture/consensus-mechanism)) |
+| Consensus       | Consensus QoreChain (voir [Mécanisme de consensus](/architecture/consensus-mechanism) pour ce qui est branché aujourd'hui) |
 | Sécurité        | Sécurisé par PQC avec signatures Dilithium-5                                    |
 | Rôle            | Couche de règlement, stockage des ancres d'état, moteur de routage QCAI, racine de confiance |
-| Temps de bloc   | \~5 secondes                                                                   |
+| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,0 seconde sur le testnet (mesuré en octobre 2026) |
 
 Toutes les couches subsidiaires ancrent périodiquement leurs racines d'état à la chaîne principale via des schémas d'engagement hiérarchiques (HCS).
 
@@ -89,14 +93,14 @@ Les paychains sont optimisées pour les **microtransactions à haute fréquence*
 
 ### Rollups
 
-Les rollups sont des **chaînes spécifiques à une application** déployées via le Rollup Development Kit (`x/rdk`). Elles s'enregistrent comme type de couche rollup au sein du module multilayer.
+Les rollups sont des **chaînes spécifiques à une application** déployées via le Rollup Development Kit (`x/rdk`). Lorsqu'un rollup est créé, le RDK enregistre une couche pour lui dans le module multilayer (comme couche de type `sidechain`, voir ci-dessous).
 
 | Paramètre                 | Valeur                                      |
 | ------------------------- | ------------------------------------------- |
 | Modes de règlement        | 4 (optimistic, zk, based, sovereign)        |
-| Rollups actifs maximum    | 100                                         |
-| Mise minimale du créateur | 10,000 QOR                                  |
-| Type de couche            | `rollup`                                    |
+| Rollups enregistrés maximum | 100 (`max_rollups`) ; mais seules 10 couches de type sidechain peuvent exister à la fois (`max_sidechains`), si bien qu'au plus 10 rollups peuvent avoir une couche ancrable |
+| Mise minimale du créateur | 10,000 QOR pour le rollup, plus 1,000 QOR de mise d'enregistrement de la couche (`min_sidechain_stake`) |
+| Type de couche            | Les rollups enregistrés via le RDK utilisent le type de couche `sidechain` (le type de couche `rollup` est défini mais n'est pas encore utilisé par `x/rdk`) |
 | Domaines cibles           | DeFi, Gaming, NFT, Enterprise               |
 
 Le déploiement et la configuration des rollups sont traités en détail dans le [Rollup Development Kit](/architecture/rollup-development-kit).
@@ -162,7 +166,7 @@ Les ancres sont soumises à la chaîne principale via `MsgAnchorState`. Le keepe
 
 1. **La couche existe et est active** — Le keeper vérifie que la couche existe dans l'état et possède actuellement le statut `active`.
 2. **Intervalle minimal d'ancrage écoulé** — Le keeper vérifie qu'au moins `min_anchor_interval` blocs (par défaut : 100) se sont écoulés depuis la dernière ancre de cette couche.
-3. **Signature agrégée PQC** — Le keeper s'assure que la signature agrégée PQC est présente et valide pour les données de l'ancre.
+3. **Signature agrégée PQC** — Le keeper s'assure que la signature agrégée PQC est présente et valide pour les données de l'ancre. La signature est vérifiée par rapport à la clé ML-DSA-87 enregistrée du **créateur de la couche** ; une ancre est refusée lorsque le créateur n'a enregistré aucune clé.
 
 ### Période de contestation
 
@@ -170,14 +174,14 @@ Chaque ancre entre dans une **période de contestation** de **24 heures** (86 40
 
 Une fois la période de contestation expirée sans contestation aboutie, l'ancre est considérée comme finalisée.
 
-### Lecture des ancres
+### Lecture des ancres {#reading-anchors}
 
-À partir de la version de chaîne **v3.1.80**, les ancres sont également **lisibles** via le service de requête multilayer. Deux requêtes exposent l'état des ancres à la fois via gRPC et REST :
+Les ancres sont **lisibles** via le service de requête multilayer. Deux requêtes exposent l'état des ancres à la fois via gRPC et REST :
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — renvoie la dernière ancre d'état finalisée pour une couche.
-* **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — renvoie l'historique des ancres pour une couche.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — renvoie la dernière ancre d'état d'une couche.
+* **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — renvoie l'historique des ancres d'une couche.
 
-Étant donné que chaque ancre porte une signature Dilithium-5 sur le message canonique `layer_id || layer_height || state_root || validator_set_hash` (vérifiée par rapport à la clé PQC enregistrée du créateur de la couche), un client peut récupérer une ancre et la vérifier **hors ligne**, sans faire confiance au nœud servant la requête. Il s'agit de la primitive on-chain qui sous-tend les [reçus de règlement quantiquement sûrs](/rollups/settlement-receipts) du Rollup Development Kit.
+Chaque ancre porte une signature Dilithium-5 du créateur de la couche sur le message `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Une version plus récente de la chaîne modifie le message signé ; les clients ne doivent donc pas le coder en dur. Une signature prouve que la clé enregistrée du créateur a signé ces octets ; l'existence de l'ancre est une question qui relève de la chaîne, de sorte qu'un vérificateur doit lire l'ancre auprès d'un nœud de confiance. Aucune couche ni aucune ancre n'existe encore sur l'un ou l'autre réseau. Il s'agit de la primitive on-chain qui sous-tend les [reçus de règlement](/rollups/settlement-receipts) du Rollup Development Kit.
 
 ---
 

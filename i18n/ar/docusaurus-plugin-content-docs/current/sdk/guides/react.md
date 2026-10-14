@@ -15,7 +15,22 @@ sidebar_position: 7
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-إنّ `react` (>=18) هو اعتمادية نظيرة؛ و`@qorechain/sdk` اعتمادية مباشرة.
+إنّ `react` (>=18) هو اعتمادية نظيرة؛ و`@qorechain/sdk` اعتمادية مباشرة،
+مثبّتة على الإصدار نفسه الذي تعمل به العدّة. استخدم `@qorechain/react` **الإصدار 0.8.3 أو أحدث**:
+فالإصدار 0.8.0 يثبّت SDK 0.8.0، الذي يوقّع الصيغة الهجينة الخاطئة على الشبكة الرئيسية،
+وقد تعرض إصدارات 0.8.x الأقدم رصيدًا أو حالة قديمة بعد تغيير العنوان.
+
+:::caution حدود العدّة React على الشبكات الحيّة (0.8.x)
+يرسل `useTx` بالتوقيع الكلاسيكي للمحفظة المتّصلة فقط، وهو ما ترفضه
+الشبكات الحيّة (يتطلّب المسار الأصلي امتداد ML-DSA-87 الهجين)، ولذلك لا يمكن لـ
+`send` / `sendTokens` إدراج معاملة على الشبكة الرئيسية أو شبكة الاختبار؛ استخدم
+[البُناة الهجينة](/sdk/concepts/accounts-pqc#hybrid-signing) في الـ SDK لعمليات الإرسال.
+يقرأ `usePqcStatus` و`<QuantumSafeBadge/>` الدالة `qor_getPQCKeyStatus`، التي لا
+تقدّمها نقاط النهاية العامة (انظر
+[مساحة الأسماء `qor_`](/api-reference/json-rpc-qor_-namespace))، ولذلك لا يمكنهما
+تأكيد مفتاح مقابل `*.qore.host`. أمّا قراءات الرصيد (`useBalance`) واتّصال
+المحفظة فتعمل.
+:::
 
 ## المزوّد
 
@@ -31,9 +46,9 @@ function Root() {
       config={{
         network: "testnet",
         endpoints: {
-          rpc: "https://rpc.testnet.example",
-          rest: "https://rest.testnet.example",
-          evmRpc: "https://evm.testnet.example",
+          rpc: "https://rpc-testnet.qore.host",
+          rest: "https://api-testnet.qore.host",
+          evmRpc: "https://evm-testnet.qore.host",
         },
       }}
     >

@@ -7,234 +7,270 @@ sidebar_position: 2
 
 # Paramètres de la chaîne
 
-Référence consolidée de tous les paramètres de module configurables dans le genesis de QoreChain. Les paramètres sont regroupés par module et peuvent être interrogés à l'exécution avec `qorechaind query <module> params`.
+Référence consolidée des paramètres de module des réseaux QoreChain, regroupés par module. Les paramètres peuvent être interrogés avec `qorechaind query <module> params` lorsque le module dispose d'une requête params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus` ; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` et `gasabstraction` utilisent `config`, et `gasabstraction` n'est interrogeable que sur le testnet), et via REST uniquement pour les routes listées dans la [référence REST / gRPC](/api-reference/rest-grpc-endpoints). REST n'est pas disponible pour `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ni `xqore`.
 
 :::note
-Les valeurs affichées sont les valeurs par défaut du genesis déployé. Les paramètres s'appliquent au mainnet **`qorechain-vladi`** (EVM chain ID **9801**) et au testnet **`qorechain-diana`** (EVM chain ID **9800**), sauf indication contraire.
+Les valeurs affichées ont été lues en direct le 14 octobre 2026 (valeurs du genesis du mainnet, sauf si une proposition de gouvernance les a modifiées ; ces cas sont signalés). Les paramètres s'appliquent au mainnet **`qorechain-vladi`** (EVM chain ID **9801**) et au testnet **`qorechain-diana`** (EVM chain ID **9800**), et sont identiques sur les deux réseaux sauf indication contraire. Les durées exprimées en blocs sont converties au temps de bloc mesuré du mainnet, d'environ 3,2 secondes (le testnet produit un bloc environ chaque seconde).
 :::
 
 ---
 
 ## Module PQC (`x/pqc`)
 
-| Paramètre                   | Type   | Valeur par défaut      | Description                                                            |
-| --------------------------- | ------ | ---------------------- | ---------------------------------------------------------------------- |
-| `hybrid_signature_mode`     | uint   | `2` (requis)           | Mode d'application : 0=désactivé, 1=optionnel, 2=requis (défaut actuel) |
-| `allow_classical_fallback`  | bool   | `false`                | Le repli en mode classique uniquement est fermé ; les transactions cosmos doivent être hybrides |
-| `algorithm_registry`        | array  | ML-DSA-87, ML-KEM-1024 | Algorithmes PQC enregistrés avec contraintes de taille                 |
-| `auto_register_enabled`     | bool   | `true`                 | Enregistre automatiquement les clés PQC à la première transaction hybride |
-| `migration_deadline_height` | uint64 | `0`                    | Hauteur de bloc après laquelle les clés classiques uniquement sont rejetées (0=désactivé) |
-| `migration_grace_period`    | uint64 | `100000`               | Blocs d'avertissement avant l'échéance de migration                    |
+| Paramètre                  | Valeur                     | Description                                                              |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `pqc_primary`              | `true`                     | Les signatures post-quantiques sont le schéma principal                  |
+| `allow_classical_fallback` | `false`                    | Le repli en mode classique uniquement est fermé ; les transactions de la voie Cosmos doivent être hybrides |
+| `min_security_level`       | `5`                        | Niveau de sécurité NIST minimal pour un algorithme enregistré            |
+| `default_migration_blocks` | `1,000,000`                | Durée par défaut d'une migration d'algorithme lancée par la gouvernance (environ 37 jours à des blocs de ≈3,2 s) |
+| `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
+| `hybrid_signature_mode`    | `2` (requis)               | Mode d'application : 0=désactivé, 1=optionnel, 2=requis                  |
+
+Le registre des algorithmes (id 1 `dilithium5`, id 2 `mlkem1024`) fait partie de l'état de la chaîne et non d'un paramètre. Les clés sont enregistrées explicitement avec `MsgRegisterPQCKey` ; il n'existe pas d'enregistrement automatique.
 
 ---
 
 ## Module IA (`x/ai`)
 
-| Paramètre                  | Type   | Valeur par défaut | Description                                       |
-| -------------------------- | ------ | ----------------- | ------------------------------------------------- |
-| `anomaly_weight_volume`    | string | `0.30`            | Poids de l'anomalie de volume dans le scoring de fraude |
-| `anomaly_weight_velocity`  | string | `0.25`            | Poids de l'anomalie de vélocité dans le scoring de fraude |
-| `anomaly_weight_pattern`   | string | `0.25`            | Poids de l'anomalie de motif dans le scoring de fraude |
-| `anomaly_weight_network`   | string | `0.20`            | Poids de l'anomalie de graphe réseau dans le scoring de fraude |
-| `fraud_threshold_low`      | string | `0.30`            | Seuil de score pour une alerte de faible gravité  |
-| `fraud_threshold_medium`   | string | `0.55`            | Seuil de score pour une alerte de gravité moyenne |
-| `fraud_threshold_high`     | string | `0.75`            | Seuil de score pour une alerte de gravité élevée  |
-| `fraud_threshold_critical` | string | `0.90`            | Seuil de score pour une alerte de gravité critique |
-| `circuit_breaker_enabled`  | bool   | `true`            | Active les disjoncteurs QCAI                       |
+La configuration du module (`qorechaind query ai config`) :
+
+| Paramètre           | Valeur                 | Description                                                                 |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| `anomaly_threshold` | `0.7`                  | Score d'anomalie au-delà duquel l'ante handler signale une transaction      |
+| `routing_strategy`  | `reputation_weighted`  | Stratégie de routage                                                        |
+| `risk_threshold`    | `0.8`                  | Seuil du score de risque                                                    |
+| `max_tx_per_minute` | `600`                  | Limite de transactions par émetteur sur la voie Cosmos, comptée sur une fenêtre de 30 blocs (environ 96 s à des blocs de ≈3,2 s ; le nom est historique). Appliquée depuis v3.2.0 ; la valeur par défaut est 10 |
+
+Les poids de scoring de fraude et les seuils de gravité décrits sur la page [Moteur d'IA](/architecture/ai-engine) sont des constantes du détecteur, et non des paramètres de module.
 
 ---
 
 ## Module Réputation (`x/reputation`)
 
-| Paramètre      | Type   | Valeur par défaut | Description                                          |
-| -------------- | ------ | ----------------- | ---------------------------------------------------- |
-| `alpha`        | string | `0.30`            | Poids du score de disponibilité (S\_i) dans la formule de réputation |
-| `beta`         | string | `0.25`            | Poids du score de participation (P\_i)              |
-| `gamma`        | string | `0.25`            | Poids du score communautaire (C\_i)                 |
-| `delta`        | string | `0.20`            | Poids du score d'ancienneté (T\_i)                  |
-| `decay_lambda` | string | `0.01`            | Facteur de décroissance temporelle exponentielle pour les scores historiques |
+| Paramètre   | Valeur | Description                                          |
+| ----------- | ------ | ---------------------------------------------------- |
+| `alpha`     | `0.30` | Poids du score de disponibilité (S\_i) dans la formule de réputation |
+| `beta`      | `0.35` | Poids du score de participation (P\_i)               |
+| `gamma`     | `0.20` | Poids du score communautaire (C\_i)                  |
+| `delta`     | `0.15` | Poids du score d'ancienneté (T\_i)                   |
+| `lambda`    | `1000` | Échelle de décroissance temporelle pour les scores historiques |
+| `min_score` | `0.10` | Plancher d'un score de réputation                    |
 
-Formule de réputation : `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i` avec une décroissance temporelle exponentielle appliquée par époque.
+Formule de réputation : `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i` avec une décroissance temporelle appliquée aux scores historiques.
 
 ---
 
 ## Module QCA (`x/qca`)
 
-| Paramètre                      | Type   | Valeur par défaut | Description                                    |
-| ------------------------------ | ------ | ----------------- | ---------------------------------------------- |
-| `emerald_pool_weight`          | string | `0.50`            | Poids de proposition de bloc pour le pool Emerald |
-| `sapphire_pool_weight`         | string | `0.30`            | Poids de proposition de bloc pour le pool Sapphire |
-| `ruby_pool_weight`             | string | `0.20`            | Poids de proposition de bloc pour le pool Ruby |
-| `emerald_min_reputation`       | string | `0.80`            | Score de réputation minimal pour le pool Emerald |
-| `sapphire_min_reputation`      | string | `0.50`            | Score de réputation minimal pour le pool Sapphire |
-| `bonding_curve_base_rate`      | string | `0.05`            | Taux de base pour la courbe de bonding du staking |
-| `bonding_curve_multiplier`     | string | `1.50`            | Multiplicateur pour la progression de la courbe de bonding |
-| `slashing_downtime_window`     | int64  | `10000`           | Blocs pour évaluer l'indisponibilité           |
-| `slashing_downtime_threshold`  | string | `0.05`            | Fraction minimale de blocs signés avant slashing |
-| `slashing_downtime_penalty`    | string | `0.01`            | Fraction de slash pour indisponibilité         |
-| `slashing_double_sign_penalty` | string | `0.05`            | Fraction de slash pour double signature        |
-| `qdrw_enabled`                 | bool   | `true`            | Active la pondération dynamique des récompenses |
-| `qdrw_throughput_weight`       | string | `0.40`            | Poids QDRW pour la métrique de débit           |
-| `qdrw_latency_weight`          | string | `0.30`            | Poids QDRW pour la métrique de latence         |
-| `qdrw_security_weight`         | string | `0.20`            | Poids QDRW pour la métrique de sécurité        |
-| `qdrw_decentralization_weight` | string | `0.10`            | Poids QDRW pour la métrique de décentralisation |
-| `qdrw_adjustment_cap`          | string | `0.10`            | Ajustement QDRW maximal sur une seule époque   |
-| `qdrw_adjustment_interval`     | int64  | `100`             | Blocs entre les ajustements QDRW               |
+:::note Implémenté, pas encore actif
+La logique CPoS à triple pool est implémentée dans `x/qca` et ces paramètres sont enregistrés on-chain, mais ils ne sont **pas encore intégrés à la production de blocs, aux récompenses, au slashing ni au décompte de la gouvernance**. Le slashing en vigueur est celui du module standard `x/slashing` (voir [Staking, slashing, gouvernance, frais et EVM](#core-modules)). Voir [Mécanisme de consensus](/architecture/consensus-mechanism).
+:::
+
+La configuration (`qorechaind query qca config`) :
+
+| Paramètre                       | Valeur              | Description                                           |
+| ------------------------------- | ------------------- | ----------------------------------------------------- |
+| `use_reputation_weighting`      | `true`              | Paramètre du genesis pour la pondération par la réputation |
+| `min_reputation_score`          | `0.1`               | Score de réputation minimal                           |
+| `pool_classification_interval`  | `1000` blocs        | Blocs entre deux classifications des pools            |
+| `pool_weight_rpos`              | `0.40`              | Poids de proposition du pool RPoS                     |
+| `pool_weight_dpos`              | `0.35`              | Poids de proposition du pool DPoS                     |
+| `pool_min_delegation_dpos`      | `10,000,000,000 uqor` | Délégation minimale pour le pool DPoS (10 000 QOR)  |
+| `pool_rep_percentile_rpos`      | `70`                | Percentile de réputation pour le pool RPoS            |
+| `bonding_alpha`                 | `0.1`               | Paramètre de la courbe de bonding                     |
+| `bonding_beta`                  | `1.0`               | Paramètre de la courbe de bonding                     |
+| `bonding_phase_multiplier`      | `1.5`               | Multiplicateur de phase de la courbe de bonding       |
+| `slashing_base_rate`            | `0.01`              | Taux de base du slashing progressif                   |
+| `slashing_escalation_factor`    | `1.5`               | Facteur d'escalade du slashing progressif             |
+| `slashing_max_penalty`          | `0.33`              | Pénalité maximale du slashing progressif              |
+| `slashing_decay_halflife`       | `100,000` blocs     | Demi-vie de décroissance du slashing progressif       |
+| `qdrw_enabled`                  | `false`             | Le décompte QDRW est désactivé                        |
+| `qdrw_xqore_multiplier`         | `2.0`               | Poids de xQORE dans la formule QDRW                   |
+| `qdrw_rep_min_multiplier`       | `0.5`               | Borne inférieure du multiplicateur de réputation      |
+| `qdrw_rep_max_multiplier`       | `2.0`               | Borne supérieure du multiplicateur de réputation      |
 
 ---
 
 ## Module Burn (`x/burn`)
 
-| Paramètre           | Type   | Valeur par défaut | Description                                       |
-| ------------------- | ------ | ----------------- | ------------------------------------------------- |
-| `burn_enabled`      | bool   | `true`            | Active le mécanisme de burn des frais             |
-| `validator_share`   | string | `0.37`            | Fraction des frais distribuée aux validateurs de blocs |
-| `burn_share`        | string | `0.30`            | Fraction des frais brûlée de façon permanente     |
-| `treasury_share`    | string | `0.20`            | Fraction des frais envoyée à la trésorerie communautaire |
-| `staker_share`      | string | `0.10`            | Fraction des frais distribuée aux délégateurs     |
-| `light_node_share`  | string | `0.03`            | Fraction des frais distribuée aux nœuds légers    |
+| Paramètre              | Valeur                       | Description                                           |
+| ---------------------- | ---------------------------- | ----------------------------------------------------- |
+| `gas_burn_rate`        | `0.30`                       | Fraction du collecteur de frais brûlée                |
+| `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Frais de burn forfaitaires pour la création d'un contrat |
+| `ai_service_burn_rate` | `0.50`                       | Fraction des frais des services d'IA brûlée           |
+| `bridge_burn_rate`     | `1.00`                       | Fraction des frais de bridge brûlée                   |
+| `failed_tx_burn_rate`  | `0.10`                       | Fraction du gas des transactions échouées brûlée      |
+| `validator_share`      | `0.37`                       | Fraction distribuée aux validateurs                   |
+| `treasury_share`       | `0.20`                       | Fraction envoyée à la trésorerie                      |
+| `staker_share`         | `0.10`                       | Fraction distribuée aux stakers                       |
+| `light_node_share`     | `0.03`                       | Fraction distribuée aux nœuds légers                  |
+| `enabled`              | `true`                       | Indicateur d'activation du module                     |
 
-Les parts doivent totaliser `1.00`. La répartition des frais est de **37 / 30 / 20 / 10 / 3** entre validateurs, burn, trésorerie, stakers et nœuds légers.
+La répartition des frais est de **37 / 30 / 20 / 10 / 3** entre validateurs, burn, trésorerie, stakers et nœuds légers ; les parts doivent totaliser `1.00`. Un `milestone_burn_schedule` existe également. Voir [Tokenomics](/architecture/tokenomics).
 
 ---
 
 ## Module xQORE (`x/xqore`)
 
-| Paramètre            | Type   | Valeur par défaut | Description                                   |
-| -------------------- | ------ | ----------------- | --------------------------------------------- |
-| `min_lock_amount`    | string | `1000000uqor`     | Montant minimal à verrouiller en xQORE        |
-| `min_lock_duration`  | string | `7d`              | Durée de verrouillage minimale                |
-| `max_lock_duration`  | string | `365d`            | Durée de verrouillage maximale                |
-| `penalty_tier_1_pct` | string | `0.50`            | Pénalité de déverrouillage anticipé : 0-25 % du verrouillage écoulé |
-| `penalty_tier_2_pct` | string | `0.30`            | Pénalité de déverrouillage anticipé : 25-50 % du verrouillage écoulé |
-| `penalty_tier_3_pct` | string | `0.15`            | Pénalité de déverrouillage anticipé : 50-75 % du verrouillage écoulé |
-| `penalty_tier_4_pct` | string | `0.05`            | Pénalité de déverrouillage anticipé : 75-100 % du verrouillage écoulé |
-| `pvp_rebase_enabled` | bool   | `true`            | Active la redistribution par rebase PvP       |
+:::caution Pas encore disponible on-chain
+La comptabilité du module xQORE existe, mais les transactions de verrouillage et de déverrouillage, les requêtes et les commandes CLI **ne sont pas encore intégrées aux réseaux en production** : aucun QOR ne peut actuellement être verrouillé et aucun xQORE n'a été émis. Les valeurs ci-dessous correspondent à la configuration du genesis.
+:::
+
+| Paramètre                 | Valeur                 | Description                                          |
+| ------------------------- | ---------------------- | ---------------------------------------------------- |
+| `governance_multiplier`   | `2.0`                  | Multiplicateur de pouvoir de vote pour les détenteurs de xQORE |
+| `min_lock_amount`         | `1,000,000 uqor`       | Montant minimal à verrouiller (1 QOR)                |
+| `penalty_burn_rate`       | `0.0`                  | Fraction des pénalités de sortie brûlée (toutes sont redistribuées) |
+| `rebase_interval`         | `100` blocs            | Blocs entre deux événements de rebase PvP            |
+| `enabled`                 | `true`                 | Indicateur d'activation du module                    |
+
+Pénalités de sortie : 50 % (verrouillage de moins de 30 jours), 35 % (30–90 jours), 15 % (90–180 jours), 0 % (plus de 180 jours). Multiplicateurs de verrouillage : 1,0 / 1,2 / 1,4 / 1,7 / 2,0 à 0 / 90 / 180 / 365 / 730 jours.
 
 ---
 
 ## Module Inflation (`x/inflation`)
 
-| Paramètre         | Type   | Valeur par défaut      | Description                                      |
-| ----------------- | ------ | ---------------------- | ------------------------------------------------ |
-| `epoch_length`    | uint64 | `100`                  | Blocs par époque d'inflation                     |
-| `blocks_per_year` | uint64 | `6311520`              | Estimation des blocs par an (pour le calcul du taux) |
-| `initial_rate`    | string | `0.08`                 | Paramètre de taux d'émission annualisé initial   |
-| `rate_decay`      | string | `0.05`                 | Facteur de décroissance appliqué chaque année    |
-| `min_rate`        | string | `0.02`                 | Paramètre de taux d'émission plancher            |
-| `max_supply`      | string | `1000000000000000uqor` | Plafond d'offre maximale de jetons               |
+| Paramètre              | Valeur                  | Description                                           |
+| ---------------------- | ----------------------- | ----------------------------------------------------- |
+| `emission_mode`        | `fixed`                 | `schedule` (historique) ou `fixed` (depuis v3.1.94)   |
+| `fixed_epoch_emission` | `16,239,000,000 uqor` (16 239 QOR) | Émis par époque en mode fixe               |
+| `max_total_emission`   | `114,285,714,000,000 uqor` (114 285 714 QOR) | Plafond cumulé strict           |
+| `epoch_length`         | `43,200` blocs          | Blocs par époque (environ 38,6 heures à des blocs de ≈3,2 s) |
+| `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Taux annuels historiques, inutilisés en mode fixe |
+| `enabled`              | `true`                  | Indicateur d'activation du module                     |
 
-:::note
-Les paramètres `x/inflation` ci-dessus sont les valeurs par défaut du mécanisme déployé. Selon le modèle économique canonique **tokenomics v2.1**, QoreChain dispose d'une **offre fixe** avec un **budget d'émission fini (pool de 590M)** qui finance les récompenses de staking et d'écosystème. Les valeurs `initial_rate` / `rate_decay` / `min_rate` sont des détails de mécanisme qui régissent la manière dont les émissions sont planifiées au sein de ce budget fini — elles ne constituent **pas** une inflation en pourcentage illimitée de l'offre totale.
-:::
+Le module émet cette émission vers le collecteur de frais jusqu'à ce que le plafond soit atteint. Voir [Tokenomics](/architecture/tokenomics#supply-and-emission). Sur le mainnet, ces valeurs ne sont pas exposées via une route REST.
 
 ---
 
 ## Module Consensus RL (`x/rlconsensus`)
 
-Le module `x/rlconsensus` implémente **PRISM**, la couche d'optimisation par apprentissage par renforcement du moteur de consensus de QoreChain.
+Le module `x/rlconsensus` implémente **PRISM**, la couche d'optimisation par apprentissage par renforcement. Sur les deux réseaux, il est en mode observation : aucun poids de politique n'est chargé, il n'ajuste donc rien. Les quatre messages de contrôle de PRISM sont désactivés par le disjoncteur sur le mainnet (voir [État du disjoncteur](#circuit-breaker)).
 
-| Paramètre                    | Type   | Valeur par défaut | Description                                     |
-| ---------------------------- | ------ | ----------------- | ----------------------------------------------- |
-| `observation_interval`       | uint64 | `10`              | Blocs entre les échantillons d'observation de PRISM |
-| `agent_mode`                 | uint   | `0`               | Mode de l'agent : 0=off, 1=observer, 2=suggérer, 3=auto |
-| `circuit_breaker_enabled`    | bool   | `true`            | Active le disjoncteur de PRISM                   |
-| `circuit_breaker_max_change` | string | `0.10`            | Changement de paramètre maximal par action (10 %) |
-| `circuit_breaker_cooldown`   | uint64 | `100`             | Blocs d'attente après déclenchement du disjoncteur |
-| `reward_throughput_weight`   | string | `0.40`            | Poids de récompense pour le débit               |
-| `reward_latency_weight`      | string | `0.30`            | Poids de récompense pour la latence             |
-| `reward_security_weight`     | string | `0.20`            | Poids de récompense pour la sécurité            |
-| `reward_stability_weight`    | string | `0.10`            | Poids de récompense pour la stabilité           |
-| `ppo_learning_rate`          | string | `0.0003`          | Taux d'apprentissage PPO                        |
-| `ppo_clip_range`             | string | `0.20`            | Plage de clipping PPO                           |
+| Paramètre                        | Valeur         | Description                                                   |
+| -------------------------------- | -------------- | ------------------------------------------------------------- |
+| `enabled`                        | `true`         | Indicateur d'activation du module                             |
+| `observation_interval`           | `10`           | Blocs entre les échantillons d'observation de PRISM           |
+| `agent_mode`                     | `1` (conservative) | Mode de l'agent : 0=shadow, 1=conservative, 2=autonomous, 3=paused |
+| `max_change_conservative`        | `0.10`         | Changement de paramètre maximal par action en mode conservative |
+| `max_change_autonomous`          | `0.25`         | Changement de paramètre maximal par action en mode autonomous |
+| `circuit_breaker_window`         | `50`           | Fenêtre du disjoncteur                                        |
+| `circuit_breaker_threshold`      | `0.50`         | Seuil du disjoncteur                                          |
+| `reward_weight_throughput`       | `0.30`         | Poids de récompense pour le débit                             |
+| `reward_weight_finality`         | `0.25`         | Poids de récompense pour la finalité                          |
+| `reward_weight_decentralization` | `0.20`         | Poids de récompense pour la décentralisation                  |
+| `reward_weight_mev`              | `0.15`         | Poids de récompense pour le MEV                               |
+| `reward_weight_failed_txs`       | `0.10`         | Poids de récompense pour les transactions échouées            |
+| `default_block_time_ms`          | `5000`         | Temps de bloc par défaut dans la base d'observation (et non le temps de bloc réel) |
+| `default_base_gas_price`         | `100`          | Prix de base du gas par défaut dans la base d'observation     |
+| `default_validator_set_size`     | `100`          | Taille par défaut de l'ensemble de validateurs dans la base d'observation |
 
 ---
 
 ## Module Bridge (`x/bridge`)
 
-| Paramètre                       | Type   | Valeur par défaut | Description                                     |
-| ------------------------------- | ------ | ----------------- | ----------------------------------------------- |
-| `min_confirmations_ibc`         | uint64 | `1`               | Confirmations minimales pour les transferts IBC |
-| `min_confirmations_ethereum`    | uint64 | `12`              | Confirmations minimales pour le bridge Ethereum |
-| `min_confirmations_bitcoin`     | uint64 | `6`               | Confirmations minimales pour le bridge Bitcoin  |
-| `circuit_breaker_enabled`       | bool   | `true`            | Active le disjoncteur du bridge                 |
-| `circuit_breaker_max_daily_usd` | string | `10000000`        | Volume de bridge quotidien maximal (équivalent USD) |
-| `circuit_breaker_max_single_tx` | string | `1000000`         | Montant de transfert unique maximal (équivalent USD) |
+:::caution Pas en production
+Les 37 configurations de chaînes sont en statut `pending`, aucun validateur de bridge n'est enregistré, aucune opération de bridge n'a été créée et aucun canal IBC n'est ouvert sur l'un ou l'autre réseau. Voir [Architecture du bridge](/architecture/bridge-architecture).
+:::
+
+`GET /qorechain/bridge/v1/config` :
+
+| Paramètre                  | Valeur                      | Description                                       |
+| -------------------------- | --------------------------- | ------------------------------------------------- |
+| `min_validators`           | `10`                        | Validateurs requis pour l'ensemble d'attestation  |
+| `attestation_threshold`    | `7`                         | Attestations requises                             |
+| `challenge_period_secs`    | `86400`                     | Période de contestation (24 heures)               |
+| `large_transfer_threshold` | `100,000,000,000 uqor` (100 000 QOR) | Les transferts supérieurs à ce montant attendent la fin de la période de contestation |
+| `enabled`                  | `true`                      | Indicateur d'activation du module                 |
+
+Les paramètres propres à chaque chaîne (`min_confirmations`, `max_single_transfer`, `daily_limit`) se trouvent dans la configuration de chaque chaîne, et non dans les paramètres du module.
 
 ---
 
 ## Module Multicouche (`x/multilayer`)
 
-| Paramètre                   | Type   | Valeur par défaut  | Description                                       |
-| --------------------------- | ------ | ------------------ | ------------------------------------------------- |
-| `max_sidechains`            | uint   | `10`               | Nombre maximal de sidechains enregistrées         |
-| `max_paychains`             | uint   | `50`               | Nombre maximal de paychains enregistrées          |
-| `anchor_interval_sidechain` | uint64 | `100`              | Intervalle d'ancrage obligatoire pour les sidechains (blocs) |
-| `anchor_interval_paychain`  | uint64 | `50`               | Intervalle d'ancrage obligatoire pour les paychains (blocs) |
-| `challenge_period`          | string | `7d`               | Durée des contestations de fraude sur les ancres  |
-| `min_sidechain_stake`       | string | `1000000000uqor`   | Stake minimal pour enregistrer une sidechain (1 000 QOR) |
-| `min_paychain_stake`        | string | `100000000uqor`    | Stake minimal pour enregistrer une paychain (100 QOR) |
-| `routing_threshold`         | string | `0.80`             | Seuil de charge déclenchant le routage automatique |
+| Paramètre                      | Valeur           | Description                                       |
+| ------------------------------ | ---------------- | ------------------------------------------------- |
+| `max_sidechains`               | `10`             | Nombre maximal de sidechains enregistrées         |
+| `max_paychains`                | `50`             | Nombre maximal de paychains enregistrées          |
+| `min_anchor_interval`          | `100`            | Intervalle d'ancrage minimal (blocs)              |
+| `max_anchor_interval`          | `1000`           | Intervalle d'ancrage maximal (blocs)              |
+| `default_challenge_period`     | `86400` s        | Période de contestation par défaut (1 jour)       |
+| `min_sidechain_stake`          | `1,000,000,000`  | Stake minimal pour enregistrer une sidechain (1 000 QOR) |
+| `min_paychain_stake`           | `100,000,000`    | Stake minimal pour enregistrer une paychain (100 QOR) |
+| `routing_enabled`              | `true`           | Routage inter-couches activé                      |
+| `routing_confidence_threshold` | `0.6`            | Seuil de confiance pour le routage automatique    |
+| `cross_layer_fee_bundling`     | `true`           | Un seul paiement de frais peut couvrir plusieurs couches |
 
 ---
 
 ## Module Cross-VM (`x/crossvm`)
 
-| Paramètre          | Type   | Valeur par défaut | Description                                    |
-| ------------------ | ------ | ----------------- | ---------------------------------------------- |
-| `max_message_size` | uint64 | `65536`           | Taille maximale d'un message cross-VM en octets (64 Ko) |
-| `max_queue_size`   | uint   | `1000`            | Nombre maximal de messages en attente dans la file cross-VM |
-| `queue_timeout`    | uint64 | `100`             | Blocs avant l'expiration d'un message en attente |
+| Paramètre             | Valeur  | Description                                    |
+| --------------------- | ------- | ---------------------------------------------- |
+| `max_message_size`    | `65536` | Taille maximale d'un message cross-VM en octets (64 Ko) |
+| `max_queue_size`      | `1000`  | Nombre maximal de messages en attente dans la file cross-VM |
+| `queue_timeout_blocks`| `100`   | Blocs avant l'expiration d'un message en attente |
+| `enabled`             | `true`  | Indicateur d'activation du module              |
+
+`MsgCrossVMCall` est désactivé sur le mainnet par le disjoncteur (activé sur le testnet).
 
 ---
 
 ## Module SVM (`x/svm`)
 
-| Paramètre                     | Type   | Valeur par défaut | Description                                  |
-| ----------------------------- | ------ | ----------------- | -------------------------------------------- |
-| `max_program_size`            | uint64 | `10485760`        | Taille binaire maximale d'un programme en octets (10 Mo) |
-| `compute_budget`              | uint64 | `1400000`         | Unités de calcul par défaut par transaction (1,4 M) |
-| `rent_lamports_per_byte_year` | uint64 | `3480`            | Coût de loyer annuel par octet en lamports   |
-| `rent_exemption_threshold`    | string | `2.0`             | Années de loyer requises pour l'exemption    |
-| `max_accounts_per_tx`         | uint   | `64`              | Nombre maximal de comptes référencés par transaction |
+Valeurs du genesis :
+
+| Paramètre               | Valeur       | Description                                  |
+| ----------------------- | ------------ | -------------------------------------------- |
+| `max_program_size`      | `10485760`   | Taille binaire maximale d'un programme en octets (10 Mo) |
+| `max_account_data_size` | `10485760`   | Taille maximale des données d'un compte en octets (10 Mo) |
+| `compute_budget_max`    | `1400000`    | Unités de calcul maximales par transaction (1,4 M) |
+| `lamports_per_byte`     | `3480`       | Coût de loyer par octet en lamports          |
+| `rent_exemption_multi`  | `2.0`        | Années de loyer requises pour l'exemption    |
+| `enabled`               | `true`       | Indicateur d'activation du module            |
+| `svm_slot_offset`       | `0`          | Décalage de slot                             |
+| `default_sig_scheme`    | `0`          | Schéma de signature par défaut               |
+| `max_cpi`               | `4`          | Profondeur maximale d'invocation inter-programmes |
+
+La voie de transactions SVM est désactivée sur l'ensemble du réseau (voir [Réseaux](/appendix/networks)).
 
 ---
 
 ## Module RDK (`x/rdk`)
 
-| Paramètre             | Type   | Valeur par défaut                  | Description                              |
-| --------------------- | ------ | ---------------------------------- | ---------------------------------------- |
-| `max_rollups`         | uint   | `100`                              | Nombre maximal de rollups enregistrés    |
-| `min_stake`           | string | `10000000000uqor`                  | Stake minimal d'un opérateur (10 000 QOR) |
-| `burn_rate`           | string | `0.01`                             | Pourcentage des frais de rollup brûlés (1 %) |
-| `challenge_window`    | string | `7d`                               | Durée de la fenêtre de contestation de fraude |
-| `max_blob_size`       | uint64 | `2097152`                          | Taille maximale d'un blob DA en octets (2 Mo) |
-| `blob_retention`      | uint64 | `432000`                           | Blocs de conservation des blobs DA avant élagage |
-| `max_batches_pending` | uint   | `10`                               | Nombre maximal de lots non finalisés par rollup |
-| `auto_finalize`       | bool   | `true`                             | Active la finalisation automatique par EndBlocker |
-| `settlement_types`    | array  | optimistic, zk, based, sovereign   | Paradigmes de règlement autorisés        |
-| `preset_profiles`     | array  | defi, gaming, nft, enterprise, custom | Préréglages de rollup disponibles     |
+`qorechaind query rdk config` :
+
+| Paramètre                   | Valeur               | Description                                   |
+| --------------------------- | -------------------- | --------------------------------------------- |
+| `max_rollups`               | `100`                | Nombre maximal de rollups enregistrés         |
+| `min_stake_for_rollup`      | `10,000,000,000 uqor`| Stake minimal d'un opérateur (10 000 QOR)     |
+| `rollup_creation_burn_rate` | `0.01`               | Fraction du stake de création brûlée (1 %)    |
+| `default_challenge_window`  | `604,800` s          | Fenêtre de contestation par défaut (7 jours)  |
+| `max_da_blob_size`          | `2,097,152`          | Taille maximale d'un blob DA en octets (2 Mo) |
+| `blob_retention_blocks`     | `432,000`            | Blocs de conservation des blobs DA (environ 16 jours à des blocs de ≈3,2 s) |
+| `max_batches_per_block`     | `10`                 | Nombre maximal de lots traités par bloc       |
+
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau.
 
 ---
 
 ## Module FairBlock (`x/fairblock`)
 
-| Paramètre            | Type   | Valeur par défaut | Description                                 |
-| -------------------- | ------ | ----------------- | ------------------------------------------- |
-| `enabled`            | bool   | `false`           | Active le chiffrement tIBE de FairBlock     |
-| `tibe_threshold`     | uint   | `2`               | Nombre minimal de parts de clé de déchiffrement requises |
-| `decryption_delay`   | uint64 | `1`               | Blocs après finalisation avant déchiffrement |
-| `max_encrypted_size` | uint64 | `4096`            | Taille maximale de la charge utile chiffrée en octets |
+Valeurs du genesis (le module n'a pas de service de requête, elles ne peuvent donc pas être relues en direct) :
+
+| Paramètre            | Valeur  | Description                                 |
+| -------------------- | ------- | ------------------------------------------- |
+| `enabled`            | `false` | Le chiffrement tIBE de FairBlock est désactivé |
+| `tibe_threshold`     | `5`     | Nombre minimal de parts de clé de déchiffrement requises |
+| `decryption_delay`   | `3`     | Blocs après finalisation avant déchiffrement |
+| `max_encrypted_size` | `65536` | Taille maximale de la charge utile chiffrée en octets |
 
 ---
 
 ## Module d'abstraction du gas (`x/gasabstraction`)
 
-| Paramètre         | Type  | Valeur par défaut | Description                                           |
-| ----------------- | ----- | ----------------- | ----------------------------------------------------- |
-| `accepted_tokens` | array | (voir ci-dessous) | Jetons acceptés pour le paiement du gas avec taux de conversion |
-
-**Jetons acceptés par défaut :**
+Configuration du genesis (`enabled = true`, `native_denom = uqor`) :
 
 | Dénomination du jeton | Taux de conversion | Description            |
 | --------------------- | ------------------ | ---------------------- |
@@ -242,4 +278,103 @@ Le module `x/rlconsensus` implémente **PRISM**, la couche d'optimisation par ap
 | `ibc/USDC`            | `1.0`              | USDC ponté via IBC     |
 | `ibc/ATOM`            | `10.0`             | ATOM ponté via IBC     |
 
-Les taux de conversion représentent le nombre d'unités de gas par unité de jeton. Des taux plus élevés signifient que chaque unité de jeton couvre davantage de gas.
+Le taux de conversion est le taux utilisé lors de la conversion de frais payés dans ce jeton.
+
+:::note Aucun canal IBC n'est ouvert
+Aucun canal IBC n'est ouvert sur l'un ou l'autre réseau, donc aucun `ibc/USDC` ni `ibc/ATOM` ne peut encore exister ; les frais sont payés en `uqor`. Le chemin des frais a été remanié dans v3.2.2 (testnet uniquement).
+:::
+
+---
+
+## Module Nœud léger (`x/lightnode`)
+
+| Paramètre                | Valeur             | Description                                          |
+| ------------------------ | ------------------ | ---------------------------------------------------- |
+| `registration_fee`       | `1,000,000 uqor` (1 QOR) | Frais d'enregistrement d'un nœud léger         |
+| `heartbeat_interval`     | `1000` blocs       | Blocs entre deux heartbeats requis (environ 54 minutes à des blocs de ≈3,2 s) |
+| `min_delegated_stake`    | `1,000,000,000 uqor` (1 000 QOR) | Stake minimal délégué par l'opérateur |
+| `reward_share`           | `0.03`             | Part du collecteur de frais réservée aux nœuds légers |
+| `min_uptime_for_rewards` | `0.80`             | Fraction de disponibilité minimale pour être éligible aux récompenses |
+| `max_light_nodes`        | `10,000`           | Nombre maximal de nœuds légers enregistrés           |
+| `heartbeat_grace_period` | `100` blocs        | Période de grâce pour un heartbeat en retard         |
+
+La comptabilité des récompenses est active (`GET /qorechain/lightnode/v1/reward_pool` indique un `max_reward_per_block_per_node` de 1 713 uqor, tel que lu le 14 octobre 2026), mais l'enregistrement est actuellement fermé et aucun nœud léger n'est enregistré. Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+
+---
+
+## Module AMM (`x/amm`)
+
+| Paramètre               | Valeur                        | Description                         |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| `swap_fee_bps`          | `30`                          | Frais de swap (0,30 %)              |
+| `protocol_fee_bps`      | `10`                          | Part des frais de protocole (0,10 %) |
+| `min_liquidity`         | `1000`                        | Liquidité minimale                  |
+| `max_pools_per_creator` | `50`                          | Nombre maximal de pools par créateur |
+| `lp_token_decimals`     | `6`                           | Décimales du jeton LP               |
+| `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | Frais de création d'un pool         |
+| `max_swap_impact_bps`   | `500`                         | Impact de prix maximal d'un swap (5 %) |
+| `enabled`               | `true`                        | Indicateur d'activation du module   |
+
+Aucun pool n'existe encore sur le mainnet ni sur le testnet, et `MsgPausePool` / `MsgResumePool` sont désactivés sur le mainnet.
+
+---
+
+## Comptes intelligents (`x/abstractaccount`)
+
+:::caution Désactivé sur les deux réseaux
+`enabled` vaut `false` : l'enregistrement d'un authentificateur, l'exécution via un authentificateur et la création d'un compte intelligent sont tous refusés tant que le module est désactivé. Vérifiez `GET /qorechain/abstractaccount/v1/config` avant de construire sur ces fonctionnalités.
+:::
+
+| Paramètre             | Valeur   | Description                      |
+| --------------------- | -------- | -------------------------------- |
+| `enabled`             | `false`  | Indicateur d'activation du module |
+| `max_session_keys`    | `10`     | Nombre maximal de clés de session par compte |
+| `max_spending_rules`  | `5`      | Nombre maximal de règles de dépense |
+| `default_session_ttl` | `86400` s| Durée de vie par défaut d'une clé de session |
+
+---
+
+## Staking, slashing, gouvernance, frais et EVM {#core-modules}
+
+Modules standard du Cosmos SDK et de l'EVM, lus en direct (identiques sur les deux réseaux sauf indication contraire).
+
+| Module | Paramètre | Valeur |
+| --- | --- | --- |
+| Staking | `unbonding_time` | 1,814,400 s (21 jours) |
+| | `max_validators` | 100 |
+| | `max_entries` | 7 |
+| | `historical_entries` | 10,000 |
+| | `bond_denom` | `uqor` |
+| | `min_commission_rate` | 0 |
+| Slashing | `signed_blocks_window` | 10,000 blocs (environ 8,9 heures à des blocs de ≈3,2 s) |
+| | `min_signed_per_window` | 5 % (un validateur qui signe moins de 5 % de la fenêtre est jailed) |
+| | `downtime_jail_duration` | 600 s |
+| | `slash_fraction_downtime` | 1 % |
+| | `slash_fraction_double_sign` | 5 % |
+| Gouvernance | `min_deposit` | 10,000,000 uqor (10 QOR) |
+| | `max_deposit_period` / `voting_period` | 172,800 s (2 jours) chacun |
+| | `quorum` / `threshold` / `veto_threshold` | 0.334 / 0.5 / 0.334 |
+| | `expedited_voting_period` / `expedited_min_deposit` / `expedited_threshold` | 86,400 s / 50 QOR / 0.667 |
+| | `burn_vote_veto` | `true` |
+| Distribution | `community_tax` | 0.02 |
+| Marché des frais | `min_gas_price` | 0,1 uqor par gas |
+| | `base_fee_change_denominator` / `elasticity_multiplier` | 8 / 2 |
+| | `no_base_fee` | `false` |
+| EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 décimales) |
+| | accès à la création / à l'appel de contrats | sans permission |
+| | `active_static_precompiles` | vide (aucun precompile EVM n'est actif) |
+| | `history_serve_window` | 8,192 |
+| ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
+| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+
+---
+
+## État du disjoncteur {#circuit-breaker}
+
+La chaîne peut désactiver des types de messages individuels grâce au disjoncteur du Cosmos SDK, contrôlé par le compte d'opérations de la fondation et par la gouvernance. Un type de message désactivé est rejeté au niveau de l'ante handler sur toutes les voies. La liste en direct se trouve à `GET /cosmos/circuit/v1/disable_list`.
+
+**Mainnet (14 octobre 2026, 16 entrées) :** création de comptes de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`) ; CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2` ; AMM `MsgPausePool`, `MsgResumePool` ; `crossvm.MsgCrossVMCall` ; `multilayer.MsgUpdateLayerStatus` ; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm` ; et les quatre messages de contrôle de PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). La voie EVM (`MsgEthereumTx`) est **ouverte** : elle a été désactivée du 16 au 25 septembre et rouverte par la mise à niveau v3.2.0.
+
+**Testnet :** uniquement les trois messages CosmWasm.
+
+Tous les autres types de messages, y compris l'ensemble des messages standard de bank, staking, gouvernance, distribution, authz et d'enregistrement `x/pqc`, sont activés. La liste est contrôlée par la gouvernance et peut changer ; interrogez-la toujours.

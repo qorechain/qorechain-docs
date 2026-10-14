@@ -27,7 +27,19 @@ ortamına sahip bir Katman 1 blokzinciridir:
 - **SVM** — Solana tarzı JSON-RPC'ye sahip, Solana uyumlu bir çalışma ortamı.
 
 Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır ve
-zincir, zincirler arası birlikte çalışabilirlik için IBC'yi destekler.
+zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
+(mainnet veya testnet üzerinde henüz açık bir IBC kanalı yoktur).
+
+:::note Canlı ağlarda bugün çalışanlar (zincir v3.2.0 ve sonrası)
+**Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
+hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
+işlemleri ve SVM okumaları.
+**Henüz kullanılamaz:** EVM ön derlemeleri (etkin değil), `qor_` JSON-RPC ad
+alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
+devre kesici tarafından kapatılmıştır), sıradan hesaplar için CosmWasm yükleme ve
+örnekleme, authenticator / soyut hesap akışları (modül kapalı), xQORE ve gaz
+soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler.
+:::
 
 ### Tasarım gereği kuantum güvenli
 
@@ -38,7 +50,9 @@ taşıdığı **hibrit** bir imzalama duruşunu destekler; böylece işlem bugü
 klasik doğrulama altında geçerli kalırken post-kuantum koruması da kazanır.
 
 SDK bugün ML-DSA-87 anahtar üretimini, imzalamayı ve doğrulamayı, ayrıca
-hibrit işlemler için yapı taşlarını sunar. Ayrıntılar için
+hibrit işlemler için yapı taşlarını sunar. Canlı ağlarda bir Native yol işlemi
+hibrit imzalı **olmak zorundadır** ve hesabın ML-DSA-87 anahtarı önce
+kaydedilmiş olmalıdır. Ayrıntılar için
 [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) sayfasına bakın.
 Burada pazarlama iddiası yoktur — SDK, tam olarak zincirin uyguladığı
 ilkeleri sunar.
@@ -53,7 +67,8 @@ protokol özellikleri üzerine inşa edilmiştir:
   zincir üzerindeki AI ile tarayın. `simulateWithRiskScore`, deterministik
   EVM precompile'larından gelen gaz artı bir risk/anomali kararı döndürür;
   böylece bir cüzdan veya dApp, imzalamadan *önce* uyarabilir (veya
-  engelleyebilir). Bkz. [AI ön kontrolü](/sdk/guides/ai-preflight).
+  engelleyebilir). Precompile'lar mainnet veya testnet üzerinde henüz etkin
+  değildir. Bkz. [AI ön kontrolü](/sdk/guides/ai-preflight).
 - **Birleşik VM'ler arası çağrılar** — tek hesap, üç VM, tek işlem.
   `createCrossVMClient` herhangi bir VM üzerindeki bir sözleşmeyi çağırır ve
   `callAtomic`, birden fazla VM'ler arası çağrıyı tek seferde imzalanan tek
@@ -64,7 +79,8 @@ protokol özellikleri üzerine inşa edilmiştir:
   post-kuantum korumalı hale getirin; hazır bir React rozetiyle birlikte.
   Bkz. [Kuantum güvenli](/sdk/guides/quantum-safe).
 
-0.6.0 ve 0.7.0 ile zincir düzeyinde iki yetenek daha geldi:
+0.6.0 ve 0.7.0 ile zincir düzeyinde iki yetenek daha geldi (ikincisi,
+aşağıda belirtildiği gibi canlı ağlarda henüz kullanılamaz):
 
 - **Birleşik eth-native hesaplar** — tek bir `eth_secp256k1` anahtarı;
   `qor1…`, `0x…` ve bir SVM base58 adresi olarak gösterilen, hepsi tek bir
@@ -73,7 +89,8 @@ protokol özellikleri üzerine inşa edilmiştir:
 - **Authenticator şeritleri** — bir Phantom veya MetaMask anahtarını
   PQC gerektiren kanonik hesaba bağlayın ve en az yetki ilkesine dayalı,
   harcama limitli, iptal edilebilir koşullar altında bir relayer üzerinden
-  harcama yapmasına izin verin. Bkz.
+  harcama yapmasına izin verin. Arkasındaki `abstractaccount` modülü bugün
+  her iki ağda da kapalıdır. Bkz.
   [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
 
 Yeni **`@qorechain/react`** kiti (provider, hook'lar, `ConnectButton`,
@@ -89,15 +106,15 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 
 | Paket | Dil | Kurulum | Durum |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.7.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.7.0) |
-| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.7.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, yayınlanmış en son sürüm; 0.7.0 depodan) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.7.0` | Yayında (Maven Central, v0.7.0) |
-| `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.7.0) |
-| `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.7.0) |
-| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.7.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.7.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.8.3) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.8.3) |
+| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.8.4`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.8.3) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | Yayında (Maven Central, v0.8.3) |
+| `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.8.0) |
+| `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.8.3) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.8.0) |
 
 > Python dağıtımı `qorechain-sdk` olarak kurulur ancak **`qorsdk` olarak
 > import edilir**. Tüm istemciler kendi kayıt defterlerinde yayınlanmıştır —
@@ -111,17 +128,17 @@ ve standart Cosmos modülleri için tipli mesaj oluşturucular, tipli sorgu
 istemcileri, eksiksiz işlem yaşam döngüsü (otomatik gaz, hata çözümleme,
 işlem takibi, blok/işlem arama), hibrit post-kuantum işlemler ve WebSocket
 abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
-(`@qorechain/sdk` 0.7.0), Python PyPI'da (`qorechain-sdk` 0.7.0, import
-`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.7.0`), Rust
-crates.io'da (`qorechain-sdk`, yayınlanmış en son sürüm — 0.7.0 crate
-yayını beklemede olduğundan crates.io'dan veya depodan kurun) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk` 0.7.0). EVM/SVM yürütme
-adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.7.0),
-`@qorechain/react` kiti (0.7.0) ve `create-qorechain-dapp` iskele oluşturma
-CLI'si (0.7.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
-yayınlanmıştır.
+(`@qorechain/sdk` 0.8.3), Python PyPI'da (`qorechain-sdk` 0.8.3, import
+`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.8.4`), Rust
+crates.io'da (`qorechain-sdk` 0.8.3) ve Java Maven
+Central'da (`io.github.qorechain:qorechain-sdk` 0.8.3). EVM/SVM yürütme
+adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.8.0),
+`@qorechain/react` kiti (0.8.3) ve `create-qorechain-dapp` iskele oluşturma
+CLI'si (0.8.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
+yayınlanmıştır. Yardımcı paketler için
+[Kurulum](/sdk/install#related-packages) sayfasına bakın.
 
-## 0.6 ve 0.7'deki yenilikler
+## 0.6, 0.7 ve 0.8'deki yenilikler
 
 **0.6.0 — birleşik eth-native hesaplar (zincir v3.1.83).** Tek bir
 `eth_secp256k1` anahtarı, üç adres kodlamasının tümü olarak gösterilen ve
@@ -138,8 +155,8 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 ```
 
 Aynı anahtarla yerel şerit (Native lane) imzalaması `signClassicalEth` /
-`signHybridEth` ile yapılır ve `connectPhantomUnified`, deterministik bir
-Phantom imzasından gözetimsiz (non-custodial) birleşik bir hesap türetir.
+`signHybridEth` ile yapılır ve bir Phantom veya MetaMask anahtarı hesaba authenticator olarak bağlanır
+(Phantom imzasından türetme 0.8.0'da kaldırıldı).
 Eski coin-type-118 `deriveNativeAccount` değişmemiştir. Bkz.
 [Birleşik hesaplar](/sdk/concepts/accounts-pqc#unified-accounts).
 
@@ -149,7 +166,9 @@ kodlanıyordu ve CheckTx aşamasında reddediliyordu). SDK ≤ 0.6.0 ile
 oluşturulan hibrit işlemler **zincir üzerinde reddedilir** — yükseltme
 yapın.
 
-**0.7.0 — authenticator şeritleri (zincir v3.1.85).** Bağlanmış bir Phantom
+**0.7.0 — authenticator şeritleri (zincir v3.1.85).** Arkasındaki
+`abstractaccount` modülü şu anda her iki ağda da kapalıdır (bkz.
+[Authenticator kılavuzu](/sdk/guides/authenticators)). Bağlanmış bir Phantom
 (ed25519) veya MetaMask (secp256k1, 20 baytlık adresle) anahtarı, en az
 yetki ilkesine dayalı, harcama limitli, iptal edilebilir koşullar altında
 bir relayer üzerinden PQC gerektiren kanonik hesaptan harcama yapabilir:
@@ -160,6 +179,21 @@ hata kodları ve TypeScript cüzdan oluşturucuları
 (`buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm`, …).
 Kopyala-yapıştır örneklerle eksiksiz anlatım:
 [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
+
+**0.8.0 – 0.8.3 — v2 hibrit sign-bytes ve EVM yetkilendirme penceresi (zincir
+v3.2.0).** Hibrit bir işlemin kuantum sonrası yarısı artık hedef ağın doğruladığı
+biçimde imzalanır (v1 veya v2, `signBytesVersion: "auto" | "v1" | "v2"`).
+Her iki herkese açık ağ da v2 üzerindedir; bu yüzden mainnet'te işlem yapmak için
+SDK **0.8.1 veya daha yenisi** gereklidir. **0.8.2**, EVM şeridinin
+[yetkilendirme penceresi](/sdk/guides/evm#evm-window) için `openEvmWindowMsg`,
+`closeEvmWindowMsg`, `fetchEvmWindow` ve `classifyEvmWindowRejection` ekler.
+**0.8.0**, cüzdan imzasına dayalı hesap yardımcılarını (`connectPhantomUnified` ve
+`unifiedAccountFromPhantomSignature`, 0.8.0'da kaldırıldı) kaldırdı, her dilde
+katı ML-DSA-87 boyut denetimleri uygular ve VM'ler arası çağrılara `async`
+bayrağını ve döndürülen callee verisini ekler. **0.8.3**, işlem aramasını, React
+hook yarış durumlarını, Python `migrate_to_hybrid` sıralamasını ve adres biçiminden
+bağımsız kanonik PQC türetmesini (`derivePqcCanonical`, `canonicalAccount`) düzeltir.
+Bkz. [Yükseltme notları](/sdk/install#upgrade).
 
 ## Sonraki adımlar
 

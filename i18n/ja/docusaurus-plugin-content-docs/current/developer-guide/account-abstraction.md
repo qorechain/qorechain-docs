@@ -7,170 +7,114 @@ sidebar_position: 7
 
 # アカウント抽象化
 
-QoreChainは`x/abstractaccount`モジュールを通じて**プロトコルレベルのアカウント抽象化**を提供します。これにより、外部のスマートコントラクトインフラを必要とせずに、柔軟な認証ルール、セッションキー、支出上限、ソーシャルリカバリーを備えたプログラマブルなアカウントが実現します。
+QoreChainは`x/abstractaccount`モジュールを通じて**プロトコルレベルのアカウント抽象化**を提供します。このモジュールは、支出ルールを持つアブストラクトアカウントを記録し、アカウントの所有者が外部の鍵（**オーセンティケーター**）を連携できるようにします。連携された鍵は、権限と支出上限の範囲内でアカウントから支出でき、外部のスマートコントラクトインフラは不要です。
+
+:::danger メインネットでもテストネットでも有効化されていません
+アブストラクトアカウントモジュールは現在、両ネットワークで**無効**になっています。`qorechaind query abstractaccount config`（および`GET /qorechain/abstractaccount/v1/config`）は、`qorechain-vladi`と`qorechain-diana`の両方で`enabled: false`を返します。チェーンv3.2.0以降、このフラグはすべての経路で強制されます。チェーンは、アカウント作成、オーセンティケーターの登録、および2つの実行レーン（`MsgExecuteEVM`、`MsgExecuteCosmos`）を、`abstract accounts are disabled on this chain`というエラーで拒否します。モジュールを有効化できるトランザクションは存在せず、アブストラクトアカウントのトランザクションがメインネットに含まれたことは一度もありません。以下の内容はすべて、参照用としてモジュールのインターフェースを説明するものです。モジュールが有効化されるまでは、稼働中のネットワーク上で連携鍵や委任支出のフローを構築しないでください。まずフラグを確認してください。
+:::
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（チェーンバージョン**v3.1.97**）を使用しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。
+以下のコマンドは、メインネット**`qorechain-vladi`**（2026年6月29日から稼働）を使用しています。このネットワークはノードリリース**v3.2.1**（コンセンサスルールはv3.2.0から）で動作しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。テストネットはv3.2.2で動作しています。
+:::
+
+:::caution Cosmosレーンのトランザクションにはすべて、ポスト量子ハイブリッドの副署名が必要です
+このページの`qorechaind tx`のサンプルは、手数料フラグのみを示しています。稼働中のネットワークでは、Cosmosレーンのトランザクションはすべて、ML-DSA-87のハイブリッド副署名も含む必要があります。そのため、`--generate-only`でトランザクションを構築し、`qorechaind tx pqc cosign`で署名してください（それらを代行するQoreXまたはSDKを使うこともできます）。コミュニティビルドの`qorechaind`ではその署名を生成できません。[ダウンロードマニフェスト](/developer-guide/running-a-node#fetch-the-manifest)にあるリリースバイナリを使用してください。手数料の下限は**ガス1単位あたり0.1 uqor**であるため、`--gas 400000`には少なくとも`--fees 40000uqor`が必要です。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。
 :::
 
 ## 概要
 
-従来のブロックチェーンアカウントは単一の秘密鍵によって制御されます。アカウント抽象化は、「誰がトランザクションを承認できるか」という概念を単一の暗号鍵から切り離し、以下を可能にします。
+従来のブロックチェーンアカウントは単一の秘密鍵によって制御されます。アカウント抽象化は、「誰がトランザクションを承認できるか」という概念を単一の暗号鍵から切り離します。`x/abstractaccount`モジュールは以下を提供します。
 
-* **マルチシグアカウント** — 閾値署名を設定可能
-* **ソーシャルリカバリーアカウント** — ガーディアンによる鍵の復旧
-* **セッションベースのアカウント** — dApp向けの、細かく時間制限された権限
+* アカウントタイプと所有者が記録された**アブストラクトアカウント**
+* 連携された鍵が支出できる範囲を制限する**支出ルール**（1トランザクションあたりおよび1日あたりの上限、許可されるデノミネーション）
+* **オーセンティケーター**: 所有者が、限定された権限と有効期限を付けて連携する外部の鍵（Phantomのed25519鍵またはMetaMaskのsecp256k1アドレス）。所有者はいつでも失効させることができます
 
-`x/abstractaccount`モジュールはこれらの機能をプロトコル層で実装しており、3つのVM（EVM、CosmWasm、SVM）すべてで動作し、ネイティブなガス効率の恩恵を受けます。
-
-*セッションベースのdAppフロー: スコープの限定されたセッションキーがトランザクションに署名し、モジュールがそれをセッションおよび支出ルールに照らして検証したうえで実行する。*
+*連携鍵（オーセンティケーター）のフロー: 連携された鍵が承認に署名し、リレイヤーがそれを送信し、モジュールが権限、有効期限、支出ルールを検証したうえで、所有者のアカウントから実行する。*
 
 ```mermaid
 flowchart TD
-    A["User connects wallet,<br/>grants scoped session key"] --> B["dApp signs tx<br/>with session key"]
-    B --> C{"Validate against<br/>session permissions"}
-    C -- "message type allowed?<br/>contract allowed?<br/>not expired?" --> D{"Validate spending rules"}
-    C -- "fails" --> R["Reject transaction"]
-    D -- "per-tx + daily limit<br/>allowed denom" --> E["Execute transaction<br/>across EVM / CosmWasm / SVM"]
-    D -- "exceeds limit" --> R
-    E --> F["Session expires<br/>or owner revokes"]
+    A["所有者が外部の鍵を連携<br/>（限定された権限 + 有効期限）"] --> B["連携された鍵が<br/>承認に署名"]
+    B --> C["リレイヤーが送信し<br/>トランザクションの手数料を負担"]
+    C --> D{"オーセンティケーターを検証"}
+    D -- "権限は付与されているか？<br/>期限切れでないか？<br/>ナンスは有効か？" --> E{"支出ルールを検証"}
+    D -- "失敗" --> R["トランザクションを拒否"]
+    E -- "1回あたり + 1日あたりの上限<br/>許可されたデノミネーション" --> F["所有者のアカウントから実行"]
+    E -- "上限を超過" --> R
+    F --> G["オーセンティケーターが失効<br/>または所有者が取り消し"]
 ```
 
 ## アカウントタイプ
 
-| タイプ              | 説明                             | ユースケース                       |
-| ----------------- | --------------------------------------- | ------------------------------ |
-| `multisig`        | M-of-N閾値署名                | DAOトレジャリー、共有ウォレット |
-| `social_recovery` | ガーディアン支援による鍵の復旧          | コンシューマーウォレット、オンボーディング   |
-| `session_based`   | 制約付きの委任セッションキー | dAppセッション、モバイルウォレット  |
+`create`は3つのアカウントタイプのいずれかを記録します。タイプはアカウントに保存され、アドレスの導出方法の一部にもなります。このモジュール自体には、マルチシグ、セッションキー、リカバリーのトランザクションはありません（トランザクションサービスは`create`、`update-rules`、`register-authenticator`、`revoke-authenticator`、`execute-cosmos`、`execute-evm`です）。
+
+| タイプ              | 想定される用途                    |
+| ----------------- | ------------------------------- |
+| `multisig`        | DAOトレジャリー、共有ウォレット  |
+| `social_recovery` | コンシューマーウォレット、オンボーディング    |
+| `session_based`   | dAppセッション、モバイルウォレット   |
 
 ## アブストラクトアカウントの作成
 
-### セッションベースアカウント
+`create`はアカウントタイプを位置引数として受け取ります（`multisig`、`social_recovery`、または`session_based`）。
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type session_based \
+qorechaind tx abstractaccount create session_based \
   --from mykey \
-  --gas auto \
-  -y
+  --gas 400000 --fees 40000uqor
 ```
 
-### マルチシグアカウント
+このコマンドには、署名者、閾値、ガーディアン用のフラグはありません。
+
+## オーセンティケーター（連携鍵）
+
+モジュールの委任鍵の仕組みは**オーセンティケーター**であり、以下の[連携ウォレットオーセンティケーター](#authenticators)で説明します。所有者は外部の鍵（ed25519またはsecp256k1）を、権限のセットと有効期限を付けて連携し、いつでも失効させることができます。
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type multisig \
-  --signers qor1alice...,qor1bob...,qor1carol... \
-  --threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
+qorechaind tx abstractaccount register-authenticator <account-address> <scheme> <pubkey-base64> <permissions-csv> <expiry-unix> <label> \
+  --from mykey --gas 400000 --fees 40000uqor
+qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <pubkey-base64> \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
 
-### ソーシャルリカバリーアカウント
-
-```bash
-qorechaind tx abstractaccount create \
-  --account-type social_recovery \
-  --guardians qor1guardian1...,qor1guardian2...,qor1guardian3... \
-  --recovery-threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
-```
-
-## セッションキー
-
-セッションキーは`session_based`アカウントタイプの中核をなすものです。副次的な鍵に対して**一時的でスコープの限定された権限**を付与できるため、プライマリキーを露出させたくないdAppとのやり取りに最適です。
-
-### キーのプロパティ
-
-| プロパティ              | 説明                                          |
-| --------------------- | ---------------------------------------------------- |
-| **権限**       | セッションキーが署名できるメッセージタイプ         |
-| **有効期限**            | 設定可能な期間経過後の自動失効   |
-| **支出上限**   | セッションキーが使用できる最大金額            |
-| **許可コントラクト** | 特定のコントラクトアドレスへのやり取りに制限 |
-
-### セッションキーの付与
-
-```bash
-qorechaind tx abstractaccount grant-session \
-  --session-key qor1sessionkey... \
-  --permissions "bank/MsgSend,wasm/MsgExecuteContract" \
-  --expiry "2026-03-01T00:00:00Z" \
-  --allowed-contracts qor1contract1...,0x1234...abcd \
-  --from mykey \
-  -y
-```
-
-### セッションキーの失効
-
-```bash
-qorechaind tx abstractaccount revoke-session \
-  --session-key qor1sessionkey... \
-  --from mykey \
-  -y
-```
-
-### アクティブなセッションの一覧表示
-
-```bash
-qorechaind query abstractaccount sessions <account-address>
-```
+`scheme`は`ed25519`（例: Phantom）または`secp256k1`（例: MetaMask）です。`grant-session`、`revoke-session`、`query abstractaccount sessions`というコマンドはありません。
 
 ## 支出ルール
 
-支出ルールは、アカウントタイプにかかわらず、アブストラクトアカウントに財務的なガードレールを追加します。
+支出ルールは、アブストラクトアカウントに財務的なガードレールを追加します。
 
-| ルール             | 説明                                     |
-| ---------------- | ----------------------------------------------- |
-| `daily_limit`    | 24時間のローリングウィンドウにおける最大合計支出額  |
-| `per_tx_limit`   | 個々のトランザクションあたりの最大支出額        |
-| `allowed_denoms` | 使用可能なトークンデノミネーションの制限 |
+| ルール             | 説明                                           |
+| ---------------- | ----------------------------------------------------- |
+| `daily_limit`    | UTC暦日あたりの最大合計支出額              |
+| `per_tx_limit`   | 承認された個々の実行あたりの最大支出額     |
+| `allowed_denoms` | 使用可能なトークンデノミネーションの制限       |
 
 ### 支出ルールの設定
 
+`update-rules`は、アカウントのルールを`SpendingRule`オブジェクトのJSON配列で置き換えます（ファイルでもフラグでもなく、インラインのJSONです）。
+
 ```bash
-qorechaind tx abstractaccount update-spending-rules \
-  --daily-limit 1000000000uqor \
-  --per-tx-limit 100000000uqor \
-  --allowed-denoms uqor \
-  --from mykey \
-  -y
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":1000000000,"per_tx_limit":100000000,"allowed_denoms":["uqor"]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
+
+上限は基本単位（`uqor`）で表され、承認された実行ごとにカウントされます。1日あたりの上限は、UTC暦日あたりの合計を制限します。ルールは保存済みのものを丸ごと置き換えるため、省略したフィールドは削除されます。
 
 ### 現在のルールの照会
 
+アカウントのレコードには、そのルールと連携された鍵の数が含まれます。
+
 ```bash
-qorechaind query abstractaccount spending-rules <account-address>
+qorechaind query abstractaccount account <account-address>
 ```
 
-### レスポンス例
-
-```json
-{
-  "daily_limit": {
-    "denom": "uqor",
-    "amount": "1000000000"
-  },
-  "per_tx_limit": {
-    "denom": "uqor",
-    "amount": "100000000"
-  },
-  "allowed_denoms": ["uqor"],
-  "daily_spent": {
-    "denom": "uqor",
-    "amount": "250000000"
-  },
-  "window_reset": "2026-02-27T00:00:00Z"
-}
-```
+:::caution ルールが鍵を制限するのは、ルールが存在する場合のみです
+チェーンは次の順序で上限を解決します。オーセンティケーター自身のルールが設定されていて`enabled`であればそれ、そうでなければアカウント上の最初の`enabled`なルール、それもなければ**上限はありません**。`enabled: false`で保存されたルールは上限なしを意味し、ゼロの上限ではありません。`MsgRegisterAuthenticator`はルールを持たないため、このメッセージだけで連携された鍵は、アカウントレベルのルールによってのみ制限されます。`update-rules`で意図的にルールを設定し、鍵に必要な権限だけを登録してください。上限は連携された鍵が与えうる被害を抑えるものであり、鍵の失効の代わりにはなりません。
+:::
 
 ## 連携ウォレットオーセンティケーター — 委任支出 {#authenticators}
 
-チェーンバージョン**v3.1.85**（v3.1.84の権限モデルを土台とする）以降、**連携された外部ウォレットの鍵**——Phantom（ed25519）の鍵、またはMetaMask（secp256k1）のアカウント——が、最小権限・支出上限付き・失効可能な条件のもとで、**正規のポスト量子アカウントから支出**できるようになりました。外部鍵がML-DSA署名を生成することはなく、**リレイヤー**がトランザクションエンベロープを送信して手数料を負担します（リレイヤー自身のハイブリッドPQC署名がチェーンの署名要件を満たします）。一方、**ドメイン分離されたリプレイ耐性のある署名バイト**に対するオーセンティケーターの署名が、承認そのものとなります。
+オーセンティケーターの設計は、チェーンバージョン**v3.1.85**（v3.1.84の権限モデルを土台とする）で導入されました。モジュールが無効な間は、**稼働中のネットワークでは使用できません**（このページ冒頭のステータスボックスを参照）。**連携された外部ウォレットの鍵**——Phantom（ed25519）の鍵、またはMetaMask（secp256k1）のアカウント——が、最小権限・支出上限付き・失効可能な条件のもとで、**正規のポスト量子アカウントから支出**できます。外部鍵がML-DSA署名を生成することはなく、**リレイヤー**がトランザクションエンベロープを送信して手数料を負担します（リレイヤー自身のハイブリッドPQC署名がチェーンの署名要件を満たします）。一方、**ドメイン分離されたリプレイ耐性のある署名バイト**に対するオーセンティケーターの署名が、承認そのものとなります。
 
 ### オーセンティケーターの登録 {#register-authenticator}
 
@@ -181,16 +125,17 @@ import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
 
 // Link a MetaMask account by its 20-byte address (EIP-191 verification):
 const msg = registerEthAuthenticatorMsg({
-  account: "qor1owner...",            // the canonical account
+  owner: "qor1owner...",              // the canonical account (signs this message)
   ethAddress: "0xAbC...123",          // the MetaMask address to link
   permissions: ["evm"],               // least privilege — see the taxonomy below
-  expirySeconds: 30 * 24 * 3600,      // ≤ 30 days recommended
-  spendingRule: { perTxLimit: "100000000uqor", dailyLimit: "1000000000uqor" },
+  expiryUnix: Math.floor(Date.now() / 1000) + 30 * 24 * 3600, // absolute Unix seconds, ≤ 30 days recommended
+  label: "metamask",
 });
+// Limits are a separate message (MsgUpdateSpendingRules), see "Spending Rules" above.
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-Phantomの鍵も同じ方法で、`scheme: "ed25519"`とPhantomの公開鍵を使って登録します。失効は`MsgRevokeAuthenticator`により即座に行われます。
+Phantomの鍵も同じ方法で、スキーム`ed25519`とPhantomの公開鍵を使って登録します（CLIでは`register-authenticator`）。失効は`MsgRevokeAuthenticator`により即座に行われます。
 
 ### 権限タクソノミー {#permission-taxonomy}
 
@@ -233,11 +178,12 @@ import { buildPhantomExecuteCosmos } from "@qorechain/wallet-adapter";
 
 // In the dApp: Phantom signs the digest with ed25519 signMessage.
 const msg = await buildPhantomExecuteCosmos({
-  provider: window.solana,            // Phantom
+  wallet: window.solana,              // Phantom: { publicKey, signMessage }
+  relayer: "qor1relayer...",          // submits the tx and pays the fee (a different account)
   chainId: "qorechain-vladi",
   account: "qor1owner...",            // canonical account being spent from
   to: "qor1recipient...",
-  amount: { denom: "uqor", amount: "900000" },
+  amount: "900000uqor",               // single-coin string
   nonce: authSequence,                // per-authenticator sequence
 });
 // Send `msg` to your relayer; the relayer wraps it in a tx it signs
@@ -251,10 +197,13 @@ import { buildMetaMaskExecuteEvm } from "@qorechain/wallet-adapter";
 
 const msg = await buildMetaMaskExecuteEvm({
   provider: window.ethereum,          // MetaMask (EIP-1193)
+  address: ethAddress,                // the linked 20-byte address
+  relayer: "qor1relayer...",
   chainId: "qorechain-vladi",
   account: "qor1owner...",
   to: "0xRecipient...",
-  valueWei: 10n ** 16n,               // 0.01 QOR (18-dec EVM view)
+  value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
+  gasLimit: 100000,
   nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
@@ -264,14 +213,19 @@ const msg = await buildMetaMaskExecuteEvm({
 同じビルダー関数は[QoreChain SDK](/sdk/guides/authenticators)にも5言語すべてで用意されており、CLIの相当コマンドも存在します。
 
 ```bash
-# Produce the exact sign bytes the chain verifies (for custom signers):
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data-hex> <nonce>
+# Generate an ed25519 authenticator key: the seed goes to a new 0600 file, only the public key is printed
+qorechaind query abstractaccount auth-keygen --out authenticator.seed
 
-# Relay a pre-signed authorization:
-qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
-qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
+# Sign the exact bytes the chain verifies (seed from --seed-file, "-" for stdin, QORE_AUTH_SEED, or a prompt)
+qorechaind query abstractaccount auth-sign-cosmos <chain-id> <account> <to> <amount> <nonce> --seed-file authenticator.seed
+qorechaind query abstractaccount auth-sign-evm <chain-id> <account> <to-0xhex> <value-wei> <data-hex> <nonce> --seed-file authenticator.seed
+
+# Relay a pre-signed authorization (the relayer's --from key pays; cosign the envelope with `tx pqc cosign`)
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
+qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data-hex> <gas-limit> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
 ```
+
+これらのコマンドの鍵と署名はbase64です。`auth-sign-*`ヘルパーは、シードをコマンドライン引数ではなく、ファイル、標準入力、または環境変数から読み取るため（ノードリリースv3.2.1以降）、シェルの履歴に残りません。シードを扱うフラグ（`--out`、`--seed-file`）は、v3.2.1以降のバイナリにのみ存在します。
 
 ### エラーコード {#authenticator-errors}
 
@@ -281,6 +235,7 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 | --- | --- | --- |
 | `5` | 支出上限超過（1回あたり、または1日あたり） | 残りの利用可能額を表示 |
 | `6` | オーセンティケーターの期限切れ | 「期限切れです — ウォレットを再連携してください」 |
+| `9` | モジュールが無効（両ネットワークでの現在の状態） | 「連携ウォレットはまだ利用できません」 |
 | `10` | 権限拒否（スコープ外、または委任不可のメッセージ） | 不足している権限を表示 |
 | `11` | リプレイ拒否（古いナンス／シーケンス） | ナンスを再照会して再署名 |
 
@@ -288,10 +243,10 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 
 ### RESTクエリ {#abstractaccount-rest}
 
-**v3.1.85**以降、このモジュールの読み取りクエリはRESTでも提供されています。
+このモジュールの読み取りクエリはRESTで提供されています（**v3.1.85**以降）。
 
 ```
-GET /qorechain/abstractaccount/v1/config
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -302,86 +257,59 @@ GET /qorechain/abstractaccount/v1/permission_schema
 ### CLI
 
 ```bash
+# Module configuration (enabled flag and limits)
+qorechaind query abstractaccount config
+
 # Get full account configuration
 qorechaind query abstractaccount account <address>
 
 # List all abstract accounts (paginated)
-qorechaind query abstractaccount list --limit 10
+qorechaind query abstractaccount accounts --page-limit 10
 ```
+
+メインネットではアカウント一覧は空です。テストネットには、有効化フラグがすべての経路で強制される前に作成されたアカウントがいくつか一覧表示されます。
 
 ### JSON-RPC
 
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getAbstractAccount",
-    "params": ["0xYourAddress"],
-    "id": 1
-  }'
-```
+> **まだ提供されていません:** リリース済みのどのノードビルドも`qor_`のJSON-RPC名前空間を提供していないため、現在のところ、すべてのパブリックエンドポイントで`qor_getAbstractAccount`は`-32601`（メソッドが見つかりません）を返します。上記のRESTルートまたはCLIを使用してください。[`qor_`名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
 
 ### アカウントレスポンス例
+
+アブストラクトアカウントのレコードの形（値は例示用）:
 
 ```json
 {
   "address": "qor1myaccount...",
   "account_type": "session_based",
   "owner": "qor1owner...",
-  "active_sessions": 2,
-  "spending_rules": {
-    "daily_limit": "1000000000uqor",
-    "per_tx_limit": "100000000uqor",
-    "allowed_denoms": ["uqor"]
-  },
-  "created_at_height": 54321
+  "spending_rules": [
+    {
+      "id": "daily",
+      "enabled": true,
+      "daily_limit": "1000000000",
+      "per_tx_limit": "100000000",
+      "allowed_denoms": ["uqor"]
+    }
+  ]
 }
 ```
 
-## ソーシャルリカバリーのフロー
+## ソーシャルリカバリー
 
-アカウントの所有者がプライマリキーへのアクセスを失った場合、ガーディアンが鍵のローテーションを承認できます。
-
-1. **所有者が鍵の紛失を報告する（またはガーディアンが開始する）**
-
-   ```bash
-   qorechaind tx abstractaccount initiate-recovery \
-     --account <account-address> \
-     --new-owner qor1newkey... \
-     --from guardian1 \
-     -y
-   ```
-
-2. **追加のガーディアンが承認する**（`recovery_threshold`を満たす必要あり）
-
-   ```bash
-   qorechaind tx abstractaccount approve-recovery \
-     --account <account-address> \
-     --recovery-id <recovery-id> \
-     --from guardian2 \
-     -y
-   ```
-
-3. **閾値に達すると、リカバリーが自動的に実行されます。** **タイムロック期間**（デフォルト: 48時間）により、元の所有者には不正なリカバリー試行をキャンセルする猶予が与えられます。
+`social_recovery`はアカウントタイプの1つですが、このモジュールにはリカバリーのトランザクションがありません。`initiate-recovery`や`approve-recovery`というコマンドはなく、モジュールのトランザクションサービスにもリカバリーのメッセージはありません。QoreChainアカウントの鍵のリカバリーは、アカウントのポスト量子鍵をニーモニックから再導出し（`tx pqc recover-key`）、必要に応じてローテーションする（`tx pqc rotate-key`）ことで行います。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。
 
 ## dAppとの連携
 
-セッションキーはシームレスなdApp体験を実現します。
-
-1. **ユーザーがウォレットを接続し**、dAppのコントラクトにスコープを限定したセッションキーを作成する
-2. **dAppがセッションキーを使用**して、ユーザーに代わってトランザクションを送信する
-3. **繰り返しの署名は不要**——セッションキーがその権限の範囲内で承認を処理する
-4. **セッションは自動的に失効する**、またはユーザーがいつでも取り消せる
-
-このパターンは特に以下の用途で有用です。
+モジュールが有効化された場合、連携鍵による承認は次のようなフローを想定しています。
 
 * 生体認証プロンプトの繰り返しが邪魔になるモバイルウォレット
-* 迅速なトランザクション署名が必要なゲームdApp
-* 複数の連続した操作を実行するDeFiプロトコル
+* 上限のある許容額の範囲内で迅速なトランザクション署名が必要なゲームdApp
+* リレイヤー経由でQoreChainアカウントから支出するPhantomまたはMetaMaskのユーザー
+
+dAppのバックエンドがリレイヤーとして機能します。連携された鍵の署名済み承認を受け取り、自身が署名するトランザクションにそれを包んでブロードキャストします。連携された鍵は、いつでも失効させることも、有効期限で失効させることもできます。対象のネットワークでモジュールが有効化されるまでは、[QoreXまたはSDK](/sdk/overview)による通常の署名を使用してください。
 
 ## 次のステップ
 
 * [バリデータの運用](/developer-guide/running-a-validator) — バリデータノードのセットアップと運用
-* [EVM開発](/developer-guide/evm-development) — Solidity dAppとアブストラクトアカウントの統合
-* [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — アブストラクトアカウントを用いたクロスVMメッセージング
+* [EVM開発](/developer-guide/evm-development) — EVMツール、アカウント、EVM承認ウィンドウ
+* [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — クロスVMメッセージング

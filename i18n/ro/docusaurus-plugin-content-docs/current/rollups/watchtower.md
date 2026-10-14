@@ -17,19 +17,28 @@ Cadrul urmărește și decide *când*; **tu furnizezi verificarea de validitate*
 Watchtower nu decide niciodată de unul singur că un lot este fraudulos — apelează
 funcția ta `validate` și acționează pe baza a ceea ce returnezi.
 
+:::caution Stadiu incipient: necesită rutele REST RDK
+Watchtower citește loturile prin clientul REST RDK. Rutele REST `/qorechain/rdk/v1/…` nu sunt servite pe mainnet în prezent, deci Watchtower nu poate rula încă pe mainnet. Nu a fost creat niciun rollup pe niciuna dintre rețele, așa că nu există nimic de urmărit.
+:::
+
 ## `watchBatches`
 
 ```ts
-import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
+import { createRdkClient, watchBatches } from "@qorechain/rdk";
 
-// The public qore.host REST + RPC endpoints are baked into the presets
-// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
-// `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-const watcher = watchBatches(rdk, "my-roll", {
+// `tx` is a signing client that produces the hybrid (post-quantum) signature
+// the networks require. See "Signing with the published clients" in
+// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
+// cannot get a challenge accepted.
+declare const tx: {
+  challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
+};
+
+const watcher = watchBatches(rdk, "my-rollup", {
   onBatch: (batch) => {
-    console.log("new batch", batch.index);
+    console.log("new batch", batch.batchIndex);
   },
 
   // Your validity predicate. Return false to flag the batch as invalid.
@@ -38,13 +47,17 @@ const watcher = watchBatches(rdk, "my-roll", {
   },
 
   // Called when validate() returns false — wire it to a challenge.
-  onInvalid: async (batch) => {
-    await challengeBatch(rdk, "my-roll", batch.index /* + your fraud proof */);
+  onInvalid: async ({ batch }) => {
+    await tx.challengeBatch({
+      rollupId: "my-rollup",
+      batchIndex: batch.batchIndex,
+      proof: myFraudProofHex, // hex fraud proof
+    });
   },
 
   // Called as a batch approaches the end of its challenge window.
-  onDeadline: (batch) => {
-    console.warn("challenge window closing for batch", batch.index);
+  onDeadline: ({ batch, secondsRemaining }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -58,14 +71,18 @@ Cadrul evidențiază:
 - **termene-limită ale ferestrei de contestare** prin `onDeadline` și
 - **loturi invalide** (pentru care `validate` a returnat `false`) prin `onInvalid`.
 
-Conectarea `onInvalid` la `challengeBatch` transformă Watchtower într-un
+Conectarea `onInvalid` la o contestare transformă Watchtower într-un
 auto-contestator complet; lasă-l neconfigurat pentru a rula în mod
 exclusiv de observare.
+
+:::note Fereastra de contestare
+Termenul-limită raportat de Watchtower folosește fereastra de contestare convertită în blocuri la 6 secunde per bloc (100.800 de blocuri implicit), deci la blocurile de ≈3,2 s ale mainnet-ului fereastra reală este mai scurtă decât „7 zile". Trimiterea unei contestări necesită, de asemenea, garanția de contestare a rollup-ului (1.000 QOR pentru presetările `nft` și `custom`).
+:::
 
 ## CLI
 
 ```bash
-qorollup watchtower my-roll
+qorollup watchtower my-rollup
 ```
 
 `watchtower` rulează cadrul din linia de comandă, afișând loturile noi și

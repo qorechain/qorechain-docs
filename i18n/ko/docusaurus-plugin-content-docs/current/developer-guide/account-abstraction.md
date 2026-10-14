@@ -7,170 +7,114 @@ sidebar_position: 7
 
 # 계정 추상화
 
-QoreChain은 `x/abstractaccount` 모듈을 통해 **프로토콜 수준의 계정 추상화**를 제공합니다. 이를 통해 외부 스마트 컨트랙트 인프라 없이도 유연한 인증 규칙, 세션 키, 지출 한도, 소셜 복구 기능을 갖춘 프로그래머블 계정을 사용할 수 있습니다.
+QoreChain은 `x/abstractaccount` 모듈을 통해 **프로토콜 수준의 계정 추상화**를 제공합니다. 이 모듈은 지출 규칙이 설정된 추상 계정을 기록하고, 계정 소유자가 외부 키(**인증자**)를 연결하여 권한 및 지출 한도 범위 안에서 해당 계정으로부터 지출할 수 있도록 합니다. 외부 스마트 컨트랙트 인프라는 필요하지 않습니다.
+
+:::danger 메인넷과 테스트넷에서 활성화되어 있지 않음
+추상 계정 모듈은 현재 두 네트워크 모두에서 **꺼져 있습니다**. `qorechaind query abstractaccount config`(및 `GET /qorechain/abstractaccount/v1/config`)는 `qorechain-vladi`와 `qorechain-diana` 모두에서 `enabled: false`를 보고합니다. 체인 v3.2.0부터 이 플래그는 모든 경로에서 강제됩니다. 체인은 계정 생성, 인증자 등록, 두 실행 레인(`MsgExecuteEVM`, `MsgExecuteCosmos`)을 모두 `abstract accounts are disabled on this chain` 오류와 함께 거부합니다. 어떤 트랜잭션으로도 모듈을 켤 수 없으며, 메인넷에는 추상 계정 트랜잭션이 포함된 적이 한 번도 없습니다. 아래 내용은 모듈의 인터페이스를 참고용으로 설명한 것입니다. 모듈이 활성화되기 전까지는 실제 네트워크에서 연결 키 또는 위임 지출 흐름을 구축하지 말고, 먼저 플래그를 확인하십시오.
+:::
 
 :::note
-아래 명령어는 2026년 6월 7일부터 운영 중이며 체인 버전 **v3.1.97**을 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. 테스트넷을 사용하려면 `--chain-id qorechain-diana`로 대체하십시오.
+아래 명령어는 2026년 6월 29일부터 운영 중이며 노드 릴리스 **v3.2.1**(합의 규칙은 v3.2.0부터)을 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 작성되었습니다. v3.2.2를 실행하는 테스트넷에서는 `--chain-id qorechain-diana`로 대체하십시오.
+:::
+
+:::caution 모든 Cosmos 레인 트랜잭션에는 하이브리드 양자내성 공동 서명이 필요합니다
+이 페이지의 `qorechaind tx` 예제는 수수료 플래그만 보여줍니다. 실제 네트워크에서는 모든 Cosmos 레인 트랜잭션에 ML-DSA-87 하이브리드 공동 서명도 포함되어야 하므로, `--generate-only`로 트랜잭션을 만든 다음 `qorechaind tx pqc cosign`으로 서명하십시오(또는 이를 대신 처리해 주는 QoreX나 SDK를 사용하십시오). 커뮤니티 빌드 `qorechaind`는 해당 서명을 생성할 수 없으므로 [다운로드 매니페스트](/developer-guide/running-a-node#fetch-the-manifest)의 릴리스 바이너리를 사용하십시오. 수수료 하한은 **가스 단위당 0.1 uqor**이므로 `--gas 400000`에는 최소 `--fees 40000uqor`가 필요합니다. [양자내성 서명](/developer-guide/post-quantum-signing)을 참조하십시오.
 :::
 
 ## 개요
 
-전통적인 블록체인 계정은 단일 개인 키로 제어됩니다. 계정 추상화는 "누가 트랜잭션을 승인할 수 있는가"라는 개념을 단일 암호화 키로부터 분리하여 다음을 가능하게 합니다.
+전통적인 블록체인 계정은 단일 개인 키로 제어됩니다. 계정 추상화는 "누가 트랜잭션을 승인할 수 있는가"라는 개념을 단일 암호화 키로부터 분리합니다. `x/abstractaccount` 모듈은 다음을 제공합니다.
 
-* 임계값을 자유롭게 설정할 수 있는 **다중서명 계정**
-* 보증인 기반 키 복구를 지원하는 **소셜 복구 계정**
-* dApp을 위한 세분화된 시간 제한 권한을 갖춘 **세션 기반 계정**
+* 계정 유형과 소유자가 기록되는 **추상 계정**
+* 연결된 키가 지출할 수 있는 금액을 제한하는 **지출 규칙**(건당 한도 및 일일 한도, 허용 단위)
+* **인증자**: 소유자가 범위가 지정된 권한과 만료 시점을 설정해 연결하고 언제든지 철회할 수 있는 외부 키(Phantom ed25519 키 또는 MetaMask secp256k1 주소)
 
-`x/abstractaccount` 모듈은 이러한 기능을 프로토콜 계층에서 구현하므로, 세 가지 VM(EVM, CosmWasm, SVM) 전체에서 동작하며 네이티브 가스 효율성의 이점을 누릴 수 있습니다.
-
-*세션 기반 dApp 흐름: 범위가 지정된 세션 키가 트랜잭션에 서명하면, 모듈이 이를 세션 및 지출 규칙에 대해 검증한 후 실행합니다.*
+*연결된 키(인증자) 흐름: 연결된 키가 승인에 서명하고, 릴레이어가 이를 제출하면, 모듈이 권한, 만료, 지출 규칙을 확인한 뒤 소유자의 계정에서 실행합니다.*
 
 ```mermaid
 flowchart TD
-    A["User connects wallet,<br/>grants scoped session key"] --> B["dApp signs tx<br/>with session key"]
-    B --> C{"Validate against<br/>session permissions"}
-    C -- "message type allowed?<br/>contract allowed?<br/>not expired?" --> D{"Validate spending rules"}
-    C -- "fails" --> R["Reject transaction"]
-    D -- "per-tx + daily limit<br/>allowed denom" --> E["Execute transaction<br/>across EVM / CosmWasm / SVM"]
-    D -- "exceeds limit" --> R
-    E --> F["Session expires<br/>or owner revokes"]
+    A["소유자가 외부 키를 연결<br/>(범위 지정 권한 + 만료)"] --> B["연결된 키가<br/>승인에 서명"]
+    B --> C["릴레이어가 트랜잭션을<br/>제출하고 수수료를 지불"]
+    C --> D{"인증자 검증"}
+    D -- "권한이 부여되었는가?<br/>만료되지 않았는가?<br/>논스가 최신인가?" --> E{"지출 규칙 검증"}
+    D -- "실패" --> R["트랜잭션 거부"]
+    E -- "건당 + 일일 한도<br/>허용된 단위" --> F["소유자의 계정에서 실행"]
+    E -- "한도 초과" --> R
+    F --> G["인증자가 만료되거나<br/>소유자가 철회"]
 ```
 
 ## 계정 유형
 
-| 유형              | 설명                             | 사용 사례                       |
-| ----------------- | --------------------------------------- | ------------------------------ |
-| `multisig`        | M-of-N 임계값 서명                | DAO 자금, 공유 지갑 |
-| `social_recovery` | 보증인 지원 키 복구          | 소비자 지갑, 온보딩   |
-| `session_based`   | 제약 조건이 있는 위임된 세션 키 | dApp 세션, 모바일 지갑  |
+`create`는 세 가지 계정 유형 중 하나를 기록합니다. 유형은 계정에 저장되며 주소가 도출되는 방식의 일부입니다. 이 모듈에는 자체적인 멀티시그, 세션 키, 복구 트랜잭션이 없습니다(트랜잭션 서비스는 `create`, `update-rules`, `register-authenticator`, `revoke-authenticator`, `execute-cosmos`, `execute-evm`입니다).
+
+| 유형              | 사용 목적                       |
+| ----------------- | ------------------------------- |
+| `multisig`        | DAO 자금, 공유 지갑             |
+| `social_recovery` | 소비자 지갑, 온보딩             |
+| `session_based`   | dApp 세션, 모바일 지갑          |
 
 ## 추상 계정 생성
 
-### 세션 기반 계정
+`create`는 계정 유형을 위치 인자(`multisig`, `social_recovery` 또는 `session_based`)로 받습니다.
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type session_based \
+qorechaind tx abstractaccount create session_based \
   --from mykey \
-  --gas auto \
-  -y
+  --gas 400000 --fees 40000uqor
 ```
 
-### 다중서명 계정
+이 명령에는 서명자, 임계값, 보증인을 위한 플래그가 없습니다.
+
+## 인증자(연결된 키)
+
+모듈의 위임 키 메커니즘은 아래 [연결된 지갑 인증자](#authenticators)에 설명된 **인증자**입니다. 소유자는 외부 키(ed25519 또는 secp256k1)를 일련의 권한 및 만료 시점과 함께 연결하고, 언제든지 철회할 수 있습니다.
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type multisig \
-  --signers qor1alice...,qor1bob...,qor1carol... \
-  --threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
+qorechaind tx abstractaccount register-authenticator <account-address> <scheme> <pubkey-base64> <permissions-csv> <expiry-unix> <label> \
+  --from mykey --gas 400000 --fees 40000uqor
+qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <pubkey-base64> \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
 
-### 소셜 복구 계정
-
-```bash
-qorechaind tx abstractaccount create \
-  --account-type social_recovery \
-  --guardians qor1guardian1...,qor1guardian2...,qor1guardian3... \
-  --recovery-threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
-```
-
-## 세션 키
-
-세션 키는 `session_based` 계정 유형의 핵심입니다. 이를 통해 보조 키에 **일시적이고 범위가 지정된 권한**을 부여할 수 있으며, 기본 키를 노출하고 싶지 않은 dApp 상호작용에 적합합니다.
-
-### 키 속성
-
-| 속성              | 설명                                          |
-| --------------------- | ---------------------------------------------------- |
-| **권한**       | 세션 키가 서명할 수 있는 메시지 유형         |
-| **만료**            | 설정 가능한 기간이 지나면 자동 만료   |
-| **지출 한도**   | 세션 키가 지출할 수 있는 최대 금액            |
-| **허용된 컨트랙트** | 특정 컨트랙트 주소로만 상호작용 제한 |
-
-### 세션 키 부여
-
-```bash
-qorechaind tx abstractaccount grant-session \
-  --session-key qor1sessionkey... \
-  --permissions "bank/MsgSend,wasm/MsgExecuteContract" \
-  --expiry "2026-03-01T00:00:00Z" \
-  --allowed-contracts qor1contract1...,0x1234...abcd \
-  --from mykey \
-  -y
-```
-
-### 세션 키 취소
-
-```bash
-qorechaind tx abstractaccount revoke-session \
-  --session-key qor1sessionkey... \
-  --from mykey \
-  -y
-```
-
-### 활성 세션 목록 조회
-
-```bash
-qorechaind query abstractaccount sessions <account-address>
-```
+`scheme`은 `ed25519`(예: Phantom) 또는 `secp256k1`(예: MetaMask)입니다. `grant-session`, `revoke-session`, `query abstractaccount sessions` 명령은 없습니다.
 
 ## 지출 규칙
 
-지출 규칙은 계정 유형과 관계없이 추상 계정에 재정적 안전장치를 추가합니다.
+지출 규칙은 추상 계정에 재정적 안전장치를 추가합니다.
 
-| 규칙             | 설명                                     |
-| ---------------- | ----------------------------------------------- |
-| `daily_limit`    | 24시간 롤링 윈도우당 최대 총 지출 금액  |
-| `per_tx_limit`   | 개별 트랜잭션당 최대 지출 금액        |
-| `allowed_denoms` | 지출 가능한 토큰 단위(denom) 제한 |
+| 규칙             | 설명                                                  |
+| ---------------- | ----------------------------------------------------- |
+| `daily_limit`    | UTC 달력 기준 하루당 최대 총 지출 금액                |
+| `per_tx_limit`   | 승인된 개별 실행당 최대 지출 금액                     |
+| `allowed_denoms` | 지출 가능한 토큰 단위(denom) 제한                     |
 
 ### 지출 규칙 설정
 
+`update-rules`는 계정의 규칙을 `SpendingRule` 객체의 JSON 배열로 교체합니다(파일이나 플래그가 아닌 인라인 JSON).
+
 ```bash
-qorechaind tx abstractaccount update-spending-rules \
-  --daily-limit 1000000000uqor \
-  --per-tx-limit 100000000uqor \
-  --allowed-denoms uqor \
-  --from mykey \
-  -y
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":1000000000,"per_tx_limit":100000000,"allowed_denoms":["uqor"]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
+
+한도는 기본 단위(`uqor`)로 지정하며 승인된 실행마다 집계됩니다. 일일 한도는 UTC 달력 기준 하루의 총액을 제한합니다. 규칙은 저장된 규칙 전체를 교체하므로 생략한 필드는 제거됩니다.
 
 ### 현재 규칙 조회
 
+계정 레코드에는 규칙과 연결된 키의 수가 포함됩니다.
+
 ```bash
-qorechaind query abstractaccount spending-rules <account-address>
+qorechaind query abstractaccount account <account-address>
 ```
 
-### 응답 예시
-
-```json
-{
-  "daily_limit": {
-    "denom": "uqor",
-    "amount": "1000000000"
-  },
-  "per_tx_limit": {
-    "denom": "uqor",
-    "amount": "100000000"
-  },
-  "allowed_denoms": ["uqor"],
-  "daily_spent": {
-    "denom": "uqor",
-    "amount": "250000000"
-  },
-  "window_reset": "2026-02-27T00:00:00Z"
-}
-```
+:::caution 규칙은 키가 존재할 때만 해당 키를 제한합니다
+체인은 다음 순서로 한도를 결정합니다. 인증자 자체의 규칙이 설정되어 있고 `enabled`이면 그것을, 아니면 계정의 첫 번째 `enabled` 규칙을, 그것도 없으면 **한도가 없습니다**. `enabled: false`로 저장된 규칙은 한도 0이 아니라 한도 없음입니다. `MsgRegisterAuthenticator`에는 규칙이 포함되어 있지 않으므로, 해당 메시지만으로 연결된 키는 계정 수준 규칙에 의해서만 제한됩니다. `update-rules`로 규칙을 의도적으로 설정하고, 키에 필요한 권한만 등록하십시오. 한도는 연결된 키가 입힐 수 있는 피해를 제한할 뿐, 키를 철회하는 것을 대신하지 않습니다.
+:::
 
 ## 연결된 지갑 인증자 — 위임된 지출 {#authenticators}
 
-체인 버전 **v3.1.85**(v3.1.84의 권한 모델을 기반으로 함)부터, **연결된 외부 지갑 키** — Phantom(ed25519) 키 또는 MetaMask(secp256k1) 계정 — 는 최소 권한, 지출 한도 제한, 철회 가능한 조건 하에 **표준 계정(post-quantum account)에서 직접 지출**할 수 있습니다. 외부 키는 ML-DSA 서명을 생성하지 않습니다. **릴레이어**가 트랜잭션 봉투를 제출하고 수수료를 지불하며(릴레이어 자신의 하이브리드 PQC 서명이 체인의 서명 요구사항을 충족합니다), 인증자가 **도메인 분리되고 재전송 방지가 적용된 서명 바이트**에 대해 남긴 서명이 승인의 근거가 됩니다.
+인증자 설계는 체인 버전 **v3.1.85**(v3.1.84의 권한 모델을 기반으로 함)에서 도입되었습니다. 모듈이 꺼져 있는 동안에는 **실제 네트워크에서 사용할 수 없습니다**(이 페이지 상단의 상태 안내 참조). **연결된 외부 지갑 키** — Phantom(ed25519) 키 또는 MetaMask(secp256k1) 계정 — 는 최소 권한, 지출 한도 제한, 철회 가능한 조건 하에 **표준 양자내성 계정에서 지출**할 수 있습니다. 외부 키는 ML-DSA 서명을 생성하지 않습니다. **릴레이어**가 트랜잭션 봉투를 제출하고 수수료를 지불하며(릴레이어 자신의 하이브리드 PQC 서명이 체인의 서명 요구사항을 충족합니다), 인증자가 **도메인 분리되고 재전송 방지가 적용된 서명 바이트**에 대해 남긴 서명이 승인의 근거가 됩니다.
 
 ### 인증자 등록 {#register-authenticator}
 
@@ -181,16 +125,17 @@ import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
 
 // Link a MetaMask account by its 20-byte address (EIP-191 verification):
 const msg = registerEthAuthenticatorMsg({
-  account: "qor1owner...",            // the canonical account
+  owner: "qor1owner...",              // the canonical account (signs this message)
   ethAddress: "0xAbC...123",          // the MetaMask address to link
   permissions: ["evm"],               // least privilege — see the taxonomy below
-  expirySeconds: 30 * 24 * 3600,      // ≤ 30 days recommended
-  spendingRule: { perTxLimit: "100000000uqor", dailyLimit: "1000000000uqor" },
+  expiryUnix: Math.floor(Date.now() / 1000) + 30 * 24 * 3600, // absolute Unix seconds, ≤ 30 days recommended
+  label: "metamask",
 });
+// Limits are a separate message (MsgUpdateSpendingRules), see "Spending Rules" above.
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-Phantom 키도 동일한 방식으로 `scheme: "ed25519"`와 Phantom 공개 키를 사용해 등록합니다. 철회는 `MsgRevokeAuthenticator`를 통해 즉시 이루어집니다.
+Phantom 키도 동일한 방식으로 `ed25519` 방식과 Phantom 공개 키를 사용해 등록합니다(CLI에서는 `register-authenticator`). 철회는 `MsgRevokeAuthenticator`를 통해 즉시 이루어집니다.
 
 ### 권한 분류 체계 {#permission-taxonomy}
 
@@ -198,7 +143,7 @@ Phantom 키도 동일한 방식으로 `scheme: "ed25519"`와 Phantom 공개 키�
 
 | 권한 | 부여되는 작업 |
 | --- | --- |
-| `send` | 네이티브 레인 계좌 이체 |
+| `send` | 네이티브 레인 뱅크 전송 |
 | `delegate` / `withdraw` / `vote` | 스테이킹, 보상 인출, 거버넌스 |
 | `evm` / `wasm` / `svm` | 해당 VM 레인에서의 실행 |
 | `amm` / `ibc` / `deploy` | AMM 작업, IBC 전송, 컨트랙트 배포 |
@@ -219,7 +164,7 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 **`MsgExecuteEVM`** — 표준 계정의 `0x…` 주소에서 이루어지는 EVM 호출 또는 전송입니다. 인증자는 `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`(모든 필드는 길이 접두사 포함)에 서명합니다. 재전송 방지는 계정 자체의 EVM 논스를 통해 이루어집니다.
 
-**`MsgExecuteCosmos`** — 표준 계정에서 이루어지는 네이티브 레인 계좌 이체입니다. 인증자는 `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`에 서명합니다. 재전송 방지는 모듈이 관리하는 **인증자별 시퀀스**를 통해 이루어집니다(계좌 이체는 계정 논스를 증가시키지 않습니다). 자기 자신에게 보내는 전송은 거부됩니다.
+**`MsgExecuteCosmos`** — 표준 계정에서 이루어지는 네이티브 레인 뱅크 전송입니다. 인증자는 `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`에 서명합니다. 재전송 방지는 모듈이 관리하는 **인증자별 시퀀스**를 통해 이루어집니다(뱅크 전송은 계정 논스를 증가시키지 않습니다). 자기 자신에게 보내는 전송은 거부됩니다.
 
 :::caution 논스 규칙
 * `MsgExecuteEVM.nonce`는 계정의 **현재** EVM 논스(`eth_getTransactionCount(account0x, "latest")`)여야 합니다. 실제 운영 환경에서 릴레이어는 *다른* 계정이므로 +1을 더하지 **마십시오**. 오래된 논스로 서명하면 코드 `11`이 반환됩니다.
@@ -233,11 +178,12 @@ import { buildPhantomExecuteCosmos } from "@qorechain/wallet-adapter";
 
 // In the dApp: Phantom signs the digest with ed25519 signMessage.
 const msg = await buildPhantomExecuteCosmos({
-  provider: window.solana,            // Phantom
+  wallet: window.solana,              // Phantom: { publicKey, signMessage }
+  relayer: "qor1relayer...",          // submits the tx and pays the fee (a different account)
   chainId: "qorechain-vladi",
   account: "qor1owner...",            // canonical account being spent from
   to: "qor1recipient...",
-  amount: { denom: "uqor", amount: "900000" },
+  amount: "900000uqor",               // single-coin string
   nonce: authSequence,                // per-authenticator sequence
 });
 // Send `msg` to your relayer; the relayer wraps it in a tx it signs
@@ -251,10 +197,13 @@ import { buildMetaMaskExecuteEvm } from "@qorechain/wallet-adapter";
 
 const msg = await buildMetaMaskExecuteEvm({
   provider: window.ethereum,          // MetaMask (EIP-1193)
+  address: ethAddress,                // the linked 20-byte address
+  relayer: "qor1relayer...",
   chainId: "qorechain-vladi",
   account: "qor1owner...",
   to: "0xRecipient...",
-  valueWei: 10n ** 16n,               // 0.01 QOR (18-dec EVM view)
+  value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
+  gasLimit: 100000,
   nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
@@ -264,14 +213,19 @@ const msg = await buildMetaMaskExecuteEvm({
 동일한 빌더 함수가 5개 언어 모두를 위한 [QoreChain SDK](/sdk/guides/authenticators)에도 제공되며, CLI에서도 동등한 기능을 사용할 수 있습니다.
 
 ```bash
-# Produce the exact sign bytes the chain verifies (for custom signers):
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data-hex> <nonce>
+# Generate an ed25519 authenticator key: the seed goes to a new 0600 file, only the public key is printed
+qorechaind query abstractaccount auth-keygen --out authenticator.seed
 
-# Relay a pre-signed authorization:
-qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
-qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
+# Sign the exact bytes the chain verifies (seed from --seed-file, "-" for stdin, QORE_AUTH_SEED, or a prompt)
+qorechaind query abstractaccount auth-sign-cosmos <chain-id> <account> <to> <amount> <nonce> --seed-file authenticator.seed
+qorechaind query abstractaccount auth-sign-evm <chain-id> <account> <to-0xhex> <value-wei> <data-hex> <nonce> --seed-file authenticator.seed
+
+# Relay a pre-signed authorization (the relayer's --from key pays; cosign the envelope with `tx pqc cosign`)
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
+qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data-hex> <gas-limit> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
 ```
+
+이 명령어의 키와 서명은 base64입니다. `auth-sign-*` 도우미는 시드를 명령줄 인자가 아니라 파일, 표준 입력 또는 환경 변수에서 읽으므로(노드 릴리스 v3.2.1 이상) 셸 히스토리에 남지 않습니다. 시드 처리 플래그(`--out`, `--seed-file`)는 v3.2.1 이상 바이너리에만 있습니다.
 
 ### 오류 코드 {#authenticator-errors}
 
@@ -281,6 +235,7 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 | --- | --- | --- |
 | `5` | 지출 한도 초과(건당 또는 일일) | 남은 허용 한도를 표시 |
 | `6` | 인증자 만료 | "만료됨 — 지갑을 다시 연결하십시오" |
+| `9` | 모듈 비활성화(두 네트워크의 현재 상태) | "연결된 지갑은 아직 사용할 수 없습니다" |
 | `10` | 권한 거부(범위 밖이거나 위임 불가능한 메시지) | 부족한 권한을 표시 |
 | `11` | 재전송 거부(오래된 논스/시퀀스) | 논스를 다시 조회하고 재서명 |
 
@@ -288,10 +243,10 @@ qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <
 
 ### REST 조회 {#abstractaccount-rest}
 
-**v3.1.85**부터 모듈의 읽기 조회 기능도 REST를 통해 제공됩니다.
+모듈의 읽기 조회 기능은 REST를 통해 제공됩니다(**v3.1.85**부터).
 
 ```
-GET /qorechain/abstractaccount/v1/config
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -302,87 +257,59 @@ GET /qorechain/abstractaccount/v1/permission_schema
 ### CLI
 
 ```bash
+# Module configuration (enabled flag and limits)
+qorechaind query abstractaccount config
+
 # Get full account configuration
 qorechaind query abstractaccount account <address>
 
 # List all abstract accounts (paginated)
-qorechaind query abstractaccount list --limit 10
+qorechaind query abstractaccount accounts --page-limit 10
 ```
+
+메인넷에서는 계정 목록이 비어 있습니다. 테스트넷에는 활성화 플래그가 모든 경로에서 강제되기 전에 생성된 계정이 몇 개 나열됩니다.
 
 ### JSON-RPC
 
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getAbstractAccount",
-    "params": ["0xYourAddress"],
-    "id": 1
-  }'
-```
+> **아직 제공되지 않음:** 릴리스된 어떤 노드 빌드도 `qor_` JSON-RPC 네임스페이스를 제공하지 않으므로, `qor_getAbstractAccount`는 현재 모든 공개 엔드포인트에서 `-32601`(메서드를 찾을 수 없음)을 반환합니다. 위의 REST 경로나 CLI를 사용하십시오. [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참조하십시오.
 
 ### 계정 응답 예시
+
+추상 계정 레코드의 형태입니다(예시 값).
 
 ```json
 {
   "address": "qor1myaccount...",
   "account_type": "session_based",
   "owner": "qor1owner...",
-  "active_sessions": 2,
-  "spending_rules": {
-    "daily_limit": "1000000000uqor",
-    "per_tx_limit": "100000000uqor",
-    "allowed_denoms": ["uqor"]
-  },
-  "created_at_height": 54321
+  "spending_rules": [
+    {
+      "id": "daily",
+      "enabled": true,
+      "daily_limit": "1000000000",
+      "per_tx_limit": "100000000",
+      "allowed_denoms": ["uqor"]
+    }
+  ]
 }
 ```
 
-## 소셜 복구 절차
+## 소셜 복구
 
-계정 소유자가 기본 키에 대한 접근 권한을 잃은 경우, 보증인들이 키 교체를 승인할 수 있습니다.
-
-1. **소유자가 키 분실을 신고(또는 보증인이 절차를 시작):**
-
-   ```bash
-   qorechaind tx abstractaccount initiate-recovery \
-     --account <account-address> \
-     --new-owner qor1newkey... \
-     --from guardian1 \
-     -y
-   ```
-
-2. **추가 보증인의 승인**(`recovery_threshold`를 충족해야 함):
-
-   ```bash
-   qorechaind tx abstractaccount approve-recovery \
-     --account <account-address> \
-     --recovery-id <recovery-id> \
-     --from guardian2 \
-     -y
-   ```
-
-3. **임계값이 충족되면 복구가 자동으로 실행됩니다.** **타임락 기간**(기본값: 48시간) 동안 원래 소유자는 사기성 복구 시도를 취소할 기회를 갖습니다.
+`social_recovery`는 계정 유형이지만, 모듈에는 복구 트랜잭션이 없습니다. `initiate-recovery`나 `approve-recovery` 명령도 없고, 모듈의 트랜잭션 서비스에 복구 메시지도 없습니다. QoreChain 계정의 키 복구는 니모닉에서 계정의 양자내성 키를 다시 도출하고(`tx pqc recover-key`), 필요하면 교체(`tx pqc rotate-key`)하는 방식으로 이루어집니다. [양자내성 서명](/developer-guide/post-quantum-signing)을 참조하십시오.
 
 ## dApp과의 통합
 
-세션 키는 원활한 dApp 경험을 가능하게 합니다.
-
-1. **사용자가 지갑을 연결**하고 dApp의 컨트랙트로 범위가 지정된 세션 키를 생성합니다
-2. **dApp이 세션 키를 사용**하여 사용자를 대신해 트랜잭션을 제출합니다
-3. **반복적인 서명이 필요 없습니다** — 세션 키가 자신의 권한 범위 내에서 승인을 처리합니다
-4. **세션이 자동으로 만료**되거나, 사용자가 언제든지 이를 취소할 수 있습니다
-
-이 패턴은 특히 다음과 같은 경우에 유용합니다.
+모듈이 활성화되면 연결된 키 승인은 다음과 같은 흐름을 위한 것입니다.
 
 * 반복적인 생체 인증 요청이 사용성을 해치는 모바일 지갑
-* 빠른 트랜잭션 서명이 필요한 게임 dApp
-* 여러 개의 순차적 작업을 실행하는 DeFi 프로토콜
+* 제한된 허용 한도 내에서 빠른 트랜잭션 서명이 필요한 게임 dApp
+* Phantom 또는 MetaMask 사용자가 릴레이어를 통해 자신의 QoreChain 계정에서 지출하는 경우
+
+dApp 백엔드가 릴레이어 역할을 합니다. 연결된 키의 서명된 승인을 받아 자신이 서명하는 트랜잭션으로 감싼 뒤 브로드캐스트합니다. 연결된 키는 언제든지 철회되거나 만료될 수 있습니다. 대상 네트워크에서 모듈이 활성화되기 전까지는 [QoreX 또는 SDK](/sdk/overview)를 통한 일반 서명을 사용하십시오.
 
 ## 다음 단계
 
-* [검증자 노드 운영](/developer-guide/running-a-validator) — 검증자 노드 설정 및 운영
-* [EVM 개발](/developer-guide/evm-development) — Solidity dApp과 추상 계정 통합
-* [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — 추상 계정을 활용한 크로스-VM 메시징
-
+* [검증자 운영](/developer-guide/running-a-validator) — 검증자 노드 설정 및 운영
+* [EVM 개발](/developer-guide/evm-development) — EVM 도구, 계정 및 EVM 승인 창
+* [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — 크로스-VM 메시징

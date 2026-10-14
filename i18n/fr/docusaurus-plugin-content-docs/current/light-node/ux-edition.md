@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # Édition UX — dashboard web
 
-L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme l'édition SX, il s'agit de la lignée **v3.1.2** du nœud léger (sa propre version, distincte de la version de la chaîne).
+L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme l'édition SX, il s'agit de la lignée **v3.1.3** du nœud léger (sa propre version, distincte de la version de la chaîne).
 
 L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et pour les opérateurs qui préfèrent une interface visuelle à la ligne de commande.
 
 ## Installation
 
-Les binaires précompilés s'exécutent nativement sur **six plateformes sans aucune dépendance native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — chacun pesant environ 16 Mo. Vérifiez la somme de contrôle du téléchargement par rapport au manifeste avant de l'exécuter — voir [Édition SX](/light-node/sx-edition#install) pour la marche à suivre.
+Les binaires précompilés s'exécutent nativement sur **six plateformes sans aucune dépendance native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) et Windows (amd64, arm64) — chacun pesant environ 11 à 12 Mo. Vérifiez la somme de contrôle du téléchargement par rapport au manifeste avant de l'exécuter — voir [Édition SX](/light-node/sx-edition#install) pour la marche à suivre.
 
 ### Compiler depuis les sources
 
@@ -27,13 +27,24 @@ Cela produit `build/lightnode-ux`.
 
 ### Docker
 
-Le service UX se compile à partir de `Dockerfile.ux` :
+Le service UX se compile à partir de `Dockerfile.ux` dans le dépôt source (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.4` ou plus récent). Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer ; l'assistant de configuration se trouve dans le binaire SX, créez donc d'abord la configuration avec l'édition SX (voir [Édition SX](/light-node/sx-edition#first-run-onboard)) et copiez-la dans le volume. Dans un conteneur, le dashboard doit écouter sur toutes les interfaces du conteneur ; définissez donc ceci dans cette configuration et publiez le port uniquement sur la boucle locale de l'hôte :
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-Le conteneur UX conserve les données dans un volume nommé sur `/root/.qorechain-lightnode` et lit l'adresse RPC de la chaîne depuis la variable d'environnement `QORECHAIN_RPC_ADDR`.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+Le conteneur UX conserve les données dans un volume nommé sur `/root/.qorechain-lightnode` et lit l'adresse RPC de la chaîne depuis la variable d'environnement `QORECHAIN_RPC_ADDR`. L'image UX n'inclut pas le signataire `qorechaind` : un conteneur UX ne peut donc pas envoyer de heartbeats on-chain ; exécutez un nœud enregistré avec l'édition SX.
 
 ## Exécution
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Cela lance le démon et le serveur du dashboard intégré ensemble. L'édition UX active toujours le dashboard. Au démarrage, le binaire affiche l'URL du dashboard.
 
-L'édition UX partage sa configuration avec l'édition SX : elle lit le même `config.toml` depuis `~/.qorechain-lightnode` et utilise le même keyring Dilithium-5. Si vous n'avez pas encore configuré le nœud, exécutez d'abord l'assistant SX (`lightnode-sx onboard`) pour écrire la configuration et importer ou générer votre clé — voir [Édition SX](/light-node/sx-edition).
+L'édition UX partage sa configuration avec l'édition SX : elle lit le même `config.toml` depuis `~/.qorechain-lightnode` et utilise le même keyring Dilithium-5. Si vous n'avez pas encore configuré le nœud, exécutez d'abord l'assistant SX (`lightnode-sx onboard`) pour écrire la configuration et importer ou générer votre clé — voir [Édition SX](/light-node/sx-edition). Le binaire UX ne dispose que des commandes `start` et `version` ; utilisez `lightnode-sx` pour `register`, `status` et `keys`. Le démon de l'édition UX envoie des heartbeats de la même manière que l'édition SX lorsqu'un signataire `qorechaind` est disponible.
 
 ## Le dashboard web sur le port 8420
 
@@ -69,7 +80,7 @@ Le dashboard est organisé selon les vues suivantes :
 
 - **Overview** — hauteur de bloc et état du nœud en un coup d'œil.
 - **Validators** — l'ensemble des validateurs liés (bonded).
-- **Delegation** — vos délégations actuelles et leur répartition.
+- **Delegation** — les délégations reflétées depuis votre compte opérateur (voir la limitation connue dans [Récompenses et supervision](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — télémétrie réseau en direct et en-têtes récemment synchronisés.
 - **Bridge** — télémétrie du pont inter-chaînes.
 - **Tokenomics** — télémétrie de l'économie du token.
@@ -85,9 +96,9 @@ Si le nœud n'a **aucun point d'accès RPC de chaîne configuré**, le dashboard
 lightnode-sx onboard
 ```
 
-L'assistant exécute l'auto-test PQC, demande votre point d'accès de chaîne, et importe ou génère votre clé de validateur. Une fois un point d'accès configuré, redémarrez le nœud et le dashboard commence à afficher les données de chaîne en direct.
+L'assistant exécute l'auto-test PQC, demande votre point d'accès de chaîne, et importe ou génère la clé de votre nœud. Une fois un point d'accès configuré, redémarrez le nœud et le dashboard commence à afficher les données de chaîne en direct.
 
 ## Pour aller plus loin
 
 - [Enregistrement et licences](/light-node/registration-and-licensing) — enregistrer le nœud on-chain.
-- [Récompenses et supervision](/light-node/rewards-and-monitoring) — gagner la part de 3 % des nœuds légers et superviser la santé du nœud.
+- [Récompenses et supervision](/light-node/rewards-and-monitoring) — comment la part de 3 % des nœuds légers est créditée et réclamée, et comment superviser la santé du nœud.

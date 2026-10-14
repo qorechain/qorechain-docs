@@ -15,7 +15,7 @@ El motor QCAI (QoreChain AI) opera a través de tres capas:
 
 | Capa                  | Alcance                                                  | Ejecución                | Determinista |
 | --------------------- | ------------------------------------------------------ | ------------------------ | ------------- |
-| **Nivel de consenso**   | Producción de bloques, ajuste de parámetros                     | On-chain (x/rlconsensus) | Sí           |
+| **Nivel de consenso**   | Producción de bloques, ajuste de parámetros                     | On-chain (x/rlconsensus) — hoy solo observación | Sí           |
 | **Nivel de red**     | Enrutamiento de transacciones, detección de fraudes, optimización de comisiones | On-chain (x/ai)          | Sí           |
 | **Nivel de aplicación** | Generación de contratos, auditoría, análisis profundo           | Off-chain (sidecar)      | No            |
 
@@ -106,7 +106,7 @@ El optimizador de comisiones predice la congestión de la red y sugiere comision
 | `normal` | 1.0x            | 3-5 bloques             |
 | `slow`   | 0.5x            | 6-10 bloques             |
 
-La comisión final incorpora un **multiplicador de congestión** (1.0x con 0% de congestión, hasta 5.0x con 100% de congestión) y una **prima de tendencia** cuando la congestión prevista supera la congestión actual. La comisión mínima es de 500 uqor (0.0005 QOR).
+La comisión final incorpora un **multiplicador de congestión** (1.0x con 0% de congestión, hasta 5.0x con 100% de congestión) y una **prima de tendencia** cuando la congestión prevista supera la congestión actual. La comisión mínima del propio estimador es una constante heredada de 500 uqor; no se expone en las redes en producción, y la comisión que una transacción debe pagar realmente la fija el mínimo de la red de 0.1 uqor por unidad de gas (consulta [Primera transacción](/getting-started/first-transaction#send-qor)).
 
 ## Optimizador de red
 
@@ -167,6 +167,10 @@ Dos contratos precompilados exponen las capacidades de IA on-chain a los contrat
 | `aiRiskScore`    | `0x0B01` | Devuelve una puntuación de riesgo (0-100) para una dirección o hash de transacción dados  |
 | `aiAnomalyCheck` | `0x0B02` | Devuelve un indicador booleano de anomalía y una puntuación de confianza para una transacción |
 
+:::warning Aún no están activos
+Estos precompilados **no están activos** en la mainnet (`qorechain-vladi`) ni en la testnet (`qorechain-diana`); una llamada devuelve datos vacíos. Solo se activarán cuando dispongan de una ruta de puntuación de solo lectura en coma fija. Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Importante**: Los precompilados de EVM utilizan **únicamente el motor heurístico determinista**. Nunca llaman al sidecar, lo que garantiza que toda la ejecución de EVM siga siendo totalmente determinista y reproducible.
 
 ## Atestación TEE
@@ -214,17 +218,12 @@ Cada ronda se configura con un número mínimo/máximo de participantes, tiempo 
 
 El aprendizaje federado se encuentra actualmente en la fase de especificación de interfaces. Su implementación está prevista para una versión futura.
 
-## Endpoints REST
+## Consultas
 
-| Endpoint                         | Descripción                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Devuelve estimaciones de comisiones para los niveles de urgencia rápida, normal y lenta |
-| `/ai/v1/fraud/investigations`    | Lista las investigaciones de fraude activas y resueltas                 |
-| `/ai/v1/network/recommendations` | Devuelve las recomendaciones actuales de optimización de parámetros de red |
-| `/ai/v1/circuit-breakers`        | Lista los estados activos de los interruptores de circuito para los contratos              |
+`qorechaind query ai config` y `qorechaind query ai stats` (gRPC) son las consultas del módulo. Hoy el módulo no tiene rutas REST: las rutas `/ai/v1/...` de estimación de comisiones, investigaciones de fraude, recomendaciones de red e interruptores de circuito no se sirven ni en la mainnet ni en la testnet.
 
 ## Relacionado
 
-* [Motor de consenso PRISM](/architecture/prism-consensus-engine) — la capa de IA que impulsa la optimización del consenso.
+* [Motor de consenso PRISM](/architecture/prism-consensus-engine) — la capa de IA diseñada para la optimización del consenso (hoy solo observación).
 * [Creador de contratos inteligentes](/dashboard/smart-contract-creator) — generación de contratos asistida por IA en el Dashboard.
 * [Auditor de contratos](/dashboard/contract-auditor) — revisión de seguridad de contratos asistida por IA.

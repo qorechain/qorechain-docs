@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChain은 QoreChain EVM 엔진을 **6개의 커스텀 프리컴파일 컨트랙트**로 확장하여 프로토콜 수준의 기능을 Solidity에 직접 노출합니다. 이 프리컴파일들은 포스트 퀀텀 암호화, AI 리스크 스코어링, 크로스 VM 메시징, PRISM 합의 파라미터에 대한 온체인 접근을 제공합니다.
 
-:::note
-프리컴파일은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 체인 버전 **v3.1.97**로 2026년 6월 7일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**) 양쪽에서 모두 사용할 수 있습니다. 모든 예제는 **포트 8545**의 JSON-RPC 엔드포인트를 사용합니다.
+:::warning 메인넷과 테스트넷에서 아직 활성화되지 않음
+아래의 QoreChain 프리컴파일 6개는 **노드에 컴파일되어 있지만 아직 활성화되지 않았습니다**. **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**) 모두 해당됩니다. EVM은 `active_static_precompiles` 파라미터에 있는 주소만 디스패치하며, 이 목록은 두 네트워크 모두 비어 있습니다. 체인 업그레이드로 활성화되기 전까지 이 주소들을 호출하면 **성공하고 빈 데이터(`0x`)를 반환**합니다. 리버트하지도, 오류를 반환하지도 않습니다. 이 중 어느 것이든 의존하기 전에 [네트워크 상태](#network-status)를 확인하세요.
 :::
+
+## 네트워크 상태 {#network-status}
+
+| 프리컴파일 | 주소 | `qorechain-vladi` (메인넷) | `qorechain-diana` (테스트넷) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | 비활성 | 비활성 |
+| PQC Key Status | `0x…0A02` | 비활성 | 비활성 |
+| AI Risk Score | `0x…0B01` | 비활성 | 비활성 |
+| AI Anomaly Check | `0x…0B02` | 비활성 | 비활성 |
+| PRISM Consensus Params | `0x…0C01` | 비활성 | 비활성 |
+| CrossVM Bridge | `0x…0901` | 비활성 | 비활성 |
+
+활성화에는 체인 업그레이드가 필요하며 단계적으로 진행될 예정입니다. 읽기 전용인 PQC 및 합의 프리컴파일이 먼저, AI 2종은 읽기 전용 고정소수점 경로가 갖춰진 뒤에, CrossVM 브리지는 저널링, 값 검사, 크로스 VM 서킷 브레이커와 함께 재구축된 이후에만 활성화됩니다. 이 표는 이들 중 어느 것이든 활성화하는 업그레이드와 같은 작업에서 갱신됩니다.
+
+현재 목록을 직접 확인하세요 (비어 있으면 활성화된 것이 없음).
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### 빈 반환 데이터에 대비하기 {#guard}
+
+비활성(또는 QoreChain이 아닌) 주소는 데이터 없이 성공을 반환하므로, 길이를 확인하지 않고 저수준 호출의 원시 반환 바이트를 읽어서는 안 됩니다. `abi.decode`와 타입이 지정된 인터페이스 호출은 빈 데이터에서 리버트하며 이는 안전한 결과입니다. 직접 작성한 저수준 호출은 이를 명시적으로 확인해야 합니다.
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+이 주소들로 가치를 보내지 마세요. payable이 아니며, 비활성 프리컴파일 주소로 보낸 가치는 그곳에 남아 복구할 방법이 없습니다.
 
 ---
 
 ## 프리컴파일 주소 맵
 
+가스 수치는 프리컴파일이 활성화된 후 노드가 부과하는 값입니다 (바이트당은 호출 입력 바이트당을 의미합니다).
+
 | 프리컴파일              | 주소                                      | 기본 가스        | 설명                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | 동기식 크로스 VM 호출(EVM에서 CosmWasm으로)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 바이트당 4 | 동기식 크로스 VM 호출(EVM에서 CosmWasm으로)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 바이트당 8 | ML-DSA-87 포스트 퀀텀 서명 검증         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | 계정에 등록된 PQC 키가 있는지 확인     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 리스크 스코어 조회 |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**가스 비용:** 기본 25,000 + 입력 데이터 바이트당 8 가스. 일반적인 ML-DSA-87 검증(2592 + 4627 + 메시지 바이트)의 경우 약 80,000~90,000 가스가 소요됩니다.
+**가스 비용:** 기본 25,000 + 입력 데이터 바이트당 8 가스. 입력은 ABI 인코딩된 호출(공개 키 2592 바이트, 서명 4627 바이트, 메시지, 그리고 ABI 오프셋과 패딩)이므로, 일반적인 ML-DSA-87 검증은 대략 85,000~90,000 가스가 소요됩니다.
 
 ### PQC Key Status — 계정 등록 여부 확인
 
@@ -177,13 +212,15 @@ contract RiskGate {
 
 **리스크 레벨:**
 
-| 레벨    | 값 | 스코어 범위(bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| 레벨    | 값 |
+| -------- | ----- |
+| SAFE     | 0     |
+| LOW      | 1     |
+| MEDIUM   | 2     |
+| HIGH     | 3     |
+| CRITICAL | 4     |
+
+레벨은 AI 엔진이 해당 트랜잭션에 부여한 심각도 레이블에서 나오며, 스코어는 베이시스 포인트(0 - 10000)로 반환됩니다. 스코어 범위에서 레벨로의 고정된 매핑은 없으므로, 스코어 임계값이 아니라 `level`을 기준으로 게이팅하세요.
 
 **가스 비용:** 정액 50,000.
 
@@ -227,29 +264,19 @@ contract ConsensusReader {
 
 **가스 비용:** 정액 1,500.
 
+:::note
+현재 노드 빌드에서 `rlConsensusParams`는 라이브 PRISM 튜닝 값이 아닌 고정된 플레이스홀더 기본값을 반환합니다 (예를 들어 측정된 블록 시간, 즉 메인넷에서 약 3.2초, 테스트넷에서 약 1.0초를 보고하지 않습니다). 이를 라이브 합의 파라미터에 연결하는 것은 활성화 작업의 일부입니다.
+:::
+
 ### CrossVM Bridge — EVM에서 CosmWasm 호출
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+CrossVM 브리지 프리컴파일은 현재 형태로는 활성화되지 **않을** 것입니다. 호출하는 컨트랙트의 리버트가 CosmWasm 쪽도 함께 되돌리고, 값 전송은 거부되며, EVM-to-EVM 재진입은 거절되고, 크로스 VM 서킷 브레이커가 적용되도록 재구축 중입니다. 그때까지는 동기식 EVM-to-CosmWasm 경로가 없습니다. `MsgCrossVMCall` 메시지 경로는 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요. 이 경로 자체도 현재 메인넷에서는 꺼져 있습니다.
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+노드는 calldata를 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`로 디코딩합니다 (4바이트 셀렉터 다음에 ABI 인코딩된 인자). 문서화된 용도는 EVM에서 CosmWasm으로의 호출이며, 재구축에 따라 ABI가 변경될 수 있습니다.
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**가스 비용:** 기본 50,000 + 대상 컨트랙트 실행 비용. 자세한 내용은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
+**가스 비용:** 기본 50,000 + 입력 바이트당 4 가스, 여기에 대상 컨트랙트 실행 비용이 더해집니다. 자세한 내용은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 
 ---
 
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 Hardhat 또는 Foundry 프로젝트에 다음과 같이 설치하세요.
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability) — 크로스 VM 메시징 전체 문서
 * [EVM 개발](/developer-guide/evm-development) — Solidity 컨트랙트 배포하기
-* [계정 추상화](/developer-guide/account-abstraction) — 세션 키를 사용하는 프로그래머블 계정
+* [계정 추상화](/developer-guide/account-abstraction) — 연결된 지갑 인증자와 지출 규칙 (모듈은 현재 비활성화됨)

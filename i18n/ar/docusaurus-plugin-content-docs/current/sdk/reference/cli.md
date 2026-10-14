@@ -19,7 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.3.0`).
+> منشورة على npm باسم `create-qorechain-dapp` (`0.8.0`). تثبّت ملفات
+> `package.json` المُنشأة `@qorechain/sdk` / `@qorechain/evm` على `^0.3.0`، وهو ما
+> يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة. بعد
+> إنشاء الهيكل، نفّذ `npm i @qorechain/sdk@latest` (و`npm i @qorechain/evm@latest`
+> لقالب EVM).
 
 ## القوالب
 
@@ -27,12 +31,18 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | --- | --- |
 | `evm-solidity` | عقد `Counter` بلغة Solidity + سكربت نشر/تفاعل بـ viem (`@qorechain/evm`). |
 | `fullstack-web` | تطبيق لامركزي بـ Vite + React + TypeScript يقرأ الأرصدة واقتصاديات الرمز (`@qorechain/sdk`). |
+| `rollup-app` | تطبيق rollup + سلسلة جانبية/paychain يستخدم `RollupClient` ومساعد multilayer (`@qorechain/sdk`). |
+
+يقرأ قالب `fullstack-web` نظرة اقتصاديات الرمز عبر `client.qor`، وهو
+استدعاء JSON-RPC من نوع `qor_` لا تخدمه نقاط النهاية العامة، لذا تعرض تلك اللوحة خطأً على الشبكة الرئيسية
+والتجريبية؛ أما قراءة الرصيد فتعمل. بدّله إلى قراءة REST
+مثل `client.rest.getBurnStats()` للشبكات العامة.
 
 ## الخيارات
 
 | الراية | الوصف |
 | --- | --- |
-| `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web`). |
+| `-t, --template <name>` | القالب المراد استخدامه (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
 | `--network <name>` | إعداد الشبكة المسبق (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | تخطّ المطالبات واستخدم الإعدادات الافتراضية. |
@@ -43,9 +53,9 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 ## التطوير المحلي مقابل مساحة العمل
 
-تُنشَر حزم `@qorechain/*` على npm؛ وبمجرد نشرها يعمل `npm install`
-العادي. قبل ذلك، استخدم `--local` لتوجيه المشروع المُنشأ
-إلى حزم المستودع الموحّد (ابنها أولاً بـ `pnpm -r build`):
+حزم `@qorechain/*` منشورة على npm، لذا يعمل `npm install`
+العادي. استخدم `--local` لتوجيه المشروع المُنشأ
+إلى حزم المستودع الموحّد بدلًا من ذلك (ابنها أولاً بـ `pnpm -r build`):
 
 ```bash
 npx create-qorechain-dapp my-dapp --template fullstack-web --local

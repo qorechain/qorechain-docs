@@ -7,234 +7,270 @@ sidebar_position: 2
 
 # Parametrii lanțului
 
-Referință consolidată a tuturor parametrilor de modul configurabili din genesis-ul QoreChain. Parametrii sunt grupați pe module și pot fi interogați în timpul execuției cu `qorechaind query <module> params`.
+Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`, iar `gasabstraction` poate fi interogat doar pe testnet) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
 
 :::note
-Valorile afișate sunt valorile implicite de genesis implementate. Parametrii se aplică pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**) și pe testnet **`qorechain-diana`** (EVM chain ID **9800**), cu excepția cazurilor menționate altfel.
+Valorile afișate au fost citite în direct la 14 octombrie 2026 (valori de genesis ale mainnet-ului, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Parametrii se aplică pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**) și pe testnet **`qorechain-diana`** (EVM chain ID **9800**) și sunt identici pe ambele rețele, cu excepția cazurilor indicate. Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
 :::
 
 ---
 
 ## Modulul PQC (`x/pqc`)
 
-| Parametru                   | Tip    | Valoare implicită      | Descriere                                                              |
-| --------------------------- | ------ | ---------------------- | ---------------------------------------------------------------------- |
-| `hybrid_signature_mode`     | uint   | `2` (required)         | Mod de aplicare: 0=dezactivat, 1=opțional, 2=obligatoriu (implicit curent) |
-| `allow_classical_fallback`  | bool   | `false`                | Fallback-ul exclusiv clasic este închis; tranzacțiile cosmos trebuie să fie hibride |
-| `algorithm_registry`        | array  | ML-DSA-87, ML-KEM-1024 | Algoritmi PQC înregistrați cu constrângeri de dimensiune              |
-| `auto_register_enabled`     | bool   | `true`                 | Înregistrare automată a cheilor PQC la prima tranzacție hibridă       |
-| `migration_deadline_height` | uint64 | `0`                    | Înălțimea blocului după care cheile exclusiv clasice sunt respinse (0=dezactivat) |
-| `migration_grace_period`    | uint64 | `100000`               | Blocuri de avertizare înainte de termenul-limită de migrare           |
+| Parametru                  | Valoare                    | Descriere                                                                |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `pqc_primary`              | `true`                     | Semnăturile post-cuantice sunt schema principală                         |
+| `allow_classical_fallback` | `false`                    | Fallback-ul exclusiv clasic este închis; tranzacțiile din lane-ul Cosmos trebuie să fie hibride |
+| `min_security_level`       | `5`                        | Nivelul minim de securitate NIST pentru un algoritm înregistrat          |
+| `default_migration_blocks` | `1,000,000`                | Durata implicită a unei migrări de algoritm pornite prin guvernanță (aproximativ 37 de zile la blocuri de ≈3,2 s) |
+| `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
+| `hybrid_signature_mode`    | `2` (required)             | Mod de aplicare: 0=dezactivat, 1=opțional, 2=obligatoriu                 |
+
+Registrul de algoritmi (id 1 `dilithium5`, id 2 `mlkem1024`) este stare a lanțului, nu un parametru. Cheile se înregistrează explicit cu `MsgRegisterPQCKey`; nu există înregistrare automată.
 
 ---
 
 ## Modulul AI (`x/ai`)
 
-| Parametru                  | Tip    | Valoare implicită | Descriere                                          |
-| -------------------------- | ------ | ----------------- | ------------------------------------------------- |
-| `anomaly_weight_volume`    | string | `0.30`            | Pondere pentru anomalia de volum în scorarea fraudei |
-| `anomaly_weight_velocity`  | string | `0.25`            | Pondere pentru anomalia de viteză în scorarea fraudei |
-| `anomaly_weight_pattern`   | string | `0.25`            | Pondere pentru anomalia de tipar în scorarea fraudei |
-| `anomaly_weight_network`   | string | `0.20`            | Pondere pentru anomalia de graf de rețea în scorarea fraudei |
-| `fraud_threshold_low`      | string | `0.30`            | Prag de scor pentru alertă de severitate scăzută  |
-| `fraud_threshold_medium`   | string | `0.55`            | Prag de scor pentru alertă de severitate medie    |
-| `fraud_threshold_high`     | string | `0.75`            | Prag de scor pentru alertă de severitate ridicată |
-| `fraud_threshold_critical` | string | `0.90`            | Prag de scor pentru alertă de severitate critică  |
-| `circuit_breaker_enabled`  | bool   | `true`            | Activează întrerupătoarele de circuit QCAI        |
+Configurația modulului (`qorechaind query ai config`):
+
+| Parametru           | Valoare                | Descriere                                                                   |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| `anomaly_threshold` | `0.7`                  | Scorul de anomalie peste care ante handler-ul marchează o tranzacție        |
+| `routing_strategy`  | `reputation_weighted`  | Strategia de rutare                                                         |
+| `risk_threshold`    | `0.8`                  | Pragul scorului de risc                                                     |
+| `max_tx_per_minute` | `600`                  | Limita de tranzacții per expeditor în lane-ul Cosmos, numărate pe o fereastră de 30 de blocuri (aproximativ 96 s la blocuri de ≈3,2 s; numele este istoric). Aplicată începând cu v3.2.0; valoarea implicită este 10 |
+
+Ponderile de scorare a fraudei și pragurile de severitate descrise în pagina [Motorul AI](/architecture/ai-engine) sunt constante ale detectorului, nu parametri de modul.
 
 ---
 
 ## Modulul Reputation (`x/reputation`)
 
-| Parametru      | Tip    | Valoare implicită | Descriere                                            |
-| -------------- | ------ | ----------------- | ---------------------------------------------------- |
-| `alpha`        | string | `0.30`            | Pondere pentru scorul de uptime (S\_i) în formula de reputație |
-| `beta`         | string | `0.25`            | Pondere pentru scorul de participare (P\_i)          |
-| `gamma`        | string | `0.25`            | Pondere pentru scorul comunitar (C\_i)               |
-| `delta`        | string | `0.20`            | Pondere pentru scorul de vechime (T\_i)              |
-| `decay_lambda` | string | `0.01`            | Factor de decădere exponențială în timp pentru scorurile istorice |
+| Parametru   | Valoare | Descriere                                            |
+| ----------- | ------- | ---------------------------------------------------- |
+| `alpha`     | `0.30`  | Pondere pentru scorul de uptime (S\_i) în formula de reputație |
+| `beta`      | `0.35`  | Pondere pentru scorul de participare (P\_i)          |
+| `gamma`     | `0.20`  | Pondere pentru scorul comunitar (C\_i)               |
+| `delta`     | `0.15`  | Pondere pentru scorul de vechime (T\_i)              |
+| `lambda`    | `1000`  | Scala decăderii în timp pentru scorurile istorice    |
+| `min_score` | `0.10`  | Pragul minim al unui scor de reputație               |
 
-Formula de reputație: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i` cu decădere exponențială în timp aplicată per epocă.
+Formula de reputație: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i`, cu decădere în timp aplicată scorurilor istorice.
 
 ---
 
 ## Modulul QCA (`x/qca`)
 
-| Parametru                      | Tip    | Valoare implicită | Descriere                                      |
-| ------------------------------ | ------ | ----------------- | ---------------------------------------------- |
-| `emerald_pool_weight`          | string | `0.50`            | Pondere de propunere a blocurilor pentru pool-ul Emerald |
-| `sapphire_pool_weight`         | string | `0.30`            | Pondere de propunere a blocurilor pentru pool-ul Sapphire |
-| `ruby_pool_weight`             | string | `0.20`            | Pondere de propunere a blocurilor pentru pool-ul Ruby |
-| `emerald_min_reputation`       | string | `0.80`            | Scor minim de reputație pentru pool-ul Emerald |
-| `sapphire_min_reputation`      | string | `0.50`            | Scor minim de reputație pentru pool-ul Sapphire |
-| `bonding_curve_base_rate`      | string | `0.05`            | Rată de bază pentru curba de bonding a staking-ului |
-| `bonding_curve_multiplier`     | string | `1.50`            | Multiplicator pentru progresia curbei de bonding |
-| `slashing_downtime_window`     | int64  | `10000`           | Blocuri pentru evaluarea downtime-ului         |
-| `slashing_downtime_threshold`  | string | `0.05`            | Fracțiune minimă de blocuri semnate înainte de slashing |
-| `slashing_downtime_penalty`    | string | `0.01`            | Fracțiune de slash pentru downtime             |
-| `slashing_double_sign_penalty` | string | `0.05`            | Fracțiune de slash pentru semnătură dublă      |
-| `qdrw_enabled`                 | bool   | `true`            | Activează ponderarea dinamică a recompenselor (Dynamic Reward Weighting) |
-| `qdrw_throughput_weight`       | string | `0.40`            | Pondere QDRW pentru metrica de throughput      |
-| `qdrw_latency_weight`          | string | `0.30`            | Pondere QDRW pentru metrica de latență         |
-| `qdrw_security_weight`         | string | `0.20`            | Pondere QDRW pentru metrica de securitate      |
-| `qdrw_decentralization_weight` | string | `0.10`            | Pondere QDRW pentru metrica de descentralizare |
-| `qdrw_adjustment_cap`          | string | `0.10`            | Ajustare QDRW maximă pe o singură epocă        |
-| `qdrw_adjustment_interval`     | int64  | `100`             | Blocuri între ajustările QDRW                  |
+:::note Implementat, încă neactiv
+Logica Triple-Pool CPoS este implementată în `x/qca` și acești parametri sunt pe lanț, dar **nu sunt încă integrați în producția de blocuri, recompense, slashing sau numărătoarea voturilor de guvernanță**. Slashing-ul în vigoare este modulul standard `x/slashing` (vezi [Staking, slashing, guvernanță, comisioane și EVM](#core-modules)). Vezi [Mecanismul de consens](/architecture/consensus-mechanism).
+:::
+
+Configurația (`qorechaind query qca config`):
+
+| Parametru                       | Valoare             | Descriere                                             |
+| ------------------------------- | ------------------- | ----------------------------------------------------- |
+| `use_reputation_weighting`      | `true`              | Setarea de genesis pentru ponderarea prin reputație   |
+| `min_reputation_score`          | `0.1`               | Scorul minim de reputație                             |
+| `pool_classification_interval`  | `1000` blocks       | Blocuri între clasificările pool-urilor               |
+| `pool_weight_rpos`              | `0.40`              | Ponderea de propunere a pool-ului RPoS                |
+| `pool_weight_dpos`              | `0.35`              | Ponderea de propunere a pool-ului DPoS                |
+| `pool_min_delegation_dpos`      | `10,000,000,000 uqor` | Delegarea minimă pentru pool-ul DPoS (10.000 QOR)   |
+| `pool_rep_percentile_rpos`      | `70`                | Percentila de reputație pentru pool-ul RPoS           |
+| `bonding_alpha`                 | `0.1`               | Parametru al curbei de bonding                        |
+| `bonding_beta`                  | `1.0`               | Parametru al curbei de bonding                        |
+| `bonding_phase_multiplier`      | `1.5`               | Multiplicatorul de fază al curbei de bonding          |
+| `slashing_base_rate`            | `0.01`              | Rata de bază a slashing-ului progresiv                |
+| `slashing_escalation_factor`    | `1.5`               | Factorul de escaladare a slashing-ului progresiv      |
+| `slashing_max_penalty`          | `0.33`              | Penalizarea maximă a slashing-ului progresiv          |
+| `slashing_decay_halflife`       | `100,000` blocks    | Timpul de înjumătățire al decăderii slashing-ului progresiv |
+| `qdrw_enabled`                  | `false`             | Numărătoarea QDRW este dezactivată                    |
+| `qdrw_xqore_multiplier`         | `2.0`               | Ponderea xQORE în formula QDRW                        |
+| `qdrw_rep_min_multiplier`       | `0.5`               | Limita inferioară a multiplicatorului de reputație    |
+| `qdrw_rep_max_multiplier`       | `2.0`               | Limita superioară a multiplicatorului de reputație    |
 
 ---
 
 ## Modulul Burn (`x/burn`)
 
-| Parametru           | Tip    | Valoare implicită | Descriere                                          |
-| ------------------- | ------ | ----------------- | ------------------------------------------------- |
-| `burn_enabled`      | bool   | `true`            | Activează mecanismul de ardere a comisioanelor    |
-| `validator_share`   | string | `0.37`            | Fracțiune din comisioane distribuită validatorilor de blocuri |
-| `burn_share`        | string | `0.30`            | Fracțiune din comisioane arsă permanent           |
-| `treasury_share`    | string | `0.20`            | Fracțiune din comisioane trimisă trezoreriei comunitare |
-| `staker_share`      | string | `0.10`            | Fracțiune din comisioane distribuită delegatorilor |
-| `light_node_share`  | string | `0.03`            | Fracțiune din comisioane distribuită nodurilor light |
+| Parametru              | Valoare                      | Descriere                                             |
+| ---------------------- | ---------------------------- | ----------------------------------------------------- |
+| `gas_burn_rate`        | `0.30`                       | Fracțiunea din colectorul de comisioane care este arsă |
+| `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Comision fix de ardere pentru crearea unui contract   |
+| `ai_service_burn_rate` | `0.50`                       | Fracțiunea din comisioanele serviciilor AI care este arsă |
+| `bridge_burn_rate`     | `1.00`                       | Fracțiunea din comisioanele de bridge care este arsă  |
+| `failed_tx_burn_rate`  | `0.10`                       | Fracțiunea din gazul tranzacțiilor eșuate care este arsă |
+| `validator_share`      | `0.37`                       | Fracțiunea distribuită validatorilor                  |
+| `treasury_share`       | `0.20`                       | Fracțiunea trimisă trezoreriei                        |
+| `staker_share`         | `0.10`                       | Fracțiunea distribuită stakerilor                     |
+| `light_node_share`     | `0.03`                       | Fracțiunea distribuită nodurilor light                |
+| `enabled`              | `true`                       | Indicator de activare a modulului                     |
 
-Cotele trebuie să însumeze `1.00`. Împărțirea comisioanelor este **37 / 30 / 20 / 10 / 3** între validatori, ardere, trezorerie, stakeri și noduri light.
+Împărțirea comisioanelor este **37 / 30 / 20 / 10 / 3** între validatori, ardere, trezorerie, stakeri și noduri light; cotele trebuie să însumeze `1.00`. Există și un `milestone_burn_schedule`. Vezi [Tokenomics](/architecture/tokenomics).
 
 ---
 
 ## Modulul xQORE (`x/xqore`)
 
-| Parametru            | Tip    | Valoare implicită | Descriere                                     |
-| -------------------- | ------ | ----------------- | --------------------------------------------- |
-| `min_lock_amount`    | string | `1000000uqor`     | Suma minimă de blocat ca xQORE                |
-| `min_lock_duration`  | string | `7d`              | Durata minimă de blocare                      |
-| `max_lock_duration`  | string | `365d`            | Durata maximă de blocare                      |
-| `penalty_tier_1_pct` | string | `0.50`            | Penalizare pentru deblocare anticipată: 0-25% din blocare scursă |
-| `penalty_tier_2_pct` | string | `0.30`            | Penalizare pentru deblocare anticipată: 25-50% din blocare scursă |
-| `penalty_tier_3_pct` | string | `0.15`            | Penalizare pentru deblocare anticipată: 50-75% din blocare scursă |
-| `penalty_tier_4_pct` | string | `0.05`            | Penalizare pentru deblocare anticipată: 75-100% din blocare scursă |
-| `pvp_rebase_enabled` | bool   | `true`            | Activează redistribuirea prin rebase PvP      |
+:::caution Încă indisponibil pe lanț
+Contabilitatea modulului xQORE există, dar tranzacțiile de blocare și deblocare, interogările și comenzile CLI **nu sunt încă integrate în rețelele live**: în prezent nu se poate bloca niciun QOR și nu a fost emis niciun xQORE. Valorile de mai jos sunt configurația de genesis.
+:::
+
+| Parametru                 | Valoare                | Descriere                                            |
+| ------------------------- | ---------------------- | ---------------------------------------------------- |
+| `governance_multiplier`   | `2.0`                  | Multiplicator al puterii de vot pentru deținătorii de xQORE |
+| `min_lock_amount`         | `1,000,000 uqor`       | Suma minimă de blocat (1 QOR)                        |
+| `penalty_burn_rate`       | `0.0`                  | Fracțiunea penalizărilor de ieșire care este arsă (toate sunt redistribuite) |
+| `rebase_interval`         | `100` blocks           | Blocuri între evenimentele de rebase PvP             |
+| `enabled`                 | `true`                 | Indicator de activare a modulului                    |
+
+Penalizări de ieșire: 50 % (blocare mai scurtă de 30 de zile), 35 % (30–90 de zile), 15 % (90–180 de zile), 0 % (peste 180 de zile). Multiplicatori de blocare: 1,0 / 1,2 / 1,4 / 1,7 / 2,0 la 0 / 90 / 180 / 365 / 730 de zile.
 
 ---
 
 ## Modulul Inflation (`x/inflation`)
 
-| Parametru         | Tip    | Valoare implicită      | Descriere                                        |
-| ----------------- | ------ | ---------------------- | ------------------------------------------------ |
-| `epoch_length`    | uint64 | `100`                  | Blocuri per epocă de inflație                     |
-| `blocks_per_year` | uint64 | `6311520`              | Blocuri estimate pe an (pentru calculul ratei)   |
-| `initial_rate`    | string | `0.08`                 | Parametrul ratei inițiale de emisie anualizată   |
-| `rate_decay`      | string | `0.05`                 | Factor de decădere aplicat în fiecare an         |
-| `min_rate`        | string | `0.02`                 | Parametrul ratei minime de emisie                 |
-| `max_supply`      | string | `1000000000000000uqor` | Plafonul maxim al ofertei de tokenuri             |
+| Parametru              | Valoare                 | Descriere                                             |
+| ---------------------- | ----------------------- | ----------------------------------------------------- |
+| `emission_mode`        | `fixed`                 | `schedule` (vechi) sau `fixed` (începând cu v3.1.94)  |
+| `fixed_epoch_emission` | `16,239,000,000 uqor` (16.239 QOR) | Emis pe epocă în modul fixed               |
+| `max_total_emission`   | `114,285,714,000,000 uqor` (114.285.714 QOR) | Plafon cumulativ strict         |
+| `epoch_length`         | `43,200` blocks         | Blocuri per epocă (aproximativ 38,6 ore la blocuri de ≈3,2 s) |
+| `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Rate vechi pe ani, nefolosite în modul fixed      |
+| `enabled`              | `true`                  | Indicator de activare a modulului                     |
 
-:::note
-Parametrii `x/inflation` de mai sus sunt valorile implicite ale mecanismului implementat. Conform modelului economic canonic **tokenomics v2.1**, QoreChain are **ofertă fixă** cu un **buget de emisie finit (pool de 590M)** care finanțează recompensele de staking și de ecosistem. Valorile `initial_rate` / `rate_decay` / `min_rate` sunt detalii de mecanism care guvernează modul în care emisiile sunt programate în cadrul acelui buget finit — ele **nu** reprezintă o inflație procentuală deschisă a ofertei totale.
-:::
+Modulul emite această cantitate în colectorul de comisioane până la atingerea plafonului. Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission). Pe mainnet, aceste valori nu sunt expuse printr-o rută REST.
 
 ---
 
 ## Modulul RL Consensus (`x/rlconsensus`)
 
-Modulul `x/rlconsensus` implementează **PRISM**, stratul de optimizare prin învățare prin întărire al QoreChain Consensus Engine.
+Modulul `x/rlconsensus` implementează **PRISM**, stratul de optimizare prin învățare prin întărire. Pe ambele rețele este în modul de observație: nu este încărcată nicio pondere de politică, deci nu reglează nimic. Cele patru mesaje de control PRISM sunt dezactivate de întrerupătorul de circuit pe mainnet (vezi [Starea întrerupătorului de circuit](#circuit-breaker)).
 
-| Parametru                    | Tip    | Valoare implicită | Descriere                                       |
-| ---------------------------- | ------ | ----------------- | ----------------------------------------------- |
-| `observation_interval`       | uint64 | `10`              | Blocuri între eșantioanele de observație PRISM  |
-| `agent_mode`                 | uint   | `0`               | Mod agent: 0=oprit, 1=observă, 2=sugerează, 3=auto |
-| `circuit_breaker_enabled`    | bool   | `true`            | Activează întrerupătorul de circuit PRISM        |
-| `circuit_breaker_max_change` | string | `0.10`            | Schimbarea maximă de parametru per acțiune (10%) |
-| `circuit_breaker_cooldown`   | uint64 | `100`             | Blocuri de așteptat după declanșarea întrerupătorului de circuit |
-| `reward_throughput_weight`   | string | `0.40`            | Pondere de recompensă pentru throughput         |
-| `reward_latency_weight`      | string | `0.30`            | Pondere de recompensă pentru latență            |
-| `reward_security_weight`     | string | `0.20`            | Pondere de recompensă pentru securitate         |
-| `reward_stability_weight`    | string | `0.10`            | Pondere de recompensă pentru stabilitate        |
-| `ppo_learning_rate`          | string | `0.0003`          | Rata de învățare PPO                            |
-| `ppo_clip_range`             | string | `0.20`            | Intervalul de clipping PPO                       |
+| Parametru                        | Valoare        | Descriere                                                     |
+| -------------------------------- | -------------- | ------------------------------------------------------------- |
+| `enabled`                        | `true`         | Indicator de activare a modulului                             |
+| `observation_interval`           | `10`           | Blocuri între eșantioanele de observație PRISM                |
+| `agent_mode`                     | `1` (conservative) | Mod agent: 0=shadow, 1=conservative, 2=autonomous, 3=paused |
+| `max_change_conservative`        | `0.10`         | Schimbarea maximă de parametru per acțiune în modul conservative |
+| `max_change_autonomous`          | `0.25`         | Schimbarea maximă de parametru per acțiune în modul autonomous |
+| `circuit_breaker_window`         | `50`           | Fereastra întrerupătorului de circuit                         |
+| `circuit_breaker_threshold`      | `0.50`         | Pragul întrerupătorului de circuit                            |
+| `reward_weight_throughput`       | `0.30`         | Pondere de recompensă pentru throughput                       |
+| `reward_weight_finality`         | `0.25`         | Pondere de recompensă pentru finalitate                       |
+| `reward_weight_decentralization` | `0.20`         | Pondere de recompensă pentru descentralizare                  |
+| `reward_weight_mev`              | `0.15`         | Pondere de recompensă pentru MEV                              |
+| `reward_weight_failed_txs`       | `0.10`         | Pondere de recompensă pentru tranzacțiile eșuate              |
+| `default_block_time_ms`          | `5000`         | Timpul de bloc implicit din baza de observație (nu timpul de bloc real) |
+| `default_base_gas_price`         | `100`          | Prețul de bază implicit al gazului din baza de observație     |
+| `default_validator_set_size`     | `100`          | Dimensiunea implicită a setului de validatori din baza de observație |
 
 ---
 
 ## Modulul Bridge (`x/bridge`)
 
-| Parametru                       | Tip    | Valoare implicită | Descriere                                       |
-| ------------------------------- | ------ | ----------------- | ----------------------------------------------- |
-| `min_confirmations_ibc`         | uint64 | `1`               | Confirmări minime pentru transferurile IBC      |
-| `min_confirmations_ethereum`    | uint64 | `12`              | Confirmări minime pentru bridge-ul Ethereum     |
-| `min_confirmations_bitcoin`     | uint64 | `6`               | Confirmări minime pentru bridge-ul Bitcoin      |
-| `circuit_breaker_enabled`       | bool   | `true`            | Activează întrerupătorul de circuit al bridge-ului |
-| `circuit_breaker_max_daily_usd` | string | `10000000`        | Volum zilnic maxim de bridge (echivalent USD)   |
-| `circuit_breaker_max_single_tx` | string | `1000000`         | Suma maximă a unui singur transfer (echivalent USD) |
+:::caution Nu este live
+Toate cele 37 de configurații de lanț sunt în starea `pending`, nu este înregistrat niciun validator de bridge, nu a fost creată nicio operațiune de bridge și niciun canal IBC nu este deschis pe vreuna dintre rețele. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
+:::
+
+`GET /qorechain/bridge/v1/config`:
+
+| Parametru                  | Valoare                     | Descriere                                         |
+| -------------------------- | --------------------------- | ------------------------------------------------- |
+| `min_validators`           | `10`                        | Validatori necesari pentru setul de atestare      |
+| `attestation_threshold`    | `7`                         | Atestări necesare                                 |
+| `challenge_period_secs`    | `86400`                     | Perioada de contestare (24 de ore)                |
+| `large_transfer_threshold` | `100,000,000,000 uqor` (100.000 QOR) | Transferurile peste această valoare așteaptă perioada de contestare |
+| `enabled`                  | `true`                      | Indicator de activare a modulului                 |
+
+Setările per lanț (`min_confirmations`, `max_single_transfer`, `daily_limit`) se află în configurația fiecărui lanț, nu în parametrii modulului.
 
 ---
 
 ## Modulul Multilayer (`x/multilayer`)
 
-| Parametru                   | Tip    | Valoare implicită  | Descriere                                         |
-| --------------------------- | ------ | ------------------ | ------------------------------------------------- |
-| `max_sidechains`            | uint   | `10`               | Numărul maxim de sidechain-uri înregistrate       |
-| `max_paychains`             | uint   | `50`               | Numărul maxim de paychain-uri înregistrate        |
-| `anchor_interval_sidechain` | uint64 | `100`              | Interval obligatoriu de ancorare pentru sidechain-uri (blocuri) |
-| `anchor_interval_paychain`  | uint64 | `50`               | Interval obligatoriu de ancorare pentru paychain-uri (blocuri)  |
-| `challenge_period`          | string | `7d`               | Durata pentru contestațiile de fraudă pe ancore   |
-| `min_sidechain_stake`       | string | `1000000000uqor`   | Stake minim pentru înregistrarea unui sidechain (1.000 QOR) |
-| `min_paychain_stake`        | string | `100000000uqor`    | Stake minim pentru înregistrarea unui paychain (100 QOR) |
-| `routing_threshold`         | string | `0.80`             | Pragul de încărcare care declanșează rutarea automată |
+| Parametru                      | Valoare          | Descriere                                         |
+| ------------------------------ | ---------------- | ------------------------------------------------- |
+| `max_sidechains`               | `10`             | Numărul maxim de sidechain-uri înregistrate       |
+| `max_paychains`                | `50`             | Numărul maxim de paychain-uri înregistrate        |
+| `min_anchor_interval`          | `100`            | Intervalul minim de ancorare (blocuri)            |
+| `max_anchor_interval`          | `1000`           | Intervalul maxim de ancorare (blocuri)            |
+| `default_challenge_period`     | `86400` s        | Perioada implicită de contestare (1 zi)           |
+| `min_sidechain_stake`          | `1,000,000,000`  | Stake minim pentru înregistrarea unui sidechain (1.000 QOR) |
+| `min_paychain_stake`           | `100,000,000`    | Stake minim pentru înregistrarea unui paychain (100 QOR)    |
+| `routing_enabled`              | `true`           | Rutarea între straturi este activată              |
+| `routing_confidence_threshold` | `0.6`            | Pragul de încredere pentru rutarea automată       |
+| `cross_layer_fee_bundling`     | `true`           | O singură plată de comision poate acoperi mai multe straturi |
 
 ---
 
 ## Modulul Cross-VM (`x/crossvm`)
 
-| Parametru          | Tip    | Valoare implicită | Descriere                                      |
-| ------------------ | ------ | ----------------- | ---------------------------------------------- |
-| `max_message_size` | uint64 | `65536`           | Dimensiunea maximă a mesajului cross-VM în octeți (64 KB) |
-| `max_queue_size`   | uint   | `1000`            | Numărul maxim de mesaje în așteptare în coada cross-VM |
-| `queue_timeout`    | uint64 | `100`             | Blocuri înainte ca un mesaj în așteptare să expire |
+| Parametru             | Valoare | Descriere                                      |
+| --------------------- | ------- | ---------------------------------------------- |
+| `max_message_size`    | `65536` | Dimensiunea maximă a mesajului cross-VM în octeți (64 KB) |
+| `max_queue_size`      | `1000`  | Numărul maxim de mesaje în așteptare în coada cross-VM |
+| `queue_timeout_blocks`| `100`   | Blocuri înainte ca un mesaj în așteptare să expire |
+| `enabled`             | `true`  | Indicator de activare a modulului              |
+
+`MsgCrossVMCall` este dezactivat pe mainnet de întrerupătorul de circuit (activat pe testnet).
 
 ---
 
 ## Modulul SVM (`x/svm`)
 
-| Parametru                     | Tip    | Valoare implicită | Descriere                                  |
-| ----------------------------- | ------ | ----------------- | -------------------------------------------- |
-| `max_program_size`            | uint64 | `10485760`        | Dimensiunea maximă a binarului de program în octeți (10 MB) |
-| `compute_budget`              | uint64 | `1400000`         | Unități de calcul implicite per tranzacție (1,4M) |
-| `rent_lamports_per_byte_year` | uint64 | `3480`            | Cost anual de chirie per octet în lamports   |
-| `rent_exemption_threshold`    | string | `2.0`             | Ani de chirie necesari pentru scutire        |
-| `max_accounts_per_tx`         | uint   | `64`              | Numărul maxim de conturi referite per tranzacție |
+Valori de genesis:
+
+| Parametru               | Valoare      | Descriere                                    |
+| ----------------------- | ------------ | -------------------------------------------- |
+| `max_program_size`      | `10485760`   | Dimensiunea maximă a binarului de program în octeți (10 MB) |
+| `max_account_data_size` | `10485760`   | Dimensiunea maximă a datelor unui cont în octeți (10 MB) |
+| `compute_budget_max`    | `1400000`    | Unități de calcul maxime per tranzacție (1,4M) |
+| `lamports_per_byte`     | `3480`       | Costul chiriei per octet, în lamports        |
+| `rent_exemption_multi`  | `2.0`        | Ani de chirie necesari pentru scutire        |
+| `enabled`               | `true`       | Indicator de activare a modulului            |
+| `svm_slot_offset`       | `0`          | Decalajul de slot                            |
+| `default_sig_scheme`    | `0`          | Schema de semnare implicită                  |
+| `max_cpi`               | `4`          | Adâncimea maximă a invocării între programe  |
+
+Lane-ul de tranzacții SVM este dezactivat la nivelul întregii rețele (vezi [Rețele](/appendix/networks)).
 
 ---
 
 ## Modulul RDK (`x/rdk`)
 
-| Parametru             | Tip    | Valoare implicită                  | Descriere                              |
-| --------------------- | ------ | ---------------------------------- | ---------------------------------------- |
-| `max_rollups`         | uint   | `100`                              | Numărul maxim de rollup-uri înregistrate |
-| `min_stake`           | string | `10000000000uqor`                  | Stake minim al operatorului (10.000 QOR) |
-| `burn_rate`           | string | `0.01`                             | Procent din comisioanele rollup-ului arse (1%) |
-| `challenge_window`    | string | `7d`                               | Durata ferestrei de contestare a fraudei |
-| `max_blob_size`       | uint64 | `2097152`                          | Dimensiunea maximă a blob-ului DA în octeți (2 MB) |
-| `blob_retention`      | uint64 | `432000`                           | Blocuri pentru reținerea blob-urilor DA înainte de prunare |
-| `max_batches_pending` | uint   | `10`                               | Numărul maxim de batch-uri nefinalizate per rollup |
-| `auto_finalize`       | bool   | `true`                             | Activează auto-finalizarea EndBlocker     |
-| `settlement_types`    | array  | optimistic, zk, based, sovereign   | Paradigme de settlement permise          |
-| `preset_profiles`     | array  | defi, gaming, nft, enterprise, custom | Preset-uri de rollup disponibile      |
+`qorechaind query rdk config`:
+
+| Parametru                   | Valoare              | Descriere                                     |
+| --------------------------- | -------------------- | --------------------------------------------- |
+| `max_rollups`               | `100`                | Numărul maxim de rollup-uri înregistrate      |
+| `min_stake_for_rollup`      | `10,000,000,000 uqor`| Stake minim al operatorului (10.000 QOR)      |
+| `rollup_creation_burn_rate` | `0.01`               | Fracțiunea din stake-ul de creare care este arsă (1%) |
+| `default_challenge_window`  | `604,800` s          | Fereastra implicită de contestare (7 zile)    |
+| `max_da_blob_size`          | `2,097,152`          | Dimensiunea maximă a blob-ului DA în octeți (2 MB) |
+| `blob_retention_blocks`     | `432,000`            | Blocuri pentru păstrarea blob-urilor DA (aproximativ 16 zile la blocuri de ≈3,2 s) |
+| `max_batches_per_block`     | `10`                 | Numărul maxim de batch-uri procesate per bloc |
+
+Până acum nu a fost creat niciun rollup pe vreuna dintre rețele.
 
 ---
 
 ## Modulul FairBlock (`x/fairblock`)
 
-| Parametru            | Tip    | Valoare implicită | Descriere                                 |
-| -------------------- | ------ | ----------------- | ------------------------------------------- |
-| `enabled`            | bool   | `false`           | Activează criptarea tIBE FairBlock          |
-| `tibe_threshold`     | uint   | `2`               | Numărul minim de cote de chei de decriptare necesare |
-| `decryption_delay`   | uint64 | `1`               | Blocuri după finalizare înainte de decriptare |
-| `max_encrypted_size` | uint64 | `4096`            | Dimensiunea maximă a payload-ului criptat în octeți |
+Valori de genesis (modulul nu are serviciu de interogare, deci nu pot fi recitite în direct):
+
+| Parametru            | Valoare | Descriere                                   |
+| -------------------- | ------- | ------------------------------------------- |
+| `enabled`            | `false` | Criptarea tIBE FairBlock este dezactivată   |
+| `tibe_threshold`     | `5`     | Numărul minim de cote de chei de decriptare necesare |
+| `decryption_delay`   | `3`     | Blocuri după finalizare înainte de decriptare |
+| `max_encrypted_size` | `65536` | Dimensiunea maximă a payload-ului criptat în octeți |
 
 ---
 
 ## Modulul Gas Abstraction (`x/gasabstraction`)
 
-| Parametru         | Tip   | Valoare implicită | Descriere                                           |
-| ----------------- | ----- | ----------------- | ----------------------------------------------------- |
-| `accepted_tokens` | array | (vezi mai jos)    | Tokenuri acceptate pentru plata gazului cu rate de conversie |
-
-**Tokenuri acceptate implicit:**
+Configurația de genesis (`enabled = true`, `native_denom = uqor`):
 
 | Denominare token | Rată de conversie | Descriere              |
 | ---------------- | ----------------- | ---------------------- |
@@ -242,4 +278,103 @@ Modulul `x/rlconsensus` implementează **PRISM**, stratul de optimizare prin în
 | `ibc/USDC`       | `1.0`             | USDC adus prin bridge IBC |
 | `ibc/ATOM`       | `10.0`            | ATOM adus prin bridge IBC |
 
-Ratele de conversie reprezintă numărul de unități de gaz per unitate de token. Rate mai mari înseamnă că fiecare unitate de token acoperă mai mult gaz.
+Rata de conversie este rata folosită la convertirea unui comision plătit în acel token.
+
+:::note Niciun canal IBC nu este deschis
+Niciun canal IBC nu este deschis pe vreuna dintre rețele, deci încă nu pot exista `ibc/USDC` sau `ibc/ATOM`; comisioanele se plătesc în `uqor`. Calea comisioanelor a fost refăcută în v3.2.2 (doar testnet).
+:::
+
+---
+
+## Modulul Light Node (`x/lightnode`)
+
+| Parametru                | Valoare            | Descriere                                            |
+| ------------------------ | ------------------ | ---------------------------------------------------- |
+| `registration_fee`       | `1,000,000 uqor` (1 QOR) | Comisionul de înregistrare a unui nod light    |
+| `heartbeat_interval`     | `1000` blocks      | Blocuri între heartbeat-urile obligatorii (aproximativ 54 de minute la blocuri de ≈3,2 s) |
+| `min_delegated_stake`    | `1,000,000,000 uqor` (1.000 QOR) | Stake-ul minim delegat de operator     |
+| `reward_share`           | `0.03`             | Fracțiunea din colectorul de comisioane rezervată nodurilor light |
+| `min_uptime_for_rewards` | `0.80`             | Fracțiunea minimă de uptime pentru eligibilitatea la recompense |
+| `max_light_nodes`        | `10,000`           | Numărul maxim de noduri light înregistrate           |
+| `heartbeat_grace_period` | `100` blocks       | Perioada de grație pentru un heartbeat întârziat     |
+
+Contabilitatea recompenselor este live (`GET /qorechain/lightnode/v1/reward_pool` raportează un `max_reward_per_block_per_node` de 1.713 uqor, citit la 14 octombrie 2026), dar înregistrarea este în prezent închisă și nu este înregistrat niciun nod light. Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+
+---
+
+## Modulul AMM (`x/amm`)
+
+| Parametru               | Valoare                       | Descriere                           |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| `swap_fee_bps`          | `30`                          | Comisionul de swap (0,30%)          |
+| `protocol_fee_bps`      | `10`                          | Partea de comision a protocolului (0,10%) |
+| `min_liquidity`         | `1000`                        | Lichiditatea minimă                 |
+| `max_pools_per_creator` | `50`                          | Numărul maxim de pool-uri per creator |
+| `lp_token_decimals`     | `6`                           | Zecimalele tokenului LP             |
+| `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | Comisionul de creare a unui pool    |
+| `max_swap_impact_bps`   | `500`                         | Impactul maxim asupra prețului al unui swap (5%) |
+| `enabled`               | `true`                        | Indicator de activare a modulului   |
+
+Nu există încă pool-uri pe mainnet sau testnet, iar `MsgPausePool` / `MsgResumePool` sunt dezactivate pe mainnet.
+
+---
+
+## Conturi inteligente (`x/abstractaccount`)
+
+:::caution Dezactivat pe ambele rețele
+`enabled` este `false`: înregistrarea unui autentificator, execuția printr-unul și crearea unui cont inteligent sunt toate refuzate cât timp este dezactivat. Verificați `GET /qorechain/abstractaccount/v1/config` înainte de a construi pe aceste funcționalități.
+:::
+
+| Parametru             | Valoare  | Descriere                        |
+| --------------------- | -------- | -------------------------------- |
+| `enabled`             | `false`  | Indicator de activare a modulului |
+| `max_session_keys`    | `10`     | Numărul maxim de chei de sesiune per cont |
+| `max_spending_rules`  | `5`      | Numărul maxim de reguli de cheltuire |
+| `default_session_ttl` | `86400` s| Durata implicită de viață a unei chei de sesiune |
+
+---
+
+## Staking, slashing, guvernanță, comisioane și EVM {#core-modules}
+
+Module standard Cosmos SDK și EVM, citite în direct (identice pe ambele rețele, cu excepția cazurilor indicate).
+
+| Modul | Parametru | Valoare |
+| --- | --- | --- |
+| Staking | `unbonding_time` | 1,814,400 s (21 de zile) |
+| | `max_validators` | 100 |
+| | `max_entries` | 7 |
+| | `historical_entries` | 10,000 |
+| | `bond_denom` | `uqor` |
+| | `min_commission_rate` | 0 |
+| Slashing | `signed_blocks_window` | 10,000 de blocuri (aproximativ 8,9 ore la blocuri de ≈3,2 s) |
+| | `min_signed_per_window` | 5 % (un validator care semnează mai puțin de 5 % din fereastră este trimis în jail) |
+| | `downtime_jail_duration` | 600 s |
+| | `slash_fraction_downtime` | 1 % |
+| | `slash_fraction_double_sign` | 5 % |
+| Guvernanță | `min_deposit` | 10,000,000 uqor (10 QOR) |
+| | `max_deposit_period` / `voting_period` | 172,800 s (2 zile) fiecare |
+| | `quorum` / `threshold` / `veto_threshold` | 0.334 / 0.5 / 0.334 |
+| | `expedited_voting_period` / `expedited_min_deposit` / `expedited_threshold` | 86,400 s / 50 QOR / 0.667 |
+| | `burn_vote_veto` | `true` |
+| Distribuție | `community_tax` | 0.02 |
+| Piața de comisioane | `min_gas_price` | 0,1 uqor per gaz |
+| | `base_fee_change_denominator` / `elasticity_multiplier` | 8 / 2 |
+| | `no_base_fee` | `false` |
+| EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 zecimale) |
+| | acces la crearea / apelarea contractelor | fără permisiuni |
+| | `active_static_precompiles` | gol (niciun precompile EVM nu este activ) |
+| | `history_serve_window` | 8,192 |
+| ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
+| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+
+---
+
+## Starea întrerupătorului de circuit {#circuit-breaker}
+
+Lanțul poate dezactiva tipuri individuale de mesaje cu întrerupătorul de circuit din Cosmos SDK, controlat de contul de operațiuni al fundației și de guvernanță. Un tip de mesaj dezactivat este respins de ante handler pe orice lane. Lista live se află la `GET /cosmos/circuit/v1/disable_list`.
+
+**Mainnet (14 octombrie 2026, 16 intrări):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
+
+**Testnet:** doar cele trei mesaje CosmWasm.
+
+Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governance, distribution, authz și de înregistrare `x/pqc`, este activat. Lista este controlată prin guvernanță și se poate schimba; interogați-o întotdeauna.

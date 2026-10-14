@@ -16,19 +16,28 @@ Watchtower는 옵티미스틱 롤업을 위한 자동 챌린저 프레임워크�
 제공합니다.** Watchtower는 배치가 부정하다고 스스로 판단하지 않습니다 —
 `validate` 함수를 호출하고 여러분이 반환한 값에 따라 행동할 뿐입니다.
 
+:::caution 초기 단계: RDK REST 경로 필요
+Watchtower는 RDK REST 클라이언트를 통해 배치를 읽습니다. `/qorechain/rdk/v1/…` REST 경로는 현재 메인넷에서 제공되지 않으므로, Watchtower는 아직 메인넷에서 실행할 수 없습니다. 어느 네트워크에서도 롤업이 생성된 적이 없으므로 감시할 대상도 없습니다.
+:::
+
 ## `watchBatches`
 
 ```ts
-import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
+import { createRdkClient, watchBatches } from "@qorechain/rdk";
 
-// The public qore.host REST + RPC endpoints are baked into the presets
-// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
-// `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-const watcher = watchBatches(rdk, "my-roll", {
+// `tx` is a signing client that produces the hybrid (post-quantum) signature
+// the networks require. See "Signing with the published clients" in
+// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
+// cannot get a challenge accepted.
+declare const tx: {
+  challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
+};
+
+const watcher = watchBatches(rdk, "my-rollup", {
   onBatch: (batch) => {
-    console.log("new batch", batch.index);
+    console.log("new batch", batch.batchIndex);
   },
 
   // Your validity predicate. Return false to flag the batch as invalid.
@@ -37,13 +46,17 @@ const watcher = watchBatches(rdk, "my-roll", {
   },
 
   // Called when validate() returns false — wire it to a challenge.
-  onInvalid: async (batch) => {
-    await challengeBatch(rdk, "my-roll", batch.index /* + your fraud proof */);
+  onInvalid: async ({ batch }) => {
+    await tx.challengeBatch({
+      rollupId: "my-rollup",
+      batchIndex: batch.batchIndex,
+      proof: myFraudProofHex, // hex fraud proof
+    });
   },
 
   // Called as a batch approaches the end of its challenge window.
-  onDeadline: (batch) => {
-    console.warn("challenge window closing for batch", batch.index);
+  onDeadline: ({ batch, secondsRemaining }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -57,13 +70,17 @@ watcher.stop();
 - `onDeadline`을 통한 **챌린지 윈도우 마감**, 그리고
 - `onInvalid`를 통한 **무효 배치** (여러분의 `validate`가 `false`를 반환한 경우).
 
-`onInvalid`를 `challengeBatch`에 연결하면 Watchtower가 완전한 자동 챌린저로
+`onInvalid`를 챌린지에 연결하면 Watchtower가 완전한 자동 챌린저로
 바뀝니다. 설정하지 않은 채 두면 관찰 전용 모드로 실행됩니다.
+
+:::note 챌린지 윈도우
+Watchtower가 보고하는 마감 시각은 챌린지 윈도우를 블록당 6초로 블록 수로 환산한 값(기본값 100,800 블록)을 사용하므로, 메인넷의 ≈3.2초 블록에서는 실제 윈도우가 "7일"보다 짧습니다. 챌린지를 제출하려면 롤업의 챌린지 본드(`nft` 및 `custom` 프리셋의 경우 1,000 QOR)도 필요합니다.
+:::
 
 ## CLI
 
 ```bash
-qorollup watchtower my-roll
+qorollup watchtower my-rollup
 ```
 
 `watchtower`는 명령줄에서 프레임워크를 실행하며, Ctrl-C를 누를 때까지 새 배치와

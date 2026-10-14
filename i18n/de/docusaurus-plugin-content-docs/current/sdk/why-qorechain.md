@@ -21,19 +21,22 @@ delegiertes Spending für externe Wallet-Schlüssel. Das sind die Gründe, hier 
 
 ## 1. KI-Preflight-Risikobewertung
 
-**Prüfen Sie eine Transaktion mit On-Chain-KI, bevor Sie sie broadcasten.**
+**Prüfen Sie eine Transaktion mit On-Chain-KI, bevor Sie sie broadcasten** (setzt
+voraus, dass die KI-Precompiles im Zielnetzwerk aktiv sind, was in den öffentlichen
+Netzwerken noch nicht der Fall ist).
 
 QoreChain liefert KI-Risikoanalyse als EVM-Precompiles aus. Das SDK ruft sie für Sie
 auf und liefert Gas plus ein Risiko-/Anomalie-Urteil in einem einzigen Aufruf — sodass
-eine Wallet oder dApp *vor* dem Signieren warnen (oder blockieren) kann.
+eine Wallet oder dApp *vor* dem Signieren warnen (oder blockieren) kann. Die
+KI-Precompiles sind auf Mainnet und Testnet **noch nicht aktiv** (siehe
+[EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
-import { createClient } from "@qorechain/sdk";
-import { simulateWithRiskScore } from "@qorechain/evm";
+import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
-const client = createClient({ network: "mainnet", endpoints: { evmRpc } });
+const { publicClient } = await createEvmClient({ endpoints: { evmRpc } });
 
-const preflight = await simulateWithRiskScore(client.evm, {
+const preflight = await simulateWithRiskScore(publicClient, {
   from: account.address,
   to: contractAddress,
   data: calldata,
@@ -49,11 +52,12 @@ if (!preflight.safe) {
 }
 ```
 
-**Warum das einzigartig ist:** Die Bewertung läuft *innerhalb der Chain* als
-deterministischer Precompile (`aiRiskScore` unter `0x…0B01`, `aiAnomalyCheck` unter
-`0x…0B02`). Andere Netzwerke können nur externe, nicht-deterministische KI-Dienste
-anflanschen. Dies ist das erste SDK, das eine Transaktion vor dem Signieren per KI
-prüft — mit einem On-Chain-Ergebnis. Siehe [KI-Preflight](/sdk/guides/ai-preflight).
+**Warum das anders ist:** Die Bewertung ist so konzipiert, dass sie *innerhalb der
+Chain* als deterministischer Precompile läuft (`aiRiskScore` unter `0x…0B01`,
+`aiAnomalyCheck` unter `0x…0B02`) und nicht als Off-Chain-Dienst. Solange diese
+Precompiles nicht aktiviert sind, werfen die obigen Helfer in den öffentlichen
+Netzwerken einen Fehler (`returned no data ("0x")`). Siehe
+[KI-Preflight](/sdk/guides/ai-preflight).
 
 ---
 
@@ -68,9 +72,10 @@ davon aufzurufen — und um mehrere Cross-VM-Aufrufe in eine einzige, atomare
 Transaktion zu packen, die nur einmal signiert wird.
 
 ```ts
-import { createCrossVMClient } from "@qorechain/sdk";
+import { connectQueryClients, createCrossVMClient } from "@qorechain/sdk";
 
-const crossVM = createCrossVMClient(tx, { query: client.query });
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
+const crossVM = createCrossVMClient(tx, { query: connectQueryClients(rpcClient).crossvm });
 
 // Call an EVM contract from a native account (payload ABI-encoded for you).
 await crossVM.call({
@@ -87,11 +92,14 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**Warum das einzigartig ist:** QoreChain ist das einzige L1 mit drei koresidenten VMs
-und einem nativen Bridge-Modul (`crossvm` + der Precompile `CrossVMBridge`).
-Single-VM-Chains können „ein Konto, drei VMs, eine atomare Transaktion" nicht
-ausdrücken — ihre SDKs haben nichts, das sie kapseln könnten. Einmal schreiben, jede
-VM aufrufen. Siehe [Cross-VM-Aufrufe](/sdk/guides/cross-vm).
+**Warum das anders ist:** QoreChain betreibt drei koresidente VMs mit einem nativen
+Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv ist),
+sodass eine einzige SDK-Schnittstelle alle drei ansprechen kann. Single-VM-Chains
+haben nichts Vergleichbares, das sich kapseln ließe. Heute wird die Reichweite eines
+Aufrufs durch die Lane begrenzt, die er anspricht: `MsgCrossVMCall` ist auf Mainnet
+abgeschaltet, SVM-Transaktionen sind deaktiviert, und CosmWasm-Upload und
+-Instanziierung sind erlaubnispflichtig. Siehe
+[Cross-VM-Aufrufe](/sdk/guides/cross-vm).
 
 ---
 
@@ -107,32 +115,45 @@ sie geschützt sind.
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Idempotent: registers the signer's ML-DSA-87 key on-chain if not already.
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair });
+// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
+// (read it over REST on the public endpoints; see the Quantum-safe guide).
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  status: { registered },
+});
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair });
-await hybrid.send(messages);
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+await hybrid.signAndBroadcastHybrid({
+  registry, signer, messages, fee, chainId, accountNumber, sequence,
+  rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key.
+// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// (needs a node that serves the `qor_` namespace; see the React guide).
 <QuantumSafeBadge address={account.address} />
 ```
 
-**Warum das einzigartig ist:** Post-Quanten-Kryptografie ist auf QoreChain nativ und
-verpflichtend, kein Experiment. Dies ist das erste SDK, in dem „quantensicher als
-Standard" ein einziger Aufruf plus ein Drop-in-Badge ist. Siehe
-[Quantensicherheit](/sdk/guides/quantum-safe).
+**Warum das wichtig ist:** Post-Quanten-Kryptografie ist auf dem nativen Pfad von
+QoreChain nativ und verpflichtend, kein Experiment, und das SDK reduziert ihre
+Einführung auf einen Registrierungsaufruf plus einen hybriden Sendepfad. Die
+Registrierung ist explizit: Es gibt keine automatische Registrierung bei der ersten
+Transaktion. Siehe [Quantensicherheit](/sdk/guides/quantum-safe).
 
 ---
 
 ## 4. Vereinheitlichte eth-native Konten — ein Schlüssel, drei Adressen, ein Guthaben
 
 **Ein `eth_secp256k1`-Schlüssel ist eine einzige 20-Byte-Identität auf allen drei
-Lanes.** (SDK 0.6.0, Chain v3.1.83.)
+Lanes.** (SDK 0.6.0, Chain v3.1.83.) Die SVM-Transaktions-Lane ist derzeit
+netzwerkweit deaktiviert, und die EVM-Lane benötigt ein
+[Autorisierungsfenster](/sdk/guides/evm#evm-window); das gemeinsame Guthaben und die
+Adresszuordnung gelten unabhängig davon.
 
 ```ts
 import { deriveUnifiedAccount } from "@qorechain/sdk";
@@ -142,15 +163,15 @@ account.cosmos; // "qor1…"  bech32 — Native lane
 account.evm;    // "0x…"    EIP-55 — EVM lane
 account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 // A deposit to ANY of the three lands in ONE balance,
-// and the same key spends on every lane (signHybridEth on the Native path).
+// and the same key signs on every enabled lane (signHybridEth on the Native path).
 ```
 
 **Warum das einzigartig ist:** Bei Multi-VM-Setups anderswo hat jede Runtime ihren
 eigenen Kontenraum, und Gelder bleiben pro Lane gestrandet. QoreChain stellt eine
 einzige 20-Byte-Identität auf drei Arten dar — mit einem gemeinsamen Guthaben. Eine
 Wallet „hat nie Guthaben auf einer Lane, aber nicht auf einer anderen".
-`connectPhantomUnified` bootstrapt diese Identität sogar non-custodial aus einer
-Phantom-Signatur. Siehe
+Eine externe Wallet wie Phantom lässt sich als begrenzter Authenticator mit
+dieser Identität verknüpfen ([Authenticators](/sdk/guides/authenticators)). Siehe
 [Vereinheitlichte Konten](/sdk/concepts/accounts-pqc#unified-accounts).
 
 ---
@@ -160,6 +181,15 @@ Phantom-Signatur. Siehe
 **Ein verknüpfter Phantom- oder MetaMask-Schlüssel gibt Mittel vom kanonischen,
 PQC-pflichtigen Konto aus — innerhalb von Limits, über einen Relayer.** (SDK 0.7.0,
 Chain v3.1.85.)
+
+:::caution Auf den Live-Netzwerken noch nicht verfügbar
+Das Modul `abstractaccount` ist auf `qorechain-vladi` und `qorechain-diana`
+abgeschaltet (`GET /qorechain/abstractaccount/v1/config` liefert
+`"enabled": false`), und ab Chain v3.2.0 wird dieses Flag auf jedem Pfad
+durchgesetzt, sodass sich kein Schlüssel verknüpfen lässt und die folgenden Lanes
+nicht genutzt werden können. Siehe den
+[Authenticators-Leitfaden](/sdk/guides/authenticators).
+:::
 
 ```ts
 import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
@@ -177,10 +207,10 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Warum das einzigartig ist:** Jede Ausgabe wird durch eine
-On-Chain-Berechtigungstaxonomie, `SpendingRule`-Limits und ein Ablaufdatum begrenzt —
-Least Privilege und widerrufbar — während das Konto selbst post-quanten-geschützt
-bleibt. Siehe
+**Warum das wichtig ist:** Sobald das Modul aktiviert ist, wird jede Ausgabe durch
+eine On-Chain-Berechtigungstaxonomie, `SpendingRule`-Limits und ein Ablaufdatum
+begrenzt — Least Privilege und widerrufbar — während das Konto selbst
+post-quanten-geschützt bleibt. Siehe
 [Authenticators & delegiertes Spending](/sdk/guides/authenticators).
 
 ---

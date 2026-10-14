@@ -7,170 +7,114 @@ sidebar_position: 7
 
 # Abstractizarea Contului
 
-QoreChain oferă **abstractizare de cont la nivel de protocol** prin modulul `x/abstractaccount`. Aceasta permite conturi programabile cu reguli de autentificare flexibile, chei de sesiune, limite de cheltuieli și recuperare socială — totul fără a necesita infrastructură externă de contracte inteligente.
+QoreChain oferă **abstractizare de cont la nivel de protocol** prin modulul `x/abstractaccount`. Modulul înregistrează conturi abstracte cu reguli de cheltuieli și permite proprietarului contului să conecteze chei externe (**autentificatori**) care pot cheltui din cont în limitele permisiunilor și ale plafoanelor de cheltuieli, fără infrastructură externă de contracte inteligente.
+
+:::danger Neactivat pe mainnet sau testnet
+Modulul de conturi abstracte este în prezent **oprit** pe ambele rețele: `qorechaind query abstractaccount config` (și `GET /qorechain/abstractaccount/v1/config`) raportează `enabled: false` pe `qorechain-vladi` și `qorechain-diana`. Începând cu chain v3.2.0, indicatorul este aplicat pe fiecare cale: chain-ul refuză crearea de conturi, înregistrarea autentificatorilor și ambele lane-uri de execuție (`MsgExecuteEVM`, `MsgExecuteCosmos`) cu mesajul `abstract accounts are disabled on this chain`. Nicio tranzacție nu poate porni modulul și nicio tranzacție de cont abstract nu a fost vreodată inclusă pe mainnet. Tot ce urmează descrie interfețele modulului doar pentru referință. Nu construiți un flux de cheie conectată sau de cheltuieli delegate pe rețelele live până când modulul nu este activat și verificați mai întâi indicatorul.
+:::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, rulând versiunea de chain **v3.1.97**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 29 iunie 2026), care rulează versiunea de nod **v3.2.1** (reguli de consens din v3.2.0). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.2.
+:::
+
+:::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
+Exemplele `qorechaind tx` de pe această pagină arată doar flag-urile de taxă. Pe rețelele live, fiecare tranzacție pe lane-ul Cosmos trebuie să poarte și cosemnătura hibridă ML-DSA-87, așa că construiți tranzacția cu `--generate-only` și semnați-o cu `qorechaind tx pqc cosign` (sau folosiți QoreX ori SDK-ul, care fac acest lucru pentru dvs.). Build-ul comunitar al `qorechaind` nu poate produce acea semnătură; folosiți binarul de release din [manifestul de descărcare](/developer-guide/running-a-node#fetch-the-manifest). Pragul minim al taxei este **0.1 uqor per unitate de gaz**, deci `--gas 400000` necesită cel puțin `--fees 40000uqor`. Consultați [Semnarea Post-Cuantică](/developer-guide/post-quantum-signing).
 :::
 
 ## Prezentare Generală
 
-Conturile blockchain tradiționale sunt controlate de o singură cheie privată. Abstractizarea contului decuplează conceptul de „cine poate autoriza o tranzacție” de o singură cheie criptografică, permițând:
+Conturile blockchain tradiționale sunt controlate de o singură cheie privată. Abstractizarea contului decuplează conceptul de „cine poate autoriza o tranzacție” de o singură cheie criptografică. Modulul `x/abstractaccount` oferă:
 
-* **Conturi multisig** cu semnare cu prag configurabil
-* **Conturi cu recuperare socială** cu recuperarea cheii pe baza gardienilor
-* **Conturi bazate pe sesiune** cu permisiuni granulare, limitate în timp, pentru dApp-uri
+* **Conturi abstracte** cu un tip de cont și un proprietar înregistrate
+* **Reguli de cheltuieli** (limite per tranzacție și zilnice, denominări permise) care limitează cât pot cheltui cheile conectate
+* **Autentificatori**: chei externe (o cheie Phantom ed25519 sau o adresă MetaMask secp256k1) pe care proprietarul le conectează cu permisiuni limitate și o expirare și pe care le poate revoca oricând
 
-Modulul `x/abstractaccount` implementează aceste capabilități la nivelul protocolului, ceea ce înseamnă că funcționează pe toate cele trei VM-uri (EVM, CosmWasm, SVM) și beneficiază de eficiența nativă a gazului.
-
-*Un flux dApp bazat pe sesiune: o cheie de sesiune cu domeniu limitat semnează o tranzacție, modulul o validează în raport cu sesiunea și regulile de cheltuieli, apoi o execută.*
+*Un flux cu cheie conectată (autentificator): cheia conectată semnează o autorizare, un releu o trimite, modulul verifică permisiunile, expirarea și regulile de cheltuieli, apoi execută din contul proprietarului.*
 
 ```mermaid
 flowchart TD
-    A["User connects wallet,<br/>grants scoped session key"] --> B["dApp signs tx<br/>with session key"]
-    B --> C{"Validate against<br/>session permissions"}
-    C -- "message type allowed?<br/>contract allowed?<br/>not expired?" --> D{"Validate spending rules"}
-    C -- "fails" --> R["Reject transaction"]
-    D -- "per-tx + daily limit<br/>allowed denom" --> E["Execute transaction<br/>across EVM / CosmWasm / SVM"]
-    D -- "exceeds limit" --> R
-    E --> F["Session expires<br/>or owner revokes"]
+    A["Proprietarul conectează o cheie externă<br/>(permisiuni limitate + expirare)"] --> B["Cheia conectată semnează<br/>o autorizare"]
+    B --> C["Releul trimite și plătește<br/>tranzacția"]
+    C --> D{"Validare autentificator"}
+    D -- "permisiune acordată?<br/>neexpirat?<br/>nonce proaspăt?" --> E{"Validare regulă de cheltuieli"}
+    D -- "eșuează" --> R["Respinge tranzacția"]
+    E -- "limită per tx + zilnică<br/>denominare permisă" --> F["Execută din contul proprietarului"]
+    E -- "depășește limita" --> R
+    F --> G["Autentificatorul expiră<br/>sau proprietarul îl revocă"]
 ```
 
 ## Tipuri de Cont
 
-| Tip                | Descriere                                | Caz de Utilizare                          |
-| ------------------ | ----------------------------------------- | ------------------------------------------ |
-| `multisig`         | Semnare cu prag M-din-N                   | Trezorerii DAO, portofele partajate        |
-| `social_recovery`  | Recuperarea cheii asistată de gardieni    | Portofele pentru consumatori, onboarding   |
-| `session_based`    | Chei de sesiune delegate cu restricții    | Sesiuni dApp, portofele mobile             |
+`create` înregistrează unul dintre trei tipuri de cont. Tipul este stocat în cont și face parte din modul în care se derivă adresa acestuia; modulul nu are tranzacții proprii de multisig, chei de sesiune sau recuperare (serviciul de tranzacții este `create`, `update-rules`, `register-authenticator`, `revoke-authenticator`, `execute-cosmos`, `execute-evm`).
+
+| Tip                | Utilizare prevăzută                |
+| ------------------ | ---------------------------------- |
+| `multisig`         | Trezorerii DAO, portofele partajate |
+| `social_recovery`  | Portofele pentru consumatori, onboarding |
+| `session_based`    | Sesiuni dApp, portofele mobile     |
 
 ## Crearea unui Cont Abstract
 
-### Cont Bazat pe Sesiune
+`create` primește tipul de cont ca argument pozițional (`multisig`, `social_recovery` sau `session_based`):
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type session_based \
+qorechaind tx abstractaccount create session_based \
   --from mykey \
-  --gas auto \
-  -y
+  --gas 400000 --fees 40000uqor
 ```
 
-### Cont Multisig
+Comanda nu are flag-uri pentru semnatari, praguri sau gardieni.
+
+## Autentificatori (chei conectate)
+
+Mecanismul de chei delegate al modulului este **autentificatorul**, descris mai jos în [Autentificatori de Portofel Conectat](#authenticators): proprietarul conectează o cheie externă (ed25519 sau secp256k1) cu un set de permisiuni și o expirare și o revocă oricând:
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type multisig \
-  --signers qor1alice...,qor1bob...,qor1carol... \
-  --threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
+qorechaind tx abstractaccount register-authenticator <account-address> <scheme> <pubkey-base64> <permissions-csv> <expiry-unix> <label> \
+  --from mykey --gas 400000 --fees 40000uqor
+qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <pubkey-base64> \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
 
-### Cont cu Recuperare Socială
-
-```bash
-qorechaind tx abstractaccount create \
-  --account-type social_recovery \
-  --guardians qor1guardian1...,qor1guardian2...,qor1guardian3... \
-  --recovery-threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
-```
-
-## Chei de Sesiune
-
-Cheile de sesiune sunt piatra de temelie a tipului de cont `session_based`. Acestea vă permit să acordați **permisiuni temporare, cu domeniu limitat** unei chei secundare — perfecte pentru interacțiunile cu dApp-uri în care nu doriți să vă expuneți cheia principală.
-
-### Proprietățile Cheii
-
-| Proprietate               | Descriere                                                       |
-| -------------------------- | ---------------------------------------------------------------- |
-| **Permisiuni**             | Ce tipuri de mesaje poate semna cheia de sesiune                 |
-| **Expirare**               | Expirare automată după o durată configurabilă                    |
-| **Limite de cheltuieli**   | Sumele maxime pe care cheia de sesiune le poate cheltui           |
-| **Contracte permise**      | Restricționează interacțiunile la adrese de contract specifice   |
-
-### Acordarea unei Chei de Sesiune
-
-```bash
-qorechaind tx abstractaccount grant-session \
-  --session-key qor1sessionkey... \
-  --permissions "bank/MsgSend,wasm/MsgExecuteContract" \
-  --expiry "2026-03-01T00:00:00Z" \
-  --allowed-contracts qor1contract1...,0x1234...abcd \
-  --from mykey \
-  -y
-```
-
-### Revocarea unei Chei de Sesiune
-
-```bash
-qorechaind tx abstractaccount revoke-session \
-  --session-key qor1sessionkey... \
-  --from mykey \
-  -y
-```
-
-### Listarea Sesiunilor Active
-
-```bash
-qorechaind query abstractaccount sessions <account-address>
-```
+`scheme` este `ed25519` (de exemplu Phantom) sau `secp256k1` (de exemplu MetaMask). Nu există comenzile `grant-session`, `revoke-session` sau `query abstractaccount sessions`.
 
 ## Reguli de Cheltuieli
 
-Regulile de cheltuieli adaugă limite de siguranță financiară conturilor abstracte, indiferent de tipul de cont:
+Regulile de cheltuieli adaugă limite de siguranță financiară conturilor abstracte:
 
-| Regulă            | Descriere                                                        |
+| Regulă            | Descriere                                                         |
 | ------------------ | ------------------------------------------------------------------ |
-| `daily_limit`      | Cheltuiala totală maximă într-o fereastră glisantă de 24 de ore    |
-| `per_tx_limit`     | Cheltuiala maximă per tranzacție individuală                       |
+| `daily_limit`      | Cheltuiala totală maximă pe zi calendaristică UTC                  |
+| `per_tx_limit`     | Cheltuiala maximă per execuție individuală autorizată              |
 | `allowed_denoms`   | Restricționează denominările de token care pot fi cheltuite        |
 
 ### Setarea Regulilor de Cheltuieli
 
+`update-rules` înlocuiește regulile contului cu un array JSON de obiecte `SpendingRule` (JSON inline, nu un fișier și nu flag-uri):
+
 ```bash
-qorechaind tx abstractaccount update-spending-rules \
-  --daily-limit 1000000000uqor \
-  --per-tx-limit 100000000uqor \
-  --allowed-denoms uqor \
-  --from mykey \
-  -y
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":1000000000,"per_tx_limit":100000000,"allowed_denoms":["uqor"]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
+
+Limitele sunt exprimate în unitatea de bază (`uqor`) și se contorizează per execuție autorizată; limita zilnică plafonează totalul pe zi calendaristică UTC. Regulile înlocuiesc în bloc regulile stocate, deci un câmp omis este eliminat.
 
 ### Interogarea Regulilor Curente
 
+Înregistrarea contului include regulile sale și numărul de chei conectate:
+
 ```bash
-qorechaind query abstractaccount spending-rules <account-address>
+qorechaind query abstractaccount account <account-address>
 ```
 
-### Exemplu de Răspuns
-
-```json
-{
-  "daily_limit": {
-    "denom": "uqor",
-    "amount": "1000000000"
-  },
-  "per_tx_limit": {
-    "denom": "uqor",
-    "amount": "100000000"
-  },
-  "allowed_denoms": ["uqor"],
-  "daily_spent": {
-    "denom": "uqor",
-    "amount": "250000000"
-  },
-  "window_reset": "2026-02-27T00:00:00Z"
-}
-```
+:::caution O regulă limitează o cheie doar dacă există una
+Chain-ul determină limita în această ordine: regula proprie a autentificatorului, dacă este setată și `enabled`; altfel prima regulă `enabled` de pe cont; altfel **nu există nicio limită**. O regulă stocată cu `enabled: false` înseamnă lipsa limitei, nu o limită zero. `MsgRegisterAuthenticator` nu poartă nicio regulă, deci o cheie conectată doar prin acel mesaj este limitată numai de o regulă la nivel de cont. Setați o regulă în mod deliberat cu `update-rules` și înregistrați doar permisiunile de care cheia are nevoie. O limită restrânge paguba pe care o poate face o cheie conectată; nu înlocuiește revocarea cheii.
+:::
 
 ## Autentificatori de Portofel Conectat — Cheltuieli Delegate {#authenticators}
 
-Începând cu versiunea de chain **v3.1.85** (bazată pe modelul de permisiuni v3.1.84), o **cheie de portofel extern conectată** — o cheie Phantom (ed25519) sau un cont MetaMask (secp256k1) — poate **cheltui din contul canonic post-cuantic** în condiții de privilegiu minim, cu limite de cheltuieli și revocabile. Cheia externă nu produce niciodată o semnătură ML-DSA; un **releu (relayer)** trimite și plătește plicul tranzacției (semnătura hibridă PQC proprie a releului satisface cerințele de semnare ale chain-ului), în timp ce semnătura autentificatorului asupra **octeților de semnare separați pe domeniu, legați de protecția anti-replay** reprezintă autorizarea.
+Designul autentificatorilor a fost introdus în versiunea de chain **v3.1.85** (bazat pe modelul de permisiuni v3.1.84). **Nu poate fi folosit pe rețelele live cât timp modulul este dezactivat** (vezi caseta de stare de la începutul acestei pagini). O **cheie de portofel extern conectată** — o cheie Phantom (ed25519) sau un cont MetaMask (secp256k1) — poate **cheltui din contul canonic post-cuantic** în condiții de privilegiu minim, cu limite de cheltuieli și revocabile. Cheia externă nu produce niciodată o semnătură ML-DSA; un **releu (relayer)** trimite și plătește plicul tranzacției (semnătura hibridă PQC proprie a releului satisface cerințele de semnare ale chain-ului), în timp ce semnătura autentificatorului asupra **octeților de semnare separați pe domeniu, legați de protecția anti-replay** reprezintă autorizarea.
 
 ### Înregistrarea unui autentificator {#register-authenticator}
 
@@ -181,16 +125,17 @@ import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
 
 // Link a MetaMask account by its 20-byte address (EIP-191 verification):
 const msg = registerEthAuthenticatorMsg({
-  account: "qor1owner...",            // the canonical account
+  owner: "qor1owner...",              // the canonical account (signs this message)
   ethAddress: "0xAbC...123",          // the MetaMask address to link
   permissions: ["evm"],               // least privilege — see the taxonomy below
-  expirySeconds: 30 * 24 * 3600,      // ≤ 30 days recommended
-  spendingRule: { perTxLimit: "100000000uqor", dailyLimit: "1000000000uqor" },
+  expiryUnix: Math.floor(Date.now() / 1000) + 30 * 24 * 3600, // absolute Unix seconds, ≤ 30 days recommended
+  label: "metamask",
 });
+// Limits are a separate message (MsgUpdateSpendingRules), see "Spending Rules" above.
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-O cheie Phantom este înregistrată în același mod, cu `scheme: "ed25519"` și cheia publică Phantom. Revocarea este instantanee prin `MsgRevokeAuthenticator`.
+O cheie Phantom este înregistrată în același mod, cu schema `ed25519` și cheia publică Phantom (`register-authenticator` în CLI). Revocarea este instantanee prin `MsgRevokeAuthenticator`.
 
 ### Taxonomia permisiunilor {#permission-taxonomy}
 
@@ -233,11 +178,12 @@ import { buildPhantomExecuteCosmos } from "@qorechain/wallet-adapter";
 
 // In the dApp: Phantom signs the digest with ed25519 signMessage.
 const msg = await buildPhantomExecuteCosmos({
-  provider: window.solana,            // Phantom
+  wallet: window.solana,              // Phantom: { publicKey, signMessage }
+  relayer: "qor1relayer...",          // submits the tx and pays the fee (a different account)
   chainId: "qorechain-vladi",
   account: "qor1owner...",            // canonical account being spent from
   to: "qor1recipient...",
-  amount: { denom: "uqor", amount: "900000" },
+  amount: "900000uqor",               // single-coin string
   nonce: authSequence,                // per-authenticator sequence
 });
 // Send `msg` to your relayer; the relayer wraps it in a tx it signs
@@ -251,10 +197,13 @@ import { buildMetaMaskExecuteEvm } from "@qorechain/wallet-adapter";
 
 const msg = await buildMetaMaskExecuteEvm({
   provider: window.ethereum,          // MetaMask (EIP-1193)
+  address: ethAddress,                // the linked 20-byte address
+  relayer: "qor1relayer...",
   chainId: "qorechain-vladi",
   account: "qor1owner...",
   to: "0xRecipient...",
-  valueWei: 10n ** 16n,               // 0.01 QOR (18-dec EVM view)
+  value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
+  gasLimit: 100000,
   nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
@@ -264,14 +213,19 @@ const msg = await buildMetaMaskExecuteEvm({
 Aceleași funcții constructor există în [SDK-ul QoreChain](/sdk/guides/authenticators) pentru toate cele cinci limbaje, plus echivalente CLI:
 
 ```bash
-# Produce the exact sign bytes the chain verifies (for custom signers):
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data-hex> <nonce>
+# Generate an ed25519 authenticator key: the seed goes to a new 0600 file, only the public key is printed
+qorechaind query abstractaccount auth-keygen --out authenticator.seed
 
-# Relay a pre-signed authorization:
-qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
-qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
+# Sign the exact bytes the chain verifies (seed from --seed-file, "-" for stdin, QORE_AUTH_SEED, or a prompt)
+qorechaind query abstractaccount auth-sign-cosmos <chain-id> <account> <to> <amount> <nonce> --seed-file authenticator.seed
+qorechaind query abstractaccount auth-sign-evm <chain-id> <account> <to-0xhex> <value-wei> <data-hex> <nonce> --seed-file authenticator.seed
+
+# Relay a pre-signed authorization (the relayer's --from key pays; cosign the envelope with `tx pqc cosign`)
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
+qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data-hex> <gas-limit> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
 ```
+
+Cheile și semnăturile din aceste comenzi sunt în base64. Funcțiile ajutătoare `auth-sign-*` citesc seed-ul dintr-un fișier, de la stdin sau din mediu, nu dintr-un argument din linia de comandă (versiunea de nod v3.2.1 și ulterioare), astfel încât acesta nu apare în istoricul shell-ului. Flag-urile de gestionare a seed-ului (`--out`, `--seed-file`) există doar în binarele v3.2.1 și ulterioare.
 
 ### Coduri de eroare {#authenticator-errors}
 
@@ -281,6 +235,7 @@ Eșecurile de aplicare a regulilor returnează coduri distincte (codespace `abst
 | --- | --- | --- |
 | `5` | Limită de cheltuieli depășită (per tranzacție sau zilnică) | Afișați alocarea rămasă |
 | `6` | Autentificator expirat | „Expirat — reconectați portofelul” |
+| `9` | Modul dezactivat (starea curentă pe ambele rețele) | „Portofelele conectate nu sunt încă disponibile” |
 | `10` | Permisiune refuzată (domeniu sau mesaj nedelegabil) | Afișați permisiunea lipsă |
 | `11` | Replay respins (nonce/secvență învechită) | Reinterogați nonce-ul și resemnați |
 
@@ -288,10 +243,10 @@ Eșecurile de aplicare a regulilor returnează coduri distincte (codespace `abst
 
 ### Interogări REST {#abstractaccount-rest}
 
-Începând cu **v3.1.85**, interogările de citire ale modulului sunt de asemenea servite prin REST:
+Interogările de citire ale modulului sunt servite prin REST (începând cu **v3.1.85**):
 
 ```
-GET /qorechain/abstractaccount/v1/config
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -302,86 +257,59 @@ GET /qorechain/abstractaccount/v1/permission_schema
 ### CLI
 
 ```bash
+# Module configuration (enabled flag and limits)
+qorechaind query abstractaccount config
+
 # Get full account configuration
 qorechaind query abstractaccount account <address>
 
 # List all abstract accounts (paginated)
-qorechaind query abstractaccount list --limit 10
+qorechaind query abstractaccount accounts --page-limit 10
 ```
+
+Pe mainnet lista de conturi este goală; testnet-ul listează câteva conturi create înainte ca indicatorul de activare să fie aplicat pe fiecare cale.
 
 ### JSON-RPC
 
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getAbstractAccount",
-    "params": ["0xYourAddress"],
-    "id": 1
-  }'
-```
+> **Încă nu este servit:** niciun build de nod lansat nu servește namespace-ul JSON-RPC `qor_`, deci `qor_getAbstractAccount` returnează `-32601` (metodă negăsită) pe fiecare endpoint public în prezent. Folosiți rutele REST de mai sus sau CLI-ul. Consultați [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ### Exemplu de Răspuns pentru Cont
+
+Structura unei înregistrări de cont abstract (valori ilustrative):
 
 ```json
 {
   "address": "qor1myaccount...",
   "account_type": "session_based",
   "owner": "qor1owner...",
-  "active_sessions": 2,
-  "spending_rules": {
-    "daily_limit": "1000000000uqor",
-    "per_tx_limit": "100000000uqor",
-    "allowed_denoms": ["uqor"]
-  },
-  "created_at_height": 54321
+  "spending_rules": [
+    {
+      "id": "daily",
+      "enabled": true,
+      "daily_limit": "1000000000",
+      "per_tx_limit": "100000000",
+      "allowed_denoms": ["uqor"]
+    }
+  ]
 }
 ```
 
-## Fluxul de Recuperare Socială
+## Recuperare Socială
 
-Dacă proprietarul contului pierde accesul la cheia sa principală, gardienii pot autoriza o rotație a cheii.
-
-1. **Proprietarul raportează pierderea cheii (sau un gardian inițiază):**
-
-   ```bash
-   qorechaind tx abstractaccount initiate-recovery \
-     --account <account-address> \
-     --new-owner qor1newkey... \
-     --from guardian1 \
-     -y
-   ```
-
-2. **Gardienii suplimentari aprobă** (trebuie să atingă `recovery_threshold`):
-
-   ```bash
-   qorechaind tx abstractaccount approve-recovery \
-     --account <account-address> \
-     --recovery-id <recovery-id> \
-     --from guardian2 \
-     -y
-   ```
-
-3. **Recuperarea se execută automat** odată ce pragul este atins. O **perioadă de blocare temporală** (implicit: 48 de ore) oferă proprietarului original șansa de a anula o încercare de recuperare frauduloasă.
+`social_recovery` este un tip de cont, dar modulul nu are tranzacții de recuperare: nu există comenzile `initiate-recovery` sau `approve-recovery` și niciun mesaj de recuperare în serviciul de tranzacții al modulului. Recuperarea cheii unui cont QoreChain se face rederivând cheia post-cuantică a contului din mnemonic (`tx pqc recover-key`) și, dacă este nevoie, rotind-o (`tx pqc rotate-key`); consultați [Semnarea Post-Cuantică](/developer-guide/post-quantum-signing).
 
 ## Integrare cu dApp-uri
 
-Cheile de sesiune permit experiențe dApp fluide:
-
-1. **Utilizatorul conectează portofelul** și creează o cheie de sesiune limitată la contractul dApp-ului
-2. **dApp-ul folosește cheia de sesiune** pentru a trimite tranzacții în numele utilizatorului
-3. **Fără semnare repetată** — cheia de sesiune gestionează autorizarea în limitele permisiunilor sale
-4. **Sesiunea expiră** automat, sau utilizatorul o poate revoca oricând
-
-Acest model este deosebit de util pentru:
+Când modulul este activat, autorizarea prin chei conectate este destinată unor fluxuri precum:
 
 * Portofele mobile unde solicitările biometrice repetate sunt deranjante
-* dApp-uri de gaming care necesită semnarea rapidă a tranzacțiilor
-* Protocoale DeFi care execută mai multe operațiuni secvențiale
+* dApp-uri de gaming care necesită semnarea rapidă a tranzacțiilor în limitele unei alocări
+* Utilizatori Phantom sau MetaMask care cheltuiesc din contul lor QoreChain printr-un releu
+
+Backend-ul unui dApp acționează ca releu: primește autorizarea semnată a cheii conectate, o încapsulează într-o tranzacție pe care o semnează el însuși și o transmite. Cheia conectată poate fi revocată sau poate expira oricând. Până când modulul este activat pe rețeaua țintă, folosiți semnarea obișnuită prin [QoreX sau SDK](/sdk/overview).
 
 ## Pașii Următori
 
 * [Rularea unui Validator](/developer-guide/running-a-validator) — Configurați și operați un nod validator
-* [Dezvoltare EVM](/developer-guide/evm-development) — Integrați conturi abstracte cu dApp-uri Solidity
-* [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Mesagerie cross-VM cu conturi abstracte
+* [Dezvoltare EVM](/developer-guide/evm-development) — Instrumente EVM, conturi și fereastra de autorizare EVM
+* [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Mesagerie cross-VM

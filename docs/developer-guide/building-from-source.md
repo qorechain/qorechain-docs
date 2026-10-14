@@ -7,7 +7,11 @@ sidebar_position: 1
 
 # Building from Source
 
-This guide walks you through building the `qorechaind` binary from source, covering both the community (open-core) build and the full proprietary build.
+This guide walks you through building the community `qorechaind` binary from the public source, and explains what that binary is and is not for.
+
+:::caution A source build cannot join mainnet or testnet
+The public repository contains the module interfaces with **stub keepers**; the consensus-critical keeper implementations and the post-quantum signer are not in the public source tree. A binary built from it cannot reproduce the networks' consensus state, and it cannot create the hybrid post-quantum signature that every Cosmos-lane transaction requires. To run a node or validator on mainnet or testnet, install the **release binary** named in the live manifest (`https://download.qore.host/mainnet/latest.json` or `.../testnet/latest.json`); see [Running a Node](/developer-guide/running-a-node) and [Running a Validator](/developer-guide/running-a-validator).
+:::
 
 ## Prerequisites
 
@@ -15,7 +19,6 @@ This guide walks you through building the `qorechaind` binary from source, cover
 | ------------------ | ------------------------- | ------------------------------------------------- |
 | **Go**             | 1.26+                     | Required for all builds                           |
 | **CGO**            | Enabled (`CGO_ENABLED=1`) | Required for PQC and SVM FFI bridges              |
-| **Rust toolchain** | Latest stable             | Required to compile `libqorepqc` and `libqoresvm` |
 | **Make**           | 3.81+                     | Build automation                                  |
 | **Git**            | 2.x                       | Source checkout                                   |
 
@@ -23,50 +26,22 @@ Verify your environment:
 
 ```bash
 go version        # go1.26.x or later
-rustc --version   # stable toolchain
-cargo --version
 echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Every `go build`, `go test`, and `go run` invocation **must** have `CGO_ENABLED=1` set. The PQC and SVM modules use FFI bridges that require cgo.
+Every `go build`, `go test`, and `go run` invocation **must** have `CGO_ENABLED=1` set. The node links native libraries (the CosmWasm runtime, and in the release build the PQC and SVM libraries) through cgo.
 :::
 
 ## Native Libraries
 
-QoreChain depends on two Rust-built native libraries that are loaded at runtime.
+### libqorepqc and libqoresvm
 
-### libqorepqc (Post-Quantum Cryptography)
-
-The PQC library provides ML-DSA-87 (Dilithium-5) key generation, signing, and verification through a C-compatible FFI interface.
-
-```bash
-cd rust/qorepqc
-cargo build --release
-```
-
-The compiled library is placed in `lib/{os}_{arch}/`:
-
-| Platform    | Library File       | Directory           |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
-
-### libqoresvm (SVM Runtime)
-
-The SVM library provides the BPF program execution environment for the x/svm module.
-
-```bash
-cd rust/qoresvm
-cargo build --release
-```
-
-Output follows the same `lib/{os}_{arch}/` convention as above (`libqoresvm.dylib` on macOS, `libqoresvm.so` on Linux).
+The post-quantum (`libqorepqc`) and SVM (`libqoresvm`) libraries are built from Rust sources that are **not part of the public repository** (there is no `rust/` directory in `qorechain-core`). The community build does not need them. The release archives for the networks bundle the compiled libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) in a `lib/` directory next to `qorechaind`; place them in `lib/{os}_{arch}/` or point the loader at them as shown below.
 
 ### Setting the Library Path
 
-The native libraries must be discoverable at runtime. Set the appropriate environment variable for your platform:
+When you use the release binary, its shared libraries must be discoverable at runtime. Set the appropriate environment variable for your platform:
 
 **macOS:**
 
@@ -89,9 +64,9 @@ Tip: Add the export to your shell profile (`~/.bashrc`, `~/.zshrc`) so it persis
 QoreChain follows an **open-core** model:
 
 * **Community build** — Contains the full module interfaces, CLI commands, protobuf definitions, and message types for every QoreChain module (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm, etc.). Keepers for proprietary modules use **stub implementations** that return safe defaults or no-op responses. This allows third-party tooling, wallets, and indexers to integrate with all QoreChain APIs without requiring proprietary code.
-* **Full (proprietary) build** — Enables the complete keeper implementations behind the `proprietary` build tag. This includes the real AI anomaly detection logic, PRISM consensus parameter tuning, advanced reputation scoring, and all production-grade features.
+* **Full build** — Contains the complete keeper implementations (the real consensus-critical module logic and the post-quantum signer). It is distributed as the release binaries published at [download.qore.host](https://download.qore.host); it is not built from the public source tree.
 
-Both builds produce the same `qorechaind` binary name and expose identical CLI commands and gRPC/REST endpoints. The difference is in the runtime behavior of the keeper logic behind those interfaces.
+Both builds produce the same `qorechaind` binary name and expose the same CLI commands. The difference is in the runtime behaviour of the keeper logic behind those interfaces.
 
 ## Community Build
 
@@ -99,21 +74,17 @@ Both builds produce the same `qorechaind` binary name and expose identical CLI c
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-This compiles all public module interfaces with stub keepers for proprietary features. The resulting binary is fully functional for:
+This compiles all public module interfaces with stub keepers for proprietary features. The resulting binary is intended for:
 
-* Running a validator node
-* Submitting and querying transactions
-* Interacting with EVM, CosmWasm, and SVM VMs
-* Building third-party integrations and tooling
-* Local development and testing
+* Local development and testing (for example a single-node devnet)
+* Querying a network (`query ...` commands work against any node)
+* Building third-party integrations and tooling against the module interfaces
 
-## Full Build (Proprietary)
+It is not a way to join mainnet or testnet as a validator or to transact there: it has no post-quantum signer (`tx pqc gen-key` and `tx pqc cosign` return an error) and its stub keepers do not reproduce the networks' consensus rules.
 
-```bash
-CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
-```
+## Full Build (release binary)
 
-The `-tags proprietary` flag activates the full keeper implementations, which are not part of the public source tree.
+The full keeper implementations, and the signer behind `tx pqc gen-key` and `tx pqc cosign`, are not in the public source tree, so they cannot be built from it. The binaries published at [download.qore.host](https://download.qore.host) are the full build; use those for mainnet and testnet.
 
 ## Running Tests
 
@@ -125,16 +96,10 @@ The `-count=1` flag disables test caching, ensuring a clean run every time. Indi
 
 ```bash
 CGO_ENABLED=1 go test ./x/pqc/... -count=1 -v
-CGO_ENABLED=1 go test ./x/ai/... -count=1 -v
 CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ```
 
-Run the Rust library tests separately:
-
-```bash
-cd rust/qorepqc && cargo test
-cd rust/qoresvm && cargo test
-```
+Tests that exercise the native libraries or the proprietary keepers are compiled only into the full build and are not part of the public suite.
 
 ## Build Verification
 
@@ -145,17 +110,17 @@ After a successful build, verify the binary:
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-The `init` command should create a genesis file and node configuration in `~/.qorechaind/` without errors. The example above initializes against the **`qorechain-diana`** testnet — for mainnet, substitute `--chain-id qorechain-vladi`, the live network running chain version **v3.1.97**.
+The `init` command should create a genesis file and node configuration in `~/.qorechaind/` without errors. The example above initializes against the **`qorechain-diana`** testnet — for mainnet, substitute `--chain-id qorechain-vladi`, the live network (node release **v3.2.1**).
 
 ## Docker Build
 
-For containerized builds, a Dockerfile is provided at the repository root:
+A Dockerfile is provided at the repository root:
 
 ```bash
-docker build -t qorechaind:latest .
+docker build -t qorechaind:community .
 ```
 
-The Docker image handles all native library compilation and path configuration automatically. See the [Quickstart](/getting-started/quickstart) guide for running a node with Docker Compose.
+It builds the **community** binary (its own comment reads "Public build — no PQC library"), so the image is for local development and tooling, not for following mainnet or testnet. To run a network node in Docker, wrap the release binary instead; see [Running a Node](/developer-guide/running-a-node#docker-compose).
 
 ## Troubleshooting
 
@@ -171,7 +136,7 @@ Install Xcode CLI tools (macOS) or `build-essential` (Linux)
 
 <summary>cannot find -lqorepqc</summary>
 
-Build the Rust libraries first and set `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH`
+You are linking a build that expects the native libraries. Use the community build (it does not need them) or the release archive, which bundles them, and set `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` to its `lib/` directory
 
 </details>
 
@@ -195,6 +160,6 @@ Increase available memory (common in Docker with low limits)
 
 <summary>PQC tests fail with size mismatch</summary>
 
-Verify you are using `pqcrypto v0.5.0+` (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bytes)
+ML-DSA-87 sizes are public key 2,592 bytes, secret key 4,896 bytes and signature 4,627 bytes. Any other size means a different algorithm or a truncated value.
 
 </details>

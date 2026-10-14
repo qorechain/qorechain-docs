@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # Ediția UX — Dashboard web
 
-Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, aceasta este linia **v3.1.2** a nodului light (versiunea sa proprie, separată de versiunea chain-ului).
+Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, aceasta este linia **v3.1.3** a nodului light (versiunea sa proprie, separată de versiunea chain-ului).
 
 Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru operatorii care preferă o interfață vizuală în locul liniei de comandă.
 
 ## Instalare
 
-Binarele precompilate rulează nativ pe **șase platforme fără nicio dependență nativă** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — fiecare de aproximativ 16 MB. Verifică suma de control (checksum) a descărcării față de manifest înainte de a o rula — vezi [Ediția SX](/light-node/sx-edition#install) pentru cum se face.
+Binarele precompilate rulează nativ pe **șase platforme fără nicio dependență nativă** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) și Windows (amd64, arm64) — fiecare de aproximativ 11–12 MB. Verifică suma de control (checksum) a descărcării față de manifest înainte de a o rula — vezi [Ediția SX](/light-node/sx-edition#install) pentru cum se face.
 
 ### Construire din sursă
 
@@ -27,13 +27,24 @@ Aceasta produce `build/lightnode-ux`.
 
 ### Docker
 
-Serviciul UX se construiește din `Dockerfile.ux`:
+Serviciul UX se construiește din `Dockerfile.ux` din depozitul sursă (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.4` sau mai nou). Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni; asistentul de configurare se află în binarul SX, așa că creează mai întâi configurația cu ediția SX (vezi [Ediția SX](/light-node/sx-edition#first-run-onboard)) și copiaz-o în volum. În interiorul unui container, dashboard-ul trebuie să asculte pe toate interfețele containerului, așa că setează acest lucru în configurația respectivă și publică portul pe loopback-ul gazdei exclusiv:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-Containerul UX își păstrează datele într-un volum denumit la `/root/.qorechain-lightnode` și citește adresa RPC a chain-ului din variabila de mediu `QORECHAIN_RPC_ADDR`.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+Containerul UX își păstrează datele într-un volum denumit la `/root/.qorechain-lightnode` și citește adresa RPC a chain-ului din variabila de mediu `QORECHAIN_RPC_ADDR`. Imaginea UX nu include semnatarul `qorechaind`, așa că un container UX nu poate trimite heartbeat-uri on-chain; rulează un nod înregistrat cu ediția SX.
 
 ## Rulare
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Aceasta lansează împreună daemon-ul și serverul de dashboard încorporat. Ediția UX activează întotdeauna dashboard-ul. La pornire, binarul afișează URL-ul dashboard-ului.
 
-Ediția UX împarte configurarea cu ediția SX: citește același `config.toml` din `~/.qorechain-lightnode` și folosește același keyring Dilithium-5. Dacă nu ai configurat încă nodul, rulează mai întâi asistentul SX (`lightnode-sx onboard`) pentru a scrie configurarea și a importa sau genera cheia ta — vezi [Ediția SX](/light-node/sx-edition).
+Ediția UX împarte configurarea cu ediția SX: citește același `config.toml` din `~/.qorechain-lightnode` și folosește același keyring Dilithium-5. Dacă nu ai configurat încă nodul, rulează mai întâi asistentul SX (`lightnode-sx onboard`) pentru a scrie configurarea și a importa sau genera cheia ta — vezi [Ediția SX](/light-node/sx-edition). Binarul UX are doar comenzile `start` și `version`; folosește `lightnode-sx` pentru `register`, `status` și `keys`. Daemon-ul din ediția UX trimite heartbeat-uri la fel ca ediția SX atunci când este disponibil un semnatar `qorechaind`.
 
 ## Dashboard-ul web pe portul 8420
 
@@ -69,7 +80,7 @@ Dashboard-ul este organizat în următoarele vizualizări:
 
 - **Overview** — înălțimea blocului și starea nodului la o privire.
 - **Validators** — setul de validatori legați (bonded).
-- **Delegation** — delegările tale curente și împărțirea lor.
+- **Delegation** — delegările oglindite din contul tău de operator (vezi limitarea cunoscută din [Recompense și monitorizare](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — telemetria de rețea în direct și header-ele sincronizate recent.
 - **Bridge** — telemetria bridge-ului cross-chain.
 - **Tokenomics** — telemetria economiei tokenului.
@@ -85,9 +96,9 @@ Dacă nodul **nu are niciun endpoint RPC de chain configurat**, dashboard-ul rul
 lightnode-sx onboard
 ```
 
-Asistentul rulează self-test-ul PQC, cere endpoint-ul tău de chain și importă sau generează cheia ta de validator. Odată ce un endpoint este configurat, repornește nodul și dashboard-ul începe să afișeze date de chain în direct.
+Asistentul rulează self-test-ul PQC, cere endpoint-ul tău de chain și importă sau generează cheia nodului tău. Odată ce un endpoint este configurat, repornește nodul și dashboard-ul începe să afișeze date de chain în direct.
 
 ## Unde să mergi mai departe
 
 - [Înregistrare și licențiere](/light-node/registration-and-licensing) — înregistrează nodul on-chain.
-- [Recompense și monitorizare](/light-node/rewards-and-monitoring) — câștigă cota de 3% pentru nodurile light și monitorizează sănătatea nodului.
+- [Recompense și monitorizare](/light-node/rewards-and-monitoring) — cum este creditată și revendicată cota de 3% pentru nodurile light și cum monitorizezi sănătatea nodului.

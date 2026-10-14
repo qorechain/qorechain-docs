@@ -10,14 +10,19 @@ sidebar_position: 5
 QoreChain oferă transmiterea evenimentelor în timp real prin două interfețe WebSocket: WebSocket-ul compatibil EVM și WebSocket-ul RPC al Motorului de Consens QoreChain.
 
 :::note
-Ambele interfețe WebSocket sunt disponibile pe mainnet-ul **`qorechain-vladi`** (live la versiunea de chain **v3.1.97**) și pe testnet-ul **`qorechain-diana`**. Endpoint-urile locale de mai jos presupun un nod pe care îl rulezi tu însuți; înlocuiește-le cu host-ul mainnet sau testnet al furnizorului tău pentru acces la distanță.
+WebSocket-ul RPC al motorului de consens este disponibil public atât pe mainnet-ul **`qorechain-vladi`**, cât și pe testnet-ul **`qorechain-diana`**. WebSocket-ul EVM este disponibil public **doar pe testnet**: nu există un WebSocket EVM public pentru mainnet (`wss://evm.qore.host` și `wss://evm-ws.qore.host` nu acceptă conexiuni WebSocket), așa că pe mainnet rulează propriul nod pentru `eth_subscribe`. Endpoint-urile locale de mai jos presupun un nod pe care îl rulezi tu însuți.
+
+| Interfață | Mainnet | Testnet |
+| --------- | ------- | ------- |
+| RPC WebSocket | `wss://rpc.qore.host/websocket` | `wss://rpc-testnet.qore.host/websocket` |
+| EVM WebSocket | niciunul (doar nod propriu) | `wss://evm-ws-testnet.qore.host` |
 :::
 
 ---
 
 ## EVM WebSocket
 
-**Endpoint:** `ws://localhost:8546`
+**Endpoint:** `ws://localhost:8546` pe propriul nod; testnet public: `wss://evm-ws-testnet.qore.host`. Nu există un WebSocket EVM public pentru mainnet.
 
 WebSocket-ul EVM suportă metoda standard `eth_subscribe` pentru transmiterea evenimentelor în timp real, compatibilă cu uneltele Ethereum.
 
@@ -28,7 +33,8 @@ WebSocket-ul EVM suportă metoda standard `eth_subscribe` pentru transmiterea ev
 | `newHeads`               | Emite un antet de fiecare dată când este adăugat un bloc nou |
 | `logs`                   | Emite loguri care corespund unui filtru opțional     |
 | `newPendingTransactions` | Emite hash-urile tranzacțiilor care intră în mempool |
-| `syncing`                | Emite actualizări ale stării de sincronizare         |
+
+Abonamentul `syncing` nu este implementat: `eth_subscribe` cu `"syncing"` returnează `-32600 syncing subscription is not implemented`. Interoghează în schimb `eth_syncing` prin HTTP.
 
 ### Abonare la blocuri noi
 
@@ -73,7 +79,7 @@ WebSocket-ul EVM suportă metoda standard `eth_subscribe` pentru transmiterea ev
 
 ## QoreChain RPC WebSocket
 
-**Endpoint:** `ws://localhost:26657/websocket`
+**Endpoint:** `ws://localhost:26657/websocket` pe propriul nod; public: `wss://rpc.qore.host/websocket` (mainnet) și `wss://rpc-testnet.qore.host/websocket` (testnet).
 
 WebSocket-ul RPC folosește sistemul de abonare la evenimente al Motorului de Consens QoreChain. Clienții se abonează folosind un șir de interogare (query) care filtrează evenimentele după tip și atribute.
 
@@ -112,7 +118,7 @@ Filtrează după tipul evenimentului pentru a primi doar evenimente dintr-un mod
   "jsonrpc": "2.0",
   "method": "subscribe",
   "params": {
-    "query": "tm.event='Tx' AND fraud_alert.severity EXISTS"
+    "query": "tm.event='Tx' AND bridge_deposit.chain EXISTS"
   },
   "id": 3
 }
@@ -135,81 +141,100 @@ Filtrează după tipul evenimentului pentru a primi doar evenimente dintr-un mod
 
 ## Referință evenimente pe module
 
+Evenimentele sunt emise ca evenimente standard ale motorului de consens. Abonează-te cu o interogare `tm.event='Tx'` filtrată după tipul și atributul evenimentului (de exemplu `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Evenimentele la nivel de bloc (cele emise de logica de la sfârșitul blocului, precum evenimentele PRISM de mai jos) sunt livrate cu `tm.event='NewBlock'`, nu cu `Tx`. Numele și atributele de mai jos sunt cele ale versiunii de chain v3.2.0.
+
+:::note Ce evenimente vei vedea efectiv
+Multe dintre aceste module sunt inactive pe rețelele publice: bridge-ul nu este live, nu este încă înregistrat niciun layer multilayer sau rollup, iar xQORE nu poate fi folosit. Evenimentele lor sunt definite, dar nu se declanșează până nu există activitate. Evenimentele de observare și de recompensă PRISM (`rl_observation_collected`, `rl_reward_computed`) sunt emise aproximativ la fiecare 10 blocuri pe ambele rețele.
+:::
+
 ### Modulul PQC
 
-| Tip eveniment               | Atribute cheie                                        | Descriere                                       |
-| --------------------------- | ------------------------------------------------------ | ------------------------------------------------ |
-| `pqc_hybrid_verify`         | `address`, `algorithm`, `result` (pass/fail), `mode`   | Emis la fiecare verificare a semnăturii hibride  |
-| `pqc_hybrid_auto_register`  | `address`, `algorithm`, `pubkey_hash`                  | Emis atunci când o cheie PQC este înregistrată automat |
+| Tip eveniment               | Atribute cheie                                            | Descriere                                            |
+| --------------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
+| `pqc_verify`                | `address`, `key_type`, `algorithm_id`, `hybrid_mode`, `status` | Emis la fiecare verificare a unei semnături PQC |
+| `pqc_hybrid_verify`         | `address`, `algorithm_id`, `status`                       | Emis la fiecare verificare a semnăturii hibride      |
+| `pqc_hybrid_classical_only` | `address`, `hybrid_mode`                                  | Emis atunci când o semnătură doar clasică este acceptată de modul curent |
+| `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Emis atunci când o cheie PQC este înregistrată       |
+| `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Emis atunci când o cheie PQC este rotită             |
+| `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Emis atunci când o cheie este migrată către un algoritm nou |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Emis atunci când se deschide o fereastră de autorizare pe lane-ul EVM |
+| `pqc_evm_window_closed`     | `address`                                                 | Emis atunci când se închide o fereastră de autorizare pe lane-ul EVM |
 
-### Modulul AI
-
-| Tip eveniment      | Atribute cheie                                                        | Descriere                                          |
-| ------------------- | ----------------------------------------------------------------------- | --------------------------------------------------- |
-| `fraud_alert`       | `severity` (low/medium/high/critical), `address`, `reason`, `score`     | Emis atunci când este detectată o fraudă într-o tranzacție |
-| `circuit_breaker`   | `module`, `action` (tripped/reset), `threshold`, `value`                | Emis atunci când un disjunctor (circuit breaker) AI își schimbă starea |
+Cheile PQC se înregistrează explicit printr-o tranzacție de înregistrare; nu există un eveniment de înregistrare automată.
 
 ### Modulul Bridge
 
-| Tip eveniment           | Atribute cheie                                                    | Descriere                                                  |
-| ------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `deposit_completed`      | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash`      | Emis atunci când un depozit bridge de intrare este confirmat |
-| `withdrawal_completed`   | `chain_id`, `sender`, `recipient`, `amount`, `asset`, `tx_hash`      | Emis atunci când o retragere bridge de ieșire este confirmată |
+| Tip eveniment                 | Atribute cheie                                           | Descriere                                    |
+| ----------------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| `bridge_deposit`              | `operation_id`, `chain`, `asset`, `amount`, `sender`     | Emis atunci când este înregistrat un depozit de intrare |
+| `bridge_withdraw`             | `operation_id`, `chain`, `asset`, `amount`, `sender`, `receiver` | Emis atunci când este înregistrată o retragere |
+| `bridge_attestation`          | `operation_id`, `validator`, `chain`, `pqc_verified`, `attestations` | Emis pentru fiecare atestare a unui validator |
+| `bridge_operation_executed`   | `operation_id`, `status`                                 | Emis atunci când o operațiune se finalizează |
+| `bridge_circuit_breaker_trip` | `chain`, `status`, `reason`                              | Emis atunci când se declanșează disjunctorul (circuit breaker) bridge-ului unui chain |
 
 ### Modulul Cross-VM
 
-| Tip eveniment       | Atribute cheie                                                     | Descriere                                             |
-| --------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------- |
-| `crossvm_request`    | `message_id`, `source_vm`, `target_vm`, `sender`, `payload_hash`      | Emis atunci când este inițiat un apel cross-VM           |
-| `crossvm_response`   | `message_id`, `source_vm`, `target_vm`, `success`, `gas_used`         | Emis atunci când un apel cross-VM se finalizează          |
-| `crossvm_timeout`    | `message_id`, `source_vm`, `target_vm`, `queued_at_height`            | Emis atunci când un mesaj cross-VM depășește timpul de așteptare în coadă |
+| Tip eveniment      | Atribute cheie                                                              | Descriere                                             |
+| ------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `crossvm_request`  | `message_id`, `source_vm`, `target_vm`, `target_contract`, `sender`         | Emis atunci când este inițiat un apel cross-VM        |
+| `crossvm_response` | `message_id`, `status`                                                      | Emis atunci când un apel cross-VM se finalizează      |
+| `crossvm_timeout`  | `message_id`                                                                | Emis atunci când un mesaj cross-VM depășește timpul de așteptare în coadă |
 
 ### Modulul Multilayer
 
-| Tip eveniment            | Atribute cheie                                                   | Descriere                                          |
-| -------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------- |
-| `anchor_submitted`         | `layer_id`, `layer_type`, `anchor_hash`, `height`, `submitter`   | Emis atunci când este trimisă o ancoră a stării unui layer |
-| `layer_status_changed`     | `layer_id`, `previous_status`, `new_status`, `reason`            | Emis atunci când un layer își schimbă starea operațională |
+| Tip eveniment           | Atribute cheie                                                                               | Descriere                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `state_anchored`        | `layer_id`, `layer_height`, `state_root`, `main_chain_height`, `pqc_verified`, `transaction_count` | Emis atunci când o ancoră a stării unui layer este acceptată |
+| `anchor_challenged`     | `layer_id`, `layer_height`, `challenger`, `challenge_reason`, `resolution`                   | Emis atunci când o ancoră este contestată    |
+| `layer_status_updated`  | `layer_id`, `status`, `reason`                                                               | Emis atunci când un layer își schimbă starea |
+| `sidechain_registered`, `paychain_registered` | `layer_id`, `layer_type`, `creator`, `status`                          | Emis atunci când un layer este înregistrat   |
+| `transaction_routed`    | `selected_layer`, `routing_reason`, `gas_savings`, `latency_ms`, `sender`                    | Emis atunci când o tranzacție este direcționată către un layer |
 
 ### Modulul RDK
 
-| Tip eveniment       | Atribute cheie                                          | Descriere                                          |
-| ---------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
-| `rollup_created`      | `rollup_id`, `operator`, `settlement_type`, `profile`      | Emis atunci când este înregistrat un rollup nou        |
-| `batch_submitted`     | `rollup_id`, `batch_index`, `state_root`, `tx_count`        | Emis atunci când este trimis un batch de decontare      |
-| `batch_finalized`     | `rollup_id`, `batch_index`, `finalized_at_height`           | Emis atunci când un batch trece de fereastra sa de contestare |
-| `da_blob_stored`      | `rollup_id`, `blob_index`, `size_bytes`, `commitment`       | Emis atunci când este stocat un blob DA                 |
-| `da_blob_pruned`      | `rollup_id`, `blob_index`, `pruned_at_height`                | Emis atunci când un blob DA este eliminat după perioada de retenție |
+| Tip eveniment     | Atribute cheie                                              | Descriere                                        |
+| ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
+| `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Emis atunci când este înregistrat un rollup nou  |
+| `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Emis atunci când este trimis un batch de decontare |
+| `batch_finalized` | `rollup_id`, `batch_index`                                  | Emis atunci când un batch trece de fereastra sa de contestare |
+| `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Emis atunci când este stocat un blob DA          |
+| `da_blob_pruned`  | `rollup_id`, `blob_index`                                   | Emis atunci când un blob DA este eliminat după perioada de retenție |
 
 ### Modulul Burn
 
-| Tip eveniment        | Atribute cheie                                                                       | Descriere                                     |
-| ----------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `fee_distributed`      | `total_fees`, `validator_amount`, `burn_amount`, `treasury_amount`, `staker_amount`      | Emis atunci când comisioanele colectate sunt distribuite |
-| `tokens_burned`        | `amount`, `channel`, `block_height`                                                       | Emis atunci când tokenurile sunt arse (burn) permanent |
+| Tip eveniment            | Atribute cheie                                            | Descriere                                           |
+| ------------------------ | --------------------------------------------------------- | --------------------------------------------------- |
+| `burn`                   | `source`, `amount`                                        | Emis atunci când tokenurile sunt arse (burn) permanent |
+| `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | Emis atunci când rulează o ardere la atingerea unui prag de tranzacții |
+| `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Emis atunci când guvernanța eliberează o parte din cota blocată a staker-ilor |
 
 ### Modulul xQORE
 
-| Tip eveniment      | Atribute cheie                                                    | Descriere                                     |
-| --------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
-| `xqore_locked`       | `address`, `amount`, `lock_duration`, `tier`                          | Emis atunci când QOR este blocat în xQORE           |
-| `xqore_unlocked`     | `address`, `amount`, `penalty_applied`, `penalty_amount`               | Emis atunci când xQORE este deblocat înapoi în QOR  |
-| `pvp_rebase`         | `epoch`, `total_penalty`, `rebase_amount`, `beneficiary_count`         | Emis în timpul distribuției rebase PvP              |
+Aceste evenimente nu sunt emise încă: xQORE nu este live în niciun build de nod publicat (vezi [Staking xQORE](/user-guide/xqore-staking)).
 
-### Modulul Inflation
+| Tip eveniment  | Atribute cheie                                                        | Descriere                                |
+| -------------- | --------------------------------------------------------------------- | ---------------------------------------- |
+| `xqore_lock`   | `owner`, `amount`                                                     | Emis atunci când QOR este blocat în xQORE |
+| `xqore_unlock` | `owner`, `amount`, `penalty`, `burned`, `redistributed`, `returned`   | Emis atunci când xQORE este deblocat înapoi în QOR |
 
-| Tip eveniment    | Atribute cheie                                                | Descriere                                    |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------------ |
-| `epoch_minted`     | `epoch`, `minted_amount`, `inflation_rate`, `block_height`     | Emis la finalul fiecărei epoci de inflație        |
+### Modulul PRISM Consensus (RL Consensus)
 
-### Modulul RL Consensus
+Acestea sunt evenimente de la sfârșitul blocului, livrate pe fluxul `NewBlock`.
 
-Ajustările parametrilor PRISM și activitatea disjunctorului (circuit breaker) sunt emise prin acest modul.
+| Tip eveniment                  | Atribute cheie          | Descriere                                                     |
+| ------------------------------ | ----------------------- | ------------------------------------------------------------- |
+| `rl_observation_collected`     | `height`                | Emis atunci când este făcută o observație PRISM (aproximativ la fiecare 10 blocuri) |
+| `rl_reward_computed`           | `height`, `reward`      | Emis atunci când este calculată recompensa PRISM              |
+| `rl_action_applied`            | `height`, `agent_mode`  | Emis atunci când agentul PRISM aplică o ajustare de parametru |
+| `rl_agent_mode_changed`        | `height`, `agent_mode`  | Emis atunci când se schimbă modul agentului                   |
+| `rl_circuit_breaker_triggered` | `height`                | Emis atunci când disjunctorul PRISM blochează o acțiune       |
+| `rl_circuit_breaker_recovered` | `height`                | Emis atunci când disjunctorul își revine                      |
 
-| Tip eveniment                 | Atribute cheie                                                   | Descriere                                                     |
-| -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `rl_action_applied`             | `action_type`, `param_key`, `old_value`, `new_value`, `reward`      | Emis atunci când agentul PRISM aplică o ajustare de parametru       |
-| `circuit_breaker_triggered`     | `reason`, `param_key`, `attempted_value`, `limit`                    | Emis atunci când disjunctorul PRISM blochează o acțiune             |
+### Modulul AI
+
+| Tip eveniment      | Atribute cheie                                   | Descriere                                           |
+| ------------------ | ------------------------------------------------ | --------------------------------------------------- |
+| `ai_anomaly_check` | `score_millionths`, `action`, `is_anomalous`     | Emis pentru fiecare tranzacție căreia i se atribuie un scor de anomalie |
 
 ---
 
@@ -220,6 +245,7 @@ Ajustările parametrilor PRISM și activitatea disjunctorului (circuit breaker) 
 ```javascript
 import { ethers } from "ethers";
 
+// Own node: ws://localhost:8546. Public testnet: wss://evm-ws-testnet.qore.host
 const provider = new ethers.WebSocketProvider("ws://localhost:8546");
 
 // Subscribe to new blocks
@@ -240,14 +266,15 @@ provider.on(filter, (log) => {
 ### QoreChain RPC WebSocket (Native)
 
 ```javascript
+// Own node: ws://localhost:26657/websocket. Public: wss://rpc.qore.host/websocket
 const ws = new WebSocket("ws://localhost:26657/websocket");
 
 ws.onopen = () => {
-  // Subscribe to fraud alerts
+  // Subscribe to bridge deposits
   ws.send(JSON.stringify({
     jsonrpc: "2.0",
     method: "subscribe",
-    params: { query: "tm.event='Tx' AND fraud_alert.severity EXISTS" },
+    params: { query: "tm.event='Tx' AND bridge_deposit.chain EXISTS" },
     id: 1,
   }));
 
@@ -272,6 +299,6 @@ ws.onmessage = (event) => {
 
 ## Note
 
-- **Limite de conexiune**: Numărul maxim implicit de conexiuni WebSocket este nelimitat (`max-open-connections = 0`). Setează o limită în `app.toml` pentru mediile de producție.
-- **Buffer de evenimente**: WebSocket-ul RPC stochează în buffer până la 200 de evenimente per abonament. Dacă clientul rămâne în urmă, evenimentele mai vechi sunt eliminate.
+- **Limite de conexiune**: Pe un nod pe care îl rulezi tu însuți, numărul maxim implicit de conexiuni WebSocket este nelimitat (`max-open-connections = 0`). Setează o limită în `app.toml` pentru mediile de producție. Endpoint-urile publice aplică propriile limite.
+- **Buffer de evenimente**: WebSocket-ul RPC stochează în buffer un număr limitat de evenimente per abonament (implicit 200 pe un nod găzduit de tine). Dacă clientul rămâne în urmă, evenimentele mai vechi sunt eliminate.
 - **Reconectare**: Clienții ar trebui să implementeze reconectare automată cu backoff exponențial, deoarece conexiunile WebSocket pot fi întrerupte în timpul repornirilor sau upgrade-urilor nodului.

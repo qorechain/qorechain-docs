@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain ist **von Anfang an (at genesis) mit Post-Quantum-Kryptografie (PQC) gebaut** — nicht nachträglich als Upgrade ergänzt. Das Modul `x/pqc` stellt gitterbasierte digitale Signaturen und Schlüsselkapselung als primäre kryptografische Primitive bereit, ergänzt um ein per Governance gesteuertes Framework für Algorithmusagilität zur langfristigen Resilienz.
 
-Die vollständige PQC-Baseline — **Dilithium-5 (Signaturen) + ML-KEM-1024 (KEM) + SHAKE-256 (Hash)** — ist nun vollständig und der Netzwerkstandard. Ab der aktuellen Chain-Version (**v3.1.85**) sind Hybridsignaturen auf dem Cosmos-Transaktionspfad **standardmäßig erforderlich**: `hybrid_signature_mode = required` und `allow_classical_fallback = false`. Jede Transaktion auf dem Cosmos-Pfad muss eine Dilithium-5-Signatur zusätzlich zu ihrer klassischen secp256k1-Signatur tragen; rein klassische Transaktionen von einem PQC-Konto werden abgelehnt, und der klassische Downgrade-Pfad ist geschlossen.
+Die vollständige PQC-Baseline — **Dilithium-5 (Signaturen) + ML-KEM-1024 (KEM) + SHAKE-256 (Hash)** — ist nun vollständig und der Netzwerkstandard. In den Live-Netzwerken (v3.2.x) sind Hybridsignaturen auf dem Cosmos-Transaktionspfad **standardmäßig erforderlich**: `hybrid_signature_mode = required` und `allow_classical_fallback = false`. Jede Transaktion auf dem Cosmos-Pfad muss eine Dilithium-5-Signatur zusätzlich zu ihrer klassischen secp256k1-Signatur tragen; rein klassische Transaktionen von einem PQC-Konto werden abgelehnt, und der klassische Downgrade-Pfad ist geschlossen.
 
 ## Designprinzipien
 
@@ -49,9 +49,9 @@ Alle Signier- und Verifizierungsoperationen sind deterministisch und erzeugen ü
 
 Dieselben Primitive — ML-DSA (FIPS-204), ML-KEM (FIPS-203) und SHAKE-256 (FIPS-202) — stehen Wallets und Integratoren über die quelloffene Bibliothek [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc) zur Verfügung, die eine konsistente, byte-kompatible API über sechs Sprachen (JavaScript/TypeScript, Rust, Go, C, Python, Java) bereitstellt. Siehe [Post-Quantum Signing](/developer-guide/post-quantum-signing).
 
-## Schlüsselregistrierung
+## Schlüsselregistrierung {#key-registration}
 
-Konten registrieren PQC-Schlüssel über `MsgRegisterPQCKey` (Legacy, standardmäßig Dilithium-5) oder `MsgRegisterPQCKeyV2` (algorithmus-bewusst). Jede Nachricht enthält:
+Konten registrieren PQC-Schlüssel ausdrücklich über `MsgRegisterPQCKey` (Legacy, standardmäßig Dilithium-5) oder `MsgRegisterPQCKeyV2` (algorithmus-bewusst); die Chain registriert nie von sich aus einen Schlüssel, und der CLI-Ablauf lautet `qorechaind tx pqc gen-key <name>` gefolgt von `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>` (siehe [Erste Transaktion](/getting-started/first-transaction#register-pqc-key)). Jede Nachricht enthält:
 
 * **Sender**: Die Kontoadresse, die den Schlüssel registriert.
 * **PublicKey**: Die Bytes des öffentlichen PQC-Schlüssels.
@@ -61,40 +61,59 @@ Konten registrieren PQC-Schlüssel über `MsgRegisterPQCKey` (Legacy, standardm�
 | Schlüsseltyp         | Beschreibung                                                              |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Sowohl klassischer (ECDSA) als auch PQC-Schlüssel. Transaktionen tragen Doppelsignaturen. |
-| `pqc_only`       | Nur PQC-Schlüssel. Eine klassische Signatur ist nicht erforderlich.                       |
+| `pqc_only`       | Wird wie `hybrid` registriert: Die klassische secp256k1-Signatur wird weiterhin von den Standard-Signaturprüfungen verifiziert, und zusätzlich ist die PQC-Signatur erforderlich. |
 | `classical_only` | Nur klassischer Schlüssel. Kein PQC-Schutz (nicht empfohlen).                 |
 
 ## Hybridsignaturen
 
 Das Hybridsignatursystem verlangt, dass Cosmos-Pfad-Transaktionen gleichzeitig **sowohl** eine klassische Signatur als auch eine PQC-Signatur tragen. Dies bietet Defense-in-Depth: Selbst wenn ein Verfahren gebrochen wird, schützt das andere die Transaktion.
 
-Mit dem Netzwerkstandard `hybrid_signature_mode = required` muss jede Cosmos-Pfad-Transaktion die Dilithium-5-Erweiterung zusätzlich zur secp256k1-Signatur enthalten. Die einzigen Ausnahmen (für das Bootstrapping) sind **Genesis-Gentxs (Höhe 0)** und **Transaktionen zur PQC-Schlüsselregistrierung/-migration** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), die rein klassisch sein dürfen, damit Konten ihren ersten PQC-Schlüssel registrieren können.
+Mit dem Netzwerkstandard `hybrid_signature_mode = required` muss jede Cosmos-Pfad-Transaktion die Dilithium-5-Erweiterung zusätzlich zur secp256k1-Signatur enthalten. Die einzigen Ausnahmen (für das Bootstrapping) sind **Genesis-Gentxs (Höhe 0)** und **Transaktionen zur PQC-Schlüsselregistrierung/-migration** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), die rein klassisch sein dürfen, damit Konten ihren ersten PQC-Schlüssel registrieren können, sowie ein Unjail von einem Operatorkonto ohne registrierten Schlüssel.
 
-**EVM-Transaktionen sind nicht betroffen.** EVM-Transaktionen werden auf einem separaten `eth_secp256k1`-Ante-Pfad (dem Pfad der QoreChain EVM Engine) authentifiziert und benötigen niemals die Hybrid-PQC-Erweiterung. Die Hybrid-Anforderung gilt nur für den Cosmos-Transaktionspfad.
+**Der EVM-Lane wird stattdessen durch ein Autorisierungsfenster geschützt.** Eine EVM-Transaktion kann keine zweite (ML-DSA-)Signatur tragen — Standard-Wallets erzeugen eine einzige secp256k1-Signatur über eine Ethereum-Transaktion und bieten keine Möglichkeit, eine weitere anzuhängen. Die Post-Quantum-Autorisierung läuft daher der Transaktion *voraus*: Das Konto öffnet mit einer Cosmos-Lane-Nachricht (`MsgOpenEVMWindow`), die die gewöhnliche Hybridsignatur trägt, ein begrenztes **EVM-Autorisierungsfenster**, und der EVM-Lane lässt dann nur Transaktionen zu, die von einem aktiven Fenster abgedeckt sind. Seit v3.2.0 wird eine EVM-Transaktion abgelehnt, sofern ihr Absender nicht (1) einen registrierten Post-Quantum-Schlüssel hat und (2) ein aktives Fenster mit verbleibenden Blöcken, Transaktionen und Wert besitzt. Innerhalb eines Fensters funktioniert eine gewöhnliche MetaMask-/ethers-/Hardhat-Transaktion unverändert, weil die Prüfung den Chain-Zustand liest, nicht die Transaktion. Siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
 
 ### Cosign-Ablauf
 
-Um eine konforme Cosmos-Transaktion zu erzeugen, wird die klassische secp256k1-Signatur über die Standard-Sign-Bytes berechnet (die die PQC-Erweiterung ausschließen), und eine Dilithium-5-Signatur wird berechnet und als Erweiterung `PQCHybridSignature` angehängt. Standardmäßiges CosmJS-/Relayer-Tooling muss diese Erweiterung erzeugen, um auf dem Cosmos-Pfad zu transagieren. Heute geschieht dies über:
+Um eine konforme Cosmos-Transaktion zu erzeugen, wird die klassische secp256k1-Signatur über die Standard-Sign-Bytes berechnet (die die PQC-Erweiterung ausschließen), und eine Dilithium-5-Signatur wird über die v2-Signierbytes berechnet (siehe [Signierte Bytes (v2)](#sign-bytes-v2) unten) und als Erweiterung `PQCHybridSignature` angehängt. Standardmäßiges CosmJS-/Relayer-Tooling muss diese Erweiterung erzeugen, um auf dem Cosmos-Pfad zu transagieren. Heute geschieht dies über:
 
-* `qorechaind tx pqc gen-key` — einen Dilithium-5-Schlüssel erzeugen.
-* `qorechaind tx pqc cosign` — die Dilithium-5-Cosignatur an eine Transaktion anhängen.
-* Das Hybrid-Signing des QoreChain SDK — `buildHybridTx` mit `includePqcPublicKey` (bettet den öffentlichen PQC-Schlüssel zur automatischen Registrierung bei der ersten Verwendung ein).
+* `qorechaind tx pqc gen-key <name>` — einen Dilithium-5-Schlüssel erzeugen.
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — die Dilithium-5-Cosignatur an eine mit `--generate-only` erstellte Transaktion anhängen.
+* Das Hybrid-Signing des QoreChain SDK — `buildHybridTx`. Der Schlüssel des Kontos muss bereits mit `MsgRegisterPQCKey` registriert sein.
+* [QoreX](/qorex/overview), das beides für Sie erledigt.
 
 *Eine Transaktion, die mit secp256k1 (ECDSA) plus ML-DSA-87 (Dilithium-5) signiert und vom Ante-Handler im chainweiten Durchsetzungsmodus verifiziert wird.*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### Signierte Bytes (v2) {#sign-bytes-v2}
+
+Die ML-DSA-Signatur deckt domänenmarkierte, an die Chain gebundene Bytes ab. Ab v3.2.0 verifiziert die Chain **ausschließlich** diese Form:
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+Dabei ist `B0` der Transaktions-Body, serialisiert **ohne** die PQC-Erweiterung, und `authInfo` sind die AuthInfo-Bytes unverändert (`‖` ist Verkettung, Längen sind Big-Endian). Das Domänen-Tag verhindert, dass eine in einem anderen Kontext erzeugte Signatur (eine Login-Challenge, eine Nachrichtensignatur-Anfrage) als Transaktionssignatur gültig ist, und die Bindung der Chain-ID macht die Post-Quantum-Signatur selbst in jedem anderen Netzwerk ungültig. Die erste Form (`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`) wurde nur unterhalb der Upgrade-Höhe verifiziert; kein Block akzeptiert beide. Payloads für Schlüsselmigration und Bridge-Attestierungen wurden auf dasselbe domänenmarkierte, an die Chain gebundene Schema umgestellt.
+
+**Welche Form verifiziert mein Netzwerk?** Fragen Sie den Knoten, ob das Upgrade angewendet wurde:
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+(`"height":"0"` bedeutet nicht angewendet.) Die CLI erledigt das mit `--sign-bytes auto`; SDK 0.8.x und wallet-adapter 0.2.x tun dasselbe und erkennen zusätzlich die frühere Vorschau der Änderung im Testnet. Ein Client mit der falschen Form erzeugt einen Digest, den die Chain ablehnt — er schlägt geschlossen fehl (fail closed).
 
 ### Format der TX-Erweiterung
 
@@ -108,7 +127,7 @@ PQC-Signaturen werden Transaktionen als **TX-Erweiterung** mit der Type-URL `/qo
 }
 ```
 
-Das Feld `pqc_public_key` ist optional. Ist es vorhanden und hat das Konto keinen registrierten PQC-Schlüssel, **registriert** der Ante-Handler den Schlüssel bei der ersten Verwendung **automatisch**.
+Das Feld `pqc_public_key` ist optional und rein informativ; Schlüssel werden ausschließlich durch eine ausdrückliche Registrierungsnachricht registriert (siehe [Schlüsselregistrierung](#key-registration)).
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ Der Ante-Handler `PQCHybridVerifyDecorator` verarbeitet Hybridsignaturen mit ein
 | Szenario | Konto hat PQC-Schlüssel | Erweiterung vorhanden | Öffentlicher Schlüssel in Erweiterung | Ergebnis                                              |
 | -------- | ------------------- | ----------------- | ----------------------- | --------------------------------------------------- |
 | Pfad 1   | Ja                 | Ja               | --                      | PQC-Signatur gegen registrierten Schlüssel verifizieren         |
-| Pfad 2   | Nein                  | Ja               | Ja                     | Schlüssel automatisch registrieren, Signatur verifizieren                 |
 | Pfad 3a  | Nein                  | Nein                | --                      | **Optional-Modus**: Rein klassische Transaktion zulassen |
 | Pfad 3b  | Nein                  | Nein                | --                      | **Required-Modus**: Transaktion ablehnen               |
 | Pfad 4   | Ja                 | Nein                | --                      | Wird vom Standard-PQCVerifyDecorator behandelt          |
+
+Ein Schlüssel muss mit `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` registriert sein, bevor das Konto hybrid signierte Transaktionen sendet; das Feld `pqc_public_key` der Erweiterung registriert nichts.
 
 ### Hybridsignatur-Modi
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### Doppelsignatur-Migration
 
-Wenn ein Algorithmus ausgemustert wird, beginnt eine **Migrationsperiode** (Standard: 1.000.000 Blöcke, etwa 69 Tage bei 6 s/Block). Während dieser Periode:
+Wenn ein Algorithmus ausgemustert wird, beginnt eine **Migrationsperiode** (Standard: 1.000.000 Blöcke — etwa 37 Tage bei der aktuellen Blockzeit des Mainnets von ≈3,2 s). Während dieser Periode:
 
 1. Konten mit Schlüsseln, die den ausgemusterten Algorithmus verwenden, müssen zum Ersatz migrieren.
 2. Die Migration erfordert Doppelsignaturen (`MsgMigratePQCKey`): eine vom alten und eine vom neuen Schlüssel, die den Besitz beider nachweisen.
 3. Während der gesamten Migrationsperiode werden beide Algorithmen zur Verifizierung akzeptiert.
 
-### Governance-Nachrichten
+### Nachrichten
 
 | Nachricht                 | Beschreibung                                                                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | Schlägt vor, dem Register einen neuen PQC-Algorithmus hinzuzufügen. Enthält vollständige `AlgorithmInfo` (Name, Kategorie, NIST-Level, Schlüsselgrößen). Muss über Governance eingereicht werden. |
-| `MsgDeprecateAlgorithm` | Startet den Ausmusterungsprozess für einen Algorithmus. Gibt den Ersatzalgorithmus und die Migrationsperiode in Blöcken an.                                              |
-| `MsgDisableAlgorithm`   | Deaktiviert einen Algorithmus sofort im Notfall. Erfordert einen Begründungsstring. Wird verwendet, wenn eine kryptografische Schwachstelle entdeckt wird.                                     |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Registriert den PQC-Schlüssel eines Kontos (siehe [Schlüsselregistrierung](#key-registration)). Darf klassisch signiert werden, damit ein neues Konto sich bootstrappen kann. |
+| `MsgMigratePQCKey`      | Doppelt signierte Migration vom Schlüssel eines Algorithmus zu dem eines anderen während einer Migrationsperiode. |
+| `MsgRotatePQCKey`       | Rotiert den ML-DSA-87-Schlüssel des Kontos innerhalb desselben Algorithmus (doppelt signiert vom alten und vom neuen Schlüssel; `tx pqc rotate-key`). |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Öffnet oder schließt das EVM-Autorisierungsfenster (v3.2.0); siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window). |
+| `MsgDeprecateAlgorithm` | Governance-Nachricht: Startet den Ausmusterungsprozess für einen Algorithmus. Gibt den Ersatzalgorithmus und die Migrationsperiode in Blöcken an. |
+| `MsgDisableAlgorithm`   | Governance-Nachricht: Deaktiviert einen Algorithmus sofort im Notfall. Erfordert einen Begründungsstring. Wird verwendet, wenn eine kryptografische Schwachstelle entdeckt wird. |
+
+`MsgDeprecateAlgorithm` und `MsgDisableAlgorithm` sind im Mainnet derzeit durch den Circuit Breaker abgeschaltet (siehe [Chain Parameters](/appendix/chain-parameters#circuit-breaker)).
 
 ### Erweiterbarkeit
 
-Das Hinzufügen eines neuen Algorithmus erfordert:
-
-1. Implementierung des Algorithmus im kryptografischen Backend hinter der einheitlichen Signier- und Verifizierungsschnittstelle.
-2. Einreichung eines `MsgAddAlgorithm`-Governance-Proposals mit den Algorithmus-Metadaten.
-3. Nach der Genehmigung steht der Algorithmus für Schlüsselregistrierung und Verifizierung zur Verfügung.
+Das Hinzufügen eines Algorithmus erfordert ein Software-Release, das ihn hinter der einheitlichen Signier- und Verifizierungsschnittstelle implementiert; das Register und der Ausmusterungs-/Deaktivierungs-Lebenszyklus werden per Governance gesteuert.
 
 ## SHAKE-256-Hash
 

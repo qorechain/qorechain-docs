@@ -16,11 +16,29 @@ okuma yardımcıları sunar. *EVM'nin içinden* başlatılan EVM→yerel yönlen
 `@qorechain/evm` içindeki **çapraz VM köprüsü precompile'ı** aracılığıyla hâlâ
 zincir üzerinde çalışır.
 
+:::caution Bugün neler çalışıyor
+Çapraz VM çağrıları yalnızca hedef şeritlerinin sunduğu ölçüde kullanılabilir:
+
+- `MsgCrossVMCall`, **mainnet** üzerinde zincirin devre kesicisi tarafından
+  kapatılmıştır (`GET /cosmos/circuit/v1/disable_list`,
+  `/qorechain.crossvm.v1.MsgCrossVMCall` kaydını listeler); testnet üzerinde
+  etkindir.
+- SVM işlem şeridi ağ genelinde devre dışıdır, CosmWasm yükleme ve örnekleme
+  izne tabidir (ve mainnet üzerinde sözleşme yoktur), EVM köprüsü precompile'ı da
+  etkin değildir (bkz.
+  [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status)).
+- Aşağıdaki tipli REST okuma yardımcıları, genel ağ geçidinin sunmadığı rotaları
+  çağırır. Mesajları bunun yerine `connectQueryClients(rpc).crossvm` ile okuyun.
+- Her Native yol işlemi gibi, bir çapraz VM çağrısı da hibrit imzayı taşımalıdır
+  (bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)).
+:::
+
 ## Birleşik çapraz VM çağrıları
 
 `createCrossVMClient`, `MsgCrossVMCall`'ı (tür URL'si
 `/qorechain.crossvm.v1.MsgCrossVMCall`) sarar, böylece asla elle bir
-`{ typeUrl, value }` oluşturmaz veya kendiniz bir payload kodlamazsınız.
+`{ typeUrl,
+value }` oluşturmaz veya kendiniz bir payload kodlamazsınız.
 İstemcinin göndericisi, bağlı `TxClient`'in adresidir; `sourceVm` varsayılan
 olarak `"evm"` olur.
 
@@ -94,20 +112,32 @@ const { messageIds, result } = await xvm.callAtomic([
 ## Bir mesajı geri okuma
 
 `getMessage`, bir çapraz VM mesajını kimliğine göre okur; tipli sorgu istemcisini
-tercih eder ve `qor_getCrossVMMessage` JSON-RPC yöntemine geri döner:
+tercih eder ve `qor_getCrossVMMessage` JSON-RPC yöntemine (genel uç noktalar bunu
+sunmaz) geri döner. Ona, konsensüs RPC'si üzerinden okuyan tipli sorgu istemcisini
+verin:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## Çapraz VM mesaj durumunu okuma
 
-`@qorechain/sdk`, `x/crossvm` üzerinde tipli REST sarmalayıcıları dışa aktarır:
+`@qorechain/sdk`, `x/crossvm` üzerinde tipli REST sarmalayıcıları dışa aktarır.
+Bunlar, genel ağ geçidinin **sunmadığı**
+`/qorechain/crossvm/v1/{message/{id},pending,params}` yollarını çağırır
+(`api.qore.host` ve `api-testnet.qore.host` üzerinde `Not Implemented`); bu nedenle
+genel uç noktalar karşısında `QoreHttpError` fırlatırlar. Bu rotaları sunan düğümler
+içindir; genel ağlarda yukarıdaki `connectQueryClients`'ı kullanın.
 
 ```ts
 import {
@@ -118,7 +148,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -134,10 +164,13 @@ const params = await getCrossVmParams(client.rest);
 Bunlar tipli şekiller döndürür: `CrossVmMessage`, `CrossVmMessageResponse`,
 `PendingCrossVmMessagesResponse` ve `CrossVmParamsResponse`.
 
-Bir mesajı `qor_` JSON-RPC ad alanı aracılığıyla da okuyabilirsiniz:
+Düğümler sunmaya başladığında, bir mesajı `qor_` JSON-RPC ad alanı aracılığıyla da
+okuyabilirsiniz:
+
+> **Henüz sunulmuyor:** yayımlanmış hiçbir düğüm sürümü `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bu çağrı bugün her genel uç noktada `-32601` (yöntem bulunamadı) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## EVM köprüsü precompile'ı
@@ -152,7 +185,13 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-Bir mesajı yerel katmana yönlendirmek için precompile'ı bir Solidity
-sözleşmesinden (veya viem aracılığıyla) o adreste çağırın, ardından yukarıdaki
-okuma yardımcılarıyla durumunu izleyin. Tam precompile listesi için
+> **Etkin değil.** Çapraz VM köprüsü precompile'ı mainnet veya testnet üzerinde etkin
+> değildir ve mevcut biçimiyle etkinleştirilmeyecektir; önce yeniden inşa
+> edilmektedir. Bugün `0x…0901` adresine yapılan bir çağrı boş veri döndürür ve hiçbir
+> şeyi yönlendirmez. Bkz.
+> [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+
+Etkinleştikten sonra, bir Solidity sözleşmesi (veya viem) bir mesajı yerel katmana
+yönlendirmek için precompile'ı o adreste çağırır, ardından durumunu yukarıdaki
+okuma yardımcılarıyla izler. Tam precompile listesi için
 [EVM kılavuzuna](/sdk/guides/evm) bakın.

@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # Protezione MEV (FairBlock)
 
-Il modulo `x/fairblock` implementa la difesa di QoreChain contro gli attacchi MEV (Maximal Extractable Value) utilizzando la crittografia a soglia basata sull'identità. Combinata con un sistema di prioritizzazione delle transazioni a 5 corsie, questa crea un'architettura anti-MEV completa che protegge gli utenti da front-running, attacchi sandwich e altre forme di estrazione di valore basate sul mempool.
+Il modulo `x/fairblock` è il progetto di QoreChain per difendersi dagli attacchi MEV (Maximal Extractable Value) utilizzando la crittografia a soglia basata sull'identità. Combinato con un sistema di prioritizzazione delle transazioni a 5 corsie, è pensato per costituire un'architettura anti-MEV che protegge gli utenti da front-running, attacchi sandwich e altre forme di estrazione di valore basate sul mempool.
+
+:::note Stato attuale (ottobre 2026)
+FairBlock è **disabilitato sia sulla mainnet sia sulla testnet** (`enabled = false`), e le definizioni delle 5 corsie sono solo configurazione: le corsie di spazio nel blocco non sono applicate dal mempool né dal gestore delle proposte in produzione. Questa pagina descrive il progetto previsto.
+:::
 
 ## Il problema MEV
 
@@ -53,7 +57,7 @@ I validatori contribuiscono con quote di decrittografia per le transazioni commi
 
 ## Stato dell'implementazione
 
-Nell'attuale release di testnet, il modulo FairBlock è un'**implementazione stub**:
+Su entrambe le reti in produzione (mainnet e testnet), il modulo FairBlock è un'**implementazione stub**:
 
 * L'ante handler `FairBlockDecorator` è collegato alla pipeline di elaborazione delle transazioni ma **lascia passare** tutte le transazioni senza modifiche.
 * Quando `enabled` è `false` (il valore predefinito), il decorator delega immediatamente al gestore successivo nella catena.
@@ -101,14 +105,12 @@ Transazioni con gas astratto e sponsorizzate. Questa corsia abilita esperienze u
 
 ### Stato dell'implementazione
 
-La configurazione delle corsie è **solo dati** nell'attuale release di testnet. Le definizioni delle corsie (priorità, allocazione di spazio nel blocco) vengono registrate all'inizializzazione dell'applicazione, ma il riordinamento effettivo del mempool tramite `PrepareProposal` e `ProcessProposal` è una milestone futura. Attualmente, tutte le transazioni vengono elaborate in ordine standard indipendentemente dall'assegnazione della corsia.
+La configurazione delle corsie è **solo dati** sulle reti in produzione. Le definizioni delle corsie (priorità, allocazione di spazio nel blocco) vengono registrate all'inizializzazione dell'applicazione, ma il riordinamento effettivo del mempool tramite `PrepareProposal` e `ProcessProposal` è una milestone futura. Attualmente, tutte le transazioni vengono elaborate in ordine standard indipendentemente dall'assegnazione della corsia.
 
-## Effetto anti-MEV combinato
+## Effetto anti-MEV combinato (progetto)
 
 1. **Livello 1: Crittografia (tIBE)** — Le transazioni vengono crittografate prima di entrare nel mempool. I proponenti non possono leggerne il contenuto, quindi non c'è alcuna informazione da estrarre.
 2. **Livello 2: Prioritizzazione (corsie)** — Le transazioni crittografate della corsia MEV ottengono il 20% di spazio nel blocco riservato. La priorità 90 garantisce l'inclusione anche durante la congestione.
 3. **Livello 3: Decrittografia a soglia** — Solo dopo il commit del blocco i validatori rivelano le quote di decrittografia. Il requisito della soglia impedisce a qualsiasi singolo validatore la decrittografia anticipata.
 
-Risultato: l'asimmetria informativa viene eliminata in ogni fase del ciclo di vita della transazione, dalla trasmissione all'esecuzione.
-
-Questo approccio è nettamente superiore agli schemi di decrittografia con ritardo temporale o di commit-reveal a singola parte, perché il requisito della soglia distribuisce la fiducia sull'intero insieme dei validatori.
+Risultato previsto: una volta attivato FairBlock, l'asimmetria informativa viene eliminata in ogni fase del ciclo di vita della transazione, dalla trasmissione all'esecuzione. Il requisito della soglia distribuisce la fiducia sull'intero insieme dei validatori, cosa che non fanno né la decrittografia con ritardo temporale né gli schemi di commit-reveal a singola parte.

@@ -15,7 +15,7 @@ Le moteur QCAI (QoreChain AI) fonctionne sur trois couches :
 
 | Couche                  | Portée                                                       | Exécution                | Déterministe |
 | ----------------------- | ----------------------------------------------------------- | ------------------------ | ------------ |
-| **Niveau consensus**    | Production de blocs, ajustement des paramètres              | On-chain (x/rlconsensus) | Oui          |
+| **Niveau consensus**    | Production de blocs, ajustement des paramètres              | On-chain (x/rlconsensus) — observation uniquement aujourd'hui | Oui          |
 | **Niveau réseau**       | Routage des transactions, détection de fraude, optimisation des frais | On-chain (x/ai) | Oui          |
 | **Niveau application**  | Génération de contrats, audit, analyse approfondie          | Off-chain (sidecar)      | Non          |
 
@@ -106,7 +106,7 @@ L'optimiseur de frais prédit la congestion du réseau et suggère des frais opt
 | `normal` | 1.0x                   | 3-5 blocs            |
 | `slow`   | 0.5x                   | 6-10 blocs           |
 
-Les frais finaux intègrent un **multiplicateur de congestion** (1.0x à 0 % de congestion, jusqu'à 5.0x à 100 % de congestion) et une **prime de tendance** lorsque la congestion prédite dépasse la congestion actuelle. Le plancher de frais minimal est de 500 uqor (0.0005 QOR).
+Les frais finaux intègrent un **multiplicateur de congestion** (1.0x à 0 % de congestion, jusqu'à 5.0x à 100 % de congestion) et une **prime de tendance** lorsque la congestion prédite dépasse la congestion actuelle. Le plancher de frais propre à l'estimateur est une constante héritée de 500 uqor ; il n'est pas exposé sur les réseaux en production, et les frais qu'une transaction doit réellement payer sont fixés par le plancher du réseau de 0.1 uqor par unité de gas (voir [Première transaction](/getting-started/first-transaction#send-qor)).
 
 ## Optimiseur de réseau
 
@@ -167,6 +167,10 @@ Deux contrats précompilés exposent les capacités d'IA on-chain aux contrats i
 | `aiRiskScore`    | `0x0B01` | Renvoie un score de risque (0-100) pour une adresse ou un hash de transaction donné |
 | `aiAnomalyCheck` | `0x0B02` | Renvoie un indicateur booléen d'anomalie et un score de confiance pour une transaction |
 
+:::warning Pas encore actif
+Ces précompilés ne sont **pas actifs** sur le mainnet (`qorechain-vladi`) ni sur le testnet (`qorechain-diana`) ; un appel renvoie des données vides. Ils ne seront activés qu'une fois dotés d'un chemin de scoring en lecture seule et en virgule fixe. Voir [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Important** : les précompilés EVM utilisent **uniquement le moteur heuristique déterministe**. Ils n'appellent jamais le sidecar, garantissant que toute exécution EVM reste entièrement déterministe et reproductible.
 
 ## Attestation TEE
@@ -214,17 +218,12 @@ Chaque tour est configuré avec un nombre minimal/maximal de participants, un d�
 
 L'apprentissage fédéré est actuellement au stade de spécification d'interface. Sa mise en œuvre est prévue pour une version future.
 
-## Points de terminaison REST
+## Requêtes
 
-| Point de terminaison             | Description                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Renvoie des estimations de frais pour les niveaux d'urgence fast, normal et slow |
-| `/ai/v1/fraud/investigations`    | Liste les enquêtes de fraude actives et résolues               |
-| `/ai/v1/network/recommendations` | Renvoie les recommandations actuelles d'optimisation des paramètres réseau |
-| `/ai/v1/circuit-breakers`        | Liste les états actifs des coupe-circuits pour les contrats     |
+`qorechaind query ai config` et `qorechaind query ai stats` (gRPC) sont les requêtes du module. Le module n'a aucune route REST aujourd'hui : les routes `/ai/v1/...` d'estimation de frais, d'enquêtes de fraude, de recommandations réseau et de coupe-circuits ne sont servies ni sur le mainnet ni sur le testnet.
 
 ## Voir aussi
 
-* [Moteur de consensus PRISM](/architecture/prism-consensus-engine) — la couche d'IA pilotant l'optimisation du consensus.
+* [Moteur de consensus PRISM](/architecture/prism-consensus-engine) — la couche d'IA conçue pour l'optimisation du consensus (observation uniquement aujourd'hui).
 * [Créateur de contrats intelligents](/dashboard/smart-contract-creator) — génération de contrats assistée par l'IA dans le Dashboard.
 * [Auditeur de contrats](/dashboard/contract-auditor) — revue de sécurité de contrats assistée par l'IA.

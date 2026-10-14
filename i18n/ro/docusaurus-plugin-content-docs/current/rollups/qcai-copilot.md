@@ -7,63 +7,31 @@ sidebar_position: 7
 
 # QCAI Rollup Copilot
 
-QCAI Rollup Copilot adună tot ceea ce serviciile de consultanță ale rețelei știu
-despre un singur rollup și le condensează într-o singură citire în limbaj simplu: o estimare
-live a comisioanelor, recomandări de rețea, orice investigații de fraudă care fac referire la
-rollup, statusul agentului de învățare prin întărire și o listă scurtă de
-sugestii pe baza cărora poți acționa.
+QCAI Rollup Copilot din RDK este un ajutor doar pentru citire care **încearcă** să adune datele de consultanță ale rețelei pentru un singur rollup — o estimare a comisioanelor, recomandări de rețea, investigații de fraudă care fac referire la rollup, statusul agentului de învățare prin întărire — și să le condenseze într-o singură citire în limbaj simplu, cu o listă scurtă de sugestii.
 
-Funcționează în regim **best-effort**. Serviciile de consultanță sunt infrastructură opțională — dacă unul
-este inaccesibil, Copilot se degradează grațios, eliminând acea secțiune și
-înregistrând un avertisment în loc să eșueze întregul apel. Întotdeauna obții un rezultat.
+:::caution Indisponibil pe endpoint-urile publice
+Serviciile de consultanță pe care le citește (rutele REST `/qorechain/ai/v1/…` și namespace-ul JSON-RPC `qor_*`) **nu sunt servite** în prezent de endpoint-urile publice `qore.host` de pe mainnet sau testnet, așa că fiecare secțiune revine ca avertisment. Copilot funcționează prin design în regim best-effort: nu eșuează niciodată, dar un rezultat gol **nu** înseamnă că rollup-ul a fost verificat și găsit sănătos. Nu-l folosi ca semnal de siguranță până când aceste servicii nu sunt expuse. Vezi [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace).
+:::
 
-## Un singur apel: `getRollupAdvice`
+## Un singur apel: `getRollupAdvice` {#one-call-getrollupadvice}
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
-// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
-// endpoint config needed; pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
+const advice = await getRollupAdvice(rdk, "my-rollup");
 
-const advice = await getRollupAdvice(rdk, "my-roll");
-
-console.log(advice.feeEstimate);            // live fee estimate (if reachable)
-console.log(advice.networkRecommendations); // tuning recommendations
-console.log(advice.fraudInvestigations);    // investigations referencing this rollup
-console.log(advice.rlAgentStatus);          // RL agent status (qor_ JSON-RPC)
-console.log(advice.suggestions);            // plain-language, actionable
-console.log(advice.warnings);               // services that were unreachable
+console.log(advice.warnings);    // services that could not be reached (all of them today)
+console.log(advice.suggestions); // plain-language suggestions, when data is available
 ```
 
-## Citirile subiacente
+Rezultatul conține și `feeEstimate`, `networkRecommendations`, `fraudInvestigations` și `rlAgentStatus` atunci când serviciul corespunzător răspunde.
 
-`getRollupAdvice` agregă un set de metode read-only pe care le poți apela și
-direct. Metodele REST de consultanță se află sub `/qorechain/ai/v1/...`:
-
-- `getFeeEstimate(...)` — estimarea curentă a comisioanelor.
-- `getNetworkRecommendations(...)` — recomandări de ajustare la nivel de rețea.
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — investigații
-  deschise și o singură investigație după id.
-- `getCircuitBreakers(...)` — starea consultativă a întrerupătoarelor de circuit.
-
-Citirile de învățare prin întărire folosesc namespace-ul JSON-RPC `qor_*`:
-
-- `getRLAgentStatus()` — statusul curent al agentului.
-- `getRLObservation()` — cea mai recentă observație.
-- `getRLReward()` — cel mai recent semnal de recompensă.
-
-Deoarece toate acestea sunt citiri, Copilot are nevoie doar de un endpoint REST (și un endpoint EVM
-/ `qor_` JSON-RPC pentru citirile RL) — fără un semnatar.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-qorollup advise my-roll
-qorollup advise my-roll --json
+qorollup advise my-rollup
+qorollup advise my-rollup --json
 ```
 
-`advise` afișează consultanța agregată, cu serviciile inaccesibile scoase la suprafață ca
-avertismente, nu ca erori. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup)
-pentru CLI-ul complet de operator `qorollup`.
+Serviciile inaccesibile sunt listate ca avertismente, nu ca erori, iar ieșirea lizibilă pentru om poate afișa totuși o linie „no issues flagged” atunci când nimic nu a putut fi accesat — citește avertismentele. Vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup) pentru CLI-ul de operator `qorollup`.

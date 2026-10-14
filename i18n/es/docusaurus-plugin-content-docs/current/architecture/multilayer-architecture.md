@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain implementa una **arquitectura jerárquica de cadenas de 4 niveles** a través del módulo `x/multilayer`. La cadena principal actúa como la raíz de liquidación y de confianza, mientras que las capas subsidiarias (sidechains, paychains y rollups) gestionan cargas de trabajo especializadas con diferentes compromisos de rendimiento y seguridad.
 
+:::caution Capacidad en fase temprana
+El módulo está desplegado en la mainnet (versión de cadena **v3.2.1**) y en la testnet, pero **todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes**. Todo lo que sigue describe el módulo tal como está construido; los parámetros son los valores vigentes.
+:::
+
 ---
 
 ## Visión General del Sistema
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ La cadena principal es la raíz de confianza para todo el ecosistema de QoreChai
 
 | Propiedad           | Valor                                                                          |
 | ------------------- | ------------------------------------------------------------------------------ |
-| Consenso            | Triple-Pool CPoS completo (ver [Mecanismo de Consenso](/architecture/consensus-mechanism)) |
+| Consenso            | Consenso de QoreChain (ver [Mecanismo de Consenso](/architecture/consensus-mechanism) para lo que está conectado hoy) |
 | Seguridad           | Protegida con PQC mediante firmas Dilithium-5                                  |
 | Función             | Capa de liquidación, almacenamiento de anclas de estado, motor de enrutamiento QCAI, raíz de confianza |
-| Tiempo de bloque    | \~5 segundos                                                                   |
+| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,0 segundos en la testnet (medido en octubre de 2026) |
 
 Todas las capas subsidiarias anclan periódicamente sus raíces de estado a la cadena principal mediante Esquemas de Compromiso Jerárquico (HCS).
 
@@ -89,14 +93,14 @@ Las paychains están optimizadas para **microtransacciones de alta frecuencia** 
 
 ### Rollups
 
-Los rollups son **cadenas específicas de aplicación** desplegadas mediante el Rollup Development Kit (`x/rdk`). Se registran como un tipo de capa rollup dentro del módulo multilayer.
+Los rollups son **cadenas específicas de aplicación** desplegadas mediante el Rollup Development Kit (`x/rdk`). Cuando se crea un rollup, el RDK registra una capa para él en el módulo multilayer (como una capa de tipo `sidechain`, véase más abajo).
 
 | Parámetro                | Valor                                       |
 | ------------------------ | ------------------------------------------- |
 | Modos de liquidación     | 4 (optimistic, zk, based, sovereign)        |
-| Rollups activos máximos  | 100                                         |
-| Stake mínimo del creador | 10,000 QOR                                  |
-| Tipo de capa             | `rollup`                                    |
+| Rollups registrados máximos | 100 (`max_rollups`); pero solo pueden existir a la vez 10 capas de tipo sidechain (`max_sidechains`), por lo que como máximo 10 rollups pueden tener una capa anclable |
+| Stake mínimo del creador | 10,000 QOR para el rollup, más 1,000 QOR de stake de registro de la capa (`min_sidechain_stake`) |
+| Tipo de capa             | Los rollups registrados a través del RDK usan el tipo de capa `sidechain` (el tipo de capa `rollup` está definido pero todavía no lo usa `x/rdk`) |
 | Dominios objetivo        | DeFi, Gaming, NFT, Enterprise               |
 
 El despliegue y la configuración de rollups se tratan en detalle en el [Rollup Development Kit](/architecture/rollup-development-kit).
@@ -162,7 +166,7 @@ Las anclas se envían a la cadena principal mediante `MsgAnchorState`. El keeper
 
 1. **La capa existe y está activa** — El keeper verifica que la capa existe en el estado y actualmente tiene el estado `active`.
 2. **Intervalo mínimo de anclaje transcurrido** — El keeper comprueba que han transcurrido al menos `min_anchor_interval` bloques (por defecto: 100) desde el último ancla de esta capa.
-3. **Firma agregada PQC** — El keeper garantiza que la firma agregada PQC está presente y es válida para los datos del ancla.
+3. **Firma agregada PQC** — El keeper garantiza que la firma agregada PQC está presente y es válida para los datos del ancla. La firma se comprueba con la clave ML-DSA-87 registrada del **creador de la capa**; se rechaza un ancla cuando el creador no tiene ninguna clave registrada.
 
 ### Período de Impugnación
 
@@ -170,14 +174,14 @@ Cada ancla entra en un **período de impugnación** de **24 horas** (86,400 segu
 
 Una vez que el período de impugnación expira sin una disputa exitosa, el ancla se considera finalizada.
 
-### Lectura de Anclas
+### Lectura de Anclas {#reading-anchors}
 
-A partir de la versión de cadena **v3.1.80**, las anclas también son **legibles** a través del servicio de consulta de multilayer. Dos consultas exponen el estado del ancla tanto sobre gRPC como sobre REST:
+Las anclas son **legibles** a través del servicio de consulta de multilayer. Dos consultas exponen el estado del ancla tanto sobre gRPC como sobre REST:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — devuelve el último ancla de estado finalizada para una capa.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — devuelve el último ancla de estado para una capa.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — devuelve el historial de anclas para una capa.
 
-Dado que cada ancla lleva una firma Dilithium-5 sobre el mensaje canónico `layer_id || layer_height || state_root || validator_set_hash` (verificado contra la clave PQC registrada del creador de la capa), un cliente puede obtener un ancla y verificarla **sin conexión**, sin necesidad de confiar en el nodo que la sirve. Este es el primitivo on-chain detrás de los [recibos de liquidación cuántico-seguros](/rollups/settlement-receipts) del Rollup Development Kit.
+Cada ancla lleva una firma Dilithium-5 del creador de la capa sobre el mensaje `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Una versión más reciente de la cadena cambia el mensaje firmado, por lo que los clientes no deben codificarlo de forma fija. Una firma demuestra que la clave registrada del creador firmó esos bytes; si el ancla existe es una cuestión que concierne a la cadena, por lo que un verificador debe leer el ancla desde un nodo en el que confíe. Todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes. Este es el primitivo on-chain detrás de los [recibos de liquidación](/rollups/settlement-receipts) del Rollup Development Kit.
 
 ---
 

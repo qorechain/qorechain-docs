@@ -26,8 +26,10 @@ sidebar_position: 10
 تشمل حقول البيان `binary` (رابط + sha256)، و`genesis` (رابط + sha256 + sizeBytes)، و`peers`، و`seeds`، و`p2pPort`، و`stateSync` (نقطة ثقة تُحدَّث كل ساعة)، و`minCompatible`. تجلب خطوات التثبيت والانضمام أدناه هذا البيان وتستخدم قيمه الحالية.
 :::
 
-:::caution مطلوب الإصدار v3.1.94 أو أحدث لعقدة تنضم من جديد
-العقدة التي تُزامن من ملف genesis أو تُعيد التشغيل من أرشيف/لقطة يجب أن تكون على **الإصدار v3.1.94 أو أحدث**، لسببين متراكبين: الإصدار v3.1.92 أصلح خللاً في قياس الغاز (gas-metering) كان يوقف إعادة التشغيل عند أول كتلة تحتوي على معاملة، وقد اجتازت الشبكة الرئيسية منذ ذلك الحين ترقية الحوكمة v3.1.94 (سقف أقصى للإصدار، مُطبَّق عند الارتفاع 2,122,074) — العقدة التي لا تحمل معالج (handler) تلك الترقية تتوقف مجدداً عند محاولة إعادة التشغيل عبر ذلك الارتفاع نفسه. الإصدار v3.1.97 هو الإصدار الموصى به حالياً (تحديثات أمنية متجددة لا تكسر الإجماع)؛ وحقل `minCompatible` هو `3.1.94`. يُرقّى البيان عمداً على مراحل (شبكة الاختبار أولاً، ثم الشبكة الرئيسية بعد فترة استقرار) وقد تأخر سابقاً عن هذا الحد الأدنى — تحقّق من حقل `"version"` فيه قبل الوثوق بـ `binary.url`، وارجع إلى [إصدارات qorechain-core على GitHub](https://github.com/qorechain/qorechain-core/releases) أو ابنِ من المصدر إذا كان متأخراً.
+:::caution مطلوب الإصدار v3.2.0 أو أحدث لعقدة تنضم من جديد
+العقدة التي تُزامن من ملف genesis أو تُعيد التشغيل من لقطة تجتاز عدة ترقيات حوكمة (على سبيل المثال سقف الإصدار v3.1.94 عند الارتفاع 2,122,074 وترقية v3.2.0 عند الارتفاع 2,981,742)، لذا ثبّت دائماً الملف الثنائي الذي يشير إليه البيان: فهو يحمل كل معالجات الترقية. تحتاج عقدة الشبكة الرئيسية الجديدة إلى **الإصدار v3.2.0 أو أحدث**: قيمة `minCompatible` في البيان هي `3.2.0`، وهو أقدم إصدار لا يزال يتبع السلسلة، أما `version` (حالياً `3.2.1`) فهو الإصدار الموصى به، وهو إصدار محلي للعقدة بلا ارتفاع ترقية. يُرقّى البيان عمداً على مراحل (شبكة الاختبار أولاً، ثم الشبكة الرئيسية بعد فترة استقرار)، لذا قارن حقل `"version"` فيه بـ `minCompatible` قبل الوثوق بـ `binary.url`. على شبكة الاختبار، تساوي `minCompatible` قيمة `version` (حالياً `3.2.2`).
+
+هناك إعدادان مهمان اعتباراً من v3.2.1: أبقِ ساعة النظام متزامنة عبر NTP (تتوقف العقدة عندما تنحرف ساعتها بأكثر من 60 ثانية)، وعيّن `evm-chain-id` في `app.toml` (راجع [حدود العقدة](#node-limits)).
 :::
 
 ---
@@ -39,7 +41,7 @@ sidebar_position: 10
 | مفتاح الإجماع       | لا يوجد                                            | مفتاح إجماع ed25519 (يجب تأمينه)    |
 | إنتاج الكتل    | لا                                              | نعم — يقترح الكتل ويوقّعها            |
 | التحصيص / العقوبات  | غير قابل للتطبيق                                  | تفويض ذاتي، مخاطر العقوبات             |
-| الغرض الأساسي     | تقديم RPC/REST/gRPC/EVM/SVM لعمليات التكامل     | تأمين الشبكة وكسب المكافآت           |
+| الغرض الأساسي     | تقديم RPC/REST/gRPC/EVM (وSVM للقراءة فقط) لعمليات التكامل     | تأمين الشبكة (تُطبَّق مكافآت التحصيص) |
 | التعرّض العام     | نقاط نهاية RPC/EVM مكشوفة عادةً             | المدقّق مخفي خلف عقد الحراسة (sentry)       |
 
 ---
@@ -48,7 +50,7 @@ sidebar_position: 10
 
 | الشبكة  | معرّف السلسلة            | معرّف سلسلة EVM         | ملاحظات                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| الشبكة الرئيسية  | `qorechain-vladi`   | `9801` (بالنظام الست عشري `0x2649`) | الأساسية — تعمل منذ 7 يونيو 2026 |
+| الشبكة الرئيسية  | `qorechain-vladi`   | `9801` (بالنظام الست عشري `0x2649`) | الأساسية — تعمل منذ 29 يونيو 2026 |
 | شبكة الاختبار  | `qorechain-diana`   | `9800`               | جرّب عمليات التكامل هنا أولاً |
 
 استبدل قيمة `--chain-id` المناسبة لشبكتك المستهدفة في كل أجزاء هذا الدليل. الأمثلة تستخدم الشبكة الرئيسية افتراضياً.
@@ -71,19 +73,33 @@ sidebar_position: 10
 
 ### Docker Compose
 
-نشر بعقدة فقط باستخدام Docker Compose. لا توجد حالياً صورة `qorechaind` منشورة علناً للسحب — ابنِ واحدة بنفسك من `Dockerfile` الخاص بالمستودع وضع لها وسماً بإصدار السلسلة الحي (**v3.1.97** على الشبكة الرئيسية)، ثم اربط وحدة تخزين دائمة لبيانات السلسلة:
+نشر بعقدة فقط باستخدام Docker Compose. لا توجد حالياً صورة `qorechaind` منشورة علناً للسحب. يبني ملف `Dockerfile` في المستودع العام الملف الثنائي **المجتمعي** (community) (بلا مكتبة ما بعد الكم، ومع keepers وهمية): وهو مناسب للتطوير المحلي لكنه لا يستطيع متابعة الشبكة الرئيسية ولا شبكة الاختبار. لعقدة شبكة، ابنِ صورتك الخاصة من **أرشيف الإصدار** المذكور في `latest.json`، وضع لها وسماً بإصدار النسخة (**v3.2.1** على الشبكة الرئيسية، و**v3.2.2** على شبكة الاختبار)، ثم اربط وحدة تخزين دائمة لبيانات السلسلة:
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+يحتوي الأرشيف على `qorechaind` ودليل `lib/` يضم مكتباته المشتركة (`libqorepqc.so` و`libqoresvm.so` و`libwasmvm.x86_64.so`)؛ والصورة أعلاه لمنصة `linux/amd64` فقط، مثل أرشيف الإصدار.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-هيّئ دليل البيانات مرة واحدة (يُغطى ملف genesis وتكوين النظراء أدناه)، ثم ابدأ التشغيل:
+هيّئ دليل البيانات مرة واحدة (على سبيل المثال `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`؛ ويُغطى ملف genesis وتكوين النظراء أدناه)، ثم ابدأ التشغيل:
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. جلب البيان (manifest)
+### 2. جلب البيان (manifest) {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-استخدم هذا الملف كمصدر لقيم الملف الثنائي وملف genesis والنظراء في الخطوات أدناه — تحقّق من `jq -r .minCompatible latest.json` لكن تذكّر أن **الحد الأدنى v3.1.94** أعلاه يبقى سارياً حتى لو تأخر هذا الحقل عن التحديث.
+استخدم هذا الملف كمصدر لقيم الملف الثنائي وملف genesis والنظراء في الخطوات أدناه — تحقّق من `jq -r .minCompatible latest.json` وشغّل ذلك الإصدار على الأقل (والإصدار الموصى به هو `jq -r .version latest.json`).
 
 ### 3. تنزيل ملف genesis والتحقق منه
 
@@ -191,6 +207,8 @@ seeds = "<value of $SEEDS>"
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+يكتب الأمر `qorechaind init <moniker> --chain-id qorechain-vladi` أيضاً معرّف سلسلة EVM الخاص بالشبكة في `app.toml` (راجع [حدود العقدة](#node-limits))؛ تحقّق منه في مجلد home جرت تهيئته منذ زمن بعيد.
 
 ### 5. بدء المزامنة
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### الاستعادة من لقطة
 
-بدلاً من ذلك، نزّل لقطة بيانات السلسلة المنشورة، وتحقّق من مجموع التحقق الخاص بها، ثم استخرجها فوق دليل البيانات لديك. لا يحمل البيان حالياً مؤشراً للقطة، لذا تحقّق من القائمة الحية على [download.qore.host](https://download.qore.host) للحصول على اسم الملف ومجموع التحقق الحاليين بدلاً من تثبيت أحدهما بشكل ثابت:
+بدلاً من ذلك، نزّل لقطة بيانات السلسلة المنشورة، وتحقّق من مجموع التحقق الخاص بها، ثم استخرجها فوق دليل البيانات لديك. على الشبكة الرئيسية يعطي الكائن `snapshot` في البيان الرابط وارتفاع الكتلة `height` والحجم ومجموع التحقق SHA-256 (لا يحمل بيان شبكة الاختبار حالياً سوى الرابط، لذا استخدم مزامنة الحالة هناك). اقرأ `snapshot.height` قبل استخدامها: لقطة الشبكة الرئيسية أرشيف واحد بحجم نحو 27 GB، واللقطة القديمة تعني لحاقاً طويلاً بالشبكة (اللقطة المنشورة حالياً للشبكة الرئيسية أقدم من ارتفاعي الترقية v3.1.94 وv3.2.0، لذا يجب على العقدة المستعادة منها إعادة تشغيلهما بملف ثنائي v3.2.x).
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-تُنشر اللقطات بأسماء ملفات **موسومة بارتفاع الكتلة** تتغيّر بانتظام — راجع [download.qore.host](https://download.qore.host) للحصول على أحدث لقطة ومجموع التحقق SHA-256 الخاص بها، وتحقّق دائماً قبل الاستخراج. تذكّر أن **الحد الأدنى v3.1.94** أعلاه ينطبق أيضاً على إعادة التشغيل من لقطة.
+يوضح الحقلان `snapshot.height` و`snapshot.ts` في البيان مدى حداثة الأرشيف، وغالباً ما تكون مزامنة الحالة (أعلاه) أسرع من تنزيل بحجم 27 GB. تحقّق دائماً من مجموع التحقق قبل الاستخراج، واستخدم إصدار عقدة يحمل كل معالجات الترقية (راجع التنبيه في أعلى هذه الصفحة) عند إعادة التشغيل من لقطة.
 :::
 
 ---
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | يحتفظ بالحالة الحديثة ويقلّم الباقي      | عقدة RPC، استعلامات الأرصدة/الحالة   |
 | `nothing`   | يحتفظ بكل الحالة التاريخية               | عقدة أرشيفية، سجل كامل        |
 | `custom`    | قيم احتفاظ/فواصل يحددها المشغّل    | احتفاظ مضبوط حسب الحاجة                   |
+
+### حدود العقدة (`app.toml`) {#node-limits}
+
+اعتباراً من إصدار العقدة v3.2.1، يكتب `init` قسماً باسم `[qorechain]` يضم ثلاثة حدود محلية للعقدة. وهي لا تغيّر إلا ما تحتفظ به هذه العقدة في الذاكرة وما تضعه في الكتل التي تقترحها، ولا تغيّر أبداً ما يجب أن تحتويه الكتلة لتكون صالحة:
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+يكتب `init` أيضاً معرّف سلسلة EVM الخاص بالشبكة في الإعداد `evm-chain-id` ضمن القسم `[evm]` من `app.toml` (القيمة `9801` للأمر `--chain-id qorechain-vladi`، و`9800` للشبكة `qorechain-diana`). العقدة التي يحمل `app.toml` لديها قيمة مختلفة تبدأ مع ذلك، لكنها تسجّل خطأً عند البدء، ويردّ JSON-RPC الخاص بها (`eth_chainId` والتوقيع مقابل تلك العقدة) بمعرّف سلسلة خاطئ إلى أن تصحّح الملف؛ أما الإجماع فلا يتأثر. كانت الملفات الثنائية الأقدم تكتب قيمة شبكة الاختبار (`9800`) بصرف النظر عن `--chain-id`، لذا ينبغي لعقدة الشبكة الرئيسية التي جرت تهيئتها منذ زمن بعيد أن تتحقق من هذا الإعداد. لا تعيّن `QORE_EVM_CHAIN_ID` على قيمة غير قيمة الشبكة: فالعقدة التي تفعل ذلك ترفض البدء.
 
 ### فهرسة المعاملات (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+تخدم نقاط النهاية العامة فضاءات الأسماء `eth_` و`net_` و`web3_` و`txpool_`. أما فضاء الأسماء `qor_` فلا يخدمه أي إصدار منشور من العقدة، لذا لا تضفه (راجع [فضاء الأسماء `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 ومستمع RPC في `config.toml`:
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | وصول برمجي عالي الإنتاجية                    |
 | EVM JSON-RPC | `8545`  | عمليات التكامل المتوافقة مع Ethereum (معرّف السلسلة `9801`)     |
 | EVM WS       | `8546`  | اشتراكات أحداث EVM                                |
-| SVM RPC      | `8899`  | عمليات التكامل المتوافقة مع Solana                         |
+| SVM RPC      | `8899`  | عمليات قراءة متوافقة مع Solana (معاملات SVM معطّلة)                         |
 
 :::warning
 لا تكشف أبداً RPC أو EVM JSON-RPC أو gRPC مباشرةً على الإنترنت العام دون وكيل عكسي (reverse proxy) وتحديد لمعدل الطلبات ومصادقة وجدار حماية. اربط على `0.0.0.0` فقط خلف طبقة دخول (ingress) خاضعة للتحكم.
@@ -342,7 +382,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .res
 
 ### Prometheus و Grafana
 
-تكشف QoreChain مقاييس Prometheus على المنفذ **26660**:
+يمكن للعقدة كشف مقاييس Prometheus على المنفذ **26660** (عيّن `prometheus = true` في القسم `[instrumentation]` من `config.toml`):
 
 ```
 http://localhost:26660/metrics
@@ -363,7 +403,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## أفضل الممارسات التشغيلية
 
-1. **ثبّت إصدار السلسلة.** شغّل الوسم الحي (**v3.1.97** على الشبكة الرئيسية) وتابع الإصدارات الرسمية للترقيات المنسّقة.
+1. **ثبّت إصدار السلسلة.** شغّل الإصدار الذي يوصي به البيان (**v3.2.1** على الشبكة الرئيسية)، وتابع الإصدارات الرسمية للترقيات المنسّقة، وأبقِ ساعة النظام متزامنة عبر NTP.
 
 2. **شغّل عقداً متكررة.** شغّل عقدتين على الأقل خلف موزّع أحمال حتى لا تؤدي إعادة تشغيل أو إعادة مزامنة واحدة إلى انقطاع حركة التكامل.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **راقب المزامنة باستمرار.** فعّل التنبيهات عند تأخر ارتفاع الكتل، وانعدام النظراء، وبقاء العقدة عالقة في `catching_up`.
 
-للوصول للقراءة فائق الخفة دون تشغيل عقدة كاملة، راجع وثائق **العقدة الخفيفة (Light Node)**.
+النشر بعقدة فقط لا يوقّع أبداً. يجب أن تحمل المعاملات التي يبثّها تكاملك عبره التوقيع الهجين لما بعد الكم بالفعل (وفي مسار EVM يحتاج المُرسِل إلى مفتاح مسجَّل ونافذة تفويض مفتوحة)؛ راجع [تكامل منصات التداول](/developer-guide/exchange-integration) و[التوقيع ما بعد الكمي](/developer-guide/post-quantum-signing).
+
+لمراقبة الشبكة دون تشغيل عقدة كاملة، راجع [وثائق العقدة الخفيفة](/light-node/overview).
 
 ---
 
 ## استكشاف الأخطاء وإصلاحها
+
+### تتوقف العقدة مع خطأ في الساعة
+
+اعتباراً من إصدار العقدة v3.2.1 يتوقف محرك الإجماع عندما تنحرف ساعة النظام عن الشبكة بأكثر من 60 ثانية. شغّل عميل NTP (`chrony` أو `systemd-timesyncd`)، وتأكد من أن الساعة متزامنة باستخدام `timedatectl status`، ثم أعد تشغيل العقدة.
 
 ### العقدة المتوقفة قبل الترقية لا تستأنف بعد تبديل الملف الثنائي
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet) — ملف genesis للشبكة الرئيسية والنظراء وتفاصيل الاتصال
 * [تشغيل مدقّق](/developer-guide/running-a-validator) — إضافة مهام إنتاج الكتل
-* [البناء من المصدر](/developer-guide/building-from-source) — بناء الملف الثنائي `qorechaind`
-* **العقدة الخفيفة (Light Node)** — وصول للقراءة فقط فائق الخفة (الوثائق قادمة قريباً)
+* [البناء من المصدر](/developer-guide/building-from-source) — بناء الملف الثنائي المجتمعي `qorechaind` للتطوير
+* [العقدة الخفيفة](/light-node/overview) — عميل خفيف يتابع الشبكة دون عقدة كاملة

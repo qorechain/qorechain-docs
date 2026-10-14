@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # UX Edition — Web-Dashboard
 
-Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie die SX-Edition gehört sie zur **v3.1.2**-Linie des Light Node (eine eigene Versionsnummer, getrennt von der Chain-Version).
+Die **UX (User eXperience)**-Edition führt denselben Light-Node-Daemon aus wie die SX-Edition, fügt aber ein **eingebettetes Web-Dashboard** hinzu, mit dem du den Node und das Netzwerk im Browser beobachten kannst. Die Binärdatei heißt `lightnode-ux`. Wie die SX-Edition gehört sie zur **v3.1.3**-Linie des Light Node (eine eigene Versionsnummer, getrennt von der Chain-Version).
 
 Die UX-Edition ist die richtige Wahl für den Desktop-Einsatz und für Betreiber, die eine visuelle Oberfläche der Kommandozeile vorziehen.
 
 ## Installation
 
-Vorgefertigte Binärdateien laufen nativ auf **sechs Plattformen ohne native Abhängigkeiten** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64) — jeweils etwa 16 MB groß. Prüfe die Prüfsumme des Downloads gegen das Manifest, bevor du ihn ausführst — siehe [SX Edition](/light-node/sx-edition#install) für die Vorgehensweise.
+Vorgefertigte Binärdateien laufen nativ auf **sechs Plattformen ohne native Abhängigkeiten** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) und Windows (amd64, arm64) — jeweils etwa 11–12 MB groß. Prüfe die Prüfsumme des Downloads gegen das Manifest, bevor du ihn ausführst — siehe [SX Edition](/light-node/sx-edition#install) für die Vorgehensweise.
 
 ### Aus dem Quellcode bauen
 
@@ -27,13 +27,24 @@ Das erzeugt `build/lightnode-ux`.
 
 ### Docker
 
-Der UX-Dienst wird aus `Dockerfile.ux` gebaut:
+Der UX-Dienst wird aus `Dockerfile.ux` im Quell-Repository (`github.com/qorechain/qorechain-lightnode`, Tag `v3.1.4` oder neuer) gebaut. Der Container benötigt eine `config.toml` in seinem Daten-Volume, bevor er startet; der Einrichtungsassistent befindet sich in der SX-Binärdatei, erstelle die Konfiguration daher zuerst mit der SX-Edition (siehe [SX Edition](/light-node/sx-edition#first-run-onboard)) und kopiere sie in das Volume. Innerhalb eines Containers muss das Dashboard auf allen Container-Schnittstellen lauschen, setze daher Folgendes in dieser Konfiguration und veröffentliche den Port nur auf dem Loopback des Hosts:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-Der UX-Container speichert Daten dauerhaft in einem benannten Volume unter `/root/.qorechain-lightnode` und liest die Chain-RPC-Adresse aus der Umgebungsvariable `QORECHAIN_RPC_ADDR`.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+Der UX-Container speichert Daten dauerhaft in einem benannten Volume unter `/root/.qorechain-lightnode` und liest die Chain-RPC-Adresse aus der Umgebungsvariable `QORECHAIN_RPC_ADDR`. Das UX-Image enthält den `qorechaind`-Signierer nicht, daher kann ein UX-Container keine On-Chain-Heartbeats senden; betreibe einen registrierten Node mit der SX-Edition.
 
 ## Ausführen
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Dies startet den Daemon und den eingebetteten Dashboard-Server zusammen. Die UX-Edition aktiviert das Dashboard immer. Beim Start gibt die Binärdatei die Dashboard-URL aus.
 
-Die UX-Edition teilt sich das Setup mit der SX-Edition: Sie liest dieselbe `config.toml` aus `~/.qorechain-lightnode` und verwendet denselben Dilithium-5-Schlüsselbund. Falls du den Node noch nicht konfiguriert hast, führe zuerst den SX-Assistenten aus (`lightnode-sx onboard`), um die Konfiguration zu schreiben und deinen Schlüssel zu importieren oder zu erzeugen — siehe [SX Edition](/light-node/sx-edition).
+Die UX-Edition teilt sich das Setup mit der SX-Edition: Sie liest dieselbe `config.toml` aus `~/.qorechain-lightnode` und verwendet denselben Dilithium-5-Schlüsselbund. Falls du den Node noch nicht konfiguriert hast, führe zuerst den SX-Assistenten aus (`lightnode-sx onboard`), um die Konfiguration zu schreiben und deinen Schlüssel zu importieren oder zu erzeugen — siehe [SX Edition](/light-node/sx-edition). Die UX-Binärdatei kennt nur die Befehle `start` und `version`; verwende `lightnode-sx` für `register`, `status` und `keys`. Der Daemon in der UX-Edition sendet Heartbeats auf dieselbe Weise wie die SX-Edition, sofern ein `qorechaind`-Signierer verfügbar ist.
 
 ## Das Web-Dashboard auf Port 8420
 
@@ -69,7 +80,7 @@ Das Dashboard ist in folgende Ansichten gegliedert:
 
 - **Overview** — Blockhöhe und Node-Status auf einen Blick.
 - **Validators** — die Menge der gebondeten Validatoren.
-- **Delegation** — deine aktuellen Delegationen und deren Aufteilung.
+- **Delegation** — die aus deinem Operator-Konto gespiegelten Delegationen (siehe die bekannte Einschränkung in [Rewards und Monitoring](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — Live-Netzwerktelemetrie und kürzlich synchronisierte Header.
 - **Bridge** — Cross-Chain-Bridge-Telemetrie.
 - **Tokenomics** — Token-Ökonomie-Telemetrie.
@@ -85,9 +96,9 @@ Wenn für den Node **kein Chain-RPC-Endpunkt konfiguriert** ist, läuft das Dash
 lightnode-sx onboard
 ```
 
-Der Assistent führt den PQC-Selbsttest aus, fragt nach deinem Chain-Endpunkt und importiert oder erzeugt deinen Validator-Schlüssel. Sobald ein Endpunkt konfiguriert ist, starte den Node neu, und das Dashboard beginnt, Live-Chain-Daten anzuzeigen.
+Der Assistent führt den PQC-Selbsttest aus, fragt nach deinem Chain-Endpunkt und importiert oder erzeugt deinen Node-Schlüssel. Sobald ein Endpunkt konfiguriert ist, starte den Node neu, und das Dashboard beginnt, Live-Chain-Daten anzuzeigen.
 
 ## Wie es weitergeht
 
 - [Registrierung und Lizenzierung](/light-node/registration-and-licensing) — registriere den Node on-chain.
-- [Rewards und Monitoring](/light-node/rewards-and-monitoring) — verdiene den 3%igen Light-Node-Anteil und überwache die Node-Gesundheit.
+- [Rewards und Monitoring](/light-node/rewards-and-monitoring) — wie der 3%ige Light-Node-Anteil gutgeschrieben und eingefordert wird und wie du die Node-Gesundheit überwachst.

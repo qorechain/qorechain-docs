@@ -16,6 +16,17 @@ Phantom **ed25519** 키 또는 MetaMask / EVM **secp256k1** 키 — 가 최소 �
 이는 체인의 [계정 추상화](/developer-guide/account-abstraction) 모듈에
 대응하는 SDK 기능입니다.
 
+:::danger 라이브 네트워크에서는 사용할 수 없습니다
+`x/abstractaccount` 모듈은 `qorechain-vladi`와 `qorechain-diana`에서 **비활성화**되어
+있습니다(`GET /qorechain/abstractaccount/v1/config`가 `"enabled": false`를
+반환합니다). 체인 v3.2.0부터 이 플래그는 모든 경로(추상 계정 생성, 인증자 연결,
+`MsgExecuteEVM` / `MsgExecuteCosmos` 모두)에서 강제되며, 체인은 이러한 요청을
+`abstract account module is disabled`(코드 9)로 거부합니다. 어떤 트랜잭션으로도
+이를 켤 수 없습니다. 아래 내용은 참고용으로 모듈의 인터페이스를 설명한 것입니다.
+모듈이 활성화되기 전까지는 라이브 네트워크에서 연결된 키 또는 위임 지출 흐름을
+구축하지 마시고, 그러한 흐름을 제공하기 전에 이 플래그를 확인하세요.
+:::
+
 ## 릴레이어 모델
 
 **릴레이어(relayer)** 가 트랜잭션을 제출하고 수수료를 지불합니다. 릴레이어
@@ -91,6 +102,17 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution 규칙은 존재할 때만 키를 제한합니다
+체인은 다음 순서로 한도를 결정합니다. 인증자 자체의 규칙이 설정되어 있고
+`enabled`이면 그 규칙, 그렇지 않으면 계정의 첫 번째 `enabled` 규칙, 그것도
+없으면 **규칙이 없으며, 이 경우 한도가 없습니다**. `enabled: false`로 저장된
+규칙은 한도 0이 아니라 한도 없음입니다. `MsgRegisterAuthenticator`에는 규칙이
+포함되지 않으므로, 해당 메시지만으로 연결된 키는 계정 수준 규칙에 의해서만
+제한됩니다. `MsgUpdateSpendingRules`로 규칙을 의도적으로 설정하고, 키에
+필요한 권한만 등록하세요. 한도는 연결된 키가 입힐 수 있는 피해를 제한할 뿐이며,
+키를 철회하는 것을 대체하지 않습니다.
+:::
+
 키를 즉시 비활성화하려면 소유자가
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`를 브로드캐스트합니다.
@@ -133,32 +155,46 @@ await fetch("/api/relay", {
 });
 ```
 
-**서버 (릴레이어):** 자신의 **고유** 계정으로 봉투에 서명하고(Native 경로에서
-평소처럼 하이브리드) 수수료를 지불합니다. 메시지 내부에 포함된 인증자의
-서명이 소유자 계정에서 지출할 수 있는 승인입니다.
+**서버 (릴레이어):** 하이브리드 경로(`signAndBroadcastHybrid`, `rest`를 전달)를
+사용해 자신의 **고유** 계정으로 봉투에 서명하고 수수료를 지불합니다. 릴레이어의
+ML-DSA-87 키는 다른 모든 계정과 마찬가지로 등록되어 있어야 합니다. 메시지
+내부에 포함된 인증자의 서명이 소유자 계정에서 지출할 수 있는 승인입니다.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -329,10 +365,11 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed`는 대부분 **헤지드(hedged)**(비결정론적) ML-DSA-87
-서명을 의미합니다 — 체인은 결정론적 서명만 수락합니다. 0.6.1 이전 SDK가
-하이브리드 확장을 JSON으로 인코딩한 경우에도 이 오류가 발생합니다
-(업그레이드하세요 —
+`hybrid_verify_failed`는 ML-DSA-87 서명이 검증되지 않았음을 의미합니다. 헤지드
+서명은 원인이 아닙니다(체인은 헤지드와 결정론적 ML-DSA-87 서명을 똑같이
+수락합니다). [코드 21 문제 해결](/developer-guide/post-quantum-signing#code-21)을
+참고하세요. 0.6.1 이전 SDK가 하이브리드 확장을 JSON으로 인코딩한 경우에도 이
+오류가 발생합니다(업그레이드하세요 -
 [계정 & PQC 서명](/sdk/concepts/accounts-pqc#hybrid-signing) 참고).
 
 ## 키 로테이션 {#key-rotation}

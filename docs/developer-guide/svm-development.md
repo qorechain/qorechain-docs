@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.97**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet (live since 29 June 2026), which runs node release **v3.2.1**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.2. **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
 :::
 
 ---
 
 :::caution SVM transaction submission is currently disabled
-As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens — this is a compile-time disable, not a runtime parameter, so it cannot be turned back on by a governance vote; it's expected to stay off until an external audit clears it.
+As of chain version v3.1.89 (22 August), following an incident, the SVM execution lane is **disabled network-wide for transaction submission** on both `qorechain-vladi` and `qorechain-diana` — any transaction sent to `x/svm` (program deployment, instruction execution, account creation, transfers) returns `code 11, "SVM module is disabled"`. This applies to your own node as well as the public endpoints. Read-style RPC methods may still respond, but do not build or rehearse a live SVM integration until the lane reopens — this is a compile-time disable, not a runtime parameter, so it cannot be turned back on by a governance vote; it's expected to stay off until an external audit clears it.
 :::
 
 ## Overview
@@ -100,12 +100,11 @@ The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly 
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   The transaction response includes the **program ID** in base58 format.
+   On a network where the lane is enabled, every `tx svm` command is a Cosmos-lane transaction: sign and broadcast `tx.json` with `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`, and set an explicit gas limit with a fee of at least gas × 0.1 uqor. The transaction response includes the **program ID** in base58 format.
 
 2. **Execute an Instruction** — Call an on-chain BPF program with instruction data:
 
@@ -113,8 +112,8 @@ The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly 
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parameter           | Format            | Description                    |
@@ -128,8 +127,8 @@ The defaults are `enable = true` and `address = "127.0.0.1:8899"`, so a freshly 
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parameter      | Description                                        |
@@ -242,20 +241,7 @@ Programs that exceed the compute budget are halted and the transaction is revert
 
 ## Cross-VM Interoperability
 
-SVM programs can communicate with EVM and CosmWasm contracts through the **asynchronous** cross-VM message path:
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-Messages are queued and processed by the EndBlocker. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for details on the message lifecycle and timeout behavior.
+SVM programs are designed to communicate with EVM and CosmWasm contracts through the `x/crossvm` module's `MsgCrossVMCall` message (the chain works out the source lane itself). Because the SVM lane is disabled for transactions and `MsgCrossVMCall` is switched off on mainnet, there is no working SVM cross-VM path today. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the current status, the message lifecycle and the timeout behaviour.
 
 ---
 

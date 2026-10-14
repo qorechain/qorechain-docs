@@ -17,13 +17,24 @@ tipizzati, build/firma/invio di trasferimenti SOL e builder minimali di istruzio
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution L'invio di transazioni SVM è disabilitato
+La corsia di esecuzione SVM è disabilitata su tutta la rete per l'invio di transazioni
+(`code 11, "SVM module is disabled"`), e gli endpoint RPC SVM pubblici sono
+di sola lettura. Le letture (`getBalance`, `getAccountInfo`, `getSlot`,
+`getSignaturesForAddress`, `getMinimumBalanceForRentExemption`,
+`getLatestBlockhash`) funzionano. Non costruire ancora un flusso di trasferimento o di deploy di programmi su
+SVM: gli helper di build, firma e invio qui sotto costituiscono la superficie della libreria client
+e oggi non possono portare a buon fine una transazione sulle reti pubbliche. Vedi
+[Sviluppo SVM](/developer-guide/svm-development).
+:::
+
 ## Creare un client
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -46,13 +57,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## Trasferire SOL
 
-Costruisci un trasferimento non firmato, poi invialo (l'invio richiede un nodo raggiungibile e un
-account finanziato):
+Costruisci un trasferimento non firmato (offline). L'invio è mostrato per completezza, ma
+non può riuscire sulle reti pubbliche finché la corsia delle transazioni SVM è disabilitata:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

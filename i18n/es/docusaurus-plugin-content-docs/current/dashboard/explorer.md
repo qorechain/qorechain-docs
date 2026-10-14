@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Explorador
 
-El **Explorador** es la ventana del Panel hacia la cadena. Úsalo para consultar bloques, transacciones, direcciones y validadores, y para observar la actividad de la red en tiempo real. El Explorador es de solo lectura: no se necesita conectar un monedero para navegar por él.
+El **Explorador** es la ventana del Panel hacia la cadena. Úsalo para consultar bloques, transacciones, direcciones y validadores, y para observar la actividad de la red en tiempo real. El Explorador es de solo lectura: no se necesita conectar un monedero para navegar por él. Dentro del Panel, ver mainnet requiere haber iniciado sesión; el mismo Explorador también está disponible sin ninguna cuenta en [explore.qore.network](https://explore.qore.network).
 
 ## La página de visión general
 
@@ -47,3 +47,11 @@ La página muestra la dirección con un código QR escaneable, su saldo de QOR, 
 ## Validadores {#validators}
 
 La vista de validadores enumera los validadores de la red con tarjetas de resumen del número de validadores activos, el total de QOR vinculado y la salud del consenso. La tabla muestra el rango de cada validador, el alias (moniker), el poder de voto, la comisión y el estado (por ejemplo activo o encarcelado/jailed), además de un indicador poscuántico. Un cuadro de búsqueda filtra por nombre o dirección del validador. Para delegar a un validador, consulta [Staking y Validadores](/dashboard/staking-and-validators).
+
+:::note La lista de validadores del propio Panel puede mostrar el conjunto de la otra red
+Usa [explore.qore.network](https://explore.qore.network) para obtener la lista de validadores autorizada de cada red.
+:::
+
+## Explorador independiente {#standalone-explorer}
+
+El mismo Explorador se sirve sin el Panel en [explore.qore.network](https://explore.qore.network): anónimo, solo explorador, con enlaces cortos como `/tx/…`, `/block/…`, `/address/…` y `/validators`. Se abre en mainnet por defecto.

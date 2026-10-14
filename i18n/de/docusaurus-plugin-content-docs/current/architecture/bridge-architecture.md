@@ -7,11 +7,23 @@ sidebar_position: 7
 
 # Bridge-Architektur
 
-Das `x/bridge`-Modul ist darauf ausgelegt, QoreChain über **37 QCB-(QoreChain Bridge-)Chain-Konfigurationen und 8 IBC-(Inter-Blockchain Communication-)Kanäle** mit dem breiteren Blockchain-Ökosystem zu verbinden. Jede Bridge-Operation wird durch Post-Quanten-Kryptografie abgesichert.
+Das `x/bridge`-Modul ist darauf ausgelegt, QoreChain über **37 Chain-Konfigurationen (36 externe Chains plus Injective, das über IBC angebunden wird) und bis zu 8 IBC-(Inter-Blockchain Communication-)Gegenparteien** mit dem breiteren Blockchain-Ökosystem zu verbinden. Jede Bridge-Operation ist darauf ausgelegt, durch Post-Quanten-Kryptografie abgesichert zu sein.
 
-:::caution
-Die Cross-Chain-Bridge befindet sich **derzeit im Testnet und ist ausstehend — sie ist noch kein Produktivsystem**. Die nachfolgend beschriebenen Chain-Konfigurationen, Light Clients und Abläufe spiegeln die Bridge so wider, wie sie konzipiert und im Testnet erprobt wurde. Die externe Konnektivität wird schrittweise eingeführt; behandeln Sie alle Ziele als Designabsicht und nicht als Live-Mainnet-Garantien.
+:::caution Auf keinem der beiden Netzwerke live
+Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge-Route ist aktiv**: Alle 37 Chain-Konfigurationen haben den Status `pending`, es ist kein Bridge-Contract gesetzt, es sind keine Bridge-Validatoren registriert, es wurde noch nie eine Bridge-Operation erstellt, und es existieren weder IBC-Kanäle noch IBC-Clients. Alles Folgende beschreibt das beabsichtigte Design. Senden Sie keine Assets in der Erwartung, dass sie gebridged werden.
 :::
+
+## Aktueller Status {#current-status}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Bridge-Modul | aktiviert | aktiviert |
+| Chain-Konfigurationen | 37, alle `pending` | 37, alle `pending` |
+| Registrierte Bridge-Validatoren | 0 | 0 |
+| Bridge-Operationen | 0 | 0 |
+| IBC-Kanäle / -Clients | 0 / 0 | 0 / 0 |
+
+(Geprüft im Oktober 2026. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators`.)
 
 ## Verbindungsübersicht
 
@@ -19,14 +31,14 @@ QoreChain ist darauf ausgelegt, zwei parallel arbeitende Bridge-Protokolle zu un
 
 | Protokoll | Verbindungen          | Sicherheitsmodell                    | Anwendungsfall                          |
 | --------- | --------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**   | 8 Kanäle              | Standard-IBC + PQC-Paketsignaturen   | Cosmos SDK-kompatible Chains            |
-| **QCB**   | 37 Chain-Konfigs      | 7-aus-10 Dilithium-5-Multisig        | Nicht-IBC-Chains (EVM, Solana, TON usw.) |
+| **IBC**   | bis zu 8 Kanäle (keiner offen) | Standard-IBC + PQC-Paketsignaturen   | Cosmos SDK-kompatible Chains            |
+| **QCB**   | 37 Chain-Konfigs (alle pending) | 7-aus-10 Dilithium-5-Multisig        | Nicht-IBC-Chains (EVM, Solana, TON usw.) |
 
-Die **37 QCB-Chain-Konfigurationen** umfassen **36 externe Chains** plus **QoreChain selbst** als native/Loopback-Konfiguration (verwendet für internes Routing und selbstreferenzielles Settlement). Die 8 IBC-Kanäle verbinden sich mit Cosmos SDK-kompatiblen Chains.
+Die **37 Chain-Konfigurationen** sind die unten aufgeführten **36 externen Chains** plus **Injective**, das als Chain vom Typ IBC konfiguriert ist. Es gibt keine Loopback-Konfiguration für QoreChain. Die geplanten IBC-Kanäle verbinden sich mit Cosmos SDK-kompatiblen Chains.
 
 ## IBC-Kanäle
 
-QoreChain ist darauf ausgelegt, IBC-Verbindungen zu den folgenden 8 Chains zu unterhalten, weitergeleitet über Hermes v1.x:
+QoreChain ist darauf ausgelegt, IBC-Verbindungen zu den folgenden 8 Chains zu unterhalten, weitergeleitet über Hermes v1.x. **Auf keinem der beiden Netzwerke existiert bislang ein IBC-Kanal oder -Client**, daher listet diese Tabelle nur geplante Gegenparteien auf:
 
 | Chain      | Beschreibung                    |
 | ---------- | ------------------------------- |
@@ -49,11 +61,11 @@ QoreChain ist darauf ausgelegt, IBC-Verbindungen zu den folgenden 8 Chains zu un
 
 ## QCB-(QoreChain Bridge-)Protokoll
 
-Das QCB-Protokoll verwendet eine Hub-and-Spoke-Architektur, die durch Post-Quanten-Kryptografie abgesichert ist. QoreChain fungiert als Hub, mit Spoke-Konfigurationen für jede externe Chain plus einer nativen/Loopback-Konfiguration für QoreChain selbst.
+Das QCB-Protokoll verwendet eine Hub-and-Spoke-Architektur, die durch Post-Quanten-Kryptografie abgesichert ist. QoreChain fungiert als Hub, mit einer Spoke-Konfiguration für jede externe Chain.
 
 ### Externe Chain-Konfigurationen (36)
 
-Das QCB-Protokoll ist darauf ausgelegt, die folgenden 36 externen Chains anzusprechen. Zusammen mit QoreChains eigener nativer/Loopback-Konfiguration ergeben sich **insgesamt 37 QCB-Chain-Konfigs (einschließlich QoreChain selbst)**.
+Das QCB-Protokoll ist darauf ausgelegt, die folgenden 36 externen Chains anzusprechen. Zusammen mit Injective (einer Konfiguration vom Typ IBC) ergeben sich **insgesamt 37 Chain-Konfigurationen**, die derzeit alle den Status `pending` haben.
 
 **Baseline-Chains (10)**
 
@@ -67,12 +79,12 @@ zkSync Era, Linea, Scroll, Blast, Mantle, Hyperliquid, Berachain, Sonic, Sei, Mo
 
 Starknet, XRP Ledger, Stellar, Hedera, Algorand.
 
-**Ausstehende Chains (7)**
+**Weitere Chains (7)**
 
 NEAR, Bitcoin, Cardano, Polkadot, Tezos, Tron, Aptos.
 
 :::note
-Zählkontrolle: 10 Baseline + 14 EVM-Familie + 5 Nicht-EVM + 7 ausstehend = **36 externe Chains**. Mit QoreChains eigener nativer/Loopback-Konfiguration ergeben sich **37 QCB-Chain-Konfigs**.
+Zählkontrolle: 10 Baseline + 14 EVM-Familie + 5 Nicht-EVM + 7 weitere = **36 externe Chains**. Mit Injective (IBC) ergeben sich **37 Chain-Konfigurationen**.
 :::
 
 ### Adressformate
@@ -107,7 +119,7 @@ Um externe Chain-Ereignisse vertrauenslos zu verifizieren, ist die Bridge darauf
 
 ## Einzahlungsablauf (Extern zu QoreChain)
 
-Die nachfolgende Sequenz zeigt eine QCB-Einzahlung: Assets werden auf einer externen Chain gesperrt, QoreChain-Validatoren reichen PQC-signierte Attestierungen ein (7-aus-10 Dilithium-5), und Wrapped Tokens werden geprägt. Cosmos SDK-kompatible Chains verwenden stattdessen den parallelen IBC-Pfad (8 Kanäle, mit optionalen Dilithium-5-Paketsignaturen). Beide Pfade sind Testnet/ausstehend.
+Die nachfolgende Sequenz zeigt die vorgesehene QCB-Einzahlung: Assets werden auf einer externen Chain gesperrt, QoreChain-Validatoren reichen PQC-signierte Attestierungen ein (7-aus-10 Dilithium-5), und Wrapped Tokens werden geprägt. Cosmos SDK-kompatible Chains würden stattdessen den parallelen IBC-Pfad verwenden (bis zu 8 Kanäle, mit optionalen Dilithium-5-Paketsignaturen). Keiner der beiden Pfade ist aktiv; es wurde noch nie eine Einzahlung vorgenommen.
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +133,7 @@ sequenceDiagram
     Note over V,Q: Light client verifies source proofs where available
     Q->>Q: 4. Mint wrapped tokens
     Note over Q: If > 100K QOR: 24h challenge period before execution
-    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+    Note over X,Q: IBC path (planned, up to 8 channels) runs in parallel for Cosmos SDK chains
 ```
 
 ```
@@ -166,15 +178,9 @@ QoreChain               QoreChain Validators           External Chain
 
 Alle während Auszahlungen erhobenen Bridge-Gebühren werden über den `bridge_fee`-Burn-Kanal an das `x/burn`-Modul geleitet (100 % der Bridge-Gebühren werden verbrannt).
 
-### L2 → L1 Auszahlungsablauf (Rollup-Settlement)
+### L2 → L1-Auszahlungen (Rollups)
 
-Die Bridge ist außerdem darauf ausgelegt, **Rollup-(L2-)Auszahlungen zurück zu ihrer Host-Chain (L1) abzuwickeln**. Rollups, die über das [Rollup Development Kit](/architecture/rollup-development-kit) bereitgestellt werden, verankern ihren Zustand periodisch in QoreChain; die Bridge konsumiert diese finalisierten Anker, um Auszahlungen vom Rollup an die Host-Chain zu autorisieren:
-
-1. Ein Nutzer initiiert eine Auszahlung auf dem Rollup (L2), die in einen Settlement-Batch aufgenommen wird.
-2. Der Batch wird in QoreChain verankert und gemäß dem Settlement-Modus des Rollups bewiesen/finalisiert (zum Beispiel nach Ablauf des optimistischen Challenge-Fensters oder bei erfolgreicher Beweisverifizierung).
-3. Sobald der Anker finalisiert ist, wird die Auszahlung beanspruchbar und die entsprechenden Assets werden über den Standard-Burn-and-Attest-Pfad auf der Host-Chain (L1) freigegeben.
-
-Dies koppelt die Rollup-Finalität direkt an die Settlement-Garantien der Host-Chain, sodass L2-Auszahlungen nicht freigegeben werden können, bevor der entsprechende L2-Zustand unwiderruflich abgewickelt ist.
+Rollup-Auszahlungen nutzen die Bridge nicht. Sie werden vom `x/rdk`-Modul mit `execute-withdrawal` gegen die Auszahlungs-Root eines finalisierten Batches bezahlt — siehe [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals).
 
 ## Sicherheitsarchitektur
 
@@ -205,13 +211,13 @@ Der Circuit-Breaker-Zustand wird pro Chain verfolgt und umfasst: maximaler Einze
 Für große Transfers (>100.000 QOR-Gegenwert, konfigurierbar über `large_transfer_threshold`):
 
 * Nach Erreichen des Attestierungsschwellenwerts gilt eine **24-stündige Challenge-Periode** (86.400 Sekunden).
-* Während dieses Zeitfensters kann jeder Validator die Operation kennzeichnen.
+* Während dieses Zeitfensters sollen Validatoren die Operation kennzeichnen können.
 * Wird sie nicht angefochten, führt sich die Operation nach Ablauf der Periode automatisch aus.
 * Angefochtene Operationen werden für eine Governance-Überprüfung eingefroren.
 
 ### KI-Pfadoptimierung
 
-Das Bridge-Modul integriert sich mit dem KI-Subsystem für die Routenoptimierung. Für Transfers, die mehrere Pfade durchlaufen können (z. B. Chain A zu Chain B über einen Vermittler), bewertet der Pfadoptimierer:
+Das Bridge-Modul integriert sich mit dem KI-Subsystem für die Routenoptimierung (nicht über REST verfügbar). Für Transfers, die mehrere Pfade durchlaufen können (z. B. Chain A zu Chain B über einen Vermittler), bewertet der Pfadoptimierer:
 
 * Geschätzte Gebühren über die Routen hinweg
 * Geschätzte Abschlusszeit
@@ -227,26 +233,27 @@ Ab Chain-Version **v3.1.78** kann eine Bridge-Chain nach dem Deployment mit eine
 * **`tx bridge update-chain-config`** — die Contract-Adresse, Bestätigungsanzahl, Architektur und den Status einer Chain festlegen (`MsgUpdateChainConfig`).
 * **`tx bridge set-verifier-bootstrap`** — den aktiven Verifier für eine Chain auswählen und dessen Trust Root installieren (`MsgSetVerifierBootstrap`).
 
-Dadurch kann ein Betreiber die Bridge einer verbundenen Chain direkt online bringen — oder deren Verifier rotieren —, wobei die Autorisierung gegen den Bridge-Admin-Key geprüft wird.
+Dadurch kann ein Betreiber die Bridge einer verbundenen Chain direkt online bringen — oder deren Verifier rotieren —, wobei die Autorisierung gegen den Bridge-Admin-Key geprüft wird. Ab Chain-Version **v3.2.0** besitzt das Bridge-Modul außerdem ein eigenes Modul-Konto (frühere Releases hatten keines, sodass die erste Einzahlung auf einer aktivierten Route fehlgeschlagen wäre).
 
 ### Validierung verbundener Netzwerke
 
-Ab Chain-Version **v3.1.79** kann ein Validator, der die passende `validator_<chain>`-(oder `qcb_bridge`-)Lizenz hält, den Client des externen Netzwerks auf demselben Node ausführen, automatisch unter QoreChains Orchestrierung bereitgestellt, sobald die Lizenz aktiviert ist. Für alle 37 Bridge-Netzwerke werden Treiber ausgeliefert, klassifiziert nach Teilnahmemodell (permissionless Validator, gedeckelt/gewählt/Zulassung, L2-Full-Node und Non-Staking/Trust-List). Stake und Signaturschlüssel des externen Netzwerks werden vom Betreiber pro Netzwerk bereitgestellt. Siehe [Einen Validator betreiben](/developer-guide/running-a-validator#connected-networks) für die Betreiberschritte.
+Ab Chain-Version **v3.1.79** kann ein Validator, der die passende `validator_<chain>`-(oder `qcb_bridge`-)Lizenz hält, den Client des externen Netzwerks auf demselben Node ausführen, automatisch unter QoreChains Orchestrierung bereitgestellt, sobald die Lizenz aktiviert ist. Für alle 37 Bridge-Netzwerke werden Treiber ausgeliefert, klassifiziert nach Teilnahmemodell (permissionless Validator, gedeckelt/gewählt/Zulassung, L2-Full-Node und Non-Staking/Trust-List). Stake und Signaturschlüssel des externen Netzwerks werden vom Betreiber pro Netzwerk bereitgestellt. Siehe [Einen Validator betreiben](/developer-guide/running-a-validator#connected-networks) für die Betreiberschritte. Da jede Chain-Konfiguration `pending` ist, wird heute kein verbundenes Netzwerk über die Bridge validiert.
 
-## REST-API-Endpunkte
+## REST-API-Endpunkte {#rest-api-endpoints}
 
-Ab Chain-Version **v3.1.77** ist der Bridge-Zustand auch **schreibgeschützt über REST** via grpc-gateway unter dem Präfix `/qorechain/bridge/v1/...` abfragbar (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — zuvor nur per gRPC. Diese liefern echtes On-Chain-JSON über HTTP für Explorer und Light-Node-Telemetrie. Siehe [REST-/gRPC-Endpunkte](/api-reference/rest-grpc-endpoints#bridge-module) für die vollständige Liste.
+Der Bridge-Zustand ist **schreibgeschützt über REST** via grpc-gateway unter dem Präfix `/qorechain/bridge/v1/...` abfragbar. Diese liefern echtes On-Chain-JSON über HTTP für Explorer und Light-Node-Telemetrie. Siehe [REST-/gRPC-Endpunkte](/api-reference/rest-grpc-endpoints#bridge-module) für die vollständige Liste.
 
-| Methode | Endpunkt                                           | Beschreibung                                      |
-| ------- | -------------------------------------------------- | ------------------------------------------------- |
-| GET     | `/bridge/v1/chains`                                | Alle unterstützten Chain-Konfigurationen auflisten |
-| GET     | `/bridge/v1/chains/{chain_id}`                     | Konfiguration für eine bestimmte Chain abrufen    |
-| GET     | `/bridge/v1/validators`                            | Alle registrierten Bridge-Validatoren auflisten   |
-| GET     | `/bridge/v1/operations`                            | Alle Bridge-Operationen auflisten (neueste zuerst) |
-| GET     | `/bridge/v1/operations/{operation_id}`             | Details einer bestimmten Operation abrufen        |
-| GET     | `/bridge/v1/locked/{chain}/{asset}`                | Gesperrte/geprägte Beträge für ein Chain-/Asset-Paar abrufen |
-| GET     | `/bridge/v1/circuit-breakers`                      | Alle Circuit-Breaker-Zustände auflisten           |
-| GET     | `/bridge/v1/estimate/{from}/{to}/{asset}/{amount}` | KI-optimierte Routenschätzung abrufen             |
+| Methode | Endpunkt                                  | Beschreibung                                                                                                         |
+| ------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| GET     | `/qorechain/bridge/v1/config`             | Konfiguration des Bridge-Moduls (`min_validators`, `attestation_threshold`, `challenge_period_secs`, `large_transfer_threshold`, `enabled`) |
+| GET     | `/qorechain/bridge/v1/chains`             | Alle Chain-Konfigurationen und ihr Status                                                                           |
+| GET     | `/qorechain/bridge/v1/chains/{chain_id}`  | Eine Chain-Konfiguration                                                                                            |
+| GET     | `/qorechain/bridge/v1/validators`         | Registrierte Bridge-Validatoren                                                                                     |
+| GET     | `/qorechain/bridge/v1/validators/{address}` | Ein Bridge-Validator                                                                                              |
+| GET     | `/qorechain/bridge/v1/operations`         | Bridge-Operationen                                                                                                  |
+| GET     | `/qorechain/bridge/v1/operations/{id}`    | Eine Bridge-Operation                                                                                               |
+
+Gesperrte Beträge, Circuit-Breaker-Zustand und Routenschätzungen haben heute keine Abfrageroute.
 
 ## Bridge-Ereignisse
 
@@ -265,6 +272,5 @@ Das Bridge-Modul emittiert die folgenden On-Chain-Ereignisse:
 ## Verwandt
 
 * [Assets bridgen](/user-guide/bridging-assets) — Assets Schritt für Schritt chainübergreifend bewegen.
-* [Dashboard-Bridge](/dashboard/bridge) — die Bridge-Schnittstelle für alltägliche Nutzer.
 * [BTC-Restaking via Babylon](/architecture/btc-restaking-babylon) — Bitcoin-gestützte Sicherheit.
 * [Post-Quanten-Sicherheit](/architecture/post-quantum-security) — PQC-Verifizierung bei IBC-Paketen.

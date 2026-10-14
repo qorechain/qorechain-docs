@@ -9,7 +9,7 @@ sidebar_position: 10
 
 **Quests** sind angeleitete Aufgaben, die dich durch die Nutzung von QoreChain führen, während du sie abschließt. Jede Quest fasst einen oder mehrere Schritte zusammen – etwa deine Wallet aufzuladen, eine Überweisung durchzuführen oder einen Swap auszuprobieren – und belohnt dich für den Abschluss. Quests sind eine praxisnahe Möglichkeit, das Netzwerk Funktion für Funktion kennenzulernen.
 
-Verbinde deine Wallet, damit dein Fortschritt erfasst wird – siehe [Overview & Getting Started](/dashboard/overview#connect-your-wallet).
+Melde dich an, damit dein Fortschritt erfasst wird – siehe [Anmelden](/dashboard/overview#sign-in). Einige Quests betreffen auch eine Wallet, siehe [Wallet verbinden](/dashboard/overview#connect-your-wallet).
 
 ## Quests durchsuchen
 
@@ -36,5 +36,5 @@ Einige Quests werden täglich oder wöchentlich zurückgesetzt. Für diese zeigt
 
 ## Verwandt
 
-- [Overview & Getting Started](/dashboard/overview) – verbinde deine Wallet, bevor du Quests startest.
+- [Overview & Getting Started](/dashboard/overview) – melde dich an und verbinde deine Wallet, bevor du Quests startest.
 - [Faucet](/dashboard/faucet) – lade eine Testnet-Wallet für Quests auf, die Transaktionen beinhalten.

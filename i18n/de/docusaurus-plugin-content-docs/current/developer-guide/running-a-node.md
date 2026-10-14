@@ -26,30 +26,32 @@ Das aktuelle Binary, Genesis, Peers, Seeds und ein State-Sync-Trust-Point werden
 Die Felder des Manifests umfassen `binary` (URL + sha256), `genesis` (URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (ein stündlich aktualisierter Trust-Point) und `minCompatible`. Die Installations- und Beitrittsschritte unten rufen dieses Manifest ab und verwenden dessen aktuelle Werte.
 :::
 
-:::caution v3.1.94 oder höher für einen frisch beitretenden Node erforderlich
-Ein Node, der ab Genesis synchronisiert oder aus einem Archiv/Snapshot repliziert, muss aus zwei sich überlagernden Gründen auf **v3.1.94 oder höher** sein: v3.1.92 behob einen Gas-Metering-Bug, der den Replay andernfalls am ersten Block mit einer Transaktion anhält, und das Mainnet hat inzwischen das Governance-Upgrade v3.1.94 durchlaufen (eine harte Obergrenze für die Emission, angewendet bei Höhe 2.122.074) — ein Node ohne den Handler dieses Upgrades hält beim Versuch, über dieselbe Höhe hinaus zu replizieren, erneut an. v3.1.97 ist die aktuell empfohlene Version (fortlaufende, nicht-konsensbrechende Sicherheitsupdates); `minCompatible` ist `3.1.94`. Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase) und lag bereits hinter dieser Untergrenze zurück — prüfen Sie sein Feld `"version"`, bevor Sie `binary.url` vertrauen, und weichen Sie andernfalls auf die [qorechain-core GitHub Releases](https://github.com/qorechain/qorechain-core/releases) oder das Bauen aus dem Quellcode aus.
+:::caution v3.2.0 oder höher für einen frisch beitretenden Node erforderlich
+Ein Node, der ab Genesis synchronisiert oder aus einem Snapshot repliziert, durchläuft mehrere Governance-Upgrades (zum Beispiel die Emissionsobergrenze v3.1.94 bei Höhe 2.122.074 und das Upgrade v3.2.0 bei Höhe 2.981.742). Installieren Sie daher immer das Binary, auf das das Manifest verweist: Es enthält jeden Upgrade-Handler. Ein frischer Mainnet-Node benötigt **v3.2.0 oder höher**: `minCompatible` im Manifest ist `3.2.0`, das älteste Release, das der Chain noch folgt, und `version` (derzeit `3.2.1`) ist die empfohlene, ein node-lokales Release ohne Upgrade-Höhe. Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase). Prüfen Sie daher sein Feld `"version"` gegen `minCompatible`, bevor Sie `binary.url` vertrauen. Im Testnet entspricht `minCompatible` der `version` (derzeit `3.2.2`).
+
+Ab v3.2.1 sind zwei Einstellungen wichtig: Halten Sie die Systemuhr per NTP synchronisiert (der Node stoppt, wenn seine Uhr um mehr als 60 Sekunden abweicht), und setzen Sie `evm-chain-id` in `app.toml` (siehe [Node-Limits](#node-limits)).
 :::
 
 ---
 
 ## Node vs. Validator
 
-| Aspekt              | Reiner Node (dieser Leitfaden)                          | Validator                                        |
-| -------------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| Konsensschlüssel     | Keiner                                                 | ed25519-Konsensschlüssel (muss gesichert werden)  |
-| Blockproduktion      | Nein                                                   | Ja — schlägt Blöcke vor und signiert sie          |
-| Staking / Slashing   | Nicht anwendbar                                        | Selbstdelegation, Slashing-Risiko                 |
-| Hauptzweck           | RPC/REST/gRPC/EVM/SVM für Integrationen bereitstellen  | Netzwerk sichern, Rewards verdienen               |
-| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert       | Validator hinter Sentry-Nodes verborgen           |
+| Aspekt              | Reiner Node (dieser Leitfaden)                          | Validator                                  |
+| ------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Konsensschlüssel    | Keiner                                          | ed25519-Konsensschlüssel (muss gesichert werden)    |
+| Blockproduktion     | Nein                                            | Ja — schlägt Blöcke vor und signiert sie            |
+| Staking / Slashing  | Nicht anwendbar                                 | Selbstdelegation, Slashing-Risiko             |
+| Hauptzweck          | RPC/REST/gRPC/EVM (und schreibgeschütztes SVM) für Integrationen bereitstellen | Netzwerk sichern (Staking-Rewards fallen an) |
+| Öffentliche Erreichbarkeit | RPC/EVM-Endpunkte typischerweise exponiert | Validator hinter Sentry-Nodes verborgen       |
 
 ---
 
 ## Zielnetzwerke
 
-| Netzwerk | Chain-ID            | EVM-Chain-ID          | Hinweise                           |
-| -------- | ------------------- | --------------------- | ----------------------------------- |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026     |
-| Testnet  | `qorechain-diana`   | `9800`                | Integrationen zuerst hier erproben  |
+| Netzwerk | Chain-ID            | EVM-Chain-ID         | Hinweise                          |
+| -------- | ------------------- | -------------------- | ------------------------------ |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 29. Juni 2026 |
+| Testnet  | `qorechain-diana`   | `9800`               | Integrationen zuerst hier erproben |
 
 Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Beispiele verwenden standardmäßig das Mainnet.
 
@@ -57,11 +59,11 @@ Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zi
 
 ## Empfohlene Hardware
 
-| Profil                    | CPU      | RAM   | Festplatte (NVMe-SSD)        | Netzwerk  |
-| ------------------------- | -------- | ----- | ----------------------------- | --------- |
-| Geprunter RPC-Node        | 4 Kerne  | 16 GB | 500 GB+                       | 100 Mbps+ |
-| Full-/Archive-Node        | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit)   | 1 Gbps    |
-| Börsen-Integration        | 8 Kerne  | 32 GB | 2 TB+ mit Reserve             | 1 Gbps    |
+| Profil                   | CPU      | RAM   | Festplatte (NVMe-SSD)   | Netzwerk  |
+| ------------------------ | -------- | ----- | ----------------------- | --------- |
+| Geprunter RPC-Node       | 4 Kerne  | 16 GB | 500 GB+                 | 100 Mbps+ |
+| Full-/Archive-Node       | 8 Kerne  | 32 GB | 2 TB+ (wächst mit der Zeit) | 1 Gbps    |
+| Börsen-Integration       | 8 Kerne  | 32 GB | 2 TB+ mit Reserve       | 1 Gbps    |
 
 Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Stores sind I/O-intensiv. Archive-Nodes (kein Pruning, vollständige Tx-Indexierung) wachsen kontinuierlich; stellen Sie Speicherplatz mit Reserve und Monitoring bereit.
 
@@ -71,19 +73,33 @@ Eine NVMe-SSD wird dringend empfohlen — der Chain-State und die EVM-/SVM-Store
 
 ### Docker Compose
 
-Ein reines Node-Deployment mit Docker Compose. Es gibt derzeit noch kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen — bauen Sie eines selbst aus dem `Dockerfile` des Repositorys und taggen Sie es auf die live laufende Chain-Version (**v3.1.97** im Mainnet), und mounten Sie dann ein persistentes Volume für die Chain-Daten:
+Ein reines Node-Deployment mit Docker Compose. Es gibt derzeit noch kein öffentlich veröffentlichtes `qorechaind`-Image zum Herunterladen. Das `Dockerfile` im öffentlichen Repository baut das **Community**-Binary (keine Post-Quanten-Bibliothek, Stub-Keeper): Das eignet sich für die lokale Entwicklung, kann aber weder dem Mainnet noch dem Testnet folgen. Bauen Sie für einen Netzwerk-Node ein eigenes Image aus dem in `latest.json` genannten **Release-Archiv**, taggen Sie es auf die Release-Version (**v3.2.1** im Mainnet, **v3.2.2** im Testnet) und mounten Sie dann ein persistentes Volume für die Chain-Daten:
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+Das Archiv enthält `qorechaind` und ein Verzeichnis `lib/` mit den zugehörigen Shared Libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); das obige Image ist, wie das Release-Archiv, nur für `linux/amd64`.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-Initialisieren Sie das Datenverzeichnis einmalig (Genesis- und Peer-Konfiguration werden weiter unten behandelt) und starten Sie dann:
+Initialisieren Sie das Datenverzeichnis einmalig (zum Beispiel `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`; Genesis- und Peer-Konfiguration werden weiter unten behandelt) und starten Sie dann:
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Manifest abrufen
+### 2. Manifest abrufen {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Verwenden Sie diese Datei als Quelle für die Binary-, Genesis- und Peer-Werte in den folgenden Schritten — prüfen Sie `jq -r .minCompatible latest.json`, denken Sie aber daran, dass die **v3.1.94-Untergrenze** oben auch dann gilt, wenn dieses Feld hinterherhinkt.
+Verwenden Sie diese Datei als Quelle für die Binary-, Genesis- und Peer-Werte in den folgenden Schritten — prüfen Sie `jq -r .minCompatible latest.json` und betreiben Sie mindestens dieses Release (das empfohlene ist `jq -r .version latest.json`).
 
 ### 3. Genesis herunterladen und verifizieren
 
@@ -191,6 +207,8 @@ Setzen Sie anschließend den minimalen Gaspreis in `~/.qorechaind/config/app.tom
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi` schreibt außerdem die EVM-Chain-ID des Netzwerks in `app.toml` (siehe [Node-Limits](#node-limits)); prüfen Sie sie bei einem Home-Verzeichnis, das vor langer Zeit initialisiert wurde.
 
 ### 5. Synchronisierung starten
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot-Wiederherstellung
 
-Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis. Das Manifest führt derzeit keinen Snapshot-Verweis, prüfen Sie daher die Live-Auflistung unter [download.qore.host](https://download.qore.host) auf den aktuellen Dateinamen und die aktuelle Prüfsumme, statt sie fest zu codieren:
+Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis. Im Mainnet nennt das Objekt `snapshot` des Manifests die URL, die Blockhöhe (`height`), die Größe und die SHA-256-Prüfsumme (das Testnet-Manifest enthält derzeit nur die URL, verwenden Sie dort also State Sync). Lesen Sie `snapshot.height`, bevor Sie ihn verwenden: Der Mainnet-Snapshot ist ein einzelnes Archiv von etwa 27 GB, und ein alter bedeutet eine lange Aufholphase (der derzeit veröffentlichte Mainnet-Snapshot liegt vor den Upgrade-Höhen von v3.1.94 und v3.2.0, ein daraus wiederhergestellter Node muss sie also mit einem v3.2.x-Binary replizieren).
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots werden unter **höhengestempelten Dateinamen** veröffentlicht, die regelmäßig wechseln — prüfen Sie [download.qore.host](https://download.qore.host) auf den aktuellsten Snapshot und dessen SHA-256-Prüfsumme, und verifizieren Sie immer vor dem Entpacken. Denken Sie daran, dass das **v3.1.94-Minimum** oben auch für den Replay aus einem Snapshot gilt.
+Die Felder `snapshot.height` und `snapshot.ts` des Manifests zeigen, wie aktuell das Archiv ist, und State Sync (oben) ist meist schneller als ein Download von 27 GB. Verifizieren Sie vor dem Entpacken immer die Prüfsumme, und verwenden Sie beim Replay aus einem Snapshot ein Node-Release, das jeden Upgrade-Handler enthält (siehe den Hinweis am Anfang dieser Seite).
 :::
 
 ---
@@ -263,11 +282,30 @@ pruning = "default"
 # pruning = "nothing"
 ```
 
-| `pruning`   | Verhalten                                        | Anwendungsfall                        |
-| ----------- | ------------------------------------------------ | -------------------------------------- |
-| `default`   | Behält aktuellen State, prunt den Rest           | RPC-Node, Kontostands-/State-Abfragen  |
-| `nothing`   | Behält den gesamten historischen State           | Archive-Node, vollständige Historie    |
-| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte   | Feinabgestimmte Aufbewahrung           |
+| `pruning`   | Verhalten                                | Anwendungsfall                          |
+| ----------- | ---------------------------------------- | --------------------------------- |
+| `default`   | Behält aktuellen State, prunt den Rest   | RPC-Node, Kontostands-/State-Abfragen   |
+| `nothing`   | Behält den gesamten historischen State   | Archive-Node, vollständige Historie        |
+| `custom`    | Vom Betreiber definierte Keep-/Intervall-Werte    | Feinabgestimmte Aufbewahrung                   |
+
+### Node-Limits (`app.toml`) {#node-limits}
+
+Ab Node-Release v3.2.1 schreibt `init` einen Abschnitt `[qorechain]` mit drei node-lokalen Limits. Sie ändern nur, was dieser Node im Speicher hält und was er in die von ihm vorgeschlagenen Blöcke aufnimmt, niemals aber, was ein Block enthalten muss, um gültig zu sein:
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init` schreibt außerdem die EVM-Chain-ID des Netzwerks in die Einstellung `evm-chain-id` im Abschnitt `[evm]` von `app.toml` (`9801` für `--chain-id qorechain-vladi`, `9800` für `qorechain-diana`). Ein Node, dessen `app.toml` einen anderen Wert enthält, startet zwar, protokolliert beim Start aber einen Fehler, und sein eigenes JSON-RPC (`eth_chainId`, Signieren gegen diesen Node) antwortet mit der falschen Chain-ID, bis Sie die Datei korrigieren; der Konsens ist davon nicht betroffen. Ältere Binaries schrieben unabhängig von `--chain-id` den Testnet-Wert (`9800`), daher sollte ein vor langer Zeit initialisierter Mainnet-Node diese Einstellung prüfen. Setzen Sie `QORE_EVM_CHAIN_ID` nicht auf einen anderen Wert als den des Netzwerks: Ein solcher Node verweigert den Start.
 
 ### Transaktionsindexierung (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+Die öffentlichen Endpunkte stellen die Namespaces `eth_`, `net_`, `web3_` und `txpool_` bereit. Der Namespace `qor_` wird von keinem veröffentlichten Node-Build bereitgestellt, fügen Sie ihn daher nicht hinzu (siehe [den Namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 Und den RPC-Listener in `config.toml`:
 
@@ -307,14 +347,14 @@ Und den RPC-Listener in `config.toml`:
 laddr = "tcp://0.0.0.0:26657"
 ```
 
-| Endpunkt     | Port    | Verwendung für                                               |
-| ------------ | ------- | -------------------------------------------------------------- |
-| RPC          | `26657` | Broadcasting von Transaktionen, Abfragen von Blöcken/Status    |
-| REST         | `1317`  | HTTP-Abfragen des Chain-States                                 |
-| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz                   |
-| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)             |
-| EVM WS       | `8546`  | EVM-Event-Subscriptions                                        |
-| SVM RPC      | `8899`  | Solana-kompatible Integrationen                                 |
+| Endpunkt     | Port   | Verwendung für                                         |
+| ------------ | ------ | ------------------------------------------------------ |
+| RPC          | `26657` | Broadcasting von Transaktionen, Abfragen von Blöcken/Status      |
+| REST         | `1317`  | HTTP-Abfragen des Chain-States                            |
+| gRPC         | `9090`  | Programmatischer Zugriff mit hohem Durchsatz                    |
+| EVM JSON-RPC | `8545`  | Ethereum-kompatible Integrationen (Chain-ID `9801`)     |
+| EVM WS       | `8546`  | EVM-Event-Subscriptions                                |
+| SVM RPC      | `8899`  | Solana-kompatible Lesezugriffe (SVM-Transaktionen sind deaktiviert) |
 
 :::warning
 Exponieren Sie RPC, EVM JSON-RPC oder gRPC niemals direkt ins öffentliche Internet ohne Reverse Proxy, Rate Limiting, Authentifizierung und Firewall. Binden Sie an `0.0.0.0` nur hinter einer kontrollierten Ingress-Schicht.
@@ -342,7 +382,7 @@ Das Feld `network` sollte `qorechain-vladi` (Mainnet) oder `qorechain-diana` (Te
 
 ### Prometheus und Grafana
 
-QoreChain stellt Prometheus-Metriken auf Port **26660** bereit:
+Der Node kann Prometheus-Metriken auf Port **26660** bereitstellen (setzen Sie `prometheus = true` im Abschnitt `[instrumentation]` von `config.toml`):
 
 ```
 http://localhost:26660/metrics
@@ -363,7 +403,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das live laufende Tag (**v3.1.97** im Mainnet) und verfolgen Sie offizielle Releases für koordinierte Upgrades.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das vom Manifest empfohlene Release (**v3.2.1** im Mainnet), verfolgen Sie offizielle Releases für koordinierte Upgrades und halten Sie die Systemuhr per NTP synchronisiert.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **Überwachen Sie die Synchronisierung kontinuierlich.** Alarmieren Sie bei Blockhöhen-Rückstand, null Peers und einem Node, der in `catching_up` feststeckt.
 
-Für ultraleichten Lesezugriff ohne den Betrieb eines Full Nodes siehe die **Light Node**-Dokumentation.
+Ein reines Node-Deployment signiert nie. Transaktionen, die Ihre Integration darüber sendet, müssen bereits die hybride Post-Quanten-Signatur tragen (und für die EVM-Lane benötigt der Absender einen registrierten Schlüssel und ein offenes Autorisierungsfenster); siehe [Börsen-Integration](/developer-guide/exchange-integration) und [Post-Quanten-Signierung](/developer-guide/post-quantum-signing).
+
+Um das Netzwerk ohne den Betrieb eines Full Nodes zu beobachten, siehe die [Light-Node-Dokumentation](/light-node/overview).
 
 ---
 
 ## Fehlerbehebung
+
+### Der Node stoppt mit einem Uhrenfehler
+
+Ab Node-Release v3.2.1 stoppt die Konsens-Engine, wenn die Systemuhr um mehr als 60 Sekunden vom Netzwerk abweicht. Betreiben Sie einen NTP-Client (`chrony` oder `systemd-timesyncd`), prüfen Sie mit `timedatectl status`, dass die Uhr synchronisiert ist, und starten Sie den Node dann neu.
 
 ### Ein bereits vor dem Upgrade angehaltener Node läuft nach einem Binary-Wechsel nicht weiter
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet) — Mainnet-Genesis, Peers und Verbindungsdetails
 * [Einen Validator betreiben](/developer-guide/running-a-validator) — Blockproduktions-Aufgaben hinzufügen
-* [Aus dem Quellcode bauen](/developer-guide/building-from-source) — Das `qorechaind`-Binary bauen
-* **Light Node** — Ultraleichter Nur-Lese-Zugriff (Dokumentation folgt in Kürze)
+* [Aus dem Quellcode bauen](/developer-guide/building-from-source) — Das Community-`qorechaind`-Binary für die Entwicklung bauen
+* [Light Node](/light-node/overview) — Leichtgewichtiger Client, der dem Netzwerk ohne Full Node folgt

@@ -31,8 +31,11 @@ pnpm --filter @qorechain/example-pqc-hybrid-sign start
 
 ## connect-and-query
 
-클라이언트를 생성하고 공개 체인 상태 — 네이티브 bank 잔액과 전체 토크노믹스
-스냅샷 — 를 읽습니다. 연결 가능한 노드가 필요합니다.
+클라이언트를 생성하고 공개 체인 상태 — 네이티브 bank 잔액과 토크노믹스
+스냅샷 — 를 읽습니다. 연결 가능한 노드가 필요합니다. 리포지토리 예제는
+스냅샷을 `client.qor`, 즉 공개 엔드포인트가 제공하지 않는 `qor_` JSON-RPC
+호출로 읽습니다. 아래 스니펫은 메인넷과 테스트넷에서 모두 동작하는 REST
+등가 호출(소각 통계)을 사용합니다.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -46,7 +49,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [소스](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -55,7 +58,11 @@ const overview = await client.qor.getTokenomicsOverview();
 
 니모닉에서 네이티브(`qor1...`) 계정을 파생하고 QOR 전송을 브로드캐스트합니다:
 파생 → 서명 → 시뮬레이션 → 수수료 추정 → `bankSend`. 연결 가능한 합의 RPC와
-REST, 그리고 자금이 있는 계정이 필요합니다.
+REST, 그리고 자금이 있는 계정이 필요합니다. 이 예제는 **클래식** 서명만으로
+서명하므로 로컬 또는 개발 노드에서는 동작하지만, 모든 Native 경로 트랜잭션에
+하이브리드 서명을 요구하는 메인넷과 테스트넷에서는 거부됩니다. 공개
+네트워크에서는 [퀵스타트](/sdk/quickstart#send-qor)의 하이브리드 전송을
+사용하세요.
 
 ```ts
 import {
@@ -83,8 +90,10 @@ console.log(result.transactionHash);
 
 `@qorechain/svm`을 사용하여 QoreChain의 Solana 호환(SVM) 런타임에서 메모
 명령이 포함된 SOL 전송을 구성합니다. 트랜잭션을 오프라인으로 구성하고
-출력하며, 전송하려면 연결 가능한 SVM JSON-RPC와 자금이 있는 계정이
-필요합니다.
+출력합니다. 전송하려면 연결 가능한 SVM JSON-RPC와 자금이 있는 계정이
+필요하며, 공개 네트워크에서는 성공할 수 없습니다. SVM 트랜잭션 제출은
+네트워크 전체에서 비활성화되어 있고 공개 SVM 엔드포인트는 읽기 전용입니다
+([SVM 개발](/developer-guide/svm-development) 참조).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -93,7 +102,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -101,7 +110,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -112,8 +122,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 `@qorechain/evm`(viem 위의 얇은 레이어)을 사용하여 읽기 전용 QoreChain
 프리컴파일을 호출하고 ERC-20 잔액을 읽습니다. EVM 체인 ID는 `eth_chainId`를
-통해 자동 감지됩니다. 프리컴파일이 없는 노드에서는 해당 호출이 "feature not
-present" 오류를 던지며, 호출별로 보고됩니다.
+통해 자동 감지됩니다. 프리컴파일은 아직 메인넷이나 테스트넷에서 활성화되지
+않았습니다([네트워크 상태](/developer-guide/evm-precompiles#network-status)
+참조). 활성화되기 전까지, 그리고 프리컴파일이 없는 노드에서는 해당 호출이
+"feature not present" 오류를 던지며, 호출별로 보고됩니다.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -154,11 +166,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -192,7 +205,9 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 EVM JSON-RPC 엔드포인트를 통해 제공되는 타입 지정 `qor_*` JSON-RPC
 네임스페이스(`client.qor`)로 토크노믹스 상태를 읽습니다. 세 개의 읽기는 서로
-독립적이므로, 다른 호출이 불가능하더라도 각각 개별적으로 보고됩니다.
+독립적이므로, 다른 호출이 불가능하더라도 각각 개별적으로 보고됩니다. 아직
+어떤 릴리스 노드 빌드도 `qor_` 네임스페이스를 제공하지 않으므로, 현재는 각
+읽기가 `-32601`로 실패합니다([`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace) 참조).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -205,7 +220,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -242,7 +257,9 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Native 인증자(authenticator) 레인에서 릴레이어가 제출하는
-`MsgExecuteCosmos`를 구성합니다(SDK 0.7.0, 체인 v3.1.85): Phantom 방식의
+`MsgExecuteCosmos`를 구성합니다(SDK 0.7.0, 체인 v3.1.85; `abstractaccount`
+모듈은 현재 두 네트워크 모두에서 꺼져 있으므로 이 레인은 아직 해당
+네트워크에서 사용할 수 없습니다): Phantom 방식의
 ed25519 키가 도메인 분리된 인증 다이제스트에 서명하고, 생성된 메시지는
 릴레이어가 브로드캐스트할 수 있도록 준비됩니다(수수료는 릴레이어가 지불하며,
 외부 키는 절대 ML-DSA 공동 서명을 생성하지 않습니다). 드라이 런 — 노드가

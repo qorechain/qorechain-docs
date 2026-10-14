@@ -91,7 +91,9 @@ gösterilen AYNI kimliktir:
 | SVM | 20 baytın sağdan 12 sıfır baytla doldurulmuş halinin (32 bayt) base58 kodlaması |
 
 Üç adresten **herhangi birine** yapılan yatırma işlemi **tek** bir bakiyeye
-düşer ve anahtar her hatta harcama yapar:
+düşer ve bu tek anahtar her hatta imzalayıcıdır (EVM hattında bir
+[yetkilendirme penceresi](/sdk/guides/evm#evm-window) içinde; SVM işlem hattı
+şu anda ağ genelinde devre dışıdır, dolayısıyla SVM bugün salt okunurdur):
 
 ```ts
 import {
@@ -106,7 +108,8 @@ account.cosmos;       // "qor1…"   bech32, Native lane
 account.evm;          // "0x…"     EIP-55 hex, EVM lane
 account.svm;          // "<base58>" 32-byte SVM address (addr20 + 12 zero bytes)
 account.addressBytes; // the raw 20 bytes shared by all three
-account.publicKey;    // 33-byte compressed secp256k1 public key
+account.publicKey;    // "0x…" hex string of the 33-byte compressed secp256k1 key
+account.privateKey;   // "0x…" hex string (a secret: never log or commit it)
 account.pqc;          // { publicKey, secretKey } — ML-DSA-87, derived below
 
 // Decode any ONE encoding into all three:
@@ -132,7 +135,10 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 
 dolayısıyla `{ address, mnemonic }` çiftinden kurtarılabilir ve QoreChain'in
 tüm dil SDK'larında birebir aynıdır. (`unifiedAccountFromSeed` için anımsatıcı
-ifade yuvası `"seed:" + hex(seed32)` değeridir.)
+ifade yuvası `"seed:" + hex(seed32)` değeridir.) SDK 0.8.3 sürümünden itibaren
+`derivePqcCanonical(account, mnemonic)` önce `account` değerini küçük harfli
+`qor1…` biçimine (`canonicalAccount`) çözer; böylece büyük harfli bir bech32
+veya aynı hesabın `0x` biçimi de aynı anahtarı üretir.
 
 ### Native hatta eth anahtarıyla gönderim
 
@@ -140,30 +146,82 @@ Birleşik bir hesap, Native yolu işlemlerini `eth_secp256k1` şemasıyla imzala
 klasik imza, SignDoc baytlarının **keccak256** özeti üzerinde secp256k1'dir
 (sha256 değil) ve `SignerInfo` genel anahtarı
 `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey` tür URL'sini kullanır. Hibrit yol
-(`signHybridEth`) ayrıca ML-DSA-87 `PQCHybridSignature` uzantısını ekler —
-canlı ağlarda zorunludur:
+(`signHybridEth` veya varsayılan `signMode: "hybrid"` ile `EthNativeSigner`)
+ayrıca ML-DSA-87 `PQCHybridSignature` uzantısını ekler; bu, canlı ağlarda
+zorunludur.
+
+İlk hibrit gönderimden önce iki şey gerekir. Birincisi, hesabın ML-DSA-87
+anahtarı (bir kez) **kaydedilmiş** olmalıdır. Kayıt, klasik imzalı ve hibrit
+kuraldan muaf tek işlemdir: onu `signMode: "classical"` ile imzalayın. Hesabın
+`publicKey` değeri `0x` onaltılık bir dizgedir; `ecdsaPubkey` için onu bayta
+çözün. İkincisi, imzalayıcının ağın hangi
+[imza baytı biçimini](#sign-bytes-versions) doğruladığını ağa sorabilmesi için
+imzalayıcıya `rest` verin (`qorechain-vladi` ve `qorechain-diana` üzerinde tahmin
+etmek yerine hata fırlatır). SDK 0.8.1 veya sonrası ve
+`npm i @cosmjs/stargate` gerekir:
 
 ```ts
-import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  buildRegisterPqcKeyMsg,
+  toBase,
+} from "@qorechain/sdk";
 
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+const CHAIN_ID = "qorechain-vladi";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
 const account = await deriveUnifiedAccount(mnemonic);
-const signer = new EthNativeSigner(account); // signMode: "hybrid" by default
 
-// `transport` is anything with broadcastTx (e.g. a connected client).
-await signer.bankSend(
+// The REST account record carries the number and sequence (the account must
+// exist, that is, have received funds).
+async function authInfo() {
+  const { account: base } = await client.rest.get<{
+    account: { account_number: string; sequence: string };
+  }>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+  return { accountNumber: BigInt(base.account_number), sequence: BigInt(base.sequence) };
+}
+
+// 1) Register the ML-DSA-87 key once (classical-signed, exempt from the hybrid rule).
+const classical = new EthNativeSigner(account, { signMode: "classical" });
+await classical.signAndBroadcast(transport, {
+  chainId: CHAIN_ID,
+  ...(await authInfo()),
+  messages: [
+    buildRegisterPqcKeyMsg(account.cosmos, {
+      pqcKeypair: account.pqc,
+      ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+    }),
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
+});
+
+// 2) Send with the hybrid signature (the default signMode).
+const signer = new EthNativeSigner(account, { rest: REST });
+const res = await signer.bankSend(
   transport,
   "qor1recipient…",
-  [{ denom: "uqor", amount: "1000000" }], // 1 QOR
-  { chainId: "qorechain-vladi", accountNumber, sequence, fee },
+  [{ denom: "uqor", amount: toBase("1.5") }],
+  {
+    chainId: CHAIN_ID,
+    ...(await authInfo()),
+    fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  },
 );
+console.log(res.transactionHash);
 ```
 
 Daha alt düzey denetim için `signHybridEth(params)` / `signClassicalEth(params)`
 birleştirilmiş `TxRaw` baytlarını ve imzalama çıktılarını döndürür;
 `accountAuthInfo(baseAccount)` ise zincir üstü genel anahtarı `eth_secp256k1`
-tür URL'sini kullanan bir hesaptan `account_number` / `sequence` değerlerini
-okur. Yalnızca-klasik yol, tek seferlik, bootstrap muafiyetli
-`MsgRegisterPQCKeyV2` içindir; diğer her şey için hibrit kullanın.
+tür URL'sini kullanan bir protobuf `BaseAccount` değerinden `account_number` /
+`sequence` alanlarını okur (bir REST JSON hesabının alanlarının önce
+eşlenmesi gerekir; yukarıdaki `authInfo` bunu yapar).
 
 :::caution Hibrit işlemler için SDK 0.6.1+ sürümüne yükseltin
 SDK **0.6.1**, konsensüs açısından kritik bir kodlama hatasını düzeltti:
@@ -175,31 +233,16 @@ oluşturulan her hibrit işlem — eth-native hat dahil — zincir üzerinde
 reddedilir: 0.6.1 veya sonrasına yükseltin.
 :::
 
-### Phantom (P1a): anahtar dışa aktarmadan birleşik hesap
+### Phantom ve diğer harici cüzdanlar {#phantom}
 
-`connectPhantomUnified()` (TypeScript), deterministik bir Phantom imzasından
-kanonik, **emanetsiz (non-custodial)** bir birleşik hesap türetir: kullanıcı,
-sabit ve alan ayrımlı (domain-separated) bir mesajı Phantom'un ed25519
-anahtarıyla imzalar ve `shake256(signature, 32)` hesabı tohumlar.
+:::danger SDK 0.8.0'da kaldırıldı
+SDK 0.6.0 ile 0.7.0 arası `connectPhantomUnified()` ve `unifiedAccountFromPhantomSignature()` işlevlerini içeriyordu (0.8.0'da kaldırıldı; Python ve Rust'ta `unified_account_from_phantom_signature`, Go'da `unified.UnifiedAccountFromPhantomSignature`, Java'da `UnifiedAccounts.unifiedAccountFromPhantomSignature`). Bu işlevler bir hesabın harcama anahtarını, sabit `QoreChain unified account derivation v1` mesajı ve ardından cüzdanın base58 açık anahtarı üzerindeki Phantom imzasından türetiyordu.
+ed25519 imzası deterministiktir ve herhangi bir web sitesi cüzdandan aynı mesajı imzalamasını isteyebilir; bu nedenle imzayı bir kez bile elde eden herkes hesabın secp256k1 ve ML-DSA anahtarlarını yeniden oluşturabilir. Her iki işlev artık hata fırlatır.
 
-```ts
-import {
-  connectPhantomUnified,
-  unifiedAccountFromPhantomSignature,
-} from "@qorechain/sdk";
+Bu yolla bir hesap oluşturduysanız, onu şimdiden ele geçirilmiş sayın: bir mnemonic ile yeni bir hesap oluşturun, fonları oraya taşıyın ve ardından Phantom'u yeni hesaba authenticator olarak bağlayın (aşağıya bakın). Eski hesap onarılamaz, çünkü adresi açığa çıkmış anahtara bağlıdır ve PQC anahtar rotasyonu yalnızca kuantum sonrası yarıyı değiştirir. SDK 0.8.2 veya üstünü kullanın.
+:::
 
-// In the browser (uses window.solana):
-const account = await connectPhantomUnified();
-
-// Or, given a raw signature you already have:
-const same = unifiedAccountFromPhantomSignature(signatureBytes);
-```
-
-Türetilen hesap, Phantom ed25519 anahtarından ayrı, kanonik bir anahtardır —
-Phantom, türetilen secp256k1/PQC gizli anahtarlarını asla görmez. Phantom
-anahtarının kendisinin limitler dahilinde hesaptan harcama yapmasına izin
-vermek için bkz.
-[Kimlik doğrulayıcılar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
+Bir Phantom (veya MetaMask) anahtarının bir hesaptan harcama yapabilmesi için **authenticator şeritlerini** kullanın: cüzdan anahtarını `MsgRegisterAuthenticator` ile kaydedin, ardından bir izin ve bir `SpendingRule` altında `MsgExecuteCosmos` / `MsgExecuteEVM` üzerinden kanonik PQC hesabından harcayın. Hesap, mnemonic'ten türetilen kendi anahtarlarını korur ve cüzdan anahtarı her an iptal edilebilir. Bkz. [Authenticator'lar ve devredilmiş harcama](/sdk/guides/authenticators). `abstractaccount` modülünün bu şeritleri sağladığını ve şu anda her iki ağda da kapalı olduğunu unutmayın (`GET /qorechain/abstractaccount/v1/config` `enabled: false` gösterir); bu nedenle bir cüzdan anahtarı henüz bağlanamaz. O zamana kadar yeni mnemonic hesabını doğrudan kullanın.
 
 ## Kuantum sonrası kriptografi (PQC)
 
@@ -231,9 +274,9 @@ Dışa aktarılan uzunluk sabitleri (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
 ### Takılabilir imzalayıcılar
 
 Bileşim (composition) için SDK; bir `Signer` soyutlaması, `PqcSigner` ve
-`HybridSigner` uygulamaları ile bir `SignatureMode` enum'u sağlar. PQC
-imzalamayı temel işlevleri doğrudan çağırmak yerine kendi akışınıza takmak
-istediğinizde bunları kullanın.
+`HybridSigner` uygulamaları ile bir `SignatureMode` türü (`"classical" | "pqc" |
+"hybrid"`) sağlar. PQC imzalamayı temel işlevleri doğrudan çağırmak yerine kendi
+akışınıza takmak istediğinizde bunları kullanın.
 
 ## Hibrit imzalama {#hybrid-signing}
 
@@ -243,13 +286,16 @@ sonrası koruma kazanır. Kuantum sonrası kısım, işlem üzerinde bir
 `PQCHybridSignature` uzantısı olarak taşınır.
 
 :::caution Native yolda hibrit imzalama zorunludur
-Güncel zincir sürümünden (**v3.1.97**) itibaren ağ varsayılanı
-`hybrid_signature_mode = required` ve `allow_classical_fallback = false`
-şeklindedir. `buildHybridTx` üzerinden (`includePqcPublicKey` ile) hibrit
-imzalama — veya birleşik eth-native hesaplar için `signHybridEth` —
+Zincir sürümü **v3.2.0** (her iki ağın da çalıştırdığı sürüm) itibarıyla ağ
+varsayılanı `hybrid_signature_mode = required` ve
+`allow_classical_fallback = false` şeklindedir. `buildHybridTx` /
+`signAndBroadcastHybrid` üzerinden (`rest` geçirerek) hibrit imzalama — veya
+birleşik eth-native hesaplar için `signHybridEth` / `EthNativeSigner` —
 Native-yol işlemleri için **zorunludur**; yalnızca-klasik Native işlemler
-zincir üzerinde reddedilir. EVM işlemleri ayrı bir `eth_secp256k1` yolu
-kullanır ve bundan etkilenmez.
+zincir üzerinde reddedilir. EVM işlemleri ayrı bir hattır, ancak v3.2.0'dan
+itibaren yalnızca kayıtlı bir ML-DSA-87 anahtarı olan ve açık bir
+[yetkilendirme penceresi](/sdk/guides/evm#evm-window) bulunan bir hesaptan kabul
+edilir.
 :::
 
 :::caution SDK ≤ 0.6.0 hibrit işlemleri reddedilir
@@ -259,28 +305,89 @@ oluşturulan hibrit işlemler, CheckTx aşamasında bir tx ayrıştırma hatası
 başarısız olur — 0.6.1+ sürümüne yükseltin.
 :::
 
+Coin type 118 hesabı için uçtan uca oluşturucu `signAndBroadcastHybrid`
+işlevidir (yayınlamadan oluşturmak için `buildHybridTx`). Klasik imzalayıcıya,
+hesabın ML-DSA-87 anahtar çiftine, hesap numarasına ve sequence değerine ve
+`rest` adresine ihtiyaç duyar. SDK 0.8.3 veya sonrası, `npm i @cosmjs/stargate`:
+
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  buildHybridTx,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
+  toBase,
 } from "@qorechain/sdk";
 
-const account = await deriveNativeAccount(mnemonic);
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// buildHybridTx assembles a tx with BOTH a classical signature and an
-// ML-DSA-87 signature attached as a PQCHybridSignature extension.
-// (See packages/ts and the pqc-hybrid-sign example for the full call.)
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address);            // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipient…",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,        // lets the SDK pick the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ### Zincir üstü ön koşul
 
-Bir hibrit işlemin zincir üzerinde PQC doğrulamasından geçebilmesi için,
-imzalayanın PQC genel anahtarının zincirin `MsgRegisterPQCKey` mesajı
-aracılığıyla **kayıtlı** olması gerekir — *ancak* `includePqcPublicKey: true`
-ayarlarsanız anahtar uzantıya gömülür ve zincir ilk kullanımda otomatik olarak
-kaydedebilir.
+Bir hibrit işlemin PQC doğrulamasından geçebilmesi için, imzalayanın PQC genel
+anahtarı `MsgRegisterPQCKeyV2` ile (klasik imzalı, hibrit kuraldan muaf)
+**kaydedilmiş** olmalıdır. SDK'nın `ensurePqcRegistered` /
+`buildRegisterPqcKeyMsg` işlevleri, `qorechaind tx pqc register-key` veya bir
+QoreChain cüzdanı bunu yapar. `includePqcPublicKey: true` yalnızca anahtarı
+uzantıya gömer; anahtarı **kaydetmez** ve zincir bir anahtarı ilk kullanımda
+kaydetmez.
+
+### Hangi imza baytı biçimi? {#sign-bytes-versions}
+
+Bir hibrit işlemin ML-DSA-87 yarısı iki bayt biçiminden biri üzerinden
+imzalanır ve bir ağ, herhangi bir yükseklikte bunlardan yalnızca birini
+doğrular:
+
+```text
+v1: BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+v2: "qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+```
+
+`B0`, PQC uzantısı olmayan işlem gövdesi, `A` ise `AuthInfo` baytlarıdır.
+`qorechain-vladi` ve `qorechain-diana` ikisi de **v2**'yi doğrular. Geçiş,
+mainnet'te `v3.2.0`, testnet'te ise `v3.1.98` (ardından `v3.2.0`) yükseltme adı
+altında kaydedildi; bu nedenle bir istemci **her iki** ad için de
+`GET /cosmos/upgrade/v1beta1/applied_plan/{name}` adresini sorgulamalı ve
+yüksekliklerden biri sıfırın üzerindeyse v2'yi kullanmalıdır. SDK bunu sizin
+yerinize yapar: her hibrit oluşturucu `signBytesVersion` alır (varsayılan
+`"auto"`, ya da `"v1"` / `"v2"`) ve bu iki zincirde `"auto"` ağın REST URL'sine
+(`rest`) ihtiyaç duyar: tahmin etmek yerine hata fırlatır. Üst düzey yollar,
+zincir imzayı `pqc` kodu 21 ile reddettiğinde yeniden çözümler ve bir kez
+yeniden dener. Birim testlerinde, testin canlı bir düğüme bağımlı olmaması için
+`signBytesVersion` değerini açıkça geçirin. Ayrıca bkz.
+[Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21).
 
 ### Hibrit işlem sözleşmesi (üst düzey)
 

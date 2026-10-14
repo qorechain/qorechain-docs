@@ -42,7 +42,7 @@ const svm = await deriveSvmAccount(mnemonic);
 console.log(svm.address); // base58 ed25519 public key
 ```
 
-Mnemonicul este validat (atât cuvintele, cât și suma de control) înainte ca
+Mnemonicul este validat (atât cuvintele, **cât și** suma de control) înainte ca
 orice cheie să fie derivată, astfel încât o greșeală de tastare generează o
 eroare, nu produce în tăcere un cont greșit. Poți valida explicit cu
 `validateMnemonic(mnemonic)`.
@@ -93,7 +93,10 @@ moduri:
 | SVM | base58 al celor 20 de bytes completați la dreapta cu 12 bytes zero (32 de bytes) |
 
 Un depozit către **oricare** dintre cele trei ajunge într-un **singur** sold,
-iar cheia cheltuiește pe fiecare lane:
+iar cheia este semnatarul pe fiecare lane (pe lane-ul EVM, în interiorul unei
+[ferestre de autorizare](/sdk/guides/evm#evm-window); lane-ul de tranzacții SVM
+este în prezent dezactivat la nivelul întregii rețele, deci SVM este astăzi
+doar în citire):
 
 ```ts
 import {
@@ -108,7 +111,8 @@ account.cosmos;       // "qor1…"   bech32, Native lane
 account.evm;          // "0x…"     EIP-55 hex, EVM lane
 account.svm;          // "<base58>" 32-byte SVM address (addr20 + 12 zero bytes)
 account.addressBytes; // the raw 20 bytes shared by all three
-account.publicKey;    // 33-byte compressed secp256k1 public key
+account.publicKey;    // "0x…" hex string of the 33-byte compressed secp256k1 key
+account.privateKey;   // "0x…" hex string (a secret: never log or commit it)
 account.pqc;          // { publicKey, secretKey } — ML-DSA-87, derived below
 
 // Decode any ONE encoding into all three:
@@ -135,6 +139,10 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 astfel încât poate fi recuperată din `{ address, mnemonic }` și este
 identică în toate SDK-urile QoreChain, indiferent de limbaj. (Pentru
 `unifiedAccountFromSeed`, slotul mnemonicului este `"seed:" + hex(seed32)`.)
+Începând cu SDK 0.8.3, `derivePqcCanonical(account, mnemonic)` rezolvă mai
+întâi `account` la forma sa `qor1…` cu litere mici (`canonicalAccount`), astfel
+încât un bech32 cu litere mari sau forma `0x` a aceluiași cont produce aceeași
+cheie.
 
 ### Trimiterea pe lane-ul Native cu cheia eth
 
@@ -142,31 +150,83 @@ Un cont unificat semnează tranzacțiile pe calea Native cu schema
 `eth_secp256k1`: semnătura clasică este secp256k1 peste **keccak256** al
 bytes-ilor SignDoc (nu sha256), iar cheia publică din `SignerInfo` folosește
 URL-ul de tip `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`. Calea hibridă
-(`signHybridEth`) atașează suplimentar extensia `PQCHybridSignature`
-ML-DSA-87 — obligatorie pe rețelele live:
+(`signHybridEth`, sau `EthNativeSigner` cu `signMode: "hybrid"` implicit)
+atașează suplimentar extensia `PQCHybridSignature` ML-DSA-87, obligatorie pe
+rețelele live.
+
+Sunt necesare două lucruri înainte de primul transfer hibrid. Mai întâi, cheia
+ML-DSA-87 a contului trebuie **înregistrată** (o singură dată). Înregistrarea
+este singura tranzacție semnată clasic și scutită de regula hibridă: semneaz-o
+cu `signMode: "classical"`. `publicKey` al contului este un șir hex `0x`, deci
+decodează-l în bytes pentru `ecdsaPubkey`. În al doilea rând, transmite `rest`
+semnatarului, ca să poată întreba rețeaua ce
+[formă a sign-bytes](#sign-bytes-versions) verifică (pe `qorechain-vladi` și
+`qorechain-diana` aruncă o eroare în loc să ghicească). Necesită SDK 0.8.1 sau
+mai nou și `npm i @cosmjs/stargate`:
 
 ```ts
-import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  buildRegisterPqcKeyMsg,
+  toBase,
+} from "@qorechain/sdk";
 
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+const CHAIN_ID = "qorechain-vladi";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
 const account = await deriveUnifiedAccount(mnemonic);
-const signer = new EthNativeSigner(account); // signMode: "hybrid" by default
 
-// `transport` is anything with broadcastTx (e.g. a connected client).
-await signer.bankSend(
+// The REST account record carries the number and sequence (the account must
+// exist, that is, have received funds).
+async function authInfo() {
+  const { account: base } = await client.rest.get<{
+    account: { account_number: string; sequence: string };
+  }>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+  return { accountNumber: BigInt(base.account_number), sequence: BigInt(base.sequence) };
+}
+
+// 1) Register the ML-DSA-87 key once (classical-signed, exempt from the hybrid rule).
+const classical = new EthNativeSigner(account, { signMode: "classical" });
+await classical.signAndBroadcast(transport, {
+  chainId: CHAIN_ID,
+  ...(await authInfo()),
+  messages: [
+    buildRegisterPqcKeyMsg(account.cosmos, {
+      pqcKeypair: account.pqc,
+      ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+    }),
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
+});
+
+// 2) Send with the hybrid signature (the default signMode).
+const signer = new EthNativeSigner(account, { rest: REST });
+const res = await signer.bankSend(
   transport,
   "qor1recipient…",
-  [{ denom: "uqor", amount: "1000000" }], // 1 QOR
-  { chainId: "qorechain-vladi", accountNumber, sequence, fee },
+  [{ denom: "uqor", amount: toBase("1.5") }],
+  {
+    chainId: CHAIN_ID,
+    ...(await authInfo()),
+    fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  },
 );
+console.log(res.transactionHash);
 ```
 
 Pentru control la nivel inferior, `signHybridEth(params)` /
 `signClassicalEth(params)` returnează bytes-ii `TxRaw` asamblați și
 artefactele de semnare, iar `accountAuthInfo(baseAccount)` citește
-`account_number` / `sequence` dintr-un cont a cărui cheie publică on-chain
-folosește URL-ul de tip `eth_secp256k1`. Calea doar-clasică este destinată
-exclusiv mesajului unic, scutit de bootstrap, `MsgRegisterPQCKeyV2`; folosește
-calea hibridă pentru orice altceva.
+`account_number` / `sequence` dintr-un `BaseAccount` protobuf a cărui cheie
+publică on-chain folosește URL-ul de tip `eth_secp256k1` (un cont REST JSON
+are nevoie ca mai întâi câmpurile să-i fie mapate, așa cum face `authInfo` mai
+sus).
 
 :::caution Actualizează la SDK 0.6.1+ pentru tranzacții hibride
 SDK **0.6.1** a corectat o eroare de codificare critică pentru consens:
@@ -178,30 +238,16 @@ hibridă — inclusiv lane-ul eth-native — construită cu SDK ≤ 0.6.0 este
 respinsă on-chain: actualizează la 0.6.1 sau o versiune ulterioară.
 :::
 
-### Phantom (P1a): un cont unificat fără exportul unei chei
+### Phantom și alte portofele externe {#phantom}
 
-`connectPhantomUnified()` (TypeScript) derivă un cont unificat canonic,
-**non-custodial**, dintr-o semnătură Phantom deterministă: utilizatorul
-semnează un mesaj fix, separat pe domeniu, cu cheia ed25519 a Phantom, iar
-`shake256(signature, 32)` generează seed-ul contului.
+:::danger Eliminat în SDK 0.8.0
+SDK-urile 0.6.0 - 0.7.0 conțineau `connectPhantomUnified()` și `unifiedAccountFromPhantomSignature()` (eliminate în 0.8.0; în Python și Rust, `unified_account_from_phantom_signature`, în Go, `unified.UnifiedAccountFromPhantomSignature`, în Java, `UnifiedAccounts.unifiedAccountFromPhantomSignature`), care derivau cheia de cheltuire a unui cont dintr-o semnătură Phantom peste mesajul fix `QoreChain unified account derivation v1` urmat de cheia publică base58 a portofelului.
+O semnătură ed25519 este deterministă și orice site poate cere portofelului să semneze același mesaj, deci oricine a obținut vreodată semnătura poate reconstrui cheile secp256k1 și ML-DSA ale contului. Ambele funcții aruncă acum o eroare.
 
-```ts
-import {
-  connectPhantomUnified,
-  unifiedAccountFromPhantomSignature,
-} from "@qorechain/sdk";
+Dacă ați creat un cont astfel, considerați-l compromis de acum: creați un cont nou dintr-un mnemonic, mutați fondurile în el și apoi legați Phantom de noul cont ca autentificator (vezi mai jos). Contul vechi nu poate fi reparat, pentru că adresa lui este legată de cheia expusă, iar o rotire a cheii PQC înlocuiește doar jumătatea post-cuantică. Folosiți SDK 0.8.2 sau mai nou.
+:::
 
-// In the browser (uses window.solana):
-const account = await connectPhantomUnified();
-
-// Or, given a raw signature you already have:
-const same = unifiedAccountFromPhantomSignature(signatureBytes);
-```
-
-Contul derivat este o cheie canonică separată de cheia ed25519 Phantom —
-Phantom nu vede niciodată secretele secp256k1/PQC derivate. Pentru a permite
-cheii Phantom însăși să cheltuiască din cont sub anumite limite, vezi
-[Autentificatori și cheltuire delegată](/sdk/guides/authenticators).
+Ca o cheie Phantom (sau MetaMask) să cheltuiască dintr-un cont, folosiți **benzile de autentificator**: înregistrați cheia portofelului cu `MsgRegisterAuthenticator`, apoi cheltuiți din contul PQC canonic prin `MsgExecuteCosmos` / `MsgExecuteEVM` sub o permisiune și o `SpendingRule`. Contul își păstrează propriile chei derivate din mnemonic, iar cheia portofelului poate fi revocată oricând. Vezi [Autentificatori și cheltuieli delegate](/sdk/guides/authenticators). Rețineți că modulul `abstractaccount` care oferă aceste benzi este momentan oprit pe ambele rețele (`GET /qorechain/abstractaccount/v1/config` arată `enabled: false`), deci o cheie de portofel nu poate fi încă legată; până atunci folosiți direct noul cont din mnemonic.
 
 ## Criptografie post-cuantică (PQC)
 
@@ -239,9 +285,9 @@ Constantele de lungime exportate (`ML_DSA_87_PUBLIC_KEY_LENGTH`,
 ### Semnatari pluggable
 
 Pentru compoziție, SDK-ul oferă o abstracție `Signer`, plus implementările
-`PqcSigner` și `HybridSigner`, și un enum `SignatureMode`. Folosește-le
-atunci când vrei să conectezi semnarea PQC în propriul tău flux, în loc să
-apelezi direct primitivele.
+`PqcSigner` și `HybridSigner`, și un tip `SignatureMode` (`"classical" | "pqc" |
+"hybrid"`). Folosește-le atunci când vrei să conectezi semnarea PQC în propriul
+tău flux, în loc să apelezi direct primitivele.
 
 ## Semnarea hibridă {#hybrid-signing}
 
@@ -251,13 +297,15 @@ timp ce câștigă protecție post-cuantică. Partea post-cuantică călătoreș
 o extensie `PQCHybridSignature` pe tranzacție.
 
 :::caution Semnarea hibridă este obligatorie pe calea Native
-Începând cu versiunea curentă a chain-ului (**v3.1.97**), valoarea implicită
-a rețelei este `hybrid_signature_mode = required`, cu
-`allow_classical_fallback = false`. Semnarea hibridă prin `buildHybridTx` (cu
-`includePqcPublicKey`) — sau `signHybridEth` pentru conturile unificate
-eth-native — este **obligatorie** pentru tranzacțiile pe calea Native;
-tranzacțiile Native doar-clasice sunt respinse on-chain. Tranzacțiile EVM
-folosesc o cale separată `eth_secp256k1` și nu sunt afectate.
+Începând cu versiunea de chain **v3.2.0** (versiunea pe care rulează ambele
+rețele), valoarea implicită a rețelei este `hybrid_signature_mode = required`,
+cu `allow_classical_fallback = false`. Semnarea hibridă prin `buildHybridTx` /
+`signAndBroadcastHybrid` (transmite `rest`), sau `signHybridEth` /
+`EthNativeSigner` pentru conturile unificate eth-native, este **obligatorie**
+pentru tranzacțiile pe calea Native; tranzacțiile Native doar-clasice sunt
+respinse on-chain. Tranzacțiile EVM sunt un lane separat, dar începând cu
+v3.2.0 sunt admise doar de la un cont cu o cheie ML-DSA-87 înregistrată și cu o
+[fereastră de autorizare](/sdk/guides/evm#evm-window) deschisă.
 :::
 
 :::caution Tranzacțiile hibride cu SDK ≤ 0.6.0 sunt respinse
@@ -267,28 +315,89 @@ protobuf, critică pentru consens). Tranzacțiile hibride construite cu SDK
 actualizează la 0.6.1+.
 :::
 
+Constructorul end-to-end pentru un cont coin-type-118 este
+`signAndBroadcastHybrid` (sau `buildHybridTx` pentru a construi fără a
+difuza). Are nevoie de semnatarul clasic, de perechea de chei ML-DSA-87 a
+contului, de numărul contului și de sequence, precum și de `rest`.
+SDK 0.8.3 sau mai nou, `npm i @cosmjs/stargate`:
+
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  buildHybridTx,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
+  toBase,
 } from "@qorechain/sdk";
 
-const account = await deriveNativeAccount(mnemonic);
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// buildHybridTx assembles a tx with BOTH a classical signature and an
-// ML-DSA-87 signature attached as a PQCHybridSignature extension.
-// (See packages/ts and the pqc-hybrid-sign example for the full call.)
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address);            // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipient…",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,        // lets the SDK pick the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ### Condiție prealabilă on-chain
 
-Înainte ca o tranzacție hibridă să poată fi verificată PQC on-chain, cheia
-publică PQC a semnatarului trebuie să fie **înregistrată** prin
-`MsgRegisterPQCKey` al chain-ului — *cu excepția* cazului în care setezi
-`includePqcPublicKey: true`, ceea ce încapsulează cheia în extensie, astfel
-încât chain-ul o poate înregistra automat la prima utilizare.
+Înainte ca o tranzacție hibridă să poată fi verificată PQC, cheia publică PQC a
+semnatarului trebuie să fie **înregistrată** prin `MsgRegisterPQCKeyV2`
+(semnată clasic, scutită de regula hibridă). O fac
+`ensurePqcRegistered` / `buildRegisterPqcKeyMsg` din SDK,
+`qorechaind tx pqc register-key` sau un portofel QoreChain.
+`includePqcPublicKey: true` doar încapsulează cheia în extensie; **nu** o
+înregistrează, iar chain-ul nu înregistrează o cheie la prima utilizare.
+
+### Ce formă a sign-bytes? {#sign-bytes-versions}
+
+Jumătatea ML-DSA-87 a unei tranzacții hibride este semnată peste una dintre
+două forme de bytes, iar o rețea o verifică exact pe una la un anumit height:
+
+```text
+v1: BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+v2: "qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+```
+
+`B0` este corpul tranzacției fără extensia PQC, iar `A` sunt bytes-ii
+`AuthInfo`. `qorechain-vladi` și `qorechain-diana` verifică ambele **v2**.
+Trecerea a fost înregistrată sub numele de upgrade `v3.2.0` pe mainnet și sub
+`v3.1.98` (apoi `v3.2.0`) pe testnet, deci un client trebuie să interogheze
+`GET /cosmos/upgrade/v1beta1/applied_plan/{name}` pentru **ambele** nume și să
+folosească v2 dacă oricare dintre height-uri este peste zero. SDK-ul face acest
+lucru pentru tine: fiecare constructor hibrid primește `signBytesVersion`
+(`"auto"` implicit, sau `"v1"` / `"v2"`), iar `"auto"` are nevoie de URL-ul REST
+al rețelei (`rest`) pe aceste două chain-uri: aruncă o eroare în loc să
+ghicească. Căile de nivel înalt reapelează rezolvarea și reîncearcă o dată
+când chain-ul refuză semnătura cu codul `pqc` 21. În testele unitare,
+transmite `signBytesVersion` explicit, ca testul să nu depindă de un nod live.
+Vezi și [Depanarea codului 21](/developer-guide/post-quantum-signing#code-21).
 
 ### Contractul tranzacției hibride (nivel general)
 

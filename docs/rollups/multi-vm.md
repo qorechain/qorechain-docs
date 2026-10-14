@@ -7,73 +7,61 @@ sidebar_position: 8
 
 # Multi-VM (cross-VM calls)
 
-A multi-VM rollup runs an EVM execution layer that can call into CosmWasm
-contracts on the **QoreChain Native** (Wasm) runtime through a dedicated
-**cross-VM precompile**. The RDK ships the TypeScript tooling to encode those
-calls and a scaffold template to start from.
+The RDK includes TypeScript helpers that encode a call from an EVM contract into the **cross-VM precompile** at `0x0000000000000000000000000000000000000901`, which is designed to route it to a CosmWasm contract on the **QoreChain Native** (Wasm) runtime, and a `multivm-rollup` scaffold template that wires them up. The tooling covers **EVM → QoreChain Native** only; SVM is a separate runtime and is not part of the precompile.
 
-> This tooling covers **EVM → QoreChain Native** (CosmWasm contracts) only. SVM
-> is a separate runtime and is not part of the cross-VM precompile.
-
-:::note
-As of RDK v0.4.2 the Wasm runtime's VM option identifier is **`native`**
-(QoreChain Native); `cosmwasm` remains an accepted legacy alias, and both map to
-`cosmwasm` on the wire — the chain, explorer, and the cross-VM precompile ABI
-(`executeCrossVMCall`) are unchanged.
+:::caution Not usable on the live networks yet
+The cross-VM precompile is **not activated** on either network: the EVM module's list of active static precompiles is empty on mainnet and testnet, so a call to `0x…0901` returns empty data and executes nothing. CosmWasm contract upload is also closed on both networks, and the SVM transaction lane is disabled network-wide. Until the precompile is activated and CosmWasm uploads are re-opened, there is nothing to call. This page documents the tooling so you can prepare; do not build production flows on it. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
-## The precompile
+:::note
+As of RDK v0.4.2 the Wasm runtime's VM option identifier is **`native`** (QoreChain Native); `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire. The precompile ABI function is `executeCrossVMCall(string,bytes)`.
+:::
 
-The cross-VM precompile is exposed at a fixed address:
+## The precompile address
 
 ```ts
 import { CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
 
-console.log(CROSS_VM_PRECOMPILE); // 0x…0901
+console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
 ```
 
 ## Encoding a cross-VM call
 
-`encodeCrossVmCalldata` builds the calldata your EVM contract sends to the
-precompile to invoke a CosmWasm contract. `functionSelector` computes the 4-byte
-selector for a Solidity function signature.
+`encodeCrossVmCalldata` builds calldata for `executeCrossVMCall(string contract, bytes msg)`. `msg` is the contract's execute message as a UTF-8 JSON string or raw bytes.
 
 ```ts
-import { encodeCrossVmCalldata, functionSelector } from "@qorechain/rdk";
+import { encodeCrossVmCalldata } from "@qorechain/rdk";
 
 const calldata = encodeCrossVmCalldata({
   contract: "qor1cosmwasmcontractaddress...",
-  msg: { transfer: { recipient: "qor1...", amount: "100" } },
+  msg: JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }),
 });
-
-const selector = functionSelector("callCosmwasm(string,bytes)");
 ```
 
 ## The Solidity side
 
-From an EVM contract you call the precompile address with the encoded calldata.
-The `multivm-rollup` template includes a `contracts/CrossVmCaller.sol` snippet
-along these lines:
+From an EVM contract you call the precompile address with the encoded call:
 
 ```solidity
-// contracts/CrossVmCaller.sol
 address constant CROSS_VM_PRECOMPILE = 0x0000000000000000000000000000000000000901;
 
-function callCosmwasm(bytes memory calldata_) internal returns (bytes memory) {
-    (bool ok, bytes memory out) = CROSS_VM_PRECOMPILE.call(calldata_);
-    require(ok, "cross-vm call failed");
-    return out;
+function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
+    external returns (bytes memory)
+{
+    bytes memory data =
+        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+    (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
+    require(ok, "cross-VM call failed");
+    return ret;
 }
 ```
 
-## Scaffold a multi-VM rollup
+Because the precompile is inactive, a plain `.call` to it returns success with empty data; check the returned length rather than relying on the `ok` flag alone if you test this today.
 
-A new template, `multivm-rollup`, scaffolds an EVM rollup wired to call CosmWasm,
-including the `CrossVmCaller.sol` snippet:
+## Scaffold a multi-VM rollup
 
 ```bash
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder
-templates.
+The template includes a `contracts/CrossVmCaller.sol` starting point; compare it with the ABI above before relying on it. See [Deploying a Rollup](/rollups/deploying-a-rollup) for all scaffolder templates.

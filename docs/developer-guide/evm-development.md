@@ -10,7 +10,11 @@ sidebar_position: 2
 QoreChain runs a fully EVM-compatible execution environment on the QoreChain EVM Engine, allowing you to deploy and interact with Solidity smart contracts using familiar tooling. The EVM module exposes a JSON-RPC interface on **port 8545** (WebSocket on **8546**) that supports standard Ethereum development workflows.
 
 :::note
-The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026 running chain version **v3.1.97**. For the **`qorechain-diana`** testnet, use EVM chain ID **9800**.
+The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 29 June 2026, which runs node release **v3.2.1** (consensus rules from the v3.2.0 upgrade). For the **`qorechain-diana`** testnet (v3.2.2), use EVM chain ID **9800**. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
+:::
+
+:::caution An EVM transaction needs a registered PQC key and an open authorisation window
+Since the v3.2.0 upgrade (mainnet height 2,981,742, testnet height 5,920,000) the EVM lane admits a transaction only from an account that has **(1) a registered ML-DSA-87 post-quantum key** and **(2) an open EVM authorisation window** that still has room for it. You sign with ordinary tools (MetaMask, ethers.js, Hardhat, Foundry), but without a registered key and an open window `eth_sendRawTransaction` is refused (codespace `pqc`, codes 26, 27 or 28). Reads, `eth_call` and gas estimation need neither. See [EVM authorisation window](#evm-window) below and the step-by-step how-to in [Your First Transaction](/getting-started/first-transaction#evm-window).
 :::
 
 ---
@@ -21,12 +25,12 @@ The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801
 | -------------------- | ------------------------------------------ |
 | Default URL          | `http://localhost:8545`                    |
 | WebSocket URL        | `ws://localhost:8546`                      |
-| Supported namespaces | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
+| Supported namespaces | `eth_`, `web3_`, `net_`, `txpool_`          |
 | Chain ID (mainnet)   | `9801` (`qorechain-vladi`)                 |
 | Chain ID (testnet)   | `9800` (`qorechain-diana`)                 |
 | Currency symbol      | `QOR`                                      |
 
-The `qor_` namespace provides QoreChain-specific methods. See [Custom Namespace](#custom-qor_-namespace) below.
+QoreChain-specific reads are served over REST (`api.qore.host`); the `qor_` JSON-RPC namespace described [below](#custom-qor_-namespace) is **not enabled** on the public endpoints or in the default node configuration.
 
 ---
 
@@ -37,10 +41,12 @@ Add QoreChain as a custom network in MetaMask:
 | Field              | Mainnet Value             | Testnet Value           |
 | ------------------ | ------------------------- | ----------------------- |
 | Network Name       | QoreChain (qorechain-vladi) | QoreChain Diana       |
-| RPC URL            | `http://localhost:8545`   | `http://localhost:8545` |
+| RPC URL            | `https://evm.qore.host`   | `https://evm-testnet.qore.host` |
 | Chain ID           | `9801`                    | `9800`                  |
 | Currency Symbol    | `QOR`                     | `QOR`                   |
-| Block Explorer URL | *(use the official mainnet explorer)* | *(leave blank for local testnet)* |
+| Block Explorer URL | `https://explore.qore.network` | *(optional)* |
+
+Sending from MetaMask additionally requires a registered PQC key and an open [EVM authorisation window](#evm-window) on the account.
 
 ---
 
@@ -63,7 +69,7 @@ module.exports = {
 };
 ```
 
-Deploy a contract:
+Deploy a contract (the deploying account needs a registered PQC key and an open [authorisation window](#evm-window); a deployment counts as one EVM transaction in the window):
 
 ```bash
 npx hardhat run scripts/deploy.js --network qorechain
@@ -152,40 +158,83 @@ This conversion is transparent — when you check a balance via `eth_getBalance`
 
 ## ERC-20 Token Pairs
 
-The `x/erc20` module provides automatic registration of **token pairs** between native Cosmos SDK denominations and ERC-20 contracts:
+The `x/erc20` module provides **token pairs** between native Cosmos SDK denominations and ERC-20 contracts:
 
 * Native tokens can be used within EVM contracts as ERC-20s
 * ERC-20 tokens deployed on the EVM can be converted to native denominations
 * Conversion is bidirectional and handled at the protocol level
 
 ```bash
-# Register a new token pair (governance proposal)
-qorechaind tx erc20 register-coin <denom> --from mykey
+# Register a native ERC-20 contract as a token pair (permissioned: `permissionless_registration` is false)
+qorechaind tx erc20 register-erc20 <contract-addr> --from mykey
 
 # Convert native tokens to ERC-20
-qorechaind tx erc20 convert-coin 1000000uqor --from mykey
+qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40000uqor
 
 # Convert ERC-20 back to native
-qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey
+qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
+
+These are Cosmos-lane transactions: on the live networks they also need the hybrid post-quantum cosign (build with `--generate-only`, then `qorechaind tx pqc cosign`; see [Post-Quantum Signing](/developer-guide/post-quantum-signing)). Token pairs are registered under a permissioned policy and none exist on mainnet yet.
 
 ---
 
 ## PQC and EVM Compatibility
 
-EVM transactions use **classical ECDSA (secp256k1)** signatures for full compatibility with existing Ethereum tooling, wallets, and libraries. This ensures that MetaMask, Hardhat, Foundry, ethers.js, and all standard EVM tools work without modification.
+EVM transactions are signed with **classical ECDSA (secp256k1)**, so MetaMask, Hardhat, Foundry, ethers.js and other standard tools build and sign them without modification. What changed in **v3.2.0** is *admission*: a transaction is accepted only if its sender holds a registered post-quantum key and a live authorisation window (next section). Registering a key and opening a window are Cosmos-lane transactions and need the hybrid (ML-DSA-87 + secp256k1) signature.
 
-For post-quantum security within the EVM:
+For post-quantum security inside contracts:
 
-* Use the **PQC Verify precompile** (`0x0000...0A01`) to verify ML-DSA-87 signatures on-chain from Solidity. See [EVM Precompiles](/developer-guide/evm-precompiles).
-* **Cross-VM messages** from EVM to CosmWasm or SVM can be PQC-signed at the Cosmos SDK transaction layer.
-* Accounts can optionally register PQC public keys via `x/pqc` for hybrid security.
+* The **PQC Verify precompile** (`0x0000...0A01`) will verify ML-DSA-87 signatures on-chain from Solidity once it is activated; it is **not active yet** on mainnet or testnet. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+* **Cross-VM messages** from EVM to CosmWasm or SVM are Cosmos-lane transactions and carry the hybrid signature like any other; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for their current availability.
+
+---
+
+## EVM authorisation window {#evm-window}
+
+A post-quantum signature cannot travel *with* an Ethereum transaction (wallets such as MetaMask cannot attach a second signature), so it travels *ahead* of it. The account opens a bounded window with the Cosmos-lane message `MsgOpenEVMWindow`; the EVM lane then admits only transactions covered by a live window. A stolen classical key alone cannot open a window, so it can move only what an already-open window allows.
+
+| Bound       | Range              | Meaning |
+| ----------- | ------------------ | ------- |
+| `blocks`    | 1 – 17,280         | How long the window stays open, counted in blocks from the block that opens it |
+| `max-txs`   | 1 – 1,000          | How many EVM transactions it admits |
+| `max-value` | above 0, in `uqor` | Total outflow it admits: transferred value **plus** the maximum fee each transaction could pay (gas limit × max fee per gas), converted to `uqor` and rounded up |
+
+Whichever bound runs out first closes the window. Every field is required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 5 hours on the testnet (about 1.0 s per block).
+
+**Steps** (the full walkthrough is in [Your First Transaction](/getting-started/first-transaction#evm-window)):
+
+1. Register your ML-DSA-87 key once (`tx pqc register-key-v2` or `register-key`, with `--gas 600000 --fees 60000uqor`; this one transaction is exempt from the hybrid requirement, so a new account can bootstrap). See [Post-Quantum Signing](/developer-guide/post-quantum-signing#pqc-key-registration).
+2. Open a window. It is a Cosmos-lane transaction, so produce it unsigned and cosign it with your ML-DSA key (`max-value` accepts `uqor` or `qor`; `1000qor` is 1,000 QOR):
+
+   ```bash
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
+   qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+   ```
+
+3. Check what is left: `qorechaind query pqc evm-window <address>` or `GET /qorechain/pqc/v1/evm_window/{address}` (answers `found: false` when there is none).
+4. Send your EVM transactions normally. Opening a window is a Cosmos-lane transaction and advances the account's sequence, which is also its EVM nonce, so read the nonce **after** the window is open and sign then.
+
+Close a window early with `qorechaind tx pqc close-evm-window` (same `--generate-only` and `cosign` pattern), for example if you suspect the classical key is exposed: whatever the window still admitted is refused from the next block.
+
+| Refusal (codespace `pqc`) | Meaning |
+| ------------------------- | ------- |
+| code 26 | No open window for the sender, or the sender has no registered PQC key |
+| code 27 | The window is expired or exhausted (the message shows which bound) |
+| code 28 | Invalid window bounds when opening one, or no registered key at that point |
+
+With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` and `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
 
 ---
 
 ## Custom `qor_` Namespace {#custom-qor_-namespace}
 
 QoreChain extends the JSON-RPC with a `qor_` namespace for chain-specific queries:
+
+:::warning Not served yet
+No released node build serves the `qor_` namespace yet: `rpc_modules` on the public endpoints lists only `eth`, `net`, `rpc`, `txpool` and `web3`, and every method below returns `-32601` (method not found) on mainnet, testnet and self-run nodes with the default configuration (`eth`, `net`, `web3`, `txpool`). See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace) for the status and the REST alternatives (for example `GET /qorechain/pqc/v1/account/{address}` for PQC key status).
+:::
 
 | Method                      | Description                                                       |
 | --------------------------- | ----------------------------------------------------------------- |
@@ -213,6 +262,6 @@ curl -X POST http://localhost:8545 \
 
 ## Next Steps
 
-* [EVM Precompiles](/developer-guide/evm-precompiles) — Access PQC, AI, and cross-VM features from Solidity
-* [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Call CosmWasm and SVM contracts from the EVM
-* [Account Abstraction](/developer-guide/account-abstraction) — Programmable accounts with session keys
+* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the reserved precompile interfaces (not active on the public networks yet)
+* [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Cross-VM calls and their current availability
+* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (module currently disabled)

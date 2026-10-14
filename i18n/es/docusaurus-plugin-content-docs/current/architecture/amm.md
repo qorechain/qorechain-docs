@@ -17,7 +17,11 @@ Los pools siguen curvas de fijación de precios de AMM conocidas:
 Todos los montos utilizan las unidades nativas de QoreChain. El token de staking y de comisiones es **QOR**, cuyo denom base es **uqor** (1 QOR = 10^6 uqor). Los participantes de los pools y las direcciones utilizan el prefijo bech32 `qor`.
 
 :::note
-Los comandos a continuación utilizan `qorechaind`. Añade los indicadores de transacción habituales (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) según tu entorno; por ejemplo `--chain-id qorechain-vladi` contra mainnet.
+Los comandos a continuación utilizan `qorechaind`. Añade los indicadores de transacción habituales (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) según tu entorno; por ejemplo `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` contra mainnet (el mínimo de comisión de la red es 0,1 uqor por unidad de gas). Cada comando `tx amm` es una transacción de la vía Cosmos, por lo que necesita la firma híbrida poscuántica: añade `--generate-only > tx.json` y luego ejecuta `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (consulta [Primera transacción](/getting-started/first-transaction#send-qor)).
+:::
+
+:::caution Todavía no existen pools
+El módulo AMM está activo en mainnet y en la testnet, pero **todavía no se ha creado ningún pool**, y los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
 :::
 
 ## Pools y participaciones LP
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Pausar y reanudar un pool
 
-Los pools pueden ser pausados y reanudados por la autoridad del pool (la dirección pasada mediante `--from`). Un pool pausado rechaza los swaps y los cambios de liquidez hasta que se reanude, lo que resulta útil para la respuesta a incidentes o el mantenimiento coordinado.
+Los pools pueden ser pausados y reanudados por la autoridad de gobernanza. En mainnet, estos dos mensajes están actualmente desactivados por el cortacircuitos. Un pool pausado rechaza los swaps y los cambios de liquidez hasta que se reanude, lo que resulta útil para la respuesta a incidentes o el mantenimiento coordinado.
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## Resumen de comandos
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | Quemar tokens LP y retirar reservas |
 | `swap-exact-in` | Intercambiar un monto de entrada fijo |
 | `swap-exact-out` | Intercambiar hasta un monto de salida fijo |
-| `pause-pool` | Pausar un pool (autoridad) |
-| `resume-pool` | Reanudar un pool pausado (autoridad) |
+| `pause-pool` | Pausar un pool (autoridad de gobernanza; desactivado en mainnet) |
+| `resume-pool` | Reanudar un pool pausado (autoridad de gobernanza; desactivado en mainnet) |
 
 **Consultas** (`qorechaind query amm …`):
 

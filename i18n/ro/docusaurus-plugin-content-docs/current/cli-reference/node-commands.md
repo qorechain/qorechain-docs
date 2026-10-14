@@ -10,7 +10,7 @@ sidebar_position: 1
 Referință pentru comenzile `qorechaind` utilizate pentru inițializarea, configurarea și operarea unui nod QoreChain.
 
 :::note
-QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026 pe versiunea de lanț **v3.1.97**) și testnet-ul **`qorechain-diana`**. Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet.
+QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 29 iunie 2026; versiunea curentă a nodului este **v3.2.1**) și testnet-ul **`qorechain-diana`** (versiunea nodului **v3.2.2**). Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet. Versiunea curentă pentru fiecare rețea este listată în `latest.json` de pe [download.qore.host](https://download.qore.host).
 :::
 
 ---
@@ -25,11 +25,14 @@ qorechaind init <moniker> --chain-id qorechain-diana
 
 | Flag          | Tip   | Descriere                                    |
 | ------------- | ------ | ---------------------------------------------- |
-| `--chain-id`  | string | Identificatorul lanțului (obligatoriu)                    |
+| `--chain-id`  | string | Identificatorul lanțului (transmite-l întotdeauna; dacă lipsește, se creează unul aleatoriu) |
 | `--home`      | string | Directorul home al nodului (implicit: `~/.qorechaind`) |
-| `--overwrite` | bool   | Suprascrie fișierele genesis și de configurare existente    |
+| `--overwrite` | bool   | Suprascrie `genesis.json` existent    |
+| `--recover`   | bool   | Furnizează o frază seed pentru a recupera o cheie existentă în loc să creezi una nouă |
 
-Creează structura de directoare sub `--home` cu `config/`, `data/` și un `genesis.json` inițial.
+Creează structura de directoare sub `--home` cu `config/`, `data/` și un `genesis.json` inițial. Pentru un nod de rețea, înlocuiește acel `genesis.json` cu fișierul genesis al rețelei înainte de pornire (vezi [Conectarea la mainnet](/getting-started/connecting-to-mainnet)).
+
+`init` scrie, de asemenea, ID-ul de lanț EVM al rețelei (`9801` pentru `qorechain-vladi`, `9800` pentru `qorechain-diana`) în setarea `evm-chain-id` din `app.toml`, așa că transmite `--chain-id` corect.
 
 ---
 
@@ -44,7 +47,7 @@ qorechaind start [flags]
 | Flag                   | Tip   | Descriere                                          |
 | ---------------------- | ------ | ---------------------------------------------------- |
 | `--home`               | string | Directorul home al nodului                                  |
-| `--minimum-gas-prices` | string | Prețurile minime de gas de acceptat (de ex., `0.001uqor`)     |
+| `--minimum-gas-prices` | string | Prețul minim de gas pe care îl acceptă acest nod. Pragul rețelei este `0.1uqor`; setează cel puțin această valoare |
 | `--pruning`            | string | Strategie de curățare: `default`, `nothing`, `everything` |
 | `--halt-height`        | uint   | Oprește nodul la această înălțime de bloc                   |
 | `--halt-time`          | uint   | Oprește nodul la această marcă temporală Unix                 |
@@ -85,23 +88,9 @@ Returnează JSON cu secțiunile `node_info`, `sync_info` și `validator_info`.
 
 ---
 
-## config
+## client configuration
 
-Citește sau scrie valori în configurarea nodului.
-
-### Setarea unei valori de configurare
-
-```bash
-qorechaind config set <key> <value>
-```
-
-### Obținerea unei valori de configurare
-
-```bash
-qorechaind config get <key>
-```
-
-Cheile de configurare comune includ `chain-id`, `keyring-backend`, `output` și `node`.
+Nu există o subcomandă `config`. Valorile implicite ale clientului (`chain-id`, `keyring-backend`, `output`, `node`) sunt citite din `<home>/config/client.toml`; editează acel fișier sau transmite flag-ul la fiecare comandă (`--chain-id`, `--keyring-backend`, `--output`, `--node`).
 
 ---
 
@@ -117,8 +106,9 @@ qorechaind keys add <name> [flags]
 
 | Flag                   | Tip   | Descriere                                     |
 | ---------------------- | ------ | ----------------------------------------------- |
-| `--keyring-backend`    | string | Backend: `os`, `file`, `test`                   |
-| `--algo`               | string | Algoritmul cheii: `secp256k1` (implicit), `ed25519` |
+| `--keyring-backend`    | string | Backend: `os`, `file`, `kwallet`, `pass`, `test`, `memory` |
+| `--key-type`           | string | Algoritmul cheii: `secp256k1` (implicit) sau `eth_secp256k1` |
+| `--coin-type`          | uint32 | Tipul de monedă HD (implicit `118`)                    |
 | `--recover`            | bool   | Recuperează cheia din mnemonic                       |
 | `--multisig`           | string | Listă de chei separate prin virgulă pentru multisig       |
 | `--multisig-threshold` | uint   | Numărul minim de semnături necesare                     |
@@ -174,6 +164,7 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 | Flag                 | Tip   | Descriere                       |
 | -------------------- | ------ | --------------------------------- |
 | `--vesting-amount`   | string | Suma de vesting                    |
+| `--vesting-start-time` | int  | Timpul de începere a vesting-ului (marcă temporală Unix) |
 | `--vesting-end-time` | int    | Timpul de încheiere a vesting-ului (marcă temporală Unix) |
 
 ### Crearea unei tranzacții genesis
@@ -195,10 +186,12 @@ qorechaind genesis gentx <key-name> <stake-amount> [flags]
 qorechaind genesis collect-gentxs
 ```
 
+Alte subcomenzi `genesis`: `bulk-add-genesis-account` și `migrate`.
+
 ### Validarea fișierului genesis
 
 ```bash
-qorechaind genesis validate-genesis
+qorechaind genesis validate
 ```
 
 ---
@@ -238,6 +231,9 @@ qorechaind export [flags]
 | `--for-zero-height` | bool   | Pregătește exportul pentru repornire la înălțimea 0 |
 | `--height`          | int    | Exportă starea la o anumită înălțime de bloc   |
 | `--home`            | string | Directorul home al nodului                       |
+| `--output-document` | string | Scrie exportul în acest fișier în loc de STDOUT |
+| `--modules-to-export` | strings | Listă de module de exportat, separate prin virgulă (implicit: toate) |
+| `--jail-allowed-addrs` | strings | Adresele operatorilor validatorilor aflați în jail care vor fi scoși din jail |
 
 ---
 

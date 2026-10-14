@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain は **Triple-Pool Composite Proof-of-Stake (CPoS)** を実装しています。これは、バリデータを 3 つの専用プールに分類し、評判で重み付けした選択によってセキュリティ・分散性・パフォーマンスのバランスを取るコンセンサスメカニズムです。CPoS は `x/qca` モジュールに実装され、**QoreChain Consensus Engine** の上で動作します。
 
-実行時にコンセンサスパラメータを調整する強化学習による最適化レイヤーは **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines) というブランド名で呼ばれます。詳細は [PRISM Consensus Engine](/architecture/prism-consensus-engine) を参照してください。
+:::note 現在の状況（2026 年 10 月）
+このページで説明する Triple-Pool CPoS のロジック — プール分類、プール重み付けプロポーザー選択、報酬ボンディングカーブ、プログレッシブスラッシング、QDRW 集計 — は `x/qca` モジュールに実装されており、そのパラメータもオンチェーンにありますが、**ブロック生成、報酬、スラッシング、ガバナンス集計にはまだ組み込まれていません**。現在のプロポーザーのローテーションは標準的なステーク加重のバリデータローテーションであり、スラッシングは標準の `x/slashing` パラメータ（ダウンタイムウィンドウ 10,000 ブロック、署名率 5 % 未満でジェイル、ダウンタイムは 1 %・ダブルサインは 5 % のスラッシュ、ジェイル期間 10 分）に従い、提案はボンドされたステークに基づいて集計されます（定足数 33.4 %、しきい値 50 %、拒否権 33.4 %）。以下の設計は、このモジュールが目指している方向を説明するものです。
+:::
 
-以下の図は、QoreChain Consensus Engine 上での Triple-Pool CPoS の 1 つのブロック/コンセンサスサイクルを要約し、PRISM が調整可能な `x/qca` パラメータにどのようにフィードバックされるかを示しています。
+実行時にコンセンサスパラメータを調整するよう設計された強化学習による最適化レイヤーは **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines) というブランド名で呼ばれます。詳細は [PRISM Consensus Engine](/architecture/prism-consensus-engine) を参照してください。
+
+以下の図は、QoreChain Consensus Engine 上での Triple-Pool CPoS の 1 つのブロック/コンセンサスサイクルを要約し、PRISM が調整可能な `x/qca` パラメータにフィードバックするよう設計されている箇所を示しています（現在、PRISM は観測のみを行います）。
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### 二次スケーリング
 
-平方根関数により、投票力はステークに対して劣線形にスケールします。あるバリデータの 4 倍のステークを持つ投票者は、4 倍ではなく 2 倍の投票力しか得られません。これにより、大口トークン保有者がガバナンスの意思決定を支配することを防ぎます。
+平方根関数により、投票力はステークに対して劣線形にスケールします。あるバリデータの 4 倍のステークを持つ投票者は、4 倍ではなく 2 倍の投票力しか得られません。これは QDRW の設計上の動作です。QDRW が無効の間は、提案はボンドされたステークに基づいて集計されます。この数式は xQORE を使用しますが、xQORE は現在稼働中のネットワークではまだロックできません。
 
 ### 決定論的演算
 
@@ -234,54 +238,54 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ## QCA パラメータ
 
-次の表は、`x/qca` モジュールにおけるすべてのガバナンスで設定可能なパラメータを示しています:
+次の表は、`x/qca` モジュールのガバナンスで設定可能なパラメータを、`qorechaind query qca config` が返す名前と稼働中の値とともに示しています（これらのパラメータはまだ有効ではありません。上記のステータスノートを参照してください）:
 
 ### コアパラメータ
 
 | パラメータ                   | 型       | デフォルト | 説明                                              |
 | -------------------------- | ------- | ------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`  | 評判重み付けプロポーザー選択を有効化                   |
+| `use_reputation_weighting` | bool    | `true`  | 評判重み付けプロポーザー選択のジェネシス設定（セレクターはまだブロック生成に組み込まれていません） |
 | `min_reputation_score`     | float64 | `0.1`   | アクティブな参加に必要な最小評判スコア                 |
 
 ### プール設定
 
 | パラメータ                  | 型         | デフォルト         | 説明                                             |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | プール再分類の間のブロック数                         |
-| `weight_rpos`             | LegacyDec | `0.40`           | RPoS プールの選択ウェイト                           |
-| `weight_dpos`             | LegacyDec | `0.35`           | DPoS プールの選択ウェイト                           |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | DPoS の最小委任量（10,000 QOR を uqor 換算）         |
-| `rep_percentile_rpos`     | uint64    | `70`             | RPoS の評判パーセンタイルしきい値                    |
+| `pool_classification_interval` | uint64 | `1000`          | プール再分類の間のブロック数                         |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | RPoS プールの選択ウェイト                           |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | DPoS プールの選択ウェイト                           |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | DPoS の最小委任量（10,000 QOR を uqor 換算）         |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | RPoS の評判パーセンタイルしきい値                    |
 
 ### ボンディングカーブ設定
 
 | パラメータ          | 型         | デフォルト | 説明                                             |
 | ------------------ | --------- | ------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`   | ロイヤルティ感度係数                                |
-| `beta`             | LegacyDec | `1.0`   | ベース報酬乗数                                     |
-| `phase_multiplier` | LegacyDec | `1.5`   | プロトコルフェーズ報酬乗数（Genesis フェーズ）        |
+| `bonding_alpha`    | LegacyDec | `0.1`   | ロイヤルティ感度係数                                |
+| `bonding_beta`     | LegacyDec | `1.0`   | ベース報酬乗数                                     |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | プロトコルフェーズ報酬乗数（Genesis フェーズ）    |
 
 ### スラッシング設定
 
 | パラメータ            | 型         | デフォルト  | 説明                                    |
 | ------------------- | --------- | --------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`    | ベーススラッシュレート (1%)               |
-| `escalation_factor` | LegacyDec | `1.5`     | プログレッシブエスカレーションのベース      |
-| `max_penalty`       | LegacyDec | `0.33`    | イベントごとの最大ペナルティ (33%)         |
-| `decay_halflife`    | uint64    | `100,000` | 違反ウェイトの半減期となるブロック数        |
+| `slashing_base_rate`| LegacyDec | `0.01`    | ベーススラッシュレート (1%)               |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | プログレッシブエスカレーションのベース    |
+| `slashing_max_penalty` | LegacyDec | `0.33` | イベントごとの最大ペナルティ (33%)         |
+| `slashing_decay_halflife` | uint64 | `100,000` | 違反ウェイトの半減期となるブロック数        |
 
 ### QDRW ガバナンス設定
 
 | パラメータ             | 型         | デフォルト | 説明                                    |
 | -------------------- | --------- | ------- | -------------------------------------- |
-| `enabled`            | bool      | `false` | QDRW ガバナンス集計を有効化               |
-| `xqore_multiplier`   | LegacyDec | `2.0`   | ステークトークンに対する xQORE ウェイト    |
-| `rep_min_multiplier` | LegacyDec | `0.5`   | 最小評判乗数                             |
-| `rep_max_multiplier` | LegacyDec | `2.0`   | 最大評判乗数                             |
+| `qdrw_enabled`       | bool      | `false` | QDRW ガバナンス集計を有効化（稼働中のネットワークでは無効） |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | ステークトークンに対する xQORE ウェイト    |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | 最小評判乗数                             |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | 最大評判乗数                             |
 
 ## 関連項目
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — コンセンサスパラメータを調整する AI レイヤー。
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — コンセンサスパラメータを調整するよう設計された AI レイヤー。
 * [Multilayer Architecture](/architecture/multilayer-architecture) — サイドチェーンがベースレイヤーにアンカーする仕組み。
 * [Running a Validator](/developer-guide/running-a-validator) — チェーンを保護するバリデータを運用する。
 * [Tokenomics](/architecture/tokenomics) — ステーキング報酬、インフレーション、スラッシング経済。

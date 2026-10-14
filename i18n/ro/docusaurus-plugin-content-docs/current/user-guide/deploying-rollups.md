@@ -7,25 +7,21 @@ sidebar_position: 6
 
 # Implementarea Rollup-urilor
 
-Acest ghid acoperă modul de implementare a rollup-urilor specifice aplicațiilor pe QoreChain folosind Rollup Development Kit (RDK). RDK oferă profiluri predefinite pentru cazurile de utilizare comune și personalizare completă pentru implementările avansate.
+Acest ghid este o scurtă orientare pentru lansarea unui rollup specific unei aplicații, care se decontează pe QoreChain, folosind Rollup Development Kit (RDK). Comenzile pas cu pas se găsesc în **[Implementarea unui Rollup](/rollups/deploying-a-rollup)**; această pagină acoperă ce ai nevoie înainte de a începe.
 
-:::caution
-RDK și stratul de decontare (settlement) al rollup-urilor reprezintă o capabilitate în evoluție activă. Tratați parametrii, profilurile predefinite și maturitatea funcțiilor individuale de mai jos ca fiind supuse schimbării și validați implementările pe **`qorechain-diana`** înainte de a viza mainnet-ul.
-:::
-
-:::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (chain ID EVM **9800**). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de chain **v3.1.97** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când implementați pe mainnet.
+:::caution Capabilitate în stadiu incipient
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele. Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de chain **v3.2.1**; testnet-ul (**`qorechain-diana`**, chain ID EVM **9800**) rulează o versiune mai nouă (**v3.2.2**). Validează mai întâi pe testnet.
 :::
 
 ---
 
-## Prezentare generală
+## Ce este un rollup aici {#what-a-rollup-is-here}
 
-RDK-ul QoreChain permite dezvoltatorilor să lanseze rollup-uri suverane care se decontează pe QoreChain. Fiecare rollup este un mediu de execuție independent, cu propriul timp de bloc, mașină virtuală și model de taxe, moștenind în același timp garanțiile de securitate și disponibilitate a datelor ale QoreChain.
+Un rollup QoreChain este un chain specific unei aplicații care **se execută off-chain** și folosește QoreChain pentru **decontare**: înregistrezi rollup-ul on-chain, postezi loturi de state root și (opțional) postezi blob-uri de date și angajamente de retragere. Înregistrarea on-chain conține un profil, un mod de decontare, un mod de sequencer, un backend de disponibilitate a datelor, un model de gas și o etichetă de VM; chain-ul gazdă nu execută tranzacțiile rollup-ului tău.
 
 ---
 
-## Profiluri predefinite
+## Profiluri predefinite {#preset-profiles}
 
 RDK vine cu cinci profiluri predefinite, fiecare ajustat pentru o categorie comună de aplicații:
 
@@ -35,206 +31,34 @@ RDK vine cu cinci profiluri predefinite, fiecare ajustat pentru o categorie comu
 | **gaming**     | based               | based     | native          | flat         | custom   | Stare de joc cu debit ridicat și experiențe în timp real |
 | **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA planificat) | standard | CosmWasm | Sarcini de mint și marketplace pentru NFT-uri |
 | **enterprise** | based               | based     | native          | subsidized   | EVM      | Implementări permisionate și de consorțiu cu taxe sponsorizate |
-| **custom**     | complet parametrizat | complet parametrizat | complet parametrizat | complet parametrizat | complet parametrizat | Setați fiecare câmp singur |
+| **custom**     | valori implicite: optimistic (fraud) | dedicated | native | standard | EVM | Valori implicite de pornire; ajustează ce permite mesajul |
 
-:::note
-Valorile per-profil de mai sus corespund valorilor implicite din profilurile pachetului `@qorechain/rdk` livrat. Configurația exactă poate evolua pe măsură ce RDK se maturizează — interogați valorile autoritare cu `qorechaind query rdk config` (sau `RdkClient.params()`) și rețineți că decontarea `based` este întotdeauna asociată cu modul sequencer `based`.
-:::
+Vezi [Profiluri predefinite](/rollups/preset-profiles) pentru detalii și note despre maturitate (de exemplu, un rollup `defi` creat prin CLI nu poate încă finaliza loturi ZK, iar secvențierea `based` înseamnă în prezent că cel care l-a creat face trimiterea).
 
 ---
 
-## Cerințe
+## Cerințe {#requirements}
 
-Înainte de a implementa un rollup, asigurați-vă că îndepliniți următoarele cerințe:
-
-| Cerință              | Detalii                                                                                 |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| **Miză minimă** | 10.000 QOR (10.000.000.000 uqor)                                                       |
-| **Ardere la creare** | 1% din suma stakuită este arsă permanent la crearea rollup-ului                    |
-| **Cont**       | Un cont QoreChain alimentat, cu sold suficient pentru miză plus taxele de tranzacție |
-
----
-
-## Crearea unui rollup dintr-un profil predefinit
-
-Implementați un rollup folosind unul dintre profilurile predefinite:
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "my-defi-rollup" \
-  --profile defi \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Exemplu:** Implementarea unui rollup de gaming:
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "battle-arena" \
-  --profile gaming \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+| Cerință | Detalii |
+| ----------- | ------- |
+| **Stake pentru rollup** | Cel puțin 10.000 QOR (`min_stake_for_rollup`, 10.000.000.000 uqor). Citește valoarea curentă: `qorechaind query rdk config` |
+| **Ardere la creare** | 1 % din stake-ul pe care îl furnizezi este ars la creare; restul este depus în escrow și returnat când oprești rollup-ul |
+| **Stake pentru înregistrarea layer-ului** | Crearea unui rollup înregistrează și un layer în modulul multilayer, ceea ce blochează încă 1.000 QOR de la cel care îl creează (returnați când rollup-ul este oprit). Fără acest sold, layer-ul nu este creat, iar rollup-ul nu poate fi ancorat |
+| **Cont** | Un cont alimentat cu fonduri, cu o cheie post-cuantică înregistrată (fiecare tranzacție pe lane-ul nativ este semnată hibrid) |
 
 ---
 
-## Crearea unui rollup personalizat
+## Sfaturi {#tips}
 
-Pentru control complet asupra parametrilor rollup-ului, folosiți profilul `custom` și specificați fiecare opțiune:
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "my-rollup" \
-  --profile custom \
-  --settlement optimistic \
-  --sequencer dedicated \
-  --da-backend native \
-  --vm-type evm \
-  --block-time 1000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Parametri personalizați:**
-
-| Parametru      | Opțiuni                                       | Descriere                        |
-| -------------- | --------------------------------------------- | ---------------------------------- |
-| `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Modul în care sunt verificate tranzițiile de stare |
-| `--sequencer`  | `dedicated`, `shared`, `based`                | Strategia de ordonare a tranzacțiilor      |
-| `--da-backend` | `native`, `external`                          | Stratul de disponibilitate a datelor            |
-| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Mediul de execuție              |
-| `--block-time` | Număr întreg (milisecunde)                        | Intervalul țintă de producere a blocurilor   |
+* Începe cu un profil predefinit. Profilurile predefinite setează modul de decontare, sequencer-ul, backend-ul de disponibilitate a datelor și VM-ul; `create-rollup` primește doar id-ul, profilul, stake-ul și un `--vm` opțional.
+* Arderea de 1 % la creare se aplică stake-ului pe care îl furnizezi.
+* Cel care creează rollup-ul este în prezent cel care trimite loturile (niciun profil predefinit nu setează o adresă de sequencer), așa că păstrează cheia creatorului în siguranță: doar creatorul poate pune pe pauză, relua sau opri rollup-ul.
+* Ajutorul `suggest-profile` returnează în prezent o variantă de rezervă fixă `defi` pe endpoint-urile publice, așa că alege din tabelul de profiluri.
 
 ---
 
-## Trimiterea batch-urilor
+## Pașii următori {#next-steps}
 
-Operatorii de rollup trimit batch-uri de tranzacții către QoreChain pentru decontare:
-
-```bash
-qorechaind tx rdk submit-batch \
-  --rollup-id "my-rollup" \
-  --state-root <hex_encoded_state_root> \
-  --tx-count 500 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Exemplu:**
-
-```bash
-qorechaind tx rdk submit-batch \
-  --rollup-id "my-rollup" \
-  --state-root a1b2c3d4e5f6... \
-  --tx-count 500 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
----
-
-## Gestionarea ciclului de viață al rollup-ului
-
-Operatorii de rollup pot gestiona ciclul de viață al implementărilor lor:
-
-1. **Pausarea unui rollup** — Oprește temporar producerea de blocuri. Starea rollup-ului este păstrată și poate fi reluată.
-
-   ```bash
-   qorechaind tx rdk pause-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-2. **Reluarea unui rollup** — Reia producerea de blocuri pe un rollup pausat:
-
-   ```bash
-   qorechaind tx rdk resume-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-3. **Oprirea unui rollup (permanentă)** — Oprește permanent un rollup. Această acțiune este **ireversibilă**.
-
-   ```bash
-   qorechaind tx rdk stop-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-:::danger
-Oprirea unui rollup este permanentă. Toată starea asociată este arhivată, dar rollup-ul nu poate fi repornit. QOR stakuit (minus arderea la creare) este returnat operatorului.
-:::
-
----
-
-## Interogarea rollup-urilor
-
-Obțineți detalii despre un rollup specific:
-
-```bash
-qorechaind query rdk rollup <rollup_id>
-```
-
-Listați toate rollup-urile de pe QoreChain:
-
-```bash
-qorechaind query rdk rollups
-```
-
-**Exemplu de rezultat:**
-
-```yaml
-rollup:
-  id: "my-defi-rollup"
-  owner: qor1abc...xyz
-  profile: defi
-  settlement: zk
-  vm_type: evm
-  block_time: 500ms
-  status: active
-  total_batches: 1247
-  last_state_root: "a1b2c3d4..."
-```
-
----
-
-## Sugestie de profil asistată de QCAI
-
-Nu sunteți sigur care profil se potrivește cazului dumneavoastră de utilizare? Folosiți instrumentul de sugestie asistat de QCAI:
-
-```bash
-qorechaind query rdk suggest-profile --use-case "defi lending protocol"
-```
-
-**Exemplu de rezultat:**
-
-```yaml
-suggested_profile: defi
-confidence: 0.94
-reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality, EVM compatibility for Solidity smart contracts, and EIP-1559 fee model for predictable gas costs."
-alternative_profile: enterprise
-```
-
-Această comandă analizează descrierea dumneavoastră și recomandă cel mai potrivit profil predefinit, împreună cu o explicație.
-
----
-
-## Sfaturi
-
-* Începeți cu un profil predefinit și personalizați ulterior. Profilurile predefinite sunt optimizate pentru cazurile lor de utilizare țintă.
-* Arderea de 1% la creare este un cost unic aplicat mizei minime la momentul implementării.
-* Folosiți decontarea `based` dacă doriți cea mai simplă configurare, cu validatorii QoreChain gestionând secvențierea.
-* Monitorizați îndeaproape trimiterile de batch-uri. Întreruperile în trimiterea batch-urilor pot declanșa alerte din partea rețelei.
-* Comanda `suggest-profile` este un punct de plecare util, dar verificați recomandarea în raport cu cerințele dumneavoastră specifice.
+* [Implementarea unui Rollup](/rollups/deploying-a-rollup) — creează, operează și oprește un rollup din CLI sau din TypeScript.
+* [Prezentare generală a Rollup-urilor](/rollups/overview) — moduri de decontare, sequencer-e, sisteme de dovezi.
+* [Disponibilitatea datelor](/rollups/data-availability) și [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals).

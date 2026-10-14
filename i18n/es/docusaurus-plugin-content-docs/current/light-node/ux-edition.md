@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # Edición UX — Panel Web
 
-La edición **UX (User eXperience)** ejecuta el mismo daemon de light node que la edición SX, pero añade un **panel web integrado** para que puedas observar el nodo y la red desde un navegador. El binario es `lightnode-ux`. Al igual que la edición SX, esta pertenece a la línea **v3.1.2** del light node (su propia versión, independiente de la versión de la cadena).
+La edición **UX (User eXperience)** ejecuta el mismo daemon de light node que la edición SX, pero añade un **panel web integrado** para que puedas observar el nodo y la red desde un navegador. El binario es `lightnode-ux`. Al igual que la edición SX, esta pertenece a la línea **v3.1.3** del light node (su propia versión, independiente de la versión de la cadena).
 
 La edición UX es la opción adecuada para uso en escritorio y para operadores que prefieren una interfaz visual en lugar de la línea de comandos.
 
 ## Instalación
 
-Los binarios precompilados se ejecutan de forma nativa en **seis plataformas sin dependencias nativas** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64) — cada uno con un tamaño aproximado de 16 MB. Verifica el checksum de la descarga contra el manifiesto antes de ejecutarlo — consulta [Edición SX](/light-node/sx-edition#install) para saber cómo.
+Los binarios precompilados se ejecutan de forma nativa en **seis plataformas sin dependencias nativas** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) y Windows (amd64, arm64) — cada uno con un tamaño aproximado de 11–12 MB. Verifica el checksum de la descarga contra el manifiesto antes de ejecutarlo — consulta [Edición SX](/light-node/sx-edition#install) para saber cómo.
 
 ### Compilar desde el código fuente
 
@@ -27,13 +27,24 @@ Esto genera `build/lightnode-ux`.
 
 ### Docker
 
-El servicio UX se compila a partir de `Dockerfile.ux`:
+El servicio UX se compila a partir de `Dockerfile.ux` en el repositorio de código fuente (`github.com/qorechain/qorechain-lightnode`, etiqueta `v3.1.4` o posterior). El contenedor necesita un `config.toml` en su volumen de datos antes de poder iniciarse; el asistente de configuración reside en el binario SX, así que crea primero la configuración con la edición SX (consulta [Edición SX](/light-node/sx-edition#first-run-onboard)) y cópiala al volumen. Dentro de un contenedor el panel debe escuchar en todas las interfaces del contenedor, así que establece esto en esa configuración y publica el puerto únicamente en el loopback del host:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-El contenedor UX conserva los datos en un volumen con nombre en `/root/.qorechain-lightnode` y lee la dirección del RPC de la cadena desde la variable de entorno `QORECHAIN_RPC_ADDR`.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+El contenedor UX conserva los datos en un volumen con nombre en `/root/.qorechain-lightnode` y lee la dirección del RPC de la cadena desde la variable de entorno `QORECHAIN_RPC_ADDR`. La imagen UX no incluye el firmante `qorechaind`, por lo que un contenedor UX no puede enviar heartbeats en la cadena; ejecuta un nodo registrado con la edición SX.
 
 ## Ejecución
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Esto inicia el daemon y el servidor del panel integrado juntos. La edición UX siempre habilita el panel. Al iniciar, el binario imprime la URL del panel.
 
-La edición UX comparte su configuración con la edición SX: lee el mismo `config.toml` desde `~/.qorechain-lightnode` y usa el mismo llavero Dilithium-5. Si aún no has configurado el nodo, ejecuta primero el asistente de SX (`lightnode-sx onboard`) para escribir la configuración e importar o generar tu clave — consulta [Edición SX](/light-node/sx-edition).
+La edición UX comparte su configuración con la edición SX: lee el mismo `config.toml` desde `~/.qorechain-lightnode` y usa el mismo llavero Dilithium-5. Si aún no has configurado el nodo, ejecuta primero el asistente de SX (`lightnode-sx onboard`) para escribir la configuración e importar o generar tu clave — consulta [Edición SX](/light-node/sx-edition). El binario UX solo tiene los comandos `start` y `version`; usa `lightnode-sx` para `register`, `status` y `keys`. El daemon de la edición UX envía heartbeats del mismo modo que la edición SX cuando hay un firmante `qorechaind` disponible.
 
 ## El panel web en el puerto 8420
 
@@ -69,7 +80,7 @@ El panel está organizado en las siguientes vistas:
 
 - **Overview** — altura de bloque y estado del nodo de un vistazo.
 - **Validators** — el conjunto de validadores en bonding.
-- **Delegation** — tus delegaciones actuales y su distribución.
+- **Delegation** — las delegaciones reflejadas desde tu cuenta de operador (consulta la limitación conocida en [Recompensas y monitoreo](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — telemetría de red en vivo y encabezados sincronizados recientemente.
 - **Bridge** — telemetría del puente entre cadenas.
 - **Tokenomics** — telemetría de economía del token.
@@ -85,9 +96,9 @@ Si el nodo **no tiene un endpoint RPC de cadena configurado**, el panel se ejecu
 lightnode-sx onboard
 ```
 
-El asistente ejecuta la autoprueba de PQC, solicita tu endpoint de cadena e importa o genera tu clave de validador. Una vez configurado un endpoint, reinicia el nodo y el panel comenzará a mostrar datos de la cadena en vivo.
+El asistente ejecuta la autoprueba de PQC, solicita tu endpoint de cadena e importa o genera la clave de tu nodo. Una vez configurado un endpoint, reinicia el nodo y el panel comenzará a mostrar datos de la cadena en vivo.
 
 ## Próximos pasos
 
 - [Registro y licencias](/light-node/registration-and-licensing) — registra el nodo en la cadena.
-- [Recompensas y monitoreo](/light-node/rewards-and-monitoring) — gana la participación del 3% del light node y monitorea la salud del nodo.
+- [Recompensas y monitoreo](/light-node/rewards-and-monitoring) — cómo se acredita y se reclama la participación del 3% del light node, y cómo monitorear la salud del nodo.

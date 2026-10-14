@@ -7,11 +7,23 @@ sidebar_position: 7
 
 # Architettura del Bridge
 
-Il modulo `x/bridge` è progettato per connettere QoreChain all'ecosistema blockchain più ampio attraverso **37 configurazioni di catena QCB (QoreChain Bridge) e 8 canali IBC (Inter-Blockchain Communication)**. Ogni operazione del bridge è protetta dalla crittografia post-quantistica.
+Il modulo `x/bridge` è progettato per connettere QoreChain all'ecosistema blockchain più ampio attraverso **37 configurazioni di catena (36 catene esterne più Injective, raggiunta tramite IBC) e fino a 8 controparti IBC (Inter-Blockchain Communication)**. Ogni operazione del bridge è progettata per essere protetta dalla crittografia post-quantistica.
 
-:::caution
-Il bridge cross-chain è **attualmente in testnet e in attesa — non è ancora un sistema di produzione**. Le configurazioni di catena, i light client e i flussi descritti di seguito riflettono il bridge così come è stato progettato e così come è stato sperimentato sulla testnet. La connettività esterna viene distribuita progressivamente; considerate tutti i target come intenzioni di progettazione piuttosto che garanzie attive di mainnet.
+:::caution Non attivo su nessuna delle due reti
+Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna rotta del bridge è attiva**: tutte le 37 configurazioni di catena sono in stato `pending` senza alcun contratto bridge impostato, non è registrato alcun validatore del bridge, non è mai stata creata alcuna operazione del bridge e non esistono canali né client IBC. Tutto quanto segue descrive il design previsto. Non inviate asset aspettandovi che vengano trasferiti tramite il bridge.
 :::
+
+## Stato attuale {#current-status}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Modulo bridge | abilitato | abilitato |
+| Configurazioni di catena | 37, tutte `pending` | 37, tutte `pending` |
+| Validatori del bridge registrati | 0 | 0 |
+| Operazioni del bridge | 0 | 0 |
+| Canali / client IBC | 0 / 0 | 0 / 0 |
+
+(Verificato a ottobre 2026. Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`.)
 
 ## Panoramica delle Connessioni
 
@@ -19,14 +31,14 @@ QoreChain è progettata per supportare due protocolli di bridge operanti in para
 
 | Protocollo | Connessioni          | Modello di Sicurezza                 | Caso d'Uso                              |
 | ---------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**    | 8 canali             | IBC standard + firme PQC sui pacchetti | Catene compatibili con Cosmos SDK     |
-| **QCB**    | 37 config di catena  | multisig Dilithium-5 7-su-10         | Catene non-IBC (EVM, Solana, TON, ecc.) |
+| **IBC**    | fino a 8 canali (nessuno aperto) | IBC standard + firme PQC sui pacchetti | Catene compatibili con Cosmos SDK     |
+| **QCB**    | 37 config di catena (tutte in attesa) | multisig Dilithium-5 7-su-10         | Catene non-IBC (EVM, Solana, TON, ecc.) |
 
-Le **37 configurazioni di catena QCB** comprendono **36 catene esterne** più **QoreChain stessa** come configurazione nativa/di loopback (utilizzata per il routing interno e il regolamento auto-referenziale). Gli 8 canali IBC si connettono a catene compatibili con Cosmos SDK.
+Le **37 configurazioni di catena** sono le **36 catene esterne** elencate di seguito più **Injective**, configurata come catena di tipo IBC. Non esiste alcuna configurazione di loopback di QoreChain. I canali IBC pianificati si connettono a catene compatibili con Cosmos SDK.
 
 ## Canali IBC
 
-QoreChain è progettata per mantenere connessioni IBC verso le seguenti 8 catene, relayate tramite Hermes v1.x:
+QoreChain è progettata per mantenere connessioni IBC verso le seguenti 8 catene, relayate tramite Hermes v1.x. **Su nessuna delle due reti esiste ancora un canale o un client IBC**, quindi questa tabella elenca solo le controparti pianificate:
 
 | Catena     | Descrizione                    |
 | ---------- | ------------------------------ |
@@ -49,11 +61,11 @@ QoreChain è progettata per mantenere connessioni IBC verso le seguenti 8 catene
 
 ## Protocollo QCB (QoreChain Bridge)
 
-Il protocollo QCB utilizza un'architettura hub-and-spoke protetta dalla crittografia post-quantistica. QoreChain funge da hub, con configurazioni spoke per ciascuna catena esterna più una configurazione nativa/di loopback per QoreChain stessa.
+Il protocollo QCB utilizza un'architettura hub-and-spoke protetta dalla crittografia post-quantistica. QoreChain funge da hub, con una configurazione spoke per ciascuna catena esterna.
 
 ### Configurazioni di Catene Esterne (36)
 
-Il protocollo QCB è progettato per indirizzarsi alle seguenti 36 catene esterne. Combinate con la configurazione nativa/di loopback di QoreChain, ciò dà **37 config di catena QCB in totale (inclusa QoreChain stessa)**.
+Il protocollo QCB è progettato per indirizzarsi alle seguenti 36 catene esterne. Insieme a Injective (una configurazione di tipo IBC), ciò dà **37 configurazioni di catena in totale**, tutte attualmente in stato `pending`.
 
 **Catene di base (10)**
 
@@ -67,12 +79,12 @@ zkSync Era, Linea, Scroll, Blast, Mantle, Hyperliquid, Berachain, Sonic, Sei, Mo
 
 Starknet, XRP Ledger, Stellar, Hedera, Algorand.
 
-**Catene in attesa (7)**
+**Altre catene (7)**
 
 NEAR, Bitcoin, Cardano, Polkadot, Tezos, Tron, Aptos.
 
 :::note
-Verifica del conteggio: 10 di base + 14 famiglia EVM + 5 non-EVM + 7 in attesa = **36 catene esterne**. Aggiungendo la configurazione nativa/di loopback di QoreChain si ottengono **37 config di catena QCB**.
+Verifica del conteggio: 10 di base + 14 famiglia EVM + 5 non-EVM + 7 altre = **36 catene esterne**. Aggiungendo Injective (IBC) si ottengono **37 configurazioni di catena**.
 :::
 
 ### Formati degli Indirizzi
@@ -107,7 +119,7 @@ Per verificare gli eventi delle catene esterne in modo trustless, il bridge è p
 
 ## Flusso di Deposito (da Esterno a QoreChain)
 
-La sequenza seguente mostra un deposito QCB: gli asset vengono bloccati su una catena esterna, i validatori di QoreChain inviano attestazioni firmate con PQC (7-su-10 Dilithium-5) e i token wrapped vengono coniati. Le catene compatibili con Cosmos SDK utilizzano invece il percorso IBC parallelo (8 canali, con firme dei pacchetti Dilithium-5 opzionali). Entrambi i percorsi sono in testnet/in attesa.
+La sequenza seguente mostra il deposito QCB come progettato: gli asset vengono bloccati su una catena esterna, i validatori di QoreChain inviano attestazioni firmate con PQC (7-su-10 Dilithium-5) e i token wrapped vengono coniati. Le catene compatibili con Cosmos SDK utilizzerebbero invece il percorso IBC parallelo (fino a 8 canali, con firme dei pacchetti Dilithium-5 opzionali). Nessuno dei due percorsi è attivo; non è mai stato effettuato alcun deposito.
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +133,7 @@ sequenceDiagram
     Note over V,Q: Light client verifies source proofs where available
     Q->>Q: 4. Mint wrapped tokens
     Note over Q: If > 100K QOR: 24h challenge period before execution
-    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+    Note over X,Q: IBC path (planned, up to 8 channels) runs in parallel for Cosmos SDK chains
 ```
 
 ```
@@ -166,15 +178,9 @@ QoreChain               QoreChain Validators           External Chain
 
 Tutte le commissioni del bridge raccolte durante i prelievi vengono instradate al modulo `x/burn` tramite il canale di burn `bridge_fee` (il 100% delle commissioni del bridge viene bruciato).
 
-### Flusso di Prelievo L2 → L1 (Regolamento Rollup)
+### Prelievi L2 → L1 (rollup)
 
-Il bridge è inoltre progettato per regolare i **prelievi rollup (L2) di ritorno alla loro catena host (L1)**. I rollup distribuiti tramite il [Rollup Development Kit](/architecture/rollup-development-kit) ancorano periodicamente il loro stato a QoreChain; il bridge consuma quegli anchor finalizzati per autorizzare i prelievi dal rollup alla catena host:
-
-1. Un utente avvia un prelievo sul rollup (L2), che viene incluso in un batch di regolamento.
-2. Il batch viene ancorato a QoreChain e provato/finalizzato secondo la modalità di regolamento del rollup (ad esempio, dopo la scadenza della finestra di sfida ottimistica, o in seguito a una valida verifica della prova).
-3. Una volta finalizzato l'anchor, il prelievo diventa rivendicabile e i corrispondenti asset vengono rilasciati sulla catena host (L1) attraverso il percorso standard burn-and-attest.
-
-Questo lega la finalità del rollup direttamente alle garanzie di regolamento della catena host, in modo che i prelievi L2 non possano essere rilasciati prima che il corrispondente stato L2 sia regolato in modo irreversibile.
+I prelievi dei rollup non utilizzano il bridge. Vengono pagati dal modulo `x/rdk` con `execute-withdrawal` rispetto alla radice dei prelievi di un batch finalizzato — vedi [ZK / STARK e Prelievi](/rollups/zk-stark-withdrawals).
 
 ## Architettura di Sicurezza
 
@@ -205,13 +211,13 @@ Lo stato del circuit breaker viene tracciato per catena e include: trasferimento
 Per i trasferimenti di grande entità (>100.000 QOR equivalenti, configurabile tramite `large_transfer_threshold`):
 
 * Si applica un **periodo di sfida di 24 ore** (86.400 secondi) dopo il raggiungimento della soglia di attestazione.
-* Durante questa finestra, qualsiasi validatore può segnalare l'operazione.
+* Durante questa finestra, i validatori sono progettati per poter segnalare l'operazione.
 * Se non viene contestata, l'operazione viene eseguita automaticamente alla scadenza del periodo.
 * Le operazioni contestate vengono congelate per la revisione da parte della governance.
 
 ### Ottimizzazione del Percorso tramite AI
 
-Il modulo del bridge si integra con il sottosistema AI per l'ottimizzazione dei percorsi. Per i trasferimenti che possono attraversare percorsi multipli (ad es. dalla catena A alla catena B tramite un intermediario), l'ottimizzatore di percorso valuta:
+Il modulo del bridge si integra con il sottosistema AI per l'ottimizzazione dei percorsi (non esposta tramite REST). Per i trasferimenti che possono attraversare percorsi multipli (ad es. dalla catena A alla catena B tramite un intermediario), l'ottimizzatore di percorso valuta:
 
 * Le commissioni stimate tra i percorsi
 * Il tempo stimato di completamento
@@ -227,26 +233,27 @@ A partire dalla versione di catena **v3.1.78**, una catena del bridge può esser
 * **`tx bridge update-chain-config`** — impostare l'indirizzo del contratto di una catena, il numero di conferme, l'architettura e lo stato (`MsgUpdateChainConfig`).
 * **`tx bridge set-verifier-bootstrap`** — selezionare il verifier attivo per una catena e installarne la trust root (`MsgSetVerifierBootstrap`).
 
-Questo consente a un operatore di portare online il bridge di una catena connessa — o di ruotarne il verifier — direttamente, con l'autorizzazione verificata rispetto alla chiave di amministrazione del bridge.
+Questo consente a un operatore di portare online il bridge di una catena connessa — o di ruotarne il verifier — direttamente, con l'autorizzazione verificata rispetto alla chiave di amministrazione del bridge. A partire dalla versione di catena **v3.2.0** il modulo bridge dispone anche di un proprio account di modulo (le versioni precedenti non ne avevano, per cui il primo deposito su una rotta attivata sarebbe fallito).
 
 ### Validazione delle reti connesse
 
-A partire dalla versione di catena **v3.1.79**, un validatore che detiene la licenza `validator_<chain>` (o `qcb_bridge`) corrispondente può eseguire il client della rete esterna sullo stesso nodo, provisionato automaticamente sotto l'orchestrazione di QoreChain una volta attivata la licenza. I driver vengono forniti per tutte le 37 reti del bridge, classificate per modello di partecipazione (validatore permissionless, capped/elected/admission, full-node L2 e non-staking/trust-list). Lo stake e le chiavi di firma della rete esterna sono forniti dall'operatore per ciascuna rete. Vedi [Eseguire un Validatore](/developer-guide/running-a-validator#connected-networks) per i passaggi dell'operatore.
+A partire dalla versione di catena **v3.1.79**, un validatore che detiene la licenza `validator_<chain>` (o `qcb_bridge`) corrispondente può eseguire il client della rete esterna sullo stesso nodo, provisionato automaticamente sotto l'orchestrazione di QoreChain una volta attivata la licenza. I driver vengono forniti per tutte le 37 reti del bridge, classificate per modello di partecipazione (validatore permissionless, capped/elected/admission, full-node L2 e non-staking/trust-list). Lo stake e le chiavi di firma della rete esterna sono forniti dall'operatore per ciascuna rete. Vedi [Eseguire un Validatore](/developer-guide/running-a-validator#connected-networks) per i passaggi dell'operatore. Poiché ogni configurazione di catena è `pending`, oggi nessuna rete connessa viene validata tramite il bridge.
 
-## Endpoint REST API
+## Endpoint REST API {#rest-api-endpoints}
 
-A partire dalla versione di catena **v3.1.77**, lo stato del bridge è anche interrogabile **in sola lettura tramite REST** via grpc-gateway sotto il prefisso `/qorechain/bridge/v1/...` (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — in precedenza solo gRPC. Questi forniscono JSON on-chain reali su HTTP per explorer e telemetria di light node. Vedi [Endpoint REST / gRPC](/api-reference/rest-grpc-endpoints#bridge-module) per l'elenco completo.
+Lo stato del bridge è interrogabile **in sola lettura tramite REST** via grpc-gateway sotto il prefisso `/qorechain/bridge/v1/...`. Questi forniscono JSON on-chain reali su HTTP per explorer e telemetria di light node. Vedi [Endpoint REST / gRPC](/api-reference/rest-grpc-endpoints#bridge-module) per l'elenco completo.
 
-| Metodo | Endpoint                                           | Descrizione                                      |
-| ------ | -------------------------------------------------- | ------------------------------------------------ |
-| GET    | `/bridge/v1/chains`                                | Elenca tutte le configurazioni di catena supportate |
-| GET    | `/bridge/v1/chains/{chain_id}`                     | Ottiene la configurazione per una catena specifica  |
-| GET    | `/bridge/v1/validators`                            | Elenca tutti i validatori del bridge registrati     |
-| GET    | `/bridge/v1/operations`                            | Elenca tutte le operazioni del bridge (più recenti per prime) |
-| GET    | `/bridge/v1/operations/{operation_id}`             | Ottiene i dettagli di un'operazione specifica       |
-| GET    | `/bridge/v1/locked/{chain}/{asset}`                | Ottiene gli importi bloccati/coniati per una coppia catena/asset |
-| GET    | `/bridge/v1/circuit-breakers`                      | Elenca tutti gli stati dei circuit breaker          |
-| GET    | `/bridge/v1/estimate/{from}/{to}/{asset}/{amount}` | Ottiene una stima del percorso ottimizzata tramite AI |
+| Metodo | Endpoint                                  | Descrizione                                                                                                         |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/qorechain/bridge/v1/config`             | Configurazione del modulo bridge (`min_validators`, `attestation_threshold`, `challenge_period_secs`, `large_transfer_threshold`, `enabled`) |
+| GET    | `/qorechain/bridge/v1/chains`             | Tutte le configurazioni di catena e il loro stato                                                                   |
+| GET    | `/qorechain/bridge/v1/chains/{chain_id}`  | Una configurazione di catena                                                                                        |
+| GET    | `/qorechain/bridge/v1/validators`         | Validatori del bridge registrati                                                                                    |
+| GET    | `/qorechain/bridge/v1/validators/{address}` | Un validatore del bridge                                                                                          |
+| GET    | `/qorechain/bridge/v1/operations`         | Operazioni del bridge                                                                                               |
+| GET    | `/qorechain/bridge/v1/operations/{id}`    | Un'operazione del bridge                                                                                            |
+
+Gli importi bloccati, lo stato dei circuit breaker e le stime dei percorsi non hanno oggi alcuna rotta di query.
 
 ## Eventi del Bridge
 
@@ -265,6 +272,5 @@ Il modulo del bridge emette i seguenti eventi on-chain:
 ## Correlati
 
 * [Trasferimento di Asset](/user-guide/bridging-assets) — sposta gli asset tra le catene passo dopo passo.
-* [Bridge della Dashboard](/dashboard/bridge) — l'interfaccia del bridge per gli utenti quotidiani.
 * [Restaking BTC tramite Babylon](/architecture/btc-restaking-babylon) — sicurezza supportata da Bitcoin.
 * [Sicurezza Post-Quantistica](/architecture/post-quantum-security) — verifica PQC sui pacchetti IBC.

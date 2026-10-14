@@ -7,14 +7,25 @@ sidebar_position: 5
 
 # AI プリフライトガイド
 
-QoreChain は、**オンチェーンの AI リスク/異常検知モデル**を任意の dApp に公開した初めての
-ネットワークです。2 つの読み取り専用 EVM プリコンパイルにより、`eth_call` だけを使って、
-トランザクションが署名またはブロードキャストされる*前*にスコアリングできます。
+QoreChain は、dApp が EVM から読み取れる**オンチェーンの AI リスク/異常検知モデル**を定義しています。
+2 つの読み取り専用 EVM プリコンパイルにより、`eth_call` だけを使って、
+トランザクションが署名またはブロードキャストされる*前*にスコアリングできるようになることを意図しています。
 
 | 機能 | プリコンパイル | アドレス |
 |---|---|---|
 | calldata のリスクスコア | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
 | `(sender, amount)` の異常チェック | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+
+:::caution 現在、公開ネットワークでは利用できません
+`simulateWithRiskScore`、`aiRiskScore`、`aiAnomalyCheck` は
+`0x…0B01` / `0x…0B02` のプリコンパイルを読み取ります。静的プリコンパイルは、そのアドレスが
+EVM モジュールの `active_static_precompiles` パラメーターに含まれている場合にのみ応答しますが、そのリストは
+`qorechain-vladi`(メインネット)と `qorechain-diana`(テストネット)の両方で空です。公開
+エンドポイントに対しては、呼び出しは空のデータ(`0x`)を返し、これらのヘルパーはエラーをスローします(例:
+`returned no data ("0x")`)。プリコンパイルが有効化されているネットワークまたはノードでのみ動作します。
+まず `GET /cosmos/evm/vm/v1/params` を確認し、
+[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照してください。
+:::
 
 実装は `@qorechain/evm`（[viem](https://viem.sh) 上の EVM アダプター）にあり、検出を容易にするため
 `@qorechain/sdk` から再エクスポートされています。
@@ -31,7 +42,7 @@ QoreChain は、**オンチェーンの AI リスク/異常検知モデル**を�
 import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
 const { publicClient } = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" },
 });
 
 const preflight = await simulateWithRiskScore(publicClient, {
@@ -83,9 +94,10 @@ import { AI_RISK_SCORE_ADDRESS, AI_ANOMALY_CHECK_ADDRESS } from "@qorechain/evm"
 
 ## 利用可能性
 
-AI プリコンパイルは QoreChain ネットワークのノード上に存在します。通常の EVM ノードでは、
-これらの呼び出しは「not available」エラーをスローします。これらのヘルパーのいずれかから
-スローされたエラーは、「このノードに機能が存在しない」とみなしてください。
+ヘルパーは、クエリ先のノードでプリコンパイルが有効でない場合は常にエラーをスローします。
+公開ネットワークでは現在それが常に当てはまり、通常の EVM ノードでも同様です。
+これらのヘルパーのいずれかからスローされたエラーは、「このノードに機能が存在しない」と
+みなしてください。
 
 完全なプリコンパイル一覧については [EVM ガイド](/sdk/guides/evm) を、実行可能なサンプルについては
 [`ai-preflight` サンプル](https://github.com/qorechain/qorechain-sdk/tree/main/examples/ai-preflight) を

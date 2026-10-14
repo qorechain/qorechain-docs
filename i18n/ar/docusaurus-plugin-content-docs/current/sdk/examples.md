@@ -33,7 +33,10 @@ pnpm --filter @qorechain/example-pqc-hybrid-sign start
 ## connect-and-query
 
 أنشئ عميلاً واقرأ حالة السلسلة العامة — رصيدًا مصرفيًا أصليًا (native) ولقطة
-اقتصاد الرمز (tokenomics) المجمّعة. يتطلب عقدة يمكن الوصول إليها.
+لاقتصاد الرمز (tokenomics). يتطلب عقدة يمكن الوصول إليها. يقرأ المثال الموجود في المستودع
+اللقطة عبر `client.qor`، وهو استدعاء JSON-RPC من نوع `qor_` لا تخدمه
+نقاط النهاية العامة؛ أما المقتطف أدناه فيستخدم المكافئ عبر REST (إحصاءات الحرق)،
+وهو يعمل على الشبكة الرئيسية وعلى شبكة الاختبار.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [المصدر](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -56,7 +59,11 @@ const overview = await client.qor.getTokenomicsOverview();
 
 اشتق حسابًا أصليًا (`qor1...`) من عبارة استذكارية وابثّ تحويل QOR:
 اشتقاق ← توقيع ← محاكاة ← تقدير الرسوم ← `bankSend`. يتطلب
-RPC إجماع يمكن الوصول إليه بالإضافة إلى REST وحساب مموَّل.
+RPC إجماع يمكن الوصول إليه بالإضافة إلى REST وحساب مموَّل. يوقّع هذا المثال
+بالتوقيع **الكلاسيكي** فقط، لذا يعمل مع عقدة محلية أو عقدة تطوير لكنه
+مرفوض من الشبكة الرئيسية وشبكة الاختبار اللتين تتطلبان التوقيع الهجين في كل معاملة
+على المسار الأصلي (Native). وبالنسبة إلى الشبكات العامة استخدم الإرسال الهجين في
+[البدء السريع](/sdk/quickstart#send-qor).
 
 ```ts
 import {
@@ -84,7 +91,10 @@ console.log(result.transactionHash);
 
 ابنِ تحويل SOL مع تعليمة مذكرة (memo) على بيئة تشغيل QoreChain المتوافقة مع
 Solana ‏(SVM)، باستخدام `@qorechain/svm`. يبني المعاملة ويطبعها
-دون اتصال؛ أما الإرسال فيتطلب SVM JSON-RPC يمكن الوصول إليه وحسابًا مموَّلًا.
+دون اتصال. أما الإرسال فيتطلب SVM JSON-RPC يمكن الوصول إليه وحسابًا مموَّلًا، ولا يمكن
+أن ينجح على الشبكات العامة: فإرسال معاملات SVM معطَّل
+على مستوى الشبكة بأكملها، ونقاط نهاية SVM العامة للقراءة فقط (راجع
+[تطوير SVM](/developer-guide/svm-development)).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -93,7 +103,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -101,7 +111,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -112,8 +123,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 استخدم `@qorechain/evm` (طبقة رقيقة فوق viem) لاستدعاء تجميعات QoreChain المسبقة
 (precompiles) الخاصة بالقراءة فقط وقراءة رصيد ERC-20. يتم اكتشاف معرّف سلسلة EVM تلقائيًا عبر
-`eth_chainId`. على عقدة لا تحتوي على التجميعات المسبقة، ترمي تلك الاستدعاءات الخطأ "feature not
-present"، ويتم الإبلاغ عنه لكل استدعاء على حدة.
+`eth_chainId`. التجميعات المسبقة ليست مفعّلة بعد على الشبكة الرئيسية ولا على شبكة الاختبار (راجع
+[حالة الشبكة](/developer-guide/evm-precompiles#network-status))؛ وإلى أن
+تُفعَّل، وعلى أي عقدة لا تحتوي عليها، ترمي تلك الاستدعاءات الخطأ "feature not present"،
+ويتم الإبلاغ عنه لكل استدعاء على حدة.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -154,11 +167,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -191,8 +205,10 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 ## read-tokenomics
 
 اقرأ حالة اقتصاد الرمز عبر مساحة أسماء JSON-RPC المصنّفة الأنواع `qor_*`
-(`client.qor`)، والمقدَّمة عبر نقطة نهاية EVM JSON-RPC. عمليات القراءة الثلاث
-مستقلة، لذا يتم الإبلاغ عن كل واحدة حتى لو كانت الأخريات غير متاحة.
+(`client.qor`)، عبر نقطة نهاية EVM JSON-RPC. عمليات القراءة الثلاث
+مستقلة، لذا يتم الإبلاغ عن كل واحدة حتى لو كانت الأخريات غير متاحة. لا توجد حتى الآن
+أي نسخة عقدة مُصدَرة تخدم مساحة الأسماء `qor_`، لذا تفشل كل عملية قراءة اليوم بالخطأ `-32601` (راجع
+[مساحة الأسماء `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -205,7 +221,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -241,7 +257,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 ابنِ رسالة `MsgExecuteCosmos` تُقدَّم عبر مُرحِّل (relayer) على مسار المصادِقات الأصلي
-(SDK 0.7.0، السلسلة v3.1.85): يوقّع مفتاح ed25519 على نمط Phantom
+(SDK 0.7.0، السلسلة v3.1.85؛ وحدة `abstractaccount` معطَّلة على الشبكتين
+اليوم، لذا لا يمكن استخدام هذا المسار هناك بعد): يوقّع مفتاح ed25519 على نمط Phantom
 ملخّص المصادقة المفصول بالنطاق (domain-separated)، وتصبح الرسالة الناتجة جاهزة كي يبثّها
 المُرحِّل (المُرحِّل يدفع الرسوم؛ ولا يُنتج المفتاح الخارجي أبدًا توقيعًا مشتركًا
 بـ ML-DSA). تشغيل تجريبي جاف — لا يتطلب أي عقدة.

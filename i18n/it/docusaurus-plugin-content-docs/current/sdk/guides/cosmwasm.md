@@ -25,7 +25,7 @@ import {
 
 const client = createClient({
   network: "testnet",
-  endpoints: { rpc: "https://rpc.testnet.example" },
+  endpoints: { rpc: "https://rpc-testnet.qore.host" }, // mainnet: https://rpc.qore.host
 });
 
 const cw = await client.cosmwasm(); // read-only CosmWasmReadClient
@@ -41,9 +41,31 @@ Puoi anche costruire un client di lettura direttamente con `createCosmWasmClient
 
 ## Firma: instantiate, execute, upload
 
-Per le modifiche allo stato, connetti un client di firma con `connectCosmWasmSigner` (che
-accetta un offline signer, lo stesso tipo prodotto da
-`directSignerFromPrivateKey`), poi usa i wrapper tipizzati:
+:::caution Upload e instantiate sono soggetti a permessi
+`code_upload_access` e `instantiate_default_permission` sono `Nobody` su
+`qorechain-vladi` e `qorechain-diana`, e anche `MsgStoreCode` /
+`MsgInstantiateContract` / `MsgInstantiateContract2` sono disattivati dal
+circuit breaker della chain, quindi `uploadCode` e `instantiate` vengono rifiutati
+per gli account ordinari. I contratti già esistenti possono essere interrogati
+(sopra) ed eseguiti. Controlla `GET /cosmwasm/wasm/v1/codes/params` per i permessi
+attuali.
+Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development).
+:::
+
+:::caution Il client di firma CosmWasm firma in modo classico
+`connectCosmWasmSigner` incapsula il client di firma di CosmJS, che allega solo la
+firma classica secp256k1. Le reti live richiedono la firma ibrida
+(secp256k1 + ML-DSA-87) su ogni transazione del percorso Native, quindi una
+transazione inviata tramite di esso viene rifiutata; funziona con un nodo che non
+richiede l'estensione ibrida (un nodo di sviluppo locale). Per un `execute` su una
+rete live, costruisci il messaggio e invialo con `signAndBroadcastHybrid` (esempio
+sotto).
+:::
+
+Per le modifiche allo stato verso un nodo che accetta firme classiche, connetti un client di
+firma con `connectCosmWasmSigner` (che accetta un offline signer, lo stesso tipo prodotto da
+`directSignerFromPrivateKey`), poi usa i wrapper tipizzati. Gli helper restituiscono
+`Promise<unknown>` a meno che tu non indichi il tipo del risultato:
 
 ```ts
 import {
@@ -56,16 +78,18 @@ import {
 const signingCw = await connectCosmWasmSigner(rpcUrl, signer);
 
 // Upload Wasm bytecode -> a code id.
-const { codeId } = await uploadCode(signingCw, sender, wasmBytes, fee);
+const { codeId } = await uploadCode<{ codeId: number }>(
+  signingCw, sender, wasmBytes, "auto",
+);
 
-// Instantiate a contract from a code id.
-const { contractAddress } = await instantiate(
+// Instantiate a contract from a code id (the last argument is InstantiateOpts).
+const { contractAddress } = await instantiate<{ contractAddress: string }>(
   signingCw,
   sender,
   codeId,
   { /* init msg */ },
   "label",
-  fee,
+  { fee: "auto" },
 );
 
 // Execute a message against a deployed contract.
@@ -74,12 +98,58 @@ const res = await execute(
   sender,
   contractAddress,
   { /* execute msg */ },
-  fee,
+  "auto",
 );
 ```
 
 Le esatte forme degli argomenti seguono `@cosmjs/cosmwasm-stargate`; l'SDK aggiunge i tipi
 tipizzati `ContractMsg`, `FeeInput`, `InstantiateOpts`, `CosmWasmReadClient` e
 `CosmWasmSigningClient`.
+
+### Eseguire su una rete live (ibrido)
+
+Aggiungi i tipi di messaggio CosmWasm a un registry e invia il `MsgExecuteContract`
+tramite il builder ibrido. La chiave ML-DSA-87 dell'account deve essere registrata
+prima (vedi [Quantum-safe](/sdk/guides/quantum-safe)). Richiede
+`npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
+
+```ts
+import { Registry } from "@cosmjs/proto-signing";
+import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
+import { StargateClient } from "@cosmjs/stargate";
+import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import {
+  qorechainRegistryTypes,
+  signAndBroadcastHybrid,
+  derivePqcCanonical,
+} from "@qorechain/sdk";
+
+const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
+const transport = await StargateClient.connect("https://rpc.qore.host");
+const info = await transport.getSequence(sender);
+
+const result = await signAndBroadcastHybrid({
+  registry,
+  signer,                                            // from directSignerFromPrivateKey
+  pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
+  messages: [
+    {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender,
+        contract: contractAddress,
+        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+        funds: [],
+      }),
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: "https://api.qore.host",
+  transport,
+});
+```
 
 Consulta l'[esempio](/sdk/examples) `cosmwasm-query` per un esempio di lettura eseguibile.

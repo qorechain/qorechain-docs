@@ -7,8 +7,8 @@ sidebar_position: 5
 
 # Guía de verificación previa con IA
 
-QoreChain es la primera red que expone un **modelo de riesgo/anomalías de IA en la
-cadena** a cualquier dApp. Dos precompilados EVM de solo lectura te permiten
+QoreChain define un **modelo de riesgo/anomalías de IA en la
+cadena** que una dApp puede leer desde la EVM. Dos precompilados EVM de solo lectura están pensados para permitirte
 puntuar una transacción *antes* de que se firme o se difunda, usando únicamente
 `eth_call`:
 
@@ -16,6 +16,17 @@ puntuar una transacción *antes* de que se firme o se difunda, usando únicament
 |---|---|---|
 | Puntuación de riesgo para los datos de llamada | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
 | Comprobación de anomalías para `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+
+:::caution No disponible hoy en las redes públicas
+`simulateWithRiskScore`, `aiRiskScore` y `aiAnomalyCheck` leen los precompilados en
+`0x…0B01` / `0x…0B02`. Un precompilado estático solo responde cuando su dirección está en el
+parámetro `active_static_precompiles` del módulo EVM, y esa lista está vacía tanto en
+`qorechain-vladi` (red principal) como en `qorechain-diana` (red de pruebas). Contra los
+endpoints públicos una llamada devuelve datos vacíos (`0x`) y estos ayudantes lanzan un error (por ejemplo
+`returned no data ("0x")`). Solo funcionan en una red o nodo donde los
+precompilados se hayan activado. Comprueba primero `GET /cosmos/evm/vm/v1/params`, y consulta
+[Precompilados EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
+:::
 
 La implementación vive en `@qorechain/evm` (el adaptador EVM sobre
 [viem](https://viem.sh)) y se reexporta desde `@qorechain/sdk` para su
@@ -33,7 +44,7 @@ una comprobación de anomalías en un único veredicto orientativo:
 import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
 const { publicClient } = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" },
 });
 
 const preflight = await simulateWithRiskScore(publicClient, {
@@ -87,9 +98,9 @@ import { AI_RISK_SCORE_ADDRESS, AI_ANOMALY_CHECK_ADDRESS } from "@qorechain/evm"
 
 ## Disponibilidad
 
-Los precompilados de IA existen en los nodos de la red QoreChain. En un nodo EVM
-normal las llamadas lanzan un error "not available": trata un error lanzado por
-cualquiera de estos ayudantes como "feature not present on this node".
+Los ayudantes lanzan un error siempre que los precompilados no están activos en el nodo que consultas:
+en las redes públicas eso ocurre actualmente siempre, y también en un nodo EVM normal.
+Trata un error lanzado por cualquiera de estos ayudantes como "feature not present on this node".
 
 Consulta la [guía de EVM](/sdk/guides/evm) para ver la lista completa de
 precompilados, y el [ejemplo ejecutable `ai-preflight`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/ai-preflight).

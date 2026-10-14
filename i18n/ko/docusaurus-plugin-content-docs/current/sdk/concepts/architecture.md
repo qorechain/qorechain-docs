@@ -28,14 +28,20 @@ SDK는 여러 엔드포인트를 통해 노드와 통신합니다:
 - **Cosmos REST (LCD)** — 뱅크 잔액, 계정 정보, 모듈 쿼리.
 - **합의 RPC** — 네이티브 트랜잭션 서명/브로드캐스트 및 CosmWasm 읽기 클라이언트에
   사용.
-- **EVM JSON-RPC** — 표준 `eth_*` 호출과 QoreChain `qor_*` 네임스페이스 및 EVM
-  프리컴파일.
-- **SVM JSON-RPC** — SVM 런타임을 위한 Solana 호환 RPC.
+- **EVM JSON-RPC** — 공개 엔드포인트의 표준 `eth_*`, `net_*`, `web3_*`, `txpool_*`
+  호출. QoreChain `qor_*` 네임스페이스와 EVM 프리컴파일은 아직 그곳에서
+  사용할 수 없습니다(아래 참조).
+- **SVM JSON-RPC** — SVM 런타임을 위한 Solana 호환 RPC(공개 엔드포인트에서는
+  읽기 전용이며, SVM 트랜잭션 제출은 네트워크 전체에서 비활성화되어 있습니다).
 
-`qor_*` JSON-RPC 네임스페이스는 토크노믹스, PQC 키 상태, 하이브리드 서명 모드,
-크로스 VM 메시지, 네트워크 통계 같은 QoreChain 고유 읽기를 노출합니다.
-TypeScript에서는 이들이 `client.qor`(`QorClient`)의 타입이 지정된 메서드입니다.
-동일한 표면이 Python, Go, Rust SDK에도 존재합니다.
+이를 활성화한 노드에서는 `qor_*` JSON-RPC 네임스페이스가 토크노믹스, PQC 키 상태,
+하이브리드 서명 모드, 크로스 VM 메시지, 네트워크 통계 같은 QoreChain 고유 읽기를
+노출합니다. TypeScript에서는 이들이 `client.qor`(`QorClient`)의 타입이 지정된
+메서드이며, 동일한 표면이 Python, Go, Rust SDK에도 존재합니다. 공개 엔드포인트에서는
+대신 REST 경로를 사용하세요(예: PQC 키 상태는 `GET /qorechain/pqc/v1/account/{address}`,
+소각 통계는 `GET /qorechain/burn/v1/stats`).
+
+> **아직 제공되지 않음:** 릴리스된 어떤 노드 빌드도 `qor_` JSON-RPC 네임스페이스를 제공하지 않으므로, 현재 모든 공개 엔드포인트에서 모든 `qor_*` 호출은 `-32601`(메서드를 찾을 수 없음)을 반환합니다. [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참조하세요.
 
 ## 토큰 및 디노미네이션
 
@@ -70,8 +76,9 @@ fromBase("1500000");  // "1.5"      (uqor -> QOR)
 ## 크로스 VM
 
 QoreChain의 `x/crossvm` 모듈은 한 VM의 컨트랙트가 다른 VM의 액션을 트리거할 수
-있게 합니다. EVM→네이티브 경로는 **크로스 VM 브리지 프리컴파일**(`@qorechain/evm`)을
-통해 온체인에서 실행되며, SDK는 타입이 지정된 REST 읽기 헬퍼(`getCrossVmMessage`,
+있게 합니다. EVM→네이티브 경로는 **크로스 VM 브리지 프리컴파일**(`@qorechain/evm`;
+공개 네트워크에서는 아직 활성화되지 않음)을 통해 온체인에서 실행되며, SDK는 타입이 지정된 REST 읽기 헬퍼(`getCrossVmMessage`,
 `getPendingCrossVmMessages`, `getCrossVmParams`)와 메시지 상태를 추적하는
-`client.qor.getCrossVMMessage(...)`를 제공합니다.
-[크로스 VM 가이드](/sdk/guides/cross-vm)를 참조하세요.
+`client.qor.getCrossVmMessage(...)`를 제공합니다. 공개 엔드포인트에서는 REST 헬퍼와
+`client.qor`가 제공되지 않으므로, `connectQueryClients(rpc).crossvm`으로 메시지를
+읽으세요. [크로스 VM 가이드](/sdk/guides/cross-vm)를 참조하세요.

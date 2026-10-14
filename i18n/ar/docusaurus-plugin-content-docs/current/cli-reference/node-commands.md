@@ -10,7 +10,7 @@ sidebar_position: 1
 مرجع لأوامر `qorechaind` المستخدمة لتهيئة عقدة QoreChain وضبطها وتشغيلها.
 
 :::note
-تُشغّل QoreChain شبكتين: الشبكة الرئيسية **`qorechain-vladi`** (تعمل منذ 7 يونيو 2026 على إصدار السلسلة **v3.1.97**) والشبكة التجريبية **`qorechain-diana`**. مرّر قيمة `--chain-id` المناسبة للشبكة التي تريد الانضمام إليها — الأمثلة أدناه تستهدف الشبكة التجريبية؛ استخدم `--chain-id qorechain-vladi` للشبكة الرئيسية.
+تُشغّل QoreChain شبكتين: الشبكة الرئيسية **`qorechain-vladi`** (تعمل منذ 29 يونيو 2026؛ إصدار العقدة الحالي **v3.2.1**) والشبكة التجريبية **`qorechain-diana`** (إصدار العقدة **v3.2.2**). مرّر قيمة `--chain-id` المناسبة للشبكة التي تريد الانضمام إليها — الأمثلة أدناه تستهدف الشبكة التجريبية؛ استخدم `--chain-id qorechain-vladi` للشبكة الرئيسية. الإصدار الحالي لكل شبكة مدرج في `latest.json` ضمن [download.qore.host](https://download.qore.host).
 :::
 
 ---
@@ -25,11 +25,14 @@ qorechaind init <moniker> --chain-id qorechain-diana
 
 | العلم         | النوع  | الوصف                                          |
 | ------------- | ------ | ----------------------------------------------- |
-| `--chain-id`  | string | معرّف السلسلة (مطلوب)                          |
+| `--chain-id`  | string | معرّف السلسلة (مرّره دائمًا؛ يُنشأ معرّف عشوائي إذا حُذف) |
 | `--home`      | string | دليل العقدة الرئيسي (الافتراضي: `~/.qorechaind`) |
-| `--overwrite` | bool   | استبدال ملفات التكوين وملف التكوين الأولي (genesis) الحالية |
+| `--overwrite` | bool   | استبدال ملف `genesis.json` الحالي |
+| `--recover`   | bool   | تقديم عبارة استرداد (seed phrase) لاسترداد مفتاح موجود بدلًا من إنشاء مفتاح جديد |
 
-ينشئ هيكل الدليل ضمن `--home` مع `config/` و`data/` وملف `genesis.json` أولي.
+ينشئ هيكل الدليل ضمن `--home` مع `config/` و`data/` وملف `genesis.json` أولي. بالنسبة إلى عقدة شبكة، استبدل ملف `genesis.json` هذا بملف التكوين الأولي (genesis) الخاص بالشبكة قبل البدء (انظر [الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet)).
+
+يكتب `init` أيضًا معرّف سلسلة EVM الخاص بالشبكة (`9801` للشبكة `qorechain-vladi`، و`9800` للشبكة `qorechain-diana`) في الإعداد `evm-chain-id` داخل `app.toml`، لذا مرّر قيمة `--chain-id` الصحيحة.
 
 ---
 
@@ -44,10 +47,10 @@ qorechaind start [flags]
 | العلم                   | النوع  | الوصف                                                |
 | ---------------------- | ------ | ------------------------------------------------------ |
 | `--home`               | string | دليل العقدة الرئيسي                                    |
-| `--minimum-gas-prices` | string | الحد الأدنى لأسعار الغاز المقبولة (مثال: `0.001uqor`) |
+| `--minimum-gas-prices` | string | الحد الأدنى لسعر الغاز الذي تقبله هذه العقدة. الحد الأدنى للشبكة هو `0.1uqor`؛ اضبط هذه القيمة عند هذا الحد على الأقل |
 | `--pruning`            | string | استراتيجية التقليم: `default`، `nothing`، `everything` |
 | `--halt-height`        | uint   | إيقاف العقدة عند هذا الارتفاع للكتلة                    |
-| `--halt-time`          | uint   | إيقاف العقدة عند هذه الطابع الزمني من نوع Unix          |
+| `--halt-time`          | uint   | إيقاف العقدة عند هذا الطابع الزمني من نوع Unix          |
 | `--log_level`          | string | مستوى تفصيل السجلّ: `info`، `debug`، `warn`، `error`   |
 | `--trace`              | bool   | تفعيل تتبّع المكدّس الكامل عند حدوث أخطاء               |
 
@@ -85,23 +88,9 @@ qorechaind status
 
 ---
 
-## config
+## client configuration
 
-قراءة أو كتابة قيم في تكوين العقدة.
-
-### ضبط قيمة تكوين
-
-```bash
-qorechaind config set <key> <value>
-```
-
-### الحصول على قيمة تكوين
-
-```bash
-qorechaind config get <key>
-```
-
-مفاتيح التكوين الشائعة تشمل `chain-id` و`keyring-backend` و`output` و`node`.
+لا يوجد أمر فرعي `config`. تُقرأ القيم الافتراضية للعميل (`chain-id` و`keyring-backend` و`output` و`node`) من الملف `<home>/config/client.toml`؛ عدّل هذا الملف، أو مرّر العلم مع كل أمر (`--chain-id` و`--keyring-backend` و`--output` و`--node`).
 
 ---
 
@@ -117,8 +106,9 @@ qorechaind keys add <name> [flags]
 
 | العلم                   | النوع  | الوصف                                             |
 | ---------------------- | ------ | ------------------------------------------------- |
-| `--keyring-backend`    | string | الخلفية: `os`، `file`، `test`                     |
-| `--algo`               | string | خوارزمية المفتاح: `secp256k1` (الافتراضي)، `ed25519` |
+| `--keyring-backend`    | string | الخلفية: `os`، `file`، `kwallet`، `pass`، `test`، `memory` |
+| `--key-type`           | string | خوارزمية المفتاح: `secp256k1` (الافتراضي) أو `eth_secp256k1` |
+| `--coin-type`          | uint32 | نوع العملة في HD (الافتراضي `118`)                 |
 | `--recover`            | bool   | استرداد المفتاح من العبارة التذكارية (mnemonic)    |
 | `--multisig`           | string | قائمة مفاتيح مفصولة بفواصل للتوقيع المتعدد          |
 | `--multisig-threshold` | uint   | الحد الأدنى للتوقيعات المطلوبة                     |
@@ -174,6 +164,7 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 | العلم                 | النوع  | الوصف                                  |
 | -------------------- | ------ | ------------------------------------------ |
 | `--vesting-amount`   | string | مبلغ الاستحقاق التدريجي (vesting)        |
+| `--vesting-start-time` | int  | وقت بدء الاستحقاق التدريجي (طابع زمني من نوع Unix) |
 | `--vesting-end-time` | int    | وقت انتهاء الاستحقاق التدريجي (طابع زمني من نوع Unix) |
 
 ### إنشاء معاملة تكوين أولي (genesis)
@@ -195,10 +186,12 @@ qorechaind genesis gentx <key-name> <stake-amount> [flags]
 qorechaind genesis collect-gentxs
 ```
 
+الأوامر الفرعية الأخرى لـ `genesis`: `bulk-add-genesis-account` و`migrate`.
+
 ### التحقق من صحة ملف التكوين الأولي
 
 ```bash
-qorechaind genesis validate-genesis
+qorechaind genesis validate
 ```
 
 ---
@@ -238,6 +231,9 @@ qorechaind export [flags]
 | `--for-zero-height` | bool   | تجهيز التصدير لإعادة التشغيل من الارتفاع صفر |
 | `--height`          | int    | تصدير الحالة عند ارتفاع كتلة محدد            |
 | `--home`            | string | دليل العقدة الرئيسي                           |
+| `--output-document` | string | كتابة ناتج التصدير في هذا الملف بدلًا من STDOUT |
+| `--modules-to-export` | strings | قائمة مفصولة بفواصل بالوحدات المراد تصديرها (الافتراضي: الكل) |
+| `--jail-allowed-addrs` | strings | عناوين المشغّلين للمدقّقين المسجونين (jailed) المراد إلغاء سجنهم |
 
 ---
 

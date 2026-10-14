@@ -13,6 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (yayında) |
+| EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
 | QOR başına temel birim | `10^6` |
@@ -25,11 +26,25 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
+| EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
 | QOR başına temel birim | `10^6` |
 | Hesap bech32 öneki | `qor` |
 | Doğrulayıcı bech32 öneki | `qorvaloper` |
+
+## Genel uç noktalar {#public-endpoints}
+
+| Uç nokta | Mainnet (`qorechain-vladi`) | Testnet (`qorechain-diana`) |
+| --- | --- | --- |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| Consensus RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM JSON-RPC (`eth_*`) | `https://evm.qore.host` (zincir kimliği 9801) | `https://evm-testnet.qore.host` (zincir kimliği 9800) |
+| EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (salt okunur) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+
+EVM uç noktaları `eth_`, `net_`, `web3_` ve `txpool_` sunar; `qor_` ad alanı
+etkin değildir. Ayrıca bkz. [Ağlar](/appendix/networks#public-endpoints).
 
 ## Varsayılan portlar
 
@@ -41,7 +56,7 @@ düğüme işaret etmek için `endpoints` parametresini geçersiz kılın.
 | Cosmos REST (LCD) | `1317` | bank bakiyeleri, hesap bilgisi, modül sorguları |
 | gRPC | `9090` | gRPC sorguları |
 | Consensus RPC | `26657` | yerel tx'leri imzalama/yayınlama, CosmWasm okumaları |
-| EVM JSON-RPC | `8545` | `eth_*`, `qor_*`, precompile'lar |
+| EVM JSON-RPC | `8545` | `eth_*` (ve bunları etkinleştiren düğümlerde `qor_*` / precompile'lar) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket abonelikleri |
 | SVM JSON-RPC | `8899` | Solana uyumlu RPC |
 
@@ -52,10 +67,10 @@ import { createClient } from "@qorechain/sdk";
 
 const client = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
-    evmWs: "wss://evm.testnet.example",      // EVM WebSocket
+    rest: "https://api-testnet.qore.host",        // REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",         // consensus RPC
+    evmRpc: "https://evm-testnet.qore.host",      // EVM JSON-RPC (eth_*)
+    evmWs: "wss://evm-ws-testnet.qore.host",      // EVM WebSocket
   },
 });
 ```
@@ -68,15 +83,15 @@ aktarılır) sunar, böylece ağları programatik olarak listeleyebilir ve
 ## Mainnet'i hedefleme
 
 Her iki ön ayar da aynı localhost varsayılanlarıyla gelir; `mainnet`'i seçin ve
-uç noktaları kendi düğüm URL'lerinizle geçersiz kılın:
+uç noktaları genel URL'lerle (veya kendi düğümünüzle) geçersiz kılın:
 
 ```ts
 const main = createClient({
   network: "mainnet",       // chain id qorechain-vladi
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```

@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain에는 **Solana Virtual Machine(SVM)** 실행 환경이 포함되어 있어, 개발자가 익숙한 Solana 툴링을 사용해 SBF/BPF 프로그램을 배포하고 실행할 수 있습니다. SVM 모듈은 **8899번 포트**에서 Solana 호환 JSON-RPC 인터페이스를 노출하며, 이는 `qorechaind start`가 자동으로 실행합니다(아래 [JSON-RPC 서버](#json-rpc-server) 참고).
 
 :::note
-아래 명령은 2026년 6월 7일부터 가동 중이며 체인 버전 **v3.1.97**를 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 합니다. 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 29일부터 가동 중이며 노드 릴리스 **v3.2.1**을 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 합니다. v3.2.2를 실행하는 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요. **두 네트워크 모두에서 SVM 트랜잭션은 비활성화되어 있으므로**(다음 상자 참고), 이 페이지의 `tx svm` 명령은 참고용일 뿐이며 현재로서는 성공할 수 없습니다.
 :::
 
 ---
 
 :::caution SVM 트랜잭션 제출이 현재 비활성화되어 있습니다
-체인 버전 v3.1.89(8월 22일) 기준으로, 한 건의 사고 이후 SVM 실행 레인은 **트랜잭션 제출에 대해 네트워크 전역에서 비활성화**되었습니다 — `x/svm`으로 전송되는 모든 트랜잭션(프로그램 배포, 명령어 실행, 계정 생성, 전송)은 `code 11, "SVM module is disabled"`를 반환합니다. 이는 여러분 자신의 노드는 물론 공개 엔드포인트에도 동일하게 적용됩니다. 읽기 성격의 RPC 메서드는 계속 응답할 수 있지만, 이 레인이 다시 열리기 전까지는 실제 SVM 연동을 구축하거나 리허설하지 마세요 — 이는 런타임 매개변수가 아니라 컴파일 타임에 이루어진 비활성화이므로 거버넌스 투표로 다시 켤 수 없으며, 외부 감사에서 승인이 날 때까지 비활성 상태를 유지할 것으로 예상됩니다.
+체인 버전 v3.1.89(8월 22일) 기준으로, 한 건의 사고 이후 SVM 실행 레인은 `qorechain-vladi`와 `qorechain-diana` 모두에서 **트랜잭션 제출에 대해 네트워크 전역에서 비활성화**되었습니다 — `x/svm`으로 전송되는 모든 트랜잭션(프로그램 배포, 명령어 실행, 계정 생성, 전송)은 `code 11, "SVM module is disabled"`를 반환합니다. 이는 여러분 자신의 노드는 물론 공개 엔드포인트에도 동일하게 적용됩니다. 읽기 성격의 RPC 메서드는 계속 응답할 수 있지만, 이 레인이 다시 열리기 전까지는 실제 SVM 연동을 구축하거나 리허설하지 마세요 — 이는 런타임 매개변수가 아니라 컴파일 타임에 이루어진 비활성화이므로 거버넌스 투표로 다시 켤 수 없으며, 외부 감사에서 승인이 날 때까지 비활성 상태를 유지할 것으로 예상됩니다.
 :::
 
 ## 개요
@@ -100,12 +100,11 @@ address = "127.0.0.1:8899"
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   트랜잭션 응답에는 base58 형식의 **프로그램 ID**가 포함됩니다.
+   레인이 활성화된 네트워크에서는 모든 `tx svm` 명령이 Cosmos 레인 트랜잭션입니다. `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`로 `tx.json`에 서명하고 브로드캐스트하며, 명시적인 가스 한도를 지정하고 수수료는 최소 gas × 0.1 uqor 이상으로 설정하세요. 트랜잭션 응답에는 base58 형식의 **프로그램 ID**가 포함됩니다.
 
 2. **명령어 실행** — 명령어 데이터와 함께 온체인 BPF 프로그램을 호출합니다.
 
@@ -113,8 +112,8 @@ address = "127.0.0.1:8899"
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | 매개변수             | 형식              | 설명                              |
@@ -128,8 +127,8 @@ address = "127.0.0.1:8899"
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | 매개변수       | 설명                                                  |
@@ -242,20 +241,7 @@ SVM 모듈은 상태 비대화를 방지하기 위해 **렌트 기반 스토리�
 
 ## 크로스-VM 상호운용성
 
-SVM 프로그램은 **비동기** 크로스-VM 메시지 경로를 통해 EVM 및 CosmWasm 컨트랙트와 통신할 수 있습니다.
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-메시지는 큐에 쌓였다가 EndBlocker에 의해 처리됩니다. 메시지 생명 주기와 타임아웃 동작에 대한 자세한 내용은 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
+SVM 프로그램은 `x/crossvm` 모듈의 `MsgCrossVMCall` 메시지를 통해 EVM 및 CosmWasm 컨트랙트와 통신하도록 설계되었습니다(출발 레인은 체인이 스스로 판단합니다). SVM 레인은 트랜잭션에 대해 비활성화되어 있고 `MsgCrossVMCall`은 메인넷에서 꺼져 있으므로, 현재 동작하는 SVM 크로스-VM 경로는 없습니다. 현재 상태, 메시지 생명 주기, 타임아웃 동작에 대한 자세한 내용은 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 
 ---
 

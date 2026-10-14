@@ -15,7 +15,7 @@ Il QOR di testnet **non ha alcun valore reale**. Il Faucet non tocca mai la main
 
 ## Richiedere token di test
 
-1. Connettiti alla **testnet** e apri il **Faucet**.
+1. Accedi, imposta la Dashboard sulla **testnet** e apri il **Faucet**.
 2. Inserisci l'indirizzo da finanziare (`qor1...`). Se il tuo wallet è connesso, seleziona **Use my address** per compilarlo automaticamente. Il modulo conferma che l'indirizzo è valido prima di poter proseguire.
 3. Seleziona il pulsante di richiesta. Il finanziamento viene elaborato in pochi secondi.
 

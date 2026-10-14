@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChainには**Solana Virtual Machine (SVM)**実行環境が組み込まれており、開発者は使い慣れたSolanaツールを使ってSBF/BPFプログラムをデプロイ・実行できます。SVMモジュールは**ポート8899**でSolana互換のJSON-RPCインターフェースを公開しており、これは`qorechaind start`によって自動的に起動されます(以下の[JSON-RPCサーバー](#json-rpc-server)を参照)。
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているチェインバージョン**v3.1.97**を実行中の**`qorechain-vladi`**メインネットを使用しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。
+以下のコマンドは、2026年6月29日から稼働している**`qorechain-vladi`**メインネットを使用しており、ノードリリース**v3.2.1**で動作しています。テストネット(v3.2.2で動作)の場合は`--chain-id qorechain-diana`に置き換えてください。**SVMトランザクションは両方のネットワークで無効化されています**(次のボックスを参照)。そのため、このページの`tx svm`コマンドは参考用であり、現時点では成功しません。
 :::
 
 ---
 
 :::caution SVMトランザクション送信は現在無効化されています
-チェインバージョンv3.1.89(8月22日)以降、インシデントを受けて、SVM実行レーンはトランザクション送信についてネットワーク全体で**無効化**されています——`x/svm`宛に送信されるトランザクション(プログラムデプロイ、命令実行、アカウント作成、送金)はすべて`code 11, "SVM module is disabled"`を返します。これは自分自身のノードにもパブリックエンドポイントにも当てはまります。読み取り系のRPCメソッドは引き続き応答する場合がありますが、このレーンが再開されるまでは、実運用のSVM統合を構築したりリハーサルしたりしないでください。これはランタイムパラメータではなくコンパイル時の無効化であるため、ガバナンス投票によって再度有効化することはできません。外部監査によって問題なしと確認されるまで、無効のままとなる見込みです。
+チェインバージョンv3.1.89(8月22日)以降、インシデントを受けて、SVM実行レーンはトランザクション送信について`qorechain-vladi`と`qorechain-diana`の両方でネットワーク全体で**無効化**されています——`x/svm`宛に送信されるトランザクション(プログラムデプロイ、命令実行、アカウント作成、送金)はすべて`code 11, "SVM module is disabled"`を返します。これは自分自身のノードにもパブリックエンドポイントにも当てはまります。読み取り系のRPCメソッドは引き続き応答する場合がありますが、このレーンが再開されるまでは、実運用のSVM統合を構築したりリハーサルしたりしないでください。これはランタイムパラメータではなくコンパイル時の無効化であるため、ガバナンス投票によって再度有効化することはできません。外部監査によって問題なしと確認されるまで、無効のままとなる見込みです。
 :::
 
 ## 概要
@@ -100,12 +100,11 @@ address = "127.0.0.1:8899"
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   トランザクションのレスポンスには、base58形式の**プログラムID**が含まれます。
+   このレーンが有効なネットワークでは、すべての`tx svm`コマンドはCosmosレーンのトランザクションです。`qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`で`tx.json`に署名してブロードキャストし、明示的なガス上限を設定して、手数料はガス量 × 0.1 uqor以上にしてください。トランザクションのレスポンスには、base58形式の**プログラムID**が含まれます。
 
 2. **命令を実行する** — 命令データを指定してオンチェーンのBPFプログラムを呼び出します:
 
@@ -113,8 +112,8 @@ address = "127.0.0.1:8899"
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | パラメータ           | 形式               | 説明                            |
@@ -128,8 +127,8 @@ address = "127.0.0.1:8899"
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | パラメータ      | 説明                                                |
@@ -242,20 +241,7 @@ SVMモジュールは、状態の肥大化を防ぐために**レントベース
 
 ## クロスVM相互運用性
 
-SVMプログラムは、**非同期**のクロスVMメッセージパスを通じてEVMおよびCosmWasmコントラクトと通信できます:
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-メッセージはキューに入れられ、EndBlockerによって処理されます。メッセージのライフサイクルとタイムアウトの挙動の詳細については、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+SVMプログラムは、`x/crossvm`モジュールの`MsgCrossVMCall`メッセージを通じてEVMおよびCosmWasmコントラクトと通信するよう設計されています(送信元のレーンはチェイン自身が判別します)。SVMレーンはトランザクションが無効化されており、`MsgCrossVMCall`もメインネットでは無効になっているため、現時点で動作するSVMのクロスVM経路はありません。現在のステータス、メッセージのライフサイクル、タイムアウトの挙動については、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
 
 ---
 

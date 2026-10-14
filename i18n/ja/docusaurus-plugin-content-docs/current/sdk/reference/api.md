@@ -31,8 +31,7 @@ pnpm --filter @qorechain/sdk docs:api
 - **アカウント:** `generateMnemonic`、`validateMnemonic`、`deriveNativeAccount`、
   `deriveEvmAccount`、`deriveSvmAccount`、およびアカウント型。
 - **統合アカウント（0.6.0）:** `deriveUnifiedAccount`、
-  `unifiedAccountFromSeed`、`addressesFrom20`、`qoreAddresses`、
-  `unifiedAccountFromPhantomSignature`、`connectPhantomUnified`。
+  `unifiedAccountFromSeed`、`addressesFrom20`、`qoreAddresses`。（`unifiedAccountFromPhantomSignature` と `connectPhantomUnified` は 0.8.0 で削除され、例外を投げます。）
 - **PQC:** `generatePqcKeypair`、`pqcSign`、`pqcVerify`、長さ定数、
   アルゴリズムID／ヘルパー、`PqcSigner`、`HybridSigner`、
   `buildHybridSignatureExtension`、`HYBRID_SIG_TYPE_URL`。
@@ -41,7 +40,14 @@ pnpm --filter @qorechain/sdk docs:api
   `buildUrl`、`joinUrl`、`QoreHttpError`）。また、`amm`、`license`、
   `abstractaccount`（`permissionSchema`）を含む全モジュールの型付きクエリ
   クライアント、および`multilayer`の`Anchor`/`Anchors`ステートアンカー
-  クエリ。
+  クエリ。公開エンドポイントでは、型付きRESTヘルパーの一部が、ゲートウェイが
+  提供していないルートを呼び出します。`getAiStats`、`getFeeEstimate`、
+  `getXqorePosition`、`getInflationRate`、`getReputation`、および
+  `getPqcAccount`（複数形の`accounts`パスを呼び出しますが、提供されている
+  ルートは単数形の`/qorechain/pqc/v1/account/{address}`で、
+  `rest.get(...)`で到達できます）。
+  `getBurnStats`、`getAllBalances`、`getBridgeChains`、
+  `getPermissionSchema`は動作します。
 - **クロスVM:** `getCrossVmMessage`、`getPendingCrossVmMessages`、
   `getCrossVmParams`。
 - **CosmWasm:** `createCosmWasmClient`、`connectCosmWasmSigner`、
@@ -68,11 +74,24 @@ pnpm --filter @qorechain/sdk docs:api
   `signMessage`）および `buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
   （EIP-191 `personal_sign`）。鍵ローテーション `rotatePqcKeyMsgFromMnemonic`、
   `derivePqcLegacy`。詳細は
-  [オーセンティケータガイド](/sdk/guides/authenticators)を参照してください。
+  [オーセンティケータガイド](/sdk/guides/authenticators)を参照してください
+  （これらのレーンの基盤となるモジュールは、現在どちらのネットワークでも無効になっています）。
+- **ハイブリッド署名バイト列（0.8.0+）:** `buildHybridTx`、`signAndBroadcastHybrid`、
+  `signHybridEth`、`EthNativeSigner` の `signBytesVersion` オプション
+  （`"auto" | "v1" | "v2"`）。`resolveSignBytesVersion`、
+  `SIGN_BYTES_V2_UPGRADES`、`isHybridSignBytesRejection`、`hybridSignBytesV1` /
+  `hybridSignBytesV2`、`migrationSignBytes`、`bridgeAttestationSignBytes`。
+- **EVM認可ウィンドウ（0.8.2+）:** `openEvmWindowMsg`、`closeEvmWindowMsg`、
+  `fetchEvmWindow`、`classifyEvmWindowRejection`、`isEvmWindowRejection`、
+  `MAX_EVM_WINDOW_BLOCKS`、`MAX_EVM_WINDOW_TXS`。詳細は
+  [EVM認可ウィンドウ](/sdk/guides/evm#evm-window)を参照してください。
+- **正規PQC導出（0.8.3+）:** `derivePqcCanonical(account, mnemonic)`、
+  `canonicalAccount(account)`。PQC登録メッセージは
+  `buildRegisterPqcKeyMsg`（`ensurePqcRegistered`が使用）です。
 
 ### `@qorechain/evm`
 
-`createEvmClient`、`evmAccountFromPrivateKey`、`erc20`ヘルパー、コントラクトラッパー（`deployContract`、`readContract`、`writeContract`）、`precompiles`バインディング、`PRECOMPILE_ADDRESSES`、および各種ABI（`ERC20_ABI`、`IQORE_PQC_ABI`、`IQORE_AI_ABI`、`IQORE_CONSENSUS_ABI`）。
+`createEvmClient`、`evmAccountFromPrivateKey`、`erc20`ヘルパー、コントラクトラッパー（`deployContract`、`readContract`、`writeContract`）、`precompiles`バインディング、プリコンパイルを基盤とするヘルパー`simulateWithRiskScore`、`aiRiskScore`、`aiAnomalyCheck`、`PRECOMPILE_ADDRESSES`、および各種ABI（`ERC20_ABI`、`IQORE_PQC_ABI`、`IQORE_AI_ABI`、`IQORE_CONSENSUS_ABI`）。プリコンパイルを基盤とするバインディングとヘルパーは、公開ネットワークでは有効ではありません（[EVMプリコンパイル](/developer-guide/evm-precompiles#network-status)を参照）。
 
 ### `@qorechain/svm`
 
@@ -82,9 +101,9 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 言語 | 生成ドキュメント | インストール |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.7.0`、インポート名は`qorsdk`） |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...`（タグ `packages/go/v0.7.0`） |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk` — 公開済みの最新クレート（リポジトリの0.7.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.7.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.8.3`、インポート名は`qorsdk`） |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...`（タグ `packages/go/v0.8.4`） |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.8.3、インポート名は`qorechain`） |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。

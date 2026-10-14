@@ -7,7 +7,11 @@ sidebar_position: 2
 
 # PRISM Konsensüs Motoru
 
-QoreChain, bir pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM'i** (Policy-driven Reinforcement-learning for Intelligent State Machines), `x/rlconsensus` modülü aracılığıyla doğrudan konsensüs katmanına gömer. PRISM, her N blokta bir zincir metriklerini gözlemler, sabit noktalı bir sinir ağı üzerinden çıkarım çalıştırır ve konsensüs parametresi ayarlamaları önerir — hepsi deterministik olarak, konsensüs açısından kritik yollarda kayan nokta aritmetiği kullanmadan.
+QoreChain, bir pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM'i** (Policy-driven Reinforcement-learning for Intelligent State Machines), `x/rlconsensus` modülü aracılığıyla doğrudan konsensüs katmanına gömer. PRISM, her N blokta bir zincir metriklerini gözlemler ve sabit noktalı bir sinir ağı üzerinden çıkarım çalıştırıp konsensüs parametresi ayarlamaları önerecek şekilde tasarlanmıştır — hepsi deterministik olarak, konsensüs açısından kritik yollarda kayan nokta aritmetiği kullanmadan.
+
+:::note Mevcut durum (Ekim 2026)
+Hem mainnet'te hem de testnet'te ajan `conservative` modundadır, her 10 blokta bir gözlem ve ödül toplar ve **yüklenmiş politika ağırlığı yoktur**: 0 adım atmıştır ve hiçbir parametre değişikliği uygulamaz. Blok süresi PRISM tarafından değil, doğrulayıcıların düğüm yapılandırması tarafından belirlenir. Bir politika yüklemek ve modu değiştirmek yönetişim eylemleridir ve şu anda mainnet'te devre kesici tarafından devre dışı bırakılmıştır.
+:::
 
 *PRISM optimizasyon döngüsü: zincir durumunu gözlemle, politika çıkarımı çalıştır, parametre değişikliklerini sıkıştır ve uygula, ardından sonucu geri besle.*
 
@@ -71,7 +75,7 @@ Tüm MLP hesaplamaları, `FixedPointScale = 10^8` ile ölçeklenmiş `int64` de�
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: `|x| <= 2.5*SCALE` için Padé yaklaşımı `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)`, aksi halde +/- SCALE'e sıkıştırılır
 
-Politika ağırlıkları, zincir üzerinde düzleştirilmiş bir `[]int64` vektörü olarak saklanır ve yönetişim önerisi aracılığıyla güncellenebilir.
+Politika ağırlıklarının zincir üzerinde düzleştirilmiş bir `[]int64` vektörü olarak saklanması ve yönetişim önerisi aracılığıyla güncellenmesi tasarlanmıştır. Bugün canlı ağlarda hiçbir politika yüklü değildir.
 
 ---
 
@@ -153,11 +157,11 @@ R = 0.30 * delta_throughput
 
 ## PRISM Modları
 
-PRISM, yönetişim aracılığıyla kontrol edilebilen dört moddan birinde çalışır:
+PRISM, yönetişim aracılığıyla kontrol edilebilen dört moddan birinde çalışır (mod değiştirme mesajı şu anda mainnet'te kapalıdır):
 
 | Mod              | ID | Azami Değişiklik | Davranış                                                                                   |
 | ---------------- | -- | ---------------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | %0               | Yalnızca önerileri gözlemle ve kaydet. Hiçbir parametre değiştirilmez. Bu varsayılan moddur. |
+| **Shadow**       | 0  | %0               | Yalnızca önerileri gözlemle ve kaydet. Hiçbir parametre değiştirilmez. Kodda varsayılandır; canlı ağlar Conservative modunda çalışır (genesis ayarı). |
 | **Conservative** | 1  | +/- %10          | Parametre değişikliklerini sıkı sınırlar içinde uygula. İlk canlı dağıtım için uygundur.    |
 | **Autonomous**   | 2  | +/- %25          | Parametre değişikliklerini daha geniş sınırlar içinde uygula. Doğrulanmış politikalara sahip olgun ağlar için. |
 | **Paused**       | 3  | %0               | PRISM tamamen boştadır. Hiçbir gözlem toplanmaz ve hiçbir çıkarım çalışmaz.                 |
@@ -228,12 +232,12 @@ Tüm fonksiyonlar `cosmossdk.io/math.LegacyDec` değerleri üzerinde çalışır
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | PRISM'i etkinleştir                                  |
 | `observation_interval`           | uint64    | `10`         | Gözlem toplamaları arasındaki bloklar               |
-| `agent_mode`                     | PrismMode | `0` (Shadow) | Mevcut çalışma modu                                  |
+| `agent_mode`                     | PrismMode | `1` (Conservative), her iki ağda | Mevcut çalışma modu                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Conservative modda azami parametre değişikliği       |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Autonomous modda azami parametre değişikliği         |
 | `circuit_breaker_window`         | uint64    | `50`         | Devre kesici tarafından izlenen son blok sayısı     |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Tetiklemeden önce asgari sağlıklı blok oranı        |
-| `default_block_time_ms`          | int64     | `5000`       | Varsayılan hedef blok süresi (ms)                   |
+| `default_block_time_ms`          | int64     | `5000`       | Gözlem temel çizgisi olarak kullanılan varsayılan hedef blok süresi (ms); gerçek blok süresi mainnet'te yaklaşık 3,2 sn, testnet'te 1,0 sn'dir |
 | `default_base_gas_price`         | LegacyDec | `100`        | Varsayılan temel gaz fiyatı                          |
 | `default_validator_set_size`     | uint64    | `100`        | Varsayılan hedef doğrulayıcı kümesi boyutu          |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Verim iyileştirmesi için ödül ağırlığı              |

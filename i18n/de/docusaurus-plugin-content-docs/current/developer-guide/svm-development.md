@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, die es Entwicklern ermöglicht, SBF/BPF-Programme mit vertrauten Solana-Tools bereitzustellen und auszuführen. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet, das seit dem 7. Juni 2026 live ist und die Chain-Version **v3.1.97** ausführt. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 29. Juni 2026), das die Node-Version **v3.2.1** ausführt. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.2 ausführt. **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
 :::
 
 ---
 
 :::caution Übermittlung von SVM-Transaktionen derzeit deaktiviert
-Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert** — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist — dies ist eine Deaktivierung zur Kompilierzeit, kein Laufzeitparameter, sodass sie nicht durch eine Governance-Abstimmung wieder aktiviert werden kann; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
+Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungsspur infolge eines Vorfalls **netzwerkweit für die Übermittlung von Transaktionen deaktiviert**, sowohl auf `qorechain-vladi` als auch auf `qorechain-diana` — jede an `x/svm` gesendete Transaktion (Programm-Deployment, Instruktionsausführung, Kontoerstellung, Überweisungen) liefert `code 11, "SVM module is disabled"` zurück. Dies gilt sowohl für Ihren eigenen Node als auch für die öffentlichen Endpunkte. Lesende RPC-Methoden können weiterhin antworten, aber bauen oder proben Sie keine produktive SVM-Integration, bevor die Spur wieder geöffnet ist — dies ist eine Deaktivierung zur Kompilierzeit, kein Laufzeitparameter, sodass sie nicht durch eine Governance-Abstimmung wieder aktiviert werden kann; sie wird voraussichtlich deaktiviert bleiben, bis ein externes Audit sie freigibt.
 :::
 
 ## Übersicht
@@ -37,7 +37,7 @@ Das Modul `x/svm` bietet:
 Seit Chain-Version **v3.1.82** ist die SVM-Schnittstelle eine **erstklassige native-QOR-Schnittstelle** und kein separates Sandbox-Guthaben mehr. Das eine einheitliche Guthaben des Kontos — dieselben Mittel, die auf der Cosmos-Schnittstelle als `uqor` und auf der EVM als 18-Dezimal-Wei sichtbar sind — erscheint auf der SVM-Seite in **Lamports** (9 Dezimalstellen):
 
 ```
-1 uqor = 1.000 Lamports    ·    1 QOR = 1.000.000.000 Lamports
+1 uqor = 1,000 lamports    ·    1 QOR = 1,000,000,000 lamports
 ```
 
 * **`getBalance` / `getAccountInfo`** liefern das native QOR-Guthaben des Kontos (in Lamports).
@@ -100,12 +100,11 @@ Die Standardwerte sind `enable = true` und `address = "127.0.0.1:8899"`, sodass 
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   Die Transaktionsantwort enthält die **Programm-ID** im Base58-Format.
+   Auf einem Netzwerk, in dem die Spur aktiviert ist, ist jeder `tx svm`-Befehl eine Transaktion auf dem Cosmos-Pfad: Signieren und übertragen Sie `tx.json` mit `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` und legen Sie ein explizites Gas-Limit fest, mit einer Gebühr von mindestens Gas × 0,1 uqor. Die Transaktionsantwort enthält die **Programm-ID** im Base58-Format.
 
 2. **Eine Instruktion ausführen** — Rufen Sie ein On-Chain-BPF-Programm mit Instruktionsdaten auf:
 
@@ -113,8 +112,8 @@ Die Standardwerte sind `enable = true` und `address = "127.0.0.1:8899"`, sodass 
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parameter           | Format            | Beschreibung                    |
@@ -128,8 +127,8 @@ Die Standardwerte sind `enable = true` und `address = "127.0.0.1:8899"`, sodass 
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parameter      | Beschreibung                                        |
@@ -242,20 +241,7 @@ Programme, die das Compute-Budget überschreiten, werden angehalten, und die Tra
 
 ## Cross-VM-Interoperabilität
 
-SVM-Programme können über den **asynchronen** Cross-VM-Nachrichtenpfad mit EVM- und CosmWasm-Contracts kommunizieren:
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-Nachrichten werden in eine Warteschlange gestellt und vom EndBlocker verarbeitet. Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für Details zum Nachrichtenlebenszyklus und Timeout-Verhalten.
+SVM-Programme sind dafür ausgelegt, über die Nachricht `MsgCrossVMCall` des Moduls `x/crossvm` mit EVM- und CosmWasm-Contracts zu kommunizieren (die Chain ermittelt die Quellspur selbst). Da die SVM-Spur für Transaktionen deaktiviert und `MsgCrossVMCall` auf dem Mainnet abgeschaltet ist, gibt es heute keinen funktionierenden SVM-Cross-VM-Pfad. Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den aktuellen Status, den Nachrichtenlebenszyklus und das Timeout-Verhalten.
 
 ---
 

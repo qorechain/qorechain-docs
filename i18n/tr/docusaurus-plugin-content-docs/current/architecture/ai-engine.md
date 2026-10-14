@@ -15,7 +15,7 @@ QCAI (QoreChain AI) motoru üç katmanda çalışır:
 
 | Katman                | Kapsam                                                  | Yürütme                  | Deterministik |
 | --------------------- | ------------------------------------------------------ | ------------------------ | ------------- |
-| **Konsensüs Seviyesi**   | Blok üretimi, parametre ayarı                     | Zincir üstü (x/rlconsensus) | Evet           |
+| **Konsensüs Seviyesi**   | Blok üretimi, parametre ayarı                     | Zincir üstü (x/rlconsensus) — bugün yalnızca gözlem | Evet           |
 | **Ağ Seviyesi**     | İşlem yönlendirme, dolandırıcılık tespiti, ücret optimizasyonu | Zincir üstü (x/ai)          | Evet           |
 | **Uygulama Seviyesi** | Sözleşme üretimi, denetim, derin analiz            | Zincir dışı (sidecar)      | Hayır            |
 
@@ -106,7 +106,7 @@ Dolandırıcılık tespit edici, istatistiksel yöntemler kullanarak her işlemi
 | `normal` | 1.0x            | 3-5 blok             |
 | `slow`   | 0.5x            | 6-10 blok             |
 
-Nihai ücret, bir **tıkanıklık çarpanı** (%0 tıkanıklıkta 1.0x, %100 tıkanıklıkta 5.0x'e kadar) ve tahmin edilen tıkanıklık mevcut tıkanıklığı aştığında bir **trend primi** içerir. Minimum ücret tabanı 500 uqor'dur (0.0005 QOR).
+Nihai ücret, bir **tıkanıklık çarpanı** (%0 tıkanıklıkta 1.0x, %100 tıkanıklıkta 5.0x'e kadar) ve tahmin edilen tıkanıklık mevcut tıkanıklığı aştığında bir **trend primi** içerir. Tahmin edicinin kendi minimum ücreti 500 uqor'luk eski bir sabittir; canlı ağlarda sunulmaz ve bir işlemin gerçekte ödemesi gereken ücret, gaz birimi başına 0.1 uqor olan ağ tabanıyla belirlenir (bkz. [İlk İşlem](/getting-started/first-transaction#send-qor)).
 
 ## Ağ Optimize Edici
 
@@ -167,6 +167,10 @@ Yan bileşen, derin öğrenme iş yüklerinin konsensüs açısından kritik yü
 | `aiRiskScore`    | `0x0B01` | Belirli bir adres veya işlem hash'i için bir risk skoru (0-100) döndürür  |
 | `aiAnomalyCheck` | `0x0B02` | Bir işlem için boolean bir anomali bayrağı ve güven skoru döndürür |
 
+:::warning Henüz etkin değil
+Bu önderlemeli sözleşmeler ana ağda (`qorechain-vladi`) veya test ağında (`qorechain-diana`) **etkin değildir**; bir çağrı boş veri döndürür. Yalnızca salt okunur, sabit noktalı bir puanlama yoluna kavuştuktan sonra etkinleştirilecekler. Bkz. [EVM Önderlemeli Sözleşmeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Önemli**: EVM önderlemeli sözleşmeler **yalnızca deterministik sezgisel motoru** kullanır. Asla yan bileşeni çağırmazlar, böylece tüm EVM yürütmesinin tamamen deterministik ve yeniden üretilebilir kalmasını sağlarlar.
 
 ## TEE Onaylaması (Attestation)
@@ -214,17 +218,12 @@ Her tur, minimum/maksimum katılımcı sayısı, zaman aşımı, öğrenme oran�
 
 Federe öğrenme şu anda arayüz belirtimi aşamasındadır. Uygulama gelecekteki bir sürümde planlanmaktadır.
 
-## REST Uç Noktaları
+## Sorgular
 
-| Uç Nokta                         | Açıklama                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Hızlı, normal ve yavaş aciliyet kademeleri için ücret tahminleri döndürür |
-| `/ai/v1/fraud/investigations`    | Aktif ve çözülmüş dolandırıcılık soruşturmalarını listeler                 |
-| `/ai/v1/network/recommendations` | Mevcut ağ parametresi optimizasyon önerilerini döndürür |
-| `/ai/v1/circuit-breakers`        | Sözleşmeler için aktif devre kesici durumlarını listeler              |
+`qorechaind query ai config` ve `qorechaind query ai stats` (gRPC), modülün sorgularıdır. Modülün bugün hiçbir REST rotası yoktur: `/ai/v1/...` ücret tahmini, dolandırıcılık soruşturması, ağ önerisi ve devre kesici rotaları ana ağda veya test ağında sunulmaz.
 
 ## İlgili
 
-* [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) — konsensüs optimizasyonunu yöneten yapay zeka katmanı.
+* [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) — konsensüs optimizasyonu için tasarlanmış yapay zeka katmanı (bugün yalnızca gözlem).
 * [Akıllı Sözleşme Oluşturucu](/dashboard/smart-contract-creator) — Kontrol Panelinde yapay zeka destekli sözleşme üretimi.
 * [Sözleşme Denetleyici](/dashboard/contract-auditor) — yapay zeka destekli sözleşme güvenlik incelemesi.

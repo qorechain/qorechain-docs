@@ -7,15 +7,19 @@ sidebar_position: 2
 
 # Staking y Delegación
 
-Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender la arquitectura de staking Triple-Pool de QoreChain.
+Esta guía explica cómo delegar tokens QOR a validadores, redelegar entre validadores, retirar tu stake (unbonding), reclamar recompensas y entender qué partes del diseño de staking de QoreChain están activas hoy.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.97** — sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) está activa desde el 29 de junio de 2026 en la línea v3.2 (versión de nodo **v3.2.1**; la testnet ejecuta **v3.2.2**) — sustituye el chain ID y los endpoints de mainnet desde la página **Conectando a Mainnet** al hacer staking en mainnet.
+:::
+
+:::caution Firma con `tx pqc cosign`
+Mainnet y testnet exigen una firma híbrida post-cuántica en cada transacción del carril Cosmos, por lo que los comandos de esta página no se difunden tal como están escritos. Añade `--generate-only > tx.json` a un comando y luego ejecuta `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Consulta [Firma híbrida](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/portfolio-and-staking) y el [panel de control](/dashboard/staking-and-validators) realizan esta firma por ti.
 :::
 
 ## ¿Existe un período de bloqueo? {#lock-in-period}
 
-**Hoy**, no — no hay que elegir un plazo, porque el staking aquí no se ofrece en duraciones fijas como suele ocurrir en un exchange. La delegación permanece activa con recompensas fluyendo desde el siguiente bloque, durante todo el tiempo que quieras, hasta que decidas retirarla (undelegate); no hay nada que expire ni que renovar. El **período de unbonding de 21 días** que verás mencionado a lo largo de esta guía no es un bloqueo que aceptes de antemano — solo comienza cuando *solicitas* retirar la delegación, y solo se aplica al QOR que estás retirando. Mover una delegación entre validadores (redelegar) evita completamente esa espera, ya que el stake nunca sale del pool bonded. El bono de "lealtad" mencionado más abajo en la [curva de bonding](#bonding-curve) es, además, un efecto en la tasa de recompensa según *cuánto tiempo llevas delegando hasta ahora* — es automático y tampoco requiere elegir un plazo, simplemente crece cuanto más tiempo mantengas la delegación sin retirarla.
+**Hoy**, no — no hay que elegir un plazo, porque el staking aquí no se ofrece en duraciones fijas como suele ocurrir en un exchange. La delegación permanece activa con recompensas fluyendo desde el siguiente bloque, durante todo el tiempo que quieras, hasta que decidas retirarla (undelegate); no hay nada que expire ni que renovar. El **período de unbonding de 21 días** que verás mencionado a lo largo de esta guía no es un bloqueo que aceptes de antemano — solo comienza cuando *solicitas* retirar la delegación, y solo se aplica al QOR que estás retirando. Mover una delegación entre validadores (redelegar) evita completamente esa espera, ya que el stake nunca sale del pool bonded. El término de "lealtad" de la [curva de bonding](#bonding-curve) más abajo forma parte del diseño de QoreChain, pero **la cadena activa no lo aplica hoy**, por lo que el tiempo que permanezcas delegando no cambia tu tasa de recompensa.
 
 Esto describe el comportamiento actual de la cadena, no una garantía permanente — un período mínimo de staking es un parámetro que la gobernanza podría introducir en el futuro, de la misma manera que cualquier otro parámetro de staking en esta página puede cambiar por votación. Si eso llegara a ocurrir, el wallet mostrará la espera resultante (cualquier mínimo más el unbonding de 21 días) antes de que confirmes una delegación, y esta página se actualizará para reflejarlo.
 
@@ -23,13 +27,13 @@ Esto describe el comportamiento actual de la cadena, no una garantía permanente
 
 ## Delegar Tokens
 
-Delega QOR a un validador para ganar recompensas de staking y participar en la seguridad de la red:
+Delega QOR a un validador para participar en la seguridad de la red. Los delegadores reciben una parte de las recompensas que gana el validador, menos la comisión del validador:
 
 ```bash
 qorechaind tx staking delegate <validator_address> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Ejemplo:** Delegar 100 QOR a un validador:
@@ -38,7 +42,7 @@ qorechaind tx staking delegate <validator_address> <amount>uqor \
 qorechaind tx staking delegate qorvaloper1abc...xyz 100000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
@@ -51,7 +55,7 @@ Mueve tu delegación de un validador a otro sin esperar el período de unbonding
 qorechaind tx staking redelegate <source_validator> <destination_validator> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Ejemplo:**
@@ -60,13 +64,13 @@ qorechaind tx staking redelegate <source_validator> <destination_validator> <amo
 qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-Redelegar **no tiene penalización ni bloqueo propio** — el stake nunca sale del pool bonded, nunca deja de generar recompensas y puede volver a moverse en cualquier momento. No está sujeto en absoluto al período de unbonding de 21 días; eso solo se aplica a `unbond`.
+Redelegar **no tiene penalización ni bloqueo propio** — el stake nunca sale del pool bonded, nunca deja de generar recompensas y surte efecto de inmediato. No está sujeto en absoluto al período de unbonding de 21 días; eso solo se aplica a `unbond`. Se aplica una regla estándar de staking: el stake que acabas de mover **a** un validador no puede volver a redelegarse **desde** ese validador hasta que el primer movimiento haya madurado (21 días); mientras tanto, aún puedes hacer `unbond` de él o redelegar el resto de tu stake.
 
 :::caution El verdadero límite es un recuento, no un enfriamiento
-Un delegador puede tener como máximo **7 entradas de redelegación simultáneas en curso** para exactamente la misma ruta (delegador, validador origen, validador destino) — cada entrada se libera por sí sola al madurar, liberando un cupo. Este es un tope que el uso normal prácticamente nunca alcanza, no una regla de "espera antes de poder redelegar de nuevo"; puedes redelegar libremente hacia o desde otros validadores, o repetir la misma ruta una vez que se libere un cupo.
+Un delegador puede tener como máximo **7 entradas de redelegación simultáneas en curso** para exactamente la misma ruta (delegador, validador origen, validador destino) — cada entrada se libera por sí sola al madurar, liberando un cupo. Este es un tope que el uso normal prácticamente nunca alcanza, no una regla general de "espera antes de poder redelegar de nuevo".
 :::
 
 ---
@@ -79,7 +83,7 @@ Retira tus tokens delegados de un validador. El unbonding tarda **21 días** en 
 qorechaind tx staking unbond <validator_address> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Ejemplo:**
@@ -88,10 +92,10 @@ qorechaind tx staking unbond <validator_address> <amount>uqor \
 qorechaind tx staking unbond qorvaloper1abc...xyz 25000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-Después del período de unbonding de 21 días, los tokens se devuelven automáticamente a tu cuenta.
+Después del período de unbonding de 21 días (1,814,400 segundos), los tokens se devuelven automáticamente a tu cuenta. Un delegador puede tener como máximo 7 entradas de unbonding simultáneas por validador.
 
 ---
 
@@ -103,7 +107,7 @@ Retira todas las recompensas de staking acumuladas de cada validador al que haya
 qorechaind tx distribution withdraw-all-rewards \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 Para retirar recompensas de un validador específico únicamente:
@@ -112,30 +116,32 @@ Para retirar recompensas de un validador específico únicamente:
 qorechaind tx distribution withdraw-rewards <validator_address> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-Las recompensas de staking se financian desde dos fuentes: el presupuesto de emisión limitado del protocolo (consulta [Tokenomics](/architecture/tokenomics#staking-reward-schedule) para el tope actual, vigente desde un cambio de gobernanza del 26 de agosto de 2026) y la parte del staker de cada comisión de transacción.
+Las recompensas de staking se financian desde dos fuentes: el presupuesto de emisión limitado del protocolo (consulta [Tokenomics](/architecture/tokenomics#staking-reward-schedule) para el tope actual, vigente desde un cambio de gobernanza del 26 de agosto de 2026) y la parte del staker de cada comisión de transacción (pagada como una recompensa de staking normal desde la actualización v3.2.0; consulta [la parte del staker varada](/architecture/tokenomics#stranded-and-reserve)). Las recompensas dependen de la comisión del validador y de la actividad de la red, y no están garantizadas.
 
 ---
 
-## Clasificación Triple-Pool
+## Clasificación Triple-Pool (estado del diseño)
 
-QoreChain utiliza un modelo de staking **Triple-Pool** que clasifica a los validadores en tres pools según su reputación y sus niveles de delegación. Cada pool recibe una parte ponderada de las recompensas de bloque.
+El diseño de QoreChain incluye un modelo **Triple-Pool** que clasificaría a los validadores en tres pools según su reputación y sus niveles de delegación, con una parte ponderada de las recompensas de bloque para cada pool:
 
-| Pool                                  | Criterio de Entrada                                                    | Peso de Recompensa |
+| Pool                                  | Criterio de Entrada                                                    | Peso de Recompensa en el Diseño |
 | -------------------------------------- | ------------------------------------------------------------------------ | ------------------- |
 | **RPoS** (Reputation Proof of Stake)   | Puntuación de reputación >= percentil 70 **Y** stake >= mediana          | 40%                  |
 | **DPoS** (Delegated Proof of Stake)    | Delegación total >= 10,000 QOR                                          | 35%                  |
 | **PoS** (Proof of Stake)               | Todos los validadores restantes                                          | 25%                  |
 
-Los validadores se reclasifican en cada límite de época. Un validador que construye una reputación sólida y acumula suficiente stake es promovido al pool RPoS, obteniendo la mayor parte de recompensa.
+:::note No activo en las redes en producción
+La clasificación en pools, la selección de proponente ponderada por pool y los pesos de recompensa por pool están implementados en el módulo `x/qca` y sus parámetros están on-chain (`qorechaind query qca config`), pero **todavía no están conectados a la producción de bloques ni a la distribución de recompensas**. Hoy la propuesta de bloques rota por stake de la forma estándar y las recompensas se reparten en proporción al stake bonded, menos la comisión de cada validador. El pool al que "pertenece" un validador no cambia lo que recibes.
+:::
 
 ---
 
 ## Recompensas por Curva de Bonding {#bonding-curve}
 
-Las recompensas de staking individuales se calculan usando la fórmula de curva de bonding de QoreChain:
+El diseño de QoreChain también define una fórmula de recompensas por curva de bonding:
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
@@ -147,11 +153,26 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 | `beta`   | Tasa base de recompensa (parámetro del protocolo)                         |
 | `S`      | Monto en stake                                                             |
 | `alpha`  | Coeficiente de lealtad (parámetro del protocolo)                          |
-| `L`      | Duración del bloqueo en épocas                                            |
+| `L`      | Duración del staking en épocas                                            |
 | `Q(r)`   | Multiplicador de calidad derivado de la puntuación de reputación `r` del validador |
 | `P(t)`   | Multiplicador de pool en el momento `t` (40%, 35% o 25% según el pool)    |
 
-Duraciones de bloqueo más largas y puntuaciones de reputación más altas producen recompensas proporcionalmente mayores, incentivando el compromiso a largo plazo y el buen comportamiento del validador.
+:::note No activo en las redes en producción
+El cálculo de la curva de bonding, al igual que la clasificación en pools anterior, **no es invocado por la cadena activa**: las recompensas no se calculan con esta fórmula, y ni la duración del staking ni la reputación del validador las modifican hoy. Los parámetros (`bonding_alpha`, `bonding_beta`) existen on-chain pero no tienen efecto.
+:::
+
+---
+
+## Slashing y Jailing
+
+El slashing en QoreChain sigue el módulo estándar de slashing del Cosmos SDK con estos parámetros activos (`qorechaind query slashing params`):
+
+| Evento               | Regla                                                                | Consecuencia                                 |
+| -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
+| Inactividad (downtime) | Firmar menos del 5% de los últimos 10,000 bloques (unas 8.9 horas con los bloques de aproximadamente 3.2 segundos de la mainnet) | Encarcelado (jailed) durante 600 segundos; 1% del stake sancionado (slashed) |
+| Doble firma (double-signing) | Firmar dos bloques distintos a la misma altura               | 5% del stake sancionado (slashed)            |
+
+El slashing se aplica al stake bonded total de un validador, por lo que los delegadores asumen su parte proporcional. También puede alcanzar el stake que ya está en unbonding desde un validador sancionado, razón por la cual el período de unbonding es una medida de seguridad y no solo un tiempo de espera.
 
 ---
 
@@ -172,7 +193,7 @@ qorechaind query staking validator qorvaloper1abc...xyz
 Lista todos los validadores activos:
 
 ```bash
-qorechaind query staking validators --status bonded
+qorechaind query staking validators --status BOND_STATUS_BONDED
 ```
 
 Consulta tus delegaciones actuales:
@@ -185,9 +206,8 @@ qorechaind query staking delegations <delegator_address>
 
 :::tip
 
-* Delegar a validadores del **pool RPoS** produce las recompensas más altas debido al peso de pool del 40%.
-* Construir la reputación de un validador lleva tiempo. Considera el historial del validador antes de delegar.
-* La redelegación es instantánea, sin penalización y sin bloqueo — el único límite es un tope de 7 entradas para redelegaciones simultáneas por la misma ruta exacta, algo que el uso normal no alcanzará.
+* Revisa la comisión, la disponibilidad y el historial de un validador antes de delegar; el pool o la reputación de un validador no cambia actualmente las recompensas que recibes.
+* La redelegación surte efecto de inmediato, sin penalización y sin bloqueo. Los límites son el tope de 7 entradas para redelegaciones simultáneas por la misma ruta exacta y la regla de que el stake recién redelegado no puede moverse desde el validador destino hasta que madure.
 * El período de unbonding de 21 días es una medida de seguridad. Durante este tiempo, los eventos de slashing aún pueden afectar tus tokens.
 
 :::

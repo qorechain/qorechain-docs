@@ -16,11 +16,28 @@ tipados para seguir el estado de los mensajes. El enrutamiento EVM→nativo inic
 *desde dentro de la EVM* aún se ejecuta en la cadena a través del **precompilado
 del puente cross-VM** en `@qorechain/evm`.
 
+:::caution Qué funciona hoy
+Las llamadas cross-VM solo están disponibles en la medida en que lo esté su carril de destino:
+
+- `MsgCrossVMCall` está desactivado por el circuit breaker de la cadena en **mainnet**
+  (`GET /cosmos/circuit/v1/disable_list` lista `/qorechain.crossvm.v1.MsgCrossVMCall`);
+  está habilitado en la testnet.
+- El carril de transacciones SVM está deshabilitado en toda la red, la subida e
+  instanciación de CosmWasm requieren permisos (y no hay contratos en mainnet), y el
+  precompilado del puente EVM no está activo (consulta
+  [Precompilados EVM](/developer-guide/evm-precompiles#network-status)).
+- Los ayudantes de lectura REST tipados de abajo llaman a rutas que la pasarela pública no sirve.
+  Lee los mensajes con `connectQueryClients(rpc).crossvm` en su lugar.
+- Como toda transacción de la ruta Native, una llamada cross-VM debe llevar la firma
+  híbrida (consulta [Cuentas y firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+:::
+
 ## Llamadas cross-VM unificadas
 
 `createCrossVMClient` envuelve `MsgCrossVMCall` (URL de tipo
 `/qorechain.crossvm.v1.MsgCrossVMCall`) para que nunca tengas que construir a mano
-un `{ typeUrl, value }` ni codificar una carga útil por tu cuenta. El emisor del
+un `{ typeUrl,
+value }` ni codificar una carga útil por tu cuenta. El emisor del
 cliente es la dirección del `TxClient` conectado; `sourceVm` toma por defecto el
 valor `"evm"`.
 
@@ -94,20 +111,31 @@ const { messageIds, result } = await xvm.callAtomic([
 ## Volver a leer un mensaje
 
 `getMessage` lee un mensaje cross-VM por id, prefiriendo el cliente de consulta
-tipado y recurriendo al método JSON-RPC `qor_getCrossVMMessage`:
+tipado y recurriendo al método JSON-RPC `qor_getCrossVMMessage` (que los endpoints
+públicos no sirven). Pásale el cliente de consulta tipado, que lee a través del
+RPC de consenso:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## Lectura del estado de los mensajes cross-VM
 
-`@qorechain/sdk` exporta envoltorios REST tipados sobre `x/crossvm`:
+`@qorechain/sdk` exporta envoltorios REST tipados sobre `x/crossvm`. Llaman a
+`/qorechain/crossvm/v1/{message/{id},pending,params}`, que la pasarela pública
+**no** sirve (`Not Implemented` en `api.qore.host` y `api-testnet.qore.host`),
+por lo que lanzan `QoreHttpError` contra los endpoints públicos. Son para nodos
+que exponen esas rutas; en las redes públicas usa `connectQueryClients`, descrito arriba.
 
 ```ts
 import {
@@ -118,7 +146,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -134,10 +162,13 @@ const params = await getCrossVmParams(client.rest);
 Estos devuelven formas tipadas: `CrossVmMessage`, `CrossVmMessageResponse`,
 `PendingCrossVmMessagesResponse` y `CrossVmParamsResponse`.
 
-También puedes leer un mensaje a través del espacio de nombres JSON-RPC `qor_`:
+También puedes leer un mensaje a través del espacio de nombres JSON-RPC `qor_`, una vez que los nodos
+lo sirvan:
+
+> **Aún no se sirve:** ninguna compilación publicada de nodo sirve el espacio de nombres JSON-RPC `qor_`, por lo que esta llamada devuelve `-32601` (método no encontrado) en todos los endpoints públicos hoy. Consulta [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## El precompilado del puente EVM
@@ -152,7 +183,12 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-Llama al precompilado desde un contrato de Solidity (o mediante viem) en esa
+> **No activo.** El precompilado del puente cross-VM no está activo en mainnet ni en
+> testnet y no se activará en su forma actual; primero se está reconstruyendo.
+> Una llamada a `0x…0901` hoy devuelve datos vacíos y no enruta nada. Consulta
+> [Precompilados EVM: Estado de la red](/developer-guide/evm-precompiles#network-status).
+
+Una vez activo, un contrato de Solidity (o viem) llama al precompilado en esa
 dirección para enrutar un mensaje a la capa nativa, y luego sigue su estado con
 los ayudantes de lectura de arriba. Consulta la [guía de EVM](/sdk/guides/evm)
 para ver la lista completa de precompilados.

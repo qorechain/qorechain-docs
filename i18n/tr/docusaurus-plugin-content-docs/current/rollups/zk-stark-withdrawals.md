@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Bu sayfa birbiriyle ilişkili iki konuyu kapsar: ZK ile çözümlenen (ZK-settled) rollup'lar tarafından kullanılan **ZK kanıt sistemleri** (`snark` ve `stark`) ve bir yığın (batch) sonuçlandırıldığında (finalized) fonları bir rollup'tan QoreChain'e geri taşıyan **L2 → L1 para çekme akışı**.
 
-:::caution
-ZK ve STARK doğrulaması, RDK'nın aktif olarak olgunlaşan bir parçasıdır. Burada açıklanan kanıt sistemlerini ve para çekme akışını tasarım niyeti olarak ele alın, **`qorechain-diana`** testnet'inde doğrulayın ve henüz mainnet'te üretim düzeyinde sağlamlaştırılmış (production-hardened) kriptografik garantiler varsaymayın.
+:::caution Erken aşama yeteneği
+Henüz hiçbir ağda rollup oluşturulmadığından, burada açıklanan kanıt doğrulaması ve para çekme akışı canlı bir rollup üzerinde denenmemiştir. SNARK doğrulaması mevcuttur ancak `create-rollup` ile oluşturulan bir rollup henüz bir ZK yığınını sonuçlandıramaz ve STARK doğrulaması deneyseldir. **`qorechain-diana`** testnet'inde doğrulayın ve mainnet'te üretim düzeyinde sağlamlaştırılmış (production-hardened) garantiler varsaymayın.
 :::
 
 ---
@@ -21,8 +21,8 @@ ZK ile çözümlenen bir rollup (`zk` çözüm modu), her çözüm yığınına 
 
 | Kanıt sistemi | Özellikler |
 | ------------ | --------------- |
-| **`snark`** | Özlü (succinct) kanıtlar |
-| **`stark`** | Şeffaf kanıtlar — güvenilir kurulum (trusted setup) yok |
+| **`snark`** | Özlü (succinct) kanıtlar (BLS12-381 üzerinde Groth16), rollup'ın doğrulama anahtarına (verifying key) karşı zincir üstünde doğrulanır |
+| **`stark`** | Şeffaf kanıtlar, güvenilir kurulum (trusted setup) yok — deneysel; isteğe bağlıdır (opt-in) ve bir gösterim devresine bağlıdır |
 
 `zk` çözüm modu, `snark` veya `stark`'tan birini gerektirir; eşleşme, rollup oluşturulduğunda zincir üstünde uygulanır. Buna karşılık, `optimistic` çözümü `fraud` kanıt sistemini kullanır ve `based` ile `sovereign` çözümü `none` kullanır. Tam uyumluluk matrisi için bkz. **[Rollup'lara Genel Bakış](/rollups/overview)**.
 
@@ -32,7 +32,7 @@ Bir hile-kanıtı (fraud-proof) itiraz penceresini bekleyen optimistic rollup'la
 
 ### Olgunluk
 
-ZK ve STARK kanıt doğrulaması hâlâ olgunlaşmaktadır. ZK çözümünü **henüz üretim düzeyinde sağlamlaştırılmamış** olarak ele alın: prototip oluşturun ve testnet'te doğrulayın ve değer taşıyan mainnet rollup'ları için ona güvenmeden önce tam kanıt doğrulamasının durumu için RDK'nın sürüm notlarını takip edin.
+SNARK yığınları, rollup ile birlikte saklanan bir doğrulama anahtarına karşı zincir üstünde doğrulanır (BLS12-381 üzerinde Groth16). `create-rollup` ile oluşturulan bir rollup şu anda bir doğrulama anahtarı taşımaz; bu nedenle ZK yığınları henüz uçtan uca sonuçlandırılamaz. STARK doğrulaması deneyseldir: isteğe bağlıdır ve rollup'ınızın kendi durum geçişini değil, bir gösterim devresini kontrol eder. ZK çözümünü üretime hazır değil olarak ele alın ve değer taşıyan mainnet rollup'ları için ona güvenmeden önce RDK'nın sürüm notlarını takip edin.
 
 ---
 
@@ -52,7 +52,7 @@ Yığınların nasıl gönderildiği ve sonuçlandırıldığı — optimistic r
 
 ## Bir para çekme işlemini yürütme: `execute-withdrawal`
 
-`execute-withdrawal` komutu, sonuçlandırılmış bir yığının para çekme köküne karşı bir L2 → L1 para çekme işlemini sonuçlandırır. Bir para çekme yaprağının o kökte işlendiğini kanıtlar ve alıcıya rdk modül emanetinden (escrow) ödeme yapar. Bu eylem **izinsizdir (permissionless)** — herkes geçerli bir kanıt gönderebilir.
+`execute-withdrawal` komutu, sonuçlandırılmış bir yığının para çekme köküne karşı bir L2 → L1 para çekme işlemini sonuçlandırır. Bir para çekme yaprağının o kökte işlendiğini kanıtlar ve alıcıya rdk modül emanetinden (escrow) ödeme yapar. Bu eylem **izinsizdir (permissionless)** — herkes geçerli bir kanıt gönderebilir. Her yerel hat (native-lane) işlemi gibi hibrit kuantum sonrası ortak imzaya (co-signature) ihtiyaç duyar; bu yüzden `--generate-only` ile oluşturun ve cosign edin (bkz. [Bir Rollup Dağıtma](/rollups/deploying-a-rollup)). Para çekme işlemleri henüz canlı bir rollup üzerinde denenmemiştir; akışı test edilmemiş olarak değerlendirin.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Konumsal argümanlar:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Yapraktan köke doğru sıralanmış, para çekme yaprağının yığının para çekme kökünde işlendiğini kanıtlayan, virgülle ayrılmış onaltılık (hex) Merkle kardeş hash'leri |
 
-`--proof` değeri dahil etme kanıtıdır (inclusion proof): para çekme yaprağından yığının işlenmiş para çekme köküne giden yol boyunca yer alan kardeş hash'ler. Modül, kökü yapraktan ve sağlanan kardeşlerden yeniden hesaplar ve emanetteki fonları serbest bırakmadan önce bunu sonuçlandırılmış yığının işlenmiş köküyle karşılaştırır.
+`--proof` değeri dahil etme kanıtıdır (inclusion proof): para çekme yaprağından yığının işlenmiş para çekme köküne giden yol boyunca yer alan kardeş hash'ler. Modül, kökü yapraktan ve sağlanan kardeşlerden yeniden hesaplar ve ödeme yapmadan önce bunu sonuçlandırılmış yığının işlenmiş köküyle karşılaştırır.
+
+### Yaprak ve düğüm kodlaması {#leaf-and-node-encoding}
+
+* **Yaprak** = `rollup_id`, bir `0x00` baytı, para çekme indeksi (8 bayt big-endian), `recipient` dizesi, `0x00`, `denom` dizesi, `0x00` ve `amount` (8 bayt big-endian) değerlerinin SHAKE-256'sı (32 bayt).
+* **Ebeveyn** = `left || right` değerinin SHAKE-256'sı. Her seviyede para çekme indeksinin ilgili biti tarafı belirler: `0`, yaprağın (veya o ana kadarki hash'in) sol düğüm olduğu anlamına gelir.
+* Her kardeş hash tam olarak 32 bayt olmalıdır.
+
+:::caution Genel Merkle yardımcıları eşleşmez
+RDK'nın genel `binaryMerkleRoot` / `binaryMerkleProof` yardımcıları varsayılan olarak tek düğümleri çoğaltan SHA-256 kullanır. Hash'i ve yaprak kodlamasını yukarıdaki kurallara göre geçersiz kılın, aksi halde kanıt zincir üstünde doğrulanmaz.
+:::
+
+### Fonlar nereden gelir {#where-the-funds-come-from}
+
+Bir para çekme işlemi, **rollup'ın kendi emanete alınmış stake'inden** (stake eksi oluşturma yakması) ödenir. Modül rollup başına bir defter tutar; böylece bir rollup için kanıtlanan bir para çekme işlemi başka bir rollup'ın stake'inden ödenemez. Modülde L1 → L2 para yatırma mesajı yoktur, bu nedenle bu, kullanıcı fonlarının bir köprüsü değildir.
 
 ---
 

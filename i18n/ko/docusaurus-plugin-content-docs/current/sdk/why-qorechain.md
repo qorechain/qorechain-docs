@@ -21,19 +21,22 @@ QoreChain SDK는 현대적인 멀티체인 SDK가 제공하는 모든 것을 제
 
 ## 1. AI 사전 위험 점수 평가
 
-**브로드캐스트하기 전에 온체인 AI로 트랜잭션을 스캔하세요.**
+**브로드캐스트하기 전에 온체인 AI로 트랜잭션을 스캔하세요** (대상 네트워크에서
+AI 프리컴파일이 활성화되어 있어야 하며, 현재 퍼블릭 네트워크에서는 아직
+활성화되어 있지 않습니다).
 
 QoreChain은 AI 위험 분석을 EVM 프리컴파일로 제공합니다. SDK가 이를 대신
 호출하여 가스와 위험/이상 징후 판정을 단일 호출로 반환합니다 — 지갑이나
-dApp이 서명 *전에* 경고(또는 차단)할 수 있습니다.
+dApp이 서명 *전에* 경고(또는 차단)할 수 있습니다. AI 프리컴파일은 메인넷과
+테스트넷 모두에서 **아직 활성화되지 않았습니다**
+([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조).
 
 ```ts
-import { createClient } from "@qorechain/sdk";
-import { simulateWithRiskScore } from "@qorechain/evm";
+import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
-const client = createClient({ network: "mainnet", endpoints: { evmRpc } });
+const { publicClient } = await createEvmClient({ endpoints: { evmRpc } });
 
-const preflight = await simulateWithRiskScore(client.evm, {
+const preflight = await simulateWithRiskScore(publicClient, {
   from: account.address,
   to: contractAddress,
   data: calldata,
@@ -49,11 +52,12 @@ if (!preflight.safe) {
 }
 ```
 
-**이것이 특별한 이유:** 점수 평가는 결정론적 프리컴파일(`0x…0B01`의
-`aiRiskScore`, `0x…0B02`의 `aiAnomalyCheck`)로 *체인 내부에서* 실행됩니다.
-다른 네트워크는 오프체인의 비결정론적 AI 서비스를 덧붙이는 것만 가능합니다.
-이것은 서명 전에 트랜잭션을 AI로 검사하고 온체인 결과를 제공하는 최초의
-SDK입니다. [AI 사전 검사](/sdk/guides/ai-preflight)를 참조하세요.
+**이것이 특별한 이유:** 점수 평가는 오프체인 서비스가 아니라 결정론적
+프리컴파일(`0x…0B01`의 `aiRiskScore`, `0x…0B02`의 `aiAnomalyCheck`)로
+*체인 내부에서* 실행되도록 설계되었습니다. 해당 프리컴파일이 활성화되기 전까지
+위의 헬퍼는 퍼블릭 네트워크에서 오류를 발생시킵니다
+(`returned no data ("0x")`). [AI 사전 검사](/sdk/guides/ai-preflight)를
+참조하세요.
 
 ---
 
@@ -68,9 +72,10 @@ QoreChain은 CosmWasm, EVM, SVM 컨트랙트를 네이티브 크로스 VM 브리
 하나의 원자적 트랜잭션에 담을 수 있습니다.
 
 ```ts
-import { createCrossVMClient } from "@qorechain/sdk";
+import { connectQueryClients, createCrossVMClient } from "@qorechain/sdk";
 
-const crossVM = createCrossVMClient(tx, { query: client.query });
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
+const crossVM = createCrossVMClient(tx, { query: connectQueryClients(rpcClient).crossvm });
 
 // Call an EVM contract from a native account (payload ABI-encoded for you).
 await crossVM.call({
@@ -87,11 +92,13 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**이것이 특별한 이유:** QoreChain은 세 개의 공존 VM과 네이티브 브리지
-모듈(`crossvm` + `CrossVMBridge` 프리컴파일)을 갖춘 유일한 L1입니다. 단일 VM
-체인은 "하나의 계정, 세 개의 VM, 하나의 원자적 트랜잭션"을 표현할 수 없습니다
-— 그들의 SDK에는 감쌀 대상 자체가 없습니다. 한 번 작성하고, 어떤 VM이든
-호출하세요. [크로스 VM 호출](/sdk/guides/cross-vm)을 참조하세요.
+**이것이 특별한 이유:** QoreChain은 세 개의 공존 VM을 네이티브 브리지
+모듈(`crossvm`, 그리고 활성화되면 `CrossVMBridge` 프리컴파일)과 함께
+실행하므로, 하나의 SDK 인터페이스로 세 VM 모두를 다룰 수 있습니다. 단일 VM
+체인에는 감쌀 만한 대응물이 없습니다. 현재 호출의 도달 범위는 대상 레인에
+의해 제한됩니다. `MsgCrossVMCall`은 메인넷에서 꺼져 있고, SVM 트랜잭션은
+비활성화되어 있으며, CosmWasm 업로드와 인스턴스화는 허가제입니다.
+[크로스 VM 호출](/sdk/guides/cross-vm)을 참조하세요.
 
 ---
 
@@ -107,24 +114,34 @@ QoreChain은 하이브리드 포스트 양자 서명(ML-DSA-87 + 클래식)을 �
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Idempotent: registers the signer's ML-DSA-87 key on-chain if not already.
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair });
+// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
+// (read it over REST on the public endpoints; see the Quantum-safe guide).
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  status: { registered },
+});
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair });
-await hybrid.send(messages);
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+await hybrid.signAndBroadcastHybrid({
+  registry, signer, messages, fee, chainId, accountNumber, sequence,
+  rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key.
+// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// (needs a node that serves the `qor_` namespace; see the React guide).
 <QuantumSafeBadge address={account.address} />
 ```
 
-**이것이 특별한 이유:** 포스트 양자 암호화는 QoreChain에서 네이티브이자
-필수이며, 실험이 아닙니다. 이것은 "기본으로 양자 안전"이 단 한 번의 호출과
-드롭인 배지 하나로 완성되는 최초의 SDK입니다.
+**중요한 이유:** 포스트 양자 암호화는 QoreChain의 Native 경로에서 네이티브이자
+필수이며, 실험이 아닙니다. SDK는 이를 도입하는 과정을 등록 호출 한 번과
+하이브리드 전송 경로로 줄여 줍니다. 등록은 명시적으로 이루어집니다. 첫
+트랜잭션에서 자동으로 등록되지 않습니다.
 [양자 안전](/sdk/guides/quantum-safe)을 참조하세요.
 
 ---
@@ -132,7 +149,10 @@ import { QuantumSafeBadge } from "@qorechain/react";
 ## 4. 통합 eth 네이티브 계정 — 하나의 키, 세 개의 주소, 하나의 잔액
 
 **하나의 `eth_secp256k1` 키가 세 레인 모두에서 하나의 20바이트
-아이덴티티입니다.** (SDK 0.6.0, 체인 v3.1.83.)
+아이덴티티입니다.** (SDK 0.6.0, 체인 v3.1.83.) SVM 트랜잭션 레인은 현재
+네트워크 전체에서 비활성화되어 있고, EVM 레인에는
+[승인 창](/sdk/guides/evm#evm-window)이 필요합니다. 공유 잔액과 주소 매핑은
+이와 무관하게 유지됩니다.
 
 ```ts
 import { deriveUnifiedAccount } from "@qorechain/sdk";
@@ -142,15 +162,15 @@ account.cosmos; // "qor1…"  bech32 — Native lane
 account.evm;    // "0x…"    EIP-55 — EVM lane
 account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 // A deposit to ANY of the three lands in ONE balance,
-// and the same key spends on every lane (signHybridEth on the Native path).
+// and the same key signs on every enabled lane (signHybridEth on the Native path).
 ```
 
-**이것이 특별한 이유:** 다른 곳의 멀티 VM 구성에서는 각 런타임이 자체 계정
+**고유한 이유:** 다른 곳의 멀티 VM 구성에서는 각 런타임이 자체 계정
 공간을 갖고 있어 자금이 레인별로 고립됩니다. QoreChain은 하나의 20바이트
 아이덴티티를 세 가지 방식으로 렌더링하고 하나의 공유 잔액을 제공합니다 —
 지갑이 "한 레인에는 자금이 있는데 다른 레인에는 없는" 일이 결코 생기지
-않습니다. `connectPhantomUnified`는 심지어 Phantom 서명으로부터 이
-아이덴티티를 비수탁형으로 부트스트랩합니다.
+않습니다. Phantom 같은 외부 지갑은 제한된 권한의 인증자(authenticator)로 이 아이덴티티에
+연결할 수 있습니다([인증자](/sdk/guides/authenticators)).
 [통합 계정](/sdk/concepts/accounts-pqc#unified-accounts)을 참조하세요.
 
 ---
@@ -159,6 +179,14 @@ account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 
 **연결된 Phantom 또는 MetaMask 키가 릴레이어를 통해, 한도 내에서, PQC 필수
 정식 계정에서 지출합니다.** (SDK 0.7.0, 체인 v3.1.85.)
+
+:::caution 라이브 네트워크에서는 아직 사용할 수 없습니다
+`abstractaccount` 모듈은 `qorechain-vladi`와 `qorechain-diana`에서 꺼져
+있으며(`GET /qorechain/abstractaccount/v1/config`가 `"enabled": false`를
+반환합니다), 체인 v3.2.0부터는 이 플래그가 모든 경로에서 강제되므로 키를
+연결할 수 없고 아래의 레인도 사용할 수 없습니다.
+[인증자 가이드](/sdk/guides/authenticators)를 참조하세요.
+:::
 
 ```ts
 import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
@@ -176,9 +204,9 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**이것이 특별한 이유:** 모든 지출은 온체인 권한 분류 체계, `SpendingRule`
-한도, 만료 시간에 의해 제한됩니다 — 최소 권한이며 취소 가능합니다 — 그러는
-동안에도 계정 자체는 포스트 양자 보호 상태를 유지합니다.
+**중요한 이유:** 모듈이 활성화되면 모든 지출은 온체인 권한 분류 체계,
+`SpendingRule` 한도, 만료 시간에 의해 제한됩니다 — 최소 권한이며 취소
+가능합니다 — 그러는 동안에도 계정 자체는 포스트 양자 보호 상태를 유지합니다.
 [인증자 및 위임 지출](/sdk/guides/authenticators)을 참조하세요.
 
 ---

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release taggata è la **v3.1.97**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026). La testnet **`qorechain-diana`** (chain ID EVM **9800**) segue le build pre-release.
+Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.2.1**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 29 giugno 2026) con le regole di consenso della **v3.2.0** (applicate all'altezza 2.981.742). La testnet **`qorechain-diana`** (chain ID EVM **9800**) esegue attualmente la **v3.2.2**, che vi è stata applicata tramite governance e non è ancora sulla mainnet.
 
 :::note
 Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet. Il manifest di release ([Connessione alla Mainnet](/getting-started/connecting-to-mainnet)) viene promosso separatamente dal tagging e può essere in ritardo rispetto a un tag di un certo periodo — verificalo direttamente per sapere cosa scarica realmente una nuova installazione.
@@ -15,11 +15,34 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 
 ---
 
+## v3.2.1 — Hardening dei nodi
+
+**Focus della release:** una release di sicurezza locale al nodo per la mainnet (14 ottobre 2026): **nessuna altezza di upgrade, nessuna modifica del consenso e nessuna votazione di governance**. I nodi sulla v3.2.0 continuano a seguire la chain.
+
+* Irrigidisce i limiti di risorse dell'API pubblica, pone dei limiti all'EVM JSON-RPC e al mempool, e propaga via gossip le transazioni EVM promosse.
+* Fissa l'EVM chain ID nella configurazione del nodo e lo confronta con il chain ID di Cosmos; gli operatori devono impostare `evm-chain-id = 9801` in `app.toml` (un valore diverso viene registrato nei log come errore).
+* Aggiorna la dipendenza del motore di consenso; mantieni l'orologio di sistema sincronizzato via NTP (uno scostamento superiore a 60 secondi arresta il nodo).
+* Consigliata a ogni operatore; `minCompatible` nel manifest della mainnet è 3.2.0.
+
+La testnet esegue attualmente la v3.2.2, applicata tramite governance all'altezza 6.905.034; per ora è una release solo testnet e le sue modifiche non fanno parte della mainnet. La proposta di governance 7 della mainnet (in periodo di votazione al momento della stesura) programmerebbe la v3.2.2 sulla mainnet all'altezza 3.556.788 — vedi [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) per i passaggi per gli operatori e come verificare l'esito.
+
+## v3.2.0 — Finestra di autorizzazione EVM e correzioni contabili
+
+**Focus della release:** rendere il requisito post-quantistico effettivo su ogni corsia e chiudere due lacune contabili. Applicata sulla mainnet dalla proposta di governance n. 6 all'altezza **2.981.742** (25 settembre 2026, 12:07 UTC); applicata sulla testnet all'altezza 5.920.000.
+
+* **Finestra di autorizzazione EVM (breaking per i wallet EVM).** Una transazione EVM è ora ammessa solo da un account che abbia una chiave ML-DSA-87 registrata **e** una finestra aperta. La finestra viene aperta con un messaggio della corsia Cosmos (`MsgOpenEVMWindow`, firmato post-quantistico) ed è limitata da blocchi (≤ 17.280), transazioni (≤ 1.000) e valore totale (valore trasferito più la fee massima di ciascuna transazione); `MsgCloseEVMWindow` la revoca. La firma Ethereum standard resta invariata all'interno di una finestra. La corsia EVM, che era stata disattivata sulla mainnet tramite il circuit breaker dal 16 settembre, è stata riaperta nello stesso blocco in cui la regola è entrata in vigore. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+* **Firma ibrida v2.** Le firme post-quantistiche sono ora calcolate su sign-bytes con tag di dominio e vincolati alla chain; la prima forma viene rifiutata dall'altezza di upgrade. I client consultano i piani di upgrade applicati del nodo per scegliere la forma; la CLI (`--sign-bytes auto`), l'SDK 0.8.x e wallet-adapter 0.2.x lo fanno. I payload di migrazione delle chiavi e di attestazione del bridge sono passati allo stesso schema. Vedi [Sicurezza post-quantistica](/architecture/post-quantum-security#sign-bytes-v2).
+* **Quota degli staker pagata.** La quota del 10 % degli staker nella ripartizione delle fee veniva depositata dove non copriva alcun credito; da questo upgrade viene pagata come normale ricompensa di staking. L'importo già accumulato (6.693.045,92 QOR sulla mainnet) è registrato on-chain (`GET /qorechain/burn/v1/stranded_rewards`) e può essere spostato solo da un voto di governance (`MsgReleaseStrandedRewards`). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+* **Riserva delle ricompense dei light node.** La quota del 3 % dei light node accumulata mentre nessun nodo era idoneo (3.156.009,33 QOR sulla mainnet) è registrata come riserva (`GET /qorechain/lightnode/v1/reward_pool`), esclusa dalla distribuzione e spostabile solo dalla governance; in seguito la distribuzione paga solo quanto accumulato dall'esecuzione precedente, con un limite per nodo e per blocco. La registrazione dei light node resta chiusa.
+* **Il limite di transazioni per mittente** è ora applicato (600 transazioni ogni 30 blocchi per mittente, in modo che i relayer possano operare).
+* **La mappa delle versioni dei moduli dell'upgrade** ora elenca tutti i moduli (48), correggendo una lacuna che avrebbe interessato le migrazioni successive.
+* Inoltre: account di modulo del bridge e payload di attestazione rafforzati, blocchi proposti convalidati, settlement dei rollup limitato al sequencer del rollup con escrow per rollup e un burn di creazione effettivo, stake del creatore multilayer bloccato alla registrazione e restituito alla dismissione, flag `enabled` dello smart account applicato su ogni percorso, e percorsi di ammissione dei validatori e di creazione del vesting chiusi all'annidamento authz.
+
 ## v3.1.96 + v3.1.97 — Blocco degli accessi CosmWasm
 
 **Focus della release:** chiudere l'upload e l'istanziazione permissionless del codice contratto, a seguito di un advisory di sicurezza CosmWasm a livello di settore.
 
-* **L'upload e l'istanziazione dei contratti richiedono ora un permesso esplicito.** `code_upload_access` e `instantiate_default_permission` sono impostati su `Nobody` sia su mainnet sia su testnet — verificato live, indipendentemente da quale dei due tag un dato nodo stia eseguendo, poiché si tratta di un parametro on-chain e non di qualcosa che solo i binari più recenti applicano. Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development) per capire cosa significa questo se stai sviluppando un contratto. I contratti già istanziati non sono interessati — `execute` e `query` funzionano come prima.
+* **L'upload e l'istanziazione dei contratti richiedono ora un permesso esplicito.** `code_upload_access` e `instantiate_default_permission` sono impostati su `Nobody` sia su mainnet sia su testnet — verificato live, indipendentemente da quale dei due tag un dato nodo stia eseguendo, poiché si tratta di un parametro on-chain e non di qualcosa che solo i binari più recenti applicano. Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development) per capire cosa significa questo se stai sviluppando un contratto. I contratti già istanziati non sono interessati — `execute` e `query` funzionano come prima. Su entrambe le reti i tre messaggi CosmWasm di upload e istanziazione sono inoltre disattivati sul circuit breaker.
 * **Build di release a indirizzo di posizione indipendente (PIE)**, secondo le linee guida di hardening dello stesso advisory, così l'indirizzo di memoria che un exploit dovrebbe indovinare viene randomizzato per ogni processo. I binari con linking dinamico hanno richiesto un solo flag di build; verificato che non rompe lo stato.
 
 ## v3.1.95 — Hardening EVM Cosmos
@@ -32,7 +55,7 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 
 **Focus della release:** allineare l'emissione delle ricompense di staking alle reali condizioni della rete, e irrigidire i controlli di autorizzazione sui messaggi amministrativi privilegiati.
 
-* **Cap di emissione** — Una proposta di governance, approvata con il pieno supporto dello stake bonded e applicata all'altezza 2.122.074 (26 agosto 2026), ha sostituito il programma di emissione a decadimento originale con un importo fisso per epoca sotto un cap cumulativo rigido. Il programma originale era stato calibrato per una rete molto più matura e completamente bonded; rispetto allo stake bonded reale stava erogando molto più velocemente del previsto. Vedi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) per i numeri attuali e la runway residua.
+* **Cap di emissione** — Una proposta di governance, approvata con il pieno supporto dello stake bonded e applicata all'altezza 2.122.074 (26 agosto 2026), ha sostituito il programma di emissione a decadimento originale con un importo fisso per epoca sotto un cap cumulativo rigido. Il programma originale era stato calibrato per una rete molto più matura e completamente bonded; rispetto allo stake bonded reale stava erogando molto più velocemente del previsto. Vedi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) per i numeri attuali.
 * **Hardening dei messaggi amministrativi** — Un insieme di messaggi amministrativi privilegiati, protetti da authority, ora verifica il firmatario rispetto all'indirizzo proprio del modulo di governance, invece di fidarsi di un valore trasportato nel messaggio stesso.
 * Include inoltre la correzione di affidabilità dell'onboarding dei nodi della v3.1.92, per qualsiasi nodo che effettui l'upgrade direttamente a questa release.
 
@@ -64,7 +87,8 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 * **Enforcement su tutte e tre le corsie** — Gli scope dei permessi e i limiti di valore **SpendingRule** (per transazione + massimali giornalieri) sono applicati sulle corsie Native, EVM e SVM; i messaggi di gestione delle chiavi non sono mai delegabili. Codici di errore distinti consentono ai wallet di mostrare il messaggio corretto: `5` limite di spesa superato, `6` authenticator scaduto, `10` permesso negato, `11` replay rifiutato.
 * **Query dello schema dei permessi** — `GET /qorechain/abstractaccount/v1/permission_schema` (anche gRPC/CLI) restituisce la tassonomia canonica dei permessi (11 permessi), la mappa messaggio→permesso e l'elenco dei messaggi non delegabili, così i wallet convalidano gli scope senza hardcoding.
 * **Rotazione della chiave PQC nello stesso algoritmo** — Il nuovo **`MsgRotatePQCKey`** ruota la chiave ML-DSA-87 di un account all'interno dello stesso algoritmo (con doppia firma della vecchia e della nuova chiave), consentendo la migrazione delle chiavi con derivazione legacy alla derivazione canonica vincolata all'indirizzo e il ritiro di una chiave compromessa. Nuovi comandi CLI: `tx pqc rotate-key` e `tx pqc recover-key` (recupero deterministico della chiave da una mnemonica).
-* **Transazioni con chiave root invariate** — Le modifiche sono additive; i normali flussi di wallet, exchange e Keplr restano invariati. Gli operatori di nodi devono trovarsi sulla **v3.1.85** entro l'altezza di upgrade della rete.
+* **Transazioni con chiave root invariate** — Le modifiche sono additive; i normali flussi di wallet ed exchange restano invariati. Gli operatori di nodi devono trovarsi sulla **v3.1.85** entro l'altezza di upgrade della rete.
+* **Stato attuale** — Le funzionalità di smart account e di wallet collegato sono implementate ma attualmente **disattivate** su entrambe le reti (`abstractaccount.enabled = false`); dalla v3.2.0 ogni percorso degli authenticator viene rifiutato finché il flag è disattivato. Controlla `GET /qorechain/abstractaccount/v1/config` prima di proporre un flusso di collegamento.
 
 ## v3.1.84 — Permessi degli authenticator e limiti di spesa
 
@@ -180,13 +204,13 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 * **Ottimizzazione del consenso PRISM** — Miglioramenti continui al layer di ottimizzazione a reinforcement learning PRISM per il tuning adattivo dei parametri in condizioni di rete live, con controlli di sicurezza a circuit-breaker.
 * **Prestazioni e stabilità** — Affinamenti di throughput, latenza e utilizzo delle risorse su validatori e full node.
 * **Tooling operativo** — Miglioramenti a monitoraggio, query ed ergonomia operativa dei nodi per gli operatori mainnet.
-* **Allineamento a Tokenomics v2.1** — Distribuzione delle fee e meccaniche di emissione allineate al modello economico a supply fissa ed emissione finita.
+* **Allineamento a Tokenomics v2.1** — Distribuzione delle fee e meccaniche di emissione allineate al modello economico a supply fissa ed emissione finita (in seguito affinato dal cap di emissione della v3.1.94).
 
 ## v3.0.0 — Genesis della mainnet
 
 **Focus della release:** lancio della mainnet ed evento di generazione del token.
 
-* **Genesis della mainnet** — La mainnet QoreChain (`qorechain-vladi`, chain ID EVM 9801) è stata lanciata il **7 giugno 2026**, con il token generation event (TGE) alla genesis.
+* **Genesis della mainnet** — La mainnet QoreChain (`qorechain-vladi`, chain ID EVM 9801) è stata lanciata il **29 giugno 2026**, con il token generation event (TGE) alla genesis.
 * **Ripartizione delle fee a cinque vie** — Distribuzione delle fee di protocollo tra validatori, burn, treasury, staker e light node (**37 / 30 / 20 / 10 / 3**), con l'aggiunta di una quota dedicata ai light node.
 * **AMM on-chain** — Modulo nativo di automated market maker (`x/amm`) per pool di liquidità e swap on-chain.
 * **Licensing on-chain** — Modulo di licenze on-chain (`x/license`) per registrare e gestire i diritti di protocollo.
@@ -216,12 +240,12 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 
 **Focus della release:** connettività cross-chain e astrazioni avanzate degli account.
 
-* **25 connessioni cross-chain** — 8 canali IBC e 17 connessioni QoreChain Bridge (QCB) verso reti esterne
+* *(Progettato; il layer cross-chain è ancora in sospeso — vedi [Architettura del bridge](/architecture/bridge-architecture).)* **25 connessioni cross-chain** — 8 canali IBC e 17 connessioni QoreChain Bridge (QCB) verso reti esterne
 * **Modulo x/babylon** — Integrazione di restaking BTC che consente ai detentori di Bitcoin di partecipare alla sicurezza dello staking di QoreChain
 * **Modulo x/abstractaccount** — Framework di smart account con regole di spesa programmabili, session key e logica di autenticazione personalizzata
 * **Modulo x/fairblock** — Threshold Identity-Based Encryption (tIBE) per la cifratura delle transazioni resistente al MEV
-* **Modulo x/gasabstraction** — Pagamento del gas multi-token con supporto per QOR nativo, USDC via bridge IBC e ATOM via bridge IBC
-* **Prioritizzazione delle TX a 5 corsie** — Corsie di transazione ordinate per priorità: system, governance, staking, bridge e general
+* **Modulo x/gasabstraction** — Progetto del pagamento del gas multi-token con supporto per QOR nativo, USDC via bridge IBC e ATOM via bridge IBC (nessun canale IBC è ancora aperto)
+* **Prioritizzazione delle TX a 5 corsie** — Definizioni delle corsie per la prioritizzazione dello spazio nei blocchi (solo configurazione; non applicata dal mempool live)
 * **Configurazioni di relayer IBC** — Setup di relayer preconfigurati per tutti i canali IBC supportati
 * **Integrazione bridge-burn** — Le fee dei bridge sono instradate attraverso la distribuzione delle fee del modulo burn
 
@@ -231,7 +255,7 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 
 * **Doppie firme secp256k1 (ECDSA) + ML-DSA-87** — Ogni transazione include sia una firma classica sia una post-quantistica, verificate nella catena dell'AnteHandler
 * **3 modalità di enforcement** — Enforcement configurabile delle firme ibride: off (modalità 0), permissive (modalità 1, PQC opzionale), mandatory (modalità 2, PQC obbligatoria)
-* **Auto-registrazione** — Le chiavi pubbliche PQC vengono registrate automaticamente alla prima transazione ibrida, eliminando un passaggio di registrazione separato
+* **Registrazione della chiave** — Le prime build registravano automaticamente una chiave pubblica PQC alla prima transazione ibrida; quel comportamento è stato rimosso e ora una chiave si registra esplicitamente con `MsgRegisterPQCKey` (vedi [Prima transazione](/getting-started/first-transaction#register-pqc-key))
 * **Fondamento di hash SHAKE-256** — Tutte le operazioni di hashing legate alla PQC usano SHAKE-256 (famiglia SHA-3) per una derivazione degli indirizzi resistente al quantistico
 * **Interfacce di attestazione TEE** — Supporto all'attestazione in Trusted Execution Environment per dimostrare l'integrità della generazione delle chiavi PQC
 * **Framework di agilità algoritmica** — Registro di algoritmi pluggable che consente di aggiungere futuri algoritmi PQC tramite governance senza upgrade della chain
@@ -242,10 +266,10 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 
 * **Modulo x/burn** — Meccanismo di burn delle fee multicanale con distribuzione a quattro vie tra validatori, burn, treasury e staker
 * **Modulo x/xqore** — Derivato di staking di governance con penalità di sblocco anticipato a livelli e redistribuzione del rebase in modalità PvP
-* **Modulo x/inflation** — Emissione basata su epoche con decadimento annuale, governata dal modello economico a emissione finita
+* **Modulo x/inflation** — Emissione basata su epoche con decadimento annuale (sostituita nella v3.1.94 da un importo fisso per epoca sotto un cap cumulativo rigido)
 * **Layer di consenso PRISM** — Ottimizzazione a reinforcement learning (PPO) per il tuning dinamico dei parametri della chain con controlli di sicurezza a circuit-breaker
-* **CPoS a triplo pool** — Classified Proof-of-Stake con pool di validatori Emerald, Sapphire e Ruby ponderati per punteggio di reputazione
-* **Governance QDRW** — Sistema di Dynamic Reward Weighting che consente aggiustamenti approvati dalla governance della distribuzione delle ricompense tra i pool
+* **CPoS a triplo pool** — Composite Proof-of-Stake con pool di validatori RPoS, DPoS e PoS ponderati per punteggio di reputazione (implementato in `x/qca`; non ancora collegato alla produzione dei blocchi)
+* **Governance QDRW** — Formula del potere di voto Quadratic Delegation with Reputation Weighting (implementata; disabilitata sulle reti live)
 * **Runtime EVM + CosmWasm + SVM** — Tre ambienti di esecuzione concorrenti: il QoreChain EVM Engine, gli smart contract CosmWasm e la Solana Virtual Machine
 * **Bridge cross-VM** — Passaggio di messaggi e trasferimenti di asset tra i runtime EVM, CosmWasm e SVM all'interno di un singolo blocco
 * **Crittografia post-quantistica** — Firma resistente al quantistico basata su una libreria PQC ad alte prestazioni

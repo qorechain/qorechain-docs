@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # JSON-RPC — eth_ Namespace
 
-QoreChain implements a fully EVM-compatible JSON-RPC interface, enabling standard Ethereum tooling (MetaMask, Hardhat, Foundry, ethers.js, web3.js) to interact with the chain without modification.
+QoreChain implements an EVM-compatible JSON-RPC interface, so standard Ethereum tooling (MetaMask, Hardhat, Foundry, ethers.js, web3.js) can read chain state and estimate gas without modification. **Sending a transaction from the EVM lane needs one extra step** since chain version v3.2.0: the sending account must have a registered post-quantum key and an open EVM authorisation window (see [Sending transactions](#sending-transactions)).
 
 ## Connection
 
@@ -17,7 +17,7 @@ QoreChain implements a fully EVM-compatible JSON-RPC interface, enabling standar
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, live on chain version **v3.1.97**) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`). The local addresses above apply to a node you run yourself; substitute your provider's mainnet or testnet endpoint for remote access.
+The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, node release **v3.2.1**) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`, node release **v3.2.2**). The local addresses above apply to a node you run yourself. The public HTTP endpoints are `https://evm.qore.host` (mainnet) and `https://evm-testnet.qore.host` (testnet), listed in [Networks](/appendix/networks#public-endpoints). The only public EVM WebSocket is the testnet's (`wss://evm-ws-testnet.qore.host`); there is no public mainnet EVM WebSocket.
 :::
 
 ## Supported Namespaces
@@ -28,7 +28,7 @@ The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM c
 | `web3_`   | Utility methods (client version, hashing)                                                                      |
 | `net_`    | Network status methods                                                                                         |
 | `txpool_` | Transaction pool inspection                                                                                    |
-| `qor_`    | QoreChain-specific extensions (see [qor_ Namespace](/api-reference/json-rpc-qor_-namespace))                   |
+| `rpc_`    | Server introspection (`rpc_modules`)                                                                           |
 
 ## eth_ Methods
 
@@ -47,6 +47,15 @@ The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM c
 | `eth_chainId`               | none                                             | Returns the chain ID (hex-encoded)                   |
 | `eth_gasPrice`              | none                                             | Returns the current gas price in wei                 |
 | `eth_feeHistory`            | `blockCount`, `newestBlock`, `rewardPercentiles` | Returns historical fee data (EIP-1559)               |
+| `eth_getBlockByHash`        | `blockHash`, `fullTx` (bool)                     | Returns block data by hash                           |
+| `eth_getCode`               | `address`, `blockNumber`                         | Returns contract bytecode                            |
+| `eth_getStorageAt`          | `address`, `slot`, `blockNumber`                 | Returns a storage slot                               |
+| `eth_getBlockReceipts`      | `blockNumber`                                    | Returns all receipts of a block                      |
+| `eth_getProof`              | `address`, `storageKeys`, `blockNumber`          | Returns an account proof                             |
+| `eth_createAccessList`      | `callObject`, `blockNumber`                      | Builds an access list for a call                     |
+| `eth_maxPriorityFeePerGas`  | none                                             | Returns the suggested priority fee (wei)             |
+| `eth_syncing`               | none                                             | Returns `false` when the node is caught up           |
+| `eth_newFilter`, `eth_newBlockFilter`, `eth_getFilterChanges` | filter object / filter id | Polling filters                              |
 
 ## web3_ Methods
 
@@ -54,6 +63,14 @@ The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM c
 | -------------------- | ------------ | ---------------------------------------- |
 | `web3_clientVersion` | none         | Returns the client version string        |
 | `web3_sha3`          | `data` (hex) | Returns the Keccak-256 hash of the input |
+
+## txpool_ Methods
+
+| Method           | Parameters | Description                                                         |
+| ---------------- | ---------- | ------------------------------------------------------------------- |
+| `txpool_status`  | none       | Returns the number of pending and queued transactions               |
+| `txpool_content` | none       | Returns the pending and queued transactions (not on public mainnet) |
+| `txpool_inspect` | none       | Returns a summary of the pool (not on public mainnet)               |
 
 ## net_ Methods
 
@@ -79,7 +96,7 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 
 # Enabled API namespaces
-api = "eth,web3,net,txpool,qor"
+api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
 filter-cap = 10000
@@ -96,6 +113,30 @@ txfee-cap = 1
 # Maximum open WebSocket connections
 max-open-connections = 0
 ```
+
+## Limits on the public endpoints {#public-limits}
+
+:::note
+- `eth_getLogs` accepts at most **10,000 blocks** between `fromBlock` and `toBlock`. A wider range returns `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Query in windows of 10,000 blocks or fewer. The separate `filter-cap` setting limits the number of logs returned.
+- `txpool_status` works on the public mainnet endpoint. `txpool_content` and `txpool_inspect` are disabled there (they work on the public testnet endpoint and on a node you run yourself).
+- `debug_*` methods and `eth_signTransaction` are not available.
+- `eth_subscribe` needs a WebSocket connection. Over HTTP it returns `-32601 notifications not supported`. See [WebSocket Events](/api-reference/websocket-events).
+- State at old heights is pruned on the public endpoints, so `eth_call` against a distant historical block can fail with a state-version error.
+- If a script gets `403 Forbidden`, set an explicit `User-Agent` header; Python's default `urllib` agent is blocked, while `requests`, `curl`, Node and Go clients work as-is.
+:::
+
+## Sending transactions {#sending-transactions}
+
+:::caution The EVM lane needs a PQC key and an open window
+Since chain version v3.2.0 the EVM lane admits a transaction (`MsgEthereumTx`, including contract deployments) only from an account that has a **registered post-quantum key** and an **open EVM authorisation window**. A plain EVM wallet that has not done this setup cannot submit transactions: the node refuses them with a `pqc` module error (codes 26, 27 or 28) instead of including them. Reading balances, calling `eth_call` and estimating gas need no window.
+
+Check an account before sending:
+
+- `GET /qorechain/pqc/v1/account/{address}` (`found: true` means a key is registered)
+- `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` means a window currently admits transactions)
+
+Both are described in [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module). A window is opened with a QoreChain transaction (`MsgOpenEVMWindow`, bounded to at most 17,280 blocks and 1,000 transactions plus a value cap), not with an Ethereum transaction. See [EVM Development](/developer-guide/evm-development) for the lane overview.
+:::
 
 ## Examples
 
@@ -197,6 +238,6 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 - Chain ID is returned as a hex string. Convert to decimal for wallet configuration — `0x2649` is **9801** (mainnet), `0x2648` is **9800** (testnet).
 - Gas pricing follows the EIP-1559 model. Use `eth_feeHistory` for base fee and priority fee estimation.
 - Block tags accepted: `"latest"`, `"earliest"`, `"pending"`, or a hex block number.
-- Filter limitations: `eth_getLogs` is capped at `filter-cap` results per query (default 10,000). Use narrower block ranges for large datasets.
+- Filter limitations: `eth_getLogs` is capped at `filter-cap` results per query (default 10,000), and the public endpoints reject ranges wider than 10,000 blocks. Use narrower block ranges for large datasets.
 
 :::

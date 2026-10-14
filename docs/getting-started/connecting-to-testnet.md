@@ -10,7 +10,7 @@ sidebar_position: 4
 Join the live QoreChain Diana testnet by configuring your node with the correct genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details.
+This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 29 June 2026 and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet currently runs **v3.2.2**; its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Public Endpoints
@@ -30,32 +30,72 @@ Testnet QOR is available from the [Dashboard Faucet](/dashboard/faucet).
 
 ---
 
-## Download Genesis
+## Install
 
-Replace your local genesis file with the official testnet genesis, served live by the chain itself:
+The canonical source of truth for the current testnet binary, genesis, peers and state-sync trust point is the **testnet manifest**, refreshed live at `https://download.qore.host/testnet/latest.json`. It has the same layout as the mainnet manifest, so the install steps are the same — fetch it and use its values rather than hardcoding a version or checksum:
 
 ```bash
-curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
-  > ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/testnet/latest.json -o latest.json
+jq -r '.version, .minCompatible, .upgradeHeight' latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+
+qorechaind init my-node --chain-id qorechain-diana
+```
+
+The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` (v3.2.2 was applied at height 6,905,034) and `minCompatible` equals the current version. A node that joins now needs the release in the manifest. Keep the system clock NTP-synchronised.
+
+---
+
+## Download Genesis
+
+Replace your local genesis file with the official testnet genesis, using the URL and SHA-256 from the manifest fetched above:
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
+```
+
+The same file is also served live by the chain itself:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
 This file defines the initial state of the Diana testnet, including the validator set, token allocations, and module parameters.
 
-:::caution
-The Diana testnet is periodically **re-genesised** (reset to height 0) as pre-release builds roll out. If your node stops syncing after a reset, re-download the genesis and start from a fresh data directory.
+:::note The testnet upgrades in place
+Diana has been running continuously since 1 July 2026 and is upgraded through governance proposals like mainnet. The testnet is a staging network and can be reset without notice: if your node stops syncing, check the manifest and the Discord announcements, then re-download the genesis and start from a fresh data directory. The public sentry keeps only recent blocks, so a new node should state-sync (below) rather than replay from genesis.
 :::
 
 ---
 
 ## Configure Peers
 
-Edit your node configuration to connect to existing testnet peers.
-
-Query a current peer directly from the network, then set the `persistent_peers` field in `~/.qorechaind/config/config.toml`:
+Read the current peer and seed lists from the manifest rather than hardcoding node IDs and hosts:
 
 ```bash
-# node id + listen address of the public testnet node
-curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+Open `~/.qorechaind/config/config.toml` and set the `persistent_peers` (and `seeds`) fields to those values:
+
+```toml
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Also set the fee floor in `~/.qorechaind/config/app.toml` (the testnet uses the same **0.1uqor** minimum gas price as mainnet):
@@ -66,18 +106,25 @@ minimum-gas-prices = "0.1uqor"
 
 ### Recommended Settings
 
-You may also want to adjust the following in `config.toml`:
+A full node does not choose the block time — validators do (the testnet currently produces a block about every 1 second). Leave the consensus timeouts at their defaults unless you operate a validator and have been given values by the validator group. A useful mempool setting for a public RPC node, in `config.toml`:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
 
-These values are tuned for the Diana testnet's block times and throughput.
+---
+
+## Fast Bootstrap (State Sync)
+
+The manifest's `stateSync` field carries a trust height/hash pair refreshed regularly:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+Set the `[statesync]` section of `config.toml` with those values and the `rpcServers` from the manifest — see [Running a Node](/developer-guide/running-a-node) for the full workflow.
 
 ---
 
@@ -89,7 +136,7 @@ Launch your node to begin syncing with the network:
 ./qorechaind start
 ```
 
-The node connects to peers and begins downloading blocks from genesis. Initial sync time depends on the current chain height and your network speed.
+The node connects to peers and begins downloading blocks (from genesis, or from the trust height if you use state sync). Initial sync time depends on the current chain height and your network speed.
 
 ---
 
@@ -156,7 +203,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — programmatic chain access               |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum-compatible RPC (chain ID `9800`) |
 | `8546`  | WebSocket | EVM WebSocket — real-time EVM event subscriptions  |
-| `8899`  | HTTP      | SVM RPC — Solana-compatible RPC                    |
+| `8899`  | HTTP      | SVM RPC — Solana-compatible RPC (reads only; the SVM transaction lane is disabled) |
 | `26660` | HTTP      | Prometheus metrics endpoint                        |
 
 ---

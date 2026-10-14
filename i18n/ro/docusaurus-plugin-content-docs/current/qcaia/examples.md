@@ -21,7 +21,7 @@ Aceste răspunsuri sunt **ilustrative** — parafrazări scurte, în limbaj simp
 
 **QCAIA răspunde:**
 
-> QoreChain's bridge lets you move assets between QoreChain and other networks. It combines QCB transfers with IBC for cross-chain connectivity, with IBC support rolling out on testnet first. For the full design, see the bridge documentation.
+> Bridge-ul QoreChain este conceput să mute active între QoreChain și alte rețele, combinând transferurile QCB cu IBC. Nu este încă live: toate configurațiile de lanț sunt încă în așteptare și niciun canal IBC nu este deschis pe niciuna dintre rețele. Pentru designul complet, vezi documentația bridge-ului.
 
 _Află mai multe: [Arhitectura bridge-ului](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _Află mai multe: [Arhitectura bridge-ului](/architecture/bridge-architecture)._
 
 **QCAIA răspunde:**
 
-> PRISM is QoreChain's reinforcement-learning optimization layer. It continuously tunes the network for performance and efficiency as conditions change. You can read the deep dive in the PRISM documentation.
+> PRISM este stratul de optimizare prin învățare prin întărire al QoreChain, conceput să regleze parametrii rețelei pe măsură ce condițiile se schimbă. Astăzi rulează în mod de observare: înregistrează observații, dar nu este încărcată încă nicio politică antrenată. Poți citi analiza aprofundată în documentația PRISM.
 
 _Află mai multe: [Motorul de consens PRISM](/architecture/prism-consensus-engine)._
 
@@ -49,7 +49,7 @@ _Află mai multe: [Motorul de consens PRISM](/architecture/prism-consensus-engin
 
 **QCAIA răspunde:**
 
-> Transaction fees on QoreChain are split across several destinations: 37% / 30% / 20% / 10% / 3%. This spreads value across the people and functions that keep the network running. See the tokenomics documentation for the breakdown of each share.
+> Comisioanele de tranzacție de pe QoreChain sunt împărțite între mai multe destinații: 37% / 30% / 20% / 10% / 3%. Aceasta distribuie valoarea între oamenii și funcțiile care mențin rețeaua în funcțiune. Vezi documentația tokenomics pentru detalierea fiecărei cote.
 
 ## Exemplul 4 — Multi-limbă (spaniolă)
 
@@ -77,7 +77,7 @@ Același lucru funcționează și pe Telegram — pur și simplu scrie-ți într
 
 **QCAIA răspunde:**
 
-> I'm QCAIA, the QoreChain AI Assistant (beta). Ask me about QoreChain's technology, tokenomics, team, and ecosystem on Discord or Telegram. Try `/ask` followed by your question, or use `/tokenomics` for a quick QOR summary.
+> Sunt QCAIA, asistentul AI al QoreChain (beta). Întreabă-mă despre tehnologia, tokenomics, echipa și ecosistemul QoreChain pe Discord sau Telegram. Încearcă `/ask` urmat de întrebarea ta sau folosește `/tokenomics` pentru un rezumat rapid al QOR.
 
 ---
 

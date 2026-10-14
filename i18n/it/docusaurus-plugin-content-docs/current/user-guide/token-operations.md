@@ -10,7 +10,11 @@ sidebar_position: 1
 Questa guida illustra il token QOR, come inviare e ricevere token, interrogare i saldi e comprendere il modello di distribuzione delle commissioni su QoreChain.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la versione della chain **v3.1.97** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 29 giugno 2026 sulla linea v3.2 (release del nodo **v3.2.1**; la testnet esegue **v3.2.2**) — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
+:::
+
+:::caution Firma con `tx pqc cosign`
+Mainnet e testnet richiedono una firma post-quantistica ibrida su ogni transazione della lane Cosmos, quindi i comandi di questa pagina non vengono trasmessi così come sono scritti. Aggiungi `--generate-only > tx.json` a un comando, poi esegui `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Vedi [Firma ibrida](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/overview) e la [Dashboard](/dashboard/overview) eseguono questa firma al posto tuo.
 :::
 
 ## Informazioni sul Token
@@ -32,7 +36,7 @@ Per trasferire token QOR da un account a un altro:
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Esempio:** invia 5 QOR (5.000.000 uqor) a un altro indirizzo:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 È possibile utilizzare anche il nome di una chiave al posto di un indirizzo grezzo per il mittente:
@@ -48,7 +52,7 @@ qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## Interrogazione dei Saldi
@@ -85,33 +89,39 @@ Le commissioni di transazione su QoreChain vengono distribuite tra cinque destin
 | Destinazione     | Quota | Finalità                                                         |
 | ---------------- | ----- | --------------------------------------------------------------- |
 | **Validatori**    | 37%   | Ricompensa i produttori di blocchi e mette in sicurezza la rete |
-| **Bruciati**      | 30%   | Rimossi permanentemente dalla supply, creando pressione deflazionistica |
+| **Bruciati**      | 30%   | Rimossi permanentemente dalla supply |
 | **Tesoreria**     | 20%   | Finanzia lo sviluppo del protocollo e le grant per l'ecosistema |
 | **Staker**        | 10%   | Distribuiti proporzionalmente a tutti i delegatori              |
-| **Light Node**    | 3%    | Ricompensa gli operatori di light node che servono dati di rete |
+| **Light Node**    | 3%    | Riservati alle ricompense dei light node (vedi la nota sotto) |
+
+La ripartizione si applica a tutto ciò che entra nel fee collector, che contiene le commissioni di transazione e l'emissione di staking coniata a ogni epoca. La quota dei light node si accumula in una riserva; la registrazione delle ricompense dei light node non è ancora aperta, quindi al momento nessun nodo viene pagato da essa (vedi [Light Node](/light-node/overview)). Dall'aggiornamento v3.2.0 la quota degli staker viene pagata come una normale ricompensa di staking (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canali di Burn
 
-QoreChain implementa un meccanismo di burn multi-canale. I token QOR vengono rimossi permanentemente dalla circolazione attraverso 10 canali distinti:
+Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati attraverso una qualsiasi di esse vengono rimossi permanentemente dalla circolazione. Sulla mainnet finora solo il canale delle gas fee ha registrato burn; gli altri sono definiti ma non hanno registrato nulla.
 
 | Canale                | Descrizione                                                         |
 | --------------------- | -------------------------------------------------------------------- |
-| `tx_fee`               | La quota di burn del 30% di ogni commissione di transazione          |
-| `governance_penalty`   | Bruciato quando le proposte di governance non raggiungono il quorum o vengono respinte con veto |
-| `slashing_burn`        | Quota bruciata degli stake dei validatori sottoposti a slashing      |
-| `bridge_fee`           | Commissione bruciata sui trasferimenti tramite bridge cross-chain    |
-| `spam_deterrent`       | Burn aggiuntivo applicato alle transazioni segnalate come spam       |
-| `epoch_excess`         | Emissioni in eccesso rispetto al target, bruciate ai confini di epoca |
-| `manual_burn`          | Burn di token avviati dalla community tramite proposta di governance |
-| `contract_callback`    | Commissioni bruciate sulle esecuzioni di callback degli smart contract |
-| `cross_vm_fee`         | Bruciato durante l'esecuzione di chiamate cross-VM (es. da EVM a CosmWasm) |
-| `rollup_create`        | 1% dello stake minimo bruciato al momento del deploy di un nuovo rollup |
+| `gas_fee`              | Il 30% di tutte le gas fee viene bruciato          |
+| `contract_create`      | Commissione fissa di 100 QOR bruciata per ogni creazione di contratto (inattivo: il caricamento di CosmWasm è chiuso) |
+| `ai_service`           | Il 50% delle commissioni dei servizi AI viene bruciato (inattivo: le commissioni dei servizi AI non sono live) |
+| `bridge_fee`           | Il 100% delle commissioni del bridge viene bruciato (inattivo: il bridge non è live) |
+| `treasury_buyback`     | Buyback-and-burn periodico dalla tesoreria |
+| `failed_tx`            | Gas delle transazioni fallite; applicato dalla chain dalla v3.2.2 (finora solo testnet) |
+| `xqore_penalty`        | Penali di uscita anticipata xQORE instradate nel burn (xQORE non è live) |
+| `auto_buyback`         | Burn automatizzati a livello di protocollo (inattivo) |
+| `tge`                  | Riservato; il burn del TGE è avvenuto prima del genesis e questo canale non registra nulla |
+| `rollup_create`        | L'1% dello stake di creazione del rollup viene bruciato |
+| `milestone`            | Burn programmati a numeri cumulativi fissi di transazioni (nessuno ancora attivato) |
+| `amm`                  | Riservato alle commissioni di protocollo dell'AMM (nessuna registrata) |
 
-Puoi interrogare l'importo totale bruciato su tutti i canali:
+Il modulo di burn non ha una query CLI; leggi il burn cumulativo per sorgente da REST:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+La risposta elenca `total_burned` e `burns_by_source` (in uqor). La supply totale attuale si ottiene con `qorechaind query bank total-supply-of uqor`.
 
 ## Suggerimenti
 
@@ -122,7 +132,7 @@ Verifica sempre due volte gli indirizzi dei destinatari prima di inviare token. 
 :::tip
 
 * Usa il flag `--dry-run` per simulare una transazione senza trasmetterla.
-* Usa `--gas auto` per lasciare che il nodo stimi il gas necessario per la tua transazione.
-* La commissione minima per un trasferimento standard è **500 uqor**.
+* Imposta `--gas` esplicitamente (400.000 bastano per un trasferimento con firma ibrida).
+* Il minimo delle commissioni è **0,1 uqor per unità di gas**, quindi un limite di gas di 400.000 richiede almeno **40.000 uqor**.
 
 :::

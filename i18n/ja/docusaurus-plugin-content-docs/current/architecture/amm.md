@@ -17,7 +17,11 @@ sidebar_position: 8
 すべての金額はQoreChainのネイティブ単位を使用します。ステーキングおよび手数料トークンは**QOR**であり、その基本デノムは**uqor**です（1 QOR = 10^6 uqor）。プール参加者とアドレスは`qor` bech32プレフィックスを使用します。
 
 :::note
-以下のコマンドは`qorechaind`を使用します。お使いの環境に合わせて、通常のトランザクションフラグ（`--from`、`--chain-id`、`--gas`、`--fees`、`--node`）を追加してください。たとえば、メインネットに対しては`--chain-id qorechain-vladi`を指定します。
+以下のコマンドは`qorechaind`を使用します。お使いの環境に合わせて、通常のトランザクションフラグ（`--from`、`--chain-id`、`--gas`、`--fees`、`--node`）を追加してください。たとえば、メインネットに対しては`--chain-id qorechain-vladi --gas 400000 --fees 40000uqor`を指定します（ネットワークの手数料下限はガス1単位あたり0.1 uqorです）。すべての`tx amm`コマンドはCosmosレーンのトランザクションであるため、ハイブリッド耐量子署名が必要です。`--generate-only > tx.json`を追加し、続けて`qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>`を実行してください（[最初のトランザクション](/getting-started/first-transaction#send-qor)を参照）。
+:::
+
+:::caution まだプールは存在しません
+AMMモジュールはメインネットとテストネットで稼働していますが、**まだプールは作成されておらず**、以下の例のデノム（`uusdc`、`uusdt`）は説明用です。現在、そのような資産はネットワーク上に存在しません。プールが存在するまでは、すべてのスワップまたは流動性追加コマンドが、プールが見つからないというエラーで失敗します。
 :::
 
 ## プールとLPシェア
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## プールの一時停止と再開
 
-プールは、プールの権限（`--from`経由で渡されるアドレス）によって一時停止および再開できます。一時停止されたプールは、再開されるまでスワップと流動性の変更を拒否します。これは、インシデント対応や協調的なメンテナンスに役立ちます。
+プールは、ガバナンス権限によって一時停止および再開できます。メインネットでは、これら2つのメッセージは現在サーキットブレーカーによって無効化されています。一時停止されたプールは、再開されるまでスワップと流動性の変更を拒否します。これは、インシデント対応や協調的なメンテナンスに役立ちます。
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## コマンドの要約
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | LPトークンをバーンしてリザーブを引き出す |
 | `swap-exact-in` | 固定された入力量をスワップする |
 | `swap-exact-out` | 固定された出力量にスワップする |
-| `pause-pool` | プールを一時停止する（権限） |
-| `resume-pool` | 一時停止されたプールを再開する（権限） |
+| `pause-pool` | プールを一時停止する（ガバナンス権限。メインネットでは無効） |
+| `resume-pool` | 一時停止されたプールを再開する（ガバナンス権限。メインネットでは無効） |
 
 **クエリ**（`qorechaind query amm …`）：
 

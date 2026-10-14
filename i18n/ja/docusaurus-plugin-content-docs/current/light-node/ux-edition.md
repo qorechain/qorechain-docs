@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # UX エディション — Web ダッシュボード
 
-**UX(User eXperience)**エディションは SX エディションと同じライトノードデーモンを実行しますが、ブラウザでノードとネットワークを確認できる**組み込みの Web ダッシュボード**が追加されています。バイナリは `lightnode-ux` です。SX エディションと同様、これはライトノードの**v3.1.2**系列です(チェーンバージョンとは別の、独自のバージョン)。
+**UX(User eXperience)**エディションは SX エディションと同じライトノードデーモンを実行しますが、ブラウザでノードとネットワークを確認できる**組み込みの Web ダッシュボード**が追加されています。バイナリは `lightnode-ux` です。SX エディションと同様、これはライトノードの**v3.1.3**系列です(チェーンバージョンとは別の、独自のバージョン)。
 
 UX エディションは、デスクトップでの利用や、コマンドラインよりビジュアルなインターフェースを好むオペレーターにとって最適な選択肢です。
 
 ## インストール
 
-プリビルドされたバイナリは**ネイティブ依存関係ゼロの6つのプラットフォーム**でネイティブに動作します — Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64)。各バイナリはおよそ16 MBです。実行する前に、ダウンロードしたファイルのチェックサムをマニフェストと照合して検証してください — 方法は[SX エディション](/light-node/sx-edition#install)を参照してください。
+プリビルドされたバイナリは**ネイティブ依存関係ゼロの6つのプラットフォーム**でネイティブに動作します — Linux(amd64、arm64)、macOS(Intel、Apple Silicon)、Windows(amd64、arm64)。各バイナリはおよそ11〜12 MBです。実行する前に、ダウンロードしたファイルのチェックサムをマニフェストと照合して検証してください — 方法は[SX エディション](/light-node/sx-edition#install)を参照してください。
 
 ### ソースからのビルド
 
@@ -27,13 +27,24 @@ go build -o build/lightnode-ux ./cmd/lightnode-ux/
 
 ### Docker
 
-UX サービスは `Dockerfile.ux` からビルドされます。
+UX サービスは、ソースリポジトリ(`github.com/qorechain/qorechain-lightnode`、タグ `v3.1.4` 以降)の `Dockerfile.ux` からビルドされます。コンテナは起動前にデータボリューム内に `config.toml` を必要とします。セットアップウィザードは SX バイナリにあるため、まず SX エディションで設定を作成し([SX エディション](/light-node/sx-edition#first-run-onboard)を参照)、それをボリュームにコピーしてください。コンテナ内ではダッシュボードがコンテナのすべてのインターフェースでリッスンする必要があるため、その設定に次を記述し、ポートはホストのループバックにのみ公開してください。
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-UX コンテナは、`/root/.qorechain-lightnode` にある名前付きボリュームにデータを永続化し、チェーン RPC アドレスを `QORECHAIN_RPC_ADDR` 環境変数から読み取ります。
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+UX コンテナは、`/root/.qorechain-lightnode` にある名前付きボリュームにデータを永続化し、チェーン RPC アドレスを `QORECHAIN_RPC_ADDR` 環境変数から読み取ります。UX イメージには `qorechaind` 署名機能が含まれていないため、UX コンテナはオンチェーンのハートビートを送信できません。登録済みのノードは SX エディションで実行してください。
 
 ## 実行
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 これにより、デーモンと組み込みのダッシュボードサーバーが同時に起動します。UX エディションは常にダッシュボードを有効にします。起動時、バイナリはダッシュボードの URL を出力します。
 
-UX エディションは SX エディションとセットアップを共有します。同じ `~/.qorechain-lightnode` の `config.toml` を読み取り、同じ Dilithium-5 キーリングを使用します。まだノードを設定していない場合は、先に SX ウィザード(`lightnode-sx onboard`)を実行して設定を書き込み、鍵をインポートまたは生成してください — 詳細は[SX エディション](/light-node/sx-edition)を参照してください。
+UX エディションは SX エディションとセットアップを共有します。同じ `~/.qorechain-lightnode` の `config.toml` を読み取り、同じ Dilithium-5 キーリングを使用します。まだノードを設定していない場合は、先に SX ウィザード(`lightnode-sx onboard`)を実行して設定を書き込み、鍵をインポートまたは生成してください — 詳細は[SX エディション](/light-node/sx-edition)を参照してください。UX バイナリには `start` と `version` のコマンドしかありません。`register`、`status`、`keys` には `lightnode-sx` を使用してください。`qorechaind` 署名機能が利用可能な場合、UX エディション内のデーモンは SX エディションと同じ方法でハートビートを送信します。
 
 ## ポート8420 の Web ダッシュボード
 
@@ -69,7 +80,7 @@ http://localhost:8420
 
 - **概要(Overview)** — ブロック高と一目でわかるノードステータス。
 - **バリデーター(Validators)** — ボンドされたバリデーターセット。
-- **委任(Delegation)** — 現在の委任とその分割。
+- **委任(Delegation)** — オペレーターアカウントからミラーリングされた委任([報酬と監視](/light-node/rewards-and-monitoring#how-rewards-work)にある既知の制限を参照)。
 - **ネットワーク(Network)** — ライブのネットワークテレメトリと最近同期されたヘッダー。
 - **ブリッジ(Bridge)** — クロスチェーンブリッジのテレメトリ。
 - **トークノミクス(Tokenomics)** — トークンエコノミクスのテレメトリ。
@@ -85,9 +96,9 @@ http://localhost:8420
 lightnode-sx onboard
 ```
 
-ウィザードは PQC セルフテストを実行し、チェーンエンドポイントを尋ね、バリデーター鍵をインポートまたは生成します。エンドポイントが設定されたら、ノードを再起動すると、ダッシュボードにライブのチェーンデータが表示され始めます。
+ウィザードは PQC セルフテストを実行し、チェーンエンドポイントを尋ね、ノードの鍵をインポートまたは生成します。エンドポイントが設定されたら、ノードを再起動すると、ダッシュボードにライブのチェーンデータが表示され始めます。
 
 ## 次に読むべきドキュメント
 
 - [登録とライセンス](/light-node/registration-and-licensing) — ノードをオンチェーンで登録します。
-- [報酬と監視](/light-node/rewards-and-monitoring) — 3%のライトノードシェアを獲得し、ノードの健全性を監視します。
+- [報酬と監視](/light-node/rewards-and-monitoring) — 3%のライトノードシェアがどのようにクレジットされ請求されるか、そしてノードの健全性をどのように監視するか。

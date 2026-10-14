@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, SVM (Solana Virtual Machine) çalışma zamanı üzerinden Solana ile uyumlu bir JSON-RPC arayüzü sunar ve mevcut Solana araçlarının ve SDK'larının QoreChain ile doğrudan etkileşime girmesini sağlar.
 
 :::caution SVM işlem gönderimi şu anda devre dışı
-Zincir sürümü v3.1.89 (22 Ağustos) itibarıyla, yaşanan bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — herhangi bir işlem `code 11, "SVM module is disabled"` hatası döndürür. Bu durum yalnızca genel salt okunur uç noktalarda değil, ağ genelinde geçerlidir. Aşağıdaki tablodaki okuma tipi yöntemler (örn. `getBalance`, `getAccountInfo`) yanıt vermeye devam edebilir, ancak hat yeniden açılana kadar SVM işlemi gönderen canlı bir entegrasyon denemeyin — bu, çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, dolayısıyla bir yönetişim oylamasıyla yeniden açılamaz; harici bir denetim onay verene kadar kapalı kalması beklenmektedir.
+Zincir sürümü v3.1.89 (22 Ağustos) itibarıyla, yaşanan bir olayın ardından SVM yürütme hattı **ağ genelinde işlem gönderimi için devre dışı bırakılmıştır** — herhangi bir işlem `code 11, "SVM module is disabled"` hatası döndürür. Bu durum yalnızca genel salt okunur uç noktalarda değil, ağ genelinde geçerlidir. Aşağıdaki tablodaki okuma tipi yöntemler (örn. `getBalance`, `getAccountInfo`) genel uç noktalarda normal şekilde yanıt verir, ancak hat yeniden açılana kadar SVM işlemi gönderen canlı bir entegrasyon denemeyin — bu, çalışma zamanı parametresi değil, derleme zamanında yapılan bir devre dışı bırakmadır, dolayısıyla bir yönetişim oylamasıyla yeniden açılamaz; harici bir denetim onay verene kadar kapalı kalması beklenmektedir.
 :::
 
 ## Bağlantı
@@ -40,6 +40,16 @@ Zincir sürümü **v3.1.82** itibarıyla, SVM arayüzü hesabın **yerel QOR bak
 | `getMinimumBalanceForRentExemption` | `dataLength` (tam sayı)   | Verilen veri boyutu için kira muafiyeti gerektiren minimum bakiyeyi döndürür |
 | `getVersion`                        | yok                     | Düğüm yazılımı sürümünü döndürür                              |
 | `getHealth`                         | yok                     | Düğüm sağlık durumunu döndürür (sağlıklıysa `"ok"`)                 |
+| `getBlockHeight`                    | yok                     | Geçerli blok yüksekliğini döndürür                              |
+| `getLatestBlockhash`                | yok                     | Yakın tarihli bir blockhash ve `lastValidBlockHeight` döndürür          |
+| `getRecentBlockhash`                | yok                     | `getLatestBlockhash`'in eski biçimi                            |
+| `getFeeForMessage`                  | `message` (base64)       | Bir mesajın ücretini (lamport) döndürür                       |
+| `getMultipleAccounts`               | `pubkeys` (dizi)        | Tek çağrıda birden fazla hesabı döndürür                           |
+| `getProgramAccounts`                | `programId` (base58)     | Bir programa ait hesapları döndürür                        |
+| `getTokenAccountsByOwner`           | `owner`, filtre          | Bir sahibin token hesaplarını döndürür                           |
+| `getTokenAccountsByDelegate`        | `delegate`, filtre       | Bir delegenin token hesaplarını döndürür                          |
+
+`getGenesisHash` ve `getEpochInfo` gibi bu listenin dışındaki yöntemler `-32601 method not found` döndürür. `getTransaction` kabul edilir ancak şu anda `result` alanı olmayan bir zarfla yanıt verir, bu yüzden ona güvenmeyin. `getSlot` tarafından bildirilen slot, zincirin blok yüksekliğini takip eder.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

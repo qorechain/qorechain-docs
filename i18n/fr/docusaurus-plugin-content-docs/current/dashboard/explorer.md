@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Explorer
 
-L'**Explorer** est la fenêtre du Dashboard sur la chaîne. Utilisez-le pour rechercher des blocs, des transactions, des adresses et des validateurs, et pour observer l'activité du réseau en temps réel. L'Explorer est en lecture seule — aucune connexion de portefeuille n'est nécessaire pour le parcourir.
+L'**Explorer** est la fenêtre du Dashboard sur la chaîne. Utilisez-le pour rechercher des blocs, des transactions, des adresses et des validateurs, et pour observer l'activité du réseau en temps réel. L'Explorer est en lecture seule — aucune connexion de portefeuille n'est nécessaire pour le parcourir. Dans le Dashboard, consulter le mainnet exige d'être connecté ; le même Explorer est aussi disponible sans aucun compte sur [explore.qore.network](https://explore.qore.network).
 
 ## La page de présentation
 
@@ -47,3 +47,11 @@ La page affiche l'adresse avec un code QR scannable, son solde en QOR, son nombr
 ## Validateurs {#validators}
 
 La vue des validateurs liste les validateurs du réseau avec des cartes récapitulatives pour le nombre de validateurs actifs, le total de QOR mis en jeu et la santé du consensus. Le tableau affiche pour chaque validateur son rang, son moniker, son pouvoir de vote, sa commission et son statut (par exemple actif ou jailed), ainsi qu'un indicateur post-quantique. Une zone de recherche filtre par nom ou adresse de validateur. Pour déléguer à un validateur, consultez [Staking et validateurs](/dashboard/staking-and-validators).
+
+:::note La liste des validateurs du Dashboard peut afficher l'ensemble de l'autre réseau
+Utilisez [explore.qore.network](https://explore.qore.network) pour la liste des validateurs de chaque réseau faisant autorité.
+:::
+
+## Explorer autonome {#standalone-explorer}
+
+Le même Explorer est servi sans le Dashboard sur [explore.qore.network](https://explore.qore.network) : anonyme, réservé à l'exploration, avec des liens courts tels que `/tx/…`, `/block/…`, `/address/…` et `/validators`. Il s'ouvre par défaut sur le mainnet.

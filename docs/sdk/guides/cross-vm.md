@@ -15,6 +15,22 @@ three VMs** — plus typed read helpers to track message state. EVM→native rou
 initiated *from inside the EVM* still runs on-chain via the **cross-VM bridge
 precompile** in `@qorechain/evm`.
 
+:::caution What works today
+Cross-VM calls are only as available as their target lane:
+
+- `MsgCrossVMCall` is switched off by the chain's circuit breaker on **mainnet**
+  (`GET /cosmos/circuit/v1/disable_list` lists `/qorechain.crossvm.v1.MsgCrossVMCall`);
+  it is enabled on the testnet.
+- The SVM transaction lane is disabled network-wide, CosmWasm upload and
+  instantiate are permissioned (and there are no contracts on mainnet), and the EVM
+  bridge precompile is not active (see
+  [EVM Precompiles](/developer-guide/evm-precompiles#network-status)).
+- The typed REST read helpers below call routes the public gateway does not serve.
+  Read messages with `connectQueryClients(rpc).crossvm` instead.
+- Like every Native-path transaction, a cross-VM call must carry the hybrid
+  signature (see [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).
+:::
+
 ## Unified cross-VM calls
 
 `createCrossVMClient` wraps `MsgCrossVMCall` (type URL
@@ -92,20 +108,31 @@ const { messageIds, result } = await xvm.callAtomic([
 ## Reading a message back
 
 `getMessage` reads a cross-VM message by id, preferring the typed query client
-and falling back to the `qor_getCrossVMMessage` JSON-RPC method:
+and falling back to the `qor_getCrossVMMessage` JSON-RPC method (which the public
+endpoints do not serve). Give it the typed query client, which reads over the
+consensus RPC:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## Reading cross-VM message state
 
-`@qorechain/sdk` exports typed REST wrappers over `x/crossvm`:
+`@qorechain/sdk` exports typed REST wrappers over `x/crossvm`. They call
+`/qorechain/crossvm/v1/{message/{id},pending,params}`, which the public gateway
+does **not** serve (`Not Implemented` on `api.qore.host` and `api-testnet.qore.host`),
+so they throw `QoreHttpError` against the public endpoints. They are for nodes
+that expose those routes; on the public networks use `connectQueryClients` above.
 
 ```ts
 import {
@@ -116,7 +143,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -132,10 +159,13 @@ const params = await getCrossVmParams(client.rest);
 These return typed shapes: `CrossVmMessage`, `CrossVmMessageResponse`,
 `PendingCrossVmMessagesResponse`, and `CrossVmParamsResponse`.
 
-You can also read a message through the `qor_` JSON-RPC namespace:
+You can also read a message through the `qor_` JSON-RPC namespace, once nodes
+serve it:
+
+> **Not served yet:** no released node build serves the `qor_` JSON-RPC namespace, so this call returns `-32601` (method not found) on every public endpoint today. See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace).
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## The EVM bridge precompile
@@ -150,6 +180,11 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-Call the precompile from a Solidity contract (or via viem) at that address to
-route a message to the native layer, then track its state with the read helpers
-above. See the [EVM guide](/sdk/guides/evm) for the full precompile list.
+> **Not active.** The cross-VM bridge precompile is not active on mainnet or
+> testnet and will not be activated in its current form; it is being rebuilt
+> first. A call to `0x…0901` today returns empty data and routes nothing. See
+> [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+
+Once active, a Solidity contract (or viem) calls the precompile at that address
+to route a message to the native layer, then tracks its state with the read
+helpers above. See the [EVM guide](/sdk/guides/evm) for the full precompile list.

@@ -7,7 +7,18 @@ sidebar_position: 5
 
 # Interopérabilité inter-VM
 
-L'**architecture triple-VM** de QoreChain (EVM, CosmWasm, SVM) permet aux contrats intelligents de n'importe quelle machine virtuelle de communiquer avec les contrats de n'importe quelle autre VM. Le module `x/crossvm` fournit à la fois des chemins de messagerie synchrones et asynchrones.
+L'**architecture triple-VM** de QoreChain (EVM, CosmWasm, SVM) est conçue pour permettre aux contrats intelligents de n'importe quelle machine virtuelle de communiquer avec les contrats de n'importe quelle autre VM. Le module `x/crossvm` fournit un message d'appel avec un chemin dans la même transaction et un chemin en file d'attente.
+
+:::caution Ce qui fonctionne aujourd'hui
+Les appels inter-VM ne sont disponibles que dans la mesure où leur lane cible l'est :
+
+* `MsgCrossVMCall` est **désactivé sur le mainnet** par le coupe-circuit (`qorechaind query circuit disabled-list`) ; il est activé sur le testnet.
+* La **lane SVM est désactivée** pour les transactions sur les deux réseaux, de sorte qu'une branche SVM ne peut pas s'exécuter.
+* Le **téléversement et l'instanciation CosmWasm sont soumis à autorisation** sur les deux réseaux et le mainnet ne contient aucun code de contrat stocké ; il n'y a donc encore aucun contrat CosmWasm à appeler.
+* Le **précompilé EVM synchrone n'est pas actif** (voir ci-dessous).
+
+Les routes REST du module (`/qorechain/crossvm/v1/...`) ne sont pas servies par la passerelle publique ; lisez les messages avec la CLI ou un client de requêtes gRPC/ABCI.
+:::
 
 :::note
 Les points de terminaison ci-dessous pointent par défaut vers un nœud local. Sur le mainnet, utilisez les points de terminaison RPC de **`qorechain-vladi`** (RPC Cosmos **26657**, JSON-RPC EVM **8545**) ; le testnet est **`qorechain-diana`**.
@@ -29,16 +40,19 @@ Les points de terminaison ci-dessous pointent par défaut vers un nœud local. S
 
 | Chemin             | Direction       | Synchronisation           | Mécanisme                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Synchrone**  | EVM vers CosmWasm | Même transaction | Précompilé à `0x0000...0901`   |
-| **Asynchrone** | CosmWasm vers EVM | Bloc suivant       | `MsgCrossVMCall` via EndBlocker |
-| **Asynchrone** | SVM vers toute VM   | Bloc suivant       | `MsgCrossVMCall` via EndBlocker |
-| **Asynchrone** | Toute VM vers SVM      | Bloc suivant       | `MsgCrossVMCall` via EndBlocker |
+| **Synchrone**  | EVM vers CosmWasm | Même transaction | Précompilé à `0x0000...0901` (pas encore actif, voir ci-dessous) |
+| **Message, par défaut** | Toute VM vers toute autre VM | Même transaction | `MsgCrossVMCall` ; l'appel s'exécute immédiatement et un échec annule toute la transaction |
+| **Message, en file d'attente**  | Toute VM vers toute autre VM | Bloc suivant (ou plus tard) | `MsgCrossVMCall` avec `async` activé ; le message attend dans la file |
 
 ---
 
 ## Chemin synchrone (EVM vers CosmWasm)
 
-Le chemin synchrone utilise un **précompilé** EVM à l'adresse `0x0000000000000000000000000000000000000901`. Cela permet aux contrats Solidity d'appeler des contrats CosmWasm et de recevoir une réponse au sein de la même transaction.
+Le chemin synchrone utilise un **précompilé** EVM à l'adresse `0x0000000000000000000000000000000000000901`. Il est conçu pour permettre aux contrats Solidity d'appeler des contrats CosmWasm et de recevoir une réponse au sein de la même transaction.
+
+:::warning Non actif sur le mainnet ni sur le testnet
+Le précompilé du pont CrossVM n'est **pas actif** sur `qorechain-vladi` ni sur `qorechain-diana` : un appel à `0x…0901` réussit et renvoie des données vides. Il ne sera pas activé sous sa forme actuelle ; il est en cours de reconstruction afin qu'un revert dans le contrat appelant annule aussi le côté CosmWasm, que les transferts de valeur soient rejetés, que la ré-entrée EVM-vers-EVM soit refusée et que le coupe-circuit inter-VM s'applique. L'exemple ci-dessous montre uniquement la forme visée. Voir [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
+:::
 
 ### Exemple Solidity
 
@@ -64,50 +78,34 @@ contract CrossVMCaller {
 }
 ```
 
-Le précompilé exécute le contrat CosmWasm immédiatement et renvoie le résultat. Coût en gaz : **50 000 de base + coût d'exécution**.
+Une fois actif, le précompilé exécute le contrat CosmWasm immédiatement et renvoie le résultat. Le nœud actuel décode les calldata sous la forme `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` ; l'ABI peut changer avec la reconstruction. Coût en gas : **50 000 de base + 4 par octet d'entrée + coût d'exécution**.
 
 ---
 
-## Chemin asynchrone
+## Chemin par message (`MsgCrossVMCall`)
 
-Toutes les autres directions inter-VM utilisent la file d'attente de messages asynchrone. Les messages sont soumis dans un bloc et traités par l'**EndBlocker** au bloc suivant.
+Les autres appels inter-VM utilisent la transaction `MsgCrossVMCall`. La chaîne détermine la lane source à partir de l'expéditeur ; le message ne porte donc que la VM cible, le contrat cible, la charge utile et d'éventuels fonds. Par défaut, l'appel s'exécute immédiatement dans la transaction, et toute la transaction est annulée si la cible échoue. Avec l'indicateur `async`, le message est au contraire mis en file d'attente et traité par la passe de file de fin de bloc du module lors d'un bloc ultérieur (voir le cycle de vie ci-dessous). Comme indiqué plus haut, ce message est désactivé sur le mainnet.
 
 ### CLI
 
+`tx crossvm call` prend la VM cible (`evm`, `cosmwasm` ou `svm`) et le contrat cible comme arguments positionnels, avec la charge utile en hexadécimal :
+
 ```bash
-# CosmWasm to EVM
-qorechaind tx crossvm call \
-  --source-vm cosmwasm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '{"method":"transfer","params":["0xRecipient",100]}' \
-  --from mykey \
-  -y
-
-# SVM to CosmWasm
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm cosmwasm \
-  --target-contract qor1contractaddr... \
-  --payload '{"execute":{"action":{}}}' \
-  --from mykey \
-  -y
-
-# EVM to SVM (async)
-qorechaind tx crossvm call \
-  --source-vm evm \
-  --target-vm svm \
-  --target-contract <program-id-base58> \
-  --payload '0a0b0c...' \
-  --from mykey \
-  -y
+qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
+  --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
+
+Autres options : `--funds <coins>` (cibles CosmWasm uniquement) et `--async` pour mettre l'appel en file d'attente au lieu de l'exécuter immédiatement. Signez et diffusez `tx.json` avec `tx pqc cosign` (voir [Signature post-quantique](/developer-guide/post-quantum-signing)) ; le plancher de frais est de 0.1 uqor par gas.
+
+:::caution Désactivé sur le mainnet, et la forme CLI nécessite un correctif
+`MsgCrossVMCall` est désactivé sur le mainnet par le coupe-circuit. Dans les binaires de la version actuelle, `tx crossvm call` construit en outre un message qui ne passe pas la propre validation du message (il laisse la VM source vide) ; la commande n'est donc documentée ici qu'à titre de référence.
+:::
 
 ---
 
 ## Cycle de vie d'un message
 
-Chaque message inter-VM transite par un ensemble défini d'états :
+Chaque message inter-VM en file d'attente transite par un ensemble défini d'états :
 
 ```
 Submitted --> Pending --> Executed
@@ -131,6 +129,7 @@ Submitted --> Pending --> Executed
 
 | Paramètre              | Valeur        | Description                                    |
 | ---------------------- | ------------ | ---------------------------------------------- |
+| `enabled`              | `true`       | Interrupteur au niveau du module (le message d'appel lui-même est désactivé séparément sur le mainnet) |
 | `max_message_size`     | 65 536 octets | Taille maximale de charge utile par message               |
 | `max_queue_size`       | 1 000        | Nombre maximal de messages en attente dans la file          |
 | `queue_timeout_blocks` | 100          | Blocs avant qu'un message non traité n'expire |
@@ -167,11 +166,13 @@ qorechaind query crossvm message <message-id>
 # List all pending messages
 qorechaind query crossvm pending
 
-# List messages by sender
-qorechaind query crossvm messages-by-sender <address>
+# Module parameters
+qorechaind query crossvm params
 ```
 
 ### JSON-RPC
+
+> **Pas encore servi :** aucune version publiée du nœud ne sert l'espace de noms JSON-RPC `qor_` ; cet appel renvoie donc `-32601` (méthode introuvable) sur tous les points de terminaison publics aujourd'hui. Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -205,7 +206,7 @@ curl -X POST http://localhost:8545 \
 
 ## Considérations de conception
 
-**Atomicité :** Les appels synchrones (EVM vers CosmWasm via précompilé) sont atomiques — si l'un des deux côtés échoue (revert), l'ensemble de la transaction est annulé. Les appels asynchrones ne sont **pas atomiques** d'un bloc à l'autre ; concevez vos contrats pour gérer les états `Failed` et `Timed Out` avec élégance.
+**Atomicité :** Les appels synchrones (EVM vers CosmWasm via précompilé) sont conçus pour être atomiques : si l'un des deux côtés échoue (revert), l'ensemble de la transaction est annulé. Le précompilé actuel ne le garantit pas encore, ce qui est l'une des raisons pour lesquelles il n'est pas actif (voir ci-dessus). Les appels asynchrones ne sont **pas atomiques** d'un bloc à l'autre ; concevez vos contrats pour gérer les états `Failed` et `Timed Out` avec élégance.
 
 **Ordonnancement :** Les messages de la file sont traités en FIFO à chaque passage de l'EndBlocker. Il n'existe aucune garantie d'ordonnancement entre différentes VM sources.
 
@@ -219,7 +220,7 @@ curl -X POST http://localhost:8545 \
 
 ## Étapes suivantes
 
-* [Précompilés EVM](/developer-guide/evm-precompiles) — Le précompilé CrossVM synchrone et autres précompilés personnalisés
+* [Précompilés EVM](/developer-guide/evm-precompiles) — État du précompilé CrossVM synchrone et des autres précompilés prévus
 * [Développement EVM](/developer-guide/evm-development) — Développement Solidity sur QoreChain
 * [Développement CosmWasm](/developer-guide/cosmwasm-development) — Développement de contrats Rust/Wasm
 * [Développement SVM](/developer-guide/svm-development) — Déploiement de programmes BPF

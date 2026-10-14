@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # MEV Protection (FairBlock)
 
-The `x/fairblock` module implements QoreChain's defense against Maximal Extractable Value (MEV) attacks using threshold identity-based encryption. Combined with a 5-lane transaction prioritization system, this creates a comprehensive anti-MEV architecture that protects users from front-running, sandwich attacks, and other forms of mempool-based value extraction.
+The `x/fairblock` module is QoreChain's design for defending against Maximal Extractable Value (MEV) attacks using threshold identity-based encryption. Combined with a 5-lane transaction prioritization system, it is intended to form an anti-MEV architecture that protects users from front-running, sandwich attacks, and other forms of mempool-based value extraction.
+
+:::note Current status (October 2026)
+FairBlock is **disabled on both mainnet and testnet** (`enabled = false`), and the 5-lane definitions are configuration only: block-space lanes are not enforced by the live mempool or proposal handler. This page describes the intended design.
+:::
 
 ## The MEV Problem
 
@@ -53,7 +57,7 @@ Validators contribute decryption shares for committed transactions:
 
 ## Implementation Status
 
-In the current testnet release, the FairBlock module is a **stub implementation**:
+On both live networks (mainnet and testnet), the FairBlock module is a **stub implementation**:
 
 * The `FairBlockDecorator` ante handler is wired into the transaction processing pipeline but **passes through** all transactions without modification.
 * When `enabled` is `false` (the default), the decorator immediately delegates to the next handler in the chain.
@@ -101,14 +105,12 @@ Gas-abstracted and sponsored transactions. This lane enables zero-fee user exper
 
 ### Implementation Status
 
-Lane configuration is **data-only** in the current testnet release. The lane definitions (priority, block space allocation) are registered at application initialization, but actual mempool reordering via `PrepareProposal` and `ProcessProposal` is a future milestone. Currently, all transactions are processed in standard order regardless of lane assignment.
+Lane configuration is **data-only** on the live networks. The lane definitions (priority, block space allocation) are registered at application initialization, but actual mempool reordering via `PrepareProposal` and `ProcessProposal` is a future milestone. Currently, all transactions are processed in standard order regardless of lane assignment.
 
-## Combined Anti-MEV Effect
+## Combined Anti-MEV Effect (design)
 
 1. **Layer 1: Encryption (tIBE)** — Transactions are encrypted before entering the mempool. Proposers cannot read contents, so there is no information to extract.
 2. **Layer 2: Prioritization (Lanes)** — Encrypted MEV-lane transactions get 20% reserved block space. Priority 90 ensures inclusion even during congestion.
 3. **Layer 3: Threshold Decryption** — Only after block commitment do validators reveal decryption shares. The threshold requirement prevents any single validator from early decryption.
 
-Result: Information asymmetry is eliminated at every stage of the transaction lifecycle, from broadcast to execution.
-
-This approach is strictly superior to time-delayed decryption or single-party commit-reveal schemes, because the threshold requirement distributes trust across the validator set.
+Intended result: information asymmetry is removed at every stage of the transaction lifecycle, from broadcast to execution, once FairBlock is activated. The threshold requirement distributes trust across the validator set, which time-delayed decryption or single-party commit-reveal schemes do not.

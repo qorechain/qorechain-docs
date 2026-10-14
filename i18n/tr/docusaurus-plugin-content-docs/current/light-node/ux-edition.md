@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu da hafif düğümün **v3.1.2** hattıdır (zincir sürümünden ayrı, kendi sürümü).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu da hafif düğümün **v3.1.3** hattıdır (zincir sürümünden ayrı, kendi sürümü).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
 ## Kurulum
 
-Derlenmiş ikili dosyalar **hiçbir yerel bağımlılık olmadan altı platformda** doğrudan çalışır — Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — her biri yaklaşık 16 MB. Çalıştırmadan önce indirmenin sağlama toplamını manifestle doğrulayın — nasıl yapılacağı için bkz. [SX Sürümü](/light-node/sx-edition#install).
+Derlenmiş ikili dosyalar **hiçbir yerel bağımlılık olmadan altı platformda** doğrudan çalışır — Linux (amd64, arm64), macOS (Intel, Apple Silicon) ve Windows (amd64, arm64) — her biri yaklaşık 11–12 MB. Çalıştırmadan önce indirmenin sağlama toplamını manifestle doğrulayın — nasıl yapılacağı için bkz. [SX Sürümü](/light-node/sx-edition#install).
 
 ### Kaynaktan derleme
 
@@ -27,13 +27,24 @@ Bu, `build/lightnode-ux` üretir.
 
 ### Docker
 
-UX hizmeti `Dockerfile.ux`'ten derlenir:
+UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, etiket `v3.1.4` veya daha yenisi) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir; kurulum sihirbazı SX ikili dosyasında yer aldığından, yapılandırmayı önce SX sürümüyle oluşturun ([SX Sürümü](/light-node/sx-edition#first-run-onboard) bölümüne bakın) ve birime kopyalayın. Bir konteynerin içinde dashboard'un tüm konteyner arabirimlerinde dinlemesi gerekir; bu nedenle bunu o yapılandırmada ayarlayın ve bağlantı noktasını yalnızca ana makinenin loopback'inde yayınlayın:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-UX konteyneri verilerini `/root/.qorechain-lightnode` konumundaki adlandırılmış bir birimde kalıcı kılar ve zincir RPC adresini `QORECHAIN_RPC_ADDR` ortam değişkeninden okur.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+UX konteyneri verilerini `/root/.qorechain-lightnode` konumundaki adlandırılmış bir birimde kalıcı kılar ve zincir RPC adresini `QORECHAIN_RPC_ADDR` ortam değişkeninden okur. UX imajı `qorechaind` imzalayıcısını içermez; bu nedenle bir UX konteyneri zincir üzerinde heartbeat gönderemez; kayıtlı bir düğümü SX sürümüyle çalıştırın.
 
 ## Çalıştırma
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Bu, daemon'u ve gömülü dashboard sunucusunu birlikte başlatır. UX sürümü her zaman dashboard'u etkinleştirir. Başlangıçta ikili dosya dashboard URL'sini yazdırır.
 
-UX sürümü kurulumunu SX sürümüyle paylaşır: `~/.qorechain-lightnode` konumundan aynı `config.toml`'u okur ve aynı Dilithium-5 anahtarlığını kullanır. Düğümü henüz yapılandırmadıysanız, yapılandırmayı yazmak ve anahtarınızı içe aktarmak veya oluşturmak için önce SX sihirbazını (`lightnode-sx onboard`) çalıştırın — bkz. [SX Sürümü](/light-node/sx-edition).
+UX sürümü kurulumunu SX sürümüyle paylaşır: `~/.qorechain-lightnode` konumundan aynı `config.toml`'u okur ve aynı Dilithium-5 anahtarlığını kullanır. Düğümü henüz yapılandırmadıysanız, yapılandırmayı yazmak ve anahtarınızı içe aktarmak veya oluşturmak için önce SX sihirbazını (`lightnode-sx onboard`) çalıştırın — bkz. [SX Sürümü](/light-node/sx-edition). UX ikili dosyasında yalnızca `start` ve `version` komutları bulunur; `register`, `status` ve `keys` için `lightnode-sx` kullanın. UX sürümünün içindeki daemon, bir `qorechaind` imzalayıcısı mevcut olduğunda heartbeat'leri SX sürümüyle aynı şekilde gönderir.
 
 ## 8420 numaralı bağlantı noktasındaki web dashboard'u
 
@@ -69,7 +80,7 @@ Dashboard aşağıdaki görünümlere göre düzenlenmiştir:
 
 - **Overview** — blok yüksekliği ve düğüm durumuna hızlı bakış.
 - **Validators** — bağlı doğrulayıcı kümesi.
-- **Delegation** — mevcut delegasyonlarınız ve bölünmeleri.
+- **Delegation** — operatör hesabınızdan yansıtılan delegasyonlar ([Ödüller ve İzleme](/light-node/rewards-and-monitoring#how-rewards-work) bölümündeki bilinen sınırlamaya bakın).
 - **Network** — canlı ağ telemetrisi ve son eşitlenmiş başlıklar.
 - **Bridge** — çapraz zincir köprü telemetrisi.
 - **Tokenomics** — token ekonomisi telemetrisi.
@@ -85,9 +96,9 @@ Düğümde **yapılandırılmış bir zincir RPC uç noktası yoksa**, dashboard
 lightnode-sx onboard
 ```
 
-Sihirbaz PQC kendi kendine testini çalıştırır, zincir uç noktanızı ister ve doğrulayıcı anahtarınızı içe aktarır veya oluşturur. Bir uç nokta yapılandırıldıktan sonra düğümü yeniden başlatın; dashboard canlı zincir verilerini göstermeye başlar.
+Sihirbaz PQC kendi kendine testini çalıştırır, zincir uç noktanızı ister ve düğüm anahtarınızı içe aktarır veya oluşturur. Bir uç nokta yapılandırıldıktan sonra düğümü yeniden başlatın; dashboard canlı zincir verilerini göstermeye başlar.
 
 ## Sonraki adımlar
 
 - [Kayıt ve Lisanslama](/light-node/registration-and-licensing) — düğümü zincir üzerinde kaydedin.
-- [Ödüller ve İzleme](/light-node/rewards-and-monitoring) — %3 hafif düğüm payını kazanın ve düğüm sağlığını izleyin.
+- [Ödüller ve İzleme](/light-node/rewards-and-monitoring) — %3 hafif düğüm payının nasıl hesaba yazıldığı ve talep edildiği ve düğüm sağlığının nasıl izleneceği.

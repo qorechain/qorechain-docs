@@ -25,7 +25,7 @@ import {
 
 const client = createClient({
   network: "testnet",
-  endpoints: { rpc: "https://rpc.testnet.example" },
+  endpoints: { rpc: "https://rpc-testnet.qore.host" }, // mainnet: https://rpc.qore.host
 });
 
 const cw = await client.cosmwasm(); // read-only CosmWasmReadClient
@@ -41,9 +41,29 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 
 ## 서명: 인스턴스화, 실행, 업로드
 
-상태 변경의 경우, `connectCosmWasmSigner`로 서명 클라이언트를 연결한 다음
-(`directSignerFromPrivateKey`가 생성하는 것과 동일한 종류의 오프라인 서명자를 받습니다),
-타입이 지정된 래퍼를 사용하세요:
+:::caution 업로드와 인스턴스화는 권한이 필요합니다
+`code_upload_access`와 `instantiate_default_permission`은 `qorechain-vladi`와
+`qorechain-diana`에서 `Nobody`로 설정되어 있으며, `MsgStoreCode` /
+`MsgInstantiateContract` / `MsgInstantiateContract2`도 체인의 서킷 브레이커에 의해
+꺼져 있으므로, 일반 계정의 `uploadCode`와 `instantiate`는 거부됩니다. 이미 존재하는
+컨트랙트는 쿼리(위 참고)하고 실행할 수 있습니다. 현재 권한은
+`GET /cosmwasm/wasm/v1/codes/params`에서 확인하세요.
+[CosmWasm 개발](/developer-guide/cosmwasm-development)을 참고하세요.
+:::
+
+:::caution CosmWasm 서명 클라이언트는 클래식 방식으로 서명합니다
+`connectCosmWasmSigner`는 CosmJS 서명 클라이언트를 감싸며, 이는 클래식 secp256k1
+서명만 첨부합니다. 라이브 네트워크는 모든 Native 경로 트랜잭션에 하이브리드
+(secp256k1 + ML-DSA-87) 서명을 요구하므로, 이를 통해 전송한 트랜잭션은 거기서
+거부됩니다. 하이브리드 확장을 요구하지 않는 노드(로컬 개발 노드)에서는 동작합니다.
+라이브 네트워크에서 `execute`를 수행하려면 메시지를 구성하여
+`signAndBroadcastHybrid`로 전송하세요(아래 샘플 참고).
+:::
+
+클래식 서명을 허용하는 노드에 대한 상태 변경의 경우, `connectCosmWasmSigner`로 서명
+클라이언트를 연결한 다음(`directSignerFromPrivateKey`가 생성하는 것과 동일한 종류의
+오프라인 서명자를 받습니다), 타입이 지정된 래퍼를 사용하세요. 결과 타입을 지정하지
+않으면 헬퍼는 `Promise<unknown>`을 반환합니다:
 
 ```ts
 import {
@@ -56,16 +76,18 @@ import {
 const signingCw = await connectCosmWasmSigner(rpcUrl, signer);
 
 // Upload Wasm bytecode -> a code id.
-const { codeId } = await uploadCode(signingCw, sender, wasmBytes, fee);
+const { codeId } = await uploadCode<{ codeId: number }>(
+  signingCw, sender, wasmBytes, "auto",
+);
 
-// Instantiate a contract from a code id.
-const { contractAddress } = await instantiate(
+// Instantiate a contract from a code id (the last argument is InstantiateOpts).
+const { contractAddress } = await instantiate<{ contractAddress: string }>(
   signingCw,
   sender,
   codeId,
   { /* init msg */ },
   "label",
-  fee,
+  { fee: "auto" },
 );
 
 // Execute a message against a deployed contract.
@@ -74,12 +96,59 @@ const res = await execute(
   sender,
   contractAddress,
   { /* execute msg */ },
-  fee,
+  "auto",
 );
 ```
 
 정확한 인자 형태는 `@cosmjs/cosmwasm-stargate`를 따릅니다. SDK는 타입이 지정된
 `ContractMsg`, `FeeInput`, `InstantiateOpts`, `CosmWasmReadClient`,
 `CosmWasmSigningClient` 타입을 추가합니다.
+
+### 라이브 네트워크에서 실행하기 (하이브리드)
+
+CosmWasm 메시지 타입을 레지스트리에 추가하고 `MsgExecuteContract`를 하이브리드
+빌더를 통해 전송합니다. 계정의 ML-DSA-87 키가 먼저 등록되어 있어야 합니다
+([양자 내성](/sdk/guides/quantum-safe) 참고).
+`npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`가
+필요합니다:
+
+```ts
+import { Registry } from "@cosmjs/proto-signing";
+import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
+import { StargateClient } from "@cosmjs/stargate";
+import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import {
+  qorechainRegistryTypes,
+  signAndBroadcastHybrid,
+  derivePqcCanonical,
+} from "@qorechain/sdk";
+
+const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
+const transport = await StargateClient.connect("https://rpc.qore.host");
+const info = await transport.getSequence(sender);
+
+const result = await signAndBroadcastHybrid({
+  registry,
+  signer,                                            // from directSignerFromPrivateKey
+  pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
+  messages: [
+    {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender,
+        contract: contractAddress,
+        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+        funds: [],
+      }),
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: "https://api.qore.host",
+  transport,
+});
+```
 
 실행 가능한 읽기 예제는 `cosmwasm-query` [예제](/sdk/examples)를 참고하세요.

@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain は、**ジェネシス時点でポスト量子暗号（PQC）**を組み込んで構築されています — アップグレードとして後付けされたものではありません。`x/pqc` モジュールは、格子ベースのデジタル署名と鍵カプセル化を主要な暗号プリミティブとして提供し、長期的な耐性のためにガバナンス制御によるアルゴリズム俊敏性フレームワークを備えています。
 
-完全な PQC ベースライン — **Dilithium-5（署名）+ ML-KEM-1024（KEM）+ SHAKE-256（ハッシュ）** — は現在完成し、ネットワークのデフォルトとなっています。現在のチェーンバージョン（**v3.1.85**）時点で、ハイブリッド署名は cosmos トランザクションパスで**デフォルトで必須**です: `hybrid_signature_mode = required` および `allow_classical_fallback = false`。すべての cosmos パストランザクションは、従来の secp256k1 署名と併せて Dilithium-5 署名を保持しなければなりません。PQC アカウントからの従来署名のみのトランザクションは拒否され、従来署名へのダウングレードパスは閉じられています。
+完全な PQC ベースライン — **Dilithium-5（署名）+ ML-KEM-1024（KEM）+ SHAKE-256（ハッシュ）** — は現在完成し、ネットワークのデフォルトとなっています。稼働中のネットワーク（v3.2.x）では、ハイブリッド署名は cosmos トランザクションパスで**デフォルトで必須**です: `hybrid_signature_mode = required` および `allow_classical_fallback = false`。すべての cosmos パストランザクションは、従来の secp256k1 署名と併せて Dilithium-5 署名を保持しなければなりません。PQC アカウントからの従来署名のみのトランザクションは拒否され、従来署名へのダウングレードパスは閉じられています。
 
 ## 設計原則
 
@@ -49,9 +49,9 @@ PQC 操作は、格子ベースの署名、検証、鍵カプセル化を QoreCh
 
 これらと同じプリミティブ — ML-DSA（FIPS-204）、ML-KEM（FIPS-203）、SHAKE-256（FIPS-202）— は、オープンソースの [**qorechain-pqc**](https://github.com/qorechain/qorechain-pqc) ライブラリを通じてウォレットやインテグレーターに提供されています。このライブラリは、6 言語（JavaScript/TypeScript、Rust、Go、C、Python、Java）にわたって、一貫性のあるバイト互換の単一 API を提供します。[ポスト量子署名](/developer-guide/post-quantum-signing) を参照してください。
 
-## 鍵の登録
+## 鍵の登録 {#key-registration}
 
-アカウントは `MsgRegisterPQCKey`（レガシー、デフォルトで Dilithium-5）または `MsgRegisterPQCKeyV2`（アルゴリズム認識）を介して PQC 鍵を登録します。各メッセージには以下が含まれます。
+アカウントは `MsgRegisterPQCKey`（レガシー、デフォルトで Dilithium-5）または `MsgRegisterPQCKeyV2`（アルゴリズム認識）を介して PQC 鍵を明示的に登録します。チェーンが自ら鍵を登録することはなく、CLI のフローは `qorechaind tx pqc gen-key <name>` に続けて `qorechaind tx pqc register-key <public_key_hex> hybrid --from <key>` を実行するものです（[最初のトランザクション](/getting-started/first-transaction#register-pqc-key)を参照）。各メッセージには以下が含まれます。
 
 * **Sender**: 鍵を登録するアカウントアドレス。
 * **PublicKey**: PQC 公開鍵のバイト列。
@@ -61,40 +61,59 @@ PQC 操作は、格子ベースの署名、検証、鍵カプセル化を QoreCh
 | 鍵タイプ          | 説明                                                                      |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | 従来型（ECDSA）と PQC の両方の鍵。トランザクションは二重署名を保持します。      |
-| `pqc_only`       | PQC 鍵のみ。従来の署名は不要です。                                          |
+| `pqc_only`       | `hybrid` と同様に登録されます。従来の secp256k1 署名は標準の署名チェックで引き続き検証され、PQC 署名も必須です。 |
 | `classical_only` | 従来の鍵のみ。PQC 保護なし（非推奨）。                                       |
 
 ## ハイブリッド署名
 
 ハイブリッド署名システムは、cosmos パストランザクションが従来の署名と PQC 署名の**両方**を同時に保持することを要求します。これにより多層防御が提供されます: 一方のスキームが破られても、もう一方がトランザクションを保護します。
 
-ネットワークデフォルトの `hybrid_signature_mode = required` では、すべての cosmos パストランザクションは secp256k1 署名と併せて Dilithium-5 拡張を含める必要があります。唯一の例外（ブートストラップ用）は、**ジェネシス gentx（高さ 0）**と **PQC 鍵登録/移行トランザクション**（`MsgRegisterPQCKey`、`MsgRegisterPQCKeyV2`、`MsgMigratePQCKey`）であり、アカウントが最初の PQC 鍵を登録できるように、これらは従来署名のみであることが許可されています。
+ネットワークデフォルトの `hybrid_signature_mode = required` では、すべての cosmos パストランザクションは secp256k1 署名と併せて Dilithium-5 拡張を含める必要があります。唯一の例外（ブートストラップ用）は、**ジェネシス gentx（高さ 0）**と **PQC 鍵登録/移行トランザクション**（`MsgRegisterPQCKey`、`MsgRegisterPQCKeyV2`、`MsgMigratePQCKey`）、および登録済みの鍵を持たないオペレーターアカウントからの unjail であり、アカウントが最初の PQC 鍵を登録できるように、これらは従来署名のみであることが許可されています。
 
-**EVM トランザクションは影響を受けません。** EVM トランザクションは別個の `eth_secp256k1` ante パス（QoreChain EVM Engine パス）で認証され、ハイブリッド PQC 拡張を必要としません。ハイブリッド要件は cosmos トランザクションパスにのみ適用されます。
+**EVM レーンは、代わりに認可ウィンドウによって保護されます。** EVM トランザクションは 2 つ目の（ML-DSA）署名を保持できません — 標準的なウォレットは Ethereum トランザクションに対して 1 つの secp256k1 署名を行うだけで、別の署名を添付する手段を提供しません。そのため、ポスト量子の認可はトランザクションの*前*に送られます。アカウントは、通常のハイブリッド署名を保持する Cosmos レーンのメッセージ（`MsgOpenEVMWindow`）で、範囲が限定された **EVM 認可ウィンドウ**を開き、EVM レーンは有効なウィンドウでカバーされるトランザクションのみを受け付けます。v3.2.0 以降、EVM トランザクションは、その送信者が (1) 登録済みのポスト量子鍵を持ち、かつ (2) ブロック数、トランザクション数、価値が残っている有効なウィンドウを持っていない限り、拒否されます。ウィンドウ内では、チェックがトランザクションではなくチェーンの状態を読み取るため、通常の MetaMask/ethers/Hardhat のトランザクションがそのまま動作します。[EVM 認可ウィンドウ](/getting-started/first-transaction#evm-window)を参照してください。
 
 ### コサインフロー
 
-準拠する cosmos トランザクションを生成するには、従来の secp256k1 署名が標準のサインバイト（PQC 拡張を除く）に対して計算され、Dilithium-5 署名が計算されて `PQCHybridSignature` 拡張として添付されます。標準の CosmJS / リレーヤーツールは、cosmos パスでトランザクションを行うためにこの拡張を生成する必要があります。現在、これは以下を介して行われます。
+準拠する cosmos トランザクションを生成するには、従来の secp256k1 署名が標準のサインバイト（PQC 拡張を除く）に対して計算され、Dilithium-5 署名が v2 署名バイト（下記の[署名バイト（v2）](#sign-bytes-v2)を参照）に対して計算されて `PQCHybridSignature` 拡張として添付されます。標準の CosmJS / リレーヤーツールは、cosmos パスでトランザクションを行うためにこの拡張を生成する必要があります。現在、これは以下を介して行われます。
 
-* `qorechaind tx pqc gen-key` — Dilithium-5 鍵を生成します。
-* `qorechaind tx pqc cosign` — Dilithium-5 コサインをトランザクションに添付します。
-* QoreChain SDK のハイブリッド署名 — `includePqcPublicKey` を指定した `buildHybridTx`（初回使用時の自動登録のために PQC 公開鍵を埋め込みます）。
+* `qorechaind tx pqc gen-key <name>` — Dilithium-5 鍵を生成します。
+* `qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name>` — `--generate-only` で構築したトランザクションに Dilithium-5 コサインを添付します。
+* QoreChain SDK のハイブリッド署名 — `buildHybridTx`。アカウントの鍵は事前に `MsgRegisterPQCKey` で登録されている必要があります。
+* [QoreX](/qorex/overview) — 両方を自動的に行います。
 
 *secp256k1（ECDSA）と ML-DSA-87（Dilithium-5）で署名され、チェーン全体の強制モードの下で ante ハンドラーによって検証されるトランザクション。*
 
 ```mermaid
 flowchart TD
     A["Transaction<br/>secp256k1 (ECDSA) signature<br/>+ ML-DSA-87 (Dilithium-5) extension"] --> B["PQCHybridVerifyDecorator"]
-    B --> C{"Account has<br/>PQC key?"}
+    B --> C{"Account has<br/>registered PQC key?"}
     C -- "Yes, extension present" --> D["Verify PQC signature<br/>against registered key"]
-    C -- "No, extension carries pubkey" --> E["Auto-register key,<br/>verify signature"]
     C -- "No extension" --> F{"Hybrid mode"}
     F -- "Disabled / Optional" --> G["Allow classical-only tx"]
     F -- "Required" --> H["Reject transaction"]
     D --> I["Accept"]
-    E --> I
     G --> I
 ```
+
+### 署名バイト（v2） {#sign-bytes-v2}
+
+ML-DSA 署名は、ドメインタグ付きでチェーンに束縛されたバイト列をカバーします。v3.2.0 以降、チェーンは**この形式のみ**を検証します。
+
+```text
+"qorechain-pqc-hybrid-v2" ‖ BE64(len(chainID)) ‖ chainID ‖
+BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo
+```
+
+ここで `B0` は PQC 拡張を**含まない**形でシリアライズされたトランザクションボディ、`authInfo` は AuthInfo のバイト列そのものです（`‖` は連結、長さはビッグエンディアン）。ドメインタグにより、別のコンテキスト（ログインチャレンジやメッセージ署名リクエスト）で作成された署名がトランザクション署名として有効になることを防ぎ、チェーン ID を束縛することで、ポスト量子署名自体が他のネットワークでは無効になります。最初の形式（`BE32(len(B0)) ‖ B0 ‖ BE32(len(authInfo)) ‖ authInfo`）はアップグレード高さより前でのみ検証されており、両方を受け入れるブロックはありません。鍵移行とブリッジ証明のペイロードも、同じドメインタグ付きでチェーンに束縛されたスキームに移行しました。
+
+**自分のネットワークはどの形式を検証するのか？** アップグレードが適用済みかどうかをノードに問い合わせます。
+
+```bash
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0         # height 2981742 on mainnet
+curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
+```
+
+（`"height":"0"` は未適用を意味します。）CLI は `--sign-bytes auto` でこれを行います。SDK 0.8.x と wallet-adapter 0.2.x も同様で、テストネットでのこの変更の先行プレビューも認識します。誤った形式のクライアントはチェーンが拒否するダイジェストを生成します — フェイルクローズ（安全側）で失敗します。
 
 ### TX 拡張形式
 
@@ -108,7 +127,7 @@ PQC 署名は、タイプ URL `/qorechain.pqc.v1.PQCHybridSignature` を持つ *
 }
 ```
 
-`pqc_public_key` フィールドはオプションです。これが存在し、アカウントに登録済みの PQC 鍵がない場合、ante ハンドラーは初回使用時に鍵を**自動登録**します。
+`pqc_public_key` フィールドはオプションで情報提供用です。鍵は明示的な登録メッセージによってのみ登録されます（[鍵の登録](#key-registration)を参照）。
 
 ### PQCHybridVerifyDecorator
 
@@ -117,10 +136,11 @@ PQC 署名は、タイプ URL `/qorechain.pqc.v1.PQCHybridSignature` を持つ *
 | シナリオ | アカウントに PQC 鍵あり | 拡張あり          | 拡張内に公開鍵          | 結果                                                |
 | -------- | ------------------- | ----------------- | ----------------------- | --------------------------------------------------- |
 | Path 1   | あり                 | あり               | --                      | 登録済みの鍵に対して PQC 署名を検証                    |
-| Path 2   | なし                 | あり               | あり                     | 鍵を自動登録し、署名を検証                            |
 | Path 3a  | なし                 | なし               | --                      | **Optional モード**: 従来署名のみのトランザクションを許可 |
 | Path 3b  | なし                 | なし               | --                      | **Required モード**: トランザクションを拒否            |
 | Path 4   | あり                 | なし               | --                      | 標準の PQCVerifyDecorator によって処理               |
+
+アカウントがハイブリッド署名のトランザクションを送信する前に、鍵を `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` で登録しておく必要があります。拡張の `pqc_public_key` フィールドは何も登録しません。
 
 ### ハイブリッド署名モード
 
@@ -155,27 +175,28 @@ active --> migrating --> deprecated --> disabled
 
 ### 二重署名による移行
 
-アルゴリズムが廃止されると、**移行期間**が始まります（デフォルト: 1,000,000 ブロック、6 秒/ブロックで約 69 日）。この期間中:
+アルゴリズムが廃止されると、**移行期間**が始まります（デフォルト: 1,000,000 ブロック — メインネットの現在のブロック時間 ≈3.2 秒で約 37 日）。この期間中:
 
 1. 廃止されたアルゴリズムを使用する鍵を持つアカウントは、置き換えアルゴリズムに移行する必要があります。
 2. 移行には二重署名（`MsgMigratePQCKey`）が必要です: 古い鍵からの 1 つと新しい鍵からの 1 つで、両方の所有権を証明します。
 3. 移行期間中、両方のアルゴリズムが検証のために受け入れられます。
 
-### ガバナンスメッセージ
+### メッセージ
 
 | メッセージ                | 説明                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MsgAddAlgorithm`       | レジストリに新しい PQC アルゴリズムを追加することを提案します。完全な `AlgorithmInfo`（名前、カテゴリ、NIST レベル、鍵サイズ）を含みます。ガバナンスを通じて提出する必要があります。 |
-| `MsgDeprecateAlgorithm` | アルゴリズムの廃止プロセスを開始します。置き換えアルゴリズムとブロック単位の移行期間を指定します。                                              |
-| `MsgDisableAlgorithm`   | アルゴリズムを直ちに緊急無効化します。理由の文字列が必要です。暗号上の脆弱性が発見された場合に使用されます。                                     |
+| `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | アカウントの PQC 鍵を登録します（[鍵の登録](#key-registration)を参照）。新しいアカウントがブートストラップできるよう、従来署名で署名できます。 |
+| `MsgMigratePQCKey`      | 移行期間中に、あるアルゴリズムの鍵から別のアルゴリズムの鍵へ二重署名で移行します。                                                                |
+| `MsgRotatePQCKey`       | 同じアルゴリズム内でアカウントの ML-DSA-87 鍵をローテーションします（旧鍵と新鍵による二重署名。`tx pqc rotate-key`）。                            |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM 認可ウィンドウを開く、または閉じます（v3.2.0）。[EVM 認可ウィンドウ](/getting-started/first-transaction#evm-window)を参照してください。 |
+| `MsgDeprecateAlgorithm` | ガバナンスメッセージ: アルゴリズムの廃止プロセスを開始します。置き換えアルゴリズムとブロック単位の移行期間を指定します。                          |
+| `MsgDisableAlgorithm`   | ガバナンスメッセージ: アルゴリズムを直ちに緊急無効化します。理由の文字列が必要です。暗号上の脆弱性が発見された場合に使用されます。                |
+
+`MsgDeprecateAlgorithm` と `MsgDisableAlgorithm` は、現在メインネットでサーキットブレーカーによって無効化されています（[チェーンパラメータ](/appendix/chain-parameters#circuit-breaker)を参照）。
 
 ### 拡張性
 
-新しいアルゴリズムの追加には以下が必要です。
-
-1. 統一された署名および検証インターフェースの背後で、暗号バックエンドにアルゴリズムを実装します。
-2. アルゴリズムのメタデータを含む `MsgAddAlgorithm` ガバナンス提案を提出します。
-3. 承認されると、そのアルゴリズムが鍵の登録と検証に利用可能になります。
+アルゴリズムの追加には、統一された署名および検証インターフェースの背後でそれを実装するソフトウェアリリースが必要です。レジストリと、廃止/無効化のライフサイクルはガバナンス制御されます。
 
 ## SHAKE-256 ハッシュ
 

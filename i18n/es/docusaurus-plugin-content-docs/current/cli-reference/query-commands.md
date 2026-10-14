@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** (versión de cadena **v3.1.97**) para datos en vivo, o un endpoint de testnet **`qorechain-diana`** para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo.
+Las consultas se ejecutan contra el nodo al que apunte `--node`. Utiliza un endpoint RPC de mainnet **`qorechain-vladi`** para datos en vivo (por ejemplo `--node https://rpc.qore.host:443`), o un endpoint de testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) para pruebas. El valor por defecto `tcp://localhost:26657` apunta a un nodo que ejecutas tú mismo. Mainnet ejecuta la versión de nodo v3.2.1 y la testnet v3.2.2; la testnet puede servir algunas rutas adicionales que mainnet aún no tiene, por lo que una consulta que funciona allí puede devolver `Not Implemented` en mainnet.
 :::
 
 Los flags comunes se aplican a todos los subcomandos de `query`:
@@ -25,409 +25,186 @@ Los flags comunes se aplican a todos los subcomandos de `query`:
 | `--output` | string | Formato de salida: `json` o `text`                     |
 | `--height` | int    | Consultar el estado a una altura de bloque específica  |
 
+No todos los módulos tienen una consulta de CLI. Cuando falta un comando, usa el endpoint REST (`https://api.qore.host/...`); consulta [API REST](/api-reference/rest-grpc-endpoints).
+
 ---
 
 ## bank
 
-### balances
-
-Consulta todos los saldos de una cuenta.
-
 ```bash
 qorechaind query bank balances <address>
+qorechaind query bank total-supply
+qorechaind query bank total-supply-of uqor
+qorechaind query bank spendable-balances <address>
 ```
 
-### total
-
-Consulta el suministro total de todos los tokens.
-
-```bash
-qorechaind query bank total
-```
+(No existe `query bank total`.)
 
 ---
 
 ## staking
 
-### validator
-
-Consulta un único validador por su dirección de operador.
-
 ```bash
 qorechaind query staking validator <validator_address>
-```
-
-### validators
-
-Lista todos los validadores.
-
-```bash
 qorechaind query staking validators
-```
-
-### delegation
-
-Consulta una delegación de un delegador a un validador.
-
-```bash
+qorechaind query staking validators --status BOND_STATUS_BONDED
 qorechaind query staking delegation <delegator_address> <validator_address>
-```
-
-### delegations
-
-Consulta todas las delegaciones de un delegador.
-
-```bash
 qorechaind query staking delegations <delegator_address>
-```
-
-### unbonding-delegation
-
-Consulta una delegación en proceso de desvinculación (unbonding).
-
-```bash
+qorechaind query staking delegations-to <validator_address>
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
+qorechaind query staking unbonding-delegations <delegator_address>
+qorechaind query staking redelegation <delegator_address> <src_validator> <dst_validator>
+qorechaind query staking params
+qorechaind query staking pool
 ```
+
+`--status` acepta el nombre completo del enum: `BOND_STATUS_BONDED`, `BOND_STATUS_UNBONDING` o `BOND_STATUS_UNBONDED` (`--status bonded` se rechaza).
 
 ---
 
 ## distribution
 
-### rewards
-
-Consulta todas las recompensas de delegación de un delegador.
-
 ```bash
 qorechaind query distribution rewards <delegator_address>
-```
-
-### commission
-
-Consulta la comisión de un validador.
-
-```bash
 qorechaind query distribution commission <validator_address>
+qorechaind query distribution validator-outstanding-rewards <validator_address>
+qorechaind query distribution community-pool
+qorechaind query distribution params
 ```
 
 ---
 
 ## gov
 
-### proposal
-
-Consulta una única propuesta por su ID.
-
 ```bash
+qorechaind query gov proposals
+qorechaind query gov proposals --proposal-status voting-period
 qorechaind query gov proposal <proposal_id>
-```
-
-### proposals
-
-Lista todas las propuestas, opcionalmente filtradas por estado.
-
-```bash
-qorechaind query gov proposals [flags]
-```
-
-| Flag       | Tipo   | Descripción                                                                 |
-| ---------- | ------ | --------------------------------------------------------------------------- |
-| `--status` | string | Filtrar por estado: `deposit_period`, `voting_period`, `passed`, `rejected` |
-
-### votes
-
-Consulta los votos de una propuesta.
-
-```bash
 qorechaind query gov votes <proposal_id>
+qorechaind query gov vote <proposal_id> <voter_address>
+qorechaind query gov tally <proposal_id>
+qorechaind query gov params
+```
+
+`--proposal-status` acepta `deposit-period`, `voting-period`, `passed`, `rejected` o `failed`. Otros filtros: `--voter`, `--depositor`.
+
+---
+
+## tx
+
+```bash
+qorechaind query tx <txhash>
+qorechaind query txs --query "message.sender='<address>'"
 ```
 
 ---
 
 ## pqc
 
-### account
-
-Consulta el estado de registro de claves PQC de una cuenta.
-
 ```bash
 qorechaind query pqc account <address>
-```
-
-### algorithms
-
-Lista todos los algoritmos PQC soportados.
-
-```bash
 qorechaind query pqc algorithms
-```
-
-### algorithm
-
-Consulta los detalles de un algoritmo PQC específico.
-
-```bash
-qorechaind query pqc algorithm <algorithm_name>
-```
-
-### stats
-
-Consulta las estadísticas agregadas de registro PQC.
-
-```bash
+qorechaind query pqc algorithm dilithium5
 qorechaind query pqc stats
-```
-
-### params
-
-Consulta los parámetros del módulo PQC.
-
-```bash
 qorechaind query pqc params
-```
-
-### migration
-
-Consulta el estado de migración de claves PQC de una cuenta.
-
-```bash
-qorechaind query pqc migration <address>
-```
-
-### hybrid-mode
-
-Consulta el modo actual de aplicación de firmas híbridas.
-
-```bash
+qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
+qorechaind query pqc evm-window <address>
 ```
 
----
-
-## xqore
-
-### position
-
-Consulta la posición de staking xQORE de una dirección.
-
-```bash
-qorechaind query xqore position <address>
-```
-
-### params
-
-Consulta los parámetros del módulo xQORE.
-
-```bash
-qorechaind query xqore params
-```
+- `algorithm` acepta un nombre de algoritmo (`dilithium5`, `mlkem1024`) o un ID numérico.
+- `migration` acepta un **ID de algoritmo** (por ejemplo `1`), no una dirección, e informa `No active migration` cuando no hay ninguna en curso.
+- `evm-window` muestra si la dirección tiene una ventana de autorización abierta en la vía EVM y cuántos bloques, transacciones y valor quedan (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## burn
 
-### stats
-
-Consulta las estadísticas de quema en todos los canales.
+El módulo burn no tiene consulta de CLI. Usa REST:
 
 ```bash
-qorechaind query burn stats
+curl -s https://api.qore.host/qorechain/burn/v1/params
+curl -s https://api.qore.host/qorechain/burn/v1/stats
+curl -s https://api.qore.host/qorechain/burn/v1/records
+curl -s https://api.qore.host/qorechain/burn/v1/milestone
+curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-### params
-
-Consulta los parámetros del módulo de quema.
-
-```bash
-qorechaind query burn params
-```
+`stranded_rewards` informa la parte de los stakers que se depositó en el módulo de distribución sin respaldar ningún derecho, tal como se registró en la actualización a v3.2.0 (`reserved`, `released`, `snapshot_height`). Solo puede liberarse mediante una votación de gobernanza.
 
 ---
 
-## inflation
+## mint e inflation
 
-### rate
-
-Consulta la tasa de inflación anualizada actual.
-
-```bash
-qorechaind query inflation rate
-```
-
-### epoch
-
-Consulta el número de época actual y su progreso.
-
-```bash
-qorechaind query inflation epoch
-```
-
-### params
-
-Consulta los parámetros del módulo de inflación.
-
-```bash
-qorechaind query inflation params
-```
+`qorechaind query mint params|inflation|annual-provisions` lee el módulo mint estándar, cuya tasa es `0` en ambas redes; **no** informa el calendario de emisión del protocolo. No existe el comando `query inflation`.
 
 ---
 
 ## ai
 
-### config
-
-Consulta la configuración del módulo de IA.
-
 ```bash
 qorechaind query ai config
-```
-
-### stats
-
-Consulta las estadísticas agregadas de procesamiento de IA.
-
-```bash
 qorechaind query ai stats
-```
-
-### fee-estimate
-
-Obtén una estimación de comisión de gas asistida por IA.
-
-```bash
-qorechaind query ai fee-estimate [flags]
-```
-
-| Flag        | Tipo   | Descripción                            |
-| ----------- | ------ | -------------------------------------- |
-| `--tx-type` | string | Tipo de transacción para la estimación |
-| `--urgency` | string | `low`, `medium`, `high`                |
-
-### investigations
-
-Lista las investigaciones de fraude activas.
-
-```bash
-qorechaind query ai investigations
-```
-
-### recommendations
-
-Obtén recomendaciones de optimización de red generadas por IA.
-
-```bash
-qorechaind query ai recommendations
-```
-
-### circuit-breakers
-
-Consulta los estados actuales de los circuit breakers.
-
-```bash
-qorechaind query ai circuit-breakers
 ```
 
 ---
 
-## reputation
-
-### validators
-
-Consulta las puntuaciones de reputación de todos los validadores.
+## reputation y qca
 
 ```bash
-qorechaind query reputation validators
+qorechaind query reputation params
+qorechaind query qca config
 ```
 
-### validator
+No hay consultas de reputación por validador ni de clasificación de pools.
 
-Consulta la puntuación de reputación de un validador específico.
+---
+
+## lightnode
 
 ```bash
-qorechaind query reputation validator <validator_address>
+qorechaind query lightnode params
+qorechaind query lightnode stats
+qorechaind query lightnode light-nodes
+qorechaind query lightnode light-node <operator_address>
+qorechaind query lightnode rewards <operator_address>
+qorechaind query lightnode reward-pool
 ```
+
+`reward-pool` muestra cómo se divide el saldo de recompensas del módulo en `reserved`, `outstanding`, `payable` y `distributable`.
+
+---
+
+## license
+
+```bash
+qorechaind query license check <grantee_address> <feature_id>
+qorechaind query license holders <feature_id>
+qorechaind query license list <grantee_address>
+```
+
+`check` devuelve un error `NotFound` cuando el beneficiario no tiene una licencia para la función.
 
 ---
 
 ## bridge
 
-### chains
-
-Lista todas las cadenas de puente registradas.
-
 ```bash
+qorechaind query bridge config
 qorechaind query bridge chains
-```
-
-### chain
-
-Consulta los detalles de una cadena puenteada específica.
-
-```bash
 qorechaind query bridge chain <chain_id>
-```
-
-### validators
-
-Lista los validadores de puente activos.
-
-```bash
 qorechaind query bridge validators
-```
-
-### operations
-
-Lista las operaciones de puente recientes.
-
-```bash
 qorechaind query bridge operations
-```
-
-| Flag       | Tipo   | Descripción                               |
-| ---------- | ------ | ------------------------------------------ |
-| `--status` | string | Filtrar: `pending`, `completed`, `failed` |
-| `--chain`  | string | Filtrar por ID de cadena                  |
-
-### limits
-
-Consulta los límites de tasa de una cadena puenteada.
-
-```bash
-qorechaind query bridge limits <chain_id>
-```
-
-### estimate
-
-Estima la comisión y el tiempo de transferencia del puente.
-
-```bash
-qorechaind query bridge estimate <chain_id> <amount> <asset>
+qorechaind query bridge operation <operation_id>
 ```
 
 ---
 
 ## crossvm
 
-### message
-
-Recupera un mensaje cross-VM por su ID.
-
 ```bash
 qorechaind query crossvm message <message_id>
-```
-
-### pending
-
-Lista los mensajes cross-VM pendientes.
-
-```bash
 qorechaind query crossvm pending
-```
-
-### params
-
-Consulta los parámetros del módulo Cross-VM.
-
-```bash
 qorechaind query crossvm params
 ```
 
@@ -435,35 +212,10 @@ qorechaind query crossvm params
 
 ## svm
 
-### account
-
-Consulta la información de una cuenta SVM.
-
 ```bash
-qorechaind query svm account <pubkey>
-```
-
-### program
-
-Consulta la información de un programa SVM desplegado.
-
-```bash
-qorechaind query svm program <program_id>
-```
-
-### params
-
-Consulta los parámetros del módulo SVM.
-
-```bash
+qorechaind query svm account <base58_address>
+qorechaind query svm program <base58_address>
 qorechaind query svm params
-```
-
-### slot
-
-Consulta el número de slot actual de SVM.
-
-```bash
 qorechaind query svm slot
 ```
 
@@ -471,64 +223,10 @@ qorechaind query svm slot
 
 ## multilayer
 
-### layer
-
-Consulta los detalles de una capa específica.
-
 ```bash
 qorechaind query multilayer layer <layer_id>
-```
-
-### layers
-
-Lista todas las capas registradas.
-
-```bash
 qorechaind query multilayer layers
-```
-
-### anchor
-
-Consulta un registro de anclaje específico.
-
-```bash
-qorechaind query multilayer anchor <anchor_id>
-```
-
-### anchors
-
-Lista los envíos de anclaje recientes.
-
-```bash
-qorechaind query multilayer anchors [flags]
-```
-
-| Flag         | Tipo   | Descripción                            |
-| ------------ | ------ | --------------------------------------- |
-| `--layer-id` | string | Filtrar por ID de capa                 |
-| `--limit`    | uint   | Número máximo de resultados a devolver |
-
-### routing-stats
-
-Consulta las estadísticas de enrutamiento de transacciones entre capas.
-
-```bash
 qorechaind query multilayer routing-stats
-```
-
-### simulate-route
-
-Simula el enrutamiento de una transacción sin ejecutarla.
-
-```bash
-qorechaind query multilayer simulate-route <tx_data_hex>
-```
-
-### params
-
-Consulta los parámetros del módulo Multilayer.
-
-```bash
 qorechaind query multilayer params
 ```
 
@@ -536,218 +234,79 @@ qorechaind query multilayer params
 
 ## rdk
 
-### rollup
-
-Consulta los detalles de un rollup específico.
-
 ```bash
+qorechaind query rdk config
 qorechaind query rdk rollup <rollup_id>
+qorechaind query rdk list-rollups
+qorechaind query rdk batch <rollup_id>            # latest batch
+qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-### rollups
-
-Lista todos los rollups registrados.
-
-```bash
-qorechaind query rdk rollups
-```
-
-| Flag       | Tipo   | Descripción                            |
-| ---------- | ------ | --------------------------------------- |
-| `--status` | string | Filtrar: `active`, `paused`, `stopped` |
-
-### batch
-
-Consulta un lote de liquidación específico.
-
-```bash
-qorechaind query rdk batch <rollup_id> <batch_index>
-```
-
-### latest-batch
-
-Consulta el último lote de un rollup.
-
-```bash
-qorechaind query rdk latest-batch <rollup_id>
-```
-
-### suggest-profile
-
-Obtén una recomendación de perfil de rollup asistida por IA.
-
-```bash
-qorechaind query rdk suggest-profile <use_case>
-```
-
-### blob
-
-Consulta un blob de DA específico.
-
-```bash
-qorechaind query rdk blob <rollup_id> <blob_index>
-```
-
-### params
-
-Consulta los parámetros del módulo RDK.
-
-```bash
-qorechaind query rdk params
-```
-
-:::note
-Las pruebas de retiro de rollups y el estado de liquidación también se pueden consultar bajo el grupo `rdk`. Los subcomandos de consulta exactos y sus argumentos dependen del tipo de liquidación de tu rollup; consulta la documentación del **Rollup Development Kit** para conocer la superficie autoritativa de consultas de retiros/liquidación.
-:::
+`config` muestra los parámetros del módulo (stake mínimo, tasa de quema en la creación, ventana de desafío, límites de DA). `suggest-profile <use_case>` no consulta la cadena; solo imprime una referencia a un método JSON-RPC que los endpoints públicos no sirven, así que elige un perfil entre los [Perfiles predefinidos](/rollups/preset-profiles).
 
 ---
 
 ## rlconsensus
 
-PRISM es la capa de aprendizaje por refuerzo que ajusta los parámetros de consenso. El nombre del módulo CLI `rlconsensus` y sus subcomandos se conservan textualmente.
-
-### agent-status
-
-Consulta el estado y el modo actual del agente PRISM.
-
 ```bash
 qorechaind query rlconsensus agent-status
-```
-
-### observation
-
-Consulta el vector de observación más reciente de PRISM.
-
-```bash
 qorechaind query rlconsensus observation
-```
-
-### reward
-
-Consulta las métricas de recompensa acumulada de PRISM.
-
-```bash
 qorechaind query rlconsensus reward
-```
-
-### params
-
-Consulta los parámetros del módulo de Consenso PRISM.
-
-```bash
 qorechaind query rlconsensus params
-```
-
-### policy
-
-Consulta la configuración de política activa de PRISM.
-
-```bash
 qorechaind query rlconsensus policy
-```
-
----
-
-## babylon
-
-### staking
-
-Consulta la posición de staking de BTC de una dirección.
-
-```bash
-qorechaind query babylon staking <address>
-```
-
-### checkpoint
-
-Consulta los datos de checkpoint de BTC para una época determinada.
-
-```bash
-qorechaind query babylon checkpoint <epoch>
-```
-
-### params
-
-Consulta los parámetros del módulo Babylon.
-
-```bash
-qorechaind query babylon params
 ```
 
 ---
 
 ## abstractaccount
 
-### account
-
-Consulta los detalles de una cuenta abstracta.
+El módulo de cuentas abstractas está actualmente desactivado en ambas redes (`config.enabled` es `false`), por lo que estas consultas no devuelven cuentas.
 
 ```bash
+qorechaind query abstractaccount config
+qorechaind query abstractaccount accounts
 qorechaind query abstractaccount account <address>
-```
-
-### params
-
-Consulta los parámetros del módulo Abstract Account.
-
-```bash
-qorechaind query abstractaccount params
-```
-
-### permission-schema
-
-Consulta la taxonomía canónica de permisos de autenticadores: los 11 permisos, el mapa mensaje→permiso y los mensajes de gestión de claves no delegables (disponible a partir de la versión de cadena **v3.1.85**; también se sirve por REST en `/qorechain/abstractaccount/v1/permission_schema`).
-
-```bash
 qorechaind query abstractaccount permission-schema
 ```
 
-### auth-keygen / auth-sign-cosmos / auth-sign-evm
-
-Utilidades para construir autorizaciones de autenticadores fuera de los SDK: genera una clave de prueba, o produce los **bytes de firma exactos que la cadena verifica** para una acción delegada del carril Native o del carril EVM (disponible a partir de la versión de cadena **v3.1.85**).
-
-```bash
-qorechaind query abstractaccount auth-keygen
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
-```
+`auth-keygen`, `auth-sign-cosmos <chain_id> <account> <to> <amount> <nonce>` y `auth-sign-evm <chain_id> <account> <to_0x> <value_wei> <data_hex> <nonce>` generan firmas de autenticador sin conexión. La semilla del autenticador nunca es un argumento: se lee de `--seed-file <file>` (o `-` para la entrada estándar), de la variable de entorno `QORE_AUTH_SEED` o de un aviso sin eco, y `auth-keygen` la escribe en un nuevo archivo `0600` (`--out`) en lugar de imprimirla.
 
 ---
 
 ## gasabstraction
 
-### accepted-tokens
+Mainnet aún no sirve consultas de abstracción de gas (`qorechaind query gasabstraction ...` imprime su texto de ayuda y la ruta REST devuelve `Not Implemented`). Las comisiones se pagan solo en `uqor`; consulta [Abstracción de gas](/user-guide/gas-abstraction).
 
-Lista los tokens aceptados para el pago de gas.
+---
 
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-### params
-
-Consulta los parámetros del módulo Gas Abstraction.
+## circuit, feemarket, upgrade
 
 ```bash
-qorechaind query gasabstraction params
+qorechaind query circuit disabled-list        # message types switched off network-wide
+qorechaind query feemarket params
+qorechaind query feemarket base-fee
+qorechaind query upgrade plan
+qorechaind query upgrade applied <upgrade_name>
+qorechaind query upgrade module-versions
 ```
 
 ---
 
-## fairblock
-
-### config
-
-Consulta la configuración de cifrado de FairBlock.
+## evm, erc20, wasm
 
 ```bash
-qorechaind query fairblock config
+qorechaind query evm params
+qorechaind query evm balance-bank <0x_address> uqor
+qorechaind query erc20 token-pairs
+qorechaind query wasm params
+qorechaind query wasm list-code
+qorechaind query wasm list-contract-by-code <code_id>
+qorechaind query wasm contract <contract_address>
+qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
 
-### params
+---
 
-Consulta los parámetros del módulo FairBlock.
+## Módulos sin CLI
 
-```bash
-qorechaind query fairblock params
-```
+`xqore`, `babylon` y `fairblock` no tienen comandos de transacción ni de consulta. No se pueden usar desde la CLI ni desde ninguna API pública por el momento.

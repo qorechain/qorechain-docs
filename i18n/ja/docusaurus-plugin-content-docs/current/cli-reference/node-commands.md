@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChainノードの初期化・設定・運用に使用する `qorechaind` コマンドのリファレンスです。
 
 :::note
-QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(チェーンバージョン **v3.1.97** で2026年6月7日から稼働中)と、**`qorechain-diana`** テストネットです。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。
+QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月29日から稼働中、現在のノードリリースは **v3.2.1**)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.2**)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
 :::
 
 ---
@@ -25,11 +25,14 @@ qorechaind init <moniker> --chain-id qorechain-diana
 
 | フラグ        | 型     | 説明                                            |
 | ------------- | ------ | ----------------------------------------------- |
-| `--chain-id`  | string | チェーン識別子(必須)                          |
+| `--chain-id`  | string | チェーン識別子(常に指定してください。省略するとランダムなものが作成されます) |
 | `--home`      | string | ノードのホームディレクトリ(デフォルト: `~/.qorechaind`) |
-| `--overwrite` | bool   | 既存のgenesisおよび設定ファイルを上書きします  |
+| `--overwrite` | bool   | 既存の `genesis.json` を上書きします            |
+| `--recover`   | bool   | キーを新規作成する代わりに、シードフレーズを指定して既存のキーを復元します |
 
-`--home` の下に `config/`、`data/`、および初期の `genesis.json` を含むディレクトリ構造を作成します。
+`--home` の下に `config/`、`data/`、および初期の `genesis.json` を含むディレクトリ構造を作成します。ネットワークノードの場合は、起動前にこの `genesis.json` をそのネットワークのgenesisファイルに置き換えてください([メインネットへの接続](/getting-started/connecting-to-mainnet)を参照)。
+
+`init` は、そのネットワークのEVMチェーンID(`qorechain-vladi` は `9801`、`qorechain-diana` は `9800`)も `app.toml` の `evm-chain-id` 設定に書き込むため、正しい `--chain-id` を指定してください。
 
 ---
 
@@ -44,7 +47,7 @@ qorechaind start [flags]
 | フラグ                 | 型     | 説明                                                  |
 | ---------------------- | ------ | ----------------------------------------------------- |
 | `--home`               | string | ノードのホームディレクトリ                            |
-| `--minimum-gas-prices` | string | 受け入れる最小ガス価格(例: `0.001uqor`)              |
+| `--minimum-gas-prices` | string | このノードが受け入れる最小ガス価格。ネットワークの下限は `0.1uqor` です。少なくともこの値を設定してください |
 | `--pruning`            | string | プルーニング戦略: `default`、`nothing`、`everything` |
 | `--halt-height`        | uint   | このブロック高でノードを停止します                   |
 | `--halt-time`          | uint   | このUnixタイムスタンプでノードを停止します            |
@@ -85,23 +88,9 @@ qorechaind status
 
 ---
 
-## config
+## client configuration
 
-ノード設定の値を読み書きします。
-
-### 設定値の設定
-
-```bash
-qorechaind config set <key> <value>
-```
-
-### 設定値の取得
-
-```bash
-qorechaind config get <key>
-```
-
-一般的な設定キーには `chain-id`、`keyring-backend`、`output`、`node` があります。
+`config` サブコマンドはありません。クライアントのデフォルト値(`chain-id`、`keyring-backend`、`output`、`node`)は `<home>/config/client.toml` から読み込まれます。このファイルを編集するか、コマンドごとにフラグ(`--chain-id`、`--keyring-backend`、`--output`、`--node`)を指定してください。
 
 ---
 
@@ -117,8 +106,9 @@ qorechaind keys add <name> [flags]
 
 | フラグ                  | 型     | 説明                                     |
 | ----------------------- | ------ | ---------------------------------------- |
-| `--keyring-backend`     | string | バックエンド: `os`、`file`、`test`       |
-| `--algo`                | string | キーアルゴリズム: `secp256k1`(デフォルト)、`ed25519` |
+| `--keyring-backend`     | string | バックエンド: `os`、`file`、`kwallet`、`pass`、`test`、`memory` |
+| `--key-type`            | string | キーアルゴリズム: `secp256k1`(デフォルト)または `eth_secp256k1` |
+| `--coin-type`           | uint32 | HDコインタイプ(デフォルト `118`)       |
 | `--recover`             | bool   | ニーモニックからキーを復元します         |
 | `--multisig`            | string | マルチシグ用のキーのカンマ区切りリスト   |
 | `--multisig-threshold`  | uint   | 必要な最小署名数                         |
@@ -174,6 +164,7 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 | フラグ                | 型     | 説明                             |
 | --------------------- | ------ | -------------------------------- |
 | `--vesting-amount`    | string | ベスティング額                   |
+| `--vesting-start-time` | int   | ベスティング開始時刻(Unixタイムスタンプ) |
 | `--vesting-end-time`  | int    | ベスティング終了時刻(Unixタイムスタンプ) |
 
 ### genesisトランザクションの作成
@@ -195,10 +186,12 @@ qorechaind genesis gentx <key-name> <stake-amount> [flags]
 qorechaind genesis collect-gentxs
 ```
 
+`genesis` のその他のサブコマンド: `bulk-add-genesis-account` と `migrate`。
+
 ### genesisファイルの検証
 
 ```bash
-qorechaind genesis validate-genesis
+qorechaind genesis validate
 ```
 
 ---
@@ -238,6 +231,9 @@ qorechaind export [flags]
 | `--for-zero-height`   | bool   | 高さ0での再起動用にエクスポートを準備します |
 | `--height`            | int    | 特定のブロック高で状態をエクスポートします |
 | `--home`              | string | ノードのホームディレクトリ                 |
+| `--output-document`   | string | エクスポートをSTDOUTではなくこのファイルに書き込みます |
+| `--modules-to-export` | strings | エクスポートするモジュールのカンマ区切りリスト(デフォルト: すべて) |
+| `--jail-allowed-addrs` | strings | ジェイルされたバリデーターのうち、ジェイル解除するもののオペレーターアドレス |
 
 ---
 

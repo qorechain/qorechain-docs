@@ -7,139 +7,63 @@ sidebar_position: 7
 
 # Abstracción de Gas
 
-Esta guía cubre la función de abstracción de gas de QoreChain, que permite a los usuarios pagar las comisiones de transacción en tokens no nativos en lugar de QOR.
+Esta página describe la función de abstracción de gas de QoreChain, cuyo diseño permite a los usuarios pagar las comisiones de transacción en un token no nativo aceptado en lugar de QOR. **Hoy no se puede usar en ninguna de las dos redes**; esta página explica el diseño y qué hacer en su lugar.
 
-:::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). La mainnet (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 ejecutando la versión de cadena **v3.1.97** — sustituya el ID de cadena y los endpoints de mainnet de la página **Conectando a Mainnet** al transaccionar en mainnet.
+:::caution Todavía no disponible
+Pagar las comisiones en un token no nativo **no** funciona hoy en mainnet (**`qorechain-vladi`**, versión de nodo **v3.2.1**) ni en la testnet (**`qorechain-diana`**).
+
+* Las consultas de abstracción de gas no se sirven en mainnet: `qorechaind query gasabstraction accepted-tokens` imprime su texto de ayuda y la ruta REST `/qorechain/gasabstraction/v1/config` devuelve `Not Implemented`.
+* No hay canales IBC abiertos en ninguna de las dos redes, por lo que no puede existir ningún saldo `ibc/USDC` o `ibc/ATOM` con el que pagar.
+* El mínimo de comisión de la red se comprueba en `uqor`, por lo que una comisión en cualquier otra denominación es rechazada.
+
+Pague cada comisión en `uqor`. Esta página se actualizará cuando se acepte un token en una red en producción.
 :::
+
+---
+
+## Lo que funciona hoy: pagar comisiones en uqor
+
+Cada transacción paga al menos **0.1 uqor por unidad de gas**. Establezca el límite de gas y la comisión a la vez:
+
+```bash
+qorechaind tx bank send mykey qor1recipient... 5000000uqor \
+  --gas 400000 --fees 40000uqor \
+  --chain-id qorechain-vladi --generate-only > tx.json
+```
+
+Después fírmela de forma híbrida y transmítala con `qorechaind tx pqc cosign`, como se describe en [Comandos de transacción](/cli-reference/transaction-commands#hybrid-signing). Consulte [Comisiones y gas](/cli-reference/transaction-commands#fees-and-gas) para ver los límites sugeridos por tipo de transacción.
 
 ---
 
 ## Descripción general
 
-La abstracción de gas elimina el requisito de tener tokens QOR para pagar las comisiones de transacción. Los usuarios que tienen tokens alternativos aceptados (como USDC o ATOM transferidos vía IBC) pueden usar esos tokens directamente como pago de comisión. El protocolo convierte automáticamente el monto de la comisión a su equivalente nativo antes de procesarla.
+La abstracción de gas está diseñada para eliminar el requisito de tener QOR para pagar las comisiones de transacción. Un usuario que tenga un token alternativo aceptado (por ejemplo, una stablecoin transferida vía IBC) pagaría la comisión en ese token, y el protocolo convertiría el monto de la comisión a su equivalente nativo antes de procesarla.
 
 ---
 
-## Tokens aceptados
+## Diseño previsto
 
-Los siguientes tokens son aceptados para el pago de comisiones:
+### Tokens aceptados
 
-| Token              | Denominación | Tasa de conversión | Comisión de ejemplo   |
-| ------------------ | ------------ | ------------------- | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (nativo)         | `--fees 500uqor`     |
-| **USDC** (vía IBC) | `ibc/USDC`   | 1.0                  | `--fees 500ibc/USDC` |
-| **ATOM** (vía IBC) | `ibc/ATOM`   | 10.0                 | `--fees 50ibc/ATOM`  |
+La configuración de génesis del módulo enumera estos tokens y tasas de conversión definidas por el protocolo. Son relaciones de cambio a efectos de comisión, no precios de mercado. Hoy en las redes solo puede existir `uqor` (véase el aviso anterior).
 
-:::note
-Las tasas de conversión reflejan la relación de cambio definida por el protocolo, no los precios de mercado. Una tasa de 10.0 para ATOM significa que 1 unidad de ibc/ATOM equivale a 10 unidades de uqor a efectos de comisión.
-:::
+| Token              | Denominación | Tasa de conversión |
+| ------------------ | ------------ | ------------------- |
+| **QOR**            | `uqor`       | 1.0 (nativo)         |
+| **USDC** (vía IBC) | `ibc/USDC`   | 1.0                  |
+| **ATOM** (vía IBC) | `ibc/ATOM`   | 10.0                 |
 
----
+### Cómo está pensado que funcione
 
-## Cómo funciona
+El `GasAbstractionDecorator` de QoreChain se sitúa en el pipeline de procesamiento de transacciones. Para una transacción cuya comisión está en una denominación no nativa:
 
-El `GasAbstractionDecorator` de QoreChain está integrado en el pipeline de procesamiento de transacciones. Cuando una transacción incluye comisiones en una denominación no nativa, ocurre lo siguiente:
-
-1. **Inspección de la comisión** — El decorador verifica la denominación de la comisión especificada en la transacción.
-2. **Búsqueda de la tasa** — Si la denominación está en la lista de tokens aceptados, el protocolo busca la tasa de conversión correspondiente.
-3. **Conversión** — El monto de la comisión se convierte a su equivalente nativo en uqor usando la tasa de conversión.
-4. **Procesamiento estándar** — La comisión convertida se pasa al manejador estándar `DeductFee` para su deducción de la cuenta del remitente. La conversión es transparente para el resto del pipeline de transacciones. Todo el procesamiento posterior de la comisión (distribución a validadores, quema, asignación a la tesorería, recompensas de stakers y recompensas de light-node) opera sobre el equivalente nativo en uqor.
+1. **Inspección de la comisión** — El decorador lee la denominación de la comisión.
+2. **Búsqueda de la tasa** — Si la denominación está en la lista de tokens aceptados, se busca la tasa de conversión correspondiente.
+3. **Conversión** — La comisión se convierte a su equivalente nativo en `uqor`.
+4. **Procesamiento estándar** — La comisión convertida pasa por el manejador estándar de deducción de comisiones, de modo que el procesamiento posterior de la comisión (distribución a validadores, quema, tesorería, participaciones de stakers y de light nodes) opera sobre el equivalente nativo.
 
 ---
 
-## Ejemplos de uso
+## Consultar la configuración
 
-### Pagar comisiones en USDC
-
-Envíe una transferencia de tokens con las comisiones pagadas en USDC:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 500ibc/USDC
-```
-
-Dado que USDC tiene una tasa de conversión de 1.0, 500 ibc/USDC equivale a 500 uqor.
-
-### Pagar comisiones en ATOM
-
-Envíe una transferencia de tokens con las comisiones pagadas en ATOM:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 50ibc/ATOM
-```
-
-Dado que ATOM tiene una tasa de conversión de 10.0, 50 ibc/ATOM equivale a 500 uqor.
-
----
-
-## Consultar tokens aceptados
-
-Recupere la lista de tokens actualmente aceptados para la abstracción de gas, junto con sus tasas de conversión:
-
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-**Salida de ejemplo:**
-
-```yaml
-accepted_tokens:
-- denom: uqor
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/USDC
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/ATOM
-  conversion_rate: "10.000000000000000000"
-```
-
----
-
-## Acceso JSON-RPC
-
-Para aplicaciones que se integran vía JSON-RPC, consulte la configuración de abstracción de gas:
-
-```
-qor_getGasAbstractionConfig
-```
-
-**Solicitud:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "qor_getGasAbstractionConfig",
-  "params": [],
-  "id": 1
-}
-```
-
-**Respuesta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "accepted_tokens": [
-      { "denom": "uqor", "conversion_rate": "1.0" },
-      { "denom": "ibc/USDC", "conversion_rate": "1.0" },
-      { "denom": "ibc/ATOM", "conversion_rate": "10.0" }
-    ]
-  }
-}
-```
-
----
-
-:::tip
-
-* La abstracción de gas es ideal para usuarios que llegan desde otros ecosistemas y que aún no tienen QOR.
-* Las tasas de conversión se establecen mediante gobernanza y pueden actualizarse a través de propuestas de cambio de parámetros.
-* Si posee varios tokens aceptados, cualquiera de ellos puede usarse para pagar comisiones en cualquier tipo de transacción.
-* El token real especificado en `--fees` es el que se deduce de su cuenta. La conversión solo se usa para validar que la comisión cumple con el requisito mínimo.
-
-:::
+Mainnet todavía no sirve las consultas de abstracción de gas, y el método JSON-RPC `qor_getGasAbstractionConfig` no se sirve en ningún endpoint público (consulte [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace)). Actualmente no hay una forma pública de leer una lista de tokens aceptados en producción.

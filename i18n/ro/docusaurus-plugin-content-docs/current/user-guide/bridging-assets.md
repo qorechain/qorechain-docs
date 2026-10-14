@@ -7,166 +7,136 @@ sidebar_position: 5
 
 # Punți pentru active
 
-Acest ghid descrie cum să muți active între QoreChain și alte rețele blockchain. Stratul de interoperabilitate al QoreChain cuprinde **37 de configurații QCB (QoreChain Bridge)** (inclusiv un loopback QoreChain) pentru rețele eterogene, plus **8 canale IBC** pentru lanțurile din ecosistemul Cosmos.
+Acest ghid descrie cum este proiectată mutarea activelor între QoreChain și alte rețele blockchain. Stratul de interoperabilitate al QoreChain este construit în jurul a **37 de configurații de lanț** (36 de lanțuri externe plus Injective, accesat prin IBC) și până la **8 contrapărți IBC** pentru lanțurile din ecosistemul Cosmos.
 
-:::caution
-Puntea cross-chain se află în prezent într-o etapă de **testnet / pre-producție**. Disponibilitatea conexiunilor, activele suportate și parametrii de finalitate pot fi modificați și nu ar trebui tratați ca fiind pregătiți pentru producție. Validează toate transferurile pe **`qorechain-diana`** înainte de a te baza pe ele.
+:::caution Nu este activ pe nicio rețea
+Modulul de punte este implementat pe mainnet și testnet, dar **nicio rută de punte nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără niciun contract de punte setat, nu este înregistrat niciun validator de punte, nu a fost creată vreodată nicio operațiune de punte și nu există canale sau clienți IBC. Tot ce urmează descrie designul intenționat. Nu trimite active așteptând să fie transferate prin punte. Vezi [Arhitectura punții](/architecture/bridge-architecture) pentru tabelul stării curente.
 :::
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ de la 7 iunie 2026, rulând versiunea de lanț **v3.1.97** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** acolo unde suportul pentru punte a fost activat.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) rulează versiunea de lanț **v3.2.1**. Înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** după ce o rută este activată.
 :::
 
 ---
 
 ## Prezentare generală a conexiunilor
 
-QoreChain oferă două protocoale de punte:
+QoreChain este proiectat să ofere două protocoale de punte:
 
-| Protocol                                 | Conexiuni          | Caz de utilizare                                                                 |
-| ---------------------------------------- | ------------------ | ------------------------------------------------------------------------ |
-| **IBC** (Inter-Blockchain Communication) | 8 canale           | Interoperabilitate nativă cu lanțuri compatibile IBC                          |
-| **QCB** (QoreChain Bridge)               | 37 de configurații | Transferuri cross-chain cu rețele non-IBC prin atestări securizate PQC |
+| Protocol                                 | Conexiuni                          | Caz de utilizare                                                                 |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| **IBC** (Inter-Blockchain Communication) | până la 8 canale (niciunul deschis) | Interoperabilitate nativă cu lanțuri compatibile IBC                          |
+| **QCB** (QoreChain Bridge)               | 37 de configurații (toate pending) | Transferuri cross-chain cu rețele non-IBC prin atestări securizate PQC |
 
-O enumerare completă a fiecărei configurații QCB și a fiecărui canal IBC se găsește pe pagina **Arhitectura punții**. Acest ghid se concentrează pe utilizarea zilnică a punților.
+O enumerare completă a fiecărei configurații de lanț se găsește pe pagina **Arhitectura punții**. Acest ghid se concentrează pe modul în care este proiectat să funcționeze un transfer prin punte.
 
 ---
 
-## Canale IBC
+## IBC
 
-Următoarele lanțuri compatibile IBC au stabilit canale cu QoreChain:
-
-| Lanț                 | Canal       | Stare  |
-| -------------------- | ----------- | ------ |
-| Cosmos Hub           | `channel-0` | Activ  |
-| Osmosis              | `channel-1` | Activ  |
-| Noble                | `channel-2` | Activ  |
-| Celestia             | `channel-3` | Activ  |
-| Stride               | `channel-4` | Activ  |
-| Akash                | `channel-5` | Activ  |
-| Babylon              | `channel-6` | Activ  |
-| QoreChain (loopback) | `channel-7` | Activ  |
-
-Transferurile IBC folosesc modulul standard `ibc-transfer`:
-
-```bash
-qorechaind tx ibc-transfer transfer transfer <channel> <recipient> <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+IBC face parte din design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), dar **nu există încă niciun canal sau client IBC pe nicio rețea**, așa că nu există nimic prin care să se poată transfera. Această pagină va lista canalele după ce vor fi deschise.
 
 ---
 
 ## Endpoint-uri ale punții QCB
 
-Puntea QoreChain se conectează la lanțuri externe care acoperă mai multe tipuri de ecosisteme. O selecție reprezentativă a rețelelor suportate:
+Puntea QoreChain este proiectată să se conecteze la lanțuri externe care acoperă mai multe tipuri de ecosisteme. O selecție reprezentativă a conexiunilor planificate (toate sunt `pending` astăzi):
 
-| Lanț      | Tip de lanț | Active suportate |
-| --------- | ---------- | ---------------- |
-| Ethereum  | EVM        | ETH, USDC, WBTC  |
-| BSC       | EVM        | BNB, USDC        |
-| Solana    | Solana     | SOL, USDC        |
-| Avalanche | EVM        | AVAX, USDC       |
-| Polygon   | EVM        | MATIC, USDC      |
-| Arbitrum  | EVM        | ETH, ARB, USDC   |
-| TON       | TON        | TON              |
-| Sui       | Sui Move   | SUI              |
-| Optimism  | EVM        | ETH, USDC, OP    |
-| Base      | EVM        | ETH, USDC        |
-| Aptos     | Aptos      | APT, USDC        |
-| Bitcoin   | Bitcoin    | BTC              |
-| NEAR      | NEAR       | NEAR, USDC       |
-| Cardano   | Cardano    | ADA              |
-| Polkadot  | Polkadot   | DOT              |
-| Tezos     | Tezos      | XTZ              |
-| Tron      | Tron       | TRX, USDT        |
+| Lanț      | Tip de lanț |
+| --------- | ---------- |
+| Ethereum  | EVM        |
+| BSC       | EVM        |
+| Solana    | Solana     |
+| Avalanche | EVM        |
+| Polygon   | EVM        |
+| Arbitrum  | EVM        |
+| TON       | TON        |
+| Sui       | Sui Move   |
+| Optimism  | EVM        |
+| Base      | EVM        |
+| Aptos     | Aptos      |
+| Bitcoin   | Bitcoin    |
+| NEAR      | NEAR       |
+| Cardano   | Cardano    |
+| Polkadot  | Polkadot   |
+| Tezos     | Tezos      |
+| Tron      | Tron       |
 
-Consultă pagina **Arhitectura punții** pentru lista completă a configurațiilor QCB și stadiul lor actual de implementare.
+Nu este publicată nicio listă de active: configurațiile de lanț nu au încă un registru de active. Consultă pagina **Arhitectura punții** pentru lista completă a configurațiilor de lanț.
 
 ---
 
 ## Fluxul de depunere (de la un lanț extern către QoreChain)
 
-Depunerea activelor de la un lanț extern în QoreChain urmează această secvență:
+Secvența proiectată pentru o depunere de la un lanț extern în QoreChain:
 
 1. **Blocare** — Blochezi tokenurile pe lanțul extern trimițându-le către contractul sau adresa punții QCB.
 2. **Atestare** — Validatorii punții observă tranzacția de blocare și produc atestări semnate PQC.
 3. **Prag** — Odată ce sunt colectate **7 din 10** atestări ale validatorilor, puntea finalizează depunerea.
 4. **Emitere** — Tokenurile înfășurate echivalente sunt emise pe QoreChain și creditate în adresa ta `qor1...`.
 
-**Comandă CLI:**
-
-```bash
-qorechaind tx bridge deposit \
-  --chain ethereum \
-  --amount 1000000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+Nu există nicio comandă rulată de utilizator pentru „a începe o depunere”: blochezi pe lanțul extern, iar atestările validatorilor punții creditează contul tău. (Comanda `qorechaind tx bridge deposit` a lanțului creditează o depunere deja atestată și necesită semnăturile validatorilor punții; nu este modalitatea prin care un utilizator începe o depunere.)
 
 ---
 
 ## Fluxul de retragere (de la QoreChain către un lanț extern)
 
-Retragerea activelor de la QoreChain către un lanț extern:
+Secvența proiectată pentru o retragere de la QoreChain către un lanț extern:
 
 1. **Ardere** — Arzi tokenurile înfășurate pe QoreChain.
 2. **Atestare** — Validatorii punții observă arderea și produc atestări semnate PQC.
 3. **Prag** — Odată ce sunt colectate **7 din 10** atestări, retragerea este finalizată.
 4. **Deblocare** — Tokenurile originale sunt eliberate pe lanțul extern către adresa de destinație specificată.
 
-**Comandă CLI:**
+**Comandă CLI** (blocată astăzi: niciun lanț nu este activ, deci tranzacția ar fi refuzată):
 
 ```bash
-qorechaind tx bridge withdraw \
-  --chain ethereum \
-  --amount 1000000 \
-  --to 0xYourEthereumAddress \
+# 1. Build the unsigned transaction
+qorechaind tx bridge withdraw [destination-chain] [destination-address] [asset] [amount] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 300000 --fees 30000uqor \
+  --generate-only > withdraw.json
+
+# 2. Attach the post-quantum co-signature and broadcast
+qorechaind tx pqc cosign withdraw.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
+
+Fiecare tranzacție pe lane-ul nativ necesită co-semnătura post-cuantică hibridă și o taxă de cel puțin 0.1 uqor pe unitate de gaz; vezi [Prima tranzacție](/getting-started/first-transaction).
 
 ---
 
 ## Modelul de securitate
 
-Puntea QoreChain este protejată prin mai multe straturi de apărare:
+Puntea QoreChain este proiectată să fie protejată prin mai multe straturi de apărare:
 
 | Mecanism                     | Descriere                                                                                                                                           |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Multisig PQC 7-din-10**    | Fiecare operațiune de punte necesită atestări de la cel puțin 7 din 10 validatori ai punții, fiecare folosind semnături criptografice post-cuantice.  |
-| **Perioadă de contestare de 24 de ore** | Retragerile care depășesc un prag configurabil intră într-o fereastră de contestare de 24 de ore, în care validatorii sau observatorii pot semnala tranzacții frauduloase. |
+| **Perioadă de contestare de 24 de ore** | Transferurile care depășesc pragul pentru transferuri mari (100,000 QOR) intră într-o fereastră de contestare de 24 de ore, în care validatorii sau observatorii pot semnala tranzacții frauduloase. |
 | **Întrerupătoare automate**  | Limitatoare automate de rată opresc operațiunile punții dacă sunt detectate volume anormale sau tipare suspecte. Operațiunile punții sunt reluate după o verificare manuală. |
 
 ---
 
 ## Interogarea stării punții
 
-Verifică starea unei operațiuni de punte în așteptare:
+Citește starea punții:
 
 ```bash
-qorechaind query bridge pending-deposits --address <your_qor_address>
+qorechaind query bridge config
+qorechaind query bridge chains
+qorechaind query bridge chain ethereum
+qorechaind query bridge validators
+qorechaind query bridge operations
+qorechaind query bridge operation [id]
 ```
 
-```bash
-qorechaind query bridge pending-withdrawals --address <your_qor_address>
-```
-
-Listează toate conexiunile de punte active:
-
-```bash
-qorechaind query bridge connections
-```
+Aceleași date sunt disponibile prin REST sub `/qorechain/bridge/v1/` (vezi [Arhitectura punții](/architecture/bridge-architecture#rest-api-endpoints)).
 
 ---
 
 ## Sfaturi
 
-* Depunerile prin punte se finalizează de obicei în câteva minute, odată ce cele 7-din-10 atestări necesare sunt adunate.
-* Retragerile mari declanșează automat perioada de contestare de 24 de ore. Planifică din timp transferurile sensibile la timp.
 * Verifică întotdeauna ca formatul adresei de destinație să corespundă lanțului țintă (de ex., `0x...` pentru lanțurile EVM, base58 pentru Solana).
-* Transferurile IBC sunt în general mai rapide decât cele prin QCB, deoarece folosesc comunicare nativă la nivel de protocol.
+* Transferurile mari (peste 100,000 QOR) sunt proiectate să declanșeze automat perioada de contestare de 24 de ore.
 * Comisioanele punții sunt arse prin canalul de ardere `bridge_fee` (vezi [Operațiuni cu tokenul](/user-guide/token-operations)).

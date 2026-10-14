@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-The per-preset values below match the shipped **`@qorechain/rdk`** profile defaults, which mirror the network's published profile table. They can still evolve as the RDK matures — query the live module parameters with `qorechaind query rdk config` (or `RdkClient.params()` from the SDK) for the authoritative configuration, and validate on the **`qorechain-diana`** testnet before mainnet.
+The per-preset values below match the shipped **`@qorechain/rdk`** profile defaults, which mirror the network's published profile table. No rollup has been created on either network yet. Query the live module parameters with `qorechaind query rdk config` (or `RdkClient.params()` from the SDK, where the RDK REST routes are served — not on mainnet today) for the authoritative configuration, and validate on the **`qorechain-diana`** testnet before mainnet.
 :::
 
 ---
@@ -38,7 +38,7 @@ A few constraints follow from the [settlement → proof matrix](/rollups/overvie
 As of RDK v0.4.2, the Wasm VM option (the runtime that executes CosmWasm contracts) is named **`native`** — QoreChain Native. `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire, so the chain, explorer, and Dashboard are unchanged.
 
 :::note
-Per-preset configuration was live-verified on chain version **v3.1.74**, where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
+Per-preset configuration was verified against the chain's profile table as of chain version **v3.2.0** (mainnet runs v3.2.1), where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
 :::
 
 Treat the four domain presets as sensible starting points and the **`custom`** profile as the fully open option. The precise bundled parameters can change between releases — query `rdk config` (below) for the authoritative values, then start from the closest preset and refine.
@@ -47,21 +47,20 @@ The [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-project-w
 
 ---
 
-## Getting a recommendation: `suggest-profile`
+## What a preset carries on-chain {#what-a-preset-carries}
 
-If you are unsure which preset fits, the `suggest-profile` query takes a plain-language description of your use case and returns a recommended profile.
+Some details are easy to assume and are worth knowing before you pick a profile:
 
-```bash
-qorechaind query rdk suggest-profile [use-case]
-```
+* **`defi` has no verifying key.** ZK batches need one, and a rollup created through `create-rollup` does not carry it, so ZK settlement cannot finalise end to end today (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
+* **`nft` and `custom`** settle optimistically with a 1,000 QOR challenge bond and a challenge window of 100,800 blocks (the default 604,800 "seconds" converted at a fixed 6 seconds per block; about 3.7 days at mainnet's current ≈3.2 s blocks).
+* **`gaming` and `enterprise`** use `based` sequencing, which today means the rollup's creator submits batches.
+* **Block time and transaction limits** (for example `defi` 500 ms, `gaming` 200 ms, `nft` 2,000 ms, `enterprise` and `custom` 1,000 ms) are stored in the on-chain record. They describe the rollup's own chain and are not enforced by the host chain.
 
-**Example:**
+---
 
-```bash
-qorechaind query rdk suggest-profile "a lending protocol with predictable fees"
-```
+## Choosing a profile {#getting-a-recommendation}
 
-The suggestion is a helpful starting point — review the recommendation against your specific requirements (settlement guarantees, sequencer trust model, data availability needs, and VM) before committing to a configuration.
+The `suggest-profile` query and the RDK's `suggestProfile()` helper are meant to recommend a preset from a plain-language description. They rely on the `qor_suggestRollupProfile` JSON-RPC method, which the public endpoints do not serve, so `suggestProfile()` currently always returns `defi` as a **fallback**, and `qorechaind query rdk suggest-profile` only prints a pointer to that RPC. Pick a profile from the table above instead, and review it against your requirements (settlement guarantees, sequencer trust model, data availability needs, and VM).
 
 ---
 

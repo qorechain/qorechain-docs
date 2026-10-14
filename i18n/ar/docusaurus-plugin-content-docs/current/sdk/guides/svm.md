@@ -17,13 +17,24 @@ sidebar_position: 2
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution إرسال معاملات SVM معطَّل
+مسار تنفيذ SVM معطَّل على مستوى الشبكة بأكملها لإرسال المعاملات
+(`code 11, "SVM module is disabled"`)، ونقاط نهاية SVM RPC العامة للقراءة فقط.
+تعمل عمليات القراءة (`getBalance` و`getAccountInfo` و`getSlot` و
+`getSignaturesForAddress` و`getMinimumBalanceForRentExemption` و
+`getLatestBlockhash`). لا تبنِ تدفق تحويل أو نشر برامج على SVM بعد: فمساعدات
+البناء والتوقيع والإرسال أدناه هي واجهة مكتبة العميل ولا يمكنها اليوم إدراج
+معاملة على الشبكات العامة. انظر
+[تطوير SVM](/developer-guide/svm-development).
+:::
+
 ## إنشاء عميل
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -46,13 +57,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## تحويل SOL
 
-ابنِ تحويلًا غير موقّع، ثمّ أرسله (يتطلّب الإرسال عقدة يمكن الوصول إليها
-وحسابًا مموَّلًا):
+ابنِ تحويلًا غير موقّع (دون اتصال). يُعرض الإرسال للاكتمال فحسب، ولا يمكن أن
+ينجح على الشبكات العامة ما دام مسار معاملات SVM معطَّلًا:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

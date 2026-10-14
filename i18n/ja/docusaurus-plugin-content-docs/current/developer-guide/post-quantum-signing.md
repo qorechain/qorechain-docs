@@ -50,22 +50,50 @@ sidebar_position: 8
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc`（インポートは `qorpqc`） | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/`（静的ライブラリ + ヘッダー） | [リポジトリ](https://github.com/qorechain/qorechain-pqc)からビルド | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info 提供状況
-JavaScript、Rust、Python、Go、Java の各バインディングはすべてバージョン **0.1.1** として**公開済み**です — 上記のコマンドで npm、crates.io、PyPI、Go モジュールプロキシ、Maven Central から直接インストールできます。Python ディストリビューションは `qorechain-pqc` としてインストールされますが、**インポート名は `qorpqc`** です。**Java** パッケージは Maven Central に `io.github.qorechain:qorechain-pqc:0.1.1`（Bouncy Castle バックエンド）として公開されています。**C** バインディングは静的ライブラリ + ヘッダーであり、[`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) からご自身でビルドします。
+JavaScript、Rust、Python、Go、Java の各バインディングはすべてバージョン **0.2.1** として**公開済み**です — 上記のコマンドで npm、crates.io、PyPI、Go モジュールプロキシ、Maven Central から直接インストールできます。Python ディストリビューションは `qorechain-pqc` としてインストールされますが、**インポート名は `qorpqc`** です。**Java** パッケージは Maven Central に `io.github.qorechain:qorechain-pqc:0.2.1`（Bouncy Castle バックエンド）として公開されています。バージョン **0.2.0** でバージョン対応の `hybridSignBytes`（後述）が追加され、**0.2.1** でメインネットの v2 への切り替えを示すアップグレード名が修正されました。0.2.1 以降を使用してください。**C** バインディングは静的ライブラリ + ヘッダーであり、[`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) からご自身でビルドします。
 :::
 
-## 決定論的署名（コンセンサスクリティカル） {#deterministic-signing}
+## 決定論的署名（デフォルト） {#deterministic-signing}
 
-バージョン **0.1.1** 以降、`sign()` は **6 つのバインディングすべて**で**決定論的** ML-DSA 変種（FIPS-204 §3.4、署名乱数が 32 バイトのゼロであるもの）を生成します — そしてチェーンが受け入れるのはこの変種のみです。QoreChain のトランザクション検証器は **hedged（ランダム化）ML-DSA 署名を拒否**するため、hedged 署名は暗号学的には検証可能であってもオンチェーンでは失敗します。
+バージョン **0.1.1** 以降（およびそれ以降のすべてのリリース）、`sign()` は **6 つのバインディングすべて**で**決定論的** ML-DSA 変種（FIPS-204 §3.4、署名乱数が 32 バイトのゼロであるもの）を生成します。チェーンは、hedged か決定論的かにかかわらず、有効な FIPS-204 ML-DSA-87 署名をすべて受け入れます。検証手順は両者で同一であり、秘密鍵なしに検証者が両者を区別することはできません。バインディングがデフォルトで決定論的に署名するのは、同じトランザクションが常に同じ署名と同じ tx ハッシュになり、すべてのバインディングが共有テストベクタと一致するようにするためです。
 
 重要な事実:
 
-* **デフォルトを変更しないでください。** 決定論的署名はコンセンサスクリティカルであり、すべてのバインディングがその旨をドキュメントに明記しています。
-* 決定論的な出力は、同じ鍵とメッセージに対して **6 つのバインディングすべてでバイト単位で同一**です — 共有のクロス言語テストベクタによって固定されています。
-* hedged 署名は、チェーン以外のユースケース向けに、各バインディングで**明示的なオプトイン**として引き続き利用できます（例: JavaScript では `{hedged: true}`、Rust では `sign_hedged`、Java では `mldsaSignHedged`、Python では `sign(..., hedged=True)`）— hedged 署名はチェーンでは**受け入れられません**。
-* JavaScript バインディングのバージョン 0.1.0 はデフォルトで hedged 署名を行っていました — 0.1.0 でトランザクションツールを構築した場合は **0.1.1 にアップグレード**してください。旧デフォルトで署名されたトランザクションはオンチェーンで拒否されます。
+* 決定論的な出力は、同じ鍵とメッセージに対して **6 つのバインディングすべてでバイト単位で同一**です。共有のクロス言語テストベクタによって固定されています。
+* hedged 署名は、各バインディングで**明示的なオプトイン**として引き続き利用できます（例: JavaScript では `{hedged: true}`、Rust では `sign_hedged`、Java では `mldsaSignHedged`、Python では `sign(..., hedged=True)`）。hedged 署名も有効な FIPS-204 署名として**チェーンに受け入れられます**。違いは、署名のたびに署名、したがって tx ハッシュが変わることだけです。
+* JavaScript バインディングのバージョン 0.1.0 はデフォルトで hedged 署名を行っていました。それらの署名もオンチェーンで有効です。共有ベクタと一致する再現可能な署名が必要な場合は 0.1.1 にアップグレードしてください。
+
+## 鍵の登録 {#pqc-key-registration}
+
+すべてのアカウントは、ML-DSA-87 公開鍵を**一度だけ、明示的に**登録します。自動登録はありません。後続のハイブリッドトランザクションに埋め込まれた公開鍵（たとえば SDK の `includePqcPublicKey` オプション）は拡張に含まれて運ばれますが、鍵を登録**しません**。登録は、従来型の署名で署名できる唯一の Cosmos レーンのトランザクションであり、新規アカウントが最初の鍵をブートストラップできるようになっています。リリース版の `qorechaind`（公開ソースからビルドしたバイナリは署名できません。[ソースからのビルド](/developer-guide/building-from-source)を参照）、QoreX、または SDK の `ensurePqcRegistered` で実行してください:
+
+```bash
+# 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
+qorechaind tx pqc gen-key mypqc
+
+# 2. Register the public key on your account (classical-signed).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
+
+# 3. Verify.
+qorechaind query pqc account <address>
+```
+
+`--gas` は明示的に設定してください。2,592 バイトの公開鍵はデフォルトの 200,000 ガスを超えることがあり（メインネットでの登録はおよそ 220,000〜350,000 を消費しています）、手数料は少なくとも gas × 0.1 uqor 必要です。そのため `--gas 600000` には `--fees 60000uqor` 以上が必要です。従来の形式 `qorechaind tx pqc register-key <pubkey-hex> hybrid` は Dilithium-5 では同等です。それ以降は、各 Cosmos レーンのトランザクションを `--generate-only` で構築し、`qorechaind tx pqc cosign` で署名します。鍵ファイルはアカウントのポスト量子署名鍵です。読み取れる人は誰でも従来型の鍵と合わせてアカウントの副署名ができてしまうため、ニーモニックと同様にバックアップしてください（ニーモニックから再導出できます。後述）。
+
+登録済みの鍵は、EVM トランザクションを送信するための 2 つの要件のうちの 1 つ目でもあります。2 つ目は開いている [EVM 認可ウィンドウ](/developer-guide/evm-development#evm-window)です。
+
+## `pqc` コード 21（`hybrid_verify_failed`）のトラブルシューティング {#code-21}
+
+コード 21 は、ハイブリッド署名の ML-DSA-87 部分が、アカウントに登録された鍵に対して検証されなかったことを意味します。hedged と決定論的のどちらで署名したかが原因になることは**決してありません**。次の順に確認してください:
+
+1. **sign-bytes のバージョン。** PQC 署名は v1 または v2 の sign-bytes を対象とし、ネットワークは各高さで正確に 1 つの形式だけを検証します。`qorechain-diana` は `v3.1.98` アップグレードで v2 に切り替わり、`qorechain-vladi` は `v3.2.0` アップグレードで切り替わります。それ以降に生まれたチェーンはジェネシスから v2 です。現在の SDK はネットワークごとに形式を選択します。独自に構築した署名器は、どのアップグレードが適用済みかをノードに問い合わせる必要があります（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc) を参照）。
+2. **v2 sign-bytes 内のチェーン ID。** v2 はチェーン ID を束縛するため、`qorechain-diana` 用に作成した署名は `qorechain-vladi` では検証されず、その逆も同様です。
+3. **古い PQC ライブラリ。** 標準化前（FIPS-204 以前）のビルドは、標準準拠の検証器が拒否する署名を生成します。`qorechain-pqc` 0.1.1 以降を使用してください。
+4. **誤った鍵。** 公開鍵はアカウントに登録されたものでなければなりません（`GET /qorechain/pqc/v1/account/{address}`）。別の導出方法で作った鍵（例えばアドレスに束縛された導出ではなく、旧来のブリッジ導出 `shake256(mnemonic)`）は有効に署名しますが一致しません。正規の鍵へ移行するには [鍵のローテーション](#key-rotation) を参照してください。
 
 ## 決定論的な鍵導出と復元 {#key-derivation}
 
@@ -79,10 +107,13 @@ seed = SHAKE-256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic)
 公開済みのすべてのツール（`@qorechain/wallet-adapter`、`@qorechain/sdk`、`@qorechain/chain-bridge` ≥0.1.1）がこの同じ鍵を導出するため、どのツールを使っても 1 つのニーモニックからは 1 つの鍵が生成されます。CLI で鍵を復元するには（ニーモニックは stdin から入力）:
 
 ```bash
-qorechaind tx pqc recover-key mykey qor1youraddress...
+# the mnemonic is read from stdin; keep it out of shell history by redirecting from a file you delete afterwards
+qorechaind tx pqc recover-key mykey qor1youraddress... < mnemonic.txt
 # legacy tooling derivation (shake256(mnemonic) only, unbound to the address):
-qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge
+qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge < mnemonic.txt
 ```
+
+復元された秘密鍵は、`tx pqc cosign` で使用するために、暗号化されていない 16 進数（モード 0600）として `<home>/pqc/mykey.dilithium` に書き込まれます。
 
 ## 鍵ローテーション（同一アルゴリズム内） {#key-rotation}
 
@@ -93,25 +124,27 @@ qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge
 ワンショット CLI（ニーモニックは stdin から入力。旧鍵を復元し、新鍵を導出または生成し、二重署名してブロードキャストします）:
 
 ```bash
-# migrate a legacy-derived key to the canonical derivation:
+# migrate a legacy-derived key to the canonical derivation (mnemonic on stdin):
 qorechaind tx pqc rotate-key --old-derivation bridge --new-derivation adapter \
-  --from mykey --chain-id qorechain-vladi -o json -y
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -o json -y < mnemonic.txt
 
-# rotate to a brand-new random key (compromise recovery):
-qorechaind tx pqc rotate-key --old-derivation adapter --new-random \
-  --from mykey --chain-id qorechain-vladi -o json -y
+# rotate to a brand-new random key (compromise recovery); --new-key-out is required and is written before anything is sent:
+qorechaind tx pqc rotate-key --old-derivation adapter --new-random --new-key-out mykey-new \
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -o json -y < mnemonic.txt
 ```
 
-コード上では、`@qorechain/wallet-adapter`（≥0.1.7）および `@qorechain/sdk`（≥0.7.0）が同じフローを公開しています:
+ローテーションは 2,592 バイトの鍵 2 つと署名 3 つを運ぶため、送金よりもはるかに多くのガスが必要です。明示的な `--gas 600000` と、少なくとも 60,000 uqor の手数料を維持してください。`--new-key-out` なしの `--new-random` は拒否されます（ノードリリース v3.2.1 以降）。これにより、ローテーションによって新しい鍵を失った状態になることはありません。
+
+コード上では、`@qorechain/wallet-adapter`（≥0.1.7）および `@qorechain/sdk`（≥0.7.0）が同じフローを公開しています（同期処理で、メッセージと両方の鍵ペアを返します）:
 
 ```js
 import { rotatePqcKeyMsgFromMnemonic } from "@qorechain/wallet-adapter";
 
 // Builds the dual-signed MsgRotatePQCKey migrating shake256(mnemonic) -> canonical:
-const msg = await rotatePqcKeyMsgFromMnemonic({
-  mnemonic, address: "qor1youraddress...", chainId: "qorechain-vladi",
+const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
+  account: "qor1youraddress...", mnemonic, chainId: "qorechain-vladi",
 });
-// Sign & broadcast with the account's normal hybrid signer (old key cosigns the envelope).
+// Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
 ローテーションが成功すると、新しい鍵での署名は成功し（code 0）、古い鍵は拒否されます（`pqc` code 21）。
@@ -179,9 +212,9 @@ pqc.MLDSA.Verify(pk, msg, sig) // true
 
 **pay-to-pubkey-hash** 登録用ヘルパーです。公開鍵の短い（20〜32 バイトの）SHAKE-256 ハッシュを生成します。パターンは次のとおりです: アカウント状態には `pubkeyHash` のみを保存し、完全な公開鍵はトランザクション内で要求します。これにより、1〜2.5 KB の鍵サイズに関係なく、アカウント状態は小さいまま保たれます。
 
-### `hybridSignBytes(bodyWithoutPqcExt, authInfo)`
+### `hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfo)`
 
-QoreChain のウォレット互換な**ハイブリッド拡張 sign-bytes フレーミング**です。ハイブリッドトランザクションの PQC 側を構成するために ML-DSA-87 (Dilithium-5) で署名すべきバイト列を、正確に生成します。
+QoreChain のウォレット互換な**ハイブリッド拡張 sign-bytes フレーミング**です。ハイブリッドトランザクションの PQC 側を構成するために ML-DSA-87 (Dilithium-5) で署名すべきバイト列を、正確に生成します。形式は 2 つあり、ネットワークは各高さでそのうち正確に 1 つを検証します。**v1** = `BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A`、**v2** = `"qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A` です（`B0` は PQC 拡張を除いたトランザクションボディ、`A` は auth info）。2 つの公開ネットワークはどちらも **v2** です。このライブラリは純粋関数なので、形式は呼び出し側が選択します。ノードに `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` で `v3.2.0`（メインネットのアップグレード名）と `v3.1.98`（テストネットの以前の名前）の**両方**を問い合わせ、どちらかの高さが 0 より大きければ v2 を使用します。`signBytesVersionForApplied` と `signBytesVersionFor(chainId, height)` がこのルールを実装しています（`@qorechain/pqc` 0.2.1 以降を使用してください。0.1.x の 2 引数形式は例外を投げます）。
 
 これは、ウォレットとインテグレーターが cosmos トランザクションパス上で**必須のハイブリッド署名**を生成するために使用する部品です。現行のチェーンバージョンでは、ハイブリッド署名は**デフォルトで必須**です（`hybrid_signature_mode = required`、`allow_classical_fallback = false`）。cosmos パスのすべてのトランザクションは、従来型の secp256k1 署名に加えて Dilithium-5 署名を伴わなければなりません。強制モデルについては[ポスト量子セキュリティ](/architecture/post-quantum-security)を参照してください。
 
@@ -189,8 +222,8 @@ QoreChain のウォレット互換な**ハイブリッド拡張 sign-bytes フ�
 
 このハイブリッド署名を生成する方法は 3 つあります:
 
-* **CLI** — `qorechaind tx pqc cosign` がトランザクションに Dilithium-5 の副署名を添付します（事前に `qorechaind tx pqc gen-key` を実行）。[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
-* **QoreChain SDK** — `buildHybridTx`（`includePqcPublicKey` 付き）が TypeScript/Python/Go/Rust で同等の処理を行います。[SDK アカウントと PQC 署名](/sdk/concepts/accounts-pqc)を参照してください。
+* **CLI** — `qorechaind tx pqc cosign` がトランザクションに Dilithium-5 の副署名を添付してブロードキャストします（事前に `qorechaind tx pqc gen-key` を実行し、鍵を登録しておきます）。リリース版バイナリにのみ含まれています。[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`（sign-bytes の形式が解決されるよう `rest` を渡します）が TypeScript、Python、Go、Rust、Java で同等の処理を行います。先に鍵を登録してください（上記参照）。[SDK アカウントと PQC 署名](/sdk/concepts/accounts-pqc)を参照してください。
 * **`qorechain-pqc` を直接使用** — サポートされている 6 言語のいずれかで SDK 外のツールを構築する場合は、`hybridSignBytes` で sign bytes をフレーミングし、`mldsa.sign` で Dilithium-5 署名を生成してください。
 
 ## オンチェーンフットプリントの最適化

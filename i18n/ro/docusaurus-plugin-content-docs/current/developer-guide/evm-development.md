@@ -10,7 +10,11 @@ sidebar_position: 2
 QoreChain rulează un mediu de execuție complet compatibil cu EVM pe QoreChain EVM Engine, permițându-vă să implementați și să interacționați cu contracte inteligente Solidity folosind uneltele obișnuite. Modulul EVM expune o interfață JSON-RPC pe **portul 8545** (WebSocket pe **8546**) care suportă fluxurile de lucru standard de dezvoltare Ethereum.
 
 :::note
-Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activă din 7 iunie 2026, rulând versiunea de chain **v3.1.97**. Pentru testnet-ul **`qorechain-diana`**, folosiți chain ID EVM **9800**.
+Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activă din 29 iunie 2026, care rulează versiunea de nod **v3.2.1** (regulile de consens din upgrade-ul v3.2.0). Pentru testnet-ul **`qorechain-diana`** (v3.2.2), folosiți chain ID EVM **9800**. Exemplele de cod folosesc `http://localhost:8545` pentru un nod pe care îl rulați singuri; endpointul public de mainnet este `https://evm.qore.host`, iar cel de testnet este `https://evm-testnet.qore.host`.
+:::
+
+:::caution O tranzacție EVM necesită o cheie PQC înregistrată și o fereastră de autorizare deschisă
+Începând cu upgrade-ul v3.2.0 (înălțimea mainnet 2.981.742, înălțimea testnet 5.920.000), lane-ul EVM admite o tranzacție doar de la un cont care are **(1) o cheie post-cuantică ML-DSA-87 înregistrată** și **(2) o fereastră de autorizare EVM deschisă** care mai are loc pentru ea. Semnați cu unelte obișnuite (MetaMask, ethers.js, Hardhat, Foundry), dar fără o cheie înregistrată și o fereastră deschisă, `eth_sendRawTransaction` este respins (codespace `pqc`, codurile 26, 27 sau 28). Citirile, `eth_call` și estimarea de gas nu au nevoie de niciuna. Vedeți [Fereastra de autorizare EVM](#evm-window) mai jos și ghidul pas cu pas din [Prima ta tranzacție](/getting-started/first-transaction#evm-window).
 :::
 
 ---
@@ -21,12 +25,12 @@ Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID E
 | --------------------------- | ------------------------------------------ |
 | URL implicit                | `http://localhost:8545`                    |
 | URL WebSocket                | `ws://localhost:8546`                      |
-| Spații de nume suportate    | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
+| Spații de nume suportate    | `eth_`, `web3_`, `net_`, `txpool_`          |
 | Chain ID (mainnet)          | `9801` (`qorechain-vladi`)                 |
 | Chain ID (testnet)          | `9800` (`qorechain-diana`)                 |
 | Simbol monedă               | `QOR`                                      |
 
-Spațiul de nume `qor_` oferă metode specifice QoreChain. Vezi [Spațiul de nume personalizat](#custom-qor_-namespace) mai jos.
+Citirile specifice QoreChain sunt servite prin REST (`api.qore.host`); spațiul de nume JSON-RPC `qor_` descris [mai jos](#custom-qor_-namespace) **nu este activat** pe endpointurile publice și nici în configurația implicită a nodului.
 
 ---
 
@@ -37,10 +41,12 @@ Adăugați QoreChain ca rețea personalizată în MetaMask:
 | Câmp                | Valoare Mainnet             | Valoare Testnet           |
 | -------------------- | ---------------------------- | -------------------------- |
 | Nume rețea           | QoreChain (qorechain-vladi)  | QoreChain Diana            |
-| URL RPC              | `http://localhost:8545`      | `http://localhost:8545`    |
+| URL RPC              | `https://evm.qore.host`      | `https://evm-testnet.qore.host` |
 | Chain ID             | `9801`                       | `9800`                     |
 | Simbol monedă        | `QOR`                        | `QOR`                      |
-| URL explorator blocuri | *(folosiți exploratorul oficial de mainnet)* | *(lăsați necompletat pentru testnet local)* |
+| URL explorator blocuri | `https://explore.qore.network` | *(opțional)* |
+
+Trimiterea din MetaMask necesită, în plus, o cheie PQC înregistrată și o [fereastră de autorizare EVM](#evm-window) deschisă pe cont.
 
 ---
 
@@ -63,7 +69,7 @@ module.exports = {
 };
 ```
 
-Implementați un contract:
+Implementați un contract (contul care face implementarea are nevoie de o cheie PQC înregistrată și de o [fereastră de autorizare](#evm-window) deschisă; o implementare contează ca o tranzacție EVM în fereastră):
 
 ```bash
 npx hardhat run scripts/deploy.js --network qorechain
@@ -152,40 +158,83 @@ Această conversie este transparentă — când verificați un sold prin `eth_ge
 
 ## Perechi de tokenuri ERC-20
 
-Modulul `x/erc20` oferă înregistrarea automată a **perechilor de tokenuri** între denominările native Cosmos SDK și contractele ERC-20:
+Modulul `x/erc20` oferă **perechi de tokenuri** între denominările native Cosmos SDK și contractele ERC-20:
 
 * Tokenurile native pot fi folosite în cadrul contractelor EVM ca ERC-20
 * Tokenurile ERC-20 implementate pe EVM pot fi convertite în denominări native
 * Conversia este bidirecțională și gestionată la nivel de protocol
 
 ```bash
-# Register a new token pair (governance proposal)
-qorechaind tx erc20 register-coin <denom> --from mykey
+# Register a native ERC-20 contract as a token pair (permissioned: `permissionless_registration` is false)
+qorechaind tx erc20 register-erc20 <contract-addr> --from mykey
 
 # Convert native tokens to ERC-20
-qorechaind tx erc20 convert-coin 1000000uqor --from mykey
+qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40000uqor
 
 # Convert ERC-20 back to native
-qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey
+qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
+
+Acestea sunt tranzacții din lane-ul Cosmos: pe rețelele live necesită și co-semnătura post-cuantică hibridă (construiți cu `--generate-only`, apoi `qorechaind tx pqc cosign`; vedeți [Semnarea post-cuantică](/developer-guide/post-quantum-signing)). Perechile de tokenuri se înregistrează sub o politică cu permisiuni, iar pe mainnet nu există încă nicio pereche.
 
 ---
 
 ## Compatibilitate PQC și EVM
 
-Tranzacțiile EVM folosesc semnături **ECDSA clasice (secp256k1)** pentru compatibilitate completă cu uneltele, portofelele și bibliotecile Ethereum existente. Acest lucru asigură că MetaMask, Hardhat, Foundry, ethers.js și toate uneltele EVM standard funcționează fără modificări.
+Tranzacțiile EVM sunt semnate cu **ECDSA clasic (secp256k1)**, așa că MetaMask, Hardhat, Foundry, ethers.js și alte unelte standard le construiesc și le semnează fără modificări. Ce s-a schimbat în **v3.2.0** este *admiterea*: o tranzacție este acceptată doar dacă expeditorul ei deține o cheie post-cuantică înregistrată și o fereastră de autorizare activă (secțiunea următoare). Înregistrarea unei chei și deschiderea unei ferestre sunt tranzacții din lane-ul Cosmos și necesită semnătura hibridă (ML-DSA-87 + secp256k1).
 
-Pentru securitate post-cuantică în cadrul EVM:
+Pentru securitate post-cuantică în cadrul contractelor:
 
-* Folosiți **precompilatul PQC Verify** (`0x0000...0A01`) pentru a verifica pe chain semnături ML-DSA-87 din Solidity. Vezi [Precompilate EVM](/developer-guide/evm-precompiles).
-* **Mesajele cross-VM** de la EVM către CosmWasm sau SVM pot fi semnate PQC la nivelul tranzacției Cosmos SDK.
-* Conturile pot înregistra opțional chei publice PQC prin `x/pqc` pentru securitate hibridă.
+* **Precompilatul PQC Verify** (`0x0000...0A01`) va verifica pe chain semnături ML-DSA-87 din Solidity odată ce este activat; **nu este încă activ** pe mainnet sau testnet. Vedeți [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+* **Mesajele cross-VM** de la EVM către CosmWasm sau SVM sunt tranzacții din lane-ul Cosmos și poartă semnătura hibridă ca oricare altele; vedeți [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru disponibilitatea lor curentă.
+
+---
+
+## Fereastra de autorizare EVM {#evm-window}
+
+O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție Ethereum (portofele precum MetaMask nu pot atașa o a doua semnătură), așa că ea călătorește *înaintea* ei. Contul deschide o fereastră delimitată cu mesajul din lane-ul Cosmos `MsgOpenEVMWindow`; lane-ul EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. O cheie clasică furată nu poate deschide singură o fereastră, deci poate muta doar ceea ce permite o fereastră deja deschisă.
+
+| Limită      | Interval           | Semnificație |
+| ----------- | ------------------ | ------- |
+| `blocks`    | 1 – 17.280         | Cât timp rămâne deschisă fereastra, numărat în blocuri începând cu blocul care o deschide |
+| `max-txs`   | 1 – 1.000          | Câte tranzacții EVM admite |
+| `max-value` | peste 0, în `uqor` | Ieșirea totală pe care o admite: valoarea transferată **plus** taxa maximă pe care ar putea-o plăti fiecare tranzacție (limita de gas × taxa maximă per gas), convertită în `uqor` și rotunjită în sus |
+
+Limita care se epuizează prima închide fereastra. Toate câmpurile sunt obligatorii; deschiderea unei ferestre o înlocuiește pe cea existentă; o tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare; implementările de contracte contează ca orice altă tranzacție. `blocks` este un număr de blocuri, nu o durată: 17.280 de blocuri înseamnă aproximativ 15 ore pe mainnet (circa 3,2 s per bloc) și aproximativ 5 ore pe testnet (circa 1,0 s per bloc).
+
+**Pași** (ghidul complet este în [Prima ta tranzacție](/getting-started/first-transaction#evm-window)):
+
+1. Înregistrați o singură dată cheia ML-DSA-87 (`tx pqc register-key-v2` sau `register-key`, cu `--gas 600000 --fees 60000uqor`; această tranzacție este scutită de cerința hibridă, astfel încât un cont nou să poată face bootstrap). Vedeți [Semnarea post-cuantică](/developer-guide/post-quantum-signing#pqc-key-registration).
+2. Deschideți o fereastră. Este o tranzacție din lane-ul Cosmos, deci produceți-o nesemnată și co-semnați-o cu cheia ML-DSA (`max-value` acceptă `uqor` sau `qor`; `1000qor` înseamnă 1.000 QOR):
+
+   ```bash
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
+   qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+   ```
+
+3. Verificați ce a rămas: `qorechaind query pqc evm-window <address>` sau `GET /qorechain/pqc/v1/evm_window/{address}` (răspunde `found: false` când nu există nicio fereastră).
+4. Trimiteți tranzacțiile EVM ca de obicei. Deschiderea unei ferestre este o tranzacție din lane-ul Cosmos și avansează secvența contului, care este totodată nonce-ul său EVM, așa că citiți nonce-ul **după** ce fereastra este deschisă și semnați abia atunci.
+
+Închideți o fereastră mai devreme cu `qorechaind tx pqc close-evm-window` (același tipar `--generate-only` și `cosign`), de exemplu dacă bănuiți că cheia clasică este expusă: tot ce mai admitea fereastra este respins începând cu blocul următor.
+
+| Respingere (codespace `pqc`) | Semnificație |
+| ------------------------- | ------- |
+| code 26 | Nu există nicio fereastră deschisă pentru expeditor sau expeditorul nu are o cheie PQC înregistrată |
+| code 27 | Fereastra a expirat sau este epuizată (mesajul arată care limită) |
+| code 28 | Limite invalide la deschiderea unei ferestre sau nicio cheie înregistrată în acel moment |
+
+Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` și `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
 
 ---
 
 ## Spațiul de nume personalizat `qor_` {#custom-qor_-namespace}
 
 QoreChain extinde JSON-RPC cu un spațiu de nume `qor_` pentru interogări specifice chain-ului:
+
+:::warning Încă nu este servit
+Niciun build de nod publicat nu servește încă spațiul de nume `qor_`: `rpc_modules` de pe endpointurile publice listează doar `eth`, `net`, `rpc`, `txpool` și `web3`, iar fiecare metodă de mai jos returnează `-32601` (metodă negăsită) pe mainnet, testnet și pe nodurile rulate de voi cu configurația implicită (`eth`, `net`, `web3`, `txpool`). Vedeți [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace) pentru stare și pentru alternativele REST (de exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC).
+:::
 
 | Metodă                        | Descriere                                                            |
 | ------------------------------ | ---------------------------------------------------------------------- |
@@ -213,6 +262,6 @@ curl -X POST http://localhost:8545 \
 
 ## Pașii următori
 
-* [Precompilate EVM](/developer-guide/evm-precompiles) — Accesați funcțiile PQC, AI și cross-VM din Solidity
-* [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Apelați contracte CosmWasm și SVM din EVM
-* [Abstractizarea contului](/developer-guide/account-abstraction) — Conturi programabile cu chei de sesiune
+* [Precompilate EVM](/developer-guide/evm-precompiles) — Referință pentru interfețele de precompilate rezervate (încă neactive pe rețelele publice)
+* [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Apeluri cross-VM și disponibilitatea lor curentă
+* [Abstractizarea contului](/developer-guide/account-abstraction) — Autentificatoare pentru portofele conectate și reguli de cheltuire (modulul este dezactivat în prezent)

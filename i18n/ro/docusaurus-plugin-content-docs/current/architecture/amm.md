@@ -17,7 +17,11 @@ Pool-urile urmează curbe de prețuri AMM familiare:
 Toate sumele folosesc unitățile native ale QoreChain. Token-ul de staking și de taxe este **QOR**, al cărui denom de bază este **uqor** (1 QOR = 10^6 uqor). Participanții la pool și adresele folosesc prefixul bech32 `qor`.
 
 :::note
-Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tranzacție (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) pentru mediul dumneavoastră — de exemplu `--chain-id qorechain-vladi` pe mainnet.
+Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tranzacție (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) pentru mediul dumneavoastră — de exemplu `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` pe mainnet (pragul minim de taxă al rețelei este 0,1 uqor per unitate de gas). Fiecare comandă `tx amm` este o tranzacție pe lane-ul Cosmos, deci necesită semnătura hibridă post-cuantică: adăugați `--generate-only > tx.json`, apoi rulați `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` (vedeți [First Transaction](/getting-started/first-transaction#send-qor)).
+:::
+
+:::caution Nu există încă pool-uri
+Modulul AMM este activ pe mainnet și pe testnet, dar **nu a fost creat încă niciun pool**, iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
 :::
 
 ## Pool-uri și cote LP
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Suspendarea și reluarea unui pool
 
-Pool-urile pot fi suspendate și reluate de către autoritatea pool-ului (adresa transmisă prin `--from`). Un pool suspendat respinge schimburile și modificările de lichiditate până când este reluat — util pentru răspunsul la incidente sau pentru mentenanță coordonată.
+Pool-urile pot fi suspendate și reluate de către autoritatea de guvernanță. Pe mainnet, aceste două mesaje sunt în prezent dezactivate de întrerupătorul de circuit (circuit breaker). Un pool suspendat respinge schimburile și modificările de lichiditate până când este reluat — util pentru răspunsul la incidente sau pentru mentenanță coordonată.
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## Rezumatul comenzilor
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | Arde token-uri LP și retrage rezerve |
 | `swap-exact-in` | Schimbă o sumă de intrare fixă |
 | `swap-exact-out` | Schimbă către o sumă de ieșire fixă |
-| `pause-pool` | Suspendă un pool (autoritate) |
-| `resume-pool` | Reia un pool suspendat (autoritate) |
+| `pause-pool` | Suspendă un pool (autoritate de guvernanță; dezactivat pe mainnet) |
+| `resume-pool` | Reia un pool suspendat (autoritate de guvernanță; dezactivat pe mainnet) |
 
 **Interogări** (`qorechaind query amm …`):
 

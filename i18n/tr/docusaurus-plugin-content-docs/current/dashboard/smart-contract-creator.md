@@ -9,14 +9,16 @@ sidebar_position: 6
 
 **Akıllı Sözleşme Oluşturucu**, **QCAI** tarafından desteklenerek, sade bir dilde verilen açıklamadan akıllı sözleşmeler üretir. Ne istediğinizi anlatın, hedef blok zincirinizi seçin ve QCAI sözleşmeyi sizin için yazsın. Yapay zeka araçları için **17 blok zinciri** desteklediğinden, geliştirme yaptığınız ekosistemi hedefleyebilirsiniz.
 
-Cüzdanınızı bağlamak, ürettiğiniz sözleşmeleri kaydetmenizi ve yönetmenizi sağlar — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet).
+Bunu **hesap olmadan** deneyebilirsiniz: ilk kez gelen bir ziyaretçi bir ücretsiz üretim hakkı alır ve sözleşmenin tamamını görür. Bir sonraki üretim için, kaydetme, denetleme ve dağıtma ile birlikte ücretsiz bir hesap gerekir; ücretsiz denemeniz kullanıldıktan sonra sayfa **Ücretsiz hesap oluştur** seçeneğini sunar.
+
+Ürettiğiniz sözleşmeleri kaydetmek ve yönetmek için oturum açın — bkz. [Oturum açma](/dashboard/overview#sign-in).
 
 ## Bir sözleşme üretin
 
-1. **Sözleşmenizi tanımlayın.** İstem alanına, sözleşmenin ne yapması gerektiğini yazın — örneğin sabit arzlı bir token, bir NFT koleksiyonu veya bir hak ediş programı. Ne kadar spesifik olursanız, sonuç o kadar iyi olur.
-2. **Blok zincirini seçin.** Desteklenen blok zincirlerinden hedefinizi seçin. Seçiminize ait sözleşme dili ve kategorisi, seçicinin yanında gösterilir.
-3. **Bir sözleşme türü seçin** (isteğe bağlı). Üretimi yönlendirmek için token, NFT veya yönetişim sözleşmesi gibi bir başlangıç şablonu seçin.
-4. **Üretin.** **Generate** öğesini seçin. QCAI sözleşmeyi üretirken bir ilerleme göstergesi durumu gösterir.
+1. **Bir örnekle başlayın veya kendinizinkini tanımlayın.** Sayfa "What would you like to build?" ile açılır. **Or start from an example:** altında **Token**, **NFT collection**, **Locked vault** veya **2-of-3 multisig** öğelerinden birini seçin — her biri eksiksiz bir açıklama doldurur ve uygun bir blok zinciri ile şablon seçer — ya da kendi açıklamanızı **Contract Description** alanına yazın. Ne kadar spesifik olursanız, sonuç o kadar iyi olur.
+2. **Blok zincirini seçin.** **Target Blockchain** öğesini kullanın. Seçiminize ait sözleşme dili ve kategorisi, seçicinin yanında gösterilir.
+3. **Bir sözleşme türü seçin** (isteğe bağlı). **Contract Type**, token, NFT veya yönetişim sözleşmesi gibi bir başlangıç şablonu sunar; yalnızca açıklamanıza güvenmek için bunu **Custom (describe in prompt)** üzerinde bırakın.
+4. **Üretin.** **Generate Smart Contract** öğesini seçin. QCAI sözleşmeyi üretirken bir ilerleme göstergesi durumu gösterir.
 
 ## Sonucu inceleyin
 
@@ -24,9 +26,10 @@ Cüzdanınızı bağlamak, ürettiğiniz sözleşmeleri kaydetmenizi ve yönetme
 
 Buradan şunları yapabilirsiniz:
 
-- Sözleşme kodunu panonuza **Copy** edin (kopyalayın).
-- Sözleşmeyi, seçtiğiniz blok zinciri için doğru biçimde bir dosya olarak **Download** edin (indirin).
-- Sözleşmeyi daha da iyileştirmek için **Edit** edin (düzenleyin).
+- Sözleşme kodunu panonuza **kopyalayın** (**Copy Code**).
+- Sözleşmeyi **PDF olarak dışa aktarın** (**Export PDF**).
+- Sözleşmeyi, seçtiğiniz blok zinciri için doğru biçimde bir dosya olarak **indirin** (**Download File**).
+- Sözleşmeyi daha da iyileştirmek için **düzenleyin** (**Edit Contract**).
 
 ## Sözleşmenizi dağıtın {#deploy}
 
@@ -35,20 +38,20 @@ Buradan şunları yapabilirsiniz:
 Mainnet dağıtımı emanetsizdir (non-custodial): Kontrol Paneli sözleşmenizi derler ve **imzasız** dağıtım verisini döndürür — anahtarlarınızı asla tutmaz ve sizin adınıza asla imza atmaz. Dağıtımı kendi cüzdanınızda imzalayıp yayınlarsınız; ardından Kontrol Paneli ortaya çıkan sözleşmeyi kaydeder.
 
 1. Dağıtmak istediğiniz sözleşmeyi (EVM hedefli bir sözleşme) açın ve **Mainnet** üzerinde **Deploy** öğesini seçin. Bu, ilk mainnet işleminizse [tek seferlik risk onayını](/dashboard/overview#risk-acknowledgement) kabul edin.
-2. Henüz bağlı değilse **MetaMask**'i bağlayın — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet).
+2. Henüz bağlı değilse **MetaMask**'i bağlayın — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet). Zincir v3.2.0'dan itibaren EVM şeridi ayrıca hesabın kayıtlı bir kuantum sonrası anahtara ve QoreX'ten açılan **açık bir EVM yetkilendirme penceresine** sahip olmasını gerektirir (bkz. [MetaMask ile Gönderme](/dashboard/wallet#send-metamask)); biri olmadan zincir dağıtımı reddeder.
 3. Kontrol Paneli sözleşmeyi derler ve imzasız dağıtım işlemini cüzdanınıza iletir.
 4. İşlemi MetaMask'te inceleyin — ağ, gas ve veri — ardından imzalayıp kendiniz yayınlamak için onaylayın.
 5. Dağıtım zincir üzerinde onaylandığında, Kontrol Paneli ortaya çıkan sözleşme adresini kayıtlı sözleşmelerinizin yanına kaydeder.
 
-Mainnet üzerinde şimdilik bu yolla yalnızca **EVM** dağıtımları kullanılabilir; **Wasm** ve **SVM** dağıtımları yalnızca testnet içindir.
+Kontrol Paneli'nden yalnızca **EVM** (Solidity) sözleşmeleri dağıtılabilir. CosmWasm ve Solana programı dağıtımları şu anda her iki ağda da kullanılamamaktadır.
 
 ### Testnet üzerinde — tek tıkla {#deploy-testnet}
 
-Testnet akışı değişmedi: Kontrol Paneli tarafından yönetilen test cüzdanı, dağıtımı sizin için tek tıkla imzalar ve gönderir; böylece mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla hızlıca yineleme yapabilirsiniz. Testnet; EVM, Wasm ve SVM dağıtımlarını destekler.
+Testnet üzerinde, Kontrol Paneli tarafından yönetilen test cüzdanı bir EVM dağıtımını sizin için tek tıkla imzalar ve gönderir; böylece mainnet'e geçmeden önce [Faucet](/dashboard/faucet) tokenlarıyla hızlıca yineleme yapabilirsiniz. Testnet, mainnet ile aynı EVM şeridi kuralını uygular; bu nedenle hesapta kuantum sonrası anahtar veya açık bir EVM penceresi yoksa bir dağıtım yine de reddedilebilir.
 
 ## Paylaşın ve yeniden kullanın
 
-Üretilen her sözleşmenin, açabileceğiniz veya paylaşabileceğiniz kendi sayfası vardır. Size ait olmayan bir sözleşmeyi açarsanız, kendi kopyanızı başlatmak ve oradan devam etmek için onu **fork** edebilirsiniz (çatallayabilirsiniz).
+Üretilen her sözleşmenin kendi sayfası vardır. Sözleşmeler **varsayılan olarak özeldir**: kendinizinkini yalnızca siz açabilirsiniz. Sahibi olarak sözleşme sayfasında bir **Public** / **Private** düğmesi göreceksiniz; bağlantıya sahip herkesin sözleşmeyi açabilmesi (ve fork edebilmesi) için **Public** olarak ayarlayın, geri çekmek için tekrar **Private** yapın. Size ait olmayan herkese açık bir sözleşmeyi açarsanız, kendi kopyanızı başlatmak ve oradan devam etmek için onu **fork** edebilirsiniz (çatallayabilirsiniz).
 
 :::tip Her zaman inceleyin ve test edin
 QCAI tarafından üretilen kod, sağlam bir başlangıç noktasıdır, incelemenin yerine geçmez. Değerli bir şey dağıtmadan önce sözleşmeyi okuyun, [testnet](/getting-started/connecting-to-testnet) üzerinde test edin ve [Contract Auditor](/dashboard/contract-auditor) üzerinden geçirin.

@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChain extinde motorul QoreChain EVM Engine cu **șase contracte precompilate personalizate** care expun funcționalități la nivel de protocol direct în Solidity. Aceste precompilate oferă acces on-chain la criptografie post-cuantică, scoring de risc bazat pe AI, mesagerie cross-VM și parametrii de consens PRISM.
 
-:::note
-Precompilatele sunt disponibile atât pe rețeaua mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026 pe versiunea de chain **v3.1.97**), cât și pe rețeaua testnet **`qorechain-diana`** (ID chain EVM **9800**). Toate exemplele folosesc endpoint-ul JSON-RPC pe **portul 8545**.
+:::warning Încă neactive pe mainnet sau testnet
+Cele șase precompilate QoreChain de mai jos sunt **compilate în nod, dar încă neactivate**, nici pe mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**), nici pe testnet-ul **`qorechain-diana`** (ID chain EVM **9800**). EVM-ul execută doar adresele din parametrul `active_static_precompiles`, iar această listă este goală pe ambele rețele. Până când un upgrade al lanțului le activează, **un apel către aceste adrese reușește și întoarce date goale (`0x`)**; nu face revert și nu întoarce o eroare. Vezi [Starea rețelei](#network-status) înainte de a te baza pe oricare dintre ele.
 :::
+
+## Starea rețelei {#network-status}
+
+| Precompilat | Adresă | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | Neactiv | Neactiv |
+| PQC Key Status | `0x…0A02` | Neactiv | Neactiv |
+| AI Risk Score | `0x…0B01` | Neactiv | Neactiv |
+| AI Anomaly Check | `0x…0B02` | Neactiv | Neactiv |
+| PRISM Consensus Params | `0x…0C01` | Neactiv | Neactiv |
+| CrossVM Bridge | `0x…0901` | Neactiv | Neactiv |
+
+Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM doar după ce este reconstruită cu journaling, verificări de valoare și cu circuit breaker-ul cross-VM. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
+
+Verifică singur lista curentă (goală înseamnă că niciunul nu e activ):
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### Protecție împotriva datelor returnate goale {#guard}
+
+Deoarece o adresă inactivă (sau care nu aparține QoreChain) întoarce succes fără date, nu citi niciodată octeții bruți returnați de un apel de nivel jos fără a-le verifica lungimea. `abi.decode` și apelurile prin interfețe tipate fac revert pe date goale, ceea ce este rezultatul sigur; un apel de nivel jos scris de mână trebuie să verifice explicit acest lucru:
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+Nu trimite valoare către aceste adrese. Nu sunt payable, iar valoarea trimisă către o adresă de precompilat inactivă rămâne acolo, fără nicio posibilitate de recuperare.
 
 ---
 
 ## Harta adreselor precompilatelor
 
+Cifrele de gaz sunt cele pe care nodul le taxează după ce un precompilat este activ (per octet înseamnă per octet de date de intrare ale apelului).
+
 | Precompilat              | Adresă                                      | Gaz de bază      | Descriere                                          |
 | ------------------------ | -------------------------------------------- | --------------- | --------------------------------------------------- |
-| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000          | Apeluri sincrone cross-VM (de la EVM la CosmWasm)   |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/octet | Apeluri sincrone cross-VM (de la EVM la CosmWasm)   |
 | **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
 | **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
 | **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**Cost de gaz:** 25.000 de bază + 8 gaz per octet de date de intrare. Pentru o verificare tipică ML-DSA-87 (2592 + 4627 + octeții mesajului), se estimează aproximativ 80.000-90.000 gaz.
+**Cost de gaz:** 25.000 de bază + 8 gaz per octet de date de intrare. Intrarea este apelul codificat ABI (cheia publică de 2592 octeți, semnătura de 4627 octeți, mesajul, plus offset-urile și padding-ul ABI), deci o verificare tipică ML-DSA-87 costă aproximativ 85.000-90.000 gaz.
 
 ### PQC Key Status — Verificarea înregistrării unui cont
 
@@ -177,13 +212,15 @@ contract RiskGate {
 
 **Niveluri de risc:**
 
-| Nivel    | Valoare | Interval scor (bps) |
-| -------- | ------- | -------------------- |
-| SAFE     | 0       | 0 - 1000              |
-| LOW      | 1       | 1001 - 3000            |
-| MEDIUM   | 2       | 3001 - 6000            |
-| HIGH     | 3       | 6001 - 8500            |
-| CRITICAL | 4       | 8501 - 10000           |
+| Nivel    | Valoare |
+| -------- | ------- |
+| SAFE     | 0       |
+| LOW      | 1       |
+| MEDIUM   | 2       |
+| HIGH     | 3       |
+| CRITICAL | 4       |
+
+Nivelul provine din eticheta de severitate a motorului AI pentru tranzacție; scorul este returnat în puncte de bază (0 - 10000). Nu există o corespondență fixă între intervalele de scor și niveluri, așa că condiționează pe `level`, nu pe praguri de scor.
 
 **Cost de gaz:** 50.000, fix.
 
@@ -227,29 +264,19 @@ contract ConsensusReader {
 
 **Cost de gaz:** 1.500, fix.
 
+:::note
+În build-ul curent al nodului, `rlConsensusParams` returnează valori implicite fixe, de umplutură (placeholder), nu valori live ajustate de PRISM (de exemplu, nu raportează timpul de bloc măsurat, care este de aproximativ 3,2 s pe mainnet și de aproximativ 1,0 s pe testnet). Conectarea la parametrii de consens live face parte din munca de activare.
+:::
+
 ### CrossVM Bridge — Apelarea CosmWasm din EVM
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+Precompilatul CrossVM bridge **nu** va fi activat în forma sa actuală. Este reconstruit astfel încât un revert în contractul apelant să anuleze și partea CosmWasm, transferurile de valoare să fie respinse, reintrarea EVM-la-EVM să fie refuzată și circuit breaker-ul cross-VM să se aplice. Până atunci nu există o cale sincronă de la EVM la CosmWasm; vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru calea de mesaj `MsgCrossVMCall`, care este ea însăși oprită pe mainnet în prezent.
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+Nodul decodează calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 octeți, apoi argumentele codificate ABI). Utilizarea documentată este de la EVM la CosmWasm; ABI-ul se poate schimba odată cu reconstrucția.
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**Cost de gaz:** 50.000 de bază + costul de execuție al contractului țintă. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
+**Cost de gaz:** 50.000 de bază + 4 gaz per octet de date de intrare, plus costul de execuție al contractului țintă. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
 
 ---
 
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 Instalează-le în proiectul tău Hardhat sau Foundry:
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) — Documentația completă a mesageriei cross-VM
 * [Dezvoltare EVM](/developer-guide/evm-development) — Implementarea contractelor Solidity
-* [Abstractizarea contului](/developer-guide/account-abstraction) — Conturi programabile cu chei de sesiune
+* [Abstractizarea contului](/developer-guide/account-abstraction) — Autentificatori pentru portofele conectate și reguli de cheltuire (modulul este dezactivat în prezent)

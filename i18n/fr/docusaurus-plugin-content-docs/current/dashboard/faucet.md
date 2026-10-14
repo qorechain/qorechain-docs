@@ -15,7 +15,7 @@ Le QOR de testnet n'a **aucune valeur réelle**. Le Faucet ne touche jamais au m
 
 ## Demander des jetons de test
 
-1. Connectez-vous au **testnet** et ouvrez le **Faucet**.
+1. Connectez-vous, basculez le Dashboard sur le **testnet** et ouvrez le **Faucet**.
 2. Saisissez l'adresse à approvisionner (`qor1...`). Si votre portefeuille est connecté, sélectionnez **Utiliser mon adresse** pour la remplir automatiquement. Le formulaire vérifie que l'adresse est valide avant de vous laisser continuer.
 3. Sélectionnez le bouton de demande. L'approvisionnement est traité en quelques secondes.
 

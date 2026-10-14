@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Gezgin
 
-**Gezgin**, Panel'in zincire açılan penceresidir. Blokları, işlemleri, adresleri ve doğrulayıcıları aramak ve ağ etkinliğini gerçek zamanlı izlemek için kullanın. Gezgin salt okunurdur — göz atmak için cüzdan bağlantısı gerekmez.
+**Gezgin**, Panel'in zincire açılan penceresidir. Blokları, işlemleri, adresleri ve doğrulayıcıları aramak ve ağ etkinliğini gerçek zamanlı izlemek için kullanın. Gezgin salt okunurdur — göz atmak için cüzdan bağlantısı gerekmez. Panel içinde mainnet'i görüntülemek için oturum açmış olmak gerekir; aynı Gezgin, herhangi bir hesap olmadan da [explore.qore.network](https://explore.qore.network) adresinde kullanılabilir.
 
 ## Genel bakış sayfası
 
@@ -47,3 +47,11 @@ Sayfa; adresi taranabilir bir QR koduyla, QOR bakiyesini, işlem sayısını ve 
 ## Doğrulayıcılar {#validators}
 
 Doğrulayıcılar görünümü, ağın doğrulayıcılarını; aktif doğrulayıcı sayısı, toplam bağlı QOR ve mutabakat sağlığı için özet kartlarıyla listeler. Tablo, her doğrulayıcının sırasını, takma adını, oy gücünü, komisyonunu ve durumunu (örneğin aktif veya hapsedilmiş) ve ayrıca bir kuantum sonrası göstergeyi gösterir. Bir arama kutusu, doğrulayıcı adına veya adresine göre filtreler. Bir doğrulayıcıya yetki vermek için bkz. [Stake Etme ve Doğrulayıcılar](/dashboard/staking-and-validators).
+
+:::note Panel'in kendi doğrulayıcı listesi diğer ağın kümesini gösterebilir
+Ağ başına yetkili doğrulayıcı listesi için [explore.qore.network](https://explore.qore.network) adresini kullanın.
+:::
+
+## Bağımsız gezgin {#standalone-explorer}
+
+Aynı Gezgin, Panel olmadan [explore.qore.network](https://explore.qore.network) adresinde sunulur: anonim, yalnızca gezgin, `/tx/…`, `/block/…`, `/address/…` ve `/validators` gibi kısa bağlantılarla. Varsayılan olarak mainnet üzerinde açılır.

@@ -11,7 +11,7 @@ Domande generali su QoreChain, con risposte tratte dalla documentazione. Ogni ri
 
 ### La mainnet è attiva?
 
-Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 7 giugno 2026. Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
+Sì. La mainnet di QoreChain (chain `qorechain-vladi`, EVM chain ID 9801) è attiva dal 29 giugno 2026 ed esegue la release v3.2.1. Vedi [Reti](/appendix/networks) e [Connessione alla mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quali sono i chain ID e gli EVM chain ID?
 
@@ -19,19 +19,19 @@ La mainnet è la chain Cosmos `qorechain-vladi` con EVM chain ID **9801** (esade
 
 ### Come vengono distribuite le commissioni di transazione?
 
-Le commissioni raccolte sono suddivise **37% ai validatori, 30% bruciato, 20% alla treasury della comunità, 10% agli staker e 3% ai light node**. Vedi [Tokenomics](/architecture/tokenomics).
+Le commissioni raccolte sono suddivise **37% ai validatori, 30% bruciato, 20% alla treasury della comunità, 10% agli staker e 3% ai light node**. La ripartizione si applica a tutto ciò che si trova nel fee collector, compresa l'emissione di epoca. Vedi [Tokenomics](/architecture/tokenomics#fee-distribution).
 
 ### Cos'è PRISM?
 
-PRISM è il livello di ottimizzazione basato sul reinforcement learning incorporato nel Consensus Engine di QoreChain. Osserva le metriche di rete e propone aggiustamenti deterministici dei parametri di consenso sotto controlli di sicurezza con circuit breaker. Vedi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
+PRISM è il livello di ottimizzazione basato sul reinforcement learning incorporato nel Consensus Engine di QoreChain. Osserva le metriche di rete e propone aggiustamenti deterministici dei parametri di consenso sotto controlli di sicurezza con circuit breaker. Oggi funziona in modalità di osservazione: non è caricata alcuna policy addestrata, quindi non modifica alcun parametro. Vedi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
 ### Il bridge cross-chain è attivo?
 
-Il bridge cross-chain è attualmente in testnet e in attesa — non è ancora un sistema di produzione. È progettato attorno a 37 configurazioni di chain QCB e 8 canali IBC; considera questi obiettivi come intento di progettazione piuttosto che garanzie attive sulla mainnet. Vedi [Architettura del bridge](/architecture/bridge-architecture).
+No. Il modulo bridge è distribuito, ma tutte le 37 configurazioni di chain sono in sospeso, non è registrato alcun validatore del bridge e su nessuna delle due reti esistono canali IBC. È progettato attorno a 37 configurazioni di chain e fino a 8 controparti IBC; considera questi obiettivi come intento di progettazione. Vedi [Architettura del bridge](/architecture/bridge-architecture).
 
 ### Come collego un wallet?
 
-Configura un wallet e aggiungi una rete QoreChain usando gli EVM chain ID (9801 mainnet, 9800 testnet). Vedi [Configurazione del wallet](/getting-started/wallet-setup).
+Usa il wallet ufficiale [QoreX](/qorex/overview), oppure aggiungi una rete QoreChain a un wallet EVM usando gli EVM chain ID (9801 mainnet, 9800 testnet). Vedi [Configurazione del wallet](/getting-started/wallet-setup).
 
 ### Come ottengo i token di testnet?
 
@@ -43,7 +43,23 @@ Per un nodo completo, vedi [Esecuzione di un nodo](/developer-guide/running-a-no
 
 ### Quale schema di firma usa QoreChain?
 
-QoreChain usa uno schema ibrido post-quantistico che combina il classico **secp256k1 (ECDSA)** con il post-quantistico **ML-DSA-87 (Dilithium-5)**. Questo schema ibrido è richiesto per impostazione predefinita sul percorso delle transazioni Cosmos, con la modalità di applicazione controllata dalla governance. Vedi [Sicurezza post-quantistica](/architecture/post-quantum-security).
+QoreChain usa uno schema ibrido post-quantistico che combina il classico **secp256k1 (ECDSA)** con il post-quantistico **ML-DSA-87 (Dilithium-5)**. Questo schema ibrido è richiesto per impostazione predefinita sul percorso delle transazioni Cosmos, con la modalità di applicazione controllata dalla governance. Sulla lane EVM la firma resta secp256k1, e un account deve inoltre possedere una chiave ML-DSA registrata e una finestra di autorizzazione aperta (v3.2.0). Vedi [Sicurezza post-quantistica](/architecture/post-quantum-security).
+
+### Perché la mia transazione EVM viene rifiutata con «no open EVM authorisation window»?
+
+Dalla v3.2.0 la lane EVM ammette una transazione solo da un account che abbia una chiave post-quantistica registrata e una finestra di autorizzazione aperta. Apri una finestra con una transazione della lane Cosmos firmata in modo post-quantistico, poi riprova. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+
+### Quale block time devo aspettarmi?
+
+Circa 3,2 secondi sulla mainnet e circa 1 secondo sulla testnet (medie misurate, ottobre 2026). Il block time è determinato dalla configurazione dei nodi dei validatori.
+
+### xQORE è disponibile?
+
+Non ancora. Il modulo di contabilità esiste, ma le transazioni di lock e unlock non sono collegate alle reti attive. Vedi [Tokenomics](/architecture/tokenomics#x-xqore).
+
+### L'offerta di QOR è fissa?
+
+L'offerta alla genesi era di 4.420.000.000 QOR. L'emissione di staking viene coniata entro un limite cumulativo rigido di 114.285.714 QOR, e i burn rimuovono i token in modo permanente. Vedi [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Come creo un rollup?
 

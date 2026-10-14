@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # JSON-RPC — eth_ Ad Alanı
 
-QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereum araçlarının (MetaMask, Hardhat, Foundry, ethers.js, web3.js) zincirle herhangi bir değişiklik yapılmadan etkileşime girmesine olanak tanır.
+QoreChain, EVM uyumlu bir JSON-RPC arayüzü uygular; böylece standart Ethereum araçları (MetaMask, Hardhat, Foundry, ethers.js, web3.js) zincir durumunu okuyabilir ve gazı hiçbir değişiklik yapmadan tahmin edebilir. **EVM şeridinden işlem göndermek için** zincir sürümü v3.2.0'dan itibaren **fazladan bir adım gerekir**: gönderen hesabın kayıtlı bir kuantum sonrası anahtarı ve açık bir EVM yetkilendirme penceresi olmalıdır ([İşlem gönderme](#sending-transactions) bölümüne bakın).
 
 ## Bağlantı
 
@@ -17,7 +17,7 @@ QoreChain, tamamen EVM uyumlu bir JSON-RPC arayüzü uygular ve standart Ethereu
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, onaltılık `0x2649`, **v3.1.97** zincir sürümünde canlı) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, onaltılık `0x2648`) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir; uzaktan erişim için sağlayıcınızın ana ağ veya test ağı uç noktasını kullanın.
+EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**, onaltılık `0x2649`, düğüm sürümü **v3.2.1**) ve **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, onaltılık `0x2648`, düğüm sürümü **v3.2.2**) tarafından sunulur. Yukarıdaki yerel adresler kendi çalıştırdığınız bir düğüm için geçerlidir. Genel HTTP uç noktaları `https://evm.qore.host` (ana ağ) ve `https://evm-testnet.qore.host` (test ağı) olup [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir. Tek genel EVM WebSocket'i test ağınındır (`wss://evm-ws-testnet.qore.host`); genel bir ana ağ EVM WebSocket'i yoktur.
 :::
 
 ## Desteklenen Ad Alanları
@@ -28,7 +28,7 @@ EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9
 | `web3_`   | Yardımcı yöntemler (istemci sürümü, hashleme)                                                                   |
 | `net_`    | Ağ durumu yöntemleri                                                                                            |
 | `txpool_` | İşlem havuzu incelemesi                                                                                         |
-| `qor_`    | QoreChain'e özgü uzantılar (bkz. [qor_ Ad Alanı](/api-reference/json-rpc-qor_-namespace))                       |
+| `rpc_`    | Sunucu iç gözlemi (`rpc_modules`)                                                                               |
 
 ## eth_ Yöntemleri
 
@@ -47,6 +47,15 @@ EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9
 | `eth_chainId`                | yok                                                | Zincir kimliğini döndürür (onaltılık kodlanmış)              |
 | `eth_gasPrice`               | yok                                                | Geçerli gaz fiyatını wei cinsinden döndürür                  |
 | `eth_feeHistory`             | `blockCount`, `newestBlock`, `rewardPercentiles`   | Geçmiş ücret verilerini döndürür (EIP-1559)                  |
+| `eth_getBlockByHash`         | `blockHash`, `fullTx` (bool)                       | Hash'e göre blok verisini döndürür                           |
+| `eth_getCode`                | `address`, `blockNumber`                           | Kontrat bytecode'unu döndürür                                |
+| `eth_getStorageAt`           | `address`, `slot`, `blockNumber`                   | Bir depolama yuvasını döndürür                               |
+| `eth_getBlockReceipts`       | `blockNumber`                                      | Bir bloktaki tüm makbuzları döndürür                         |
+| `eth_getProof`               | `address`, `storageKeys`, `blockNumber`            | Bir hesap kanıtı döndürür                                    |
+| `eth_createAccessList`       | `callObject`, `blockNumber`                        | Bir çağrı için erişim listesi oluşturur                      |
+| `eth_maxPriorityFeePerGas`   | yok                                                | Önerilen öncelik ücretini döndürür (wei)                     |
+| `eth_syncing`                | yok                                                | Düğüm senkronize olduğunda `false` döndürür                  |
+| `eth_newFilter`, `eth_newBlockFilter`, `eth_getFilterChanges` | filtre nesnesi / filtre kimliği | Yoklama (polling) filtreleri                |
 
 ## web3_ Yöntemleri
 
@@ -54,6 +63,14 @@ EVM JSON-RPC arayüzü, **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9
 | --------------------- | ------------ | -------------------------------------------- |
 | `web3_clientVersion`  | yok          | İstemci sürüm dizesini döndürür               |
 | `web3_sha3`           | `data` (hex) | Girdinin Keccak-256 hash'ini döndürür         |
+
+## txpool_ Yöntemleri
+
+| Yöntem            | Parametreler | Açıklama                                                              |
+| ----------------- | ------------ | ---------------------------------------------------------------------- |
+| `txpool_status`   | yok          | Bekleyen ve kuyruktaki işlemlerin sayısını döndürür                    |
+| `txpool_content`  | yok          | Bekleyen ve kuyruktaki işlemleri döndürür (genel ana ağda yok)         |
+| `txpool_inspect`  | yok          | Havuzun özetini döndürür (genel ana ağda yok)                          |
 
 ## net_ Yöntemleri
 
@@ -79,7 +96,7 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 
 # Enabled API namespaces
-api = "eth,web3,net,txpool,qor"
+api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
 filter-cap = 10000
@@ -96,6 +113,30 @@ txfee-cap = 1
 # Maximum open WebSocket connections
 max-open-connections = 0
 ```
+
+## Genel uç noktalardaki sınırlar {#public-limits}
+
+:::note
+- `eth_getLogs`, `fromBlock` ile `toBlock` arasında en fazla **10.000 blok** kabul eder. Daha geniş bir aralık `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}` döndürür. Sorguları 10.000 blok veya daha küçük pencereler halinde yapın. Ayrı `filter-cap` ayarı, döndürülen günlük sayısını sınırlar.
+- `txpool_status`, genel ana ağ uç noktasında çalışır. `txpool_content` ve `txpool_inspect` orada devre dışıdır (genel test ağı uç noktasında ve kendi çalıştırdığınız bir düğümde çalışırlar).
+- `debug_*` yöntemleri ve `eth_signTransaction` kullanılamaz.
+- `eth_subscribe` bir WebSocket bağlantısı gerektirir. HTTP üzerinden `-32601 notifications not supported` döndürür. Bkz. [WebSocket Olayları](/api-reference/websocket-events).
+- Genel uç noktalarda eski yüksekliklerdeki durum budanmıştır (pruned); bu nedenle uzak bir geçmiş bloğa karşı `eth_call`, durum sürümü hatasıyla başarısız olabilir.
+- Bir betik `403 Forbidden` alırsa açık bir `User-Agent` başlığı ayarlayın; Python'un varsayılan `urllib` ajanı engellenir, `requests`, `curl`, Node ve Go istemcileri olduğu gibi çalışır.
+:::
+
+## İşlem gönderme {#sending-transactions}
+
+:::caution EVM şeridi bir PQC anahtarı ve açık bir pencere gerektirir
+Zincir sürümü v3.2.0'dan itibaren EVM şeridi, bir işlemi (`MsgEthereumTx`, kontrat dağıtımları dahil) yalnızca **kayıtlı bir kuantum sonrası anahtarı** ve **açık bir EVM yetkilendirme penceresi** olan bir hesaptan kabul eder. Bu kurulumu yapmamış sıradan bir EVM cüzdanı işlem gönderemez: düğüm, işlemleri dahil etmek yerine bir `pqc` modülü hatasıyla (kod 26, 27 veya 28) reddeder. Bakiyeleri okumak, `eth_call` çağırmak ve gazı tahmin etmek için pencere gerekmez.
+
+Göndermeden önce bir hesabı kontrol edin:
+
+- `GET /qorechain/pqc/v1/account/{address}` (`found: true` bir anahtarın kayıtlı olduğu anlamına gelir)
+- `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` şu anda bir pencerenin işlemleri kabul ettiği anlamına gelir)
+
+Her ikisi de [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module) sayfasında açıklanmıştır. Pencere, bir Ethereum işlemiyle değil, bir QoreChain işlemiyle (`MsgOpenEVMWindow`; en fazla 17.280 blok ve 1.000 işlemle ve bir değer sınırıyla sınırlıdır) açılır. Şerit genel bakışı için [EVM Geliştirme](/developer-guide/evm-development) sayfasına bakın.
+:::
 
 ## Örnekler
 
@@ -197,6 +238,6 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 - Zincir kimliği onaltılık bir dize olarak döndürülür. Cüzdan yapılandırması için ondalığa dönüştürün — `0x2649` = **9801** (ana ağ), `0x2648` = **9800** (test ağı).
 - Gaz fiyatlandırması EIP-1559 modelini izler. Baz ücret ve öncelik ücreti tahmini için `eth_feeHistory` kullanın.
 - Kabul edilen blok etiketleri: `"latest"`, `"earliest"`, `"pending"` veya onaltılık bir blok numarası.
-- Filtre sınırlamaları: `eth_getLogs`, sorgu başına `filter-cap` sonuçla sınırlıdır (varsayılan 10.000). Büyük veri kümeleri için daha dar blok aralıkları kullanın.
+- Filtre sınırlamaları: `eth_getLogs`, sorgu başına `filter-cap` sonuçla sınırlıdır (varsayılan 10.000) ve genel uç noktalar 10.000 bloktan geniş aralıkları reddeder. Büyük veri kümeleri için daha dar blok aralıkları kullanın.
 
 :::

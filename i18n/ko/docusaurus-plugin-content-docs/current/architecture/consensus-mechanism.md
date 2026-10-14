@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain은 검증자를 세 개의 특화된 풀로 분류하고 평판 가중치 기반 선택을 사용하여 보안, 탈중앙화, 성능의 균형을 맞추는 합의 메커니즘인 **Triple-Pool Composite Proof-of-Stake (CPoS)**를 구현합니다. CPoS는 `x/qca` 모듈에서 구현되며 **QoreChain Consensus Engine** 위에서 동작합니다.
 
-런타임에 합의 파라미터를 튜닝하는 강화학습 최적화 계층은 **PRISM**(Policy-driven Reinforcement-learning for Intelligent State Machines)이라는 브랜드로 명명됩니다. 자세한 내용은 [PRISM Consensus Engine](/architecture/prism-consensus-engine)을 참조하세요.
+:::note 현재 상태 (2026년 10월)
+이 페이지에서 설명하는 Triple-Pool CPoS 로직 — 풀 분류, 풀 가중치 기반 제안자 선택, 보상 본딩 커브, 점진적 슬래싱, QDRW 집계 — 은 `x/qca` 모듈에 구현되어 있고 파라미터도 온체인에 있지만, **아직 블록 생성, 보상, 슬래싱, 거버넌스 집계에 연결되어 있지 않습니다**. 현재 제안자 순환은 표준 스테이크 가중치 기반 검증자 순환이며, 슬래싱은 표준 `x/slashing` 파라미터(다운타임 윈도우 10,000 블록, 서명 비율 5 % 미만 시 감금, 다운타임 1 % 및 이중 서명 5 % 슬래시, 10분 감금)를 따르고, 제안은 본딩된 스테이크를 기준으로 집계됩니다(정족수 33.4 %, 통과 기준 50 %, 거부권 33.4 %). 아래 설계는 이 모듈이 향하고 있는 방향을 설명합니다.
+:::
 
-아래 다이어그램은 QoreChain Consensus Engine에서 Triple-Pool CPoS의 한 블록/합의 주기를 요약하며, PRISM이 튜닝 가능한 `x/qca` 파라미터로 어떻게 피드백되는지 보여줍니다.
+런타임에 합의 파라미터를 튜닝하도록 설계된 강화학습 최적화 계층은 **PRISM**(Policy-driven Reinforcement-learning for Intelligent State Machines)이라는 브랜드로 명명됩니다. 자세한 내용은 [PRISM Consensus Engine](/architecture/prism-consensus-engine)을 참조하세요.
+
+아래 다이어그램은 QoreChain Consensus Engine에서 Triple-Pool CPoS의 한 블록/합의 주기를 요약하며, PRISM이 튜닝 가능한 `x/qca` 파라미터로 어떻게 피드백되도록 설계되었는지 보여줍니다(PRISM은 현재 관찰만 수행합니다).
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### 이차 스케일링
 
-제곱근 함수는 투표권이 스테이크에 대해 선형 이하로 확장되도록 보장합니다. 다른 투표자의 4배 스테이크를 가진 투표자는 4배가 아니라 2배의 투표권만 받습니다. 이는 대규모 토큰 보유자가 거버넌스 결정을 지배하는 것을 방지합니다.
+제곱근 함수는 투표권이 스테이크에 대해 선형 이하로 확장되도록 보장합니다. 다른 투표자의 4배 스테이크를 가진 투표자는 4배가 아니라 2배의 투표권만 받습니다. 이것이 QDRW의 설계된 동작이며, QDRW가 비활성화된 동안에는 제안이 본딩된 스테이크를 기준으로 집계됩니다. 이 공식은 xQORE를 사용하지만, xQORE는 아직 라이브 네트워크에서 잠글 수 없습니다.
 
 ### 결정론적 수학
 
@@ -234,54 +238,54 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ## QCA 파라미터
 
-다음 표는 `x/qca` 모듈에서 거버넌스로 구성 가능한 모든 파라미터를 나열합니다:
+다음 표는 `x/qca` 모듈에서 거버넌스로 구성 가능한 파라미터를 `qorechaind query qca config`가 반환하는 이름과 라이브 값으로 나열합니다(이 파라미터들은 아직 활성화되지 않았습니다. 위의 상태 안내를 참조하세요):
 
 ### 핵심 파라미터
 
 | 파라미터                    | 타입     | 기본값   | 설명                                               |
 | -------------------------- | ------- | ------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`  | 평판 가중치 기반 제안자 선택 활성화                    |
+| `use_reputation_weighting` | bool    | `true`  | 평판 가중치 기반 제안자 선택에 대한 제네시스 설정(선택기는 아직 블록 생성에 연결되어 있지 않음) |
 | `min_reputation_score`     | float64 | `0.1`   | 활성 참여를 위한 최소 평판 점수                       |
 
 ### 풀 구성
 
 | 파라미터                   | 타입       | 기본값            | 설명                                              |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | 풀 재분류 사이의 블록 수                            |
-| `weight_rpos`             | LegacyDec | `0.40`           | RPoS 풀 선택 가중치                                |
-| `weight_dpos`             | LegacyDec | `0.35`           | DPoS 풀 선택 가중치                                |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | DPoS를 위한 최소 위임량 (uqor 단위 10,000 QOR)     |
-| `rep_percentile_rpos`     | uint64    | `70`             | RPoS를 위한 평판 백분위수 임계값                    |
+| `pool_classification_interval` | uint64 | `1000`        | 풀 재분류 사이의 블록 수                            |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | RPoS 풀 선택 가중치                                |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | DPoS 풀 선택 가중치                                |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | DPoS를 위한 최소 위임량 (uqor 단위 10,000 QOR)     |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | RPoS를 위한 평판 백분위수 임계값                    |
 
 ### 본딩 커브 구성
 
 | 파라미터            | 타입       | 기본값  | 설명                                             |
 | ------------------ | --------- | ------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`   | 충성도 민감도 계수                                 |
-| `beta`             | LegacyDec | `1.0`   | 기본 보상 배수                                     |
-| `phase_multiplier` | LegacyDec | `1.5`   | 프로토콜 단계 보상 배수 (Genesis 단계)             |
+| `bonding_alpha`    | LegacyDec | `0.1`   | 충성도 민감도 계수                                 |
+| `bonding_beta`     | LegacyDec | `1.0`   | 기본 보상 배수                                     |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | 프로토콜 단계 보상 배수 (Genesis 단계)             |
 
 ### 슬래싱 구성
 
 | 파라미터             | 타입       | 기본값     | 설명                                    |
 | ------------------- | --------- | --------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`    | 기본 슬래시 비율 (1%)                    |
-| `escalation_factor` | LegacyDec | `1.5`     | 점진적 점증 기준값                       |
-| `max_penalty`       | LegacyDec | `0.33`    | 이벤트당 최대 페널티 (33%)               |
-| `decay_halflife`    | uint64    | `100,000` | 위반 가중치 반감기 블록 수                |
+| `slashing_base_rate`| LegacyDec | `0.01`    | 기본 슬래시 비율 (1%)                    |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | 점진적 점증 기준값                       |
+| `slashing_max_penalty` | LegacyDec | `0.33` | 이벤트당 최대 페널티 (33%)               |
+| `slashing_decay_halflife` | uint64 | `100,000` | 위반 가중치 반감기 블록 수                |
 
 ### QDRW 거버넌스 구성
 
 | 파라미터             | 타입       | 기본값  | 설명                                    |
 | -------------------- | --------- | ------- | -------------------------------------- |
-| `enabled`            | bool      | `false` | QDRW 거버넌스 집계 활성화                |
-| `xqore_multiplier`   | LegacyDec | `2.0`   | 스테이크 토큰 대비 xQORE 가중치          |
-| `rep_min_multiplier` | LegacyDec | `0.5`   | 최소 평판 배수                          |
-| `rep_max_multiplier` | LegacyDec | `2.0`   | 최대 평판 배수                          |
+| `qdrw_enabled`       | bool      | `false` | QDRW 거버넌스 집계 활성화(라이브 네트워크에서는 비활성화됨) |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | 스테이크 토큰 대비 xQORE 가중치          |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | 최소 평판 배수                          |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | 최대 평판 배수                          |
 
 ## 관련 문서
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — 합의 파라미터를 튜닝하는 AI 계층.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — 합의 파라미터를 튜닝하도록 설계된 AI 계층.
 * [Multilayer Architecture](/architecture/multilayer-architecture) — 사이드체인이 기본 계층에 앵커링되는 방식.
 * [Running a Validator](/developer-guide/running-a-validator) — 체인을 보호하는 검증자 운영.
 * [Tokenomics](/architecture/tokenomics) — 스테이킹 보상, 인플레이션, 슬래싱 경제학.

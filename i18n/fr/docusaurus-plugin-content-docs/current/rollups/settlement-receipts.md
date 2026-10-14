@@ -7,30 +7,31 @@ sidebar_position: 6
 
 # Reçus de règlement à sûreté quantique
 
-Un **reçu de règlement** est une preuve portable et autonome qu'un lot de
-règlement d'un rollup a été ancré à la Main Chain sous une signature
-post-quantique. Il lie un lot spécifique à l'ancre on-chain qui a engagé l'état
-du rollup à cette hauteur, et il peut être vérifié **entièrement hors ligne** —
-sans nœud, sans confiance dans le chemin réseau du vérificateur.
+Un **reçu de règlement** est un enregistrement portable attestant qu'un lot de règlement d'un rollup a été ancré à la Main Chain sous une signature post-quantique. Il désigne le rollup, le lot et l'ancre, et porte la signature **ML-DSA-87** (Dilithium-5, FIPS-204) de l'ancre, le même schéma que celui utilisé par la Main Chain.
 
-La signature d'ancrage est **ML-DSA-87** (Dilithium-5, FIPS-204), le même schéma
-post-quantique utilisé par la Main Chain, de sorte qu'un reçu hérite de
-l'intégrité à sûreté quantique de la chaîne de base.
+:::caution Stade précoce : aucune ancre n'existe encore
+Les reçus dépendent des ancres, et **aucun rollup ni aucune ancre n'existe encore sur l'un ou l'autre réseau**. Sur le mainnet, le RDK n'écrit pas encore d'ancres : les lots de règlement sont enregistrés, mais l'étape d'ancrage est ignorée. Considérez cette page comme une description de la conception et des briques de base, et non d'un service sur lequel vous pouvez vous appuyer aujourd'hui.
+:::
 
-## Le message d'ancrage canonique
+## Un reçu est une affirmation, pas une preuve {#a-receipt-is-a-claim}
 
-La vérification contrôle une signature Dilithium-5 sur un message canonique
-construit à partir des champs de l'ancre, concaténés dans cet ordre exact :
+Chaque champ d'un reçu est fourni par celui qui vous le remet. Vérifier la signature avec une clé qui vous a été donnée montre que quelqu'un détenant cette clé a signé ces octets ; cela ne montre pas que QoreChain a ancré quoi que ce soit. Un vérificateur a donc besoin d'un client connecté à un nœud QoreChain auquel il fait confiance, et relit l'affirmation depuis l'état de la chaîne : le rollup et sa couche, le lot et sa racine d'état, l'ancre, et la clé post-quantique enregistrée du créateur.
+
+## Ce que l'ancre signe {#what-the-anchor-signs}
+
+La signature de l'ancre est produite par la clé ML-DSA-87 enregistrée du **créateur du rollup**. Sur le mainnet aujourd'hui, le message signé est
 
 ```
 layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
 ```
 
-`anchorSignBytes(...)` produit ces octets ; le vérificateur les reconstruit à
-partir du reçu et contrôle la signature avec la clé ML-DSA-87 enregistrée du
-créateur de la couche.
+Une version plus récente de la chaîne modifie le message signé ; ne le codez donc pas en dur : lisez les octets à signer pour le réseau que vous ciblez. Une ancre est un objet de niveau couche : elle ne désigne ni le rollup ni le lot, de sorte qu'un vérificateur les lie par des lectures de la chaîne (voir [Architecture multicouche](/architecture/multilayer-architecture#reading-anchors)).
 
-## Construire et vérifier (TypeScript)
+## Lecture des ancres {#reading-anchors}
+
+Les ancres sont lisibles via REST et gRPC (`/qorechain/multilayer/v1/anchor/{layer_id}` pour la dernière ancre et `/qorechain/multilayer/v1/anchors/{layer_id}` pour l'historique), et la clé post-quantique enregistrée d'un compte à l'adresse `/qorechain/pqc/v1/account/{address}`. Les lots d'un rollup se lisent avec `qorechaind query rdk batch [rollup-id]` (les routes REST du RDK ne sont pas servies sur le mainnet aujourd'hui).
+
+## Construire et vérifier (TypeScript) {#build-and-verify}
 
 ```ts
 import {
@@ -39,71 +40,27 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-// Build a portable receipt for one batch.
-const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);
+// Build a receipt for one batch (throws if no anchor covers the batch yet).
+const receipt = await buildSettlementReceipt(rdk, "my-rollup", 7);
 
-// Persist it, ship it, hand it to a counterparty — it is self-contained JSON.
-
-// Verify fully offline. With no client, you must supply the creator's key.
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "<layer creator ML-DSA-87 public key>",
-});
-
-console.log(result.valid); // true when the signature and the batch↔anchor binding both hold
+// Verify it against chain state — pass a client; a receipt on its own proves nothing.
+const result = await verifySettlementReceipt(receipt, { client: rdk });
+console.log(result.valid);
 ```
 
-Si vous passez un `client` au lieu de (ou en plus de) `creatorPublicKey`, la
-vérification récupère depuis la chaîne la clé ML-DSA-87 enregistrée du créateur
-de la couche (`getPqcAccount(address)`). La vérification contrôle alors deux
-choses :
+Passez un `client` pour chaque vérification. Utilisez la dernière version publiée de votre client RDK : l'API des reçus et ses contrôles ont changé d'une version à l'autre, et les clients Python, Go, Rust et Java exposent la même surface de construction/vérification (ils effectuent la vérification ML-DSA-87 via la bibliothèque [`qorechain-pqc`](https://github.com/qorechain)).
 
-1. la **signature Dilithium-5** sur le message d'ancrage canonique, et
-2. la **liaison lot ↔ racine d'état de l'ancre** — c'est-à-dire que le lot que
-   vous détenez est bien celui que l'ancre a engagé.
+:::note Limitations actuelles du client
+Les clients RDK publiés recherchent la clé du créateur par un chemin que la chaîne en service ne sert pas ; la vérification en ligne n'aboutit donc pas encore sur les réseaux en service. Tant qu'une version de client ne corrige pas cela, utilisez un reçu uniquement comme un enregistrement à recouper avec l'ancre que vous lisez depuis votre propre nœud.
+:::
 
-```ts
-// Online verification: fetch the creator's PQC key from the chain.
-const online = await verifySettlementReceipt(receipt, { client: rdk });
-```
-
-## Lecture des ancres
-
-Les reçus sont construits à partir de la requête **Anchor** on-chain du module
-`x/multilayer`, disponible à la fois via gRPC et REST depuis la version de
-chaîne **v3.1.80** (voir
-[Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#multilayer-module)).
-Les lectures :
-
-- `getAnchor(layerId)` — l'ancre d'une couche.
-- `getLatestAnchor()` — l'ancre la plus récente.
-- `getAnchors(layerId)` — l'historique des ancres d'une couche.
-- `getPqcAccount(address)` — un compte post-quantique enregistré (sa clé
-  ML-DSA-87), utilisé pour vérifier la signature du créateur.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-# Build a receipt and print it.
-qorollup receipt my-roll 7
-
-# Build, then verify it inline.
-qorollup receipt my-roll 7 --verify
-
-# Build and write it to a file.
-qorollup receipt my-roll 7 --out receipt.json
+qorollup receipt my-rollup 7                 # build and print
+qorollup receipt my-rollup 7 --out receipt.json
 ```
 
-Voir [Déployer un rollup](/rollups/deploying-a-rollup) pour la CLI opérateur
-`qorollup` complète.
-
-## Autres langages
-
-Les clients Python, Go, Rust et Java (JVM) exposent la même surface de
-construction/vérification. Ils effectuent la vérification ML-DSA-87 via la
-bibliothèque [`qorechain-pqc`](https://github.com/qorechain) plutôt qu'avec une
-implémentation JavaScript embarquée ; installez-la aux côtés du client RDK de
-votre langage.
+Voir [Déployer un rollup](/rollups/deploying-a-rollup) pour la CLI opérateur `qorollup` complète.

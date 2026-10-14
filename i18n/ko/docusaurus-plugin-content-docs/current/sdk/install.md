@@ -12,17 +12,33 @@ EVM 및 SVM 어댑터(`@qorechain/evm`, `@qorechain/svm`), React 키트
 (`@qorechain/react`), 그리고 Python, Go, Rust, Java 클라이언트는 모두
 완전한 네이티브 체인 패리티(타입드 메시지, 쿼리, tx 라이프사이클, 하이브리드
 PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게시**되어 있습니다.
-현재 릴리스는 **0.7.0**이며, 통합 eth-네이티브 계정, 컨센서스에 치명적이었던
-하이브리드 확장 인코딩 수정, 그리고 인증자(authenticator) 레인이 추가되었습니다
-([Authenticators 가이드](/sdk/guides/authenticators) 참조).
-아래에서 언어를 선택하세요.
+현재 릴리스 라인은 **0.8**입니다. TypeScript, Python, Rust, Java는 **0.8.3**이고,
+Go 모듈은 **v0.8.4**입니다. 아래에서 언어를 선택하세요.
 
-:::caution 0.6.0 이하에서 업그레이드
+## 업그레이드 안내 {#upgrade}
+
+:::danger 라이브 네트워크에서는 SDK 0.8.1 이상을 사용하세요
+두 공개 네트워크 모두 **v2 하이브리드 sign-bytes** 형태(도메인 태그가 붙고 체인 id에
+바인딩됨)를 검증하며, 이전 형태는 `pqc` 코드 21로 거부합니다. **0.8.0** 이전의
+모든 SDK 릴리스는 이전 형태로 서명하며, **0.8.0**은 네트워크가 사용한 두 가지
+업그레이드 이름 중 하나로만 전환 시점을 찾기 때문에(메인넷은 이를 `v3.2.0`으로,
+테스트넷은 `v3.1.98`과 이후 `v3.2.0`으로 기록했습니다) 메인넷에서 잘못된 형태로
+서명합니다. 모든 언어에서 **0.8.1 이상**을 사용하세요. [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를
+열려면 **0.8.2 이상**이 필요합니다. 하이브리드 빌더는 `signBytesVersion` 옵션
+(`"auto"` | `"v1"` | `"v2"`)을 받습니다. `"auto"`는 네트워크에 문의하므로
+`qorechain-vladi` / `qorechain-diana`에서 REST 엔드포인트(`rest`)가 필요하며,
+추측하는 대신 예외를 던집니다.
+[어떤 sign-bytes 형태인가?](/sdk/concepts/accounts-pqc#sign-bytes-versions)를
+참조하세요.
+:::
+
+:::caution 이전 수정 사항
 SDK **0.6.1**은 컨센서스에 치명적인 버그를 수정했습니다:
 `/qorechain.pqc.v1.PQCHybridSignature` tx 본문 확장이
 `Any.value`에 JSON으로 직렬화되어 **CheckTx 단계에서 체인에 의해 거부**되었습니다.
-SDK ≤ 0.6.0으로 생성한 하이브리드(PQC + 클래식) 트랜잭션은 온체인에서 거부되므로,
-사용 중인 모든 언어에서 0.6.1 이상으로 업그레이드하세요.
+SDK ≤ 0.6.0으로 생성한 하이브리드(PQC + 클래식) 트랜잭션은 온체인에서 거부됩니다.
+**0.8.0**에서는 지갑 서명 계정 헬퍼가 제거되었습니다
+([계정 및 PQC 서명](/sdk/concepts/accounts-pqc#phantom) 참조).
 :::
 
 ## TypeScript
@@ -33,7 +49,9 @@ SDK ≤ 0.6.0으로 생성한 하이브리드(PQC + 클래식) 트랜잭션은 �
 npm i @qorechain/sdk
 ```
 
-Node.js 20+를 대상으로 하며 ESM, CommonJS, 타입 정의를 함께 제공합니다.
+Node.js 20+를 대상으로 하며 ESM, CommonJS, 타입 정의를 함께 제공합니다. 이 문서의
+하이브리드 트랜잭션 샘플은 `@cosmjs/stargate`에서 `StargateClient`도 임포트합니다
+(`npm i @cosmjs/stargate`).
 
 ### EVM 어댑터
 
@@ -44,7 +62,7 @@ viem은 **피어 의존성**이므로 함께 설치하세요:
 npm i @qorechain/evm viem
 ```
 
-npm에 `0.7.0`으로 게시되어 있습니다.
+npm에 `0.8.0`으로 게시되어 있습니다.
 
 ### SVM 어댑터
 
@@ -56,7 +74,7 @@ npm에 `0.7.0`으로 게시되어 있습니다.
 npm i @qorechain/svm @solana/web3.js
 ```
 
-npm에 `0.7.0`으로 게시되어 있습니다.
+npm에 `0.8.0`으로 게시되어 있습니다.
 
 ### React 키트
 
@@ -68,16 +86,22 @@ npm에 `0.7.0`으로 게시되어 있습니다.
 npm i @qorechain/react
 ```
 
-npm에 `0.7.0`으로 게시되어 있습니다. [React 키트 가이드](/sdk/guides/react)를
+npm에 `0.8.3`으로 게시되어 있습니다. [React 키트 가이드](/sdk/guides/react)를
 참고하세요.
 
 ### 스캐폴더
 
-`create-qorechain-dapp`(npm, `0.7.0`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
+`create-qorechain-dapp`(npm, `0.8.0`)은 바로 실행할 수 있는 dApp을 스캐폴딩합니다:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
+
+생성된 `package.json` 파일은 `@qorechain/sdk` / `@qorechain/evm`을 `^0.3.0`으로
+고정하는데, npm은 이를 라이브 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다.
+스캐폴딩 후 `npm i @qorechain/sdk@latest`를 실행하세요(EVM 템플릿의 경우
+`npm i @qorechain/evm@latest`도 실행). [CLI 레퍼런스](/sdk/reference/cli)를
+참고하세요.
 
 ## Python
 
@@ -87,7 +111,7 @@ pip install qorechain-sdk
 
 Python 3.10+가 필요합니다. 이 패키지는 타입 힌트와 `py.typed` 마커를 제공합니다.
 
-> 배포판은 `qorechain-sdk`로 설치되지만(PyPI에 `0.7.0`으로 게시됨)
+> 배포판은 `qorechain-sdk`로 설치되지만(PyPI에 `0.8.3`으로 게시됨)
 > **`qorsdk`로 임포트**합니다:
 >
 > ```python
@@ -109,7 +133,7 @@ import (
 )
 ```
 
-독립형 Go 모듈로 게시되어 있습니다(태그: `packages/go/v0.7.0`).
+독립형 Go 모듈로 게시되어 있습니다(태그: `packages/go/v0.8.4`).
 
 ## Rust
 
@@ -117,7 +141,7 @@ import (
 cargo add qorechain-sdk
 ```
 
-또는 저장소에서 직접 `0.7.0` 소스를 추적하려면:
+또는 저장소의 최신 헤드를 추적하려면:
 
 ```toml
 [dependencies]
@@ -128,10 +152,8 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Rust 1.74+가 필요합니다. 읽기 클라이언트는 비동기(Tokio)입니다. 이 크레이트는
 `qorechain`으로 임포트합니다(`use qorechain;`).
 
-> crates.io에 `qorechain-sdk`로 게시되어 있습니다. `cargo add qorechain-sdk`는
-> **가장 최근에 게시된 크레이트**를 설치하며, 이 버전은 현재 `0.7.0` 릴리스보다
-> 뒤처져 있습니다. crates.io(최신 게시 버전)에서 설치하거나, 최신 API 표면이
-> 필요하면 저장소에서 설치하세요.
+> crates.io에 `qorechain-sdk`(0.8.3)로 게시되어 있습니다. `cargo add qorechain-sdk`는
+> 최신 릴리스를 설치합니다.
 
 ## Java
 
@@ -141,17 +163,29 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.3</version>
 </dependency>
 ```
 
 또는 Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.7.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.8.3'
 ```
 
-> Maven Central에 `io.github.qorechain:qorechain-sdk:0.7.0`으로 게시되어 있습니다.
+> Maven Central에 `io.github.qorechain:qorechain-sdk:0.8.3`으로 게시되어 있습니다.
+> Central에는 0.8.0 또는 0.8.1 빌드가 없으므로, 라이브 네트워크에서는 0.8.2 이상을
+> 사용하세요.
+
+## 관련 패키지 {#related-packages}
+
+| 패키지 | 용도 | 버전 |
+| --- | --- | --- |
+| `@qorechain/wallet-adapter` | 지갑 측 헬퍼: 지갑 생성(`generateQoreWallet`), `eth_secp256k1` 하이브리드 서명(`signHybridEth`, `QoreChainSigner`), MetaMask 네트워크 등록(`addQoreEvmToWallet`), 인증자 및 EVM 윈도우 메시지 빌더. 피어 의존성: `@cosmjs/proto-signing` 및 `@cosmjs/stargate` `^0.32` | 0.3.0 |
+| `@qorechain/chain-bridge` | 백엔드용 서버 측 워커: PQC 키를 유도하고, 하이브리드 서명 후 브로드캐스트합니다(`sendTokens`, `registerPqc` 등). `cosmosRest`를 전달하세요 | 0.2.2 |
+| `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([포스트 양자 서명](/developer-guide/post-quantum-signing) 참조) | 0.2.1 |
+| `@qorechain/handles` | 최초 사용 시 신뢰(trust-on-first-use) 고정을 갖춘 검증된 `@handle` 해석(`HandleClient`) | 0.1.0 |
+| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). npm 릴리스(0.4.4)는 트랜잭션을 클래식 전용으로 서명하며 네트워크가 이를 거부하므로 읽기만 가능하고 전송은 할 수 없습니다. 하이브리드 서명은 0.5.0에 있으며 현재 PyPI와 Go 모듈에서만 제공됩니다 | 0.4.4 (npm) |
 
 ## 다음
 

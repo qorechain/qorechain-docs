@@ -26,7 +26,19 @@ runtimes on a single chain:
 - **SVM** — a Solana-compatible runtime with a Solana-style JSON-RPC.
 
 Accounts, balances, and tokens are shared across the runtimes, and the chain
-supports IBC for cross-chain interoperability.
+includes the IBC module for cross-chain interoperability (no IBC channels are
+open on mainnet or testnet yet).
+
+:::note What works on the live networks today (chain v3.2.0 and later)
+**Works:** reads on every lane, hybrid-signed Native transactions, unified
+accounts, EVM transactions inside an
+[authorization window](/sdk/guides/evm#evm-window), and SVM reads.
+**Not available yet:** the EVM precompiles (inactive), the `qor_` JSON-RPC
+namespace, SVM transactions, cross-VM calls on mainnet (`MsgCrossVMCall` is
+switched off by the circuit breaker), CosmWasm upload and instantiate for ordinary
+accounts, the authenticator / abstract-account flows (module switched off), xQORE
+and gas abstraction. Each guide repeats the caveat where it applies.
+:::
 
 ### Quantum-safe by design
 
@@ -37,7 +49,9 @@ the chain supports a **hybrid** signing posture in which a transaction carries
 under classical verification today while gaining post-quantum protection.
 
 The SDK exposes ML-DSA-87 key generation, signing, and verification today, plus
-the building blocks for hybrid transactions. See
+the building blocks for hybrid transactions. On the live networks a Native-path
+transaction **must** be hybrid-signed and the account's ML-DSA-87 key must be
+registered first. See
 [Accounts & PQC signing](/sdk/concepts/accounts-pqc) for details. No marketing
 claims here — the SDK exposes exactly the primitives the chain implements.
 
@@ -49,7 +63,8 @@ QoreChain**, because they are built on protocol features no other Layer 1 has:
 - **AI pre-flight risk scoring** — scan a transaction with on-chain AI before you
   broadcast it. `simulateWithRiskScore` returns gas plus a risk/anomaly verdict
   from deterministic EVM precompiles, so a wallet or dApp can warn (or block)
-  *before* signing. See [AI pre-flight](/sdk/guides/ai-preflight).
+  *before* signing. The precompiles are not active yet on mainnet or testnet. See
+  [AI pre-flight](/sdk/guides/ai-preflight).
 - **Unified cross-VM calls** — one account, three VMs, one transaction.
   `createCrossVMClient` calls a contract on any VM and `callAtomic` packs several
   cross-VM calls into a single atomic transaction signed once. See
@@ -58,7 +73,8 @@ QoreChain**, because they are built on protocol features no other Layer 1 has:
   call (`ensurePqcRegistered` / `migrateToHybrid`), with a drop-in React badge.
   See [Quantum-safe](/sdk/guides/quantum-safe).
 
-Two more chain-level capabilities landed in 0.6.0 and 0.7.0:
+Two more chain-level capabilities landed in 0.6.0 and 0.7.0 (the second is not
+usable on the live networks yet, see below):
 
 - **Unified eth-native accounts** — one `eth_secp256k1` key is one 20-byte
   identity rendered as `qor1…`, `0x…`, and an SVM base58 address, all sharing
@@ -66,7 +82,8 @@ Two more chain-level capabilities landed in 0.6.0 and 0.7.0:
   [Unified accounts](/sdk/concepts/accounts-pqc#unified-accounts).
 - **Authenticator lanes** — link a Phantom or MetaMask key to the canonical
   PQC-required account and let it spend through a relayer under
-  least-privilege, spending-limited, revocable terms. See
+  least-privilege, spending-limited, revocable terms. The `abstractaccount`
+  module behind it is switched off on both networks today. See
   [Authenticators & delegated spending](/sdk/guides/authenticators).
 
 A new **`@qorechain/react`** kit (provider, hooks, `ConnectButton`,
@@ -82,15 +99,15 @@ math, and read surfaces.
 
 | Package | Language | Install | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.7.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.7.0) |
-| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.7.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, latest published; 0.7.0 from the repo) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.7.0` | Published (Maven Central, v0.7.0) |
-| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.7.0) |
-| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.7.0) |
-| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.7.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.7.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.8.3) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.8.3) |
+| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.8.4`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.8.3) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | Published (Maven Central, v0.8.3) |
+| `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.8.0) |
+| `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.8.3) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.8.0) |
 
 > The Python distribution installs as `qorechain-sdk` but **imports as
 > `qorsdk`**. All clients are published to their registries — see
@@ -104,16 +121,16 @@ for every custom module plus the standard Cosmos modules, typed query clients,
 the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
 block/tx search), hybrid post-quantum transactions, and WebSocket
 subscriptions. All of these clients are **published**: TypeScript to npm
-(`@qorechain/sdk` 0.7.0), Python to PyPI (`qorechain-sdk` 0.7.0, import
-`qorsdk`), Go to the module proxy (tag `packages/go/v0.7.0`), Rust to
-crates.io (`qorechain-sdk`, latest published — the 0.7.0 crate publish is
-pending, so install from crates.io or from the repo), and Java to Maven
-Central (`io.github.qorechain:qorechain-sdk` 0.7.0). The EVM/SVM execution
-adapters (`@qorechain/evm`, `@qorechain/svm`, both 0.7.0), the
-`@qorechain/react` kit (0.7.0), and the `create-qorechain-dapp` scaffolding CLI
-(0.7.0) are TypeScript-only and likewise published to npm.
+(`@qorechain/sdk` 0.8.3), Python to PyPI (`qorechain-sdk` 0.8.3, import
+`qorsdk`), Go to the module proxy (tag `packages/go/v0.8.4`), Rust to crates.io
+(`qorechain-sdk` 0.8.3), and Java to Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.8.3). The EVM/SVM execution adapters
+(`@qorechain/evm`, `@qorechain/svm`, both 0.8.0), the `@qorechain/react` kit
+(0.8.3), and the `create-qorechain-dapp` scaffolding CLI (0.8.0) are
+TypeScript-only and likewise published to npm. See
+[Install](/sdk/install#related-packages) for the companion packages.
 
-## What's new in 0.6 and 0.7
+## What's new in 0.6, 0.7 and 0.8
 
 **0.6.0 — unified eth-native accounts (chain v3.1.83).** One `eth_secp256k1`
 key is one 20-byte identity rendered as all three address encodings, sharing
@@ -129,8 +146,8 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 ```
 
 Native-lane signing with the same key is `signClassicalEth` / `signHybridEth`,
-and `connectPhantomUnified` derives a non-custodial unified account from a
-deterministic Phantom signature. The legacy coin-type-118
+and a Phantom or MetaMask key is linked to the account as an authenticator
+(the Phantom-signature derivation was removed in 0.8.0). The legacy coin-type-118
 `deriveNativeAccount` is unchanged. See
 [Unified accounts](/sdk/concepts/accounts-pqc#unified-accounts).
 
@@ -138,7 +155,9 @@ deterministic Phantom signature. The legacy coin-type-118
 is now protobuf-encoded (it was JSON-encoded and rejected at CheckTx). Hybrid
 transactions built with SDK ≤ 0.6.0 are **rejected on-chain** — upgrade.
 
-**0.7.0 — authenticator lanes (chain v3.1.85).** A linked Phantom (ed25519) or
+**0.7.0 — authenticator lanes (chain v3.1.85).** The `abstractaccount` module
+behind them is currently switched off on both networks (see the
+[Authenticators guide](/sdk/guides/authenticators)). A linked Phantom (ed25519) or
 MetaMask (secp256k1, by 20-byte address) key can spend from the canonical
 PQC-required account through a relayer, under least-privilege, spending-limited,
 revocable terms: `MsgExecuteEVM` / `MsgExecuteCosmos` / `MsgRotatePQCKey`
@@ -147,6 +166,21 @@ composers, byte-exact `evmAuthSignBytes` / `cosmosAuthSignBytes` /
 and TypeScript wallet builders (`buildPhantomExecuteCosmos`,
 `buildMetaMaskExecuteEvm`, …). Full walkthrough with copy-pasteable examples:
 [Authenticators & delegated spending](/sdk/guides/authenticators).
+
+**0.8.0 – 0.8.3 — v2 hybrid sign-bytes and the EVM authorization window (chain
+v3.2.0).** The post-quantum half of a hybrid transaction is now signed in the form
+the target network verifies (v1 or v2, `signBytesVersion: "auto" | "v1" | "v2"`).
+Both public networks are on v2, so SDK **0.8.1 or later** is required to
+transact on mainnet. **0.8.2** adds `openEvmWindowMsg`, `closeEvmWindowMsg`,
+`fetchEvmWindow` and `classifyEvmWindowRejection` for the EVM-lane
+[authorization window](/sdk/guides/evm#evm-window).
+**0.8.0** removed the wallet-signature account helpers (`connectPhantomUnified` and
+`unifiedAccountFromPhantomSignature`, removed in 0.8.0), applies strict ML-DSA-87
+size checks in every language, and adds the `async` flag and returned callee data
+to cross-VM calls. **0.8.3** fixes tx search, React hook races, Python
+`migrate_to_hybrid` sequencing and address-form-independent canonical PQC
+derivation (`derivePqcCanonical`, `canonicalAccount`). See
+[Upgrade notes](/sdk/install#upgrade).
 
 ## Where to go next
 

@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-تُنفَّذ الاستعلامات على العقدة التي يشير إليها الخيار `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** (إصدار السلسلة **v3.1.97**) للحصول على بيانات حية، أو نقطة نهاية شبكة الاختبار **`qorechain-diana`** للاختبار. القيمة الافتراضية `tcp://localhost:26657` تستهدف عقدة تشغّلها بنفسك.
+تُنفَّذ الاستعلامات على العقدة التي يشير إليها الخيار `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** للحصول على بيانات حية (مثل `--node https://rpc.qore.host:443`)، أو نقطة نهاية شبكة الاختبار **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) للاختبار. القيمة الافتراضية `tcp://localhost:26657` تستهدف عقدة تشغّلها بنفسك. تشغّل الشبكة الرئيسية إصدار العقدة v3.2.1 وشبكة الاختبار v3.2.2؛ وقد تقدّم شبكة الاختبار بعض المسارات الإضافية التي لا تملكها الشبكة الرئيسية بعد، لذا قد يُرجع استعلام يعمل هناك `Not Implemented` على الشبكة الرئيسية.
 :::
 
 تنطبق الرايات (Flags) الشائعة على كل أمر فرعي من أوامر `query`:
@@ -25,409 +25,186 @@ qorechaind query <module> <command> [args] [flags]
 | `--output` | string | تنسيق الإخراج: `json` أو `text`                  |
 | `--height` | int    | الاستعلام عن الحالة عند ارتفاع كتلة محدد         |
 
+ليس لكل وحدة استعلام في سطر الأوامر. وحيثما يغيب أمر، استخدم نقطة نهاية REST (`https://api.qore.host/...`)؛ راجع [REST API](/api-reference/rest-grpc-endpoints).
+
 ---
 
 ## bank
 
-### balances
-
-الاستعلام عن جميع أرصدة حساب معيّن.
-
 ```bash
 qorechaind query bank balances <address>
+qorechaind query bank total-supply
+qorechaind query bank total-supply-of uqor
+qorechaind query bank spendable-balances <address>
 ```
 
-### total
-
-الاستعلام عن إجمالي المعروض من جميع الرموز.
-
-```bash
-qorechaind query bank total
-```
+(لا يوجد `query bank total`.)
 
 ---
 
 ## staking
 
-### validator
-
-الاستعلام عن مُدقِّق واحد باستخدام عنوان المشغّل.
-
 ```bash
 qorechaind query staking validator <validator_address>
-```
-
-### validators
-
-سرد جميع المدقِّقين.
-
-```bash
 qorechaind query staking validators
-```
-
-### delegation
-
-الاستعلام عن تفويض من مفوِّض إلى مُدقِّق.
-
-```bash
+qorechaind query staking validators --status BOND_STATUS_BONDED
 qorechaind query staking delegation <delegator_address> <validator_address>
-```
-
-### delegations
-
-الاستعلام عن جميع تفويضات مفوِّض معيّن.
-
-```bash
 qorechaind query staking delegations <delegator_address>
-```
-
-### unbonding-delegation
-
-الاستعلام عن تفويض قيد فك الارتباط.
-
-```bash
+qorechaind query staking delegations-to <validator_address>
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
+qorechaind query staking unbonding-delegations <delegator_address>
+qorechaind query staking redelegation <delegator_address> <src_validator> <dst_validator>
+qorechaind query staking params
+qorechaind query staking pool
 ```
+
+يقبل `--status` اسم التعداد (enum) الكامل: `BOND_STATUS_BONDED` أو `BOND_STATUS_UNBONDING` أو `BOND_STATUS_UNBONDED` (يُرفض `--status bonded`).
 
 ---
 
 ## distribution
 
-### rewards
-
-الاستعلام عن جميع مكافآت التفويض لمفوِّض معيّن.
-
 ```bash
 qorechaind query distribution rewards <delegator_address>
-```
-
-### commission
-
-الاستعلام عن عمولة المُدقِّق.
-
-```bash
 qorechaind query distribution commission <validator_address>
+qorechaind query distribution validator-outstanding-rewards <validator_address>
+qorechaind query distribution community-pool
+qorechaind query distribution params
 ```
 
 ---
 
 ## gov
 
-### proposal
-
-الاستعلام عن مقترح واحد باستخدام المعرّف.
-
 ```bash
+qorechaind query gov proposals
+qorechaind query gov proposals --proposal-status voting-period
 qorechaind query gov proposal <proposal_id>
-```
-
-### proposals
-
-سرد جميع المقترحات، مع إمكانية التصفية حسب الحالة.
-
-```bash
-qorechaind query gov proposals [flags]
-```
-
-| الراية     | النوع  | الوصف                                                                       |
-| ---------- | ------ | --------------------------------------------------------------------------- |
-| `--status` | string | التصفية حسب الحالة: `deposit_period`، `voting_period`، `passed`، `rejected` |
-
-### votes
-
-الاستعلام عن الأصوات على مقترح معيّن.
-
-```bash
 qorechaind query gov votes <proposal_id>
+qorechaind query gov vote <proposal_id> <voter_address>
+qorechaind query gov tally <proposal_id>
+qorechaind query gov params
+```
+
+يقبل `--proposal-status` القيم `deposit-period` أو `voting-period` أو `passed` أو `rejected` أو `failed`. عوامل تصفية أخرى: `--voter` و`--depositor`.
+
+---
+
+## tx
+
+```bash
+qorechaind query tx <txhash>
+qorechaind query txs --query "message.sender='<address>'"
 ```
 
 ---
 
 ## pqc
 
-### account
-
-الاستعلام عن حالة تسجيل مفتاح PQC لحساب معيّن.
-
 ```bash
 qorechaind query pqc account <address>
-```
-
-### algorithms
-
-سرد جميع خوارزميات PQC المدعومة.
-
-```bash
 qorechaind query pqc algorithms
-```
-
-### algorithm
-
-الاستعلام عن تفاصيل خوارزمية PQC محددة.
-
-```bash
-qorechaind query pqc algorithm <algorithm_name>
-```
-
-### stats
-
-الاستعلام عن إحصاءات تسجيل PQC المجمَّعة.
-
-```bash
+qorechaind query pqc algorithm dilithium5
 qorechaind query pqc stats
-```
-
-### params
-
-الاستعلام عن معاملات وحدة PQC.
-
-```bash
 qorechaind query pqc params
-```
-
-### migration
-
-الاستعلام عن حالة ترحيل مفتاح PQC لحساب معيّن.
-
-```bash
-qorechaind query pqc migration <address>
-```
-
-### hybrid-mode
-
-الاستعلام عن وضع فرض التوقيع الهجين الحالي.
-
-```bash
+qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
+qorechaind query pqc evm-window <address>
 ```
 
----
-
-## xqore
-
-### position
-
-الاستعلام عن مركز التحصيص (staking) في xQORE لعنوان معيّن.
-
-```bash
-qorechaind query xqore position <address>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة xQORE.
-
-```bash
-qorechaind query xqore params
-```
+- يقبل `algorithm` اسم خوارزمية (`dilithium5` أو `mlkem1024`) أو معرّفاً رقمياً.
+- يقبل `migration` **معرّف خوارزمية** (مثل `1`)، وليس عنواناً، ويُبلغ عن `No active migration` عندما لا توجد عملية ترحيل جارية.
+- يعرض `evm-window` ما إذا كان للعنوان نافذة تفويض مفتوحة على مسار EVM وكم كتلة ومعاملة وقيمة متبقية (`found` و`live` و`remaining_blocks` و`remaining_txs` و`remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## burn
 
-### stats
-
-الاستعلام عن إحصاءات الحرق عبر جميع القنوات.
+لا تملك وحدة الحرق (burn) استعلاماً في سطر الأوامر. استخدم REST:
 
 ```bash
-qorechaind query burn stats
+curl -s https://api.qore.host/qorechain/burn/v1/params
+curl -s https://api.qore.host/qorechain/burn/v1/stats
+curl -s https://api.qore.host/qorechain/burn/v1/records
+curl -s https://api.qore.host/qorechain/burn/v1/milestone
+curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-### params
-
-الاستعلام عن معاملات وحدة الحرق.
-
-```bash
-qorechaind query burn params
-```
+يُبلغ `stranded_rewards` عن حصة المخزِّنين (stakers) التي أُودعت في وحدة التوزيع دون أن تغطي أي مطالبة، كما سُجّلت عند الترقية إلى v3.2.0 (`reserved` و`released` و`snapshot_height`). ولا يمكن الإفراج عنها إلا بتصويت حوكمة.
 
 ---
 
-## inflation
+## mint وinflation
 
-### rate
-
-الاستعلام عن معدل التضخم السنوي الحالي.
-
-```bash
-qorechaind query inflation rate
-```
-
-### epoch
-
-الاستعلام عن رقم الحقبة (epoch) الحالية ومدى تقدمها.
-
-```bash
-qorechaind query inflation epoch
-```
-
-### params
-
-الاستعلام عن معاملات وحدة التضخم.
-
-```bash
-qorechaind query inflation params
-```
+يقرأ `qorechaind query mint params|inflation|annual-provisions` وحدة mint القياسية التي معدّلها `0` على الشبكتين؛ وهو **لا** يُبلغ عن جدول الإصدار الخاص بالبروتوكول. لا يوجد أمر `query inflation`.
 
 ---
 
 ## ai
 
-### config
-
-الاستعلام عن تكوين وحدة الذكاء الاصطناعي.
-
 ```bash
 qorechaind query ai config
-```
-
-### stats
-
-الاستعلام عن إحصاءات معالجة الذكاء الاصطناعي المجمَّعة.
-
-```bash
 qorechaind query ai stats
-```
-
-### fee-estimate
-
-الحصول على تقدير لرسوم الغاز بمساعدة الذكاء الاصطناعي.
-
-```bash
-qorechaind query ai fee-estimate [flags]
-```
-
-| الراية      | النوع  | الوصف                            |
-| ----------- | ------ | -------------------------------- |
-| `--tx-type` | string | نوع المعاملة المستخدم في التقدير |
-| `--urgency` | string | `low`، `medium`، `high`          |
-
-### investigations
-
-سرد تحقيقات الاحتيال النشطة.
-
-```bash
-qorechaind query ai investigations
-```
-
-### recommendations
-
-الحصول على توصيات لتحسين الشبكة مولَّدة بالذكاء الاصطناعي.
-
-```bash
-qorechaind query ai recommendations
-```
-
-### circuit-breakers
-
-الاستعلام عن حالات قواطع الدائرة الحالية.
-
-```bash
-qorechaind query ai circuit-breakers
 ```
 
 ---
 
-## reputation
-
-### validators
-
-الاستعلام عن درجات السمعة لجميع المدقِّقين.
+## reputation وqca
 
 ```bash
-qorechaind query reputation validators
+qorechaind query reputation params
+qorechaind query qca config
 ```
 
-### validator
+لا توجد استعلامات سمعة لكل مُدقِّق ولا استعلامات تصنيف المجمّعات (pools).
 
-الاستعلام عن درجة السمعة لمُدقِّق محدد.
+---
+
+## lightnode
 
 ```bash
-qorechaind query reputation validator <validator_address>
+qorechaind query lightnode params
+qorechaind query lightnode stats
+qorechaind query lightnode light-nodes
+qorechaind query lightnode light-node <operator_address>
+qorechaind query lightnode rewards <operator_address>
+qorechaind query lightnode reward-pool
 ```
+
+يعرض `reward-pool` كيف ينقسم رصيد مكافآت الوحدة إلى `reserved` و`outstanding` و`payable` و`distributable`.
+
+---
+
+## license
+
+```bash
+qorechaind query license check <grantee_address> <feature_id>
+qorechaind query license holders <feature_id>
+qorechaind query license list <grantee_address>
+```
+
+يُرجع `check` الخطأ `NotFound` عندما لا يحمل المستفيد ترخيصاً للميزة.
 
 ---
 
 ## bridge
 
-### chains
-
-سرد جميع سلاسل الجسر المسجَّلة.
-
 ```bash
+qorechaind query bridge config
 qorechaind query bridge chains
-```
-
-### chain
-
-الاستعلام عن تفاصيل سلسلة مجسورة محددة.
-
-```bash
 qorechaind query bridge chain <chain_id>
-```
-
-### validators
-
-سرد مدقِّقي الجسر النشطين.
-
-```bash
 qorechaind query bridge validators
-```
-
-### operations
-
-سرد عمليات الجسر الأخيرة.
-
-```bash
 qorechaind query bridge operations
-```
-
-| الراية     | النوع  | الوصف                                     |
-| ---------- | ------ | ----------------------------------------- |
-| `--status` | string | التصفية: `pending`، `completed`، `failed` |
-| `--chain`  | string | التصفية حسب معرّف السلسلة                 |
-
-### limits
-
-الاستعلام عن حدود المعدل لسلسلة مجسورة.
-
-```bash
-qorechaind query bridge limits <chain_id>
-```
-
-### estimate
-
-تقدير رسوم الجسر ووقت التحويل.
-
-```bash
-qorechaind query bridge estimate <chain_id> <amount> <asset>
+qorechaind query bridge operation <operation_id>
 ```
 
 ---
 
 ## crossvm
 
-### message
-
-استرجاع رسالة عابرة للأجهزة الافتراضية (cross-VM) باستخدام المعرّف.
-
 ```bash
 qorechaind query crossvm message <message_id>
-```
-
-### pending
-
-سرد الرسائل العابرة للأجهزة الافتراضية المعلَّقة.
-
-```bash
 qorechaind query crossvm pending
-```
-
-### params
-
-الاستعلام عن معاملات وحدة Cross-VM.
-
-```bash
 qorechaind query crossvm params
 ```
 
@@ -435,35 +212,10 @@ qorechaind query crossvm params
 
 ## svm
 
-### account
-
-الاستعلام عن معلومات حساب SVM.
-
 ```bash
-qorechaind query svm account <pubkey>
-```
-
-### program
-
-الاستعلام عن معلومات برنامج SVM منشور.
-
-```bash
-qorechaind query svm program <program_id>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة SVM.
-
-```bash
+qorechaind query svm account <base58_address>
+qorechaind query svm program <base58_address>
 qorechaind query svm params
-```
-
-### slot
-
-الاستعلام عن رقم فتحة (slot) SVM الحالية.
-
-```bash
 qorechaind query svm slot
 ```
 
@@ -471,64 +223,10 @@ qorechaind query svm slot
 
 ## multilayer
 
-### layer
-
-الاستعلام عن تفاصيل طبقة محددة.
-
 ```bash
 qorechaind query multilayer layer <layer_id>
-```
-
-### layers
-
-سرد جميع الطبقات المسجَّلة.
-
-```bash
 qorechaind query multilayer layers
-```
-
-### anchor
-
-الاستعلام عن سجل إرساء (anchor) محدد.
-
-```bash
-qorechaind query multilayer anchor <anchor_id>
-```
-
-### anchors
-
-سرد عمليات إرسال الإرساء الأخيرة.
-
-```bash
-qorechaind query multilayer anchors [flags]
-```
-
-| الراية       | النوع  | الوصف                             |
-| ------------ | ------ | --------------------------------- |
-| `--layer-id` | string | التصفية حسب معرّف الطبقة          |
-| `--limit`    | uint   | الحد الأقصى لعدد النتائج المعادة  |
-
-### routing-stats
-
-الاستعلام عن إحصاءات توجيه المعاملات عبر الطبقات.
-
-```bash
 qorechaind query multilayer routing-stats
-```
-
-### simulate-route
-
-محاكاة توجيه المعاملة دون تنفيذها.
-
-```bash
-qorechaind query multilayer simulate-route <tx_data_hex>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة Multilayer.
-
-```bash
 qorechaind query multilayer params
 ```
 
@@ -536,218 +234,79 @@ qorechaind query multilayer params
 
 ## rdk
 
-### rollup
-
-الاستعلام عن تفاصيل تجميع (rollup) محدد.
-
 ```bash
+qorechaind query rdk config
 qorechaind query rdk rollup <rollup_id>
+qorechaind query rdk list-rollups
+qorechaind query rdk batch <rollup_id>            # latest batch
+qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-### rollups
-
-سرد جميع التجميعات المسجَّلة.
-
-```bash
-qorechaind query rdk rollups
-```
-
-| الراية     | النوع  | الوصف                                  |
-| ---------- | ------ | -------------------------------------- |
-| `--status` | string | التصفية: `active`، `paused`، `stopped` |
-
-### batch
-
-الاستعلام عن دفعة تسوية محددة.
-
-```bash
-qorechaind query rdk batch <rollup_id> <batch_index>
-```
-
-### latest-batch
-
-الاستعلام عن أحدث دفعة لتجميع معيّن.
-
-```bash
-qorechaind query rdk latest-batch <rollup_id>
-```
-
-### suggest-profile
-
-الحصول على توصية بملف تعريف للتجميع بمساعدة الذكاء الاصطناعي.
-
-```bash
-qorechaind query rdk suggest-profile <use_case>
-```
-
-### blob
-
-الاستعلام عن كتلة بيانات (DA blob) محددة.
-
-```bash
-qorechaind query rdk blob <rollup_id> <blob_index>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة RDK.
-
-```bash
-qorechaind query rdk params
-```
-
-:::note
-يمكن أيضًا الاستعلام عن إثباتات سحب التجميعات وحالة التسوية ضمن مجموعة `rdk`. تعتمد الأوامر الفرعية للاستعلام ووسائطها الدقيقة على نوع التسوية الخاص بتجميعك؛ راجع وثائق **Rollup Development Kit** للاطلاع على الواجهة المرجعية لاستعلامات السحب/التسوية.
-:::
+يعرض `config` معاملات الوحدة (الحد الأدنى للحصة، ومعدل الحرق عند الإنشاء، ونافذة التحدي، وحدود DA). أما `suggest-profile <use_case>` فلا يستعلم عن السلسلة؛ بل يطبع فقط إشارة إلى طريقة JSON-RPC لا تقدّمها نقاط النهاية العامة، لذا اختر ملفاً من [الملفات الجاهزة](/rollups/preset-profiles).
 
 ---
 
 ## rlconsensus
 
-‏PRISM هي طبقة التعلم المعزَّز التي تضبط معاملات الإجماع. اسم وحدة CLI وهو `rlconsensus` وأوامرها الفرعية محفوظة كما هي حرفيًا.
-
-### agent-status
-
-الاستعلام عن حالة وكيل PRISM الحالية ووضعه.
-
 ```bash
 qorechaind query rlconsensus agent-status
-```
-
-### observation
-
-الاستعلام عن أحدث متجه ملاحظات لـ PRISM.
-
-```bash
 qorechaind query rlconsensus observation
-```
-
-### reward
-
-الاستعلام عن مقاييس مكافآت PRISM التراكمية.
-
-```bash
 qorechaind query rlconsensus reward
-```
-
-### params
-
-الاستعلام عن معاملات وحدة إجماع PRISM.
-
-```bash
 qorechaind query rlconsensus params
-```
-
-### policy
-
-الاستعلام عن تكوين سياسة PRISM النشطة.
-
-```bash
 qorechaind query rlconsensus policy
-```
-
----
-
-## babylon
-
-### staking
-
-الاستعلام عن مركز تحصيص BTC لعنوان معيّن.
-
-```bash
-qorechaind query babylon staking <address>
-```
-
-### checkpoint
-
-الاستعلام عن بيانات نقطة تحقق BTC لحقبة معيّنة.
-
-```bash
-qorechaind query babylon checkpoint <epoch>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة Babylon.
-
-```bash
-qorechaind query babylon params
 ```
 
 ---
 
 ## abstractaccount
 
-### account
-
-الاستعلام عن تفاصيل الحساب المجرَّد.
+وحدة الحسابات المجرَّدة متوقفة حالياً على الشبكتين (`config.enabled` تساوي `false`)، لذا لا تُرجع هذه الاستعلامات أي حسابات.
 
 ```bash
+qorechaind query abstractaccount config
+qorechaind query abstractaccount accounts
 qorechaind query abstractaccount account <address>
-```
-
-### params
-
-الاستعلام عن معاملات وحدة Abstract Account.
-
-```bash
-qorechaind query abstractaccount params
-```
-
-### permission-schema
-
-الاستعلام عن التصنيف المعياري لأذونات المصادِقات (authenticators) — الأذونات الأحد عشر، وخريطة الرسالة→الإذن، ورسائل إدارة المفاتيح غير القابلة للتفويض (متاح اعتبارًا من إصدار السلسلة **v3.1.85**؛ ويُقدَّم أيضًا عبر REST على المسار `/qorechain/abstractaccount/v1/permission_schema`).
-
-```bash
 qorechaind query abstractaccount permission-schema
 ```
 
-### auth-keygen / auth-sign-cosmos / auth-sign-evm
-
-أدوات مساعدة لبناء تفويضات المصادِقات خارج حِزم SDK: توليد مفتاح اختباري، أو إنتاج **بايتات التوقيع الدقيقة التي تتحقق منها السلسلة** لإجراء مفوَّض عبر مسار Native أو مسار EVM (متاح اعتبارًا من إصدار السلسلة **v3.1.85**).
-
-```bash
-qorechaind query abstractaccount auth-keygen
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
-```
+تبني `auth-keygen` و`auth-sign-cosmos <chain_id> <account> <to> <amount> <nonce>` و`auth-sign-evm <chain_id> <account> <to_0x> <value_wei> <data_hex> <nonce>` تواقيع المصادقة دون اتصال. بذرة المصادقة ليست وسيطاً أبداً: تُقرأ من `--seed-file <file>` (أو `-` للإدخال القياسي)، أو من متغير البيئة `QORE_AUTH_SEED`، أو من مطالبة بلا صدى، وتكتبها `auth-keygen` في ملف `0600` جديد (`--out`) بدلاً من طباعتها.
 
 ---
 
 ## gasabstraction
 
-### accepted-tokens
+لا تقدّم الشبكة الرئيسية استعلامات تجريد الغاز بعد (يطبع `qorechaind query gasabstraction ...` نص المساعدة ويُرجع مسار REST الرمز `Not Implemented`). تُدفع الرسوم بـ `uqor` فقط؛ راجع [تجريد الغاز](/user-guide/gas-abstraction).
 
-سرد الرموز المقبولة لدفع رسوم الغاز.
+---
 
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-### params
-
-الاستعلام عن معاملات وحدة Gas Abstraction.
+## circuit, feemarket, upgrade
 
 ```bash
-qorechaind query gasabstraction params
+qorechaind query circuit disabled-list        # message types switched off network-wide
+qorechaind query feemarket params
+qorechaind query feemarket base-fee
+qorechaind query upgrade plan
+qorechaind query upgrade applied <upgrade_name>
+qorechaind query upgrade module-versions
 ```
 
 ---
 
-## fairblock
-
-### config
-
-الاستعلام عن تكوين تشفير FairBlock.
+## evm, erc20, wasm
 
 ```bash
-qorechaind query fairblock config
+qorechaind query evm params
+qorechaind query evm balance-bank <0x_address> uqor
+qorechaind query erc20 token-pairs
+qorechaind query wasm params
+qorechaind query wasm list-code
+qorechaind query wasm list-contract-by-code <code_id>
+qorechaind query wasm contract <contract_address>
+qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
 
-### params
+---
 
-الاستعلام عن معاملات وحدة FairBlock.
+## وحدات بلا سطر أوامر
 
-```bash
-qorechaind query fairblock params
-```
+ليس لدى `xqore` و`babylon` و`fairblock` أوامر معاملات أو استعلام. ولا يمكن استخدامها من سطر الأوامر أو من أي واجهة برمجة عامة في الوقت الحالي.

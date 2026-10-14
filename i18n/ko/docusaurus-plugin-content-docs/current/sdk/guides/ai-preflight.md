@@ -7,14 +7,27 @@ sidebar_position: 5
 
 # AI 프리플라이트 가이드
 
-QoreChain은 모든 dApp에 **온체인 AI 위험/이상 탐지 모델**을 노출하는 최초의
-네트워크입니다. 두 개의 읽기 전용 EVM 프리컴파일을 통해 트랜잭션이 서명되거나
-브로드캐스트되기 *전에*, 오직 `eth_call`만으로 트랜잭션을 점수화할 수 있습니다:
+QoreChain은 dApp이 EVM에서 읽을 수 있는 **온체인 AI 위험/이상 탐지 모델**을
+정의합니다. 두 개의 읽기 전용 EVM 프리컴파일은 트랜잭션이 서명되거나
+브로드캐스트되기 *전에*, 오직 `eth_call`만으로 트랜잭션을 점수화할 수 있도록
+하기 위한 것입니다:
 
 | 기능 | 프리컴파일 | 주소 |
 |---|---|---|
 | 콜데이터에 대한 위험 점수 | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
 | `(sender, amount)`에 대한 이상 검사 | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+
+:::caution 현재 공개 네트워크에서는 사용할 수 없습니다
+`simulateWithRiskScore`, `aiRiskScore`, `aiAnomalyCheck`는 `0x…0B01` / `0x…0B02`의
+프리컴파일을 읽습니다. 정적 프리컴파일은 해당 주소가 EVM 모듈의
+`active_static_precompiles` 파라미터에 있을 때만 응답하는데, 이 목록은
+`qorechain-vladi`(메인넷)와 `qorechain-diana`(테스트넷) 모두에서 비어 있습니다.
+공개 엔드포인트에 호출하면 빈 데이터(`0x`)가 반환되고 이 헬퍼들은 에러를 던집니다
+(예: `returned no data ("0x")`). 프리컴파일이 활성화된 네트워크나 노드에서만
+동작합니다. 먼저 `GET /cosmos/evm/vm/v1/params`를 확인하고,
+[EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를
+참고하세요.
+:::
 
 구현은 `@qorechain/evm`([viem](https://viem.sh) 위의 EVM 어댑터)에 들어 있으며,
 검색 편의를 위해 `@qorechain/sdk`에서 다시 내보냅니다.
@@ -31,7 +44,7 @@ QoreChain은 모든 dApp에 **온체인 AI 위험/이상 탐지 모델**을 노�
 import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
 const { publicClient } = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" },
 });
 
 const preflight = await simulateWithRiskScore(publicClient, {
@@ -84,9 +97,10 @@ import { AI_RISK_SCORE_ADDRESS, AI_ANOMALY_CHECK_ADDRESS } from "@qorechain/evm"
 
 ## 가용성
 
-AI 프리컴파일은 QoreChain 네트워크 노드에 존재합니다. 일반 EVM 노드에서는 호출이
-"not available" 에러를 던집니다 — 이 헬퍼 중 어느 것에서든 던져진 에러는 "이 노드에
-기능이 존재하지 않음"으로 취급하세요.
+헬퍼는 조회하는 노드에서 프리컴파일이 활성화되어 있지 않으면 항상 에러를 던집니다.
+공개 네트워크에서는 현재 항상 그러하며, 일반 EVM 노드에서도 마찬가지입니다.
+이 헬퍼 중 어느 것에서든 던져진 에러는 "이 노드에 기능이 존재하지 않음"으로
+취급하세요.
 
 전체 프리컴파일 목록은 [EVM 가이드](/sdk/guides/evm)를, 실행 가능한 예제는
 [`ai-preflight` 예제](https://github.com/qorechain/qorechain-sdk/tree/main/examples/ai-preflight)를

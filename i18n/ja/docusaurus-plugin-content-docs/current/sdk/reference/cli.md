@@ -19,34 +19,43 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm に `create-qorechain-dapp`（`0.3.0`）として公開されています。
+> npm には `create-qorechain-dapp`（`0.8.0`）として公開されています。生成される
+> `package.json` ファイルは `@qorechain/sdk` / `@qorechain/evm` を `^0.3.0` に固定しており、
+> npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
+> スキャフォールド後に `npm i @qorechain/sdk@latest`（EVM テンプレートでは
+> `npm i @qorechain/evm@latest` も）を実行してください。
 
 ## テンプレート
 
 | テンプレート | 説明 |
 | --- | --- |
-| `evm-solidity` | Solidity の `Counter` コントラクト + viem のデプロイ/操作スクリプト（`@qorechain/evm`）。 |
+| `evm-solidity` | Solidity の `Counter` コントラクト + viem によるデプロイ/操作スクリプト（`@qorechain/evm`）。 |
 | `fullstack-web` | 残高とトークノミクスを読み取る Vite + React + TypeScript の dApp（`@qorechain/sdk`）。 |
+| `rollup-app` | `RollupClient` と multilayer ヘルパーを使うロールアップ + サイドチェーン/ペイチェーンのアプリ（`@qorechain/sdk`）。 |
+
+`fullstack-web` テンプレートは、トークノミクスの概要を `client.qor` 経由で読み取ります。これは
+公開エンドポイントが提供していない `qor_` JSON-RPC 呼び出しであるため、メインネットとテストネットでは
+そのパネルにエラーが表示されます（残高の読み取りは動作します）。公開ネットワークでは、
+`client.rest.getBurnStats()` のような REST 読み取りに切り替えてください。
 
 ## オプション
 
 | フラグ | 説明 |
 | --- | --- |
-| `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web`）。 |
+| `-t, --template <name>` | 使用するテンプレート（`evm-solidity` \| `fullstack-web` \| `rollup-app`）。 |
 | `--network <name>` | ネットワークプリセット（`testnet` \| `mainnet`）。 |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`。 |
 | `-y, --yes` | プロンプトをスキップしてデフォルトを使用します。 |
 | `--no-install` | スキャフォールド後に依存関係をインストールしません。 |
-| `--local` | `@qorechain/*` の依存関係を、SDK モノレポへのローカルな `file:` リンクに書き換えます。 |
+| `--local` | `@qorechain/*` の依存関係を、SDK モノレポへのローカルの `file:` リンクに書き換えます。 |
 | `-h, --help` | ヘルプを表示します。 |
-| `-v, --version` | バージョンを出力します。 |
+| `-v, --version` | バージョンを表示します。 |
 
 ## ワークスペースに対するローカル開発
 
-`@qorechain/*` パッケージは npm に公開されています。公開後は通常の
-`npm install` で動作します。それ以前は、`--local` を使用してスキャフォールドした
-プロジェクトをモノレポのパッケージに向けます（先に `pnpm -r build` でビルド
-してください）:
+`@qorechain/*` パッケージは npm に公開されているため、通常の `npm install` で動作します。
+代わりに、スキャフォールドしたプロジェクトをモノレポのパッケージに向けるには
+`--local` を使用します（先に `pnpm -r build` でビルドしてください）。
 
 ```bash
 npx create-qorechain-dapp my-dapp --template fullstack-web --local

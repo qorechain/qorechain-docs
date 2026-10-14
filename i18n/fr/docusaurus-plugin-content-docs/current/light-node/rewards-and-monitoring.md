@@ -7,69 +7,91 @@ sidebar_position: 5
 
 # Récompenses et surveillance
 
-Un light node **gagne des récompenses** tout en devant **rester en bonne santé** pour continuer à les gagner. Cette page couvre la part de 3 % des récompenses de bloc réservée aux light nodes, le fonctionnement du staking délégué et de la capitalisation automatique, ainsi que la surveillance du nœud.
+Un light node enregistré est crédité d'une part de l'allocation des light nodes et **doit rester en bonne santé** pour continuer à y être éligible. Cette page couvre la part de récompenses de 3 % réservée aux light nodes, la manière dont les récompenses sont créditées et réclamées, ce que le nœud fait et ne fait pas avec les délégations, ainsi que la surveillance du nœud.
+
+:::note L'inscription au programme de récompenses n'est pas encore ouverte
+Aucun light node n'est encore enregistré sur l'un ou l'autre réseau, car l'enregistrement nécessite une licence `lightnode_operator` et aucune n'a été accordée. La comptabilité des récompenses décrite ici est active on-chain, mais rien n'est versé aux nœuds aujourd'hui et rien sur cette page ne constitue une promesse de gains. Voir [Statut du programme de récompenses](/light-node/overview#reward-program-status).
+:::
 
 ## La part de 3 % des récompenses de bloc
 
 La distribution des frais de QoreChain réserve une part fixe de **3 % aux light nodes** qui servent des données réseau. C'est l'une des cinq destinations de la répartition des récompenses du protocole — validateurs (37 %), brûlés (30 %), trésorerie (20 %), stakers (10 %) et **light nodes (3 %)** — appliquée on-chain. Voir [Tokenomics](/architecture/tokenomics) pour la répartition complète.
 
-Pour être éligible à cette part, un nœud doit remplir trois conditions, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active, un minimum de **1 000 QOR délégués** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur — et des frais d'enregistrement on-chain de **1 QOR**. La participation est également plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et des licences, y compris le statut actuel de l'inscription au programme de récompenses.
+Pour participer à cette part, un nœud doit remplir les conditions suivantes, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active (vérifiée lors de l'enregistrement), au moins **1 000 QOR bondés** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur, exigés lors de l'enregistrement et relus depuis le staking à chaque crédit de récompenses — et des frais d'enregistrement de **1 QOR**, payés une seule fois lors de l'enregistrement. La participation est plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et [Statut du programme de récompenses](/light-node/overview#reward-program-status) pour savoir si l'inscription est ouverte.
 
-Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle d'environ **1 000 blocs (~39 minutes)**.
+Les 3 % correspondent à ce qui afflue dans le module light-node, et non à un droit par nœud : chaque nœud éligible est crédité de sa part, pondérée par le stake, de ce qui s'est accumulé, plafonnée par nœud par `max_reward_per_block_per_node` (actuellement `1713` uqor par bloc, mis à l'échelle selon la disponibilité), et tout ce qui n'est pas gagné va dans une réserve que seul un vote de gouvernance peut libérer. Voir [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share).
 
-**La fenêtre de soumission est étroite des deux côtés, pas seulement du côté tardif.** Un heartbeat n'est accepté qu'entre environ **votre dernier heartbeat accepté + 1 000 blocs et +1 100 blocs** (environ 4 minutes, une fois toutes les ~39 minutes) — le soumettre trop tôt le fait rejeter tout comme le soumettre trop tard.
+Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle de **1 000 blocs** (environ 54 minutes sur le mainnet, pour un temps de bloc moyen mesuré d'environ 3,2 s ; environ 17 minutes sur le testnet, qui produit un bloc à peu près toutes les secondes).
 
-**Manquer la fenêtre coûte de la disponibilité, pas votre enregistrement.** Un nœud qui manque la fenêtre est marqué inactif et cesse de gagner la part, mais le tout prochain heartbeat réussi le réactive — il n'y a pas de réenregistrement à effectuer. Notez également que le compteur interne du daemon vers le prochain heartbeat continue d'avancer même si une tentative de soumission échoue, et se réinitialise au redémarrage, si bien qu'un nœud peut se retrouver marqué inactif sans faute de la part de l'opérateur ; vérifiez `status` plutôt que de supposer qu'une marque inactive signifie qu'une configuration est erronée.
+**Les règles de timing.** La chaîne rejette un heartbeat envoyé **moins de 1 000 blocs après le précédent** (`heartbeat submitted too early`) ; votre premier heartbeat après l'enregistrement n'a pas de telle limite inférieure. Si aucun heartbeat n'arrive dans les **1 000 + 100 blocs** (le `heartbeat_interval` plus le `heartbeat_grace_period` ; sur le mainnet, environ 54 minutes plus un délai de grâce d'environ 5 minutes) suivant le dernier — ou suivant l'enregistrement, si vous n'en avez pas envoyé —, le nœud est marqué inactif et cesse d'être crédité. Un heartbeat envoyé plus tard est tout de même accepté et le réactive. Le daemon envoie le heartbeat suivant dès que 1 000 blocs se sont écoulés depuis le `last_heartbeat` propre à la chaîne pour votre nœud, en vérifiant toutes les 60 secondes.
+
+**Manquer la fenêtre coûte de la disponibilité, pas votre enregistrement.** Un nœud qui la manque est marqué inactif et cesse de gagner, mais le tout prochain heartbeat réussi le réactive — il n'y a pas de réenregistrement à effectuer. Votre **disponibilité (uptime)** est le ratio courant entre les heartbeats reçus et les heartbeats attendus (un par tranche de 1 000 blocs) depuis le bloc de votre enregistrement, plafonné à 1. En dessous du seuil `min_uptime_for_rewards` (`0.80`), un nœud ne gagne rien ; à ce seuil ou au-dessus, le plafond par nœud est mis à l'échelle selon votre disponibilité. Une longue interruption fait donc baisser le ratio, qui ne remonte qu'à mesure que des heartbeats ponctuels s'accumulent. Vérifiez `status` si un nœud apparaît comme inactif : il indique l'état du signataire, de la licence et de l'enregistrement.
 
 :::note Ce qu'un heartbeat prouve réellement
 Un heartbeat réussi prouve que la clé de l'opérateur a signé à temps — il ne prouve pas qu'un nœud exécute en continu l'intégralité du logiciel. Considérez-le comme une signature de vivacité, et non comme une « vérification qu'il s'agit d'un nœud actif ».
 :::
 
 :::note `last_heartbeat` est une hauteur de bloc, pas un horodatage
-Si vous interrogez directement l'enregistrement on-chain d'un nœud, `last_heartbeat` est une hauteur de bloc, et une valeur de `0` signifie que le nœud n'en a encore jamais envoyé — la chaîne indique alors sa hauteur `registered_at` en remplacement. Le lire comme un calcul naïf de temps écoulé fait apparaître un nœud fraîchement enregistré comme s'il avait des millions de blocs de retard.
+Si vous interrogez directement l'enregistrement on-chain d'un nœud, `last_heartbeat` est une hauteur de bloc, et une valeur de `0` signifie qu'aucun heartbeat n'a encore été enregistré — la chaîne mesure alors l'échéance d'inactivité à partir de la hauteur `registered_at` du nœud. Lire `0` comme un calcul naïf de temps écoulé fait apparaître un nœud fraîchement enregistré comme s'il avait des millions de blocs de retard.
 :::
 
-*Éligibilité aux récompenses : détenir une licence on-chain active et le stake délégué minimum, s'enregistrer, puis continuer à prouver sa vivacité via des heartbeats pour rester au-dessus des seuils de disponibilité et d'intervalle de heartbeat qui maintiennent le versement de la part.*
+*Éligibilité aux récompenses : détenir une licence on-chain active et le stake bondé minimum, s'enregistrer, puis continuer à prouver sa vivacité via des heartbeats pour rester au-dessus des seuils de disponibilité et d'intervalle de heartbeat.*
 
 ```mermaid
 flowchart LR
-    A["Register on-chain"] --> B["Submit heartbeat<br/>liveness proofs"]
-    B --> C{"Synced and<br/>proving liveness?"}
-    C -- "yes" --> D["Active status<br/>eligible for 3% light-node share"]
-    C -- "stalled / offline" --> E["Not eligible<br/>(no share)"]
+    A["Enregistrement on-chain"] --> B["Envoi des preuves<br/>de vivacité (heartbeats)"]
+    B --> C{"Synchronisé et<br/>prouve sa vivacité ?"}
+    C -- "oui" --> D["Statut actif<br/>éligible aux récompenses des light nodes"]
+    C -- "bloqué / hors ligne" --> E["Non éligible<br/>(aucune part)"]
     E --> B
-    D --> F["Earn 3% fee share<br/>+ staking rewards"]
-    F --> G["Auto-compound:<br/>claim and re-delegate"]
+    D --> F["Crédité de sa part<br/>(plafonnée par nœud)"]
+    F --> G["Réclamation vers le<br/>compte de l'opérateur"]
     G --> D
 ```
 
-## Fonctionnement des récompenses
+## Fonctionnement des récompenses {#how-rewards-work}
 
-Au-delà de la part réservée aux light nodes, le nœud gère le stake délégué et les récompenses de staking qu'il produit. Le comportement est piloté par la section `[delegation]` de `config.toml`.
+### Crédit
 
-### Staking délégué avec répartition multi-validateurs
+Toutes les 100 blocs, la chaîne crédite chaque nœud éligible (actif, avec au moins le stake bondé minimum et au moins la disponibilité minimale) de sa part de ce qui s'est accumulé, plafonnée par nœud comme décrit dans [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share). Le montant est ajouté aux `accumulated_rewards` du nœud. Lisez-le avec :
 
-Vous pouvez déléguer sur **plusieurs validateurs** plutôt que de concentrer le stake sur un seul. Le nœud suit chaque délégation et la part de stake attribuée à chaque validateur à l'aide de **poids de répartition** configurables, ce qui permet de répartir le risque sur l'ensemble.
+```bash
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+# or: qorechaind query lightnode rewards <operator-address>
+```
 
-### Capitalisation automatique des récompenses
+(Utilisez `https://api-testnet.qore.host` pour le testnet.)
 
-Le nœud peut **réclamer les récompenses et les re-déléguer automatiquement** selon un intervalle configurable. Par défaut, la capitalisation automatique est activée sur un intervalle de `1h`, avec un seuil minimal de récompense (en `uqor`) devant s'accumuler avant qu'une réclamation ne soit déclenchée. La capitalisation transforme les récompenses gagnées en stake supplémentaire sans intervention manuelle.
+### Réclamation
 
-### Rééquilibrage tenant compte de la réputation
+Les récompenses créditées restent sur l'enregistrement du nœud jusqu'à ce que vous les réclamiez. Réclamez avec la même paire génération puis co-signature que celle utilisée pour l'enregistrement :
 
-Lorsque le rééquilibrage est activé, le nœud peut **déplacer la délégation vers des validateurs à réputation plus élevée** automatiquement, sous réserve d'un score de réputation minimal configurable. Cela permet de garder le stake actif auprès des validateurs qui performent bien plutôt que de le laisser auprès de ceux dont la performance s'est dégradée.
+```bash
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+```
+
+Vous pouvez aussi définir `auto_claim = true` sous `[delegation]` : le daemon réclame alors les récompenses de light node accumulées vers le compte de l'opérateur via le signataire dès qu'elles dépassent `min_reward_claim` (par défaut `1000000` uqor, soit 1 QOR), en vérifiant toutes les `compound_interval` (par défaut `1h`). La réclamation automatique est **désactivée par défaut**, et elle ne fait que réclamer : le nœud ne re-délègue jamais et ne déplace jamais de stake. `qorechaind tx lightnode deregister` supprime l'enregistrement et verse tout ce qui est encore crédité ; les frais d'enregistrement ne sont pas remboursés.
+
+### Suivi des délégations et alertes de réputation
+
+Le nœud reflète les délégations du compte de l'opérateur depuis la chaîne toutes les cinq minutes. Lorsque `rebalance_enabled` est activé (par défaut), il vérifie aussi le score de réputation de chaque validateur auquel vous déléguez et consigne un avertissement pour tout score inférieur à `min_reputation` (par défaut `0.5`). Il ne déplace pas de stake : modifiez les délégations depuis votre propre portefeuille. (Les options `validators` et `split_weights` de `[delegation]` sont acceptées mais ne sont pas exploitées pour l'instant.)
 
 ### Inspection des récompenses et des délégations
 
-L'édition SX expose des commandes pour inspecter cet état :
-
 ```bash
-lightnode-sx delegation   # current delegations and their split
-lightnode-sx rewards      # pending staking rewards (uqor)
 lightnode-sx validators   # the bonded validator set
 ```
 
-Dans l'édition UX, la vue **Delegation** affiche les mêmes informations de délégation et de récompenses dans le navigateur.
+:::caution Limitation connue dans la v3.1.3 / v3.1.4
+`lightnode-sx delegation`, `lightnode-sx rewards` et la vue **Delegation** de l'UX recherchent l'adresse dérivée de la clé du nœud. Une clé de nœud post-quantique n'a pas d'adresse, ces commandes n'affichent donc actuellement rien (`rewards` indique `chain REST endpoint not available`). Utilisez plutôt les requêtes de la chaîne :
+
+```bash
+curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
+curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+```
+:::
 
 ## Surveillance
 
@@ -88,7 +110,7 @@ L'édition UX affiche les mêmes données en direct dans ses vues **Overview**, 
 
 ### Santé de la synchronisation et des heartbeats
 
-La commande `status` indique l'ID de la chaîne, la hauteur de bloc la plus récente, si la chaîne est en train de rattraper son retard, ainsi que la hauteur synchronisée et l'état de synchronisation du light client. Un nœud enregistré, synchronisé et en cours d'exécution continue à soumettre des **preuves de vivacité (heartbeats)** et reste ainsi éligible à la part de récompenses. Ces heartbeats sont produits via un **pipeline de transactions co-signées PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le défaut de la chaîne exigeant la PQC — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour le fonctionnement du pipeline et la manière d'activer les heartbeats on-chain. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il se peut qu'il échoue à prouver sa vivacité — investiguez avant que l'éligibilité ne soit affectée.
+La commande `status` indique l'ID de la chaîne, la hauteur de bloc la plus récente, si la chaîne est en train de rattraper son retard, la hauteur synchronisée et l'état de synchronisation du light client, ainsi que — une fois `operator_address` défini — l'état du `Signer`, de la `Licence` et de la `Registration` (y compris le statut du nœud et la hauteur de son dernier heartbeat). Un nœud enregistré, synchronisé et en cours d'exécution continue à soumettre des **preuves de vivacité (heartbeats)** et reste ainsi éligible aux récompenses. Ces heartbeats sont produits via un **pipeline de transactions co-signées PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le défaut de la chaîne exigeant la PQC — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour le fonctionnement du pipeline et la manière d'activer les heartbeats on-chain. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il se peut qu'il échoue à prouver sa vivacité — investiguez avant que l'éligibilité ne soit affectée.
 
 ### Santé de l'auto-test
 
@@ -99,6 +121,19 @@ lightnode-sx selftest
 ```
 
 Il exécute génération de clés → signature → vérification → détection d'altération (cinq vérifications) et se termine avec un code non nul en cas d'échec. C'est le moyen le plus rapide d'écarter un problème avec la pile de signature post-quantique lors du diagnostic des problèmes de nœud. Voir [Édition SX](/light-node/sx-edition) pour le détail complet de l'auto-test.
+
+### Requêtes de la chaîne {#chain-queries}
+
+URL de base : `https://api.qore.host` (mainnet) et `https://api-testnet.qore.host` (testnet).
+
+| Requête | Renvoie |
+| --- | --- |
+| `GET /qorechain/lightnode/v1/params` | Frais d'enregistrement, intervalle de heartbeat et délai de grâce, stake délégué minimum, part de récompense, disponibilité minimale, plafond de nœuds. |
+| `GET /qorechain/lightnode/v1/stats` | Nombre de nœuds enregistrés et actifs, total des récompenses créditées. |
+| `GET /qorechain/lightnode/v1/node/{address}` | L'enregistrement d'un nœud (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
+| `GET /qorechain/lightnode/v1/rewards/{address}` | Récompenses créditées et pas encore réclamées. |
+| `GET /qorechain/lightnode/v1/reward_pool` | Comment le solde du module se répartit entre la réserve, les récompenses créditées et le prochain versement ; inclut le plafond par nœud. |
+| `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Indique si une adresse détient une licence active. |
 
 ## Où aller ensuite
 

@@ -9,7 +9,7 @@ sidebar_position: 10
 
 Le **Quest** sono attività guidate che ti accompagnano nell'uso di QoreChain mentre le completi. Ogni quest raggruppa uno o più passaggi — come finanziare il tuo wallet, effettuare un trasferimento o provare uno swap — e ti premia per il completamento. Le quest sono un modo pratico per imparare la rete funzionalità dopo funzionalità.
 
-Collega il tuo wallet affinché i tuoi progressi vengano monitorati — vedi [Panoramica e primi passi](/dashboard/overview#connect-your-wallet).
+Accedi affinché i tuoi progressi vengano monitorati — vedi [Accedi](/dashboard/overview#sign-in). Alcune quest richiedono anche un wallet, vedi [Collega il tuo wallet](/dashboard/overview#connect-your-wallet).
 
 ## Sfoglia le quest
 
@@ -36,5 +36,5 @@ Alcune quest si reimpostano con cadenza giornaliera o settimanale. Per quelle, l
 
 ## Correlati
 
-- [Panoramica e primi passi](/dashboard/overview) — collega il tuo wallet prima di avviare le quest.
+- [Panoramica e primi passi](/dashboard/overview) — accedi e collega il tuo wallet prima di avviare le quest.
 - [Faucet](/dashboard/faucet) — finanzia un wallet testnet per le quest che prevedono transazioni.

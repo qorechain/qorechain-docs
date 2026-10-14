@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChain extiende el QoreChain EVM Engine con **seis contratos precompilados personalizados** que exponen funciones a nivel de protocolo directamente a Solidity. Estos precompilados brindan acceso on-chain a criptografía post-cuántica, puntuación de riesgo por IA, mensajería cross-VM y parámetros de consenso PRISM.
 
-:::note
-Los precompilados están disponibles tanto en la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, en vivo desde el 7 de junio de 2026 en la versión de cadena **v3.1.97**) como en la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). Todos los ejemplos usan el endpoint JSON-RPC en el **puerto 8545**.
+:::warning Aún no activos en mainnet ni en testnet
+Los seis precompilados de QoreChain que se describen a continuación están **compilados en el nodo pero aún no activados**, ni en la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**) ni en la testnet **`qorechain-diana`** (ID de cadena EVM **9800**). La EVM solo despacha las direcciones listadas en el parámetro `active_static_precompiles`, y esa lista está vacía en ambas redes. Hasta que una actualización de la cadena los active, **una llamada a cualquiera de estas direcciones tiene éxito y devuelve datos vacíos (`0x`)**; no revierte ni devuelve un error. Consulte [Estado de la red](#network-status) antes de depender de cualquiera de ellos.
 :::
+
+## Estado de la red {#network-status}
+
+| Precompilado | Dirección | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | No activo | No activo |
+| PQC Key Status | `0x…0A02` | No activo | No activo |
+| AI Risk Score | `0x…0B01` | No activo | No activo |
+| AI Anomaly Check | `0x…0B02` | No activo | No activo |
+| PRISM Consensus Params | `0x…0C01` | No activo | No activo |
+| CrossVM Bridge | `0x…0901` | No activo | No activo |
+
+La activación requiere una actualización de la cadena y está planificada por etapas: primero los precompilados de PQC y de consenso de solo lectura, el par de IA una vez que esté lista su ruta de solo lectura en punto fijo, y el CrossVM Bridge solo después de reconstruirlo con journaling, comprobaciones de valor y el circuit breaker cross-VM. Esta tabla se actualiza en la misma operación que la actualización que active cualquiera de ellos.
+
+Compruebe usted mismo la lista actual (una lista vacía significa que ninguno está activo):
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### Protéjase frente a datos de retorno vacíos {#guard}
+
+Como una dirección inactiva (o que no es de QoreChain) devuelve éxito sin datos, nunca lea los bytes de retorno sin procesar de una llamada de bajo nivel sin comprobar su longitud. `abi.decode` y las llamadas a interfaces tipadas revierten con datos vacíos, que es el resultado seguro; una llamada de bajo nivel escrita a mano debe comprobarlo explícitamente:
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+No envíe valor a estas direcciones. No son payable, y el valor enviado a una dirección de precompilado inactiva se queda allí sin forma de recuperarlo.
 
 ---
 
 ## Mapa de direcciones de precompilados
 
+Las cifras de gas son lo que el nodo cobra una vez que un precompilado está activo (por byte significa por byte de la entrada de la llamada).
+
 | Precompilado             | Dirección                                    | Gas base         | Descripción                                        |
 | ------------------------ | --------------------------------------------- | ---------------- | --------------------------------------------------- |
-| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50,000            | Llamadas cross-VM síncronas (EVM a CosmWasm)         |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Llamadas cross-VM síncronas (EVM a CosmWasm)         |
 | **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte   | Verifica firmas post-cuánticas ML-DSA-87             |
 | **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2,500             | Verifica si una cuenta tiene una clave PQC registrada |
 | **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50,000            | Obtiene la puntuación de riesgo generada por IA para datos de transacción |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**Costo de gas:** 25,000 base + 8 gas por byte de datos de entrada. Para una verificación típica de ML-DSA-87 (2592 + 4627 + bytes del mensaje), espere aproximadamente 80,000-90,000 de gas.
+**Costo de gas:** 25,000 base + 8 gas por byte de datos de entrada. La entrada es la llamada codificada en ABI (clave pública de 2592 bytes, firma de 4627 bytes, el mensaje, más los desplazamientos y el relleno de ABI), por lo que una verificación típica de ML-DSA-87 cuesta aproximadamente 85,000-90,000 de gas.
 
 ### PQC Key Status — Verificar el registro de una cuenta
 
@@ -177,13 +212,15 @@ contract RiskGate {
 
 **Niveles de riesgo:**
 
-| Nivel    | Valor | Rango de puntuación (bps) |
-| -------- | ----- | -------------------------- |
-| SAFE     | 0     | 0 - 1000                   |
-| LOW      | 1     | 1001 - 3000                 |
-| MEDIUM   | 2     | 3001 - 6000                 |
-| HIGH     | 3     | 6001 - 8500                 |
-| CRITICAL | 4     | 8501 - 10000                |
+| Nivel    | Valor |
+| -------- | ----- |
+| SAFE     | 0     |
+| LOW      | 1     |
+| MEDIUM   | 2     |
+| HIGH     | 3     |
+| CRITICAL | 4     |
+
+El nivel proviene de la etiqueta de gravedad que el motor de IA asigna a la transacción; la puntuación se devuelve en puntos básicos (0 - 10000). No hay una correspondencia fija entre rangos de puntuación y niveles, así que condicione la decisión a `level` en lugar de a umbrales de puntuación.
 
 **Costo de gas:** 50,000 fijo.
 
@@ -227,29 +264,19 @@ contract ConsensusReader {
 
 **Costo de gas:** 1,500 fijo.
 
+:::note
+En la compilación actual del nodo, `rlConsensusParams` devuelve valores predeterminados fijos de marcador de posición, no valores en vivo ajustados por PRISM (por ejemplo, no informa el tiempo de bloque medido, que es de aproximadamente 3,2 s en mainnet y de aproximadamente 1,0 s en la testnet). Conectarlo a los parámetros de consenso en vivo forma parte del trabajo de activación.
+:::
+
 ### CrossVM Bridge — Llamar a CosmWasm desde EVM
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+El precompilado CrossVM Bridge **no** se activará en su forma actual. Se está reconstruyendo para que una reversión en el contrato que llama también deshaga el lado de CosmWasm, se rechacen las transferencias de valor, se impida la reentrada de EVM a EVM y se aplique el circuit breaker cross-VM. Hasta entonces no existe una ruta síncrona de EVM a CosmWasm; consulte [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) para la ruta de mensajes `MsgCrossVMCall`, que a su vez está desactivada hoy en mainnet.
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+El nodo decodifica el calldata como `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 bytes y, a continuación, los argumentos codificados en ABI). El uso documentado es de EVM a CosmWasm; el ABI puede cambiar con la reconstrucción.
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**Costo de gas:** 50,000 base + costo de ejecución del contrato de destino. Consulte [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) para más detalles.
+**Costo de gas:** 50,000 base + 4 gas por byte de entrada, más el costo de ejecución del contrato de destino. Consulte [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) para más detalles.
 
 ---
 
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 Instálelos en su proyecto de Hardhat o Foundry:
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Interoperabilidad Cross-VM](/developer-guide/cross-vm-interoperability) — Documentación completa de mensajería cross-VM
 * [Desarrollo en EVM](/developer-guide/evm-development) — Despliegue de contratos Solidity
-* [Abstracción de cuentas](/developer-guide/account-abstraction) — Cuentas programables con claves de sesión
+* [Abstracción de cuentas](/developer-guide/account-abstraction) — Autenticadores de billeteras vinculadas y reglas de gasto (módulo actualmente deshabilitado)

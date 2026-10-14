@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChainは**CosmWasm**スマートコントラクトをサポートしており、開発者はRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルできます。CosmWasmコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（チェーンバージョン**v3.1.97**）を対象としています。テストネットの場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026年6月29日から稼働しているメインネット**`qorechain-vladi`**（ノードリリース**v3.2.1**）を対象としています。テストネット（v3.2.2）の場合は `--chain-id qorechain-diana` に置き換えてください。
 :::
 
 :::caution コードのアップロードとインスタンス化には現在、明示的な権限が必要です
-本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、業界全体のCosmWasmセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください。
+本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、業界全体のCosmWasmセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください（メインネットには現在、保存済みのコントラクトコードが一切ありません）。
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+`MsgStoreCode`、`MsgInstantiateContract`、`MsgInstantiateContract2` の各メッセージタイプも、両ネットワークでチェーンのサーキットブレーカーによって無効化されています（`qorechaind query circuit disabled-list`）。そのため、権限を引き上げるだけでは足りず、これらのエントリが解除されるまで実行できません。
+
 この制限は、既にインスタンス化済みのコントラクトには影響しません — 既存のコントラクトに対する `execute` と `query` は、この設定にかかわらず通常どおり動作します。
+:::
+
+:::caution `tx pqc cosign` で署名します
+メインネットとテストネットでは、Cosmosレーンのすべてのトランザクションにハイブリッドのポスト量子署名が必要です。そのため、このページの `tx` コマンドは記載のままではブロードキャストされません。これらは `--generate-only > tx.json` でトランザクションを構築します。その後、`qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` で署名してブロードキャストしてください（[ダウンロードマニフェスト](/developer-guide/running-a-node#fetch-the-manifest)のリリースバイナリには署名機能が含まれていますが、公開ソースからのビルドには含まれていません）。ネットワークの手数料下限は**ガス1単位あたり0.1 uqor**で、これが `--gas-prices 0.1uqor` の意味です。ハイブリッド署名はシミュレーションに含まれない約47,000ガスを追加するため、`1.5` の調整を行っています。[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。
 :::
 
 ---
@@ -60,19 +66,18 @@ CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**
      cosmwasm/rust-optimizer:0.15.0
    ```
 
-   最適化された `.wasm` ファイルは `artifacts/` ディレクトリに生成されます。
+   最適化された `.wasm` ファイルは `artifacts/` ディレクトリに出力されます。
 
 2. **Store** — コンパイル済みコントラクトをチェーンにアップロードします。
 
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   トランザクションが確定した後、保存されたコードIDを照会します。
+   トランザクションが確定したら（上記のとおり `tx pqc cosign` で `tx.json` に署名してブロードキャストします）、保存されたコードIDを照会します。
 
    ```bash
    qorechaind query wasm list-code
@@ -86,22 +91,21 @@ CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | フラグ                | 説明                                    |
    | ------------------- | ---------------------------------------------- |
-   | `<code-id>`         | store トランザクションから返される数値ID |
-   | `--label`           | このインスタンスの人間可読なラベル         |
-   | `--no-admin`        | 管理者アドレスなし（コントラクトはイミュータブル）       |
-   | `--admin <address>` | コントラクトの移行が可能な管理者を設定      |
+   | `<code-id>`         | 保存トランザクションから返される数値ID |
+   | `--label`           | このインスタンスの人間が読めるラベル         |
+   | `--no-admin`        | 管理者アドレスなし（コントラクトは不変になります）       |
+   | `--admin <address>` | コントラクトを移行できる管理者を設定します      |
 
    コントラクトアドレスを取得します。
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **Execute** — コントラクトのexecuteエントリーポイントを呼び出し、状態を変更します。
@@ -110,18 +114,19 @@ CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   資金を添えて実行する場合。
+   資金を添付して実行します。
 
    ```bash
    qorechaind tx wasm execute <contract-addr> \
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **Query** — トランザクションを送信せずにコントラクトの状態を読み取ります。
@@ -131,7 +136,7 @@ CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**
      '{"get_count": {}}'
    ```
 
-   クエリの応答はJSONとして返されます。
+   クエリのレスポンスはJSONで返されます。
 
 ---
 
@@ -142,7 +147,7 @@ CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## クロスVM呼び出し
 
-CosmWasmコントラクトは、`x/crossvm` モジュールを通じてEVMおよびSVM上にデプロイされたコントラクトと連携できます。CosmWasmからのクロスVM呼び出しは**非同期**メッセージパスを使用します。
+クロスVM呼び出しは、`x/crossvm` モジュールを通じて `MsgCrossVMCall` トランザクションとして送信されます。メッセージのライフサイクルについては、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。現時点では、CosmWasmコントラクトにはクロスVM呼び出しを開始するためのコントラクト側のバインディングがありません（コントラクトが発行できるカスタムの `QoreChainMsg` メッセージは存在しません）。そのため、コントラクトは自身の `execute` エントリーポイントの内部からEVMまたはSVMのコントラクトを呼び出すことはできません。
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-メッセージはキューに送信され、次のブロックでEndBlockerによって処理されます。メッセージの完全なライフサイクルについては、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+:::caution クロスVM呼び出しは現在メインネットで無効化されています
+`MsgCrossVMCall` はメインネットのサーキットブレーカーのリストに含まれており（`qorechaind query circuit disabled-list`）、SVMレーンも両ネットワークで無効化されています。そのため、現時点ではクロスVMのパスを通常のトランザクションで利用することはできません。
+:::
 
 ---
 
@@ -260,7 +253,8 @@ let delegate_msg = StakingMsg::Delegate {
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 これにより、既存のコントラクト状態を保持したまま、新しいコードの `migrate` エントリーポイントが呼び出されます。
@@ -271,4 +265,4 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 * [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — CosmWasmからEVMおよびSVMコントラクトを呼び出す
 * [SVM開発](/developer-guide/svm-development) — QoreChain上にBPFプログラムをデプロイする
-* [EVMプリコンパイル](/developer-guide/evm-precompiles) — SolidityからPQCおよびAI機能にアクセスする
+* [EVMプリコンパイル](/developer-guide/evm-precompiles) — 計画中のSolidityプリコンパイルのリファレンス（現時点で有効なものはありません）

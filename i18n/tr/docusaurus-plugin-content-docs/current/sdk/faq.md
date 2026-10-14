@@ -32,8 +32,9 @@ const client = createClient({
 ```
 
 İmzalama yolu (`connectTx`) konsensüs **`rpc`** uç noktasına ihtiyaç duyar;
-CosmWasm okumaları da onu kullanır. REST okumaları `rest` kullanır; EVM ve
-`qor_` çağrıları `evmRpc` kullanır.
+CosmWasm okumaları da onu kullanır. REST okumaları `rest` kullanır; EVM çağrıları
+`evmRpc` kullanır (bu ad alanını sunan bir düğümde `qor_` çağrıları da). Mainnet
+URL'leri [ağ referansında](/sdk/reference/network#public-endpoints) yer alır.
 
 ## "Cannot find module 'viem'" / "'@solana/web3.js'"
 
@@ -45,12 +46,27 @@ npm i @qorechain/evm viem
 npm i @qorechain/svm @solana/web3.js
 ```
 
-## Bir precompile çağrısı "feature not present" hatası veriyor
+## Bir precompile çağrısı "returned no data" / "feature not present" hatası veriyor
 
-EVM precompile'ları yalnızca QoreChain EVM Engine çalıştıran düğümlerde
-bulunur. Düz bir EVM düğümünde bu çağrılar başarısız olur. Heterojen düğümleri
-hedefliyorsanız her precompile çağrısını sarmalayın ve hatayı çağrı bazında ele
-alın.
+QoreChain EVM precompile'ları düğüme derlenmiştir ancak mainnet veya testnet'te
+**henüz etkin değildir**: yalnızca adresleri EVM modülünün
+`active_static_precompiles` parametresinde listelenmiş olduğu yerlerde yanıt
+verirler ve bu liste her iki ağda da boştur. Bugün çağrı boş veri döndürür; bu
+yüzden viem `returned no data ("0x")` bildirir ve yardımcı fonksiyon genel
+ağlarda da hata fırlatır (bkz.
+[EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)).
+Düz bir EVM düğümünde çağrılar aynı şekilde başarısız olur.
+`GET /cosmos/evm/vm/v1/params` adresini kontrol edin ve hatanın çağrı bazında ele
+alınması için her precompile çağrısını sarmalayın.
+
+## `client.qor` çağrım -32601 ile başarısız oluyor
+
+`client.qor`, yayımlanmış hiçbir düğüm sürümünün sunmadığı `qor_` JSON-RPC ad
+alanını çağırır; genel EVM uç noktalarındaki `rpc_modules` yalnızca `eth`, `net`,
+`rpc`, `txpool` ve `web3` listeler. Bunun yerine bir REST rotası kullanın; örneğin
+`client.rest.get(...)` üzerinden `GET /qorechain/pqc/v1/account/{address}` (PQC
+anahtar durumu) veya `GET /qorechain/burn/v1/stats`. Bkz.
+[`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ## Tutarlarım bir milyon kat sapıyor
 
@@ -67,17 +83,16 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 ## Hangi paketler yayımlandı ve nerede?
 
-Hepsi. TypeScript çekirdeği (`@qorechain/sdk`), EVM/SVM adaptörleri
-(`@qorechain/evm`, `@qorechain/svm`), React kiti (`@qorechain/react`) ve
-`create-qorechain-dapp` iskele aracı npm'de `0.7.0` sürümünde; Python istemcisi
-PyPI'da (`pip install qorechain-sdk`, sürüm `0.7.0`, import `qorsdk`); Go
+Hepsi. TypeScript çekirdeği (`@qorechain/sdk`, 0.8.3), EVM/SVM adaptörleri
+(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), React kiti (`@qorechain/react`,
+0.8.3) ve `create-qorechain-dapp` iskele aracı (0.8.0) npm'de; Python istemcisi
+PyPI'da (`pip install qorechain-sdk`, sürüm 0.8.3, import `qorsdk`); Go
 istemcisi modül proxy'sinde
 (`go get github.com/qorechain/qorechain-sdk/packages/go/...`, etiket
-`packages/go/v0.7.0`); Java istemcisi ise Maven Central'da
-(`io.github.qorechain:qorechain-sdk:0.7.0`). Rust istemcisi crates.io'da
-(`cargo add qorechain-sdk`) **yayımlanmış en son crate sürümündedir**; bu sürüm
-şu anda 0.7.0'ın gerisindedir — crates.io'dan veya depodan kurun. Dil başına
-tüm komutlar için [Kurulum](/sdk/install) bölümüne bakın.
+`packages/go/v0.8.4`); Rust istemcisi crates.io'da (`cargo add qorechain-sdk`,
+0.8.3); Java istemcisi ise Maven Central'da
+(`io.github.qorechain:qorechain-sdk:0.8.3`). Dil başına tüm komutlar için
+[Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor
 
@@ -90,14 +105,31 @@ bir ifadeyi test etmek için `validateMnemonic` kullanın.
 
 Hibrit (klasik + ML-DSA-87) gönderim Native yolunda **yayında ve zorunludur** —
 yalnızca klasik imzalı Native işlemler zincir üzerinde reddedilir (zincir
-v3.1.97). Bir hibrit işlemin PQC doğrulamasından geçebilmesi için imzalayanın
-PQC açık anahtarının kayıtlı olması gerekir (`MsgRegisterPQCKeyV2`); ya da ilk
-kullanımda otomatik kayıt için anahtarı gömmek üzere
-`includePqcPublicKey: true` ayarlayabilirsiniz.
-Zincir **yalnızca deterministik** ML-DSA-87 imzalarını kabul eder (SDK, 0.5.1
-sürümünden beri varsayılan olarak deterministik imzalar); hedged imzalar `pqc`
-kodu 21 (`hybrid_verify_failed`) ile başarısız olur.
-[Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) bölümüne bakın.
+v3.2.0). Bir hibrit işlemin PQC doğrulamasından geçebilmesi için imzalayanın
+PQC açık anahtarının `MsgRegisterPQCKeyV2` ile (klasik imzalı, hibritten muaf bir
+işlem) **açıkça kaydedilmiş** olması gerekir; açık anahtarı uzantıya gömmek
+(`includePqcPublicKey: true`) anahtarı kaydetmez ve zincir ilk kullanımda bir
+anahtarı kaydetmez.
+Zincir, hedged veya deterministik, FIPS-204'e uygun her geçerli ML-DSA-87
+imzasını kabul eder. SDK, bir işlemin her zaman aynı imzaya ve tx hash'ine sahip
+olması için (0.5.1 sürümünden beri) varsayılan olarak deterministik imzalar.
+Hibrit bir tx `pqc` kodu 21 (`hybrid_verify_failed`) ile başarısız olursa neden
+sign-bytes sürümü, chain-id, eski bir PQC kütüphanesi veya kayıtlı olmayan bir
+anahtardır; hedged imzalama asla neden değildir.
+Her iki ağ da v2 sign-bytes biçimini doğrular; bu yüzden SDK **0.8.1 veya daha
+yenisini** kullanın ve `rest` (veya `signBytesVersion`) geçirin: bunlardan biri
+yoksa oluşturucular `qorechain-vladi` / `qorechain-diana` üzerinde hata fırlatır.
+[Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21) ve
+[Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) bölümlerine bakın.
+
+## EVM işlemim "no open EVM authorisation window" ile reddediliyor
+
+Zincir v3.2.0'dan beri EVM şeridi, bir işlemi yalnızca kayıtlı bir PQC anahtarı
+ve açık bir yetkilendirme penceresi olan hesaptan kabul eder. Bir anahtar
+kaydedin, bir pencere açın, ardından gönderin. Bkz.
+[EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window). SDK ile
+`classifyEvmWindowRejection(err)` `"no-pqc-key"`, `"no-window"`,
+`"exhausted"` veya `"invalid"` döndürür.
 
 ## Hibrit işlemlerim CheckTx aşamasında tx ayrıştırma hatasıyla başarısız oluyor
 
@@ -109,6 +141,11 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 şeritte (eth-native dahil) zincir üzerinde reddedilir.
 
 ## Authenticator harcamam `authenticator_replay` ile reddediliyor
+
+(`abstractaccount` modülü bugün her iki ağda da kapalıdır; bir harcama, herhangi
+bir nonce kontrol edilmeden önce `abstract account module is disabled` ile
+reddedilir. Bkz. [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
+Aşağıdaki yönergeler modül etkinleştirildikten sonra geçerlidir.)
 
 Nonce yanlış. `MsgExecuteEVM.nonce`, hesabın **güncel** EVM nonce'u olmalıdır
 (relayer farklı bir hesaptır, bu yüzden 1 **eklemeyin**);

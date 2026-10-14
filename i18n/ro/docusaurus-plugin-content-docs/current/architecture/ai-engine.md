@@ -15,7 +15,7 @@ Motorul QCAI (QoreChain AI) operează pe trei straturi:
 
 | Strat                 | Domeniu                                                  | Execuție                | Determinist |
 | --------------------- | ------------------------------------------------------ | ------------------------ | ------------- |
-| **Nivel consens**   | Producția de blocuri, ajustarea parametrilor                     | On-chain (x/rlconsensus) | Da           |
+| **Nivel consens**   | Producția de blocuri, ajustarea parametrilor                     | On-chain (x/rlconsensus) — în prezent doar observare | Da           |
 | **Nivel rețea**     | Rutarea tranzacțiilor, detectarea fraudei, optimizarea taxelor | On-chain (x/ai)          | Da           |
 | **Nivel aplicație** | Generarea de contracte, auditarea, analiza profundă            | Off-chain (sidecar)      | Nu            |
 
@@ -106,7 +106,7 @@ Optimizatorul de taxe prezice congestia rețelei și sugerează taxe optime pent
 | `normal` | 1.0x            | 3-5 blocuri             |
 | `slow`   | 0.5x            | 6-10 blocuri            |
 
-Taxa finală încorporează un **multiplicator de congestie** (1.0x la 0% congestie, până la 5.0x la 100% congestie) și o **primă de tendință** atunci când congestia prezisă depășește congestia curentă. Pragul minim al taxei este de 500 uqor (0.0005 QOR).
+Taxa finală încorporează un **multiplicator de congestie** (1.0x la 0% congestie, până la 5.0x la 100% congestie) și o **primă de tendință** atunci când congestia prezisă depășește congestia curentă. Taxa minimă a estimatorului în sine este o constantă moștenită de 500 uqor; ea nu este expusă pe rețelele live, iar taxa pe care o tranzacție trebuie efectiv să o plătească este stabilită de pragul rețelei de 0.1 uqor per unitate de gaz (vezi [Prima tranzacție](/getting-started/first-transaction#send-qor)).
 
 ## Optimizator de rețea
 
@@ -167,6 +167,10 @@ Două contracte precompilate expun capabilitățile AI on-chain către contracte
 | `aiRiskScore`    | `0x0B01` | Returnează un scor de risc (0-100) pentru o adresă sau un hash de tranzacție dat  |
 | `aiAnomalyCheck` | `0x0B02` | Returnează un indicator boolean de anomalie și un scor de încredere pentru o tranzacție |
 
+:::warning Încă inactiv
+Aceste precompilate **nu sunt active** pe mainnet (`qorechain-vladi`) și nici pe testnet (`qorechain-diana`); un apel returnează date goale. Vor fi activate abia după ce vor avea o cale de scorare read-only, în virgulă fixă. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă.
 
 ## Atestare TEE
@@ -214,17 +218,12 @@ Fiecare rundă este configurată cu participanți minimi/maximi, timeout, rată 
 
 Învățarea federată se află în prezent în stadiul de specificație a interfeței. Implementarea este planificată pentru o versiune viitoare.
 
-## Endpoint-uri REST
+## Interogări
 
-| Endpoint                         | Descriere                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Returnează estimări de taxe pentru nivelurile de urgență fast, normal și slow |
-| `/ai/v1/fraud/investigations`    | Listează investigațiile de fraudă active și rezolvate                 |
-| `/ai/v1/network/recommendations` | Returnează recomandările curente de optimizare a parametrilor de rețea |
-| `/ai/v1/circuit-breakers`        | Listează stările active ale întrerupătoarelor de circuit pentru contracte              |
+`qorechaind query ai config` și `qorechaind query ai stats` (gRPC) sunt interogările modulului. În prezent modulul nu are rute REST: rutele `/ai/v1/...` pentru estimarea taxelor, investigațiile de fraudă, recomandările de rețea și circuit breaker-e nu sunt servite pe mainnet sau testnet.
 
 ## Conexe
 
-* [Motorul de consens PRISM](/architecture/prism-consensus-engine) — stratul AI care conduce optimizarea consensului.
+* [Motorul de consens PRISM](/architecture/prism-consensus-engine) — stratul AI conceput pentru optimizarea consensului (în prezent doar observare).
 * [Creator de contracte inteligente](/dashboard/smart-contract-creator) — generarea de contracte asistată de AI în Dashboard.
 * [Auditor de contracte](/dashboard/contract-auditor) — revizuirea securității contractelor asistată de AI.

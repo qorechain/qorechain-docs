@@ -7,13 +7,17 @@ sidebar_position: 2
 
 # نظرة عامة على البنية
 
-QoreChain هي عقدة بلوكتشين معيارية مكوّنة من ثلاث عمليات أساسية — عقدة السلسلة، والملحق الجانبي للذكاء الاصطناعي (AI sidecar)، ومُفهرس الكتل (block indexer) — مدعومة بقاعدة بيانات Postgres ومراقَبة عبر Prometheus وGrafana. الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM **9801**) نشطة منذ 7 يونيو 2026 على إصدار السلسلة **v3.1.97**، إلى جانب شبكة اختبار موازية (`qorechain-diana`، معرّف سلسلة EVM **9800**). السلسلة مبنية على Cosmos SDK v0.53. يوضّح المخطط التالي التخطيط العام لمكوّنات النظام.
+QoreChain هي عقدة بلوكتشين معيارية مكوّنة من ثلاث عمليات أساسية — عقدة السلسلة، والملحق الجانبي للذكاء الاصطناعي (AI sidecar)، ومُفهرس الكتل (block indexer) — مدعومة بقاعدة بيانات Postgres ومراقَبة عبر Prometheus وGrafana. الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM **9801**) نشطة منذ 29 يونيو 2026 على الإصدار **v3.2.1** (قواعد الإجماع الخاصة بـ v3.2.0)، إلى جانب شبكة اختبار موازية (`qorechain-diana`، معرّف سلسلة EVM **9800**). السلسلة مبنية على Cosmos SDK v0.53. يوضّح المخطط التالي التخطيط العام لمكوّنات النظام.
 
 تلخّص دورة حياة المعاملة أدناه كيفية مرور معاملة مُرسَلة عبر العقدة — بدءًا من سلسلة مُزخرِفات AnteHandler (فحوصات الأمان والرسوم) وصولًا إلى تنفيذ الآلة الافتراضية (VM) والتسوية على السلسلة:
 
 ```mermaid
 flowchart LR
-    Tx[Submitted transaction] --> Ante[AnteHandler chain]
+    Tx[Submitted transaction] --> Lane{Lane}
+    Lane -->|Cosmos lane| Ante[AnteHandler chain]
+    Lane -->|EVM lane| EAnte[EVM checks]
+    EAnte --> Win[Registered PQC key +<br/>EVM authorisation window]
+    Win --> Router
     Ante --> PQC[PQC signature verify]
     PQC --> AI[AI anomaly detection]
     AI --> Fair[FairBlock MEV protection]
@@ -43,24 +47,24 @@ flowchart LR
 │  ┌────────────────────── Tokenomics ─────────────────────────┐           │
 │  │  ┌──────┐   ┌───────┐   ┌───────────┐                    │           │
 │  │  │x/burn│   │x/xqore│   │x/inflation│                    │           │
-│  │  │10 ch.│   │lock/  │   │finite     │                    │           │
+│  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
-│  │  │20/10/│   │PvP    │   │590M       │                    │           │
-│  │  │3     │   │       │   │budget     │                    │           │
+│  │  │20/10/│   │PvP    │   │emission   │                    │           │
+│  │  │3     │   │       │   │114.3M cap │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
 │  ┌──────────── IBC / Bridges ────────────────────────────────┐           │
 │  │  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐ │           │
 │  │  │x/bridge  │  │x/babylon │  │x/abstract │  │x/gas     │ │           │
-│  │  │37 QCB +  │  │BTC re-   │  │ account   │  │abstract. │ │           │
-│  │  │8 IBC     │  │staking   │  │session key│  │multi-tok │ │           │
+│  │  │37 QCB    │  │BTC re-   │  │ account   │  │abstract. │ │           │
+│  │  │configs   │  │staking   │  │session key│  │multi-tok │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
 │  │  QCB Bridge     Babylon IBC   ERC-4337-like   ibc/USDC    │           │
 │  │  PQC-signed     BTC finality  social recov.   ibc/ATOM    │           │
 │  │  36 ext chains  checkpoint    spending rules  fee convert  │           │
 │  │  ┌──────────┐                                              │           │
-│  │  │x/fair    │  5-Lane Prioritization: PQC|MEV|AI|Def|Free │           │
+│  │  │x/fair    │  Lane config (not enforced): PQC|MEV|AI|... │           │
 │  │  │ block    │  tIBE encrypted mempool framework           │           │
 │  │  └──────────┘                                              │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -74,7 +78,7 @@ flowchart LR
 │  │  │ sovereign│  │          │  │           │  │ social/  │ │           │
 │  │  │          │  │          │  │           │  │ general  │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
-│  │  Bank escrow    Auto-finalize  SHA-256 commit  AI-assisted │           │
+│  │  Bank escrow    Auto-finalize  SHAKE-256 commit AI-assisted │           │
 │  │  Burn on create EndBlocker     Blob pruning    PRISM sugg. │           │
 │  │  → x/multilayer (RegisterSidechain + AnchorState)          │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -129,17 +133,18 @@ flowchart LR
 | 26657 | HTTP/WebSocket | RPC الخاص بمحرّك إجماع QoreChain (الكتل، المعاملات، حالة الإجماع)                 |
 | 1317  | HTTP           | واجهة REST API (نقاط نهاية الاستعلام، بثّ المعاملات)                              |
 | 9090  | gRPC           | نقاط نهاية gRPC للاستعلام والمعاملات                                              |
-| 8545  | HTTP           | EVM JSON-RPC (مساحات الأسماء `eth_`، `web3_`، `net_`، `txpool_`، `qor_`)          |
+| 8545  | HTTP           | EVM JSON-RPC (مساحات الأسماء `eth_`، `web3_`، `net_`، `txpool_`)                  |
 | 8546  | WebSocket      | EVM JSON-RPC (اشتراكات WebSocket)                                                 |
 | 8899  | HTTP           | SVM JSON-RPC (متوافق مع Solana: `getAccountInfo`، `getBalance`، `getSlot`، وغيرها) |
 | 50051 | gRPC           | الملحق الجانبي للذكاء الاصطناعي (طلبات الاستدلال من العقدة)                       |
 | 5432  | TCP            | Postgres (تخزين مُفهرس الكتل)                                                     |
-| 9091  | HTTP           | مقاييس Prometheus                                                                  |
-| 3000  | HTTP           | لوحات معلومات Grafana                                                             |
+| 26660 | HTTP           | نقطة نهاية مقاييس Prometheus الخاصة بالعقدة                                       |
+| 9091  | HTTP           | خادم Prometheus (منفذ المضيف في حزمة Docker Compose)                              |
+| 3001  | HTTP           | لوحات معلومات Grafana (منفذ المضيف في حزمة Docker Compose؛ منفذ الحاوية 3000)     |
 
 ## خريطة الوحدات
 
-تسجّل QoreChain **أكثر من 45 وحدة تأسيسية (genesis) تشمل أكثر من 20 وحدة مخصّصة**، مُصنّفة حسب الوظيفة:
+تسجّل QoreChain **48 وحدة تأسيسية (genesis)، منها 20 وحدة خاصة بـ QoreChain**، مُصنّفة حسب الوظيفة:
 
 **الأمان**
 
@@ -149,11 +154,11 @@ flowchart LR
 
 * `x/ai` — توجيه المعاملات، كشف الشذوذ، كشف الاحتيال، تحسين الرسوم، تصديق TEE، التعلّم الموحّد (federated learning)
 * `x/reputation` — تقييم سمعة المدقّقين (validators) متعدد العوامل مع اضمحلال زمني
-* `x/rlconsensus` — وكيل تعلّم معزَّز (RL) على السلسلة (PPO MLP)، ضبط ديناميكي للإجماع، قاطع دارة (circuit breaker)، استشارة للتجميعات (rollups) — طبقة تحسين PRISM
+* `x/rlconsensus` — وكيل تعلّم معزَّز (RL) على السلسلة (PPO MLP)، تصميم لضبط الإجماع، قاطع دارة (circuit breaker)، استشارة للتجميعات (rollups) — طبقة تحسين PRISM (مراقبة فقط على الشبكات الحيّة: لا يتم تحميل أي سياسة)
 
 **الإجماع**
 
-* `x/qca` — إثبات حصة مركّب ثلاثي المجمّعات (RPoS/DPoS/PoS) على محرّك إجماع QoreChain، منحنى ربط (bonding curve) مخصّص، خصم تدريجي (slashing)، حوكمة QDRW
+* `x/qca` — تصميم إثبات حصة مركّب ثلاثي المجمّعات (RPoS/DPoS/PoS)، منحنى ربط (bonding curve) مخصّص، خصم تدريجي (slashing)، حوكمة QDRW — مُنفَّذ لكنه غير مربوط بعد بإنتاج الكتل أو المكافآت أو الخصم أو احتساب أصوات الحوكمة
 
 **الآلات الافتراضية**
 
@@ -163,22 +168,22 @@ flowchart LR
 
 **اقتصاديات الرمز والسيولة**
 
-* `x/burn` — 10 قنوات حرق (burn)، توزيع رسوم EndBlocker (تقسيم 37/30/20/10/3)
-* `x/xqore` — تكديس (staking) معزَّز بالحوكمة: قفل/فك قفل، عقوبات خروج متدرّجة، إعادة موازنة PvP
-* `x/inflation` — إصدار بعرض ثابت من ميزانية محدودة لمكافآت التكديس وفق جدول زمني متعدد السنوات
+* `x/burn` — 12 مصدر حرق (burn)، توزيع رسوم EndBlocker (تقسيم 37/30/20/10/3)
+* `x/xqore` — تصميم تكديس (staking) معزَّز بالحوكمة: قفل/فك قفل، عقوبات خروج متدرّجة، إعادة موازنة PvP (محاسبة فقط؛ معاملات القفل وفك القفل غير مربوطة بعد على الشبكات الحيّة)
+* `x/inflation` — إصدار محدود السقف: يُسَكّ مبلغ ثابت في كل حقبة (epoch) حتى بلوغ سقف تراكمي صارم (114,285,714 QOR)
 * `x/amm` — سيولة على السلسلة / صانع سوق آلي (AMM)
 
 **الجسور وقابلية التشغيل البيني**
 
-* `x/bridge` — 37 إعداد QCB (36 سلسلة خارجية + حلقة استرجاع QoreChain) عبر كل الأنواع الرئيسية للسلاسل، تصديقات موقّعة بـ PQC، قواطع دارة
-* `x/babylon` — إعادة تكديس BTC عبر بروتوكول Babylon، نقاط تفتيش للحقب (epoch checkpoints)
+* `x/bridge` — 37 إعداد سلسلة (36 سلسلة خارجية بالإضافة إلى Injective عبر IBC) عبر كل الأنواع الرئيسية للسلاسل، تصديقات موقّعة بـ PQC، قواطع دارة (جميع الإعدادات في حالة `pending`؛ غير حيّة)
+* `x/babylon` — إعادة تكديس BTC عبر بروتوكول Babylon، نقاط تفتيش للحقب (epoch checkpoints) (مرحلة التصميم؛ لا توجد معاملات مفعّلة)
 * `x/multilayer` — إدارة طبقات السلاسل الجانبية (sidechain)/سلاسل الدفع (paychain)/التجميعات (rollup)، تثبيت الحالة (state anchoring)
 
 **امتدادات الحوكمة والترخيص**
 
-* `x/abstractaccount` — حسابات ذكية: توقيع متعدد (multisig)، استعادة اجتماعية، مفاتيح جلسة، قواعد إنفاق
-* `x/fairblock` — حماية من MEV: إطار عمل لتشفير تجمّع المعاملات (mempool) باستخدام IBE العتبي (threshold IBE)
-* `x/gasabstraction` — دفع الغاز بعملات متعددة: تحويل رسوم ibc/USDC، ibc/ATOM
+* `x/abstractaccount` — حسابات ذكية: توقيع متعدد (multisig)، استعادة اجتماعية، مفاتيح جلسة، قواعد إنفاق (معطّلة على الشبكتين: `enabled = false`)
+* `x/fairblock` — حماية من MEV: إطار عمل لتشفير تجمّع المعاملات (mempool) باستخدام IBE العتبي (threshold IBE) (معطّل على الشبكتين)
+* `x/gasabstraction` — تصميم دفع الغاز بعملات متعددة: تحويل رسوم ibc/USDC، ibc/ATOM (لا توجد قناة IBC مفتوحة بعد، لذا تُدفع الرسوم بـ QOR)
 * `x/license` — ترخيص السلسلة
 
 **التجميعات (Rollups)**
@@ -187,41 +192,21 @@ flowchart LR
 
 ## سلسلة AnteHandler
 
-تمرّ كل معاملة عبر سلسلة المُزخرِفات (decorators) التالية قبل التنفيذ. تعمل المُزخرِفات بالترتيب، ويمكن لأي مُزخرِف رفض المعاملة.
+تمرّ كل معاملة عبر سلسلة مُزخرِفات (decorators) قبل التنفيذ، ويمكن لأي مُزخرِف رفضها. هناك سلسلتان.
 
-```
-SetUpContext
-  → CircuitBreaker
-    → PQCVerify
-      → PQCHybridVerify
-        → AIAnomaly
-          → FairBlock
-            → SVMComputeBudget
-              → SVMDeductFee
-                → Extension
-                  → ValidateBasic
-                    → TxTimeout
-                      → Memo
-                        → MinGasPrice
-                          → ConsumeTxSize
-                            → GasAbstraction
-                              → DeductFee
-                                → SetPubKey
-                                  → ValidateSigCount
-                                    → SigGasConsume
-                                      → SigVerify
-                                        → IncrementSequence
-```
+**مسار Cosmos** (بالترتيب): `RejectMessages` (لا `MsgEthereumTx` على هذا المسار) → `AuthzLimiter` (لا رسائل EVM ولا رسائل إنشاء الاستحقاق التدريجي (vesting) داخل authz) → `SetUpContext` → حواجز mempool وعمق التوقيع المتعدد → مُزخرِفات CosmWasm الخاصة بغاز المحاكاة وعدّاد المعاملات وسجل الغاز والعقود → `CircuitBreaker` → فحص خيارات الامتداد → `ValidateBasic` → `TxTimeout` → `Memo` → بوابة ترخيص المدقّق (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (يتضمن حدّ المعدّل لكل مُرسِل) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → عدّاد معاملات الحرق → فحص الترحيل الزائد في IBC → تتبّع الغاز المطلوب.
 
-تعمل المُزخرِفات الرئيسية وفق التسلسل التالي (يعمل كل مُزخرِف بالترتيب ويمكنه رفض المعاملة):
+**مسار EVM** (المعاملات التي تحمل خيار امتداد Ethereum): `CircuitBreaker` → المُزخرِف الأحادي الخاص بـ EVM (فحوصات التوقيع وnonce والرسوم والرصيد) → `EVMWindowDecorator` (مفتاح مقاوم للحوسبة الكمومية مسجَّل ونافذة تفويض نشطة؛ راجع [نافذة تفويض EVM](/getting-started/first-transaction#evm-window)).
+
+المُزخرِفات الرئيسية على مسار Cosmos:
 
 1. **PQCVerify** — الوحدة `x/pqc`. التحقق من توقيعات Dilithium-5 على المعاملات المُعلَّمة بـ PQC.
 2. **PQCHybridVerify** — الوحدة `x/pqc`. التحقق من التوقيعات الهجينة المزدوجة secp256k1 (ECDSA) + ML-DSA-87.
-3. **AIAnomaly** — الوحدة `x/ai`. تشغيل كشف الشذوذ بخوارزمية الغابة العازلة (isolation forest) وتقييم المخاطر.
-4. **FairBlock** — الوحدة `x/fairblock`. معالجة المعاملات المشفَّرة بـ tIBE للحماية من MEV.
+3. **AIAnomaly** — الوحدة `x/ai`. تشغيل كشف الشذوذ بخوارزمية الغابة العازلة (isolation forest) وتقييم المخاطر، وتطبيق حدّ المعاملات لكل مُرسِل.
+4. **FairBlock** — الوحدة `x/fairblock`. معالجة المعاملات المشفَّرة بـ tIBE للحماية من MEV (معطّل على الشبكات الحيّة).
 5. **SVMComputeBudget** — الوحدة `x/svm`. التحقق من وحدات الحوسبة وتخصيصها لبرامج SVM.
 6. **SVMDeductFee** — الوحدة `x/svm`. خصم رسوم التنفيذ الخاصة بـ SVM.
-7. **GasAbstraction** — الوحدة `x/gasabstraction`. تحويل رموز الرسوم غير الأصلية (USDC، ATOM) قبل الخصم.
+7. **GasAbstraction** — الوحدة `x/gasabstraction`. تحويل رموز الرسوم غير الأصلية قبل الخصم (تُدفع الرسوم حاليًا بـ QOR).
 
 ## حزمة Docker Compose
 
@@ -229,18 +214,20 @@ SetUpContext
 
 | الخدمة           | الصورة                      | الغرض                                                |
 | ---------------- | -------------------------- | --------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | عقدة السلسلة مع جميع الوحدات والآلات الافتراضية ونقاط نهاية RPC |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | خدمة استدلال الذكاء الاصطناعي (gRPC + خلفية QCAI)     |
-| `block-indexer`  | `qorechain-indexer:latest` | مُفهرس الكتل/المعاملات (WebSocket + Postgres)         |
+| `qorechain-node` | `qorechain-core:latest` (تُبنى محليًا من Dockerfile؛ لا توجد صورة منشورة للعقدة) | عقدة السلسلة مع جميع الوحدات والآلات الافتراضية ونقاط نهاية RPC |
+| `ai-sidecar`     | `ghcr.io/qorechain/ai-sidecar:latest` | خدمة استدلال الذكاء الاصطناعي (gRPC + خلفية QCAI)     |
+| `block-indexer`  | `ghcr.io/qorechain/block-indexer:latest` | مُفهرس الكتل/المعاملات (WebSocket + Postgres)         |
 | `postgres`       | `postgres:16-alpine`       | قاعدة بيانات مُفهرس الكتل                             |
-| `prometheus`     | `prom/prometheus:latest`   | جمع المقاييس وتخزينها                                |
-| `grafana`        | `grafana/grafana:latest`   | لوحات مراقبة وتنبيهات                                |
+| `prometheus`     | `prom/prometheus:v3.10.0`  | جمع المقاييس وتخزينها                                |
+| `grafana`        | `grafana/grafana:12.4.1`   | لوحات مراقبة وتنبيهات                                |
 
 لتشغيل الحزمة الكاملة:
 
 ```bash
 docker compose up -d
 ```
+
+قبل أول تشغيل، انسخ `.env.example` إلى `.env` وانسخ `.env.sidecar.example` إلى `.env.sidecar`، وعيّن `GRAFANA_PASSWORD` (يرفض Compose البدء بدونه).
 
 تُخزَّن جميع البيانات الدائمة في مجلدات Docker مُسمّاة (named volumes): `node-data`، و`postgres-data`، و`prometheus-data`، و`grafana-data`.
 

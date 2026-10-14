@@ -18,6 +18,17 @@ Bu, zincirin
 [hesap soyutlama](/developer-guide/account-abstraction) modülünün SDK
 tarafındaki karşılığıdır.
 
+:::danger Canlı ağlarda kullanılamaz
+`x/abstractaccount` modülü `qorechain-vladi` ve `qorechain-diana` üzerinde
+**devre dışıdır** (`GET /qorechain/abstractaccount/v1/config` yanıtı
+`"enabled": false` döndürür). Zincir v3.2.0'dan itibaren bu bayrak her yolda
+uygulanır (soyut hesap oluşturma, bir kimlik doğrulayıcı bağlama ve hem
+`MsgExecuteEVM` hem de `MsgExecuteCosmos`) ve zincir bunları `abstract account module is disabled` (kod 9) hatasıyla reddeder. Hiçbir işlem bunu açamaz.
+Aşağıdaki her şey modülün arayüzlerini yalnızca başvuru için anlatır: modül
+etkinleştirilene kadar canlı ağlarda bağlı anahtar ya da yetkilendirilmiş
+harcama akışı oluşturmayın ve böyle bir akışı sunmadan önce bayrağı kontrol edin.
+:::
+
 ## Aktarıcı (relayer) modeli
 
 Bir **aktarıcı (relayer)** işlemi gönderir ve ücretleri öder. Aktarıcının kendi
@@ -94,6 +105,18 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution Bir kural, yalnızca var olduğunda bir anahtarı sınırlar
+Zincir limiti şu sırayla çözümler: kimlik doğrulayıcının kendi kuralı, ayarlıysa
+ve `enabled` ise; aksi halde hesaptaki ilk `enabled` kural; aksi halde
+**hiçbiri ve bu durumda hiçbir limit yoktur**. `enabled: false` ile saklanan bir
+kural, sıfır limit değil, limitsizlik anlamına gelir. `MsgRegisterAuthenticator`
+herhangi bir kural taşımaz; bu nedenle yalnızca bu mesajla bağlanan bir anahtar
+sadece hesap düzeyindeki bir kuralla sınırlanır. Bir kuralı
+`MsgUpdateSpendingRules` ile bilinçli olarak ayarlayın ve yalnızca anahtarın
+ihtiyaç duyduğu yetkileri kaydedin. Bir limit, bağlı bir anahtarın verebileceği
+zararı sınırlar; anahtarın iptal edilmesinin yerini tutmaz.
+:::
+
 Bir anahtarı anında devre dışı bırakmak için sahip,
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })` mesajını yayınlar.
@@ -135,32 +158,47 @@ await fetch("/api/relay", {
 });
 ```
 
-**Sunucu (aktarıcı):** zarfı **kendi** hesabıyla imzalar (Native yolunda her
-zamanki gibi hibrit) ve ücretleri öder. Mesajın içindeki kimlik doğrulayıcı
-imzası, sahibin hesabından harcama yapma yetkisidir.
+**Sunucu (aktarıcı):** zarfı hibrit yolu (`signAndBroadcastHybrid`, `rest`
+geçirilerek) kullanarak **kendi** hesabıyla imzalar ve ücretleri öder.
+Aktarıcının ML-DSA-87 anahtarı, her hesapta olduğu gibi kayıtlı olmalıdır.
+Mesajın içindeki kimlik doğrulayıcı imzası, sahibin hesabından harcama yapma
+yetkisidir.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -334,10 +372,12 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed` çoğunlukla **hedged** (deterministik olmayan) bir
-ML-DSA-87 imzası anlamına gelir — zincir yalnızca deterministik imzaları kabul
-eder. Ayrıca, 0.6.1 öncesi bir SDK hibrit uzantıyı JSON olarak kodladıysa da
-bu hatayı görürsünüz (yükseltin — bkz.
+`hybrid_verify_failed`, ML-DSA-87 imzasının doğrulanmadığı anlamına gelir. Neden
+hedged imzalama değildir (zincir hedged ve deterministik ML-DSA-87 imzalarını
+aynı şekilde kabul eder); bkz.
+[Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21). Ayrıca,
+0.6.1 öncesi bir SDK hibrit uzantıyı JSON olarak kodladıysa da bu hatayı
+görürsünüz (yükseltin - bkz.
 [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 ## Anahtar rotasyonu {#key-rotation}

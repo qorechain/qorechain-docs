@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-Aşağıdaki ön ayar bazlı değerler, ağın yayımlanmış profil tablosunu yansıtan, pakette gelen **`@qorechain/rdk`** profil varsayılanlarıyla eşleşir. RDK olgunlaştıkça bu değerler yine de değişebilir — yetkili (kesin) yapılandırma için canlı modül parametrelerini `qorechaind query rdk config` komutuyla (veya SDK'dan `RdkClient.params()` ile) sorgulayın ve ana ağdan önce **`qorechain-diana`** test ağında doğrulayın.
+Aşağıdaki ön ayar bazlı değerler, ağın yayımlanmış profil tablosunu yansıtan, pakette gelen **`@qorechain/rdk`** profil varsayılanlarıyla eşleşir. Henüz hiçbir ağda rollup oluşturulmamıştır. Yetkili (kesin) yapılandırma için canlı modül parametrelerini `qorechaind query rdk config` komutuyla (veya RDK REST rotalarının sunulduğu SDK'dan `RdkClient.params()` ile — bugün ana ağda yok) sorgulayın ve ana ağdan önce **`qorechain-diana`** test ağında doğrulayın.
 :::
 
 ---
@@ -38,7 +38,7 @@ Bazı kısıtlamalar [uzlaşma → kanıt matrisinden](/rollups/overview) kaynak
 RDK v0.4.2 itibarıyla, Wasm VM seçeneğinin (CosmWasm sözleşmelerini yürüten çalışma zamanı) adı **`native`** — yani QoreChain Native — olmuştur. `cosmwasm` kabul edilen eski (legacy) bir takma ad olarak kalmaya devam eder ve her ikisi de aktarım katmanında `cosmwasm` olarak eşlenir; dolayısıyla zincir, gezgin (explorer) ve Dashboard değişmemiştir.
 
 :::note
-Ön ayar bazlı yapılandırma, `create-rollup` komutunun profilin ön ayarını otomatik olarak uyguladığı zincir sürümü **v3.1.74** üzerinde canlı olarak doğrulanmıştır: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (varsayılanlar)**. `custom` ön ayarı her alanı açık bırakır — gösterilen değerler onun başlangıç varsayılanlarıdır.
+Ön ayar bazlı yapılandırma, `create-rollup` komutunun profilin ön ayarını otomatik olarak uyguladığı zincir sürümü **v3.2.0** itibarıyla zincirin profil tablosuna karşı doğrulanmıştır (ana ağ v3.2.1 çalıştırır): **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (varsayılanlar)**. `custom` ön ayarı her alanı açık bırakır — gösterilen değerler onun başlangıç varsayılanlarıdır.
 :::
 
 Dört alan (domain) ön ayarını makul başlangıç noktaları, **`custom`** profilini ise tamamen açık seçenek olarak değerlendirin. Bir araya getirilen kesin parametreler sürümler arasında değişebilir — yetkili değerler için `rdk config` komutunu (aşağıda) sorgulayın, ardından size en yakın ön ayardan başlayıp ince ayar yapın.
@@ -47,21 +47,20 @@ Dört alan (domain) ön ayarını makul başlangıç noktaları, **`custom`** pr
 
 ---
 
-## Öneri alma: `suggest-profile`
+## Bir ön ayarın zincir üzerinde taşıdıkları {#what-a-preset-carries}
 
-Hangi ön ayarın size uygun olduğundan emin değilseniz, `suggest-profile` sorgusu kullanım senaryonuzun sade bir dille yazılmış açıklamasını alır ve önerilen bir profil döndürür.
+Bazı ayrıntıları yanlış varsaymak kolaydır ve bir profil seçmeden önce bilmeye değerdir:
 
-```bash
-qorechaind query rdk suggest-profile [use-case]
-```
+* **`defi` için doğrulama anahtarı (verifying key) yoktur.** ZK yığınlarının buna ihtiyacı vardır ve `create-rollup` ile oluşturulan bir rollup bunu taşımaz; bu nedenle ZK uzlaşması bugün uçtan uca kesinleşemez (bkz. [ZK / STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
+* **`nft` ve `custom`**, 1.000 QOR'luk bir itiraz teminatı (challenge bond) ve 100.800 blokluk bir itiraz penceresiyle optimistic olarak uzlaşır (varsayılan 604.800 "saniyenin" blok başına sabit 6 saniyeden dönüştürülmüş hali; ana ağın şu anki ≈3,2 sn'lik blokları ile yaklaşık 3,7 gün).
+* **`gaming` ve `enterprise`** `based` sıralama kullanır; bu, bugün yığınları rollup'ın oluşturucusunun gönderdiği anlamına gelir.
+* **Blok süresi ve işlem sınırları** (örneğin `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` ve `custom` 1.000 ms) zincir üzerindeki kayıtta saklanır. Bunlar rollup'ın kendi zincirini tanımlar ve ana (host) zincir tarafından uygulanmaz.
 
-**Örnek:**
+---
 
-```bash
-qorechaind query rdk suggest-profile "a lending protocol with predictable fees"
-```
+## Bir profil seçme {#getting-a-recommendation}
 
-Bu öneri yararlı bir başlangıç noktasıdır — bir yapılandırmaya karar vermeden önce öneriyi kendi özel gereksinimlerinize (uzlaşma garantileri, sıralayıcı güven modeli, veri erişilebilirliği ihtiyaçları ve VM) göre gözden geçirin.
+`suggest-profile` sorgusu ve RDK'nın `suggestProfile()` yardımcısı, sade dille yazılmış bir açıklamadan bir ön ayar önermek üzere tasarlanmıştır. Bunlar, herkese açık uç noktaların sunmadığı `qor_suggestRollupProfile` JSON-RPC metoduna dayanır; bu yüzden `suggestProfile()` şu anda **yedek** olarak her zaman `defi` döndürür ve `qorechaind query rdk suggest-profile` yalnızca o RPC'ye bir işaretçi yazdırır. Bunun yerine yukarıdaki tablodan bir profil seçin ve gereksinimlerinize (uzlaşma garantileri, sıralayıcı güven modeli, veri erişilebilirliği ihtiyaçları ve VM) göre gözden geçirin.
 
 ---
 

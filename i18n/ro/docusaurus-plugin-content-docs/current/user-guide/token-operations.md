@@ -10,7 +10,11 @@ sidebar_position: 1
 Acest ghid acoperă token-ul QOR, modul de trimitere și primire a token-urilor, interogarea soldurilor și înțelegerea modelului de distribuire a comisioanelor pe QoreChain.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026, rulând versiunea de chain **v3.1.97** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 29 iunie 2026, pe linia v3.2 (versiunea de nod **v3.2.1**; testnet-ul rulează **v3.2.2**) — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
+:::
+
+:::caution Semnați cu `tx pqc cosign`
+Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pentru fiecare tranzacție pe lane-ul Cosmos, așa că comenzile de pe această pagină nu se transmit în rețea așa cum sunt scrise. Adăugați `--generate-only > tx.json` la o comandă, apoi rulați `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Vezi [Semnarea hibridă](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/overview) și [Dashboard-ul](/dashboard/overview) fac această semnare pentru dumneavoastră.
 :::
 
 ## Informații despre token
@@ -32,7 +36,7 @@ Pentru a transfera token-uri QOR dintr-un cont în altul:
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Exemplu:** Trimiteți 5 QOR (5.000.000 uqor) către o altă adresă:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 Puteți folosi, de asemenea, un nume de cheie în loc de o adresă brută pentru expeditor:
@@ -48,7 +52,7 @@ Puteți folosi, de asemenea, un nume de cheie în loc de o adresă brută pentru
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## Interogarea soldurilor
@@ -85,33 +89,39 @@ Comisioanele de tranzacție pe QoreChain sunt distribuite către cinci destinaț
 | Destinație      | Cotă  | Scop                                                             |
 | --------------- | ----- | ----------------------------------------------------------------- |
 | **Validatori**  | 37%   | Recompensează producătorii de blocuri și securizează rețeaua      |
-| **Ars**         | 30%   | Eliminat permanent din ofertă, creând presiune deflaționistă      |
+| **Ars**         | 30%   | Eliminat permanent din ofertă                                     |
 | **Trezorerie**  | 20%   | Finanțează dezvoltarea protocolului și granturile ecosistemului   |
 | **Stakeri**     | 10%   | Distribuit proporțional tuturor delegatorilor                     |
-| **Light Nodes** | 3%    | Recompensează operatorii de light-node care servesc date de rețea |
+| **Light Nodes** | 3%    | Rezervat pentru recompensele light node-urilor (vezi nota de mai jos) |
+
+Împărțirea se aplică tuturor sumelor care intră în colectorul de comisioane, care deține comisioanele de tranzacție și emisia de staking creată la fiecare epocă. Cota light node-urilor se acumulează într-o rezervă; înregistrarea pentru recompensele light node-urilor nu este încă deschisă, astfel încât în prezent niciun nod nu este plătit din ea (vezi [Light Node](/light-node/overview)). De la upgrade-ul v3.2.0, cota stakerilor este plătită ca o recompensă obișnuită de staking (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canale de ardere
 
-QoreChain implementează un mecanism de ardere multi-canal. Token-urile QOR sunt eliminate permanent din circulație prin 10 canale distincte:
+Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin oricare dintre ele este eliminat permanent din circulație. Pe mainnet, până acum doar canalul comisioanelor de gaz a înregistrat arderi; celelalte sunt definite, dar nu au înregistrat nimic.
 
-| Canal                | Descriere                                                                |
-| --------------------- | ------------------------------------------------------------------------ |
-| `tx_fee`             | Porțiunea de ardere de 30% din fiecare comision de tranzacție             |
-| `governance_penalty` | Ars când propunerile de guvernanță nu ating cvorumul sau sunt respinse prin veto |
-| `slashing_burn`      | Porțiunea arsă din stake-urile de validator supuse slashing-ului          |
-| `bridge_fee`         | Comision ars la transferurile prin bridge cross-chain                     |
-| `spam_deterrent`     | Ardere suplimentară aplicată tranzacțiilor marcate drept spam             |
-| `epoch_excess`       | Emisiuni în exces peste țintă, arse la granițele de epocă                 |
-| `manual_burn`        | Arderi de token-uri inițiate de comunitate prin propunere de guvernanță   |
-| `contract_callback`  | Comisioane arse la execuțiile de callback ale contractelor inteligente    |
-| `cross_vm_fee`       | Ars la executarea apelurilor cross-VM (de ex., de la EVM la CosmWasm)     |
-| `rollup_create`      | 1% din stake-ul minim, ars la implementarea unui rollup nou               |
+| Canal              | Descriere                                                                        |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `gas_fee`          | 30% din toate comisioanele de gaz sunt arse                                       |
+| `contract_create`  | Comision fix de 100 QOR ars la fiecare creare de contract (inactiv: încărcarea CosmWasm este închisă) |
+| `ai_service`       | 50% din comisioanele serviciilor AI sunt arse (inactiv: comisioanele serviciilor AI nu sunt live) |
+| `bridge_fee`       | 100% din comisioanele bridge-ului sunt arse (inactiv: bridge-ul nu este live)     |
+| `treasury_buyback` | Răscumpărare și ardere periodică din trezorerie                                   |
+| `failed_tx`        | Gazul tranzacțiilor eșuate; aplicat de lanț începând cu v3.2.2 (deocamdată doar pe testnet) |
+| `xqore_penalty`    | Penalizările de ieșire anticipată xQORE direcționate prin ardere (xQORE nu este live) |
+| `auto_buyback`     | Arderi automate la nivel de protocol (inactiv)                                    |
+| `tge`              | Rezervat; arderea TGE a avut loc înainte de genesis, iar acest canal nu înregistrează nimic |
+| `rollup_create`    | 1% din stake-ul de creare a rollup-ului este ars                                  |
+| `milestone`        | Arderi programate la numere cumulative fixe de tranzacții (încă niciuna declanșată) |
+| `amm`              | Rezervat pentru comisioanele de protocol AMM (nimic înregistrat)                  |
 
-Puteți interoga suma totală arsă pe toate canalele:
+Modulul de ardere nu are interogare CLI; citiți arderea cumulată pe fiecare sursă din REST:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+Răspunsul listează `total_burned` și `burns_by_source` (în uqor). Oferta totală curentă se obține cu `qorechaind query bank total-supply-of uqor`.
 
 ## Sfaturi
 
@@ -122,7 +132,7 @@ Verificați întotdeauna de două ori adresele destinatarilor înainte de a trim
 :::tip
 
 * Folosiți flag-ul `--dry-run` pentru a simula o tranzacție fără a o transmite în rețea.
-* Folosiți `--gas auto` pentru a permite nodului să estimeze gazul necesar pentru tranzacția dumneavoastră.
-* Comisionul minim pentru un transfer standard este de **500 uqor**.
+* Setați `--gas` explicit (400.000 este suficient pentru un transfer semnat hibrid).
+* Pragul minim al comisionului este de **0,1 uqor per unitate de gaz**, deci o limită de gaz de 400.000 necesită cel puțin **40.000 uqor**.
 
 :::

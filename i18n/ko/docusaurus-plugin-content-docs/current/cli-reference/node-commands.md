@@ -10,7 +10,7 @@ sidebar_position: 1
 QoreChain 노드를 초기화, 설정, 운영하는 데 사용하는 `qorechaind` 명령어 레퍼런스입니다.
 
 :::note
-QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 체인 버전 **v3.1.97**로 운영 중)과 **`qorechain-diana`** 테스트넷입니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요.
+QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 29일부터 운영 중이며, 현재 노드 릴리스는 **v3.2.1**)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.2**)입니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요. 각 네트워크의 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에 나와 있습니다.
 :::
 
 ---
@@ -25,11 +25,14 @@ qorechaind init <moniker> --chain-id qorechain-diana
 
 | 플래그          | 타입   | 설명                                    |
 | ------------- | ------ | ---------------------------------------------- |
-| `--chain-id`  | string | 체인 식별자 (필수)                    |
+| `--chain-id`  | string | 체인 식별자 (항상 지정하세요. 생략하면 임의의 식별자가 생성됩니다) |
 | `--home`      | string | 노드 홈 디렉터리 (기본값: `~/.qorechaind`) |
-| `--overwrite` | bool   | 기존 제네시스 및 설정 파일을 덮어씁니다    |
+| `--overwrite` | bool   | 기존 `genesis.json`을 덮어씁니다    |
+| `--recover`   | bool   | 키를 새로 만들지 않고 시드 문구를 입력하여 기존 키를 복구합니다 |
 
-`--home` 아래에 `config/`, `data/` 디렉터리 구조와 초기 `genesis.json`을 생성합니다.
+`--home` 아래에 `config/`, `data/` 디렉터리 구조와 초기 `genesis.json`을 생성합니다. 네트워크 노드의 경우, 시작하기 전에 이 `genesis.json`을 해당 네트워크의 제네시스 파일로 교체하세요([메인넷 연결하기](/getting-started/connecting-to-mainnet) 참조).
+
+`init`은 또한 네트워크의 EVM 체인 ID(`qorechain-vladi`는 `9801`, `qorechain-diana`는 `9800`)를 `app.toml`의 `evm-chain-id` 설정에 기록하므로, 올바른 `--chain-id`를 지정하세요.
 
 ---
 
@@ -44,7 +47,7 @@ qorechaind start [flags]
 | 플래그                   | 타입   | 설명                                          |
 | ---------------------- | ------ | ---------------------------------------------- |
 | `--home`               | string | 노드 홈 디렉터리                                  |
-| `--minimum-gas-prices` | string | 수락할 최소 가스 가격 (예: `0.001uqor`)     |
+| `--minimum-gas-prices` | string | 이 노드가 수락하는 최소 가스 가격. 네트워크 하한은 `0.1uqor`이므로 최소한 그 값 이상으로 설정하세요 |
 | `--pruning`            | string | 프루닝 전략: `default`, `nothing`, `everything` |
 | `--halt-height`        | uint   | 해당 블록 높이에서 노드를 정지합니다                   |
 | `--halt-time`          | uint   | 해당 Unix 타임스탬프에서 노드를 정지합니다                |
@@ -85,23 +88,9 @@ qorechaind status
 
 ---
 
-## config
+## client configuration
 
-노드 설정 값을 읽거나 씁니다.
-
-### 설정 값 지정
-
-```bash
-qorechaind config set <key> <value>
-```
-
-### 설정 값 조회
-
-```bash
-qorechaind config get <key>
-```
-
-일반적인 설정 키로는 `chain-id`, `keyring-backend`, `output`, `node`가 있습니다.
+`config` 하위 명령어는 없습니다. 클라이언트 기본값(`chain-id`, `keyring-backend`, `output`, `node`)은 `<home>/config/client.toml`에서 읽습니다. 이 파일을 편집하거나, 명령어마다 플래그(`--chain-id`, `--keyring-backend`, `--output`, `--node`)를 지정하세요.
 
 ---
 
@@ -117,8 +106,9 @@ qorechaind keys add <name> [flags]
 
 | 플래그                   | 타입   | 설명                                     |
 | ---------------------- | ------ | ----------------------------------------------- |
-| `--keyring-backend`    | string | 백엔드: `os`, `file`, `test`                   |
-| `--algo`               | string | 키 알고리즘: `secp256k1` (기본값), `ed25519` |
+| `--keyring-backend`    | string | 백엔드: `os`, `file`, `kwallet`, `pass`, `test`, `memory` |
+| `--key-type`           | string | 키 알고리즘: `secp256k1` (기본값) 또는 `eth_secp256k1` |
+| `--coin-type`          | uint32 | HD 코인 타입 (기본값 `118`)                    |
 | `--recover`            | bool   | 니모닉으로부터 키를 복구합니다                       |
 | `--multisig`           | string | 멀티시그에 사용할 키의 콤마 구분 목록       |
 | `--multisig-threshold` | uint   | 필요한 최소 서명 수                     |
@@ -174,6 +164,7 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 | 플래그                 | 타입   | 설명                       |
 | -------------------- | ------ | --------------------------------- |
 | `--vesting-amount`   | string | 베스팅 수량                    |
+| `--vesting-start-time` | int  | 베스팅 시작 시각 (Unix 타임스탬프) |
 | `--vesting-end-time` | int    | 베스팅 종료 시각 (Unix 타임스탬프) |
 
 ### 제네시스 트랜잭션 생성
@@ -195,10 +186,12 @@ qorechaind genesis gentx <key-name> <stake-amount> [flags]
 qorechaind genesis collect-gentxs
 ```
 
+다른 `genesis` 하위 명령어: `bulk-add-genesis-account`, `migrate`.
+
 ### 제네시스 파일 검증
 
 ```bash
-qorechaind genesis validate-genesis
+qorechaind genesis validate
 ```
 
 ---
@@ -238,6 +231,9 @@ qorechaind export [flags]
 | `--for-zero-height` | bool   | 높이 0에서 재시작하기 위한 내보내기를 준비합니다 |
 | `--height`          | int    | 특정 블록 높이에서 상태를 내보냅니다   |
 | `--home`            | string | 노드 홈 디렉터리                       |
+| `--output-document` | string | 내보내기 결과를 STDOUT 대신 이 파일에 기록합니다 |
+| `--modules-to-export` | strings | 내보낼 모듈의 콤마 구분 목록 (기본값: 전체) |
+| `--jail-allowed-addrs` | strings | 투옥 해제할 투옥된 검증인의 운영자 주소 |
 
 ---
 

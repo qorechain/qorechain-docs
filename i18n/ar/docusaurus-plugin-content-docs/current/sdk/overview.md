@@ -25,8 +25,20 @@ QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث 
   و JSON-RPC القياسي).
 - **SVM** — بيئة تشغيل متوافقة مع Solana مع واجهة JSON-RPC على نمط Solana.
 
-الحسابات والأرصدة والرموز المميزة مشتركة بين بيئات التشغيل، كما تدعم السلسلة
-IBC للتشغيل البيني عبر السلاسل.
+الحسابات والأرصدة والرموز المميزة مشتركة بين بيئات التشغيل، كما تتضمن السلسلة
+وحدة IBC للتشغيل البيني عبر السلاسل (لا توجد قنوات IBC مفتوحة بعد على الشبكة
+الرئيسية ولا على شبكة الاختبار).
+
+:::note ما يعمل على الشبكات الحية اليوم (السلسلة v3.2.0 وما بعدها)
+**يعمل:** القراءات على كل مسار، ومعاملات المسار الأصلي (Native) الموقَّعة
+توقيعاً هجيناً، والحسابات الموحّدة، ومعاملات EVM داخل
+[نافذة التفويض](/sdk/guides/evm#evm-window)، وقراءات SVM.
+**غير متاح بعد:** مكوّنات EVM ما قبل التجميع (غير مفعَّلة)، ومساحة الأسماء
+`qor_` في JSON-RPC، ومعاملات SVM، والاستدعاءات عبر الآلات الافتراضية على الشبكة
+الرئيسية (`MsgCrossVMCall` متوقفة بواسطة قاطع الدائرة)، ورفع عقود CosmWasm
+وإنشاء نسخ منها للحسابات العادية، ومسارات المصادِق / الحساب المجرّد (الوحدة
+متوقفة)، وxQORE وتجريد الغاز. يكرر كل دليل هذا التنبيه حيثما ينطبق.
+:::
 
 ### آمنة كمومياً بحكم التصميم
 
@@ -37,7 +49,9 @@ IBC للتشغيل البيني عبر السلاسل.
 اليوم مع اكتساب حماية ما بعد كمومية.
 
 تتيح SDK اليوم توليد مفاتيح ML-DSA-87 والتوقيع والتحقق بها، إضافة إلى
-اللبنات الأساسية للمعاملات الهجينة. راجع
+اللبنات الأساسية للمعاملات الهجينة. وعلى الشبكات الحية **يجب** أن تكون
+معاملة المسار الأصلي موقَّعة توقيعاً هجيناً، وأن يكون مفتاح ML-DSA-87 للحساب
+مسجَّلاً أولاً. راجع
 [الحسابات وتوقيع PQC](/sdk/concepts/accounts-pqc) للتفاصيل. لا ادعاءات
 تسويقية هنا — تتيح SDK بالضبط الأساسيات التي تنفذها السلسلة.
 
@@ -50,8 +64,9 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 - **تقييم المخاطر المسبق بالذكاء الاصطناعي** — افحص المعاملة بالذكاء
   الاصطناعي على السلسلة قبل بثها. تُرجع `simulateWithRiskScore` تقدير الغاز
   إضافة إلى حكم بالمخاطر/الشذوذ صادر عن precompiles حتمية على EVM، بحيث
-  تستطيع المحفظة أو التطبيق اللامركزي التحذير (أو المنع) *قبل* التوقيع. راجع
-  [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
+  تستطيع المحفظة أو التطبيق اللامركزي التحذير (أو المنع) *قبل* التوقيع. لم
+  تُفعَّل مكوّنات ما قبل التجميع بعد على الشبكة الرئيسية ولا على شبكة الاختبار.
+  راجع [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
 - **استدعاءات موحّدة عبر الآلات الافتراضية** — حساب واحد، ثلاث آلات
   افتراضية، معاملة واحدة. تستدعي `createCrossVMClient` عقداً على أي آلة
   افتراضية، وتحزم `callAtomic` عدة استدعاءات عبر الآلات الافتراضية في معاملة
@@ -62,7 +77,8 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
   شارة React جاهزة للاستخدام. راجع
   [الأمان الكمومي](/sdk/guides/quantum-safe).
 
-وصلت قدرتان إضافيتان على مستوى السلسلة في 0.6.0 و 0.7.0:
+وصلت قدرتان إضافيتان على مستوى السلسلة في 0.6.0 و 0.7.0 (الثانية غير قابلة
+للاستخدام بعد على الشبكات الحية، انظر أدناه):
 
 - **حسابات موحّدة أصلية بنمط eth** — مفتاح `eth_secp256k1` واحد هو هوية
   واحدة من 20 بايت تُعرض بصيَغ `qor1…` و `0x…` وعنوان base58 لـ SVM، وكلها
@@ -70,7 +86,8 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
   [الحسابات الموحّدة](/sdk/concepts/accounts-pqc#unified-accounts).
 - **مسارات المصادقة (Authenticator lanes)** — اربط مفتاح Phantom أو
   MetaMask بالحساب القانوني الذي يتطلب PQC ودعه ينفق عبر مُرحِّل وفق شروط
-  قائمة على أدنى الامتيازات ومحدودة الإنفاق وقابلة للإلغاء. راجع
+  قائمة على أدنى الامتيازات ومحدودة الإنفاق وقابلة للإلغاء. وحدة
+  `abstractaccount` التي تقوم عليها متوقفة على الشبكتين اليوم. راجع
   [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators).
 
 كما أن حزمة **`@qorechain/react`** الجديدة (مزوِّد، وخطافات hooks، و
@@ -87,15 +104,15 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 
 | الحزمة | اللغة | التثبيت | الحالة |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.7.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.7.0) |
-| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.7.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، آخر إصدار منشور؛ الإصدار 0.7.0 من المستودع) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.7.0` | منشورة (Maven Central، الإصدار v0.7.0) |
-| `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.7.0) |
-| `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.7.0) |
-| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.7.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.7.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.8.3) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.8.3) |
+| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.8.4`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.8.3) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | منشورة (Maven Central، الإصدار v0.8.3) |
+| `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.8.0) |
+| `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.8.0) |
+| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.8.3) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.8.0) |
 
 > توزيعة Python تُثبَّت باسم `qorechain-sdk` لكنها **تُستورَد باسم
 > `qorsdk`**. جميع العملاء منشورون في سجلاتهم — راجع
@@ -109,17 +126,17 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 القياسية، وعملاء استعلام منمَّطون، ودورة حياة المعاملة الكاملة (الغاز
 التلقائي، وفك ترميز الأخطاء، وتتبع المعاملات، والبحث في الكتل/المعاملات)،
 والمعاملات الهجينة ما بعد الكمومية، واشتراكات WebSocket. جميع هؤلاء العملاء
-**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.7.0)، و Python على
-PyPI ‏(`qorechain-sdk` 0.7.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
-الوحدات (الوسم `packages/go/v0.7.0`)، و Rust على crates.io
-‏(`qorechain-sdk`، آخر إصدار منشور — نشر الحزمة 0.7.0 على crates.io ما يزال
-معلقاً، لذا ثبّت من crates.io أو من المستودع)، و Java على Maven Central
-‏(`io.github.qorechain:qorechain-sdk` 0.7.0). أما محوِّلات التنفيذ EVM/SVM
-‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.7.0)، وحزمة
-`@qorechain/react` ‏(0.7.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.7.0)
-فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm.
+**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.8.3)، و Python على
+PyPI ‏(`qorechain-sdk` 0.8.3، الاستيراد باسم `qorsdk`)، و Go على وكيل
+الوحدات (الوسم `packages/go/v0.8.4`)، و Rust على crates.io
+‏(`qorechain-sdk` 0.8.3)، و Java على Maven Central
+‏(`io.github.qorechain:qorechain-sdk` 0.8.3). أما محوِّلات التنفيذ EVM/SVM
+‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.8.0)، وحزمة
+`@qorechain/react` ‏(0.8.3)، وأداة السقالة `create-qorechain-dapp` ‏(0.8.0)
+فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع
+[التثبيت](/sdk/install#related-packages) للاطلاع على الحزم المصاحبة.
 
-## الجديد في 0.6 و 0.7
+## الجديد في 0.6 و 0.7 و 0.8
 
 **0.6.0 — الحسابات الموحّدة الأصلية بنمط eth (السلسلة v3.1.83).** مفتاح
 `eth_secp256k1` واحد هو هوية واحدة من 20 بايت تُعرض بجميع ترميزات العناوين
@@ -135,8 +152,8 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 ```
 
 التوقيع على المسار الأصلي بنفس المفتاح يتم عبر `signClassicalEth` /
-`signHybridEth`، وتشتق `connectPhantomUnified` حساباً موحّداً غير وصائي من
-توقيع Phantom حتمي. أما الاشتقاق التقليدي بنوع العملة 118 عبر
+`signHybridEth`، ويُربط مفتاح Phantom أو MetaMask بالحساب كمُصادِق (أُزيل الاشتقاق من
+توقيع Phantom في الإصدار 0.8.0). أما الاشتقاق التقليدي بنوع العملة 118 عبر
 `deriveNativeAccount` فيبقى دون تغيير. راجع
 [الحسابات الموحّدة](/sdk/concepts/accounts-pqc#unified-accounts).
 
@@ -145,7 +162,9 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 ويُرفض عند CheckTx). المعاملات الهجينة المبنية بإصدار SDK ‏≤ 0.6.0
 **تُرفض على السلسلة** — قم بالترقية.
 
-**0.7.0 — مسارات المصادقة (السلسلة v3.1.85).** يمكن لمفتاح Phantom مرتبط
+**0.7.0 — مسارات المصادقة (السلسلة v3.1.85).** وحدة `abstractaccount` التي
+تقوم عليها متوقفة حالياً على الشبكتين (راجع
+[دليل المصادِقات](/sdk/guides/authenticators)). يمكن لمفتاح Phantom مرتبط
 ‏(ed25519) أو MetaMask ‏(secp256k1، عبر عنوان من 20 بايت) أن ينفق من الحساب
 القانوني الذي يتطلب PQC عبر مُرحِّل، وفق شروط قائمة على أدنى الامتيازات
 ومحدودة الإنفاق وقابلة للإلغاء: مُنشئات `MsgExecuteEVM` /
@@ -155,6 +174,21 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 TypeScript ‏(`buildPhantomExecuteCosmos` و `buildMetaMaskExecuteEvm`، …).
 شرح كامل مع أمثلة قابلة للنسخ واللصق:
 [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators).
+
+**0.8.0 – 0.8.3 — بايتات التوقيع الهجينة v2 ونافذة تفويض EVM (السلسلة
+v3.2.0).** يُوقَّع النصف ما بعد الكمومي من المعاملة الهجينة الآن بالصيغة التي
+تتحقق منها الشبكة المستهدفة (v1 أو v2، `signBytesVersion: "auto" | "v1" | "v2"`).
+كلتا الشبكتين العامتين على v2، لذا يلزم SDK **0.8.1 أو أحدث** للتعامل على
+الشبكة الرئيسية. تضيف **0.8.2** الدوال `openEvmWindowMsg` و `closeEvmWindowMsg`
+و `fetchEvmWindow` و `classifyEvmWindowRejection` الخاصة بـ
+[نافذة التفويض](/sdk/guides/evm#evm-window) على مسار EVM.
+أزالت **0.8.0** مساعدات الحساب المعتمدة على توقيع المحفظة (`connectPhantomUnified` و
+`unifiedAccountFromPhantomSignature`، أُزيلتا في 0.8.0)، وتطبق فحوص صارمة
+لأحجام ML-DSA-87 في كل لغة، وتضيف العلم `async` وبيانات المُستدعى المُعادة
+إلى الاستدعاءات عبر الآلات الافتراضية. وتصلح **0.8.3** البحث عن المعاملات،
+وسباقات خطافات React، وترتيب تسلسل `migrate_to_hybrid` في Python، والاشتقاق
+القانوني لـ PQC المستقل عن صيغة العنوان (`derivePqcCanonical`، `canonicalAccount`).
+راجع [ملاحظات الترقية](/sdk/install#upgrade).
 
 ## إلى أين تتجه بعد ذلك
 

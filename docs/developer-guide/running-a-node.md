@@ -26,8 +26,10 @@ The current binary, genesis, peers, seeds, and a state-sync trust point are publ
 The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
 :::
 
-:::caution v3.1.94 or later required for a node joining fresh
-A node that syncs from genesis or replays from an archive/snapshot needs to be on **v3.1.94 or later**, for two stacked reasons: v3.1.92 fixed a gas-metering bug that otherwise halts replay at the first block containing a transaction, and mainnet has since passed the v3.1.94 governance upgrade (a hard-cap on emission, applied at height 2,122,074) — a node without that upgrade's handler halts again trying to replay past that same height. v3.1.97 is the current recommended version (rolling, non-consensus-breaking security updates); `minCompatible` is `3.1.94`. The manifest is promoted deliberately (testnet first, mainnet after a soak period) and has previously lagged behind this floor — check its `"version"` field before trusting `binary.url`, and fall back to the [qorechain-core GitHub releases](https://github.com/qorechain/qorechain-core/releases) or building from source if it's behind.
+:::caution v3.2.0 or later required for a node joining fresh
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (for example the v3.1.94 emission cap at height 2,122,074 and the v3.2.0 upgrade at height 2,981,742), so always install the binary the manifest points to: it carries every upgrade handler. A fresh mainnet node needs **v3.2.0 or later**: `minCompatible` in the manifest is `3.2.0`, the oldest release that still follows the chain, and `version` (currently `3.2.1`) is the recommended one, a node-local release with no upgrade height. The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`. On the testnet, `minCompatible` equals `version` (currently `3.2.2`).
+
+Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP (the node stops when its clock is more than 60 seconds out), and set `evm-chain-id` in `app.toml` (see [Node limits](#node-limits)).
 :::
 
 ---
@@ -39,7 +41,7 @@ A node that syncs from genesis or replays from an archive/snapshot needs to be o
 | Consensus key       | None                                            | ed25519 consensus key (must be secured)    |
 | Block production    | No                                              | Yes — proposes and signs blocks            |
 | Staking / slashing  | Not applicable                                  | Self-delegation, slashing risk             |
-| Primary purpose     | Serve RPC/REST/gRPC/EVM/SVM to integrations     | Secure the network, earn rewards           |
+| Primary purpose     | Serve RPC/REST/gRPC/EVM (and read-only SVM) to integrations | Secure the network (staking rewards apply) |
 | Public exposure     | RPC/EVM endpoints typically exposed             | Validator hidden behind sentry nodes       |
 
 ---
@@ -48,7 +50,7 @@ A node that syncs from genesis or replays from an archive/snapshot needs to be o
 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026 |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 29 Jun 2026 |
 | Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
@@ -71,19 +73,33 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet — build one yourself from the repository's `Dockerfile` and tag it to the live chain version (**v3.1.97** on mainnet), then mount a persistent volume for chain data:
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet. The `Dockerfile` in the public repository builds the **community** binary (no post-quantum library, stub keepers): that is suitable for local development but it cannot follow mainnet or testnet. For a network node, build your own image from the **release archive** named in `latest.json`, tag it to the release version (**v3.2.1** on mainnet, **v3.2.2** on testnet), then mount a persistent volume for chain data:
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+The archive contains `qorechaind` and a `lib/` directory with its shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); the image above is `linux/amd64` only, like the release archive.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-Initialize the data directory once (genesis and peer configuration are covered below), then start:
+Initialize the data directory once (for example `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`; genesis and peer configuration are covered below), then start:
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Fetch the manifest
+### 2. Fetch the manifest {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Use this file as the source for the binary, genesis, and peer values in the steps below — check `jq -r .minCompatible latest.json` but remember the **v3.1.94 floor** above holds even if that field lags behind.
+Use this file as the source for the binary, genesis, and peer values in the steps below — check `jq -r .minCompatible latest.json` and run at least that release (the recommended one is `jq -r .version latest.json`).
 
 ### 3. Download and verify genesis
 
@@ -191,6 +207,8 @@ Then set the minimum gas price in `~/.qorechaind/config/app.toml` (network fee f
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi` also writes the network's EVM chain id into `app.toml` (see [Node limits](#node-limits)); check it on a home that was initialised long ago.
 
 ### 5. Start syncing
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot restore
 
-Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. The manifest does not currently carry a snapshot pointer, so check the live listing at [download.qore.host](https://download.qore.host) for the current filename and checksum rather than hardcoding one:
+Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. On mainnet the manifest's `snapshot` object gives the URL, the block `height`, the size and the SHA-256 (the testnet manifest currently carries only the URL, so use state sync there). Read `snapshot.height` before using it: the mainnet snapshot is a single archive of about 27 GB, and an old one means a long catch-up (the mainnet snapshot currently published predates both the v3.1.94 and v3.2.0 upgrade heights, so a node restored from it must replay them with a v3.2.x binary).
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Snapshots are published under **height-stamped filenames** that change regularly — check [download.qore.host](https://download.qore.host) for the most recent snapshot and its SHA-256 checksum, and always verify before extracting. Remember the **v3.1.94 minimum** above applies to replay from a snapshot too.
+The manifest's `snapshot.height` and `snapshot.ts` fields say how fresh the archive is, and state sync (above) is usually faster than a 27 GB download. Always verify the checksum before extracting, and use a node release that carries every upgrade handler (see the caution at the top of this page) when replaying from a snapshot.
 :::
 
 ---
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | Keeps recent state, prunes the rest      | RPC node, balance/state lookups   |
 | `nothing`   | Keeps all historical state               | Archive node, full history        |
 | `custom`    | Operator-defined keep/interval values    | Tuned retention                   |
+
+### Node limits (`app.toml`) {#node-limits}
+
+From node release v3.2.1, `init` writes a `[qorechain]` section with three node-local limits. They change only what this node keeps in memory and what it puts into the blocks it proposes, never what a block must contain to be valid:
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init` also writes the network's EVM chain id into the `[evm]` `evm-chain-id` setting of `app.toml` (`9801` for `--chain-id qorechain-vladi`, `9800` for `qorechain-diana`). A node whose `app.toml` carries a different value still starts, but logs an error at startup, and its own JSON-RPC (`eth_chainId`, signing against that node) answers with the wrong chain id until you correct the file; consensus is unaffected. Older binaries wrote the testnet value (`9800`) regardless of `--chain-id`, so a mainnet node initialised long ago should check this setting. Do not set `QORE_EVM_CHAIN_ID` to a value other than the network's: such a node refuses to start.
 
 ### Transaction indexing (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+The public endpoints serve the `eth_`, `net_`, `web3_` and `txpool_` namespaces. The `qor_` namespace is not served by any released node build, so do not add it (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
 
 And the RPC listener in `config.toml`:
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | High-throughput programmatic access                    |
 | EVM JSON-RPC | `8545`  | Ethereum-compatible integrations (chain ID `9801`)     |
 | EVM WS       | `8546`  | EVM event subscriptions                                |
-| SVM RPC      | `8899`  | Solana-compatible integrations                         |
+| SVM RPC      | `8899`  | Solana-compatible reads (SVM transactions are disabled) |
 
 :::warning
 Never expose RPC, EVM JSON-RPC, or gRPC directly to the public internet without a reverse proxy, rate limiting, authentication, and a firewall. Bind to `0.0.0.0` only behind a controlled ingress layer.
@@ -342,7 +382,7 @@ The `network` field should report `qorechain-vladi` (mainnet) or `qorechain-dian
 
 ### Prometheus and Grafana
 
-QoreChain exposes Prometheus metrics on port **26660**:
+The node can expose Prometheus metrics on port **26660** (set `prometheus = true` in the `[instrumentation]` section of `config.toml`):
 
 ```
 http://localhost:26660/metrics
@@ -363,7 +403,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the live tag (**v3.1.97** on mainnet) and track official releases for coordinated upgrades.
+1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.1** on mainnet), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **Monitor sync continuously.** Alert on block-height lag, zero peers, and a node stuck in `catching_up`.
 
-For ultra-light read access without running a full node, see the **Light Node** documentation.
+A node-only deployment never signs. Transactions that your integration broadcasts through it must already carry the hybrid post-quantum signature (and, for the EVM lane, the sender needs a registered key and an open authorisation window); see [Exchange Integration](/developer-guide/exchange-integration) and [Post-Quantum Signing](/developer-guide/post-quantum-signing).
+
+To observe the network without running a full node, see the [Light Node documentation](/light-node/overview).
 
 ---
 
 ## Troubleshooting
+
+### The node stops with a clock error
+
+From node release v3.2.1 the consensus engine stops when the system clock is more than 60 seconds out of step with the network. Run an NTP client (`chrony` or `systemd-timesyncd`), confirm the clock is synchronised with `timedatectl status`, then restart the node.
 
 ### A node halted before the upgrade doesn't resume after a binary swap
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [Connecting to Mainnet](/getting-started/connecting-to-mainnet) — Mainnet genesis, peers, and connection details
 * [Running a Validator](/developer-guide/running-a-validator) — Add block-production duties
-* [Building from Source](/developer-guide/building-from-source) — Build the `qorechaind` binary
-* **Light Node** — Ultra-light read-only access (documentation coming soon)
+* [Building from Source](/developer-guide/building-from-source) — Build the community `qorechaind` binary for development
+* [Light Node](/light-node/overview) — Lightweight client that follows the network without a full node

@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Cette page couvre deux sujets connexes : les **systèmes de preuve ZK** (`snark` et `stark`) utilisés par les rollups réglés en ZK, et le **flux de retrait L2 → L1** qui ramène des fonds d'un rollup vers QoreChain une fois qu'un lot est finalisé.
 
-:::caution
-La vérification ZK et STARK est une partie du RDK en pleine maturation. Considérez les systèmes de preuve et le flux de retrait décrits ici comme une intention de conception, validez sur le testnet **`qorechain-diana`**, et ne présumez pas encore de garanties cryptographiques durcies pour la production sur le mainnet.
+:::caution Capacité à un stade précoce
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau, donc ni la vérification des preuves ni le flux de retrait décrits ici n'ont été exercés sur un rollup en production. La vérification SNARK existe, mais un rollup créé via `create-rollup` ne peut pas encore finaliser un lot ZK, et la vérification STARK est expérimentale. Validez sur le testnet **`qorechain-diana`** et ne présumez pas de garanties durcies pour la production sur le mainnet.
 :::
 
 ---
@@ -21,8 +21,8 @@ Un rollup réglé en ZK (mode de règlement `zk`) attache une preuve de validit�
 
 | Système de preuve | Caractéristiques |
 | ------------ | --------------- |
-| **`snark`** | Preuves succinctes |
-| **`stark`** | Preuves transparentes — pas de configuration de confiance |
+| **`snark`** | Preuves succinctes (Groth16 sur BLS12-381), vérifiées on-chain par rapport à la clé de vérification du rollup |
+| **`stark`** | Preuves transparentes, sans configuration de confiance — expérimental ; opt-in et lié à un circuit de démonstration |
 
 Le mode de règlement `zk` requiert l'un de `snark` ou `stark` ; l'appariement est imposé on-chain lors de la création du rollup. À l'inverse, le règlement `optimistic` utilise le système de preuve `fraud`, et les règlements `based` et `sovereign` utilisent `none`. Consultez la **[Vue d'ensemble des rollups](/rollups/overview)** pour la matrice de compatibilité complète.
 
@@ -32,7 +32,7 @@ Contrairement aux rollups optimistes — qui attendent la fin d'une fenêtre de 
 
 ### Maturité
 
-La vérification des preuves ZK et STARK est encore en maturation. Considérez le règlement ZK comme **pas encore durci pour la production** : prototypez et validez sur le testnet, et suivez les notes de version du RDK pour connaître l'état de la vérification complète des preuves avant de vous y fier pour des rollups mainnet porteurs de valeur.
+Les lots SNARK sont vérifiés on-chain (Groth16 sur BLS12-381) par rapport à une clé de vérification stockée avec le rollup. Un rollup créé via `create-rollup` ne porte actuellement pas de clé de vérification, donc les lots ZK ne peuvent pas encore être finalisés de bout en bout. La vérification STARK est expérimentale : elle est opt-in et vérifie un circuit de démonstration, et non la transition d'état propre à votre rollup. Considérez le règlement ZK comme non prêt pour la production, et suivez les notes de version du RDK avant de vous y fier pour des rollups mainnet porteurs de valeur.
 
 ---
 
@@ -52,7 +52,7 @@ Pour savoir comment les lots sont soumis et finalisés — y compris `submit-bat
 
 ## Exécuter un retrait : `execute-withdrawal`
 
-La commande `execute-withdrawal` finalise un retrait L2 → L1 sur la racine des retraits d'un lot finalisé. Elle prouve qu'une feuille de retrait est engagée dans cette racine et paie le destinataire depuis l'escrow du module rdk. L'action est **sans permission** — quiconque peut soumettre une preuve valide.
+La commande `execute-withdrawal` finalise un retrait L2 → L1 sur la racine des retraits d'un lot finalisé. Elle prouve qu'une feuille de retrait est engagée dans cette racine et paie le destinataire depuis l'escrow du module rdk. L'action est **sans permission** — quiconque peut soumettre une preuve valide. Comme toute transaction de la voie native, elle nécessite la co-signature post-quantique hybride : construisez-la donc avec `--generate-only` et co-signez-la (voir [Déployer un rollup](/rollups/deploying-a-rollup)). Les retraits n'ont pas encore été exercés sur un rollup en production ; considérez ce flux comme non testé.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Arguments positionnels :**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Hachages frères (siblings) de Merkle hexadécimaux séparés par des virgules, ordonnés de la feuille à la racine, qui prouvent que la feuille de retrait est engagée dans la racine des retraits du lot |
 
-La valeur `--proof` est la preuve d'inclusion : les hachages frères le long du chemin allant de la feuille de retrait jusqu'à la racine des retraits engagée du lot. Le module recalcule la racine à partir de la feuille et des frères fournis, et la compare à la racine engagée du lot finalisé avant de libérer les fonds sous escrow.
+La valeur `--proof` est la preuve d'inclusion : les hachages frères le long du chemin allant de la feuille de retrait jusqu'à la racine des retraits engagée du lot. Le module recalcule la racine à partir de la feuille et des frères fournis, et la compare à la racine engagée du lot finalisé avant de payer.
+
+### Encodage des feuilles et des nœuds {#leaf-and-node-encoding}
+
+* **Feuille** = SHAKE-256 (32 octets) de `rollup_id`, un octet `0x00`, l'index de retrait (8 octets, big-endian), la chaîne `recipient`, `0x00`, la chaîne `denom`, `0x00`, et le `amount` (8 octets, big-endian).
+* **Parent** = SHAKE-256 de `left || right`. À chaque niveau, le bit correspondant de l'index de retrait détermine le côté : `0` signifie que la feuille (ou le hachage courant) est le nœud gauche.
+* Chaque hachage frère doit faire exactement 32 octets.
+
+:::caution Les utilitaires Merkle génériques ne correspondent pas
+Les utilitaires génériques `binaryMerkleRoot` / `binaryMerkleProof` du RDK utilisent par défaut SHA-256 avec duplication des nœuds impairs. Remplacez la fonction de hachage et l'encodage des feuilles par les règles ci-dessus, faute de quoi la preuve ne sera pas vérifiée on-chain.
+:::
+
+### D'où viennent les fonds {#where-the-funds-come-from}
+
+Un retrait est payé depuis le **stake placé sous escrow par le rollup lui-même** (le stake moins la destruction à la création). Le module tient un registre par rollup, de sorte qu'un retrait prouvé pour un rollup ne puisse pas être payé sur le stake d'un autre rollup. Le module ne comporte aucun message de dépôt L1 → L2 ; il ne s'agit donc pas d'un pont de fonds d'utilisateurs.
 
 ---
 

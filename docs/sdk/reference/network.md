@@ -13,6 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `mainnet` |
 | Chain id | `qorechain-vladi` (live) |
+| EVM chain ID | `9801` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
 | Base units per QOR | `10^6` |
@@ -25,11 +26,25 @@ sidebar_position: 1
 | --- | --- |
 | Network preset | `testnet` |
 | Chain id | `qorechain-diana` (live) |
+| EVM chain ID | `9800` |
 | Display token | `QOR` |
 | Base denomination | `uqor` |
 | Base units per QOR | `10^6` |
 | Account bech32 prefix | `qor` |
 | Validator bech32 prefix | `qorvaloper` |
+
+## Public endpoints {#public-endpoints}
+
+| Endpoint | Mainnet (`qorechain-vladi`) | Testnet (`qorechain-diana`) |
+| --- | --- | --- |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| Consensus RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM JSON-RPC (`eth_*`) | `https://evm.qore.host` (chain ID 9801) | `https://evm-testnet.qore.host` (chain ID 9800) |
+| EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (read-only) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+
+The EVM endpoints serve `eth_`, `net_`, `web3_` and `txpool_`; the `qor_`
+namespace is not enabled. See also [Networks](/appendix/networks#public-endpoints).
 
 ## Default ports
 
@@ -41,7 +56,7 @@ point at a real node.
 | Cosmos REST (LCD) | `1317` | bank balances, account info, module queries |
 | gRPC | `9090` | gRPC queries |
 | Consensus RPC | `26657` | signing/broadcasting native txs, CosmWasm reads |
-| EVM JSON-RPC | `8545` | `eth_*`, `qor_*`, precompiles |
+| EVM JSON-RPC | `8545` | `eth_*` (and `qor_*` / precompiles on nodes that enable them) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket subscriptions |
 | SVM JSON-RPC | `8899` | Solana-compatible RPC |
 
@@ -52,10 +67,10 @@ import { createClient } from "@qorechain/sdk";
 
 const client = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
-    evmWs: "wss://evm.testnet.example",      // EVM WebSocket
+    rest: "https://api-testnet.qore.host",        // REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",         // consensus RPC
+    evmRpc: "https://evm-testnet.qore.host",      // EVM JSON-RPC (eth_*)
+    evmWs: "wss://evm-ws-testnet.qore.host",      // EVM WebSocket
   },
 });
 ```
@@ -68,15 +83,15 @@ the equivalents are `create_client` / `CreateClient` / `ClientBuilder` plus the
 ## Targeting mainnet
 
 Both presets ship the same localhost defaults; select `mainnet` and override the
-endpoints with your node URLs:
+endpoints with the public URLs (or your own node):
 
 ```ts
 const main = createClient({
   network: "mainnet",       // chain id qorechain-vladi
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```

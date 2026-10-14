@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # JSON-RPC — Spațiul de nume eth_
 
-QoreChain implementează o interfață JSON-RPC complet compatibilă cu EVM, permițând instrumentelor standard Ethereum (MetaMask, Hardhat, Foundry, ethers.js, web3.js) să interacționeze cu lanțul fără modificări.
+QoreChain implementează o interfață JSON-RPC compatibilă cu EVM, astfel încât instrumentele standard Ethereum (MetaMask, Hardhat, Foundry, ethers.js, web3.js) pot citi starea lanțului și estima gas-ul fără modificări. **Trimiterea unei tranzacții de pe lane-ul EVM necesită un pas suplimentar** începând cu versiunea de lanț v3.2.0: contul expeditor trebuie să aibă o cheie post-cuantică înregistrată și o fereastră de autorizare EVM deschisă (vezi [Trimiterea tranzacțiilor](#sending-transactions)).
 
 ## Conexiune
 
@@ -17,7 +17,7 @@ QoreChain implementează o interfață JSON-RPC complet compatibilă cu EVM, per
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, activ pe versiunea de lanț **v3.1.97**) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți; înlocuiește-le cu endpoint-ul de mainnet sau testnet al furnizorului tău pentru acces la distanță.
+Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, versiunea de nod **v3.2.1**) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`, versiunea de nod **v3.2.2**). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți. Endpoint-urile HTTP publice sunt `https://evm.qore.host` (mainnet) și `https://evm-testnet.qore.host` (testnet), listate în [Rețele](/appendix/networks#public-endpoints). Singurul WebSocket EVM public este cel al testnet-ului (`wss://evm-ws-testnet.qore.host`); nu există un WebSocket EVM public pentru mainnet.
 :::
 
 ## Spații de nume acceptate
@@ -28,7 +28,7 @@ Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM c
 | `web3_`   | Metode utilitare (versiunea clientului, hashing)                                                               |
 | `net_`    | Metode de stare a rețelei                                                                                      |
 | `txpool_` | Inspecția pool-ului de tranzacții                                                                              |
-| `qor_`    | Extensii specifice QoreChain (vezi [Spațiul de nume qor_](/api-reference/json-rpc-qor_-namespace))            |
+| `rpc_`    | Introspecția serverului (`rpc_modules`)                                                                        |
 
 ## Metode eth_
 
@@ -47,6 +47,15 @@ Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM c
 | `eth_chainId`               | niciunul                                         | Returnează ID-ul lanțului (codat în hex)             |
 | `eth_gasPrice`              | niciunul                                         | Returnează prețul curent al gas-ului în wei          |
 | `eth_feeHistory`            | `blockCount`, `newestBlock`, `rewardPercentiles` | Returnează date istorice despre taxe (EIP-1559)      |
+| `eth_getBlockByHash`        | `blockHash`, `fullTx` (bool)                     | Returnează datele unui bloc după hash                |
+| `eth_getCode`               | `address`, `blockNumber`                         | Returnează bytecode-ul unui contract                 |
+| `eth_getStorageAt`          | `address`, `slot`, `blockNumber`                 | Returnează un slot de stocare                        |
+| `eth_getBlockReceipts`      | `blockNumber`                                    | Returnează toate chitanțele unui bloc                |
+| `eth_getProof`              | `address`, `storageKeys`, `blockNumber`          | Returnează o dovadă de cont                          |
+| `eth_createAccessList`      | `callObject`, `blockNumber`                      | Construiește o listă de acces pentru un apel         |
+| `eth_maxPriorityFeePerGas`  | niciunul                                         | Returnează taxa de prioritate sugerată (wei)         |
+| `eth_syncing`               | niciunul                                         | Returnează `false` când nodul este sincronizat       |
+| `eth_newFilter`, `eth_newBlockFilter`, `eth_getFilterChanges` | obiect filtru / id filtru | Filtre cu polling                              |
 
 ## Metode web3_
 
@@ -54,6 +63,14 @@ Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM c
 | -------------------- | ------------ | ----------------------------------------- |
 | `web3_clientVersion` | niciunul     | Returnează șirul cu versiunea clientului |
 | `web3_sha3`          | `data` (hex) | Returnează hash-ul Keccak-256 al intrării |
+
+## Metode txpool_
+
+| Metodă           | Parametri  | Descriere                                                           |
+| ---------------- | ---------- | ------------------------------------------------------------------- |
+| `txpool_status`  | niciunul   | Returnează numărul de tranzacții în așteptare și în coadă           |
+| `txpool_content` | niciunul   | Returnează tranzacțiile în așteptare și în coadă (indisponibilă pe mainnet-ul public) |
+| `txpool_inspect` | niciunul   | Returnează un rezumat al pool-ului (indisponibilă pe mainnet-ul public) |
 
 ## Metode net_
 
@@ -79,7 +96,7 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 
 # Enabled API namespaces
-api = "eth,web3,net,txpool,qor"
+api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
 filter-cap = 10000
@@ -96,6 +113,30 @@ txfee-cap = 1
 # Maximum open WebSocket connections
 max-open-connections = 0
 ```
+
+## Limite pe endpoint-urile publice {#public-limits}
+
+:::note
+- `eth_getLogs` acceptă cel mult **10.000 de blocuri** între `fromBlock` și `toBlock`. Un interval mai larg returnează `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Interoghează în ferestre de cel mult 10.000 de blocuri. Setarea separată `filter-cap` limitează numărul de jurnale returnate.
+- `txpool_status` funcționează pe endpoint-ul public de mainnet. `txpool_content` și `txpool_inspect` sunt dezactivate acolo (funcționează pe endpoint-ul public de testnet și pe un nod pe care îl rulezi tu însuți).
+- Metodele `debug_*` și `eth_signTransaction` nu sunt disponibile.
+- `eth_subscribe` necesită o conexiune WebSocket. Prin HTTP returnează `-32601 notifications not supported`. Vezi [Evenimente WebSocket](/api-reference/websocket-events).
+- Starea de la înălțimi vechi este eliminată (pruned) pe endpoint-urile publice, astfel că `eth_call` pe un bloc istoric îndepărtat poate eșua cu o eroare de versiune de stare.
+- Dacă un script primește `403 Forbidden`, setează un header `User-Agent` explicit; agentul implicit `urllib` din Python este blocat, în timp ce clienții `requests`, `curl`, Node și Go funcționează ca atare.
+:::
+
+## Trimiterea tranzacțiilor {#sending-transactions}
+
+:::caution Lane-ul EVM necesită o cheie PQC și o fereastră deschisă
+Începând cu versiunea de lanț v3.2.0, lane-ul EVM admite o tranzacție (`MsgEthereumTx`, inclusiv desfășurările de contracte) doar de la un cont care are o **cheie post-cuantică înregistrată** și o **fereastră de autorizare EVM deschisă**. Un portofel EVM obișnuit care nu a făcut această configurare nu poate trimite tranzacții: nodul le refuză cu o eroare a modulului `pqc` (codurile 26, 27 sau 28) în loc să le includă. Citirea soldurilor, apelarea `eth_call` și estimarea gas-ului nu necesită o fereastră.
+
+Verifică un cont înainte de a trimite:
+
+- `GET /qorechain/pqc/v1/account/{address}` (`found: true` înseamnă că o cheie este înregistrată)
+- `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` înseamnă că o fereastră admite în prezent tranzacții)
+
+Ambele sunt descrise în [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). O fereastră se deschide cu o tranzacție QoreChain (`MsgOpenEVMWindow`, limitată la cel mult 17.280 de blocuri și 1.000 de tranzacții plus un plafon de valoare), nu cu o tranzacție Ethereum. Vezi [Dezvoltare EVM](/developer-guide/evm-development) pentru prezentarea generală a lane-ului.
+:::
 
 ## Exemple
 
@@ -197,6 +238,6 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 - Chain ID-ul este returnat ca șir hex. Convertește-l în zecimal pentru configurarea portofelului — `0x2649` este **9801** (mainnet), `0x2648` este **9800** (testnet).
 - Stabilirea prețului gas-ului urmează modelul EIP-1559. Folosește `eth_feeHistory` pentru estimarea taxei de bază și a taxei prioritare.
 - Etichete de bloc acceptate: `"latest"`, `"earliest"`, `"pending"` sau un număr de bloc în hex.
-- Limitări ale filtrului: `eth_getLogs` este plafonat la `filter-cap` rezultate per interogare (implicit 10.000). Folosește intervale de blocuri mai înguste pentru seturi mari de date.
+- Limitări ale filtrului: `eth_getLogs` este plafonat la `filter-cap` rezultate per interogare (implicit 10.000), iar endpoint-urile publice resping intervalele mai late de 10.000 de blocuri. Folosește intervale de blocuri mai înguste pentru seturi mari de date.
 
 :::

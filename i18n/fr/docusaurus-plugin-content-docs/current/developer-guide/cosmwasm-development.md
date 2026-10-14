@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChain prend en charge les contrats intelligents **CosmWasm**, permettant aux développeurs d'écrire des programmes sécurisés et isolés (sandboxed) en Rust qui compilent vers WebAssembly. Les contrats CosmWasm s'exécutent aux côtés des programmes EVM et SVM au sein de l'architecture triple-VM de QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, actif depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.97**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (actif depuis le 29 juin 2026), qui exécute la version de nœud **v3.2.1**. Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.2.
 :::
 
 :::caution Le téléversement et l'instanciation de code nécessitent actuellement une permission explicite
-Au moment de la rédaction, `code_upload_access` et `instantiate_default_permission` sont tous deux définis sur **`Nobody`** à la fois sur **le mainnet et le testnet** — ce qui signifie que `MsgStoreCode` et `MsgInstantiateContract` ne sont pas ouverts par défaut à des comptes arbitraires, suite à une alerte de sécurité CosmWasm à l'échelle de l'industrie. Vous devrez obtenir de la gouvernance qu'elle accorde à votre compte (ou à une liste d'adresses spécifique) la permission de téléversement/instanciation avant que les étapes ci-dessous ne puissent réussir — vérifiez d'abord les paramètres en vigueur, car c'est exactement le type de réglage que la gouvernance peut modifier :
+Au moment de la rédaction, `code_upload_access` et `instantiate_default_permission` sont tous deux définis sur **`Nobody`** à la fois sur **le mainnet et le testnet** — ce qui signifie que `MsgStoreCode` et `MsgInstantiateContract` ne sont pas ouverts par défaut à des comptes arbitraires, suite à une alerte de sécurité CosmWasm à l'échelle de l'industrie. Vous devrez obtenir de la gouvernance qu'elle accorde à votre compte (ou à une liste d'adresses spécifique) la permission de téléversement/instanciation avant que les étapes ci-dessous ne puissent réussir. Vérifiez d'abord les paramètres en vigueur, car c'est exactement le type de réglage que la gouvernance peut modifier (le mainnet ne contient actuellement aucun code de contrat stocké) :
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+Les types de message `MsgStoreCode`, `MsgInstantiateContract` et `MsgInstantiateContract2` sont également désactivés par le disjoncteur (circuit breaker) de la chaîne sur les deux réseaux (`qorechaind query circuit disabled-list`) ; relever la permission seule ne suffit donc pas tant que ces entrées ne sont pas levées.
+
 Cette restriction n'affecte pas les contrats déjà instanciés — `execute` et `query` sur un contrat existant fonctionnent normalement quel que soit ce réglage.
+:::
+
+:::caution Signer avec `tx pqc cosign`
+Le mainnet et le testnet exigent une signature post-quantique hybride sur chaque transaction de la voie Cosmos ; les commandes `tx` de cette page ne diffusent donc pas la transaction telles quelles. Elles construisent la transaction avec `--generate-only > tx.json` ; signez et diffusez-la ensuite avec `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (le binaire de la release issu du [manifeste de téléchargement](/developer-guide/running-a-node#fetch-the-manifest) inclut le signataire ; un build à partir du code source public ne l'inclut pas). Le plancher de frais du réseau est de **0,1 uqor par unité de gas**, ce que traduit `--gas-prices 0.1uqor` ; la signature hybride ajoute environ 47 000 gas qu'une simulation n'inclut pas, d'où l'ajustement de `1.5`. Voir [Signature post-quantique](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -29,7 +35,7 @@ Cette restriction n'affecte pas les contrats déjà instanciés — `execute` et
 ## Prérequis
 
 | Dépendance                 | Version       | Objectif                        |
-| --------------------------- | ------------- | -------------------------------- |
+| -------------------------- | ------------- | ------------------------------- |
 | **Rust**                   | Dernière stable | Compilation du contrat         |
 | **wasm32-unknown-unknown** | cible         | Cible de compilation WebAssembly |
 | **cargo-generate**         | Dernière      | Génération de la structure du projet |
@@ -67,12 +73,11 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   Une fois la transaction confirmée, interrogez l'ID de code stocké :
+   Une fois la transaction confirmée (signez et diffusez `tx.json` avec `tx pqc cosign` comme décrit ci-dessus), interrogez l'ID de code stocké :
 
    ```bash
    qorechaind query wasm list-code
@@ -86,13 +91,12 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | Flag                | Description                                       |
-   | -------------------- | -------------------------------------------------- |
+   | ------------------- | ------------------------------------------------- |
    | `<code-id>`         | ID numérique renvoyé par la transaction de stockage |
    | `--label`           | Étiquette lisible pour cette instance               |
    | `--no-admin`        | Aucune adresse admin (le contrat est immuable)      |
@@ -101,7 +105,7 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
    Récupérez l'adresse du contrat :
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **Execute** — Appelez le point d'entrée d'exécution d'un contrat pour modifier son état :
@@ -110,8 +114,8 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    Exécution avec des fonds joints :
@@ -121,7 +125,8 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **Query** — Lisez l'état du contrat sans soumettre de transaction :
@@ -142,7 +147,7 @@ Les contrats CosmWasm suivent un cycle de vie en cinq étapes : **Build** (const
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## Appels inter-VM
 
-Les contrats CosmWasm peuvent interagir avec des contrats déployés sur l'EVM et la SVM via le module `x/crossvm`. Les appels inter-VM depuis CosmWasm utilisent le chemin de message **asynchrone** :
+Les appels inter-VM sont envoyés sous forme de transactions `MsgCrossVMCall` via le module `x/crossvm` ; consultez [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) pour le cycle de vie du message. Les contrats CosmWasm ne disposent aujourd'hui d'aucune liaison côté contrat pour initier un appel inter-VM (il n'existe aucun message personnalisé `QoreChainMsg` que les contrats pourraient émettre) ; un contrat ne peut donc pas appeler un contrat EVM ou SVM depuis son point d'entrée `execute`.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-Le message est soumis à une file d'attente et traité par l'EndBlocker au bloc suivant. Consultez [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) pour le cycle de vie complet du message.
+:::caution Les appels inter-VM sont actuellement désactivés sur le mainnet
+`MsgCrossVMCall` figure sur la liste du disjoncteur (circuit breaker) du mainnet (`qorechaind query circuit disabled-list`), et la voie SVM est désactivée sur les deux réseaux ; le chemin inter-VM n'est donc pas utilisable aujourd'hui pour des transactions ordinaires.
+:::
 
 ---
 
@@ -260,7 +253,8 @@ Si le contrat a été instancié avec une adresse `--admin`, l'admin peut le mig
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 Cela appelle le point d'entrée `migrate` sur le nouveau code avec l'état existant du contrat.
@@ -271,4 +265,4 @@ Cela appelle le point d'entrée `migrate` sur le nouveau code avec l'état exist
 
 * [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Appeler des contrats EVM et SVM depuis CosmWasm
 * [Développement SVM](/developer-guide/svm-development) — Déployer des programmes BPF sur QoreChain
-* [Précompilés EVM](/developer-guide/evm-precompiles) — Accéder aux fonctionnalités PQC et IA depuis Solidity
+* [Précompilés EVM](/developer-guide/evm-precompiles) — Référence des précompilés Solidity prévus (aucun n'est encore actif)

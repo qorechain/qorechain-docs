@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü resmi genesis dosyası, eşler (peers) ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.1.97** zincir sürümünü çalıştıran ve **7 Haziran 2026 23:59 UTC** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.2.1** sürümünü çalıştıran ve **29 Haziran 2026** tarihinden beri (genesis bloğu 17:03 UTC) canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
 :::
 
 ## Genel Erişime Açık Uç Noktalar
@@ -54,11 +54,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir.
 
-:::caution Düğümünüzü güncel tutun — taze bir senkronizasyon için v3.1.94 veya üzeri gerekli
-Tam düğümler ağın canlı zincir sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Genesis'ten taze katılan veya bir kesintiden kurtarılan bir düğüm için eşik, üst üste yığılmış iki bağımsız nedenden dolayı **v3.1.94 veya üzeridir**: v3.1.92, aksi takdirde işlem içeren ilk blokta yeniden oynatmayı (replay) durduran bir gaz ölçüm hatasını düzeltti ve o zamandan beri ana ağ, v3.1.94 yönetişim (governance) yükseltmesini geçti (emisyon üzerinde 2.122.074 yüksekliğinde uygulanan sabit bir üst sınır) — bu yükseltmenin işleyicisinden yoksun bir düğüm, aynı yüksekliği yeniden oynatmaya çalışırken yine durur. v3.1.97 mevcut önerilen sürümdür (sürekli bir güvenlik güncellemesi; `minCompatible` değeri `3.1.94`'tür). `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` alanını mevcut eşikle karşılaştırın — manifesto kasıtlı olarak kademeli yayına alınır (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ) ve daha önce sürüm eşiğinin gerisinde kalmıştır.
+:::caution Düğümünüzü güncel tutun — v3.2.0 veya üzeri gerekli
+Tam düğümler ağın canlı sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Güncel manifesto **v3.2.1**'dir ve `minCompatible` değeri **3.2.0**'dır. Ana ağ, her düğümün işlemesi gereken iki yönetişim yükseltmesi uyguladı: 2.122.074 yüksekliğinde **v3.1.94** (emisyon tavanı) ve 2.981.742 yüksekliğinde **v3.2.0** (EVM yetkilendirme penceresi ve v2 hibrit imza baytları). Bu nedenle taze katılan bir düğümün v3.2.x ikili dosyasına ihtiyacı vardır; genesis'ten yeniden oynatmak yerine state sync'i (aşağıda) tercih edin. Yayımlanan zincir verisi anlık görüntüsü her iki yükseltme yüksekliğinden de öncesine aittir; bu nedenle ondan geri yüklenen bir düğüm, bunları bir v3.2.x ikili dosyasıyla yeniden oynatmalıdır.
+
+v3.2.1 düğüm-yerel bir sürümdür (yükseltme yüksekliği yok, yönetişim oylaması yok): v3.2.0 üzerindeki düğümler zinciri takip etmeye devam eder, ancak yükseltme önerilir. v3.2.1'e geçtikten sonra `app.toml` içinde `evm-chain-id = 9801` ayarlayın (farklı bir değer hata olarak günlüğe yazılır) ve sistem saatini NTP ile senkronize tutun: saati 60 saniyeden fazla sapan bir düğüm durur. `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` ve `"minCompatible"` alanlarını kontrol edin — manifesto kasıtlı olarak yükseltilir (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ).
 :::
 
-### Kaynak koddan derleme
+:::caution Koordineli bir ana ağ yükseltmesi planlandı — bir düğümü başlatmadan veya yeniden başlatmadan önce okuyun
+Ana ağ yönetişim önerisi **7** (hızlandırılmış, 15 Ekim 2026 21:24 UTC'ye kadar oylama), **v3.2.2**'yi **3.556.788** yüksekliğinde uygulayacaktır — blok başına yaklaşık 3,2 sn ile 14 Ekim'den yaklaşık iki gün sonra. Öneri metni şöyle der: o yüksekliğe kadar v3.2.1'de (veya v3.2.0'da) kalın; düğüm orada durur ve siz onu v3.2.2 ile yeniden başlatırsınız; işlem imzalama değişmez. **Gerçekleşip gerçekleşmeyeceği oylamaya bağlıdır** — herhangi bir ikili dosyayı değiştirmeden önce sonucu (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, `status` alanı) ve [ana ağ manifestosunun](https://download.qore.host/mainnet/latest.json) `version` ile `upgradeHeight` alanlarını kontrol edin. v3.2.2'yi erken kurmayın: o yükseklikten önce onu taşıyan bir düğüm de durur. Öneri reddedilirse veya yükseklik geçtiyse bu not artık geçerli değildir.
+:::
+
+### Kaynak koddan derleme (yalnızca geliştirme için)
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -66,7 +72,7 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Tüm ön koşullar (Go 1.26+, CGO, Rust araç zinciri, yerel kitaplıklar) için [Kaynak Koddan Derleme](/developer-guide/building-from-source) sayfasına bakın.
+Bu, stub keeper'lı ve kuantum-sonrası imzalayıcısı olmayan topluluk ikili dosyasını derler; bu dosya ağların konsensüs durumunu yeniden üretemez veya hibrit imzalı işlemler oluşturamaz. Ana ağda bir düğüm çalıştırmak için yukarıdaki sürüm ikili dosyasını kurun. Tüm ön koşullar (Go 1.26+, CGO, yerel kitaplıklar) için [Kaynak Koddan Derleme](/developer-guide/building-from-source) sayfasına bakın.
 
 ### Düğümü ilklendirme
 
@@ -124,18 +130,12 @@ minimum-gas-prices = "0.1uqor"
 
 ### Önerilen Ayarlar
 
-`config.toml` dosyasında aşağıdaki değerleri de ayarlamak isteyebilirsiniz:
+Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar seçer (ana ağ şu anda yaklaşık her 3,2 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılanlarında bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
-
-Bu değerler, Vladi ana ağının blok süreleri ve işlem hacmine göre ayarlanmıştır.
 
 ---
 
@@ -150,12 +150,14 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Ardından `config.toml` dosyasının `[statesync]` bölümünü bu değerlerle ayarlayın — güven noktasını kendiniz türetmeniz gerekirse elle RPC tabanlı bir yedek yöntem dahil olmak üzere tam iş akışı için [Düğüm Çalıştırma](/developer-guide/running-a-node) sayfasına bakın.
 
-[download.qore.host](https://download.qore.host) adresinde bir zincir verisi anlık görüntüsü (snapshot) de yayımlanır. En güncel anlık görüntü dosya adı ve yayımlanan sağlama toplamı için oradaki güncel listeyi kontrol edin — bir dosya adını veya yüksekliği sabit kodlamayın, çünkü düzenli aralıklarla yeni bir anlık görüntü eskisinin yerini alır:
+Bir zincir verisi anlık görüntüsü (snapshot) de manifestoda listelenir (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Yeni bir anlık görüntü eskisinin yerini aldığından, bir dosya adını veya yüksekliği sabit kodlamak yerine değerleri manifestodan okuyun. Anlık görüntü büyüktür (onlarca gigabayt) ve Ekim 2026'da yayımlandığı haliyle 1.966.629 yüksekliğinde (21 Ağustos 2026) alınmıştır — v3.1.94 ve v3.2.0 yükseltme yüksekliklerinden önce — dolayısıyla ondan geri yüklenen bir düğüm her iki yükseltmeyi yeniden oynatır ve bir v3.2.x ikili dosyası çalıştırmalıdır; state sync genellikle daha hızlıdır:
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
+SNAPSHOT_SHA256=$(jq -r .snapshot.sha256 latest.json)
+
+curl -fsSL "$SNAPSHOT_URL" -o snapshot.tar.gz
+echo "${SNAPSHOT_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
@@ -243,7 +245,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — zincire programatik erişim                    |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum uyumlu RPC (zincir kimliği `9801`) |
 | `8546`  | WebSocket | EVM WebSocket — gerçek zamanlı EVM olay abonelikleri     |
-| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC                              |
+| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC (yalnızca okuma; SVM işlem hattı devre dışıdır) |
 | `26660` | HTTP      | Prometheus metrik uç noktası                             |
 
 ---
@@ -254,8 +256,9 @@ http://localhost:1317
 | ----------------- | --------------------------------------- |
 | Zincir kimliği     | `qorechain-vladi`                      |
 | EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
-| Zincir sürümü      | v3.1.97                                |
-| Canlıya geçiş tarihi | 7 Haziran 2026 23:59 UTC             |
+| Zincir sürümü      | v3.2.1 (v3.2.0 konsensüs kuralları)    |
+| Canlıya geçiş tarihi | 29 Haziran 2026 17:03 UTC (genesis bloğu) |
+| Blok süresi        | yaklaşık 3,2 saniye (ölçülen ortalama) |
 | Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |
 | Asgari gaz fiyatı  | `0.1uqor`                              |
 | Hesap ön eki       | `qor`                                  |

@@ -11,8 +11,8 @@ sidebar_position: 7
 
 ## Bir denetim çalıştırma
 
-1. **Denetleyici**'yi açın ve analiz edilmesini istediğiniz sözleşmeyi sağlayın.
-2. Denetimi başlatın. QCAI sözleşmeyi inceler ve bir rapor üretir.
+1. Oturum açın, **AI Audit** öğesini açın ve sözleşmenizi **Contract Source Code** alanına yapıştırın. İsteğe bağlı olarak **Blockchain** (varsayılan **Auto-detect from code**) ve bir **Name** ayarlayın.
+2. **Run Security Audit** öğesini seçin. QCAI sözleşmeyi inceler ve bir rapor üretir; **Export PDF** onu kaydeder.
 
 ## Raporu okuma
 
@@ -31,7 +31,7 @@ Uygun olduğunda rapor, genel öneriler, gas optimizasyonları, en iyi uygulamal
 
 ## Geçmiş denetimleri inceleme
 
-Denetimler listesi, önceki raporlarınızı bir tabloda sözleşme adı, blok zinciri, risk seviyesi, güvenlik puanı ve her birinin ne zaman oluşturulduğuyla birlikte gösterir. Bir arama kutusu, sözleşme adına veya blok zincirine göre filtreler. Tam raporu yeniden açmak için herhangi bir satırı seçin ve paylaşmak için raporun kendi sayfa bağlantısını kullanın.
+Denetimler listesi, önceki raporlarınızı bir tabloda sözleşme adı, blok zinciri, risk seviyesi, güvenlik puanı ve her birinin ne zaman oluşturulduğuyla birlikte gösterir. Bir arama kutusu, sözleşme adına veya blok zincirine göre filtreler. Tam raporu yeniden açmak için herhangi bir satırı seçin. Raporlar **varsayılan olarak özeldir**; size ait bir raporda, üstteki bir anahtar "This report is private" yazar — raporu herkese açık yapmak için açın; böylece bağlantıya sahip herkes onu okuyabilir (adınız ve IP'niz asla gösterilmez); tekrar özel yapmak için kapatın.
 
 :::tip Dağıtmadan önce denetleyin
 Bir denetimi, dağıtımdan önceki son adım olarak çalıştırın ve herhangi bir değişiklikten sonra yeniden çalıştırın. Bulguları otomatik bir garanti olarak değil, doğrulanacak bir rehber olarak değerlendirin — raporu [testnet](/getting-started/connecting-to-testnet) üzerindeki kendi testlerinizle birleştirin.

@@ -7,10 +7,14 @@ sidebar_position: 3
 
 # Implementarea unui Rollup
 
-Poți implementa un rollup specific aplicației în trei moduri: prin **Dashboard** (un asistent ghidat, fără cod), prin **CLI**-ul lanțului (`qorechaind`, control total asupra tranzacției on-chain) sau programatic cu **RDK-ul TypeScript** (`@qorechain/rdk` plus schela `create-qorechain-rollup`). Această pagină acoperă toate cele trei moduri, plus ciclul de viață al operatorului și comenzile de batch.
+Poți configura un rollup specific aplicației în trei moduri: prin **Dashboard** (un formular de cerere, nu o tranzacție on-chain), prin **CLI**-ul lanțului (`qorechaind`, control total asupra tranzacției on-chain) sau cu **RDK-ul TypeScript** (`@qorechain/rdk` plus schela `create-qorechain-rollup`), care acoperă astăzi configurarea și citirile. Această pagină acoperă toate cele trei moduri, plus ciclul de viață al operatorului și comenzile de batch.
 
-:::note
-Comenzile de mai jos vizează testnetul **`qorechain-diana`**. Mainnetul (**`qorechain-vladi`**, chain ID EVM **9801**) este live din 7 iunie 2026, rulând versiunea de lanț **v3.1.97** — înlocuiește chain ID-ul și endpoint-urile cu cele de mainnet atunci când implementezi pe mainnet. Validează fiecare implementare mai întâi pe testnet.
+:::caution Capabilitate în stadiu incipient
+Până acum nu a fost creat niciun rollup pe vreuna dintre rețele. Comenzile de mai jos folosesc testnetul **`qorechain-diana`** (chain ID EVM **9800**, versiunea de lanț **v3.2.2**). Mainnetul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de lanț **v3.2.1**; această pagină descrie comportamentul de pe mainnet, iar versiunea mai nouă de pe testnet poate diferi în detalii. Validează fiecare implementare mai întâi pe testnet.
+:::
+
+:::note Taxe și semnare
+Rețeaua impune un preț minim al gazului de `0.1uqor`, așa că un simplu `--fees 500uqor` este refuzat, iar fiecare tranzacție pe lane-ul nativ are nevoie de co-semnătura post-cuantică hibridă. Exemplele de CLI de pe această pagină construiesc, prin urmare, tranzacția cu `--generate-only` și o co-semnează cu `qorechaind tx pqc cosign`, care o semnează și o transmite (creează cheia o singură dată cu `qorechaind tx pqc gen-key` și înregistreaz-o on-chain o singură dată cu `qorechaind tx pqc register-key`, sau folosește QoreX ori SDK-ul, care fac asta pentru tine). Taxa este fixată când este generat fișierul nesemnat, așa că setează limita de gas și taxa împreună: taxa trebuie să fie cel puțin limita de gas × 0.1 uqor. Limitele de gas de mai jos sunt orientative — simulează înainte să te bazezi pe ele. Vezi [Prima tranzacție](/getting-started/first-transaction) și [Semnarea post-cuantică](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -19,9 +23,11 @@ Comenzile de mai jos vizează testnetul **`qorechain-diana`**. Mainnetul (**`qor
 
 | Cerință | Detalii |
 | ----------- | ------- |
-| **Stake minim** | Un depozit garantat (bond) în QOR este ținut în escrow la crearea rollup-ului |
-| **Ardere la creare** | O fracțiune din suma stake-uită este arsă permanent la creare; restul rămâne în escrow și este returnat când rollup-ul este oprit |
-| **Cont** | Un cont QoreChain alimentat, cu sold suficient pentru stake plus taxele de tranzacție |
+| **Stake minim** | Cel puțin 10.000 QOR (`min_stake_for_rollup`); stake-ul este ținut în escrow la crearea rollup-ului |
+| **Ardere la creare** | 1 % din stake-ul pe care îl furnizezi este ars permanent la creare (o creare care nu poate aplica arderea este refuzată); restul este ținut în escrow și este returnat când rollup-ul este oprit |
+| **Stake de înregistrare a stratului** | Crearea înregistrează și stratul rollup-ului în modulul multilayer, ceea ce blochează încă **1.000 QOR** (`min_sidechain_stake`) de la creator, returnați când stratul este dezafectat la oprire. Dacă stratul nu poate fi înregistrat (sold prea mic sau s-a atins limita de 10 sidechain-uri multilayer), rollup-ul este totuși creat, dar nu are strat, deci batch-urile sale nu pot fi ancorate |
+| **ID rollup** | Folosește 3–64 de caractere: litere mici, cifre, `.`, `_` și `-`, începând cu o literă sau o cifră. Versiunile mai noi ale lanțului impun această regulă, așa că folosește-o de la început |
+| **Cont** | Un cont QoreChain alimentat, cu o cheie post-cuantică înregistrată, cu sold suficient pentru stake, stake-ul stratului și taxele de tranzacție |
 
 Interoghează parametrii live ai modulului pentru stake-ul minim și rata de ardere curente înainte de a implementa:
 
@@ -33,13 +39,13 @@ qorechaind query rdk config
 
 ## Implementare prin Dashboard (Tools → Rollups)
 
-Dashboard-ul oferă un asistent ghidat **Deploy a Rollup** sub **Tools → Rollups**. Este cea mai rapidă cale pentru a lansa un rollup specific aplicației fără a asambla manual o tranzacție.
+Dashboard-ul are un formular **Deploy a Rollup** sub **Tools → Rollups**. Este un **formular de cerere**: trimiterea lui înregistrează o cerere de provizionare pentru contul tău, revizuită de **The Qore Trust**, iar o cerere nouă afișează statusul **provisioning**. **Nu** transmite o tranzacție `create-rollup` on-chain — pentru a înregistra un rollup on-chain, folosește CLI-ul de mai jos.
 
 ### Pași
 
-1. **Autentifică-te.** Asistentul necesită o sesiune autentificată pentru a implementa și pentru a lista implementările tale existente.
+1. **Autentifică-te.** Formularul necesită o sesiune autentificată pentru a trimite o cerere și pentru a lista cererile tale existente.
 2. **Denumește-ți rollup-ul.** Introdu un nume pentru rollup (2–41 caractere: litere, cifre, spații, cratime sau underscore).
-3. **Alege o mașină virtuală.** QoreChain este un lanț cu triplu VM, așa că rollup-ul tău poate rula oricare dintre:
+3. **Alege o mașină virtuală.** Înregistrarea on-chain stochează o etichetă de VM. Rollup-ul tău se execută off-chain în propriul runtime; alegerea nu rulează pe lane-urile EVM, CosmWasm sau SVM proprii ale QoreChain:
    * **EVM** — contracte Solidity / Vyper cu unelte Ethereum complete (Hardhat, Foundry, MetaMask)
    * **CosmWasm** — contracte inteligente Rust pe runtime-ul Cosmos SDK, cu IBC nativ
    * **SVM** — mașina virtuală Solana, pentru aplicații cu execuție paralelă și throughput ridicat
@@ -47,12 +53,12 @@ Dashboard-ul oferă un asistent ghidat **Deploy a Rollup** sub **Tools → Rollu
 5. **Setează un token de gas.** Token-ul folosit pentru a plăti execuția pe rollup-ul tău. Implicit este **QOR**; introdu un simbol personalizat pentru a folosi propriul token nativ.
 6. **Alege un sequencer.** Cine ordonează tranzacțiile înainte de settlement: **Shared sequencer** (setul partajat QoreChain), **Dedicated (single)** (rulează propriul sequencer unic) sau **Decentralized** (un set de sequencer permisionless).
 7. **Alege o țintă de settlement.** Unde își ancorează rollup-ul rădăcinile de stare și dovezile de validitate: **mainnet QoreChain** sau **Ethereum**.
-8. **Implementează.** Trimite formularul asistentului. Provizionarea este revizuită de **The Qore Trust** înainte ca rollup-ul să devină live, așa că un rollup abia trimis apare cu statusul **provisioning** până la finalizarea revizuirii.
+8. **Trimite cererea.** Provizionarea este revizuită de **The Qore Trust**, așa că o cerere abia trimisă apare cu statusul **provisioning** până la finalizarea revizuirii.
 
-Rollup-urile trimise apar în lista **Your rollups** împreună cu VM-ul, stratul DA, token-ul de gas, sequencer-ul, ținta de settlement și statusul curent.
+Cererile trimise apar în lista **Your rollups** împreună cu VM-ul, stratul DA, token-ul de gas, sequencer-ul, ținta de settlement și statusul curent.
 
 :::note
-Asistentul din Dashboard prezintă alegeri prietenoase, la nivel de produs, și direcționează provizionarea printr-un flux revizuit. CLI-ul de mai jos lucrează direct cu suprafața de mesaje on-chain a modulului `x/rdk`. Cele două împărtășesc aceleași concepte de bază (VM, DA, sequencer, settlement), dar le expun la altitudini diferite.
+Opțiunile formularului (mașină virtuală, strat de disponibilitate a datelor, token de gas, sequencer, țintă de settlement) descriu ceea ce ceri; sunt mai largi decât ceea ce modulul `x/rdk` on-chain acceptă în prezent. On-chain, disponibilitatea datelor este `native` (Celestia nu este activ), iar sequencing-ul este făcut de creatorul rollup-ului sau de o adresă de sequencer configurată. Vezi [Disponibilitatea datelor](/rollups/data-availability).
 :::
 
 ---
@@ -69,25 +75,38 @@ CLI-ul creează rollup-ul direct on-chain. `create-rollup` primește trei argume
 qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 600000 --fees 60000uqor \
+  --generate-only > create-rollup.json
 ```
 
-**Exemplu** — creează un rollup din preset-ul `defi` (settlement, sequencer, DA și VM provin toate din preset; `defi` se rezolvă la settlement zk pe EVM):
+**Exemplu** — creează un rollup din preset-ul `defi` (settlement, sequencer, DA și VM provin toate din preset; `defi` se rezolvă la settlement zk pe EVM). Construiește tranzacția nesemnată, apoi atașează co-semnătura post-cuantică și transmite-o:
 
 ```bash
+# 1. Build the unsigned transaction (10,000 QOR stake)
 qorechaind tx rdk create-rollup my-defi-rollup defi 10000000000 \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 600000 --fees 60000uqor \
+  --generate-only > create-rollup.json
+
+# 2. Cosign with your post-quantum key and broadcast
+qorechaind tx pqc cosign create-rollup.json \
+  --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
+
+Un profil ZK precum `defi` este acceptat la creare, dar un rollup creat astfel nu are o cheie de verificare, deci batch-urile sale ZK nu pot fi încă finalizate (vezi [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
 
 **Flag-uri:**
 
 | Flag | Implicit | Descriere |
 | ---- | ------- | ----------- |
-| `--vm` | *(gol — se folosește VM-ul din preset)* | Suprascrie tipul de VM al rollup-ului: `evm`, `cosmwasm`, `svm` sau `custom`. Lasă nesetat pentru a aplica VM-ul din preset. (În clienții RDK, runtime-ul Wasm este tipul de VM **`native`** — QoreChain Native — cu `cosmwasm` păstrat ca alias legacy; `cosmwasm` este valoarea on-wire, care este cea acceptată de acest flag la nivel de lanț.) |
+| `--vm` | *(gol — se folosește VM-ul din profil)* | Suprascrie tipul de VM al rollup-ului: `evm`, `cosmwasm`, `svm` sau `custom`. Lasă nesetat pentru a aplica VM-ul din preset. (În clienții RDK, runtime-ul Wasm este tipul de VM **`native`** — QoreChain Native — cu `cosmwasm` păstrat ca alias legacy; `cosmwasm` este valoarea on-wire, care este cea acceptată de acest flag la nivel de lanț.) |
 
-Argumentul `[profile]` selectează o configurație preset care se aplică automat — vezi **[Profiluri preset](/rollups/preset-profiles)**. `[stake-amount]` este garanția (bond) în `uqor`.
+:::note Eticheta VM este metadată
+`--vm` înregistrează ce runtime folosește rollup-ul tău. Lanțul gazdă doar face settlement pentru rollup; nu îi execută contractele. Încărcarea CosmWasm a lanțului gazdă este în prezent închisă, iar lane-ul său de tranzacții SVM este dezactivat la nivelul întregii rețele, ceea ce nu afectează settlement-ul unui rollup off-chain, dar înseamnă că nu poți implementa contracte pentru un rollup pe acele lane-uri ale lanțului gazdă.
+:::
+
+Argumentul `[profile]` selectează o configurație preset care se aplică automat — vezi **[Profiluri preset](/rollups/preset-profiles)**. `[stake-amount]` este garanția (bond) în `uqor`; arderea la creare reprezintă 1 % din ea.
 
 ### Inspectează ce ai implementat
 
@@ -103,7 +122,7 @@ qorechaind query rdk list-rollups
 
 ## Implementare cu RDK-ul TypeScript (`@qorechain/rdk`) {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-Rollup Development Kit-ul este livrat ca două pachete npm publice care operează pe același modul on-chain `x/rdk` ca și CLI-ul, prin RPC/REST/gRPC/JSON-RPC public și orice `OfflineSigner` cosmjs:
+Rollup Development Kit-ul este livrat ca două pachete npm publice pentru același modul on-chain `x/rdk` ca și CLI-ul. Astăzi sunt cele mai utile pentru construirea și validarea configurațiilor și pentru citirea stării; vezi avertismentul de mai jos despre semnare înainte de a te baza pe ele pentru a trimite tranzacții:
 
 * **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.4`) — SDK-ul TypeScript: un constructor de configurație cu profiluri preset, helper-e de tranzacție pentru ciclurile de viață ale rollup-ului și ale batch-urilor de settlement, DA nativ, clienți de citire tipați și noutățile din v0.4 — chitanțe de settlement quantum-safe, QCAI Rollup Copilot, helper-e de calldata cross-VM și watchtower.
 * **`create-qorechain-rollup`** (`v0.4.4`) — o schelă (scaffolder) care clonează câte un șablon de pornire funcțional pentru fiecare profil (inclusiv șablonul `multivm-rollup`).
@@ -113,16 +132,20 @@ Acestea sunt publicate pe npm. Repo-ul livrează de asemenea un CLI de operator 
 Puncte importante de la lansarea inițială v0.4.0:
 
 * **v0.4.2 — funcționează direct pe rețeaua live, fără configurare suplimentară.** Preset-urile `mainnet` și `testnet` includ acum endpoint-urile publice `qore.host` (REST la `api.qore.host` / `api-testnet.qore.host`), astfel încât `createRdkClient({ network })` ajunge la lanț fără `endpoints` setate manual — suprascrie doar dacă vrei să vizezi propriul nod. Aceeași versiune a redenumit identificatorul VM-ului rollup Wasm în **`native`** (QoreChain Native); `cosmwasm` rămâne un alias legacy acceptat, iar ambele se mapează la `cosmwasm` pe wire — lanțul, explorer-ul și Dashboard-ul rămân neschimbate.
-* **v0.4.3 — remediere a codificării semnăturii hibride** pentru calea de semnare TypeScript (vezi avertismentul de mai jos).
+* **v0.4.3 — actualizare de dependențe pentru remedierea codificării semnăturii hibride din SDK.** Clientul de tranzacții al RDK-ului în sine încă semnează exclusiv clasic (vezi avertismentul de mai jos).
 * **v0.4.4 — urmărește `@qorechain/sdk` `^0.7.0`**, versiunea SDK pentru lane-urile de autenticator din lanțul **v3.1.85**, astfel încât aceste capabilități ajung la utilizatorii TypeScript ai RDK-ului direct prin SDK. Fără modificări în API-ul RDK.
 
-:::caution
-**Utilizatorii TypeScript trebuie să folosească RDK ≥ 0.4.3.** Versiunile anterioare codificau greșit extensia de tranzacție PQC hibridă, astfel încât lanțul respingea orice tranzacție semnată hibrid. v0.4.3 (prin `@qorechain/sdk` ≥ 0.6.1) remediază codificarea. Doar calea de semnare hibridă TypeScript a fost afectată — clienții Python, Go, Rust și Java semnează exclusiv clasic și nu au fost afectați niciodată.
+:::caution Semnarea cu clienții publicați
+Ambele rețele necesită o semnătură hibridă (secp256k1 + ML-DSA-87) pe fiecare tranzacție pe lane-ul nativ. Pachetul npm publicat în prezent (`@qorechain/rdk` 0.4.4) semnează printr-un client exclusiv clasic, deci poate **citi** starea lanțului, dar nu poate face ca o tranzacție să fie acceptată. Pentru tranzacții, construiește și semnează astăzi cu CLI-ul (`--generate-only`, apoi `qorechaind tx pqc cosign`) sau cu semnarea hibridă din [`@qorechain/sdk`](/sdk/overview). Clienții RDK Python, Go, Rust și Java semnează de asemenea exclusiv clasic și **nu sunt potriviți pentru tranzacții** pe aceste rețele. Verifică versiunea pe care o instalezi; versiunile care adaugă semnare hibridă în clienții RDK vor fi menționate aici.
+:::
+
+:::note Citirile necesită rutele REST ale RDK
+Helper-ele de citire TypeScript (`rdk.params()`, `rdk.rest.getRollup()`) apelează rute REST `/qorechain/rdk/v1/…`, pe care endpoint-urile publice de mainnet nu le servesc în prezent. Pe mainnet folosește `qorechaind query rdk …` (gRPC).
 :::
 
 #### Clienții Python, Go, Rust și Java
 
-Pe lângă pachetul TypeScript, RDK-ul oferă clienți compleți în **Python**, **Go**, **Rust** și **Java** care reflectă suprafața TypeScript: constructorul de configurație cu validare, cele cinci profiluri preset, utilitare denom/economie/bech32, helper-e Merkle binar și pentru dovezi de retragere, manifeste de rollup, clienți de citire REST și JSON-RPC `qor_`, verificări preflight/health, conturi (mnemonic → adresă `qor`) și **semnare + broadcast de tranzacții** (`SIGN_MODE_DIRECT`). Toate sunt verificate față de vectori de test comuni, cross-language, și sunt **publicate** în registrele lor:
+Pe lângă pachetul TypeScript, RDK-ul oferă clienți compleți în **Python**, **Go**, **Rust** și **Java** care reflectă suprafața TypeScript: constructorul de configurație cu validare, cele cinci profiluri preset, utilitare denom/economie/bech32, helper-e Merkle binar și pentru dovezi de retragere, manifeste de rollup, clienți de citire REST și JSON-RPC `qor_`, verificări preflight/health, conturi (mnemonic → adresă `qor`) și semnare + broadcast clasic de tranzacții (`SIGN_MODE_DIRECT`, neacceptat pe rețelele cu semnătură hibridă — vezi avertismentul de mai sus). Toate sunt verificate față de vectori de test comuni, cross-language, și sunt **publicate** în registrele lor:
 
 ```bash
 # Python — installs as qorechain-rdk, imports as qorrdk
@@ -142,7 +165,7 @@ go get github.com/qorechain/qorechain-rdk/packages/go
 import qorrdk
 ```
 
-Versiuni curente publicate: Python `qorechain-rdk` **0.4.4** (PyPI, import `qorrdk`), Rust `qorechain-rdk` (crates.io — instalează cea mai recentă versiune publicată, sau construiește din repo), modulul Go `github.com/qorechain/qorechain-rdk/packages/go` (**v0.4.4**) și Java `io.github.qorechain:qorechain-rdk` **0.4.4** (Maven Central). Broadcast-ul live necesită un endpoint de nod.
+Versiuni curente publicate: Python `qorechain-rdk` **0.5.0** (PyPI, import `qorrdk`), modulul Go `github.com/qorechain/qorechain-rdk/packages/go` (**v0.5.0**), Rust `qorechain-rdk` **0.4.4** (crates.io) și Java `io.github.qorechain:qorechain-rdk` **0.4.4** (Maven Central). Acești clienți citesc starea lanțului; nu produc semnătura hibridă pe care o cer rețelele (vezi avertismentul de mai sus).
 
 :::note
 RDK-ul TypeScript și șabloanele sale folosesc implicit testnetul **`qorechain-diana`**, iar din v0.4.2 preset-urile ajung la endpoint-urile publice live fără configurare suplimentară. Fixează versiunile (pin) și validează pe testnet înainte de mainnet.
@@ -166,9 +189,13 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 
 Schela afișează costul documentat de stake și de ardere la creare, plus pașii următori pentru a crea rollup-ul și a-i citi statusul.
 
-### Creează un rollup din cod
+:::caution Verifică versiunea RDK pe care o instalează șablonul
+Șabloanele fixează în prezent `@qorechain/rdk` la seria 0.2. După generarea proiectului, rulează `npm install @qorechain/rdk@latest` pentru a obține preset-urile de endpoint-uri publice `qore.host` și clienții de citire actuali. Scriptul `submit-batch` al șablonului de pornire este doar un flux de referință: trimite rădăcini ilustrative și o dovadă de exemplu și nu este de așteptat să finalizeze un batch pe o rețea live.
+:::
 
-Construiește o configurație dintr-un preset, citește stake-ul și rata de ardere live de pe lanț, apoi creează rollup-ul cu un client de semnare. Constructorul de configurație aplică matricea de compatibilitate settlement → proof la `validate()` / `build()`.
+### Construiește o configurație de rollup din cod
+
+Construiește o configurație dintr-un preset, citește stake-ul și rata de ardere live de pe lanț și produce mesajul de creare. Constructorul de configurație aplică matricea de compatibilitate settlement → proof la `validate()` / `build()`. Trimite valorile rezultate cu CLI-ul de mai sus (sau cu un client care semnează hibrid) — vezi avertismentul despre semnare.
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -176,8 +203,9 @@ import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qore
 // A config builder pre-filled with the defi preset's defaults; override via .set({ ... }).
 const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2) —
-// no manual `endpoints` config needed; override to target your own node.
+// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2).
+// `params()` is a REST read: it works where the RDK REST routes are served and
+// is refused (HTTP 501) on mainnet today — use `qorechaind query rdk config` there.
 const rdk = createRdkClient({ network: "testnet" });
 
 // Read the live module parameters — never hardcode the stake or burn rate.
@@ -188,46 +216,29 @@ const cost = estimateCreationCost({
 });
 console.log(`Stake: ${uqorToQor(cost.stakeUqor)} QOR — burned: ${uqorToQor(cost.burnUqor)} QOR`);
 
-// Connect a signing client with any cosmjs OfflineSigner.
-const tx = await rdk.connectTx(signer, { gasPrice: "0.15uqor" }); // the chain enforces a 0.1uqor/gas fee floor
-const msg = config.toCreateMsg(tx.address, { stakeAmount: params.minStakeForRollup });
-
-const res = await tx.createRollup({
-  rollupId: msg.rollupId,
-  profile: msg.profile,
-  vmType: msg.vmType,
-  stakeAmount: msg.stakeAmount,
-});
-console.log(`Submitted: ${res.transactionHash} (code ${res.code})`);
+// The values to pass to `qorechaind tx rdk create-rollup`.
+const msg = config.toCreateMsg("<your qor address>", { stakeAmount: params.minStakeForRollup });
+console.log(msg.rollupId, msg.profile, msg.vmType, msg.stakeAmount);
 ```
 
-Nu ești sigur ce profil ți se potrivește? `rdk.suggestProfile("a lending protocol with predictable fees")` returnează o recomandare asistată de QCAI (cu un fallback documentat).
+Nu ești sigur ce profil ți se potrivește? `rdk.suggestProfile(...)` ar trebui să returneze o recomandare asistată de QCAI; pe endpoint-urile publice actuale returnează întotdeauna fallback-ul `defi` (`source: "fallback"`), așa că alege din [tabelul de profiluri](/rollups/preset-profiles).
 
-### Gestionează ciclul de viață și citește starea din cod
+### Citește starea din cod
 
-Clientul de semnare expune întregul ciclu de viață — `pauseRollup`, `resumeRollup`, `stopRollup`, plus `submitBatch`, `challengeBatch`, `resolveChallenge` și `executeWithdrawal`. Tranzițiile de ciclu de viață pot fi protejate prin transmiterea `currentStatus`.
-
-```ts
-await tx.pauseRollup({ rollupId: "my-defi-rollup", reason: "maintenance" });
-await tx.resumeRollup({ rollupId: "my-defi-rollup" });
-await tx.stopRollup({ rollupId: "my-defi-rollup" });
-```
-
-Citește starea cu clientul REST tipat (fără a fi necesar un signer):
+Clientul REST tipat nu are nevoie de signer și funcționează acolo unde rutele REST ale RDK sunt servite (nu și pe mainnet în prezent):
 
 ```ts
 const rollup = await rdk.rest.getRollup("my-defi-rollup");
 console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
-
-const batch = await rdk.rest.getLatestBatch("my-defi-rollup");
-console.log(batch.batchIndex, batch.status, batch.txCount);
 ```
+
+Pentru batch-uri, folosește `qorechaind query rdk batch [rollup-id]` (mai jos).
 
 ---
 
 ## Gestionarea ciclului de viață
 
-Un rollup trece prin stările `pending`, `active`, `paused` și `stopped`. Creatorul gestionează tranzițiile cu următoarele comenzi.
+Un rollup trece prin stările `pending`, `active`, `paused` și `stopped`; un rollup nou începe imediat în starea `active`. Doar creatorul îl poate pune în pauză, relua sau opri (impus începând cu versiunea de lanț v3.2.0). Fiecare comandă de mai jos urmează același tipar în doi pași ca la creare: generează tranzacția nesemnată, apoi co-semneaz-o.
 
 ### Pause
 
@@ -237,7 +248,9 @@ Oprește temporar rollup-ul. Starea este păstrată, iar rollup-ul poate fi relu
 qorechaind tx rdk pause-rollup [rollup-id] [reason] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > pause.json
+qorechaind tx pqc cosign pause.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 ### Resume
@@ -248,18 +261,22 @@ Reia un rollup pus anterior în pauză.
 qorechaind tx rdk resume-rollup [rollup-id] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > resume.json
+qorechaind tx pqc cosign resume.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 ### Stop
 
-Dezafectează permanent rollup-ul și eliberează stake-ul. QOR-ul stake-uit — minus arderea unică de la creare — este returnat creatorului.
+Dezafectează permanent rollup-ul și eliberează stake-ul. QOR-ul stake-uit — minus arderea unică de la creare — este returnat creatorului. Stake-ul de înregistrare a stratului, de 1.000 QOR, este returnat separat când stratul rollup-ului este dezafectat.
 
 ```bash
 qorechaind tx rdk stop-rollup [rollup-id] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > stop.json
+qorechaind tx pqc cosign stop.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 :::danger
@@ -272,6 +289,13 @@ Oprirea unui rollup este permanentă. Rollup-ul nu poate fi repornit după ce a 
 
 Operatorii de rollup trimit batch-uri de settlement, iar contestatarii pot disputa batch-uri optimistice. Aceste comenzi stau la baza stratului de settlement descris în **[Prezentare generală Rollups](/rollups/overview)** și **[ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)**.
 
+### Cine poate trimite și în ce ordine
+
+* **Doar adresa de sequencer configurată a rollup-ului — sau, când nu este configurată niciuna (cazul tuturor preset-urilor), creatorul său — poate trimite batch-uri.** Based sequencing și shared sequencing nu admit încă seturi de propunători sau liste (rosters): sunt deocamdată doar etichete, iar creatorul trimite.
+* Batch-urile formează un lanț: primul batch are indexul `0`; fiecare batch ulterior trebuie să folosească indexul următor și să poarte rădăcina de stare a batch-ului anterior ca `prev_state_root`.
+* Un batch care poartă un hash de date pe un rollup `native` sau `both` este refuzat dacă nu este deja stocat un blob corespunzător (vezi [Disponibilitatea datelor](/rollups/data-availability)). Un batch fără hash de date nu este verificat.
+* Un rollup `zk` trebuie să atașeze o dovadă, iar dovada trebuie să treacă verificarea (vezi [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
+
 ### Trimite un batch
 
 Trimite un batch de settlement pentru un rollup. Primește ID-ul rollup-ului, un index de batch și o rădăcină de stare codificată hex.
@@ -280,24 +304,32 @@ Trimite un batch de settlement pentru un rollup. Primește ID-ul rollup-ului, un
 qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > batch.json
+qorechaind tx pqc cosign batch.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-### Contestă un batch
+Comanda CLI primește doar aceste trei argumente poziționale, deci poate trimite **doar batch-ul 0**; batch-urile ulterioare au nevoie de un client care poate seta `prev_state_root` (și, acolo unde sunt folosite, `data_hash`, `withdrawals_root` și `tx_count`). Batch-urile unui rollup sunt decontate (settled), dar **nu sunt ancorate** în `x/multilayer` pe mainnet în prezent (vezi [Rollup Development Kit](/architecture/rollup-development-kit#state-anchoring)).
 
-Contestă un batch trimis (pentru rollup-uri optimistice). Primește ID-ul rollup-ului și indexul batch-ului; transmite dovada de fraudă cu `--proof`. Începând cu versiunea de lanț **v3.1.74**, calea optimistică **submit-batch → challenge-batch** este live și funcțională de la un capăt la altul.
+### Contestă un batch (rollup-uri optimistice) {#challenge-a-batch-optimistic-rollups}
+
+Orice cont poate contesta un batch `submitted` în fereastra de contestare, depunând o garanție (bond) (`challenge_bond`-ul rollup-ului; 1.000 QOR pentru preset-urile `nft` și `custom`) și o dovadă de fraudă. Primește ID-ul rollup-ului și indexul batch-ului; transmite dovada de fraudă cu `--proof`:
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \
   --proof <hex-encoded-fraud-proof> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > challenge.json
+qorechaind tx pqc cosign challenge.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 | Flag | Descriere |
 | ---- | ----------- |
 | `--proof` | Dovadă de fraudă codificată hex |
+
+O contestație **îngheață** batch-ul (`challenged`): acesta nu mai poate fi finalizat. **Creatorul** rollup-ului îl rezolvă apoi cu un mesaj resolve-challenge (nu este expus ca o comandă CLI; folosește un client). Lanțul decide singur rezultatul, verificând dovada stocată. Dacă frauda este confirmată, batch-ul devine `rejected`, garanția este returnată, iar contestatarul primește o sumă suplimentară egală cu garanția, din stake-ul rollup-ului; dacă este respinsă, garanția ajunge la creator, iar batch-ul revine la `submitted`.
 
 ### Inspectează batch-urile
 
@@ -319,7 +351,7 @@ qorechaind query rdk batch [rollup-id] --index 42
 | `qorechaind query rdk list-rollups` | Toate rollup-urile înregistrate |
 | `qorechaind query rdk batch [rollup-id]` | Ultimul batch de settlement (sau `--index`) |
 | `qorechaind query rdk config` | Parametrii modulului RDK |
-| `qorechaind query rdk suggest-profile [use-case]` | Recomandă un preset pentru un caz de utilizare |
+| `qorechaind query rdk suggest-profile [use-case]` | Afișează o trimitere către RPC-ul `qor_suggestRollupProfile`; endpoint-urile publice nu îl servesc, așa că alege un profil din tabelul [Profiluri preset](/rollups/preset-profiles) |
 
 ---
 

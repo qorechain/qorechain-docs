@@ -15,7 +15,7 @@ Die QCAI-Engine (QoreChain AI) arbeitet über drei Schichten hinweg:
 
 | Schicht               | Geltungsbereich                                            | Ausführung               | Deterministisch |
 | --------------------- | --------------------------------------------------------- | ------------------------ | --------------- |
-| **Konsensebene**      | Blockproduktion, Parameterabstimmung                      | On-Chain (x/rlconsensus) | Ja              |
+| **Konsensebene**      | Blockproduktion, Parameterabstimmung                      | On-Chain (x/rlconsensus) — derzeit nur Beobachtung | Ja              |
 | **Netzwerkebene**     | Transaktions-Routing, Betrugserkennung, Gebührenoptimierung | On-Chain (x/ai)          | Ja              |
 | **Anwendungsebene**   | Vertragsgenerierung, Auditing, Tiefenanalyse              | Off-Chain (Sidecar)      | Nein            |
 
@@ -106,7 +106,7 @@ Der Gebührenoptimierer prognostiziert die Netzwerküberlastung und schlägt mit
 | `normal`      | 1.0x               | 3-5 Blöcke             |
 | `slow`        | 0.5x               | 6-10 Blöcke            |
 
-Die endgültige Gebühr berücksichtigt einen **Überlastungsmultiplikator** (1.0x bei 0 % Überlastung, bis zu 5.0x bei 100 % Überlastung) sowie einen **Trendaufschlag**, wenn die prognostizierte Überlastung die aktuelle Überlastung übersteigt. Die Mindestgebührenuntergrenze beträgt 500 uqor (0.0005 QOR).
+Die endgültige Gebühr berücksichtigt einen **Überlastungsmultiplikator** (1.0x bei 0 % Überlastung, bis zu 5.0x bei 100 % Überlastung) sowie einen **Trendaufschlag**, wenn die prognostizierte Überlastung die aktuelle Überlastung übersteigt. Die Mindestgebühr des Schätzers ist eine veraltete Konstante von 500 uqor; sie wird in den Live-Netzwerken nicht ausgespielt, und die Gebühr, die eine Transaktion tatsächlich zahlen muss, wird durch die Netzwerk-Untergrenze von 0.1 uqor pro Gaseinheit festgelegt (siehe [Erste Transaktion](/getting-started/first-transaction#send-qor)).
 
 ## Netzwerkoptimierer
 
@@ -167,6 +167,10 @@ Zwei vorkompilierte Verträge stellen EVM-Smart-Contracts On-Chain-KI-Funktionen
 | `aiRiskScore`    | `0x0B01` | Gibt einen Risikoscore (0-100) für eine bestimmte Adresse oder einen Transaktions-Hash zurück |
 | `aiAnomalyCheck` | `0x0B02` | Gibt ein boolesches Anomalie-Flag und einen Konfidenzscore für eine Transaktion zurück |
 
+:::warning Noch nicht aktiv
+Diese Precompiles sind im Mainnet (`qorechain-vladi`) und im Testnet (`qorechain-diana`) **nicht aktiv**; ein Aufruf liefert leere Daten. Sie werden erst aktiviert, nachdem sie einen schreibgeschützten Scoring-Pfad mit Festkommaarithmetik erhalten haben. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Wichtig**: EVM-Precompiles verwenden **ausschließlich die deterministische heuristische Engine**. Sie rufen niemals das Sidecar auf und stellen so sicher, dass die gesamte EVM-Ausführung vollständig deterministisch und reproduzierbar bleibt.
 
 ## TEE-Attestierung
@@ -214,17 +218,12 @@ Jede Runde wird mit minimaler/maximaler Teilnehmerzahl, Timeout, Lernrate, Gradi
 
 Das föderierte Lernen befindet sich derzeit im Stadium der Schnittstellenspezifikation. Die Implementierung ist für eine zukünftige Version geplant.
 
-## REST-Endpunkte
+## Abfragen
 
-| Endpunkt                         | Beschreibung                                                       |
-| -------------------------------- | ----------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Gibt Gebührenschätzungen für die Dringlichkeitsstufen fast, normal und slow zurück |
-| `/ai/v1/fraud/investigations`    | Listet aktive und abgeschlossene Betrugsuntersuchungen auf         |
-| `/ai/v1/network/recommendations` | Gibt aktuelle Empfehlungen zur Optimierung der Netzwerkparameter zurück |
-| `/ai/v1/circuit-breakers`        | Listet aktive Circuit-Breaker-Zustände für Verträge auf            |
+`qorechaind query ai config` und `qorechaind query ai stats` (gRPC) sind die Abfragen des Moduls. Das Modul hat derzeit keine REST-Routen: Die `/ai/v1/...`-Routen für Gebührenschätzung, Betrugsuntersuchungen, Netzwerkempfehlungen und Circuit Breaker werden weder im Mainnet noch im Testnet bereitgestellt.
 
 ## Verwandte Themen
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — die KI-Schicht, die die Konsensoptimierung steuert.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — die für die Konsensoptimierung vorgesehene KI-Schicht (derzeit nur Beobachtung).
 * [Smart Contract Creator](/dashboard/smart-contract-creator) — KI-gestützte Vertragsgenerierung im Dashboard.
 * [Contract Auditor](/dashboard/contract-auditor) — KI-gestützte Sicherheitsprüfung von Verträgen.

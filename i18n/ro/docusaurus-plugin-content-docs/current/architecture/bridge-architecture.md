@@ -7,11 +7,23 @@ sidebar_position: 7
 
 # Arhitectura podului
 
-Modulul `x/bridge` este conceput pentru a conecta QoreChain la ecosistemul blockchain mai larg prin **37 de configurații de lanț QCB (QoreChain Bridge) și 8 canale IBC (Inter-Blockchain Communication)**. Fiecare operațiune a podului este securizată prin criptografie post-cuantică.
+Modulul `x/bridge` este conceput pentru a conecta QoreChain la ecosistemul blockchain mai larg prin **37 de configurații de lanț (36 de lanțuri externe plus Injective, accesat prin IBC) și până la 8 contrapărți IBC (Inter-Blockchain Communication)**. Fiecare operațiune a podului este concepută să fie securizată prin criptografie post-cuantică.
 
-:::caution
-Podul cross-chain este **în prezent pe testnet și în așteptare — nu este încă un sistem de producție**. Configurațiile de lanț, clienții light și fluxurile descrise mai jos reflectă podul așa cum a fost proiectat și exersat pe testnet. Conectivitatea externă este implementată progresiv; tratați toate țintele ca intenție de proiectare, nu ca garanții live pe mainnet.
+:::caution Nu este live pe niciuna dintre rețele
+Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de pod nu este activă**: toate cele 37 de configurații de lanț sunt în starea `pending`, fără contract de pod setat, nu este înregistrat niciun validator de pod, nu a fost creată vreodată nicio operațiune de pod și nu există canale sau clienți IBC. Tot ce urmează descrie designul intenționat. Nu trimiteți active așteptând să fie transferate prin pod.
 :::
+
+## Starea curentă {#current-status}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Modulul podului | activat | activat |
+| Configurații de lanț | 37, toate `pending` | 37, toate `pending` |
+| Validatori de pod înregistrați | 0 | 0 |
+| Operațiuni de pod | 0 | 0 |
+| Canale / clienți IBC | 0 / 0 | 0 / 0 |
+
+(Verificat în octombrie 2026. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`.)
 
 ## Prezentare generală a conexiunilor
 
@@ -19,14 +31,14 @@ QoreChain este conceput să susțină două protocoale de pod care funcționeaz�
 
 | Protocol | Conexiuni            | Model de securitate                  | Caz de utilizare                        |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | 8 canale             | IBC standard + semnături PQC de pachet | Lanțuri compatibile Cosmos SDK         |
-| **QCB**  | 37 configurații de lanț | Multisig Dilithium-5 7-din-10      | Lanțuri non-IBC (EVM, Solana, TON etc.) |
+| **IBC**  | până la 8 canale (niciunul deschis)  | IBC standard + semnături PQC de pachet | Lanțuri compatibile Cosmos SDK         |
+| **QCB**  | 37 configurații de lanț (toate pending) | Multisig Dilithium-5 7-din-10      | Lanțuri non-IBC (EVM, Solana, TON etc.) |
 
-Cele **37 de configurații de lanț QCB** includ **36 de lanțuri externe** plus **QoreChain însuși** ca o configurație nativă/loopback (folosită pentru rutarea internă și decontarea autoreferențială). Cele 8 canale IBC se conectează la lanțuri compatibile Cosmos SDK.
+Cele **37 de configurații de lanț** sunt cele **36 de lanțuri externe** enumerate mai jos plus **Injective**, configurat ca lanț de tip IBC. Nu există o configurație loopback pentru QoreChain. Canalele IBC planificate se conectează la lanțuri compatibile Cosmos SDK.
 
 ## Canale IBC
 
-QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise prin Hermes v1.x:
+QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțuri, retransmise prin Hermes v1.x. **Nu există încă niciun canal sau client IBC pe niciuna dintre rețele**, deci acest tabel enumeră doar contrapărțile planificate:
 
 | Lanț       | Descriere                      |
 | ---------- | ------------------------------ |
@@ -49,11 +61,11 @@ QoreChain este conceput să mențină conexiuni IBC către următoarele 8 lanțu
 
 ## Protocolul QCB (QoreChain Bridge)
 
-Protocolul QCB folosește o arhitectură hub-and-spoke securizată prin criptografie post-cuantică. QoreChain acționează ca hub, cu configurații de tip spoke pentru fiecare lanț extern, plus o configurație nativă/loopback pentru QoreChain însuși.
+Protocolul QCB folosește o arhitectură hub-and-spoke securizată prin criptografie post-cuantică. QoreChain acționează ca hub, cu o configurație de tip spoke pentru fiecare lanț extern.
 
 ### Configurații de lanțuri externe (36)
 
-Protocolul QCB este conceput să țintească următoarele 36 de lanțuri externe. Combinat cu propria configurație nativă/loopback a QoreChain, aceasta rezultă în **37 de configurații de lanț QCB în total (inclusiv QoreChain însuși)**.
+Protocolul QCB este conceput să țintească următoarele 36 de lanțuri externe. Împreună cu Injective (o configurație de tip IBC), aceasta rezultă în **37 de configurații de lanț în total**, toate aflate în prezent în starea `pending`.
 
 **Lanțuri de bază (10)**
 
@@ -67,12 +79,12 @@ zkSync Era, Linea, Scroll, Blast, Mantle, Hyperliquid, Berachain, Sonic, Sei, Mo
 
 Starknet, XRP Ledger, Stellar, Hedera, Algorand.
 
-**Lanțuri în așteptare (7)**
+**Alte lanțuri (7)**
 
 NEAR, Bitcoin, Cardano, Polkadot, Tezos, Tron, Aptos.
 
 :::note
-Verificare a numărului: 10 de bază + 14 din familia EVM + 5 non-EVM + 7 în așteptare = **36 de lanțuri externe**. Adăugând propria configurație nativă/loopback a QoreChain rezultă **37 de configurații de lanț QCB**.
+Verificare a numărului: 10 de bază + 14 din familia EVM + 5 non-EVM + 7 alte lanțuri = **36 de lanțuri externe**. Adăugând Injective (IBC) rezultă **37 de configurații de lanț**.
 :::
 
 ### Formate de adresă
@@ -107,7 +119,7 @@ Pentru a verifica evenimentele de pe lanțurile externe fără încredere, podul
 
 ## Fluxul de depozit (extern către QoreChain)
 
-Secvența de mai jos prezintă un depozit QCB: activele sunt blocate pe un lanț extern, validatorii QoreChain trimit atestări semnate PQC (7-din-10 Dilithium-5), iar token-urile wrapped sunt emise. Lanțurile compatibile Cosmos SDK folosesc în schimb calea IBC paralelă (8 canale, cu semnături de pachet Dilithium-5 opționale). Ambele căi sunt pe testnet/în așteptare.
+Secvența de mai jos prezintă depozitul QCB așa cum este conceput: activele sunt blocate pe un lanț extern, validatorii QoreChain trimit atestări semnate PQC (7-din-10 Dilithium-5), iar token-urile wrapped sunt emise. Lanțurile compatibile Cosmos SDK ar folosi în schimb calea IBC paralelă (până la 8 canale, cu semnături de pachet Dilithium-5 opționale). Niciuna dintre căi nu este activă; nu a fost făcut niciodată vreun depozit.
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +133,7 @@ sequenceDiagram
     Note over V,Q: Light client verifies source proofs where available
     Q->>Q: 4. Mint wrapped tokens
     Note over Q: If > 100K QOR: 24h challenge period before execution
-    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+    Note over X,Q: IBC path (planned, up to 8 channels) runs in parallel for Cosmos SDK chains
 ```
 
 ```
@@ -166,15 +178,9 @@ QoreChain               QoreChain Validators           External Chain
 
 Toate taxele de pod colectate în timpul retragerilor sunt direcționate către modulul `x/burn` prin canalul de ardere `bridge_fee` (100% din taxele de pod sunt arse).
 
-### Fluxul de retragere L2 → L1 (decontarea rollup)
+### Retrageri L2 → L1 (rollup-uri)
 
-Podul este, de asemenea, conceput să deconteze **retragerile rollup (L2) înapoi către lanțul lor gazdă (L1)**. Rollup-urile implementate prin [Rollup Development Kit](/architecture/rollup-development-kit) își ancorează periodic starea în QoreChain; podul consumă acele ancore finalizate pentru a autoriza retragerile din rollup către lanțul gazdă:
-
-1. Un utilizator inițiază o retragere pe rollup (L2), care este inclusă într-un batch de decontare.
-2. Batch-ul este ancorat în QoreChain și dovedit/finalizat conform modului de decontare al rollup-ului (de exemplu, după expirarea ferestrei de contestare optimistă, sau la verificarea unei probe valide).
-3. Odată ce ancora este finalizată, retragerea devine revendicabilă, iar activele corespunzătoare sunt eliberate pe lanțul gazdă (L1) prin calea standard de ardere-și-atestare.
-
-Aceasta leagă finalitatea rollup-ului direct de garanțiile de decontare ale lanțului gazdă, astfel încât retragerile L2 să nu poată fi eliberate înainte ca starea L2 corespunzătoare să fie decontată ireversibil.
+Retragerile din rollup nu folosesc podul. Ele sunt plătite de modulul `x/rdk` cu `execute-withdrawal` față de rădăcina retragerilor unui lot finalizat — vezi [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals).
 
 ## Arhitectura de securitate
 
@@ -205,13 +211,13 @@ Starea disjunctorului este urmărită per lanț și include: transferul unic max
 Pentru transferurile mari (>100.000 echivalent QOR, configurabil prin `large_transfer_threshold`):
 
 * O **perioadă de contestare de 24 de ore** (86.400 de secunde) se aplică după ce pragul de atestare este atins.
-* În acest interval, orice validator poate semnala operațiunea.
+* În acest interval, validatorii sunt concepuți să poată semnala operațiunea.
 * Dacă nu este contestată, operațiunea se execută automat după expirarea perioadei.
 * Operațiunile contestate sunt înghețate pentru revizuire de către guvernanță.
 
 ### Optimizarea traseelor prin AI
 
-Modulul podului se integrează cu subsistemul AI pentru optimizarea rutelor. Pentru transferurile care pot traversa mai multe căi (de exemplu, lanțul A către lanțul B prin intermediul unui intermediar), optimizatorul de traseu evaluează:
+Modulul podului se integrează cu subsistemul AI pentru optimizarea rutelor (neexpus prin REST). Pentru transferurile care pot traversa mai multe căi (de exemplu, lanțul A către lanțul B prin intermediul unui intermediar), optimizatorul de traseu evaluează:
 
 * Taxele estimate pe rute
 * Timpul estimat de finalizare
@@ -227,26 +233,27 @@ Modulul podului se integrează cu subsistemul AI pentru optimizarea rutelor. Pen
 * **`tx bridge update-chain-config`** — setează adresa de contract, numărul de confirmări, arhitectura și statusul unui lanț (`MsgUpdateChainConfig`).
 * **`tx bridge set-verifier-bootstrap`** — selectează verificatorul activ pentru un lanț și instalează rădăcina sa de încredere (`MsgSetVerifierBootstrap`).
 
-Aceasta permite unui operator să aducă online podul unui lanț conectat — sau să-i rotească verificatorul — direct, cu autorizarea verificată față de cheia de administrator al podului.
+Aceasta permite unui operator să aducă online podul unui lanț conectat — sau să-i rotească verificatorul — direct, cu autorizarea verificată față de cheia de administrator al podului. Începând cu versiunea de lanț **v3.2.0**, modulul podului are și propriul cont de modul (versiunile anterioare nu aveau, așa că primul depozit pe o rută activată ar fi eșuat).
 
 ### Validarea rețelelor conectate
 
-Începând cu versiunea de lanț **v3.1.79**, un validator care deține licența `validator_<chain>` (sau `qcb_bridge`) corespunzătoare poate rula clientul rețelei externe pe același nod, provizionat automat sub orchestrarea QoreChain odată ce licența este activată. Driverele sunt livrate pentru toate cele 37 de rețele de pod, clasificate după modelul de participare (validator permissionless, plafonat/ales/admitere, full-node L2 și non-staking/listă de încredere). Stake-ul și cheile de semnare ale rețelei externe sunt furnizate de operator pentru fiecare rețea. Consultați [Rulează un validator](/developer-guide/running-a-validator#connected-networks) pentru pașii operatorului.
+Începând cu versiunea de lanț **v3.1.79**, un validator care deține licența `validator_<chain>` (sau `qcb_bridge`) corespunzătoare poate rula clientul rețelei externe pe același nod, provizionat automat sub orchestrarea QoreChain odată ce licența este activată. Driverele sunt livrate pentru toate cele 37 de rețele de pod, clasificate după modelul de participare (validator permissionless, plafonat/ales/admitere, full-node L2 și non-staking/listă de încredere). Stake-ul și cheile de semnare ale rețelei externe sunt furnizate de operator pentru fiecare rețea. Consultați [Rulează un validator](/developer-guide/running-a-validator#connected-networks) pentru pașii operatorului. Deoarece fiecare configurație de lanț este `pending`, în prezent nicio rețea conectată nu este validată prin pod.
 
-## Endpoint-uri REST API
+## Endpoint-uri REST API {#rest-api-endpoints}
 
-Începând cu versiunea de lanț **v3.1.77**, starea podului poate fi, de asemenea, interogată **read-only prin REST** via grpc-gateway sub prefixul `/qorechain/bridge/v1/...` (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — anterior disponibilă doar prin gRPC. Acestea servesc JSON real on-chain prin HTTP pentru exploratoare și telemetrie de noduri light. Consultați [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#bridge-module) pentru lista completă.
+Starea podului poate fi interogată **read-only prin REST** via grpc-gateway sub prefixul `/qorechain/bridge/v1/...`. Acestea servesc JSON real on-chain prin HTTP pentru exploratoare și telemetrie de noduri light. Consultați [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#bridge-module) pentru lista completă.
 
-| Metodă | Endpoint                                           | Descriere                                        |
-| ------ | -------------------------------------------------- | ------------------------------------------------ |
-| GET    | `/bridge/v1/chains`                                | Listează toate configurațiile de lanț suportate  |
-| GET    | `/bridge/v1/chains/{chain_id}`                     | Obține configurația pentru un lanț specific      |
-| GET    | `/bridge/v1/validators`                            | Listează toți validatorii de pod înregistrați    |
-| GET    | `/bridge/v1/operations`                            | Listează toate operațiunile podului (cele mai recente întâi) |
-| GET    | `/bridge/v1/operations/{operation_id}`             | Obține detaliile unei operațiuni specifice       |
-| GET    | `/bridge/v1/locked/{chain}/{asset}`                | Obține sumele blocate/emise pentru o pereche lanț/activ |
-| GET    | `/bridge/v1/circuit-breakers`                      | Listează toate stările disjunctoarelor           |
-| GET    | `/bridge/v1/estimate/{from}/{to}/{asset}/{amount}` | Obține o estimare de rută optimizată prin AI     |
+| Metodă | Endpoint                                  | Descriere                                                                                                           |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/qorechain/bridge/v1/config`             | Configurația modulului podului (`min_validators`, `attestation_threshold`, `challenge_period_secs`, `large_transfer_threshold`, `enabled`) |
+| GET    | `/qorechain/bridge/v1/chains`             | Toate configurațiile de lanț și starea lor                                                                          |
+| GET    | `/qorechain/bridge/v1/chains/{chain_id}`  | O configurație de lanț                                                                                              |
+| GET    | `/qorechain/bridge/v1/validators`         | Validatorii de pod înregistrați                                                                                     |
+| GET    | `/qorechain/bridge/v1/validators/{address}` | Un validator de pod                                                                                               |
+| GET    | `/qorechain/bridge/v1/operations`         | Operațiunile podului                                                                                                |
+| GET    | `/qorechain/bridge/v1/operations/{id}`    | O operațiune a podului                                                                                              |
+
+Sumele blocate, starea disjunctoarelor și estimările de rută nu au în prezent nicio rută de interogare.
 
 ## Evenimente ale podului
 
@@ -265,6 +272,5 @@ Modulul podului emite următoarele evenimente on-chain:
 ## Înrudite
 
 * [Transferul activelor prin pod](/user-guide/bridging-assets) — mută activele între lanțuri pas cu pas.
-* [Podul din Dashboard](/dashboard/bridge) — interfața podului pentru utilizatorii de zi cu zi.
 * [Restaking BTC prin Babylon](/architecture/btc-restaking-babylon) — securitate susținută de Bitcoin.
 * [Securitate post-cuantică](/architecture/post-quantum-security) — verificare PQC pe pachetele IBC.

@@ -16,6 +16,17 @@ sidebar_position: 8
 هذه الصفحة هي نظير SDK لوحدة
 [تجريد الحسابات](/developer-guide/account-abstraction) على مستوى السلسلة.
 
+:::danger غير متاح على الشبكات الحية
+وحدة `x/abstractaccount` **معطَّلة** على `qorechain-vladi` و
+`qorechain-diana` (يُرجع `GET /qorechain/abstractaccount/v1/config` القيمة
+`"enabled": false`). ابتداءً من السلسلة v3.2.0 يُفرَض هذا العَلَم على كل مسار
+(إنشاء حساب مجرَّد، وربط موثِّق، وكلٍّ من `MsgExecuteEVM` /
+`MsgExecuteCosmos`)، وترفضها السلسلة بالرسالة `abstract account module is
+disabled` (الرمز 9). لا توجد معاملة تستطيع تفعيلها. كل ما يرد أدناه يصف واجهات
+الوحدة للرجوع إليها فقط: لا تبنِ تدفق مفتاح مرتبط أو إنفاق مفوَّض على الشبكات
+الحية قبل تفعيل الوحدة، وتحقَّق من هذا العَلَم قبل عرض أي تدفق من هذا النوع.
+:::
+
 ## نموذج المُرحِّل (relayer)
 
 يقوم **المُرحِّل** بإرسال المعاملة ودفع الرسوم. توقيع المُرحِّل الهجين الخاص به
@@ -90,6 +101,16 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution القاعدة لا تقيِّد المفتاح إلا إذا وُجدت
+تحسم السلسلة الحد بهذا الترتيب: قاعدة الموثِّق نفسه إذا كانت مُعيَّنة و`enabled`؛
+وإلا فأول قاعدة `enabled` على الحساب؛ وإلا فلا قاعدة **ولا يوجد حينها أي حد**.
+القاعدة المخزَّنة مع `enabled: false` تعني لا حد، وليست حدًّا صفريًا. لا تحمل
+`MsgRegisterAuthenticator` أي قاعدة، فالمفتاح المرتبط بتلك الرسالة وحدها لا يقيِّده
+إلا قاعدة على مستوى الحساب. عيِّن قاعدة عن قصد عبر `MsgUpdateSpendingRules`، ولا
+تسجِّل إلا الأذونات التي يحتاجها المفتاح. الحد يقيِّد الضرر الذي قد يُحدثه مفتاح
+مرتبط؛ لكنه لا يغني عن إلغاء المفتاح.
+:::
+
 لتعطيل مفتاح فورًا، يبثّ المالك
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
@@ -131,32 +152,46 @@ await fetch("/api/relay", {
 });
 ```
 
-**الخادم (المُرحِّل):** يوقّع الغلاف بحسابه **الخاص** (هجين، كالمعتاد على
-المسار الأصلي) ويدفع الرسوم. توقيع الموثِّق داخل الرسالة هو التفويض بالإنفاق
-من حساب المالك.
+**الخادم (المُرحِّل):** يوقّع الغلاف بحسابه **الخاص** عبر المسار الهجين
+(`signAndBroadcastHybrid`، مع تمرير `rest`) ويدفع الرسوم. يجب تسجيل مفتاح
+ML-DSA-87 الخاص بالمُرحِّل، كأي حساب آخر. توقيع الموثِّق داخل الرسالة هو
+التفويض بالإنفاق من حساب المالك.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -329,10 +364,11 @@ switch (decoded.kind) {
 }
 ```
 
-يعني `hybrid_verify_failed` في أغلب الأحيان توقيع ML-DSA-87 **مُحوَّطًا**
-(غير حتمي) — فالسلسلة لا تقبل إلا التوقيعات الحتمية. وهو أيضًا ما تراه إذا
-قام إصدار SDK أقدم من 0.6.1 بترميز الامتداد الهجين بصيغة JSON
-(قم بالترقية — انظر
+يعني `hybrid_verify_failed` أن توقيع ML-DSA-87 لم يتحقق. وليس السبب التوقيع
+المُحوَّط (فالسلسلة تقبل توقيعات ML-DSA-87 المُحوَّطة والحتمية على حد سواء)؛ راجع
+[استكشاف أخطاء الرمز 21](/developer-guide/post-quantum-signing#code-21). وهو أيضًا
+ما تراه إذا قام إصدار SDK أقدم من 0.6.1 بترميز الامتداد الهجين بصيغة JSON
+(قم بالترقية - انظر
 [الحسابات وتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 ## تدوير المفاتيح {#key-rotation}

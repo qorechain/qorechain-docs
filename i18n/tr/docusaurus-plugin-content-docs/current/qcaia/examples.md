@@ -21,7 +21,7 @@ Bu yanıtlar **açıklayıcıdır** — QoreChain'in herkese açık belgelerinin
 
 **QCAIA yanıtlar:**
 
-> QoreChain'in köprüsü, varlıkları QoreChain ile diğer ağlar arasında taşımanıza olanak tanır. Zincirler arası bağlanabilirlik için QCB transferlerini IBC ile birleştirir; IBC desteği önce testnet üzerinde kullanıma sunulur. Tam tasarım için köprü belgelerine bakın.
+> QoreChain'in köprüsü, varlıkları QoreChain ile diğer ağlar arasında taşımak üzere tasarlanmıştır ve QCB transferlerini IBC ile birleştirir. Henüz canlı değildir: tüm zincir yapılandırmaları hâlâ beklemededir ve her iki ağda da açık bir IBC kanalı yoktur. Tam tasarım için köprü belgelerine bakın.
 
 _Daha fazla bilgi: [Bridge Architecture](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _Daha fazla bilgi: [Bridge Architecture](/architecture/bridge-architecture)._
 
 **QCAIA yanıtlar:**
 
-> PRISM, QoreChain'in pekiştirmeli öğrenme optimizasyon katmanıdır. Koşullar değiştikçe ağı performans ve verimlilik için sürekli olarak ince ayar yapar. Ayrıntılı incelemeyi PRISM belgelerinde okuyabilirsiniz.
+> PRISM, QoreChain'in pekiştirmeli öğrenme optimizasyon katmanıdır ve koşullar değiştikçe ağ parametrelerine ince ayar yapmak üzere tasarlanmıştır. Bugün gözlem modunda çalışır: gözlemleri kaydeder ancak henüz eğitilmiş bir politika yüklenmemiştir. Ayrıntılı incelemeyi PRISM belgelerinde okuyabilirsiniz.
 
 _Daha fazla bilgi: [PRISM Consensus Engine](/architecture/prism-consensus-engine)._
 

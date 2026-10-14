@@ -15,8 +15,8 @@ El QOR de testnet **no tiene valor real**. El Grifo nunca toca mainnet: no exist
 
 ## Solicitar tokens de prueba
 
-1. Conéctate a **testnet** y abre el **Grifo**.
-2. Introduce la dirección que quieres financiar (`qor1...`). Si tu monedero está conectado, selecciona **Usar mi dirección** para rellenarla automáticamente. El formulario confirma que la dirección es válida antes de que puedas continuar.
+1. Inicia sesión, cambia el Panel a **testnet** y abre el **Grifo**.
+2. Introduce la dirección que quieres financiar (`qor1...`). Si tu monedero está conectado, selecciona **Use my address** para rellenarla automáticamente. El formulario confirma que la dirección es válida antes de que puedas continuar.
 3. Selecciona el botón de solicitud. La financiación se procesa en segundos.
 
 Cuando la solicitud tiene éxito, una tarjeta de confirmación muestra la cantidad enviada y el hash de la transacción, con un botón de copiar y un enlace para abrir la transacción en el [Explorador](/dashboard/explorer).

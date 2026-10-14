@@ -5,12 +5,12 @@ sidebar_label: JSON-RPC — Solana 호환
 sidebar_position: 4
 ---
 
-# JSON-RPC — Solana-Compatible
+# JSON-RPC — Solana 호환
 
 QoreChain은 SVM(Solana Virtual Machine) 런타임을 통해 Solana 호환 JSON-RPC 인터페이스를 제공하여, 기존 Solana 툴링 및 SDK가 QoreChain과 네이티브하게 상호작용할 수 있도록 합니다.
 
 :::caution SVM 트랜잭션 제출이 현재 비활성화되어 있습니다
-체인 버전 v3.1.89(8월 22일) 기준, 장애 발생 이후 SVM 실행 레인은 **네트워크 전역에서 트랜잭션 제출이 비활성화**되었습니다 — 어떤 트랜잭션을 보내도 `code 11, "SVM module is disabled"`가 반환됩니다. 이는 공개 읽기 전용 엔드포인트뿐 아니라 네트워크 전역에 적용됩니다. 아래 표의 읽기 계열 메서드(예: `getBalance`, `getAccountInfo`)는 여전히 응답할 수 있지만, 레인이 재개되기 전까지는 SVM 트랜잭션을 제출하는 실제 연동을 시도하지 마십시오 — 이는 런타임 파라미터가 아니라 컴파일 타임 비활성화이므로 거버넌스 투표로 다시 켤 수 없으며, 외부 감사에서 통과 판정이 나올 때까지 계속 비활성화 상태로 유지될 것으로 예상됩니다.
+체인 버전 v3.1.89(8월 22일) 기준, 장애 발생 이후 SVM 실행 레인은 **네트워크 전역에서 트랜잭션 제출이 비활성화**되었습니다 — 어떤 트랜잭션을 보내도 `code 11, "SVM module is disabled"`가 반환됩니다. 이는 공개 읽기 전용 엔드포인트뿐 아니라 네트워크 전역에 적용됩니다. 아래 표의 읽기 계열 메서드(예: `getBalance`, `getAccountInfo`)는 공개 엔드포인트에서 정상적으로 응답하지만, 레인이 재개되기 전까지는 SVM 트랜잭션을 제출하는 실제 연동을 시도하지 마십시오 — 이는 런타임 파라미터가 아니라 컴파일 타임 비활성화이므로 거버넌스 투표로 다시 켤 수 없으며, 외부 감사에서 통과 판정이 나올 때까지 계속 비활성화 상태로 유지될 것으로 예상됩니다.
 :::
 
 ## 연결
@@ -40,6 +40,16 @@ JSON-RPC 서버는 **`qorechaind start`에 의해 시작**되며 **기본적으�
 | `getMinimumBalanceForRentExemption` | `dataLength` (정수)   | 지정한 데이터 크기에 대한 렌트 면제 최소 잔액을 반환 |
 | `getVersion`                        | 없음                     | 노드 소프트웨어 버전을 반환                              |
 | `getHealth`                         | 없음                     | 노드 상태를 반환(정상이면 `"ok"`)                 |
+| `getBlockHeight`                    | 없음                     | 현재 블록 높이를 반환                                |
+| `getLatestBlockhash`                | 없음                     | 최근 블록해시와 `lastValidBlockHeight`를 반환          |
+| `getRecentBlockhash`                | 없음                     | `getLatestBlockhash`의 레거시 형태                            |
+| `getFeeForMessage`                  | `message` (base64)       | 메시지의 수수료(lamport)를 반환                                |
+| `getMultipleAccounts`               | `pubkeys` (배열)        | 한 번의 호출로 여러 계정을 반환                                |
+| `getProgramAccounts`                | `programId` (base58)     | 프로그램이 소유한 계정을 반환                                  |
+| `getTokenAccountsByOwner`           | `owner`, 필터          | 소유자의 토큰 계정을 반환                                      |
+| `getTokenAccountsByDelegate`        | `delegate`, 필터       | 위임자의 토큰 계정을 반환                                      |
+
+`getGenesisHash`, `getEpochInfo` 같이 이 목록에 없는 메서드는 `-32601 method not found`를 반환합니다. `getTransaction`은 허용되지만 현재 `result` 필드가 없는 엔벨로프로 응답하므로 의존하지 마십시오. `getSlot`이 보고하는 슬롯은 체인의 블록 높이를 따라갑니다.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

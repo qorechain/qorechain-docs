@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # Protecție MEV (FairBlock)
 
-Modulul `x/fairblock` implementează apărarea QoreChain împotriva atacurilor de tip Maximal Extractable Value (MEV) folosind criptare bazată pe identitate cu prag (threshold). Combinată cu un sistem de prioritizare a tranzacțiilor pe 5 benzi, aceasta creează o arhitectură anti-MEV cuprinzătoare care protejează utilizatorii împotriva front-running-ului, a atacurilor sandwich și a altor forme de extragere de valoare din mempool.
+Modulul `x/fairblock` este designul QoreChain pentru apărarea împotriva atacurilor de tip Maximal Extractable Value (MEV), folosind criptare bazată pe identitate cu prag (threshold). Combinat cu un sistem de prioritizare a tranzacțiilor pe 5 benzi, este menit să formeze o arhitectură anti-MEV care protejează utilizatorii împotriva front-running-ului, a atacurilor sandwich și a altor forme de extragere de valoare din mempool.
+
+:::note Stare curentă (octombrie 2026)
+FairBlock este **dezactivat atât pe mainnet, cât și pe testnet** (`enabled = false`), iar definițiile celor 5 benzi sunt doar configurație: benzile de spațiu în bloc nu sunt impuse de mempool-ul sau de gestionarul de propuneri aflate în funcțiune. Această pagină descrie designul intenționat.
+:::
 
 ## Problema MEV
 
@@ -53,7 +57,7 @@ Validatorii contribuie cu fragmente de decriptare pentru tranzacțiile comise:
 
 ## Starea implementării
 
-În versiunea curentă de testnet, modulul FairBlock este o **implementare de tip stub**:
+Pe ambele rețele aflate în funcțiune (mainnet și testnet), modulul FairBlock este o **implementare de tip stub**:
 
 * Gestionarul ante `FairBlockDecorator` este integrat în fluxul de procesare a tranzacțiilor, dar **transmite mai departe** toate tranzacțiile fără modificare.
 * Când `enabled` este `false` (valoarea implicită), decoratorul deleagă imediat către următorul gestionar din lanț.
@@ -101,14 +105,12 @@ Tranzacții cu abstractizare de gaz și sponsorizate. Această bandă permite ex
 
 ### Starea implementării
 
-Configurarea benzilor este **doar la nivel de date** în versiunea curentă de testnet. Definițiile benzilor (prioritate, alocare de spațiu în bloc) sunt înregistrate la inițializarea aplicației, dar reordonarea efectivă a mempool-ului prin `PrepareProposal` și `ProcessProposal` este o etapă viitoare. În prezent, toate tranzacțiile sunt procesate în ordine standard, indiferent de atribuirea benzii.
+Configurarea benzilor este **doar la nivel de date** pe rețelele aflate în funcțiune. Definițiile benzilor (prioritate, alocare de spațiu în bloc) sunt înregistrate la inițializarea aplicației, dar reordonarea efectivă a mempool-ului prin `PrepareProposal` și `ProcessProposal` este o etapă viitoare. În prezent, toate tranzacțiile sunt procesate în ordine standard, indiferent de atribuirea benzii.
 
-## Efectul anti-MEV combinat
+## Efectul anti-MEV combinat (design)
 
 1. **Stratul 1: Criptare (tIBE)** — Tranzacțiile sunt criptate înainte de a intra în mempool. Propunătorii nu pot citi conținutul, deci nu există informații de extras.
 2. **Stratul 2: Prioritizare (Benzi)** — Tranzacțiile criptate din banda MEV primesc 20% spațiu rezervat în bloc. Prioritatea 90 asigură includerea chiar și în timpul congestiei.
 3. **Stratul 3: Decriptare cu prag** — Numai după comiterea blocului validatorii dezvăluie fragmentele de decriptare. Cerința de prag împiedică orice validator individual să decripteze prematur.
 
-Rezultat: Asimetria informațională este eliminată în fiecare etapă a ciclului de viață al tranzacției, de la difuzare la execuție.
-
-Această abordare este strict superioară schemelor de decriptare cu întârziere temporală sau celor de commit-reveal cu o singură parte, deoarece cerința de prag distribuie încrederea pe întregul set de validatori.
+Rezultat intenționat: asimetria informațională este eliminată în fiecare etapă a ciclului de viață al tranzacției, de la difuzare la execuție, odată ce FairBlock este activat. Cerința de prag distribuie încrederea pe întregul set de validatori, ceea ce schemele de decriptare cu întârziere temporală sau de commit-reveal cu o singură parte nu fac.

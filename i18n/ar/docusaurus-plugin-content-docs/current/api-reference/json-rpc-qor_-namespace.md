@@ -7,176 +7,62 @@ sidebar_position: 2
 
 # JSON-RPC — مساحة الأسماء qor_
 
-توفّر مساحة الأسماء `qor_` طرق JSON-RPC الخاصة بـ QoreChain للاستعلام عن حالة التشفير ما بعد الكمومي، وتحليلات الذكاء الاصطناعي، والمراسلة عبر الأجهزة الافتراضية، والحالة متعددة الطبقات، وعمليات الجسر، واقتصاديات الرمز، وبنية الـ rollup التحتية، وحالة إجماع PRISM.
+صُمّمت مساحة الأسماء `qor_` لتوفير طرق JSON-RPC خاصة بـ QoreChain للاستعلام عن حالة التشفير ما بعد الكمومي، وتحليلات الذكاء الاصطناعي، والمراسلة عبر الأجهزة الافتراضية، والحالة متعددة الطبقات، وعمليات الجسر، واقتصاديات الرمز، وبنية الـ rollup التحتية، وحالة إجماع PRISM.
 
-## الاتصال
+:::warning غير متاحة بعد
+**لا يوجد إصدار منشور من العقدة يقدّم مساحة الأسماء `qor_` حتى الآن**، لا على الشبكة الرئيسية (`qorechain-vladi`) ولا على الشبكة التجريبية (`qorechain-diana`) ولا على عقدة تشغّلها بنفسك. على نقاط نهاية EVM العامة لا تسرد `rpc_modules` سوى `eth` و`net` و`rpc` و`txpool` و`web3`، و**تُرجع كل طريقة `qor_` الرمز `-32601` (method not found)** على الشبكتين. الطرق مُنفّذة في الشيفرة المصدرية للعقدة لكنها غير مسجّلة لدى خادم JSON-RPC، لذا فإن إضافة `qor` إلى قائمة `api` في `app.toml` لا تأثير لها. تسجيل مساحة الأسماء مخطَّط له في إصدار قادم للعقدة، وستذكر هذه الصفحة أي إصدار عند صدوره.
 
-| النقل     | العنوان الافتراضي       |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
-
-تُقدَّم مساحة الأسماء `qor_` إلى جانب `eth_` و`web3_` و`net_` و`txpool_` على المنافذ نفسها. فعّلها في `app.toml`:
-
-```toml
-[json-rpc]
-api = "eth,web3,net,txpool,qor"
-```
-
-:::note
-تتوفّر مساحة الأسماء `qor_` على شبكة **`qorechain-vladi`** الرئيسية (معرّف سلسلة EVM **9801**، تعمل على إصدار السلسلة **v3.1.97**) وشبكة **`qorechain-diana`** الاختبارية (معرّف سلسلة EVM **9800**). تفترض الأمثلة أدناه عقدة محلية؛ استبدلها بنقطة نهاية الشبكة الرئيسية أو الاختبارية الخاصة بمزوّدك للوصول عن بُعد.
+لا تبنِ على طرق `qor_` اليوم. استخدم مسارات REST في الجدول أدناه حيثما وُجد مسار. وتغلّف مكتبات العملاء التي توفّر دوال `client.qor.*` هذه الطرق نفسها، لذا تفشل تلك الدوال بالطريقة نفسها.
 :::
 
----
+يمكنك التأكد من ذلك بنفسك:
 
-## الطرق
+```bash
+curl -s -X POST https://evm.qore.host \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"rpc_modules","params":[],"id":1}'
+```
 
-| الطريقة                        | المعاملات                              | الوصف                                                  |
-| ----------------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `qor_getPQCKeyStatus`         | `address` (string)                      | تُرجِع حالة تسجيل مفتاح PQC لحساب       |
-| `qor_getHybridSignatureMode`  | لا شيء                                   | تُرجِع وضع فرض التوقيع الهجين الحالي        |
-| `qor_getAIStats`              | لا شيء                                   | تُرجِع إحصاءات معالجة وحدة الذكاء الاصطناعي المجمّعة       |
-| `qor_getCrossVMMessage`       | `messageId` (string)                    | تسترجع رسالة عبر الأجهزة الافتراضية حسب معرّفها                   |
-| `qor_getReputationScore`      | `validator` (string)                    | تُرجِع درجة السمعة لعنوان مُدقِّق         |
-| `qor_getLayerInfo`            | `layerId` (string)                      | تُرجِع البيانات الوصفية والحالة لطبقة مسجَّلة       |
-| `qor_getBridgeStatus`         | `chainId` (string)                      | تُرجِع حالة الجسر والإجماليات المقفلة لسلسلة      |
-| `qor_getRLAgentStatus`        | لا شيء                                   | تُرجِع الوضع الحالي لوكيل PRISM وحالة التشغيل  |
-| `qor_getRLObservation`        | لا شيء                                   | تُرجِع أحدث متّجه مراقبة لـ PRISM             |
-| `qor_getRLReward`             | لا شيء                                   | تُرجِع مقاييس مكافأة PRISM التراكمية                  |
-| `qor_getPoolClassification`   | `validator` (string)                    | تُرجِع تصنيف مجمّع CPoS لمُدقِّق         |
-| `qor_getBurnStats`            | لا شيء                                   | تُرجِع إحصاءات الحرق عبر جميع القنوات        |
-| `qor_getXQOREPosition`        | `address` (string)                      | تُرجِع وضعية رهان xQORE لعنوان            |
-| `qor_getInflationRate`        | لا شيء                                   | تُرجِع معدّل التضخم السنوي الحالي                |
-| `qor_getTokenomicsOverview`   | لا شيء                                   | تُرجِع نظرة عامة مجمّعة على الحرق والتضخم والمعروض    |
-| `qor_getRollupStatus`         | `rollupId` (string)                     | تُرجِع الحالة والتهيئة لـ rollup محدّد   |
-| `qor_listRollups`             | لا شيء                                   | تُرجِع قائمة بجميع الـ rollups المسجَّلة                 |
-| `qor_getSettlementBatch`      | `rollupId` (string)، `batchIndex` (int) | تُرجِع دفعة تسوية محدّدة لـ rollup         |
-| `qor_suggestRollupProfile`    | `useCase` (string)                      | توصية بملف تعريف rollup بمساعدة الذكاء الاصطناعي لحالة استخدام |
-| `qor_getDABlobStatus`         | `rollupId` (string)، `blobIndex` (int)  | تُرجِع حالة كتلة DA محدّدة         |
-| `qor_getBTCStakingPosition`   | `address` (string)                      | تُرجِع وضعية رهان BTC عبر وحدة Babylon         |
-| `qor_getAbstractAccount`      | `address` (string)                      | تُرجِع تفاصيل الحساب المجرَّد وقواعد الإنفاق     |
-| `qor_getFairBlockStatus`      | لا شيء                                   | تُرجِع حالة تشفير FairBlock وتهيئته    |
-| `qor_getGasAbstractionConfig` | لا شيء                                   | تُرجِع الرموز المقبولة ومعاملات تجريد الغاز   |
-| `qor_getLaneConfiguration`    | لا شيء                                   | تُرجِع تهيئة ترتيب أولوية المعاملات على 5 مسارات   |
+```json
+{"jsonrpc":"2.0","id":1,"result":{"eth":"1.0","net":"1.0","rpc":"1.0","txpool":"1.0","web3":"1.0"}}
+```
 
 ---
 
-## أمثلة
+## الطرق المخطَّط لها وما يُستخدم اليوم
 
-### qor_getBurnStats
+| الطريقة المخطَّط لها                | ما يُستخدم اليوم |
+| ----------------------------- | ----------------- |
+| `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` ‏(`found` و`account.key_type` و`account.created_at_height`). راجع [نقاط نهاية REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). |
+| `qor_getHybridSignatureMode`  | لا يوجد مسار استعلام عام. |
+| `qor_getAIStats`              | gRPC ‏`qorechain.ai.v1.Query/Stats` على عقدة تشغّلها؛ لا يوجد مسار REST. |
+| `qor_getCrossVMMessage`       | gRPC ‏`qorechain.crossvm.v1.Query/Message` على عقدة تشغّلها؛ لا يوجد مسار REST. |
+| `qor_getReputationScore`      | لا يوجد مسار استعلام عام (تتيح وحدة السمعة `Params` فقط عبر gRPC). |
+| `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` و`anchor/{layer_id}`. راجع [وحدة Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
+| `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. راجع [وحدة Bridge](/api-reference/rest-grpc-endpoints#bridge-module). الجسر ليس حيًّا بعد. |
+| `qor_getRLAgentStatus`، `qor_getRLObservation`، `qor_getRLReward` | gRPC ‏`qorechain.rlconsensus.v1.Query` ‏(`AgentStatus` و`Observation` و`Reward`) على عقدة تشغّلها؛ لا يوجد مسار REST. |
+| `qor_getPoolClassification`   | لا يوجد مسار استعلام عام. |
+| `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. راجع [وحدة Burn](/api-reference/rest-grpc-endpoints#burn-module). |
+| `qor_getXQOREPosition`        | لا شيء. xQORE غير مُفعَّل (راجع [الرهن عبر xQORE](/user-guide/xqore-staking)). |
+| `qor_getInflationRate`        | لا يوجد مسار استعلام عام على الشبكة الرئيسية. |
+| `qor_getTokenomicsOverview`   | اجمع بين `GET /qorechain/burn/v1/stats` و`GET /cosmos/bank/v1beta1/supply`. |
+| `qor_getRollupStatus`، `qor_listRollups`، `qor_getSettlementBatch`، `qor_getDABlobStatus` | gRPC ‏`qorechain.rdk.v1.Query` ‏(`Rollup` و`Rollups` و`Batch` و`LatestBatch`) أو واجهة سطر الأوامر على عقدة تشغّلها؛ مسارات REST ‏`/qorechain/rdk/v1/...` غير متاحة على الشبكة الرئيسية. |
+| `qor_suggestRollupProfile`    | لا توجد خدمة عامة؛ راجع [الملفات التعريفية الجاهزة](/rollups/preset-profiles). |
+| `qor_getBTCStakingPosition`   | لا شيء. وحدة إعادة الرهن بـ BTC لا تملك خدمة استعلام بعد. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. الحسابات المجرَّدة معطَّلة على الشبكتين اليوم. |
+| `qor_getFairBlockStatus`، `qor_getGasAbstractionConfig`، `qor_getLaneConfiguration` | لا شيء. |
 
-**الطلب:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getBurnStats",
-    "params": [],
-    "id": 1
-  }'
-```
-
-**الاستجابة:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "total_burned": "1250000000",
-    "total_distributed": "4750000000",
-    "channels": {
-      "validator_share": "0.40",
-      "burn_share": "0.30",
-      "treasury_share": "0.20",
-      "staker_share": "0.10"
-    },
-    "last_block_burned": "342891"
-  }
-}
-```
-
-### qor_getRLAgentStatus
-
-**الطلب:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRLAgentStatus",
-    "params": [],
-    "id": 2
-  }'
-```
-
-**الاستجابة:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "agent_mode": "observe",
-    "observation_interval": 10,
-    "circuit_breaker": {
-      "active": false,
-      "max_param_change": "0.10",
-      "cooldown_blocks": 100
-    },
-    "last_observation_block": "342885",
-    "cumulative_reward": "18.742"
-  }
-}
-```
-
-### qor_getRollupStatus
-
-**الطلب:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRollupStatus",
-    "params": ["rollup-001"],
-    "id": 3
-  }'
-```
-
-**الاستجابة:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 3,
-  "result": {
-    "rollup_id": "rollup-001",
-    "status": "active",
-    "settlement_type": "optimistic",
-    "operator": "qor1abc123...",
-    "total_batches": 147,
-    "last_finalized_batch": 145,
-    "pending_batches": 2,
-    "stake": "10000000000uqor",
-    "created_at_height": 100230
-  }
-}
-```
+لمعرفة حالة حساب على مسار EVM (مفتاح PQC المسجَّل ونافذة التفويض) استخدم `GET /qorechain/pqc/v1/account/{address}` و`GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## رموز الأخطاء
 
+على عقدة تقدّم مساحة الأسماء هذه، تتبع الأخطاء رموز JSON-RPC 2.0 القياسية. أما اليوم فتفشل استدعاءات أي طريقة `qor_` بالرمز `-32601`.
+
 | الرمز   | الرسالة          | الوصف                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | طلب JSON-RPC مشوَّه            |
-| -32601 | Method not found | الطريقة غير موجودة             |
+| -32601 | Method not found | الطريقة غير موجودة، أو أن العقدة لا تقدّم مساحة الأسماء `qor_` (كل إصدار منشور اليوم) |
 | -32602 | Invalid params   | معاملات مفقودة أو غير صالحة         |
 | -32603 | Internal error   | خطأ في المعالجة من جانب الخادم          |
-| -32000 | Module disabled  | الوحدة المستعلَم عنها غير مُفعَّلة     |
-| -32001 | Entity not found | المورد المطلوب غير موجود |

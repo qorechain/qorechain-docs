@@ -25,10 +25,12 @@ SDK は、いくつかのエンドポイントを通じてノードと通信し�
 
 - **Cosmos REST (LCD)** — 銀行残高、アカウント情報、モジュールクエリ。
 - **コンセンサス RPC** — ネイティブトランザクションの署名/ブロードキャスト、および CosmWasm 読み取りクライアントに使用されます。
-- **EVM JSON-RPC** — 標準の `eth_*` 呼び出しに加え、QoreChain の `qor_*` 名前空間と EVM プリコンパイル。
-- **SVM JSON-RPC** — SVM ランタイム向けの Solana 互換 RPC。
+- **EVM JSON-RPC** — 公開エンドポイント上の標準的な `eth_*`、`net_*`、`web3_*`、`txpool_*` 呼び出し。QoreChain の `qor_*` 名前空間と EVM プリコンパイルは、現時点ではそこでは利用できません（下記参照）。
+- **SVM JSON-RPC** — SVM ランタイム向けの Solana 互換 RPC（公開エンドポイントでは読み取り専用。SVM トランザクションの送信はネットワーク全体で無効化されています）。
 
-`qor_*` JSON-RPC 名前空間は、トークノミクス、PQC 鍵ステータス、ハイブリッド署名モード、クロス VM メッセージ、ネットワーク統計など、QoreChain 固有の読み取りを公開します。TypeScript では、これらは `client.qor`（`QorClient`）上の型付きメソッドです。同じ面が Python、Go、Rust の SDK にも存在します。
+これを有効にしているノードでは、`qor_*` JSON-RPC 名前空間が、トークノミクス、PQC 鍵ステータス、ハイブリッド署名モード、クロス VM メッセージ、ネットワーク統計など、QoreChain 固有の読み取りを公開します。TypeScript では、これらは `client.qor`（`QorClient`）上の型付きメソッドです。同じ面が Python、Go、Rust の SDK にも存在します。公開エンドポイントに対しては、代わりに REST ルートを使用してください（例: PQC 鍵ステータスには `GET /qorechain/pqc/v1/account/{address}`、バーン統計には `GET /qorechain/burn/v1/stats`）。
+
+> **まだ提供されていません:** リリース済みのノードビルドはいずれも `qor_` JSON-RPC 名前空間を提供していないため、現時点ではすべての公開エンドポイントで、あらゆる `qor_*` 呼び出しが `-32601`（メソッドが見つかりません）を返します。[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace) を参照してください。
 
 ## トークンと通貨単位
 
@@ -58,5 +60,5 @@ fromBase("1500000");  // "1.5"      (uqor -> QOR)
 
 ## クロス VM
 
-QoreChain の `x/crossvm` モジュールは、ある VM 上のコントラクトが別の VM 上のアクションをトリガーできるようにします。EVM→native のパスは、**クロス VM ブリッジプリコンパイル**（`@qorechain/evm`）を通じてオンチェーンで実行され、SDK は型付きの REST 読み取りヘルパー
-（`getCrossVmMessage`、`getPendingCrossVmMessages`、`getCrossVmParams`）に加え、メッセージの状態を追跡する `client.qor.getCrossVMMessage(...)` を提供します。[クロス VM ガイド](/sdk/guides/cross-vm) を参照してください。
+QoreChain の `x/crossvm` モジュールは、ある VM 上のコントラクトが別の VM 上のアクションをトリガーできるようにします。EVM→native のパスは、**クロス VM ブリッジプリコンパイル**（`@qorechain/evm`。公開ネットワークではまだ有効化されていません）を通じてオンチェーンで実行され、SDK は型付きの REST 読み取りヘルパー
+（`getCrossVmMessage`、`getPendingCrossVmMessages`、`getCrossVmParams`）に加え、メッセージの状態を追跡する `client.qor.getCrossVmMessage(...)` を提供します。公開エンドポイントでは、REST ヘルパーと `client.qor` は提供されていません。メッセージは `connectQueryClients(rpc).crossvm` で読み取ってください。[クロス VM ガイド](/sdk/guides/cross-vm) を参照してください。

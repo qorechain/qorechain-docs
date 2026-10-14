@@ -7,71 +7,31 @@ sidebar_position: 7
 
 # Copilote de rollup QCAI
 
-Le copilote de rollup QCAI rassemble tout ce que les services consultatifs du
-réseau savent sur un rollup donné et le condense en une lecture unique, en
-langage clair : une estimation des frais en temps réel, des recommandations
-réseau, les éventuelles enquêtes anti-fraude faisant référence au rollup, le
-statut de l'agent d'apprentissage par renforcement, ainsi qu'une courte liste
-de suggestions concrètes que vous pouvez appliquer.
+Le copilote de rollup QCAI du RDK est un assistant en lecture seule qui **tente** de rassembler les données consultatives du réseau pour un rollup — une estimation des frais, des recommandations réseau, les enquêtes anti-fraude faisant référence au rollup, le statut de l'agent d'apprentissage par renforcement — et de les condenser en une lecture unique en langage clair, accompagnée d'une courte liste de suggestions.
 
-Il fonctionne en mode **meilleur effort**. Les services consultatifs sont une
-infrastructure optionnelle — si l'un d'eux est injoignable, le copilote se
-dégrade proprement : il omet la section concernée et enregistre un
-avertissement au lieu de faire échouer l'appel entier. Vous obtenez toujours
-un résultat.
+:::caution Non disponible sur les points de terminaison publics
+Les services consultatifs qu'il lit (routes REST `/qorechain/ai/v1/…` et espace de noms JSON-RPC `qor_*`) ne sont **pas servis** actuellement par les points de terminaison publics `qore.host` sur le mainnet ni sur le testnet ; chaque section revient donc sous forme d'avertissement. Le copilote fonctionne par conception en meilleur effort : il n'échoue jamais, mais un résultat vide ne signifie **pas** que le rollup a été vérifié et jugé sain. Ne l'utilisez pas comme signal de sécurité tant que ces services ne sont pas exposés. Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace).
+:::
 
-## Un seul appel : `getRollupAdvice`
+## Un seul appel : `getRollupAdvice` {#one-call-getrollupadvice}
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
-// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
-// endpoint config needed; pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
+const advice = await getRollupAdvice(rdk, "my-rollup");
 
-const advice = await getRollupAdvice(rdk, "my-roll");
-
-console.log(advice.feeEstimate);            // live fee estimate (if reachable)
-console.log(advice.networkRecommendations); // tuning recommendations
-console.log(advice.fraudInvestigations);    // investigations referencing this rollup
-console.log(advice.rlAgentStatus);          // RL agent status (qor_ JSON-RPC)
-console.log(advice.suggestions);            // plain-language, actionable
-console.log(advice.warnings);               // services that were unreachable
+console.log(advice.warnings);    // services that could not be reached (all of them today)
+console.log(advice.suggestions); // plain-language suggestions, when data is available
 ```
 
-## Les lectures sous-jacentes
+Le résultat contient aussi `feeEstimate`, `networkRecommendations`, `fraudInvestigations` et `rlAgentStatus` lorsque le service correspondant répond.
 
-`getRollupAdvice` agrège un ensemble de méthodes en lecture seule que vous
-pouvez également appeler directement. Les méthodes REST consultatives sont
-exposées sous `/qorechain/ai/v1/...` :
-
-- `getFeeEstimate(...)` — estimation actuelle des frais.
-- `getNetworkRecommendations(...)` — recommandations de réglage au niveau du
-  réseau.
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — enquêtes
-  ouvertes et enquête individuelle par id.
-- `getCircuitBreakers(...)` — état consultatif des disjoncteurs.
-
-Les lectures d'apprentissage par renforcement utilisent l'espace de noms
-JSON-RPC `qor_*` :
-
-- `getRLAgentStatus()` — le statut actuel de l'agent.
-- `getRLObservation()` — la dernière observation.
-- `getRLReward()` — le dernier signal de récompense.
-
-Comme il s'agit exclusivement de lectures, le copilote n'a besoin que d'un
-point de terminaison REST (et d'un point de terminaison EVM / JSON-RPC `qor_`
-pour les lectures RL) — aucun signataire n'est requis.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-qorollup advise my-roll
-qorollup advise my-roll --json
+qorollup advise my-rollup
+qorollup advise my-rollup --json
 ```
 
-`advise` affiche les conseils agrégés, les services injoignables étant signalés
-comme des avertissements plutôt que comme des erreurs. Consultez
-[Déployer un rollup](/rollups/deploying-a-rollup) pour la CLI opérateur
-`qorollup` complète.
+Les services injoignables sont listés comme des avertissements plutôt que comme des erreurs, et la sortie lisible peut tout de même afficher une ligne « no issues flagged » lorsque rien n'était joignable — lisez les avertissements. Consultez [Déployer un rollup](/rollups/deploying-a-rollup) pour la CLI opérateur `qorollup`.

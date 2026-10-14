@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Explorer
 
-**Explorer**-ul este fereastra Dashboard-ului către lanț. Folosește-l pentru a căuta blocuri, tranzacții, adrese și validatori și pentru a urmări activitatea rețelei în timp real. Explorer-ul este doar pentru citire — nu este necesară conectarea unui portofel pentru a-l explora.
+**Explorer**-ul este fereastra Dashboard-ului către lanț. Folosește-l pentru a căuta blocuri, tranzacții, adrese și validatori și pentru a urmări activitatea rețelei în timp real. Explorer-ul este doar pentru citire — nu este necesară conectarea unui portofel pentru a-l explora. În interiorul Dashboard-ului, vizualizarea mainnet-ului necesită autentificare; același Explorer este disponibil și fără niciun cont la [explore.qore.network](https://explore.qore.network).
 
 ## Pagina de prezentare generală
 
@@ -47,3 +47,11 @@ Pagina afișează adresa cu un cod QR scanabil, soldul său de QOR, numărul de 
 ## Validatori {#validators}
 
 Vizualizarea validatorilor listează validatorii rețelei, cu carduri rezumative pentru numărul de validatori activi, totalul de QOR pus în staking și sănătatea consensului. Tabelul afișează pentru fiecare validator rangul, numele (moniker), puterea de vot, comisionul și starea (de exemplu activ sau sancționat/jailed), plus un indicator post-cuantic. O casetă de căutare filtrează după numele sau adresa validatorului. Pentru a delega către un validator, consultă [Staking și Validatori](/dashboard/staking-and-validators).
+
+:::note Lista de validatori a Dashboard-ului poate afișa setul celeilalte rețele
+Folosește [explore.qore.network](https://explore.qore.network) pentru lista autoritară de validatori pe fiecare rețea.
+:::
+
+## Explorer independent {#standalone-explorer}
+
+Același Explorer este servit fără Dashboard la [explore.qore.network](https://explore.qore.network): anonim, doar explorer, cu linkuri scurte precum `/tx/…`, `/block/…`, `/address/…` și `/validators`. Se deschide implicit pe mainnet.

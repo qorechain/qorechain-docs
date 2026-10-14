@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain implementează **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mecanism de consens care clasifică validatorii în trei grupuri specializate și folosește o selecție ponderată cu reputație pentru a echilibra securitatea, descentralizarea și performanța. CPoS este implementat în modulul `x/qca` și operează deasupra **QoreChain Consensus Engine**.
 
-Stratul de optimizare prin învățare prin întărire care reglează parametrii de consens în timpul execuției poartă marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consultați [PRISM Consensus Engine](/architecture/prism-consensus-engine) pentru detalii.
+:::note Stare curentă (octombrie 2026)
+Logica Triple-Pool CPoS descrisă în această pagină — clasificarea grupurilor, selecția propunătorului ponderată pe grupuri, curba de bondare a recompenselor, slashing-ul progresiv și numărarea voturilor QDRW — este implementată în modulul `x/qca`, iar parametrii săi sunt on-chain, dar **nu este încă conectată la producerea blocurilor, la recompense, la slashing sau la numărarea voturilor de guvernanță**. Astăzi rotația propunătorilor este rotația standard a validatorilor ponderată pe miză, slashing-ul urmează parametrii standard `x/slashing` (fereastră de downtime de 10,000 de blocuri, validator închis („jailed”) sub 5 % semnat, slash de 1 % pentru downtime și de 5 % pentru dublă semnare, închisoare de 10 minute), iar propunerile sunt numărate pe baza mizei bondate (cvorum 33.4 %, prag 50 %, veto 33.4 %). Designul de mai jos descrie direcția în care evoluează modulul.
+:::
 
-Diagrama de mai jos rezumă un ciclu de bloc/consens al Triple-Pool CPoS pe QoreChain Consensus Engine și arată unde PRISM realimentează parametrii reglabili `x/qca`.
+Stratul de optimizare prin învățare prin întărire, conceput pentru a regla parametrii de consens în timpul execuției, poartă marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consultați [PRISM Consensus Engine](/architecture/prism-consensus-engine) pentru detalii.
+
+Diagrama de mai jos rezumă un ciclu de bloc/consens al Triple-Pool CPoS pe QoreChain Consensus Engine și arată unde este conceput PRISM să realimenteze parametrii reglabili `x/qca` (PRISM doar observă în prezent).
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### Scalare pătratică
 
-Funcția radical asigură că puterea de vot crește sub-liniar cu miza. Un votant cu de 4 ori miza altui votant primește doar de 2 ori puterea de vot, nu de 4 ori. Aceasta împiedică deținătorii mari de token-uri să domine deciziile de guvernanță.
+Funcția radical asigură că puterea de vot crește sub-liniar cu miza. Un votant cu de 4 ori miza altui votant primește doar de 2 ori puterea de vot, nu de 4 ori. Acesta este comportamentul proiectat al QDRW; cât timp este dezactivat, propunerile sunt numărate pe baza mizei bondate. Formula folosește xQORE, care nu poate fi încă blocat pe rețelele live.
 
 ### Matematică deterministă
 
@@ -234,54 +238,54 @@ Funcția radical asigură că puterea de vot crește sub-liniar cu miza. Un vota
 
 ## Parametri QCA
 
-Tabelul de mai jos listează toți parametrii configurabili prin guvernanță din modulul `x/qca`:
+Tabelele de mai jos listează parametrii configurabili prin guvernanță ai modulului `x/qca`, cu numele returnate de `qorechaind query qca config` și valorile live (acești parametri nu sunt încă activi; consultați nota de stare de mai sus):
 
 ### Parametri de bază
 
 | Parametru                  | Tip    | Implicit | Descriere                                       |
 | -------------------------- | ------- | ------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`  | Activează selecția propunătorului ponderată pe reputație     |
+| `use_reputation_weighting` | bool    | `true`  | Setare de genesis pentru selecția propunătorului ponderată pe reputație (selectorul nu este încă conectat la producerea blocurilor) |
 | `min_reputation_score`     | float64 | `0.1`   | Scorul minim de reputație pentru participare activă |
 
 ### Configurarea grupurilor
 
 | Parametru                 | Tip      | Implicit          | Descriere                                      |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | Blocuri între reclasificările grupurilor             |
-| `weight_rpos`             | LegacyDec | `0.40`           | Ponderea de selecție a grupului RPoS                       |
-| `weight_dpos`             | LegacyDec | `0.35`           | Ponderea de selecție a grupului DPoS                       |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | Delegarea minimă pentru DPoS (10,000 QOR în uqor) |
-| `rep_percentile_rpos`     | uint64    | `70`             | Pragul de percentilă de reputație pentru RPoS         |
+| `pool_classification_interval` | uint64 | `1000`        | Blocuri între reclasificările grupurilor             |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | Ponderea de selecție a grupului RPoS                       |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | Ponderea de selecție a grupului DPoS                       |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | Delegarea minimă pentru DPoS (10,000 QOR în uqor) |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | Pragul de percentilă de reputație pentru RPoS         |
 
 ### Configurarea curbei de bondare
 
 | Parametru          | Tip      | Implicit | Descriere                                      |
 | ------------------ | --------- | ------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`   | Coeficientul de sensibilitate la loialitate                  |
-| `beta`             | LegacyDec | `1.0`   | Multiplicatorul de recompensă de bază                           |
-| `phase_multiplier` | LegacyDec | `1.5`   | Multiplicatorul de recompensă pentru faza protocolului (faza Genesis) |
+| `bonding_alpha`    | LegacyDec | `0.1`   | Coeficientul de sensibilitate la loialitate                  |
+| `bonding_beta`     | LegacyDec | `1.0`   | Multiplicatorul de recompensă de bază                           |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | Multiplicatorul de recompensă pentru faza protocolului (faza Genesis) |
 
 ### Configurarea slashing-ului
 
 | Parametru           | Tip      | Implicit   | Descriere                            |
 | ------------------- | --------- | --------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`    | Rata de slash de bază (1%)                   |
-| `escalation_factor` | LegacyDec | `1.5`     | Baza de escaladare progresivă            |
-| `max_penalty`       | LegacyDec | `0.33`    | Penalizarea maximă per eveniment (33%)        |
-| `decay_halflife`    | uint64    | `100,000` | Blocuri pentru timpul de înjumătățire a ponderii infracțiunii |
+| `slashing_base_rate`| LegacyDec | `0.01`    | Rata de slash de bază (1%)                   |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | Baza de escaladare progresivă            |
+| `slashing_max_penalty` | LegacyDec | `0.33` | Penalizarea maximă per eveniment (33%)        |
+| `slashing_decay_halflife` | uint64 | `100,000` | Blocuri pentru timpul de înjumătățire a ponderii infracțiunii |
 
 ### Configurarea guvernanței QDRW
 
 | Parametru            | Tip      | Implicit | Descriere                            |
 | -------------------- | --------- | ------- | -------------------------------------- |
-| `enabled`            | bool      | `false` | Activează numărarea voturilor de guvernanță QDRW           |
-| `xqore_multiplier`   | LegacyDec | `2.0`   | Ponderea xQORE raportată la token-urile mizate |
-| `rep_min_multiplier` | LegacyDec | `0.5`   | Multiplicatorul minim de reputație          |
-| `rep_max_multiplier` | LegacyDec | `2.0`   | Multiplicatorul maxim de reputație          |
+| `qdrw_enabled`       | bool      | `false` | Activează numărarea voturilor de guvernanță QDRW (dezactivată pe rețelele live)           |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | Ponderea xQORE raportată la token-urile mizate |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | Multiplicatorul minim de reputație          |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | Multiplicatorul maxim de reputație          |
 
 ## Resurse conexe
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — stratul AI care reglează parametrii de consens.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — stratul AI conceput pentru a regla parametrii de consens.
 * [Multilayer Architecture](/architecture/multilayer-architecture) — cum se ancorează sidechain-urile la stratul de bază.
 * [Running a Validator](/developer-guide/running-a-validator) — operarea unui validator care securizează lanțul.
 * [Tokenomics](/architecture/tokenomics) — recompense de staking, inflație și economia slashing-ului.

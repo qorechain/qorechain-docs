@@ -13,6 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | إعداد الشبكة المسبق | `mainnet` |
 | معرّف السلسلة | `qorechain-vladi` (قيد التشغيل) |
+| معرّف سلسلة EVM | `9801` |
 | رمز العرض | `QOR` |
 | الفئة النقدية الأساسية | `uqor` |
 | الوحدات الأساسية لكل QOR | `10^6` |
@@ -25,11 +26,25 @@ sidebar_position: 1
 | --- | --- |
 | إعداد الشبكة المسبق | `testnet` |
 | معرّف السلسلة | `qorechain-diana` (قيد التشغيل) |
+| معرّف سلسلة EVM | `9800` |
 | رمز العرض | `QOR` |
 | الفئة النقدية الأساسية | `uqor` |
 | الوحدات الأساسية لكل QOR | `10^6` |
 | بادئة bech32 للحساب | `qor` |
 | بادئة bech32 للمدقّق | `qorvaloper` |
+
+## نقاط النهاية العامة {#public-endpoints}
+
+| نقطة الوصول | الشبكة الرئيسية (`qorechain-vladi`) | الشبكة التجريبية (`qorechain-diana`) |
+| --- | --- | --- |
+| Cosmos REST (LCD) | `https://api.qore.host` | `https://api-testnet.qore.host` |
+| Consensus RPC | `https://rpc.qore.host` | `https://rpc-testnet.qore.host` |
+| EVM JSON-RPC (`eth_*`) | `https://evm.qore.host` (معرّف السلسلة 9801) | `https://evm-testnet.qore.host` (معرّف السلسلة 9800) |
+| EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
+| SVM JSON-RPC (للقراءة فقط) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
+
+تخدم نقاط نهاية EVM فضاءات الأسماء `eth_` و`net_` و`web3_` و`txpool_`؛ أما فضاء الأسماء `qor_`
+فغير مفعّل. راجع أيضًا [الشبكات](/appendix/networks#public-endpoints).
 
 ## المنافذ الافتراضية
 
@@ -41,7 +56,7 @@ sidebar_position: 1
 | Cosmos REST (LCD) | `1317` | أرصدة البنك، ومعلومات الحساب، واستعلامات الوحدات |
 | gRPC | `9090` | استعلامات gRPC |
 | Consensus RPC | `26657` | توقيع/بث معاملات native، وقراءات CosmWasm |
-| EVM JSON-RPC | `8545` | `eth_*` و`qor_*` والعقود المسبقة (precompiles) |
+| EVM JSON-RPC | `8545` | `eth_*` (و`qor_*` والعقود المسبقة (precompiles) على العقد التي تفعّلها) |
 | EVM JSON-RPC (WS) | `8546` | اشتراكات EVM عبر WebSocket |
 | SVM JSON-RPC | `8899` | RPC متوافق مع Solana |
 
@@ -52,10 +67,10 @@ import { createClient } from "@qorechain/sdk";
 
 const client = createClient({
   endpoints: {
-    rest: "https://rest.testnet.example",   // REST (LCD)
-    rpc: "https://rpc.testnet.example",      // consensus RPC
-    evmRpc: "https://evm.testnet.example",   // EVM + qor_ JSON-RPC
-    evmWs: "wss://evm.testnet.example",      // EVM WebSocket
+    rest: "https://api-testnet.qore.host",        // REST (LCD)
+    rpc: "https://rpc-testnet.qore.host",         // consensus RPC
+    evmRpc: "https://evm-testnet.qore.host",      // EVM JSON-RPC (eth_*)
+    evmWs: "wss://evm-ws-testnet.qore.host",      // EVM WebSocket
   },
 });
 ```
@@ -68,15 +83,15 @@ const client = createClient({
 ## استهداف الشبكة الرئيسية
 
 يُشحن كلا الإعدادين المسبقين بنفس إعدادات localhost الافتراضية؛ حدّد `mainnet` وتجاوز
-نقاط الوصول بعناوين URL الخاصة بعقدتك:
+نقاط الوصول بعناوين URL العامة (أو بعقدتك الخاصة):
 
 ```ts
 const main = createClient({
   network: "mainnet",       // chain id qorechain-vladi
   endpoints: {
-    rest: "https://rest.mainnet.example",
-    rpc: "https://rpc.mainnet.example",
-    evmRpc: "https://evm.mainnet.example",
+    rest: "https://api.qore.host",
+    rpc: "https://rpc.qore.host",
+    evmRpc: "https://evm.qore.host",
   },
 });
 ```

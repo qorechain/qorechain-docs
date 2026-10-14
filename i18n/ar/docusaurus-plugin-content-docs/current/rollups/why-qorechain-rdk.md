@@ -9,128 +9,84 @@ sidebar_position: 2
 
 معظم أدوات تطوير الـ Rollup هي اختلافات على النغمة نفسها: فهي تساعدك على
 إطلاق سلسلة تطبيقات (app-chain) تُسوّى على طبقة أساس. تقوم QoreChain RDK بذلك
-أيضًا — لكنها تتيح بالإضافة إلى ذلك ثلاثة أشياء **لا تستطيع أي مجموعة أدوات Rollup أخرى تقديمها**، لأنها
-تعتمد على قدرات موجودة في الطبقة الأولى (Layer 1) لـ QoreChain، وليس في الأدوات نفسها:
+أيضًا، وتضيف إليه ثلاث قدرات خاصة بـ QoreChain مبنية حول الطبقة الأولى (Layer 1)
+لـ QoreChain وليس حول الأدوات نفسها:
 
 - طبقة تسوية **مقاومة للحوسبة الكمومية**،
 - أساسيات استشارية للذكاء الاصطناعي/التعلم المعزز **على السلسلة** (QCAI)، و
 - بيئة تشغيل **ثلاثية الأجهزة الافتراضية (VM)** مع استدعاءات عابرة بين الأجهزة الافتراضية.
 
-إذا كنت تحتاج فقط إلى Rollup تفاؤلي/zk عام، فأي مجموعة أدوات ستفي بالغرض. أما إذا أردت
-أن تكون تسوية الـ Rollup الخاص بك **قابلة للتحقق، وآمنة كموميًا، وواعية بالذكاء الاصطناعي**، فهذه
-هي مجموعة الأدوات الوحيدة القادرة على التعبير عن ذلك — بلغات TypeScript وPython وGo وRust وJava.
+:::caution مرحلة مبكرة: اقرأ عمود الحالة
+لم يُنشأ أي Rollup على أي من الشبكتين حتى الآن. يوضح الجدول أدناه ما يعمل
+اليوم. إذا كنت تحتاج فقط إلى Rollup تفاؤلي/zk عام، فأي مجموعة أدوات ستفي
+بالغرض؛ أما القدرات المذكورة هنا فهي ما تضيفه RDK فوق ذلك، بلغات TypeScript
+وPython وGo وRust وJava.
+:::
 
-| عامل التميّز | الحالة | لماذا هذا ممكن هنا فقط |
+| القدرة | الحالة | ما تعتمد عليه |
 | --- | --- | --- |
-| **إيصالات تسوية آمنة كموميًا** | 🟢 فريدة (السبّاقة) | تتطلب طبقة L1 ما بعد كمومية — مستحيلة على طبقة أساس غير مزودة بـ PQC |
-| **QCAI Rollup Copilot** | 🟢 فريد عبر السلسلة | يغلّف نقاط نهاية الذكاء الاصطناعي/التعلم المعزز على السلسلة الحصرية بـ QoreChain |
-| **استدعاءات عابرة بين أجهزة افتراضية متعددة** | 🟡 مميّز | تشغّل QoreChain كلًا من EVM + CosmWasm + SVM تحت سلسلة واحدة |
+| **إيصالات تسوية آمنة كموميًا** | 🟡 مرحلة مبكرة | تُوقَّع المراسي بـ ML-DSA-87، مخطط السلسلة الرئيسية ما بعد الكمومي؛ ولا توجد مراسٍ بعد |
+| **QCAI Rollup Copilot** | 🟡 غير متاح بعد على نقاط النهاية العامة | خدمات استشارية للذكاء الاصطناعي/التعلم المعزز على السلسلة لا تكشفها نقاط النهاية العامة اليوم |
+| **استدعاءات عابرة بين أجهزة افتراضية متعددة** | 🟡 غير قابل للاستخدام بعد على الشبكات الحية | عقد مسبق التجميع (precompile) للاستدعاءات العابرة بين الأجهزة الافتراضية غير مفعّل، ورفع CosmWasm مغلق |
 
 ---
 
 ## 1. إيصالات تسوية آمنة كموميًا
 
-> 🟢 **فريدة.** لا يمكن لأي مجموعة أدوات Rollup مبنية على طبقة L1 غير ما بعد كمومية أن تقدّم هذا.
+> 🟡 **تصميم مبني على طبقة الأساس ما بعد الكمومية في QoreChain.** تُوقَّع مراسي
+> التسوية بـ ML-DSA-87 (Dilithium-5, FIPS-204)، وهو المخطط نفسه الذي تستخدمه
+> السلسلة الرئيسية. مرحلة مبكرة: لا توجد مراسٍ على أي من الشبكتين بعد.
 
-عندما يرسّخ الـ Rollup الخاص بك دفعة تسوية، تلتزم QoreChain بجذر حالته على
-السلسلة الرئيسية (Main Chain) بتوقيع **ما بعد كمومي (ML-DSA-87 / Dilithium-5, FIPS-204)**.
-تحوّل الـ RDK هذا الترسيخ إلى **إيصال قابل للنقل** يمكن لأي شخص
-التحقق منه **دون اتصال بالكامل** — لا عقدة، ولا ثقة في مجموعة الأدوات، مجرد رياضيات.
-
-يثبت الإيصال أمرين: أن جذر حالة الدفعة هو نفسه الذي تم
-ترسيخه (الربط)، وأن الترسيخ وُقّع بمفتاح ما بعد كمومي مسجّل يخص منشئ
-الطبقة (الموثوقية). يغطي التوقيع الرسالة القياسية
-`layer_id || layer_height(8-byte big-endian) || state_root || validator_set_hash`.
+عندما يرسّخ منشئ الـ Rollup الخاص بك دفعة تسوية، يُوقَّع المرساة بمفتاح
+ما بعد كمومي مسجّل على السلسلة. يمكن لـ RDK تغليف هذه المرساة في **إيصال قابل
+للنقل**، ويعيد المُتحقِّق قراءة الادعاء من عقدة QoreChain ليتأكد من أن الـ Rollup
+والدفعة والمرساة ومفتاح المنشئ كلها تطابق ما تحتفظ به السلسلة.
 
 ```ts
-import {
-  createRdkClient,
-  buildSettlementReceipt,
-  verifySettlementReceipt,
-} from "@qorechain/rdk";
+import { createRdkClient, buildSettlementReceipt, verifySettlementReceipt } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
-const rdk = createRdkClient({ network: "mainnet" });
-
-// Build a portable receipt for batch #42 of "my-rollup".
+const rdk = createRdkClient({ network: "testnet" });
 const receipt = await buildSettlementReceipt(rdk, "my-rollup", 42);
-// → { algorithm: "ML-DSA-87", stateRoot, layerHeight, pqcSignature, creator, ... }
-
-// Verify it — fetches the creator's PQC key from the chain.
 const result = await verifySettlementReceipt(receipt, { client: rdk });
-console.log(result.valid);                 // true
-console.log(result.checks.pqcSignature);   // Dilithium-5 signature verified
-console.log(result.checks.stateRootBinding); // batch root == anchored root
+console.log(result.valid);
 ```
 
-**دون اتصال بالكامل** — سلّم الإيصال والمفتاح العام لمنشئ الطبقة إلى أي شخص، على
-جهاز معزول عن الشبكة (air-gapped)، وسيتمكن من التحقق منه دون لمس الشبكة:
-
-```ts
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "a1b2…", // the layer creator's ML-DSA-87 key (hex)
-});
-// result.valid === true, with zero network calls
-```
-
-يُتحقّق من الإيصال نفسه **بايتًا ببايت عبر اللغات الخمس جميعها** (يستخدم
-العملاء غير المكتوبين بـ TypeScript مكتبة `qorechain-pqc` الخاصة بالسلسلة نفسها)، وبالتالي فإن الإيصال
-الذي تنتجه خدمة TypeScript يُتحقّق منه بشكل مطابق في مدقّق مكتوب بـ Go أو خلفية
-مكتوبة بـ Java. راجع [إيصالات التسوية الآمنة كموميًا](/rollups/settlement-receipts).
+راجع [إيصالات التسوية الآمنة كموميًا](/rollups/settlement-receipts) لمعرفة ما
+يُثبته الإيصال وما لا يُثبته.
 
 ---
 
 ## 2. QCAI Rollup Copilot
 
-> 🟢 **فريد عبر السلسلة.** مبني على نقاط نهاية للذكاء الاصطناعي/التعلم المعزز على السلسلة لا
-> تمتلكها الشبكات الأخرى ببساطة.
+> 🟡 **غير متاح بعد على نقاط النهاية العامة.**
 
-تشغّل QoreChain خدمات ذكاء اصطناعي/تعلم معزز على مستوى الشبكة على السلسلة — وكيل سياسة رسوم،
-وتوصيات للشبكة، وتحقيقات احتيال، وقواطع دوائر. يجمّع الـ Copilot
-هذه الخدمات في عرض واحد قابل للمراجعة وبلغة واضحة لـ Rollup واحد. وهو
-للقراءة فقط ويعمل بمبدأ أفضل جهد ممكن: إذا تعذّر الوصول إلى خدمة استشارية، فإنه يتراجع إلى
-تحذير بدلًا من الفشل.
+صُمّم الـ Copilot لتجميع الخدمات الاستشارية في الشبكة (وكيل سياسة رسوم،
+وتوصيات، وتحقيقات احتيال) في عرض واحد للقراءة فقط وبلغة واضحة لـ Rollup واحد.
+وهو يعمل بمبدأ أفضل جهد ممكن: إذا تعذّر الوصول إلى خدمة، فإنه يتراجع إلى
+تحذير بدلًا من الفشل. هذه الخدمات غير مكشوفة على نقاط النهاية العامة اليوم،
+لذلك يعود كل قسم على شكل تحذير.
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-const rdk = createRdkClient({ network: "mainnet" }); // REST + qor_ JSON-RPC endpoints baked in (RDK ≥ 0.4.2)
-
+const rdk = createRdkClient({ network: "testnet" });
 const advice = await getRollupAdvice(rdk, "my-rollup");
-
-for (const s of advice.suggestions) {
-  console.log(`[${s.level}] ${s.message}`);
-  // [action] 2 open fraud investigation(s) reference this rollup …
-  // [warn]   QCAI reports network congestion — consider raising the fee …
-  // [info]   A live QCAI fee estimate is available …
-}
-
-console.log(advice.feeEstimate);          // live QCAI fee estimate
-console.log(advice.fraudInvestigations);  // investigations touching this rollup
-console.log(advice.rlAgentStatus);        // the RL fee/routing agent's state
+console.log(advice.warnings); // services that could not be reached
 ```
 
-من واجهة سطر الأوامر:
-
-```bash
-qorollup advise my-rollup
-```
-
-مجموعات الأدوات الأخرى لا تملك شيئًا لتغلّفه — فالبيانات الاستشارية أساسية خاصة بـ QoreChain.
-راجع [QCAI Copilot](/rollups/qcai-copilot).
+من واجهة سطر الأوامر: `qorollup advise my-rollup`. راجع [QCAI Copilot](/rollups/qcai-copilot).
 
 ---
 
 ## 3. استدعاءات عابرة بين أجهزة افتراضية متعددة
 
-> 🟡 **مميّز.** تشغّل QoreChain كلًا من EVM وCosmWasm وSVM تحت سلسلة واحدة، مع
-> عقد مسبق التجميع (precompile) يجسّر EVM ← CosmWasm.
+> 🟡 **غير قابل للاستخدام بعد على الشبكات الحية** — الـ precompile غير مفعّل
+> ورفع CosmWasm مغلق. راجع [الأجهزة الافتراضية المتعددة](/rollups/multi-vm).
 
-يمكن لعقد الـ Rollup الخاص بك على EVM (بلغة Solidity) استدعاء عقد **CosmWasm** موجود
-عبر precompile ثابت على العنوان `0x…0901`. تبني الـ RDK بيانات الاستدعاء (calldata) نيابةً عنك، بحيث
-يمكنك إعادة استخدام أوراكل أو رمز أو سجل من CosmWasm انطلاقًا من Solidity دون
-إعادة تنفيذه.
+تتضمن RDK دوال مساعدة تُرمّز استدعاءً من عقد EVM (بلغة Solidity) إلى عقد
+**CosmWasm** عبر precompile ثابت على العنوان `0x…0901`. هذا الـ precompile
+**غير مفعّل** على الشبكة الرئيسية ولا على شبكة الاختبار (راجع
+[عقود EVM المسبقة التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
 import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
@@ -161,22 +117,22 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 ```
 
 أنشئ هيكل مشروع للبداية باستخدام `npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(EVM↔CosmWasm فقط؛ الاستدعاءات العابرة لـ SVM منفصلة.) راجع [الأجهزة الافتراضية المتعددة](/rollups/multi-vm).
+(EVM↔CosmWasm فقط؛ الاستدعاءات العابرة لـ SVM منفصلة.)
 
 ---
 
 ## كل ما تتوقعه إضافةً إلى ذلك
 
-إلى جانب عوامل التميّز، تشحن الـ RDK أيضًا الأساسيات المتوقعة: خمسة عملاء
+إلى جانب هذه القدرات، تشحن RDK أيضًا الأساسيات المتوقعة: خمسة عملاء
 لغات منشورون ومُتحقق منهم مقابل متجهات ذهبية مشتركة، وملفات التعريف الخمسة المسبقة الإعداد
 ومصفوفة التوافق الكاملة، وإدارة دفعات التسوية ودورة الحياة،
-وتوافر بيانات أصلي، ومتحدٍّ تلقائي من نوع **watchtower** للـ Rollups
+وتخزين أصلي لتوافر البيانات (راجع ملاحظة حالته)، ومتحدٍّ تلقائي من نوع **watchtower** للـ Rollups
 التفاؤلية، وواجهة سطر أوامر المشغّل `qorollup`.
 
 ## التالي
 
 - [نشر Rollup](/rollups/deploying-a-rollup) — التثبيت لكل لغة
-  ومن الصفر إلى Rollup حي على شبكة الاختبار.
+  ومسار واجهة سطر الأوامر إلى Rollup على شبكة الاختبار.
 - [إيصالات التسوية الآمنة كموميًا](/rollups/settlement-receipts) ·
   [QCAI Copilot](/rollups/qcai-copilot) ·
   [الأجهزة الافتراضية المتعددة](/rollups/multi-vm) ·

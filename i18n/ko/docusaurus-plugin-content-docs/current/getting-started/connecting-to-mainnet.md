@@ -10,7 +10,7 @@ sidebar_position: 3
 공식 제네시스 파일, 피어, 네트워크 설정으로 노드를 구성하여 운영 중인 QoreChain Vladi 메인넷에 참여하세요.
 
 :::note
-이 페이지는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`)을 다룹니다. 이 메인넷은 Cosmos SDK v0.53 위에서 체인 버전 **v3.1.97**를 실행하며 **2026년 6월 7일 23:59 UTC**부터 운영되고 있습니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)에 대해서는 [테스트넷 연결하기](/getting-started/connecting-to-testnet)를 참고하여, 실제 메인넷에 나서기 전에 그곳에서 설정을 미리 연습해 보세요.
+이 페이지는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`)을 다룹니다. 이 메인넷은 **2026년 6월 29일**(제네시스 블록 17:03 UTC)부터 운영되고 있으며, Cosmos SDK v0.53 위에서 릴리스 **v3.2.1**을 실행합니다. **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)에 대해서는 [테스트넷 연결하기](/getting-started/connecting-to-testnet)를 참고하여, 실제 메인넷에 나서기 전에 그곳에서 설정을 미리 연습해 보세요.
 :::
 
 ## 공개 엔드포인트
@@ -54,11 +54,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 이 번들에는 `qorechaind`와 함께 필요한 공유 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`)가 포함되어 있습니다.
 
-:::caution 노드를 최신 상태로 유지하세요 — 새로 동기화하려면 v3.1.94 이상 필요
-풀 노드는 네트워크가 실제로 실행 중인 체인 버전을 계속 따라가야 합니다 — 오래된 버전을 고정해 쓰지 말고, 항상 매니페스트가 가리키는 바이너리를 설치하세요. 제네시스부터 새로 참여하거나 중단(halt) 상태에서 복구하는 노드의 하한선은 **v3.1.94 이상**이며, 여기에는 독립적이면서도 겹겹이 쌓인 두 가지 이유가 있습니다 — v3.1.92는 지금은 수정된 가스 계량(gas-metering) 버그를 고쳤는데, 이 버그는 트랜잭션이 포함된 첫 블록에서 리플레이를 멈춰버립니다. 그리고 메인넷은 그 이후 v3.1.94 거버넌스 업그레이드(발행량 상한(hard-cap), 블록 높이 2,122,074에서 적용)를 통과했으므로, 이 업그레이드의 핸들러가 없는 노드는 바로 그 높이를 리플레이하려다 다시 멈춥니다. v3.1.97은 현재 권장 버전입니다(순차적 보안 업데이트이며, `minCompatible`은 `3.1.94`입니다). `binary.url`을 신뢰하기 전에 항상 매니페스트의 `"version"` 필드를 현재 하한선과 비교하세요 — 매니페스트는 테스트넷에 먼저 반영된 뒤 안정화 기간을 거쳐 메인넷에 반영되는 방식으로 의도적으로 단계적으로 승격되며, 이전에도 버전 하한선보다 뒤처진 적이 있습니다.
+:::caution 노드를 최신 상태로 유지하세요 — v3.2.0 이상 필요
+풀 노드는 네트워크가 실제로 실행 중인 릴리스를 계속 따라가야 합니다 — 오래된 버전을 고정해 쓰지 말고, 항상 매니페스트가 가리키는 바이너리를 설치하세요. 현재 매니페스트는 **v3.2.1**이며 `minCompatible`은 **3.2.0**입니다. 메인넷은 모든 노드가 처리해야 하는 두 번의 거버넌스 업그레이드를 적용했습니다. 블록 높이 2,122,074의 **v3.1.94**(발행 상한)와 블록 높이 2,981,742의 **v3.2.0**(EVM 승인 창과 v2 하이브리드 서명 바이트)입니다. 따라서 새로 합류하는 노드에는 v3.2.x 바이너리가 필요하며, 제네시스부터 리플레이하기보다는 상태 동기화(아래 참고)를 권장합니다. 게시된 체인 데이터 스냅샷은 두 업그레이드 높이보다 이전 시점의 것이므로, 이를 복원한 노드는 v3.2.x 바이너리로 두 업그레이드를 리플레이해야 합니다.
+
+v3.2.1은 노드 로컬 릴리스(업그레이드 높이 없음, 거버넌스 투표 없음)입니다. v3.2.0 노드는 계속 체인을 따라가지만 업그레이드를 권장합니다. v3.2.1로 전환한 후에는 `app.toml`에 `evm-chain-id = 9801`을 설정하고(다른 값은 오류로 기록됩니다) 시스템 시계를 NTP로 동기화된 상태로 유지하세요. 시계가 60초를 초과하여 어긋나면 노드가 중지됩니다. `binary.url`을 신뢰하기 전에 항상 매니페스트의 `"version"`과 `"minCompatible"` 필드를 확인하세요 — 매니페스트는 테스트넷에 먼저 반영된 뒤 안정화 기간을 거쳐 메인넷에 반영되는 방식으로 의도적으로 승격됩니다.
 :::
 
-### 소스에서 빌드하기
+:::caution 조율된 메인넷 업그레이드가 예정되어 있습니다 — 노드를 시작하거나 재시작하기 전에 읽어보세요
+메인넷 거버넌스 제안 **7**(신속 처리, 2026년 10월 15일 21:24 UTC까지 투표)은 블록 높이 **3,556,788**에 **v3.2.2**를 적용합니다 — 블록당 약 3.2초 기준으로 10월 14일로부터 대략 이틀 뒤입니다. 제안문은 해당 높이까지 v3.2.1(또는 v3.2.0)에 머물라고 안내합니다. 노드는 그 높이에서 정지하며, 그때 v3.2.2로 재시작하면 됩니다. 트랜잭션 서명 방식은 변하지 않습니다. **실제 적용 여부는 투표 결과에 달려 있습니다** — 어떤 바이너리든 교체하기 전에 결과(`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, `status` 필드)와 [메인넷 매니페스트](https://download.qore.host/mainnet/latest.json)의 `version` 및 `upgradeHeight` 필드를 확인하세요. v3.2.2를 미리 설치하지 마세요. 해당 높이 전에 이 버전을 탑재한 노드도 정지합니다. 제안이 부결되었거나 해당 높이가 이미 지났다면 이 안내는 더 이상 적용되지 않습니다.
+:::
+
+### 소스에서 빌드하기 (개발 전용)
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -66,7 +72,7 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-전체 사전 요구 사항(Go 1.26+, CGO, Rust 툴체인, 네이티브 라이브러리)은 [소스에서 빌드하기](/developer-guide/building-from-source)를 참고하세요.
+이렇게 빌드하면 스텁 키퍼가 포함되고 사후양자 서명기가 없는 커뮤니티 바이너리가 만들어지며, 이 바이너리는 네트워크의 합의 상태를 재현하거나 하이브리드 서명 트랜잭션을 생성할 수 없습니다. 메인넷에서 노드를 운영하려면 위의 릴리스 바이너리를 설치하세요. 전체 사전 요구 사항(Go 1.26+, CGO, 네이티브 라이브러리)은 [소스에서 빌드하기](/developer-guide/building-from-source)를 참고하세요.
 
 ### 노드 초기화
 
@@ -124,18 +130,12 @@ minimum-gas-prices = "0.1uqor"
 
 ### 권장 설정
 
-`config.toml`에서 다음 항목도 조정하는 것을 권장합니다.
+풀 노드는 블록 타임을 선택하지 않으며, 이는 검증인이 정합니다(메인넷은 현재 약 3.2초마다 블록을 생성합니다). 검증인을 운영하면서 검증인 그룹으로부터 값을 전달받은 경우가 아니라면 컨센서스 타임아웃은 기본값 그대로 두세요. 공개 RPC 노드에 유용한 멤풀 설정은 `config.toml`에서 다음과 같습니다.
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
-
-이 값들은 Vladi 메인넷의 블록 타임과 처리량에 맞춰 튜닝된 값입니다.
 
 ---
 
@@ -150,12 +150,14 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 그런 다음 `config.toml`의 `[statesync]` 섹션을 위 값으로 설정하세요 — 신뢰 지점을 직접 구해야 할 때를 위한 수동 RPC 기반 대체 방법을 포함한 전체 절차는 [노드 운영하기](/developer-guide/running-a-node)를 참고하세요.
 
-체인 데이터 스냅샷도 [download.qore.host](https://download.qore.host)에 게시되어 있습니다. 새 스냅샷이 이전 것을 정기적으로 대체하므로, 파일명이나 높이를 하드코딩하지 말고 해당 위치의 현재 목록에서 최신 스냅샷 파일명과 게시된 체크섬을 확인하세요.
+체인 데이터 스냅샷도 매니페스트에 나열되어 있습니다(`snapshot.url`, `snapshot.sha256`, `snapshot.height`). 새 스냅샷이 이전 것을 대체하므로 파일명이나 높이를 하드코딩하지 말고 매니페스트에서 값을 읽으세요. 이 스냅샷은 용량이 크며(수십 기가바이트) 2026년 10월에 게시된 것은 블록 높이 1,966,629(2026년 8월 21일)에서 생성되었습니다 — v3.1.94와 v3.2.0 업그레이드 높이보다 이전이므로, 이를 복원한 노드는 두 업그레이드를 리플레이하며 v3.2.x 바이너리를 실행해야 합니다. 대개는 상태 동기화가 더 빠릅니다.
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
+SNAPSHOT_SHA256=$(jq -r .snapshot.sha256 latest.json)
+
+curl -fsSL "$SNAPSHOT_URL" -o snapshot.tar.gz
+echo "${SNAPSHOT_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
@@ -243,7 +245,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — 프로그래밍 방식 체인 접근                    |
 | `8545`  | HTTP      | EVM JSON-RPC — 이더리움 호환 RPC(체인 ID `9801`) |
 | `8546`  | WebSocket | EVM WebSocket — 실시간 EVM 이벤트 구독       |
-| `8899`  | HTTP      | SVM RPC — 솔라나 호환 RPC                |
+| `8899`  | HTTP      | SVM RPC — 솔라나 호환 RPC(읽기 전용이며, SVM 트랜잭션 레인은 비활성화되어 있음) |
 | `26660` | HTTP      | Prometheus 메트릭 엔드포인트                             |
 
 ---
@@ -254,8 +256,9 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | 체인 ID          | `qorechain-vladi`                      |
 | EVM 체인 ID      | `9801` (16진수 `0x2649`)                  |
-| 체인 버전     | v3.1.97                                |
-| 운영 시작        | 2026년 6월 7일 23:59 UTC                  |
+| 체인 버전     | v3.2.1 (v3.2.0의 합의 규칙)     |
+| 운영 시작        | 2026년 6월 29일 17:03 UTC (제네시스 블록) |
+| 블록 타임        | 약 3.2초 (측정된 평균)   |
 | 토큰             | QOR (`uqor`, 10^6 마이크로 단위 = 1 QOR) |
 | 최소 가스 가격 | `0.1uqor`                              |
 | 계정 접두사    | `qor`                              |

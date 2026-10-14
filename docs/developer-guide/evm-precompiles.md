@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChain extends the QoreChain EVM Engine with **six custom precompiled contracts** that expose protocol-level features directly to Solidity. These precompiles provide on-chain access to post-quantum cryptography, AI risk scoring, cross-VM messaging, and PRISM consensus parameters.
 
-:::note
-Precompiles are available on both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026 on chain version **v3.1.97**) and the **`qorechain-diana`** testnet (EVM chain ID **9800**). All examples use the JSON-RPC endpoint on **port 8545**.
+:::warning Not active yet on mainnet or testnet
+The six QoreChain precompiles below are **compiled into the node but not yet activated** on the **`qorechain-vladi`** mainnet (EVM chain ID **9801**) or the **`qorechain-diana`** testnet (EVM chain ID **9800**). The EVM only dispatches addresses listed in the `active_static_precompiles` parameter, and that list is empty on both networks. Until a chain upgrade activates them, a call to any of these addresses **succeeds and returns empty data (`0x`)**; it does not revert and it does not return an error. See [Network status](#network-status) before relying on any of them.
 :::
+
+## Network status {#network-status}
+
+| Precompile | Address | `qorechain-vladi` (mainnet) | `qorechain-diana` (testnet) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | Not active | Not active |
+| PQC Key Status | `0x…0A02` | Not active | Not active |
+| AI Risk Score | `0x…0B01` | Not active | Not active |
+| AI Anomaly Check | `0x…0B02` | Not active | Not active |
+| PRISM Consensus Params | `0x…0C01` | Not active | Not active |
+| CrossVM Bridge | `0x…0901` | Not active | Not active |
+
+Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge only after it is rebuilt with journaling, value checks and the cross-VM circuit breaker. This table is updated in the same operation as the upgrade that activates any of them.
+
+Check the live list yourself (an empty list means none is active):
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### Guard against empty return data {#guard}
+
+Because an inactive (or non-QoreChain) address returns success with no data, never read the raw return bytes of a low-level call without checking their length. `abi.decode` and typed interface calls revert on empty data, which is the safe outcome; a hand-rolled low-level call must check it explicitly:
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+Do not send value to these addresses. They are not payable, and value sent to an inactive precompile address stays there with no way to recover it.
 
 ---
 
 ## Precompile Address Map
 
+Gas figures are what the node charges once a precompile is active (per byte means per byte of call input).
+
 | Precompile              | Address                                      | Base Gas        | Description                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | Synchronous cross-VM calls (EVM to CosmWasm)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Synchronous cross-VM calls (EVM to CosmWasm)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | Verify ML-DSA-87 post-quantum signatures         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Check if an account has a registered PQC key     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | Get AI-generated risk score for transaction data |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**Gas cost:** 25,000 base + 8 gas per byte of input data. For a typical ML-DSA-87 verification (2592 + 4627 + message bytes), expect approximately 80,000-90,000 gas.
+**Gas cost:** 25,000 base + 8 gas per byte of input data. The input is the ABI-encoded call (public key 2592 bytes, signature 4627 bytes, the message, plus ABI offsets and padding), so a typical ML-DSA-87 verification costs roughly 85,000-90,000 gas.
 
 ### PQC Key Status — Check Account Registration
 
@@ -177,13 +212,15 @@ contract RiskGate {
 
 **Risk levels:**
 
-| Level    | Value | Score Range (bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| Level    | Value |
+| -------- | ----- |
+| SAFE     | 0     |
+| LOW      | 1     |
+| MEDIUM   | 2     |
+| HIGH     | 3     |
+| CRITICAL | 4     |
+
+The level comes from the AI engine's severity label for the transaction; the score is returned in basis points (0 - 10000). There is no fixed mapping from score ranges to levels, so gate on `level` rather than on score thresholds.
 
 **Gas cost:** 50,000 flat.
 
@@ -227,29 +264,19 @@ contract ConsensusReader {
 
 **Gas cost:** 1,500 flat.
 
+:::note
+In the current node build `rlConsensusParams` returns fixed placeholder defaults, not live PRISM-tuned values (for example, it does not report the measured block time, which is about 3.2 s on mainnet and about 1.0 s on the testnet). Wiring it to the live consensus parameters is part of the activation work.
+:::
+
 ### CrossVM Bridge — Call CosmWasm from EVM
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+The CrossVM bridge precompile will **not** be activated in its current form. It is being rebuilt so that a revert in the calling contract also undoes the CosmWasm side, value transfers are rejected, EVM-to-EVM re-entry is refused and the cross-VM circuit breaker applies. Until then there is no synchronous EVM-to-CosmWasm path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The documented use is EVM to CosmWasm; the ABI may change with the rebuild.
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**Gas cost:** 50,000 base + target contract execution cost. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for details.
+**Gas cost:** 50,000 base + 4 gas per byte of input, plus the target contract execution cost. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for details.
 
 ---
 
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 Install them in your Hardhat or Foundry project:
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Full cross-VM messaging documentation
 * [EVM Development](/developer-guide/evm-development) — Deploying Solidity contracts
-* [Account Abstraction](/developer-guide/account-abstraction) — Programmable accounts with session keys
+* [Account Abstraction](/developer-guide/account-abstraction) — Linked-wallet authenticators and spending rules (module currently disabled)

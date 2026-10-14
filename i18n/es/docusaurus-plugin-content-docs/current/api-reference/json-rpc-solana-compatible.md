@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain proporciona una interfaz JSON-RPC compatible con Solana a través de su entorno de ejecución SVM (Solana Virtual Machine), lo que permite que las herramientas y los SDK existentes de Solana interactúen con QoreChain de forma nativa.
 
 :::caution El envío de transacciones SVM está actualmente deshabilitado
-A partir de la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el lane de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción devuelve `code 11, "SVM module is disabled"`. Esto se aplica en toda la red, no solo en los endpoints públicos de solo lectura. Los métodos de tipo lectura de la tabla siguiente (p. ej. `getBalance`, `getAccountInfo`) pueden seguir respondiendo, pero no intentes una integración en vivo que envíe transacciones SVM hasta que el lane vuelva a abrirse — se trata de una deshabilitación en tiempo de compilación, no de un parámetro en tiempo de ejecución, por lo que no puede reactivarse mediante una votación de gobernanza; se espera que permanezca deshabilitado hasta que una auditoría externa lo apruebe.
+A partir de la versión de cadena v3.1.89 (22 de agosto), tras un incidente, el lane de ejecución SVM está **deshabilitado en toda la red para el envío de transacciones** — cualquier transacción devuelve `code 11, "SVM module is disabled"`. Esto se aplica en toda la red, no solo en los endpoints públicos de solo lectura. Los métodos de tipo lectura de la tabla siguiente (p. ej. `getBalance`, `getAccountInfo`) responden con normalidad en los endpoints públicos, pero no intentes una integración en vivo que envíe transacciones SVM hasta que el lane vuelva a abrirse — se trata de una deshabilitación en tiempo de compilación, no de un parámetro en tiempo de ejecución, por lo que no puede reactivarse mediante una votación de gobernanza; se espera que permanezca deshabilitado hasta que una auditoría externa lo apruebe.
 :::
 
 ## Conexión
@@ -40,6 +40,16 @@ A partir de la versión de cadena **v3.1.82**, la interfaz SVM sirve el **saldo 
 | `getMinimumBalanceForRentExemption` | `dataLength` (entero)    | Devuelve el saldo mínimo para la exención de renta según el tamaño de los datos |
 | `getVersion`                        | ninguno                  | Devuelve la versión del software del nodo                              |
 | `getHealth`                         | ninguno                  | Devuelve el estado de salud del nodo (`"ok"` si está sano)                 |
+| `getBlockHeight`                    | ninguno                  | Devuelve la altura de bloque actual                            |
+| `getLatestBlockhash`                | ninguno                  | Devuelve un blockhash reciente y `lastValidBlockHeight`        |
+| `getRecentBlockhash`                | ninguno                  | Forma heredada de `getLatestBlockhash`                         |
+| `getFeeForMessage`                  | `message` (base64)       | Devuelve la tarifa de un mensaje (lamports)                    |
+| `getMultipleAccounts`               | `pubkeys` (array)        | Devuelve varias cuentas en una sola llamada                    |
+| `getProgramAccounts`                | `programId` (base58)     | Devuelve las cuentas que pertenecen a un programa              |
+| `getTokenAccountsByOwner`           | `owner`, filtro          | Devuelve las cuentas de token de un propietario                |
+| `getTokenAccountsByDelegate`        | `delegate`, filtro       | Devuelve las cuentas de token de un delegado                   |
+
+Los métodos fuera de esta lista, como `getGenesisHash` y `getEpochInfo`, devuelven `-32601 method not found`. `getTransaction` se acepta, pero actualmente responde con un sobre que no tiene el campo `result`, así que no cuentes con él. El slot que informa `getSlot` sigue la altura de bloque de la cadena.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

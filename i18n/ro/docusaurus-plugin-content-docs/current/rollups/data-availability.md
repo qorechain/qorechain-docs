@@ -7,56 +7,52 @@ sidebar_position: 4
 
 # Disponibilitatea datelor
 
-Disponibilitatea datelor (DA) este garanția că datele tranzacțiilor din spatele stării unui rollup sunt publicate undeva unde oricine le poate citi — astfel încât oricine să poată reconstrui și verifica independent starea rollup-ului. RDK acceptă trei backend-uri DA.
+Disponibilitatea datelor (DA) este garanția că datele tranzacțiilor din spatele stării unui rollup sunt publicate undeva unde oricine le poate citi — astfel încât oricine să poată reconstrui și verifica independent starea rollup-ului. RDK definește trei backend-uri DA; astăzi este implementat doar `native`.
 
-| Backend | Ce este |
-| ------- | ---------- |
-| **`native`** | Stocare de blob-uri on-chain în cadrul QoreChain însuși |
-| **`celestia`** | Disponibilitatea datelor prin IBC către Celestia, un strat DA modular dedicat |
-| **`both`** | Native și Celestia împreună, pentru redundanță |
+| Backend | Ce este | Stare |
+| ------- | ---------- | ------ |
+| **`native`** | Stocare de blob-uri on-chain în cadrul QoreChain însuși | Implementat în modul; încă nu există o modalitate publică de a posta un blob (vezi mai jos) |
+| **`celestia`** | Disponibilitatea datelor prin IBC către Celestia, un strat DA modular dedicat | Neimplementat |
+| **`both`** | Native și Celestia împreună, pentru redundanță | Se comportă exact ca `native` astăzi |
 
-:::caution
-Backend-urile de disponibilitate a datelor fac parte din RDK aflat în dezvoltare activă. Tratează notele de maturitate de mai jos ca intenție de proiectare și validează pe testnet-ul **`qorechain-diana`** înainte de a te baza pe un backend în producție.
+:::caution Capabilitate în fază incipientă
+Niciun rollup nu a fost creat încă în niciuna dintre rețele, iar backend-urile DA sunt implementate doar parțial. Starea fiecărui backend este indicată mai jos; validează pe testnet-ul **`qorechain-diana`** înainte de a te baza pe oricare dintre ele.
 :::
 
 ---
 
 ## DA native (stocare de blob-uri on-chain)
 
-DA native stochează datele tranzacțiilor rollup-ului ca **blob-uri** direct pe QoreChain. Fiecare blob este comis și adresabil, astfel încât datele din spatele unui lot de settlement să poată fi recuperate și verificate on-chain.
+DA native este depozitul de blob-uri on-chain din `x/rdk`: fiecare blob este indexat după ID-ul rollup-ului și indexul blob-ului, poartă un **commitment SHAKE-256** al octeților săi și este curățat după fereastra de reținere, în timp ce commitment-ul său este păstrat.
+
+:::caution Încă nu există o modalitate publică de a posta un blob
+Modulul definește stocarea, reținerea și curățarea blob-urilor, dar în versiunile actuale **nu există niciun mesaj de tranzacție pentru postarea unui blob**. Până la livrarea unui mesaj de trimitere, un lot de settlement trebuie să lase `data_hash` gol — un lot care indică un hash de date pe un rollup `native` sau `both` este refuzat, deoarece nu poate fi stocat niciun blob corespunzător.
+:::
 
 Concepte cheie:
 
-* **Blob-uri.** Datele tranzacțiilor rollup-ului sunt publicate ca blob-uri de disponibilitate a datelor, fiecare asociat cu un ID de rollup și un index de blob.
-* **Commitment-uri.** Fiecare blob poartă un commitment (un hash al datelor blob-ului), astfel încât un blob să poată fi verificat în raport cu ceea ce a fost comis, fără a avea încredere în cel care îl stochează.
+* **Blob-uri.** Un blob este asociat cu un ID de rollup și un index de blob.
+* **Commitment-uri.** Fiecare blob poartă un commitment SHAKE-256 de 32 de octeți al datelor sale, astfel încât un blob să poată fi verificat în raport cu ceea ce a fost comis, fără a avea încredere în cel care îl stochează. (Helperul TypeScript `buildDaBlob()` calculează în prezent hash-ul cu SHA-256, deci `dataHash` al său nu corespunde commitment-ului lanțului.)
 * **Namespace-uri.** Blob-urile pot purta un namespace specific rollup-ului, păstrând datele fiecărui rollup separate logic în cadrul stocării partajate.
-* **Reținere și curățare.** Blob-urile native sunt reținute pentru o fereastră limitată și apoi curățate pentru a menține stocarea on-chain sustenabilă. După curățare, datele brute ale blob-ului sunt eliminate, în timp ce metadatele commitment-ului sunt reținute, astfel încât commitment-ul istoric rămâne verificabil chiar dacă byte-urile nu mai sunt stocate on-chain.
+* **Reținere și curățare.** Blob-urile native sunt reținute pentru `blob_retention_blocks` (432.000 de blocuri — aproximativ 16 zile la timpul actual de bloc al mainnet-ului de ≈3,2 s; cifra se modifică odată cu timpul de bloc) și apoi curățate pentru a menține stocarea on-chain sustenabilă. După curățare, datele brute ale blob-ului sunt eliminate, în timp ce metadatele commitment-ului sunt reținute, astfel încât commitment-ul istoric rămâne verificabil chiar dacă byte-urile nu mai sunt stocate on-chain.
 
-Dimensiunea maximă exactă a blob-ului și fereastra de reținere sunt guvernate de parametrii live ai modulului. Interoghează-i înainte de a proiecta în jurul oricărei limite specifice:
+Dimensiunea maximă a blob-ului și fereastra de reținere sunt guvernate de parametrii live ai modulului. Interoghează-i înainte de a proiecta în jurul oricărei limite specifice:
 
 ```bash
 qorechaind query rdk config
 ```
 
-DA native este cea mai simplă opțiune — păstrează totul în interiorul QoreChain, moștenind securitatea și criptografia post-cuantică a chain-ului gazdă, cu prețul consumului de stocare al chain-ului gazdă.
-
 ---
 
 ## DA Celestia (IBC către Celestia)
 
-Backend-ul `celestia` publică disponibilitatea datelor prin IBC către **Celestia**, o rețea DA modulară dedicată. Acest lucru descarcă stocarea blob-urilor de pe QoreChain către un strat DA construit special, în timp ce ancorează în continuare settlement-ul pe QoreChain.
-
-:::note
-DA Celestia este o integrare în curs de maturizare. În versiunea actuală ar trebui tratată ca neîntărită încă pentru producție — validează comportamentul pe testnet și preferă `native` sau `both` acolo unde ai nevoie astăzi de o garanție de settlement.
-:::
+DA Celestia **nu este implementat**. Un rollup al cărui backend DA este `celestia` nu poate posta date (modulul întoarce o eroare). Designul planificat publică disponibilitatea datelor prin IBC către **Celestia**, o rețea DA modulară dedicată, ancorând în continuare settlement-ul pe QoreChain; astăzi nu există niciun canal IBC în niciuna dintre rețele (vezi [Arhitectura Bridge](/architecture/bridge-architecture)). Folosește `native`.
 
 ---
 
 ## Both (redundanță)
 
-Backend-ul `both` scrie atât în **native, cât și în Celestia împreună**, oferind redundanță între o stocare on-chain și un strat DA modular extern. Alege `both` când vrei cea mai largă suprafață de disponibilitate și ești dispus să plătești pentru stocarea datelor în două locuri.
-
-Deoarece calea Celestia este încă în curs de maturizare, tratează `both` ca native-cu-redundanță-în-curs, mai degrabă decât ca o garanție că două copii pe deplin independente sunt settled astăzi. Confirmă comportamentul curent pe testnet.
+Backend-ul `both` este menit să scrie atât în **native, cât și în Celestia împreună**. Astăzi `both` se comportă exact ca `native`: este stocată doar copia native, iar jumătatea Celestia este omisă cu un avertisment în jurnal. Nu o trata ca pe două copii independente.
 
 ---
 
@@ -65,7 +61,7 @@ Deoarece calea Celestia este încă în curs de maturizare, tratează `both` ca 
 | Dacă vrei... | Alege |
 | -------------- | ------ |
 | Cea mai simplă opțiune, complet on-chain, care moștenește securitatea QoreChain | **`native`** |
-| Să descarci DA către un strat modular dedicat (în curs de maturizare) | **`celestia`** |
-| Suprafață maximă de disponibilitate cu redundanță (în curs de maturizare) | **`both`** |
+| Să descarci DA către un strat modular dedicat | **`celestia`** — neimplementat |
+| Redundanță între două stocări | **`both`** — la fel ca `native` astăzi |
 
 Pentru modul în care DA se încadrează în imaginea mai largă a settlement-ului, vezi **[Prezentarea generală a rollup-urilor](/rollups/overview)**. Pentru referința modulului de nivel inferior, vezi pagina **[Rollup Development Kit](/architecture/rollup-development-kit)**.

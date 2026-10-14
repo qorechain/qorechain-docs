@@ -7,7 +7,11 @@ sidebar_position: 1
 
 # Aus dem Quellcode bauen
 
-Diese Anleitung führt Sie durch das Bauen der `qorechaind`-Binärdatei aus dem Quellcode und behandelt sowohl den Community-Build (Open-Core) als auch den vollständigen proprietären Build.
+Diese Anleitung führt Sie durch das Bauen der Community-Binärdatei `qorechaind` aus dem öffentlichen Quellcode und erklärt, wofür diese Binärdatei gedacht ist und wofür nicht.
+
+:::caution Ein Build aus dem Quellcode kann dem Mainnet oder Testnet nicht beitreten
+Das öffentliche Repository enthält die Modulschnittstellen mit **Stub-Keepern**; die konsenskritischen Keeper-Implementierungen und der Post-Quanten-Signierer befinden sich nicht im öffentlichen Quellbaum. Eine daraus gebaute Binärdatei kann den Konsenszustand der Netzwerke nicht reproduzieren und kann die hybride Post-Quanten-Signatur nicht erzeugen, die jede Transaktion auf dem Cosmos-Pfad erfordert. Um einen Knoten oder Validator im Mainnet oder Testnet zu betreiben, installieren Sie die **Release-Binärdatei**, die im Live-Manifest genannt wird (`https://download.qore.host/mainnet/latest.json` oder `.../testnet/latest.json`); siehe [Einen Knoten betreiben](/developer-guide/running-a-node) und [Einen Validator betreiben](/developer-guide/running-a-validator).
+:::
 
 ## Voraussetzungen
 
@@ -15,7 +19,6 @@ Diese Anleitung führt Sie durch das Bauen der `qorechaind`-Binärdatei aus dem 
 | ------------------ | ------------------------- | ------------------------------------------------- |
 | **Go**             | 1.26+                     | Für alle Builds erforderlich                      |
 | **CGO**            | Aktiviert (`CGO_ENABLED=1`) | Für PQC- und SVM-FFI-Bridges erforderlich        |
-| **Rust-Toolchain** | Neueste stabile Version   | Erforderlich, um `libqorepqc` und `libqoresvm` zu kompilieren |
 | **Make**           | 3.81+                     | Build-Automatisierung                             |
 | **Git**            | 2.x                       | Quellcode-Checkout                                |
 
@@ -23,50 +26,22 @@ Diese Anleitung führt Sie durch das Bauen der `qorechaind`-Binärdatei aus dem 
 
 ```bash
 go version        # go1.26.x or later
-rustc --version   # stable toolchain
-cargo --version
 echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Jeder Aufruf von `go build`, `go test` und `go run` **muss** `CGO_ENABLED=1` gesetzt haben. Die PQC- und SVM-Module verwenden FFI-Bridges, die cgo erfordern.
+Jeder Aufruf von `go build`, `go test` und `go run` **muss** `CGO_ENABLED=1` gesetzt haben. Der Knoten bindet native Bibliotheken (die CosmWasm-Laufzeit und im Release-Build die PQC- und SVM-Bibliotheken) über cgo ein.
 :::
 
 ## Native Bibliotheken
 
-QoreChain hängt von zwei in Rust gebauten nativen Bibliotheken ab, die zur Laufzeit geladen werden.
+### libqorepqc und libqoresvm
 
-### libqorepqc (Post-Quantum-Kryptografie)
-
-Die PQC-Bibliothek bietet die Generierung, Signierung und Verifizierung von ML-DSA-87-Schlüsseln (Dilithium-5) über eine C-kompatible FFI-Schnittstelle.
-
-```bash
-cd rust/qorepqc
-cargo build --release
-```
-
-Die kompilierte Bibliothek wird in `lib/{os}_{arch}/` abgelegt:
-
-| Plattform   | Bibliotheksdatei  | Verzeichnis         |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
-
-### libqoresvm (SVM-Laufzeitumgebung)
-
-Die SVM-Bibliothek stellt die BPF-Programmausführungsumgebung für das x/svm-Modul bereit.
-
-```bash
-cd rust/qoresvm
-cargo build --release
-```
-
-Die Ausgabe folgt derselben `lib/{os}_{arch}/`-Konvention wie oben (`libqoresvm.dylib` unter macOS, `libqoresvm.so` unter Linux).
+Die Post-Quantum-Bibliothek (`libqorepqc`) und die SVM-Bibliothek (`libqoresvm`) werden aus Rust-Quellen gebaut, die **nicht Teil des öffentlichen Repositorys** sind (es gibt kein Verzeichnis `rust/` in `qorechain-core`). Der Community-Build benötigt sie nicht. Die Release-Archive der Netzwerke enthalten die kompilierten Bibliotheken (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) in einem Verzeichnis `lib/` neben `qorechaind`; legen Sie sie in `lib/{os}_{arch}/` ab oder verweisen Sie den Loader wie unten gezeigt darauf.
 
 ### Den Bibliothekspfad festlegen
 
-Die nativen Bibliotheken müssen zur Laufzeit auffindbar sein. Legen Sie die passende Umgebungsvariable für Ihre Plattform fest:
+Wenn Sie die Release-Binärdatei verwenden, müssen deren gemeinsam genutzte Bibliotheken zur Laufzeit auffindbar sein. Legen Sie die passende Umgebungsvariable für Ihre Plattform fest:
 
 **macOS:**
 
@@ -89,9 +64,9 @@ Tipp: Fügen Sie den Export zu Ihrem Shell-Profil (`~/.bashrc`, `~/.zshrc`) hinz
 QoreChain folgt einem **Open-Core**-Modell:
 
 * **Community-Build** — Enthält die vollständigen Modulschnittstellen, CLI-Befehle, Protobuf-Definitionen und Nachrichtentypen für jedes QoreChain-Modul (x/pqc, x/ai, x/reputation, x/qca, x/svm, x/crossvm usw.). Keeper für proprietäre Module verwenden **Stub-Implementierungen**, die sichere Standardwerte oder No-op-Antworten zurückgeben. Dies ermöglicht es Drittanbieter-Tools, Wallets und Indexern, mit allen QoreChain-APIs zu integrieren, ohne proprietären Code zu benötigen.
-* **Vollständiger (proprietärer) Build** — Aktiviert die vollständigen Keeper-Implementierungen hinter dem Build-Tag `proprietary`. Dies umfasst die echte KI-Anomalieerkennungslogik, die PRISM-Konsensparameter-Abstimmung, die fortgeschrittene Reputationsbewertung und alle produktionsreifen Funktionen.
+* **Vollständiger Build** — Enthält die vollständigen Keeper-Implementierungen (die echte konsenskritische Modullogik und den Post-Quanten-Signierer). Er wird als die Release-Binärdateien verteilt, die unter [download.qore.host](https://download.qore.host) veröffentlicht werden; er wird nicht aus dem öffentlichen Quellbaum gebaut.
 
-Beide Builds erzeugen denselben Binärnamen `qorechaind` und stellen identische CLI-Befehle sowie gRPC/REST-Endpunkte bereit. Der Unterschied liegt im Laufzeitverhalten der Keeper-Logik hinter diesen Schnittstellen.
+Beide Builds erzeugen denselben Binärnamen `qorechaind` und stellen identische CLI-Befehle bereit. Der Unterschied liegt im Laufzeitverhalten der Keeper-Logik hinter diesen Schnittstellen.
 
 ## Community-Build
 
@@ -99,21 +74,17 @@ Beide Builds erzeugen denselben Binärnamen `qorechaind` und stellen identische 
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Dies kompiliert alle öffentlichen Modulschnittstellen mit Stub-Keepern für proprietäre Funktionen. Die resultierende Binärdatei ist voll funktionsfähig für:
+Dies kompiliert alle öffentlichen Modulschnittstellen mit Stub-Keepern für proprietäre Funktionen. Die resultierende Binärdatei ist gedacht für:
 
-* Den Betrieb eines Validator-Knotens
-* Das Übermitteln und Abfragen von Transaktionen
-* Die Interaktion mit den VMs EVM, CosmWasm und SVM
-* Den Aufbau von Drittanbieter-Integrationen und -Tools
-* Lokale Entwicklung und Tests
+* Lokale Entwicklung und Tests (zum Beispiel ein Einzelknoten-Devnet)
+* Das Abfragen eines Netzwerks (`query ...`-Befehle funktionieren gegen jeden Knoten)
+* Den Aufbau von Drittanbieter-Integrationen und -Tools auf den Modulschnittstellen
 
-## Vollständiger Build (proprietär)
+Sie ist kein Weg, dem Mainnet oder Testnet als Validator beizutreten oder dort Transaktionen auszuführen: Sie hat keinen Post-Quanten-Signierer (`tx pqc gen-key` und `tx pqc cosign` geben einen Fehler zurück), und ihre Stub-Keeper reproduzieren die Konsensregeln der Netzwerke nicht.
 
-```bash
-CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
-```
+## Vollständiger Build (Release-Binärdatei)
 
-Das Flag `-tags proprietary` aktiviert die vollständigen Keeper-Implementierungen, die nicht Teil des öffentlichen Quellbaums sind.
+Die vollständigen Keeper-Implementierungen und der Signierer hinter `tx pqc gen-key` und `tx pqc cosign` befinden sich nicht im öffentlichen Quellbaum und können daher nicht daraus gebaut werden. Die unter [download.qore.host](https://download.qore.host) veröffentlichten Binärdateien sind der vollständige Build; verwenden Sie diese für Mainnet und Testnet.
 
 ## Tests ausführen
 
@@ -125,16 +96,10 @@ Das Flag `-count=1` deaktiviert das Test-Caching und sorgt jedes Mal für einen 
 
 ```bash
 CGO_ENABLED=1 go test ./x/pqc/... -count=1 -v
-CGO_ENABLED=1 go test ./x/ai/... -count=1 -v
 CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ```
 
-Führen Sie die Rust-Bibliothekstests separat aus:
-
-```bash
-cd rust/qorepqc && cargo test
-cd rust/qoresvm && cargo test
-```
+Tests, die die nativen Bibliotheken oder die proprietären Keeper ausführen, werden nur in den vollständigen Build kompiliert und sind nicht Teil der öffentlichen Suite.
 
 ## Build-Verifizierung
 
@@ -145,17 +110,17 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk, das mit der Chain-Version **v3.1.97** läuft.
+Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk (Knoten-Release **v3.2.1**).
 
 ## Docker-Build
 
-Für containerisierte Builds wird im Repository-Root ein Dockerfile bereitgestellt:
+Im Repository-Root wird ein Dockerfile bereitgestellt:
 
 ```bash
-docker build -t qorechaind:latest .
+docker build -t qorechaind:community .
 ```
 
-Das Docker-Image übernimmt die gesamte Kompilierung der nativen Bibliotheken und die Pfadkonfiguration automatisch. Siehe die Anleitung [Quickstart](/getting-started/quickstart) zum Betrieb eines Knotens mit Docker Compose.
+Es baut die **Community**-Binärdatei (der eigene Kommentar lautet „Public build — no PQC library“), das Image dient also der lokalen Entwicklung und dem Tooling, nicht dem Mitlaufen im Mainnet oder Testnet. Um einen Netzwerkknoten in Docker zu betreiben, kapseln Sie stattdessen die Release-Binärdatei; siehe [Einen Knoten betreiben](/developer-guide/running-a-node#docker-compose).
 
 ## Fehlerbehebung
 
@@ -171,7 +136,7 @@ Installieren Sie die Xcode-CLI-Tools (macOS) oder `build-essential` (Linux)
 
 <summary>cannot find -lqorepqc</summary>
 
-Bauen Sie zuerst die Rust-Bibliotheken und setzen Sie `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH`
+Sie linken einen Build, der die nativen Bibliotheken erwartet. Verwenden Sie den Community-Build (er benötigt sie nicht) oder das Release-Archiv, das sie enthält, und setzen Sie `LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` auf dessen Verzeichnis `lib/`
 
 </details>
 
@@ -195,6 +160,6 @@ Erhöhen Sie den verfügbaren Arbeitsspeicher (häufig bei Docker mit niedrigen 
 
 <summary>PQC tests fail with size mismatch</summary>
 
-Überprüfen Sie, ob Sie `pqcrypto v0.5.0+` verwenden (ML-DSA-87: pubkey=2592, privkey=4896, sig=4627 bytes)
+Die Größen von ML-DSA-87 betragen: öffentlicher Schlüssel 2.592 Bytes, geheimer Schlüssel 4.896 Bytes und Signatur 4.627 Bytes. Jede andere Größe bedeutet einen anderen Algorithmus oder einen abgeschnittenen Wert.
 
 </details>

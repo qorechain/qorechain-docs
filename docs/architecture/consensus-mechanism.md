@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain implements **Triple-Pool Composite Proof-of-Stake (CPoS)**, a consensus mechanism that classifies validators into three specialized pools and uses reputation-weighted selection to balance security, decentralization, and performance. CPoS is implemented in the `x/qca` module and operates on top of the **QoreChain Consensus Engine**.
 
-The reinforcement-learning optimization layer that tunes consensus parameters at runtime is branded **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). See the [PRISM Consensus Engine](/architecture/prism-consensus-engine) for details.
+:::note Current status (October 2026)
+The Triple-Pool CPoS logic described on this page — pool classification, pool-weighted proposer selection, the reward bonding curve, progressive slashing and QDRW tallying — is implemented in the `x/qca` module and its parameters are on chain, but **it is not yet wired into block production, rewards, slashing or the governance tally**. Today the proposer rotation is the standard stake-weighted validator rotation, slashing follows the standard `x/slashing` parameters (downtime window 10,000 blocks, jailed below 5 % signed, 1 % downtime and 5 % double-sign slash, 10-minute jail) and proposals are tallied on bonded stake (quorum 33.4 %, threshold 50 %, veto 33.4 %). The design below describes where the module is heading.
+:::
 
-The diagram below summarizes one block/consensus cycle of Triple-Pool CPoS on the QoreChain Consensus Engine, and shows where PRISM feeds back into the tunable `x/qca` parameters.
+The reinforcement-learning optimization layer designed to tune consensus parameters at runtime is branded **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). See the [PRISM Consensus Engine](/architecture/prism-consensus-engine) for details.
+
+The diagram below summarizes one block/consensus cycle of Triple-Pool CPoS on the QoreChain Consensus Engine, and shows where PRISM is designed to feed back into the tunable `x/qca` parameters (PRISM currently observes only).
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### Quadratic Scaling
 
-The square root function ensures that voting power scales sub-linearly with stake. A voter with 4x the stake of another voter receives only 2x the voting power, not 4x. This prevents large token holders from dominating governance decisions.
+The square root function ensures that voting power scales sub-linearly with stake. A voter with 4x the stake of another voter would receive only 2x the voting power, not 4x. This is the designed behaviour of QDRW; while it is disabled, proposals are tallied on bonded stake. The formula uses xQORE, which cannot yet be locked on the live networks.
 
 ### Deterministic Math
 
@@ -234,54 +238,54 @@ The square root function ensures that voting power scales sub-linearly with stak
 
 ## QCA Parameters
 
-The following table lists all governance-configurable parameters in the `x/qca` module:
+The following tables list the governance-configurable parameters of the `x/qca` module, with the names returned by `qorechaind query qca config` and the live values (these parameters are not yet active; see the status note above):
 
 ### Core Parameters
 
 | Parameter                  | Type    | Default | Description                                       |
 | -------------------------- | ------- | ------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`  | Enable reputation-weighted proposer selection     |
+| `use_reputation_weighting` | bool    | `true`  | Genesis setting for reputation-weighted proposer selection (the selector is not yet wired into block production) |
 | `min_reputation_score`     | float64 | `0.1`   | Minimum reputation score for active participation |
 
 ### Pool Configuration
 
 | Parameter                 | Type      | Default          | Description                                      |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | Blocks between pool reclassification             |
-| `weight_rpos`             | LegacyDec | `0.40`           | RPoS pool selection weight                       |
-| `weight_dpos`             | LegacyDec | `0.35`           | DPoS pool selection weight                       |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | Minimum delegation for DPoS (10,000 QOR in uqor) |
-| `rep_percentile_rpos`     | uint64    | `70`             | Reputation percentile threshold for RPoS         |
+| `pool_classification_interval` | uint64 | `1000`        | Blocks between pool reclassification             |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | RPoS pool selection weight                       |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | DPoS pool selection weight                       |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | Minimum delegation for DPoS (10,000 QOR in uqor) |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | Reputation percentile threshold for RPoS         |
 
 ### Bonding Curve Configuration
 
 | Parameter          | Type      | Default | Description                                      |
 | ------------------ | --------- | ------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`   | Loyalty sensitivity coefficient                  |
-| `beta`             | LegacyDec | `1.0`   | Base reward multiplier                           |
-| `phase_multiplier` | LegacyDec | `1.5`   | Protocol phase reward multiplier (Genesis phase) |
+| `bonding_alpha`    | LegacyDec | `0.1`   | Loyalty sensitivity coefficient                  |
+| `bonding_beta`     | LegacyDec | `1.0`   | Base reward multiplier                           |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | Protocol phase reward multiplier (Genesis phase) |
 
 ### Slashing Configuration
 
 | Parameter           | Type      | Default   | Description                            |
 | ------------------- | --------- | --------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`    | Base slash rate (1%)                   |
-| `escalation_factor` | LegacyDec | `1.5`     | Progressive escalation base            |
-| `max_penalty`       | LegacyDec | `0.33`    | Maximum penalty per event (33%)        |
-| `decay_halflife`    | uint64    | `100,000` | Blocks for infraction weight half-life |
+| `slashing_base_rate`| LegacyDec | `0.01`    | Base slash rate (1%)                   |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | Progressive escalation base            |
+| `slashing_max_penalty` | LegacyDec | `0.33` | Maximum penalty per event (33%)        |
+| `slashing_decay_halflife` | uint64 | `100,000` | Blocks for infraction weight half-life |
 
 ### QDRW Governance Configuration
 
 | Parameter            | Type      | Default | Description                            |
 | -------------------- | --------- | ------- | -------------------------------------- |
-| `enabled`            | bool      | `false` | Enable QDRW governance tally           |
-| `xqore_multiplier`   | LegacyDec | `2.0`   | xQORE weight relative to staked tokens |
-| `rep_min_multiplier` | LegacyDec | `0.5`   | Minimum reputation multiplier          |
-| `rep_max_multiplier` | LegacyDec | `2.0`   | Maximum reputation multiplier          |
+| `qdrw_enabled`       | bool      | `false` | Enable QDRW governance tally (disabled on the live networks) |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | xQORE weight relative to staked tokens |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | Minimum reputation multiplier          |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | Maximum reputation multiplier          |
 
 ## Related
 
-* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI layer that tunes consensus parameters.
+* [PRISM Consensus Engine](/architecture/prism-consensus-engine) — AI layer designed to tune consensus parameters.
 * [Multilayer Architecture](/architecture/multilayer-architecture) — how sidechains anchor to the base layer.
 * [Running a Validator](/developer-guide/running-a-validator) — operate a validator that secures the chain.
 * [Tokenomics](/architecture/tokenomics) — staking rewards, inflation, and slashing economics.

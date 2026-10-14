@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain oferă o interfață JSON-RPC compatibilă cu Solana prin runtime-ul său SVM (Solana Virtual Machine), permițând instrumentelor și SDK-urilor Solana existente să interacționeze nativ cu QoreChain.
 
 :::caution Trimiterea tranzacțiilor SVM este momentan dezactivată
-Începând cu versiunea de lanț v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivel de rețea pentru trimiterea tranzacțiilor** — orice tranzacție returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică la nivel de rețea, nu doar la endpoint-urile publice doar-pentru-citire. Metodele de tip citire din tabelul de mai jos (de exemplu `getBalance`, `getAccountInfo`) pot răspunde în continuare, dar nu încerca o integrare live care trimite tranzacții SVM până când lane-ul nu se redeschide — aceasta este o dezactivare la momentul compilării, nu un parametru de runtime, deci nu poate fi reactivată printr-un vot de guvernanță; se așteaptă să rămână dezactivată până când un audit extern o eliberează.
+Începând cu versiunea de lanț v3.1.89 (22 august), în urma unui incident, lane-ul de execuție SVM este **dezactivat la nivel de rețea pentru trimiterea tranzacțiilor** — orice tranzacție returnează `code 11, "SVM module is disabled"`. Acest lucru se aplică la nivel de rețea, nu doar la endpoint-urile publice doar-pentru-citire. Metodele de tip citire din tabelul de mai jos (de exemplu `getBalance`, `getAccountInfo`) răspund normal pe endpoint-urile publice, dar nu încerca o integrare live care trimite tranzacții SVM până când lane-ul nu se redeschide — aceasta este o dezactivare la momentul compilării, nu un parametru de runtime, deci nu poate fi reactivată printr-un vot de guvernanță; se așteaptă să rămână dezactivată până când un audit extern o eliberează.
 :::
 
 ## Conexiune
@@ -40,6 +40,16 @@ Serverul JSON-RPC este **pornit de `qorechaind start`** și este **activat impli
 | `getMinimumBalanceForRentExemption` | `dataLength` (număr întreg)   | Returnează soldul minim pentru scutirea de chirie pentru dimensiunea de date dată |
 | `getVersion`                        | niciunul                     | Returnează versiunea software-ului nodului                              |
 | `getHealth`                         | niciunul                     | Returnează starea de sănătate a nodului (`"ok"` dacă este sănătos)                 |
+| `getBlockHeight`                    | niciunul                     | Returnează înălțimea curentă a blocului                                |
+| `getLatestBlockhash`                | niciunul                     | Returnează un blockhash recent și `lastValidBlockHeight`          |
+| `getRecentBlockhash`                | niciunul                     | Forma veche a `getLatestBlockhash`                            |
+| `getFeeForMessage`                  | `message` (base64)       | Returnează taxa pentru un mesaj (lamports)                       |
+| `getMultipleAccounts`               | `pubkeys` (listă)        | Returnează mai multe conturi într-un singur apel                           |
+| `getProgramAccounts`                | `programId` (base58)     | Returnează conturile deținute de un program                        |
+| `getTokenAccountsByOwner`           | `owner`, filtru          | Returnează conturile de token ale unui proprietar                           |
+| `getTokenAccountsByDelegate`        | `delegate`, filtru       | Returnează conturile de token ale unui delegat                          |
+
+Metodele din afara acestei liste, precum `getGenesisHash` și `getEpochInfo`, returnează `-32601 method not found`. `getTransaction` este acceptată, dar în prezent răspunde cu un înveliș fără câmpul `result`, așa că nu te baza pe ea. Slotul raportat de `getSlot` urmărește înălțimea blocului lanțului.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

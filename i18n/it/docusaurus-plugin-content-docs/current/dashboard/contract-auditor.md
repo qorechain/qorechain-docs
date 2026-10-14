@@ -11,8 +11,8 @@ Il **Contract Auditor** esegue un'analisi di sicurezza basata sull'IA di uno sma
 
 ## Eseguire un audit
 
-1. Apri l'**Auditor** e fornisci il contratto che vuoi analizzare.
-2. Avvia l'audit. QCAI esamina il contratto e produce un report.
+1. Accedi, apri **AI Audit** e incolla il tuo contratto in **Contract Source Code**. Facoltativamente imposta la **Blockchain** (per impostazione predefinita è **Auto-detect from code**) e un **Name**.
+2. Seleziona **Run Security Audit**. QCAI esamina il contratto e produce un report; **Export PDF** lo salva.
 
 ## Leggere il report
 
@@ -31,7 +31,7 @@ Dove applicabile, il report include anche sezioni per raccomandazioni generali, 
 
 ## Esaminare gli audit precedenti
 
-L'elenco degli audit mostra i tuoi report precedenti in una tabella con il nome del contratto, la blockchain, il livello di rischio, il punteggio di sicurezza e la data di creazione di ciascuno. Una casella di ricerca filtra per nome del contratto o blockchain. Seleziona una qualsiasi riga per riaprire il report completo e usa il link della pagina del report per condividerlo.
+L'elenco degli audit mostra i tuoi report precedenti in una tabella con il nome del contratto, la blockchain, il livello di rischio, il punteggio di sicurezza e la data di creazione di ciascuno. Una casella di ricerca filtra per nome del contratto o blockchain. Seleziona una qualsiasi riga per riaprire il report completo. I report sono **privati per impostazione predefinita**; su un report di tua proprietà, un interruttore in alto riporta "This report is private" — attivalo per rendere il report pubblico così che chiunque abbia il link possa leggerlo (il tuo nome e il tuo IP non vengono mai mostrati), e disattivalo per renderlo di nuovo privato.
 
 :::tip Esegui l'audit prima del deploy
 Esegui un audit come ultimo passaggio prima del deploy e ripetilo dopo ogni modifica. Considera i risultati come una guida da verificare, non come una garanzia automatica — combina il report con i tuoi test sulla [testnet](/getting-started/connecting-to-testnet).

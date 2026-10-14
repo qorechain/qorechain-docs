@@ -7,35 +7,33 @@ sidebar_position: 3
 
 # Governance
 
-Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert, einschließlich des Quadratic Delegation-Reputation Weighted (QDRW) Voting-Systems, wie man Vorschläge einreicht und wie man abstimmt.
+Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live mit Chain-Version **v3.1.97** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 29. Juni 2026 live auf der v3.2-Linie (Node-Release **v3.2.1**; das Testnet läuft mit **v3.2.2**) — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+:::
+
+:::caution Mit `tx pqc cosign` signieren
+Mainnet und Testnet verlangen für jede Transaktion auf der Cosmos-Lane eine hybride Post-Quantum-Signatur, daher lassen sich die Befehle auf dieser Seite so, wie sie dastehen, nicht senden. Hänge `--generate-only > tx.json` an einen Befehl an und führe dann `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` aus. Siehe [Hybrides Signieren](/cli-reference/transaction-commands#hybrid-signing).
 :::
 
 ---
 
-## Stimmgewicht: QDRW-Formel
+## Stimmgewicht {#voting-power}
 
-QoreChain verwendet die **Quadratic Delegation-Reputation Weighted (QDRW)**-Formel, um das Stimmgewicht zu berechnen. Dieses System verhindert die Dominanz von Großinvestoren und belohnt gleichzeitig Teilnehmer, die sich hohe Reputationswerte erarbeitet und sich durch xQORE-Staking für die Governance engagiert haben.
+Vorschläge werden anhand des **gebondeten Stakes** ausgezählt: Jedes QOR, das du an einen gebondeten Validator delegiert hast, zählt als eine Einheit Stimmgewicht, ohne Multiplikator. Wenn du nicht selbst abstimmst, folgt deine Delegation der Stimme deines Validators; gibst du deine eigene Stimme ab, überschreibt sie dies für deinen Stake. Ein Vorschlag wird angenommen, wenn alle folgenden Bedingungen erfüllt sind:
 
-```
-VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
-```
+| Regel     | Aktueller Wert | Bedeutung                                                                     |
+| --------- | ---------- | ----------------------------------------------------------------------------- |
+| Quorum    | 33.4%      | Anteil des gebondeten Stakes, der abstimmen muss                              |
+| Schwellenwert | 50%   | Anteil der „Ja"-Stimmen unter den nicht enthaltenen Stimmen, der zur Annahme nötig ist |
+| Veto      | 33.4%      | Erreicht „Nein mit Veto" diesen Anteil, wird der Vorschlag abgelehnt und seine Einzahlung verbrannt |
 
-| Variable                  | Beschreibung                                                                                                                     |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `VP`                      | Effektives Stimmgewicht                                                                                                           |
-| `staked`                  | Gesamtzahl der vom Abstimmenden gestakten QOR-Token                                                                               |
-| `xQORE`                   | Menge der gehaltenen xQORE-Governance-Token (siehe [xQORE-Staking](/user-guide/xqore-staking))                                    |
-| `r`                       | Reputationswert des Abstimmenden, normiert auf \[0, 1]                                                                            |
-| `ReputationMultiplier(r)` | Sigmoid-Funktion, die die Reputation auf einen Multiplikator im Bereich \[0.5, 2.0] abbildet                                      |
+Diese Werte wurden am 14. Oktober 2026 von der Chain ausgelesen; bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
 
-### Wesentliche Eigenschaften
-
-* **Quadratische Dämpfung:** Ein Halter mit dem 100-fachen Einsatz eines anderen Abstimmenden erhält nur etwa das 10-fache Stimmgewicht, nicht das 100-fache. Dadurch skaliert der Governance-Einfluss unterlinear mit dem Vermögen.
-* **xQORE-Bonus:** xQORE-Token zählen innerhalb der Quadratwurzel mit **2-fachem Gewicht** und verschaffen Governance-engagierten Teilnehmern einen spürbaren Vorteil.
-* **Reputationsmultiplikator:** Bildet den Reputationswert des Abstimmenden von \[0, 1] mittels einer Sigmoid-Kurve auf einen Multiplikator im Bereich \[0.5, 2.0] ab. Teilnehmer mit hoher Reputation können ihr effektives Stimmgewicht verdoppeln, während der Einfluss von Teilnehmern mit niedriger Reputation halbiert wird.
+:::note QDRW ist entworfen, aber nicht aktiv
+Das Design von QoreChain sieht eine Stimmgewicht-Formel **Quadratic Delegation-Reputation Weighted (QDRW)** vor, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, die große Stakes dämpfen und Reputation gewichten würde. Sie ist im Modul `x/qca` implementiert, aber auf beiden Netzwerken **abgeschaltet** (`qdrw_enabled` ist in `qorechaind query qca config` `false`) und nicht Teil der Governance-Auszählung, beeinflusst also heute keine Abstimmung. xQORE ist ebenfalls noch nicht live (siehe [xQORE-Staking](/user-guide/xqore-staking)).
+:::
 
 ---
 
@@ -47,26 +45,36 @@ Jeder QOR-Halter kann einen Governance-Vorschlag einreichen. Damit der Vorschlag
 qorechaind tx gov submit-proposal <proposal_file.json> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-**Beispiel für eine Vorschlagsdatei** (`proposal.json`):
+**Beispiel für eine Vorschlagsdatei** (`proposal.json`). Ein Vorschlag ist eine Liste von Nachrichten, die das Governance-Modul ausführt, wenn er angenommen wird, plus Titel, Zusammenfassung und Einzahlung. Dieser hier erhöht die maximale Validatorenzahl von 100 auf 150; `authority` ist das Modulkonto der Governance (`qorechaind query auth module-account gov`):
 
 ```json
 {
-  "title": "Increase Maximum Validator Count",
-  "description": "This proposal increases the maximum active validator set from 100 to 150 to improve decentralization.",
-  "type": "parameter_change",
-  "changes": [
+  "messages": [
     {
-      "subspace": "staking",
-      "key": "MaxValidators",
-      "value": "150"
+      "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+      "authority": "qor10d07y265gmmuvt4z0w9aw880jnsr700jwfyxr3",
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 150,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "uqor",
+        "min_commission_rate": "0.000000000000000000"
+      }
     }
   ],
-  "deposit": "10000000uqor"
+  "metadata": "",
+  "deposit": "10000000uqor",
+  "title": "Increase maximum validator count",
+  "summary": "Raise the active validator set from 100 to 150 to improve decentralization.",
+  "expedited": false
 }
 ```
+
+`MsgUpdateParams` ersetzt den gesamten Parametersatz, kopiere daher die aktuellen Werte aus `qorechaind query staking params` und ändere nur das Feld, das du ändern willst. Ein reiner Text-Vorschlag (Signalvorschlag) verwendet `"messages": []`. `qorechaind tx gov draft-proposal` erzeugt ein Grundgerüst.
 
 ---
 
@@ -78,7 +86,7 @@ Sobald ein Vorschlag in die Abstimmungsphase eintritt, kann jeder Staker seine S
 qorechaind tx gov vote <proposal_id> <option> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Abstimmungsoptionen:**
@@ -96,21 +104,22 @@ qorechaind tx gov vote <proposal_id> <option> \
 qorechaind tx gov vote 1 yes \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
 
 ## Vorschlagstypen
 
-QoreChain unterstützt die folgenden Governance-Vorschlagstypen:
+Ein Vorschlag enthält null oder mehr Nachrichten, die ausgeführt werden, wenn er angenommen wird. Häufige Fälle:
 
 | Typ                    | Beschreibung                                                                                                  |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Text**                | Ein Signalvorschlag ohne automatische On-Chain-Ausführung. Wird für Stimmungsbilder der Community genutzt.     |
-| **Parameter Change**    | Ändert einen oder mehrere On-Chain-Protokollparameter (z. B. maximale Validatorenzahl, Emissionsrate).          |
-| **Software Upgrade**    | Plant ein koordiniertes Chain-Upgrade zu einer bestimmten Blockhöhe.                                            |
-| **Community Spend**     | Fordert Mittel aus der Community-Treasury für eine bestimmte Empfängeradresse an.                              |
+| **Text**                | Ein Signalvorschlag ohne Nachrichten und ohne automatische On-Chain-Ausführung. Wird für Stimmungsbilder der Community genutzt. |
+| **Parameter Change**    | Die `MsgUpdateParams`-Nachricht eines Moduls, gesendet vom Modulkonto der Governance. Sie ersetzt den gesamten Parametersatz dieses Moduls. |
+| **Software Upgrade**    | Eine `MsgSoftwareUpgrade`-Nachricht, die ein koordiniertes Chain-Upgrade zu einer bestimmten Blockhöhe plant. |
+| **Community Spend**     | Eine `MsgCommunityPoolSpend`-Nachricht, die Mittel aus dem Community-Pool an eine Empfängeradresse sendet. |
+| **Expedited**           | Setze `"expedited": true` für eine kürzere Abstimmungsphase mit höherer Einzahlung und höherem Annahme-Schwellenwert (siehe unten). |
 
 ---
 
@@ -152,21 +161,21 @@ qorechaind query gov params
 
 Wichtige Parameter sind unter anderem:
 
-| Parameter             | Beschreibung                                                                    |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| `min_deposit`          | Mindesteinzahlung, damit ein Vorschlag in die Abstimmung eintritt                   |
-| `max_deposit_period`   | Zeitfenster zum Erreichen der Mindesteinzahlung                                     |
-| `voting_period`        | Dauer der Abstimmungsphase, sobald ein Vorschlag aktiv ist                          |
-| `quorum`               | Mindestbeteiligung, die für eine gültige Abstimmung erforderlich ist                |
-| `threshold`            | Mindestanteil an „Ja"-Stimmen zur Annahme (Enthaltungen ausgenommen)                |
-| `veto_threshold`       | Mindestanteil an „Nein mit Veto"-Stimmen, um abzulehnen und die Einzahlung zu verbrennen |
+| Parameter             | Beschreibung                                                                    | Aktueller Wert (14. Okt. 2026) |
+| ---------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `min_deposit`          | Mindesteinzahlung, damit ein Vorschlag in die Abstimmung eintritt                   | 10 QOR (`10000000uqor`)  |
+| `max_deposit_period`   | Zeitfenster zum Erreichen der Mindesteinzahlung                                     | 2 Tage                   |
+| `voting_period`        | Dauer der Abstimmungsphase, sobald ein Vorschlag aktiv ist                          | 2 Tage                   |
+| `quorum`               | Mindestbeteiligung, die für eine gültige Abstimmung erforderlich ist                | 0.334                    |
+| `threshold`            | Mindestanteil an „Ja"-Stimmen zur Annahme (Enthaltungen ausgenommen)                | 0.5                      |
+| `veto_threshold`       | Mindestanteil an „Nein mit Veto"-Stimmen, um abzulehnen und die Einzahlung zu verbrennen | 0.334                    |
+| `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Abstimmungsdauer, Annahme-Schwellenwert und Einzahlung für beschleunigte Vorschläge | 1 Tag / 0.667 / 50 QOR |
 
 ---
 
 :::tip
 
-* Baue vor wichtigen Governance-Abstimmungen Reputation auf, um deinen Stimmgewicht-Multiplikator zu maximieren.
-* Lege QOR in xQORE an, um innerhalb der QDRW-Formel einen 2-fachen Governance-Gewichtsbonus zu erhalten.
+* Stimme ab, bevor die Abstimmungsphase endet; deine Stimme zählt nur, wenn sie abgegeben wird, während sich der Vorschlag in der Abstimmungsphase befindet.
 * Verwende `no_with_veto` mit Bedacht. Wird der Veto-Schwellenwert erreicht, wird die Einzahlung des Vorschlags verbrannt.
 * Vorschläge, die innerhalb der Einzahlungsfrist die Mindesteinzahlung nicht erreichen, werden automatisch entfernt.
 

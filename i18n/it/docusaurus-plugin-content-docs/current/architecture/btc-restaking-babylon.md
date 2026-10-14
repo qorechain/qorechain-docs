@@ -7,7 +7,11 @@ sidebar_position: 11
 
 # BTC Restaking (Babylon)
 
-Il modulo `x/babylon` integra QoreChain con il Babylon Protocol per ereditare le garanzie di finalità basate sulla proof-of-work di Bitcoin. Attraverso il restaking di BTC, QoreChain acquisisce un livello di finalità secondario supportato dall'hashrate di Bitcoin — senza richiedere alcuna modifica al protocollo Bitcoin stesso.
+Il modulo `x/babylon` è progettato per integrare QoreChain con il Babylon Protocol per ereditare le garanzie di finalità basate sulla proof-of-work di Bitcoin. Attraverso il restaking di BTC, QoreChain acquisirebbe un livello di finalità secondario supportato dall'hashrate di Bitcoin — senza richiedere alcuna modifica al protocollo Bitcoin stesso.
+
+:::caution Fase di progettazione
+L'integrazione con Babylon è specificata, ma le sue transazioni **non sono abilitate sulle reti attive**: il modulo è disabilitato nella configurazione di genesis (`enabled = false`), non ha servizio di transazione, servizio di query, CLI né route REST, e nessun canale IBC (incluso quello verso Babylon) è aperto su nessuna delle due reti. Tutto ciò che segue descrive il design previsto; i nomi dei messaggi, i percorsi REST e i comandi CLI non sono disponibili oggi.
+:::
 
 ## Panoramica
 
@@ -21,7 +25,7 @@ Questo fornisce una difesa contro attacchi long-range ed equivocazione che è an
 
 ## Posizioni di staking BTC
 
-Gli utenti possono registrare posizioni di staking BTC su QoreChain inviando una transazione `MsgBTCRestake` che fa riferimento a una transazione di staking Bitcoin.
+Gli utenti registrerebbero posizioni di staking BTC su QoreChain inviando una transazione `MsgBTCRestake` che fa riferimento a una transazione di staking Bitcoin.
 
 ### Requisiti di registrazione
 
@@ -91,7 +95,7 @@ L'integrazione con Babylon fornisce una **garanzia di finalità secondaria** che
 
 | Livello di finalità | Fonte                       | Velocità     | Sicurezza                               |
 | ------------------- | --------------------------- | ------------ | --------------------------------------- |
-| **Primario**        | Motore di Consenso QoreChain | \~5 secondi  | Supportato da stake QOR + firme PQC     |
+| **Primario**        | Motore di Consenso QoreChain | \~3 secondi  | Supportato da stake QOR + firme PQC     |
 | **Secondario**      | Babylon + Bitcoin           | \~60 minuti  | Supportato dall'hashrate cumulativo di Bitcoin |
 
 Il livello secondario è particolarmente prezioso per:
@@ -121,7 +125,9 @@ Il modulo emette i seguenti eventi on-chain:
 | `btc_checkpoint`         | epoch, checkpoint\_id                    | Checkpoint dell'epoca inviato a Babylon        |
 | `babylon_epoch_complete` | epoch                                    | Epoca Babylon finalizzata con timestamp Bitcoin |
 
-## Endpoint API
+## Endpoint API (previsti)
+
+Nessuno degli endpoint o dei comandi di questa sezione è servito o disponibile oggi sulle reti attive.
 
 ### REST
 
@@ -133,11 +139,13 @@ Il modulo emette i seguenti eventi on-chain:
 
 ### JSON-RPC
 
+> **Non ancora servito:** nessuna build rilasciata del nodo serve il namespace JSON-RPC `qor_`, quindi questa chiamata restituisce `-32601` (metodo non trovato) su ogni endpoint pubblico oggi. Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace).
+
 | Metodo                      | Parametri          | Descrizione                                                      |
 | --------------------------- | ------------------ | ---------------------------------------------------------------- |
 | `qor_getBTCStakingPosition` | `address` (string) | Restituisce la posizione di staking BTC per il dato indirizzo QoreChain |
 
-## Comandi CLI
+## Comandi CLI (previsti)
 
 ### Comandi di query
 

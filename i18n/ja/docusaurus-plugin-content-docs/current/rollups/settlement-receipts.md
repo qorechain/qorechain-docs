@@ -7,27 +7,31 @@ sidebar_position: 6
 
 # 量子安全な決済レシート
 
-**決済レシート** は、ロールアップの決済バッチがポスト量子署名のもとで Main Chain に
-アンカーされたことを示す、可搬で自己完結型の証明です。特定のバッチを、そのロールアップの
-状態をその高さでコミットしたオンチェーンアンカーに結び付け、**完全オフライン** で検証できます —
-ノードも、検証者のネットワーク経路への信頼も不要です。
+**決済レシート** は、ロールアップの決済バッチがポスト量子署名のもとで Main Chain にアンカーされたことを示す、可搬な記録です。ロールアップ、バッチ、アンカーを示し、Main Chain が使用するのと同じ方式である、アンカーの **ML-DSA-87**（Dilithium-5、FIPS-204）署名を保持します。
 
-アンカー署名は **ML-DSA-87**（Dilithium-5、FIPS-204）であり、Main Chain が使用するのと同じ
-ポスト量子スキームです。そのため、レシートはベースチェーンの量子安全な完全性を継承します。
+:::caution 初期段階：アンカーはまだ存在しません
+レシートはアンカーに依存しており、**どちらのネットワークにも、まだロールアップもアンカーも存在しません**。メインネットでは、RDK はまだアンカーを書き込んでいません。決済バッチは記録されますが、アンカー処理のステップはスキップされます。このページは、設計とその構成要素の説明として扱ってください。現時点で頼れるサービスの説明ではありません。
+:::
 
-## 正規アンカーメッセージ
+## レシートは主張であり、証拠ではありません {#a-receipt-is-a-claim}
 
-検証では、アンカーフィールドから次の正確な順序で連結して構築された正規メッセージに対する
-Dilithium-5 署名をチェックします:
+レシートのすべてのフィールドは、それを渡した人が提供したものです。与えられた鍵に対して署名を確認しても、その鍵を持つ誰かがそのバイト列に署名したことが分かるだけで、QoreChain が何かをアンカーしたことは分かりません。したがって検証者は、信頼できる QoreChain ノードに接続されたクライアントを必要とし、チェーンの状態から主張を読み直します。対象となるのは、ロールアップとそのレイヤー、バッチとその状態ルート、アンカー、そして作成者の登録済みポスト量子鍵です。
+
+## アンカーが署名するもの {#what-the-anchor-signs}
+
+アンカーの署名は、**ロールアップ作成者** の登録済み ML-DSA-87 鍵によって行われます。現在のメインネットでは、署名されるメッセージは次のとおりです
 
 ```
 layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
 ```
 
-`anchorSignBytes(...)` はこれらのバイトを生成します。検証者はレシートからそれらを再構築し、
-レイヤー作成者の登録済み ML-DSA-87 鍵に対して署名をチェックします。
+新しいチェーンリリースでは署名対象のメッセージが変更されるため、ハードコードしないでください。対象とするネットワークの署名バイト列を読み取ってください。アンカーはレイヤー単位のオブジェクトです。ロールアップもバッチも示さないため、検証者はチェーンの読み取りを通じてそれらを結び付けます（[マルチレイヤーアーキテクチャ](/architecture/multilayer-architecture#reading-anchors)を参照）。
 
-## ビルドと検証（TypeScript）
+## アンカーの読み取り {#reading-anchors}
+
+アンカーは REST と gRPC で読み取れます（最新のアンカーは `/qorechain/multilayer/v1/anchor/{layer_id}`、履歴は `/qorechain/multilayer/v1/anchors/{layer_id}`）。また、アカウントの登録済みポスト量子鍵は `/qorechain/pqc/v1/account/{address}` で読み取れます。ロールアップのバッチは `qorechaind query rdk batch [rollup-id]` で読み取ります（RDK の REST ルートは現在メインネットでは提供されていません）。
+
+## ビルドと検証（TypeScript） {#build-and-verify}
 
 ```ts
 import {
@@ -36,68 +40,27 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-// Build a portable receipt for one batch.
-const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);
+// Build a receipt for one batch (throws if no anchor covers the batch yet).
+const receipt = await buildSettlementReceipt(rdk, "my-rollup", 7);
 
-// Persist it, ship it, hand it to a counterparty — it is self-contained JSON.
-
-// Verify fully offline. With no client, you must supply the creator's key.
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "<layer creator ML-DSA-87 public key>",
-});
-
-console.log(result.valid); // true when the signature and the batch↔anchor binding both hold
+// Verify it against chain state — pass a client; a receipt on its own proves nothing.
+const result = await verifySettlementReceipt(receipt, { client: rdk });
+console.log(result.valid);
 ```
 
-`creatorPublicKey` の代わりに（またはそれと併せて）`client` を渡すと、検証は
-レイヤー作成者の登録済み ML-DSA-87 鍵をチェーンから取得します（`getPqcAccount(address)`）。
-検証は次に 2 つのことをチェックします:
+検証のたびに `client` を渡してください。お使いの RDK クライアントの最新の公開リリースを使用してください。レシート API とそのチェックはリリース間で変更されており、Python、Go、Rust、Java クライアントも同じビルド/検証のサーフェスを公開しています（ML-DSA-87 検証は [`qorechain-pqc`](https://github.com/qorechain) ライブラリを通じて実行します）。
 
-1. 正規アンカーメッセージに対する **Dilithium-5 署名**、および
-2. **バッチ ↔ アンカー状態ルートの結び付き** — あなたが保持するバッチが、アンカーが
-   コミットしたものであること。
+:::note 現在のクライアントの制限
+公開されている RDK クライアントは、稼働中のチェーンが提供していない経路で作成者の鍵を検索するため、オンライン検証は稼働中のネットワークに対してまだ完了しません。クライアントのリリースでこれが解消されるまでは、レシートは、自分のノードから読み取ったアンカーと照合するための記録としてのみ使用してください。
+:::
 
-```ts
-// Online verification: fetch the creator's PQC key from the chain.
-const online = await verifySettlementReceipt(receipt, { client: rdk });
-```
-
-## アンカーの読み取り
-
-レシートは、オンチェーンの `x/multilayer` **Anchor** クエリから構築されます。これは
-チェーンバージョン **v3.1.80** 以降、gRPC と REST の両方で利用可能です（
-[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#multilayer-module) を参照）。
-読み取りは次のとおりです:
-
-- `getAnchor(layerId)` — レイヤーのアンカー。
-- `getLatestAnchor()` — 最新のアンカー。
-- `getAnchors(layerId)` — レイヤーのアンカー履歴。
-- `getPqcAccount(address)` — 登録済みのポスト量子アカウント（その ML-DSA-87
-  鍵）。作成者の署名の検証に使用されます。
-
-## CLI
+## CLI {#cli}
 
 ```bash
-# Build a receipt and print it.
-qorollup receipt my-roll 7
-
-# Build, then verify it inline.
-qorollup receipt my-roll 7 --verify
-
-# Build and write it to a file.
-qorollup receipt my-roll 7 --out receipt.json
+qorollup receipt my-rollup 7                 # build and print
+qorollup receipt my-rollup 7 --out receipt.json
 ```
 
-完全な `qorollup` オペレーター CLI については [ロールアップのデプロイ](/rollups/deploying-a-rollup)
-を参照してください。
-
-## その他の言語
-
-Python、Go、Rust、Java（JVM）クライアントは、同じビルド/検証の
-サーフェスを公開しています。これらは、バンドルされた JavaScript 実装ではなく
-[`qorechain-pqc`](https://github.com/qorechain) ライブラリを通じて ML-DSA-87 検証を
-実行します。お使いの言語の RDK クライアントと併せてインストールしてください。
+完全な `qorollup` オペレーター CLI については [ロールアップのデプロイ](/rollups/deploying-a-rollup) を参照してください。

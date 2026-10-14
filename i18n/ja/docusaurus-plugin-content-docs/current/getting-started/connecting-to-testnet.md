@@ -10,7 +10,7 @@ sidebar_position: 4
 正しいジェネシスファイル、ピア、ネットワーク設定でノードを構成し、稼働中の QoreChain Diana テストネットに参加しましょう。
 
 :::note
-このページでは **`qorechain-diana`** テストネット(EVM チェーン ID **9800**)を扱います。メインネット(**`qorechain-vladi`**、EVM チェーン ID **9801**)は 2026 年 6 月 7 日から稼働しており、専用の **メインネットへの接続** ページに独自のジェネシス、ピア、接続情報が記載されています。
+このページでは **`qorechain-diana`** テストネット(EVM チェーン ID **9800**)を扱います。メインネット(**`qorechain-vladi`**、EVM チェーン ID **9801**)は 2026 年 6 月 29 日から稼働しており、専用の **メインネットへの接続** ページに独自のジェネシス、ピア、接続情報が記載されています。テストネットは現在 **v3.2.2** を実行しており、そのリリースマニフェストは [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) にあります。
 :::
 
 ## パブリックエンドポイント
@@ -30,32 +30,72 @@ sidebar_position: 4
 
 ---
 
-## ジェネシスのダウンロード
+## インストール
 
-ローカルのジェネシスファイルを、チェーン自体からライブで配信される公式のテストネットジェネシスに置き換えます:
+現在のテストネットのバイナリ、ジェネシス、ピア、ステートシンクのトラストポイントについての正式な情報源は**テストネットマニフェスト**で、`https://download.qore.host/testnet/latest.json` でライブ更新されています。メインネットのマニフェストと同じ構造のため、インストール手順も同じです — バージョンやチェックサムをハードコードするのではなく、マニフェストを取得してその値を使用してください:
 
 ```bash
-curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
-  > ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/testnet/latest.json -o latest.json
+jq -r '.version, .minCompatible, .upgradeHeight' latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+
+qorechaind init my-node --chain-id qorechain-diana
+```
+
+テストネットはガバナンス提案を通じて調整されたアップグレードを行うため、マニフェストには `upgradeHeight` が含まれ(v3.2.2 は高さ 6,905,034 で適用されました)、`minCompatible` は現在のバージョンと同じです。現在参加するノードには、マニフェストに記載のリリースが必要です。システムクロックは NTP で同期させてください。
+
+---
+
+## ジェネシスのダウンロード
+
+ローカルのジェネシスファイルを、上で取得したマニフェストの URL と SHA-256 を使って、公式のテストネットジェネシスに置き換えます:
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
+```
+
+同じファイルは、チェーン自体からもライブで配信されています:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
 このファイルは、バリデータセット、トークン割り当て、モジュールパラメータなど、Diana テストネットの初期状態を定義します。
 
-:::caution
-Diana テストネットは、プレリリースビルドの展開に伴い、定期的に**再ジェネシス**(高さ 0 へのリセット)が行われます。リセット後にノードの同期が止まった場合は、ジェネシスを再ダウンロードし、新しいデータディレクトリから起動してください。
+:::note テストネットはその場でアップグレードされます
+Diana は 2026 年 7 月 1 日から継続して稼働しており、メインネットと同様にガバナンス提案によってアップグレードされます。テストネットはステージングネットワークであり、予告なくリセットされることがあります。ノードの同期が止まった場合は、マニフェストと Discord のお知らせを確認したうえで、ジェネシスを再ダウンロードし、新しいデータディレクトリから起動してください。パブリックセントリーは直近のブロックしか保持しないため、新しいノードはジェネシスからリプレイするのではなく、ステートシンク(下記)を使用してください。
 :::
 
 ---
 
 ## ピアの設定
 
-ノードの設定を編集して、既存のテストネットピアに接続します。
-
-ネットワークから現在のピアを直接取得し、`~/.qorechaind/config/config.toml` の `persistent_peers` フィールドに設定します:
+ノード ID やホストをハードコードするのではなく、マニフェストから現在のピアとシードの一覧を読み取ります:
 
 ```bash
-# node id + listen address of the public testnet node
-curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml` を開き、`persistent_peers`(および `seeds`)フィールドにそれらの値を設定します:
+
+```toml
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 また、`~/.qorechaind/config/app.toml` で手数料の下限も設定してください(テストネットはメインネットと同じ **0.1uqor** の最低ガス価格を使用します):
@@ -66,18 +106,25 @@ minimum-gas-prices = "0.1uqor"
 
 ### 推奨設定
 
-`config.toml` では以下の値の調整も推奨します:
+フルノードはブロック時間を選びません — それを決めるのはバリデータです(テストネットは現在、約 1 秒ごとに 1 ブロックを生成しています)。バリデータを運用していて、バリデータグループから値を指定された場合を除き、コンセンサスのタイムアウトはデフォルトのままにしてください。パブリック RPC ノードに有用なメモリプールの設定は、`config.toml` の次のとおりです:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
 
-これらの値は、Diana テストネットのブロック生成時間とスループットに合わせて調整されています。
+---
+
+## 高速ブートストラップ(ステートシンク)
+
+マニフェストの `stateSync` フィールドには、定期的に更新されるトラストの高さとハッシュのペアが含まれています:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+`config.toml` の `[statesync]` セクションに、これらの値とマニフェストの `rpcServers` を設定します — 完全な手順は [ノードの実行](/developer-guide/running-a-node) を参照してください。
 
 ---
 
@@ -89,7 +136,7 @@ timeout_commit = "5s"
 ./qorechaind start
 ```
 
-ノードはピアに接続し、ジェネシスからブロックのダウンロードを開始します。初回同期にかかる時間は、現在のチェーンの高さとネットワーク速度に依存します。
+ノードはピアに接続し、(ジェネシスから、またはステートシンクを使用する場合はトラストの高さから)ブロックのダウンロードを開始します。初回同期にかかる時間は、現在のチェーンの高さとネットワーク速度に依存します。
 
 ---
 
@@ -156,7 +203,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — プログラムによるチェーンアクセス               |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum 互換 RPC(チェーン ID `9800`) |
 | `8546`  | WebSocket | EVM WebSocket — リアルタイムの EVM イベント購読  |
-| `8899`  | HTTP      | SVM RPC — Solana 互換 RPC                    |
+| `8899`  | HTTP      | SVM RPC — Solana 互換 RPC(読み取り専用。SVM トランザクションレーンは無効)                    |
 | `26660` | HTTP      | Prometheus メトリクスエンドポイント                        |
 
 ---

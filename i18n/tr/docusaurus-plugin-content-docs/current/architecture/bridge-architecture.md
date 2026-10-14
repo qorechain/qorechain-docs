@@ -7,11 +7,23 @@ sidebar_position: 7
 
 # Köprü Mimarisi
 
-`x/bridge` modülü, QoreChain'i **37 QCB (QoreChain Bridge) zincir yapılandırması ve 8 IBC (Inter-Blockchain Communication) kanalı** aracılığıyla daha geniş blok zinciri ekosistemine bağlamak için tasarlanmıştır. Her köprü işlemi, kuantum sonrası kriptografi ile güvence altına alınır.
+`x/bridge` modülü, QoreChain'i **37 zincir yapılandırması (36 harici zincir ile IBC üzerinden erişilen Injective) ve en fazla 8 IBC (Inter-Blockchain Communication) karşı tarafı** aracılığıyla daha geniş blok zinciri ekosistemine bağlamak için tasarlanmıştır. Her köprü işlemi, kuantum sonrası kriptografi ile güvence altına alınacak şekilde tasarlanmıştır.
 
-:::caution
-Zincirler arası köprü **şu anda testnet aşamasında ve beklemededir — henüz bir üretim sistemi değildir**. Aşağıda açıklanan zincir yapılandırmaları, hafif istemciler ve akışlar, köprünün tasarlandığı ve testnet üzerinde denendiği haliyle yansıtılmaktadır. Harici bağlantı kademeli olarak devreye alınmaktadır; tüm hedefleri canlı mainnet garantileri olarak değil, tasarım amacı olarak değerlendirin.
+:::caution Her iki ağda da canlı değil
+Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tümü `pending` durumundadır ve köprü sözleşmesi ayarlanmamıştır, kayıtlı köprü doğrulayıcısı yoktur, bugüne kadar hiçbir köprü işlemi oluşturulmamıştır ve IBC kanalı ya da istemcisi bulunmamaktadır. Aşağıdaki her şey amaçlanan tasarımı anlatır. Köprülenmesini bekleyerek varlık göndermeyin.
 :::
+
+## Mevcut durum {#current-status}
+
+| | Mainnet | Testnet |
+|---|---|---|
+| Köprü modülü | etkin | etkin |
+| Zincir yapılandırmaları | 37, tümü `pending` | 37, tümü `pending` |
+| Kayıtlı köprü doğrulayıcıları | 0 | 0 |
+| Köprü işlemleri | 0 | 0 |
+| IBC kanalları / istemcileri | 0 / 0 | 0 / 0 |
+
+(Ekim 2026'da kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile okuyun.)
 
 ## Bağlantıya Genel Bakış
 
@@ -19,14 +31,14 @@ QoreChain, paralel olarak çalışan iki köprü protokolünü desteklemek üzer
 
 | Protokol | Bağlantılar          | Güvenlik Modeli                       | Kullanım Senaryosu                      |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | 8 kanal              | Standart IBC + PQC paket imzaları    | Cosmos SDK uyumlu zincirler             |
-| **QCB**  | 37 zincir yapılandırması | 7/10 Dilithium-5 çoklu imza       | IBC olmayan zincirler (EVM, Solana, TON, vb.) |
+| **IBC**  | en fazla 8 kanal (hiçbiri açık değil)  | Standart IBC + PQC paket imzaları    | Cosmos SDK uyumlu zincirler             |
+| **QCB**  | 37 zincir yapılandırması (tümü pending) | 7/10 Dilithium-5 çoklu imza       | IBC olmayan zincirler (EVM, Solana, TON, vb.) |
 
-**37 QCB zincir yapılandırması**, **36 harici zincir** ile QoreChain'in kendisini bir yerel/geri döngü (loopback) yapılandırması olarak (dahili yönlendirme ve kendine referanslı uzlaşma için kullanılır) içerir. 8 IBC kanalı, Cosmos SDK uyumlu zincirlere bağlanır.
+**37 zincir yapılandırması**, aşağıda listelenen **36 harici zincir** ile IBC türünde yapılandırılmış **Injective**'dir. QoreChain için bir geri döngü (loopback) yapılandırması yoktur. Planlanan IBC kanalları, Cosmos SDK uyumlu zincirlere bağlanır.
 
 ## IBC Kanalları
 
-QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır:
+QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC bağlantıları sürdürmek üzere tasarlanmıştır. **Her iki ağda da henüz IBC kanalı veya istemcisi yoktur**, bu nedenle bu tablo yalnızca planlanan karşı tarafları listeler:
 
 | Zincir     | Açıklama                       |
 | ---------- | ------------------------------ |
@@ -49,11 +61,11 @@ QoreChain, Hermes v1.x aracılığıyla aktarılan aşağıdaki 8 zincire IBC ba
 
 ## QCB (QoreChain Bridge) Protokolü
 
-QCB protokolü, kuantum sonrası kriptografi ile güvence altına alınmış bir hub-and-spoke (merkez ve uçlar) mimarisi kullanır. QoreChain hub görevi görür; her harici zincir için spoke (uç) yapılandırmaları ve QoreChain'in kendisi için bir yerel/geri döngü yapılandırması bulunur.
+QCB protokolü, kuantum sonrası kriptografi ile güvence altına alınmış bir hub-and-spoke (merkez ve uçlar) mimarisi kullanır. QoreChain hub görevi görür; her harici zincir için bir spoke (uç) yapılandırması bulunur.
 
 ### Harici Zincir Yapılandırmaları (36)
 
-QCB protokolü, aşağıdaki 36 harici zinciri hedeflemek üzere tasarlanmıştır. QoreChain'in kendi yerel/geri döngü yapılandırmasıyla birlikte bu, **toplamda 37 QCB zincir yapılandırması (QoreChain'in kendisi dahil)** verir.
+QCB protokolü, aşağıdaki 36 harici zinciri hedeflemek üzere tasarlanmıştır. IBC türünde bir yapılandırma olan Injective ile birlikte bu, **toplamda 37 zincir yapılandırması** verir; tümü şu anda `pending` durumundadır.
 
 **Temel zincirler (10)**
 
@@ -67,12 +79,12 @@ zkSync Era, Linea, Scroll, Blast, Mantle, Hyperliquid, Berachain, Sonic, Sei, Mo
 
 Starknet, XRP Ledger, Stellar, Hedera, Algorand.
 
-**Bekleyen zincirler (7)**
+**Diğer zincirler (7)**
 
 NEAR, Bitcoin, Cardano, Polkadot, Tezos, Tron, Aptos.
 
 :::note
-Sayı kontrolü: 10 temel + 14 EVM ailesi + 5 EVM olmayan + 7 bekleyen = **36 harici zincir**. QoreChain'in kendi yerel/geri döngü yapılandırması eklendiğinde **37 QCB zincir yapılandırması** elde edilir.
+Sayı kontrolü: 10 temel + 14 EVM ailesi + 5 EVM olmayan + 7 diğer = **36 harici zincir**. Injective (IBC) eklendiğinde **37 zincir yapılandırması** elde edilir.
 :::
 
 ### Adres Biçimleri
@@ -107,7 +119,7 @@ Harici zincir olaylarını güvene dayanmadan doğrulamak için köprü, her kay
 
 ## Yatırma Akışı (Harici Zincirden QoreChain'e)
 
-Aşağıdaki dizi bir QCB yatırma işlemini gösterir: varlıklar harici bir zincirde kilitlenir, QoreChain doğrulayıcıları PQC imzalı tasdikler gönderir (7/10 Dilithium-5) ve sarmalanmış (wrapped) tokenlar basılır. Cosmos SDK uyumlu zincirler bunun yerine paralel IBC yolunu kullanır (8 kanal, isteğe bağlı Dilithium-5 paket imzalarıyla). Her iki yol da testnet/beklemededir.
+Aşağıdaki dizi, tasarlanan QCB yatırma işlemini gösterir: varlıklar harici bir zincirde kilitlenir, QoreChain doğrulayıcıları PQC imzalı tasdikler gönderir (7/10 Dilithium-5) ve sarmalanmış (wrapped) tokenlar basılır. Cosmos SDK uyumlu zincirler bunun yerine paralel IBC yolunu kullanır (en fazla 8 kanal, isteğe bağlı Dilithium-5 paket imzalarıyla). Her iki yol da etkin değildir; bugüne kadar hiçbir yatırma işlemi yapılmamıştır.
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +133,7 @@ sequenceDiagram
     Note over V,Q: Light client verifies source proofs where available
     Q->>Q: 4. Mint wrapped tokens
     Note over Q: If > 100K QOR: 24h challenge period before execution
-    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+    Note over X,Q: IBC path (planned, up to 8 channels) runs in parallel for Cosmos SDK chains
 ```
 
 ```
@@ -166,15 +178,9 @@ QoreChain               QoreChain Validators           External Chain
 
 Çekme işlemleri sırasında toplanan tüm köprü ücretleri, `bridge_fee` yakma kanalı aracılığıyla `x/burn` modülüne yönlendirilir (köprü ücretlerinin %100'ü yakılır).
 
-### L2 → L1 Çekme Akışı (Rollup Uzlaşması)
+### L2 → L1 çekmeleri (rollup'lar)
 
-Köprü ayrıca **rollup (L2) çekme işlemlerini ana zincirlerine (L1) geri uzlaştırmak** üzere de tasarlanmıştır. [Rollup Development Kit](/architecture/rollup-development-kit) aracılığıyla dağıtılan rollup'lar durumlarını periyodik olarak QoreChain'e bağlar (anchor); köprü, rollup'tan ana zincire çekme işlemlerini yetkilendirmek için bu kesinleşmiş bağlantıları (anchor) tüketir:
-
-1. Bir kullanıcı, rollup (L2) üzerinde bir çekme işlemi başlatır ve bu işlem bir uzlaşma toplu işine (batch) dahil edilir.
-2. Toplu iş QoreChain'e bağlanır ve rollup'ın uzlaşma moduna göre kanıtlanır/kesinleştirilir (örneğin, iyimser itiraz penceresi sona erdikten sonra veya geçerli kanıt doğrulaması üzerine).
-3. Bağlantı (anchor) kesinleştiğinde, çekme işlemi talep edilebilir hale gelir ve ilgili varlıklar standart yak-ve-tasdik yolu aracılığıyla ana zincirde (L1) serbest bırakılır.
-
-Bu, rollup kesinliğini doğrudan ana zincir uzlaşma garantilerine bağlar; böylece L2 çekme işlemleri, ilgili L2 durumu geri döndürülemez biçimde uzlaşmadan önce serbest bırakılamaz.
+Rollup çekmeleri köprüyü kullanmaz. Kesinleşmiş bir toplu işin (batch) çekme köküne karşı `execute-withdrawal` ile `x/rdk` modülü tarafından ödenir — bkz. [ZK / STARK ve Çekmeler](/rollups/zk-stark-withdrawals).
 
 ## Güvenlik Mimarisi
 
@@ -205,13 +211,13 @@ Devre kesici durumu zincir başına izlenir ve şunları içerir: maksimum tekil
 Büyük transferler için (>100.000 QOR eşdeğeri, `large_transfer_threshold` aracılığıyla yapılandırılabilir):
 
 * Tasdik eşiği karşılandıktan sonra **24 saatlik bir itiraz dönemi** (86.400 saniye) uygulanır.
-* Bu pencere boyunca herhangi bir doğrulayıcı işlemi işaretleyebilir.
+* Bu pencere boyunca doğrulayıcıların işlemi işaretleyebilmesi amaçlanmıştır.
 * İtiraz edilmezse, işlem dönem sona erdikten sonra otomatik olarak yürütülür.
 * İtiraz edilen işlemler, yönetişim incelemesi için dondurulur.
 
 ### AI Yol Optimizasyonu
 
-Köprü modülü, rota optimizasyonu için AI alt sistemiyle entegre olur. Birden fazla yol kat edebilen transferler için (örneğin, bir aracı aracılığıyla A zincirinden B zincirine), yol optimize edici şunları değerlendirir:
+Köprü modülü, rota optimizasyonu için AI alt sistemiyle entegre olur (REST üzerinden sunulmaz). Birden fazla yol kat edebilen transferler için (örneğin, bir aracı aracılığıyla A zincirinden B zincirine), yol optimize edici şunları değerlendirir:
 
 * Rotalar arasında tahmini ücretler
 * Tahmini tamamlanma süresi
@@ -227,26 +233,27 @@ Zincir sürümü **v3.1.78** itibarıyla, bir köprü zinciri dağıtımdan sonr
 * **`tx bridge update-chain-config`** — bir zincirin sözleşme adresini, onay sayısını, mimarisini ve durumunu ayarlar (`MsgUpdateChainConfig`).
 * **`tx bridge set-verifier-bootstrap`** — bir zincir için etkin doğrulayıcıyı seçer ve güven kökünü kurar (`MsgSetVerifierBootstrap`).
 
-Bu, bir operatörün bağlı bir zincirin köprüsünü doğrudan çevrimiçi getirmesine — veya doğrulayıcısını döndürmesine — olanak tanır; yetkilendirme köprü yönetici anahtarına karşı kontrol edilir.
+Bu, bir operatörün bağlı bir zincirin köprüsünü doğrudan çevrimiçi getirmesine — veya doğrulayıcısını döndürmesine — olanak tanır; yetkilendirme köprü yönetici anahtarına karşı kontrol edilir. Zincir sürümü **v3.2.0** itibarıyla köprü modülünün kendi modül hesabı da vardır (önceki sürümlerde yoktu, bu nedenle etkinleştirilmiş bir rotadaki ilk yatırma işlemi başarısız olurdu).
 
 ### Bağlı ağları doğrulama
 
-Zincir sürümü **v3.1.79** itibarıyla, eşleşen `validator_<chain>` (veya `qcb_bridge`) lisansını elinde bulunduran bir doğrulayıcı, harici ağın istemcisini aynı düğümde çalıştırabilir; bu istemci, lisans etkinleştirildikten sonra QoreChain'in orkestrasyonu altında otomatik olarak hazırlanır. Sürücüler 37 köprü ağının tümü için sunulur ve katılım modeline göre sınıflandırılır (izin gerektirmeyen doğrulayıcı, sınırlı/seçilmiş/kabul, L2 tam düğüm ve staking yapmayan/güven listesi). Harici ağın stake ve imzalama anahtarları, ağ başına operatör tarafından sağlanır. Operatör adımları için [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator#connected-networks) bölümüne bakın.
+Zincir sürümü **v3.1.79** itibarıyla, eşleşen `validator_<chain>` (veya `qcb_bridge`) lisansını elinde bulunduran bir doğrulayıcı, harici ağın istemcisini aynı düğümde çalıştırabilir; bu istemci, lisans etkinleştirildikten sonra QoreChain'in orkestrasyonu altında otomatik olarak hazırlanır. Sürücüler 37 köprü ağının tümü için sunulur ve katılım modeline göre sınıflandırılır (izin gerektirmeyen doğrulayıcı, sınırlı/seçilmiş/kabul, L2 tam düğüm ve staking yapmayan/güven listesi). Harici ağın stake ve imzalama anahtarları, ağ başına operatör tarafından sağlanır. Operatör adımları için [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator#connected-networks) bölümüne bakın. Her zincir yapılandırması `pending` durumunda olduğundan, bugün köprü üzerinden doğrulanan bağlı bir ağ yoktur.
 
-## REST API Uç Noktaları
+## REST API Uç Noktaları {#rest-api-endpoints}
 
-Zincir sürümü **v3.1.77** itibarıyla, köprü durumu `/qorechain/bridge/v1/...` öneki altında grpc-gateway aracılığıyla **REST üzerinden salt okunur** olarak da sorgulanabilir (`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — daha önce yalnızca gRPC idi. Bunlar, gezginler ve hafif düğüm telemetrisi için HTTP üzerinden gerçek zincir üstü JSON sunar. Tam liste için [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#bridge-module) bölümüne bakın.
+Köprü durumu, `/qorechain/bridge/v1/...` öneki altında grpc-gateway aracılığıyla **REST üzerinden salt okunur** olarak sorgulanabilir. Bunlar, gezginler ve hafif düğüm telemetrisi için HTTP üzerinden gerçek zincir üstü JSON sunar. Tam liste için [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#bridge-module) bölümüne bakın.
 
-| Yöntem | Uç Nokta                                           | Açıklama                                         |
-| ------ | -------------------------------------------------- | ------------------------------------------------ |
-| GET    | `/bridge/v1/chains`                                | Desteklenen tüm zincir yapılandırmalarını listeler |
-| GET    | `/bridge/v1/chains/{chain_id}`                     | Belirli bir zincirin yapılandırmasını getirir    |
-| GET    | `/bridge/v1/validators`                            | Kayıtlı tüm köprü doğrulayıcılarını listeler      |
-| GET    | `/bridge/v1/operations`                            | Tüm köprü işlemlerini listeler (en yeni önce)     |
-| GET    | `/bridge/v1/operations/{operation_id}`             | Belirli bir işlemin ayrıntılarını getirir         |
-| GET    | `/bridge/v1/locked/{chain}/{asset}`                | Bir zincir/varlık çifti için kilitli/basılmış tutarları getirir |
-| GET    | `/bridge/v1/circuit-breakers`                      | Tüm devre kesici durumlarını listeler             |
-| GET    | `/bridge/v1/estimate/{from}/{to}/{asset}/{amount}` | AI ile optimize edilmiş rota tahminini getirir    |
+| Yöntem | Uç Nokta                                  | Açıklama                                                                                                            |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/qorechain/bridge/v1/config`             | Köprü modülü yapılandırması (`min_validators`, `attestation_threshold`, `challenge_period_secs`, `large_transfer_threshold`, `enabled`) |
+| GET    | `/qorechain/bridge/v1/chains`             | Tüm zincir yapılandırmaları ve durumları                                                                            |
+| GET    | `/qorechain/bridge/v1/chains/{chain_id}`  | Tek bir zincir yapılandırması                                                                                       |
+| GET    | `/qorechain/bridge/v1/validators`         | Kayıtlı köprü doğrulayıcıları                                                                                       |
+| GET    | `/qorechain/bridge/v1/validators/{address}` | Tek bir köprü doğrulayıcısı                                                                                       |
+| GET    | `/qorechain/bridge/v1/operations`         | Köprü işlemleri                                                                                                     |
+| GET    | `/qorechain/bridge/v1/operations/{id}`    | Tek bir köprü işlemi                                                                                                |
+
+Kilitli tutarlar, devre kesici durumu ve rota tahminleri için bugün bir sorgu rotası yoktur.
 
 ## Köprü Olayları
 
@@ -265,6 +272,5 @@ Köprü modülü, aşağıdaki zincir üstü olayları yayar:
 ## İlgili
 
 * [Varlıkları Köprüleme](/user-guide/bridging-assets) — varlıkları zincirler arasında adım adım taşıyın.
-* [Panel Köprüsü](/dashboard/bridge) — günlük kullanıcılar için köprü arayüzü.
 * [Babylon ile BTC Restaking](/architecture/btc-restaking-babylon) — Bitcoin destekli güvenlik.
 * [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security) — IBC paketlerinde PQC doğrulaması.

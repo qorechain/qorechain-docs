@@ -16,11 +16,15 @@ O referință consolidată pentru rețelele QoreChain — identificatori de lan�
 | **Stare** | Activă | Testnet activ |
 | **ID lanț Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **ID lanț EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **Activă din** | 7 iunie 2026, 23:59 UTC | — |
-| **Versiune lanț** | v3.1.97 | v3.1.97 |
+| **Activă din** | 29 iunie 2026, 17:03 UTC (blocul genesis) | 1 iulie 2026 (continuu de atunci; fără reset) |
+| **Versiune lanț** | v3.2.1 (reguli de consens din v3.2.0) | v3.2.2 |
+| **Timp de bloc (medie măsurată)** | aproximativ 3,2 s | aproximativ 1,0 s |
+| **Manifest de versiune** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Preț minim gas** | `0.1uqor` | `0.1uqor` |
 | **Ghid de conectare** | [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) | [Conectarea la Testnet](/getting-started/connecting-to-testnet) |
+
+Ambele manifeste sunt sursa de adevăr pentru versiunea pe care ar trebui să o ruleze un nod nou. Manifestul testnet-ului (v3.2.2) conține o înălțime de upgrade, deoarece testnet-ul primește upgrade-uri coordonate prin guvernanță, în timp ce v3.2.1 de pe mainnet este o versiune graduală, locală fiecărui nod, peste regulile de consens din v3.2.0.
 
 ## Puncte finale publice {#public-endpoints}
 
@@ -35,10 +39,14 @@ Toate punctele finale publice sunt furnizate prin HTTPS.
 | WebSocket EVM | — | `wss://evm-ws-testnet.qore.host` |
 | JSON-RPC SVM (compatibil Solana, doar citire) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | Explorator de blocuri | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (comută pe Testnet) |
-| Descărcări (binar / genesis / instantaneu) | [download.qore.host](https://download.qore.host) | — |
+| Descărcări (binar / genesis / instantaneu) | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-Punctele finale publice SVM sunt **doar pentru citire** (trimiterea tranzacțiilor este dezactivată la marginea rețelei); rulează propriul nod pentru operațiuni de scriere SVM. Pentru sarcini de lucru grele sau de producție, rulează propriul nod — vezi [Rularea unui nod](/developer-guide/running-a-node).
+Punctele finale publice SVM sunt **doar pentru citire** (trimiterea tranzacțiilor este dezactivată la marginea rețelei); rulează propriul nod pentru operațiuni de scriere SVM. Pentru sarcini de lucru grele sau de producție, rulează propriul nod — vezi [Rularea unui nod](/developer-guide/running-a-node). Nu există un punct final gRPC public și nici un WebSocket EVM public pentru mainnet. Pe punctele finale publice EVM, `eth_getLogs` acceptă cel mult 10.000 de blocuri per interogare, iar `txpool_content` este dezactivat (un nod auto-găzduit servește întregul namespace); vezi [Namespace-ul eth_](/api-reference/json-rpc-eth_-namespace).
+:::
+
+:::tip
+Dacă un script primește `403 Forbidden` de la un punct final public, setează explicit un header `User-Agent` (agentul implicit `urllib` din Python este blocat; clienții `requests`, `curl`, Node și Go funcționează ca atare).
 :::
 
 :::caution Lane-ul de tranzacții SVM este momentan dezactivat

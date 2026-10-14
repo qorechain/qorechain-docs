@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChain supports **CosmWasm** smart contracts, enabling developers to write secure, sandboxed programs in Rust that compile to WebAssembly. CosmWasm contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet, live since 7 June 2026 running chain version **v3.1.97**. Substitute `--chain-id qorechain-diana` for the testnet.
+The commands below use the **`qorechain-vladi`** mainnet (live since 29 June 2026), which runs node release **v3.2.1**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.2.
 :::
 
 :::caution Code upload and instantiation currently require explicit permission
-As of this writing, `code_upload_access` and `instantiate_default_permission` are both set to **`Nobody`** on **both mainnet and testnet** — meaning `MsgStoreCode` and `MsgInstantiateContract` are not open to arbitrary accounts by default, following an industry-wide CosmWasm security advisory. You'll need governance to grant your account (or a specific address list) upload/instantiate permission before the steps below will succeed — check the live parameters first, since this is exactly the kind of setting governance can change:
+As of this writing, `code_upload_access` and `instantiate_default_permission` are both set to **`Nobody`** on **both mainnet and testnet** — meaning `MsgStoreCode` and `MsgInstantiateContract` are not open to arbitrary accounts by default, following an industry-wide CosmWasm security advisory. You'll need governance to grant your account (or a specific address list) upload/instantiate permission before the steps below will succeed. Check the live parameters first, since this is exactly the kind of setting governance can change (mainnet currently has no stored contract code at all):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+The `MsgStoreCode`, `MsgInstantiateContract` and `MsgInstantiateContract2` message types are also switched off by the chain's circuit breaker on both networks (`qorechaind query circuit disabled-list`), so raising the permission alone is not enough until those entries are lifted.
+
 This restriction doesn't affect already-instantiated contracts — `execute` and `query` against an existing contract work normally regardless of this setting.
+:::
+
+:::caution Sign with `tx pqc cosign`
+Mainnet and testnet require a hybrid post-quantum signature on every Cosmos-lane transaction, so the `tx` commands on this page do not broadcast as written. They build the transaction with `--generate-only > tx.json`; then sign and broadcast it with `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (the release binary from the [download manifest](/developer-guide/running-a-node#fetch-the-manifest) has the signer; a build from the public source does not). The network fee floor is **0.1 uqor per unit of gas**, which is what `--gas-prices 0.1uqor` expresses; the hybrid signature adds roughly 47,000 gas that a simulation does not include, hence the `1.5` adjustment. See [Post-Quantum Signing](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -67,12 +73,11 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   After the transaction confirms, query the stored code ID:
+   After the transaction confirms (sign and broadcast `tx.json` with `tx pqc cosign` as described above), query the stored code ID:
 
    ```bash
    qorechaind query wasm list-code
@@ -86,9 +91,8 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | Flag                | Description                                    |
@@ -101,7 +105,7 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
    Retrieve the contract address:
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **Execute** — Call a contract's execute entry point to change state:
@@ -110,8 +114,8 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    Execute with funds attached:
@@ -121,7 +125,8 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **Query** — Read contract state without submitting a transaction:
@@ -142,7 +147,7 @@ CosmWasm contracts follow a five-step lifecycle: **Build**, **Store**, **Instant
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## Cross-VM Calls
 
-CosmWasm contracts can interact with contracts deployed on the EVM and SVM through the `x/crossvm` module. Cross-VM calls from CosmWasm use the **asynchronous** message path:
+Cross-VM calls are sent as `MsgCrossVMCall` transactions through the `x/crossvm` module; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the message lifecycle. CosmWasm contracts do not have a contract-side binding for initiating a cross-VM call today (there is no custom `QoreChainMsg` message for contracts to emit), so a contract cannot call an EVM or SVM contract from inside its `execute` entry point.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-The message is submitted to a queue and processed by the EndBlocker in the next block. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the full message lifecycle.
+:::caution Cross-VM calls are currently switched off on mainnet
+`MsgCrossVMCall` is on mainnet's circuit-breaker list (`qorechaind query circuit disabled-list`), and the SVM lane is disabled on both networks, so the cross-VM path is not usable for ordinary transactions today.
+:::
 
 ---
 
@@ -260,7 +253,8 @@ If the contract was instantiated with an `--admin` address, the admin can migrat
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 This calls the `migrate` entry point on the new code with the existing contract state.
@@ -271,4 +265,4 @@ This calls the `migrate` entry point on the new code with the existing contract 
 
 * [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Call EVM and SVM contracts from CosmWasm
 * [SVM Development](/developer-guide/svm-development) — Deploy BPF programs on QoreChain
-* [EVM Precompiles](/developer-guide/evm-precompiles) — Access PQC and AI features from Solidity
+* [EVM Precompiles](/developer-guide/evm-precompiles) — Reference for the planned Solidity precompiles (none are active yet)

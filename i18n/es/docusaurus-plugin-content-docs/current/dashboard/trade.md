@@ -7,9 +7,13 @@ sidebar_position: 4
 
 # Operar (DEX)
 
-La página de **Operar** es el exchange descentralizado del Panel. Te permite intercambiar tokens y aportar liquidez directamente en el creador de mercado automatizado (AMM) nativo y on-chain de QoreChain —sin libro de órdenes off-chain ni contrato inteligente externo. Los intercambios y las acciones de liquidez se liquidan a nivel de protocolo. Para el diseño que hay detrás, consulta [AMM y liquidez on-chain](/architecture/amm).
+La página de **Operar** es la pantalla de intercambio de tokens del Panel: intercambia un token por otro y aporta liquidez a un pool, sin libro de órdenes off-chain. Para el diseño del creador de mercado automatizado (AMM) nativo de QoreChain, consulta [AMM y liquidez on-chain](/architecture/amm).
 
-Conecta tu billetera para operar —consulta [Resumen y primeros pasos](/dashboard/overview#connect-your-wallet).
+:::caution Solo tokens de prueba, por ahora
+Los pools y los tokens de esta página son tokens de prueba: los intercambios se ejecutan contra un contrato de intercambio desplegado en la EVM de testnet, y la página tiene un botón **Get test tokens** para conseguirlos. No trates nada de lo que se muestra aquí como liquidez de valor real ni como un precio de mercado. El módulo AMM nativo de QoreChain está activo, pero todavía no se ha creado ningún pool en ninguna de las dos redes. Esta página se actualizará cuando haya pools reales disponibles.
+:::
+
+Operar requiere una cuenta con sesión iniciada y una billetera —consulta [Iniciar sesión](/dashboard/overview#sign-in) y [Conectar tu billetera](/dashboard/overview#connect-your-wallet).
 
 La página tiene cuatro pestañas: **Swap**, **Pools**, **Add Liquidity** y **My Positions**.
 
@@ -30,11 +34,11 @@ Una mayor tolerancia al deslizamiento hace que un intercambio tenga más probabi
 
 ## Pools
 
-Explora los pools de liquidez disponibles. Cada tarjeta de pool muestra el par de trading, la liquidez total, el volumen de 24 horas, el APR y el número de proveedores. Un cuadro de búsqueda filtra los pools por símbolo de token.
+Explora los pools de liquidez disponibles. Cada tarjeta de pool muestra el par de trading, la liquidez total, el volumen de 24 horas y el número de proveedores. Un cuadro de búsqueda filtra los pools por símbolo de token.
 
 ## Add Liquidity
 
-Aporta liquidez para ganar una parte de las comisiones de intercambio:
+Aporta liquidez a un pool y recibe una parte de sus comisiones de intercambio:
 
 1. Selecciona los dos tokens que vas a emparejar (uno es QOR por defecto).
 2. Introduce una cantidad para el primer token —la segunda cantidad se completa automáticamente para coincidir con la proporción actual del pool.
@@ -44,7 +48,7 @@ Recibes tokens de proveedor de liquidez (LP) que representan tu posición.
 
 ## My Positions
 
-Consulta las posiciones de liquidez que tienes. Cada entrada muestra el par de tokens, la cantidad en cada token, tu participación en el pool, las comisiones obtenidas y el APR. Selecciona **Remove Liquidity** en una posición para previsualizar los tokens que recibirías y retirar tu parte.
+Consulta las posiciones de liquidez que tienes. Cada entrada muestra el par de tokens, la cantidad en cada token, tu participación en el pool y las comisiones obtenidas. Selecciona **Remove Liquidity** en una posición para previsualizar los tokens que recibirías y retirar tu parte.
 
 ## Relacionado
 

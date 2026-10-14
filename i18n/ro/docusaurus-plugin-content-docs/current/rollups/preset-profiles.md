@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-Valorile per presetare de mai jos corespund valorilor implicite ale profilurilor livrate în **`@qorechain/rdk`**, care reflectă tabelul de profiluri publicat al rețelei. Acestea pot totuși evolua pe măsură ce RDK se maturizează — interoghează parametrii live ai modulului cu `qorechaind query rdk config` (sau `RdkClient.params()` din SDK) pentru configurația autoritativă și validează pe testnet-ul **`qorechain-diana`** înainte de mainnet.
+Valorile per presetare de mai jos corespund valorilor implicite ale profilurilor livrate în **`@qorechain/rdk`**, care reflectă tabelul de profiluri publicat al rețelei. Până acum nu a fost creat niciun rollup pe niciuna dintre rețele. Interoghează parametrii live ai modulului cu `qorechaind query rdk config` (sau `RdkClient.params()` din SDK, unde sunt servite rutele REST RDK — nu pe mainnet în prezent) pentru configurația autoritativă și validează pe testnet-ul **`qorechain-diana`** înainte de mainnet.
 :::
 
 ---
@@ -38,7 +38,7 @@ Câteva constrângeri decurg din [matricea decontare → dovadă](/rollups/overv
 Începând cu RDK v0.4.2, opțiunea de VM Wasm (runtime-ul care execută contractele CosmWasm) se numește **`native`** — QoreChain Native. `cosmwasm` rămâne un alias istoric acceptat, iar ambele se mapează la `cosmwasm` pe fir, astfel încât lanțul, exploratorul și Dashboard-ul rămân neschimbate.
 
 :::note
-Configurația per presetare a fost verificată live pe versiunea de lanț **v3.1.74**, unde `create-rollup` aplică automat presetarea profilului: **`defi` = zk + EVM, `gaming` = based + VM personalizat, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (valori implicite)**. Presetarea `custom` lasă fiecare câmp deschis — valorile afișate sunt doar valorile sale implicite de pornire.
+Configurația per presetare a fost verificată față de tabelul de profiluri al lanțului la versiunea de lanț **v3.2.0** (mainnet rulează v3.2.1), unde `create-rollup` aplică automat presetarea profilului: **`defi` = zk + EVM, `gaming` = based + VM personalizat, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (valori implicite)**. Presetarea `custom` lasă fiecare câmp deschis — valorile afișate sunt doar valorile sale implicite de pornire.
 :::
 
 Tratează cele patru presetări de domeniu ca puncte de plecare rezonabile, iar profilul **`custom`** ca opțiunea complet deschisă. Parametrii exacți grupați se pot schimba între versiuni — interoghează `rdk config` (mai jos) pentru valorile autoritative, apoi pornește de la presetarea cea mai apropiată și rafinează.
@@ -47,21 +47,20 @@ CLI-ul [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-projec
 
 ---
 
-## Obținerea unei recomandări: `suggest-profile`
+## Ce poartă o presetare on-chain {#what-a-preset-carries}
 
-Dacă nu ești sigur care presetare ți se potrivește, interogarea `suggest-profile` primește o descriere în limbaj natural a cazului tău de utilizare și returnează un profil recomandat.
+Unele detalii sunt ușor de presupus greșit și merită cunoscute înainte de a alege un profil:
 
-```bash
-qorechaind query rdk suggest-profile [use-case]
-```
+* **`defi` nu are cheie de verificare.** Loturile ZK au nevoie de una, iar un rollup creat prin `create-rollup` nu o poartă, deci decontarea ZK nu poate fi finalizată cap-coadă astăzi (vezi [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals)).
+* **`nft` și `custom`** se decontează optimistic, cu o garanție de contestare de 1.000 QOR și o fereastră de contestare de 100.800 de blocuri (cele 604.800 de „secunde" implicite convertite la 6 secunde fixe per bloc; aproximativ 3,7 zile la blocurile actuale de ≈3,2 s ale mainnet-ului).
+* **`gaming` și `enterprise`** folosesc sequencing `based`, ceea ce astăzi înseamnă că loturile sunt trimise de creatorul rollup-ului.
+* **Timpul de bloc și limitele de tranzacție** (de exemplu `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` și `custom` 1.000 ms) sunt stocate în înregistrarea on-chain. Ele descriu propriul lanț al rollup-ului și nu sunt impuse de lanțul gazdă.
 
-**Exemplu:**
+---
 
-```bash
-qorechaind query rdk suggest-profile "a lending protocol with predictable fees"
-```
+## Alegerea unui profil {#getting-a-recommendation}
 
-Sugestia este un punct de plecare util — analizează recomandarea în raport cu cerințele tale specifice (garanțiile de decontare, modelul de încredere al sequencer-ului, nevoile de disponibilitate a datelor și VM-ul) înainte de a te angaja la o configurație.
+Interogarea `suggest-profile` și funcția ajutătoare `suggestProfile()` din RDK sunt menite să recomande o presetare pornind de la o descriere în limbaj natural. Ele se bazează pe metoda JSON-RPC `qor_suggestRollupProfile`, pe care endpoint-urile publice nu o servesc, astfel că `suggestProfile()` returnează în prezent mereu `defi` ca **alternativă de rezervă**, iar `qorechaind query rdk suggest-profile` afișează doar o trimitere către acel RPC. Alege în schimb un profil din tabelul de mai sus și analizează-l în raport cu cerințele tale (garanțiile de decontare, modelul de încredere al sequencer-ului, nevoile de disponibilitate a datelor și VM-ul).
 
 ---
 

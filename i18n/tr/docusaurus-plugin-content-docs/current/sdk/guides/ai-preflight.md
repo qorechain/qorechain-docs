@@ -7,14 +7,27 @@ sidebar_position: 5
 
 # AI ön kontrol kılavuzu
 
-QoreChain, herhangi bir dApp'e **zincir üzerinde bir AI risk/anomali modeli**
-sunan ilk ağdır. Salt okunur iki EVM precompile'ı, yalnızca `eth_call` kullanarak,
-bir işlemi imzalanmadan veya yayınlanmadan *önce* puanlamanıza olanak tanır:
+QoreChain, bir dApp'in EVM üzerinden okuyabileceği **zincir üzerinde bir AI
+risk/anomali modeli** tanımlar. Salt okunur iki EVM precompile'ı, yalnızca
+`eth_call` kullanarak, bir işlemi imzalanmadan veya yayınlanmadan *önce*
+puanlamanıza olanak tanımak üzere tasarlanmıştır:
 
 | Yetenek | Precompile | Adres |
 |---|---|---|
 | Calldata için risk puanı | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
 | `(sender, amount)` için anomali kontrolü | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+
+:::caution Bugün herkese açık ağlarda kullanılamaz
+`simulateWithRiskScore`, `aiRiskScore` ve `aiAnomalyCheck`, `0x…0B01` / `0x…0B02`
+adreslerindeki precompile'ları okur. Statik bir precompile yalnızca adresi EVM
+modülünün `active_static_precompiles` parametresinde olduğunda yanıt verir ve bu
+liste hem `qorechain-vladi` (ana ağ) hem de `qorechain-diana` (test ağı) üzerinde
+boştur. Herkese açık uç noktalara yapılan bir çağrı boş veri (`0x`) döndürür ve bu
+yardımcılar hata fırlatır (örneğin `returned no data ("0x")`). Yalnızca
+precompile'ların etkinleştirildiği bir ağda veya düğümde çalışırlar. Önce
+`GET /cosmos/evm/vm/v1/params` adresini kontrol edin ve bkz.
+[EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+:::
 
 Uygulama `@qorechain/evm` içinde ([viem](https://viem.sh) üzerindeki EVM adaptörü)
 yer alır ve keşif için `@qorechain/sdk`'den yeniden dışa aktarılır.
@@ -31,7 +44,7 @@ kontrolünü tek bir tavsiye niteliğindeki sonuçta bir araya getirir:
 import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
 const { publicClient } = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" },
 });
 
 const preflight = await simulateWithRiskScore(publicClient, {
@@ -86,9 +99,10 @@ import { AI_RISK_SCORE_ADDRESS, AI_ANOMALY_CHECK_ADDRESS } from "@qorechain/evm"
 
 ## Kullanılabilirlik
 
-AI precompile'ları QoreChain ağ düğümlerinde bulunur. Düz bir EVM düğümünde
-çağrılar bir "not available" hatası fırlatır — bu yardımcılardan herhangi birinden
-fırlatılan bir hatayı "bu düğümde özellik mevcut değil" olarak değerlendirin.
+Yardımcılar, sorguladığınız düğümde precompile'lar etkin olmadığı sürece hata
+fırlatır: herkese açık ağlarda bu şu anda her zaman böyledir, düz bir EVM düğümünde
+de öyledir. Bu yardımcılardan herhangi birinden fırlatılan bir hatayı "bu düğümde
+özellik mevcut değil" olarak değerlendirin.
 
 Tam precompile listesi için [EVM kılavuzuna](/sdk/guides/evm) ve çalıştırılabilir
 [`ai-preflight` örneğine](https://github.com/qorechain/qorechain-sdk/tree/main/examples/ai-preflight)

@@ -1,7 +1,7 @@
 ---
 slug: /sdk/concepts/accounts-pqc
-title: Accounts & PQC Signing
-sidebar_label: Accounts & PQC
+title: 계정 및 PQC 서명
+sidebar_label: 계정 및 PQC
 sidebar_position: 2
 ---
 
@@ -41,7 +41,7 @@ const svm = await deriveSvmAccount(mnemonic);
 console.log(svm.address); // base58 ed25519 public key
 ```
 
-니모닉은 키가 파생되기 전에 (단어와 체크섬 모두) 검증되므로, 오타가 있으면
+니모닉은 키가 파생되기 전에 (단어와 체크섬 **모두**) 검증되므로, 오타가 있으면
 잘못된 계정을 조용히 생성하는 대신 오류가 발생합니다. `validateMnemonic(mnemonic)`으로
 명시적으로 검증할 수도 있습니다.
 
@@ -88,7 +88,9 @@ SDK **0.6.0**(체인 v3.1.83) 이후, `deriveUnifiedAccount(mnemonic, index = 0)
 | SVM | 12개의 0바이트로 오른쪽 패딩된 20바이트의 base58 (32바이트) |
 
 세 레인 중 **어느 것**에 예치하든 **하나**의 잔액으로 합쳐지며, 이 키는
-모든 레인에서 지출할 수 있습니다:
+모든 레인에서 서명자가 됩니다(EVM 레인에서는
+[승인 창](/sdk/guides/evm#evm-window) 안에서만 가능하며, SVM 트랜잭션 레인은
+현재 네트워크 전체에서 비활성화되어 있어 SVM은 오늘 기준으로 읽기 전용입니다):
 
 ```ts
 import {
@@ -103,7 +105,8 @@ account.cosmos;       // "qor1…"   bech32, Native lane
 account.evm;          // "0x…"     EIP-55 hex, EVM lane
 account.svm;          // "<base58>" 32-byte SVM address (addr20 + 12 zero bytes)
 account.addressBytes; // the raw 20 bytes shared by all three
-account.publicKey;    // 33-byte compressed secp256k1 public key
+account.publicKey;    // "0x…" hex string of the 33-byte compressed secp256k1 key
+account.privateKey;   // "0x…" hex string (a secret: never log or commit it)
 account.pqc;          // { publicKey, secretKey } — ML-DSA-87, derived below
 
 // Decode any ONE encoding into all three:
@@ -128,7 +131,10 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 
 따라서 `{ address, mnemonic }`으로부터 복구할 수 있으며 QoreChain의 모든
 언어 SDK에서 동일합니다. (`unifiedAccountFromSeed`의 경우, 니모닉 자리는
-`"seed:" + hex(seed32)`입니다.)
+`"seed:" + hex(seed32)`입니다.) SDK 0.8.3부터
+`derivePqcCanonical(account, mnemonic)`은 먼저 `account`를 소문자 `qor1…`
+형태(`canonicalAccount`)로 정규화하므로, 대문자 bech32나 같은 계정의 `0x`
+형태도 동일한 키를 생성합니다.
 
 ### eth 키로 Native 레인에서 전송하기
 
@@ -136,30 +142,81 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 클래식 서명은 SignDoc 바이트의 (sha256이 아닌) **keccak256**에 대한
 secp256k1 서명이며, `SignerInfo`의 공개키는 타입 URL
 `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`를 사용합니다. 하이브리드 경로
-(`signHybridEth`)는 추가로 ML-DSA-87 `PQCHybridSignature` 확장을
-첨부하며, 이는 라이브 네트워크에서 필수입니다:
+(`signHybridEth`, 또는 기본 `signMode: "hybrid"`의 `EthNativeSigner`)는
+추가로 ML-DSA-87 `PQCHybridSignature` 확장을 첨부하며, 이는 라이브
+네트워크에서 필수입니다.
+
+첫 하이브리드 전송 전에 두 가지가 필요합니다. 첫째, 계정의 ML-DSA-87
+키가 (한 번) **등록**되어 있어야 합니다. 등록은 클래식 서명으로 보내는,
+하이브리드가 면제되는 유일한 트랜잭션입니다. `signMode: "classical"`로
+서명하세요. 계정의 `publicKey`는 `0x` 헥스 문자열이므로 `ecdsaPubkey`에
+넘기려면 바이트로 디코딩하세요. 둘째, 네트워크가 어떤
+[서명 바이트 형식](#sign-bytes-versions)을 검증하는지 서명자가 물어볼 수
+있도록 `rest`를 서명자에 전달하세요(`qorechain-vladi`와 `qorechain-diana`에서는
+추측하는 대신 예외를 발생시킵니다). SDK 0.8.1 이상과
+`npm i @cosmjs/stargate`가 필요합니다:
 
 ```ts
-import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  buildRegisterPqcKeyMsg,
+  toBase,
+} from "@qorechain/sdk";
 
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+const CHAIN_ID = "qorechain-vladi";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
 const account = await deriveUnifiedAccount(mnemonic);
-const signer = new EthNativeSigner(account); // signMode: "hybrid" by default
 
-// `transport` is anything with broadcastTx (e.g. a connected client).
-await signer.bankSend(
+// The REST account record carries the number and sequence (the account must
+// exist, that is, have received funds).
+async function authInfo() {
+  const { account: base } = await client.rest.get<{
+    account: { account_number: string; sequence: string };
+  }>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+  return { accountNumber: BigInt(base.account_number), sequence: BigInt(base.sequence) };
+}
+
+// 1) Register the ML-DSA-87 key once (classical-signed, exempt from the hybrid rule).
+const classical = new EthNativeSigner(account, { signMode: "classical" });
+await classical.signAndBroadcast(transport, {
+  chainId: CHAIN_ID,
+  ...(await authInfo()),
+  messages: [
+    buildRegisterPqcKeyMsg(account.cosmos, {
+      pqcKeypair: account.pqc,
+      ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+    }),
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
+});
+
+// 2) Send with the hybrid signature (the default signMode).
+const signer = new EthNativeSigner(account, { rest: REST });
+const res = await signer.bankSend(
   transport,
   "qor1recipient…",
-  [{ denom: "uqor", amount: "1000000" }], // 1 QOR
-  { chainId: "qorechain-vladi", accountNumber, sequence, fee },
+  [{ denom: "uqor", amount: toBase("1.5") }],
+  {
+    chainId: CHAIN_ID,
+    ...(await authInfo()),
+    fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  },
 );
+console.log(res.transactionHash);
 ```
 
 더 낮은 수준의 제어가 필요하면, `signHybridEth(params)` / `signClassicalEth(params)`가
 조립된 `TxRaw` 바이트와 서명 아티팩트를 반환하며, `accountAuthInfo(baseAccount)`는
-온체인 공개키가 `eth_secp256k1` 타입 URL을 사용하는 계정으로부터
-`account_number` / `sequence`를 읽습니다. 클래식 전용 경로는 일회성이며
-부트스트랩 예외인 `MsgRegisterPQCKeyV2`를 위한 것입니다. 그 외에는 모두
-하이브리드를 사용하세요.
+온체인 공개키가 `eth_secp256k1` 타입 URL을 사용하는 프로토버프 `BaseAccount`로부터
+`account_number` / `sequence`를 읽습니다(REST JSON 계정은 위의 `authInfo`처럼
+먼저 필드를 매핑해야 합니다).
 
 :::caution 하이브리드 트랜잭션을 위해 SDK 0.6.1 이상으로 업그레이드하세요
 SDK **0.6.1**은 합의에 중요한 인코딩 버그를 수정했습니다:
@@ -171,31 +228,16 @@ JSON으로 직렬화되어 있었고, 체인이 **CheckTx 단계에서 이러한
 거부됩니다. 0.6.1 이상으로 업그레이드하세요.
 :::
 
-### Phantom(P1a): 키를 내보내지 않는 통합 계정
+### Phantom 및 기타 외부 지갑 {#phantom}
 
-`connectPhantomUnified()`(TypeScript)는 결정론적 Phantom 서명으로부터
-정규적이고 **비수탁형**인 통합 계정을 파생합니다. 사용자는 Phantom의
-ed25519 키로 고정된, 도메인 분리된 메시지에 서명하고,
-`shake256(signature, 32)`가 계정의 시드가 됩니다.
+:::danger SDK 0.8.0에서 제거됨
+SDK 0.6.0부터 0.7.0까지는 `connectPhantomUnified()`와 `unifiedAccountFromPhantomSignature()`(0.8.0에서 제거, Python과 Rust는 `unified_account_from_phantom_signature`, Go는 `unified.UnifiedAccountFromPhantomSignature`, Java는 `UnifiedAccounts.unifiedAccountFromPhantomSignature`)를 제공했으며, 이 함수들은 고정 메시지 `QoreChain unified account derivation v1`와 지갑의 base58 공개키에 대한 Phantom 서명으로부터 계정의 지출 키를 파생했습니다.
+ed25519 서명은 결정론적이고 어떤 웹사이트든 지갑에 같은 메시지 서명을 요청할 수 있으므로, 그 서명을 한 번이라도 얻은 사람은 계정의 secp256k1 키와 ML-DSA 키를 재구성할 수 있습니다. 두 함수는 이제 오류를 발생시킵니다.
 
-```ts
-import {
-  connectPhantomUnified,
-  unifiedAccountFromPhantomSignature,
-} from "@qorechain/sdk";
+이 방식으로 계정을 만들었다면 지금 바로 유출된 것으로 간주하세요. 새 니모닉으로 계정을 만들어 자금을 옮긴 뒤, Phantom을 새 계정에 인증자로 연결하세요(아래 참고). 기존 계정은 복구할 수 없습니다. 주소가 노출된 키에 묶여 있고, PQC 키 로테이션은 포스트 퀀텀 부분만 교체하기 때문입니다. SDK 0.8.2 이상을 사용하세요.
+:::
 
-// In the browser (uses window.solana):
-const account = await connectPhantomUnified();
-
-// Or, given a raw signature you already have:
-const same = unifiedAccountFromPhantomSignature(signatureBytes);
-```
-
-파생된 계정은 Phantom의 ed25519 키와는 별개의 정규 키입니다. Phantom은
-파생된 secp256k1/PQC 비밀값을 결코 보지 않습니다. Phantom 키 자체가
-한도 내에서 계정으로부터 지출하도록 허용하려면
-[Authenticators & delegated spending](/sdk/guides/authenticators)를
-참고하세요.
+Phantom(또는 MetaMask) 키로 계정에서 지출하게 하려면 **인증자 레인**을 사용하세요. 지갑 키를 `MsgRegisterAuthenticator`로 등록한 다음, 권한과 `SpendingRule` 범위 안에서 `MsgExecuteCosmos` / `MsgExecuteEVM`으로 정식 PQC 계정에서 지출합니다. 계정은 니모닉에서 파생한 자체 키를 유지하며, 지갑 키는 언제든 취소할 수 있습니다. [인증자 & 위임 지출](/sdk/guides/authenticators)을 참고하세요. 참고로 이 레인을 제공하는 `abstractaccount` 모듈은 현재 두 네트워크 모두에서 꺼져 있으므로(`GET /qorechain/abstractaccount/v1/config`가 `enabled: false`를 표시) 아직 지갑 키를 연결할 수 없습니다. 그때까지는 새 니모닉 계정을 직접 사용하세요.
 
 ## 양자내성암호(PQC)
 
@@ -232,8 +274,9 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ### 교체 가능한 서명자(Pluggable signers)
 
 조합을 위해 SDK는 `Signer` 추상화와 `PqcSigner`, `HybridSigner` 구현,
-그리고 `SignatureMode` 열거형을 제공합니다. 프리미티브를 직접 호출하는
-대신 PQC 서명을 자신의 흐름에 연결하고 싶을 때 이를 사용하세요.
+그리고 `SignatureMode` 타입(`"classical" | "pqc" | "hybrid"`)을 제공합니다.
+프리미티브를 직접 호출하는 대신 PQC 서명을 자신의 흐름에 연결하고 싶을 때
+이를 사용하세요.
 
 ## 하이브리드 서명 {#hybrid-signing}
 
@@ -243,13 +286,15 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 전달됩니다.
 
 :::caution Native 경로에서는 하이브리드 서명이 필수입니다
-현재 체인 버전(**v3.1.97**) 기준으로, 네트워크 기본값은
-`hybrid_signature_mode = required`이며 `allow_classical_fallback = false`입니다.
-`buildHybridTx`(`includePqcPublicKey` 사용)를 통한 하이브리드 서명 —
-또는 통합 eth-네이티브 계정의 경우 `signHybridEth` — 는 Native 경로
-트랜잭션에서 **필수**이며, 클래식 서명만 사용한 Native 트랜잭션은
-온체인에서 거부됩니다. EVM 트랜잭션은 별도의 `eth_secp256k1` 경로를
-사용하며 영향을 받지 않습니다.
+체인 버전 **v3.2.0**(두 네트워크가 실행 중인 버전) 기준으로, 네트워크
+기본값은 `hybrid_signature_mode = required`이며
+`allow_classical_fallback = false`입니다. `buildHybridTx` /
+`signAndBroadcastHybrid`(`rest` 전달)를 통한 하이브리드 서명 —
+또는 통합 eth-네이티브 계정의 경우 `signHybridEth` / `EthNativeSigner` — 는
+Native 경로 트랜잭션에서 **필수**이며, 클래식 서명만 사용한 Native 트랜잭션은
+온체인에서 거부됩니다. EVM 트랜잭션은 별도의 레인이지만, v3.2.0부터는
+등록된 ML-DSA-87 키가 있고
+[승인 창](/sdk/guides/evm#evm-window)이 열려 있는 계정에서만 허용됩니다.
 :::
 
 :::caution SDK 0.6.0 이하의 하이브리드 트랜잭션은 거부됩니다
@@ -259,27 +304,87 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 업그레이드하세요.
 :::
 
+코인 타입 118 계정을 위한 엔드투엔드 빌더는 `signAndBroadcastHybrid`
+(브로드캐스트 없이 빌드만 하려면 `buildHybridTx`)입니다. 클래식 서명자,
+계정의 ML-DSA-87 키쌍, 계정 번호와 시퀀스, 그리고 `rest`가 필요합니다.
+SDK 0.8.3 이상, `npm i @cosmjs/stargate`:
+
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  buildHybridTx,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
+  toBase,
 } from "@qorechain/sdk";
 
-const account = await deriveNativeAccount(mnemonic);
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// buildHybridTx assembles a tx with BOTH a classical signature and an
-// ML-DSA-87 signature attached as a PQCHybridSignature extension.
-// (See packages/ts and the pqc-hybrid-sign example for the full call.)
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address);            // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipient…",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,        // lets the SDK pick the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ### 온체인 전제 조건
 
-하이브리드 트랜잭션이 온체인에서 PQC 검증을 통과하려면, 서명자의 PQC
-공개키가 체인의 `MsgRegisterPQCKey`를 통해 **등록**되어 있어야 합니다 —
-단, `includePqcPublicKey: true`를 설정한 경우는 예외입니다. 이 경우
-확장에 키가 포함되어 체인이 첫 사용 시 자동으로 등록할 수 있습니다.
+하이브리드 트랜잭션이 PQC 검증을 통과하려면, 서명자의 PQC 공개키가
+`MsgRegisterPQCKeyV2`(클래식 서명, 하이브리드 면제)로 **등록**되어 있어야
+합니다. SDK의 `ensurePqcRegistered` / `buildRegisterPqcKeyMsg`,
+`qorechaind tx pqc register-key`, 또는 QoreChain 지갑이 이를 수행합니다.
+`includePqcPublicKey: true`는 확장에 키를 포함시킬 뿐이며 키를 등록하지
+**않습니다**. 체인은 첫 사용 시 키를 자동으로 등록하지 않습니다.
+
+### 어떤 서명 바이트 형식인가? {#sign-bytes-versions}
+
+하이브리드 트랜잭션의 ML-DSA-87 부분은 두 가지 바이트 형식 중 하나에 대해
+서명되며, 네트워크는 어느 높이에서든 정확히 하나만 검증합니다:
+
+```text
+v1: BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+v2: "qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+```
+
+`B0`은 PQC 확장을 제외한 트랜잭션 본문이고 `A`는 `AuthInfo` 바이트입니다.
+`qorechain-vladi`와 `qorechain-diana`는 둘 다 **v2**를 검증합니다. 전환은
+메인넷에서는 업그레이드 이름 `v3.2.0`으로, 테스트넷에서는 `v3.1.98`(이후
+`v3.2.0`)로 기록되었으므로, 클라이언트는 **두** 이름 모두에 대해
+`GET /cosmos/upgrade/v1beta1/applied_plan/{name}`을 조회하고 어느 한쪽의
+높이가 0보다 크면 v2를 사용해야 합니다. SDK가 이를 대신 처리합니다. 모든
+하이브리드 빌더는 `signBytesVersion`(기본값 `"auto"`, 또는 `"v1"` / `"v2"`)을
+받으며, 이 두 체인에서 `"auto"`는 네트워크의 REST URL(`rest`)이 필요합니다.
+추측하는 대신 예외를 발생시킵니다. 고수준 경로는 체인이 `pqc` 코드 21로
+서명을 거부하면 다시 확인한 뒤 한 번 재시도합니다. 단위 테스트에서는 테스트가
+라이브 노드에 의존하지 않도록 `signBytesVersion`을 명시적으로 전달하세요.
+[코드 21 문제 해결](/developer-guide/post-quantum-signing#code-21)도
+참고하세요.
 
 ### 하이브리드 트랜잭션 계약 (개요)
 

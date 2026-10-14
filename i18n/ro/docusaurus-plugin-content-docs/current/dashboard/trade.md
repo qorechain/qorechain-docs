@@ -7,9 +7,13 @@ sidebar_position: 4
 
 # Tranzacționare (DEX)
 
-Pagina **Tranzacționare** este bursa descentralizată a Panoului. Îți permite să schimbi tokenuri și să furnizezi lichiditate direct pe automated market maker-ul (AMM) nativ on-chain al QoreChain — fără registru de ordine off-chain și fără un contract inteligent extern. Schimburile (swap-urile) și acțiunile de lichiditate se decontează la nivel de protocol. Pentru designul din spate, vezi [AMM și lichiditate on-chain](/architecture/amm).
+Pagina **Tranzacționare** este ecranul de schimb de tokenuri al Panoului: schimbi un token cu altul și furnizezi lichiditate unui pool, fără registru de ordine off-chain. Pentru designul automated market maker-ului (AMM) nativ al QoreChain, vezi [AMM și lichiditate on-chain](/architecture/amm).
 
-Conectează-ți portofelul pentru a tranzacționa — vezi [Prezentare generală și primii pași](/dashboard/overview#connect-your-wallet).
+:::caution Deocamdată doar tokenuri de test
+Pool-urile și tokenurile de pe această pagină sunt tokenuri de test: schimburile rulează pe un contract de swap implementat pe EVM-ul testnet-ului, iar pagina are un buton **Get test tokens** pentru ele. Nu considera nimic din ce este afișat aici drept lichiditate cu valoare reală sau drept preț de piață. Modulul AMM nativ al QoreChain este activ, dar încă nu au fost create pool-uri pe niciuna dintre rețele. Această pagină va fi actualizată când vor fi disponibile pool-uri reale.
+:::
+
+Tranzacționarea necesită un cont autentificat și un portofel — vezi [Autentificare](/dashboard/overview#sign-in) și [Conectează-ți portofelul](/dashboard/overview#connect-your-wallet).
 
 Pagina are patru file: **Swap**, **Pools**, **Add Liquidity** și **My Positions**.
 
@@ -30,11 +34,11 @@ O toleranță mai mare la slippage face ca un schimb să aibă șanse mai mari s
 
 ## Pools
 
-Răsfoiește pool-urile de lichiditate disponibile. Fiecare card de pool afișează perechea de tranzacționare, lichiditatea totală, volumul pe 24 de ore, APR-ul și numărul de furnizori. O casetă de căutare filtrează pool-urile după simbolul tokenului.
+Răsfoiește pool-urile de lichiditate disponibile. Fiecare card de pool afișează perechea de tranzacționare, lichiditatea totală, volumul pe 24 de ore și numărul de furnizori. O casetă de căutare filtrează pool-urile după simbolul tokenului.
 
 ## Add Liquidity
 
-Furnizează lichiditate pentru a câștiga o parte din comisioanele de schimb:
+Furnizează lichiditate unui pool și primește o parte din comisioanele de schimb ale acestuia:
 
 1. Selectează cele două tokenuri pe care să le împerechezi (unul este implicit QOR).
 2. Introdu o sumă pentru primul token — a doua sumă se completează automat pentru a corespunde raportului curent al pool-ului.
@@ -44,7 +48,7 @@ Primești tokenuri de furnizor de lichiditate (LP) care reprezintă poziția ta.
 
 ## My Positions
 
-Vizualizează pozițiile de lichiditate pe care le deții. Fiecare intrare afișează perechea de tokenuri, suma din fiecare token, ponderea ta din pool, comisioanele câștigate și APR-ul. Selectează **Remove Liquidity** pe o poziție pentru a previzualiza tokenurile pe care le-ai primi și pentru a-ți retrage partea.
+Vizualizează pozițiile de lichiditate pe care le deții. Fiecare intrare afișează perechea de tokenuri, suma din fiecare token, ponderea ta din pool și comisioanele câștigate. Selectează **Remove Liquidity** pe o poziție pentru a previzualiza tokenurile pe care le-ai primi și pentru a-ți retrage partea.
 
 ## Înrudite
 

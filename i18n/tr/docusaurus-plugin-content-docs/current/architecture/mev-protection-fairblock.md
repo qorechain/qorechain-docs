@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # MEV Koruması (FairBlock)
 
-`x/fairblock` modülü, QoreChain'in Azami Çıkarılabilir Değer (Maximal Extractable Value, MEV) saldırılarına karşı eşik kimlik tabanlı şifreleme kullanan savunmasını uygular. 5 şeritli bir işlem önceliklendirme sistemiyle birleştiğinde, bu, kullanıcıları öne geçme (front-running), sandviç saldırıları ve diğer mempool tabanlı değer çıkarma biçimlerinden koruyan kapsamlı bir MEV karşıtı mimari oluşturur.
+`x/fairblock` modülü, QoreChain'in Azami Çıkarılabilir Değer (Maximal Extractable Value, MEV) saldırılarına karşı eşik kimlik tabanlı şifreleme kullanan savunma tasarımıdır. 5 şeritli bir işlem önceliklendirme sistemiyle birleştiğinde, kullanıcıları öne geçme (front-running), sandviç saldırıları ve diğer mempool tabanlı değer çıkarma biçimlerinden koruyan bir MEV karşıtı mimari oluşturması amaçlanmaktadır.
+
+:::note Mevcut durum (Ekim 2026)
+FairBlock hem mainnet'te hem de testnet'te **devre dışıdır** (`enabled = false`) ve 5 şerit tanımı yalnızca yapılandırmadır: blok alanı şeritleri canlı mempool veya öneri işleyicisi tarafından uygulanmaz. Bu sayfa amaçlanan tasarımı açıklar.
+:::
 
 ## MEV Sorunu
 
@@ -53,7 +57,7 @@ Doğrulayıcılar, işlenmiş işlemler için şifre çözme payları katkısın
 
 ## Uygulama Durumu
 
-Mevcut testnet sürümünde, FairBlock modülü bir **taslak (stub) uygulamasıdır**:
+Her iki canlı ağda da (mainnet ve testnet) FairBlock modülü bir **taslak (stub) uygulamasıdır**:
 
 * `FairBlockDecorator` ante işleyicisi işlem işleme hattına bağlanmıştır ancak tüm işlemleri değişiklik yapmadan **geçirir**.
 * `enabled` `false` olduğunda (varsayılan), dekoratör hemen zincirdeki bir sonraki işleyiciye devreder.
@@ -101,14 +105,12 @@ Gaz soyutlamalı ve sponsorlu işlemler. Bu şerit, bir üçüncü tarafın (uyg
 
 ### Uygulama Durumu
 
-Şerit yapılandırması mevcut testnet sürümünde **yalnızca veridir**. Şerit tanımları (öncelik, blok alanı tahsisi) uygulama başlatılırken kaydedilir, ancak `PrepareProposal` ve `ProcessProposal` aracılığıyla gerçek mempool yeniden sıralaması gelecekteki bir kilometre taşıdır. Şu anda tüm işlemler, şerit atamasından bağımsız olarak standart sırada işlenir.
+Şerit yapılandırması canlı ağlarda **yalnızca veridir**. Şerit tanımları (öncelik, blok alanı tahsisi) uygulama başlatılırken kaydedilir, ancak `PrepareProposal` ve `ProcessProposal` aracılığıyla gerçek mempool yeniden sıralaması gelecekteki bir kilometre taşıdır. Şu anda tüm işlemler, şerit atamasından bağımsız olarak standart sırada işlenir.
 
-## Birleşik MEV Karşıtı Etki
+## Birleşik MEV Karşıtı Etki (tasarım)
 
 1. **Katman 1: Şifreleme (tIBE)** — İşlemler mempool'a girmeden önce şifrelenir. Önerenler içeriği okuyamaz, dolayısıyla çıkarılacak bilgi yoktur.
 2. **Katman 2: Önceliklendirme (Şeritler)** — Şifrelenmiş MEV şeridi işlemleri %20 ayrılmış blok alanı alır. Öncelik 90, tıkanıklık sırasında bile dahil edilmeyi sağlar.
 3. **Katman 3: Eşik Şifre Çözme** — Doğrulayıcılar şifre çözme paylarını yalnızca blok işlendikten sonra açığa çıkarır. Eşik gereksinimi, herhangi bir tek doğrulayıcının erken şifre çözmesini önler.
 
-Sonuç: Bilgi asimetrisi, işlem yaşam döngüsünün yayından yürütmeye kadar her aşamasında ortadan kaldırılır.
-
-Bu yaklaşım, eşik gereksinimi güveni doğrulayıcı kümesine dağıttığından, zaman gecikmeli şifre çözme veya tek taraflı taahhüt-açıklama şemalarından kesinlikle üstündür.
+Amaçlanan sonuç: FairBlock etkinleştirildiğinde bilgi asimetrisi, işlem yaşam döngüsünün yayından yürütmeye kadar her aşamasında ortadan kaldırılır. Eşik gereksinimi, zaman gecikmeli şifre çözme veya tek taraflı taahhüt-açıklama şemalarının sağlamadığı şekilde güveni doğrulayıcı kümesine dağıtır.

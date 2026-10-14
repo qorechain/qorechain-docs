@@ -7,25 +7,21 @@ sidebar_position: 6
 
 # Déploiement de rollups
 
-Ce guide explique comment déployer des rollups spécifiques à une application sur QoreChain à l'aide du Rollup Development Kit (RDK). Le RDK fournit des profils prédéfinis pour les cas d'usage courants et une personnalisation complète pour les déploiements avancés.
+Ce guide est une courte présentation du lancement d'un rollup spécifique à une application qui se règle sur QoreChain à l'aide du Rollup Development Kit (RDK). Les commandes pas à pas se trouvent dans **[Déployer un rollup](/rollups/deploying-a-rollup)** ; cette page couvre ce dont vous avez besoin avant de commencer.
 
-:::caution
-Le RDK et la couche de règlement des rollups sont une capacité en évolution active. Considérez les paramètres, les profils prédéfinis et la maturité des fonctionnalités individuelles ci-dessous comme susceptibles de changer, et validez les déploiements sur **`qorechain-diana`** avant de viser le mainnet.
-:::
-
-:::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.97** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors d'un déploiement sur le mainnet.
+:::caution Capacité à un stade précoce
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau. Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.1** ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute une version plus récente (**v3.2.2**). Validez d'abord sur le testnet.
 :::
 
 ---
 
-## Aperçu
+## Ce qu'est un rollup ici {#what-a-rollup-is-here}
 
-Le RDK de QoreChain permet aux développeurs de lancer des rollups souverains qui se règlent sur QoreChain. Chaque rollup est un environnement d'exécution indépendant avec son propre temps de bloc, sa machine virtuelle et son modèle de frais, tout en héritant des garanties de sécurité et de disponibilité des données de QoreChain.
+Un rollup QoreChain est une chaîne spécifique à une application qui **s'exécute hors chaîne** et utilise QoreChain pour le **règlement** : vous enregistrez le rollup on-chain, publiez des lots de racines d'état et (facultativement) des blobs de données et des engagements de retrait. L'enregistrement on-chain contient un profil, un mode de règlement, un mode de séquenceur, un backend de disponibilité des données, un modèle de gas et un label de VM ; la chaîne hôte n'exécute pas les transactions de votre rollup.
 
 ---
 
-## Profils prédéfinis
+## Profils prédéfinis {#preset-profiles}
 
 Le RDK est livré avec cinq profils prédéfinis, chacun réglé pour une catégorie d'application courante :
 
@@ -35,206 +31,34 @@ Le RDK est livré avec cinq profils prédéfinis, chacun réglé pour une catég
 | **gaming**     | based               | based     | natif           | forfaitaire         | custom   | État de jeu à haut débit et expériences en temps réel |
 | **nft**        | optimistic (fraude)  | dédié | natif (DA Celestia prévue) | standard | CosmWasm | Charges de travail de frappe et de place de marché NFT |
 | **enterprise** | based               | based     | natif          | subventionné   | EVM      | Déploiements avec permissions et consortiums, avec frais sponsorisés |
-| **custom**     | entièrement paramétré | entièrement paramétré | entièrement paramétré | entièrement paramétré | entièrement paramétré | Définissez chaque champ vous-même |
+| **custom**     | valeurs par défaut : optimistic (fraude) | dédié | natif | standard | EVM | Valeurs par défaut de départ ; ajustez ce que le message permet |
 
-:::note
-Les valeurs par profil ci-dessus correspondent aux valeurs par défaut des profils livrés avec `@qorechain/rdk`. La configuration exacte peut évoluer à mesure que le RDK mûrit — interrogez les valeurs faisant autorité avec `qorechaind query rdk config` (ou `RdkClient.params()`), et notez que le règlement `based` est toujours associé au mode de séquenceur `based`.
-:::
+Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les notes de maturité (par exemple, un rollup `defi` créé via la CLI ne peut pas encore finaliser de lots ZK, et le séquençage `based` signifie actuellement que le créateur soumet).
 
 ---
 
-## Prérequis
+## Prérequis {#requirements}
 
-Avant de déployer un rollup, assurez-vous de remplir les conditions suivantes :
-
-| Prérequis       | Détails                                                                                |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| **Mise minimale** | 10 000 QOR (10 000 000 000 uqor)                                                       |
-| **Brûlage à la création** | 1 % du montant misé est définitivement brûlé lors de la création du rollup                       |
-| **Compte**       | Un compte QoreChain approvisionné, avec un solde suffisant pour couvrir la mise et les frais de transaction |
-
----
-
-## Créer un rollup à partir d'un profil prédéfini
-
-Déployez un rollup en utilisant l'un des profils prédéfinis :
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "my-defi-rollup" \
-  --profile defi \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Exemple :** déployer un rollup de jeu :
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "battle-arena" \
-  --profile gaming \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+| Prérequis | Détails |
+| ----------- | ------- |
+| **Mise du rollup** | Au moins 10 000 QOR (`min_stake_for_rollup`, 10 000 000 000 uqor). Lisez la valeur en vigueur : `qorechaind query rdk config` |
+| **Brûlage à la création** | 1 % de la mise que vous fournissez est brûlé à la création ; le reste est placé sous séquestre et restitué lorsque vous arrêtez le rollup |
+| **Mise d'enregistrement de la couche** | La création d'un rollup enregistre aussi une couche auprès du module multilayer, ce qui verrouille 1 000 QOR supplémentaires du créateur (restitués à l'arrêt du rollup). Sans ce solde, la couche n'est pas créée et le rollup ne peut pas être ancré |
+| **Compte** | Un compte approvisionné avec une clé post-quantique enregistrée (chaque transaction du lane natif est signée en hybride) |
 
 ---
 
-## Créer un rollup personnalisé
+## Astuces {#tips}
 
-Pour un contrôle total sur les paramètres du rollup, utilisez le profil `custom` et spécifiez chaque option :
-
-```bash
-qorechaind tx rdk create-rollup \
-  --rollup-id "my-rollup" \
-  --profile custom \
-  --settlement optimistic \
-  --sequencer dedicated \
-  --da-backend native \
-  --vm-type evm \
-  --block-time 1000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Paramètres personnalisés :**
-
-| Paramètre      | Options                                       | Description                        |
-| -------------- | --------------------------------------------- | ---------------------------------- |
-| `--settlement` | `optimistic`, `zk`, `based`, `sovereign`      | Comment les transitions d'état sont vérifiées |
-| `--sequencer`  | `dedicated`, `shared`, `based`                | Stratégie d'ordonnancement des transactions      |
-| `--da-backend` | `native`, `external`                          | Couche de disponibilité des données            |
-| `--vm-type`    | `evm`, `cosmwasm`, `custom`                   | Environnement d'exécution              |
-| `--block-time` | Entier (millisecondes)                        | Intervalle cible de production de blocs   |
+* Commencez par un profil prédéfini. Les profils prédéfinis fixent le mode de règlement, le séquenceur, le backend de disponibilité des données et la VM ; `create-rollup` ne prend que l'id, le profil, la mise et un `--vm` facultatif.
+* Le brûlage à la création de 1 % s'applique à la mise que vous fournissez.
+* Le créateur du rollup est aujourd'hui celui qui soumet les lots (aucun profil prédéfini ne définit d'adresse de séquenceur) ; gardez donc la clé du créateur en sécurité : seul le créateur peut mettre en pause, reprendre ou arrêter le rollup.
+* L'assistant `suggest-profile` renvoie actuellement un repli fixe `defi` sur les points de terminaison publics ; choisissez donc dans le tableau des profils.
 
 ---
 
-## Soumettre des lots
+## Prochaines étapes {#next-steps}
 
-Les opérateurs de rollups soumettent des lots de transactions à QoreChain pour règlement :
-
-```bash
-qorechaind tx rdk submit-batch \
-  --rollup-id "my-rollup" \
-  --state-root <hex_encoded_state_root> \
-  --tx-count 500 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Exemple :**
-
-```bash
-qorechaind tx rdk submit-batch \
-  --rollup-id "my-rollup" \
-  --state-root a1b2c3d4e5f6... \
-  --tx-count 500 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
----
-
-## Gestion du cycle de vie d'un rollup
-
-Les opérateurs de rollups peuvent gérer le cycle de vie de leurs déploiements :
-
-1. **Mettre un rollup en pause** — Interrompt temporairement la production de blocs. L'état du rollup est préservé et peut être repris.
-
-   ```bash
-   qorechaind tx rdk pause-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-2. **Reprendre un rollup** — Reprend la production de blocs sur un rollup en pause :
-
-   ```bash
-   qorechaind tx rdk resume-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-3. **Arrêter un rollup (permanent)** — Arrête définitivement un rollup. Cette action est **irréversible**.
-
-   ```bash
-   qorechaind tx rdk stop-rollup \
-     --rollup-id "my-rollup" \
-     --from mykey \
-     --chain-id qorechain-diana \
-     --fees 500uqor
-   ```
-
-:::danger
-L'arrêt d'un rollup est permanent. L'ensemble de l'état associé est archivé, mais le rollup ne peut pas être redémarré. Le QOR misé (moins le brûlage à la création) est restitué à l'opérateur.
-:::
-
----
-
-## Interroger les rollups
-
-Obtenez les détails d'un rollup spécifique :
-
-```bash
-qorechaind query rdk rollup <rollup_id>
-```
-
-Listez tous les rollups sur QoreChain :
-
-```bash
-qorechaind query rdk rollups
-```
-
-**Exemple de sortie :**
-
-```yaml
-rollup:
-  id: "my-defi-rollup"
-  owner: qor1abc...xyz
-  profile: defi
-  settlement: zk
-  vm_type: evm
-  block_time: 500ms
-  status: active
-  total_batches: 1247
-  last_state_root: "a1b2c3d4..."
-```
-
----
-
-## Suggestion de profil assistée par QCAI
-
-Vous ne savez pas quel profil convient à votre cas d'usage ? Utilisez l'outil de suggestion assistée par QCAI :
-
-```bash
-qorechaind query rdk suggest-profile --use-case "defi lending protocol"
-```
-
-**Exemple de sortie :**
-
-```yaml
-suggested_profile: defi
-confidence: 0.94
-reasoning: "DeFi lending protocols benefit from ZK settlement for fast finality, EVM compatibility for Solidity smart contracts, and EIP-1559 fee model for predictable gas costs."
-alternative_profile: enterprise
-```
-
-Cette commande analyse votre description et recommande le profil prédéfini le plus adapté, accompagné d'une explication.
-
----
-
-## Astuces
-
-* Commencez par un profil prédéfini et personnalisez-le ensuite. Les profils prédéfinis sont optimisés pour leurs cas d'usage cibles.
-* Le brûlage à la création de 1 % est un coût unique appliqué à la mise minimale au moment du déploiement.
-* Utilisez le règlement `based` si vous voulez la configuration la plus simple, avec les validateurs QoreChain qui gèrent le séquençage.
-* Surveillez de près les soumissions de lots. Des interruptions dans la soumission des lots peuvent déclencher des alertes sur le réseau.
-* La commande `suggest-profile` est un bon point de départ, mais comparez toujours la recommandation à vos exigences spécifiques.
+* [Déployer un rollup](/rollups/deploying-a-rollup) — créer, exploiter et arrêter un rollup depuis la CLI ou TypeScript.
+* [Présentation des rollups](/rollups/overview) — modes de règlement, séquenceurs, systèmes de preuve.
+* [Disponibilité des données](/rollups/data-availability) et [ZK / STARK et retraits](/rollups/zk-stark-withdrawals).

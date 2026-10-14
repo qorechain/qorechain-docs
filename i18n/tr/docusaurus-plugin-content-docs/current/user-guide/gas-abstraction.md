@@ -7,139 +7,63 @@ sidebar_position: 7
 
 # Gas Soyutlama
 
-Bu kılavuz, kullanıcıların işlem ücretlerini QOR yerine yerel olmayan tokenlarla ödemesine olanak tanıyan QoreChain'in gas soyutlama özelliğini açıklar.
+Bu sayfa, tasarımı kullanıcıların işlem ücretlerini QOR yerine kabul edilen yerel olmayan bir tokenla ödemesine olanak tanıyan QoreChain'in gas soyutlama özelliğini açıklar. **Bugün hiçbir ağda kullanılamaz**; bu sayfa tasarımı ve bunun yerine ne yapacağınızı açıklar.
 
-:::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.97** zincir sürümünü çalıştırarak yayında — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+:::caution Henüz kullanılamıyor
+Ücretleri yerel olmayan bir tokenla ödemek bugün ana ağda (**`qorechain-vladi`**, düğüm sürümü **v3.2.1**) veya test ağında (**`qorechain-diana`**) **çalışmaz**.
+
+* Gas soyutlama sorguları ana ağda sunulmaz: `qorechaind query gasabstraction accepted-tokens` yardım metnini yazdırır ve `/qorechain/gasabstraction/v1/config` REST yolu `Not Implemented` döndürür.
+* Hiçbir ağda açık bir IBC kanalı yoktur; bu nedenle ödeme yapılabilecek bir `ibc/USDC` veya `ibc/ATOM` bakiyesi var olamaz.
+* Ağ ücret tabanı `uqor` cinsinden kontrol edilir; bu nedenle başka bir birimdeki ücret reddedilir.
+
+Her ücreti `uqor` ile ödeyin. Canlı bir ağda bir token kabul edildiğinde bu sayfa güncellenecektir.
 :::
+
+---
+
+## Bugün çalışan: ücretleri uqor ile ödeyin
+
+Her işlem gas birimi başına en az **0,1 uqor** öder. Gas limitini ve ücreti birlikte ayarlayın:
+
+```bash
+qorechaind tx bank send mykey qor1recipient... 5000000uqor \
+  --gas 400000 --fees 40000uqor \
+  --chain-id qorechain-vladi --generate-only > tx.json
+```
+
+Ardından [İşlem Komutları](/cli-reference/transaction-commands#hybrid-signing) bölümünde açıklandığı gibi `qorechaind tx pqc cosign` ile hibrit imzalayıp yayınlayın. İşlem türü başına önerilen limitler için bkz. [Ücretler ve gas](/cli-reference/transaction-commands#fees-and-gas).
 
 ---
 
 ## Genel Bakış
 
-Gas soyutlama, işlem ücretlerini ödemek için QOR token tutma gerekliliğini ortadan kaldırır. Kabul edilen alternatif tokenları (IBC ile transfer edilen USDC veya ATOM gibi) tutan kullanıcılar, bu tokenları doğrudan ücret ödemesi olarak kullanabilir. Protokol, işlemeden önce ücret tutarını otomatik olarak yerel eşdeğerine dönüştürür.
+Gas soyutlama, işlem ücretlerini ödemek için QOR tutma gerekliliğini ortadan kaldırmak üzere tasarlanmıştır. Kabul edilen alternatif bir token tutan kullanıcı (örneğin IBC ile transfer edilen bir stablecoin), ücreti o tokenla öder ve protokol, işlemeden önce ücret tutarını yerel eşdeğerine dönüştürür.
 
 ---
 
-## Kabul Edilen Tokenlar
+## Hedeflenen tasarım
 
-Aşağıdaki tokenlar ücret ödemesi için kabul edilir:
+### Kabul Edilen Tokenlar
 
-| Token              | Birim        | Dönüşüm Oranı   | Örnek Ücret          |
-| ------------------ | ------------ | --------------- | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (yerel)     | `--fees 500uqor`     |
-| **USDC** (IBC ile) | `ibc/USDC`   | 1.0             | `--fees 500ibc/USDC` |
-| **ATOM** (IBC ile) | `ibc/ATOM`   | 10.0            | `--fees 50ibc/ATOM`  |
+Modülün genesis yapılandırması bu tokenları ve protokol tarafından tanımlanan dönüşüm oranlarını listeler. Bunlar ücret amaçlı değişim oranlarıdır, piyasa fiyatları değildir. Bugün ağlarda yalnızca `uqor` var olabilir (yukarıdaki bildirime bakın).
 
-:::note
-Dönüşüm oranları, piyasa fiyatlarını değil, protokol tarafından tanımlanan değişim oranını yansıtır. ATOM için 10.0 oranı, ücret amaçları açısından 1 birim ibc/ATOM'un 10 birim uqor'a eşdeğer olduğu anlamına gelir.
-:::
+| Token              | Birim        | Dönüşüm Oranı   |
+| ------------------ | ------------ | --------------- |
+| **QOR**            | `uqor`       | 1.0 (yerel)     |
+| **USDC** (IBC ile) | `ibc/USDC`   | 1.0             |
+| **ATOM** (IBC ile) | `ibc/ATOM`   | 10.0            |
 
----
+### Nasıl çalışması amaçlanıyor
 
-## Nasıl Çalışır
+QoreChain'in `GasAbstractionDecorator`'ı işlem işleme hattında yer alır. Ücreti yerel olmayan bir birimde olan bir işlem için:
 
-QoreChain'in `GasAbstractionDecorator`'ı işlem işleme hattına entegre edilmiştir. Bir işlem, yerel olmayan bir birimde ücret içerdiğinde aşağıdakiler gerçekleşir:
-
-1. **Ücret İncelemesi** — Decorator, işlemde belirtilen ücret birimini kontrol eder.
-2. **Oran Araması** — Birim kabul edilen tokenlar listesindeyse, protokol ilgili dönüşüm oranını arar.
-3. **Dönüşüm** — Ücret tutarı, dönüşüm oranı kullanılarak yerel uqor eşdeğerine dönüştürülür.
-4. **Standart İşleme** — Dönüştürülen ücret, gönderenin hesabından düşülmek üzere standart `DeductFee` işleyicisine aktarılır. Dönüşüm, işlem hattının geri kalanı için şeffaftır. Tüm alt seviye ücret işlemleri (doğrulayıcılara dağıtım, yakma, hazine tahsisi, staker ödülleri ve hafif düğüm ödülleri) yerel uqor eşdeğeri üzerinde çalışır.
+1. **Ücret İncelemesi** — decorator ücret birimini okur.
+2. **Oran Araması** — birim kabul edilen tokenlar listesindeyse, ilgili dönüşüm oranı aranır.
+3. **Dönüşüm** — ücret, yerel `uqor` eşdeğerine dönüştürülür.
+4. **Standart İşleme** — dönüştürülen ücret standart ücret kesinti işleyicisinden geçer; böylece alt seviye ücret işlemleri (doğrulayıcılara dağıtım, yakma, hazine, staker ve hafif düğüm payları) yerel eşdeğer üzerinde çalışır.
 
 ---
 
-## Kullanım Örnekleri
+## Yapılandırmayı sorgulama
 
-### Ücretleri USDC ile Ödeme
-
-Ücretleri USDC ile ödenen bir token transferi gönderin:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 500ibc/USDC
-```
-
-USDC'nin 1.0 dönüşüm oranı olduğundan, 500 ibc/USDC, 500 uqor'a eşdeğerdir.
-
-### Ücretleri ATOM ile Ödeme
-
-Ücretleri ATOM ile ödenen bir token transferi gönderin:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 50ibc/ATOM
-```
-
-ATOM'un 10.0 dönüşüm oranı olduğundan, 50 ibc/ATOM, 500 uqor'a eşdeğerdir.
-
----
-
-## Kabul Edilen Tokenları Sorgulama
-
-Gas soyutlama için şu anda kabul edilen tokenların listesini, dönüşüm oranlarıyla birlikte alın:
-
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-**Örnek çıktı:**
-
-```yaml
-accepted_tokens:
-- denom: uqor
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/USDC
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/ATOM
-  conversion_rate: "10.000000000000000000"
-```
-
----
-
-## JSON-RPC Erişimi
-
-JSON-RPC aracılığıyla entegre olan uygulamalar için gas soyutlama yapılandırmasını sorgulayın:
-
-```
-qor_getGasAbstractionConfig
-```
-
-**İstek:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "qor_getGasAbstractionConfig",
-  "params": [],
-  "id": 1
-}
-```
-
-**Yanıt:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "accepted_tokens": [
-      { "denom": "uqor", "conversion_rate": "1.0" },
-      { "denom": "ibc/USDC", "conversion_rate": "1.0" },
-      { "denom": "ibc/ATOM", "conversion_rate": "10.0" }
-    ]
-  }
-}
-```
-
----
-
-:::tip
-
-* Gas soyutlama, henüz QOR tutmayabilecek, diğer ekosistemlerden katılan kullanıcılar için idealdir.
-* Dönüşüm oranları yönetişim tarafından belirlenir ve parametre değişikliği teklifleri aracılığıyla güncellenebilir.
-* Birden fazla kabul edilen token tutuyorsanız, herhangi bir işlem türünde ücretler için bunlardan herhangi biri kullanılabilir.
-* `--fees` içinde belirtilen asıl token hesabınızdan düşülür. Dönüşüm yalnızca ücretin asgari gereksinimi karşıladığını doğrulamak için kullanılır.
-
-:::
+Ana ağ henüz gas soyutlama sorgularını sunmaz ve `qor_getGasAbstractionConfig` JSON-RPC yöntemi hiçbir genel uç noktada sunulmaz (bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace)). Şu anda canlı bir kabul edilen token listesini okumanın genel bir yolu yoktur.

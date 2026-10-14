@@ -26,8 +26,10 @@ sidebar_position: 10
 マニフェストのフィールドには、`binary`(URLとsha256)、`genesis`(URL、sha256、sizeBytes)、`peers`、`seeds`、`p2pPort`、`stateSync`(1時間ごとに更新される信頼点)、`minCompatible`が含まれます。以下のインストールおよび参加手順では、このマニフェストを取得し、その時点の値を使用します。
 :::
 
-:::caution 新規参加ノードにはv3.1.94以降が必須
-ジェネシスから同期する、またはアーカイブ/スナップショットからリプレイするノードは**v3.1.94以降**である必要があります。理由は2つ重なっています——v3.1.92では、修正済みとなったガス計測のバグにより、リプレイ中にトランザクションを含む最初のブロックで停止していましたが、それに加えてメインネットはその後v3.1.94のガバナンスアップグレード(発行上限のハードキャップ、ブロック高2,122,074で適用)を経ています——このアップグレードのハンドラーを持たないノードは、同じブロック高をリプレイしようとして再び停止します。v3.1.97が現在推奨されるバージョンです(コンセンサスを破壊しない、継続的なセキュリティアップデート)。`minCompatible`は`3.1.94`です。マニフェストはまずテストネットで、猶予期間を置いてからメインネットで昇格されるため意図的に遅れて反映されることがあり、これまでもこの下限より遅れていたことがあります——`binary.url`を信頼する前にマニフェストの`"version"`フィールドを確認し、遅れている場合は[qorechain-core GitHub リリース](https://github.com/qorechain/qorechain-core/releases)を使うか、ソースからビルドしてください。
+:::caution 新規参加ノードにはv3.2.0以降が必須
+ジェネシスから同期する、またはスナップショットからリプレイするノードは、複数のガバナンスアップグレード(たとえば、ブロック高2,122,074でのv3.1.94の発行上限や、ブロック高2,981,742でのv3.2.0アップグレード)を通過します。そのため、必ずマニフェストが指すバイナリをインストールしてください。そのバイナリにはすべてのアップグレードハンドラーが含まれています。新規のメインネットノードには**v3.2.0以降**が必要です。マニフェストの`minCompatible`は`3.2.0`で、これはチェーンに追従できる最も古いリリースです。また`version`(現在は`3.2.1`)が推奨バージョンで、アップグレード高を伴わないノードローカルのリリースです。マニフェストはまずテストネットで、猶予期間を置いてからメインネットで意図的に昇格されるため、`binary.url`を信頼する前に、マニフェストの`"version"`フィールドを`minCompatible`と照らし合わせて確認してください。テストネットでは、`minCompatible`は`version`と同じです(現在は`3.2.2`)。
+
+v3.2.1以降では2つの設定が重要です。システムクロックをNTPで同期させておくこと(ノードはクロックのずれが60秒を超えると停止します)、そして`app.toml`で`evm-chain-id`を設定することです([ノードの制限](#node-limits)を参照)。
 :::
 
 ---
@@ -39,7 +41,7 @@ sidebar_position: 10
 | コンセンサス鍵       | なし                                              | ed25519コンセンサス鍵(要保護)    |
 | ブロック生成    | なし                                              | あり——ブロックを提案・署名する           |
 | ステーキング/スラッシング  | 該当なし                                                | セルフデリゲーション、スラッシングリスク             |
-| 主な目的     | インテグレーション向けにRPC/REST/gRPC/EVM/SVMを提供する     | ネットワークを保護し、報酬を得る           |
+| 主な目的     | インテグレーション向けにRPC/REST/gRPC/EVM(および読み取り専用のSVM)を提供する     | ネットワークを保護する(ステーキング報酬が適用される)           |
 | 公開範囲     | 通常はRPC/EVMエンドポイントを公開             | サントリーノードの背後に隠されたバリデーター       |
 
 ---
@@ -48,7 +50,7 @@ sidebar_position: 10
 
 | ネットワーク  | チェーンID            | EVMチェーンID         | 備考                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| メインネット  | `qorechain-vladi`   | `9801`(16進数 `0x2649`) | 主要——2026年6月7日より稼働中 |
+| メインネット  | `qorechain-vladi`   | `9801`(16進数 `0x2649`) | 主要——2026年6月29日より稼働中 |
 | テストネット  | `qorechain-diana`   | `9800`               | まずここで統合をリハーサルすること |
 
 本ガイド全体を通して、対象ネットワークに合わせて適切な`--chain-id`に置き換えてください。例ではデフォルトでメインネットを使用しています。
@@ -71,19 +73,33 @@ NVMe SSDを強く推奨します——チェーンの状態およびEVM/SVMス�
 
 ### Docker Compose
 
-Docker Composeによるノードのみのデプロイです。まだ公開されている`qorechaind`イメージは存在しないため、リポジトリの`Dockerfile`から自分でビルドし、稼働中のチェーンバージョン(メインネットでは**v3.1.97**)にタグを合わせ、チェーンデータ用に永続ボリュームをマウントしてください。
+Docker Composeによるノードのみのデプロイです。まだ公開されている`qorechaind`イメージは存在しません。公開リポジトリの`Dockerfile`は**コミュニティ**バイナリ(ポスト量子ライブラリなし、スタブkeeper)をビルドします。これはローカル開発には適していますが、メインネットやテストネットには追従できません。ネットワークノードの場合は、`latest.json`に記載された**リリースアーカイブ**から自分でイメージをビルドし、リリースバージョン(メインネットでは**v3.2.1**、テストネットでは**v3.2.2**)でタグ付けしたうえで、チェーンデータ用に永続ボリュームをマウントしてください。
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+アーカイブには`qorechaind`と、その共有ライブラリ(`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`)を収めた`lib/`ディレクトリが含まれます。上記のイメージはリリースアーカイブと同様に`linux/amd64`専用です。
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-データディレクトリを一度初期化してから(ジェネシスとピア設定は以下で説明します)、起動します。
+データディレクトリを一度初期化してから(たとえば`docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`。ジェネシスとピア設定は以下で説明します)、起動します。
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. マニフェストの取得
+### 2. マニフェストの取得 {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-以下の手順では、このファイルをバイナリ、ジェネシス、ピアの値の情報源として使用してください——`jq -r .minCompatible latest.json`を確認しますが、そのフィールドが遅れていても上記の**v3.1.94の下限**が適用されることに変わりはない点に注意してください。
+以下の手順では、このファイルをバイナリ、ジェネシス、ピアの値の情報源として使用してください——`jq -r .minCompatible latest.json`を確認し、少なくともそのリリースを実行してください(推奨リリースは`jq -r .version latest.json`です)。
 
 ### 3. ジェネシスのダウンロードと検証
 
@@ -166,7 +182,7 @@ GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
 curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
 echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
-# チェーンがライブで配信しているジェネシスと突き合わせて検証する:
+# Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
@@ -191,6 +207,8 @@ seeds = "<value of $SEEDS>"
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi`は、ネットワークのEVMチェーンIDも`app.toml`に書き込みます([ノードの制限](#node-limits)を参照)。ずっと前に初期化したhomeでは、この設定を確認してください。
 
 ### 5. 同期の開始
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### スナップショットからの復元
 
-代わりに、公開されているチェーンデータのスナップショットをダウンロードし、チェックサムを検証してから、データディレクトリに展開する方法もあります。マニフェストには現時点でスナップショットへのポインタが含まれていないため、ファイル名をハードコードするのではなく、現在のファイル名とチェックサムについて[download.qore.host](https://download.qore.host)のライブ一覧を確認してください。
+代わりに、公開されているチェーンデータのスナップショットをダウンロードし、チェックサムを検証してから、データディレクトリに展開する方法もあります。メインネットでは、マニフェストの`snapshot`オブジェクトにURL、ブロック高(`height`)、サイズ、SHA-256が含まれます(テストネットのマニフェストには現在URLのみが含まれているため、そちらではステートシンクを使用してください)。使用する前に`snapshot.height`を確認してください。メインネットのスナップショットは約27 GBの単一アーカイブであり、古いものは追いつきに長い時間がかかります(現在公開されているメインネットのスナップショットは、v3.1.94とv3.2.0の両方のアップグレード高より前のものであるため、そこから復元したノードはv3.2.xバイナリでそれらをリプレイする必要があります)。
 
 ```bash
-# download.qore.host の一覧にある現在のファイル名とチェックサムに置き換えること
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # 併せて公開されているチェックサムと比較する
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-スナップショットは頻繁に変化する**ブロック高が刻まれたファイル名**で公開されます——最新のスナップショットとそのSHA-256チェックサムについては[download.qore.host](https://download.qore.host)を確認し、展開前に必ず検証してください。上記の**v3.1.94という最低要件**は、スナップショットからのリプレイにも適用される点に注意してください。
+マニフェストの`snapshot.height`と`snapshot.ts`フィールドはアーカイブの新しさを示しており、通常はステートシンク(上記)の方が27 GBのダウンロードより高速です。展開前に必ずチェックサムを検証し、スナップショットからリプレイする際は、すべてのアップグレードハンドラーを含むノードリリースを使用してください(このページ冒頭の注意を参照)。
 :::
 
 ---
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | 最近の状態を保持し、それ以外はプルーニングする      | RPCノード、残高/状態の照会   |
 | `nothing`   | すべての履歴状態を保持する               | アーカイブノード、完全な履歴                    |
 | `custom`    | オペレーターが定義する保持/間隔の値    | 保持期間のチューニング                    |
+
+### ノードの制限(`app.toml`) {#node-limits}
+
+ノードリリースv3.2.1以降、`init`は3つのノードローカルな制限を持つ`[qorechain]`セクションを書き込みます。これらが変更するのは、このノードがメモリに保持するものと、提案するブロックに含めるものだけであり、ブロックが有効であるために含まなければならない内容を変えることはありません。
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init`は、ネットワークのEVMチェーンIDも`app.toml`の`[evm]`の`evm-chain-id`設定に書き込みます(`--chain-id qorechain-vladi`では`9801`、`qorechain-diana`では`9800`)。`app.toml`に異なる値が入っているノードも起動はしますが、起動時にエラーをログに記録し、そのノード自身のJSON-RPC(`eth_chainId`、そのノードに対する署名)は、ファイルを修正するまで誤ったチェーンIDで応答します。コンセンサスには影響しません。古いバイナリは`--chain-id`に関係なくテストネットの値(`9800`)を書き込んでいたため、ずっと前に初期化されたメインネットノードはこの設定を確認してください。`QORE_EVM_CHAIN_ID`にネットワークの値以外を設定しないでください。そのようなノードは起動を拒否します。
 
 ### トランザクションインデックス(`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+公開エンドポイントは`eth_`、`net_`、`web3_`、`txpool_`の各名前空間を提供します。`qor_`名前空間はリリース済みのどのノードビルドでも提供されていないため、追加しないでください([`qor_`名前空間](/api-reference/json-rpc-qor_-namespace)を参照)。
 
 そして`config.toml`でRPCリスナーを設定します。
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | 高スループットなプログラムからのアクセス                    |
 | EVM JSON-RPC | `8545`  | Ethereum互換の統合(チェーンID `9801`)     |
 | EVM WS       | `8546`  | EVMイベントの購読                            |
-| SVM RPC      | `8899`  | Solana互換の統合                         |
+| SVM RPC      | `8899`  | Solana互換の読み取り(SVMトランザクションは無効)                         |
 
 :::warning
 リバースプロキシ、レート制限、認証、ファイアウォールなしに、RPC、EVM JSON-RPC、gRPCを直接インターネットに公開しないでください。`0.0.0.0`へのバインドは、制御された入口層の背後でのみ行ってください。
@@ -334,7 +374,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 * `false` — 完全に同期済みで、現在の状態を提供中。
 
 ```bash
-# 最新のブロック高とネットワーク
+# Latest height and network
 curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .result.node_info.network'
 ```
 
@@ -342,7 +382,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .res
 
 ### PrometheusとGrafana
 
-QoreChainはポート**26660**でPrometheusメトリクスを公開します。
+ノードはポート**26660**でPrometheusメトリクスを公開できます(`config.toml`の`[instrumentation]`セクションで`prometheus = true`を設定します)。
 
 ```
 http://localhost:26660/metrics
@@ -356,14 +396,14 @@ Prometheus互換の任意のコレクターでこれをスクレイプしてく�
 curl -s -X POST http://localhost:8545 \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}'
-# メインネットでは "0x2649"(9801)が返るはず
+# Expect "0x2649" (9801) on mainnet
 ```
 
 ---
 
 ## 運用上のベストプラクティス
 
-1. **チェーンバージョンを固定する。** 稼働中のタグ(メインネットでは**v3.1.97**)を実行し、協調アップグレードのため公式リリースを追跡してください。
+1. **チェーンバージョンを固定する。** マニフェストが推奨するリリース(メインネットでは**v3.2.1**)を実行し、協調アップグレードのため公式リリースを追跡し、システムクロックをNTPで同期させておいてください。
 
 2. **冗長なノードを運用する。** 単一ノードの再起動や再同期が統合トラフィックを中断させないよう、ロードバランサーの背後に少なくとも2台のノードを配置してください。
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **同期を継続的に監視する。** ブロック高の遅延、ピア数ゼロ、`catching_up`で行き詰まったノードについてアラートを設定してください。
 
-フルノードを実行しない超軽量な読み取りアクセスについては、**ライトノード**のドキュメントを参照してください。
+ノードのみのデプロイは署名を一切行いません。統合がこのノード経由でブロードキャストするトランザクションは、あらかじめハイブリッドのポスト量子署名を備えている必要があります(またEVMレーンでは、送信者に登録済みの鍵と開いている認可ウィンドウが必要です)。[取引所統合](/developer-guide/exchange-integration)および[ポスト量子署名](/developer-guide/post-quantum-signing)を参照してください。
+
+フルノードを実行せずにネットワークを観察するには、[ライトノードのドキュメント](/light-node/overview)を参照してください。
 
 ---
 
 ## トラブルシューティング
+
+### ノードがクロックエラーで停止する
+
+ノードリリースv3.2.1以降、システムクロックがネットワークと60秒を超えてずれると、コンセンサスエンジンが停止します。NTPクライアント(`chrony`または`systemd-timesyncd`)を実行し、`timedatectl status`でクロックが同期されていることを確認してから、ノードを再起動してください。
 
 ### アップグレード前に停止していたノードがバイナリ差し替え後も再開しない
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [メインネットへの接続](/getting-started/connecting-to-mainnet) — メインネットのジェネシス、ピア、接続の詳細
 * [バリデーターの運用](/developer-guide/running-a-validator) — ブロック生成の役割を追加する
-* [ソースからのビルド](/developer-guide/building-from-source) — `qorechaind`バイナリをビルドする
-* **ライトノード** — 超軽量な読み取り専用アクセス(ドキュメントは近日公開予定)
+* [ソースからのビルド](/developer-guide/building-from-source) — 開発用にコミュニティ版`qorechaind`バイナリをビルドする
+* [ライトノード](/light-node/overview) — フルノードなしでネットワークに追従する軽量クライアント

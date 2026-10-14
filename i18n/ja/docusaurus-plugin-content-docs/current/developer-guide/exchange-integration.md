@@ -10,7 +10,7 @@ sidebar_position: 11
 取引所、カストディアン、決済インテグレーターが QOR を上場し、入金と出金を処理するために必要なすべて — インターフェースの選択、安全な入金検知、そして出金の署名について解説します。
 
 :::note
-本ガイドは **`qorechain-vladi`** メインネット(チェーンバージョン **v3.1.97**)を対象としています。まず **`qorechain-diana`** テストネットでフロー全体をリハーサルしてください — 両ネットワークのエンドポイントは [ネットワーク](/appendix/networks#public-endpoints) に記載されています。自前のフルノードを運用する場合は、現行のチェーンバージョンに保ってください — 古いノードは新しいトランザクションタイプをデコードできず、同期が停止します。
+本ガイドは **`qorechain-vladi`** メインネット(2026 年 6 月 29 日から稼働中。ノードリリース **v3.2.1**、v3.2.0 アップグレードのコンセンサスルールを含む)を対象としています。まず **`qorechain-diana`** テストネット(v3.2.2)でフロー全体をリハーサルしてください — 両ネットワークのエンドポイントは [ネットワーク](/appendix/networks#public-endpoints) に記載されています。自前のフルノードを運用する場合は、ダウンロードマニフェストが推奨するリリースに保ち、その `minCompatible` を決して下回らないようにしてください(新規のメインネットノードには v3.2.0 以降が必要です) — 古いノードはチェーンのアップグレードに追従できず、同期が停止します。
 :::
 
 ## 統合パスの選択 {#choosing-a-path}
@@ -22,12 +22,12 @@ QoreChain は、**単一の統合ネイティブ QOR 残高**を 3 つのイン�
 | アドレス | `qor1...`(bech32) | `0x...`(Ethereum) | Solana base58(同一の鍵) |
 | 小数点桁数(ネイティブ QOR) | **6**(`uqor`) | **18**(wei 方式) | **9**(lamports; 1 uqor = 1,000 lamports) |
 | ツーリング | Cosmos SDK / CosmJS | **標準的な Ethereum**(ethers/web3、MetaMask) | `@solana/web3.js` |
-| 出金の署名 | **ハイブリッド PQC が必須**(ML-DSA-87 + secp256k1) | **標準の secp256k1 / EIP-155 — PQC 不要** | Cosmos tx またはノード上での送信経由 |
+| 出金の署名 | **ハイブリッド PQC が必須**(ML-DSA-87 + secp256k1) | **標準の secp256k1 / EIP-155。ただし、開いている PQC 認可ウィンドウ内に限る**(登録済みの ML-DSA 鍵 + ハイブリッド署名された Cosmos メッセージで開かれたウィンドウ) | Cosmos tx またはノード上での送信経由(レーンは現在無効) |
 | メモ / タグ対応 | **あり**(共有アドレス + メモ) | なし(ユーザーごとに 1 アドレス) | なし(ユーザーごとに 1 アドレス) |
 | 入金検知 | `MsgSend` イベントをスキャン | `eth_getBlockByNumber` でブロックをスキャン | `getBalance` / `getSignaturesForAddress` |
 | 最適な用途 | Cosmos ネイティブのプラットフォーム | **既存の EVM 統合を持つプラットフォーム** | Solana ツーリングのプラットフォーム |
 
-**推奨:** すでに EVM チェーンをサポートしている場合、**パス B(EVM)** が最も工数の少ない統合です — 標準的な Ethereum ツーリングが使え、**出金にポスト量子署名は不要**です(EVM の ante パスは免除対象)。パス A(Cosmos)は、メモベースの共有入金アドレスを備えたネイティブルートです。パス C(SVM)は仕様上は完全なネイティブ QOR インターフェースですが、**そのトランザクションレーンは現在ネットワーク全体で無効化されています**([パス C](#path-c-svm) を参照) — 再開されるまではパス A またはパス B を使用してください。
+**推奨:** 出金には**パス A(Cosmos)**を使用してください。これはネイティブルートであり、メモベースの共有入金アドレスを備えています。v3.2.0 以降、EVM レーン(パス B)でも、登録済みの ML-DSA-87 鍵と、開かれた上限付きの **EVM 認可ウィンドウ**が必要になり、このウィンドウはハイブリッド署名された Cosmos レーンのメッセージでしか開けません。そのため、EVM の出金レールにはパス A と同じポスト量子署名スタックに**加えて**ウィンドウ管理が必要です([パス B](#path-b-evm) と [EVM 認可ウィンドウ](/developer-guide/evm-development#evm-window) を参照)。パス B は、標準的な Ethereum ツーリングによる**入金検知**には引き続き適しています。パス C(SVM)は仕様上は完全なネイティブ QOR インターフェースですが、**そのトランザクションレーンは現在ネットワーク全体で無効化されています**([パス C](#path-c-svm) を参照) — 再開されるまでは、パス A、または入金検知にはパス B を使用してください。
 
 3 つのインターフェースは**相互排他ではありません** — 同じ鍵の `0x` 形式、`qor1` 形式、SVM 形式のいずれに送られた資金も、同一の残高です。
 
@@ -51,7 +51,7 @@ curl -s https://rpc.qore.host/status | jq -r .result.sync_info.latest_block_heig
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs/block/{HEIGHT}" | jq '.txs'
 
 # incoming transfers to an address
-curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&pagination.limit=50" | jq '.tx_responses[].txhash'
+curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&limit=50" | jq '.tx_responses[].txhash'
 
 # balance (uqor — divide by 1e6 for QOR)
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
@@ -76,13 +76,13 @@ curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?den
 署名ライブラリは [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter)(npm)で、FIPS-204 プリミティブのために `@qorechain/pqc` を取り込みます:
 
 ```bash
-npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
-# pin cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
+npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing@0.32 @cosmjs/stargate@0.32 cosmjs-types@0.9.0
+# pin the cosmjs packages to 0.32 (the adapter's peer range) and cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
 ```
 
 署名は(`qorechaind tx pqc cosign` を反映した)**2 ステップ**のフローです:
 
-**ステップ 1 — ホットウォレットごとに 1 回だけ: ML-DSA-87 鍵を登録します。** この単一の登録トランザクションは**クラシカル署名**です(ブートストラップ免除): メッセージは `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` で、内容は `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}` です。ML-DSA 鍵は既存のシークレットから復元可能なように決定論的に導出してください — 例: `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`、次に `mldsa.keygen(seed)` — そしてシードをホットウォレット鍵と併せて保管してください。
+**ステップ 1 — ホットウォレットごとに 1 回だけ: ML-DSA-87 鍵を登録します。** この単一の登録トランザクションは**クラシカル署名**です(ブートストラップ免除): メッセージは `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` で、内容は `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}` です。ML-DSA 鍵は既存のシークレットから復元可能なように決定論的に導出してください — 例: `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`、次に `mldsa.keygen(seed)` — そしてシードをホットウォレット鍵と併せて保管してください。登録は明示的に行うものです。ハイブリッドトランザクションが初めて現れたときに鍵が自動的に登録されることはなく、トランザクションに埋め込まれた鍵は登録されたことになりません。ガスは明示的に設定してください(2,592 バイトの鍵にはデフォルトの 200,000 を超えるガスが必要です。CLI では `--gas 600000`、コードではガスリミット 600,000、手数料は少なくとも gas × 0.1 uqor、つまり 60,000 uqor を使用してください)。
 
 **ステップ 2 — 以降のすべての出金: `MsgSend` をハイブリッド署名します。** アダプターは通常の secp256k1 `signDirect` の*前に* ML-DSA-87 署名を tx-body 拡張に組み込むため、既存の署名器はそのまま使えます:
 
@@ -93,6 +93,7 @@ import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx.js";
 // pqc = { publicKey, secretKey } from mldsa.keygen(seed)
 // accountNumber + sequence from the auth query
 const signer = new QoreChainSigner({ wallet, chainId: "qorechain-vladi",
+  rest: "https://api.qore.host",   // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   address, pubkeySecp256k1, accountNumber, pqc });
 const txBytes = await signer.signHybrid({
   messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -109,43 +110,46 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
   -H 'Content-Type: application/json' \
   -d '{"tx_bytes":"<base64-signed-tx>","mode":"BROADCAST_MODE_SYNC"}' | jq .tx_response.code
 # 0 => accepted into the mempool
-# code 8 "classical fallback not allowed" => step 1 not done yet for this account
+# code 20 "hybrid PQC signature required" => the transaction carries no PQC extension
+#   (a classical-only transaction is refused; only the key registration itself is exempt)
+# code 21 => the PQC half did not verify (wrong key or sign-bytes form), see the troubleshooting link below
 ```
 
 その後、`GET /cosmos/tx/v1beta1/txs/{hash}` を、`code == 0` でブロックに現れるまでポーリングしてください。
 
-HSM や別言語のカスタム署名器の場合は、スタンドアロンの [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 ライブラリ(npm、PyPI、crates.io、Maven Central、Go)を使用し、同じ拡張を組み立ててください。ML-DSA 署名は**決定論的でなければなりません**(FIPS-204 §3.4)— [決定論的署名](/developer-guide/post-quantum-signing#deterministic-signing) を参照してください。チェーンは hedged 署名を拒否します。
+HSM や別言語のカスタム署名器の場合は、スタンドアロンの [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 ライブラリ(npm、PyPI、crates.io、Maven Central、Go)を使用し、同じ拡張を組み立ててください。チェーンは hedged か決定論的かにかかわらず、有効な FIPS-204 ML-DSA-87 署名をすべて受け入れます。決定論的に署名する（FIPS-204 §3.4、ライブラリのデフォルト）と、署名と tx ハッシュが再現可能になります。[決定論的署名](/developer-guide/post-quantum-signing#deterministic-signing) を参照し、ハイブリッドトランザクションが拒否された場合は [コード 21 のトラブルシューティング](/developer-guide/post-quantum-signing#code-21) を参照してください。
 
 ### サーバーサイドの代替手段: `@qorechain/chain-bridge` {#chain-bridge}
 
-完全にサーバーサイドで動作するホットウォレットワーカー(ブラウザウォレット不使用)向けに、**`@qorechain/chain-bridge`**(npm)はフロー全体 — 鍵導出、初回利用時の PQC 自動登録、ハイブリッド署名、ブロードキャスト — を 1 回の呼び出しにまとめます。純粋な JavaScript(ネイティブアドオンなし)で、サーバーレスワーカーに適しています:
+完全にサーバーサイドで動作するホットウォレットワーカー(ブラウザウォレット不使用)向けに、**`@qorechain/chain-bridge`**(npm)はフロー全体 — 鍵導出、ハイブリッド署名、ブロードキャスト — を 1 回の呼び出しにまとめます。純粋な JavaScript(ネイティブアドオンなし)で、サーバーレスワーカーに適しています:
 
 ```js
 import { ChainBridge } from "@qorechain/chain-bridge";
 
 const bridge = new ChainBridge({
   cosmosRpc: "https://rpc.qore.host",       // or your own node
+  cosmosRest: "https://api.qore.host",      // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   chainId: "qorechain-vladi",
   signerMnemonic: process.env.HOT_WALLET_MNEMONIC,  // from your secrets manager
 });
 
-// One call: derives the canonical ML-DSA-87 key, auto-registers it if missing,
-// hybrid-signs the MsgSend, and broadcasts. Amounts are in uqor (6 decimals).
+// One call: derives the canonical ML-DSA-87 key, hybrid-signs the MsgSend, and broadcasts.
+// Amounts are in uqor (6 decimals). Register the key beforehand with bridge.registerPqc({ mnemonic }).
 const { txHash } = await bridge.sendTokens({
   to: "qor1recipient...",
   amountUqor: "1000000",   // 1 QOR
 });
 ```
 
-`chain-bridge`(≥0.1.1)は、スタックの他の部分と同じ正規のアドレス紐付け PQC 導出 — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — を使用するため、鍵はニーモニックから `qorechaind tx pqc recover-key` で復元できます。旧ツーリングで登録されたアカウントは自動的に処理され(レガシー鍵フォールバック)、[`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) で正規の鍵へ一度だけ移行できます。
+アカウントにまだ登録済みの鍵がない場合、ライブラリ自身が明示的な `MsgRegisterPQCKeyV2` トランザクションを送信して 1 回リトライします。これはライブラリの動作であり、チェーンの動作ではないため、ホットウォレットのレールでは、最初の出金の前に鍵を事前に登録し、確認(`GET /qorechain/pqc/v1/account/{address}`)しておくべきです。`chain-bridge`(≥0.1.1)は、スタックの他の部分と同じ正規のアドレス紐付け PQC 導出 — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — を使用するため、鍵はニーモニックから `qorechaind tx pqc recover-key` で復元できます。旧ツーリングで登録されたアカウントは自動的に処理され(レガシー鍵フォールバック)、[`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) で正規の鍵へ一度だけ移行できます。
 
 ## パス B — EVM {#path-b-evm}
 
 `https://evm.qore.host`(チェーン ID **9801**)または自ノードのポート 8545 に対する標準的な Ethereum 統合です。
 
 * **小数点桁数:** ネイティブ QOR は EVM レール上では **18 桁**です(1 uqor = 10¹² wei)。これを誤ると入金が 10¹² 倍の係数で誤計上されます。
-* **入金:** `eth_getBlockByNumber` でブロックをスキャンし、自社アドレスへのネイティブ送金を検出します。`eth_getTransactionReceipt`(`status == 0x1`)で確認してください。
-* **出金:** 標準の secp256k1 / EIP-155 署名 — EVM の ante パスでは **PQC は不要**です。既存の Ethereum 署名スタックがそのまま動作します。
+* **入金:** `eth_getBlockByNumber` でブロックをスキャンし、自社アドレスへのネイティブ送金を検出します。`eth_getTransactionReceipt`(`status == 0x1`)で確認してください。入金者自身の EVM トランザクションにもウィンドウのルールが適用されるため、アカウントに登録済みの鍵も開いているウィンドウもないユーザーは、EVM レーンから入金を送ることができません(代わりに Cosmos レーンを使用できます)。
+* **出金:** 標準の secp256k1 / EIP-155 署名。**ただし、登録済みの ML-DSA-87 鍵と開いている EVM 認可ウィンドウを持つアカウントからに限ります**(v3.2.0 以降。[EVM 認可ウィンドウ](/developer-guide/evm-development#evm-window) と、[はじめてのトランザクション](/getting-started/first-transaction#evm-window) のウォークスルーを参照)。ウィンドウ外のトランザクションは拒否されます(codespace `pqc`、コード 26、27 または 28)。ウィンドウはハイブリッド署名された Cosmos レーンのトランザクションで開く必要があるため、パス B でもポスト量子署名の必要性はなくなりません。`max-value` は、ウィンドウ内で予定しているすべての出金の金額に最大手数料(ガスリミット × ガスあたりの最大手数料)を加えた額をまかなえるように設定し、ホットウォレットがバッチの途中で枯渇しないよう `GET /qorechain/pqc/v1/evm_window/{address}` を監視してください。ウィンドウを開くとアカウントの sequence(EVM nonce でもあります)が進むため、nonce はウィンドウが開いた後に読み取ってください。
 * **偽入金対策:** レシートのステータスを検証し、移動した value が(インデックスしていない ERC-20 イベントではなく)**ネイティブ**送金であることを確認し、自前のノードに対して照合してください。
 * **アドレスのマッピング:** `0x` アドレスと `qor1` アドレスは同一アカウントの 2 つのエンコーディングであり、資金は共有されます。[EVM 開発](/developer-guide/evm-development) を参照してください。
 
@@ -166,7 +170,7 @@ v3.1.82 以降、SVM インターフェースは**ネイティブ QOR** を提�
 | 操作 | パス | 署名は必要? |
 |---|---|---|
 | **入金**(ユーザー → プラットフォーム) | 同期済みノードで自社アドレスへの送金を監視(Cosmos ではメモも) | 不要 — 監視のみ |
-| **出金**(プラットフォーム → ユーザー) | 送金を組み立て、オフラインで署名し、ブロードキャスト | Cosmos: ハイブリッド PQC · EVM: 標準の secp256k1 |
+| **出金**(プラットフォーム → ユーザー) | 送金を組み立て、オフラインで署名し、ブロードキャスト | Cosmos: ハイブリッド PQC · EVM: PQC 認可ウィンドウ内での標準の secp256k1 |
 | **残高 / スイープ** | REST / EVM / SVM の残高照会 + 送金 | スイープ時のみ署名 |
 
 ## 関連ページ

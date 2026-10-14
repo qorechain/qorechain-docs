@@ -25,7 +25,19 @@ QoreChain은 하나의 체인 위에서 세 가지 일급(first-class) 스마트
 - **SVM** — 솔라나 스타일 JSON-RPC를 갖춘 솔라나 호환 런타임.
 
 계정, 잔액, 토큰은 모든 런타임에서 공유되며, 체인은 크로스체인 상호운용성을
-위한 IBC를 지원합니다.
+위한 IBC 모듈을 포함합니다(메인넷과 테스트넷에는 아직 열려 있는 IBC 채널이
+없습니다).
+
+:::note 현재 라이브 네트워크에서 동작하는 것 (체인 v3.2.0 이상)
+**동작함:** 모든 레인에서의 읽기, 하이브리드 서명된 Native 트랜잭션, 통합
+계정, [인가 윈도우](/sdk/guides/evm#evm-window) 안에서의 EVM 트랜잭션, 그리고
+SVM 읽기.
+**아직 사용 불가:** EVM 프리컴파일(비활성), `qor_` JSON-RPC 네임스페이스, SVM
+트랜잭션, 메인넷에서의 크로스 VM 호출(`MsgCrossVMCall`은 서킷 브레이커로
+꺼져 있음), 일반 계정의 CosmWasm 업로드 및 인스턴스화, 인증자 / 추상 계정
+플로우(모듈 꺼짐), xQORE, 가스 추상화. 각 가이드는 해당되는 곳마다 이 주의
+사항을 반복합니다.
+:::
 
 ### 설계부터 양자 내성
 
@@ -36,7 +48,9 @@ QoreChain은 **ML-DSA-87**(Dilithium-5, FIPS 204)에 기반한 포스트 양자
 동시에 포스트 양자 보호를 얻습니다.
 
 SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트랜잭션을 위한
-구성 요소를 제공합니다. 자세한 내용은
+구성 요소를 제공합니다. 라이브 네트워크에서 Native 경로 트랜잭션은 반드시
+하이브리드로 서명되어야 하며, 계정의 ML-DSA-87 키가 먼저 등록되어 있어야
+합니다. 자세한 내용은
 [계정 및 PQC 서명](/sdk/concepts/accounts-pqc)을 참고하세요. 마케팅 문구가
 아닙니다 — SDK는 체인이 실제로 구현한 프리미티브만을 정확히 노출합니다.
 
@@ -48,7 +62,8 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
 - **AI 사전 위험 점수(pre-flight risk scoring)** — 브로드캐스트하기 전에
   온체인 AI로 트랜잭션을 스캔합니다. `simulateWithRiskScore`는 가스와 함께
   결정적 EVM 프리컴파일이 산출한 위험/이상 징후 판정을 반환하므로, 지갑이나
-  dApp이 서명 *전에* 경고(또는 차단)할 수 있습니다.
+  dApp이 서명 *전에* 경고(또는 차단)할 수 있습니다. 프리컴파일은 아직
+  메인넷이나 테스트넷에서 활성화되지 않았습니다.
   [AI 사전 점검](/sdk/guides/ai-preflight)을 참고하세요.
 - **통합 크로스 VM 호출** — 하나의 계정, 세 개의 VM, 하나의 트랜잭션.
   `createCrossVMClient`는 어떤 VM의 컨트랙트든 호출하며, `callAtomic`은 여러
@@ -59,7 +74,8 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
   상태로 만들 수 있으며, 바로 사용할 수 있는 React 배지도 제공됩니다.
   [양자 내성](/sdk/guides/quantum-safe)을 참고하세요.
 
-0.6.0과 0.7.0에서는 체인 수준의 기능 두 가지가 더 추가되었습니다:
+0.6.0과 0.7.0에서는 체인 수준의 기능 두 가지가 더 추가되었습니다(두 번째
+기능은 아래에 설명하듯 아직 라이브 네트워크에서 사용할 수 없습니다):
 
 - **통합 eth-네이티브 계정** — 하나의 `eth_secp256k1` 키가 `qor1…`, `0x…`,
   그리고 SVM base58 주소로 표현되는 하나의 20바이트 아이덴티티이며, 모두
@@ -67,7 +83,8 @@ SDK는 현재 ML-DSA-87 키 생성, 서명, 검증과 함께 하이브리드 트
   [통합 계정](/sdk/concepts/accounts-pqc#unified-accounts)을 참고하세요.
 - **인증자(Authenticator) 레인** — Phantom 또는 MetaMask 키를 정식(canonical)
   PQC 필수 계정에 연결하고, 최소 권한·지출 한도·철회 가능 조건 아래 릴레이어를
-  통해 지출하도록 할 수 있습니다.
+  통해 지출하도록 할 수 있습니다. 그 뒤에 있는 `abstractaccount` 모듈은 현재
+  두 네트워크 모두에서 꺼져 있습니다.
   [인증자 및 위임 지출](/sdk/guides/authenticators)을 참고하세요.
 
 새로운 **`@qorechain/react`** 키트(프로바이더, 훅, `ConnectButton`,
@@ -83,15 +100,15 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 
 | 패키지 | 언어 | 설치 | 상태 |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.7.0) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.7.0) |
-| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.7.0`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, 최신 게시본; 저장소 기준 0.7.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.7.0` | 게시됨 (Maven Central, v0.7.0) |
-| `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.7.0) |
-| `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.7.0) |
-| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.7.0) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.7.0) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.8.3) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.8.3) |
+| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.8.4`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.8.3) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | 게시됨 (Maven Central, v0.8.3) |
+| `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.8.0) |
+| `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.8.3) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.8.0) |
 
 > Python 배포판은 `qorechain-sdk`라는 이름으로 설치되지만 **`qorsdk`로
 > import**합니다. 모든 클라이언트는 각 레지스트리에 게시되어 있습니다 —
@@ -105,16 +122,16 @@ Python, Go, Rust, Java 클라이언트는 TypeScript와 **완전한 네이티브
 트랜잭션 라이프사이클(자동 가스, 오류 디코딩, 트랜잭션 추적, 블록/트랜잭션
 검색), 하이브리드 포스트 양자 트랜잭션, 그리고 WebSocket 구독까지
 지원합니다. 이 모든 클라이언트는 **게시**되어 있습니다: TypeScript는
-npm(`@qorechain/sdk` 0.7.0), Python은 PyPI(`qorechain-sdk` 0.7.0, import
-`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.7.0`), Rust는
-crates.io(`qorechain-sdk`, 최신 게시본 — 0.7.0 크레이트 게시는 대기 중이므로
-crates.io 또는 저장소에서 설치), Java는 Maven
-Central(`io.github.qorechain:qorechain-sdk` 0.7.0)에 게시되어 있습니다.
-EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.7.0),
-`@qorechain/react` 키트(0.7.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.7.0)는
-TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다.
+npm(`@qorechain/sdk` 0.8.3), Python은 PyPI(`qorechain-sdk` 0.8.3, import
+`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.8.4`), Rust는
+crates.io(`qorechain-sdk` 0.8.3), Java는 Maven
+Central(`io.github.qorechain:qorechain-sdk` 0.8.3)에 게시되어 있습니다.
+EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.8.0),
+`@qorechain/react` 키트(0.8.3), `create-qorechain-dapp` 스캐폴딩 CLI(0.8.0)는
+TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는
+[설치](/sdk/install#related-packages)를 참고하세요.
 
-## 0.6과 0.7의 새로운 기능
+## 0.6, 0.7, 0.8의 새로운 기능
 
 **0.6.0 — 통합 eth-네이티브 계정 (체인 v3.1.83).** 하나의 `eth_secp256k1`
 키가 세 가지 주소 인코딩 모두로 표현되는 하나의 20바이트 아이덴티티이며,
@@ -130,8 +147,8 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 ```
 
 동일한 키로 네이티브 레인에서 서명하려면 `signClassicalEth` /
-`signHybridEth`를 사용하며, `connectPhantomUnified`는 결정적 Phantom
-서명으로부터 비수탁형(non-custodial) 통합 계정을 파생합니다. 기존 coin-type-118
+`signHybridEth`를 사용하며, Phantom 또는 MetaMask 키는 인증자로 계정에 연결합니다(Phantom 서명 기반
+파생은 0.8.0에서 제거되었습니다). 기존 coin-type-118
 `deriveNativeAccount`는 변경되지 않았습니다.
 [통합 계정](/sdk/concepts/accounts-pqc#unified-accounts)을 참고하세요.
 
@@ -140,7 +157,9 @@ account.svm;    // base58    (20 bytes + 12 zero bytes)
 거부되었습니다). SDK ≤ 0.6.0으로 만든 하이브리드 트랜잭션은 **온체인에서
 거부됩니다** — 업그레이드하세요.
 
-**0.7.0 — 인증자 레인 (체인 v3.1.85).** 연결된 Phantom(ed25519) 또는
+**0.7.0 — 인증자 레인 (체인 v3.1.85).** 그 뒤에 있는 `abstractaccount` 모듈은
+현재 두 네트워크 모두에서 꺼져 있습니다([인증자 가이드](/sdk/guides/authenticators)
+참고). 연결된 Phantom(ed25519) 또는
 MetaMask(secp256k1, 20바이트 주소 기준) 키가 최소 권한·지출 한도·철회 가능
 조건 아래 릴레이어를 통해 정식 PQC 필수 계정에서 지출할 수 있습니다:
 `MsgExecuteEVM` / `MsgExecuteCosmos` / `MsgRotatePQCKey` 컴포저, 바이트 단위로
@@ -149,6 +168,22 @@ MetaMask(secp256k1, 20바이트 주소 기준) 키가 최소 권한·지출 한�
 빌더(`buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm`, …)를 제공합니다.
 복사해 붙여넣을 수 있는 예제가 포함된 전체 안내:
 [인증자 및 위임 지출](/sdk/guides/authenticators).
+
+**0.8.0 – 0.8.3 — v2 하이브리드 sign-bytes와 EVM 인가 윈도우 (체인
+v3.2.0).** 하이브리드 트랜잭션의 포스트 양자 부분은 이제 대상 네트워크가
+검증하는 형식(v1 또는 v2, `signBytesVersion: "auto" | "v1" | "v2"`)으로
+서명됩니다. 두 퍼블릭 네트워크 모두 v2를 사용하므로, 메인넷에서 트랜잭션을
+보내려면 SDK **0.8.1 이상**이 필요합니다. **0.8.2**는 EVM 레인
+[인가 윈도우](/sdk/guides/evm#evm-window)를 위한 `openEvmWindowMsg`,
+`closeEvmWindowMsg`, `fetchEvmWindow`, `classifyEvmWindowRejection`을
+추가합니다.
+**0.8.0**은 지갑 서명 기반 계정 헬퍼(`connectPhantomUnified`와
+`unifiedAccountFromPhantomSignature`, 0.8.0에서 제거됨)를 제거했고, 모든
+언어에서 엄격한 ML-DSA-87 크기 검사를 적용하며, 크로스 VM 호출에 `async`
+플래그와 반환되는 callee 데이터를 추가했습니다. **0.8.3**은 트랜잭션 검색,
+React 훅 경쟁 상태, Python `migrate_to_hybrid` 시퀀싱, 그리고 주소 형식에
+독립적인 정식 PQC 파생(`derivePqcCanonical`, `canonicalAccount`)을
+수정합니다. [업그레이드 노트](/sdk/install#upgrade)를 참고하세요.
 
 ## 다음 단계
 

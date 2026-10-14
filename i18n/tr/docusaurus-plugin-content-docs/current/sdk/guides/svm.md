@@ -18,13 +18,24 @@ oluşturucuları ekler.
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution SVM işlem gönderimi devre dışıdır
+SVM yürütme şeridi, işlem gönderimi için ağ genelinde devre dışıdır
+(`code 11, "SVM module is disabled"`) ve herkese açık SVM RPC uç noktaları
+salt okunurdur. Okumalar (`getBalance`, `getAccountInfo`, `getSlot`,
+`getSignaturesForAddress`, `getMinimumBalanceForRentExemption`,
+`getLatestBlockhash`) çalışır. Henüz SVM üzerinde bir transfer veya program dağıtım
+akışı oluşturmayın: aşağıdaki oluşturma, imzalama ve gönderme yardımcıları istemci
+kütüphanesi yüzeyidir ve bugün herkese açık ağlarda bir işlemi zincire işleyemez.
+Bkz. [SVM Geliştirme](/developer-guide/svm-development).
+:::
+
 ## Bir istemci oluşturun
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -47,13 +58,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## SOL transferi
 
-İmzasız bir transfer oluşturun, ardından gönderin (gönderme, ulaşılabilir bir düğüm ve
-fonlanmış bir hesap gerektirir):
+İmzasız bir transfer oluşturun (çevrimdışı). Gönderme eksiksizlik için gösterilmiştir,
+ancak SVM işlem şeridi devre dışıyken herkese açık ağlarda başarılı olamaz:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

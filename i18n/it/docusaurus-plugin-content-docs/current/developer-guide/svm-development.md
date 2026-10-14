@@ -10,13 +10,13 @@ sidebar_position: 4
 QoreChain include un ambiente di esecuzione **Solana Virtual Machine (SVM)**, che consente agli sviluppatori di distribuire ed eseguire programmi SBF/BPF utilizzando gli strumenti Solana con cui hanno già familiarità. Il modulo SVM espone un'interfaccia JSON-RPC compatibile con Solana sulla **porta 8899**, che `qorechaind start` avvia automaticamente (vedi [JSON-RPC Server](#json-rpc-server) qui sotto).
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`**, attiva dal 7 giugno 2026 e in esecuzione sulla versione della chain **v3.1.97**. Sostituisci con `--chain-id qorechain-diana` per la testnet.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 29 giugno 2026), che esegue la release del nodo **v3.2.1**. Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.2. **Le transazioni SVM sono disabilitate su entrambe le reti** (vedi il riquadro successivo), quindi i comandi `tx svm` di questa pagina hanno valore di sola consultazione: oggi non possono andare a buon fine.
 :::
 
 ---
 
 :::caution L'invio di transazioni SVM è attualmente disabilitato
-A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
+A partire dalla versione della chain v3.1.89 (22 agosto), in seguito a un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** sia su `qorechain-vladi` sia su `qorechain-diana` — qualsiasi transazione inviata a `x/svm` (distribuzione di programmi, esecuzione di istruzioni, creazione di account, trasferimenti) restituisce `code 11, "SVM module is disabled"`. Questo vale sia per il tuo nodo personale sia per gli endpoint pubblici. I metodi RPC di sola lettura possono ancora rispondere, ma non costruire né provare un'integrazione SVM live finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che rimarrà disattivata finché un audit esterno non la autorizzi.
 :::
 
 ## Panoramica
@@ -100,12 +100,11 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
    # Deploy the compiled program
    qorechaind tx svm deploy-program ./my_program.so \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas 2000000 --fees 200000uqor \
+     --generate-only > tx.json
    ```
 
-   La risposta della transazione include il **program ID** in formato base58.
+   Su una rete in cui la lane è abilitata, ogni comando `tx svm` è una transazione della lane Cosmos: firma e trasmetti `tx.json` con `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` e imposta un limite di gas esplicito con una commissione di almeno gas × 0,1 uqor. La risposta della transazione include il **program ID** in formato base58.
 
 2. **Eseguire un'istruzione** — Chiama un programma BPF on-chain con dati di istruzione:
 
@@ -113,8 +112,8 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
    # Execute instruction
    qorechaind tx svm execute <program-id-base58> <data-hex> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parametro           | Formato            | Descrizione                    |
@@ -128,8 +127,8 @@ I valori predefiniti sono `enable = true` e `address = "127.0.0.1:8899"`, quindi
    # Create data account
    qorechaind tx svm create-account <owner-base58> <space> <lamports> \
      --from mykey \
-     --gas auto \
-     -y
+     --gas 400000 --fees 40000uqor \
+     --generate-only > tx.json
    ```
 
    | Parametro      | Descrizione                                        |
@@ -242,20 +241,7 @@ I programmi che superano il compute budget vengono interrotti e la transazione v
 
 ## Interoperabilità Cross-VM
 
-I programmi SVM possono comunicare con i contratti EVM e CosmWasm tramite il percorso di messaggistica cross-VM **asincrono**:
-
-```bash
-# Cross-VM call example
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '...' \
-  --from mykey \
-  -y
-```
-
-I messaggi vengono accodati ed elaborati dall'EndBlocker. Vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per i dettagli sul ciclo di vita dei messaggi e sul comportamento in caso di timeout.
+I programmi SVM sono progettati per comunicare con i contratti EVM e CosmWasm tramite il messaggio `MsgCrossVMCall` del modulo `x/crossvm` (la chain determina da sola la lane di origine). Poiché la lane SVM è disabilitata per le transazioni e `MsgCrossVMCall` è disattivato sulla mainnet, oggi non esiste alcun percorso cross-VM SVM funzionante. Vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per lo stato attuale, il ciclo di vita dei messaggi e il comportamento in caso di timeout.
 
 ---
 

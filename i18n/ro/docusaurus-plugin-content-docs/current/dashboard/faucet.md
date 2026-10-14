@@ -15,7 +15,7 @@ QOR de testnet **nu are valoare reală**. Faucet-ul nu atinge niciodată mainnet
 
 ## Solicită tokenuri de test
 
-1. Conectează-te la **testnet** și deschide **Faucet**-ul.
+1. Autentifică-te, comută Dashboard-ul pe **testnet** și deschide **Faucet**-ul.
 2. Introdu adresa de alimentat (`qor1...`). Dacă portofelul tău este conectat, selectează **Use my address** pentru a o completa automat. Formularul confirmă faptul că adresa este validă înainte de a putea continua.
 3. Selectează butonul de solicitare. Alimentarea este procesată în câteva secunde.
 

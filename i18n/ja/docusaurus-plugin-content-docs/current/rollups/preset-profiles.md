@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-以下のプリセットごとの値は、同梱の **`@qorechain/rdk`** プロファイルのデフォルト値と一致しており、ネットワークが公開しているプロファイル表を反映しています。ただし、RDK の成熟に伴い変更される可能性があります。正式な構成については、稼働中のモジュールパラメータを `qorechaind query rdk config`（または SDK の `RdkClient.params()`）で照会し、メインネットの前に **`qorechain-diana`** テストネットで検証してください。
+以下のプリセットごとの値は、同梱の **`@qorechain/rdk`** プロファイルのデフォルト値と一致しており、ネットワークが公開しているプロファイル表を反映しています。これまでのところ、どちらのネットワークでもロールアップは作成されていません。正式な構成については、稼働中のモジュールパラメータを `qorechaind query rdk config`（または SDK の `RdkClient.params()`。RDK の REST ルートが提供される環境が対象で、現時点ではメインネットでは提供されていません）で照会し、メインネットの前に **`qorechain-diana`** テストネットで検証してください。
 :::
 
 ---
@@ -38,7 +38,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 RDK v0.4.2 以降、Wasm VM オプション（CosmWasm コントラクトを実行するランタイム）は **`native`** — QoreChain Native — という名前になりました。`cosmwasm` は引き続きレガシーエイリアスとして受け付けられ、どちらもワイヤ上では `cosmwasm` にマップされるため、チェーン、エクスプローラー、Dashboard に変更はありません。
 
 :::note
-プリセットごとの構成は、チェーンバージョン **v3.1.74** でライブ検証されました。このバージョンでは `create-rollup` がプロファイルのプリセットを自動的に適用します: **`defi` = zk + EVM、`gaming` = based + カスタム VM、`nft` = optimistic + QoreChain Native (Wasm)、`enterprise` = based + EVM、`custom` = optimistic + EVM（デフォルト）**。`custom` プリセットはすべてのフィールドが自由に設定可能で、記載の値はその初期デフォルトです。
+プリセットごとの構成は、チェーンバージョン **v3.2.0**（メインネットは v3.2.1 で稼働）時点のチェーンのプロファイル表と照合して検証されました。このバージョンでは `create-rollup` がプロファイルのプリセットを自動的に適用します: **`defi` = zk + EVM、`gaming` = based + カスタム VM、`nft` = optimistic + QoreChain Native (Wasm)、`enterprise` = based + EVM、`custom` = optimistic + EVM（デフォルト）**。`custom` プリセットはすべてのフィールドが自由に設定可能で、記載の値はその初期デフォルトです。
 :::
 
 4 つのドメイン向けプリセットは妥当な出発点として、**`custom`** プロファイルは完全に自由なオプションとして扱ってください。バンドルされる正確なパラメータはリリース間で変わる可能性があります。正式な値については（下記の）`rdk config` を照会し、最も近いプリセットから始めて調整してください。
@@ -47,21 +47,20 @@ RDK v0.4.2 以降、Wasm VM オプション（CosmWasm コントラクトを実�
 
 ---
 
-## 推奨プロファイルの取得: `suggest-profile`
+## プリセットがオンチェーンに保持する内容 {#what-a-preset-carries}
 
-どのプリセットが適しているか分からない場合は、`suggest-profile` クエリにユースケースの自然言語による説明を渡すと、推奨プロファイルが返されます。
+思い込みやすい細部がいくつかあるため、プロファイルを選ぶ前に知っておく価値があります:
 
-```bash
-qorechaind query rdk suggest-profile [use-case]
-```
+* **`defi` には検証鍵（verifying key）がありません。** ZK バッチには検証鍵が必要ですが、`create-rollup` で作成されたロールアップはそれを保持しないため、現時点では ZK 決済をエンドツーエンドで確定させることはできません（[ZK / STARK と引き出し](/rollups/zk-stark-withdrawals)を参照）。
+* **`nft` と `custom`** は、1,000 QOR のチャレンジボンドと 100,800 ブロックのチャレンジ期間（デフォルトの 604,800「秒」を 1 ブロックあたり固定 6 秒で換算した値。メインネットの現在の約 3.2 秒ブロックでは約 3.7 日）でオプティミスティックに決済します。
+* **`gaming` と `enterprise`** は `based` シーケンシングを使用します。これは現時点ではロールアップの作成者がバッチを提出することを意味します。
+* **ブロック時間とトランザクション上限**（例: `defi` は 500 ms、`gaming` は 200 ms、`nft` は 2,000 ms、`enterprise` と `custom` は 1,000 ms）はオンチェーンのレコードに保存されます。これらはロールアップ自身のチェーンを記述するもので、ホストチェーンによって強制されるものではありません。
 
-**例:**
+---
 
-```bash
-qorechaind query rdk suggest-profile "a lending protocol with predictable fees"
-```
+## プロファイルの選び方 {#getting-a-recommendation}
 
-この提案はあくまで有用な出発点です。構成を確定する前に、推奨内容を自身の具体的な要件（決済の保証、シーケンサーの信頼モデル、データ可用性の要件、VM）と照らし合わせて確認してください。
+`suggest-profile` クエリと RDK の `suggestProfile()` ヘルパーは、自然言語による説明からプリセットを推奨することを目的としています。これらは `qor_suggestRollupProfile` JSON-RPC メソッドに依存していますが、公開エンドポイントはこれを提供していないため、`suggestProfile()` は現在、**フォールバック**として常に `defi` を返し、`qorechaind query rdk suggest-profile` はその RPC への案内を表示するだけです。代わりに上の表からプロファイルを選び、要件（決済の保証、シーケンサーの信頼モデル、データ可用性の要件、VM）と照らし合わせて確認してください。
 
 ---
 

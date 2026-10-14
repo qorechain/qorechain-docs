@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain fournit une interface JSON-RPC compatible avec Solana via son runtime SVM (Solana Virtual Machine), permettant aux outils et SDK Solana existants d'interagir nativement avec QoreChain.
 
 :::caution La soumission de transactions SVM est actuellement désactivée
-Depuis la version de chaîne v3.1.89 (22 août), suite à un incident, la voie d'exécution SVM est **désactivée pour l'ensemble du réseau pour la soumission de transactions** — toute transaction renvoie `code 11, "SVM module is disabled"`. Cela s'applique à l'ensemble du réseau, pas seulement aux points de terminaison publics en lecture seule. Les méthodes de type lecture du tableau ci-dessous (par ex. `getBalance`, `getAccountInfo`) peuvent encore répondre, mais ne tentez pas d'intégration en production qui soumet des transactions SVM tant que la voie n'a pas rouvert — il s'agit d'une désactivation au moment de la compilation, et non d'un paramètre d'exécution, elle ne peut donc pas être réactivée par un vote de gouvernance ; elle devrait rester désactivée jusqu'à ce qu'un audit externe la valide.
+Depuis la version de chaîne v3.1.89 (22 août), suite à un incident, la voie d'exécution SVM est **désactivée pour l'ensemble du réseau pour la soumission de transactions** — toute transaction renvoie `code 11, "SVM module is disabled"`. Cela s'applique à l'ensemble du réseau, pas seulement aux points de terminaison publics en lecture seule. Les méthodes de type lecture du tableau ci-dessous (par ex. `getBalance`, `getAccountInfo`) répondent normalement sur les points de terminaison publics, mais ne tentez pas d'intégration en production qui soumet des transactions SVM tant que la voie n'a pas rouvert — il s'agit d'une désactivation au moment de la compilation, et non d'un paramètre d'exécution, elle ne peut donc pas être réactivée par un vote de gouvernance ; elle devrait rester désactivée jusqu'à ce qu'un audit externe la valide.
 :::
 
 ## Connexion
@@ -31,7 +31,7 @@ Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde QOR na
 
 ## Méthodes
 
-| Method                              | Parameters               | Description                                                    |
+| Méthode                              | Paramètres               | Description                                                    |
 | ----------------------------------- | ------------------------ | -------------------------------------------------------------- |
 | `getAccountInfo`                    | `pubkey` (chaîne base58) | Renvoie les données du compte, le propriétaire, les lamports et l'indicateur exécutable |
 | `getBalance`                        | `pubkey` (chaîne base58) | Renvoie le solde QOR natif en lamports pour la clé publique donnée |
@@ -40,6 +40,16 @@ Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde QOR na
 | `getMinimumBalanceForRentExemption` | `dataLength` (entier)    | Renvoie le solde minimum pour l'exemption de loyer compte tenu de la taille des données |
 | `getVersion`                        | aucun                    | Renvoie la version du logiciel du nœud                          |
 | `getHealth`                         | aucun                    | Renvoie l'état de santé du nœud (`"ok"` si sain)                |
+| `getBlockHeight`                    | aucun                    | Renvoie la hauteur de bloc actuelle                             |
+| `getLatestBlockhash`                | aucun                    | Renvoie un blockhash récent et `lastValidBlockHeight`           |
+| `getRecentBlockhash`                | aucun                    | Forme héritée de `getLatestBlockhash`                           |
+| `getFeeForMessage`                  | `message` (base64)       | Renvoie les frais d'un message (lamports)                       |
+| `getMultipleAccounts`               | `pubkeys` (tableau)      | Renvoie plusieurs comptes en un seul appel                      |
+| `getProgramAccounts`                | `programId` (base58)     | Renvoie les comptes détenus par un programme                    |
+| `getTokenAccountsByOwner`           | `owner`, filtre          | Renvoie les comptes de tokens d'un propriétaire                 |
+| `getTokenAccountsByDelegate`        | `delegate`, filtre       | Renvoie les comptes de tokens d'un délégué                      |
+
+Les méthodes absentes de cette liste, telles que `getGenesisHash` et `getEpochInfo`, renvoient `-32601 method not found`. `getTransaction` est accepté mais répond actuellement par une enveloppe sans champ `result` ; ne vous y fiez donc pas. Le slot rapporté par `getSlot` suit la hauteur de bloc de la chaîne.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

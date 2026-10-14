@@ -23,20 +23,23 @@ sidebar_position: 2
 
 ## 1. تقييم المخاطر المسبق بالذكاء الاصطناعي
 
-**افحص المعاملة بذكاء اصطناعي على السلسلة قبل بثّها.**
+**افحص المعاملة بذكاء اصطناعي على السلسلة قبل بثّها** (يتطلب تفعيل العمليات
+المسبقة التجميع الخاصة بالذكاء الاصطناعي على الشبكة المستهدفة، وهي غير مفعّلة
+بعد على الشبكات العامة).
 
 توفّر QoreChain تحليل المخاطر بالذكاء الاصطناعي كعمليات مسبقة التجميع
 (precompiles) على EVM. تستدعيها SDK نيابة عنك وتعيد الغاز مع حكم
 المخاطر/الشذوذ في استدعاء واحد — بحيث تستطيع المحفظة أو التطبيق اللامركزي
-التحذير (أو الحظر) *قبل* التوقيع.
+التحذير (أو الحظر) *قبل* التوقيع. العمليات المسبقة التجميع الخاصة بالذكاء
+الاصطناعي **غير مفعّلة بعد** على الشبكة الرئيسية أو شبكة الاختبار (راجع
+[عمليات EVM المسبقة التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
-import { createClient } from "@qorechain/sdk";
-import { simulateWithRiskScore } from "@qorechain/evm";
+import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
-const client = createClient({ network: "mainnet", endpoints: { evmRpc } });
+const { publicClient } = await createEvmClient({ endpoints: { evmRpc } });
 
-const preflight = await simulateWithRiskScore(client.evm, {
+const preflight = await simulateWithRiskScore(publicClient, {
   from: account.address,
   to: contractAddress,
   data: calldata,
@@ -52,11 +55,11 @@ if (!preflight.safe) {
 }
 ```
 
-**لماذا هذا فريد:** يعمل التقييم *داخل السلسلة نفسها* كعملية مسبقة التجميع
-حتمية (`aiRiskScore` على العنوان `0x…0B01`، و`aiAnomalyCheck` على العنوان
-`0x…0B02`). الشبكات الأخرى لا تستطيع سوى إلحاق خدمات ذكاء اصطناعي خارج
-السلسلة وغير حتمية. هذه أول SDK تفحص المعاملة بالذكاء الاصطناعي قبل توقيعها،
-بنتيجة صادرة من على السلسلة. راجع [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
+**لماذا هذا مختلف:** صُمّم التقييم ليعمل *داخل السلسلة نفسها* كعملية مسبقة
+التجميع حتمية (`aiRiskScore` على العنوان `0x…0B01`، و`aiAnomalyCheck` على العنوان
+`0x…0B02`)، وليس كخدمة خارج السلسلة. إلى أن يتم تفعيل هذه العمليات المسبقة
+التجميع، تُطلق الدوال المساعدة أعلاه خطأً على الشبكات العامة
+(`returned no data ("0x")`). راجع [الفحص المسبق بالذكاء الاصطناعي](/sdk/guides/ai-preflight).
 
 ---
 
@@ -69,9 +72,10 @@ if (!preflight.safe) {
 استدعاءات عابرة للآلات الافتراضية في معاملة ذرّية واحدة تُوقَّع مرة واحدة.
 
 ```ts
-import { createCrossVMClient } from "@qorechain/sdk";
+import { connectQueryClients, createCrossVMClient } from "@qorechain/sdk";
 
-const crossVM = createCrossVMClient(tx, { query: client.query });
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
+const crossVM = createCrossVMClient(tx, { query: connectQueryClients(rpcClient).crossvm });
 
 // Call an EVM contract from a native account (payload ABI-encoded for you).
 await crossVM.call({
@@ -88,12 +92,13 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**لماذا هذا فريد:** إن QoreChain هي شبكة الطبقة الأولى الوحيدة التي تضم ثلاث
-آلات افتراضية متعايشة مع وحدة جسر أصلية (وحدة `crossvm` + العملية مسبقة
-التجميع `CrossVMBridge`). السلاسل ذات الآلة الافتراضية الواحدة لا يمكنها
-التعبير عن "حساب واحد، ثلاث آلات افتراضية، معاملة ذرّية واحدة" — فحِزم SDK
-لديها لا تملك شيئًا لتغليفه. اكتب مرة واحدة، واستدعِ أي آلة افتراضية. راجع
-[الاستدعاءات عبر الآلات الافتراضية](/sdk/guides/cross-vm).
+**لماذا هذا مختلف:** تشغّل QoreChain ثلاث آلات افتراضية متعايشة مع وحدة جسر
+أصلية (`crossvm`، إضافةً إلى العملية مسبقة التجميع `CrossVMBridge` متى تم
+تفعيلها)، ولذلك تستطيع واجهة SDK واحدة مخاطبة الآلات الثلاث كلها. السلاسل ذات
+الآلة الافتراضية الواحدة ليس لديها ما يماثل ذلك لتغليفه. واليوم يقتصر مدى
+الاستدعاء على المسار الذي يستهدفه: فرسالة `MsgCrossVMCall` معطّلة على الشبكة
+الرئيسية، ومعاملات SVM معطّلة، ورفع عقود CosmWasm وإنشاء نسخ منها يتطلبان إذنًا.
+راجع [الاستدعاءات عبر الآلات الافتراضية](/sdk/guides/cross-vm).
 
 ---
 
@@ -108,31 +113,44 @@ await crossVM.callAtomic([
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Idempotent: registers the signer's ML-DSA-87 key on-chain if not already.
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair });
+// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
+// (read it over REST on the public endpoints; see the Quantum-safe guide).
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  status: { registered },
+});
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair });
-await hybrid.send(messages);
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+await hybrid.signAndBroadcastHybrid({
+  registry, signer, messages, fee, chainId, accountNumber, sequence,
+  rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key.
+// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// (needs a node that serves the `qor_` namespace; see the React guide).
 <QuantumSafeBadge address={account.address} />
 ```
 
-**لماذا هذا فريد:** تشفير ما بعد الكم أصلي وإلزامي على QoreChain، وليس تجربة.
-هذه أول SDK يكون فيها "الأمان الكمومي افتراضيًا" استدعاءً واحدًا مع شارة جاهزة
-للاستخدام. راجع [الأمان الكمومي](/sdk/guides/quantum-safe).
+**لماذا هذا مهم:** تشفير ما بعد الكم أصلي وإلزامي على المسار الأصلي (Native) في
+QoreChain، وليس تجربة، وتختزل SDK اعتماده في استدعاء تسجيل واحد ومسار إرسال
+هجين. التسجيل صريح: لا يوجد تسجيل تلقائي عند أول معاملة. راجع
+[الأمان الكمومي](/sdk/guides/quantum-safe).
 
 ---
 
 ## 4. حسابات موحّدة أصلية بمفاتيح eth — مفتاح واحد، ثلاثة عناوين، رصيد واحد
 
 **مفتاح `eth_secp256k1` واحد هو هوية واحدة من 20 بايت على المسارات الثلاثة
-كلها.** (SDK 0.6.0، السلسلة v3.1.83.)
+كلها.** (SDK 0.6.0، السلسلة v3.1.83.) مسار معاملات SVM معطّل حاليًا على مستوى
+الشبكة كلها، ومسار EVM يحتاج إلى
+[نافذة تفويض](/sdk/guides/evm#evm-window)؛ أما الرصيد المشترك وربط العناوين
+فيبقيان قائمين في كل الأحوال.
 
 ```ts
 import { deriveUnifiedAccount } from "@qorechain/sdk";
@@ -142,14 +160,14 @@ account.cosmos; // "qor1…"  bech32 — Native lane
 account.evm;    // "0x…"    EIP-55 — EVM lane
 account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 // A deposit to ANY of the three lands in ONE balance,
-// and the same key spends on every lane (signHybridEth on the Native path).
+// and the same key signs on every enabled lane (signHybridEth on the Native path).
 ```
 
 **لماذا هذا فريد:** في المنظومات متعددة الآلات الافتراضية في أماكن أخرى، لكل
 بيئة تشغيل فضاء حسابات خاص بها وتبقى الأموال عالقة في كل مسار على حدة. أما
 QoreChain فتعرض هوية واحدة من 20 بايت بثلاث صيغ مع رصيد واحد مشترك —
-فالمحفظة لا "تملك أموالًا على مسار دون آخر" أبدًا. بل إن `connectPhantomUnified`
-تُنشئ هذه الهوية بشكل غير وصائي (non-custodial) انطلاقًا من توقيع Phantom. راجع
+فالمحفظة لا "تملك أموالًا على مسار دون آخر" أبدًا. ويمكن ربط محفظة خارجية مثل Phantom بهذه الهوية كمُصادِق محدود الصلاحيات
+([المُصادِقات](/sdk/guides/authenticators)). راجع
 [الحسابات الموحّدة](/sdk/concepts/accounts-pqc#unified-accounts).
 
 ---
@@ -158,6 +176,14 @@ QoreChain فتعرض هوية واحدة من 20 بايت بثلاث صيغ مع
 
 **مفتاح Phantom أو MetaMask مرتبط يُنفق من الحساب القانوني الذي يشترط PQC،
 ضمن حدود، عبر مُرحِّل (relayer).** (SDK 0.7.0، السلسلة v3.1.85.)
+
+:::caution غير متاح على الشبكات الحية بعد
+وحدة `abstractaccount` معطّلة على `qorechain-vladi` و`qorechain-diana`
+(يعيد `GET /qorechain/abstractaccount/v1/config` القيمة `"enabled": false`)،
+وابتداءً من إصدار السلسلة v3.2.0 يُفرض هذا الإعداد على كل مسار، وبالتالي لا
+يمكن ربط مفتاح ولا استخدام المسارات أدناه. راجع
+[دليل المُصادِقات](/sdk/guides/authenticators).
+:::
 
 ```ts
 import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
@@ -175,9 +201,10 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**لماذا هذا فريد:** كل عملية إنفاق مقيّدة بتصنيف صلاحيات على السلسلة، وبحدود
-`SpendingRule`، وبتاريخ انتهاء — وفق مبدأ الحد الأدنى من الامتيازات وقابلة
-للإلغاء — بينما يبقى الحساب نفسه محميًّا بتشفير ما بعد الكم. راجع
+**لماذا هذا مهم:** متى تم تفعيل الوحدة، تصبح كل عملية إنفاق مقيّدة بتصنيف
+صلاحيات على السلسلة، وبحدود `SpendingRule`، وبتاريخ انتهاء — وفق مبدأ الحد
+الأدنى من الامتيازات وقابلة للإلغاء — بينما يبقى الحساب نفسه محميًّا بتشفير ما
+بعد الكم. راجع
 [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators).
 
 ---

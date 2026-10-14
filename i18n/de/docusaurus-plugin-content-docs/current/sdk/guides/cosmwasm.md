@@ -25,7 +25,7 @@ import {
 
 const client = createClient({
   network: "testnet",
-  endpoints: { rpc: "https://rpc.testnet.example" },
+  endpoints: { rpc: "https://rpc-testnet.qore.host" }, // mainnet: https://rpc.qore.host
 });
 
 const cw = await client.cosmwasm(); // read-only CosmWasmReadClient
@@ -41,9 +41,32 @@ Du kannst einen Lese-Client auch direkt mit `createCosmWasmClient` konstruieren.
 
 ## Signieren: instanziieren, ausführen, hochladen
 
-Für Zustandsänderungen verbinde einen signierenden Client mit `connectCosmWasmSigner` (er
-nimmt einen Offline-Signierer entgegen, dieselbe Art, die von
-`directSignerFromPrivateKey` erzeugt wird), und verwende dann die typisierten Wrapper:
+:::caution Hochladen und Instanziieren sind berechtigungspflichtig
+`code_upload_access` und `instantiate_default_permission` sind auf
+`qorechain-vladi` und `qorechain-diana` auf `Nobody` gesetzt, und
+`MsgStoreCode` / `MsgInstantiateContract` / `MsgInstantiateContract2` sind
+zusätzlich durch den Circuit Breaker der Chain abgeschaltet, sodass `uploadCode`
+und `instantiate` für gewöhnliche Konten abgelehnt werden. Bereits vorhandene
+Verträge können abgefragt (siehe oben) und ausgeführt werden. Prüfe
+`GET /cosmwasm/wasm/v1/codes/params` für die aktuellen Berechtigungen.
+Siehe [CosmWasm-Entwicklung](/developer-guide/cosmwasm-development).
+:::
+
+:::caution Der CosmWasm-Signing-Client signiert klassisch
+`connectCosmWasmSigner` umhüllt den CosmJS-Signing-Client, der nur die klassische
+secp256k1-Signatur anhängt. Die Live-Netzwerke verlangen bei jeder Transaktion
+über den Native-Pfad die Hybrid-Signatur (secp256k1 + ML-DSA-87); eine darüber
+gesendete Transaktion wird dort daher abgelehnt. Sie funktioniert gegen einen
+Node, der die Hybrid-Erweiterung nicht verlangt (ein lokaler Dev-Node). Für
+`execute` auf einem Live-Netzwerk baue die Nachricht und sende sie mit
+`signAndBroadcastHybrid` (Beispiel unten).
+:::
+
+Für Zustandsänderungen gegen einen Node, der klassische Signaturen akzeptiert,
+verbinde einen signierenden Client mit `connectCosmWasmSigner` (er nimmt einen
+Offline-Signierer entgegen, dieselbe Art, die von `directSignerFromPrivateKey`
+erzeugt wird), und verwende dann die typisierten Wrapper. Die Helfer liefern
+`Promise<unknown>` zurück, sofern du den Ergebnistyp nicht angibst:
 
 ```ts
 import {
@@ -56,16 +79,18 @@ import {
 const signingCw = await connectCosmWasmSigner(rpcUrl, signer);
 
 // Upload Wasm bytecode -> a code id.
-const { codeId } = await uploadCode(signingCw, sender, wasmBytes, fee);
+const { codeId } = await uploadCode<{ codeId: number }>(
+  signingCw, sender, wasmBytes, "auto",
+);
 
-// Instantiate a contract from a code id.
-const { contractAddress } = await instantiate(
+// Instantiate a contract from a code id (the last argument is InstantiateOpts).
+const { contractAddress } = await instantiate<{ contractAddress: string }>(
   signingCw,
   sender,
   codeId,
   { /* init msg */ },
   "label",
-  fee,
+  { fee: "auto" },
 );
 
 // Execute a message against a deployed contract.
@@ -74,12 +99,59 @@ const res = await execute(
   sender,
   contractAddress,
   { /* execute msg */ },
-  fee,
+  "auto",
 );
 ```
 
 Die genauen Argumentformen folgen `@cosmjs/cosmwasm-stargate`; das SDK fügt typisierte
 `ContractMsg`-, `FeeInput`-, `InstantiateOpts`-, `CosmWasmReadClient`- und
 `CosmWasmSigningClient`-Typen hinzu.
+
+### Ausführen auf einem Live-Netzwerk (Hybrid)
+
+Füge die CosmWasm-Nachrichtentypen zu einer Registry hinzu und sende die
+`MsgExecuteContract` über den Hybrid-Builder. Der ML-DSA-87-Schlüssel des Kontos
+muss zuvor registriert sein (siehe [Quantensicher](/sdk/guides/quantum-safe)).
+Benötigt
+`npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:
+
+```ts
+import { Registry } from "@cosmjs/proto-signing";
+import { wasmTypes } from "@cosmjs/cosmwasm-stargate";
+import { StargateClient } from "@cosmjs/stargate";
+import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import {
+  qorechainRegistryTypes,
+  signAndBroadcastHybrid,
+  derivePqcCanonical,
+} from "@qorechain/sdk";
+
+const registry = new Registry([...qorechainRegistryTypes, ...wasmTypes]);
+const transport = await StargateClient.connect("https://rpc.qore.host");
+const info = await transport.getSequence(sender);
+
+const result = await signAndBroadcastHybrid({
+  registry,
+  signer,                                            // from directSignerFromPrivateKey
+  pqcKeypair: derivePqcCanonical(sender, mnemonic),  // the key registered on-chain
+  messages: [
+    {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender,
+        contract: contractAddress,
+        msg: new TextEncoder().encode(JSON.stringify({ /* execute msg */ })),
+        funds: [],
+      }),
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: "https://api.qore.host",
+  transport,
+});
+```
 
 Siehe das `cosmwasm-query`-[Beispiel](/sdk/examples) für ein lauffähiges Lesebeispiel.

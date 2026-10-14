@@ -15,10 +15,27 @@ QoreChain은 **EVM, SVM, CosmWasm을 나란히** 실행하며, `x/crossvm` 모�
 EVM→네이티브 라우팅은 여전히 `@qorechain/evm`의 **크로스-VM 브리지 프리컴파일**을 통해
 온체인에서 실행됩니다.
 
+:::caution 현재 작동하는 것
+크로스-VM 호출은 대상 레인이 사용 가능한 만큼만 사용할 수 있습니다:
+
+- `MsgCrossVMCall`은 **메인넷**에서 체인의 서킷 브레이커에 의해 꺼져 있습니다
+  (`GET /cosmos/circuit/v1/disable_list`에 `/qorechain.crossvm.v1.MsgCrossVMCall`이
+  나열됩니다). 테스트넷에서는 활성화되어 있습니다.
+- SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있고, CosmWasm 업로드와
+  인스턴스화는 허가제이며(메인넷에는 컨트랙트가 없습니다), EVM 브리지 프리컴파일은
+  활성화되어 있지 않습니다
+  ([EVM 프리컴파일](/developer-guide/evm-precompiles#network-status) 참조).
+- 아래의 타입이 지정된 REST 읽기 헬퍼는 공개 게이트웨이가 제공하지 않는 경로를
+  호출합니다. 대신 `connectQueryClients(rpc).crossvm`으로 메시지를 읽으세요.
+- 모든 Native 경로 트랜잭션과 마찬가지로, 크로스-VM 호출도 하이브리드 서명을 담아야
+  합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc#hybrid-signing) 참조).
+:::
+
 ## 통합 크로스-VM 호출
 
 `createCrossVMClient`는 `MsgCrossVMCall`(타입 URL
-`/qorechain.crossvm.v1.MsgCrossVMCall`)을 래핑하므로, `{ typeUrl, value }`를 직접
+`/qorechain.crossvm.v1.MsgCrossVMCall`)을 래핑하므로, `{ typeUrl,
+value }`를 직접
 손으로 빌드하거나 페이로드를 직접 인코딩할 필요가 없습니다. 클라이언트의 sender는 연결된
 `TxClient`의 주소이며, `sourceVm`은 기본적으로 `"evm"`입니다.
 
@@ -91,20 +108,32 @@ const { messageIds, result } = await xvm.callAtomic([
 ## 메시지 다시 읽기
 
 `getMessage`는 id로 크로스-VM 메시지를 읽으며, 타입이 지정된 쿼리 클라이언트를 우선
-사용하고 `qor_getCrossVMMessage` JSON-RPC 메서드로 폴백합니다:
+사용하고 `qor_getCrossVMMessage` JSON-RPC 메서드(공개 엔드포인트는 이를 제공하지
+않습니다)로 폴백합니다. 컨센서스 RPC를 통해 읽는, 타입이 지정된 쿼리 클라이언트를
+전달하세요:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## 크로스-VM 메시지 상태 읽기
 
-`@qorechain/sdk`는 `x/crossvm` 위의 타입이 지정된 REST 래퍼를 내보냅니다:
+`@qorechain/sdk`는 `x/crossvm` 위의 타입이 지정된 REST 래퍼를 내보냅니다. 이들은
+`/qorechain/crossvm/v1/{message/{id},pending,params}`를 호출하는데, 공개 게이트웨이는
+이 경로를 제공하지 **않으므로**(`api.qore.host`와 `api-testnet.qore.host`에서
+`Not Implemented`), 공개 엔드포인트에 대해서는 `QoreHttpError`를 던집니다. 이들은
+해당 경로를 노출하는 노드를 위한 것이며, 공개 네트워크에서는 위의
+`connectQueryClients`를 사용하세요.
 
 ```ts
 import {
@@ -115,7 +144,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -131,10 +160,13 @@ const params = await getCrossVmParams(client.rest);
 이들은 타입이 지정된 형태를 반환합니다: `CrossVmMessage`, `CrossVmMessageResponse`,
 `PendingCrossVmMessagesResponse`, `CrossVmParamsResponse`.
 
-`qor_` JSON-RPC 네임스페이스를 통해 메시지를 읽을 수도 있습니다:
+노드가 제공하기 시작하면 `qor_` JSON-RPC 네임스페이스를 통해 메시지를 읽을 수도
+있습니다:
+
+> **아직 제공되지 않음:** 릴리스된 어떤 노드 빌드도 `qor_` JSON-RPC 네임스페이스를 제공하지 않으므로, 이 호출은 현재 모든 공개 엔드포인트에서 `-32601`(메서드를 찾을 수 없음)을 반환합니다. [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참조하세요.
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## EVM 브리지 프리컴파일
@@ -149,6 +181,12 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-해당 주소에서 Solidity 컨트랙트로부터(또는 viem을 통해) 프리컴파일을 호출하여 메시지를
-네이티브 레이어로 라우팅한 다음, 위의 읽기 헬퍼로 그 상태를 추적하세요. 전체 프리컴파일
+> **활성화되지 않음.** 크로스-VM 브리지 프리컴파일은 메인넷과 테스트넷에서 활성화되어
+> 있지 않으며, 현재 형태로는 활성화되지 않을 것입니다. 먼저 재구축 중입니다. 현재
+> `0x…0901` 호출은 빈 데이터를 반환하고 아무것도 라우팅하지 않습니다.
+> [EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status)를
+> 참조하세요.
+
+활성화되면, Solidity 컨트랙트(또는 viem)가 해당 주소의 프리컴파일을 호출하여 메시지를
+네이티브 레이어로 라우팅한 다음, 위의 읽기 헬퍼로 그 상태를 추적합니다. 전체 프리컴파일
 목록은 [EVM 가이드](/sdk/guides/evm)를 참고하세요.

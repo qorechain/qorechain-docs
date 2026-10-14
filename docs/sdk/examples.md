@@ -32,8 +32,11 @@ source for the full, runnable program.
 
 ## connect-and-query
 
-Create a client and read public chain state — a native bank balance and the
-aggregate tokenomics snapshot. Needs a reachable node.
+Create a client and read public chain state — a native bank balance and a
+tokenomics snapshot. Needs a reachable node. The repository example reads the
+snapshot through `client.qor`, a `qor_` JSON-RPC call that the public endpoints do
+not serve; the snippet below uses the REST equivalent (the burn statistics), which
+works on mainnet and testnet.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [Source](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -56,7 +59,11 @@ const overview = await client.qor.getTokenomicsOverview();
 
 Derive a native (`qor1...`) account from a mnemonic and broadcast a QOR
 transfer: derive → sign → simulate → estimate fee → `bankSend`. Needs a
-reachable consensus RPC plus REST and a funded account.
+reachable consensus RPC plus REST and a funded account. This example signs with
+the **classical** signature only, so it works against a local or dev node but is
+refused by mainnet and testnet, which require the hybrid signature on every
+Native-path transaction. For the public networks use the hybrid send in the
+[Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
 import {
@@ -84,7 +91,10 @@ console.log(result.transactionHash);
 
 Build a SOL transfer with a memo instruction on QoreChain's Solana-compatible
 (SVM) runtime, using `@qorechain/svm`. Builds and prints the transaction
-offline; sending needs a reachable SVM JSON-RPC and a funded account.
+offline. Sending needs a reachable SVM JSON-RPC and a funded account, and cannot
+succeed on the public networks: SVM transaction submission is disabled
+network-wide and the public SVM endpoints are read-only (see
+[SVM Development](/developer-guide/svm-development)).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -93,7 +103,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -101,7 +111,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -112,8 +123,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Use `@qorechain/evm` (a thin layer over viem) to call read-only QoreChain
 precompiles and read an ERC-20 balance. The EVM chain id is auto-detected via
-`eth_chainId`. On a node without the precompiles, those calls throw "feature not
-present", reported per-call.
+`eth_chainId`. The precompiles are not yet active on mainnet or testnet (see
+[Network status](/developer-guide/evm-precompiles#network-status)); until they
+are, and on a node without them, those calls throw "feature not present",
+reported per-call.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -154,11 +167,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -191,8 +205,10 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 ## read-tokenomics
 
 Read tokenomics state through the typed `qor_*` JSON-RPC namespace
-(`client.qor`), served over the EVM JSON-RPC endpoint. The three reads are
-independent, so each is reported even if the others are unavailable.
+(`client.qor`) over the EVM JSON-RPC endpoint. The three reads are independent,
+so each is reported even if the others are unavailable. No released node build
+serves the `qor_` namespace yet, so today each read fails with `-32601` (see
+[the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -205,7 +221,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -241,7 +257,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Build a relayer-submitted `MsgExecuteCosmos` on the Native authenticator lane
-(SDK 0.7.0, chain v3.1.85): a Phantom-style ed25519 key signs the
+(SDK 0.7.0, chain v3.1.85; the `abstractaccount` module is switched off on both
+networks today, so this lane cannot be used there yet): a Phantom-style ed25519 key signs the
 domain-separated auth digest, and the resulting message is ready for a relayer
 to broadcast (the relayer pays fees; the external key never produces an ML-DSA
 co-signature). Dry run — no node required.

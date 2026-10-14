@@ -11,8 +11,8 @@ The **Contract Auditor** runs an AI-powered security analysis of a smart contrac
 
 ## Run an audit
 
-1. Open the **Auditor** and provide the contract you want analyzed.
-2. Start the audit. QCAI reviews the contract and produces a report.
+1. Sign in, open **AI Audit**, and paste your contract into **Contract Source Code**. Optionally set the **Blockchain** (it defaults to **Auto-detect from code**) and a **Name**.
+2. Select **Run Security Audit**. QCAI reviews the contract and produces a report; **Export PDF** saves it.
 
 ## Read the report
 
@@ -31,7 +31,7 @@ Where applicable, the report also includes sections for general recommendations,
 
 ## Review past audits
 
-The audits list shows your previous reports in a table with the contract name, blockchain, risk level, security score, and when each was created. A search box filters by contract name or blockchain. Select any row to reopen the full report, and use the report's own page link to share it.
+The audits list shows your previous reports in a table with the contract name, blockchain, risk level, security score, and when each was created. A search box filters by contract name or blockchain. Select any row to reopen the full report. Reports are **private by default**; on a report you own, a switch at the top reads "This report is private" — turn it on to make the report public so anyone with the link can read it (your name and IP are never shown), and turn it off to make it private again.
 
 :::tip Audit before you deploy
 Run an audit as the last step before deploying, and re-run it after any change. Treat findings as guidance to verify, not an automatic guarantee — combine the report with your own testing on [testnet](/getting-started/connecting-to-testnet).

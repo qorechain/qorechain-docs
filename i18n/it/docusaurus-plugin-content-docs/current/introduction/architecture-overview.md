@@ -7,13 +7,17 @@ sidebar_position: 2
 
 # Panoramica dell'Architettura
 
-QoreChain è un nodo blockchain modulare composto da tre processi principali — il nodo della chain, il sidecar AI e l'indicizzatore di blocchi — supportati da un database Postgres e monitorati tramite Prometheus e Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 7 giugno 2026 sulla versione della chain **v3.1.97**, con una testnet parallela (`qorechain-diana`, EVM chain ID **9800**). La chain è costruita su Cosmos SDK v0.53. Il diagramma seguente mostra la disposizione di alto livello dei componenti.
+QoreChain è un nodo blockchain modulare composto da tre processi principali — il nodo della chain, il sidecar AI e l'indicizzatore di blocchi — supportati da un database Postgres e monitorati tramite Prometheus e Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 29 giugno 2026 sulla release **v3.2.1** (regole di consenso della v3.2.0), con una testnet parallela (`qorechain-diana`, EVM chain ID **9800**). La chain è costruita su Cosmos SDK v0.53. Il diagramma seguente mostra la disposizione di alto livello dei componenti.
 
 Il ciclo di vita della transazione riportato di seguito riassume come una transazione inviata attraversa il nodo — dalla catena di decorator dell'AnteHandler (controlli di sicurezza e delle commissioni) all'esecuzione nella VM e al regolamento on-chain:
 
 ```mermaid
 flowchart LR
-    Tx[Submitted transaction] --> Ante[AnteHandler chain]
+    Tx[Submitted transaction] --> Lane{Lane}
+    Lane -->|Cosmos lane| Ante[AnteHandler chain]
+    Lane -->|EVM lane| EAnte[EVM checks]
+    EAnte --> Win[Registered PQC key +<br/>EVM authorisation window]
+    Win --> Router
     Ante --> PQC[PQC signature verify]
     PQC --> AI[AI anomaly detection]
     AI --> Fair[FairBlock MEV protection]
@@ -43,24 +47,24 @@ flowchart LR
 │  ┌────────────────────── Tokenomics ─────────────────────────┐           │
 │  │  ┌──────┐   ┌───────┐   ┌───────────┐                    │           │
 │  │  │x/burn│   │x/xqore│   │x/inflation│                    │           │
-│  │  │10 ch.│   │lock/  │   │finite     │                    │           │
+│  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
-│  │  │20/10/│   │PvP    │   │590M       │                    │           │
-│  │  │3     │   │       │   │budget     │                    │           │
+│  │  │20/10/│   │PvP    │   │emission   │                    │           │
+│  │  │3     │   │       │   │114.3M cap │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
 │  ┌──────────── IBC / Bridges ────────────────────────────────┐           │
 │  │  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐ │           │
 │  │  │x/bridge  │  │x/babylon │  │x/abstract │  │x/gas     │ │           │
-│  │  │37 QCB +  │  │BTC re-   │  │ account   │  │abstract. │ │           │
-│  │  │8 IBC     │  │staking   │  │session key│  │multi-tok │ │           │
+│  │  │37 QCB    │  │BTC re-   │  │ account   │  │abstract. │ │           │
+│  │  │configs   │  │staking   │  │session key│  │multi-tok │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
 │  │  QCB Bridge     Babylon IBC   ERC-4337-like   ibc/USDC    │           │
 │  │  PQC-signed     BTC finality  social recov.   ibc/ATOM    │           │
 │  │  36 ext chains  checkpoint    spending rules  fee convert  │           │
 │  │  ┌──────────┐                                              │           │
-│  │  │x/fair    │  5-Lane Prioritization: PQC|MEV|AI|Def|Free │           │
+│  │  │x/fair    │  Lane config (not enforced): PQC|MEV|AI|... │           │
 │  │  │ block    │  tIBE encrypted mempool framework           │           │
 │  │  └──────────┘                                              │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -74,7 +78,7 @@ flowchart LR
 │  │  │ sovereign│  │          │  │           │  │ social/  │ │           │
 │  │  │          │  │          │  │           │  │ general  │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
-│  │  Bank escrow    Auto-finalize  SHA-256 commit  AI-assisted │           │
+│  │  Bank escrow    Auto-finalize  SHAKE-256 commit AI-assisted │           │
 │  │  Burn on create EndBlocker     Blob pruning    PRISM sugg. │           │
 │  │  → x/multilayer (RegisterSidechain + AnchorState)          │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -114,7 +118,7 @@ flowchart LR
 
 ## Componenti del Nodo
 
-QoreChain viene eseguito come tre processi cooperanti, ciascuno con il proprio modulo Go e binario:
+QoreChain viene eseguito come tre processi cooperanti, ciascuno con il proprio modulo Go e il proprio binario:
 
 | Componente         | Descrizione                                                                                                                                                                                                                                                                                          | Posizione                 |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -129,17 +133,18 @@ QoreChain viene eseguito come tre processi cooperanti, ciascuno con il proprio m
 | 26657 | HTTP/WebSocket | RPC del QoreChain Consensus Engine (blocchi, transazioni, stato del consenso)     |
 | 1317  | HTTP           | API REST (endpoint di query, broadcast delle transazioni)                         |
 | 9090  | gRPC           | Endpoint gRPC per query e transazioni                                             |
-| 8545  | HTTP           | EVM JSON-RPC (namespace `eth_`, `web3_`, `net_`, `txpool_`, `qor_`)               |
+| 8545  | HTTP           | EVM JSON-RPC (namespace `eth_`, `web3_`, `net_`, `txpool_`)                       |
 | 8546  | WebSocket      | EVM JSON-RPC (sottoscrizioni WebSocket)                                           |
 | 8899  | HTTP           | SVM JSON-RPC (compatibile con Solana: `getAccountInfo`, `getBalance`, `getSlot`, ecc.) |
 | 50051 | gRPC           | AI Sidecar (richieste di inferenza dal nodo)                                      |
 | 5432  | TCP            | Postgres (archiviazione dell'indicizzatore di blocchi)                            |
-| 9091  | HTTP           | Metriche Prometheus                                                               |
-| 3000  | HTTP           | Dashboard Grafana                                                                 |
+| 26660 | HTTP           | Endpoint delle metriche Prometheus del nodo                                       |
+| 9091  | HTTP           | Server Prometheus (porta host nello stack Docker Compose)                         |
+| 3001  | HTTP           | Dashboard Grafana (porta host nello stack Docker Compose; porta del container 3000) |
 
 ## Mappa dei Moduli
 
-QoreChain registra **45+ moduli di genesis, inclusi 20+ moduli personalizzati**, raggruppati per funzione:
+QoreChain registra **48 moduli di genesis, 20 dei quali specifici di QoreChain**, raggruppati per funzione:
 
 **Sicurezza**
 
@@ -149,11 +154,11 @@ QoreChain registra **45+ moduli di genesis, inclusi 20+ moduli personalizzati**,
 
 * `x/ai` — Routing delle transazioni, rilevamento di anomalie, rilevamento di frodi, ottimizzazione delle commissioni, attestazione TEE, apprendimento federato
 * `x/reputation` — Punteggio di reputazione multi-fattore dei validatori con decadimento temporale
-* `x/rlconsensus` — Agente RL on-chain (PPO MLP), tuning dinamico del consenso, circuit breaker, advisory per i rollup — il livello di ottimizzazione PRISM
+* `x/rlconsensus` — Agente RL on-chain (PPO MLP), design di tuning del consenso, circuit breaker, advisory per i rollup — il livello di ottimizzazione PRISM (solo osservazione sulle reti attive: nessuna policy è caricata)
 
 **Consenso**
 
-* `x/qca` — Triple-Pool Composite PoS (RPoS/DPoS/PoS) sul QoreChain Consensus Engine, bonding curve personalizzata, slashing progressivo, governance QDRW
+* `x/qca` — Design del Triple-Pool Composite PoS (RPoS/DPoS/PoS), bonding curve personalizzata, slashing progressivo, governance QDRW — implementato ma non ancora collegato alla produzione dei blocchi, alle ricompense, allo slashing né al conteggio dei voti di governance
 
 **Macchine Virtuali**
 
@@ -163,22 +168,22 @@ QoreChain registra **45+ moduli di genesis, inclusi 20+ moduli personalizzati**,
 
 **Tokenomics e Liquidità**
 
-* `x/burn` — 10 canali di burn, distribuzione delle commissioni nell'EndBlocker (suddivisione 37/30/20/10/3)
-* `x/xqore` — Staking potenziato dalla governance: lock/unlock, penalità di uscita graduate, rebase PvP
-* `x/inflation` — Emissione a offerta fissa da un budget finito di ricompense di staking su un calendario pluriennale
+* `x/burn` — 12 fonti di burn, distribuzione delle commissioni nell'EndBlocker (suddivisione 37/30/20/10/3)
+* `x/xqore` — Design di staking potenziato dalla governance: lock/unlock, penalità di uscita graduate, rebase PvP (solo contabilità; le transazioni di lock e unlock non sono ancora collegate sulle reti attive)
+* `x/inflation` — Emissione con tetto: un importo fisso viene coniato a ogni epoca fino al raggiungimento di un tetto cumulativo rigido (114.285.714 QOR)
 * `x/amm` — Liquidità on-chain / market maker automatizzato
 
 **Bridge e Interoperabilità**
 
-* `x/bridge` — 37 configurazioni QCB (36 chain esterne + loopback di QoreChain) per ogni tipo di chain principale, attestazioni firmate con PQC, circuit breaker
-* `x/babylon` — Restaking BTC tramite Babylon Protocol, checkpoint di epoca
+* `x/bridge` — 37 configurazioni di chain (36 chain esterne più Injective tramite IBC) per ogni tipo di chain principale, attestazioni firmate con PQC, circuit breaker (tutte le configurazioni sono `pending`; non attive)
+* `x/babylon` — Restaking BTC tramite Babylon Protocol, checkpoint di epoca (fase di design; nessuna transazione abilitata)
 * `x/multilayer` — Gestione dei livelli di sidechain/paychain/rollup, ancoraggio dello stato
 
 **Estensioni di Governance e Licensing**
 
-* `x/abstractaccount` — Smart account: multisig, social recovery, session key, regole di spesa
-* `x/fairblock` — Protezione MEV: framework di mempool cifrato con threshold IBE
-* `x/gasabstraction` — Pagamento del gas multi-token: conversione delle commissioni ibc/USDC, ibc/ATOM
+* `x/abstractaccount` — Smart account: multisig, social recovery, session key, regole di spesa (disattivato su entrambe le reti: `enabled = false`)
+* `x/fairblock` — Protezione MEV: framework di mempool cifrato con threshold IBE (disattivato su entrambe le reti)
+* `x/gasabstraction` — Design del pagamento del gas multi-token: conversione delle commissioni ibc/USDC, ibc/ATOM (nessun canale IBC è ancora aperto, quindi le commissioni si pagano in QOR)
 * `x/license` — Licensing della chain
 
 **Rollup**
@@ -187,41 +192,21 @@ QoreChain registra **45+ moduli di genesis, inclusi 20+ moduli personalizzati**,
 
 ## Catena AnteHandler
 
-Ogni transazione passa attraverso la seguente catena di decorator prima dell'esecuzione. I decorator vengono eseguiti in ordine; qualsiasi decorator può rifiutare la transazione.
+Ogni transazione passa attraverso una catena di decorator prima dell'esecuzione; qualsiasi decorator può rifiutarla. Esistono due catene.
 
-```
-SetUpContext
-  → CircuitBreaker
-    → PQCVerify
-      → PQCHybridVerify
-        → AIAnomaly
-          → FairBlock
-            → SVMComputeBudget
-              → SVMDeductFee
-                → Extension
-                  → ValidateBasic
-                    → TxTimeout
-                      → Memo
-                        → MinGasPrice
-                          → ConsumeTxSize
-                            → GasAbstraction
-                              → DeductFee
-                                → SetPubKey
-                                  → ValidateSigCount
-                                    → SigGasConsume
-                                      → SigVerify
-                                        → IncrementSequence
-```
+**Lane Cosmos** (in ordine): `RejectMessages` (nessun `MsgEthereumTx` su questa lane) → `AuthzLimiter` (nessun messaggio EVM o di creazione di vesting dentro authz) → `SetUpContext` → protezioni su mempool e profondità multisig → decorator CosmWasm per simulation-gas, tx-counter, gas-register e contratti → `CircuitBreaker` → controllo dell'extension option → `ValidateBasic` → `TxTimeout` → `Memo` → gate della licenza validatore (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (include il rate limit per mittente) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → contatore delle transazioni di burn → controllo del relay IBC ridondante → tracciamento del gas richiesto.
 
-I decorator principali vengono eseguiti nella seguente sequenza (ogni decorator viene eseguito in ordine e può rifiutare una transazione):
+**Lane EVM** (transazioni che portano l'extension option di Ethereum): `CircuitBreaker` → il decorator monolitico EVM (controlli di firma, nonce, commissioni e saldo) → `EVMWindowDecorator` (chiave post-quantistica registrata e finestra di autorizzazione attiva; vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window)).
+
+Decorator principali sulla lane Cosmos:
 
 1. **PQCVerify** — Modulo `x/pqc`. Verifica le firme Dilithium-5 sulle transazioni contrassegnate come PQC.
 2. **PQCHybridVerify** — Modulo `x/pqc`. Verifica le firme ibride duali secp256k1 (ECDSA) + ML-DSA-87.
-3. **AIAnomaly** — Modulo `x/ai`. Esegue il rilevamento di anomalie con isolation forest e il punteggio di rischio.
-4. **FairBlock** — Modulo `x/fairblock`. Elabora le transazioni cifrate con tIBE per la protezione MEV.
+3. **AIAnomaly** — Modulo `x/ai`. Esegue il rilevamento di anomalie con isolation forest e il punteggio di rischio, e applica il limite di transazioni per mittente.
+4. **FairBlock** — Modulo `x/fairblock`. Elabora le transazioni cifrate con tIBE per la protezione MEV (disattivato sulle reti attive).
 5. **SVMComputeBudget** — Modulo `x/svm`. Convalida e alloca le compute unit per i programmi SVM.
 6. **SVMDeductFee** — Modulo `x/svm`. Deduce le commissioni di esecuzione specifiche di SVM.
-7. **GasAbstraction** — Modulo `x/gasabstraction`. Converte i token di commissione non nativi (USDC, ATOM) prima della deduzione.
+7. **GasAbstraction** — Modulo `x/gasabstraction`. Converte i token di commissione non nativi prima della deduzione (le commissioni sono attualmente pagate in QOR).
 
 ## Stack Docker Compose
 
@@ -229,18 +214,20 @@ L'intero stack di sviluppo viene eseguito come un deployment Docker Compose a se
 
 | Servizio         | Immagine                   | Scopo                                                |
 | ---------------- | -------------------------- | --------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | Nodo della chain con tutti i moduli, le VM e gli endpoint RPC |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | Servizio di inferenza AI (gRPC + QCAI Backend)      |
-| `block-indexer`  | `qorechain-indexer:latest` | Indicizzatore di blocchi/transazioni (WebSocket + Postgres) |
+| `qorechain-node` | `qorechain-core:latest` (costruita localmente dal Dockerfile; nessuna immagine del nodo pubblicata) | Nodo della chain con tutti i moduli, le VM e gli endpoint RPC |
+| `ai-sidecar`     | `ghcr.io/qorechain/ai-sidecar:latest` | Servizio di inferenza AI (gRPC + QCAI Backend)      |
+| `block-indexer`  | `ghcr.io/qorechain/block-indexer:latest` | Indicizzatore di blocchi/transazioni (WebSocket + Postgres) |
 | `postgres`       | `postgres:16-alpine`       | Database per l'indicizzatore di blocchi             |
-| `prometheus`     | `prom/prometheus:latest`   | Raccolta e archiviazione delle metriche             |
-| `grafana`        | `grafana/grafana:latest`   | Dashboard di monitoraggio e alerting                |
+| `prometheus`     | `prom/prometheus:v3.10.0`  | Raccolta e archiviazione delle metriche             |
+| `grafana`        | `grafana/grafana:12.4.1`   | Dashboard di monitoraggio e alerting                |
 
 Avvia l'intero stack:
 
 ```bash
 docker compose up -d
 ```
+
+Prima del primo avvio, copia `.env.example` in `.env` e `.env.sidecar.example` in `.env.sidecar`, e imposta `GRAFANA_PASSWORD` (Compose rifiuta di avviarsi senza).
 
 Tutti i dati persistenti sono archiviati in volumi Docker denominati: `node-data`, `postgres-data`, `prometheus-data` e `grafana-data`.
 

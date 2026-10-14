@@ -7,7 +7,11 @@ sidebar_position: 2
 
 # PRISM Consensus Engine
 
-QoreChain bettet **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), eine Optimierungsschicht auf Basis von Reinforcement Learning, über das Modul `x/rlconsensus` direkt in die Konsensschicht ein. PRISM beobachtet alle N Blöcke Chain-Metriken, führt die Inferenz durch ein neuronales Netz mit Festkomma-Arithmetik aus und schlägt Anpassungen der Konsensparameter vor — alles deterministisch, ohne Gleitkommaarithmetik in konsenskritischen Pfaden.
+QoreChain bettet **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), eine Optimierungsschicht auf Basis von Reinforcement Learning, über das Modul `x/rlconsensus` direkt in die Konsensschicht ein. PRISM beobachtet alle N Blöcke Chain-Metriken und ist darauf ausgelegt, die Inferenz durch ein neuronales Netz mit Festkomma-Arithmetik auszuführen und Anpassungen der Konsensparameter vorzuschlagen — alles deterministisch, ohne Gleitkommaarithmetik in konsenskritischen Pfaden.
+
+:::note Aktueller Stand (Oktober 2026)
+Sowohl im Mainnet als auch im Testnet befindet sich der Agent im Modus `conservative`, erfasst alle 10 Blöcke eine Beobachtung und eine Belohnung und hat **keine geladenen Policy-Gewichte**: Er hat 0 Schritte ausgeführt und wendet keine Parameteränderung an. Die Blockzeit wird durch die Node-Konfiguration der Validatoren bestimmt, nicht durch PRISM. Das Laden einer Policy und das Ändern des Modus sind Governance-Aktionen, die derzeit im Mainnet durch den Circuit Breaker deaktiviert sind.
+:::
 
 *Die PRISM-Optimierungsschleife: Chain-Zustand beobachten, Policy-Inferenz ausführen, Parameteränderungen begrenzen und anwenden, dann das Ergebnis zurückspeisen.*
 
@@ -71,7 +75,7 @@ Alle MLP-Berechnungen verwenden `int64`-Werte, skaliert mit `FixedPointScale = 1
 * **ReLU**: `relu(x) = max(0, x)`
 * **tanh**: Padé-Approximant `tanh(x) ~ x * (3*S - x^2) / (3*S + x^2)` für `|x| <= 2.5*SCALE`, andernfalls auf +/- SCALE begrenzt
 
-Die Policy-Gewichte werden on-chain als abgeflachter `[]int64`-Vektor gespeichert und können per Governance-Proposal aktualisiert werden.
+Die Policy-Gewichte sind dafür ausgelegt, on-chain als abgeflachter `[]int64`-Vektor gespeichert und per Governance-Proposal aktualisiert zu werden. Auf den Live-Netzwerken ist heute keine Policy geladen.
 
 ---
 
@@ -153,11 +157,11 @@ Die Belohnungsgewichte sind per Governance konfigurierbar und müssen sich auf g
 
 ## PRISM-Modi
 
-PRISM arbeitet in einem von vier Modi, die per Governance gesteuert werden:
+PRISM arbeitet in einem von vier Modi, die per Governance gesteuert werden (die Nachricht zum Moduswechsel ist derzeit im Mainnet abgeschaltet):
 
 | Modus             | ID | Max. Änderung | Verhalten                                                                                   |
 | ---------------- | -- | ---------- | ------------------------------------------------------------------------------------------ |
-| **Shadow**       | 0  | 0%         | Nur Empfehlungen beobachten und protokollieren. Es werden keine Parameter geändert. Dies ist der Standardmodus. |
+| **Shadow**       | 0  | 0%         | Nur Empfehlungen beobachten und protokollieren. Es werden keine Parameter geändert. Standard im Code; die Live-Netzwerke laufen im Modus Conservative (Genesis-Einstellung). |
 | **Conservative** | 1  | +/- 10%    | Parameteränderungen innerhalb enger Grenzen anwenden. Geeignet für den anfänglichen Live-Einsatz.         |
 | **Autonomous**   | 2  | +/- 25%    | Parameteränderungen innerhalb weiterer Grenzen anwenden. Für ausgereifte Netzwerke mit validierten Policies.  |
 | **Paused**       | 3  | 0%         | PRISM ist vollständig im Leerlauf. Es werden keine Beobachtungen erfasst und keine Inferenz ausgeführt.             |
@@ -228,12 +232,12 @@ Alle Funktionen arbeiten mit `cosmossdk.io/math.LegacyDec`-Werten und stellen id
 | -------------------------------- | --------- | ------------ | ---------------------------------------------------- |
 | `enabled`                        | bool      | `true`       | PRISM aktivieren                                          |
 | `observation_interval`           | uint64    | `10`         | Blöcke zwischen Beobachtungserfassungen               |
-| `agent_mode`                     | PrismMode | `0` (Shadow) | Aktueller Betriebsmodus                               |
+| `agent_mode`                     | PrismMode | `1` (Conservative) auf beiden Netzwerken | Aktueller Betriebsmodus                  |
 | `max_change_conservative`        | LegacyDec | `0.10`       | Maximale Parameteränderung im Conservative-Modus        |
 | `max_change_autonomous`          | LegacyDec | `0.25`       | Maximale Parameteränderung im Autonomous-Modus          |
 | `circuit_breaker_window`         | uint64    | `50`         | Anzahl der vom Circuit Breaker überwachten letzten Blöcke |
 | `circuit_breaker_threshold`      | LegacyDec | `0.50`       | Minimaler gesunder Blockanteil vor Auslösung        |
-| `default_block_time_ms`          | int64     | `5000`       | Standard-Ziel-Blockzeit (ms)                       |
+| `default_block_time_ms`          | int64     | `5000`       | Standard-Ziel-Blockzeit (ms), die als Beobachtungsbasis dient; die tatsächliche Blockzeit beträgt im Mainnet etwa 3,2 s und im Testnet 1,0 s |
 | `default_base_gas_price`         | LegacyDec | `100`        | Standard-Basis-Gaspreis                             |
 | `default_validator_set_size`     | uint64    | `100`        | Standard-Ziel-Validatorenmengengröße                    |
 | `reward_weight_throughput`       | LegacyDec | `0.30`       | Belohnungsgewicht für Durchsatzverbesserung             |

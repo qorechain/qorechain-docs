@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Explorer
 
-The **Explorer** is the Dashboard's window into the chain. Use it to look up blocks, transactions, addresses, and validators, and to watch network activity in real time. The Explorer is read-only — no wallet connection is needed to browse it.
+The **Explorer** is the Dashboard's window into the chain. Use it to look up blocks, transactions, addresses, and validators, and to watch network activity in real time. The Explorer is read-only — no wallet connection is needed to browse it. Inside the Dashboard, viewing mainnet requires being signed in; the same Explorer is also available without any account at [explore.qore.network](https://explore.qore.network).
 
 ## The overview page
 
@@ -47,3 +47,11 @@ The page shows the address with a scannable QR code, its QOR balance, transactio
 ## Validators {#validators}
 
 The validators view lists the network's validators with summary cards for the active validator count, total bonded QOR, and consensus health. The table shows each validator's rank, moniker, voting power, commission, and status (for example active or jailed), plus a post-quantum indicator. A search box filters by validator name or address. To delegate to a validator, see [Staking & Validators](/dashboard/staking-and-validators).
+
+:::note The Dashboard's own validators list can show the other network's set
+Use [explore.qore.network](https://explore.qore.network) for the authoritative per-network validator list.
+:::
+
+## Standalone explorer {#standalone-explorer}
+
+The same Explorer is served without the Dashboard at [explore.qore.network](https://explore.qore.network): anonymous, explorer-only, with short links such as `/tx/…`, `/block/…`, `/address/…` and `/validators`. It opens on mainnet by default.

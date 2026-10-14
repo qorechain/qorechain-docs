@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Diese Seite behandelt zwei verwandte Themen: die **ZK-Beweissysteme** (`snark` und `stark`), die von ZK-gesettelten Rollups verwendet werden, und den **L2 → L1-Auszahlungsablauf**, der Gelder von einem Rollup zurück auf QoreChain bewegt, sobald ein Batch finalisiert ist.
 
-:::caution
-Die ZK- und STARK-Verifikation ist ein sich aktiv weiterentwickelnder Teil des RDK. Behandle die hier beschriebenen Beweissysteme und den Auszahlungsablauf als Designabsicht, validiere im **`qorechain-diana`**-Testnet und gehe noch nicht von produktionsgehärteten kryptografischen Garantien im Mainnet aus.
+:::caution Fähigkeit in früher Phase
+Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt, daher wurden weder die Beweisverifikation noch der hier beschriebene Auszahlungsablauf auf einem Live-Rollup erprobt. Die SNARK-Verifikation existiert, aber ein über `create-rollup` erstelltes Rollup kann noch keinen ZK-Batch finalisieren, und die STARK-Verifikation ist experimentell. Validiere im **`qorechain-diana`**-Testnet und gehe im Mainnet nicht von produktionsgehärteten Garantien aus.
 :::
 
 ---
@@ -21,8 +21,8 @@ Ein ZK-gesetteltes Rollup (Settlement-Modus `zk`) hängt an jeden Settlement-Bat
 
 | Beweissystem | Eigenschaften |
 | ------------ | --------------- |
-| **`snark`** | Prägnante Beweise |
-| **`stark`** | Transparente Beweise — kein Trusted Setup |
+| **`snark`** | Prägnante Beweise (Groth16 über BLS12-381), on-chain gegen den Verifying Key des Rollups verifiziert |
+| **`stark`** | Transparente Beweise, kein Trusted Setup — experimentell; Opt-in und an eine Demonstrationsschaltung gebunden |
 
 Der Settlement-Modus `zk` erfordert eines von `snark` oder `stark`; die Paarung wird on-chain erzwungen, wenn das Rollup erstellt wird. Im Gegensatz dazu nutzt `optimistic`-Settlement das Beweissystem `fraud`, und `based`- sowie `sovereign`-Settlement nutzen `none`. Siehe **[Rollups-Überblick](/rollups/overview)** für die vollständige Kompatibilitätsmatrix.
 
@@ -32,7 +32,7 @@ Anders als Optimistic Rollups — die ein Fraud-Proof-Challenge-Window abwarten 
 
 ### Reifegrad
 
-Die ZK- und STARK-Beweisverifikation befindet sich noch in der Reifung. Behandle ZK-Settlement als **noch nicht produktionsgehärtet**: Prototypisiere und validiere im Testnet und verfolge die Release Notes des RDK zum Status der vollständigen Beweisverifikation, bevor du dich für wertbehaftete Mainnet-Rollups darauf verlässt.
+SNARK-Batches werden on-chain (Groth16 über BLS12-381) gegen einen mit dem Rollup gespeicherten Verifying Key verifiziert. Ein über `create-rollup` erstelltes Rollup trägt derzeit keinen Verifying Key, daher können ZK-Batches noch nicht Ende-zu-Ende finalisiert werden. Die STARK-Verifikation ist experimentell: Sie ist Opt-in und prüft eine Demonstrationsschaltung, nicht den eigenen State-Übergang deines Rollups. Behandle ZK-Settlement als nicht produktionsreif und verfolge die Release Notes des RDK, bevor du dich für wertbehaftete Mainnet-Rollups darauf verlässt.
 
 ---
 
@@ -52,7 +52,7 @@ Wie Batches eingereicht und finalisiert werden — einschließlich `submit-batch
 
 ## Eine Auszahlung ausführen: `execute-withdrawal`
 
-Der Befehl `execute-withdrawal` finalisiert eine L2 → L1-Auszahlung gegen die Auszahlungs-Root eines finalisierten Batches. Er beweist, dass ein Auszahlungs-Blatt in dieser Root committet ist, und zahlt den Empfänger aus dem Escrow des rdk-Moduls aus. Die Aktion ist **permissionless** — jeder kann einen gültigen Beweis einreichen.
+Der Befehl `execute-withdrawal` finalisiert eine L2 → L1-Auszahlung gegen die Auszahlungs-Root eines finalisierten Batches. Er beweist, dass ein Auszahlungs-Blatt in dieser Root committet ist, und zahlt den Empfänger aus dem Escrow des rdk-Moduls aus. Die Aktion ist **permissionless** — jeder kann einen gültigen Beweis einreichen. Wie jede Transaktion auf der Native-Lane benötigt sie die hybride Post-Quanten-Mitsignatur, bauen Sie sie also mit `--generate-only` und signieren Sie sie mit cosign mit (siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup)). Auszahlungen wurden auf einem Live-Rollup noch nicht erprobt; behandle den Ablauf als ungetestet.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Positionsargumente:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Kommagetrennte Hex-Merkle-Geschwister-Hashes, geordnet von Blatt zu Root, die beweisen, dass das Auszahlungs-Blatt in der Auszahlungs-Root des Batches committet ist |
 
-Der `--proof`-Wert ist der Inklusionsbeweis: die Geschwister-Hashes entlang des Pfades vom Auszahlungs-Blatt hinauf zur committeten Auszahlungs-Root des Batches. Das Modul berechnet die Root aus dem Blatt und den gelieferten Geschwistern neu und prüft sie gegen die committete Root des finalisierten Batches, bevor es die hinterlegten Gelder freigibt.
+Der `--proof`-Wert ist der Inklusionsbeweis: die Geschwister-Hashes entlang des Pfades vom Auszahlungs-Blatt hinauf zur committeten Auszahlungs-Root des Batches. Das Modul berechnet die Root aus dem Blatt und den gelieferten Geschwistern neu und prüft sie gegen die committete Root des finalisierten Batches, bevor es auszahlt.
+
+### Blatt- und Knoten-Kodierung {#leaf-and-node-encoding}
+
+* **Blatt** = SHAKE-256 (32 Bytes) aus `rollup_id`, einem `0x00`-Byte, dem Auszahlungs-Index (8 Bytes, Big-Endian), dem `recipient`-String, `0x00`, dem `denom`-String, `0x00` und dem `amount` (8 Bytes, Big-Endian).
+* **Elternknoten** = SHAKE-256 aus `left || right`. Auf jeder Ebene entscheidet das entsprechende Bit des Auszahlungs-Index über die Seite: `0` bedeutet, dass das Blatt (oder der laufende Hash) der linke Knoten ist.
+* Jeder Geschwister-Hash muss genau 32 Bytes lang sein.
+
+:::caution Generische Merkle-Helfer passen nicht
+Die generischen Helfer `binaryMerkleRoot` / `binaryMerkleProof` des RDK verwenden standardmäßig SHA-256 mit duplizierten ungeraden Knoten. Überschreiben Sie Hash und Blatt-Kodierung mit den obigen Regeln, sonst wird der Beweis on-chain nicht verifiziert.
+:::
+
+### Woher die Gelder stammen {#where-the-funds-come-from}
+
+Eine Auszahlung wird aus dem **eigenen hinterlegten Stake des Rollups** bezahlt (der Stake abzüglich des Erstellungs-Burns). Das Modul führt ein Ledger je Rollup, sodass eine für ein Rollup bewiesene Auszahlung nicht aus dem Stake eines anderen Rollups bezahlt werden kann. Das Modul kennt keine L1 → L2-Einzahlungsnachricht, dies ist also keine Bridge für Nutzergelder.
 
 ---
 

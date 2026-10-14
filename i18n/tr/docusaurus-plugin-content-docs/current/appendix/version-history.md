@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. En son etiketlenen sürüm **v3.1.97**'dir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) yayın öncesi derlemeleri takip eder.
+QoreChain için genel sürüm geçmişi. En son sürüm **v3.2.1**'dir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 29 Haziran 2026'dan beri canlı) **v3.2.0**'ın konsensüs kurallarıyla (2.981.742 yüksekliğinde uygulandı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) şu anda orada yönetişimle uygulanan ve henüz ana ağda bulunmayan **v3.2.2** sürümünü çalıştırır.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -15,11 +15,34 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ---
 
+## v3.2.1 — Düğüm Sertleştirmesi
+
+**Sürüm odağı:** Ana ağ için düğüm-yerel bir güvenlik sürümü (14 Ekim 2026): **yükseltme yüksekliği yok, konsensüs değişikliği yok ve yönetişim oylaması yok**. v3.2.0 üzerindeki düğümler zinciri takip etmeye devam eder.
+
+* Genel API'nin kaynak sınırlarını sertleştirir, EVM JSON-RPC'yi ve mempool'u sınırlandırır ve terfi ettirilen EVM işlemlerini yayar (gossip).
+* EVM zincir kimliğini düğüm yapılandırmasında sabitler ve Cosmos zincir kimliğiyle çapraz kontrol eder; operatörler `app.toml` içinde `evm-chain-id = 9801` ayarlamalıdır (farklı bir değer hata olarak günlüğe yazılır).
+* Konsensüs motoru bağımlılığını günceller; sistem saatini NTP ile senkronize tutun (60 saniyeden fazla sapma düğümü durdurur).
+* Her operatör için önerilir; ana ağ manifestosundaki `minCompatible` değeri 3.2.0'dır.
+
+Test ağı şu anda 6.905.034 yüksekliğinde yönetişimle uygulanan v3.2.2'yi çalıştırıyor; şimdilik yalnızca test ağına özel bir sürümdür ve değişiklikleri ana ağın parçası değildir. Ana ağ yönetişim önerisi 7 (bu yazıldığında oylama döneminde), v3.2.2'yi ana ağda 3.556.788 yüksekliğine planlayacaktır — operatör adımları ve sonucun nasıl kontrol edileceği için bkz. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+
+## v3.2.0 — EVM Yetkilendirme Penceresi ve Muhasebe Düzeltmeleri
+
+**Sürüm odağı:** Kuantum-sonrası gerekliliğini her hatta geçerli kılmak ve iki muhasebe açığını kapatmak. Ana ağda yönetişim önerisi #6 ile **2.981.742** yüksekliğinde (25 Eylül 2026, 12:07 UTC) uygulandı; test ağında 5.920.000 yüksekliğinde uygulandı.
+
+* **EVM yetkilendirme penceresi (EVM cüzdanları için uyumluluğu bozan değişiklik).** Bir EVM işlemi artık yalnızca kayıtlı bir ML-DSA-87 anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul edilir. Pencere, bir Cosmos-hattı mesajıyla (`MsgOpenEVMWindow`, kuantum-sonrası imzalı) açılır ve blok sayısı (≤ 17.280), işlem sayısı (≤ 1.000) ve toplam değer (aktarılan değer artı her işlemin azami ücreti) ile sınırlandırılır; `MsgCloseEVMWindow` onu iptal eder. Bir pencerenin içinde standart Ethereum imzalama değişmez. 16 Eylül'den beri ana ağda devre kesici ile kapatılmış olan EVM hattı, kuralın yürürlüğe girdiği blokta yeniden açıldı. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+* **Hibrit imza v2.** Kuantum-sonrası imzalar artık alan etiketli, zincire bağlı imza baytları üzerinden atılır; ilk biçim yükseltme yüksekliğinden itibaren reddedilir. İstemciler biçimi seçmek için düğümün uygulanmış yükseltme planlarına bakar; CLI (`--sign-bytes auto`), SDK 0.8.x ve wallet-adapter 0.2.x bunu yapar. Anahtar geçişi ve köprü tanıklığı (attestation) yükleri de aynı şemaya taşındı. Bkz. [Kuantum-Sonrası Güvenlik](/architecture/post-quantum-security#sign-bytes-v2).
+* **Stake sahibi payı ödendi.** Ücret bölüşümündeki %10'luk stake sahibi payı hiçbir alacağı karşılamayan bir yere yatırılıyordu; bu yükseltmeden itibaren normal bir stake ödülü olarak ödenir. Halihazırda birikmiş tutar (ana ağda 6.693.045,92 QOR) zincir üzerinde kayıtlıdır (`GET /qorechain/burn/v1/stranded_rewards`) ve yalnızca bir yönetişim oylamasıyla (`MsgReleaseStrandedRewards`) hareket ettirilebilir. Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+* **Işık düğümü ödül rezervi.** Hiçbir düğümün uygun olmadığı dönemde biriken %3'lük ışık düğümü payı (ana ağda 3.156.009,33 QOR) bir rezerv olarak kaydedilir (`GET /qorechain/lightnode/v1/reward_pool`), dağıtımın dışında tutulur ve yalnızca yönetişimle hareket ettirilebilir; bundan sonra dağıtım yalnızca bir önceki çalıştırmadan beri biriken tutarı öder ve düğüm başına, blok başına sınırlıdır. Işık düğümü kaydı kapalı kalmaya devam eder.
+* **Gönderen başına işlem sınırı** artık uygulanıyor (röleler çalışabilsin diye gönderen başına 30 blokta 600 işlem).
+* **Yükseltme modülü sürüm haritası** artık her modülü (48) listeliyor; bu, sonraki geçişleri etkileyecek bir açığı kapatıyor.
+* Ayrıca: köprü modülü hesabı ve tanıklık yükleri sertleştirildi, önerilen bloklar doğrulanıyor, rollup yerleşimi rollup'ın sıralayıcısıyla (sequencer) sınırlandırıldı ve rollup başına teminat ile etkin bir oluşturma yakımı eklendi, çok katmanlı oluşturucu stake'i kayıtta kilitleniyor ve hizmetten çıkarmada iade ediliyor, akıllı hesap `enabled` bayrağı her yolda uygulanıyor, doğrulayıcı kabul ve vesting oluşturma yolları authz iç içe geçmesine kapatıldı.
+
 ## v3.1.96 + v3.1.97 — CosmWasm Erişim Kilidi
 
 **Sürüm odağı:** Endüstri genelindeki bir CosmWasm güvenlik uyarısının ardından, izinsiz sözleşme kodu yükleme ve örnekleme (instantiation) kapatılıyor.
 
-* **Sözleşme yükleme ve örnekleme artık açık izin gerektiriyor.** `code_upload_access` ve `instantiate_default_permission`, hem ana ağda hem de test ağında `Nobody` olarak ayarlandı — canlı olarak doğrulandı, bu iki etiketten hangisinin bir düğümde çalıştığından bağımsız olarak, çünkü bu yalnızca daha yeni ikili dosyaların uyguladığı bir şey değil, zincir üzerinde bir parametre. Bir sözleşme geliştiriyorsanız bunun ne anlama geldiği için bkz. [CosmWasm Geliştirme](/developer-guide/cosmwasm-development). Zaten örneklenmiş sözleşmeler etkilenmez — `execute` ve `query` eskisi gibi çalışır.
+* **Sözleşme yükleme ve örnekleme artık açık izin gerektiriyor.** `code_upload_access` ve `instantiate_default_permission`, hem ana ağda hem de test ağında `Nobody` olarak ayarlandı — canlı olarak doğrulandı, bu iki etiketten hangisinin bir düğümde çalıştığından bağımsız olarak, çünkü bu yalnızca daha yeni ikili dosyaların uyguladığı bir şey değil, zincir üzerinde bir parametre. Bir sözleşme geliştiriyorsanız bunun ne anlama geldiği için bkz. [CosmWasm Geliştirme](/developer-guide/cosmwasm-development). Zaten örneklenmiş sözleşmeler etkilenmez — `execute` ve `query` eskisi gibi çalışır. Her iki ağda da üç CosmWasm yükleme ve örnekleme mesajı devre kesici ile kapatılmıştır.
 * Aynı uyarının sertleştirme rehberliğine uygun olarak **konum-bağımsız (PIE) yayın derlemeleri**, böylece bir istismarın tahmin etmesi gereken bellek adresi süreç başına rastgeleleştirilir. Dinamik bağlantılı ikili dosyalar yalnızca bir derleme bayrağına ihtiyaç duydu; durumu bozmadığı doğrulandı.
 
 ## v3.1.95 — Cosmos EVM Sertleştirmesi
@@ -32,7 +55,7 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 **Sürüm odağı:** Stake ödülü emisyonunu gerçek ağ koşullarıyla uyumlu hale getirmek ve yetkili yönetimsel mesajlar üzerindeki yetkilendirme denetimlerini sıkılaştırmak.
 
-* **Emisyon tavanı** — Tam bonded-stake desteğiyle kabul edilip 2.122.074 yüksekliğinde (26 Ağustos 2026) uygulanan bir yönetişim önerisi, orijinal azalan emisyon takvimini, sert ve kümülatif bir tavan altında dönem başına sabit bir tutarla değiştirdi. Orijinal takvim, çok daha olgun, tamamen bonded bir ağ için kalibre edilmişti; gerçek bonded stake'e karşı, amaçlanandan çok daha hızlı ödeme yapıyordu. Güncel rakamlar ve kalan pist için bkz. [Tokenomics](/architecture/tokenomics#staking-reward-schedule).
+* **Emisyon tavanı** — Tam bonded-stake desteğiyle kabul edilip 2.122.074 yüksekliğinde (26 Ağustos 2026) uygulanan bir yönetişim önerisi, orijinal azalan emisyon takvimini, sert ve kümülatif bir tavan altında dönem başına sabit bir tutarla değiştirdi. Orijinal takvim, çok daha olgun, tamamen bonded bir ağ için kalibre edilmişti; gerçek bonded stake'e karşı, amaçlanandan çok daha hızlı ödeme yapıyordu. Güncel rakamlar için bkz. [Tokenomics](/architecture/tokenomics#staking-reward-schedule).
 * **Yönetimsel mesaj sertleştirmesi** — Bir dizi yetkili, yetki-korumalı yönetimsel mesajın imzalayanı artık mesajın kendisinde taşınan bir değere güvenmek yerine yönetişim modülünün kendi adresine karşı doğrulanıyor.
 * Ayrıca, doğrudan bu sürüme güncelleme yapan herhangi bir düğüm için v3.1.92'deki düğüm devreye alma güvenilirliği düzeltmesini de taşıyor.
 
@@ -64,7 +87,8 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 * **Her üç hatta da uygulama** — İzin kapsamları ve **SpendingRule** değer limitleri (işlem başına + günlük tavanlar) Native, EVM ve SVM hatlarının tümünde uygulanır; anahtar yönetimi mesajları hiçbir zaman devredilemez. Farklı hata kodları, cüzdanların doğru mesajı göstermesini sağlar: `5` harcama limiti aşıldı, `6` yetkilendirici süresi doldu, `10` izin reddedildi, `11` tekrar oynatma reddedildi.
 * **İzin şeması sorgusu** — `GET /qorechain/abstractaccount/v1/permission_schema` (ayrıca gRPC/CLI üzerinden), kurallı izin taksonomisini (11 izin), mesaj→izin eşlemesini ve devredilemez mesaj listesini döndürür; böylece cüzdanlar kapsamları sabit kodlamadan doğrulayabilir.
 * **Aynı algoritmalı PQC anahtar rotasyonu** — Yeni **`MsgRotatePQCKey`**, bir hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarla çift imzalı); bu, eski türetilmiş anahtarların kurallı adrese bağlı türetmeye geçişini ve ele geçirilmiş bir anahtarın emekliye ayrılmasını sağlar. Yeni CLI: `tx pqc rotate-key` ve `tx pqc recover-key` (bir anımsatıcı ifadeden deterministik anahtar kurtarma).
-* **Kök anahtar işlemleri etkilenmedi** — Değişiklikler eklemelidir; normal cüzdan, borsa ve Keplr akışları değişmemiştir. Düğüm operatörleri, ağ yükseltme yüksekliğine kadar **v3.1.85** sürümünde olmalıdır.
+* **Kök anahtar işlemleri etkilenmedi** — Değişiklikler eklemelidir; normal cüzdan ve borsa akışları değişmemiştir. Düğüm operatörleri, ağ yükseltme yüksekliğine kadar **v3.1.85** sürümünde olmalıdır.
+* **Mevcut durum** — Akıllı hesap ve bağlı cüzdan özellikleri uygulanmıştır ancak şu anda her iki ağda da **kapalıdır** (`abstractaccount.enabled = false`); v3.2.0'dan itibaren bayrak kapalıyken her yetkilendirici yolu reddedilir. Bir bağlama akışı sunmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
 
 ## v3.1.84 — Yetkilendirici İzinleri ve Harcama Limitleri
 
@@ -180,13 +204,13 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 * **PRISM konsensüs optimizasyonu** — Canlı ağ koşulları altında uyarlanabilir parametre ayarlaması için PRISM pekiştirmeli öğrenme optimizasyon katmanında, devre kesici güvenlik kontrolleriyle birlikte devam eden iyileştirmeler.
 * **Performans ve kararlılık** — Doğrulayıcılar ve tam düğümler genelinde verim, gecikme ve kaynak kullanımı iyileştirmeleri.
 * **Operasyonel araçlar** — Ana ağ operatörleri için geliştirilmiş izleme, sorgu ve düğüm işletme ergonomisi.
-* **Tokenomics v2.1 uyumu** — Ücret dağıtımı ve emisyon mekaniği, sabit arzlı, sonlu-emisyonlu ekonomik modelle uyumlu hale getirildi.
+* **Tokenomics v2.1 uyumu** — Ücret dağıtımı ve emisyon mekaniği, sonlu ve tavanlı emisyonlu ekonomik modelle uyumlu hale getirildi (daha sonra v3.1.94 emisyon tavanıyla yeniden düzenlendi).
 
 ## v3.0.0 — Ana Ağ Genesis'i
 
 **Sürüm odağı:** Ana ağ lansmanı ve token üretim etkinliği.
 
-* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801), genesis'te token üretim etkinliği (TGE) ile birlikte **7 Haziran 2026**'da başlatıldı.
+* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801), genesis'te token üretim etkinliği (TGE) ile birlikte **29 Haziran 2026**'da başlatıldı.
 * **Beş yönlü ücret bölünmesi** — Doğrulayıcılar, yakma, hazine, stake sahipleri ve ışık düğümleri arasında protokol ücreti dağıtımı (**37 / 30 / 20 / 10 / 3**); ışık düğümleri için özel bir pay ekliyor.
 * **Zincir üzerinde AMM** — Zincir üzerinde likidite havuzları ve takaslar için yerel otomatik piyasa yapıcı (AMM) modülü (`x/amm`).
 * **Zincir lisanslama** — Protokol yetkilerini kaydetmek ve yönetmek için zincir üzerinde lisans modülü (`x/license`).
@@ -216,12 +240,12 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 
 **Sürüm odağı:** Çapraz zincir bağlantısı ve gelişmiş hesap soyutlamaları.
 
-* **25 çapraz zincir bağlantısı** — Harici ağlara 8 IBC kanalı ve 17 QoreChain Köprüsü (QCB) bağlantısı
+* *(Tasarlandı; çapraz zincir katmanı hâlâ beklemede — bkz. [Köprü Mimarisi](/architecture/bridge-architecture).)* **25 çapraz zincir bağlantısı** — Harici ağlara 8 IBC kanalı ve 17 QoreChain Köprüsü (QCB) bağlantısı
 * **x/babylon modülü** — Bitcoin sahiplerinin QoreChain stake güvenliğine katılmasını sağlayan BTC yeniden-stake entegrasyonu
 * **x/abstractaccount modülü** — Programlanabilir harcama kuralları, oturum anahtarları ve özel kimlik doğrulama mantığına sahip akıllı hesap çerçevesi
 * **x/fairblock modülü** — MEV'e dayanıklı işlem şifrelemesi için Eşik Kimlik-Tabanlı Şifreleme (tIBE)
-* **x/gasabstraction modülü** — Yerel QOR, IBC-köprülenmiş USDC ve IBC-köprülenmiş ATOM'u destekleyen çoklu-token gaz ödemesi
-* **5 hatlı işlem önceliklendirmesi** — Sistem, yönetişim, stake, köprü ve genel şeklinde önceliğe göre sıralanmış işlem hatları
+* **x/gasabstraction modülü** — Yerel QOR, IBC-köprülenmiş USDC ve IBC-köprülenmiş ATOM'u destekleyen çoklu-token gaz ödemesi tasarımı (henüz açık bir IBC kanalı yok)
+* **5 hatlı işlem önceliklendirmesi** — Blok alanı önceliklendirmesi için hat tanımları (yalnızca yapılandırma; canlı mempool tarafından uygulanmıyor)
 * **IBC röle yapılandırmaları** — Desteklenen tüm IBC kanalları için önceden yapılandırılmış röle kurulumları
 * **Köprüden yakmaya entegrasyon** — Köprü ücretleri, yakma modülünün ücret dağıtımı üzerinden yönlendirilir
 
@@ -231,7 +255,7 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 
 * **Çift secp256k1 (ECDSA) + ML-DSA-87 imzalar** — Her işlem, AnteHandler zincirinde doğrulanan hem klasik hem de kuantum-sonrası bir imza taşır
 * **3 zorunluluk modu** — Yapılandırılabilir hibrit imza zorunluluğu: kapalı (mod 0), izin verici (mod 1, PQC isteğe bağlı), zorunlu (mod 2, PQC gerekli)
-* **Otomatik kayıt** — PQC ortak anahtarları, ayrı bir kayıt adımını ortadan kaldırarak ilk hibrit işlemde otomatik olarak kaydedilir
+* **Anahtar kaydı** — İlk derlemeler ilk hibrit işlemde bir PQC ortak anahtarını otomatik olarak kaydediyordu; bu davranış kaldırıldı ve artık bir anahtar `MsgRegisterPQCKey` ile açıkça kaydedilir (bkz. [İlk İşlem](/getting-started/first-transaction#register-pqc-key))
 * **SHAKE-256 özet temeli** — PQC ile ilgili tüm özetleme işlemleri, kuantuma dayanıklı adres türetimi için SHAKE-256 (SHA-3 ailesi) kullanır
 * **TEE tanıklama arayüzleri** — PQC anahtar üretimi bütünlüğünü kanıtlamak için Güvenilir Yürütme Ortamı tanıklama desteği
 * **Algoritma çevikliği çerçevesi** — Gelecekteki PQC algoritmalarının bir zincir yükseltmesi olmadan yönetişim yoluyla eklenmesine izin veren eklenebilir algoritma kaydı
@@ -242,10 +266,10 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 
 * **x/burn modülü** — Doğrulayıcılar, yakma, hazine ve stake sahipleri arasında dört yönlü dağıtıma sahip çok kanallı ücret yakma mekanizması
 * **x/xqore modülü** — Kademeli erken-kilit açma cezaları ve PvP rebase yeniden dağıtımına sahip yönetişim stake türevi
-* **x/inflation modülü** — Sonlu-emisyon ekonomik modeli tarafından yönetilen, yıllık düşüşe sahip dönem-tabanlı emisyon
+* **x/inflation modülü** — Yıllık düşüşe sahip dönem-tabanlı emisyon (v3.1.94'te, sert bir kümülatif tavan altında dönem başına sabit bir tutarla değiştirildi)
 * **PRISM konsensüs katmanı** — Dinamik zincir parametre ayarlaması için pekiştirmeli öğrenme optimizasyonu (PPO), devre kesici güvenlik kontrolleriyle
-* **Üçlü havuzlu CPoS** — İtibar puanlarına göre ağırlıklandırılmış Emerald, Sapphire ve Ruby doğrulayıcı havuzlarına sahip Sınıflandırılmış Stake Kanıtı
-* **QDRW yönetişimi** — Havuzlar genelinde ödül dağıtımına yönetişim onaylı ayarlamalara izin veren Dinamik Ödül Ağırlıklandırma sistemi
+* **Üçlü havuzlu CPoS** — İtibar puanlarına göre ağırlıklandırılmış RPoS, DPoS ve PoS doğrulayıcı havuzlarına sahip Bileşik Stake Kanıtı (`x/qca` içinde uygulandı; henüz blok üretimine bağlanmadı)
+* **QDRW yönetişimi** — İtibar Ağırlıklı Kuadratik Delegasyon (Quadratic Delegation with Reputation Weighting) oy gücü formülü (uygulandı; canlı ağlarda devre dışı)
 * **EVM + CosmWasm + SVM çalışma zamanları** — QoreChain EVM Motoru, CosmWasm akıllı sözleşmeleri ve Solana Sanal Makinesi olmak üzere üç eşzamanlı yürütme ortamı
 * **VM'ler arası köprü** — Tek bir blok içinde EVM, CosmWasm ve SVM çalışma zamanları arasında mesaj geçişi ve varlık transferleri
 * **Kuantum-sonrası kriptografi** — Yüksek performanslı bir PQC kütüphanesi tarafından desteklenen kuantuma dayanıklı imzalama

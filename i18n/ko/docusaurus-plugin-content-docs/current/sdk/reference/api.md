@@ -37,8 +37,7 @@ pnpm --filter @qorechain/sdk docs:api
 - **계정:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; 계정 타입.
 - **통합 계정 (0.6.0):** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`,
-  `unifiedAccountFromPhantomSignature`, `connectPhantomUnified`.
+  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature`와 `connectPhantomUnified`는 0.8.0에서 제거되었으며 오류를 발생시킵니다.)
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, 길이 상수,
   알고리즘 ID/헬퍼, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -47,6 +46,13 @@ pnpm --filter @qorechain/sdk docs:api
   `buildUrl`, `joinUrl`, `QoreHttpError`); 모든 모듈에 대한 타입 지정 쿼리
   클라이언트 — `amm`, `license`, `abstractaccount`(`permissionSchema`),
   그리고 `multilayer`의 `Anchor`/`Anchors` 상태 앵커(state-anchor) 쿼리 포함.
+  공개 엔드포인트에서는 일부 타입 지정 REST 헬퍼가 게이트웨이가 제공하지 않는
+  경로를 호출합니다: `getAiStats`, `getFeeEstimate`, `getXqorePosition`,
+  `getInflationRate`, `getReputation`, 그리고 `getPqcAccount`(복수형 `accounts`
+  경로를 호출하며, 실제로 제공되는 경로는 단수형
+  `/qorechain/pqc/v1/account/{address}`이고 `rest.get(...)`으로 접근할 수
+  있습니다). `getBurnStats`, `getAllBalances`, `getBridgeChains`,
+  `getPermissionSchema`는 동작합니다.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
@@ -72,14 +78,30 @@ pnpm --filter @qorechain/sdk docs:api
   `signMessage`) 및 `buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
   (EIP-191 `personal_sign`); 키 로테이션 `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. 자세한 내용은
-  [Authenticators 가이드](/sdk/guides/authenticators)를 참고하세요.
+  [Authenticators 가이드](/sdk/guides/authenticators)를 참고하세요(이 레인들의
+  기반이 되는 모듈은 현재 두 네트워크 모두에서 꺼져 있습니다).
+- **하이브리드 sign-bytes (0.8.0+):** `buildHybridTx`, `signAndBroadcastHybrid`,
+  `signHybridEth`, `EthNativeSigner`의 `signBytesVersion` 옵션
+  (`"auto" | "v1" | "v2"`); `resolveSignBytesVersion`,
+  `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
+  `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
+- **EVM 인증 윈도우 (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
+  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
+  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. 자세한 내용은
+  [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 참고하세요.
+- **정규(canonical) PQC 파생 (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
+  `canonicalAccount(account)`; PQC 등록 메시지는
+  `buildRegisterPqcKeyMsg`입니다(`ensurePqcRegistered`에서 사용).
 
 ### `@qorechain/evm`
 
 `createEvmClient`, `evmAccountFromPrivateKey`, `erc20` 헬퍼, 컨트랙트
 래퍼(`deployContract`, `readContract`, `writeContract`), `precompiles`
-바인딩, `PRECOMPILE_ADDRESSES`, 그리고 ABI(`ERC20_ABI`, `IQORE_PQC_ABI`,
-`IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`).
+바인딩, 프리컴파일 기반 헬퍼 `simulateWithRiskScore`, `aiRiskScore`,
+`aiAnomalyCheck`, `PRECOMPILE_ADDRESSES`, 그리고 ABI(`ERC20_ABI`,
+`IQORE_PQC_ABI`, `IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`). 프리컴파일 기반
+바인딩과 헬퍼는 공개 네트워크에서 활성화되어 있지 않습니다
+([EVM 프리컴파일](/developer-guide/evm-precompiles#network-status) 참조).
 
 ### `@qorechain/svm`
 
@@ -93,10 +115,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 언어 | 생성 문서 | 설치 |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.7.0` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (태그 `packages/go/v0.7.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` — 최신 게시 크레이트(저장소 기준 0.7.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.7.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.8.3` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (태그 `packages/go/v0.8.4`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

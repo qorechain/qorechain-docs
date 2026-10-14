@@ -7,139 +7,63 @@ sidebar_position: 7
 
 # Abstraction du gas
 
-Ce guide couvre la fonctionnalité d'abstraction du gas de QoreChain, qui permet aux utilisateurs de payer les frais de transaction dans des jetons non natifs au lieu de QOR.
+Cette page décrit la fonctionnalité d'abstraction du gas de QoreChain, dont la conception permet aux utilisateurs de payer les frais de transaction dans un jeton non natif accepté au lieu de QOR. **Elle n'est utilisable sur aucun des deux réseaux aujourd'hui** ; cette page explique la conception et ce que vous devez faire à la place.
 
-:::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.1.97** — substituez le chain ID et les points de terminaison du mainnet depuis la page **Connexion au Mainnet** lors de transactions sur le mainnet.
+:::caution Pas encore disponible
+Payer les frais dans un jeton non natif ne fonctionne **pas** aujourd'hui sur le mainnet (**`qorechain-vladi`**, version de nœud **v3.2.1**) ni sur le testnet (**`qorechain-diana`**).
+
+* Les requêtes d'abstraction du gas ne sont pas servies sur le mainnet : `qorechaind query gasabstraction accepted-tokens` affiche son texte d'aide et la route REST `/qorechain/gasabstraction/v1/config` renvoie `Not Implemented`.
+* Aucun canal IBC n'est ouvert sur l'un ou l'autre réseau, donc aucun solde `ibc/USDC` ou `ibc/ATOM` ne peut exister pour payer.
+* Le plancher de frais du réseau est vérifié en `uqor`, de sorte qu'un frais dans toute autre dénomination est rejeté.
+
+Payez chaque frais en `uqor`. Cette page sera mise à jour lorsqu'un jeton sera accepté sur un réseau en service.
 :::
+
+---
+
+## Ce qui fonctionne aujourd'hui : payer les frais en uqor
+
+Chaque transaction paie au moins **0.1 uqor par unité de gas**. Définissez ensemble la limite de gas et les frais :
+
+```bash
+qorechaind tx bank send mykey qor1recipient... 5000000uqor \
+  --gas 400000 --fees 40000uqor \
+  --chain-id qorechain-vladi --generate-only > tx.json
+```
+
+Signez-la ensuite en mode hybride et diffusez-la avec `qorechaind tx pqc cosign`, comme décrit dans [Commandes de transaction](/cli-reference/transaction-commands#hybrid-signing). Voir [Frais et gas](/cli-reference/transaction-commands#fees-and-gas) pour les limites suggérées par type de transaction.
 
 ---
 
 ## Aperçu
 
-L'abstraction du gas supprime l'obligation de détenir des jetons QOR pour payer les frais de transaction. Les utilisateurs qui détiennent des jetons alternatifs acceptés (tels que l'USDC ou l'ATOM transférés via IBC) peuvent utiliser ces jetons directement comme paiement de frais. Le protocole convertit automatiquement le montant des frais en son équivalent natif avant le traitement.
+L'abstraction du gas est conçue pour supprimer l'obligation de détenir du QOR pour payer les frais de transaction. Un utilisateur qui détient un jeton alternatif accepté (par exemple un stablecoin transféré via IBC) paierait les frais dans ce jeton, et le protocole convertirait le montant des frais en son équivalent natif avant le traitement.
 
 ---
 
-## Jetons acceptés
+## Conception prévue
 
-Les jetons suivants sont acceptés pour le paiement des frais :
+### Jetons acceptés
 
-| Jeton              | Dénomination | Taux de conversion | Exemple de frais     |
-| ------------------ | ------------ | ------------------ | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (natif)        | `--fees 500uqor`     |
-| **USDC** (via IBC) | `ibc/USDC`   | 1.0                | `--fees 500ibc/USDC` |
-| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0               | `--fees 50ibc/ATOM`  |
+La configuration de genesis du module liste ces jetons et des taux de conversion définis par le protocole. Ce sont des ratios de change à des fins de frais, et non des prix du marché. Seul `uqor` peut exister sur les réseaux aujourd'hui (voir l'avis ci-dessus).
 
-:::note
-Les taux de conversion reflètent le ratio de change défini par le protocole, et non les prix du marché. Un taux de 10.0 pour ATOM signifie qu'1 unité d'ibc/ATOM équivaut à 10 unités d'uqor à des fins de frais.
-:::
+| Jeton              | Dénomination | Taux de conversion |
+| ------------------ | ------------ | ------------------ |
+| **QOR**            | `uqor`       | 1.0 (natif)        |
+| **USDC** (via IBC) | `ibc/USDC`   | 1.0                |
+| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0               |
 
----
+### Fonctionnement prévu
 
-## Fonctionnement
+Le `GasAbstractionDecorator` de QoreChain est intégré au pipeline de traitement des transactions. Pour une transaction dont les frais sont dans une dénomination non native :
 
-Le `GasAbstractionDecorator` de QoreChain est intégré au pipeline de traitement des transactions. Lorsqu'une transaction inclut des frais dans une dénomination non native, voici ce qui se passe :
-
-1. **Inspection des frais** — Le décorateur vérifie la dénomination des frais spécifiée dans la transaction.
-2. **Recherche du taux** — Si la dénomination figure dans la liste des jetons acceptés, le protocole recherche le taux de conversion correspondant.
-3. **Conversion** — Le montant des frais est converti en son équivalent natif uqor à l'aide du taux de conversion.
-4. **Traitement standard** — Les frais convertis sont transmis au gestionnaire standard `DeductFee` pour déduction du compte de l'expéditeur. La conversion est transparente pour le reste du pipeline de transaction. Tout le traitement des frais en aval (distribution aux validateurs, brûlage, allocation à la trésorerie, récompenses des stakers et récompenses des nœuds légers) opère sur l'équivalent natif uqor.
+1. **Inspection des frais** — le décorateur lit la dénomination des frais.
+2. **Recherche du taux** — si la dénomination figure dans la liste des jetons acceptés, le taux de conversion correspondant est recherché.
+3. **Conversion** — les frais sont convertis en leur équivalent natif `uqor`.
+4. **Traitement standard** — les frais convertis passent par le gestionnaire standard de déduction des frais, de sorte que le traitement des frais en aval (distribution aux validateurs, burn, trésorerie, parts des stakers et des nœuds légers) opère sur l'équivalent natif.
 
 ---
 
-## Exemples d'utilisation
+## Interrogation de la configuration
 
-### Payer les frais en USDC
-
-Envoyez un transfert de jetons avec des frais payés en USDC :
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 500ibc/USDC
-```
-
-Comme l'USDC a un taux de conversion de 1.0, 500 ibc/USDC équivaut à 500 uqor.
-
-### Payer les frais en ATOM
-
-Envoyez un transfert de jetons avec des frais payés en ATOM :
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 50ibc/ATOM
-```
-
-Comme l'ATOM a un taux de conversion de 10.0, 50 ibc/ATOM équivaut à 500 uqor.
-
----
-
-## Interrogation des jetons acceptés
-
-Récupérez la liste des jetons actuellement acceptés pour l'abstraction du gas, ainsi que leurs taux de conversion :
-
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-**Exemple de sortie :**
-
-```yaml
-accepted_tokens:
-- denom: uqor
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/USDC
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/ATOM
-  conversion_rate: "10.000000000000000000"
-```
-
----
-
-## Accès JSON-RPC
-
-Pour les applications intégrées via JSON-RPC, interrogez la configuration de l'abstraction du gas :
-
-```
-qor_getGasAbstractionConfig
-```
-
-**Requête :**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "qor_getGasAbstractionConfig",
-  "params": [],
-  "id": 1
-}
-```
-
-**Réponse :**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "accepted_tokens": [
-      { "denom": "uqor", "conversion_rate": "1.0" },
-      { "denom": "ibc/USDC", "conversion_rate": "1.0" },
-      { "denom": "ibc/ATOM", "conversion_rate": "10.0" }
-    ]
-  }
-}
-```
-
----
-
-:::tip
-
-* L'abstraction du gas est idéale pour les utilisateurs arrivant d'autres écosystèmes qui ne détiennent pas encore de QOR.
-* Les taux de conversion sont définis par la gouvernance et peuvent être mis à jour via des propositions de changement de paramètres.
-* Si vous détenez plusieurs jetons acceptés, n'importe lequel d'entre eux peut être utilisé pour les frais sur n'importe quel type de transaction.
-* Le jeton effectivement spécifié dans `--fees` est déduit de votre compte. La conversion sert uniquement à valider que les frais respectent l'exigence minimale.
-
-:::
+Le mainnet ne sert pas encore les requêtes d'abstraction du gas, et la méthode JSON-RPC `qor_getGasAbstractionConfig` n'est servie sur aucun point de terminaison public (voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace)). Il n'existe actuellement aucun moyen public de lire une liste de jetons acceptés en service.

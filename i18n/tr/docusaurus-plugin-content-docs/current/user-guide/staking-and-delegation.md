@@ -7,15 +7,19 @@ sidebar_position: 2
 
 # Stake ve Delegasyon
 
-Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in Üçlü Havuz (Triple-Pool) stake mimarisini anlama konularını kapsar.
+Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in stake tasarımının hangi bölümlerinin bugün canlı olduğunu anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri **v3.1.97** zincir sürümünü çalıştırarak canlıdır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 29 Haziran 2026'dan beri v3.2 hattında canlıdır (düğüm sürümü **v3.2.1**; testnet **v3.2.2** çalıştırır) — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+:::
+
+:::caution `tx pqc cosign` ile imzalayın
+Mainnet ve testnet, her Cosmos şeridi işleminde hibrit post-kuantum imza gerektirir; bu nedenle bu sayfadaki komutlar yazıldığı haliyle yayınlanmaz. Bir komuta `--generate-only > tx.json` ekleyin, ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` komutunu çalıştırın. Bkz. [Hibrit imzalama](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/portfolio-and-staking) ve [Panel](/dashboard/staking-and-validators) bu imzalamayı sizin için yapar.
 :::
 
 ## Bağlayıcı bir süre var mı? {#lock-in-period}
 
-**Bugün itibarıyla**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıda [bonding curve](#bonding-curve) bölümünde bahsedilen "sadakat" bonusu, *şu ana kadar ne kadar süredir delege kaldığınıza* bağlı bir ödül oranı etkisidir — o da otomatiktir ve seçilecek bir vadesi yoktur, undelegate etmediğiniz sürece basitçe büyür.
+**Bugün itibarıyla**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıdaki [bonding curve](#bonding-curve) bölümündeki "sadakat" terimi QoreChain'in tasarımının bir parçasıdır, ancak **bugün canlı zincir tarafından uygulanmaz**; dolayısıyla ne kadar süre delege kaldığınız ödül oranınızı değiştirmez.
 
 Bu, mevcut zincir davranışını tanımlar, kalıcı bir garanti değildir — minimum bir stake süresi, bu sayfadaki diğer herhangi bir stake parametresinin oylamayla değişebileceği gibi, gelecekte governance tarafından getirilebilecek bir parametredir. Bu gerçekleşirse, cüzdan bir delegasyonu onaylamadan önce ortaya çıkan bekleme süresini (varsa minimum süre artı 21 günlük çözülme) gösterecek ve bu sayfa buna uygun şekilde güncellenecektir.
 
@@ -23,13 +27,13 @@ Bu, mevcut zincir davranışını tanımlar, kalıcı bir garanti değildir — 
 
 ## Token Delege Etme
 
-Stake ödülleri kazanmak ve ağ güvenliğine katılmak için QOR'u bir doğrulayıcıya delege edin:
+Ağ güvenliğine katılmak için QOR'u bir doğrulayıcıya delege edin. Delegatörler, doğrulayıcının kazandığı ödüllerden, doğrulayıcının komisyonu düşüldükten sonra bir pay alır:
 
 ```bash
 qorechaind tx staking delegate <validator_address> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Örnek:** Bir doğrulayıcıya 100 QOR delege edin:
@@ -38,7 +42,7 @@ qorechaind tx staking delegate <validator_address> <amount>uqor \
 qorechaind tx staking delegate qorvaloper1abc...xyz 100000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
@@ -51,7 +55,7 @@ qorechaind tx staking delegate qorvaloper1abc...xyz 100000000uqor \
 qorechaind tx staking redelegate <source_validator> <destination_validator> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Örnek:**
@@ -60,13 +64,13 @@ qorechaind tx staking redelegate <source_validator> <destination_validator> <amo
 qorechaind tx staking redelegate qorvaloper1src... qorvaloper1dst... 50000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-Yeniden delege etmenin **kendine ait hiçbir cezası ve hiçbir kilidi yoktur** — stake hiçbir zaman bonded havuzdan ayrılmaz, ödül kazanmayı hiç durdurmaz ve istediğiniz zaman tekrar taşınabilir. 21 günlük çözülme süresine hiç tabi değildir; bu süre yalnızca `unbond` için geçerlidir.
+Yeniden delege etmenin **kendine ait hiçbir cezası ve hiçbir kilidi yoktur** — stake hiçbir zaman bonded havuzdan ayrılmaz, ödül kazanmayı hiç durdurmaz ve hemen geçerli olur. 21 günlük çözülme süresine hiç tabi değildir; bu süre yalnızca `unbond` için geçerlidir. Standart bir stake kuralı geçerlidir: bir doğrulayıcıya **taşıdığınız** stake, ilk taşıma olgunlaşana (21 gün) kadar o doğrulayıcıdan **tekrar** yeniden delege edilemez; bu arada onu yine `unbond` edebilir veya diğer stake'inizi yeniden delege edebilirsiniz.
 
 :::caution Gerçek sınır bir bekleme süresi değil, bir sayaçtır
-Bir delegatör, tam olarak aynı (delegatör, kaynak doğrulayıcı, hedef doğrulayıcı) rotası için aynı anda en fazla **7 adet devam eden (in-flight) yeniden delegasyon kaydına** sahip olabilir — her kayıt olgunlaştıkça kendiliğinden temizlenir ve bir yer açar. Bu, normal kullanımın pratikte hiç ulaşmayacağı bir tavan sınırıdır, "tekrar yeniden delege etmeden önce bekleyin" kuralı değildir; başka doğrulayıcılara veya başka doğrulayıcılardan serbestçe yeniden delege edebilir, ya da bir yer açıldığında aynı rotayı tekrar kullanabilirsiniz.
+Bir delegatör, tam olarak aynı (delegatör, kaynak doğrulayıcı, hedef doğrulayıcı) rotası için aynı anda en fazla **7 adet devam eden (in-flight) yeniden delegasyon kaydına** sahip olabilir — her kayıt olgunlaştıkça kendiliğinden temizlenir ve bir yer açar. Bu, normal kullanımın pratikte hiç ulaşmayacağı bir tavan sınırıdır, genel bir "tekrar yeniden delege etmeden önce bekleyin" kuralı değildir.
 :::
 
 ---
@@ -79,7 +83,7 @@ Delege edilmiş token'larınızı bir doğrulayıcıdan geri çekin. Çözülme 
 qorechaind tx staking unbond <validator_address> <amount>uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Örnek:**
@@ -88,10 +92,10 @@ qorechaind tx staking unbond <validator_address> <amount>uqor \
 qorechaind tx staking unbond qorvaloper1abc...xyz 25000000uqor \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-21 günlük çözülme süresinin ardından token'lar otomatik olarak hesabınıza geri döner.
+21 günlük çözülme süresinin (1.814.400 saniye) ardından token'lar otomatik olarak hesabınıza geri döner. Bir delegatör, doğrulayıcı başına aynı anda en fazla 7 çözülme kaydına sahip olabilir.
 
 ---
 
@@ -103,7 +107,7 @@ Delege ettiğiniz her doğrulayıcıdan birikmiş tüm stake ödüllerini çekin
 qorechaind tx distribution withdraw-all-rewards \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 Yalnızca belirli bir doğrulayıcıdan ödül çekmek için:
@@ -112,30 +116,32 @@ Yalnızca belirli bir doğrulayıcıdan ödül çekmek için:
 qorechaind tx distribution withdraw-rewards <validator_address> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmış emisyon bütçesi (güncel sınır için, 26 Ağustos 2026'daki governance değişikliğinden bu yana yürürlükte olan haliyle [Tokenomics](/architecture/tokenomics#staking-reward-schedule) sayfasına bakın) ve her işlem ücretinin staker payı.
+Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmış emisyon bütçesi (güncel sınır için, 26 Ağustos 2026'daki governance değişikliğinden bu yana yürürlükte olan haliyle [Tokenomics](/architecture/tokenomics#staking-reward-schedule) sayfasına bakın) ve her işlem ücretinin staker payı (v3.2.0 yükseltmesinden bu yana normal bir stake ödülü olarak dağıtılır; bkz. [sıkışıp kalan staker payı](/architecture/tokenomics#stranded-and-reserve)). Ödüller doğrulayıcının komisyonuna ve ağ etkinliğine bağlıdır ve garanti edilmez.
 
 ---
 
-## Üçlü Havuz (Triple-Pool) Sınıflandırması
+## Üçlü Havuz (Triple-Pool) Sınıflandırması (tasarım durumu)
 
-QoreChain, doğrulayıcıları itibar (reputation) ve delegasyon seviyelerine göre üç havuza ayıran bir **Üçlü Havuz** stake modeli kullanır. Her havuz, blok ödüllerinden ağırlıklı bir pay alır.
+QoreChain'in tasarımı, doğrulayıcıları itibar (reputation) ve delegasyon seviyesine göre üç havuza ayıracak ve her havuza blok ödüllerinden ağırlıklı bir pay verecek bir **Üçlü Havuz (Triple-Pool)** modeli içerir:
 
-| Havuz                                 | Giriş Kriteri                                                | Ödül Ağırlığı |
-| ------------------------------------- | ------------------------------------------------------------- | -------------- |
-| **RPoS** (Reputation Proof of Stake)  | İtibar puanı >= 70. yüzdelik dilim **VE** stake >= medyan     | %40            |
-| **DPoS** (Delegated Proof of Stake)   | Toplam delegasyon >= 10.000 QOR                                | %35            |
-| **PoS** (Proof of Stake)              | Kalan tüm doğrulayıcılar                                       | %25            |
+| Havuz                                 | Giriş Kriteri                                                | Tasarım Ödül Ağırlığı |
+| ------------------------------------- | ------------------------------------------------------------- | ---------------------- |
+| **RPoS** (Reputation Proof of Stake)  | İtibar puanı >= 70. yüzdelik dilim **VE** stake >= medyan     | %40                    |
+| **DPoS** (Delegated Proof of Stake)   | Toplam delegasyon >= 10.000 QOR                                | %35                    |
+| **PoS** (Proof of Stake)              | Kalan tüm doğrulayıcılar                                       | %25                    |
 
-Doğrulayıcılar her epoch sınırında yeniden sınıflandırılır. Güçlü bir itibar oluşturan ve yeterli stake biriktiren bir doğrulayıcı, en yüksek ödül payını kazanarak RPoS havuzuna terfi ettirilir.
+:::note Canlı ağlarda etkin değil
+Havuz sınıflandırması, havuz ağırlıklı blok önerici seçimi ve havuz ödül ağırlıkları `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir (`qorechaind query qca config`), ancak **henüz blok üretimine veya ödül dağıtımına bağlanmamıştır**. Bugün blok önerisi standart biçimde stake'e göre döner ve ödüller, her doğrulayıcının komisyonu düşüldükten sonra bonded stake ile orantılı olarak paylaşılır. Bir doğrulayıcının hangi havuza "ait" olduğu, aldığınız ödülü değiştirmez.
+:::
 
 ---
 
 ## Bonding Curve Ödülleri {#bonding-curve}
 
-Bireysel stake ödülleri, QoreChain'in bonding curve formülü kullanılarak hesaplanır:
+QoreChain'in tasarımı ayrıca bir bonding curve ödül formülü tanımlar:
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
@@ -147,11 +153,26 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 | `beta`   | Temel ödül oranı (protokol parametresi)                                 |
 | `S`      | Stake edilen miktar                                                     |
 | `alpha`  | Sadakat katsayısı (protokol parametresi)                                |
-| `L`      | Epoch cinsinden kilit süresi                                            |
+| `L`      | Epoch cinsinden stake süresi                                            |
 | `Q(r)`   | Doğrulayıcının `r` itibar puanından türetilen kalite çarpanı            |
 | `P(t)`   | `t` anındaki havuz çarpanı (havuza bağlı olarak %40, %35 veya %25)      |
 
-Daha uzun kilit süreleri ve daha yüksek itibar puanları, orantılı olarak daha büyük ödüllerle sonuçlanır; bu da uzun vadeli taahhüdü ve iyi doğrulayıcı davranışını teşvik eder.
+:::note Canlı ağlarda etkin değil
+Bonding curve hesaplaması, yukarıdaki havuz sınıflandırması gibi, **canlı zincir tarafından çağrılmaz**: ödüller bu formülle hesaplanmaz ve bugün ne stake süresi ne de doğrulayıcı itibarı onları değiştirir. Parametreler (`bonding_alpha`, `bonding_beta`) zincir üzerinde bulunur ancak hiçbir etkisi yoktur.
+:::
+
+---
+
+## Slashing ve Jailing
+
+QoreChain'de slashing, şu canlı parametrelerle (`qorechaind query slashing params`) standart Cosmos SDK slashing modülünü izler:
+
+| Olay                 | Kural                                                                | Sonuç                                        |
+| -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
+| Kesinti (downtime)   | Son 10.000 bloğun %5'inden azını imzalama (mainnet'in yaklaşık 3,2 saniyelik bloklarında yaklaşık 8,9 saat) | 600 saniye jail; stake'in %1'i slash edilir |
+| Çifte imza (double-signing) | Aynı yükseklikte iki farklı bloğu imzalama                    | Stake'in %5'i slash edilir                   |
+
+Slashing, bir doğrulayıcının toplam bonded stake'ine uygulanır; bu nedenle delegatörler kendi orantılı paylarını üstlenir. Slash edilen bir doğrulayıcıdan zaten çözülmekte olan stake'e de ulaşabilir; çözülme süresinin yalnızca bir bekleme süresi değil, bir güvenlik önlemi olmasının nedeni budur.
 
 ---
 
@@ -172,7 +193,7 @@ qorechaind query staking validator qorvaloper1abc...xyz
 Tüm aktif doğrulayıcıları listeleyin:
 
 ```bash
-qorechaind query staking validators --status bonded
+qorechaind query staking validators --status BOND_STATUS_BONDED
 ```
 
 Mevcut delegasyonlarınızı sorgulayın:
@@ -185,9 +206,8 @@ qorechaind query staking delegations <delegator_address>
 
 :::tip
 
-* **RPoS havuzundaki** doğrulayıcılara delege etmek, %40'lık havuz ağırlığı nedeniyle en yüksek ödülleri sağlar.
-* Doğrulayıcı itibarının oluşması zaman alır. Delege etmeden önce doğrulayıcının geçmiş performansını göz önünde bulundurun.
-* Yeniden delegasyon anındadır, cezası ve kilidi yoktur — tek sınır, normal kullanımın ulaşmayacağı, tam olarak aynı rota üzerindeki eş zamanlı yeniden delegasyonlar için 7 kayıtlık bir tavandır.
+* Delege etmeden önce bir doğrulayıcının komisyonuna, çalışma süresine (uptime) ve geçmişine bakın; bir doğrulayıcının havuzu veya itibarı şu anda aldığınız ödülleri değiştirmez.
+* Yeniden delegasyon hemen geçerli olur, cezası ve kilidi yoktur. Sınırlar, tam olarak aynı rota üzerindeki eş zamanlı yeniden delegasyonlar için 7 kayıtlık tavan ile yeni yeniden delege edilen stake'in olgunlaşana kadar hedef doğrulayıcıdan başka yere taşınamayacağı kuralıdır.
 * 21 günlük çözülme süresi bir güvenlik önlemidir. Bu süre boyunca slashing (cezalandırma) olayları token'larınızı yine de etkileyebilir.
 
 :::

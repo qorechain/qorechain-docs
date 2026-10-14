@@ -7,17 +7,26 @@ sidebar_position: 9
 
 # Doğrulayıcı Çalıştırma
 
-Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma sistemini anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğüminizi izlemeyi kapsar.
+Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.1.97** zincir sürümünü çalıştırır. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 29 Haziran 2026'dan beri canlı olup **v3.2.1** düğüm sürümünü çalıştırır (konsensüs kuralları, 2.981.742 yüksekliğinde uygulanan v3.2.0 yükseltmesinden gelir). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.2), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+:::
+
+:::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın
+Bir doğrulayıcı, canlı manifestte (`https://download.qore.host/mainnet/latest.json`; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node#fetch-the-manifest)) belirtilen **yayın sürümü `qorechaind`** dosyasını çalıştırmalıdır. Herkese açık kaynaktan derlenen bir ikili dosyada stub keeper'lar bulunur ve kuantum sonrası imzalayıcı yoktur: ağın konsensüs durumunu yeniden üretemez ve `create-validator` ile diğer tüm Cosmos yolu işlemlerinin gerektirdiği hibrit imzayı oluşturamaz (bkz. [Kaynaktan Derleme](/developer-guide/building-from-source)). Yeni bir ana ağ düğümü v3.2.0 veya üstünü gerektirir; sistem saatini NTP ile senkronize tutun, çünkü v3.2.1'den itibaren düğüm, saati 60 saniyeden fazla saptığında durur.
+:::
+
+:::note Bu sayfanın hangi bölümleri canlı
+Blok üretimi standart, stake ağırlıklı doğrulayıcı rotasyonunu kullanır; slashing ve yönetişim ise aşağıda gösterilen parametrelerle standart Cosmos SDK modüllerini kullanır. Triple-Pool CPoS mantığı (havuz sınıflandırması, havuz ağırlıklı blok önereni seçimi, bonding eğrisi ve kademeli slashing) `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir, ancak **henüz blok üretimine, ödüllere veya slashing'e bağlı değildir**. Bu konulardaki bölümler tasarımı anlatır; bugün havuz üyeliğinin veya itibarın blok önerme payınızı ya da ödüllerinizi değiştireceğini varsayarak plan yapmayın.
 :::
 
 ---
 
 ## Ön Koşullar
 
-* Tam olarak senkronize edilmiş bir `qorechaind` düğümü (bkz. [Test Ağına Bağlanma](/getting-started/connecting-to-testnet))
+* Tam olarak senkronize edilmiş bir yayın sürümü `qorechaind` düğümü (bkz. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) veya prova için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet))
+* Operatör hesabında **kayıtlı bir ML-DSA-87 PQC anahtarı** (bkz. [PQC Anahtar Kaydı](#pqc-key-registration)) — `create-validator` hibrit imzayı gerektirir
 * İlk öz-delegasyon için en az **100.000 QOR** (100.000.000.000 uqor) bakiyeli, fonlanmış bir hesap — bu minimum zincir üzerinde zorunlu kılınır ve bunun altında `create-validator` reddedilir
 * Hesabınızda etkin bir **`validator_operator` lisansı** — aşağıdaki nota bakın; bu lisans olmadan, ne kadar QOR öz-bağlarsanız bağlayın, `create-validator` `ErrUnauthorized` hatasıyla başarısız olur
 * [Staking ve Delegasyon](/user-guide/staking-and-delegation) modeline aşinalık
@@ -33,32 +42,48 @@ Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) he
 1. **Minimum 100.000 QOR öz-bağlama.**
 2. İşlemi gönderen hesapta **etkin bir `validator_operator` lisansı**.
 
-Bir lisansın `expires_at` değeri bir **tarih veya süre değil, bir blok yüksekliğidir** — `0` süresiz geçerlilik anlamına gelir. Lisans eksik veya süresi dolmuşsa, ne kadar öz-bağlama yaparsanız yapın `create-validator` `ErrUnauthorized` hatasıyla başarısız olur; iyi fonlanmış bir denemenin açıklanamaz görünüp başarısız olmasının en yaygın tek nedeni budur. Bu kontrol, özellikle EVM yürütme yolunun bunu görüp uygulayamaması nedeniyle vardır (oradaki tek bir ante dekoratörü bunu tamamen atlar) — staking ve doğrulamanın yalnızca Native yolunda kalmasının nedenlerinden biri de budur.
+Lisanslar zincir üzerinde lisans otoritesi tarafından verilir (başvuru adımları için bkz. [Tools Hub](/dashboard/tools-hub#validator-application)); kendi lisansınızı `GET /qorechain/license/v1/check/{grantee}/validator_operator` ile kontrol edin. Bir lisansın `expires_at` değeri bir **tarih veya süre değil, bir blok yüksekliğidir** — `0` süresiz geçerlilik anlamına gelir. Lisans eksik veya süresi dolmuşsa, ne kadar öz-bağlama yaparsanız yapın `create-validator` `ErrUnauthorized` hatasıyla başarısız olur; iyi fonlanmış bir denemenin açıklanamaz görünüp başarısız olmasının en yaygın tek nedeni budur. Bu kontrol, özellikle EVM yürütme yolunun bunu görüp uygulayamaması nedeniyle vardır (oradaki tek bir ante dekoratörü bunu tamamen atlar) — staking ve doğrulamanın yalnızca Native yolunda kalmasının nedenlerinden biri de budur.
 
-```bash
-qorechaind tx staking create-validator \
-  --amount 100000000000uqor \
-  --pubkey $(qorechaind comet show-validator) \
-  --moniker "my-validator" \
-  --commission-rate 0.10 \
-  --commission-max-rate 0.20 \
-  --commission-max-change-rate 0.01 \
-  --min-self-delegation 1 \
-  --from mykey \
-  --gas auto \
-  --gas-adjustment 1.3 \
-  -y
+Bir `validator.json` dosyası oluşturun (bayrak tabanlı biçim mevcut SDK'dan kaldırılmıştır):
+
+```json
+{
+  "pubkey": {"@type": "/cosmos.crypto.ed25519.PubKey", "key": "<base64 key from: qorechaind comet show-validator>"},
+  "amount": "100000000000uqor",
+  "moniker": "my-validator",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.10",
+  "commission-max-rate": "0.20",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
 ```
 
-| Parametre                      | Açıklama                                              |
+Ardından işlemi oluşturup imzalayın (her Cosmos yolu işlemi gibi hibrit imza gerektirir; bkz. [İşlem Komutları](/cli-reference/transaction-commands#hybrid-signing)):
+
+```bash
+qorechaind tx staking create-validator validator.json \
+  --from mykey --chain-id qorechain-vladi \
+  --gas 600000 --fees 60000uqor \
+  --generate-only > tx.json
+
+qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+```
+
+Ağ ücret tabanı **gas birimi başına 0,1 uqor**'dur; dolayısıyla 600.000 gas limiti en az 60.000 uqor gerektirir.
+
+| `validator.json` alanı         | Açıklama                                              |
 | ------------------------------ | ------------------------------------------------------ |
-| `--amount`                     | Öz-delegasyon miktarı — **minimum 100.000 QOR** (`100000000000uqor`) |
-| `--pubkey`                     | Doğrulayıcı konsensüs açık anahtarı (ed25519)          |
-| `--moniker`                    | Doğrulayıcınız için okunabilir ad                       |
-| `--commission-rate`            | Başlangıç komisyon oranı (ör. 0.10 = %10)              |
-| `--commission-max-rate`        | Maksimum komisyon oranı (oluşturulduktan sonra değişmez) |
-| `--commission-max-change-rate` | Maksimum günlük komisyon değişim oranı                 |
-| `--min-self-delegation`        | Operatörün öz-delege etmesi gereken minimum token miktarı |
+| `amount`                       | Öz-delegasyon miktarı — **minimum 100.000 QOR** (`100000000000uqor`) |
+| `pubkey`                       | Doğrulayıcı konsensüs açık anahtarı (ed25519)          |
+| `moniker`                      | Doğrulayıcınız için okunabilir ad                       |
+| `commission-rate`              | Başlangıç komisyon oranı (ör. 0.10 = %10)              |
+| `commission-max-rate`          | Maksimum komisyon oranı (oluşturulduktan sonra değişmez) |
+| `commission-max-change-rate`   | Maksimum günlük komisyon değişim oranı                 |
+| `min-self-delegation`          | Operatörün öz-delege etmesi gereken minimum token miktarı |
 
 İşlem onaylandıktan sonra doğrulayıcınızı doğrulayın:
 
@@ -70,7 +95,11 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 
 ## Havuz Sınıflandırması
 
-QoreChain, `x/qca` (Quantum Consensus Allocation) modülü tarafından yönetilen bir **üç havuzlu sınıflandırma sistemi** kullanır. Her **1.000 blokta bir**, doğrulayıcılar itibarlarına ve stake'lerine göre üç havuzdan birine yeniden sınıflandırılır:
+:::note Tasarım; blok üretiminde henüz etkin değil
+Aşağıdaki havuz sınıflandırması `x/qca` tasarımıdır. Parametreleri zincir üzerindedir (`qorechaind query qca config`), ancak blok önerenler henüz havuza göre seçilmez ve havuzlar ödülleri veya slashing'i henüz değiştirmez.
+:::
+
+QoreChain'in `x/qca` (Quantum Consensus Allocation) modülü bir **üç havuzlu sınıflandırma sistemi** tanımlar. Her **1.000 blokta bir** (ana ağın 3,2 sn'lik bloklarında yaklaşık 54 dakika), doğrulayıcıların itibarlarına ve stake'lerine göre üç havuzdan birine yeniden sınıflandırılması amaçlanır:
 
 | Havuz                                 | Kriter                                              | Blok Tahsisi |
 | -------------------------------------- | ---------------------------------------------------- | ------------ |
@@ -78,15 +107,18 @@ QoreChain, `x/qca` (Quantum Consensus Allocation) modülü tarafından yönetile
 | **DPoS** (Delegated Proof-of-Stake)    | Toplam delegasyon >= 10.000 QOR                       | Blokların %35'i |
 | **PoS** (Proof-of-Stake)               | Kalan tüm aktif doğrulayıcılar                        | Blokların %25'i |
 
-Her havuz içinde blok önerenler, etkin stake'leri ile orantılı **ağırlıklı rastgele seçim** kullanılarak belirlenir. Bu sınıflandırma, hem yüksek itibarlı hem de yüksek delegasyonlu doğrulayıcıların adil temsil edilmesini sağlarken, daha küçük doğrulayıcıların da katılımına imkân tanır.
+Tasarımda, her havuz içindeki blok önerenler etkin stake'leri ile orantılı ağırlıklı rastgele seçimle belirlenir; böylece hem yüksek itibarlı hem de yüksek delegasyonlu doğrulayıcılar adil temsil edilirken, daha küçük doğrulayıcılar da katılabilir.
 
-### Havuz Sınıflandırmanızı Sorgulama
+### Havuz Yapılandırmasını Sorgulama
 
 ```bash
-qorechaind query qca pool-classification $(qorechaind keys show mykey --bech val -a)
+# Pool weights and classification parameters (there is no per-validator classification query)
+qorechaind query qca config
 ```
 
 JSON-RPC üzerinden:
+
+> **Henüz sunulmuyor:** yayımlanmış hiçbir düğüm sürümü `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bu çağrı bugün tüm herkese açık uç noktalarda `-32601` (method not found) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -103,7 +135,11 @@ curl -X POST http://localhost:8545 \
 
 ## Bağlanma Eğrisi (Bonding Curve)
 
-Bir doğrulayıcının staking ödülü, birden fazla faktörü birleştiren bir bağlanma eğrisi ile belirlenir:
+:::note Tasarım; henüz etkin değil
+Bağlanma eğrisi `x/qca` içinde uygulanmıştır ancak henüz ödül dağıtımına bağlı değildir; staking ödülleri bugün standart distribution modülünü izler. Aşağıdaki formül tasarımdır.
+:::
+
+Bir doğrulayıcının staking ödülünün, birden fazla faktörü birleştiren bir bağlanma eğrisi ile belirlenmesi tasarlanmıştır:
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
@@ -121,13 +157,13 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 **Önemli çıkarımlar:**
 
-* **Sadakat süresi bonusu:** Kesintisiz stake yapan doğrulayıcılar, logaritmik sadakat terimi sayesinde artan ödüller alır. Bu, uzun vadeli bağlılığı teşvik eder.
-* **İtibar kalite faktörü:** 0.75 (zayıf itibar) ile 1.25 (mükemmel itibar) arasında değişir. İtibar; çalışma süresi, başarılı blok önerileri, topluluk katılımı ve işlem doğrulama kalitesinden hesaplanır.
-* **Protokol aşaması çarpanı:** Ağ farklı aşamalardan (başlangıç, büyüme, olgunluk) geçerken ayarlanır.
+* **Sadakat süresi bonusu:** Tasarım, kesintisiz staking süresi için logaritmik bir terim ekler.
+* **İtibar kalite faktörü:** 0.75 (zayıf itibar) ile 1.25 (mükemmel itibar) arasında değişir. İtibar formülü ağırlıkları zincir üzerindedir (`qorechaind query reputation params`).
+* **Protokol aşaması çarpanı:** Ağ farklı aşamalardan (başlangıç, büyüme, olgunluk) geçerek olgunlaştıkça ayarlanır.
 
 ---
 
-## Slashing
+## Slashing {#slashing}
 
 Bu yazının hazırlandığı sırada geçerli olan ve canlı olarak sorgulanabilen temel ihlal cezaları:
 
@@ -137,17 +173,21 @@ qorechaind query slashing params
 
 | Parametre | Değer |
 | --- | --- |
-| İmzalanan blok penceresi | 10.000 blok (yaklaşık 6 saatte birikir) |
-| Pencere başına gereken minimum imza | %95 (bu değerin altı hapse atılır) |
+| İmzalanan blok penceresi | 10.000 blok (ana ağda blok başına 3,2 sn ile yaklaşık 8,9 saat; test ağında daha kısa) |
+| Pencere başına gereken minimum imza | %5 (`min_signed_per_window` = 0.05): bir doğrulayıcı, son 10.000 bloğun **%5'inden azını** imzaladığında, yani %95'ten fazlasını kaçırdığında hapse atılır |
 | Çevrimdışı kalma hapis süresi | 600 saniye (10 dakika) |
 | Çevrimdışı kalma slashing oranı | Stake'in %1'i |
 | Çifte imza slashing oranı | Stake'in %5'i |
 
-Hapse atılma, sabit cezalı 10 dakikalık bir zaman aşımıdır — aşağıdaki kademeli modelden ayrıdır; o model, tekrarlayan ihlaller üzerine daha uzun bir zaman ufkunda ek, artan sonuçlar katmanlar.
+Hapse atılma, sabit cezalı sabit 10 dakikalık bir zaman aşımıdır. Unbonding 21 gün (1.814.400 sn) sürer, aktif küme en fazla 100 doğrulayıcı barındırır (`max_validators`) ve her delegatörün en fazla 7 unbonding kaydı olabilir (`max_entries`). Aşağıdaki kademeli model ayrı bir tasarımdır; tekrarlayan ihlallerin üzerine ek, artan sonuçlar katmanlayacaktır ve henüz bağlı değildir.
 
 ## Kademeli Slashing
 
-QoreChain, tekrarlayan ihlallerde cezaları kademeli olarak artıran, ancak doğrulayıcıların zamanla toparlanmasına da izin veren bir **kademeli slashing** modeli kullanır:
+:::note Tasarım; henüz etkin değil
+Kademeli slashing `x/qca` içinde uygulanmıştır ancak slashing'e bağlı değildir: yürürlükteki cezalar yukarıdaki tablodaki standart `x/slashing` değerleridir. Aşağıdaki parametreler tasarımdır (`qorechaind query qca config`).
+:::
+
+Kademeli slashing tasarımı, tekrarlayan ihlallerde cezaları kademeli olarak artırır, ancak doğrulayıcıların zamanla toparlanmasına da izin verir:
 
 ```
 penalty = base_rate * escalation^effective_count * severity
@@ -165,7 +205,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 2. **Ceza üstel olarak artar.** Ceza, yukarıdaki formüle göre etkin sayaca bağlı olarak artar; bu nedenle tekrar eden ihlaller çok daha büyük cezalarla karşılaşır.
 
-3. **Etkin sayaç zamanla azalır.** Etkin sayaç, 100.000 bloklık bir yarı ömürle azalır (6 saniyelik bloklarda ~7 gün), bu da doğrulayıcıların iyi davranış süresinin ardından toparlanmasına imkân tanır.
+3. **Etkin sayaç zamanla azalır.** Etkin sayaç, 100.000 bloklık bir yarı ömürle azalır (ana ağın 3,2 sn'lik bloklarında yaklaşık 3,7 gün), bu da doğrulayıcıların iyi davranış süresinin ardından toparlanmasına imkân tanır.
 
 4. **Tekil olaylar ile tekrarlayan ihlaller.** Kazara oluşan tek bir çevrimdışı kalma olayı küçük bir cezayla sonuçlanırken, tekrarlayan ihlaller üstel olarak artan sonuçlar doğurur.
 
@@ -173,29 +213,39 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC Anahtar Kaydı {#pqc-key-registration}
 
-**Post-kuantum kriptografik (PQC) açık anahtarınızı** — ML-DSA-87 — bir doğrulayıcı lisansına başvurmadan veya `create-validator` komutunu çalıştırmadan **önce** kaydedin. Bu **isteğe bağlı değildir ve otomatik gerçekleşmez**: zincir, her cosmos-yolu işleminde hibrit bir PQC imzası zorunlu kılar, `MsgCreateValidator` muaf tutulan mesaj türlerinden biri değildir ve — ilk işleminde anahtarını otomatik olarak kaydeden normal bir hesabın aksine — bir doğrulayıcının bu komutu önceden, kendi düğümünde, bizzat çalıştırması gerekir.
+**Post-kuantum kriptografik (PQC) açık anahtarınızı** — ML-DSA-87 — bir doğrulayıcı lisansına başvurmadan veya `create-validator` komutunu çalıştırmadan **önce** kaydedin. Bu **isteğe bağlı değildir ve otomatik gerçekleşmez**: zincir, her Cosmos yolu işleminde hibrit bir PQC imzası zorunlu kılar, `MsgCreateValidator` muaf tutulan mesaj türlerinden biri değildir ve hiçbir hesap anahtarını otomatik olarak kaydetmez: kayıt, her hesabın (doğrulayıcı operatörleri dahil) önceden kendisinin göndermesi gereken açık bir işlemdir. Önce anahtarı oluşturun:
 
 ```bash
-qorechaind tx pqc register-key <pubkey-hex> hybrid \
+qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
+```
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
-  --gas 600000 \
+  --chain-id qorechain-vladi \
+  --gas 600000 --fees 60000uqor \
   -y
 ```
 
 | Parametre      | Açıklama                                              |
 | -------------- | -------------------------------------------------------- |
+| `dilithium5`   | Algoritma (ML-DSA-87)                                     |
 | `<pubkey-hex>` | Hex kodlamasında 2592 bayt uzunluğunda ML-DSA-87 açık anahtarı |
-| `hybrid`       | Kayıt modu (hybrid = hem klasik hem PQC)                  |
+| `hybrid`       | Anahtar türü (hybrid = hem klasik hem PQC)                |
+
+(`qorechaind tx pqc register-key <pubkey-hex> hybrid`, Dilithium-5 için eşdeğer eski biçimdir.)
 
 :::caution `--gas` değerini açıkça belirtin
-ML-DSA-87 açık anahtarı 2.592 bayt uzunluğundadır ve bunu zincir üzerine yazmak varsayılan 200.000 gas limitini aşar. `--gas 600000` (veya daha yüksek) belirtilmeden işlem, belirsiz bir `out of gas in location: WritePerByte` hatasıyla başarısız olur.
+ML-DSA-87 açık anahtarı 2.592 bayt uzunluğundadır ve bunu zincir üzerine yazmak varsayılan 200.000 gas limitini aşabilir (ana ağdaki kayıtlar 220.000 ile 350.000 arasında gas kullanmıştır). `--gas 600000` (veya daha yüksek) belirtilmeden işlem, belirsiz bir `out of gas` hatasıyla başarısız olabilir. Ücret en az gas limitinin 0,1 uqor ile çarpımı kadar olmalıdır; dolayısıyla `--gas 600000` için `--fees 60000uqor` veya daha fazlası gerekir.
 :::
 
 Kaydı doğrulayın:
 
 ```bash
-qorechaind query pqc key <account-address>
+qorechaind query pqc account <account-address>
 ```
+
+`~/.qorechaind/pqc/` altındaki anahtar dosyası, hesabın kuantum sonrası imzalama anahtarıdır: onu anımsatıcı (mnemonic) gibi yedekleyin ve mümkün olduğunca konsensüs anahtarını çalıştıran makineden uzak tutun. Kurtarma ve rotasyon için bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#pqc-key-registration).
 
 ---
 
@@ -209,25 +259,18 @@ QoreChain, **26660** portunda Prometheus metrikleri sunar:
 http://localhost:26660/metrics
 ```
 
-İzlenmesi gereken temel metrikler:
+Uç noktayı, `config.toml` dosyasındaki `[instrumentation]` bölümünde `prometheus = true` ayarlayarak etkinleştirin. Düğüm, konsensüs motorunun standart metriklerini (blok yüksekliği, konsensüs turları, doğrulayıcı kümesi, eşler, mempool) sunar; düğümünüzün neleri sunduğunu `curl -s localhost:26660/metrics | grep -i -E 'height|validator|peers|mempool'` ile listeleyin. Doğrulayıcı başına imzalama sağlığı en güvenilir şekilde zincirin kendisinden okunur (aşağıdaki Sağlık Kontrollerine bakın); çünkü hapse atmaya karar veren, zincirin kendi kaydıdır.
 
-| Metrik                           | Açıklama                                            |
-| --------------------------------- | ------------------------------------------------------ |
-| `qorechain_missed_blocks_total`   | Doğrulayıcınız tarafından kaçırılan toplam blok sayısı  |
-| `qorechain_validator_uptime`      | Son N blok üzerinden çalışma süresi yüzdesi             |
-| `qorechain_reputation_score`      | Güncel itibar puanı                                     |
-| `qorechain_pool_classification`   | Güncel havuz ataması (0=PoS, 1=DPoS, 2=RPoS)            |
-| `qorechain_consecutive_signed`    | Ardışık imzalanan blok sayısı                            |
-| `consensus_height`                | Güncel blok yüksekliği                                  |
-| `consensus_rounds`                | Güncel yükseklik için konsensüs turları                 |
-
-### İtibar Puanını Sorgulama
+### İtibar Parametrelerini Sorgulama
 
 ```bash
-qorechaind query reputation score $(qorechaind keys show mykey --bech val -a)
+# Formula weights only (there is no per-validator score query)
+qorechaind query reputation params
 ```
 
 JSON-RPC üzerinden:
+
+> **Henüz sunulmuyor:** yayımlanmış hiçbir düğüm sürümü `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bu çağrı bugün tüm herkese açık uç noktalarda `-32601` (method not found) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -250,7 +293,7 @@ qorechaind status | jq '.sync_info'
 qorechaind query slashing signing-info $(qorechaind comet show-validator)
 
 # Check if your validator is in the active set
-qorechaind query staking validators --status bonded | grep "my-validator"
+qorechaind query staking validators --status BOND_STATUS_BONDED | grep "my-validator"
 ```
 
 ---
@@ -261,15 +304,15 @@ qorechaind query staking validators --status bonded | grep "my-validator"
 
 2. **Uyarı sistemi kurun.** Kaçırılan bloklar, düşük çalışma süresi ve beklenmedik yeniden başlatmalar için uyarılar yapılandırın. Birkaç kaçırılan blok normaldir; sürekli kaçırmalar slashing tetikler.
 
-3. **Yüksek çalışma süresini koruyun.** İtibar sistemi, tutarlı çalışma süresini ödüllendirir. Uzun süreli kesinti, itibar kalite faktörünüzü düşürerek ödülleri azaltır.
+3. **Yüksek çalışma süresini koruyun.** Sürekli kesinti, doğrulayıcının hapse atılmasına (son 10.000 bloğun %5'inden azının imzalanması) ve slashing'e yol açar; bkz. [Slashing](#slashing).
 
 4. **Yazılımı güncel tutun.** QoreChain sürümlerini takip edin ve güncellemeleri hızlıca uygulayın. Zincir yükseltmeleri için doğrulayıcı topluluğuyla koordinasyon sağlayın.
 
 5. **Anahtarlarınızı güvende tutun.** Doğrulayıcı konsensüs anahtarı için bir donanım güvenlik modülü (HSM) veya uzak imzalayıcı kullanın. Anahtarları asla düğümle aynı makinede saklamayın.
 
-6. **Bir PQC anahtarı kaydedin.** Bir ML-DSA-87 anahtarı kaydederek doğrulayıcınızı kuantum tehditlerine karşı geleceğe hazırlayın.
+6. **Önce bir PQC anahtarı kaydedin.** Operatör hesabının, bir doğrulayıcı oluşturabilmesi veya başka herhangi bir Cosmos yolu işlemi gönderebilmesi için kayıtlı bir ML-DSA-87 anahtarına ihtiyacı vardır.
 
-7. **Havuzunuzu izleyin.** Havuz sınıflandırmanızı her 1.000 blokta bir takip edin. İtibarınızı iyileştirmek sizi PoS'tan RPoS'a taşıyabilir ve bu da blok önerme fırsatlarınızı önemli ölçüde artırabilir.
+7. **Saati senkronize tutun.** Bir NTP istemcisi çalıştırın; v3.2.1'den itibaren düğüm, saati 60 saniyeden fazla saptığında durur.
 
 ---
 
@@ -278,28 +321,37 @@ qorechaind query staking validators --status bonded | grep "my-validator"
 ```bash
 # Edit validator metadata
 qorechaind tx staking edit-validator \
-  --moniker "new-name" \
+  --new-moniker "new-name" \
   --website "https://myvalidator.com" \
   --details "Description of my validator" \
-  --from mykey -y
+  --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
 
 # Unjail after downtime slashing
-qorechaind tx slashing unjail --from mykey -y
+qorechaind tx slashing unjail --from mykey --gas 300000 --fees 30000uqor --generate-only > tx.json
 
 # Delegate additional stake
 qorechaind tx staking delegate $(qorechaind keys show mykey --bech val -a) \
-  500000000uqor --from mykey -y
+  500000000uqor --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
 
-# Withdraw rewards
+# Withdraw rewards and commission
 qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech val -a) \
-  --commission --from mykey -y
+  --commission --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
+
+# Sign and broadcast any of the above (hybrid signature):
+qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
+
+Ağ ücret tabanı gas birimi başına 0,1 uqor'dur. Kayıtlı PQC anahtarı **olmayan** bir operatör hesabı `unjail` işlemini yine klasik yöntemle gönderebilir; bir anahtar kaydedildikten sonra ise her işlem (unjail dahil) hibrit imza gerektirir.
 
 ---
 
 ## Bağlı Ağları Doğrulama {#connected-networks}
 
-**v3.1.80** zincir sürümünden itibaren, bir QoreChain doğrulayıcısı [köprü](/architecture/bridge-architecture) aracılığıyla bağlanan ağların doğrulanmasına da yardımcı olabilir. Bu, **lisansa bağlı ve isteğe bağlı (opt-in)** bir işlevdir:
+:::caution Henüz etkin bir bağlı ağ yok
+Köprü modülü ana ağda ve test ağında dağıtılmıştır, ancak **hiçbir köprü rotası etkin değildir**: 37 zincir yapılandırmasının tamamı `pending` durumundadır, kayıtlı köprü doğrulayıcısı yoktur, hiçbir köprü işlemi hiç oluşturulmamıştır ve hiçbir IBC kanalı yoktur. Aşağıdaki çerçeve tasarımı anlatır; bugün bağlı bir ağda doğrulanacak bir şey yoktur.
+:::
+
+Tasarım (**v3.1.80** zincir sürümünden beri), bir QoreChain doğrulayıcısının [köprü](/architecture/bridge-architecture) aracılığıyla bağlanan ağların doğrulanmasına da yardımcı olmasına olanak tanır. Bu, **lisansa bağlı ve isteğe bağlı (opt-in)** bir işlevdir:
 
 1. **Lisansa sahip olun.** Doğrulayıcının, hedef ağ için etkin bir `validator_<chain>` (veya `qcb_bridge`) lisansına sahip olması gerekir. Orkestratör, bu lisans olmadan harici bir istemciyi başlatmayı reddeder (fail-closed).
 2. **Etkinleştirme istemciyi otomatik olarak sağlar.** Lisans etkinleştirildiğinde QoreChain, ilgili ağın istemcisini düğümünüzde sağlar — sabitlenmiş istemciyi indirir, yapılandırmasını oluşturur ve QoreChain'in orkestrasyonu altında çalıştırır. Etkinleştirme öncesinde hiçbir şey indirilmez.
@@ -320,6 +372,6 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 
 ## Sonraki Adımlar
 
-* [Kaynaktan Derleme](/developer-guide/building-from-source) — `qorechaind` ikili dosyasını derleyin
+* [Düğüm Çalıştırma](/developer-guide/running-a-node) — Yayın ikili dosyasını kurun, state sync ve düğüm ayarları
 * [EVM Geliştirme](/developer-guide/evm-development) — QoreChain üzerinde akıllı sözleşmeler dağıtın
-* [Hesap Soyutlama](/developer-guide/account-abstraction) — Doğrulayıcı operasyonlarınız için programlanabilir hesaplar
+* [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing) — Anahtar kaydı, kurtarma ve rotasyon

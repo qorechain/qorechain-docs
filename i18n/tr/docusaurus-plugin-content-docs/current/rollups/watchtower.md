@@ -19,19 +19,28 @@ sağlarsınız**. Watchtower hiçbir zaman bir yığının hileli olduğuna kend
 karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğünüz değere
 göre hareket eder.
 
+:::caution Erken aşama: RDK REST rotaları gerekir
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur. `/qorechain/rdk/v1/…` REST rotaları bugün ana ağda sunulmamaktadır, bu nedenle Watchtower henüz ana ağa karşı çalışamaz. Henüz hiçbir ağda rollup oluşturulmamıştır, dolayısıyla izlenecek bir şey yoktur.
+:::
+
 ## `watchBatches`
 
 ```ts
-import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
+import { createRdkClient, watchBatches } from "@qorechain/rdk";
 
-// The public qore.host REST + RPC endpoints are baked into the presets
-// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
-// `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-const watcher = watchBatches(rdk, "my-roll", {
+// `tx` is a signing client that produces the hybrid (post-quantum) signature
+// the networks require. See "Signing with the published clients" in
+// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
+// cannot get a challenge accepted.
+declare const tx: {
+  challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
+};
+
+const watcher = watchBatches(rdk, "my-rollup", {
   onBatch: (batch) => {
-    console.log("new batch", batch.index);
+    console.log("new batch", batch.batchIndex);
   },
 
   // Your validity predicate. Return false to flag the batch as invalid.
@@ -40,13 +49,17 @@ const watcher = watchBatches(rdk, "my-roll", {
   },
 
   // Called when validate() returns false — wire it to a challenge.
-  onInvalid: async (batch) => {
-    await challengeBatch(rdk, "my-roll", batch.index /* + your fraud proof */);
+  onInvalid: async ({ batch }) => {
+    await tx.challengeBatch({
+      rollupId: "my-rollup",
+      batchIndex: batch.batchIndex,
+      proof: myFraudProofHex, // hex fraud proof
+    });
   },
 
   // Called as a batch approaches the end of its challenge window.
-  onDeadline: (batch) => {
-    console.warn("challenge window closing for batch", batch.index);
+  onDeadline: ({ batch, secondsRemaining }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -61,14 +74,18 @@ watcher.stop();
 - **geçersiz yığınlar** (sizin `validate` fonksiyonunuzun `false` döndürdüğü
   durumlar) `onInvalid` aracılığıyla.
 
-`onInvalid`'i `challengeBatch`'e bağlamak, Watchtower'ı eksiksiz bir otomatik
+`onInvalid`'i bir itiraza bağlamak, Watchtower'ı eksiksiz bir otomatik
 itiraz aracına dönüştürür; yalnızca gözlem (observe-only) modunda çalıştırmak için
 onu ayarlanmamış bırakın.
+
+:::note İtiraz penceresi
+Watchtower'ın bildirdiği son tarih, itiraz penceresinin blok başına 6 saniye üzerinden bloğa dönüştürülmüş halini kullanır (varsayılan olarak 100.800 blok); bu nedenle ana ağın ≈3,2 sn'lik bloklarında gerçek pencere "7 gün"den daha kısadır. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
+:::
 
 ## CLI
 
 ```bash
-qorollup watchtower my-roll
+qorollup watchtower my-rollup
 ```
 
 `watchtower`, çerçeveyi komut satırından çalıştırır; siz Ctrl-C'ye basana kadar

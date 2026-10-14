@@ -7,35 +7,33 @@ sidebar_position: 3
 
 # Gobernanza
 
-Esta guía explica cómo funciona la gobernanza on-chain en QoreChain, incluido el sistema de votación Quadratic Delegation-Reputation Weighted (QDRW), cómo presentar propuestas y cómo votar.
+Esta guía explica cómo funciona la gobernanza on-chain en QoreChain: cómo se cuentan los votos, cómo presentar propuestas y cómo votar.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión de cadena **v3.1.97** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 29 de junio de 2026 en la línea v3.2 (versión de nodo **v3.2.1**; la testnet ejecuta **v3.2.2**) — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+:::
+
+:::caution Firma con `tx pqc cosign`
+Mainnet y testnet exigen una firma híbrida poscuántica en cada transacción del carril Cosmos, por lo que los comandos de esta página no se difunden tal como están escritos. Añade `--generate-only > tx.json` a un comando y ejecuta después `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`. Consulta [Firma híbrida](/cli-reference/transaction-commands#hybrid-signing).
 :::
 
 ---
 
-## Poder de voto: fórmula QDRW
+## Poder de voto {#voting-power}
 
-QoreChain usa la fórmula **Quadratic Delegation-Reputation Weighted (QDRW)** para calcular el poder de voto. Este sistema evita el dominio de las ballenas a la vez que recompensa a los participantes que han ganado puntuaciones de reputación altas y se han comprometido con la gobernanza mediante el staking de xQORE.
+Las propuestas se cuentan sobre el **stake vinculado (bonded)**: cada QOR que hayas delegado a un validador vinculado cuenta como una unidad de poder de voto, sin multiplicador. Si no votas tú mismo, tu delegación sigue el voto de tu validador; emitir tu propio voto lo anula para tu stake. Una propuesta se aprueba cuando se cumplen todas las condiciones siguientes:
 
-```
-VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
-```
+| Regla     | Valor actual | Significado                                                                   |
+| --------- | ---------- | ----------------------------------------------------------------------------- |
+| Quórum    | 33.4%      | Proporción del stake vinculado que debe votar                                 |
+| Umbral    | 50%        | Proporción de "sí" entre los votos no abstenidos necesaria para aprobar       |
+| Veto      | 33.4%      | Si "no con veto" alcanza esta proporción, la propuesta se rechaza y su depósito se quema |
 
-| Variable                  | Descripción                                                                                                                      |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `VP`                      | Poder de voto efectivo                                                                                                          |
-| `staked`                  | Total de tokens QOR en stake por el votante                                                                                     |
-| `xQORE`                   | Cantidad de tokens de gobernanza xQORE que se posee (consulta [Staking de xQORE](/user-guide/xqore-staking))                    |
-| `r`                       | Puntuación de reputación del votante, normalizada a \[0, 1]                                                                     |
-| `ReputationMultiplier(r)` | Función sigmoide que mapea la reputación a un multiplicador en el rango \[0.5, 2.0]                                             |
+Estos valores se leyeron de la cadena el 14 de octubre de 2026; confírmalos con `qorechaind query gov params`, ya que la gobernanza puede cambiarlos.
 
-### Propiedades clave
-
-* **Amortiguación cuadrática:** Un poseedor con 100 veces el stake de otro votante obtiene solo \~10 veces el poder de voto, no 100 veces. Esto garantiza que la influencia en la gobernanza escale de forma sublineal con la riqueza.
-* **Bonificación de xQORE:** Los tokens xQORE cuentan con un **peso 2x** dentro de la raíz cuadrada, lo que otorga una ventaja significativa a los participantes comprometidos con la gobernanza.
-* **Multiplicador de reputación:** Mapea la puntuación de reputación del votante de \[0, 1] a un multiplicador en \[0.5, 2.0] usando una curva sigmoide. Los participantes con alta reputación pueden duplicar su poder de voto efectivo, mientras que los de baja reputación ven su influencia reducida a la mitad.
+:::note QDRW está diseñado pero no está activo
+El diseño de QoreChain incluye una fórmula de poder de voto **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, que amortiguaría los stakes grandes y ponderaría la reputación. Está implementada en el módulo `x/qca`, pero está **desactivada** en ambas redes (`qdrw_enabled` es `false` en `qorechaind query qca config`) y no forma parte del recuento de gobernanza, por lo que hoy no afecta a ningún voto. xQORE tampoco está activo (consulta [Staking de xQORE](/user-guide/xqore-staking)).
+:::
 
 ---
 
@@ -47,26 +45,36 @@ Cualquier poseedor de QOR puede presentar una propuesta de gobernanza. Se requie
 qorechaind tx gov submit-proposal <proposal_file.json> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-**Archivo de propuesta de ejemplo** (`proposal.json`):
+**Archivo de propuesta de ejemplo** (`proposal.json`). Una propuesta es una lista de mensajes que el módulo de gobernanza ejecuta si se aprueba, más un título, un resumen y un depósito. Esta eleva el número máximo de validadores de 100 a 150; `authority` es la cuenta del módulo de gobernanza (`qorechaind query auth module-account gov`):
 
 ```json
 {
-  "title": "Increase Maximum Validator Count",
-  "description": "This proposal increases the maximum active validator set from 100 to 150 to improve decentralization.",
-  "type": "parameter_change",
-  "changes": [
+  "messages": [
     {
-      "subspace": "staking",
-      "key": "MaxValidators",
-      "value": "150"
+      "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+      "authority": "qor10d07y265gmmuvt4z0w9aw880jnsr700jwfyxr3",
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 150,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "uqor",
+        "min_commission_rate": "0.000000000000000000"
+      }
     }
   ],
-  "deposit": "10000000uqor"
+  "metadata": "",
+  "deposit": "10000000uqor",
+  "title": "Increase maximum validator count",
+  "summary": "Raise the active validator set from 100 to 150 to improve decentralization.",
+  "expedited": false
 }
 ```
+
+`MsgUpdateParams` reemplaza todo el conjunto de parámetros, así que copia los valores actuales de `qorechaind query staking params` y cambia solo el campo que quieras modificar. Una propuesta solo de texto (de señalización) usa `"messages": []`. `qorechaind tx gov draft-proposal` genera un esqueleto.
 
 ---
 
@@ -78,7 +86,7 @@ Una vez que una propuesta entra en el período de votación, cualquier staker pu
 qorechaind tx gov vote <proposal_id> <option> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Opciones de voto:**
@@ -96,21 +104,22 @@ qorechaind tx gov vote <proposal_id> <option> \
 qorechaind tx gov vote 1 yes \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
 
 ## Tipos de propuesta
 
-QoreChain admite los siguientes tipos de propuesta de gobernanza:
+Una propuesta lleva cero o más mensajes que se ejecutan si se aprueba. Casos habituales:
 
 | Tipo                 | Descripción                                                                                     |
 | -------------------- | ----------------------------------------------------------------------------------------------- |
-| **Texto**             | Una propuesta de señalización sin ejecución automática on-chain. Se usa para sondeos de sentimiento de la comunidad. |
-| **Cambio de parámetro** | Modifica uno o más parámetros de protocolo on-chain (por ejemplo, máximo de validadores, tasa de emisión). |
-| **Actualización de software** | Programa una actualización coordinada de la cadena a una altura de bloque especificada.   |
-| **Gasto comunitario** | Solicita fondos de la tesorería comunitaria para una dirección de destinatario especificada.   |
+| **Texto**             | Una propuesta de señalización sin mensajes y sin ejecución automática on-chain. Se usa para sondeos de sentimiento de la comunidad. |
+| **Cambio de parámetro** | El mensaje `MsgUpdateParams` de un módulo, enviado por la cuenta del módulo de gobernanza. Reemplaza todo el conjunto de parámetros de ese módulo. |
+| **Actualización de software** | Un mensaje `MsgSoftwareUpgrade` que programa una actualización coordinada de la cadena a una altura de bloque especificada.   |
+| **Gasto comunitario** | Un mensaje `MsgCommunityPoolSpend` que envía fondos del pool comunitario a una dirección de destinatario.   |
+| **Expedita**        | Establece `"expedited": true` para un período de votación más corto con un depósito y un umbral de aprobación más altos (ver más abajo). |
 
 ---
 
@@ -152,21 +161,21 @@ qorechaind query gov params
 
 Los parámetros clave incluyen:
 
-| Parámetro            | Descripción                                                      |
-| -------------------- | ---------------------------------------------------------------- |
-| `min_deposit`        | Depósito mínimo requerido para que una propuesta entre en votación |
-| `max_deposit_period` | Ventana de tiempo para alcanzar el depósito mínimo               |
-| `voting_period`      | Duración del período de votación una vez que una propuesta está activa |
-| `quorum`             | Participación mínima requerida para una votación válida          |
-| `threshold`          | Porcentaje mínimo de "sí" para aprobar (excluyendo las abstenciones) |
-| `veto_threshold`     | Porcentaje mínimo de "no con veto" para rechazar y quemar el depósito |
+| Parámetro            | Descripción                                                      | Valor actual (14 oct. 2026) |
+| -------------------- | ---------------------------------------------------------------- | ------------------------ |
+| `min_deposit`        | Depósito mínimo requerido para que una propuesta entre en votación | 10 QOR (`10000000uqor`)  |
+| `max_deposit_period` | Ventana de tiempo para alcanzar el depósito mínimo               | 2 días                   |
+| `voting_period`      | Duración del período de votación una vez que una propuesta está activa | 2 días                   |
+| `quorum`             | Participación mínima requerida para una votación válida          | 0.334                    |
+| `threshold`          | Porcentaje mínimo de "sí" para aprobar (excluyendo las abstenciones) | 0.5                      |
+| `veto_threshold`     | Porcentaje mínimo de "no con veto" para rechazar y quemar el depósito | 0.334                    |
+| `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Período de votación, umbral de aprobación y depósito de las propuestas expeditas | 1 día / 0.667 / 50 QOR |
 
 ---
 
 :::tip
 
-* Construye reputación antes de las votaciones de gobernanza importantes para maximizar tu multiplicador de poder de voto.
-* Bloquea QOR en xQORE para obtener una bonificación de peso de gobernanza de 2x dentro de la fórmula QDRW.
+* Vota antes de que termine el período de votación; tu voto solo se cuenta si se emite mientras la propuesta está en el período de votación.
 * Usa `no_with_veto` con cuidado. Si se alcanza el umbral de veto, el depósito de la propuesta se quema.
 * Las propuestas que no alcanzan el depósito mínimo dentro del período de depósito se eliminan automáticamente.
 

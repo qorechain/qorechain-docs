@@ -26,7 +26,7 @@ npm i @qorechain/evm viem
 import { createEvmClient } from "@qorechain/evm";
 
 const client = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" }, // mainnet: https://evm.qore.host
 });
 
 console.log(await client.getChainId());
@@ -34,7 +34,8 @@ console.log(await client.getChainId());
 ```
 
 يمكنك أيضًا تمرير `rpcUrl` مباشرةً (متعارض تبادليًا مع `endpoints`)، و
-`wsUrl` / `endpoints.evmWs` لـ WebSocket، و`chainId` صريح، و`decimals`
+`wsUrl` / `endpoints.evmWs` لـ WebSocket (`wss://evm-ws-testnet.qore.host` على
+شبكة الاختبار)، و`chainId` صريح، و`decimals`
 (القيمة الافتراضية 18، وهي اصطلاح EVM لـ QOR — متمايز عن أساس Cosmos لـ `uqor`
 البالغ 10^6).
 
@@ -77,11 +78,97 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 // const hash = await writeContract(walletClient, { address, abi, functionName, args });
 ```
 
+## نافذة تفويض EVM (السلسلة v3.2.0) {#evm-window}
+
+منذ إصدار السلسلة **v3.2.0** (الشبكة الرئيسية من الكتلة 2,981,742، وشبكة الاختبار
+من الكتلة 5,920,000) لا يقبل مسار EVM معاملةً إلا من حساب لديه **مفتاح ML-DSA-87
+مسجَّل** و**نافذة تفويض مفتوحة**. تعمل القراءات
+(`eth_call` والأرصدة والإيصالات) وتقدير الغاز بدونها، وتوقّع المحافظ
+والمكتبات مثل MetaMask وviem وethers وHardhat وFoundry كما كانت؛
+الذي يتغير هو أن التفويض ما بعد الكمّي يسبق
+المعاملة، في صورة رسالة على المسار الأصلي (Native) موقَّعة توقيعًا هجينًا. القواعد على مستوى السلسلة والحدود وصيغ سطر الأوامر
+ورموز الرفض موجودة في
+[نافذة تفويض EVM](/getting-started/first-transaction#evm-window).
+
+مع SDK **0.8.2 أو أحدث** يمكنك فتح نافذة من الشيفرة. تسجيل المفتاح
+(مرة واحدة) موصوف في [الأمان الكمومي](/sdk/guides/quantum-safe)؛ ثم يفتح المثال
+أدناه نافذة لحساب eth-native موحَّد (`npm i @cosmjs/stargate`):
+
+```ts
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  openEvmWindowMsg,
+  fetchEvmWindow,
+  classifyEvmWindowRejection,
+} from "@qorechain/sdk";
+
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
+const account = await deriveUnifiedAccount(mnemonic);
+const signer = new EthNativeSigner(account, { rest: REST }); // hybrid: the window needs the ML-DSA key
+
+const { account: base } = await client.rest.get<{
+  account: { account_number: string; sequence: string };
+}>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+
+const open = openEvmWindowMsg({
+  sender: account.cosmos,
+  blocks: 7200,         // 1 … 17,280 blocks (a block count, not a duration)
+  maxTxs: 20,           // 1 … 1,000 transactions
+  maxValue: "1000000000", // uqor: transferred value PLUS the maximum fee of each transaction
+});
+
+await signer.signAndBroadcast(transport, {
+  chainId: "qorechain-vladi",
+  accountNumber: BigInt(base.account_number),
+  sequence: BigInt(base.sequence),
+  messages: [open],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+});
+
+const w = await fetchEvmWindow({ rest: REST, address: account.cosmos });
+console.log(w.live); // true while the window admits at least one more transaction
+```
+
+يؤدي فتح نافذة إلى تقدّم nonce الحساب (هوية واحدة: تسلسل Cosmos
+هو nonce في EVM)، لذا اقرأ nonce الخاص بـ EVM **بعد** فتح النافذة ووقّع
+معاملة EVM حينها. يحدّ `maxValue` القيمة **زائد** أقصى رسم (حد الغاز
+مضروبًا في سقف الرسوم) لكل معاملة: تحويل 1,000 uqor بغاز 21,000 وبسعر
+112.5 gwei يستهلك 3,363 uqor من النافذة. افتح نافذة فقط عندما
+يطلب المستخدم ذلك؛ ولا تفتح واحدة تلقائيًا أبدًا.
+
+عندما يرفض مسار EVM معاملةً، تخبرك `classifyEvmWindowRejection(err)`
+بالسبب:
+
+```ts
+try {
+  // send the EVM transaction (viem, ethers, ...)
+} catch (err) {
+  const why = classifyEvmWindowRejection(err);
+  // "no-pqc-key" | "no-window" | "exhausted" | "invalid" | undefined
+}
+```
+
+تبني `closeEvmWindowMsg` رسالة الإغلاق المقابلة، وتُصدِّر `MAX_EVM_WINDOW_BLOCKS`
+و`MAX_EVM_WINDOW_TXS` الحدود.
+
 ## ما قبل التجميع (Precompiles)
 
-تكشف QoreChain عن مكوّنات ما قبل التجميع القابلة للاستدعاء كعقود على عناوين
+تعرّف QoreChain مكوّنات ما قبل التجميع القابلة للاستدعاء من العقود على عناوين
 ثابتة. يوفّر فضاء الأسماء `precompiles` ارتباطات مُصنّفة، وتُصدَّر العناوين
 وملفّات ABI.
+
+> **غير مفعَّلة بعد.** مكوّنات ما قبل التجميع في QoreChain مُترجَمة داخل العقدة
+> لكنها لم تُفعَّل بعد على الشبكة الرئيسية (`qorechain-vladi`) ولا على شبكة الاختبار
+> (`qorechain-diana`): يعيد الاستدعاء بيانات فارغة، لذا تُطلق هذه المساعدات
+> أخطاءً على الشبكات العامة اليوم أيضًا. راجع
+> [مكوّنات EVM ما قبل التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status).
 
 | ما قبل التجميع | الدالة | العنوان |
 | --- | --- | --- |
@@ -95,15 +182,18 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read live consensus parameters.
+// Read consensus parameters (once 0x…0C01 is active).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
 const status = await precompiles.pqcKeyStatus(client.publicClient, account);
 
-// QCAI helpers.
-const score = await precompiles.aiRiskScore(client.publicClient, /* args */);
-const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, /* args */);
+// QCAI helpers: raw calldata for the risk score, an args object for the anomaly check.
+const score = await precompiles.aiRiskScore(client.publicClient, "0xa9059cbb...");
+const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, {
+  sender: account,
+  amount: 1_000_000_000_000_000_000n, // 1 QOR in wei
+});
 
 console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 ```
@@ -111,8 +201,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 تُصدَّر ملفّات ABI لما قبل التجميع باسم `IQORE_PQC_ABI` و`IQORE_AI_ABI` و
 `IQORE_CONSENSUS_ABI`.
 
-> على عقدة لا تتوفّر فيها مكوّنات ما قبل التجميع الخاصة بـ QoreChain، تُطلِق هذه
-> الاستدعاءات خطأ "feature not present". عالج ذلك لكلّ استدعاء على حدة إن كنت
-> تستهدف عُقدًا غير متجانسة.
+> حيث لا يكون مكوّن ما قبل التجميع مفعَّلًا (اليوم: كل شبكة عامة)، أو على عقدة
+> بلا مكوّنات ما قبل التجميع الخاصة بـ QoreChain، تُطلِق هذه الاستدعاءات خطأ
+> "feature not present". عالج ذلك لكلّ استدعاء على حدة.
 
 انظر [مثال](/sdk/examples) `evm-precompile` للحصول على نسخة قابلة للتشغيل.

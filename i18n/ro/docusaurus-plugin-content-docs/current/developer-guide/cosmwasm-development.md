@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChain acceptă contracte inteligente **CosmWasm**, permițând dezvoltatorilor să scrie programe sigure, izolate în sandbox, în Rust, care se compilează în WebAssembly. Contractele CosmWasm rulează alături de programele EVM și SVM în cadrul arhitecturii triple-VM a QoreChain.
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, rulând versiunea de lanț **v3.1.97**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 29 iunie 2026, care rulează versiunea de nod **v3.2.1**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.2.
 :::
 
 :::caution Încărcarea codului și instanțierea necesită momentan permisiune explicită
-La momentul redactării, `code_upload_access` și `instantiate_default_permission` sunt ambele setate la **`Nobody`** atât pe **mainnet, cât și pe testnet** — ceea ce înseamnă că `MsgStoreCode` și `MsgInstantiateContract` nu sunt deschise implicit oricărui cont, în urma unei alerte de securitate CosmWasm valabile la nivelul întregii industrii. Va trebui ca guvernanța să acorde contului tău (sau unei liste specifice de adrese) permisiunea de încărcare/instanțiere înainte ca pașii de mai jos să reușească — verifică mai întâi parametrii live, deoarece aceasta este exact genul de setare pe care guvernanța o poate modifica:
+La momentul redactării, `code_upload_access` și `instantiate_default_permission` sunt ambele setate la **`Nobody`** atât pe **mainnet, cât și pe testnet** — ceea ce înseamnă că `MsgStoreCode` și `MsgInstantiateContract` nu sunt deschise implicit oricărui cont, în urma unei alerte de securitate CosmWasm valabile la nivelul întregii industrii. Va trebui ca guvernanța să acorde contului tău (sau unei liste specifice de adrese) permisiunea de încărcare/instanțiere înainte ca pașii de mai jos să reușească — verifică mai întâi parametrii live, deoarece aceasta este exact genul de setare pe care guvernanța o poate modifica (în prezent, mainnet-ul nu are deloc cod de contract stocat):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+Tipurile de mesaje `MsgStoreCode`, `MsgInstantiateContract` și `MsgInstantiateContract2` sunt, de asemenea, dezactivate de întrerupătorul de circuit (circuit breaker) al lanțului pe ambele rețele (`qorechaind query circuit disabled-list`), așa că ridicarea permisiunii nu este suficientă până când aceste intrări nu sunt eliminate din listă.
+
 Această restricție nu afectează contractele deja instanțiate — `execute` și `query` asupra unui contract existent funcționează normal, indiferent de această setare.
+:::
+
+:::caution Semnează cu `tx pqc cosign`
+Mainnet-ul și testnet-ul cer o semnătură post-cuantică hibridă pe fiecare tranzacție din lane-ul Cosmos, așa că comenzile `tx` de pe această pagină nu se difuzează așa cum sunt scrise. Ele construiesc tranzacția cu `--generate-only > tx.json`; apoi o semnezi și o difuzezi cu `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (binarul de release din [manifestul de descărcare](/developer-guide/running-a-node#fetch-the-manifest) include semnatarul; un build din sursa publică nu îl include). Pragul minim de taxă al rețelei este de **0,1 uqor per unitate de gas**, exact ceea ce exprimă `--gas-prices 0.1uqor`; semnătura hibridă adaugă aproximativ 47.000 de gas pe care o simulare nu îi include, de aici ajustarea `1.5`. Vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -67,12 +73,11 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   După ce tranzacția se confirmă, interoghează ID-ul codului stocat:
+   După ce tranzacția se confirmă (semnează și difuzează `tx.json` cu `tx pqc cosign`, așa cum este descris mai sus), interoghează ID-ul codului stocat:
 
    ```bash
    qorechaind query wasm list-code
@@ -86,9 +91,8 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | Indicator           | Descriere                                      |
@@ -101,7 +105,7 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
    Obține adresa contractului:
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **Execute** — Apelează punctul de intrare execute al unui contract pentru a-i modifica starea:
@@ -110,8 +114,8 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    Execuție cu fonduri atașate:
@@ -121,7 +125,8 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **Query** — Citește starea contractului fără a trimite o tranzacție:
@@ -142,7 +147,7 @@ Contractele CosmWasm urmează un ciclu de viață în cinci pași: **Build (comp
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## Apeluri între VM-uri
 
-Contractele CosmWasm pot interacționa cu contracte implementate pe EVM și SVM prin modulul `x/crossvm`. Apelurile între VM-uri din CosmWasm folosesc calea de mesaje **asincronă**:
+Apelurile între VM-uri se trimit ca tranzacții `MsgCrossVMCall` prin modulul `x/crossvm`; vezi [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) pentru ciclul de viață al mesajelor. Contractele CosmWasm nu au astăzi o legătură (binding) pe partea contractului pentru a iniția un apel între VM-uri (nu există un mesaj personalizat `QoreChainMsg` pe care contractele să îl emită), așa că un contract nu poate apela un contract EVM sau SVM din interiorul punctului său de intrare `execute`.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-Mesajul este trimis într-o coadă și procesat de EndBlocker în blocul următor. Vezi [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) pentru ciclul de viață complet al mesajelor.
+:::caution Apelurile între VM-uri sunt în prezent oprite pe mainnet
+`MsgCrossVMCall` se află pe lista circuit breaker-ului mainnet-ului (`qorechaind query circuit disabled-list`), iar lane-ul SVM este dezactivat pe ambele rețele, așa că ruta între VM-uri nu poate fi folosită astăzi pentru tranzacții obișnuite.
+:::
 
 ---
 
@@ -254,13 +247,14 @@ let delegate_msg = StakingMsg::Delegate {
 
 ## Migrarea contractelor
 
-Dacă a fost instanțiat contractul cu o adresă `--admin`, adminul îl poate migra la un nou ID de cod:
+Dacă contractul a fost instanțiat cu o adresă `--admin`, adminul îl poate migra la un nou ID de cod:
 
 ```bash
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 Acest lucru apelează punctul de intrare `migrate` din noul cod cu starea existentă a contractului.
@@ -271,4 +265,4 @@ Acest lucru apelează punctul de intrare `migrate` din noul cod cu starea existe
 
 * [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) — Apelează contracte EVM și SVM din CosmWasm
 * [Dezvoltare SVM](/developer-guide/svm-development) — Implementează programe BPF pe QoreChain
-* [Precompile EVM](/developer-guide/evm-precompiles) — Accesează funcțiile PQC și AI din Solidity
+* [Precompile EVM](/developer-guide/evm-precompiles) — Referință pentru precompilatele Solidity planificate (încă niciunul nu este activ)

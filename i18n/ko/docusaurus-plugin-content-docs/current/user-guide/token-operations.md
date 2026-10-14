@@ -10,7 +10,11 @@ sidebar_position: 1
 이 가이드에서는 QOR 토큰, 토큰 송수신 방법, 잔액 조회, 그리고 QoreChain의 수수료 분배 모델에 대해 다룹니다.
 
 :::note
-아래 명령은 **`qorechain-diana`** 테스트넷(EVM chain ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM chain ID **9801**)은 체인 버전 **v3.1.97**로 2026년 6월 7일부터 가동 중입니다. 메인넷에서 거래할 때는 **메인넷 연결** 페이지의 메인넷 chain ID 및 엔드포인트로 대체하세요.
+아래 명령은 **`qorechain-diana`** 테스트넷(EVM chain ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM chain ID **9801**)은 v3.2 라인(노드 릴리스 **v3.2.1**, 테스트넷은 **v3.2.2** 실행 중)으로 2026년 6월 29일부터 가동 중입니다. 메인넷에서 거래할 때는 **메인넷 연결** 페이지의 메인넷 chain ID 및 엔드포인트로 대체하세요.
+:::
+
+:::caution `tx pqc cosign`으로 서명하세요
+메인넷과 테스트넷은 모든 Cosmos 레인 트랜잭션에 하이브리드 포스트 양자 서명을 요구하므로, 이 페이지의 명령은 그대로는 브로드캐스트되지 않습니다. 명령에 `--generate-only > tx.json`을 추가한 다음 `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`를 실행하세요. [하이브리드 서명](/cli-reference/transaction-commands#hybrid-signing)을 참조하세요. [QoreX](/qorex/overview)와 [대시보드](/dashboard/overview)는 이 서명을 대신 처리해 줍니다.
 :::
 
 ## 토큰 정보
@@ -32,7 +36,7 @@ sidebar_position: 1
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **예시:** 다른 주소로 5 QOR (5,000,000 uqor) 전송:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 송신자에 대해 원시 주소 대신 키 이름을 사용할 수도 있습니다:
@@ -48,7 +52,7 @@ qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## 잔액 조회
@@ -85,33 +89,39 @@ QoreChain의 거래 수수료는 네트워크 인센티브를 정렬하기 위�
 | 분배처          | 비율  | 목적                                                            |
 | --------------- | ----- | --------------------------------------------------------------- |
 | **검증인**      | 37%   | 블록 생성자에게 보상하고 네트워크를 보호합니다                    |
-| **소각**        | 30%   | 공급량에서 영구적으로 제거되어 디플레이션 압력을 만듭니다          |
+| **소각**        | 30%   | 공급량에서 영구적으로 제거됩니다                                  |
 | **트레저리**    | 20%   | 프로토콜 개발과 생태계 보조금에 자금을 지원합니다                 |
 | **스테이커**    | 10%   | 모든 위임자에게 비례하여 분배됩니다                              |
-| **라이트 노드** | 3%    | 네트워크 데이터를 제공하는 라이트 노드 운영자에게 보상합니다       |
+| **라이트 노드** | 3%    | 라이트 노드 보상을 위해 적립됩니다(아래 참고 사항 참조)            |
+
+이 분배는 수수료 수집기에 들어오는 모든 것에 적용되며, 수수료 수집기에는 거래 수수료와 에포크마다 발행되는 스테이킹 발행량이 담깁니다. 라이트 노드 몫은 준비금에 적립되며, 라이트 노드 보상 등록은 아직 열려 있지 않으므로 현재 이 준비금에서 지급받는 노드는 없습니다([라이트 노드](/light-node/overview) 참조). v3.2.0 업그레이드 이후 스테이커 몫은 일반 스테이킹 보상으로 지급됩니다([토크노믹스](/architecture/tokenomics#stranded-and-reserve) 참조).
 
 ## 소각 채널
 
-QoreChain은 다중 채널 소각 메커니즘을 구현합니다. QOR 토큰은 10개의 개별 채널을 통해 유통에서 영구적으로 제거됩니다:
+QoreChain의 소각 모듈은 12개의 소각 소스를 정의합니다. 이 중 어느 경로로든 소각된 QOR은 유통에서 영구적으로 제거됩니다. 메인넷에서는 현재까지 가스 수수료 채널에서만 소각이 기록되었으며, 나머지는 정의되어 있지만 기록된 것이 없습니다.
 
-| 채널                  | 설명                                                                |
-| -------------------- | ------------------------------------------------------------------- |
-| `tx_fee`             | 모든 거래 수수료의 30% 소각 부분                                      |
-| `governance_penalty` | 거버넌스 제안이 정족수에 도달하지 못하거나 거부될 때 소각              |
-| `slashing_burn`      | 슬래싱된 검증인 스테이크의 소각 부분                                  |
-| `bridge_fee`         | 크로스체인 브리지 전송 시 소각되는 수수료                             |
-| `spam_deterrent`     | 스팸으로 표시된 거래에 적용되는 추가 소각                             |
-| `epoch_excess`       | 에포크 경계에서 목표를 초과한 발행량 소각                             |
-| `manual_burn`        | 거버넌스 제안을 통한 커뮤니티 주도 토큰 소각                          |
-| `contract_callback`  | 스마트 컨트랙트 콜백 실행 시 소각되는 수수료                          |
-| `cross_vm_fee`       | 크로스 VM (예: EVM에서 CosmWasm) 호출 실행 시 소각                    |
-| `rollup_create`      | 새 롤업 배포 시 최소 스테이크의 1% 소각                               |
+| 채널                | 설명                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `gas_fee`          | 모든 가스 수수료의 30%가 소각됩니다                                                |
+| `contract_create`  | 컨트랙트 생성당 정액 100 QOR 수수료 소각 (비활성: CosmWasm 업로드가 닫혀 있음)    |
+| `ai_service`       | AI 서비스 수수료의 50% 소각 (비활성: AI 서비스 수수료는 라이브가 아님)            |
+| `bridge_fee`       | 브리지 수수료의 100% 소각 (비활성: 브리지는 라이브가 아님)                        |
+| `treasury_buyback` | 트레저리에서 주기적으로 수행하는 바이백 후 소각                                    |
+| `failed_tx`        | 실패한 거래의 가스; v3.2.2부터 체인이 적용 (현재까지는 테스트넷만)                 |
+| `xqore_penalty`    | 소각을 통해 처리되는 xQORE 조기 출금 페널티 (xQORE는 라이브가 아님)               |
+| `auto_buyback`     | 프로토콜 수준의 자동 소각 (비활성)                                                |
+| `tge`              | 예약됨; TGE 소각은 제네시스 이전에 이루어졌으며 이 채널에는 기록되는 것이 없음      |
+| `rollup_create`    | 롤업 생성 스테이크의 1%가 소각됩니다                                              |
+| `milestone`        | 고정된 누적 거래 건수에서 예약된 소각 (아직 발동된 적 없음)                        |
+| `amm`              | AMM 프로토콜 수수료용으로 예약됨 (기록된 것 없음)                                  |
 
-모든 채널에 걸친 총 소각 금액을 조회할 수 있습니다:
+소각 모듈에는 CLI 조회 명령이 없습니다. 소스별 누적 소각량은 REST에서 읽으세요:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+응답에는 `total_burned`와 `burns_by_source`(uqor 단위)가 나열됩니다. 현재 총 공급량은 `qorechaind query bank total-supply-of uqor`로 확인할 수 있습니다.
 
 ## 팁
 
@@ -122,7 +132,7 @@ qorechaind query bank total --denom uqor
 :::tip
 
 * `--dry-run` 플래그를 사용하면 거래를 브로드캐스트하지 않고 시뮬레이션할 수 있습니다.
-* `--gas auto`를 사용하면 노드가 거래에 필요한 가스를 추정하도록 할 수 있습니다.
-* 표준 전송의 최소 수수료는 **500 uqor**입니다.
+* `--gas`를 명시적으로 설정하세요(하이브리드 서명 전송에는 400,000이면 충분합니다).
+* 수수료 하한은 **가스 단위당 0.1 uqor**이므로, 가스 한도 400,000에는 최소 **40,000 uqor**가 필요합니다.
 
 :::

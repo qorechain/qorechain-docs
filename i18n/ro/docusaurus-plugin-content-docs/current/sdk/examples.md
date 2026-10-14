@@ -33,7 +33,10 @@ sursa din link pentru programul complet, rulabil.
 ## connect-and-query
 
 Creați un client și citiți starea publică a lanțului — un sold bancar nativ și
-instantaneul agregat de tokenomics. Necesită un nod accesibil.
+un instantaneu de tokenomics. Necesită un nod accesibil. Exemplul din repository citește
+instantaneul prin `client.qor`, un apel JSON-RPC `qor_` pe care endpoint-urile publice nu
+îl servesc; fragmentul de mai jos folosește echivalentul REST (statisticile de ardere), care
+funcționează pe mainnet și pe testnet.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [Sursa](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -56,7 +59,11 @@ const overview = await client.qor.getTokenomicsOverview();
 
 Derivați un cont nativ (`qor1...`) dintr-un mnemonic și difuzați un transfer
 QOR: derivare → semnare → simulare → estimare comision → `bankSend`. Necesită un
-RPC de consens accesibil, plus REST și un cont finanțat.
+RPC de consens accesibil, plus REST și un cont finanțat. Acest exemplu semnează doar cu
+semnătura **clasică**, deci funcționează pe un nod local sau de dezvoltare, dar este
+refuzat de mainnet și de testnet, care cer semnătura hibridă pentru fiecare
+tranzacție pe calea Native. Pentru rețelele publice folosiți transferul hibrid din
+[Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
 import {
@@ -84,7 +91,10 @@ console.log(result.transactionHash);
 
 Construiți un transfer SOL cu o instrucțiune memo pe runtime-ul QoreChain
 compatibil Solana (SVM), folosind `@qorechain/svm`. Construiește și afișează tranzacția
-offline; trimiterea necesită un JSON-RPC SVM accesibil și un cont finanțat.
+offline. Trimiterea necesită un JSON-RPC SVM accesibil și un cont finanțat și nu poate
+reuși pe rețelele publice: trimiterea tranzacțiilor SVM este dezactivată
+la nivelul întregii rețele, iar endpoint-urile SVM publice sunt doar pentru citire (consultați
+[Dezvoltare SVM](/developer-guide/svm-development)).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -93,7 +103,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -101,7 +111,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -112,8 +123,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Folosiți `@qorechain/evm` (un strat subțire peste viem) pentru a apela precompile-urile
 QoreChain în mod read-only și pentru a citi un sold ERC-20. ID-ul de lanț EVM este detectat automat prin
-`eth_chainId`. Pe un nod fără precompile-uri, acele apeluri aruncă eroarea "feature not
-present", raportată per apel.
+`eth_chainId`. Precompile-urile nu sunt încă active pe mainnet sau testnet (consultați
+[Starea rețelei](/developer-guide/evm-precompiles#network-status)); până când
+vor fi, și pe un nod fără ele, acele apeluri aruncă eroarea "feature not present",
+raportată per apel.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -154,11 +167,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -193,6 +207,9 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Citiți starea tokenomics prin namespace-ul JSON-RPC tipizat `qor_*`
 (`client.qor`), servit prin endpoint-ul EVM JSON-RPC. Cele trei citiri sunt
 independente, astfel încât fiecare este raportată chiar dacă celelalte nu sunt disponibile.
+Nicio versiune de nod lansată nu servește încă namespace-ul `qor_`, așa că astăzi fiecare
+citire eșuează cu `-32601` (consultați
+[namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -205,7 +222,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -241,7 +258,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Construiți un `MsgExecuteCosmos` trimis prin relayer pe culoarul de autentificatori Native
-(SDK 0.7.0, chain v3.1.85): o cheie ed25519 în stil Phantom semnează
+(SDK 0.7.0, chain v3.1.85; modulul `abstractaccount` este dezactivat astăzi pe ambele
+rețele, deci acest culoar nu poate fi folosit încă acolo): o cheie ed25519 în stil Phantom semnează
 digestul de autentificare cu separare de domeniu, iar mesajul rezultat este gata pentru ca un relayer
 să îl difuzeze (relayer-ul plătește comisioanele; cheia externă nu produce niciodată o
 co-semnătură ML-DSA). Rulare de probă — nu necesită niciun nod.

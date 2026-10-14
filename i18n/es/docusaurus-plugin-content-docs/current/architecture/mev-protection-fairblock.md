@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # Protección MEV (FairBlock)
 
-El módulo `x/fairblock` implementa la defensa de QoreChain contra los ataques de Valor Máximo Extraíble (MEV) mediante cifrado por umbral basado en identidad. Combinado con un sistema de priorización de transacciones de 5 carriles, esto crea una arquitectura anti-MEV integral que protege a los usuarios contra el front-running, los ataques sándwich y otras formas de extracción de valor basadas en el mempool.
+El módulo `x/fairblock` es el diseño de QoreChain para defenderse de los ataques de Valor Máximo Extraíble (MEV) mediante cifrado por umbral basado en identidad. Combinado con un sistema de priorización de transacciones de 5 carriles, está pensado para formar una arquitectura anti-MEV que proteja a los usuarios contra el front-running, los ataques sándwich y otras formas de extracción de valor basadas en el mempool.
+
+:::note Estado actual (octubre de 2026)
+FairBlock está **desactivado tanto en la red principal como en la red de pruebas** (`enabled = false`), y las definiciones de los 5 carriles son solo configuración: el mempool y el manejador de propuestas en producción no aplican los carriles de espacio de bloque. Esta página describe el diseño previsto.
+:::
 
 ## El Problema del MEV
 
@@ -53,7 +57,7 @@ Los validadores aportan participaciones de descifrado para las transacciones con
 
 ## Estado de Implementación
 
-En la versión actual de testnet, el módulo FairBlock es una **implementación stub**:
+En ambas redes activas (red principal y red de pruebas), el módulo FairBlock es una **implementación stub**:
 
 * El ante handler `FairBlockDecorator` está conectado a la canalización de procesamiento de transacciones pero **deja pasar** todas las transacciones sin modificación.
 * Cuando `enabled` es `false` (el valor por defecto), el decorador delega inmediatamente al siguiente handler de la cadena.
@@ -101,14 +105,12 @@ Transacciones con gas abstraído y patrocinadas. Este carril permite experiencia
 
 ### Estado de Implementación
 
-La configuración de carriles es **solo de datos** en la versión actual de testnet. Las definiciones de carriles (prioridad, asignación de espacio de bloque) se registran en la inicialización de la aplicación, pero la reordenación real del mempool mediante `PrepareProposal` y `ProcessProposal` es un hito futuro. Actualmente, todas las transacciones se procesan en orden estándar independientemente de la asignación de carril.
+La configuración de carriles es **solo de datos** en las redes activas. Las definiciones de carriles (prioridad, asignación de espacio de bloque) se registran en la inicialización de la aplicación, pero la reordenación real del mempool mediante `PrepareProposal` y `ProcessProposal` es un hito futuro. Actualmente, todas las transacciones se procesan en orden estándar independientemente de la asignación de carril.
 
-## Efecto Anti-MEV Combinado
+## Efecto Anti-MEV Combinado (diseño)
 
 1. **Capa 1: Cifrado (tIBE)** — Las transacciones se cifran antes de entrar en el mempool. Los proponentes no pueden leer el contenido, por lo que no hay información que extraer.
 2. **Capa 2: Priorización (Carriles)** — Las transacciones cifradas del carril MEV obtienen un 20% de espacio de bloque reservado. La prioridad 90 garantiza la inclusión incluso durante la congestión.
 3. **Capa 3: Descifrado por Umbral** — Solo después de la confirmación del bloque los validadores revelan las participaciones de descifrado. El requisito de umbral evita que cualquier validador individual realice un descifrado anticipado.
 
-Resultado: La asimetría de información se elimina en cada etapa del ciclo de vida de la transacción, desde la difusión hasta la ejecución.
-
-Este enfoque es estrictamente superior al descifrado con retardo temporal o a los esquemas de commit-reveal de una sola parte, porque el requisito de umbral distribuye la confianza entre todo el conjunto de validadores.
+Resultado previsto: una vez activado FairBlock, la asimetría de información se elimina en cada etapa del ciclo de vida de la transacción, desde la difusión hasta la ejecución. El requisito de umbral distribuye la confianza entre todo el conjunto de validadores, algo que no consiguen el descifrado con retardo temporal ni los esquemas de commit-reveal de una sola parte.

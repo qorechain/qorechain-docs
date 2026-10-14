@@ -7,74 +7,61 @@ sidebar_position: 8
 
 # Çoklu-VM (VM'ler arası çağrılar)
 
-Çoklu-VM rollup'u, özel bir **VM'ler arası ön derleme (precompile)** aracılığıyla
-**QoreChain Native** (Wasm) çalışma zamanındaki CosmWasm sözleşmelerini
-çağırabilen bir EVM yürütme katmanı çalıştırır. RDK, bu çağrıları kodlamak için
-TypeScript araçlarını ve başlangıç noktası olarak bir iskelet şablonu içerir.
+RDK, bir EVM sözleşmesinden `0x0000000000000000000000000000000000000901` adresindeki **VM'ler arası ön derlemeye (precompile)** yapılan bir çağrıyı kodlayan TypeScript yardımcılarını içerir; bu ön derleme, çağrıyı **QoreChain Native** (Wasm) çalışma zamanındaki bir CosmWasm sözleşmesine yönlendirmek üzere tasarlanmıştır. Bunları birbirine bağlayan bir `multivm-rollup` iskelet şablonu da vardır. Araçlar yalnızca **EVM → QoreChain Native** kapsamını içerir; SVM ayrı bir çalışma zamanıdır ve ön derlemenin bir parçası değildir.
 
-> Bu araçlar yalnızca **EVM → QoreChain Native** (CosmWasm sözleşmeleri) kapsamını
-> içerir. SVM ayrı bir çalışma zamanıdır ve VM'ler arası ön derlemenin bir parçası
-> değildir.
-
-:::note
-RDK v0.4.2 itibarıyla Wasm çalışma zamanının VM seçenek tanımlayıcısı
-**`native`**'dir (QoreChain Native); `cosmwasm` kabul edilen eski bir takma ad
-olarak kalır ve her ikisi de ağ üzerinde `cosmwasm` olarak eşlenir — zincir,
-gezgin ve VM'ler arası ön derleme ABI'si (`executeCrossVMCall`) değişmemiştir.
+:::caution Canlı ağlarda henüz kullanılamaz
+VM'ler arası ön derleme hiçbir ağda **etkinleştirilmemiştir**: EVM modülünün etkin statik ön derlemeler listesi ana ağda ve test ağında boştur; bu nedenle `0x…0901` adresine yapılan bir çağrı boş veri döndürür ve hiçbir şey yürütmez. CosmWasm sözleşme yükleme de her iki ağda kapalıdır ve SVM işlem şeridi ağ genelinde devre dışıdır. Ön derleme etkinleştirilip CosmWasm yüklemeleri yeniden açılana kadar çağrılacak bir şey yoktur. Bu sayfa, hazırlanabilmeniz için araçları belgeler; üzerine üretim akışları kurmayın. Bkz. [EVM Ön Derlemeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
-## Ön derleme (precompile)
+:::note
+RDK v0.4.2 itibarıyla Wasm çalışma zamanının VM seçenek tanımlayıcısı **`native`**'dir (QoreChain Native); `cosmwasm` kabul edilen eski bir takma ad olarak kalır ve her ikisi de ağ üzerinde `cosmwasm` olarak eşlenir. Ön derleme ABI işlevi `executeCrossVMCall(string,bytes)`'tır.
+:::
 
-VM'ler arası ön derleme sabit bir adreste sunulur:
+## Ön derleme adresi
 
 ```ts
 import { CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
 
-console.log(CROSS_VM_PRECOMPILE); // 0x…0901
+console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
 ```
 
 ## VM'ler arası çağrı kodlama
 
-`encodeCrossVmCalldata`, EVM sözleşmenizin bir CosmWasm sözleşmesini çağırmak için
-ön derlemeye gönderdiği calldata'yı oluşturur. `functionSelector`, bir Solidity
-işlev imzası için 4 baytlık seçiciyi hesaplar.
+`encodeCrossVmCalldata`, `executeCrossVMCall(string contract, bytes msg)` için calldata oluşturur. `msg`, sözleşmenin yürütme (execute) mesajıdır; UTF-8 JSON dizesi veya ham baytlar olarak verilir.
 
 ```ts
-import { encodeCrossVmCalldata, functionSelector } from "@qorechain/rdk";
+import { encodeCrossVmCalldata } from "@qorechain/rdk";
 
 const calldata = encodeCrossVmCalldata({
   contract: "qor1cosmwasmcontractaddress...",
-  msg: { transfer: { recipient: "qor1...", amount: "100" } },
+  msg: JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }),
 });
-
-const selector = functionSelector("callCosmwasm(string,bytes)");
 ```
 
 ## Solidity tarafı
 
-Bir EVM sözleşmesinden, kodlanmış calldata ile ön derleme adresini çağırırsınız.
-`multivm-rollup` şablonu, şu satırlar doğrultusunda bir `contracts/CrossVmCaller.sol`
-parçası içerir:
+Bir EVM sözleşmesinden, kodlanmış çağrı ile ön derleme adresini çağırırsınız:
 
 ```solidity
-// contracts/CrossVmCaller.sol
 address constant CROSS_VM_PRECOMPILE = 0x0000000000000000000000000000000000000901;
 
-function callCosmwasm(bytes memory calldata_) internal returns (bytes memory) {
-    (bool ok, bytes memory out) = CROSS_VM_PRECOMPILE.call(calldata_);
-    require(ok, "cross-vm call failed");
-    return out;
+function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
+    external returns (bytes memory)
+{
+    bytes memory data =
+        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+    (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
+    require(ok, "cross-VM call failed");
+    return ret;
 }
 ```
 
-## Çoklu-VM rollup iskeleti oluşturma
+Ön derleme etkin olmadığından, ona yapılan düz bir `.call` boş veriyle başarı döndürür; bunu bugün test ediyorsanız yalnızca `ok` bayrağına güvenmek yerine dönen uzunluğu kontrol edin.
 
-Yeni bir şablon olan `multivm-rollup`, `CrossVmCaller.sol` parçası dahil olmak üzere,
-CosmWasm'ı çağırmak için bağlanmış bir EVM rollup iskeleti oluşturur:
+## Çoklu-VM rollup iskeleti oluşturma
 
 ```bash
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup)
-sayfasına bakın.
+Şablon, başlangıç noktası olarak bir `contracts/CrossVmCaller.sol` içerir; ona güvenmeden önce yukarıdaki ABI ile karşılaştırın. Tüm iskelet oluşturucu şablonları için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.

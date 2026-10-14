@@ -89,8 +89,10 @@ const second = await deriveNativeAccount(mnemonic, { accountIndex: 1 });
 | EVM | `0x` + ترميز سداسي عشري بمجموع تحقق مختلط الحالة وفق EIP-55 |
 | SVM | ترميز base58 للبايتات العشرين مع حشو 12 بايت صفرية على اليمين (32 بايت) |
 
-الإيداع إلى **أي** من العناوين الثلاثة يصل إلى رصيد **واحد**، والمفتاح يُنفق
-على كل مسار:
+الإيداع إلى **أي** من العناوين الثلاثة يصل إلى رصيد **واحد**، والمفتاح الواحد
+هو الموقِّع على كل مسار (على مسار EVM داخل
+[نافذة تفويض](/sdk/guides/evm#evm-window)؛ أما مسار معاملات SVM فهو معطّل
+حاليًا على مستوى الشبكة كلها، لذا فإن SVM للقراءة فقط اليوم):
 
 ```ts
 import {
@@ -105,7 +107,8 @@ account.cosmos;       // "qor1…"   bech32, Native lane
 account.evm;          // "0x…"     EIP-55 hex, EVM lane
 account.svm;          // "<base58>" 32-byte SVM address (addr20 + 12 zero bytes)
 account.addressBytes; // the raw 20 bytes shared by all three
-account.publicKey;    // 33-byte compressed secp256k1 public key
+account.publicKey;    // "0x…" hex string of the 33-byte compressed secp256k1 key
+account.privateKey;   // "0x…" hex string (a secret: never log or commit it)
 account.pqc;          // { publicKey, secretKey } — ML-DSA-87, derived below
 
 // Decode any ONE encoding into all three:
@@ -130,7 +133,10 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 
 وبذلك يمكن استرجاعه من `{ address, mnemonic }` وهو متطابق عبر جميع حزم SDK
 اللغوية الخاصة بـ QoreChain. (بالنسبة إلى `unifiedAccountFromSeed`، تكون خانة
-عبارة الاسترجاع هي `"seed:" + hex(seed32)`.)
+عبارة الاسترجاع هي `"seed:" + hex(seed32)`.) منذ SDK 0.8.3 تقوم
+`derivePqcCanonical(account, mnemonic)` أولًا بتحويل `account` إلى صيغته
+`qor1…` بأحرف صغيرة (`canonicalAccount`)، لذا فإن عنوان bech32 بأحرف كبيرة أو
+صيغة `0x` للحساب نفسه تُنتج المفتاح نفسه.
 
 ### الإرسال على مسار Native باستخدام مفتاح eth
 
@@ -138,30 +144,81 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 الكلاسيكي هو secp256k1 على **keccak256** لبايتات SignDoc (وليس sha256)،
 ويستخدم المفتاح العام في `SignerInfo` عنوان النوع (type URL)
 `/cosmos.evm.crypto.v1.ethsecp256k1.PubKey`. أما المسار الهجين
-(`signHybridEth`) فيُرفق إضافةً إلى ذلك امتداد `PQCHybridSignature` الخاص بـ
-ML-DSA-87 — وهو مطلوب على الشبكات الحية:
+(`signHybridEth`، أو `EthNativeSigner` مع قيمته الافتراضية
+`signMode: "hybrid"`) فيُرفق إضافةً إلى ذلك امتداد `PQCHybridSignature` الخاص
+بـ ML-DSA-87، وهو مطلوب على الشبكات الحية.
+
+يلزم أمران قبل أول إرسال هجين. أولًا، يجب **تسجيل** مفتاح ML-DSA-87 الخاص
+بالحساب (مرة واحدة). التسجيل هو المعاملة الوحيدة الموقَّعة كلاسيكيًا
+والمعفاة من متطلب التوقيع الهجين: وقِّعها باستخدام `signMode: "classical"`.
+إن `publicKey` الخاص بالحساب سلسلة سداسية عشرية بالبادئة `0x`، لذا فك ترميزها
+إلى بايتات لاستخدامها في `ecdsaPubkey`. ثانيًا، مرِّر `rest` إلى الموقِّع
+ليتمكن من سؤال الشبكة عن [صيغة بايتات التوقيع](#sign-bytes-versions) التي
+تتحقق منها (وعلى `qorechain-vladi` و`qorechain-diana` يرمي خطأ بدلًا من
+التخمين). يتطلب SDK 0.8.1 أو أحدث، و`npm i @cosmjs/stargate`:
 
 ```ts
-import { EthNativeSigner, deriveUnifiedAccount } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  buildRegisterPqcKeyMsg,
+  toBase,
+} from "@qorechain/sdk";
 
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+const CHAIN_ID = "qorechain-vladi";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
 const account = await deriveUnifiedAccount(mnemonic);
-const signer = new EthNativeSigner(account); // signMode: "hybrid" by default
 
-// `transport` is anything with broadcastTx (e.g. a connected client).
-await signer.bankSend(
+// The REST account record carries the number and sequence (the account must
+// exist, that is, have received funds).
+async function authInfo() {
+  const { account: base } = await client.rest.get<{
+    account: { account_number: string; sequence: string };
+  }>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+  return { accountNumber: BigInt(base.account_number), sequence: BigInt(base.sequence) };
+}
+
+// 1) Register the ML-DSA-87 key once (classical-signed, exempt from the hybrid rule).
+const classical = new EthNativeSigner(account, { signMode: "classical" });
+await classical.signAndBroadcast(transport, {
+  chainId: CHAIN_ID,
+  ...(await authInfo()),
+  messages: [
+    buildRegisterPqcKeyMsg(account.cosmos, {
+      pqcKeypair: account.pqc,
+      ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+    }),
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
+});
+
+// 2) Send with the hybrid signature (the default signMode).
+const signer = new EthNativeSigner(account, { rest: REST });
+const res = await signer.bankSend(
   transport,
   "qor1recipient…",
-  [{ denom: "uqor", amount: "1000000" }], // 1 QOR
-  { chainId: "qorechain-vladi", accountNumber, sequence, fee },
+  [{ denom: "uqor", amount: toBase("1.5") }],
+  {
+    chainId: CHAIN_ID,
+    ...(await authInfo()),
+    fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  },
 );
+console.log(res.transactionHash);
 ```
 
 لمزيد من التحكم منخفض المستوى، تُعيد `signHybridEth(params)` /
 `signClassicalEth(params)` بايتات `TxRaw` المُجمّعة ومخرجات التوقيع، بينما
 تقرأ `accountAuthInfo(baseAccount)` قيمتي `account_number` / `sequence` من
-حساب يستخدم مفتاحه العام على السلسلة عنوان النوع `eth_secp256k1`. المسار
-الكلاسيكي فقط مخصص لرسالة `MsgRegisterPQCKeyV2` التي تُنفَّذ مرة واحدة وتُعفى
-من متطلب التوقيع الهجين عند التمهيد؛ استخدم المسار الهجين لكل شيء آخر.
+`BaseAccount` بصيغة protobuf يستخدم مفتاحه العام على السلسلة عنوان النوع
+`eth_secp256k1` (أما حساب REST بصيغة JSON فتجب مواءمة حقوله أولًا، كما تفعل
+`authInfo` أعلاه).
 
 :::caution قم بالترقية إلى SDK 0.6.1+ للمعاملات الهجينة
 أصلح إصدار SDK ‏**0.6.1** خطأ ترميز حرجًا على مستوى الإجماع: كان امتداد
@@ -172,30 +229,16 @@ await signer.bankSend(
 مبنية بإصدار SDK ‏≤ 0.6.0 تُرفض على السلسلة: قم بالترقية إلى 0.6.1 أو أحدث.
 :::
 
-### Phantom ‏(P1a): حساب موحّد دون تصدير مفتاح
+### Phantom والمحافظ الخارجية الأخرى {#phantom}
 
-تشتق `connectPhantomUnified()` ‏(TypeScript) حسابًا موحّدًا قانونيًا **غير
-وصائي** من توقيع Phantom حتمي: يوقّع المستخدم رسالة ثابتة مفصولة بالنطاق
-(domain-separated) بمفتاح ed25519 الخاص بـ Phantom، وتُستخدم
-`shake256(signature, 32)` كبذرة للحساب.
+:::danger أُزيلت في SDK 0.8.0
+تضمّنت إصدارات SDK من 0.6.0 إلى 0.7.0 الدالتين `connectPhantomUnified()` و`unifiedAccountFromPhantomSignature()` (أُزيلتا في 0.8.0؛ وفي Python وRust: `unified_account_from_phantom_signature`، وفي Go: `unified.UnifiedAccountFromPhantomSignature`، وفي Java: `UnifiedAccounts.unifiedAccountFromPhantomSignature`)، وكانتا تشتقان مفتاح الإنفاق للحساب من توقيع Phantom على الرسالة الثابتة `QoreChain unified account derivation v1` متبوعة بالمفتاح العام للمحفظة بصيغة base58.
+توقيع ed25519 حتمي، وأي موقع ويب يستطيع أن يطلب من المحفظة توقيع الرسالة نفسها، لذا يستطيع كل من حصل على ذلك التوقيع يومًا إعادة بناء مفتاحي secp256k1 وML-DSA للحساب. الدالتان الآن ترميان خطأ.
 
-```ts
-import {
-  connectPhantomUnified,
-  unifiedAccountFromPhantomSignature,
-} from "@qorechain/sdk";
+إذا أنشأت حسابًا بهذه الطريقة فاعتبره مخترقًا الآن: أنشئ حسابًا جديدًا من عبارة استرجاع (mnemonic)، وانقل الأموال إليه، ثم اربط Phantom بالحساب الجديد كمُصادِق (انظر أدناه). لا يمكن إصلاح الحساب القديم، لأن عنوانه مرتبط بالمفتاح المكشوف، وتدوير مفتاح PQC لا يستبدل إلا النصف ما بعد الكمّي. استخدم SDK 0.8.2 أو أحدث.
+:::
 
-// In the browser (uses window.solana):
-const account = await connectPhantomUnified();
-
-// Or, given a raw signature you already have:
-const same = unifiedAccountFromPhantomSignature(signatureBytes);
-```
-
-الحساب المشتق هو مفتاح قانوني منفصل عن مفتاح ed25519 الخاص بـ Phantom — ولا
-ترى Phantom أبدًا أسرار secp256k1/PQC المشتقة. لتمكين مفتاح Phantom نفسه من
-الإنفاق من الحساب ضمن حدود، راجع
-[المُصادِقون والإنفاق المفوَّض](/sdk/guides/authenticators).
+لتمكين مفتاح Phantom (أو MetaMask) من الإنفاق من حساب، استخدم **مسارات المُصادِقات**: سجّل مفتاح المحفظة عبر `MsgRegisterAuthenticator`، ثم أنفق من حساب PQC القياسي عبر `MsgExecuteCosmos` / `MsgExecuteEVM` ضمن صلاحية و`SpendingRule`. يحتفظ الحساب بمفاتيحه المشتقة من عبارة الاسترجاع، ويمكن إلغاء مفتاح المحفظة في أي وقت. انظر [المُصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators). لاحظ أن وحدة `abstractaccount` التي توفّر هذه المسارات معطّلة حاليًا على الشبكتين (يُظهر `GET /qorechain/abstractaccount/v1/config` القيمة `enabled: false`)، لذا لا يمكن ربط مفتاح محفظة بعد؛ وإلى أن يصبح ذلك ممكنًا استخدم حساب عبارة الاسترجاع الجديد مباشرة.
 
 ## التشفير ما بعد الكمومي (PQC)
 
@@ -227,7 +270,8 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ### المُوقِّعون القابلون للتوصيل
 
 من أجل قابلية التركيب، توفر حزمة SDK تجريدًا `Signer` إضافةً إلى تطبيقَي
-`PqcSigner` و`HybridSigner`، وتعدادًا `SignatureMode`. استخدم هذه العناصر
+`PqcSigner` و`HybridSigner`، ونوع `SignatureMode` (`"classical" | "pqc" |
+"hybrid"`). استخدم هذه العناصر
 عندما تريد دمج توقيع PQC في تدفقك الخاص بدلًا من استدعاء العمليات الأولية
 مباشرةً.
 
@@ -238,12 +282,15 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 الجزء ما بعد الكمومي كامتداد `PQCHybridSignature` على المعاملة.
 
 :::caution التوقيع الهجين مطلوب على مسار Native
-اعتبارًا من إصدار السلسلة الحالي (**v3.1.97**)، الإعداد الافتراضي للشبكة هو
+اعتبارًا من إصدار السلسلة **v3.2.0** (الإصدار الذي تعمل به الشبكتان)،
+الإعداد الافتراضي للشبكة هو
 `hybrid_signature_mode = required` مع `allow_classical_fallback = false`.
-التوقيع الهجين عبر `buildHybridTx` (مع `includePqcPublicKey`) — أو
-`signHybridEth` للحسابات الموحّدة eth-native — **إلزامي** لمعاملات مسار
-Native؛ وتُرفض المعاملات الكلاسيكية فقط على مسار Native على السلسلة. أما
-معاملات EVM فتستخدم مسار `eth_secp256k1` منفصلًا ولا تتأثر.
+التوقيع الهجين عبر `buildHybridTx` / `signAndBroadcastHybrid` (مرِّر `rest`)،
+أو `signHybridEth` / `EthNativeSigner` للحسابات الموحّدة eth-native، **إلزامي**
+لمعاملات مسار Native؛ وتُرفض المعاملات الكلاسيكية فقط على مسار Native على
+السلسلة. أما معاملات EVM فهي مسار منفصل، لكنها منذ v3.2.0 لا تُقبل إلا من
+حساب لديه مفتاح ML-DSA-87 مسجَّل و[نافذة تفويض](/sdk/guides/evm#evm-window)
+مفتوحة.
 :::
 
 :::caution المعاملات الهجينة بإصدار SDK ‏≤ 0.6.0 مرفوضة
@@ -252,27 +299,88 @@ Native؛ وتُرفض المعاملات الكلاسيكية فقط على مس
 تفشل عند CheckTx بخطأ تحليل المعاملة — قم بالترقية إلى 0.6.1 أو أحدث.
 :::
 
+أداة البناء الشاملة لحساب من نوع coin type 118 هي `signAndBroadcastHybrid`
+(أو `buildHybridTx` للبناء دون بث). وتحتاج إلى الموقِّع الكلاسيكي، وزوج مفاتيح
+ML-DSA-87 الخاص بالحساب، ورقم الحساب والتسلسل (sequence)، و`rest`.
+يتطلب SDK 0.8.3 أو أحدث، و`npm i @cosmjs/stargate`:
+
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  buildHybridTx,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
+  toBase,
 } from "@qorechain/sdk";
 
-const account = await deriveNativeAccount(mnemonic);
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// buildHybridTx assembles a tx with BOTH a classical signature and an
-// ML-DSA-87 signature attached as a PQCHybridSignature extension.
-// (See packages/ts and the pqc-hybrid-sign example for the full call.)
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address);            // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipient…",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // 0.1 uqor per gas is the floor
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,        // lets the SDK pick the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ### المتطلب المسبق على السلسلة
 
-قبل أن تجتاز المعاملة الهجينة تحقق PQC على السلسلة، يجب **تسجيل** المفتاح
-العام PQC الخاص بالموقّع عبر رسالة `MsgRegisterPQCKey` الخاصة بالسلسلة —
-*إلا* إذا ضبطت `includePqcPublicKey: true`، مما يضمّن المفتاح في الامتداد
-لتتمكن السلسلة من تسجيله تلقائيًا عند أول استخدام.
+قبل أن تجتاز المعاملة الهجينة تحقق PQC، يجب **تسجيل** المفتاح العام PQC الخاص
+بالموقّع عبر `MsgRegisterPQCKeyV2` (موقَّعة كلاسيكيًا ومعفاة من التوقيع
+الهجين). وتقوم بذلك الدالتان `ensurePqcRegistered` / `buildRegisterPqcKeyMsg`
+في SDK، أو الأمر `qorechaind tx pqc
+register-key`، أو محفظة QoreChain. أما `includePqcPublicKey: true` فتضمّن
+المفتاح في الامتداد فقط؛ وهي **لا** تسجّله، والسلسلة لا تسجّل مفتاحًا عند أول
+استخدام.
+
+### أي صيغة لبايتات التوقيع؟ {#sign-bytes-versions}
+
+يُوقَّع النصف ML-DSA-87 من المعاملة الهجينة على إحدى صيغتين للبايتات، وتتحقق
+الشبكة من صيغة واحدة فقط عند أي ارتفاع:
+
+```text
+v1: BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+v2: "qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A
+```
+
+`B0` هو جسم المعاملة دون امتداد PQC، و`A` هي بايتات `AuthInfo`.
+تتحقق كل من `qorechain-vladi` و`qorechain-diana` من الصيغة **v2**. سُجّل التبديل
+تحت اسم الترقية `v3.2.0` على الشبكة الرئيسية وتحت `v3.1.98` (ثم
+`v3.2.0`) على الشبكة التجريبية، لذا يجب على العميل أن يستعلم
+`GET /cosmos/upgrade/v1beta1/applied_plan/{name}` عن **كلا** الاسمين وأن يستخدم v2 إذا
+كان ارتفاع أي منهما أكبر من الصفر. تفعل حزمة SDK ذلك نيابةً عنك: يقبل كل
+مُنشئ هجين المعامل
+`signBytesVersion` (القيمة الافتراضية `"auto"`، أو `"v1"` / `"v2"`)، وتتطلب
+`"auto"` عنوان REST الخاص بالشبكة (`rest`) على هاتين السلسلتين: فهي ترمي خطأ
+بدلًا من التخمين. وتعيد المسارات عالية المستوى الحل وتعيد المحاولة مرة واحدة
+عندما ترفض السلسلة التوقيع برمز `pqc` رقم 21. في اختبارات الوحدة مرِّر
+`signBytesVersion` صراحةً حتى لا يعتمد الاختبار على عقدة حية. راجع أيضًا
+[استكشاف الأخطاء: الرمز 21](/developer-guide/post-quantum-signing#code-21).
 
 ### عقد المعاملة الهجينة (نظرة عالية المستوى)
 

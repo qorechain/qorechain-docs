@@ -7,13 +7,17 @@ sidebar_position: 2
 
 # 아키텍처 개요
 
-QoreChain은 체인 노드, AI 사이드카, 블록 인덱서라는 세 가지 주요 프로세스로 구성된 모듈형 블록체인 노드이며, Postgres 데이터베이스를 기반으로 하고 Prometheus와 Grafana를 통해 모니터링됩니다. 메인넷(`qorechain-vladi`, EVM 체인 ID **9801**)은 2026년 6월 7일부터 체인 버전 **v3.1.97**로 가동 중이며, 병행하는 테스트넷(`qorechain-diana`, EVM 체인 ID **9800**)도 운영되고 있습니다. 이 체인은 Cosmos SDK v0.53 위에 구축되었습니다. 아래 다이어그램은 상위 수준의 컴포넌트 구성을 보여줍니다.
+QoreChain은 체인 노드, AI 사이드카, 블록 인덱서라는 세 가지 주요 프로세스로 구성된 모듈형 블록체인 노드이며, Postgres 데이터베이스를 기반으로 하고 Prometheus와 Grafana를 통해 모니터링됩니다. 메인넷(`qorechain-vladi`, EVM 체인 ID **9801**)은 2026년 6월 29일부터 릴리스 **v3.2.1**(합의 규칙은 v3.2.0)로 가동 중이며, 병행하는 테스트넷(`qorechain-diana`, EVM 체인 ID **9800**)도 운영되고 있습니다. 이 체인은 Cosmos SDK v0.53 위에 구축되었습니다. 아래 다이어그램은 상위 수준의 컴포넌트 구성을 보여줍니다.
 
 아래의 트랜잭션 라이프사이클은 제출된 트랜잭션이 노드를 통과하는 흐름을 요약합니다 — AnteHandler 데코레이터 체인(보안 및 수수료 검사)에서 VM 실행 및 온체인 정산에 이르기까지:
 
 ```mermaid
 flowchart LR
-    Tx[Submitted transaction] --> Ante[AnteHandler chain]
+    Tx[Submitted transaction] --> Lane{Lane}
+    Lane -->|Cosmos lane| Ante[AnteHandler chain]
+    Lane -->|EVM lane| EAnte[EVM checks]
+    EAnte --> Win[Registered PQC key +<br/>EVM authorisation window]
+    Win --> Router
     Ante --> PQC[PQC signature verify]
     PQC --> AI[AI anomaly detection]
     AI --> Fair[FairBlock MEV protection]
@@ -43,24 +47,24 @@ flowchart LR
 │  ┌────────────────────── Tokenomics ─────────────────────────┐           │
 │  │  ┌──────┐   ┌───────┐   ┌───────────┐                    │           │
 │  │  │x/burn│   │x/xqore│   │x/inflation│                    │           │
-│  │  │10 ch.│   │lock/  │   │finite     │                    │           │
+│  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
-│  │  │20/10/│   │PvP    │   │590M       │                    │           │
-│  │  │3     │   │       │   │budget     │                    │           │
+│  │  │20/10/│   │PvP    │   │emission   │                    │           │
+│  │  │3     │   │       │   │114.3M cap │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
 │  ┌──────────── IBC / Bridges ────────────────────────────────┐           │
 │  │  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐ │           │
 │  │  │x/bridge  │  │x/babylon │  │x/abstract │  │x/gas     │ │           │
-│  │  │37 QCB +  │  │BTC re-   │  │ account   │  │abstract. │ │           │
-│  │  │8 IBC     │  │staking   │  │session key│  │multi-tok │ │           │
+│  │  │37 QCB    │  │BTC re-   │  │ account   │  │abstract. │ │           │
+│  │  │configs   │  │staking   │  │session key│  │multi-tok │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
 │  │  QCB Bridge     Babylon IBC   ERC-4337-like   ibc/USDC    │           │
 │  │  PQC-signed     BTC finality  social recov.   ibc/ATOM    │           │
 │  │  36 ext chains  checkpoint    spending rules  fee convert  │           │
 │  │  ┌──────────┐                                              │           │
-│  │  │x/fair    │  5-Lane Prioritization: PQC|MEV|AI|Def|Free │           │
+│  │  │x/fair    │  Lane config (not enforced): PQC|MEV|AI|... │           │
 │  │  │ block    │  tIBE encrypted mempool framework           │           │
 │  │  └──────────┘                                              │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -74,7 +78,7 @@ flowchart LR
 │  │  │ sovereign│  │          │  │           │  │ social/  │ │           │
 │  │  │          │  │          │  │           │  │ general  │ │           │
 │  │  └────┬─────┘  └────┬─────┘  └───────────┘  └──────────┘ │           │
-│  │  Bank escrow    Auto-finalize  SHA-256 commit  AI-assisted │           │
+│  │  Bank escrow    Auto-finalize  SHAKE-256 commit AI-assisted │           │
 │  │  Burn on create EndBlocker     Blob pruning    PRISM sugg. │           │
 │  │  → x/multilayer (RegisterSidechain + AnchorState)          │           │
 │  └────────────────────────────────────────────────────────────┘           │
@@ -129,17 +133,18 @@ QoreChain은 각각 고유한 Go 모듈과 바이너리를 가진 세 가지 협
 | 26657 | HTTP/WebSocket | QoreChain 컨센서스 엔진 RPC(블록, 트랜잭션, 컨센서스 상태)            |
 | 1317  | HTTP           | REST API(조회 엔드포인트, 트랜잭션 브로드캐스트)                                 |
 | 9090  | gRPC           | gRPC 조회 및 트랜잭션 엔드포인트                                              |
-| 8545  | HTTP           | EVM JSON-RPC(`eth_`, `web3_`, `net_`, `txpool_`, `qor_` 네임스페이스)              |
+| 8545  | HTTP           | EVM JSON-RPC(`eth_`, `web3_`, `net_`, `txpool_` 네임스페이스)              |
 | 8546  | WebSocket      | EVM JSON-RPC(WebSocket 구독)                                            |
 | 8899  | HTTP           | SVM JSON-RPC(Solana 호환: `getAccountInfo`, `getBalance`, `getSlot` 등) |
 | 50051 | gRPC           | AI 사이드카(노드로부터의 추론 요청)                                     |
 | 5432  | TCP            | Postgres(블록 인덱서 저장소)                                                |
-| 9091  | HTTP           | Prometheus 메트릭                                                                |
-| 3000  | HTTP           | Grafana 대시보드                                                                |
+| 26660 | HTTP           | 노드 Prometheus 메트릭 엔드포인트                                                 |
+| 9091  | HTTP           | Prometheus 서버(Docker Compose 스택의 호스트 포트)                                  |
+| 3001  | HTTP           | Grafana 대시보드(Docker Compose 스택의 호스트 포트; 컨테이너 포트 3000)            |
 
 ## 모듈 맵
 
-QoreChain은 기능별로 그룹화된 **20개 이상의 커스텀 모듈을 포함해 45개 이상의 제네시스 모듈**을 등록합니다:
+QoreChain은 기능별로 그룹화된 **48개의 제네시스 모듈(그중 20개가 QoreChain 전용)**을 등록합니다:
 
 **보안**
 
@@ -149,11 +154,11 @@ QoreChain은 기능별로 그룹화된 **20개 이상의 커스텀 모듈을 포
 
 * `x/ai` — 트랜잭션 라우팅, 이상 탐지, 사기 탐지, 수수료 최적화, TEE 증명, 연합 학습
 * `x/reputation` — 시간에 따라 감쇠하는 다요소 검증인 평판 점수 산정
-* `x/rlconsensus` — 온체인 RL 에이전트(PPO MLP), 동적 컨센서스 튜닝, 서킷 브레이커, 롤업 어드바이저리 — PRISM 최적화 레이어
+* `x/rlconsensus` — 온체인 RL 에이전트(PPO MLP), 컨센서스 튜닝 설계, 서킷 브레이커, 롤업 어드바이저리 — PRISM 최적화 레이어(실제 가동 네트워크에서는 관찰 전용: 로드된 정책 없음)
 
 **컨센서스**
 
-* `x/qca` — QoreChain 컨센서스 엔진 위에서 동작하는 트리플 풀 복합 PoS(RPoS/DPoS/PoS), 커스텀 본딩 커브, 누진 슬래싱, QDRW 거버넌스
+* `x/qca` — 트리플 풀 복합 PoS(RPoS/DPoS/PoS) 설계, 커스텀 본딩 커브, 누진 슬래싱, QDRW 거버넌스 — 구현되어 있으나 아직 블록 생성, 보상, 슬래싱 또는 거버넌스 집계에는 연결되지 않음
 
 **가상 머신**
 
@@ -163,22 +168,22 @@ QoreChain은 기능별로 그룹화된 **20개 이상의 커스텀 모듈을 포
 
 **토크노믹스 및 유동성**
 
-* `x/burn` — 10개의 소각 채널, EndBlocker 수수료 분배(37/30/20/10/3 분할)
-* `x/xqore` — 거버넌스로 강화된 스테이킹: 잠금/해제, 단계적 탈퇴 페널티, PvP 리베이스
-* `x/inflation` — 다년간 일정에 따라 유한한 스테이킹 보상 예산에서 발행되는 고정 공급량 방출
+* `x/burn` — 12개의 소각 소스, EndBlocker 수수료 분배(37/30/20/10/3 분할)
+* `x/xqore` — 거버넌스로 강화된 스테이킹 설계: 잠금/해제, 단계적 탈퇴 페널티, PvP 리베이스(회계 처리만 해당; 잠금 및 해제 트랜잭션은 아직 실제 가동 네트워크에 연결되지 않음)
+* `x/inflation` — 제한된 방출: 하드 누적 상한(114,285,714 QOR)에 도달할 때까지 에포크마다 고정된 양을 발행
 * `x/amm` — 온체인 유동성 / 자동화 마켓 메이커
 
 **브리지 및 상호운용성**
 
-* `x/bridge` — 모든 주요 체인 유형을 아우르는 37개의 QCB 구성(36개 외부 체인 + QoreChain 루프백), PQC 서명 증명, 서킷 브레이커
-* `x/babylon` — Babylon Protocol을 통한 BTC 리스테이킹, 에포크 체크포인트
+* `x/bridge` — 모든 주요 체인 유형을 아우르는 37개의 체인 구성(36개 외부 체인 + IBC를 통한 Injective), PQC 서명 증명, 서킷 브레이커(모든 구성이 `pending` 상태이며 가동 전)
+* `x/babylon` — Babylon Protocol을 통한 BTC 리스테이킹, 에포크 체크포인트(설계 단계; 활성화된 트랜잭션 없음)
 * `x/multilayer` — 사이드체인/페이체인/롤업 레이어 관리, 상태 앵커링
 
 **거버넌스 및 라이선싱 확장**
 
-* `x/abstractaccount` — 스마트 계정: 다중서명, 소셜 복구, 세션 키, 지출 규칙
-* `x/fairblock` — MEV 방지: 임계값 IBE로 암호화된 멤풀 프레임워크
-* `x/gasabstraction` — 멀티토큰 가스 결제: ibc/USDC, ibc/ATOM 수수료 변환
+* `x/abstractaccount` — 스마트 계정: 다중서명, 소셜 복구, 세션 키, 지출 규칙(두 네트워크 모두에서 꺼져 있음: `enabled = false`)
+* `x/fairblock` — MEV 방지: 임계값 IBE로 암호화된 멤풀 프레임워크(두 네트워크 모두에서 비활성화됨)
+* `x/gasabstraction` — 멀티토큰 가스 결제 설계: ibc/USDC, ibc/ATOM 수수료 변환(아직 열린 IBC 채널이 없으므로 수수료는 QOR로 지불됨)
 * `x/license` — 체인 라이선싱
 
 **롤업**
@@ -187,41 +192,21 @@ QoreChain은 기능별로 그룹화된 **20개 이상의 커스텀 모듈을 포
 
 ## AnteHandler 체인
 
-모든 트랜잭션은 실행되기 전에 다음 데코레이터 체인을 통과합니다. 데코레이터는 순서대로 실행되며, 각 데코레이터는 트랜잭션을 거부할 수 있습니다.
+모든 트랜잭션은 실행되기 전에 데코레이터 체인을 통과하며, 어떤 데코레이터든 트랜잭션을 거부할 수 있습니다. 체인은 두 가지입니다.
 
-```
-SetUpContext
-  → CircuitBreaker
-    → PQCVerify
-      → PQCHybridVerify
-        → AIAnomaly
-          → FairBlock
-            → SVMComputeBudget
-              → SVMDeductFee
-                → Extension
-                  → ValidateBasic
-                    → TxTimeout
-                      → Memo
-                        → MinGasPrice
-                          → ConsumeTxSize
-                            → GasAbstraction
-                              → DeductFee
-                                → SetPubKey
-                                  → ValidateSigCount
-                                    → SigGasConsume
-                                      → SigVerify
-                                        → IncrementSequence
-```
+**Cosmos 레인**(순서대로): `RejectMessages`(이 레인에서는 `MsgEthereumTx` 불가) → `AuthzLimiter`(authz 내부에서 EVM 또는 베스팅 생성 메시지 불가) → `SetUpContext` → 멤풀 및 멀티시그 깊이 가드 → CosmWasm 시뮬레이션 가스, 트랜잭션 카운터, 가스 레지스터 및 컨트랙트 데코레이터 → `CircuitBreaker` → 확장 옵션 검사 → `ValidateBasic` → `TxTimeout` → `Memo` → 검증인 라이선스 게이트(`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly`(발신자별 속도 제한 포함) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → 소각 트랜잭션 카운터 → IBC 중복 릴레이 검사 → 요청 가스 추적.
 
-핵심 데코레이터는 다음 순서로 실행됩니다(각 데코레이터는 순서대로 실행되며 트랜잭션을 거부할 수 있습니다):
+**EVM 레인**(Ethereum 확장 옵션을 포함한 트랜잭션): `CircuitBreaker` → EVM 모노 데코레이터(서명, 논스, 수수료 및 잔액 검사) → `EVMWindowDecorator`(등록된 양자내성 키와 유효한 승인 윈도우; [EVM 승인 윈도우](/getting-started/first-transaction#evm-window) 참조).
+
+Cosmos 레인의 핵심 데코레이터:
 
 1. **PQCVerify** — 모듈 `x/pqc`. PQC 플래그가 지정된 트랜잭션에 대해 Dilithium-5 서명을 검증합니다.
 2. **PQCHybridVerify** — 모듈 `x/pqc`. secp256k1(ECDSA) + ML-DSA-87 이중 하이브리드 서명을 검증합니다.
-3. **AIAnomaly** — 모듈 `x/ai`. 아이솔레이션 포레스트 이상 탐지와 위험도 산정을 실행합니다.
-4. **FairBlock** — 모듈 `x/fairblock`. MEV 방지를 위해 tIBE로 암호화된 트랜잭션을 처리합니다.
+3. **AIAnomaly** — 모듈 `x/ai`. 아이솔레이션 포레스트 이상 탐지와 위험도 산정을 실행하고 발신자별 트랜잭션 한도를 적용합니다.
+4. **FairBlock** — 모듈 `x/fairblock`. MEV 방지를 위해 tIBE로 암호화된 트랜잭션을 처리합니다(실제 가동 네트워크에서는 비활성화됨).
 5. **SVMComputeBudget** — 모듈 `x/svm`. SVM 프로그램의 컴퓨트 유닛을 검증하고 할당합니다.
 6. **SVMDeductFee** — 모듈 `x/svm`. SVM 전용 실행 수수료를 차감합니다.
-7. **GasAbstraction** — 모듈 `x/gasabstraction`. 차감 전에 네이티브가 아닌 수수료 토큰(USDC, ATOM)을 변환합니다.
+7. **GasAbstraction** — 모듈 `x/gasabstraction`. 차감 전에 네이티브가 아닌 수수료 토큰을 변환합니다(현재 수수료는 QOR로 지불됨).
 
 ## Docker Compose 스택
 
@@ -229,18 +214,20 @@ SetUpContext
 
 | 서비스          | 이미지                      | 용도                                             |
 | ---------------- | -------------------------- | --------------------------------------------------- |
-| `qorechain-node` | `qorechain-core:latest`    | 모든 모듈, VM, RPC 엔드포인트를 갖춘 체인 노드 |
-| `ai-sidecar`     | `qorechain-sidecar:latest` | AI 추론 서비스(gRPC + QCAI 백엔드)          |
-| `block-indexer`  | `qorechain-indexer:latest` | 블록/트랜잭션 인덱서(WebSocket + Postgres)    |
+| `qorechain-node` | `qorechain-core:latest` (Dockerfile에서 로컬로 빌드됨; 게시된 노드 이미지 없음) | 모든 모듈, VM, RPC 엔드포인트를 갖춘 체인 노드 |
+| `ai-sidecar`     | `ghcr.io/qorechain/ai-sidecar:latest` | AI 추론 서비스(gRPC + QCAI 백엔드)          |
+| `block-indexer`  | `ghcr.io/qorechain/block-indexer:latest` | 블록/트랜잭션 인덱서(WebSocket + Postgres)    |
 | `postgres`       | `postgres:16-alpine`       | 블록 인덱서용 데이터베이스                      |
-| `prometheus`     | `prom/prometheus:latest`   | 메트릭 수집 및 저장                        |
-| `grafana`        | `grafana/grafana:latest`   | 모니터링 대시보드 및 알림                 |
+| `prometheus`     | `prom/prometheus:v3.10.0`  | 메트릭 수집 및 저장                        |
+| `grafana`        | `grafana/grafana:12.4.1`   | 모니터링 대시보드 및 알림                 |
 
 전체 스택 시작:
 
 ```bash
 docker compose up -d
 ```
+
+처음 시작하기 전에 `.env.example`을 `.env`로, `.env.sidecar.example`을 `.env.sidecar`로 복사하고 `GRAFANA_PASSWORD`를 설정하세요(설정하지 않으면 Compose가 시작되지 않습니다).
 
 모든 영구 데이터는 `node-data`, `postgres-data`, `prometheus-data`, `grafana-data`라는 이름의 Docker 볼륨에 저장됩니다.
 

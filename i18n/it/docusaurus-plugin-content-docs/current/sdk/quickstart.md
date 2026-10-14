@@ -17,7 +17,8 @@ si trovano alla fine.
 le commissioni e un punto di ingresso pigro per la firma. Per impostazione
 predefinita punta alla testnet pubblica (`qorechain-diana`). Gli endpoint
 predefiniti puntano a **localhost**, quindi passa `endpoints` per comunicare con
-un nodo reale.
+un nodo reale. Gli endpoint pubblici sono elencati nel
+[riferimento di rete](/sdk/reference/network#public-endpoints).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -25,12 +26,12 @@ import { createClient } from "@qorechain/sdk";
 // Testnet (chain id "qorechain-diana"), default localhost endpoints.
 const client = createClient();
 
-// Point at a real node by overriding endpoints.
+// Point at the public testnet by overriding endpoints.
 const remote = createClient({
   endpoints: {
     rest: "https://api-testnet.qore.host",   // Native REST (LCD)
     rpc: "https://rpc-testnet.qore.host",    // consensus RPC (for signing)
-    evmRpc: "https://evm-testnet.qore.host", // EVM + qor_ JSON-RPC
+    evmRpc: "https://evm-testnet.qore.host", // EVM JSON-RPC (eth_*)
   },
 });
 ```
@@ -88,89 +89,184 @@ EVM/SVM, gli account unificati e la tabella di derivazione completa.
 // Native bank balances over REST.
 const balances = await client.rest.getAllBalances(native.address);
 
-// A typed qor_ JSON-RPC call.
-const tokenomics = await client.qor.getTokenomicsOverview();
+// Any REST route works through the typed escape hatch, for example the burn
+// statistics.
+const burn = await client.rest.getBurnStats();
 ```
 
-## 4. Inviare un trasferimento QOR
+`client.qor` (le chiamate JSON-RPC `qor_` tipizzate) non è utilizzabile sugli
+endpoint pubblici: nessuna build del nodo rilasciata serve quel namespace,
+quindi ogni chiamata restituisce `-32601` (metodo non trovato). Leggi invece
+tramite REST. Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace).
 
-Deriva un account native, adatta la sua chiave privata in un firmatario,
-connetti un `TxClient` e invia i token. Usa `toBase("1.5")` per convertire QOR
-nell'unità base `uqor`.
+## 4. Inviare un trasferimento QOR {#send-qor}
+
+Su mainnet e testnet ogni transazione del percorso Native deve portare la firma
+**ibrida** (secp256k1 classica più ML-DSA-87), e la chiave ML-DSA-87
+dell'account deve essere **registrata prima on-chain**. La registrazione è
+esplicita: non esiste alcuna registrazione automatica alla prima transazione. Un
+semplice `tx.bankSend` (solo firma classica) viene rifiutato dalle reti live. I
+due passaggi seguenti richiedono **SDK 0.8.3 o successivo**
+(`derivePqcCanonical`; 0.8.1 o successivo per gli invii ibridi in generale) e un
+account con fondi:
+
+```bash
+npm i @qorechain/sdk @cosmjs/stargate
+```
+
+### 4a. Registrare la tua chiave post-quantistica (una sola volta)
+
+La registrazione è firmata in modo classico ed esente dal requisito ibrido,
+così un nuovo account può avviare la sua prima chiave. L'account paga la
+commissione: la chiave da 2.592 byte richiede un gas limit di circa 600.000.
 
 ```ts
 import {
   createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  ensurePqcRegistered,
+} from "@qorechain/sdk";
+
+const REST = "https://api-testnet.qore.host";
+const RPC = "https://rpc-testnet.qore.host";
+
+const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
+
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const tx = await client.connectTx(signer);
+
+// The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
+
+// Read the status over REST (the default status source needs `qor_`).
+const { found } = await client.rest.get<{ found: boolean }>(
+  `/qorechain/pqc/v1/account/${account.address}`,
+);
+
+const res = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  ecdsaPubkey: account.publicKey,
+  status: { registered: found },          // skips the transaction when already registered
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
+});
+console.log(res.alreadyRegistered ? "already registered" : res.txHash);
+```
+
+### 4b. Inviare con una firma ibrida
+
+`signAndBroadcastHybrid` costruisce, firma e trasmette. Passa `rest` in modo che
+l'SDK possa chiedere alla rete quale forma di sign-bytes verifica (vedi
+[Quale forma di sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
+Usa `toBase("1.5")` per convertire QOR in `uqor` base. Il prezzo minimo del gas
+della rete è 0,1 uqor per unità di gas, quindi un gas limit di 400.000 richiede
+una commissione di almeno 40.000 uqor.
+
+```ts
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  signAndBroadcastHybrid,
+  qorechainRegistry,
+  MSG_SEND_TYPE_URL,
   toBase,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  endpoints: {
-    rpc: "https://rpc-testnet.qore.host",
-    rest: "https://api-testnet.qore.host",
-  },
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(account.address); // { accountNumber, sequence }
+
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [
+    {
+      typeUrl: MSG_SEND_TYPE_URL,
+      value: {
+        fromAddress: account.address,
+        toAddress: "qor1recipientaddress...",
+        amount: [{ denom: "uqor", amount: toBase("1.5") }],
+      },
+    },
+  ],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: client.network.chainId,
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
 });
-
-const account = await deriveNativeAccount(mnemonic);
-
-// Adapt the raw secp256k1 key into an offline signer bound to the "qor" prefix.
-const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-
-// Connect a tx client at the consensus RPC endpoint.
-const tx = await client.connectTx(signer);
-
-// Estimate a fee, then send 1.5 QOR.
-const fee = await client.fees.estimate(); // or "fast" | "normal" | "slow"
-const result = await tx.bankSend(
-  "qor1recipientaddress...",
-  [{ denom: "uqor", amount: toBase("1.5") }],
-  { fee },
-);
 
 console.log(result.transactionHash);
 ```
 
 `toBase("1.5")` restituisce `"1500000"` (QOR ha 10^6 unità base `uqor`).
 
-:::info Firma ibrida sulle reti live
-Su mainnet e testnet il percorso Native richiede l'estensione di firma
-**ibrida** (classica + ML-DSA-87) — usa `buildHybridTx` /
-`signAndBroadcastHybrid`, oppure `signHybridEth` per gli account unificati
-eth-native. Vedi [Firma ibrida](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::info Account unificati
+Per un account unificato eth-native (`deriveUnifiedAccount`), usa invece
+`EthNativeSigner`; gli esempi di registrazione e invio si trovano in
+[Account e firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing).
+:::
+
+:::note Gli invii classici funzionano solo su nodi locali e di sviluppo
+Il percorso classico `client.connectTx(signer)` più `tx.bankSend(...)` esiste
+ancora, ed è quello che `ensurePqcRegistered` usa per l'unica transazione di
+registrazione. Su un nodo che non richiede l'estensione ibrida (un nodo di
+sviluppo locale) invia anche trasferimenti ordinari. Le reti pubbliche lo
+rifiutano.
 :::
 
 ## Altri linguaggi: connessione e lettura
 
 Questi rispecchiano gli stessi preset di rete e la stessa superficie di lettura.
+Usano gli endpoint della testnet pubblica; per la mainnet passa `"mainnet"` e gli
+URL della mainnet.
 
 ### Python
 
 ```python
-from qorechain import create_client
+from qorsdk import create_client
 
-client = create_client()  # testnet preset (localhost endpoints)
+client = create_client(
+    network="testnet",
+    endpoints={
+        "rest": "https://api-testnet.qore.host",
+        "rpc": "https://rpc-testnet.qore.host",
+        "evm_rpc": "https://evm-testnet.qore.host",
+    },
+)
 print(client.network.chain_id)  # "qorechain-diana"
 
 balances = client.rest.get_all_balances("qor1...")
-stats = client.qor.get_ai_stats()
+burn = client.rest.get_burn_stats()
 client.close()
 ```
 
 ### Go
 
 ```go
-import "github.com/qorechain/qorechain-sdk/packages/go/qorechain/client"
+import (
+    "fmt"
 
-c, err := client.CreateClient(client.Options{}) // defaults to "testnet"
+    "github.com/qorechain/qorechain-sdk/packages/go/qorechain/client"
+)
+
+c, err := client.CreateClient(client.Options{
+    Network: "testnet",
+    Endpoints: client.EndpointOverrides{
+        REST:   "https://api-testnet.qore.host",
+        RPC:    "https://rpc-testnet.qore.host",
+        EVMRPC: "https://evm-testnet.qore.host",
+    },
+})
 if err != nil {
     panic(err)
 }
 fmt.Println(c.Network.ChainID) // qorechain-diana
 
 balances, err := c.REST.GetAllBalances("qor1...")
-stats, err := c.Qor.GetAIStats()
+burn, err := c.REST.GetBurnStats()
 ```
 
 ### Rust
@@ -180,10 +276,15 @@ use qorechain::ClientBuilder;
 
 #[tokio::main]
 async fn main() -> qorechain::Result<()> {
-    let client = ClientBuilder::new().build()?; // defaults to "testnet"
+    let client = ClientBuilder::new()
+        .network("testnet")
+        .rest("https://api-testnet.qore.host")
+        .rpc("https://rpc-testnet.qore.host")
+        .evm_rpc("https://evm-testnet.qore.host")
+        .build()?;
     let balances = client.rest.get_all_balances("qor1...").await?;
-    let stats = client.qor.get_ai_stats().await?;
-    let _ = (balances, stats);
+    let burn = client.rest.get_burn_stats().await?;
+    let _ = (balances, burn);
     Ok(())
 }
 ```

@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain, `x/multilayer` modülü aracılığıyla **4 katmanlı hiyerarşik zincir mimarisi** uygular. Ana zincir, uzlaştırma ve güven kökü olarak hizmet ederken, alt katmanlar (yan zincirler, ödeme zincirleri ve rollup'lar) farklı performans ve güvenlik dengeleriyle özelleşmiş iş yüklerini ele alır.
 
+:::caution Erken aşama yeteneği
+Modül ana ağda (zincir sürümü **v3.2.1**) ve test ağında dağıtılmıştır, ancak **her iki ağda da henüz hiçbir katman ve hiçbir bağlantı (anchor) yoktur**. Aşağıdakilerin tamamı modülü inşa edildiği şekliyle anlatır; parametreler canlı değerlerdir.
+:::
+
 ---
 
 ## Sistem Genel Bakışı
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ Ana zincir, tüm QoreChain ekosisteminin güven köküdür.
 
 | Özellik    | Değer                                                                          |
 | ---------- | ------------------------------------------------------------------------------ |
-| Uzlaşma    | Tam Üçlü Havuz CPoS (bkz. [Uzlaşma Mekanizması](/architecture/consensus-mechanism)) |
+| Uzlaşma    | QoreChain uzlaşması (bugün devrede olanlar için bkz. [Uzlaşma Mekanizması](/architecture/consensus-mechanism)) |
 | Güvenlik   | Dilithium-5 imzalarıyla PQC güvenceli                                          |
 | Rol        | Uzlaştırma katmanı, durum bağlantısı (anchor) depolama, QCAI yönlendirme motoru, güven kökü |
-| Blok süresi | \~5 saniye                                                                    |
+| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3,2 saniye, test ağında yaklaşık 1,0 saniye (Ekim 2026'da ölçülmüştür) |
 
 Tüm alt katmanlar, durum köklerini Hiyerarşik Bağlılık Şemaları (HCS) aracılığıyla periyodik olarak ana zincire bağlar.
 
@@ -89,14 +93,14 @@ Yan zincirler, DeFi protokolleri, oyun motorları ve IoT veri işleme gibi **yo�
 
 ### Rollup'lar
 
-Rollup'lar, Rollup Geliştirme Kiti (`x/rdk`) aracılığıyla dağıtılan **uygulamaya özel zincirlerdir**. Çok katmanlı modül içinde bir rollup katman türü olarak kaydolurlar.
+Rollup'lar, Rollup Geliştirme Kiti (`x/rdk`) aracılığıyla dağıtılan **uygulamaya özel zincirlerdir**. Bir rollup oluşturulduğunda RDK, onun için çok katmanlı modülde bir katman kaydeder (aşağıda açıklandığı gibi `sidechain` türünde bir katman olarak).
 
 | Parametre                  | Değer                                       |
 | -------------------------- | ------------------------------------------- |
 | Uzlaştırma modları         | 4 (optimistic, zk, based, sovereign)        |
-| Maksimum aktif rollup      | 100                                         |
-| Minimum oluşturucu teminatı | 10,000 QOR                                 |
-| Katman türü                | `rollup`                                    |
+| Maksimum kayıtlı rollup    | 100 (`max_rollups`); ancak aynı anda yalnızca 10 yan zincir türünde katman bulunabilir (`max_sidechains`), dolayısıyla en fazla 10 rollup bağlanabilir (anchor alabilir) bir katmana sahip olabilir |
+| Minimum oluşturucu teminatı | Rollup için 10,000 QOR, artı 1,000 QOR katman kayıt teminatı (`min_sidechain_stake`) |
+| Katman türü                | RDK aracılığıyla kaydedilen rollup'lar `sidechain` katman türünü kullanır (`rollup` katman türü tanımlıdır ancak `x/rdk` tarafından henüz kullanılmamaktadır) |
 | Hedef alanlar              | DeFi, Gaming, NFT, Enterprise               |
 
 Rollup dağıtımı ve yapılandırması, [Rollup Geliştirme Kiti](/architecture/rollup-development-kit) bölümünde ayrıntılı olarak ele alınmıştır.
@@ -162,7 +166,7 @@ Bağlantılar, `MsgAnchorState` aracılığıyla ana zincire gönderilir. Keeper
 
 1. **Katman mevcut ve aktif** — Keeper, katmanın durumda mevcut olduğunu ve şu anda `active` durumuna sahip olduğunu doğrular.
 2. **Minimum bağlantı aralığı geçti** — Keeper, bu katman için son bağlantıdan bu yana en az `min_anchor_interval` blok (varsayılan: 100) geçtiğini kontrol eder.
-3. **PQC toplu imzası** — Keeper, PQC toplu imzasının mevcut olduğundan ve bağlantı verileri için geçerli olduğundan emin olur.
+3. **PQC toplu imzası** — Keeper, PQC toplu imzasının mevcut olduğundan ve bağlantı verileri için geçerli olduğundan emin olur. İmza, **katman oluşturucusunun** kayıtlı ML-DSA-87 anahtarına karşı kontrol edilir; oluşturucunun kayıtlı anahtarı yoksa bağlantı reddedilir.
 
 ### İtiraz Süresi
 
@@ -170,14 +174,14 @@ Her bağlantı, **24 saatlik** (86.400 saniye, katman başına yapılandırılab
 
 İtiraz süresi başarılı bir itiraz olmadan sona erdikten sonra, bağlantı kesinleşmiş kabul edilir.
 
-### Bağlantıları Okuma
+### Bağlantıları Okuma {#reading-anchors}
 
-Zincir sürümü **v3.1.80** itibarıyla, bağlantılar çok katmanlı sorgu hizmeti aracılığıyla **okunabilir** hale gelmiştir. İki sorgu, hem gRPC hem de REST üzerinden bağlantı durumunu sunar:
+Bağlantılar, çok katmanlı sorgu hizmeti aracılığıyla **okunabilir**. İki sorgu, hem gRPC hem de REST üzerinden bağlantı durumunu sunar:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — bir katman için en son kesinleşmiş durum bağlantısını döndürür.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — bir katman için en son durum bağlantısını döndürür.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — bir katman için bağlantı geçmişini döndürür.
 
-Her bağlantı, kanonik `layer_id || layer_height || state_root || validator_set_hash` mesajı üzerinde bir Dilithium-5 imzası taşıdığından (katman oluşturucusunun kayıtlı PQC anahtarına karşı doğrulanır), bir istemci bir bağlantıyı getirebilir ve hizmet veren düğüme güvenmeden **çevrimdışı** olarak doğrulayabilir. Bu, Rollup Geliştirme Kiti'nin [kuantum güvenli uzlaştırma makbuzlarının](/rollups/settlement-receipts) arkasındaki zincir üstü ilkeldir.
+Her bağlantı, `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash` mesajı üzerinde katman oluşturucusunun Dilithium-5 imzasını taşır. Daha yeni bir zincir sürümü imzalanan mesajı değiştirir, bu nedenle istemciler bunu koda sabit olarak yazmamalıdır. Bir imza, kayıtlı oluşturucu anahtarının bu baytları imzaladığını kanıtlar; bağlantının var olup olmadığı ise zincire sorulması gereken bir sorudur, dolayısıyla bir doğrulayıcı bağlantıyı güvendiği bir düğümden okumalıdır. Şu anda her iki ağda da hiçbir katman veya bağlantı yoktur. Bu, Rollup Geliştirme Kiti'nin [uzlaştırma makbuzlarının](/rollups/settlement-receipts) arkasındaki zincir üstü ilkeldir.
 
 ---
 

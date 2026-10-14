@@ -7,139 +7,63 @@ sidebar_position: 7
 
 # Gas Abstraction
 
-This guide covers QoreChain's gas abstraction feature, which allows users to pay transaction fees in non-native tokens instead of QOR.
+This page describes QoreChain's gas abstraction feature, whose design lets users pay transaction fees in an accepted non-native token instead of QOR. **It is not usable on either network today**; this page explains the design and what you do instead.
 
-:::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 running chain version **v3.1.97** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+:::caution Not available yet
+Paying fees in a non-native token does **not** work on mainnet (**`qorechain-vladi`**, node release **v3.2.1**) or on the testnet (**`qorechain-diana`**) today.
+
+* The gas-abstraction queries are not served on mainnet: `qorechaind query gasabstraction accepted-tokens` prints its help text and the REST route `/qorechain/gasabstraction/v1/config` returns `Not Implemented`.
+* No IBC channels are open on either network, so no `ibc/USDC` or `ibc/ATOM` balance can exist to pay with.
+* The network fee floor is checked in `uqor`, so a fee in any other denomination is rejected.
+
+Pay every fee in `uqor`. This page will be updated when a token is accepted on a live network.
 :::
+
+---
+
+## What works today: pay fees in uqor
+
+Every transaction pays at least **0.1 uqor per unit of gas**. Set the gas limit and the fee together:
+
+```bash
+qorechaind tx bank send mykey qor1recipient... 5000000uqor \
+  --gas 400000 --fees 40000uqor \
+  --chain-id qorechain-vladi --generate-only > tx.json
+```
+
+Then hybrid-sign and broadcast it with `qorechaind tx pqc cosign`, as described in [Transaction Commands](/cli-reference/transaction-commands#hybrid-signing). See [Fees and gas](/cli-reference/transaction-commands#fees-and-gas) for suggested limits per transaction type.
 
 ---
 
 ## Overview
 
-Gas abstraction removes the requirement to hold QOR tokens for paying transaction fees. Users who hold accepted alternative tokens (such as IBC-transferred USDC or ATOM) can use those tokens directly as fee payment. The protocol automatically converts the fee amount to its native equivalent before processing.
+Gas abstraction is designed to remove the requirement to hold QOR for paying transaction fees. A user holding an accepted alternative token (for example an IBC-transferred stablecoin) would pay the fee in that token, and the protocol would convert the fee amount to its native equivalent before processing.
 
 ---
 
-## Accepted Tokens
+## Intended design
 
-The following tokens are accepted for fee payment:
+### Accepted tokens
 
-| Token              | Denomination | Conversion Rate | Example Fee          |
-| ------------------ | ------------ | --------------- | -------------------- |
-| **QOR**            | `uqor`       | 1.0 (native)    | `--fees 500uqor`     |
-| **USDC** (via IBC) | `ibc/USDC`   | 1.0             | `--fees 500ibc/USDC` |
-| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0            | `--fees 50ibc/ATOM`  |
+The module's genesis configuration lists these tokens and protocol-defined conversion rates. They are exchange ratios for fee purposes, not market prices. Only `uqor` can exist on the networks today (see the notice above).
 
-:::note
-Conversion rates reflect the protocol-defined exchange ratio, not market prices. A rate of 10.0 for ATOM means 1 unit of ibc/ATOM is equivalent to 10 units of uqor for fee purposes.
-:::
+| Token              | Denomination | Conversion Rate |
+| ------------------ | ------------ | --------------- |
+| **QOR**            | `uqor`       | 1.0 (native)    |
+| **USDC** (via IBC) | `ibc/USDC`   | 1.0             |
+| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0            |
 
----
+### How it is meant to work
 
-## How It Works
+QoreChain's `GasAbstractionDecorator` sits in the transaction processing pipeline. For a transaction whose fee is in a non-native denomination:
 
-QoreChain's `GasAbstractionDecorator` is integrated into the transaction processing pipeline. When a transaction includes fees in a non-native denomination, the following occurs:
-
-1. **Fee Inspection** — The decorator checks the fee denomination specified in the transaction.
-2. **Rate Lookup** — If the denomination is in the accepted tokens list, the protocol looks up the corresponding conversion rate.
-3. **Conversion** — The fee amount is converted to its native uqor equivalent using the conversion rate.
-4. **Standard Processing** — The converted fee is passed to the standard `DeductFee` handler for deduction from the sender's account. The conversion is transparent to the rest of the transaction pipeline. All downstream fee processing (distribution to validators, burning, treasury allocation, staker rewards, and light-node rewards) operates on the native uqor equivalent.
+1. **Fee inspection** — the decorator reads the fee denomination.
+2. **Rate lookup** — if the denomination is in the accepted-tokens list, the corresponding conversion rate is looked up.
+3. **Conversion** — the fee is converted to its native `uqor` equivalent.
+4. **Standard processing** — the converted fee goes through the standard fee-deduction handler, so downstream fee handling (distribution to validators, burning, treasury, staker and light-node shares) operates on the native equivalent.
 
 ---
 
-## Usage Examples
+## Querying the configuration
 
-### Pay Fees in USDC
-
-Send a token transfer with fees paid in USDC:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 500ibc/USDC
-```
-
-Since USDC has a 1.0 conversion rate, 500 ibc/USDC is equivalent to 500 uqor.
-
-### Pay Fees in ATOM
-
-Send a token transfer with fees paid in ATOM:
-
-```bash
-qorechaind tx bank send mykey qor1recipient... 5000000uqor \
-  --chain-id qorechain-diana \
-  --fees 50ibc/ATOM
-```
-
-Since ATOM has a 10.0 conversion rate, 50 ibc/ATOM is equivalent to 500 uqor.
-
----
-
-## Querying Accepted Tokens
-
-Retrieve the list of tokens currently accepted for gas abstraction, along with their conversion rates:
-
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-**Sample output:**
-
-```yaml
-accepted_tokens:
-- denom: uqor
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/USDC
-  conversion_rate: "1.000000000000000000"
-- denom: ibc/ATOM
-  conversion_rate: "10.000000000000000000"
-```
-
----
-
-## JSON-RPC Access
-
-For applications integrating via JSON-RPC, query the gas abstraction configuration:
-
-```
-qor_getGasAbstractionConfig
-```
-
-**Request:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "qor_getGasAbstractionConfig",
-  "params": [],
-  "id": 1
-}
-```
-
-**Response:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "accepted_tokens": [
-      { "denom": "uqor", "conversion_rate": "1.0" },
-      { "denom": "ibc/USDC", "conversion_rate": "1.0" },
-      { "denom": "ibc/ATOM", "conversion_rate": "10.0" }
-    ]
-  }
-}
-```
-
----
-
-:::tip
-
-* Gas abstraction is ideal for users onboarding from other ecosystems who may not yet hold QOR.
-* Conversion rates are set by governance and may be updated via parameter change proposals.
-* If you hold multiple accepted tokens, any of them can be used for fees on any transaction type.
-* The actual token specified in `--fees` is deducted from your account. The conversion is only used to validate that the fee meets the minimum requirement.
-
-:::
+Mainnet does not serve the gas-abstraction queries yet, and the `qor_getGasAbstractionConfig` JSON-RPC method is not served on any public endpoint (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)). There is currently no public way to read a live accepted-token list.

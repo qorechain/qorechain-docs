@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 29 Haziran 2026'dan bu yana canlıdır ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı şu anda **v3.2.2** sürümünü çalıştırmaktadır; sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -30,32 +30,72 @@ Test ağı QOR'u [Panel Musluğu](/dashboard/faucet) üzerinden edinilebilir.
 
 ---
 
-## Genesis'i İndirin
+## Kurulum
 
-Yerel genesis dosyanızı, zincirin kendisi tarafından canlı olarak sunulan resmi test ağı genesis dosyasıyla değiştirin:
+Güncel test ağı ikili dosyası, genesis, eşler ve state-sync güven noktası için tek doğru kaynak, `https://download.qore.host/testnet/latest.json` adresinde canlı olarak yenilenen **test ağı manifestosudur**. Ana ağ manifestosuyla aynı yapıya sahiptir, dolayısıyla kurulum adımları aynıdır — bir sürümü veya sağlama toplamını koda gömmek yerine manifestoyu indirin ve içindeki değerleri kullanın:
 
 ```bash
-curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
-  > ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/testnet/latest.json -o latest.json
+jq -r '.version, .minCompatible, .upgradeHeight' latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+
+qorechaind init my-node --chain-id qorechain-diana
+```
+
+Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur (v3.2.2, 6.905.034 yüksekliğinde uygulandı) ve `minCompatible` güncel sürüme eşittir. Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Sistem saatini NTP ile senkronize tutun.
+
+---
+
+## Genesis'i İndirin
+
+Yerel genesis dosyanızı, yukarıda indirilen manifestodaki URL ve SHA-256'yı kullanarak resmi test ağı genesis dosyasıyla değiştirin:
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
+```
+
+Aynı dosya, zincirin kendisi tarafından da canlı olarak sunulur:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
 Bu dosya; doğrulayıcı kümesi, token tahsisleri ve modül parametreleri dahil olmak üzere Diana test ağının başlangıç durumunu tanımlar.
 
-:::caution
-Diana test ağı, ön sürüm derlemeleri yayınlandıkça periyodik olarak **yeniden genesis'lenir** (yükseklik 0'a sıfırlanır). Bir sıfırlamadan sonra düğümünüz senkronize olmayı bırakırsa, genesis'i yeniden indirin ve temiz bir veri dizininden başlayın.
+:::note Test ağı yerinde yükseltilir
+Diana, 1 Temmuz 2026'dan beri kesintisiz çalışmaktadır ve ana ağ gibi governance önerileriyle yükseltilir. Test ağı bir hazırlık (staging) ağıdır ve önceden haber verilmeden sıfırlanabilir: düğümünüz senkronize olmayı bırakırsa manifestoyu ve Discord duyurularını kontrol edin, ardından genesis'i yeniden indirin ve temiz bir veri dizininden başlayın. Genel sentry yalnızca son blokları tutar, bu nedenle yeni bir düğüm genesis'ten itibaren yeniden oynatmak yerine (aşağıdaki) state-sync kullanmalıdır.
 :::
 
 ---
 
 ## Eşleri Yapılandırın
 
-Mevcut test ağı eşlerine bağlanmak için düğüm yapılandırmanızı düzenleyin.
-
-Ağdan doğrudan güncel bir eş sorgulayın, ardından `~/.qorechaind/config/config.toml` dosyasındaki `persistent_peers` alanını ayarlayın:
+Düğüm kimliklerini ve ana makineleri koda gömmek yerine güncel eş ve seed listelerini manifestodan okuyun:
 
 ```bash
-# node id + listen address of the public testnet node
-curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml` dosyasını açın ve `persistent_peers` (ve `seeds`) alanlarını bu değerlere ayarlayın:
+
+```toml
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 Ayrıca `~/.qorechaind/config/app.toml` dosyasında ücret tabanını ayarlayın (test ağı, ana ağ ile aynı **0.1uqor** minimum gaz fiyatını kullanır):
@@ -66,18 +106,25 @@ minimum-gas-prices = "0.1uqor"
 
 ### Önerilen Ayarlar
 
-`config.toml` dosyasında aşağıdakileri de ayarlamak isteyebilirsiniz:
+Tam bir düğüm blok süresini seçmez — bunu doğrulayıcılar belirler (test ağı şu anda yaklaşık her 1 saniyede bir blok üretir). Bir doğrulayıcı işletmiyorsanız ve doğrulayıcı grubu tarafından size değerler verilmediyse konsensüs zaman aşımlarını varsayılan değerlerinde bırakın. Genel bir RPC düğümü için `config.toml` içinde yararlı bir mempool ayarı:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
 
-Bu değerler, Diana test ağının blok süreleri ve iş hacmi için ayarlanmıştır.
+---
+
+## Hızlı Önyükleme (State Sync)
+
+Manifestonun `stateSync` alanı, düzenli olarak yenilenen bir güven yüksekliği/özet (hash) çifti taşır:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+`config.toml` içindeki `[statesync]` bölümünü bu değerlerle ve manifestodaki `rpcServers` ile ayarlayın — tam iş akışı için [Düğüm Çalıştırma](/developer-guide/running-a-node) sayfasına bakın.
 
 ---
 
@@ -89,7 +136,7 @@ Ağ ile senkronizasyona başlamak için düğümünüzü çalıştırın:
 ./qorechaind start
 ```
 
-Düğüm, eşlere bağlanır ve blokları genesis'ten itibaren indirmeye başlar. İlk senkronizasyon süresi, güncel zincir yüksekliğine ve ağ hızınıza bağlıdır.
+Düğüm eşlere bağlanır ve blokları indirmeye başlar (genesis'ten veya state-sync kullanıyorsanız güven yüksekliğinden itibaren). İlk senkronizasyon süresi, güncel zincir yüksekliğine ve ağ hızınıza bağlıdır.
 
 ---
 
@@ -156,7 +203,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — programatik zincir erişimi               |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum uyumlu RPC (zincir kimliği `9800`) |
 | `8546`  | WebSocket | EVM WebSocket — gerçek zamanlı EVM olay abonelikleri  |
-| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC                    |
+| `8899`  | HTTP      | SVM RPC — Solana uyumlu RPC (yalnızca okuma; SVM işlem şeridi devre dışıdır) |
 | `26660` | HTTP      | Prometheus metrik uç noktası                        |
 
 ---

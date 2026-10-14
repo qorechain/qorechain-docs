@@ -33,7 +33,10 @@ esempio. Consulta il sorgente collegato per il programma completo ed eseguibile.
 ## connect-and-query
 
 Crea un client e leggi lo stato pubblico della chain — un saldo bancario nativo
-e lo snapshot aggregato della tokenomics. Richiede un nodo raggiungibile.
+e uno snapshot della tokenomics. Richiede un nodo raggiungibile. L'esempio nel
+repository legge lo snapshot tramite `client.qor`, una chiamata JSON-RPC `qor_`
+che gli endpoint pubblici non servono; lo snippet qui sotto usa l'equivalente
+REST (le statistiche di burn), che funziona su mainnet e testnet.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [Sorgente](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -57,6 +60,11 @@ const overview = await client.qor.getTokenomicsOverview();
 Deriva un account nativo (`qor1...`) da una mnemonica e trasmetti un
 trasferimento QOR: deriva → firma → simula → stima la fee → `bankSend`.
 Richiede un RPC di consenso raggiungibile più REST e un account con fondi.
+Questo esempio firma solo con la firma **classica**, quindi funziona contro un
+nodo locale o di sviluppo ma viene rifiutato da mainnet e testnet, che
+richiedono la firma ibrida su ogni transazione del percorso Native. Per le
+reti pubbliche usa l'invio ibrido descritto nella
+[Guida rapida](/sdk/quickstart#send-qor).
 
 ```ts
 import {
@@ -84,8 +92,10 @@ console.log(result.transactionHash);
 
 Costruisci un trasferimento SOL con un'istruzione memo sul runtime
 compatibile con Solana (SVM) di QoreChain, usando `@qorechain/svm`. Costruisce
-e stampa la transazione offline; l'invio richiede un JSON-RPC SVM raggiungibile
-e un account con fondi.
+e stampa la transazione offline. L'invio richiede un JSON-RPC SVM raggiungibile
+e un account con fondi, e non può riuscire sulle reti pubbliche: l'invio di
+transazioni SVM è disabilitato su tutta la rete e gli endpoint SVM pubblici
+sono di sola lettura (vedi [Sviluppo SVM](/developer-guide/svm-development)).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -94,7 +104,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -102,7 +112,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -113,9 +124,11 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 Usa `@qorechain/evm` (un livello sottile sopra viem) per chiamare i precompile
 di sola lettura di QoreChain e leggere un saldo ERC-20. L'id della chain EVM
-viene rilevato automaticamente tramite `eth_chainId`. Su un nodo privo dei
-precompile, quelle chiamate lanciano "feature not present", segnalato per
-singola chiamata.
+viene rilevato automaticamente tramite `eth_chainId`. I precompile non sono
+ancora attivi su mainnet o testnet (vedi
+[Stato della rete](/developer-guide/evm-precompiles#network-status)); finché
+non lo saranno, e su un nodo che ne è privo, quelle chiamate lanciano "feature
+not present", segnalato per singola chiamata.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -157,11 +170,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -195,9 +209,11 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 ## read-tokenomics
 
 Leggi lo stato della tokenomics attraverso il namespace JSON-RPC tipizzato
-`qor_*` (`client.qor`), servito tramite l'endpoint JSON-RPC EVM. Le tre letture
-sono indipendenti, quindi ognuna viene riportata anche se le altre non sono
-disponibili.
+`qor_*` (`client.qor`) tramite l'endpoint JSON-RPC EVM. Le tre letture sono
+indipendenti, quindi ognuna viene riportata anche se le altre non sono
+disponibili. Nessuna build rilasciata del nodo serve ancora il namespace `qor_`,
+quindi oggi ogni lettura fallisce con `-32601` (vedi
+[il namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -210,7 +226,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -247,7 +263,9 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Costruisci un `MsgExecuteCosmos` inviato tramite relayer sulla corsia degli
-authenticator Native (SDK 0.7.0, chain v3.1.85): una chiave ed25519 in stile
+authenticator Native (SDK 0.7.0, chain v3.1.85; il modulo `abstractaccount` è
+oggi disattivato su entrambe le reti, quindi questa corsia non può ancora
+essere usata lì): una chiave ed25519 in stile
 Phantom firma il digest di autenticazione con separazione di dominio, e il
 messaggio risultante è pronto perché un relayer lo trasmetta (il relayer paga
 le fee; la chiave esterna non produce mai una co-firma ML-DSA). Esecuzione a

@@ -7,7 +7,18 @@ sidebar_position: 5
 
 # クロス VM 相互運用性
 
-QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）により、いずれかの仮想マシン上のスマートコントラクトが、他のいずれの VM 上のコントラクトとも通信できます。`x/crossvm` モジュールは、同期および非同期の両方のメッセージングパスを提供します。
+QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）は、いずれかの仮想マシン上のスマートコントラクトが、他のいずれの VM 上のコントラクトとも通信できるように設計されています。`x/crossvm` モジュールは、同一トランザクション内のパスとキューに入るパスを持つ呼び出しメッセージを提供します。
+
+:::caution 現時点で動作するもの
+クロス VM 呼び出しは、ターゲットとなるレーンが利用可能な範囲でのみ利用できます。
+
+* `MsgCrossVMCall` は、メインネットではサーキットブレーカーによって**無効化されています**（`qorechaind query circuit disabled-list`）。テストネットでは有効です。
+* 両ネットワークとも、トランザクションに対して **SVM レーンは無効**であるため、SVM 側の処理は実行できません。
+* 両ネットワークとも、**CosmWasm のアップロードとインスタンス化は許可制**であり、メインネットには保存されたコントラクトコードがないため、呼び出せる CosmWasm コントラクトはまだありません。
+* 同期の **EVM プリコンパイルは有効ではありません**（下記参照）。
+
+モジュールの REST ルート（`/qorechain/crossvm/v1/...`）は公開ゲートウェイでは提供されていません。メッセージは CLI または gRPC/ABCI クエリクライアントで読み取ってください。
+:::
 
 :::note
 以下のエンドポイントはローカルノードをデフォルトとします。メインネットでは **`qorechain-vladi`** の RPC エンドポイント（Cosmos RPC **26657**、EVM JSON-RPC **8545**）を使用してください。テストネットは **`qorechain-diana`** です。
@@ -29,16 +40,19 @@ QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）
 
 | パス             | 方向       | タイミング           | メカニズム                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **同期**  | EVM から CosmWasm | 同一トランザクション | `0x0000...0901` のプリコンパイル   |
-| **非同期** | CosmWasm から EVM | 次のブロック       | EndBlocker 経由の `MsgCrossVMCall` |
-| **非同期** | SVM から任意の VM   | 次のブロック       | EndBlocker 経由の `MsgCrossVMCall` |
-| **非同期** | 任意から SVM へ   | 次のブロック       | EndBlocker 経由の `MsgCrossVMCall` |
+| **同期**  | EVM から CosmWasm | 同一トランザクション | `0x0000...0901` のプリコンパイル（まだ有効ではありません。下記参照） |
+| **メッセージ（デフォルト）** | 任意の VM から他の任意の VM | 同一トランザクション | `MsgCrossVMCall`。呼び出しは即座に実行され、失敗するとトランザクション全体がリバートされます |
+| **メッセージ（キュー）**  | 任意の VM から他の任意の VM | 次のブロック（またはそれ以降） | `async` を指定した `MsgCrossVMCall`。メッセージはキューで待機します |
 
 ---
 
 ## 同期パス（EVM から CosmWasm）
 
-同期パスは、アドレス `0x0000000000000000000000000000000000000901` にある EVM **プリコンパイル**を使用します。これにより、Solidity コントラクトは CosmWasm コントラクトを呼び出し、同一トランザクション内でレスポンスを受け取ることができます。
+同期パスは、アドレス `0x0000000000000000000000000000000000000901` にある EVM **プリコンパイル**を使用します。Solidity コントラクトが CosmWasm コントラクトを呼び出し、同一トランザクション内でレスポンスを受け取れるように設計されています。
+
+:::warning メインネットでもテストネットでも有効ではありません
+CrossVM ブリッジのプリコンパイルは、`qorechain-vladi` でも `qorechain-diana` でも**有効ではありません**。`0x…0901` への呼び出しは成功し、空のデータを返します。現在の形では有効化されません。呼び出し元コントラクトでのリバートが CosmWasm 側も取り消すこと、価値の送金が拒否されること、EVM から EVM への再入が拒否されること、クロス VM サーキットブレーカーが適用されることを実現するため、再構築中です。以下の例は想定される形のみを示しています。[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status) を参照してください。
+:::
 
 ### Solidity の例
 
@@ -64,50 +78,34 @@ contract CrossVMCaller {
 }
 ```
 
-プリコンパイルは CosmWasm コントラクトを即座に実行し、結果を返します。ガスコスト: **基本 50,000 + 実行コスト**。
+有効化された後は、プリコンパイルが CosmWasm コントラクトを即座に実行して結果を返します。現在のノードは calldata を `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` としてデコードしますが、再構築に伴って ABI が変更される可能性があります。ガスコスト：**基本 50,000 + 入力 1 バイトあたり 4 + 実行コスト**。
 
 ---
 
-## 非同期パス
+## メッセージパス（`MsgCrossVMCall`）
 
-その他すべてのクロス VM 方向は、非同期メッセージキューを使用します。メッセージは 1 つのブロックで送信され、次のブロックの **EndBlocker** で処理されます。
+その他のクロス VM 呼び出しには `MsgCrossVMCall` トランザクションを使用します。チェーンは送信者から送信元レーンを判断するため、メッセージにはターゲット VM、ターゲットコントラクト、ペイロード、および任意の資金のみが含まれます。デフォルトでは、呼び出しはトランザクション内で即座に実行され、ターゲットが失敗するとトランザクション全体がリバートされます。`async` フラグを指定すると、メッセージは代わりにキューに入れられ、後のブロックでモジュールのエンドブロックキュー処理によって処理されます（下記のライフサイクルを参照）。前述のとおり、このメッセージはメインネットでは無効化されています。
 
 ### CLI
 
+`tx crossvm call` は、ターゲット VM（`evm`、`cosmwasm`、または `svm`）とターゲットコントラクトを位置引数として受け取り、ペイロードは 16 進で指定します。
+
 ```bash
-# CosmWasm to EVM
-qorechaind tx crossvm call \
-  --source-vm cosmwasm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '{"method":"transfer","params":["0xRecipient",100]}' \
-  --from mykey \
-  -y
-
-# SVM to CosmWasm
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm cosmwasm \
-  --target-contract qor1contractaddr... \
-  --payload '{"execute":{"action":{}}}' \
-  --from mykey \
-  -y
-
-# EVM to SVM (async)
-qorechaind tx crossvm call \
-  --source-vm evm \
-  --target-vm svm \
-  --target-contract <program-id-base58> \
-  --payload '0a0b0c...' \
-  --from mykey \
-  -y
+qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
+  --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
+
+その他のフラグ：`--funds <coins>`（CosmWasm ターゲットのみ）と、呼び出しを即時実行せずキューに入れる `--async`。`tx.json` は `tx pqc cosign` で署名してブロードキャストします（[ポスト量子署名](/developer-guide/post-quantum-signing)を参照）。手数料の下限はガス 1 単位あたり 0.1 uqor です。
+
+:::caution メインネットでは無効、かつ CLI 形式には修正が必要です
+`MsgCrossVMCall` は、メインネットではサーキットブレーカーによって無効化されています。現在のリリースバイナリでは、`tx crossvm call` はメッセージ自身の検証を通過しないメッセージ（送信元 VM が空のまま）を構築するため、このコマンドは参考情報としてのみ記載しています。
+:::
 
 ---
 
 ## メッセージのライフサイクル
 
-すべてのクロス VM メッセージは、定義された一連の状態を遷移します。
+キューに入ったすべてのクロス VM メッセージは、定義された一連の状態を遷移します。
 
 ```
 Submitted --> Pending --> Executed
@@ -119,7 +117,7 @@ Submitted --> Pending --> Executed
 
 | 状態         | 説明                                               |
 | ------------- | --------------------------------------------------------- |
-| **Submitted** | メッセージがキューに受け入れられた                           |
+| **Submitted** | メッセージがキューに受理された                           |
 | **Pending**   | 次の EndBlocker パスでの実行を待機中            |
 | **Executed**  | ターゲットコントラクトが正常に呼び出され、レスポンスが記録された    |
 | **Failed**    | ターゲットコントラクトの実行がリバートされ、エラーが記録された        |
@@ -131,6 +129,7 @@ Submitted --> Pending --> Executed
 
 | パラメータ              | 値        | 説明                                    |
 | ---------------------- | ------------ | ---------------------------------------------- |
+| `enabled`              | `true`       | モジュールレベルのスイッチ（呼び出しメッセージ自体は、メインネットでは別途無効化されています） |
 | `max_message_size`     | 65,536 バイト | メッセージあたりの最大ペイロードサイズ               |
 | `max_queue_size`       | 1,000        | キュー内の保留中メッセージの最大数          |
 | `queue_timeout_blocks` | 100          | 未処理メッセージがタイムアウトするまでのブロック数 |
@@ -167,11 +166,13 @@ qorechaind query crossvm message <message-id>
 # List all pending messages
 qorechaind query crossvm pending
 
-# List messages by sender
-qorechaind query crossvm messages-by-sender <address>
+# Module parameters
+qorechaind query crossvm params
 ```
 
 ### JSON-RPC
+
+> **まだ提供されていません：** リリース済みのノードビルドはいずれも `qor_` JSON-RPC 名前空間を提供していないため、現時点ではすべての公開エンドポイントでこの呼び出しは `-32601`（メソッドが見つかりません）を返します。[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -205,7 +206,7 @@ curl -X POST http://localhost:8545 \
 
 ## 設計上の考慮事項
 
-**アトミック性:** 同期呼び出し（プリコンパイル経由の EVM から CosmWasm）はアトミックです。いずれかの側がリバートすると、トランザクション全体がリバートされます。非同期呼び出しはブロックをまたいでアトミックでは**ありません**。`Failed` および `Timed Out` の状態を適切に処理できるようコントラクトを設計してください。
+**アトミック性:** 同期呼び出し（プリコンパイル経由の EVM から CosmWasm）は、いずれかの側がリバートするとトランザクション全体がリバートされるよう、アトミックになるように設計されています。現在のプリコンパイルはまだこれを保証しておらず、これが有効化されていない理由の一つです（上記参照）。非同期呼び出しはブロックをまたいでアトミックでは**ありません**。`Failed` および `Timed Out` の状態を適切に処理できるようコントラクトを設計してください。
 
 **順序付け:** キュー内のメッセージは、各 EndBlocker パス内で FIFO で処理されます。異なるソース VM をまたぐ順序付けは保証されません。
 
@@ -219,7 +220,7 @@ curl -X POST http://localhost:8545 \
 
 ## 次のステップ
 
-* [EVM プリコンパイル](/developer-guide/evm-precompiles) — 同期 CrossVM プリコンパイルとその他のカスタムプリコンパイル
+* [EVM プリコンパイル](/developer-guide/evm-precompiles) — 同期 CrossVM プリコンパイルの状況と、その他の計画中のプリコンパイル
 * [EVM 開発](/developer-guide/evm-development) — QoreChain 上での Solidity 開発
 * [CosmWasm 開発](/developer-guide/cosmwasm-development) — Rust/Wasm コントラクト開発
 * [SVM 開発](/developer-guide/svm-development) — BPF プログラムのデプロイ

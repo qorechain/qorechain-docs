@@ -33,7 +33,10 @@ pnpm --filter @qorechain/example-pqc-hybrid-sign start
 ## connect-and-query
 
 クライアントを作成し、公開されているチェーン状態 — ネイティブのバンク残高と
-トークノミクスの集計スナップショット — を読み取ります。到達可能なノードが必要です。
+トークノミクスのスナップショット — を読み取ります。到達可能なノードが必要です。リポジトリのサンプルは
+`client.qor` を通じてスナップショットを読み取りますが、これは公開エンドポイントが
+提供していない `qor_` JSON-RPC 呼び出しです。以下のスニペットでは、メインネットとテストネットで
+動作する REST の同等機能（バーン統計）を使用しています。
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [ソース](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -57,6 +60,10 @@ const overview = await client.qor.getTokenomicsOverview();
 ニーモニックからネイティブ（`qor1...`）アカウントを導出し、QOR の送金を
 ブロードキャストします: 導出 → 署名 → シミュレーション → 手数料見積もり → `bankSend`。
 到達可能なコンセンサス RPC と REST、および資金のあるアカウントが必要です。
+このサンプルは**古典的**署名のみで署名するため、ローカルノードや開発ノードに対しては
+動作しますが、Native パスのすべてのトランザクションにハイブリッド署名を要求する
+メインネットとテストネットでは拒否されます。公開ネットワークでは、
+[クイックスタート](/sdk/quickstart#send-qor)のハイブリッド送信を使用してください。
 
 ```ts
 import {
@@ -84,7 +91,9 @@ console.log(result.transactionHash);
 
 `@qorechain/svm` を使って、QoreChain の Solana 互換（SVM）ランタイム上で
 メモ命令付きの SOL 送金を構築します。トランザクションの構築と表示は
-オフラインで行われます。送信には到達可能な SVM JSON-RPC と資金のあるアカウントが必要です。
+オフラインで行われます。送信には到達可能な SVM JSON-RPC と資金のあるアカウントが必要で、
+公開ネットワークでは成功しません。SVM トランザクションの送信はネットワーク全体で無効化されており、
+公開 SVM エンドポイントは読み取り専用です（[SVM 開発](/developer-guide/svm-development)を参照）。
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -93,7 +102,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -101,7 +110,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -112,7 +122,9 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 
 `@qorechain/evm`（viem の薄いラッパー）を使って、読み取り専用の QoreChain
 プリコンパイルを呼び出し、ERC-20 残高を読み取ります。EVM チェーン ID は
-`eth_chainId` で自動検出されます。プリコンパイルのないノードでは、該当する呼び出しは
+`eth_chainId` で自動検出されます。プリコンパイルはメインネットとテストネットではまだ有効化されていません
+（[ネットワークの状況](/developer-guide/evm-precompiles#network-status)を参照）。有効化されるまでの間、
+およびプリコンパイルのないノードでは、該当する呼び出しは
 "feature not present" をスローし、呼び出しごとに報告されます。
 
 ```ts
@@ -154,11 +166,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -190,9 +203,12 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 
 ## read-tokenomics
 
-型付きの `qor_*` JSON-RPC 名前空間（`client.qor`）を通じてトークノミクスの状態を
-読み取ります。これは EVM JSON-RPC エンドポイント経由で提供されます。3 つの読み取りは
+型付きの `qor_*` JSON-RPC 名前空間（`client.qor`）を通じて、EVM JSON-RPC エンドポイント経由で
+トークノミクスの状態を読み取ります。3 つの読み取りは
 互いに独立しているため、他が利用できない場合でもそれぞれ個別に報告されます。
+リリース済みのノードビルドで `qor_` 名前空間を提供しているものはまだないため、
+現時点ではどの読み取りも `-32601` で失敗します
+（[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照）。
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -205,7 +221,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -241,7 +257,8 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Native オーセンティケーターレーン上で、リレイヤーが送信する `MsgExecuteCosmos` を
-構築します（SDK 0.7.0、チェーン v3.1.85）: Phantom 形式の ed25519 鍵が
+構築します（SDK 0.7.0、チェーン v3.1.85。`abstractaccount` モジュールは現在どちらの
+ネットワークでも無効化されているため、このレーンはまだそこでは使用できません）: Phantom 形式の ed25519 鍵が
 ドメイン分離された認証ダイジェストに署名し、生成されたメッセージはリレイヤーが
 ブロードキャストできる状態になります（手数料はリレイヤーが支払い、外部鍵が ML-DSA の
 共同署名を生成することはありません）。ドライラン — ノードは不要です。

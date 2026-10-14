@@ -7,41 +7,48 @@ sidebar_position: 1
 
 # QoreX Cüzdanı
 
-**QoreX**, kuantum güvenli Layer 1 **QoreChain**'in (mainnet `qorechain-vladi`) resmi **saklamasız (non-custodial)** cüzdanıdır. Özel anahtarlarınız **yalnızca cihazınızda** üretilir ve saklanır — QoreChain Association fonlarınıza asla erişemez ve uygulamalar **hiçbir veri toplamaz**. Native lane üzerindeki her QOR transferi bir **hibrit post-kuantum imza** (ML-DSA-87, NIST FIPS-204, secp256k1 ile eşleştirilmiş) taşır, böylece fonlarınız hem klasik hem de kuantum saldırganlara karşı korunur.
+**QoreX**, kuantum güvenli Layer 1 **QoreChain**'in (mainnet `qorechain-vladi`) resmi **saklamasız (non-custodial)** cüzdanıdır. Özel anahtarlarınız **yalnızca cihazınızda** üretilir ve saklanır — QoreChain Association fonlarınıza asla erişemez ve uygulamalarda **hiçbir analitik, izleme veya reklam yoktur**. Native lane üzerindeki her QOR transferi bir **hibrit post-kuantum imza** (ML-DSA-87, NIST FIPS-204, secp256k1 ile eşleştirilmiş) taşır, böylece fonlarınız hem klasik hem de kuantum saldırganlara karşı korunur.
 
 QoreX, birlikte çalışan iki parçadan oluşur:
 
 - **Tarayıcı eklentisi** — masaüstü cüzdanı, **Chrome, Firefox ve Safari'de (macOS) canlı ve yayında**. Hem bağımsız bir cüzdandır (oluştur/içe aktar, QOR tut ve gönder) hem de herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık bir onaya dönüştürmesini sağlayan bağlayıcıdır. Bkz. [Tarayıcı Eklentisi](/qorex/browser-extension).
 - **Mobil uygulama** (Android ve iOS) — tam cüzdan: oluştur/geri yükle, kuantum güvenli QOR gönder ve al, dış ağlar, staking, portföy, kurtarma ve uygulama içi bir dApp tarayıcısı. Android için **Google Play'de**, iOS için **App Store'da** (aşağıdaki kullanılabilirliğe bakın).
 
+:::caution Cüzdan oluşturur oluşturmaz kurtarma ifadenizi yedekleyin
+QoreX saklamasızdır: QoreChain Association kaybolan bir cüzdanı kurtaramaz, sıfırlayamaz veya sizin için geri yükleyemez. **Uygulamayı kaldırmak, telefonu sıfırlamak veya eklentiyi silmek anahtarlarınızı o cihazdan siler.** 24 kelimelik kurtarma ifadenizi yazın (mobil uygulama cüzdanı oluştururken bunu göstermez — **Ayarlar → Güvenlik → Kurtarma ifadesini göster** bölümünden görüntüleyin; eklenti oluşturma sırasında bir kez gösterir) ve mümkünse [sosyal kurtarma](/qorex/security-and-recovery#social-recovery) kurun. Bkz. [Şimdi yedekleyin](/qorex/security-and-recovery#back-up-now).
+:::
+
 ## Platform kullanılabilirliği {#platform-availability}
 
 | Yetenek | Mobil uygulama (Android ve iOS) | Tarayıcı eklentisi |
 |---|---|---|
-| Cüzdan oluştur / içe aktar | ✅ | ✅ (bağımsız) |
-| Tek kurtarma ifadesinden birden çok hesap | ✅ (20'ye kadar) | ✅ *(0.2.2'den itibaren)* |
-| QOR gönder ve al (post-kuantum) | ✅ | ✅ (popup'tan, Al QR dahil) |
-| Bir @handle öde / talep et | ✅ | ✅ |
-| Staking (delege et, delegeyi kaldır, talep et) | ✅ | ✅ *(0.2.2'den itibaren — kendi Stake ekranı, ayrıca Dashboard'ın gönderdiği bir staking isteğini onaylayabilir)* |
+| Cüzdan oluştur / içe aktar | ✅ (uygulama cüzdanı oluştururken ifadeyi göstermez — Ayarlar → Güvenlik'ten görüntüleyin) | ✅ (bağımsız; ifade oluşturma sırasında bir kez gösterilir) |
+| Her biri kendi kurtarma ifadesine sahip birden çok cüzdan | ✅ (Ayarlar → Cüzdanlar) | ✅ (**Cüzdanlar**, hepsi için tek parola) |
+| Tek kurtarma ifadesinden birden çok hesap | ✅ (cüzdan başına 20'ye kadar) | ✅ |
+| Elle eklenen Ethereum tarzı (coin 60) hesap | ✅ | ✅ |
+| QOR gönder ve al (post-kuantum) | ✅ | ✅ (Gönder; QR ile Al) |
+| Desteklenen herhangi bir ağda al | ✅ | ✅ |
+| Bir @handle öde / talep et | ✅ | ✅ ödeme; talep etme bazı eklenti sürümlerinde sıradan QoreChain hesaplarında sunulur — aksi halde uygulamada talep edin |
+| Staking: delege et, unstake et, stake'i taşı, talep et, talep et ve yeniden stake et | ✅ | ✅ |
 | Dış ağlar (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokenlar) | ✅ | ✅ (popup'tan gönder) |
+| Sözleşme adresiyle token ekle (EVM ağları) | ✅ | ✅ |
+| EVM erişim penceresi | ✅ | ✅ |
 | Arayüz dili (10 dil) | ✅ (telefonu izler) | ✅ (tarayıcıyı izler) |
 | Portföy, Q-Day Tarayıcı, Sosyal Kurtarma, Miras | ✅ | — |
-| dApp bağlantıları | ✅ (uygulama içi tarayıcı) | ✅ (herhangi bir web sitesi) |
+| Arama, ilk açılış turu, ana ekran widget'ı, anlık bildirimler | ✅ | — |
+| dApp bağlantıları | ✅ (uygulama içi tarayıcı, oturum kapsamlı) | ✅ (herhangi bir web sitesi; İptal özellikli **Bağlı siteler**) |
+| Takas | Yalnızca Android, havuz likiditesine kadar kapalı (iOS'ta gösterilmez) | — |
 | Hesap girişi ve ödeme istekleri | ✅ | — |
 | Çoklu cihaz bağlama | ✅ | — |
 | Dashboard eşleştirme | ✅ | ✅ (bağlantı + önerilen transferler, staking dahil) |
-
-:::note Eklenti staking için 0.2.2 veya üzeri gerekir
-Eklentiniz 0.2.2'den eskiyse, yakın zamanda bir sürümde olsanız bile Dashboard'ın staking düğmesi eklentinin güncellenmesi gerektiğini bildirebilir — Dashboard'ın staking isteğini eklentiye bağlayan düzeltme 0.2.2 ile yayınlandı. [Hangi sürümün nerede canlı olduğunu](/qorex/browser-extension#versions) kontrol edin; mağazanız henüz 0.2.2'yi yayınlamadıysa, staking onayı yayınlanır yayınlanmaz sizin tarafınızdan hiçbir işlem gerekmeden çalışmaya başlayacaktır.
-:::
 
 ## QoreX neden farklı
 
 - **Varsayılan olarak kuantum güvenli** — Native lane QOR transferleri her zaman bir ML-DSA-87 + secp256k1 hibrit imza taşır. Klasik olan her şey (dış zincirler) açıkça etiketlenir, asla sessiz geçilmez.
 - **Gerçek anlamda saklamasız** — anahtarlar cihaz üzerinde üretilir ve donanım destekli bir kasada (iOS'ta Secure Enclave, Android'de StrongBox) veya şifreli bir kasada (eklenti) yaşar. Cihazınızdan asla çıkmazlar.
-- **Veri toplama yok** — hiçbir QoreX uygulamasında analitik, izleme veya reklam yoktur. İsteğe bağlı bir hesap girişi kolaylıklar ekler (bkz. [Hesap ve Dashboard](/qorex/account-and-dashboard)) ancak cüzdan asla buna bağımlı değildir.
+- **Hiçbir QoreX uygulamasında analitik, izleme veya reklam yok.** İsteğe bağlı ekstralar yalnızca siz açtığınızda bir sunucu kullanır: hesap girişi (bkz. [Hesap ve Dashboard](/qorex/account-and-dashboard)) ve QOR geldiğinde QoreX'in sizi bilgilendirebilmesi için cihazınızı ve *herkese açık* adreslerinizi kaydeden anlık bildirimler. Cüzdan asla bunların hiçbirine bağımlı değildir.
 - **Tek bir birleşik bakiye** — QOR'unuz Native, EVM ve SVM lane'leri arasında tek bir bakiyedir; QoreX bunu tek bir rakam olarak gösterir.
-- **Birden çok kurtarma yolu** — 24 kelimelik bir kurtarma ifadesi (her zaman), koruyucularla isteğe bağlı sosyal kurtarma ve 48 saatlik bir zaman kilidi, isteğe bağlı Miras devri ve pratik çoklu cihaz bağlama.
+- **Birden çok kurtarma yolu** — 24 kelimelik bir kurtarma ifadesi (her zaman; mobilde Ayarlar → Güvenlik'ten görüntüleyin), koruyucularla isteğe bağlı sosyal kurtarma ve 48 saatlik bir zaman kilidi, isteğe bağlı Miras devri ve pratik çoklu cihaz bağlama.
 
 ## Başlarken
 
@@ -50,26 +57,29 @@ Eklentiniz 0.2.2'den eskiyse, yakın zamanda bir sürümde olsanız bile Dashboa
 - Güvenlik ağınızı [Güvenlik ve Kurtarma](/qorex/security-and-recovery)'da kurun.
 - Masaüstünde [Tarayıcı Eklentisi](/qorex/browser-extension)'ni kurun.
 
-:::note İndirme ve kullanılabilirlik
-- **Tarayıcı eklentisi** — canlı ve yayında: [Chrome Web Store, Firefox Add-ons veya Mac App Store'dan (Safari)](/qorex/browser-extension#install) kurun. [Hangi sürümün nerede canlı olduğuna](/qorex/browser-extension#versions) bakın — daha yeni özellikler bazı tarayıcılara hâlâ yayılıyor olabilir.
-- **Android uygulaması** — Google Play'de üretimde canlı: https://play.google.com/store/apps/details?id=network.qore.qorex
-- **iOS uygulaması** — **App Store**'da canlı: https://apps.apple.com/us/app/qorex-wallet/id6791256626.
+## İndirme ve kullanılabilirlik {#availability}
 
-Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden en yeni sürüm bazen bir mağazaya diğerinden önce ulaşır — tam güncel tabloyu görmek için aşağıdaki [hangi sürümün nerede canlı olduğuna](#platform-availability) bakın. Her zaman resmi bir mağaza listesinden kurun.
-:::
+- **Tarayıcı eklentisi** — canlı ve yayında: [Chrome Web Store, Firefox Add-ons veya Mac App Store'dan (Safari)](/qorex/browser-extension#install) kurun. Her zaman resmi bir mağaza listesinden kurun.
+- **Android uygulaması** — Google Play'de üretimde canlı: https://play.google.com/store/apps/details?id=network.qore.qorex (Android 7.0 veya üzeri).
+- **iOS uygulaması** — **App Store**'da canlı: https://apps.apple.com/us/app/qorex-wallet/id6791256626 (iOS 15.1 veya üzeri).
 
-:::note Hangi sürüm nerede canlı
-Mağaza onayları farklı zamanlarda gerçekleşir, bu yüzden aşağıdaki sürüm platforma göre kısa süreliğine farklılık gösterebilir:
+## Hangi sürüm nerede canlı {#versions}
+
+Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza kısa süreliğine diğerinden daha eski veya daha yeni bir sürüm sunabilir. **15 Ekim 2026** itibarıyla:
 
 | Platform | Canlı sürüm |
 |---|---|
-| Android | 1.0.9 |
-| iOS | 1.0.9 |
-| Firefox | 0.2.6 |
-| Safari (macOS) | 1.6, eklenti 0.2.6 ile birlikte |
-| Chrome | Ağustos sonu itibarıyla uzun bir mağaza incelemesinde bekliyordu — buradaki bir sayıya güvenmek yerine güncel sürümü doğrudan [Chrome Web Store listesinden](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) kontrol edin |
+| Android | 1.1.6 |
+| iOS | 1.1.6 |
+| Chrome | 0.3.6 |
+| Firefox | 0.3.7 (0.3.6'dan sonraki bir ara sürüm) |
+| Safari (macOS) | 1.7.6, eklenti 0.3.6 ile birlikte |
 
-1.0.8 / 0.2.6, 21 günlük unbonding beklemesi olmadan **stake edilmiş QOR'u validatörler arasında taşımayı** (redelege) ekledi — bkz. [Stake'i validatörler arasında taşı](/qorex/portfolio-and-staking#move-stake). **1.0.9** (yalnızca mobil), fonlanmış bir hesabın "Hesaplarınız" listesinden anlık olarak kaybolduğu bir hatayı düzeltti — bkz. [Sorun Giderme](/qorex/troubleshooting) — ve tutarların gösterilme ve yazılma biçimini iyileştirdi.
+Bu dokümantasyon 1.1.6 / 0.3.6 özellik setini anlatır. Hâlâ eski bir sürüm sunan bir mağaza otomatik olarak yetişecektir; mağazalar her zaman güncel sürümlerini gösterir. 1.0.9 / 0.2.6'dan bu yana öne çıkanlar:
 
-Bu sayfa QoreX'in mevcut özellik setini anlatır — hâlâ eski bir sürümü sunan bir mağaza, sizin tarafınızdan hiçbir işlem gerekmeden otomatik olarak yetişecektir.
-:::
+- Aynı telefonda veya tarayıcıda her biri kendi kurtarma ifadesine sahip **birden çok cüzdan**, tek dokunuşla geçiş — bkz. [Birden çok cüzdan](/qorex/getting-started#several-wallets).
+- İlk olarak MetaMask'ta veya Dashboard'da kullanılmış ifadeler için elle eklenen **Ethereum tarzı (coin 60) hesap** — bkz. [MetaMask'tan veya Dashboard'dan bir ifadeyi geri yükleyin](/qorex/getting-started#restore-dashboard).
+- **Sözleşme adresiyle token ekleme**, **Herhangi bir ağda alma**, genel **arama**, ilk açılış **turu**, **ana ekran widget'ı** ve QOR geldiğinde **anlık bildirimler** (mobil) — bkz. [Gönder ve Al](/qorex/send-and-receive).
+- **Talep et ve yeniden stake et**, talepten önce ücret kontrolü, **Devam eden unstake** listesi ve unstake edemeyeceğiniz kadar stake etmeden önce uyarılar — bkz. [Portföy ve Stake](/qorex/portfolio-and-staking).
+- Her mesajı, ücreti, harcama limitlerini ve son kullanma süresini gösteren ve QoreX'in görüntüleyemediği şeyleri reddeden onay ekranları; dApp'ler için **`signAndBroadcast`**; İptal özellikli **Bağlı siteler** (eklenti); **EVM erişim penceresi** — bkz. [Güvenlik ve Kurtarma](/qorex/security-and-recovery) ve [Tarayıcı Eklentisi](/qorex/browser-extension).
+- Düzeltmeler: fonlanmış bir hesap "Hesaplarınız" listesinden anlık olarak kaybolabiliyordu (1.0.9); Android donanım Geri tuşu artık bir ekran geri gidiyor (1.1.1); kurtarma ifadesi Android 14 ve sonrasında erişilebilirlik hizmeti olmayan hizmetlerden gizleniyor (1.1.6).

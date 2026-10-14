@@ -15,7 +15,7 @@ Testnet QOR'un **gerçek bir değeri yoktur**. Musluk asla mainnet'e dokunmaz: m
 
 ## Test token'ları talep etme
 
-1. **Testnet**'e bağlanın ve **Musluk**'u açın.
+1. Oturum açın, Panel'i **testnet**'e geçirin ve **Musluk**'u açın.
 2. Fonlanacak adresi girin (`qor1...`). Cüzdanınız bağlıysa, otomatik olarak doldurmak için **Adresimi kullan** seçeneğini seçin. Form, devam edebilmeniz için adresin geçerli olduğunu doğrular.
 3. Talep düğmesini seçin. Fonlama saniyeler içinde işlenir.
 

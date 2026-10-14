@@ -33,7 +33,10 @@ Tam ve çalıştırılabilir program için bağlantısı verilen kaynağa bakın
 ## connect-and-query
 
 Bir istemci oluşturun ve herkese açık zincir durumunu okuyun — yerel bir bank
-bakiyesi ve toplu tokenomik anlık görüntüsü. Erişilebilir bir düğüm gerektirir.
+bakiyesi ve bir tokenomik anlık görüntüsü. Erişilebilir bir düğüm gerektirir.
+Depodaki örnek anlık görüntüyü, herkese açık uç noktaların sunmadığı bir `qor_`
+JSON-RPC çağrısı olan `client.qor` üzerinden okur; aşağıdaki kod parçası ise
+mainnet ve testnet'te çalışan REST karşılığını (yakım istatistikleri) kullanır.
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -47,7 +50,7 @@ const client = createClient({
 });
 
 const balances = await client.rest.getAllBalances(address);
-const overview = await client.qor.getTokenomicsOverview();
+const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 ```
 
 [Kaynak](https://github.com/qorechain/qorechain-sdk/tree/main/examples/connect-and-query)
@@ -57,6 +60,11 @@ const overview = await client.qor.getTokenomicsOverview();
 Bir mnemonic'ten yerel (`qor1...`) bir hesap türetin ve bir QOR transferi
 yayınlayın: türet → imzala → simüle et → ücreti tahmin et → `bankSend`.
 Erişilebilir bir konsensüs RPC'si ile REST ve fonlanmış bir hesap gerektirir.
+Bu örnek yalnızca **klasik** imzayla imzalar; bu nedenle yerel veya geliştirme
+düğümüne karşı çalışır, ancak her Native yol işleminde hibrit imza isteyen
+mainnet ve testnet tarafından reddedilir. Herkese açık ağlar için
+[Hızlı Başlangıç](/sdk/quickstart#send-qor) sayfasındaki hibrit gönderimi
+kullanın.
 
 ```ts
 import {
@@ -84,8 +92,10 @@ console.log(result.transactionHash);
 
 `@qorechain/svm` kullanarak QoreChain'in Solana uyumlu (SVM) çalışma zamanında
 memo talimatı içeren bir SOL transferi oluşturun. İşlemi çevrimdışı oluşturur
-ve yazdırır; gönderim için erişilebilir bir SVM JSON-RPC'si ve fonlanmış bir
-hesap gerekir.
+ve yazdırır. Gönderim için erişilebilir bir SVM JSON-RPC'si ve fonlanmış bir
+hesap gerekir ve herkese açık ağlarda başarılı olamaz: SVM işlem gönderimi
+ağ genelinde devre dışıdır ve herkese açık SVM uç noktaları salt okunurdur
+([SVM Geliştirme](/developer-guide/svm-development) sayfasına bakın).
 
 ```ts
 import { deriveSvmAccount } from "@qorechain/sdk";
@@ -94,7 +104,7 @@ import {
   svmKeypairFromSecretKey,
   createMemoInstruction,
 } from "@qorechain/svm";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const account = await deriveSvmAccount(mnemonic);
 const keypair = svmKeypairFromSecretKey(account.secretKey);
@@ -102,7 +112,8 @@ const keypair = svmKeypairFromSecretKey(account.secretKey);
 const client = createSvmClient({ endpoints: { svmRpc } });
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
-const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });
+const to = new PublicKey(recipient); // `to` is a PublicKey, not a string
+const tx = client.buildTransferSol({ from: keypair, to, lamports });
 tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 // To broadcast: client.sendTransaction(tx, [keypair])
 ```
@@ -114,8 +125,10 @@ tx.add(createMemoInstruction("hello from @qorechain/svm", [keypair.publicKey]));
 Salt okunur QoreChain precompile'larını çağırmak ve bir ERC-20 bakiyesini
 okumak için `@qorechain/evm` paketini (viem üzerinde ince bir katman) kullanın.
 EVM zincir kimliği `eth_chainId` aracılığıyla otomatik olarak algılanır.
-Precompile'ların bulunmadığı bir düğümde bu çağrılar, her çağrı için ayrı ayrı
-raporlanan "feature not present" hatası fırlatır.
+Precompile'lar henüz mainnet veya testnet'te etkin değildir
+([Ağ durumu](/developer-guide/evm-precompiles#network-status) bölümüne bakın);
+etkinleşene kadar ve precompile'ların bulunmadığı bir düğümde bu çağrılar, her
+çağrı için ayrı ayrı raporlanan "feature not present" hatası fırlatır.
 
 ```ts
 import { createEvmClient, precompiles, erc20 } from "@qorechain/evm";
@@ -156,11 +169,12 @@ const built = await buildHybridTx({
   signer,
   pqcKeypair,
   messages,
-  fee: { amount: [{ denom: "uqor", amount: "5000" }], gas: "200000" },
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" }, // network floor: 0.1 uqor per gas
   chainId: "qorechain-diana",
   accountNumber: 0,
   sequence: 0,
-  includePqcPublicKey: true, // embed the key for auto-registration on first use
+  signBytesVersion: "v2", // explicit, so this offline example needs no node
+  includePqcPublicKey: true, // embeds the key in the extension (registration is a separate, explicit step)
 });
 ```
 
@@ -196,7 +210,9 @@ const result = await queryContractSmart(cw, contract, { token_info: {} });
 Tokenomik durumunu, EVM JSON-RPC uç noktası üzerinden sunulan tipli `qor_*`
 JSON-RPC ad alanı (`client.qor`) aracılığıyla okuyun. Üç okuma birbirinden
 bağımsızdır; bu nedenle diğerleri kullanılamıyor olsa bile her biri ayrı ayrı
-raporlanır.
+raporlanır. Henüz hiçbir yayımlanmış düğüm sürümü `qor_` ad alanını sunmadığından,
+bugün her okuma `-32601` ile başarısız olur
+([`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace) sayfasına bakın).
 
 ```ts
 import { createClient } from "@qorechain/sdk";
@@ -209,7 +225,7 @@ const client = createClient({
 });
 
 const burn = await client.qor.getBurnStats();        // qor_getBurnStats
-const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition
+const xqore = await client.qor.getXqorePosition(address); // qor_getXQOREPosition (xQORE has no query service yet)
 const inflation = await client.qor.getInflationRate(); // qor_getInflationRate
 ```
 
@@ -246,7 +262,9 @@ const fromSeed = unifiedAccountFromSeed(seed32);
 ## authenticator-spend
 
 Native authenticator hattında, relayer tarafından gönderilen bir
-`MsgExecuteCosmos` oluşturun (SDK 0.7.0, zincir v3.1.85): Phantom tarzı bir
+`MsgExecuteCosmos` oluşturun (SDK 0.7.0, zincir v3.1.85; `abstractaccount`
+modülü bugün her iki ağda da kapalıdır, bu nedenle bu hat orada henüz
+kullanılamaz): Phantom tarzı bir
 ed25519 anahtarı, alan ayrımlı (domain-separated) kimlik doğrulama özetini
 imzalar ve ortaya çıkan mesaj, bir relayer'ın yayınlamasına hazır hale gelir
 (ücretleri relayer öder; harici anahtar hiçbir zaman bir ML-DSA eş-imzası

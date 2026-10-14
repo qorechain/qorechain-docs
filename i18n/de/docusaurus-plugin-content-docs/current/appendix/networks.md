@@ -16,11 +16,15 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **Status** | Live | Aktives Testnet |
 | **Cosmos-Chain-ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **Live seit** | 7. Juni 2026, 23:59 UTC | — |
-| **Chain-Version** | v3.1.97 | v3.1.97 |
+| **Live seit** | 29. Juni 2026, 17:03 UTC (Genesis-Block) | 1. Juli 2026 (seitdem durchgehend; kein Reset) |
+| **Chain-Version** | v3.2.1 (Konsensregeln von v3.2.0) | v3.2.2 |
+| **Blockzeit (gemessener Durchschnitt)** | etwa 3,2 s | etwa 1,0 s |
+| **Release-Manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimaler Gaspreis** | `0.1uqor` | `0.1uqor` |
 | **Verbindungsanleitung** | [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) | [Verbindung zum Testnet](/getting-started/connecting-to-testnet) |
+
+Beide Manifeste sind die maßgebliche Quelle für das Release, das ein neuer Node ausführen sollte. Das Testnet-Manifest (v3.2.2) enthält eine Upgrade-Höhe, weil das Testnet koordinierte Upgrades über die Governance erhält, während v3.2.1 des Mainnets ein rollierendes, Node-lokales Release auf Basis der Konsensregeln von v3.2.0 ist.
 
 ## Öffentliche Endpunkte {#public-endpoints}
 
@@ -35,10 +39,14 @@ Alle öffentlichen Endpunkte werden über HTTPS bereitgestellt.
 | EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
 | SVM JSON-RPC (Solana-kompatibel, nur lesend) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | Block-Explorer | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (auf Testnet umschalten) |
-| Downloads (Binary / Genesis / Snapshot) | [download.qore.host](https://download.qore.host) | — |
+| Downloads (Binary / Genesis / Snapshot) | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-Die öffentlichen SVM-Endpunkte sind **nur lesend** (das Einreichen von Transaktionen ist am Edge deaktiviert); betreiben Sie für SVM-Schreibzugriffe einen eigenen Node. Für umfangreiche oder produktive Workloads sollten Sie einen eigenen Node betreiben — siehe [Betrieb eines Nodes](/developer-guide/running-a-node).
+Die öffentlichen SVM-Endpunkte sind **nur lesend** (das Einreichen von Transaktionen ist am Edge deaktiviert); betreiben Sie für SVM-Schreibzugriffe einen eigenen Node. Für umfangreiche oder produktive Workloads sollten Sie einen eigenen Node betreiben — siehe [Betrieb eines Nodes](/developer-guide/running-a-node). Es gibt keinen öffentlichen gRPC-Endpunkt und keinen öffentlichen Mainnet-EVM-WebSocket. Auf den öffentlichen EVM-Endpunkten akzeptiert `eth_getLogs` höchstens 10.000 Blöcke pro Abfrage, und `txpool_content` ist deaktiviert (ein selbst betriebener Node stellt den vollständigen Namespace bereit); siehe [eth_-Namespace](/api-reference/json-rpc-eth_-namespace).
+:::
+
+:::tip
+Wenn ein Skript von einem öffentlichen Endpunkt `403 Forbidden` erhält, setzen Sie einen expliziten `User-Agent`-Header (der Standard-Agent von Pythons `urllib` wird blockiert; `requests`, `curl` sowie Node- und Go-Clients funktionieren unverändert).
 :::
 
 :::caution SVM-Transaktionspfad derzeit deaktiviert

@@ -7,16 +7,18 @@ sidebar_position: 3
 
 # Senden & Empfangen
 
-Der Tab Home (Wallet) ist Ihr Ausgangspunkt. Er zeigt ein **Netzwerk-Badge** (standardmäßig MAINNET, oder TESTNET, wenn Sie den Entwickler-Schalter aktiviert haben), Ihr **Gesamtguthaben** (zum Ein-/Ausblenden antippen) und die Hauptaktionen: **Senden · Empfangen · Swap · Staken**. Ihre Asset-Liste zeigt **QOR** (Native + Post-Quantum 🛡, ein einheitliches Guthaben über die Native-/EVM-/SVM-Lanes hinweg) und **Alle Netzwerke** (eine einheitliche Ansicht über ETH, BNB, POL, ARB und die weiteren [externen Netzwerke](#external-networks-tokens), die QoreX unterstützt).
+Der Tab Home (Wallet) ist Ihr Ausgangspunkt. Er zeigt ein **Netzwerk-Badge** (standardmäßig MAINNET, oder TESTNET, wenn Sie den Entwickler-Schalter aktiviert haben), Ihr **Gesamtguthaben** (zum Ein-/Ausblenden antippen) und die Hauptaktionen: **Senden · Empfangen · Swap · Staken** (**Swap** wird unter iOS nicht angezeigt). Ihre Asset-Liste zeigt **QOR** (Native + Post-Quantum 🛡, ein einheitliches Guthaben über die Native-/EVM-/SVM-Lanes hinweg) und **Alle Netzwerke** (eine einheitliche Ansicht über ETH, BNB, POL, ARB und die weiteren [externen Netzwerke](#external-networks-tokens), die QoreX unterstützt).
 
 ## Quantensicheres QOR senden
 
 1. Tippen Sie auf **Senden**.
 2. Geben Sie den Empfänger als `qor1…`-Adresse **oder** als **@Handle** ein. Ein Handle wird aufgelöst und kryptografisch verifiziert (Registry-Signatur + Besitzer-Signatur + Trust-on-First-Use-Pinning); sollte sich der Schlüssel eines Handles jemals stillschweigend ändern, zeigt QoreX eine ausdrückliche Warnung an.
-3. Geben Sie den Betrag ein. Die Vorschau zeigt Empfänger, Betrag, Gebühr und den **Shield**-Status — die Post-Quantum-Schutzstufe der Signatur.
+3. Geben Sie den Betrag ein. Die Vorschau zeigt Empfänger, Betrag, die **Netzwerkgebühr** und den **Shield**-Status — die Post-Quantum-Schutzstufe der Signatur.
 4. Bestätigen Sie mit **biometrischer** Freigabe. QoreX signiert die Überweisung mit der obligatorischen hybriden Post-Quantum-Signatur (ML-DSA-87 + secp256k1) und überträgt sie auf der Native-Lane.
 
-Ihre **erste** Überweisung registriert außerdem automatisch Ihren Post-Quantum-Schlüssel on-chain — Sie können dies unter [Sicherheit & Wiederherstellung](/qorex/security-and-recovery#pqc-key) sehen. Ein separater Schritt ist nicht nötig.
+Auf dem ersten Bildschirm können Sie mit **Ask QoreX** eine Anfrage wie „send 50 QOR to @maria“ eintippen, und das Formular wird für Sie ausgefüllt; Sie prüfen und bestätigen weiterhin wie gewohnt per Biometrie. Einfache Anfragen werden auf Ihrem Gerät gelesen; eine Anfrage, die so nicht gelesen werden kann, wird möglicherweise an den QCAI-Dienst von QoreChain gesendet, um daraus einen Entwurf zu machen. Der Assistent signiert niemals und sieht niemals Ihre Schlüssel. Letzte Empfänger erscheinen als Chips.
+
+QoreChain registriert Ihren Post-Quantum-Schlüssel nicht von selbst — QoreX erledigt das für Sie im Rahmen Ihrer **ersten** Überweisung (eine kleine einmalige Netzwerkgebühr), und den Status sehen Sie unter [Sicherheit & Wiederherstellung](/qorex/security-and-recovery#pqc-key). In QoreX ist kein separater Schritt nötig.
 
 ### Senden an ein @Handle, Schritt für Schritt {#handle-send}
 
@@ -30,13 +32,26 @@ QoreX akzeptiert eine Auflösung nur, wenn sie **beide** durchgeführten Prüfun
 
 Wenn ein Teil Ihres Guthabens noch **vestet** — zum Beispiel eine noch nicht freigegebene TGE-Zuteilung —, wird Ihr Gesamtbetrag aufgeteilt in **jetzt verfügbar** und **noch gesperrt**. Sie können nur den verfügbaren Anteil senden; QoreX weist einen Überausgabe-Versuch selbst zurück, statt das Netzwerk diesen erst nach Abzug einer Gebühr ablehnen zu lassen. Der gesperrte Anteil wird schrittweise ausgabefähig, sobald der Vesting-Zeitplan ihn freigibt. Diese Aufteilung wird überall dort angezeigt, wo Ihr Guthaben erscheint — Home, Senden und Asset-Detail.
 
-## QOR empfangen
+## Empfangen {#receive}
 
-Tippen Sie auf **Empfangen**, um Ihre `qor1…`-Adresse als QR-Code (mit eingebettetem QoreChain-Icon) und eine Kopieren-Schaltfläche anzuzeigen. Teilen Sie eines von beidem mit dem Absender.
+Tippen Sie auf **Empfangen**. Zuerst ist QoreChain ausgewählt — Ihre `qor1…`-Adresse (und Ihr @Handle, falls Sie eines haben) als QR-Code mit dem QoreChain-Icon, dazu **Kopieren** und **Teilen**. Alles, was dorthin gesendet wird, kommt mit quantensicherem Schutz an.
 
-:::note Erstmaliger Empfang eines Assets eines externen Netzwerks
-Der Bildschirm **Empfangen** zeigt nur ein Netzwerk, auf dem Sie bereits ein Guthaben halten — wenn Sie also noch nie ETH gehalten haben, gibt es dort noch keine ETH-Option zur Auswahl. Ihre EVM-Adresse existiert bereits ab dem Moment, in dem Ihre Wallet existiert (sie wird aus derselben Recovery-Phrase abgeleitet) und ist über Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet und Avalanche hinweg dieselbe Adresse — finden und kopieren Sie sie stattdessen unter **Einstellungen → Adressen** und teilen Sie diese. Sobald eine Überweisung eingeht, erscheint dieses Netzwerk fortan unter Empfangen.
-:::
+Um auf einem anderen Netzwerk zu empfangen, verwenden Sie oben die **Netzwerk**-Auswahl: Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis und Celestia zeigen jeweils **ihre eigene Adresse** und die Warnung *„Send only \{coin\} or tokens on \{network\} to this address. Coins sent from another network can be lost.“* (Senden Sie nur \{coin\} oder Tokens auf \{network\} an diese Adresse. Von einem anderen Netzwerk gesendete Coins können verloren gehen.) Alle EVM-Netzwerke teilen sich eine `0x…`-Adresse. Ihre EVM- und Solana-Adressen werden aus Ihrer Wiederherstellungsphrase abgeleitet, daher verlangt QoreX eine biometrische Bestätigung (**Adresse anzeigen**), bevor es sie zeigt. Andere Netzwerke können keine Post-Quantum-Signaturen tragen — siehe [Externe Netzwerke](#external-networks-tokens).
+
+In der Browser-Erweiterung hat **Empfangen** dieselbe Netzwerk-Auswahl.
+
+## Coins und Tokens {#coins-and-tokens}
+
+Ein Coin ohne Zeile hat keine Adresse, auf der er empfangen werden könnte. Um einen Coin oder Token im **Portfolio** zu sehen, *bevor* Sie welche halten, öffnen Sie Portfolio → **+ Coin oder Token** und schalten Sie ihn ein (in der Erweiterung: **Coins und Tokens**). Ein auf null angepinnter Coin öffnet beim Antippen **Empfangen** auf seinem Netzwerk. Einstellungen → **Coins und Netzwerke** listet alles auf, was die Wallet heute halten kann.
+
+**Token per Contract hinzufügen** (nur EVM-Netzwerke):
+
+1. Portfolio → **+ Coin oder Token** → **Token per Contract hinzufügen** (Erweiterung: **Coins und Tokens** → *Token per Contract hinzufügen*).
+2. Wählen Sie das **Netzwerk**, fügen Sie die **Contract-Adresse (0x…)** ein und tippen Sie auf **Contract prüfen**.
+3. QoreX liest Symbol und Dezimalstellen aus dem Contract selbst und zeigt *„The contract says: \{symbol\} · \{decimals\} decimals“* (Der Contract gibt an: \{symbol\} · \{decimals\} Dezimalstellen). Jeder kann einen Token erstellen und ihm einen beliebigen Namen geben — QoreX bürgt nicht dafür, stellen Sie also sicher, dass es der gemeinte Contract ist.
+4. Tippen Sie auf **\{symbol\} hinzufügen**. Er wird mit *Von Ihnen hinzugefügt* gekennzeichnet und kann wie die mitgelieferten Tokens gesendet werden. Entfernen Sie ihn jederzeit.
+
+QoreX lehnt ab: einen Token, der bereits mitgeliefert wird, einen, den Sie schon hinzugefügt haben, ein Nicht-EVM-Netzwerk, eine ungültige Adresse, einen Contract, der nicht als Token antwortet, und einen Contract, der den Namen eines Tokens verwendet, den QoreX auf diesem Netzwerk bereits mitliefert (eine wahrscheinliche Kopie).
 
 ## Eine Zahlung anfordern
 
@@ -44,19 +59,25 @@ Tippen Sie auf **Anfordern** (erfordert [Anmeldung](/qorex/account-and-dashboard
 
 ## Externe Netzwerke & Tokens {#external-networks-tokens}
 
-Über **Alle Netzwerke** (oder Send-external) können Sie **ETH, BNB, POL, AVAX und SOL** nativ senden, außerdem ETH auf **Arbitrum, Base und OP Mainnet** sowie **ATOM, OSMO und TIA** auf Cosmos, dazu **ERC-20**-, **SPL**- und **IBC**-Tokens — USDC und USDT über die EVM-Chains und Solana hinweg, DAI auf Ethereum sowie Noble USDC über IBC — alle abgeleitet aus derselben Recovery-Phrase (ETH verwendet `m/44'/60'`, SOL verwendet seinen Standardpfad, und SPL verwendet Associated Token Accounts).
+Über **Alle Netzwerke** (oder Send-external) können Sie **ETH, BNB, POL, AVAX und SOL** nativ senden, außerdem ETH auf **Arbitrum, Base und OP Mainnet** sowie **ATOM, OSMO und TIA** auf Cosmos, dazu **ERC-20**-, **SPL**- und **IBC**-Tokens — USDC und USDT über die EVM-Chains und Solana hinweg, DAI auf Ethereum sowie Noble USDC über IBC — alle abgeleitet aus derselben Wiederherstellungsphrase (ETH verwendet `m/44'/60'`, SOL verwendet seinen Standardpfad, und SPL verwendet Associated Token Accounts).
 
 :::caution Externe Chains sind ausschließlich klassisch
-Andere Blockchains können keine Post-Quantum-Signaturen tragen. Wenn Sie auf einem externen Netzwerk senden, weist QoreX ausdrücklich darauf hin (die Überweisung verwendet eine klassische Signatur, und **Shield** zeigt die Herabstufung an). Ihr **QOR** bleibt immer auf der geschützten Native-Lane. Cosmos-basierte externe Sendungen unterstützen ein optionales Memo.
+Andere Blockchains können keine Post-Quantum-Signaturen tragen. Wenn Sie auf einem externen Netzwerk senden, weist QoreX ausdrücklich darauf hin (die Überweisung verwendet eine klassische Signatur, und **Shield** zeigt die Herabstufung an). Ihr **QOR** bleibt immer auf der geschützten Native-Lane. Cosmos-basierte externe Sendungen unterstützen ein optionales Memo. Bei EVM-Netzwerken zeigt QoreX vor der Bestätigung außerdem die **maximale Netzwerkgebühr** an — „Network fee: at most \{fee\}. Check it before you confirm.“ (Netzwerkgebühr: höchstens \{fee\}. Prüfen Sie sie vor der Bestätigung.) — und signiert mit genau diesem Wert.
 :::
 
 ## Swap
 
-Der Tab **Swap** ist an QoreChains On-Chain-AMM angebunden, bleibt aber deaktiviert — die Schaltfläche zeigt **„Swap – kommt mit Pool-Liquidität"** —, bis Liquidität und das Remote-Feature-Flag ihn aktivieren. Sobald das geschieht, leuchtet er automatisch auf; **es ist kein App-Update erforderlich**.
+Der Tab **Swap** ist an QoreChains On-Chain-AMM angebunden, bleibt aber deaktiviert — die Schaltfläche zeigt **„Swap — coming with pool liquidity“** —, bis Liquidität und das Remote-Feature-Flag ihn aktivieren. Sobald das geschieht, leuchtet er automatisch auf; **es ist kein App-Update erforderlich**.
 
 :::note iOS
-Der Swap-Tab erscheint im App-Store-Build überhaupt nicht — Apple behandelt einen In-App-Token-Tausch als regulierten Dienst. Swap bleibt (sobald aktiviert) unter Android und in der Browser-Erweiterung verfügbar.
+Der Swap-Tab erscheint im App-Store-Build überhaupt nicht — Apple behandelt einen In-App-Token-Tausch als regulierten Dienst. Swap bleibt (sobald aktiviert) nur unter Android verfügbar. Die Browser-Erweiterung hat keinen Swap-Bildschirm.
 :::
+
+## Extras auf dem Home-Bildschirm {#home-extras}
+
+- **Home-Bildschirm-Widget** (Android und iPhone) — fügen Sie **QoreX** über die Widget-Auswahl Ihres Telefons hinzu. Es zeigt Ihr QOR-Guthaben für das verwendete Konto, zeigt Punkte statt des Betrags, solange der Privatsphäre-Modus aktiv ist, aktualisiert sich etwa alle 30 Minuten selbst und öffnet beim Antippen die App. Jeder, der Ihren Home-Bildschirm sehen kann, kann das Widget sehen. Schalten Sie daher den Privatsphäre-Modus ein (Guthaben antippen), falls das eine Rolle spielt.
+- **Push-Benachrichtigungen** (mobil, Mainnet) — die Glocke unter Home → **Benachrichtigungen** hat einen Schalter **Push-Benachrichtigungen**: *„Get a notification when QOR arrives, even with the app closed. Our server watches only your public addresses; Apple and Google see no amount or address.“* (Erhalten Sie eine Benachrichtigung, wenn QOR eintrifft, auch bei geschlossener App. Unser Server beobachtet nur Ihre öffentlichen Adressen; Apple und Google sehen weder Betrag noch Adresse.) Der Benachrichtigungstext lautet nur „QOR received“. Schalten Sie den Schalter aus, wird Ihr Gerät vom Server entfernt. Sind Benachrichtigungen für QoreX in den Einstellungen Ihres Telefons ausgeschaltet, schalten Sie sie zuerst dort ein. Die Zustellung wurde unter Android Ende-zu-Ende getestet; unter dem iPhone behandeln Sie sie als Best-Effort und prüfen Sie weiterhin die Liste **Benachrichtigungen** in der App.
+- **Suche und Tour** — siehe [Orientieren Sie sich](/qorex/getting-started#find-your-way).
 
 ## Nächste Schritte
 

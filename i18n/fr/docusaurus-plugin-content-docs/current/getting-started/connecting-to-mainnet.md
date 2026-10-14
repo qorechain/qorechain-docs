@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en service en configurant votre nœud avec le fichier genesis officiel, les pairs et les paramètres réseau.
 
 :::note
-Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026 23:59 UTC** et exécutant la version de chaîne **v3.1.97** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
+Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **29 juin 2026** (bloc genesis à 17:03 UTC) et exécutant la version **v3.2.1** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
 :::
 
 ## Points d'accès publics
@@ -54,11 +54,17 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Le bundle contient `qorechaind` ainsi que ses bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Maintenez votre nœud à jour — v3.1.94 ou supérieure requise pour une synchronisation neuve
-Les nœuds complets doivent suivre la version de chaîne en production — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le plancher pour un nœud qui rejoint le réseau depuis zéro (depuis le genesis) ou qui se rétablit après un arrêt est **v3.1.94 ou supérieure**, pour deux raisons indépendantes et cumulatives : v3.1.92 a corrigé un bug de mesure du gas qui, sinon, arrête la relecture au premier bloc contenant une transaction, et le mainnet a depuis franchi la mise à niveau par gouvernance v3.1.94 (un plafond strict sur l'émission, appliqué à la hauteur 2 122 074) — un nœud dépourvu du gestionnaire de cette mise à niveau s'arrête à nouveau en tentant de rejouer au-delà de cette même hauteur. v3.1.97 est la version actuellement recommandée (mises à jour de sécurité continues ; `minCompatible` vaut `3.1.94`). Vérifiez toujours le champ `"version"` du manifeste par rapport au plancher actuel avant de faire confiance à `binary.url` — le manifeste est promu délibérément (d'abord sur le testnet, puis sur le mainnet après une période de rodage) et a déjà été en retard par rapport au plancher de version.
+:::caution Maintenez votre nœud à jour — v3.2.0 ou supérieure requise
+Les nœuds complets doivent suivre la version en production du réseau — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le manifeste actuel est **v3.2.1** avec `minCompatible` **3.2.0**. Le mainnet a appliqué deux mises à niveau par gouvernance que chaque nœud doit gérer : **v3.1.94** à la hauteur 2 122 074 (le plafond d'émission) et **v3.2.0** à la hauteur 2 981 742 (la fenêtre d'autorisation EVM et les octets de signature hybride v2). Un nœud qui rejoint le réseau depuis zéro a donc besoin d'un binaire v3.2.x ; privilégiez la synchronisation d'état (ci-dessous) plutôt que la relecture depuis le genesis. Le snapshot de données de chaîne publié est antérieur aux deux hauteurs de mise à niveau, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer avec un binaire v3.2.x.
+
+v3.2.1 est une version locale au nœud (aucune hauteur de mise à niveau, aucun vote de gouvernance) : les nœuds sous v3.2.0 continuent de suivre la chaîne, mais la mise à niveau est recommandée. Après être passé à v3.2.1, définissez `evm-chain-id = 9801` dans `app.toml` (une valeur différente est journalisée comme une erreur) et maintenez l'horloge système synchronisée par NTP : un nœud s'arrête lorsque son horloge dérive de plus de 60 secondes. Vérifiez toujours les champs `"version"` et `"minCompatible"` du manifeste avant de faire confiance à `binary.url` — le manifeste est promu délibérément (d'abord sur le testnet, puis sur le mainnet après une période de rodage).
 :::
 
-### Compilation depuis les sources
+:::caution Une mise à niveau coordonnée du mainnet est programmée — à lire avant de démarrer ou de redémarrer un nœud
+La proposition de gouvernance **7** du mainnet (accélérée, vote jusqu'au 15 octobre 2026 21:24 UTC) appliquerait **v3.2.2** à la hauteur **3 556 788** — environ deux jours après le 14 octobre, à raison d'environ 3,2 s par bloc. Le texte de la proposition indique : restez sur v3.2.1 (ou v3.2.0) jusqu'à cette hauteur ; le nœud s'arrête à cette hauteur et vous le redémarrez sous v3.2.2 ; la signature des transactions est inchangée. **Cela dépend du vote** — vérifiez le résultat (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, champ `status`) ainsi que les champs `version` et `upgradeHeight` du [manifeste mainnet](https://download.qore.host/mainnet/latest.json) avant de remplacer un binaire. N'installez pas v3.2.2 par anticipation : un nœud qui l'embarque avant la hauteur s'arrête lui aussi. Si la proposition est rejetée ou si la hauteur est dépassée, cette note ne s'applique plus.
+:::
+
+### Compilation depuis les sources (développement uniquement)
 
 ```bash
 git clone https://github.com/qorechain/qorechain-core.git
@@ -66,7 +72,7 @@ cd qorechain-core
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-Consultez [Compilation depuis les sources](/developer-guide/building-from-source) pour l'ensemble des prérequis (Go 1.26+, CGO, toolchain Rust, bibliothèques natives).
+Cela compile le binaire communautaire avec des keepers factices (stubs) et sans signataire post-quantique, qui ne peut ni reproduire l'état de consensus des réseaux ni créer de transactions à signature hybride. Pour exécuter un nœud sur le mainnet, installez le binaire de version ci-dessus. Consultez [Compilation depuis les sources](/developer-guide/building-from-source) pour l'ensemble des prérequis (Go 1.26+, CGO, bibliothèques natives).
 
 ### Initialiser le nœud
 
@@ -124,18 +130,12 @@ minimum-gas-prices = "0.1uqor"
 
 ### Paramètres recommandés
 
-Vous pouvez également ajuster les valeurs suivantes dans `config.toml` :
+Un nœud complet ne choisit pas le temps de bloc — ce sont les validateurs qui le font (le mainnet produit actuellement un bloc environ toutes les 3,2 secondes). Laissez les délais de consensus à leurs valeurs par défaut, sauf si vous exploitez un validateur et que le groupe de validateurs vous a communiqué des valeurs. Un paramètre de mempool utile pour un nœud RPC public, dans `config.toml` :
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
-
-Ces valeurs sont réglées pour les temps de bloc et le débit du mainnet Vladi.
 
 ---
 
@@ -150,12 +150,14 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Définissez ensuite la section `[statesync]` de `config.toml` avec ces valeurs — voir [Exécuter un nœud](/developer-guide/running-a-node) pour le workflow complet, y compris une méthode manuelle de repli basée sur le RPC si vous devez dériver vous-même un point de confiance.
 
-Un snapshot des données de la chaîne est également publié sur [download.qore.host](https://download.qore.host). Vérifiez le listing actuel à cet endroit pour obtenir le nom de fichier et la somme de contrôle publiés du dernier snapshot — ne codez pas en dur un nom de fichier ou une hauteur, car un nouveau snapshot remplace régulièrement l'ancien :
+Un snapshot des données de la chaîne figure également dans le manifeste (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Lisez les valeurs depuis le manifeste plutôt que de coder en dur un nom de fichier ou une hauteur, car un nouveau snapshot remplace l'ancien. Le snapshot est volumineux (des dizaines de gigaoctets) et, tel que publié en octobre 2026, a été pris à la hauteur 1 966 629 (21 août 2026) — avant les hauteurs de mise à niveau v3.1.94 et v3.2.0 — de sorte qu'un nœud restauré à partir de celui-ci rejoue les deux mises à niveau et doit exécuter un binaire v3.2.x ; la synchronisation d'état est généralement plus rapide :
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
+SNAPSHOT_SHA256=$(jq -r .snapshot.sha256 latest.json)
+
+curl -fsSL "$SNAPSHOT_URL" -o snapshot.tar.gz
+echo "${SNAPSHOT_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 ```
@@ -243,7 +245,7 @@ http://localhost:1317
 | `9090`  | gRPC      | API gRPC — accès programmatique à la chaîne                |
 | `8545`  | HTTP      | JSON-RPC EVM — RPC compatible Ethereum (chain ID `9801`)  |
 | `8546`  | WebSocket | WebSocket EVM — abonnements aux événements EVM en temps réel |
-| `8899`  | HTTP      | RPC SVM — RPC compatible Solana                            |
+| `8899`  | HTTP      | RPC SVM — RPC compatible Solana (lectures uniquement ; la voie de transactions SVM est désactivée) |
 | `26660` | HTTP      | Point d'accès des métriques Prometheus                    |
 
 ---
@@ -254,8 +256,9 @@ http://localhost:1317
 | --------------------- | --------------------------------------- |
 | Chain ID               | `qorechain-vladi`                      |
 | Chain ID EVM           | `9801` (hex `0x2649`)                  |
-| Version de chaîne      | v3.1.97                                |
-| En production depuis   | 7 juin 2026 23:59 UTC                  |
+| Version de chaîne      | v3.2.1 (règles de consensus de v3.2.0) |
+| En production depuis   | 29 juin 2026 17:03 UTC (bloc genesis)  |
+| Temps de bloc          | environ 3,2 secondes (moyenne mesurée) |
 | Jeton                  | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
 | Prix de gaz minimum    | `0.1uqor`                              |
 | Préfixe de compte      | `qor`                                  |
@@ -273,4 +276,3 @@ http://localhost:1317
 * [Votre première transaction](/getting-started/first-transaction) — Envoyer votre premier transfert de QOR
 * [Connexion au testnet](/getting-started/connecting-to-testnet) — Rejoindre le testnet Diana pour des tests gratuits
 * [Réseaux](/appendix/networks) — Chain IDs, ports et la référence complète des réseaux
-

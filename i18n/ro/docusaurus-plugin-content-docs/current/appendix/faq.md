@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 29 iunie 2026 și rulează versiunea v3.2.1. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 
@@ -19,19 +19,19 @@ Mainnet-ul este lanțul Cosmos `qorechain-vladi` cu EVM chain ID **9801** (hex `
 
 ### Cum sunt distribuite comisioanele de tranzacție?
 
-Comisioanele colectate sunt împărțite **37% validatorilor, 30% arse, 20% trezoreriei comunitare, 10% stakerilor și 3% nodurilor light**. Vezi [Tokenomics](/architecture/tokenomics).
+Comisioanele colectate sunt împărțite **37% validatorilor, 30% arse, 20% trezoreriei comunitare, 10% stakerilor și 3% nodurilor light**. Împărțirea se aplică întregii sume din colectorul de comisioane, care include și emisia epocii. Vezi [Tokenomics](/architecture/tokenomics#fee-distribution).
 
 ### Ce este PRISM?
 
-PRISM este stratul de optimizare prin învățare prin întărire integrat în QoreChain Consensus Engine. Observă metricile rețelei și propune ajustări deterministe ale parametrilor de consens sub controale de siguranță de tip întrerupător de circuit. Vezi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
+PRISM este stratul de optimizare prin învățare prin întărire integrat în QoreChain Consensus Engine. Observă metricile rețelei și propune ajustări deterministe ale parametrilor de consens sub controale de siguranță de tip întrerupător de circuit. Astăzi rulează în mod de observare: nu este încărcată nicio politică antrenată, așa că nu modifică niciun parametru. Vezi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
 ### Este bridge-ul cross-chain live?
 
-Bridge-ul cross-chain se află în prezent pe testnet și este în așteptare — nu este încă un sistem de producție. Este conceput în jurul a 37 de configurații de lanț QCB și 8 canale IBC; tratați aceste ținte mai degrabă ca intenție de design decât ca garanții live de mainnet. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
+Nu. Modulul de bridge este implementat, dar toate cele 37 de configurații de lanț sunt în așteptare, nu este înregistrat niciun validator de bridge și nu există canale IBC pe niciuna dintre rețele. Este conceput în jurul a 37 de configurații de lanț și până la 8 contrapărți IBC; tratați aceste ținte ca intenție de design. Vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).
 
 ### Cum conectez un portofel?
 
-Configurați un portofel și adăugați o rețea QoreChain folosind EVM chain ID-urile (9801 mainnet, 9800 testnet). Vezi [Configurarea portofelului](/getting-started/wallet-setup).
+Folosiți portofelul oficial [QoreX](/qorex/overview) sau adăugați o rețea QoreChain la un portofel EVM folosind EVM chain ID-urile (9801 mainnet, 9800 testnet). Vezi [Configurarea portofelului](/getting-started/wallet-setup).
 
 ### Cum obțin tokenuri de testnet?
 
@@ -43,7 +43,23 @@ Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node).
 
 ### Ce schemă de semnătură folosește QoreChain?
 
-QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
+QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Pe banda EVM semnătura rămâne secp256k1, iar un cont trebuie să dețină în plus o cheie ML-DSA înregistrată și o fereastră de autorizare deschisă (v3.2.0). Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
+
+### De ce este refuzată tranzacția mea EVM cu „no open EVM authorisation window"?
+
+Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie post-cuantică înregistrată și o fereastră de autorizare deschisă. Deschide o fereastră cu o tranzacție pe banda Cosmos semnată post-cuantic, apoi reîncearcă. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+
+### Ce timp de bloc ar trebui să mă aștept?
+
+Aproximativ 3,2 secunde pe mainnet și aproximativ 1 secundă pe testnet (medii măsurate, octombrie 2026). Timpul de bloc este stabilit de configurația nodurilor validatorilor.
+
+### Este xQORE disponibil?
+
+Încă nu. Modulul de contabilitate există, dar tranzacțiile de blocare și deblocare nu sunt conectate la rețelele live. Vezi [Tokenomics](/architecture/tokenomics#x-xqore).
+
+### Este oferta de QOR fixă?
+
+Oferta la genesis a fost de 4.420.000.000 QOR. Emisia de staking este bătută sub un plafon cumulativ strict de 114.285.714 QOR, iar arderile elimină definitiv tokenuri. Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Cum construiesc un rollup?
 

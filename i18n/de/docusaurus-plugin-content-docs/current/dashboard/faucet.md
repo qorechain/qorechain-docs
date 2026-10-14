@@ -15,8 +15,8 @@ Testnet-QOR hat **keinen realen Wert**. Der Faucet berührt niemals das Mainnet:
 
 ## Test-Token anfordern
 
-1. Verbinden Sie sich mit dem **Testnet** und öffnen Sie den **Faucet**.
-2. Geben Sie die zu finanzierende Adresse ein (`qor1...`). Wenn Ihre Wallet verbunden ist, wählen Sie **Meine Adresse verwenden**, um sie automatisch einzutragen. Das Formular prüft, ob die Adresse gültig ist, bevor Sie fortfahren können.
+1. Melden Sie sich an, stellen Sie das Dashboard auf **Testnet** um und öffnen Sie den **Faucet**.
+2. Geben Sie die zu finanzierende Adresse ein (`qor1...`). Wenn Ihre Wallet verbunden ist, wählen Sie **Use my address**, um sie automatisch einzutragen. Das Formular prüft, ob die Adresse gültig ist, bevor Sie fortfahren können.
 3. Wählen Sie die Anfrage-Schaltfläche. Die Gutschrift wird innerhalb von Sekunden verarbeitet.
 
 Wenn die Anfrage erfolgreich ist, zeigt eine Bestätigungskarte den gesendeten Betrag und den Transaktions-Hash an, zusammen mit einer Kopier-Schaltfläche und einem Link, um die Transaktion im [Explorer](/dashboard/explorer) zu öffnen.

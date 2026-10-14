@@ -10,7 +10,11 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.1.97** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı için EVM zincir kimliği **9800**'ü kullanın.
+Aşağıdaki örnekler, 29 Haziran 2026'dan beri canlı olan ve **v3.2.1** düğüm sürümünü (v3.2.0 yükseltmesinden gelen konsensüs kuralları) çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı (v3.2.2) için EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
+:::
+
+:::caution Bir EVM işlemi, kayıtlı bir PQC anahtarı ve açık bir yetkilendirme penceresi gerektirir
+v3.2.0 yükseltmesinden itibaren (ana ağ yüksekliği 2.981.742, test ağı yüksekliği 5.920.000) EVM şeridi (lane), bir işlemi yalnızca **(1) kayıtlı bir ML-DSA-87 kuantum-sonrası anahtarına** ve **(2) o işlem için hâlâ yer bulunan açık bir EVM yetkilendirme penceresine** sahip bir hesaptan kabul eder. Sıradan araçlarla (MetaMask, ethers.js, Hardhat, Foundry) imzalarsınız, ancak kayıtlı bir anahtar ve açık bir pencere olmadan `eth_sendRawTransaction` reddedilir (codespace `pqc`, kod 26, 27 veya 28). Okumalar, `eth_call` ve gas tahmini bunların hiçbirine ihtiyaç duymaz. Aşağıdaki [EVM yetkilendirme penceresi](#evm-window) bölümüne ve [İlk İşleminiz](/getting-started/first-transaction#evm-window) sayfasındaki adım adım anlatıma bakın.
 :::
 
 ---
@@ -21,12 +25,12 @@ Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.1.97** zinci
 | ---------------------- | ------------------------------------------ |
 | Varsayılan URL          | `http://localhost:8545`                    |
 | WebSocket URL           | `ws://localhost:8546`                      |
-| Desteklenen ad alanları | `eth_`, `web3_`, `net_`, `txpool_`, `qor_` |
+| Desteklenen ad alanları | `eth_`, `web3_`, `net_`, `txpool_`          |
 | Zincir kimliği (ana ağ) | `9801` (`qorechain-vladi`)                 |
 | Zincir kimliği (test ağı) | `9800` (`qorechain-diana`)               |
 | Para birimi sembolü     | `QOR`                                      |
 
-`qor_` ad alanı, QoreChain'e özgü yöntemler sağlar. Aşağıdaki [Özel Ad Alanı](#custom-qor_-namespace) bölümüne bakın.
+QoreChain'e özgü okumalar REST üzerinden (`api.qore.host`) sunulur; [aşağıda](#custom-qor_-namespace) açıklanan `qor_` JSON-RPC ad alanı, herkese açık uç noktalarda ve varsayılan düğüm yapılandırmasında **etkin değildir**.
 
 ---
 
@@ -37,10 +41,12 @@ QoreChain'i MetaMask'e özel bir ağ olarak ekleyin:
 | Alan                | Ana Ağ Değeri              | Test Ağı Değeri         |
 | ------------------- | -------------------------- | ------------------------ |
 | Ağ Adı               | QoreChain (qorechain-vladi) | QoreChain Diana         |
-| RPC URL              | `http://localhost:8545`    | `http://localhost:8545` |
+| RPC URL              | `https://evm.qore.host`    | `https://evm-testnet.qore.host` |
 | Zincir Kimliği       | `9801`                     | `9800`                   |
 | Para Birimi Sembolü  | `QOR`                      | `QOR`                    |
-| Blok Gezgini URL'si  | *(resmi ana ağ gezginini kullanın)* | *(yerel test ağı için boş bırakın)* |
+| Blok Gezgini URL'si  | `https://explore.qore.network` | *(isteğe bağlı)* |
+
+MetaMask'ten göndermek ayrıca hesapta kayıtlı bir PQC anahtarı ve açık bir [EVM yetkilendirme penceresi](#evm-window) gerektirir.
 
 ---
 
@@ -63,7 +69,7 @@ module.exports = {
 };
 ```
 
-Bir sözleşmeyi dağıtın:
+Bir sözleşmeyi dağıtın (dağıtımı yapan hesabın kayıtlı bir PQC anahtarına ve açık bir [yetkilendirme penceresine](#evm-window) ihtiyacı vardır; bir dağıtım, pencerede tek bir EVM işlemi olarak sayılır):
 
 ```bash
 npx hardhat run scripts/deploy.js --network qorechain
@@ -152,40 +158,83 @@ Bu dönüşüm şeffaftır — `eth_getBalance` ile bir bakiyeyi kontrol ettiği
 
 ## ERC-20 Token Çiftleri
 
-`x/erc20` modülü, yerel Cosmos SDK birimleri ile ERC-20 sözleşmeleri arasında **token çiftlerinin** otomatik olarak kaydedilmesini sağlar:
+`x/erc20` modülü, yerel Cosmos SDK birimleri ile ERC-20 sözleşmeleri arasında **token çiftleri** sağlar:
 
 * Yerel token'lar EVM sözleşmeleri içinde ERC-20 olarak kullanılabilir
 * EVM üzerinde dağıtılan ERC-20 token'ları yerel birimlere dönüştürülebilir
 * Dönüşüm çift yönlüdür ve protokol seviyesinde gerçekleştirilir
 
 ```bash
-# Register a new token pair (governance proposal)
-qorechaind tx erc20 register-coin <denom> --from mykey
+# Register a native ERC-20 contract as a token pair (permissioned: `permissionless_registration` is false)
+qorechaind tx erc20 register-erc20 <contract-addr> --from mykey
 
 # Convert native tokens to ERC-20
-qorechaind tx erc20 convert-coin 1000000uqor --from mykey
+qorechaind tx erc20 convert-coin 1000000uqor --from mykey --gas 400000 --fees 40000uqor
 
 # Convert ERC-20 back to native
-qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey
+qorechaind tx erc20 convert-erc20 <contract-addr> 1000000000000000000 --from mykey --gas 400000 --fees 40000uqor
 ```
+
+Bunlar Cosmos şeridi işlemleridir: canlı ağlarda ayrıca hibrit kuantum-sonrası ortak imza (cosign) da gerekir (`--generate-only` ile oluşturun, ardından `qorechaind tx pqc cosign` çalıştırın; bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)). Token çiftleri izinli bir politika altında kaydedilir ve ana ağda henüz hiçbiri yoktur.
 
 ---
 
 ## PQC ve EVM Uyumluluğu
 
-EVM işlemleri, mevcut Ethereum araçları, cüzdanları ve kütüphaneleriyle tam uyumluluk için **klasik ECDSA (secp256k1)** imzalarını kullanır. Bu, MetaMask, Hardhat, Foundry, ethers.js ve tüm standart EVM araçlarının değişiklik yapılmadan çalışmasını sağlar.
+EVM işlemleri **klasik ECDSA (secp256k1)** ile imzalanır; bu nedenle MetaMask, Hardhat, Foundry, ethers.js ve diğer standart araçlar bunları değişiklik yapılmadan oluşturur ve imzalar. **v3.2.0** ile değişen şey *kabul (admission)* kuralıdır: bir işlem, yalnızca göndericisi kayıtlı bir kuantum-sonrası anahtara ve etkin bir yetkilendirme penceresine sahipse kabul edilir (sonraki bölüm). Bir anahtar kaydetmek ve pencere açmak Cosmos şeridi işlemleridir ve hibrit (ML-DSA-87 + secp256k1) imza gerektirir.
 
-EVM içinde kuantum-sonrası güvenlik için:
+Sözleşmeler içinde kuantum-sonrası güvenlik için:
 
-* Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulamak üzere **PQC Verify precompile'ını** (`0x0000...0A01`) kullanın. Bkz. [EVM Precompile'ları](/developer-guide/evm-precompiles).
-* EVM'den CosmWasm veya SVM'ye giden **VM'ler arası mesajlar**, Cosmos SDK işlem katmanında PQC ile imzalanabilir.
-* Hesaplar, hibrit güvenlik için isteğe bağlı olarak `x/pqc` üzerinden PQC genel anahtarları kaydedebilir.
+* **PQC Verify precompile'ı** (`0x0000...0A01`), etkinleştirildiğinde Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulayacaktır; ana ağda veya test ağında **henüz etkin değildir**. Bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+* EVM'den CosmWasm veya SVM'ye giden **VM'ler arası mesajlar** Cosmos şeridi işlemleridir ve diğerleri gibi hibrit imza taşır; mevcut kullanılabilirlikleri için bkz. [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability).
+
+---
+
+## EVM yetkilendirme penceresi {#evm-window}
+
+Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask gibi cüzdanlar ikinci bir imza ekleyemez); bu yüzden işlemden *önce* gider. Hesap, Cosmos şeridi mesajı `MsgOpenEVMWindow` ile sınırlı bir pencere açar; ardından EVM şeridi yalnızca etkin bir pencerenin kapsadığı işlemleri kabul eder. Çalınmış klasik bir anahtar tek başına pencere açamaz, dolayısıyla yalnızca zaten açık olan bir pencerenin izin verdiği kadarını taşıyabilir.
+
+| Sınır       | Aralık             | Anlamı |
+| ----------- | ------------------ | ------- |
+| `blocks`    | 1 – 17.280         | Pencerenin ne kadar açık kalacağı; pencereyi açan bloktan itibaren blok sayısıyla ölçülür |
+| `max-txs`   | 1 – 1.000          | Kaç EVM işlemini kabul edeceği |
+| `max-value` | 0'ın üzerinde, `uqor` cinsinden | Kabul ettiği toplam çıkış: aktarılan değer **artı** her işlemin ödeyebileceği azami ücret (gas limiti × gas başına azami ücret), `uqor`'a çevrilip yukarı yuvarlanır |
+
+Hangi sınır önce tükenirse pencereyi o kapatır. Tüm alanlar zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 5 saattir (blok başına yaklaşık 1,0 sn).
+
+**Adımlar** (tam anlatım [İlk İşleminiz](/getting-started/first-transaction#evm-window) sayfasındadır):
+
+1. ML-DSA-87 anahtarınızı bir kez kaydedin (`tx pqc register-key-v2` veya `register-key`, `--gas 600000 --fees 60000uqor` ile; bu tek işlem hibrit gereksiniminden muaftır, böylece yeni bir hesap kendini başlatabilir). Bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#pqc-key-registration).
+2. Bir pencere açın. Bu bir Cosmos şeridi işlemidir; bu yüzden imzasız üretin ve ML-DSA anahtarınızla ortak imzalayın (`max-value`, `uqor` veya `qor` kabul eder; `1000qor` 1.000 QOR'dur):
+
+   ```bash
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
+   qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+   ```
+
+3. Geriye ne kaldığını kontrol edin: `qorechaind query pqc evm-window <address>` veya `GET /qorechain/pqc/v1/evm_window/{address}` (pencere yoksa `found: false` yanıtı verir).
+4. EVM işlemlerinizi normal şekilde gönderin. Bir pencere açmak bir Cosmos şeridi işlemidir ve hesabın sıra numarasını (sequence) ilerletir; bu aynı zamanda hesabın EVM nonce'udur, bu yüzden nonce'u pencere açıldıktan **sonra** okuyun ve imzayı o zaman atın.
+
+Bir pencereyi erkenden `qorechaind tx pqc close-evm-window` ile kapatın (aynı `--generate-only` ve `cosign` düzeni), örneğin klasik anahtarın açığa çıktığından şüphelenirseniz: pencerenin hâlâ kabul edeceği her şey bir sonraki bloktan itibaren reddedilir.
+
+| Ret (codespace `pqc`) | Anlamı |
+| ------------------------- | ------- |
+| code 26 | Gönderici için açık pencere yok veya göndericinin kayıtlı bir PQC anahtarı yok |
+| code 27 | Pencerenin süresi dolmuş veya tükenmiş (mesaj hangi sınırın aşıldığını gösterir) |
+| code 28 | Pencere açılırken geçersiz sınırlar veya o anda kayıtlı anahtar yok |
+
+TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` ve `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
 
 ---
 
 ## Özel `qor_` Ad Alanı {#custom-qor_-namespace}
 
 QoreChain, zincire özgü sorgular için JSON-RPC'yi bir `qor_` ad alanıyla genişletir:
+
+:::warning Henüz sunulmuyor
+Yayımlanmış hiçbir düğüm sürümü henüz `qor_` ad alanını sunmuyor: herkese açık uç noktalardaki `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3`'ü listeler ve aşağıdaki her yöntem; ana ağda, test ağında ve varsayılan yapılandırmayla (`eth`, `net`, `web3`, `txpool`) kendi çalıştırdığınız düğümlerde `-32601` (yöntem bulunamadı) döndürür. Durum ve REST alternatifleri için (örneğin PQC anahtar durumu için `GET /qorechain/pqc/v1/account/{address}`) bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
+:::
 
 | Yöntem                       | Açıklama                                                          |
 | ----------------------------- | ------------------------------------------------------------------ |
@@ -213,6 +262,6 @@ curl -X POST http://localhost:8545 \
 
 ## Sonraki Adımlar
 
-* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Solidity'den PQC, yapay zeka ve VM'ler arası özelliklere erişin
-* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — EVM'den CosmWasm ve SVM sözleşmelerini çağırın
-* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Oturum anahtarlarıyla programlanabilir hesaplar
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Ayrılmış precompile arayüzleri için başvuru (herkese açık ağlarda henüz etkin değil)
+* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — VM'ler arası çağrılar ve mevcut kullanılabilirlikleri
+* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan doğrulayıcıları ve harcama kuralları (modül şu anda devre dışı)

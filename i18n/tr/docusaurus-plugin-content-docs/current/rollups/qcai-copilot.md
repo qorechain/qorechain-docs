@@ -7,66 +7,31 @@ sidebar_position: 7
 
 # QCAI Rollup Yardımcı Pilotu
 
-QCAI Rollup Yardımcı Pilotu, ağın tavsiye hizmetlerinin tek bir rollup hakkında
-bildiği her şeyi toplar ve bunu tek, sade dilde bir okumaya dönüştürür: canlı
-bir ücret tahmini, ağ önerileri, rollup'a referans veren herhangi bir
-dolandırıcılık soruşturması, pekiştirmeli öğrenme ajanının durumu ve harekete
-geçebileceğiniz kısa bir öneri listesi.
+RDK'daki QCAI Rollup Yardımcı Pilotu, tek bir rollup için ağın tavsiye verilerini — bir ücret tahmini, ağ önerileri, rollup'a referans veren dolandırıcılık soruşturmaları, pekiştirmeli öğrenme ajanının durumu — toplamaya **çalışan** ve bunu kısa bir öneri listesiyle birlikte tek, sade dilde bir okumaya dönüştüren salt okunur bir yardımcıdır.
 
-Bu, **en iyi çaba** ilkesiyle çalışır. Tavsiye hizmetleri isteğe bağlı
-altyapıdır — biri erişilemezse, Yardımcı Pilot zarif bir şekilde geriler; tüm
-çağrıyı başarısız kılmak yerine o bölümü atlar ve bir uyarı kaydeder. Her zaman
-bir sonuç alırsınız.
+:::caution Genel uç noktalarda kullanılamaz
+Okuduğu tavsiye hizmetleri (`/qorechain/ai/v1/…` REST rotaları ve `qor_*` JSON-RPC ad alanı) şu anda mainnet veya testnet üzerindeki genel `qore.host` uç noktaları tarafından **sunulmamaktadır**; bu yüzden her bölüm bir uyarı olarak döner. Yardımcı Pilot tasarım gereği en iyi çaba ilkesiyle çalışır: asla başarısız olmaz, ancak boş bir sonuç rollup'ın kontrol edildiği ve sağlıklı bulunduğu anlamına **gelmez**. Bu hizmetler kullanıma açılana kadar bunu bir güvenlik sinyali olarak kullanmayın. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
+:::
 
-## Tek çağrı: `getRollupAdvice`
+## Tek çağrı: `getRollupAdvice` {#one-call-getrollupadvice}
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
-// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
-// endpoint config needed; pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
+const advice = await getRollupAdvice(rdk, "my-rollup");
 
-const advice = await getRollupAdvice(rdk, "my-roll");
-
-console.log(advice.feeEstimate);            // live fee estimate (if reachable)
-console.log(advice.networkRecommendations); // tuning recommendations
-console.log(advice.fraudInvestigations);    // investigations referencing this rollup
-console.log(advice.rlAgentStatus);          // RL agent status (qor_ JSON-RPC)
-console.log(advice.suggestions);            // plain-language, actionable
-console.log(advice.warnings);               // services that were unreachable
+console.log(advice.warnings);    // services that could not be reached (all of them today)
+console.log(advice.suggestions); // plain-language suggestions, when data is available
 ```
 
-## Temel okumalar
+Sonuç, ilgili hizmet yanıt verdiğinde ayrıca `feeEstimate`, `networkRecommendations`, `fraudInvestigations` ve `rlAgentStatus` değerlerini de taşır.
 
-`getRollupAdvice`, doğrudan da çağırabileceğiniz bir dizi salt okunur yöntemi
-bir araya getirir. Tavsiye REST yöntemleri `/qorechain/ai/v1/...` altında
-bulunur:
-
-- `getFeeEstimate(...)` — geçerli ücret tahmini.
-- `getNetworkRecommendations(...)` — ağ düzeyinde ayar önerileri.
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — açık
-  soruşturmalar ve kimliğe göre tek bir soruşturma.
-- `getCircuitBreakers(...)` — tavsiye niteliğinde devre kesici durumu.
-
-Pekiştirmeli öğrenme okumaları `qor_*` JSON-RPC ad alanını kullanır:
-
-- `getRLAgentStatus()` — ajanın geçerli durumu.
-- `getRLObservation()` — en son gözlem.
-- `getRLReward()` — en son ödül sinyali.
-
-Bunların tümü okuma olduğundan, Yardımcı Pilot yalnızca bir REST uç noktasına
-(ve RL okumaları için bir EVM / `qor_` JSON-RPC uç noktasına) ihtiyaç duyar —
-imzalayıcı gerekmez.
-
-## CLI
+## CLI {#cli}
 
 ```bash
-qorollup advise my-roll
-qorollup advise my-roll --json
+qorollup advise my-rollup
+qorollup advise my-rollup --json
 ```
 
-`advise`, bir araya getirilen tavsiyeyi yazdırır; erişilemeyen hizmetler hata
-yerine uyarı olarak gösterilir. Tam `qorollup` operatör CLI'sı için
-[Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.
+Erişilemeyen hizmetler hata yerine uyarı olarak listelenir ve hiçbirine erişilemediğinde bile insan tarafından okunabilir çıktı yine de bir "no issues flagged" satırı yazdırabilir — uyarıları okuyun. `qorollup` operatör CLI'sı için [Bir Rollup Dağıtma](/rollups/deploying-a-rollup) sayfasına bakın.

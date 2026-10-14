@@ -23,20 +23,23 @@ Acestea sunt motivele pentru care merită să construiești aici.
 
 ## 1. Scorare de risc AI pre-flight
 
-**Scanează o tranzacție cu AI on-chain înainte de a o difuza.**
+**Scanează o tranzacție cu AI on-chain înainte de a o difuza** (necesită ca
+precompilările AI să fie active pe rețeaua țintă, ceea ce încă nu se întâmplă pe
+rețelele publice).
 
 QoreChain livrează analiza de risc AI sub formă de precompilări EVM. SDK-ul le
 apelează pentru tine și returnează gas-ul plus un verdict de risc/anomalie
 într-un singur apel — astfel încât un portofel sau un dApp poate avertiza (sau
-bloca) *înainte* de semnare.
+bloca) *înainte* de semnare. Precompilările AI **nu sunt încă active** pe
+mainnet sau pe testnet (vezi
+[Precompilări EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
-import { createClient } from "@qorechain/sdk";
-import { simulateWithRiskScore } from "@qorechain/evm";
+import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
-const client = createClient({ network: "mainnet", endpoints: { evmRpc } });
+const { publicClient } = await createEvmClient({ endpoints: { evmRpc } });
 
-const preflight = await simulateWithRiskScore(client.evm, {
+const preflight = await simulateWithRiskScore(publicClient, {
   from: account.address,
   to: contractAddress,
   data: calldata,
@@ -52,11 +55,11 @@ if (!preflight.safe) {
 }
 ```
 
-**De ce este unic:** scorarea rulează *în interiorul lanțului* ca precompilare
-deterministă (`aiRiskScore` la `0x…0B01`, `aiAnomalyCheck` la `0x…0B02`). Alte
-rețele pot doar să atașeze servicii AI off-chain, nedeterministe. Acesta este
-primul SDK care verifică o tranzacție cu AI înainte ca aceasta să fie semnată,
-cu un rezultat on-chain. Vezi [AI pre-flight](/sdk/guides/ai-preflight).
+**De ce este diferit:** scorarea este concepută să ruleze *în interiorul
+lanțului* ca precompilare deterministă (`aiRiskScore` la `0x…0B01`,
+`aiAnomalyCheck` la `0x…0B02`), nu ca serviciu off-chain. Până când aceste
+precompilări sunt activate, helperii de mai sus aruncă eroare pe rețelele
+publice (`returned no data ("0x")`). Vezi [AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
@@ -71,9 +74,10 @@ ele — și pentru a împacheta mai multe apeluri cross-VM într-o singură
 tranzacție atomică, semnată o singură dată.
 
 ```ts
-import { createCrossVMClient } from "@qorechain/sdk";
+import { connectQueryClients, createCrossVMClient } from "@qorechain/sdk";
 
-const crossVM = createCrossVMClient(tx, { query: client.query });
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
+const crossVM = createCrossVMClient(tx, { query: connectQueryClients(rpcClient).crossvm });
 
 // Call an EVM contract from a native account (payload ABI-encoded for you).
 await crossVM.call({
@@ -90,10 +94,13 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**De ce este unic:** QoreChain este singurul L1 cu trei VM-uri co-rezidente și
-un modul de bridge nativ (`crossvm` + precompilarea `CrossVMBridge`). Lanțurile
-cu un singur VM nu pot exprima „un cont, trei VM-uri, o tranzacție atomică" —
-SDK-urile lor nu au ce să încapsuleze. Scrii o dată, apelezi orice VM. Vezi
+**De ce este diferit:** QoreChain rulează trei VM-uri co-rezidente cu un modul
+de bridge nativ (`crossvm`, plus precompilarea `CrossVMBridge` odată ce este
+activă), astfel încât o singură interfață SDK poate adresa toate cele trei.
+Lanțurile cu un singur VM nu au nimic echivalent de încapsulat. Astăzi raza de
+acțiune a unui apel este limitată de banda pe care o vizează: `MsgCrossVMCall`
+este oprit pe mainnet, tranzacțiile SVM sunt dezactivate, iar încărcarea și
+instanțierea CosmWasm sunt cu permisiuni. Vezi
 [Apeluri cross-VM](/sdk/guides/cross-vm).
 
 ---
@@ -110,32 +117,45 @@ le arată utilizatorilor că sunt protejați.
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Idempotent: registers the signer's ML-DSA-87 key on-chain if not already.
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair });
+// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
+// (read it over REST on the public endpoints; see the Quantum-safe guide).
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  status: { registered },
+});
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair });
-await hybrid.send(messages);
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+await hybrid.signAndBroadcastHybrid({
+  registry, signer, messages, fee, chainId, accountNumber, sequence,
+  rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key.
+// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// (needs a node that serves the `qor_` namespace; see the React guide).
 <QuantumSafeBadge address={account.address} />
 ```
 
-**De ce este unic:** criptografia post-cuantică este nativă și obligatorie pe
-QoreChain, nu un experiment. Acesta este primul SDK în care „rezistent la
-calculul cuantic în mod implicit" înseamnă un singur apel plus un badge gata de
-integrat. Vezi [Quantum-safe](/sdk/guides/quantum-safe).
+**De ce contează:** criptografia post-cuantică este nativă și obligatorie pe
+calea Native a QoreChain, nu un experiment, iar SDK-ul reduce adoptarea ei la un
+apel de înregistrare plus o cale de trimitere hibridă. Înregistrarea este
+explicită: nu există auto-înregistrare la prima tranzacție. Vezi
+[Quantum-safe](/sdk/guides/quantum-safe).
 
 ---
 
 ## 4. Conturi eth-native unificate — o cheie, trei adrese, un singur sold
 
 **O cheie `eth_secp256k1` este o singură identitate de 20 de octeți pe toate
-cele trei benzi.** (SDK 0.6.0, chain v3.1.83.)
+cele trei benzi.** (SDK 0.6.0, chain v3.1.83.) Banda de tranzacții SVM este
+dezactivată în prezent la nivelul întregii rețele, iar banda EVM necesită o
+[fereastră de autorizare](/sdk/guides/evm#evm-window); soldul comun și maparea
+adreselor se mențin indiferent de aceasta.
 
 ```ts
 import { deriveUnifiedAccount } from "@qorechain/sdk";
@@ -145,23 +165,31 @@ account.cosmos; // "qor1…"  bech32 — Native lane
 account.evm;    // "0x…"    EIP-55 — EVM lane
 account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 // A deposit to ANY of the three lands in ONE balance,
-// and the same key spends on every lane (signHybridEth on the Native path).
+// and the same key signs on every enabled lane (signHybridEth on the Native path).
 ```
 
 **De ce este unic:** pe configurațiile multi-VM din altă parte, fiecare runtime
 are propriul spațiu de conturi, iar fondurile rămân blocate pe fiecare bandă.
 QoreChain redă o singură identitate de 20 de octeți în trei moduri, cu un sold
 comun — un portofel nu ajunge niciodată să „aibă fonduri pe o bandă, dar nu pe
-alta". `connectPhantomUnified` chiar inițializează această identitate în mod
-non-custodial dintr-o semnătură Phantom. Vezi
+alta". Un portofel extern precum Phantom poate fi legat de această identitate ca
+autentificator limitat ([Autentificatori](/sdk/guides/authenticators)). Vezi
 [Conturi unificate](/sdk/concepts/accounts-pqc#unified-accounts).
 
 ---
 
-## 5. Benzi de authenticatori — cheltuieli delegate fără a renunța la PQC
+## 5. Benzi de autentificatori — cheltuieli delegate fără a renunța la PQC
 
 **O cheie Phantom sau MetaMask conectată cheltuiește din contul canonic cu PQC
 obligatoriu, sub limite, printr-un relayer.** (SDK 0.7.0, chain v3.1.85.)
+
+:::caution Încă indisponibil pe rețelele live
+Modulul `abstractaccount` este oprit pe `qorechain-vladi` și `qorechain-diana`
+(`GET /qorechain/abstractaccount/v1/config` returnează `"enabled": false`), iar
+începând cu chain v3.2.0 acest indicator este impus pe orice cale, deci o cheie
+nu poate fi legată și benzile de mai jos nu pot fi folosite. Vezi
+[ghidul Autentificatori](/sdk/guides/authenticators).
+:::
 
 ```ts
 import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
@@ -179,11 +207,11 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**De ce este unic:** fiecare cheltuială este delimitată de o taxonomie de
-permisiuni on-chain, de limitele `SpendingRule` și de o dată de expirare —
-privilegii minime și revocabile — în timp ce contul în sine rămâne protejat
-post-cuantic. Vezi
-[Authenticatori și cheltuieli delegate](/sdk/guides/authenticators).
+**De ce contează:** odată ce modulul este activat, fiecare cheltuială este
+delimitată de o taxonomie de permisiuni on-chain, de limitele `SpendingRule` și
+de o dată de expirare — privilegii minime și revocabile — în timp ce contul în
+sine rămâne protejat post-cuantic. Vezi
+[Autentificatori și cheltuieli delegate](/sdk/guides/authenticators).
 
 ---
 

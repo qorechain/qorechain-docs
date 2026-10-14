@@ -10,12 +10,16 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 29일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
+
+## QoreX (권장) {#qorex}
+
+**QoreX**는 QoreChain의 공식 비수탁형(non-custodial) 지갑으로, 모바일 앱(Android, iOS)과 브라우저 확장 프로그램(Chrome, Firefox, macOS의 Safari)으로 제공됩니다. 모든 네이티브 레인 송금에 필수 하이브리드 포스트 퀀텀 서명으로 서명하고, 사용자의 포스트 퀀텀 키를 대신 등록해 주며, 스테이킹, @핸들, 외부 네트워크를 지원하고, 대시보드와 연동됩니다. 또한 MetaMask 트랜잭션에 필요한 [EVM 인가 창](/getting-started/first-transaction#evm-window)을 열 수 있습니다. [QoreX 가이드](/qorex/overview)와 [시작하기](/qorex/getting-started)부터 확인하세요.
 
 ## Keplr 지갑
 
-Keplr는 네이티브 QoreChain 트랜잭션, 스테이킹, 거버넌스에 권장되는 지갑입니다.
+Keplr는 QoreChain을 커스텀 체인(아래 참고)으로 추가하여 잔액을 확인하고 네이티브 레인에서 수신하는 데 사용할 수 있습니다. QoreChain은 네이티브 레인에서 포스트 퀀텀 공동 서명을 요구하므로, 송금, 스테이킹, 투표는 Keplr만 사용하지 말고 [QoreX](/qorex/overview)와 같은 PQC 지원 지갑으로 진행하세요.
 
 ### QoreChain을 커스텀 체인으로 추가하기
 
@@ -57,18 +61,28 @@ MetaMask를 열고 **Settings > Networks > Add Network**로 이동한 다음 아
 
 네이티브 QOR은 EVM 인터페이스에서 **18자리 소수점**(wei 방식)을 사용합니다. 연결한 후에는 MetaMask로 EVM 트랜잭션에 서명하고, 배포된 스마트 컨트랙트와 상호작용하며, QoreChain에서 ERC-20 토큰을 관리할 수 있습니다.
 
+:::caution EVM / MetaMask에는 PQC 키와 열린 창이 필요합니다
+MetaMask는 여전히 정상적으로 서명하지만, EVM 레인은 등록된 포스트 퀀텀 키가 있고 **EVM 인가 창**이 열려 있는 계정의 트랜잭션만 받아들입니다(v3.2.0 이상). 키를 한 번 등록한 뒤, EVM 활동 세션을 시작하기 전에 창을 여세요 — [EVM 인가 창](/getting-started/first-transaction#evm-window)을 참고하세요. MetaMask는 창을 직접 열 수 없으므로, [QoreX](/qorex/security-and-recovery#evm-window) 또는 CLI로 여세요. 위의 MetaMask 네트워크 추가 방법은 달라지지 않았습니다.
+:::
+
 ### 한 번의 호출로 네트워크 등록하기
 
-dApp의 경우, npm에 배포된 **`@qorechain/wallet-adapter`**와 **`@qorechain/connect`** 패키지가 한 번의 호출로 사용자 지갑에 QoreChain을 등록합니다 — EIP-3085를 통해 MetaMask에 네트워크 추가를 요청하고(EVM 레일에서 올바른 **18자리 소수점** 네이티브 QOR 포함), Keplr의 가스 가격 단계도 함께 구성합니다.
+dApp의 경우, npm에 배포된 **`@qorechain/wallet-adapter`** 패키지가 한 번의 호출로 사용자 지갑에 QoreChain을 등록합니다 — EIP-3085를 통해 MetaMask에 네트워크 추가를 요청하고(EVM 레일에서 올바른 **18자리 소수점** 네이티브 QOR 포함), Keplr 체인 제안(가스 가격 단계 포함)을 위한 `qoreChainInfo`를 제공합니다.
 
 ```bash
-npm install @qorechain/wallet-adapter @qorechain/connect
+npm install @qorechain/wallet-adapter
 ```
 
 ```ts
 import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
 
-await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+// pass the EIP-1193 provider and the network parameters (rpcUrl is required)
+await addQoreEvmToWallet(window.ethereum, {
+  evmChainId: 9801,                       // 9800 for the testnet
+  rpcUrl: "https://evm.qore.host",        // https://evm-testnet.qore.host for the testnet
+  explorerUrl: "https://explore.qore.network",
+  testnet: false,                         // true for the testnet
+});
 ```
 
 ## 하나의 계정, 세 가지 주소 (통합 계정) {#unified-accounts}
@@ -81,17 +95,21 @@ await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network par
 import { generateQoreWallet } from "@qorechain/wallet-adapter";
 
 const w = await generateQoreWallet();          // or walletFromMnemonic(mnemonic)
-console.log(w.addresses.cosmos);               // qor1...
-console.log(w.addresses.evm);                  // 0x... (same identity)
-console.log(w.addresses.svm);                  // base58 (same identity)
-// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid).
+console.log(w.cosmos);                         // qor1...
+console.log(w.evm);                            // 0x... (same identity)
+console.log(w.svm);                            // base58 (same identity)
+// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid); pass `rest` so the sign-bytes form is resolved.
 ```
 
 세 가지 형식 중 어디로 자금을 보내든 동일한 잔액에 반영됩니다.
 
 ## 연결된 지갑: 지출 키로 사용하는 Phantom과 MetaMask {#linked-wallets}
 
-체인 버전 **v3.1.85**부터, dApp에서 QoreChain 계정의 자금을 사용하기 위해 루트 키를 노출할 필요가 없습니다. **Phantom**(ed25519) 또는 **MetaMask**(`personal_sign`을 통한 이더리움 주소 기반) 키를 계정의 **인증자(authenticator)로 등록**할 수 있으며 — 범위가 지정된 권한, 지출 한도, 만료 시각, 즉시 철회 기능과 함께 — 이후 dApp 백엔드가 중계하는 송금을 승인할 수 있습니다. 전체 모델과 코드는 [연결된 지갑 인증자](/developer-guide/account-abstraction#authenticators) 문서를, 종단 간 예제는 [SDK 인증자 가이드](/sdk/guides/authenticators)를 참고하세요.
+:::caution 현재 두 네트워크 모두에서 꺼져 있습니다
+스마트 계정 및 연결된 지갑 기능은 구현되어 있지만 두 네트워크 모두에서 **꺼져 있습니다**(`abstractaccount.enabled = false`). 이 플래그가 꺼져 있는 동안에는 인증자 등록과 인증자를 통한 실행이 거부됩니다. 연결 흐름을 제공하기 전에 `GET /qorechain/abstractaccount/v1/config`를 확인하세요. 아래 섹션은 설계된 동작을 설명합니다.
+:::
+
+dApp에서 QoreChain 계정의 자금을 사용하기 위해 루트 키를 노출할 필요가 없도록 설계되었습니다(체인 버전 **v3.1.85**에서 도입). **Phantom**(ed25519) 또는 **MetaMask**(`personal_sign`을 통한 이더리움 주소 기반) 키를 계정의 **인증자(authenticator)로 등록**할 수 있으며 — 범위가 지정된 권한, 지출 한도, 만료 시각, 즉시 철회 기능과 함께 — 이후 dApp 백엔드가 중계하는 송금을 승인할 수 있습니다. 전체 모델과 코드는 [연결된 지갑 인증자](/developer-guide/account-abstraction#authenticators) 문서를, 종단 간 예제는 [SDK 인증자 가이드](/sdk/guides/authenticators)를 참고하세요.
 
 ## Solana 지갑 (SVM)
 
@@ -116,10 +134,10 @@ console.log("Current slot:", slot);
 
 ## PQC 지원 지갑 (Cosmos 경로에서 필수)
 
-QoreChain은 cosmos 트랜잭션 경로에서 하이브리드 포스트 퀀텀 암호화(PQC)를 요구합니다. 현재 체인 버전(**v3.1.82**) 기준으로 네트워크 기본값은 `hybrid_signature_mode = required`이며 `allow_classical_fallback = false`입니다 — 즉 **모든 cosmos 경로 트랜잭션은 표준 secp256k1(ECDSA) 서명과 함께 ML-DSA-87(Dilithium-5) 서명을 포함해야 합니다**. PQC 계정에서 보낸 클래식 전용 cosmos 트랜잭션은 거부됩니다.
+QoreChain은 cosmos 트랜잭션 경로에서 하이브리드 포스트 퀀텀 암호화(PQC)를 요구합니다. 현재 운영 중인 네트워크(v3.2.x)의 네트워크 기본값은 `hybrid_signature_mode = required`이며 `allow_classical_fallback = false`입니다 — 즉 **모든 cosmos 경로 트랜잭션은 표준 secp256k1(ECDSA) 서명과 함께 ML-DSA-87(Dilithium-5) 서명을 포함해야 합니다**. PQC 계정에서 보낸 클래식 전용 cosmos 트랜잭션은 거부됩니다.
 
 :::caution Cosmos 트랜잭션에는 하이브리드 PQC 확장이 필요합니다
-cosmos 경로에서 일반 클래식 트랜잭션을 보내면 거부됩니다. Dilithium-5 서명을 `PQCHybridSignature` 트랜잭션 확장으로 첨부해야 합니다. 표준 CosmJS / Keplr 툴링은 이 확장을 자체적으로 생성하지 않습니다 — `qorechaind tx pqc cosign` CLI 명령어, QoreChain SDK의 하이브리드 서명(아래 참고), 또는 직접 코드로 구현하려면 오픈소스 [**qorechain-pqc**](/developer-guide/post-quantum-signing) 라이브러리(`hybridSignBytes`)를 사용하세요. 유일한 예외는 제네시스 gentx와 PQC 키 등록/마이그레이션 트랜잭션입니다.
+cosmos 경로에서 일반 클래식 트랜잭션을 보내면 거부됩니다. Dilithium-5 서명을 `PQCHybridSignature` 트랜잭션 확장으로 첨부해야 합니다. 표준 CosmJS / Keplr 툴링은 이 확장을 자체적으로 생성하지 않습니다 — `qorechaind tx pqc cosign` CLI 명령어, QoreChain SDK의 하이브리드 서명(아래 참고), 또는 직접 코드로 구현하려면 오픈소스 [**qorechain-pqc**](/developer-guide/post-quantum-signing) 라이브러리(`hybridSignBytes`)를 사용하세요. 유일한 예외는 제네시스 gentx, PQC 키 등록/마이그레이션 트랜잭션, 그리고 등록된 키가 없는 운영자 계정의 unjail입니다.
 :::
 
 ### 작동 방식
@@ -131,16 +149,26 @@ cosmos 경로에서 일반 클래식 트랜잭션을 보내면 거부됩니다. 
 하이브리드 서명을 위한 포스트 퀀텀 키를 생성합니다.
 
 ```bash
-qorechaind tx pqc gen-key
+qorechaind tx pqc gen-key mypqc
 ```
 
-### 자동 등록
+이 명령은 키 이름을 받아 키를 `~/.qorechaind/pqc/<name>.dilithium`에 저장합니다(모드 `0600`, 암호화되지 않음). 공식 `qorechaind` 릴리스 바이너리가 필요합니다.
 
-첫 트랜잭션에 PQC 공개 키를 포함하면 QoreChain이 이를 자동으로 온체인에 등록합니다. 별도의 등록 절차는 필요하지 않습니다. (PQC 키 등록/마이그레이션 트랜잭션 자체는 하이브리드 요구사항에서 예외이므로, 계정은 첫 키를 부트스트랩할 수 있습니다.)
+### 키 등록하기 (한 번만) {#register-your-key}
+
+포스트 퀀텀 키는 계정당 한 번, 키 등록 트랜잭션으로 **명시적으로 등록**합니다. 이 트랜잭션(및 키 마이그레이션)은 완전히 새로운 계정이 부트스트랩할 수 있도록 클래식 방식으로 서명할 수 있으며, 그 이후에는 모든 Cosmos 레인 트랜잭션에 하이브리드 서명이 포함되어야 합니다.
+
+```bash
+# register the public key printed by gen-key for your account
+qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+PQC 키 파일을 니모닉만큼 신중하게 백업하세요. (키는 `qorechaind tx pqc recover-key`로 니모닉에서 다시 도출할 수 있으며, `tx pqc rotate-key`로 교체할 수 있습니다.) QoreX와 QoreChain SDK는 키를 대신 등록해 줍니다. 서명된 송금의 전체 예시는 [첫 번째 트랜잭션](/getting-started/first-transaction#register-pqc-key)을 참고하세요.
 
 ### SDK를 사용한 하이브리드 서명
 
-QoreChain SDK는 `includePqcPublicKey: true` 옵션과 함께 `buildHybridTx`를 통해 규격에 맞는 cosmos 트랜잭션을 생성하며, 이 과정에서 Dilithium-5 확장을 첨부하고 자동 등록을 위한 공개 키를 포함시킵니다. 자세한 내용은 [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc) 문서를 참고하세요.
+QoreChain SDK는 `buildHybridTx`로 규격에 맞는 Cosmos 레인 트랜잭션을 생성하며, 이 과정에서 Dilithium-5 확장을 첨부합니다. 계정의 키가 이미 등록되어 있어야 합니다(위 참고). [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc) 문서를 참고하세요.
 
 ### PQC 모드
 
@@ -154,8 +182,8 @@ QoreChain SDK는 `includePqcPublicKey: true` 옵션과 함께 `buildHybridTx`를
 
 활성 모드는 체인 레벨에서 설정되며 거버넌스를 통해 변경할 수 있습니다.
 
-:::note EVM / MetaMask는 영향을 받지 않습니다
-위의 MetaMask(EVM) 흐름은 하이브리드 요구사항의 영향을 받지 **않습니다**. EVM 트랜잭션은 별도의 `eth_secp256k1` ante 경로를 사용하며 PQC 확장이 전혀 필요하지 않습니다.
+:::caution EVM / MetaMask에는 PQC 키와 열린 창이 필요합니다
+위의 MetaMask(EVM) 흐름은 하이브리드 확장을 포함하지 않지만, v3.2.0부터 EVM 레인은 등록된 포스트 퀀텀 키가 있고 **EVM 인가 창**이 열려 있는 계정의 트랜잭션만 받아들입니다. [EVM 인가 창](/getting-started/first-transaction#evm-window)을 참고하세요.
 :::
 
 ## CLI 지갑

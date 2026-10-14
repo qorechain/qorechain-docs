@@ -7,7 +7,11 @@ sidebar_position: 11
 
 # BTC Yeniden Stake (Babylon)
 
-`x/babylon` modülü, Bitcoin'in proof-of-work sonlandırma garantilerini devralmak için QoreChain'i Babylon Protocol ile entegre eder. BTC yeniden stake yoluyla, QoreChain — Bitcoin protokolünün kendisinde herhangi bir değişiklik gerektirmeden — Bitcoin'in hash gücüyle desteklenen ikincil bir sonlandırma katmanı kazanır.
+`x/babylon` modülü, Bitcoin'in proof-of-work sonlandırma garantilerini devralmak için QoreChain'i Babylon Protocol ile entegre etmek üzere tasarlanmıştır. BTC yeniden stake yoluyla, QoreChain — Bitcoin protokolünün kendisinde herhangi bir değişiklik gerektirmeden — Bitcoin'in hash gücüyle desteklenen ikincil bir sonlandırma katmanı kazanacaktır.
+
+:::caution Tasarım aşaması
+Babylon entegrasyonu belirtilmiştir (specified), ancak işlemleri **canlı ağlarda etkin değildir**: modül genesis yapılandırmasında devre dışıdır (`enabled = false`); işlem servisi, sorgu servisi, CLI veya REST rotası yoktur ve hiçbir ağda (Babylon'a giden kanal dahil) açık bir IBC kanalı bulunmaz. Aşağıdakilerin tümü amaçlanan tasarımı açıklar; mesaj adları, REST yolları ve CLI komutları bugün kullanılamaz.
+:::
 
 ## Genel Bakış
 
@@ -21,7 +25,7 @@ Bu, yalnızca QoreChain'in kendi doğrulayıcı setine güvenmek yerine Bitcoin'
 
 ## BTC Stake Pozisyonları
 
-Kullanıcılar, bir Bitcoin stake işlemine atıfta bulunan bir `MsgBTCRestake` işlemi göndererek QoreChain'de BTC stake pozisyonları kaydedebilir.
+Kullanıcılar, bir Bitcoin stake işlemine atıfta bulunan bir `MsgBTCRestake` işlemi göndererek QoreChain'de BTC stake pozisyonları kaydedecektir.
 
 ### Kayıt Gereksinimleri
 
@@ -91,7 +95,7 @@ Babylon entegrasyonu, QoreChain'in yerel konsensüs sonlandırmasını tamamlaya
 
 | Sonlandırma Katmanı | Kaynak                     | Hız        | Güvenlik                                |
 | -------------- | -------------------------- | ------------ | --------------------------------------- |
-| **Birincil**    | QoreChain Konsensüs Motoru | \~5 saniye  | QOR stake + PQC imzaları tarafından desteklenir    |
+| **Birincil**    | QoreChain Konsensüs Motoru | \~3 saniye  | QOR stake + PQC imzaları tarafından desteklenir    |
 | **İkincil**  | Babylon + Bitcoin          | \~60 dakika | Bitcoin'in kümülatif hash gücüyle desteklenir |
 
 İkincil katman özellikle şunlar için değerlidir:
@@ -121,7 +125,9 @@ Modül aşağıdaki zincir üstü olayları yayar:
 | `btc_checkpoint`         | epoch, checkpoint\_id                    | Epoch kontrol noktası Babylon'a gönderildi          |
 | `babylon_epoch_complete` | epoch                                    | Babylon epoch'u Bitcoin zaman damgasıyla sonlandırıldı |
 
-## API Uç Noktaları
+## API Uç Noktaları (planlanan)
+
+Bu bölümdeki uç noktaların veya komutların hiçbiri bugün canlı ağlarda sunulmamaktadır ya da kullanılamamaktadır.
 
 ### REST
 
@@ -133,11 +139,13 @@ Modül aşağıdaki zincir üstü olayları yayar:
 
 ### JSON-RPC
 
+> **Henüz sunulmuyor:** yayımlanmış hiçbir düğüm sürümü `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bu çağrı bugün her herkese açık uç noktada `-32601` (yöntem bulunamadı) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
+
 | Yöntem                      | Parametreler         | Açıklama                                                      |
 | --------------------------- | ------------------ | ---------------------------------------------------------------- |
 | `qor_getBTCStakingPosition` | `address` (string) | Belirli QoreChain adresi için BTC stake pozisyonunu döndürür |
 
-## CLI Komutları
+## CLI Komutları (planlanan)
 
 ### Sorgu Komutları
 

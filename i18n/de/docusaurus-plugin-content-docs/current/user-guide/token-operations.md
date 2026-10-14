@@ -10,7 +10,11 @@ sidebar_position: 1
 Dieser Leitfaden behandelt den QOR-Token, das Senden und Empfangen von Token, das Abfragen von Guthaben sowie das Verständnis des Gebührenverteilungsmodells von QoreChain.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit der Chain-Version **v3.1.97** — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 live und läuft auf der v3.2-Linie (Node-Release **v3.2.1**; das Testnet läuft mit **v3.2.2**) — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
+:::
+
+:::caution Mit `tx pqc cosign` signieren
+Mainnet und Testnet verlangen bei jeder Transaktion auf der Cosmos-Lane eine hybride Post-Quanten-Signatur, daher werden die Befehle auf dieser Seite so, wie sie dastehen, nicht übertragen. Hängen Sie `--generate-only > tx.json` an einen Befehl an und führen Sie dann `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` aus. Siehe [Hybrides Signieren](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/overview) und das [Dashboard](/dashboard/overview) übernehmen dieses Signieren für Sie.
 :::
 
 ## Token-Informationen
@@ -32,7 +36,7 @@ So übertragen Sie QOR-Token von einem Konto auf ein anderes:
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Beispiel:** Senden Sie 5 QOR (5.000.000 uqor) an eine andere Adresse:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 Sie können für den Absender auch einen Schlüsselnamen anstelle einer rohen Adresse verwenden:
@@ -48,7 +52,7 @@ Sie können für den Absender auch einen Schlüsselnamen anstelle einer rohen Ad
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## Guthaben abfragen
@@ -85,33 +89,39 @@ Transaktionsgebühren auf QoreChain werden auf fünf Ziele verteilt, um die Netz
 | Ziel             | Anteil | Zweck                                                            |
 | --------------- | ----- | --------------------------------------------------------------- |
 | **Validatoren**  | 37%   | Belohnt Blockproduzenten und sichert das Netzwerk                |
-| **Verbrannt**    | 30%   | Wird dauerhaft aus dem Umlauf entfernt und erzeugt deflationären Druck |
+| **Verbrannt**    | 30%   | Wird dauerhaft aus dem Umlauf entfernt                           |
 | **Treasury**     | 20%   | Finanziert die Protokollentwicklung und Ökosystem-Grants         |
 | **Staker**       | 10%   | Proportional an alle Delegatoren verteilt                        |
-| **Light Nodes**  | 3%    | Belohnt Light-Node-Betreiber, die Netzwerkdaten bereitstellen    |
+| **Light Nodes**  | 3%    | Für Light-Node-Belohnungen reserviert (siehe Hinweis unten)      |
+
+Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transaktionsgebühren und die in jeder Epoche geprägte Staking-Emission enthält. Der Light-Node-Anteil sammelt sich in einer Reserve an; die Registrierung für Light-Node-Belohnungen ist noch nicht geöffnet, daher wird derzeit kein Node daraus bezahlt (siehe [Light Node](/light-node/overview)). Seit dem Upgrade v3.2.0 wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt (siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Burn-Kanäle
 
-QoreChain implementiert einen Multi-Channel-Burn-Mechanismus. QOR-Token werden über 10 verschiedene Kanäle dauerhaft aus dem Umlauf entfernt:
+Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davon verbrannt wird, wird dauerhaft aus dem Umlauf entfernt. Im Mainnet hat bisher nur der Gas-Gebühren-Kanal Burns verzeichnet; die anderen sind definiert, haben aber nichts verzeichnet.
 
-| Kanal                 | Beschreibung                                                          |
-| -------------------- | ---------------------------------------------------------------------- |
-| `tx_fee`             | Der 30%-Burn-Anteil jeder Transaktionsgebühr                           |
-| `governance_penalty` | Wird verbrannt, wenn Governance-Vorschläge das Quorum nicht erreichen oder abgelehnt werden |
-| `slashing_burn`      | Verbrannter Anteil von geslashten Validator-Stakes                     |
-| `bridge_fee`         | Bei Cross-Chain-Bridge-Transfers verbrannte Gebühr                     |
-| `spam_deterrent`     | Zusätzlicher Burn, der auf als Spam markierte Transaktionen angewendet wird |
-| `epoch_excess`       | Überschüssige Emissionen über dem Ziel, die an Epochen-Grenzen verbrannt werden |
-| `manual_burn`        | Von der Community initiierte Token-Burns per Governance-Vorschlag      |
-| `contract_callback`  | Bei Smart-Contract-Callback-Ausführungen verbrannte Gebühren           |
-| `cross_vm_fee`       | Wird verbrannt bei der Ausführung von Cross-VM-Aufrufen (z. B. EVM zu CosmWasm) |
-| `rollup_create`      | 1% des Mindest-Stakes werden beim Deployment eines neuen Rollups verbrannt |
+| Kanal               | Beschreibung                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `gas_fee`          | 30% aller Gas-Gebühren werden verbrannt                                          |
+| `contract_create`  | Pauschale Gebühr von 100 QOR wird pro Contract-Erstellung verbrannt (inaktiv: der CosmWasm-Upload ist geschlossen) |
+| `ai_service`       | 50% der KI-Dienstgebühren werden verbrannt (inaktiv: KI-Dienstgebühren sind nicht live) |
+| `bridge_fee`       | 100% der Bridge-Gebühren werden verbrannt (inaktiv: die Bridge ist nicht live)   |
+| `treasury_buyback` | Periodischer Buyback-and-Burn aus der Treasury                                   |
+| `failed_tx`        | Gas fehlgeschlagener Transaktionen; wird von der Chain ab v3.2.2 angewendet (bisher nur im Testnet) |
+| `xqore_penalty`    | xQORE-Strafen für vorzeitigen Ausstieg, die über Burn geleitet werden (xQORE ist nicht live) |
+| `auto_buyback`     | Automatisierte Burns auf Protokollebene (inaktiv)                                |
+| `tge`              | Reserviert; der TGE-Burn fand vor dem Genesis statt, und dieser Kanal verzeichnet nichts |
+| `rollup_create`    | 1% des Rollup-Erstellungs-Stakes werden verbrannt                                |
+| `milestone`        | Geplante Burns bei festen kumulativen Transaktionszahlen (bisher keiner ausgelöst) |
+| `amm`              | Reserviert für AMM-Protokollgebühren (keine verzeichnet)                         |
 
-Sie können den insgesamt über alle Kanäle verbrannten Betrag abfragen:
+Das Burn-Modul hat keine CLI-Abfrage; lesen Sie den kumulativen Burn je Quelle über REST:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+Die Antwort listet `total_burned` und `burns_by_source` (in uqor) auf. Das aktuelle Gesamtangebot liefert `qorechaind query bank total-supply-of uqor`.
 
 ## Tipps
 
@@ -122,7 +132,7 @@ qorechaind query bank total --denom uqor
 :::tip
 
 * Verwenden Sie das Flag `--dry-run`, um eine Transaktion zu simulieren, ohne sie zu übertragen.
-* Verwenden Sie `--gas auto`, damit der Node das für Ihre Transaktion benötigte Gas schätzt.
-* Die Mindestgebühr für eine Standardüberweisung beträgt **500 uqor**.
+* Setzen Sie `--gas` explizit (400.000 genügen für eine hybrid signierte Überweisung).
+* Die Gebühren-Untergrenze beträgt **0,1 uqor pro Gaseinheit**, ein Gaslimit von 400.000 erfordert also mindestens **40.000 uqor**.
 
 :::

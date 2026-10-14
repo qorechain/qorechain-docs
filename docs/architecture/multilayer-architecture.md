@@ -9,6 +9,10 @@ sidebar_position: 5
 
 QoreChain implements a **4-tier hierarchical chain architecture** through the `x/multilayer` module. The main chain serves as the settlement and trust root, while subsidiary layers (sidechains, paychains, and rollups) handle specialized workloads with different performance and security trade-offs.
 
+:::caution Early-stage capability
+The module is deployed on mainnet (chain version **v3.2.1**) and testnet, but **no layer and no anchor exists on either network yet**. Everything below describes the module as built; the parameters are the live values.
+:::
+
 ---
 
 ## System Overview
@@ -43,7 +47,7 @@ flowchart TD
     |  3-10 validators | |  500ms blocks  | |  4 settlement     |
     |  1,000 QOR min   | |  100 QOR min   | |    modes          |
     |  Max: 10         | |  Max: 50       | |  10,000 QOR min   |
-    +------------------+ +----------------+ |  Max: 100         |
+    +------------------+ +----------------+ |  Max: 100 (x/rdk) |
                                             +-------------------+
 ```
 
@@ -57,10 +61,10 @@ The main chain is the trust root for the entire QoreChain ecosystem.
 
 | Property   | Value                                                                          |
 | ---------- | ------------------------------------------------------------------------------ |
-| Consensus  | Full Triple-Pool CPoS (see [Consensus Mechanism](/architecture/consensus-mechanism)) |
+| Consensus  | QoreChain consensus (see [Consensus Mechanism](/architecture/consensus-mechanism) for what is wired today) |
 | Security   | PQC-secured with Dilithium-5 signatures                                        |
 | Role       | Settlement layer, state anchor storage, QCAI routing engine, trust root        |
-| Block time | \~5 seconds                                                                    |
+| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.0 second on testnet (measured October 2026) |
 
 All subsidiary layers periodically anchor their state roots to the main chain via Hierarchical Commitment Schemes (HCS).
 
@@ -89,14 +93,14 @@ Paychains are optimized for **high-frequency microtransactions** with minimal la
 
 ### Rollups
 
-Rollups are **application-specific chains** deployed via the Rollup Development Kit (`x/rdk`). They register as a rollup layer type within the multilayer module.
+Rollups are **application-specific chains** deployed via the Rollup Development Kit (`x/rdk`). When a rollup is created, the RDK registers a layer for it in the multilayer module (as a `sidechain`-type layer, see below).
 
 | Parameter              | Value                                       |
 | ---------------------- | ------------------------------------------- |
 | Settlement modes       | 4 (optimistic, zk, based, sovereign)        |
-| Maximum active rollups | 100                                         |
-| Minimum creator stake  | 10,000 QOR                                  |
-| Layer type             | `rollup`                                    |
+| Maximum registered rollups | 100 (`max_rollups`); but only 10 sidechain-type layers can exist at a time (`max_sidechains`), so at most 10 rollups can have an anchorable layer |
+| Minimum creator stake  | 10,000 QOR for the rollup, plus 1,000 QOR layer-registration stake (`min_sidechain_stake`) |
+| Layer type             | Rollups registered through the RDK use the `sidechain` layer type (the `rollup` layer type is defined but not yet used by `x/rdk`) |
 | Target domains         | DeFi, Gaming, NFT, Enterprise               |
 
 Rollup deployment and configuration is covered in detail in the [Rollup Development Kit](/architecture/rollup-development-kit).
@@ -162,7 +166,7 @@ Anchors are submitted to the main chain via `MsgAnchorState`. The keeper validat
 
 1. **Layer exists and is active** — The keeper verifies that the layer exists in state and currently has `active` status.
 2. **Minimum anchor interval elapsed** — The keeper checks that at least `min_anchor_interval` blocks (default: 100) have elapsed since the last anchor for this layer.
-3. **PQC aggregate signature** — The keeper ensures the PQC aggregate signature is present and valid for the anchor data.
+3. **PQC aggregate signature** — The keeper ensures the PQC aggregate signature is present and valid for the anchor data. The signature is checked against the **layer creator's** registered ML-DSA-87 key; an anchor is refused when the creator has no registered key.
 
 ### Challenge Period
 
@@ -170,14 +174,14 @@ Each anchor enters a **challenge period** of **24 hours** (86,400 seconds, confi
 
 After the challenge period expires without a successful dispute, the anchor is considered finalized.
 
-### Reading Anchors
+### Reading Anchors {#reading-anchors}
 
-As of chain version **v3.1.80**, anchors are also **readable** through the multilayer query service. Two queries expose anchor state over both gRPC and REST:
+Anchors are **readable** through the multilayer query service. Two queries expose anchor state over both gRPC and REST:
 
-* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returns the latest finalized state anchor for a layer.
+* **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returns the latest state anchor for a layer.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — returns the anchor history for a layer.
 
-Because each anchor carries a Dilithium-5 signature over the canonical message `layer_id || layer_height || state_root || validator_set_hash` (verified against the layer creator's registered PQC key), a client can fetch an anchor and verify it **offline**, without trusting the serving node. This is the on-chain primitive behind the Rollup Development Kit's [quantum-safe settlement receipts](/rollups/settlement-receipts).
+Each anchor carries a Dilithium-5 signature by the layer creator over the message `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. A newer chain release changes the signed message, so clients should not hard-code it. A signature proves that the registered creator key signed those bytes; whether the anchor exists is a question for the chain, so a verifier should read the anchor from a node it trusts. No layer or anchor exists on either network yet. This is the on-chain primitive behind the Rollup Development Kit's [settlement receipts](/rollups/settlement-receipts).
 
 ---
 

@@ -28,14 +28,22 @@ SDK-ul comunică cu un nod prin mai multe endpoint-uri:
 - **Cosmos REST (LCD)** — solduri bancare, informații despre cont, interogări de modul.
 - **RPC de consens** — folosit pentru semnarea/difuzarea tranzacțiilor native și
   pentru clientul de citire CosmWasm.
-- **EVM JSON-RPC** — apeluri standard `eth_*` plus spațiul de nume QoreChain `qor_*`
-  și precompile-urile EVM.
-- **SVM JSON-RPC** — RPC compatibil cu Solana pentru runtime-ul SVM.
+- **EVM JSON-RPC** — apeluri standard `eth_*`, `net_*`, `web3_*` și `txpool_*` pe
+  endpoint-urile publice. Spațiul de nume QoreChain `qor_*` și precompile-urile EVM
+  nu sunt încă disponibile acolo (vezi mai jos).
+- **SVM JSON-RPC** — RPC compatibil cu Solana pentru runtime-ul SVM (doar în citire
+  pe endpoint-urile publice; trimiterea de tranzacții SVM este dezactivată la nivelul
+  întregii rețele).
 
-Spațiul de nume JSON-RPC `qor_*` expune citiri specifice QoreChain, cum ar fi
-tokenomics, starea cheilor PQC, modul de semnătură hibridă, mesajele inter-VM și
-statisticile de rețea. În TypeScript acestea sunt metode tipizate pe `client.qor`
-(`QorClient`); aceeași suprafață există în SDK-urile Python, Go și Rust.
+Pe nodurile care îl activează, spațiul de nume JSON-RPC `qor_*` expune citiri
+specifice QoreChain, cum ar fi tokenomics, starea cheilor PQC, modul de semnătură
+hibridă, mesajele inter-VM și statisticile de rețea. În TypeScript acestea sunt
+metode tipizate pe `client.qor` (`QorClient`); aceeași suprafață există în SDK-urile
+Python, Go și Rust. Pe endpoint-urile publice folosește în schimb rutele REST (de
+exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC și
+`GET /qorechain/burn/v1/stats` pentru statisticile de ardere).
+
+> **Încă nedisponibil:** nicio versiune de nod lansată nu servește spațiul de nume JSON-RPC `qor_`, deci fiecare apel `qor_*` returnează `-32601` (metodă negăsită) pe fiecare endpoint public astăzi. Vezi [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ## Tokenuri și denominații
 
@@ -71,7 +79,9 @@ Vezi [Conturi și semnare PQC](/sdk/concepts/accounts-pqc) pentru căile de deri
 
 Modulul `x/crossvm` al QoreChain permite contractelor de pe un VM să declanșeze
 acțiuni pe altul. Calea EVM→nativ rulează on-chain prin **precompile-ul de punte
-inter-VM** (`@qorechain/evm`), iar SDK-ul oferă funcții ajutătoare tipizate de
+inter-VM** (`@qorechain/evm`; încă inactiv pe rețelele publice), iar SDK-ul oferă funcții ajutătoare tipizate de
 citire REST (`getCrossVmMessage`, `getPendingCrossVmMessages`, `getCrossVmParams`)
-plus `client.qor.getCrossVMMessage(...)` pentru a urmări starea mesajelor. Vezi
+plus `client.qor.getCrossVmMessage(...)` pentru a urmări starea mesajelor. Pe
+endpoint-urile publice, funcțiile ajutătoare REST și `client.qor` nu sunt servite;
+citește mesajele cu `connectQueryClients(rpc).crossvm`. Vezi
 [ghidul inter-VM](/sdk/guides/cross-vm).

@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChain, geliştiricilerin WebAssembly'ye derlenen güvenli, sandbox'lanmış Rust programları yazmasına olanak tanıyan **CosmWasm** akıllı sözleşmelerini destekler. CosmWasm sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.1.97** zincir sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. Test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 29 Haziran 2026'dan beri yayında olan ve **v3.2.1** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. v3.2.2 çalıştıran test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme şu anda açık izin gerektirir
-Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, sektör genelindeki bir CosmWasm güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır:
+Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, sektör genelindeki bir CosmWasm güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır (ana ağda şu anda hiç depolanmış sözleşme kodu yoktur):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+`MsgStoreCode`, `MsgInstantiateContract` ve `MsgInstantiateContract2` mesaj türleri de her iki ağda zincirin devre kesicisi (circuit breaker) tarafından kapatılmıştır (`qorechaind query circuit disabled-list`); bu nedenle bu girdiler kaldırılana kadar yalnızca izni yükseltmek yeterli değildir.
+
 Bu kısıtlama, zaten örneklenmiş sözleşmeleri etkilemez — mevcut bir sözleşmeye karşı `execute` ve `query` bu ayardan bağımsız olarak normal şekilde çalışır.
+:::
+
+:::caution `tx pqc cosign` ile imzalayın
+Ana ağ ve test ağı, her Cosmos şeridi (lane) işleminde hibrit bir kuantum-sonrası imza gerektirir; bu nedenle bu sayfadaki `tx` komutları yazıldığı gibi yayınlanmaz. Bunlar işlemi `--generate-only > tx.json` ile oluşturur; ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` ile imzalayıp yayınlayın (imzalayıcı, [indirme manifestosundaki](/developer-guide/running-a-node#fetch-the-manifest) sürüm ikili dosyasında bulunur; herkese açık kaynaktan derlenen sürümde yoktur). Ağ ücret tabanı **gas birimi başına 0,1 uqor**'dur ve `--gas-prices 0.1uqor` bunu ifade eder; hibrit imza, simülasyonun içermediği yaklaşık 47.000 gas ekler, bu yüzden `1.5` ayarı kullanılır. Bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -67,12 +73,11 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   İşlem onaylandıktan sonra, depolanan kod kimliğini (code ID) sorgulayın:
+   İşlem onaylandıktan sonra (`tx.json` dosyasını yukarıda açıklandığı gibi `tx pqc cosign` ile imzalayıp yayınlayın), depolanan kod kimliğini (code ID) sorgulayın:
 
    ```bash
    qorechaind query wasm list-code
@@ -86,9 +91,8 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | Bayrak               | Açıklama                                          |
@@ -101,7 +105,7 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
    Sözleşme adresini alın:
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **Çalıştırma (Execute)** — Durumu değiştirmek için bir sözleşmenin execute giriş noktasını çağırın:
@@ -110,8 +114,8 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    Fon ekleyerek çalıştırma:
@@ -121,7 +125,8 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **Sorgulama (Query)** — Bir işlem göndermeden sözleşme durumunu okuyun:
@@ -142,7 +147,7 @@ CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (B
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## VM'ler Arası Çağrılar
 
-CosmWasm sözleşmeleri, `x/crossvm` modülü aracılığıyla EVM ve SVM üzerinde dağıtılan sözleşmelerle etkileşime girebilir. CosmWasm'dan yapılan VM'ler arası çağrılar **asenkron** mesaj yolunu kullanır:
+VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall` işlemleri olarak gönderilir; mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın. CosmWasm sözleşmelerinin bugün VM'ler arası çağrı başlatmak için sözleşme tarafında bir bağlaması (binding) yoktur (sözleşmelerin yayabileceği özel bir `QoreChainMsg` mesajı bulunmaz); bu nedenle bir sözleşme, kendi `execute` giriş noktasının içinden bir EVM veya SVM sözleşmesini çağıramaz.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-Mesaj bir kuyruğa gönderilir ve bir sonraki blokta EndBlocker tarafından işlenir. Tam mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
+:::caution VM'ler arası çağrılar şu anda ana ağda kapalıdır
+`MsgCrossVMCall`, ana ağın devre kesici listesindedir (`qorechaind query circuit disabled-list`) ve SVM şeridi her iki ağda da devre dışıdır; dolayısıyla VM'ler arası yol bugün sıradan işlemler için kullanılamaz.
+:::
 
 ---
 
@@ -260,7 +253,8 @@ Sözleşme bir `--admin` adresiyle örneklendiyse, yönetici onu yeni bir kod ki
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 Bu, mevcut sözleşme durumuyla yeni kod üzerindeki `migrate` giriş noktasını çağırır.
@@ -271,4 +265,4 @@ Bu, mevcut sözleşme durumuyla yeni kod üzerindeki `migrate` giriş noktasın�
 
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — CosmWasm'dan EVM ve SVM sözleşmelerini çağırın
 * [SVM Geliştirme](/developer-guide/svm-development) — QoreChain üzerinde BPF programları dağıtın
-* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Solidity'den PQC ve AI özelliklerine erişin
+* [EVM Precompile'ları](/developer-guide/evm-precompiles) — Planlanan Solidity precompile'ları için başvuru (henüz hiçbiri etkin değil)

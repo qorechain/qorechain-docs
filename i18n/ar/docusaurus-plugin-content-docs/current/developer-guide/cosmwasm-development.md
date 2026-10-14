@@ -10,18 +10,24 @@ sidebar_position: 3
 تدعم QoreChain عقود **CosmWasm** الذكية، ما يتيح للمطورين كتابة برامج آمنة ومعزولة بلغة Rust تُجمَّع إلى WebAssembly. تعمل عقود CosmWasm جنباً إلى جنب مع برامج EVM وSVM ضمن بنية QoreChain ثلاثية الآلة الافتراضية.
 
 :::note
-تستخدم الأوامر أدناه الشبكة الرئيسية **`qorechain-vladi`**، العاملة منذ 7 يونيو 2026 بإصدار السلسلة **v3.1.97**. استبدل `--chain-id qorechain-diana` لشبكة الاختبار.
+تستخدم الأوامر أدناه الشبكة الرئيسية **`qorechain-vladi`** (العاملة منذ 29 يونيو 2026)، التي تشغّل إصدار العقدة **v3.2.1**. استبدل `--chain-id qorechain-diana` لشبكة الاختبار، التي تشغّل الإصدار v3.2.2.
 :::
 
 :::caution رفع الكود والتهيئة يتطلبان حالياً إذناً صريحاً
-حتى وقت كتابة هذا النص، تم ضبط كل من `code_upload_access` و`instantiate_default_permission` على **`Nobody`** على **كل من الشبكة الرئيسية وشبكة الاختبار** — أي أن `MsgStoreCode` و`MsgInstantiateContract` ليستا متاحتين لأي حساب بشكل افتراضي، وذلك تبعاً لتنبيه أمني صادر على مستوى صناعة CosmWasm بأكملها. ستحتاج إلى قرار حوكمة يمنح حسابك (أو قائمة عناوين محددة) إذن الرفع/التهيئة قبل أن تنجح الخطوات أدناه — تحقّق أولاً من المعاملات الفعلية على الشبكة، لأن هذا بالضبط نوع الإعداد الذي يمكن للحوكمة تغييره:
+حتى وقت كتابة هذا النص، تم ضبط كل من `code_upload_access` و`instantiate_default_permission` على **`Nobody`** على **كل من الشبكة الرئيسية وشبكة الاختبار** — أي أن `MsgStoreCode` و`MsgInstantiateContract` ليستا متاحتين لأي حساب بشكل افتراضي، وذلك تبعاً لتنبيه أمني صادر على مستوى صناعة CosmWasm بأكملها. ستحتاج إلى قرار حوكمة يمنح حسابك (أو قائمة عناوين محددة) إذن الرفع/التهيئة قبل أن تنجح الخطوات أدناه. تحقّق أولاً من المعاملات الفعلية على الشبكة، لأن هذا بالضبط نوع الإعداد الذي يمكن للحوكمة تغييره (لا يوجد حالياً أي كود عقد مخزَّن على الشبكة الرئيسية إطلاقاً):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
+أنواع الرسائل `MsgStoreCode` و`MsgInstantiateContract` و`MsgInstantiateContract2` متوقفة أيضاً بواسطة قاطع الدائرة في السلسلة على الشبكتين (`qorechaind query circuit disabled-list`)، لذا لا يكفي رفع الإذن وحده ما لم يتم رفع الإيقاف عن هذه الإدخالات.
+
 هذا القيد لا يؤثر على العقود التي سبق أن تمت تهيئتها — عمليتا `execute` و`query` على عقد قائم تعملان بشكل طبيعي بغض النظر عن هذا الإعداد.
+:::
+
+:::caution وقّع باستخدام `tx pqc cosign`
+تتطلب الشبكة الرئيسية وشبكة الاختبار توقيعاً هجيناً مقاوماً للحوسبة الكمومية على كل معاملة في مسار Cosmos، ولذلك لا تُبَثّ أوامر `tx` في هذه الصفحة كما هي مكتوبة. فهي تبني المعاملة باستخدام `--generate-only > tx.json`؛ ثم وقّعها وابثّها باستخدام `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` (يتضمن الملف التنفيذي المُصدَر من [قائمة التنزيل](/developer-guide/running-a-node#fetch-the-manifest) أداة التوقيع، أما البناء من الشيفرة المصدرية العامة فلا يتضمنها). حدّ الرسوم الأدنى في الشبكة هو **0.1 uqor لكل وحدة غاز**، وهو ما يعبّر عنه `--gas-prices 0.1uqor`؛ ويضيف التوقيع الهجين نحو 47,000 وحدة غاز لا تشملها المحاكاة، ومن هنا جاء معامل التعديل `1.5`. راجع [التوقيع ما بعد الكمومي](/developer-guide/post-quantum-signing).
 :::
 
 ---
@@ -67,12 +73,11 @@ rustup target add wasm32-unknown-unknown
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   بعد تأكيد المعاملة، استعلم عن معرّف الكود المخزَّن:
+   بعد تأكيد المعاملة (وقّع `tx.json` وابثّه باستخدام `tx pqc cosign` كما هو موضح أعلاه)، استعلم عن معرّف الكود المخزَّن:
 
    ```bash
    qorechaind query wasm list-code
@@ -86,9 +91,8 @@ rustup target add wasm32-unknown-unknown
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | العلامة              | الوصف                                          |
@@ -101,7 +105,7 @@ rustup target add wasm32-unknown-unknown
    استرجع عنوان العقد:
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **التنفيذ** — استدعِ نقطة دخول التنفيذ في العقد لتغيير الحالة:
@@ -110,8 +114,8 @@ rustup target add wasm32-unknown-unknown
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    التنفيذ مع إرفاق أموال:
@@ -121,7 +125,8 @@ rustup target add wasm32-unknown-unknown
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **الاستعلام** — اقرأ حالة العقد دون إرسال معاملة:
@@ -142,7 +147,7 @@ rustup target add wasm32-unknown-unknown
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## استدعاءات عبر الآلات الافتراضية
 
-يمكن لعقود CosmWasm التفاعل مع العقود المنشورة على EVM وSVM من خلال وحدة `x/crossvm`. تستخدم الاستدعاءات عبر الآلات الافتراضية من CosmWasm مسار الرسائل **غير المتزامن**:
+تُرسَل الاستدعاءات عبر الآلات الافتراضية على هيئة معاملات `MsgCrossVMCall` من خلال وحدة `x/crossvm`؛ راجع [التشغيل البيني عبر الآلات الافتراضية](/developer-guide/cross-vm-interoperability) للاطلاع على دورة حياة الرسالة. لا يوجد حالياً ربط من جهة العقد لبدء استدعاء عبر الآلات الافتراضية (فلا توجد رسالة `QoreChainMsg` مخصصة يمكن للعقود إصدارها)، ولذلك لا يستطيع العقد استدعاء عقد EVM أو SVM من داخل نقطة الدخول `execute`.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-تُرسَل الرسالة إلى قائمة انتظار وتتم معالجتها بواسطة EndBlocker في الكتلة التالية. راجع [التشغيل البيني عبر الآلات الافتراضية](/developer-guide/cross-vm-interoperability) للاطلاع على دورة حياة الرسالة الكاملة.
+:::caution الاستدعاءات عبر الآلات الافتراضية متوقفة حالياً على الشبكة الرئيسية
+الرسالة `MsgCrossVMCall` مدرجة في قائمة قاطع الدائرة على الشبكة الرئيسية (`qorechaind query circuit disabled-list`)، ومسار SVM معطّل على الشبكتين، ولذلك فإن مسار الاستدعاء عبر الآلات الافتراضية غير قابل للاستخدام في المعاملات العادية اليوم.
+:::
 
 ---
 
@@ -260,7 +253,8 @@ let delegate_msg = StakingMsg::Delegate {
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 يستدعي هذا نقطة الدخول `migrate` في الكود الجديد مع حالة العقد الحالية.
@@ -271,4 +265,4 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 * [التشغيل البيني عبر الآلات الافتراضية](/developer-guide/cross-vm-interoperability) — استدعِ عقود EVM وSVM من CosmWasm
 * [تطوير SVM](/developer-guide/svm-development) — انشر برامج BPF على QoreChain
-* [إضافات EVM المدمجة](/developer-guide/evm-precompiles) — الوصول إلى ميزات التشفير ما بعد الكمومي والذكاء الاصطناعي من Solidity
+* [إضافات EVM المدمجة](/developer-guide/evm-precompiles) — مرجع لإضافات Solidity المدمجة المخطط لها (لا توجد أي منها مفعّلة بعد)

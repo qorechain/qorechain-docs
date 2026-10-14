@@ -7,29 +7,31 @@ sidebar_position: 6
 
 # إيصالات التسوية الآمنة كمومياً
 
-**إيصال التسوية** هو إثبات محمول وقائم بذاته على أن دفعة التسوية الخاصة بـ rollup
-قد تم تثبيتها (anchored) على السلسلة الرئيسية بموجب توقيع ما بعد الكم.
-وهو يربط دفعة محددة بالمرساة (anchor) المسجلة على السلسلة التي وثّقت حالة
-الـ rollup عند ذلك الارتفاع، ويمكن التحقق منه **دون اتصال بالإنترنت بالكامل** —
-لا حاجة إلى عقدة، ولا إلى الثقة في مسار الشبكة لدى الجهة المتحقِّقة.
+**إيصال التسوية** هو سجل محمول يثبت أن دفعة التسوية الخاصة بـ rollup قد تم تثبيتها (anchored) على السلسلة الرئيسية بموجب توقيع ما بعد الكم. وهو يسمّي الـ rollup والدفعة والمرساة، ويحمل توقيع **ML-DSA-87** ‏(Dilithium-5، ‏FIPS-204) الخاص بالمرساة، وهو نفس المخطط الذي تستخدمه السلسلة الرئيسية.
 
-توقيع المرساة هو **ML-DSA-87** ‏(Dilithium-5، ‏FIPS-204)، وهو نفس مخطط
-ما بعد الكم الذي تستخدمه السلسلة الرئيسية، وبذلك يرث الإيصال سلامة السلسلة
-الأساسية الآمنة كمومياً.
+:::caution مرحلة مبكرة: لا توجد مراسٍ بعد
+تعتمد الإيصالات على المراسي، و**لا يوجد أي rollup أو مرساة على أيٍّ من الشبكتين حتى الآن**. وعلى الشبكة الرئيسية لا يكتب الـ RDK المراسي بعد: تُسجَّل دفعات التسوية، لكن خطوة التثبيت تُتخطّى. تعامل مع هذه الصفحة على أنها وصف للتصميم ولمكوّناته الأساسية، وليست وصفًا لخدمة يمكنك الاعتماد عليها اليوم.
+:::
 
-## رسالة المرساة القانونية
+## الإيصال ادّعاء وليس دليلًا {#a-receipt-is-a-claim}
 
-يتحقق التحقُّق من توقيع Dilithium-5 على رسالة قانونية (canonical) مبنية من
-حقول المرساة، مُسلسلة بهذا الترتيب الدقيق:
+كل حقل في الإيصال يوفّره من يسلّمه إليك. والتحقق من التوقيع مقابل مفتاح أُعطيتَ إياه يُظهر أن شخصًا ما يحمل ذلك المفتاح قد وقّع تلك البايتات؛ لكنه لا يُظهر أن QoreChain ثبّتت أي شيء. ولذلك تحتاج الجهة المتحقِّقة إلى عميل متصل بعقدة QoreChain تثق بها، وتعيد قراءة الادّعاء من حالة السلسلة: الـ rollup وطبقته، والدفعة وجذر حالتها، والمرساة، ومفتاح ما بعد الكم المسجَّل للمنشئ.
+
+## ما الذي توقّعه المرساة {#what-the-anchor-signs}
+
+يُنشأ توقيع المرساة بواسطة مفتاح ML-DSA-87 المسجَّل الخاص بـ**منشئ الـ rollup**. وعلى الشبكة الرئيسية اليوم تكون الرسالة الموقَّعة هي
 
 ```
 layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
 ```
 
-تنتج الدالة `anchorSignBytes(...)` هذه البايتات؛ وتعيد الجهة المتحقِّقة بناءها من
-الإيصال ثم تفحص التوقيع مقابل مفتاح ML-DSA-87 المسجل الخاص بمنشئ الطبقة.
+يغيّر إصدار أحدث للسلسلة الرسالة الموقَّعة، لذا لا تُدرجها في الشيفرة بقيمة ثابتة: اقرأ بايتات التوقيع الخاصة بالشبكة التي تستهدفها. والمرساة كائن على مستوى الطبقة: فهي لا تسمّي الـ rollup ولا الدفعة، ولذلك تربط الجهة المتحقِّقة بينهما عبر قراءات من السلسلة (راجع [البنية متعددة الطبقات](/architecture/multilayer-architecture#reading-anchors)).
 
-## البناء والتحقق (TypeScript)
+## قراءة المراسي {#reading-anchors}
+
+يمكن قراءة المراسي عبر REST وgRPC ‏(`/qorechain/multilayer/v1/anchor/{layer_id}` لأحدث مرساة و`/qorechain/multilayer/v1/anchors/{layer_id}` للسجل)، ويمكن قراءة مفتاح ما بعد الكم المسجَّل لحساب ما عبر `/qorechain/pqc/v1/account/{address}`. وتُقرأ دفعات الـ rollup بالأمر `qorechaind query rdk batch [rollup-id]` (مسارات REST الخاصة بالـ RDK غير متاحة على الشبكة الرئيسية اليوم).
+
+## البناء والتحقق (TypeScript) {#build-and-verify}
 
 ```ts
 import {
@@ -38,68 +40,27 @@ import {
   verifySettlementReceipt,
 } from "@qorechain/rdk";
 
-// The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2);
-// pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-// Build a portable receipt for one batch.
-const receipt = await buildSettlementReceipt(rdk, "my-roll", 7);
+// Build a receipt for one batch (throws if no anchor covers the batch yet).
+const receipt = await buildSettlementReceipt(rdk, "my-rollup", 7);
 
-// Persist it, ship it, hand it to a counterparty — it is self-contained JSON.
-
-// Verify fully offline. With no client, you must supply the creator's key.
-const result = await verifySettlementReceipt(receipt, {
-  creatorPublicKey: "<layer creator ML-DSA-87 public key>",
-});
-
-console.log(result.valid); // true when the signature and the batch↔anchor binding both hold
+// Verify it against chain state — pass a client; a receipt on its own proves nothing.
+const result = await verifySettlementReceipt(receipt, { client: rdk });
+console.log(result.valid);
 ```
 
-إذا مرّرت `client` بدلاً من `creatorPublicKey` (أو إلى جانبه)، فإن التحقق
-يجلب مفتاح ML-DSA-87 المسجل لمنشئ الطبقة من السلسلة
-(`getPqcAccount(address)`). ثم يفحص التحقق أمرين:
+مرّر `client` عند كل عملية تحقق. استخدم أحدث إصدار منشور من عميل RDK الخاص بك: فقد تغيّرت واجهة الإيصالات وفحوصاتها بين الإصدارات، وتوفّر عملاء Python وGo وRust وJava نفس واجهة البناء/التحقق (وهي تُجري تحقق ML-DSA-87 عبر مكتبة [`qorechain-pqc`](https://github.com/qorechain)).
 
-1. **توقيع Dilithium-5** على رسالة المرساة القانونية، و
-2. **ربط جذر الحالة بين الدفعة والمرساة (batch ↔ anchor)** — أي أن الدفعة التي
-   بحوزتك هي نفسها التي وثّقتها المرساة.
+:::note قيود العملاء الحالية
+تبحث عملاء RDK المنشورة عن مفتاح المنشئ عبر مسار لا تخدمه السلسلة الحيّة، ولذلك لا يكتمل التحقق عبر الإنترنت بعد على الشبكات الحيّة. وإلى أن يعالج أحد إصدارات العملاء هذا الأمر، استخدم الإيصال فقط كسجل تقارنه بالمرساة التي تقرؤها من عقدتك الخاصة.
+:::
 
-```ts
-// Online verification: fetch the creator's PQC key from the chain.
-const online = await verifySettlementReceipt(receipt, { client: rdk });
-```
-
-## قراءة المراسي
-
-تُبنى الإيصالات من استعلام **Anchor** الخاص بوحدة `x/multilayer` على السلسلة،
-وهو متاح عبر gRPC وREST معاً اعتباراً من إصدار السلسلة **v3.1.80** (راجع
-[نقاط نهاية REST / gRPC‏](/api-reference/rest-grpc-endpoints#multilayer-module)).
-عمليات القراءة:
-
-- `getAnchor(layerId)` — المرساة الخاصة بطبقة معينة.
-- `getLatestAnchor()` — أحدث مرساة.
-- `getAnchors(layerId)` — سجل المراسي الخاص بطبقة معينة.
-- `getPqcAccount(address)` — حساب ما بعد الكم المسجل (مفتاح ML-DSA-87 الخاص
-  به)، ويُستخدم للتحقق من توقيع المنشئ.
-
-## واجهة سطر الأوامر (CLI)
+## واجهة سطر الأوامر (CLI) {#cli}
 
 ```bash
-# Build a receipt and print it.
-qorollup receipt my-roll 7
-
-# Build, then verify it inline.
-qorollup receipt my-roll 7 --verify
-
-# Build and write it to a file.
-qorollup receipt my-roll 7 --out receipt.json
+qorollup receipt my-rollup 7                 # build and print
+qorollup receipt my-rollup 7 --out receipt.json
 ```
 
-راجع [نشر Rollup‏](/rollups/deploying-a-rollup) للاطلاع على واجهة سطر الأوامر
-الكاملة للمشغّل `qorollup`.
-
-## اللغات الأخرى
-
-توفر عملاء Python وGo وRust وJava ‏(JVM) نفس واجهة البناء/التحقق.
-وهي تُجري تحقق ML-DSA-87 عبر مكتبة
-[`qorechain-pqc`](https://github.com/qorechain) بدلاً من تطبيق JavaScript
-مضمّن؛ ثبّتها إلى جانب عميل RDK الخاص بلغتك.
+راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على واجهة سطر الأوامر الكاملة للمشغّل `qorollup`.

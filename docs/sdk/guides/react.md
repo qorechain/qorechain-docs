@@ -15,7 +15,22 @@ provider, a handful of hooks, and two drop-in components — including a one-lin
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) is a peer dependency; `@qorechain/sdk` is a direct dependency.
+`react` (>=18) is a peer dependency; `@qorechain/sdk` is a direct dependency,
+pinned to the same version as the kit. Use `@qorechain/react` **0.8.3 or later**:
+0.8.0 pins SDK 0.8.0, which signs the wrong hybrid form on mainnet, and earlier
+0.8.x releases can show a stale balance or status after an address change.
+
+:::caution Live-network limits of the React kit (0.8.x)
+`useTx` sends with the connected wallet's classical signature only, which the
+live networks reject (the Native path requires the hybrid ML-DSA-87 extension), so
+`send` / `sendTokens` cannot land a transaction on mainnet or testnet; use the
+SDK's [hybrid builders](/sdk/concepts/accounts-pqc#hybrid-signing) for sends.
+`usePqcStatus` and `<QuantumSafeBadge/>` read `qor_getPQCKeyStatus`, which the
+public endpoints do not serve (see
+[the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)), so they cannot
+confirm a key against `*.qore.host`. Balance reads (`useBalance`) and wallet
+connection work.
+:::
 
 ## Provider
 
@@ -31,9 +46,9 @@ function Root() {
       config={{
         network: "testnet",
         endpoints: {
-          rpc: "https://rpc.testnet.example",
-          rest: "https://rest.testnet.example",
-          evmRpc: "https://evm.testnet.example",
+          rpc: "https://rpc-testnet.qore.host",
+          rest: "https://api-testnet.qore.host",
+          evmRpc: "https://evm-testnet.qore.host",
         },
       }}
     >

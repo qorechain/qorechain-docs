@@ -7,7 +7,7 @@ sidebar_position: 5
 
 # Sicurezza e recupero
 
-Tutto ciò che riguarda la protezione e il recupero del tuo wallet si trova in **Settings → Security dashboard**. Anche la scheda Home mostra una card **Backup health** che continua ad avvisarti finché il recupero sociale non è configurato.
+Tutto ciò che riguarda la protezione e il recupero del tuo wallet si trova in **Settings → Security**. Anche la scheda Home mostra una card **Backup health** che continua ad avvisarti finché il recupero sociale non è configurato. La card tiene traccia solo del recupero sociale: non può sapere se hai annotato la tua frase di recupero, quindi fallo tu stesso (vedi sotto).
 
 ## Esegui subito il backup — nessuno può recuperare un wallet perso al posto tuo {#back-up-now}
 
@@ -16,35 +16,35 @@ QoreX è **non-custodial**: le tue chiavi esistono solo sul tuo dispositivo, e Q
 
 **Fai almeno una di queste cose — subito dopo aver creato il tuo wallet, non più tardi:**
 
-1. **Scrivi la tua frase di recupero di 24 parole** e conservala offline e in un luogo durevole (non uno screenshot, non una nota sincronizzata sul cloud, non un messaggio a te stesso). È l'unica cosa in grado di ripristinare il tuo wallet su qualsiasi dispositivo, in qualsiasi momento — su mobile, il ripristino diretto dalla frase richiede la versione **1.0.4 o successiva** (le build precedenti offrono solo il percorso tramite guardian; vedi [Ripristinare un wallet esistente](/qorex/getting-started#2-restore-an-existing-wallet)). L'estensione ripristina sempre direttamente dalla frase, in ogni versione.
+1. **Scrivi la tua frase di recupero di 24 parole** e conservala offline e in un luogo durevole (non uno screenshot, non una nota sincronizzata sul cloud, non un messaggio a te stesso). È l'unica cosa in grado di ripristinare il tuo wallet su qualsiasi dispositivo, in qualsiasi momento — su mobile, mostrala da **Settings → Security → Reveal recovery phrase** (l'app **non** la mostra mentre crea il wallet, quindi devi andare a prenderla tu — fallo subito); nell'estensione viene mostrata una sola volta quando crei il wallet, e in qualsiasi momento da **Reveal recovery phrase** nel popup. Vedi [Ripristinare un wallet esistente](/qorex/getting-started#2-restore-an-existing-wallet).
 2. **Configura il [recupero sociale](#social-recovery)** con guardian di cui ti fidi. Questo ti permette di recuperare il tuo wallet anche se perdi la frase, senza che un singolo guardian possa mai accedere da solo ai tuoi fondi.
 
 Fare entrambe le cose è l'opzione più sicura — la frase ti protegge se cambi dispositivo o l'app non è disponibile; i guardian ti proteggono se perdi la frase stessa.
 
-**Disinstallare l'app elimina le tue chiavi da quel dispositivo.** Il vault dell'app mobile e il vault dell'estensione del browser vivono ciascuno solo sul dispositivo che li ha creati. Disinstallare l'app, ripristinare il telefono o rimuovere/cancellare l'estensione elimina quella copia — senza backup e senza un dispositivo collegato, il tuo wallet non può essere recuperato da nessuno, QoreChain inclusa.
+**Disinstallare l'app elimina le tue chiavi da quel dispositivo.** Il vault dell'app mobile e il vault dell'estensione del browser vivono ciascuno solo sul dispositivo che li ha creati. Disinstallare l'app, ripristinare il telefono o rimuovere/cancellare l'estensione elimina quella copia — senza backup e senza un dispositivo collegato, il tuo wallet non può essere recuperato da nessuno, QoreChain inclusa. **Rimuovere un wallet da un telefono o da un browser** (Settings → Wallets → *Remove from this phone*, oppure *Remove from this browser* nell'estensione) elimina allo stesso modo la chiave di quel wallet dal dispositivo — i tuoi fondi restano on-chain, ma solo la sua frase di recupero può riportarlo indietro.
 :::
 
 ## Chiave post-quantistica {#pqc-key}
 
-La Security dashboard mostra lo stato on-chain in tempo reale della tua chiave post-quantistica: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. L'algoritmo è **ML-DSA-87** (deterministico, ibrido con secp256k1).
+La schermata **Security** mostra lo stato on-chain in tempo reale della tua chiave post-quantistica: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. L'algoritmo è **ML-DSA-87** (deterministico, ibrido con secp256k1).
 
-**Rotazione della chiave** — la rotazione della tua chiave post-quantistica (un'operazione on-chain `MsgRotatePQCKey`) richiede una nuova cerimonia biometrica e **non è mai automatizzata**. Vedi [Key rotation](/developer-guide/post-quantum-signing#key-rotation) per il meccanismo sottostante.
+**Rotazione della chiave** — la rotazione della tua chiave post-quantistica (un'operazione on-chain `MsgRotatePQCKey`) **non è ancora disponibile all'interno di QoreX**; arriverà con un successivo aggiornamento di gestione delle chiavi, richiederà una nuova conferma biometrica e **non è mai automatizzata**. I siti web non possono chiedere a QoreX di registrare, migrare o ruotare la tua chiave post-quantistica. Vedi [Key rotation](/developer-guide/post-quantum-signing#key-rotation) per il meccanismo sottostante.
 
 ## Recupero sociale {#social-recovery}
 
 Il recupero sociale permette a **guardian** fidati di aiutarti a ripristinare il tuo wallet senza mai vedere la tua frase di recupero.
 
-- Il tuo seed viene suddiviso in **share sigillate con ML-KEM** distribuite ai guardian secondo uno schema a **soglia** (t-of-n): un numero qualsiasi di *t* dei tuoi *n* guardian può aiutarti a recuperare, ma un numero inferiore no.
+- Il tuo seed viene suddiviso in **share sigillate con ML-KEM** — tre per impostazione predefinita, di cui due qualsiasi possono aiutarti a recuperare (uno schema a soglia 2-of-3); una sola non può.
 - Ogni guardian riceve una credenziale. La configurazione non scrive nulla di leggibile sul relay — solo buste opache e sigillate.
 - Un recupero richiede l'approvazione della soglia di guardian, poi esegue un **timelock di 48 ore** e ti invia un **avviso di annullamento**, così che un tentativo malevolo possa essere fermato.
 
-**Configuralo:** Security dashboard → Social recovery → scegli i tuoi guardian e la soglia. L'avviso Backup health scompare una volta completata questa operazione.
+**Configuralo:** Home → **Set up recovery** (oppure Settings → Security → Social recovery) → **Create guardian credentials**. QoreX crea tre credenziali — *Guardian 1*, *Guardian 2* e un *Printable backup* — e **2 su 3** qualsiasi possono aiutarti a recuperare. Consegnane una a ciascuna persona o dispositivo di fiducia e conserva il backup stampabile in un luogo sicuro. L'avviso Backup health scompare una volta completata questa operazione.
 
 **Approva il recupero di qualcun altro:** se sei un guardian per qualcuno, usa **Help recover** nella scheda Home per approvare la sua richiesta.
 
 ## Legacy Protocol {#legacy}
 
-**Legacy Protocol** è l'eredità quantum-safe: un dead-man's switch sovrapposto ai tuoi guardian, così che i tuoi asset possano passare ai beneficiari da te scelti se diventi irraggiungibile. È opzionale e si configura dalla Security dashboard.
+**Legacy Protocol** è l'eredità quantum-safe: un dead-man's switch sovrapposto ai tuoi guardian, così che i tuoi asset possano passare ai beneficiari da te scelti se diventi irraggiungibile. È opzionale e si configura da Settings → Security.
 
 ## Collegare un nuovo dispositivo {#link-device}
 
@@ -60,13 +60,51 @@ Sposta il tuo wallet su un secondo telefono o tablet **senza server e senza digi
 Il collegamento del dispositivo è una **comodità**, non un metodo di recupero. La tua frase di 24 parole e il recupero sociale sono le tue vere reti di sicurezza.
 :::
 
+## Finestra di accesso EVM {#evm-window}
+
+Dalla chain **v3.2.0**, una transazione sulla **lane EVM** — per esempio una che firmi in MetaMask sulla rete EVM di QoreChain — viene ammessa solo da un account che ha una **chiave post-quantistica registrata** *e* una **finestra di autorizzazione aperta**. Aprire una finestra è un messaggio della lane Native di QoreChain che MetaMask non può produrre, quindi è in QoreX che la apri. Gli invii di QoreX stesso usano la lane Native e non hanno mai bisogno di una finestra.
+
+Aprila nell'app da **Settings → Security → EVM access window**, oppure con il pulsante **EVM access window** nel popup dell'estensione. Scegli tu:
+
+| Campo | Significato | Limite |
+|---|---|---|
+| **How long (blocks, max 17280)** | per quanto tempo la finestra resta aperta | fino a 17.280 blocchi (circa 15 ore sulla mainnet) |
+| **How many transactions (max 1000)** | quante transazioni EVM ammette | fino a 1.000 |
+| **Spending cap, QOR — covers each amount sent PLUS its maximum fee** | il massimo che lascia passare | conta il valore **più** la commissione massima di ogni transazione |
+
+I valori predefiniti sono 300 blocchi (circa 16 minuti sulla mainnet), 5 transazioni e 1 QOR. L'apertura costa una normale commissione di rete ed è firmata con la consueta firma post-quantistica ibrida, e una nuova finestra **sostituisce** qualsiasi finestra già aperta. Aprirla fa anche avanzare il nonce del tuo account, quindi apri la finestra **per prima**, poi invia da MetaMask — una transazione preparata in precedenza verrà rifiutata con "nonce too low". **Close the window** viene offerto solo mentre una finestra è attiva.
+
+La schermata mostra uno di quattro stati: *Open for \{blocks\} more blocks · \{txs\} transactions · \{value\} QOR left*; *No window is open. MetaMask transactions from this account are refused.*; *That window has expired or is used up*; oppure *QoreX could not read the window from the network* — il che significa che QoreX non lo sa, **non** che non ne hai una. Se il tuo account non ha ancora una chiave post-quantistica, registrane una prima (il tuo primo trasferimento QoreX lo fa); una finestra non serve a nulla prima di allora.
+
+:::caution Tienila piccola e breve
+Una finestra permette a normali transazioni MetaMask di spostare i tuoi QOR **senza una firma post-quantistica**. Mantieni i limiti bassi e chiudi la finestra quando hai finito.
+:::
+
+QoreX stesso non invia mai sulla lane EVM di QoreChain; usa MetaMask o un altro wallet EVM per quello, all'interno di una finestra aperta. (Inviare ETH, BNB e altri asset su *altre* reti da QoreX è una cosa diversa — vedi [Reti e token esterni](/qorex/send-and-receive#external-networks-tokens).)
+
+## Cosa mostra la finestra di approvazione {#approvals}
+
+Ogni firma prodotta da QoreX è approvata da te, e l'approvazione elenca esattamente ciò che stai firmando. QoreX mostra:
+
+- un titolo e campi etichettati per **ogni messaggio** della richiesta, compresi i messaggi annidati in un **MsgExec** authz e i termini delle concessioni di permessi — e **rifiuta** tutto ciò che non riesce a mostrare ("QoreX cannot read this message … Approve only if you trust this site completely");
+- la **commissione** (*Fee: \{amount\} · gas \{gas\}*), chi la paga ed eventuali fee grant — se la commissione non può essere letta, QoreX lo dice e ti avvisa di non approvare;
+- il **limite, l'azione consentita e la scadenza** delle autorizzazioni di spesa e delle concessioni authz, con *UNLIMITED* e *NEVER* scritti per esteso. Tutto ciò che è illeggibile, illimitato o senza fine richiede un **secondo tocco** su Approve (*Tap again to approve*);
+- l'account firmatario (*Signed by …*) quando ne hai più di uno;
+- per una richiesta con un numero molto elevato di messaggi, i primi 50 e il conteggio dei restanti.
+
+Un cambio di wallet o di account, o il blocco del wallet, risponde "no" alle richieste in attesa; un sito può avere una richiesta in attesa, e in totale ne possono attendere tre. In alcune build i nomi dei campi nelle finestre di approvazione sono mostrati in inglese.
+
+## La tua frase di recupero e gli strumenti di accessibilità {#phrase-privacy}
+
+La schermata della frase di recupero è nascosta agli screenshot e al selettore di app. Su **Android 14 e successivi** le parole sono inoltre sottratte ai servizi di accessibilità che non sono veri strumenti di accessibilità (TalkBack e gli altri veri screen reader possono comunque leggerle). Su Android più vecchio e su iOS le parole sono nascoste per impostazione predefinita agli screen reader; se ti affidi a uno screen reader, tocca l'avviso su quella schermata per permettergli di leggerle. Mostra la frase solo quando nessuno può vedere il tuo schermo.
+
 ## dApp collegate {#connected-dapps}
 
-Le connessioni alle dApp sono **per-origin** e **legate alla sessione**: chiudendo il browser dApp integrato nell'app si revocano tutte le connessioni. Puoi rivedere e disconnettere le connessioni attive nella Security dashboard.
+Le connessioni alle dApp sono **per-origin**. Nell'app sono anche **legate alla sessione**: chiudendo il browser dApp integrato nell'app si revocano tutte le connessioni, quindi nulla resta connesso in background (la card **Connected dApps** in Settings → Security lo dice semplicemente). Nell'estensione del browser le connessioni persistono finché non le rimuovi — apri **Connected sites** nel popup per vedere ogni sito approvato da questo wallet e **Revoke** per revocarne uno qualsiasi.
 
 ## Firmatari collegati e limiti di spesa {#linked-signers}
 
-Quando colleghi chiavi esterne (Phantom / MetaMask) tramite la [Dashboard](/qorex/account-and-dashboard#dashboard), ognuna riceve **permessi con ambito definito** e una **SpendingRule** che viene applicata **on-chain**, non solo nell'interfaccia. La gestione delle chiavi non può mai essere delegata a una chiave collegata. Vedi [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) per il modello on-chain. La dashboard mostra sempre la verità on-chain corrente.
+Collegare una chiave esterna (Phantom o MetaMask) come **firmatario collegato** con propri limiti di spesa **non è ancora disponibile all'interno di QoreX** — Settings → Security mostra la card, con l'azione contrassegnata *coming*. Nulla è collegato al tuo wallet a meno che tu non l'abbia fatto da solo al di fuori di QoreX. La gestione delle chiavi non può mai essere delegata a una chiave collegata. Per il modello on-chain, vedi [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators).
 
 ## Q-Day Scanner {#q-day-scanner}
 
@@ -75,7 +113,7 @@ Il **Q-Day Scanner** ti permette di inserire qualsiasi indirizzo — il tuo o qu
 ## Il modello di sicurezza, in breve
 
 1. **Non-custodial** — le chiavi vengono generate sul dispositivo, risiedono in vault supportati dall'hardware (mobile) o in un vault cifrato (estensione), e non lo lasciano mai.
-2. **Niente senza consenso** — ogni connessione è per-origin, ogni firma è approvata individualmente (biometrica su mobile) e i payload vengono sempre decodificati prima della firma.
-3. **Quantum-safe per impostazione predefinita** — i trasferimenti QOR sulla Native-lane portano sempre ML-DSA-87 + secp256k1; qualsiasi elemento classico è etichettato, mai silenzioso.
-4. **Nessuna raccolta di dati** — nessuna analisi, tracciamento o pubblicità. L'accesso opzionale all'account è coperto dalla [QoreChain privacy policy](https://qorechain.io/privacy).
+2. **Niente senza consenso** — ogni connessione è per-origin, ogni firma è approvata individualmente (biometrica su mobile) e i payload vengono sempre decodificati prima della firma — ciò che QoreX non sa decodificare, lo rifiuta.
+3. **Quantum-safe per impostazione predefinita** — i trasferimenti QOR sulla lane Native portano sempre ML-DSA-87 + secp256k1; qualsiasi elemento classico è etichettato, mai silenzioso.
+4. **Nessuna analisi, nessun tracciamento, nessuna pubblicità.** L'accesso opzionale all'account e le notifiche push usano un server solo quando li attivi, e sono coperti dalla [QoreChain privacy policy](https://qorechain.io/privacy).
 5. **Percorsi di recupero** — frase di 24 parole (sempre), recupero sociale con guardian + timelock di 48h (opzionale), eredità Legacy (opzionale), collegamento del dispositivo (comodità).

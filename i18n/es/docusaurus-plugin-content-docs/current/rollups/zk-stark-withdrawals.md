@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Esta página cubre dos temas relacionados: los **sistemas de pruebas ZK** (`snark` y `stark`) utilizados por los rollups liquidados con ZK, y el **flujo de retiro L2 → L1** que mueve fondos desde un rollup de vuelta a QoreChain una vez que un lote se finaliza.
 
-:::caution
-La verificación ZK y STARK es una parte del RDK que está madurando activamente. Trata los sistemas de pruebas y el flujo de retiro descritos aquí como una intención de diseño, valídalos en la testnet **`qorechain-diana`** y no asumas todavía garantías criptográficas reforzadas para producción en mainnet.
+:::caution Capacidad en etapa temprana
+Todavía no se ha creado ningún rollup en ninguna de las dos redes, por lo que ni la verificación de pruebas ni el flujo de retiro descritos aquí se han ejercitado en un rollup en vivo. La verificación SNARK existe, pero un rollup creado mediante `create-rollup` todavía no puede finalizar un lote ZK, y la verificación STARK es experimental. Valida en la testnet **`qorechain-diana`** y no asumas garantías reforzadas para producción en mainnet.
 :::
 
 ---
@@ -21,8 +21,8 @@ Un rollup liquidado con ZK (modo de liquidación `zk`) adjunta una prueba de val
 
 | Sistema de pruebas | Características |
 | ------------ | --------------- |
-| **`snark`** | Pruebas sucintas |
-| **`stark`** | Pruebas transparentes — sin configuración de confianza (trusted setup) |
+| **`snark`** | Pruebas sucintas (Groth16 sobre BLS12-381), verificadas on-chain contra la verifying key del rollup |
+| **`stark`** | Pruebas transparentes, sin configuración de confianza (trusted setup) — experimental; opt-in y ligado a un circuito de demostración |
 
 El modo de liquidación `zk` requiere `snark` o `stark`; el emparejamiento se aplica on-chain cuando se crea el rollup. En cambio, la liquidación `optimistic` usa el sistema de pruebas `fraud`, y las liquidaciones `based` y `sovereign` usan `none`. Consulta **[Visión general de Rollups](/rollups/overview)** para ver la matriz de compatibilidad completa.
 
@@ -32,7 +32,7 @@ A diferencia de los rollups optimistas —que esperan a que transcurra una venta
 
 ### Madurez
 
-La verificación de pruebas ZK y STARK todavía está madurando. Trata la liquidación ZK como **aún no reforzada para producción**: crea prototipos y valida en testnet, y sigue las notas de versión del RDK para conocer el estado de la verificación completa de pruebas antes de confiar en ella para rollups de mainnet que manejen valor.
+Los lotes SNARK se verifican on-chain (Groth16 sobre BLS12-381) contra una verifying key almacenada con el rollup. Un rollup creado mediante `create-rollup` actualmente no incluye una verifying key, por lo que los lotes ZK todavía no pueden finalizarse de extremo a extremo. La verificación STARK es experimental: es opt-in y comprueba un circuito de demostración, no la transición de estado propia de tu rollup. Trata la liquidación ZK como no lista para producción, y sigue las notas de versión del RDK antes de confiar en ella para rollups de mainnet que manejen valor.
 
 ---
 
@@ -52,7 +52,7 @@ Para saber cómo se envían y finalizan los lotes —incluyendo `submit-batch` y
 
 ## Ejecutar un retiro: `execute-withdrawal`
 
-El comando `execute-withdrawal` finaliza un retiro L2 → L1 contra la raíz de retiros de un lote finalizado. Demuestra que una hoja de retiro está comprometida en esa raíz y paga al destinatario desde el escrow del módulo rdk. La acción es **sin permisos**: cualquiera puede enviar una prueba válida.
+El comando `execute-withdrawal` finaliza un retiro L2 → L1 contra la raíz de retiros de un lote finalizado. Demuestra que una hoja de retiro está comprometida en esa raíz y paga al destinatario desde el escrow del módulo rdk. La acción es **sin permisos**: cualquiera puede enviar una prueba válida. Como toda transacción de la lane nativa, necesita la cofirma híbrida post-cuántica, así que constrúyela con `--generate-only` y cofírmala (consulta [Desplegar un Rollup](/rollups/deploying-a-rollup)). Los retiros todavía no se han ejercitado en un rollup en vivo; trata el flujo como no probado.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Argumentos posicionales:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Hashes hermanos de Merkle en hexadecimal separados por comas, ordenados de la hoja a la raíz, que demuestran que la hoja de retiro está comprometida en la raíz de retiros del lote |
 
-El valor de `--proof` es la prueba de inclusión: los hashes hermanos a lo largo del camino desde la hoja de retiro hasta la raíz de retiros comprometida del lote. El módulo recalcula la raíz a partir de la hoja y los hermanos proporcionados y la compara con la raíz comprometida del lote finalizado antes de liberar los fondos en escrow.
+El valor de `--proof` es la prueba de inclusión: los hashes hermanos a lo largo del camino desde la hoja de retiro hasta la raíz de retiros comprometida del lote. El módulo recalcula la raíz a partir de la hoja y los hermanos proporcionados y la compara con la raíz comprometida del lote finalizado antes de pagar.
+
+### Codificación de hojas y nodos {#leaf-and-node-encoding}
+
+* **Hoja** = SHAKE-256 (32 bytes) de `rollup_id`, un byte `0x00`, el índice de retiro (8 bytes, big-endian), la cadena `recipient`, `0x00`, la cadena `denom`, `0x00` y el `amount` (8 bytes, big-endian).
+* **Padre** = SHAKE-256 de `left || right`. En cada nivel, el bit correspondiente del índice de retiro decide el lado: `0` significa que la hoja (o el hash acumulado) es el nodo izquierdo.
+* Cada hash hermano debe tener exactamente 32 bytes.
+
+:::caution Los helpers genéricos de Merkle no coinciden
+Los helpers genéricos `binaryMerkleRoot` / `binaryMerkleProof` del RDK usan por defecto SHA-256 con nodos impares duplicados. Sobrescribe el hash y la codificación de hojas con las reglas anteriores, o la prueba no se verificará on-chain.
+:::
+
+### De dónde salen los fondos {#where-the-funds-come-from}
+
+Un retiro se paga desde el **stake en escrow propio del rollup** (el stake menos la quema de creación). El módulo mantiene un libro mayor por rollup, de modo que un retiro demostrado para un rollup no pueda pagarse con el stake de otro rollup. El módulo no tiene ningún mensaje de depósito L1 → L2, por lo que esto no es un bridge de fondos de usuarios.
 
 ---
 

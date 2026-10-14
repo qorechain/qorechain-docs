@@ -21,7 +21,7 @@ Estas respuestas son **ilustrativas** — paráfrasis breves y en lenguaje senci
 
 **QCAIA responde:**
 
-> El puente de QoreChain te permite mover activos entre QoreChain y otras redes. Combina transferencias QCB con IBC para la conectividad entre cadenas, con el soporte de IBC desplegándose primero en testnet. Para conocer el diseño completo, consulta la documentación del puente.
+> El puente de QoreChain está diseñado para mover activos entre QoreChain y otras redes, combinando transferencias QCB con IBC. Todavía no está en funcionamiento: todas las configuraciones de cadena siguen pendientes y no hay ningún canal IBC abierto en ninguna de las dos redes. Para conocer el diseño completo, consulta la documentación del puente.
 
 _Más información: [Arquitectura del puente](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _Más información: [Arquitectura del puente](/architecture/bridge-architecture)
 
 **QCAIA responde:**
 
-> PRISM es la capa de optimización por aprendizaje por refuerzo de QoreChain. Ajusta continuamente la red para obtener rendimiento y eficiencia a medida que cambian las condiciones. Puedes leer el análisis detallado en la documentación de PRISM.
+> PRISM es la capa de optimización por aprendizaje por refuerzo de QoreChain, diseñada para ajustar los parámetros de la red a medida que cambian las condiciones. Hoy funciona en modo de observación: registra observaciones, pero todavía no hay cargada ninguna política entrenada. Puedes leer el análisis detallado en la documentación de PRISM.
 
 _Más información: [Motor de consenso PRISM](/architecture/prism-consensus-engine)._
 

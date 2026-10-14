@@ -20,7 +20,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publié sur npm sous le nom `create-qorechain-dapp` (`0.3.0`).
+> Publié sur npm sous le nom `create-qorechain-dapp` (`0.8.0`). Les fichiers
+> `package.json` générés épinglent `@qorechain/sdk` / `@qorechain/evm` à `^0.3.0`,
+> que npm résout vers une version 0.3 incapable de signer pour les réseaux en
+> service. Après l'échafaudage, exécutez `npm i @qorechain/sdk@latest` (et
+> `npm i @qorechain/evm@latest` pour le template EVM).
 
 ## Templates
 
@@ -28,12 +32,19 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | --- | --- |
 | `evm-solidity` | Un contrat Solidity `Counter` + un script de déploiement/interaction viem (`@qorechain/evm`). |
 | `fullstack-web` | Une dApp Vite + React + TypeScript lisant les soldes et la tokenomique (`@qorechain/sdk`). |
+| `rollup-app` | Une application rollup + sidechain/paychain utilisant le `RollupClient` et l'assistant multilayer (`@qorechain/sdk`). |
+
+Le template `fullstack-web` lit la vue d'ensemble de la tokenomique via `client.qor`,
+un appel JSON-RPC `qor_` que les points de terminaison publics ne servent pas ; sur le
+mainnet et le testnet, ce panneau affiche donc une erreur, tandis que la lecture du
+solde fonctionne. Remplacez-le par une lecture REST telle que
+`client.rest.getBurnStats()` pour les réseaux publics.
 
 ## Options
 
 | Flag | Description |
 | --- | --- |
-| `-t, --template <name>` | Template à utiliser (`evm-solidity` \| `fullstack-web`). |
+| `-t, --template <name>` | Template à utiliser (`evm-solidity` \| `fullstack-web` \| `rollup-app`). |
 | `--network <name>` | Préréglage réseau (`testnet` \| `mainnet`). |
 | `--package-manager <pm>` | `pnpm` \| `npm` \| `yarn`. |
 | `-y, --yes` | Ignorer les invites et utiliser les valeurs par défaut. |
@@ -44,10 +55,9 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 
 ## Développement local sur le workspace
 
-Les packages `@qorechain/*` sont publiés sur npm ; une fois publiés, un simple
-`npm install` fonctionne. Avant cela, utilisez `--local` pour pointer le projet
-échafaudé vers les packages du monorepo (compilez-les d'abord avec
-`pnpm -r build`) :
+Les packages `@qorechain/*` sont publiés sur npm, donc un simple `npm install`
+fonctionne. Utilisez `--local` pour pointer plutôt le projet échafaudé vers les
+packages du monorepo (compilez-les d'abord avec `pnpm -r build`) :
 
 ```bash
 npx create-qorechain-dapp my-dapp --template fullstack-web --local

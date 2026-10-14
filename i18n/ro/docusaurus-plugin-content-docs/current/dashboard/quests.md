@@ -9,7 +9,7 @@ sidebar_position: 10
 
 **Misiunile** sunt sarcini ghidate care te conduc prin utilizarea QoreChain pe măsură ce le finalizezi. Fiecare misiune grupează unul sau mai mulți pași — precum alimentarea portofelului, efectuarea unui transfer sau încercarea unui schimb (swap) — și te recompensează la finalizare. Misiunile sunt o modalitate practică de a învăța rețeaua funcție cu funcție.
 
-Conectează-ți portofelul pentru ca progresul tău să fie urmărit — vezi [Prezentare generală și primii pași](/dashboard/overview#connect-your-wallet).
+Autentifică-te pentru ca progresul tău să fie urmărit — vezi [Autentificare](/dashboard/overview#sign-in). Unele misiuni implică și un portofel, vezi [Conectează-ți portofelul](/dashboard/overview#connect-your-wallet).
 
 ## Răsfoiește misiunile
 
@@ -36,5 +36,5 @@ Unele misiuni se resetează după un program zilnic sau săptămânal. Pentru ac
 
 ## Înrudite
 
-- [Prezentare generală și primii pași](/dashboard/overview) — conectează-ți portofelul înainte de a începe misiunile.
+- [Prezentare generală și primii pași](/dashboard/overview) — autentifică-te și conectează-ți portofelul înainte de a începe misiunile.
 - [Faucet](/dashboard/faucet) — alimentează un portofel de testnet pentru misiunile care implică tranzacții.

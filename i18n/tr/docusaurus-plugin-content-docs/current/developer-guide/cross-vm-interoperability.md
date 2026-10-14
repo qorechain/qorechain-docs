@@ -7,7 +7,18 @@ sidebar_position: 5
 
 # VM'ler Arası Birlikte Çalışabilirlik
 
-QoreChain'in **üçlü VM mimarisi** (EVM, CosmWasm, SVM), herhangi bir sanal makinedeki akıllı sözleşmelerin başka herhangi bir VM'deki sözleşmelerle iletişim kurmasına olanak tanır. `x/crossvm` modülü hem senkron hem de asenkron mesajlaşma yolları sağlar.
+QoreChain'in **üçlü VM mimarisi** (EVM, CosmWasm, SVM), herhangi bir sanal makinedeki akıllı sözleşmelerin başka herhangi bir VM'deki sözleşmelerle iletişim kurmasına olanak tanımak üzere tasarlanmıştır. `x/crossvm` modülü, aynı işlem içinde çalışan bir yol ve kuyruğa alınan bir yol sunan bir çağrı mesajı sağlar.
+
+:::caution Bugün neler çalışıyor
+VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ölçüde kullanılabilir:
+
+* `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
+* **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
+* **CosmWasm yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir CosmWasm sözleşmesi bulunmamaktadır.
+* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın).
+
+Modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz; mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
+:::
 
 :::note
 Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. Ana ağda **`qorechain-vladi`** RPC uç noktalarını kullanın (Cosmos RPC **26657**, EVM JSON-RPC **8545**); test ağı **`qorechain-diana`** şeklindedir.
@@ -29,16 +40,19 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 
 | Yol              | Yön             | Zamanlama        | Mekanizma                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Senkron**      | EVM'den CosmWasm'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev |
-| **Asenkron**     | CosmWasm'dan EVM'e | Sonraki blok  | EndBlocker aracılığıyla `MsgCrossVMCall` |
-| **Asenkron**     | SVM'den herhangi bir VM'e | Sonraki blok | EndBlocker aracılığıyla `MsgCrossVMCall` |
-| **Asenkron**     | Herhangi birinden SVM'e | Sonraki blok | EndBlocker aracılığıyla `MsgCrossVMCall` |
+| **Senkron**      | EVM'den CosmWasm'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev (henüz etkin değil, aşağıya bakın) |
+| **Mesaj, varsayılan** | Herhangi bir VM'den başka herhangi bir VM'e | Aynı işlem | `MsgCrossVMCall`; çağrı hemen yürütülür ve bir başarısızlık tüm işlemi geri alır |
+| **Mesaj, kuyruğa alınmış**  | Herhangi bir VM'den başka herhangi bir VM'e | Sonraki blok (veya daha sonra) | `async` ayarlı `MsgCrossVMCall`; mesaj kuyrukta bekler |
 
 ---
 
 ## Senkron Yol (EVM'den CosmWasm'a)
 
-Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Bu, Solidity sözleşmelerinin CosmWasm sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanır.
+Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin CosmWasm sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
+
+:::warning Ana ağda veya test ağında etkin değil
+CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. Mevcut haliyle etkinleştirilmeyecektir; çağıran sözleşmedeki bir geri alma (revert) CosmWasm tarafını da geri alacak, değer transferleri reddedilecek, EVM'den EVM'e yeniden giriş (re-entry) engellenecek ve VM'ler arası devre kesici uygulanacak şekilde yeniden inşa edilmektedir. Aşağıdaki örnek yalnızca amaçlanan biçimi gösterir. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+:::
 
 ### Solidity Örneği
 
@@ -64,50 +78,34 @@ contract CrossVMCaller {
 }
 ```
 
-Önderlenmiş işlev, CosmWasm sözleşmesini hemen yürütür ve sonucu döndürür. Gaz maliyeti: **50.000 taban + yürütme maliyeti**.
+Etkinleştirildiğinde, önderlenmiş işlev CosmWasm sözleşmesini hemen yürütür ve sonucu döndürür. Mevcut düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözer; ABI yeniden inşa ile birlikte değişebilir. Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 
 ---
 
-## Asenkron Yol
+## Mesaj Yolu (`MsgCrossVMCall`)
 
-Diğer tüm VM'ler arası yönler asenkron mesaj kuyruğunu kullanır. Mesajlar bir blokta gönderilir ve sonraki blokta **EndBlocker** tarafından işlenir.
+Diğer VM'ler arası çağrılar `MsgCrossVMCall` işlemini kullanır. Zincir, kaynak şeridi göndericiden çıkarır; bu nedenle mesaj yalnızca hedef VM'i, hedef sözleşmeyi, yükü (payload) ve isteğe bağlı fonları taşır. Varsayılan olarak çağrı işlem içinde hemen yürütülür ve hedef başarısız olursa tüm işlem geri alınır. `async` bayrağıyla mesaj bunun yerine kuyruğa alınır ve modülün blok sonu kuyruk geçişi tarafından sonraki bir blokta işlenir (aşağıdaki yaşam döngüsüne bakın). Yukarıda belirtildiği gibi, bu mesaj ana ağda kapalıdır.
 
 ### CLI
 
+`tx crossvm call`, hedef VM'i (`evm`, `cosmwasm` veya `svm`) ve hedef sözleşmeyi konumsal argümanlar olarak, yükü ise hex olarak alır:
+
 ```bash
-# CosmWasm to EVM
-qorechaind tx crossvm call \
-  --source-vm cosmwasm \
-  --target-vm evm \
-  --target-contract 0x1234...abcd \
-  --payload '{"method":"transfer","params":["0xRecipient",100]}' \
-  --from mykey \
-  -y
-
-# SVM to CosmWasm
-qorechaind tx crossvm call \
-  --source-vm svm \
-  --target-vm cosmwasm \
-  --target-contract qor1contractaddr... \
-  --payload '{"execute":{"action":{}}}' \
-  --from mykey \
-  -y
-
-# EVM to SVM (async)
-qorechaind tx crossvm call \
-  --source-vm evm \
-  --target-vm svm \
-  --target-contract <program-id-base58> \
-  --payload '0a0b0c...' \
-  --from mykey \
-  -y
+qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
+  --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
+
+Diğer bayraklar: `--funds <coins>` (yalnızca CosmWasm hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur.
+
+:::caution Ana ağda devre dışı ve CLI biçiminin düzeltilmesi gerekiyor
+`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır. Mevcut sürüm ikili dosyalarında `tx crossvm call` ayrıca mesajın kendi doğrulamasından geçemeyen bir mesaj oluşturur (kaynak VM'i boş bırakır); bu nedenle komut burada yalnızca başvuru amacıyla belgelenmiştir.
+:::
 
 ---
 
 ## Mesaj Yaşam Döngüsü
 
-Her VM'ler arası mesaj, tanımlanmış bir dizi durum arasında geçiş yapar:
+Kuyruğa alınan her VM'ler arası mesaj, tanımlanmış bir dizi durum arasında geçiş yapar:
 
 ```
 Submitted --> Pending --> Executed
@@ -131,6 +129,7 @@ Submitted --> Pending --> Executed
 
 | Parametre              | Değer        | Açıklama                                       |
 | ---------------------- | ------------ | ---------------------------------------------- |
+| `enabled`              | `true`       | Modül düzeyinde anahtar (çağrı mesajının kendisi ana ağda ayrıca kapatılmıştır) |
 | `max_message_size`     | 65.536 bayt  | Mesaj başına maksimum yük boyutu               |
 | `max_queue_size`       | 1.000        | Kuyruktaki maksimum bekleyen mesaj             |
 | `queue_timeout_blocks` | 100          | İşlenmemiş bir mesajın zaman aşımına uğramasından önceki blok sayısı |
@@ -167,11 +166,13 @@ qorechaind query crossvm message <message-id>
 # List all pending messages
 qorechaind query crossvm pending
 
-# List messages by sender
-qorechaind query crossvm messages-by-sender <address>
+# Module parameters
+qorechaind query crossvm params
 ```
 
 ### JSON-RPC
+
+> **Henüz sunulmuyor:** yayımlanmış hiçbir düğüm derlemesi `qor_` JSON-RPC ad alanını sunmaz; bu nedenle bu çağrı bugün her genel uç noktada `-32601` (yöntem bulunamadı) döndürür. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -205,7 +206,7 @@ curl -X POST http://localhost:8545 \
 
 ## Tasarım Hususları
 
-**Atomiklik:** Senkron çağrılar (önderlenmiş işlev aracılığıyla EVM'den CosmWasm'a) atomiktir — taraflardan biri geri alınırsa, tüm işlem geri alınır. Asenkron çağrılar bloklar arasında **atomik değildir**; sözleşmelerinizi `Failed` ve `Timed Out` durumlarını sorunsuzca ele alacak şekilde tasarlayın.
+**Atomiklik:** Senkron çağrılar (önderlenmiş işlev aracılığıyla EVM'den CosmWasm'a), taraflardan biri geri alınırsa tüm işlemin geri alınması için atomik olacak şekilde tasarlanmıştır. Mevcut önderlenmiş işlev bunu henüz garanti etmez; etkin olmamasının nedenlerinden biri budur (yukarıya bakın). Asenkron çağrılar bloklar arasında **atomik değildir**; sözleşmelerinizi `Failed` ve `Timed Out` durumlarını sorunsuzca ele alacak şekilde tasarlayın.
 
 **Sıralama:** Kuyruktaki mesajlar, her EndBlocker geçişi içinde FIFO olarak işlenir. Farklı kaynak VM'ler arasında garantili bir sıralama yoktur.
 
@@ -219,7 +220,7 @@ curl -X POST http://localhost:8545 \
 
 ## Sonraki Adımlar
 
-* [EVM Önderlenmiş İşlevleri](/developer-guide/evm-precompiles) — Senkron CrossVM önderlenmiş işlevi ve diğer özel önderlenmiş işlevler
+* [EVM Önderlenmiş İşlevleri](/developer-guide/evm-precompiles) — Senkron CrossVM önderlenmiş işlevinin ve planlanan diğer önderlenmiş işlevlerin durumu
 * [EVM Geliştirme](/developer-guide/evm-development) — QoreChain üzerinde Solidity geliştirme
 * [CosmWasm Geliştirme](/developer-guide/cosmwasm-development) — Rust/Wasm sözleşme geliştirme
 * [SVM Geliştirme](/developer-guide/svm-development) — BPF program dağıtımı

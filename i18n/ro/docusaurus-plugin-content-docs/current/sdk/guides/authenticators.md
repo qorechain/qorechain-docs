@@ -16,6 +16,18 @@ externe conectate — o cheie Phantom **ed25519** sau o cheie MetaMask / EVM
 Aceasta este contrapartea din SDK a modulului de
 [abstractizare a conturilor](/developer-guide/account-abstraction) de pe chain.
 
+:::danger Indisponibil pe rețelele live
+Modulul `x/abstractaccount` este **dezactivat** pe `qorechain-vladi` și
+`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returnează
+`"enabled": false`). Începând cu chain v3.2.0, acest indicator este aplicat pe
+fiecare cale (crearea unui cont abstract, conectarea unui autentificator și atât
+`MsgExecuteEVM`, cât și `MsgExecuteCosmos`), iar chain-ul le refuză cu `abstract account module is disabled` (cod 9). Nicio tranzacție nu îl poate activa.
+Tot ce urmează descrie interfețele modulului doar cu titlu de referință: nu
+construiți un flux cu cheie conectată sau cu cheltuieli delegate pe rețelele live
+până când modulul nu este activat și verificați indicatorul înainte de a oferi
+un astfel de flux.
+:::
+
 ## Modelul cu relayer
 
 Un **relayer** trimite tranzacția și plătește comisioanele. Semnătura hibridă
@@ -92,6 +104,18 @@ const limits = msg.abstractaccount.updateSpendingRules({
 // await signAndBroadcastHybrid({ ..., messages: [register, limits] });
 ```
 
+:::caution O regulă limitează o cheie doar dacă există una
+Chain-ul rezolvă limita în această ordine: regula proprie a autentificatorului,
+dacă este setată și `enabled`; altfel prima regulă `enabled` de pe cont; altfel
+**niciuna, iar atunci nu există nicio limită**. O regulă stocată cu
+`enabled: false` înseamnă lipsa limitei, nu o limită zero.
+`MsgRegisterAuthenticator` nu poartă nicio regulă, deci o cheie conectată doar
+prin acel mesaj este limitată numai de o regulă la nivel de cont. Setați o regulă
+în mod deliberat prin `MsgUpdateSpendingRules` și înregistrați doar permisiunile
+de care cheia are nevoie. O limită restrânge paguba pe care o poate face o cheie
+conectată; nu înlocuiește revocarea cheii.
+:::
+
 Pentru a dezactiva instantaneu o cheie, proprietarul difuzează
 `msg.abstractaccount.revokeAuthenticator({ owner, accountAddress, scheme,
 pubkey })`.
@@ -134,33 +158,47 @@ await fetch("/api/relay", {
 });
 ```
 
-**Server (relayer-ul):** semnează anvelopa cu **propriul** său cont (hibrid,
-ca de obicei pe calea Nativă) și plătește comisioanele. Semnătura
-autentificatorului din interiorul mesajului este autorizarea de a cheltui din
-contul proprietarului.
+**Server (relayer-ul):** semnează anvelopa cu **propriul** său cont, folosind
+calea hibridă (`signAndBroadcastHybrid`, transmițând `rest`), și plătește
+comisioanele. Cheia ML-DSA-87 a relayer-ului trebuie să fie înregistrată, ca a
+oricărui cont. Semnătura autentificatorului din interiorul mesajului este
+autorizarea de a cheltui din contul proprietarului.
 
 ```ts
+import { StargateClient } from "@cosmjs/stargate";
 import {
-  createClient,
   deriveNativeAccount,
   directSignerFromPrivateKey,
+  derivePqcCanonical,
+  signAndBroadcastHybrid,
+  qorechainRegistry,
 } from "@qorechain/sdk";
 
-const client = createClient({
-  network: "mainnet",
-  endpoints: {
-    rpc: "https://rpc.qore.host",
-    rest: "https://api.qore.host",
-  },
-});
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
 
-// The relayer's OWN account — a different account than the owner.
-const relayer = await deriveNativeAccount(process.env.RELAYER_MNEMONIC!);
+// The relayer's OWN account: a different account than the owner.
+const mnemonic = process.env.RELAYER_MNEMONIC!;
+const relayer = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(relayer.privateKey, "qor");
-const tx = await client.connectTx(signer);
+const pqcKeypair = derivePqcCanonical(relayer.address, mnemonic);
 
-// Decode the message from the request, then broadcast it (relayer pays fees).
-const result = await tx.signAndBroadcast([msgExecute], { fee });
+const transport = await StargateClient.connect(RPC);
+const info = await transport.getSequence(relayer.address);
+
+// `msgExecute` is the message decoded from the request. The relayer pays fees.
+const result = await signAndBroadcastHybrid({
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,
+  messages: [msgExecute],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: REST,
+  transport,
+});
 console.log(result.transactionHash);
 ```
 
@@ -333,10 +371,12 @@ switch (decoded.kind) {
 }
 ```
 
-`hybrid_verify_failed` înseamnă cel mai adesea o semnătură ML-DSA-87
-**hedged** (nedeterministă) — chain-ul acceptă doar semnături deterministe.
-Este, de asemenea, ceea ce vedeți dacă un SDK anterior versiunii 0.6.1 a
-codificat în JSON extensia hibridă (faceți upgrade — vezi
+`hybrid_verify_failed` înseamnă că semnătura ML-DSA-87 nu s-a verificat. Semnarea
+hedged nu este cauza (chain-ul acceptă la fel semnăturile ML-DSA-87 hedged și
+deterministe); vezi
+[Depanarea codului 21](/developer-guide/post-quantum-signing#code-21). Este, de
+asemenea, ceea ce vedeți dacă un SDK anterior versiunii 0.6.1 a codificat în JSON
+extensia hibridă (faceți upgrade - vezi
 [Conturi și semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 ## Rotația cheii {#key-rotation}

@@ -18,13 +18,24 @@ SVM RPC 엔드포인트를 대상으로 하는 클라이언트 팩토리, 키 �
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution SVM 트랜잭션 제출은 비활성화되어 있습니다
+SVM 실행 레인은 네트워크 전체에서 트랜잭션 제출이 비활성화되어 있으며
+(`code 11, "SVM module is disabled"`), 공개 SVM RPC 엔드포인트는 읽기 전용입니다.
+읽기(`getBalance`, `getAccountInfo`, `getSlot`,
+`getSignaturesForAddress`, `getMinimumBalanceForRentExemption`,
+`getLatestBlockhash`)는 동작합니다. 아직은 SVM 위에 전송이나 프로그램 배포 흐름을
+구축하지 마세요. 아래의 빌드, 서명, 전송 헬퍼는 클라이언트 라이브러리 표면일 뿐이며
+현재 공개 네트워크에서는 트랜잭션을 반영할 수 없습니다.
+[SVM 개발](/developer-guide/svm-development)을 참고하세요.
+:::
+
 ## 클라이언트 생성
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -47,13 +58,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## SOL 전송
 
-서명되지 않은 전송을 빌드한 다음 전송합니다(전송에는 도달 가능한 노드와 자금이
-있는 계정이 필요합니다):
+서명되지 않은 전송을 빌드합니다(오프라인). 전송은 완전성을 위해 보여 주지만,
+SVM 트랜잭션 레인이 비활성화되어 있는 동안에는 공개 네트워크에서 성공할 수 없습니다:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

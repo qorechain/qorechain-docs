@@ -7,52 +7,31 @@ sidebar_position: 7
 
 # QCAI ロールアップ Copilot
 
-QCAI ロールアップ Copilot は、ネットワークのアドバイザリサービスが 1 つのロールアップについて把握しているすべての情報を集約し、平易な言葉による単一のレポートにまとめます。内容は、ライブの手数料見積もり、ネットワーク推奨事項、そのロールアップに言及している不正調査、強化学習エージェントのステータス、そしてすぐに実行に移せる提案の短いリストです。
+RDK の QCAI ロールアップ Copilot は読み取り専用のヘルパーで、1 つのロールアップについて、ネットワークのアドバイザリデータ（手数料の見積もり、ネットワークへの推奨事項、そのロールアップを参照する不正調査、強化学習エージェントのステータス）を集めることを**試み**、それを平易な言葉による 1 つの読み物と、短い提案のリストにまとめます。
 
-これは**ベストエフォート**で動作します。アドバイザリサービスは任意のインフラであり、いずれかに到達できない場合でも、Copilot はそのセクションを省略して警告を記録するという形で緩やかに縮退し、呼び出し全体が失敗することはありません。常に結果が返されます。
+:::caution 公開エンドポイントでは利用できません
+Copilot が読み取るアドバイザリサービス（`/qorechain/ai/v1/…` の REST ルートと `qor_*` JSON-RPC 名前空間）は、現在、メインネットでもテストネットでも公開の `qore.host` エンドポイントでは**提供されていません**。そのため、すべてのセクションが警告として返されます。Copilot は設計上ベストエフォートであり、失敗することはありませんが、結果が空であることは、ロールアップが検査されて健全だと確認されたことを意味するものでは**ありません**。これらのサービスが公開されるまでは、安全性のシグナルとして使用しないでください。[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
+:::
 
-## 1 回の呼び出し: `getRollupAdvice`
+## 1 回の呼び出し: `getRollupAdvice` {#one-call-getrollupadvice}
 
 ```ts
 import { createRdkClient, getRollupAdvice } from "@qorechain/rdk";
 
-// The public qore.host endpoints (REST + the qor_ JSON-RPC endpoint used for
-// the RL agent reads) are baked into the presets since RDK 0.4.2 — no manual
-// endpoint config needed; pass `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
+const advice = await getRollupAdvice(rdk, "my-rollup");
 
-const advice = await getRollupAdvice(rdk, "my-roll");
-
-console.log(advice.feeEstimate);            // live fee estimate (if reachable)
-console.log(advice.networkRecommendations); // tuning recommendations
-console.log(advice.fraudInvestigations);    // investigations referencing this rollup
-console.log(advice.rlAgentStatus);          // RL agent status (qor_ JSON-RPC)
-console.log(advice.suggestions);            // plain-language, actionable
-console.log(advice.warnings);               // services that were unreachable
+console.log(advice.warnings);    // services that could not be reached (all of them today)
+console.log(advice.suggestions); // plain-language suggestions, when data is available
 ```
 
-## 内部で行われる読み取り
+結果には、対応するサービスが応答した場合に、`feeEstimate`、`networkRecommendations`、`fraudInvestigations`、`rlAgentStatus` も含まれます。
 
-`getRollupAdvice` は、直接呼び出すこともできる読み取り専用メソッド群を集約したものです。アドバイザリ REST メソッドは `/qorechain/ai/v1/...` 配下にあります。
-
-- `getFeeEstimate(...)` — 現在の手数料見積もり。
-- `getNetworkRecommendations(...)` — ネットワークレベルのチューニング推奨事項。
-- `getFraudInvestigations(...)` / `getFraudInvestigation(id)` — 進行中の調査一覧と、id 指定による単一の調査。
-- `getCircuitBreakers(...)` — アドバイザリのサーキットブレーカー状態。
-
-強化学習関連の読み取りには `qor_*` JSON-RPC ネームスペースを使用します。
-
-- `getRLAgentStatus()` — エージェントの現在のステータス。
-- `getRLObservation()` — 最新の観測値。
-- `getRLReward()` — 最新の報酬シグナル。
-
-これらはすべて読み取り操作であるため、Copilot に必要なのは REST エンドポイント（および RL 読み取り用の EVM / `qor_` JSON-RPC エンドポイント）だけです。署名者は不要です。
-
-## CLI
+## CLI {#cli}
 
 ```bash
-qorollup advise my-roll
-qorollup advise my-roll --json
+qorollup advise my-rollup
+qorollup advise my-rollup --json
 ```
 
-`advise` は集約されたアドバイスを出力し、到達できなかったサービスはエラーではなく警告として表示されます。オペレーター向け `qorollup` CLI の全体については[ロールアップのデプロイ](/rollups/deploying-a-rollup)を参照してください。
+到達できないサービスはエラーではなく警告として一覧表示されます。また、何にも到達できなかった場合でも、人が読める出力に "no issues flagged" という行が表示されることがあります — 警告を読んでください。`qorollup` オペレーター CLI については、[ロールアップのデプロイ](/rollups/deploying-a-rollup)を参照してください。

@@ -9,17 +9,52 @@ sidebar_position: 6
 
 QoreChain, QoreChain EVM Engine'i protokol düzeyindeki özellikleri doğrudan Solidity'ye sunan **altı özel ön derlenmiş contract** ile genişletir. Bu ön derlemeler; kuantum sonrası kriptografiye, AI risk puanlamasına, VM'ler arası mesajlaşmaya ve PRISM konsensüs parametrelerine zincir üzerinde erişim sağlar.
 
-:::note
-Ön derlemeler, hem **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri **v3.1.97** zincir sürümünde yayında) hem de **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) mevcuttur. Tüm örnekler **8545 portundaki** JSON-RPC uç noktasını kullanır.
+:::warning Ana ağda ve test ağında henüz etkin değil
+Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir ancak henüz etkinleştirilmemiştir**; bu hem **`qorechain-vladi`** ana ağı (EVM zincir kimliği **9801**) hem de **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için geçerlidir. EVM yalnızca `active_static_precompiles` parametresinde listelenen adresleri çalıştırır ve bu liste her iki ağda da boştur. Bir zincir yükseltmesi bunları etkinleştirene kadar, bu adreslere yapılan bir çağrı **başarılı olur ve boş veri (`0x`) döndürür**; geri alınmaz (revert) ve hata döndürmez. Herhangi birine güvenmeden önce [Ağ durumu](#network-status) bölümüne bakın.
 :::
+
+## Ağ durumu {#network-status}
+
+| Ön derleme | Adres | `qorechain-vladi` (ana ağ) | `qorechain-diana` (test ağı) |
+| --- | --- | --- | --- |
+| PQC Verify | `0x…0A01` | Etkin değil | Etkin değil |
+| PQC Key Status | `0x…0A02` | Etkin değil | Etkin değil |
+| AI Risk Score | `0x…0B01` | Etkin değil | Etkin değil |
+| AI Anomaly Check | `0x…0B02` | Etkin değil | Etkin değil |
+| PRISM Consensus Params | `0x…0C01` | Etkin değil | Etkin değil |
+| CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
+
+Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve CrossVM köprüsü ise yalnızca journaling, değer kontrolleri ve VM'ler arası devre kesiciyle yeniden inşa edildikten sonra. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
+
+Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
+
+```bash
+curl -s https://api.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+curl -s https://api-testnet.qore.host/cosmos/evm/vm/v1/params | jq .params.active_static_precompiles
+```
+
+### Boş dönüş verisine karşı koruma {#guard}
+
+Etkin olmayan (veya QoreChain'e ait olmayan) bir adres veri olmadan başarı döndürdüğü için, düşük seviyeli bir çağrının ham dönüş baytlarını uzunluklarını kontrol etmeden asla okumayın. `abi.decode` ve tipli arayüz çağrıları boş veride revert eder, bu da güvenli sonuçtur; elle yazılmış düşük seviyeli bir çağrı bunu açıkça kontrol etmelidir:
+
+```solidity
+(bool ok, bytes memory ret) = address(0x0000000000000000000000000000000000000A02)
+    .staticcall(abi.encodeWithSignature("pqcKeyStatus(address)", account));
+require(ok && ret.length >= 96, "precompile not active");
+(bool registered, uint8 algorithmId, bytes memory pubkey) = abi.decode(ret, (bool, uint8, bytes));
+```
+
+Bu adreslere değer göndermeyin. Bunlar payable değildir ve etkin olmayan bir ön derleme adresine gönderilen değer orada kalır ve geri alınmasının bir yolu yoktur.
 
 ---
 
 ## Ön Derleme Adres Haritası
 
+Gaz rakamları, bir ön derleme etkin olduktan sonra düğümün tahsil ettiği değerlerdir (bayt başına, çağrı girişinin bayt başına anlamına gelir).
+
 | Ön Derleme              | Adres                                      | Temel Gaz        | Açıklama                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000          | Senkron VM'ler arası çağrılar (EVM'den CosmWasm'a)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Senkron VM'ler arası çağrılar (EVM'den CosmWasm'a)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | ML-DSA-87 kuantum sonrası imzalarını doğrular         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Bir hesabın kayıtlı bir PQC anahtarı olup olmadığını kontrol eder     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | İşlem verileri için AI tarafından oluşturulan risk puanını alır |
@@ -139,7 +174,7 @@ contract PQCVerifier {
 }
 ```
 
-**Gaz maliyeti:** 25,000 temel + giriş verisinin baytı başına 8 gaz. Tipik bir ML-DSA-87 doğrulaması için (2592 + 4627 + mesaj baytları), yaklaşık 80,000-90,000 gaz bekleyin.
+**Gaz maliyeti:** 25,000 temel + giriş verisinin baytı başına 8 gaz. Giriş, ABI ile kodlanmış çağrıdır (2592 baytlık açık anahtar, 4627 baytlık imza, mesaj, artı ABI ofsetleri ve dolgu), bu nedenle tipik bir ML-DSA-87 doğrulaması yaklaşık 85,000-90,000 gaza mal olur.
 
 ### PQC Key Status — Hesap Kaydını Kontrol Etme
 
@@ -177,13 +212,15 @@ contract RiskGate {
 
 **Risk seviyeleri:**
 
-| Seviye    | Değer | Puan Aralığı (bps) |
-| -------- | ----- | ----------------- |
-| SAFE     | 0     | 0 - 1000          |
-| LOW      | 1     | 1001 - 3000       |
-| MEDIUM   | 2     | 3001 - 6000       |
-| HIGH     | 3     | 6001 - 8500       |
-| CRITICAL | 4     | 8501 - 10000      |
+| Seviye    | Değer |
+| -------- | ----- |
+| SAFE     | 0     |
+| LOW      | 1     |
+| MEDIUM   | 2     |
+| HIGH     | 3     |
+| CRITICAL | 4     |
+
+Seviye, AI motorunun işlem için verdiği önem derecesi etiketinden gelir; puan baz puan (basis points) cinsinden döndürülür (0 - 10000). Puan aralıklarından seviyelere sabit bir eşleme yoktur, bu yüzden puan eşikleri yerine `level` üzerinden kapı koyun.
 
 **Gaz maliyeti:** 50,000 sabit.
 
@@ -227,29 +264,19 @@ contract ConsensusReader {
 
 **Gaz maliyeti:** 1,500 sabit.
 
+:::note
+Mevcut düğüm derlemesinde `rlConsensusParams`, canlı PRISM ile ayarlanmış değerler değil, sabit yer tutucu varsayılanlar döndürür (örneğin ölçülen blok süresini bildirmez; bu süre ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn'dir). Bunu canlı konsensüs parametrelerine bağlamak etkinleştirme çalışmasının bir parçasıdır.
+:::
+
 ### CrossVM Bridge — EVM'den CosmWasm Çağırma
 
-```solidity
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
+:::warning
+CrossVM köprü ön derlemesi mevcut haliyle **etkinleştirilmeyecektir**. Çağıran sözleşmedeki bir revert'in CosmWasm tarafını da geri alması, değer transferlerinin reddedilmesi, EVM'den EVM'ye yeniden girişin (re-entry) engellenmesi ve VM'ler arası devre kesicinin uygulanması için yeniden inşa edilmektedir. O zamana kadar senkron bir EVM'den CosmWasm'a yol yoktur; bugün mainnet'te kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+:::
 
-contract CrossVMExample {
-    ICrossVM constant CROSSVM = ICrossVM(
-        0x0000000000000000000000000000000000000901
-    );
+Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Belgelenen kullanım EVM'den CosmWasm'adır; ABI yeniden inşayla değişebilir.
 
-    function callCosmWasm(
-        string memory contractAddr,
-        string memory executeMsg
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(contractAddr, executeMsg, uint256(0));
-        return CROSSVM.call(payload);
-    }
-}
-```
-
-**Gaz maliyeti:** 50,000 temel + hedef sözleşme yürütme maliyeti. Ayrıntılar için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+**Gaz maliyeti:** 50,000 temel + giriş baytı başına 4 gaz, artı hedef sözleşme yürütme maliyeti. Ayrıntılar için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 
 ---
 
@@ -263,7 +290,6 @@ contracts/
     IQorePQC.sol
     IQoreAI.sol
     IQoreConsensus.sol
-    ICrossVM.sol
 ```
 
 Bunları Hardhat veya Foundry projenize kurun:
@@ -287,4 +313,4 @@ import "./interfaces/IQoreConsensus.sol";
 
 * [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — Tam VM'ler arası mesajlaşma belgeleri
 * [EVM Geliştirme](/developer-guide/evm-development) — Solidity sözleşmelerini dağıtma
-* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Oturum anahtarlı programlanabilir hesaplar
+* [Hesap Soyutlaması](/developer-guide/account-abstraction) — Bağlı cüzdan yetkilendiricileri ve harcama kuralları (modül şu anda devre dışı)

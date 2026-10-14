@@ -11,8 +11,8 @@ Le **Contract Auditor** réalise une analyse de sécurité assistée par IA d'un
 
 ## Lancer un audit
 
-1. Ouvrez l'**Auditor** et fournissez le contrat que vous souhaitez analyser.
-2. Démarrez l'audit. QCAI examine le contrat et produit un rapport.
+1. Connectez-vous, ouvrez **AI Audit** et collez votre contrat dans **Contract Source Code**. Vous pouvez éventuellement définir la **Blockchain** (par défaut **Auto-detect from code**) et un **Name**.
+2. Sélectionnez **Run Security Audit**. QCAI examine le contrat et produit un rapport ; **Export PDF** l'enregistre.
 
 ## Lire le rapport
 
@@ -31,7 +31,7 @@ Le cas échéant, le rapport inclut également des sections pour les recommandat
 
 ## Consulter les audits passés
 
-La liste des audits affiche vos rapports précédents dans un tableau avec le nom du contrat, la blockchain, le niveau de risque, le score de sécurité et la date de création de chacun. Une zone de recherche filtre par nom de contrat ou par blockchain. Sélectionnez une ligne pour rouvrir le rapport complet, et utilisez le lien de la page du rapport pour le partager.
+La liste des audits affiche vos rapports précédents dans un tableau avec le nom du contrat, la blockchain, le niveau de risque, le score de sécurité et la date de création de chacun. Une zone de recherche filtre par nom de contrat ou par blockchain. Sélectionnez une ligne pour rouvrir le rapport complet. Les rapports sont **privés par défaut** ; sur un rapport qui vous appartient, un interrupteur en haut indique « This report is private » — activez-le pour rendre le rapport public afin que toute personne disposant du lien puisse le lire (votre nom et votre IP ne sont jamais affichés), et désactivez-le pour le rendre de nouveau privé.
 
 :::tip Auditer avant de déployer
 Lancez un audit comme dernière étape avant le déploiement, et relancez-le après toute modification. Considérez les constatations comme des indications à vérifier, et non comme une garantie automatique — combinez le rapport avec vos propres tests sur le [testnet](/getting-started/connecting-to-testnet).

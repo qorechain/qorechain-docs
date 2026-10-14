@@ -9,6 +9,10 @@ sidebar_position: 12
 
 The `x/rdk` module provides a comprehensive Rollup Development Kit (RDK) that allows developers to deploy application-specific rollups on QoreChain. It supports four settlement paradigms, multiple sequencer modes, pluggable data availability backends, and AI-assisted configuration optimization.
 
+:::caution Early-stage capability
+The module is deployed on mainnet (chain version **v3.2.1**) and testnet, but **no rollup has been created on either network yet**. Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
+:::
+
 ---
 
 ## Settlement Paradigms
@@ -20,10 +24,10 @@ QoreChain RDK supports four distinct settlement modes — **optimistic**, **zk**
 Optimistic rollups assume transactions are valid by default and rely on fraud proofs for dispute resolution.
 
 * **Proof system**: Interactive fraud proofs
-* **Challenge window**: 7 days (604,800 seconds), configurable per rollup
-* **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge
+* **Challenge window**: 604,800 "seconds" (default), converted by the chain to blocks at a fixed 6 seconds per block — **100,800 blocks**. The real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks), so plan in blocks, not days.
+* **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge (`nft` and `custom` presets; the `defi`, `gaming` and `enterprise` presets set no bond because they have no challenge window)
 * **Finality**: Delayed until the challenge window expires with no valid challenge
-* **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute
+* **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: the rollup creator resolves the challenge first (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Batch lifecycle**:
 
@@ -36,11 +40,11 @@ Submitted → [fraud proof submitted] → Challenged → Rejected
 
 ZK rollups provide cryptographic validity proofs that guarantee state transition correctness.
 
-* **Proof system**: SNARK (Groth16, PLONK) or STARK (transparent, no trusted setup)
+* **Proof system**: SNARK (Groth16 over BLS12-381) or STARK (transparent, no trusted setup)
 * **Finality**: Instant on proof verification — no challenge window required
 * **Max proof size**: 1 MB (1,048,576 bytes)
 * **Recursion depth**: Configurable proof aggregation depth (default: 1)
-* **Maturity**: In the current release, ZK settlement uses stub verification that accepts any non-empty proof. Full SNARK/STARK proof verification is a planned upgrade and should be treated as not yet production-hardened.
+* **Maturity**: SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. A rollup created through `create-rollup` does not currently carry a verifying key, so ZK batches cannot yet be finalised end to end. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready.
 
 **Batch lifecycle**:
 
@@ -84,7 +88,7 @@ Sovereign rollups operate with independent consensus and self-sequence their tra
 | **Based**       |           -- |        -- |        -- | Required |
 | **Sovereign**   |           -- |        -- |        -- | Required |
 
-STARK and full ZK proof verification are still maturing; see the [ZK Settlement](#zk-zero-knowledge-settlement) maturity note above.
+STARK verification is experimental and ZK settlement is not production-ready; see the [ZK Settlement](#zk-zero-knowledge-settlement) maturity note above.
 
 ---
 
@@ -108,6 +112,10 @@ The `custom` profile leaves every field for you to set. The exact values bundled
 
 The sequencer determines who orders transactions within a rollup block.
 
+:::note What is enforced today
+On-chain, a batch may be submitted only by the rollup's configured sequencer address or, when none is set (every preset), by its creator. The `shared` and `based` modes are recorded in the rollup configuration, but QoreChain does not yet admit a shared sequencer roster or L1 proposers as batch submitters; those modes describe the intended design.
+:::
+
 ### Dedicated Sequencer
 
 A single operator sequences all rollup transactions.
@@ -120,6 +128,7 @@ A single operator sequences all rollup transactions.
 
 A set of sequencers collectively order transactions.
 
+* **Status**: a label today — the roster is not admitted on-chain yet (see the note above)
 * **Minimum set size**: Configurable (default: 1)
 * **Latency**: Slightly higher due to multi-party coordination
 * **Trust**: Distributed across the sequencer set
@@ -128,6 +137,7 @@ A set of sequencers collectively order transactions.
 
 QoreChain L1 proposers sequence rollup transactions.
 
+* **Status**: a label today — L1 proposers are not admitted as batch submitters yet (see the note above)
 * **Inclusion delay**: Configurable blocks before forced inclusion (default: 10)
 * **Priority fee share**: Configurable percentage of priority fees paid to L1 proposers
 * **Trust**: Inherits QoreChain's validator set security and censorship resistance
@@ -141,12 +151,16 @@ QoreChain L1 proposers sequence rollup transactions.
 
 On-chain KV-store blob storage within QoreChain itself.
 
+:::caution No public way to post a blob yet
+The module defines blob storage, retention and pruning, but there is no transaction message for posting a blob in the current releases. A batch that names a data hash on a `native` or `both` rollup is refused because no matching blob can be stored. See [Data Availability](/rollups/data-availability).
+:::
+
 | Parameter            | Value                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Max blob size**    | 2 MB (2,097,152 bytes)                                                                              |
-| **Retention period** | 432,000 blocks (\~30 days at 6-second blocks)                                                       |
+| **Retention period** | 432,000 blocks (about 16 days at mainnet's current ≈3.2 s blocks; the figure moves with block time) |
 | **Auto-pruning**     | Expired blobs are pruned in the `EndBlocker` — data is removed but commitment metadata is retained  |
-| **Commitment**       | SHA-256 hash of blob data                                                                           |
+| **Commitment**       | SHAKE-256 (32-byte) hash of the blob data                                                           |
 
 ### Celestia DA
 
@@ -181,7 +195,7 @@ Pending → Active → Paused → Active → Stopped
 | **Paused**  | Temporarily halted by creator (can resume)                   |
 | **Stopped** | Permanently decommissioned — stake bond returned to creator  |
 
-On creation, rollup status is set to `Active` immediately after stake escrow and layer registration succeed.
+On creation, rollup status is set to `Active` immediately after stake escrow and the creation burn succeed (layer registration is attempted but non-fatal). Only the creator can pause, resume or stop a rollup (enforced since chain version v3.2.0).
 
 ---
 
@@ -205,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement Mode | Finalization Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | Challenge window expires (\~7 days) with no valid challenge |
+| **Optimistic**  | 100,800 blocks after submission (default window) with no challenge |
 | **ZK**          | Instant on valid proof submission                           |
 | **Based**       | 2 L1 blocks after submission                                |
 | **Sovereign**   | None — managed by the rollup's own consensus                |
@@ -221,9 +235,9 @@ Auto-finalization is executed in the `EndBlocker` for optimistic and based rollu
 | `max_rollups`               |                              100 | Maximum number of rollups that can be registered |
 | `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Minimum stake required to create a rollup        |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Fraction of creation stake burned via `x/burn`   |
-| `default_challenge_window`  |         604,800 seconds (7 days) | Default optimistic challenge window              |
+| `default_challenge_window`  | 604,800 (converted to 100,800 blocks) | Default optimistic challenge window         |
 | `max_da_blob_size`          |           2,097,152 bytes (2 MB) | Maximum data availability blob size              |
-| `blob_retention_blocks`     |              432,000 (\~30 days) | Blocks before DA blobs are pruned                |
+| `blob_retention_blocks`     |                   432,000 blocks | Blocks before DA blobs are pruned                |
 | `max_batches_per_block`     |                               10 | Maximum settlement batches processed per block   |
 
 ---
@@ -232,29 +246,27 @@ Auto-finalization is executed in the `EndBlocker` for optimistic and based rollu
 
 The RDK module integrates with `x/multilayer` for cross-layer state management:
 
-### Layer Registration
+### Layer Registration {#layer-registration}
 
-When a rollup is created, it is automatically registered as a sidechain layer via `RegisterSidechain`. The registration includes:
+When a rollup is created, the module registers a layer for it through `RegisterSidechain`, so on-chain the layer type is **`sidechain`**, it starts in the `proposed` status, it counts against the multilayer sidechain limit (`max_sidechains`, default **10**) and it locks the creator's `min_sidechain_stake` (1,000 QOR). The registration includes:
 
 * Layer ID (matches rollup ID)
 * Target block time and max transactions per block
 * Supported VM types and domains
 * Settlement interval
 
-Registration is **non-fatal**: if `x/multilayer` registration fails, the rollup is still created and a warning is logged.
+Registration is **non-fatal**: if it fails (insufficient balance or limit reached), the rollup is still created, but it has no layer and cannot be anchored.
 
-### State Anchoring
+### State Anchoring {#state-anchoring}
 
-Every settlement batch submitted to the RDK is anchored to `x/multilayer` via `AnchorState`. This records:
+A settlement batch can be anchored to `x/multilayer`, which records the layer ID, layer height (the batch index), state root, validator-set hash and transaction count under a post-quantum signature by the rollup creator.
 
-* Layer ID and layer height (batch index)
-* State root
-* Transaction count
+* **Mainnet today:** batches are settled but are **not** anchored — the RDK does not supply the creator signature the anchor requires, so the anchoring step does not succeed and no anchor has been written. Anchoring is non-fatal: it never prevents batch processing.
 
-Anchoring is **non-fatal**: failures are logged but do not prevent batch processing.
+See [Settlement Receipts](/rollups/settlement-receipts) for what an anchor does and does not prove.
 
 ---
 
 ## Burn Integration
 
-On rollup creation, **1% of the stake amount** is burned via the `x/burn` module through the `rollup_create` burn channel. For example, creating a rollup with the minimum 10,000 QOR stake burns 100 QOR permanently. The remaining 9,900 QOR is held in escrow and returned when the rollup is stopped.
+On rollup creation, **1% of the stake amount** is burned via the `x/burn` module through the `rollup_create` burn channel. For example, creating a rollup with the minimum 10,000 QOR stake burns 100 QOR permanently. The remaining 9,900 QOR is held in escrow and returned when the rollup is stopped. The creation burn is enforced since chain version v3.2.0; earlier releases did not apply it.

@@ -7,11 +7,23 @@ sidebar_position: 7
 
 # 브리지 아키텍처
 
-`x/bridge` 모듈은 **37개의 QCB(QoreChain Bridge) 체인 구성과 8개의 IBC(Inter-Blockchain Communication) 채널**을 통해 QoreChain을 더 넓은 블록체인 생태계에 연결하도록 설계되었습니다. 모든 브리지 작업은 포스트 양자 암호화로 보호됩니다.
+`x/bridge` 모듈은 **37개의 체인 구성(36개의 외부 체인과 IBC를 통해 연결되는 Injective)과 최대 8개의 IBC(Inter-Blockchain Communication) 카운터파티**를 통해 QoreChain을 더 넓은 블록체인 생태계에 연결하도록 설계되었습니다. 모든 브리지 작업은 포스트 양자 암호화로 보호되도록 설계되었습니다.
 
-:::caution
-크로스체인 브리지는 **현재 테스트넷 상태이며 보류 중입니다 — 아직 프로덕션 시스템이 아닙니다**. 아래에 설명된 체인 구성, 라이트 클라이언트, 흐름은 설계된 대로 그리고 테스트넷에서 실행된 대로의 브리지를 반영합니다. 외부 연결은 점진적으로 출시되고 있으니, 모든 대상을 라이브 메인넷 보장이 아니라 설계 의도로 간주하십시오.
+:::caution 어느 네트워크에서도 아직 라이브 아님
+브리지 모듈은 메인넷과 테스트넷에 배포되어 있지만 **활성화된 브리지 경로는 없습니다**. 37개의 체인 구성이 모두 `pending` 상태이며 브리지 컨트랙트가 설정되어 있지 않고, 등록된 브리지 검증인이 없으며, 생성된 브리지 작업이 한 건도 없고, IBC 채널이나 클라이언트도 존재하지 않습니다. 아래 내용은 모두 의도된 설계를 설명합니다. 브리징될 것을 기대하고 자산을 보내지 마십시오.
 :::
+
+## 현재 상태 {#current-status}
+
+| | 메인넷 | 테스트넷 |
+|---|---|---|
+| 브리지 모듈 | 활성화됨 | 활성화됨 |
+| 체인 구성 | 37개, 모두 `pending` | 37개, 모두 `pending` |
+| 등록된 브리지 검증인 | 0 | 0 |
+| 브리지 작업 | 0 | 0 |
+| IBC 채널 / 클라이언트 | 0 / 0 | 0 / 0 |
+
+(2026년 10월 확인. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽을 수 있습니다.)
 
 ## 연결 개요
 
@@ -19,14 +31,14 @@ QoreChain은 두 가지 브리지 프로토콜이 병렬로 작동하도록 설�
 
 | 프로토콜 | 연결                 | 보안 모델                            | 사용 사례                               |
 | -------- | -------------------- | ------------------------------------ | --------------------------------------- |
-| **IBC**  | 8개 채널             | 표준 IBC + PQC 패킷 서명             | Cosmos SDK 호환 체인                    |
-| **QCB**  | 37개 체인 구성       | 7-of-10 Dilithium-5 멀티시그         | 비-IBC 체인 (EVM, Solana, TON 등)       |
+| **IBC**  | 최대 8개 채널 (열린 채널 없음)  | 표준 IBC + PQC 패킷 서명             | Cosmos SDK 호환 체인                    |
+| **QCB**  | 37개 체인 구성 (모두 pending) | 7-of-10 Dilithium-5 멀티시그         | 비-IBC 체인 (EVM, Solana, TON 등)       |
 
-**37개의 QCB 체인 구성**에는 **36개의 외부 체인**과 네이티브/루프백 구성으로서의 **QoreChain 자체**(내부 라우팅 및 자기 참조 정산에 사용)가 포함됩니다. 8개의 IBC 채널은 Cosmos SDK 호환 체인에 연결됩니다.
+**37개의 체인 구성**은 아래에 나열된 **36개의 외부 체인**에 IBC 유형 체인으로 구성된 **Injective**를 더한 것입니다. QoreChain 루프백 구성은 없습니다. 계획된 IBC 채널은 Cosmos SDK 호환 체인에 연결됩니다.
 
 ## IBC 채널
 
-QoreChain은 Hermes v1.x를 통해 릴레이되는 다음 8개 체인에 대한 IBC 연결을 유지하도록 설계되었습니다:
+QoreChain은 Hermes v1.x를 통해 릴레이되는 다음 8개 체인에 대한 IBC 연결을 유지하도록 설계되었습니다. **두 네트워크 모두에 아직 IBC 채널이나 클라이언트가 존재하지 않으므로**, 이 표는 계획된 카운터파티만 나열합니다:
 
 | 체인       | 설명                           |
 | ---------- | ------------------------------ |
@@ -49,11 +61,11 @@ QoreChain은 Hermes v1.x를 통해 릴레이되는 다음 8개 체인에 대한 
 
 ## QCB (QoreChain Bridge) 프로토콜
 
-QCB 프로토콜은 포스트 양자 암호화로 보호되는 허브 앤 스포크(hub-and-spoke) 아키텍처를 사용합니다. QoreChain은 허브 역할을 하며, 각 외부 체인에 대한 스포크 구성과 QoreChain 자체에 대한 네이티브/루프백 구성을 갖습니다.
+QCB 프로토콜은 포스트 양자 암호화로 보호되는 허브 앤 스포크(hub-and-spoke) 아키텍처를 사용합니다. QoreChain은 허브 역할을 하며, 각 외부 체인에 대한 스포크 구성을 갖습니다.
 
 ### 외부 체인 구성 (36)
 
-QCB 프로토콜은 다음 36개의 외부 체인을 대상으로 하도록 설계되었습니다. QoreChain 자체의 네이티브/루프백 구성과 결합하면 **총 37개의 QCB 체인 구성(QoreChain 자체 포함)**이 됩니다.
+QCB 프로토콜은 다음 36개의 외부 체인을 대상으로 하도록 설계되었습니다. IBC 유형 구성인 Injective와 합하면 **총 37개의 체인 구성**이 되며, 모두 현재 `pending` 상태입니다.
 
 **기준 체인 (10)**
 
@@ -67,12 +79,12 @@ zkSync Era, Linea, Scroll, Blast, Mantle, Hyperliquid, Berachain, Sonic, Sei, Mo
 
 Starknet, XRP Ledger, Stellar, Hedera, Algorand.
 
-**보류 중인 체인 (7)**
+**추가 체인 (7)**
 
 NEAR, Bitcoin, Cardano, Polkadot, Tezos, Tron, Aptos.
 
 :::note
-개수 확인: 기준 10 + EVM 계열 14 + 비-EVM 5 + 보류 중 7 = **36개의 외부 체인**. QoreChain 자체의 네이티브/루프백 구성을 추가하면 **37개의 QCB 체인 구성**이 됩니다.
+개수 확인: 기준 10 + EVM 계열 14 + 비-EVM 5 + 추가 7 = **36개의 외부 체인**. Injective(IBC)를 더하면 **37개의 체인 구성**이 됩니다.
 :::
 
 ### 주소 형식
@@ -107,7 +119,7 @@ QCB 프로토콜은 대상 주소를 검증하기 위해 체인을 유형별로 
 
 ## 입금 흐름 (외부에서 QoreChain으로)
 
-아래 시퀀스는 QCB 입금을 보여줍니다: 자산이 외부 체인에서 잠기고, QoreChain 검증인이 PQC 서명된 증명(7-of-10 Dilithium-5)을 제출하며, 래핑된 토큰이 발행됩니다. Cosmos SDK 호환 체인은 대신 병렬 IBC 경로(8개 채널, 선택적 Dilithium-5 패킷 서명 포함)를 사용합니다. 두 경로 모두 테스트넷/보류 중입니다.
+아래 시퀀스는 설계된 QCB 입금을 보여줍니다: 자산이 외부 체인에서 잠기고, QoreChain 검증인이 PQC 서명된 증명(7-of-10 Dilithium-5)을 제출하며, 래핑된 토큰이 발행됩니다. Cosmos SDK 호환 체인은 대신 병렬 IBC 경로(최대 8개 채널, 선택적 Dilithium-5 패킷 서명 포함)를 사용합니다. 두 경로 모두 활성화되어 있지 않으며, 입금이 이루어진 적은 한 번도 없습니다.
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +133,7 @@ sequenceDiagram
     Note over V,Q: Light client verifies source proofs where available
     Q->>Q: 4. Mint wrapped tokens
     Note over Q: If > 100K QOR: 24h challenge period before execution
-    Note over X,Q: IBC path (8 channels) runs in parallel for Cosmos SDK chains
+    Note over X,Q: IBC path (planned, up to 8 channels) runs in parallel for Cosmos SDK chains
 ```
 
 ```
@@ -166,15 +178,9 @@ QoreChain               QoreChain Validators           External Chain
 
 출금 중 수집된 모든 브리지 수수료는 `bridge_fee` 소각 채널을 통해 `x/burn` 모듈로 라우팅됩니다(브리지 수수료의 100%가 소각됩니다).
 
-### L2 → L1 출금 흐름 (롤업 정산)
+### L2 → L1 출금 (롤업)
 
-브리지는 또한 **롤업(L2) 출금을 호스트 체인(L1)으로 다시 정산**하도록 설계되었습니다. [Rollup Development Kit](/architecture/rollup-development-kit)를 통해 배포된 롤업은 주기적으로 자신의 상태를 QoreChain에 앵커링합니다. 브리지는 이러한 확정된 앵커를 소비하여 롤업에서 호스트 체인으로의 출금을 승인합니다:
-
-1. 사용자가 롤업(L2)에서 출금을 시작하고, 이는 정산 배치에 포함됩니다.
-2. 배치가 QoreChain에 앵커링되고 롤업의 정산 모드에 따라 증명/확정됩니다(예: 낙관적 챌린지 기간이 만료된 후, 또는 유효한 증명 검증 시).
-3. 앵커가 확정되면 출금이 청구 가능해지고, 표준 소각-및-증명 경로를 통해 호스트 체인(L1)에서 해당 자산이 해제됩니다.
-
-이는 롤업 확정성을 호스트 체인 정산 보장에 직접 연결하여, 해당 L2 상태가 되돌릴 수 없게 정산되기 전에는 L2 출금이 해제될 수 없도록 합니다.
+롤업 출금은 브리지를 사용하지 않습니다. 확정된 배치의 출금 루트에 대해 `execute-withdrawal`로 `x/rdk` 모듈이 지급합니다 — [ZK / STARK 및 출금](/rollups/zk-stark-withdrawals)을 참조하십시오.
 
 ## 보안 아키텍처
 
@@ -205,13 +211,13 @@ QoreChain               QoreChain Validators           External Chain
 대규모 전송(100,000 QOR 상당 초과, `large_transfer_threshold`를 통해 구성 가능)의 경우:
 
 * 증명 임계값이 충족된 후 **24시간 챌린지 기간**(86,400초)이 적용됩니다.
-* 이 기간 동안 모든 검증인이 작업에 플래그를 지정할 수 있습니다.
+* 이 기간 동안 검증인이 해당 작업에 플래그를 지정할 수 있도록 설계되었습니다.
 * 챌린지가 없으면 기간 만료 후 작업이 자동으로 실행됩니다.
 * 챌린지가 제기된 작업은 거버넌스 검토를 위해 동결됩니다.
 
 ### AI 경로 최적화
 
-브리지 모듈은 경로 최적화를 위해 AI 서브시스템과 통합됩니다. 여러 경로를 통과할 수 있는 전송(예: 중개자를 통한 체인 A에서 체인 B로)의 경우, 경로 최적화기는 다음을 평가합니다:
+브리지 모듈은 경로 최적화를 위해 AI 서브시스템과 통합됩니다(REST로는 노출되지 않음). 여러 경로를 통과할 수 있는 전송(예: 중개자를 통한 체인 A에서 체인 B로)의 경우, 경로 최적화기는 다음을 평가합니다:
 
 * 경로별 예상 수수료
 * 예상 완료 시간
@@ -227,26 +233,27 @@ QoreChain               QoreChain Validators           External Chain
 * **`tx bridge update-chain-config`** — 체인의 컨트랙트 주소, 확인 횟수, 아키텍처, 상태를 설정합니다 (`MsgUpdateChainConfig`).
 * **`tx bridge set-verifier-bootstrap`** — 체인의 활성 검증기를 선택하고 신뢰 루트를 설치합니다 (`MsgSetVerifierBootstrap`).
 
-이를 통해 운영자는 브리지 관리자 키에 대해 권한이 확인된 상태로 연결된 체인의 브리지를 직접 온라인 상태로 만들거나 검증기를 교체할 수 있습니다.
+이를 통해 운영자는 브리지 관리자 키에 대해 권한이 확인된 상태로 연결된 체인의 브리지를 직접 온라인 상태로 만들거나 검증기를 교체할 수 있습니다. 체인 버전 **v3.2.0**부터 브리지 모듈은 자체 모듈 계정도 갖습니다(이전 릴리스에는 없었기 때문에, 활성화된 경로의 첫 입금은 실패했을 것입니다).
 
 ### 연결된 네트워크 검증
 
-체인 버전 **v3.1.79**부터, 일치하는 `validator_<chain>`(또는 `qcb_bridge`) 라이선스를 보유한 검증인은 동일한 노드에서 외부 네트워크의 클라이언트를 실행할 수 있으며, 라이선스가 활성화되면 QoreChain의 오케스트레이션 하에 자동으로 프로비저닝됩니다. 드라이버는 37개의 모든 브리지 네트워크에 대해 제공되며, 참여 모델별로 분류됩니다(무허가 검증인, 상한/선출/승인, L2 풀 노드, 비스테이킹/신뢰 목록). 외부 네트워크의 스테이크 및 서명 키는 네트워크별로 운영자가 제공합니다. 운영자 단계는 [검증인 실행하기](/developer-guide/running-a-validator#connected-networks)를 참조하십시오.
+체인 버전 **v3.1.79**부터, 일치하는 `validator_<chain>`(또는 `qcb_bridge`) 라이선스를 보유한 검증인은 동일한 노드에서 외부 네트워크의 클라이언트를 실행할 수 있으며, 라이선스가 활성화되면 QoreChain의 오케스트레이션 하에 자동으로 프로비저닝됩니다. 드라이버는 37개의 모든 브리지 네트워크에 대해 제공되며, 참여 모델별로 분류됩니다(무허가 검증인, 상한/선출/승인, L2 풀 노드, 비스테이킹/신뢰 목록). 외부 네트워크의 스테이크 및 서명 키는 네트워크별로 운영자가 제공합니다. 운영자 단계는 [검증인 실행하기](/developer-guide/running-a-validator#connected-networks)를 참조하십시오. 모든 체인 구성이 `pending` 상태이므로, 현재 브리지를 통해 검증되고 있는 연결된 네트워크는 없습니다.
 
-## REST API 엔드포인트
+## REST API 엔드포인트 {#rest-api-endpoints}
 
-체인 버전 **v3.1.77**부터, 브리지 상태는 `/qorechain/bridge/v1/...` 접두사 하에 grpc-gateway를 통해 **REST에서 읽기 전용으로** 쿼리할 수도 있습니다(`config`, `chains`, `chains/{chain_id}`, `validators`, `validators/{address}`, `operations`, `operations/{id}`) — 이전에는 gRPC 전용이었습니다. 이는 익스플로러 및 라이트 노드 텔레메트리를 위해 HTTP를 통해 실제 온체인 JSON을 제공합니다. 전체 목록은 [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#bridge-module)를 참조하십시오.
+브리지 상태는 `/qorechain/bridge/v1/...` 접두사 하에 grpc-gateway를 통해 **REST에서 읽기 전용으로** 쿼리할 수 있습니다. 이는 익스플로러 및 라이트 노드 텔레메트리를 위해 HTTP를 통해 실제 온체인 JSON을 제공합니다. 전체 목록은 [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#bridge-module)를 참조하십시오.
 
-| 메서드 | 엔드포인트                                          | 설명                                             |
-| ------ | -------------------------------------------------- | ------------------------------------------------ |
-| GET    | `/bridge/v1/chains`                                | 지원되는 모든 체인 구성 목록 조회                |
-| GET    | `/bridge/v1/chains/{chain_id}`                     | 특정 체인의 구성 조회                            |
-| GET    | `/bridge/v1/validators`                            | 등록된 모든 브리지 검증인 목록 조회             |
-| GET    | `/bridge/v1/operations`                            | 모든 브리지 작업 목록 조회 (최신순)             |
-| GET    | `/bridge/v1/operations/{operation_id}`             | 특정 작업의 세부 정보 조회                      |
-| GET    | `/bridge/v1/locked/{chain}/{asset}`                | 체인/자산 쌍에 대한 잠긴/발행된 금액 조회       |
-| GET    | `/bridge/v1/circuit-breakers`                      | 모든 서킷 브레이커 상태 목록 조회               |
-| GET    | `/bridge/v1/estimate/{from}/{to}/{asset}/{amount}` | AI 최적화 경로 추정치 조회                      |
+| 메서드 | 엔드포인트                                | 설명                                                                                                                |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/qorechain/bridge/v1/config`             | 브리지 모듈 구성 (`min_validators`, `attestation_threshold`, `challenge_period_secs`, `large_transfer_threshold`, `enabled`) |
+| GET    | `/qorechain/bridge/v1/chains`             | 모든 체인 구성 및 상태                                                                                              |
+| GET    | `/qorechain/bridge/v1/chains/{chain_id}`  | 특정 체인 구성                                                                                                      |
+| GET    | `/qorechain/bridge/v1/validators`         | 등록된 브리지 검증인                                                                                                |
+| GET    | `/qorechain/bridge/v1/validators/{address}` | 특정 브리지 검증인                                                                                                |
+| GET    | `/qorechain/bridge/v1/operations`         | 브리지 작업                                                                                                         |
+| GET    | `/qorechain/bridge/v1/operations/{id}`    | 특정 브리지 작업                                                                                                    |
+
+잠긴 금액, 서킷 브레이커 상태, 경로 추정치에는 현재 쿼리 경로가 없습니다.
 
 ## 브리지 이벤트
 
@@ -265,6 +272,5 @@ QoreChain               QoreChain Validators           External Chain
 ## 관련 항목
 
 * [자산 브리징](/user-guide/bridging-assets) — 단계별로 체인 간 자산 이동.
-* [대시보드 브리지](/dashboard/bridge) — 일반 사용자를 위한 브리지 인터페이스.
 * [Babylon을 통한 BTC 리스테이킹](/architecture/btc-restaking-babylon) — Bitcoin 기반 보안.
 * [포스트 양자 보안](/architecture/post-quantum-security) — IBC 패킷에 대한 PQC 검증.

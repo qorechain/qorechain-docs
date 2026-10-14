@@ -7,75 +7,29 @@ sidebar_position: 4
 
 # Staking xQORE
 
-Questa guida illustra il meccanismo di staking per la governance xQORE, che consente ai detentori di QOR di bloccare i propri token per ottenere un potere di governance potenziato, con un modello di rebase PvP che premia i partecipanti a lungo termine.
+Questa pagina descrive il meccanismo di staking per la governance xQORE così com'è **progettato**, in cui i detentori di QOR bloccherebbero i propri token per ottenere un potere di governance potenziato, con un modello di rebase PvP che premia i partecipanti a lungo termine. **xQORE non può essere utilizzato oggi su nessuna delle due reti**; nulla in questa pagina è ancora qualcosa che puoi fare.
 
-:::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la versione di chain **v3.1.97** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** quando fai staking sulla mainnet.
+:::warning Non ancora attivo
+xQORE è abilitato nel genesis ma **non è ancora utilizzabile** su mainnet (`qorechain-vladi`, release del nodo **v3.2.1**) o testnet (`qorechain-diana`). Il nodo non ha alcun punto di ingresso di transazione, query, CLI o RPC per esso, quindi non esistono `tx xqore lock` / `unlock`, né `query xqore ...`, né route REST di xQORE, né il metodo `qor_getXQOREPosition`; nessun QOR può essere bloccato e nessuno detiene xQORE. È previsto per una futura release della chain, che cambierà anche il modo in cui le penali di uscita vengono ridistribuite, in modo che lo sblocco resti economico indipendentemente dal numero di detentori. La release sarà indicata qui al momento del rilascio.
 :::
 
 ---
 
 ## Panoramica
 
-xQORE è il token di staking per la governance di QoreChain. Quando blocchi QOR, ricevi xQORE con un **rapporto 1:1**. Detenere xQORE offre un vantaggio significativo nella governance: i token xQORE contano con **peso doppio** nella formula del potere di voto QDRW (vedi [Governance](/user-guide/governance)).
+Nel design, bloccare QOR conia xQORE con un **rapporto 1:1**, e xQORE conta con **peso doppio** nella formula del potere di voto QDRW:
 
 ```
 VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
 ```
 
-Ciò significa che bloccare QOR in xQORE raddoppia di fatto il suo impatto sulla governance rispetto al solo staking ordinario.
+QDRW stesso è disattivato sulle reti attive e i voti di governance vengono conteggiati solo sullo stake in bonding (vedi [Governance](/user-guide/governance#voting-power)), quindi anche una volta rilasciato xQORE non modificherà il potere di voto finché QDRW non sarà abilitato da una futura release.
 
 ---
 
-## Bloccare QOR per xQORE
+## Piano delle penali di uscita previsto
 
-Blocca i token QOR per coniare xQORE con un rapporto 1:1:
-
-```bash
-qorechaind tx xqore lock <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Esempio:** Blocca 1.000 QOR:
-
-```bash
-qorechaind tx xqore lock 1000000000uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-Dopo questa transazione, il tuo account deterrà 1.000.000.000 uxqore (1.000 xQORE).
-
----
-
-## Sbloccare xQORE
-
-Brucia xQORE per riottenere QOR. Può applicarsi una **penale di uscita** a seconda di quanto a lungo i token sono stati bloccati:
-
-```bash
-qorechaind tx xqore unlock <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
-**Esempio:** Sblocca 500 xQORE:
-
-```bash
-qorechaind tx xqore unlock 500000000uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
-
----
-
-## Piano delle Penali di Uscita
-
-Il ritiro anticipato da xQORE comporta una penale. Più a lungo mantieni la posizione, più bassa è la penale:
+La configurazione del genesis definisce una penale di uscita che diminuisce quanto più a lungo il QOR è rimasto bloccato:
 
 | Durata del Lock      | Penale di Uscita |
 | ------------------ | ------------ |
@@ -84,94 +38,14 @@ Il ritiro anticipato da xQORE comporta una penale. Più a lungo mantieni la posi
 | Da 90 a 180 giorni     | **15%**      |
 | Più di 180 giorni | **0%**       |
 
-**Esempio:** Se hai bloccato 1.000 QOR e sblocchi dopo 45 giorni, ricevi 650 QOR (penale del 35% applicata). I restanti 350 QOR vengono ridistribuiti agli altri detentori di xQORE attraverso il meccanismo di rebase PvP.
+Secondo il design, le penali **non vengono bruciate** (`penalty_burn_rate` è `0`): l'intera penale viene ridistribuita proporzionalmente ai detentori di xQORE rimanenti (il "rebase PvP"). Il meccanismo di ridistribuzione è la parte che cambierà nella release che integrerà xQORE.
 
 ---
 
-## Meccanismo di Rebase PvP
+## Cosa non è disponibile
 
-Le penali raccolte dalle uscite anticipate **non vengono bruciate**. Vengono invece ridistribuite proporzionalmente a tutti i detentori di xQORE rimanenti. Questo crea una dinamica "Player vs Player" in cui i detentori pazienti traggono vantaggio dall'impazienza degli altri.
+* **Blocco e sblocco.** Non esistono comandi `tx xqore` né un tipo di transazione per bloccare o sbloccare QOR.
+* **Posizioni.** Non esiste alcuna query per una posizione xQORE su nessuna interfaccia (CLI, REST o JSON-RPC), e `total_locked` e `total_xqore` sono entrambi zero.
+* **Bonus di voto.** Oggi non esiste alcun bonus di voto xQORE.
 
-Come funziona:
-
-1. Un utente sblocca xQORE prima della soglia di penale zero a 180 giorni.
-2. La penale di uscita viene detratta dai QOR restituiti.
-3. L'importo della penale viene distribuito proporzionalmente su tutte le posizioni xQORE rimanenti.
-4. I QOR riscuotibili per ogni xQORE di ciascun detentore rimanente aumentano.
-
-Questo meccanismo incentiva l'impegno a lungo termine nella governance e premia i detentori che mantengono le proprie posizioni.
-
----
-
-## Interrogare la Tua Posizione
-
-Verifica la tua posizione xQORE corrente, la durata del lock e la penale di uscita applicabile:
-
-```bash
-qorechaind query xqore position <address>
-```
-
-**Esempio:**
-
-```bash
-qorechaind query xqore position qor1abc...xyz
-```
-
-**Output di esempio:**
-
-```yaml
-position:
-  address: qor1abc...xyz
-  locked_amount: "1000000000"
-  xqore_balance: "1000000000"
-  lock_timestamp: "2026-01-15T12:00:00Z"
-  current_penalty_rate: "0.150000000000000000"
-  accrued_rebase: "25000000"
-```
-
----
-
-## Accesso JSON-RPC
-
-Per le applicazioni che si integrano con QoreChain tramite JSON-RPC, la posizione xQORE può essere interrogata utilizzando:
-
-```
-qor_getXQOREPosition
-```
-
-**Richiesta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "qor_getXQOREPosition",
-  "params": ["qor1abc...xyz"],
-  "id": 1
-}
-```
-
-**Risposta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "locked_amount": "1000000000",
-    "xqore_balance": "1000000000",
-    "lock_timestamp": "2026-01-15T12:00:00Z",
-    "current_penalty_rate": "0.15",
-    "accrued_rebase": "25000000"
-  }
-}
-```
-
----
-
-## Suggerimenti
-
-* Blocca QOR in xQORE con largo anticipo rispetto a votazioni di governance importanti per massimizzare il tuo potere di voto.
-* La soglia di 180 giorni per uscite senza penale premia i partecipanti pazienti alla governance.
-* Monitora gli accrediti del rebase PvP. Man mano che altri escono anticipatamente, la tua posizione cresce di valore.
-* xQORE non è trasferibile. Può essere coniato solo bloccando QOR e bruciato solo sbloccandolo.
-* Considera attentamente la penale di uscita prima di bloccare. I lock a breve termine comportano penali significative.
+Se vuoi partecipare alla governance adesso, delega QOR a un validatore (vedi [Staking e Delega](/user-guide/staking-and-delegation)) e vota sulle proposte (vedi [Governance](/user-guide/governance)).

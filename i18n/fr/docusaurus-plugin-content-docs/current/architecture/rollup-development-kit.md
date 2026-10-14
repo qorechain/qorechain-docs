@@ -9,6 +9,10 @@ sidebar_position: 12
 
 Le module `x/rdk` fournit un kit complet de développement de rollups (Rollup Development Kit, RDK) qui permet aux développeurs de déployer des rollups spécifiques à une application sur QoreChain. Il prend en charge quatre paradigmes de règlement, plusieurs modes de séquenceur, des backends de disponibilité des données enfichables et une optimisation de la configuration assistée par IA.
 
+:::caution Capacité à un stade précoce
+Le module est déployé sur le mainnet (version de chaîne **v3.2.1**) et sur le testnet, mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau**. Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
+:::
+
 ---
 
 ## Paradigmes de règlement
@@ -20,10 +24,10 @@ Le RDK de QoreChain prend en charge quatre modes de règlement distincts — **o
 Les rollups optimistes supposent que les transactions sont valides par défaut et s'appuient sur des preuves de fraude pour la résolution des litiges.
 
 * **Système de preuve** : preuves de fraude interactives
-* **Fenêtre de contestation** : 7 jours (604 800 secondes), configurable par rollup
-* **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude
+* **Fenêtre de contestation** : 604 800 « secondes » (par défaut), converties par la chaîne en blocs à raison fixe de 6 secondes par bloc — soit **100 800 blocs**. Le temps réel écoulé dépend du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s), il faut donc planifier en blocs, pas en jours.
+* **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude (profils `nft` et `custom` ; les profils `defi`, `gaming` et `enterprise` ne définissent aucune caution car ils n'ont pas de fenêtre de contestation)
 * **Finalité** : différée jusqu'à l'expiration de la fenêtre de contestation sans contestation valide
-* **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige
+* **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : le créateur du rollup doit d'abord résoudre la contestation (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
 **Cycle de vie d'un lot** :
 
@@ -36,11 +40,11 @@ Submitted → [fraud proof submitted] → Challenged → Rejected
 
 Les rollups ZK fournissent des preuves de validité cryptographiques qui garantissent l'exactitude des transitions d'état.
 
-* **Système de preuve** : SNARK (Groth16, PLONK) ou STARK (transparent, sans configuration de confiance)
+* **Système de preuve** : SNARK (Groth16 sur BLS12-381) ou STARK (transparent, sans configuration de confiance)
 * **Finalité** : instantanée à la vérification de la preuve — aucune fenêtre de contestation requise
 * **Taille de preuve maximale** : 1 Mo (1 048 576 octets)
 * **Profondeur de récursion** : profondeur d'agrégation de preuves configurable (par défaut : 1)
-* **Maturité** : dans la version actuelle, le règlement ZK utilise une vérification factice qui accepte toute preuve non vide. La vérification complète des preuves SNARK/STARK est une mise à niveau prévue et doit être considérée comme pas encore durcie pour la production.
+* **Maturité** : les lots SNARK sont vérifiés on-chain (Groth16 sur BLS12-381) par rapport à une clé de vérification stockée avec le rollup. Un rollup créé via `create-rollup` ne porte actuellement pas de clé de vérification, de sorte que les lots ZK ne peuvent pas encore être finalisés de bout en bout. La vérification STARK est expérimentale : elle est optionnelle et vérifie un circuit de démonstration, et non la propre transition d'état de votre rollup. Considérez le règlement ZK comme non prêt pour la production.
 
 **Cycle de vie d'un lot** :
 
@@ -84,7 +88,7 @@ Les rollups souverains fonctionnent avec un consensus indépendant et séquencen
 | **Based**       |           -- |        -- |        -- | Requise |
 | **Sovereign**   |           -- |        -- |        -- | Requise |
 
-La vérification STARK et la vérification complète des preuves ZK sont encore en cours de maturation ; voir la note de maturité sur le [règlement ZK](#zk-zero-knowledge-settlement) ci-dessus.
+La vérification STARK est expérimentale et le règlement ZK n'est pas prêt pour la production ; voir la note de maturité sur le [règlement ZK](#zk-zero-knowledge-settlement) ci-dessus.
 
 ---
 
@@ -108,6 +112,10 @@ Le profil `custom` laisse chaque champ à votre discrétion. Les valeurs exactes
 
 Le séquenceur détermine qui ordonne les transactions au sein d'un bloc de rollup.
 
+:::note Ce qui est imposé aujourd'hui
+On-chain, un lot ne peut être soumis que par l'adresse de séquenceur configurée du rollup ou, lorsqu'aucune n'est définie (c'est le cas de tous les profils prédéfinis), par son créateur. Les modes `shared` et `based` sont enregistrés dans la configuration du rollup, mais QoreChain n'admet pas encore de liste de séquenceurs partagés ni de proposeurs L1 comme soumetteurs de lots ; ces modes décrivent la conception prévue.
+:::
+
 ### Séquenceur dédié
 
 Un seul opérateur séquence toutes les transactions du rollup.
@@ -120,6 +128,7 @@ Un seul opérateur séquence toutes les transactions du rollup.
 
 Un ensemble de séquenceurs ordonne collectivement les transactions.
 
+* **Statut** : une simple étiquette aujourd'hui — la liste n'est pas encore admise on-chain (voir la note ci-dessus)
 * **Taille minimale de l'ensemble** : configurable (par défaut : 1)
 * **Latence** : légèrement supérieure en raison de la coordination multipartite
 * **Confiance** : répartie sur l'ensemble des séquenceurs
@@ -128,6 +137,7 @@ Un ensemble de séquenceurs ordonne collectivement les transactions.
 
 Les proposeurs L1 de QoreChain séquencent les transactions du rollup.
 
+* **Statut** : une simple étiquette aujourd'hui — les proposeurs L1 ne sont pas encore admis comme soumetteurs de lots (voir la note ci-dessus)
 * **Délai d'inclusion** : nombre de blocs configurable avant l'inclusion forcée (par défaut : 10)
 * **Partage des frais de priorité** : pourcentage configurable des frais de priorité versés aux proposeurs L1
 * **Confiance** : hérite de la sécurité de l'ensemble des validateurs de QoreChain et de la résistance à la censure
@@ -141,12 +151,16 @@ Les proposeurs L1 de QoreChain séquencent les transactions du rollup.
 
 Stockage de blobs en KV-store on-chain au sein de QoreChain elle-même.
 
+:::caution Pas encore de moyen public de publier un blob
+Le module définit le stockage, la rétention et l'élagage des blobs, mais il n'existe aucun message de transaction pour publier un blob dans les versions actuelles. Un lot qui nomme un hachage de données sur un rollup `native` ou `both` est refusé, car aucun blob correspondant ne peut être stocké. Voir [Disponibilité des données](/rollups/data-availability).
+:::
+
 | Paramètre            | Valeur                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | **Taille de blob maximale**    | 2 Mo (2 097 152 octets)                                                                              |
-| **Période de rétention** | 432 000 blocs (\~30 jours avec des blocs de 6 secondes)                                                       |
+| **Période de rétention** | 432 000 blocs (environ 16 jours avec les blocs actuels du mainnet d'environ 3,2 s ; ce chiffre évolue avec le temps de bloc) |
 | **Élagage automatique**     | Les blobs expirés sont élagués dans l'`EndBlocker` — les données sont supprimées mais les métadonnées d'engagement sont conservées  |
-| **Engagement**       | Hachage SHA-256 des données du blob                                                                           |
+| **Engagement**       | Hachage SHAKE-256 (32 octets) des données du blob                                                   |
 
 ### Celestia DA
 
@@ -181,7 +195,7 @@ Pending → Active → Paused → Active → Stopped
 | **Paused**  | Temporairement suspendu par le créateur (peut reprendre)                   |
 | **Stopped** | Définitivement mis hors service — caution de stake retournée au créateur  |
 
-À la création, le statut du rollup est défini sur `Active` immédiatement après la réussite de la mise sous séquestre du stake et de l'enregistrement de la couche.
+À la création, le statut du rollup est défini sur `Active` immédiatement après la réussite de la mise sous séquestre du stake et du brûlage de création (l'enregistrement de la couche est tenté mais n'est pas bloquant). Seul le créateur peut mettre en pause, reprendre ou arrêter un rollup (imposé depuis la version de chaîne v3.2.0).
 
 ---
 
@@ -205,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mode de règlement | Déclencheur de finalisation                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | Expiration de la fenêtre de contestation (\~7 jours) sans contestation valide |
+| **Optimistic**  | 100 800 blocs après la soumission (fenêtre par défaut) sans contestation |
 | **ZK**          | Instantanée à la soumission d'une preuve valide                           |
 | **Based**       | 2 blocs L1 après la soumission                                |
 | **Sovereign**   | Aucune — gérée par le propre consensus du rollup                |
@@ -221,9 +235,9 @@ La finalisation automatique est exécutée dans l'`EndBlocker` pour les rollups 
 | `max_rollups`               |                              100 | Nombre maximal de rollups pouvant être enregistrés |
 | `min_stake_for_rollup`      | 10 000 000 000 uqor (10 000 QOR) | Stake minimal requis pour créer un rollup        |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Fraction du stake de création brûlée via `x/burn`   |
-| `default_challenge_window`  |         604 800 secondes (7 jours) | Fenêtre de contestation optimistic par défaut              |
+| `default_challenge_window`  | 604 800 (converti en 100 800 blocs) | Fenêtre de contestation optimistic par défaut         |
 | `max_da_blob_size`          |           2 097 152 octets (2 Mo) | Taille maximale de blob de disponibilité des données              |
-| `blob_retention_blocks`     |              432 000 (\~30 jours) | Blocs avant l'élagage des blobs DA                |
+| `blob_retention_blocks`     |                   432 000 blocs | Blocs avant l'élagage des blobs DA                |
 | `max_batches_per_block`     |                               10 | Nombre maximal de lots de règlement traités par bloc   |
 
 ---
@@ -232,29 +246,27 @@ La finalisation automatique est exécutée dans l'`EndBlocker` pour les rollups 
 
 Le module RDK s'intègre à `x/multilayer` pour la gestion d'état inter-couches :
 
-### Enregistrement de couche
+### Enregistrement de couche {#layer-registration}
 
-Lorsqu'un rollup est créé, il est automatiquement enregistré en tant que couche sidechain via `RegisterSidechain`. L'enregistrement comprend :
+Lorsqu'un rollup est créé, le module enregistre une couche pour celui-ci via `RegisterSidechain` ; ainsi, on-chain, le type de couche est **`sidechain`**, elle démarre au statut `proposed`, elle compte dans la limite de sidechains de multilayer (`max_sidechains`, par défaut **10**) et elle verrouille le `min_sidechain_stake` du créateur (1 000 QOR). L'enregistrement comprend :
 
 * L'ID de couche (correspond à l'ID du rollup)
 * Le temps de bloc cible et le nombre maximal de transactions par bloc
 * Les types de VM et domaines pris en charge
 * L'intervalle de règlement
 
-L'enregistrement est **non fatal** : si l'enregistrement `x/multilayer` échoue, le rollup est tout de même créé et un avertissement est journalisé.
+L'enregistrement est **non fatal** : s'il échoue (solde insuffisant ou limite atteinte), le rollup est tout de même créé, mais il n'a pas de couche et ne peut pas être ancré.
 
-### Ancrage d'état
+### Ancrage d'état {#state-anchoring}
 
-Chaque lot de règlement soumis au RDK est ancré à `x/multilayer` via `AnchorState`. Cela enregistre :
+Un lot de règlement peut être ancré à `x/multilayer`, qui enregistre l'ID de couche, la hauteur de couche (l'index du lot), la racine d'état, le hachage de l'ensemble de validateurs et le nombre de transactions sous une signature post-quantique du créateur du rollup.
 
-* L'ID de couche et la hauteur de couche (index du lot)
-* La racine d'état
-* Le nombre de transactions
+* **Mainnet aujourd'hui :** les lots sont réglés mais **ne sont pas** ancrés — le RDK ne fournit pas la signature du créateur que l'ancrage exige, de sorte que l'étape d'ancrage n'aboutit pas et qu'aucun ancrage n'a été écrit. L'ancrage est non fatal : il n'empêche jamais le traitement des lots.
 
-L'ancrage est **non fatal** : les échecs sont journalisés mais n'empêchent pas le traitement des lots.
+Voir [Reçus de règlement](/rollups/settlement-receipts) pour ce qu'un ancrage prouve et ne prouve pas.
 
 ---
 
 ## Intégration du burn
 
-À la création d'un rollup, **1 % du montant du stake** est brûlé via le module `x/burn` à travers le canal de burn `rollup_create`. Par exemple, créer un rollup avec le stake minimal de 10 000 QOR brûle 100 QOR de manière permanente. Les 9 900 QOR restants sont conservés sous séquestre et restitués lorsque le rollup est arrêté.
+À la création d'un rollup, **1 % du montant du stake** est brûlé via le module `x/burn` à travers le canal de burn `rollup_create`. Par exemple, créer un rollup avec le stake minimal de 10 000 QOR brûle 100 QOR de manière permanente. Les 9 900 QOR restants sont conservés sous séquestre et restitués lorsque le rollup est arrêté. Le brûlage à la création est imposé depuis la version de chaîne v3.2.0 ; les versions antérieures ne l'appliquaient pas.

@@ -7,176 +7,62 @@ sidebar_position: 2
 
 # JSON-RPC — Espacio de nombres qor_
 
-El espacio de nombres `qor_` proporciona métodos JSON-RPC específicos de QoreChain para consultar el estado de la criptografía poscuántica, la analítica de IA, la mensajería entre VM, el estado multicapa, las operaciones de puente, la tokenómica, la infraestructura de rollups y el estado del consenso PRISM.
+El espacio de nombres `qor_` se diseñó para proporcionar métodos JSON-RPC específicos de QoreChain con los que consultar el estado de la criptografía poscuántica, la analítica de IA, la mensajería entre VM, el estado multicapa, las operaciones de puente, la tokenómica, la infraestructura de rollups y el estado del consenso PRISM.
 
-## Conexión
+:::warning Aún no se sirve
+**Ninguna versión publicada del nodo sirve todavía el espacio de nombres `qor_`**, ni en mainnet (`qorechain-vladi`), ni en testnet (`qorechain-diana`), ni en un nodo propio. En los endpoints EVM públicos, `rpc_modules` solo lista `eth`, `net`, `rpc`, `txpool` y `web3`, y **todo método `qor_` devuelve `-32601` (method not found)** en ambas redes. Los métodos están implementados en el código fuente del nodo pero no registrados en el servidor JSON-RPC, así que añadir `qor` a la lista `api` de `app.toml` no tiene efecto. El registro del espacio de nombres está previsto para una versión del nodo, y esta página indicará cuál cuando se publique.
 
-| Transporte | Dirección predeterminada |
-| --------- | ----------------------- |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
-
-El espacio de nombres `qor_` se sirve junto con `eth_`, `web3_`, `net_` y `txpool_` en los mismos puertos. Habilítalo en `app.toml`:
-
-```toml
-[json-rpc]
-api = "eth,web3,net,txpool,qor"
-```
-
-:::note
-El espacio de nombres `qor_` está disponible en la red principal **`qorechain-vladi`** (EVM chain ID **9801**, activa en la versión de cadena **v3.1.97**) y en la red de pruebas **`qorechain-diana`** (EVM chain ID **9800**). Los ejemplos siguientes asumen un nodo local; sustituye el endpoint de red principal o de pruebas de tu proveedor para el acceso remoto.
+No desarrolle hoy sobre métodos `qor_`. Use las rutas REST de la tabla siguiente cuando exista una. Las bibliotecas cliente que exponen utilidades `client.qor.*` envuelven estos mismos métodos, por lo que esas utilidades fallan de la misma manera.
 :::
 
----
+Puede comprobarlo usted mismo:
 
-## Métodos
+```bash
+curl -s -X POST https://evm.qore.host \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"rpc_modules","params":[],"id":1}'
+```
 
-| Método                        | Parámetros                              | Descripción                                              |
-| ----------------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `qor_getPQCKeyStatus`         | `address` (string)                      | Devuelve el estado de registro de la clave PQC de una cuenta |
-| `qor_getHybridSignatureMode`  | ninguno                                 | Devuelve el modo actual de aplicación de firmas híbridas |
-| `qor_getAIStats`              | ninguno                                 | Devuelve estadísticas agregadas de procesamiento del módulo de IA |
-| `qor_getCrossVMMessage`       | `messageId` (string)                    | Recupera un mensaje entre VM por su ID                   |
-| `qor_getReputationScore`      | `validator` (string)                    | Devuelve la puntuación de reputación de una dirección de validador |
-| `qor_getLayerInfo`            | `layerId` (string)                      | Devuelve metadatos y estado de una capa registrada       |
-| `qor_getBridgeStatus`         | `chainId` (string)                      | Devuelve el estado del puente y los totales bloqueados de una cadena |
-| `qor_getRLAgentStatus`        | ninguno                                 | Devuelve el modo actual del agente PRISM y su estado operativo |
-| `qor_getRLObservation`        | ninguno                                 | Devuelve el último vector de observación de PRISM        |
-| `qor_getRLReward`             | ninguno                                 | Devuelve las métricas acumuladas de recompensa de PRISM  |
-| `qor_getPoolClassification`   | `validator` (string)                    | Devuelve la clasificación de pool CPoS de un validador   |
-| `qor_getBurnStats`            | ninguno                                 | Devuelve las estadísticas de quema en todos los canales  |
-| `qor_getXQOREPosition`        | `address` (string)                      | Devuelve la posición de staking xQORE de una dirección   |
-| `qor_getInflationRate`        | ninguno                                 | Devuelve la tasa de inflación anualizada actual          |
-| `qor_getTokenomicsOverview`   | ninguno                                 | Devuelve un resumen combinado de quema, inflación y oferta |
-| `qor_getRollupStatus`         | `rollupId` (string)                     | Devuelve el estado y la configuración de un rollup específico |
-| `qor_listRollups`             | ninguno                                 | Devuelve una lista de todos los rollups registrados      |
-| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int) | Devuelve un lote de liquidación específico de un rollup  |
-| `qor_suggestRollupProfile`    | `useCase` (string)                      | Recomendación de perfil de rollup asistida por IA para un caso de uso |
-| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)  | Devuelve el estado de un blob de DA específico           |
-| `qor_getBTCStakingPosition`   | `address` (string)                      | Devuelve la posición de staking de BTC a través del módulo Babylon |
-| `qor_getAbstractAccount`      | `address` (string)                      | Devuelve los detalles de la cuenta abstracta y sus reglas de gasto |
-| `qor_getFairBlockStatus`      | ninguno                                 | Devuelve el estado y la configuración del cifrado FairBlock |
-| `qor_getGasAbstractionConfig` | ninguno                                 | Devuelve los tokens aceptados y los parámetros de abstracción de gas |
-| `qor_getLaneConfiguration`    | ninguno                                 | Devuelve la configuración de priorización de TX de 5 carriles |
+```json
+{"jsonrpc":"2.0","id":1,"result":{"eth":"1.0","net":"1.0","rpc":"1.0","txpool":"1.0","web3":"1.0"}}
+```
 
 ---
 
-## Ejemplos
+## Métodos previstos y qué usar hoy
 
-### qor_getBurnStats
+| Método previsto                | Qué usar hoy |
+| ----------------------------- | ----------------- |
+| `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Consulte [Endpoints REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). |
+| `qor_getHybridSignatureMode`  | No hay ruta de consulta pública. |
+| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` en un nodo propio; no hay ruta REST. |
+| `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` en un nodo propio; no hay ruta REST. |
+| `qor_getReputationScore`      | No hay ruta de consulta pública (el módulo de reputación solo expone gRPC `Params`). |
+| `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` y `anchor/{layer_id}`. Consulte [Módulo Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
+| `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. Consulte [Módulo Bridge](/api-reference/rest-grpc-endpoints#bridge-module). El puente todavía no está activo. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`) en un nodo propio; no hay ruta REST. |
+| `qor_getPoolClassification`   | No hay ruta de consulta pública. |
+| `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Consulte [Módulo Burn](/api-reference/rest-grpc-endpoints#burn-module). |
+| `qor_getXQOREPosition`        | Ninguno. xQORE no está activo (consulte [Staking de xQORE](/user-guide/xqore-staking)). |
+| `qor_getInflationRate`        | No hay ruta de consulta pública en mainnet. |
+| `qor_getTokenomicsOverview`   | Combine `GET /qorechain/burn/v1/stats` con `GET /cosmos/bank/v1beta1/supply`. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) o la CLI en un nodo propio; las rutas REST `/qorechain/rdk/v1/...` no se sirven en mainnet. |
+| `qor_suggestRollupProfile`    | No hay servicio público; consulte [Perfiles preconfigurados](/rollups/preset-profiles). |
+| `qor_getBTCStakingPosition`   | Ninguno. El módulo de restaking de BTC todavía no tiene servicio de consulta. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Las cuentas abstractas están deshabilitadas hoy en ambas redes. |
+| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | Ninguno. |
 
-**Solicitud:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getBurnStats",
-    "params": [],
-    "id": 1
-  }'
-```
-
-**Respuesta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "total_burned": "1250000000",
-    "total_distributed": "4750000000",
-    "channels": {
-      "validator_share": "0.40",
-      "burn_share": "0.30",
-      "treasury_share": "0.20",
-      "staker_share": "0.10"
-    },
-    "last_block_burned": "342891"
-  }
-}
-```
-
-### qor_getRLAgentStatus
-
-**Solicitud:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRLAgentStatus",
-    "params": [],
-    "id": 2
-  }'
-```
-
-**Respuesta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "agent_mode": "observe",
-    "observation_interval": 10,
-    "circuit_breaker": {
-      "active": false,
-      "max_param_change": "0.10",
-      "cooldown_blocks": 100
-    },
-    "last_observation_block": "342885",
-    "cumulative_reward": "18.742"
-  }
-}
-```
-
-### qor_getRollupStatus
-
-**Solicitud:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRollupStatus",
-    "params": ["rollup-001"],
-    "id": 3
-  }'
-```
-
-**Respuesta:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 3,
-  "result": {
-    "rollup_id": "rollup-001",
-    "status": "active",
-    "settlement_type": "optimistic",
-    "operator": "qor1abc123...",
-    "total_batches": 147,
-    "last_finalized_batch": 145,
-    "pending_batches": 2,
-    "stake": "10000000000uqor",
-    "created_at_height": 100230
-  }
-}
-```
+Para el estado de una cuenta en el carril EVM (clave PQC registrada y ventana de autorización) use `GET /qorechain/pqc/v1/account/{address}` y `GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## Códigos de error
 
+En un nodo que sí sirve el espacio de nombres, los errores siguen los códigos estándar de JSON-RPC 2.0. Hoy, las llamadas a un método `qor_` fallan con `-32601`.
+
 | Código | Mensaje          | Descripción                           |
 | ------ | ---------------- | ------------------------------------- |
 | -32600 | Invalid Request  | Solicitud JSON-RPC mal formada        |
-| -32601 | Method not found | El método no existe                   |
+| -32601 | Method not found | El método no existe, o el nodo no sirve el espacio de nombres `qor_` (todas las versiones publicadas hoy) |
 | -32602 | Invalid params   | Parámetros faltantes o no válidos     |
 | -32603 | Internal error   | Error de procesamiento del lado del servidor |
-| -32000 | Module disabled  | El módulo consultado no está habilitado |
-| -32001 | Entity not found | El recurso solicitado no existe       |

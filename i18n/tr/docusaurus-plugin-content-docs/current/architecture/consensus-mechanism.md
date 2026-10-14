@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain, doğrulayıcıları üç uzmanlaşmış havuza ayıran ve güvenlik, merkeziyetsizlik ile performansı dengelemek için itibar ağırlıklı seçim kullanan bir konsensüs mekanizması olan **Üçlü Havuz Bileşik Hisse Kanıtı'nı (Triple-Pool Composite Proof-of-Stake, CPoS)** uygular. CPoS, `x/qca` modülünde uygulanır ve **QoreChain Konsensüs Motoru** üzerinde çalışır.
 
-Konsensüs parametrelerini çalışma zamanında ayarlayan pekiştirmeli öğrenme optimizasyon katmanı **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines) markasıyla anılır. Ayrıntılar için [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasına bakın.
+:::note Güncel durum (Ekim 2026)
+Bu sayfada açıklanan Üçlü Havuz CPoS mantığı — havuz sınıflandırması, havuz ağırlıklı öneren seçimi, ödül bağlanma eğrisi, aşamalı kesme ve QDRW sayımı — `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir, ancak **henüz blok üretimine, ödüllere, kesmeye veya yönetişim sayımına bağlanmamıştır**. Bugün öneren rotasyonu standart hisse ağırlıklı doğrulayıcı rotasyonudur, kesme standart `x/slashing` parametrelerini izler (kesinti penceresi 10,000 blok, imzalanan oran %5'in altına düştüğünde hapis, %1 kesinti kesmesi ve %5 çift imza kesmesi, 10 dakikalık hapis) ve öneriler bağlanmış hisse üzerinden sayılır (yeter sayı %33.4, eşik %50, veto %33.4). Aşağıdaki tasarım, modülün nereye doğru ilerlediğini açıklar.
+:::
 
-Aşağıdaki diyagram, QoreChain Konsensüs Motoru üzerinde Üçlü Havuz CPoS'un bir blok/konsensüs döngüsünü özetler ve PRISM'in ayarlanabilir `x/qca` parametrelerine nerede geri besleme yaptığını gösterir.
+Konsensüs parametrelerini çalışma zamanında ayarlamak üzere tasarlanan pekiştirmeli öğrenme optimizasyon katmanı **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines) markasıyla anılır. Ayrıntılar için [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasına bakın.
+
+Aşağıdaki diyagram, QoreChain Konsensüs Motoru üzerinde Üçlü Havuz CPoS'un bir blok/konsensüs döngüsünü özetler ve PRISM'in ayarlanabilir `x/qca` parametrelerine nerede geri besleme yapacak şekilde tasarlandığını gösterir (PRISM şu anda yalnızca gözlemler).
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### Kuadratik Ölçeklendirme
 
-Karekök fonksiyonu, oy gücünün hisseyle alt-doğrusal olarak ölçeklenmesini sağlar. Başka bir oy verenin 4 katı hisseye sahip bir oy veren, 4 kat değil yalnızca 2 kat oy gücü alır. Bu, büyük token sahiplerinin yönetişim kararlarına hâkim olmasını önler.
+Karekök fonksiyonu, oy gücünün hisseyle alt-doğrusal olarak ölçeklenmesini sağlar. Başka bir oy verenin 4 katı hisseye sahip bir oy veren, 4 kat değil yalnızca 2 kat oy gücü alır. Bu, QDRW'nin tasarlanmış davranışıdır; devre dışı olduğu sürece öneriler bağlanmış hisse üzerinden sayılır. Formül xQORE kullanır; xQORE ise canlı ağlarda henüz kilitlenemez.
 
 ### Deterministik Matematik
 
@@ -234,54 +238,54 @@ Karekök fonksiyonu, oy gücünün hisseyle alt-doğrusal olarak ölçeklenmesin
 
 ## QCA Parametreleri
 
-Aşağıdaki tablo, `x/qca` modülündeki yönetişimle yapılandırılabilen tüm parametreleri listeler:
+Aşağıdaki tablolar, `x/qca` modülünün yönetişimle yapılandırılabilen parametrelerini, `qorechaind query qca config` komutunun döndürdüğü adlarla ve canlı değerlerle listeler (bu parametreler henüz etkin değildir; yukarıdaki durum notuna bakın):
 
 ### Temel Parametreler
 
 | Parametre                  | Tür     | Varsayılan | Açıklama                                          |
 | -------------------------- | ------- | ---------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`     | İtibar ağırlıklı öneren seçimini etkinleştir      |
+| `use_reputation_weighting` | bool    | `true`     | İtibar ağırlıklı öneren seçimi için genesis ayarı (seçici henüz blok üretimine bağlanmamıştır) |
 | `min_reputation_score`     | float64 | `0.1`      | Aktif katılım için asgari itibar puanı            |
 
 ### Havuz Yapılandırması
 
 | Parametre                 | Tür       | Varsayılan       | Açıklama                                         |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | Havuz yeniden sınıflandırması arasındaki bloklar |
-| `weight_rpos`             | LegacyDec | `0.40`           | RPoS havuz seçim ağırlığı                         |
-| `weight_dpos`             | LegacyDec | `0.35`           | DPoS havuz seçim ağırlığı                         |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | DPoS için asgari delegasyon (uqor cinsinden 10,000 QOR) |
-| `rep_percentile_rpos`     | uint64    | `70`             | RPoS için itibar yüzdelik eşiği                   |
+| `pool_classification_interval` | uint64 | `1000`        | Havuz yeniden sınıflandırması arasındaki bloklar |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | RPoS havuz seçim ağırlığı                         |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | DPoS havuz seçim ağırlığı                         |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | DPoS için asgari delegasyon (uqor cinsinden 10,000 QOR) |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | RPoS için itibar yüzdelik eşiği                   |
 
 ### Bağlanma Eğrisi Yapılandırması
 
 | Parametre          | Tür       | Varsayılan | Açıklama                                         |
 | ------------------ | --------- | ---------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`      | Sadakat duyarlılığı katsayısı                    |
-| `beta`             | LegacyDec | `1.0`      | Temel ödül çarpanı                               |
-| `phase_multiplier` | LegacyDec | `1.5`      | Protokol aşaması ödül çarpanı (Genesis aşaması)  |
+| `bonding_alpha`    | LegacyDec | `0.1`      | Sadakat duyarlılığı katsayısı                    |
+| `bonding_beta`     | LegacyDec | `1.0`      | Temel ödül çarpanı                               |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | Protokol aşaması ödül çarpanı (Genesis aşaması)  |
 
 ### Kesme Yapılandırması
 
 | Parametre           | Tür       | Varsayılan | Açıklama                               |
 | ------------------- | --------- | ---------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`     | Temel kesme oranı (%1)                 |
-| `escalation_factor` | LegacyDec | `1.5`      | Aşamalı artış tabanı                   |
-| `max_penalty`       | LegacyDec | `0.33`     | Olay başına azami ceza (%33)           |
-| `decay_halflife`    | uint64    | `100,000`  | İhlal ağırlığı yarı ömrü için bloklar  |
+| `slashing_base_rate`| LegacyDec | `0.01`     | Temel kesme oranı (%1)                 |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | Aşamalı artış tabanı                   |
+| `slashing_max_penalty` | LegacyDec | `0.33` | Olay başına azami ceza (%33)           |
+| `slashing_decay_halflife` | uint64 | `100,000` | İhlal ağırlığı yarı ömrü için bloklar  |
 
 ### QDRW Yönetişim Yapılandırması
 
 | Parametre            | Tür       | Varsayılan | Açıklama                               |
 | -------------------- | --------- | ---------- | -------------------------------------- |
-| `enabled`            | bool      | `false`    | QDRW yönetişim sayımını etkinleştir    |
-| `xqore_multiplier`   | LegacyDec | `2.0`      | Bağlanmış token'lara göre xQORE ağırlığı |
-| `rep_min_multiplier` | LegacyDec | `0.5`      | Asgari itibar çarpanı                  |
-| `rep_max_multiplier` | LegacyDec | `2.0`      | Azami itibar çarpanı                   |
+| `qdrw_enabled`       | bool      | `false`    | QDRW yönetişim sayımını etkinleştir (canlı ağlarda devre dışı) |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | Bağlanmış token'lara göre xQORE ağırlığı |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | Asgari itibar çarpanı                  |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | Azami itibar çarpanı                   |
 
 ## İlgili
 
-* [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) — konsensüs parametrelerini ayarlayan yapay zeka katmanı.
+* [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) — konsensüs parametrelerini ayarlamak üzere tasarlanan yapay zeka katmanı.
 * [Çok Katmanlı Mimari](/architecture/multilayer-architecture) — yan zincirlerin temel katmana nasıl bağlandığı.
 * [Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator) — zinciri güvence altına alan bir doğrulayıcıyı işletin.
 * [Tokenomik](/architecture/tokenomics) — staking ödülleri, enflasyon ve kesme ekonomisi.

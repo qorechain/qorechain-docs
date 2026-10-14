@@ -7,234 +7,270 @@ sidebar_position: 2
 
 # Zincir Parametreleri
 
-QoreChain genesis dosyasındaki tüm yapılandırılabilir modül parametrelerinin birleştirilmiş referansı. Parametreler modüle göre gruplanmıştır ve çalışma zamanında `qorechaind query <module> params` ile sorgulanabilir.
+QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır ve `gasabstraction` yalnızca test ağında sorgulanabilir), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
 
 :::note
-Gösterilen değerler dağıtılmış genesis varsayılanlarıdır. Parametreler, aksi belirtilmedikçe ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**) ve test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) için geçerlidir.
+Gösterilen değerler 14 Ekim 2026 tarihinde canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında ana ağ genesis değerleridir; değişenler ayrıca belirtilmiştir). Parametreler ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**) ve test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) için geçerlidir ve belirtilen durumlar dışında her iki ağda aynıdır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
 :::
 
 ---
 
 ## PQC Modülü (`x/pqc`)
 
-| Parametre                   | Tür    | Varsayılan Değer       | Açıklama                                                                          |
-| --------------------------- | ------ | ---------------------- | -------------------------------------------------------------------------------- |
-| `hybrid_signature_mode`     | uint   | `2` (zorunlu)          | Uygulama modu: 0=devre dışı, 1=isteğe bağlı, 2=zorunlu (mevcut varsayılan)        |
-| `allow_classical_fallback`  | bool   | `false`                | Yalnızca klasik geri dönüş kapalıdır; cosmos işlemleri hibrit olmalıdır           |
-| `algorithm_registry`        | array  | ML-DSA-87, ML-KEM-1024 | Boyut kısıtlamalarına sahip kayıtlı PQC algoritmaları                             |
-| `auto_register_enabled`     | bool   | `true`                 | İlk hibrit işlemde PQC anahtarlarını otomatik kaydet                              |
-| `migration_deadline_height` | uint64 | `0`                    | Yalnızca klasik anahtarların reddedildiği blok yüksekliği (0=devre dışı)          |
-| `migration_grace_period`    | uint64 | `100000`               | Geçiş son tarihinden önce uyarı bloğu sayısı                                      |
+| Parametre                  | Değer                      | Açıklama                                                                 |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `pqc_primary`              | `true`                     | Kuantum sonrası imzalar birincil şemadır                                 |
+| `allow_classical_fallback` | `false`                    | Yalnızca klasik geri dönüş kapalıdır; Cosmos hattındaki işlemler hibrit olmalıdır |
+| `min_security_level`       | `5`                        | Kayıtlı bir algoritma için minimum NIST güvenlik seviyesi                |
+| `default_migration_blocks` | `1,000,000`                | Yönetişimle başlatılan bir algoritma geçişinin varsayılan uzunluğu (≈3,2 sn bloklarda yaklaşık 37 gün) |
+| `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
+| `hybrid_signature_mode`    | `2` (required)             | Uygulama modu: 0=devre dışı, 1=isteğe bağlı, 2=zorunlu                   |
+
+Algoritma kayıt defteri (id 1 `dilithium5`, id 2 `mlkem1024`) bir parametre değil, zincir durumudur. Anahtarlar `MsgRegisterPQCKey` ile açıkça kaydedilir; otomatik kayıt yoktur.
 
 ---
 
 ## AI Modülü (`x/ai`)
 
-| Parametre                  | Tür    | Varsayılan Değer | Açıklama                                                  |
-| -------------------------- | ------ | --------------- | -------------------------------------------------------- |
-| `anomaly_weight_volume`    | string | `0.30`          | Dolandırıcılık puanlamasında hacim anomalisi ağırlığı    |
-| `anomaly_weight_velocity`  | string | `0.25`          | Dolandırıcılık puanlamasında hız anomalisi ağırlığı      |
-| `anomaly_weight_pattern`   | string | `0.25`          | Dolandırıcılık puanlamasında desen anomalisi ağırlığı    |
-| `anomaly_weight_network`   | string | `0.20`          | Dolandırıcılık puanlamasında ağ grafiği anomalisi ağırlığı |
-| `fraud_threshold_low`      | string | `0.30`          | Düşük şiddetli uyarı için puan eşiği                      |
-| `fraud_threshold_medium`   | string | `0.55`          | Orta şiddetli uyarı için puan eşiği                       |
-| `fraud_threshold_high`     | string | `0.75`          | Yüksek şiddetli uyarı için puan eşiği                     |
-| `fraud_threshold_critical` | string | `0.90`          | Kritik şiddetli uyarı için puan eşiği                     |
-| `circuit_breaker_enabled`  | bool   | `true`          | QCAI devre kesicilerini etkinleştir                      |
+Modülün yapılandırması (`qorechaind query ai config`):
+
+| Parametre           | Değer                  | Açıklama                                                                    |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| `anomaly_threshold` | `0.7`                  | Ante handler'ın bir işlemi işaretlediği anomali puanı eşiği                 |
+| `routing_strategy`  | `reputation_weighted`  | Yönlendirme stratejisi                                                      |
+| `risk_threshold`    | `0.8`                  | Risk puanı eşiği                                                            |
+| `max_tx_per_minute` | `600`                  | Cosmos hattında 30 blokluk bir pencere boyunca sayılan, gönderen başına işlem sınırı (≈3,2 sn bloklarda yaklaşık 96 sn; ad tarihsel kalıntıdır). v3.2.0'dan beri uygulanır; varsayılan değer 10'dur |
+
+[AI Motoru](/architecture/ai-engine) sayfasında açıklanan dolandırıcılık puanlama ağırlıkları ve şiddet eşikleri modül parametresi değil, dedektör sabitleridir.
 
 ---
 
 ## İtibar Modülü (`x/reputation`)
 
-| Parametre      | Tür    | Varsayılan Değer | Açıklama                                                      |
-| -------------- | ------ | --------------- | ------------------------------------------------------------ |
-| `alpha`        | string | `0.30`          | İtibar formülünde çalışma süresi puanı (S\_i) ağırlığı       |
-| `beta`         | string | `0.25`          | Katılım puanı (P\_i) ağırlığı                                |
-| `gamma`        | string | `0.25`          | Topluluk puanı (C\_i) ağırlığı                               |
-| `delta`        | string | `0.20`          | Kıdem puanı (T\_i) ağırlığı                                  |
-| `decay_lambda` | string | `0.01`          | Geçmiş puanlar için üstel zaman azalma faktörü               |
+| Parametre   | Değer  | Açıklama                                             |
+| ----------- | ------ | ---------------------------------------------------- |
+| `alpha`     | `0.30` | İtibar formülünde çalışma süresi puanı (S\_i) ağırlığı |
+| `beta`      | `0.35` | Katılım puanı (P\_i) ağırlığı                        |
+| `gamma`     | `0.20` | Topluluk puanı (C\_i) ağırlığı                       |
+| `delta`     | `0.15` | Kıdem puanı (T\_i) ağırlığı                          |
+| `lambda`    | `1000` | Geçmiş puanlar için zaman azalması ölçeği            |
+| `min_score` | `0.10` | Bir itibar puanı için taban değer                    |
 
-İtibar formülü: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i`, her dönem başına üstel zaman azalması uygulanır.
+İtibar formülü: `R_i = alpha * S_i + beta * P_i + gamma * C_i + delta * T_i`, geçmiş puanlara zaman azalması uygulanır.
 
 ---
 
 ## QCA Modülü (`x/qca`)
 
-| Parametre                      | Tür    | Varsayılan Değer | Açıklama                                              |
-| ------------------------------ | ------ | --------------- | ---------------------------------------------------- |
-| `emerald_pool_weight`          | string | `0.50`          | Emerald havuzu için blok önerme ağırlığı             |
-| `sapphire_pool_weight`         | string | `0.30`          | Sapphire havuzu için blok önerme ağırlığı            |
-| `ruby_pool_weight`             | string | `0.20`          | Ruby havuzu için blok önerme ağırlığı                |
-| `emerald_min_reputation`       | string | `0.80`          | Emerald havuzu için minimum itibar puanı             |
-| `sapphire_min_reputation`      | string | `0.50`          | Sapphire havuzu için minimum itibar puanı            |
-| `bonding_curve_base_rate`      | string | `0.05`          | Stake bağlanma eğrisi için temel oran                |
-| `bonding_curve_multiplier`     | string | `1.50`          | Bağlanma eğrisi ilerleyişi için çarpan               |
-| `slashing_downtime_window`     | int64  | `10000`         | Kesinti süresini değerlendirmek için blok sayısı     |
-| `slashing_downtime_threshold`  | string | `0.05`          | Slashing öncesi minimum imzalanan blok oranı         |
-| `slashing_downtime_penalty`    | string | `0.01`          | Kesinti için slash oranı                             |
-| `slashing_double_sign_penalty` | string | `0.05`          | Çift imzalama için slash oranı                       |
-| `qdrw_enabled`                 | bool   | `true`          | Dinamik Ödül Ağırlıklandırmayı etkinleştir           |
-| `qdrw_throughput_weight`       | string | `0.40`          | İş hacmi metriği için QDRW ağırlığı                  |
-| `qdrw_latency_weight`          | string | `0.30`          | Gecikme metriği için QDRW ağırlığı                   |
-| `qdrw_security_weight`         | string | `0.20`          | Güvenlik metriği için QDRW ağırlığı                  |
-| `qdrw_decentralization_weight` | string | `0.10`          | Merkeziyetsizlik metriği için QDRW ağırlığı          |
-| `qdrw_adjustment_cap`          | string | `0.10`          | Tek dönemlik maksimum QDRW ayarlaması                |
-| `qdrw_adjustment_interval`     | int64  | `100`           | QDRW ayarlamaları arasındaki blok sayısı             |
+:::note Uygulandı, henüz etkin değil
+Triple-Pool CPoS mantığı `x/qca` içinde uygulanmıştır ve bu parametreler zincir üzerindedir, ancak **henüz blok üretimine, ödüllere, slashing'e veya yönetişim sayımına bağlanmamıştır**. Yürürlükteki slashing standart `x/slashing` modülüdür ([Stake, slashing, yönetişim, ücretler ve EVM](#core-modules) bölümüne bakın). Bkz. [Konsensüs Mekanizması](/architecture/consensus-mechanism).
+:::
+
+Yapılandırma (`qorechaind query qca config`):
+
+| Parametre                       | Değer               | Açıklama                                              |
+| ------------------------------- | ------------------- | ----------------------------------------------------- |
+| `use_reputation_weighting`      | `true`              | İtibar ağırlıklandırması için genesis ayarı           |
+| `min_reputation_score`          | `0.1`               | Minimum itibar puanı                                  |
+| `pool_classification_interval`  | `1000` blocks       | Havuz sınıflandırmaları arasındaki blok sayısı        |
+| `pool_weight_rpos`              | `0.40`              | RPoS havuzunun öneri ağırlığı                         |
+| `pool_weight_dpos`              | `0.35`              | DPoS havuzunun öneri ağırlığı                         |
+| `pool_min_delegation_dpos`      | `10,000,000,000 uqor` | DPoS havuzu için minimum delegasyon (10.000 QOR)    |
+| `pool_rep_percentile_rpos`      | `70`                | RPoS havuzu için itibar yüzdelik dilimi               |
+| `bonding_alpha`                 | `0.1`               | Bağlanma eğrisi parametresi                           |
+| `bonding_beta`                  | `1.0`               | Bağlanma eğrisi parametresi                           |
+| `bonding_phase_multiplier`      | `1.5`               | Bağlanma eğrisi aşama çarpanı                         |
+| `slashing_base_rate`            | `0.01`              | Kademeli slashing temel oranı                         |
+| `slashing_escalation_factor`    | `1.5`               | Kademeli slashing artış faktörü                       |
+| `slashing_max_penalty`          | `0.33`              | Kademeli slashing azami cezası                        |
+| `slashing_decay_halflife`       | `100,000` blocks    | Kademeli slashing azalma yarı ömrü                    |
+| `qdrw_enabled`                  | `false`             | QDRW sayımı devre dışıdır                             |
+| `qdrw_xqore_multiplier`         | `2.0`               | QDRW formülünde xQORE ağırlığı                        |
+| `qdrw_rep_min_multiplier`       | `0.5`               | İtibar çarpanının alt sınırı                          |
+| `qdrw_rep_max_multiplier`       | `2.0`               | İtibar çarpanının üst sınırı                          |
 
 ---
 
 ## Yakma Modülü (`x/burn`)
 
-| Parametre           | Tür    | Varsayılan Değer | Açıklama                                              |
-| ------------------- | ------ | --------------- | ---------------------------------------------------- |
-| `burn_enabled`      | bool   | `true`          | Ücret yakma mekanizmasını etkinleştir                |
-| `validator_share`   | string | `0.37`          | Blok doğrulayıcılarına dağıtılan ücret oranı         |
-| `burn_share`        | string | `0.30`          | Kalıcı olarak yakılan ücret oranı                    |
-| `treasury_share`    | string | `0.20`          | Topluluk hazinesine gönderilen ücret oranı           |
-| `staker_share`      | string | `0.10`          | Delegatörlere dağıtılan ücret oranı                  |
-| `light_node_share`  | string | `0.03`          | Hafif düğümlere dağıtılan ücret oranı                |
+| Parametre              | Değer                        | Açıklama                                              |
+| ---------------------- | ---------------------------- | ----------------------------------------------------- |
+| `gas_burn_rate`        | `0.30`                       | Ücret toplayıcısından yakılan oran                    |
+| `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Kontrat oluşturma için sabit yakma ücreti             |
+| `ai_service_burn_rate` | `0.50`                       | Yakılan AI hizmet ücretleri oranı                     |
+| `bridge_burn_rate`     | `1.00`                       | Yakılan köprü ücretleri oranı                         |
+| `failed_tx_burn_rate`  | `0.10`                       | Yakılan başarısız işlem gazı oranı                    |
+| `validator_share`      | `0.37`                       | Doğrulayıcılara dağıtılan oran                        |
+| `treasury_share`       | `0.20`                       | Hazineye gönderilen oran                              |
+| `staker_share`         | `0.10`                       | Stake edenlere dağıtılan oran                         |
+| `light_node_share`     | `0.03`                       | Hafif düğümlere dağıtılan oran                        |
+| `enabled`              | `true`                       | Modül etkinleştirme bayrağı                           |
 
-Oranların toplamı `1.00` olmalıdır. Ücret bölüşümü doğrulayıcılar, yakma, hazine, stake edenler ve hafif düğümler arasında **37 / 30 / 20 / 10 / 3** şeklindedir.
+Ücret bölüşümü doğrulayıcılar, yakma, hazine, stake edenler ve hafif düğümler arasında **37 / 30 / 20 / 10 / 3** şeklindedir; payların toplamı `1.00` olmalıdır. Bir `milestone_burn_schedule` da vardır. Bkz. [Tokenomics](/architecture/tokenomics).
 
 ---
 
 ## xQORE Modülü (`x/xqore`)
 
-| Parametre            | Tür    | Varsayılan Değer | Açıklama                                          |
-| -------------------- | ------ | --------------- | ------------------------------------------------ |
-| `min_lock_amount`    | string | `1000000uqor`   | xQORE olarak kilitlenecek minimum miktar         |
-| `min_lock_duration`  | string | `7d`            | Minimum kilit süresi                             |
-| `max_lock_duration`  | string | `365d`          | Maksimum kilit süresi                            |
-| `penalty_tier_1_pct` | string | `0.50`          | Erken açma cezası: kilit süresinin %0-25'i       |
-| `penalty_tier_2_pct` | string | `0.30`          | Erken açma cezası: kilit süresinin %25-50'si     |
-| `penalty_tier_3_pct` | string | `0.15`          | Erken açma cezası: kilit süresinin %50-75'i      |
-| `penalty_tier_4_pct` | string | `0.05`          | Erken açma cezası: kilit süresinin %75-100'ü     |
-| `pvp_rebase_enabled` | bool   | `true`          | PvP yeniden dengeleme yeniden dağıtımını etkinleştir |
+:::caution Zincir üzerinde henüz kullanılamıyor
+xQORE modülünün muhasebesi mevcuttur, ancak kilitleme ve kilit açma işlemleri, sorgular ve CLI komutları **henüz canlı ağlara bağlanmamıştır**: şu anda hiçbir QOR kilitlenemez ve hiç xQORE basılmamıştır. Aşağıdaki değerler genesis yapılandırmasıdır.
+:::
+
+| Parametre                 | Değer                  | Açıklama                                             |
+| ------------------------- | ---------------------- | ---------------------------------------------------- |
+| `governance_multiplier`   | `2.0`                  | xQORE sahipleri için oy gücü çarpanı                 |
+| `min_lock_amount`         | `1,000,000 uqor`       | Kilitlenecek minimum miktar (1 QOR)                  |
+| `penalty_burn_rate`       | `0.0`                  | Yakılan çıkış cezaları oranı (hepsi yeniden dağıtılır) |
+| `rebase_interval`         | `100` blocks           | PvP yeniden dengeleme olayları arasındaki blok sayısı |
+| `enabled`                 | `true`                 | Modül etkinleştirme bayrağı                          |
+
+Çıkış cezaları: %50 (30 günden kısa kilit), %35 (30–90 gün), %15 (90–180 gün), %0 (180 günden uzun). Kilit çarpanları: 0 / 90 / 180 / 365 / 730 günde 1,0 / 1,2 / 1,4 / 1,7 / 2,0.
 
 ---
 
 ## Enflasyon Modülü (`x/inflation`)
 
-| Parametre         | Tür    | Varsayılan Değer       | Açıklama                                         |
-| ----------------- | ------ | ---------------------- | ----------------------------------------------- |
-| `epoch_length`    | uint64 | `100`                  | Enflasyon dönemi başına blok sayısı             |
-| `blocks_per_year` | uint64 | `6311520`              | Yıllık tahmini blok sayısı (oran hesabı için)   |
-| `initial_rate`    | string | `0.08`                 | Başlangıç yıllıklaştırılmış emisyon oranı parametresi |
-| `rate_decay`      | string | `0.05`                 | Her yıl uygulanan azalma faktörü                |
-| `min_rate`        | string | `0.02`                 | Taban emisyon oranı parametresi                 |
-| `max_supply`      | string | `1000000000000000uqor` | Maksimum token arzı üst sınırı                  |
+| Parametre              | Değer                   | Açıklama                                              |
+| ---------------------- | ----------------------- | ----------------------------------------------------- |
+| `emission_mode`        | `fixed`                 | `schedule` (eski) veya `fixed` (v3.1.94'ten beri)     |
+| `fixed_epoch_emission` | `16,239,000,000 uqor` (16.239 QOR) | Fixed modunda dönem başına basılan miktar  |
+| `max_total_emission`   | `114,285,714,000,000 uqor` (114.285.714 QOR) | Kesin kümülatif üst sınır       |
+| `epoch_length`         | `43,200` blocks         | Dönem başına blok sayısı (≈3,2 sn bloklarda yaklaşık 38,6 saat) |
+| `schedule`             | %17,5, %11, %7, %7, %2  | Eski yıl bazlı oranlar, fixed modunda kullanılmaz     |
+| `enabled`              | `true`                  | Modül etkinleştirme bayrağı                           |
 
-:::note
-Yukarıdaki `x/inflation` parametreleri dağıtılmış mekanizma varsayılanlarıdır. Kanonik **tokenomics v2.1** ekonomik modeli kapsamında QoreChain **sabit arzlıdır** ve stake ile ekosistem ödüllerini finanse eden **sonlu bir emisyon bütçesine (590M havuz)** sahiptir. `initial_rate` / `rate_decay` / `min_rate` değerleri, emisyonların bu sonlu bütçe içinde nasıl programlandığını yöneten mekanizma ayrıntılarıdır — toplam arzın açık uçlu bir yüzde enflasyonu **değildir**.
-:::
+Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basar. Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission). Ana ağda bu değerler bir REST rotası üzerinden sunulmaz.
 
 ---
 
 ## RL Konsensüs Modülü (`x/rlconsensus`)
 
-`x/rlconsensus` modülü, QoreChain Konsensüs Motorunun pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM**'i uygular.
+`x/rlconsensus` modülü, pekiştirmeli öğrenme optimizasyon katmanı olan **PRISM**'i uygular. Her iki ağda da gözlem modundadır: hiçbir politika ağırlığı yüklenmemiştir, dolayısıyla hiçbir şeyi ayarlamaz. Dört PRISM kontrol mesajı ana ağda devre kesici tarafından kapatılmıştır ([Devre Kesici Durumu](#circuit-breaker) bölümüne bakın).
 
-| Parametre                    | Tür    | Varsayılan Değer | Açıklama                                             |
-| ---------------------------- | ------ | --------------- | --------------------------------------------------- |
-| `observation_interval`       | uint64 | `10`            | PRISM gözlem örnekleri arasındaki blok sayısı        |
-| `agent_mode`                 | uint   | `0`             | Aracı modu: 0=kapalı, 1=gözlem, 2=öneri, 3=otomatik  |
-| `circuit_breaker_enabled`    | bool   | `true`          | PRISM devre kesicisini etkinleştir                  |
-| `circuit_breaker_max_change` | string | `0.10`          | Eylem başına maksimum parametre değişikliği (%10)    |
-| `circuit_breaker_cooldown`   | uint64 | `100`           | Devre kesici tetiklendikten sonra beklenecek blok sayısı |
-| `reward_throughput_weight`   | string | `0.40`          | İş hacmi için ödül ağırlığı                          |
-| `reward_latency_weight`      | string | `0.30`          | Gecikme için ödül ağırlığı                           |
-| `reward_security_weight`     | string | `0.20`          | Güvenlik için ödül ağırlığı                          |
-| `reward_stability_weight`    | string | `0.10`          | Kararlılık için ödül ağırlığı                        |
-| `ppo_learning_rate`          | string | `0.0003`        | PPO öğrenme oranı                                    |
-| `ppo_clip_range`             | string | `0.20`          | PPO kırpma aralığı                                   |
+| Parametre                        | Değer          | Açıklama                                                      |
+| -------------------------------- | -------------- | ------------------------------------------------------------- |
+| `enabled`                        | `true`         | Modül etkinleştirme bayrağı                                   |
+| `observation_interval`           | `10`           | PRISM gözlem örnekleri arasındaki blok sayısı                 |
+| `agent_mode`                     | `1` (conservative) | Aracı modu: 0=shadow, 1=conservative, 2=autonomous, 3=paused |
+| `max_change_conservative`        | `0.10`         | Conservative modunda eylem başına maksimum parametre değişikliği |
+| `max_change_autonomous`          | `0.25`         | Autonomous modunda eylem başına maksimum parametre değişikliği |
+| `circuit_breaker_window`         | `50`           | Devre kesici penceresi                                        |
+| `circuit_breaker_threshold`      | `0.50`         | Devre kesici eşiği                                            |
+| `reward_weight_throughput`       | `0.30`         | İş hacmi için ödül ağırlığı                                   |
+| `reward_weight_finality`         | `0.25`         | Kesinlik (finality) için ödül ağırlığı                        |
+| `reward_weight_decentralization` | `0.20`         | Merkeziyetsizlik için ödül ağırlığı                           |
+| `reward_weight_mev`              | `0.15`         | MEV için ödül ağırlığı                                        |
+| `reward_weight_failed_txs`       | `0.10`         | Başarısız işlemler için ödül ağırlığı                         |
+| `default_block_time_ms`          | `5000`         | Gözlem temel çizgisindeki varsayılan blok süresi (canlı blok süresi değil) |
+| `default_base_gas_price`         | `100`          | Gözlem temel çizgisindeki varsayılan temel gaz fiyatı         |
+| `default_validator_set_size`     | `100`          | Gözlem temel çizgisindeki varsayılan doğrulayıcı kümesi boyutu |
 
 ---
 
 ## Köprü Modülü (`x/bridge`)
 
-| Parametre                       | Tür    | Varsayılan Değer | Açıklama                                             |
-| ------------------------------- | ------ | --------------- | --------------------------------------------------- |
-| `min_confirmations_ibc`         | uint64 | `1`             | IBC transferleri için minimum onay sayısı            |
-| `min_confirmations_ethereum`    | uint64 | `12`            | Ethereum köprüsü için minimum onay sayısı            |
-| `min_confirmations_bitcoin`     | uint64 | `6`             | Bitcoin köprüsü için minimum onay sayısı             |
-| `circuit_breaker_enabled`       | bool   | `true`          | Köprü devre kesicisini etkinleştir                  |
-| `circuit_breaker_max_daily_usd` | string | `10000000`      | Maksimum günlük köprü hacmi (USD eşdeğeri)           |
-| `circuit_breaker_max_single_tx` | string | `1000000`       | Maksimum tek transfer miktarı (USD eşdeğeri)         |
+:::caution Canlı değil
+37 zincir yapılandırmasının tamamı `pending` durumundadır, hiçbir köprü doğrulayıcısı kayıtlı değildir, hiçbir köprü işlemi oluşturulmamıştır ve her iki ağda da açık bir IBC kanalı yoktur. Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
+:::
+
+`GET /qorechain/bridge/v1/config`:
+
+| Parametre                  | Değer                       | Açıklama                                          |
+| -------------------------- | --------------------------- | ------------------------------------------------- |
+| `min_validators`           | `10`                        | Onay kümesi için gereken doğrulayıcı sayısı       |
+| `attestation_threshold`    | `7`                         | Gereken onay sayısı                               |
+| `challenge_period_secs`    | `86400`                     | İtiraz süresi (24 saat)                           |
+| `large_transfer_threshold` | `100,000,000,000 uqor` (100.000 QOR) | Bunun üzerindeki transferler itiraz süresini bekler |
+| `enabled`                  | `true`                      | Modül etkinleştirme bayrağı                       |
+
+Zincir başına ayarlar (`min_confirmations`, `max_single_transfer`, `daily_limit`) modül parametrelerinde değil, her zincirin yapılandırmasında bulunur.
 
 ---
 
 ## Çok Katmanlı Modül (`x/multilayer`)
 
-| Parametre                   | Tür    | Varsayılan Değer   | Açıklama                                              |
-| --------------------------- | ------ | ------------------ | ---------------------------------------------------- |
-| `max_sidechains`            | uint   | `10`               | Maksimum kayıtlı yan zincir sayısı                   |
-| `max_paychains`             | uint   | `50`               | Maksimum kayıtlı ödeme zinciri sayısı                |
-| `anchor_interval_sidechain` | uint64 | `100`              | Yan zincirler için zorunlu çapa aralığı (blok)       |
-| `anchor_interval_paychain`  | uint64 | `50`               | Ödeme zincirleri için zorunlu çapa aralığı (blok)    |
-| `challenge_period`          | string | `7d`               | Çapalarda dolandırıcılık itirazları için süre        |
-| `min_sidechain_stake`       | string | `1000000000uqor`   | Bir yan zincir kaydetmek için minimum stake (1.000 QOR) |
-| `min_paychain_stake`        | string | `100000000uqor`    | Bir ödeme zinciri kaydetmek için minimum stake (100 QOR) |
-| `routing_threshold`         | string | `0.80`             | Otomatik yönlendirmeyi tetikleyen yük eşiği          |
+| Parametre                      | Değer            | Açıklama                                          |
+| ------------------------------ | ---------------- | ------------------------------------------------- |
+| `max_sidechains`               | `10`             | Maksimum kayıtlı yan zincir sayısı                |
+| `max_paychains`                | `50`             | Maksimum kayıtlı ödeme zinciri sayısı             |
+| `min_anchor_interval`          | `100`            | Minimum çapa aralığı (blok)                       |
+| `max_anchor_interval`          | `1000`           | Maksimum çapa aralığı (blok)                      |
+| `default_challenge_period`     | `86400` s        | Varsayılan itiraz süresi (1 gün)                  |
+| `min_sidechain_stake`          | `1,000,000,000`  | Bir yan zincir kaydetmek için minimum stake (1.000 QOR) |
+| `min_paychain_stake`           | `100,000,000`    | Bir ödeme zinciri kaydetmek için minimum stake (100 QOR) |
+| `routing_enabled`              | `true`           | Katmanlar arası yönlendirme etkin                 |
+| `routing_confidence_threshold` | `0.6`            | Otomatik yönlendirme için güven eşiği             |
+| `cross_layer_fee_bundling`     | `true`           | Tek bir ücret ödemesi birden fazla katmanı kapsayabilir |
 
 ---
 
 ## Çapraz-VM Modülü (`x/crossvm`)
 
-| Parametre          | Tür    | Varsayılan Değer | Açıklama                                            |
-| ------------------ | ------ | --------------- | -------------------------------------------------- |
-| `max_message_size` | uint64 | `65536`         | Bayt cinsinden maksimum çapraz-VM mesaj boyutu (64 KB) |
-| `max_queue_size`   | uint   | `1000`          | Çapraz-VM kuyruğundaki maksimum bekleyen mesaj      |
-| `queue_timeout`    | uint64 | `100`           | Bekleyen bir mesajın zaman aşımına uğramasından önceki blok sayısı |
+| Parametre             | Değer   | Açıklama                                       |
+| --------------------- | ------- | ---------------------------------------------- |
+| `max_message_size`    | `65536` | Bayt cinsinden maksimum çapraz-VM mesaj boyutu (64 KB) |
+| `max_queue_size`      | `1000`  | Çapraz-VM kuyruğundaki maksimum bekleyen mesaj |
+| `queue_timeout_blocks`| `100`   | Bekleyen bir mesajın zaman aşımına uğramasından önceki blok sayısı |
+| `enabled`             | `true`  | Modül etkinleştirme bayrağı                    |
+
+`MsgCrossVMCall` ana ağda devre kesici tarafından kapatılmıştır (test ağında etkindir).
 
 ---
 
 ## SVM Modülü (`x/svm`)
 
-| Parametre                     | Tür    | Varsayılan Değer | Açıklama                                       |
-| ----------------------------- | ------ | --------------- | ---------------------------------------------- |
-| `max_program_size`            | uint64 | `10485760`      | Bayt cinsinden maksimum program ikili boyutu (10 MB) |
-| `compute_budget`              | uint64 | `1400000`       | İşlem başına varsayılan hesaplama birimi (1.4M) |
-| `rent_lamports_per_byte_year` | uint64 | `3480`          | Lamport cinsinden bayt başına yıllık kira maliyeti |
-| `rent_exemption_threshold`    | string | `2.0`           | Muafiyet için gereken kira yılı sayısı         |
-| `max_accounts_per_tx`         | uint   | `64`            | İşlem başına başvurulan maksimum hesap sayısı  |
+Genesis değerleri:
+
+| Parametre               | Değer        | Açıklama                                     |
+| ----------------------- | ------------ | -------------------------------------------- |
+| `max_program_size`      | `10485760`   | Bayt cinsinden maksimum program ikili boyutu (10 MB) |
+| `max_account_data_size` | `10485760`   | Bayt cinsinden maksimum hesap verisi boyutu (10 MB)  |
+| `compute_budget_max`    | `1400000`    | İşlem başına maksimum hesaplama birimi (1,4M) |
+| `lamports_per_byte`     | `3480`       | Lamport cinsinden bayt başına kira maliyeti  |
+| `rent_exemption_multi`  | `2.0`        | Muafiyet için gereken kira yılı sayısı       |
+| `enabled`               | `true`       | Modül etkinleştirme bayrağı                  |
+| `svm_slot_offset`       | `0`          | Slot ofseti                                  |
+| `default_sig_scheme`    | `0`          | Varsayılan imza şeması                       |
+| `max_cpi`               | `4`          | Maksimum programlar arası çağrı derinliği    |
+
+SVM işlem hattı ağ genelinde devre dışıdır (bkz. [Ağlar](/appendix/networks)).
 
 ---
 
 ## RDK Modülü (`x/rdk`)
 
-| Parametre             | Tür    | Varsayılan Değer                      | Açıklama                                |
-| --------------------- | ------ | ------------------------------------- | --------------------------------------- |
-| `max_rollups`         | uint   | `100`                                 | Maksimum kayıtlı rollup sayısı          |
-| `min_stake`           | string | `10000000000uqor`                     | Minimum operatör stake'i (10.000 QOR)   |
-| `burn_rate`           | string | `0.01`                                | Yakılan rollup ücretlerinin yüzdesi (%1) |
-| `challenge_window`    | string | `7d`                                  | Dolandırıcılık itiraz penceresinin süresi |
-| `max_blob_size`       | uint64 | `2097152`                             | Bayt cinsinden maksimum DA blob boyutu (2 MB) |
-| `blob_retention`      | uint64 | `432000`                              | DA bloblarını budamadan önce saklama blok sayısı |
-| `max_batches_pending` | uint   | `10`                                  | Rollup başına maksimum sonlandırılmamış parti |
-| `auto_finalize`       | bool   | `true`                                | EndBlocker otomatik sonlandırmayı etkinleştir |
-| `settlement_types`    | array  | optimistic, zk, based, sovereign      | İzin verilen mutabakat paradigmaları    |
-| `preset_profiles`     | array  | defi, gaming, nft, enterprise, custom | Mevcut rollup ön ayarları               |
+`qorechaind query rdk config`:
+
+| Parametre                   | Değer                | Açıklama                                      |
+| --------------------------- | -------------------- | --------------------------------------------- |
+| `max_rollups`               | `100`                | Maksimum kayıtlı rollup sayısı                |
+| `min_stake_for_rollup`      | `10,000,000,000 uqor`| Minimum operatör stake'i (10.000 QOR)         |
+| `rollup_creation_burn_rate` | `0.01`               | Oluşturma stake'inin yakılan oranı (%1)       |
+| `default_challenge_window`  | `604,800` s          | Varsayılan itiraz penceresi (7 gün)           |
+| `max_da_blob_size`          | `2,097,152`          | Bayt cinsinden maksimum DA blob boyutu (2 MB) |
+| `blob_retention_blocks`     | `432,000`            | DA bloblarının saklanacağı blok sayısı (≈3,2 sn bloklarda yaklaşık 16 gün) |
+| `max_batches_per_block`     | `10`                 | Blok başına işlenen maksimum parti sayısı     |
+
+Her iki ağda da henüz hiçbir rollup oluşturulmamıştır.
 
 ---
 
 ## FairBlock Modülü (`x/fairblock`)
 
-| Parametre            | Tür    | Varsayılan Değer | Açıklama                                     |
-| -------------------- | ------ | --------------- | ------------------------------------------- |
-| `enabled`            | bool   | `false`         | FairBlock tIBE şifrelemesini etkinleştir    |
-| `tibe_threshold`     | uint   | `2`             | Gereken minimum şifre çözme anahtarı payı   |
-| `decryption_delay`   | uint64 | `1`             | Sonlandırma sonrası şifre çözmeden önceki blok sayısı |
-| `max_encrypted_size` | uint64 | `4096`          | Bayt cinsinden maksimum şifreli yük boyutu  |
+Genesis değerleri (modülün sorgu hizmeti olmadığından canlı olarak yeniden okunamazlar):
+
+| Parametre            | Değer   | Açıklama                                    |
+| -------------------- | ------- | ------------------------------------------- |
+| `enabled`            | `false` | FairBlock tIBE şifrelemesi devre dışıdır    |
+| `tibe_threshold`     | `5`     | Gereken minimum şifre çözme anahtarı payı   |
+| `decryption_delay`   | `3`     | Sonlandırma sonrası şifre çözmeden önceki blok sayısı |
+| `max_encrypted_size` | `65536` | Bayt cinsinden maksimum şifreli yük boyutu  |
 
 ---
 
 ## Gaz Soyutlama Modülü (`x/gasabstraction`)
 
-| Parametre         | Tür   | Varsayılan Değer | Açıklama                                              |
-| ----------------- | ----- | --------------- | ---------------------------------------------------- |
-| `accepted_tokens` | array | (aşağıya bakın) | Dönüşüm oranlarıyla gaz ödemesi için kabul edilen tokenlar |
-
-**Varsayılan kabul edilen tokenlar:**
+Genesis yapılandırması (`enabled = true`, `native_denom = uqor`):
 
 | Token Denomu | Dönüşüm Oranı | Açıklama               |
 | ------------ | ------------- | ---------------------- |
@@ -242,4 +278,103 @@ Yukarıdaki `x/inflation` parametreleri dağıtılmış mekanizma varsayılanlar
 | `ibc/USDC`   | `1.0`         | IBC ile köprülenen USDC |
 | `ibc/ATOM`   | `10.0`        | IBC ile köprülenen ATOM |
 
-Dönüşüm oranları, token birimi başına gaz birimi sayısını temsil eder. Daha yüksek oranlar, her token biriminin daha fazla gaz karşıladığı anlamına gelir.
+Dönüşüm oranı, o tokenle ödenen bir ücret dönüştürülürken kullanılan orandır.
+
+:::note Açık IBC kanalı yok
+Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `ibc/ATOM` var olamaz; ücretler `uqor` ile ödenir. Ücret yolu v3.2.2'de yeniden düzenlendi (yalnızca test ağı).
+:::
+
+---
+
+## Hafif Düğüm Modülü (`x/lightnode`)
+
+| Parametre                | Değer              | Açıklama                                             |
+| ------------------------ | ------------------ | ---------------------------------------------------- |
+| `registration_fee`       | `1,000,000 uqor` (1 QOR) | Bir hafif düğümü kaydetme ücreti               |
+| `heartbeat_interval`     | `1000` blocks      | Zorunlu heartbeat'ler arasındaki blok sayısı (≈3,2 sn bloklarda yaklaşık 54 dakika) |
+| `min_delegated_stake`    | `1,000,000,000 uqor` (1.000 QOR) | Operatör tarafından delege edilen minimum stake |
+| `reward_share`           | `0.03`             | Hafif düğümler için ayrılan ücret toplayıcısı payı   |
+| `min_uptime_for_rewards` | `0.80`             | Ödül hakkı için minimum çalışma süresi oranı         |
+| `max_light_nodes`        | `10,000`           | Maksimum kayıtlı hafif düğüm sayısı                  |
+| `heartbeat_grace_period` | `100` blocks       | Geciken bir heartbeat için ek süre                   |
+
+Ödül muhasebesi canlıdır (`GET /qorechain/lightnode/v1/reward_pool`, 14 Ekim 2026'da okunduğu üzere 1.713 uqor'luk bir `max_reward_per_block_per_node` bildirir), ancak kayıt şu anda kapalıdır ve kayıtlı hafif düğüm yoktur. Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+
+---
+
+## AMM Modülü (`x/amm`)
+
+| Parametre               | Değer                         | Açıklama                            |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| `swap_fee_bps`          | `30`                          | Takas ücreti (%0,30)                |
+| `protocol_fee_bps`      | `10`                          | Protokol ücreti payı (%0,10)        |
+| `min_liquidity`         | `1000`                        | Minimum likidite                    |
+| `max_pools_per_creator` | `50`                          | Oluşturan başına maksimum havuz sayısı |
+| `lp_token_decimals`     | `6`                           | LP token ondalık basamağı           |
+| `pool_creation_fee`     | `100,000,000 uqor` (100 QOR)  | Havuz oluşturma ücreti              |
+| `max_swap_impact_bps`   | `500`                         | Bir takasın maksimum fiyat etkisi (%5) |
+| `enabled`               | `true`                        | Modül etkinleştirme bayrağı         |
+
+Ana ağda da test ağında da henüz havuz yoktur ve `MsgPausePool` / `MsgResumePool` ana ağda kapatılmıştır.
+
+---
+
+## Akıllı Hesaplar (`x/abstractaccount`)
+
+:::caution Her iki ağda da kapalı
+`enabled` değeri `false`'tur: bir kimlik doğrulayıcı kaydetme, bir kimlik doğrulayıcı üzerinden yürütme ve akıllı hesap oluşturma, modül kapalıyken reddedilir. Bu özellikler üzerine geliştirme yapmadan önce `GET /qorechain/abstractaccount/v1/config` adresini kontrol edin.
+:::
+
+| Parametre             | Değer    | Açıklama                         |
+| --------------------- | -------- | -------------------------------- |
+| `enabled`             | `false`  | Modül etkinleştirme bayrağı      |
+| `max_session_keys`    | `10`     | Hesap başına maksimum oturum anahtarı sayısı |
+| `max_spending_rules`  | `5`      | Maksimum harcama kuralı sayısı   |
+| `default_session_ttl` | `86400` s| Varsayılan oturum anahtarı ömrü  |
+
+---
+
+## Stake, Slashing, Yönetişim, Ücretler ve EVM {#core-modules}
+
+Standart Cosmos SDK ve EVM modülleri, canlı olarak okunmuştur (belirtilen durumlar dışında her iki ağda aynıdır).
+
+| Modül | Parametre | Değer |
+| --- | --- | --- |
+| Stake | `unbonding_time` | 1,814,400 s (21 gün) |
+| | `max_validators` | 100 |
+| | `max_entries` | 7 |
+| | `historical_entries` | 10,000 |
+| | `bond_denom` | `uqor` |
+| | `min_commission_rate` | 0 |
+| Slashing | `signed_blocks_window` | 10,000 blok (≈3,2 sn bloklarda yaklaşık 8,9 saat) |
+| | `min_signed_per_window` | %5 (pencerenin %5'inden azını imzalayan bir doğrulayıcı hapse atılır) |
+| | `downtime_jail_duration` | 600 s |
+| | `slash_fraction_downtime` | %1 |
+| | `slash_fraction_double_sign` | %5 |
+| Yönetişim | `min_deposit` | 10,000,000 uqor (10 QOR) |
+| | `max_deposit_period` / `voting_period` | her biri 172,800 s (2 gün) |
+| | `quorum` / `threshold` / `veto_threshold` | 0.334 / 0.5 / 0.334 |
+| | `expedited_voting_period` / `expedited_min_deposit` / `expedited_threshold` | 86,400 s / 50 QOR / 0.667 |
+| | `burn_vote_veto` | `true` |
+| Dağıtım | `community_tax` | 0.02 |
+| Ücret piyasası | `min_gas_price` | gaz başına 0,1 uqor |
+| | `base_fee_change_denominator` / `elasticity_multiplier` | 8 / 2 |
+| | `no_base_fee` | `false` |
+| EVM | `evm_denom` / `extended_denom` | `uqor` / `aqor` (18 ondalık) |
+| | kontrat oluşturma / çağırma erişimi | izinsiz (permissionless) |
+| | `active_static_precompiles` | boş (hiçbir EVM precompile'ı etkin değil) |
+| | `history_serve_window` | 8,192 |
+| ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
+| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+
+---
+
+## Devre Kesici Durumu {#circuit-breaker}
+
+Zincir, vakıf operasyon hesabı ve yönetişim tarafından kontrol edilen Cosmos SDK devre kesicisiyle tekil mesaj türlerini kapatabilir. Devre dışı bırakılmış bir mesaj türü, her hatta ante handler'da reddedilir. Canlı liste `GET /cosmos/circuit/v1/disable_list` adresindedir.
+
+**Ana ağ (14 Ekim 2026, 16 kayıt):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
+
+**Test ağı:** yalnızca üç CosmWasm mesajı.
+
+Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajlarının tümü dahil diğer her mesaj türü etkindir. Liste yönetişim tarafından kontrol edilir ve değişebilir; her zaman sorgulayın.

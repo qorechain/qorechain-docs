@@ -16,11 +16,15 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **Durum** | Canlı | Aktif testnet |
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
-| **Canlıya geçiş tarihi** | 7 Haziran 2026, 23:59 UTC | — |
-| **Zincir sürümü** | v3.1.97 | v3.1.97 |
+| **Canlıya geçiş tarihi** | 29 Haziran 2026, 17:03 UTC (genesis bloğu) | 1 Temmuz 2026 (o tarihten beri kesintisiz; sıfırlama yok) |
+| **Zincir sürümü** | v3.2.1 (v3.2.0 konsensüs kuralları) | v3.2.2 |
+| **Blok süresi (ölçülen ortalama)** | yaklaşık 3,2 sn | yaklaşık 1,0 sn |
+| **Sürüm manifestosu** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
 | **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |
+
+Her iki manifesto da yeni bir düğümün çalıştırması gereken sürüm için tek doğru kaynaktır. Testnet manifestosu (v3.2.2) bir yükseltme yüksekliği içerir; çünkü testnet, yönetişim üzerinden koordineli yükseltmeler alır. Mainnet'in v3.2.1 sürümü ise v3.2.0 konsensüs kuralları üzerinde, düğüme özgü, kademeli bir sürümdür.
 
 ## Genel uç noktalar {#public-endpoints}
 
@@ -35,10 +39,14 @@ Tüm genel uç noktalar HTTPS üzerinden sunulur.
 | EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
 | SVM JSON-RPC (Solana uyumlu, salt okunur) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | Blok gezgini | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (Testnet'e geçiş yapın) |
-| İndirmeler (ikili dosya / genesis / anlık görüntü) | [download.qore.host](https://download.qore.host) | — |
+| İndirmeler (ikili dosya / genesis / anlık görüntü) | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-Genel SVM uç noktaları **salt okunurdur** (işlem gönderimi uçta devre dışıdır); SVM yazma işlemleri için kendi düğümünüzü çalıştırın. Yoğun veya üretim iş yükleri için kendi düğümünüzü çalıştırın — bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node).
+Genel SVM uç noktaları **salt okunurdur** (işlem gönderimi uçta devre dışıdır); SVM yazma işlemleri için kendi düğümünüzü çalıştırın. Yoğun veya üretim iş yükleri için kendi düğümünüzü çalıştırın — bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node). Genel bir gRPC uç noktası ve genel bir mainnet EVM WebSocket'i yoktur. Genel EVM uç noktalarında `eth_getLogs` sorgu başına en fazla 10.000 bloğu kabul eder ve `txpool_content` devre dışıdır (kendi barındırdığınız bir düğüm tam ad alanını sunar); bkz. [eth_ Ad Alanı](/api-reference/json-rpc-eth_-namespace).
+:::
+
+:::tip
+Bir betik genel bir uç noktadan `403 Forbidden` alıyorsa, açıkça bir `User-Agent` başlığı ayarlayın (Python'un varsayılan `urllib` istemcisi engellenir; `requests`, `curl`, Node ve Go istemcileri olduğu gibi çalışır).
 :::
 
 :::caution SVM işlem hattı şu anda devre dışı

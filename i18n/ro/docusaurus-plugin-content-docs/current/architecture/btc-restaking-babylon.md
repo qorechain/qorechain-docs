@@ -7,7 +7,11 @@ sidebar_position: 11
 
 # Restaking BTC (Babylon)
 
-Modulul `x/babylon` integrează QoreChain cu Babylon Protocol pentru a moșteni garanțiile de finalitate proof-of-work ale Bitcoin. Prin restaking BTC, QoreChain câștigă un strat secundar de finalitate susținut de hashrate-ul Bitcoin — fără a necesita vreo modificare a protocolului Bitcoin însuși.
+Modulul `x/babylon` este conceput să integreze QoreChain cu Babylon Protocol pentru a moșteni garanțiile de finalitate proof-of-work ale Bitcoin. Prin restaking BTC, QoreChain ar câștiga un strat secundar de finalitate susținut de hashrate-ul Bitcoin — fără a necesita vreo modificare a protocolului Bitcoin însuși.
+
+:::caution Etapa de proiectare
+Integrarea Babylon este specificată, dar tranzacțiile sale **nu sunt activate pe rețelele live**: modulul este dezactivat în configurația genesis (`enabled = false`), nu are serviciu de tranzacții, serviciu de interogări, CLI sau rute REST, iar niciun canal IBC (inclusiv către Babylon) nu este deschis pe vreuna dintre rețele. Tot ce urmează descrie designul intenționat; numele mesajelor, căile REST și comenzile CLI nu sunt disponibile astăzi.
+:::
 
 ## Prezentare generală
 
@@ -21,7 +25,7 @@ Acest lucru oferă o apărare împotriva atacurilor pe rază lungă și a echivo
 
 ## Poziții de staking BTC
 
-Utilizatorii pot înregistra poziții de staking BTC pe QoreChain trimițând o tranzacție `MsgBTCRestake` care referențiază o tranzacție de staking Bitcoin.
+Utilizatorii ar înregistra poziții de staking BTC pe QoreChain trimițând o tranzacție `MsgBTCRestake` care referențiază o tranzacție de staking Bitcoin.
 
 ### Cerințe de înregistrare
 
@@ -91,7 +95,7 @@ Integrarea Babylon oferă o **garanție secundară de finalitate** care complete
 
 | Strat de finalitate | Sursă                     | Viteză        | Securitate                                |
 | -------------- | -------------------------- | ------------ | --------------------------------------- |
-| **Primar**    | Motorul de consens QoreChain | \~5 secunde  | Susținut de stake QOR + semnături PQC    |
+| **Primar**    | Motorul de consens QoreChain | \~3 secunde  | Susținut de stake QOR + semnături PQC    |
 | **Secundar**  | Babylon + Bitcoin          | \~60 de minute | Susținut de hashrate-ul cumulativ al Bitcoin |
 
 Stratul secundar este deosebit de valoros pentru:
@@ -121,7 +125,9 @@ Modulul emite următoarele evenimente on-chain:
 | `btc_checkpoint`         | epoch, checkpoint\_id                    | Checkpoint de epocă trimis către Babylon          |
 | `babylon_epoch_complete` | epoch                                    | Epocă Babylon finalizată cu marcă temporală Bitcoin |
 
-## Endpoint-uri API
+## Endpoint-uri API (planificate)
+
+Niciunul dintre endpoint-urile sau comenzile din această secțiune nu este servit sau disponibil astăzi pe rețelele live.
 
 ### REST
 
@@ -133,11 +139,13 @@ Modulul emite următoarele evenimente on-chain:
 
 ### JSON-RPC
 
+> **Încă neservit:** nicio versiune lansată a nodului nu servește namespace-ul JSON-RPC `qor_`, așa că acest apel returnează `-32601` (metodă negăsită) pe fiecare endpoint public astăzi. Vezi [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace).
+
 | Metodă                      | Parametri         | Descriere                                                      |
 | --------------------------- | ------------------ | ---------------------------------------------------------------- |
 | `qor_getBTCStakingPosition` | `address` (string) | Returnează poziția de staking BTC pentru adresa QoreChain dată |
 
-## Comenzi CLI
+## Comenzi CLI (planificate)
 
 ### Comenzi de interogare
 

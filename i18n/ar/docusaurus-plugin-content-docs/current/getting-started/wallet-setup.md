@@ -10,12 +10,16 @@ sidebar_position: 2
 تدعم QoreChain أنواعًا متعددة من المحافظ عبر بيئات التنفيذ الأصلية وEVM وSVM. اختر المحفظة التي تناسب حالة الاستخدام الخاصة بك.
 
 :::note
-القيم أدناه تغطي كلًّا من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، تعمل منذ 7 يونيو 2026) وشبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**). نقاط النهاية العامة لكلتا الشبكتين مدرجة في [الشبكات](/appendix/networks#public-endpoints).
+القيم أدناه تغطي كلًّا من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، تعمل منذ 29 يونيو 2026) وشبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**). نقاط النهاية العامة لكلتا الشبكتين مدرجة في [الشبكات](/appendix/networks#public-endpoints).
 :::
+
+## QoreX (موصى بها) {#qorex}
+
+‏**QoreX** هي محفظة QoreChain الرسمية غير الحاضنة — تطبيق للهاتف المحمول (Android وiOS) وإضافة للمتصفح (Chrome وFirefox وSafari على macOS). توقّع كل تحويل على المسار الأصلي (Native) بالتوقيع الهجين الإلزامي المقاوم للحوسبة الكمومية، وتسجّل مفتاحك المقاوم للحوسبة الكمومية نيابةً عنك، وتدعم التخزين (staking) وأسماء @handles والشبكات الخارجية، وتقترن بلوحة التحكم (Dashboard). كما تفتح [نافذة تفويض EVM](/getting-started/first-transaction#evm-window) التي تحتاجها معاملات MetaMask. ابدأ بـ[دليل QoreX](/qorex/overview) و[البدء](/qorex/getting-started).
 
 ## محفظة Keplr
 
-‏Keplr هي المحفظة الموصى بها لمعاملات QoreChain الأصلية والتخزين (staking) والحوكمة.
+يمكن لـ Keplr إضافة QoreChain كسلسلة مخصصة (أدناه) لعرض الأرصدة والاستقبال على المسار الأصلي (Native). ولأن QoreChain تشترط توقيعًا مشتركًا مقاومًا للحوسبة الكمومية على المسار الأصلي، فأرسل وخزّن (stake) وصوّت باستخدام محفظة تدعم PQC مثل [QoreX](/qorex/overview) بدلًا من الاكتفاء بـ Keplr وحدها.
 
 ### إضافة QoreChain كسلسلة مخصصة
 
@@ -57,18 +61,28 @@ sidebar_position: 2
 
 يمتلك QOR الأصلي **18 خانة عشرية** على واجهة EVM (بأسلوب wei). بمجرد الاتصال، يمكنك استخدام MetaMask لتوقيع معاملات EVM، والتفاعل مع العقود الذكية المنشورة، وإدارة رموز ERC-20 على QoreChain.
 
+:::caution EVM / MetaMask يحتاج إلى مفتاح PQC ونافذة مفتوحة
+لا تزال MetaMask توقّع بشكل طبيعي، لكن مسار EVM لا يقبل المعاملات إلا من حساب لديه مفتاح مسجّل مقاوم للحوسبة الكمومية و**نافذة تفويض EVM** مفتوحة (الإصدار v3.2.0 وما بعده). سجّل مفتاحك مرة واحدة، ثم افتح نافذة قبل جلسة من نشاط EVM — راجع [نافذة تفويض EVM](/getting-started/first-transaction#evm-window). لا تستطيع MetaMask فتح النافذة بنفسها؛ افتحها من [QoreX](/qorex/security-and-recovery#evm-window) أو باستخدام CLI. إضافة الشبكة إلى MetaMask (أعلاه) لم تتغير.
+:::
+
 ### تسجيل الشبكة باستدعاء واحد
 
-بالنسبة للتطبيقات اللامركزية (dApps)، تقوم الحزمتان **`@qorechain/wallet-adapter`** و**`@qorechain/connect`** (المنشورتان على npm) بتسجيل QoreChain في محفظة المستخدم باستدعاء واحد — إذ تطلبان من MetaMask إضافة الشبكة عبر EIP-3085 (مع QOR الأصلي الصحيح ذي **18 خانة عشرية** على مسار EVM) وتضبطان درجة سعر الغاز في Keplr:
+بالنسبة للتطبيقات اللامركزية (dApps)، تقوم الحزمة **`@qorechain/wallet-adapter`** (المنشورة على npm) بتسجيل QoreChain في محفظة المستخدم باستدعاء واحد — إذ تطلب من MetaMask إضافة الشبكة عبر EIP-3085 (مع QOR الأصلي الصحيح ذي **18 خانة عشرية** على مسار EVM) — وتوفّر `qoreChainInfo` لاقتراح السلسلة في Keplr (بما في ذلك درجة سعر الغاز):
 
 ```bash
-npm install @qorechain/wallet-adapter @qorechain/connect
+npm install @qorechain/wallet-adapter
 ```
 
 ```ts
 import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
 
-await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+// pass the EIP-1193 provider and the network parameters (rpcUrl is required)
+await addQoreEvmToWallet(window.ethereum, {
+  evmChainId: 9801,                       // 9800 for the testnet
+  rpcUrl: "https://evm.qore.host",        // https://evm-testnet.qore.host for the testnet
+  explorerUrl: "https://explore.qore.network",
+  testnet: false,                         // true for the testnet
+});
 ```
 
 ## حساب واحد، ثلاثة عناوين (الحسابات الموحّدة) {#unified-accounts}
@@ -81,17 +95,21 @@ await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network par
 import { generateQoreWallet } from "@qorechain/wallet-adapter";
 
 const w = await generateQoreWallet();          // or walletFromMnemonic(mnemonic)
-console.log(w.addresses.cosmos);               // qor1...
-console.log(w.addresses.evm);                  // 0x... (same identity)
-console.log(w.addresses.svm);                  // base58 (same identity)
-// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid).
+console.log(w.cosmos);                         // qor1...
+console.log(w.evm);                            // 0x... (same identity)
+console.log(w.svm);                            // base58 (same identity)
+// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid); pass `rest` so the sign-bytes form is resolved.
 ```
 
 الأموال المرسلة إلى أي من الصيغ الثلاث تصل إلى الرصيد نفسه.
 
 ## المحافظ المرتبطة: Phantom وMetaMask كمفاتيح إنفاق {#linked-wallets}
 
-اعتبارًا من إصدار السلسلة **v3.1.85**، لم تعد بحاجة إلى كشف مفتاحك الجذري للإنفاق من حساب QoreChain داخل تطبيق لامركزي. يمكن **تسجيل** مفتاح **Phantom** ‏(ed25519) أو **MetaMask** (بواسطة عنوانه على Ethereum، عبر `personal_sign`) **كموثِّق (authenticator)** على حسابك — مع صلاحيات محددة النطاق، وحدود إنفاق، وتاريخ انتهاء، وإمكانية إلغاء فوري — ثم يمكنه تفويض تحويلات يمررها الخادم الخلفي للتطبيق اللامركزي. راجع [موثِّقات المحافظ المرتبطة](/developer-guide/account-abstraction#authenticators) للاطلاع على النموذج الكامل والكود، و[دليل الموثِّقات في SDK](/sdk/guides/authenticators) للحصول على أمثلة شاملة من البداية إلى النهاية.
+:::caution معطّلة حاليًا على كلتا الشبكتين
+ميزات الحساب الذكي والمحافظ المرتبطة منفَّذة لكنها **معطّلة** على كلتا الشبكتين (`abstractaccount.enabled = false`): يُرفض تسجيل موثِّق (authenticator) كما يُرفض التنفيذ عبره ما دام هذا الخيار معطّلًا. تحقّق من `GET /qorechain/abstractaccount/v1/config` قبل تقديم مسار للربط. يصف القسم التالي السلوك المصمَّم.
+:::
+
+صُمّم هذا بحيث لا تضطر إلى كشف مفتاحك الجذري للإنفاق من حساب QoreChain داخل تطبيق لامركزي (أُدخل في إصدار السلسلة **v3.1.85**): يمكن **تسجيل** مفتاح **Phantom** ‏(ed25519) أو **MetaMask** (بواسطة عنوانه على Ethereum، عبر `personal_sign`) **كموثِّق (authenticator)** على حسابك — مع صلاحيات محددة النطاق، وحدود إنفاق، وتاريخ انتهاء، وإمكانية إلغاء فوري — ثم يمكنه تفويض تحويلات يمررها الخادم الخلفي للتطبيق اللامركزي. راجع [موثِّقات المحافظ المرتبطة](/developer-guide/account-abstraction#authenticators) للاطلاع على النموذج الكامل والكود، و[دليل الموثِّقات في SDK](/sdk/guides/authenticators) للحصول على أمثلة شاملة من البداية إلى النهاية.
 
 ## محافظ Solana ‏(SVM)
 
@@ -116,10 +134,10 @@ console.log("Current slot:", slot);
 
 ## المحافظ الداعمة لـ PQC (إلزامية على مسار Cosmos)
 
-تشترط QoreChain استخدام التشفير الهجين المقاوم للحوسبة الكمومية (PQC) على مسار معاملات cosmos. اعتبارًا من إصدار السلسلة الحالي (**v3.1.82**)، الإعداد الافتراضي للشبكة هو `hybrid_signature_mode = required` مع `allow_classical_fallback = false` — أي أن **كل معاملة على مسار cosmos يجب أن تحمل توقيع ML-DSA-87 ‏(Dilithium-5) إلى جانب توقيع secp256k1 ‏(ECDSA) القياسي**. معاملات cosmos الكلاسيكية فقط الصادرة من حساب PQC تُرفض.
+تشترط QoreChain استخدام التشفير الهجين المقاوم للحوسبة الكمومية (PQC) على مسار معاملات cosmos. على الشبكات الحية (الإصدارات v3.2.x)، الإعداد الافتراضي للشبكة هو `hybrid_signature_mode = required` مع `allow_classical_fallback = false` — أي أن **كل معاملة على مسار cosmos يجب أن تحمل توقيع ML-DSA-87 ‏(Dilithium-5) إلى جانب توقيع secp256k1 ‏(ECDSA) القياسي**. معاملات cosmos الكلاسيكية فقط الصادرة من حساب PQC تُرفض.
 
 :::caution معاملات Cosmos تتطلب امتداد PQC الهجين
-إرسال معاملة كلاسيكية عادية على مسار cosmos سيؤدي إلى رفضها. يجب عليك إرفاق توقيع Dilithium-5 كامتداد معاملة من نوع `PQCHybridSignature`. أدوات CosmJS / Keplr القياسية لا تُنتج هذا الامتداد بنفسها — استخدم أمر CLI ‏`qorechaind tx pqc cosign`، أو التوقيع الهجين في QoreChain SDK (انظر أدناه)، أو، لبنائه بنفسك برمجيًا، مكتبة [**qorechain-pqc**](/developer-guide/post-quantum-signing) مفتوحة المصدر (`hybridSignBytes`). الاستثناءات الوحيدة هي معاملات gentx الخاصة بالتكوين الأولي (genesis) ومعاملات تسجيل/ترحيل مفاتيح PQC.
+إرسال معاملة كلاسيكية عادية على مسار cosmos سيؤدي إلى رفضها. يجب عليك إرفاق توقيع Dilithium-5 كامتداد معاملة من نوع `PQCHybridSignature`. أدوات CosmJS / Keplr القياسية لا تُنتج هذا الامتداد بنفسها — استخدم أمر CLI ‏`qorechaind tx pqc cosign`، أو التوقيع الهجين في QoreChain SDK (انظر أدناه)، أو، لبنائه بنفسك برمجيًا، مكتبة [**qorechain-pqc**](/developer-guide/post-quantum-signing) مفتوحة المصدر (`hybridSignBytes`). الاستثناءات الوحيدة هي معاملات gentx الخاصة بالتكوين الأولي (genesis)، ومعاملات تسجيل/ترحيل مفاتيح PQC، وإلغاء السجن (unjail) من حساب مشغّل ليس لديه مفتاح مسجّل.
 :::
 
 ### كيف يعمل
@@ -131,16 +149,26 @@ console.log("Current slot:", slot);
 قم بتوليد مفتاح مقاوم للحوسبة الكمومية للتوقيع الهجين:
 
 ```bash
-qorechaind tx pqc gen-key
+qorechaind tx pqc gen-key mypqc
 ```
 
-### التسجيل التلقائي
+يأخذ الأمر اسم مفتاح ويخزّن المفتاح في `~/.qorechaind/pqc/<name>.dilithium` (الصلاحيات `0600`، غير مشفّر). ويتطلب الملف التنفيذي `qorechaind` الخاص بالإصدار الرسمي.
 
-عندما تُضمِّن مفتاح PQC العام في معاملتك الأولى، تسجّله QoreChain تلقائيًا على السلسلة. لا حاجة إلى خطوة تسجيل منفصلة. (معاملات تسجيل/ترحيل مفاتيح PQC معفاة بنفسها من متطلب التوقيع الهجين، مما يتيح للحساب إعداد مفتاحه الأول.)
+### سجّل مفتاحك (مرة واحدة) {#register-your-key}
+
+يُسجَّل مفتاح PQC **بشكل صريح**، مرة واحدة لكل حساب، بمعاملة تسجيل مفتاح. يجوز توقيع تلك المعاملة الواحدة (وترحيل المفتاح) توقيعًا كلاسيكيًا ليتمكن حساب جديد تمامًا من الإقلاع؛ وبعدها يجب أن تحمل كل معاملة على مسار Cosmos التوقيع الهجين.
+
+```bash
+# register the public key printed by gen-key for your account
+qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+احتفظ بنسخة احتياطية من ملف مفتاح PQC بالعناية نفسها التي تحتفظ بها بعبارتك الاسترجاعية (mnemonic). (يمكن إعادة اشتقاق المفتاح من العبارة الاسترجاعية بالأمر `qorechaind tx pqc recover-key`، واستبداله بالأمر `tx pqc rotate-key`.) تسجّل QoreX وQoreChain SDK المفتاح نيابةً عنك. راجع [المعاملة الأولى](/getting-started/first-transaction#register-pqc-key) للاطلاع على عملية إرسال موقّعة كاملة.
 
 ### التوقيع الهجين باستخدام SDK
 
-يُنتج QoreChain SDK معاملات cosmos متوافقة عبر `buildHybridTx` مع `includePqcPublicKey: true`، حيث يرفق امتداد Dilithium-5 ويضمّن المفتاح العام للتسجيل التلقائي. راجع [حسابات SDK والتوقيع بـ PQC](/sdk/concepts/accounts-pqc).
+يُنتج QoreChain SDK معاملات متوافقة على مسار Cosmos عبر `buildHybridTx`، الذي يرفق امتداد Dilithium-5. يجب أن يكون مفتاح الحساب مسجّلًا بالفعل (انظر أعلاه). راجع [حسابات SDK والتوقيع بـ PQC](/sdk/concepts/accounts-pqc).
 
 ### أوضاع PQC
 
@@ -154,8 +182,8 @@ qorechaind tx pqc gen-key
 
 يُضبط الوضع النشط على مستوى السلسلة ويمكن تحديثه عبر الحوكمة.
 
-:::note EVM / MetaMask غير متأثرين
-مسار MetaMask ‏(EVM) الموضح أعلاه **غير** متأثر بمتطلب التوقيع الهجين. تستخدم معاملات EVM مسار ante منفصلًا من نوع `eth_secp256k1` ولا تحتاج أبدًا إلى امتداد PQC.
+:::caution EVM / MetaMask يحتاج إلى مفتاح PQC ونافذة مفتوحة
+مسار MetaMask ‏(EVM) الموضح أعلاه لا يحمل الامتداد الهجين، لكن منذ الإصدار v3.2.0 لا يقبل مسار EVM المعاملات إلا من حساب لديه مفتاح مسجّل مقاوم للحوسبة الكمومية و**نافذة تفويض EVM** مفتوحة. راجع [نافذة تفويض EVM](/getting-started/first-transaction#evm-window).
 :::
 
 ## محفظة سطر الأوامر (CLI)

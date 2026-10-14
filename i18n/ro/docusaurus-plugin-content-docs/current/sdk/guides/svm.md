@@ -18,13 +18,24 @@ minimali de instrucțiuni pentru programe native.
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution Trimiterea de tranzacții SVM este dezactivată
+Banda de execuție SVM este dezactivată în întreaga rețea pentru trimiterea de tranzacții
+(`code 11, "SVM module is disabled"`), iar endpoint-urile RPC SVM publice sunt doar
+pentru citire. Citirile (`getBalance`, `getAccountInfo`, `getSlot`,
+`getSignaturesForAddress`, `getMinimumBalanceForRentExemption`,
+`getLatestBlockhash`) funcționează. Nu construi încă un flux de transfer sau de
+implementare de programe pe SVM: helperele build, sign și send de mai jos reprezintă
+suprafața bibliotecii client și nu pot include astăzi o tranzacție pe rețelele publice.
+Vezi [Dezvoltare SVM](/developer-guide/svm-development).
+:::
+
 ## Crearea unui client
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -47,13 +58,15 @@ console.log(svmAddress(keypair)); // base58
 
 ## Transfer SOL
 
-Construiește un transfer nesemnat, apoi trimite-l (trimiterea necesită un nod accesibil și un
-cont finanțat):
+Construiește un transfer nesemnat (offline). Trimiterea este prezentată pentru
+completitudine, dar nu poate reuși pe rețelele publice cât timp banda de tranzacții SVM
+este dezactivată:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

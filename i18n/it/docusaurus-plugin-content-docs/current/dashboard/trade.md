@@ -7,9 +7,13 @@ sidebar_position: 4
 
 # Trade (DEX)
 
-La pagina **Trade** è l'exchange decentralizzato della Dashboard. Ti consente di scambiare token e fornire liquidità direttamente sull'automated market maker (AMM) nativo on-chain di QoreChain — senza order book off-chain e senza alcuno smart contract esterno richiesto. Gli swap e le azioni di liquidità vengono regolati a livello di protocollo. Per il design alla base, vedi [AMM e liquidità on-chain](/architecture/amm).
+La pagina **Trade** è la schermata di scambio di token della Dashboard: scambia un token con un altro e fornisci liquidità a un pool, senza order book off-chain. Per il design dell'automated market maker (AMM) nativo di QoreChain, vedi [AMM e liquidità on-chain](/architecture/amm).
 
-Collega il tuo wallet per fare trading — vedi [Panoramica e primi passi](/dashboard/overview#connect-your-wallet).
+:::caution Solo token di test, per ora
+I pool e i token di questa pagina sono token di test: gli swap vengono eseguiti su un contratto di swap distribuito sulla EVM della testnet, e la pagina ha un pulsante **Get test tokens** per ottenerli. Non considerare nulla di ciò che è mostrato qui come liquidità di valore reale né come prezzo di mercato. Il modulo AMM nativo di QoreChain è attivo, ma non è ancora stato creato alcun pool su nessuna delle due reti. Questa pagina verrà aggiornata quando saranno disponibili pool reali.
+:::
+
+Fare trading richiede un account con accesso effettuato e un wallet — vedi [Accedi](/dashboard/overview#sign-in) e [Collega il tuo wallet](/dashboard/overview#connect-your-wallet).
 
 La pagina ha quattro schede: **Swap**, **Pools**, **Add Liquidity** e **My Positions**.
 
@@ -30,11 +34,11 @@ Una tolleranza allo slippage più alta rende più probabile che uno swap vada a 
 
 ## Pools
 
-Sfoglia i pool di liquidità disponibili. Ogni card di pool mostra la coppia di trading, la liquidità totale, il volume delle 24 ore, l'APR e il numero di provider. Una casella di ricerca filtra i pool per simbolo del token.
+Sfoglia i pool di liquidità disponibili. Ogni card di pool mostra la coppia di trading, la liquidità totale, il volume delle 24 ore e il numero di provider. Una casella di ricerca filtra i pool per simbolo del token.
 
 ## Add Liquidity
 
-Fornisci liquidità per guadagnare una quota delle commissioni di swap:
+Fornisci liquidità a un pool e ricevi una quota delle sue commissioni di swap:
 
 1. Seleziona i due token da accoppiare (uno è impostato per default su QOR).
 2. Inserisci un importo per il primo token — il secondo importo si compila automaticamente per corrispondere al rapporto attuale del pool.
@@ -44,7 +48,7 @@ Ricevi token liquidity provider (LP) che rappresentano la tua posizione.
 
 ## My Positions
 
-Visualizza le posizioni di liquidità che detieni. Ogni voce mostra la coppia di token, l'importo in ciascun token, la tua quota del pool, le commissioni guadagnate e l'APR. Seleziona **Remove Liquidity** su una posizione per visualizzare in anteprima i token che riceveresti e prelevare la tua quota.
+Visualizza le posizioni di liquidità che detieni. Ogni voce mostra la coppia di token, l'importo in ciascun token, la tua quota del pool e le commissioni guadagnate. Seleziona **Remove Liquidity** su una posizione per visualizzare in anteprima i token che riceveresti e prelevare la tua quota.
 
 ## Correlati
 

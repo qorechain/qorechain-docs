@@ -7,75 +7,61 @@ sidebar_position: 8
 
 # متعدد الأجهزة الافتراضية (الاستدعاءات عبر الأجهزة الافتراضية)
 
-يشغّل الـ rollup متعدد الأجهزة الافتراضية طبقة تنفيذ EVM يمكنها استدعاء عقود
-CosmWasm على بيئة تشغيل **QoreChain Native** (Wasm) من خلال
-**precompile مخصص للاستدعاءات عبر الأجهزة الافتراضية**. يوفّر الـ RDK أدوات
-TypeScript لترميز هذه الاستدعاءات وقالبًا هيكليًا للبدء منه.
+يتضمّن الـ RDK أدوات مساعدة بلغة TypeScript تُرمّز استدعاءً من عقد EVM إلى **precompile الاستدعاءات عبر الأجهزة الافتراضية** عند العنوان `0x0000000000000000000000000000000000000901`، وهو مصمَّم لتوجيهه إلى عقد CosmWasm على بيئة تشغيل **QoreChain Native** (Wasm)، إضافةً إلى قالب هيكلي `multivm-rollup` يربط بينها. تغطّي هذه الأدوات **EVM ← QoreChain Native** فقط؛ أما SVM فهو بيئة تشغيل منفصلة وليس جزءًا من الـ precompile.
 
-> تغطّي هذه الأدوات **EVM ← QoreChain Native** (عقود CosmWasm) فقط. أما SVM
-> فهو بيئة تشغيل منفصلة وليس جزءًا من الـ precompile الخاص بالاستدعاءات عبر
-> الأجهزة الافتراضية.
-
-:::note
-اعتبارًا من RDK v0.4.2 أصبح معرّف خيار الجهاز الافتراضي لبيئة تشغيل Wasm هو
-**`native`** ‏(QoreChain Native)؛ ويبقى `cosmwasm` اسمًا بديلًا قديمًا مقبولًا،
-وكلاهما يُترجم إلى `cosmwasm` على مستوى الشبكة — فالسلسلة والمستكشف وواجهة ABI
-الخاصة بالـ precompile للاستدعاءات عبر الأجهزة الافتراضية (`executeCrossVMCall`)
-لم تتغيّر.
+:::caution غير قابل للاستخدام على الشبكات الحيّة بعد
+الـ precompile الخاص بالاستدعاءات عبر الأجهزة الافتراضية **غير مُفعَّل** على أيٍّ من الشبكتين: قائمة الـ precompiles الثابتة النشطة في وحدة EVM فارغة على الشبكة الرئيسية وعلى شبكة الاختبار، لذا فإن استدعاء `0x…0901` يُرجع بيانات فارغة ولا ينفّذ شيئًا. كما أن رفع عقود CosmWasm مغلق على الشبكتين، ومسار معاملات SVM معطَّل على مستوى الشبكة بأكملها. وإلى أن يتم تفعيل الـ precompile وإعادة فتح رفع عقود CosmWasm، لا يوجد ما يمكن استدعاؤه. توثّق هذه الصفحة الأدوات لتتمكّن من الاستعداد؛ فلا تبنِ عليها تدفقات إنتاجية. راجع [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
-## الـ precompile
+:::note
+اعتبارًا من RDK v0.4.2 أصبح معرّف خيار الجهاز الافتراضي لبيئة تشغيل Wasm هو **`native`** ‏(QoreChain Native)؛ ويبقى `cosmwasm` اسمًا بديلًا قديمًا مقبولًا، وكلاهما يُترجم إلى `cosmwasm` على مستوى الشبكة. أما دالة ABI الخاصة بالـ precompile فهي `executeCrossVMCall(string,bytes)`.
+:::
 
-يُتاح الـ precompile الخاص بالاستدعاءات عبر الأجهزة الافتراضية عند عنوان ثابت:
+## عنوان الـ precompile
 
 ```ts
 import { CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
 
-console.log(CROSS_VM_PRECOMPILE); // 0x…0901
+console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
 ```
 
 ## ترميز استدعاء عبر الأجهزة الافتراضية
 
-تبني الدالة `encodeCrossVmCalldata` بيانات الاستدعاء (calldata) التي يرسلها عقد EVM
-الخاص بك إلى الـ precompile لاستدعاء عقد CosmWasm. وتحسب الدالة `functionSelector`
-المحدِّد المكوَّن من 4 بايتات لتوقيع دالة Solidity.
+تبني الدالة `encodeCrossVmCalldata` بيانات الاستدعاء (calldata) للدالة `executeCrossVMCall(string contract, bytes msg)`. والمعامل `msg` هو رسالة التنفيذ الخاصة بالعقد، إما كسلسلة JSON بترميز UTF-8 أو كبايتات خام.
 
 ```ts
-import { encodeCrossVmCalldata, functionSelector } from "@qorechain/rdk";
+import { encodeCrossVmCalldata } from "@qorechain/rdk";
 
 const calldata = encodeCrossVmCalldata({
   contract: "qor1cosmwasmcontractaddress...",
-  msg: { transfer: { recipient: "qor1...", amount: "100" } },
+  msg: JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }),
 });
-
-const selector = functionSelector("callCosmwasm(string,bytes)");
 ```
 
 ## جانب Solidity
 
-من عقد EVM تستدعي عنوان الـ precompile باستخدام بيانات الاستدعاء المرمّزة.
-يتضمّن قالب `multivm-rollup` مقتطف `contracts/CrossVmCaller.sol`
-على هذا النحو:
+من عقد EVM تستدعي عنوان الـ precompile باستخدام الاستدعاء المرمّز:
 
 ```solidity
-// contracts/CrossVmCaller.sol
 address constant CROSS_VM_PRECOMPILE = 0x0000000000000000000000000000000000000901;
 
-function callCosmwasm(bytes memory calldata_) internal returns (bytes memory) {
-    (bool ok, bytes memory out) = CROSS_VM_PRECOMPILE.call(calldata_);
-    require(ok, "cross-vm call failed");
-    return out;
+function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
+    external returns (bytes memory)
+{
+    bytes memory data =
+        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+    (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
+    require(ok, "cross-VM call failed");
+    return ret;
 }
 ```
 
-## إنشاء هيكل rollup متعدد الأجهزة الافتراضية
+ولأن الـ precompile غير نشط، فإن استدعاء `.call` عاديًا إليه يُرجع نجاحًا مع بيانات فارغة؛ لذا تحقّق من طول البيانات المُرجَعة بدلًا من الاعتماد على العلم `ok` وحده إذا جرّبت ذلك اليوم.
 
-يقوم قالب جديد، `multivm-rollup`، بإنشاء هيكل rollup من نوع EVM مهيّأ لاستدعاء
-CosmWasm، بما في ذلك مقتطف `CrossVmCaller.sol`:
+## إنشاء هيكل rollup متعدد الأجهزة الافتراضية
 
 ```bash
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب
-أداة الإنشاء الهيكلي.
+يتضمّن القالب نقطة بداية في `contracts/CrossVmCaller.sol`؛ قارِنها بواجهة ABI أعلاه قبل الاعتماد عليها. راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب أداة الإنشاء الهيكلي.

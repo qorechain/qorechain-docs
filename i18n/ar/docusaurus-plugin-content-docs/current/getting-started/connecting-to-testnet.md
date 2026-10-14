@@ -10,7 +10,7 @@ sidebar_position: 4
 انضم إلى شبكة اختبار QoreChain Diana الحيّة عبر إعداد عقدتك بملف التكوين الأولي (genesis) الصحيح والنظراء (peers) وإعدادات الشبكة المناسبة.
 
 :::note
-تغطي هذه الصفحة شبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM هو **9800**). أما الشبكة الرئيسية (**`qorechain-vladi`**، بمعرّف سلسلة EVM **9801**) فهي تعمل منذ 7 يونيو 2026 ولديها صفحة مخصصة بعنوان **الاتصال بالشبكة الرئيسية** تتضمن ملف genesis ونظراء وتفاصيل اتصال منفصلة.
+تغطي هذه الصفحة شبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM هو **9800**). أما الشبكة الرئيسية (**`qorechain-vladi`**، بمعرّف سلسلة EVM **9801**) فهي تعمل منذ 29 يونيو 2026 ولديها صفحة مخصصة بعنوان **الاتصال بالشبكة الرئيسية** تتضمن ملف genesis ونظراء وتفاصيل اتصال منفصلة. تعمل شبكة الاختبار حاليًا بالإصدار **v3.2.2**؛ ويوجد بيان الإصدار الخاص بها على [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## نقاط النهاية العامة
@@ -30,32 +30,72 @@ sidebar_position: 4
 
 ---
 
-## تنزيل ملف Genesis
+## التثبيت
 
-استبدل ملف genesis المحلي لديك بملف genesis الرسمي لشبكة الاختبار، والذي تقدّمه السلسلة نفسها مباشرةً:
+المصدر المرجعي الوحيد للملف التنفيذي الحالي لشبكة الاختبار وملف genesis والنظراء ونقطة الثقة الخاصة بمزامنة الحالة (state-sync) هو **بيان شبكة الاختبار (testnet manifest)**، ويُحدَّث مباشرةً على `https://download.qore.host/testnet/latest.json`. له نفس بنية بيان الشبكة الرئيسية، ولذلك فإن خطوات التثبيت هي نفسها — نزّله واستخدم قيمه بدلًا من تثبيت إصدار أو مجموع تحقق (checksum) بشكل ثابت في الأوامر:
 
 ```bash
-curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
-  > ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/testnet/latest.json -o latest.json
+jq -r '.version, .minCompatible, .upgradeHeight' latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+
+qorechaind init my-node --chain-id qorechain-diana
+```
+
+تخضع شبكة الاختبار لترقيات منسّقة عبر مقترحات الحوكمة، ولذلك يتضمن بيانها الحقل `upgradeHeight` (طُبّق الإصدار v3.2.2 عند الارتفاع 6,905,034) ويساوي `minCompatible` الإصدار الحالي. العقدة التي تنضم الآن تحتاج إلى الإصدار المذكور في البيان. أبقِ ساعة النظام متزامنة عبر NTP.
+
+---
+
+## تنزيل ملف Genesis
+
+استبدل ملف genesis المحلي لديك بملف genesis الرسمي لشبكة الاختبار، باستخدام الرابط وقيمة SHA-256 من البيان الذي جلبته أعلاه:
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
+```
+
+ويقدّم الملف نفسه أيضًا مباشرةً من السلسلة ذاتها:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
 يحدد هذا الملف الحالة الأولية لشبكة اختبار Diana، بما في ذلك مجموعة المدقّقين وتوزيعات الرموز ومعاملات الوحدات (modules).
 
-:::caution
-تخضع شبكة اختبار Diana دوريًا لإعادة **إنشاء genesis** (إعادة التعيين إلى الارتفاع 0) مع طرح الإصدارات التجريبية. إذا توقفت عقدتك عن المزامنة بعد إعادة تعيين، فأعد تنزيل ملف genesis وابدأ من دليل بيانات جديد.
+:::note تتم ترقية شبكة الاختبار في مكانها
+تعمل Diana بشكل متواصل منذ 1 يوليو 2026 وتُرقّى عبر مقترحات الحوكمة مثل الشبكة الرئيسية. شبكة الاختبار شبكة تجريبية (staging) ويمكن إعادة تعيينها دون إشعار: إذا توقفت عقدتك عن المزامنة، فتحقق من البيان ومن إعلانات Discord، ثم أعد تنزيل ملف genesis وابدأ من دليل بيانات جديد. تحتفظ العقدة الحارسة العامة (sentry) بالكتل الأخيرة فقط، ولذلك ينبغي للعقدة الجديدة استخدام مزامنة الحالة (state sync، أدناه) بدلًا من إعادة التشغيل من genesis.
 :::
 
 ---
 
 ## إعداد النظراء
 
-عدّل إعدادات عقدتك للاتصال بنظراء شبكة الاختبار الحاليين.
-
-استعلم عن نظير حالي مباشرةً من الشبكة، ثم عيّن الحقل `persistent_peers` في `~/.qorechaind/config/config.toml`:
+اقرأ قوائم النظراء والعقد المُبذِّرة (seeds) الحالية من البيان بدلًا من تثبيت معرّفات العقد والمضيفين بشكل ثابت:
 
 ```bash
-# node id + listen address of the public testnet node
-curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+افتح `~/.qorechaind/config/config.toml` وعيّن الحقلين `persistent_peers` (و`seeds`) بتلك القيم:
+
+```toml
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 عيّن أيضًا الحد الأدنى للرسوم في `~/.qorechaind/config/app.toml` (تستخدم شبكة الاختبار نفس الحد الأدنى لسعر الغاز **0.1uqor** المعتمد في الشبكة الرئيسية):
@@ -66,18 +106,25 @@ minimum-gas-prices = "0.1uqor"
 
 ### الإعدادات الموصى بها
 
-قد ترغب أيضًا في تعديل ما يلي في `config.toml`:
+العقدة الكاملة لا تختار زمن الكتلة — بل يختاره المدقّقون (تنتج شبكة الاختبار حاليًا كتلة تقريبًا كل ثانية واحدة). اترك مهلات الإجماع على قيمها الافتراضية ما لم تشغّل مدقّقًا وتكون قد حصلت على قيم من مجموعة المدقّقين. إعداد مفيد لذاكرة المعاملات (mempool) في عقدة RPC عامة، في `config.toml`:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
 
-هذه القيم مضبوطة بما يتناسب مع أزمنة الكتل ومعدل المعالجة في شبكة اختبار Diana.
+---
+
+## بدء سريع (مزامنة الحالة)
+
+يحمل الحقل `stateSync` في البيان زوج ارتفاع/تجزئة الثقة يُحدَّث بانتظام:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+اضبط القسم `[statesync]` في `config.toml` بتلك القيم وبقيمة `rpcServers` من البيان — راجع [تشغيل عقدة](/developer-guide/running-a-node) لسير العمل الكامل.
 
 ---
 
@@ -89,7 +136,7 @@ timeout_commit = "5s"
 ./qorechaind start
 ```
 
-تتصل العقدة بالنظراء وتبدأ في تنزيل الكتل من genesis. يعتمد زمن المزامنة الأولية على ارتفاع السلسلة الحالي وسرعة شبكتك.
+تتصل العقدة بالنظراء وتبدأ في تنزيل الكتل (من genesis، أو من ارتفاع الثقة إذا استخدمت مزامنة الحالة). يعتمد زمن المزامنة الأولية على ارتفاع السلسلة الحالي وسرعة شبكتك.
 
 ---
 
@@ -156,7 +203,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — الوصول البرمجي إلى السلسلة              |
 | `8545`  | HTTP      | EVM JSON-RPC — واجهة RPC متوافقة مع Ethereum (معرّف السلسلة `9800`) |
 | `8546`  | WebSocket | EVM WebSocket — اشتراكات أحداث EVM في الوقت الفعلي |
-| `8899`  | HTTP      | SVM RPC — واجهة RPC متوافقة مع Solana              |
+| `8899`  | HTTP      | SVM RPC — واجهة RPC متوافقة مع Solana (للقراءة فقط؛ مسار معاملات SVM معطّل) |
 | `26660` | HTTP      | نقطة نهاية مقاييس Prometheus                       |
 
 ---

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Cea mai recentă versiune etichetată este **v3.1.97**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) urmărește build-urile pre-lansare.
+Istoricul public al versiunilor QoreChain. Cea mai recentă versiune este **v3.2.1**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 29 iunie 2026) cu regulile de consens din **v3.2.0** (aplicate la înălțimea 2.981.742). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează în prezent **v3.2.2**, care este aplicată acolo prin guvernanță și nu se află încă pe mainnet.
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
@@ -15,11 +15,34 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 
 ---
 
+## v3.2.1 — Consolidarea nodurilor
+
+**Focus lansare:** O lansare de securitate locală nodului pentru mainnet (14 octombrie 2026): **fără înălțime de upgrade, fără modificare de consens și fără vot de guvernanță**. Nodurile pe v3.2.0 continuă să urmeze chain-ul.
+
+* Întărește limitele de resurse ale API-ului public, limitează EVM JSON-RPC și mempool-ul și propagă (gossip) tranzacțiile EVM promovate.
+* Fixează EVM chain ID în configurația nodului și îl verifică încrucișat cu chain ID-ul Cosmos; operatorii trebuie să seteze `evm-chain-id = 9801` în `app.toml` (o valoare diferită este înregistrată ca eroare).
+* Actualizează dependența motorului de consens; mențineți ceasul sistemului sincronizat prin NTP (o abatere de peste 60 de secunde oprește nodul).
+* Recomandată pentru fiecare operator; `minCompatible` din manifestul mainnet este 3.2.0.
+
+Testnetul rulează în prezent v3.2.2, aplicată prin guvernanță la înălțimea 6.905.034; deocamdată este o lansare doar pentru testnet, iar modificările ei nu fac parte din mainnet. Propunerea de guvernanță 7 de pe mainnet (în perioada de votare la momentul scrierii) ar programa v3.2.2 pe mainnet la înălțimea 3.556.788 — vezi [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) pentru pașii operatorului și pentru cum să verifici rezultatul.
+
+## v3.2.0 — Fereastra de autorizare EVM și corecții de contabilitate
+
+**Focus lansare:** Fă cerința post-cuantică valabilă pe fiecare lane și închide două goluri de contabilitate. Aplicată pe mainnet prin propunerea de guvernanță #6 la înălțimea **2.981.742** (25 septembrie 2026, 12:07 UTC); aplicată pe testnet la înălțimea 5.920.000.
+
+* **Fereastra de autorizare EVM (breaking pentru portofelele EVM).** O tranzacție EVM este acum admisă doar de la un cont care are o cheie ML-DSA-87 înregistrată **și** o fereastră deschisă. Fereastra se deschide cu un mesaj de pe lane-ul Cosmos (`MsgOpenEVMWindow`, semnat post-cuantic) și este delimitată de blocuri (≤ 17.280), tranzacții (≤ 1.000) și valoare totală (valoarea transferată plus taxa maximă a fiecărei tranzacții); `MsgCloseEVMWindow` o revocă. Semnarea Ethereum standard rămâne neschimbată în interiorul unei ferestre. Lane-ul EVM, care fusese oprit pe mainnet prin circuit breaker din 16 septembrie, a fost redeschis în același bloc în care a intrat în vigoare regula. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+* **Semnătura hibridă v2.** Semnăturile post-cuantice se fac acum peste octeți de semnat etichetați pe domeniu și legați de chain; prima formă este refuzată începând de la înălțimea upgrade-ului. Clienții verifică planurile de upgrade aplicate ale nodului pentru a alege forma; CLI-ul (`--sign-bytes auto`), SDK 0.8.x și wallet-adapter 0.2.x fac acest lucru. Payload-urile de migrare a cheilor și de atestare a bridge-ului au trecut la aceeași schemă. Vezi [Securitate post-cuantică](/architecture/post-quantum-security#sign-bytes-v2).
+* **Cota stakerilor plătită.** Cota de 10 % a stakerilor din distribuția taxelor era depusă într-un loc unde nu susținea nicio creanță; de la acest upgrade este plătită ca recompensă normală de staking. Suma deja acumulată (6.693.045,92 QOR pe mainnet) este înregistrată on-chain (`GET /qorechain/burn/v1/stranded_rewards`) și poate fi mutată doar printr-un vot de guvernanță (`MsgReleaseStrandedRewards`). Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+* **Rezerva de recompense pentru light node.** Cota de 3 % pentru light node care s-a acumulat cât timp niciun nod nu era eligibil (3.156.009,33 QOR pe mainnet) este înregistrată ca rezervă (`GET /qorechain/lightnode/v1/reward_pool`), exclusă din distribuție și mutabilă doar prin guvernanță; ulterior, distribuția plătește doar ce s-a acumulat de la rularea anterioară, cu limită per nod și per bloc. Înregistrarea light node-urilor rămâne închisă.
+* **Limita de tranzacții per expeditor** este acum aplicată (600 de tranzacții la 30 de blocuri per expeditor, astfel încât relayer-ii să poată funcționa).
+* **Harta versiunilor modulelor din upgrade** listează acum fiecare modul (48), remediind un gol care ar fi afectat migrările ulterioare.
+* De asemenea: modulul de cont și payload-urile de atestare ale bridge-ului consolidate, blocuri propuse validate, decontarea rollup-urilor restricționată la sequencer-ul rollup-ului, cu escrow per rollup și un burn de creare efectiv, stake-ul creatorului multilayer blocat la înregistrare și returnat la dezafectare, flag-ul `enabled` al contului inteligent aplicat pe fiecare cale, iar căile de admitere a validatorilor și de creare a vesting-ului închise față de imbricarea authz.
+
 ## v3.1.96 + v3.1.97 — Blocarea accesului CosmWasm
 
 **Focus lansare:** Închiderea încărcării și instanțierii permisionless de cod de contract, în urma unui avertisment de securitate CosmWasm la nivel de industrie.
 
-* **Încărcarea și instanțierea contractelor necesită acum permisiune explicită.** `code_upload_access` și `instantiate_default_permission` sunt setate la `Nobody` atât pe mainnet, cât și pe testnet — verificat live, indiferent de care dintre aceste două taguri rulează un anumit nod, deoarece este un parametru on-chain, nu ceva aplicat doar de binarele mai noi. Vezi [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) pentru ce înseamnă acest lucru dacă dezvoltați un contract. Contractele deja instanțiate rămân neafectate — `execute` și `query` funcționează ca înainte.
+* **Încărcarea și instanțierea contractelor necesită acum permisiune explicită.** `code_upload_access` și `instantiate_default_permission` sunt setate la `Nobody` atât pe mainnet, cât și pe testnet — verificat live, indiferent de care dintre aceste două taguri rulează un anumit nod, deoarece este un parametru on-chain, nu ceva aplicat doar de binarele mai noi. Vezi [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) pentru ce înseamnă acest lucru dacă dezvoltați un contract. Contractele deja instanțiate rămân neafectate — `execute` și `query` funcționează ca înainte. Ambele rețele au, de asemenea, cele trei mesaje CosmWasm de încărcare și instanțiere oprite prin circuit breaker.
 * **Build-uri de lansare cu poziție independentă (PIE)**, conform aceluiași ghid de întărire (hardening) din avertisment, astfel încât adresa de memorie pe care ar trebui să o ghicească un exploit este randomizată per proces. Binarele legate dinamic au avut nevoie doar de un flag de build; verificat că nu rupe starea (state-breaking).
 
 ## v3.1.95 — Consolidare EVM Cosmos
@@ -32,7 +55,7 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 
 **Focus lansare:** Aducerea emisiunii recompenselor de staking în linie cu condițiile reale ale rețelei și strângerea verificărilor de autorizare pe mesajele administrative privilegiate.
 
-* **Plafon de emisiune** — O propunere de guvernanță, adoptată cu susținerea integrală a stake-ului bonded și aplicată la înălțimea 2.122.074 (26 august 2026), a înlocuit programul original de emisiune în declin cu o sumă fixă per epocă, sub un plafon cumulativ dur. Programul original fusese calibrat pentru o rețea mult mai matură, complet bonded; raportat la stake-ul bonded real, plătea mult mai rapid decât se intenționase. Vezi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pentru cifrele curente și autonomia (runway) rămasă.
+* **Plafon de emisiune** — O propunere de guvernanță, adoptată cu susținerea integrală a stake-ului bonded și aplicată la înălțimea 2.122.074 (26 august 2026), a înlocuit programul original de emisiune în declin cu o sumă fixă per epocă, sub un plafon cumulativ dur. Programul original fusese calibrat pentru o rețea mult mai matură, complet bonded; raportat la stake-ul bonded real, plătea mult mai rapid decât se intenționase. Vezi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pentru cifrele curente.
 * **Consolidarea mesajelor administrative** — Un set de mesaje administrative privilegiate, controlate prin autoritate, își verifică acum semnatarul față de adresa proprie a modulului de guvernanță, în loc să aibă încredere într-o valoare purtată în mesajul însuși.
 * De asemenea, include corecția de fiabilitate la onboarding-ul nodurilor din v3.1.92, pentru orice nod care face upgrade direct la această versiune.
 
@@ -64,7 +87,8 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 * **Aplicare pe toate cele trei lane-uri** — Domeniile de permisiune și limitele de valoare din **SpendingRule** (plafoane per tranzacție + zilnice) sunt aplicate pe lane-urile Native, EVM și SVM; mesajele de management al cheilor nu pot fi niciodată delegate. Coduri de eroare distincte permit portofelelor să afișeze mesajul corect: `5` limită de cheltuire depășită, `6` autenticator expirat, `10` permisiune refuzată, `11` replay respins.
 * **Interogare schemă de permisiuni** — `GET /qorechain/abstractaccount/v1/permission_schema` (disponibil și prin gRPC/CLI) returnează taxonomia canonică de permisiuni (11 permisiuni), maparea mesaj→permisiune și lista mesajelor nedelegabile, astfel încât portofelele să valideze domeniile fără a le codifica dur (hardcoding).
 * **Rotația cheii PQC în același algoritm** — Noul mesaj **`MsgRotatePQCKey`** rotește cheia ML-DSA-87 a unui cont în cadrul aceluiași algoritm (semnat dublu de cheia veche și cea nouă), permițând migrarea cheilor derivate în formă veche către derivarea canonică legată de adresă și retragerea unei chei compromise. CLI nou: `tx pqc rotate-key` și `tx pqc recover-key` (recuperare deterministă a cheii dintr-un mnemonic).
-* **Tranzacțiile cu cheia rădăcină rămân neafectate** — Modificările sunt aditive; fluxurile normale de portofel, exchange și Keplr rămân neschimbate. Operatorii de noduri trebuie să fie pe **v3.1.85** până la înălțimea upgrade-ului de rețea.
+* **Tranzacțiile cu cheia rădăcină rămân neafectate** — Modificările sunt aditive; fluxurile normale de portofel și de exchange rămân neschimbate. Operatorii de noduri trebuie să fie pe **v3.1.85** până la înălțimea upgrade-ului de rețea.
+* **Stare curentă** — Funcționalitățile de cont inteligent și de portofel conectat sunt implementate, dar în prezent sunt **oprite** pe ambele rețele (`abstractaccount.enabled = false`); începând cu v3.2.0, fiecare cale de autenticator este refuzată cât timp flag-ul este oprit. Verifică `GET /qorechain/abstractaccount/v1/config` înainte de a oferi un flux de conectare.
 
 ## v3.1.84 — Permisiuni și limite de cheltuire pentru autenticator
 
@@ -180,13 +204,13 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 * **Optimizarea consensului PRISM** — Îmbunătățiri continue ale stratului de optimizare prin învățare prin întărire PRISM pentru ajustarea adaptivă a parametrilor în condiții de rețea live, cu controale de siguranță de tip circuit-breaker.
 * **Performanță și stabilitate** — Rafinări de throughput, latență și utilizare a resurselor pe validatori și noduri complete.
 * **Unelte operaționale** — Ergonomie îmbunătățită de monitorizare, interogare și operare a nodurilor pentru operatorii de mainnet.
-* **Aliniere Tokenomics v2.1** — Mecanica distribuției taxelor și a emisiunii aliniată cu modelul economic de supply fix și emisiune finită.
+* **Aliniere Tokenomics v2.1** — Mecanica distribuției taxelor și a emisiunii aliniată cu modelul economic cu emisiune finită și plafonată (rafinat ulterior de plafonul de emisiune din v3.1.94).
 
 ## v3.0.0 — Geneza mainnet-ului
 
 **Focus lansare:** Lansarea mainnet-ului și evenimentul de generare a token-ului.
 
-* **Geneza mainnet-ului** — Mainnet-ul QoreChain (`qorechain-vladi`, ID chain EVM 9801) a fost lansat pe **7 iunie 2026**, cu evenimentul de generare a token-ului (TGE) la geneză.
+* **Geneza mainnet-ului** — Mainnet-ul QoreChain (`qorechain-vladi`, ID chain EVM 9801) a fost lansat pe **29 iunie 2026**, cu evenimentul de generare a token-ului (TGE) la geneză.
 * **Distribuție a taxelor în cinci direcții** — Distribuția taxelor de protocol pe validatori, burn, trezorerie, stakeri și light node-uri (**37 / 30 / 20 / 10 / 3**), adăugând o cotă dedicată pentru light node-uri.
 * **AMM on-chain** — Modul nativ de automated-market-maker (`x/amm`) pentru pool-uri de lichiditate și swap-uri on-chain.
 * **Licențiere pe chain** — Modul de licențiere on-chain (`x/license`) pentru înregistrarea și gestionarea drepturilor de protocol.
@@ -216,12 +240,12 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 
 **Focus lansare:** Conectivitate cross-chain și abstractizări avansate de cont.
 
-* **25 de conexiuni cross-chain** — 8 canale IBC și 17 conexiuni QoreChain Bridge (QCB) către rețele externe
+* *(Proiectat; stratul cross-chain este încă în așteptare — vezi [Arhitectura bridge-ului](/architecture/bridge-architecture).)* **25 de conexiuni cross-chain** — 8 canale IBC și 17 conexiuni QoreChain Bridge (QCB) către rețele externe
 * **Modulul x/babylon** — Integrare de restaking BTC, permițând deținătorilor de Bitcoin să participe la securitatea prin staking a QoreChain
 * **Modulul x/abstractaccount** — Cadru de conturi inteligente cu reguli de cheltuire programabile, chei de sesiune și logică de autentificare personalizată
 * **Modulul x/fairblock** — Criptare prin identitate cu prag (tIBE) pentru criptarea tranzacțiilor rezistentă la MEV
-* **Modulul x/gasabstraction** — Plata gazului cu mai multe token-uri, suportând QOR nativ, USDC bridge-uit prin IBC și ATOM bridge-uit prin IBC
-* **Prioritizare TX pe 5 lane-uri** — Lane-uri de tranzacții ordonate după prioritate: sistem, guvernanță, staking, bridge și general
+* **Modulul x/gasabstraction** — Design de plată a gazului cu mai multe token-uri, suportând QOR nativ, USDC bridge-uit prin IBC și ATOM bridge-uit prin IBC (niciun canal IBC nu este încă deschis)
+* **Prioritizare TX pe 5 lane-uri** — Definiții de lane-uri pentru prioritizarea spațiului din bloc (doar configurație; neaplicată de mempool-ul live)
 * **Configurații de relayer IBC** — Configurări de relayer preconfigurate pentru toate canalele IBC suportate
 * **Integrare bridge-la-burn** — Taxele de bridge sunt rutate prin distribuția de taxe a modulului de burn
 
@@ -231,7 +255,7 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 
 * **Semnături duale secp256k1 (ECDSA) + ML-DSA-87** — Fiecare tranzacție poartă atât o semnătură clasică, cât și una post-cuantică, verificate în lanțul AnteHandler
 * **3 moduri de aplicare** — Aplicare configurabilă a semnăturii hibride: dezactivat (modul 0), permisiv (modul 1, PQC opțional), obligatoriu (modul 2, PQC necesar)
-* **Auto-înregistrare** — Cheile publice PQC sunt înregistrate automat la prima tranzacție hibridă, eliminând un pas separat de înregistrare
+* **Înregistrarea cheii** — Build-urile timpurii înregistrau automat o cheie publică PQC la prima tranzacție hibridă; acel comportament a fost eliminat, iar acum o cheie se înregistrează explicit cu `MsgRegisterPQCKey` (vezi [Prima tranzacție](/getting-started/first-transaction#register-pqc-key))
 * **Fundație de hash SHAKE-256** — Toate operațiunile de hashing legate de PQC folosesc SHAKE-256 (familia SHA-3) pentru derivarea de adrese rezistentă cuantic
 * **Interfețe de atestare TEE** — Suport pentru atestare Trusted Execution Environment, pentru a demonstra integritatea generării cheilor PQC
 * **Cadru de agilitate a algoritmilor** — Registru de algoritmi conectabil (pluggable), permițând adăugarea de algoritmi PQC viitori prin guvernanță, fără upgrade de chain
@@ -242,10 +266,10 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 
 * **Modulul x/burn** — Mecanism de ardere a taxelor pe mai multe canale, cu o distribuție în patru direcții pe validatori, burn, trezorerie și stakeri
 * **Modulul x/xqore** — Derivativ de staking pentru guvernanță, cu penalități pe niveluri pentru deblocare anticipată și redistribuire prin rebase PvP
-* **Modulul x/inflation** — Emisiune bazată pe epoci, cu declin anual, guvernată de modelul economic cu emisiune finită
+* **Modulul x/inflation** — Emisiune bazată pe epoci, cu declin anual (înlocuită în v3.1.94 cu o sumă fixă per epocă sub un plafon cumulativ dur)
 * **Stratul de consens PRISM** — Optimizare prin învățare prin întărire (PPO) pentru ajustarea dinamică a parametrilor chain-ului, cu controale de siguranță de tip circuit-breaker
-* **CPoS cu trei pool-uri** — Classified Proof-of-Stake cu pool-uri de validatori Emerald, Sapphire și Ruby, ponderate după scoruri de reputație
-* **Guvernanță QDRW** — Sistem de ponderare dinamică a recompenselor (Dynamic Reward Weighting), permițând ajustări aprobate prin guvernanță ale distribuției recompenselor între pool-uri
+* **CPoS cu trei pool-uri** — Composite Proof-of-Stake cu pool-uri de validatori RPoS, DPoS și PoS, ponderate după scoruri de reputație (implementat în `x/qca`; încă neconectat la producția de blocuri)
+* **Guvernanță QDRW** — Formula de putere de vot Quadratic Delegation with Reputation Weighting (implementată; dezactivată pe rețelele live)
 * **Runtime-uri EVM + CosmWasm + SVM** — Trei medii de execuție concurente: motorul EVM QoreChain, contractele inteligente CosmWasm și Solana Virtual Machine
 * **Bridge cross-VM** — Transmitere de mesaje și transferuri de active între runtime-urile EVM, CosmWasm și SVM în cadrul aceluiași bloc
 * **Criptografie post-cuantică** — Semnare rezistentă cuantic, susținută de o bibliotecă PQC de înaltă performanță

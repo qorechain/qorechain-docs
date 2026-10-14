@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Tokenomics
 
-QoreChain utilise un modèle économique à **offre fixe** centré sur le jeton natif **QOR**. Plutôt que d'augmenter l'offre au fil du temps par inflation, le réseau finance les récompenses de staking à partir d'un budget d'émission fini et pré-alloué, tandis qu'un moteur de burn multicanal exerce une pression déflationniste soutenue à mesure que l'usage du réseau croît.
+Le modèle économique de QoreChain est centré sur le jeton natif **QOR** et suit une **trajectoire d'offre finie et plafonnée** : une offre de genèse fixe, une émission de récompenses de staking frappée sous un plafond cumulatif strict, et un moteur de burn multicanal qui retire définitivement des jetons. Cette page décrit le fonctionnement de l'offre, de l'émission, des burns et de la répartition des frais, à partir de chiffres lus sur la chaîne en production.
 
 ---
 
@@ -18,47 +18,43 @@ QoreChain utilise un modèle économique à **offre fixe** centré sur le jeton 
 | **Jeton affiché**     | QOR                                                      |
 | **Dénomination de base** | uqor                                                     |
 | **Précision décimale** | 10^6 (1 QOR = 1 000 000 uqor)                            |
-| **Offre totale**      | 4 500 000 000 QOR (fixe)                                |
+| **Offre**             | Genèse : 4 420 000 000 QOR ; voir [Modèle d'offre et d'émission](#supply-and-emission) |
 | **ID de chaîne**          | `qorechain-vladi` (mainnet, ID de chaîne EVM 9801)          |
 | **Préfixe Bech32**     | `qor` (comptes : `qor1...`, validateurs : `qorvaloper...`) |
 
 :::note
-Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version de chaîne **v3.1.97**. Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**) partage le même modèle économique.
+Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 29 juin 2026 sur la version **v3.2.1**. Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**) partage les mêmes paramètres de module ; son historique d'offre et d'émission diffère (l'offre du testnet est très supérieure à celle du mainnet et son émission a déjà dépassé le plafond), utilisez donc les chiffres du mainnet.
 :::
 
 ---
 
-## Modèle d'offre et d'émission
+## Modèle d'offre et d'émission {#supply-and-emission}
 
-QoreChain a une **offre totale fixe de 4 500 000 000 QOR**. Aucun nouveau QOR n'est jamais frappé pour gonfler l'offre. À la place :
+QoreChain suit une **trajectoire d'offre finie et plafonnée**. L'offre de genèse était de **4 420 000 000 QOR** (4 500 000 000 QOR prévus ; 80 000 000 QOR, soit 1,78 %, ont été brûlés lors du Token Generation Event avant la genèse). Après la genèse, seules deux choses modifient l'offre :
 
-* **80 000 000 QOR (1,78 % de l'offre)** ont été brûlés lors du Token Generation Event (TGE).
-* Les récompenses de staking sont versées à partir d'un **budget d'émission fini de 590 000 000 QOR**, décaissé progressivement selon un barème dégressif.
+* **Émission** — le module `x/inflation` frappe un montant fixe à chaque époque, sous un **plafond cumulatif strict de 114 285 714 QOR**. Les jetons frappés entrent dans le collecteur de frais et passent par la même répartition que les frais de transaction (voir [Répartition des frais](#fee-distribution)).
+* **Burns** — le module `x/burn` retire définitivement la part de burn de tout ce que contient le collecteur de frais.
 
-Il s'agit d'un **modèle à offre fixe avec un budget d'émission fini**, et non d'un modèle d'inflation de l'offre. Une fois le budget d'émission épuisé, aucune émission de récompense supplémentaire ne se produit au-delà de ce que la gouvernance alloue depuis le budget restant.
+### Émission {#staking-reward-schedule}
 
-### Barème des récompenses de staking {#staking-reward-schedule}
+| Paramètre | Valeur |
+| --- | --- |
+| Mode d'émission | `fixed` (depuis v3.1.94, hauteur 2 122 074 — 26 août 2026) |
+| Émission par époque | 16 239 QOR |
+| Longueur d'une époque | 43 200 blocs (environ 38,6 heures avec le temps de bloc actuel d'environ 3,2 s) |
+| Plafond cumulatif (`max_total_emission`) | 114 285 714 QOR |
+| Frappé à ce jour (14 octobre 2026, époque 81) | 105 200 179 QOR (92,05 % du plafond) |
+| Restant sous le plafond | 9 085 535 QOR (environ 559 époques à 16 239 QOR par époque) |
 
-:::note L'émission a été plafonnée par la gouvernance le 26 août 2026
-Le barème dégressif ci-dessous était la conception d'origine, visant un réseau mature avec la majeure partie de l'offre bondée. Rapporté au réseau tel qu'il se présentait réellement — environ 6,8 M QOR bondés, bien en-deçà de cette cible — il versait environ 20 % de la mise bondée *par jour*. La proposition de gouvernance n°4 a été adoptée avec 100 % de la mise bondée et appliquée à la hauteur de bloc 2 122 074 (2026-08-26 03:27 UTC, version de chaîne v3.1.94) : l'émission par époque est passée de 2 153 583 QOR à **16 239 QOR**, sous un nouveau plafond cumulatif strict de **114 285 714 QOR** pour ce module — une décision de conception, pas un correctif de bug. Au moment où le plafond a pris effet, **104 680 531 QOR (91,6 %) avaient déjà été émis** selon l'ancien barème ; au nouveau rythme, le solde restant devrait durer encore environ **1 an et 11 mois**, après quoi ce module cesse d'émettre définitivement et les récompenses des validateurs/stakers proviennent uniquement des frais de transaction (voir [Répartition des frais](#fee-distribution) ci-dessous). Le tableau ci-dessous est conservé comme référence de la conception d'origine — il ne décrit plus le taux de versement actuellement en vigueur.
-:::
+Une fois le plafond atteint, le module cesse définitivement de frapper ; ensuite, les récompenses proviennent uniquement des frais de transaction. Le plafond a été fixé par la proposition de gouvernance n°4 (adoptée avec toute la mise bondée votant pour), qui a remplacé le barème dégressif d'origine, calibré pour un réseau mature et entièrement bondé et qui versait bien plus vite que prévu par rapport à la mise réellement bondée. Les valeurs du barème (17,5 %, 11 %, 7 %, 7 %, 2 % pour les années 1 à 5) restent stockées dans les paramètres du module mais ne sont pas utilisées en mode `fixed`.
 
-Les récompenses de staking sont distribuées à partir du budget d'émission de 590 000 000 QOR selon un barème dégressif :
-
-| Période      | APY cible              | Budget d'émission                  |
-| ----------- | ----------------------- | -------------------------------- |
-| Année 1      | 8–12 % APY               | 127 500 000 QOR                  |
-| Année 2      | 6–10 % APY               | 106 250 000 QOR                  |
-| Années 3–4   | 5–8 % APY                | 85 000 000 QOR par an          |
-| Année 5+     | Déterminé par la gouvernance   | ~186 000 000 QOR restants       |
-
-Les fourchettes d'APY étaient les cibles de conception d'origine par période ; elles ne reflètent plus le taux de versement actuellement en vigueur depuis le plafonnement de l'émission décrit ci-dessus. QoreChain n'expose actuellement aucun point d'accès permettant de calculer un chiffre d'APY en direct — considérez tout pourcentage de rendement de staking spécifique que vous voyez cité (y compris sur cette page, historiquement) comme invérifiable par rapport à la chaîne aujourd'hui, et non comme un chiffre sur lequel planifier.
+QoreChain n'expose aucun chiffre de rendement de staking en direct ; considérez tout pourcentage cité comme invérifié. Les chiffres actuels peuvent être lus dans l'état de la chaîne : l'offre se trouve à `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` et les totaux de burn à `GET /qorechain/burn/v1/stats`.
 
 ---
 
 ## x/burn — Moteur de burn multicanal
 
-Le module `x/burn` implémente un système de burn de jetons à 10 canaux. Chaque jeton brûlé est retiré définitivement de l'offre en circulation, créant une pression déflationniste soutenue à mesure que l'usage du réseau croît.
+Le module `x/burn` définit **12 sources de burn**. Chaque jeton brûlé est retiré définitivement de l'offre. Sur le mainnet, seul `gas_fee` a enregistré des burns jusqu'ici (31 560 093 QOR au 14 octobre 2026) ; les autres sont définis mais n'en ont enregistré aucun.
 
 ### Canaux de burn
 
@@ -69,27 +65,31 @@ Le module `x/burn` implémente un système de burn de jetons à 10 canaux. Chaqu
 | 3  | `ai_service`       | Frais d'utilisation du module IA       | 50 % des frais de service IA brûlés                 |
 | 4  | `bridge_fee`       | Frais du pont interchaînes    | 100 % des frais de pont brûlés                    |
 | 5  | `treasury_buyback` | Opérations de trésorerie        | Rachat-et-burn périodique depuis la trésorerie       |
-| 6  | `failed_tx`        | Gas des transactions échouées     | 10 % du gas des transactions échouées brûlé    |
+| 6  | `failed_tx`        | Gas des transactions échouées     | 10 % du gas des transactions échouées brûlé (appliqué par la chaîne à partir de v3.2.2 ; testnet uniquement pour l'instant)    |
 | 7  | `xqore_penalty`    | Pénalités de sortie anticipée xQORE | Montants des pénalités acheminés vers le burn |
 | 8  | `auto_buyback`     | Programme de rachat automatisé  | Burns automatisés au niveau du protocole |
-| 9  | `tge`              | Token generation event     | Burns de genèse ponctuels (80 000 000 QOR)       |
+| 9  | `tge`              | Token generation event     | Le burn TGE de 80 000 000 QOR a eu lieu avant la genèse (l'offre de genèse est de 4 420 000 000 QOR) ; ce canal est réservé et enregistre 0       |
 | 10 | `rollup_create`    | Déploiement de rollup          | 1 % de la mise de création de rollup brûlée            |
+| 11 | `milestone`        | Jalons du nombre de transactions | Burns programmés à des nombres cumulés de transactions fixes (aucun déclenché pour l'instant) |
+| 12 | `amm`              | AMM                        | Réservé aux frais de protocole de l'AMM (aucun enregistré) |
+
+Les canaux `contract_create`, `ai_service`, `bridge_fee` et `auto_buyback` sont inactifs aujourd'hui : le téléversement CosmWasm est fermé, et les frais de service IA ainsi que le pont ne sont pas en production.
 
 ### Répartition des frais {#fee-distribution}
 
-Tous les frais de transaction collectés par le réseau sont répartis entre cinq destinations, comme indiqué ci-dessous. Les parts sont appliquées on-chain et totalisent toujours exactement 100 %.
+Tout ce que contient le collecteur de frais est réparti entre cinq destinations, comme indiqué ci-dessous. Le collecteur de frais contient à la fois les frais de transaction et l'émission d'époque frappée par `x/inflation`. Les parts sont appliquées on-chain et totalisent toujours exactement 100 %.
 
 ```mermaid
 flowchart LR
-    F["Transaction fees"]
-    F --> V["Validators<br/>37%"]
-    F --> B["Burned<br/>30%"]
-    F --> T["Treasury<br/>20%"]
+    F["Collecteur de frais<br/>(frais + émission)"]
+    F --> V["Validateurs<br/>37%"]
+    F --> B["Brûlé<br/>30%"]
+    F --> T["Trésorerie<br/>20%"]
     F --> S["Stakers<br/>10%"]
-    F --> L["Light Nodes<br/>3%"]
+    F --> L["Nœuds légers<br/>3%"]
 ```
 
-Tous les frais de transaction collectés par le réseau sont répartis entre cinq destinations :
+Les parts sont les suivantes :
 
 | Destinataire       | Part | Description                                                          |
 | --------------- | ----- | -------------------------------------------------------------------- |
@@ -101,8 +101,8 @@ Tous les frais de transaction collectés par le réseau sont répartis entre cin
 
 Les parts sont appliquées on-chain et doivent toujours totaliser exactement 100 %.
 
-:::note Ce sont les répartitions configurées, pas une mesure confirmée en conditions réelles
-Le tableau ci-dessus reflète les paramètres configurés de `x/burn`. Un effort de mesure sur l'état réel de la chaîne a constaté que la part combinée effectivement perçue par les validateurs et les stakers ensemble était inférieure aux 47 % que ces deux lignes totalisent. Cet écart n'a pas encore été réconcilié de manière indépendante ; cette page indique donc les valeurs de conception configurées plutôt que d'affirmer que l'un ou l'autre chiffre est la valeur en direct confirmée — interrogez directement les paramètres et statistiques de `x/burn` (voir [Points d'accès REST/gRPC](/api-reference/rest-grpc-endpoints)) si votre cas d'usage dépend de la répartition exacte actuelle.
+:::note Ce qui transite réellement par la répartition
+La répartition s'applique à tout ce que contient le collecteur de frais, qui contient à la fois les frais de transaction et l'émission d'époque frappée par `x/inflation`. En pratique, la quasi-totalité de ce montant est aujourd'hui de l'émission : sur 105 200 179 QOR frappés, 31 560 093 QOR (30,0 %) ont été brûlés et 3 156 009 QOR (3,0 %) se trouvent dans la réserve des nœuds légers. Jusqu'à la mise à niveau v3.2.0 (25 septembre 2026, hauteur 2 981 742), la part de 10 % des stakers était déplacée vers le solde du module de distribution sans adosser aucune créance, de sorte que stakers et validateurs ensemble recevaient 37 %, et non 47 % ; à partir de cette hauteur, la part des stakers est versée comme une récompense de staking normale, et le montant déjà bloqué (6 693 045,92 QOR) a été enregistré et ne peut bouger que par un vote de gouvernance — voir [Part des stakers bloquée et réserve des nœuds légers](#stranded-and-reserve).
 :::
 
 ### Paramètres de burn
@@ -114,12 +114,34 @@ Le tableau ci-dessus reflète les paramètres configurés de `x/burn`. Un effort
 | `ai_service_burn_rate` | 0.50                       | Fraction des frais de service IA brûlée (50 %) |
 | `bridge_burn_rate`     | 1.00                       | Fraction des frais de pont brûlée (100 %)    |
 | `failed_tx_burn_rate`  | 0.10                       | Fraction du gas des TX échouées brûlée (10 %)   |
+| `validator_share`      | 0.37                       | Part du collecteur de frais pour les validateurs |
+| `treasury_share`       | 0.20                       | Part pour la trésorerie                    |
+| `staker_share`         | 0.10                       | Part pour les stakers                         |
+| `light_node_share`     | 0.03                       | Part pour les nœuds légers                    |
+| `enabled`              | true                       | Indicateur d'activation du module                 |
 
 Chaque événement de burn est enregistré on-chain avec sa source, son montant, sa hauteur de bloc et le hash de transaction associé. Des statistiques agrégées sont interrogeables par canal et au total.
 
 ---
 
-## x/xqore — Staking verrouillé et amplification de la gouvernance
+## Part des stakers bloquée et réserve des nœuds légers {#stranded-and-reserve}
+
+Deux montants se sont accumulés sur le mainnet avant la mise à niveau v3.2.0 (25 septembre 2026, hauteur 2 981 742) et sont désormais détenus **à titre d'enregistrement, en dehors de toute distribution**. Les deux ne peuvent bouger que par un vote de gouvernance.
+
+| Enregistrement | Montant sur le mainnet | Requête | Message de gouvernance |
+| --- | --- | --- | --- |
+| **Part des stakers bloquée** — la part de 10 % des stakers qui avait été déposée à un endroit où elle n'adossait aucune créance de récompense de staking | 6 693 045,921330 QOR enregistrés, 0 libéré | `GET /qorechain/burn/v1/stranded_rewards` | `MsgReleaseStrandedRewards` (autorité de gouvernance ; destination nommée ; ne peut pas dépasser l'enregistrement) |
+| **Réserve des nœuds légers** — la part de 3 % des nœuds légers qui s'est accumulée alors qu'aucun nœud léger n'était éligible | 3 156 009,326407 QOR réservés, 0 en attente | `GET /qorechain/lightnode/v1/reward_pool` | `MsgReleaseLightNodeReserve` (autorité de gouvernance) |
+
+À partir de la hauteur de la mise à niveau, la part des stakers est versée comme une récompense de staking normale et les récompenses des nœuds légers ne sont versées qu'à partir de ce qui s'est accumulé depuis la précédente exécution de distribution, avec un plafond par nœud et par bloc (`max_reward_per_block_per_node`, 1 713 uqor tel que lu le 14 octobre 2026). L'enregistrement des nœuds légers est actuellement fermé, donc aucun nœud n'est éligible et la part de 3 % continue de s'accumuler dans la réserve. Une libération antérieure à l'instantané de la mise à niveau, supérieure au montant enregistré ou vers une destination invalide est refusée.
+
+---
+
+## x/xqore — Staking verrouillé et amplification de la gouvernance {#x-xqore}
+
+:::warning Pas encore en production
+La comptabilité du module xQORE existe et le module est activé dans la genèse, mais il **n'est pas encore utilisable** sur le mainnet (`qorechain-vladi`) ni sur le testnet (`qorechain-diana`). Le nœud n'a aucun point d'entrée de transaction, de requête, de CLI ou de RPC pour lui ; ainsi `tx xqore lock` / `unlock`, `query xqore ...`, les routes REST xQORE et `qor_getXQOREPosition` ne fonctionnent pas, et personne ne détient de xQORE. Il est prévu pour une prochaine version de la chaîne, qui modifiera aussi la façon dont les pénalités de sortie sont redistribuées afin que le déverrouillage reste peu coûteux quel que soit le nombre de détenteurs. La version sera nommée ici lors de sa publication.
+:::
 
 Le module `x/xqore` introduit **xQORE**, un dérivé de staking verrouillé et non transférable. Les utilisateurs verrouillent du QOR pour frapper du xQORE dans un ratio de 1:1. Les détenteurs de xQORE reçoivent un pouvoir de gouvernance amplifié et une part des pénalités de sortie redistribuées.
 
@@ -144,8 +166,8 @@ Un retrait anticipé depuis xQORE entraîne une pénalité qui diminue avec la d
 
 Les pénalités collectées lors des sorties anticipées ne sont pas simplement détruites. Elles suivent plutôt un modèle de rebase PvP (player-versus-player) :
 
-1. **50 %** des montants de pénalité sont brûlés (acheminés via `x/burn` par le canal `xqore_penalty`).
-2. **50 %** sont redistribués au prorata à tous les détenteurs de xQORE restants.
+1. Dans la configuration de genèse, **0 %** des montants de pénalité sont brûlés (`penalty_burn_rate = 0` ; le canal de burn `xqore_penalty` existe si la gouvernance le modifie).
+2. **100 %** sont redistribués au prorata à tous les détenteurs de xQORE restants.
 
 Cela crée une dynamique à somme positive pour les détenteurs de long terme : chaque sortie anticipée augmente la valeur effective des positions xQORE restantes. Les rebases surviennent tous les **100 blocs**.
 
@@ -155,62 +177,41 @@ Cela crée une dynamique à somme positive pour les détenteurs de long terme : 
 | ----------------------- | ---------------------- | ------------------------------------------ |
 | `governance_multiplier` | 2.0                    | Multiplicateur de pouvoir de vote pour les détenteurs de xQORE |
 | `min_lock_amount`       | 1 000 000 uqor (1 QOR) | QOR minimum requis pour verrouiller              |
-| `penalty_burn_rate`     | 0.50                   | Fraction des pénalités de sortie brûlée (50 %)   |
+| `penalty_burn_rate`     | 0.00                   | Fraction des pénalités de sortie brûlée (valeur par défaut de la genèse : toutes les pénalités sont redistribuées) |
 | `rebase_interval`       | 100 blocs             | Blocs entre les événements de rebase PvP          |
 | `enabled`               | true                   | Indicateur d'activation du module                    |
 
 ---
 
-## x/inflation — Barème du budget d'émission
+## x/inflation — Émission plafonnée
 
-Malgré son nom, le module `x/inflation` **n'**inflate **pas** l'offre totale. Il régit la libération des récompenses de staking depuis le budget d'émission fini de **590 000 000 QOR**, selon le [barème des récompenses de staking](#staking-reward-schedule) dégressif. Les émissions sont calculées par époque et distribuées aux stakers et validateurs, en décaissant le budget pré-alloué plutôt qu'en frappant une nouvelle offre.
+Le module `x/inflation` frappe l'émission par époque (16 239 QOR, `emission_mode = fixed`) et l'envoie au collecteur de frais, jusqu'à ce que le plafond cumulatif de 114 285 714 QOR soit atteint. Les changements de paramètres passent par une proposition de gouvernance de paramètres normale (`MsgUpdateParams`, ajouté dans v3.1.94).
 
 ### Mécanique des époques
 
-* **Longueur d'une époque** : 17 280 blocs (\~1 jour avec des blocs de 5 secondes)
-* **Blocs par an** : \~6 311 520
-* Au début de chaque époque, l'émission prévue pour la période en cours est libérée depuis le budget d'émission et distribuée aux stakers et validateurs.
-* Le suivi des époques enregistre le numéro de l'époque en cours, l'année en cours, le bloc de départ, le QOR cumulé libéré depuis le budget d'émission, et le budget restant.
+* **Longueur d'une époque** : 43 200 blocs (environ 38,6 heures à ≈3,2 s par bloc).
+* À chaque limite d'époque, le module frappe l'émission de l'époque (ou le reliquat jusqu'au plafond), met à jour l'enregistrement d'époque et cesse de frapper une fois que `total_minted` atteint le plafond.
 
-### Paramètres d'inflation
+### Paramètres
 
-| Paramètre      | Valeur par défaut          | Description                                                |
-| -------------- | ---------------- | ---------------------------------------------------------- |
-| `schedule`     | dégressif        | Budget d'émission indexé par période (voir le barème des récompenses de staking) |
-| `epoch_length` | 17 280 blocs    | Blocs par époque d'émission                                  |
-| `enabled`      | true             | Indicateur d'activation du module                                     |
+| Paramètre | Valeur (mainnet) | Description |
+| --- | --- | --- |
+| `emission_mode` | `fixed` | `schedule` (hérité, taux par année) ou `fixed` |
+| `fixed_epoch_emission` | 16 239 000 000 uqor | Frappé par époque en mode fixe |
+| `max_total_emission` | 114 285 714 000 000 uqor | Plafond cumulatif strict |
+| `epoch_length` | 43 200 blocs | Blocs par époque d'émission |
+| `schedule` | 17,5 %, 11 %, 7 %, 7 %, 2 % (années 1 à 5) | Barème hérité, inutilisé en mode fixe |
+| `enabled` | `true` | Indicateur d'activation du module |
 
----
-
-## Dynamique déflationniste
-
-Comme l'offre est fixe et que l'émission est prélevée sur un budget fini, la dynamique nette du jeton de QoreChain tend à devenir déflationniste à mesure que l'adoption croît :
-
-```
-Years 1-2:  Larger scheduled emissions from the budget offset burns → near-neutral supply
-Years 3-4:  Scheduled emissions decline; burn volume grows with usage → convergence
-Year 5+:    Emission budget is largely drawn down; burn channels (gas, bridge,
-            contracts, rollups) scale with transaction volume → net deflationary
-```
-
-Les 10 canaux de burn garantissent que chaque activité majeure du réseau retire des jetons de l'offre. À mesure que le volume de transactions, l'usage du pont, les appels au service IA et les déploiements de rollups augmentent, les burns cumulés s'accélèrent tandis que les émissions prévues déclinent vers la fin du budget fini.
+Sur le mainnet, ces valeurs ne sont pas exposées via une route REST ; elles peuvent être lues dans l'état de la chaîne avec l'interface de store brut RPC `abci_query` (store `inflation`, clés `inflation/params` et `inflation/epoch`). Un service de requête dédié n'existe que sur le testnet (v3.2.2).
 
 ---
 
-## Ordre du cycle de vie des modules
+## Burn et émission
 
-Les modules économiques s'exécutent dans un ordre précis lors de l'`EndBlocker` de chaque bloc :
+L'émission est plafonnée (114 285 714 QOR) et la part de burn s'applique à tout ce qui entre dans le collecteur de frais, émission comprise. À ce jour, 31 560 093 QOR ont été brûlés pour 105 200 179 QOR frappés, de sorte que l'offre est actuellement supérieure à son niveau de genèse. Une fois le plafond atteint, l'offre ne peut plus que diminuer, du montant brûlé.
 
-```
-x/burn → x/xqore → x/inflation → x/rlconsensus
-```
-
-1. **x/burn** — Traite les enregistrements de burn en attente et met à jour les statistiques agrégées.
-2. **x/xqore** — Exécute les rebases PvP (tous les `rebase_interval` blocs) et achemine les pénalités vers le burn.
-3. **x/inflation** — Libère les émissions programmées de récompenses de staking depuis le budget, aux limites d'époque.
-4. **x/rlconsensus** — Ajuste les paramètres de consensus en fonction des signaux d'apprentissage par renforcement PRISM.
-
-Cet ordonnancement garantit que les burns sont finalisés avant les rebases, et que les rebases se terminent avant que les émissions programmées ne soient libérées, maintenant des transitions d'état économique cohérentes.
+---
 
 ## Voir aussi
 

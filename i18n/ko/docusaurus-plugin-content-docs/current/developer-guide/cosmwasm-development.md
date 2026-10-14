@@ -10,18 +10,24 @@ sidebar_position: 3
 QoreChain은 **CosmWasm** 스마트 컨트랙트를 지원하여, 개발자가 WebAssembly로 컴파일되는 안전하고 샌드박스화된 프로그램을 Rust로 작성할 수 있게 합니다. CosmWasm 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
 
 :::note
-아래 명령은 2026년 6월 7일부터 운영 중이며 체인 버전 **v3.1.97**을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 29일부터 운영 중이며 노드 릴리스 **v3.2.1**을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 테스트넷(v3.2.2 실행)의 경우 `--chain-id qorechain-diana`로 대체하세요.
 :::
 
 :::caution 코드 업로드 및 인스턴스화에는 현재 명시적 권한이 필요합니다
-이 글 작성 시점 기준, `code_upload_access`와 `instantiate_default_permission`은 **메인넷과 테스트넷 모두**에서 **`Nobody`**로 설정되어 있습니다. 즉, 업계 전반의 CosmWasm 보안 권고에 따라 `MsgStoreCode`와 `MsgInstantiateContract`는 기본적으로 임의의 계정에 열려 있지 않습니다. 아래 단계가 성공하려면 거버넌스를 통해 계정(또는 특정 주소 목록)에 업로드/인스턴스화 권한을 부여받아야 합니다 — 이는 거버넌스가 변경할 수 있는 종류의 설정이므로 먼저 실시간 파라미터를 확인하세요:
+이 글 작성 시점 기준, `code_upload_access`와 `instantiate_default_permission`은 **메인넷과 테스트넷 모두**에서 **`Nobody`**로 설정되어 있습니다. 즉, 업계 전반의 CosmWasm 보안 권고에 따라 `MsgStoreCode`와 `MsgInstantiateContract`는 기본적으로 임의의 계정에 열려 있지 않습니다. 아래 단계가 성공하려면 거버넌스를 통해 계정(또는 특정 주소 목록)에 업로드/인스턴스화 권한을 부여받아야 합니다. 이는 거버넌스가 변경할 수 있는 종류의 설정이므로 먼저 실시간 파라미터를 확인하세요(현재 메인넷에는 저장된 컨트랙트 코드가 전혀 없습니다):
 
 ```bash
 qorechaind query wasm params
 # or: curl -s https://api.qore.host/cosmwasm/wasm/v1/codes/params  (substitute api-testnet.qore.host for testnet)
 ```
 
-이 제한은 이미 인스턴스화된 컨트랙트에는 영향을 주지 않습니다 — 기존 컨트랙트에 대한 `execute`와 `query`는 이 설정과 무관하게 정상적으로 작동합니다.
+`MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2` 메시지 유형도 두 네트워크 모두에서 체인의 서킷 브레이커에 의해 꺼져 있으므로(`qorechaind query circuit disabled-list`), 권한만 올려서는 이 항목들이 해제되기 전까지 충분하지 않습니다.
+
+이 제한은 이미 인스턴스화된 컨트랙트에는 영향을 주지 않습니다. 기존 컨트랙트에 대한 `execute`와 `query`는 이 설정과 무관하게 정상적으로 작동합니다.
+:::
+
+:::caution `tx pqc cosign`으로 서명하세요
+메인넷과 테스트넷은 모든 Cosmos 레인 트랜잭션에 하이브리드 양자 내성 서명을 요구하므로, 이 페이지의 `tx` 명령은 그대로는 브로드캐스트되지 않습니다. 이 명령들은 `--generate-only > tx.json`으로 트랜잭션을 구성합니다. 그런 다음 `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>`로 서명하고 브로드캐스트하세요(서명기는 [다운로드 매니페스트](/developer-guide/running-a-node#fetch-the-manifest)의 릴리스 바이너리에 포함되어 있으며, 공개 소스에서 빌드한 바이너리에는 없습니다). 네트워크 수수료 하한은 **가스 단위당 0.1 uqor**이며, `--gas-prices 0.1uqor`가 이를 나타냅니다. 하이브리드 서명은 시뮬레이션에 포함되지 않는 약 47,000 가스를 추가하므로 `1.5` 조정값을 사용합니다. [양자 내성 서명](/developer-guide/post-quantum-signing)을 참조하세요.
 :::
 
 ---
@@ -67,12 +73,11 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
    ```bash
    qorechaind tx wasm store contract.wasm \
      --from mykey \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
-   트랜잭션이 확정된 후, 저장된 코드 ID를 조회합니다:
+   트랜잭션이 확정된 후(위에서 설명한 대로 `tx pqc cosign`으로 `tx.json`에 서명하고 브로드캐스트), 저장된 코드 ID를 조회합니다:
 
    ```bash
    qorechaind query wasm list-code
@@ -86,9 +91,8 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
      --label "my-counter-contract" \
      --from mykey \
      --no-admin \
-     --gas auto \
-     --gas-adjustment 1.3 \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    | 플래그                | 설명                                    |
@@ -101,7 +105,7 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
    컨트랙트 주소를 검색합니다:
 
    ```bash
-   qorechaind query wasm list-contracts-by-code <code-id>
+   qorechaind query wasm list-contract-by-code <code-id>
    ```
 
 4. **실행** — 상태를 변경하기 위해 컨트랙트의 execute 진입점을 호출합니다:
@@ -110,8 +114,8 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
    qorechaind tx wasm execute <contract-addr> \
      '{"increment": {}}' \
      --from mykey \
-     --gas auto \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
    자금을 첨부하여 실행합니다:
@@ -121,7 +125,8 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
      '{"deposit": {}}' \
      --amount 1000000uqor \
      --from mykey \
-     -y
+     --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+     --generate-only > tx.json
    ```
 
 5. **조회** — 트랜잭션을 제출하지 않고 컨트랙트 상태를 읽습니다:
@@ -142,7 +147,7 @@ CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **
 qorechaind query wasm list-code
 
 # List all instances of a specific code ID
-qorechaind query wasm list-contracts-by-code <code-id>
+qorechaind query wasm list-contract-by-code <code-id>
 
 # Get contract info (code ID, admin, label)
 qorechaind query wasm contract <contract-addr>
@@ -206,23 +211,11 @@ pub fn query(
 
 ## 크로스 VM 호출
 
-CosmWasm 컨트랙트는 `x/crossvm` 모듈을 통해 EVM 및 SVM에 배포된 컨트랙트와 상호작용할 수 있습니다. CosmWasm으로부터의 크로스 VM 호출은 **비동기** 메시지 경로를 사용합니다:
+크로스 VM 호출은 `x/crossvm` 모듈을 통해 `MsgCrossVMCall` 트랜잭션으로 전송됩니다. 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요. 현재 CosmWasm 컨트랙트에는 크로스 VM 호출을 시작하기 위한 컨트랙트 측 바인딩이 없으므로(컨트랙트가 내보낼 수 있는 커스텀 `QoreChainMsg` 메시지가 없음), 컨트랙트는 자신의 `execute` 진입점 내부에서 EVM 또는 SVM 컨트랙트를 호출할 수 없습니다.
 
-```rust
-use cosmwasm_std::{CosmosMsg, CustomMsg};
-
-// Call an EVM contract from CosmWasm
-let cross_vm_msg = CosmosMsg::Custom(QoreChainMsg::CrossVMCall {
-    target_vm: "evm".to_string(),
-    target_contract: "0x1234...abcd".to_string(),
-    payload: hex::encode(abi_encoded_data),
-    funds: vec![],
-});
-
-Ok(Response::new().add_message(cross_vm_msg))
-```
-
-메시지는 큐에 제출되고 다음 블록에서 EndBlocker에 의해 처리됩니다. 전체 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요.
+:::caution 크로스 VM 호출은 현재 메인넷에서 꺼져 있습니다
+`MsgCrossVMCall`은 메인넷의 서킷 브레이커 목록(`qorechaind query circuit disabled-list`)에 올라 있고 SVM 레인은 두 네트워크 모두에서 비활성화되어 있으므로, 현재 크로스 VM 경로는 일반 트랜잭션에 사용할 수 없습니다.
+:::
 
 ---
 
@@ -260,7 +253,8 @@ let delegate_msg = StakingMsg::Delegate {
 qorechaind tx wasm migrate <contract-addr> <new-code-id> \
   '{"migrate_msg": {}}' \
   --from admin-key \
-  -y
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.1uqor \
+  --generate-only > tx.json
 ```
 
 이는 기존 컨트랙트 상태와 함께 새 코드의 `migrate` 진입점을 호출합니다.
@@ -271,4 +265,4 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 * [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability) — CosmWasm에서 EVM 및 SVM 컨트랙트 호출
 * [SVM 개발](/developer-guide/svm-development) — QoreChain에 BPF 프로그램 배포
-* [EVM 프리컴파일](/developer-guide/evm-precompiles) — Solidity에서 PQC 및 AI 기능 접근
+* [EVM 프리컴파일](/developer-guide/evm-precompiles) — 계획된 Solidity 프리컴파일 참조(아직 활성화된 것은 없음)

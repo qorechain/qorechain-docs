@@ -39,8 +39,7 @@ pnpm --filter @qorechain/sdk docs:api
 - **الحسابات (Accounts):** ‏`generateMnemonic`، `validateMnemonic`، `deriveNativeAccount`،
   `deriveEvmAccount`، `deriveSvmAccount`؛ وأنواع الحسابات.
 - **الحسابات الموحّدة (0.6.0):** ‏`deriveUnifiedAccount`،
-  `unifiedAccountFromSeed`، `addressesFrom20`، `qoreAddresses`،
-  `unifiedAccountFromPhantomSignature`، `connectPhantomUnified`.
+  `unifiedAccountFromSeed`، `addressesFrom20`، `qoreAddresses`. (أُزيلت `unifiedAccountFromPhantomSignature` و`connectPhantomUnified` في الإصدار 0.8.0 وأصبحتا ترميان خطأ.)
 - **PQC:** ‏`generatePqcKeypair`، `pqcSign`، `pqcVerify`، وثوابت الأطوال،
   ومعرّفات الخوارزميات ودوالها المساعدة، `PqcSigner`، `HybridSigner`،
   `buildHybridSignatureExtension`، `HYBRID_SIG_TYPE_URL`.
@@ -49,7 +48,13 @@ pnpm --filter @qorechain/sdk docs:api
   `buildUrl`، `joinUrl`، `QoreHttpError`)؛ وعملاء استعلام منمّطون لكل
   وحدة، بما فيها `amm` و`license` و`abstractaccount`
   (‏`permissionSchema`)، واستعلامات مرساة الحالة `Anchor`/`Anchors` الخاصة بوحدة
-  `multilayer`.
+  `multilayer`. على نقاط النهاية العامة تستدعي بعض دوال REST المنمّطة مسارات
+  لا تقدّمها البوابة: `getAiStats`، `getFeeEstimate`، `getXqorePosition`،
+  `getInflationRate`، `getReputation` و`getPqcAccount` (التي تستدعي مسارًا
+  بصيغة الجمع `accounts`؛ أما المسار المُقدَّم فهو بصيغة المفرد
+  `/qorechain/pqc/v1/account/{address}`، ويمكن الوصول إليه عبر `rest.get(...)`).
+  أما `getBurnStats` و`getAllBalances` و`getBridgeChains` و`getPermissionSchema`
+  فتعمل.
 - **عبر الأجهزة الافتراضية (Cross-VM):** ‏`getCrossVmMessage`، `getPendingCrossVmMessages`،
   `getCrossVmParams`.
 - **CosmWasm:** ‏`createCosmWasmClient`، `connectCosmWasmSigner`،
@@ -75,14 +80,30 @@ pnpm --filter @qorechain/sdk docs:api
   عبر `signMessage`) و`buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
   (‏EIP-191 عبر `personal_sign`)؛ وتدوير المفاتيح `rotatePqcKeyMsgFromMnemonic`،
   `derivePqcLegacy`. راجع
-  [دليل المصادِقات](/sdk/guides/authenticators).
+  [دليل المصادِقات](/sdk/guides/authenticators) (الوحدة الكامنة وراء هذه
+  المسارات متوقفة اليوم على كلتا الشبكتين).
+- **بايتات التوقيع الهجينة (Hybrid sign-bytes) ‏(0.8.0+):** الخيار `signBytesVersion`
+  (‏`"auto" | "v1" | "v2"`) في `buildHybridTx` و`signAndBroadcastHybrid` و
+  `signHybridEth` و`EthNativeSigner`؛ و`resolveSignBytesVersion`،
+  `SIGN_BYTES_V2_UPGRADES`، `isHybridSignBytesRejection`، `hybridSignBytesV1` /
+  `hybridSignBytesV2`، `migrationSignBytes`، `bridgeAttestationSignBytes`.
+- **نافذة تفويض EVM ‏(0.8.2+):** ‏`openEvmWindowMsg`، `closeEvmWindowMsg`،
+  `fetchEvmWindow`، `classifyEvmWindowRejection`، `isEvmWindowRejection`،
+  `MAX_EVM_WINDOW_BLOCKS`، `MAX_EVM_WINDOW_TXS`. راجع
+  [نافذة تفويض EVM](/sdk/guides/evm#evm-window).
+- **الاشتقاق القياسي لـ PQC ‏(0.8.3+):** ‏`derivePqcCanonical(account, mnemonic)`،
+  `canonicalAccount(account)`؛ ورسالة تسجيل PQC هي
+  `buildRegisterPqcKeyMsg` (تستخدمها `ensurePqcRegistered`).
 
 ### `@qorechain/evm`
 
 ‏`createEvmClient`، `evmAccountFromPrivateKey`، ودوال `erc20` المساعدة، وأغلفة
 العقود (`deployContract`، `readContract`، `writeContract`)، وارتباطات `precompiles`،
-و`PRECOMPILE_ADDRESSES`، وواجهات ABI ‏(`ERC20_ABI`، `IQORE_PQC_ABI`،
-`IQORE_AI_ABI`، `IQORE_CONSENSUS_ABI`).
+والدوال المساعدة المعتمدة على precompile ‏`simulateWithRiskScore` و`aiRiskScore` و
+`aiAnomalyCheck`، و`PRECOMPILE_ADDRESSES`، وواجهات ABI ‏(`ERC20_ABI`،
+`IQORE_PQC_ABI`، `IQORE_AI_ABI`، `IQORE_CONSENSUS_ABI`). الارتباطات والدوال
+المساعدة المعتمدة على precompile غير مفعّلة على الشبكات العامة (راجع
+[عقود EVM المسبقة التجميع](/developer-guide/evm-precompiles#network-status)).
 
 ### `@qorechain/svm`
 
@@ -96,10 +117,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.7.0` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (الوسم `packages/go/v0.7.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` — أحدث حزمة crate منشورة (0.7.0 من المستودع؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.7.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.8.3` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (الوسم `packages/go/v0.8.4`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.8.3؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.8.3` |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

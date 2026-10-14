@@ -7,170 +7,114 @@ sidebar_position: 7
 
 # Abstraction de compte
 
-QoreChain fournit une **abstraction de compte au niveau du protocole** via le module `x/abstractaccount`. Elle permet des comptes programmables avec des règles d'authentification flexibles, des clés de session, des limites de dépenses et une récupération sociale — le tout sans nécessiter d'infrastructure externe de contrats intelligents.
+QoreChain fournit une **abstraction de compte au niveau du protocole** via le module `x/abstractaccount`. Le module enregistre des comptes abstraits assortis de règles de dépenses et permet au propriétaire du compte de lier des clés externes (**authentificateurs**) qui peuvent dépenser depuis le compte dans les limites de permissions et de dépenses définies, sans infrastructure externe de contrats intelligents.
+
+:::danger Non activé sur le mainnet ni sur le testnet
+Le module d'abstraction de compte est actuellement **désactivé** sur les deux réseaux : `qorechaind query abstractaccount config` (et `GET /qorechain/abstractaccount/v1/config`) renvoient `enabled: false` sur `qorechain-vladi` et `qorechain-diana`. À partir de la version de chaîne v3.2.0, ce paramètre est appliqué sur chaque chemin : la chaîne refuse la création de compte, l'enregistrement d'authentificateurs et les deux voies d'exécution (`MsgExecuteEVM`, `MsgExecuteCosmos`) avec `abstract accounts are disabled on this chain`. Aucune transaction ne peut activer le module, et aucune transaction de compte abstrait n'a jamais été incluse sur le mainnet. Tout ce qui suit décrit les interfaces du module à titre de référence. Ne construisez pas de flux de clé liée ou de dépenses déléguées sur les réseaux en production tant que le module n'est pas activé, et vérifiez d'abord ce paramètre.
+:::
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`**, en production depuis le 7 juin 2026 et exécutant la version de chaîne **v3.1.97**. Remplacez par `--chain-id qorechain-diana` pour le testnet.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (en production depuis le 29 juin 2026), qui exécute la version de nœud **v3.2.1** (règles de consensus de la v3.2.0). Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.2.
+:::
+
+:::caution Toute transaction sur la voie Cosmos exige la co-signature post-quantique hybride
+Les exemples `qorechaind tx` de cette page ne montrent que les indicateurs de frais. Sur les réseaux en production, toute transaction sur la voie Cosmos doit aussi porter la co-signature hybride ML-DSA-87 ; construisez donc la transaction avec `--generate-only` et signez-la avec `qorechaind tx pqc cosign` (ou utilisez QoreX ou le SDK, qui s'en chargent pour vous). La version communautaire de `qorechaind` ne peut pas produire cette signature ; utilisez le binaire de la release issu du [manifeste de téléchargement](/developer-guide/running-a-node#fetch-the-manifest). Le plancher de frais est de **0,1 uqor par unité de gaz**, donc `--gas 400000` exige au moins `--fees 40000uqor`. Voir [Signature post-quantique](/developer-guide/post-quantum-signing).
 :::
 
 ## Vue d'ensemble
 
-Les comptes blockchain traditionnels sont contrôlés par une seule clé privée. L'abstraction de compte dissocie la notion de « qui peut autoriser une transaction » d'une clé cryptographique unique, ce qui permet :
+Les comptes blockchain traditionnels sont contrôlés par une seule clé privée. L'abstraction de compte dissocie la notion de « qui peut autoriser une transaction » d'une clé cryptographique unique. Le module `x/abstractaccount` fournit :
 
-* Des **comptes multisignatures** avec signature à seuil configurable
-* Des **comptes à récupération sociale** avec récupération de clé assistée par des gardiens
-* Des **comptes basés sur des sessions** avec des permissions granulaires et limitées dans le temps pour les dApps
+* Des **comptes abstraits** avec un type de compte et un propriétaire enregistrés
+* Des **règles de dépenses** (limites par transaction et quotidiennes, dénominations autorisées) qui bornent ce que les clés liées peuvent dépenser
+* Des **authentificateurs** : des clés externes (une clé ed25519 Phantom ou une adresse secp256k1 MetaMask) que le propriétaire lie avec des permissions limitées et une expiration, et qu'il peut révoquer à tout moment
 
-Le module `x/abstractaccount` implémente ces capacités au niveau du protocole, ce qui signifie qu'elles fonctionnent sur les trois VM (EVM, CosmWasm, SVM) et bénéficient de l'efficacité native en gaz.
-
-*Un flux dApp basé sur une session : une clé de session à portée limitée signe une transaction, le module la valide par rapport à la session et aux règles de dépenses, puis l'exécute.*
+*Un flux avec clé liée (authentificateur) : la clé liée signe une autorisation, un relayeur la soumet, le module vérifie les permissions, l'expiration et les règles de dépenses, puis exécute depuis le compte du propriétaire.*
 
 ```mermaid
 flowchart TD
-    A["User connects wallet,<br/>grants scoped session key"] --> B["dApp signs tx<br/>with session key"]
-    B --> C{"Validate against<br/>session permissions"}
-    C -- "message type allowed?<br/>contract allowed?<br/>not expired?" --> D{"Validate spending rules"}
-    C -- "fails" --> R["Reject transaction"]
-    D -- "per-tx + daily limit<br/>allowed denom" --> E["Execute transaction<br/>across EVM / CosmWasm / SVM"]
-    D -- "exceeds limit" --> R
-    E --> F["Session expires<br/>or owner revokes"]
+    A["Le propriétaire lie une clé externe<br/>(permissions limitées + expiration)"] --> B["La clé liée signe<br/>une autorisation"]
+    B --> C["Le relayeur soumet et paie<br/>la transaction"]
+    C --> D{"Valider l'authentificateur"}
+    D -- "permission accordée ?<br/>non expiré ?<br/>nonce valide ?" --> E{"Valider la règle de dépenses"}
+    D -- "échec" --> R["Rejeter la transaction"]
+    E -- "limite par tx + quotidienne<br/>dénomination autorisée" --> F["Exécuter depuis le compte du propriétaire"]
+    E -- "dépasse la limite" --> R
+    F --> G["L'authentificateur expire<br/>ou le propriétaire le révoque"]
 ```
 
 ## Types de comptes
 
-| Type              | Description                             | Cas d'usage                       |
-| ----------------- | --------------------------------------- | ------------------------------ |
-| `multisig`        | Signature à seuil M-parmi-N                | Trésoreries de DAO, portefeuilles partagés |
-| `social_recovery` | Récupération de clé assistée par des gardiens          | Portefeuilles grand public, onboarding   |
-| `session_based`   | Clés de session déléguées avec contraintes | Sessions dApp, portefeuilles mobiles  |
+`create` enregistre l'un des trois types de comptes. Le type est stocké sur le compte et participe à la dérivation de son adresse ; le module n'a ni transactions multisig, ni clés de session, ni récupération qui lui soient propres (le service de transactions comprend `create`, `update-rules`, `register-authenticator`, `revoke-authenticator`, `execute-cosmos`, `execute-evm`).
+
+| Type              | Cas d'usage prévu                       |
+| ----------------- | --------------------------------------- |
+| `multisig`        | Trésoreries de DAO, portefeuilles partagés |
+| `social_recovery` | Portefeuilles grand public, onboarding  |
+| `session_based`   | Sessions dApp, portefeuilles mobiles    |
 
 ## Créer un compte abstrait
 
-### Compte basé sur une session
+`create` prend le type de compte comme argument positionnel (`multisig`, `social_recovery` ou `session_based`) :
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type session_based \
+qorechaind tx abstractaccount create session_based \
   --from mykey \
-  --gas auto \
-  -y
+  --gas 400000 --fees 40000uqor
 ```
 
-### Compte multisignature
+La commande n'a aucun indicateur pour les signataires, les seuils ou les gardiens.
+
+## Authentificateurs (clés liées)
+
+Le mécanisme de clé déléguée du module est l'**authentificateur**, décrit dans [Authentificateurs de portefeuilles liés](#authenticators) ci-dessous : le propriétaire lie une clé externe (ed25519 ou secp256k1) avec un ensemble de permissions et une expiration, et la révoque à tout moment :
 
 ```bash
-qorechaind tx abstractaccount create \
-  --account-type multisig \
-  --signers qor1alice...,qor1bob...,qor1carol... \
-  --threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
+qorechaind tx abstractaccount register-authenticator <account-address> <scheme> <pubkey-base64> <permissions-csv> <expiry-unix> <label> \
+  --from mykey --gas 400000 --fees 40000uqor
+qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <pubkey-base64> \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
 
-### Compte à récupération sociale
-
-```bash
-qorechaind tx abstractaccount create \
-  --account-type social_recovery \
-  --guardians qor1guardian1...,qor1guardian2...,qor1guardian3... \
-  --recovery-threshold 2 \
-  --from mykey \
-  --gas auto \
-  -y
-```
-
-## Clés de session
-
-Les clés de session sont la pierre angulaire du type de compte `session_based`. Elles vous permettent d'accorder des **permissions temporaires et à portée limitée** à une clé secondaire — idéal pour les interactions avec des dApps où vous ne souhaitez pas exposer votre clé principale.
-
-### Propriétés clés
-
-| Propriété              | Description                                          |
-| --------------------- | ---------------------------------------------------- |
-| **Permissions**       | Les types de messages que la clé de session peut signer         |
-| **Expiration**            | Expiration automatique après une durée configurable   |
-| **Limites de dépenses**   | Montants maximaux que la clé de session peut dépenser            |
-| **Contrats autorisés** | Restreint les interactions à des adresses de contrats spécifiques |
-
-### Accorder une clé de session
-
-```bash
-qorechaind tx abstractaccount grant-session \
-  --session-key qor1sessionkey... \
-  --permissions "bank/MsgSend,wasm/MsgExecuteContract" \
-  --expiry "2026-03-01T00:00:00Z" \
-  --allowed-contracts qor1contract1...,0x1234...abcd \
-  --from mykey \
-  -y
-```
-
-### Révoquer une clé de session
-
-```bash
-qorechaind tx abstractaccount revoke-session \
-  --session-key qor1sessionkey... \
-  --from mykey \
-  -y
-```
-
-### Lister les sessions actives
-
-```bash
-qorechaind query abstractaccount sessions <account-address>
-```
+`scheme` vaut `ed25519` (par exemple Phantom) ou `secp256k1` (par exemple MetaMask). Il n'existe aucune commande `grant-session`, `revoke-session` ni `query abstractaccount sessions`.
 
 ## Règles de dépenses
 
-Les règles de dépenses ajoutent des garde-fous financiers aux comptes abstraits, quel que soit le type de compte :
+Les règles de dépenses ajoutent des garde-fous financiers aux comptes abstraits :
 
-| Règle             | Description                                     |
-| ---------------- | ----------------------------------------------- |
-| `daily_limit`    | Dépense totale maximale par fenêtre glissante de 24 heures  |
-| `per_tx_limit`   | Dépense maximale par transaction individuelle        |
+| Règle            | Description                                           |
+| ---------------- | ----------------------------------------------------- |
+| `daily_limit`    | Dépense totale maximale par jour calendaire UTC       |
+| `per_tx_limit`   | Dépense maximale par exécution autorisée individuelle |
 | `allowed_denoms` | Restreint les dénominations de jetons pouvant être dépensées |
 
 ### Définir les règles de dépenses
 
+`update-rules` remplace les règles du compte par un tableau JSON d'objets `SpendingRule` (JSON en ligne, pas un fichier et pas des indicateurs) :
+
 ```bash
-qorechaind tx abstractaccount update-spending-rules \
-  --daily-limit 1000000000uqor \
-  --per-tx-limit 100000000uqor \
-  --allowed-denoms uqor \
-  --from mykey \
-  -y
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":1000000000,"per_tx_limit":100000000,"allowed_denoms":["uqor"]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
 ```
+
+Les limites sont exprimées dans l'unité de base (`uqor`) et comptent par exécution autorisée ; la limite quotidienne borne le total par jour calendaire UTC. Les règles remplacent d'un bloc celles qui sont stockées, donc un champ que vous omettez est supprimé.
 
 ### Interroger les règles actuelles
 
+L'enregistrement du compte inclut ses règles et le nombre de clés liées :
+
 ```bash
-qorechaind query abstractaccount spending-rules <account-address>
+qorechaind query abstractaccount account <account-address>
 ```
 
-### Exemple de réponse
-
-```json
-{
-  "daily_limit": {
-    "denom": "uqor",
-    "amount": "1000000000"
-  },
-  "per_tx_limit": {
-    "denom": "uqor",
-    "amount": "100000000"
-  },
-  "allowed_denoms": ["uqor"],
-  "daily_spent": {
-    "denom": "uqor",
-    "amount": "250000000"
-  },
-  "window_reset": "2026-02-27T00:00:00Z"
-}
-```
+:::caution Une règle ne borne une clé que si elle existe
+La chaîne résout la limite dans cet ordre : la règle propre à l'authentificateur si elle est définie et `enabled` ; sinon la première règle `enabled` du compte ; sinon **il n'y a aucune limite**. Une règle stockée avec `enabled: false` signifie aucune limite, et non une limite nulle. `MsgRegisterAuthenticator` ne porte aucune règle, donc une clé liée par ce seul message n'est bornée que par une règle au niveau du compte. Définissez une règle délibérément avec `update-rules`, et n'enregistrez que les permissions dont la clé a besoin. Une limite borne les dégâts qu'une clé liée peut causer ; elle ne remplace pas la révocation de la clé.
+:::
 
 ## Authentificateurs de portefeuilles liés — dépenses déléguées {#authenticators}
 
-Depuis la version de chaîne **v3.1.85** (qui s'appuie sur le modèle de permissions de la v3.1.84), une **clé de portefeuille externe liée** — une clé Phantom (ed25519) ou un compte MetaMask (secp256k1) — peut **dépenser depuis le compte post-quantique canonique** selon des conditions révocables, à moindre privilège et à dépenses limitées. La clé externe ne produit jamais de signature ML-DSA ; un **relayeur** soumet et paie l'enveloppe de transaction (la propre signature PQC hybride du relayeur satisfait les exigences de signature de la chaîne), tandis que la signature de l'authentificateur sur des **octets de signature séparés par domaine et protégés contre le rejeu** constitue l'autorisation.
+La conception des authentificateurs a été introduite dans la version de chaîne **v3.1.85** (qui s'appuie sur le modèle de permissions de la v3.1.84). Elle n'est **pas utilisable sur les réseaux en production tant que le module est désactivé** (voir l'encadré d'état en haut de cette page). Une **clé de portefeuille externe liée** — une clé Phantom (ed25519) ou un compte MetaMask (secp256k1) — peut **dépenser depuis le compte post-quantique canonique** selon des conditions révocables, à moindre privilège et à dépenses limitées. La clé externe ne produit jamais de signature ML-DSA ; un **relayeur** soumet et paie l'enveloppe de transaction (la propre signature PQC hybride du relayeur satisfait les exigences de signature de la chaîne), tandis que la signature de l'authentificateur sur des **octets de signature séparés par domaine et protégés contre le rejeu** constitue l'autorisation.
 
 ### Enregistrer un authentificateur {#register-authenticator}
 
@@ -181,16 +125,17 @@ import { registerEthAuthenticatorMsg } from "@qorechain/wallet-adapter";
 
 // Link a MetaMask account by its 20-byte address (EIP-191 verification):
 const msg = registerEthAuthenticatorMsg({
-  account: "qor1owner...",            // the canonical account
+  owner: "qor1owner...",              // the canonical account (signs this message)
   ethAddress: "0xAbC...123",          // the MetaMask address to link
   permissions: ["evm"],               // least privilege — see the taxonomy below
-  expirySeconds: 30 * 24 * 3600,      // ≤ 30 days recommended
-  spendingRule: { perTxLimit: "100000000uqor", dailyLimit: "1000000000uqor" },
+  expiryUnix: Math.floor(Date.now() / 1000) + 30 * 24 * 3600, // absolute Unix seconds, ≤ 30 days recommended
+  label: "metamask",
 });
+// Limits are a separate message (MsgUpdateSpendingRules), see "Spending Rules" above.
 // Sign & broadcast this msg with the OWNER's normal hybrid-PQC signer.
 ```
 
-Une clé Phantom s'enregistre de la même manière avec `scheme: "ed25519"` et la clé publique Phantom. La révocation est instantanée via `MsgRevokeAuthenticator`.
+Une clé Phantom s'enregistre de la même manière avec le schéma `ed25519` et la clé publique Phantom (`register-authenticator` en CLI). La révocation est instantanée via `MsgRevokeAuthenticator`.
 
 ### Taxonomie des permissions {#permission-taxonomy}
 
@@ -233,11 +178,12 @@ import { buildPhantomExecuteCosmos } from "@qorechain/wallet-adapter";
 
 // In the dApp: Phantom signs the digest with ed25519 signMessage.
 const msg = await buildPhantomExecuteCosmos({
-  provider: window.solana,            // Phantom
+  wallet: window.solana,              // Phantom: { publicKey, signMessage }
+  relayer: "qor1relayer...",          // submits the tx and pays the fee (a different account)
   chainId: "qorechain-vladi",
   account: "qor1owner...",            // canonical account being spent from
   to: "qor1recipient...",
-  amount: { denom: "uqor", amount: "900000" },
+  amount: "900000uqor",               // single-coin string
   nonce: authSequence,                // per-authenticator sequence
 });
 // Send `msg` to your relayer; the relayer wraps it in a tx it signs
@@ -251,10 +197,13 @@ import { buildMetaMaskExecuteEvm } from "@qorechain/wallet-adapter";
 
 const msg = await buildMetaMaskExecuteEvm({
   provider: window.ethereum,          // MetaMask (EIP-1193)
+  address: ethAddress,                // the linked 20-byte address
+  relayer: "qor1relayer...",
   chainId: "qorechain-vladi",
   account: "qor1owner...",
   to: "0xRecipient...",
-  valueWei: 10n ** 16n,               // 0.01 QOR (18-dec EVM view)
+  value: (10n ** 16n).toString(),     // 0.01 QOR in wei (18-decimal EVM view), as a decimal string
+  gasLimit: 100000,
   nonce: currentEvmNonce,             // eth_getTransactionCount(owner0x, "latest")
 });
 // Relay as above. The chain verifies the signature via EIP-191 + ecrecover
@@ -264,14 +213,19 @@ const msg = await buildMetaMaskExecuteEvm({
 Les mêmes constructeurs existent dans le [SDK QoreChain](/sdk/guides/authenticators) pour les cinq langages, ainsi que des équivalents CLI :
 
 ```bash
-# Produce the exact sign bytes the chain verifies (for custom signers):
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data-hex> <nonce>
+# Generate an ed25519 authenticator key: the seed goes to a new 0600 file, only the public key is printed
+qorechaind query abstractaccount auth-keygen --out authenticator.seed
 
-# Relay a pre-signed authorization:
-qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
-qorechaind tx abstractaccount execute-evm    <account> <to> <value> <data-hex> <auth-pubkey> <auth-sig> <nonce> --from relayer -y
+# Sign the exact bytes the chain verifies (seed from --seed-file, "-" for stdin, QORE_AUTH_SEED, or a prompt)
+qorechaind query abstractaccount auth-sign-cosmos <chain-id> <account> <to> <amount> <nonce> --seed-file authenticator.seed
+qorechaind query abstractaccount auth-sign-evm <chain-id> <account> <to-0xhex> <value-wei> <data-hex> <nonce> --seed-file authenticator.seed
+
+# Relay a pre-signed authorization (the relayer's --from key pays; cosign the envelope with `tx pqc cosign`)
+qorechaind tx abstractaccount execute-cosmos <account> <to> <amount> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
+qorechaind tx abstractaccount execute-evm <account> <to-0xhex> <value-wei> <data-hex> <gas-limit> <scheme> <pubkey-base64> <signature-base64> <nonce> --from relayer --generate-only > tx.json
 ```
+
+Les clés et les signatures de ces commandes sont en base64. Les utilitaires `auth-sign-*` lisent la graine depuis un fichier, l'entrée standard ou l'environnement plutôt que depuis un argument de ligne de commande (version de nœud v3.2.1 et ultérieures), de sorte qu'elle n'apparaît pas dans l'historique du shell. Les indicateurs de gestion de la graine (`--out`, `--seed-file`) n'existent que dans les binaires v3.2.1 et ultérieurs.
 
 ### Codes d'erreur {#authenticator-errors}
 
@@ -281,6 +235,7 @@ Les échecs d'application des règles renvoient des codes distincts (codespace `
 | --- | --- | --- |
 | `5` | Limite de dépenses dépassée (par transaction ou quotidienne) | Afficher l'allocation restante |
 | `6` | Authentificateur expiré | « Expiré — reliez à nouveau votre portefeuille » |
+| `9` | Module désactivé (l'état actuel sur les deux réseaux) | « Les portefeuilles liés ne sont pas encore disponibles » |
 | `10` | Permission refusée (portée ou message non délégable) | Afficher la permission manquante |
 | `11` | Rejeu refusé (nonce/séquence périmé) | Réinterroger le nonce et signer à nouveau |
 
@@ -288,10 +243,10 @@ Les échecs d'application des règles renvoient des codes distincts (codespace `
 
 ### Requêtes REST {#abstractaccount-rest}
 
-Depuis la **v3.1.85**, les requêtes en lecture du module sont également servies via REST :
+Les requêtes en lecture du module sont servies via REST (depuis la **v3.1.85**) :
 
 ```
-GET /qorechain/abstractaccount/v1/config
+GET /qorechain/abstractaccount/v1/config      # {"config":{"enabled":false,...}} on both networks today
 GET /qorechain/abstractaccount/v1/accounts
 GET /qorechain/abstractaccount/v1/accounts/{address}
 GET /qorechain/abstractaccount/v1/permission_schema
@@ -302,86 +257,59 @@ GET /qorechain/abstractaccount/v1/permission_schema
 ### CLI
 
 ```bash
+# Module configuration (enabled flag and limits)
+qorechaind query abstractaccount config
+
 # Get full account configuration
 qorechaind query abstractaccount account <address>
 
 # List all abstract accounts (paginated)
-qorechaind query abstractaccount list --limit 10
+qorechaind query abstractaccount accounts --page-limit 10
 ```
+
+Sur le mainnet, la liste des comptes est vide ; le testnet liste quelques comptes créés avant que le paramètre d'activation ne soit appliqué sur chaque chemin.
 
 ### JSON-RPC
 
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getAbstractAccount",
-    "params": ["0xYourAddress"],
-    "id": 1
-  }'
-```
+> **Pas encore servi :** aucune version publiée du nœud ne sert l'espace de noms JSON-RPC `qor_`, donc `qor_getAbstractAccount` renvoie `-32601` (méthode introuvable) sur tous les points d'accès publics aujourd'hui. Utilisez les routes REST ci-dessus ou la CLI. Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ### Exemple de réponse de compte
+
+La forme d'un enregistrement de compte abstrait (valeurs illustratives) :
 
 ```json
 {
   "address": "qor1myaccount...",
   "account_type": "session_based",
   "owner": "qor1owner...",
-  "active_sessions": 2,
-  "spending_rules": {
-    "daily_limit": "1000000000uqor",
-    "per_tx_limit": "100000000uqor",
-    "allowed_denoms": ["uqor"]
-  },
-  "created_at_height": 54321
+  "spending_rules": [
+    {
+      "id": "daily",
+      "enabled": true,
+      "daily_limit": "1000000000",
+      "per_tx_limit": "100000000",
+      "allowed_denoms": ["uqor"]
+    }
+  ]
 }
 ```
 
-## Flux de récupération sociale
+## Récupération sociale
 
-Si le propriétaire du compte perd l'accès à sa clé principale, les gardiens peuvent autoriser une rotation de clé.
-
-1. **Le propriétaire signale la perte de la clé (ou un gardien initie la procédure) :**
-
-   ```bash
-   qorechaind tx abstractaccount initiate-recovery \
-     --account <account-address> \
-     --new-owner qor1newkey... \
-     --from guardian1 \
-     -y
-   ```
-
-2. **Des gardiens supplémentaires approuvent** (le `recovery_threshold` doit être atteint) :
-
-   ```bash
-   qorechaind tx abstractaccount approve-recovery \
-     --account <account-address> \
-     --recovery-id <recovery-id> \
-     --from guardian2 \
-     -y
-   ```
-
-3. **La récupération s'exécute automatiquement** dès que le seuil est atteint. Une **période de verrouillage temporel** (par défaut : 48 heures) donne au propriétaire d'origine la possibilité d'annuler une tentative de récupération frauduleuse.
+`social_recovery` est un type de compte, mais le module n'a aucune transaction de récupération : il n'existe aucune commande `initiate-recovery` ni `approve-recovery`, et aucun message de récupération dans le service de transactions du module. La récupération de clé d'un compte QoreChain s'effectue en redérivant la clé post-quantique du compte à partir de sa phrase mnémonique (`tx pqc recover-key`) et, si nécessaire, en la faisant pivoter (`tx pqc rotate-key`) ; voir [Signature post-quantique](/developer-guide/post-quantum-signing).
 
 ## Intégration avec les dApps
 
-Les clés de session permettent des expériences dApp fluides :
-
-1. **L'utilisateur connecte son portefeuille** et crée une clé de session limitée au contrat de la dApp
-2. **La dApp utilise la clé de session** pour soumettre des transactions au nom de l'utilisateur
-3. **Aucune signature répétée** — la clé de session gère l'autorisation dans les limites de ses permissions
-4. **La session expire** automatiquement, ou l'utilisateur la révoque à tout moment
-
-Ce schéma est particulièrement utile pour :
+Lorsque le module est activé, l'autorisation par clé liée est destinée à des flux tels que :
 
 * Les portefeuilles mobiles où les invites biométriques répétées sont gênantes
-* Les dApps de jeu qui nécessitent une signature rapide des transactions
-* Les protocoles DeFi qui exécutent plusieurs opérations séquentielles
+* Les dApps de jeu qui nécessitent une signature rapide des transactions dans les limites d'une allocation bornée
+* Les utilisateurs de Phantom ou MetaMask qui dépensent depuis leur compte QoreChain via un relayeur
+
+Le backend d'une dApp joue le rôle de relayeur : il reçoit l'autorisation signée de la clé liée, l'enveloppe dans une transaction qu'il signe lui-même et la diffuse. La clé liée peut être révoquée, ou peut expirer, à tout moment. Tant que le module n'est pas activé sur le réseau que vous ciblez, utilisez la signature ordinaire via [QoreX ou le SDK](/sdk/overview).
 
 ## Prochaines étapes
 
 * [Exploiter un validateur](/developer-guide/running-a-validator) — Mettre en place et exploiter un nœud de validation
-* [Développement EVM](/developer-guide/evm-development) — Intégrer les comptes abstraits avec des dApps Solidity
-* [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Messagerie inter-VM avec les comptes abstraits
+* [Développement EVM](/developer-guide/evm-development) — Outils EVM, comptes et fenêtre d'autorisation EVM
+* [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) — Messagerie inter-VM

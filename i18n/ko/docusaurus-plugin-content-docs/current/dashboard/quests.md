@@ -9,7 +9,7 @@ sidebar_position: 10
 
 **퀘스트**는 완료하는 동안 QoreChain 사용법을 단계별로 안내하는 가이드형 작업입니다. 각 퀘스트는 지갑에 자금을 충전하거나, 송금을 하거나, 스왑을 해보는 것과 같은 하나 이상의 단계를 묶어 구성되며, 완료하면 보상을 제공합니다. 퀘스트는 네트워크의 기능을 하나씩 직접 체험하며 배울 수 있는 실습 방식입니다.
 
-진행 상황이 추적되도록 지갑을 연결하세요 — [개요 및 시작하기](/dashboard/overview#connect-your-wallet)를 참고하세요.
+진행 상황이 추적되도록 로그인하세요 — [로그인](/dashboard/overview#sign-in)을 참고하세요. 일부 퀘스트에는 지갑도 필요합니다. [지갑 연결하기](/dashboard/overview#connect-your-wallet)를 참고하세요.
 
 ## 퀘스트 둘러보기
 
@@ -36,5 +36,5 @@ sidebar_position: 10
 
 ## 관련 항목
 
-- [개요 및 시작하기](/dashboard/overview) — 퀘스트를 시작하기 전에 지갑을 연결하세요.
+- [개요 및 시작하기](/dashboard/overview) — 퀘스트를 시작하기 전에 로그인하고 지갑을 연결하세요.
 - [Faucet](/dashboard/faucet) — 트랜잭션이 포함된 퀘스트를 위해 테스트넷 지갑에 자금을 충전하세요.

@@ -39,8 +39,7 @@ projesinden de yeniden üretebilirsiniz.
 - **Hesaplar:** `generateMnemonic`, `validateMnemonic`, `deriveNativeAccount`,
   `deriveEvmAccount`, `deriveSvmAccount`; hesap tipleri.
 - **Birleşik hesaplar (0.6.0):** `deriveUnifiedAccount`,
-  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`,
-  `unifiedAccountFromPhantomSignature`, `connectPhantomUnified`.
+  `unifiedAccountFromSeed`, `addressesFrom20`, `qoreAddresses`. (`unifiedAccountFromPhantomSignature` ve `connectPhantomUnified` 0.8.0'da kaldırıldı ve hata fırlatır.)
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, uzunluk sabitleri,
   algoritma kimlikleri/yardımcıları, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
@@ -49,6 +48,13 @@ projesinden de yeniden üretebilirsiniz.
   `buildUrl`, `joinUrl`, `QoreHttpError`); `amm`, `license`, `abstractaccount`
   (`permissionSchema`) ve `multilayer` `Anchor`/`Anchors` durum-çapa
   sorguları dahil olmak üzere her modül için tipli sorgu istemcileri.
+  Genel uç noktalarda bazı tipli REST yardımcıları, ağ geçidinin sunmadığı
+  rotaları çağırır: `getAiStats`, `getFeeEstimate`, `getXqorePosition`,
+  `getInflationRate`, `getReputation` ve `getPqcAccount` (çoğul bir `accounts`
+  yolunu çağırır; sunulan rota tekil
+  `/qorechain/pqc/v1/account/{address}` olup `rest.get(...)` ile erişilebilir).
+  `getBurnStats`, `getAllBalances`, `getBridgeChains` ve `getPermissionSchema`
+  çalışır.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
@@ -75,14 +81,30 @@ projesinden de yeniden üretebilirsiniz.
   `signMessage`) ve `buildMetaMaskExecuteEvm` / `buildMetaMaskExecuteCosmos`
   (EIP-191 `personal_sign`); anahtar rotasyonu `rotatePqcKeyMsgFromMnemonic`,
   `derivePqcLegacy`. Bkz.
-  [Authenticator kılavuzu](/sdk/guides/authenticators).
+  [Authenticator kılavuzu](/sdk/guides/authenticators) (bu hatların arkasındaki
+  modül bugün her iki ağda da kapalıdır).
+- **Hibrit imza baytları (0.8.0+):** `buildHybridTx`, `signAndBroadcastHybrid`,
+  `signHybridEth` ve `EthNativeSigner` üzerindeki `signBytesVersion` seçeneği
+  (`"auto" | "v1" | "v2"`); `resolveSignBytesVersion`,
+  `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
+  `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
+- **EVM yetkilendirme penceresi (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
+  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
+  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. Bkz.
+  [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window).
+- **Kanonik PQC türetme (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
+  `canonicalAccount(account)`; PQC kayıt mesajı
+  `buildRegisterPqcKeyMsg`'dir (`ensurePqcRegistered` tarafından kullanılır).
 
 ### `@qorechain/evm`
 
 `createEvmClient`, `evmAccountFromPrivateKey`, `erc20` yardımcıları, sözleşme
 sarmalayıcıları (`deployContract`, `readContract`, `writeContract`), `precompiles`
-bağlamaları, `PRECOMPILE_ADDRESSES` ve ABI'ler (`ERC20_ABI`, `IQORE_PQC_ABI`,
-`IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`).
+bağlamaları, precompile destekli yardımcılar `simulateWithRiskScore`,
+`aiRiskScore` ve `aiAnomalyCheck`, `PRECOMPILE_ADDRESSES` ve ABI'ler
+(`ERC20_ABI`, `IQORE_PQC_ABI`, `IQORE_AI_ABI`, `IQORE_CONSENSUS_ABI`).
+Precompile destekli bağlamalar ve yardımcılar genel ağlarda etkin değildir
+(bkz. [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status)).
 
 ### `@qorechain/svm`
 
@@ -96,10 +118,10 @@ sabitleri.
 
 | Dil | Oluşturulan dokümanlar | Kurulum |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.7.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (etiket `packages/go/v0.7.0`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` — yayımlanmış en güncel crate (depodan 0.7.0; `qorechain` olarak içe aktarılır) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.7.0` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.8.3` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (etiket `packages/go/v0.8.4`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; `qorechain` olarak içe aktarılır) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
 
 Her paket aynı yüzeyi yansıtır (ağ hazır ayarları, denom/adres yardımcıları,
 HD türetme — birleşik eth-native hesaplar dahil — PQC temel bileşenleri ve

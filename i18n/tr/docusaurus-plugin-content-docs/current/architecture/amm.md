@@ -17,7 +17,11 @@ Havuzlar tanıdık AMM fiyatlandırma eğrilerini takip eder:
 Tüm tutarlar QoreChain'in yerel birimlerini kullanır. Stake ve ücret tokenı **QOR**'dur ve temel birimi **uqor**'dur (1 QOR = 10^6 uqor). Havuz katılımcıları ve adresleri `qor` bech32 önekini kullanır.
 
 :::note
-Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem bayraklarını (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) ekleyin — örneğin ana ağa karşı `--chain-id qorechain-vladi`.
+Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem bayraklarını (`--from`, `--chain-id`, `--gas`, `--fees`, `--node`) ekleyin — örneğin ana ağa karşı `--chain-id qorechain-vladi --gas 400000 --fees 40000uqor` (ağ ücret tabanı, gaz birimi başına 0,1 uqor'dur). Her `tx amm` komutu bir Cosmos hattı işlemidir, bu nedenle hibrit kuantum sonrası imza gerektirir: `--generate-only > tx.json` ekleyin, ardından `qorechaind tx pqc cosign tx.json --from <key> --pqc-key <name> --chain-id <id>` komutunu çalıştırın (bkz. [İlk İşlem](/getting-started/first-transaction#send-qor)).
+:::
+
+:::caution Henüz hiç havuz yok
+AMM modülü ana ağda ve test ağında canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
 :::
 
 ## Havuzlar ve LP payları
@@ -123,17 +127,8 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Bir havuzu duraklatma ve sürdürme
 
-Havuzlar, havuz yetkilisi (`--from` ile geçirilen adres) tarafından duraklatılabilir ve sürdürülebilir. Duraklatılmış bir havuz, sürdürülene kadar takasları ve likidite değişikliklerini reddeder — olay müdahalesi veya koordineli bakım için kullanışlıdır.
+Havuzlar, yönetişim yetkilisi tarafından duraklatılabilir ve sürdürülebilir. Ana ağda bu iki mesaj şu anda devre kesici tarafından kapatılmıştır. Duraklatılmış bir havuz, sürdürülene kadar takasları ve likidite değişikliklerini reddeder — olay müdahalesi veya koordineli bakım için kullanışlıdır.
 
-```bash
-# Pause pool 1 with a human-readable reason
-qorechaind tx amm pause-pool 1 "scheduled maintenance" \
-  --from qor1authority... --chain-id qorechain-vladi
-
-# Resume pool 1
-qorechaind tx amm resume-pool 1 \
-  --from qor1authority... --chain-id qorechain-vladi
-```
 
 ## Komut özeti
 
@@ -146,8 +141,8 @@ qorechaind tx amm resume-pool 1 \
 | `remove-liquidity` | LP tokenları yak ve rezervleri çek |
 | `swap-exact-in` | Sabit bir giriş tutarını takas et |
 | `swap-exact-out` | Sabit bir çıkış tutarına takas et |
-| `pause-pool` | Bir havuzu duraklat (yetkili) |
-| `resume-pool` | Duraklatılmış bir havuzu sürdür (yetkili) |
+| `pause-pool` | Bir havuzu duraklat (yönetişim yetkilisi; ana ağda kapalı) |
+| `resume-pool` | Duraklatılmış bir havuzu sürdür (yönetişim yetkilisi; ana ağda kapalı) |
 
 **Sorgular** (`qorechaind query amm …`):
 

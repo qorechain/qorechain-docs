@@ -10,7 +10,7 @@ sidebar_position: 1
 Riferimento per i comandi `qorechaind` usati per inizializzare, configurare e gestire un nodo QoreChain.
 
 :::note
-QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026 sulla versione di chain **v3.1.97**) e la testnet **`qorechain-diana`**. Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet.
+QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 29 giugno 2026; release attuale del nodo **v3.2.1**) e la testnet **`qorechain-diana`** (release del nodo **v3.2.2**). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
 :::
 
 ---
@@ -25,11 +25,14 @@ qorechaind init <moniker> --chain-id qorechain-diana
 
 | Flag          | Tipo   | Descrizione                                          |
 | ------------- | ------ | ----------------------------------------------------- |
-| `--chain-id`  | string | Identificatore della chain (obbligatorio)              |
+| `--chain-id`  | string | Identificatore della chain (indicalo sempre; se omesso ne viene creato uno casuale) |
 | `--home`      | string | Directory home del nodo (predefinita: `~/.qorechaind`) |
-| `--overwrite` | bool   | Sovrascrive i file di genesis e configurazione esistenti |
+| `--overwrite` | bool   | Sovrascrive il `genesis.json` esistente                |
+| `--recover`   | bool   | Fornisce una seed phrase per recuperare una chiave esistente invece di crearne una |
 
-Crea la struttura di directory sotto `--home` con `config/`, `data/` e un `genesis.json` iniziale.
+Crea la struttura di directory sotto `--home` con `config/`, `data/` e un `genesis.json` iniziale. Per un nodo di rete, sostituisci questo `genesis.json` con il file di genesis della rete prima di avviare il nodo (vedi [Connessione alla mainnet](/getting-started/connecting-to-mainnet)).
+
+`init` scrive inoltre l'ID di chain EVM della rete (`9801` per `qorechain-vladi`, `9800` per `qorechain-diana`) nell'impostazione `evm-chain-id` di `app.toml`, quindi passa il `--chain-id` corretto.
 
 ---
 
@@ -44,7 +47,7 @@ qorechaind start [flags]
 | Flag                   | Tipo   | Descrizione                                                |
 | ---------------------- | ------ | ------------------------------------------------------------ |
 | `--home`               | string | Directory home del nodo                                       |
-| `--minimum-gas-prices` | string | Prezzi minimi del gas accettati (es. `0.001uqor`)             |
+| `--minimum-gas-prices` | string | Prezzo minimo del gas accettato da questo nodo. Il minimo della rete è `0.1uqor`; imposta almeno questo valore |
 | `--pruning`            | string | Strategia di pruning: `default`, `nothing`, `everything`      |
 | `--halt-height`        | uint   | Ferma il nodo a questa altezza di blocco                      |
 | `--halt-time`          | uint   | Ferma il nodo a questo timestamp Unix                         |
@@ -85,23 +88,9 @@ Restituisce un JSON con le sezioni `node_info`, `sync_info` e `validator_info`.
 
 ---
 
-## config
+## client configuration
 
-Legge o scrive valori nella configurazione del nodo.
-
-### Impostare un valore di configurazione
-
-```bash
-qorechaind config set <key> <value>
-```
-
-### Ottenere un valore di configurazione
-
-```bash
-qorechaind config get <key>
-```
-
-Le chiavi di configurazione comuni includono `chain-id`, `keyring-backend`, `output` e `node`.
+Non esiste un sottocomando `config`. I valori predefiniti del client (`chain-id`, `keyring-backend`, `output`, `node`) vengono letti da `<home>/config/client.toml`; modifica quel file oppure passa il flag a ogni comando (`--chain-id`, `--keyring-backend`, `--output`, `--node`).
 
 ---
 
@@ -117,8 +106,9 @@ qorechaind keys add <name> [flags]
 
 | Flag                   | Tipo   | Descrizione                                          |
 | ---------------------- | ------ | ------------------------------------------------------- |
-| `--keyring-backend`    | string | Backend: `os`, `file`, `test`                            |
-| `--algo`               | string | Algoritmo della chiave: `secp256k1` (predefinito), `ed25519` |
+| `--keyring-backend`    | string | Backend: `os`, `file`, `kwallet`, `pass`, `test`, `memory` |
+| `--key-type`           | string | Algoritmo della chiave: `secp256k1` (predefinito) o `eth_secp256k1` |
+| `--coin-type`          | uint32 | Coin type HD (predefinito `118`)                         |
 | `--recover`            | bool   | Recupera la chiave da mnemonic                           |
 | `--multisig`           | string | Elenco separato da virgole delle chiavi per il multisig  |
 | `--multisig-threshold` | uint   | Numero minimo di firme richieste                         |
@@ -174,6 +164,7 @@ qorechaind genesis add-genesis-account <address> <coins> [flags]
 | Flag                 | Tipo   | Descrizione                              |
 | -------------------- | ------ | -------------------------------------------- |
 | `--vesting-amount`   | string | Importo in vesting                            |
+| `--vesting-start-time` | int  | Data di inizio vesting (timestamp Unix)       |
 | `--vesting-end-time` | int    | Data di fine vesting (timestamp Unix)         |
 
 ### Creare una transazione di genesis
@@ -195,10 +186,12 @@ qorechaind genesis gentx <key-name> <stake-amount> [flags]
 qorechaind genesis collect-gentxs
 ```
 
+Altri sottocomandi di `genesis`: `bulk-add-genesis-account` e `migrate`.
+
 ### Convalidare il file di genesis
 
 ```bash
-qorechaind genesis validate-genesis
+qorechaind genesis validate
 ```
 
 ---
@@ -238,6 +231,9 @@ qorechaind export [flags]
 | `--for-zero-height` | bool   | Prepara l'esportazione per riavviare all'altezza 0    |
 | `--height`          | int    | Esporta lo stato a un'altezza di blocco specifica     |
 | `--home`            | string | Directory home del nodo                                |
+| `--output-document` | string | Scrive l'esportazione in questo file invece che su STDOUT |
+| `--modules-to-export` | strings | Elenco separato da virgole dei moduli da esportare (predefinito: tutti) |
+| `--jail-allowed-addrs` | strings | Indirizzi operatore dei validatori in jail da rimettere in attività |
 
 ---
 

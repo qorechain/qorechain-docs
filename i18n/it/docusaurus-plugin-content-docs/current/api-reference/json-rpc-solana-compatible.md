@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain fornisce un'interfaccia JSON-RPC compatibile con Solana tramite il proprio runtime SVM (Solana Virtual Machine), consentendo agli strumenti e agli SDK Solana esistenti di interagire con QoreChain in modo nativo.
 
 :::caution L'invio di transazioni SVM è attualmente disabilitato
-A partire dalla versione della chain v3.1.89 (22 agosto), a seguito di un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione restituisce `code 11, "SVM module is disabled"`. Questo vale a livello di rete, non solo sugli endpoint pubblici di sola lettura. I metodi in stile lettura elencati nella tabella sottostante (ad es. `getBalance`, `getAccountInfo`) potrebbero comunque rispondere, ma non tentare un'integrazione live che invii transazioni SVM finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che resterà disattivata finché un audit esterno non la sblocchi.
+A partire dalla versione della chain v3.1.89 (22 agosto), a seguito di un incidente, la lane di esecuzione SVM è **disabilitata a livello di rete per l'invio di transazioni** — qualsiasi transazione restituisce `code 11, "SVM module is disabled"`. Questo vale a livello di rete, non solo sugli endpoint pubblici di sola lettura. I metodi in stile lettura elencati nella tabella sottostante (ad es. `getBalance`, `getAccountInfo`) rispondono normalmente sugli endpoint pubblici, ma non tentare un'integrazione live che invii transazioni SVM finché la lane non viene riaperta — si tratta di una disabilitazione a livello di compilazione, non di un parametro a runtime, quindi non può essere riattivata con un voto di governance; si prevede che resterà disattivata finché un audit esterno non la sblocchi.
 :::
 
 ## Connessione
@@ -40,6 +40,16 @@ A partire dalla versione della chain **v3.1.82**, l'interfaccia SVM espone il **
 | `getMinimumBalanceForRentExemption` | `dataLength` (intero)   | Restituisce il saldo minimo per l'esenzione dal rent in base alla dimensione dei dati |
 | `getVersion`                        | nessuno                     | Restituisce la versione del software del nodo                              |
 | `getHealth`                         | nessuno                     | Restituisce lo stato di salute del nodo (`"ok"` se in salute)                 |
+| `getBlockHeight`                    | nessuno                     | Restituisce l'altezza del blocco corrente                                 |
+| `getLatestBlockhash`                | nessuno                     | Restituisce un blockhash recente e `lastValidBlockHeight`                 |
+| `getRecentBlockhash`                | nessuno                     | Forma legacy di `getLatestBlockhash`                                      |
+| `getFeeForMessage`                  | `message` (base64)       | Restituisce la commissione per un messaggio (lamport)                     |
+| `getMultipleAccounts`               | `pubkeys` (array)        | Restituisce più account in una sola chiamata                              |
+| `getProgramAccounts`                | `programId` (base58)     | Restituisce gli account posseduti da un programma                         |
+| `getTokenAccountsByOwner`           | `owner`, filtro          | Restituisce gli account token di un proprietario                          |
+| `getTokenAccountsByDelegate`        | `delegate`, filtro       | Restituisce gli account token di un delegato                              |
+
+I metodi non presenti in questo elenco, come `getGenesisHash` e `getEpochInfo`, restituiscono `-32601 method not found`. `getTransaction` viene accettato ma al momento risponde con una busta priva del campo `result`, quindi non fare affidamento su di esso. Lo slot riportato da `getSlot` segue l'altezza del blocco della chain.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```

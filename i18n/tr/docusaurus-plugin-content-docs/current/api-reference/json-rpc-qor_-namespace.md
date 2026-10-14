@@ -7,176 +7,62 @@ sidebar_position: 2
 
 # JSON-RPC — qor_ Ad Alanı
 
-`qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik ve rollup altyapısı ile PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlar.
+`qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik ve rollup altyapısı ile PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlamak üzere tasarlanmıştır.
 
-## Bağlantı
+:::warning Henüz sunulmuyor
+**Yayınlanmış hiçbir düğüm derlemesi henüz `qor_` ad alanını sunmuyor**; ana ağ (`qorechain-vladi`), test ağı (`qorechain-diana`) ve kendi çalıştırdığınız düğüm için de durum aynıdır. Genel EVM uç noktalarında `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3` değerlerini listeler ve her iki ağda da **her `qor_` yöntemi `-32601` (method not found) döndürür**. Yöntemler düğüm kaynak kodunda uygulanmıştır ancak JSON-RPC sunucusuna kaydedilmemiştir; bu yüzden `app.toml` içindeki `api` listesine `qor` eklemenin hiçbir etkisi yoktur. Ad alanının kaydedilmesi bir düğüm sürümü için planlanmıştır ve yayınlandığında bu sayfa hangi sürüm olduğunu belirtecektir.
 
-| Taşıma    | Varsayılan Adres        |
-| --------- | ------------------------ |
-| HTTP      | `http://localhost:8545` |
-| WebSocket | `ws://localhost:8546`   |
-
-`qor_` ad alanı, aynı bağlantı noktalarında `eth_`, `web3_`, `net_` ve `txpool_` ile birlikte sunulur. `app.toml` içinde etkinleştirin:
-
-```toml
-[json-rpc]
-api = "eth,web3,net,txpool,qor"
-```
-
-:::note
-`qor_` ad alanı, **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, zincir sürümü **v3.1.97** üzerinde canlı) ve **`qorechain-diana`** test ağında (EVM zincir kimliği **9800**) kullanılabilir. Aşağıdaki örnekler yerel bir düğüm varsayar; uzaktan erişim için bunu sağlayıcınızın ana ağ veya test ağı uç noktasıyla değiştirin.
+Bugün `qor_` yöntemleri üzerine geliştirme yapmayın. Aşağıdaki tabloda bir REST rotası bulunan yerlerde onu kullanın. `client.qor.*` yardımcılarını sunan istemci kitaplıkları aynı yöntemleri sarmalar, dolayısıyla bu yardımcılar da aynı şekilde başarısız olur.
 :::
 
----
+Bunu kendiniz doğrulayabilirsiniz:
 
-## Yöntemler
+```bash
+curl -s -X POST https://evm.qore.host \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"rpc_modules","params":[],"id":1}'
+```
 
-| Yöntem                        | Parametreler                             | Açıklama                                                    |
-| ----------------------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| `qor_getPQCKeyStatus`         | `address` (string)                        | Bir hesap için PQC anahtar kayıt durumunu döndürür            |
-| `qor_getHybridSignatureMode`  | yok                                       | Mevcut hibrit imza zorunluluk modunu döndürür                 |
-| `qor_getAIStats`              | yok                                       | Toplanmış AI modülü işleme istatistiklerini döndürür           |
-| `qor_getCrossVMMessage`       | `messageId` (string)                      | Kimliğine göre bir VM'ler arası mesajı getirir                 |
-| `qor_getReputationScore`      | `validator` (string)                      | Bir doğrulayıcı adresi için itibar puanını döndürür            |
-| `qor_getLayerInfo`            | `layerId` (string)                        | Kayıtlı bir katman için meta veri ve durum döndürür             |
-| `qor_getBridgeStatus`         | `chainId` (string)                        | Bir zincir için köprü durumunu ve kilitli toplamları döndürür  |
-| `qor_getRLAgentStatus`        | yok                                       | Mevcut PRISM ajan modunu ve operasyonel durumu döndürür        |
-| `qor_getRLObservation`        | yok                                       | En son PRISM gözlem vektörünü döndürür                          |
-| `qor_getRLReward`             | yok                                       | Birikimli PRISM ödül metriklerini döndürür                      |
-| `qor_getPoolClassification`   | `validator` (string)                      | Bir doğrulayıcı için CPoS havuz sınıflandırmasını döndürür      |
-| `qor_getBurnStats`            | yok                                       | Tüm kanallar genelinde yakım istatistiklerini döndürür          |
-| `qor_getXQOREPosition`        | `address` (string)                        | Bir adres için xQORE staking pozisyonunu döndürür               |
-| `qor_getInflationRate`        | yok                                       | Mevcut yıllıklandırılmış enflasyon oranını döndürür              |
-| `qor_getTokenomicsOverview`   | yok                                       | Birleşik yakım, enflasyon ve arz genel görünümünü döndürür       |
-| `qor_getRollupStatus`         | `rollupId` (string)                       | Belirli bir rollup için durum ve yapılandırmayı döndürür         |
-| `qor_listRollups`             | yok                                       | Kayıtlı tüm rollup'ların bir listesini döndürür                 |
-| `qor_getSettlementBatch`      | `rollupId` (string), `batchIndex` (int)   | Bir rollup için belirli bir mutabakat grubunu (batch) döndürür  |
-| `qor_suggestRollupProfile`    | `useCase` (string)                        | Bir kullanım senaryosu için AI destekli rollup profil önerisi   |
-| `qor_getDABlobStatus`         | `rollupId` (string), `blobIndex` (int)    | Belirli bir DA blob'unun durumunu döndürür                       |
-| `qor_getBTCStakingPosition`   | `address` (string)                        | Babylon modülü üzerinden BTC staking pozisyonunu döndürür       |
-| `qor_getAbstractAccount`      | `address` (string)                        | Soyut hesap ayrıntılarını ve harcama kurallarını döndürür       |
-| `qor_getFairBlockStatus`      | yok                                       | FairBlock şifreleme durumunu ve yapılandırmasını döndürür        |
-| `qor_getGasAbstractionConfig` | yok                                       | Kabul edilen tokenleri ve gas soyutlama parametrelerini döndürür |
-| `qor_getLaneConfiguration`    | yok                                       | 5 şeritli TX önceliklendirme yapılandırmasını döndürür            |
+```json
+{"jsonrpc":"2.0","id":1,"result":{"eth":"1.0","net":"1.0","rpc":"1.0","txpool":"1.0","web3":"1.0"}}
+```
 
 ---
 
-## Örnekler
+## Planlanan yöntemler ve bugün ne kullanılmalı
 
-### qor_getBurnStats
+| Planlanan yöntem              | Bugün ne kullanılmalı |
+| ----------------------------- | ----------------- |
+| `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module). |
+| `qor_getHybridSignatureMode`  | Genel bir sorgu rotası yok. |
+| `qor_getAIStats`              | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.ai.v1.Query/Stats`; REST rotası yok. |
+| `qor_getCrossVMMessage`       | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.crossvm.v1.Query/Message`; REST rotası yok. |
+| `qor_getReputationScore`      | Genel bir sorgu rotası yok (reputation modülü yalnızca gRPC `Params` sunar). |
+| `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` ve `anchor/{layer_id}`. Bkz. [Multilayer Modülü](/api-reference/rest-grpc-endpoints#multilayer-module). |
+| `qor_getBridgeStatus`         | `GET /qorechain/bridge/v1/chains/{chain_id}`. Bkz. [Bridge Modülü](/api-reference/rest-grpc-endpoints#bridge-module). Köprü henüz canlı değil. |
+| `qor_getRLAgentStatus`, `qor_getRLObservation`, `qor_getRLReward` | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.rlconsensus.v1.Query` (`AgentStatus`, `Observation`, `Reward`); REST rotası yok. |
+| `qor_getPoolClassification`   | Genel bir sorgu rotası yok. |
+| `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Bkz. [Burn Modülü](/api-reference/rest-grpc-endpoints#burn-module). |
+| `qor_getXQOREPosition`        | Yok. xQORE canlı değil (bkz. [xQORE Staking](/user-guide/xqore-staking)). |
+| `qor_getInflationRate`        | Ana ağda genel bir sorgu rotası yok. |
+| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats` ile `GET /cosmos/bank/v1beta1/supply` çağrılarını birleştirin. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) veya CLI; `/qorechain/rdk/v1/...` REST rotaları ana ağda sunulmaz. |
+| `qor_suggestRollupProfile`    | Genel bir hizmet yok; bkz. [Hazır Profiller](/rollups/preset-profiles). |
+| `qor_getBTCStakingPosition`   | Yok. BTC yeniden stake etme (restaking) modülünün henüz bir sorgu hizmeti yok. |
+| `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Soyut hesaplar bugün her iki ağda da devre dışıdır. |
+| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | Yok. |
 
-**İstek:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getBurnStats",
-    "params": [],
-    "id": 1
-  }'
-```
-
-**Yanıt:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "total_burned": "1250000000",
-    "total_distributed": "4750000000",
-    "channels": {
-      "validator_share": "0.40",
-      "burn_share": "0.30",
-      "treasury_share": "0.20",
-      "staker_share": "0.10"
-    },
-    "last_block_burned": "342891"
-  }
-}
-```
-
-### qor_getRLAgentStatus
-
-**İstek:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRLAgentStatus",
-    "params": [],
-    "id": 2
-  }'
-```
-
-**Yanıt:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "agent_mode": "observe",
-    "observation_interval": 10,
-    "circuit_breaker": {
-      "active": false,
-      "max_param_change": "0.10",
-      "cooldown_blocks": 100
-    },
-    "last_observation_block": "342885",
-    "cumulative_reward": "18.742"
-  }
-}
-```
-
-### qor_getRollupStatus
-
-**İstek:**
-
-```bash
-curl -X POST http://localhost:8545 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "qor_getRollupStatus",
-    "params": ["rollup-001"],
-    "id": 3
-  }'
-```
-
-**Yanıt:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 3,
-  "result": {
-    "rollup_id": "rollup-001",
-    "status": "active",
-    "settlement_type": "optimistic",
-    "operator": "qor1abc123...",
-    "total_batches": 147,
-    "last_finalized_batch": 145,
-    "pending_batches": 2,
-    "stake": "10000000000uqor",
-    "created_at_height": 100230
-  }
-}
-```
+Bir hesabın EVM şeridi durumu (kayıtlı PQC anahtarı ve yetkilendirme penceresi) için `GET /qorechain/pqc/v1/account/{address}` ve `GET /qorechain/pqc/v1/evm_window/{address}` kullanın.
 
 ---
 
 ## Hata Kodları
 
+Ad alanını sunan bir düğümde hatalar standart JSON-RPC 2.0 kodlarını izler. Bugün bir `qor_` yöntemine yapılan çağrılar `-32601` ile başarısız olur.
+
 | Kod    | Mesaj             | Açıklama                                |
 | ------ | ----------------- | ----------------------------------------- |
 | -32600 | Invalid Request    | Hatalı biçimlendirilmiş JSON-RPC isteği   |
-| -32601 | Method not found   | Yöntem mevcut değil                        |
+| -32601 | Method not found   | Yöntem mevcut değil veya düğüm `qor_` ad alanını sunmuyor (bugün yayınlanmış her derleme) |
 | -32602 | Invalid params     | Eksik veya geçersiz parametreler           |
 | -32603 | Internal error     | Sunucu tarafı işleme hatası                |
-| -32000 | Module disabled    | Sorgulanan modül etkin değil               |
-| -32001 | Entity not found   | İstenen kaynak mevcut değil                |

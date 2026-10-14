@@ -7,14 +7,25 @@ sidebar_position: 5
 
 # دليل الفحص المُسبق بالذكاء الاصطناعي
 
-QoreChain هي أول شبكة تكشف **نموذج مخاطر/شذوذ بالذكاء الاصطناعي على السلسلة**
-لأي dApp. تتيح لك precompiletان للقراءة فقط في EVM تقييم معاملة *قبل*
+تُعرِّف QoreChain **نموذج مخاطر/شذوذ بالذكاء الاصطناعي على السلسلة** يمكن لأي dApp
+قراءته من EVM. يُقصَد من precompiletين للقراءة فقط في EVM أن تتيحا لك تقييم معاملة *قبل*
 توقيعها أو بثها، باستخدام `eth_call` فقط لا غير:
 
 | القدرة | precompile | العنوان |
 |---|---|---|
 | درجة مخاطر لـ calldata | `aiRiskScore(bytes)` | `0x0000000000000000000000000000000000000B01` |
 | فحص شذوذ لـ `(sender, amount)` | `aiAnomalyCheck(address,uint256)` | `0x0000000000000000000000000000000000000B02` |
+
+:::caution غير متاحة على الشبكات العامة اليوم
+تقرأ `simulateWithRiskScore` و`aiRiskScore` و`aiAnomalyCheck` الـ precompiles عند
+`0x…0B01` / `0x…0B02`. لا يستجيب precompile ثابت إلا إذا كان عنوانه ضمن معامل
+`active_static_precompiles` في وحدة EVM، وهذه القائمة فارغة على كل من
+`qorechain-vladi` (الشبكة الرئيسية) و`qorechain-diana` (شبكة الاختبار). وعند الاستدعاء
+على نقاط النهاية العامة تُرجِع المكالمة بيانات فارغة (`0x`) وتُطلق هذه المساعِدات خطأً
+(مثل `returned no data ("0x")`). وهي تعمل فقط على شبكة أو عقدة جرى فيها تفعيل
+الـ precompiles. تحقّق أولًا من `GET /cosmos/evm/vm/v1/params`، وانظر
+[precompiles في EVM: حالة الشبكة](/developer-guide/evm-precompiles#network-status).
+:::
 
 يوجد التنفيذ في `@qorechain/evm` (محوّل EVM فوق
 [viem](https://viem.sh)) ويُعاد تصديره من `@qorechain/sdk` لتسهيل الاكتشاف.
@@ -31,7 +42,7 @@ QoreChain هي أول شبكة تكشف **نموذج مخاطر/شذوذ بال�
 import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
 const { publicClient } = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" },
 });
 
 const preflight = await simulateWithRiskScore(publicClient, {
@@ -84,9 +95,9 @@ import { AI_RISK_SCORE_ADDRESS, AI_ANOMALY_CHECK_ADDRESS } from "@qorechain/evm"
 
 ## التوفّر
 
-توجد precompiles الذكاء الاصطناعي على عقد شبكة QoreChain. على عقدة EVM عادية تُطلق
-الاستدعاءات خطأ "not available" — عامل أي خطأ مُطلَق من أي من هذه
-المساعِدات على أنه "الميزة غير موجودة على هذه العقدة".
+تُطلق المساعِدات خطأً كلما لم تكن الـ precompiles مفعّلة على العقدة التي
+تستعلم عنها: وعلى الشبكات العامة يحدث ذلك حاليًا دائمًا، وكذلك على عقدة EVM عادية.
+عامل أي خطأ مُطلَق من أي من هذه المساعِدات على أنه "الميزة غير موجودة على هذه العقدة".
 
 راجع [دليل EVM](/sdk/guides/evm) للحصول على قائمة precompiles الكاملة، والمثال
 القابل للتشغيل [`ai-preflight`](https://github.com/qorechain/qorechain-sdk/tree/main/examples/ai-preflight).

@@ -26,7 +26,7 @@ EVM-Chain-ID automatisch über `eth_chainId`, sofern Sie nicht `chainId` überge
 import { createEvmClient } from "@qorechain/evm";
 
 const client = await createEvmClient({
-  endpoints: { evmRpc: "https://evm.testnet.example" },
+  endpoints: { evmRpc: "https://evm-testnet.qore.host" }, // mainnet: https://evm.qore.host
 });
 
 console.log(await client.getChainId());
@@ -34,7 +34,8 @@ console.log(await client.getChainId());
 ```
 
 Sie können auch `rpcUrl` direkt übergeben (gegenseitig ausschließend mit `endpoints`), eine
-`wsUrl` / `endpoints.evmWs` für WebSocket, eine explizite `chainId` sowie `decimals`
+`wsUrl` / `endpoints.evmWs` für WebSocket (`wss://evm-ws-testnet.qore.host` im
+Testnet), eine explizite `chainId` sowie `decimals`
 (Standardwert 18, die EVM-Konvention für QOR — abweichend von der Cosmos-Basis `uqor`
 von 10^6).
 
@@ -77,11 +78,96 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 // const hash = await writeContract(walletClient, { address, abi, functionName, args });
 ```
 
+## EVM-Autorisierungsfenster (Chain v3.2.0) {#evm-window}
+
+Seit Chain-Version **v3.2.0** (Mainnet ab Block 2.981.742, Testnet ab Block
+5.920.000) lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das einen
+**registrierten ML-DSA-87-Schlüssel** und ein **offenes Autorisierungsfenster** hat. Lesezugriffe
+(`eth_call`, Guthaben, Receipts) und Gasschätzung funktionieren ohne beides, und Wallets
+und Bibliotheken wie MetaMask, viem, ethers, Hardhat und Foundry signieren wie bisher;
+neu ist, dass die Post-Quantum-Autorisierung der Transaktion *vorausgeht*, und zwar als
+hybrid-signierte Native-Lane-Nachricht. Die Regeln auf Chain-Ebene, die Grenzwerte, die CLI-Formen und die Ablehnungscodes stehen unter
+[EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
+
+Mit SDK **0.8.2 oder neuer** können Sie ein Fenster aus Code heraus öffnen. Das (einmalige)
+Registrieren des Schlüssels ist unter [Quantensicher](/sdk/guides/quantum-safe) beschrieben; das
+folgende Beispiel öffnet dann ein Fenster für ein vereinheitlichtes eth-natives Konto (`npm i @cosmjs/stargate`):
+
+```ts
+import { StargateClient } from "@cosmjs/stargate";
+import {
+  createClient,
+  deriveUnifiedAccount,
+  EthNativeSigner,
+  openEvmWindowMsg,
+  fetchEvmWindow,
+  classifyEvmWindowRejection,
+} from "@qorechain/sdk";
+
+const REST = "https://api.qore.host";
+const RPC = "https://rpc.qore.host";
+
+const client = createClient({ network: "mainnet", endpoints: { rest: REST, rpc: RPC } });
+const transport = await StargateClient.connect(RPC);
+const account = await deriveUnifiedAccount(mnemonic);
+const signer = new EthNativeSigner(account, { rest: REST }); // hybrid: the window needs the ML-DSA key
+
+const { account: base } = await client.rest.get<{
+  account: { account_number: string; sequence: string };
+}>(`/cosmos/auth/v1beta1/accounts/${account.cosmos}`);
+
+const open = openEvmWindowMsg({
+  sender: account.cosmos,
+  blocks: 7200,         // 1 … 17,280 blocks (a block count, not a duration)
+  maxTxs: 20,           // 1 … 1,000 transactions
+  maxValue: "1000000000", // uqor: transferred value PLUS the maximum fee of each transaction
+});
+
+await signer.signAndBroadcast(transport, {
+  chainId: "qorechain-vladi",
+  accountNumber: BigInt(base.account_number),
+  sequence: BigInt(base.sequence),
+  messages: [open],
+  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
+});
+
+const w = await fetchEvmWindow({ rest: REST, address: account.cosmos });
+console.log(w.live); // true while the window admits at least one more transaction
+```
+
+Das Öffnen eines Fensters erhöht die Nonce des Kontos (eine Identität: die Cosmos-Sequence
+ist die EVM-Nonce). Lesen Sie die EVM-Nonce daher **nach** dem Öffnen des Fensters und signieren Sie
+die EVM-Transaktion erst dann. `maxValue` begrenzt den Wert **plus** die maximale Gebühr (Gaslimit
+mal Fee-Cap) jeder Transaktion: Ein Transfer von 1.000 uqor mit 21.000 Gas bei
+112,5 gwei verbraucht 3.363 uqor des Fensters. Öffnen Sie ein Fenster nur, wenn der Nutzer
+es verlangt; öffnen Sie nie automatisch eines.
+
+Wenn die EVM-Lane eine Transaktion ablehnt, sagt Ihnen `classifyEvmWindowRejection(err)`
+warum:
+
+```ts
+try {
+  // send the EVM transaction (viem, ethers, ...)
+} catch (err) {
+  const why = classifyEvmWindowRejection(err);
+  // "no-pqc-key" | "no-window" | "exhausted" | "invalid" | undefined
+}
+```
+
+`closeEvmWindowMsg` baut die passende Schließen-Nachricht, und `MAX_EVM_WINDOW_BLOCKS`
+sowie `MAX_EVM_WINDOW_TXS` exportieren die Grenzwerte.
+
 ## Precompiles
 
-QoreChain stellt vertragsaufrufbare Precompiles an festen Adressen bereit. Der
+QoreChain definiert vertragsaufrufbare Precompiles an festen Adressen. Der
 `precompiles`-Namespace bietet typisierte Bindings, und die Adressen sowie ABIs werden
 exportiert.
+
+> **Noch nicht aktiv.** Die QoreChain-Precompiles sind in den Node einkompiliert,
+> aber weder im Mainnet (`qorechain-vladi`) noch im Testnet
+> (`qorechain-diana`) aktiviert: Ein Aufruf liefert leere Daten zurück, sodass diese Helfer
+> heute auch auf den öffentlichen Netzwerken Fehler werfen. Siehe
+> [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 
 | Precompile | Funktion | Adresse |
 | --- | --- | --- |
@@ -95,15 +181,18 @@ exportiert.
 ```ts
 import { precompiles, PRECOMPILE_ADDRESSES } from "@qorechain/evm";
 
-// Read live consensus parameters.
+// Read consensus parameters (once 0x…0C01 is active).
 const params = await precompiles.rlConsensusParams(client.publicClient);
 
 // Check whether an address has a registered PQC key.
 const status = await precompiles.pqcKeyStatus(client.publicClient, account);
 
-// QCAI helpers.
-const score = await precompiles.aiRiskScore(client.publicClient, /* args */);
-const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, /* args */);
+// QCAI helpers: raw calldata for the risk score, an args object for the anomaly check.
+const score = await precompiles.aiRiskScore(client.publicClient, "0xa9059cbb...");
+const anomaly = await precompiles.aiAnomalyCheck(client.publicClient, {
+  sender: account,
+  amount: 1_000_000_000_000_000_000n, // 1 QOR in wei
+});
 
 console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 ```
@@ -111,7 +200,8 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 Die Precompile-ABIs werden als `IQORE_PQC_ABI`, `IQORE_AI_ABI` und
 `IQORE_CONSENSUS_ABI` exportiert.
 
-> Auf einem Node ohne die QoreChain-Precompiles werfen diese Aufrufe einen Fehler "feature not
-> present". Behandeln Sie dies pro Aufruf, falls Sie heterogene Nodes ansprechen.
+> Wo ein Precompile nicht aktiv ist (heute: jedes öffentliche Netzwerk) oder auf einem Node
+> ohne die QoreChain-Precompiles, werfen diese Aufrufe einen Fehler "feature not
+> present". Behandeln Sie dies pro Aufruf.
 
 Eine lauffähige Version finden Sie im `evm-precompile`-[Beispiel](/sdk/examples).

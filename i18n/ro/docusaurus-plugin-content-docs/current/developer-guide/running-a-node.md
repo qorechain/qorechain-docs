@@ -26,8 +26,10 @@ Binarul curent, genesis-ul, peers, seeds și un punct de încredere pentru state
 Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punct de încredere actualizat orar) și `minCompatible`. Pașii de instalare și conectare de mai jos preiau acest manifest și folosesc valorile lui curente.
 :::
 
-:::caution v3.1.94 sau mai nou necesar pentru un nod care se alătură de la zero
-Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/instantaneu trebuie să ruleze **v3.1.94 sau mai nou**, din două motive care se cumulează: v3.1.92 a remediat un bug de măsurare a gazului care altfel oprește redarea la primul bloc ce conține o tranzacție, iar mainnet-ul a trecut între timp de upgrade-ul de guvernanță v3.1.94 (un plafon dur pe emisiune, aplicat la înălțimea 2.122.074) — un nod fără handler-ul acelui upgrade se oprește din nou încercând să redea starea dincolo de aceeași înălțime. v3.1.97 este versiunea curentă recomandată (actualizări de securitate continue, care nu rup consensul); `minCompatible` este `3.1.94`. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj) și a rămas anterior în urma acestui prag — verificați câmpul său `"version"` înainte de a avea încredere în `binary.url`, și treceți la [lansările GitHub qorechain-core](https://github.com/qorechain/qorechain-core/releases) sau compilați din sursă dacă este în urmă.
+:::caution v3.2.0 sau mai nou necesar pentru un nod care se alătură de la zero
+Un nod care se sincronizează de la genesis sau reface starea dintr-un instantaneu trece prin mai multe upgrade-uri de guvernanță (de exemplu plafonul de emisiune v3.1.94 la înălțimea 2.122.074 și upgrade-ul v3.2.0 la înălțimea 2.981.742), așa că instalați întotdeauna binarul indicat de manifest: acesta conține toate handler-ele de upgrade. Un nod nou de mainnet are nevoie de **v3.2.0 sau mai nou**: `minCompatible` din manifest este `3.2.0`, cea mai veche versiune care încă urmează lanțul, iar `version` (în prezent `3.2.1`) este cea recomandată, o versiune locală a nodului, fără înălțime de upgrade. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj), așa că verificați câmpul său `"version"` în raport cu `minCompatible` înainte de a avea încredere în `binary.url`. Pe testnet, `minCompatible` este egal cu `version` (în prezent `3.2.2`).
+
+Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sincronizat prin NTP (nodul se oprește dacă ceasul său are o abatere de mai mult de 60 de secunde) și setați `evm-chain-id` în `app.toml` (consultați [Limitele nodului](#node-limits)).
 :::
 
 ---
@@ -39,7 +41,7 @@ Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/in
 | Cheie de consens       | Niciuna                                          | Cheie de consens ed25519 (trebuie securizată) |
 | Producție de blocuri   | Nu                                              | Da — propune și semnează blocuri           |
 | Staking / slashing     | Nu se aplică                                    | Auto-delegare, risc de slashing            |
-| Scop principal         | Servește RPC/REST/gRPC/EVM/SVM pentru integrări | Securizează rețeaua, câștigă recompense    |
+| Scop principal         | Servește RPC/REST/gRPC/EVM (și SVM doar-citire) pentru integrări | Securizează rețeaua (se aplică recompense de staking) |
 | Expunere publică       | Endpoint-urile RPC/EVM sunt de obicei expuse    | Validatorul este ascuns în spatele nodurilor sentry |
 
 ---
@@ -48,7 +50,7 @@ Un nod care se sincronizează de la genesis sau reface starea dintr-o arhivă/in
 
 | Rețea    | Chain ID            | Chain ID EVM          | Note                          |
 | -------- | ------------------- | ---------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 7 iunie 2026 |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 29 iunie 2026 |
 | Testnet  | `qorechain-diana`   | `9800`                 | Testați integrările aici mai întâi |
 
 Înlocuiți `--chain-id`-ul corespunzător pentru rețeaua țintă pe parcursul acestui ghid. Exemplele folosesc implicit mainnet.
@@ -71,19 +73,33 @@ Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM 
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat — construiți-vă una singuri din `Dockerfile`-ul din repository și etichetați-o cu versiunea de lanț live (**v3.1.97** pe mainnet), apoi montați un volum persistent pentru datele lanțului:
+O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat. `Dockerfile`-ul din repository-ul public construiește binarul **community** (fără bibliotecă post-cuantică, keepers de tip stub): este potrivit pentru dezvoltare locală, dar nu poate urmări mainnet-ul sau testnet-ul. Pentru un nod de rețea, construiți-vă propria imagine din **arhiva de versiune** indicată în `latest.json`, etichetați-o cu versiunea (**v3.2.1** pe mainnet, **v3.2.2** pe testnet), apoi montați un volum persistent pentru datele lanțului:
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); imaginea de mai sus este doar `linux/amd64`, ca și arhiva de versiune.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-Inițializați directorul de date o singură dată (genesis-ul și configurarea peer-ilor sunt acoperite mai jos), apoi porniți:
+Inițializați directorul de date o singură dată (de exemplu `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`; genesis-ul și configurarea peer-ilor sunt acoperite mai jos), apoi porniți:
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Preluați manifestul
+### 2. Preluați manifestul {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Folosiți acest fișier ca sursă pentru valorile de binar, genesis și peer din pașii de mai jos — verificați `jq -r .minCompatible latest.json`, dar rețineți că **pragul v3.1.94** de mai sus rămâne valabil chiar dacă acel câmp este în urmă.
+Folosiți acest fișier ca sursă pentru valorile de binar, genesis și peer din pașii de mai jos — verificați `jq -r .minCompatible latest.json` și rulați cel puțin acea versiune (cea recomandată este `jq -r .version latest.json`).
 
 ### 3. Descărcați și verificați genesis-ul
 
@@ -166,7 +182,7 @@ GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
 curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
 echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
-# Verificați încrucișat față de genesis-ul servit live de lanț:
+# Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
@@ -191,6 +207,8 @@ Apoi setați prețul minim al gazului în `~/.qorechaind/config/app.toml` (pragu
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi` scrie în `app.toml` și chain id-ul EVM al rețelei (consultați [Limitele nodului](#node-limits)); verificați-l pe un director home inițializat cu mult timp în urmă.
 
 ### 5. Porniți sincronizarea
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restaurare din instantaneu (snapshot)
 
-Alternativ, descărcați instantaneul publicat al datelor lanțului, verificați-i suma de control și extrageți-l peste directorul dumneavoastră de date. Manifestul nu conține în prezent un pointer către instantaneu, așa că verificați listarea live de la [download.qore.host](https://download.qore.host) pentru numele de fișier și suma de control curente, în loc să le codificați rigid:
+Alternativ, descărcați instantaneul publicat al datelor lanțului, verificați-i suma de control și extrageți-l peste directorul dumneavoastră de date. Pe mainnet, obiectul `snapshot` din manifest oferă URL-ul, `height` (înălțimea blocului), dimensiunea și SHA-256 (manifestul de testnet conține în prezent doar URL-ul, așa că folosiți state sync acolo). Citiți `snapshot.height` înainte de a-l folosi: instantaneul de mainnet este o singură arhivă de aproximativ 27 GB, iar unul vechi înseamnă o recuperare lungă (instantaneul de mainnet publicat în prezent este anterior înălțimilor ambelor upgrade-uri, v3.1.94 și v3.2.0, așa că un nod restaurat din el trebuie să le redea cu un binar v3.2.x).
 
 ```bash
-# Înlocuiți numele de fișier și suma de control curente din listarea download.qore.host
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # comparați cu suma de control publicată alături de el
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Instantaneele sunt publicate sub **nume de fișiere marcate cu înălțimea blocului**, care se schimbă regulat — verificați [download.qore.host](https://download.qore.host) pentru cel mai recent instantaneu și suma sa de control SHA-256 și verificați întotdeauna înainte de a extrage. Rețineți că **minimul v3.1.94** de mai sus se aplică și redării dintr-un instantaneu.
+Câmpurile `snapshot.height` și `snapshot.ts` din manifest arată cât de proaspătă este arhiva, iar state sync (mai sus) este de obicei mai rapid decât o descărcare de 27 GB. Verificați întotdeauna suma de control înainte de a extrage și folosiți o versiune de nod care conține toate handler-ele de upgrade (consultați avertismentul de la începutul acestei pagini) când redați starea dintr-un instantaneu.
 :::
 
 ---
@@ -256,10 +275,10 @@ Ajustați pruning-ul și indexarea tranzacțiilor în funcție de integrarea dum
 ### Pruning (`app.toml`)
 
 ```toml
-# Păstrează doar starea recentă — cea mai mică amprentă pe disc
+# Keep recent state only — smallest disk footprint
 pruning = "default"
 
-# Păstrează totul — necesar pentru interogări de arhivă / istoric complet
+# Keep everything — required for archive / full historical queries
 # pruning = "nothing"
 ```
 
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | Păstrează starea recentă, elimină restul     | Nod RPC, interogări de sold/stare  |
 | `nothing`   | Păstrează toată starea istorică              | Nod de arhivă, istoric complet     |
 | `custom`    | Valori de reținere/interval definite de operator | Retenție personalizată         |
+
+### Limitele nodului (`app.toml`) {#node-limits}
+
+Începând cu versiunea de nod v3.2.1, `init` scrie o secțiune `[qorechain]` cu trei limite locale ale nodului. Acestea schimbă doar ce păstrează acest nod în memorie și ce include în blocurile pe care le propune, niciodată ce trebuie să conțină un bloc pentru a fi valid:
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init` scrie de asemenea chain id-ul EVM al rețelei în setarea `evm-chain-id` din secțiunea `[evm]` a fișierului `app.toml` (`9801` pentru `--chain-id qorechain-vladi`, `9800` pentru `qorechain-diana`). Un nod al cărui `app.toml` conține o altă valoare pornește totuși, dar înregistrează o eroare la pornire, iar propriul său JSON-RPC (`eth_chainId`, semnarea față de acel nod) răspunde cu un chain id greșit până când corectați fișierul; consensul nu este afectat. Binarele mai vechi scriau valoarea de testnet (`9800`) indiferent de `--chain-id`, așa că un nod de mainnet inițializat cu mult timp în urmă ar trebui să-și verifice această setare. Nu setați `QORE_EVM_CHAIN_ID` la o valoare diferită de cea a rețelei: un astfel de nod refuză să pornească.
 
 ### Indexarea tranzacțiilor (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+Endpoint-urile publice servesc namespace-urile `eth_`, `net_`, `web3_` și `txpool_`. Namespace-ul `qor_` nu este servit de nicio versiune lansată a nodului, așa că nu îl adăugați (consultați [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 Și listenerul RPC în `config.toml`:
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | Acces programatic de mare debit (high-throughput)          |
 | EVM JSON-RPC | `8545`  | Integrări compatibile Ethereum (chain ID `9801`)           |
 | EVM WS       | `8546`  | Abonamente la evenimente EVM                               |
-| SVM RPC      | `8899`  | Integrări compatibile Solana                                |
+| SVM RPC      | `8899`  | Citiri compatibile Solana (tranzacțiile SVM sunt dezactivate) |
 
 :::warning
 Nu expuneți niciodată RPC, EVM JSON-RPC sau gRPC direct pe internetul public fără un reverse proxy, limitare de rată (rate limiting), autentificare și un firewall. Legați (bind) la `0.0.0.0` doar în spatele unui strat de ingress controlat.
@@ -334,7 +374,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 * `false` — complet sincronizat și servește starea curentă.
 
 ```bash
-# Cea mai recentă înălțime și rețeaua
+# Latest height and network
 curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .result.node_info.network'
 ```
 
@@ -342,7 +382,7 @@ Câmpul `network` ar trebui să raporteze `qorechain-vladi` (mainnet) sau `qorec
 
 ### Prometheus și Grafana
 
-QoreChain expune metrici Prometheus pe portul **26660**:
+Nodul poate expune metrici Prometheus pe portul **26660** (setați `prometheus = true` în secțiunea `[instrumentation]` din `config.toml`):
 
 ```
 http://localhost:26660/metrics
@@ -356,14 +396,14 @@ Colectați aceste metrici cu orice colector compatibil Prometheus. Dacă rulați
 curl -s -X POST http://localhost:8545 \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}'
-# Se așteaptă "0x2649" (9801) pe mainnet
+# Expect "0x2649" (9801) on mainnet
 ```
 
 ---
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea de lanț.** Rulați tag-ul live (**v3.1.97** pe mainnet) și urmăriți versiunile oficiale pentru upgrade-uri coordonate.
+1. **Fixați versiunea de lanț.** Rulați versiunea recomandată de manifest (**v3.2.1** pe mainnet), urmăriți versiunile oficiale pentru upgrade-uri coordonate și mențineți ceasul sistemului sincronizat prin NTP.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **Monitorizați sincronizarea continuu.** Alertați la întârzierea înălțimii blocului, zero peers și un nod blocat în `catching_up`.
 
-Pentru acces de citire ultra-ușor fără a rula un nod complet, consultați documentația **Light Node**.
+O implementare doar-nod nu semnează niciodată. Tranzacțiile pe care integrarea dumneavoastră le difuzează prin ea trebuie să poarte deja semnătura hibridă post-cuantică (iar, pentru lane-ul EVM, expeditorul are nevoie de o cheie înregistrată și de o fereastră de autorizare deschisă); consultați [Integrarea cu exchange-uri](/developer-guide/exchange-integration) și [Semnarea post-cuantică](/developer-guide/post-quantum-signing).
+
+Pentru a observa rețeaua fără a rula un nod complet, consultați [documentația Light Node](/light-node/overview).
 
 ---
 
 ## Depanare (Troubleshooting)
+
+### Nodul se oprește cu o eroare de ceas
+
+Începând cu versiunea de nod v3.2.1, motorul de consens se oprește când ceasul sistemului are o abatere de mai mult de 60 de secunde față de rețea. Rulați un client NTP (`chrony` sau `systemd-timesyncd`), confirmați că ceasul este sincronizat cu `timedatectl status`, apoi reporniți nodul.
 
 ### Un nod oprit înainte de upgrade nu își reia funcționarea după înlocuirea binarului
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) — Genesis-ul, peers și detaliile de conectare pentru mainnet
 * [Rularea unui Validator](/developer-guide/running-a-validator) — Adăugați atribuții de producție a blocurilor
-* [Compilarea din sursă](/developer-guide/building-from-source) — Compilați binarul `qorechaind`
-* **Light Node** — Acces ultra-ușor doar-citire (documentație în curând)
+* [Compilarea din sursă](/developer-guide/building-from-source) — Compilați binarul community `qorechaind` pentru dezvoltare
+* [Light Node](/light-node/overview) — Client ușor care urmărește rețeaua fără un nod complet

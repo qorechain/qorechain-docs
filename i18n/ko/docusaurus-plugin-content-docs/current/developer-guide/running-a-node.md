@@ -26,8 +26,10 @@ sidebar_position: 10
 매니페스트의 필드에는 `binary`(URL + sha256), `genesis`(URL + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync`(매시간 갱신되는 신뢰 지점), `minCompatible`이 포함됩니다. 아래의 설치 및 참여 단계는 이 매니페스트를 가져와 그 안의 현재 값을 사용합니다.
 :::
 
-:::caution 새로 참여하는 노드는 v3.1.94 이상 필요
-제네시스부터 동기화하거나 아카이브/스냅샷에서 리플레이하는 노드는 두 가지 이유가 겹쳐서 **v3.1.94 이상**이어야 합니다. 첫째, v3.1.92에서 리플레이 중 트랜잭션이 포함된 첫 블록에서 멈추는 가스 미터링 버그가 수정되었습니다. 둘째, 메인넷은 그 이후 v3.1.94 거버넌스 업그레이드(발행량 상한을 높이 2,122,074에서 적용)를 통과했습니다 — 이 업그레이드의 핸들러가 없는 노드는 동일한 높이를 리플레이하려 할 때 다시 멈춥니다. v3.1.97이 현재 권장 버전이며(합의를 깨지 않는 지속적인 보안 업데이트), `minCompatible`은 `3.1.94`입니다. 매니페스트는 의도적으로 단계적으로 승격되며(테스트넷 먼저, 숙성 기간 후 메인넷) 과거에 이 최소 기준보다 뒤처진 적이 있습니다 — `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 확인하고, 뒤처져 있다면 [qorechain-core GitHub 릴리스](https://github.com/qorechain/qorechain-core/releases)를 사용하거나 소스에서 직접 빌드하세요.
+:::caution 새로 참여하는 노드는 v3.2.0 이상 필요
+제네시스부터 동기화하거나 스냅샷에서 리플레이하는 노드는 여러 거버넌스 업그레이드를 거치게 됩니다(예: 높이 2,122,074의 v3.1.94 발행량 상한, 높이 2,981,742의 v3.2.0 업그레이드). 따라서 항상 매니페스트가 가리키는 바이너리를 설치하세요. 그 바이너리에는 모든 업그레이드 핸들러가 들어 있습니다. 새로 참여하는 메인넷 노드는 **v3.2.0 이상**이 필요합니다. 매니페스트의 `minCompatible`은 `3.2.0`으로, 체인을 따라갈 수 있는 가장 오래된 릴리스이며, `version`(현재 `3.2.1`)이 권장 버전으로 업그레이드 높이가 없는 노드 로컬 릴리스입니다. 매니페스트는 의도적으로 단계적으로 승격되므로(테스트넷 먼저, 숙성 기간 후 메인넷) `binary.url`을 신뢰하기 전에 매니페스트의 `"version"` 필드를 `minCompatible`과 비교해 확인하세요. 테스트넷에서는 `minCompatible`이 `version`과 같습니다(현재 `3.2.2`).
+
+v3.2.1부터는 두 가지 설정이 중요합니다. 시스템 시계를 NTP로 동기화된 상태로 유지하고(시계가 60초 넘게 어긋나면 노드가 중지됩니다), `app.toml`에 `evm-chain-id`를 설정하세요([노드 제한](#node-limits) 참조).
 :::
 
 ---
@@ -39,7 +41,7 @@ sidebar_position: 10
 | 합의 키             | 없음                                            | ed25519 합의 키 (반드시 안전하게 보관)      |
 | 블록 생성           | 아니요                                          | 예 — 블록을 제안하고 서명                   |
 | 스테이킹 / 슬래싱   | 해당 없음                                       | 자기 위임, 슬래싱 위험                      |
-| 주요 목적           | 통합을 위한 RPC/REST/gRPC/EVM/SVM 제공          | 네트워크 보안 유지, 보상 획득               |
+| 주요 목적           | 통합을 위한 RPC/REST/gRPC/EVM(및 읽기 전용 SVM) 제공 | 네트워크 보안 유지 (스테이킹 보상 적용)     |
 | 공개 노출           | RPC/EVM 엔드포인트를 일반적으로 노출            | 밸리데이터는 센트리 노드 뒤에 숨김          |
 
 ---
@@ -48,7 +50,7 @@ sidebar_position: 10
 
 | 네트워크 | 체인 ID             | EVM 체인 ID          | 비고                           |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| 메인넷   | `qorechain-vladi`   | `9801` (16진수 `0x2649`) | 기본 — 2026년 6월 7일부터 라이브 |
+| 메인넷   | `qorechain-vladi`   | `9801` (16진수 `0x2649`) | 기본 — 2026년 6월 29일부터 라이브 |
 | 테스트넷 | `qorechain-diana`   | `9800`               | 통합은 먼저 여기서 리허설하세요 |
 
 이 가이드 전반에서 대상 네트워크에 맞는 `--chain-id`로 바꿔 사용하세요. 예시는 기본적으로 메인넷을 사용합니다.
@@ -71,19 +73,33 @@ NVMe SSD를 강력히 권장합니다 — 체인 상태와 EVM/SVM 스토어는 
 
 ### Docker Compose
 
-Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없으므로, 저장소의 `Dockerfile`을 사용해 직접 빌드하고 라이브 체인 버전(메인넷 기준 **v3.1.97**)에 태그를 맞춘 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
+Docker Compose를 사용한 노드 전용 배포입니다. 아직 공개적으로 배포된 `qorechaind` 이미지는 없습니다. 공개 저장소의 `Dockerfile`은 **커뮤니티** 바이너리(양자 내성 라이브러리 없음, 스텁 키퍼)를 빌드합니다. 로컬 개발에는 적합하지만 메인넷이나 테스트넷을 따라갈 수는 없습니다. 네트워크 노드용으로는 `latest.json`에 명시된 **릴리스 아카이브**로 직접 이미지를 빌드하고, 릴리스 버전(메인넷은 **v3.2.1**, 테스트넷은 **v3.2.2**)으로 태그를 지정한 뒤, 체인 데이터용 영구 볼륨을 마운트하세요:
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+아카이브에는 `qorechaind`와 공유 라이브러리(`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`)가 들어 있는 `lib/` 디렉터리가 포함되어 있습니다. 위 이미지는 릴리스 아카이브와 마찬가지로 `linux/amd64` 전용입니다.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-데이터 디렉터리를 한 번 초기화한 뒤(제네시스와 피어 구성은 아래에서 다룹니다) 시작하세요:
+데이터 디렉터리를 한 번 초기화한 뒤(예: `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind`; 제네시스와 피어 구성은 아래에서 다룹니다) 시작하세요:
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. 매니페스트 가져오기
+### 2. 매니페스트 가져오기 {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-아래 단계에서 바이너리, 제네시스, 피어 값의 출처로 이 파일을 사용하세요 — `jq -r .minCompatible latest.json`으로 확인하되, 이 필드가 뒤처져 있더라도 위의 **v3.1.94 최소 기준**은 그대로 유효하다는 점을 기억하세요.
+아래 단계에서 바이너리, 제네시스, 피어 값의 출처로 이 파일을 사용하세요 — `jq -r .minCompatible latest.json`을 확인하고 최소한 그 릴리스 이상을 실행하세요(권장 릴리스는 `jq -r .version latest.json`입니다).
 
 ### 3. 제네시스 다운로드 및 검증
 
@@ -191,6 +207,8 @@ seeds = "<value of $SEEDS>"
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi`는 해당 네트워크의 EVM 체인 ID도 `app.toml`에 기록합니다([노드 제한](#node-limits) 참조). 오래전에 초기화한 홈 디렉터리라면 이 값을 확인하세요.
 
 ### 5. 동기화 시작
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### 스냅샷 복원
 
-또는 게시된 체인 데이터 스냅샷을 다운로드하고 체크섬을 검증한 뒤 데이터 디렉터리 위에 압축을 풀 수도 있습니다. 매니페스트는 현재 스냅샷 포인터를 담고 있지 않으므로, 파일명이나 체크섬을 하드코딩하지 말고 [download.qore.host](https://download.qore.host)의 실시간 목록에서 현재 파일명과 체크섬을 확인하세요:
+또는 게시된 체인 데이터 스냅샷을 다운로드하고 체크섬을 검증한 뒤 데이터 디렉터리 위에 압축을 풀 수도 있습니다. 메인넷에서는 매니페스트의 `snapshot` 객체가 URL, 블록 `height`, 크기, SHA-256을 제공합니다(테스트넷 매니페스트에는 현재 URL만 있으므로 테스트넷에서는 스테이트 싱크를 사용하세요). 사용하기 전에 `snapshot.height`를 확인하세요. 메인넷 스냅샷은 약 27 GB의 단일 아카이브이며, 오래된 스냅샷은 따라잡는 데 오랜 시간이 걸립니다(현재 게시된 메인넷 스냅샷은 v3.1.94와 v3.2.0 업그레이드 높이보다 이전 시점이므로, 이 스냅샷으로 복원한 노드는 v3.2.x 바이너리로 해당 구간을 리플레이해야 합니다).
 
 ```bash
-# Substitute the current filename and checksum from the download.qore.host listing
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # compare against the checksum published alongside it
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-스냅샷은 정기적으로 바뀌는 **블록 높이가 표기된 파일명**으로 게시됩니다 — [download.qore.host](https://download.qore.host)에서 최신 스냅샷과 SHA-256 체크섬을 확인하고, 압축을 풀기 전에 항상 검증하세요. 위의 **v3.1.94 최소 기준**은 스냅샷에서 리플레이하는 경우에도 동일하게 적용된다는 점을 기억하세요.
+매니페스트의 `snapshot.height`와 `snapshot.ts` 필드는 아카이브가 얼마나 최신인지 알려 주며, 스테이트 싱크(위 참조)가 27 GB를 내려받는 것보다 대개 더 빠릅니다. 압축을 풀기 전에 항상 체크섬을 검증하고, 스냅샷에서 리플레이할 때는 모든 업그레이드 핸들러가 들어 있는 노드 릴리스를 사용하세요(이 페이지 상단의 주의 사항 참조).
 :::
 
 ---
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | 최근 상태만 유지하고 나머지는 프루닝     | RPC 노드, 잔액/상태 조회          |
 | `nothing`   | 모든 과거 상태 유지                      | 아카이브 노드, 전체 이력          |
 | `custom`    | 운영자가 정의한 keep/interval 값         | 맞춤형 보존 정책                  |
+
+### 노드 제한 (`app.toml`) {#node-limits}
+
+노드 릴리스 v3.2.1부터 `init`은 세 가지 노드 로컬 제한이 담긴 `[qorechain]` 섹션을 기록합니다. 이 제한은 이 노드가 메모리에 보관하는 것과 자신이 제안하는 블록에 담는 것만 바꾸며, 블록이 유효하기 위해 반드시 포함해야 하는 내용에는 영향을 주지 않습니다:
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init`은 해당 네트워크의 EVM 체인 ID도 `app.toml`의 `[evm]` `evm-chain-id` 설정에 기록합니다(`--chain-id qorechain-vladi`는 `9801`, `qorechain-diana`는 `9800`). `app.toml`에 다른 값이 들어 있는 노드도 시작은 되지만 시작 시 오류를 로그로 남기며, 파일을 수정하기 전까지 해당 노드의 자체 JSON-RPC(`eth_chainId`, 해당 노드에 대한 서명)가 잘못된 체인 ID로 응답합니다. 합의에는 영향이 없습니다. 이전 바이너리는 `--chain-id`와 관계없이 테스트넷 값(`9800`)을 기록했으므로, 오래전에 초기화한 메인넷 노드는 이 설정을 확인해야 합니다. `QORE_EVM_CHAIN_ID`를 해당 네트워크의 값이 아닌 다른 값으로 설정하지 마세요. 그런 노드는 시작을 거부합니다.
 
 ### 트랜잭션 인덱싱 (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+공개 엔드포인트는 `eth_`, `net_`, `web3_`, `txpool_` 네임스페이스를 제공합니다. `qor_` 네임스페이스는 어떤 릴리스 노드 빌드에서도 제공되지 않으므로 추가하지 마세요([`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace) 참조).
 
 그리고 `config.toml`에서 RPC 리스너를 설정하세요:
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC         | `9090`  | 고처리량 프로그래매틱 액세스                           |
 | EVM JSON-RPC | `8545`  | Ethereum 호환 통합 (체인 ID `9801`)                    |
 | EVM WS       | `8546`  | EVM 이벤트 구독                                        |
-| SVM RPC      | `8899`  | Solana 호환 통합                                       |
+| SVM RPC      | `8899`  | Solana 호환 읽기 (SVM 트랜잭션은 비활성화됨)           |
 
 :::warning
 RPC, EVM JSON-RPC, gRPC를 리버스 프록시, 속도 제한, 인증, 방화벽 없이 공개 인터넷에 직접 노출하지 마세요. `0.0.0.0` 바인딩은 반드시 통제된 인그레스 레이어 뒤에서만 사용하세요.
@@ -342,7 +382,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .res
 
 ### Prometheus와 Grafana
 
-QoreChain은 포트 **26660**에서 Prometheus 메트릭을 노출합니다:
+노드는 포트 **26660**에서 Prometheus 메트릭을 노출할 수 있습니다(`config.toml`의 `[instrumentation]` 섹션에서 `prometheus = true`로 설정):
 
 ```
 http://localhost:26660/metrics
@@ -363,7 +403,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## 운영 모범 사례
 
-1. **체인 버전을 고정하세요.** 라이브 태그(메인넷 기준 **v3.1.97**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하세요.
+1. **체인 버전을 고정하세요.** 매니페스트가 권장하는 릴리스(메인넷 기준 **v3.2.1**)를 실행하고, 조율된 업그레이드를 위해 공식 릴리스를 추적하며, 시스템 시계를 NTP로 동기화된 상태로 유지하세요.
 
 2. **이중화된 노드를 운영하세요.** 로드 밸런서 뒤에 최소 두 대의 노드를 운영해 단일 노드의 재시작이나 재동기화가 통합 트래픽을 중단시키지 않도록 하세요.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **동기화를 지속적으로 모니터링하세요.** 블록 높이 지연, 피어 0개, `catching_up`에 멈춰 있는 노드에 대해 알림을 설정하세요.
 
-풀 노드를 실행하지 않고 초경량 읽기 접근이 필요하다면 **라이트 노드(Light Node)** 문서를 참조하세요.
+노드 전용 배포는 서명을 하지 않습니다. 통합에서 이 노드를 통해 브로드캐스트하는 트랜잭션에는 이미 하이브리드 양자 내성 서명이 포함되어 있어야 하며(EVM 레인에서는 발신자에게 등록된 키와 열려 있는 승인 창도 필요합니다), [거래소 통합](/developer-guide/exchange-integration)과 [양자 내성 서명](/developer-guide/post-quantum-signing)을 참조하세요.
+
+풀 노드를 실행하지 않고 네트워크를 관찰하려면 [라이트 노드 문서](/light-node/overview)를 참조하세요.
 
 ---
 
 ## 문제 해결
+
+### 노드가 시계 오류로 중지되는 경우
+
+노드 릴리스 v3.2.1부터 합의 엔진은 시스템 시계가 네트워크와 60초 넘게 어긋나면 중지됩니다. NTP 클라이언트(`chrony` 또는 `systemd-timesyncd`)를 실행하고, `timedatectl status`로 시계가 동기화되었는지 확인한 뒤 노드를 재시작하세요.
 
 ### 업그레이드 전에 멈춘 노드가 바이너리 교체 후에도 재개되지 않는 경우
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [메인넷 연결](/getting-started/connecting-to-mainnet) — 메인넷 제네시스, 피어, 연결 세부 정보
 * [밸리데이터 운영](/developer-guide/running-a-validator) — 블록 생성 임무 추가
-* [소스에서 빌드하기](/developer-guide/building-from-source) — `qorechaind` 바이너리 빌드
-* **라이트 노드(Light Node)** — 초경량 읽기 전용 접근 (문서 준비 중)
+* [소스에서 빌드하기](/developer-guide/building-from-source) — 개발용 커뮤니티 `qorechaind` 바이너리 빌드
+* [라이트 노드](/light-node/overview) — 풀 노드 없이 네트워크를 따라가는 경량 클라이언트

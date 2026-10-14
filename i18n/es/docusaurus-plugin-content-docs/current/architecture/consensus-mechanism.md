@@ -9,9 +9,13 @@ sidebar_position: 1
 
 QoreChain implementa **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mecanismo de consenso que clasifica a los validadores en tres pools especializados y utiliza una selección ponderada por reputación para equilibrar seguridad, descentralización y rendimiento. CPoS está implementado en el módulo `x/qca` y opera sobre el **QoreChain Consensus Engine**.
 
-La capa de optimización por aprendizaje por refuerzo que ajusta los parámetros de consenso en tiempo de ejecución se denomina **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consulta el [Motor de Consenso PRISM](/architecture/prism-consensus-engine) para más detalles.
+:::note Estado actual (octubre de 2026)
+La lógica de Triple-Pool CPoS descrita en esta página — clasificación de pools, selección de proponente ponderada por pool, curva de vinculación de recompensas, slashing progresivo y conteo QDRW — está implementada en el módulo `x/qca` y sus parámetros están on-chain, pero **todavía no está conectada a la producción de bloques, las recompensas, el slashing ni el conteo de gobernanza**. Hoy la rotación de proponentes es la rotación estándar de validadores ponderada por stake, el slashing sigue los parámetros estándar de `x/slashing` (ventana de downtime de 10,000 bloques, jail por debajo del 5 % de bloques firmados, slash del 1 % por downtime y del 5 % por double-sign, jail de 10 minutos) y las propuestas se cuentan sobre el stake vinculado (quórum 33.4 %, umbral 50 %, veto 33.4 %). El diseño que sigue describe hacia dónde evoluciona el módulo.
+:::
 
-El diagrama siguiente resume un ciclo de bloque/consenso de Triple-Pool CPoS sobre el QoreChain Consensus Engine, y muestra dónde PRISM retroalimenta los parámetros ajustables de `x/qca`.
+La capa de optimización por aprendizaje por refuerzo diseñada para ajustar los parámetros de consenso en tiempo de ejecución se denomina **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consulta el [Motor de Consenso PRISM](/architecture/prism-consensus-engine) para más detalles.
+
+El diagrama siguiente resume un ciclo de bloque/consenso de Triple-Pool CPoS sobre el QoreChain Consensus Engine, y muestra dónde está diseñado PRISM para retroalimentar los parámetros ajustables de `x/qca` (actualmente PRISM solo observa).
 
 ```mermaid
 flowchart TD
@@ -224,7 +228,7 @@ ReputationMultiplier(r) = 0.5 + 1.5 * sigmoid(6 * (r - 0.5))
 
 ### Escalado Cuadrático
 
-La función raíz cuadrada garantiza que el poder de voto escale de forma sublineal con el stake. Un votante con 4x el stake de otro votante recibe solo 2x el poder de voto, no 4x. Esto evita que los grandes poseedores de tokens dominen las decisiones de gobernanza.
+La función raíz cuadrada garantiza que el poder de voto escale de forma sublineal con el stake. Un votante con 4x el stake de otro votante recibe solo 2x el poder de voto, no 4x. Este es el comportamiento diseñado de QDRW; mientras esté deshabilitado, las propuestas se cuentan sobre el stake vinculado. La fórmula usa xQORE, que todavía no se puede bloquear en las redes activas.
 
 ### Matemática Determinista
 
@@ -234,54 +238,54 @@ La función raíz cuadrada garantiza que el poder de voto escale de forma sublin
 
 ## Parámetros de QCA
 
-La siguiente tabla enumera todos los parámetros configurables por gobernanza en el módulo `x/qca`:
+Las siguientes tablas enumeran los parámetros configurables por gobernanza del módulo `x/qca`, con los nombres que devuelve `qorechaind query qca config` y los valores activos (estos parámetros aún no están activos; consulta la nota de estado anterior):
 
 ### Parámetros Centrales
 
 | Parámetro                  | Tipo    | Por Defecto | Descripción                                       |
 | -------------------------- | ------- | ------- | ------------------------------------------------- |
-| `use_reputation_weighting` | bool    | `true`  | Habilita la selección de proponente ponderada por reputación |
+| `use_reputation_weighting` | bool    | `true`  | Ajuste de genesis para la selección de proponente ponderada por reputación (el selector aún no está conectado a la producción de bloques) |
 | `min_reputation_score`     | float64 | `0.1`   | Puntuación mínima de reputación para participación activa |
 
 ### Configuración de Pools
 
 | Parámetro                 | Tipo      | Por Defecto      | Descripción                                      |
 | ------------------------- | --------- | ---------------- | ------------------------------------------------ |
-| `classification_interval` | uint64    | `1000`           | Bloques entre reclasificaciones de pool          |
-| `weight_rpos`             | LegacyDec | `0.40`           | Peso de selección del pool RPoS                  |
-| `weight_dpos`             | LegacyDec | `0.35`           | Peso de selección del pool DPoS                  |
-| `min_delegation_dpos`     | uint64    | `10,000,000,000` | Delegación mínima para DPoS (10,000 QOR en uqor) |
-| `rep_percentile_rpos`     | uint64    | `70`             | Umbral de percentil de reputación para RPoS      |
+| `pool_classification_interval` | uint64 | `1000`        | Bloques entre reclasificaciones de pool          |
+| `pool_weight_rpos`        | LegacyDec | `0.40`           | Peso de selección del pool RPoS                  |
+| `pool_weight_dpos`        | LegacyDec | `0.35`           | Peso de selección del pool DPoS                  |
+| `pool_min_delegation_dpos`| uint64    | `10,000,000,000` | Delegación mínima para DPoS (10,000 QOR en uqor) |
+| `pool_rep_percentile_rpos`| uint64    | `70`             | Umbral de percentil de reputación para RPoS      |
 
 ### Configuración de la Curva de Vinculación
 
 | Parámetro          | Tipo      | Por Defecto | Descripción                                      |
 | ------------------ | --------- | ------- | ------------------------------------------------ |
-| `alpha`            | LegacyDec | `0.1`   | Coeficiente de sensibilidad de lealtad           |
-| `beta`             | LegacyDec | `1.0`   | Multiplicador de recompensa base                 |
-| `phase_multiplier` | LegacyDec | `1.5`   | Multiplicador de recompensa por fase del protocolo (fase Genesis) |
+| `bonding_alpha`    | LegacyDec | `0.1`   | Coeficiente de sensibilidad de lealtad           |
+| `bonding_beta`     | LegacyDec | `1.0`   | Multiplicador de recompensa base                 |
+| `bonding_phase_multiplier` | LegacyDec | `1.5` | Multiplicador de recompensa por fase del protocolo (fase Genesis) |
 
 ### Configuración de Slashing
 
 | Parámetro           | Tipo      | Por Defecto   | Descripción                            |
 | ------------------- | --------- | --------- | -------------------------------------- |
-| `base_rate`         | LegacyDec | `0.01`    | Tasa de slash base (1%)                |
-| `escalation_factor` | LegacyDec | `1.5`     | Base de escalado progresivo            |
-| `max_penalty`       | LegacyDec | `0.33`    | Penalización máxima por evento (33%)   |
-| `decay_halflife`    | uint64    | `100,000` | Bloques para la vida media del peso de infracción |
+| `slashing_base_rate`| LegacyDec | `0.01`    | Tasa de slash base (1%)                |
+| `slashing_escalation_factor` | LegacyDec | `1.5` | Base de escalado progresivo            |
+| `slashing_max_penalty` | LegacyDec | `0.33` | Penalización máxima por evento (33%)   |
+| `slashing_decay_halflife` | uint64 | `100,000` | Bloques para la vida media del peso de infracción |
 
 ### Configuración de Gobernanza QDRW
 
 | Parámetro            | Tipo      | Por Defecto | Descripción                            |
 | -------------------- | --------- | ------- | -------------------------------------- |
-| `enabled`            | bool      | `false` | Habilita el conteo de gobernanza QDRW  |
-| `xqore_multiplier`   | LegacyDec | `2.0`   | Peso de xQORE relativo a los tokens en stake |
-| `rep_min_multiplier` | LegacyDec | `0.5`   | Multiplicador de reputación mínimo     |
-| `rep_max_multiplier` | LegacyDec | `2.0`   | Multiplicador de reputación máximo     |
+| `qdrw_enabled`       | bool      | `false` | Habilita el conteo de gobernanza QDRW (deshabilitado en las redes activas) |
+| `qdrw_xqore_multiplier` | LegacyDec | `2.0` | Peso de xQORE relativo a los tokens en stake |
+| `qdrw_rep_min_multiplier` | LegacyDec | `0.5` | Multiplicador de reputación mínimo     |
+| `qdrw_rep_max_multiplier` | LegacyDec | `2.0` | Multiplicador de reputación máximo     |
 
 ## Relacionado
 
-* [Motor de Consenso PRISM](/architecture/prism-consensus-engine) — capa de IA que ajusta los parámetros de consenso.
+* [Motor de Consenso PRISM](/architecture/prism-consensus-engine) — capa de IA diseñada para ajustar los parámetros de consenso.
 * [Arquitectura Multicapa](/architecture/multilayer-architecture) — cómo las sidechains se anclan a la capa base.
 * [Ejecutar un Validador](/developer-guide/running-a-validator) — opera un validador que asegura la cadena.
 * [Tokenómica](/architecture/tokenomics) — recompensas de staking, inflación y economía del slashing.

@@ -9,7 +9,7 @@ sidebar_position: 10
 
 Les **quêtes** sont des tâches guidées qui vous accompagnent dans l'utilisation de QoreChain à mesure que vous les réalisez. Chaque quête regroupe une ou plusieurs étapes — comme approvisionner votre portefeuille, effectuer un transfert ou essayer un échange (swap) — et vous récompense lorsque vous la terminez. Les quêtes sont une manière pratique d'apprendre le réseau fonctionnalité par fonctionnalité.
 
-Connectez votre portefeuille pour que votre progression soit suivie — voir [Présentation et premiers pas](/dashboard/overview#connect-your-wallet).
+Connectez-vous pour que votre progression soit suivie — voir [Se connecter](/dashboard/overview#sign-in). Certaines quêtes impliquent aussi un portefeuille, voir [Connecter votre portefeuille](/dashboard/overview#connect-your-wallet).
 
 ## Parcourir les quêtes
 
@@ -36,5 +36,5 @@ Certaines quêtes se réinitialisent selon un calendrier quotidien ou hebdomadai
 
 ## Liens connexes
 
-- [Présentation et premiers pas](/dashboard/overview) — connectez votre portefeuille avant de commencer les quêtes.
+- [Présentation et premiers pas](/dashboard/overview) — connectez-vous et connectez votre portefeuille avant de commencer les quêtes.
 - [Faucet](/dashboard/faucet) — approvisionnez un portefeuille de testnet pour les quêtes impliquant des transactions.

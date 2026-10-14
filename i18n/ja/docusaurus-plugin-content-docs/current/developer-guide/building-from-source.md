@@ -7,7 +7,11 @@ sidebar_position: 1
 
 # ソースからのビルド
 
-このガイドでは、コミュニティ版（オープンコア）ビルドと完全版（プロプライエタリ）ビルドの両方を取り上げながら、`qorechaind` バイナリをソースからビルドする手順を説明します。
+このガイドでは、公開ソースからコミュニティ版の `qorechaind` バイナリをビルドする手順を説明し、そのバイナリが何のためのもので、何のためのものではないかを解説します。
+
+:::caution ソースからのビルドではメインネットにもテストネットにも参加できません
+公開リポジトリには、**スタブ Keeper** を備えたモジュールインターフェースが含まれています。コンセンサスに不可欠な Keeper 実装と耐量子署名器は公開ソースツリーには含まれていません。そこからビルドしたバイナリは、ネットワークのコンセンサス状態を再現できず、Cosmos レーンのすべてのトランザクションが必要とするハイブリッド耐量子署名も作成できません。メインネットまたはテストネットでノードやバリデーターを運用するには、稼働中のマニフェスト（`https://download.qore.host/mainnet/latest.json` または `.../testnet/latest.json`）に記載された**リリースバイナリ**をインストールしてください。[ノードの運用](/developer-guide/running-a-node)および[バリデーターの運用](/developer-guide/running-a-validator)を参照してください。
+:::
 
 ## 前提条件
 
@@ -15,7 +19,6 @@ sidebar_position: 1
 | ------------------ | ------------------------- | ------------------------------------------------- |
 | **Go**             | 1.26+                     | すべてのビルドに必須                           |
 | **CGO**            | 有効化（`CGO_ENABLED=1`） | PQC および SVM FFI ブリッジに必須              |
-| **Rust ツールチェーン** | 最新の安定版             | `libqorepqc` および `libqoresvm` のコンパイルに必須 |
 | **Make**           | 3.81+                     | ビルド自動化                                  |
 | **Git**            | 2.x                       | ソースのチェックアウト                                   |
 
@@ -23,50 +26,22 @@ sidebar_position: 1
 
 ```bash
 go version        # go1.26.x or later
-rustc --version   # stable toolchain
-cargo --version
 echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-すべての `go build`、`go test`、`go run` の呼び出しでは、`CGO_ENABLED=1` を設定する**必要があります**。PQC および SVM モジュールは cgo を必要とする FFI ブリッジを使用します。
+すべての `go build`、`go test`、`go run` の呼び出しでは、`CGO_ENABLED=1` を設定する**必要があります**。ノードは cgo を通じてネイティブライブラリ（CosmWasm ランタイム、およびリリースビルドでは PQC と SVM のライブラリ）をリンクします。
 :::
 
 ## ネイティブライブラリ
 
-QoreChain は、実行時にロードされる Rust 製のネイティブライブラリ 2 つに依存します。
+### libqorepqc と libqoresvm
 
-### libqorepqc（耐量子暗号）
-
-PQC ライブラリは、C 互換の FFI インターフェースを通じて ML-DSA-87（Dilithium-5）の鍵生成、署名、検証を提供します。
-
-```bash
-cd rust/qorepqc
-cargo build --release
-```
-
-コンパイルされたライブラリは `lib/{os}_{arch}/` に配置されます。
-
-| プラットフォーム    | ライブラリファイル       | ディレクトリ           |
-| ----------- | ------------------ | ------------------- |
-| macOS arm64 | `libqorepqc.dylib` | `lib/darwin_arm64/` |
-| Linux amd64 | `libqorepqc.so`    | `lib/linux_amd64/`  |
-| Linux arm64 | `libqorepqc.so`    | `lib/linux_arm64/`  |
-
-### libqoresvm（SVM ランタイム）
-
-SVM ライブラリは、x/svm モジュール向けの BPF プログラム実行環境を提供します。
-
-```bash
-cd rust/qoresvm
-cargo build --release
-```
-
-出力は上記と同じ `lib/{os}_{arch}/` の規則に従います（macOS では `libqoresvm.dylib`、Linux では `libqoresvm.so`）。
+耐量子（`libqorepqc`）と SVM（`libqoresvm`）のライブラリは、**公開リポジトリには含まれていない** Rust ソースからビルドされます（`qorechain-core` に `rust/` ディレクトリはありません）。コミュニティ版ビルドにはこれらは不要です。各ネットワーク向けのリリースアーカイブには、コンパイル済みライブラリ（`libqorepqc.so`、`libqoresvm.so`、`libwasmvm.x86_64.so`）が `qorechaind` の隣の `lib/` ディレクトリに同梱されています。これらを `lib/{os}_{arch}/` に配置するか、以下のようにローダーにパスを指定してください。
 
 ### ライブラリパスの設定
 
-ネイティブライブラリは実行時に検出可能である必要があります。お使いのプラットフォームに応じた環境変数を設定してください。
+リリースバイナリを使用する場合、その共有ライブラリは実行時に検出可能である必要があります。お使いのプラットフォームに応じた環境変数を設定してください。
 
 **macOS:**
 
@@ -89,9 +64,9 @@ export LD_LIBRARY_PATH=$(pwd)/lib/linux_amd64:$LD_LIBRARY_PATH
 QoreChain は**オープンコア**モデルに従っています。
 
 * **コミュニティ版ビルド** — すべての QoreChain モジュール（x/pqc、x/ai、x/reputation、x/qca、x/svm、x/crossvm など）の完全なモジュールインターフェース、CLI コマンド、protobuf 定義、メッセージタイプを含みます。プロプライエタリモジュールの Keeper は、安全なデフォルト値や no-op レスポンスを返す**スタブ実装**を使用します。これにより、サードパーティのツール、ウォレット、インデクサーは、プロプライエタリなコードを必要とせずにすべての QoreChain API と統合できます。
-* **完全版（プロプライエタリ）ビルド** — `proprietary` ビルドタグの背後にある完全な Keeper 実装を有効化します。これには、実際の AI 異常検知ロジック、PRISM コンセンサスパラメータのチューニング、高度なレピュテーションスコアリング、およびすべての本番グレードの機能が含まれます。
+* **完全版ビルド** — 完全な Keeper 実装（コンセンサスに不可欠な実際のモジュールロジックと耐量子署名器）を含みます。[download.qore.host](https://download.qore.host) で公開されるリリースバイナリとして配布されており、公開ソースツリーからビルドするものではありません。
 
-どちらのビルドも同じ `qorechaind` バイナリ名を生成し、同一の CLI コマンドと gRPC/REST エンドポイントを公開します。違いは、それらのインターフェースの背後にある Keeper ロジックの実行時の動作にあります。
+どちらのビルドも同じ `qorechaind` バイナリ名を生成し、同一の CLI コマンドを公開します。違いは、それらのインターフェースの背後にある Keeper ロジックの実行時の動作にあります。
 
 ## コミュニティ版ビルド
 
@@ -99,21 +74,17 @@ QoreChain は**オープンコア**モデルに従っています。
 CGO_ENABLED=1 go build -o qorechaind ./cmd/qorechaind/
 ```
 
-これは、プロプライエタリ機能向けのスタブ Keeper を用いて、すべての公開モジュールインターフェースをコンパイルします。得られるバイナリは、以下の用途で完全に機能します。
+これは、プロプライエタリ機能向けのスタブ Keeper を用いて、すべての公開モジュールインターフェースをコンパイルします。得られるバイナリは、以下の用途を想定しています。
 
-* バリデーターノードの運用
-* トランザクションの送信と照会
-* EVM、CosmWasm、SVM の各 VM とのやり取り
-* サードパーティ統合とツールの構築
-* ローカルでの開発とテスト
+* ローカルでの開発とテスト（たとえば単一ノードの devnet）
+* ネットワークの照会（`query ...` コマンドは任意のノードに対して動作します）
+* モジュールインターフェースに対するサードパーティ統合とツールの構築
 
-## 完全版ビルド（プロプライエタリ）
+これは、バリデーターとしてメインネットやテストネットに参加したり、そこでトランザクションを実行したりする手段ではありません。耐量子署名器を持たず（`tx pqc gen-key` と `tx pqc cosign` はエラーを返します）、そのスタブ Keeper はネットワークのコンセンサスルールを再現しません。
 
-```bash
-CGO_ENABLED=1 go build -tags proprietary -o qorechaind ./cmd/qorechaind/
-```
+## 完全版ビルド（リリースバイナリ）
 
-`-tags proprietary` フラグは、完全な Keeper 実装を有効化します。これらは公開ソースツリーには含まれていません。
+完全な Keeper 実装、および `tx pqc gen-key` と `tx pqc cosign` の背後にある署名器は、公開ソースツリーには含まれていないため、そこからビルドすることはできません。[download.qore.host](https://download.qore.host) で公開されているバイナリが完全版ビルドです。メインネットとテストネットにはそれらを使用してください。
 
 ## テストの実行
 
@@ -125,16 +96,10 @@ CGO_ENABLED=1 go test ./... -count=1
 
 ```bash
 CGO_ENABLED=1 go test ./x/pqc/... -count=1 -v
-CGO_ENABLED=1 go test ./x/ai/... -count=1 -v
 CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ```
 
-Rust ライブラリのテストは別途実行します。
-
-```bash
-cd rust/qorepqc && cargo test
-cd rust/qoresvm && cargo test
-```
+ネイティブライブラリやプロプライエタリ Keeper を実行するテストは、完全版ビルドにのみコンパイルされ、公開テストスイートには含まれません。
 
 ## ビルドの検証
 
@@ -145,17 +110,17 @@ cd rust/qoresvm && cargo test
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、チェーンバージョン **v3.1.97** を実行する稼働中ネットワークである `--chain-id qorechain-vladi` に置き換えてください。
+`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、稼働中のネットワークである `--chain-id qorechain-vladi`（ノードリリース **v3.2.1**）に置き換えてください。
 
 ## Docker ビルド
 
-コンテナ化されたビルド向けに、リポジトリのルートに Dockerfile が用意されています。
+リポジトリのルートに Dockerfile が用意されています。
 
 ```bash
-docker build -t qorechaind:latest .
+docker build -t qorechaind:community .
 ```
 
-Docker イメージは、すべてのネイティブライブラリのコンパイルとパス設定を自動的に処理します。Docker Compose を使ったノードの実行については、[クイックスタート](/getting-started/quickstart)ガイドを参照してください。
+これは**コミュニティ版**バイナリをビルドします（Dockerfile 自身のコメントには "Public build — no PQC library" とあります）。したがってこのイメージはローカル開発とツール向けであり、メインネットやテストネットに追従するためのものではありません。Docker でネットワークノードを運用するには、代わりにリリースバイナリをラップしてください。[ノードの運用](/developer-guide/running-a-node#docker-compose)を参照してください。
 
 ## トラブルシューティング
 
@@ -171,7 +136,7 @@ Xcode CLI ツール（macOS）または `build-essential`（Linux）をインス
 
 <summary>cannot find -lqorepqc</summary>
 
-先に Rust ライブラリをビルドし、`LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` を設定してください
+ネイティブライブラリを必要とするビルドをリンクしています。コミュニティ版ビルド（これらは不要です）か、ライブラリを同梱したリリースアーカイブを使用し、`LD_LIBRARY_PATH` / `DYLD_LIBRARY_PATH` をその `lib/` ディレクトリに設定してください
 
 </details>
 
@@ -195,6 +160,6 @@ Xcode CLI ツール（macOS）または `build-essential`（Linux）をインス
 
 <summary>PQC tests fail with size mismatch</summary>
 
-`pqcrypto v0.5.0+` を使用していることを確認してください（ML-DSA-87: pubkey=2592、privkey=4896、sig=4627 バイト）
+ML-DSA-87 のサイズは、公開鍵 2,592 バイト、秘密鍵 4,896 バイト、署名 4,627 バイトです。これ以外のサイズは、別のアルゴリズムか、切り詰められた値であることを意味します。
 
 </details>

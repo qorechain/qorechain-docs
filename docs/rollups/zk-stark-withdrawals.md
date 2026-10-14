@@ -9,8 +9,8 @@ sidebar_position: 5
 
 This page covers two related topics: the **ZK proof systems** (`snark` and `stark`) used by ZK-settled rollups, and the **L2 → L1 withdrawal flow** that moves funds from a rollup back to QoreChain once a batch is finalized.
 
-:::caution
-ZK and STARK verification are an actively maturing part of the RDK. Treat the proof systems and the withdrawal flow described here as design intent, validate on the **`qorechain-diana`** testnet, and do not assume production-hardened cryptographic guarantees on mainnet yet.
+:::caution Early-stage capability
+No rollup has been created on either network yet, so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
 :::
 
 ---
@@ -21,8 +21,8 @@ A ZK-settled rollup (`zk` settlement mode) attaches a validity proof to each set
 
 | Proof system | Characteristics |
 | ------------ | --------------- |
-| **`snark`** | Succinct proofs |
-| **`stark`** | Transparent proofs — no trusted setup |
+| **`snark`** | Succinct proofs (Groth16 over BLS12-381), verified on-chain against the rollup's verifying key |
+| **`stark`** | Transparent proofs, no trusted setup — experimental; opt-in and bound to a demonstration circuit |
 
 The `zk` settlement mode requires one of `snark` or `stark`; the pairing is enforced on-chain when the rollup is created. By contrast, `optimistic` settlement uses the `fraud` proof system, and `based` and `sovereign` settlement use `none`. See **[Rollups Overview](/rollups/overview)** for the full compatibility matrix.
 
@@ -32,7 +32,7 @@ Unlike optimistic rollups — which wait out a fraud-proof challenge window — 
 
 ### Maturity
 
-ZK and STARK proof verification are still maturing. Treat ZK settlement as **not yet production-hardened**: prototype and validate on testnet, and track the RDK's release notes for the status of full proof verification before relying on it for value-bearing mainnet rollups.
+SNARK batches are verified on-chain (Groth16 over BLS12-381) against a verifying key stored with the rollup. A rollup created through `create-rollup` does not currently carry a verifying key, so ZK batches cannot yet be finalised end to end. STARK verification is experimental: it is opt-in and checks a demonstration circuit, not your rollup's own state transition. Treat ZK settlement as not production-ready, and track the RDK's release notes before relying on it for value-bearing mainnet rollups.
 
 ---
 
@@ -52,7 +52,7 @@ For how batches are submitted and finalized — including `submit-batch` and the
 
 ## Executing a withdrawal: `execute-withdrawal`
 
-The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof.
+The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof. Like every native-lane transaction it needs the hybrid post-quantum co-signature, so build it with `--generate-only` and cosign it (see [Deploying a Rollup](/rollups/deploying-a-rollup)). Withdrawals have not been exercised on a live rollup yet; treat the flow as untested.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Positional arguments:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Comma-separated hex Merkle sibling hashes, ordered from leaf to root, that prove the withdrawal leaf is committed in the batch's withdrawals root |
 
-The `--proof` value is the inclusion proof: the sibling hashes along the path from the withdrawal leaf up to the batch's committed withdrawals root. The module recomputes the root from the leaf and the supplied siblings and checks it against the finalized batch's committed root before releasing escrowed funds.
+The `--proof` value is the inclusion proof: the sibling hashes along the path from the withdrawal leaf up to the batch's committed withdrawals root. The module recomputes the root from the leaf and the supplied siblings and checks it against the finalized batch's committed root before paying.
+
+### Leaf and node encoding {#leaf-and-node-encoding}
+
+* **Leaf** = SHAKE-256 (32 bytes) of `rollup_id`, a `0x00` byte, the withdrawal index (8-byte big-endian), the `recipient` string, `0x00`, the `denom` string, `0x00`, and the `amount` (8-byte big-endian).
+* **Parent** = SHAKE-256 of `left || right`. At each level the corresponding bit of the withdrawal index decides the side: `0` means the leaf (or running hash) is the left node.
+* Every sibling hash must be exactly 32 bytes.
+
+:::caution Generic Merkle helpers do not match
+The RDK's generic `binaryMerkleRoot` / `binaryMerkleProof` helpers default to SHA-256 with duplicated odd nodes. Override the hash and leaf encoding to the rules above, or the proof will not verify on-chain.
+:::
+
+### Where the funds come from {#where-the-funds-come-from}
+
+A withdrawal is paid from the **rollup's own escrowed stake** (the stake less the creation burn). The module keeps a per-rollup ledger so a withdrawal proved for one rollup cannot be paid out of another rollup's stake. There is no L1 → L2 deposit message in the module, so this is not a bridge of user funds.
 
 ---
 

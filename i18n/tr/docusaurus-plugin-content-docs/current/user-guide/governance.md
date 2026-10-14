@@ -7,35 +7,33 @@ sidebar_position: 3
 
 # Yönetişim
 
-Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, Kuadratik Delegasyon-İtibar Ağırlıklı (QDRW) oylama sistemini, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
+Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri **v3.1.97** zincir sürümünü çalıştırarak yayında — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 29 Haziran 2026'dan beri v3.2 hattında yayında (düğüm sürümü **v3.2.1**; testnet **v3.2.2** çalıştırıyor) — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+:::
+
+:::caution `tx pqc cosign` ile imzalayın
+Mainnet ve testnet, her Cosmos hattı (lane) işlemi için hibrit bir kuantum sonrası imza gerektirir; bu nedenle bu sayfadaki komutlar yazıldığı haliyle yayınlanmaz. Bir komuta `--generate-only > tx.json` ekleyin, ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` komutunu çalıştırın. Bkz. [Hibrit imzalama](/cli-reference/transaction-commands#hybrid-signing).
 :::
 
 ---
 
-## Oylama Gücü: QDRW Formülü
+## Oylama Gücü {#voting-power}
 
-QoreChain, oylama gücünü hesaplamak için **Kuadratik Delegasyon-İtibar Ağırlıklı (QDRW)** formülünü kullanır. Bu sistem, yüksek itibar puanları kazanmış ve xQORE staking yoluyla yönetişime bağlılık göstermiş katılımcıları ödüllendirirken balina (whale) hakimiyetini önler.
+Teklifler **bonded stake** üzerinden sayılır: bonded bir doğrulayıcıya delege ettiğiniz her QOR, çarpan olmaksızın bir birim oylama gücü sayılır. Kendiniz oy kullanmazsanız delegasyonunuz doğrulayıcınızın oyunu izler; kendi oyunuzu kullanırsanız bu, stake'iniz için doğrulayıcının oyunu geçersiz kılar. Bir teklif, aşağıdakilerin tümü sağlandığında kabul edilir:
 
-```
-VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)
-```
+| Kural     | Güncel değer | Anlamı                                                                      |
+| --------- | ------------ | --------------------------------------------------------------------------- |
+| Yeter sayı (quorum) | 33.4% | Oy kullanması gereken bonded stake payı                                     |
+| Eşik      | 50%          | Kabul için gereken, çekimser olmayan oylar içindeki "yes" payı              |
+| Veto      | 33.4%        | "no with veto" bu paya ulaşırsa teklif reddedilir ve depozitosu yakılır     |
 
-| Variable                  | Description                                                                                                                      |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `VP`                      | Etkin oylama gücü                                                                                                                 |
-| `staked`                  | Oy verenin stake ettiği toplam QOR token miktarı                                                                                 |
-| `xQORE`                   | Elde tutulan xQORE yönetişim tokenlarının miktarı (bkz. [xQORE Staking](/user-guide/xqore-staking))                              |
-| `r`                       | Oy verenin \[0, 1] aralığına normalleştirilmiş itibar puanı                                                                      |
-| `ReputationMultiplier(r)` | İtibarı \[0.5, 2.0] aralığındaki bir çarpana eşleyen sigmoid fonksiyon                                                           |
+Bu değerler 14 Ekim 2026'da zincirden okunmuştur; yönetişim bunları değiştirebileceğinden `qorechaind query gov params` ile doğrulayın.
 
-### Temel Özellikler
-
-* **Kuadratik sönümleme:** Bir başka oy verenin 100 katı stake'e sahip bir katılımcı, 100 kat değil yalnızca \~10 kat oylama gücü kazanır. Bu, yönetişim etkisinin servetle doğrusal-altı (sub-linear) şekilde ölçeklenmesini sağlar.
-* **xQORE bonusu:** xQORE tokenları karekök içinde **2x ağırlıkla** sayılır ve yönetişime bağlılık göstermiş katılımcılara belirgin bir avantaj sağlar.
-* **İtibar çarpanı:** Oy verenin itibar puanını, bir sigmoid eğrisi kullanarak \[0, 1] aralığından \[0.5, 2.0] aralığındaki bir çarpana eşler. Yüksek itibarlı katılımcılar etkin oylama güçlerini ikiye katlayabilirken, düşük itibarlı katılımcıların etkisi yarıya iner.
+:::note QDRW tasarlandı ancak etkin değil
+QoreChain'in tasarımı, büyük stake'leri sönümleyecek ve itibarı ağırlıklandıracak bir **Kuadratik Delegasyon-İtibar Ağırlıklı (QDRW)** oylama gücü formülü içerir: `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`. Bu formül `x/qca` modülünde uygulanmıştır ancak her iki ağda da **kapalıdır** (`qorechaind query qca config` içinde `qdrw_enabled` değeri `false`) ve yönetişim sayımının parçası değildir; dolayısıyla bugün hiçbir oyu etkilemez. xQORE da henüz yayında değildir (bkz. [xQORE Staking](/user-guide/xqore-staking)).
+:::
 
 ---
 
@@ -47,26 +45,36 @@ Herhangi bir QOR sahibi bir yönetişim teklifi gönderebilir. Teklifin oylama d
 qorechaind tx gov submit-proposal <proposal_file.json> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
-**Örnek teklif dosyası** (`proposal.json`):
+**Örnek teklif dosyası** (`proposal.json`). Bir teklif; kabul edilmesi halinde yönetişim modülünün yürüttüğü mesajların bir listesi ile bir başlık, bir özet ve bir depozitodan oluşur. Bu örnek, maksimum doğrulayıcı sayısını 100'den 150'ye çıkarır; `authority`, yönetişim modülü hesabıdır (`qorechaind query auth module-account gov`):
 
 ```json
 {
-  "title": "Increase Maximum Validator Count",
-  "description": "This proposal increases the maximum active validator set from 100 to 150 to improve decentralization.",
-  "type": "parameter_change",
-  "changes": [
+  "messages": [
     {
-      "subspace": "staking",
-      "key": "MaxValidators",
-      "value": "150"
+      "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+      "authority": "qor10d07y265gmmuvt4z0w9aw880jnsr700jwfyxr3",
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 150,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "uqor",
+        "min_commission_rate": "0.000000000000000000"
+      }
     }
   ],
-  "deposit": "10000000uqor"
+  "metadata": "",
+  "deposit": "10000000uqor",
+  "title": "Increase maximum validator count",
+  "summary": "Raise the active validator set from 100 to 150 to improve decentralization.",
+  "expedited": false
 }
 ```
+
+`MsgUpdateParams` parametre kümesinin tamamını değiştirir; bu yüzden güncel değerleri `qorechaind query staking params` çıktısından kopyalayın ve yalnızca değiştirmek istediğiniz alanı değiştirin. Yalnızca metin içeren (sinyal) bir teklif `"messages": []` kullanır. `qorechaind tx gov draft-proposal` bir iskelet üretir.
 
 ---
 
@@ -78,12 +86,12 @@ Bir teklif oylama dönemine girdiğinde, herhangi bir staker oy kullanabilir:
 qorechaind tx gov vote <proposal_id> <option> \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Oy seçenekleri:**
 
-| Option         | Description                                                                                              |
+| Seçenek        | Açıklama                                                                                                 |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
 | `yes`          | Teklifi destekler                                                                                        |
 | `no`           | Teklife karşı çıkar                                                                                      |
@@ -96,21 +104,22 @@ qorechaind tx gov vote <proposal_id> <option> \
 qorechaind tx gov vote 1 yes \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ---
 
 ## Teklif Türleri
 
-QoreChain aşağıdaki yönetişim teklif türlerini destekler:
+Bir teklif, kabul edilirse yürütülen sıfır veya daha fazla mesaj taşır. Yaygın durumlar:
 
-| Type                 | Description                                                                                     |
+| Tür                  | Açıklama                                                                                        |
 | -------------------- | ----------------------------------------------------------------------------------------------- |
-| **Text**             | Otomatik zincir üstü yürütmesi olmayan bir sinyal teklifi. Topluluk eğilimini ölçmek için kullanılır. |
-| **Parameter Change** | Bir veya daha fazla zincir üstü protokol parametresini değiştirir (örn. maksimum doğrulayıcı sayısı, emisyon oranı). |
-| **Software Upgrade** | Belirtilen bir blok yüksekliğinde koordineli bir zincir yükseltmesini planlar.                   |
-| **Community Spend**  | Belirtilen bir alıcı adres için topluluk hazinesinden fon talep eder.                            |
+| **Metin**            | Mesajı olmayan ve otomatik zincir üstü yürütmesi bulunmayan bir sinyal teklifi. Topluluk eğilimini ölçmek için kullanılır. |
+| **Parametre Değişikliği** | Yönetişim modülü hesabı tarafından gönderilen, bir modülün `MsgUpdateParams` mesajı. O modülün parametre kümesinin tamamını değiştirir. |
+| **Yazılım Yükseltmesi** | Belirtilen bir blok yüksekliğinde koordineli bir zincir yükseltmesini planlayan bir `MsgSoftwareUpgrade` mesajı. |
+| **Topluluk Harcaması** | Topluluk havuzundan bir alıcı adrese fon gönderen bir `MsgCommunityPoolSpend` mesajı.         |
+| **Hızlandırılmış (Expedited)** | Daha kısa bir oylama dönemi, daha yüksek bir depozito ve kabul eşiği için `"expedited": true` olarak ayarlayın (aşağıya bakın). |
 
 ---
 
@@ -152,22 +161,22 @@ qorechaind query gov params
 
 Başlıca parametreler şunlardır:
 
-| Parameter            | Description                                                      |
-| -------------------- | ---------------------------------------------------------------- |
-| `min_deposit`        | Bir teklifin oylamaya girmesi için gereken asgari depozito        |
-| `max_deposit_period` | Asgari depozitoya ulaşmak için tanınan zaman penceresi            |
-| `voting_period`      | Bir teklif etkinleştikten sonraki oylama döneminin süresi         |
-| `quorum`             | Geçerli bir oylama için gereken asgari katılım                    |
-| `threshold`          | Kabul edilmesi için gereken asgari "yes" yüzdesi (çekimserler hariç) |
-| `veto_threshold`     | Reddetmek ve depozitoyu yakmak için gereken asgari "no with veto" yüzdesi |
+| Parametre            | Açıklama                                                         | Güncel değer (14 Eki 2026) |
+| -------------------- | ---------------------------------------------------------------- | -------------------------- |
+| `min_deposit`        | Bir teklifin oylamaya girmesi için gereken asgari depozito       | 10 QOR (`10000000uqor`)    |
+| `max_deposit_period` | Asgari depozitoya ulaşmak için tanınan zaman penceresi           | 2 gün                      |
+| `voting_period`      | Bir teklif etkinleştikten sonraki oylama döneminin süresi        | 2 gün                      |
+| `quorum`             | Geçerli bir oylama için gereken asgari katılım                   | 0.334                      |
+| `threshold`          | Kabul edilmesi için gereken asgari "yes" yüzdesi (çekimserler hariç) | 0.5                    |
+| `veto_threshold`     | Reddetmek ve depozitoyu yakmak için gereken asgari "no with veto" yüzdesi | 0.334             |
+| `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Hızlandırılmış teklifler için oylama dönemi, kabul eşiği ve depozito | 1 gün / 0.667 / 50 QOR |
 
 ---
 
 :::tip
 
-* Oylama gücü çarpanınızı en üst düzeye çıkarmak için önemli yönetişim oylamalarından önce itibar biriktirin.
-* QDRW formülü içinde 2x yönetişim ağırlığı bonusu için QOR'unuzu xQORE'a kilitleyin.
-* `no_with_veto` seçeneğini dikkatli kullanın. Veto eşiği karşılanırsa teklif depozitosu yakılır.
+* Oylama dönemi sona ermeden önce oy kullanın; oyunuz yalnızca teklif oylama dönemindeyken kullanılırsa sayılır.
+* `no_with_veto` seçeneğini dikkatli kullanın. Veto eşiğine ulaşılırsa teklif depozitosu yakılır.
 * Depozito dönemi içinde asgari depozitoya ulaşamayan teklifler otomatik olarak kaldırılır.
 
 :::

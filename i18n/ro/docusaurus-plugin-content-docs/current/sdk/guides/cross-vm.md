@@ -16,11 +16,30 @@ pentru a urmări starea mesajelor. Rutarea EVM→nativ inițiată *din interioru
 EVM-ului* rulează în continuare on-chain prin **precompile-ul bridge cross-VM** din
 `@qorechain/evm`.
 
+:::caution Ce funcționează astăzi
+Apelurile cross-VM sunt disponibile doar în măsura în care este disponibilă calea
+țintă:
+
+- `MsgCrossVMCall` este oprit de circuit breaker-ul lanțului pe **mainnet**
+  (`GET /cosmos/circuit/v1/disable_list` listează `/qorechain.crossvm.v1.MsgCrossVMCall`);
+  este activat pe testnet.
+- Calea de tranzacții SVM este dezactivată la nivelul întregii rețele, încărcarea și
+  instanțierea CosmWasm sunt cu permisiuni (și nu există contracte pe mainnet), iar
+  precompile-ul bridge EVM nu este activ (vezi
+  [Precompile-uri EVM](/developer-guide/evm-precompiles#network-status)).
+- Utilitarele REST tipizate de citire de mai jos apelează rute pe care gateway-ul
+  public nu le servește. Citește în schimb mesajele cu
+  `connectQueryClients(rpc).crossvm`.
+- Ca orice tranzacție pe calea Native, un apel cross-VM trebuie să poarte semnătura
+  hibridă (vezi [Conturi și semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+:::
+
 ## Apeluri cross-VM unificate
 
 `createCrossVMClient` încapsulează `MsgCrossVMCall` (URL de tip
 `/qorechain.crossvm.v1.MsgCrossVMCall`) astfel încât să nu construiești niciodată
-manual un `{ typeUrl, value }` și să nu codifici tu însuți un payload. Expeditorul
+manual un `{ typeUrl,
+value }` și să nu codifici tu însuți un payload. Expeditorul
 clientului este adresa `TxClient`-ului conectat; `sourceVm` are valoarea implicită
 `"evm"`.
 
@@ -94,20 +113,31 @@ const { messageIds, result } = await xvm.callAtomic([
 ## Citirea înapoi a unui mesaj
 
 `getMessage` citește un mesaj cross-VM după id, preferând clientul de interogare
-tipizat și revenind la metoda JSON-RPC `qor_getCrossVMMessage`:
+tipizat și revenind la metoda JSON-RPC `qor_getCrossVMMessage` (pe care endpoint-urile
+publice nu o servesc). Transmite-i clientul de interogare tipizat, care citește prin
+RPC-ul de consens:
 
 ```ts
 import { connectQueryClients } from "@qorechain/sdk";
 
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
 const queries = connectQueryClients(rpcClient);
 const reader = createCrossVMClient(tx, { query: queries.crossvm });
 
 const msg = await reader.getMessage(messageId);
+
+// Module parameters and the pending queue, over the same typed client:
+const params = await queries.crossvm.params();
+const pending = await queries.crossvm.pendingMessages();
 ```
 
 ## Citirea stării mesajelor cross-VM
 
-`@qorechain/sdk` exportă învelișuri REST tipizate peste `x/crossvm`:
+`@qorechain/sdk` exportă învelișuri REST tipizate peste `x/crossvm`. Acestea apelează
+`/qorechain/crossvm/v1/{message/{id},pending,params}`, pe care gateway-ul public
+**nu** le servește (`Not Implemented` pe `api.qore.host` și `api-testnet.qore.host`),
+așa că aruncă `QoreHttpError` față de endpoint-urile publice. Sunt destinate nodurilor
+care expun acele rute; pe rețelele publice folosește `connectQueryClients` de mai sus.
 
 ```ts
 import {
@@ -118,7 +148,7 @@ import {
 } from "@qorechain/sdk";
 
 const client = createClient({
-  endpoints: { rest: "https://rest.testnet.example" },
+  endpoints: { rest: "https://api-testnet.qore.host" },
 });
 
 // A single message by id.
@@ -134,10 +164,13 @@ const params = await getCrossVmParams(client.rest);
 Acestea returnează forme tipizate: `CrossVmMessage`, `CrossVmMessageResponse`,
 `PendingCrossVmMessagesResponse` și `CrossVmParamsResponse`.
 
-De asemenea, poți citi un mesaj prin spațiul de nume JSON-RPC `qor_`:
+De asemenea, poți citi un mesaj prin spațiul de nume JSON-RPC `qor_`, odată ce
+nodurile îl servesc:
+
+> **Încă nu este servit:** nicio versiune lansată de nod nu servește spațiul de nume JSON-RPC `qor_`, așa că acest apel returnează `-32601` (metodă negăsită) pe fiecare endpoint public astăzi. Vezi [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ```ts
-const m = await client.qor.getCrossVMMessage(messageId);
+const m = await client.qor.getCrossVmMessage(messageId);
 ```
 
 ## Precompile-ul bridge EVM
@@ -152,7 +185,12 @@ console.log(PRECOMPILE_ADDRESSES.crossVmBridge);
 // 0x0000000000000000000000000000000000000901
 ```
 
-Apelează precompile-ul dintr-un contract Solidity (sau prin viem) la acea adresă
-pentru a ruta un mesaj către stratul nativ, apoi urmărește-i starea cu utilitarele
+> **Nu este activ.** Precompile-ul bridge cross-VM nu este activ pe mainnet sau
+> testnet și nu va fi activat în forma sa actuală; este reconstruit mai întâi. Un
+> apel către `0x…0901` returnează astăzi date goale și nu rutează nimic. Vezi
+> [Precompile-uri EVM: Starea rețelei](/developer-guide/evm-precompiles#network-status).
+
+Odată activ, un contract Solidity (sau viem) apelează precompile-ul la acea adresă
+pentru a ruta un mesaj către stratul nativ, apoi îi urmărește starea cu utilitarele
 de citire de mai sus. Vezi [ghidul EVM](/sdk/guides/evm) pentru lista completă de
 precompile-uri.

@@ -7,7 +7,11 @@ sidebar_position: 11
 
 # BTC Restaking (Babylon)
 
-The `x/babylon` module integrates QoreChain with the Babylon Protocol to inherit Bitcoin's proof-of-work finality guarantees. Through BTC restaking, QoreChain gains a secondary finality layer backed by Bitcoin's hashrate — without requiring any changes to the Bitcoin protocol itself.
+The `x/babylon` module is designed to integrate QoreChain with the Babylon Protocol to inherit Bitcoin's proof-of-work finality guarantees. Through BTC restaking, QoreChain would gain a secondary finality layer backed by Bitcoin's hashrate — without requiring any changes to the Bitcoin protocol itself.
+
+:::caution Design stage
+The Babylon integration is specified, but its transactions are **not enabled on the live networks**: the module is disabled in the genesis configuration (`enabled = false`), has no transaction service, query service, CLI or REST routes, and no IBC channel (including to Babylon) is open on either network. Everything below describes the intended design; the message names, REST paths and CLI commands are not available today.
+:::
 
 ## Overview
 
@@ -21,7 +25,7 @@ This provides a defense against long-range attacks and equivocation that is anch
 
 ## BTC Staking Positions
 
-Users can register BTC staking positions on QoreChain by submitting a `MsgBTCRestake` transaction that references a Bitcoin staking transaction.
+Users would register BTC staking positions on QoreChain by submitting a `MsgBTCRestake` transaction that references a Bitcoin staking transaction.
 
 ### Registration Requirements
 
@@ -91,7 +95,7 @@ The Babylon integration provides a **secondary finality guarantee** that complem
 
 | Finality Layer | Source                     | Speed        | Security                                |
 | -------------- | -------------------------- | ------------ | --------------------------------------- |
-| **Primary**    | QoreChain Consensus Engine | \~5 seconds  | Backed by QOR stake + PQC signatures    |
+| **Primary**    | QoreChain Consensus Engine | \~3 seconds  | Backed by QOR stake + PQC signatures    |
 | **Secondary**  | Babylon + Bitcoin          | \~60 minutes | Backed by Bitcoin's cumulative hashrate |
 
 The secondary layer is particularly valuable for:
@@ -121,7 +125,9 @@ The module emits the following on-chain events:
 | `btc_checkpoint`         | epoch, checkpoint\_id                    | Epoch checkpoint submitted to Babylon          |
 | `babylon_epoch_complete` | epoch                                    | Babylon epoch finalized with Bitcoin timestamp |
 
-## API Endpoints
+## API Endpoints (planned)
+
+None of the endpoints or commands in this section is served or available on the live networks today.
 
 ### REST
 
@@ -133,11 +139,13 @@ The module emits the following on-chain events:
 
 ### JSON-RPC
 
+> **Not served yet:** no released node build serves the `qor_` JSON-RPC namespace, so this call returns `-32601` (method not found) on every public endpoint today. See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace).
+
 | Method                      | Parameters         | Description                                                      |
 | --------------------------- | ------------------ | ---------------------------------------------------------------- |
 | `qor_getBTCStakingPosition` | `address` (string) | Returns the BTC staking position for the given QoreChain address |
 
-## CLI Commands
+## CLI Commands (planned)
 
 ### Query Commands
 

@@ -7,7 +7,11 @@ sidebar_position: 10
 
 # Protection MEV (FairBlock)
 
-Le module `x/fairblock` met en œuvre la défense de QoreChain contre les attaques MEV (Maximal Extractable Value) à l'aide d'un chiffrement à seuil basé sur l'identité. Combinée à un système de priorisation des transactions à 5 voies, cette approche crée une architecture anti-MEV complète qui protège les utilisateurs contre le front-running, les attaques sandwich et d'autres formes d'extraction de valeur fondées sur le mempool.
+Le module `x/fairblock` est la conception retenue par QoreChain pour se défendre contre les attaques MEV (Maximal Extractable Value) à l'aide d'un chiffrement à seuil basé sur l'identité. Combinée à un système de priorisation des transactions à 5 voies, cette approche est destinée à former une architecture anti-MEV qui protège les utilisateurs contre le front-running, les attaques sandwich et d'autres formes d'extraction de valeur fondées sur le mempool.
+
+:::note État actuel (octobre 2026)
+FairBlock est **désactivé sur le mainnet comme sur le testnet** (`enabled = false`), et les définitions des 5 voies relèvent uniquement de la configuration : les voies d'espace de bloc ne sont pas appliquées par le mempool ni par le gestionnaire de propositions en production. Cette page décrit la conception visée.
+:::
 
 ## Le problème du MEV
 
@@ -53,7 +57,7 @@ Les validateurs fournissent des parts de déchiffrement pour les transactions va
 
 ## État d'implémentation
 
-Dans la version actuelle du testnet, le module FairBlock est une **implémentation factice (stub)** :
+Sur les deux réseaux en production (mainnet et testnet), le module FairBlock est une **implémentation factice (stub)** :
 
 * L'ante handler `FairBlockDecorator` est branché dans le pipeline de traitement des transactions mais **laisse passer** toutes les transactions sans modification.
 * Lorsque `enabled` vaut `false` (la valeur par défaut), le décorateur délègue immédiatement au handler suivant de la chaîne.
@@ -101,14 +105,12 @@ Transactions à gas abstrait et sponsorisées. Cette voie permet des expérience
 
 ### État d'implémentation
 
-La configuration des voies est **purement déclarative (data-only)** dans la version actuelle du testnet. Les définitions de voies (priorité, allocation d'espace de bloc) sont enregistrées à l'initialisation de l'application, mais le réordonnancement effectif du mempool via `PrepareProposal` et `ProcessProposal` est un jalon futur. Actuellement, toutes les transactions sont traitées dans l'ordre standard quelle que soit leur affectation de voie.
+La configuration des voies est **purement déclarative (data-only)** sur les réseaux en production. Les définitions de voies (priorité, allocation d'espace de bloc) sont enregistrées à l'initialisation de l'application, mais le réordonnancement effectif du mempool via `PrepareProposal` et `ProcessProposal` est un jalon futur. Actuellement, toutes les transactions sont traitées dans l'ordre standard quelle que soit leur affectation de voie.
 
-## Effet anti-MEV combiné
+## Effet anti-MEV combiné (conception)
 
 1. **Couche 1 : Chiffrement (tIBE)** — Les transactions sont chiffrées avant d'entrer dans le mempool. Les proposants ne peuvent pas en lire le contenu, il n'y a donc aucune information à extraire.
 2. **Couche 2 : Priorisation (voies)** — Les transactions chiffrées de la voie MEV bénéficient de 20 % d'espace de bloc réservé. La priorité 90 garantit l'inclusion même en cas de congestion.
 3. **Couche 3 : Déchiffrement à seuil** — Ce n'est qu'après la validation du bloc que les validateurs révèlent les parts de déchiffrement. L'exigence de seuil empêche tout validateur isolé de procéder à un déchiffrement anticipé.
 
-Résultat : l'asymétrie d'information est éliminée à chaque étape du cycle de vie de la transaction, de la diffusion à l'exécution.
-
-Cette approche est strictement supérieure au déchiffrement temporisé ou aux schémas commit-reveal à partie unique, car l'exigence de seuil répartit la confiance sur l'ensemble des validateurs.
+Résultat visé : l'asymétrie d'information est éliminée à chaque étape du cycle de vie de la transaction, de la diffusion à l'exécution, une fois FairBlock activé. L'exigence de seuil répartit la confiance sur l'ensemble des validateurs, ce que ne font ni le déchiffrement temporisé ni les schémas commit-reveal à partie unique.

@@ -7,166 +7,136 @@ sidebar_position: 5
 
 # Trasferimento di Asset tramite Bridge
 
-Questa guida spiega come spostare asset tra QoreChain e altre reti blockchain. Il livello di interoperabilità di QoreChain comprende **37 configurazioni QCB (QoreChain Bridge)** (incluso un loopback QoreChain) per reti eterogenee, oltre a **8 canali IBC** per le chain dell'ecosistema Cosmos.
+Questa guida descrive come è progettato il funzionamento dello spostamento di asset tra QoreChain e altre reti blockchain. Il livello di interoperabilità di QoreChain è costruito attorno a **37 configurazioni di chain** (36 chain esterne più Injective, raggiunta tramite IBC) e fino a **8 controparti IBC** per le chain dell'ecosistema Cosmos.
 
-:::caution
-Il bridge cross-chain si trova attualmente in fase di **testnet / pre-produzione**. La disponibilità delle connessioni, gli asset supportati e i parametri di finalità sono soggetti a modifiche e non devono essere considerati pronti per la produzione. Verifica tutti i trasferimenti su **`qorechain-diana`** prima di farvi affidamento.
+:::caution Non attivo su nessuna delle due reti
+Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna route del bridge è attiva**: tutte le 37 configurazioni di chain sono in stato `pending` senza alcun contratto bridge impostato, non è registrato alcun validatore del bridge, non è mai stata creata alcuna operazione del bridge e non esistono canali o client IBC. Tutto ciò che segue descrive il design previsto. Non inviare asset aspettandoti che vengano trasferiti tramite bridge. Vedi [Architettura del Bridge](/architecture/bridge-architecture) per la tabella dello stato attuale.
 :::
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 ed esegue la versione della chain **v3.1.97** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet**, dove il supporto al bridge è stato abilitato.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.1**. Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route.
 :::
 
 ---
 
 ## Panoramica delle Connessioni
 
-QoreChain offre due protocolli di bridging:
+QoreChain è progettata per offrire due protocolli di bridging:
 
 | Protocollo                               | Connessioni        | Caso d'Uso                                                                 |
 | ----------------------------------------- | ------------------ | --------------------------------------------------------------------------- |
-| **IBC** (Inter-Blockchain Communication)  | 8 canali           | Interoperabilità nativa con le chain abilitate a IBC                        |
-| **QCB** (QoreChain Bridge)                | 37 configurazioni  | Trasferimenti cross-chain con reti non-IBC tramite attestazioni protette da PQC |
+| **IBC** (Inter-Blockchain Communication)  | fino a 8 canali (nessuno aperto)           | Interoperabilità nativa con le chain abilitate a IBC                        |
+| **QCB** (QoreChain Bridge)                | 37 configurazioni (tutte in sospeso)  | Trasferimenti cross-chain con reti non-IBC tramite attestazioni protette da PQC |
 
-Un elenco completo di ogni configurazione QCB e canale IBC è disponibile nella pagina **Architettura del Bridge**. Questa guida si concentra sull'utilizzo quotidiano del bridge.
+Un elenco completo di ogni configurazione di chain è disponibile nella pagina **Architettura del Bridge**. Questa guida si concentra su come è progettato il funzionamento di un trasferimento tramite bridge.
 
 ---
 
-## Canali IBC
+## IBC
 
-Le seguenti chain abilitate a IBC hanno stabilito canali con QoreChain:
-
-| Chain                 | Canale      | Stato  |
-| ---------------------- | ----------- | ------ |
-| Cosmos Hub             | `channel-0` | Attivo |
-| Osmosis                | `channel-1` | Attivo |
-| Noble                  | `channel-2` | Attivo |
-| Celestia               | `channel-3` | Attivo |
-| Stride                 | `channel-4` | Attivo |
-| Akash                  | `channel-5` | Attivo |
-| Babylon                | `channel-6` | Attivo |
-| QoreChain (loopback)   | `channel-7` | Attivo |
-
-I trasferimenti IBC utilizzano il modulo standard `ibc-transfer`:
-
-```bash
-qorechaind tx ibc-transfer transfer transfer <channel> <recipient> <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+IBC fa parte del design (Cosmos Hub, Osmosis, Noble, Celestia, Stride, Akash, Babylon, Injective), ma **su nessuna delle due reti esiste ancora alcun canale o client IBC**, quindi non c'è nulla da trasferire. Questa pagina elencherà i canali una volta aperti.
 
 ---
 
 ## Endpoint del Bridge QCB
 
-Il QoreChain Bridge si connette a chain esterne appartenenti a più tipologie di ecosistema. Una selezione rappresentativa delle reti supportate:
+Il QoreChain Bridge è progettato per connettersi a chain esterne appartenenti a più tipologie di ecosistema. Una selezione rappresentativa delle connessioni pianificate (ognuna è oggi `pending`):
 
-| Chain     | Tipo di Chain | Asset Supportati |
-| --------- | ------------- | ----------------- |
-| Ethereum  | EVM           | ETH, USDC, WBTC   |
-| BSC       | EVM           | BNB, USDC         |
-| Solana    | Solana        | SOL, USDC         |
-| Avalanche | EVM           | AVAX, USDC        |
-| Polygon   | EVM           | MATIC, USDC       |
-| Arbitrum  | EVM           | ETH, ARB, USDC    |
-| TON       | TON           | TON               |
-| Sui       | Sui Move      | SUI               |
-| Optimism  | EVM           | ETH, USDC, OP     |
-| Base      | EVM           | ETH, USDC         |
-| Aptos     | Aptos         | APT, USDC         |
-| Bitcoin   | Bitcoin       | BTC               |
-| NEAR      | NEAR          | NEAR, USDC        |
-| Cardano   | Cardano       | ADA               |
-| Polkadot  | Polkadot      | DOT               |
-| Tezos     | Tezos         | XTZ               |
-| Tron      | Tron          | TRX, USDT         |
+| Chain     | Tipo di Chain |
+| --------- | ------------- |
+| Ethereum  | EVM           |
+| BSC       | EVM           |
+| Solana    | Solana        |
+| Avalanche | EVM           |
+| Polygon   | EVM           |
+| Arbitrum  | EVM           |
+| TON       | TON           |
+| Sui       | Sui Move      |
+| Optimism  | EVM           |
+| Base      | EVM           |
+| Aptos     | Aptos         |
+| Bitcoin   | Bitcoin       |
+| NEAR      | NEAR          |
+| Cardano   | Cardano       |
+| Polkadot  | Polkadot      |
+| Tezos     | Tezos         |
+| Tron      | Tron          |
 
-Consulta la pagina **Architettura del Bridge** per l'elenco completo delle configurazioni QCB e il loro stato di rollout attuale.
+Non è pubblicato alcun elenco di asset: le configurazioni di chain non contengono ancora un registro degli asset. Consulta la pagina **Architettura del Bridge** per l'elenco completo delle configurazioni di chain.
 
 ---
 
 ## Flusso di Deposito (da Chain Esterna a QoreChain)
 
-Il deposito di asset da una chain esterna a QoreChain segue questa sequenza:
+La sequenza prevista per un deposito da una chain esterna a QoreChain:
 
 1. **Blocco (Lock)** — Blocca i token sulla chain esterna inviandoli al contratto o all'indirizzo del bridge QCB.
 2. **Attestazione** — I validatori del bridge osservano la transazione di blocco e producono attestazioni firmate con PQC.
 3. **Soglia** — Una volta raccolte **7 attestazioni su 10** dai validatori, il bridge finalizza il deposito.
 4. **Conio (Mint)** — I token wrapped equivalenti vengono coniati su QoreChain e accreditati sul tuo indirizzo `qor1...`.
 
-**Comando CLI:**
-
-```bash
-qorechaind tx bridge deposit \
-  --chain ethereum \
-  --amount 1000000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+Non esiste alcun comando "avvia un deposito" eseguibile dall'utente: blocchi sulla chain esterna, e le attestazioni dei validatori del bridge accreditano il tuo account. (Il comando `qorechaind tx bridge deposit` della chain accredita un deposito già attestato e richiede firme dei validatori del bridge; non è il modo in cui un utente avvia un deposito.)
 
 ---
 
 ## Flusso di Prelievo (da QoreChain a Chain Esterna)
 
-Il prelievo di asset da QoreChain verso una chain esterna:
+La sequenza prevista per un prelievo da QoreChain verso una chain esterna:
 
 1. **Bruciatura (Burn)** — Brucia i token wrapped su QoreChain.
 2. **Attestazione** — I validatori del bridge osservano la bruciatura e producono attestazioni firmate con PQC.
 3. **Soglia** — Una volta raccolte **7 attestazioni su 10**, il prelievo viene finalizzato.
 4. **Sblocco (Unlock)** — I token originali vengono rilasciati sulla chain esterna verso l'indirizzo di destinazione specificato.
 
-**Comando CLI:**
+**Comando CLI** (bloccato oggi: nessuna chain è attiva, quindi la transazione verrebbe rifiutata):
 
 ```bash
-qorechaind tx bridge withdraw \
-  --chain ethereum \
-  --amount 1000000 \
-  --to 0xYourEthereumAddress \
+# 1. Build the unsigned transaction
+qorechaind tx bridge withdraw [destination-chain] [destination-address] [asset] [amount] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 300000 --fees 30000uqor \
+  --generate-only > withdraw.json
+
+# 2. Attach the post-quantum co-signature and broadcast
+qorechaind tx pqc cosign withdraw.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
+
+Ogni transazione della lane nativa richiede la co-firma post-quantistica ibrida e una commissione di almeno 0,1 uqor per unità di gas; vedi [Prima Transazione](/getting-started/first-transaction).
 
 ---
 
 ## Modello di Sicurezza
 
-Il QoreChain Bridge è protetto da più livelli di difesa:
+Il QoreChain Bridge è progettato per essere protetto da più livelli di difesa:
 
 | Meccanismo                        | Descrizione                                                                                                                                                       |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Multisig PQC 7-su-10**           | Ogni operazione del bridge richiede attestazioni da almeno 7 dei 10 validatori del bridge, ciascuno utilizzando firme crittografiche post-quantistiche.            |
-| **Periodo di Contestazione di 24 Ore** | I prelievi che superano una soglia configurabile entrano in una finestra di contestazione di 24 ore durante la quale i validatori o gli osservatori possono segnalare transazioni fraudolente. |
+| **Periodo di Contestazione di 24 Ore** | I trasferimenti che superano la soglia di trasferimento elevato (100.000 QOR) entrano in una finestra di contestazione di 24 ore durante la quale i validatori o gli osservatori possono segnalare transazioni fraudolente. |
 | **Interruttori Automatici (Circuit Breaker)** | Limitatori di velocità automatici bloccano le operazioni del bridge in caso di volumi anomali o pattern sospetti. Le operazioni del bridge riprendono dopo una revisione manuale. |
 
 ---
 
 ## Interrogazione dello Stato del Bridge
 
-Verifica lo stato di un'operazione del bridge in sospeso:
+Leggi lo stato del bridge:
 
 ```bash
-qorechaind query bridge pending-deposits --address <your_qor_address>
+qorechaind query bridge config
+qorechaind query bridge chains
+qorechaind query bridge chain ethereum
+qorechaind query bridge validators
+qorechaind query bridge operations
+qorechaind query bridge operation [id]
 ```
 
-```bash
-qorechaind query bridge pending-withdrawals --address <your_qor_address>
-```
-
-Elenca tutte le connessioni attive del bridge:
-
-```bash
-qorechaind query bridge connections
-```
+Gli stessi dati sono disponibili via REST sotto `/qorechain/bridge/v1/` (vedi [Architettura del Bridge](/architecture/bridge-architecture#rest-api-endpoints)).
 
 ---
 
 ## Suggerimenti
 
-* I depositi tramite bridge tipicamente si finalizzano nel giro di pochi minuti, una volta raccolte le attestazioni richieste di 7 su 10.
-* I prelievi di importo elevato attivano automaticamente il periodo di contestazione di 24 ore. Pianifica in anticipo i trasferimenti sensibili al tempo.
 * Verifica sempre che il formato dell'indirizzo di destinazione corrisponda alla chain di destinazione (ad es. `0x...` per le chain EVM, base58 per Solana).
-* I trasferimenti IBC sono generalmente più veloci dei trasferimenti QCB poiché utilizzano una comunicazione nativa a livello di protocollo.
+* I trasferimenti di importo elevato (oltre 100.000 QOR) sono progettati per attivare automaticamente il periodo di contestazione di 24 ore.
 * Le commissioni del bridge vengono bruciate tramite il canale di bruciatura `bridge_fee` (vedi [Operazioni sul Token](/user-guide/token-operations)).

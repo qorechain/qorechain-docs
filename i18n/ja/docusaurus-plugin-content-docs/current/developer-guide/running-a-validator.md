@@ -10,14 +10,23 @@ sidebar_position: 9
 このガイドでは、QoreChain ネットワーク上でバリデータを作成する方法、プール分類システムの仕組み、量子耐性セキュリティのための PQC 鍵の登録方法、そしてノードの監視方法について説明します。
 
 :::note
-このガイドは、2026年6月7日から稼働しているメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）を対象としており、チェーンバージョン **v3.1.97** で稼働しています。本番稼働前のセットアップのリハーサルには、テストネット **`qorechain-diana`**（EVM チェーン ID **9800**）の利用を推奨します。対象ネットワークに応じて `--chain-id` を適宜置き換えてください。
+このガイドは、2026年6月29日から稼働しているメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）を対象としており、ノードリリース **v3.2.1** で稼働しています（コンセンサスルールは v3.2.0 アップグレードによるもので、ブロック高 2,981,742 で適用されました）。本番稼働前のセットアップのリハーサルには、テストネット **`qorechain-diana`**（EVM チェーン ID **9800**、v3.2.2）の利用を推奨します。対象ネットワークに応じて `--chain-id` を適宜置き換えてください。ブロック時間はネットワークによって異なります。メインネットで約 3.2 秒、テストネットで約 1.0 秒のため、ブロック数はネットワークごとに時間へ換算してください。
+:::
+
+:::caution ソースビルドではなくリリースバイナリを使用してください
+バリデータは、ライブのマニフェスト（`https://download.qore.host/mainnet/latest.json`。[ノードの運用](/developer-guide/running-a-node#fetch-the-manifest)を参照）に記載された**リリース版の `qorechaind`** を実行する必要があります。公開ソースからビルドしたバイナリにはスタブのキーパーしかなく、耐量子署名機能もありません。そのためネットワークのコンセンサス状態を再現できず、`create-validator` やその他すべての Cosmos レーンのトランザクションに必要なハイブリッド署名も作成できません（[ソースからのビルド](/developer-guide/building-from-source)を参照）。新規のメインネットノードには v3.2.0 以降が必要です。v3.2.1 以降ではノードの時計が 60 秒以上ずれると停止するため、システムクロックは NTP で同期してください。
+:::
+
+:::note このページのうち稼働中の部分
+ブロック生成には標準のステーク加重バリデータローテーションが使われ、スラッシングとガバナンスには、以下に示すパラメータを持つ標準の Cosmos SDK モジュールが使われます。トリプルプール CPoS ロジック（プール分類、プール加重によるプロポーザー選出、ボンディングカーブ、段階的スラッシング）は `x/qca` モジュールに実装されており、そのパラメータもオンチェーンにありますが、**ブロック生成、報酬、スラッシングにはまだ接続されていません**。これらのトピックの節は設計を説明するものです。現時点でプールへの所属や評判によってブロック提案の割合や報酬が変わることを前提に計画しないでください。
 :::
 
 ---
 
 ## 前提条件
 
-* 完全に同期済みの `qorechaind` ノード（[テストネットへの接続](/getting-started/connecting-to-testnet)を参照）
+* 完全に同期済みのリリース版 `qorechaind` ノード（[メインネットへの接続](/getting-started/connecting-to-mainnet)を参照。リハーサルには[テストネットへの接続](/getting-started/connecting-to-testnet)を参照）
+* オペレーターアカウントに**登録済みの ML-DSA-87 PQC 鍵**があること（[PQC 鍵の登録](#pqc-key-registration)を参照）— `create-validator` にはハイブリッド署名が必要です
 * 初期自己委任のために少なくとも **100,000 QOR**（100,000,000,000 uqor）を保有する資金入りアカウント — この最小額はオンチェーンで強制されており、これを下回ると `create-validator` は拒否されます
 * アカウントに有効な **`validator_operator` ライセンス**があること — 詳細は下記の注記を参照してください。ライセンスがない場合、どれだけ多くの QOR を自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します
 * [ステーキングとデリゲーション](/user-guide/staking-and-delegation)モデルへの理解
@@ -33,32 +42,48 @@ sidebar_position: 9
 1. **100,000 QOR の最小自己ボンド。**
 2. **トランザクションを送信するアカウントに有効な `validator_operator` ライセンス**があること。
 
-ライセンスの `expires_at` は日付や期間ではなく**ブロック高**であり、`0` は無期限を意味します。ライセンスが存在しない、または期限切れの場合、どれだけ自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します。これは、資金は十分にあるのに原因が分かりにくい失敗として最も多い理由です。このゲートが存在するのは、EVM 実行レーンではこれを検知・強制できないためです（そこに単一の ante デコレータを置いてしまうと完全に迂回されてしまいます）。これは、ステーキングと検証が Native レーンに限定されている理由の一つでもあります。
+ライセンスはライセンス認可機関によってオンチェーンで付与されます（申請手順は [Tools Hub](/dashboard/tools-hub#validator-application) を参照）。ご自身のライセンスは `GET /qorechain/license/v1/check/{grantee}/validator_operator` で確認できます。ライセンスの `expires_at` は日付や期間ではなく**ブロック高**であり、`0` は無期限を意味します。ライセンスが存在しない、または期限切れの場合、どれだけ自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します。これは、資金は十分にあるのに原因が分かりにくい失敗として最も多い理由です。このゲートが存在するのは、EVM 実行レーンではこれを検知・強制できないためです（そこに単一の ante デコレータを置いてしまうと完全に迂回されてしまいます）。これは、ステーキングと検証が Native レーンに限定されている理由の一つでもあります。
 
-```bash
-qorechaind tx staking create-validator \
-  --amount 100000000000uqor \
-  --pubkey $(qorechaind comet show-validator) \
-  --moniker "my-validator" \
-  --commission-rate 0.10 \
-  --commission-max-rate 0.20 \
-  --commission-max-change-rate 0.01 \
-  --min-self-delegation 1 \
-  --from mykey \
-  --gas auto \
-  --gas-adjustment 1.3 \
-  -y
+`validator.json` ファイルを作成します（フラグ形式は現行の SDK では削除されました）。
+
+```json
+{
+  "pubkey": {"@type": "/cosmos.crypto.ed25519.PubKey", "key": "<base64 key from: qorechaind comet show-validator>"},
+  "amount": "100000000000uqor",
+  "moniker": "my-validator",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.10",
+  "commission-max-rate": "0.20",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
 ```
 
-| パラメータ                       | 説明                                                |
+次に、トランザクションを生成して署名します（他の Cosmos レーンのトランザクションと同様にハイブリッド署名が必要です。[トランザクションコマンド](/cli-reference/transaction-commands#hybrid-signing)を参照）。
+
+```bash
+qorechaind tx staking create-validator validator.json \
+  --from mykey --chain-id qorechain-vladi \
+  --gas 600000 --fees 60000uqor \
+  --generate-only > tx.json
+
+qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+```
+
+ネットワークの手数料下限は**ガス1単位あたり 0.1 uqor** のため、ガス上限 600,000 には少なくとも 60,000 uqor が必要です。
+
+| `validator.json` のフィールド     | 説明                                                |
 | ------------------------------ | -------------------------------------------------- |
-| `--amount`                     | 自己委任額 — **最小100,000 QOR**（`100000000000uqor`） |
-| `--pubkey`                     | バリデータのコンセンサス公開鍵（ed25519）             |
-| `--moniker`                    | バリデータの人が読める名前                            |
-| `--commission-rate`            | 初期コミッション率（例: 0.10 = 10%）                  |
-| `--commission-max-rate`        | 最大コミッション率（作成後は変更不可）                 |
-| `--commission-max-change-rate` | コミッション率の1日あたりの最大変更幅                  |
-| `--min-self-delegation`        | 運営者が自己委任しなければならない最小トークン数        |
+| `amount`                       | 自己委任額 — **最小100,000 QOR**（`100000000000uqor`） |
+| `pubkey`                       | バリデータのコンセンサス公開鍵（ed25519）             |
+| `moniker`                      | バリデータの人が読める名前                            |
+| `commission-rate`              | 初期コミッション率（例: 0.10 = 10%）                  |
+| `commission-max-rate`          | 最大コミッション率（作成後は変更不可）                 |
+| `commission-max-change-rate`   | コミッション率の1日あたりの最大変更幅                  |
+| `min-self-delegation`          | 運営者が自己委任しなければならない最小トークン数        |
 
 トランザクションが確定したら、バリデータを確認します。
 
@@ -70,7 +95,11 @@ qorechaind query staking validator $(qorechaind keys show mykey --bech val -a)
 
 ## プール分類
 
-QoreChain は `x/qca`（Quantum Consensus Allocation）モジュールが管理する**3プール分類システム**を採用しています。**1,000ブロック**ごとに、バリデータはその評判とステーク量に基づいて3つのプールのいずれかに再分類されます。
+:::note 設計段階であり、ブロック生成ではまだ有効ではありません
+以下のプール分類は `x/qca` の設計です。そのパラメータはオンチェーンにあります（`qorechaind query qca config`）が、ブロックプロポーザーはまだプールによって選ばれておらず、プールはまだ報酬やスラッシングを変更しません。
+:::
+
+QoreChain の `x/qca`（Quantum Consensus Allocation）モジュールは**3プール分類システム**を定義しています。**1,000ブロック**ごと（メインネットの 3.2 秒ブロックで約54分）に、バリデータはその評判とステーク量に基づいて3つのプールのいずれかに再分類されることになっています。
 
 | プール                                | 基準                                                | ブロック配分   |
 | ------------------------------------ | -------------------------------------------------- | ------------- |
@@ -78,15 +107,18 @@ QoreChain は `x/qca`（Quantum Consensus Allocation）モジュールが管理�
 | **DPoS**（Delegated Proof-of-Stake）  | 総委任額が10,000 QOR以上                            | ブロックの35% |
 | **PoS**（Proof-of-Stake）             | それ以外のすべてのアクティブなバリデータ              | ブロックの25% |
 
-各プール内では、実効ステーク量に比例する**加重ランダム選出**によってブロックプロポーザーが選ばれます。この分類により、高評判のバリデータと高委任額のバリデータの双方が公平に代表される一方で、小規模なバリデータの参加も可能になっています。
+設計上、各プール内では、実効ステーク量に比例する加重ランダム選出によってブロックプロポーザーが選ばれ、高評判のバリデータと高委任額のバリデータの双方が公平に代表される一方で、小規模なバリデータの参加も可能になります。
 
-### プール分類の照会
+### プール設定の照会
 
 ```bash
-qorechaind query qca pool-classification $(qorechaind keys show mykey --bech val -a)
+# Pool weights and classification parameters (there is no per-validator classification query)
+qorechaind query qca config
 ```
 
 JSON-RPC 経由の場合:
+
+> **まだ提供されていません:** リリース済みのどのノードビルドも `qor_` JSON-RPC ネームスペースを提供していないため、この呼び出しは現在、すべての公開エンドポイントで `-32601`（method not found）を返します。[`qor_` ネームスペース](/api-reference/json-rpc-qor_-namespace)を参照してください。
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -103,7 +135,11 @@ curl -X POST http://localhost:8545 \
 
 ## ボンディングカーブ
 
-バリデータへのステーキング報酬は、複数の要因を組み込んだボンディングカーブによって決定されます。
+:::note 設計段階であり、まだ有効ではありません
+ボンディングカーブは `x/qca` に実装されていますが、まだ報酬分配には接続されていません。現在のステーキング報酬は標準のディストリビューションモジュールに従います。以下の式は設計です。
+:::
+
+バリデータへのステーキング報酬は、複数の要因を組み込んだボンディングカーブによって決定されるように設計されています。
 
 ```
 R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
@@ -121,13 +157,13 @@ R = beta * S * (1 + alpha * log(1 + L)) * Q(r) * P(t)
 
 **要点:**
 
-* **ロイヤルティ期間ボーナス:** 継続的にステークするバリデータは、対数のロイヤルティ項によって報酬が増加していきます。これにより長期的なコミットメントが促進されます。
-* **評判品質係数:** 0.75（評判が低い）から1.25（評判が高い）の範囲を取ります。評判は稼働率、ブロック提案の成功、コミュニティへの参加、トランザクション検証の品質から算出されます。
+* **ロイヤルティ期間ボーナス:** 設計では、継続ステーキング時間に対する対数項が加えられます。
+* **評判品質係数:** 0.75（評判が低い）から1.25（評判が高い）の範囲を取ります。評判の計算式の重みはオンチェーンにあります（`qorechaind query reputation params`）。
 * **プロトコルフェーズ乗数:** ネットワークがブートストラップ期、成長期、成熟期といった各フェーズを経るにつれて調整されます。
 
 ---
 
-## スラッシング
+## スラッシング {#slashing}
 
 基本的な違反ペナルティは、次のコマンドでライブに照会でき、本記事執筆時点の内容は以下のとおりです。
 
@@ -137,17 +173,21 @@ qorechaind query slashing params
 
 | パラメータ | 値 |
 | --- | --- |
-| 署名済みブロックのウィンドウ | 10,000ブロック（累積に約6時間） |
-| ウィンドウ内での最低署名率 | 95%（これを下回るとジェイルされます） |
+| 署名済みブロックのウィンドウ | 10,000ブロック（メインネットで 1ブロック 3.2 秒の場合は約8.9時間。テストネットではより短い） |
+| ウィンドウ内での最低署名率 | 5%（`min_signed_per_window` = 0.05）: 直近10,000ブロックのうち署名したのが **5%未満**、つまり95%超を見逃した場合にバリデータはジェイルされます |
 | ダウンタイムジェイル期間 | 600秒（10分） |
 | ダウンタイムのスラッシュ率 | ステークの1% |
 | 二重署名のスラッシュ率 | ステークの5% |
 
-ジェイルは固定10分のタイムアウトと固定ペナルティであり、以下の段階的モデルとは別のものです。段階的モデルは、より長い時間軸で繰り返される違反に対し、追加のエスカレートするペナルティを積み重ねます。
+ジェイルは固定10分のタイムアウトと固定ペナルティです。アンボンディングには21日（1,814,400秒）かかり、アクティブセットは最大100バリデータ（`max_validators`）で、各デリゲーターが持てるアンボンディングエントリは最大7件（`max_entries`）です。以下の段階的モデルは別個の設計であり、繰り返される違反に対して追加のエスカレートするペナルティを積み重ねるものですが、まだ接続されていません。
 
 ## 段階的スラッシング
 
-QoreChain は、違反を繰り返す者へのペナルティを段階的に強めつつ、時間の経過によってバリデータが回復できるようにする**段階的スラッシング**モデルを採用しています。
+:::note 設計段階であり、まだ有効ではありません
+段階的スラッシングは `x/qca` に実装されていますが、スラッシングには接続されていません。実際に適用されるペナルティは、上の表にある標準の `x/slashing` の値です。以下のパラメータは設計です（`qorechaind query qca config`）。
+:::
+
+段階的スラッシングの設計は、違反を繰り返す者へのペナルティを段階的に強めつつ、時間の経過によってバリデータが回復できるようにするものです。
 
 ```
 penalty = base_rate * escalation^effective_count * severity
@@ -165,7 +205,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 2. **ペナルティは指数関数的に増大します。** 上記の式に基づき、実効カウントに応じてペナルティが段階的に強まるため、違反を繰り返すバリデータははるかに大きなペナルティを受けます。
 
-3. **実効カウントは時間とともに減衰します。** 実効カウントは半減期100,000ブロック（6秒ブロックで約7日間）で減衰するため、一定期間良好な状態を維持したバリデータは回復できます。
+3. **実効カウントは時間とともに減衰します。** 実効カウントは半減期100,000ブロック（メインネットの 3.2 秒ブロックで約3.7日間）で減衰するため、一定期間良好な状態を維持したバリデータは回復できます。
 
 4. **単発の違反と繰り返しの違反。** 単発の偶発的なダウンタイムは軽微なペナルティで済みますが、違反が繰り返されると指数関数的に増大する結果を招きます。
 
@@ -173,29 +213,39 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC 鍵の登録 {#pqc-key-registration}
 
-バリデータライセンスへの申請や `create-validator` の実行**前**に、**耐量子暗号（PQC）公開鍵**（ML-DSA-87）を登録してください。これは**任意ではなく、また自動でもありません**。チェーンはすべての cosmos パスのトランザクションにハイブリッド PQC 署名を要求し、`MsgCreateValidator` は例外対象のメッセージタイプには含まれていません。さらに、初回のトランザクションで自動的に鍵が登録される通常のアカウントとは異なり、バリデータ自身が事前に、自分のノード上でこのコマンドを実行する必要があります。
+バリデータライセンスへの申請や `create-validator` の実行**前**に、**耐量子暗号（PQC）公開鍵**（ML-DSA-87）を登録してください。これは**任意ではなく、また自動でもありません**。チェーンはすべての Cosmos レーンのトランザクションにハイブリッド PQC 署名を要求し、`MsgCreateValidator` は例外対象のメッセージタイプには含まれていません。また、鍵を自動的に登録するアカウントは存在せず、登録は明示的なトランザクションであり、バリデータ運営者を含むすべてのアカウントが事前に自分で送信する必要があります。まず鍵を生成します。
 
 ```bash
-qorechaind tx pqc register-key <pubkey-hex> hybrid \
+qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
+```
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
-  --gas 600000 \
+  --chain-id qorechain-vladi \
+  --gas 600000 --fees 60000uqor \
   -y
 ```
 
 | パラメータ      | 説明                                              |
 | -------------- | ------------------------------------------------- |
+| `dilithium5`   | アルゴリズム（ML-DSA-87）                           |
 | `<pubkey-hex>` | 16進エンコードされた2592バイトの ML-DSA-87 公開鍵     |
-| `hybrid`       | 登録モード（hybrid = 従来型 + PQC の両方）           |
+| `hybrid`       | 鍵タイプ（hybrid = 従来型 + PQC の両方）             |
+
+（`qorechaind tx pqc register-key <pubkey-hex> hybrid` は Dilithium-5 向けの同等のレガシー形式です。）
 
 :::caution `--gas` を明示的に指定してください
-ML-DSA-87 の公開鍵は2,592バイトあり、これをオンチェーンに書き込むとデフォルトの200,000ガス上限を超えてしまいます。`--gas 600000`（またはそれ以上）を指定しない場合、トランザクションは不可解な `out of gas in location: WritePerByte` エラーで失敗します。
+ML-DSA-87 の公開鍵は2,592バイトあり、これをオンチェーンに書き込むとデフォルトの200,000ガス上限を超える場合があります（メインネットでの登録では 220,000 から 350,000 ガスが使われています）。`--gas 600000`（またはそれ以上）を指定しない場合、トランザクションは不可解な `out of gas` エラーで失敗することがあります。手数料はガス上限に 0.1 uqor を掛けた額以上である必要があるため、`--gas 600000` には `--fees 60000uqor` 以上が必要です。
 :::
 
 登録を確認します。
 
 ```bash
-qorechaind query pqc key <account-address>
+qorechaind query pqc account <account-address>
 ```
+
+`~/.qorechaind/pqc/` 配下の鍵ファイルは、アカウントの耐量子署名鍵です。ニーモニックと同様にバックアップし、可能な限りコンセンサス鍵を実行するマシンには置かないでください。復旧とローテーションについては[耐量子署名](/developer-guide/post-quantum-signing#pqc-key-registration)を参照してください。
 
 ---
 
@@ -209,25 +259,18 @@ QoreChain はポート **26660** で Prometheus メトリクスを公開して�
 http://localhost:26660/metrics
 ```
 
-監視すべき主なメトリクス:
+`config.toml` の `[instrumentation]` セクションで `prometheus = true` を設定してエンドポイントを有効にします。ノードはコンセンサスエンジンの標準メトリクス（ブロック高、コンセンサスラウンド、バリデータセット、ピア、メムプール）を公開します。ノードが提供している内容は `curl -s localhost:26660/metrics | grep -i -E 'height|validator|peers|mempool'` で一覧表示できます。バリデータごとの署名の健全性は、ジェイルを決定するのがチェーン自身の記録であるため、チェーンそのものから読み取るのが最も確実です（下記のヘルスチェックを参照）。
 
-| メトリクス                        | 説明                                             |
-| ------------------------------- | ----------------------------------------------- |
-| `qorechain_missed_blocks_total` | バリデータが見逃したブロックの総数                    |
-| `qorechain_validator_uptime`    | 直近Nブロックにおける稼働率                          |
-| `qorechain_reputation_score`    | 現在の評判スコア                                    |
-| `qorechain_pool_classification` | 現在のプール割り当て（0=PoS、1=DPoS、2=RPoS）          |
-| `qorechain_consecutive_signed`  | 連続して署名したブロック数                            |
-| `consensus_height`              | 現在のブロック高                                    |
-| `consensus_rounds`              | 現在のブロック高におけるコンセンサスラウンド数           |
-
-### 評判スコアの照会
+### 評判パラメータの照会
 
 ```bash
-qorechaind query reputation score $(qorechaind keys show mykey --bech val -a)
+# Formula weights only (there is no per-validator score query)
+qorechaind query reputation params
 ```
 
 JSON-RPC 経由の場合:
+
+> **まだ提供されていません:** リリース済みのどのノードビルドも `qor_` JSON-RPC ネームスペースを提供していないため、この呼び出しは現在、すべての公開エンドポイントで `-32601`（method not found）を返します。[`qor_` ネームスペース](/api-reference/json-rpc-qor_-namespace)を参照してください。
 
 ```bash
 curl -X POST http://localhost:8545 \
@@ -243,14 +286,14 @@ curl -X POST http://localhost:8545 \
 ### ヘルスチェック
 
 ```bash
-# ノードステータス
+# Node status
 qorechaind status | jq '.sync_info'
 
-# バリデータの署名情報（稼働率、見逃したブロック）
+# Validator signing info (uptime, missed blocks)
 qorechaind query slashing signing-info $(qorechaind comet show-validator)
 
-# バリデータがアクティブセットに含まれているか確認
-qorechaind query staking validators --status bonded | grep "my-validator"
+# Check if your validator is in the active set
+qorechaind query staking validators --status BOND_STATUS_BONDED | grep "my-validator"
 ```
 
 ---
@@ -261,45 +304,54 @@ qorechaind query staking validators --status bonded | grep "my-validator"
 
 2. **アラートを設定する。** 見逃したブロック、低い稼働率、予期しない再起動に対してアラートを設定します。少数のブロック見逃しは正常な範囲ですが、継続的な見逃しはスラッシングを引き起こします。
 
-3. **高い稼働率を維持する。** 評判システムは一貫した稼働率に報酬を与えます。長時間のダウンタイムは評判品質係数を低下させ、報酬を減少させます。
+3. **高い稼働率を維持する。** 長時間のダウンタイムが続くと、バリデータはジェイルされ（直近10,000ブロックのうち署名したのが5%未満）、スラッシングを受けます。[スラッシング](#slashing)を参照してください。
 
 4. **ソフトウェアを最新に保つ。** QoreChain のリリースを追跡し、速やかにアップデートを適用してください。チェーンアップグレードの際はバリデータコミュニティと連携してください。
 
 5. **鍵を安全に管理する。** バリデータのコンセンサス鍵には、ハードウェアセキュリティモジュール（HSM）またはリモート署名者を使用してください。鍵をノードと同じマシンに保管しないでください。
 
-6. **PQC 鍵を登録する。** ML-DSA-87 鍵を登録することで、バリデータを量子の脅威に対して将来にわたって備えられます。
+6. **先に PQC 鍵を登録する。** オペレーターアカウントは、バリデータを作成したり他の Cosmos レーンのトランザクションを送信したりする前に、登録済みの ML-DSA-87 鍵が必要です。
 
-7. **自分のプールを監視する。** 1,000ブロックごとにプール分類を確認してください。評判を改善することで PoS から RPoS へ移行でき、ブロック提案の機会を大幅に増やすことができます。
+7. **時計の同期を保つ。** NTP クライアントを実行してください。v3.2.1 以降では、ノードの時計が 60 秒以上ずれると停止します。
 
 ---
 
 ## バリデータコマンドリファレンス
 
 ```bash
-# バリデータのメタデータを編集
+# Edit validator metadata
 qorechaind tx staking edit-validator \
-  --moniker "new-name" \
+  --new-moniker "new-name" \
   --website "https://myvalidator.com" \
   --details "Description of my validator" \
-  --from mykey -y
+  --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
 
-# ダウンタイムによるスラッシング後のアンジェイル
-qorechaind tx slashing unjail --from mykey -y
+# Unjail after downtime slashing
+qorechaind tx slashing unjail --from mykey --gas 300000 --fees 30000uqor --generate-only > tx.json
 
-# 追加ステークの委任
+# Delegate additional stake
 qorechaind tx staking delegate $(qorechaind keys show mykey --bech val -a) \
-  500000000uqor --from mykey -y
+  500000000uqor --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
 
-# 報酬の引き出し
+# Withdraw rewards and commission
 qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech val -a) \
-  --commission --from mykey -y
+  --commission --from mykey --gas 400000 --fees 40000uqor --generate-only > tx.json
+
+# Sign and broadcast any of the above (hybrid signature):
+qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
+
+ネットワークの手数料下限はガス1単位あたり 0.1 uqor です。登録済みの PQC 鍵を**持たない**オペレーターアカウントは、従来型の署名で `unjail` を送信できます。鍵を登録した後は、すべてのトランザクション（unjail を含む）にハイブリッド署名が必要です。
 
 ---
 
 ## 接続ネットワークの検証 {#connected-networks}
 
-チェーンバージョン **v3.1.80** 以降、QoreChain バリデータは[ブリッジ](/architecture/bridge-architecture)を通じて接続された各ネットワークの検証も支援できるようになりました。これは**ライセンスによってゲートされたオプトイン機能**です。
+:::caution 接続ネットワークはまだ有効ではありません
+ブリッジモジュールはメインネットとテストネットにデプロイされていますが、**有効なブリッジルートはありません**。37のチェーン設定はすべて `pending` ステータスで、ブリッジバリデータは登録されておらず、ブリッジ操作は一度も作成されておらず、IBC チャネルも存在しません。以下のフレームワークは設計を説明するものであり、現時点で接続ネットワーク上に検証するものはありません。
+:::
+
+この設計（チェーンバージョン **v3.1.80** 以降）により、QoreChain バリデータは[ブリッジ](/architecture/bridge-architecture)を通じて接続された各ネットワークの検証も支援できるようになります。これは**ライセンスによってゲートされたオプトイン機能**です。
 
 1. **ライセンスを保有する。** バリデータは対象ネットワーク向けの有効な `validator_<chain>`（または `qcb_bridge`）ライセンスを保有している必要があります。オーケストレータは、ライセンスがなければ外部クライアントの起動を拒否します（フェイルクローズ）。
 2. **有効化によりクライアントが自動プロビジョニングされる。** ライセンスが有効化されると、QoreChain は該当ネットワークのクライアントをノード上に自動的にプロビジョニングします。ピン留めされたクライアントのダウンロード、設定のレンダリング、QoreChain のオーケストレーション下での実行が行われます。有効化されるまでは何も取得されません。
@@ -320,6 +372,6 @@ qorechaind tx distribution withdraw-rewards $(qorechaind keys show mykey --bech 
 
 ## 次のステップ
 
-* [ソースからのビルド](/developer-guide/building-from-source) — `qorechaind` バイナリをビルドする
+* [ノードの運用](/developer-guide/running-a-node) — リリースバイナリのインストール、ステートシンク、ノード設定
 * [EVM 開発](/developer-guide/evm-development) — QoreChain 上でスマートコントラクトをデプロイする
-* [アカウントアブストラクション](/developer-guide/account-abstraction) — バリデータ運用のためのプログラマブルアカウント
+* [耐量子署名](/developer-guide/post-quantum-signing) — 鍵の登録、復旧、ローテーション

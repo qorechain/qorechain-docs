@@ -7,56 +7,52 @@ sidebar_position: 4
 
 # Disponibilidad de datos
 
-La disponibilidad de datos (DA) es la garantía de que los datos de transacción que respaldan el estado de un rollup se publican en algún lugar donde cualquiera pueda leerlos — de modo que cualquiera pueda reconstruir y verificar de forma independiente el estado del rollup. El RDK admite tres backends de DA.
+La disponibilidad de datos (DA) es la garantía de que los datos de transacción que respaldan el estado de un rollup se publican en algún lugar donde cualquiera pueda leerlos — de modo que cualquiera pueda reconstruir y verificar de forma independiente el estado del rollup. El RDK define tres backends de DA; hoy solo `native` está implementado.
 
-| Backend | Qué es |
-| ------- | ---------- |
-| **`native`** | Almacenamiento de blobs on-chain dentro de la propia QoreChain |
-| **`celestia`** | Disponibilidad de datos a través de IBC hacia Celestia, una capa de DA modular dedicada |
-| **`both`** | Native y Celestia juntos, para redundancia |
+| Backend | Qué es | Estado |
+| ------- | ---------- | ------ |
+| **`native`** | Almacenamiento de blobs on-chain dentro de la propia QoreChain | Implementado en el módulo; todavía no hay una forma pública de publicar un blob (ver más abajo) |
+| **`celestia`** | Disponibilidad de datos a través de IBC hacia Celestia, una capa de DA modular dedicada | No implementado |
+| **`both`** | Native y Celestia juntos, para redundancia | Se comporta exactamente como `native` hoy |
 
-:::caution
-Los backends de disponibilidad de datos forman parte del RDK en evolución activa. Trata las notas de madurez siguientes como intención de diseño y valídalas en la testnet **`qorechain-diana`** antes de confiar en un backend en producción.
+:::caution Capacidad en fase temprana
+Todavía no se ha creado ningún rollup en ninguna de las dos redes, y los backends de DA están implementados solo en parte. El estado de cada backend se indica a continuación; valida en la testnet **`qorechain-diana`** antes de confiar en cualquiera de ellos.
 :::
 
 ---
 
 ## DA nativa (almacenamiento de blobs on-chain)
 
-La DA nativa almacena los datos de transacción del rollup como **blobs** directamente en QoreChain. Cada blob se confirma y es direccionable, de modo que los datos que respaldan un lote de liquidación pueden recuperarse y verificarse on-chain.
+La DA nativa es el almacén de blobs on-chain dentro de `x/rdk`: cada blob se indexa por ID de rollup e índice de blob, lleva un **compromiso SHAKE-256** de sus bytes y se poda tras la ventana de retención mientras se conserva su compromiso.
+
+:::caution Todavía no hay una forma pública de publicar un blob
+El módulo define el almacenamiento, la retención y la poda de blobs, pero **no existe ningún mensaje de transacción para publicar un blob** en las versiones actuales. Hasta que se publique un mensaje de envío, un lote de liquidación debe dejar `data_hash` vacío — un lote que indique un hash de datos en un rollup `native` o `both` es rechazado porque no se puede almacenar ningún blob que coincida.
+:::
 
 Conceptos clave:
 
-* **Blobs.** Los datos de transacción del rollup se publican como blobs de disponibilidad de datos, cada uno asociado a un ID de rollup y a un índice de blob.
-* **Compromisos (commitments).** Cada blob lleva un compromiso (un hash de los datos del blob), de modo que un blob puede verificarse frente a lo que se comprometió, sin necesidad de confiar en quien lo almacena.
+* **Blobs.** Un blob se asocia a un ID de rollup y a un índice de blob.
+* **Compromisos (commitments).** Cada blob lleva un compromiso SHAKE-256 de 32 bytes de sus datos, de modo que un blob puede verificarse frente a lo que se comprometió, sin necesidad de confiar en quien lo almacena. (La utilidad TypeScript `buildDaBlob()` calcula actualmente el hash con SHA-256, por lo que su `dataHash` no coincide con el compromiso de la cadena.)
 * **Espacios de nombres (namespaces).** Los blobs pueden llevar un espacio de nombres específico del rollup, manteniendo los datos de cada rollup lógicamente separados dentro del almacenamiento compartido.
-* **Retención y poda (pruning).** Los blobs nativos se conservan durante una ventana acotada y luego se podan para mantener sostenible el almacenamiento on-chain. Tras la poda, los datos brutos del blob se eliminan mientras que los metadatos del compromiso se conservan, de modo que el compromiso histórico sigue siendo verificable aunque los bytes ya no se almacenen on-chain.
+* **Retención y poda (pruning).** Los blobs nativos se conservan durante `blob_retention_blocks` (432,000 bloques — unos 16 días con el tiempo de bloque actual de mainnet de ≈3.2 s; la cifra varía con el tiempo de bloque) y luego se podan para mantener sostenible el almacenamiento on-chain. Tras la poda, los datos brutos del blob se eliminan mientras que los metadatos del compromiso se conservan, de modo que el compromiso histórico sigue siendo verificable aunque los bytes ya no se almacenen on-chain.
 
-El tamaño máximo exacto de blob y la ventana de retención se rigen por los parámetros del módulo en vivo. Consúltalos antes de diseñar en torno a cualquier límite específico:
+El tamaño máximo de blob y la ventana de retención se rigen por los parámetros del módulo en vivo. Consúltalos antes de diseñar en torno a cualquier límite específico:
 
 ```bash
 qorechaind query rdk config
 ```
 
-La DA nativa es la opción más sencilla — mantiene todo dentro de QoreChain, heredando la seguridad y la criptografía post-cuántica de la cadena anfitriona, a costa de consumir almacenamiento de la cadena anfitriona.
-
 ---
 
 ## DA de Celestia (IBC hacia Celestia)
 
-El backend `celestia` publica la disponibilidad de datos a través de IBC hacia **Celestia**, una red de DA modular dedicada. Esto descarga el almacenamiento de blobs de QoreChain hacia una capa de DA específica, sin dejar de anclar la liquidación en QoreChain.
-
-:::note
-La DA de Celestia es una integración en proceso de maduración. En la versión actual debe tratarse como aún no consolidada para producción — valida el comportamiento en testnet y prefiere `native` o `both` donde necesites una garantía liquidada hoy.
-:::
+La DA de Celestia **no está implementada**. Un rollup cuyo backend de DA sea `celestia` no puede publicar datos (el módulo devuelve un error). El diseño previsto publica la disponibilidad de datos a través de IBC hacia **Celestia**, una red de DA modular dedicada, sin dejar de anclar la liquidación en QoreChain; hoy no existe ningún canal IBC en ninguna de las dos redes (consulta [Arquitectura del puente](/architecture/bridge-architecture)). Usa `native`.
 
 ---
 
 ## Both (redundancia)
 
-El backend `both` escribe en **native y Celestia juntos**, ofreciendo redundancia entre un almacén on-chain y una capa de DA modular externa. Elige `both` cuando quieras la mayor superficie de disponibilidad posible y estés dispuesto a pagar por almacenar los datos en dos lugares.
-
-Dado que la vía de Celestia todavía está madurando, trata `both` como nativa-con-redundancia-en-progreso en lugar de una garantía de que hoy se liquidan dos copias totalmente independientes. Confirma el comportamiento actual en testnet.
+El backend `both` está pensado para escribir en **native y Celestia juntos**. Hoy `both` se comporta exactamente como `native`: solo se almacena la copia nativa, y la mitad de Celestia se omite con una advertencia registrada. No lo trates como dos copias independientes.
 
 ---
 
@@ -65,7 +61,7 @@ Dado que la vía de Celestia todavía está madurando, trata `both` como nativa-
 | Si quieres... | Elige |
 | -------------- | ------ |
 | La opción más sencilla y totalmente on-chain que hereda la seguridad de QoreChain | **`native`** |
-| Descargar la DA a una capa modular dedicada (en maduración) | **`celestia`** |
-| La máxima superficie de disponibilidad con redundancia (en maduración) | **`both`** |
+| Descargar la DA a una capa modular dedicada | **`celestia`** — no implementado |
+| Redundancia entre dos almacenes | **`both`** — igual que `native` hoy |
 
 Para saber cómo encaja la DA en el panorama más amplio de la liquidación, consulta **[Visión general de los rollups](/rollups/overview)**. Para la referencia del módulo de más bajo nivel, consulta la página del **[Kit de desarrollo de rollups](/architecture/rollup-development-kit)**.

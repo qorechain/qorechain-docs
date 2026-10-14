@@ -21,19 +21,22 @@ keys. These are the reasons to build here.
 
 ## 1. AI pre-flight risk scoring
 
-**Scan a transaction with on-chain AI before you broadcast it.**
+**Scan a transaction with on-chain AI before you broadcast it** (requires the AI
+precompiles to be active on the target network, which they are not on the public
+networks yet).
 
-QoreChain ships AI risk analysis as EVM precompiles. The SDK calls them for you
-and returns gas plus a risk/anomaly verdict in a single call — so a wallet or
-dApp can warn (or block) *before* signing.
+QoreChain builds AI risk analysis into EVM precompiles. The SDK calls them for
+you and returns gas plus a risk/anomaly verdict in a single call, so a wallet or
+dApp can warn (or block) *before* signing. The AI precompiles are **not active
+yet** on mainnet or testnet (see
+[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)).
 
 ```ts
-import { createClient } from "@qorechain/sdk";
-import { simulateWithRiskScore } from "@qorechain/evm";
+import { createEvmClient, simulateWithRiskScore } from "@qorechain/evm";
 
-const client = createClient({ network: "mainnet", endpoints: { evmRpc } });
+const { publicClient } = await createEvmClient({ endpoints: { evmRpc } });
 
-const preflight = await simulateWithRiskScore(client.evm, {
+const preflight = await simulateWithRiskScore(publicClient, {
   from: account.address,
   to: contractAddress,
   data: calldata,
@@ -49,11 +52,11 @@ if (!preflight.safe) {
 }
 ```
 
-**Why it's unique:** the scoring runs *inside the chain* as a deterministic
-precompile (`aiRiskScore` at `0x…0B01`, `aiAnomalyCheck` at `0x…0B02`). Other
-networks can only bolt on off-chain, non-deterministic AI services. This is the
-first SDK that AI-screens a transaction before it is signed, with an on-chain
-result. See [AI pre-flight](/sdk/guides/ai-preflight).
+**Why it's different:** the scoring is designed to run *inside the chain* as a
+deterministic precompile (`aiRiskScore` at `0x…0B01`, `aiAnomalyCheck` at
+`0x…0B02`), not as an off-chain service. Until those precompiles are activated, the
+helpers above throw on the public networks (`returned no data ("0x")`). See
+[AI pre-flight](/sdk/guides/ai-preflight).
 
 ---
 
@@ -66,9 +69,10 @@ cross-VM bridge. The SDK exposes one interface to call any of them — and to pa
 several cross-VM calls into a single, atomic transaction signed once.
 
 ```ts
-import { createCrossVMClient } from "@qorechain/sdk";
+import { connectQueryClients, createCrossVMClient } from "@qorechain/sdk";
 
-const crossVM = createCrossVMClient(tx, { query: client.query });
+// rpcClient: a connected consensus-RPC client (the CosmJS RPC client type).
+const crossVM = createCrossVMClient(tx, { query: connectQueryClients(rpcClient).crossvm });
 
 // Call an EVM contract from a native account (payload ABI-encoded for you).
 await crossVM.call({
@@ -85,11 +89,12 @@ await crossVM.callAtomic([
 ]);
 ```
 
-**Why it's unique:** QoreChain is the only L1 with three co-resident VMs and a
-native bridge module (`crossvm` + the `CrossVMBridge` precompile). Single-VM
-chains cannot express "one account, three VMs, one atomic transaction" — their
-SDKs have nothing to wrap. Write once, call any VM. See
-[Cross-VM calls](/sdk/guides/cross-vm).
+**Why it's different:** QoreChain runs three co-resident VMs with a native bridge
+module (`crossvm`, plus the `CrossVMBridge` precompile once it is active), so one
+SDK interface can address all three. Single-VM chains have nothing equivalent to
+wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
+is switched off on mainnet, SVM transactions are disabled, and CosmWasm upload and
+instantiate are permissioned. See [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---
 
@@ -104,24 +109,34 @@ migrate to hybrid signing — with a React badge to show users they're protected
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Idempotent: registers the signer's ML-DSA-87 key on-chain if not already.
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair });
+// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
+// (read it over REST on the public endpoints; see the Quantum-safe guide).
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
+  pqcKeypair,
+  status: { registered },
+});
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair });
-await hybrid.send(messages);
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+await hybrid.signAndBroadcastHybrid({
+  registry, signer, messages, fee, chainId, accountNumber, sequence,
+  rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
+  transport,
+});
 ```
 
 ```tsx
 import { QuantumSafeBadge } from "@qorechain/react";
 
-// Shows a "Quantum-safe" indicator when the address has a registered PQC key.
+// Shows a "Quantum-safe" indicator when the address has a registered PQC key
+// (needs a node that serves the `qor_` namespace; see the React guide).
 <QuantumSafeBadge address={account.address} />
 ```
 
-**Why it's unique:** post-quantum cryptography is native and mandatory on
-QoreChain, not an experiment. This is the first SDK where "quantum-safe by
-default" is a single call plus a drop-in badge. See
+**Why it matters:** post-quantum cryptography is native and mandatory on
+QoreChain's Native path, not an experiment, and the SDK reduces adopting it to a
+register call plus a hybrid send path. Registration is explicit: there is no
+auto-registration on the first transaction. See
 [Quantum-safe](/sdk/guides/quantum-safe).
 
 ---
@@ -129,7 +144,10 @@ default" is a single call plus a drop-in badge. See
 ## 4. Unified eth-native accounts — one key, three addresses, one balance
 
 **One `eth_secp256k1` key is one 20-byte identity on all three lanes.** (SDK
-0.6.0, chain v3.1.83.)
+0.6.0, chain v3.1.83.) The SVM transaction lane is disabled network-wide today, and
+the EVM lane needs an
+[authorization window](/sdk/guides/evm#evm-window); the shared balance and
+address mapping hold regardless.
 
 ```ts
 import { deriveUnifiedAccount } from "@qorechain/sdk";
@@ -139,14 +157,14 @@ account.cosmos; // "qor1…"  bech32 — Native lane
 account.evm;    // "0x…"    EIP-55 — EVM lane
 account.svm;    // base58   — SVM lane (same 20 bytes + 12 zero bytes)
 // A deposit to ANY of the three lands in ONE balance,
-// and the same key spends on every lane (signHybridEth on the Native path).
+// and the same key signs on every enabled lane (signHybridEth on the Native path).
 ```
 
 **Why it's unique:** on multi-VM setups elsewhere, each runtime has its own
 account space and funds get stranded per-lane. QoreChain renders one 20-byte
 identity three ways with one shared balance — a wallet never "has funds on one
-lane but not another". `connectPhantomUnified` even bootstraps this identity
-non-custodially from a Phantom signature. See
+lane but not another". An external wallet such as Phantom can be linked to that identity as a
+limited authenticator ([Authenticators](/sdk/guides/authenticators)). See
 [Unified accounts](/sdk/concepts/accounts-pqc#unified-accounts).
 
 ---
@@ -155,6 +173,14 @@ non-custodially from a Phantom signature. See
 
 **A linked Phantom or MetaMask key spends from the canonical PQC-required
 account, under limits, via a relayer.** (SDK 0.7.0, chain v3.1.85.)
+
+:::caution Not available on the live networks yet
+The `abstractaccount` module is switched off on `qorechain-vladi` and
+`qorechain-diana` (`GET /qorechain/abstractaccount/v1/config` returns
+`"enabled": false`), and from chain v3.2.0 that flag is enforced on every path, so a
+key cannot be linked and the lanes below cannot be used. See the
+[Authenticators guide](/sdk/guides/authenticators).
+:::
 
 ```ts
 import { buildPhantomExecuteCosmos } from "@qorechain/sdk";
@@ -172,7 +198,7 @@ const msg = await buildPhantomExecuteCosmos({
 });
 ```
 
-**Why it's unique:** every spend is bounded by an on-chain permission taxonomy,
+**Why it matters:** once the module is enabled, every spend is bounded by an on-chain permission taxonomy,
 `SpendingRule` limits, and an expiry — least-privilege and revocable — while
 the account itself stays post-quantum protected. See
 [Authenticators & delegated spending](/sdk/guides/authenticators).

@@ -9,8 +9,8 @@ sidebar_position: 5
 
 Questa pagina copre due argomenti correlati: i **sistemi di proof ZK** (`snark` e `stark`) usati dai rollup con settlement ZK, e il **flusso di prelievo L2 → L1** che sposta i fondi da un rollup verso QoreChain una volta che un batch è finalizzato.
 
-:::caution
-La verifica ZK e STARK è una parte dell'RDK in attiva maturazione. Tratta i sistemi di proof e il flusso di prelievo qui descritti come intento progettuale, validali sulla testnet **`qorechain-diana`** e non dare per scontate garanzie crittografiche pronte per la produzione sulla mainnet, per ora.
+:::caution Funzionalità in fase iniziale
+Nessun rollup è ancora stato creato su nessuna delle due reti, quindi né la verifica delle proof né il flusso di prelievo qui descritti sono stati messi alla prova su un rollup live. La verifica SNARK esiste, ma un rollup creato tramite `create-rollup` non può ancora finalizzare un batch ZK, e la verifica STARK è sperimentale. Valida sulla testnet **`qorechain-diana`** e non dare per scontate garanzie pronte per la produzione sulla mainnet.
 :::
 
 ---
@@ -21,8 +21,8 @@ Un rollup con settlement ZK (modalità di settlement `zk`) allega una validity p
 
 | Sistema di proof | Caratteristiche |
 | ------------ | --------------- |
-| **`snark`** | Proof succinte |
-| **`stark`** | Proof trasparenti — nessun trusted setup |
+| **`snark`** | Proof succinte (Groth16 su BLS12-381), verificate on-chain rispetto alla verifying key del rollup |
+| **`stark`** | Proof trasparenti, nessun trusted setup — sperimentale; opt-in e legato a un circuito dimostrativo |
 
 La modalità di settlement `zk` richiede uno tra `snark` o `stark`; l'abbinamento è imposto on-chain quando il rollup viene creato. Per contro, il settlement `optimistic` usa il sistema di proof `fraud`, mentre i settlement `based` e `sovereign` usano `none`. Vedi **[Panoramica dei Rollup](/rollups/overview)** per la matrice di compatibilità completa.
 
@@ -32,7 +32,7 @@ A differenza dei rollup ottimistici — che attendono lo scadere di una finestra
 
 ### Maturità
 
-La verifica delle proof ZK e STARK è ancora in fase di maturazione. Considera il settlement ZK come **non ancora pronto per la produzione**: prototipa e valida su testnet, e segui le release notes dell'RDK per lo stato della verifica completa delle proof prima di farvi affidamento per rollup mainnet che gestiscono valore.
+I batch SNARK vengono verificati on-chain (Groth16 su BLS12-381) rispetto a una verifying key memorizzata insieme al rollup. Un rollup creato tramite `create-rollup` al momento non porta con sé una verifying key, quindi i batch ZK non possono ancora essere finalizzati end-to-end. La verifica STARK è sperimentale: è opt-in e controlla un circuito dimostrativo, non la transizione di stato del tuo rollup. Considera il settlement ZK come non pronto per la produzione, e segui le release notes dell'RDK prima di farvi affidamento per rollup mainnet che gestiscono valore.
 
 ---
 
@@ -52,7 +52,7 @@ Per come i batch vengono sottomessi e finalizzati — incluso `submit-batch` e i
 
 ## Eseguire un prelievo: `execute-withdrawal`
 
-Il comando `execute-withdrawal` finalizza un prelievo L2 → L1 contro la root dei prelievi di un batch finalizzato. Dimostra che una foglia di prelievo è sottoposta a commit in quella root e paga il destinatario dall'escrow del modulo rdk. L'azione è **permissionless** — chiunque può sottomettere una proof valida.
+Il comando `execute-withdrawal` finalizza un prelievo L2 → L1 contro la root dei prelievi di un batch finalizzato. Dimostra che una foglia di prelievo è sottoposta a commit in quella root e paga il destinatario dall'escrow del modulo rdk. L'azione è **permissionless** — chiunque può sottomettere una proof valida. Come ogni transazione della lane nativa, richiede la co-firma post-quantistica ibrida, quindi costruiscila con `--generate-only` e co-firmala (vedi [Distribuire un Rollup](/rollups/deploying-a-rollup)). I prelievi non sono ancora stati messi alla prova su un rollup live; considera il flusso come non testato.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -60,7 +60,9 @@ qorechaind tx rdk execute-withdrawal \
   --proof <sibling-hash-1>,<sibling-hash-2>,... \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor \
+  --generate-only > withdrawal.json
+qorechaind tx pqc cosign withdrawal.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
 **Argomenti posizionali:**
@@ -80,7 +82,21 @@ qorechaind tx rdk execute-withdrawal \
 | ---- | ----------- |
 | `--proof` | Sibling hash Merkle in formato hex separati da virgola, ordinati dalla foglia alla root, che dimostrano che la foglia di prelievo è sottoposta a commit nella root dei prelievi del batch |
 
-Il valore di `--proof` è la inclusion proof: i sibling hash lungo il percorso dalla foglia di prelievo fino alla root dei prelievi sottoposta a commit dal batch. Il modulo ricalcola la root a partire dalla foglia e dai sibling forniti e la confronta con la root sottoposta a commit dal batch finalizzato prima di rilasciare i fondi in escrow.
+Il valore di `--proof` è la inclusion proof: i sibling hash lungo il percorso dalla foglia di prelievo fino alla root dei prelievi sottoposta a commit dal batch. Il modulo ricalcola la root a partire dalla foglia e dai sibling forniti e la confronta con la root sottoposta a commit dal batch finalizzato prima di effettuare il pagamento.
+
+### Codifica di foglie e nodi {#leaf-and-node-encoding}
+
+* **Foglia** = SHAKE-256 (32 byte) di `rollup_id`, un byte `0x00`, l'indice di prelievo (8 byte big-endian), la stringa `recipient`, `0x00`, la stringa `denom`, `0x00`, e l'`amount` (8 byte big-endian).
+* **Genitore** = SHAKE-256 di `left || right`. A ogni livello il bit corrispondente dell'indice di prelievo decide il lato: `0` significa che la foglia (o l'hash corrente) è il nodo sinistro.
+* Ogni sibling hash deve essere esattamente di 32 byte.
+
+:::caution Gli helper Merkle generici non corrispondono
+Gli helper generici `binaryMerkleRoot` / `binaryMerkleProof` dell'RDK usano per impostazione predefinita SHA-256 con nodi dispari duplicati. Sostituisci l'hash e la codifica delle foglie con le regole qui sopra, altrimenti la proof non verrà verificata on-chain.
+:::
+
+### Da dove provengono i fondi {#where-the-funds-come-from}
+
+Un prelievo viene pagato dallo **stake in escrow del rollup stesso** (lo stake meno il burn di creazione). Il modulo mantiene un registro per rollup, così un prelievo dimostrato per un rollup non può essere pagato dallo stake di un altro rollup. Nel modulo non esiste alcun messaggio di deposito L1 → L2, quindi questo non è un bridge di fondi degli utenti.
 
 ---
 

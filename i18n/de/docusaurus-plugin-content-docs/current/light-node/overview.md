@@ -7,21 +7,21 @@ sidebar_position: 1
 
 # Light-Node-Überblick
 
-Die **QoreChain Light Node** ist ein leichtgewichtiger Client, der dem QoreChain-Netzwerk folgt, ohne einen vollständigen Validator- oder Archivknoten zu betreiben. Anstatt jede Transaktion erneut abzuspielen, gleicht sie Block-Header über mehrere RPC-Endpunkte hinweg ab, verfolgt Delegationen und Belohnungen und streamt Live-Netzwerk-Telemetrie — alles aus einer kleinen, eigenständigen Binärdatei.
+Die **QoreChain Light Node** ist ein leichtgewichtiger Client, der dem QoreChain-Netzwerk folgt, ohne einen vollständigen Validator- oder Archivknoten zu betreiben. Anstatt jede Transaktion erneut abzuspielen, gleicht sie Block-Header über mehrere RPC-Endpunkte hinweg ab, spiegelt die Delegationen und Belohnungen des Operator-Kontos von der Chain und streamt Live-Netzwerk-Telemetrie — alles aus einer kleinen, eigenständigen Binärdatei.
 
-Der Betrieb einer Light Node ermöglicht es Ihnen, an der Ökonomie des Netzwerks teilzunehmen und seinen Zustand zu beobachten, ohne die Speicher-, Bandbreiten- und Betriebskosten eines vollständigen Knotens.
+Der Betrieb einer Light Node ermöglicht es Ihnen, den Zustand des Netzwerks zu beobachten, ohne die Speicher-, Bandbreiten- und Betriebskosten eines vollständigen Knotens. Die Teilnahme am Light-Node-Belohnungsanteil ist ein separater, lizenzpflichtiger Schritt, der **noch nicht offen ist** — siehe [Status des Belohnungsprogramms](#reward-program-status).
 
 ## Eine eigene Versionslinie
 
-Die Light Node wird in ihrer **eigenen Versionslinie — derzeit v3.1.2** — ausgeliefert, die sich von der **Chain-Release-Version unterscheidet** (die Chain befindet sich auf einem separaten `v3.x`-Track). Binärdateien werden mit einem **SHA-256-Checksum-Manifest** veröffentlicht — siehe [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) für das Download-Muster — und v3.1.2 ist die erste Version, deren Windows- und macOS-Binärdateien Keygen/Sign/Verify tatsächlich bestehen (frühere Builds stammten aus der Zeit vor einem Wechsel der Rust-Bibliothek und schlugen auf diesen Plattformen stillschweigend fehl). Sie ist derzeit im **Testnet**-Release-Channel freigegeben; der Mainnet-Channel wird absichtlich zurückgehalten, um vor der Freigabe eine längere Bewährungsphase zu durchlaufen — falls ein Mainnet-Download-Link einen 404-Fehler liefert, liegt das daran, nicht an einem defekten Link.
+Die Light Node wird in ihrer **eigenen Versionslinie — derzeit v3.1.3** — für die vorgebauten Binärdateien ausgeliefert, die sich von der **Chain-Release-Version unterscheidet** (die Chain befindet sich auf einem separaten `v3.x`-Track). Binärdateien für jedes Netzwerk werden mit einem **SHA-256-Checksum-Manifest** unter `https://download.qore.host/<net>/lightnode/latest.json` veröffentlicht (`<net>` ist `mainnet` oder `testnet`; beide Channels führen derzeit denselben v3.1.3-Build). Siehe [SX-Edition](/light-node/sx-edition#install) für die Download- und Verifizierungsschritte. Das Source-Tag `v3.1.4` unterscheidet sich von v3.1.3 nur im gebündelten Signer des Docker-Images; siehe [Docker](/light-node/sx-edition#docker).
 
-Wenn Sie Dokumentation oder Release-Notes lesen, behandeln Sie die Version der Light Node (v3.1.2) und die Version der Chain als zwei separate Zahlen, die zufällig eine Hauptserie teilen.
+Wenn Sie Dokumentation oder Release-Notes lesen, behandeln Sie die Version der Light Node (v3.1.3) und die Version der Chain als zwei separate Zahlen, die zufällig eine Hauptserie teilen.
 
 ## Warum eine Light Node betreiben {#why-run-a-light-node}
 
-- **Verdienen Sie einen Anteil an den Block-Belohnungen.** Aktive, registrierte Light Nodes sind für den unten beschriebenen **3%-Light-Node-Belohnungsanteil** berechtigt.
-- **Überprüfen Sie den Chain-Zustand, der Ihnen angezeigt wird.** Der Knoten ruft die neueste Höhe parallel von seinem primären RPC-Endpunkt und von jedem konfigurierten Witness-Endpunkt ab und speichert einen Header nur, wenn diese sich über den Block-Hash einig sind — das erhöht die Hürde vom Vertrauen in einen einzelnen Endpunkt hin zur Notwendigkeit, dass alle konfigurierten Endpunkte gleichzeitig kompromittiert sein müssten. Dies ist ein Abgleich über unabhängige Quellen, **keine vollständige kryptografische Konsensverifizierung** (keine Prüfung von Validatoren-Set oder Commit-Signaturen). Ihr eigener Knoten meldet, in welchem Modus er läuft, als `Assurance`-Status auf **seinem eigenen Dashboard** (standardmäßig `http://127.0.0.1:8420`) — das ist etwas, das ein zentrales QoreChain-Dashboard nicht sehen kann, da die RPC-Auswahl Ihres Knotens lokal zu Ihrer Einrichtung gehört. **`trusted-single-source`** (keine Witnesses konfiguriert) ist der Standard, mit dem die meisten Betreiber starten, und kein Warnzeichen — ein ehrlich betriebener einzelner Endpunkt meldet denselben Wert wie ein kompromittierter. Fügen Sie einen unabhängig betriebenen Witness hinzu, um zu `corroborated-across-sources` zu wechseln.
-- **Delegieren und automatisch verzinsen.** Verwalten Sie delegierten Stake über mehrere Validatoren hinweg, aufgeteilt nach Gewichtung, und verzinsen Sie Belohnungen automatisch.
+- **Nehmen Sie am Light-Node-Belohnungsanteil teil.** Registrierte, aktive Light Nodes, die die Stake- und Uptime-Regeln erfüllen, sind für die unten beschriebene **3%-Light-Node-Zuweisung** berechtigt. Die Registrierung für das Belohnungsprogramm ist **noch nicht offen** — siehe [Status des Belohnungsprogramms](#reward-program-status). Das Betreiben und Synchronisieren eines Knotens braucht keine Lizenz und funktioniert heute.
+- **Überprüfen Sie den Chain-Zustand, der Ihnen angezeigt wird.** Der Knoten ruft die neueste Höhe parallel von seinem primären RPC-Endpunkt und von jedem konfigurierten Witness-Endpunkt ab und speichert einen Header nur, wenn diese sich über den Block-Hash einig sind — das erhöht die Hürde vom Vertrauen in einen einzelnen Endpunkt hin zur Notwendigkeit, dass alle konfigurierten Endpunkte gleichzeitig kompromittiert sein müssten. Dies ist ein Abgleich über unabhängige Quellen, **keine vollständige kryptografische Konsensverifizierung** (keine Prüfung von Validatoren-Set oder Commit-Signaturen). Ihr Knoten hält fest, in welchem Modus er läuft, als `assurance`-Wert in jeder `synced header`-Zeile seines Debug-Logs (setzen Sie `log_level = "debug"`); er wird weder im Dashboard des Knotens noch in `status` angezeigt, und kein zentraler QoreChain-Dienst kann ihn sehen, da die RPC-Auswahl Ihres Knotens lokal zu Ihrer Einrichtung gehört. **`trusted-single-source`** erhalten Sie, wenn keine Witnesses konfiguriert sind — der Knoten protokolliert beim Start eine entsprechende Warnung, weil ein ehrlich betriebener einzelner Endpunkt denselben Wert meldet wie ein kompromittierter. Fügen Sie einen unabhängig betriebenen Witness hinzu, um zu `corroborated-across-sources` zu wechseln.
+- **Behalten Sie Ihren Stake im Blick.** Der Knoten spiegelt die Delegationen des Operator-Kontos von der Chain und warnt, wenn ein Validator, an den Sie delegieren, unter einen konfigurierbaren Reputationswert fällt. Er bewegt selbst nie Stake — Delegationsänderungen werden von Ihrer eigenen Wallet aus vorgenommen.
 - **Beobachten Sie das Netzwerk live.** Echtzeit-Telemetrie deckt Validatoren, Konsens, die Bridge und Tokenomics ab.
 - **Post-Quanten ab dem ersten Tag.** Schlüssel und Signaturen verwenden Dilithium-5 (ML-DSA-87).
 
@@ -39,20 +39,30 @@ Die Light Node ist in zwei Editionen verfügbar, die aus derselben Codebasis ers
 
 Beide Editionen lesen dieselbe `config.toml`, speichern Daten im selben Home-Verzeichnis (standardmäßig `~/.qorechain-lightnode`) und verwenden denselben Dilithium-5-Keyring.
 
-## Der 3%-Light-Node-Belohnungsanteil
+## Der 3%-Light-Node-Belohnungsanteil {#the-3-light-node-reward-share}
 
-Die Gebührenverteilung von QoreChain weist Light Nodes einen festen **3%-Anteil** für die Bereitstellung von Netzwerkdaten zu. Dies wird on-chain als Teil der Belohnungsaufteilung des Protokolls durchgesetzt und ist derselbe Kanal, der in der Ökonomie des Projekts dokumentiert ist — siehe [Tokenomics](/architecture/tokenomics) für die vollständige Aufschlüsselung 37 % / 30 % / 20 % / 10 % / 3 % (Validatoren, verbrannt, Treasury, Staker, Light Nodes).
+Die Gebührenverteilung von QoreChain weist Light Nodes einen festen **3%-Anteil** zu (der Parameter `reward_share`, `0.03`). Siehe [Tokenomics](/architecture/tokenomics) für die vollständige Aufschlüsselung 37 % / 30 % / 20 % / 10 % / 3 % (Validatoren, verbrannt, Treasury, Staker, Light Nodes).
 
-Um für diesen Anteil berechtigt zu sein, muss eine Light Node **on-chain registriert sein und aktiv ihre Liveness nachweisen** über Heartbeat-Proofs. Registrierung und Lizenzierung werden unter [Registrierung und Lizenzierung](/light-node/registration-and-licensing) behandelt; wie der Anteil verdient, verzinst und überwacht wird, wird unter [Belohnungen und Überwachung](/light-node/rewards-and-monitoring) behandelt.
+Diese 3 % sind das, was in das Light-Node-Modulkonto eingezahlt wird; es ist kein Anspruch pro Knoten. Alle 100 Blöcke schreibt die Chain jedem berechtigten Knoten seinen stake-gewichteten Anteil an dem gut, was seit der vorherigen Abrechnung aufgelaufen ist, **pro Knoten begrenzt** durch `max_reward_per_block_per_node` (derzeit `1713` uqor pro Block, skaliert mit der Uptime des Knotens). Die Grenze ist eine Obergrenze, kein zugesicherter Betrag. Alles, was nicht verdient wird, wird in eine Reserve verschoben, die nur eine Governance-Abstimmung freigeben kann, sodass sich kein Topf für denjenigen aufbaut, der sich zuerst registriert. Die aktuelle Aufteilung können Sie mit `GET /qorechain/lightnode/v1/reward_pool` einsehen.
+
+Um für Belohnungen berechtigt zu sein, muss eine Light Node **on-chain registriert und aktiv** sein (Liveness per Heartbeats nachweisen), mindestens den minimalen gebundenen Stake halten und ihre Uptime auf oder über dem Minimum halten. Registrierung und Lizenzierung werden unter [Registrierung und Lizenzierung](/light-node/registration-and-licensing) behandelt; wie Belohnungen gutgeschrieben, beansprucht und überwacht werden, wird unter [Belohnungen und Überwachung](/light-node/rewards-and-monitoring) behandelt.
+
+## Status des Belohnungsprogramms {#reward-program-status}
+
+:::note Die Registrierung für das Belohnungsprogramm ist noch nicht offen
+Zum Zeitpunkt der Erstellung (15. Oktober 2026) wurde auf keinem der beiden Netzwerke eine `lightnode_operator`-Lizenz erteilt, und es ist keine Light Node registriert (`GET /qorechain/lightnode/v1/stats` meldet `total_registered: "0"` im Mainnet und im Testnet). Die Chain lehnt eine Registrierung ohne diese Lizenz ab, sodass sich noch niemand anmelden kann. Die Belohnungsabrechnung selbst ist seit dem Upgrade auf v3.2.0 auf beiden Netzwerken bereits live. Das Betreiben und Synchronisieren eines Knotens braucht keine Lizenz und funktioniert heute, doch die Uptime wird **ab dem Block gezählt, in dem Ihr Knoten registriert wird**, sodass ein vorheriger Betrieb keine Gutschrift bringt.
+
+Das Release-Manifest (`https://download.qore.host/<net>/lightnode/latest.json`) trägt das offizielle Signal im Feld `registration.open`. Sie können auch `GET /qorechain/license/v1/holders/lightnode_operator` und `GET /qorechain/lightnode/v1/stats` auf `https://api.qore.host` (Mainnet) oder `https://api-testnet.qore.host` (Testnet) prüfen.
+:::
 
 ## Kernfunktionen auf einen Blick
 
 - **Header-Abgleich aus mehreren Quellen** — überprüft den neuesten Block-Hash gegen jeden konfigurierten Witness-Endpunkt, bevor er vertraut wird, ohne vollständige Blöcke herunterzuladen, und synchronisiert sich schnell, selbst aus einem Cold Start.
-- **Delegiertes Staking** — staken Sie über mehrere Validatoren hinweg mit konfigurierbaren Aufteilungsgewichten.
-- **Auto-Compound-Belohnungen** — beanspruchen und re-delegieren Sie Belohnungen in einem konfigurierbaren Intervall.
-- **Reputationsbewusstes Rebalancing** — verschieben Sie die Delegation automatisch hin zu Validatoren mit höherer Reputation.
+- **Delegations-Tracking** — spiegelt die Delegationen des Operator-Kontos von der Chain (nur lesend).
+- **Optionaler Auto-Claim** — beansprucht aufgelaufene Light-Node-Belohnungen in einem konfigurierbaren Intervall auf das Operator-Konto. Standardmäßig aus; er delegiert nie neu.
+- **Reputationswarnungen** — warnen, wenn ein Validator, an den Sie delegieren, unter einen konfigurierbaren Reputationswert fällt; er bewegt keinen Stake.
 - **Echtzeit-Telemetrie** — Validatoren, Konsens, Bridge und Tokenomics, aktualisiert in unabhängigen Intervallen.
-- **On-Chain-Registrierung** — mit Heartbeat-Liveness-Proofs, die den Knoten für Belohnungen berechtigt halten.
+- **On-Chain-Registrierung** — mit Heartbeat-Liveness-Proofs, die den Knoten für Belohnungen berechtigt halten. Die Registrierung ist lizenzpflichtig.
 - **Post-Quanten-Kryptografie** — Dilithium-5-(ML-DSA-87-)Schlüssel und -Signaturen durchgängig.
 - **Local-Only-Modus** — testen Sie den vollständigen PQC-Stack und betreiben Sie den Knoten eigenständig, bevor Sie ihn auf eine live laufende Chain ausrichten.
 
@@ -63,6 +73,5 @@ Die Light Node wird unter der **Apache-2.0**-Lizenz veröffentlicht.
 - [SX-Edition](/light-node/sx-edition) — installieren, konfigurieren und betreiben Sie den Server-Daemon.
 - [UX-Edition](/light-node/ux-edition) — betreiben Sie die Web-Dashboard-Edition.
 - [Registrierung und Lizenzierung](/light-node/registration-and-licensing) — registrieren Sie sich on-chain und erhalten Sie eine Lizenz.
-- [Belohnungen und Überwachung](/light-node/rewards-and-monitoring) — verdienen Sie den 3%-Anteil und halten Sie den Knoten gesund.
-- [SX-Edition](/light-node/sx-edition) und [UX-Edition](/light-node/ux-edition) sind die zwei Möglichkeiten, eine Light Node zu betreiben.
+- [Belohnungen und Überwachung](/light-node/rewards-and-monitoring) — wie der 3%-Anteil gutgeschrieben und beansprucht wird und wie Sie den Knoten gesund halten.
 - [Tokenomics](/architecture/tokenomics) — wie der Light-Node-Belohnungsanteil in die größere Ökonomie passt.

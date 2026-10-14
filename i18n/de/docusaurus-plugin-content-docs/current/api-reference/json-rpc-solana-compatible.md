@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain bietet über seine SVM-Runtime (Solana Virtual Machine) eine Solana-kompatible JSON-RPC-Schnittstelle, die es bestehenden Solana-Tools und -SDKs ermöglicht, nativ mit QoreChain zu interagieren.
 
 :::caution SVM-Transaktionsübermittlung derzeit deaktiviert
-Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungs-Lane infolge eines Vorfalls **netzwerkweit für die Transaktionsübermittlung deaktiviert** — jede Transaktion liefert `code 11, "SVM module is disabled"`. Dies gilt netzwerkweit, nicht nur an den öffentlichen Nur-Lese-Endpunkten. Lesende Methoden in der Tabelle unten (z. B. `getBalance`, `getAccountInfo`) können weiterhin antworten, aber versuchen Sie keine Live-Integration, die SVM-Transaktionen übermittelt, bis die Lane wieder geöffnet wird — dies ist eine zur Kompilierzeit festgelegte Deaktivierung, kein Laufzeitparameter, kann also nicht per Governance-Abstimmung wieder aktiviert werden; es wird erwartet, dass sie deaktiviert bleibt, bis ein externes Audit sie freigibt.
+Seit Chain-Version v3.1.89 (22. August) ist die SVM-Ausführungs-Lane infolge eines Vorfalls **netzwerkweit für die Transaktionsübermittlung deaktiviert** — jede Transaktion liefert `code 11, "SVM module is disabled"`. Dies gilt netzwerkweit, nicht nur an den öffentlichen Nur-Lese-Endpunkten. Lesende Methoden in der Tabelle unten (z. B. `getBalance`, `getAccountInfo`) antworten an den öffentlichen Endpunkten normal, aber versuchen Sie keine Live-Integration, die SVM-Transaktionen übermittelt, bis die Lane wieder geöffnet wird — dies ist eine zur Kompilierzeit festgelegte Deaktivierung, kein Laufzeitparameter, kann also nicht per Governance-Abstimmung wieder aktiviert werden; es wird erwartet, dass sie deaktiviert bleibt, bis ein externes Audit sie freigibt.
 :::
 
 ## Verbindung
@@ -40,6 +40,16 @@ Seit Chain-Version **v3.1.82** liefert die SVM-Schnittstelle das native **QOR-Gu
 | `getMinimumBalanceForRentExemption` | `dataLength` (Integer)   | Liefert das Mindestguthaben für Rent-Befreiung bei gegebener Datengröße |
 | `getVersion`                        | keine                     | Liefert die Node-Softwareversion                              |
 | `getHealth`                         | keine                     | Liefert den Health-Status des Nodes (`"ok"`, falls gesund)                 |
+| `getBlockHeight`                    | keine                     | Liefert die aktuelle Blockhöhe                                 |
+| `getLatestBlockhash`                | keine                     | Liefert einen aktuellen Blockhash und `lastValidBlockHeight`   |
+| `getRecentBlockhash`                | keine                     | Legacy-Form von `getLatestBlockhash`                           |
+| `getFeeForMessage`                  | `message` (base64)       | Liefert die Gebühr für eine Nachricht (Lamports)               |
+| `getMultipleAccounts`               | `pubkeys` (Array)        | Liefert mehrere Accounts in einem Aufruf                       |
+| `getProgramAccounts`                | `programId` (base58)     | Liefert die Accounts, die einem Programm gehören               |
+| `getTokenAccountsByOwner`           | `owner`, Filter          | Liefert die Token-Accounts eines Owners                        |
+| `getTokenAccountsByDelegate`        | `delegate`, Filter       | Liefert die Token-Accounts eines Delegates                     |
+
+Methoden außerhalb dieser Liste, wie `getGenesisHash` und `getEpochInfo`, liefern `-32601 method not found`. `getTransaction` wird akzeptiert, antwortet derzeit aber mit einem Envelope ohne `result`-Feld, verlassen Sie sich daher nicht darauf. Der von `getSlot` gemeldete Slot folgt der Blockhöhe der Chain.
 
 ---
 
@@ -156,7 +166,7 @@ curl -X POST http://localhost:8899 \
   "id": 3,
   "result": {
     "solana-core": "1.18.0-qorechain",
-    "feature-set": 1
+    "feature-set": 0
   }
 }
 ```
@@ -174,20 +184,20 @@ import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 
-// Version prüfen
+// Check version
 const version = await connection.getVersion();
 console.log("Node version:", version["solana-core"]);
 
-// Guthaben abrufen
+// Get balance
 const pubkey = new PublicKey("4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T");
 const balance = await connection.getBalance(pubkey);
 console.log("Balance:", balance / LAMPORTS_PER_SOL);
 
-// Slot abrufen
+// Get slot
 const slot = await connection.getSlot();
 console.log("Current slot:", slot);
 
-// Account-Info abrufen
+// Get account info
 const accountInfo = await connection.getAccountInfo(pubkey);
 if (accountInfo) {
   console.log("Owner:", accountInfo.owner.toBase58());

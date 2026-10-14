@@ -21,7 +21,7 @@ These answers are **illustrative** — short, plain-language paraphrases of Qore
 
 **QCAIA replies:**
 
-> QoreChain's bridge lets you move assets between QoreChain and other networks. It combines QCB transfers with IBC for cross-chain connectivity, with IBC support rolling out on testnet first. For the full design, see the bridge documentation.
+> QoreChain's bridge is designed to move assets between QoreChain and other networks, combining QCB transfers with IBC. It is not live yet: all chain configurations are still pending and no IBC channel is open on either network. For the full design, see the bridge documentation.
 
 _Learn more: [Bridge Architecture](/architecture/bridge-architecture)._
 
@@ -35,7 +35,7 @@ _Learn more: [Bridge Architecture](/architecture/bridge-architecture)._
 
 **QCAIA replies:**
 
-> PRISM is QoreChain's reinforcement-learning optimization layer. It continuously tunes the network for performance and efficiency as conditions change. You can read the deep dive in the PRISM documentation.
+> PRISM is QoreChain's reinforcement-learning optimization layer, designed to tune network parameters as conditions change. Today it runs in observation mode: it records observations but no trained policy is loaded yet. You can read the deep dive in the PRISM documentation.
 
 _Learn more: [PRISM Consensus Engine](/architecture/prism-consensus-engine)._
 

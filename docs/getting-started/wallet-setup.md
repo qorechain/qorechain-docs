@@ -10,12 +10,16 @@ sidebar_position: 2
 QoreChain supports multiple wallet types across its native, EVM, and SVM execution environments. Choose the wallet that matches your use case.
 
 :::note
-The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
+The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 29 June 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
 :::
+
+## QoreX (recommended) {#qorex}
+
+**QoreX** is the official, non-custodial QoreChain wallet — a mobile app (Android, iOS) and a browser extension (Chrome, Firefox, Safari on macOS). It signs every Native-lane transfer with the mandatory hybrid post-quantum signature, registers your post-quantum key for you, supports staking, @handles and external networks, and pairs with the Dashboard. It also opens the [EVM authorisation window](/getting-started/first-transaction#evm-window) that MetaMask transactions need. Start with the [QoreX guide](/qorex/overview) and [Getting Started](/qorex/getting-started).
 
 ## Keplr Wallet
 
-Keplr is the recommended wallet for native QoreChain transactions, staking, and governance.
+Keplr can add QoreChain as a custom chain (below) to view balances and receive on the Native lane. Because QoreChain requires a post-quantum co-signature on the Native lane, send, stake and vote with a PQC-capable wallet such as [QoreX](/qorex/overview) rather than with Keplr alone.
 
 ### Add QoreChain as a Custom Chain
 
@@ -57,18 +61,28 @@ Open MetaMask and navigate to **Settings > Networks > Add Network**, then enter:
 
 Native QOR has **18 decimals** on the EVM interface (wei-style). Once connected, you can use MetaMask to sign EVM transactions, interact with deployed smart contracts, and manage ERC-20 tokens on QoreChain.
 
+:::caution EVM / MetaMask needs a PQC key and an open window
+MetaMask still signs normally, but the EVM lane admits transactions only from an account that has a registered post-quantum key and an open **EVM authorisation window** (v3.2.0 and later). Register your key once, then open a window before a session of EVM activity — see [EVM authorisation window](/getting-started/first-transaction#evm-window). MetaMask cannot open the window itself; open it in [QoreX](/qorex/security-and-recovery#evm-window) or with the CLI. Adding the network to MetaMask (above) is unchanged.
+:::
+
 ### One-call network registration
 
-For dApps, the **`@qorechain/wallet-adapter`** and **`@qorechain/connect`** packages (published to npm) register QoreChain with the user's wallet in one call — prompting MetaMask to add the network via EIP-3085 (with the correct **18-decimal** native QOR on the EVM rail) and configuring Keplr's gas-price step:
+For dApps, the **`@qorechain/wallet-adapter`** package (published to npm) registers QoreChain with the user's wallet in one call — prompting MetaMask to add the network via EIP-3085 (with the correct **18-decimal** native QOR on the EVM rail) — and provides `qoreChainInfo` for the Keplr chain suggestion (including the gas-price step):
 
 ```bash
-npm install @qorechain/wallet-adapter @qorechain/connect
+npm install @qorechain/wallet-adapter
 ```
 
 ```ts
 import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
 
-await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+// pass the EIP-1193 provider and the network parameters (rpcUrl is required)
+await addQoreEvmToWallet(window.ethereum, {
+  evmChainId: 9801,                       // 9800 for the testnet
+  rpcUrl: "https://evm.qore.host",        // https://evm-testnet.qore.host for the testnet
+  explorerUrl: "https://explore.qore.network",
+  testnet: false,                         // true for the testnet
+});
 ```
 
 ## One Account, Three Addresses (Unified Accounts) {#unified-accounts}
@@ -81,17 +95,21 @@ Generate a unified wallet in code with `@qorechain/wallet-adapter`:
 import { generateQoreWallet } from "@qorechain/wallet-adapter";
 
 const w = await generateQoreWallet();          // or walletFromMnemonic(mnemonic)
-console.log(w.addresses.cosmos);               // qor1...
-console.log(w.addresses.evm);                  // 0x... (same identity)
-console.log(w.addresses.svm);                  // base58 (same identity)
-// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid).
+console.log(w.cosmos);                         // qor1...
+console.log(w.evm);                            // 0x... (same identity)
+console.log(w.svm);                            // base58 (same identity)
+// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid); pass `rest` so the sign-bytes form is resolved.
 ```
 
 Funds sent to any of the three forms land in the same balance.
 
 ## Linked Wallets: Phantom & MetaMask as Spending Keys {#linked-wallets}
 
-As of chain version **v3.1.85**, you don't have to expose your root key to spend from a QoreChain account in a dApp. A **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.
+:::caution Currently switched off on both networks
+Smart-account and linked-wallet features are implemented but **switched off** on both networks (`abstractaccount.enabled = false`): registering an authenticator and executing through one are refused while the flag is off. Check `GET /qorechain/abstractaccount/v1/config` before offering a linking flow. The section below describes the designed behaviour.
+:::
+
+Designed so that you don't have to expose your root key to spend from a QoreChain account in a dApp (introduced in chain version **v3.1.85**): a **Phantom** (ed25519) or **MetaMask** (by its Ethereum address, via `personal_sign`) key can be **registered as an authenticator** on your account — with scoped permissions, spending limits, an expiry, and instant revocation — and then authorize transfers relayed by the dApp's backend. See [Linked Wallet Authenticators](/developer-guide/account-abstraction#authenticators) for the full model and code, and the [SDK Authenticators guide](/sdk/guides/authenticators) for end-to-end examples.
 
 ## Solana Wallets (SVM)
 
@@ -116,10 +134,10 @@ The public SVM endpoints are **read-only**; transaction submission requires your
 
 ## PQC-Enabled Wallets (Required on the Cosmos Path)
 
-QoreChain requires hybrid post-quantum cryptography (PQC) on the cosmos transaction path. As of the current chain version (**v3.1.82**), the network default is `hybrid_signature_mode = required` with `allow_classical_fallback = false` — so **every cosmos-path transaction must carry an ML-DSA-87 (Dilithium-5) signature alongside the standard secp256k1 (ECDSA) signature**. Classical-only cosmos transactions from a PQC account are rejected.
+QoreChain requires hybrid post-quantum cryptography (PQC) on the cosmos transaction path. On the live networks (v3.2.x) the network default is `hybrid_signature_mode = required` with `allow_classical_fallback = false` — so **every cosmos-path transaction must carry an ML-DSA-87 (Dilithium-5) signature alongside the standard secp256k1 (ECDSA) signature**. Classical-only cosmos transactions from a PQC account are rejected.
 
 :::caution Cosmos txs require the hybrid PQC extension
-Sending a plain classical transaction on the cosmos path will be rejected. You must attach the Dilithium-5 signature as a `PQCHybridSignature` transaction extension. Standard CosmJS / Keplr tooling does not produce this extension by itself — use the `qorechaind tx pqc cosign` CLI command, the QoreChain SDK's hybrid signing (see below), or, to build it yourself in code, the open-source [**qorechain-pqc**](/developer-guide/post-quantum-signing) library (`hybridSignBytes`). The only exemptions are genesis gentxs and PQC key registration/migration transactions.
+Sending a plain classical transaction on the cosmos path will be rejected. You must attach the Dilithium-5 signature as a `PQCHybridSignature` transaction extension. Standard CosmJS / Keplr tooling does not produce this extension by itself — use the `qorechaind tx pqc cosign` CLI command, the QoreChain SDK's hybrid signing (see below), or, to build it yourself in code, the open-source [**qorechain-pqc**](/developer-guide/post-quantum-signing) library (`hybridSignBytes`). The only exemptions are genesis gentxs, PQC key registration/migration transactions, and an unjail from an operator account that has no registered key.
 :::
 
 ### How It Works
@@ -131,16 +149,26 @@ Wallets attach an ML-DSA-87 PQC signature as a transaction extension alongside t
 Generate a post-quantum key for hybrid signing:
 
 ```bash
-qorechaind tx pqc gen-key
+qorechaind tx pqc gen-key mypqc
 ```
 
-### Auto-Registration
+The command takes a key name and stores the key under `~/.qorechaind/pqc/<name>.dilithium` (mode `0600`, not encrypted). It requires the official `qorechaind` release binary.
 
-When you include a PQC public key in your first transaction, QoreChain automatically registers it on-chain. No separate registration step is needed. (PQC key registration/migration transactions are themselves exempt from the hybrid requirement, so an account can bootstrap its first key.)
+### Register your key (once) {#register-your-key}
+
+A post-quantum key is **registered explicitly**, once per account, with a key-registration transaction. That one transaction (and key migration) may be signed classically so a brand-new account can bootstrap; after it, every Cosmos-lane transaction must carry the hybrid signature.
+
+```bash
+# register the public key printed by gen-key for your account
+qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+Back up the PQC key file as carefully as your mnemonic. (A key can be re-derived from the mnemonic with `qorechaind tx pqc recover-key`, and replaced with `tx pqc rotate-key`.) QoreX and the QoreChain SDK register the key for you. See [First Transaction](/getting-started/first-transaction#register-pqc-key) for a complete signed send.
 
 ### Hybrid Signing with the SDK
 
-The QoreChain SDK produces compliant cosmos transactions via `buildHybridTx` with `includePqcPublicKey: true`, which attaches the Dilithium-5 extension and embeds the public key for auto-registration. See [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc).
+The QoreChain SDK builds compliant Cosmos-lane transactions with `buildHybridTx`, which attaches the Dilithium-5 extension. The account's key must already be registered (see above). See [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc).
 
 ### PQC Modes
 
@@ -154,8 +182,8 @@ The three enforcement modes remain governance-controlled; the **current network 
 
 The active mode is configured at the chain level and can be updated through governance.
 
-:::note EVM / MetaMask unaffected
-The MetaMask (EVM) flow above is **not** affected by the hybrid requirement. EVM transactions use a separate `eth_secp256k1` ante path and never need the PQC extension.
+:::caution EVM / MetaMask needs a PQC key and an open window
+The MetaMask (EVM) flow above does not carry the hybrid extension, but since v3.2.0 the EVM lane admits transactions only from an account with a registered post-quantum key and an open **EVM authorisation window**. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
 :::
 
 ## CLI Wallet

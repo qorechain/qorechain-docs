@@ -11,8 +11,8 @@ El **Auditor de Contratos** ejecuta un análisis de seguridad impulsado por IA d
 
 ## Ejecutar una auditoría
 
-1. Abre el **Auditor** y proporciona el contrato que quieres analizar.
-2. Inicia la auditoría. QCAI revisa el contrato y produce un informe.
+1. Inicia sesión, abre **AI Audit** y pega tu contrato en **Contract Source Code**. Opcionalmente, establece la **Blockchain** (por defecto es **Auto-detect from code**) y un **Name**.
+2. Selecciona **Run Security Audit**. QCAI revisa el contrato y produce un informe; **Export PDF** lo guarda.
 
 ## Leer el informe
 
@@ -31,7 +31,7 @@ Cuando corresponde, el informe también incluye secciones de recomendaciones gen
 
 ## Revisar auditorías anteriores
 
-La lista de auditorías muestra tus informes anteriores en una tabla con el nombre del contrato, la blockchain, el nivel de riesgo, la puntuación de seguridad y cuándo se creó cada uno. Un cuadro de búsqueda filtra por nombre de contrato o blockchain. Selecciona cualquier fila para volver a abrir el informe completo y usa el enlace a la página del propio informe para compartirlo.
+La lista de auditorías muestra tus informes anteriores en una tabla con el nombre del contrato, la blockchain, el nivel de riesgo, la puntuación de seguridad y cuándo se creó cada uno. Un cuadro de búsqueda filtra por nombre de contrato o blockchain. Selecciona cualquier fila para volver a abrir el informe completo. Los informes son **privados por defecto**; en un informe de tu propiedad, un interruptor en la parte superior dice "This report is private": actívalo para hacer público el informe y que cualquiera con el enlace pueda leerlo (tu nombre y tu IP nunca se muestran), y desactívalo para volver a hacerlo privado.
 
 :::tip Audita antes de desplegar
 Ejecuta una auditoría como último paso antes de desplegar, y vuelve a ejecutarla después de cualquier cambio. Trata los hallazgos como una guía que debes verificar, no como una garantía automática: combina el informe con tus propias pruebas en [testnet](/getting-started/connecting-to-testnet).

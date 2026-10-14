@@ -10,7 +10,7 @@ sidebar_position: 11
 Everything an exchange, custodian, or payment integrator needs to list QOR and process deposits and withdrawals: choosing an interface, detecting deposits safely, and signing withdrawals.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (chain version **v3.1.97**). Rehearse the full flow on the **`qorechain-diana`** testnet first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the current chain version — an outdated node cannot decode newer transaction types and stops syncing.
+This guide targets the **`qorechain-vladi`** mainnet (live since 29 June 2026; node release **v3.2.1**, with the consensus rules of the v3.2.0 upgrade). Rehearse the full flow on the **`qorechain-diana`** testnet (v3.2.2) first — endpoints for both networks are in [Networks](/appendix/networks#public-endpoints). If you run your own full node, keep it on the release the download manifest recommends and never below its `minCompatible` (a fresh mainnet node needs v3.2.0 or later) — an outdated node cannot follow the chain's upgrades and stops syncing.
 :::
 
 ## Choosing an integration path {#choosing-a-path}
@@ -22,12 +22,12 @@ QoreChain is a single chain with **one unified native-QOR balance** exposed thro
 | Address | `qor1...` (bech32) | `0x...` (Ethereum) | Solana base58 (same key) |
 | Decimals (native QOR) | **6** (`uqor`) | **18** (wei-style) | **9** (lamports; 1 uqor = 1,000 lamports) |
 | Tooling | Cosmos SDK / CosmJS | **Standard Ethereum** (ethers/web3, MetaMask) | `@solana/web3.js` |
-| Withdrawal signing | **Hybrid PQC required** (ML-DSA-87 + secp256k1) | **Standard secp256k1 / EIP-155 — no PQC** | via Cosmos tx or on-node submission |
+| Withdrawal signing | **Hybrid PQC required** (ML-DSA-87 + secp256k1) | **Standard secp256k1 / EIP-155, but only inside an open PQC authorisation window** (registered ML-DSA key + a window opened by a hybrid-signed Cosmos message) | via Cosmos tx or on-node submission (lane currently disabled) |
 | Memo / tag support | **Yes** (shared address + memo) | No (one address per user) | No (one address per user) |
 | Deposit detection | scan `MsgSend` events | scan blocks via `eth_getBlockByNumber` | `getBalance` / `getSignaturesForAddress` |
 | Best for | Cosmos-native platforms | **Platforms with existing EVM integration** | Solana-tooling platforms |
 
-**Recommendation:** if you already support EVM chains, **Path B (EVM)** is the least-effort integration — standard Ethereum tooling, and **withdrawals do not require post-quantum signing** (the EVM ante path is exempt). Path A (Cosmos) is the native route with memo-based shared deposit addresses. Path C (SVM) is a full native-QOR interface on paper, but **its transaction lane is currently disabled network-wide** (see [Path C](#path-c-svm)) — use Path A or Path B until it reopens.
+**Recommendation:** use **Path A (Cosmos)** for withdrawals; it is the native route and has memo-based shared deposit addresses. Since v3.2.0 the EVM lane (Path B) also requires a registered ML-DSA-87 key and an open, bounded **EVM authorisation window** that can only be opened with a hybrid-signed Cosmos-lane message, so an EVM withdrawal rail needs the same post-quantum signing stack as Path A **plus** window management (see [Path B](#path-b-evm) and the [EVM authorisation window](/developer-guide/evm-development#evm-window)). Path B remains fine for **deposit detection** with standard Ethereum tooling. Path C (SVM) is a full native-QOR interface on paper, but **its transaction lane is currently disabled network-wide** (see [Path C](#path-c-svm)) — use Path A, or Path B for deposit detection, until it reopens.
 
 The three interfaces are **not mutually exclusive** — funds sent to the `0x`, `qor1`, or SVM form of the same key are the same balance.
 
@@ -51,7 +51,7 @@ curl -s https://rpc.qore.host/status | jq -r .result.sync_info.latest_block_heig
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs/block/{HEIGHT}" | jq '.txs'
 
 # incoming transfers to an address
-curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&pagination.limit=50" | jq '.tx_responses[].txhash'
+curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&limit=50" | jq '.tx_responses[].txhash'
 
 # balance (uqor — divide by 1e6 for QOR)
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
@@ -76,13 +76,13 @@ Mainnet enforces **post-quantum signatures** on cosmos transactions (`allow_clas
 The signing library is [**`@qorechain/wallet-adapter`**](https://github.com/qorechain/qorechain-wallet-adapter) (npm), which pulls in `@qorechain/pqc` for the FIPS-204 primitives:
 
 ```bash
-npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing cosmjs-types@0.9.0
-# pin cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
+npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing@0.32 @cosmjs/stargate@0.32 cosmjs-types@0.9.0
+# pin the cosmjs packages to 0.32 (the adapter's peer range) and cosmjs-types to 0.9.x — 0.10 breaks the subpath imports the adapter uses
 ```
 
 Signing is a **two-step** flow (mirroring `qorechaind tx pqc cosign`):
 
-**Step 1 — one-time per hot wallet: register its ML-DSA-87 key.** This single registration transaction is **classical-signed** (bootstrap exemption): message `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` with `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Derive the ML-DSA key deterministically so it is recoverable from your existing secret — e.g. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, then `mldsa.keygen(seed)` — and store the seed alongside your hot-wallet key.
+**Step 1 — one-time per hot wallet: register its ML-DSA-87 key.** This single registration transaction is **classical-signed** (bootstrap exemption): message `/qorechain.pqc.v1.MsgRegisterPQCKeyV2` with `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. Derive the ML-DSA key deterministically so it is recoverable from your existing secret — e.g. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, then `mldsa.keygen(seed)` — and store the seed alongside your hot-wallet key. Registration is explicit: nothing registers the key for you when a hybrid transaction first appears, and a key embedded in a transaction is not registered. Set the gas explicitly (the 2,592-byte key needs more than the default 200,000; use `--gas 600000` on the CLI, a gas limit of 600,000 in code, and a fee of at least gas × 0.1 uqor, i.e. 60,000 uqor).
 
 **Step 2 — every withdrawal after that: hybrid-sign the `MsgSend`.** The adapter bakes the ML-DSA-87 signature into a tx-body extension *before* the normal secp256k1 `signDirect`, so your existing signer stays unchanged:
 
@@ -93,6 +93,7 @@ import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx.js";
 // pqc = { publicKey, secretKey } from mldsa.keygen(seed)
 // accountNumber + sequence from the auth query
 const signer = new QoreChainSigner({ wallet, chainId: "qorechain-vladi",
+  rest: "https://api.qore.host",   // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   address, pubkeySecp256k1, accountNumber, pqc });
 const txBytes = await signer.signHybrid({
   messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -109,43 +110,46 @@ curl -s -X POST https://api.qore.host/cosmos/tx/v1beta1/txs \
   -H 'Content-Type: application/json' \
   -d '{"tx_bytes":"<base64-signed-tx>","mode":"BROADCAST_MODE_SYNC"}' | jq .tx_response.code
 # 0 => accepted into the mempool
-# code 8 "classical fallback not allowed" => step 1 not done yet for this account
+# code 20 "hybrid PQC signature required" => the transaction carries no PQC extension
+#   (a classical-only transaction is refused; only the key registration itself is exempt)
+# code 21 => the PQC half did not verify (wrong key or sign-bytes form), see the troubleshooting link below
 ```
 
 Then poll `GET /cosmos/tx/v1beta1/txs/{hash}` until it appears in a block with `code == 0`.
 
-For an HSM or a custom signer in another language, use the standalone [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 libraries (npm, PyPI, crates.io, Maven Central, Go) and assemble the same extension. The ML-DSA signature **must be deterministic** (FIPS-204 §3.4) — see [Deterministic signing](/developer-guide/post-quantum-signing#deterministic-signing); the chain rejects hedged signatures.
+For an HSM or a custom signer in another language, use the standalone [**`qorechain-pqc`**](/developer-guide/post-quantum-signing) FIPS-204 libraries (npm, PyPI, crates.io, Maven Central, Go) and assemble the same extension. The chain accepts any valid FIPS-204 ML-DSA-87 signature, hedged or deterministic; signing deterministically (FIPS-204 §3.4, the libraries' default) gives you a reproducible signature and tx hash. See [Deterministic signing](/developer-guide/post-quantum-signing#deterministic-signing), and [Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21) if a hybrid transaction is rejected.
 
 ### Server-side alternative: `@qorechain/chain-bridge` {#chain-bridge}
 
-For a fully server-side hot-wallet worker (no browser wallet involved), **`@qorechain/chain-bridge`** (npm) wraps the whole flow — key derivation, PQC auto-registration on first use, hybrid signing, and broadcast — in one call. It is pure JavaScript (no native addons), suitable for serverless workers:
+For a fully server-side hot-wallet worker (no browser wallet involved), **`@qorechain/chain-bridge`** (npm) wraps the whole flow — key derivation, hybrid signing, and broadcast — in one call. It is pure JavaScript (no native addons), suitable for serverless workers:
 
 ```js
 import { ChainBridge } from "@qorechain/chain-bridge";
 
 const bridge = new ChainBridge({
   cosmosRpc: "https://rpc.qore.host",       // or your own node
+  cosmosRest: "https://api.qore.host",      // used to pick the network's hybrid sign-bytes form (required on mainnet and testnet)
   chainId: "qorechain-vladi",
   signerMnemonic: process.env.HOT_WALLET_MNEMONIC,  // from your secrets manager
 });
 
-// One call: derives the canonical ML-DSA-87 key, auto-registers it if missing,
-// hybrid-signs the MsgSend, and broadcasts. Amounts are in uqor (6 decimals).
+// One call: derives the canonical ML-DSA-87 key, hybrid-signs the MsgSend, and broadcasts.
+// Amounts are in uqor (6 decimals). Register the key beforehand with bridge.registerPqc({ mnemonic }).
 const { txHash } = await bridge.sendTokens({
   to: "qor1recipient...",
   amountUqor: "1000000",   // 1 QOR
 });
 ```
 
-`chain-bridge` (≥0.1.1) uses the same canonical address-bound PQC derivation as the rest of the stack — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — so the key is recoverable from the mnemonic with `qorechaind tx pqc recover-key`. Accounts registered with older tooling are handled automatically (legacy-key fallback), and can be migrated once to the canonical key with [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
+If the account has no registered key yet, the library itself sends the explicit `MsgRegisterPQCKeyV2` transaction and retries once; that is the library's behaviour, not the chain's, so a hot-wallet rail should register the key ahead of time and confirm it (`GET /qorechain/pqc/v1/account/{address}`) before the first withdrawal. `chain-bridge` (≥0.1.1) uses the same canonical address-bound PQC derivation as the rest of the stack — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — so the key is recoverable from the mnemonic with `qorechaind tx pqc recover-key`. Accounts registered with older tooling are handled automatically (legacy-key fallback), and can be migrated once to the canonical key with [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation).
 
 ## Path B — EVM {#path-b-evm}
 
 Standard Ethereum integration against `https://evm.qore.host` (chain ID **9801**) or your own node's port 8545.
 
 * **Decimals:** native QOR is **18 decimals** on the EVM rail (1 uqor = 10¹² wei). Getting this wrong mis-credits deposits by a factor of 10¹².
-* **Deposits:** scan blocks with `eth_getBlockByNumber` for native transfers to your addresses; confirm with `eth_getTransactionReceipt` (`status == 0x1`).
-* **Withdrawals:** standard secp256k1 / EIP-155 signing — **no PQC required** on the EVM ante path. Any Ethereum signing stack works unchanged.
+* **Deposits:** scan blocks with `eth_getBlockByNumber` for native transfers to your addresses; confirm with `eth_getTransactionReceipt` (`status == 0x1`). Depositors' own EVM transactions are subject to the window rule too, so a user whose account has no registered key or open window cannot send a deposit from the EVM lane (they can use the Cosmos lane instead).
+* **Withdrawals:** standard secp256k1 / EIP-155 signing, **but only from an account with a registered ML-DSA-87 key and an open EVM authorisation window** (since v3.2.0; see [EVM authorisation window](/developer-guide/evm-development#evm-window) and the walkthrough in [Your First Transaction](/getting-started/first-transaction#evm-window)). A transaction outside a window is refused (codespace `pqc`, codes 26, 27 or 28). The window must be opened with a hybrid-signed Cosmos-lane transaction, so Path B does not remove the need for post-quantum signing; size `max-value` to cover the value plus the maximum fee (gas limit × max fee per gas) of every withdrawal you expect inside the window, and watch `GET /qorechain/pqc/v1/evm_window/{address}` so the hot wallet never runs dry mid-batch. Opening a window advances the account's sequence, which is also its EVM nonce, so read the nonce after the window is open.
 * **Anti-fake-deposit:** verify the receipt status, that the value moved is a **native** transfer (not an ERC-20 event you don't index), and confirm against your own node.
 * **Address mapping:** the `0x` address and the `qor1` address are two encodings of the same account — funds are shared. See [EVM Development](/developer-guide/evm-development).
 
@@ -166,7 +170,7 @@ As of v3.1.82 the SVM interface serves **native QOR** (see [Native QOR on the SV
 | Operation | Path | Signing needed? |
 |---|---|---|
 | **Deposit** (user → platform) | Watch your synced node for transfers to your address (+ memo on Cosmos) | No — monitor only |
-| **Withdrawal** (platform → user) | Build the transfer, sign offline, broadcast | Cosmos: hybrid PQC · EVM: standard secp256k1 |
+| **Withdrawal** (platform → user) | Build the transfer, sign offline, broadcast | Cosmos: hybrid PQC · EVM: standard secp256k1 inside a PQC-authorised window |
 | **Balance / sweep** | REST / EVM / SVM balance query + transfer | Sign only for the sweep |
 
 ## Related

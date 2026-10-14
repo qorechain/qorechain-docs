@@ -10,7 +10,11 @@ sidebar_position: 1
 Bu kılavuz QOR token'ını, token gönderme ve alma işlemlerini, bakiye sorgulamayı ve QoreChain üzerindeki ücret dağıtım modelini ele alır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri **v3.1.97** zincir sürümüyle canlıdır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 29 Haziran 2026'dan beri v3.2 hattında (node sürümü **v3.2.1**; testnet **v3.2.2** çalıştırır) canlıdır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
+:::
+
+:::caution `tx pqc cosign` ile imzalayın
+Mainnet ve testnet, her Cosmos hattı (lane) işleminde hibrit bir kuantum sonrası imza gerektirir; bu nedenle bu sayfadaki komutlar yazıldığı haliyle yayınlanmaz. Bir komuta `--generate-only > tx.json` ekleyin, ardından `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` komutunu çalıştırın. Bkz. [Hibrit imzalama](/cli-reference/transaction-commands#hybrid-signing). [QoreX](/qorex/overview) ve [Dashboard](/dashboard/overview) bu imzalamayı sizin yerinize yapar.
 :::
 
 ## Token Bilgileri
@@ -32,7 +36,7 @@ Bir hesaptan diğerine QOR token transferi yapmak için:
 ```bash
 qorechaind tx bank send <from_address> <to_address> <amount>uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 **Örnek:** Başka bir adrese 5 QOR (5.000.000 uqor) gönderin:
@@ -40,7 +44,7 @@ qorechaind tx bank send <from_address> <to_address> <amount>uqor \
 ```bash
 qorechaind tx bank send qor1sender... qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 Gönderen için ham adres yerine bir anahtar adı (key name) da kullanabilirsiniz:
@@ -48,7 +52,7 @@ Gönderen için ham adres yerine bir anahtar adı (key name) da kullanabilirsini
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 400000 --fees 40000uqor
 ```
 
 ## Bakiye Sorgulama
@@ -85,33 +89,39 @@ QoreChain üzerindeki işlem ücretleri, ağ teşviklerini uyumlu hale getirmek 
 | Hedef            | Pay | Amaç                                                              |
 | ----------------- | --- | ------------------------------------------------------------------ |
 | **Validator'lar** | %37 | Blok üretenleri ödüllendirir ve ağı güvence altına alır             |
-| **Yakılan**       | %30 | Arzdan kalıcı olarak kaldırılır, deflasyonist baskı yaratır         |
+| **Yakılan**       | %30 | Arzdan kalıcı olarak kaldırılır                                     |
 | **Hazine**        | %20 | Protokol geliştirmesini ve ekosistem hibelerini finanse eder        |
 | **Stake Edenler** | %10 | Tüm delegatörlere orantılı olarak dağıtılır                        |
-| **Hafif Node'lar**| %3  | Ağ verisi sunan hafif node operatörlerini ödüllendirir              |
+| **Hafif Node'lar**| %3  | Hafif node ödülleri için ayrılmıştır (aşağıdaki nota bakın)         |
+
+Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret toplayıcı, işlem ücretlerini ve her epoch'ta basılan staking emisyonunu tutar. Hafif node payı bir rezerve birikir; hafif node ödül kaydı henüz açık değildir, bu nedenle şu anda hiçbir node bundan ödeme almamaktadır (bkz. [Hafif Node](/light-node/overview)). v3.2.0 yükseltmesinden bu yana staker payı normal bir staking ödülü olarak ödenir (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Yakma Kanalları
 
-QoreChain çok kanallı bir yakma (burn) mekanizması uygular. QOR token'ları 10 farklı kanal aracılığıyla dolaşımdan kalıcı olarak kaldırılır:
+QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi biri aracılığıyla yakılan QOR, dolaşımdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca gas ücreti kanalında yakma kaydedilmiştir; diğerleri tanımlıdır ancak hiçbir şey kaydetmemiştir.
 
-| Kanal                 | Açıklama                                                              |
-| ---------------------- | ------------------------------------------------------------------- |
-| `tx_fee`               | Her işlem ücretinin %30'luk yakma payı                                |
-| `governance_penalty`   | Yönetişim önerileri yeter sayıya ulaşamadığında veya veto edildiğinde yakılır |
-| `slashing_burn`        | Cezalandırılan (slash edilen) validator stake'lerinin yakılan kısmı  |
-| `bridge_fee`           | Zincirler arası köprü transferlerinde yakılan ücret                  |
-| `spam_deterrent`       | İşaretlenmiş spam işlemlere uygulanan ek yakma                       |
-| `epoch_excess`         | Epoch sınırlarında hedefi aşan fazla emisyonların yakılması           |
-| `manual_burn`          | Yönetişim önerisi yoluyla topluluk tarafından başlatılan token yakmaları |
-| `contract_callback`    | Akıllı sözleşme callback yürütmelerinde yakılan ücretler              |
-| `cross_vm_fee`         | VM'ler arası (örn. EVM'den CosmWasm'e) çağrılar yürütülürken yakılır  |
-| `rollup_create`        | Yeni bir rollup dağıtılırken minimum stake'in %1'i yakılır             |
+| Kanal              | Açıklama                                                                         |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `gas_fee`          | Tüm gas ücretlerinin %30'u yakılır                                                |
+| `contract_create`  | Sözleşme oluşturma başına sabit 100 QOR ücret yakılır (devre dışı: CosmWasm yüklemesi kapalı) |
+| `ai_service`       | AI servis ücretlerinin %50'si yakılır (devre dışı: AI servis ücretleri canlı değil) |
+| `bridge_fee`       | Köprü ücretlerinin %100'ü yakılır (devre dışı: köprü canlı değil)                 |
+| `treasury_buyback` | Hazineden periyodik geri alım ve yakma                                            |
+| `failed_tx`        | Başarısız işlemlerin gas'ı; zincir tarafından v3.2.2'den itibaren uygulanır (şimdilik yalnızca testnet) |
+| `xqore_penalty`    | Yakma yoluyla yönlendirilen xQORE erken çıkış cezaları (xQORE canlı değil)        |
+| `auto_buyback`     | Protokol düzeyinde otomatik yakmalar (devre dışı)                                 |
+| `tge`              | Ayrılmış; TGE yakması genesis'ten önce gerçekleşti ve bu kanal hiçbir şey kaydetmez |
+| `rollup_create`    | Rollup oluşturma stake'inin %1'i yakılır                                          |
+| `milestone`        | Sabit kümülatif işlem sayılarında planlanmış yakmalar (henüz hiçbiri tetiklenmedi) |
+| `amm`              | AMM protokol ücretleri için ayrılmış (kayıtlı bir şey yok)                        |
 
-Tüm kanallardaki toplam yakılan tutarı sorgulayabilirsiniz:
+Yakma modülünün CLI sorgusu yoktur; kaynak başına kümülatif yakmayı REST üzerinden okuyun:
 
 ```bash
-qorechaind query bank total --denom uqor
+curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```
+
+Yanıt, `total_burned` ve `burns_by_source` değerlerini (uqor cinsinden) listeler. Güncel toplam arz `qorechaind query bank total-supply-of uqor` ile görülür.
 
 ## İpuçları
 
@@ -122,7 +132,7 @@ Token göndermeden önce alıcı adreslerini her zaman iki kez kontrol edin. Qor
 :::tip
 
 * Bir işlemi yayınlamadan simüle etmek için `--dry-run` bayrağını kullanın.
-* Node'un işleminiz için gereken gas'ı tahmin etmesine izin vermek için `--gas auto` kullanın.
-* Standart bir transfer için minimum ücret **500 uqor**'dur.
+* `--gas` değerini açıkça ayarlayın (hibrit imzalı bir transfer için 400.000 yeterlidir).
+* Ücret tabanı **gas birimi başına 0,1 uqor**'dur; dolayısıyla 400.000 gas limiti en az **40.000 uqor** gerektirir.
 
 :::

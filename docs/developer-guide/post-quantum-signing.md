@@ -50,22 +50,50 @@ Every language exposes the same API, each backed by a different audited implemen
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (static lib + header) | build from the [repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.1.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Availability
-The JavaScript, Rust, Python, Go, and Java bindings are all **published** at version **0.1.1** — install them straight from npm, crates.io, PyPI, the Go module proxy, and Maven Central with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **Java** package is on Maven Central as `io.github.qorechain:qorechain-pqc:0.1.1` (Bouncy Castle backend). The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
+The JavaScript, Rust, Python, Go, and Java bindings are all **published** at version **0.2.1** — install them straight from npm, crates.io, PyPI, the Go module proxy, and Maven Central with the commands above. The Python distribution installs as `qorechain-pqc` but **imports as `qorpqc`**. The **Java** package is on Maven Central as `io.github.qorechain:qorechain-pqc:0.2.1` (Bouncy Castle backend). Version **0.2.0** added the version-aware `hybridSignBytes` (below) and **0.2.1** corrected which upgrade name marks the switch to v2 for mainnet, so use 0.2.1 or later. The **C** binding is a static library + header you build from [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
 :::
 
-## Deterministic signing (consensus-critical) {#deterministic-signing}
+## Deterministic signing (default) {#deterministic-signing}
 
-As of version **0.1.1**, `sign()` produces the **deterministic** ML-DSA variant (FIPS-204 §3.4, where the signing randomness is 32 zero bytes) in **all six bindings** — and this is the only variant the chain accepts. QoreChain's transaction verifier **rejects hedged (randomized) ML-DSA signatures**, so a hedged signature fails on-chain even though it verifies cryptographically.
+As of version **0.1.1** (and in every later release), `sign()` produces the **deterministic** ML-DSA variant (FIPS-204 §3.4, where the signing randomness is 32 zero bytes) in **all six bindings**. The chain accepts any valid FIPS-204 ML-DSA-87 signature, hedged or deterministic: verification is identical for both, and a verifier cannot tell them apart without the secret key. The bindings sign deterministically by default so the same transaction always produces the same signature and tx hash, and so every binding matches the shared vectors.
 
 Key facts:
 
-* **Do not change the default.** Deterministic signing is consensus-critical; every binding documents it as such.
-* The deterministic output is **byte-identical across all six bindings** for the same key and message — locked in by shared cross-language test vectors.
-* Hedged signing remains available as an **explicit opt-in** per binding (e.g. `{hedged: true}` in JavaScript, `sign_hedged` in Rust, `mldsaSignHedged` in Java, `sign(..., hedged=True)` in Python) for non-chain use cases — hedged signatures are **not accepted by the chain**.
-* Version 0.1.0 of the JavaScript binding signed hedged by default — if you built transaction tooling against 0.1.0, **upgrade to 0.1.1**; transactions signed with the old default are rejected on-chain.
+* The deterministic output is **byte-identical across all six bindings** for the same key and message, locked in by shared cross-language test vectors.
+* Hedged signing remains available as an **explicit opt-in** per binding (e.g. `{hedged: true}` in JavaScript, `sign_hedged` in Rust, `mldsaSignHedged` in Java, `sign(..., hedged=True)` in Python). Hedged signatures are **accepted by the chain** like any valid FIPS-204 signature; the only difference is that the signature, and so the tx hash, changes every time you sign.
+* Version 0.1.0 of the JavaScript binding signed hedged by default. Those signatures are valid on-chain too; upgrade to 0.1.1 if you want reproducible signatures that match the shared vectors.
+
+## Registering your key {#pqc-key-registration}
+
+Every account registers its ML-DSA-87 public key **once, explicitly**. There is no automatic registration: a public key embedded in a later hybrid transaction (for example the SDK's `includePqcPublicKey` option) is carried in the extension but does **not** register it. Registration is the one Cosmos-lane transaction that may be signed classically, so a brand-new account can bootstrap its first key. Do it with the release `qorechaind` (a binary built from the public source cannot sign; see [Building from Source](/developer-guide/building-from-source)), with QoreX, or with the SDK's `ensurePqcRegistered`:
+
+```bash
+# 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
+qorechaind tx pqc gen-key mypqc
+
+# 2. Register the public key on your account (classical-signed).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
+
+# 3. Verify.
+qorechaind query pqc account <address>
+```
+
+Set `--gas` explicitly: the 2,592-byte public key can exceed the default 200,000 gas (mainnet registrations have used roughly 220,000 to 350,000), and the fee must be at least gas × 0.1 uqor, so `--gas 600000` needs `--fees 60000uqor` or more. The legacy form `qorechaind tx pqc register-key <pubkey-hex> hybrid` is equivalent for Dilithium-5. From then on, build each Cosmos-lane transaction with `--generate-only` and sign it with `qorechaind tx pqc cosign`. The key file is the account's post-quantum signing key: anyone who can read it can co-sign for the account together with the classical key, so back it up like the mnemonic (it can be re-derived from the mnemonic, see below).
+
+A registered key is also the first of two requirements for sending EVM transactions; the second is an open [EVM authorisation window](/developer-guide/evm-development#evm-window).
+
+## Troubleshooting `pqc` code 21 (`hybrid_verify_failed`) {#code-21}
+
+Code 21 means the ML-DSA-87 half of a hybrid signature did not verify against the account's registered key. It is **never** caused by choosing hedged over deterministic signing. Check, in this order:
+
+1. **Sign-bytes version.** The PQC signature covers either the v1 or the v2 sign-bytes, and a network verifies exactly one form at any height: `qorechain-diana` switched to v2 at its `v3.1.98` upgrade, `qorechain-vladi` at its `v3.2.0` upgrade, and chains born later are v2 from genesis. Current SDKs pick the form per network; hand-built signers must ask the node which upgrade is applied (see [Accounts & PQC signing](/sdk/concepts/accounts-pqc)).
+2. **Chain-id in v2 sign-bytes.** v2 binds the chain-id, so a signature built for `qorechain-diana` does not verify on `qorechain-vladi` and vice versa.
+3. **Stale PQC library.** Pre-standards (pre-FIPS-204) builds produce signatures a standards verifier rejects. Use `qorechain-pqc` 0.1.1 or later.
+4. **Wrong key.** The public key must be the one registered for the account (`GET /qorechain/pqc/v1/account/{address}`). A key derived with a different derivation (for example the legacy `shake256(mnemonic)` bridge derivation instead of the address-bound one) signs validly but does not match. See [Key rotation](#key-rotation) to move to the canonical key.
 
 ## Deterministic key derivation & recovery {#key-derivation}
 
@@ -79,10 +107,13 @@ seed = SHAKE-256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic)
 Every published tool (`@qorechain/wallet-adapter`, `@qorechain/sdk`, `@qorechain/chain-bridge` ≥0.1.1) derives this same key, so one mnemonic produces one key regardless of tooling. Recover a key on the CLI (mnemonic on stdin):
 
 ```bash
-qorechaind tx pqc recover-key mykey qor1youraddress...
+# the mnemonic is read from stdin; keep it out of shell history by redirecting from a file you delete afterwards
+qorechaind tx pqc recover-key mykey qor1youraddress... < mnemonic.txt
 # legacy tooling derivation (shake256(mnemonic) only, unbound to the address):
-qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge
+qorechaind tx pqc recover-key mykey qor1youraddress... --derivation bridge < mnemonic.txt
 ```
+
+The recovered private key is written as unencrypted hex (mode 0600) to `<home>/pqc/mykey.dilithium` for use with `tx pqc cosign`.
 
 ## Key rotation (same algorithm) {#key-rotation}
 
@@ -93,25 +124,27 @@ The rotation is **dual-signed**: both the old and the new key sign the domain-se
 One-shot CLI (mnemonic on stdin; recovers the old key, derives or generates the new one, dual-signs, broadcasts):
 
 ```bash
-# migrate a legacy-derived key to the canonical derivation:
+# migrate a legacy-derived key to the canonical derivation (mnemonic on stdin):
 qorechaind tx pqc rotate-key --old-derivation bridge --new-derivation adapter \
-  --from mykey --chain-id qorechain-vladi -o json -y
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -o json -y < mnemonic.txt
 
-# rotate to a brand-new random key (compromise recovery):
-qorechaind tx pqc rotate-key --old-derivation adapter --new-random \
-  --from mykey --chain-id qorechain-vladi -o json -y
+# rotate to a brand-new random key (compromise recovery); --new-key-out is required and is written before anything is sent:
+qorechaind tx pqc rotate-key --old-derivation adapter --new-random --new-key-out mykey-new \
+  --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -o json -y < mnemonic.txt
 ```
 
-In code, `@qorechain/wallet-adapter` (≥0.1.7) and `@qorechain/sdk` (≥0.7.0) expose the same flow:
+The rotation carries two 2,592-byte keys and three signatures, so it needs far more gas than a transfer; keep the explicit `--gas 600000` and a fee of at least 60,000 uqor. `--new-random` without `--new-key-out` is refused (node release v3.2.1 and later) so that a rotation can never leave you without the new key.
+
+In code, `@qorechain/wallet-adapter` (≥0.1.7) and `@qorechain/sdk` (≥0.7.0) expose the same flow (synchronous; it returns the message plus both keypairs):
 
 ```js
 import { rotatePqcKeyMsgFromMnemonic } from "@qorechain/wallet-adapter";
 
 // Builds the dual-signed MsgRotatePQCKey migrating shake256(mnemonic) -> canonical:
-const msg = await rotatePqcKeyMsgFromMnemonic({
-  mnemonic, address: "qor1youraddress...", chainId: "qorechain-vladi",
+const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
+  account: "qor1youraddress...", mnemonic, chainId: "qorechain-vladi",
 });
-// Sign & broadcast with the account's normal hybrid signer (old key cosigns the envelope).
+// Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
 After a successful rotation the new key signs (code 0) and the old key is rejected (`pqc` code 21).
@@ -179,9 +212,9 @@ Beyond the raw primitives, the library exposes two helpers that integrators need
 
 A **pay-to-pubkey-hash** registration helper. It produces a short (20–32 byte) SHAKE-256 hash of a public key. The pattern: store only the `pubkeyHash` in account state and require the full public key in the transaction. Account state stays tiny regardless of the 1–2.5 KB key.
 
-### `hybridSignBytes(bodyWithoutPqcExt, authInfo)`
+### `hybridSignBytes(version, chainId, bodyWithoutPqcExt, authInfo)`
 
-QoreChain's wallet-compatible **hybrid-extension sign-bytes framing**. This produces exactly the bytes that must be signed with ML-DSA-87 (Dilithium-5) to form the PQC half of a hybrid transaction.
+QoreChain's wallet-compatible **hybrid-extension sign-bytes framing**. It produces exactly the bytes that must be signed with ML-DSA-87 (Dilithium-5) to form the PQC half of a hybrid transaction. Two forms exist and a network verifies exactly one at any height: **v1** = `BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A` and **v2** = `"qorechain-pqc-hybrid-v2" ‖ BE64(len chainId) ‖ chainId ‖ BE32(len B0) ‖ B0 ‖ BE32(len A) ‖ A` (`B0` is the transaction body without the PQC extension, `A` the auth info). Both public networks are on **v2**. The library is pure, so the caller picks the form: ask the node `GET /cosmos/upgrade/v1beta1/applied_plan/{name}` for **both** `v3.2.0` (mainnet's upgrade name) and `v3.1.98` (the testnet's earlier name) and use v2 if either height is above 0; `signBytesVersionForApplied` and `signBytesVersionFor(chainId, height)` implement the rule (use `@qorechain/pqc` 0.2.1 or later; the 2-argument form from 0.1.x throws).
 
 This is the piece wallets and integrators use to produce the **required hybrid signature** on the cosmos transaction path. As of the current chain version, hybrid signatures are **required by default** (`hybrid_signature_mode = required`, `allow_classical_fallback = false`): every cosmos-path transaction must carry a Dilithium-5 signature alongside its classical secp256k1 signature. See [Post-Quantum Security](/architecture/post-quantum-security) for the enforcement model.
 
@@ -189,8 +222,8 @@ The classical secp256k1 signature is computed over the standard sign bytes (whic
 
 There are three ways to produce this hybrid signature:
 
-* **The CLI** — `qorechaind tx pqc cosign` attaches the Dilithium-5 cosignature to a transaction (after `qorechaind tx pqc gen-key`). See [Transaction Commands](/cli-reference/transaction-commands).
-* **The QoreChain SDK** — `buildHybridTx` (with `includePqcPublicKey`) does the equivalent in TypeScript/Python/Go/Rust. See [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc).
+* **The CLI** — `qorechaind tx pqc cosign` attaches the Dilithium-5 cosignature to a transaction and broadcasts it (after `qorechaind tx pqc gen-key`, and registering the key). It is part of the release binary only. See [Transaction Commands](/cli-reference/transaction-commands).
+* **The QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (pass `rest` so the sign-bytes form is resolved) do the equivalent in TypeScript, Python, Go, Rust and Java; register your key first (see above). See [SDK Accounts & PQC signing](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` directly** — use `hybridSignBytes` to frame the sign bytes and `mldsa.sign` to produce the Dilithium-5 signature, when you are building tooling outside the SDK in one of the six supported languages.
 
 ## Optimizing on-chain footprint

@@ -15,7 +15,22 @@ sağlayıcı, bir avuç kanca ve iki yerleştirilebilir bileşen — tek satırl
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır.
+`react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır ve
+kitle aynı sürüme sabitlenmiştir. `@qorechain/react` **0.8.3 veya sonrasını**
+kullanın: 0.8.0, SDK 0.8.0'a sabitlenir ve bu sürüm mainnet'te yanlış hibrit
+biçimiyle imzalar; daha eski 0.8.x sürümleri ise adres değişikliğinden sonra
+eski bir bakiye veya durum gösterebilir.
+
+:::caution React kitinin canlı ağ sınırlamaları (0.8.x)
+`useTx`, yalnızca bağlı cüzdanın klasik imzasıyla gönderir; canlı ağlar bunu
+reddeder (Native yolu hibrit ML-DSA-87 uzantısını gerektirir), bu nedenle
+`send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi işleyemez;
+gönderimler için SDK'nin [hibrit oluşturucularını](/sdk/concepts/accounts-pqc#hybrid-signing)
+kullanın. `usePqcStatus` ve `<QuantumSafeBadge/>`, genel uç noktaların sunmadığı
+`qor_getPQCKeyStatus`'ı okur ([`qor_` ad alanına](/api-reference/json-rpc-qor_-namespace) bakın),
+bu nedenle `*.qore.host` üzerinde bir anahtarı doğrulayamazlar. Bakiye okumaları
+(`useBalance`) ve cüzdan bağlantısı çalışır.
+:::
 
 ## Sağlayıcı
 
@@ -31,9 +46,9 @@ function Root() {
       config={{
         network: "testnet",
         endpoints: {
-          rpc: "https://rpc.testnet.example",
-          rest: "https://rest.testnet.example",
-          evmRpc: "https://evm.testnet.example",
+          rpc: "https://rpc-testnet.qore.host",
+          rest: "https://api-testnet.qore.host",
+          evmRpc: "https://evm-testnet.qore.host",
         },
       }}
     >

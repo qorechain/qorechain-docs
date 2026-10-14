@@ -16,11 +16,15 @@ QoreChain 네트워크에 대한 통합 레퍼런스 — 체인 식별자, EVM �
 | **상태** | 라이브 | 활성 테스트넷 |
 | **Cosmos 체인 ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM 체인 ID (EIP-155)** | **9801** (16진수 `0x2649`) | **9800** (16진수 `0x2648`) |
-| **라이브 시작** | 2026년 6월 7일 23:59 UTC | — |
-| **체인 버전** | v3.1.97 | v3.1.97 |
+| **라이브 시작** | 2026년 6월 29일 17:03 UTC (제네시스 블록) | 2026년 7월 1일 (이후 계속 가동 중, 리셋 없음) |
+| **체인 버전** | v3.2.1 (v3.2.0의 합의 규칙) | v3.2.2 |
+| **블록 시간 (측정 평균)** | 약 3.2초 | 약 1.0초 |
+| **릴리스 매니페스트** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **프레임워크** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **최소 가스 가격** | `0.1uqor` | `0.1uqor` |
 | **연결 가이드** | [메인넷에 연결하기](/getting-started/connecting-to-mainnet) | [테스트넷에 연결하기](/getting-started/connecting-to-testnet) |
+
+두 매니페스트는 새 노드가 실행해야 할 릴리스에 대한 기준 정보입니다. 테스트넷은 거버넌스를 통한 조율된 업그레이드를 적용하기 때문에 테스트넷 매니페스트(v3.2.2)에는 업그레이드 높이가 포함되어 있으며, 메인넷의 v3.2.1은 v3.2.0 합의 규칙 위에서 노드별로 순차 적용되는 릴리스입니다.
 
 ## 퍼블릭 엔드포인트 {#public-endpoints}
 
@@ -35,10 +39,14 @@ QoreChain 네트워크에 대한 통합 레퍼런스 — 체인 식별자, EVM �
 | EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
 | SVM JSON-RPC (Solana 호환, 읽기 전용) | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | 블록 익스플로러 | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network) (Testnet으로 전환) |
-| 다운로드 (바이너리 / 제네시스 / 스냅샷) | [download.qore.host](https://download.qore.host) | — |
+| 다운로드 (바이너리 / 제네시스 / 스냅샷) | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-퍼블릭 SVM 엔드포인트는 **읽기 전용**입니다(트랜잭션 제출은 엣지에서 비활성화되어 있습니다). SVM 쓰기가 필요하면 자체 노드를 운영하세요. 대규모 또는 프로덕션 워크로드의 경우에도 자체 노드 운영을 권장합니다 — [노드 실행하기](/developer-guide/running-a-node)를 참고하세요.
+퍼블릭 SVM 엔드포인트는 **읽기 전용**입니다(트랜잭션 제출은 엣지에서 비활성화되어 있습니다). SVM 쓰기가 필요하면 자체 노드를 운영하세요. 대규모 또는 프로덕션 워크로드의 경우에도 자체 노드 운영을 권장합니다 — [노드 실행하기](/developer-guide/running-a-node)를 참고하세요. 퍼블릭 gRPC 엔드포인트는 없으며 퍼블릭 메인넷 EVM WebSocket도 없습니다. 퍼블릭 EVM 엔드포인트에서 `eth_getLogs`는 쿼리당 최대 10,000개 블록까지 허용하며 `txpool_content`는 비활성화되어 있습니다(자체 호스팅 노드는 전체 네임스페이스를 제공합니다). [eth_ 네임스페이스](/api-reference/json-rpc-eth_-namespace)를 참고하세요.
+:::
+
+:::tip
+스크립트가 퍼블릭 엔드포인트에서 `403 Forbidden`을 받는다면 `User-Agent` 헤더를 명시적으로 설정하세요(Python의 기본 `urllib` 에이전트는 차단되며, `requests`, `curl`, Node 및 Go 클라이언트는 그대로 동작합니다).
 :::
 
 :::caution SVM 트랜잭션 레인 현재 비활성화됨

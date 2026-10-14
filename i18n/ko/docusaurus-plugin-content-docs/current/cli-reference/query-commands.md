@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(체인 버전 **v3.1.97**)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다.
+쿼리는 `--node`가 가리키는 노드를 대상으로 실행됩니다. 실시간 데이터를 조회하려면 **`qorechain-vladi`** 메인넷 RPC 엔드포인트(예: `--node https://rpc.qore.host:443`)를 사용하고, 테스트용으로는 **`qorechain-diana`** 테스트넷 엔드포인트(`--node https://rpc-testnet.qore.host:443`)를 사용하세요. 기본값인 `tcp://localhost:26657`은 직접 운영하는 노드를 대상으로 합니다. 메인넷은 노드 릴리스 v3.2.1을, 테스트넷은 v3.2.2를 실행합니다. 테스트넷은 메인넷에 아직 없는 몇 가지 추가 경로를 제공할 수 있으므로, 테스트넷에서 동작하는 쿼리가 메인넷에서는 `Not Implemented`를 반환할 수 있습니다.
 :::
 
 공통 플래그는 모든 `query` 하위 명령어에 적용됩니다.
@@ -25,409 +25,186 @@ qorechaind query <module> <command> [args] [flags]
 | `--output` | string | 출력 형식: `json` 또는 `text`                 |
 | `--height` | int    | 특정 블록 높이의 상태를 쿼리          |
 
+모든 모듈에 CLI 쿼리가 있는 것은 아닙니다. 명령어가 없는 경우 REST 엔드포인트(`https://api.qore.host/...`)를 사용하세요. [REST API](/api-reference/rest-grpc-endpoints)를 참조하십시오.
+
 ---
 
 ## bank
 
-### balances
-
-계정의 모든 잔액을 조회합니다.
-
 ```bash
 qorechaind query bank balances <address>
+qorechaind query bank total-supply
+qorechaind query bank total-supply-of uqor
+qorechaind query bank spendable-balances <address>
 ```
 
-### total
-
-모든 토큰의 총 공급량을 조회합니다.
-
-```bash
-qorechaind query bank total
-```
+(`query bank total`은 없습니다.)
 
 ---
 
 ## staking
 
-### validator
-
-운영자 주소로 단일 검증인을 조회합니다.
-
 ```bash
 qorechaind query staking validator <validator_address>
-```
-
-### validators
-
-모든 검증인 목록을 조회합니다.
-
-```bash
 qorechaind query staking validators
-```
-
-### delegation
-
-위임자에서 검증인으로의 위임 내역을 조회합니다.
-
-```bash
+qorechaind query staking validators --status BOND_STATUS_BONDED
 qorechaind query staking delegation <delegator_address> <validator_address>
-```
-
-### delegations
-
-위임자의 모든 위임 내역을 조회합니다.
-
-```bash
 qorechaind query staking delegations <delegator_address>
-```
-
-### unbonding-delegation
-
-언본딩 중인 위임 내역을 조회합니다.
-
-```bash
+qorechaind query staking delegations-to <validator_address>
 qorechaind query staking unbonding-delegation <delegator_address> <validator_address>
+qorechaind query staking unbonding-delegations <delegator_address>
+qorechaind query staking redelegation <delegator_address> <src_validator> <dst_validator>
+qorechaind query staking params
+qorechaind query staking pool
 ```
+
+`--status`는 전체 열거형 이름(`BOND_STATUS_BONDED`, `BOND_STATUS_UNBONDING` 또는 `BOND_STATUS_UNBONDED`)을 받습니다(`--status bonded`는 거부됩니다).
 
 ---
 
 ## distribution
 
-### rewards
-
-위임자의 모든 위임 보상을 조회합니다.
-
 ```bash
 qorechaind query distribution rewards <delegator_address>
-```
-
-### commission
-
-검증인 수수료를 조회합니다.
-
-```bash
 qorechaind query distribution commission <validator_address>
+qorechaind query distribution validator-outstanding-rewards <validator_address>
+qorechaind query distribution community-pool
+qorechaind query distribution params
 ```
 
 ---
 
 ## gov
 
-### proposal
-
-ID로 단일 제안을 조회합니다.
-
 ```bash
+qorechaind query gov proposals
+qorechaind query gov proposals --proposal-status voting-period
 qorechaind query gov proposal <proposal_id>
-```
-
-### proposals
-
-모든 제안 목록을 조회하며, 필요 시 상태로 필터링할 수 있습니다.
-
-```bash
-qorechaind query gov proposals [flags]
-```
-
-| 플래그       | 유형   | 설명                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------- |
-| `--status` | string | 상태로 필터링: `deposit_period`, `voting_period`, `passed`, `rejected` |
-
-### votes
-
-제안에 대한 투표를 조회합니다.
-
-```bash
 qorechaind query gov votes <proposal_id>
+qorechaind query gov vote <proposal_id> <voter_address>
+qorechaind query gov tally <proposal_id>
+qorechaind query gov params
+```
+
+`--proposal-status`는 `deposit-period`, `voting-period`, `passed`, `rejected` 또는 `failed`를 받습니다. 기타 필터: `--voter`, `--depositor`.
+
+---
+
+## tx
+
+```bash
+qorechaind query tx <txhash>
+qorechaind query txs --query "message.sender='<address>'"
 ```
 
 ---
 
 ## pqc
 
-### account
-
-계정의 PQC 키 등록 상태를 조회합니다.
-
 ```bash
 qorechaind query pqc account <address>
-```
-
-### algorithms
-
-지원되는 모든 PQC 알고리즘 목록을 조회합니다.
-
-```bash
 qorechaind query pqc algorithms
-```
-
-### algorithm
-
-특정 PQC 알고리즘의 세부 정보를 조회합니다.
-
-```bash
-qorechaind query pqc algorithm <algorithm_name>
-```
-
-### stats
-
-집계된 PQC 등록 통계를 조회합니다.
-
-```bash
+qorechaind query pqc algorithm dilithium5
 qorechaind query pqc stats
-```
-
-### params
-
-PQC 모듈 파라미터를 조회합니다.
-
-```bash
 qorechaind query pqc params
-```
-
-### migration
-
-계정의 PQC 키 마이그레이션 상태를 조회합니다.
-
-```bash
-qorechaind query pqc migration <address>
-```
-
-### hybrid-mode
-
-현재 하이브리드 서명 강제 모드를 조회합니다.
-
-```bash
+qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
+qorechaind query pqc evm-window <address>
 ```
 
----
-
-## xqore
-
-### position
-
-주소의 xQORE 스테이킹 포지션을 조회합니다.
-
-```bash
-qorechaind query xqore position <address>
-```
-
-### params
-
-xQORE 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query xqore params
-```
+- `algorithm`은 알고리즘 이름(`dilithium5`, `mlkem1024`) 또는 숫자 ID를 받습니다.
+- `migration`은 주소가 아닌 **알고리즘 ID**(예: `1`)를 받으며, 진행 중인 마이그레이션이 없으면 `No active migration`을 보고합니다.
+- `evm-window`는 해당 주소에 열려 있는 EVM 레인 승인 창이 있는지, 그리고 남은 블록, 트랜잭션, 금액이 얼마인지(`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`)를 보여줍니다. REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
 
 ---
 
 ## burn
 
-### stats
-
-모든 채널에 걸친 소각 통계를 조회합니다.
+burn 모듈에는 CLI 쿼리가 없습니다. REST를 사용하십시오.
 
 ```bash
-qorechaind query burn stats
+curl -s https://api.qore.host/qorechain/burn/v1/params
+curl -s https://api.qore.host/qorechain/burn/v1/stats
+curl -s https://api.qore.host/qorechain/burn/v1/records
+curl -s https://api.qore.host/qorechain/burn/v1/milestone
+curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-### params
-
-소각 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query burn params
-```
+`stranded_rewards`는 어떤 청구권의 뒷받침도 없이 distribution 모듈에 예치된 스테이커 몫을 v3.2.0 업그레이드 시점에 기록된 대로 보고합니다(`reserved`, `released`, `snapshot_height`). 이 금액은 거버넌스 투표를 통해서만 해제할 수 있습니다.
 
 ---
 
-## inflation
+## mint 및 inflation
 
-### rate
-
-현재 연환산 인플레이션율을 조회합니다.
-
-```bash
-qorechaind query inflation rate
-```
-
-### epoch
-
-현재 에폭 번호와 진행 상황을 조회합니다.
-
-```bash
-qorechaind query inflation epoch
-```
-
-### params
-
-인플레이션 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query inflation params
-```
+`qorechaind query mint params|inflation|annual-provisions`는 표준 mint 모듈을 조회하며, 이 모듈의 비율은 두 네트워크 모두에서 `0`입니다. 프로토콜의 발행 일정은 보고하지 **않습니다**. `query inflation` 명령은 없습니다.
 
 ---
 
 ## ai
 
-### config
-
-AI 모듈 설정을 조회합니다.
-
 ```bash
 qorechaind query ai config
-```
-
-### stats
-
-집계된 AI 처리 통계를 조회합니다.
-
-```bash
 qorechaind query ai stats
-```
-
-### fee-estimate
-
-AI 기반 가스 수수료 견적을 받습니다.
-
-```bash
-qorechaind query ai fee-estimate [flags]
-```
-
-| 플래그        | 유형   | 설명                     |
-| ----------- | ------ | -------------------------------- |
-| `--tx-type` | string | 견적 대상 트랜잭션 유형 |
-| `--urgency` | string | `low`, `medium`, `high`         |
-
-### investigations
-
-진행 중인 부정 행위 조사 목록을 조회합니다.
-
-```bash
-qorechaind query ai investigations
-```
-
-### recommendations
-
-AI가 생성한 네트워크 최적화 권장 사항을 받습니다.
-
-```bash
-qorechaind query ai recommendations
-```
-
-### circuit-breakers
-
-현재 서킷 브레이커 상태를 조회합니다.
-
-```bash
-qorechaind query ai circuit-breakers
 ```
 
 ---
 
-## reputation
-
-### validators
-
-모든 검증인의 평판 점수를 조회합니다.
+## reputation 및 qca
 
 ```bash
-qorechaind query reputation validators
+qorechaind query reputation params
+qorechaind query qca config
 ```
 
-### validator
+검증자별 평판 쿼리나 풀 분류 쿼리는 없습니다.
 
-특정 검증인의 평판 점수를 조회합니다.
+---
+
+## lightnode
 
 ```bash
-qorechaind query reputation validator <validator_address>
+qorechaind query lightnode params
+qorechaind query lightnode stats
+qorechaind query lightnode light-nodes
+qorechaind query lightnode light-node <operator_address>
+qorechaind query lightnode rewards <operator_address>
+qorechaind query lightnode reward-pool
 ```
+
+`reward-pool`은 모듈의 보상 잔액이 `reserved`, `outstanding`, `payable`, `distributable`로 어떻게 나뉘는지 보여줍니다.
+
+---
+
+## license
+
+```bash
+qorechaind query license check <grantee_address> <feature_id>
+qorechaind query license holders <feature_id>
+qorechaind query license list <grantee_address>
+```
+
+`check`는 수혜자가 해당 기능에 대한 라이선스를 보유하고 있지 않으면 `NotFound` 오류를 반환합니다.
 
 ---
 
 ## bridge
 
-### chains
-
-등록된 모든 브리지 체인 목록을 조회합니다.
-
 ```bash
+qorechaind query bridge config
 qorechaind query bridge chains
-```
-
-### chain
-
-특정 브리지 연결된 체인의 세부 정보를 조회합니다.
-
-```bash
 qorechaind query bridge chain <chain_id>
-```
-
-### validators
-
-활성 브리지 검증인 목록을 조회합니다.
-
-```bash
 qorechaind query bridge validators
-```
-
-### operations
-
-최근 브리지 작업 목록을 조회합니다.
-
-```bash
 qorechaind query bridge operations
-```
-
-| 플래그       | 유형   | 설명                              |
-| ---------- | ------ | ---------------------------------------- |
-| `--status` | string | 필터: `pending`, `completed`, `failed` |
-| `--chain`  | string | 체인 ID로 필터링                       |
-
-### limits
-
-브리지 연결된 체인의 속도 제한을 조회합니다.
-
-```bash
-qorechaind query bridge limits <chain_id>
-```
-
-### estimate
-
-브리지 수수료와 전송 시간을 추정합니다.
-
-```bash
-qorechaind query bridge estimate <chain_id> <amount> <asset>
+qorechaind query bridge operation <operation_id>
 ```
 
 ---
 
 ## crossvm
 
-### message
-
-ID로 크로스-VM 메시지를 조회합니다.
-
 ```bash
 qorechaind query crossvm message <message_id>
-```
-
-### pending
-
-대기 중인 크로스-VM 메시지 목록을 조회합니다.
-
-```bash
 qorechaind query crossvm pending
-```
-
-### params
-
-Cross-VM 모듈 파라미터를 조회합니다.
-
-```bash
 qorechaind query crossvm params
 ```
 
@@ -435,35 +212,10 @@ qorechaind query crossvm params
 
 ## svm
 
-### account
-
-SVM 계정 정보를 조회합니다.
-
 ```bash
-qorechaind query svm account <pubkey>
-```
-
-### program
-
-배포된 SVM 프로그램 정보를 조회합니다.
-
-```bash
-qorechaind query svm program <program_id>
-```
-
-### params
-
-SVM 모듈 파라미터를 조회합니다.
-
-```bash
+qorechaind query svm account <base58_address>
+qorechaind query svm program <base58_address>
 qorechaind query svm params
-```
-
-### slot
-
-현재 SVM 슬롯 번호를 조회합니다.
-
-```bash
 qorechaind query svm slot
 ```
 
@@ -471,64 +223,10 @@ qorechaind query svm slot
 
 ## multilayer
 
-### layer
-
-특정 레이어의 세부 정보를 조회합니다.
-
 ```bash
 qorechaind query multilayer layer <layer_id>
-```
-
-### layers
-
-등록된 모든 레이어 목록을 조회합니다.
-
-```bash
 qorechaind query multilayer layers
-```
-
-### anchor
-
-특정 앵커 레코드를 조회합니다.
-
-```bash
-qorechaind query multilayer anchor <anchor_id>
-```
-
-### anchors
-
-최근 앵커 제출 내역 목록을 조회합니다.
-
-```bash
-qorechaind query multilayer anchors [flags]
-```
-
-| 플래그         | 유형   | 설명               |
-| ------------ | ------ | ------------------------- |
-| `--layer-id` | string | 레이어 ID로 필터링        |
-| `--limit`    | uint   | 반환할 최대 결과 수 |
-
-### routing-stats
-
-레이어 간 트랜잭션 라우팅 통계를 조회합니다.
-
-```bash
 qorechaind query multilayer routing-stats
-```
-
-### simulate-route
-
-실행 없이 트랜잭션 라우팅을 시뮬레이션합니다.
-
-```bash
-qorechaind query multilayer simulate-route <tx_data_hex>
-```
-
-### params
-
-Multilayer 모듈 파라미터를 조회합니다.
-
-```bash
 qorechaind query multilayer params
 ```
 
@@ -536,218 +234,79 @@ qorechaind query multilayer params
 
 ## rdk
 
-### rollup
-
-특정 롤업의 세부 정보를 조회합니다.
-
 ```bash
+qorechaind query rdk config
 qorechaind query rdk rollup <rollup_id>
+qorechaind query rdk list-rollups
+qorechaind query rdk batch <rollup_id>            # latest batch
+qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-### rollups
-
-등록된 모든 롤업 목록을 조회합니다.
-
-```bash
-qorechaind query rdk rollups
-```
-
-| 플래그       | 유형   | 설명                           |
-| ---------- | ------ | ------------------------------------- |
-| `--status` | string | 필터: `active`, `paused`, `stopped` |
-
-### batch
-
-특정 정산 배치를 조회합니다.
-
-```bash
-qorechaind query rdk batch <rollup_id> <batch_index>
-```
-
-### latest-batch
-
-롤업의 최신 배치를 조회합니다.
-
-```bash
-qorechaind query rdk latest-batch <rollup_id>
-```
-
-### suggest-profile
-
-AI 기반 롤업 프로필 추천을 받습니다.
-
-```bash
-qorechaind query rdk suggest-profile <use_case>
-```
-
-### blob
-
-특정 DA blob을 조회합니다.
-
-```bash
-qorechaind query rdk blob <rollup_id> <blob_index>
-```
-
-### params
-
-RDK 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query rdk params
-```
-
-:::note
-롤업 출금 증명 및 정산 상태 또한 `rdk` 그룹 아래에서 조회할 수 있습니다. 정확한 쿼리 하위 명령어와 인자는 사용 중인 롤업의 정산 유형에 따라 달라지므로, 출금/정산 쿼리의 정확한 범위는 **Rollup Development Kit** 문서를 참조하세요.
-:::
+`config`는 모듈 파라미터(최소 스테이크, 생성 시 소각 비율, 챌린지 윈도우, DA 한도)를 보여줍니다. `suggest-profile <use_case>`는 체인을 쿼리하지 않으며, 공개 엔드포인트가 제공하지 않는 JSON-RPC 메서드를 가리키는 안내만 출력하므로, [프리셋 프로필](/rollups/preset-profiles)에서 프로필을 선택하십시오.
 
 ---
 
 ## rlconsensus
 
-PRISM은 합의 파라미터를 조정하는 강화학습 레이어입니다. CLI 모듈 이름 `rlconsensus`와 그 하위 명령어는 그대로 유지됩니다.
-
-### agent-status
-
-현재 PRISM 에이전트 상태와 모드를 조회합니다.
-
 ```bash
 qorechaind query rlconsensus agent-status
-```
-
-### observation
-
-최신 PRISM 관측 벡터를 조회합니다.
-
-```bash
 qorechaind query rlconsensus observation
-```
-
-### reward
-
-누적 PRISM 보상 지표를 조회합니다.
-
-```bash
 qorechaind query rlconsensus reward
-```
-
-### params
-
-PRISM Consensus 모듈 파라미터를 조회합니다.
-
-```bash
 qorechaind query rlconsensus params
-```
-
-### policy
-
-활성 PRISM 정책 설정을 조회합니다.
-
-```bash
 qorechaind query rlconsensus policy
-```
-
----
-
-## babylon
-
-### staking
-
-주소의 BTC 스테이킹 포지션을 조회합니다.
-
-```bash
-qorechaind query babylon staking <address>
-```
-
-### checkpoint
-
-특정 에폭의 BTC 체크포인트 데이터를 조회합니다.
-
-```bash
-qorechaind query babylon checkpoint <epoch>
-```
-
-### params
-
-Babylon 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query babylon params
 ```
 
 ---
 
 ## abstractaccount
 
-### account
-
-추상 계정 세부 정보를 조회합니다.
+추상 계정 모듈은 현재 두 네트워크 모두에서 꺼져 있으므로(`config.enabled`가 `false`) 이 쿼리들은 계정을 반환하지 않습니다.
 
 ```bash
+qorechaind query abstractaccount config
+qorechaind query abstractaccount accounts
 qorechaind query abstractaccount account <address>
-```
-
-### params
-
-Abstract Account 모듈 파라미터를 조회합니다.
-
-```bash
-qorechaind query abstractaccount params
-```
-
-### permission-schema
-
-11개의 권한, 메시지→권한 매핑, 그리고 위임 불가능한 키 관리 메시지로 구성된 표준 인증자 권한 분류 체계를 조회합니다(체인 버전 **v3.1.85** 기준으로 제공되며, REST `/qorechain/abstractaccount/v1/permission_schema`에서도 제공됩니다).
-
-```bash
 qorechaind query abstractaccount permission-schema
 ```
 
-### auth-keygen / auth-sign-cosmos / auth-sign-evm
-
-SDK 없이 인증자 권한 부여를 구성하기 위한 도우미 명령어입니다. 테스트용 키를 생성하거나, Native 레인 또는 EVM 레인의 위임 작업에 대해 **체인이 검증하는 정확한 서명 바이트**를 생성합니다(체인 버전 **v3.1.85** 기준으로 제공).
-
-```bash
-qorechaind query abstractaccount auth-keygen
-qorechaind query abstractaccount auth-sign-cosmos <account> <to> <amount> <nonce>
-qorechaind query abstractaccount auth-sign-evm <account> <to> <value> <data_hex> <nonce>
-```
+`auth-keygen`, `auth-sign-cosmos <chain_id> <account> <to> <amount> <nonce>`, `auth-sign-evm <chain_id> <account> <to_0x> <value_wei> <data_hex> <nonce>`는 인증자 서명을 오프라인으로 생성합니다. 인증자 시드는 절대 인자로 전달하지 않습니다. 시드는 `--seed-file <file>`(표준 입력은 `-`), `QORE_AUTH_SEED` 환경 변수 또는 에코 없는 프롬프트에서 읽으며, `auth-keygen`은 시드를 출력하는 대신 새 `0600` 파일(`--out`)에 기록합니다.
 
 ---
 
 ## gasabstraction
 
-### accepted-tokens
+메인넷은 아직 가스 추상화 쿼리를 제공하지 않습니다(`qorechaind query gasabstraction ...`은 도움말 텍스트를 출력하고 REST 경로는 `Not Implemented`를 반환합니다). 수수료는 `uqor`로만 지불합니다. [가스 추상화](/user-guide/gas-abstraction)를 참조하십시오.
 
-가스 결제용으로 허용되는 토큰 목록을 조회합니다.
+---
 
-```bash
-qorechaind query gasabstraction accepted-tokens
-```
-
-### params
-
-Gas Abstraction 모듈 파라미터를 조회합니다.
+## circuit, feemarket, upgrade
 
 ```bash
-qorechaind query gasabstraction params
+qorechaind query circuit disabled-list        # message types switched off network-wide
+qorechaind query feemarket params
+qorechaind query feemarket base-fee
+qorechaind query upgrade plan
+qorechaind query upgrade applied <upgrade_name>
+qorechaind query upgrade module-versions
 ```
 
 ---
 
-## fairblock
-
-### config
-
-FairBlock 암호화 설정을 조회합니다.
+## evm, erc20, wasm
 
 ```bash
-qorechaind query fairblock config
+qorechaind query evm params
+qorechaind query evm balance-bank <0x_address> uqor
+qorechaind query erc20 token-pairs
+qorechaind query wasm params
+qorechaind query wasm list-code
+qorechaind query wasm list-contract-by-code <code_id>
+qorechaind query wasm contract <contract_address>
+qorechaind query wasm contract-state smart <contract_address> '<json_query>'
 ```
 
-### params
+---
 
-FairBlock 모듈 파라미터를 조회합니다.
+## CLI가 없는 모듈
 
-```bash
-qorechaind query fairblock params
-```
+`xqore`, `babylon`, `fairblock`에는 트랜잭션 또는 쿼리 명령이 없습니다. 현재 CLI나 어떤 공개 API에서도 사용할 수 없습니다.

@@ -10,12 +10,16 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 29 de junio de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
+
+## QoreX (recomendada) {#qorex}
+
+**QoreX** es la billetera oficial no custodial de QoreChain: una aplicación móvil (Android, iOS) y una extensión de navegador (Chrome, Firefox, Safari en macOS). Firma cada transferencia del carril Native con la firma híbrida poscuántica obligatoria, registra por ti tu clave poscuántica, admite staking, @handles y redes externas, y se vincula con el Dashboard. También abre la [ventana de autorización EVM](/getting-started/first-transaction#evm-window) que necesitan las transacciones de MetaMask. Empieza con la [guía de QoreX](/qorex/overview) y [Primeros pasos](/qorex/getting-started).
 
 ## Billetera Keplr
 
-Keplr es la billetera recomendada para transacciones nativas de QoreChain, staking y gobernanza.
+Keplr puede añadir QoreChain como cadena personalizada (más abajo) para ver saldos y recibir en el carril Native. Como QoreChain exige una cofirma poscuántica en el carril Native, envía, haz staking y vota con una billetera compatible con PQC como [QoreX](/qorex/overview) en lugar de usar solo Keplr.
 
 ### Añadir QoreChain como cadena personalizada
 
@@ -57,18 +61,28 @@ Abre MetaMask y ve a **Settings > Networks > Add Network**, luego introduce:
 
 El QOR nativo tiene **18 decimales** en la interfaz EVM (estilo wei). Una vez conectado, puedes usar MetaMask para firmar transacciones EVM, interactuar con contratos inteligentes desplegados y gestionar tokens ERC-20 en QoreChain.
 
+:::caution EVM / MetaMask necesita una clave PQC y una ventana abierta
+MetaMask sigue firmando con normalidad, pero el carril EVM solo admite transacciones de una cuenta que tenga una clave poscuántica registrada y una **ventana de autorización EVM** abierta (v3.2.0 y posteriores). Registra tu clave una vez y abre una ventana antes de una sesión de actividad EVM — consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window). MetaMask no puede abrir la ventana por sí misma; ábrela en [QoreX](/qorex/security-and-recovery#evm-window) o con la CLI. Añadir la red a MetaMask (arriba) no cambia.
+:::
+
 ### Registro de la red en una sola llamada
 
-Para dApps, los paquetes **`@qorechain/wallet-adapter`** y **`@qorechain/connect`** (publicados en npm) registran QoreChain en la billetera del usuario con una sola llamada — solicitando a MetaMask que añada la red mediante EIP-3085 (con el QOR nativo correcto de **18 decimales** en el carril EVM) y configurando el escalón de precio de gas de Keplr:
+Para dApps, el paquete **`@qorechain/wallet-adapter`** (publicado en npm) registra QoreChain en la billetera del usuario con una sola llamada — solicitando a MetaMask que añada la red mediante EIP-3085 (con el QOR nativo correcto de **18 decimales** en el carril EVM) — y proporciona `qoreChainInfo` para la sugerencia de cadena de Keplr (incluido el escalón de precio de gas):
 
 ```bash
-npm install @qorechain/wallet-adapter @qorechain/connect
+npm install @qorechain/wallet-adapter
 ```
 
 ```ts
 import { addQoreEvmToWallet } from "@qorechain/wallet-adapter";
 
-await addQoreEvmToWallet(); // prompts MetaMask with QoreChain's EVM network params
+// pass the EIP-1193 provider and the network parameters (rpcUrl is required)
+await addQoreEvmToWallet(window.ethereum, {
+  evmChainId: 9801,                       // 9800 for the testnet
+  rpcUrl: "https://evm.qore.host",        // https://evm-testnet.qore.host for the testnet
+  explorerUrl: "https://explore.qore.network",
+  testnet: false,                         // true for the testnet
+});
 ```
 
 ## Una cuenta, tres direcciones (cuentas unificadas) {#unified-accounts}
@@ -81,17 +95,21 @@ Genera una billetera unificada en código con `@qorechain/wallet-adapter`:
 import { generateQoreWallet } from "@qorechain/wallet-adapter";
 
 const w = await generateQoreWallet();          // or walletFromMnemonic(mnemonic)
-console.log(w.addresses.cosmos);               // qor1...
-console.log(w.addresses.evm);                  // 0x... (same identity)
-console.log(w.addresses.svm);                  // base58 (same identity)
-// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid).
+console.log(w.cosmos);                         // qor1...
+console.log(w.evm);                            // 0x... (same identity)
+console.log(w.svm);                            // base58 (same identity)
+// Native-lane sends use signHybridEth (classical eth_secp256k1 + ML-DSA-87 hybrid); pass `rest` so the sign-bytes form is resolved.
 ```
 
 Los fondos enviados a cualquiera de las tres formas llegan al mismo saldo.
 
 ## Billeteras vinculadas: Phantom y MetaMask como claves de gasto {#linked-wallets}
 
-A partir de la versión de cadena **v3.1.85**, no es necesario exponer tu clave raíz para gastar desde una cuenta de QoreChain en una dApp. Una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.
+:::caution Actualmente desactivado en ambas redes
+Las funciones de cuenta inteligente y de billetera vinculada están implementadas, pero **desactivadas** en ambas redes (`abstractaccount.enabled = false`): mientras el indicador esté desactivado, se rechazan tanto el registro de un autenticador como la ejecución a través de uno. Consulta `GET /qorechain/abstractaccount/v1/config` antes de ofrecer un flujo de vinculación. La sección siguiente describe el comportamiento diseñado.
+:::
+
+Diseñado para que no tengas que exponer tu clave raíz al gastar desde una cuenta de QoreChain en una dApp (introducido en la versión de cadena **v3.1.85**): una clave de **Phantom** (ed25519) o de **MetaMask** (por su dirección de Ethereum, mediante `personal_sign`) puede **registrarse como autenticador** en tu cuenta — con permisos delimitados, límites de gasto, una fecha de expiración y revocación instantánea — y luego autorizar transferencias retransmitidas por el backend de la dApp. Consulta [Autenticadores de billeteras vinculadas](/developer-guide/account-abstraction#authenticators) para el modelo completo y el código, y la [guía de Autenticadores del SDK](/sdk/guides/authenticators) para ejemplos de principio a fin.
 
 ## Billeteras de Solana (SVM)
 
@@ -116,10 +134,10 @@ Los endpoints públicos de SVM son de **solo lectura**; el envío de transaccion
 
 ## Billeteras con PQC habilitado (obligatorio en la ruta Cosmos)
 
-QoreChain requiere criptografía híbrida poscuántica (PQC) en la ruta de transacciones cosmos. A partir de la versión actual de la cadena (**v3.1.82**), el valor predeterminado de la red es `hybrid_signature_mode = required` con `allow_classical_fallback = false` — por lo que **toda transacción de la ruta cosmos debe llevar una firma ML-DSA-87 (Dilithium-5) junto con la firma estándar secp256k1 (ECDSA)**. Las transacciones cosmos únicamente clásicas provenientes de una cuenta PQC son rechazadas.
+QoreChain requiere criptografía híbrida poscuántica (PQC) en la ruta de transacciones cosmos. En las redes activas (v3.2.x), el valor predeterminado de la red es `hybrid_signature_mode = required` con `allow_classical_fallback = false` — por lo que **toda transacción de la ruta cosmos debe llevar una firma ML-DSA-87 (Dilithium-5) junto con la firma estándar secp256k1 (ECDSA)**. Las transacciones cosmos únicamente clásicas provenientes de una cuenta PQC son rechazadas.
 
 :::caution Las transacciones Cosmos requieren la extensión híbrida PQC
-Enviar una transacción clásica simple por la ruta cosmos será rechazado. Debes adjuntar la firma Dilithium-5 como una extensión de transacción `PQCHybridSignature`. Las herramientas estándar de CosmJS / Keplr no producen esta extensión por sí solas — usa el comando CLI `qorechaind tx pqc cosign`, la firma híbrida del SDK de QoreChain (ver más abajo) o, para construirla tú mismo en código, la biblioteca de código abierto [**qorechain-pqc**](/developer-guide/post-quantum-signing) (`hybridSignBytes`). Las únicas exenciones son los gentxs de génesis y las transacciones de registro/migración de claves PQC.
+Enviar una transacción clásica simple por la ruta cosmos será rechazado. Debes adjuntar la firma Dilithium-5 como una extensión de transacción `PQCHybridSignature`. Las herramientas estándar de CosmJS / Keplr no producen esta extensión por sí solas — usa el comando CLI `qorechaind tx pqc cosign`, la firma híbrida del SDK de QoreChain (ver más abajo) o, para construirla tú mismo en código, la biblioteca de código abierto [**qorechain-pqc**](/developer-guide/post-quantum-signing) (`hybridSignBytes`). Las únicas exenciones son los gentxs de génesis, las transacciones de registro/migración de claves PQC y un unjail desde una cuenta de operador que no tiene ninguna clave registrada.
 :::
 
 ### Cómo funciona
@@ -131,16 +149,26 @@ Las billeteras adjuntan una firma PQC ML-DSA-87 como extensión de transacción 
 Genera una clave poscuántica para la firma híbrida:
 
 ```bash
-qorechaind tx pqc gen-key
+qorechaind tx pqc gen-key mypqc
 ```
 
-### Registro automático
+El comando toma un nombre de clave y guarda la clave en `~/.qorechaind/pqc/<name>.dilithium` (modo `0600`, sin cifrar). Requiere el binario de la versión oficial de `qorechaind`.
 
-Cuando incluyes una clave pública PQC en tu primera transacción, QoreChain la registra automáticamente en la cadena. No se necesita un paso de registro separado. (Las transacciones de registro/migración de claves PQC están a su vez exentas del requisito híbrido, de modo que una cuenta puede inicializar su primera clave.)
+### Registra tu clave (una sola vez) {#register-your-key}
+
+Una clave poscuántica se **registra de forma explícita**, una vez por cuenta, con una transacción de registro de clave. Esa única transacción (y la migración de claves) puede firmarse de forma clásica para que una cuenta recién creada pueda inicializarse; después, toda transacción del carril Cosmos debe llevar la firma híbrida.
+
+```bash
+# register the public key printed by gen-key for your account
+qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+Respalda el archivo de la clave PQC con el mismo cuidado que tu mnemónica. (Una clave puede volver a derivarse de la mnemónica con `qorechaind tx pqc recover-key` y reemplazarse con `tx pqc rotate-key`.) QoreX y el SDK de QoreChain registran la clave por ti. Consulta [Primera transacción](/getting-started/first-transaction#register-pqc-key) para ver un envío firmado completo.
 
 ### Firma híbrida con el SDK
 
-El SDK de QoreChain produce transacciones cosmos conformes mediante `buildHybridTx` con `includePqcPublicKey: true`, que adjunta la extensión Dilithium-5 e incorpora la clave pública para el registro automático. Consulta [Cuentas del SDK y firma PQC](/sdk/concepts/accounts-pqc).
+El SDK de QoreChain produce transacciones conformes del carril Cosmos mediante `buildHybridTx`, que adjunta la extensión Dilithium-5. La clave de la cuenta ya debe estar registrada (ver arriba). Consulta [Cuentas del SDK y firma PQC](/sdk/concepts/accounts-pqc).
 
 ### Modos PQC
 
@@ -154,8 +182,8 @@ Los tres modos de aplicación siguen controlados por gobernanza; el **valor pred
 
 El modo activo se configura a nivel de cadena y puede actualizarse mediante gobernanza.
 
-:::note EVM / MetaMask no se ve afectado
-El flujo de MetaMask (EVM) descrito arriba **no** se ve afectado por el requisito híbrido. Las transacciones EVM usan una ruta ante `eth_secp256k1` separada y nunca necesitan la extensión PQC.
+:::caution EVM / MetaMask necesita una clave PQC y una ventana abierta
+El flujo de MetaMask (EVM) descrito arriba no lleva la extensión híbrida, pero desde v3.2.0 el carril EVM solo admite transacciones de una cuenta con una clave poscuántica registrada y una **ventana de autorización EVM** abierta. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
 :::
 
 ## Billetera CLI

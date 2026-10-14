@@ -15,7 +15,7 @@ Testnet QOR has **no real value**. The Faucet never touches mainnet: there is no
 
 ## Request test tokens
 
-1. Connect to **testnet** and open the **Faucet**.
+1. Sign in, switch the Dashboard to **testnet**, and open the **Faucet**.
 2. Enter the address to fund (`qor1...`). If your wallet is connected, select **Use my address** to fill it in automatically. The form confirms the address is valid before you can continue.
 3. Select the request button. Funding is processed within seconds.
 

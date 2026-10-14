@@ -26,8 +26,10 @@ Le binaire actuel, le genesis, les pairs, les seeds et un point de confiance de 
 Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un point de confiance actualisé toutes les heures) et `minCompatible`. Les étapes d'installation et de connexion ci-dessous récupèrent ce manifeste et utilisent ses valeurs actuelles.
 :::
 
-:::caution v3.1.94 ou ultérieure requise pour un nœud rejoignant le réseau à neuf
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/un snapshot doit être en **v3.1.94 ou ultérieure**, pour deux raisons cumulées : la v3.1.92 a corrigé un bug de mesure du gaz qui bloquait sinon le rejeu au premier bloc contenant une transaction, et le mainnet a depuis franchi la mise à niveau de gouvernance v3.1.94 (un plafond strict sur l'émission, appliqué à la hauteur 2 122 074) — un nœud sans le gestionnaire de cette mise à niveau s'arrête à nouveau en essayant de rejouer au-delà de cette même hauteur. La v3.1.97 est la version actuellement recommandée (mises à jour de sécurité continues, sans rupture de consensus) ; `minCompatible` vaut `3.1.94`. Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) et a déjà pris du retard par rapport à ce plancher — vérifiez son champ `"version"` avant de faire confiance à `binary.url`, et repliez-vous sur les [releases GitHub de qorechain-core](https://github.com/qorechain/qorechain-core/releases) ou sur une construction depuis les sources s'il est en retard.
+:::caution v3.2.0 ou ultérieure requise pour un nœud rejoignant le réseau à neuf
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (par exemple le plafond d'émission v3.1.94 à la hauteur 2 122 074 et la mise à niveau v3.2.0 à la hauteur 2 981 742) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Un nouveau nœud mainnet nécessite la **v3.2.0 ou ultérieure** : `minCompatible` dans le manifeste vaut `3.2.0`, la plus ancienne version qui suit encore la chaîne, et `version` (actuellement `3.2.1`) est la version recommandée, une version locale au nœud sans hauteur de mise à niveau. Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`. Sur le testnet, `minCompatible` est égal à `version` (actuellement `3.2.2`).
+
+Deux paramètres comptent à partir de la v3.2.1 : gardez l'horloge système synchronisée via NTP (le nœud s'arrête lorsque son horloge dérive de plus de 60 secondes) et définissez `evm-chain-id` dans `app.toml` (voir [Limites du nœud](#node-limits)).
 :::
 
 ---
@@ -39,7 +41,7 @@ Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/u
 | Clé de consensus        | Aucune                                            | Clé de consensus ed25519 (doit être sécurisée) |
 | Production de blocs     | Non                                                | Oui — propose et signe les blocs            |
 | Staking / slashing      | Non applicable                                    | Auto-délégation, risque de slashing         |
-| Objectif principal      | Servir RPC/REST/gRPC/EVM/SVM aux intégrations     | Sécuriser le réseau, gagner des récompenses |
+| Objectif principal      | Servir RPC/REST/gRPC/EVM (et SVM en lecture seule) aux intégrations | Sécuriser le réseau (les récompenses de staking s'appliquent) |
 | Exposition publique     | Points de terminaison RPC/EVM généralement exposés | Validateur caché derrière des nœuds sentinelles |
 
 ---
@@ -48,7 +50,7 @@ Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis une archive/u
 
 | Réseau   | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 29 juin 2026 |
 | Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici |
 
 Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce guide. Les exemples utilisent le mainnet par défaut.
@@ -71,19 +73,33 @@ Un SSD NVMe est fortement recommandé — l'état de la chaîne et les stores EV
 
 ### Docker Compose
 
-Un déploiement nœud uniquement avec Docker Compose. Il n'existe pas encore d'image `qorechaind` publiée publiquement à récupérer — construisez-en une vous-même à partir du `Dockerfile` du dépôt et étiquetez-la avec la version de chaîne en direct (**v3.1.97** sur mainnet), puis montez un volume persistant pour les données de la chaîne :
+Un déploiement nœud uniquement avec Docker Compose. Il n'existe pas encore d'image `qorechaind` publiée publiquement à récupérer. Le `Dockerfile` du dépôt public construit le binaire **communautaire** (sans bibliothèque post-quantique, keepers factices) : il convient au développement local mais ne peut pas suivre le mainnet ni le testnet. Pour un nœud de réseau, construisez votre propre image à partir de l'**archive de version** indiquée dans `latest.json`, étiquetez-la avec la version de la release (**v3.2.1** sur mainnet, **v3.2.2** sur testnet), puis montez un volume persistant pour les données de la chaîne :
 
 ```bash
-git clone https://github.com/qorechain/qorechain-core.git
-cd qorechain-core
-docker build -t qorechain-node:v3.1.97 .
+# Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
+curl -s https://download.qore.host/mainnet/latest.json -o latest.json
+curl -fsSL "$(jq -r .binary.url latest.json)" -o qore.tgz
+echo "$(jq -r .binary.sha256 latest.json)  qore.tgz" | sha256sum -c -
+mkdir release && tar xzf qore.tgz -C release
+
+cat > release/Dockerfile <<'EOF'
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates curl jq && rm -rf /var/lib/apt/lists/*
+COPY qorechaind /usr/local/bin/qorechaind
+COPY lib/ /opt/qorechain/lib/
+ENV LD_LIBRARY_PATH=/opt/qorechain/lib
+ENTRYPOINT ["qorechaind"]
+EOF
+docker build -t qorechain-node:v3.2.1 release/
 ```
+
+L'archive contient `qorechaind` et un répertoire `lib/` avec ses bibliothèques partagées (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) ; l'image ci-dessus est uniquement `linux/amd64`, comme l'archive de version.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.1.97
+    image: qorechain-node:v3.2.1
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -96,14 +112,14 @@ services:
       - "9090:9090"     # gRPC
       - "8545:8545"     # EVM JSON-RPC
       - "8546:8546"     # EVM WebSocket
-      - "8899:8899"     # SVM RPC
+      - "8899:8899"     # SVM RPC (read-only: SVM transactions are disabled)
       - "26660:26660"   # Prometheus
 
 volumes:
   qorechain-data:
 ```
 
-Initialisez le répertoire de données une fois (le genesis et la configuration des pairs sont couverts ci-dessous), puis démarrez :
+Initialisez le répertoire de données une fois (par exemple `docker compose run --rm qorechain-node init my-node --chain-id qorechain-vladi --home /root/.qorechaind` ; le genesis et la configuration des pairs sont couverts ci-dessous), puis démarrez :
 
 ```bash
 docker compose up -d
@@ -148,14 +164,14 @@ sudo journalctl -u qorechaind -f
 qorechaind init my-node --chain-id qorechain-vladi
 ```
 
-### 2. Récupérer le manifeste
+### 2. Récupérer le manifeste {#fetch-the-manifest}
 
 ```bash
 curl -s https://download.qore.host/mainnet/latest.json -o latest.json
 # testnet: https://download.qore.host/testnet/latest.json
 ```
 
-Utilisez ce fichier comme source pour les valeurs du binaire, du genesis et des pairs dans les étapes ci-dessous — vérifiez `jq -r .minCompatible latest.json`, mais rappelez-vous que le **plancher v3.1.94** ci-dessus s'applique même si ce champ est en retard.
+Utilisez ce fichier comme source pour les valeurs du binaire, du genesis et des pairs dans les étapes ci-dessous — vérifiez `jq -r .minCompatible latest.json` et exécutez au moins cette version (la version recommandée est `jq -r .version latest.json`).
 
 ### 3. Télécharger et vérifier le genesis
 
@@ -166,7 +182,7 @@ GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
 curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
 echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
 
-# Vérification croisée avec le genesis servi en direct par la chaîne :
+# Cross-verify against the genesis served live by the chain:
 curl -s https://rpc.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
@@ -191,6 +207,8 @@ Puis réglez le prix minimum du gaz dans `~/.qorechaind/config/app.toml` (planch
 ```toml
 minimum-gas-prices = "0.1uqor"
 ```
+
+`qorechaind init <moniker> --chain-id qorechain-vladi` écrit aussi l'EVM chain id du réseau dans `app.toml` (voir [Limites du nœud](#node-limits)) ; vérifiez-le sur un répertoire home initialisé il y a longtemps.
 
 ### 5. Démarrer la synchronisation
 
@@ -232,19 +250,20 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restauration à partir d'un snapshot
 
-Alternativement, téléchargez le snapshot de données de chaîne publié, vérifiez sa somme de contrôle, puis extrayez-le par-dessus votre répertoire de données. Le manifeste ne porte pas actuellement de pointeur de snapshot, donc consultez le listing en direct sur [download.qore.host](https://download.qore.host) pour le nom de fichier et la somme de contrôle actuels plutôt que d'en coder un en dur :
+Alternativement, téléchargez le snapshot de données de chaîne publié, vérifiez sa somme de contrôle, puis extrayez-le par-dessus votre répertoire de données. Sur mainnet, l'objet `snapshot` du manifeste fournit l'URL, la `height` du bloc, la taille et le SHA-256 (le manifeste du testnet ne porte actuellement que l'URL, utilisez donc le state sync sur ce réseau). Lisez `snapshot.height` avant de l'utiliser : le snapshot mainnet est une archive unique d'environ 27 Go, et un snapshot ancien implique un long rattrapage (le snapshot mainnet actuellement publié est antérieur aux hauteurs de mise à niveau v3.1.94 et v3.2.0, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer avec un binaire v3.2.x).
 
 ```bash
-# Remplacez par le nom de fichier et la somme de contrôle actuels du listing download.qore.host
-curl -fsSL https://download.qore.host/<current-snapshot-filename>.tar.gz -o snapshot.tar.gz
-sha256sum snapshot.tar.gz   # comparez à la somme de contrôle publiée avec le fichier
+SNAP_URL=$(jq -r .snapshot.url latest.json)
+SNAP_SHA256=$(jq -r .snapshot.sha256 latest.json)
+curl -fsSL "$SNAP_URL" -o snapshot.tar.gz
+echo "${SNAP_SHA256}  snapshot.tar.gz" | sha256sum -c -
 
 tar xzf snapshot.tar.gz -C ~/.qorechaind/
 qorechaind start --minimum-gas-prices=0.1uqor
 ```
 
 :::note
-Les snapshots sont publiés sous des **noms de fichiers horodatés par hauteur** qui changent régulièrement — consultez [download.qore.host](https://download.qore.host) pour le snapshot le plus récent et sa somme de contrôle SHA-256, et vérifiez toujours avant d'extraire. N'oubliez pas que le **minimum v3.1.94** ci-dessus s'applique aussi au rejeu depuis un snapshot.
+Les champs `snapshot.height` et `snapshot.ts` du manifeste indiquent la fraîcheur de l'archive, et le state sync (ci-dessus) est généralement plus rapide qu'un téléchargement de 27 Go. Vérifiez toujours la somme de contrôle avant d'extraire, et utilisez une version de nœud qui porte tous les gestionnaires de mise à niveau (voir l'avertissement en haut de cette page) lors d'un rejeu depuis un snapshot.
 :::
 
 ---
@@ -268,6 +287,25 @@ pruning = "default"
 | `default`   | Conserve l'état récent, élague le reste      | Nœud RPC, consultations de solde/état  |
 | `nothing`   | Conserve tout l'état historique              | Nœud archive, historique complet       |
 | `custom`    | Valeurs de conservation/intervalle définies par l'opérateur | Rétention ajustée      |
+
+### Limites du nœud (`app.toml`) {#node-limits}
+
+À partir de la version de nœud v3.2.1, `init` écrit une section `[qorechain]` avec trois limites locales au nœud. Elles ne changent que ce que ce nœud garde en mémoire et ce qu'il place dans les blocs qu'il propose, jamais ce qu'un bloc doit contenir pour être valide :
+
+```toml
+[qorechain]
+# Maximum number of Cosmos transactions held in the app-side mempool (default 5000).
+# When full, a new transaction that pays more per gas evicts the lowest-paying one; otherwise it is refused.
+cosmos-mempool-max-txs = 5000
+
+# Time the node may spend selecting transactions for a proposal before it proposes what it has ("0s" disables the budget).
+prepare-proposal-budget = "1s"
+
+# Stop after this many candidates in a row that do not fit in the remaining block space (0 disables the cap).
+prepare-proposal-max-skips = 64
+```
+
+`init` écrit aussi l'EVM chain id du réseau dans le paramètre `evm-chain-id` de la section `[evm]` de `app.toml` (`9801` pour `--chain-id qorechain-vladi`, `9800` pour `qorechain-diana`). Un nœud dont l'`app.toml` contient une autre valeur démarre quand même, mais consigne une erreur au démarrage, et son propre JSON-RPC (`eth_chainId`, signature auprès de ce nœud) répond avec un mauvais chain id tant que vous n'avez pas corrigé le fichier ; le consensus n'est pas affecté. Les anciens binaires écrivaient la valeur du testnet (`9800`) quel que soit `--chain-id`, de sorte qu'un nœud mainnet initialisé il y a longtemps doit vérifier ce paramètre. Ne définissez pas `QORE_EVM_CHAIN_ID` sur une valeur autre que celle du réseau : un tel nœud refuse de démarrer.
 
 ### Indexation des transactions (`config.toml`)
 
@@ -297,8 +335,10 @@ address = "0.0.0.0:9090"
 enable = true
 address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
-api = "eth,net,web3,qor"
+api = "eth,net,web3,txpool"
 ```
+
+Les points de terminaison publics servent les espaces de noms `eth_`, `net_`, `web3_` et `txpool_`. L'espace de noms `qor_` n'est servi par aucune version de nœud publiée, ne l'ajoutez donc pas (voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 Et l'écouteur RPC dans `config.toml` :
 
@@ -314,7 +354,7 @@ laddr = "tcp://0.0.0.0:26657"
 | gRPC                  | `9090`  | Accès programmatique à haut débit                           |
 | EVM JSON-RPC          | `8545`  | Intégrations compatibles Ethereum (chain ID `9801`)          |
 | EVM WS                | `8546`  | Abonnements aux événements EVM                               |
-| SVM RPC               | `8899`  | Intégrations compatibles Solana                              |
+| SVM RPC               | `8899`  | Lectures compatibles Solana (les transactions SVM sont désactivées) |
 
 :::warning
 N'exposez jamais RPC, EVM JSON-RPC ou gRPC directement sur l'internet public sans reverse proxy, limitation de débit, authentification et pare-feu. Ne liez `0.0.0.0` que derrière une couche d'entrée contrôlée.
@@ -334,7 +374,7 @@ curl -s localhost:26657/status | jq '.result.sync_info.catching_up'
 * `false` — entièrement synchronisé et servant l'état actuel.
 
 ```bash
-# Hauteur la plus récente et réseau
+# Latest height and network
 curl -s localhost:26657/status | jq '.result.sync_info.latest_block_height, .result.node_info.network'
 ```
 
@@ -342,7 +382,7 @@ Le champ `network` doit indiquer `qorechain-vladi` (mainnet) ou `qorechain-diana
 
 ### Prometheus et Grafana
 
-QoreChain expose des métriques Prometheus sur le port **26660** :
+Le nœud peut exposer des métriques Prometheus sur le port **26660** (réglez `prometheus = true` dans la section `[instrumentation]` de `config.toml`) :
 
 ```
 http://localhost:26660/metrics
@@ -356,14 +396,14 @@ Récupérez-les avec n'importe quel collecteur compatible Prometheus. Si vous ex
 curl -s -X POST http://localhost:8545 \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}'
-# Attendu : "0x2649" (9801) sur mainnet
+# Expect "0x2649" (9801) on mainnet
 ```
 
 ---
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez le tag en direct (**v3.1.97** sur mainnet) et suivez les versions officielles pour les mises à niveau coordonnées.
+1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.1** sur mainnet), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
 
 2. **Faites tourner des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un simple redémarrage ou une resynchronisation n'interrompe pas le trafic d'intégration.
 
@@ -375,11 +415,17 @@ curl -s -X POST http://localhost:8545 \
 
 6. **Surveillez la synchronisation en continu.** Alertez sur le retard de hauteur de bloc, l'absence de pairs et un nœud bloqué en `catching_up`.
 
-Pour un accès en lecture ultra-léger sans exécuter un nœud complet, voir la documentation **Light Node**.
+Un déploiement nœud uniquement ne signe jamais. Les transactions que votre intégration diffuse par son intermédiaire doivent déjà porter la signature post-quantique hybride (et, pour la voie EVM, l'expéditeur a besoin d'une clé enregistrée et d'une fenêtre d'autorisation ouverte) ; voir [Intégration exchange](/developer-guide/exchange-integration) et [Signature post-quantique](/developer-guide/post-quantum-signing).
+
+Pour observer le réseau sans exécuter de nœud complet, voir la [documentation du Light Node](/light-node/overview).
 
 ---
 
 ## Dépannage
+
+### Le nœud s'arrête avec une erreur d'horloge
+
+À partir de la version de nœud v3.2.1, le moteur de consensus s'arrête lorsque l'horloge système dérive de plus de 60 secondes par rapport au réseau. Exécutez un client NTP (`chrony` ou `systemd-timesyncd`), confirmez que l'horloge est synchronisée avec `timedatectl status`, puis redémarrez le nœud.
 
 ### Un nœud arrêté avant la mise à niveau ne reprend pas après un remplacement de binaire
 
@@ -406,5 +452,5 @@ echo '{"height":"0","round":0,"step":0}' > <HOME>/data/priv_validator_state.json
 
 * [Connexion au Mainnet](/getting-started/connecting-to-mainnet) — Genesis, pairs et détails de connexion du mainnet
 * [Exécution d'un validateur](/developer-guide/running-a-validator) — Ajouter les fonctions de production de blocs
-* [Construire depuis les sources](/developer-guide/building-from-source) — Construire le binaire `qorechaind`
-* **Light Node** — Accès en lecture ultra-léger (documentation à venir)
+* [Construire depuis les sources](/developer-guide/building-from-source) — Construire le binaire `qorechaind` communautaire pour le développement
+* [Light Node](/light-node/overview) — Client léger qui suit le réseau sans nœud complet

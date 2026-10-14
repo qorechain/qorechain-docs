@@ -17,19 +17,28 @@ El framework observa y decide *cuándo*; **tú aportas la comprobación de valid
 El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a tu
 función `validate` y actúa según lo que devuelvas.
 
+:::caution Etapa temprana: necesita las rutas REST del RDK
+El Watchtower lee los lotes a través del cliente REST del RDK. Las rutas REST `/qorechain/rdk/v1/…` hoy no se sirven en mainnet, por lo que el Watchtower todavía no puede ejecutarse contra mainnet. No se ha creado ningún rollup en ninguna de las dos redes, así que no hay nada que vigilar.
+:::
+
 ## `watchBatches`
 
 ```ts
-import { createRdkClient, watchBatches, challengeBatch } from "@qorechain/rdk";
+import { createRdkClient, watchBatches } from "@qorechain/rdk";
 
-// The public qore.host REST + RPC endpoints are baked into the presets
-// (RDK ≥ 0.4.2); the RPC endpoint is what broadcasts a challenge. Pass
-// `endpoints` only to target your own node.
 const rdk = createRdkClient({ network: "testnet" });
 
-const watcher = watchBatches(rdk, "my-roll", {
+// `tx` is a signing client that produces the hybrid (post-quantum) signature
+// the networks require. See "Signing with the published clients" in
+// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
+// cannot get a challenge accepted.
+declare const tx: {
+  challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
+};
+
+const watcher = watchBatches(rdk, "my-rollup", {
   onBatch: (batch) => {
-    console.log("new batch", batch.index);
+    console.log("new batch", batch.batchIndex);
   },
 
   // Your validity predicate. Return false to flag the batch as invalid.
@@ -38,13 +47,17 @@ const watcher = watchBatches(rdk, "my-roll", {
   },
 
   // Called when validate() returns false — wire it to a challenge.
-  onInvalid: async (batch) => {
-    await challengeBatch(rdk, "my-roll", batch.index /* + your fraud proof */);
+  onInvalid: async ({ batch }) => {
+    await tx.challengeBatch({
+      rollupId: "my-rollup",
+      batchIndex: batch.batchIndex,
+      proof: myFraudProofHex, // hex fraud proof
+    });
   },
 
   // Called as a batch approaches the end of its challenge window.
-  onDeadline: (batch) => {
-    console.warn("challenge window closing for batch", batch.index);
+  onDeadline: ({ batch, secondsRemaining }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -58,14 +71,18 @@ El framework expone:
 - **fechas límite de la ventana de desafío** mediante `onDeadline`, y
 - **lotes inválidos** (aquellos en los que tu `validate` devolvió `false`) mediante `onInvalid`.
 
-Conectar `onInvalid` a `challengeBatch` convierte al Watchtower en un
+Conectar `onInvalid` a un desafío convierte al Watchtower en un
 auto-challenger completo; déjalo sin definir para ejecutarlo en modo de solo
 observación.
+
+:::note Ventana de desafío
+La fecha límite que informa el Watchtower usa la ventana de desafío convertida a bloques a 6 segundos por bloque (100,800 bloques por defecto), por lo que con los bloques de ≈3.2 s de mainnet la ventana real es más corta que "7 días". Publicar un desafío también requiere la fianza de desafío del rollup (1,000 QOR para los presets `nft` y `custom`).
+:::
 
 ## CLI
 
 ```bash
-qorollup watchtower my-roll
+qorollup watchtower my-rollup
 ```
 
 `watchtower` ejecuta el framework desde la línea de comandos, imprimiendo los

@@ -16,26 +16,14 @@ It is **live and public** on three stores.
 | Browser | Install |
 |---|---|
 | **Chrome and Chromium browsers** (Brave, Edge, Arc, Opera) | https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg |
-| **Firefox** | https://addons.mozilla.org/firefox/addon/qorex/ |
-| **Safari (macOS 10.14 or later)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
+| **Firefox** (Firefox 140 or later) | https://addons.mozilla.org/firefox/addon/qorex/ |
+| **Safari (macOS 12 or later)** | https://apps.apple.com/us/app/qorex-wallet/id6794132220 |
 
 ### Which version is live where {#versions}
 
-Store reviews land at different times, so the published version currently differs per browser:
+As of **15 October 2026**: **Chrome 0.3.6**, **Firefox 0.3.7** (a point release after 0.3.6), and **Safari** inside the **QoreX Wallet** macOS app (**1.7.6**, which carries extension 0.3.6; the Mac App Store uses its own `1.x` numbering). Store reviews land at different times, so a store can briefly serve an older or newer build; the store listing always shows its current version. This page describes the 0.3.6 feature set. See also [Which version is live where](/qorex/overview#versions).
 
-| Browser | Published version |
-|---|---|
-| **Firefox** | **0.2.6** |
-| **Safari (macOS)** | ships inside the **QoreX Wallet** macOS app, which uses its own `1.x` numbering — the Mac App Store currently serves **1.6** (carries extension **0.2.6**) |
-| **Chrome / Chromium** | Had been stuck behind a long store review as of late August — check the [Chrome Web Store listing](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) directly for its current version rather than trusting a number here |
-
-Newer features may not be live in your browser yet — check the table above before assuming something described here is available. If the Dashboard tells you your extension needs updating, it means a specific minimum version for that action (for example 0.2.2, for staking) — not that your build is generally old.
-
-**0.1.5** added [Solana Wallet Standard discovery](#standards), [passkey unlock](#security), a fully implemented [SVM dApp lane](#standards), and the [Dashboard connection bridge](#dashboard-bridge). (Version 0.1.4 was never published — its changes reach users with 0.1.5.)
-
-**0.1.6–0.1.9** added, in order: vesting-aware sends with honest bank-refusal messages; the account address and live balance shown directly on the popup home; and, in **0.1.9**, [paying an @handle](#handle-send) straight from Send, a [Receive screen with an address QR code](#receive), a [language picker](#language) (ten languages, matching the mobile app's set), and the removal of a confusing "next unlock date" from the [vesting balance](#vesting).
-
-**0.2.2** added [staking, from the extension itself](#stake) — its own Stake screen (validators with commission, your staked total, waiting rewards, and delegate / unstake / claim); [several accounts from one recovery phrase](#wallet), the same as the mobile app; the fix that lets the **Dashboard's** staking button actually reach the extension (a wallet created only in the extension previously couldn't stake through the Dashboard at all — see [Dashboard bridge](#dashboard-bridge)); working @handle claiming from the browser; and the build number shown at the foot of the popup.
+Since 0.2.6 the extension gained: [several wallets with one password](#wallets), an [Ethereum-style account you add by hand](#coin60), [Claim & restake](#stake), an **Unstaking in progress** list, [adding a token by contract](#custom-tokens), [Receive on any network](#receive), [Connected sites with Revoke](#connected-sites), the [EVM access window](#evm-window), [`signAndBroadcast` for dApps](#sign-and-broadcast), and approval screens that show every message, fee and expiry.
 
 **The permission surface has not changed since 0.1.3** — see [What permissions QoreX asks for](#permissions).
 
@@ -47,14 +35,25 @@ On Safari, approvals open in a browser tab rather than a popup window — the ex
 
 Open the popup and choose:
 
-- **Create wallet** — generates a fresh 24-word recovery phrase on your device (256-bit entropy), derives your QoreChain identity, and seals it in the vault under a password (and, optionally, a passkey — see [Security](#security)).
-- **Import wallet** — restore from an existing 24-word phrase.
+- **Create a new wallet** — choose a password (at least 8 characters); QoreX generates a fresh 24-word recovery phrase on your device (256-bit entropy), derives your QoreChain identity, and seals it in the vault under that password (and, optionally, a passkey — see [Security](#security)). The 24 words are shown **once** — write them down, tick *I have saved my recovery phrase somewhere safe*, then continue. You can show them again later with **Reveal recovery phrase** in the popup (password required).
+- **Import a recovery phrase** — restore from an existing phrase. A phrase shorter than 24 words restores your funds normally, but QoreX warns that your post-quantum key then only gets the phrase's strength; for full strength, create a new 24-word wallet and move your funds there.
 
-The extension holds its own keys; it does not require the mobile app. You can also export your mnemonic from the popup. Keys never leave the device.
-
-:::note Several accounts from one phrase (from 0.2.2)
-The extension can now create and switch between several accounts from the same recovery phrase, the same as the mobile app — the phrase you already wrote down restores every one of them. Switching moves everything with it: sending, staking, receiving, and your @handle all follow whichever account is active. Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests, and device linking remain mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability) for the full comparison.
+:::danger Write the phrase down before you continue
+The extension's vault lives only in this browser. **Removing the extension, clearing its data or resetting the browser deletes your keys**, and nobody — including QoreChain Association — can restore them. Without your written 24 words, your funds are gone for good. See [Back up now](/qorex/security-and-recovery#back-up-now).
 :::
+
+The extension holds its own keys; it does not require the mobile app. Keys never leave the device.
+
+## Several wallets and accounts {#wallets}
+
+- **Wallets** (from 0.3.3) — the popup's **Wallets** screen ("Wallets in this browser") lists every wallet in this browser. Each has its own recovery phrase; **one password** unlocks them all, and switching changes which one QoreX shows and signs with (nothing moves on chain). **Add** a wallet by creating a new one (its phrase is shown once) or restoring one; your password is asked once to re-seal the vault. Adding or removing a wallet turns **passkey unlock** off — turn it back on from the home screen. To remove one, tap *Remove from this browser* and enter your password; the last wallet cannot be removed from this screen. Removing deletes that key from the browser — only its recovery phrase brings it back.
+- **Accounts** (from 0.2.2) — **Your accounts** creates and switches between several accounts from the same phrase (up to 20 per wallet; they are numbered and cannot be renamed). Restoring the phrase you wrote down brings back **Account 1**; re-add the others with **Add an account**. Switching moves everything with it: sending, staking, receiving, and your @handle follow whichever account is active.
+
+### Ethereum-style account {#coin60}
+
+From 0.3.2, **Add an Ethereum account (coin 60)** (on the **Your accounts** screen) adds the account for a phrase first used in MetaMask or on the Dashboard; see [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard). Its 0x address is the one MetaMask shows for the same words. Handles are not offered on it.
+
+Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests and device linking remain mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Your account, balance & @handle {#account}
 
@@ -66,7 +65,7 @@ If your account holds vesting QOR (for example, an unreleased TGE allocation), t
 
 ### Claim an @handle
 
-From the popup you can claim a unique **@handle** (for example `@liviu`) for this account's address, the same as in the mobile app. The claim is signed with the account's own key and binds to that address, so the mobile app and the Dashboard can resolve it when someone sends to you. See [@handle](/qorex/account-and-dashboard#handle) for how handles are bound to addresses (not to a wallet as a whole).
+Some extension versions let you claim a unique **@handle** (for example `@liviu`) for this account's address from the popup, the same as in the mobile app; if your popup does not offer it, claim from the mobile app (claiming is not offered on Ethereum-style accounts). The claim is signed with the account's own key and binds to that address, so the mobile app and the Dashboard can resolve it when someone sends to you. See [@handle](/qorex/account-and-dashboard#handle) for how handles are bound to addresses (not to a wallet as a whole).
 
 ## Send to an @handle {#handle-send}
 
@@ -83,21 +82,24 @@ Resolution is verified two ways before QoreX will use it: a registry attestation
 
 Tap **Receive** in the popup to show your `qor1…` address as a QR code (with the QoreChain icon embedded) alongside a copy button — scan it from a phone or paste the address directly.
 
+**Network picker.** Receive can also show the address for Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis and Celestia, each with an "only this network" warning (QoreChain stays first).
+
 ## Stake from the extension {#stake}
 
 Since **0.2.2**, the popup has its own **Stake** screen — a wallet created only in the extension no longer needs the mobile app to earn staking rewards.
 
 1. Open the popup and go to **Stake**.
 2. The screen lists active validators with their commission, your currently staked total, and any rewards waiting to be claimed. Validators the network has **jailed** are left out of the list — delegating to one is never what you want.
-3. To delegate, pick a validator and an amount, then confirm. QoreX signs with the mandatory hybrid post-quantum signature, the same as a Send.
-4. **Unstake** and **claim** work from the same screen. Unstaking starts the 21-day unbonding period — see [Staking & Delegation](/user-guide/staking-and-delegation) for what that means.
-5. Since **0.2.6**, you can also **move stake to a different validator** (redelegate) — no unbonding wait, no penalty, and rewards keep flowing the whole way across. See [Move stake between validators](/qorex/portfolio-and-staking#move-stake) for how it works (the mechanics are identical between the app and the extension).
+3. To delegate, pick a validator and an amount, then confirm. QoreX signs with the mandatory hybrid post-quantum signature, the same as a Send. While you type, it warns you if the amount would leave less than a transaction's fee (you could not unstake or claim until the account holds QOR again). With several accounts, choose which one stakes from the account selector on the Stake screen.
+4. **Claim** collects rewards; **Claim & restake** compounds them back to the validators that earned them in one transaction. QoreX checks first that your **unlocked** QOR can pay the fee (it is paid before rewards arrive) and tells you if not.
+5. **Unstake** starts the 21-day unbonding period and the amount appears under **Unstaking in progress** with the time left — see [Staking & Delegation](/user-guide/staking-and-delegation).
+6. **Move stake** moves stake to one or several other validators (redelegate) — no unbonding wait, no penalty, rewards keep flowing. See [Move stake between validators](/qorex/portfolio-and-staking#move-stake).
 
 Staking, delegation, and rewards happen exclusively on the **Native** lane, never through an EVM precompile.
 
 ### Approving a Dashboard staking request {#stake-dashboard}
 
-The QoreChain [Dashboard](/dashboard/staking-and-validators) composes staking requests but cannot sign them — your key never leaves the extension's vault. When you click **Continue in QoreX** on the Dashboard, the request opens in the extension for you to review (validator and amount) and approve, exactly like a Send. This connection was broken in 0.2.1 (the extension reported itself as "too old" even when it was the newest published build — the real issue was a missing internal hop, not version staleness); it's fixed as of **0.2.2**. If you're on an older build, see [which version is live where](#versions).
+The QoreChain [Dashboard](/dashboard/staking-and-validators) composes staking requests but cannot sign them — your key never leaves the extension's vault. When you click **Continue in QoreX** on the Dashboard, the request opens in the extension for you to review (validator and amount) and approve, exactly like a Send.
 
 :::note If a transaction shows as "downgraded" instead of successful
 The Dashboard occasionally shows a transaction as **downgraded** rather than a clean success. This means your funds moved, but the post-quantum signature layer wasn't found on chain for that transaction — it is not something you did wrong and not something you can fix from your side. It's a fault on our side; please report it to support so we can investigate. The message stays on screen deliberately rather than clearing, so you have time to read and report it.
@@ -105,7 +107,7 @@ The Dashboard occasionally shows a transaction as **downgraded** rather than a c
 
 ### Send on external networks {#send-external}
 
-Besides QOR on the Native lane, the popup can send assets on external networks, all derived from the same recovery phrase:
+Besides QOR on the Native lane, the popup can send assets on external networks, all derived from the same recovery phrase (for EVM networks it shows the **maximum network fee** — "Network fee: at most …" — before you confirm):
 
 | Kind | Networks | Bundled tokens |
 |---|---|---|
@@ -121,16 +123,28 @@ QoreX exposes three interfaces, all injected on the page as `window.qorex` (`{ e
 
 | Standard | What it is | What it means for you as a dev |
 |---|---|---|
-| **EIP-1193** | The Ethereum provider JavaScript API (`request(...)`, events). | Your existing ethers.js / viem / web3.js code talks to QoreX's EVM lane unchanged; numeric error codes (e.g. `4902`) are forwarded verbatim. |
+| **EIP-1193** | The Ethereum provider JavaScript API (`request(...)`, events). | QoreX's EVM provider answers account and network queries — `eth_requestAccounts`, `eth_accounts`, `eth_chainId` and `wallet_switchEthereumChain` (any other chain returns the standard `4902`). It does **not** sign or send EVM transactions or messages yet: other methods return "EVM method … not yet supported". Use MetaMask or another EVM wallet for EVM-lane transactions (which now also need an open [EVM access window](#evm-window)). |
 | **EIP-6963** | Multi-wallet provider discovery (announce / request events). | QoreX announces itself alongside every other wallet — it **never overwrites `window.ethereum`** — so the user picks QoreX per site with no conflicts. |
-| **Keplr-pattern `signDirect`** | A Cosmos `OfflineDirectSigner`-shaped provider on `window.qorex.native`. | Cosmos-style dApps sign QoreChain **Native-lane** transactions the same way they would with Keplr; the post-quantum layer is pre-applied (see [Post-quantum signing](#pqc)). |
+| **Native provider (Keplr-style)** | `window.qorex.native`: `enable`, `getKey`, `signDirect` and `signAndBroadcast`, plus a `capabilities` list. It is **not** a full Keplr drop-in — QoreX does not alias `window.keplr` and has no `getOfflineSigner`, `signAmino` or `sendTx`. | To send a QoreChain transaction call **`signAndBroadcast`** (see [Sending a QoreChain transaction](#sign-and-broadcast)): QoreX shows the decoded messages and fee, adds the hybrid post-quantum signature that only the wallet can make, and broadcasts. `signDirect` on QoreChain is refused unless the transaction already carries a valid quantum-safe layer. |
 | **Solana Wallet Standard** *(from 0.1.5)* | Native wallet discovery for Solana dApps (`wallet-standard:register-wallet` / `app-ready`). | Solana dApps **auto-detect QoreX** — no custom integration. Features: `standard:connect`, `standard:disconnect`, `standard:events`, `solana:signMessage`, `solana:signTransaction`, `solana:signAndSendTransaction`; chain `solana:mainnet`; both `legacy` and `v0` transactions. |
 
 :::note Reaching the SVM lane directly
 The same interface is also available on `window.qorex.svm` (`connect` / `signAndSendTransaction` / `signMessage`). Wallet-Standard auto-discovery and the fully implemented SVM lane shipped in **0.1.5** and are live on both Chrome and Firefox (see [which version is live where](#versions)).
 
-Solana approvals show the decoded payload (recipient and lamports for System transfers, and the program list), reject transactions that do not list your wallet as a signer, and mark the signature as **classical** — see [Post-quantum signing](#pqc).
+Solana approvals show **one line per instruction**, decoded where QoreX can: SOL transfers (recipient and lamports), SPL token transfers, **"ALLOW SPENDING of your tokens"** (approve), **"HAND OVER control of the account"** (set authority) and closing a token account — and say "instruction QoreX cannot read" for anything else, with the program. A request that includes an approve or set-authority instruction is headlined "wants authority over your Solana tokens — read every line below". Transactions that do not list your wallet as a signer are rejected, `signMessage` will not sign bytes that are really a transaction, and the signature is marked **classical** — see [Post-quantum signing](#pqc).
 :::
+
+## Coins and tokens {#custom-tokens}
+
+The popup's **Coins and tokens** screen lets you add an **ERC-20 token by its contract**: pick the network, paste the contract address, **Check contract**. QoreX reads the token's name and decimals from the contract itself — and reads it again in the background when you add it, rather than trusting the popup — then shows them with a reminder that anyone can create a token with any name. The token then appears in **Send on external networks**. It refuses bundled tokens, duplicates, non-EVM networks, bad addresses, unreadable contracts and contracts that borrow the name of a bundled token.
+
+## Connected sites {#connected-sites}
+
+**Connected sites** in the popup lists every site this wallet has approved — a site can see this wallet's address and ask you to sign. Tap **Revoke** to remove one. Approvals are kept **per wallet**: a site approved for one wallet cannot read another wallet's address after you switch.
+
+## EVM access window {#evm-window}
+
+The popup's **EVM access window** screen opens and closes the window that lets an account send on QoreChain's EVM lane (v3.2.0 and later) — the same screen as in the app. See [EVM access window](/qorex/security-and-recovery#evm-window).
 
 ## Language {#language}
 
@@ -160,11 +174,15 @@ The extension's `manifest.json` declares:
 "host_permissions": [],
 "content_scripts": [
   { "matches": ["<all_urls>"], "js": ["dist/content.js"], "run_at": "document_start" }
+],
+"web_accessible_resources": [
+  { "resources": ["dist/inpage.js"], "matches": ["<all_urls>"], "use_dynamic_url": true }
 ]
 ```
 
 - **`permissions: ["storage"]`** — the only API permission. It stores the encrypted vault and your per-origin connection approvals **locally**, in extension storage.
 - **`host_permissions: []`** — QoreX declares **no** host permissions. It does not request the ability to make cross-origin network requests to arbitrary sites on your behalf.
+- **`web_accessible_resources`** — lets pages load QoreX's own `inpage.js`, the small script that exposes the provider. `use_dynamic_url` gives it a per-session address so sites cannot fingerprint the extension by probing for it.
 - **`content_scripts` matches `<all_urls>`** — this is the honest reason Firefox says *"Access your data for all websites."* QoreX injects a small provider script (`content.js` → `inpage.js`) into **every page**. A content script that runs on all sites *can* technically read the page, and browsers describe that capability with that exact wording — whether it comes from `host_permissions` or from a content-script match.
 
 **Why the content script runs everywhere.** So that **any** dApp can discover the wallet through EIP-6963 without you first granting per-site access. This is how MetaMask, Keplr, Phantom and every other injected wallet work: the injected provider must be present before the page's scripts run (`document_start`), on whatever site you visit.
@@ -173,7 +191,7 @@ The extension's `manifest.json` declares:
 
 ## Connect a dApp to QoreX {#connect}
 
-A dApp discovers QoreX's EVM lane through **EIP-6963**. Announce-and-request, then use the returned EIP-1193 provider:
+A dApp discovers QoreX through **EIP-6963**. Announce-and-request, then use the returned EIP-1193 provider (which answers account and network queries only — see the table above):
 
 ```ts
 import type { EIP6963ProviderDetail } from "./types";
@@ -197,23 +215,48 @@ if (qorex) {
 }
 ```
 
-For the QoreChain **Native** lane, use the Keplr-pattern provider at `window.qorex.native` (`enable`, `getKey`, `signDirect`). The higher-level [`@qorechain/connect`](/sdk/overview) package wraps this detection for you.
+For the QoreChain **Native** lane, use the provider at `window.qorex.native` (`enable`, `getKey`, `signAndBroadcast`, `signDirect`; read `capabilities` to see what this build supports). The higher-level [`@qorechain/connect`](/sdk/overview) package wraps this detection for you.
 
-Approvals are **per-origin**: the first connection to a site opens an approval popup showing the origin, approving reveals only your public address, and one site's approval grants nothing to another.
+Approvals are **per-origin**: the first connection to a site opens an approval popup showing the origin, approving reveals only your public address, and one site's approval grants nothing to another. Approvals are kept per wallet, persist until you revoke them under **Connected sites**, and one site can have one request waiting (three in all); switching wallet or locking answers waiting requests with "no". See [What the approval window shows](/qorex/security-and-recovery#approvals).
 
 ### Dashboard bridge (v0.1.5, extended in v0.2.2) {#dashboard-bridge}
 
 Version 0.1.5 adds a bridge scoped to **`dashboard.qorechain.io` only**: `window.qorex.native.connectProof(sessionId)` signs the *Connect with QoreX* pairing proof (the backend re-verifies the signature), and `executeTransfer({ to, amountUqor, memo })` approves and broadcasts a Dashboard-proposed QOR transfer, returning the `txHash`. These methods are refused on any other origin.
 
-**0.2.2** adds `native:executeRequest`, which accepts a whole Dashboard-proposed request — including [staking](#stake-dashboard) — validated against the same shared parser QoreX uses everywhere else: refused on a network mismatch, a foreign origin, an address that isn't yours, an unknown request kind, or a staking request that carries a `toAddress` (staking requests don't have one).
+**0.2.2** adds `native:executeRequest`, which accepts a whole Dashboard-proposed request — including [staking](#stake-dashboard) — validated against the same shared parser QoreX uses everywhere else: refused on a network mismatch, a foreign origin, an address that isn't yours, an unknown request kind, or a staking request that carries a `toAddress` (staking requests don't have one). The request kinds are send, delegate, undelegate, redelegate and claim; a Connect request lets you choose which of your accounts to link, and `listAccounts()` returns your accounts (read-only).
 
 Because a `qor1…` address is equally valid on mainnet and testnet, a Dashboard-proposed request states which network it targets, and QoreX refuses to act on it if that doesn't match the network the extension is currently connected to — it will never switch networks on a request's behalf.
+
+## Sending a QoreChain transaction from a dApp: `signAndBroadcast` {#sign-and-broadcast}
+
+Every QoreChain transaction from an account with a registered post-quantum key needs a hybrid signature — secp256k1 **and** ML-DSA-87 — and only the wallet holds the ML-DSA key, so a page cannot build it. Send the messages; QoreX does the rest: it shows the decoded messages and fee, builds the transaction for the account the user selected, adds the hybrid signature (registering the account's post-quantum key first if this is its first transaction), broadcasts, and resolves with the result. Available from extension **0.3.5** and app **1.1.5** (every store build today).
+
+```js
+const provider = window.qorex.native;
+if (!provider.capabilities?.includes("signAndBroadcast")) {
+  throw new Error("Please update QoreX");
+}
+await provider.enable("qorechain-vladi");            // connect, once per site
+
+const res = await provider.signAndBroadcast({
+  chainId: "qorechain-vladi",                        // must be the wallet's active network
+  messages: [{ typeUrl: "/cosmos.bank.v1beta1.MsgSend", value: msgSendBytes }],  // protobuf bytes: Uint8Array, number[] or base64
+  memo: "",                                          // optional, up to 256 bytes
+  gasLimit: 300000,                                  // optional
+});
+// → { txHash, code, height?, shield }
+```
+
+- `chainId` must equal the wallet's active network (`qorechain-vladi` on mainnet). A dApp cannot switch the network; only the user can.
+- 1–32 messages per call; the message bytes are signed exactly as sent.
+- The fee (`gasLimit` × the network's gas price) is shown before approval. A rejection throws `QoreX: signature rejected`.
+- Post-quantum key management (register, migrate, rotate — also inside authz `MsgExec`) is refused: the wallet manages the account's key itself.
 
 ## Post-quantum signing {#pqc}
 
 Every QOR transfer QoreX itself initiates is signed with a **hybrid post-quantum signature** — **ML-DSA-87** (Dilithium-5, NIST **FIPS-204**) alongside the classical secp256k1 signature — using the full hybrid pipeline in `@qorechain/sdk`. **There is no toggle**: QoreChain requires it and QoreX never sends a Native-lane QOR transfer without it.
 
-- **dApp-initiated Native signing** — dApps built on the qorechain-connect flow pre-layer the PQC extension (`/qorechain.pqc.v1.PQCHybridSignature`) into the transaction body before calling `signDirect`; QoreX contributes the classical half and **refuses to blind-sign**, decoding the payload and marking whether the PQC layer is present.
-- **Classical requests are always labeled** — if a request carries no PQC layer, or targets an external chain (ETH/BNB/etc., which cannot carry PQC), QoreX shows an explicit warning rather than silently downgrading.
+- **dApp-initiated Native signing** — use [`signAndBroadcast`](#sign-and-broadcast): QoreX decodes every message, shows the fee, and adds the quantum-safe layer itself. `signDirect` signs a transaction the page built and, on QoreChain, is **refused** unless that transaction already carries a valid quantum-safe layer (and refused for Ethereum-style accounts, which use `signAndBroadcast`). QoreX never blind-signs: a request it cannot decode is refused, and it never signs a classical-only QoreChain transaction.
+- **Classical signatures are always labeled** — transfers on external networks (ETH, BNB, Solana, …) cannot carry a post-quantum signature; QoreX makes you tick an explicit acknowledgement and marks them classical rather than silently downgrading.
 
 **What this means for transaction size.** ML-DSA-87 is a large signature: the signature is **4,627 bytes** and the public key **2,592 bytes** (fixed by FIPS-204). A hybrid QoreChain transaction is therefore several kilobytes larger than a purely classical one. If you build and broadcast transactions yourself, size your buffers and fee estimates for the extra bytes; QoreChain's gas accounting already expects them. See [Post-Quantum Signing](/developer-guide/post-quantum-signing) for the primitives and the deterministic-signing requirement.

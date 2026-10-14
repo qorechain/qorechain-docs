@@ -15,7 +15,7 @@ Il motore QCAI (QoreChain AI) opera su tre livelli:
 
 | Livello                | Ambito                                                       | Esecuzione               | Deterministico |
 | ---------------------- | ----------------------------------------------------------- | ------------------------ | -------------- |
-| **Livello consenso**   | Produzione dei blocchi, regolazione dei parametri           | On-chain (x/rlconsensus) | Sì             |
+| **Livello consenso**   | Produzione dei blocchi, regolazione dei parametri           | On-chain (x/rlconsensus) — oggi solo osservazione | Sì             |
 | **Livello rete**       | Instradamento delle transazioni, rilevamento frodi, ottimizzazione delle commissioni | On-chain (x/ai)          | Sì             |
 | **Livello applicazione** | Generazione di contratti, auditing, analisi approfondita  | Off-chain (sidecar)      | No             |
 
@@ -106,7 +106,7 @@ L'ottimizzatore delle commissioni prevede la congestione della rete e suggerisce
 | `normal` | 1.0x                | 3-5 blocchi      |
 | `slow`   | 0.5x                | 6-10 blocchi     |
 
-La commissione finale incorpora un **moltiplicatore di congestione** (1.0x allo 0% di congestione, fino a 5.0x al 100% di congestione) e un **premio di tendenza** quando la congestione prevista supera quella attuale. La commissione minima è di 500 uqor (0.0005 QOR).
+La commissione finale incorpora un **moltiplicatore di congestione** (1.0x allo 0% di congestione, fino a 5.0x al 100% di congestione) e un **premio di tendenza** quando la congestione prevista supera quella attuale. La commissione minima propria dello stimatore è una costante legacy di 500 uqor; non è esposta sulle reti attive, e la commissione che una transazione deve effettivamente pagare è fissata dal floor di rete di 0.1 uqor per unità di gas (vedi [Prima transazione](/getting-started/first-transaction#send-qor)).
 
 ## Ottimizzatore di rete
 
@@ -167,6 +167,10 @@ Due contratti precompilati espongono le capacità di AI on-chain agli smart cont
 | `aiRiskScore`    | `0x0B01`  | Restituisce un punteggio di rischio (0-100) per un dato indirizzo o hash di transazione |
 | `aiAnomalyCheck` | `0x0B02`  | Restituisce un flag booleano di anomalia e un punteggio di confidenza per una transazione |
 
+:::warning Non ancora attivo
+Questi precompilati **non sono attivi** sulla mainnet (`qorechain-vladi`) né sulla testnet (`qorechain-diana`); una chiamata restituisce dati vuoti. Verranno attivati solo dopo aver ottenuto un percorso di scoring in sola lettura e a virgola fissa. Vedi [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
+:::
+
 **Importante**: I precompilati EVM utilizzano **esclusivamente il motore euristico deterministico**. Non chiamano mai il sidecar, garantendo che tutta l'esecuzione EVM rimanga completamente deterministica e riproducibile.
 
 ## Attestazione TEE
@@ -214,17 +218,12 @@ Ogni round è configurato con un numero minimo/massimo di partecipanti, timeout,
 
 L'apprendimento federato è attualmente nella fase di specifica dell'interfaccia. L'implementazione è prevista per una versione futura.
 
-## Endpoint REST
+## Query
 
-| Endpoint                         | Descrizione                                                    |
-| -------------------------------- | -------------------------------------------------------------- |
-| `/ai/v1/fee-estimate`            | Restituisce le stime delle commissioni per i livelli di urgenza fast, normal e slow |
-| `/ai/v1/fraud/investigations`    | Elenca le indagini sulle frodi attive e risolte                |
-| `/ai/v1/network/recommendations` | Restituisce le raccomandazioni attuali di ottimizzazione dei parametri di rete |
-| `/ai/v1/circuit-breakers`        | Elenca gli stati attivi dei circuit breaker per i contratti    |
+`qorechaind query ai config` e `qorechaind query ai stats` (gRPC) sono le query del modulo. Oggi il modulo non ha route REST: le route `/ai/v1/...` per stima delle commissioni, indagini sulle frodi, raccomandazioni di rete e circuit breaker non sono servite né sulla mainnet né sulla testnet.
 
 ## Correlati
 
-* [Motore di Consenso PRISM](/architecture/prism-consensus-engine) — il livello AI che guida l'ottimizzazione del consenso.
+* [Motore di Consenso PRISM](/architecture/prism-consensus-engine) — il livello AI progettato per l'ottimizzazione del consenso (oggi solo osservazione).
 * [Smart Contract Creator](/dashboard/smart-contract-creator) — generazione di contratti assistita dall'AI nella Dashboard.
 * [Contract Auditor](/dashboard/contract-auditor) — revisione della sicurezza dei contratti assistita dall'AI.

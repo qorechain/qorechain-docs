@@ -16,11 +16,15 @@ QoreChainネットワークの統合リファレンスです。チェーンID、
 | **ステータス** | 稼働中 | アクティブなテストネット |
 | **Cosmosチェーン ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVMチェーン ID (EIP-155)** | **9801**（16進数 `0x2649`） | **9800**（16進数 `0x2648`） |
-| **稼働開始** | 2026年6月7日 23:59 UTC | — |
-| **チェーンバージョン** | v3.1.97 | v3.1.97 |
+| **稼働開始** | 2026年6月29日 17:03 UTC（genesisブロック） | 2026年7月1日（以降連続稼働、リセットなし） |
+| **チェーンバージョン** | v3.2.1（v3.2.0のコンセンサスルール） | v3.2.2 |
+| **ブロック時間（実測平均）** | 約3.2秒 | 約1.0秒 |
+| **リリースマニフェスト** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **フレームワーク** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **最小ガス価格** | `0.1uqor` | `0.1uqor` |
 | **接続ガイド** | [メインネットへの接続](/getting-started/connecting-to-mainnet) | [テストネットへの接続](/getting-started/connecting-to-testnet) |
+
+2つのマニフェストは、新しいノードが実行すべきリリースの正式な情報源です。テストネットのマニフェスト（v3.2.2）にはアップグレード高さが含まれています。これは、テストネットがガバナンスを通じて調整されたアップグレードを受けるためです。一方、メインネットのv3.2.1は、v3.2.0のコンセンサスルールの上で提供される、ノード単位のローリングリリースです。
 
 ## パブリックエンドポイント {#public-endpoints}
 
@@ -35,10 +39,14 @@ QoreChainネットワークの統合リファレンスです。チェーンID、
 | EVM WebSocket | — | `wss://evm-ws-testnet.qore.host` |
 | SVM JSON-RPC（Solana互換、読み取り専用） | `https://svm.qore.host` | `https://svm-testnet.qore.host` |
 | ブロックエクスプローラー | [explore.qore.network](https://explore.qore.network) | [explore.qore.network](https://explore.qore.network)（テストネットに切り替え） |
-| ダウンロード（バイナリ／genesis／スナップショット） | [download.qore.host](https://download.qore.host) | — |
+| ダウンロード（バイナリ／genesis／スナップショット） | [download.qore.host](https://download.qore.host) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 
 :::note
-パブリックSVMエンドポイントは**読み取り専用**です（トランザクション送信はエッジで無効化されています）。SVMへの書き込みが必要な場合は自分自身のノードを運用してください。負荷の高い用途や本番ワークロードについても、自分自身のノードの運用を推奨します。詳細は[ノードの運用](/developer-guide/running-a-node)を参照してください。
+パブリックSVMエンドポイントは**読み取り専用**です（トランザクション送信はエッジで無効化されています）。SVMへの書き込みが必要な場合は自分自身のノードを運用してください。負荷の高い用途や本番ワークロードについても、自分自身のノードの運用を推奨します。詳細は[ノードの運用](/developer-guide/running-a-node)を参照してください。パブリックなgRPCエンドポイントはなく、メインネットにパブリックなEVM WebSocketもありません。パブリックEVMエンドポイントでは、`eth_getLogs`は1回のクエリで最大10,000ブロックまで、`txpool_content`は無効です（セルフホストのノードでは名前空間全体を利用できます）。詳細は[eth_ 名前空間](/api-reference/json-rpc-eth_-namespace)を参照してください。
+:::
+
+:::tip
+スクリプトがパブリックエンドポイントから`403 Forbidden`を受け取る場合は、`User-Agent`ヘッダーを明示的に設定してください（Pythonのデフォルトの`urllib`エージェントはブロックされます。`requests`、`curl`、Node、Goのクライアントはそのまま動作します）。
 :::
 
 :::caution SVM取引レーンは現在無効です

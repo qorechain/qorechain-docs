@@ -7,166 +7,136 @@ sidebar_position: 5
 
 # アセットのブリッジ
 
-このガイドでは、QoreChainと他のブロックチェーンネットワーク間でアセットを移動する方法について説明します。QoreChainの相互運用レイヤーは、異種ネットワーク向けの**37個のQCB(QoreChain Bridge)構成**(QoreChainループバックを含む)と、Cosmosエコシステムのチェーン向けの**8個のIBCチャネル**で構成されています。
+このガイドでは、QoreChainと他のブロックチェーンネットワーク間でのアセット移動が、どのように動作するよう設計されているかを説明します。QoreChainの相互運用レイヤーは、**37個のチェーン構成**(外部チェーン36個に加え、IBC経由で接続するInjective)と、Cosmosエコシステムのチェーン向けの最大**8つのIBCカウンターパーティ**を中心に構築されています。
 
-:::caution
-クロスチェーンブリッジは現在、**テストネット/プレプロダクション**段階にあります。接続の可用性、対応アセット、ファイナリティパラメータは変更される可能性があり、本番稼働可能なものとして扱うべきではありません。転送を利用する前に、必ず**`qorechain-diana`**上で検証してください。
+:::caution どちらのネットワークでも稼働していません
+ブリッジモジュールはメインネットとテストネットにデプロイされていますが、**有効なブリッジルートはありません**。37個すべてのチェーン構成は、ブリッジコントラクトが未設定の`pending`ステータスであり、ブリッジバリデータは登録されておらず、ブリッジ操作は一度も作成されたことがなく、IBCチャネルもクライアントも存在しません。以下の内容はすべて、想定されている設計の説明です。ブリッジされることを期待してアセットを送信しないでください。現在のステータス表については[ブリッジアーキテクチャ](/architecture/bridge-architecture)を参照してください。
 :::
 
 :::note
-以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)は2026年6月7日からチェーンバージョン**v3.1.97**で稼働しています — ブリッジ対応が有効化されている場合は、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
+以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)はチェーンバージョン**v3.2.1**で稼働しています。ルートが有効化された時点で、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
 :::
 
 ---
 
 ## 接続の概要
 
-QoreChainは2種類のブリッジプロトコルを提供します。
+QoreChainは2種類のブリッジプロトコルを提供するよう設計されています。
 
 | プロトコル                                 | 接続数        | 用途                                                                 |
 | ---------------------------------------- | ------------------ | ------------------------------------------------------------------------ |
-| **IBC**(Inter-Blockchain Communication) | 8チャネル         | IBC対応チェーンとのネイティブな相互運用性                          |
-| **QCB**(QoreChain Bridge)               | 37構成  | PQCで保護されたアテステーションによる非IBCネットワークとのクロスチェーン転送 |
+| **IBC**(Inter-Blockchain Communication) | 最大8チャネル(開通しているものはなし)         | IBC対応チェーンとのネイティブな相互運用性                          |
+| **QCB**(QoreChain Bridge)               | 37構成(すべて保留中)  | PQCで保護されたアテステーションによる非IBCネットワークとのクロスチェーン転送 |
 
-すべてのQCB構成とIBCチャネルの完全な一覧は、**ブリッジアーキテクチャ**ページに掲載されています。このガイドでは、日常的なブリッジ利用に焦点を当てます。
+すべてのチェーン構成の完全な一覧は、**ブリッジアーキテクチャ**ページに掲載されています。このガイドでは、ブリッジ転送がどのように動作するよう設計されているかに焦点を当てます。
 
 ---
 
-## IBCチャネル
+## IBC
 
-以下のIBC対応チェーンは、QoreChainとの間にチャネルを確立しています。
-
-| チェーン                | チャネル     | ステータス |
-| -------------------- | ----------- | ------ |
-| Cosmos Hub           | `channel-0` | Active |
-| Osmosis              | `channel-1` | Active |
-| Noble                | `channel-2` | Active |
-| Celestia             | `channel-3` | Active |
-| Stride               | `channel-4` | Active |
-| Akash                | `channel-5` | Active |
-| Babylon              | `channel-6` | Active |
-| QoreChain(ループバック) | `channel-7` | Active |
-
-IBC転送には、標準の`ibc-transfer`モジュールを使用します。
-
-```bash
-qorechaind tx ibc-transfer transfer transfer <channel> <recipient> <amount>uqor \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+IBCは設計の一部です(Cosmos Hub、Osmosis、Noble、Celestia、Stride、Akash、Babylon、Injective)が、**どちらのネットワークにも、IBCチャネルやクライアントはまだ存在しない**ため、転送できるものはありません。チャネルが開通した時点で、このページに一覧を掲載します。
 
 ---
 
 ## QCBブリッジのエンドポイント
 
-QoreChain Bridgeは、複数のエコシステムタイプにまたがる外部チェーンに接続します。対応ネットワークの代表例は以下のとおりです。
+QoreChain Bridgeは、複数のエコシステムタイプにまたがる外部チェーンに接続するよう設計されています。計画されている接続の代表例は以下のとおりです(現時点ではすべて`pending`です)。
 
-| チェーン     | チェーンタイプ | 対応アセット |
-| --------- | ---------- | ---------------- |
-| Ethereum  | EVM        | ETH, USDC, WBTC  |
-| BSC       | EVM        | BNB, USDC        |
-| Solana    | Solana     | SOL, USDC        |
-| Avalanche | EVM        | AVAX, USDC       |
-| Polygon   | EVM        | MATIC, USDC      |
-| Arbitrum  | EVM        | ETH, ARB, USDC   |
-| TON       | TON        | TON              |
-| Sui       | Sui Move   | SUI              |
-| Optimism  | EVM        | ETH, USDC, OP    |
-| Base      | EVM        | ETH, USDC        |
-| Aptos     | Aptos      | APT, USDC        |
-| Bitcoin   | Bitcoin    | BTC              |
-| NEAR      | NEAR       | NEAR, USDC       |
-| Cardano   | Cardano    | ADA              |
-| Polkadot  | Polkadot   | DOT              |
-| Tezos     | Tezos      | XTZ              |
-| Tron      | Tron       | TRX, USDT        |
+| チェーン     | チェーンタイプ |
+| --------- | ---------- |
+| Ethereum  | EVM        |
+| BSC       | EVM        |
+| Solana    | Solana     |
+| Avalanche | EVM        |
+| Polygon   | EVM        |
+| Arbitrum  | EVM        |
+| TON       | TON        |
+| Sui       | Sui Move   |
+| Optimism  | EVM        |
+| Base      | EVM        |
+| Aptos     | Aptos      |
+| Bitcoin   | Bitcoin    |
+| NEAR      | NEAR       |
+| Cardano   | Cardano    |
+| Polkadot  | Polkadot   |
+| Tezos     | Tezos      |
+| Tron      | Tron       |
 
-QCB構成の全リストと現在のロールアウト状況については、**ブリッジアーキテクチャ**ページを参照してください。
+アセット一覧は公開されていません。チェーン構成には、まだアセットレジストリがありません。チェーン構成の全リストについては、**ブリッジアーキテクチャ**ページを参照してください。
 
 ---
 
 ## 入金フロー(外部チェーンからQoreChainへ)
 
-外部チェーンからQoreChainへのアセット入金は、次の手順で行われます。
+外部チェーンからQoreChainへの入金について、設計上の手順は次のとおりです。
 
 1. **ロック** — 外部チェーン上でトークンをQCBブリッジのコントラクトまたはアドレスに送信してロックします。
 2. **アテステーション** — ブリッジバリデータがロックトランザクションを検知し、PQC署名付きのアテステーションを生成します。
 3. **しきい値** — バリデータのアテステーションが**10件中7件**集まると、ブリッジが入金を確定します。
 4. **ミント** — 相当量のラップトークンがQoreChain上でミントされ、あなたの`qor1...`アドレスに入金されます。
 
-**CLIコマンド:**
-
-```bash
-qorechaind tx bridge deposit \
-  --chain ethereum \
-  --amount 1000000 \
-  --from mykey \
-  --chain-id qorechain-diana \
-  --fees 500uqor
-```
+ユーザーが実行する「入金を開始する」コマンドはありません。外部チェーン上でロックすると、ブリッジバリデータのアテステーションによってアカウントに入金されます。(チェーンの`qorechaind tx bridge deposit`コマンドは、すでにアテステーション済みの入金を反映するもので、ブリッジバリデータの署名が必要です。ユーザーが入金を開始する方法ではありません。)
 
 ---
 
 ## 出金フロー(QoreChainから外部チェーンへ)
 
-QoreChainから外部チェーンへのアセット出金:
+QoreChainから外部チェーンへの出金について、設計上の手順は次のとおりです。
 
 1. **バーン** — QoreChain上でラップトークンをバーン(焼却)します。
 2. **アテステーション** — ブリッジバリデータがバーンを検知し、PQC署名付きのアテステーションを生成します。
 3. **しきい値** — アテステーションが**10件中7件**集まると、出金が確定します。
 4. **アンロック** — 元のトークンが外部チェーン上で指定した宛先アドレスに解放されます。
 
-**CLIコマンド:**
+**CLIコマンド**(現時点ではブロックされています。有効なチェーンがないため、トランザクションは拒否されます):
 
 ```bash
-qorechaind tx bridge withdraw \
-  --chain ethereum \
-  --amount 1000000 \
-  --to 0xYourEthereumAddress \
+# 1. Build the unsigned transaction
+qorechaind tx bridge withdraw [destination-chain] [destination-address] [asset] [amount] \
   --from mykey \
   --chain-id qorechain-diana \
-  --fees 500uqor
+  --gas 300000 --fees 30000uqor \
+  --generate-only > withdraw.json
+
+# 2. Attach the post-quantum co-signature and broadcast
+qorechaind tx pqc cosign withdraw.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
+
+ネイティブレーンのすべてのトランザクションには、ハイブリッド耐量子共同署名と、ガス1単位あたり少なくとも0.1 uqorの手数料が必要です。[最初のトランザクション](/getting-started/first-transaction)を参照してください。
 
 ---
 
 ## セキュリティモデル
 
-QoreChain Bridgeは、複数の防御レイヤーによって保護されています。
+QoreChain Bridgeは、複数の防御レイヤーによって保護されるよう設計されています。
 
 | メカニズム                    | 説明                                                                                                                                           |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **7-of-10 PQCマルチシグ**     | すべてのブリッジ操作には、10のブリッジバリデータのうち少なくとも7つからのアテステーションが必要で、それぞれが耐量子暗号署名を使用します。               |
-| **24時間チャレンジ期間**       | 設定可能なしきい値を超える出金は、24時間のチャレンジウィンドウに入り、その間バリデータやウォッチャーが不正なトランザクションにフラグを立てることができます。 |
+| **24時間チャレンジ期間**       | 大口転送のしきい値(100,000 QOR)を超える転送は、24時間のチャレンジウィンドウに入り、その間バリデータやウォッチャーが不正なトランザクションにフラグを立てることができます。 |
 | **サーキットブレーカー**       | 異常な取引量や不審なパターンが検出されると、自動レートリミッターがブリッジ操作を停止します。ブリッジ操作は手動レビュー後に再開されます。  |
 
 ---
 
 ## ブリッジステータスの照会
 
-保留中のブリッジ操作のステータスを確認します。
+ブリッジの状態を読み取ります。
 
 ```bash
-qorechaind query bridge pending-deposits --address <your_qor_address>
+qorechaind query bridge config
+qorechaind query bridge chains
+qorechaind query bridge chain ethereum
+qorechaind query bridge validators
+qorechaind query bridge operations
+qorechaind query bridge operation [id]
 ```
 
-```bash
-qorechaind query bridge pending-withdrawals --address <your_qor_address>
-```
-
-すべてのアクティブなブリッジ接続を一覧表示します。
-
-```bash
-qorechaind query bridge connections
-```
+同じデータは、REST の `/qorechain/bridge/v1/` 配下でも取得できます([ブリッジアーキテクチャ](/architecture/bridge-architecture#rest-api-endpoints)を参照)。
 
 ---
 
 ## ヒント
 
-* ブリッジ入金は通常、必要な7-of-10のアテステーションが集まってから数分以内に確定します。
-* 大口の出金は自動的に24時間のチャレンジ期間の対象となります。時間に制約のある転送は事前に計画してください。
 * 宛先アドレスの形式が対象チェーンに一致していることを必ず確認してください(例: EVMチェーンでは`0x...`、Solanaではbase58)。
-* IBC転送はネイティブなプロトコルレベルの通信を利用するため、通常QCB転送より高速です。
+* 大口の転送(100,000 QOR超)は、24時間のチャレンジ期間が自動的に発動するよう設計されています。
 * ブリッジ手数料は`bridge_fee`バーンチャネルを通じてバーンされます([トークン操作](/user-guide/token-operations)を参照)。

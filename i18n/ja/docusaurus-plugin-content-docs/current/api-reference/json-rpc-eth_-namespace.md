@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # JSON-RPC — eth_ 名前空間
 
-QoreChainは完全にEVM互換のJSON-RPCインターフェースを実装しており、標準的なEthereumツール(MetaMask、Hardhat、Foundry、ethers.js、web3.js)が変更なしにチェーンと連携できます。
+QoreChainはEVM互換のJSON-RPCインターフェースを実装しており、標準的なEthereumツール(MetaMask、Hardhat、Foundry、ethers.js、web3.js)が変更なしにチェーンの状態を読み取り、ガスを見積もることができます。**EVMレーンからトランザクションを送信するには、チェーンバージョン v3.2.0 以降、追加の手順が必要です**。送信元アカウントには、登録済みのポスト量子鍵と、開いているEVM認可ウィンドウが必要です([トランザクションの送信](#sending-transactions)を参照)。
 
 ## 接続
 
@@ -17,7 +17,7 @@ QoreChainは完全にEVM互換のJSON-RPCインターフェースを実装して
 | WebSocket        | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 **0x2649**、チェーンバージョン **v3.1.97** で稼働中)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 **0x2648**)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。リモートアクセスの場合は、お使いのプロバイダーのメインネットまたはテストネットのエンドポイントに置き換えてください。
+EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.1**)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.2**)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
 :::
 
 ## サポートされている名前空間
@@ -28,7 +28,7 @@ EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネッ�
 | `web3_`   | ユーティリティメソッド(クライアントバージョン、ハッシュ化)                               |
 | `net_`    | ネットワークステータスメソッド                                                             |
 | `txpool_` | トランザクションプールの検査                                                               |
-| `qor_`    | QoreChain固有の拡張機能([qor_ 名前空間](/api-reference/json-rpc-qor_-namespace)を参照)   |
+| `rpc_`    | サーバーのイントロスペクション(`rpc_modules`)                                            |
 
 ## eth_ メソッド
 
@@ -47,6 +47,15 @@ EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネッ�
 | `eth_chainId`                | なし                                                | チェーンID(16進数エンコード)を返す                       |
 | `eth_gasPrice`                | なし                                                | 現在のガス価格をwei単位で返す                             |
 | `eth_feeHistory`             | `blockCount`、`newestBlock`、`rewardPercentiles`  | 過去の手数料データを返す(EIP-1559)                        |
+| `eth_getBlockByHash`         | `blockHash`、`fullTx`(真偽値)                    | ハッシュによりブロックデータを返す                         |
+| `eth_getCode`                | `address`、`blockNumber`                          | コントラクトのバイトコードを返す                           |
+| `eth_getStorageAt`           | `address`、`slot`、`blockNumber`                  | ストレージスロットを返す                                   |
+| `eth_getBlockReceipts`       | `blockNumber`                                      | ブロックのすべてのレシートを返す                           |
+| `eth_getProof`               | `address`、`storageKeys`、`blockNumber`           | アカウントの証明を返す                                     |
+| `eth_createAccessList`       | `callObject`、`blockNumber`                       | 呼び出し用のアクセスリストを構築する                       |
+| `eth_maxPriorityFeePerGas`   | なし                                                | 推奨される優先手数料(wei)を返す                          |
+| `eth_syncing`                | なし                                                | ノードが同期済みの場合は `false` を返す                    |
+| `eth_newFilter`、`eth_newBlockFilter`、`eth_getFilterChanges` | フィルタオブジェクト / フィルタID | ポーリング型フィルタ                              |
 
 ## web3_ メソッド
 
@@ -54,6 +63,14 @@ EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネッ�
 | ---------------------- | -------------- | ------------------------------------------- |
 | `web3_clientVersion`  | なし           | クライアントのバージョン文字列を返す        |
 | `web3_sha3`           | `data`(16進数) | 入力のKeccak-256ハッシュを返す              |
+
+## txpool_ メソッド
+
+| メソッド          | パラメータ | 説明                                                                 |
+| ------------------ | ---------- | -------------------------------------------------------------------- |
+| `txpool_status`    | なし       | 保留中およびキュー内のトランザクション数を返す                       |
+| `txpool_content`   | なし       | 保留中およびキュー内のトランザクションを返す(公開メインネットでは利用不可) |
+| `txpool_inspect`   | なし       | プールの概要を返す(公開メインネットでは利用不可)                   |
 
 ## net_ メソッド
 
@@ -79,7 +96,7 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 
 # Enabled API namespaces
-api = "eth,web3,net,txpool,qor"
+api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
 filter-cap = 10000
@@ -96,6 +113,30 @@ txfee-cap = 1
 # Maximum open WebSocket connections
 max-open-connections = 0
 ```
+
+## 公開エンドポイントの制限 {#public-limits}
+
+:::note
+- `eth_getLogs` は `fromBlock` と `toBlock` の間で最大 **10,000 ブロック**まで受け付けます。これより広い範囲を指定すると `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}` が返されます。10,000 ブロック以下のウィンドウに分けてクエリしてください。別の設定 `filter-cap` は返されるログの件数を制限します。
+- `txpool_status` は公開メインネットエンドポイントで動作します。`txpool_content` と `txpool_inspect` はそこでは無効です(公開テストネットエンドポイントおよび自分で実行するノードでは動作します)。
+- `debug_*` メソッドと `eth_signTransaction` は利用できません。
+- `eth_subscribe` にはWebSocket接続が必要です。HTTP経由では `-32601 notifications not supported` が返されます。[WebSocketイベント](/api-reference/websocket-events)を参照してください。
+- 公開エンドポイントでは古い高さの状態はプルーニングされているため、遠い過去のブロックに対する `eth_call` は状態バージョンエラーで失敗することがあります。
+- スクリプトが `403 Forbidden` を受け取る場合は、明示的な `User-Agent` ヘッダーを設定してください。Pythonのデフォルトの `urllib` エージェントはブロックされますが、`requests`、`curl`、Node、Goのクライアントはそのまま動作します。
+:::
+
+## トランザクションの送信 {#sending-transactions}
+
+:::caution EVMレーンにはPQC鍵と開いているウィンドウが必要です
+チェーンバージョン v3.2.0 以降、EVMレーンがトランザクション(コントラクトのデプロイを含む `MsgEthereumTx`)を受け付けるのは、**登録済みのポスト量子鍵**と**開いているEVM認可ウィンドウ**を持つアカウントからのものだけです。このセットアップを行っていない通常のEVMウォレットはトランザクションを送信できません。ノードはそれらを取り込まず、`pqc` モジュールのエラー(コード 26、27、または 28)で拒否します。残高の読み取り、`eth_call`、ガスの見積もりにウィンドウは不要です。
+
+送信前にアカウントを確認してください:
+
+- `GET /qorechain/pqc/v1/account/{address}`(`found: true` は鍵が登録されていることを意味します)
+- `GET /qorechain/pqc/v1/evm_window/{address}`(`live: true` は現在ウィンドウがトランザクションを受け付けていることを意味します)
+
+どちらも[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)で説明されています。ウィンドウはEthereumトランザクションではなく、QoreChainトランザクション(`MsgOpenEVMWindow`。最大 17,280 ブロックと 1,000 トランザクション、および価値の上限に制限されます)で開きます。レーンの概要は[EVM開発](/developer-guide/evm-development)を参照してください。
+:::
 
 ## 例
 
@@ -197,6 +238,6 @@ console.log("Balance:", ethers.formatEther(balance), "QOR");
 - チェーンIDは16進数文字列で返されます。ウォレット設定用に10進数へ変換してください — `0x2649` は **9801**(メインネット)、`0x2648` は **9800**(テストネット)です。
 - ガス価格はEIP-1559モデルに従います。基本手数料と優先手数料の見積もりには `eth_feeHistory` を使用してください。
 - 受け付けられるブロックタグ: `"latest"`、`"earliest"`、`"pending"`、または16進数のブロック番号。
-- フィルタの制限: `eth_getLogs` は1クエリあたり `filter-cap` 件(デフォルト10,000件)に制限されます。大量のデータセットにはより狭いブロック範囲を使用してください。
+- フィルタの制限: `eth_getLogs` は1クエリあたり `filter-cap` 件(デフォルト10,000件)に制限され、公開エンドポイントは10,000ブロックより広い範囲を拒否します。大量のデータセットにはより狭いブロック範囲を使用してください。
 
 :::

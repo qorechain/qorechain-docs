@@ -17,13 +17,24 @@ SVM RPC エンドポイントを対象とするクライアントファクトリ
 npm i @qorechain/svm @solana/web3.js
 ```
 
+:::caution SVM のトランザクション送信は無効です
+SVM 実行レーンは、トランザクション送信についてネットワーク全体で無効化されており
+（`code 11, "SVM module is disabled"`）、公開 SVM RPC エンドポイントは
+読み取り専用です。読み取り（`getBalance`、`getAccountInfo`、`getSlot`、
+`getSignaturesForAddress`、`getMinimumBalanceForRentExemption`、
+`getLatestBlockhash`）は動作します。SVM 上で送金やプログラムデプロイのフローを
+まだ構築しないでください。以下の構築・署名・送信ヘルパーはクライアントライブラリの
+インターフェースであり、現時点では公開ネットワーク上でトランザクションを成立させることは
+できません。[SVM 開発](/developer-guide/svm-development)を参照してください。
+:::
+
 ## クライアントの作成
 
 ```ts
 import { createSvmClient } from "@qorechain/svm";
 
 const client = createSvmClient({
-  endpoints: { svmRpc: "https://svm.testnet.example" },
+  endpoints: { svmRpc: "https://svm-testnet.qore.host" }, // mainnet: https://svm.qore.host
 });
 ```
 
@@ -46,13 +57,14 @@ console.log(svmAddress(keypair)); // base58
 
 ## SOL の送金
 
-署名なしの送金を構築してから送信します（送信には到達可能なノードと
-資金のあるアカウントが必要です）:
+署名なしの送金を（オフラインで）構築します。送信は網羅性のために示していますが、
+SVM トランザクションレーンが無効である間は、公開ネットワークでは成功しません:
 
 ```ts
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 const lamports = Math.round(0.01 * LAMPORTS_PER_SOL);
+const recipient = new PublicKey("<recipient base58 address>"); // `to` is a PublicKey, not a string
 
 // Build only (no broadcast):
 const tx = client.buildTransferSol({ from: keypair, to: recipient, lamports });

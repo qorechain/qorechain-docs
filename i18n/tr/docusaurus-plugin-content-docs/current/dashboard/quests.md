@@ -9,7 +9,7 @@ sidebar_position: 10
 
 **Görevler**, siz tamamlarken QoreChain'i kullanmanızda size rehberlik eden adım adım yapılan işlerdir. Her görev, cüzdanınıza para yüklemek, bir transfer yapmak veya bir takas denemek gibi bir veya daha fazla adımı bir araya getirir ve tamamladığınızda sizi ödüllendirir. Görevler, ağı özellik özellik öğrenmenin uygulamalı bir yoludur.
 
-İlerlemenizin takip edilmesi için cüzdanınızı bağlayın — bkz. [Genel Bakış ve Başlangıç](/dashboard/overview#connect-your-wallet).
+İlerlemenizin takip edilmesi için oturum açın — bkz. [Oturum açma](/dashboard/overview#sign-in). Bazı görevler ayrıca bir cüzdan gerektirir, bkz. [Cüzdanınızı bağlayın](/dashboard/overview#connect-your-wallet).
 
 ## Görevlere göz atın
 
@@ -36,5 +36,5 @@ Bazı görevler günlük veya haftalık bir programa göre sıfırlanır. Bunlar
 
 ## İlgili
 
-- [Genel Bakış ve Başlangıç](/dashboard/overview) — görevlere başlamadan önce cüzdanınızı bağlayın.
+- [Genel Bakış ve Başlangıç](/dashboard/overview) — görevlere başlamadan önce oturum açın ve cüzdanınızı bağlayın.
 - [Faucet](/dashboard/faucet) — işlem içeren görevler için bir testnet cüzdanına para yükleyin.

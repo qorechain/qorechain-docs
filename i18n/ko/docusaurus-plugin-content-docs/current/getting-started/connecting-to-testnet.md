@@ -10,7 +10,7 @@ sidebar_position: 4
 올바른 제네시스 파일, 피어, 네트워크 설정으로 노드를 구성하여 라이브 QoreChain Diana 테스트넷에 참여하세요.
 
 :::note
-이 페이지는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 다룹니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 7일부터 라이브 상태이며, 별도의 제네시스, 피어, 연결 정보를 담은 전용 **메인넷 연결하기** 페이지가 있습니다.
+이 페이지는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 다룹니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 29일부터 라이브 상태이며, 별도의 제네시스, 피어, 연결 정보를 담은 전용 **메인넷 연결하기** 페이지가 있습니다. 테스트넷은 현재 **v3.2.2**를 실행 중이며, 릴리스 매니페스트는 [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json)에 있습니다.
 :::
 
 ## 퍼블릭 엔드포인트
@@ -30,32 +30,72 @@ sidebar_position: 4
 
 ---
 
-## 제네시스 다운로드
+## 설치
 
-체인 자체에서 실시간으로 제공되는 공식 테스트넷 제네시스로 로컬 제네시스 파일을 교체하세요:
+현재 테스트넷 바이너리, 제네시스, 피어, 스테이트 싱크 신뢰 지점의 기준 정보 출처는 `https://download.qore.host/testnet/latest.json`에서 실시간으로 갱신되는 **테스트넷 매니페스트**입니다. 메인넷 매니페스트와 동일한 구조이므로 설치 단계도 같습니다. 버전이나 체크섬을 하드코딩하지 말고, 매니페스트를 가져와 그 값을 사용하세요:
 
 ```bash
-curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' \
-  > ~/.qorechaind/config/genesis.json
+curl -s https://download.qore.host/testnet/latest.json -o latest.json
+jq -r '.version, .minCompatible, .upgradeHeight' latest.json
+
+BINARY_URL=$(jq -r .binary.url latest.json)
+BINARY_SHA256=$(jq -r .binary.sha256 latest.json)
+
+curl -fsSL "$BINARY_URL" -o qore.tgz
+echo "${BINARY_SHA256}  qore.tgz" | sha256sum -c -
+
+tar xzf qore.tgz
+sudo install -m0755 qorechaind /usr/local/bin/
+sudo mkdir -p /opt/qorechain/lib && sudo cp lib/*.so /opt/qorechain/lib/
+export LD_LIBRARY_PATH=/opt/qorechain/lib
+
+qorechaind init my-node --chain-id qorechain-diana
+```
+
+테스트넷은 거버넌스 제안을 통해 조율된 업그레이드를 진행하므로, 매니페스트에는 `upgradeHeight`가 포함되어 있으며(v3.2.2는 높이 6,905,034에서 적용되었습니다) `minCompatible`은 현재 버전과 같습니다. 지금 합류하는 노드는 매니페스트에 있는 릴리스가 필요합니다. 시스템 시계는 NTP로 동기화된 상태를 유지하세요.
+
+---
+
+## 제네시스 다운로드
+
+위에서 가져온 매니페스트의 URL과 SHA-256을 사용하여 로컬 제네시스 파일을 공식 테스트넷 제네시스로 교체하세요:
+
+```bash
+GENESIS_URL=$(jq -r .genesis.url latest.json)
+GENESIS_SHA256=$(jq -r .genesis.sha256 latest.json)
+
+curl -fsSL "$GENESIS_URL" -o ~/.qorechaind/config/genesis.json
+echo "${GENESIS_SHA256}  $HOME/.qorechaind/config/genesis.json" | sha256sum -c -
+```
+
+같은 파일은 체인 자체에서도 실시간으로 제공됩니다:
+
+```bash
+curl -s https://rpc-testnet.qore.host/genesis | jq '.result.genesis' > /tmp/genesis-live.json
 ```
 
 이 파일은 밸리데이터 세트, 토큰 할당, 모듈 파라미터를 포함한 Diana 테스트넷의 초기 상태를 정의합니다.
 
-:::caution
-Diana 테스트넷은 프리릴리스 빌드가 배포됨에 따라 주기적으로 **재제네시스**(높이 0으로 리셋)됩니다. 리셋 이후 노드가 동기화를 멈추면 제네시스를 다시 다운로드하고 새 데이터 디렉터리에서 시작하세요.
+:::note 테스트넷은 제자리에서 업그레이드됩니다
+Diana는 2026년 7월 1일부터 계속 실행 중이며 메인넷과 마찬가지로 거버넌스 제안을 통해 업그레이드됩니다. 테스트넷은 스테이징 네트워크이므로 예고 없이 리셋될 수 있습니다. 노드가 동기화를 멈추면 매니페스트와 Discord 공지를 확인한 다음, 제네시스를 다시 다운로드하고 새 데이터 디렉터리에서 시작하세요. 퍼블릭 센트리는 최근 블록만 보관하므로, 새 노드는 제네시스부터 재생하지 말고 (아래의) 스테이트 싱크를 사용해야 합니다.
 :::
 
 ---
 
 ## 피어 구성
 
-기존 테스트넷 피어에 연결하도록 노드 구성을 편집하세요.
-
-네트워크에서 직접 현재 피어를 조회한 다음, `~/.qorechaind/config/config.toml`의 `persistent_peers` 필드를 설정하세요:
+하드코딩된 노드 ID와 호스트 대신 매니페스트에서 현재 피어 및 시드 목록을 읽어 오세요:
 
 ```bash
-# node id + listen address of the public testnet node
-curl -s https://rpc-testnet.qore.host/status | jq -r '.result.node_info.id'
+PEERS=$(jq -r '.peers | join(",")' latest.json)
+SEEDS=$(jq -r '.seeds | join(",")' latest.json)
+```
+
+`~/.qorechaind/config/config.toml`을 열어 `persistent_peers`(및 `seeds`) 필드를 그 값으로 설정하세요:
+
+```toml
+persistent_peers = "<value of $PEERS>"
+seeds = "<value of $SEEDS>"
 ```
 
 또한 `~/.qorechaind/config/app.toml`에서 수수료 하한을 설정하세요(테스트넷은 메인넷과 동일한 **0.1uqor** 최소 가스 가격을 사용합니다):
@@ -66,18 +106,25 @@ minimum-gas-prices = "0.1uqor"
 
 ### 권장 설정
 
-`config.toml`에서 다음 항목도 조정하는 것이 좋습니다:
+풀 노드는 블록 시간을 정하지 않으며, 이는 밸리데이터가 정합니다(테스트넷은 현재 약 1초마다 블록을 생성합니다). 밸리데이터를 운영하면서 밸리데이터 그룹으로부터 값을 전달받은 경우가 아니라면 컨센서스 타임아웃은 기본값 그대로 두세요. 퍼블릭 RPC 노드에 유용한 멤풀 설정은 `config.toml`에서 다음과 같습니다:
 
 ```toml
 [mempool]
 size = 5000
-
-[consensus]
-timeout_propose = "3s"
-timeout_commit = "5s"
 ```
 
-이 값들은 Diana 테스트넷의 블록 시간과 처리량에 맞게 조정되어 있습니다.
+---
+
+## 빠른 부트스트랩 (스테이트 싱크)
+
+매니페스트의 `stateSync` 필드에는 정기적으로 갱신되는 신뢰 높이/해시 쌍이 들어 있습니다:
+
+```bash
+TRUST_HEIGHT=$(jq -r .stateSync.trustHeight latest.json)
+TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
+```
+
+`config.toml`의 `[statesync]` 섹션을 그 값들과 매니페스트의 `rpcServers`로 설정하세요 — 전체 워크플로는 [노드 실행하기](/developer-guide/running-a-node)를 참조하세요.
 
 ---
 
@@ -89,7 +136,7 @@ timeout_commit = "5s"
 ./qorechaind start
 ```
 
-노드가 피어에 연결되고 제네시스부터 블록 다운로드를 시작합니다. 초기 동기화 시간은 현재 체인 높이와 네트워크 속도에 따라 달라집니다.
+노드가 피어에 연결되고 블록 다운로드를 시작합니다(제네시스부터, 또는 스테이트 싱크를 사용하는 경우 신뢰 높이부터). 초기 동기화 시간은 현재 체인 높이와 네트워크 속도에 따라 달라집니다.
 
 ---
 
@@ -156,7 +203,7 @@ http://localhost:1317
 | `9090`  | gRPC      | gRPC API — 프로그래밍 방식의 체인 접근               |
 | `8545`  | HTTP      | EVM JSON-RPC — Ethereum 호환 RPC (체인 ID `9800`) |
 | `8546`  | WebSocket | EVM WebSocket — 실시간 EVM 이벤트 구독  |
-| `8899`  | HTTP      | SVM RPC — Solana 호환 RPC                    |
+| `8899`  | HTTP      | SVM RPC — Solana 호환 RPC (읽기 전용이며, SVM 트랜잭션 레인은 비활성화되어 있습니다) |
 | `26660` | HTTP      | Prometheus 메트릭 엔드포인트                        |
 
 ---

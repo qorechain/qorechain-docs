@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # Edizione UX — Dashboard Web
 
-L'edizione **UX (User eXperience)** esegue lo stesso demone light node dell'edizione SX, ma aggiunge una **dashboard web integrata** che permette di monitorare il nodo e la rete dal browser. Il binario è `lightnode-ux`. Come l'edizione SX, appartiene alla linea **v3.1.2** del light node (una versione propria, separata dalla versione della chain).
+L'edizione **UX (User eXperience)** esegue lo stesso demone light node dell'edizione SX, ma aggiunge una **dashboard web integrata** che permette di monitorare il nodo e la rete dal browser. Il binario è `lightnode-ux`. Come l'edizione SX, appartiene alla linea **v3.1.3** del light node (una versione propria, separata dalla versione della chain).
 
 L'edizione UX è la scelta giusta per l'uso desktop e per gli operatori che preferiscono un'interfaccia visiva alla riga di comando.
 
 ## Installazione
 
-I binari precompilati funzionano nativamente su **sei piattaforme senza dipendenze native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64) — ciascuno di circa 16 MB. Verifica il checksum del download rispetto al manifest prima di eseguirlo — vedi [Edizione SX](/light-node/sx-edition#install) per il procedimento.
+I binari precompilati funzionano nativamente su **sei piattaforme senza dipendenze native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64) — ciascuno di circa 11–12 MB. Verifica il checksum del download rispetto al manifest prima di eseguirlo — vedi [Edizione SX](/light-node/sx-edition#install) per il procedimento.
 
 ### Compilazione da sorgente
 
@@ -27,13 +27,24 @@ Questo produce `build/lightnode-ux`.
 
 ### Docker
 
-Il servizio UX viene compilato da `Dockerfile.ux`:
+Il servizio UX viene compilato da `Dockerfile.ux` nel repository dei sorgenti (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.4` o successivo). Il container ha bisogno di un `config.toml` nel proprio volume di dati prima di potersi avviare; la procedura guidata di configurazione si trova nel binario SX, quindi crea prima la configurazione con l'edizione SX (vedi [Edizione SX](/light-node/sx-edition#first-run-onboard)) e copiala nel volume. All'interno di un container la dashboard deve ascoltare su tutte le interfacce del container, quindi imposta questo valore in quella configurazione e pubblica la porta solo sul loopback dell'host:
 
-```bash
-docker compose up lightnode-ux
+```toml
+[dashboard]
+bind_addr = "0.0.0.0:8420"
 ```
 
-Il container UX persiste i dati in un volume denominato su `/root/.qorechain-lightnode` e legge l'indirizzo RPC della chain dalla variabile d'ambiente `QORECHAIN_RPC_ADDR`.
+```yaml
+# docker-compose.yml, lightnode-ux service
+ports:
+  - "127.0.0.1:8420:8420"
+```
+
+```bash
+QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+```
+
+Il container UX persiste i dati in un volume denominato su `/root/.qorechain-lightnode` e legge l'indirizzo RPC della chain dalla variabile d'ambiente `QORECHAIN_RPC_ADDR`. L'immagine UX non include il firmatario `qorechaind`, quindi un container UX non può inviare heartbeat on-chain; esegui un nodo registrato con l'edizione SX.
 
 ## Esecuzione
 
@@ -45,7 +56,7 @@ build/lightnode-ux start
 
 Questo avvia insieme il demone e il server della dashboard integrata. L'edizione UX abilita sempre la dashboard. All'avvio il binario stampa l'URL della dashboard.
 
-L'edizione UX condivide la configurazione con l'edizione SX: legge lo stesso `config.toml` da `~/.qorechain-lightnode` e usa lo stesso keyring Dilithium-5. Se non hai ancora configurato il nodo, esegui prima la procedura guidata SX (`lightnode-sx onboard`) per scrivere la configurazione e importare o generare la tua chiave — vedi [Edizione SX](/light-node/sx-edition).
+L'edizione UX condivide la configurazione con l'edizione SX: legge lo stesso `config.toml` da `~/.qorechain-lightnode` e usa lo stesso keyring Dilithium-5. Se non hai ancora configurato il nodo, esegui prima la procedura guidata SX (`lightnode-sx onboard`) per scrivere la configurazione e importare o generare la tua chiave — vedi [Edizione SX](/light-node/sx-edition). Il binario UX dispone solo dei comandi `start` e `version`; usa `lightnode-sx` per `register`, `status` e `keys`. Il demone dell'edizione UX invia gli heartbeat allo stesso modo dell'edizione SX quando è disponibile un firmatario `qorechaind`.
 
 ## La dashboard web sulla porta 8420
 
@@ -69,7 +80,7 @@ La dashboard è organizzata nelle seguenti viste:
 
 - **Overview** — altezza del blocco e stato del nodo a colpo d'occhio.
 - **Validators** — l'insieme dei validatori bonded.
-- **Delegation** — le tue delegazioni attuali e la loro ripartizione.
+- **Delegation** — le delegazioni rispecchiate dal tuo account operatore (vedi la limitazione nota in [Reward e Monitoraggio](/light-node/rewards-and-monitoring#how-rewards-work)).
 - **Network** — telemetria di rete in tempo reale e header sincronizzati di recente.
 - **Bridge** — telemetria del bridge cross-chain.
 - **Tokenomics** — telemetria dell'economia del token.
@@ -85,9 +96,9 @@ Se il nodo **non ha un endpoint RPC della chain configurato**, la dashboard funz
 lightnode-sx onboard
 ```
 
-La procedura guidata esegue l'autotest PQC, chiede il tuo endpoint della chain e importa o genera la tua chiave di validatore. Una volta configurato un endpoint, riavvia il nodo e la dashboard inizierà a mostrare dati live della chain.
+La procedura guidata esegue l'autotest PQC, chiede il tuo endpoint della chain e importa o genera la chiave del tuo nodo. Una volta configurato un endpoint, riavvia il nodo e la dashboard inizierà a mostrare dati live della chain.
 
 ## Dove andare ora
 
 - [Registrazione e Licenze](/light-node/registration-and-licensing) — registra il nodo on-chain.
-- [Reward e Monitoraggio](/light-node/rewards-and-monitoring) — guadagna la quota del 3% per light node e monitora lo stato del nodo.
+- [Reward e Monitoraggio](/light-node/rewards-and-monitoring) — come la quota del 3% per light node viene accreditata e riscossa, e come monitorare lo stato del nodo.

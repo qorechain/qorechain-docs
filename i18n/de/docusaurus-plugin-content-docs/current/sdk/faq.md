@@ -33,7 +33,9 @@ const client = createClient({
 
 Der Signierpfad (`connectTx`) benötigt den Konsens-Endpoint **`rpc`**;
 CosmWasm-Lesezugriffe verwenden ihn ebenfalls. REST-Lesezugriffe verwenden
-`rest`; EVM- und `qor_`-Aufrufe verwenden `evmRpc`.
+`rest`; EVM-Aufrufe verwenden `evmRpc` (ebenso `qor_`-Aufrufe, auf einem Node,
+der diesen Namespace bereitstellt). Die Mainnet-URLs stehen in der
+[Netzwerkreferenz](/sdk/reference/network#public-endpoints).
 
 ## "Cannot find module 'viem'" / "'@solana/web3.js'"
 
@@ -45,12 +47,28 @@ npm i @qorechain/evm viem
 npm i @qorechain/svm @solana/web3.js
 ```
 
-## Ein Precompile-Aufruf wirft "feature not present"
+## Ein Precompile-Aufruf wirft "returned no data" / "feature not present"
 
-Die EVM-Precompiles existieren nur auf Nodes, die die QoreChain EVM Engine
-ausführen. Auf einem gewöhnlichen EVM-Node schlagen diese Aufrufe fehl. Wenn Sie
-heterogene Nodes ansprechen, kapseln Sie jeden Precompile-Aufruf und behandeln
-Sie den Fehler pro Aufruf.
+Die QoreChain-EVM-Precompiles sind in den Node einkompiliert, aber auf Mainnet
+und Testnet **noch nicht aktiv**: Sie antworten nur dort, wo ihre Adressen im
+Parameter `active_static_precompiles` des EVM-Moduls aufgeführt sind, und diese
+Liste ist auf beiden Netzwerken leer. Derzeit liefert der Aufruf leere Daten,
+sodass viem `returned no data ("0x")` meldet und der Helper auch auf den
+öffentlichen Netzwerken einen Fehler wirft (siehe
+[EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)).
+Auf einem gewöhnlichen EVM-Node schlagen die Aufrufe auf dieselbe Weise fehl.
+Prüfen Sie `GET /cosmos/evm/vm/v1/params` und kapseln Sie jeden
+Precompile-Aufruf, sodass der Fehler pro Aufruf behandelt wird.
+
+## Mein `client.qor`-Aufruf scheitert mit -32601
+
+`client.qor` ruft den JSON-RPC-Namespace `qor_` auf, den kein veröffentlichter
+Node-Build bereitstellt; `rpc_modules` auf den öffentlichen EVM-Endpoints listet
+nur `eth`, `net`, `rpc`, `txpool` und `web3`. Verwenden Sie stattdessen eine
+REST-Route, zum Beispiel `GET /qorechain/pqc/v1/account/{address}`
+(PQC-Schlüsselstatus) oder `GET /qorechain/burn/v1/stats`, über
+`client.rest.get(...)`. Siehe
+[den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace).
 
 ## Meine Beträge weichen um den Faktor eine Million ab
 
@@ -68,18 +86,16 @@ unterscheidet.
 
 ## Welche Pakete sind veröffentlicht, und wo?
 
-Alle. Der TypeScript-Core (`@qorechain/sdk`), die EVM/SVM-Adapter
-(`@qorechain/evm`, `@qorechain/svm`), das React-Kit (`@qorechain/react`) und der
-`create-qorechain-dapp`-Scaffolder sind auf npm in Version `0.7.0`; der
-Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version `0.7.0`,
+Alle. Der TypeScript-Core (`@qorechain/sdk`, 0.8.3), die EVM/SVM-Adapter
+(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), das React-Kit (`@qorechain/react`,
+0.8.3) und der `create-qorechain-dapp`-Scaffolder (0.8.0) sind auf npm; der
+Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.8.3,
 Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
 (`go get github.com/qorechain/qorechain-sdk/packages/go/...`, Tag
-`packages/go/v0.7.0`); und der Java-Client ist auf Maven Central
-(`io.github.qorechain:qorechain-sdk:0.7.0`). Der Rust-Client ist auf crates.io
-(`cargo add qorechain-sdk`) in der **zuletzt veröffentlichten Crate-Version**,
-die derzeit hinter 0.7.0 zurückliegt — installieren Sie von crates.io oder aus
-dem Repo. Siehe [Installation](/sdk/install) für die vollständigen Befehle pro
-Sprache.
+`packages/go/v0.8.4`); der Rust-Client ist auf crates.io (`cargo add qorechain-sdk`,
+0.8.3); und der Java-Client ist auf Maven Central
+(`io.github.qorechain:qorechain-sdk:0.8.3`). Siehe [Installation](/sdk/install)
+für die vollständigen Befehle pro Sprache.
 
 ## Meine Mnemonic wird abgelehnt
 
@@ -92,14 +108,33 @@ Wörter erneut; verwenden Sie `validateMnemonic`, um eine Phrase zu testen.
 
 Die hybride Einreichung (klassisch + ML-DSA-87) ist auf dem Native-Pfad **live
 und verpflichtend** — rein klassische Native-Transaktionen werden on-chain
-abgelehnt (Chain v3.1.97). Bevor eine hybride Tx PQC-verifiziert wird, muss der
-öffentliche PQC-Schlüssel des Signierers registriert sein
-(`MsgRegisterPQCKeyV2`), oder Sie setzen `includePqcPublicKey: true`, um ihn für
-die automatische Registrierung bei der ersten Verwendung einzubetten. Die Chain
-akzeptiert **ausschließlich deterministische** ML-DSA-87-Signaturen (das SDK
-signiert seit 0.5.1 standardmäßig deterministisch); hedged-Signaturen schlagen
-mit `pqc`-Code 21 (`hybrid_verify_failed`) fehl. Siehe
+abgelehnt (Chain v3.2.0). Bevor eine hybride Tx PQC-verifiziert wird, muss der
+öffentliche PQC-Schlüssel des Signierers **ausdrücklich registriert** werden,
+und zwar mit `MsgRegisterPQCKeyV2` (einer klassisch signierten, von der
+Hybrid-Pflicht befreiten Transaktion); das Einbetten des öffentlichen Schlüssels
+in die Erweiterung (`includePqcPublicKey: true`) registriert ihn **nicht**, und
+die Chain registriert einen Schlüssel nicht bei der ersten Verwendung.
+Die Chain akzeptiert jede gültige FIPS-204-ML-DSA-87-Signatur, ob hedged oder
+deterministisch. Das SDK signiert standardmäßig deterministisch (seit 0.5.1),
+damit eine Transaktion immer dieselbe Signatur und denselben Tx-Hash hat. Wenn
+eine hybride Tx mit `pqc`-Code 21 (`hybrid_verify_failed`) fehlschlägt, liegt es
+an der Sign-Bytes-Version, der Chain-ID, einer veralteten PQC-Bibliothek oder
+einem nicht registrierten Schlüssel, nie an hedged Signierung.
+Beide Netzwerke verifizieren die Sign-Bytes-Form v2; verwenden Sie daher SDK
+**0.8.1 oder neuer** und übergeben Sie `rest` (oder `signBytesVersion`): Die
+Builder werfen auf `qorechain-vladi` / `qorechain-diana` einen Fehler, wenn
+keines von beiden angegeben ist. Siehe
+[Fehlerbehebung für Code 21](/developer-guide/post-quantum-signing#code-21) und
 [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
+
+## Meine EVM-Transaktion wird mit "no open EVM authorisation window" abgelehnt
+
+Seit Chain v3.2.0 lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das
+einen registrierten PQC-Schlüssel und ein offenes Autorisierungsfenster hat.
+Registrieren Sie einen Schlüssel, öffnen Sie ein Fenster und senden Sie dann.
+Siehe [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window). Mit dem SDK liefert
+`classifyEvmWindowRejection(err)` `"no-pqc-key"`, `"no-window"`, `"exhausted"`
+oder `"invalid"`.
 
 ## Meine hybriden Transaktionen scheitern bei CheckTx mit einem Tx-Parse-Fehler
 
@@ -111,6 +146,12 @@ Sprachen. Hybride Transaktionen, die mit älteren Versionen erstellt wurden,
 werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 
 ## Meine Authenticator-Ausgabe wird mit `authenticator_replay` abgelehnt
+
+(Das Modul `abstractaccount` ist derzeit auf beiden Netzwerken abgeschaltet; eine
+Ausgabe wird mit `abstract account module is disabled` abgelehnt, bevor eine
+Nonce geprüft wird. Siehe
+[Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators). Die folgenden
+Hinweise gelten, sobald das Modul aktiviert ist.)
 
 Die Nonce ist falsch. `MsgExecuteEVM.nonce` muss die **aktuelle** EVM-Nonce des
 Kontos sein (der Relayer ist ein anderes Konto, also **nicht** 1 addieren);
