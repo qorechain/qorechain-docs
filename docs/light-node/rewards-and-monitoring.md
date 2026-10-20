@@ -9,17 +9,17 @@ sidebar_position: 5
 
 A registered light node is credited a share of the light-node allocation and **needs to stay healthy** to keep qualifying for it. This page covers the 3% light-node reward share, how rewards are credited and claimed, what the node does and does not do with delegations, and how to monitor the node.
 
-:::note Reward-program registration is not open yet
-No light node is registered on either network yet, because registration needs a `lightnode_operator` licence and none has been granted. The reward accounting described here is live on-chain, but nothing is being paid to nodes today and nothing on this page is a promise of earnings. See [Status of the reward program](/light-node/overview#reward-program-status).
+:::note Nothing here is a promise of earnings
+Registration is open on both networks; see [Status of the reward program](/light-node/overview#reward-program-status) for the current state. What a node is credited depends on the light-node allocation, the number of eligible nodes, their stake and uptime, and the per-node bound described below.
 :::
 
 ## The 3% block-reward share
 
 QoreChain's fee distribution reserves a fixed **3% share for light nodes** that serve network data. This is one of the five destinations in the protocol's reward split — validators (37%), burned (30%), treasury (20%), stakers (10%), and **light nodes (3%)** — enforced on-chain. See [Tokenomics](/architecture/tokenomics) for the full breakdown.
 
-To take part in this share a node needs, checked on-chain rather than self-declared: an active `lightnode_operator` license (checked when you register), at least **1,000 QOR bonded** — counted as your total across all the validators you delegate to, not per validator, required when you register and re-read from staking each time rewards are credited — and a **1 QOR** registration fee, paid once when you register. Participation is capped network-wide at **10,000 light nodes**. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration works and [Status of the reward program](/light-node/overview#reward-program-status) for whether enrolment is open.
+To take part in this share a node needs, checked on-chain rather than self-declared: an active `lightnode_operator` license (checked when you register), at least **1,000 QOR delegated to bonded validators** — counted as your total across all the validators you delegate to, not per validator; delegations to jailed or unbonded validators do not count; required when you register and re-read from staking each time rewards are credited — and a **1 QOR** registration fee, paid once when you register. Participation is capped network-wide at **10,000 light nodes**. See [Registration and Licensing](/light-node/registration-and-licensing) for how registration works and [Status of the reward program](/light-node/overview#reward-program-status) for the current state.
 
-The 3% is what flows into the light-node module, not a per-node entitlement: each eligible node is credited its stake-weighted share of what has accrued, bounded per node by `max_reward_per_block_per_node` (currently `1713` uqor per block, scaled by uptime), and anything unearned goes to a reserve that only a governance vote can release. See [the 3% light-node reward share](/light-node/overview#the-3-light-node-reward-share).
+The 3% is what flows into the light-node module, not a per-node entitlement: each eligible node is credited its stake-weighted share of what has accrued, bounded per node, and anything unearned goes to a reserve that only a governance vote can release. Since chain v3.2.3 the per-node bound is **2,000 QOR per 30 days** (`max_reward_per_month_per_node`), prorated over the block time elapsed between settlements and scaled by uptime (the `lightnode-monthly-cap` rule); it replaces the earlier per-block bound (`max_reward_per_block_per_node`, `1713` uqor per block). See [the 3% light-node reward share](/light-node/overview#the-3-light-node-reward-share).
 
 Once registered and delegated, staying eligible is a matter of staying live. A node needs at least **80% uptime**, and must keep submitting heartbeat liveness proofs on a **1,000-block interval** (about 54 minutes on mainnet at the measured average block time of roughly 3.2 s; about 17 minutes on testnet, which produces blocks roughly once a second).
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Crediting
 
-Every 100 blocks the chain credits each eligible node (active, with at least the minimum bonded stake and at least the minimum uptime) its share of what has accrued, bounded per node as described in [the 3% light-node reward share](/light-node/overview#the-3-light-node-reward-share). The amount is added to the node's `accumulated_rewards`. Read it with:
+Every 100 blocks the chain credits each eligible node (active, with at least the minimum delegated stake and at least the minimum uptime) its share of what has accrued, bounded per node (at most 2,000 QOR per 30 days, prorated over the time since the previous settlement) as described in [the 3% light-node reward share](/light-node/overview#the-3-light-node-reward-share). The amount is added to the node's `accumulated_rewards`. Read it with:
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Claiming
 
-Credited rewards stay on the node record until you claim them. Claim with the same generate-then-cosign pair used for registration:
+Credited rewards stay on the node record until you claim them. The node can claim them for you: set `auto_claim = true` under `[delegation]`, and the daemon claims accrued light-node rewards to the operator account once they pass `min_reward_claim` (default `1000000` uqor, 1 QOR), checking every `compound_interval` (default `1h`). It signs the claim the same way as heartbeats (natively, or through the `qorechaind` fallback). Auto-claim is **off by default**, and it only claims: the node never re-delegates or moves stake.
+
+To claim by hand with `qorechaind` (the operator key in a `qorechaind` keyring, and the post-quantum key exported with `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), use a generate-then-cosign pair:
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-Alternatively set `auto_claim = true` under `[delegation]`: the daemon then claims accrued light-node rewards to the operator account through the signer once they pass `min_reward_claim` (default `1000000` uqor, 1 QOR), checking every `compound_interval` (default `1h`). Auto-claim is **off by default**, and it only claims: the node never re-delegates or moves stake. `qorechaind tx lightnode deregister` removes the registration and pays out anything still credited; the registration fee is not refunded.
+`qorechaind tx lightnode deregister` removes the registration and pays out anything still credited; the registration fee is not refunded.
 
 ### Delegation tracking and reputation alerts
 
-The node mirrors the operator account's delegations from the chain every five minutes. When `rebalance_enabled` is on (the default), it also checks the reputation score of each validator you delegate to and logs a warning for any below `min_reputation` (default `0.5`). It does not move stake: change delegations from your own wallet. (The `validators` and `split_weights` options in `[delegation]` are accepted but not currently acted on.)
+The node mirrors the operator account's delegations from the chain when it starts and then every five minutes. When `rebalance_enabled` is on (the default), it also checks the reputation score of each validator you delegate to and logs a warning for any below `min_reputation` (default `0.5`). It does not move stake: change delegations from your own wallet. (The `validators` and `split_weights` options in `[delegation]` are accepted but not currently acted on.)
 
 ### Inspecting rewards and delegations
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution Known limitation in v3.1.3 / v3.1.4
-`lightnode-sx delegation`, `lightnode-sx rewards` and the UX **Delegation** view look up the address derived from the node key. A post-quantum node key has no address, so these currently show nothing (`rewards` reports `chain REST endpoint not available`). Use the chain queries instead:
+Since 3.1.6 these, and the UX **Delegation** view, read the account in `operator_address`. `rewards` shows **staking** rewards from your delegations, not light-node rewards. To read everything straight from the chain:
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## Monitoring
 
@@ -110,7 +112,7 @@ The UX edition surfaces the same data live across its **Overview**, **Network**,
 
 ### Sync and heartbeat health
 
-The `status` command reports the chain ID, latest block height, whether the chain is catching up, the light client's synced height and syncing state, and — once `operator_address` is set — the `Signer`, `Licence` and `Registration` state (including the node's status and last heartbeat height). A node that is registered, synced, and running continues to submit **heartbeat liveness proofs** and so stays eligible for rewards. These heartbeats are produced via a **PQC-cosigned transaction pipeline** (hybrid Dilithium-5 / ML-DSA-87), consistent with the chain's PQC-required default — see [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) for how the pipeline works and how to enable on-chain heartbeats. If `status` shows the node stalled or not syncing, it may be failing to prove liveness — investigate before eligibility is affected.
+The `status` command reports the chain ID, latest block height, whether the chain is catching up, the light client's synced height and syncing state, the `Signer` (native, or `qorechaind`, or unavailable with the reason), and — once `operator_address` is set — the `Licence` and `Registration` state (including the node's status and last heartbeat height). A node that is registered, synced, and running continues to submit **heartbeat liveness proofs** and so stays eligible for rewards. These heartbeats are produced via a **PQC-cosigned transaction pipeline** (hybrid Dilithium-5 / ML-DSA-87), consistent with the chain's PQC-required default — see [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) for how the pipeline works and how the node chooses its signer. If `status` shows the node stalled or not syncing, it may be failing to prove liveness — investigate before eligibility is affected.
 
 ### Self-test health
 
@@ -132,7 +134,7 @@ Base URLs: `https://api.qore.host` (mainnet) and `https://api-testnet.qore.host`
 | `GET /qorechain/lightnode/v1/stats` | Registered and active counts, total rewards credited. |
 | `GET /qorechain/lightnode/v1/node/{address}` | One node's record (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | Rewards credited and not yet claimed. |
-| `GET /qorechain/lightnode/v1/reward_pool` | How the module balance divides between reserve, credited rewards and the next payout; includes the per-node bound. |
+| `GET /qorechain/lightnode/v1/reward_pool` | How the module balance divides between reserve, credited rewards and the next payout; includes the per-node bounds (`max_reward_per_month_per_node`, and the earlier `max_reward_per_block_per_node`). |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Whether an address holds an active licence. |
 
 ## Where to go next

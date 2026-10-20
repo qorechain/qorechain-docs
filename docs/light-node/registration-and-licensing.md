@@ -7,58 +7,111 @@ sidebar_position: 4
 
 # Registration and Licensing
 
-To take part in the [3% light-node reward share](/light-node/rewards-and-monitoring), a light node must be **registered on-chain** and must keep proving that it is alive. This page covers how registration works, how the node proves liveness, and how to license a node through the Dashboard and register it on-chain.
+To take part in the [3% light-node reward share](/light-node/rewards-and-monitoring), a light node must be **registered on-chain** and must keep proving that it is alive. This page covers what the chain requires, how to get a licence, how the node registers itself, and how it proves liveness.
 
-:::note Reward-program registration is not open yet
-No `lightnode_operator` licence has been granted on either network and no node is registered, so the chain refuses every registration today. Running and syncing a node needs no licence. See [Status of the reward program](/light-node/overview#reward-program-status) for how to check the current state.
+:::note Registration is open
+Registration is open on mainnet (`qorechain-vladi`) and on testnet (`qorechain-diana`). Running and syncing a node needs no licence. See [Status of the reward program](/light-node/overview#reward-program-status) for how to check the current state.
 :::
 
 ## On-chain registration
 
-Registration records your light node on the chain so the protocol knows it exists, what type it is (`sx` or `ux`), and which operator key controls it. Once registered and live, the node becomes eligible for the light-node reward share.
+Registration records your light node on the chain so the protocol knows it exists, what type it is (`sx` or `ux`), and which operator account controls it. Once registered and live, the node becomes eligible for the light-node reward share.
 
 ### Requirements {#requirements}
 
 The chain checks all of these when your registration transaction executes:
 
 1. An active `lightnode_operator` licence on the operator address.
-2. At least **1,000 QOR bonded** to validators from that same address (your total across all validators). Delegate **before** you register: from the Dashboard's staking page, or with `qorechaind tx staking delegate` (and the post-quantum co-signature, like every transaction).
-3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The daemon pays a fee for each heartbeat from this account (default `50000uqor` per heartbeat, `[heartbeat] fees`).
+2. At least **1,000 QOR delegated** from that same address to **bonded** validators (your total across any validators; delegations to jailed or unbonded validators do not count).
+3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The node also pays a fee for each heartbeat from this account: with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor (0.075 QOR) at the default `[heartbeat] gas` of 300,000.
 4. Fewer than 10,000 light nodes registered network-wide.
 
-### Generating the registration commands
+After registration the node must send a heartbeat every **1,000 blocks** (with a grace of 100 blocks) and keep at least **80% uptime** to be paid. Read the live values with `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
 
-Registration is made from your **operator address**: a funded `qor1…` account created with `qorechaind` (or any Cosmos wallet), which also receives the rewards. The node's own Dilithium-5 key has no address; it becomes the account's post-quantum key. Put the address in `config.toml` as `operator_address`, and make sure `key_name` and `chain_id` are set as described in [First run](/light-node/sx-edition#first-run-onboard) (`onboard` does not set them correctly for you). Then run:
+### The operator account {#operator-account}
+
+Registration is made from your **operator address**: an ordinary `qor1…` account that holds the licence and the stake, pays the fees, and receives the rewards. The node must be able to sign for it, so it must be an account **whose recovery words you hold**: words you wrote down yourself, an account from Keplr, or a `qorechaind` key (derivation path `m/44'/118'/0'/0/0`). A dedicated account used only for the node is the best choice.
+
+A custodial wallet on the Dashboard (one whose seed the Dashboard keeps for you) cannot run a node unless you first export its seed.
+
+The node's Dilithium-5 key has no address of its own: on QoreChain a post-quantum key is attached to an account, it does not create one. The node attaches its key to the operator account as that account's post-quantum key, unless the account already has one (see [Accounts that already have a post-quantum key](#accounts-with-a-pqc-key)).
+
+## Getting a licence
+
+### Mainnet: buy on the Dashboard
+
+Licences are bought on the QoreChain Dashboard at **Tools → Light Node**. A licence costs **$50**, paid in USDT on ERC-20, BEP-20 or TRC-20; the payment is verified on its chain. You must enter the `qor1…` address the licence is for **before** paying; use the operator address described above.
+
+The grant is a separate on-chain step, signed by hand and sent in batches. Until the chain confirms it, the tab shows **Paid, awaiting on-chain grant**, and the node keeps reporting that the address has no licence. `lightnode-sx status` shows a `Licence:` line that changes to `active` when the grant lands. You can also check it directly:
 
 ```bash
-lightnode-sx register
+curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-Before printing anything, the command asks the chain whether `operator_address` holds an active `lightnode_operator` licence. It does this because the chain refuses a registration without one, and there is no point in handing you commands that will be refused. Without a licence it stops with:
+### Testnet: on request
 
-```text
-operator address qor1... has no lightnode_operator licence. Buy one at
-https://dashboard.qorechain.io -> Tools -> Buy License, and enter this operator
-address there; the on-chain grant follows and register works once it lands.
+Nothing is sold on testnet. Testnet licences are granted by the testnet licence authority on request.
+
+## Registering the node
+
+The steps below are the node's own setup flow. They are the same for both editions: `lightnode-ux` has the same commands as `lightnode-sx` and uses the same home directory (`~/.qorechain-lightnode`). See [SX Edition](/light-node/sx-edition#first-run-onboard) for details on each command.
+
+```bash
+# 1. Keys are stored encrypted. Keep this set for every command below and for start.
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
+
+# 2. Self-test, RPC endpoint (mainnet: https://rpc.qore.host), node key
+lightnode-sx onboard
+
+# 3. The operator account: the one the licence is for. --recover reads its
+#    recovery words from standard input.
+lightnode-sx keys add-operator --recover
+
+# 4. Post-quantum key, missing stake (only if you name a validator), registration
+lightnode-sx register --delegate-to qorvaloper1...
+
+# 5. Run the node; it sends heartbeats on its own
+lightnode-sx start
+lightnode-sx status
 ```
 
-A licence bought on the Dashboard is granted on-chain in a separate step, so `register` can still say "no licence" for a while after the purchase; `lightnode-sx status` shows the same `Licence:` line and flips to `active` when the grant lands. A node that is already registered is reported as such instead of being registered twice.
+The passphrase protects both keys in the node's keyring: the node's post-quantum key and the operator account key.
 
-With an active licence, the command reads the node key from the keyring and prints, filled in with your values:
+### What `register` does
 
-1. **Once only**, the command that attaches the node key to the operator account as its post-quantum key (`qorechaind tx pqc register-key-v2 dilithium5 <pubkey> hybrid --from operator …`), after exporting the key into `qorechaind`'s key directory with `lightnode-sx keys export`. Skip it if the account already has a post-quantum key (`GET /qorechain/pqc/v1/account/<address>` says `found: true`). If the printed gas limit runs out, repeat it with `--gas 600000 --fees 60000uqor`.
-2. The registration itself: `qorechaind tx lightnode register <type> <version> --from operator --generate-only > register.json`, then `qorechaind tx pqc cosign register.json --from operator --pqc-key <key>`. The chain requires the post-quantum co-signature on every transaction, so registration is a generate-then-cosign pair.
+`register` reads `operator_address` and the keys from the keyring, then:
 
-The command takes two optional flags:
+1. **Checks the licence.** It asks the chain whether `operator_address` holds an active `lightnode_operator` licence. Without one it stops and says where to get one. (In 3.1.9 that message still names the Dashboard's old "Buy License" tab; licences are bought at **Tools → Light Node**.) A licence that has expired or is suspended is reported as such. A node that is already registered is reported as such, and nothing is sent.
+2. **Attaches the post-quantum key**, unless the account already has one. An account with no post-quantum key may only send this one message, signed classically (without the hybrid extension); the node sends it that way and includes a proof of possession of the key where the chain supports it.
+3. **Delegates the missing stake**, only if you name a validator with `--delegate-to qorvaloper1...`. Without `--delegate-to`, if the account is below the minimum, it stops and says how much is missing.
+4. **Registers the node** with the 1 QOR fee.
 
-- `--type` — the node type, `sx` or `ux` (defaults to `sx`).
+Each step is signed by the node itself and confirmed in a block before the next one is sent. Every transaction after the key registration carries the hybrid ML-DSA-87 + secp256k1 signature the chain requires.
+
+The command takes these flags:
+
+- `--delegate-to` — the `qorvaloper1…` validator to delegate the missing stake to.
+- `--type` — the node type, `sx` or `ux` (defaults to the edition of the binary).
 - `--version` — the node version to register (defaults to the binary's own version).
+- `--print` — print the equivalent `qorechaind` commands instead of signing (see below).
 
-Submit on the network you are joining (testnet `qorechain-diana` or mainnet `qorechain-vladi`). Registration requires an active `lightnode_operator` licence granted on the operator address; the chain refuses it otherwise.
+The account must already exist on chain (it must have received funds) before `register` can sign for it.
 
-:::note
-`lightnode-sx register` **prints** the commands for you to review and run — it does not broadcast on its own. This keeps you in control of when and how the node is registered.
-:::
+### Accounts that already have a post-quantum key {#accounts-with-a-pqc-key}
+
+An account set up in a wallet often already has a post-quantum key, derived from the same recovery words. Under the chain's v3.2.3 rules the chain accepts only the key registered on the account, and it refuses keys of type `classical_only` or an empty key.
+
+Since 3.1.9, `keys add-operator --recover` handles this: when the account already has a post-quantum key, it rebuilds that key from the words, using the same derivation as the wallet-adapter and the Dashboard (the same as `qorechaind tx pqc recover-key`), and the node signs with it. When the account has no key, the node derives one from the words, so the words also restore the node's key. If the account has a post-quantum key that the words cannot reproduce (a wallet that generates and keeps its own key), the command refuses and advises a dedicated operator account.
+
+### Fallback: operator key in a `qorechaind` keyring
+
+If you keep the operator account key in a `qorechaind` keyring and do not want to store it in the node, skip step 3 and run:
+
+```bash
+lightnode-sx register --print
+```
+
+It runs the same licence and registration checks and prints, filled in with your values, the `qorechaind` commands for each step: exporting the node key into `qorechaind`'s key directory (`keys export <name> --out ~/.qorechaind/pqc/<name>.dilithium`), `tx pqc register-key-v2 … hybrid`, a `tx staking delegate` when the stake is short, and `tx lightnode register` as a generate-then-`tx pqc cosign` pair. On this path the daemon also uses `qorechaind` for heartbeats; see [`[heartbeat]` settings](/light-node/sx-edition#configure).
 
 ## Heartbeat liveness proofs
 
@@ -68,21 +121,27 @@ In practice this means a node that is registered and kept running (and synced) m
 
 ### PQC-cosigned heartbeat pipeline {#pqc-cosigned-heartbeat-pipeline}
 
-QoreChain is **PQC-required by default**, so the heartbeat liveness transaction is produced through a post-quantum co-signed pipeline rather than a classical-only signature. The daemon builds the unsigned heartbeat, then co-signs it with a **hybrid Dilithium-5 (ML-DSA-87)** signature before broadcast — the same post-quantum posture the chain enforces for every transaction. The node submits one heartbeat per `interval_blocks` window (matching the chain's `heartbeat_interval` parameter), pacing itself by block height to avoid early-submission rejections.
+QoreChain is **PQC-required by default**, so every heartbeat carries a **hybrid signature**: ML-DSA-87 (Dilithium-5) with the account's post-quantum key, and secp256k1 with the operator account key. The node builds and signs the transaction itself on Linux, macOS and Windows; `qorechaind` is not needed. It reads from the network which sign-bytes version to use.
 
-On-chain heartbeats are on by default. The daemon needs: `operator_address` in the config; a `qorechaind` binary **v3.2.0 or newer** (on `PATH` or at `[heartbeat] qorechaind_path`; the SX Docker image built from tag `v3.1.4` ships one — older signers are refused by the chain); and the `qorechaind` home holding the operator key and the exported node key (`qorechaind_home`, default `~/.qorechaind`). Two keyring passphrases belong in the environment: `QORE_LIGHTNODE_KEYRING_PASSPHRASE` for the node keyring and `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` for the `qorechaind` keyring (the second is piped to `qorechaind` on stdin, never placed on a command line). `qorechaind` is published for **Linux amd64 only** (see the `binary` entry of `https://download.qore.host/mainnet/latest.json`), so on macOS, Windows or ARM hosts the node runs and syncs but cannot sign heartbeats natively; a registered node should run the SX edition on Linux amd64, or the Docker image on an amd64 host. It paces itself by the chain's own `last_heartbeat` for the node, so a restart neither sends a duplicate nor waits a whole interval. Until the node is registered, it does not heartbeat; it logs why instead, once per state change: no licence (with where to buy one) or licence active but not registered (run `lightnode-sx register`). `lightnode-sx status` shows `Signer:`, `Licence:` and `Registration:` lines so the reason is visible without reading logs. When the signer is missing, the node still runs and syncs; it just cannot stay active on chain, and `status` says so.
+On-chain heartbeats are on by default. The daemon sends one when 1,000 blocks (`[heartbeat] interval_blocks`, matching the chain's `heartbeat_interval`) have passed since the chain's own `last_heartbeat` for the node, checking every 60 seconds, so a restart neither sends a duplicate nor waits a whole interval. Each heartbeat is reported only once it is in a block.
 
-## Registering and licensing via the Dashboard
+The daemon picks its signer at start:
 
-You can check your licensing status and keep your node details on the QoreChain Dashboard's **Tools → Light Node** tab. Running a node and joining its rewards program are two different things, and the Dashboard keeps them separate:
+- **Native** — the keyring holds the operator key (from `keys add-operator`) and it matches `operator_address`. This is the normal case.
+- **`qorechaind` fallback** — otherwise, if a `qorechaind` binary is on `PATH` or at `[heartbeat] qorechaind_path`. It uses the operator key in the `qorechaind` keyring (`[heartbeat] key_name`, home `qorechaind_home`, default `~/.qorechaind`) and the exported node key under `pqc/<key_name>.dilithium`. The `qorechaind` keyring passphrase goes in `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE`; it is piped to `qorechaind` on stdin, never placed on a command line.
 
-1. **Get the software (no licence needed).** The tab links the light-node binaries for the selected network (the same files as `https://download.qore.host/<net>/lightnode/latest.json`, with their sha256 checksums) and shows a bring-up pack for a full QoreChain node. A light node only needs the `lightnode-sx` or `lightnode-ux` binary and an RPC endpoint; follow [SX Edition](/light-node/sx-edition).
-2. **Check your rewards-program status.** Joining the light-node reward share is a separate, on-chain-gated step: an active `lightnode_operator` licence granted on-chain, at least 1,000 QOR bonded (your total across all validators, read live from staking), and a 1 QOR registration fee. **Enrollment is not open yet** (see [Status of the reward program](/light-node/overview#reward-program-status)), and buying a licence does not open it early. Uptime is counted from the block your node registers on-chain, not before.
-3. **Licence.** A licence purchased through **Buy License** is recorded on our side first; the grant that makes it recognised on-chain is a separate step, and the chain refuses a registration until it lands. The purchase needs the `qor1…` address the licence will be granted to, and shows **Paid — awaiting on-chain grant** until the chain confirms it. `lightnode-sx status` shows the on-chain `Licence:` line.
-4. **Registration record.** If your account holds a licence recorded as active, the tab also shows a short form (operator address, moniker, public endpoint URL, and an acknowledgement of the stake commitment) followed by a summary of what you submitted. This records your request with the Dashboard; it does **not** send the on-chain registration transaction.
-5. **Register on-chain.** Once the licence is granted and 1,000 QOR is bonded from your operator address, register with `lightnode-sx register` and the `qorechaind` commands it prints (see above).
+Until the node is registered it does not send heartbeats; it logs why instead, once per state change: no licence, or licence active but not registered (run `register`). `lightnode-sx status` shows `Signer:`, `Licence:` and `Registration:` lines so the reason is visible without reading logs. When there is no signer, the node still runs and syncs, but it cannot stay active on chain, and `status` says so.
 
-The Dashboard is useful for downloading the node, checking the chain's requirements and your node's health, and buying a licence. The on-chain registration itself is always the `lightnode-sx register` transaction.
+## The Dashboard's Light Node tab
+
+The QoreChain Dashboard's **Tools → Light Node** tab brings the steps together:
+
+1. **Downloads.** It links the light-node binaries for the selected network (the same files as `https://download.qore.host/<net>/lightnode/latest.json`, with their sha256 checksums).
+2. **Setup steps.** It shows the five steps above, matched to the version in the release manifest, and whether registration is open, read from the manifest's `registration` field.
+3. **Licence purchase** (mainnet only). It takes the licence address before payment and shows **Paid, awaiting on-chain grant** until the chain confirms the grant. It warns you if the address you enter is your own custodial Dashboard wallet, and it notes, for information, if the address already has a post-quantum key.
+4. **Status.** A status panel shows the node's state as read from the chain.
+
+The registration itself is always the transaction sent by `lightnode-sx register` (or `lightnode-ux register`). The Dashboard does not register nodes; its old registration form, which only stored a record, has been removed.
 
 ## Where to go next
 
