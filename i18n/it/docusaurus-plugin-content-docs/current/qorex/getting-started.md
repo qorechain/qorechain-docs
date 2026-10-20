@@ -80,7 +80,7 @@ Per impostazione predefinita QoreX deriva il tuo indirizzo `qor1…` da una fras
 3. Apri Impostazioni → **I tuoi account** e tocca **Aggiungi un account Ethereum (coin 60)**. Il primo tocco aggiunge l'account all'indice 0 — lo stesso indirizzo `0x…` che MetaMask mostra per quelle parole, e la stessa chiave del tuo indirizzo QoreChain `qor1…` per quell'account. I tuoi QOR sono lì.
 4. Passa a quell'account (è etichettato *Ethereum · coin 60*). Da lì puoi inviare, fare staking e riscuotere. Il primo invio registra anche la chiave post-quantistica di quell'account, il che comporta una piccola commissione una tantum.
 
-Un account in stile Ethereum non ha un @handle (gli handle si rivendicano su un account QoreChain `qor1…` al coin type 118), e i siti web firmano con esso tramite `signAndBroadcast` anziché `signDirect`. Ogni tocco su **Aggiungi un account Ethereum (coin 60)** aggiunge l'indice successivo.
+Un account in stile Ethereum non ha un @handle (gli handle si rivendicano su un account QoreChain `qor1…` al coin type 118), e i siti web firmano con esso tramite `signAndBroadcast` anziché `signDirect`. È anche il tipo di account per cui la [finestra di accesso EVM](/qorex/security-and-recovery#evm-window) è importante: MetaMask firma con la stessa chiave, quindi le transazioni di MetaMask possono spostarne i QOR una volta aperta una finestra. Ogni tocco su **Aggiungi un account Ethereum (coin 60)** aggiunge l'indice successivo.
 
 ## Orientarsi {#find-your-way}
 
@@ -89,7 +89,7 @@ Un account in stile Ethereum non ha un @handle (gli handle si rivendicano su un 
 
 ## Facoltativo: rivendica un @handle
 
-Dopo la creazione del wallet puoi rivendicare un **@handle** univoco (ad esempio `@liviu`) in modo che le persone possano inviarti fondi usando il tuo nome invece di un indirizzo `qor1…`. Questo è facoltativo e può essere saltato — il tuo wallet non dipende mai da esso. (Nell'estensione del browser, alcune versioni non offrono la rivendicazione; se il popup non la propone, rivendica dall'app mobile.) Un handle è associato a un indirizzo specifico piuttosto che al wallet nel suo insieme, il che diventa rilevante quando hai più di un account — vedi [Più account da una sola frase](/qorex/account-and-dashboard#accounts) e [@handle](/qorex/account-and-dashboard#handle).
+Dopo la creazione del wallet puoi rivendicare un **@handle** univoco (ad esempio `@liviu`) in modo che le persone possano inviarti fondi usando il tuo nome invece di un indirizzo `qor1…`. La rivendicazione richiede un [account con accesso effettuato](/qorex/account-and-dashboard#sign-in) e avviene **nell'app mobile** (l'estensione del browser ti rimanda lì). È facoltativa e può essere saltata — il tuo wallet non dipende mai da essa. Un handle è associato a un indirizzo specifico piuttosto che al wallet nel suo insieme, il che diventa rilevante quando hai più di un account — vedi [Più account da una sola frase](/qorex/account-and-dashboard#accounts) e [@handle](/qorex/account-and-dashboard#handle).
 
 ## Lingua
 

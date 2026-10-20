@@ -23,7 +23,7 @@ Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna rotta del bri
 | Operazioni del bridge | 0 | 0 |
 | Canali / client IBC | 0 / 0 | 0 / 0 |
 
-(Verificato a ottobre 2026. Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`.)
+(Verificato il 20 ottobre 2026 sulla mainnet v3.2.3 e sulla testnet v3.2.4. Leggete i valori live con `qorechaind query bridge chains` e `qorechaind query bridge validators`, oppure tramite REST su `/qorechain/bridge/v1/chains` e `/qorechain/bridge/v1/validators`.) La configurazione del modulo è la stessa su entrambe le reti: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 e `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Lo stack IBC che il modulo utilizzerebbe è ibc-go v10.7 (dalla v3.2.2), ma non è stato creato alcun client né canale.
 
 ## Panoramica delle Connessioni
 
@@ -193,6 +193,8 @@ Tutte le operazioni del bridge QCB richiedono una **soglia 7-su-10** di firme po
 * Un elenco di catene supportate
 * Un punteggio di reputazione (mantenuto da `x/reputation`)
 
+Dalla v3.2.2 il modulo convalida in modo coerente su ogni percorso gli importi pari a zero e la propria configurazione. **Solo testnet (v3.2.4, non sulla mainnet):** la registrazione di un validatore del bridge richiede inoltre una prova di possesso della chiave Dilithium-5 (lo stesso formato `proof_of_possession` della registrazione delle chiavi PQC, vedi [Sicurezza Post-Quantistica](/architecture/post-quantum-security#proof-of-possession)) e rifiuta una chiave già utilizzata da un altro validatore del bridge. La mainnet v3.2.3 non ha un controllo di questo tipo, e su nessuna delle due reti è registrato alcun validatore del bridge.
+
 ### Circuit Breaker
 
 Ogni catena connessa dispone di protezioni circuit breaker indipendenti:
@@ -234,6 +236,8 @@ A partire dalla versione di catena **v3.1.78**, una catena del bridge può esser
 * **`tx bridge set-verifier-bootstrap`** — selezionare il verifier attivo per una catena e installarne la trust root (`MsgSetVerifierBootstrap`).
 
 Questo consente a un operatore di portare online il bridge di una catena connessa — o di ruotarne il verifier — direttamente, con l'autorizzazione verificata rispetto alla chiave di amministrazione del bridge. A partire dalla versione di catena **v3.2.0** il modulo bridge dispone anche di un proprio account di modulo (le versioni precedenti non ne avevano, per cui il primo deposito su una rotta attivata sarebbe fallito).
+
+Le licenze come `qcb_bridge` vengono concesse dall'account dell'autorità delle licenze. Dalla v3.2.3 (mainnet) la governance può sostituire tale account con una proposta `MsgUpdateAuthority`; il modulo stesso è descritto in [Licenze della Catena](/architecture/chain-licensing).
 
 ### Validazione delle reti connesse
 

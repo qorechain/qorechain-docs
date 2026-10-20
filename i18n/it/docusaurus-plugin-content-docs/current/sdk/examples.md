@@ -63,7 +63,8 @@ Richiede un RPC di consenso raggiungibile più REST e un account con fondi.
 Questo esempio firma solo con la firma **classica**, quindi funziona contro un
 nodo locale o di sviluppo ma viene rifiutato da mainnet e testnet, che
 richiedono la firma ibrida su ogni transazione del percorso Native. Per le
-reti pubbliche usa l'invio ibrido descritto nella
+reti pubbliche connettiti con la coppia di chiavi dell'account,
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), come nella
 [Guida rapida](/sdk/quickstart#send-qor).
 
 ```ts

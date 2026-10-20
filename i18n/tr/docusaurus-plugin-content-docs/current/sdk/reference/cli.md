@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm'e `create-qorechain-dapp` (`0.8.0`) olarak yayınlandı. Oluşturulan
-> `package.json` dosyaları `@qorechain/sdk` / `@qorechain/evm` paketlerini `^0.3.0`
-> sürümüne sabitler; npm bunu canlı ağlar için imzalayamayan bir 0.3 sürümüne çözer.
-> İskeleleme sonrasında `npm i @qorechain/sdk@latest` komutunu çalıştırın (EVM şablonu
-> için ayrıca `npm i @qorechain/evm@latest`).
+> npm'e `create-qorechain-dapp` (`0.9.0`) olarak yayınlandı. Oluşturulan
+> `package.json` dosyaları `@qorechain/sdk` `^0.9.0` sürümüne bağımlıdır (EVM şablonu
+> ise `@qorechain/evm` `^0.8.0` sürümüne). İskeleleyicinin 0.8.0 sürümü `^0.3.0`
+> aralıkları yazıyordu; npm bunu canlı ağlar için imzalayamayan bir 0.3 sürümüne çözer.
+> 0.8.0 ile iskelelediyseniz `npm i @qorechain/sdk@latest` komutunu çalıştırın.
 
 ## Şablonlar
 
@@ -32,6 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Bir Solidity `Counter` sözleşmesi + bir viem dağıtım/etkileşim betiği (`@qorechain/evm`). |
 | `fullstack-web` | Bakiyeleri ve tokenomik verileri okuyan bir Vite + React + TypeScript dApp'i (`@qorechain/sdk`). |
 | `rollup-app` | `RollupClient` ve multilayer yardımcısını kullanan bir rollup + sidechain/paychain uygulaması (`@qorechain/sdk`). |
+
+`rollup-app` şablonu (0.9.0) varsayılan olarak bir deneme çalıştırması yapar. `QORE_BROADCAST=1`
+ile hesabın ML-DSA-87 anahtarını mnemonic'ten türetir, bir kez kaydeder ve hibrit imzalar;
+önceki şablon bunu yapamıyordu. Örnek rollup değerleri (`profile: "default"`, stake) açıklayıcıdır:
+yayın yapmadan önce gerçek profil adlarını ve stake'i [Ön ayarlı profiller](/rollups/preset-profiles)
+sayfasından ve canlı modül parametrelerinden alın.
 
 `fullstack-web` şablonu, tokenomik genel bakışını `client.qor` üzerinden okur; bu, genel uç
 noktaların sunmadığı bir `qor_` JSON-RPC çağrısıdır, bu yüzden mainnet ve testnet üzerinde bu

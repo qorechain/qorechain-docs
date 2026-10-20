@@ -21,6 +21,15 @@ QCAI (QoreChain AI) motoru üç katmanda çalışır:
 
 Konsensüs seviyesi ayrı olarak [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasında belgelenmiştir. Bu sayfa ağ ve uygulama seviyelerini kapsar.
 
+:::note Canlı ağlarda neler uygulanıyor (ana ağ v3.2.3, test ağı v3.2.4)
+`x/ai` modülünün iki parçası bugün işlemler üzerinde etkilidir; hem Cosmos hattında hem de EVM hattında:
+
+* **Gönderen başına hız sınırı**. Canlı sınır **gönderen başına dakikada 600 işlemdir** (`max_tx_per_minute`; EVM hattının kendi isteğe bağlı sınırı vardır, ancak ayarlanmamıştır, bu yüzden aynı değer geçerlidir). "Dakika", duvar saati süresiyle değil, sabit bir blok penceresi üzerinden sayılır, çünkü blok yüksekliği her doğrulayıcının paylaştığı tek saattir. Sınıra ulaşan bir gönderenin daha eski işlemleri pencereden çıkana kadar sonraki işlemleri reddedilir. Sınır, Cosmos hattında v3.2.0'dan beri, her iki hatta ise v3.2.2'den beri uygulanmaktadır.
+* Her işlem için bir **anomali skoru**. Canlı `anomaly_action` değeri `flag`'tir: yüksek bir skor bir `ai_anomaly_check` olayı yayar ve işlemi işaretlenmiş olarak sayar, ancak reddetmez. Skora göre reddetme, etkinleştirilmemiş bir yönetişim ayarıdır.
+
+Bu sayfadaki diğer her şey (yönlendirici, altı katmanlı dolandırıcılık hattı, ücret optimize edici, ağ optimize edici, sidecar) analiz ve tavsiyeyi tanımlar: hiçbiri zincirin hangi işlemleri kabul ettiğini değiştirmez ve altı katmanlı hat işlem yolundan çağrılmaz. Canlı ayarları `qorechaind query ai config` ile, sayaçları ise `qorechaind query ai stats` ile okuyun.
+:::
+
 ## İşlem Yönlendiricisi
 
 Yapay zeka destekli yönlendirici, ağırlıklı çok faktörlü puanlama kullanarak her işlem için en uygun doğrulayıcıları ve yolları seçer.
@@ -86,7 +95,7 @@ Dolandırıcılık tespit edici, istatistiksel yöntemler kullanarak her işlemi
 | Orta       | Herhangi        | `alert`                                                      |
 | Düşük / Yok   | Herhangi        | `allow`                                                      |
 
-`allow` dışında bir eylem tetiklendiğinde, benzersiz bir kimliğe sahip bir dolandırıcılık soruşturma kaydı oluşturulur (biçim: `INV-{timestamp}-{txhash_prefix}`).
+`allow` dışında bir eylem tetiklendiğinde, hat benzersiz bir kimliğe sahip bir dolandırıcılık soruşturma kaydı oluşturur (biçim: `INV-{block_height}-{txhash}`, 48 karaktere kısaltılır). Canlı ağlarda hat işlem yolundan çağrılmaz (bu sayfanın başındaki nota bakın), bu nedenle bugün hiçbir soruşturma kaydı üretilmez ve hat tarafından hiçbir sözleşme devre kesicisi ayarlanmaz.
 
 ## Ücret Optimize Edici
 
@@ -171,7 +180,7 @@ Yan bileşen, derin öğrenme iş yüklerinin konsensüs açısından kritik yü
 Bu önderlemeli sözleşmeler ana ağda (`qorechain-vladi`) veya test ağında (`qorechain-diana`) **etkin değildir**; bir çağrı boş veri döndürür. Yalnızca salt okunur, sabit noktalı bir puanlama yoluna kavuştuktan sonra etkinleştirilecekler. Bkz. [EVM Önderlemeli Sözleşmeleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Önemli**: EVM önderlemeli sözleşmeler **yalnızca deterministik sezgisel motoru** kullanır. Asla yan bileşeni çağırmazlar, böylece tüm EVM yürütmesinin tamamen deterministik ve yeniden üretilebilir kalmasını sağlarlar.
+**Önemli**: EVM önderlemeli sözleşmeler **yalnızca deterministik sezgisel motoru** kullanır. Asla yan bileşeni çağırmazlar, böylece tüm EVM yürütmesinin tamamen deterministik ve yeniden üretilebilir kalmasını sağlarlar. v3.2.3'ten itibaren anomali kontrolü önderlemeli sözleşmesi bir işlemi durum yazmadan analiz eder; o sürümdeki diğer önderlemeli sözleşme sağlamlaştırmaları (CrossVM köprüsünün `STATICCALL` çağrısını reddetmesi, iç içe çağrısını çağıran çerçevenin gas'ından ölçmesi ve yalnızca izin listesindeki CosmWasm hedeflerine ulaşması) CrossVM önderlemeli sözleşmesi etkinleştirildiğinde geçerli olur. 20 Ekim 2026 itibarıyla `active_static_precompiles` listesi her iki ağda da boştur.
 
 ## TEE Onaylaması (Attestation)
 

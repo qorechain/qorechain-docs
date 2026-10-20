@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain prend en charge les contrats intelligents **CosmWasm**, permettant aux développeurs d'écrire des programmes sécurisés et isolés (sandboxed) en Rust qui compilent vers WebAssembly. Les contrats CosmWasm s'exécutent aux côtés des programmes EVM et SVM au sein de l'architecture triple-VM de QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (actif depuis le 29 juin 2026), qui exécute la version de nœud **v3.2.1**. Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.2.
+Les commandes ci-dessous utilisent le mainnet **`qorechain-vladi`** (actif depuis le 7 juin 2026), qui exécute la version de nœud **v3.2.3**. Remplacez par `--chain-id qorechain-diana` pour le testnet, qui exécute la v3.2.4 (testnet uniquement).
 :::
 
 :::caution Le téléversement et l'instanciation de code nécessitent actuellement une permission explicite
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Appels inter-VM
 
-Les appels inter-VM sont envoyés sous forme de transactions `MsgCrossVMCall` via le module `x/crossvm` ; consultez [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) pour le cycle de vie du message. Les contrats CosmWasm ne disposent aujourd'hui d'aucune liaison côté contrat pour initier un appel inter-VM (il n'existe aucun message personnalisé `QoreChainMsg` que les contrats pourraient émettre) ; un contrat ne peut donc pas appeler un contrat EVM ou SVM depuis son point d'entrée `execute`.
+Les appels inter-VM sont envoyés sous forme de transactions `MsgCrossVMCall` via le module `x/crossvm` ; consultez [Interopérabilité inter-VM](/developer-guide/cross-vm-interoperability) pour le cycle de vie du message. Les contrats CosmWasm ne disposent aujourd'hui d'aucune liaison côté contrat pour initier un appel inter-VM (il n'existe aucun message personnalisé `QoreChainMsg` que les contrats pourraient émettre) ; un contrat ne peut donc pas appeler un contrat EVM ou SVM depuis son point d'entrée `execute`. Depuis la v3.2.3, un appel vers la propre voie de l'appelant est refusé et un appel en file d'attente qui échoue ne laisse aucun effet de bord.
 
 :::caution Les appels inter-VM sont actuellement désactivés sur le mainnet
 `MsgCrossVMCall` figure sur la liste du disjoncteur (circuit breaker) du mainnet (`qorechaind query circuit disabled-list`), et la voie SVM est désactivée sur les deux réseaux ; le chemin inter-VM n'est donc pas utilisable aujourd'hui pour des transactions ordinaires.

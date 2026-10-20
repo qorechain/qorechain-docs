@@ -22,6 +22,8 @@ QCAIA est conçu pour aider les nouveaux venus et les membres de la communauté 
 
 Si une question dépasse ce que QCAIA connaît, il le dira plutôt que de deviner. QCAIA est une aide communautaire, et non un conseil financier ou d'investissement.
 
+Les réponses de QCAIA suivent la documentation publique de QoreChain ; elles peuvent donc avoir un temps de retard sur une version. Pour savoir ce qui est en service sur chaque réseau en ce moment (le mainnet `qorechain-vladi` exécute la v3.2.3 et le testnet `qorechain-diana` la v3.2.4 au 20 octobre 2026), consultez [Réseaux](/appendix/networks) et [Historique des versions](/appendix/version-history), ou interrogez directement un nœud. Plusieurs parties de la plateforme sur lesquelles QCAIA est interrogé, comme le pont, les pools AMM, les rollups et xQORE, sont décrites dans la documentation comme conçues mais ne sont pas encore en service ; si QCAIA donne une réponse différente, fiez-vous à la documentation et au réseau en service.
+
 ## Support multilingue
 
 QCAIA comprend les questions dans de nombreuses langues. Si vous posez votre question dans une langue autre que l'anglais, il traduit automatiquement votre question, y répond et renvoie la réponse — vous pouvez donc utiliser votre propre langue tout en obtenant une réponse claire. Voir [Exemples](/qcaia/examples) pour un exemple concret non anglophone.
@@ -38,7 +40,7 @@ QCAIA est en **bêta**. Il s'améliore continuellement et, à l'occasion, il peu
 
 | Plateforme | Comment y accéder | Guide |
 | --- | --- | --- |
-| **Discord** | Rejoignez **[discord.gg/qorechain](https://discord.gg/qorechain)** et utilisez les commandes slash | [Utiliser QCAIA sur Discord](/qcaia/discord) |
+| **Discord** | Rejoignez **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** et utilisez les commandes slash | [Utiliser QCAIA sur Discord](/qcaia/discord) |
 | **Telegram** | Rejoignez **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** et mentionnez le bot | [Utiliser QCAIA sur Telegram](/qcaia/telegram) |
 
 Choisissez votre plateforme ci-dessus pour apprendre exactement comment poser vos questions, ou allez directement à la page [Exemples](/qcaia/examples) pour voir QCAIA en action.

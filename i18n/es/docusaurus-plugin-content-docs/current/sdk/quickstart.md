@@ -106,20 +106,28 @@ través de REST. Consulta
 En mainnet y testnet toda transacción de la ruta Native debe llevar la firma
 **híbrida** (secp256k1 clásica más ML-DSA-87), y la clave ML-DSA-87 de la cuenta
 debe estar **registrada primero on-chain**. El registro es explícito: no hay
-autorregistro en la primera transacción. Un `tx.bankSend` simple (solo firma
-clásica) es rechazado por las redes en producción. Los dos pasos siguientes
-requieren **SDK 0.8.3 o posterior** (`derivePqcCanonical`; 0.8.1 o posterior para
-los envíos híbridos en general) y una cuenta con fondos:
+autorregistro en la primera transacción. Una transacción firmada solo de forma
+clásica es rechazada por las redes en producción, así que entrega al cliente de
+transacciones el keypair ML-DSA-87 de la cuenta y firmará cada transacción de forma
+híbrida. Los dos pasos siguientes requieren **SDK 0.9.0 o posterior** y una cuenta
+con fondos:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. Registra tu clave poscuántica (una sola vez)
 
-El registro se firma de forma clásica y está exento del requisito híbrido, de modo
-que una cuenta nueva pueda arrancar su primera clave. La cuenta paga la comisión:
-la clave de 2.592 bytes necesita un límite de gas de unos 600.000.
+La cuenta paga la comisión: la clave de 2.592 bytes necesita un límite de gas de
+unos 600.000. `ensurePqcRegistered` lee primero el estado de la clave por REST
+(`rest`), así que omite la transacción cuando la clave ya está registrada, y lanza
+`PqcKeyMismatchError` sin enviar nada cuando la cuenta tiene una clave *distinta*
+(un segundo registro es rechazado **después de cobrar la comisión**). El registro es
+la única transacción de firma clásica que la cadena acepta de una cuenta sin clave,
+por lo que el cliente híbrido la envía de forma clásica por sí mismo. Una vez que la
+red ha aplicado la v3.2.3 (ambas redes la han aplicado), el asistente también adjunta
+la prueba de posesión opcional. La cadena rechaza las claves débiles, degeneradas o
+reutilizadas; una clave de `derivePqcCanonical` es válida.
 
 ```ts
 import {
@@ -137,20 +145,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -158,51 +162,26 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. Envía con firma híbrida
 
-`signAndBroadcastHybrid` construye, firma y difunde. Pasa `rest` para que el SDK
-pueda preguntar a la red qué forma de sign-bytes verifica (consulta
-[¿Qué forma de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
-Usa `toBase("1.5")` para convertir QOR a la unidad base `uqor`. El precio mínimo
-de gas de la red es de 0,1 uqor por unidad de gas, así que un límite de gas de
-400.000 requiere una comisión de al menos 40.000 uqor.
+`tx.bankSend` ahora firma de forma híbrida. La comisión es `"auto"` por defecto: el
+cliente simula la propia transacción híbrida y añade el gas de la verificación
+poscuántica, que la simulación no cobra. El precio mínimo de gas de la red es de
+0,1 uqor por unidad de gas (el cliente fija el precio en 0,15). Usa `toBase("1.5")`
+para convertir QOR a la unidad base `uqor`.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` devuelve `"1500000"` (QOR tiene 10^6 unidades base `uqor`).
+`toBase("1.5")` devuelve `"1500000"` (QOR tiene 10^6 unidades base `uqor`). Para
+enviar cualquier otro mensaje del mismo modo, pásalo a
+`tx.signAndBroadcast([message], "auto")`. Para controlar explícitamente la comisión,
+el número de cuenta y la secuencia, usa `signAndBroadcastHybrid` (consulta
+[Cuentas y firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info Cuentas unificadas
 Para una cuenta unificada eth-native (`deriveUnifiedAccount`), usa
@@ -210,11 +189,13 @@ Para una cuenta unificada eth-native (`deriveUnifiedAccount`), usa
 [Cuentas y firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing).
 :::
 
-:::note Los envíos clásicos solo funcionan en nodos locales y de desarrollo
-La ruta clásica `client.connectTx(signer)` más `tx.bankSend(...)` sigue existiendo,
-y es la que usa `ensurePqcRegistered` para la única transacción de registro. Frente
-a un nodo que no exige la extensión híbrida (un nodo de desarrollo local) también
-envía transferencias ordinarias. Las redes públicas la rechazan.
+:::note Sin un keypair el cliente firma de forma clásica
+`client.connectTx(signer)` sin `pqcKeypair` firma solo de forma clásica. Las redes
+públicas lo aceptan únicamente para el registro de clave (una cuenta que aún no tiene
+clave); frente a un nodo que no exige la extensión híbrida (un nodo de desarrollo
+local) también envía transferencias ordinarias. Las versiones del SDK anteriores a la
+0.9.0 no tienen un `TxClient` híbrido: envía mediante `signAndBroadcastHybrid` (consulta
+[Versiones anteriores a la 0.9.0](/sdk/install#before-090)).
 :::
 
 ## Otros lenguajes: conectar y leer

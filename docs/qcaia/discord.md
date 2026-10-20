@@ -13,7 +13,7 @@ On Discord, QCAIA works through **slash commands**. Type `/`, pick a command, fi
 
 Join the official QoreChain Discord server:
 
-**[discord.gg/qorechain](https://discord.gg/qorechain)**
+**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
 
 Once you're in, head to the **#general** channel to talk to QCAIA.
 

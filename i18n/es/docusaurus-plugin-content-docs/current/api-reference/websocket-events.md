@@ -141,7 +141,7 @@ Filtre por tipo de evento para recibir únicamente los eventos de un módulo esp
 
 ## Referencia de eventos por módulo
 
-Los eventos se emiten como eventos estándar del motor de consenso. Suscríbase con una consulta `tm.event='Tx'` filtrada por el tipo de evento y el atributo (por ejemplo `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Los eventos a nivel de bloque (los emitidos por la lógica de fin de bloque, como los eventos de PRISM que se muestran más abajo) se entregan con `tm.event='NewBlock'`, no con `Tx`. Los nombres y atributos que se muestran a continuación corresponden a la versión de cadena v3.2.0.
+Los eventos se emiten como eventos estándar del motor de consenso. Suscríbase con una consulta `tm.event='Tx'` filtrada por el tipo de evento y el atributo (por ejemplo `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Los eventos a nivel de bloque (los emitidos por la lógica de fin de bloque, como los eventos de PRISM que se muestran más abajo) se entregan con `tm.event='NewBlock'`, no con `Tx`. Los nombres y atributos que se muestran a continuación corresponden a la versión de cadena v3.2.3 (mainnet); los eventos que existen solo en la testnet v3.2.4 están marcados.
 
 :::note Qué eventos verá realmente
 Muchos de estos módulos están inactivos en las redes públicas: el puente no está en producción, todavía no hay capas multilayer ni rollups registrados, y xQORE no se puede usar. Sus eventos están definidos, pero no se disparan hasta que haya actividad. Los eventos de observación y recompensa de PRISM (`rl_observation_collected`, `rl_reward_computed`) se emiten aproximadamente cada 10 bloques en ambas redes.
@@ -157,8 +157,11 @@ Muchos de estos módulos están inactivos en las redes públicas: el puente no e
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Se emite cuando se registra una clave PQC                 |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Se emite cuando se rota una clave PQC                    |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Se emite cuando una clave se migra a un nuevo algoritmo    |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Se emite cuando se abre una ventana de autorización del carril EVM  |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`; `native_only` y `allowed_targets` cuando la ventana tiene alcance (v3.2.3) | Se emite cuando se abre una ventana de autorización del carril EVM  |
 | `pqc_evm_window_closed`     | `address`                                                 | Se emite cuando se cierra una ventana de autorización del carril EVM |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | Se emite cuando una cuenta registra su consentimiento para una delegación EIP-7702 (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | Se emite cuando se borra la delegación EIP-7702 de una cuenta (v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id`, y `name`/`category`, `old_status`/`new_status` o `reason` | Cambios en el registro de algoritmos realizados por la gobernanza |
 
 Las claves PQC se registran explícitamente con una transacción de registro; no existe ningún evento de registro automático.
 
@@ -195,6 +198,8 @@ Las claves PQC se registran explícitamente con una transacción de registro; no
 | Tipo de evento    | Atributos clave                                             | Descripción                                      |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Se emite cuando se registra un nuevo rollup          |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id` y un motivo cuando se indica | Se emite cuando un rollup se pausa, se reanuda o se detiene |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index` (y `fraud_upheld` en una resolución) | Se emite cuando se impugna un lote, se resuelve la impugnación o se rechaza un lote |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Se emite cuando se envía un lote de liquidación     |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | Se emite cuando un lote supera su ventana de impugnación |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Se emite cuando se almacena un blob de DA                |
@@ -207,6 +212,29 @@ Las claves PQC se registran explícitamente con una transacción de registro; no
 | `burn`                   | `source`, `amount`                                        | Se emite cuando se queman tokens de forma permanente          |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | Se emite cuando se ejecuta una quema por hito de recuento de transacciones |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Se emite cuando la gobernanza libera parte de la cuota atrapada de los stakers |
+
+### Módulos Inflation, Gas Abstraction, Licence, Light Node e IA
+
+| Tipo de evento | Atributos clave | Descripción |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | Se emite cuando la gobernanza cambia los parámetros de emisión |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | Se emite cuando se convierte una comisión en otro token aceptado, y cuando se repone el float (ninguno se dispara mientras solo se acepte `uqor`) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount`; `accepted_tokens`, `block_conversion_cap` | Se emite cuando se dota el float y cuando la gobernanza actualiza la configuración |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | beneficiario y funcionalidad | Ciclo de vida de las licencias |
+| `license_authority_updated` | `new_authority` | Se emite cuando la gobernanza reemplaza la autoridad de licencias (v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Eventos del ciclo de vida y de las recompensas de los nodos ligeros |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Se emite cuando la gobernanza actualiza la configuración del filtrado de IA |
+
+### Módulo Staking Tiers (solo testnet)
+
+Estos eventos existen solo en la testnet `qorechain-diana` (v3.2.4); la mainnet todavía no tiene el módulo (la propuesta de gobernanza 13 aplicaría la v3.2.4 en la altura 3,742,566).
+
+| Tipo de evento | Atributos clave | Descripción |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Se creó un bloqueo de delegación |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un bloqueo terminó anticipadamente, o llegó a su fin |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; totales de la liquidación | Se reclamó un bonus; se liquidó el pool |
+| `staking_tier_params_updated` | parámetros | La gobernanza cambió los parámetros del módulo |
 
 ### Módulo xQORE
 

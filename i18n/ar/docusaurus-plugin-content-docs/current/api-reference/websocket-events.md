@@ -141,7 +141,7 @@ sidebar_position: 5
 
 ## مرجع أحداث الوحدات
 
-تُصدَر الأحداث بوصفها أحداثًا قياسية لمحرّك الإجماع. اشترك باستعلام `tm.event='Tx'` مُرشَّح حسب نوع الحدث والسمة (على سبيل المثال `tm.event='Tx' AND bridge_deposit.chain EXISTS`). أما الأحداث على مستوى الكتلة (تلك التي تُصدرها منطق نهاية الكتلة، مثل أحداث PRISM أدناه) فتُسلَّم عبر `tm.event='NewBlock'` وليس `Tx`. الأسماء والسمات الواردة أدناه هي لإصدار السلسلة v3.2.0.
+تُصدَر الأحداث بوصفها أحداثًا قياسية لمحرّك الإجماع. اشترك باستعلام `tm.event='Tx'` مُرشَّح حسب نوع الحدث والسمة (على سبيل المثال `tm.event='Tx' AND bridge_deposit.chain EXISTS`). أما الأحداث على مستوى الكتلة (تلك التي تُصدرها منطق نهاية الكتلة، مثل أحداث PRISM أدناه) فتُسلَّم عبر `tm.event='NewBlock'` وليس `Tx`. الأسماء والسمات الواردة أدناه هي لإصدار السلسلة v3.2.3 (الشبكة الرئيسية)؛ والأحداث الموجودة فقط على الشبكة الاختبارية v3.2.4 موسومة.
 
 :::note الأحداث التي ستراها فعليًا
 كثير من هذه الوحدات خاملة على الشبكات العامة: الجسر غير مُفعَّل، ولم تُسجَّل بعد أي طبقات multilayer أو rollups، وxQORE غير قابل للاستخدام. أحداثها معرَّفة لكنها لا تُطلَق حتى يوجد نشاط. أما حدثا المراقبة والمكافأة في PRISM (`rl_observation_collected` و`rl_reward_computed`) فيُصدَران نحو كل 10 كتل على كلتا الشبكتين.
@@ -157,8 +157,11 @@ sidebar_position: 5
 | `pqc_key_registered`        | `address`، `key_type`، `algorithm_id`                     | يُصدَر عند تسجيل مفتاح PQC                 |
 | `pqc_key_rotated`           | `address`، `algorithm_id`                                 | يُصدَر عند تدوير مفتاح PQC                    |
 | `pqc_key_migrated`          | `address`، `from_algorithm`، `to_algorithm`               | يُصدَر عند ترحيل مفتاح إلى خوارزمية جديدة    |
-| `pqc_evm_window_opened`     | `address`، `expiry_height`، `max_txs`، `max_value`        | يُصدَر عند فتح نافذة تفويض لمسار EVM  |
+| `pqc_evm_window_opened`     | `address`، `expiry_height`، `max_txs`، `max_value`؛ و`native_only` و`allowed_targets` عندما تكون النافذة ذات نطاق (v3.2.3) | يُصدَر عند فتح نافذة تفويض لمسار EVM  |
 | `pqc_evm_window_closed`     | `address`                                                 | يُصدَر عند إغلاق نافذة تفويض لمسار EVM |
+| `pqc_evm_delegation_consent` | `address`، `delegate`، `expiry_height`                   | يُصدَر عندما يسجّل حساب موافقته على تفويض EIP-7702 (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`، `delegate`                                    | يُصدَر عند مسح تفويض EIP-7702 لحساب (v3.2.2) |
+| `pqc_algorithm_registered`، `pqc_algorithm_status_updated`، `pqc_algorithm_disabled` | `algorithm_id`، و`name`/`category` أو `old_status`/`new_status` أو `reason` | تغييرات سجل الخوارزميات التي تجريها الحوكمة |
 
 تُسجَّل مفاتيح PQC صراحةً بمعاملة تسجيل؛ ولا يوجد حدث تسجيل تلقائي.
 
@@ -195,6 +198,8 @@ sidebar_position: 5
 | نوع الحدث        | السمات الرئيسية                                              | الوصف                                      |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`، `creator`، `profile`، `settlement_mode`        | يُصدَر عند تسجيل rollup جديد          |
+| `rollup_paused`، `rollup_resumed`، `rollup_stopped` | `rollup_id` وسبب حيثما وُجد | يُصدَر عند إيقاف rollup مؤقتًا أو استئنافه أو إيقافه نهائيًا |
+| `batch_challenged`، `challenge_resolved`، `batch_rejected` | `rollup_id`، `batch_index` (و`fraud_upheld` عند الحسم) | يُصدَر عند الطعن في دفعة، أو حسم الطعن، أو رفض دفعة |
 | `batch_submitted` | `rollup_id`، `batch_index`، `tx_count`                      | يُصدَر عند تقديم دفعة تسوية     |
 | `batch_finalized` | `rollup_id`، `batch_index`                                  | يُصدَر عند اجتياز دفعة لنافذة التحدّي الخاصة بها |
 | `da_blob_stored`  | `rollup_id`، `blob_index`، `backend`، `size`                | يُصدَر عند تخزين كتلة DA                |
@@ -207,6 +212,29 @@ sidebar_position: 5
 | `burn`                   | `source`، `amount`                                        | يُصدَر عند حرق الرموز بشكل دائم          |
 | `milestone_burn`         | `tx_threshold`، `burn_amount`، `cumulative_tx_count`      | يُصدَر عند تنفيذ حرق مرتبط بمَعلَم عدد المعاملات |
 | `burn_stranded_released` | `amount`، `destination`، `remaining`                      | يُصدَر عندما تُفرِج الحوكمة عن جزء من حصة المُراهِنين (stakers) العالقة |
+
+### وحدات التضخم وتجريد الغاز والترخيص والعقدة الخفيفة والذكاء الاصطناعي
+
+| نوع الحدث | السمات الرئيسية | الوصف |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`، `fixed_epoch_emission`، `max_total_emission` | يُصدَر عندما تغيّر الحوكمة معاملات الإصدار |
+| `gas_abstraction_conversion`، `gas_abstraction_refill` | `paid`، `native_equivalent`، `rate`، `price_source`، `result` | يُصدَر عند تحويل رسوم مدفوعة برمز مقبول آخر، وعند إعادة ملء رصيد التحويل (float) (لا يُطلَق أيٌّ منهما ما دام `uqor` وحده مقبولًا) |
+| `gas_abstraction_float_funded`، `gas_abstraction_config_updated` | `sender`، `amount`؛ `accepted_tokens`، `block_conversion_cap` | يُصدَر عند تمويل رصيد التحويل (float) وعندما تحدّث الحوكمة الإعدادات |
+| `license_granted`، `license_revoked`، `license_suspended`، `license_resumed`، `license_expired` | المستفيد والميزة | دورة حياة الترخيص |
+| `license_authority_updated` | `new_authority` | يُصدَر عندما تستبدل الحوكمة جهة الترخيص (v3.2.3) |
+| `lightnode_register`، `lightnode_heartbeat`، `lightnode_claim_rewards`، `lightnode_deregister`، `lightnode_status_change`، `lightnode_reward_distribution`، `lightnode_reserve_release` | `address`، `node_type`، `status`، `reward_amount`، `destination` | أحداث دورة حياة العقدة الخفيفة والمكافآت |
+| `ai_config_updated` | `max_tx_per_minute`، `max_evm_tx_per_minute`، `anomaly_action`، `anomaly_threshold` | يُصدَر عندما تحدّث الحوكمة إعدادات الفحص بالذكاء الاصطناعي |
+
+### وحدة مستويات الرهن (الشبكة الاختبارية فقط)
+
+توجد هذه الأحداث فقط على الشبكة الاختبارية `qorechain-diana` (v3.2.4)؛ ولا تملك الشبكة الرئيسية هذه الوحدة بعد (سيطبّق مقترح الحوكمة 13 الإصدار v3.2.4 عند الارتفاع 3,742,566).
+
+| نوع الحدث | السمات الرئيسية | الوصف |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`، `delegator`، `validator`، `amount`، `months`، `end_time` | أُنشئ قفل تفويض |
+| `staking_tier_lock_unlocked_early`، `staking_tier_lock_released` | `lock_id`، `delegator`، `penalty_burned`، `bonus_forfeited` | أُنهي قفل مبكرًا، أو بلغ نهايته |
+| `staking_tier_bonus_claimed`، `staking_tier_bonus_settled` | `delegator`، `amount`؛ إجماليات التسوية | جرت المطالبة بمكافأة إضافية؛ وسُوِّي المجمّع |
+| `staking_tier_params_updated` | المعاملات | غيّرت الحوكمة معاملات الوحدة |
 
 ### وحدة xQORE
 

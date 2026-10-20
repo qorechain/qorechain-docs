@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ düğüm sürümü v3.2.1'i, test ağı ise v3.2.2'yi çalıştırır; test ağı, ana ağda henüz bulunmayan birkaç ek yol sunabilir, bu nedenle orada çalışan bir sorgu ana ağda `Not Implemented` döndürebilir.
+Sorgular, `--node` parametresinin işaret ettiği düğüme karşı çalışır. Canlı veriler için bir **`qorechain-vladi`** ana ağ RPC uç noktası (örneğin `--node https://rpc.qore.host:443`) veya test için bir **`qorechain-diana`** test ağı uç noktası (`--node https://rpc-testnet.qore.host:443`) kullanın. Varsayılan `tcp://localhost:26657` kendi çalıştırdığınız bir düğümü hedefler. Ana ağ düğüm sürümü v3.2.3'ü, test ağı ise v3.2.4'ü çalıştırır; test ağı, ana ağda bulunmayan birkaç ek yol ve komut sunar (aşağıda **yalnızca test ağı** olarak işaretlenmiştir), bu nedenle orada çalışan bir sorgu ana ağda `Not Implemented` döndürebilir. Bu sayfadaki komutlar, `https://rpc.qore.host:443` adresine karşı çalıştırılan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir.
 :::
 
 Ortak bayraklar her `query` alt komutu için geçerlidir:
@@ -110,11 +110,15 @@ qorechaind query pqc params
 qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
 qorechaind query pqc evm-window <address>
+qorechaind query pqc evm-delegation-consent <address>
 ```
 
 - `algorithm`, bir algoritma adı (`dilithium5`, `mlkem1024`) veya sayısal kimlik alır.
 - `migration`, bir adres değil, bir **algoritma kimliği** (örneğin `1`) alır ve çalışan bir geçiş olmadığında `No active migration` bildirir.
-- `evm-window`, adresin açık bir EVM hattı yetkilendirme penceresi olup olmadığını ve kaç blok, işlem ve değerin kaldığını gösterir (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `account`, kayıtlı anahtarı bildirir. Anahtarın, `key_type` ve `algorithm_name` alanlarının yanı sıra kayıt, `classical_key_source` alanını da taşır (`stored`, `auth_account` veya `none`: klasik açık anahtarın nereden geldiği). Test ağında (v3.2.4, **yalnızca test ağı**) ayrıca `possession_proven` alanı bulunur; anahtar doğrulanmış bir sahiplik kanıtıyla kaydedildiyse bu alan `true` olur.
+- `evm-window`, adresin açık bir EVM hattı yetkilendirme penceresi olup olmadığını ve kaç blok, işlem ve değerin kaldığını gösterir (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`); ayrıca pencerenin kapsamını da gösterir (`native_only`, `allowed_targets`; ana ağ v3.2.3'ten itibaren). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `evm-delegation-consent`, adresin EIP-7702 delegasyon onayını (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), mevcut delegasyonunu ve EVM nonce'unu gösterir. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+- `params` ve `hybrid-mode`, `hybrid_signature_mode` (`2` = her iki ağda da zorunlu) ve `allow_classical_fallback` (`false`) değerlerini bildirir.
 
 ---
 
@@ -130,13 +134,22 @@ curl -s https://api.qore.host/qorechain/burn/v1/milestone
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-`stranded_rewards`, hiçbir talebi karşılamadan distribution modülüne yatırılan staker payını, v3.2.0 yükseltmesinde kaydedildiği şekliyle bildirir (`reserved`, `released`, `snapshot_height`). Yalnızca bir yönetişim oylamasıyla serbest bırakılabilir.
+`stranded_rewards`, hiçbir talebi karşılamadan distribution modülüne yatırılan staker payını bildirir (`reserved`, `released`, `snapshot_height`). Yalnızca bir yönetişim oylamasıyla serbest bırakılabilir. Rezerv ilk olarak v3.2.0 yükseltmesinde kaydedildi ve v3.2.3 yükseltme yüksekliğinde yeniden hesaplandı; bu nedenle başka yerde alıntılanan bir rakam yerine canlı değerleri okuyun.
+
+`stats`, kümülatif yakımı kaynağa göre böler; bunlar arasında v3.2.2 yükseltmesinden beri sıfırdan farklı olan `failed_tx` de bulunur.
 
 ---
 
 ## mint ve inflation
 
-`qorechaind query mint params|inflation|annual-provisions`, oranı her iki ağda da `0` olan standart mint modülünü okur; protokolün emisyon takvimini **bildirmez**. `query inflation` komutu yoktur.
+`qorechaind query mint params|inflation|annual-provisions`, oranı her iki ağda da `0` olan standart mint modülünü okur; protokolün emisyon takvimini **bildirmez**. `query inflation` CLI komutu yoktur. Protokolün kendi emisyon ayarları ve ilerleyişi v3.2.2'den beri REST üzerinden sunulur:
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mode, fixed_epoch_emission, max_total_emission, epoch_length
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
+```
+
+Ana ağda bunlar `emission_mode: "fixed"`, her biri 43,200 bloktan oluşan epoch başına 86,000 QOR sabit emisyon ve 590,000,000 QOR kümülatif üst sınır bildirir (yönetişim önerisi 10, 19 Ekim 2026'da kabul edildi; yeni miktardaki ilk epoch 3,672,000 numaralı blokta başlar). Miktarlar `uqor` cinsindendir. Test ağı hâlâ kendine ait, farklı değerler bildirir; test ağının v3.2.4 sürümü, ana ağda bulunmayan ek bir emisyon modu getirir (**yalnızca test ağı**).
 
 ---
 
@@ -171,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool`, modülün ödül bakiyesinin `reserved`, `outstanding`, `payable` ve `distributable` olarak nasıl bölündüğünü gösterir.
+`reward-pool`, modülün ödül bakiyesinin `reserved`, `outstanding`, `payable` ve `distributable` olarak nasıl bölündüğünü ve düğüm başına sınırları gösterir: `max_reward_per_block_per_node` ve v3.2.3'ten itibaren `max_reward_per_month_per_node` (2,000 QOR; blok süresine ve çalışma süresine göre orantılanır). Test ağında (v3.2.4, **yalnızca test ağı**) ayrıca `monthly_cap_active`, `last_distribution_time` ve `last_distribution_height` alanlarını bildirir.
 
 ---
 
@@ -242,7 +255,12 @@ qorechaind query rdk batch <rollup_id>            # latest batch
 qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-`config`, modül parametrelerini gösterir (asgari stake, oluşturma yakım oranı, itiraz penceresi, DA limitleri). `suggest-profile <use_case>` zinciri sorgulamaz; yalnızca genel uç noktaların sunmadığı bir JSON-RPC yöntemine işaret eden bir not yazdırır, bu yüzden profili [Hazır Profiller](/rollups/preset-profiles) bölümünden seçin.
+```bash
+qorechaind query rdk batches <rollup_id> [--start 0] [--limit 100]   # batches in index order
+qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>
+```
+
+`config`, modül parametrelerini gösterir (asgari stake, oluşturma yakım oranı, itiraz penceresi, DA limitleri). `anchor-sign-bytes`, bir rollup oluşturucusunun `tx rdk submit-batch --anchor-signature` için imzaladığı v2 çapa imza baytlarını onaltılık olarak yazdırır. Aynı sorgular v3.2.2'den beri REST üzerinden `/qorechain/rdk/v1/...` altında sunulur (bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#rdk-module)). `suggest-profile <use_case>` zinciri sorgulamaz; yalnızca genel uç noktaların sunmadığı bir JSON-RPC yöntemine işaret eden bir not yazdırır, bu yüzden profili [Hazır Profiller](/rollups/preset-profiles) bölümünden seçin.
 
 ---
 
@@ -275,7 +293,44 @@ qorechaind query abstractaccount permission-schema
 
 ## gasabstraction
 
-Ana ağ henüz gaz soyutlama sorgularını sunmaz (`qorechaind query gasabstraction ...` yardım metnini yazdırır ve REST yolu `Not Implemented` döndürür). Ücretler yalnızca `uqor` ile ödenir; bkz. [Gaz Soyutlama](/user-guide/gas-abstraction).
+Gaz soyutlama sorguları v3.2.2'den beri her iki ağda da sunulur:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate <denom>   # what one unit of a fee token is worth in uqor, and whether it can pay fees
+qorechaind query gasabstraction float                     # the conversion float's balances and this block's usage
+```
+
+Kabul edilen token listesi her iki ağda da yalnızca yerel `uqor` içerir; dolayısıyla ücretler `uqor` ile ödenir ve herhangi bir dönüşüm gerçekleşmez; hangi diğer token'ların kabul edileceğine yönetişim karar verir. REST: `/qorechain/gasabstraction/v1/config`, `/conversion_rate?denom=`, `/float`. Bkz. [Gaz Soyutlama](/user-guide/gas-abstraction).
+
+---
+
+## amm
+
+```bash
+qorechaind query amm params
+qorechaind query amm pools
+qorechaind query amm pool <pool_id>
+qorechaind query amm pool-by-denoms <denom_a> <denom_b>
+qorechaind query amm lp-balance <pool_id> <address>
+qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
+qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
+```
+
+Bu yazının hazırlandığı sırada her iki ağda da hiçbir havuz yoktur.
+
+---
+
+## stakingtier (yalnızca test ağı)
+
+```bash
+qorechaind query stakingtier params
+qorechaind query stakingtier locks <holder_address>
+qorechaind query stakingtier pool
+```
+
+Staking katmanları modülü, yalnızca test ağında çalışan **v3.2.4** sürümünün bir parçasıdır; ana ağda modül henüz yoktur (yönetişim önerisi 13, v3.2.4'ü 3,742,566 yüksekliğinde uygulayacaktır). REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Bkz. [İşlem Komutları](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -289,6 +344,8 @@ qorechaind query upgrade plan
 qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
+
+`query upgrade applied <name>`, bir yükseltmenin ne zaman yürürlüğe girdiğini okumanın yoludur: ana ağda `v3.2.2` 3,556,788 yüksekliğinde, `v3.2.3` ise 3,662,051 yüksekliğinde uygulandı; test ağında `v3.2.2` 6,905,034'te, `v3.2.3` 8,003,746'da ve `v3.2.4` 8,337,253'te uygulandı (`0` uygulanmadı demektir). Ana ağ devre kesici listesi (`disabled-list`) şu anda vesting hesabı oluşturma mesajlarını, CosmWasm store ve instantiate'i, AMM havuzunu duraklatma ve sürdürmeyi, cross-VM çağrısını, multilayer katman durumu güncellemesini, PQC algoritmasını kullanımdan kaldırma ve devre dışı bırakmayı ve PRISM uzlaşma yönetişim mesajlarını içerir; test ağınınki ise yalnızca üç CosmWasm mesajını içerir.
 
 ---
 

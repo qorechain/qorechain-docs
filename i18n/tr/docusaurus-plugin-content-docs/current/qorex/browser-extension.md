@@ -9,7 +9,7 @@ sidebar_position: 2
 
 QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. **Bağımsız bir cüzdandır** — cüzdan oluşturabilir veya içe aktarabilir, QOR tutup gönderebilir ve dApp'lere bağlanabilirsiniz — ve herhangi bir web sitesinin QoreX'i keşfetmesini ve her isteği açık, çözümlenmiş bir onaya dönüştürmesini sağlayan parçadır.
 
-Üç mağazada **yayında ve herkese açıktır**.
+Üç mağazada (Chrome, Firefox ve Safari) **yayında ve herkese açıktır**; Chrome şu anda diğerlerinin bir sürüm gerisindedir — bkz. [hangi sürüm nerede yayında](#versions).
 
 ## Kurulum {#install}
 
@@ -21,9 +21,17 @@ QoreX **tarayıcı uzantısı**, masaüstü QoreChain cüzdanıdır. **Bağıms�
 
 ### Hangi sürüm nerede yayında {#versions}
 
-**15 Ekim 2026** itibarıyla: **Chrome 0.3.6**, **Firefox 0.3.7** (0.3.6'dan sonra gelen bir nokta sürümü) ve **QoreX Wallet** macOS uygulamasının içindeki **Safari** (**1.7.6**, 0.3.6 uzantısını taşır; Mac App Store kendi `1.x` numaralandırmasını kullanır). Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza kısa süreliğine daha eski veya daha yeni bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Bu sayfa 0.3.6 özellik setini açıklar. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
+Her mağazadaki güncel sürüm, **20 Ekim 2026** itibarıyla:
 
-0.2.6'dan bu yana uzantıya şunlar eklendi: [tek parolayla birden fazla cüzdan](#wallets), [elle eklediğiniz Ethereum tarzı bir hesap](#coin60), **Claim & restake**, bir **Unstaking in progress** listesi, [bir token'ı kontratıyla ekleme](#custom-tokens), [her ağda Al](#receive), [Revoke özellikli bağlı siteler](#connected-sites), [EVM erişim penceresi](#evm-window), [dApp'ler için `signAndBroadcast`](#sign-and-broadcast) ve her mesajı, ücreti ve son kullanma süresini gösteren onay ekranları.
+| Mağaza | Güncel sürüm |
+|---|---|
+| Chrome Web Store | 0.3.6 (henüz 0.3.7'ye güncellenmedi) |
+| Firefox Add-ons | 0.3.7 |
+| Safari (Mac App Store, **QoreX Wallet** macOS uygulaması) | 1.7.7, 0.3.7 uzantısını taşır — Mac App Store kendi `1.x` numaralandırmasını kullanır |
+
+Mağaza incelemeleri farklı zamanlarda sonuçlandığı için bir mağaza diğerinden daha eski bir derleme sunabilir; mağaza listelemesi her zaman güncel sürümünü gösterir. Bu sayfa 0.3.7 özellik setini açıklar; bir noktanın 0.3.7'ye ihtiyaç duyduğu yerde bunu belirtir ve Chrome kullanıcıları Chrome listelemesi güncellendiğinde ona kavuşur. Ayrıca bkz. [Hangi sürüm nerede yayında](/qorex/overview#versions).
+
+0.2.6'dan bu yana uzantıya şunlar eklendi: [tek parolayla birden fazla cüzdan](#wallets), [elle eklediğiniz Ethereum tarzı bir hesap](#coin60), [Claim & restake](#stake), bir **Unstaking in progress** listesi, [bir token'ı kontratıyla ekleme](#custom-tokens), [her ağda Al](#receive), [Revoke özellikli bağlı siteler](#connected-sites), [EVM erişim penceresi](#evm-window), [dApp'ler için `signAndBroadcast`](#sign-and-broadcast) ve her mesajı, ücreti ve son kullanma süresini gösteren onay ekranları.
 
 **İzin yüzeyi 0.1.3'ten bu yana değişmedi** — bkz. [QoreX hangi izinleri istiyor](#permissions).
 
@@ -53,7 +61,7 @@ Uzantı kendi anahtarlarını tutar; mobil uygulamaya ihtiyaç duymaz. Anahtarla
 
 0.3.2'den itibaren, (**Your accounts** ekranındaki) **Add an Ethereum account (coin 60)**, ilk kez MetaMask'ta veya Dashboard'da kullanılmış bir ifade için hesabı ekler; bkz. [MetaMask'tan veya Dashboard'dan bir ifadeyi geri yükleme](/qorex/getting-started#restore-dashboard). Onun 0x adresi, aynı kelimeler için MetaMask'ın gösterdiği adrestir. Bu hesapta handle'lar sunulmaz.
 
-Portfolio, Q-Day Scanner, sosyal kurtarma, Legacy Protocol, ödeme istekleri ve cihaz bağlama yalnızca mobilde kalmaya devam ediyor — bkz. [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, sosyal kurtarma, Legacy Protocol, ödeme istekleri, hesap girişi ve cihaz bağlama yalnızca mobilde kalmaya devam ediyor — bkz. [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Hesabınız, bakiyeniz ve @handle {#account}
 
@@ -65,11 +73,11 @@ Hesabınızda vesting QOR varsa (örneğin serbest bırakılmamış bir TGE tahs
 
 ### Bir @handle talep edin
 
-Bazı uzantı sürümleri, mobil uygulamada olduğu gibi, açılır pencereden bu hesabın adresi için benzersiz bir **@handle** (örneğin `@liviu`) talep etmenize izin verir; açılır pencereniz bunu sunmuyorsa mobil uygulamadan talep edin (talep etme Ethereum tarzı hesaplarda sunulmaz). Talep, hesabın kendi anahtarıyla imzalanır ve o adrese bağlanır, böylece biri size gönderim yaptığında mobil uygulama ve Dashboard bunu çözümleyebilir. Handle'ların adreslere (bir bütün olarak cüzdana değil) nasıl bağlandığını görmek için bkz. [@handle](/qorex/account-and-dashboard#handle).
+Benzersiz bir **@handle** (örneğin `@liviu`) talep etmek için **oturum açmış bir hesap** gerekir ve bu işlem **mobil uygulamada** yapılır; uzantı sizi oraya yönlendirir ve handle'ları kendisi talep etmez. Talep edildikten sonra handle o adrese bağlanır, böylece uzantı ona ödeme yaparken onu çözümler ve başkaları size adınızla ödeme yapabilir. Handle'ların adreslere (bir bütün olarak cüzdana değil) nasıl bağlandığını görmek için bkz. [@handle](/qorex/account-and-dashboard#handle).
 
 ## Bir @handle'a gönderim {#handle-send}
 
-0.1.9'dan itibaren, bir adres aramak yerine kayıtlı bir @handle'a doğrudan ödeme yapabilirsiniz:
+0.1.9'dan itibaren, bir adres aramak yerine kayıtlı bir @handle'a doğrudan ödeme yapabilirsiniz (0.3.6'ya kadarki sürümlerde bir hata aramaları kesintiye uğratıyordu ve 0.3.7'den itibaren yeniden çalışıyor):
 
 1. Açılır pencereyi açın ve **Gönder**'e dokunun.
 2. Alıcı alanına, bir `qor1…` adresi yerine `@` işaretini ve ardından handle'ı (örneğin `@liviu`) yazın.
@@ -144,7 +152,7 @@ Açılır penceredeki **Connected sites**, bu cüzdanın onayladığı her sitey
 
 ## EVM erişim penceresi {#evm-window}
 
-Açılır pencerenin **EVM access window** ekranı, bir hesabın QoreChain'in EVM hattında (v3.2.0 ve sonrası) gönderim yapmasına izin veren pencereyi açar ve kapatır — uygulamadaki ekranla aynıdır. Bkz. [EVM erişim penceresi](/qorex/security-and-recovery#evm-window).
+Açılır pencerenin **EVM access window** ekranı, Ethereum tarzı (coin 60) bir hesabın QoreChain'in EVM hattında (v3.2.0 ve sonrası) gönderim yapmasına izin veren pencereyi açar ve kapatır — uygulamadaki ekranla aynıdır ve aynı sınırlara sahiptir (en fazla 17,280 blok ve 1,000 işlem ve her tutarı artı azami ücretini sayan bir QOR üst sınırı). Bkz. [EVM erişim penceresi](/qorex/security-and-recovery#evm-window).
 
 ## Dil {#language}
 
@@ -161,7 +169,7 @@ QoreX yalnızca güvenilmek için değil, doğrulanabilir olmak için tasarland�
   QoreX, WebAuthn'ı özellik tespitiyle arar ve **Enable passkey unlock** seçeneğini yalnızca tarayıcının bunu uzantı sayfalarına sunduğu yerlerde gösterir — yani **Chrome ve Edge**'de. **Firefox**'ta bu seçenek gizlidir, çünkü Firefox WebAuthn'ı uzantı sayfalarına sunmaz. Bu beklenen bir durumdur, hata değildir.
   :::
 - **Manifest V3 + katı CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Kurulumdan sonra **uzaktan kod yükleme yoktur** ve `wasm-unsafe-eval` kullanılmaz.
-- **Hesap yok, telemetri yok** — analitik yok, izleme yok, uzaktan günlükleme yok, kayıt yok ve e-posta yok. Firefox listelemesi veri toplamayı `none` olarak beyan eder.
+- **Analitik yok, çökme raporlama yok, izleme SDK'sı yok, kayıt yok** — uzantı QOR tutmak, göndermek veya staking yapmak için bir hesap gerektirmez. Anahtarlarınız, kurtarma ifadeniz, kasanız ve onaylarınız tarayıcıdan asla ayrılmaz. Ağ istekleri yapar: bakiyeler, geçmiş ve yayınlama için herkese açık QoreChain uç noktalarına (bunlar herkese açık `qor1…` adresinizi taşır), bir fiyat sorgusuna (adres yok), tuttuğunuz veya görüntülediğiniz herhangi bir harici ağın herkese açık hizmetlerine (o ağdaki herkese açık adresiniz) ve @handle kayıt defterine (handle veya herkese açık bir adres). Yalnızca [Dashboard eşleştirmesini](#dashboard-bridge) kullanırsanız, adresin sahibi olduğunuza dair imzalı bir kanıt gönderir. Bkz. [QoreX ağ üzerinden neler gönderir](/qorex/overview#data-and-privacy).
 
 ### QoreX hangi izinleri istiyor ve neden {#permissions}
 
@@ -259,4 +267,4 @@ QoreX'in kendi başlattığı her QOR transferi, `@qorechain/sdk` içindeki tam 
 - **dApp tarafından başlatılan Native imzalama** — [`signAndBroadcast`](#sign-and-broadcast) kullanın: QoreX her mesajı çözümler, ücreti gösterir ve kuantum güvenli katmanı kendisi ekler. `signDirect`, sayfanın oluşturduğu bir işlemi imzalar ve QoreChain üzerinde, o işlem zaten geçerli bir kuantum güvenli katman taşımıyorsa **reddedilir** (ve `signAndBroadcast` kullanan Ethereum tarzı hesaplar için reddedilir). QoreX asla kör imzalamaz: çözemediği bir istek reddedilir ve yalnızca klasik imzalı bir QoreChain işlemini asla imzalamaz.
 - **Klasik imzalar her zaman etiketlenir** — harici ağlardaki (ETH, BNB, Solana, …) transferler post-kuantum bir imza taşıyamaz; QoreX açık bir onay işaretlemenizi ister ve sessizce alt seviyeye düşmek yerine bunları klasik olarak işaretler.
 
-**Bunun işlem boyutu açısından anlamı.** ML-DSA-87 büyük bir imzadır: imza **4.627 bayt**, açık anahtar ise **2.592 bayttır** (FIPS-204 tarafından sabitlenmiştir). Dolayısıyla hibrit bir QoreChain işlemi, tamamen klasik bir işleme göre birkaç kilobayt daha büyüktür. İşlemleri kendiniz oluşturup yayınlıyorsanız, tamponlarınızı ve gas tahminlerinizi bu ek baytlara göre boyutlandırın; QoreChain'in gas muhasebesi bunları zaten bekler. İlkeler ve deterministik imzalama gereksinimi için bkz. [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing).
+**Bunun işlem boyutu açısından anlamı.** ML-DSA-87 büyük bir imzadır: imza **4,627 bayt**, açık anahtar ise **2,592 bayttır** (FIPS-204 tarafından sabitlenmiştir). Dolayısıyla hibrit bir QoreChain işlemi, tamamen klasik bir işleme göre birkaç kilobayt daha büyüktür. İşlemleri kendiniz oluşturup yayınlıyorsanız, tamponlarınızı ve gas tahminlerinizi bu ek baytlara göre boyutlandırın; QoreChain'in gas muhasebesi bunları zaten bekler. İlkeler ve deterministik imzalama gereksinimi için bkz. [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing).

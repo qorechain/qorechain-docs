@@ -10,7 +10,7 @@ sidebar_position: 2
 Bu kılavuz, QOR token'larını doğrulayıcılara (validator) delege etme, doğrulayıcılar arasında yeniden delege etme (redelegate), stake'inizi çözme (unbond), ödülleri talep etme ve QoreChain'in stake tasarımının hangi bölümlerinin bugün canlı olduğunu anlama konularını kapsar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 29 Haziran 2026'dan beri v3.2 hattında canlıdır (düğüm sürümü **v3.2.1**; testnet **v3.2.2** çalıştırır) — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM zincir kimliği **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.3** sürümünü çalıştırır; testnet **v3.2.4** çalıştırır — mainnet üzerinde stake yaparken zincir kimliğini ve uç noktaları **Mainnet'e Bağlanma** sayfasından alarak değiştirin.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -19,9 +19,9 @@ Mainnet ve testnet, her Cosmos şeridi işleminde hibrit post-kuantum imza gerek
 
 ## Bağlayıcı bir süre var mı? {#lock-in-period}
 
-**Bugün itibarıyla**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıdaki [bonding curve](#bonding-curve) bölümündeki "sadakat" terimi QoreChain'in tasarımının bir parçasıdır, ancak **bugün canlı zincir tarafından uygulanmaz**; dolayısıyla ne kadar süre delege kaldığınız ödül oranınızı değiştirmez.
+**Bugün mainnet'te**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada sıklıkla olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıdaki [bonding curve](#bonding-curve) bölümündeki "sadakat" terimi QoreChain'in tasarımının bir parçasıdır, ancak **bugün canlı zincir tarafından uygulanmaz**; dolayısıyla ne kadar süre delege kaldığınız ödül oranınızı değiştirmez. İsteğe bağlı, zamana kilitli bir stake biçimi yalnızca testnet'te mevcuttur; bkz. [Zamana kilitli stake (yalnızca testnet)](#time-locked-staking).
 
-Bu, mevcut zincir davranışını tanımlar, kalıcı bir garanti değildir — minimum bir stake süresi, bu sayfadaki diğer herhangi bir stake parametresinin oylamayla değişebileceği gibi, gelecekte governance tarafından getirilebilecek bir parametredir. Bu gerçekleşirse, cüzdan bir delegasyonu onaylamadan önce ortaya çıkan bekleme süresini (varsa minimum süre artı 21 günlük çözülme) gösterecek ve bu sayfa buna uygun şekilde güncellenecektir.
+Bu, mevcut mainnet davranışını tanımlar, kalıcı bir garanti değildir — minimum bir stake süresi, bu sayfadaki diğer herhangi bir stake parametresinin oylamayla değişebileceği gibi, gelecekte governance tarafından getirilebilecek bir parametredir. Bu gerçekleşirse, cüzdan bir delegasyonu onaylamadan önce ortaya çıkan bekleme süresini (varsa minimum süre artı 21 günlük çözülme) gösterecek ve bu sayfa buna uygun şekilde güncellenecektir.
 
 ---
 
@@ -95,7 +95,7 @@ qorechaind tx staking unbond qorvaloper1abc...xyz 25000000uqor \
   --gas 400000 --fees 40000uqor
 ```
 
-21 günlük çözülme süresinin (1.814.400 saniye) ardından token'lar otomatik olarak hesabınıza geri döner. Bir delegatör, doğrulayıcı başına aynı anda en fazla 7 çözülme kaydına sahip olabilir.
+21 günlük çözülme süresinin (1,814,400 saniye) ardından token'lar otomatik olarak hesabınıza geri döner. Bir delegatör, doğrulayıcı başına aynı anda en fazla 7 çözülme kaydına sahip olabilir.
 
 ---
 
@@ -119,7 +119,35 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --gas 400000 --fees 40000uqor
 ```
 
-Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmış emisyon bütçesi (güncel sınır için, 26 Ağustos 2026'daki governance değişikliğinden bu yana yürürlükte olan haliyle [Tokenomics](/architecture/tokenomics#staking-reward-schedule) sayfasına bakın) ve her işlem ücretinin staker payı (v3.2.0 yükseltmesinden bu yana normal bir stake ödülü olarak dağıtılır; bkz. [sıkışıp kalan staker payı](/architecture/tokenomics#stranded-and-reserve)). Ödüller doğrulayıcının komisyonuna ve ağ etkinliğine bağlıdır ve garanti edilmez.
+Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmış emisyon bütçesi (dönem başına güncel miktar ve sınır için [Tokenomics](/architecture/tokenomics#staking-reward-schedule) sayfasına bakın; ikisi de governance tarafından belirlenir — en son 19 Ekim 2026'daki 10 numaralı öneri) ve her işlem ücretinin staker payı (v3.2.0 yükseltmesinden bu yana normal bir stake ödülü olarak dağıtılır; bkz. [sıkışıp kalan staker payı](/architecture/tokenomics#stranded-and-reserve)). Ödüller doğrulayıcının komisyonuna ve ağ etkinliğine bağlıdır ve garanti edilmez.
+
+---
+
+## Zamana kilitli stake (yalnızca testnet) {#time-locked-staking}
+
+:::note Mainnet'te yok
+v3.2.4 sürümü, **yalnızca `qorechain-diana` testnet'ine** isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. Henüz mainnet'te canlı değildir (mainnet yönetişim önerisi 13, v3.2.4'ü 3,742,566 yüksekliğinde uygulayacaktır); mainnet'te delegasyonun bağlayıcı bir süresi yoktur (bkz. [yukarıda](#lock-in-period)). Aşağıdakilerin tümü testnet'i anlatır.
+:::
+
+Testnet'te bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kısmını 3, 6 veya 12 aylık sabit bir vade için taahhüt edebilir. Vadeler ve tutarlar zincir parametreleridir; güncel olanları bu sayfadan değil `GET /qorechain/stakingtier/v1/params` adresinden okuyun.
+
+* **Kilitleme isteğe bağlıdır.** Olağan bir delegasyon, yeniden delegasyon ve çözülme bu sayfada açıklandığı gibi aynen çalışır. Yalnızca kilitli tutar kısıtlanır: bir kilit açıkken, o tutar undelegate edilemez veya yeniden delege edilemez ve bu her yol için geçerlidir (işlem, authz, group, sözleşme, governance).
+* **Asgari kilit** 10 QOR'dur ve delegatör başına en fazla 16 açık kilit olabilir.
+* **Erken kilit açma** serbesttir: kilidi sonlandırır, ödenmemiş kilit bonusunu kaybettirir ve kilitli tutarın bir kısmını yakar (`staking_tier_penalty` yakım kaynağı altında kaydedilir); geri kalanı delege edilmiş ve kilitsiz kalır.
+* **Slashing**, kilitli bir delegasyona da diğerleri gibi uygulanır; kilit delegasyonla birlikte küçülür.
+* **Talep etme.** Kilit bonusları dönem başına birikir ve siz talep ettiğinizde ödenir.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind query stakingtier locks <holder_address>
+```
+
+Bu sayfanın geri kalanında olduğu gibi, oluşturulan her işlemi `tx pqc cosign` ile imzalayın.
 
 ---
 
@@ -130,7 +158,7 @@ QoreChain'in tasarımı, doğrulayıcıları itibar (reputation) ve delegasyon s
 | Havuz                                 | Giriş Kriteri                                                | Tasarım Ödül Ağırlığı |
 | ------------------------------------- | ------------------------------------------------------------- | ---------------------- |
 | **RPoS** (Reputation Proof of Stake)  | İtibar puanı >= 70. yüzdelik dilim **VE** stake >= medyan     | %40                    |
-| **DPoS** (Delegated Proof of Stake)   | Toplam delegasyon >= 10.000 QOR                                | %35                    |
+| **DPoS** (Delegated Proof of Stake)   | Toplam delegasyon >= 10,000 QOR                                | %35                    |
 | **PoS** (Proof of Stake)              | Kalan tüm doğrulayıcılar                                       | %25                    |
 
 :::note Canlı ağlarda etkin değil
@@ -169,7 +197,7 @@ QoreChain'de slashing, şu canlı parametrelerle (`qorechaind query slashing par
 
 | Olay                 | Kural                                                                | Sonuç                                        |
 | -------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| Kesinti (downtime)   | Son 10.000 bloğun %5'inden azını imzalama (mainnet'in yaklaşık 3,2 saniyelik bloklarında yaklaşık 8,9 saat) | 600 saniye jail; stake'in %1'i slash edilir |
+| Kesinti (downtime)   | Son 10,000 bloğun %5'inden azını imzalama (mainnet'in yaklaşık 3.2 saniyelik bloklarında yaklaşık 8.9 saat) | 600 saniye jail; stake'in %1'i slash edilir |
 | Çifte imza (double-signing) | Aynı yükseklikte iki farklı bloğu imzalama                    | Stake'in %5'i slash edilir                   |
 
 Slashing, bir doğrulayıcının toplam bonded stake'ine uygulanır; bu nedenle delegatörler kendi orantılı paylarını üstlenir. Slash edilen bir doğrulayıcıdan zaten çözülmekte olan stake'e de ulaşabilir; çözülme süresinin yalnızca bir bekleme süresi değil, bir güvenlik önlemi olmasının nedeni budur.

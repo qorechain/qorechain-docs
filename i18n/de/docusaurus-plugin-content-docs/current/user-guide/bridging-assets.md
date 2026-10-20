@@ -10,11 +10,11 @@ sidebar_position: 5
 Diese Anleitung beschreibt, wie der Transfer von Assets zwischen QoreChain und anderen Blockchain-Netzwerken gedacht ist. Die Interoperabilitätsschicht von QoreChain ist um **37 Chain-Konfigurationen** (36 externe Chains plus Injective, erreichbar über IBC) und bis zu **8 IBC-Gegenparteien** für Chains im Cosmos-Ökosystem aufgebaut.
 
 :::caution Auf keinem der beiden Netzwerke live
-Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge-Route ist aktiv**: Alle 37 Chain-Konfigurationen haben den Status `pending`, ohne gesetzten Bridge-Vertrag, es sind keine Bridge-Validatoren registriert, es wurde nie eine Bridge-Operation erstellt, und es existieren weder IBC-Kanäle noch IBC-Clients. Alles Folgende beschreibt das beabsichtigte Design. Senden Sie keine Assets in der Erwartung, dass sie gebridgt werden. Die aktuelle Statustabelle finden Sie unter [Bridge-Architektur](/architecture/bridge-architecture).
+Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge-Route ist aktiv**: Alle 37 Chain-Konfigurationen haben den Status `pending`, ohne gesetzten Bridge-Vertrag, es sind keine Bridge-Validatoren registriert, es wurde nie eine Bridge-Operation erstellt, und es existieren weder IBC-Kanäle noch IBC-Clients. Alles Folgende beschreibt das beabsichtigte Design. Senden Sie keine Assets in der Erwartung, dass sie gebridgt werden. Die aktuelle Statustabelle finden Sie unter [Bridge-Architektur](/architecture/bridge-architecture#current-status).
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.1**. Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Chain-Version **v3.2.4**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft mit Chain-Version **v3.2.3**. Ersetze die Mainnet-Chain-ID und die Endpunkte anhand der Seite **Verbindung zum Mainnet**, sobald eine Route aktiviert ist. Status geprüft am 20. Oktober 2026: Alle 37 Chain-Konfigurationen sind auf beiden Netzwerken `pending`.
 :::
 
 ---

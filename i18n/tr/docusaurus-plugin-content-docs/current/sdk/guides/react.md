@@ -15,20 +15,23 @@ sağlayıcı, bir avuç kanca ve iki yerleştirilebilir bileşen — tek satırl
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır ve
-kitle aynı sürüme sabitlenmiştir. `@qorechain/react` **0.8.3 veya sonrasını**
-kullanın: 0.8.0, SDK 0.8.0'a sabitlenir ve bu sürüm mainnet'te yanlış hibrit
-biçimiyle imzalar; daha eski 0.8.x sürümleri ise adres değişikliğinden sonra
-eski bir bakiye veya durum gösterebilir.
+`react` (>=18) bir eş bağımlılıktır; `@qorechain/sdk` doğrudan bir bağımlılıktır
+(kit 0.9.0'dan beri `^0.9.0`; 0.x bir sürümde şapka işareti 0.9 içinde kalır, dolayısıyla bir SDK
+yaması ikinci bir kopya kurmaz). `@qorechain/react` **0.9.0** sürümünü kullanın: 0.8.0,
+mainnet'te yanlış hibrit biçimiyle imzalayan SDK 0.8.0'a sabitlenir; daha eski 0.8.x
+sürümleri ise adres değişikliğinden sonra eski bir bakiye veya durum gösterebilir.
 
-:::caution React kitinin canlı ağ sınırlamaları (0.8.x)
-`useTx`, yalnızca bağlı cüzdanın klasik imzasıyla gönderir; canlı ağlar bunu
-reddeder (Native yolu hibrit ML-DSA-87 uzantısını gerektirir), bu nedenle
-`send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi işleyemez;
-gönderimler için SDK'nin [hibrit oluşturucularını](/sdk/concepts/accounts-pqc#hybrid-signing)
-kullanın. `usePqcStatus` ve `<QuantumSafeBadge/>`, genel uç noktaların sunmadığı
-`qor_getPQCKeyStatus`'ı okur ([`qor_` ad alanına](/api-reference/json-rpc-qor_-namespace) bakın),
-bu nedenle `*.qore.host` üzerinde bir anahtarı doğrulayamazlar. Bakiye okumaları
+:::caution React kitinin canlı ağ sınırlamaları (0.9.0)
+`useTx`, cüzdanın imzalayanıyla ve post-kuantum anahtar çifti olmadan bağlanır; bu yüzden
+yalnızca klasik imzayla gönderir ve canlı ağlar bunu reddeder (Native yolu hibrit ML-DSA-87
+uzantısını gerektirir): `send` / `sendTokens` mainnet veya testnet üzerinde bir işlemi
+işleyemez. Gönderimler için SDK'nin hibrit `TxClient`'ını kullanın
+(`client.connectTx(signer, { pqcKeypair })`, bkz.
+[Kuantuma dayanıklı](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` ve `<QuantumSafeBadge/>`,
+durumu sağlayıcının oluşturulmuş istemcisiyle `getPqcStatus` üzerinden okur; bu çağrı SDK 0.9.0'dan
+itibaren REST üzerinden okur (`/qorechain/pqc/v1/account/{address}`), bu nedenle
+`*.qore.host` karşısında çalışırlar (kit 0.8.x, genel uç noktaların sunmadığı
+`qor_getPQCKeyStatus`'ı okuyordu ve orada bir anahtarı doğrulayamıyordu). Bakiye okumaları
 (`useBalance`) ve cüzdan bağlantısı çalışır.
 :::
 

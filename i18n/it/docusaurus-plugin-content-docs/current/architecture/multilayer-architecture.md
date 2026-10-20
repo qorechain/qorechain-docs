@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementa un'**architettura gerarchica a 4 livelli** tramite il modulo `x/multilayer`. La main chain funge da radice di regolamento e di fiducia, mentre i livelli sussidiari (sidechain, paychain e rollup) gestiscono carichi di lavoro specializzati con diversi compromessi tra prestazioni e sicurezza.
 
 :::caution Funzionalità in fase iniziale
-Il modulo è distribuito sulla mainnet (versione di chain **v3.2.1**) e sulla testnet, ma **su nessuna delle due reti esiste ancora alcun livello né alcun anchor**. Tutto ciò che segue descrive il modulo così come è stato realizzato; i parametri sono i valori attivi.
+Il modulo è distribuito sulla mainnet (versione di chain **v3.2.3**) e sulla testnet (**v3.2.4**), ma **su nessuna delle due reti esiste ancora alcun livello né alcun anchor** (verificato il 20 ottobre 2026: `GET /qorechain/multilayer/v1/layers` restituisce un elenco vuoto su entrambe). Tutto ciò che segue descrive il modulo così come è stato realizzato; i parametri sono i valori attivi. Sulla mainnet il messaggio `MsgUpdateLayerStatus` è attualmente disattivato dal circuit breaker (vedi [Parametri della chain](/appendix/chain-parameters#circuit-breaker)); sulla testnet no.
 :::
 
 ---
@@ -59,12 +59,12 @@ flowchart TD
 
 La main chain è la radice di fiducia per l'intero ecosistema QoreChain.
 
-| Proprietà   | Valore                                                                          |
-| ----------- | ------------------------------------------------------------------------------ |
-| Consenso    | Consenso QoreChain (vedi [Meccanismo di consenso](/architecture/consensus-mechanism) per ciò che è attivo oggi) |
-| Sicurezza   | Protetta con PQC tramite firme Dilithium-5                                     |
-| Ruolo       | Livello di regolamento, archiviazione degli state anchor, QCAI routing engine, radice di fiducia |
-| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,0 secondo sulla testnet (misurato a ottobre 2026) |
+| Proprietà       | Valore                                                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Consenso        | Consenso QoreChain (vedi [Meccanismo di consenso](/architecture/consensus-mechanism) per ciò che è attivo oggi)         |
+| Sicurezza       | Protetta con PQC tramite firme Dilithium-5                                                                              |
+| Ruolo           | Livello di regolamento, archiviazione degli state anchor, QCAI routing engine, radice di fiducia                        |
+| Tempo di blocco | Dipende dalla rete: circa 3,2 secondi sulla mainnet, circa 1,0 secondo sulla testnet (misurato il 20 ottobre 2026)      |
 
 Tutti i livelli sussidiari ancorano periodicamente le proprie state root alla main chain tramite gli Hierarchical Commitment Schemes (HCS).
 
@@ -72,13 +72,13 @@ Tutti i livelli sussidiari ancorano periodicamente le proprie state root alla ma
 
 Le sidechain gestiscono **operazioni a forte intensità di calcolo** come protocolli DeFi, motori di gioco ed elaborazione di dati IoT.
 
-| Parametro                  | Valore            |
-| -------------------------- | ----------------- |
-| Validatori minimi          | 3                 |
-| Validatori massimi         | 10                |
-| Stake minimo del creatore  | 1,000 QOR         |
-| Sidechain attive massime   | 10                |
-| Domini di destinazione     | DeFi, Gaming, IoT |
+| Parametro                 | Valore            |
+| ------------------------- | ----------------- |
+| Validatori minimi         | 3                 |
+| Validatori massimi        | 10                |
+| Stake minimo del creatore | 1,000 QOR         |
+| Sidechain attive massime  | 10                |
+| Domini di destinazione    | DeFi, Gaming, IoT |
 
 ### Paychain
 
@@ -95,13 +95,13 @@ Le paychain sono ottimizzate per **microtransazioni ad alta frequenza** con late
 
 I rollup sono **chain specifiche per applicazione** distribuite tramite il Rollup Development Kit (`x/rdk`). Quando viene creato un rollup, l'RDK registra per esso un livello nel modulo multilayer (come livello di tipo `sidechain`, vedi sotto).
 
-| Parametro                 | Valore                                      |
-| ------------------------- | ------------------------------------------- |
-| Modalità di regolamento   | 4 (optimistic, zk, based, sovereign)        |
-| Rollup registrati massimi | 100 (`max_rollups`); ma possono esistere contemporaneamente solo 10 livelli di tipo sidechain (`max_sidechains`), quindi al massimo 10 rollup possono avere un livello ancorabile |
-| Stake minimo del creatore | 10,000 QOR per il rollup, più 1,000 QOR di stake per la registrazione del livello (`min_sidechain_stake`) |
-| Tipo di livello           | I rollup registrati tramite l'RDK usano il tipo di livello `sidechain` (il tipo di livello `rollup` è definito ma non ancora utilizzato da `x/rdk`) |
-| Domini di destinazione    | DeFi, Gaming, NFT, Enterprise               |
+| Parametro                 | Valore                                                                                                                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modalità di regolamento   | 4 (optimistic, zk, based, sovereign)                                                                                                                                                                    |
+| Rollup registrati massimi | 100 (`max_rollups`); ma possono esistere contemporaneamente solo 10 livelli di tipo sidechain (`max_sidechains`), quindi al massimo 10 rollup possono avere un livello ancorabile                        |
+| Stake minimo del creatore | 10,000 QOR per il rollup, più 1,000 QOR di stake per la registrazione del livello (`min_sidechain_stake`)                                                                                               |
+| Tipo di livello           | I rollup registrati tramite l'RDK usano il tipo di livello `sidechain` (il tipo di livello `rollup` è definito ma non ancora utilizzato da `x/rdk`)                                                      |
+| Domini di destinazione    | DeFi, Gaming, NFT, Enterprise                                                                                                                                                                           |
 
 Il deployment e la configurazione dei rollup sono trattati in dettaglio nel [Rollup Development Kit](/architecture/rollup-development-kit).
 
@@ -119,12 +119,12 @@ Ogni livello candidato riceve un punteggio composito (più alto è meglio):
 Score = w_congestion * (1 - Congestion) + w_capability * Capability + w_cost * (1 - Cost) + w_latency * (1 - Latency)
 ```
 
-| Fattore    | Peso   | Descrizione                                                                  |
-| ---------- | ------ | --------------------------------------------------------------------------- |
-| Congestion | 0.30   | Livello di carico attuale (invertito: minore congestione = punteggio più alto) |
-| Capability | 0.40   | Quanto bene il livello soddisfa i requisiti della transazione               |
-| Cost       | 0.20   | Moltiplicatore delle commissioni rispetto alla main chain (invertito: costo inferiore = punteggio più alto) |
-| Latency    | 0.10   | Tempo previsto fino alla finalità (invertito: latenza inferiore = punteggio più alto) |
+| Fattore    | Peso | Descrizione                                                                                                 |
+| ---------- | ---- | ----------------------------------------------------------------------------------------------------------- |
+| Congestion | 0.30 | Livello di carico attuale (invertito: minore congestione = punteggio più alto)                              |
+| Capability | 0.40 | Quanto bene il livello soddisfa i requisiti della transazione                                               |
+| Cost       | 0.20 | Moltiplicatore delle commissioni rispetto alla main chain (invertito: costo inferiore = punteggio più alto) |
+| Latency    | 0.10 | Tempo previsto fino alla finalità (invertito: latenza inferiore = punteggio più alto)                       |
 
 ### Soglia di confidenza
 
@@ -136,11 +136,11 @@ Il mittente della transazione può fornire un suggerimento di livello preferito.
 
 Quando i metadati dettagliati della transazione non sono disponibili, il router utilizza la dimensione del payload come segnale di classificazione:
 
-| Dimensione del payload | Livello preferito | Motivazione                                  |
-| ---------------------- | ----------------- | -------------------------------------------- |
+| Dimensione del payload | Livello preferito | Motivazione                                                    |
+| ---------------------- | ----------------- | -------------------------------------------------------------- |
 | &lt; 256 bytes         | Paychain          | Probabilmente un semplice trasferimento o una microtransazione |
-| 256 - 1,024 bytes      | Main Chain        | Complessità di transazione standard          |
-| > 1,024 bytes          | Sidechain         | Probabilmente un'interazione complessa con un contratto |
+| 256 - 1,024 bytes      | Main Chain        | Complessità di transazione standard                            |
+| > 1,024 bytes          | Sidechain         | Probabilmente un'interazione complessa con un contratto        |
 
 ---
 
@@ -150,23 +150,29 @@ I livelli sussidiari sottopongono periodicamente il proprio stato alla main chai
 
 ### Contenuto dell'anchor
 
-| Campo                     | Descrizione                                          |
-| ------------------------- | ---------------------------------------------------- |
-| `layer_id`                | Identificatore del livello sussidiario               |
-| `layer_height`            | Altezza del blocco sulla chain sussidiaria           |
-| `state_root`              | Merkle root dell'albero di stato della chain sussidiaria |
+| Campo                     | Descrizione                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `layer_id`                | Identificatore del livello sussidiario                       |
+| `layer_height`            | Altezza del blocco sulla chain sussidiaria                   |
+| `state_root`              | Merkle root dell'albero di stato della chain sussidiaria     |
 | `validator_set_hash`      | Hash dell'insieme di validatori che ha firmato il commitment |
-| `pqc_aggregate_signature` | Firma aggregata Dilithium-5 sui dati dell'anchor     |
-| `transaction_count`       | Numero di transazioni dall'ultimo anchor             |
-| `compressed_state_proof`  | Prova compressa della transizione di stato           |
+| `pqc_aggregate_signature` | Firma aggregata Dilithium-5 sui dati dell'anchor             |
+| `transaction_count`       | Numero di transazioni dall'ultimo anchor                     |
+| `compressed_state_proof`  | Prova compressa della transizione di stato                   |
 
-### Invio dell'anchor
+### ID di livello e di rollup {#id-grammar}
+
+Dalla v3.2.2 un **nuovo** id di livello (e un id di rollup, che un rollup condivide con il proprio livello) deve corrispondere a `^[a-z0-9][a-z0-9._-]{2,63}$`: da 3 a 64 caratteri, lettere minuscole, cifre, `.`, `_` e `-`, a partire da una lettera o da una cifra. Il keeper lo verifica quando il livello viene creato, e una transazione che non lo rispetta paga comunque la propria commissione, quindi convalida gli id prima lato client. Gli id creati prima della v3.2.2 non sono interessati.
+
+### Invio dell'anchor {#anchor-submission}
 
 Gli anchor vengono inviati alla main chain tramite `MsgAnchorState`. Il keeper convalida l'anchor secondo i seguenti passaggi:
 
 1. **Il livello esiste ed è attivo** — Il keeper verifica che il livello esista nello stato e abbia attualmente stato `active`.
 2. **Intervallo minimo tra anchor trascorso** — Il keeper controlla che siano trascorsi almeno `min_anchor_interval` blocchi (predefinito: 100) dall'ultimo anchor per questo livello.
 3. **Firma aggregata PQC** — Il keeper garantisce che la firma aggregata PQC sia presente e valida per i dati dell'anchor. La firma viene verificata rispetto alla chiave ML-DSA-87 registrata del **creatore del livello**; un anchor viene rifiutato se il creatore non ha alcuna chiave registrata.
+
+Un **anchor di regolamento** scritto tramite `x/rdk` (un batch inviato con un `anchor_signature`, dalla v3.2.2) è un caso particolare: salta il controllo dell'intervallo minimo perché i batch arrivano in ordine, può ancorare un livello ancora `proposed` (nulla on-chain promuove un livello registrato da un rollup RDK), ed è accettato solo quando chi lo invia è il creatore stesso del livello. Il controllo della firma è lo stesso.
 
 ### Periodo di contestazione
 
@@ -181,7 +187,24 @@ Gli anchor sono **leggibili** tramite il servizio di query multilayer. Due query
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — restituisce l'ultimo state anchor di un livello.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — restituisce la cronologia degli anchor di un livello.
 
-Ogni anchor porta una firma Dilithium-5 del creatore del livello sul messaggio `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Una release più recente della chain modifica il messaggio firmato, quindi i client non devono inserirlo nel codice in modo fisso. Una firma dimostra che la chiave registrata del creatore ha firmato quei byte; stabilire se l'anchor esista è una questione che spetta alla chain, quindi un verificatore deve leggere l'anchor da un nodo di cui si fida. Su nessuna delle due reti esiste ancora alcun livello né alcun anchor. Questa è la primitiva on-chain alla base delle [ricevute di regolamento](/rollups/settlement-receipts) del Rollup Development Kit.
+Ogni anchor porta una firma Dilithium-5 (ML-DSA-87) del creatore del livello. Il messaggio firmato dipende dall'altezza a cui l'anchor viene inviato:
+
+* **Dalla v3.2.2 (altezza mainnet 3,556,788, altezza testnet 6,905,034): v2.** Ogni campo di lunghezza variabile reca una lunghezza di 8 byte big-endian, il chain id fa parte del messaggio, e sono coperti il conteggio delle transazioni e la prova di stato compressa:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Prima della v3.2.2: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, senza prefissi di lunghezza e senza chain id, quindi una firma v1 è valida su ogni chain). Dall'altezza della v3.2.2 in poi la chain non accetta più un anchor v1.
+
+Poiché il messaggio può cambiare tra una release e l'altra, un client dovrebbe scegliere la forma in base all'altezza del piano applicato (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` significa non applicato) invece di inserirla nel codice in modo fisso. Per un batch RDK la corrispondenza è: `layer_id` = l'id del livello del rollup, `layer_height` = l'indice del batch, `state_root` = la state root del batch, `transaction_count` = il conteggio delle transazioni del batch e una `compressed_state_proof` vuota. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` stampa questi byte offline. Una firma dimostra che la chiave registrata del creatore ha firmato quei byte; stabilire se l'anchor esista è una questione che spetta alla chain, quindi un verificatore deve leggere l'anchor da un nodo di cui si fida. Su nessuna delle due reti esiste ancora alcun livello né alcun anchor. Questa è la primitiva on-chain alla base delle [ricevute di regolamento](/rollups/settlement-receipts) del Rollup Development Kit.
 
 ---
 
@@ -225,12 +248,12 @@ Proposed --> Active --> Suspended --> Decommissioned
                    +-- Active <--+
 ```
 
-| Stato              | Descrizione                                                                     | Transizioni consentite    |
-| ------------------ | ------------------------------------------------------------------------------- | ------------------------- |
-| **Proposed**       | Il livello è stato registrato ma non ancora attivato                            | Active, Decommissioned    |
-| **Active**         | Il livello è operativo e accetta transazioni                                    | Suspended, Decommissioned |
+| Stato              | Descrizione                                                                               | Transizioni consentite    |
+| ------------------ | ----------------------------------------------------------------------------------------- | ------------------------- |
+| **Proposed**       | Il livello è stato registrato ma non ancora attivato                                      | Active, Decommissioned    |
+| **Active**         | Il livello è operativo e accetta transazioni                                              | Suspended, Decommissioned |
 | **Suspended**      | Il livello è temporaneamente in pausa (ad es. per manutenzione o per motivi di sicurezza) | Active, Decommissioned    |
-| **Decommissioned** | Il livello è definitivamente disattivato (stato terminale)                      | Nessuna                   |
+| **Decommissioned** | Il livello è definitivamente disattivato (stato terminale)                                | Nessuna                   |
 
 Le transizioni di stato sono applicate dal keeper. Le transizioni non valide (ad es. da Decommissioned ad Active) vengono rifiutate.
 
@@ -238,15 +261,17 @@ Le transizioni di stato sono applicate dal keeper. Le transizioni non valide (ad
 
 ## Parametri
 
-| Parametro                      | Tipo   | Predefinito     | Descrizione                                            |
-| ------------------------------ | ------ | --------------- | ------------------------------------------------------- |
-| `max_sidechains`               | uint64 | `10`            | Numero massimo di sidechain attive                     |
-| `max_paychains`                | uint64 | `50`            | Numero massimo di paychain attive                      |
-| `min_anchor_interval`          | uint64 | `100`           | Blocchi minimi tra gli state anchor                    |
-| `max_anchor_interval`          | uint64 | `1,000`         | Blocchi massimi tra gli state anchor (anchor forzato)  |
-| `default_challenge_period`     | uint64 | `86,400`        | Periodo di contestazione predefinito in secondi (24 ore) |
+| Parametro                      | Tipo   | Predefinito     | Descrizione                                               |
+| ------------------------------ | ------ | --------------- | --------------------------------------------------------- |
+| `max_sidechains`               | uint64 | `10`            | Numero massimo di sidechain attive                        |
+| `max_paychains`                | uint64 | `50`            | Numero massimo di paychain attive                         |
+| `min_anchor_interval`          | uint64 | `100`           | Blocchi minimi tra gli state anchor                       |
+| `max_anchor_interval`          | uint64 | `1,000`         | Blocchi massimi tra gli state anchor (anchor forzato)     |
+| `default_challenge_period`     | uint64 | `86,400`        | Periodo di contestazione predefinito in secondi (24 ore)  |
 | `min_sidechain_stake`          | string | `1,000,000,000` | Stake minimo per creare una sidechain (1,000 QOR in uqor) |
-| `min_paychain_stake`           | string | `100,000,000`   | Stake minimo per creare una paychain (100 QOR in uqor) |
-| `routing_enabled`              | bool   | `true`          | Abilita il routing delle transazioni basato su QCAI    |
-| `routing_confidence_threshold` | string | `0.6`           | Confidenza minima per le decisioni di routing QCAI     |
-| `cross_layer_fee_bundling`     | bool   | `true`          | Abilita il Cross-Layer Fee Bundling globale            |
+| `min_paychain_stake`           | string | `100,000,000`   | Stake minimo per creare una paychain (100 QOR in uqor)    |
+| `routing_enabled`              | bool   | `true`          | Abilita il routing delle transazioni basato su QCAI       |
+| `routing_confidence_threshold` | string | `0.6`           | Confidenza minima per le decisioni di routing QCAI        |
+| `cross_layer_fee_bundling`     | bool   | `true`          | Abilita il Cross-Layer Fee Bundling globale               |
+
+Questi sono i valori restituiti da `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) su mainnet e testnet il 20 ottobre 2026. Dalla v3.2.2 il `MsgUpdateParams` del modulo può essere instradato, quindi una proposta di governance può modificarli.

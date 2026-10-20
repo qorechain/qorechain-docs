@@ -50,10 +50,10 @@ Her dil aynı API'yi sunar ve her biri farklı bir denetlenmiş uygulama tarafı
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (statik kütüphane + başlık dosyası) | [depodan](https://github.com/qorechain/qorechain-pqc) derleyin | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Kullanılabilirlik
-JavaScript, Rust, Python, Go ve Java binding'lerinin tamamı **0.2.1** sürümünde **yayımlanmıştır** — yukarıdaki komutlarla doğrudan npm, crates.io, PyPI, Go modül proxy'si ve Maven Central'dan kurabilirsiniz. Python dağıtımı `qorechain-pqc` olarak kurulur ancak **`qorpqc` olarak import edilir**. **Java** paketi Maven Central'da `io.github.qorechain:qorechain-pqc:0.2.1` olarak bulunur (Bouncy Castle arka ucu). **0.2.0** sürümü, sürüm farkındalıklı `hybridSignBytes` işlevini (aşağıda) ekledi; **0.2.1** ise ana ağ için v2'ye geçişi hangi yükseltme adının işaretlediğini düzeltti, bu nedenle 0.2.1 veya üstünü kullanın. **C** binding'i, [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) deposundan derlediğiniz bir statik kütüphane + başlık dosyasıdır.
+JavaScript, Rust, Python, Go ve Java binding'lerinin tamamı **0.2.2** sürümünde **yayımlanmıştır** (npm, crates.io, PyPI, `v0.2.2` olarak Go modül proxy'si ve Maven Central; 21 Ekim 2026'da kontrol edildi). Bunları yukarıdaki komutlarla kurun. Python dağıtımı `qorechain-pqc` olarak kurulur ancak **`qorpqc` olarak import edilir**. **Java** paketi `io.github.qorechain:qorechain-pqc:0.2.2`'dir (Bouncy Castle arka ucu). **0.2.0** sürümü, sürüm farkındalıklı `hybridSignBytes` işlevini (aşağıda) ekledi; **0.2.1** ana ağ için v2'ye geçişi hangi yükseltme adının işaretlediğini düzeltti; **0.2.2** ise hedged ile deterministik imzalamaya ilişkin dokümantasyonu ve yorumları düzeltti (zincir ikisini de kabul eder; JavaScript binding'inde kodda sürüm sabiti dışında hiçbir şey değişmedi); bu nedenle 0.2.1 veya üstünü kullanın. **C** binding'i, [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) deposundan derlediğiniz bir statik kütüphane + başlık dosyasıdır.
 :::
 
 ## Deterministik imzalama (varsayılan) {#deterministic-signing}
@@ -68,29 +68,68 @@ Temel bilgiler:
 
 ## Anahtarınızı kaydetme {#pqc-key-registration}
 
-Her hesap ML-DSA-87 açık anahtarını **bir kez ve açıkça** kaydeder. Otomatik kayıt yoktur: sonraki bir hibrit işleme gömülü bir açık anahtar (örneğin SDK'nın `includePqcPublicKey` seçeneği) uzantıda taşınır ancak anahtarı **kaydetmez**. Kayıt, klasik olarak imzalanabilen tek Cosmos şeridi işlemidir; böylece yepyeni bir hesap ilk anahtarını başlatabilir. Bunu sürüm `qorechaind` ile (genel kaynaktan derlenen bir ikili dosya imzalayamaz; bkz. [Kaynaktan Derleme](/developer-guide/building-from-source)), QoreX ile veya SDK'nın `ensurePqcRegistered` işleviyle yapın:
+Her hesap ML-DSA-87 açık anahtarını **bir kez ve açıkça** kaydeder. Otomatik kayıt yoktur: sonraki bir hibrit işleme gömülü bir açık anahtar (örneğin SDK'nın `includePqcPublicKey` seçeneği) uzantıda taşınır ancak anahtarı **kaydetmez**. **İlk** kayıt, klasik olarak imzalanabilen tek Cosmos şeridi işlemidir; böylece yepyeni bir hesap ilk anahtarını başlatabilir; zaten bir anahtarı olan bir hesap, sonraki her anahtar mesajını hibrit imzalamalıdır. Bunu sürüm ikili dosyası `qorechaind` ile (genel kaynaktan derlenen bir ikili dosya imzalayamaz; bkz. [Kaynaktan Derleme](/developer-guide/building-from-source)), QoreX ile veya SDK'nın `ensurePqcRegistered` işleviyle yapın:
 
 ```bash
 # 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
 qorechaind tx pqc gen-key mypqc
 
-# 2. Register the public key on your account (classical-signed).
-qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+# 2. Register the public key on your account (classical-signed, because the account has no key yet).
+#    --pqc-key mypqc also attaches the optional proof of possession (see below).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid --pqc-key mypqc \
   --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
 
 # 3. Verify.
 qorechaind query pqc account <address>
 ```
 
-`--gas` değerini açıkça ayarlayın: 2.592 baytlık açık anahtar varsayılan 200.000 gazı aşabilir (ana ağ kayıtları kabaca 220.000 ile 350.000 arası kullandı) ve ücret en az gas × 0,1 uqor olmalıdır; dolayısıyla `--gas 600000` için `--fees 60000uqor` veya daha fazlası gerekir. Eski biçim `qorechaind tx pqc register-key <pubkey-hex> hybrid`, Dilithium-5 için eşdeğerdir. Bundan sonra her Cosmos şeridi işlemini `--generate-only` ile oluşturun ve `qorechaind tx pqc cosign` ile imzalayın. Anahtar dosyası, hesabın kuantum sonrası imzalama anahtarıdır: onu okuyabilen herkes klasik anahtarla birlikte hesap adına eş imza atabilir; bu yüzden onu mnemonic gibi yedekleyin (aşağıda açıklandığı gibi mnemonic'ten yeniden türetilebilir).
+`--gas` değerini açıkça ayarlayın: 2.592 baytlık açık anahtar varsayılan 200.000 gazı aşabilir (ana ağ kayıtları kabaca 220.000 ile 310.000 arası kullandı; sahiplik kanıtı içeren bir kayıt bir 4.627 baytlık imza daha taşır, yaklaşık 46.000 gaz fazladan) ve ücret en az gas × 0,1 uqor olmalıdır; dolayısıyla `--gas 600000` için `--fees 60000uqor` veya daha fazlası gerekir. Eski biçim `qorechaind tx pqc register-key <pubkey-hex> hybrid`, Dilithium-5 için eşdeğerdir. Bundan sonra her Cosmos şeridi işlemini `--generate-only` ile oluşturun ve `qorechaind tx pqc cosign` ile imzalayın. Anahtar dosyası, hesabın kuantum sonrası imzalama anahtarıdır: onu okuyabilen herkes klasik anahtarla birlikte hesap adına eş imza atabilir; bu yüzden onu mnemonic gibi yedekleyin (aşağıda açıklandığı gibi mnemonic'ten yeniden türetilebilir).
 
 Kayıtlı bir anahtar, EVM işlemleri göndermek için gereken iki şartın ilkidir; ikincisi açık bir [EVM yetkilendirme penceresidir](/developer-guide/evm-development#evm-window).
+
+### Zincirin kayıt sırasında neleri kontrol ettiği (ana ağ v3.2.3 ve sonrası) {#key-integrity}
+
+v3.2.3 yükseltmesinden beri (ana ağda 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) zincir yalnızca anahtarın doğru uzunlukta olduğunu değil, anahtarın kendisini de kontrol eder:
+
+| Kural | Ret (codespace `pqc`) |
+| --- | --- |
+| `key_type` değeri `hybrid` veya `pqc_only` olmalıdır; `classical_only` hiçbir kuantum sonrası anahtar kaydetmez ve hesabı bir daha imzalayamaz hale getirir | kod 230 |
+| Kuantum sonrası koruma sağlamayan bir anahtar (kimsenin gizli anahtara ihtiyaç duymadığı dejenere bir anahtar) kayıtta, rotasyonda ve geçişte aynı şekilde reddedilir | kod 230 |
+| Hesabın daha önce kullandığı bir anahtar yeniden kaydedilemez veya ona geri döndürülemez (hesap emekliye ayrılmış anahtarları hatırlar) | kod 232 |
+| Kayıttaki klasik anahtar, imzalayanın kendi sıkıştırılmış secp256k1 anahtarı olmalıdır (v3.2.2'den beri) | kod 45 |
+| İsteğe bağlı bir sahiplik kanıtı, varsa doğrulanmalıdır | kod 231 |
+| Zaten bir anahtarı olan bir hesap, sonraki her anahtar mesajını (kayıt, geçiş) hibrit imzalamalıdır; yalnızca kullanılabilir anahtar içermeyen bir kaydın onarımı klasik olabilir | kod 234 |
+| Bir algoritmayı kullanımdan kaldırmak veya devre dışı bırakmak, zinciri etkin bir imza algoritması olmadan bırakamaz | kod 233 |
+
+Ayrıca, v3.2.3'ten beri anahtar mesajlarının hiçbiri (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey`, `MsgMigratePQCKey`) bir hesap adına `authz` aracılığıyla gönderilemez; bir işlem en fazla **bir** hibrit imza uzantısı taşıyabilir; ve **kayıtlı anahtarı olmayan** bir hesap artık karşısında doğrulanacak hiçbir şey bulunmayan bir hibrit uzantı ekleyemez (hiç uzantı olmamasında olduğu gibi yalnızca bir kayıt geçebilir).
+
+### Sahiplik kanıtı (isteğe bağlı) {#proof-of-possession}
+
+Bir kayıt ayrıca, kaydı yapanın yeni anahtarın gizli anahtarına sahip olduğunu da kanıtlayabilir. Anahtar `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` metnini imzalar (algoritma kimliği ML-DSA-87 için `1`'dir; açık anahtar küçük harfli hex'tir) ve imza `MsgRegisterPQCKeyV2` mesajının `proof_of_possession` alanına konur. CLI ile `register-key-v2 ... --pqc-key <name>` bunu oluşturur ve ekler. TypeScript SDK 0.9.0 ile `ensurePqcRegistered`, ağ v3.2.3'ü uyguladıktan sonra kanıtı kendiliğinden ekler (`signProofOfPossession` / `verifyProofOfPossession` ise bir kanıtı elle oluşturur ve denetler); `@qorechain/chain-bridge` 0.2.3, `cosmosRest` verildiğinde aynısını yapar. `@qorechain/wallet-adapter` (0.4.0) ve 0.9.0 öncesi SDK sürümleri kanıt eklemez; bu nedenle onlarla yapılan bir kayıt kanıt taşımaz ve zincir yine de bunu kabul eder. Zincir, kanıtı **varsa** doğrular ve doğrulanmazsa kaydı reddeder (kod 231); kanıtsız bir kayıt ana ağda hâlâ kabul edilir. Mesaj zinciri, algoritmayı, hesabı ve anahtarı adlandırdığı için, bunlardan biri için yapılmış bir kanıt diğeri için hiçbir şeyi kanıtlamaz.
+
+Test ağında (v3.2.4, **yalnızca test ağı**) hesap kaydı bir kanıtın doğrulanıp doğrulanmadığını bildirir (`GET /qorechain/pqc/v1/account/{address}` içindeki `possession_proven`) ve köprü doğrulayıcısı kaydı bir kanıt gerektirir. Hiçbiri henüz ana ağda yoktur; ana ağ yönetişim önerisi 13 v3.2.4'ü 3.742.566 yüksekliğinde uygulayacaktır.
+
+## Ret kodları (codespace `pqc`) {#pqc-codes}
+
+| Kod | Anlamı |
+| --- | --- |
+| 20 | Hibrit imza gerekli: işlem hiçbir PQC uzantısı taşımıyor (yalnızca ilk kayıt ve anahtarı olmayan bir hesabın unjail işlemi muaftır) |
+| 21 | ML-DSA-87 yarısı doğrulanmadı, bkz. [aşağıda](#code-21) |
+| 26, 27, 28 | EVM şeridi: açık pencere yok veya anahtar yok / pencere tükendi / geçersiz pencere sınırları, bkz. [EVM Geliştirme](/developer-guide/evm-development#evm-window) |
+| 45 | Bir kayıttaki klasik anahtar, imzalayanın kendi sıkıştırılmış secp256k1 anahtarı değil |
+| 60, 61 | EIP-7702 delegasyonu: bu delegasyon için kuantum sonrası onay yok / geçersiz delegasyon isteği |
+| 62, 63 | Delege edilmiş bir hesabın eylemi kapsayan bir penceresi yok / bir Ethereum işlemi yalnızca EVM şeridinde yürütülür |
+| 230 | Zayıf anahtar veya `classical_only` kaydı |
+| 231 | Sahiplik kanıtı doğrulanmıyor |
+| 232 | Anahtar bu hesap tarafından daha önce kullanılmış |
+| 233 | Etkin hiçbir imza algoritması kalmayacak |
+| 234 | Anahtarı olan bir hesaptan anahtar bakımı hibrit imza gerektirir |
 
 ## `pqc` kodu 21 (`hybrid_verify_failed`) sorun giderme {#code-21}
 
 Kod 21, hibrit imzanın ML-DSA-87 yarısının hesabın kayıtlı anahtarına karşı doğrulanmadığı anlamına gelir. Hedged yerine deterministik imzalamayı seçmek **asla** nedeni değildir. Şu sırayla kontrol edin:
 
-1. **Sign-bytes sürümü.** PQC imzası v1 veya v2 sign-bytes'ı kapsar ve bir ağ her yükseklikte tam olarak bir biçimi doğrular: `qorechain-diana` `v3.1.98` yükseltmesiyle v2'ye geçti, `qorechain-vladi` `v3.2.0` yükseltmesiyle geçer ve daha sonra doğan zincirler genesis'ten itibaren v2'dir. Güncel SDK'lar biçimi ağa göre seçer; elle yazılmış imzalayıcılar, hangi yükseltmenin uygulandığını düğüme sormalıdır (bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc)).
+1. **Sign-bytes sürümü.** PQC imzası v1 veya v2 sign-bytes'ı kapsar ve bir ağ her yükseklikte tam olarak bir biçimi doğrular: `qorechain-diana` `v3.1.98` yükseltmesiyle v2'ye geçti, `qorechain-vladi` `v3.2.0` yükseltmesiyle geçti ve daha sonra doğan zincirler genesis'ten itibaren v2'dir. Güncel SDK'lar biçimi ağa göre seçer; elle yazılmış imzalayıcılar, hangi yükseltmenin uygulandığını düğüme sormalıdır (bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc)).
 2. **v2 sign-bytes içindeki chain-id.** v2 chain-id'yi bağlar; `qorechain-diana` için oluşturulan bir imza `qorechain-vladi` üzerinde doğrulanmaz, tersi de geçerlidir.
 3. **Eski PQC kütüphanesi.** Standart öncesi (FIPS-204 öncesi) derlemeler, standarda uygun bir doğrulayıcının reddettiği imzalar üretir. `qorechain-pqc` 0.1.1 veya üstünü kullanın.
 4. **Yanlış anahtar.** Açık anahtar, hesap için kayıtlı olan anahtar olmalıdır (`GET /qorechain/pqc/v1/account/{address}`). Farklı bir türetmeyle elde edilen anahtar (örneğin adrese bağlı türetme yerine eski bridge türetmesi `shake256(mnemonic)`) geçerli imzalar ama eşleşmez. Kanonik anahtara geçmek için [Anahtar rotasyonu](#key-rotation) bölümüne bakın.
@@ -147,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21).
+SDK 0.9.0 ve `@qorechain/wallet-adapter` 0.4.0'ın rotasyon yardımcıları, eski türetmeyi **yeni** anahtar olarak reddeder (hesaba bağlı değildir); eski bir anahtar yine de eski anahtar olabilir. Başarılı bir rotasyondan sonra yeni anahtar imzalar (kod 0) ve eski anahtar reddedilir (`pqc` kodu 21). v3.2.3'ten beri bir rotasyon (tıpkı bir geçiş gibi), kuantum sonrası koruma sağlamayan yeni bir anahtarı (kod 230) ve hesabın daha önce kullandığı bir anahtarı (kod 232) reddeder ve `authz` aracılığıyla gönderilemez.
 
 ## Tutarlı API
 
@@ -223,7 +262,7 @@ Klasik secp256k1 imzası, standart imza baytları üzerinde hesaplanır (bunlar 
 Bu hibrit imzayı üretmenin üç yolu vardır:
 
 * **CLI** — `qorechaind tx pqc cosign`, bir işleme Dilithium-5 eş imzasını ekler ve yayınlar (`qorechaind tx pqc gen-key` sonrasında ve anahtarı kaydettikten sonra). Yalnızca sürüm ikili dosyasının parçasıdır. Bkz. [İşlem Komutları](/cli-reference/transaction-commands).
-* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (sign-bytes biçiminin çözümlenmesi için `rest` geçirin) aynısını TypeScript, Python, Go, Rust ve Java'da yapar; önce anahtarınızı kaydedin (yukarıya bakın). Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (sign-bytes biçiminin çözümlenmesi için `rest` geçirin) aynısını TypeScript, Python, Go, Rust ve Java'da yapar; TypeScript'te `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) her işlemi hibrit imzalar. Önce anahtarınızı kaydedin (yukarıya bakın). Bkz. [SDK Hesapları ve PQC imzalama](/sdk/concepts/accounts-pqc).
 * **Doğrudan `qorechain-pqc`** — desteklenen altı dilden birinde SDK dışında araç geliştiriyorsanız, imza baytlarını çerçevelemek için `hybridSignBytes` ve Dilithium-5 imzasını üretmek için `mldsa.sign` kullanın.
 
 ## Zincir üzerindeki ayak izini optimize etme

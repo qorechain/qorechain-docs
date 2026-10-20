@@ -10,7 +10,7 @@ sidebar_position: 4
 Questa pagina descrive il meccanismo di staking per la governance xQORE così com'è **progettato**, in cui i detentori di QOR bloccherebbero i propri token per ottenere un potere di governance potenziato, con un modello di rebase PvP che premia i partecipanti a lungo termine. **xQORE non può essere utilizzato oggi su nessuna delle due reti**; nulla in questa pagina è ancora qualcosa che puoi fare.
 
 :::warning Non ancora attivo
-xQORE è abilitato nel genesis ma **non è ancora utilizzabile** su mainnet (`qorechain-vladi`, release del nodo **v3.2.1**) o testnet (`qorechain-diana`). Il nodo non ha alcun punto di ingresso di transazione, query, CLI o RPC per esso, quindi non esistono `tx xqore lock` / `unlock`, né `query xqore ...`, né route REST di xQORE, né il metodo `qor_getXQOREPosition`; nessun QOR può essere bloccato e nessuno detiene xQORE. È previsto per una futura release della chain, che cambierà anche il modo in cui le penali di uscita vengono ridistribuite, in modo che lo sblocco resti economico indipendentemente dal numero di detentori. La release sarà indicata qui al momento del rilascio.
+xQORE è abilitato nel genesis ma **non è ancora utilizzabile** su mainnet (`qorechain-vladi`, release del nodo **v3.2.3**) o testnet (`qorechain-diana`, release del nodo **v3.2.4**); nessuna delle due release cambia questo stato (verificato il 20 ottobre 2026). Il nodo non ha alcun punto di ingresso di transazione, query, CLI o RPC per esso (la route REST `/qorechain/xqore/v1/params` restituisce `Not Implemented` su entrambe le reti), quindi non esistono `tx xqore lock` / `unlock`, né `query xqore ...`, né route REST di xQORE, né il metodo `qor_getXQOREPosition`; nessun QOR può essere bloccato e nessuno detiene xQORE. È previsto per una futura release della chain, che cambierà anche il modo in cui le penali di uscita vengono ridistribuite, in modo che lo sblocco resti economico indipendentemente dal numero di detentori. La release sarà indicata qui al momento del rilascio.
 :::
 
 ---
@@ -31,12 +31,12 @@ QDRW stesso è disattivato sulle reti attive e i voti di governance vengono cont
 
 La configurazione del genesis definisce una penale di uscita che diminuisce quanto più a lungo il QOR è rimasto bloccato:
 
-| Durata del Lock      | Penale di Uscita |
-| ------------------ | ------------ |
-| Meno di 30 giorni  | **50%**      |
-| Da 30 a 90 giorni      | **35%**      |
-| Da 90 a 180 giorni     | **15%**      |
-| Più di 180 giorni | **0%**       |
+| Durata del Lock    | Penale di Uscita |
+| ------------------ | ---------------- |
+| Meno di 30 giorni  | **50%**          |
+| Da 30 a 90 giorni  | **35%**          |
+| Da 90 a 180 giorni | **15%**          |
+| Più di 180 giorni  | **0%**           |
 
 Secondo il design, le penali **non vengono bruciate** (`penalty_burn_rate` è `0`): l'intera penale viene ridistribuita proporzionalmente ai detentori di xQORE rimanenti (il "rebase PvP"). Il meccanismo di ridistribuzione è la parte che cambierà nella release che integrerà xQORE.
 
@@ -49,3 +49,17 @@ Secondo il design, le penali **non vengono bruciate** (`penalty_burn_rate` è `0
 * **Bonus di voto.** Oggi non esiste alcun bonus di voto xQORE.
 
 Se vuoi partecipare alla governance adesso, delega QOR a un validatore (vedi [Staking e Delega](/user-guide/staking-and-delegation)) e vota sulle proposte (vedi [Governance](/user-guide/governance)).
+
+---
+
+## Lo staking con blocco temporale è una funzione diversa (solo testnet) {#staking-tiers}
+
+La release **v3.2.4**, che gira solo sulla testnet (un upgrade della mainnet a essa è proposto: proposta di governance 13, all'altezza 3.742.566), aggiunge un modulo separato, `x/stakingtier`, per lo **staking facoltativo con blocco temporale**. Non è xQORE: non conia xQORE, non modifica il potere di voto e non tocca i parametri xQORE descritti sopra. In sintesi:
+
+* Un delegatore blocca una delega a un validatore per un termine scelto (il modulo offre 3, 6 e 12 mesi). Mentre il blocco è in corso, l'importo bloccato non può essere annullato (undelegate) né ridelegato, attraverso alcun percorso di messaggio (una transazione, authz, un contratto o la governance).
+* I blocchi hanno una dimensione minima e un limite al numero che un singolo delegatore può detenere; leggili con `GET /qorechain/stakingtier/v1/params`.
+* Una componente di ricompensa aggiuntiva definita dai parametri del modulo viene accreditata per epoca di inflazione e riscossa con un messaggio separato. L'entità di quella componente è un parametro del modulo e non è indicata in questa pagina.
+* Un blocco può essere rilasciato in anticipo. Il rilascio anticipato fa perdere ciò che è maturato e non è stato riscosso e comporta una penale, di cui una parte viene bruciata.
+* I blocchi e lo stato dell'account del modulo sono leggibili su `/qorechain/stakingtier/v1/locks/{holder}` e `/qorechain/stakingtier/v1/pool`.
+
+Nulla di questa sezione esiste sulla mainnet v3.2.3: `GET https://api.qore.host/qorechain/stakingtier/v1/params` vi restituisce `Not Implemented`. Lo staking sulla mainnet è la normale delega, trattata in [Staking e Delega](/user-guide/staking-and-delegation).

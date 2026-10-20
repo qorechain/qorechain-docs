@@ -15,22 +15,26 @@ provider, câteva hook-uri și două componente drop-in — inclusiv un badge
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) este o dependență peer; `@qorechain/sdk` este o dependență directă,
-fixată la aceeași versiune ca kit-ul. Folosește `@qorechain/react` **0.8.3 sau
-mai nou**: 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă greșită pe mainnet,
-iar versiunile 0.8.x anterioare pot afișa un sold sau o stare învechită după o
-schimbare de adresă.
+`react` (>=18) este o dependență peer; `@qorechain/sdk` este o dependență directă
+(`^0.9.0` începând cu kit-ul 0.9.0; pe o versiune 0.x, caret-ul rămâne în interiorul
+lui 0.9, deci un patch al SDK-ului nu instalează o a doua copie). Folosește
+`@qorechain/react` **0.9.0**: 0.8.0 fixează SDK 0.8.0, care semnează forma hibridă
+greșită pe mainnet, iar versiunile 0.8.x anterioare pot afișa un sold sau o stare
+învechită după o schimbare de adresă.
 
-:::caution Limitele kit-ului React pe rețelele live (0.8.x)
-`useTx` trimite doar cu semnătura clasică a portofelului conectat, pe care
-rețelele live o resping (calea Native cere extensia hibridă ML-DSA-87), așa că
-`send` / `sendTokens` nu pot înscrie o tranzacție pe mainnet sau testnet; pentru
-trimiteri folosește [constructorii hibrizi](/sdk/concepts/accounts-pqc#hybrid-signing)
-ai SDK-ului. `usePqcStatus` și `<QuantumSafeBadge/>` citesc
-`qor_getPQCKeyStatus`, pe care endpoint-urile publice nu îl servesc (vezi
-[spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace)), deci nu pot
-confirma o cheie pe `*.qore.host`. Citirile de sold (`useBalance`) și conectarea
-portofelului funcționează.
+:::caution Limitele kit-ului React pe rețelele live (0.9.0)
+`useTx` se conectează cu semnatarul portofelului și fără o pereche de chei
+post-cuantice, deci trimite doar cu semnătura clasică, pe care rețelele live o resping
+(calea Native cere extensia hibridă ML-DSA-87): `send` / `sendTokens` nu pot înscrie o
+tranzacție pe mainnet sau testnet. Pentru trimiteri folosește `TxClient`-ul hibrid al
+SDK-ului (`client.connectTx(signer, { pqcKeypair })`, vezi
+[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` și
+`<QuantumSafeBadge/>` citesc starea prin `getPqcStatus` cu clientul compus al
+provider-ului, care începând cu SDK 0.9.0 citește prin REST
+(`/qorechain/pqc/v1/account/{address}`), deci funcționează față de `*.qore.host`
+(kit-ul 0.8.x citea `qor_getPQCKeyStatus`, pe care endpoint-urile publice nu îl
+servesc, și nu putea confirma acolo o cheie). Citirile de sold (`useBalance`) și
+conectarea portofelului funcționează.
 :::
 
 ## Provider

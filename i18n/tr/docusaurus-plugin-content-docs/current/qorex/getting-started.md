@@ -80,7 +80,7 @@ QoreX, varsayılan olarak `qor1…` adresinizi bir kurtarma ifadesinden coin typ
 3. Ayarlar → **Hesaplarınız**'ı açın ve **Ethereum hesabı ekle (coin 60)**'a dokunun. İlk dokunuş hesabı 0 dizininde ekler — MetaMask'in bu kelimeler için gösterdiği aynı `0x…` adresi ve o hesap için QoreChain `qor1…` adresinizle aynı anahtar. QOR'unuz orada durur.
 4. O hesaba geçin (*Ethereum · coin 60* etiketlidir). Ondan gönderebilir, staking yapabilir ve ödül talep edebilirsiniz. İlk gönderim ayrıca o hesabın kuantum sonrası anahtarını da kaydeder; bunun küçük, tek seferlik bir ücreti vardır.
 
-Ethereum tarzı bir hesabın @kullanıcı adı yoktur (kullanıcı adları coin type 118'deki bir QoreChain `qor1…` hesabında talep edilir) ve web siteleri bununla `signDirect` yerine `signAndBroadcast` üzerinden imzalar. **Ethereum hesabı ekle (coin 60)**'a her dokunuş bir sonraki dizini ekler.
+Ethereum tarzı bir hesabın @kullanıcı adı yoktur (kullanıcı adları coin type 118'deki bir QoreChain `qor1…` hesabında talep edilir) ve web siteleri bununla `signDirect` yerine `signAndBroadcast` üzerinden imzalar. Aynı zamanda [EVM erişim penceresinin](/qorex/security-and-recovery#evm-window) önem taşıdığı hesap türüdür: MetaMask aynı anahtarla imzalar, dolayısıyla bir pencere açıldığında MetaMask işlemleri bu hesabın QOR'unu taşıyabilir. **Ethereum hesabı ekle (coin 60)**'a her dokunuş bir sonraki dizini ekler.
 
 ## Yolunuzu bulun {#find-your-way}
 
@@ -89,7 +89,7 @@ Ethereum tarzı bir hesabın @kullanıcı adı yoktur (kullanıcı adları coin 
 
 ## İsteğe bağlı: bir @kullanıcı adı alın
 
-Cüzdanınız oluşturulduktan sonra, insanların size bir `qor1…` adresi yerine isimle gönderim yapabilmesi için benzersiz bir **@kullanıcı adı** (örneğin `@liviu`) talep edebilirsiniz. Bu isteğe bağlıdır ve atlanabilir — cüzdanınız asla buna bağlı değildir. (Tarayıcı eklentisinde bazı sürümler talep etmeyi sunmaz; açılır pencere sunmuyorsa mobil uygulamadan talep edin.) Bir kullanıcı adı, cüzdanın tamamına değil belirli bir adrese bağlanır; bu, birden fazla hesabınız olduğunda önem kazanır — bkz. [Tek bir ifadeden birden fazla hesap](/qorex/account-and-dashboard#accounts) ve [@kullanıcı adı](/qorex/account-and-dashboard#handle).
+Cüzdanınız oluşturulduktan sonra, insanların size bir `qor1…` adresi yerine isimle gönderim yapabilmesi için benzersiz bir **@kullanıcı adı** (örneğin `@liviu`) talep edebilirsiniz. Talep etmek için [oturum açmış bir hesap](/qorex/account-and-dashboard#sign-in) gerekir ve bu işlem **mobil uygulamada** yapılır (tarayıcı eklentisi sizi oraya yönlendirir). İsteğe bağlıdır ve atlanabilir — cüzdanınız asla buna bağlı değildir. Bir kullanıcı adı, cüzdanın tamamına değil belirli bir adrese bağlanır; bu, birden fazla hesabınız olduğunda önem kazanır — bkz. [Tek bir ifadeden birden fazla hesap](/qorex/account-and-dashboard#accounts) ve [@kullanıcı adı](/qorex/account-and-dashboard#handle).
 
 ## Dil
 

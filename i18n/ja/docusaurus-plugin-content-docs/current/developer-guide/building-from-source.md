@@ -10,7 +10,7 @@ sidebar_position: 1
 このガイドでは、公開ソースからコミュニティ版の `qorechaind` バイナリをビルドする手順を説明し、そのバイナリが何のためのもので、何のためのものではないかを解説します。
 
 :::caution ソースからのビルドではメインネットにもテストネットにも参加できません
-公開リポジトリには、**スタブ Keeper** を備えたモジュールインターフェースが含まれています。コンセンサスに不可欠な Keeper 実装と耐量子署名器は公開ソースツリーには含まれていません。そこからビルドしたバイナリは、ネットワークのコンセンサス状態を再現できず、Cosmos レーンのすべてのトランザクションが必要とするハイブリッド耐量子署名も作成できません。メインネットまたはテストネットでノードやバリデーターを運用するには、稼働中のマニフェスト（`https://download.qore.host/mainnet/latest.json` または `.../testnet/latest.json`）に記載された**リリースバイナリ**をインストールしてください。[ノードの運用](/developer-guide/running-a-node)および[バリデーターの運用](/developer-guide/running-a-validator)を参照してください。
+公開リポジトリには、**スタブ Keeper** を備えたモジュールインターフェースが含まれています。コンセンサスに不可欠な Keeper 実装と耐量子署名器は公開ソースツリーには含まれていません。そこからビルドしたバイナリは、ネットワークのコンセンサス状態を再現できず、Cosmos レーンのすべてのトランザクションが必要とするハイブリッド耐量子署名も作成できません。v3.2.3 以降、このバイナリは `qorechain-vladi` または `qorechain-diana` 上では**起動を拒否**します（チェーン ID とジェネシス時刻で両ネットワークを識別します。公開チェーン ID を独自のジェネシスで再利用するローカル devnet は影響を受けません）。`qorechaind start --community-unenforced-pqc` を使うと、実験用にこの拒否を上書きできます。ただしその場合、ノードは耐量子署名を一切検証せず、警告なしにネットワークから乖離する可能性があるため、信頼して使うノードには決して使用しないでください。メインネットまたはテストネットでノードやバリデーターを運用するには、稼働中のマニフェスト（`https://download.qore.host/mainnet/latest.json` または `.../testnet/latest.json`）に記載された**リリースバイナリ**をインストールしてください。[ノードの運用](/developer-guide/running-a-node)および[バリデーターの運用](/developer-guide/running-a-validator)を参照してください。
 :::
 
 ## 前提条件
@@ -106,11 +106,11 @@ CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 ビルドが成功したら、バイナリを検証します。
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、稼働中のネットワークである `--chain-id qorechain-vladi`（ノードリリース **v3.2.1**）に置き換えてください。
+`init` コマンドは、エラーなく `~/.qorechaind/` に genesis ファイルとノード設定を作成するはずです。上記の例は **`qorechain-diana`** テストネットに対して初期化しています。メインネットの場合は、稼働中のネットワークである `--chain-id qorechain-vladi`（ノードリリース **v3.2.3**）に置き換えてください。
 
 ## Docker ビルド
 

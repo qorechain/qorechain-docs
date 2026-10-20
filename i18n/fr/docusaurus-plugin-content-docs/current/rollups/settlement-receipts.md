@@ -10,7 +10,7 @@ sidebar_position: 6
 Un **reçu de règlement** est un enregistrement portable attestant qu'un lot de règlement d'un rollup a été ancré à la Main Chain sous une signature post-quantique. Il désigne le rollup, le lot et l'ancre, et porte la signature **ML-DSA-87** (Dilithium-5, FIPS-204) de l'ancre, le même schéma que celui utilisé par la Main Chain.
 
 :::caution Stade précoce : aucune ancre n'existe encore
-Les reçus dépendent des ancres, et **aucun rollup ni aucune ancre n'existe encore sur l'un ou l'autre réseau**. Sur le mainnet, le RDK n'écrit pas encore d'ancres : les lots de règlement sont enregistrés, mais l'étape d'ancrage est ignorée. Considérez cette page comme une description de la conception et des briques de base, et non d'un service sur lequel vous pouvez vous appuyer aujourd'hui.
+Les reçus dépendent des ancres, et **aucun rollup ni aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026). Depuis la v3.2.2 (en service sur les deux réseaux), un lot soumis avec un `anchor_signature` est ancré dans `x/multilayer` au sein de la même transaction ; un lot soumis sans cette signature est réglé sans ancre. Les clients RDK publiés (0.5.0) n'envoient pas ce champ, de sorte que les lots qu'ils soumettent ne sont pas ancrés. Considérez cette page comme une description de la conception et des briques de base, et non d'un service sur lequel vous pouvez vous appuyer aujourd'hui.
 :::
 
 ## Un reçu est une affirmation, pas une preuve {#a-receipt-is-a-claim}
@@ -19,17 +19,13 @@ Chaque champ d'un reçu est fourni par celui qui vous le remet. Vérifier la sig
 
 ## Ce que l'ancre signe {#what-the-anchor-signs}
 
-La signature de l'ancre est produite par la clé ML-DSA-87 enregistrée du **créateur du rollup**. Sur le mainnet aujourd'hui, le message signé est
+La signature de l'ancre est produite par la clé ML-DSA-87 enregistrée du **créateur du rollup**. Le message signé dépend de la hauteur à laquelle l'ancre est soumise. **À partir de la v3.2.2 (mainnet hauteur 3,556,788, testnet hauteur 6,905,034), c'est le message v2** : une balise de domaine, l'identifiant de chaîne, puis `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, le nombre de transactions et la preuve d'état compressée, chacun préfixé par sa longueur (la disposition exacte figure dans [Lecture des ancres](/architecture/multilayer-architecture#reading-anchors)). La chaîne n'accepte plus d'ancre v1 (`layer_id || layer_height || state_root || validator_set_hash`, sans identifiant de chaîne) à partir de cette hauteur. Ne codez aucune des deux formes en dur : lisez les octets à signer pour le réseau que vous ciblez, par exemple avec `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>`.
 
-```
-layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
-```
-
-Une version plus récente de la chaîne modifie le message signé ; ne le codez donc pas en dur : lisez les octets à signer pour le réseau que vous ciblez. Une ancre est un objet de niveau couche : elle ne désigne ni le rollup ni le lot, de sorte qu'un vérificateur les lie par des lectures de la chaîne (voir [Architecture multicouche](/architecture/multilayer-architecture#reading-anchors)).
+Une ancre est un objet de niveau couche : elle ne désigne ni le rollup ni le lot, de sorte qu'un vérificateur les lie par des lectures de la chaîne (voir [Architecture multicouche](/architecture/multilayer-architecture#reading-anchors)).
 
 ## Lecture des ancres {#reading-anchors}
 
-Les ancres sont lisibles via REST et gRPC (`/qorechain/multilayer/v1/anchor/{layer_id}` pour la dernière ancre et `/qorechain/multilayer/v1/anchors/{layer_id}` pour l'historique), et la clé post-quantique enregistrée d'un compte à l'adresse `/qorechain/pqc/v1/account/{address}`. Les lots d'un rollup se lisent avec `qorechaind query rdk batch [rollup-id]` (les routes REST du RDK ne sont pas servies sur le mainnet aujourd'hui).
+Les ancres sont lisibles via REST et gRPC (`/qorechain/multilayer/v1/anchor/{layer_id}` pour la dernière ancre et `/qorechain/multilayer/v1/anchors/{layer_id}` pour l'historique), et la clé post-quantique enregistrée d'un compte à l'adresse `/qorechain/pqc/v1/account/{address}` (`account` au singulier). Les lots d'un rollup se lisent via les routes REST du RDK (`/qorechain/rdk/v1/batch/{rollup_id}/{batch_index}`, `/qorechain/rdk/v1/latest_batch/{rollup_id}`, `/qorechain/rdk/v1/batches/{rollup_id}`), que les deux réseaux servent, ou avec `qorechaind query rdk batch [rollup-id]`.
 
 ## Construire et vérifier (TypeScript) {#build-and-verify}
 
@@ -50,10 +46,15 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Passez un `client` pour chaque vérification. Utilisez la dernière version publiée de votre client RDK : l'API des reçus et ses contrôles ont changé d'une version à l'autre, et les clients Python, Go, Rust et Java exposent la même surface de construction/vérification (ils effectuent la vérification ML-DSA-87 via la bibliothèque [`qorechain-pqc`](https://github.com/qorechain)).
+Passez un `client` pour chaque vérification. L'API des reçus et ses contrôles ont changé d'une version à l'autre : utilisez donc une version qui vérifie par rapport à la chaîne (0.5.0 ou ultérieure). Les clients Python, Go, Rust et Java exposent la même surface de construction/vérification (les clients Go et Rust utilisent le même chemin de recherche de clé au pluriel que celui décrit dans la limitation ci-dessous).
 
-:::note Limitations actuelles du client
-Les clients RDK publiés recherchent la clé du créateur par un chemin que la chaîne en service ne sert pas ; la vérification en ligne n'aboutit donc pas encore sur les réseaux en service. Tant qu'une version de client ne corrige pas cela, utilisez un reçu uniquement comme un enregistrement à recouper avec l'ancre que vous lisez depuis votre propre nœud.
+:::caution Limitations actuelles du client (RDK 0.5.0)
+Dans la 0.5.0, `verifySettlementReceipt` ne rapporte jamais `valid` à partir du seul reçu (sans `client`, le résultat est `mode: "signature-only"` et `valid: false`), et son contrôle sur la chaîne n'aboutit pas encore sur les réseaux en service, pour deux raisons qui tiennent au client et non à la chaîne :
+
+* il recherche la clé du créateur via la forme plurielle `accounts` de la route de compte post-quantique, que les réseaux ne servent pas (HTTP 501 ; la route qui fonctionne est celle au singulier `account`), de sorte qu'avec un `client` le résultat est `valid: false`, avec pour motif que la clé post-quantique du créateur n'a pas pu être résolue ; et
+* il reconstruit le message signé dans la disposition v1, que la chaîne n'accepte plus pour les ancres depuis la v3.2.2 ; il ne pourrait donc pas vérifier une signature v2 authentique, même avec la clé en main.
+
+`buildSettlementReceipt` ne fonctionne qu'une fois qu'une ancre couvre le lot, et aucune n'existe. Utilisez un reçu uniquement comme un enregistrement à recouper avec l'ancre et la clé du créateur que vous lisez depuis votre propre nœud, avec les octets à signer v2 du réseau.
 :::
 
 ## CLI {#cli}

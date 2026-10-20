@@ -56,6 +56,10 @@ Bu dört işlemin tamamı Validators sayfasında değil, **Wallet** sayfasında 
 8. Panel artık bir **Open QoreX** bağlantısı ve bir istek kimliğiyle birlikte **Approve it in QoreX** gösterir. QoreX, imzalamadan önce size doğrulayıcıyı ve tutarı gösterecektir — siz orada onaylamadan hiçbir şey gönderilmez. QoreX tarayıcı eklentisi algılanırsa, bir **Approve in the browser extension** düğmesi de sunulur.
 9. QoreX'i açın (bağlantı/deeplink bunu yapar) ve delegasyonu onaylayın. QoreX işlemi oluşturur, imzalar ve yayınlar; dashboard anahtarınızı asla görmez.
 
+:::note Zaman kilitli stake yalnızca testnet'te
+İsteğe bağlı bir zaman kilitli stake modülü yalnızca testnet'te (zincir v3.2.4) mevcuttur — bkz. [Zaman kilitli stake](/user-guide/staking-and-delegation#time-locked-staking). Henüz mainnet'te yoktur (mainnet yönetişim önerisi 13 bunu 3,742,566 yüksekliğinde uygulayacaktır) ve ne Dashboard'da ne de QoreX'te bunun için bir ekran bulunur. Burada yapılan delegasyonlar, kilitlenme içermeyen sıradan delegasyonlardır; tek bekleme, çıkışta 21 günlük unbonding'dir.
+:::
+
 ### Yeniden delegasyon yap {#redelegate}
 
 Dashboard'ın kendisinde özel bir Redelegate paneli yok — ama artık buna ihtiyacınız yok. **QoreX'in kendisi artık stake'i doğrulayıcılar arasında doğrudan taşıyabiliyor** (uygulama 1.0.8+ ve eklenti 0.2.6+): 21 günlük unbonding beklemesi yok, kayıp ödül yok, hatta tek bir işlemde bir taşımayı birden fazla hedef doğrulayıcıya bölebiliyor. QoreX'te **Stake**'i açın, ayrılmak istediğiniz doğrulayıcıya dokunun ve stake'in nereye gideceğini seçin — tam anlatım için bkz. [Stake'i doğrulayıcılar arasında taşıma](/qorex/portfolio-and-staking#move-stake). Bu, dashboard'ın kendi istek sözleşmesinin sunabileceği herhangi bir şeyden daha iyi bir çözümdür, bu yüzden aşağıdaki geçici çözüm yerine bunun için doğrudan QoreX'i kullanın.

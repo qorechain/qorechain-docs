@@ -21,6 +21,15 @@ The QCAI (QoreChain AI) engine operates across three layers:
 
 The consensus level is documented separately in the [PRISM Consensus Engine](/architecture/prism-consensus-engine). This page covers the network and application levels.
 
+:::note What is enforced on the live networks (mainnet v3.2.3, testnet v3.2.4)
+Two parts of `x/ai` act on transactions today, on both the Cosmos lane and the EVM lane:
+
+* A **per-sender rate limit**. The live limit is **600 transactions per minute per sender** (`max_tx_per_minute`; the EVM lane has its own optional limit, which is not set, so the same value applies). The "minute" is counted over a fixed window of blocks, not wall-clock time, because block height is the only clock every validator shares. A sender at the limit has further transactions refused until older ones leave the window. The limit has been enforced on the Cosmos lane since v3.2.0 and on both lanes since v3.2.2.
+* An **anomaly score** for each transaction. The live `anomaly_action` is `flag`: a high score emits an `ai_anomaly_check` event and counts the transaction as flagged, but does not refuse it. Refusing on score is a governance setting that is not enabled.
+
+Everything else on this page (the router, the six-layer fraud pipeline, the fee optimizer, the network optimizer, the sidecar) describes analysis and advice: none of it changes which transactions the chain accepts, and the six-layer pipeline is not called from the transaction path. Read the live settings with `qorechaind query ai config` and the counters with `qorechaind query ai stats`.
+:::
+
 ## Transaction Router
 
 The AI-enhanced router selects optimal validators and routes for each transaction using weighted multi-factor scoring.
@@ -86,7 +95,7 @@ The fraud detector implements a **six-layer detection pipeline** that analyzes e
 | Medium       | Any        | `alert`                                                      |
 | Low / None   | Any        | `allow`                                                      |
 
-When an action other than `allow` is triggered, a fraud investigation record is created with a unique ID (format: `INV-{timestamp}-{txhash_prefix}`).
+When an action other than `allow` is triggered, the pipeline creates a fraud investigation record with a unique ID (format: `INV-{block_height}-{txhash}`, truncated to 48 characters). On the live networks the pipeline is not called from the transaction path (see the note at the top of this page), so no investigation records are produced today and no contract circuit breaker is set by it.
 
 ## Fee Optimizer
 
@@ -171,7 +180,7 @@ Two precompiled contracts expose on-chain AI capabilities to EVM smart contracts
 These precompiles are **not active** on mainnet (`qorechain-vladi`) or testnet (`qorechain-diana`); a call returns empty data. They will be activated only after they get a read-only, fixed-point scoring path. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Important**: EVM precompiles use the **deterministic heuristic engine only**. They never call the sidecar, ensuring all EVM execution remains fully deterministic and reproducible.
+**Important**: EVM precompiles use the **deterministic heuristic engine only**. They never call the sidecar, ensuring all EVM execution remains fully deterministic and reproducible. Since v3.2.3 the anomaly-check precompile analyses a transaction without writing state; the other precompile hardening in that release (the CrossVM bridge refusing `STATICCALL`, metering its nested call against the calling frame's gas, and reaching only allowlisted CosmWasm targets) applies once the CrossVM precompile is activated. As of 20 October 2026 the `active_static_precompiles` list is empty on both networks.
 
 ## TEE Attestation
 

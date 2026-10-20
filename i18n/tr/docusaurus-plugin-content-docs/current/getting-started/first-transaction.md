@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu kılavuz, QOR token gönderme, işlemleri sorgulama ve QoreChain ile yerel, EVM ve SVM arayüzleri üzerinden etkileşim kurma adımlarını anlatır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 29 Haziran 2026'dan beri canlıdır — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kullanır. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan beri canlıdır ve v3.2.3 sürümünü çalıştırır (test ağı v3.2.4 çalıştırır) — ana ağda işlem yaparken **Ana Ağa Bağlanma** sayfasındaki ana ağ zincir kimliğini ve uç noktalarını kullanın.
 :::
 
 ## Bakiyenizi Kontrol Etme
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+v3.2.3'ten beri zincir, kayıtla birlikte isteğe bağlı bir **sahiplik kanıtını** da kabul eder ve zayıf, dejenere veya daha önce kullanılmış anahtarları reddeder. Bir tane eklemek için `register-key-v2` ile kayıt yapın ve yerel anahtarınızı adlandırın:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ EVM hattıyla ilgili geri kalan her şey aynıdır: MetaMask, ethers.js, Hardhat
 * Kabul edilip sonra başarısız olan bir işlem de yuvasını ve değer bütçesini tüketir.
 * Yeni bir pencere açmak öncekinin **yerini alır**; tüketim sıfırdan yeniden başlar.
 * CLI, `max-value` değerini `uqor` veya `qor` cinsinden kabul eder (`1000qor` = 1,000,000,000 uqor).
+* Değer sınırı yalnızca yerel QOR'u sayar: bir token transferi, bir onay veya başka herhangi bir sözleşme çağrısı sıfır değer taşır. Bunları da sınırlamak için pencerenin kapsamını daraltın (aşağıda).
 
 **Adım 1 — kuantum sonrası anahtarınızı kaydedin** (bir kez): yukarıdaki [Kuantum sonrası anahtarınızı kaydedin](#register-pqc-key) bölümüne bakın.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**Kapsamı daraltma (v3.2.3 ve sonrası).** İsteğe bağlı iki bayrak, açık bir pencerenin kabul ettiği şeyi kısıtlar: `--native-only` yalnızca düz yerel QOR transferlerini kabul eder (calldata yok, sözleşme oluşturma yok, kod taşıyan alıcı yok) ve `--allowed-targets 0xAAA...,0xBBB...` yalnızca bu alıcılara yönelik işlemleri kabul eder (en fazla 16; bu durumda sözleşme oluşturma reddedilir). Örneğin:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 Ana ağda bir pencere açmak yaklaşık 180,000 gaz kullanmıştır. [QoreX](/qorex/security-and-recovery#evm-window) içinde aynı adım **Settings → Security → EVM access window** (uygulama) veya **EVM access window** düğmesidir (uzantı). Pencereyi açmak hesap nonce'unuzu ilerletir; bu yüzden cüzdanınızda EVM işlemini hazırlamadan **önce** açın.
@@ -162,7 +177,7 @@ REST yanıtı, penceresi olmayan bir adres için asla hata vermez; `found: false
 
 **Adım 4 — EVM hattını normal şekilde kullanın.** MetaMask'tan veya araçlarınızdan her zamanki gibi gönderin. Her işlem pencereden bir işlem yuvası ve (değer + azami ücret) tüketir.
 
-**Bir pencereyi erken kapatın.** Klasik anahtarınızın ele geçirildiğinden şüpheleniyorsanız pencereyi kapatın; kabul etmeye devam edeceği her şey bir sonraki bloktan itibaren reddedilir:
+**Bir pencereyi erken kapatın.** Klasik anahtarınızın ele geçirildiğinden şüpheleniyorsanız pencereyi kapatın; kabul etmeye devam edeceği her şey bir sonraki bloktan itibaren reddedilir. Kapatmak ayrıca bekleyen her EIP-7702 delegasyon onayını da iptal eder (v3.2.2'den beri; bir hesabın kodunu değiştiren type-4 işlemi yalnızca kuantum sonrası bir `authorize-evm-delegation` onayından sonra kabul edilir):
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

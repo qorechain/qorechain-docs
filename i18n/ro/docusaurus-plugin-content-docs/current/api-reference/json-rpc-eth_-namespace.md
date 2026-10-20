@@ -17,7 +17,7 @@ QoreChain implementează o interfață JSON-RPC compatibilă cu EVM, astfel înc
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, versiunea de nod **v3.2.1**) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`, versiunea de nod **v3.2.2**). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți. Endpoint-urile HTTP publice sunt `https://evm.qore.host` (mainnet) și `https://evm-testnet.qore.host` (testnet), listate în [Rețele](/appendix/networks#public-endpoints). Singurul WebSocket EVM public este cel al testnet-ului (`wss://evm-ws-testnet.qore.host`); nu există un WebSocket EVM public pentru mainnet.
+Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`, versiunea de nod **v3.2.3**, activ din 7 iunie 2026) și de testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, hex `0x2648`, versiunea de nod **v3.2.4**, doar testnet). Adresele locale de mai sus se aplică unui nod pe care îl rulezi tu însuți. Endpoint-urile HTTP publice sunt `https://evm.qore.host` (mainnet) și `https://evm-testnet.qore.host` (testnet), listate în [Rețele](/appendix/networks#public-endpoints). Singurul WebSocket EVM public este cel al testnet-ului (`wss://evm-ws-testnet.qore.host`); nu există un WebSocket EVM public pentru mainnet.
 :::
 
 ## Spații de nume acceptate
@@ -69,8 +69,8 @@ Interfața JSON-RPC EVM este servită de mainnet-ul **`qorechain-vladi`** (EVM c
 | Metodă           | Parametri  | Descriere                                                           |
 | ---------------- | ---------- | ------------------------------------------------------------------- |
 | `txpool_status`  | niciunul   | Returnează numărul de tranzacții în așteptare și în coadă           |
-| `txpool_content` | niciunul   | Returnează tranzacțiile în așteptare și în coadă (indisponibilă pe mainnet-ul public) |
-| `txpool_inspect` | niciunul   | Returnează un rezumat al pool-ului (indisponibilă pe mainnet-ul public) |
+| `txpool_content` | niciunul   | Returnează tranzacțiile în așteptare și în coadă (indisponibilă pe endpoint-urile publice) |
+| `txpool_inspect` | niciunul   | Returnează un rezumat al pool-ului (indisponibilă pe endpoint-urile publice) |
 
 ## Metode net_
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs` acceptă cel mult **10.000 de blocuri** între `fromBlock` și `toBlock`. Un interval mai larg returnează `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Interoghează în ferestre de cel mult 10.000 de blocuri. Setarea separată `filter-cap` limitează numărul de jurnale returnate.
-- `txpool_status` funcționează pe endpoint-ul public de mainnet. `txpool_content` și `txpool_inspect` sunt dezactivate acolo (funcționează pe endpoint-ul public de testnet și pe un nod pe care îl rulezi tu însuți).
+- `txpool_status` funcționează pe endpoint-urile publice. `txpool_content` și `txpool_inspect` sunt dezactivate atât pe endpoint-ul public de mainnet, cât și pe cel de testnet (funcționează pe un nod pe care îl rulezi tu însuți, cu `txpool` în lista sa `api`).
 - Metodele `debug_*` și `eth_signTransaction` nu sunt disponibile.
 - `eth_subscribe` necesită o conexiune WebSocket. Prin HTTP returnează `-32601 notifications not supported`. Vezi [Evenimente WebSocket](/api-reference/websocket-events).
 - Starea de la înălțimi vechi este eliminată (pruned) pe endpoint-urile publice, astfel că `eth_call` pe un bloc istoric îndepărtat poate eșua cu o eroare de versiune de stare.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## Trimiterea tranzacțiilor {#sending-transactions}
 
 :::caution Lane-ul EVM necesită o cheie PQC și o fereastră deschisă
-Începând cu versiunea de lanț v3.2.0, lane-ul EVM admite o tranzacție (`MsgEthereumTx`, inclusiv desfășurările de contracte) doar de la un cont care are o **cheie post-cuantică înregistrată** și o **fereastră de autorizare EVM deschisă**. Un portofel EVM obișnuit care nu a făcut această configurare nu poate trimite tranzacții: nodul le refuză cu o eroare a modulului `pqc` (codurile 26, 27 sau 28) în loc să le includă. Citirea soldurilor, apelarea `eth_call` și estimarea gas-ului nu necesită o fereastră.
+Începând cu versiunea de lanț v3.2.0, lane-ul EVM admite o tranzacție (`MsgEthereumTx`, inclusiv desfășurările de contracte) doar de la un cont care are o **cheie post-cuantică înregistrată** și o **fereastră de autorizare EVM deschisă**. Un portofel EVM obișnuit care nu a făcut această configurare nu poate trimite tranzacții: nodul le refuză cu o eroare a modulului `pqc` (codurile 26, 27 sau 28) în loc să le includă. Citirea soldurilor, apelarea `eth_call` și estimarea gas-ului nu necesită o fereastră. Începând cu v3.2.2, este refuzată și o tranzacție semnată **fără chain id** (pre-EIP-155), iar începând cu v3.2.3 o fereastră poate fi limitată la simple transferuri de QOR (`native_only`) sau la destinatari listați (`allowed_targets`); o tranzacție din afara acestei limitări este refuzată cu codul 27.
 
 Verifică un cont înainte de a trimite:
 
 - `GET /qorechain/pqc/v1/account/{address}` (`found: true` înseamnă că o cheie este înregistrată)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` înseamnă că o fereastră admite în prezent tranzacții)
 
-Ambele sunt descrise în [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). O fereastră se deschide cu o tranzacție QoreChain (`MsgOpenEVMWindow`, limitată la cel mult 17.280 de blocuri și 1.000 de tranzacții plus un plafon de valoare), nu cu o tranzacție Ethereum. Vezi [Dezvoltare EVM](/developer-guide/evm-development) pentru prezentarea generală a lane-ului.
+Ambele sunt descrise în [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module) (răspunsul ferestrei raportează și `native_only` și `allowed_targets`). O fereastră se deschide cu o tranzacție QoreChain (`MsgOpenEVMWindow`, limitată la cel mult 17.280 de blocuri și 1.000 de tranzacții plus un plafon de valoare), nu cu o tranzacție Ethereum. Vezi [Dezvoltare EVM](/developer-guide/evm-development) pentru prezentarea generală a lane-ului.
 :::
 
 ## Exemple
@@ -161,7 +162,7 @@ Răspuns:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

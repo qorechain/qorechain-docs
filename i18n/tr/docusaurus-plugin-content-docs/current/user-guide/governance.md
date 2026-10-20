@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 29 Haziran 2026'dan beri v3.2 hattında yayında (düğüm sürümü **v3.2.1**; testnet **v3.2.2** çalıştırıyor) — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve **v3.2.3** sürümünü çalıştırıyor; testnet **v3.2.4** çalıştırıyor — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -29,7 +29,7 @@ Teklifler **bonded stake** üzerinden sayılır: bonded bir doğrulayıcıya del
 | Eşik      | 50%          | Kabul için gereken, çekimser olmayan oylar içindeki "yes" payı              |
 | Veto      | 33.4%        | "no with veto" bu paya ulaşırsa teklif reddedilir ve depozitosu yakılır     |
 
-Bu değerler 14 Ekim 2026'da zincirden okunmuştur; yönetişim bunları değiştirebileceğinden `qorechaind query gov params` ile doğrulayın.
+Bu değerler 20 Ekim 2026'da mainnet'ten okunmuştur (testnet'te de aynıdır); yönetişim bunları değiştirebileceğinden `qorechaind query gov params` ile doğrulayın.
 
 :::note QDRW tasarlandı ancak etkin değil
 QoreChain'in tasarımı, büyük stake'leri sönümleyecek ve itibarı ağırlıklandıracak bir **Kuadratik Delegasyon-İtibar Ağırlıklı (QDRW)** oylama gücü formülü içerir: `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`. Bu formül `x/qca` modülünde uygulanmıştır ancak her iki ağda da **kapalıdır** (`qorechaind query qca config` içinde `qdrw_enabled` değeri `false`) ve yönetişim sayımının parçası değildir; dolayısıyla bugün hiçbir oyu etkilemez. xQORE da henüz yayında değildir (bkz. [xQORE Staking](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Başlıca parametreler şunlardır:
 
-| Parametre            | Açıklama                                                         | Güncel değer (14 Eki 2026) |
+| Parametre            | Açıklama                                                         | Güncel değer (20 Eki 2026) |
 | -------------------- | ---------------------------------------------------------------- | -------------------------- |
 | `min_deposit`        | Bir teklifin oylamaya girmesi için gereken asgari depozito       | 10 QOR (`10000000uqor`)    |
 | `max_deposit_period` | Asgari depozitoya ulaşmak için tanınan zaman penceresi           | 2 gün                      |
@@ -170,6 +170,12 @@ Başlıca parametreler şunlardır:
 | `threshold`          | Kabul edilmesi için gereken asgari "yes" yüzdesi (çekimserler hariç) | 0.5                    |
 | `veto_threshold`     | Reddetmek ve depozitoyu yakmak için gereken asgari "no with veto" yüzdesi | 0.334             |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Hızlandırılmış teklifler için oylama dönemi, kabul eşiği ve depozito | 1 gün / 0.667 / 50 QOR |
+
+---
+
+## Mainnet'te şimdiye kadarki yönetişim {#mainnet-history}
+
+Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 11 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi ve 12 numaralı teklif bu yazıldığı sırada oylama dönemindeydi; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
 
 ---
 

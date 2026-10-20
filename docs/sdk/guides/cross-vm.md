@@ -28,7 +28,10 @@ Cross-VM calls are only as available as their target lane:
 - The typed REST read helpers below call routes the public gateway does not serve.
   Read messages with `connectQueryClients(rpc).crossvm` instead.
 - Like every Native-path transaction, a cross-VM call must carry the hybrid
-  signature (see [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  signature: connect the signing client with the account's keypair
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) so the cross-VM client signs
+  hybrid (see [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  Releases before 0.9.0 sign it classically and the public networks refuse it.
 :::
 
 ## Unified cross-VM calls
@@ -42,7 +45,7 @@ value }` or encode a payload yourself. The client's sender is the connected
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

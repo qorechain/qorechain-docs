@@ -12,9 +12,18 @@ adaptateurs EVM et SVM (`@qorechain/evm`, `@qorechain/svm`), le kit React
 (`@qorechain/react`) et les clients Python, Go, Rust et Java sont tous
 **publiés** sur leurs registres avec une parité complète avec la chaîne native (messages
 typés, requêtes, cycle de vie des tx, transactions PQC hybrides et
-abonnements WebSocket). La ligne de versions actuelle est la **0.8** : TypeScript, Python, Rust et
-Java sont en **0.8.3**, et le module Go est en **v0.8.4**. Choisissez votre langage
-ci-dessous.
+abonnements WebSocket). La ligne de versions actuelle est la **0.9**, publiée le 21 octobre
+2026 (vérifiée ce jour-là auprès de chaque registre) :
+
+| Registre | Paquet | Version |
+| --- | --- | --- |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `create-qorechain-dapp` | 0.9.0 |
+| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
+| crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
+| Proxy de modules Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+
+Choisissez votre langage ci-dessous.
 
 ## Notes de mise à niveau {#upgrade}
 
@@ -24,13 +33,60 @@ liée au chain id) et refusent l'ancienne forme avec le code `pqc` 21. Toutes le
 antérieures à la **0.8.0** signent l'ancienne forme, et la **0.8.0** cherche le basculement
 sous un seul des deux noms de mise à niveau utilisés par les réseaux (le mainnet l'a enregistré sous
 `v3.2.0`, le testnet sous `v3.1.98` puis `v3.2.0`), de sorte qu'elle signe la mauvaise forme
-sur le mainnet. Utilisez la **0.8.1 ou une version ultérieure** dans tous les langages ; la **0.8.2 ou une version ultérieure** est nécessaire
+sur le mainnet. Utilisez la **0.9.0** (ou au minimum la **0.8.1**) dans tous les langages ; la **0.8.2 ou une version ultérieure** est nécessaire
 pour ouvrir une [fenêtre d'autorisation EVM](/sdk/guides/evm#evm-window). Les constructeurs
 hybrides acceptent une option `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`) ; `"auto"`
 interroge le réseau et nécessite donc le point d'accès REST (`rest`) sur
 `qorechain-vladi` / `qorechain-diana` : il lève une erreur au lieu de deviner. Voir
 [Quelle forme de sign-bytes ?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
+La forme n'a pas changé dans la chaîne v3.2.3 (mainnet) ni v3.2.4 (testnet) : `"auto"`
+se résout en v2 sur les deux réseaux.
 :::
+
+## Ce qu'ajoute la 0.9.0 {#whats-new-090}
+
+Le SDK 0.9.0 est la version cliente pour les chaînes **v3.2.2** et **v3.2.3** (le mainnet
+les a appliquées aux hauteurs 3,556,788 et 3,662,051 ; le testnet exécute la v3.2.4). Le
+format de signature, les adresses, les décimales, les memos et les frais n'ont pas changé,
+si bien que la forme sign-bytes hybride v2 que signent la 0.8.1 et les versions suivantes
+reste la bonne.
+Voici les nouveautés :
+
+| Domaine | Dans la 0.9.0 |
+| --- | --- |
+| `TxClient` hybride (TypeScript) | Passez la paire de clés du compte : `client.connectTx(signer, { pqcKeypair })` ou `TxClient.connect({ …, pqcKeypair, rest })`. Chaque transaction est alors signée en mode hybride et `fee: "auto"` simule la transaction hybride elle-même ; un simple enregistrement de clé reste classique (le chemin d'amorçage de la chaîne). `bankSend` et les clients rollup, multilayer et cross-VM du SDK l'utilisent. Sans paire de clés, rien ne change |
+| Clé PQC récupérable | `derivePqcCanonical(address, mnemonic)` et ses équivalents dans chaque langage (voir [Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)) |
+| `ensurePqcRegistered` | Lit d'abord l'état de la clé via REST (`rest`), refuse d'enregistrer lorsqu'il ne peut pas le déterminer, lève `PqcKeyMismatchError` lorsque le compte détient déjà une autre clé, et traite le refus « déjà enregistrée » de la chaîne comme un succès. À partir de la chaîne v3.2.3, il signe et joint lui-même la **preuve de possession** ; avant la v3.2.3, il laisse le champ vide |
+| Fenêtres EVM à portée restreinte | `openEvmWindowMsg` accepte `nativeOnly` et `allowedTargets` (16 au plus, sans doublons) ; `fetchEvmWindow` relit les deux (voir le [guide EVM](/sdk/guides/evm#evm-window)) |
+| Consentement EIP-7702 | `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`, `classifyEvmDelegationRejection` |
+| Intégrité des clés | Les constructeurs d'enregistrement refusent `classical_only`, une clé vide et une clé ML-DSA-87 dégénérée, que la chaîne refuse à partir de la v3.2.3. `signProofOfPossession` / `verifyProofOfPossession` sont exportées ; `migratePqcKeyHybrid` envoie le `MsgMigratePQCKey` signé en mode hybride dont les comptes dotés d'une clé ont besoin à partir de la v3.2.3 |
+| Condensat de compte abstrait v2 | `evmAuthSignBytesV2` (lie la limite de gas de l'appel) et `resolveEvmAuthDigestVersion`. Le module `abstractaccount` est désactivé sur les deux réseaux ; ceci est donc donné à titre de référence |
+| Détection des mises à niveau | `isUpgradeApplied`, `requireUpgradeApplied` : les nouveaux champs facultatifs ne sont renseignés qu'une fois que `applied_plan` signale la version, car un nœud qui n'a pas appliqué une version refuse la transaction entière lorsqu'un des nouveaux champs de cette version est renseigné |
+| Décodage des erreurs | Un échec survenu dans un bloc conserve son codespace (par exemple `pqc` 231, et non `sdk_231`) ; `rate_limited` et les codes de délégation sont décodés ; `decodeTxError` lit le journal ou le message d'une erreur levée |
+| Règles de dépense | `validateSpendingRules` s'exécute dans les constructeurs de `MsgUpdateSpendingRules` et refuse une règle qui ne borne rien |
+| Correctifs | La route du compte PQC est la route au singulier `/qorechain/pqc/v1/account/{address}` dans tous les SDK (ainsi que dans `client.rest.getPqcAccount`, `isPqcRegistered` et `getPqcStatus` lorsqu'on leur donne le client composé) ; le `VERSION` exporté correspond au paquet ; les clients Go et Rust créés par le SDK expirent au lieu de rester bloqués ; les modèles de `create-qorechain-dapp` dépendent de la version avec laquelle ils sont livrés |
+
+La dérivation PQC historique pour les nouvelles clés (`derivePqcLegacy`, `"bridge"`) est
+dépréciée : elle n'est pas liée au compte, si bien qu'une même phrase mnémonique donnerait une même clé à
+chaque compte. Les helpers de rotation la refusent comme **nouvelle** clé ; récupérer une clé historique existante
+ou en changer par rotation fonctionne toujours.
+
+## Versions antérieures à la 0.9.0 {#before-090}
+
+Si vous êtes en 0.8.x, elle signe toujours la forme que vérifient les deux réseaux et fonctionne sur
+le mainnet v3.2.3 et le testnet v3.2.4. Voici les limites que la 0.9.0 supprime, et
+certaines coûtent des frais si vous ne les connaissez pas :
+
+| Version antérieure à la 0.9.0 | Contournement |
+| --- | --- |
+| Pas de constructeurs de preuve de possession, de fenêtre à portée restreinte ni de consentement EIP-7702 | Utilisez `qorechaind tx pqc register-key-v2 … --pqc-key <name>`, `open-evm-window --native-only` / `--allowed-targets`, et `authorize-evm-delegation` / `clear-evm-delegation` (voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window), [Délégations EIP-7702](/architecture/post-quantum-security#eip-7702)) |
+| `ensurePqcRegistered` sans `status` diffusait l'enregistrement sans vérification, et signalait un succès lorsqu'une autre clé était enregistrée | Un second enregistrement pour un compte qui détient déjà une clé est refusé **après le prélèvement des frais**. Lisez d'abord `GET /qorechain/pqc/v1/account/{address}` et passez `status: { registered: found }` |
+| `client.rest.getPqcAccount`, `isPqcRegistered`, `getPqcStatus` | Elles appelaient un chemin `/accounts/` au pluriel ou l'espace de noms `qor_`, que les points de terminaison publics ne servent pas (HTTP 501, `-32601`). Lisez la route REST au singulier ci-dessus |
+| `TxClient` / `bankSend` et les clients rollup, multilayer et cross-VM signaient en classique uniquement | Les réseaux le refusent pour tout compte qui possède une clé. Envoyez via `signAndBroadcastHybrid` |
+| Les transactions échouées dans un bloc perdaient leur codespace | Lisez la transaction depuis `GET /cosmos/tx/v1beta1/txs/{hash}` |
+| La constante `VERSION` exportée de la 0.8.3 indiquait `0.8.0` | Lisez la version installée depuis `package.json` |
+| `create-qorechain-dapp` 0.8.0 épinglait `@qorechain/sdk` / `@qorechain/evm` sur `^0.3.0` (un caret sur une version 0.x reste dans la 0.3) | Exécutez `npm i @qorechain/sdk@latest` après la génération |
+| `@qorechain/react` 0.8.x laissait l'état de la clé enregistrée illisible sur les points de terminaison publics | Utilisez `@qorechain/react` 0.9.0 |
 
 :::caution Anciens correctifs
 Le SDK **0.6.1** a corrigé un bogue critique pour le consensus : l'extension de corps de tx
@@ -86,21 +142,21 @@ fournisseur, des hooks et les composants `ConnectButton` / `QuantumSafeBadge`.
 npm i @qorechain/react
 ```
 
-Publié sur npm en `0.8.3`. Voir le [guide du kit React](/sdk/guides/react).
+Publié sur npm en `0.9.0` ; il dépend de `@qorechain/sdk` `^0.9.0`. Voir le [guide du kit React](/sdk/guides/react).
 
 ### Générateur de projet
 
-`create-qorechain-dapp` (npm, `0.8.0`) génère une dApp prête à l'emploi :
+`create-qorechain-dapp` (npm, `0.9.0`) génère une dApp prête à l'emploi :
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
-Les fichiers `package.json` générés épinglent `@qorechain/sdk` / `@qorechain/evm` sur
-`^0.3.0`, ce que npm résout vers une version 0.3 qui ne peut pas signer pour les réseaux
-en production. Après la génération, exécutez `npm i @qorechain/sdk@latest` (et
-`npm i @qorechain/evm@latest` pour le modèle EVM). Voir la
-[référence de la CLI](/sdk/reference/cli).
+Les fichiers `package.json` générés dépendent de la version du SDK avec laquelle le générateur
+est livré (`@qorechain/sdk` `^0.9.0` ; le modèle EVM utilise `@qorechain/evm` `^0.8.0`).
+La version 0.8.0 du générateur écrivait des plages `^0.3.0`, qui, sur une version 0.x, restent
+dans la 0.3 et ne peuvent pas signer pour les réseaux en production ; si vous avez généré avec la 0.8.0, exécutez
+`npm i @qorechain/sdk@latest`. Voir la [référence de la CLI](/sdk/reference/cli).
 
 ## Python
 
@@ -110,7 +166,7 @@ pip install qorechain-sdk
 
 Nécessite Python 3.10+. Le paquet fournit des annotations de types et un marqueur `py.typed`.
 
-> La distribution s'installe sous le nom `qorechain-sdk` (publiée sur PyPI en `0.8.3`)
+> La distribution s'installe sous le nom `qorechain-sdk` (publiée sur PyPI en `0.9.0`)
 > mais **s'importe sous le nom `qorsdk`** :
 >
 > ```python
@@ -132,7 +188,8 @@ import (
 )
 ```
 
-Publié comme module Go autonome (étiqueté `packages/go/v0.8.4`).
+Publié comme module Go autonome (étiqueté `packages/go/v0.9.0`). Épinglez la version
+explicitement : `go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`.
 
 ## Rust
 
@@ -151,7 +208,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Nécessite Rust 1.74+. Les clients de lecture sont asynchrones (Tokio). La crate s'importe sous le nom
 `qorechain` (`use qorechain;`).
 
-> Publié sur crates.io sous le nom `qorechain-sdk` (0.8.3) ; `cargo add qorechain-sdk`
+> Publié sur crates.io sous le nom `qorechain-sdk` (0.9.0) ; `cargo add qorechain-sdk`
 > installe la dernière version publiée.
 
 ## Java
@@ -162,28 +219,32 @@ Maven (`pom.xml`) :
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.8.3</version>
+  <version>0.9.0</version>
 </dependency>
 ```
 
 Ou Gradle :
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.8.3'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 ```
 
-> Publié sur Maven Central sous `io.github.qorechain:qorechain-sdk:0.8.3`. Central
-> n'a aucune version 0.8.0 ni 0.8.1, donc sur les réseaux en production utilisez la 0.8.2 ou une version ultérieure.
+> Publié sur Maven Central sous `io.github.qorechain:qorechain-sdk:0.9.0` (vérifié le
+> 21 octobre 2026). Central n'a aucune version 0.8.0 ni 0.8.1, donc sur les réseaux en production utilisez la
+> 0.9.0 (ou la 0.8.2 ou une version ultérieure).
 
 ## Paquets associés {#related-packages}
 
 | Paquet | Rôle | Version |
 | --- | --- | --- |
-| `@qorechain/wallet-adapter` | Assistants côté portefeuille : génération de portefeuille (`generateQoreWallet`), signature hybride `eth_secp256k1` (`signHybridEth`, `QoreChainSigner`), enregistrement du réseau MetaMask (`addQoreEvmToWallet`), constructeurs de messages d'authenticator et de fenêtre EVM. Dépendances de type pair : `@cosmjs/proto-signing` et `@cosmjs/stargate` `^0.32` | 0.3.0 |
-| `@qorechain/chain-bridge` | Worker côté serveur pour les backends : dérive la clé PQC, signe en hybride et diffuse (`sendTokens`, `registerPqc`, et plus). Passez `cosmosRest` | 0.2.2 |
-| `@qorechain/pqc` | Primitives ML-DSA / ML-KEM / SHAKE-256 conformes aux standards uniquement et `hybridSignBytes` (voir [Signature post-quantique](/developer-guide/post-quantum-signing)) | 0.2.1 |
+| `@qorechain/wallet-adapter` | Assistants côté portefeuille : génération de portefeuille (`generateQoreWallet`), signature hybride `eth_secp256k1` (`signHybridEth`, `QoreChainSigner`), enregistrement du réseau MetaMask (`addQoreEvmToWallet`), constructeurs de messages d'authenticator et de fenêtre EVM (son `openEvmWindowMsg` ne construit que la forme sans restriction), le condensat de compte abstrait v2. Il ne joint pas de preuve de possession. Dépendances de type pair : `@cosmjs/proto-signing` et `@cosmjs/stargate` `^0.32` (le SDK utilise cosmjs 0.39 ; installer les deux dans un même projet fait donc signaler un conflit de dépendances de type pair par npm, `ERESOLVE` ; gardez-les dans des projets séparés ou passez `--legacy-peer-deps`) | 0.4.0 |
+| `@qorechain/chain-bridge` | Worker côté serveur pour les backends : dérive la clé PQC, signe en hybride et diffuse (`sendTokens`, `registerPqc`, et plus). Passez `cosmosRest` : avec lui, un enregistrement porte la preuve de possession dès que le réseau a appliqué la v3.2.3, et un refus d'apparence PQC est vérifié auprès de la chaîne avant tout nouvel enregistrement (une clé enregistrée différente lève `pqc_key_mismatch` au lieu de payer un second enregistrement) | 0.2.3 |
+| `@qorechain/pqc` | Primitives ML-DSA / ML-KEM / SHAKE-256 conformes aux standards uniquement et `hybridSignBytes` (voir [Signature post-quantique](/developer-guide/post-quantum-signing)) ; également sur PyPI, crates.io, Maven Central et le proxy Go (Go `v0.2.2`) à la même version | 0.2.2 |
 | `@qorechain/handles` | Résolution vérifiée des `@handle` avec épinglage à la première utilisation (`HandleClient`) | 0.1.0 |
-| `@qorechain/rdk` | Client du Rollup Development Kit (voir [Rollups](/rollups/why)). La version npm (0.4.4) signe les transactions en classique uniquement, ce que les réseaux refusent ; elle peut donc lire mais pas envoyer ; la signature hybride est dans la 0.5.0, actuellement sur PyPI et le module Go uniquement | 0.4.4 (npm) |
+| `@qorechain/connect` | Un connecteur unique pour les portefeuilles EVM, Cosmos et SVM, construit sur l'adaptateur de portefeuille (sa plage de pairs est `@qorechain/wallet-adapter` `^0.2.1`, qui n'inclut pas la 0.4.0). Il n'ouvre pas de [fenêtre d'autorisation EVM](/sdk/guides/evm#evm-window) : un envoi EVM via ce paquet est donc refusé tant que le compte n'a pas de clé enregistrée ni de fenêtre ouverte | 0.2.1 |
+| `@qorechain/rdk` | Client du Rollup Development Kit (voir [Rollups](/rollups/why)). Il dépend de `@qorechain/sdk` `^0.8.0` ; npm installe donc le SDK 0.8.3 comme sa propre copie, même lorsque votre application utilise le SDK 0.9.0. Ne signe en mode hybride que lorsque vous passez une `pqcKeypair` ; les lectures fonctionnent sans elle. Voir les [limites de la 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits) | 0.5.0 |
+| `@qorechain/rdk-cli` | La CLI opérateur `qorollup` pour le RDK. Ses commandes de transaction signent en classique uniquement et sont refusées par les réseaux | 0.5.0 |
+| `create-qorechain-rollup` | Générateur de projets rollup ; ses modèles dépendent de `@qorechain/rdk` `^0.5.0` | 0.5.0 |
 
 ## Étape suivante
 

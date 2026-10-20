@@ -23,7 +23,7 @@ Das Bridge-Modul ist auf Mainnet und Testnet bereitgestellt, aber **keine Bridge
 | Bridge-Operationen | 0 | 0 |
 | IBC-Kanäle / -Clients | 0 / 0 | 0 / 0 |
 
-(Geprüft im Oktober 2026. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators`.)
+(Geprüft am 20. Oktober 2026 gegen Mainnet v3.2.3 und Testnet v3.2.4. Die Live-Werte lesen Sie mit `qorechaind query bridge chains` und `qorechaind query bridge validators` oder über REST unter `/qorechain/bridge/v1/chains` und `/qorechain/bridge/v1/validators`.) Die Modulkonfiguration ist auf beiden Netzwerken gleich: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 und `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Der IBC-Stack, den das Modul verwenden würde, ist ibc-go v10.7 (seit v3.2.2), es wurde jedoch noch kein Client und kein Kanal erstellt.
 
 ## Verbindungsübersicht
 
@@ -193,6 +193,8 @@ Alle QCB-Bridge-Operationen erfordern einen **7-aus-10-Schwellenwert** von Dilit
 * Einer Liste unterstützter Chains
 * Einem Reputationswert (verwaltet von `x/reputation`)
 
+Seit v3.2.2 validiert das Modul Nullbeträge und seine Konfiguration auf jedem Pfad einheitlich. **Nur Testnet (v3.2.4, nicht im Mainnet):** Die Registrierung eines Bridge-Validators erfordert zusätzlich einen Besitznachweis des Dilithium-5-Schlüssels (dasselbe `proof_of_possession`-Format wie bei der PQC-Schlüsselregistrierung, siehe [Post-Quanten-Sicherheit](/architecture/post-quantum-security#proof-of-possession)) und weist einen Schlüssel zurück, den bereits ein anderer Bridge-Validator verwendet. Das Mainnet v3.2.3 hat keine solche Prüfung, und auf keinem der beiden Netzwerke ist ein Bridge-Validator registriert.
+
 ### Circuit Breaker
 
 Jede verbundene Chain verfügt über unabhängige Circuit-Breaker-Schutzmechanismen:
@@ -234,6 +236,8 @@ Ab Chain-Version **v3.1.78** kann eine Bridge-Chain nach dem Deployment mit eine
 * **`tx bridge set-verifier-bootstrap`** — den aktiven Verifier für eine Chain auswählen und dessen Trust Root installieren (`MsgSetVerifierBootstrap`).
 
 Dadurch kann ein Betreiber die Bridge einer verbundenen Chain direkt online bringen — oder deren Verifier rotieren —, wobei die Autorisierung gegen den Bridge-Admin-Key geprüft wird. Ab Chain-Version **v3.2.0** besitzt das Bridge-Modul außerdem ein eigenes Modul-Konto (frühere Releases hatten keines, sodass die erste Einzahlung auf einer aktivierten Route fehlgeschlagen wäre).
+
+Lizenzen wie `qcb_bridge` werden vom Lizenzautoritäts-Konto vergeben. Seit v3.2.3 (Mainnet) kann die Governance dieses Konto mit einem `MsgUpdateAuthority`-Vorschlag ersetzen; das Modul selbst ist unter [Chain-Lizenzierung](/architecture/chain-licensing) beschrieben.
 
 ### Validierung verbundener Netzwerke
 

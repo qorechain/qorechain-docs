@@ -21,8 +21,32 @@ Commands below use `qorechaind`. Append the usual transaction flags (`--from`, `
 :::
 
 :::caution No pools exist yet
-The AMM module is live on mainnet and the testnet, but **no pools have been created yet**, and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
+The AMM module is live on mainnet (v3.2.3) and the testnet (v3.2.4), but **no pools have been created yet** (checked 20 October 2026: `GET /qorechain/amm/v1/pools` returns an empty list on both), and the denoms in the examples below (`uusdc`, `uusdt`) are illustrative: no such assets exist on the networks today. Until a pool exists, every swap or add-liquidity command fails with a pool-not-found error.
 :::
+
+## Module parameters {#parameters}
+
+Read the live values with `qorechaind query amm params` or `GET /qorechain/amm/v1/params`. Mainnet and testnet currently report the same values:
+
+| Parameter | Value | Meaning |
+| --- | --- | --- |
+| `enabled` | `true` | Module switch |
+| `swap_fee_bps` | `30` | Swap fee, 0.30 % of the input amount |
+| `protocol_fee_bps` | `10` | The part of the swap fee that leaves the pool as the protocol share (0.10 % of the input). The rest stays in the pool for liquidity providers |
+| `pool_creation_fee` | `100000000` | 100 QOR (in uqor), charged on top of the initial deposits and burned when a pool is created |
+| `min_liquidity` | `1000` | The smaller of a new pool's two initial deposits must be at least this many base units |
+| `max_pools_per_creator` | `50` | Pools one account may create |
+| `max_swap_impact_bps` | `500` | Largest price impact a swap may have (5 %); see [Swap rules](#swap-rules) |
+| `lp_token_decimals` | `6` | Decimals of a pool's LP token |
+
+## Swap rules enforced since v3.2.2 {#swap-rules}
+
+The AMM integrity fixes below were applied to mainnet with v3.2.2 (height 3,556,788, 16 October 2026) and refined in v3.2.3 (height 3,662,051, 20 October 2026). They apply to every swap, whichever lane it arrives from.
+
+* **Both denominations are bound to the pool.** A swap must name the two denoms of the pool it targets. Stable-swap pools are priced with the stable-swap curve in both directions (exact-in and exact-out).
+* **Protocol fee.** The protocol share of the swap fee leaves the pool. When it is paid in QOR it goes to the fee collector and is split with the block's other fees (see [Tokenomics](/architecture/tokenomics)), with the burned part recorded under the `amm` burn source; in any other denomination it goes to the community pool. The pool creation fee is burned and recorded under the same `amm` source.
+* **Price-impact cap.** `max_swap_impact_bps` is enforced: a swap whose price impact over the pool's price exceeds 5 % is refused. A swap that sets no slippage bound (`min-out` of 0 on exact-in, or a `max-in` that covers the whole input reserve on exact-out) is additionally measured against the pool's price at the start of the block and is refused if earlier trades in the same block moved it past the cap. Set a real `min-out` / `max-in` on every swap.
+* **Bounded end-of-block work (v3.2.3).** At the end of each block the module refreshes the running weighted-average price of at most 100 pools, round-robin. While there are 100 pools or fewer, every pool is refreshed every block; beyond that, a pool's average updates once per round of `ceil(pools / 100)` blocks. The average is informational (it is returned by `pool` queries) and does not change swap pricing.
 
 ## Pools and LP shares
 
@@ -127,7 +151,7 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Pausing and resuming a pool
 
-Pools can be paused and resumed by the governance authority. On mainnet these two messages are currently switched off by the circuit breaker. A paused pool rejects swaps and liquidity changes until it is resumed — useful for incident response or coordinated maintenance.
+Pools can be paused and resumed by the governance authority. On mainnet these two messages are currently switched off by the circuit breaker; on the testnet they are not switched off. A paused pool rejects swaps and liquidity changes until it is resumed — useful for incident response or coordinated maintenance.
 
 
 ## Command summary
@@ -161,4 +185,5 @@ Pools can be paused and resumed by the governance authority. On mainnet these tw
 - The **Dashboard Trade / DEX** surfaces these pools, quotes, and swaps in a graphical interface for everyday users.
 - For how QOR supply, fees, and value flow through the chain, see [Tokenomics](/architecture/tokenomics).
 - Try swaps yourself in the [Trade / DEX](/dashboard/trade) interface.
-- To bring assets onto QoreChain first, see [Bridging Assets](/user-guide/bridging-assets).
+- To bring assets onto QoreChain first, see [Bridging Assets](/user-guide/bridging-assets) (the bridge is not live yet).
+- Pools can also be a fee price source for [Gas Abstraction](/user-guide/gas-abstraction); no token is accepted for fees today.

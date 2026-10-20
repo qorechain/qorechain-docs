@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain bettet **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), eine Optimierungsschicht auf Basis von Reinforcement Learning, über das Modul `x/rlconsensus` direkt in die Konsensschicht ein. PRISM beobachtet alle N Blöcke Chain-Metriken und ist darauf ausgelegt, die Inferenz durch ein neuronales Netz mit Festkomma-Arithmetik auszuführen und Anpassungen der Konsensparameter vorzuschlagen — alles deterministisch, ohne Gleitkommaarithmetik in konsenskritischen Pfaden.
 
-:::note Aktueller Stand (Oktober 2026)
-Sowohl im Mainnet als auch im Testnet befindet sich der Agent im Modus `conservative`, erfasst alle 10 Blöcke eine Beobachtung und eine Belohnung und hat **keine geladenen Policy-Gewichte**: Er hat 0 Schritte ausgeführt und wendet keine Parameteränderung an. Die Blockzeit wird durch die Node-Konfiguration der Validatoren bestimmt, nicht durch PRISM. Das Laden einer Policy und das Ändern des Modus sind Governance-Aktionen, die derzeit im Mainnet durch den Circuit Breaker deaktiviert sind.
+:::note Aktueller Stand (20. Oktober 2026: Mainnet v3.2.3, Testnet v3.2.4)
+Sowohl im Mainnet als auch im Testnet befindet sich der Agent im Modus `conservative`, erfasst alle 10 Blöcke eine Beobachtung und eine Belohnung und hat **keine geladenen Policy-Gewichte**: Er hat 0 Schritte ausgeführt und wendet keine Parameteränderung an (geprüft über die Abfragen `AgentStatus` und `Policy` auf beiden Netzwerken). Die Blockzeit wird durch die Node-Konfiguration der Validatoren bestimmt, nicht durch PRISM. Das Laden einer Policy, das Ändern des Modus, das Fortsetzen des Agenten und das Aktualisieren der Belohnungsgewichte sind Governance-Aktionen, die derzeit im Mainnet durch den Circuit Breaker deaktiviert sind; im Testnet sind sie nicht deaktiviert.
+
+Zwei Release-Änderungen schränken ein, was eine künftige Policy oder Parameteränderung bewirken kann. Seit v3.2.2 wird ein Governance-Policy-Update mit geprüfter Arithmetik validiert. Seit v3.2.3 werden die Governance-Nachrichten am rohen Wire-Wert (dem Agentenmodus) auf ihren Wertebereich geprüft, und jedes Belohnungsgewicht muss zwischen 0 und 1 liegen.
 :::
 
 *Die PRISM-Optimierungsschleife: Chain-Zustand beobachten, Policy-Inferenz ausführen, Parameteränderungen begrenzen und anwenden, dann das Ergebnis zurückspeisen.*

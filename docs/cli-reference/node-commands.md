@@ -10,7 +10,9 @@ sidebar_position: 1
 Reference for `qorechaind` commands used to initialize, configure, and operate a QoreChain node.
 
 :::note
-QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 29 June 2026; current node release **v3.2.1**) and the **`qorechain-diana`** testnet (node release **v3.2.2**). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
+QoreChain runs two networks: the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.3**, applied at height 3,662,051 on 20 October 2026) and the **`qorechain-diana`** testnet (node release **v3.2.4**, applied at height 8,337,253 on 19 October 2026; v3.2.4 is not yet applied on mainnet; governance proposal 13 would apply it at height 3,742,566). Pass the appropriate `--chain-id` for the network you intend to join — the examples below target the testnet; use `--chain-id qorechain-vladi` for mainnet. The current release for each network is listed in `latest.json` under [download.qore.host](https://download.qore.host).
+
+The commands on this page were checked against the v3.2.3 release binary, which is the mainnet release. The testnet's v3.2.4 binary adds commands that mainnet does not have; where this manual mentions one, it is marked **testnet only**.
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ---------------------------------------------------- |
 | `--home`               | string | Node home directory                                  |
 | `--minimum-gas-prices` | string | Minimum gas price this node accepts. The network floor is `0.1uqor`; set at least that |
-| `--pruning`            | string | Pruning strategy: `default`, `nothing`, `everything` |
+| `--pruning`            | string | Pruning strategy: `default`, `nothing`, `everything`, `custom` (with `--pruning-keep-recent` and `--pruning-interval`) |
 | `--halt-height`        | uint   | Stop the node at this block height                   |
 | `--halt-time`          | uint   | Stop the node at this Unix timestamp                 |
 | `--log_level`          | string | Log verbosity: `info`, `debug`, `warn`, `error`      |
 | `--trace`              | bool   | Enable full stack trace on errors                    |
 
+A binary built from the public source tree (the community build) refuses to start on `qorechain-vladi` or `qorechain-diana`: it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully (node release v3.2.3 and later). Use the release binary from [download.qore.host](https://download.qore.host); see [Building from Source](/developer-guide/building-from-source).
+
 ---
 
 ## version
 
-Print the `qorechaind` binary version and build information.
+`qorechaind version` does **not** report the release number on the release binaries: it prints an empty line, and `version --long` adds no build details. Do not rely on it to tell releases apart. To confirm what you run:
+
+- Compare the SHA-256 of the **downloaded archive** with `binary.sha256` in the network's [manifest](https://download.qore.host/mainnet/latest.json) before you extract it (and keep that archive, or its checksum, as the record of what you installed).
+- Ask the chain which upgrades it has applied: `GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>` returns the height an upgrade was applied at, or `0` if it has not been applied.
 
 ```bash
-qorechaind version
-```
-
-Use `--long` for extended build details including Go version, commit hash, and build tags:
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

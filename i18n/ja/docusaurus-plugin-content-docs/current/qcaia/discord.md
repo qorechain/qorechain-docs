@@ -13,7 +13,7 @@ Discord では、QCAIA は**スラッシュコマンド**を通じて動作し�
 
 公式の QoreChain Discord サーバーに参加してください。
 
-**[discord.gg/qorechain](https://discord.gg/qorechain)**
+**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
 
 参加したら、**#general** チャンネルに移動して QCAIA と話してください。
 

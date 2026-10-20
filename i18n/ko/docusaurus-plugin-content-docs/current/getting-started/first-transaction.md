@@ -10,7 +10,7 @@ sidebar_position: 5
 이 가이드에서는 QOR 토큰 전송, 트랜잭션 조회, 그리고 QoreChain의 네이티브, EVM, SVM 인터페이스를 통한 상호작용 방법을 다룹니다.
 
 :::note
-아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 기준으로 합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 29일부터 운영 중입니다 — 메인넷에서 트랜잭션을 수행할 때는 **메인넷 연결하기** 페이지에 나온 메인넷 체인 ID와 엔드포인트로 교체하세요.
+아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 기준으로 합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 7일부터 운영 중이며 릴리스 v3.2.3을 실행합니다(테스트넷은 v3.2.4를 실행합니다) — 메인넷에서 트랜잭션을 수행할 때는 **메인넷 연결하기** 페이지에 나온 메인넷 체인 ID와 엔드포인트로 교체하세요.
 :::
 
 ## 잔액 확인하기
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+v3.2.3부터 체인은 등록 시 선택적인 **소유 증명(proof of possession)**도 받으며, 약한 키, 퇴화(degenerate) 키, 이미 사용된 키는 거부합니다. 소유 증명을 첨부하려면 `register-key-v2`로 등록하고 로컬 키 이름을 지정하세요.
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ EVM 레인의 나머지 부분은 달라지지 않았습니다. MetaMask, ethers
 * 받아들여진 뒤 실패한 트랜잭션도 슬롯과 금액 예산을 소모합니다.
 * 새 윈도우를 열면 이전 윈도우를 **대체**하며, 소비량은 0부터 다시 시작합니다.
 * CLI는 `max-value`를 `uqor` 또는 `qor` 단위로 받습니다(`1000qor` = 1,000,000,000 uqor).
+* 금액 한도는 네이티브 QOR만 집계합니다. 토큰 전송, approval, 그 밖의 컨트랙트 호출은 금액이 0입니다. 이러한 것들도 제한하려면 윈도우의 범위를 좁히세요(아래).
 
 **1단계 — 포스트 퀀텀 키 등록**(한 번만): 위의 [포스트 퀀텀 키 등록하기](#register-pqc-key)를 참고하세요.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**범위 좁히기(v3.2.3 이상).** 두 개의 선택적 플래그로 열린 윈도우가 받아들이는 대상을 제한할 수 있습니다. `--native-only`는 일반 네이티브 QOR 전송만 허용하고(calldata 없음, 컨트랙트 생성 없음, 코드를 가진 수신자 없음), `--allowed-targets 0xAAA...,0xBBB...`는 해당 수신자로 가는 트랜잭션만 허용합니다(최대 16개이며, 이 경우 컨트랙트 생성은 거부됩니다). 예를 들면 다음과 같습니다.
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 메인넷에서 윈도우를 여는 데는 약 180,000 가스가 사용되었습니다. [QoreX](/qorex/security-and-recovery#evm-window)에서는 같은 단계가 **설정 → 보안 → EVM 액세스 윈도우**(앱) 또는 **EVM 액세스 윈도우** 버튼(확장 프로그램)입니다. 윈도우를 열면 계정 nonce가 증가하므로, 지갑에서 EVM 트랜잭션을 준비하기 **전에** 윈도우를 여세요.
@@ -162,7 +177,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/qor1youraddres
 
 **4단계 — EVM 레인을 평소처럼 사용.** MetaMask나 사용 중인 툴링에서 평소처럼 전송하세요. 각 트랜잭션은 윈도우에서 트랜잭션 슬롯 하나와 (금액 + 최대 수수료)를 소모합니다.
 
-**윈도우를 일찍 닫기.** 클래식 키가 탈취되었다고 의심되면 윈도우를 닫으세요. 윈도우가 아직 허용하고 있던 것은 다음 블록부터 거부됩니다.
+**윈도우를 일찍 닫기.** 클래식 키가 탈취되었다고 의심되면 윈도우를 닫으세요. 윈도우가 아직 허용하고 있던 것은 다음 블록부터 거부됩니다. 윈도우를 닫으면 보류 중인 EIP-7702 위임 동의도 함께 철회됩니다(v3.2.2부터. 계정의 코드를 변경하는 type-4 트랜잭션은 포스트 퀀텀 `authorize-evm-delegation` 동의가 있어야만 허용됩니다).
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

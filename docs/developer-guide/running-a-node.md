@@ -26,8 +26,10 @@ The current binary, genesis, peers, seeds, and a state-sync trust point are publ
 The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (a trust point refreshed hourly), and `minCompatible`. The install and join steps below fetch this manifest and use its current values.
 :::
 
-:::caution v3.2.0 or later required for a node joining fresh
-A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (for example the v3.1.94 emission cap at height 2,122,074 and the v3.2.0 upgrade at height 2,981,742), so always install the binary the manifest points to: it carries every upgrade handler. A fresh mainnet node needs **v3.2.0 or later**: `minCompatible` in the manifest is `3.2.0`, the oldest release that still follows the chain, and `version` (currently `3.2.1`) is the recommended one, a node-local release with no upgrade height. The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`. On the testnet, `minCompatible` equals `version` (currently `3.2.2`).
+:::caution Use the release the manifest names: v3.2.3 on mainnet
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.3` (the coordinated upgrade applied at height 3,662,051 on 20 October 2026), so a node joining now needs v3.2.3: an older binary stops at the upgrade height it does not know. On the **testnet** they are both `3.2.4` (applied at height 8,337,253 on 19 October 2026); v3.2.4 is not applied on mainnet yet (governance proposal 13 would apply it on mainnet at height 3,742,566), so do not run a testnet binary against mainnet. The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
+
+A binary built from the public source (the community build) refuses to start on either public network (v3.2.3 and later): it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully. Use the release archive only.
 
 Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP (the node stops when its clock is more than 60 seconds out), and set `evm-chain-id` in `app.toml` (see [Node limits](#node-limits)).
 :::
@@ -50,8 +52,8 @@ Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP 
 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 29 Jun 2026 |
-| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.3 |
+| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.4 (testnet only) |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
 
@@ -73,7 +75,7 @@ NVMe SSD is strongly recommended — chain state and the EVM/SVM stores are I/O 
 
 ### Docker Compose
 
-A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull yet. The `Dockerfile` in the public repository builds the **community** binary (no post-quantum library, stub keepers): that is suitable for local development but it cannot follow mainnet or testnet. For a network node, build your own image from the **release archive** named in `latest.json`, tag it to the release version (**v3.2.1** on mainnet, **v3.2.2** on testnet), then mount a persistent volume for chain data:
+A node-only deployment with Docker Compose. There is no publicly published `qorechaind` image to pull (nothing is published under the project's Docker Hub organisation). The `Dockerfile` in the public repository builds the **community** binary (no post-quantum library, stub keepers): that is suitable for local development but it cannot follow mainnet or testnet, and since v3.2.3 it refuses to start on them. For a network node, build your own image from the **release archive** named in `latest.json`, tag it to the release version (**v3.2.3** on mainnet, **v3.2.4** on testnet), then mount a persistent volume for chain data:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -90,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.1 release/
+docker build -t qorechain-node:v3.2.3 release/
 ```
 
 The archive contains `qorechaind` and a `lib/` directory with its shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); the image above is `linux/amd64` only, like the release archive.
@@ -99,7 +101,7 @@ The archive contains `qorechaind` and a `lib/` directory with its shared librari
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.1
+    image: qorechain-node:v3.2.3
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -250,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot restore
 
-Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. On mainnet the manifest's `snapshot` object gives the URL, the block `height`, the size and the SHA-256 (the testnet manifest currently carries only the URL, so use state sync there). Read `snapshot.height` before using it: the mainnet snapshot is a single archive of about 27 GB, and an old one means a long catch-up (the mainnet snapshot currently published predates both the v3.1.94 and v3.2.0 upgrade heights, so a node restored from it must replay them with a v3.2.x binary).
+Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. On mainnet the manifest's `snapshot` object gives the URL, the block `height`, the size and the SHA-256. **The testnet manifest's snapshot URL currently returns `404` (no testnet snapshot is published), so use state sync there.** Read `snapshot.height` before using the mainnet one: it is a single archive of about 27 GB, and an old one means a long catch-up. The mainnet snapshot currently published is from 21 August 2026 (height 1,966,629): it predates the v3.1.94, v3.2.0, v3.2.2 and v3.2.3 upgrade heights, so a node restored from it replays about two months of blocks with the v3.2.3 binary. State sync is almost always the better choice.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -265,6 +267,25 @@ qorechaind start --minimum-gas-prices=0.1uqor
 :::note
 The manifest's `snapshot.height` and `snapshot.ts` fields say how fresh the archive is, and state sync (above) is usually faster than a 27 GB download. Always verify the checksum before extracting, and use a node release that carries every upgrade handler (see the caution at the top of this page) when replaying from a snapshot.
 :::
+
+---
+
+## Upgrades {#upgrades}
+
+Consensus changes arrive as **coordinated governance upgrades**: a passed proposal names a plan (for example `v3.2.3`) and a block height. The release binary carries the upgrade handlers; at the plan height every node must be running it, and a node still on the previous binary **halts at that height** (this is the intended behaviour of the upgrade module). The manifest tells you which kind a release is: `upgradeType` is `height` for a coordinated upgrade (with `upgradeHeight` set) and `rolling` for a node-local release that can be swapped node by node. Install the new binary **before** the height; if your node halted first, swap the binary and restart (see the rollback note under [Troubleshooting](#troubleshooting)).
+
+| Release | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
+| ------- | ------------------------- | ------------------------- |
+| v3.1.94 | height 2,122,074 | not applied |
+| v3.2.0 | height 2,981,742 | height 5,920,000 |
+| v3.2.1 | node-local, no height | node-local |
+| v3.2.2 | height 3,556,788 (16 Oct 2026) | height 6,905,034 (2 Oct 2026) |
+| v3.2.3 | height 3,662,051 (20 Oct 2026, governance proposal 11) | height 8,003,746 (15 Oct 2026) |
+| v3.2.4 | **not applied on mainnet yet (governance proposal 13 would apply it at height 3,742,566); testnet only today** | height 8,337,253 (19 Oct 2026, governance proposal 13) |
+
+Read the live record with `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = not applied) and any pending plan with `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 raised the consensus engine, Cosmos SDK (v0.53.8) and IBC dependencies, and the SDK's stricter transaction checks make that release replace the previous binary at the upgrade height rather than node by node. Transaction signing, addresses, decimals, memos and fees did not change in v3.2.2 or v3.2.3.
+
+**State sync and the clock.** State sync takes its trust point from the manifest's `stateSync` block (`trustHeight`, `trustHash`, refreshed hourly); the RPC server it lists is the project's own, so for a production node add RPC servers you trust and check the trust hash against another source. Keep the clock NTP-synchronised: the node stops when it is more than 60 seconds out of step with the network.
 
 ---
 
@@ -338,7 +359,7 @@ ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
 
-The public endpoints serve the `eth_`, `net_`, `web3_` and `txpool_` namespaces. The `qor_` namespace is not served by any released node build, so do not add it (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
+The public endpoints serve the `eth_`, `net_`, `web3_` and `txpool_` (status only) namespaces; a node initialised by v3.2.3 or later defaults to `eth,net,web3` and leaves `txpool` out (it publishes the node's pending transactions), so add it only if you need it. The `qor_` namespace is not served by any released node build, so do not add it (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
 
 And the RPC listener in `config.toml`:
 
@@ -403,7 +424,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.1** on mainnet), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
+1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.3** on mainnet), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 
@@ -421,7 +442,7 @@ To observe the network without running a full node, see the [Light Node document
 
 ---
 
-## Troubleshooting
+## Troubleshooting {#troubleshooting}
 
 ### The node stops with a clock error
 

@@ -56,6 +56,10 @@ Toate cele patru acțiuni se află pe pagina **Portofel** (`/wallet`), nu pe pag
 8. Panoul arată acum **Approve it in QoreX**, cu un link **Open QoreX** și un ID de cerere. QoreX îți va arăta validatorul și suma înainte de semnare — nimic nu este trimis până când nu aprobi acolo. Dacă extensia de browser QoreX este detectată, este oferit și un buton **Approve in the browser extension**.
 9. Deschide QoreX (link-ul/deeplink-ul face asta) și aprobă delegarea. QoreX construiește, semnează și transmite tranzacția; dashboard-ul nu vede niciodată cheia ta.
 
+:::note Staking-ul cu blocare în timp există doar pe testnet
+Un modul opțional de staking cu blocare în timp există doar pe testnet (lanțul v3.2.4) — vezi [Staking cu blocare în timp](/user-guide/staking-and-delegation#time-locked-staking). Nu se află încă pe mainnet (propunerea de guvernanță 13 de pe mainnet l-ar aplica la înălțimea 3.742.566), iar nici Dashboard-ul, nici QoreX nu au un ecran pentru el. Delegările făcute aici sunt delegări obișnuite, fără blocare; singura așteptare este eliberarea (unbonding) de 21 de zile la ieșire.
+:::
+
 ### Redelegă {#redelegate}
 
 Dashboard-ul în sine nu are un panou dedicat de Redelegare — dar nu mai ai nevoie de unul. **QoreX poate acum muta el însuși stake-ul între validatori direct** (aplicația 1.0.8+ și extensia 0.2.6+): fără cele 21 de zile de așteptare pentru eliberare, fără recompense pierdute, și poate chiar împărți o mutare către mai mulți validatori destinație într-o singură tranzacție. Deschide **Stake** în QoreX, atinge validatorul pe care vrei să-l părăsești și alege unde ar trebui să meargă stake-ul — vezi [Mută stake-ul între validatori](/qorex/portfolio-and-staking#move-stake) pentru ghidul complet. Acesta este un răspuns mai bun decât orice ar putea oferi contractul propriu de cerere al dashboard-ului, așa că folosește QoreX direct pentru asta, în loc de soluția temporară de mai jos.

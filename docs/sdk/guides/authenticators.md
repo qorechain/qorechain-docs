@@ -44,8 +44,9 @@ domain-separated, replay-bound **sign-bytes** digest.
                                                                   spend FROM canonical account
 ```
 
-The relayer is a **different** account than the owner, so it does not bump the
-account's EVM nonce.
+The relayer is a **different** account than the owner. The nonce the authenticator
+signs is the linked key's own sequence, kept by the chain (see [Nonces](#nonces)),
+not the account's EVM nonce.
 
 ## The three lanes
 
@@ -245,7 +246,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -273,6 +275,20 @@ sha256( "qorechain-evm-auth-v1"
 `to` is the `0x`-hex recipient, `value` the decimal wei string, `data` the raw
 calldata.
 
+**EVM lane, v2 (chain v3.2.3)** — `evmAuthSignBytesV2({ …, gasLimit })` appends the
+call's gas limit, so a relayer cannot replay a valid signature with another limit.
+The chain verifies exactly one form per block: v1 below the v3.2.3 upgrade, v2 from
+it. `resolveEvmAuthDigestVersion({ rest })` returns `"v2"` once the network has applied
+v3.2.3 and `"v1"` before, and `buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm`
+take `digestVersion` (default `"v1"`, so pass `"v2"` on a network at v3.2.3 or later).
+`gasLimit` must be non-zero.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Native lane** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 returns a 32-byte digest:
 
@@ -291,24 +307,20 @@ returns the string both keys sign (UTF-8 of it):
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## Nonces
+## Nonces {#nonces}
 
-- `MsgExecuteEVM.nonce` = the account's **current EVM nonce** (the relayer is a
-  different account and does not bump the owner's nonce, so do **not** add 1).
-- `MsgExecuteCosmos.nonce` = the **per-authenticator sequence** for
-  `(account, pubkey)` — a store counter distinct from the account's own
-  sequence, incremented on each successful Native-lane spend.
+Both lanes use the **per-authenticator sequence** for `(account, pubkey)`: a counter
+the chain keeps for each linked key, starting at 0 and incremented by each successful
+execution.
 
-Getting the nonce wrong is a replay rejection
-(`abstractaccount` code 11, see below).
+- `MsgExecuteEVM.nonce` is this counter, **not** the account's EVM nonce
+  (`eth_getTransactionCount`).
+- `MsgExecuteCosmos.nonce` is the same kind of counter.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+There is no query for the counter yet, so track it per linked key: 0 for a newly
+linked key, +1 after each execution the chain accepts. Sending a value that is not
+the chain's current counter is a replay rejection (`abstractaccount` code 11, see
+below).
 
 ## The permission schema
 

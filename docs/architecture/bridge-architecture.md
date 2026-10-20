@@ -23,7 +23,7 @@ The bridge module is deployed on mainnet and testnet, but **no bridge route is a
 | Bridge operations | 0 | 0 |
 | IBC channels / clients | 0 / 0 | 0 / 0 |
 
-(Checked October 2026. Read the live values with `qorechaind query bridge chains` and `qorechaind query bridge validators`.)
+(Checked 20 October 2026 against mainnet v3.2.3 and testnet v3.2.4. Read the live values with `qorechaind query bridge chains` and `qorechaind query bridge validators`, or over REST at `/qorechain/bridge/v1/chains` and `/qorechain/bridge/v1/validators`.) The module configuration is the same on both networks: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 and `large_transfer_threshold` 100,000 QOR (`100000000000` uqor). The IBC stack the module would use is ibc-go v10.7 (since v3.2.2), but no client or channel has been created.
 
 ## Connection Overview
 
@@ -193,6 +193,8 @@ All QCB bridge operations require a **7-of-10 threshold** of Dilithium-5 post-qu
 * A list of supported chains
 * A reputation score (maintained by `x/reputation`)
 
+Since v3.2.2 the module validates zero amounts and its configuration consistently on every path. **Testnet only (v3.2.4, not on mainnet):** registering a bridge validator also requires a proof of possession of the Dilithium-5 key (the same `proof_of_possession` format as PQC key registration, see [Post-Quantum Security](/architecture/post-quantum-security#proof-of-possession)) and refuses a key that another bridge validator already uses. Mainnet v3.2.3 has no such check, and no bridge validator is registered on either network.
+
 ### Circuit Breakers
 
 Each connected chain has independent circuit breaker protections:
@@ -234,6 +236,8 @@ As of chain version **v3.1.78**, a bridge chain can be activated and reconfigure
 * **`tx bridge set-verifier-bootstrap`** — select the active verifier for a chain and install its trust root (`MsgSetVerifierBootstrap`).
 
 This lets an operator bring a connected chain's bridge online — or rotate its verifier — directly, with authorization checked against the bridge admin key. As of chain version **v3.2.0** the bridge module also has its own module account (earlier releases had none, so the first deposit on an activated route would have failed).
+
+Licences such as `qcb_bridge` are granted by the licence authority account. Since v3.2.3 (mainnet) governance can replace that account with a `MsgUpdateAuthority` proposal; the module itself is described in [Chain Licensing](/architecture/chain-licensing).
 
 ### Validating connected networks
 

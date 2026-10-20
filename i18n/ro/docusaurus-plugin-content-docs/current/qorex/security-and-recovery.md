@@ -28,7 +28,7 @@ Cel mai sigur este să faci ambele — fraza te acoperă dacă schimbi dispoziti
 
 Ecranul Security afișează starea live, on-chain, a cheii tale post-cuantice: **„Se înregistrează la primul transfer"** → **„Înregistrată on-chain ✓"**. Algoritmul este **ML-DSA-87** (determinist, hibrid cu secp256k1).
 
-**Rotația cheii** — rotirea cheii tale post-cuantice (o operațiune on-chain `MsgRotatePQCKey`) **nu este încă disponibilă în QoreX**; va sosi odată cu o actualizare ulterioară de gestionare a cheilor, va necesita o nouă confirmare biometrică și **nu este niciodată automatizată**. Site-urile web nu pot cere QoreX să îți înregistreze, să îți migreze sau să îți rotească cheia post-cuantică. Vezi [Rotația cheii](/developer-guide/post-quantum-signing#key-rotation) pentru mecanismul care stă la bază.
+**Rotația cheii** — rotirea cheii tale post-cuantice (o operațiune on-chain `MsgRotatePQCKey`) **nu este încă disponibilă în QoreX**; va sosi odată cu o actualizare ulterioară de gestionare a cheilor, va necesita o nouă confirmare biometrică și **nu este niciodată automatizată**. Site-urile web nu pot cere QoreX să îți înregistreze, să îți migreze sau să îți rotească cheia post-cuantică. Înregistrarea se face de la sine la primul tău transfer și nu necesită nimic din partea ta — pe mainnet v3.2.3, lanțul acceptă și o *dovadă de posesie* opțională la înregistrare, pe care QoreX o gestionează invizibil în versiunile curente din magazine. Vezi [Rotația cheii](/developer-guide/post-quantum-signing#key-rotation) pentru mecanismul care stă la bază.
 
 ## Recuperare socială {#social-recovery}
 
@@ -64,6 +64,8 @@ Conectarea dispozitivelor este o **facilitate**, nu o metodă de recuperare. Fra
 
 Începând cu lanțul **v3.2.0**, o tranzacție pe **lane-ul EVM** — de exemplu una pe care o semnezi în MetaMask pe rețeaua EVM a QoreChain — este admisă doar de la un cont care are o **cheie post-cuantică înregistrată** *și* o **fereastră de autorizare deschisă**. Deschiderea unei ferestre este un mesaj pe lane-ul Native al QoreChain pe care MetaMask nu îl poate produce, deci QoreX este locul unde o deschizi. Trimiterile proprii ale QoreX folosesc lane-ul Native și nu au nevoie niciodată de o fereastră.
 
+**Cine are nevoie de ea.** O fereastră este pentru **conturile în stil Ethereum (coin 60)** — conturile pe care le adaugi cu *Add an Ethereum account (coin 60)* pentru o frază folosită prima dată în MetaMask (vezi [Restaurarea unei fraze din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard)). MetaMask semnează cu o cheie Ethereum, care este cheia unui cont coin-60; nicio cheie MetaMask nu poate trimite de pe un cont obișnuit coin-118 `qor1…`, așa că o fereastră deschisă pe unul nu realizează nimic și costă doar comisionul.
+
 O deschizi în aplicație la **Settings → Security → EVM access window**, sau cu butonul **EVM access window** din popup-ul extensiei. Alegi:
 
 | Câmp | Semnificație | Limită |
@@ -72,12 +74,12 @@ O deschizi în aplicație la **Settings → Security → EVM access window**, sa
 | **Câte tranzacții (max 1000)** | câte tranzacții EVM admite | până la 1.000 |
 | **Plafon de cheltuieli, QOR — acoperă fiecare sumă trimisă PLUS comisionul ei maxim** | cât permite să treacă, cel mult | numără valoarea **plus** comisionul maxim al fiecărei tranzacții |
 
-Valorile implicite sunt 300 de blocuri (aproximativ 16 minute pe mainnet), 5 tranzacții și 1 QOR. Deschiderea costă un comision de rețea normal și este semnată cu semnătura post-cuantică hibridă obișnuită, iar o fereastră nouă o **înlocuiește** pe cea deja deschisă. Deschiderea avansează și nonce-ul contului tău, așa că deschide fereastra **mai întâi**, apoi trimite din MetaMask — o tranzacție pregătită mai devreme va fi refuzată cu „nonce too low". **Close the window** este oferit doar cât timp o fereastră este activă.
+Începând cu v3.2.3, lanțul acceptă și ferestre mai înguste, cu *domeniu restrâns*; QoreX nu oferă un ecran pentru acestea. Valorile implicite sunt 300 de blocuri (aproximativ 16 minute pe mainnet), 5 tranzacții și 1 QOR. Deschiderea costă un comision de rețea normal și este semnată cu semnătura post-cuantică hibridă obișnuită, iar o fereastră nouă o **înlocuiește** pe cea deja deschisă. Deschiderea avansează și nonce-ul contului tău, așa că deschide fereastra **mai întâi**, apoi trimite din MetaMask — o tranzacție pregătită mai devreme va fi refuzată cu „nonce too low". **Close the window** este oferit doar cât timp o fereastră este activă.
 
 Ecranul afișează una dintre patru stări: *Deschisă încă \{blocks\} blocuri · \{txs\} tranzacții · \{value\} QOR rămași*; *Nicio fereastră nu este deschisă. Tranzacțiile MetaMask de la acest cont sunt refuzate.*; *Fereastra respectivă a expirat sau a fost epuizată*; sau *QoreX nu a putut citi fereastra din rețea* — ceea ce înseamnă că QoreX nu știe, **nu** că nu ai niciuna. Dacă contul tău nu are încă o cheie post-cuantică, înregistrează mai întâi una (primul tău transfer QoreX o face); o fereastră nu te ajută înainte de asta.
 
 :::caution Păstreaz-o mică și scurtă
-O fereastră permite tranzacțiilor obișnuite MetaMask să îți mute QOR **fără o semnătură post-cuantică**. Păstrează limitele mici și închide fereastra când ai terminat.
+O fereastră permite tranzacțiilor obișnuite MetaMask să îți mute QOR **fără o semnătură post-cuantică**. Păstrează limitele mici — un plafon de cheltuieli mic, puține tranzacții, un timp scurt — și închide fereastra când ai terminat. Deschiderea unei ferestre noi o înlocuiește pe cea veche, iar plafonul numără fiecare sumă pe care o trimiți **plus** comisionul ei maxim, așa că o tranzacție care ar depăși plafonul este refuzată.
 :::
 
 QoreX însuși nu trimite niciodată pe lane-ul EVM al QoreChain; folosește MetaMask sau un alt portofel EVM pentru asta, într-o fereastră deschisă. (Trimiterea de ETH, BNB și alte active pe *alte* rețele din QoreX este altceva — vezi [Rețele și token-uri externe](/qorex/send-and-receive#external-networks-tokens).)
@@ -88,15 +90,17 @@ Fiecare semnătură produsă de QoreX este aprobată de tine, iar aprobarea list
 
 - un titlu și câmpuri etichetate pentru **fiecare mesaj** din cerere, inclusiv mesajele imbricate într-un authz **MsgExec** și termenii acordărilor de permisiuni — și **refuză** orice nu poate afișa („QoreX cannot read this message … Approve only if you trust this site completely");
 - **comisionul** (*Fee: \{amount\} · gas \{gas\}*), cine îl plătește și orice fee grant — dacă comisionul nu poate fi citit, QoreX spune asta și îți cere să nu aprobi;
-- **limita, acțiunea permisă și expirarea** alocațiilor de cheltuieli și ale acordărilor authz, cu *UNLIMITED* și *NEVER* scrise explicit. Orice este ilizibil, nelimitat sau fără sfârșit necesită o **a doua atingere** pe Approve (*Tap again to approve*);
+- **limita, acțiunea permisă și expirarea** alocațiilor de cheltuieli și ale acordărilor authz, cu *UNLIMITED* și *NEVER* scrise explicit; o expirare este afișată la secundă (`YYYY-MM-DD HH:MM:SS UTC`), iar un vot de guvernanță este decodat, ca să vezi pentru ce votezi. Orice este ilizibil, nelimitat sau fără sfârșit necesită o **a doua atingere** pe Approve (*Tap again to approve*);
 - contul care semnează (*Signed by …*) când ai mai multe;
 - pentru o cerere cu un număr foarte mare de mesaje, primele 50 și numărul celorlalte.
+
+QoreX **refuză** și o cerere ai cărei octeți pot fi citiți în două moduri (începând cu 1.1.7 / 0.3.7). O cerere care repetă un câmp ce ar trebui să apară o singură dată — de exemplu un comision sau o sumă dublate — ar putea fi afișată într-un fel și executată în altul, așa că QoreX nu o va afișa deloc spre aprobare. Pentru site-uri web, QoreX identifică site-ul care face cererea prin originea pe care o atestă browserul însuși, niciodată prin ceea ce afirmă cererea despre sine.
 
 O schimbare de portofel sau de cont, ori blocarea portofelului, răspunde „nu" cererilor aflate în așteptare; un site poate avea o singură cerere în așteptare, iar în total pot aștepta trei. Numele câmpurilor din ferestrele de aprobare sunt afișate în engleză în unele build-uri.
 
 ## Fraza ta de recuperare și instrumentele de accesibilitate {#phrase-privacy}
 
-Ecranul frazei de recuperare este ascuns din capturi de ecran și din comutatorul de aplicații. Pe **Android 14 și ulterior**, cuvintele sunt de asemenea ascunse de serviciile de accesibilitate care nu sunt instrumente de accesibilitate autentice (TalkBack și alte cititoare de ecran reale le pot citi în continuare). Pe versiunile mai vechi de Android și pe iOS, cuvintele sunt ascunse implicit de cititoarele de ecran; dacă te bazezi pe un cititor de ecran, atinge notificarea de pe acel ecran pentru a-l lăsa să le citească. Afișează fraza doar când nimeni nu îți poate vedea ecranul.
+Ecranul frazei de recuperare cere de fiecare dată o nouă confirmare biometrică sau un PIN al dispozitivului, afișează cuvintele ca o grilă numerotată, doar pentru citire, **fără buton de copiere**, este blocat pentru capturi de ecran pe Android și este ascuns din comutatorul de aplicații. Pe **Android 14 și ulterior**, cuvintele sunt de asemenea ascunse de serviciile de accesibilitate care nu sunt instrumente de accesibilitate autentice (TalkBack și alte cititoare de ecran reale le pot citi în continuare). Pe versiunile mai vechi de Android și pe iOS, cuvintele sunt ascunse implicit de cititoarele de ecran; dacă te bazezi pe un cititor de ecran, atinge notificarea de pe acel ecran pentru a-l lăsa să le citească. Afișează fraza doar când nimeni nu îți poate vedea ecranul.
 
 ## dApp-uri conectate {#connected-dapps}
 
@@ -115,5 +119,5 @@ Conectarea unei chei externe (Phantom sau MetaMask) ca **semnatar conectat** cu 
 1. **Non-custodial** — cheile sunt generate pe dispozitiv, trăiesc în seifuri protejate hardware (mobil) sau într-un seif criptat (extensie), și nu părăsesc niciodată dispozitivul.
 2. **Nimic fără consimțământ** — fiecare conexiune este per-origine, fiecare semnătură este aprobată individual (biometric pe mobil), iar payload-urile sunt întotdeauna decodate înainte de semnare — ce nu poate decoda QoreX, refuză.
 3. **Rezistent cuantic implicit** — transferurile QOR pe lane-ul Native poartă întotdeauna ML-DSA-87 + secp256k1; orice este clasic este etichetat, niciodată tăcut.
-4. **Fără analytics, fără tracking, fără reclame.** Autentificarea opțională prin cont și notificările push folosesc un server doar când le activezi și sunt acoperite de [politica de confidențialitate QoreChain](https://qorechain.io/privacy).
+4. **Fără analytics, fără raportare de erori, fără SDK de urmărire.** Cheile, fraza de recuperare, seiful și aprobările nu părăsesc niciodată dispozitivul. Autentificarea opțională, notificările push și recuperarea socială folosesc un server doar când le activezi; lista completă a ceea ce trimite QoreX se află în [Ce trimite QoreX prin rețea](/qorex/overview#data-and-privacy) și este acoperită de [politica de confidențialitate QoreChain](https://qorechain.io/privacy).
 5. **Căi de recuperare** — fraza din 24 de cuvinte (întotdeauna), recuperare socială cu gardieni + timelock de 48h (opțional), moștenire Legacy (opțional), conectarea dispozitivelor (facilitate).

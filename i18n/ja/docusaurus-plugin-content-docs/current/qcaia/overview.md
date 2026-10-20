@@ -22,6 +22,8 @@ QCAIA は、新規参加者やコミュニティメンバーが素早く理解�
 
 質問が QCAIA の知っている範囲外であれば、推測するのではなく、その旨を伝えます。QCAIA はコミュニティのヘルパーであり、金融や投資のアドバイスではありません。
 
+QCAIA の回答は QoreChain の公開ドキュメントに従っているため、リリースに対して遅れが生じることがあります。各ネットワークで現在何が稼働しているか（2026 年 10 月 20 日時点で、メインネット `qorechain-vladi` は v3.2.3、テストネット `qorechain-diana` は v3.2.4 を実行しています）については、[ネットワーク](/appendix/networks) と [バージョン履歴](/appendix/version-history) を確認するか、ノードに直接クエリしてください。QCAIA に尋ねられるプラットフォームの一部、たとえばブリッジ、AMM プール、ロールアップ、xQORE は、ドキュメントでは設計されたものとして説明されているもののまだ稼働していません。QCAIA が異なる回答をした場合は、ドキュメントと稼働中のネットワークを信頼してください。
+
 ## 多言語サポート
 
 QCAIA は多くの言語の質問を理解します。英語以外の言語で質問した場合、QCAIA は自動的にあなたの質問を翻訳し、回答して返信します。そのため、自分の言語を使いながらも明確な回答を得ることができます。英語以外の実例については [使用例](/qcaia/examples) を参照してください。
@@ -38,7 +40,7 @@ QCAIA は **ベータ版** です。継続的に改善されており、まれ�
 
 | プラットフォーム | アクセス方法 | ガイド |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)** に参加してスラッシュコマンドを使用 | [Discord での QCAIA の使用](/qcaia/discord) |
+| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** に参加してスラッシュコマンドを使用 | [Discord での QCAIA の使用](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** に参加してボットにメンション | [Telegram での QCAIA の使用](/qcaia/telegram) |
 
 上記からプラットフォームを選んで、質問の仕方を詳しく学ぶか、[使用例](/qcaia/examples) ページに直接進んで QCAIA の実際の動作を確認してください。

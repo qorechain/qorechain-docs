@@ -21,6 +21,15 @@ Motorul QCAI (QoreChain AI) operează pe trei straturi:
 
 Nivelul de consens este documentat separat în [Motorul de consens PRISM](/architecture/prism-consensus-engine). Această pagină acoperă nivelurile de rețea și de aplicație.
 
+:::note Ce este aplicat pe rețelele live (mainnet v3.2.3, testnet v3.2.4)
+Două părți din `x/ai` acționează astăzi asupra tranzacțiilor, atât pe lane-ul Cosmos, cât și pe lane-ul EVM:
+
+* O **limită de rată per expeditor**. Limita live este de **600 de tranzacții pe minut per expeditor** (`max_tx_per_minute`; lane-ul EVM are propria limită opțională, care nu este setată, deci se aplică aceeași valoare). „Minutul” este numărat pe o fereastră fixă de blocuri, nu pe timpul real al ceasului, deoarece înălțimea blocului este singurul ceas pe care îl împărtășesc toți validatorii. Unui expeditor aflat la limită i se refuză tranzacțiile următoare până când cele mai vechi ies din fereastră. Limita este aplicată pe lane-ul Cosmos începând cu v3.2.0 și pe ambele lane-uri începând cu v3.2.2.
+* Un **scor de anomalie** pentru fiecare tranzacție. `anomaly_action` live este `flag`: un scor ridicat emite un eveniment `ai_anomaly_check` și numără tranzacția ca marcată, dar nu o refuză. Refuzul pe baza scorului este o setare de guvernanță care nu este activată.
+
+Tot restul de pe această pagină (routerul, pipeline-ul de fraudă pe șase straturi, optimizatorul de taxe, optimizatorul de rețea, sidecar-ul) descrie analiză și consiliere: nimic din toate acestea nu schimbă ce tranzacții acceptă lanțul, iar pipeline-ul pe șase straturi nu este apelat din calea tranzacției. Citiți setările live cu `qorechaind query ai config` și contoarele cu `qorechaind query ai stats`.
+:::
+
 ## Router de tranzacții
 
 Routerul îmbunătățit cu AI selectează validatorii și rutele optime pentru fiecare tranzacție folosind scorare multi-factor ponderată.
@@ -86,7 +95,7 @@ Detectorul de fraudă implementează o **pipeline de detectare pe șase straturi
 | Mediu       | Oricare        | `alert`                                                      |
 | Scăzut / Niciunul   | Oricare        | `allow`                                                      |
 
-Când este declanșată o acțiune diferită de `allow`, se creează o înregistrare de investigație a fraudei cu un ID unic (format: `INV-{timestamp}-{txhash_prefix}`).
+Când este declanșată o acțiune diferită de `allow`, pipeline-ul creează o înregistrare de investigație a fraudei cu un ID unic (format: `INV-{block_height}-{txhash}`, trunchiat la 48 de caractere). Pe rețelele live pipeline-ul nu este apelat din calea tranzacției (vezi nota de la începutul acestei pagini), așa că astăzi nu se produce nicio înregistrare de investigație și el nu setează niciun circuit breaker de contract.
 
 ## Optimizator de taxe
 
@@ -171,7 +180,7 @@ Două contracte precompilate expun capabilitățile AI on-chain către contracte
 Aceste precompilate **nu sunt active** pe mainnet (`qorechain-vladi`) și nici pe testnet (`qorechain-diana`); un apel returnează date goale. Vor fi activate abia după ce vor avea o cale de scorare read-only, în virgulă fixă. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă.
+**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă. Începând cu v3.2.3, precompilatul de verificare a anomaliilor analizează o tranzacție fără a scrie în stare; celelalte întăriri ale precompilatelor din acea versiune (puntea CrossVM care refuză `STATICCALL`, care măsoară apelul imbricat din gazul cadrului apelant și care atinge doar ținte CosmWasm din lista de permise) se aplică odată ce precompilatul CrossVM este activat. La 20 octombrie 2026, lista `active_static_precompiles` este goală pe ambele rețele.
 
 ## Atestare TEE
 

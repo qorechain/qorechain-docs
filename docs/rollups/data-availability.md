@@ -16,7 +16,7 @@ Data availability (DA) is the guarantee that the transaction data behind a rollu
 | **`both`** | Native and Celestia together, for redundancy | Behaves exactly like `native` today |
 
 :::caution Early-stage capability
-No rollup has been created on either network yet, and the DA backends are only partly implemented. The status of each backend is stated below; validate on the **`qorechain-diana`** testnet before relying on any of them.
+No rollup has been created on either network yet (checked 20 October 2026), and the DA backends are only partly implemented. The status of each backend is stated below; validate on the **`qorechain-diana`** testnet before relying on any of them.
 :::
 
 ---
@@ -41,6 +41,8 @@ The maximum blob size and retention window are governed by the live module param
 ```bash
 qorechaind query rdk config
 ```
+
+Blob metadata (not the bytes) is readable over REST at `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`, which both networks serve; it includes `expires_at_height`.
 
 ---
 

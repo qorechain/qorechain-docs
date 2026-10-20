@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 29 Haziran 2026'dan beri canlı olan ve **v3.2.1** düğüm sürümünü (v3.2.0 yükseltmesinden gelen konsensüs kuralları) çalıştıran **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı (v3.2.2) için EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.2.3** düğüm sürümünü çalıştıran (20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı (v3.2.4, 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı; ana ağda henüz uygulanmadı; yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır) için EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
 :::
 
 :::caution Bir EVM işlemi, kayıtlı bir PQC anahtarı ve açık bir yetkilendirme penceresi gerektirir
 v3.2.0 yükseltmesinden itibaren (ana ağ yüksekliği 2.981.742, test ağı yüksekliği 5.920.000) EVM şeridi (lane), bir işlemi yalnızca **(1) kayıtlı bir ML-DSA-87 kuantum-sonrası anahtarına** ve **(2) o işlem için hâlâ yer bulunan açık bir EVM yetkilendirme penceresine** sahip bir hesaptan kabul eder. Sıradan araçlarla (MetaMask, ethers.js, Hardhat, Foundry) imzalarsınız, ancak kayıtlı bir anahtar ve açık bir pencere olmadan `eth_sendRawTransaction` reddedilir (codespace `pqc`, kod 26, 27 veya 28). Okumalar, `eth_call` ve gas tahmini bunların hiçbirine ihtiyaç duymaz. Aşağıdaki [EVM yetkilendirme penceresi](#evm-window) bölümüne ve [İlk İşleminiz](/getting-started/first-transaction#evm-window) sayfasındaki adım adım anlatıma bakın.
+
+v3.2.2'den beri ana ağda iki kural daha geçerlidir: **korumasız (EIP-155 öncesi) işlemler reddedilir**, hem düğümün mempool'unda hem de blok yürütmede; bu yüzden bir zincir kimliğiyle imzalayın (günümüzün tüm cüzdanları ve kütüphaneleri bunu yapar); ve **modül hesapları EVM üzerinden sahiplenilemez**.
 :::
 
 ---
@@ -30,7 +32,7 @@ v3.2.0 yükseltmesinden itibaren (ana ağ yüksekliği 2.981.742, test ağı yü
 | Zincir kimliği (test ağı) | `9800` (`qorechain-diana`)               |
 | Para birimi sembolü     | `QOR`                                      |
 
-QoreChain'e özgü okumalar REST üzerinden (`api.qore.host`) sunulur; [aşağıda](#custom-qor_-namespace) açıklanan `qor_` JSON-RPC ad alanı, herkese açık uç noktalarda ve varsayılan düğüm yapılandırmasında **etkin değildir**.
+QoreChain'e özgü okumalar REST üzerinden (`api.qore.host`) sunulur; [aşağıda](#custom-qor_-namespace) açıklanan `qor_` JSON-RPC ad alanı, herkese açık uç noktalarda ve varsayılan düğüm yapılandırmasında **etkin değildir**. Yeni başlatılmış bir düğümün varsayılan `api` listesi (v3.2.3 ve sonrası) `eth,net,web3`'tür; `txpool` isteğe bağlıdır, çünkü düğümün bekleyen işlemlerini yayınlar.
 
 ---
 
@@ -200,7 +202,16 @@ Kuantum-sonrası bir imza, bir Ethereum işlemiyle *birlikte* gidemez (MetaMask 
 | `max-txs`   | 1 – 1.000          | Kaç EVM işlemini kabul edeceği |
 | `max-value` | 0'ın üzerinde, `uqor` cinsinden | Kabul ettiği toplam çıkış: aktarılan değer **artı** her işlemin ödeyebileceği azami ücret (gas limiti × gas başına azami ücret), `uqor`'a çevrilip yukarı yuvarlanır |
 
-Hangi sınır önce tükenirse pencereyi o kapatır. Tüm alanlar zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 5 saattir (blok başına yaklaşık 1,0 sn).
+Hangi sınır önce tükenirse pencereyi o kapatır. Üç sınır da zorunludur; bir pencere açmak mevcut pencerenin yerini alır; kabul edilip sonra başarısız olan bir işlem yine de yuvasını ve değer bütçesini kullanır; sözleşme dağıtımları diğer işlemler gibi sayılır. `blocks` bir süre değil, blok sayısıdır: 17.280 blok ana ağda yaklaşık 15 saat (blok başına yaklaşık 3,2 sn), test ağında ise yaklaşık 5 saattir (blok başına yaklaşık 1,0 sn).
+
+**Değer sınırı yalnızca yerel QOR'u sayar.** Bir token transferi, bir onay (approval) veya başka herhangi bir sözleşme çağrısı sıfır değer taşır; bu nedenle `max-value` karşısında sayılmaz (yalnızca azami ücreti sayılır). Bunları da sınırlamak için pencerenin **kapsamını (scope)** daraltın (ana ağ v3.2.3 ve sonrası):
+
+| Kapsam seçeneği (CLI bayrağı) | Mesaj alanı | Pencerenin kabul ettiği |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | Yalnızca yerel QOR'un düz transferleri: calldata yok, sözleşme oluşturma yok, kod taşıyan alıcı yok, EIP-7702 yetkilendirmesi yok |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | Yalnızca alıcısı listelenen 20 baytlık adreslerden biri olan işlemler; sözleşme oluşturma reddedilir |
+
+Kapsamsız açılmış bir pencere tam olarak eskisi gibi davranır. Kapsam dışındaki bir işlem 27 koduyla reddedilir (mesaj, pencerenin "bu işlemi kabul etmediğini" söyler). `GET /qorechain/pqc/v1/evm_window/{address}` ve `qorechaind query pqc evm-window`, `native_only` ve `allowed_targets` değerlerini raporlar; `pqc_evm_window_opened` olayı da bunlar ayarlıysa taşır.
 
 **Adımlar** (tam anlatım [İlk İşleminiz](/getting-started/first-transaction#evm-window) sayfasındadır):
 
@@ -211,6 +222,10 @@ Hangi sınır önce tükenirse pencereyi o kapatır. Tüm alanlar zorunludur; bi
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. Geriye ne kaldığını kontrol edin: `qorechaind query pqc evm-window <address>` veya `GET /qorechain/pqc/v1/evm_window/{address}` (pencere yoksa `found: false` yanıtı verir).
@@ -218,13 +233,17 @@ Hangi sınır önce tükenirse pencereyi o kapatır. Tüm alanlar zorunludur; bi
 
 Bir pencereyi erkenden `qorechaind tx pqc close-evm-window` ile kapatın (aynı `--generate-only` ve `cosign` düzeni), örneğin klasik anahtarın açığa çıktığından şüphelenirseniz: pencerenin hâlâ kabul edeceği her şey bir sonraki bloktan itibaren reddedilir.
 
+### EIP-7702 delegasyonları {#eip-7702}
+
+Hesabınızın bir EIP-7702 delegasyonu (type-4 işlem), v3.2.2'den beri yalnızca hesabınızın kendi kuantum-sonrası onayıyla yürürlüğe girer. Önce onayı, hibrit imzalı Cosmos şeridi mesajı `MsgAuthorizeEVMDelegation` ile kaydedin (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); tek kullanımlıktır, verilen blok sayısından sonra sona erer ve `close-evm-window` ile iptal edilir. Delege edilmiş bir hesaptan çıkan değer, **o** hesabın kendi penceresine yüklenir, başarısız bir type-4 işlem uyguladığı yetkilendirmeleri korur ve `qorechaind tx pqc clear-evm-delegation` bir delegasyonu kaldırır. Reddedilen bir delegasyon 60 ila 63 kodlarıyla yanıt verir. Onayı `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` ile okuyun.
+
 | Ret (codespace `pqc`) | Anlamı |
 | ------------------------- | ------- |
 | code 26 | Gönderici için açık pencere yok veya göndericinin kayıtlı bir PQC anahtarı yok |
-| code 27 | Pencerenin süresi dolmuş veya tükenmiş (mesaj hangi sınırın aşıldığını gösterir) |
+| code 27 | Pencerenin süresi dolmuş veya tükenmiş (mesaj hangi sınırın aşıldığını gösterir) ya da işlem pencerenin kapsamı dışında |
 | code 28 | Pencere açılırken geçersiz sınırlar veya o anda kayıtlı anahtar yok |
 
-TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` ve `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
+TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` ve `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0, `openEvmWindowMsg`'ye kapsam seçeneklerini (`nativeOnly`, `allowedTargets`) ve EIP-7702 onay oluşturucularını (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ekler; 0.9.0 öncesi sürümler yalnızca kapsamsız pencereyi oluşturur, bu yüzden geri kalanı için `qorechaind` kullanın (bkz. [SDK EVM kılavuzu](/sdk/guides/evm#evm-window-scope)).
 
 ---
 
@@ -233,7 +252,7 @@ TypeScript SDK ile (0.8.2 ve sonrası): `openEvmWindowMsg`, `closeEvmWindowMsg`,
 QoreChain, zincire özgü sorgular için JSON-RPC'yi bir `qor_` ad alanıyla genişletir:
 
 :::warning Henüz sunulmuyor
-Yayımlanmış hiçbir düğüm sürümü henüz `qor_` ad alanını sunmuyor: herkese açık uç noktalardaki `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3`'ü listeler ve aşağıdaki her yöntem; ana ağda, test ağında ve varsayılan yapılandırmayla (`eth`, `net`, `web3`, `txpool`) kendi çalıştırdığınız düğümlerde `-32601` (yöntem bulunamadı) döndürür. Durum ve REST alternatifleri için (örneğin PQC anahtar durumu için `GET /qorechain/pqc/v1/account/{address}`) bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
+Yayımlanmış hiçbir düğüm sürümü henüz `qor_` ad alanını sunmuyor: herkese açık uç noktalardaki `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3`'ü listeler ve aşağıdaki her yöntem; ana ağda, test ağında ve varsayılan yapılandırmayla (`eth`, `net`, `web3`) kendi çalıştırdığınız düğümlerde `-32601` (yöntem bulunamadı) döndürür. Durum ve REST alternatifleri için (örneğin PQC anahtar durumu için `GET /qorechain/pqc/v1/account/{address}`) bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 :::
 
 | Yöntem                       | Açıklama                                                          |

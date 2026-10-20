@@ -50,10 +50,10 @@ sidebar_position: 8
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (정적 라이브러리 + 헤더) | [리포지토리](https://github.com/qorechain/qorechain-pqc)에서 빌드 | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info 가용성
-JavaScript, Rust, Python, Go, Java 바인딩은 모두 버전 **0.2.1**로 **게시**되어 있습니다 — 위의 명령어를 사용해 npm, crates.io, PyPI, Go 모듈 프록시, Maven Central에서 바로 설치하세요. Python 배포판은 `qorechain-pqc`로 설치되지만 **`qorpqc`로 임포트**합니다. **Java** 패키지는 Maven Central에 `io.github.qorechain:qorechain-pqc:0.2.1`(Bouncy Castle 백엔드)로 올라와 있습니다. 버전 **0.2.0**에서 버전 인식형 `hybridSignBytes`(아래 참조)가 추가되었고, **0.2.1**에서는 메인넷에서 v2로의 전환을 나타내는 업그레이드 이름이 수정되었으므로 0.2.1 이상을 사용하세요. **C** 바인딩은 [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc)에서 직접 빌드하는 정적 라이브러리 + 헤더입니다.
+JavaScript, Rust, Python, Go, Java 바인딩은 모두 버전 **0.2.2**로 **게시**되어 있습니다(npm, crates.io, PyPI, `v0.2.2`로 Go 모듈 프록시, Maven Central. 2026년 10월 21일 확인) — 위의 명령어로 설치하세요. Python 배포판은 `qorechain-pqc`로 설치되지만 **`qorpqc`로 임포트**합니다. **Java** 패키지는 `io.github.qorechain:qorechain-pqc:0.2.2`(Bouncy Castle 백엔드)입니다. 버전 **0.2.0**에서 버전 인식형 `hybridSignBytes`(아래 참조)가 추가되었고, **0.2.1**에서는 메인넷에서 v2로의 전환을 나타내는 업그레이드 이름이 수정되었으며, **0.2.2**에서는 헤지드 서명과 결정론적 서명에 관한 문서와 주석이 수정되었으므로(체인은 둘 다 수락하며, JavaScript 바인딩에서는 코드상 버전 상수만 바뀌었습니다) 0.2.1 이상을 사용하세요. **C** 바인딩은 [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc)에서 직접 빌드하는 정적 라이브러리 + 헤더입니다.
 :::
 
 ## 결정론적 서명 (기본값) {#deterministic-signing}
@@ -68,29 +68,68 @@ JavaScript, Rust, Python, Go, Java 바인딩은 모두 버전 **0.2.1**로 **게
 
 ## 키 등록 {#pqc-key-registration}
 
-모든 계정은 ML-DSA-87 공개 키를 **한 번, 명시적으로** 등록합니다. 자동 등록은 없습니다: 이후의 하이브리드 트랜잭션에 포함된 공개 키(예: SDK의 `includePqcPublicKey` 옵션)는 확장에 실려 전달될 뿐 키를 **등록하지는 않습니다**. 등록은 클래식 방식으로 서명할 수 있는 유일한 Cosmos 레인 트랜잭션이므로, 새 계정이 첫 키를 부트스트랩할 수 있습니다. 릴리스 `qorechaind`(공개 소스에서 빌드한 바이너리는 서명할 수 없습니다. [소스에서 빌드하기](/developer-guide/building-from-source) 참조), QoreX, 또는 SDK의 `ensurePqcRegistered`로 수행하세요.
+모든 계정은 ML-DSA-87 공개 키를 **한 번, 명시적으로** 등록합니다. 자동 등록은 없습니다: 이후의 하이브리드 트랜잭션에 포함된 공개 키(예: SDK의 `includePqcPublicKey` 옵션)는 확장에 실려 전달될 뿐 키를 **등록하지는 않습니다**. **첫** 등록은 클래식 방식으로 서명할 수 있는 유일한 Cosmos 레인 트랜잭션이므로, 새 계정이 첫 키를 부트스트랩할 수 있습니다. 이미 키가 있는 계정은 이후의 모든 키 메시지에 하이브리드 서명을 해야 합니다. 릴리스 `qorechaind`(공개 소스에서 빌드한 바이너리는 서명할 수 없습니다. [소스에서 빌드하기](/developer-guide/building-from-source) 참조), QoreX, 또는 SDK의 `ensurePqcRegistered`로 수행하세요.
 
 ```bash
 # 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
 qorechaind tx pqc gen-key mypqc
 
-# 2. Register the public key on your account (classical-signed).
-qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+# 2. Register the public key on your account (classical-signed, because the account has no key yet).
+#    --pqc-key mypqc also attaches the optional proof of possession (see below).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid --pqc-key mypqc \
   --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
 
 # 3. Verify.
 qorechaind query pqc account <address>
 ```
 
-`--gas`를 명시적으로 설정하세요: 2,592바이트 공개 키는 기본 200,000 가스를 초과할 수 있으며(메인넷 등록은 대략 220,000~350,000을 사용했습니다), 수수료는 최소 gas × 0.1 uqor여야 하므로 `--gas 600000`에는 `--fees 60000uqor` 이상이 필요합니다. 레거시 형식 `qorechaind tx pqc register-key <pubkey-hex> hybrid`는 Dilithium-5에서 동일하게 동작합니다. 이후에는 각 Cosmos 레인 트랜잭션을 `--generate-only`로 구성하고 `qorechaind tx pqc cosign`으로 서명하세요. 키 파일은 계정의 양자내성 서명 키입니다: 이를 읽을 수 있는 사람은 누구든 클래식 키와 함께 계정의 공동 서명을 할 수 있으므로 니모닉처럼 백업하세요(아래에 설명된 대로 니모닉에서 다시 파생할 수 있습니다).
+`--gas`를 명시적으로 설정하세요: 2,592바이트 공개 키는 기본 200,000 가스를 초과할 수 있으며(메인넷 등록은 대략 220,000~310,000을 사용했고, 소유 증명이 포함된 등록은 4,627바이트 서명이 하나 더 실리므로 약 46,000 가스가 더 듭니다), 수수료는 최소 gas × 0.1 uqor여야 하므로 `--gas 600000`에는 `--fees 60000uqor` 이상이 필요합니다. 레거시 형식 `qorechaind tx pqc register-key <pubkey-hex> hybrid`는 Dilithium-5에서 동일하게 동작합니다. 이후에는 각 Cosmos 레인 트랜잭션을 `--generate-only`로 구성하고 `qorechaind tx pqc cosign`으로 서명하세요. 키 파일은 계정의 양자내성 서명 키입니다: 이를 읽을 수 있는 사람은 누구든 클래식 키와 함께 계정의 공동 서명을 할 수 있으므로 니모닉처럼 백업하세요(아래에 설명된 대로 니모닉에서 다시 파생할 수 있습니다).
 
 등록된 키는 EVM 트랜잭션을 보내기 위한 두 가지 요건 중 첫 번째이기도 합니다. 두 번째는 열려 있는 [EVM 승인 윈도우](/developer-guide/evm-development#evm-window)입니다.
+
+### 체인이 등록 시 검사하는 항목 (메인넷 v3.2.3 이상) {#key-integrity}
+
+v3.2.3 업그레이드(2026년 10월 20일 메인넷 높이 3,662,051에서 적용)부터 체인은 키의 길이가 맞는지만이 아니라 키 자체를 검사합니다:
+
+| 규칙 | 거부 (codespace `pqc`) |
+| --- | --- |
+| `key_type`은 `hybrid` 또는 `pqc_only`여야 합니다. `classical_only`는 양자내성 키를 등록하지 않아 계정이 다시는 서명할 수 없게 됩니다 | 코드 230 |
+| 양자내성 보호를 제공하지 않는 키(비밀 값이 필요 없는 퇴화된 키)는 등록, 로테이션, 마이그레이션 모두에서 거부됩니다 | 코드 230 |
+| 계정이 이전에 사용한 키는 다시 등록하거나 그 키로 되돌려 로테이션할 수 없습니다(계정이 폐기된 키를 기억합니다) | 코드 232 |
+| 등록에 포함되는 클래식 키는 서명자 본인의 압축 secp256k1 키여야 합니다(v3.2.2부터) | 코드 45 |
+| 선택적인 소유 증명이 있으면 검증되어야 합니다 | 코드 231 |
+| 이미 키를 가진 계정은 이후의 모든 키 메시지(등록, 마이그레이션)에 하이브리드 서명을 해야 합니다. 사용 가능한 키가 없는 레코드를 복구하는 경우에만 클래식 서명이 허용됩니다 | 코드 234 |
+| 알고리즘을 폐기하거나 비활성화하더라도 체인에 활성 서명 알고리즘이 하나도 남지 않는 상황이 되어서는 안 됩니다 | 코드 233 |
+
+또한 v3.2.3부터 어떤 키 메시지(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey`, `MsgMigratePQCKey`)도 `authz`를 통해 계정을 대신해 보낼 수 없습니다. 트랜잭션은 하이브리드 서명 확장을 최대 **하나**만 담을 수 있습니다. 등록된 키가 **없는** 계정은 더 이상 검증할 대상이 없는 하이브리드 확장을 첨부할 수 없습니다(확장이 전혀 없는 경우와 똑같이, 등록만 통과할 수 있습니다).
+
+### 소유 증명 (선택 사항) {#proof-of-possession}
+
+등록 시 등록자가 새 키의 비밀을 보유하고 있음을 함께 증명할 수도 있습니다. 키가 `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>`에 서명하고(알고리즘 ID는 ML-DSA-87의 경우 `1`이며, 공개 키는 소문자 hex입니다) 그 서명을 `MsgRegisterPQCKeyV2`의 `proof_of_possession` 필드에 넣습니다. CLI에서는 `register-key-v2 ... --pqc-key <name>`이 이를 만들어 첨부합니다. TypeScript SDK 0.9.0에서는 네트워크가 v3.2.3을 적용한 뒤 `ensurePqcRegistered`가 증명을 스스로 첨부하며(`signProofOfPossession` / `verifyProofOfPossession`으로 직접 만들고 검증할 수도 있습니다), `@qorechain/chain-bridge` 0.2.3도 `cosmosRest`가 주어지면 동일하게 동작합니다. `@qorechain/wallet-adapter`(0.4.0)와 0.9.0 이전의 SDK 릴리스는 증명을 첨부하지 않으므로 이들을 통한 등록에는 증명이 없으며, 체인은 이를 여전히 수락합니다. 체인은 증명이 **있을 때** 이를 검증하고, 검증되지 않으면 등록을 거부합니다(코드 231). 증명이 없는 등록은 메인넷에서 여전히 수락됩니다. 메시지에 체인, 알고리즘, 계정, 키가 모두 명시되므로, 그중 하나를 위해 만든 증명은 다른 것에 대해서는 아무것도 증명하지 못합니다.
+
+테스트넷(v3.2.4, **테스트넷 전용**)에서는 계정 레코드가 증명이 검증되었는지 여부를 보고하며(`GET /qorechain/pqc/v1/account/{address}`의 `possession_proven`), 브리지 밸리데이터 등록에는 증명이 필요합니다. 둘 다 아직 메인넷에는 없으며, 메인넷 거버넌스 제안 13이 통과되면 v3.2.4가 높이 3,742,566에서 적용됩니다.
+
+## 거부 코드 (codespace `pqc`) {#pqc-codes}
+
+| 코드 | 의미 |
+| --- | --- |
+| 20 | 하이브리드 서명 필요: 트랜잭션에 PQC 확장이 없음(첫 등록과, 키가 없는 계정의 unjail만 예외) |
+| 21 | ML-DSA-87 부분이 검증되지 않음, [아래](#code-21) 참조 |
+| 26, 27, 28 | EVM 레인: 열린 윈도우 없음 또는 키 없음 / 윈도우 소진 / 잘못된 윈도우 범위, [EVM 개발](/developer-guide/evm-development#evm-window) 참조 |
+| 45 | 등록에 포함된 클래식 키가 서명자 본인의 압축 secp256k1 키가 아님 |
+| 60, 61 | EIP-7702 위임: 이 위임에 대한 양자내성 동의 없음 / 잘못된 위임 요청 |
+| 62, 63 | 위임된 계정에 해당 동작을 포함하는 윈도우가 없음 / Ethereum 트랜잭션은 EVM 레인에서만 실행됨 |
+| 230 | 취약한 키 또는 `classical_only` 등록 |
+| 231 | 소유 증명이 검증되지 않음 |
+| 232 | 이 계정이 이전에 사용한 키 |
+| 233 | 활성 서명 알고리즘이 남지 않게 됨 |
+| 234 | 키가 있는 계정의 키 관리에는 하이브리드 서명이 필요함 |
 
 ## `pqc` 코드 21 (`hybrid_verify_failed`) 문제 해결 {#code-21}
 
 코드 21은 하이브리드 서명의 ML-DSA-87 부분이 계정에 등록된 키로 검증되지 않았음을 의미합니다. 헤지드와 결정론적 서명 중 무엇을 선택했는지는 **절대** 원인이 아닙니다. 다음 순서로 확인하세요.
 
-1. **sign-bytes 버전.** PQC 서명은 v1 또는 v2 sign-bytes를 대상으로 하며, 네트워크는 각 높이에서 정확히 한 가지 형식만 검증합니다. `qorechain-diana`는 `v3.1.98` 업그레이드에서 v2로 전환했고, `qorechain-vladi`는 `v3.2.0` 업그레이드에서 전환하며, 이후에 생성된 체인은 제네시스부터 v2입니다. 현재 SDK는 네트워크별로 형식을 선택합니다. 직접 구현한 서명기는 어떤 업그레이드가 적용되었는지 노드에 확인해야 합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc) 참고).
+1. **sign-bytes 버전.** PQC 서명은 v1 또는 v2 sign-bytes를 대상으로 하며, 네트워크는 각 높이에서 정확히 한 가지 형식만 검증합니다. `qorechain-diana`는 `v3.1.98` 업그레이드에서 v2로 전환했고, `qorechain-vladi`는 `v3.2.0` 업그레이드에서 전환했으며, 이후에 생성된 체인은 제네시스부터 v2입니다. 현재 SDK는 네트워크별로 형식을 선택합니다. 직접 구현한 서명기는 어떤 업그레이드가 적용되었는지 노드에 확인해야 합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc) 참고).
 2. **v2 sign-bytes의 체인 ID.** v2는 체인 ID를 바인딩하므로, `qorechain-diana`용으로 만든 서명은 `qorechain-vladi`에서 검증되지 않으며 그 반대도 마찬가지입니다.
 3. **오래된 PQC 라이브러리.** 표준 이전(FIPS-204 이전) 빌드는 표준 검증기가 거부하는 서명을 생성합니다. `qorechain-pqc` 0.1.1 이상을 사용하세요.
 4. **잘못된 키.** 공개키는 계정에 등록된 키여야 합니다(`GET /qorechain/pqc/v1/account/{address}`). 다른 파생 방식으로 만든 키(예: 주소 바인딩 파생 대신 레거시 브리지 파생 `shake256(mnemonic)`)는 유효하게 서명하지만 일치하지 않습니다. 정식 키로 옮기려면 [키 로테이션](#key-rotation)을 참고하세요.
@@ -147,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-로테이션이 성공하면 새 키의 서명이 통과되고(code 0), 이전 키는 거부됩니다(`pqc` code 21).
+SDK 0.9.0과 `@qorechain/wallet-adapter` 0.4.0의 로테이션 헬퍼는 레거시 파생 방식을 **새** 키로 사용하는 것을 거부합니다(계정에 바인딩되지 않기 때문입니다). 레거시 키도 이전 키로는 여전히 사용할 수 있습니다. 로테이션이 성공하면 새 키의 서명이 통과되고(code 0), 이전 키는 거부됩니다(`pqc` code 21). v3.2.3부터 로테이션은(마이그레이션과 마찬가지로) 양자내성 보호를 제공하지 않는 새 키(코드 230)와 계정이 이전에 사용한 키(코드 232)를 거부하며, `authz`를 통해 보낼 수 없습니다.
 
 ## 일관된 API
 
@@ -223,7 +262,7 @@ QoreChain의 지갑 호환 **하이브리드 확장 서명 바이트(sign-bytes)
 이 하이브리드 서명을 생성하는 방법은 세 가지입니다:
 
 * **CLI** — `qorechaind tx pqc cosign`이 트랜잭션에 Dilithium-5 공동 서명을 첨부하고 브로드캐스트합니다(`qorechaind tx pqc gen-key` 실행 및 키 등록 이후). 릴리스 바이너리에만 포함되어 있습니다. [트랜잭션 명령어](/cli-reference/transaction-commands)를 참조하세요.
-* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`(sign-bytes 형식이 결정되도록 `rest`를 전달하세요)가 TypeScript, Python, Go, Rust, Java에서 동일한 작업을 수행합니다. 먼저 키를 등록하세요(위 참조). [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc)을 참조하세요.
+* **QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid`(sign-bytes 형식이 결정되도록 `rest`를 전달하세요)가 TypeScript, Python, Go, Rust, Java에서 동일한 작업을 수행하며, TypeScript에서는 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0)가 모든 트랜잭션을 하이브리드로 서명합니다. 먼저 키를 등록하세요(위 참조). [SDK 계정 및 PQC 서명](/sdk/concepts/accounts-pqc)을 참조하세요.
 * **`qorechain-pqc` 직접 사용** — 지원되는 6개 언어 중 하나로 SDK 외부에서 툴링을 구축하는 경우, `hybridSignBytes`로 서명 바이트를 프레이밍하고 `mldsa.sign`으로 Dilithium-5 서명을 생성하세요.
 
 ## 온체인 풋프린트 최적화

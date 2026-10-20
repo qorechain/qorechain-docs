@@ -30,7 +30,7 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet veya testnet üzerinde henüz açık bir IBC kanalı yoktur).
 
-:::note Canlı ağlarda bugün çalışanlar (zincir v3.2.0 ve sonrası)
+:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.3, testnet v3.2.4)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
@@ -39,6 +39,13 @@ alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
 devre kesici tarafından kapatılmıştır), sıradan hesaplar için CosmWasm yükleme ve
 örnekleme, authenticator / soyut hesap akışları (modül kapalı), xQORE ve gaz
 soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler.
+
+Yayımlanan SDK (0.9.0, 21 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
+(v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
+ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi. Sonraki
+kuantum sonrası kuralların istemci tarafını taşır (anahtar kaydında sahiplik
+kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları); 0.9.0 öncesi
+sürümler taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090).
 :::
 
 ### Tasarım gereği kuantum güvenli
@@ -106,15 +113,15 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 
 | Paket | Dil | Kurulum | Durum |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.8.3) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.8.3) |
-| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.8.4`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.8.3) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | Yayında (Maven Central, v0.8.3) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Yayında (npm, v0.9.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.9.0) |
+| `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.9.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Yayında (Maven Central, v0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.8.3) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.9.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Yayında (npm, v0.9.0) |
 
 > Python dağıtımı `qorechain-sdk` olarak kurulur ancak **`qorsdk` olarak
 > import edilir**. Tüm istemciler kendi kayıt defterlerinde yayınlanmıştır —
@@ -128,17 +135,17 @@ ve standart Cosmos modülleri için tipli mesaj oluşturucular, tipli sorgu
 istemcileri, eksiksiz işlem yaşam döngüsü (otomatik gaz, hata çözümleme,
 işlem takibi, blok/işlem arama), hibrit post-kuantum işlemler ve WebSocket
 abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
-(`@qorechain/sdk` 0.8.3), Python PyPI'da (`qorechain-sdk` 0.8.3, import
-`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.8.4`), Rust
-crates.io'da (`qorechain-sdk` 0.8.3) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk` 0.8.3). EVM/SVM yürütme
+(`@qorechain/sdk` 0.9.0), Python PyPI'da (`qorechain-sdk` 0.9.0, import
+`qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.9.0`), Rust
+crates.io'da (`qorechain-sdk` 0.9.0) ve Java Maven
+Central'da (`io.github.qorechain:qorechain-sdk` 0.9.0). EVM/SVM yürütme
 adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.8.0),
-`@qorechain/react` kiti (0.8.3) ve `create-qorechain-dapp` iskele oluşturma
-CLI'si (0.8.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
+`@qorechain/react` kiti (0.9.0) ve `create-qorechain-dapp` iskele oluşturma
+CLI'si (0.9.0) yalnızca TypeScript içindir ve aynı şekilde npm'de
 yayınlanmıştır. Yardımcı paketler için
 [Kurulum](/sdk/install#related-packages) sayfasına bakın.
 
-## 0.6, 0.7 ve 0.8'deki yenilikler
+## 0.6, 0.7, 0.8 ve 0.9'daki yenilikler
 
 **0.6.0 — birleşik eth-native hesaplar (zincir v3.1.83).** Tek bir
 `eth_secp256k1` anahtarı, üç adres kodlamasının tümü olarak gösterilen ve
@@ -184,7 +191,7 @@ Kopyala-yapıştır örneklerle eksiksiz anlatım:
 v3.2.0).** Hibrit bir işlemin kuantum sonrası yarısı artık hedef ağın doğruladığı
 biçimde imzalanır (v1 veya v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Her iki herkese açık ağ da v2 üzerindedir; bu yüzden mainnet'te işlem yapmak için
-SDK **0.8.1 veya daha yenisi** gereklidir. **0.8.2**, EVM şeridinin
+SDK **0.8.1 veya daha yenisi** gereklidir (0.9.0'ı kullanın). **0.8.2**, EVM şeridinin
 [yetkilendirme penceresi](/sdk/guides/evm#evm-window) için `openEvmWindowMsg`,
 `closeEvmWindowMsg`, `fetchEvmWindow` ve `classifyEvmWindowRejection` ekler.
 **0.8.0**, cüzdan imzasına dayalı hesap yardımcılarını (`connectPhantomUnified` ve
@@ -194,6 +201,20 @@ bayrağını ve döndürülen callee verisini ekler. **0.8.3**, işlem aramasın
 hook yarış durumlarını, Python `migrate_to_hybrid` sıralamasını ve adres biçiminden
 bağımsız kanonik PQC türetmesini (`derivePqcCanonical`, `canonicalAccount`) düzeltir.
 Bkz. [Yükseltme notları](/sdk/install#upgrade).
+
+**0.9.0 — zincir v3.2.2 ve v3.2.3 için istemci desteği.** TypeScript `TxClient`,
+hesabın anahtar çiftini verdiğinizde hibrit imzalar
+(`client.connectTx(signer, { pqcKeypair })`); böylece `bankSend` ile SDK'nın
+rollup, multilayer ve cross-VM istemcileri herkese açık ağlarda çalışır.
+`ensurePqcRegistered`, kayıtlı anahtarı önce REST üzerinden kontrol eder, ikinci,
+farklı bir anahtarı kaydetmeyi reddeder ve ağ v3.2.3'ü uyguladıktan sonra
+sahiplik kanıtını kendiliğinden ekler. Yeni oluşturucular kapsamlı EVM
+pencerelerini (`nativeOnly`, `allowedTargets`) ve EIP-7702 onay mesajlarını
+kapsar; `derivePqcCanonical(address, mnemonic)` ise her dilde mnemonic'ten
+kurtarabileceğiniz bir anahtar verir. PQC hesap rotası tekil
+`/qorechain/pqc/v1/account/{address}` biçimindedir, bir blok içindeki başarısızlıklar
+codespace'lerini korur ve `create-qorechain-dapp` güncel SDK üzerinde iskelet
+oluşturur. Bkz. [0.9.0 neler ekliyor](/sdk/install#whats-new-090).
 
 ## Sonraki adımlar
 

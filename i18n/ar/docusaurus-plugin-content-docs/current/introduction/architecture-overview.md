@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # نظرة عامة على البنية
 
-QoreChain هي عقدة بلوكتشين معيارية مكوّنة من ثلاث عمليات أساسية — عقدة السلسلة، والملحق الجانبي للذكاء الاصطناعي (AI sidecar)، ومُفهرس الكتل (block indexer) — مدعومة بقاعدة بيانات Postgres ومراقَبة عبر Prometheus وGrafana. الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM **9801**) نشطة منذ 29 يونيو 2026 على الإصدار **v3.2.1** (قواعد الإجماع الخاصة بـ v3.2.0)، إلى جانب شبكة اختبار موازية (`qorechain-diana`، معرّف سلسلة EVM **9800**). السلسلة مبنية على Cosmos SDK v0.53. يوضّح المخطط التالي التخطيط العام لمكوّنات النظام.
+QoreChain هي عقدة بلوكتشين معيارية مكوّنة من ثلاث عمليات أساسية — عقدة السلسلة، والملحق الجانبي للذكاء الاصطناعي (AI sidecar)، ومُفهرس الكتل (block indexer) — مدعومة بقاعدة بيانات Postgres ومراقَبة عبر Prometheus وGrafana. الشبكة الرئيسية (`qorechain-vladi`، معرّف سلسلة EVM **9801**) نشطة منذ 7 يونيو 2026 على الإصدار **v3.2.3**، إلى جانب شبكة اختبار موازية (`qorechain-diana`، معرّف سلسلة EVM **9800**، الإصدار v3.2.4، لشبكة الاختبار فقط). السلسلة مبنية على Cosmos SDK v0.53. يوضّح المخطط التالي التخطيط العام لمكوّنات النظام.
 
 تلخّص دورة حياة المعاملة أدناه كيفية مرور معاملة مُرسَلة عبر العقدة — بدءًا من سلسلة مُزخرِفات AnteHandler (فحوصات الأمان والرسوم) وصولًا إلى تنفيذ الآلة الافتراضية (VM) والتسوية على السلسلة:
 
@@ -50,7 +50,7 @@ flowchart LR
 │  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
 │  │  │20/10/│   │PvP    │   │emission   │                    │           │
-│  │  │3     │   │       │   │114.3M cap │                    │           │
+│  │  │3     │   │       │   │590M cap   │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
@@ -170,7 +170,7 @@ flowchart LR
 
 * `x/burn` — 12 مصدر حرق (burn)، توزيع رسوم EndBlocker (تقسيم 37/30/20/10/3)
 * `x/xqore` — تصميم تكديس (staking) معزَّز بالحوكمة: قفل/فك قفل، عقوبات خروج متدرّجة، إعادة موازنة PvP (محاسبة فقط؛ معاملات القفل وفك القفل غير مربوطة بعد على الشبكات الحيّة)
-* `x/inflation` — إصدار محدود السقف: يُسَكّ مبلغ ثابت في كل حقبة (epoch) حتى بلوغ سقف تراكمي صارم (114,285,714 QOR)
+* `x/inflation` — إصدار محدود السقف: يُسَكّ مبلغ ثابت في كل حقبة (epoch) حتى بلوغ سقف تراكمي صارم (590,000,000 QOR)
 * `x/amm` — سيولة على السلسلة / صانع سوق آلي (AMM)
 
 **الجسور وقابلية التشغيل البيني**
@@ -194,7 +194,7 @@ flowchart LR
 
 تمرّ كل معاملة عبر سلسلة مُزخرِفات (decorators) قبل التنفيذ، ويمكن لأي مُزخرِف رفضها. هناك سلسلتان.
 
-**مسار Cosmos** (بالترتيب): `RejectMessages` (لا `MsgEthereumTx` على هذا المسار) → `AuthzLimiter` (لا رسائل EVM ولا رسائل إنشاء الاستحقاق التدريجي (vesting) داخل authz) → `SetUpContext` → حواجز mempool وعمق التوقيع المتعدد → مُزخرِفات CosmWasm الخاصة بغاز المحاكاة وعدّاد المعاملات وسجل الغاز والعقود → `CircuitBreaker` → فحص خيارات الامتداد → `ValidateBasic` → `TxTimeout` → `Memo` → بوابة ترخيص المدقّق (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (يتضمن حدّ المعدّل لكل مُرسِل) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → عدّاد معاملات الحرق → فحص الترحيل الزائد في IBC → تتبّع الغاز المطلوب.
+**مسار Cosmos** (بالترتيب): `RejectMessages` (لا `MsgEthereumTx` على هذا المسار) → `AuthzLimiter` (لا رسائل EVM ولا رسائل إنشاء الاستحقاق التدريجي (vesting) داخل authz، ومنذ v3.2.3 لا رسائل إدارة المفاتيح المقاومة للحوسبة الكمومية) → `SetUpContext` → حواجز mempool وعمق التوقيع المتعدد → مُزخرِفات CosmWasm الخاصة بغاز المحاكاة وعدّاد المعاملات وسجل الغاز والعقود → `CircuitBreaker` → فحص خيارات الامتداد → `ValidateBasic` → `TxTimeout` → `Memo` → بوابة ترخيص المدقّق (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (يتضمن حدّ المعدّل لكل مُرسِل) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → عدّاد معاملات الحرق → فحص الترحيل الزائد في IBC → تتبّع الغاز المطلوب.
 
 **مسار EVM** (المعاملات التي تحمل خيار امتداد Ethereum): `CircuitBreaker` → المُزخرِف الأحادي الخاص بـ EVM (فحوصات التوقيع وnonce والرسوم والرصيد) → `EVMWindowDecorator` (مفتاح مقاوم للحوسبة الكمومية مسجَّل ونافذة تفويض نشطة؛ راجع [نافذة تفويض EVM](/getting-started/first-transaction#evm-window)).
 

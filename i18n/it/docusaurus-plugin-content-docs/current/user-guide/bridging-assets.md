@@ -14,7 +14,7 @@ Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna route del bri
 :::
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.1**. Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**, versione della chain **v3.2.4**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.3**. Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route. Stato verificato il 20 ottobre 2026: tutte le 37 configurazioni di chain sono `pending` su entrambe le reti.
 :::
 
 ---
@@ -23,10 +23,10 @@ I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9
 
 QoreChain è progettata per offrire due protocolli di bridging:
 
-| Protocollo                               | Connessioni        | Caso d'Uso                                                                 |
-| ----------------------------------------- | ------------------ | --------------------------------------------------------------------------- |
-| **IBC** (Inter-Blockchain Communication)  | fino a 8 canali (nessuno aperto)           | Interoperabilità nativa con le chain abilitate a IBC                        |
-| **QCB** (QoreChain Bridge)                | 37 configurazioni (tutte in sospeso)  | Trasferimenti cross-chain con reti non-IBC tramite attestazioni protette da PQC |
+| Protocollo                               | Connessioni                          | Caso d'Uso                                                                      |
+| ---------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------- |
+| **IBC** (Inter-Blockchain Communication) | fino a 8 canali (nessuno aperto)     | Interoperabilità nativa con le chain abilitate a IBC                            |
+| **QCB** (QoreChain Bridge)               | 37 configurazioni (tutte in sospeso) | Trasferimenti cross-chain con reti non-IBC tramite attestazioni protette da PQC |
 
 Un elenco completo di ogni configurazione di chain è disponibile nella pagina **Architettura del Bridge**. Questa guida si concentra su come è progettato il funzionamento di un trasferimento tramite bridge.
 
@@ -110,11 +110,11 @@ Ogni transazione della lane nativa richiede la co-firma post-quantistica ibrida 
 
 Il QoreChain Bridge è progettato per essere protetto da più livelli di difesa:
 
-| Meccanismo                        | Descrizione                                                                                                                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Multisig PQC 7-su-10**           | Ogni operazione del bridge richiede attestazioni da almeno 7 dei 10 validatori del bridge, ciascuno utilizzando firme crittografiche post-quantistiche.            |
-| **Periodo di Contestazione di 24 Ore** | I trasferimenti che superano la soglia di trasferimento elevato (100.000 QOR) entrano in una finestra di contestazione di 24 ore durante la quale i validatori o gli osservatori possono segnalare transazioni fraudolente. |
-| **Interruttori Automatici (Circuit Breaker)** | Limitatori di velocità automatici bloccano le operazioni del bridge in caso di volumi anomali o pattern sospetti. Le operazioni del bridge riprendono dopo una revisione manuale. |
+| Meccanismo                                    | Descrizione                                                                                                                                                                                                                  |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Multisig PQC 7-su-10**                      | Ogni operazione del bridge richiede attestazioni da almeno 7 dei 10 validatori del bridge, ciascuno utilizzando firme crittografiche post-quantistiche.                                                                      |
+| **Periodo di Contestazione di 24 Ore**        | I trasferimenti che superano la soglia di trasferimento elevato (100.000 QOR) entrano in una finestra di contestazione di 24 ore durante la quale i validatori o gli osservatori possono segnalare transazioni fraudolente. |
+| **Interruttori Automatici (Circuit Breaker)** | Limitatori di velocità automatici bloccano le operazioni del bridge in caso di volumi anomali o pattern sospetti. Le operazioni del bridge riprendono dopo una revisione manuale.                                            |
 
 ---
 

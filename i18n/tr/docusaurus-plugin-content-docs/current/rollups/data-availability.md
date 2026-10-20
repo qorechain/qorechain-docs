@@ -16,7 +16,7 @@ Veri kullanılabilirliği (DA), bir rollup'ın durumunun arkasındaki işlem ver
 | **`both`** | Yedeklilik için native ve Celestia birlikte | Bugün tam olarak `native` gibi davranır |
 
 :::caution Erken aşama yeteneği
-Henüz hiçbir ağda bir rollup oluşturulmamıştır ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
+Henüz hiçbir ağda bir rollup oluşturulmamıştır (20 Ekim 2026 itibarıyla kontrol edildi) ve DA arka uçları yalnızca kısmen uygulanmıştır. Her arka ucun durumu aşağıda belirtilmiştir; herhangi birine güvenmeden önce **`qorechain-diana`** testnet üzerinde doğrulayın.
 :::
 
 ---
@@ -41,6 +41,8 @@ Maksimum blob boyutu ve saklama penceresi, canlı modül parametreleri tarafınd
 ```bash
 qorechaind query rdk config
 ```
+
+Blob meta verileri (baytlar değil) her iki ağın da sunduğu `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}` adresinden REST üzerinden okunabilir; `expires_at_height` alanını içerir.
 
 ---
 

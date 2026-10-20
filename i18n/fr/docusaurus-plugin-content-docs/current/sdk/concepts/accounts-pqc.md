@@ -140,7 +140,13 @@ tous les SDK de langage de QoreChain. (Pour `unifiedAccountFromSeed`,
 l'emplacement du mnémonique est `"seed:" + hex(seed32)`.) Depuis le SDK 0.8.3,
 `derivePqcCanonical(account, mnemonic)` commence par ramener `account` à sa
 forme `qor1…` en minuscules (`canonicalAccount`) : un bech32 en majuscules ou la
-forme `0x` du même compte produit donc la même clé.
+forme `0x` du même compte produit donc la même clé. Chaque langage dispose de la
+même fonction (Python `derive_pqc_canonical`, Go
+`authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
+`Authenticator.derivePqcCanonical` ; voir le
+[tableau du guide Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)),
+et le même `{ address, mnemonic }` donne la même clé dans tous (vérifié pour
+TypeScript, Python, Go et Rust en octobre 2026).
 
 ### Envoyer sur la voie Native avec la clé eth
 
@@ -161,7 +167,8 @@ hexadécimale `0x` ; décodez-la donc en octets pour `ecdsaPubkey`. Ensuite,
 passez `rest` au signeur afin qu'il puisse demander au réseau quelle
 [forme d'octets de signature](#sign-bytes-versions) il vérifie (sur
 `qorechain-vladi` et `qorechain-diana`, il lève une erreur au lieu de deviner).
-Nécessite le SDK 0.8.1 ou ultérieur et `npm i @cosmjs/stargate` :
+Nécessite le SDK 0.8.1 ou ultérieur (0.9.0 pour les assistants de preuve de
+possession) et `npm i @cosmjs/stargate` :
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -170,6 +177,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -199,6 +207,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -293,8 +309,8 @@ post-quantique voyage sous forme d'extension `PQCHybridSignature` sur la
 transaction.
 
 :::caution La signature hybride est obligatoire sur le chemin Native
-Depuis la version **v3.2.0** de la chaîne (celle qu'exécutent les deux
-réseaux), la valeur par défaut du réseau est
+Depuis la version **v3.2.0** de la chaîne (le mainnet exécute la v3.2.3, le
+testnet la v3.2.4), la valeur par défaut du réseau est
 `hybrid_signature_mode = required` avec `allow_classical_fallback = false`. La
 signature hybride via `buildHybridTx` / `signAndBroadcastHybrid` (passez
 `rest`), ou `signHybridEth` / `EthNativeSigner` pour les comptes unifiés
@@ -315,8 +331,36 @@ d'analyse de transaction — passez à la version 0.6.1+.
 Le constructeur de bout en bout pour un compte de coin type 118 est
 `signAndBroadcastHybrid` (ou `buildHybridTx` pour construire sans diffuser). Il
 a besoin du signeur classique, de la paire de clés ML-DSA-87 du compte, du
-numéro de compte et de la séquence, ainsi que de `rest`. SDK 0.8.3 ou
-ultérieur, `npm i @cosmjs/stargate` :
+numéro de compte et de la séquence, ainsi que de `rest`.
+Pour un compte de coin type 118 en TypeScript, le chemin le plus court est le
+`TxClient` hybride (SDK 0.9.0) : passez la paire de clés lors de la connexion et
+chaque transaction est signée en mode hybride, `fee: "auto"` simulant la
+transaction hybride elle-même (l'enregistrement seul reste classique) :
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+Pour un contrôle explicite des frais, du numéro de compte et de la séquence,
+utilisez `signAndBroadcastHybrid` (SDK 0.8.1 ou ultérieur, `npm i
+@cosmjs/stargate`) :
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -366,11 +410,19 @@ const result = await signAndBroadcastHybrid({
 
 Avant qu'une transaction hybride puisse être vérifiée en PQC, la clé publique
 PQC du signataire doit être **enregistrée** avec `MsgRegisterPQCKeyV2` (signée
-classiquement, exemptée de la règle hybride). Les fonctions
+classiquement, exemptée de la règle hybride pour un compte qui n'a pas encore de
+clé). Les fonctions
 `ensurePqcRegistered` / `buildRegisterPqcKeyMsg` du SDK, `qorechaind tx pqc
 register-key` ou un wallet QoreChain s'en chargent. `includePqcPublicKey: true`
 ne fait qu'intégrer la clé dans l'extension ; cela ne l'enregistre **pas**, et
-la chaîne n'enregistre pas de clé à la première utilisation.
+la chaîne n'enregistre pas de clé à la première utilisation. Depuis la v3.2.3, la
+chaîne refuse les clés faibles, dégénérées et réutilisées, et accepte une preuve
+de possession facultative (voir
+[Règles d'intégrité des clés](/architecture/post-quantum-security#key-integrity)).
+Dans le SDK 0.9.0, `ensurePqcRegistered` joint la preuve de lui-même une fois
+que le réseau a appliqué la v3.2.3, et `signProofOfPossession` /
+`verifyProofOfPossession` sont exportées pour les enregistrements construits à la
+main ; les constructeurs 0.8.x enregistrent sans preuve, ce qui est autorisé.
 
 ### Quelle forme d'octets de signature ? {#sign-bytes-versions}
 

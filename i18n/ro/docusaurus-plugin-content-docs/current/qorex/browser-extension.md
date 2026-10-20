@@ -9,7 +9,7 @@ sidebar_position: 2
 
 **Extensia de browser** QoreX este portofelul QoreChain pentru desktop. Este un **portofel de sine stătător** — creezi sau imporți un portofel, deții și trimiți QOR și te conectezi la dApp-uri — și este elementul care permite oricărui site web să descopere QoreX și să transforme fiecare cerere într-o aprobare explicită și decodată.
 
-Este **live și public** pe trei magazine.
+Este **live și public** pe trei magazine (Chrome, Firefox și Safari); Chrome este în prezent în urma celorlalte cu o versiune — vezi [ce versiune este live unde](#versions).
 
 ## Instalare {#install}
 
@@ -21,9 +21,17 @@ Este **live și public** pe trei magazine.
 
 ### Ce versiune este live unde {#versions}
 
-La data de **15 octombrie 2026**: **Chrome 0.3.6**, **Firefox 0.3.7** (o versiune punctuală după 0.3.6) și **Safari** în interiorul aplicației macOS **QoreX Wallet** (**1.7.6**, care conține extensia 0.3.6; Mac App Store folosește propria numerotare `1.x`). Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi pentru scurt timp un build mai vechi sau mai nou; listarea din magazin arată mereu versiunea sa curentă. Această pagină descrie setul de funcții din 0.3.6. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
+Versiunea curentă din fiecare magazin, la data de **20 octombrie 2026**:
 
-De la 0.2.6, extensia a primit: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), **Claim & restake**, o listă **Unstaking in progress**, [adăugarea unui token prin contract](#custom-tokens), [Receive pe orice rețea](#receive), [Site-uri conectate cu Revoke](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
+| Magazin | Versiunea curentă |
+|---|---|
+| Chrome Web Store | 0.3.6 (încă neactualizat la 0.3.7) |
+| Firefox Add-ons | 0.3.7 |
+| Safari (Mac App Store, aplicația macOS **QoreX Wallet**) | 1.7.7, care conține extensia 0.3.7 — Mac App Store folosește propria numerotare `1.x` |
+
+Recenziile magazinelor ajung în momente diferite, astfel încât un magazin poate servi un build mai vechi decât altul; listarea din magazin arată mereu versiunea sa curentă. Această pagină descrie setul de funcții din 0.3.7; acolo unde un punct necesită 0.3.7, se spune acest lucru, iar utilizatorii de Chrome îl primesc când se actualizează listarea Chrome. Vezi și [Ce versiune este live unde](/qorex/overview#versions).
+
+De la 0.2.6, extensia a primit: [mai multe portofele cu o singură parolă](#wallets), un [cont în stil Ethereum pe care îl adaugi manual](#coin60), [Claim & restake](#stake), o listă **Unstaking in progress**, [adăugarea unui token prin contract](#custom-tokens), [Receive pe orice rețea](#receive), [Site-uri conectate cu Revoke](#connected-sites), [fereastra de acces EVM](#evm-window), [`signAndBroadcast` pentru dApp-uri](#sign-and-broadcast) și ecrane de aprobare care arată fiecare mesaj, comision și expirare.
 
 **Suprafața de permisiuni nu s-a schimbat din versiunea 0.1.3** — vezi [Ce permisiuni cere QoreX](#permissions).
 
@@ -53,7 +61,7 @@ Extensia deține propriile chei; nu necesită aplicația mobilă. Cheile nu păr
 
 Din 0.3.2, **Add an Ethereum account (coin 60)** (pe ecranul **Your accounts**) adaugă contul pentru o frază folosită prima dată în MetaMask sau pe Dashboard; vezi [Restaurează o frază din MetaMask sau din Dashboard](/qorex/getting-started#restore-dashboard). Adresa lui 0x este cea pe care MetaMask o arată pentru aceleași cuvinte. Handle-urile nu sunt oferite pe el.
 
-Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, cererile de plată și asocierea dispozitivelor rămân disponibile doar pe mobil — vezi [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, recuperarea socială, Legacy Protocol, cererile de plată, autentificarea contului și asocierea dispozitivelor rămân disponibile doar pe mobil — vezi [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Contul, soldul și @handle-ul tău {#account}
 
@@ -65,11 +73,11 @@ Dacă contul tău deține QOR aflat în vesting (de exemplu, o alocare TGE nedeb
 
 ### Revendică un @handle
 
-Unele versiuni ale extensiei îți permit să revendici din popup un **@handle** unic (de exemplu `@liviu`) pentru adresa acestui cont, la fel ca în aplicația mobilă; dacă popup-ul tău nu îl oferă, revendică din aplicația mobilă (revendicarea nu este oferită pe conturile în stil Ethereum). Revendicarea este semnată cu cheia proprie a contului și se leagă de acea adresă, astfel încât aplicația mobilă și Dashboard-ul o pot rezolva atunci când cineva îți trimite bani. Vezi [@handle](/qorex/account-and-dashboard#handle) pentru modul în care handle-urile sunt legate de adrese (nu de un portofel ca întreg).
+Revendicarea unui **@handle** unic (de exemplu `@liviu`) necesită un **cont autentificat** și are loc **în aplicația mobilă**; extensia te trimite acolo și nu revendică ea însăși handle-uri. Odată revendicat, handle-ul se leagă de acea adresă, astfel încât extensia îl rezolvă atunci când îl plătești, iar ceilalți te pot plăti după nume. Vezi [@handle](/qorex/account-and-dashboard#handle) pentru modul în care handle-urile sunt legate de adrese (nu de un portofel ca întreg).
 
 ## Trimite către un @handle {#handle-send}
 
-Începând cu 0.1.9 poți plăti direct un @handle înregistrat, în loc să cauți o adresă:
+Începând cu 0.1.9 poți plăti direct un @handle înregistrat, în loc să cauți o adresă (căutările au fost întrerupte de o eroare în versiunile până la 0.3.6 și funcționează din nou începând cu 0.3.7):
 
 1. Deschide popup-ul și atinge **Send**.
 2. În câmpul destinatarului, scrie `@` urmat de handle (de exemplu `@liviu`) în loc de o adresă `qor1…`.
@@ -144,7 +152,7 @@ Ecranul **Coins and tokens** al popup-ului îți permite să adaugi un **token E
 
 ## Fereastra de acces EVM {#evm-window}
 
-Ecranul **EVM access window** al popup-ului deschide și închide fereastra care permite unui cont să trimită pe lane-ul EVM al QoreChain (v3.2.0 și ulterior) — același ecran ca în aplicație. Vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window).
+Ecranul **EVM access window** al popup-ului deschide și închide fereastra care permite unui cont în stil Ethereum (coin 60) să trimită pe lane-ul EVM al QoreChain (v3.2.0 și ulterior) — același ecran ca în aplicație, cu aceleași limite (până la 17,280 de blocuri și 1,000 de tranzacții, plus un plafon de QOR care numără fiecare sumă împreună cu comisionul ei maxim). Vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window).
 
 ## Limbă {#language}
 
@@ -161,7 +169,7 @@ QoreX este construit pentru a fi verificabil, nu doar de încredere:
   QoreX detectează automat WebAuthn și afișează **Enable passkey unlock** doar acolo unde browserul îl expune paginilor de extensie — adică **Chrome și Edge**. Pe **Firefox** opțiunea este ascunsă, pentru că Firefox nu expune WebAuthn paginilor de extensie. Acest lucru este așteptat, nu un bug.
   :::
 - **Manifest V3 + CSP strict** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Nu există **nicio încărcare de cod la distanță** după instalare și niciun `wasm-unsafe-eval`.
-- **Fără cont, fără telemetrie** — fără analiză, fără urmărire, fără jurnalizare la distanță, fără înregistrare și fără e-mail. Listarea de pe Firefox declară colectarea de date ca `none`.
+- **Fără analiză, fără raportare de erori, fără SDK de urmărire, fără înregistrare** — extensia nu are nevoie de un cont pentru a deține, trimite sau pune în stake QOR. Cheile tale, fraza de recuperare, seiful și aprobările nu părăsesc niciodată browserul. Ea face totuși cereri de rețea: către endpoint-urile publice QoreChain pentru solduri, istoric și transmitere (acestea poartă adresa ta publică `qor1…`), o căutare de preț (fără adresă), serviciile publice ale oricărei rețele externe pe care o deții sau o vizualizezi (adresa ta publică pe acea rețea) și registrul de @handle (handle-ul sau o adresă publică). Doar dacă folosești [asocierea cu Dashboard](#dashboard-bridge) trimite o dovadă semnată că deții adresa. Vezi [Ce trimite QoreX prin rețea](/qorex/overview#data-and-privacy).
 
 ### Ce permisiuni cere QoreX și de ce {#permissions}
 

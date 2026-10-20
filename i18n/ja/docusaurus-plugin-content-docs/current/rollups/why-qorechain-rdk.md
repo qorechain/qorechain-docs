@@ -14,14 +14,14 @@ sidebar_position: 2
 - クロス VM 呼び出しを備えた **トリプル VM** ランタイム。
 
 :::caution 初期段階: ステータス列をお読みください
-どちらのネットワークにも、まだロールアップは作成されていません。下の表は、現時点で動作するものを示しています。汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ここで説明する機能は、RDK が TypeScript、Python、Go、Rust、Java で上乗せするものです。
+どちらのネットワークにも、まだロールアップは作成されていません（2026年10月20日時点で確認）。下の表は、現時点で動作するものを示しています。リリース済みの 0.5.0 クライアントの制限は [RDK 0.5.0 の制限](/rollups/deploying-a-rollup#rdk-050-limits) にまとめてあります。汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ここで説明する機能は、RDK が TypeScript、Python、Go、Rust、Java で上乗せするものです。
 :::
 
 | 機能 | ステータス | 依存するもの |
 | --- | --- | --- |
-| **量子耐性のある決済レシート** | 🟡 初期段階 | アンカーは Main Chain のポスト量子方式である ML-DSA-87 で署名されます。アンカーはまだ存在しません |
+| **量子耐性のある決済レシート** | 🟡 初期段階 | アンカーは Main Chain のポスト量子方式である ML-DSA-87 で署名されます。アンカーはまだ存在せず、0.5.0 の検証器は稼働中のネットワークに対するチェーン検証を完了できません |
 | **QCAI Rollup Copilot** | 🟡 公開エンドポイントではまだ利用不可 | 現在、公開エンドポイントが公開していないオンチェーン AI/RL アドバイザリーサービス |
-| **マルチ VM のクロス VM 呼び出し** | 🟡 稼働中のネットワークではまだ利用不可 | 有効化されていないクロス VM プリコンパイルがあり、CosmWasm のアップロードは閉じられています |
+| **マルチ VM のクロス VM 呼び出し** | 🟡 稼働中のネットワークではまだ利用不可 | 有効化されていないクロス VM プリコンパイルがあり、0.5.0 のエンコーダーはチェーンのレイアウトと一致せず、CosmWasm のアップロードは閉じられています |
 
 ---
 
@@ -40,7 +40,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-レシートが何を証明し、何を証明しないのかについては、[量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
+0.5.0 では、`verifySettlementReceipt` はチェーンに対して検証を行い、`client` なしでは `valid` と報告することを拒否します。ただし、そのチェーン検証は稼働中のネットワークに対してまだ完了しないため、本物のレシートを有効と報告する代わりに、フェイルクローズで失敗します。レシートが何を証明し、何を証明しないのか、また正確な制限については、[量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
 
 ---
 
@@ -66,18 +66,28 @@ CLI から: `qorollup advise my-rollup`。詳細は [QCAI Copilot](/rollups/qcai
 
 > 🟡 **稼働中のネットワークではまだ利用できません** — プリコンパイルは有効化されておらず、CosmWasm のアップロードは閉じられています。[マルチ VM](/rollups/multi-vm) を参照してください。
 
-RDK には、EVM（Solidity）コントラクトから **CosmWasm** コントラクトへの呼び出しを、`0x…0901` の固定プリコンパイル経由でエンコードするヘルパーが含まれています。このプリコンパイルは、メインネットでもテストネットでも **有効ではありません**（[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status) を参照）。
+RDK には、EVM（Solidity）コントラクトから **CosmWasm** コントラクトへの呼び出しを、`0x…0901` の固定プリコンパイル経由でエンコードするヘルパーが含まれています。このプリコンパイルは、メインネットでもテストネットでも **有効ではありません**（[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status) を参照）。どちらでも `0x…0901` に対する `eth_getCode` は `0x` を返し、そこへのコントラクト呼び出しは何の効果もなく成功します。
+
+0.5.0 のヘルパー `encodeCrossVmCalldata` は `executeCrossVMCall(string,bytes)` 用のコールデータを作成しますが、ノードがデコードするのは `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` であるため、その出力はチェーンが読み取る内容と一致しません。代わりに、チェーンのレイアウトで呼び出しをエンコードしてください（ここでは viem を使用。`targetVM` の 1 は CosmWasm で、サポートされる唯一のターゲットです）。
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 あるいは、ロールアップ上の Solidity から直接:
@@ -89,12 +99,14 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+現時点では `ok` だけでは何も証明されません。プリコンパイルにコードがない間は、呼び出しは空のデータとともに成功を返し、何も実行しないため、ターゲットコントラクトへの効果を確認してください。
 
 スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別枠です。）
 

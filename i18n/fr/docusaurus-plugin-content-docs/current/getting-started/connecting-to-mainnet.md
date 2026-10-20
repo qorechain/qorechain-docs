@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en service en configurant votre nœud avec le fichier genesis officiel, les pairs et les paramètres réseau.
 
 :::note
-Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **29 juin 2026** (bloc genesis à 17:03 UTC) et exécutant la version **v3.2.1** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
+Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026** et exécutant la version **v3.2.3** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
 :::
 
 ## Points d'accès publics
@@ -54,15 +54,15 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Le bundle contient `qorechaind` ainsi que ses bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Maintenez votre nœud à jour — v3.2.0 ou supérieure requise
-Les nœuds complets doivent suivre la version en production du réseau — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le manifeste actuel est **v3.2.1** avec `minCompatible` **3.2.0**. Le mainnet a appliqué deux mises à niveau par gouvernance que chaque nœud doit gérer : **v3.1.94** à la hauteur 2 122 074 (le plafond d'émission) et **v3.2.0** à la hauteur 2 981 742 (la fenêtre d'autorisation EVM et les octets de signature hybride v2). Un nœud qui rejoint le réseau depuis zéro a donc besoin d'un binaire v3.2.x ; privilégiez la synchronisation d'état (ci-dessous) plutôt que la relecture depuis le genesis. Le snapshot de données de chaîne publié est antérieur aux deux hauteurs de mise à niveau, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer avec un binaire v3.2.x.
+:::caution Maintenez votre nœud à jour — v3.2.3 requise
+Les nœuds complets doivent suivre la version en production du réseau — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le manifeste actuel est **v3.2.3** avec `minCompatible` **3.2.3** et `upgradeHeight` **3 662 051** : le mainnet y a appliqué la v3.2.3 le 20 octobre 2026 par la proposition de gouvernance 11, et un nœud encore sur une version antérieure ne peut pas suivre la chaîne au-delà de cette hauteur. Les mises à niveau par gouvernance précédentes sur le mainnet étaient la **v3.1.94** à la hauteur 2 122 074 (le plafond d'émission), la **v3.2.0** à la hauteur 2 981 742 (la fenêtre d'autorisation EVM et les octets de signature hybride v2) et la **v3.2.2** à la hauteur 3 556 788 (16 octobre 2026, proposition 7). La v3.2.1 était une version locale au nœud, sans hauteur. Un nœud qui rejoint le réseau depuis zéro a donc besoin du binaire v3.2.3 ; privilégiez la synchronisation d'état (ci-dessous) plutôt que la relecture depuis le genesis. Le snapshot de données de chaîne publié est antérieur à toutes ces hauteurs de mise à niveau, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer.
 
-v3.2.1 est une version locale au nœud (aucune hauteur de mise à niveau, aucun vote de gouvernance) : les nœuds sous v3.2.0 continuent de suivre la chaîne, mais la mise à niveau est recommandée. Après être passé à v3.2.1, définissez `evm-chain-id = 9801` dans `app.toml` (une valeur différente est journalisée comme une erreur) et maintenez l'horloge système synchronisée par NTP : un nœud s'arrête lorsque son horloge dérive de plus de 60 secondes. Vérifiez toujours les champs `"version"` et `"minCompatible"` du manifeste avant de faire confiance à `binary.url` — le manifeste est promu délibérément (d'abord sur le testnet, puis sur le mainnet après une période de rodage).
+Définissez `evm-chain-id = 9801` dans `app.toml` (une valeur différente est journalisée comme une erreur) et maintenez l'horloge système synchronisée par NTP : un nœud s'arrête lorsque son horloge dérive de plus de 60 secondes. Vérifiez toujours les champs `"version"` et `"minCompatible"` du manifeste avant de faire confiance à `binary.url` — le manifeste est promu délibérément (d'abord sur le testnet, puis sur le mainnet après une période de rodage). Le format de signature, les adresses, les décimales, les mémos et les frais n'ont pas changé dans la v3.2.3.
+
+Le testnet (`qorechain-diana`) exécute la v3.2.4, qui est une version réservée au testnet : ne l'installez pas sur un nœud mainnet, et le manifeste du mainnet ne la proposera pas.
 :::
 
-:::caution Une mise à niveau coordonnée du mainnet est programmée — à lire avant de démarrer ou de redémarrer un nœud
-La proposition de gouvernance **7** du mainnet (accélérée, vote jusqu'au 15 octobre 2026 21:24 UTC) appliquerait **v3.2.2** à la hauteur **3 556 788** — environ deux jours après le 14 octobre, à raison d'environ 3,2 s par bloc. Le texte de la proposition indique : restez sur v3.2.1 (ou v3.2.0) jusqu'à cette hauteur ; le nœud s'arrête à cette hauteur et vous le redémarrez sous v3.2.2 ; la signature des transactions est inchangée. **Cela dépend du vote** — vérifiez le résultat (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, champ `status`) ainsi que les champs `version` et `upgradeHeight` du [manifeste mainnet](https://download.qore.host/mainnet/latest.json) avant de remplacer un binaire. N'installez pas v3.2.2 par anticipation : un nœud qui l'embarque avant la hauteur s'arrête lui aussi. Si la proposition est rejetée ou si la hauteur est dépassée, cette note ne s'applique plus.
-:::
+Lorsqu'une mise à niveau coordonnée est programmée, le texte de la proposition indique la hauteur et vous demande de rester sur la version précédente jusque-là : le nœud s'arrête à cette hauteur et vous le redémarrez sous le nouveau binaire. Lisez le `status` de la proposition (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) ainsi que les champs `version` et `upgradeHeight` du [manifeste mainnet](https://download.qore.host/mainnet/latest.json) avant de remplacer un binaire, et n'installez jamais un binaire de mise à niveau avant sa hauteur : un nœud qui l'embarque trop tôt s'arrête lui aussi. Aucune mise à niveau n'est programmée au moment de la rédaction (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` renvoie `"plan": null`).
 
 ### Compilation depuis les sources (développement uniquement)
 
@@ -150,7 +150,7 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Définissez ensuite la section `[statesync]` de `config.toml` avec ces valeurs — voir [Exécuter un nœud](/developer-guide/running-a-node) pour le workflow complet, y compris une méthode manuelle de repli basée sur le RPC si vous devez dériver vous-même un point de confiance.
 
-Un snapshot des données de la chaîne figure également dans le manifeste (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Lisez les valeurs depuis le manifeste plutôt que de coder en dur un nom de fichier ou une hauteur, car un nouveau snapshot remplace l'ancien. Le snapshot est volumineux (des dizaines de gigaoctets) et, tel que publié en octobre 2026, a été pris à la hauteur 1 966 629 (21 août 2026) — avant les hauteurs de mise à niveau v3.1.94 et v3.2.0 — de sorte qu'un nœud restauré à partir de celui-ci rejoue les deux mises à niveau et doit exécuter un binaire v3.2.x ; la synchronisation d'état est généralement plus rapide :
+Un snapshot des données de la chaîne figure également dans le manifeste (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Lisez les valeurs depuis le manifeste plutôt que de coder en dur un nom de fichier ou une hauteur, car un nouveau snapshot remplace l'ancien. Le snapshot est volumineux (des dizaines de gigaoctets) et, tel que publié en octobre 2026, a été pris à la hauteur 1 966 629 (21 août 2026) — avant chacune des hauteurs de mise à niveau indiquées ci-dessus — de sorte qu'un nœud restauré à partir de celui-ci doit rejouer ces mises à niveau ; la synchronisation d'état est généralement plus rapide et évite cela :
 
 ```bash
 SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
@@ -256,8 +256,8 @@ http://localhost:1317
 | --------------------- | --------------------------------------- |
 | Chain ID               | `qorechain-vladi`                      |
 | Chain ID EVM           | `9801` (hex `0x2649`)                  |
-| Version de chaîne      | v3.2.1 (règles de consensus de v3.2.0) |
-| En production depuis   | 29 juin 2026 17:03 UTC (bloc genesis)  |
+| Version de chaîne      | v3.2.3 (appliquée à la hauteur 3 662 051) |
+| En production depuis   | 7 juin 2026                            |
 | Temps de bloc          | environ 3,2 secondes (moyenne mesurée) |
 | Jeton                  | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |
 | Prix de gaz minimum    | `0.1uqor`                              |

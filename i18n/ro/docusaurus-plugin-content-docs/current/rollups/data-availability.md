@@ -16,7 +16,7 @@ Disponibilitatea datelor (DA) este garanția că datele tranzacțiilor din spate
 | **`both`** | Native și Celestia împreună, pentru redundanță | Se comportă exact ca `native` astăzi |
 
 :::caution Capabilitate în fază incipientă
-Niciun rollup nu a fost creat încă în niciuna dintre rețele, iar backend-urile DA sunt implementate doar parțial. Starea fiecărui backend este indicată mai jos; validează pe testnet-ul **`qorechain-diana`** înainte de a te baza pe oricare dintre ele.
+Niciun rollup nu a fost creat încă în niciuna dintre rețele (verificat la 20 octombrie 2026), iar backend-urile DA sunt implementate doar parțial. Starea fiecărui backend este indicată mai jos; validează pe testnet-ul **`qorechain-diana`** înainte de a te baza pe oricare dintre ele.
 :::
 
 ---
@@ -41,6 +41,8 @@ Dimensiunea maximă a blob-ului și fereastra de reținere sunt guvernate de par
 ```bash
 qorechaind query rdk config
 ```
+
+Metadatele blob-ului (nu și octeții) pot fi citite prin REST la `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`, pe care îl servesc ambele rețele; acestea includ `expires_at_height`.
 
 ---
 

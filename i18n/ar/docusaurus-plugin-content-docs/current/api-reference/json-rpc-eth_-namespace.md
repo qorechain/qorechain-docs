@@ -17,7 +17,7 @@ sidebar_position: 3
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-تُقدَّم واجهة EVM JSON-RPC من شبكة **`qorechain-vladi`** الرئيسية (معرّف سلسلة EVM **9801**، بالنظام السداسي عشري `0x2649`، إصدار العقدة **v3.2.1**) وشبكة **`qorechain-diana`** الاختبارية (معرّف سلسلة EVM **9800**، بالنظام السداسي عشري `0x2648`، إصدار العقدة **v3.2.2**). تنطبق العناوين المحلية أعلاه على عقدة تشغّلها بنفسك. نقاط HTTP العامة هي `https://evm.qore.host` (الشبكة الرئيسية) و`https://evm-testnet.qore.host` (الشبكة الاختبارية)، وهي مدرجة في [الشبكات](/appendix/networks#public-endpoints). الـ WebSocket العام الوحيد لـ EVM هو الخاص بالشبكة الاختبارية (`wss://evm-ws-testnet.qore.host`)؛ ولا يوجد WebSocket عام لـ EVM على الشبكة الرئيسية.
+تُقدَّم واجهة EVM JSON-RPC من شبكة **`qorechain-vladi`** الرئيسية (معرّف سلسلة EVM **9801**، بالنظام السداسي عشري `0x2649`، إصدار العقدة **v3.2.3**، تعمل منذ 7 يونيو 2026) وشبكة **`qorechain-diana`** الاختبارية (معرّف سلسلة EVM **9800**، بالنظام السداسي عشري `0x2648`، إصدار العقدة **v3.2.4**، للشبكة الاختبارية فقط). تنطبق العناوين المحلية أعلاه على عقدة تشغّلها بنفسك. نقاط HTTP العامة هي `https://evm.qore.host` (الشبكة الرئيسية) و`https://evm-testnet.qore.host` (الشبكة الاختبارية)، وهي مدرجة في [الشبكات](/appendix/networks#public-endpoints). الـ WebSocket العام الوحيد لـ EVM هو الخاص بالشبكة الاختبارية (`wss://evm-ws-testnet.qore.host`)؛ ولا يوجد WebSocket عام لـ EVM على الشبكة الرئيسية.
 :::
 
 ## مساحات الأسماء المدعومة
@@ -69,8 +69,8 @@ sidebar_position: 3
 | الطريقة           | المعاملات | الوصف                                                         |
 | ---------------- | ---------- | ------------------------------------------------------------------- |
 | `txpool_status`  | لا شيء       | تُرجِع عدد المعاملات المعلّقة والمصطفّة                    |
-| `txpool_content` | لا شيء       | تُرجِع المعاملات المعلّقة والمصطفّة (غير متاحة على الشبكة الرئيسية العامة) |
-| `txpool_inspect` | لا شيء       | تُرجِع ملخصًا للمجمّع (غير متاحة على الشبكة الرئيسية العامة)               |
+| `txpool_content` | لا شيء       | تُرجِع المعاملات المعلّقة والمصطفّة (غير متاحة على نقاط النهاية العامة) |
+| `txpool_inspect` | لا شيء       | تُرجِع ملخصًا للمجمّع (غير متاحة على نقاط النهاية العامة)               |
 
 ## طرق net_
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - تقبل `eth_getLogs` حدًا أقصى قدره **10,000 كتلة** بين `fromBlock` و`toBlock`. أي نطاق أوسع يُرجع `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. استعلم بنوافذ من 10,000 كتلة أو أقل. أما إعداد `filter-cap` المنفصل فيحدّ من عدد السجلات المُرجَعة.
-- تعمل `txpool_status` على نقطة نهاية الشبكة الرئيسية العامة. أما `txpool_content` و`txpool_inspect` فهما معطّلتان هناك (وتعملان على نقطة نهاية الشبكة الاختبارية العامة وعلى عقدة تشغّلها بنفسك).
+- تعمل `txpool_status` على نقاط النهاية العامة. أما `txpool_content` و`txpool_inspect` فهما معطّلتان على نقطة نهاية الشبكة الرئيسية العامة ونقطة نهاية الشبكة الاختبارية العامة معًا (وتعملان على عقدة تشغّلها بنفسك، مع إدراج `txpool` في قائمة `api` الخاصة بها).
 - طرق `debug_*` و`eth_signTransaction` غير متاحة.
 - يحتاج `eth_subscribe` إلى اتصال WebSocket. عبر HTTP يُرجع `-32601 notifications not supported`. انظر [أحداث WebSocket](/api-reference/websocket-events).
 - تُقلَّم الحالة عند الارتفاعات القديمة على نقاط النهاية العامة، لذا قد يفشل `eth_call` على كتلة تاريخية بعيدة بخطأ إصدار الحالة.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## إرسال المعاملات {#sending-transactions}
 
 :::caution مسار EVM يحتاج إلى مفتاح PQC ونافذة مفتوحة
-منذ إصدار السلسلة v3.2.0، يقبل مسار EVM معاملة (`MsgEthereumTx`، بما في ذلك نشر العقود) فقط من حساب لديه **مفتاح مسجَّل ما بعد كمومي** و**نافذة تفويض EVM مفتوحة**. لا تستطيع محفظة EVM عادية لم تُجرِ هذا الإعداد إرسال المعاملات: ترفضها العقدة بخطأ من وحدة `pqc` (الرموز 26 أو 27 أو 28) بدلًا من تضمينها. أما قراءة الأرصدة واستدعاء `eth_call` وتقدير الغاز فلا تحتاج إلى نافذة.
+منذ إصدار السلسلة v3.2.0، يقبل مسار EVM معاملة (`MsgEthereumTx`، بما في ذلك نشر العقود) فقط من حساب لديه **مفتاح مسجَّل ما بعد كمومي** و**نافذة تفويض EVM مفتوحة**. لا تستطيع محفظة EVM عادية لم تُجرِ هذا الإعداد إرسال المعاملات: ترفضها العقدة بخطأ من وحدة `pqc` (الرموز 26 أو 27 أو 28) بدلًا من تضمينها. أما قراءة الأرصدة واستدعاء `eth_call` وتقدير الغاز فلا تحتاج إلى نافذة. ومنذ v3.2.2 تُرفض أيضًا المعاملة الموقَّعة **دون معرّف سلسلة** (قبل EIP-155)، ومنذ v3.2.3 يمكن تحديد نطاق النافذة بحيث تقتصر على تحويلات QOR العادية (`native_only`) أو على مستلمين مدرجين (`allowed_targets`)؛ وتُرفض المعاملة الخارجة عن النطاق بالرمز 27.
 
 تحقق من الحساب قبل الإرسال:
 
 - `GET /qorechain/pqc/v1/account/{address}` (القيمة `found: true` تعني أن مفتاحًا مسجَّل)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (القيمة `live: true` تعني أن نافذة تقبل المعاملات حاليًا)
 
-كلاهما موصوف في [نقاط نهاية REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). تُفتح النافذة بمعاملة QoreChain (`MsgOpenEVMWindow`، محدودة بحد أقصى 17,280 كتلة و1,000 معاملة إضافةً إلى سقف للقيمة)، وليس بمعاملة Ethereum. انظر [تطوير EVM](/developer-guide/evm-development) للاطلاع على نظرة عامة على المسار.
+كلاهما موصوف في [نقاط نهاية REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module) (وتُبلغ استجابة النافذة أيضًا عن `native_only` و`allowed_targets`). تُفتح النافذة بمعاملة QoreChain (`MsgOpenEVMWindow`، محدودة بحد أقصى 17,280 كتلة و1,000 معاملة إضافةً إلى سقف للقيمة)، وليس بمعاملة Ethereum. انظر [تطوير EVM](/developer-guide/evm-development) للاطلاع على نظرة عامة على المسار.
 :::
 
 ## أمثلة
@@ -161,7 +162,7 @@ curl -X POST http://localhost:8545 \
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

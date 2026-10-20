@@ -41,6 +41,13 @@ pnpm --filter @qorechain/sdk docs:api
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, 길이 상수,
   알고리즘 ID/헬퍼, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
+- **PQC 키 라이프사이클 (0.9.0):** `ensurePqcRegistered`(REST로 상태를 읽고,
+  `PqcKeyMismatchError`), `fetchPqcStatus`, `isRegisteredPqcKey`,
+  `buildRegisterPqcKeyMsg`, `signProofOfPossession` / `verifyProofOfPossession`
+  (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
+  `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
+  `isUpgradeApplied` / `requireUpgradeApplied`(`CHAIN_UPGRADE_V3_2_2`,
+  `CHAIN_UPGRADE_V3_2_3`).
 - **읽기 클라이언트:** `RestClient`(`getPermissionSchema` 포함),
   `JsonRpcClient`, `QorClient`, HTTP 헬퍼(`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); 모든 모듈에 대한 타입 지정 쿼리
@@ -48,17 +55,18 @@ pnpm --filter @qorechain/sdk docs:api
   그리고 `multilayer`의 `Anchor`/`Anchors` 상태 앵커(state-anchor) 쿼리 포함.
   공개 엔드포인트에서는 일부 타입 지정 REST 헬퍼가 게이트웨이가 제공하지 않는
   경로를 호출합니다: `getAiStats`, `getFeeEstimate`, `getXqorePosition`,
-  `getInflationRate`, `getReputation`, 그리고 `getPqcAccount`(복수형 `accounts`
-  경로를 호출하며, 실제로 제공되는 경로는 단수형
-  `/qorechain/pqc/v1/account/{address}`이고 `rest.get(...)`으로 접근할 수
-  있습니다). `getBurnStats`, `getAllBalances`, `getBridgeChains`,
-  `getPermissionSchema`는 동작합니다.
+  `getInflationRate`, `getReputation`.
+  `getBurnStats`, `getAllBalances`, `getBridgeChains`, `getPermissionSchema`,
+  그리고(복수형 `accounts` 경로를 실제로 제공되는 단수형
+  `/qorechain/pqc/v1/account/{address}`로 고친 0.9.0부터) `getPqcAccount`는
+  동작합니다.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
-- **트랜잭션:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`,
+- **트랜잭션:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`(0.9.0부터
+  `pqcKeypair`로 연결하면 하이브리드, `HYBRID_VERIFY_GAS`),
   `MSG_SEND_TYPE_URL`, 하이브리드 헬퍼(`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   `decodeTxError`를 통한 구조화된 오류 디코딩(`abstractaccount`
@@ -85,13 +93,21 @@ pnpm --filter @qorechain/sdk docs:api
   (`"auto" | "v1" | "v2"`); `resolveSignBytesVersion`,
   `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
   `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
-- **EVM 인증 윈도우 (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
-  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
-  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. 자세한 내용은
+- **EVM 인증 윈도우 (0.8.2+):** `openEvmWindowMsg`(0.9.0부터 `nativeOnly`와
+  `allowedTargets`), `closeEvmWindowMsg`, `fetchEvmWindow`,
+  `classifyEvmWindowRejection`, `isEvmWindowRejection`, `MAX_EVM_WINDOW_BLOCKS`,
+  `MAX_EVM_WINDOW_TXS`, `MAX_EVM_WINDOW_TARGETS`. 자세한 내용은
   [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 참고하세요.
+- **EIP-7702 동의 (0.9.0):** `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`,
+  `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`,
+  `classifyEvmDelegationRejection`, `EVM_DELEGATION_CLEAR`,
+  `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
+- **추상 계정 다이제스트 v2 (0.9.0):** `evmAuthSignBytesV2`,
+  `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
 - **정규(canonical) PQC 파생 (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; PQC 등록 메시지는
   `buildRegisterPqcKeyMsg`입니다(`ensurePqcRegistered`에서 사용).
+  `derivePqcLegacy`는 새 키에 대해 더 이상 권장되지 않습니다.
 
 ### `@qorechain/evm`
 
@@ -115,10 +131,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | 언어 | 생성 문서 | 설치 |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.8.3` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (태그 `packages/go/v0.8.4`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.9.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (태그 `packages/go/v0.9.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

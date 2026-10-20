@@ -64,7 +64,8 @@ Nécessite un RPC de consensus accessible ainsi que le REST et un compte approvi
 Cet exemple signe uniquement avec la signature **classique** ; il fonctionne donc
 contre un nœud local ou de développement, mais est refusé par le mainnet et le
 testnet, qui exigent la signature hybride sur chaque transaction de la voie
-Native. Pour les réseaux publics, utilisez l'envoi hybride du
+Native. Pour les réseaux publics, connectez-vous avec la paire de clés du compte,
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), comme dans le
 [Démarrage rapide](/sdk/quickstart#send-qor).
 
 ```ts

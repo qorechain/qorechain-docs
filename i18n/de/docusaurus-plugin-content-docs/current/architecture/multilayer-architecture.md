@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementiert über das Modul `x/multilayer` eine **hierarchische 4-Schichten-Chain-Architektur**. Die Hauptchain dient als Settlement- und Trust-Root, während die untergeordneten Schichten (Sidechains, Paychains und Rollups) spezialisierte Workloads mit unterschiedlichen Kompromissen zwischen Performance und Sicherheit verarbeiten.
 
 :::caution Frühe Entwicklungsphase
-Das Modul ist im Mainnet (Chain-Version **v3.2.1**) und im Testnet bereitgestellt, aber **bisher existiert in keinem der beiden Netzwerke eine Schicht oder ein Anchor**. Alles Folgende beschreibt das Modul so, wie es gebaut ist; die Parameter sind die aktuell gültigen Werte.
+Das Modul ist im Mainnet (Chain-Version **v3.2.3**) und im Testnet (**v3.2.4**) bereitgestellt, aber **bisher existiert in keinem der beiden Netzwerke eine Schicht oder ein Anchor** (geprüft am 20. Oktober 2026: `GET /qorechain/multilayer/v1/layers` liefert in beiden eine leere Liste). Alles Folgende beschreibt das Modul so, wie es gebaut ist; die Parameter sind die aktuell gültigen Werte. Im Mainnet ist die Nachricht `MsgUpdateLayerStatus` derzeit durch den Circuit Breaker abgeschaltet (siehe [Chain-Parameter](/appendix/chain-parameters#circuit-breaker)); im Testnet nicht.
 :::
 
 ---
@@ -64,7 +64,7 @@ Die Hauptchain ist der Trust-Root für das gesamte QoreChain-Ökosystem.
 | Konsens    | QoreChain-Konsens (siehe [Konsensmechanismus](/architecture/consensus-mechanism), was heute verdrahtet ist) |
 | Sicherheit | PQC-gesichert mit Dilithium-5-Signaturen                                        |
 | Rolle      | Settlement-Schicht, Speicherung von State-Anchors, QCAI-Routing-Engine, Trust-Root |
-| Blockzeit  | Netzwerkabhängig: etwa 3,2 Sekunden im Mainnet, etwa 1,0 Sekunden im Testnet (gemessen im Oktober 2026) |
+| Blockzeit  | Netzwerkabhängig: etwa 3,2 Sekunden im Mainnet, etwa 1,0 Sekunden im Testnet (gemessen am 20. Oktober 2026) |
 
 Alle untergeordneten Schichten verankern ihre State-Roots periodisch über Hierarchical Commitment Schemes (HCS) an der Hauptchain.
 
@@ -160,13 +160,19 @@ Untergeordnete Schichten committen ihren State periodisch über **State-Anchors*
 | `transaction_count`       | Anzahl der Transaktionen seit dem letzten Anchor     |
 | `compressed_state_proof`  | Komprimierter State-Transition-Proof                 |
 
-### Übermittlung von Anchors
+### Schicht- und Rollup-IDs {#id-grammar}
+
+Seit v3.2.2 muss eine **neue** Schicht-ID (und eine Rollup-ID, die ein Rollup mit seiner Schicht teilt) dem Muster `^[a-z0-9][a-z0-9._-]{2,63}$` entsprechen: 3 bis 64 Zeichen, Kleinbuchstaben, Ziffern, `.`, `_` und `-`, beginnend mit einem Buchstaben oder einer Ziffer. Der Keeper prüft dies, wenn die Schicht erstellt wird, und eine Transaktion, die daran scheitert, zahlt trotzdem ihre Gebühr; validieren Sie IDs daher zuerst im Client. Vor v3.2.2 erstellte IDs sind nicht betroffen.
+
+### Übermittlung von Anchors {#anchor-submission}
 
 Anchors werden über `MsgAnchorState` an die Hauptchain übermittelt. Der Keeper validiert den Anchor anhand der folgenden Schritte:
 
 1. **Schicht existiert und ist aktiv** — Der Keeper prüft, dass die Schicht im State existiert und aktuell den Status `active` hat.
 2. **Mindest-Anchor-Intervall verstrichen** — Der Keeper prüft, dass seit dem letzten Anchor dieser Schicht mindestens `min_anchor_interval` Blöcke (Standard: 100) verstrichen sind.
 3. **PQC-Aggregatsignatur** — Der Keeper stellt sicher, dass die PQC-Aggregatsignatur vorhanden und für die Anchor-Daten gültig ist. Die Signatur wird gegen den registrierten ML-DSA-87-Schlüssel des **Schicht-Erstellers** geprüft; ein Anchor wird abgelehnt, wenn der Ersteller keinen registrierten Schlüssel hat.
+
+Ein **Settlement-Anchor**, der über `x/rdk` geschrieben wird (ein Batch, der seit v3.2.2 mit einer `anchor_signature` übermittelt wird), ist ein Sonderfall: Er überspringt die Prüfung des Mindestintervalls, weil Batches der Reihe nach eintreffen, er darf eine Schicht verankern, die noch `proposed` ist (nichts On-Chain befördert eine Schicht, die ein RDK-Rollup registriert hat), und er wird nur akzeptiert, wenn der Einreicher der Ersteller der Schicht selbst ist. Die Signaturprüfung ist dieselbe.
 
 ### Challenge-Periode
 
@@ -181,7 +187,24 @@ Anchors sind über den Multilayer-Query-Service **lesbar**. Zwei Queries stellen
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — gibt den neuesten State-Anchor einer Schicht zurück.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — gibt die Anchor-Historie einer Schicht zurück.
 
-Jeder Anchor trägt eine Dilithium-5-Signatur des Schicht-Erstellers über die Nachricht `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Eine neuere Chain-Version ändert die signierte Nachricht, daher sollten Clients sie nicht fest codieren. Eine Signatur belegt, dass der registrierte Schlüssel des Erstellers diese Bytes signiert hat; ob der Anchor existiert, ist eine Frage an die Chain, daher sollte ein Verifizierer den Anchor von einem Node lesen, dem er vertraut. In keinem der beiden Netzwerke existiert bisher eine Schicht oder ein Anchor. Dies ist das On-Chain-Primitiv hinter den [Settlement-Receipts](/rollups/settlement-receipts) des Rollup Development Kits.
+Jeder Anchor trägt eine Dilithium-5-Signatur (ML-DSA-87) des Schicht-Erstellers. Die signierte Nachricht hängt von der Höhe ab, auf der der Anchor übermittelt wird:
+
+* **Ab v3.2.2 (Mainnet-Höhe 3,556,788, Testnet-Höhe 6,905,034): v2.** Jedes Feld variabler Länge trägt eine 8-Byte-Länge im Big-Endian-Format, die Chain-ID ist Teil der Nachricht, und Transaktionsanzahl sowie komprimierter State-Proof sind abgedeckt:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Vor v3.2.2: v1** (`layer_id ‖ layer_height (8-Byte Big-Endian) ‖ state_root ‖ validator_set_hash`, ohne Längenpräfixe und ohne Chain-ID, sodass eine v1-Signatur auf jeder Chain gültig ist). Die Chain akzeptiert ab der Höhe von v3.2.2 keinen v1-Anchor mehr.
+
+Weil sich die Nachricht zwischen Releases ändern kann, sollte ein Client die Form anhand der Höhe des angewendeten Plans wählen (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` bedeutet nicht angewendet), statt sie fest zu codieren. Für einen RDK-Batch gilt folgende Zuordnung: `layer_id` = die Schicht-ID des Rollups, `layer_height` = der Batch-Index, `state_root` = der State-Root des Batches, `transaction_count` = die Transaktionsanzahl des Batches und ein leerer `compressed_state_proof`. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` gibt diese Bytes offline aus. Eine Signatur belegt, dass der registrierte Schlüssel des Erstellers diese Bytes signiert hat; ob der Anchor existiert, ist eine Frage an die Chain, daher sollte ein Verifizierer den Anchor von einem Node lesen, dem er vertraut. In keinem der beiden Netzwerke existiert bisher eine Schicht oder ein Anchor. Dies ist das On-Chain-Primitiv hinter den [Settlement-Receipts](/rollups/settlement-receipts) des Rollup Development Kits.
 
 ---
 
@@ -250,3 +273,5 @@ Statusübergänge werden vom Keeper durchgesetzt. Ungültige Übergänge (z. B. 
 | `routing_enabled`              | bool   | `true`          | QCAI-basiertes Transaktions-Routing aktivieren          |
 | `routing_confidence_threshold` | string | `0.6`           | Mindestkonfidenz für QCAI-Routing-Entscheidungen        |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Globales Cross-Layer Fee Bundling aktivieren            |
+
+Dies sind die Werte, die `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) am 20. Oktober 2026 in Mainnet und Testnet zurückgibt. Seit v3.2.2 kann `MsgUpdateParams` des Moduls geroutet werden, sodass ein Governance-Vorschlag sie ändern kann.

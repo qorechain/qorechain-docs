@@ -12,7 +12,8 @@ sidebar_position: 1
 | Câmp | Valoare |
 | --- | --- |
 | Presetare de rețea | `mainnet` |
-| Chain id | `qorechain-vladi` (live) |
+| Chain id | `qorechain-vladi` (live din 7 iunie 2026) |
+| Versiune lanț (20 octombrie 2026) | v3.2.3 |
 | ID lanț EVM | `9801` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |
@@ -26,6 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `testnet` |
 | Chain id | `qorechain-diana` (live) |
+| Versiune lanț (20 octombrie 2026) | v3.2.4 (deocamdată doar testnet; propunerea 13 de pe mainnet ar aplica-o la înălțimea 3,742,566) |
 | ID lanț EVM | `9800` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |

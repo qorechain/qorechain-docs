@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | Planned method                | What to use today |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). See [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module). |
-| `qor_getHybridSignatureMode`  | No public query route. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` on a node you run; no REST route. |
+| `qor_getHybridSignatureMode`  | No public REST route; `qorechaind query pqc hybrid-mode` (or `query pqc params`) against a node or `--node https://rpc.qore.host:443`. |
+| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` on a node you run, or `qorechaind query ai stats`; no REST route. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` on a node you run; no REST route. |
 | `qor_getReputationScore`      | No public query route (the reputation module exposes gRPC `Params` only). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` and `anchor/{layer_id}`. See [Multilayer Module](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | No public query route. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. See [Burn Module](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | None. xQORE is not live (see [xQORE Staking](/user-guide/xqore-staking)). |
-| `qor_getInflationRate`        | No public query route on mainnet. |
-| `qor_getTokenomicsOverview`   | Combine `GET /qorechain/burn/v1/stats` with `GET /cosmos/bank/v1beta1/supply`. |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) or the CLI on a node you run; the `/qorechain/rdk/v1/...` REST routes are not served on mainnet. |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` and `/epoch_info` (emission mode, per-epoch amount, cap, progress; served since v3.2.2). See [Inflation Module](/api-reference/rest-grpc-endpoints#inflation-module). |
+| `qor_getTokenomicsOverview`   | Combine `GET /qorechain/burn/v1/stats`, `GET /qorechain/inflation/v1/epoch_info` and `GET /cosmos/bank/v1beta1/supply`. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (served since v3.2.2; see [RDK Module](/api-reference/rest-grpc-endpoints#rdk-module)), or `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | No public service; see [Preset Profiles](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | None. The BTC-restaking module has no query service yet. |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Abstract accounts are disabled on both networks today. |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | None. |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (served since v3.2.2). See [Gas Abstraction Module](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | None. |
 
-For the EVM-lane state of an account (registered PQC key and authorisation window) use `GET /qorechain/pqc/v1/account/{address}` and `GET /qorechain/pqc/v1/evm_window/{address}`.
+For the EVM-lane state of an account (registered PQC key, authorisation window and EIP-7702 consent) use `GET /qorechain/pqc/v1/account/{address}`, `GET /qorechain/pqc/v1/evm_window/{address}` and `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`. The status route is the **singular** `account`; the plural `/accounts/` is not served and answers `501`.
 
 ---
 

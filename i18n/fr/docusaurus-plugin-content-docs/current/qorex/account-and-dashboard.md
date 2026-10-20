@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Compte et Dashboard
 
-QoreX fonctionne **entièrement sans compte** — vos clés n'en dépendent jamais. La connexion ajoute des commodités comme les demandes de paiement et l'appairage au Dashboard ; la réservation d'un @handle peut aussi vous demander de vous connecter.
+QoreX fonctionne **entièrement sans compte** — vos clés n'en dépendent jamais. La connexion ajoute des commodités comme les demandes de paiement et l'appairage au Dashboard, et elle est **requise pour réserver un @handle**. La connexion se fait par e-mail, ou avec Apple ou Google — voir ci-dessous.
 
 ## Se connecter {#sign-in}
 
@@ -35,7 +35,7 @@ Paramètres → **Vos comptes** vous permet de créer et de basculer entre jusqu
 
 Réservez un nom unique (par exemple `@liviu`) lié à votre adresse par **double signature** (une signature ed25519 du registre + votre propre signature secp256k1). N'importe qui peut ensuite envoyer vers votre @handle. La résolution se fait selon le principe **vérifier-puis-épingler** (confiance à la première utilisation) : ainsi, si la clé d'un handle est un jour modifiée en silence, QoreX le signale.
 
-Comme un handle se lie à une adresse plutôt qu'à votre portefeuille, le réserver se fait **par adresse** — si vous avez [plusieurs comptes](#accounts), chacun peut porter son propre @handle, et en réserver un pour un compte ne donne pas automatiquement un nom aux autres. Dans l'extension de navigateur, vous pouvez payer un handle ; la réservation depuis le popup est proposée sur les comptes QoreChain ordinaires dans certaines versions et pas dans d'autres — si le popup ne la propose pas, réservez depuis l'application mobile. Les comptes de type Ethereum (coin 60) n'ont pas de handle.
+Comme un handle se lie à une adresse plutôt qu'à votre portefeuille, le réserver se fait **par adresse** — si vous avez [plusieurs comptes](#accounts), chacun peut porter son propre @handle, et en réserver un pour un compte ne donne pas automatiquement un nom aux autres. Réserver un handle nécessite un compte connecté et se fait **dans l'application mobile**. Dans l'extension de navigateur, vous pouvez payer un handle (la recherche fonctionne à partir de l'extension 0.3.7) mais pas en réserver un — l'extension vous renvoie vers l'application. Les comptes de type Ethereum (coin 60) n'ont pas de handle. Les noms imitant QoreChain sont réservés : un nouveau handle qui imite le projet (ses noms de marque, ou des mots de confiance tels que *official*, *support*, *airdrop* ou *treasury*, y compris les orthographes approchantes) est refusé. Les propriétaires existants peuvent toujours supprimer leur handle.
 
 Si le registre des handles est temporairement inaccessible, l'écran se rabat sur **« Handles bientôt disponibles »** et tout le reste continue de fonctionner ; les handles se réactivent automatiquement dès le retour du registre.
 

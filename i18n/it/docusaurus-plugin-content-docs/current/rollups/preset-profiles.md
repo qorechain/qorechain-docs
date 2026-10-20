@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-I valori per preset riportati di seguito corrispondono ai default dei profili distribuiti con **`@qorechain/rdk`**, che rispecchiano la tabella dei profili pubblicata dalla rete. Finora non è stato creato alcun rollup su nessuna delle due reti. Interroga i parametri live del modulo con `qorechaind query rdk config` (oppure `RdkClient.params()` dall'SDK, dove vengono servite le route REST dell'RDK — oggi non sul mainnet) per ottenere la configurazione autoritativa, e verifica sul testnet **`qorechain-diana`** prima del mainnet.
+I valori per preset riportati di seguito corrispondono ai default dei profili distribuiti con **`@qorechain/rdk`**, che rispecchiano la tabella dei profili pubblicata dalla rete. Finora non è stato creato alcun rollup su nessuna delle due reti. Interroga i parametri live del modulo con `qorechaind query rdk config` (oppure `rdk.params()` da `@qorechain/rdk`, che legge `GET /qorechain/rdk/v1/params`, servita su entrambe le reti) per ottenere la configurazione autoritativa, e verifica sul testnet **`qorechain-diana`** prima del mainnet.
 :::
 
 ---
@@ -38,7 +38,7 @@ Alcuni vincoli derivano dalla [matrice settlement → proof](/rollups/overview):
 A partire da RDK v0.4.2, l'opzione della VM Wasm (il runtime che esegue i contratti CosmWasm) si chiama **`native`** — QoreChain Native. `cosmwasm` resta un alias legacy accettato, ed entrambi vengono mappati su `cosmwasm` a livello di protocollo, quindi la chain, l'explorer e la Dashboard restano invariati.
 
 :::note
-La configurazione per preset è stata verificata rispetto alla tabella dei profili della chain alla versione **v3.2.0** (il mainnet esegue la v3.2.1), dove `create-rollup` applica automaticamente il preset del profilo: **`defi` = zk + EVM, `gaming` = based + VM custom, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (default)**. Il preset `custom` lascia aperto ogni campo — i valori mostrati sono i suoi default di partenza.
+La configurazione per preset è stata verificata rispetto alla tabella dei profili della chain nel sorgente della v3.2.3 (il mainnet esegue la v3.2.3, il testnet la v3.2.4), dove `create-rollup` applica automaticamente il preset del profilo: **`defi` = zk + EVM, `gaming` = based + VM custom, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (default)**. Il preset `custom` lascia aperto ogni campo — i valori mostrati sono i suoi default di partenza.
 :::
 
 Considera i quattro preset di dominio come punti di partenza sensati e il profilo **`custom`** come l'opzione completamente aperta. I parametri esatti raggruppati possono cambiare da una release all'altra — interroga `rdk config` (sotto) per i valori autoritativi, poi parti dal preset più vicino e affina.
@@ -52,7 +52,7 @@ La CLI [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-projec
 Alcuni dettagli sono facili da dare per scontati e vale la pena conoscerli prima di scegliere un profilo:
 
 * **`defi` non ha una verifying key.** I batch ZK ne hanno bisogno, e un rollup creato tramite `create-rollup` non la include, quindi oggi il settlement ZK non può finalizzarsi end to end (vedi [ZK / STARK e prelievi](/rollups/zk-stark-withdrawals)).
-* **`nft` e `custom`** effettuano il settlement in modo optimistic con un bond di challenge di 1.000 QOR e una finestra di challenge di 100.800 blocchi (i 604.800 «secondi» predefiniti convertiti a 6 secondi fissi per blocco; circa 3,7 giorni con gli attuali blocchi del mainnet da ≈3,2 s).
+* **`nft` e `custom`** effettuano il settlement in modo optimistic con un bond di challenge di 1.000 QOR e una finestra di challenge di 100.800 blocchi sul mainnet (i 604.800 «secondi» predefiniti convertiti a 6 secondi fissi per blocco; circa 3,7 giorni con gli attuali blocchi del mainnet da ≈3,2 s). Solo sul testnet, un batch inviato dalla v3.2.4 (altezza 8.337.253) in poi ottiene invece una finestra misurata in secondi di block time.
 * **`gaming` e `enterprise`** usano il sequencing `based`, che oggi significa che è il creatore del rollup a inviare i batch.
 * **Il block time e i limiti delle transazioni** (ad esempio `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` e `custom` 1.000 ms) sono memorizzati nel record on-chain. Descrivono la chain del rollup stesso e non sono applicati dalla chain host.
 

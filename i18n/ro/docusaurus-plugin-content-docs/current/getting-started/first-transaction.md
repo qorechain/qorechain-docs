@@ -10,7 +10,7 @@ sidebar_position: 5
 Acest ghid parcurge trimiterea de token-uri QOR, interogarea tranzacțiilor și interacțiunea cu QoreChain prin interfețele sale native, EVM și SVM.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 29 iunie 2026 — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.3 (testnet-ul rulează v3.2.4) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
 :::
 
 ## Verificarea soldului
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+Din v3.2.3, chain-ul acceptă și o **dovadă a deținerii** opțională odată cu înregistrarea și refuză cheile slabe, degenerate sau deja folosite. Pentru a atașa una, înregistrați cu `register-key-v2` și numiți cheia locală:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ Tot restul lane-ului EVM rămâne neschimbat: continuați să semnați cu MetaMa
 * O tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare.
 * Deschiderea unei ferestre noi **înlocuiește** fereastra anterioară; consumul reîncepe de la zero.
 * CLI acceptă `max-value` în `uqor` sau `qor` (`1000qor` = 1,000,000,000 uqor).
+* Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero. Pentru a limita și acestea, restrângeți domeniul ferestrei (mai jos).
 
 **Pasul 1 — înregistrați cheia post-cuantică** (o singură dată): vezi [Înregistrarea cheii post-cuantice](#register-pqc-key) mai sus.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**Restrângerea domeniului (v3.2.3 și ulterioare).** Două opțiuni facultative restrâng ce admite o fereastră deschisă: `--native-only` admite doar transferuri simple de QOR nativ (fără calldata, fără creare de contracte, fără destinatar care poartă cod), iar `--allowed-targets 0xAAA...,0xBBB...` admite doar tranzacții către acei destinatari (cel mult 16; crearea de contracte este atunci refuzată). De exemplu:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 Pe mainnet, deschiderea unei ferestre a consumat aproximativ 180,000 de gaz. În [QoreX](/qorex/security-and-recovery#evm-window), același pas este **Settings → Security → EVM access window** (aplicația) sau butonul **EVM access window** (extensia). Deschiderea ferestrei avansează nonce-ul contului dumneavoastră, deci deschideți-o **înainte** de a pregăti tranzacția EVM în portofel.
@@ -162,7 +177,7 @@ Răspunsul REST nu eșuează niciodată pentru o adresă fără fereastră; retu
 
 **Pasul 4 — folosiți normal lane-ul EVM.** Trimiteți din MetaMask sau din uneltele dumneavoastră ca de obicei. Fiecare tranzacție consumă un slot de tranzacție și (valoare + comision maxim) din fereastră.
 
-**Închideți o fereastră mai devreme.** Dacă bănuiți că cheia dumneavoastră clasică este compromisă, închideți fereastra; tot ce mai admitea ea este refuzat începând cu blocul următor:
+**Închideți o fereastră mai devreme.** Dacă bănuiți că cheia dumneavoastră clasică este compromisă, închideți fereastra; tot ce mai admitea ea este refuzat începând cu blocul următor. Închiderea revocă și orice consimțământ de delegare EIP-7702 aflat în așteptare (din v3.2.2; o tranzacție de tip 4 care schimbă codul unui cont este admisă doar după un consimțământ post-cuantic `authorize-evm-delegation`):
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

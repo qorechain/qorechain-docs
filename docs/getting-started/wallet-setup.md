@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain supports multiple wallet types across its native, EVM, and SVM execution environments. Choose the wallet that matches your use case.
 
 :::note
-The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 29 June 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
+The values below cover both the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, live since 7 June 2026, release v3.2.3) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, release v3.2.4). Public endpoints for both networks are listed in [Networks](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommended) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-Back up the PQC key file as carefully as your mnemonic. (A key can be re-derived from the mnemonic with `qorechaind tx pqc recover-key`, and replaced with `tx pqc rotate-key`.) QoreX and the QoreChain SDK register the key for you. See [First Transaction](/getting-started/first-transaction#register-pqc-key) for a complete signed send.
+Since v3.2.3 you can attach an optional proof of possession by registering with `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`; the chain also refuses weak, degenerate or already-used keys. Back up the PQC key file as carefully as your mnemonic. (A key can be re-derived from the mnemonic with `qorechaind tx pqc recover-key`, and replaced with `tx pqc rotate-key`.) QoreX and the QoreChain SDK register the key for you. See [First Transaction](/getting-started/first-transaction#register-pqc-key) for a complete signed send.
 
 ### Hybrid Signing with the SDK
 

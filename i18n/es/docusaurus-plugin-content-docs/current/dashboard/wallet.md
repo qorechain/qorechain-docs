@@ -127,12 +127,12 @@ Este anclaje se almacena solo en tu propio navegador, no en ningún servidor, de
 El carril EVM admite una transacción solo de una cuenta que tenga una clave post-cuántica registrada y una **ventana de autorización EVM abierta**: un permiso acotado en tiempo, número y valor que la cuenta abre con un mensaje firmado de forma post-cuántica. MetaMask no puede producir ese mensaje. Si envías sin una ventana, la cadena rechaza la transacción (errores típicos: no window, window exhausted, no post-quantum key).
 :::
 
-1. En **QoreX** (el monedero propio de la cuenta), registra la clave post-cuántica de la cuenta si no tiene ninguna y luego abre una ventana de autorización EVM — consulta [Ventana de acceso EVM](/qorex/security-and-recovery#evm-window). Elige límites con los que te sientas cómodo; abrir una ventana nueva sustituye a la anterior.
+1. En **QoreX** (el monedero propio de la cuenta), registra la clave post-cuántica de la cuenta si no tiene ninguna (tu primera transferencia desde QoreX con esa cuenta lo hace) y luego abre una ventana de autorización EVM — consulta [Ventana de acceso EVM](/qorex/security-and-recovery#evm-window). Esto es para la **cuenta de estilo Ethereum (coin 60)** que comparte la clave de MetaMask — añádela en QoreX con **Add an Ethereum account (coin 60)** usando la misma frase de recuperación ([cómo](/qorex/getting-started#restore-dashboard)); ninguna clave de MetaMask puede enviar desde una cuenta `qor1…` ordinaria de coin 118. Una ventana está acotada por bloques (como máximo 17,280, unas 15 horas en mainnet), por número de transacciones (como máximo 1,000) y por un tope de gasto en QOR que cuenta cada importe **más** su comisión máxima. Elige límites con los que te sientas cómodo y mantenlos pequeños: mientras hay una ventana abierta, las transacciones de MetaMask mueven QOR sin una firma post-cuántica. Abrir una ventana nueva sustituye a la anterior y avanza el nonce de la cuenta, así que ábrela **antes** de enviar desde MetaMask (una transacción preparada antes falla con «nonce too low»). Desde v3.2.3 la cadena también admite ventanas más estrechas y acotadas; QoreX todavía no ofrece una pantalla para ellas.
 2. Abre MetaMask y confirma que está configurado en la red EVM de QoreChain.
 3. Selecciona **Send** dentro de MetaMask, introduce la dirección `0x...` del destinatario y el importe, revisa la comisión de gas y confirma.
 4. De vuelta en la página Monedero del Panel, la transacción aparece en tu historial en cuanto está en la cadena (actualiza si todavía no ha aparecido).
 
-Cada transacción consume parte de la ventana; cuando se alcanza su límite de tiempo, de número de transacciones o de valor, abre una nueva en QoreX.
+Cada transacción consume parte de la ventana; cuando se alcanza su límite de tiempo, de número de transacciones o de valor, abre una nueva en QoreX. Cierra la ventana desde QoreX cuando hayas terminado.
 
 ### Recibe en un carril específico {#receive-mainnet}
 

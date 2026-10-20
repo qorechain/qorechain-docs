@@ -17,17 +17,19 @@ construite în jurul Layer 1-ului QoreChain, nu al uneltelor:
 - un runtime **triple-VM** cu apeluri cross-VM.
 
 :::caution Etapă timpurie: citește coloana de stare
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele. Tabelul de mai
-jos arată ce funcționează astăzi. Dacă ai nevoie doar de un rollup
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 20
+octombrie 2026). Tabelul de mai jos arată ce funcționează astăzi; limitele
+clienților 0.5.0 publicați sunt adunate în
+[Limitele RDK 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits). Dacă ai nevoie doar de un rollup
 optimistic/zk generic, orice kit e suficient; capabilitățile de aici sunt ceea
 ce adaugă RDK-ul în plus, în TypeScript, Python, Go, Rust și Java.
 :::
 
 | Capabilitate | Stare | Pe ce se bazează |
 | --- | --- | --- |
-| **Chitanțe de decontare sigure cuantic** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore |
+| **Chitanțe de decontare sigure cuantic** | 🟡 Etapă timpurie | Ancorele sunt semnate cu ML-DSA-87, schema post-cuantică a Main Chain; încă nu există ancore, iar verificatorul 0.5.0 nu poate finaliza verificarea în lanț pe rețelele live |
 | **QCAI Rollup Copilot** | 🟡 Încă indisponibil pe endpoint-urile publice | Servicii de consultanță AI/RL on-chain pe care endpoint-urile publice nu le expun astăzi |
-| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat, iar încărcarea CosmWasm este închisă |
+| **Apeluri cross-VM multi-VM** | 🟡 Încă inutilizabil pe rețelele live | Un precompile cross-VM care nu este activat, un encoder 0.5.0 care nu se potrivește cu structura lanțului, iar încărcarea CosmWasm este închisă |
 
 ---
 
@@ -53,8 +55,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Vezi [Chitanțe de decontare sigure cuantic](/rollups/settlement-receipts) pentru
-ce dovedește și ce nu dovedește o chitanță.
+În 0.5.0, `verifySettlementReceipt` verifică față de lanț și refuză să spună
+`valid` fără un `client`, dar verificarea sa în lanț nu se finalizează încă pe
+rețelele live, așa că eșuează închis în loc să raporteze o chitanță autentică
+drept validă. Vezi [Chitanțe de decontare sigure cuantic](/rollups/settlement-receipts) pentru
+ce dovedește și ce nu dovedește o chitanță și pentru limitele exacte.
 
 ---
 
@@ -89,18 +94,35 @@ Din CLI: `qorollup advise my-rollup`. Vezi [QCAI Copilot](/rollups/qcai-copilot)
 RDK-ul include helpere care codifică un apel de la un contract EVM (Solidity)
 către un contract **CosmWasm** printr-un precompile fix la `0x…0901`. Acel
 precompile **nu este activ** pe mainnet sau testnet (vezi
-[Precompile-uri EVM: starea rețelei](/developer-guide/evm-precompiles#network-status)).
+[Precompile-uri EVM: starea rețelei](/developer-guide/evm-precompiles#network-status)):
+`eth_getCode` pentru `0x…0901` returnează `0x` pe ambele, iar un apel de contract
+către el reușește fără niciun efect.
+
+Helperul 0.5.0 `encodeCrossVmCalldata` construiește calldata pentru
+`executeCrossVMCall(string,bytes)`, dar nodul decodifică
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, deci
+rezultatul său nu se potrivește cu ceea ce citește lanțul. Codifică apelul cu
+structura lanțului (arătat aici cu viem; `targetVM` 1 este CosmWasm, singura
+țintă suportată):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 Sau direct din Solidity, pe rollup-ul tău:
@@ -112,12 +134,16 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+`ok` singur nu dovedește nimic astăzi: cât timp precompile-ul nu are cod, apelul
+returnează succes cu date goale și nu execută nimic, așa că confirmă efectul pe
+contractul țintă.
 
 Generează un proiect de pornire cu `npm create qorechain-rollup my-app -- --template multivm-rollup`.
 (Doar EVM↔CosmWasm; apelurile cross-VM către SVM sunt separate.)

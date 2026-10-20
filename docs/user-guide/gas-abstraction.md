@@ -7,14 +7,13 @@ sidebar_position: 7
 
 # Gas Abstraction
 
-This page describes QoreChain's gas abstraction feature, whose design lets users pay transaction fees in an accepted non-native token instead of QOR. **It is not usable on either network today**; this page explains the design and what you do instead.
+Gas abstraction lets a user pay a transaction fee in an accepted non-native token instead of QOR. The fee-conversion code is part of the chain, but **no non-native token is accepted on either network today**, so every fee is paid in QOR. This page explains what is live, how conversion works as built, and what you do instead.
 
-:::caution Not available yet
-Paying fees in a non-native token does **not** work on mainnet (**`qorechain-vladi`**, node release **v3.2.1**) or on the testnet (**`qorechain-diana`**) today.
+:::caution Not usable yet: pay every fee in uqor
+On mainnet (**`qorechain-vladi`**, node release **v3.2.3**) and on the testnet (**`qorechain-diana`**, node release **v3.2.4**), checked 20 October 2026:
 
-* The gas-abstraction queries are not served on mainnet: `qorechaind query gasabstraction accepted-tokens` prints its help text and the REST route `/qorechain/gasabstraction/v1/config` returns `Not Implemented`.
-* No IBC channels are open on either network, so no `ibc/USDC` or `ibc/ATOM` balance can exist to pay with.
-* The network fee floor is checked in `uqor`, so a fee in any other denomination is rejected.
+* The live accepted-token list contains **only `uqor`**. Fee conversion switched on with v3.2.2, but nothing else is listed, the per-block conversion cap is `0` (conversion off) and the conversion float holds no balance. A fee paid in any other denomination is refused with a "denom not accepted for fee payment" error, in simulation as well as in a real transaction.
+* No IBC channel or client exists on either network, so no `ibc/…` balance can exist to pay with.
 
 Pay every fee in `uqor`. This page will be updated when a token is accepted on a live network.
 :::
@@ -35,35 +34,59 @@ Then hybrid-sign and broadcast it with `qorechaind tx pqc cosign`, as described 
 
 ---
 
-## Overview
+## The live configuration {#live-configuration}
 
-Gas abstraction is designed to remove the requirement to hold QOR for paying transaction fees. A user holding an accepted alternative token (for example an IBC-transferred stablecoin) would pay the fee in that token, and the protocol would convert the fee amount to its native equivalent before processing.
+The module serves its configuration over REST and gRPC. These are the values on both networks on 20 October 2026:
+
+| Field | Value | Meaning |
+| --- | --- | --- |
+| `enabled` | `true` | Module switch |
+| `native_denom` | `uqor` | The denomination every fee is finally paid in |
+| `accepted_tokens` | `uqor` only | Tokens that may pay a fee. `uqor` needs no price source |
+| `premium_bps` | `300` | The share of a converted fee's value that the float keeps to cover its price risk (3 %) |
+| `max_tip_multiplier` | `3` | A converted fee may not exceed this multiple of the minimum fee for its gas; `0` would mean no bound |
+| `float_min` | `0` | The native balance the float always keeps back |
+| `block_conversion_cap` | `0` | The most the float pays out per block; `0` means conversion is off |
+
+Earlier versions of this page showed `ibc/USDC` and `ibc/ATOM` placeholder entries with fixed rates. They are not in the live list.
+
+Read it yourself:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate uqor
+qorechaind query gasabstraction float
+
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
+curl -s "https://api.qore.host/qorechain/gasabstraction/v1/conversion_rate?denom=uqor"
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/float
+```
+
+`conversion_rate` reports `rate`, `effective_rate` (the rate less the premium), `price_source`, and whether the token is `usable` at this height, with a `reason` when it is not. `float` reports the float's address and balances and the current block's usage against `block_cap`. The `qor_getGasAbstractionConfig` JSON-RPC method is not served on any public endpoint (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)); use REST or gRPC.
 
 ---
 
-## Intended design
+## How conversion works (as built) {#how-it-works}
 
-### Accepted tokens
+Since v3.2.2 the fee decorator routes each transaction down one of two paths:
 
-The module's genesis configuration lists these tokens and protocol-defined conversion rates. They are exchange ratios for fee purposes, not market prices. Only `uqor` can exist on the networks today (see the notice above).
+* A fee in `uqor`, or in more than one denomination, takes the **native path**, unchanged.
+* A fee in **exactly one** non-native denomination takes the **conversion path**.
 
-| Token              | Denomination | Conversion Rate |
-| ------------------ | ------------ | --------------- |
-| **QOR**            | `uqor`       | 1.0 (native)    |
-| **USDC** (via IBC) | `ibc/USDC`   | 1.0             |
-| **ATOM** (via IBC) | `ibc/ATOM`   | 10.0            |
+On the conversion path:
 
-### How it is meant to work
+1. **Accepted?** The denomination must be in the accepted-token list and have a price source, or the transaction is refused.
+2. **Price.** The token's price comes from one of two sources: a governance-set static rate that expires at a stated block height, or the time-weighted average price of the [AMM](/architecture/amm) pool that pairs the token with QOR. A pool price is used only if the pool is active, holds at least the configured minimum liquidity on the QOR side, and its spot price is within the configured deviation of its average.
+3. **Value.** The fee's native value is the token amount times the price, less the premium.
+4. **Same rules as a native fee.** The native minimum-fee and dynamic-fee rules are applied to that native value, so a converted fee must clear exactly what a QOR fee must clear (0.1 uqor per unit of gas as a floor), and is bounded by `max_tip_multiplier`.
+5. **Settlement.** The payer's tokens go to the gas-abstraction module's **float**, and the float pays the native value in `uqor` to the fee collector. Everything downstream of the fee collector (burning, validator, staker, treasury and light-node shares) therefore only ever sees `uqor`.
 
-QoreChain's `GasAbstractionDecorator` sits in the transaction processing pipeline. For a transaction whose fee is in a non-native denomination:
+Conversion is bounded three ways: per transaction (`max_tip_multiplier`), per block (`block_conversion_cap`) and by the balance the float always keeps (`float_min`). Every refusal also happens during simulation, so gas estimation fails the same way the real transaction would.
 
-1. **Fee inspection** — the decorator reads the fee denomination.
-2. **Rate lookup** — if the denomination is in the accepted-tokens list, the corresponding conversion rate is looked up.
-3. **Conversion** — the fee is converted to its native `uqor` equivalent.
-4. **Standard processing** — the converted fee goes through the standard fee-deduction handler, so downstream fee handling (distribution to validators, burning, treasury, staker and light-node shares) operates on the native equivalent.
+### Getting a token accepted
 
----
+* **Governance** replaces the configuration with `MsgUpdateConfig` (authority: the governance module account). That is how a real `ibc/<hash>` fee token and its pool or static rate would be added and conversion opened.
+* **The float** is a module account that refuses ordinary bank sends. It is funded with `MsgFundFloat` (`qorechaind tx gasabstraction fund-float <amount>uqor`), for example by an account that received a community-pool spend for the purpose.
 
-## Querying the configuration
-
-Mainnet does not serve the gas-abstraction queries yet, and the `qor_getGasAbstractionConfig` JSON-RPC method is not served on any public endpoint (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)). There is currently no public way to read a live accepted-token list.
+No proposal to do either has been made on mainnet, and the list stays `uqor`-only until one passes.

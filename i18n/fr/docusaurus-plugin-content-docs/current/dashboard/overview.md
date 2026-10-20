@@ -23,7 +23,7 @@ Tout ce qui se trouve dans cette section est un guide pratique utilisateur : ce 
 | **[Staking et validateurs](/dashboard/staking-and-validators)** | Examiner les validateurs et déléguer vos QOR. |
 | **[Faucet](/dashboard/faucet)** | Demander des jetons de test sur le testnet. |
 | **[Quests](/dashboard/quests)** | Accomplir des tâches guidées pour apprendre à connaître le réseau. |
-| **[Tools Hub](/dashboard/tools-hub)** | Accéder aux téléchargements et à l'état des nœuds légers, à l'enregistrement des nœuds, aux demandes de rollup, au SDK et à l'outillage de licences. |
+| **[Tools Hub](/dashboard/tools-hub)** | Outillage pour opérateurs et développeurs en six onglets : Validator Program, Validator Application, Light Node, Node Registration, Rollups et SDK. |
 
 ## Se connecter {#sign-in}
 
@@ -39,7 +39,7 @@ Parcourir le Dashboard ne nécessite jamais de portefeuille ; en connecter un es
 
 La plupart des actions qui modifient l'état on-chain — envoi de jetons, swap, staking — nécessitent un portefeuille connecté. La façon dont le Dashboard gère les clés dépend du réseau :
 
-- **Le mainnet est non custodial.** Le Dashboard ne détient jamais vos clés mainnet. Vous connectez votre propre portefeuille — **QoreX** (le portefeuille officiel de QoreChain, extension ou application), **Keplr**, ou **MetaMask** — et le Dashboard lit votre solde et votre historique réels depuis la chaîne. Chaque transaction mainnet est signée dans votre propre portefeuille, jamais par le Dashboard. L'envoi et le staking sur le **rail Native nécessitent QoreX**, car les comptes QoreChain signent avec une signature hybride post-quantique que seul QoreX produit aujourd'hui ; Keplr peut tout de même se connecter pour consulter votre solde sur le rail Native. **MetaMask** se connecte sur le **rail EVM** ; l'envoi depuis celui-ci nécessite en outre une fenêtre d'autorisation EVM ouverte, que l'on ouvre depuis QoreX (voir [Envoyer avec MetaMask](/dashboard/wallet#send-metamask)).
+- **Le mainnet est non custodial.** Le Dashboard ne détient jamais vos clés mainnet. Vous connectez votre propre portefeuille — **QoreX** (le portefeuille officiel de QoreChain, extension ou application), **Keplr**, ou **MetaMask** — et le Dashboard lit votre solde et votre historique réels depuis la chaîne. Chaque transaction mainnet est signée dans votre propre portefeuille, jamais par le Dashboard. L'envoi et le staking sur le **rail Native nécessitent QoreX**, car les comptes QoreChain signent avec une signature hybride post-quantique que seul QoreX produit aujourd'hui ; Keplr peut tout de même se connecter pour consulter votre solde sur le rail Native. **MetaMask** se connecte sur le **rail EVM** ; l'envoi depuis celui-ci nécessite en outre la clé post-quantique du compte et une fenêtre d'autorisation EVM ouverte, que l'on ouvre depuis QoreX sur le compte de type Ethereum (coin 60) qui partage la clé de MetaMask (voir [Envoyer avec MetaMask](/dashboard/wallet#send-metamask)).
 - **Le testnet est custodial.** Le Dashboard gère un portefeuille de test pour vous, afin que vous puissiez expérimenter sans aucune configuration et sans aucune valeur réelle en jeu.
 
 ### Se connecter avec QoreX (recommandé) {#connect-qorex}
@@ -77,8 +77,8 @@ Le Dashboard fonctionne avec deux réseaux. L'en-tête affiche le réseau auquel
 
 | Réseau | ID de la chaîne | Quand l'utiliser |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Réseau en direct pour la valeur réelle et l'usage en production. Non custodial : vous connectez votre propre portefeuille. |
-| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests, avec un portefeuille de test géré par le dashboard et le [Faucet](/dashboard/faucet) pour les jetons de test. |
+| **Mainnet** | `qorechain-vladi` | Réseau en direct (en ligne depuis le 7 juin 2026, exécutant la chaîne v3.2.3) pour la valeur réelle et l'usage en production. Non custodial : vous connectez votre propre portefeuille. |
+| **Testnet** | `qorechain-diana` | Environnement gratuit pour les tests (exécutant la chaîne v3.2.4, une version réservée au testnet), avec un portefeuille de test géré par le dashboard et le [Faucet](/dashboard/faucet) pour les jetons de test. |
 
 Le jeton natif est **QOR** (dénomination de base `uqor`, où 1 QOR = 10^6 uqor). Si vous débutez, commencez sur le testnet, réclamez des jetons au Faucet et essayez un premier transfert avant de passer au mainnet.
 
@@ -91,5 +91,5 @@ Suivez [Se connecter au testnet](/getting-started/connecting-to-testnet) et [Vot
 * [Explorer](/dashboard/explorer) — parcourir les blocs, les transactions et les comptes.
 * [Wallet](/dashboard/wallet) — gérer les comptes et envoyer des transactions.
 * [Trade / DEX](/dashboard/trade) — échanger des jetons contre les pools de l'AMM on-chain.
-* [Tools Hub](/dashboard/tools-hub) — téléchargements et état des nœuds légers, enregistrement des nœuds, demandes de rollup, SDK et licences.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups et SDK.
 * [Faucet](/dashboard/faucet) — jetons de test sur le testnet.

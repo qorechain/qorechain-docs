@@ -24,15 +24,17 @@ transacción), y después cada transacción de la ruta Native debe llevar la fir
 ## Comprobar el estado {#check-status}
 
 `isPqcRegistered` / `getPqcStatus` leen si una dirección tiene una clave PQC
-registrada mediante el método JSON-RPC `qor_getPQCKeyStatus`. Aceptan ya sea un
-`QorClient` o el cliente compuesto de `createClient`. **Los endpoints públicos
-no sirven el espacio de nombres `qor_`** (consulta
+registrada. Con el cliente compuesto de `createClient` leen por REST
+(`GET /qorechain/pqc/v1/account/{address}`, servida por todos los endpoints públicos); con
+un `QorClient` simple usan el método JSON-RPC `qor_getPQCKeyStatus`, que **los
+endpoints públicos no sirven** (consulta
 [el espacio de nombres `qor_`](/api-reference/json-rpc-qor_-namespace)), así que contra
-`*.qore.host` esas utilidades fallan con el error JSON-RPC `-32601`. Lee el estado
-por REST en su lugar:
+`*.qore.host` pasa el cliente compuesto. Las versiones anteriores a la 0.9.0 usaban siempre el
+método `qor_` y fallaban con el error JSON-RPC `-32601`; allí lee directamente la ruta
+REST.
 
 ```ts
-import { createClient } from "@qorechain/sdk";
+import { createClient, isPqcRegistered, getPqcStatus } from "@qorechain/sdk";
 
 const client = createClient({
   network: "mainnet",
@@ -43,48 +45,49 @@ const client = createClient({
   },
 });
 
-async function isPqcRegistered(address: string): Promise<boolean> {
-  const res = await client.rest.get<{ found: boolean }>(
-    `/qorechain/pqc/v1/account/${address}`,
-  );
-  return res.found;
-}
+const registered = await isPqcRegistered(client, address); // boolean
+const status = await getPqcStatus(client, address);
+// { registered: boolean; algorithmId?: number; pubkey?: string | Uint8Array }
 ```
 
 La ruta es `GET /qorechain/pqc/v1/account/{address}` (`account` en singular). Responde
 `{"found": true, "account": {…}}` para una dirección registrada y
-`{"found": false, "account": null}` en caso contrario. No uses `client.rest.getPqcAccount`
-para esto: llama a la ruta en plural `/accounts/`, que la cadena no sirve.
-
-`isPqcRegistered(client, address)` y `getPqcStatus(client, address)` (con la opción
-`statusSource`) siguen siendo las llamadas adecuadas contra un nodo que sirva el espacio
-de nombres `qor`; su resultado es
-`{ registered: boolean; algorithmId?: number; pubkey?: string | Uint8Array }`.
+`{"found": false, "account": null}` en caso contrario; `client.rest.getPqcAccount(address)`
+devuelve ese cuerpo, y `fetchPqcStatus({ rest, address })` lo convierte en el estado
+anterior. Una respuesta ilegible (un error HTTP, un fallo de transporte) lanza un error tras un
+reintento: nunca se interpreta como «no registrada». En la 0.8.x `getPqcAccount` llamaba a una
+ruta en plural `/accounts/` que la cadena no sirve.
 
 El mismo estado también se puede leer desde el lado EVM mediante el
 precompilado `pqcKeyStatus(address) returns (bool registered, uint8 algorithmId, bytes pubkey)`
 en `0x0000000000000000000000000000000000000A02` (expuesto como
 `pqcKeyStatus` en `@qorechain/evm`) una vez que ese precompilado esté activo; todavía no
 está activo en mainnet ni en testnet (consulta
-[Estado de la red](/developer-guide/evm-precompiles#network-status)). La próxima versión
-de parche del SDK recurre a la ruta REST anterior cuando recibe un cliente que expone
-`.rest` (como el cliente compuesto), y lanza un error en lugar de informar «no
-registrada» cuando no se puede leer el estado.
+[Estado de la red](/developer-guide/evm-precompiles#network-status)).
 
-## Registrar en una sola llamada
+## Registrar en una sola llamada {#register-in-one-call}
 
 `ensurePqcRegistered` hace que una cuenta sea segura frente a lo cuántico. Construye y difunde
-`MsgRegisterPQCKeyV2` con la clave pública ML-DSA-87 del firmante y la clave pública ECDSA
-de la cuenta. Es **idempotente** cuando le pasas un `status` leído previamente (o un
-`statusSource`): omite el registro cuando la clave ya está registrada, de modo que
-es seguro llamarla en cada arranque de la app.
+`MsgRegisterPQCKeyV2` con la clave pública ML-DSA-87 del firmante. Es **idempotente**:
+lee primero el estado de la cuenta (por REST cuando pasas `rest`), omite el
+registro cuando la cuenta ya tiene la clave de este par de claves, y por lo tanto es
+seguro llamarla en cada arranque de la app. Cuando la cuenta tiene una clave *distinta* lanza
+`PqcKeyMismatchError` y no envía nada, porque toda transacción híbrida firmada
+con tu par de claves sería rechazada. Nunca registra a ciegas: si no se puede leer el estado
+lanza un error (pasa `force: true` solo para una cuenta de la que sepas que no tiene clave).
 
 El registro se firma de forma clásica y está exento del requisito híbrido, de modo que una
-cuenta nueva puede arrancar su primera clave. Se firma mediante un firmante de CosmJS, es decir,
-una cuenta con coin type 118 (`deriveNativeAccount`); para una cuenta unificada eth-nativa
-firma el registro con `EthNativeSigner` y `signMode: "classical"` (consulta
+cuenta nueva puede arrancar su primera clave; desde la v3.2.3 esa exención cubre solo una
+cuenta sin clave (una cuenta que ya tiene una debe firmar de forma híbrida un registro
+o una migración, y la cadena rechaza las claves débiles, degeneradas o reutilizadas). Una vez que la red
+haya aplicado la v3.2.3, el helper firma con la clave nueva la **prueba de posesión** opcional y
+la adjunta (lee el id de la cadena de `chainId` o del nodo, y
+omite el campo en una red que no haya aplicado la v3.2.3, porque un nodo anterior
+lo rechaza). Firma mediante un firmante de CosmJS, es decir, una cuenta con coin type 118
+(`deriveNativeAccount`); para una cuenta unificada eth-nativa firma el registro con
+`EthNativeSigner` y `signMode: "classical"` (consulta
 [Cuentas y firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)). La clave de
-2592 bytes necesita un límite de gas de unos 600.000; el precio mínimo del gas de la red es
+2.592 bytes necesita un límite de gas de unos 600.000; el precio mínimo del gas de la red es
 0,1 uqor por unidad de gas.
 
 ```ts
@@ -98,33 +101,101 @@ import {
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
-// The address-bound key, recoverable from { address, mnemonic } (SDK 0.8.3+).
+// The address-bound key, recoverable from { address, mnemonic } (0.8.3+; see below).
 // Never register a throwaway key from generatePqcKeypair() unless you store it.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST: the default status source needs the `qor_` namespace.
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair the client signs every transaction hybrid; the registration
+// itself stays classical (the chain's bootstrap path).
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },
+  rest: client.network.endpoints.rest,
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 // res: { alreadyRegistered: boolean; txHash?: string }
+
+await tx.bankSend("qor1…", [{ denom: "uqor", amount: "1000000" }]); // hybrid-signed
 ```
+
+### Una clave que puedes recuperar {#canonical-derivation}
+
+`derivePqcCanonical(address, mnemonic)` deriva la clave ML-DSA-87 de la cuenta a partir de su
+dirección y su mnemónico, de modo que un dispositivo perdido es recuperable y cada lenguaje y
+cada cartera derivan la misma clave (un mnemónico, una clave por cuenta). Primero resuelve la dirección a
+su forma `qor1…` en minúsculas, así que la forma `0x` de una cuenta unificada da la
+misma clave. Los equivalentes:
+
+| Lenguaje | Función | Publicado |
+| --- | --- | --- |
+| TypeScript | `derivePqcCanonical(address, mnemonic)` (`@qorechain/sdk`) | 0.9.0 |
+| Python | `derive_pqc_canonical(address, mnemonic)` (`qorsdk`) | 0.9.0 |
+| Go | `authenticator.DerivePQCCanonical(address, mnemonic)` | v0.9.0 |
+| Rust | `authenticator::try_derive_pqc_canonical(address, mnemonic)` (devuelve un `Result`) | 0.9.0 |
+| Java | `Authenticator.derivePqcCanonical(address, mnemonic)` | 0.9.0 |
+
+La derivación heredada (`derivePqcLegacy`, `"bridge"`) no está vinculada a la cuenta y
+está obsoleta para claves nuevas; los helpers de rotación la rechazan como clave nueva (consulta
+[Rotar una clave](#rotate-a-key)).
+
+Registro en Python (0.9.0; la lectura del estado va por REST y la llamada lanza
+`PqcKeyMismatchError` para una clave registrada distinta en lugar de pagar un segundo
+registro):
+
+```python
+import httpx
+from qorsdk import derive_native_account, derive_pqc_canonical, ensure_pqc_registered, fetch_pqc_status
+
+REST = "https://api.qore.host"
+native = derive_native_account(mnemonic, 0)
+pqc_keypair = derive_pqc_canonical(native.address, mnemonic)
+
+print(fetch_pqc_status(REST, native.address))  # {'registered': False} for a new account
+
+acct = httpx.get(f"{REST}/cosmos/auth/v1beta1/accounts/{native.address}").json()["account"]
+result = ensure_pqc_registered(
+    account=native,
+    pqc_keypair=pqc_keypair,
+    chain_id="qorechain-vladi",
+    account_number=int(acct["account_number"]),
+    sequence=int(acct.get("sequence", 0)),
+    rest_url=REST,
+    fee={"amount": [{"denom": "uqor", "amount": "60000"}], "gas": "600000"},
+)
+```
+
+Los helpers de Go (`pqcdx.Signer.RestURL`), Rust (`pqc_dx` `rest_url`) y Java
+(`signer.restUrl`) leen el estado de la misma ruta REST y adjuntan la
+prueba de posesión de la misma manera.
+
+Los demás SDK firman de forma híbrida mediante sus constructores de transacciones híbridas
+(`build_hybrid_tx` en Python y Rust, `tx.BuildHybridMessages` en Go,
+`PqcDx.HybridSendPath` en Java); solo el `TxClient` de TypeScript firma de forma híbrida por ti.
+
+:::warning Deja siempre que compruebe primero
+La cadena rechaza un segundo registro de la misma clave **después de cobrar la
+comisión**. Por eso `ensurePqcRegistered` lee primero el estado, por REST
+(`/qorechain/pqc/v1/account/{address}`), y se niega a registrar cuando no puede
+saberlo. Pasa `rest` (o `statusSource` para un nodo que exponga `qor_*`, o un
+`status` leído previamente); `force: true` omite la comprobación. En la 0.8.x el helper no tenía
+un recurso REST alternativo y difundía el registro sin comprobar, a menos que pasaras tú mismo `status`.
+:::
 
 ## Firmar de forma híbrida
 
+Con un `pqcKeypair` en el cliente, `tx.bankSend(...)` y
+`tx.signAndBroadcast([messages], "auto")` firman de forma híbrida (la ruta `fee: "auto"`
+simula la transacción híbrida y añade el gas de la verificación poscuántica).
+La firma híbrida se calcula sobre la forma de sign-bytes que verifica la red (consulta
+[¿Qué forma de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)); el cliente
+se lo pregunta a la red a través de su endpoint REST.
+
 `migrateToHybrid` garantiza el registro y devuelve una ruta de envío híbrida con el
-par de claves preenlazado a los constructores existentes `buildHybridTx` / `signAndBroadcastHybrid`.
-Pasa `rest` para que el SDK pueda determinar qué forma de sign-bytes híbrida
-verifica la red (consulta
-[¿Qué forma de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)):
+par de claves preenlazado a los constructores de más bajo nivel `buildHybridTx` /
+`signAndBroadcastHybrid`, para cuando gestionas tú mismo la comisión, el número de cuenta y la secuencia. Pasa
+`rest` para que el SDK pueda resolver la forma de sign-bytes:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -132,8 +203,7 @@ import { migrateToHybrid, qorechainRegistry } from "@qorechain/sdk";
 
 const hybrid = await migrateToHybrid(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },
+  rest: "https://api.qore.host",
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 
@@ -160,7 +230,7 @@ el código `pqc` 21 (`hybrid_verify_failed`), la causa es la versión de sign-by
 el chain-id, una biblioteca PQC obsoleta o una clave no registrada o distinta, nunca la
 firma hedged: consulta [Solución de problemas del código 21](/developer-guide/post-quantum-signing#code-21).
 
-## Rotar una clave
+## Rotar una clave {#rotate-a-key}
 
 Para sustituir la clave ML-DSA-87 de una cuenta por otra clave del **mismo** algoritmo
 (por ejemplo, pasar una clave heredada `shake256(mnemonic)` a la clave canónica vinculada
@@ -168,17 +238,36 @@ a la dirección, o retirar una clave comprometida), construye un `MsgRotatePQCKe
 `rotatePqcKeyMsgFromMnemonic`; ambas claves lo firman conjuntamente. Consulta
 [Rotación de claves](/sdk/guides/authenticators#key-rotation) para ver el ejemplo completo.
 
-`migratePqcKey` difunde el antiguo `MsgMigratePQCKey`, que mueve una cuenta
-entre **algoritmos** y requiere que el llamador aporte ambas firmas:
+`migratePqcKeyHybrid` difunde el antiguo `MsgMigratePQCKey`, que mueve una cuenta
+entre **algoritmos**, con la firma híbrida que la cadena exige desde la v3.2.3 a
+una cuenta que tiene una clave. `pqcKeypair` es la clave que está registrada **actualmente**
+(la que se retira), y el llamador aporta las dos firmas de titularidad
+(`oldSignature` de la clave antigua, `newSignature` de la clave nueva). El
+`migratePqcKey` clásico está obsoleto: un nodo v3.2.3 rechaza una migración clásica de una
+cuenta con clave.
 
 ```ts
-import { migratePqcKey } from "@qorechain/sdk";
+import { StargateClient } from "@cosmjs/stargate";
+import { migratePqcKeyHybrid, qorechainRegistry } from "@qorechain/sdk";
 
-await migratePqcKey(tx, {
+const transport = await StargateClient.connect("https://rpc.qore.host");
+const info = await transport.getSequence(account.address);
+
+await migratePqcKeyHybrid({
+  sender: account.address,
+  registry: qorechainRegistry(),
+  signer,
+  pqcKeypair,   // the currently registered key
   oldPublicKey,
   newPublicKey,
   oldSignature, // by the old key
   newSignature, // by the new key
+  fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
+  chainId: "qorechain-vladi",
+  accountNumber: info.accountNumber,
+  sequence: info.sequence,
+  rest: "https://api.qore.host",
+  transport,
 });
 ```
 
@@ -187,6 +276,6 @@ await migratePqcKey(tx, {
 El kit [`@qorechain/react`](/sdk/guides/react) expone todo esto en React: el
 hook `usePqcStatus` y el componente `<QuantumSafeBadge/>` muestran un indicador de
 **seguridad cuántica** siempre que la cuenta conectada tenga una clave PQC registrada. Ambos leen el
-estado mediante `getPqcStatus`, así que contra los endpoints públicos (sin el espacio de
-nombres `qor_`) hoy no pueden confirmar una clave; consulta los límites de las redes en
-producción en la página de React.
+estado mediante `getPqcStatus` con el cliente compuesto, así que desde `@qorechain/react`
+0.9.0 lo leen por REST y funcionan contra los endpoints públicos; la 0.8.x no
+podía confirmar una clave allí.

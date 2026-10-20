@@ -28,7 +28,10 @@ QoreChain は **EVM、SVM、CosmWasm を並行して**実行し、`x/crossvm`
 - 以下の型付き REST 読み取りヘルパーは、公開ゲートウェイが提供していないルートを呼び出します。
   代わりに `connectQueryClients(rpc).crossvm` でメッセージを読み取ってください。
 - すべての Native パスのトランザクションと同様に、クロス VM 呼び出しもハイブリッド署名を
-  持たなければなりません（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
+  持たなければなりません。署名用クライアントをアカウントの鍵ペアと接続すると
+  （`client.connectTx(signer, { pqcKeypair })`、SDK 0.9.0）、クロス VM クライアントが
+  ハイブリッドで署名します（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
+  0.9.0 より前のリリースは古典署名で署名するため、公開ネットワークはこれを拒否します。
 :::
 
 ## 統合されたクロス VM 呼び出し
@@ -42,7 +45,7 @@ value }` を手作業で組み立てたり、ペイロードを自分でエン�
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

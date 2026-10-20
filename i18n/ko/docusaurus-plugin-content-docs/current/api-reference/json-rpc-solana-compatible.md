@@ -49,7 +49,7 @@ JSON-RPC 서버는 **`qorechaind start`에 의해 시작**되며 **기본적으�
 | `getTokenAccountsByOwner`           | `owner`, 필터          | 소유자의 토큰 계정을 반환                                      |
 | `getTokenAccountsByDelegate`        | `delegate`, 필터       | 위임자의 토큰 계정을 반환                                      |
 
-`getGenesisHash`, `getEpochInfo` 같이 이 목록에 없는 메서드는 `-32601 method not found`를 반환합니다. `getTransaction`은 허용되지만 현재 `result` 필드가 없는 엔벨로프로 응답하므로 의존하지 마십시오. `getSlot`이 보고하는 슬롯은 체인의 블록 높이를 따라갑니다.
+`getGenesisHash`, `getEpochInfo` 같이 이 목록에 없는 메서드는 `-32601 method not found`를 반환합니다(`https://svm.qore.host`와 `https://svm-testnet.qore.host`에서 2026년 10월 20일에 확인). v3.2.2부터 RPC 및 gRPC 쿼리의 base58 주소는 정규 형식이어야 하며 길이가 제한됩니다. 형식이 잘못된 주소는 거부됩니다. `getTransaction`은 허용되지만 현재 `result` 필드가 없는 엔벨로프로 응답하므로 의존하지 마십시오. `getSlot`이 보고하는 슬롯은 체인의 블록 높이를 따라갑니다.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## 참고 사항
 
 - **주소 형식**: SVM 계정은 base58로 인코딩된 공개 키(표준 Solana 형식)를 사용하며, 네이티브 Cosmos SDK 모듈에서 사용하는 `qor1` Bech32 접두사와는 다릅니다.
-- **크로스 VM 브리징**: EVM과 SVM 런타임 간에 자산을 이동하려면 Cross-VM 모듈(`x/crossvm`)을 사용하십시오. `crossvm call` 구문은 [트랜잭션 명령어](/cli-reference/transaction-commands)를 참고하십시오.
+- **크로스 VM 브리징**: EVM과 SVM 런타임 간에 자산을 이동하려면 Cross-VM 모듈(`x/crossvm`)을 사용하십시오. `crossvm call` 구문은 [트랜잭션 명령어](/cli-reference/transaction-commands#crossvm)를 참고하십시오. SVM 레인은 비활성화되어 있고 메인넷에서는 `MsgCrossVMCall`도 꺼져 있으므로, 현재로서는 참고용일 뿐입니다.
 - **프로그램 배포**: CLI(`qorechaind tx svm deploy-program`)를 통해 또는 SVM 런타임을 통해 프로그래밍 방식으로 BPF 프로그램을 배포합니다.
 - **컴퓨트 예산**: SVM 런타임은 기본적으로 트랜잭션당 1,400,000 컴퓨트 유닛의 컴퓨트 예산을 적용합니다. 이는 모듈 파라미터를 통해 설정할 수 있습니다.

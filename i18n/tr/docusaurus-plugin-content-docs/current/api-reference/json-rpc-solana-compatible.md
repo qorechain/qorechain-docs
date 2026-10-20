@@ -49,7 +49,7 @@ Zincir sürümü **v3.1.82** itibarıyla, SVM arayüzü hesabın **yerel QOR bak
 | `getTokenAccountsByOwner`           | `owner`, filtre          | Bir sahibin token hesaplarını döndürür                           |
 | `getTokenAccountsByDelegate`        | `delegate`, filtre       | Bir delegenin token hesaplarını döndürür                          |
 
-`getGenesisHash` ve `getEpochInfo` gibi bu listenin dışındaki yöntemler `-32601 method not found` döndürür. `getTransaction` kabul edilir ancak şu anda `result` alanı olmayan bir zarfla yanıt verir, bu yüzden ona güvenmeyin. `getSlot` tarafından bildirilen slot, zincirin blok yüksekliğini takip eder.
+`getGenesisHash` ve `getEpochInfo` gibi bu listenin dışındaki yöntemler `-32601 method not found` döndürür (`https://svm.qore.host` ve `https://svm-testnet.qore.host` üzerinde denetlendi, 20 Ekim 2026). v3.2.2'den itibaren RPC ve gRPC sorgularındaki base58 adresleri kanonik olmalı ve uzunluk bakımından sınırlı olmalıdır; hatalı biçimli bir adres reddedilir. `getTransaction` kabul edilir ancak şu anda `result` alanı olmayan bir zarfla yanıt verir, bu yüzden ona güvenmeyin. `getSlot` tarafından bildirilen slot, zincirin blok yüksekliğini takip eder.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Notlar
 
 - **Adres biçimi**: SVM hesapları, yerel Cosmos SDK modüllerinin kullandığı `qor1` Bech32 önekinin aksine, base58 kodlu genel anahtarlar (standart Solana biçimi) kullanır.
-- **VM'ler Arası Köprüleme**: Varlıkları EVM ve SVM çalışma zamanları arasında taşımak için VM'ler Arası modülünü (`x/crossvm`) kullanın. `crossvm call` sözdizimi için [İşlem Komutları](/cli-reference/transaction-commands) sayfasına bakın.
+- **VM'ler Arası Köprüleme**: Varlıkları EVM ve SVM çalışma zamanları arasında taşımak için VM'ler Arası modülünü (`x/crossvm`) kullanın. `crossvm call` sözdizimi için [İşlem Komutları](/cli-reference/transaction-commands#crossvm) sayfasına bakın. SVM hattı devre dışıdır ve `MsgCrossVMCall` ana ağda kapalıdır; dolayısıyla bu bilgi bugün yalnızca referans niteliğindedir.
 - **Program dağıtımı**: BPF programlarını CLI üzerinden (`qorechaind tx svm deploy-program`) veya programatik olarak SVM çalışma zamanı aracılığıyla dağıtın.
 - **Hesaplama bütçesi**: SVM çalışma zamanı, varsayılan olarak işlem başına 1,400,000 hesaplama birimlik bir hesaplama bütçesi uygular. Bu, modül parametreleri aracılığıyla yapılandırılabilir.

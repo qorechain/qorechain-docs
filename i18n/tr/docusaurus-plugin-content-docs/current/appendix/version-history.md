@@ -7,13 +7,62 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. En son sürüm **v3.2.1**'dir ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 29 Haziran 2026'dan beri canlı) **v3.2.0**'ın konsensüs kurallarıyla (2.981.742 yüksekliğinde uygulandı) çalışır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) şu anda orada yönetişimle uygulanan ve henüz ana ağda bulunmayan **v3.2.2** sürümünü çalıştırır.
+QoreChain için genel sürüm geçmişi. En son ana ağ sürümü **v3.2.3**'tür ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır; yönetişimle 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) ise orada 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulanan **v3.2.4** sürümünü çalıştırır. **v3.2.4 henüz ana ağın parçası değildir: ana ağ yönetişim önerisi 13 (oylama 21 Ekim 2026, 21:18 UTC'ye kadar sürer) bunu 3.742.566 yüksekliğinde uygulayacaktır.**
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
 :::
 
+## Ana ağ yönetişim zaman çizelgesi {#governance-timeline}
+
+14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 11 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
+
+| Öneri | Ne yapar | Oylama | Sonuç |
+| --- | --- | --- | --- |
+| 7 | v3.2.2'yi 3.556.788 yüksekliğinde uygular | 14–15 Ekim 2026 (21:24 UTC'de sona erer) | Kabul edildi; 16 Ekim 2026'da uygulandı |
+| 8 | Işık düğümü rezervini (3.156.983,796395 QOR) vakfa aktarır | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
+| 9 | Sahipsiz kalmış stake sahibi payını (6.693.045,921330 QOR) vakfa aktarır | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
+| 10 | Emisyon: sabit emisyonu dönem başına 86.000 QOR'a ve kümülatif tavanı 590.000.000 QOR'a ayarlar (dönem uzunluğu değişmez; 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar) | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
+| 11 | v3.2.3'ü 3.662.051 yüksekliğinde uygular | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi; 20 Ekim 2026'da uygulandı |
+| 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Bu yazıldığı sırada oylama döneminde |
+| 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme (stake kademeleri, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı ve düğüm-yerel sertleştirme) | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Bu yazıldığı sırada oylama döneminde |
+
+Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
+
 ---
+
+## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (yalnızca test ağı)
+
+**Sürüm odağı:** Yalnızca test ağına özel bir sürüm; `qorechain-diana` üzerinde test ağı yönetişim önerisi 13 ile **8.337.253** yüksekliğinde (19 Ekim 2026) uygulandı. **Henüz ana ağda değildir**: ana ağ yönetişim önerisi 13 (oylama 21 Ekim 2026, 21:18 UTC'ye kadar sürer) bunu 3.742.566 yüksekliğinde uygulayacaktır ve o zamana kadar aşağıdakilerin hiçbiri `qorechain-vladi` için geçerli değildir. Test ağı manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar.
+
+* **Işık düğümü kayıt penceresi.** Bir ışık düğümünün ödül sınırı, önceki yerleşim ile düğümün kendi kaydından hangisi daha geçse oradan başlar; böylece yeni bir kayıt, katılmasından önceki birikmiş bir tutarı toplamaz.
+* **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını belirli bir süre için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise ceza ile izin verilir. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
+* **Yeni emisyon modu.** `x/inflation`, `target_apy_bps` parametresiyle (şu anda `0`) üçüncü bir emisyon modu olan `target_apy`'yi kazanır.
+* Kuantum-sonrası hesap kayıtlarında **`possession_proven` bayrağı**; hesap anahtarları için sahiplik kanıtı isteğe bağlı kalır.
+* **Köprü doğrulayıcısı sahiplik kanıtı.** Bir köprü doğrulayıcısını kaydetmek, bir sahiplik kanıtı ve başka hiçbir köprü doğrulayıcısının kullanmadığı bir anahtar gerektirir.
+* **Blok süresi cinsinden RDK itiraz penceresi.** İyimser itiraz penceresi, ondan türetilen bir blok sayısı yerine blok süresi cinsinden sayılır.
+* **Düğüm-yerel sertleştirme** (JSON-RPC istek sınırları, durum-senkronizasyonu parça bütçesi, anahtar kaydı ön denetimleri) ve yeni sorgular (`protocol_features`, `auth_nonce` ve `monthly_cap_active` gibi ek ışık düğümü ödül havuzu alanları).
+
+## v3.2.3 — İkinci Ekim Güvenlik Paketi (ana ağ)
+
+**Sürüm odağı:** İkinci Ekim sertleştirme paketi; ana ağda yönetişim önerisi 11 ile **3.662.051** yüksekliğinde (20 Ekim 2026, 16:01 UTC) uygulandı; test ağında daha önce 8.003.746 yüksekliğinde (15 Ekim) uygulanmıştı. Ana ağ manifestosu `minCompatible` değerini 3.2.3 olarak ayarlar: ana ağa katılan bir düğümün artık v3.2.3'e ihtiyacı vardır. Yükseltme, o yükseklikte 52 protokol özelliğini açar; imza biçimi, adresler, ondalık basamaklar, memolar ve ücretler değişmez.
+
+* **Kuantum-sonrası anahtar bütünlüğü.** Zayıf, dejenere ve daha önce kullanılmış anahtarlar kayıtta reddedilir; hibrit anahtar bakımı sıkılaştırılır; kuantum-sonrası anahtar yönetimi mesajları artık authz üzerinden çalıştırılamaz; bir hesap son imzalama algoritmasını kaldıramaz. Kayıt (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`), varsa doğrulanan **isteğe bağlı bir sahiplik kanıtı** kabul eder.
+* **Kapsamlı EVM pencereleri.** `MsgOpenEVMWindow`, bir pencereyi daraltan isteğe bağlı `native_only` (yalnızca düz yerel QOR transferleri) ve `allowed_targets` (en fazla 16 alıcı) alanlarını alır. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+* RDK için **rollup teminat defteri**, precompile sertleştirmesine sahip **atomik VM'ler arası kuyruk** ve **kurallı stake yetkilendirmesi**.
+* **Yalnızca kendine vesting oluşturma.** Vesting hesabı oluşturma yalnızca oluşturanın kendi hesabını fonlayabilir (üç vesting mesajı ayrıca devre kesicide kapalı kalmaya devam eder).
+* **Ekonomi düzeltmeleri.** Emisyon yılı dönem uzunluğundan türetilir; AMM blok-sonu işi sınırlandırılır; yakma kayıtları budanır; kayıtlı sahipsiz stake sahibi payı yükseltme yüksekliğinde 0'dan 3.807.496,79 QOR olarak yeniden hesaplandı (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Işık düğümü aylık sınırı.** Düğüm başına ödül sınırı artık aylık olarak belirtilir: düğüm başına 30 günde 2.000 QOR; blok süresine ve çalışma süresine göre orantılanır.
+* **Yönetişimle değiştirilebilir lisans otoritesi.** Yeni bir `MsgUpdateAuthority`, yönetişimin lisansları veren otoriteyi değiştirmesine olanak tanır.
+* **Genel derlemeler genel ağları reddeder.** Genel kaynak ağacından derlenmiş bir ikili dosya, canlı bir ağa yönlendirilirse durur.
+* **Yeni okuma rotaları.** `x/inflation` parametreleri ve dönem kaydı, ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`, `/epoch_info`).
+
+## v3.2.2 — Bağımlılık Güncellemesi ve Birinci Ekim Güvenlik Paketi (ana ağ)
+
+**Sürüm odağı:** Ana ağda yönetişim önerisi 7 ile **3.556.788** yüksekliğinde (16 Ekim 2026, 17:59 UTC) uygulanan koordineli bir yükseltme; test ağında 6.905.034 yüksekliğinde (2 Ekim) uygulandı. İmza biçimi değişmez.
+
+* **Bağımlılıklar.** Cosmos SDK v0.53.8, konsensüs motoru v0.38.26 ve ibc-go v10.7.
+* Yükseltme yüksekliğinde **26 protokol özelliği** açılır; bunların arasında şunlar vardır: EIP-7702 delegasyonu bir kuantum-sonrası onay gerektirir (`MsgAuthorizeEVMDelegation`; `MsgClearEVMDelegation` veya `MsgCloseEVMWindow` ile temizlenir); multisig sınırları blok yürütmede uygulanır; doğrulayıcı kabulü her yolda denetlenir; AMM bütünlük denetimleri; modül hesapları EVM üzerinden sahiplenilemez; EIP-155 öncesi işlemler reddedilir; kuantum-sonrası anahtar kaydı klasik anahtarı doğrular; RDK ve çok katmanlı çıpa mesajı ikinci bir biçime (v2) geçer; ve başarısız işlem yakma kanalı uygulanır.
 
 ## v3.2.1 — Düğüm Sertleştirmesi
 
@@ -22,9 +71,9 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 * Genel API'nin kaynak sınırlarını sertleştirir, EVM JSON-RPC'yi ve mempool'u sınırlandırır ve terfi ettirilen EVM işlemlerini yayar (gossip).
 * EVM zincir kimliğini düğüm yapılandırmasında sabitler ve Cosmos zincir kimliğiyle çapraz kontrol eder; operatörler `app.toml` içinde `evm-chain-id = 9801` ayarlamalıdır (farklı bir değer hata olarak günlüğe yazılır).
 * Konsensüs motoru bağımlılığını günceller; sistem saatini NTP ile senkronize tutun (60 saniyeden fazla sapma düğümü durdurur).
-* Her operatör için önerilir; ana ağ manifestosundaki `minCompatible` değeri 3.2.0'dır.
+* Her operatör için önerilir; ana ağ manifestosundaki `minCompatible` değeri o sırada 3.2.0'dı.
 
-Test ağı şu anda 6.905.034 yüksekliğinde yönetişimle uygulanan v3.2.2'yi çalıştırıyor; şimdilik yalnızca test ağına özel bir sürümdür ve değişiklikleri ana ağın parçası değildir. Ana ağ yönetişim önerisi 7 (bu yazıldığında oylama döneminde), v3.2.2'yi ana ağda 3.556.788 yüksekliğine planlayacaktır — operatör adımları ve sonucun nasıl kontrol edileceği için bkz. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda v3.2.2 (16 Ekim) ve v3.2.3 (20 Ekim) tarafından geçersiz kılındı.
 
 ## v3.2.0 — EVM Yetkilendirme Penceresi ve Muhasebe Düzeltmeleri
 
@@ -32,8 +81,8 @@ Test ağı şu anda 6.905.034 yüksekliğinde yönetişimle uygulanan v3.2.2'yi 
 
 * **EVM yetkilendirme penceresi (EVM cüzdanları için uyumluluğu bozan değişiklik).** Bir EVM işlemi artık yalnızca kayıtlı bir ML-DSA-87 anahtarına **ve** açık bir pencereye sahip bir hesaptan kabul edilir. Pencere, bir Cosmos-hattı mesajıyla (`MsgOpenEVMWindow`, kuantum-sonrası imzalı) açılır ve blok sayısı (≤ 17.280), işlem sayısı (≤ 1.000) ve toplam değer (aktarılan değer artı her işlemin azami ücreti) ile sınırlandırılır; `MsgCloseEVMWindow` onu iptal eder. Bir pencerenin içinde standart Ethereum imzalama değişmez. 16 Eylül'den beri ana ağda devre kesici ile kapatılmış olan EVM hattı, kuralın yürürlüğe girdiği blokta yeniden açıldı. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 * **Hibrit imza v2.** Kuantum-sonrası imzalar artık alan etiketli, zincire bağlı imza baytları üzerinden atılır; ilk biçim yükseltme yüksekliğinden itibaren reddedilir. İstemciler biçimi seçmek için düğümün uygulanmış yükseltme planlarına bakar; CLI (`--sign-bytes auto`), SDK 0.8.x ve wallet-adapter 0.2.x bunu yapar. Anahtar geçişi ve köprü tanıklığı (attestation) yükleri de aynı şemaya taşındı. Bkz. [Kuantum-Sonrası Güvenlik](/architecture/post-quantum-security#sign-bytes-v2).
-* **Stake sahibi payı ödendi.** Ücret bölüşümündeki %10'luk stake sahibi payı hiçbir alacağı karşılamayan bir yere yatırılıyordu; bu yükseltmeden itibaren normal bir stake ödülü olarak ödenir. Halihazırda birikmiş tutar (ana ağda 6.693.045,92 QOR) zincir üzerinde kayıtlıdır (`GET /qorechain/burn/v1/stranded_rewards`) ve yalnızca bir yönetişim oylamasıyla (`MsgReleaseStrandedRewards`) hareket ettirilebilir. Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
-* **Işık düğümü ödül rezervi.** Hiçbir düğümün uygun olmadığı dönemde biriken %3'lük ışık düğümü payı (ana ağda 3.156.009,33 QOR) bir rezerv olarak kaydedilir (`GET /qorechain/lightnode/v1/reward_pool`), dağıtımın dışında tutulur ve yalnızca yönetişimle hareket ettirilebilir; bundan sonra dağıtım yalnızca bir önceki çalıştırmadan beri biriken tutarı öder ve düğüm başına, blok başına sınırlıdır. Işık düğümü kaydı kapalı kalmaya devam eder.
+* **Stake sahibi payı ödendi.** Ücret bölüşümündeki %10'luk stake sahibi payı hiçbir alacağı karşılamayan bir yere yatırılıyordu; bu yükseltmeden itibaren normal bir stake ödülü olarak ödenir. Halihazırda birikmiş tutar (ana ağda 6.693.045,92 QOR) zincir üzerinde kayıtlıdır (`GET /qorechain/burn/v1/stranded_rewards`) ve yalnızca bir yönetişim oylamasıyla (`MsgReleaseStrandedRewards`) hareket ettirilebilirdi; yönetişim bunu Ekim 2026'da serbest bıraktı (bkz. [yönetişim zaman çizelgesi](#governance-timeline) ve [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Işık düğümü ödül rezervi.** Hiçbir düğümün uygun olmadığı dönemde biriken %3'lük ışık düğümü payı (ana ağda 3.156.009,33 QOR) bir rezerv olarak kaydedilir (`GET /qorechain/lightnode/v1/reward_pool`), dağıtımın dışında tutulur ve yalnızca yönetişimle hareket ettirilebilir (Ekim 2026'da serbest bırakıldı); bundan sonra dağıtım yalnızca bir önceki çalıştırmadan beri biriken tutarı öder ve düğüm başına sınırlıdır. Işık düğümü kaydı bu sürümde hâlâ kapalıydı ve o tarihten beri açıldı (bkz. [Işık Düğümü](/light-node/overview#reward-program-status)).
 * **Gönderen başına işlem sınırı** artık uygulanıyor (röleler çalışabilsin diye gönderen başına 30 blokta 600 işlem).
 * **Yükseltme modülü sürüm haritası** artık her modülü (48) listeliyor; bu, sonraki geçişleri etkileyecek bir açığı kapatıyor.
 * Ayrıca: köprü modülü hesabı ve tanıklık yükleri sertleştirildi, önerilen bloklar doğrulanıyor, rollup yerleşimi rollup'ın sıralayıcısıyla (sequencer) sınırlandırıldı ve rollup başına teminat ile etkin bir oluşturma yakımı eklendi, çok katmanlı oluşturucu stake'i kayıtta kilitleniyor ve hizmetten çıkarmada iade ediliyor, akıllı hesap `enabled` bayrağı her yolda uygulanıyor, doğrulayıcı kabul ve vesting oluşturma yolları authz iç içe geçmesine kapatıldı.
@@ -55,7 +104,7 @@ Test ağı şu anda 6.905.034 yüksekliğinde yönetişimle uygulanan v3.2.2'yi 
 
 **Sürüm odağı:** Stake ödülü emisyonunu gerçek ağ koşullarıyla uyumlu hale getirmek ve yetkili yönetimsel mesajlar üzerindeki yetkilendirme denetimlerini sıkılaştırmak.
 
-* **Emisyon tavanı** — Tam bonded-stake desteğiyle kabul edilip 2.122.074 yüksekliğinde (26 Ağustos 2026) uygulanan bir yönetişim önerisi, orijinal azalan emisyon takvimini, sert ve kümülatif bir tavan altında dönem başına sabit bir tutarla değiştirdi. Orijinal takvim, çok daha olgun, tamamen bonded bir ağ için kalibre edilmişti; gerçek bonded stake'e karşı, amaçlanandan çok daha hızlı ödeme yapıyordu. Güncel rakamlar için bkz. [Tokenomics](/architecture/tokenomics#staking-reward-schedule).
+* **Emisyon tavanı** — Tam bonded-stake desteğiyle kabul edilip 2.122.074 yüksekliğinde (26 Ağustos 2026) uygulanan bir yönetişim önerisi, orijinal azalan emisyon takvimini, sert ve kümülatif bir tavan altında dönem başına sabit bir tutarla değiştirdi. Orijinal takvim, çok daha olgun, tamamen bonded bir ağ için kalibre edilmişti; gerçek bonded stake'e karşı, amaçlanandan çok daha hızlı ödeme yapıyordu. Dönem başına tutar ve tavan, 19 Ekim 2026'da yönetişim önerisi 10 ile yükseltildi. Güncel rakamlar için bkz. [Tokenomics](/architecture/tokenomics#staking-reward-schedule).
 * **Yönetimsel mesaj sertleştirmesi** — Bir dizi yetkili, yetki-korumalı yönetimsel mesajın imzalayanı artık mesajın kendisinde taşınan bir değere güvenmek yerine yönetişim modülünün kendi adresine karşı doğrulanıyor.
 * Ayrıca, doğrudan bu sürüme güncelleme yapan herhangi bir düğüm için v3.1.92'deki düğüm devreye alma güvenilirliği düzeltmesini de taşıyor.
 
@@ -210,7 +259,7 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 
 **Sürüm odağı:** Ana ağ lansmanı ve token üretim etkinliği.
 
-* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801), genesis'te token üretim etkinliği (TGE) ile birlikte **29 Haziran 2026**'da başlatıldı.
+* **Ana ağ genesis'i** — QoreChain ana ağı (`qorechain-vladi`, EVM zincir kimliği 9801), genesis'te token üretim etkinliği (TGE) ile birlikte **7 Haziran 2026**'dan beri canlıdır.
 * **Beş yönlü ücret bölünmesi** — Doğrulayıcılar, yakma, hazine, stake sahipleri ve ışık düğümleri arasında protokol ücreti dağıtımı (**37 / 30 / 20 / 10 / 3**); ışık düğümleri için özel bir pay ekliyor.
 * **Zincir üzerinde AMM** — Zincir üzerinde likidite havuzları ve takaslar için yerel otomatik piyasa yapıcı (AMM) modülü (`x/amm`).
 * **Zincir lisanslama** — Protokol yetkilerini kaydetmek ve yönetmek için zincir üzerinde lisans modülü (`x/license`).

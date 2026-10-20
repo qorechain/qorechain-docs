@@ -63,7 +63,8 @@ comisión → `bankSend`. Necesita un RPC de consenso accesible además de REST 
 una cuenta con fondos. Este ejemplo firma únicamente con la firma **clásica**,
 por lo que funciona contra un nodo local o de desarrollo, pero mainnet y testnet
 lo rechazan, ya que exigen la firma híbrida en cada transacción de la ruta
-Native. Para las redes públicas usa el envío híbrido del
+Native. Para las redes públicas conéctate con el keypair de la cuenta,
+`client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), como en el
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts

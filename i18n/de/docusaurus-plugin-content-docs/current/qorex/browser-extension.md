@@ -9,7 +9,7 @@ sidebar_position: 2
 
 Die **Browser-Erweiterung** von QoreX ist die Desktop-QoreChain-Wallet. Sie ist eine **eigenständige Wallet** — erstellen oder importieren Sie eine Wallet, halten und senden Sie QOR und verbinden Sie sich mit dApps — und sie ist der Baustein, der jeder Website erlaubt, QoreX zu erkennen und jede Anfrage in eine explizite, entschlüsselte Genehmigung zu verwandeln.
 
-Sie ist **live und öffentlich** in drei Stores verfügbar.
+Sie ist **live und öffentlich** in drei Stores verfügbar (Chrome, Firefox und Safari); Chrome hinkt den anderen derzeit um ein Release hinterher — siehe [welche Version wo verfügbar ist](#versions).
 
 ## Installation {#install}
 
@@ -21,7 +21,15 @@ Sie ist **live und öffentlich** in drei Stores verfügbar.
 
 ### Welche Version wo verfügbar ist {#versions}
 
-Stand **15. Oktober 2026**: **Chrome 0.3.6**, **Firefox 0.3.7** (ein Point-Release nach 0.3.6) und **Safari** innerhalb der **QoreX Wallet**-macOS-App (**1.7.6**, die die Erweiterung 0.3.6 enthält; der Mac App Store verwendet seine eigene `1.x`-Nummerierung). Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher kann ein Store kurzzeitig einen älteren oder neueren Build ausliefern; der Store-Eintrag zeigt stets seine aktuelle Version. Diese Seite beschreibt den Funktionsumfang von 0.3.6. Siehe auch [Welche Version wo verfügbar ist](/qorex/overview#versions).
+Aktuelle Version in jedem Store, Stand **20. Oktober 2026**:
+
+| Store | Aktuelle Version |
+|---|---|
+| Chrome Web Store | 0.3.6 (noch nicht auf 0.3.7 aktualisiert) |
+| Firefox Add-ons | 0.3.7 |
+| Safari (Mac App Store, macOS-App **QoreX Wallet**) | 1.7.7, die die Erweiterung 0.3.7 enthält — der Mac App Store verwendet seine eigene `1.x`-Nummerierung |
+
+Store-Reviews landen zu unterschiedlichen Zeitpunkten, daher kann ein Store einen älteren Build ausliefern als ein anderer; der Store-Eintrag zeigt stets seine aktuelle Version. Diese Seite beschreibt den Funktionsumfang von 0.3.7; wo ein Punkt 0.3.7 voraussetzt, steht das dabei, und Chrome-Nutzer erhalten ihn, sobald der Chrome-Eintrag aktualisiert wird. Siehe auch [Welche Version wo verfügbar ist](/qorex/overview#versions).
 
 Seit 0.2.6 hat die Erweiterung hinzugewonnen: [mehrere Wallets mit einem Passwort](#wallets), ein [Ethereum-artiges Konto, das Sie von Hand hinzufügen](#coin60), [Claim & restake](#stake), eine Liste **Unstaking läuft**, das [Hinzufügen eines Tokens per Vertrag](#custom-tokens), [Empfangen auf jedem Netzwerk](#receive), [Verbundene Websites mit Widerrufen](#connected-sites), das [EVM-Zugriffsfenster](#evm-window), [`signAndBroadcast` für dApps](#sign-and-broadcast) sowie Genehmigungsbildschirme, die jede Nachricht, Gebühr und Ablaufzeit anzeigen.
 
@@ -53,7 +61,7 @@ Die Erweiterung verwaltet ihre eigenen Schlüssel; sie benötigt nicht die mobil
 
 Ab 0.3.2 fügt **Ethereum-Konto hinzufügen (Coin 60)** (auf dem Bildschirm **Ihre Konten**) das Konto für eine Phrase hinzu, die zuerst in MetaMask oder im Dashboard verwendet wurde; siehe [Eine Phrase aus MetaMask oder dem Dashboard wiederherstellen](/qorex/getting-started#restore-dashboard). Seine 0x-Adresse ist diejenige, die MetaMask für dieselben Wörter anzeigt. Handles werden dafür nicht angeboten.
 
-Portfolio, Q-Day Scanner, soziale Wiederherstellung, Legacy-Protokoll, Zahlungsanfragen und Geräteverknüpfung bleiben nur in der mobilen App verfügbar — siehe [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, soziale Wiederherstellung, Legacy-Protokoll, Zahlungsanfragen, Konto-Anmeldung und Geräteverknüpfung bleiben nur in der mobilen App verfügbar — siehe [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Ihr Konto, Guthaben & @Handle {#account}
 
@@ -65,11 +73,11 @@ Wenn Ihr Konto Vesting-QOR hält (zum Beispiel eine noch nicht freigegebene TGE-
 
 ### Ein @Handle beanspruchen
 
-Einige Versionen der Erweiterung erlauben es, aus dem Popup ein eindeutiges **@Handle** (zum Beispiel `@liviu`) für die Adresse dieses Kontos zu beanspruchen, genau wie in der mobilen App; bietet Ihr Popup das nicht an, beanspruchen Sie es in der mobilen App (das Beanspruchen wird für Ethereum-artige Konten nicht angeboten). Die Beanspruchung wird mit dem eigenen Schlüssel des Kontos signiert und an diese Adresse gebunden, sodass die mobile App und das Dashboard sie auflösen können, wenn jemand an Sie sendet. Siehe [@Handle](/qorex/account-and-dashboard#handle) dazu, wie Handles an Adressen gebunden werden (nicht an eine Wallet als Ganzes).
+Das Beanspruchen eines eindeutigen **@Handles** (zum Beispiel `@liviu`) erfordert ein **angemeldetes Konto** und geschieht **in der mobilen App**; die Erweiterung verweist Sie dorthin und beansprucht Handles nicht selbst. Einmal beansprucht, wird das Handle an diese Adresse gebunden, sodass die Erweiterung es auflöst, wenn Sie es bezahlen, und andere Sie per Namen bezahlen können. Siehe [@Handle](/qorex/account-and-dashboard#handle) dazu, wie Handles an Adressen gebunden werden (nicht an eine Wallet als Ganzes).
 
 ## An ein @Handle senden {#handle-send}
 
-Seit 0.1.9 können Sie ein registriertes @Handle direkt bezahlen, statt eine Adresse nachzuschlagen:
+Seit 0.1.9 können Sie ein registriertes @Handle direkt bezahlen, statt eine Adresse nachzuschlagen (Abfragen wurden in den Versionen bis 0.3.6 durch einen Fehler unterbrochen und funktionieren ab 0.3.7 wieder):
 
 1. Öffnen Sie das Popup und tippen Sie auf **Senden**.
 2. Geben Sie im Empfängerfeld ein `@` gefolgt vom Handle ein (zum Beispiel `@liviu`) statt einer `qor1…`-Adresse.
@@ -144,7 +152,7 @@ Auf dem Popup-Bildschirm **Coins und Token** können Sie einen **ERC-20-Token ü
 
 ## EVM-Zugriffsfenster {#evm-window}
 
-Der Popup-Bildschirm **EVM-Zugriffsfenster** öffnet und schließt das Fenster, das einem Konto das Senden auf der EVM-Lane von QoreChain erlaubt (v3.2.0 und neuer) — derselbe Bildschirm wie in der App. Siehe [EVM-Zugriffsfenster](/qorex/security-and-recovery#evm-window).
+Der Popup-Bildschirm **EVM-Zugriffsfenster** öffnet und schließt das Fenster, das einem Ethereum-artigen (Coin 60) Konto das Senden auf der EVM-Lane von QoreChain erlaubt (v3.2.0 und neuer) — derselbe Bildschirm wie in der App, mit denselben Grenzen (bis zu 17.280 Blöcke und 1.000 Transaktionen sowie eine QOR-Obergrenze, die jeden Betrag samt seiner maximalen Gebühr zählt). Siehe [EVM-Zugriffsfenster](/qorex/security-and-recovery#evm-window).
 
 ## Sprache {#language}
 
@@ -161,7 +169,7 @@ QoreX ist darauf ausgelegt, überprüfbar zu sein, nicht nur vertrauenswürdig:
   QoreX erkennt WebAuthn per Feature-Detection und zeigt **Passkey-Entsperrung aktivieren** nur dort, wo der Browser dies für Erweiterungsseiten bereitstellt — das sind **Chrome und Edge**. In **Firefox** ist die Option ausgeblendet, weil Firefox WebAuthn für Erweiterungsseiten nicht bereitstellt. Das ist erwartet, kein Fehler.
   :::
 - **Manifest V3 + strikte CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Es gibt **kein Nachladen von Remote-Code** nach der Installation und kein `wasm-unsafe-eval`.
-- **Kein Konto, keine Telemetrie** — keine Analytics, kein Tracking, kein Remote-Logging, keine Anmeldung und keine E-Mail. Der Firefox-Eintrag deklariert die Datenerhebung als `none`.
+- **Keine Analytics, kein Absturzbericht, kein Tracking-SDK, keine Anmeldung** — die Erweiterung braucht kein Konto, um QOR zu halten, zu senden oder zu staken. Ihre Schlüssel, Wiederherstellungsphrase, Ihr Tresor und Ihre Genehmigungen verlassen den Browser nie. Sie stellt jedoch Netzwerkanfragen: an die öffentlichen QoreChain-Endpunkte für Guthaben, Verlauf und Übertragung (diese enthalten Ihre öffentliche `qor1…`-Adresse), eine Preisabfrage (ohne Adresse), die öffentlichen Dienste jedes externen Netzwerks, das Sie halten oder ansehen (Ihre öffentliche Adresse in diesem Netzwerk), und die @Handle-Registry (das Handle oder eine öffentliche Adresse). Nur wenn Sie die [Dashboard-Kopplung](#dashboard-bridge) verwenden, sendet sie einen signierten Nachweis, dass Sie die Adresse besitzen. Siehe [Was QoreX über das Netzwerk sendet](/qorex/overview#data-and-privacy).
 
 ### Welche Berechtigungen QoreX anfragt, und warum {#permissions}
 

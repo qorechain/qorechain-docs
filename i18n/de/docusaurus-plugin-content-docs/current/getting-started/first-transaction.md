@@ -10,7 +10,7 @@ sidebar_position: 5
 Diese Anleitung führt durch das Senden von QOR-Token, das Abfragen von Transaktionen und die Interaktion mit QoreChain über seine nativen, EVM- und SVM-Schnittstellen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 aktiv — ersetzen Sie beim Transagieren auf dem Mainnet die Chain-ID und die Endpunkte des Mainnets von der Seite **Verbindung zum Mainnet**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft auf Release v3.2.3 (das Testnet läuft auf v3.2.4) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
 :::
 
 ## Ihr Guthaben prüfen
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+Seit v3.2.3 akzeptiert die Chain bei der Registrierung außerdem einen optionalen **Besitznachweis** und lehnt schwache, degenerierte oder bereits verwendete Schlüssel ab. Um einen anzuhängen, registrieren Sie mit `register-key-v2` und benennen Ihren lokalen Schlüssel:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -122,7 +129,7 @@ Seit dem Chain-Release **v3.2.0** (Mainnet-Höhe 2.981.742, 25. September 2026; 
 
 Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMask, ethers.js, Hardhat oder Foundry, und `eth_estimateGas` sowie andere Simulationen funktionieren ohne Fenster. Contract-Deployments zählen wie jede andere EVM-Transaktion, daher wird vor einem Deployment ein Fenster benötigt.
 
-**Warum ein Fenster?** Ein Standard-Wallet erzeugt eine einzelne secp256k1-Signatur über eine Ethereum-Transaktion und bietet Anwendungen keine Möglichkeit, eine zweite, Post-Quanten-Signatur anzuhängen. Deshalb reist die Post-Quanten-Autorisierung der Transaktion *voraus*: Sie öffnen mit einer normalen Cosmos-Pfad-Transaktion, die Ihre ML-DSA-Signatur trägt, ein begrenztes Fenster, und der EVM-Pfad lässt dann Transaktionen zu, die davon abgedeckt sind. Ein klassischer Schlüssel allein kann nie ein Fenster öffnen, sodass ein gestohlener klassischer Schlüssel nur ausgeben kann, was ein bereits geöffnetes Fenster erlaubt. Es funktioniert wie eine ERC-20-Freigabe: Sie autorisieren einen begrenzten Betrag für eine begrenzte Zeit und transagieren dann normal.
+**Warum ein Fenster?** Ein Standard-Wallet erzeugt eine einzelne secp256k1-Signatur über eine Ethereum-Transaktion und bietet Anwendungen keine Möglichkeit, eine zweite, Post-Quanten-Signatur anzuhängen. Deshalb reist die Post-Quanten-Autorisierung der Transaktion *voraus*: Sie öffnen mit einer normalen Cosmos-Pfad-Transaktion, die Ihre ML-DSA-Signatur trägt, ein begrenztes Fenster, und der EVM-Pfad lässt dann Transaktionen zu, die davon abgedeckt sind. Ein klassischer Schlüssel allein kann nie ein Fenster öffnen, sodass ein gestohlener klassischer Schlüssel nur ausgeben kann, was ein bereits geöffnetes Fenster erlaubt. Es funktioniert wie eine ERC-20-Freigabe: Sie autorisieren einen begrenzten Betrag für eine begrenzte Zeit und führen dann normal Transaktionen durch.
 
 **Was ein Fenster begrenzt.** Drei Grenzen gelten gleichzeitig; welche zuerst erschöpft ist, schließt das Fenster.
 
@@ -136,6 +143,7 @@ Alles andere am EVM-Pfad bleibt unverändert: Sie signieren weiterhin mit MetaMa
 * Eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht dennoch ihren Platz und ihr Wertbudget.
 * Das Öffnen eines neuen Fensters **ersetzt** das vorherige; der Verbrauch beginnt wieder bei null.
 * Die CLI akzeptiert `max-value` in `uqor` oder `qor` (`1000qor` = 1.000.000.000 uqor).
+* Die Wertgrenze zählt nur natives QOR: Eine Token-Überweisung, eine Freigabe oder ein anderer Contract-Aufruf trägt den Wert null. Um auch diese zu begrenzen, schränken Sie den Geltungsbereich des Fensters ein (siehe unten).
 
 **Schritt 1 — Registrieren Sie Ihren Post-Quanten-Schlüssel** (einmalig): siehe [Registrieren Sie Ihren Post-Quanten-Schlüssel](#register-pqc-key) oben.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**Den Geltungsbereich einschränken (v3.2.3 und später).** Zwei optionale Flags beschränken, was ein offenes Fenster zulässt: `--native-only` lässt nur einfache native QOR-Überweisungen zu (keine Calldata, keine Contract-Erstellung, keinen Empfänger, der Code trägt), und `--allowed-targets 0xAAA...,0xBBB...` lässt nur Transaktionen an diese Empfänger zu (höchstens 16; die Contract-Erstellung wird dann abgelehnt). Zum Beispiel:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 Im Mainnet hat das Öffnen eines Fensters etwa 180.000 Gas verbraucht. In [QoreX](/qorex/security-and-recovery#evm-window) ist derselbe Schritt **Einstellungen → Sicherheit → EVM-Zugriffsfenster** (App) bzw. die Schaltfläche **EVM-Zugriffsfenster** (Erweiterung). Das Öffnen des Fensters erhöht die Nonce Ihres Kontos, öffnen Sie es daher **bevor** Sie die EVM-Transaktion in Ihrem Wallet vorbereiten.
@@ -162,7 +177,7 @@ Die REST-Antwort schlägt für eine Adresse ohne Fenster nie fehl; sie liefert `
 
 **Schritt 4 — Nutzen Sie den EVM-Pfad ganz normal.** Senden Sie wie gewohnt aus MetaMask oder Ihrem Tooling. Jede Transaktion verbraucht einen Transaktionsplatz und (Wert + maximale Gebühr) aus dem Fenster.
 
-**Ein Fenster vorzeitig schließen.** Wenn Sie vermuten, dass Ihr klassischer Schlüssel kompromittiert ist, schließen Sie das Fenster; was es noch zugelassen hätte, wird ab dem nächsten Block abgelehnt:
+**Ein Fenster vorzeitig schließen.** Wenn Sie vermuten, dass Ihr klassischer Schlüssel kompromittiert ist, schließen Sie das Fenster; was es noch zugelassen hätte, wird ab dem nächsten Block abgelehnt. Das Schließen widerruft außerdem jede ausstehende EIP-7702-Delegationszustimmung (seit v3.2.2; eine Transaktion vom Typ 4, die den Code eines Kontos ändert, wird nur nach einer Post-Quanten-Zustimmung per `authorize-evm-delegation` zugelassen):
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

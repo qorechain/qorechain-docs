@@ -44,8 +44,9 @@ digest di **sign-bytes** con separazione di dominio e protezione anti-replay.
                                                                   spend FROM canonical account
 ```
 
-Il relayer è un account **diverso** da quello del proprietario, quindi non
-incrementa il nonce EVM dell'account.
+Il relayer è un account **diverso** da quello del proprietario. Il nonce che
+l'authenticator firma è la sequenza propria della chiave collegata, tenuta dalla
+chain (vedi [Nonces](#nonces)), non il nonce EVM dell'account.
 
 ## Le tre corsie
 
@@ -248,7 +249,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -276,6 +278,21 @@ sha256( "qorechain-evm-auth-v1"
 `to` è il destinatario in `0x`-hex, `value` la stringa decimale in wei, `data`
 la calldata grezza.
 
+**Corsia EVM, v2 (chain v3.2.3)** — `evmAuthSignBytesV2({ …, gasLimit })` aggiunge
+il gas limit della chiamata, così un relayer non può riproporre una firma valida
+con un limite diverso. La chain verifica esattamente una forma per blocco: v1
+prima dell'upgrade v3.2.3, v2 da esso in poi. `resolveEvmAuthDigestVersion({ rest })`
+restituisce `"v2"` una volta che la rete ha applicato la v3.2.3 e `"v1"` prima, e
+`buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm` accettano `digestVersion`
+(predefinito `"v1"`, quindi passa `"v2"` su una rete alla v3.2.3 o successiva).
+`gasLimit` deve essere diverso da zero.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Corsia Nativa** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 restituisce un digest da 32 byte:
 
@@ -294,25 +311,20 @@ restituisce la stringa che entrambe le chiavi firmano (in UTF-8):
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## Nonce
+## Nonces {#nonces}
 
-- `MsgExecuteEVM.nonce` = il **nonce EVM corrente** dell'account (il relayer è
-  un account diverso e non incrementa il nonce del proprietario, quindi **non**
-  aggiungere 1).
-- `MsgExecuteCosmos.nonce` = la **sequenza per-authenticator** per
-  `(account, pubkey)` — un contatore nello store, distinto dalla sequenza
-  dell'account stesso, incrementato a ogni spesa riuscita sulla corsia Nativa.
+Entrambe le corsie usano la **sequenza per-authenticator** per `(account, pubkey)`:
+un contatore che la chain tiene per ogni chiave collegata, parte da 0 e viene
+incrementato a ogni esecuzione riuscita.
 
-Sbagliare il nonce produce un rifiuto per replay
-(codice 11 di `abstractaccount`, vedi sotto).
+- `MsgExecuteEVM.nonce` è questo contatore, **non** il nonce EVM dell'account
+  (`eth_getTransactionCount`).
+- `MsgExecuteCosmos.nonce` è lo stesso tipo di contatore.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+Non esiste ancora una query per il contatore, quindi tienine traccia per ogni
+chiave collegata: 0 per una chiave appena collegata, +1 dopo ogni esecuzione che
+la chain accetta. Inviare un valore diverso dal contatore corrente della chain
+produce un rifiuto per replay (codice 11 di `abstractaccount`, vedi sotto).
 
 ## Lo schema dei permessi
 

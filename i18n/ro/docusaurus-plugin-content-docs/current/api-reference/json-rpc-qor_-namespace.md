@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | Metodă planificată            | Ce se folosește astăzi |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). |
-| `qor_getHybridSignatureMode`  | Nicio rută de interogare publică. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` pe un nod propriu; fără rută REST. |
+| `qor_getHybridSignatureMode`  | Nicio rută REST publică; `qorechaind query pqc hybrid-mode` (sau `query pqc params`) pe un nod sau cu `--node https://rpc.qore.host:443`. |
+| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` pe un nod propriu, sau `qorechaind query ai stats`; fără rută REST. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` pe un nod propriu; fără rută REST. |
 | `qor_getReputationScore`      | Nicio rută de interogare publică (modulul reputation expune doar gRPC `Params`). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` și `anchor/{layer_id}`. Vezi [Modulul Multilayer](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | Nicio rută de interogare publică. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Vezi [Modulul Burn](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Niciuna. xQORE nu este activ (vezi [Staking xQORE](/user-guide/xqore-staking)). |
-| `qor_getInflationRate`        | Nicio rută de interogare publică pe mainnet. |
-| `qor_getTokenomicsOverview`   | Combinați `GET /qorechain/burn/v1/stats` cu `GET /cosmos/bank/v1beta1/supply`. |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) sau CLI pe un nod propriu; rutele REST `/qorechain/rdk/v1/...` nu sunt servite pe mainnet. |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` și `/epoch_info` (modul de emisie, suma per epocă, plafon, progres; servite începând cu v3.2.2). Vezi [Modulul Inflation](/api-reference/rest-grpc-endpoints#inflation-module). |
+| `qor_getTokenomicsOverview`   | Combinați `GET /qorechain/burn/v1/stats`, `GET /qorechain/inflation/v1/epoch_info` și `GET /cosmos/bank/v1beta1/supply`. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (servite începând cu v3.2.2; vezi [Modulul RDK](/api-reference/rest-grpc-endpoints#rdk-module)), sau `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Niciun serviciu public; vezi [Profiluri presetate](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Niciuna. Modulul de BTC restaking nu are încă un serviciu de interogare. |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Conturile abstracte sunt dezactivate astăzi în ambele rețele. |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | Niciuna. |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (servită începând cu v3.2.2). Vezi [Modulul Gas Abstraction](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Niciuna. |
 
-Pentru starea unui cont pe banda EVM (cheia PQC înregistrată și fereastra de autorizare) folosiți `GET /qorechain/pqc/v1/account/{address}` și `GET /qorechain/pqc/v1/evm_window/{address}`.
+Pentru starea unui cont pe banda EVM (cheia PQC înregistrată, fereastra de autorizare și consimțământul EIP-7702) folosiți `GET /qorechain/pqc/v1/account/{address}`, `GET /qorechain/pqc/v1/evm_window/{address}` și `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`. Ruta de stare este `account` la **singular**; pluralul `/accounts/` nu este servit și răspunde cu `501`.
 
 ---
 

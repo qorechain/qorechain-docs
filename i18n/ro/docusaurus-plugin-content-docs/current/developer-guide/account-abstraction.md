@@ -14,7 +14,7 @@ Modulul de conturi abstracte este în prezent **oprit** pe ambele rețele: `qore
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 29 iunie 2026), care rulează versiunea de nod **v3.2.1** (reguli de consens din v3.2.0). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.2.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.3**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 (doar testnet).
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
@@ -86,7 +86,9 @@ Regulile de cheltuieli adaugă limite de siguranță financiară conturilor abst
 | ------------------ | ------------------------------------------------------------------ |
 | `daily_limit`      | Cheltuiala totală maximă pe zi calendaristică UTC                  |
 | `per_tx_limit`     | Cheltuiala maximă per execuție individuală autorizată              |
-| `allowed_denoms`   | Restricționează denominările de token care pot fi cheltuite        |
+| `allowed_denoms`   | Restricționează denominările de token care pot fi cheltuite (un ERC-20 este listat ca `erc20/<contract>`) |
+| `denom_limits`     | Limite per denominare ca șiruri zecimale (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; înlocuiesc `per_tx_limit` și `daily_limit` pentru denominările pe care le numesc, astfel încât un token cu 18 zecimale poate fi plafonat |
+| `allowed_evm_calls` | Apeluri EVM pe care o cheie legată de regulă le poate face **cu date de apel** (v3.2.2), ca `0x<target>` (orice funcție a acelui contract) sau `0x<target>/0x<selector>` (doar acea funcție). Fără o intrare, o cheie legată de regulă poate doar să trimită valoare, să desfășoare contracte (cu permisiunea `deploy`) și să mute tokenii ERC-20 listați în `allowed_denoms`. Listarea unei ținte presupune încredere în fiecare argument al apelurilor făcute către ea, destinatarii incluși |
 
 ### Setarea Regulilor de Cheltuieli
 
@@ -98,7 +100,13 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Limitele sunt exprimate în unitatea de bază (`uqor`) și se contorizează per execuție autorizată; limita zilnică plafonează totalul pe zi calendaristică UTC. Regulile înlocuiesc în bloc regulile stocate, deci un câmp omis este eliminat.
+Limitele sunt exprimate în unitatea de bază (`uqor`) și se contorizează per execuție autorizată; limita zilnică plafonează totalul pe zi calendaristică UTC. Regulile înlocuiesc în bloc regulile stocate, deci un câmp omis este eliminat. Începând cu v3.2.2, lane-ul EVM măsoară ce mută efectiv un apel (valoarea nativă, scăderea soldului nativ al contului, monedele bancare cheltuite și modificarea soldului sau a alocației fiecărui ERC-20 listat) în loc de doar `msg.value`, iar crearea de contracte necesită permisiunea separată `deploy`. Un exemplu mai bogat:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
+```
 
 ### Interogarea Regulilor Curente
 
@@ -149,7 +157,7 @@ Unsprezece permisiuni canonice controlează ce poate face un autentificator înr
 | `amm` / `ibc` / `deploy` | Operațiuni AMM, transferuri IBC, desfășurare de contracte |
 | `all` | Orice mesaj *delegabil* |
 
-**Mesajele de gestionare a cheilor nu sunt niciodată delegabile** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, înregistrarea/migrarea cheii PQC și `MsgRotatePQCKey` necesită întotdeauna cheia rădăcină, astfel încât o cheie conectată nu își poate escalada niciodată propriile privilegii.
+**Mesajele de gestionare a cheilor nu sunt niciodată delegabile** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, înregistrarea/migrarea cheii PQC și `MsgRotatePQCKey` necesită întotdeauna cheia rădăcină, astfel încât o cheie conectată nu își poate escalada niciodată propriile privilegii. Schema (`schema_version` 2) listează și `lane_rules`: crearea unui contract de la adresa contului, un apel care avansează nonce-ul EVM al contului și un apel către contul însuși atunci când codul său este o delegare EIP-7702 necesită fiecare permisiunea `deploy` sau `all`. Începând cu v3.2.3, înregistrarea refuză șirurile de permisiuni necunoscute și cheile secp256k1 de 65 de octeți care nu s-ar putea verifica niciodată.
 
 Citiți taxonomia live (cu `schema_version` pentru detectarea derivei) în loc să o codificați static:
 
@@ -162,13 +170,13 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Două mesaje transportă acțiuni autorizate de autentificator. În ambele cazuri, releul este semnatarul/plătitorul de taxe al tranzacției; semnătura autentificatorului călătorește în interiorul mesajului.
 
-**`MsgExecuteEVM`** — un apel sau transfer EVM **de la adresa `0x…` a contului canonic**. Autentificatorul semnează `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (toate câmpurile prefixate cu lungime). Protecția anti-replay este nonce-ul EVM propriu al contului.
+**`MsgExecuteEVM`** — un apel sau transfer EVM **de la adresa `0x…` a contului canonic**. Autentificatorul semnează `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (toate câmpurile prefixate cu lungime). Începând cu v3.2.3 (funcția `abstractaccount-hardening`), chain-ul cere **digest-ul v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, care leagă și limita de gaz a apelului (8 octeți big-endian), astfel încât un releu nu poate reda semnătura cu o altă limită; niciun bloc nu acceptă ambele forme. `qorechaind query abstractaccount auth-sign-evm` primește `--gas-limit` pentru aceasta, iar aceeași valoare o transmiteți și lui `execute-evm`. Protecția anti-replay este nonce-ul EVM propriu al contului.
 
 **`MsgExecuteCosmos`** — un transfer bancar pe lane-ul nativ din contul canonic. Autentificatorul semnează `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. Protecția anti-replay este o **secvență per-autentificator** păstrată de modul (un transfer bancar nu incrementează nonce-ul contului). Auto-trimiterile sunt respinse.
 
 :::caution Reguli privind nonce-ul
 * `MsgExecuteEVM.nonce` = nonce-ul EVM **curent** al contului (`eth_getTransactionCount(account0x, "latest")`). În producție releul este un cont *diferit*, deci **nu** adăugați +1. Semnarea unui nonce învechit returnează codul `11`.
-* `MsgExecuteCosmos.nonce` = secvența per-autentificator (interogați starea autentificatorului contului), **nu** secvența Cosmos a contului.
+* `MsgExecuteCosmos.nonce` = secvența per-autentificator (interogați starea autentificatorului contului), **nu** secvența Cosmos a contului. Doar pe testnet (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returnează direct această secvență (`nonce`, `linked`).
 :::
 
 **Exemplu Phantom** (browser: Phantom semnează, backend-ul dvs. transmite):

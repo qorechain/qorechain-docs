@@ -50,10 +50,10 @@ Fiecare limbaj expune același API, fiecare fiind susținut de o implementare au
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (bibliotecă statică + header) | se compilează din [repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Disponibilitate
-Binding-urile JavaScript, Rust, Python, Go și Java sunt toate **publicate** la versiunea **0.2.1** — instalează-le direct din npm, crates.io, PyPI, proxy-ul de module Go și Maven Central cu comenzile de mai sus. Distribuția Python se instalează ca `qorechain-pqc`, dar **se importă ca `qorpqc`**. Pachetul **Java** este pe Maven Central ca `io.github.qorechain:qorechain-pqc:0.2.1` (backend Bouncy Castle). Versiunea **0.2.0** a adăugat `hybridSignBytes` conștient de versiune (mai jos), iar **0.2.1** a corectat numele de upgrade care marchează trecerea la v2 pentru mainnet, deci folosește 0.2.1 sau mai nou. Binding-ul **C** este o bibliotecă statică + header pe care le compilezi din [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
+Binding-urile JavaScript, Rust, Python, Go și Java sunt toate **publicate** la versiunea **0.2.2** (npm, crates.io, PyPI, proxy-ul de module Go ca `v0.2.2` și Maven Central; verificat la 21 octombrie 2026). Instalează-le cu comenzile de mai sus. Distribuția Python se instalează ca `qorechain-pqc`, dar **se importă ca `qorpqc`**. Pachetul **Java** este `io.github.qorechain:qorechain-pqc:0.2.2` (backend Bouncy Castle). Versiunea **0.2.0** a adăugat `hybridSignBytes` conștient de versiune (mai jos), **0.2.1** a corectat numele de upgrade care marchează trecerea la v2 pentru mainnet, iar **0.2.2** a corectat documentația și comentariile despre semnarea hedged față de cea deterministă (lanțul le acceptă pe amândouă; în binding-ul JavaScript, în cod s-a schimbat doar constanta de versiune), deci folosește 0.2.1 sau mai nou. Binding-ul **C** este o bibliotecă statică + header pe care le compilezi din [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
 :::
 
 ## Semnare deterministă (implicită) {#deterministic-signing}
@@ -68,23 +68,62 @@ Fapte cheie:
 
 ## Înregistrarea cheii {#pqc-key-registration}
 
-Fiecare cont își înregistrează cheia publică ML-DSA-87 **o singură dată, în mod explicit**. Nu există înregistrare automată: o cheie publică inclusă într-o tranzacție hibridă ulterioară (de exemplu opțiunea `includePqcPublicKey` a SDK-ului) este transportată în extensie, dar **nu** o înregistrează. Înregistrarea este singura tranzacție pe lane-ul Cosmos care poate fi semnată clasic, astfel încât un cont nou-nouț își poate iniția prima cheie. Fă-o cu `qorechaind` din release (un binar compilat din sursa publică nu poate semna; vezi [Compilare din sursă](/developer-guide/building-from-source)), cu QoreX sau cu `ensurePqcRegistered` din SDK:
+Fiecare cont își înregistrează cheia publică ML-DSA-87 **o singură dată, în mod explicit**. Nu există înregistrare automată: o cheie publică inclusă într-o tranzacție hibridă ulterioară (de exemplu opțiunea `includePqcPublicKey` a SDK-ului) este transportată în extensie, dar **nu** o înregistrează. O **primă** înregistrare este singura tranzacție pe lane-ul Cosmos care poate fi semnată clasic, astfel încât un cont nou-nouț își poate iniția prima cheie; un cont care are deja o cheie trebuie să semneze hibrid orice mesaj de cheie ulterior. Fă-o cu `qorechaind` din release (un binar compilat din sursa publică nu poate semna; vezi [Compilare din sursă](/developer-guide/building-from-source)), cu QoreX sau cu `ensurePqcRegistered` din SDK:
 
 ```bash
 # 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
 qorechaind tx pqc gen-key mypqc
 
-# 2. Register the public key on your account (classical-signed).
-qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+# 2. Register the public key on your account (classical-signed, because the account has no key yet).
+#    --pqc-key mypqc also attaches the optional proof of possession (see below).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid --pqc-key mypqc \
   --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
 
 # 3. Verify.
 qorechaind query pqc account <address>
 ```
 
-Setează `--gas` explicit: cheia publică de 2.592 de octeți poate depăși gas-ul implicit de 200.000 (înregistrările de pe mainnet au folosit aproximativ 220.000 până la 350.000), iar taxa trebuie să fie cel puțin gas × 0,1 uqor, deci `--gas 600000` necesită `--fees 60000uqor` sau mai mult. Forma veche `qorechaind tx pqc register-key <pubkey-hex> hybrid` este echivalentă pentru Dilithium-5. De acum încolo, construiește fiecare tranzacție pe lane-ul Cosmos cu `--generate-only` și semn-o cu `qorechaind tx pqc cosign`. Fișierul cheii este cheia de semnare post-cuantică a contului: oricine îl poate citi poate cosemna pentru cont împreună cu cheia clasică, așa că fă-i backup ca mnemonicului (poate fi rederivat din mnemonic, vezi mai jos).
+Setează `--gas` explicit: cheia publică de 2.592 de octeți poate depăși gas-ul implicit de 200.000 (înregistrările de pe mainnet au folosit aproximativ 220.000 până la 310.000; o înregistrare cu dovadă de posesie poartă încă o semnătură de 4.627 de octeți, adică aproximativ 46.000 de gas în plus), iar taxa trebuie să fie cel puțin gas × 0.1 uqor, deci `--gas 600000` necesită `--fees 60000uqor` sau mai mult. Forma veche `qorechaind tx pqc register-key <pubkey-hex> hybrid` este echivalentă pentru Dilithium-5. De acum încolo, construiește fiecare tranzacție pe lane-ul Cosmos cu `--generate-only` și semn-o cu `qorechaind tx pqc cosign`. Fișierul cheii este cheia de semnare post-cuantică a contului: oricine îl poate citi poate cosemna pentru cont împreună cu cheia clasică, așa că fă-i backup ca mnemonicului (poate fi rederivat din mnemonic, vezi mai jos).
 
 O cheie înregistrată este totodată prima dintre cele două cerințe pentru trimiterea tranzacțiilor EVM; a doua este o [fereastră de autorizare EVM](/developer-guide/evm-development#evm-window) deschisă.
+
+### Ce verifică lanțul la înregistrare (mainnet v3.2.3 și mai nou) {#key-integrity}
+
+De la upgrade-ul v3.2.3 (aplicat pe mainnet la înălțimea 3.662.051, pe 20 octombrie 2026), lanțul verifică cheia în sine, nu doar că are lungimea corectă:
+
+| Regulă | Refuz (codespace `pqc`) |
+| --- | --- |
+| `key_type` trebuie să fie `hybrid` sau `pqc_only`; `classical_only` nu înregistrează nicio cheie post-cuantică și ar lăsa contul în imposibilitatea de a mai semna vreodată | cod 230 |
+| O cheie care nu oferă nicio protecție post-cuantică (o cheie degenerată pentru care nimeni nu are nevoie de un secret) este refuzată, la fel la înregistrare, rotație și migrare | cod 230 |
+| O cheie pe care contul a folosit-o înainte nu poate fi înregistrată din nou și nici nu se poate reveni la ea printr-o rotație (contul ține minte cheile retrase) | cod 232 |
+| Cheia clasică din înregistrare trebuie să fie cheia secp256k1 comprimată a semnatarului însuși (începând cu v3.2.2) | cod 45 |
+| O dovadă de posesie opțională, dacă este prezentă, trebuie să se verifice | cod 231 |
+| Un cont care deține deja o cheie trebuie să semneze hibrid orice mesaj de cheie ulterior (înregistrare, migrare); doar repararea unei înregistrări care nu conține nicio cheie utilizabilă poate fi clasică | cod 234 |
+| Depreciarea sau dezactivarea unui algoritm nu poate lăsa lanțul fără un algoritm de semnare activ | cod 233 |
+
+În plus, începând cu v3.2.3, niciunul dintre mesajele de cheie (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey`, `MsgMigratePQCKey`) nu poate fi trimis în numele unui cont prin `authz`; o tranzacție poate purta cel mult **o** extensie de semnătură hibridă; iar un cont care **nu** are nicio cheie înregistrată nu mai poate atașa o extensie hibridă care nu are față de ce să fie verificată (doar o înregistrare poate trece, exact ca în cazul lipsei oricărei extensii).
+
+### Dovadă de posesie (opțională) {#proof-of-possession}
+
+O înregistrare poate dovedi, de asemenea, că cel care o face deține secretul noii chei. Cheia semnează `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` (id-ul algoritmului este `1` pentru ML-DSA-87; cheia publică este în hex cu litere mici), iar semnătura se pune în câmpul `proof_of_possession` din `MsgRegisterPQCKeyV2`. În CLI, `register-key-v2 ... --pqc-key <name>` o construiește și o atașează. Cu SDK-ul TypeScript 0.9.0, `ensurePqcRegistered` atașează dovada singur după ce rețeaua a aplicat v3.2.3 (iar `signProofOfPossession` / `verifyProofOfPossession` construiesc și verifică una manual); `@qorechain/chain-bridge` 0.2.3 face același lucru când i se dă `cosmosRest`. `@qorechain/wallet-adapter` (0.4.0) și versiunile SDK anterioare lui 0.9.0 nu atașează una, deci o înregistrare făcută prin ele nu poartă niciuna, ceea ce lanțul acceptă în continuare. Lanțul verifică dovada **atunci când este prezentă** și refuză înregistrarea dacă aceasta nu se verifică (cod 231); o înregistrare fără dovadă este în continuare acceptată pe mainnet. Deoarece mesajul numește lanțul, algoritmul, contul și cheia, o dovadă făcută pentru unul dintre ele nu dovedește nimic pentru altul.
+
+Pe testnet (v3.2.4, **doar testnet**), înregistrarea contului raportează dacă o dovadă a fost verificată (`possession_proven`, în `GET /qorechain/pqc/v1/account/{address}`), iar înregistrarea validatorilor de punte cere o dovadă. Niciuna dintre acestea nu este încă pe mainnet; propunerea de guvernanță 13 de pe mainnet ar aplica v3.2.4 la înălțimea 3.742.566.
+
+## Coduri de refuz (codespace `pqc`) {#pqc-codes}
+
+| Cod | Semnificație |
+| --- | --- |
+| 20 | Semnătură hibridă necesară: tranzacția nu poartă nicio extensie PQC (doar o primă înregistrare și un unjail făcut de un cont fără cheie sunt scutite) |
+| 21 | Jumătatea ML-DSA-87 nu s-a verificat, vezi [mai jos](#code-21) |
+| 26, 27, 28 | Lane-ul EVM: nicio fereastră deschisă sau nicio cheie / fereastră epuizată / limite de fereastră invalide, vezi [Dezvoltare EVM](/developer-guide/evm-development#evm-window) |
+| 45 | Cheia clasică dintr-o înregistrare nu este cheia secp256k1 comprimată a semnatarului însuși |
+| 60, 61 | Delegare EIP-7702: niciun consimțământ post-cuantic pentru această delegare / cerere de delegare invalidă |
+| 62, 63 | Un cont delegat nu are nicio fereastră care să acopere acțiunea / o tranzacție Ethereum se execută doar pe lane-ul EVM |
+| 230 | Cheie slabă sau înregistrare `classical_only` |
+| 231 | Dovada de posesie nu se verifică |
+| 232 | Cheia a fost folosită înainte de acest cont |
+| 233 | Nu ar mai rămâne niciun algoritm de semnare activ |
+| 234 | Întreținerea cheii de la un cont care are cheie necesită semnătura hibridă |
 
 ## Depanarea codului `pqc` 21 (`hybrid_verify_failed`) {#code-21}
 
@@ -147,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-După o rotație reușită, cheia nouă semnează (cod 0), iar cheia veche este respinsă (`pqc` cod 21).
+Helperele de rotație din SDK 0.9.0 și din `@qorechain/wallet-adapter` 0.4.0 refuză derivarea legacy ca cheie **nouă** (nu este legată de cont); o cheie legacy poate fi în continuare cheia veche. După o rotație reușită, cheia nouă semnează (cod 0), iar cheia veche este respinsă (`pqc` cod 21). Începând cu v3.2.3, o rotație (ca și o migrare) refuză o cheie nouă care nu oferă nicio protecție post-cuantică (cod 230) și o cheie pe care contul a folosit-o înainte (cod 232) și nu poate fi trimisă prin `authz`.
 
 ## API consecvent
 
@@ -223,7 +262,7 @@ Semnătura clasică secp256k1 este calculată peste sign bytes standard (care **
 Există trei moduri de a produce această semnătură hibridă:
 
 * **CLI-ul** — `qorechaind tx pqc cosign` atașează cosemnătura Dilithium-5 unei tranzacții și o difuzează (după `qorechaind tx pqc gen-key` și înregistrarea cheii). Face parte doar din binarul de release. Vezi [Comenzi de tranzacții](/cli-reference/transaction-commands).
-* **SDK-ul QoreChain** — `buildHybridTx` / `signAndBroadcastHybrid` (transmite `rest` pentru ca forma sign-bytes să fie determinată) fac echivalentul în TypeScript, Python, Go, Rust și Java; înregistrează mai întâi cheia (vezi mai sus). Vezi [Conturi SDK și semnare PQC](/sdk/concepts/accounts-pqc).
+* **SDK-ul QoreChain** — `buildHybridTx` / `signAndBroadcastHybrid` (transmite `rest` pentru ca forma sign-bytes să fie determinată) fac echivalentul în TypeScript, Python, Go, Rust și Java; în TypeScript, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) semnează hibrid fiecare tranzacție; înregistrează mai întâi cheia (vezi mai sus). Vezi [Conturi SDK și semnare PQC](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` direct** — folosește `hybridSignBytes` pentru a încadra sign bytes și `mldsa.sign` pentru a produce semnătura Dilithium-5, atunci când construiești instrumente în afara SDK-ului într-unul dintre cele șase limbaje suportate.
 
 ## Optimizarea amprentei on-chain

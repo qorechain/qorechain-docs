@@ -90,7 +90,8 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 ورموز الرفض موجودة في
 [نافذة تفويض EVM](/getting-started/first-transaction#evm-window).
 
-مع SDK **0.8.2 أو أحدث** يمكنك فتح نافذة من الشيفرة. تسجيل المفتاح
+مع SDK **0.8.2 أو أحدث** يمكنك فتح نافذة من الشيفرة (و**0.9.0** تضيف خيارات
+النطاق أدناه). تسجيل المفتاح
 (مرة واحدة) موصوف في [الأمان الكمومي](/sdk/guides/quantum-safe)؛ ثم يفتح المثال
 أدناه نافذة لحساب eth-native موحَّد (`npm i @cosmjs/stargate`):
 
@@ -157,6 +158,97 @@ try {
 
 تبني `closeEvmWindowMsg` رسالة الإغلاق المقابلة، وتُصدِّر `MAX_EVM_WINDOW_BLOCKS`
 و`MAX_EVM_WINDOW_TXS` الحدود.
+
+### تحديد نطاق نافذة (منذ السلسلة v3.2.3، SDK 0.9.0) {#evm-window-scope}
+
+يمكن تضييق نطاق النافذة عند فتحها: يقبل `nativeOnly` التحويلات البسيطة من QOR
+الأصلي فقط (بلا calldata، وبلا إنشاء عقود، وبلا مستلم يحمل شيفرة، وبلا تفويض
+EIP-7702)، ويقبل `allowedTargets` المعاملات التي يكون مستلمها واحدًا من
+عناوين `0x` المدرجة وعددها 16 كحد أقصى (دون تكرار؛ ويُرفض إنشاء العقود).
+كلاهما حقلان جديدان في الرسالة: تُرفض المعاملة كلها في أي عقدة أقدم من v3.2.3
+عند ضبط أيٍّ منهما، لذا اضبطهما فقط على شبكة طبّقت v3.2.3 (وقد طبّقتها
+الشبكتان العامتان). تقرأ `fetchEvmWindow` كليهما (`nativeOnly` و
+`allowedTargets`؛ وتُقرآن `false` وفارغتين قبل v3.2.3). وللنافذة التي تُفتح
+لإرسال QOR فقط، فضّل `nativeOnly`.
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  openEvmWindowMsg,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on-chain
+const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
+
+await tx.signAndBroadcast(
+  [
+    openEvmWindowMsg({
+      sender: account.address,
+      blocks: 7200,
+      maxTxs: 20,
+      maxValue: "1000000000", // uqor: value PLUS the maximum fee of each transaction
+      nativeOnly: true,
+      // or: allowedTargets: ["0x…", "0x…"],
+    }),
+  ],
+  "auto",
+);
+```
+
+### موافقة EIP-7702 (منذ السلسلة v3.2.2، SDK 0.9.0) {#evm-delegation-consent}
+
+لا تُقبل معاملة من النوع 4 (EIP-7702) إلا بعد أن يمنح كل حساب يسري تفويضه موافقة
+ما بعد كمّية على ذلك المفوَّض بالتحديد، عبر `MsgAuthorizeEVMDelegation`
+موقَّعة توقيعًا هجينًا. تُستهلك الموافقة بالمعاملة التي تثبّت التفويض، وتنتهي
+بعد عدد الكتل `blocks` الذي تضبطه (من 1 إلى 17,280)؛ والعنوان الصفري كمفوَّض يعني
+الموافقة على المسح. يبني الـ SDK الرسائل ويقرأ الموافقة، بما في ذلك الـ nonce
+الذي يجب أن تحمله مجموعة التفويض (authorisation tuple):
+
+```ts
+import {
+  authorizeEvmDelegationMsg,
+  clearEvmDelegationMsg,
+  fetchEvmDelegationConsent,
+  evmDelegationTupleNonce,
+} from "@qorechain/sdk";
+
+// 1) Consent to one delegate (hybrid-signed Native-lane message, `tx` as above).
+await tx.signAndBroadcast(
+  [authorizeEvmDelegationMsg({ sender: account.address, delegate: "0xDelegate…", blocks: 600 })],
+  "auto",
+);
+
+// 2) Read the consent: the tuple's nonce is the account's EVM nonce for a
+//    sponsored transaction, and that nonce + 1 when the account sends it itself.
+const consent = await fetchEvmDelegationConsent({ rest: "https://api.qore.host", address: account.address });
+const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
+
+// 3) Sign the authorisation tuple with `tupleNonce` and send the type-4
+//    transaction (the sender still needs an open window; a sponsor pays from its own).
+
+// Remove an installed delegation directly, without any EVM transaction:
+// await tx.signAndBroadcast([clearEvmDelegationMsg(account.address)], "auto");
+```
+
+تُرجع `classifyEvmDelegationRejection(err)` القيمة `"no-consent"` أو `"invalid"`
+عندما يرفض مسار EVM تفويضًا. يتطلب استعلام الموافقة السلسلة v3.2.2 أو أحدث.
+القواعد على مستوى السلسلة موجودة في
+[تفويضات EIP-7702](/architecture/post-quantum-security#eip-7702)؛ وصيغ سطر
+الأوامر هي `qorechaind tx pqc authorize-evm-delegation` و`clear-evm-delegation`.
+
+الإصدارات السابقة لـ 0.9.0 تبني النافذة غير المقيَّدة النطاق فقط (وما زالت
+النافذة غير المقيَّدة تعمل على الشبكتين) وليس فيها أي مُنشئ لرسائل الموافقة؛
+استخدم هناك صيغ سطر الأوامر الواردة في
+[نافذة تفويض EVM](/getting-started/first-transaction#evm-window).
 
 ## ما قبل التجميع (Precompiles)
 

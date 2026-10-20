@@ -18,7 +18,7 @@ QoreChain はプログラムからのアクセス向けに、3つの主要なイ
 すべての REST エンドポイントは JSON を返します。gRPC エンドポイントは Protocol Buffers を使用し、任意の gRPC クライアントで利用できます。RPC インターフェースはコンセンサスレベルのクエリとトランザクションのブロードキャストを提供します。
 
 :::note
-これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月29日より稼働中）と **`qorechain-diana`** テストネットの両方で利用できます。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
+これらのインターフェースは、**`qorechain-vladi`** メインネット（2026年6月7日より稼働中、ノードリリース **v3.2.3**）と **`qorechain-diana`** テストネット（ノードリリース **v3.2.4**）の両方で利用できます。以下のベース URL はローカルで実行中のノードを前提としています。公開ホスト型エンドポイントは `https://api.qore.host` / `https://api-testnet.qore.host`（REST）と `https://rpc.qore.host` / `https://rpc-testnet.qore.host`（RPC）で、[ネットワーク](/appendix/networks#public-endpoints)に掲載されています。**公開の gRPC エンドポイントはありません**。ホスト名 `grpc.qore.host` と `grpc-testnet.qore.host` は存在しないため、gRPC が必要な場合は自分のノードを実行してください。
 :::
 
 ## ベース URL
@@ -35,7 +35,7 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 
 存在しないルートは、HTTP `501` と `{"code":12,"message":"Not Implemented"}` で応答します。これはルートが提供されていないことを意味し、クエリの結果が空だったという意味ではありません。`/qorechain/` プレフィックスのない短縮パス（例: `/bridge/v1/chains` や `/pqc/v1/params`）は提供**されません**。存在するルートで未知のレコードを指定すると、HTTP `404` と `{"code":5,"message":"... not found"}` が返ります。
 
-以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。
+以下の例は公開メインネットのホストを使用しています。テストネットでは `https://api-testnet.qore.host` に置き換えてください。サンプルの値は 2026年10月20日ごろ（メインネット v3.2.3、テストネット v3.2.4）に実際のネットワークから読み取ったもので、時間とともに変化します。レスポンスの形を示すものとしてご利用ください。テストネットはより新しい v3.2.4 リリースを実行しているため、メインネットにはないルートやフィールドがいくつか提供されています。これらは以下で**テストネットのみ**と表記しており、メインネットでは `501` で応答します。
 
 ## PQC モジュール {#pqc-module}
 
@@ -43,8 +43,10 @@ QoreChain 固有のモジュールは `/qorechain/<module>/v1/...` プレフィ�
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | アカウントのポスト量子鍵の登録状況（`found`、鍵タイプ、アルゴリズム） |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | アカウントの EVM レーン認可ウィンドウと、その残り          |
+| GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | アカウントの EIP-7702 委任の同意、現在の委任、EVM ノンス（v3.2.2 以降） |
+| GET    | `/qorechain/pqc/v1/protocol_features`    | **テストネットのみ（v3.2.4）。** バイナリが認識しているすべてのプロトコル機能と、`enabled`、`known`、`staged` フラグ |
 
-パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/params` や `/stats` のルートはありません。
+パスのセグメントは単数形の `account` である点に注意してください。`/qorechain/pqc/v1/params` や `/stats` のルートはありません（これらには `qorechaind query pqc params` と `stats` を使用してください）。
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -62,10 +64,13 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
     "key_type": "hybrid",
     "created_at_height": "209015",
     "migration_public_key": null,
-    "migration_algorithm_id": 0
+    "migration_algorithm_id": 0,
+    "classical_key_source": "auth_account"
   }
 }
 ```
+
+`classical_key_source` は `ecdsa_pubkey` の出所を示します。`stored`（登録時に渡された鍵）、`auth_account`（何も保存されていないため、アカウント自身のオンチェーン公開鍵）、または `none` です。テストネット（v3.2.4、**テストネットのみ**）では、レコードに `"possession_proven": false` も含まれます。これは、検証済みの[所有証明](/developer-guide/post-quantum-signing#proof-of-possession)とともに鍵が登録されると `true` になります。メインネットはまだこのフィールドを報告しません。
 
 鍵が登録されていないアカウントは `{"found": false, "account": null}` を返します。アカウントが送信前に鍵を登録する必要があるかどうかは、`found` で判断してください。
 
@@ -85,11 +90,31 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
   "used_value": "",
   "remaining_blocks": "0",
   "remaining_txs": "0",
-  "remaining_value": ""
+  "remaining_value": "",
+  "native_only": false,
+  "allowed_targets": []
 }
 ```
 
-このルートは、ウィンドウのないアドレスに対しても失敗せず、`found: false` を返します。v3.2.0 以降、EVM レーンは、登録済みの PQC 鍵を持ち**かつ**ウィンドウが開いているアカウントからのトランザクションのみを受け付けます。`live` は、現在の高さでウィンドウがあと1件以上のトランザクションを受け付ける間は `true` です。`remaining_blocks`、`remaining_txs`、`remaining_value` は、どの上限が最も使い果たされそうかを示します。値は文字列として返される `uqor` 単位の整数です。EVM レーンの仕組みについては [EVM 開発](/developer-guide/evm-development)を参照してください。
+このルートは、ウィンドウのないアドレスに対しても失敗せず、`found: false` を返します。v3.2.0 以降、EVM レーンは、登録済みの PQC 鍵を持ち**かつ**ウィンドウが開いているアカウントからのトランザクションのみを受け付けます。`live` は、現在の高さでウィンドウがあと1件以上のトランザクションを受け付ける間は `true` です。`remaining_blocks`、`remaining_txs`、`remaining_value` は、どの上限が最も使い果たされそうかを示します。値は文字列として返される `uqor` 単位の整数です。v3.2.3 以降、ウィンドウにはスコープを持たせることができます。`native_only`（通常の QOR 送金のみ）と `allowed_targets`（列挙された受取先のみ）です。EVM レーンの仕組みについては [EVM 開発](/developer-guide/evm-development#evm-window)を参照してください。
+
+```bash
+curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...
+```
+
+```json
+{
+  "found": false,
+  "live": false,
+  "delegate": "",
+  "granted_height": "0",
+  "expiry_height": "0",
+  "current_delegate": "",
+  "nonce": "0"
+}
+```
+
+アカウントの EIP-7702 委任は、そのアカウント自身のポスト量子同意（`MsgAuthorizeEVMDelegation`）がある場合にのみ有効になります。`found` と `live` は、`delegate` に対する記録済みでまだ使用可能な同意を報告します。`current_delegate` はアカウントが現在設定している委任、`nonce` はその EVM ノンスです。
 
 ## Bridge モジュール {#bridge-module}
 
@@ -140,7 +165,7 @@ Multilayer モジュールの完全なクエリサービスは `/qorechain/multi
 | GET    | `/qorechain/multilayer/v1/anchors/{layer_id}`   | レイヤーのステートアンカー履歴                  |
 | GET    | `/qorechain/multilayer/v1/routing-stats`        | レイヤー間のトランザクションルーティング統計      |
 
-`StateAnchorView` には `layer_id`、`layer_height`、`state_root`、`validator_set_hash`、`main_chain_height`、`anchored_at`、`pqc_aggregate_signature`、`transaction_count`、`compressed_state_proof` が含まれます。署名対象の正規化メッセージは `layer_id || layer_height || state_root || validator_set_hash` であり、レイヤー作成者の登録済み PQC 鍵に対して検証されます。アンカーのないレイヤーは、`anchor/{layer_id}` からは HTTP `404`（`no anchor for layer ...`）を返し、`anchors/{layer_id}` からは空のリスト（`{"anchors": []}`）を返します。
+`StateAnchorView` には `layer_id`、`layer_height`、`state_root`、`validator_set_hash`、`main_chain_height`、`anchored_at`、`pqc_aggregate_signature`、`transaction_count`、`compressed_state_proof` が含まれます。v3.2.2 以降、署名対象のメッセージは **v2 アンカーメッセージ**です。ドメインタグ `qorechain-multilayer-anchor-v2` に続いて、チェーン ID、レイヤー ID、レイヤー高、ステートルート、バリデーターセットのハッシュ、トランザクション数、圧縮ステート証明が並び、可変長の各フィールドには 8 バイトのビッグエンディアンの長さが前置されます（以前の v1 メッセージにはチェーン ID も長さの前置もなかったため、署名がすべてのチェーンで有効でした）。これはレイヤー作成者の登録済み PQC 鍵に対して検証されます。`qorechaind query rdk anchor-sign-bytes` は、ロールアップバッチに対するこのバイト列を出力します。アンカーのないレイヤーは、`anchor/{layer_id}` からは HTTP `404`（`no anchor for layer ...`）を返し、`anchors/{layer_id}` からは空のリスト（`{"anchors": []}`）を返します。
 
 ```bash
 curl -s https://api.qore.host/qorechain/multilayer/v1/params
@@ -175,7 +200,7 @@ Burn モジュールの読み取り専用ステートは `/qorechain/burn/v1/...
 | GET    | `/qorechain/burn/v1/stats`            | 累積 Burn 総量（ソース別内訳）                     |
 | GET    | `/qorechain/burn/v1/records`          | 最近の Burn レコードを一覧表示                                   |
 | GET    | `/qorechain/burn/v1/milestone`        | Burn マイルストーンの進捗（累積トランザクション数）         |
-| GET    | `/qorechain/burn/v1/stranded_rewards` | v3.2.0 アップグレードで取り分けられ、まだ解放されていないステーカーの取り分 |
+| GET    | `/qorechain/burn/v1/stranded_rewards` | 取り分けられ、まだガバナンスによって解放されていないステーカーの取り分 |
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stats
@@ -184,30 +209,30 @@ curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```json
 {
   "stats": {
-    "total_burned": "31560093291491",
+    "total_burned": "31574710367921",
     "burns_by_source": {
-      "gas_fee": "31560093291491",
-      "failed_tx": "0",
+      "gas_fee": "31574710282421",
+      "failed_tx": "85500",
       "milestone": "0",
       "amm": "0",
       "xqore_penalty": "0"
     },
-    "last_burn_height": "3506945"
+    "last_burn_height": "3666968"
   }
 }
 ```
 
-実際のレスポンスにはすべての Burn ソース（`ai_service`、`amm`、`auto_buyback`、`bridge_fee`、`contract_create`、`failed_tx`、`gas_fee`、`milestone`、`rollup_create`、`tge`、`treasury_buyback`、`xqore_penalty`）が列挙されます。サンプルは一部を省略しています。金額は `uqor` 単位です。
+実際のレスポンスにはすべての Burn ソース（`ai_service`、`amm`、`auto_buyback`、`bridge_fee`、`contract_create`、`failed_tx`、`gas_fee`、`milestone`、`rollup_create`、`tge`、`treasury_buyback`、`xqore_penalty`）が列挙されます。サンプルは一部を省略しています。金額は `uqor` 単位です。`failed_tx` は v3.2.2 アップグレード以降ゼロではありません。このアップグレードで、失敗したトランザクションの Burn が実際に課金された手数料に対して適用されるようになりました。v3.2.3 以降、古い Burn ごとの `records` は削除されるため、`records` は全履歴ではなく最近の範囲です。`stats` の合計は累積値です。
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
 ```json
-{ "reserved": "6693045921330", "released": "0", "initialized": true, "snapshot_height": "2981742" }
+{ "reserved": "3807496785528", "released": "6693045921330", "initialized": true, "snapshot_height": "2981742" }
 ```
 
-`reserved` は解放されずに残っている分、`released` はガバナンスがすでに移動した分、`snapshot_height` は準備金を記録した v3.2.0 アップグレードの高さです。[トークノミクス](/architecture/tokenomics)を参照してください。
+`reserved` は解放されずに残っている分、`released` はガバナンスがすでに移動した分、`snapshot_height` は準備金を記録した v3.2.0 アップグレードの高さです。上記の値は本稿執筆時点のものです。ガバナンスは最初の金額（6,693,045.921330 QOR）を 2026年10月19日に解放し、v3.2.3 アップグレードは残りの準備金をその時点の高さで再計算しました（3,807,496.785528 QOR）。再計算された金額を解放するための次のガバナンス提案は、本稿執筆時点ではまだ投票期間中でしたので、最新の値を読み取ってください。[トークノミクス](/architecture/tokenomics)を参照してください。
 
 ## Abstract Account モジュール {#abstract-account-module}
 
@@ -218,7 +243,8 @@ Abstract Account のクエリサービスは `/qorechain/abstractaccount/v1/...`
 | GET    | `/qorechain/abstractaccount/v1/config`                | モジュール設定（機能プローブ: `enabled`）        |
 | GET    | `/qorechain/abstractaccount/v1/accounts`              | アブストラクトアカウントを一覧表示                                |
 | GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | 指定アドレスのアブストラクトアカウントの状態（なければ `404`）                  |
-| GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`、`permissions`、`msg_permissions`、`key_management_msgs` |
+| GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`、`permissions`、`msg_permissions`、`key_management_msgs`、`lane_rules` |
+| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **テストネットのみ（v3.2.4）。** リンク済みオーセンティケーター鍵が次に署名すべきシーケンス（`nonce`、`linked`） |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -280,8 +306,23 @@ curl -s https://api.qore.host/qorechain/license/v1/holders/lightnode_operator
 ```
 
 ```json
-{ "licenses": [] }
+{
+  "licenses": [
+    {
+      "grantee": "qor1...",
+      "feature_id": "lightnode_operator",
+      "expires_at": "0",
+      "granted_at": "3536305",
+      "granted_by": "qor1...",
+      "suspended": false,
+      "metadata": "",
+      "active": true
+    }
+  ]
+}
 ```
+
+`expires_at: "0"` は、付与の有効期限がないことを意味します。v3.2.3 以降、ガバナンスはこれらのライセンスを付与するライセンス権限者を置き換えることができます（`MsgUpdateAuthority`）。すでに行われた付与はそのまま残ります。
 
 ## Light Node モジュール {#light-node-module}
 
@@ -292,7 +333,7 @@ curl -s https://api.qore.host/qorechain/license/v1/holders/lightnode_operator
 | GET    | `/qorechain/lightnode/v1/nodes`               | 登録済みのライトノードを一覧表示                                       |
 | GET    | `/qorechain/lightnode/v1/node/{address}`      | 1つのノード（未登録の場合は `{"node": null, "found": false}`）     |
 | GET    | `/qorechain/lightnode/v1/rewards/{address}`   | オペレーターアドレスに蓄積された報酬（`accumulated_rewards`） |
-| GET    | `/qorechain/lightnode/v1/reward_pool`         | 報酬プールの会計（`balance`、`reserved`、`outstanding`、`payable`、`distributable`、`max_reward_per_block_per_node`、`initialized`） |
+| GET    | `/qorechain/lightnode/v1/reward_pool`         | 報酬プールの会計（`balance`、`reserved`、`outstanding`、`payable`、`distributable`、`max_reward_per_block_per_node`、`max_reward_per_month_per_node`、`initialized`） |
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/params
@@ -316,39 +357,134 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 
 ```json
 {
-  "balance": "<uqor>",
-  "reserved": "<uqor>",
+  "balance": "487231800",
+  "reserved": "487231800",
   "outstanding": "0",
   "payable": "0",
   "max_reward_per_block_per_node": "1713",
   "distributable": "0",
-  "initialized": true
+  "initialized": true,
+  "max_reward_per_month_per_node": "2000000000"
 }
 ```
 
-`reserved` はプールのうち留保されていて、ガバナンス投票でしか動かせない部分です。`max_reward_per_block_per_node`（`uqor` 単位）は、チェーンが付与する報酬の、ノードごと・ブロックごとの上限です。上限は約束された金額ではありません。`balance` と `reserved` は、ここではプレースホルダーとして表示しています。
+`reserved` はプールのうち留保されていて、ガバナンス投票でしか動かせない部分です。ノードごとの上限は `uqor` 単位です。`max_reward_per_block_per_node` はブロックごとの上限で、v3.2.3 以降は `max_reward_per_month_per_node`（`2000000000` uqor = 30 日あたり 2,000 QOR）が月ごとの上限となり、ブロック時間と稼働率に応じて按分されるため、ブロックの生成速度に左右されなくなりました。上限は約束された金額ではありません。サンプルは、ガバナンスが以前の準備金を解放した後（提案 8、2026年10月19日）の、本稿執筆時点の実際のメインネットのレスポンスです。テストネット（v3.2.4、**テストネットのみ**）では、レスポンスに `monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も含まれ、ノードの上限はそのノード自身の登録時から始まります。
 
-:::note 登録は開放されていません
-両ネットワークで `stats` は `"total_registered": "0"` を報告し、`nodes` は空です。また、チェーンは `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
+:::note 登録にはライセンスが必要です
+チェーンは、有効な `lightnode_operator` ライセンスの付与がないライトノード登録を拒否します（`holders/lightnode_operator` で付与を一覧できます）。本稿執筆時点では、`stats` はメインネットで `"total_registered": "0"`、テストネットで登録済みノード1件を報告しています。プログラムの状況については[ライトノード](/light-node/overview)を参照してください。
 :::
+
+## RDK モジュール {#rdk-module}
+
+Rollup Development Kit のクエリサービスは `/qorechain/rdk/v1/...` 配下の REST として公開されています（チェーンバージョン **v3.2.2** 以降。v3.2.0 と v3.2.1 では gRPC のみでした）。
+
+| メソッド | エンドポイント                                              | 説明                                          |
+| ------ | ----------------------------------------------------- | ---------------------------------------------------- |
+| GET    | `/qorechain/rdk/v1/params`                            | モジュールパラメータ                                    |
+| GET    | `/qorechain/rdk/v1/rollups`                           | ロールアップを一覧表示                                        |
+| GET    | `/qorechain/rdk/v1/rollup/{rollup_id}`                | 1つのロールアップ（不明な場合は `404`）                        |
+| GET    | `/qorechain/rdk/v1/latest_batch/{rollup_id}`          | ロールアップの最新の決済バッチ                 |
+| GET    | `/qorechain/rdk/v1/batch/{rollup_id}/{batch_index}`   | 1つの決済バッチ                                     |
+| GET    | `/qorechain/rdk/v1/batches/{rollup_id}`               | ロールアップのバッチをインデックス順に（ページネーション付き）      |
+| GET    | `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`     | 1つのデータアベイラビリティ blob レコード                    |
+
+```bash
+curl -s https://api.qore.host/qorechain/rdk/v1/params
+```
+
+```json
+{
+  "params": {
+    "max_rollups": 100,
+    "min_stake_for_rollup": "10000000000",
+    "rollup_creation_burn_rate": "0.01",
+    "default_challenge_window": "604800",
+    "max_da_blob_size": "2097152",
+    "blob_retention_blocks": "432000",
+    "max_batches_per_block": 10
+  }
+}
+```
+
+本稿執筆時点では、両ネットワークとも `rollups` は空のリストであるため、ロールアップごとのルートは `404` で応答します（例: `{"code":5,"message":"rollup foo not found"}`）。`default_challenge_window` は秒単位で表されます（`604800`）。テストネット（v3.2.4、**テストネットのみ**）では、オプティミスティックのチャレンジウィンドウはブロック時間で計測されます。
+
+## Inflation モジュール {#inflation-module}
+
+発行の設定と進捗は `/qorechain/inflation/v1/...` 配下の REST として公開されています（チェーンバージョン **v3.2.2** 以降）。CLI コマンドでは利用できません。
+
+| メソッド | エンドポイント                              | 説明                                                                 |
+| ------ | ------------------------------------- | --------------------------------------------------------------------------- |
+| GET    | `/qorechain/inflation/v1/params`      | 発行パラメータ: `emission_mode`、`fixed_epoch_emission`、`max_total_emission`、`epoch_length`、`enabled` |
+| GET    | `/qorechain/inflation/v1/epoch_info`  | 進捗: `current_epoch`、`block_start`、`next_epoch_height`、`total_minted`、`max_total_emission`、`remaining_emission` |
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
+```
+
+メインネットでは、`emission_mode` は `"fixed"`、`fixed_epoch_emission` は `"86000000000"`（1エポックあたり 86,000 QOR）、`epoch_length` は `"43200"` ブロック、`max_total_emission` は `"590000000000000"`（590,000,000 QOR、累積の上限）です。これらはガバナンス提案 10（2026年10月19日可決）で設定されました。新しい固定額を使用する最初のエポックはブロック 3,672,000 から始まり、`epoch_info` は進行中のエポックとこれまでにミントされた量を示します。レスポンス内の `schedule` リストは元の `schedule` モードに属するもので、固定モードのエポックがミントする量を表すものではありません。すべての金額は `uqor` 単位です。テストネットは、それとは異なる独自の値を報告します。テストネットのみ（v3.2.4、**テストネットのみ**）に、3つ目のモード `target_apy` があり、`target_apy_bps` フィールドを持ちます。これはステーキングティアモジュールのボーナスに使用されます。メインネットにはこのモードはありません。
+
+## Gas Abstraction モジュール {#gas-abstraction-module}
+
+| メソッド | エンドポイント                                              | 説明                                                                 |
+| ------ | ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| GET    | `/qorechain/gasabstraction/v1/config`                 | 受け入れ可能な手数料トークン、プレミアム、ブロックごとの変換上限                      |
+| GET    | `/qorechain/gasabstraction/v1/conversion_rate?denom=` | 手数料トークン1単位が `uqor` でいくらの価値か、および `usable` かどうか |
+| GET    | `/qorechain/gasabstraction/v1/float`                  | 変換フロートのアドレス、残高、このブロックでの使用量             |
+
+```bash
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
+```
+
+```json
+{
+  "config": {
+    "enabled": true,
+    "native_denom": "uqor",
+    "accepted_tokens": [
+      { "denom": "uqor", "conversion_rate": "1.0", "price_source": "", "rate_expiry_height": "0",
+        "pool_id": "0", "min_liquidity": "", "max_deviation_bps": 0 }
+    ],
+    "premium_bps": 300,
+    "max_tip_multiplier": 3,
+    "float_min": "0",
+    "block_conversion_cap": "0"
+  }
+}
+```
+
+受け入れリストには、両ネットワークともネイティブの `uqor` のみが含まれているため、手数料は `uqor` で支払われ、変換は行われません。ガバナンスはトークンを追加します（プール、最小流動性、時間加重価格とスポット価格の最大乖離とともに）。そのようなトークンで支払われた手数料は QOR フロートを通じて変換され、AMM プールを通じて補充されます。`?denom=` なしの `conversion_rate` は `500`（`denom is required`）で応答します。
+
+## Staking Tiers モジュール（テストネットのみ） {#stakingtier-module}
+
+:::note テストネットのみ
+Staking Tiers モジュールは **v3.2.4** の一部で、テストネットでのみ稼働しています。メインネットではこれらのルートは `501` で応答し、メインネットの v3.2.4 へのアップグレードは現時点では提案されているだけです（ガバナンス提案 13、ブロック高 3,742,566）。
+:::
+
+| メソッド | エンドポイント                                  | 説明                                                        |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------ |
+| GET    | `/qorechain/stakingtier/v1/params`        | ロックティア、最小ロック額、早期アンロックのペナルティ      |
+| GET    | `/qorechain/stakingtier/v1/locks/{holder}` | 保有者のロック、各ロックが現在どれだけ発生しているか、請求可能な額 |
+| GET    | `/qorechain/stakingtier/v1/pool`          | ボーナスプール: 残高、未払い額、余剰、直近の決済 |
+
+`params` は3つのロック期間（3、6、12 か月）とそのパラメータ、および `min_lock_amount`（`"10000000"` uqor、10 QOR）を列挙します。ロックは `tx stakingtier lock` で行います（[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照）。
 
 ## gRPC 専用モジュール {#grpc-only-modules}
 
 これらのモジュールには gRPC の `Query` サービスはありますが、**REST ルートはありません**。サービス名は `qorechain.<module>.v1.Query` の形式です。
 
-| モジュール        | gRPC クエリメソッド（チェーンバージョン v3.2.0）              |
+| モジュール        | gRPC クエリメソッド（チェーンバージョン v3.2.3）              |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
 | `reputation`  | `Params`                                               |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
-| `rdk`         | `Params`, `Rollup`, `Rollups`, `Batch`, `LatestBatch`  |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-自分のノードに対して `grpcurl` を使用するか、[CLI クエリコマンド](/cli-reference/query-commands)を使用してください。特に `rdk` のクエリは、メインネットでは REST では利用できません（`/qorechain/rdk/v1/...` は `501` で応答します）。そのため、REST ベースのロールアップリーダーは現在メインネットに対して動作しません。
+自分のノードに対して `grpcurl` を使用するか、[CLI クエリコマンド](/cli-reference/query-commands)を使用してください。`rdk` のクエリは REST でも利用できます（[RDK モジュール](#rdk-module)を参照）。v3.2.2 より前は gRPC のみでした。
 
-xQORE、インフレーション、BTC リステーキング（Babylon）、FairBlock、ガスアブストラクションの各モジュールには、現在のメインネットリリースではクエリサービス自体がなく、REST でも gRPC でも利用できません。
+xQORE、BTC リステーキング（Babylon）、FairBlock の各モジュールには、現在のリリースではクエリサービス自体がなく、REST でも gRPC でも利用できません。v3.2.2 より前はクエリサービスがなかったインフレーションモジュールとガスアブストラクションモジュールは、REST で提供されています（[Inflation モジュール](#inflation-module)と [Gas Abstraction モジュール](#gas-abstraction-module)を参照）。
 
 ## 標準ルート {#standard-routes}
 
@@ -363,7 +499,8 @@ xQORE、インフレーション、BTC リステーキング（Babylon）、Fair
 | `/cosmos/distribution/v1beta1/params`                 | ディストリビューションパラメータ                       |
 | `/cosmos/gov/v1/params/voting`                        | ガバナンスパラメータ                       |
 | `/cosmos/slashing/v1beta1/params`                     | スラッシングパラメータ                       |
-| `/cosmos/upgrade/v1beta1/current_plan`, `/applied_plan/{name}` | 保留中 / 適用済みのアップグレード          |
+| `/cosmos/upgrade/v1beta1/current_plan`, `/applied_plan/{name}` | 保留中 / 適用済みのアップグレード（メインネットでは `applied_plan/v3.2.3` が `{"height":"3662051"}` を返します） |
+| `/cosmos/circuit/v1/disable_list`                     | ネットワーク全体で無効化されたメッセージタイプ       |
 | `/cosmos/base/node/v1beta1/config`                    | ノードの最低ガス価格（両ネットワークで `0.1uqor`） |
 | `/cosmos/base/tendermint/v1beta1/blocks/latest`       | 最新ブロック                                  |
 | `/cosmos/tx/v1beta1/txs`, `/txs/{hash}`, `/txs/block/{height}` | トランザクションの検索 / 参照 / ブロック別 |
@@ -388,7 +525,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` には `Account` と `EVMWindow` の2つのメソッドがあります。`Params` メソッドはありません。
+`qorechain.pqc.v1.Query` にはメインネットで `Account`、`EVMWindow`、`EVMDelegationConsent` の3つのメソッドがあり、テストネットのみ（v3.2.4）で4つ目の `ProtocolFeatures` があります。`Params` メソッドはありません。
 
 ## 認証
 

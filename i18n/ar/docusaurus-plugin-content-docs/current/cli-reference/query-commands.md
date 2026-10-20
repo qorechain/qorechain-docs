@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-تُنفَّذ الاستعلامات على العقدة التي يشير إليها الخيار `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** للحصول على بيانات حية (مثل `--node https://rpc.qore.host:443`)، أو نقطة نهاية شبكة الاختبار **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) للاختبار. القيمة الافتراضية `tcp://localhost:26657` تستهدف عقدة تشغّلها بنفسك. تشغّل الشبكة الرئيسية إصدار العقدة v3.2.1 وشبكة الاختبار v3.2.2؛ وقد تقدّم شبكة الاختبار بعض المسارات الإضافية التي لا تملكها الشبكة الرئيسية بعد، لذا قد يُرجع استعلام يعمل هناك `Not Implemented` على الشبكة الرئيسية.
+تُنفَّذ الاستعلامات على العقدة التي يشير إليها الخيار `--node`. استخدم نقطة نهاية RPC للشبكة الرئيسية **`qorechain-vladi`** للحصول على بيانات حية (مثل `--node https://rpc.qore.host:443`)، أو نقطة نهاية شبكة الاختبار **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) للاختبار. القيمة الافتراضية `tcp://localhost:26657` تستهدف عقدة تشغّلها بنفسك. تشغّل الشبكة الرئيسية إصدار العقدة v3.2.3 وشبكة الاختبار v3.2.4؛ وتقدّم شبكة الاختبار بعض المسارات والأوامر الإضافية التي لا تملكها الشبكة الرئيسية (موسومة بعبارة **شبكة الاختبار فقط** أدناه)، لذا قد يُرجع استعلام يعمل هناك `Not Implemented` على الشبكة الرئيسية. جرى التحقق من الأوامر في هذه الصفحة مقابل الملف الثنائي للإصدار v3.2.3، مُشغَّلًا على `https://rpc.qore.host:443`.
 :::
 
 تنطبق الرايات (Flags) الشائعة على كل أمر فرعي من أوامر `query`:
@@ -110,11 +110,15 @@ qorechaind query pqc params
 qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
 qorechaind query pqc evm-window <address>
+qorechaind query pqc evm-delegation-consent <address>
 ```
 
 - يقبل `algorithm` اسم خوارزمية (`dilithium5` أو `mlkem1024`) أو معرّفاً رقمياً.
 - يقبل `migration` **معرّف خوارزمية** (مثل `1`)، وليس عنواناً، ويُبلغ عن `No active migration` عندما لا توجد عملية ترحيل جارية.
-- يعرض `evm-window` ما إذا كان للعنوان نافذة تفويض مفتوحة على مسار EVM وكم كتلة ومعاملة وقيمة متبقية (`found` و`live` و`remaining_blocks` و`remaining_txs` و`remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- يُبلغ `account` عن المفتاح المسجَّل. إلى جانب المفتاح و`key_type` و`algorithm_name`، يحتوي السجل على `classical_key_source` (`stored` أو `auth_account` أو `none`: أي مصدر المفتاح العام الكلاسيكي). وعلى شبكة الاختبار (v3.2.4، **شبكة الاختبار فقط**) يحمل أيضاً `possession_proven`، وتكون قيمتها `true` عندما سُجّل المفتاح بإثبات حيازة جرى التحقق منه.
+- يعرض `evm-window` ما إذا كان للعنوان نافذة تفويض مفتوحة على مسار EVM وكم كتلة ومعاملة وقيمة متبقية (`found` و`live` و`remaining_blocks` و`remaining_txs` و`remaining_value`)، إضافةً إلى نطاق النافذة (`native_only` و`allowed_targets`؛ منذ v3.2.3 على الشبكة الرئيسية). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- يعرض `evm-delegation-consent` موافقة العنوان على التفويض بموجب EIP-7702 (`found` و`live` و`delegate` و`granted_height` و`expiry_height`)، وتفويضه الحالي، وقيمة nonce الخاصة به على EVM. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+- يُبلغ `params` و`hybrid-mode` عن `hybrid_signature_mode` (القيمة `2` = مطلوب على الشبكتين) وعن `allow_classical_fallback` (`false`).
 
 ---
 
@@ -130,13 +134,22 @@ curl -s https://api.qore.host/qorechain/burn/v1/milestone
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-يُبلغ `stranded_rewards` عن حصة المخزِّنين (stakers) التي أُودعت في وحدة التوزيع دون أن تغطي أي مطالبة، كما سُجّلت عند الترقية إلى v3.2.0 (`reserved` و`released` و`snapshot_height`). ولا يمكن الإفراج عنها إلا بتصويت حوكمة.
+يُبلغ `stranded_rewards` عن حصة المخزِّنين (stakers) التي أُودعت في وحدة التوزيع دون أن تغطي أي مطالبة (`reserved` و`released` و`snapshot_height`). ولا يمكن الإفراج عنها إلا بتصويت حوكمة. سُجّل الاحتياطي أول مرة عند الترقية إلى v3.2.0 وأُعيد حسابه عند ارتفاع الترقية إلى v3.2.3، لذا اقرأ القيم الحية بدلاً من رقم مذكور في موضع آخر.
+
+يقسّم `stats` الحرق التراكمي بحسب المصدر، بما في ذلك `failed_tx` التي ظلّت قيمتها غير صفرية منذ الترقية إلى v3.2.2.
 
 ---
 
 ## mint وinflation
 
-يقرأ `qorechaind query mint params|inflation|annual-provisions` وحدة mint القياسية التي معدّلها `0` على الشبكتين؛ وهو **لا** يُبلغ عن جدول الإصدار الخاص بالبروتوكول. لا يوجد أمر `query inflation`.
+يقرأ `qorechaind query mint params|inflation|annual-provisions` وحدة mint القياسية التي معدّلها `0` على الشبكتين؛ وهو **لا** يُبلغ عن جدول الإصدار الخاص بالبروتوكول. لا يوجد أمر `query inflation` في سطر الأوامر. أما إعدادات الإصدار الخاصة بالبروتوكول وتقدّمه فتُقدَّم عبر REST منذ v3.2.2:
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mode, fixed_epoch_emission, max_total_emission, epoch_length
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
+```
+
+تُبلغ هذه الاستعلامات على الشبكة الرئيسية عن `emission_mode: "fixed"`، وإصدار ثابت قدره 86,000 QOR لكل حقبة من 43,200 كتلة، وسقف تراكمي قدره 590,000,000 QOR (مقترح الحوكمة 10، أُقرّ في 19 أكتوبر 2026؛ وتبدأ أول حقبة بالمبلغ الجديد عند الكتلة 3,672,000). المبالغ بوحدة `uqor`. وما زالت شبكة الاختبار تُبلغ عن قيمها الخاصة المختلفة؛ ويضيف إصدار v3.2.4 على شبكة الاختبار وضع إصدار آخر لا تملكه الشبكة الرئيسية (**شبكة الاختبار فقط**).
 
 ---
 
@@ -171,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-يعرض `reward-pool` كيف ينقسم رصيد مكافآت الوحدة إلى `reserved` و`outstanding` و`payable` و`distributable`.
+يعرض `reward-pool` كيف ينقسم رصيد مكافآت الوحدة إلى `reserved` و`outstanding` و`payable` و`distributable`، وحدود كل عقدة: `max_reward_per_block_per_node` ومنذ v3.2.3 `max_reward_per_month_per_node` (2,000 QOR، موزّعة بالتناسب بحسب زمن الكتلة ووقت التشغيل). وعلى شبكة الاختبار (v3.2.4، **شبكة الاختبار فقط**) يُبلغ أيضاً عن `monthly_cap_active` و`last_distribution_time` و`last_distribution_height`.
 
 ---
 
@@ -242,7 +255,12 @@ qorechaind query rdk batch <rollup_id>            # latest batch
 qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-يعرض `config` معاملات الوحدة (الحد الأدنى للحصة، ومعدل الحرق عند الإنشاء، ونافذة التحدي، وحدود DA). أما `suggest-profile <use_case>` فلا يستعلم عن السلسلة؛ بل يطبع فقط إشارة إلى طريقة JSON-RPC لا تقدّمها نقاط النهاية العامة، لذا اختر ملفاً من [الملفات الجاهزة](/rollups/preset-profiles).
+```bash
+qorechaind query rdk batches <rollup_id> [--start 0] [--limit 100]   # batches in index order
+qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>
+```
+
+يعرض `config` معاملات الوحدة (الحد الأدنى للحصة، ومعدل الحرق عند الإنشاء، ونافذة التحدي، وحدود DA). ويطبع `anchor-sign-bytes` بالنظام السداسي عشري بايتات توقيع الإرساء (anchor) بالإصدار v2 التي يوقّعها منشئ الرول-أب لأجل `tx rdk submit-batch --anchor-signature`. وتُقدَّم الاستعلامات نفسها عبر REST تحت `/qorechain/rdk/v1/...` منذ v3.2.2 (راجع [نقاط نهاية REST / gRPC](/api-reference/rest-grpc-endpoints#rdk-module)). أما `suggest-profile <use_case>` فلا يستعلم عن السلسلة؛ بل يطبع فقط إشارة إلى طريقة JSON-RPC لا تقدّمها نقاط النهاية العامة، لذا اختر ملفاً من [الملفات الجاهزة](/rollups/preset-profiles).
 
 ---
 
@@ -275,7 +293,44 @@ qorechaind query abstractaccount permission-schema
 
 ## gasabstraction
 
-لا تقدّم الشبكة الرئيسية استعلامات تجريد الغاز بعد (يطبع `qorechaind query gasabstraction ...` نص المساعدة ويُرجع مسار REST الرمز `Not Implemented`). تُدفع الرسوم بـ `uqor` فقط؛ راجع [تجريد الغاز](/user-guide/gas-abstraction).
+تُقدَّم استعلامات تجريد الغاز على الشبكتين منذ v3.2.2:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate <denom>   # what one unit of a fee token is worth in uqor, and whether it can pay fees
+qorechaind query gasabstraction float                     # the conversion float's balances and this block's usage
+```
+
+لا تحتوي قائمة الرموز المقبولة سوى `uqor` الأصلي على الشبكتين، لذا تُدفع الرسوم بـ `uqor` ولا يجري أي تحويل؛ وتقرّر الحوكمة أي الرموز الأخرى تُقبل. REST: `/qorechain/gasabstraction/v1/config` و`/conversion_rate?denom=` و`/float`. راجع [تجريد الغاز](/user-guide/gas-abstraction).
+
+---
+
+## amm
+
+```bash
+qorechaind query amm params
+qorechaind query amm pools
+qorechaind query amm pool <pool_id>
+qorechaind query amm pool-by-denoms <denom_a> <denom_b>
+qorechaind query amm lp-balance <pool_id> <address>
+qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
+qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
+```
+
+لا يوجد أي مجمّع (pool) على أي من الشبكتين وقت كتابة هذا.
+
+---
+
+## stakingtier (شبكة الاختبار فقط)
+
+```bash
+qorechaind query stakingtier params
+qorechaind query stakingtier locks <holder_address>
+qorechaind query stakingtier pool
+```
+
+وحدة طبقات التخزين (staking tiers) جزء من إصدار **v3.2.4** الذي يعمل على شبكة الاختبار فقط؛ ولا تملك الشبكة الرئيسية هذه الوحدة بعد (سيطبّق مقترح الحوكمة 13 الإصدار v3.2.4 عند الارتفاع 3,742,566). REST: `/qorechain/stakingtier/v1/params` و`/locks/{holder}` و`/pool`. راجع [أوامر المعاملات](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -289,6 +344,8 @@ qorechaind query upgrade plan
 qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
+
+`query upgrade applied <name>` هو الطريقة لمعرفة متى دخلت الترقية حيّز التنفيذ: على الشبكة الرئيسية طُبّق `v3.2.2` عند الارتفاع 3,556,788 و`v3.2.3` عند الارتفاع 3,662,051؛ وعلى شبكة الاختبار طُبّق `v3.2.2` عند 6,905,034 و`v3.2.3` عند 8,003,746 و`v3.2.4` عند 8,337,253 (القيمة `0` تعني أنها لم تُطبَّق). وتضم قائمة قاطع الدائرة (circuit breaker) على الشبكة الرئيسية (`disabled-list`) حالياً رسائل إنشاء حسابات الاستحقاق التدريجي (vesting)، وتخزين CosmWasm وإنشاء نسخ منه، وإيقاف مجمّعات AMM مؤقتاً واستئنافها، والاستدعاء عبر الآلات الافتراضية (cross-VM)، وتحديث حالة طبقة multilayer، وإهمال خوارزميات PQC وتعطيلها، ورسائل حوكمة إجماع PRISM؛ أما قائمة شبكة الاختبار فلا تضم سوى رسائل CosmWasm الثلاث.
 
 ---
 

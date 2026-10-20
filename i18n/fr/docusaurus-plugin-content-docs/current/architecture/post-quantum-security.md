@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain est conçue avec la **cryptographie post-quantique (PQC) dès le genesis** — et non ajoutée a posteriori sous forme de mise à niveau. Le module `x/pqc` fournit des signatures numériques fondées sur les réseaux euclidiens (lattices) et l'encapsulation de clés comme primitives cryptographiques principales, avec un cadre d'agilité algorithmique contrôlé par la gouvernance pour une résilience à long terme.
 
-La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. Sur les réseaux en production (v3.2.x), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé.
+La base PQC complète — **Dilithium-5 (signatures) + ML-KEM-1024 (KEM) + SHAKE-256 (hachage)** — est désormais achevée et constitue la valeur par défaut du réseau. Sur les réseaux en production (v3.2.x), les signatures hybrides sont **requises par défaut** sur le chemin de transaction cosmos : `hybrid_signature_mode = required` et `allow_classical_fallback = false`. Chaque transaction du chemin cosmos doit porter une signature Dilithium-5 aux côtés de sa signature classique secp256k1 ; les transactions purement classiques émises depuis un compte PQC sont rejetées, et le chemin de rétrogradation classique est fermé. Le mainnet exécute la v3.2.3 et le testnet la v3.2.4 ; ce que les versions v3.2.2 et v3.2.3 ont ajouté aux règles post-quantiques (intégrité des clés, preuve de possession optionnelle, fenêtres EVM à portée limitée, consentement EIP-7702) est décrit dans [Règles d'intégrité des clés](#key-integrity), [Preuve de possession](#proof-of-possession) et [Délégations EIP-7702](#eip-7702).
 
 ## Principes de conception
 
@@ -56,21 +56,74 @@ Les comptes enregistrent explicitement leurs clés PQC via `MsgRegisterPQCKey` (
 * **Sender** : L'adresse du compte qui enregistre la clé.
 * **PublicKey** : Les octets de la clé publique PQC.
 * **AlgorithmID** : L'identifiant de l'algorithme PQC (v2 uniquement).
-* **KeyType** : L'un des trois modes d'enregistrement :
+* **ProofOfPossession** : Signature optionnelle par la nouvelle clé (v2 uniquement, depuis la v3.2.3) ; voir [Preuve de possession](#proof-of-possession).
+* **KeyType** : L'une des valeurs `hybrid` ou `pqc_only` (une troisième valeur, `classical_only`, existe encore dans le schéma mais est refusée depuis la v3.2.3) :
 
 | Type de clé      | Description                                                              |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Clés classique (ECDSA) et PQC. Les transactions portent des doubles signatures. |
 | `pqc_only`       | Enregistrée comme `hybrid` : la signature classique secp256k1 est toujours vérifiée par les contrôles de signature standard, et la signature PQC est également requise. |
-| `classical_only` | Clé classique uniquement. Aucune protection PQC (non recommandé).        |
+| `classical_only` | **Refusée depuis la v3.2.3.** Un enregistrement avec ce type de clé n'enregistre aucune clé post-quantique utilisable et laisserait le compte incapable de signer ; la chaîne le rejette donc. |
 
-## Signatures hybrides
+### Règles d'intégrité des clés (v3.2.3) {#key-integrity}
+
+Depuis la mise à niveau v3.2.3 (hauteur mainnet 3,662,051, 20 octobre 2026 ; hauteur testnet 8,003,746), la chaîne applique ces règles aux clés post-quantiques. En dessous de cette hauteur, aucune d'entre elles n'était appliquée.
+
+| Règle | Comportement |
+| --- | --- |
+| Pas de clés faibles | Un enregistrement est refusé si le type de clé est `classical_only`, si la clé est vide, ou si la clé est dégénérée : une clé de la bonne longueur dont la structure n'offre aucune protection post-quantique. Générez les clés avec `tx pqc gen-key` ou la bibliothèque `qorechain-pqc` et enregistrez ce qu'elles affichent |
+| Pas de réutilisation de clé | Une rotation ou une migration est refusée si la nouvelle clé est une clé que le compte a déjà utilisée. La chaîne mémorise un hachage de chaque clé que le compte a abandonnée par rotation ou migration |
+| Les comptes avec clé exigent la signature hybride | Un compte qui détient déjà une clé utilisable doit aussi porter sa signature hybride sur une transaction d'enregistrement ou de migration. L'exemption purement classique ne couvre désormais que les comptes **sans** clé enregistrée, ou dont l'enregistrement stocké ne contient aucune clé utilisable (que `MsgRegisterPQCKeyV2` peut alors remplacer) |
+| Pas d'extension sans clé | En mode `required`, un compte sans clé enregistrée ne peut pas passer en joignant une extension hybride que rien ne peut vérifier ; seul un enregistrement peut passer sans extension |
+| Une seule extension | Une transaction porte au plus une extension de signature hybride |
+| Pas de messages de clé via authz | `MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey` et `MsgMigratePQCKey` ne peuvent pas être exécutés pour le compte d'un autre via `x/authz` ; la signature propre du compte est requise |
+| Garde-fous de gouvernance des algorithmes | Déprécier ou désactiver un algorithme ne peut pas laisser la chaîne sans algorithme de signature actif, et l'algorithme de remplacement doit être capable de signer |
+
+La v3.2.2 a ajouté un contrôle apparenté : un enregistrement valide la clé classique `ecdsa_pubkey` qu'il porte et la lie au compte signataire, de sorte qu'un compte ne peut pas enregistrer une clé classique qui n'est pas la sienne.
+
+Les nœuds filtrent aussi ces cas dans le mempool, de sorte qu'une transaction qui ne peut qu'échouer n'est pas relayée et ne coûte aucuns frais.
+
+### Preuve de possession (optionnelle) {#proof-of-possession}
+
+`MsgRegisterPQCKeyV2` possède un champ optionnel `proof_of_possession`. Lorsqu'il est présent, la chaîne le vérifie ; lorsqu'il est absent, l'enregistrement se déroule comme avant (la preuve n'est **pas requise**). La preuve est une signature, par la clé en cours d'enregistrement, sur
+
+```text
+qorechain-pqc-pop-v1|<chain-id>|<algorithm-id>|<account-address>|<hex(public-key)>
+```
+
+de sorte qu'une preuve établie pour un compte ou une chaîne ne prouve rien sur un autre. La CLI la construit pour vous lorsque vous nommez le fichier de clé local :
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
+  --pqc-key mypqc --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+L'enregistrement n'est exempté de l'exigence hybride que pour un compte sans clé ; cette transaction est donc signée avec la seule clé classique du compte. Une preuve mal formée est refusée avec `ErrInvalidProofOfPossession` (code 231 dans le module `pqc`).
+
+**Testnet uniquement (v3.2.4, pas sur le mainnet) :** l'enregistrement du compte gagne un booléen `possession_proven`, renvoyé par `GET /qorechain/pqc/v1/account/{address}` sur le testnet. Il vaut `true` lorsque la clé actuelle a été enregistrée avec une preuve valide, ou est arrivée par une rotation ou une migration (qui vérifient toutes deux une signature par la nouvelle clé sur des octets nommant la chaîne, le compte et la clé) ; un enregistrement sans preuve enregistre `false`, et une clé qui change sans preuve efface l'indicateur. Le mainnet v3.2.3 ne renvoie pas ce champ. La preuve reste également optionnelle sur le testnet.
+
+## Signatures hybrides {#hybrid-signatures}
 
 Le système de signatures hybrides exige que les transactions du chemin cosmos portent **à la fois** une signature classique et une signature PQC simultanément. Cela offre une défense en profondeur : même si l'un des schémas est cassé, l'autre protège la transaction.
 
-Avec la valeur par défaut du réseau `hybrid_signature_mode = required`, chaque transaction du chemin cosmos doit inclure l'extension Dilithium-5 aux côtés de la signature secp256k1. Les seules exemptions (pour le bootstrap) sont les **gentxs de genesis (hauteur 0)** et les **transactions d'enregistrement/migration de clé PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), qui sont autorisées à être purement classiques afin que les comptes puissent enregistrer leur première clé PQC, ainsi qu'un unjail depuis un compte opérateur qui n'a aucune clé enregistrée.
+Avec la valeur par défaut du réseau `hybrid_signature_mode = required`, chaque transaction du chemin cosmos doit inclure l'extension Dilithium-5 aux côtés de la signature secp256k1. Les seules exemptions (pour le bootstrap) sont les **gentxs de genesis (hauteur 0)**, l'**enregistrement de clé PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`) depuis un compte qui n'a aucune clé enregistrée (ou dont l'enregistrement ne contient aucune clé utilisable), qui est autorisé à être purement classique afin que le compte puisse enregistrer sa première clé PQC, ainsi qu'un unjail depuis un compte opérateur qui n'a aucune clé enregistrée. Depuis la v3.2.3, un enregistrement ou une migration depuis un compte qui détient déjà une clé utilisable exige la signature hybride comme toute autre transaction (voir [Règles d'intégrité des clés](#key-integrity)).
 
 **La voie EVM est protégée par une fenêtre d'autorisation à la place.** Une transaction EVM ne peut pas porter de seconde signature (ML-DSA) — les portefeuilles standard produisent une seule signature secp256k1 sur une transaction Ethereum et n'offrent aucun moyen d'en joindre une autre. L'autorisation post-quantique voyage donc *en amont* de la transaction : le compte ouvre une **fenêtre d'autorisation EVM** bornée au moyen d'un message de la voie Cosmos (`MsgOpenEVMWindow`), qui porte la signature hybride ordinaire, et la voie EVM n'admet alors que les transactions couvertes par une fenêtre active. Depuis v3.2.0, une transaction EVM est refusée sauf si son expéditeur (1) possède une clé post-quantique enregistrée et (2) dispose d'une fenêtre active avec des blocs, des transactions et de la valeur restants. À l'intérieur d'une fenêtre, une transaction MetaMask/ethers/Hardhat ordinaire fonctionne sans modification, car le contrôle lit l'état de la chaîne, et non la transaction. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
+
+Depuis la v3.2.3, une fenêtre peut aussi être **à portée limitée** lors de son ouverture : `--native-only` la restreint aux simples transferts de QOR natif (sans calldata, sans création de contrat, sans destinataire qui porte du code, sans autorisation EIP-7702), et `--allowed-targets 0x…,0x…` n'admet que les destinataires listés et refuse la création de contrat. Une fenêtre ouverte sans portée admet ce qu'elle a toujours admis. La portée fait partie de `MsgOpenEVMWindow` (`native_only`, `allowed_targets`).
+
+### Délégations EIP-7702 {#eip-7702}
+
+Un tuple d'autorisation EIP-7702 installe du code sur le compte qui l'a signé, et cette signature est une signature classique secp256k1 que n'importe qui peut transporter dans une transaction de type 4. À partir de la v3.2.2 (hauteur mainnet 3,556,788), la voie EVM n'admet donc une transaction de type 4 que si **chaque autorité dont le tuple prendrait effet** détient une clé post-quantique enregistrée et a **consenti**, au moyen d'un message de la voie Cosmos signé en hybride, exactement à la délégation que le tuple installe.
+
+| Élément | Détail |
+| --- | --- |
+| Donner son consentement | `qorechaind tx pqc authorize-evm-delegation <delegate-0x-address> <blocks>` (`MsgAuthorizeEVMDelegation`) : nomme l'adresse du délégué que le tuple doit porter et la durée pendant laquelle le consentement reste utilisable (au plus 17,280 blocs, la même borne qu'une fenêtre) |
+| Effacer une délégation | L'adresse zéro comme délégué consent à l'effacement. `tx pqc clear-evm-delegation` (`MsgClearEVMDelegation`) efface une délégation existante sans aucune transaction EVM |
+| Usage unique | Un consentement est consommé par la transaction qui installe la délégation, remplace tout consentement antérieur du compte, et est révoqué par `MsgCloseEVMWindow` |
+| Le lire | `qorechaind query pqc evm-delegation-consent <address>`, ou `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` (champs `live`, `delegate`, `granted_height`, `expiry_height`, `current_delegate`, `nonce`) |
+| Limites | Au plus 8 autorisations par transaction de type 4. La valeur qui quitte un compte délégué est imputée à sa propre fenêtre. Une transaction de type 4 qui échoue conserve les autorisations qu'elle a appliquées |
+| Délégation sponsorisée | Fonctionne toujours : le sponsor paie depuis sa propre fenêtre, et l'autorité ne fait que consentir au préalable |
 
 ### Flux de cosignature
 
@@ -113,7 +166,7 @@ curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0        
 curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
 ```
 
-(`"height":"0"` signifie non appliquée.) La CLI le fait avec `--sign-bytes auto` ; le SDK 0.8.x et wallet-adapter 0.2.x font de même, et reconnaissent aussi l'aperçu antérieur de ce changement sur le testnet. Un client sur la mauvaise forme produit un condensat que la chaîne rejette — il échoue en mode fermé.
+(`"height":"0"` signifie non appliquée.) Les deux réseaux ont appliqué ce changement depuis longtemps ; un client actuel signe donc partout la forme v2, et la vérification n'importe que si vous rejouez ou vérifiez d'anciens blocs. La CLI le fait avec `--sign-bytes auto`, et les versions actuelles du SDK et de wallet-adapter font de même. Un client sur la mauvaise forme produit un condensat que la chaîne rejette — il échoue en mode fermé.
 
 ### Format de l'extension de TX
 
@@ -186,13 +239,14 @@ Lorsqu'un algorithme est déprécié, une **période de migration** commence (pa
 | Message                 | Description                                                                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Enregistre la clé PQC d'un compte (voir [Enregistrement des clés](#key-registration)). Peut être signé de façon classique afin qu'un nouveau compte puisse s'amorcer. |
-| `MsgMigratePQCKey`      | Migration à double signature d'une clé d'un algorithme vers celle d'un autre pendant une période de migration.                                                    |
-| `MsgRotatePQCKey`       | Fait pivoter la clé ML-DSA-87 du compte au sein du même algorithme (double signature par l'ancienne et la nouvelle clé ; `tx pqc rotate-key`).                    |
-| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Ouvre ou ferme la fenêtre d'autorisation EVM (v3.2.0) ; voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window). |
+| `MsgMigratePQCKey`      | Migration à double signature d'une clé d'un algorithme vers celle d'un autre pendant une période de migration. Refuse une clé que le compte a déjà utilisée (v3.2.3). |
+| `MsgRotatePQCKey`       | Fait pivoter la clé ML-DSA-87 du compte au sein du même algorithme (double signature par l'ancienne et la nouvelle clé ; `tx pqc rotate-key`). Refuse une clé que le compte a déjà utilisée (v3.2.3). |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Ouvre ou ferme la fenêtre d'autorisation EVM (v3.2.0 ; portée optionnelle depuis la v3.2.3) ; voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window). |
+| `MsgAuthorizeEVMDelegation` / `MsgClearEVMDelegation` | Consent à une délégation EIP-7702 du propre compte de l'expéditeur, ou l'efface (v3.2.2) ; voir [Délégations EIP-7702](#eip-7702). |
 | `MsgDeprecateAlgorithm` | Message de gouvernance : démarre le processus de dépréciation d'un algorithme. Spécifie l'algorithme de remplacement et la période de migration en blocs.         |
 | `MsgDisableAlgorithm`   | Message de gouvernance : désactive un algorithme immédiatement en urgence. Requiert une chaîne de motif. Utilisé lorsqu'une vulnérabilité cryptographique est découverte. |
 
-`MsgDeprecateAlgorithm` et `MsgDisableAlgorithm` sont actuellement désactivés sur le mainnet par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)).
+`MsgDeprecateAlgorithm` et `MsgDisableAlgorithm` sont actuellement désactivés sur le mainnet par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; ils ne sont pas désactivés sur le testnet. Sur les deux réseaux, depuis la v3.2.3, les garde-fous de gouvernance des algorithmes décrits dans [Règles d'intégrité des clés](#key-integrity) s'appliquent.
 
 ### Extensibilité
 
@@ -219,7 +273,7 @@ Ces utilitaires sous-tendent le hachage applicatif par défaut et sont utilisés
 
 Toutes les attestations de bridge inter-chaînes et les engagements d'état utilisent des signatures **Dilithium-5**. Le module `x/multilayer` requiert des signatures agrégées PQC sur chaque soumission `MsgAnchorState`, et les engagements ML-KEM sécurisent les canaux d'échange de clés entre les relayers de bridge.
 
-Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge, maintenant la résistance au quantique sur l'ensemble de la pile du protocole.
+Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge, maintenant la résistance au quantique sur l'ensemble de la pile du protocole. Aucune route de bridge n'est active (voir [Architecture du bridge](/architecture/bridge-architecture#current-status)) ; sur le testnet uniquement (v3.2.4), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession de sa clé PQC.
 
 ## Paramètres du module
 

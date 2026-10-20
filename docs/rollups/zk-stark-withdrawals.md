@@ -10,7 +10,7 @@ sidebar_position: 5
 This page covers two related topics: the **ZK proof systems** (`snark` and `stark`) used by ZK-settled rollups, and the **L2 → L1 withdrawal flow** that moves funds from a rollup back to QoreChain once a batch is finalized.
 
 :::caution Early-stage capability
-No rollup has been created on either network yet, so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
+No rollup has been created on either network yet (checked 20 October 2026), so neither the proof verification nor the withdrawal flow described here has been exercised on a live rollup. Withdrawals can succeed on mainnet only from v3.2.3 (height 3,662,051, 20 October 2026), when the per-rollup escrow ledger went live (see [Where the funds come from](#where-the-funds-come-from)); before that every withdrawal failed. SNARK verification exists but a rollup created through `create-rollup` cannot yet finalise a ZK batch, and STARK verification is experimental. Validate on the **`qorechain-diana`** testnet and do not assume production-hardened guarantees on mainnet.
 :::
 
 ---
@@ -52,7 +52,7 @@ For how batches are submitted and finalized — including `submit-batch` and the
 
 ## Executing a withdrawal: `execute-withdrawal`
 
-The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof. Like every native-lane transaction it needs the hybrid post-quantum co-signature, so build it with `--generate-only` and cosign it (see [Deploying a Rollup](/rollups/deploying-a-rollup)). Withdrawals have not been exercised on a live rollup yet; treat the flow as untested.
+The `execute-withdrawal` command finalizes an L2 → L1 withdrawal against a finalized batch's withdrawals root. It proves that a withdrawal leaf is committed in that root and pays the recipient from the rdk module escrow. The action is **permissionless** — anyone may submit a valid proof. Like every native-lane transaction it needs the hybrid post-quantum co-signature, so build it with `--generate-only` and cosign it (see [Deploying a Rollup](/rollups/deploying-a-rollup)). Withdrawals have not been exercised on a live rollup yet; treat the flow as untested. Check these before you pay a fee, because the chain refuses the transaction otherwise: the denom must be exactly `uqor`, the amount must be positive, the proof has at most 64 levels and every sibling is exactly 32 bytes, the submitter and recipient are valid `qor1…` addresses, the batch is finalized and committed a `withdrawals_root`, the rollup is not stopped, and that withdrawal leaf has not been paid before.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -96,7 +96,7 @@ The RDK's generic `binaryMerkleRoot` / `binaryMerkleProof` helpers default to SH
 
 ### Where the funds come from {#where-the-funds-come-from}
 
-A withdrawal is paid from the **rollup's own escrowed stake** (the stake less the creation burn). The module keeps a per-rollup ledger so a withdrawal proved for one rollup cannot be paid out of another rollup's stake. There is no L1 → L2 deposit message in the module, so this is not a bridge of user funds.
+A withdrawal is paid from the **rollup's own escrowed stake** (the stake less the 1% creation burn). All rollups' escrow sits in one pooled module balance, and since **v3.2.3** a per-rollup **escrow ledger** is the account of what each rollup holds: `create-rollup` credits it with the escrow the rollup keeps, a withdrawal or a fraud-proof reward is paid out of it and debited from it, and a withdrawal larger than the rollup still holds is refused with an insufficient-escrow error. `stop-rollup` refunds only what is left and zeroes the ledger, and a stopped rollup pays no further withdrawals. A withdrawal proved for one rollup therefore cannot be paid out of another rollup's stake. The rollup queries carry `escrow_balance` (uqor still held for that rollup). There is no L1 → L2 deposit message in the module, so this is not a bridge of user funds.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Settle a batch.** The rollup operator submits a settlement batch with `submit-batch`. The batch can commit a withdrawals root over its outbound L2 → L1 messages.
-2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it).
+2. **Finalize.** The batch finalizes according to the rollup's settlement mode — on valid proof verification for `zk`, or after the challenge window for `optimistic` (during which `challenge-batch` may dispute it). On mainnet the optimistic window is 100,800 blocks by default; on the testnet only (v3.2.4) it is measured in seconds of block time for batches submitted from height 8,337,253 on.
 3. **Prove and execute.** Once finalized, anyone submits `execute-withdrawal` with the Merkle inclusion proof (`--proof`) for the specific withdrawal leaf. The module verifies inclusion against the finalized batch's withdrawals root and pays the recipient from escrow.
 
 Because step 3 is permissionless and proof-based, a withdrawal does not depend on the rollup operator's cooperation once the batch carrying it is finalized.

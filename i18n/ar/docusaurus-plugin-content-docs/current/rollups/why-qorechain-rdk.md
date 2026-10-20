@@ -17,17 +17,18 @@ sidebar_position: 2
 - بيئة تشغيل **ثلاثية الأجهزة الافتراضية (VM)** مع استدعاءات عابرة بين الأجهزة الافتراضية.
 
 :::caution مرحلة مبكرة: اقرأ عمود الحالة
-لم يُنشأ أي Rollup على أي من الشبكتين حتى الآن. يوضح الجدول أدناه ما يعمل
-اليوم. إذا كنت تحتاج فقط إلى Rollup تفاؤلي/zk عام، فأي مجموعة أدوات ستفي
-بالغرض؛ أما القدرات المذكورة هنا فهي ما تضيفه RDK فوق ذلك، بلغات TypeScript
-وPython وGo وRust وJava.
+لم يُنشأ أي Rollup على أي من الشبكتين حتى الآن (جرى التحقق في 20 أكتوبر 2026).
+يوضح الجدول أدناه ما يعمل اليوم؛ وقد جُمعت حدود عملاء 0.5.0 المنشورة في
+[حدود RDK 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits). إذا كنت تحتاج فقط
+إلى Rollup تفاؤلي/zk عام، فأي مجموعة أدوات ستفي بالغرض؛ أما القدرات المذكورة
+هنا فهي ما تضيفه RDK فوق ذلك، بلغات TypeScript وPython وGo وRust وJava.
 :::
 
 | القدرة | الحالة | ما تعتمد عليه |
 | --- | --- | --- |
-| **إيصالات تسوية آمنة كموميًا** | 🟡 مرحلة مبكرة | تُوقَّع المراسي بـ ML-DSA-87، مخطط السلسلة الرئيسية ما بعد الكمومي؛ ولا توجد مراسٍ بعد |
+| **إيصالات تسوية آمنة كموميًا** | 🟡 مرحلة مبكرة | تُوقَّع المراسي بـ ML-DSA-87، مخطط السلسلة الرئيسية ما بعد الكمومي؛ ولا توجد مراسٍ بعد، ولا يستطيع المُتحقِّق في 0.5.0 إكمال فحصه للسلسلة على الشبكات الحيّة |
 | **QCAI Rollup Copilot** | 🟡 غير متاح بعد على نقاط النهاية العامة | خدمات استشارية للذكاء الاصطناعي/التعلم المعزز على السلسلة لا تكشفها نقاط النهاية العامة اليوم |
-| **استدعاءات عابرة بين أجهزة افتراضية متعددة** | 🟡 غير قابل للاستخدام بعد على الشبكات الحية | عقد مسبق التجميع (precompile) للاستدعاءات العابرة بين الأجهزة الافتراضية غير مفعّل، ورفع CosmWasm مغلق |
+| **استدعاءات عابرة بين أجهزة افتراضية متعددة** | 🟡 غير قابل للاستخدام بعد على الشبكات الحية | عقد مسبق التجميع (precompile) للاستدعاءات العابرة بين الأجهزة الافتراضية غير مفعّل، ومُرمِّز في 0.5.0 لا يطابق تخطيط السلسلة، ورفع CosmWasm مغلق |
 
 ---
 
@@ -51,8 +52,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
+في الإصدار 0.5.0 تتحقق `verifySettlementReceipt` مقابل السلسلة وترفض القول
+`valid` من دون `client`، لكن فحصها للسلسلة لا يكتمل بعد على الشبكات الحيّة،
+ولذلك تفشل بإغلاق آمن بدلًا من أن تُبلغ عن إيصال حقيقي على أنه صالح.
 راجع [إيصالات التسوية الآمنة كموميًا](/rollups/settlement-receipts) لمعرفة ما
-يُثبته الإيصال وما لا يُثبته.
+يُثبته الإيصال وما لا يُثبته ولمعرفة الحدود بدقة.
 
 ---
 
@@ -86,18 +90,34 @@ console.log(advice.warnings); // services that could not be reached
 تتضمن RDK دوال مساعدة تُرمّز استدعاءً من عقد EVM (بلغة Solidity) إلى عقد
 **CosmWasm** عبر precompile ثابت على العنوان `0x…0901`. هذا الـ precompile
 **غير مفعّل** على الشبكة الرئيسية ولا على شبكة الاختبار (راجع
-[عقود EVM المسبقة التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status)).
+[عقود EVM المسبقة التجميع: حالة الشبكة](/developer-guide/evm-precompiles#network-status)):
+فالاستدعاء `eth_getCode` للعنوان `0x…0901` يعيد `0x` على كلتيهما، واستدعاء عقد له
+ينجح من دون أي أثر.
+
+تبني الدالة المساعدة `encodeCrossVmCalldata` في الإصدار 0.5.0 بيانات استدعاء
+للدالة `executeCrossVMCall(string,bytes)`، لكن العقدة تفك ترميز
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`، ولذلك
+لا يطابق ناتجها ما تقرؤه السلسلة. رمّز الاستدعاء بتخطيط السلسلة بدلًا من ذلك
+(موضَّح هنا باستخدام viem؛ القيمة 1 لـ `targetVM` هي CosmWasm، وهي الهدف الوحيد المدعوم):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 أو مباشرةً من Solidity على الـ Rollup الخاص بك:
@@ -109,12 +129,15 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+لا تثبت `ok` وحدها شيئًا اليوم: فما دام الـ precompile بلا شيفرة، يعيد الاستدعاء
+نجاحًا مع بيانات فارغة ولا ينفّذ شيئًا، ولذلك تأكّد من الأثر على العقد الهدف.
 
 أنشئ هيكل مشروع للبداية باستخدام `npm create qorechain-rollup my-app -- --template multivm-rollup`.
 (EVM↔CosmWasm فقط؛ الاستدعاءات العابرة لـ SVM منفصلة.)

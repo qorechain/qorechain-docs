@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain, **kuantum sonrası kriptografi (post-quantum cryptography, PQC) ile genesis'te** inşa edilmiştir — sonradan bir yükseltme olarak eklenmemiştir. `x/pqc` modülü, uzun vadeli dayanıklılık için yönetişim kontrollü bir algoritma çevikliği çerçevesiyle birlikte birincil kriptografik ilkeller olarak kafes tabanlı dijital imzalar ve anahtar kapsülleme sağlar.
 
-Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır.
+Tam PQC temeli — **Dilithium-5 (imzalar) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — artık tamamlandı ve ağ varsayılanıdır. Canlı ağlarda (v3.2.x), hibrit imzalar cosmos işlem yolunda **varsayılan olarak gereklidir**: `hybrid_signature_mode = required` ve `allow_classical_fallback = false`. Her cosmos yolu işlemi, klasik secp256k1 imzasının yanında bir Dilithium-5 imzası taşımalıdır; bir PQC hesabından gelen yalnızca klasik işlemler reddedilir ve klasik geri dönüş (downgrade) yolu kapalıdır. Mainnet v3.2.3, testnet ise v3.2.4 çalıştırır; v3.2.2 ve v3.2.3 sürümlerinin kuantum sonrası kurallara eklediği şeyler (anahtar bütünlüğü, isteğe bağlı sahiplik kanıtı, kapsamlı EVM pencereleri, EIP-7702 onayı) [Anahtar bütünlüğü kuralları](#key-integrity), [Sahiplik kanıtı](#proof-of-possession) ve [EIP-7702 delegasyonları](#eip-7702) bölümlerinde açıklanmıştır.
 
 ## Tasarım İlkeleri
 
@@ -56,21 +56,74 @@ Hesaplar, PQC anahtarlarını `MsgRegisterPQCKey` (eski, varsayılan olarak Dili
 * **Sender**: Anahtarı kaydeden hesap adresi.
 * **PublicKey**: PQC genel anahtar baytları.
 * **AlgorithmID**: PQC algoritma tanımlayıcısı (yalnızca v2).
-* **KeyType**: Üç kayıt modundan biri:
+* **ProofOfPossession**: Yeni anahtarın attığı isteğe bağlı imza (yalnızca v2, v3.2.3'ten itibaren); bkz. [Sahiplik kanıtı](#proof-of-possession).
+* **KeyType**: `hybrid` veya `pqc_only` değerlerinden biri (üçüncü bir değer olan `classical_only` şemada hâlâ vardır ancak v3.2.3'ten beri reddedilir):
 
 | Anahtar Türü     | Açıklama                                                                 |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Hem klasik (ECDSA) hem de PQC anahtarları. İşlemler çift imza taşır.     |
 | `pqc_only`       | `hybrid` gibi kaydedilir: klasik secp256k1 imzası yine standart imza kontrolleriyle doğrulanır ve PQC imzası da ayrıca gereklidir. |
-| `classical_only` | Yalnızca klasik anahtar. PQC koruması yok (önerilmez).                   |
+| `classical_only` | **v3.2.3'ten beri reddedilir.** Bu anahtar türüyle yapılan bir kayıt, kullanılabilir hiçbir kuantum sonrası anahtar kaydetmez ve hesabı imza atamaz durumda bırakır, bu yüzden zincir onu reddeder. |
 
-## Hibrit İmzalar
+### Anahtar bütünlüğü kuralları (v3.2.3) {#key-integrity}
+
+v3.2.3 yükseltmesinden itibaren (mainnet yüksekliği 3,662,051, 20 Ekim 2026; testnet yüksekliği 8,003,746) zincir kuantum sonrası anahtarlara şu kuralları uygular. Bu yüksekliğin altında bunların hiçbiri uygulanmıyordu.
+
+| Kural | Davranış |
+| --- | --- |
+| Zayıf anahtar yok | Anahtar türü `classical_only` ise, anahtar boşsa veya anahtar dejenere ise kayıt reddedilir: doğru uzunlukta olan ancak yapısı hiçbir kuantum sonrası koruma sağlamayan bir anahtar. Anahtarları `tx pqc gen-key` veya `qorechain-pqc` kütüphanesiyle üretin ve bunların yazdırdığını kaydedin |
+| Anahtar yeniden kullanımı yok | Yeni anahtar hesabın daha önce kullandığı bir anahtarsa döndürme veya geçiş reddedilir. Zincir, bir hesabın döndürdüğü veya geçtiği her anahtarın bir hash'ini hatırlar |
+| Anahtarlı hesaplar hibrit imza gerektirir | Kullanılabilir bir anahtarı zaten olan bir hesap, bir kayıt veya geçiş işleminde de hibrit imzasını taşımalıdır. Yalnızca klasik muafiyeti artık yalnızca kayıtlı anahtarı **olmayan** bir hesabı veya saklanan kaydında kullanılabilir anahtar bulunmayan bir hesabı kapsar (`MsgRegisterPQCKeyV2` bunu değiştirebilir) |
+| Anahtarsız uzantı yok | `required` modunda, kayıtlı anahtarı olmayan bir hesap, hiçbir şeyin doğrulayamayacağı bir hibrit uzantı ekleyerek geçemez; yalnızca bir kayıt işlemi uzantısız geçebilir |
+| Tek uzantı | Bir işlem en fazla bir hibrit imza uzantısı taşır |
+| authz üzerinden anahtar mesajı yok | `MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey` ve `MsgMigratePQCKey` bir hesap adına `x/authz` üzerinden yürütülemez; hesabın kendi imzası gerekir |
+| Algoritma yönetişimi korumaları | Bir algoritmayı kullanımdan kaldırmak veya devre dışı bırakmak zinciri etkin bir imza algoritması olmadan bırakamaz ve yedek algoritma imza atabilir olmalıdır |
+
+v3.2.2, ilgili bir kontrol ekledi: bir kayıt, taşıdığı klasik `ecdsa_pubkey` değerini doğrular ve imzalayan hesaba bağlar, böylece bir hesap kendisine ait olmayan bir klasik anahtar kaydedemez.
+
+Düğümler bu durumları ayrıca mempool'da eler, bu nedenle yalnızca başarısız olabilecek bir işlem aktarılmaz ve ücrete mal olmaz.
+
+### Sahiplik kanıtı (isteğe bağlı) {#proof-of-possession}
+
+`MsgRegisterPQCKeyV2` mesajının isteğe bağlı bir `proof_of_possession` alanı vardır. Mevcut olduğunda zincir bunu doğrular; yoksa kayıt eskisi gibi ilerler (kanıt **gerekli değildir**). Kanıt, kaydedilen anahtarın şu veri üzerinde attığı bir imzadır
+
+```text
+qorechain-pqc-pop-v1|<chain-id>|<algorithm-id>|<account-address>|<hex(public-key)>
+```
+
+dolayısıyla bir hesap veya zincir için yapılmış bir kanıt, bir başkasında hiçbir şeyi kanıtlamaz. Yerel anahtar dosyasını belirttiğinizde CLI bunu sizin için oluşturur:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
+  --pqc-key mypqc --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+Kayıt, hibrit gereksiniminden yalnızca anahtarı olmayan bir hesap için muaftır, bu nedenle bu işlem yalnızca hesabın klasik anahtarıyla imzalanır. Hatalı biçimlendirilmiş bir kanıt `ErrInvalidProofOfPossession` ile (`pqc` modülünde kod 231) reddedilir.
+
+**Yalnızca testnet (v3.2.4, mainnet'te yok):** hesap kaydı, testnet'te `GET /qorechain/pqc/v1/account/{address}` tarafından döndürülen bir boolean `possession_proven` alanı kazanır. Geçerli anahtar geçerli bir kanıtla kaydedildiyse veya bir döndürme ya da geçiş yoluyla geldiyse (her ikisi de yeni anahtarın zinciri, hesabı ve anahtarı adlandıran baytlar üzerindeki imzasını doğrular) `true` olur; kanıtsız bir kayıt `false` kaydeder ve kanıtsız değişen bir anahtar bayrağı temizler. Mainnet v3.2.3 bu alanı bildirmez. Kanıt testnet'te de isteğe bağlı kalır.
+
+## Hibrit İmzalar {#hybrid-signatures}
 
 Hibrit imza sistemi, cosmos yolu işlemlerinin aynı anda **hem** bir klasik imza **hem de** bir PQC imzası taşımasını gerektirir. Bu, derinlemesine savunma sağlar: bir şema kırılsa bile diğeri işlemi korur.
 
-`hybrid_signature_mode = required` ağ varsayılanıyla, her cosmos yolu işlemi secp256k1 imzasının yanında Dilithium-5 uzantısını içermelidir. Tek istisnalar (önyükleme için) **genesis gentx'leri (yükseklik 0)** ve hesapların ilk PQC anahtarlarını kaydedebilmesi için yalnızca klasik olmalarına izin verilen **PQC anahtar kaydı/geçiş işlemleridir** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`); bunlara ek olarak kayıtlı anahtarı olmayan bir operatör hesabından yapılan unjail işlemi de istisnadır.
+`hybrid_signature_mode = required` ağ varsayılanıyla, her cosmos yolu işlemi secp256k1 imzasının yanında Dilithium-5 uzantısını içermelidir. Tek istisnalar (önyükleme için) **genesis gentx'leri (yükseklik 0)**, hesabın ilk PQC anahtarını kaydedebilmesi için yalnızca klasik olmasına izin verilen, kayıtlı anahtarı olmayan (veya kaydı kullanılabilir anahtar içermeyen) bir hesaptan gelen **PQC anahtar kaydı** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`) ve kayıtlı anahtarı olmayan bir operatör hesabından yapılan unjail işlemidir. v3.2.3'ten itibaren, kullanılabilir bir anahtarı zaten olan bir hesaptan gelen bir kayıt veya geçiş, diğer her işlem gibi hibrit imza gerektirir (bkz. [Anahtar bütünlüğü kuralları](#key-integrity)).
 
 **EVM yolu bunun yerine bir yetkilendirme penceresiyle korunur.** Bir EVM işlemi ikinci bir (ML-DSA) imza taşıyamaz — standart cüzdanlar bir Ethereum işlemi üzerinde tek bir secp256k1 imzası atar ve bir başkasını eklemenin yolunu sunmaz. Bu yüzden kuantum sonrası yetkilendirme işlemin *önünde* ilerler: hesap, sıradan hibrit imzayı taşıyan bir Cosmos yolu mesajıyla (`MsgOpenEVMWindow`) sınırlı bir **EVM yetkilendirme penceresi** açar ve EVM yolu daha sonra yalnızca canlı bir pencerenin kapsadığı işlemleri kabul eder. v3.2.0'dan itibaren bir EVM işlemi, göndericisinin (1) kayıtlı bir kuantum sonrası anahtarı ve (2) blok, işlem ve değer hakkı kalan canlı bir penceresi yoksa reddedilir. Bir pencere içinde sıradan bir MetaMask/ethers/Hardhat işlemi değiştirilmeden çalışır, çünkü kontrol işlemi değil zincir durumunu okur. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+
+v3.2.3'ten itibaren bir pencere açılırken ayrıca **kapsamlı** olabilir: `--native-only` onu yerel QOR'un düz transferleriyle sınırlar (calldata yok, sözleşme oluşturma yok, kod taşıyan alıcı yok, EIP-7702 yetkilendirmesi yok) ve `--allowed-targets 0x…,0x…` yalnızca listelenen alıcılara izin verir ve sözleşme oluşturmayı reddeder. Kapsam belirtilmeden açılan bir pencere her zaman kabul ettiğini kabul eder. Kapsam, `MsgOpenEVMWindow` mesajının bir parçasıdır (`native_only`, `allowed_targets`).
+
+### EIP-7702 delegasyonları {#eip-7702}
+
+Bir EIP-7702 yetkilendirme demeti, onu imzalayan hesaba kod yükler ve bu imza, herkesin tip-4 bir işlemde taşıyabileceği klasik bir secp256k1 imzasıdır. Bu nedenle v3.2.2'den itibaren (mainnet yüksekliği 3,556,788) EVM yolu, bir tip-4 işlemi yalnızca **demeti etkili olacak her yetki sahibinin** kayıtlı bir kuantum sonrası anahtarı varsa ve demetin yüklediği delegasyona tam olarak, hibrit imzalı bir Cosmos yolu mesajıyla **onay vermişse** kabul eder.
+
+| Öğe | Ayrıntı |
+| --- | --- |
+| Onay verme | `qorechaind tx pqc authorize-evm-delegation <delegate-0x-address> <blocks>` (`MsgAuthorizeEVMDelegation`): demetin taşıması gereken delege adresini ve onayın ne kadar süre kullanılabilir kalacağını belirtir (en fazla 17,280 blok, bir pencereyle aynı sınır) |
+| Delegasyonu temizleme | Delege olarak sıfır adres, temizlemeye onay verir. `tx pqc clear-evm-delegation` (`MsgClearEVMDelegation`) mevcut bir delegasyonu hiçbir EVM işlemi olmadan temizler |
+| Tek kullanım | Bir onay, delegasyonu yükleyen işlem tarafından tüketilir, hesap için önceki herhangi bir onayın yerini alır ve `MsgCloseEVMWindow` ile iptal edilir |
+| Okuma | `qorechaind query pqc evm-delegation-consent <address>` veya `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` (alanlar: `live`, `delegate`, `granted_height`, `expiry_height`, `current_delegate`, `nonce`) |
+| Sınırlar | Tip-4 işlem başına en fazla 8 yetkilendirme. Delege edilmiş bir hesaptan çıkan değer, kendi penceresine yazılır. Başarısız bir tip-4 işlem, uyguladığı yetkilendirmeleri korur |
+| Sponsorlu delegasyon | Hâlâ çalışır: sponsor kendi penceresinden öder ve yetki sahibi yalnızca önceden onay verir |
 
 ### Eş İmzalama Akışı
 
@@ -113,7 +166,7 @@ curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0        
 curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
 ```
 
-(`"height":"0"` uygulanmadığı anlamına gelir.) CLI bunu `--sign-bytes auto` ile yapar; SDK 0.8.x ve wallet-adapter 0.2.x de aynısını yapar ve ayrıca testnet'in bu değişikliğin önceki önizlemesini de tanır. Yanlış biçimdeki bir istemci zincirin reddettiği bir özet üretir — güvenli biçimde başarısız olur (fails closed).
+(`"height":"0"` uygulanmadığı anlamına gelir.) Her iki ağ da değişikliği uzun zaman önce uyguladı, bu nedenle güncel bir istemci her yerde v2 biçimini imzalar; kontrol, eski blokları yeniden oynattığınızda veya doğruladığınızda önem taşır. CLI bunu `--sign-bytes auto` ile yapar; güncel SDK ve wallet-adapter sürümleri de aynısını yapar. Yanlış biçimdeki bir istemci zincirin reddettiği bir özet üretir — güvenli biçimde başarısız olur (fails closed).
 
 ### TX Uzantı Formatı
 
@@ -186,13 +239,14 @@ Bir algoritma kullanımdan kaldırıldığında, bir **geçiş süresi** başlar
 | Mesaj                   | Açıklama                                                                                                                                                          |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Bir hesabın PQC anahtarını kaydeder (bkz. [Anahtar Kaydı](#key-registration)). Yeni bir hesabın önyükleme yapabilmesi için klasik olarak imzalanabilir. |
-| `MsgMigratePQCKey`      | Bir geçiş süresi boyunca bir algoritmanın anahtarından diğerine çift imzalı geçiş.                                                                                |
-| `MsgRotatePQCKey`       | Hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarca çift imzalı; `tx pqc rotate-key`).                                         |
-| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM yetkilendirme penceresini açar veya kapatır (v3.2.0); bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).                  |
+| `MsgMigratePQCKey`      | Bir geçiş süresi boyunca bir algoritmanın anahtarından diğerine çift imzalı geçiş. Hesabın daha önce kullandığı bir anahtarı reddeder (v3.2.3).                    |
+| `MsgRotatePQCKey`       | Hesabın ML-DSA-87 anahtarını aynı algoritma içinde döndürür (eski ve yeni anahtarlarca çift imzalı; `tx pqc rotate-key`). Hesabın daha önce kullandığı bir anahtarı reddeder (v3.2.3). |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM yetkilendirme penceresini açar veya kapatır (v3.2.0; isteğe bağlı kapsam v3.2.3'ten itibaren); bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window). |
+| `MsgAuthorizeEVMDelegation` / `MsgClearEVMDelegation` | Göndericinin kendi hesabının bir EIP-7702 delegasyonuna onay verir veya onu temizler (v3.2.2); bkz. [EIP-7702 delegasyonları](#eip-7702). |
 | `MsgDeprecateAlgorithm` | Yönetişim mesajı: bir algoritma için kullanımdan kaldırma sürecini başlatır. Yedek algoritmayı ve blok cinsinden geçiş süresini belirtir.                         |
 | `MsgDisableAlgorithm`   | Yönetişim mesajı: bir algoritmayı hemen acil olarak devre dışı bırakır. Bir gerekçe dizesi gerektirir. Bir kriptografik güvenlik açığı keşfedildiğinde kullanılır. |
 
-`MsgDeprecateAlgorithm` ve `MsgDisableAlgorithm` şu anda mainnet'te devre kesici (circuit breaker) tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)).
+`MsgDeprecateAlgorithm` ve `MsgDisableAlgorithm` şu anda mainnet'te devre kesici (circuit breaker) tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)); testnet'te kapatılmamıştır. Her iki ağda da, v3.2.3'ten itibaren [Anahtar bütünlüğü kuralları](#key-integrity) bölümündeki algoritma yönetişimi korumaları geçerlidir.
 
 ### Genişletilebilirlik
 
@@ -219,7 +273,7 @@ Bu yardımcı programlar, varsayılan uygulama hash'ini destekler ve şunlar iç
 
 Tüm çapraz zincir köprü kanıtlamaları ve durum taahhütleri **Dilithium-5** imzaları kullanır. `x/multilayer` modülü, her `MsgAnchorState` gönderiminde PQC toplu imzalar gerektirir ve ML-KEM taahhütleri, köprü aktarıcıları arasındaki anahtar değişim kanallarını güvence altına alır.
 
-Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmamasını sağlayarak protokol yığını genelinde kuantum direncini korur.
+Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmamasını sağlayarak protokol yığını genelinde kuantum direncini korur. Hiçbir köprü rotası canlı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture#current-status)); yalnızca testnet'te (v3.2.4) bir köprü doğrulayıcısı kaydetmek, ayrıca PQC anahtarının sahiplik kanıtını da gerektirir.
 
 ## Modül Parametreleri
 

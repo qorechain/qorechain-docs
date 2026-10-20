@@ -140,6 +140,12 @@ der Mnemonic-Slot `"seed:" + hex(seed32)`.) Seit SDK 0.8.3 löst
 `derivePqcCanonical(account, mnemonic)` `account` zuerst in seine kleingeschriebene
 `qor1…`-Form auf (`canonicalAccount`), sodass eine großgeschriebene bech32-Adresse
 oder die `0x`-Form desselben Kontos denselben Schlüssel ergibt.
+Jede Sprache hat dieselbe Funktion (Python `derive_pqc_canonical`, Go
+`authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
+`Authenticator.derivePqcCanonical`; siehe die
+[Tabelle im Leitfaden Quantensicher](/sdk/guides/quantum-safe#canonical-derivation)),
+und dieselben `{ address, mnemonic }` ergeben in allen denselben Schlüssel (für
+TypeScript, Python, Go und Rust im Oktober 2026 geprüft).
 
 ### Senden auf der Native-Lane mit dem Eth-Key
 
@@ -159,8 +165,8 @@ des Kontos ist ein `0x`-Hex-String, decodieren Sie ihn daher für `ecdsaPubkey`
 zu Bytes. Zweitens übergeben Sie `rest` an den Signer, damit dieser das
 Netzwerk fragen kann, welche [Sign-Bytes-Form](#sign-bytes-versions) es
 verifiziert (auf `qorechain-vladi` und `qorechain-diana` wirft er einen
-Fehler, statt zu raten). Erfordert SDK 0.8.1 oder neuer und
-`npm i @cosmjs/stargate`:
+Fehler, statt zu raten). Erfordert SDK 0.8.1 oder neuer (0.9.0
+für die Helfer zum Besitznachweis) und `npm i @cosmjs/stargate`:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -169,6 +175,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -198,6 +205,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -290,7 +305,7 @@ gültig bleibt und gleichzeitig Post-Quanten-Schutz erhält. Der Post-Quanten-
 Teil wird als `PQCHybridSignature`-Erweiterung an der Transaktion mitgeführt.
 
 :::caution Hybrid-Signierung ist auf dem Native-Pfad erforderlich
-Ab Chain-Version **v3.2.0** (der Version, die beide Netzwerke betreiben) ist die
+Ab Chain-Version **v3.2.0** (das Mainnet läuft auf v3.2.3, das Testnet auf v3.2.4) ist die
 Netzwerk-Voreinstellung `hybrid_signature_mode = required` mit
 `allow_classical_fallback = false`. Hybrid-Signierung über `buildHybridTx` /
 `signAndBroadcastHybrid` (übergeben Sie `rest`) oder `signHybridEth` /
@@ -312,8 +327,35 @@ Tx-Parse-Fehler — aktualisieren Sie auf 0.6.1+.
 Der End-to-End-Builder für ein Konto mit Coin-Type 118 ist
 `signAndBroadcastHybrid` (oder `buildHybridTx`, um ohne Broadcast zu bauen). Er
 benötigt den klassischen Signer, das ML-DSA-87-Schlüsselpaar des Kontos,
-Kontonummer und Sequenz sowie `rest`. SDK 0.8.3 oder neuer,
-`npm i @cosmjs/stargate`:
+Kontonummer und Sequenz sowie `rest`.
+Für ein Konto mit Coin-Type 118 in TypeScript ist der kürzeste Weg der hybride
+`TxClient` (SDK 0.9.0): Übergeben Sie das Schlüsselpaar beim Verbinden, und jede Transaktion wird
+hybrid signiert, wobei `fee: "auto"` die hybride Transaktion selbst simuliert
+(nur die Registrierung bleibt klassisch):
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+Mit expliziter Kontrolle über Gebühr, Kontonummer und Sequenz verwenden Sie
+`signAndBroadcastHybrid` (SDK 0.8.1 oder neuer, `npm i @cosmjs/stargate`):
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -363,11 +405,19 @@ const result = await signAndBroadcastHybrid({
 
 Damit eine Hybrid-Transaktion PQC-verifiziert wird, muss der PQC-Public-Key des
 Signers mit `MsgRegisterPQCKeyV2` **registriert** sein (klassisch signiert,
-vom Hybrid ausgenommen). Das erledigen `ensurePqcRegistered` /
+vom Hybrid ausgenommen für ein Konto, das noch keinen Schlüssel hat). Das
+erledigen `ensurePqcRegistered` /
 `buildRegisterPqcKeyMsg` des SDK, `qorechaind tx pqc
 register-key` oder eine QoreChain-Wallet. `includePqcPublicKey: true` bettet
 den Schlüssel nur in die Erweiterung ein; es registriert ihn **nicht**, und die
-Chain registriert einen Schlüssel nicht bei der ersten Verwendung.
+Chain registriert einen Schlüssel nicht bei der ersten Verwendung. Seit v3.2.3
+verweigert die Chain schwache, degenerierte und wiederverwendete Schlüssel und
+akzeptiert einen optionalen Besitznachweis (siehe
+[Regeln zur Schlüsselintegrität](/architecture/post-quantum-security#key-integrity)). Im SDK
+0.9.0 hängt `ensurePqcRegistered` den Nachweis selbst an, sobald das Netzwerk
+v3.2.3 angewendet hat, und `signProofOfPossession` / `verifyProofOfPossession` werden
+für von Hand gebaute Registrierungen exportiert; die Builder von 0.8.x registrieren ohne Nachweis, was
+zulässig ist.
 
 ### Welche Sign-Bytes-Form? {#sign-bytes-versions}
 

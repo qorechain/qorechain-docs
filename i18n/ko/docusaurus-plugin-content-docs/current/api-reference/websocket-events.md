@@ -141,7 +141,7 @@ RPC 웹소켓은 QoreChain 컨센서스 엔진의 이벤트 구독 시스템을 
 
 ## 모듈 이벤트 레퍼런스
 
-이벤트는 표준 컨센서스 엔진 이벤트로 발생합니다. 이벤트 유형과 속성으로 필터링한 `tm.event='Tx'` 쿼리로 구독하십시오(예: `tm.event='Tx' AND bridge_deposit.chain EXISTS`). 블록 종료 로직에서 발생하는 블록 수준 이벤트(아래의 PRISM 이벤트 등)는 `Tx`가 아니라 `tm.event='NewBlock'`으로 전달됩니다. 아래의 이름과 속성은 체인 버전 v3.2.0 기준입니다.
+이벤트는 표준 컨센서스 엔진 이벤트로 발생합니다. 이벤트 유형과 속성으로 필터링한 `tm.event='Tx'` 쿼리로 구독하십시오(예: `tm.event='Tx' AND bridge_deposit.chain EXISTS`). 블록 종료 로직에서 발생하는 블록 수준 이벤트(아래의 PRISM 이벤트 등)는 `Tx`가 아니라 `tm.event='NewBlock'`으로 전달됩니다. 아래의 이름과 속성은 체인 버전 v3.2.3(메인넷) 기준이며, v3.2.4 테스트넷에만 존재하는 이벤트는 따로 표시되어 있습니다.
 
 :::note 실제로 볼 수 있는 이벤트
 이 모듈 중 상당수는 공개 네트워크에서 유휴 상태입니다. 브리지는 아직 가동되지 않았고, 등록된 멀티레이어 레이어나 롤업도 아직 없으며, xQORE는 사용할 수 없습니다. 이들 이벤트는 정의되어 있지만 활동이 생기기 전까지는 발생하지 않습니다. PRISM 관찰 및 보상 이벤트(`rl_observation_collected`, `rl_reward_computed`)는 두 네트워크 모두에서 약 10블록마다 발생합니다.
@@ -157,8 +157,11 @@ RPC 웹소켓은 QoreChain 컨센서스 엔진의 이벤트 구독 시스템을 
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | PQC 키가 등록될 때 발생합니다                        |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | PQC 키가 교체될 때 발생합니다                        |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | 키가 새 알고리즘으로 마이그레이션될 때 발생합니다    |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | EVM 레인 승인 윈도우가 열릴 때 발생합니다            |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`; 윈도우에 범위가 지정된 경우 `native_only`와 `allowed_targets`(v3.2.3) | EVM 레인 승인 윈도우가 열릴 때 발생합니다            |
 | `pqc_evm_window_closed`     | `address`                                                 | EVM 레인 승인 윈도우가 닫힐 때 발생합니다            |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | 계정이 EIP-7702 위임에 대한 동의를 기록할 때 발생합니다(v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | 계정의 EIP-7702 위임이 해제될 때 발생합니다(v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id`, 그리고 `name`/`category`, `old_status`/`new_status` 또는 `reason` | 거버넌스에 의한 알고리즘 레지스트리 변경 |
 
 PQC 키는 등록 트랜잭션으로 명시적으로 등록됩니다. 자동 등록 이벤트는 없습니다.
 
@@ -195,6 +198,8 @@ PQC 키는 등록 트랜잭션으로 명시적으로 등록됩니다. 자동 등
 | 이벤트 유형       | 주요 속성                                                   | 설명                                             |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | 새 롤업이 등록될 때 발생합니다                   |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id`와 주어진 경우 사유 | 롤업이 일시 중지, 재개 또는 중단될 때 발생합니다 |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index`(그리고 해결 시 `fraud_upheld`) | 배치에 이의가 제기되거나, 이의가 해결되거나, 배치가 거부될 때 발생합니다 |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | 정산 배치가 제출될 때 발생합니다                 |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | 배치가 챌린지 기간을 통과할 때 발생합니다        |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | DA 블롭이 저장될 때 발생합니다                   |
@@ -207,6 +212,29 @@ PQC 키는 등록 트랜잭션으로 명시적으로 등록됩니다. 자동 등
 | `burn`                   | `source`, `amount`                                        | 토큰이 영구적으로 소각될 때 발생합니다              |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | 트랜잭션 수 마일스톤 소각이 실행될 때 발생합니다    |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | 거버넌스가 묶여 있던 스테이커 몫의 일부를 해제할 때 발생합니다 |
+
+### 인플레이션, 가스 추상화, 라이선스, 라이트 노드 및 AI 모듈
+
+| 이벤트 유형 | 주요 속성 | 설명 |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | 거버넌스가 발행 파라미터를 변경할 때 발생합니다 |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | 허용된 다른 토큰으로 지불된 수수료가 변환될 때, 그리고 플로트가 다시 채워질 때 발생합니다(`uqor`만 허용되는 동안에는 발생하지 않음) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount`; `accepted_tokens`, `block_conversion_cap` | 플로트에 자금이 공급될 때, 그리고 거버넌스가 구성을 업데이트할 때 발생합니다 |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | 피부여자와 기능 | 라이선스 수명 주기 |
+| `license_authority_updated` | `new_authority` | 거버넌스가 라이선스 권한자를 교체할 때 발생합니다(v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | 라이트 노드 수명 주기 및 보상 이벤트 |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | 거버넌스가 AI 스크리닝 구성을 업데이트할 때 발생합니다 |
+
+### 스테이킹 티어 모듈 (테스트넷 전용)
+
+이 이벤트들은 `qorechain-diana` 테스트넷(v3.2.4)에만 존재합니다. 메인넷에는 아직 이 모듈이 없습니다(거버넌스 제안 13이 통과되면 높이 3,742,566에 v3.2.4가 적용됩니다).
+
+| 이벤트 유형 | 주요 속성 | 설명 |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | 위임 락이 생성되었습니다 |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | 락이 조기에 종료되었거나 만기에 도달했습니다 |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; 정산 합계 | 보너스가 청구되었습니다. 풀이 정산되었습니다 |
+| `staking_tier_params_updated` | 파라미터 | 거버넌스가 모듈 파라미터를 변경했습니다 |
 
 ### xQORE 모듈
 

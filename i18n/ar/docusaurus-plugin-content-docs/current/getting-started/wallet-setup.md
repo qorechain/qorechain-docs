@@ -10,7 +10,7 @@ sidebar_position: 2
 تدعم QoreChain أنواعًا متعددة من المحافظ عبر بيئات التنفيذ الأصلية وEVM وSVM. اختر المحفظة التي تناسب حالة الاستخدام الخاصة بك.
 
 :::note
-القيم أدناه تغطي كلًّا من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، تعمل منذ 29 يونيو 2026) وشبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**). نقاط النهاية العامة لكلتا الشبكتين مدرجة في [الشبكات](/appendix/networks#public-endpoints).
+القيم أدناه تغطي كلًّا من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM ‏**9801**، تعمل منذ 7 يونيو 2026، الإصدار v3.2.3) وشبكة الاختبار **`qorechain-diana`** (معرّف سلسلة EVM ‏**9800**، الإصدار v3.2.4). نقاط النهاية العامة لكلتا الشبكتين مدرجة في [الشبكات](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (موصى بها) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-احتفظ بنسخة احتياطية من ملف مفتاح PQC بالعناية نفسها التي تحتفظ بها بعبارتك الاسترجاعية (mnemonic). (يمكن إعادة اشتقاق المفتاح من العبارة الاسترجاعية بالأمر `qorechaind tx pqc recover-key`، واستبداله بالأمر `tx pqc rotate-key`.) تسجّل QoreX وQoreChain SDK المفتاح نيابةً عنك. راجع [المعاملة الأولى](/getting-started/first-transaction#register-pqc-key) للاطلاع على عملية إرسال موقّعة كاملة.
+منذ v3.2.3 يمكنك إرفاق إثبات حيازة اختياري بالتسجيل عبر `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`؛ كما ترفض السلسلة المفاتيح الضعيفة والمنحلّة والمستخدمة سابقًا. احتفظ بنسخة احتياطية من ملف مفتاح PQC بالعناية نفسها التي تحتفظ بها بعبارتك الاسترجاعية (mnemonic). (يمكن إعادة اشتقاق المفتاح من العبارة الاسترجاعية بالأمر `qorechaind tx pqc recover-key`، واستبداله بالأمر `tx pqc rotate-key`.) تسجّل QoreX وQoreChain SDK المفتاح نيابةً عنك. راجع [المعاملة الأولى](/getting-started/first-transaction#register-pqc-key) للاطلاع على عملية إرسال موقّعة كاملة.
 
 ### التوقيع الهجين باستخدام SDK
 

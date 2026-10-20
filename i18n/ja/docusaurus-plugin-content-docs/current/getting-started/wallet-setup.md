@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChainは、ネイティブ、EVM、SVMの各実行環境にわたって複数のウォレットタイプをサポートしています。ご自身のユースケースに合ったウォレットを選択してください。
 
 :::note
-以下の値は、**`qorechain-vladi`**メインネット（EVMチェーンID **9801**、2026年6月29日から稼働）と**`qorechain-diana`**テストネット（EVMチェーンID **9800**）の両方をカバーしています。両ネットワークの公開エンドポイントは[ネットワーク](/appendix/networks#public-endpoints)に記載されています。
+以下の値は、**`qorechain-vladi`**メインネット（EVMチェーンID **9801**、2026年6月7日から稼働、リリースv3.2.3）と**`qorechain-diana`**テストネット（EVMチェーンID **9800**、リリースv3.2.4）の両方をカバーしています。両ネットワークの公開エンドポイントは[ネットワーク](/appendix/networks#public-endpoints)に記載されています。
 :::
 
 ## QoreX（推奨） {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-PQC鍵ファイルは、ニーモニックと同じくらい慎重にバックアップしてください。（鍵は`qorechaind tx pqc recover-key`でニーモニックから再導出でき、`tx pqc rotate-key`で置き換えられます。）QoreXとQoreChain SDKは鍵を自動的に登録します。署名付き送金の完全な例については[初めてのトランザクション](/getting-started/first-transaction#register-pqc-key)を参照してください。
+v3.2.3以降は、`qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`で登録することで、オプションの所有証明を添付できます。チェーンは、脆弱な鍵、縮退した鍵、すでに使用済みの鍵も拒否します。PQC鍵ファイルは、ニーモニックと同じくらい慎重にバックアップしてください。（鍵は`qorechaind tx pqc recover-key`でニーモニックから再導出でき、`tx pqc rotate-key`で置き換えられます。）QoreXとQoreChain SDKは鍵を自動的に登録します。署名付き送金の完全な例については[初めてのトランザクション](/getting-started/first-transaction#register-pqc-key)を参照してください。
 
 ### SDKによるハイブリッド署名
 

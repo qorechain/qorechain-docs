@@ -10,7 +10,7 @@ sidebar_position: 5
 This guide walks through sending QOR tokens, querying transactions, and interacting with QoreChain across its native, EVM, and SVM interfaces.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 29 June 2026 — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release v3.2.3 (the testnet runs v3.2.4) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 ## Check Your Balance
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+Since v3.2.3 the chain also accepts an optional **proof of possession** with the registration, and refuses weak, degenerate or already-used keys. To attach one, register with `register-key-v2` and name your local key:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ Everything else about the EVM lane is unchanged: you keep signing with MetaMask,
 * A transaction that is admitted and then fails still uses its slot and value budget.
 * Opening a new window **replaces** the previous one; consumption starts again from zero.
 * The CLI accepts `max-value` in `uqor` or `qor` (`1000qor` = 1,000,000,000 uqor).
+* The value bound counts native QOR only: a token transfer, an approval or any other contract call carries value zero. To bound those as well, narrow the window's scope (below).
 
 **Step 1 — register your post-quantum key** (once): see [Register your post-quantum key](#register-pqc-key) above.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**Narrowing the scope (v3.2.3 and later).** Two optional flags restrict what an open window admits: `--native-only` admits plain native QOR transfers only (no calldata, no contract creation, no recipient that carries code), and `--allowed-targets 0xAAA...,0xBBB...` admits only transactions to those recipients (at most 16; contract creation is then refused). For example:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 On mainnet, opening a window has used about 180,000 gas. In [QoreX](/qorex/security-and-recovery#evm-window) the same step is **Settings → Security → EVM access window** (app) or the **EVM access window** button (extension). Opening the window advances your account nonce, so open it **before** you prepare the EVM transaction in your wallet.
@@ -162,7 +177,7 @@ The REST answer never fails for an address without a window; it returns `found: 
 
 **Step 4 — use the EVM lane normally.** Send from MetaMask or your tooling as usual. Each transaction consumes one transaction slot and (value + maximum fee) from the window.
 
-**Close a window early.** If you suspect your classical key is compromised, close the window; whatever it still admitted is refused from the next block:
+**Close a window early.** If you suspect your classical key is compromised, close the window; whatever it still admitted is refused from the next block. Closing also revokes any pending EIP-7702 delegation consent (since v3.2.2; a type-4 transaction that changes an account's code is admitted only after a post-quantum `authorize-evm-delegation` consent):
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

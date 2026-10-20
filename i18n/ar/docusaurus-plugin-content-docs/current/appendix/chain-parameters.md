@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # معاملات السلسلة
 
-مرجع موحَّد لمعاملات الوحدات في شبكات QoreChain، مُجمَّعة حسب الوحدة. يمكن الاستعلام عن المعاملات باستخدام `qorechaind query <module> params` حيثما تتوفر للوحدة استعلامات params (`pqc` و`amm` و`crossvm` و`lightnode` و`multilayer` و`reputation` و`rlconsensus`؛ أما `ai` و`qca` و`rdk` و`bridge` و`abstractaccount` و`gasabstraction` فتستخدم `config`، ويمكن الاستعلام عن `gasabstraction` على الشبكة التجريبية فقط)، وعبر REST فقط للمسارات المذكورة في [مرجع REST / gRPC](/api-reference/rest-grpc-endpoints). REST غير متاح للوحدات `ai` و`qca` و`reputation` و`crossvm` و`rlconsensus` و`fairblock` و`xqore`.
+مرجع موحَّد لمعاملات الوحدات في شبكات QoreChain، مُجمَّعة حسب الوحدة. يمكن الاستعلام عن المعاملات باستخدام `qorechaind query <module> params` حيثما تتوفر للوحدة استعلامات params (`pqc` و`amm` و`crossvm` و`lightnode` و`multilayer` و`reputation` و`rlconsensus`؛ أما `ai` و`qca` و`rdk` و`bridge` و`abstractaccount` و`gasabstraction` فتستخدم `config`، ويمكن الاستعلام عن `gasabstraction` على الشبكة التجريبية فقط)، وعبر REST فقط للمسارات المذكورة في [مرجع REST / gRPC](/api-reference/rest-grpc-endpoints). كما تُتاح معاملات `x/inflation` عبر REST على الشبكة الرئيسية منذ v3.2.3 (`/qorechain/inflation/v1/params`). REST غير متاح للوحدات `ai` و`qca` و`reputation` و`crossvm` و`rlconsensus` و`fairblock` و`xqore`.
 
 :::note
-القيم المعروضة قُرئت مباشرةً بتاريخ 14 أكتوبر 2026 (قيم منشأ الشبكة الرئيسية ما لم يغيّرها مقترح حوكمة؛ وتُذكر تلك الحالات). تنطبق المعاملات على الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM رقم **9801**) والشبكة التجريبية **`qorechain-diana`** (معرّف سلسلة EVM رقم **9800**)، وهي متطابقة على الشبكتين إلا حيث يُذكر خلاف ذلك. المدد المعطاة بالكتل تُحوَّل وفق زمن الكتلة المقيس على الشبكة الرئيسية وهو نحو 3.2 ثانية (تنتج الشبكة التجريبية كتلة كل ثانية تقريبًا).
+القيم المعروضة قُرئت مباشرةً من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM رقم **9801**، الإصدار **v3.2.3**) بتاريخ 20 أكتوبر 2026 (قيم المنشأ ما لم يغيّرها مقترح حوكمة؛ وتُذكر تلك الحالات). وهي متطابقة على الشبكة التجريبية **`qorechain-diana`** (معرّف سلسلة EVM رقم **9800**، الإصدار **v3.2.4**) إلا حيث يُذكر خلاف ذلك؛ والفروق القائمة اليوم مجمَّعة في [فروق الشبكة التجريبية (v3.2.4)](#testnet-differences). المدد المعطاة بالكتل تُحوَّل وفق زمن الكتلة المقيس على الشبكة الرئيسية وهو نحو 3.2 ثانية (تنتج الشبكة التجريبية كتلة كل ثانية تقريبًا).
 :::
 
 ---
@@ -26,7 +26,20 @@ sidebar_position: 2
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (مطلوب)                | وضع الإلزام: 0=معطّل، 1=اختياري، 2=مطلوب                                  |
 
-سجل الخوارزميات (المعرّف 1 `dilithium5`، والمعرّف 2 `mlkem1024`) هو حالة سلسلة وليس معاملًا. تُسجَّل المفاتيح صراحةً عبر `MsgRegisterPQCKey`؛ ولا يوجد تسجيل تلقائي.
+سجل الخوارزميات (المعرّف 1 `dilithium5`، والمعرّف 2 `mlkem1024`) هو حالة سلسلة وليس معاملًا. تُسجَّل المفاتيح صراحةً عبر `MsgRegisterPQCKey` أو `MsgRegisterPQCKeyV2`؛ ولا يوجد تسجيل تلقائي. منذ v3.2.3 ترفض السلسلة المفاتيح العامة الضعيفة والمنحلّة والمستخدمة سابقًا، وتقبل `MsgRegisterPQCKeyV2` إثبات امتلاك (proof of possession) اختياريًا (`tx pqc register-key-v2 ... --pqc-key <name>`) تتحقق منه السلسلة عند وجوده.
+
+### حدود نافذة تفويض EVM {#evm-window-limits}
+
+حدود [نافذة تفويض EVM](/getting-started/first-transaction#evm-window) هي ثوابت في البروتوكول وليست معاملات وحدة:
+
+| الحد | القيمة |
+| ----- | ----- |
+| الحد الأقصى لـ `blocks` | 17,280 (نحو 15 ساعة عند كتل ≈3.2 ث) |
+| الحد الأقصى لـ `max_txs` | 1,000 |
+| `max_value` | أكبر من 0 (uqor؛ القيمة المحوَّلة مضافًا إليها الحد الأقصى للرسوم لكل معاملة) |
+| الحد الأقصى لـ `allowed_targets` | 16 عنوان مستلم (نطاق اختياري، v3.2.3) |
+
+ويمكن أيضًا تضييق النافذة باستخدام `native_only` (تحويلات QOR الأصلية البسيطة فقط) اعتبارًا من v3.2.3.
 
 ---
 
@@ -99,7 +112,7 @@ sidebar_position: 2
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | رسم حرق ثابت لإنشاء عقد                                |
 | `ai_service_burn_rate` | `0.50`                       | نسبة المحروق من رسوم خدمات الذكاء الاصطناعي            |
 | `bridge_burn_rate`     | `1.00`                       | نسبة المحروق من رسوم الجسر                             |
-| `failed_tx_burn_rate`  | `0.10`                       | نسبة المحروق من غاز المعاملات الفاشلة                  |
+| `failed_tx_burn_rate`  | `0.10`                       | نسبة المحروق من غاز المعاملات الفاشلة (تطبّقها السلسلة منذ v3.2.2) |
 | `validator_share`      | `0.37`                       | النسبة الموزَّعة على المُصدِّقين                       |
 | `treasury_share`       | `0.20`                       | النسبة المرسلة إلى الخزينة                             |
 | `staker_share`         | `0.10`                       | النسبة الموزَّعة على الراهنين                          |
@@ -133,13 +146,13 @@ sidebar_position: 2
 | المعامل                | القيمة                  | الوصف                                                 |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule` (قديم) أو `fixed` (منذ v3.1.94)             |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16,239 QOR) | المُصدَر لكل حقبة في الوضع الثابت          |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114,285,714 QOR) | سقف تراكمي صارم                 |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86,000 QOR) | المُصدَر لكل حقبة في الوضع الثابت (16,239 QOR قبل مقترح الحوكمة 10 بتاريخ 19 أكتوبر 2026) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590,000,000 QOR) | سقف تراكمي صارم (114,285,714 QOR قبل المقترح 10) |
 | `epoch_length`         | `43,200` كتلة           | عدد الكتل لكل حقبة (نحو 38.6 ساعة عند كتل ≈3.2 ث)      |
 | `schedule`             | 17.5 %، 11 %، 7 %، 7 %، 2 % | معدلات قديمة مبنية على السنوات، غير مستخدمة في الوضع الثابت |
 | `enabled`              | `true`                  | علَم تفعيل الوحدة                                      |
 
-تُصدِر الوحدة هذا الإصدار إلى جامع الرسوم حتى يُبلَغ السقف. راجع [Tokenomics](/architecture/tokenomics#supply-and-emission). على الشبكة الرئيسية لا تُتاح هذه القيم عبر مسار REST.
+تُصدِر الوحدة هذا الإصدار إلى جامع الرسوم حتى يُبلَغ السقف. تبدأ أول حقبة بمقدار 86,000 QOR عند الكتلة 3,672,000. وبتاريخ 20 أكتوبر 2026 (الحقبة 84) كان قد أُصدر 105,248,896.21 QOR وبقي 484,751,103.79 QOR تحت السقف (`GET /qorechain/inflation/v1/epoch_info`). راجع [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -281,7 +294,7 @@ sidebar_position: 2
 معدل التحويل هو المعدل المستخدم عند تحويل رسم مدفوع بذلك الرمز.
 
 :::note لا توجد قناة IBC مفتوحة
-لا توجد قناة IBC مفتوحة على أي من الشبكتين، ولذلك لا يمكن أن يوجد بعدُ أي `ibc/USDC` أو `ibc/ATOM`؛ وتُدفع الرسوم بـ `uqor`. أُعيد تصميم مسار الرسوم في v3.2.2 (على الشبكة التجريبية فقط).
+لا توجد قناة IBC مفتوحة على أي من الشبكتين، ولذلك لا يمكن أن يوجد بعدُ أي `ibc/USDC` أو `ibc/ATOM`؛ وتُدفع الرسوم بـ `uqor`.
 :::
 
 ---
@@ -298,7 +311,7 @@ sidebar_position: 2
 | `max_light_nodes`        | `10,000`           | الحد الأقصى للعقد الخفيفة المسجَّلة                   |
 | `heartbeat_grace_period` | `100` كتلة         | مهلة السماح لنبضة حياة متأخرة                        |
 
-محاسبة المكافآت مفعَّلة (يُبلغ `GET /qorechain/lightnode/v1/reward_pool` عن `max_reward_per_block_per_node` بقيمة 1,713 uqor كما قُرئ بتاريخ 14 أكتوبر 2026)، لكن التسجيل مغلق حاليًا ولا توجد أي عقدة خفيفة مسجَّلة. راجع [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+محاسبة المكافآت مفعَّلة. يُبلغ `GET /qorechain/lightnode/v1/reward_pool` عن المجمَّع (`balance` و`reserved` و`outstanding` و`payable` و`distributable`) وعن الحد الأقصى للمكافأة لكل عقدة. منذ v3.2.3 أصبح هذا الحد `max_reward_per_month_per_node`، وهو **2,000 QOR (`2000000000` uqor) لكل عقدة كل 30 يومًا**، يُحتسب بالتناسب مع زمن الكتلة ويُضبط وفق وقت تشغيل العقدة؛ ولا تزال القيمة القديمة لكل كتلة (`max_reward_per_block_per_node`، أي `1713` uqor) تُعرض أيضًا. وبتاريخ 20 أكتوبر 2026 كان في المجمَّع احتياطي قدره 487.2318 QOR دون أي مستحقات معلَّقة. التسجيل مفتوح ومقيَّد بترخيص: مُنحت ستة تراخيص `lightnode_operator` على الشبكة الرئيسية ولم تُسجَّل أي عقدة خفيفة بعد (`GET /qorechain/license/v1/holders/lightnode_operator` و`GET /qorechain/lightnode/v1/stats`). راجع [العقدة الخفيفة](/light-node/overview#reward-program-status) و[Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -336,7 +349,7 @@ sidebar_position: 2
 
 ## Staking وslashing والحوكمة والرسوم وEVM {#core-modules}
 
-وحدات Cosmos SDK وEVM القياسية، قُرئت مباشرةً (متطابقة على الشبكتين ما لم يُذكر خلاف ذلك).
+وحدات Cosmos SDK وEVM القياسية، قُرئت مباشرةً بتاريخ 20 أكتوبر 2026 (متطابقة على الشبكتين ما لم يُذكر خلاف ذلك؛ ولم تتغير منذ قراءة 14 أكتوبر).
 
 | الوحدة | المعامل | القيمة |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ sidebar_position: 2
 
 يمكن للسلسلة تعطيل أنواع رسائل بعينها بواسطة قاطع الدائرة في Cosmos SDK، ويتحكم فيه حساب عمليات المؤسسة والحوكمة. يُرفض نوع الرسالة المعطَّل في معالج ante على كل مسار. القائمة الحية متاحة على `GET /cosmos/circuit/v1/disable_list`.
 
-**الشبكة الرئيسية (14 أكتوبر 2026، 16 إدخالًا):** إنشاء حسابات الاستحقاق التدريجي (`MsgCreateVestingAccount` و`MsgCreatePermanentLockedAccount` و`MsgCreatePeriodicVestingAccount`)؛ رسائل CosmWasm `MsgStoreCode` و`MsgInstantiateContract` و`MsgInstantiateContract2`؛ رسائل AMM `MsgPausePool` و`MsgResumePool`؛ `crossvm.MsgCrossVMCall`؛ `multilayer.MsgUpdateLayerStatus`؛ `pqc.MsgDeprecateAlgorithm` و`pqc.MsgDisableAlgorithm`؛ ورسائل التحكم الأربع في PRISM (`MsgSetAgentMode` و`MsgUpdatePolicy` و`MsgUpdateRewardWeights` و`MsgResumeAgent`). مسار EVM (`MsgEthereumTx`) **مفتوح**: كان معطَّلًا من 16 إلى 25 سبتمبر وأُعيد فتحه بترقية v3.2.0.
+**الشبكة الرئيسية (20 أكتوبر 2026، 16 إدخالًا، دون تغيير منذ 14 أكتوبر):** إنشاء حسابات الاستحقاق التدريجي (`MsgCreateVestingAccount` و`MsgCreatePermanentLockedAccount` و`MsgCreatePeriodicVestingAccount`)؛ رسائل CosmWasm `MsgStoreCode` و`MsgInstantiateContract` و`MsgInstantiateContract2`؛ رسائل AMM `MsgPausePool` و`MsgResumePool`؛ `crossvm.MsgCrossVMCall`؛ `multilayer.MsgUpdateLayerStatus`؛ `pqc.MsgDeprecateAlgorithm` و`pqc.MsgDisableAlgorithm`؛ ورسائل التحكم الأربع في PRISM (`MsgSetAgentMode` و`MsgUpdatePolicy` و`MsgUpdateRewardWeights` و`MsgResumeAgent`). مسار EVM (`MsgEthereumTx`) **مفتوح**: كان معطَّلًا من 16 إلى 25 سبتمبر وأُعيد فتحه بترقية v3.2.0.
 
-**الشبكة التجريبية:** رسائل CosmWasm الثلاث فقط.
+**الشبكة التجريبية (20 أكتوبر 2026):** رسائل CosmWasm الثلاث فقط.
 
 كل نوع رسالة آخر، بما في ذلك جميع رسائل bank وstaking والحوكمة والتوزيع وauthz وتسجيل `x/pqc` القياسية، مفعَّل. القائمة تخضع للحوكمة وقد تتغير؛ استعلم عنها دائمًا.
+
+---
+
+## فروق الشبكة التجريبية (v3.2.4) {#testnet-differences}
+
+تعمل الشبكة التجريبية `qorechain-diana` بالإصدار v3.2.4 (طُبِّق عند الارتفاع 8,337,253 بتاريخ 19 أكتوبر 2026)؛ والإصدار v3.2.4 **للشبكة التجريبية فقط** حاليًا؛ ومن شأن مقترح الحوكمة 13 على الشبكة الرئيسية أن يطبّقه عند الارتفاع 3,742,566. اعتبارًا من 20 أكتوبر 2026 تختلف هذه العناصر عن الشبكة الرئيسية:
+
+| المجال | الشبكة التجريبية |
+| ---- | ------- |
+| الوحدات | 49 بدلًا من 48: وحدة الرهن المقفل زمنيًا الاختيارية `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`؛ الحد الأدنى للقفل 10 QOR). راجع [الرهن والتفويض](/user-guide/staking-and-delegation#time-locked-staking). |
+| `x/inflation` | قيم إصدار أقدم (16,239 QOR لكل حقبة، وسقف 114,285,714 QOR، وقد بُلغ بالفعل) ووضع ثالث لـ `emission_mode` هو `target_apy`، مع معامل `target_apy_bps` قيمته حاليًا `0`. |
+| `x/burn` | مصدر مسجَّل ثالث عشر، `staking_tier_penalty`. |
+| مجمَّع مكافآت `x/lightnode` | حقول إبلاغ إضافية (`monthly_cap_active` و`last_distribution_time` و`last_distribution_height`)؛ ويبدأ الحد الأقصى لمكافأة العقدة من تسجيلها هي. |
+| `x/pqc` | علَم `possession_proven` على حسابات PQC؛ وإثبات الامتلاك ما زال اختياريًا لمفاتيح الحسابات ومطلوبًا لمفاتيح مُصدِّقي الجسر. |
+| `x/rdk` | تُحتسب نافذة الطعن المتفائلة بزمن الكتلة. |
+| قاطع الدائرة | رسائل CosmWasm الثلاث فقط (انظر أعلاه). |
+| الاستعلامات | استعلامان جديدان هما `protocol_features` و`auth_nonce`. |
+
+كل معامل غير مذكور هنا متطابق على الشبكتين.

@@ -13,7 +13,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **AMM** — Automated Market Maker (market maker automatizzato). Il modulo di liquidità on-chain nativo di QoreChain (`x/amm`) che fornisce pool a prodotto costante, swap e provisioning di liquidità direttamente a livello di protocollo, senza un deployment di smart contract esterno. Vedi [AMM](/architecture/amm).
 
-**Authorisation window (EVM)** (finestra di autorizzazione EVM) — Un'autorizzazione delimitata (blocchi, numero di transazioni, valore totale), aperta con un messaggio della lane Cosmos firmato in modo post-quantistico, entro cui una transazione della lane EVM deve rientrare dalla v3.2.0. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM)** (finestra di autorizzazione EVM) — Un'autorizzazione delimitata (blocchi, numero di transazioni, valore totale), aperta con un messaggio della lane Cosmos firmato in modo post-quantistico, entro cui una transazione della lane EVM deve rientrare dalla v3.2.0. Dalla v3.2.3 una finestra può essere ristretta ai soli trasferimenti nativi o a un elenco di destinatari. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. Il formato bytecode usato dal runtime SVM per eseguire i programmi on-chain. I programmi vengono compilati in BPF prima del deployment.
 
@@ -39,7 +39,7 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **IBC** — Inter-Blockchain Communication (comunicazione tra blockchain). Un protocollo per lo scambio autenticato di messaggi tra blockchain indipendenti. QoreChain supporta i canali IBC per i trasferimenti di token cross-chain e il relay di dati.
 
-**Light Node** — Un client a basso consumo di risorse che segue la chain confrontando gli header dei blocchi con uno o più endpoint RPC, senza mantenere lo stato completo. Non serve query ad altri. La suddivisione delle commissioni di protocollo riserva una quota del **3%** al programma di ricompense dei light node, che non è ancora aperto alla registrazione. Vedi [Light Node](/light-node/overview) e lo [stato del programma di ricompense](/light-node/overview#reward-program-status).
+**Light Node** — Un client a basso consumo di risorse che segue la chain confrontando gli header dei blocchi con uno o più endpoint RPC, senza mantenere lo stato completo. Non serve query ad altri. La suddivisione delle commissioni di protocollo riserva una quota del **3%** al programma di ricompense dei light node. La registrazione al programma è aperta e subordinata a una licenza `lightnode_operator` (50 $, acquistata sulla Dashboard); al 20 ottobre 2026 sulla mainnet erano state concesse sei licenze e nessun light node si era ancora registrato. Eseguire un nodo non richiede alcuna licenza. Vedi [Light Node](/light-node/overview) e il suo [stato del programma di ricompense](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (valore massimo estraibile). Il profitto che può essere ottenuto riordinando, inserendo o censurando transazioni all'interno di un blocco. Il modulo FairBlock di QoreChain (cifratura tIBE) è progettato per mitigare l'estrazione di MEV; non è ancora abilitato.
 
@@ -54,6 +54,8 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 **PQC** — Post-Quantum Cryptography (crittografia post-quantistica). Algoritmi crittografici progettati per essere sicuri contro attacchi sia da computer classici sia da computer quantistici. QoreChain implementa la PQC tramite il suo modulo `x/pqc` con ML-DSA-87 come schema di firma principale.
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. Il livello di ottimizzazione basato sul reinforcement learning incorporato nel Consensus Engine di QoreChain (tramite il modulo `x/rlconsensus`). PRISM osserva le metriche di rete ed è progettato per proporre aggiustamenti deterministici dei parametri di consenso sotto controlli di sicurezza di tipo circuit breaker; oggi funziona in modalità di osservazione. Vedi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
+
+**Proof of possession (PoP)** (prova di possesso) — Una firma che una chiave post-quantistica produce sui propri dati di registrazione, dimostrando che chi la registra detiene la chiave privata. Opzionale nella registrazione delle chiavi degli account dalla v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obbligatoria per le chiavi dei validatori del bridge sulla testnet (v3.2.4).
 
 **Protocol feature** (funzionalità di protocollo) — Un interruttore di comportamento che l'upgrade handler di una release attiva a una determinata altezza di blocco su ogni nodo (ad esempio `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), in modo che la cronologia venga rieseguita invariata al di sotto di quell'altezza.
 
@@ -77,13 +79,15 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **STARK** — Scalable Transparent Argument of Knowledge. Un sistema di prove a conoscenza zero che non richiede un trusted setup ed è resistente ai quanti. Disponibile come sistema di prova alternativo per il settlement degli zk-rollup nell'RDK.
 
-**Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance. Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance; la governance li ha rilasciati nell'ottobre 2026 (dopo la v3.2.3 è stato proposto un resto corretto della quota bloccata). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine. Un ambiente di esecuzione ad alte prestazioni per i programmi BPF. QoreChain integra la SVM come uno dei tre runtime supportati insieme al QoreChain EVM Engine e a CosmWasm.
 
 **TEE** — Trusted Execution Environment (ambiente di esecuzione fidato). Un'area sicura di un processore che garantisce che codice e dati siano protetti dall'accesso esterno. QoreChain definisce specifiche di interfaccia per l'attestazione TEE; non esiste ancora alcuna implementazione.
 
 **tIBE** — Threshold Identity-Based Encryption (cifratura a soglia basata sull'identità). Uno schema crittografico in cui un messaggio può essere decifrato solo quando una soglia di parti collabora. Usato dal modulo FairBlock per cifrare il contenuto delle transazioni fino alla finalizzazione del blocco, impedendo l'estrazione di MEV.
+
+**Time-locked staking** (staking con blocco temporale) — Un impegno opzionale di una parte di una delega per un periodo fisso, fornito dal modulo `x/stakingtier`. **Solo testnet** (v3.2.4); non attivo sulla mainnet. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — La denominazione base del token QOR. 1 QOR = 1.000.000 uqor (10^6). Tutti gli importi on-chain, le commissioni e i valori di staking sono espressi in uqor.
 

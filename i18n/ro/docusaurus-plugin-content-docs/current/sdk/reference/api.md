@@ -43,6 +43,13 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, constante de lungime,
   ID-uri de algoritmi/funcții ajutătoare, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
+- **Ciclul de viață al cheii PQC (0.9.0):** `ensurePqcRegistered` (citește starea
+  prin REST, `PqcKeyMismatchError`), `fetchPqcStatus`, `isRegisteredPqcKey`,
+  `buildRegisterPqcKeyMsg`, `signProofOfPossession` / `verifyProofOfPossession`
+  (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
+  `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
+  `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
+  `CHAIN_UPGRADE_V3_2_3`).
 - **Clienți de citire:** `RestClient` (incl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, funcții ajutătoare HTTP (`getJson`,
   `postJsonRpc`, `buildUrl`, `joinUrl`, `QoreHttpError`); clienți de
@@ -50,17 +57,18 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `abstractaccount` (`permissionSchema`) și interogările de ancore de stare
   `Anchor`/`Anchors` din modulul `multilayer`. Pe endpoint-urile publice,
   unele funcții REST tipizate apelează rute pe care gateway-ul nu le servește:
-  `getAiStats`, `getFeeEstimate`, `getXqorePosition`, `getInflationRate`,
-  `getReputation` și `getPqcAccount` (care apelează o cale `accounts` la plural;
-  ruta servită este cea la singular `/qorechain/pqc/v1/account/{address}`,
-  accesibilă cu `rest.get(...)`). `getBurnStats`, `getAllBalances`,
-  `getBridgeChains` și `getPermissionSchema` funcționează.
+  `getAiStats`, `getFeeEstimate`, `getXqorePosition`, `getInflationRate` și
+  `getReputation`. `getBurnStats`, `getAllBalances`, `getBridgeChains`,
+  `getPermissionSchema` și (începând cu 0.9.0, care a corectat calea sa `accounts`
+  la plural în ruta servită, la singular,
+  `/qorechain/pqc/v1/account/{address}`) `getPqcAccount` funcționează.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
-- **Tranzacții:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`,
+- **Tranzacții:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient` (hibrid
+  când este conectat cu `pqcKeypair`, 0.9.0; `HYBRID_VERIFY_GAS`),
   `MSG_SEND_TYPE_URL`, funcții ajutătoare hibride (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   decodare structurată a erorilor prin `decodeTxError` (incl. codurile
@@ -88,13 +96,21 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `signHybridEth` și `EthNativeSigner`; `resolveSignBytesVersion`,
   `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
   `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
-- **Fereastra de autorizare EVM (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
-  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
-  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. Vezi
+- **Fereastra de autorizare EVM (0.8.2+):** `openEvmWindowMsg` (`nativeOnly` și
+  `allowedTargets` începând cu 0.9.0), `closeEvmWindowMsg`, `fetchEvmWindow`,
+  `classifyEvmWindowRejection`, `isEvmWindowRejection`, `MAX_EVM_WINDOW_BLOCKS`,
+  `MAX_EVM_WINDOW_TXS`, `MAX_EVM_WINDOW_TARGETS`. Vezi
   [Fereastra de autorizare EVM](/sdk/guides/evm#evm-window).
+- **Consimțământ EIP-7702 (0.9.0):** `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`,
+  `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`,
+  `classifyEvmDelegationRejection`, `EVM_DELEGATION_CLEAR`,
+  `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
+- **Digest v2 pentru abstract account (0.9.0):** `evmAuthSignBytesV2`,
+  `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
 - **Derivare PQC canonică (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; mesajul de înregistrare PQC este
-  `buildRegisterPqcKeyMsg` (folosit de `ensurePqcRegistered`).
+  `buildRegisterPqcKeyMsg` (folosit de `ensurePqcRegistered`). `derivePqcLegacy`
+  este depreciat pentru chei noi.
 
 ### `@qorechain/evm`
 
@@ -119,10 +135,10 @@ program-id.
 
 | Limbaj | Documentație generată | Instalare |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.8.3` (import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (tag `packages/go/v0.8.4`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.8.3` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.9.0` (import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.9.0` |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

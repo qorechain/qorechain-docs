@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain unterstützt **CosmWasm**-Smart-Contracts und ermöglicht es Entwicklern, sichere, sandboxed Programme in Rust zu schreiben, die zu WebAssembly kompiliert werden. CosmWasm-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 29. Juni 2026), auf dem die Node-Version **v3.2.1** läuft. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem v3.2.2 läuft.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.3** läuft. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem v3.2.4 läuft (nur Testnet).
 :::
 
 :::caution Code-Upload und Instanziierung erfordern derzeit eine explizite Berechtigung
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Cross-VM-Aufrufe
 
-Cross-VM-Aufrufe werden als `MsgCrossVMCall`-Transaktionen über das Modul `x/crossvm` gesendet; den Nachrichten-Lebenszyklus finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability). CosmWasm-Contracts haben heute keine contractseitige Anbindung, um einen Cross-VM-Aufruf auszulösen (es gibt keine benutzerdefinierte `QoreChainMsg`-Nachricht, die Contracts ausgeben könnten); ein Contract kann daher aus seinem `execute`-Einstiegspunkt heraus keinen EVM- oder SVM-Contract aufrufen.
+Cross-VM-Aufrufe werden als `MsgCrossVMCall`-Transaktionen über das Modul `x/crossvm` gesendet; den Nachrichten-Lebenszyklus finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability). CosmWasm-Contracts haben keine eigene contractseitige Anbindung, um einen Cross-VM-Aufruf auszulösen (es gibt keine benutzerdefinierte `QoreChainMsg`-Nachricht, die Contracts ausgeben könnten); ein Contract kann daher aus seinem `execute`-Einstiegspunkt heraus keinen EVM- oder SVM-Contract aufrufen. Seit v3.2.3 wird ein Aufruf in die eigene Lane des Aufrufers abgelehnt, und ein eingereihter Aufruf, der fehlschlägt, hinterlässt keine Nebenwirkungen.
 
 :::caution Cross-VM-Aufrufe sind im Mainnet derzeit abgeschaltet
 `MsgCrossVMCall` steht auf der Circuit-Breaker-Liste des Mainnets (`qorechaind query circuit disabled-list`), und die SVM-Lane ist in beiden Netzwerken deaktiviert; der Cross-VM-Pfad ist daher für gewöhnliche Transaktionen heute nicht nutzbar.

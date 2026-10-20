@@ -28,7 +28,7 @@ Fare entrambe le cose è l'opzione più sicura — la frase ti protegge se cambi
 
 La schermata **Security** mostra lo stato on-chain in tempo reale della tua chiave post-quantistica: **"Registers with your first transfer"** → **"Registered on-chain ✓"**. L'algoritmo è **ML-DSA-87** (deterministico, ibrido con secp256k1).
 
-**Rotazione della chiave** — la rotazione della tua chiave post-quantistica (un'operazione on-chain `MsgRotatePQCKey`) **non è ancora disponibile all'interno di QoreX**; arriverà con un successivo aggiornamento di gestione delle chiavi, richiederà una nuova conferma biometrica e **non è mai automatizzata**. I siti web non possono chiedere a QoreX di registrare, migrare o ruotare la tua chiave post-quantistica. Vedi [Key rotation](/developer-guide/post-quantum-signing#key-rotation) per il meccanismo sottostante.
+**Rotazione della chiave** — la rotazione della tua chiave post-quantistica (un'operazione on-chain `MsgRotatePQCKey`) **non è ancora disponibile all'interno di QoreX**; arriverà con un successivo aggiornamento di gestione delle chiavi, richiederà una nuova conferma biometrica e **non è mai automatizzata**. I siti web non possono chiedere a QoreX di registrare, migrare o ruotare la tua chiave post-quantistica. La registrazione avviene da sola con il tuo primo trasferimento e non richiede nulla da parte tua — sulla mainnet v3.2.3 la chain accetta anche una *prova di possesso* opzionale insieme alla registrazione, che QoreX gestisce in modo invisibile nelle build attuali degli store. Vedi [Key rotation](/developer-guide/post-quantum-signing#key-rotation) per il meccanismo sottostante.
 
 ## Recupero sociale {#social-recovery}
 
@@ -64,6 +64,8 @@ Il collegamento del dispositivo è una **comodità**, non un metodo di recupero.
 
 Dalla chain **v3.2.0**, una transazione sulla **lane EVM** — per esempio una che firmi in MetaMask sulla rete EVM di QoreChain — viene ammessa solo da un account che ha una **chiave post-quantistica registrata** *e* una **finestra di autorizzazione aperta**. Aprire una finestra è un messaggio della lane Native di QoreChain che MetaMask non può produrre, quindi è in QoreX che la apri. Gli invii di QoreX stesso usano la lane Native e non hanno mai bisogno di una finestra.
 
+**Chi ne ha bisogno.** Una finestra serve per gli **account in stile Ethereum (coin 60)** — gli account che aggiungi con *Add an Ethereum account (coin 60)* per una frase usata per la prima volta in MetaMask (vedi [Ripristinare una frase da MetaMask o dalla Dashboard](/qorex/getting-started#restore-dashboard)). MetaMask firma con una chiave Ethereum, che è la chiave di un account coin-60; nessuna chiave di MetaMask può inviare da un normale account coin-118 `qor1…`, quindi una finestra aperta su uno di essi non ottiene nulla e costa solo la commissione.
+
 Aprila nell'app da **Settings → Security → EVM access window**, oppure con il pulsante **EVM access window** nel popup dell'estensione. Scegli tu:
 
 | Campo | Significato | Limite |
@@ -72,12 +74,12 @@ Aprila nell'app da **Settings → Security → EVM access window**, oppure con i
 | **How many transactions (max 1000)** | quante transazioni EVM ammette | fino a 1.000 |
 | **Spending cap, QOR — covers each amount sent PLUS its maximum fee** | il massimo che lascia passare | conta il valore **più** la commissione massima di ogni transazione |
 
-I valori predefiniti sono 300 blocchi (circa 16 minuti sulla mainnet), 5 transazioni e 1 QOR. L'apertura costa una normale commissione di rete ed è firmata con la consueta firma post-quantistica ibrida, e una nuova finestra **sostituisce** qualsiasi finestra già aperta. Aprirla fa anche avanzare il nonce del tuo account, quindi apri la finestra **per prima**, poi invia da MetaMask — una transazione preparata in precedenza verrà rifiutata con "nonce too low". **Close the window** viene offerto solo mentre una finestra è attiva.
+Dalla v3.2.3 la chain supporta anche finestre più ristrette, con *ambito definito*; QoreX non offre una schermata per esse. I valori predefiniti sono 300 blocchi (circa 16 minuti sulla mainnet), 5 transazioni e 1 QOR. L'apertura costa una normale commissione di rete ed è firmata con la consueta firma post-quantistica ibrida, e una nuova finestra **sostituisce** qualsiasi finestra già aperta. Aprirla fa anche avanzare il nonce del tuo account, quindi apri la finestra **per prima**, poi invia da MetaMask — una transazione preparata in precedenza verrà rifiutata con "nonce too low". **Close the window** viene offerto solo mentre una finestra è attiva.
 
 La schermata mostra uno di quattro stati: *Open for \{blocks\} more blocks · \{txs\} transactions · \{value\} QOR left*; *No window is open. MetaMask transactions from this account are refused.*; *That window has expired or is used up*; oppure *QoreX could not read the window from the network* — il che significa che QoreX non lo sa, **non** che non ne hai una. Se il tuo account non ha ancora una chiave post-quantistica, registrane una prima (il tuo primo trasferimento QoreX lo fa); una finestra non serve a nulla prima di allora.
 
 :::caution Tienila piccola e breve
-Una finestra permette a normali transazioni MetaMask di spostare i tuoi QOR **senza una firma post-quantistica**. Mantieni i limiti bassi e chiudi la finestra quando hai finito.
+Una finestra permette a normali transazioni MetaMask di spostare i tuoi QOR **senza una firma post-quantistica**. Mantieni i limiti bassi — un tetto di spesa ridotto, poche transazioni, un tempo breve — e chiudi la finestra quando hai finito. Aprire una nuova finestra sostituisce la precedente, e il tetto conta ogni importo che invii **più** la sua commissione massima, quindi una transazione che supererebbe il tetto viene rifiutata.
 :::
 
 QoreX stesso non invia mai sulla lane EVM di QoreChain; usa MetaMask o un altro wallet EVM per quello, all'interno di una finestra aperta. (Inviare ETH, BNB e altri asset su *altre* reti da QoreX è una cosa diversa — vedi [Reti e token esterni](/qorex/send-and-receive#external-networks-tokens).)
@@ -88,15 +90,17 @@ Ogni firma prodotta da QoreX è approvata da te, e l'approvazione elenca esattam
 
 - un titolo e campi etichettati per **ogni messaggio** della richiesta, compresi i messaggi annidati in un **MsgExec** authz e i termini delle concessioni di permessi — e **rifiuta** tutto ciò che non riesce a mostrare ("QoreX cannot read this message … Approve only if you trust this site completely");
 - la **commissione** (*Fee: \{amount\} · gas \{gas\}*), chi la paga ed eventuali fee grant — se la commissione non può essere letta, QoreX lo dice e ti avvisa di non approvare;
-- il **limite, l'azione consentita e la scadenza** delle autorizzazioni di spesa e delle concessioni authz, con *UNLIMITED* e *NEVER* scritti per esteso. Tutto ciò che è illeggibile, illimitato o senza fine richiede un **secondo tocco** su Approve (*Tap again to approve*);
+- il **limite, l'azione consentita e la scadenza** delle autorizzazioni di spesa e delle concessioni authz, con *UNLIMITED* e *NEVER* scritti per esteso; una scadenza è mostrata al secondo (`YYYY-MM-DD HH:MM:SS UTC`), e un voto di governance viene decodificato così da vedere su cosa stai votando. Tutto ciò che è illeggibile, illimitato o senza fine richiede un **secondo tocco** su Approve (*Tap again to approve*);
 - l'account firmatario (*Signed by …*) quando ne hai più di uno;
 - per una richiesta con un numero molto elevato di messaggi, i primi 50 e il conteggio dei restanti.
+
+QoreX **rifiuta anche una richiesta i cui byte possono essere letti in due modi** (dalla 1.1.7 / 0.3.7). Una richiesta che ripete un campo che dovrebbe comparire una sola volta — per esempio una commissione o un importo raddoppiato — potrebbe essere mostrata in un modo ed eseguita in un altro, quindi QoreX non la mostra affatto per l'approvazione. Per i siti web, QoreX identifica il sito richiedente tramite l'origine che il browser stesso attesta, mai in base a ciò che la richiesta dichiara di sé.
 
 Un cambio di wallet o di account, o il blocco del wallet, risponde "no" alle richieste in attesa; un sito può avere una richiesta in attesa, e in totale ne possono attendere tre. In alcune build i nomi dei campi nelle finestre di approvazione sono mostrati in inglese.
 
 ## La tua frase di recupero e gli strumenti di accessibilità {#phrase-privacy}
 
-La schermata della frase di recupero è nascosta agli screenshot e al selettore di app. Su **Android 14 e successivi** le parole sono inoltre sottratte ai servizi di accessibilità che non sono veri strumenti di accessibilità (TalkBack e gli altri veri screen reader possono comunque leggerle). Su Android più vecchio e su iOS le parole sono nascoste per impostazione predefinita agli screen reader; se ti affidi a uno screen reader, tocca l'avviso su quella schermata per permettergli di leggerle. Mostra la frase solo quando nessuno può vedere il tuo schermo.
+La schermata della frase di recupero richiede ogni volta una nuova biometria o un nuovo PIN del dispositivo, mostra le parole come una griglia numerata di sola lettura **senza pulsante di copia**, è bloccata per gli screenshot su Android ed è nascosta nel selettore di app. Su **Android 14 e successivi** le parole sono inoltre sottratte ai servizi di accessibilità che non sono veri strumenti di accessibilità (TalkBack e gli altri veri screen reader possono comunque leggerle). Su Android più vecchio e su iOS le parole sono nascoste per impostazione predefinita agli screen reader; se ti affidi a uno screen reader, tocca l'avviso su quella schermata per permettergli di leggerle. Mostra la frase solo quando nessuno può vedere il tuo schermo.
 
 ## dApp collegate {#connected-dapps}
 
@@ -115,5 +119,5 @@ Il **Q-Day Scanner** ti permette di inserire qualsiasi indirizzo — il tuo o qu
 1. **Non-custodial** — le chiavi vengono generate sul dispositivo, risiedono in vault supportati dall'hardware (mobile) o in un vault cifrato (estensione), e non lo lasciano mai.
 2. **Niente senza consenso** — ogni connessione è per-origin, ogni firma è approvata individualmente (biometrica su mobile) e i payload vengono sempre decodificati prima della firma — ciò che QoreX non sa decodificare, lo rifiuta.
 3. **Quantum-safe per impostazione predefinita** — i trasferimenti QOR sulla lane Native portano sempre ML-DSA-87 + secp256k1; qualsiasi elemento classico è etichettato, mai silenzioso.
-4. **Nessuna analisi, nessun tracciamento, nessuna pubblicità.** L'accesso opzionale all'account e le notifiche push usano un server solo quando li attivi, e sono coperti dalla [QoreChain privacy policy](https://qorechain.io/privacy).
+4. **Nessun analytics, nessun crash reporting, nessun SDK di tracciamento.** Chiavi, frase di recupero, vault e approvazioni non lasciano mai il dispositivo. L'accesso opzionale, le notifiche push e il recupero sociale usano un server solo quando li attivi; l'elenco completo di ciò che QoreX invia è in [Cosa invia QoreX in rete](/qorex/overview#data-and-privacy), ed è coperto dalla [QoreChain privacy policy](https://qorechain.io/privacy).
 5. **Percorsi di recupero** — frase di 24 parole (sempre), recupero sociale con guardian + timelock di 48h (opzionale), eredità Legacy (opzionale), collegamento del dispositivo (comodità).

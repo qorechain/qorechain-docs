@@ -29,8 +29,11 @@ zincir üzerinde çalışır.
   [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status)).
 - Aşağıdaki tipli REST okuma yardımcıları, genel ağ geçidinin sunmadığı rotaları
   çağırır. Mesajları bunun yerine `connectQueryClients(rpc).crossvm` ile okuyun.
-- Her Native yol işlemi gibi, bir çapraz VM çağrısı da hibrit imzayı taşımalıdır
-  (bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)).
+- Her Native yol işlemi gibi, bir çapraz VM çağrısı da hibrit imzayı taşımalıdır:
+  imzalama istemcisini hesabın anahtar çiftiyle bağlayın
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0); böylece çapraz VM istemcisi
+  hibrit olarak imzalar (bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  0.9.0 öncesi sürümler bunu klasik olarak imzalar ve genel ağlar bunu reddeder.
 :::
 
 ## Birleşik çapraz VM çağrıları
@@ -46,7 +49,7 @@ olarak `"evm"` olur.
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

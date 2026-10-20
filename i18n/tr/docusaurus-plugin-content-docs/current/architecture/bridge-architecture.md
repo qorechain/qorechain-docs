@@ -23,7 +23,7 @@ Köprü modülü mainnet ve testnet üzerinde dağıtılmıştır, ancak **hiçb
 | Köprü işlemleri | 0 | 0 |
 | IBC kanalları / istemcileri | 0 / 0 | 0 / 0 |
 
-(Ekim 2026'da kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile okuyun.)
+(20 Ekim 2026'da mainnet v3.2.3 ve testnet v3.2.4 üzerinde kontrol edildi. Canlı değerleri `qorechaind query bridge chains` ve `qorechaind query bridge validators` ile ya da REST üzerinden `/qorechain/bridge/v1/chains` ve `/qorechain/bridge/v1/validators` adreslerinden okuyun.) Modül yapılandırması her iki ağda aynıdır: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 ve `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Modülün kullanacağı IBC yığını ibc-go v10.7'dir (v3.2.2'den beri), ancak henüz hiçbir istemci veya kanal oluşturulmamıştır.
 
 ## Bağlantıya Genel Bakış
 
@@ -193,6 +193,8 @@ Tüm QCB köprü işlemleri, kayıtlı köprü doğrulayıcılarından Dilithium
 * Desteklenen zincirlerin listesi
 * Bir itibar puanı (`x/reputation` tarafından sürdürülür)
 
+v3.2.2'den beri modül, sıfır tutarları ve kendi yapılandırmasını her yolda tutarlı biçimde doğrular. **Yalnızca testnet (v3.2.4, mainnet'te yok):** bir köprü doğrulayıcısını kaydetmek ayrıca Dilithium-5 anahtarının sahiplik kanıtını gerektirir (PQC anahtar kaydıyla aynı `proof_of_possession` biçimi; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security#proof-of-possession)) ve başka bir köprü doğrulayıcısının zaten kullandığı bir anahtarı reddeder. Mainnet v3.2.3'te böyle bir kontrol yoktur ve hiçbir ağda kayıtlı köprü doğrulayıcısı bulunmamaktadır.
+
 ### Devre Kesiciler (Circuit Breakers)
 
 Bağlı her zincirin bağımsız devre kesici korumaları vardır:
@@ -234,6 +236,8 @@ Zincir sürümü **v3.1.78** itibarıyla, bir köprü zinciri dağıtımdan sonr
 * **`tx bridge set-verifier-bootstrap`** — bir zincir için etkin doğrulayıcıyı seçer ve güven kökünü kurar (`MsgSetVerifierBootstrap`).
 
 Bu, bir operatörün bağlı bir zincirin köprüsünü doğrudan çevrimiçi getirmesine — veya doğrulayıcısını döndürmesine — olanak tanır; yetkilendirme köprü yönetici anahtarına karşı kontrol edilir. Zincir sürümü **v3.2.0** itibarıyla köprü modülünün kendi modül hesabı da vardır (önceki sürümlerde yoktu, bu nedenle etkinleştirilmiş bir rotadaki ilk yatırma işlemi başarısız olurdu).
+
+`qcb_bridge` gibi lisanslar, lisans otoritesi hesabı tarafından verilir. v3.2.3'ten (mainnet) beri yönetişim, bu hesabı bir `MsgUpdateAuthority` önerisiyle değiştirebilir; modülün kendisi [Zincir Lisanslama](/architecture/chain-licensing) bölümünde anlatılmıştır.
 
 ### Bağlı ağları doğrulama
 

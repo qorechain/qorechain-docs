@@ -17,7 +17,7 @@ QoreChain implémente une interface JSON-RPC compatible EVM, de sorte que les ou
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-L'interface JSON-RPC EVM est servie par le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hexadécimal `0x2649`, version de nœud **v3.2.1**) et le testnet **`qorechain-diana`** (chain ID EVM **9800**, hexadécimal `0x2648`, version de nœud **v3.2.2**). Les adresses locales ci-dessus s'appliquent à un nœud que vous exécutez vous-même. Les points de terminaison HTTP publics sont `https://evm.qore.host` (mainnet) et `https://evm-testnet.qore.host` (testnet), listés dans [Réseaux](/appendix/networks#public-endpoints). Le seul WebSocket EVM public est celui du testnet (`wss://evm-ws-testnet.qore.host`) ; il n'existe pas de WebSocket EVM public pour le mainnet.
+L'interface JSON-RPC EVM est servie par le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hexadécimal `0x2649`, version de nœud **v3.2.3**, en production depuis le 7 juin 2026) et le testnet **`qorechain-diana`** (chain ID EVM **9800**, hexadécimal `0x2648`, version de nœud **v3.2.4**, testnet uniquement). Les adresses locales ci-dessus s'appliquent à un nœud que vous exécutez vous-même. Les points de terminaison HTTP publics sont `https://evm.qore.host` (mainnet) et `https://evm-testnet.qore.host` (testnet), listés dans [Réseaux](/appendix/networks#public-endpoints). Le seul WebSocket EVM public est celui du testnet (`wss://evm-ws-testnet.qore.host`) ; il n'existe pas de WebSocket EVM public pour le mainnet.
 :::
 
 ## Espaces de noms pris en charge
@@ -69,8 +69,8 @@ L'interface JSON-RPC EVM est servie par le mainnet **`qorechain-vladi`** (chain 
 | Méthode           | Paramètres | Description                                                         |
 | ---------------- | ---------- | ------------------------------------------------------------------- |
 | `txpool_status`  | aucun       | Renvoie le nombre de transactions en attente et en file d'attente               |
-| `txpool_content` | aucun       | Renvoie les transactions en attente et en file d'attente (absent du mainnet public) |
-| `txpool_inspect` | aucun       | Renvoie un résumé du pool (absent du mainnet public)               |
+| `txpool_content` | aucun       | Renvoie les transactions en attente et en file d'attente (absent des points de terminaison publics) |
+| `txpool_inspect` | aucun       | Renvoie un résumé du pool (absent des points de terminaison publics)               |
 
 ## Méthodes net_
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs` accepte au plus **10 000 blocs** entre `fromBlock` et `toBlock`. Une plage plus large renvoie `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Interrogez par fenêtres de 10 000 blocs ou moins. Le paramètre distinct `filter-cap` limite le nombre de journaux renvoyés.
-- `txpool_status` fonctionne sur le point de terminaison mainnet public. `txpool_content` et `txpool_inspect` y sont désactivés (ils fonctionnent sur le point de terminaison testnet public et sur un nœud que vous exécutez vous-même).
+- `txpool_status` fonctionne sur les points de terminaison publics. `txpool_content` et `txpool_inspect` sont désactivés à la fois sur le point de terminaison mainnet public et sur le point de terminaison testnet public (ils fonctionnent sur un nœud que vous exécutez vous-même, avec `txpool` dans sa liste `api`).
 - Les méthodes `debug_*` et `eth_signTransaction` ne sont pas disponibles.
 - `eth_subscribe` nécessite une connexion WebSocket. Via HTTP, il renvoie `-32601 notifications not supported`. Voir [Événements WebSocket](/api-reference/websocket-events).
 - L'état aux hauteurs anciennes est élagué sur les points de terminaison publics ; un `eth_call` sur un bloc historique lointain peut donc échouer avec une erreur de version d'état.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## Envoi de transactions {#sending-transactions}
 
 :::caution Le lane EVM exige une clé PQC et une fenêtre ouverte
-Depuis la version de chaîne v3.2.0, le lane EVM n'admet une transaction (`MsgEthereumTx`, y compris les déploiements de contrats) que d'un compte disposant d'une **clé post-quantique enregistrée** et d'une **fenêtre d'autorisation EVM ouverte**. Un wallet EVM classique qui n'a pas effectué cette configuration ne peut pas soumettre de transactions : le nœud les refuse avec une erreur du module `pqc` (codes 26, 27 ou 28) au lieu de les inclure. La lecture des soldes, `eth_call` et l'estimation du gas ne nécessitent aucune fenêtre.
+Depuis la version de chaîne v3.2.0, le lane EVM n'admet une transaction (`MsgEthereumTx`, y compris les déploiements de contrats) que d'un compte disposant d'une **clé post-quantique enregistrée** et d'une **fenêtre d'autorisation EVM ouverte**. Un wallet EVM classique qui n'a pas effectué cette configuration ne peut pas soumettre de transactions : le nœud les refuse avec une erreur du module `pqc` (codes 26, 27 ou 28) au lieu de les inclure. La lecture des soldes, `eth_call` et l'estimation du gas ne nécessitent aucune fenêtre. Depuis la v3.2.2, une transaction signée **sans chain id** (pré-EIP-155) est également refusée, et depuis la v3.2.3, une fenêtre peut être limitée aux simples transferts de QOR (`native_only`) ou à une liste de destinataires (`allowed_targets`) ; une transaction hors de ce périmètre est refusée avec le code 27.
 
 Vérifiez un compte avant d'envoyer :
 
 - `GET /qorechain/pqc/v1/account/{address}` (`found: true` signifie qu'une clé est enregistrée)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` signifie qu'une fenêtre admet actuellement des transactions)
 
-Les deux sont décrits dans [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). Une fenêtre s'ouvre avec une transaction QoreChain (`MsgOpenEVMWindow`, limitée à 17 280 blocs et 1 000 transactions au plus, plus un plafond de valeur), et non avec une transaction Ethereum. Voir [Développement EVM](/developer-guide/evm-development) pour une vue d'ensemble du lane.
+Les deux sont décrits dans [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module) (la réponse de la fenêtre indique aussi `native_only` et `allowed_targets`). Une fenêtre s'ouvre avec une transaction QoreChain (`MsgOpenEVMWindow`, limitée à 17 280 blocs et 1 000 transactions au plus, plus un plafond de valeur), et non avec une transaction Ethereum. Voir [Développement EVM](/developer-guide/evm-development) pour une vue d'ensemble du lane.
 :::
 
 ## Exemples
@@ -161,7 +162,7 @@ Réponse :
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

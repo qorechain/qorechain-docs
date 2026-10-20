@@ -23,7 +23,7 @@ sidebar_position: 1
 | **[Staking & Validators](/dashboard/staking-and-validators)** | バリデータを確認し、QOR をデリゲートします。 |
 | **[Faucet](/dashboard/faucet)** | テストネットでテストトークンをリクエストします。 |
 | **[Quests](/dashboard/quests)** | ガイド付きタスクをこなしてネットワークを学びます。 |
-| **[Tools Hub](/dashboard/tools-hub)** | ライトノードのダウンロードとステータス、ノード登録、ロールアップのリクエスト、SDK、ライセンス関連のツールにアクセスします。 |
+| **[Tools Hub](/dashboard/tools-hub)** | オペレーターとビルダー向けのツールを 6 つのタブにまとめています。Validator Program、Validator Application、Light Node、Node Registration、Rollups、SDK です。 |
 
 ## サインインする {#sign-in}
 
@@ -39,7 +39,7 @@ sidebar_position: 1
 
 トークンの送信、スワップ、ステーキングなど、オンチェーンの状態を変更するほとんどの操作には、接続済みのウォレットが必要です。ダッシュボードによる鍵の取り扱いは、ネットワークによって異なります。
 
-- **メインネットはノンカストディアルです。** ダッシュボードがメインネットの鍵を保持することは決してありません。自分自身のウォレット — **QoreX**（QoreChain の公式ウォレットで、拡張機能またはアプリ）、**Keplr**、**MetaMask** — のいずれかを接続すると、ダッシュボードがチェーンから実際の残高と履歴を読み取ります。メインネットのトランザクションはすべて自分自身のウォレット内で署名され、ダッシュボードが署名することはありません。**Native レール**での送金とステーキングには**QoreX が必須です**。QoreChain のアカウントは耐量子ハイブリッド署名で署名しますが、現時点でこれを生成できるのは QoreX だけだからです。Keplr は接続して Native レールの残高を閲覧することはできます。**MetaMask** は **EVM レール**に接続されます。そこから送金するには、QoreX から開く EVM 認可ウィンドウが開いている必要もあります（[MetaMask で送金する](/dashboard/wallet#send-metamask)を参照）。
+- **メインネットはノンカストディアルです。** ダッシュボードがメインネットの鍵を保持することは決してありません。自分自身のウォレット — **QoreX**（QoreChain の公式ウォレットで、拡張機能またはアプリ）、**Keplr**、**MetaMask** — のいずれかを接続すると、ダッシュボードがチェーンから実際の残高と履歴を読み取ります。メインネットのトランザクションはすべて自分自身のウォレット内で署名され、ダッシュボードが署名することはありません。**Native レール**での送金とステーキングには**QoreX が必須です**。QoreChain のアカウントは耐量子ハイブリッド署名で署名しますが、現時点でこれを生成できるのは QoreX だけだからです。Keplr は接続して Native レールの残高を閲覧することはできます。**MetaMask** は **EVM レール**に接続されます。そこから送金するには、アカウントの耐量子鍵と、開いている EVM 認可ウィンドウも必要です。このウィンドウは、MetaMask の鍵を共有する Ethereum 形式（coin 60）のアカウントで QoreX から開きます（[MetaMask で送金する](/dashboard/wallet#send-metamask)を参照）。
 - **テストネットはカストディアルです。** ダッシュボードがテストウォレットを管理してくれるため、セットアップ不要かつ実際の資産をリスクにさらすことなく試すことができます。
 
 ### QoreX で接続する（推奨） {#connect-qorex}
@@ -77,8 +77,8 @@ QoreChain のアカウントは bech32 プレフィックス `qor` を使用す�
 
 | ネットワーク | チェーン ID | 使いどころ |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | 実際の資産と本番利用のための稼働中ネットワーク。ノンカストディアルで、自分自身のウォレットを接続します。 |
-| **Testnet** | `qorechain-diana` | テスト用の無料環境。ダッシュボード管理のテストウォレットと、テストトークン用の [Faucet](/dashboard/faucet) が利用できます。 |
+| **Mainnet** | `qorechain-vladi` | 実際の資産と本番利用のための稼働中ネットワーク（2026 年 6 月 7 日から稼働、チェーン v3.2.3 を実行）。ノンカストディアルで、自分自身のウォレットを接続します。 |
+| **Testnet** | `qorechain-diana` | テスト用の無料環境（チェーン v3.2.4 を実行。テストネット専用のリリースです）。ダッシュボード管理のテストウォレットと、テストトークン用の [Faucet](/dashboard/faucet) が利用できます。 |
 
 ネイティブトークンは **QOR**（基本単位は `uqor`、1 QOR = 10^6 uqor）です。初めての場合はテストネットから始め、Faucet でトークンを受け取り、最初の送金を試してからメインネットへ移行してください。
 
@@ -91,5 +91,5 @@ QoreChain のアカウントは bech32 プレフィックス `qor` を使用す�
 * [Explorer](/dashboard/explorer) — ブロック、トランザクション、アカウントを閲覧します。
 * [Wallet](/dashboard/wallet) — アカウントを管理し、トランザクションを送信します。
 * [Trade / DEX](/dashboard/trade) — オンチェーン AMM プールでトークンをスワップします。
-* [Tools Hub](/dashboard/tools-hub) — ライトノードのダウンロードとステータス、ノード登録、ロールアップのリクエスト、SDK、ライセンス。
+* [Tools Hub](/dashboard/tools-hub) — Validator Program、Validator Application、Light Node、Node Registration、Rollups、SDK。
 * [Faucet](/dashboard/faucet) — テストネットのテストトークン。

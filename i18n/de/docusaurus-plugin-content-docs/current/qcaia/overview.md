@@ -22,6 +22,8 @@ QCAIA wurde entwickelt, um Neulingen und Community-Mitgliedern zu helfen, sich s
 
 Wenn eine Frage außerhalb dessen liegt, was QCAIA weiß, wird er das sagen, anstatt zu raten. QCAIA ist ein Community-Helfer, keine Finanz- oder Anlageberatung.
 
+Die Antworten von QCAIA folgen der öffentlichen Dokumentation von QoreChain und können daher einem Release hinterherhinken. Was gerade in jedem Netzwerk live ist (das Mainnet `qorechain-vladi` läuft auf v3.2.3 und das Testnet `qorechain-diana` auf v3.2.4, Stand 20. Oktober 2026), entnehmen Sie [Netzwerke](/appendix/networks) und [Versionsverlauf](/appendix/version-history), oder fragen Sie einen Node direkt ab. Mehrere Teile der Plattform, nach denen QCAIA gefragt wird, wie die Bridge, die AMM-Pools, Rollups und xQORE, sind in der Dokumentation als konzipiert beschrieben, aber noch nicht live; wenn QCAIA etwas anderes antwortet, vertrauen Sie der Dokumentation und dem Live-Netzwerk.
+
 ## Mehrsprachige Unterstützung
 
 QCAIA versteht Fragen in vielen Sprachen. Wenn Sie in einer anderen Sprache als Englisch fragen, übersetzt er Ihre Frage automatisch, beantwortet sie und antwortet — so können Sie Ihre eigene Sprache verwenden und erhalten dennoch eine klare Antwort. Ein ausgearbeitetes nicht-englisches Beispiel finden Sie unter [Beispiele](/qcaia/examples).
@@ -38,7 +40,7 @@ QCAIA befindet sich in der **Beta**-Phase. Er wird kontinuierlich verbessert, un
 
 | Plattform | Wie man sie erreicht | Anleitung |
 | --- | --- | --- |
-| **Discord** | Treten Sie **[discord.gg/qorechain](https://discord.gg/qorechain)** bei und verwenden Sie Slash-Befehle | [QCAIA auf Discord nutzen](/qcaia/discord) |
+| **Discord** | Treten Sie **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** bei und verwenden Sie Slash-Befehle | [QCAIA auf Discord nutzen](/qcaia/discord) |
 | **Telegram** | Treten Sie **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** bei und erwähnen Sie den Bot | [QCAIA auf Telegram nutzen](/qcaia/telegram) |
 
 Wählen Sie oben Ihre Plattform aus, um genau zu erfahren, wie man fragt, oder springen Sie direkt zur Seite [Beispiele](/qcaia/examples), um QCAIA in Aktion zu sehen.

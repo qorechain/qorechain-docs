@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Parametrii lanțului
 
-Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`, iar `gasabstraction` poate fi interogat doar pe testnet) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
+Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`, iar `gasabstraction` poate fi interogat doar pe testnet) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). Parametrii `x/inflation` sunt serviți și prin REST pe mainnet începând cu v3.2.3 (`/qorechain/inflation/v1/params`). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
 
 :::note
-Valorile afișate au fost citite în direct la 14 octombrie 2026 (valori de genesis ale mainnet-ului, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Parametrii se aplică pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**) și pe testnet **`qorechain-diana`** (EVM chain ID **9800**) și sunt identici pe ambele rețele, cu excepția cazurilor indicate. Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
+Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.3**) la 20 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Ele sunt identice pe testnet **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4**), cu excepția cazurilor indicate; diferențele existente astăzi sunt adunate în [Diferențe ale testnet-ului (v3.2.4)](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
 :::
 
 ---
@@ -26,7 +26,20 @@ Valorile afișate au fost citite în direct la 14 octombrie 2026 (valori de gene
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | Mod de aplicare: 0=dezactivat, 1=opțional, 2=obligatoriu                 |
 
-Registrul de algoritmi (id 1 `dilithium5`, id 2 `mlkem1024`) este stare a lanțului, nu un parametru. Cheile se înregistrează explicit cu `MsgRegisterPQCKey`; nu există înregistrare automată.
+Registrul de algoritmi (id 1 `dilithium5`, id 2 `mlkem1024`) este stare a lanțului, nu un parametru. Cheile se înregistrează explicit cu `MsgRegisterPQCKey` sau `MsgRegisterPQCKeyV2`; nu există înregistrare automată. Începând cu v3.2.3, lanțul refuză cheile publice slabe, degenerate și deja folosite, iar `MsgRegisterPQCKeyV2` acceptă o dovadă opțională de posesie (`tx pqc register-key-v2 ... --pqc-key <name>`) pe care lanțul o verifică atunci când este prezentă.
+
+### Limitele ferestrei de autorizare EVM {#evm-window-limits}
+
+Limitele unei [ferestre de autorizare EVM](/getting-started/first-transaction#evm-window) sunt constante de protocol, nu parametri de modul:
+
+| Limită | Valoare |
+| ------ | ------- |
+| `blocks` maxim | 17,280 (aproximativ 15 ore la blocuri de ≈3,2 s) |
+| `max_txs` maxim | 1,000 |
+| `max_value` | mai mare decât 0 (uqor; valoarea transferată plus comisionul maxim al fiecărei tranzacții) |
+| `allowed_targets` maxim | 16 adrese de destinatar (domeniu opțional, v3.2.3) |
+
+O fereastră poate fi restrânsă și cu `native_only` (doar transferuri simple de QOR nativ) începând cu v3.2.3.
 
 ---
 
@@ -99,7 +112,7 @@ Configurația (`qorechaind query qca config`):
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Comision fix de ardere pentru crearea unui contract   |
 | `ai_service_burn_rate` | `0.50`                       | Fracțiunea din comisioanele serviciilor AI care este arsă |
 | `bridge_burn_rate`     | `1.00`                       | Fracțiunea din comisioanele de bridge care este arsă  |
-| `failed_tx_burn_rate`  | `0.10`                       | Fracțiunea din gazul tranzacțiilor eșuate care este arsă |
+| `failed_tx_burn_rate`  | `0.10`                       | Fracțiunea din gazul tranzacțiilor eșuate care este arsă (aplicată de lanț începând cu v3.2.2) |
 | `validator_share`      | `0.37`                       | Fracțiunea distribuită validatorilor                  |
 | `treasury_share`       | `0.20`                       | Fracțiunea trimisă trezoreriei                        |
 | `staker_share`         | `0.10`                       | Fracțiunea distribuită stakerilor                     |
@@ -133,13 +146,13 @@ Penalizări de ieșire: 50 % (blocare mai scurtă de 30 de zile), 35 % (30–90 
 | Parametru              | Valoare                 | Descriere                                             |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule` (vechi) sau `fixed` (începând cu v3.1.94)  |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16.239 QOR) | Emis pe epocă în modul fixed               |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114.285.714 QOR) | Plafon cumulativ strict         |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Emis pe epocă în modul fixed (16.239 QOR înainte de propunerea de guvernanță 10, 19 octombrie 2026) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Plafon cumulativ strict (114.285.714 QOR înainte de propunerea 10) |
 | `epoch_length`         | `43,200` blocks         | Blocuri per epocă (aproximativ 38,6 ore la blocuri de ≈3,2 s) |
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Rate vechi pe ani, nefolosite în modul fixed      |
 | `enabled`              | `true`                  | Indicator de activare a modulului                     |
 
-Modulul emite această cantitate în colectorul de comisioane până la atingerea plafonului. Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission). Pe mainnet, aceste valori nu sunt expuse printr-o rută REST.
+Modulul emite această cantitate în colectorul de comisioane până la atingerea plafonului. Prima epocă la 86.000 QOR începe la blocul 3,672,000. La 20 octombrie 2026 (epoca 84) fuseseră emiși 105.248.896,21 QOR și rămâneau 484.751.103,79 QOR sub plafon (`GET /qorechain/inflation/v1/epoch_info`). Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -281,7 +294,7 @@ Configurația de genesis (`enabled = true`, `native_denom = uqor`):
 Rata de conversie este rata folosită la convertirea unui comision plătit în acel token.
 
 :::note Niciun canal IBC nu este deschis
-Niciun canal IBC nu este deschis pe vreuna dintre rețele, deci încă nu pot exista `ibc/USDC` sau `ibc/ATOM`; comisioanele se plătesc în `uqor`. Calea comisioanelor a fost refăcută în v3.2.2 (doar testnet).
+Niciun canal IBC nu este deschis pe vreuna dintre rețele, deci încă nu pot exista `ibc/USDC` sau `ibc/ATOM`; comisioanele se plătesc în `uqor`.
 :::
 
 ---
@@ -298,7 +311,7 @@ Niciun canal IBC nu este deschis pe vreuna dintre rețele, deci încă nu pot ex
 | `max_light_nodes`        | `10,000`           | Numărul maxim de noduri light înregistrate           |
 | `heartbeat_grace_period` | `100` blocks       | Perioada de grație pentru un heartbeat întârziat     |
 
-Contabilitatea recompenselor este live (`GET /qorechain/lightnode/v1/reward_pool` raportează un `max_reward_per_block_per_node` de 1.713 uqor, citit la 14 octombrie 2026), dar înregistrarea este în prezent închisă și nu este înregistrat niciun nod light. Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Contabilitatea recompenselor este live. `GET /qorechain/lightnode/v1/reward_pool` raportează pool-ul (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) și limita de recompensă per nod. Începând cu v3.2.3, limita este `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) per nod la 30 de zile**, calculată proporțional cu timpul de bloc și scalată cu uptime-ul nodului; valoarea mai veche per bloc (`max_reward_per_block_per_node`, `1713` uqor) este în continuare raportată. La 20 octombrie 2026, pool-ul avea o rezervă de 487,2318 QOR, fără nimic restant. Înregistrarea este deschisă și condiționată de licență: pe mainnet au fost acordate șase licențe `lightnode_operator`, iar niciun nod light nu s-a înregistrat încă (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Vezi [Nod light](/light-node/overview#reward-program-status) și [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -336,7 +349,7 @@ Nu există încă pool-uri pe mainnet sau testnet, iar `MsgPausePool` / `MsgResu
 
 ## Staking, slashing, guvernanță, comisioane și EVM {#core-modules}
 
-Module standard Cosmos SDK și EVM, citite în direct (identice pe ambele rețele, cu excepția cazurilor indicate).
+Module standard Cosmos SDK și EVM, citite în direct la 20 octombrie 2026 (identice pe ambele rețele, cu excepția cazurilor indicate; neschimbate față de citirea din 14 octombrie).
 
 | Modul | Parametru | Valoare |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ Module standard Cosmos SDK și EVM, citite în direct (identice pe ambele rețel
 
 Lanțul poate dezactiva tipuri individuale de mesaje cu întrerupătorul de circuit din Cosmos SDK, controlat de contul de operațiuni al fundației și de guvernanță. Un tip de mesaj dezactivat este respins de ante handler pe orice lane. Lista live se află la `GET /cosmos/circuit/v1/disable_list`.
 
-**Mainnet (14 octombrie 2026, 16 intrări):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
+**Mainnet (20 octombrie 2026, 16 intrări, neschimbate din 14 octombrie):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
 
-**Testnet:** doar cele trei mesaje CosmWasm.
+**Testnet (20 octombrie 2026):** doar cele trei mesaje CosmWasm.
 
 Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governance, distribution, authz și de înregistrare `x/pqc`, este activat. Lista este controlată prin guvernanță și se poate schimba; interogați-o întotdeauna.
+
+---
+
+## Diferențe ale testnet-ului (v3.2.4) {#testnet-differences}
+
+Testnet-ul `qorechain-diana` rulează v3.2.4 (aplicată la înălțimea 8,337,253, la 19 octombrie 2026); v3.2.4 este **doar pentru testnet** în prezent; propunerea de guvernanță 13 de pe mainnet ar aplica-o la înălțimea 3,742,566. La 20 octombrie 2026, următoarele diferă față de mainnet:
+
+| Zonă | Testnet |
+| ---- | ------- |
+| Module | 49 în loc de 48: modulul opțional de staking cu blocare în timp `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; blocare minimă 10 QOR). Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking). |
+| `x/inflation` | Valori de emisie mai vechi (16.239 QOR per epocă, plafon 114.285.714 QOR, deja atins) și un al treilea `emission_mode`, `target_apy`, cu un parametru `target_apy_bps` care este în prezent `0`. |
+| `x/burn` | O a treisprezecea sursă înregistrată, `staking_tier_penalty`. |
+| Pool-ul de recompense `x/lightnode` | Câmpuri suplimentare de raportare (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); limita de recompensă a unui nod începe de la propria înregistrare. |
+| `x/pqc` | Un indicator `possession_proven` pe conturile PQC; dovada de posesie este în continuare opțională pentru cheile de cont și obligatorie pentru cheile validatorilor de bridge. |
+| `x/rdk` | Fereastra optimistă de contestare este numărată în timp de bloc. |
+| Întrerupător de circuit | Doar cele trei mesaje CosmWasm (vezi mai sus). |
+| Interogări | Interogări noi `protocol_features` și `auth_nonce`. |
+
+Orice parametru care nu este enumerat aici este identic pe ambele rețele.

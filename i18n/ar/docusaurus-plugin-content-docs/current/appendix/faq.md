@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### هل الشبكة الرئيسية فعّالة؟
 
-نعم. الشبكة الرئيسية لـ QoreChain (السلسلة `qorechain-vladi`، معرّف سلسلة EVM رقم 9801) فعّالة منذ 29 يونيو 2026 وتعمل بالإصدار v3.2.1. انظر [الشبكات](/appendix/networks) و[الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet).
+نعم. الشبكة الرئيسية لـ QoreChain (السلسلة `qorechain-vladi`، معرّف سلسلة EVM رقم 9801) فعّالة منذ 7 يونيو 2026 وتعمل بالإصدار v3.2.3 (أما الشبكة التجريبية `qorechain-diana` فتعمل بالإصدار v3.2.4). انظر [الشبكات](/appendix/networks) و[الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet).
 
 ### ما هي معرّفات السلسلة ومعرّفات سلسلة EVM؟
 
@@ -39,15 +39,19 @@ PRISM هو طبقة التحسين بالتعلُّم المعزَّز المض�
 
 ### كيف أشغّل عقدة أو مُصدِّقًا أو عقدة خفيفة؟
 
-لعقدة كاملة، انظر [تشغيل عقدة](/developer-guide/running-a-node). لمُصدِّق، انظر [تشغيل مُصدِّق](/developer-guide/running-a-validator). لعقدة خفيفة، انظر [العقدة الخفيفة](/light-node/overview).
+لعقدة كاملة، انظر [تشغيل عقدة](/developer-guide/running-a-node). لمُصدِّق، انظر [تشغيل مُصدِّق](/developer-guide/running-a-validator). لعقدة خفيفة، انظر [العقدة الخفيفة](/light-node/overview)؛ التسجيل في برنامج مكافآت العقد الخفيفة مفتوح ومقيَّد بترخيص ([الحالة](/light-node/overview#reward-program-status)).
 
 ### ما نظام التوقيع الذي تستخدمه QoreChain؟
 
-تستخدم QoreChain نظامًا هجينًا مقاومًا للحوسبة الكمومية يجمع بين **secp256k1 (ECDSA)** الكلاسيكي و**ML-DSA-87 (Dilithium-5)** اللاحق للكم. هذا النظام الهجين مطلوب افتراضيًا على مسار معاملات Cosmos، مع التحكم في وضع الإلزام عبر الحوكمة. أما على مسار EVM فيبقى التوقيع secp256k1، ويجب على الحساب أن يحتفظ إضافةً إلى ذلك بمفتاح ML-DSA مسجَّل ونافذة ترخيص مفتوحة (v3.2.0). انظر [الأمان اللاحق للكم](/architecture/post-quantum-security).
+تستخدم QoreChain نظامًا هجينًا مقاومًا للحوسبة الكمومية يجمع بين **secp256k1 (ECDSA)** الكلاسيكي و**ML-DSA-87 (Dilithium-5)** اللاحق للكم. هذا النظام الهجين مطلوب افتراضيًا على مسار معاملات Cosmos، مع التحكم في وضع الإلزام عبر الحوكمة. أما على مسار EVM فيبقى التوقيع secp256k1، ويجب على الحساب أن يحتفظ إضافةً إلى ذلك بمفتاح ML-DSA مسجَّل ونافذة ترخيص مفتوحة (منذ v3.2.0). انظر [الأمان اللاحق للكم](/architecture/post-quantum-security).
 
 ### لماذا تُرفض معاملة EVM الخاصة بي بالرسالة "no open EVM authorisation window"؟
 
 منذ v3.2.0 لا يقبل مسار EVM معاملة إلا من حساب لديه مفتاح لاحق للكم مسجَّل ونافذة ترخيص مفتوحة. افتح نافذة بمعاملة على مسار Cosmos موقَّعة بتوقيع لاحق للكم، ثم أعد المحاولة. انظر [نافذة ترخيص EVM](/getting-started/first-transaction#evm-window).
+
+### كم عدد المُصدِّقين في الشبكة الرئيسية؟
+
+ثمانية مُصدِّقين مرهونين بتاريخ 20 أكتوبر 2026، مع نحو 55.1 مليون QOR مرهونة (تتسع المجموعة النشطة لما يصل إلى 100). وفي الشبكة التجريبية ثلاثة. اقرأ المجموعة الحية من `GET /cosmos/staking/v1beta1/validators` على `https://api.qore.host`.
 
 ### ما زمن الكتلة الذي ينبغي أن أتوقعه؟
 
@@ -59,7 +63,7 @@ PRISM هو طبقة التحسين بالتعلُّم المعزَّز المض�
 
 ### هل عرض QOR ثابت؟
 
-كان العرض عند التكوين الأول (genesis) 4,420,000,000 QOR. يُسكّ إصدار التخزين (staking) تحت سقف تراكمي صارم قدره 114,285,714 QOR، وتزيل عمليات الحرق الرموز بشكل دائم. انظر [اقتصاديات الرمز](/architecture/tokenomics#supply-and-emission).
+كان العرض عند التكوين الأول (genesis) 4,420,000,000 QOR. يُسكّ إصدار التخزين (staking) تحت سقف تراكمي صارم قدره 590,000,000 QOR (86,000 QOR لكل حقبة منذ مقترح الحوكمة 10، أكتوبر 2026)، وتزيل عمليات الحرق الرموز بشكل دائم. انظر [اقتصاديات الرمز](/architecture/tokenomics#supply-and-emission).
 
 ### كيف أبني rollup؟
 
@@ -71,7 +75,7 @@ PRISM هو طبقة التحسين بالتعلُّم المعزَّز المض�
 
 ### أين يمكنني طرح الأسئلة؟
 
-يجيب بوت مجتمع QCAIA على الأسئلة في Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) وTelegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). انظر [بوت مجتمع QCAIA](/qcaia/overview).
+يجيب بوت مجتمع QCAIA على الأسئلة في Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) وTelegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). انظر [بوت مجتمع QCAIA](/qcaia/overview).
 
 ## ذات صلة
 

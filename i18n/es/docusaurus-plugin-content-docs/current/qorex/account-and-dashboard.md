@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Cuenta y Dashboard
 
-QoreX funciona **completamente sin una cuenta**: tus claves nunca dependen de una. Iniciar sesión añade comodidades como las solicitudes de pago y el emparejamiento con el Dashboard; reclamar un @handle también puede pedirte que inicies sesión.
+QoreX funciona **completamente sin una cuenta**: tus claves nunca dependen de una. Iniciar sesión añade comodidades como las solicitudes de pago y el emparejamiento con el Dashboard, y es **obligatorio para reclamar un @handle**. El inicio de sesión es por correo electrónico, o con Apple o Google; consulta más abajo.
 
 ## Iniciar sesión {#sign-in}
 
@@ -35,7 +35,7 @@ Settings → **Your accounts** te permite crear hasta **20 cuentas** por moneder
 
 Reclama un nombre único (por ejemplo, `@liviu`) vinculado a tu dirección mediante **firmas duales** (una firma ed25519 del registro + tu propia firma secp256k1). A partir de ahí, cualquiera puede enviarte a tu @handle. La resolución es de tipo **verify-then-pin** (confianza en el primer uso), de modo que si la clave de un handle llega a cambiarse silenciosamente, QoreX lo marca.
 
-Dado que un handle se vincula a una dirección y no a tu monedero, reclamarlo es **por dirección**: si tienes [varias cuentas](#accounts), cada una puede tener su propio @handle, y reclamar uno para una cuenta no le da automáticamente un nombre a las demás. En la extensión de navegador puedes pagar a un handle; reclamarlo desde el popup se ofrece en las cuentas normales de QoreChain en algunas versiones y en otras no: si el popup no lo ofrece, resérvalo desde la app móvil. Las cuentas de estilo Ethereum (coin 60) no tienen handle.
+Dado que un handle se vincula a una dirección y no a tu monedero, reclamarlo es **por dirección**: si tienes [varias cuentas](#accounts), cada una puede tener su propio @handle, y reclamar uno para una cuenta no le da automáticamente un nombre a las demás. Reclamar requiere una cuenta con sesión iniciada y se hace **en la app móvil**. En la extensión de navegador puedes pagar a un handle (las búsquedas funcionan en la extensión 0.3.7 y posteriores), pero no reclamar uno: la extensión te remite a la app. Las cuentas de estilo Ethereum (coin 60) no tienen handle. Los nombres de QoreChain que se le parecen están reservados: se rechaza un handle nuevo que imite al proyecto (sus nombres de marca, o palabras de confianza como *official*, *support*, *airdrop* o *treasury*, incluidas las grafías similares). Los propietarios existentes todavía pueden eliminar su handle.
 
 Si el registro de handles no está disponible temporalmente, la pantalla se reduce a **"Handles coming soon"** y todo lo demás sigue funcionando; los handles vuelven a activarse automáticamente cuando el registro vuelve a estar disponible.
 

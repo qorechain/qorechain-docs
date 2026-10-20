@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain prend en charge plusieurs types de portefeuilles dans ses environnements d'exécution natif, EVM et SVM. Choisissez le portefeuille adapté à votre cas d'usage.
 
 :::note
-Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 29 juin 2026) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
+Les valeurs ci-dessous couvrent à la fois le mainnet **`qorechain-vladi`** (ID de chaîne EVM **9801**, actif depuis le 7 juin 2026, version v3.2.3) et le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version v3.2.4). Les points de terminaison publics des deux réseaux sont répertoriés dans [Réseaux](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recommandé) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-Sauvegardez le fichier de clé PQC aussi soigneusement que votre phrase mnémotechnique. (Une clé peut être re-dérivée à partir de la phrase mnémotechnique avec `qorechaind tx pqc recover-key`, et remplacée avec `tx pqc rotate-key`.) QoreX et le SDK QoreChain enregistrent la clé pour vous. Consultez [Première transaction](/getting-started/first-transaction#register-pqc-key) pour un envoi signé complet.
+Depuis la v3.2.3, vous pouvez joindre une preuve de possession facultative en enregistrant avec `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...` ; la chaîne refuse aussi les clés faibles, dégénérées ou déjà utilisées. Sauvegardez le fichier de clé PQC aussi soigneusement que votre phrase mnémotechnique. (Une clé peut être re-dérivée à partir de la phrase mnémotechnique avec `qorechaind tx pqc recover-key`, et remplacée avec `tx pqc rotate-key`.) QoreX et le SDK QoreChain enregistrent la clé pour vous. Consultez [Première transaction](/getting-started/first-transaction#register-pqc-key) pour un envoi signé complet.
 
 ### Signature hybride avec le SDK
 

@@ -17,7 +17,7 @@ QoreChainはEVM互換のJSON-RPCインターフェースを実装しており、
 | WebSocket        | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.1**)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.2**)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
+EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネット(EVMチェーンID **9801**、16進数 `0x2649`、ノードリリース **v3.2.3**、2026年6月7日から稼働)と **`qorechain-diana`** テストネット(EVMチェーンID **9800**、16進数 `0x2648`、ノードリリース **v3.2.4**、テストネット専用)によって提供されます。上記のローカルアドレスは自分で実行するノードに適用されます。公開HTTPエンドポイントは `https://evm.qore.host`(メインネット)と `https://evm-testnet.qore.host`(テストネット)で、[ネットワーク](/appendix/networks#public-endpoints)に記載されています。公開されているEVM WebSocketはテストネットのもの(`wss://evm-ws-testnet.qore.host`)のみで、メインネットの公開EVM WebSocketはありません。
 :::
 
 ## サポートされている名前空間
@@ -69,8 +69,8 @@ EVM JSON-RPCインターフェースは、**`qorechain-vladi`** メインネッ�
 | メソッド          | パラメータ | 説明                                                                 |
 | ------------------ | ---------- | -------------------------------------------------------------------- |
 | `txpool_status`    | なし       | 保留中およびキュー内のトランザクション数を返す                       |
-| `txpool_content`   | なし       | 保留中およびキュー内のトランザクションを返す(公開メインネットでは利用不可) |
-| `txpool_inspect`   | なし       | プールの概要を返す(公開メインネットでは利用不可)                   |
+| `txpool_content`   | なし       | 保留中およびキュー内のトランザクションを返す(公開エンドポイントでは利用不可) |
+| `txpool_inspect`   | なし       | プールの概要を返す(公開エンドポイントでは利用不可)                 |
 
 ## net_ メソッド
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs` は `fromBlock` と `toBlock` の間で最大 **10,000 ブロック**まで受け付けます。これより広い範囲を指定すると `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}` が返されます。10,000 ブロック以下のウィンドウに分けてクエリしてください。別の設定 `filter-cap` は返されるログの件数を制限します。
-- `txpool_status` は公開メインネットエンドポイントで動作します。`txpool_content` と `txpool_inspect` はそこでは無効です(公開テストネットエンドポイントおよび自分で実行するノードでは動作します)。
+- `txpool_status` は公開エンドポイントで動作します。`txpool_content` と `txpool_inspect` は公開メインネットと公開テストネットの両方のエンドポイントで無効です(自分で実行するノードでは、`api` リストに `txpool` を含めていれば動作します)。
 - `debug_*` メソッドと `eth_signTransaction` は利用できません。
 - `eth_subscribe` にはWebSocket接続が必要です。HTTP経由では `-32601 notifications not supported` が返されます。[WebSocketイベント](/api-reference/websocket-events)を参照してください。
 - 公開エンドポイントでは古い高さの状態はプルーニングされているため、遠い過去のブロックに対する `eth_call` は状態バージョンエラーで失敗することがあります。
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## トランザクションの送信 {#sending-transactions}
 
 :::caution EVMレーンにはPQC鍵と開いているウィンドウが必要です
-チェーンバージョン v3.2.0 以降、EVMレーンがトランザクション(コントラクトのデプロイを含む `MsgEthereumTx`)を受け付けるのは、**登録済みのポスト量子鍵**と**開いているEVM認可ウィンドウ**を持つアカウントからのものだけです。このセットアップを行っていない通常のEVMウォレットはトランザクションを送信できません。ノードはそれらを取り込まず、`pqc` モジュールのエラー(コード 26、27、または 28)で拒否します。残高の読み取り、`eth_call`、ガスの見積もりにウィンドウは不要です。
+チェーンバージョン v3.2.0 以降、EVMレーンがトランザクション(コントラクトのデプロイを含む `MsgEthereumTx`)を受け付けるのは、**登録済みのポスト量子鍵**と**開いているEVM認可ウィンドウ**を持つアカウントからのものだけです。このセットアップを行っていない通常のEVMウォレットはトランザクションを送信できません。ノードはそれらを取り込まず、`pqc` モジュールのエラー(コード 26、27、または 28)で拒否します。残高の読み取り、`eth_call`、ガスの見積もりにウィンドウは不要です。v3.2.2 以降は、**チェーンIDなし**で署名されたトランザクション(EIP-155 以前の形式)も拒否されます。また v3.2.3 以降は、ウィンドウを通常のQOR送金のみ(`native_only`)、または指定した宛先のみ(`allowed_targets`)に限定でき、範囲外のトランザクションはコード 27 で拒否されます。
 
 送信前にアカウントを確認してください:
 
 - `GET /qorechain/pqc/v1/account/{address}`(`found: true` は鍵が登録されていることを意味します)
 - `GET /qorechain/pqc/v1/evm_window/{address}`(`live: true` は現在ウィンドウがトランザクションを受け付けていることを意味します)
 
-どちらも[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)で説明されています。ウィンドウはEthereumトランザクションではなく、QoreChainトランザクション(`MsgOpenEVMWindow`。最大 17,280 ブロックと 1,000 トランザクション、および価値の上限に制限されます)で開きます。レーンの概要は[EVM開発](/developer-guide/evm-development)を参照してください。
+どちらも[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)で説明されています(ウィンドウのレスポンスには `native_only` と `allowed_targets` も含まれます)。ウィンドウはEthereumトランザクションではなく、QoreChainトランザクション(`MsgOpenEVMWindow`。最大 17,280 ブロックと 1,000 トランザクション、および価値の上限に制限されます)で開きます。レーンの概要は[EVM開発](/developer-guide/evm-development)を参照してください。
 :::
 
 ## 例
@@ -161,7 +162,7 @@ curl -X POST http://localhost:8545 \
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

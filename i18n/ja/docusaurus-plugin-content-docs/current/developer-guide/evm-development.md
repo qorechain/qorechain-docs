@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChainは、QoreChain EVM Engine上で完全にEVM互換の実行環境を稼働しており、使い慣れたツールを使ってSolidityスマートコントラクトをデプロイ・操作できます。EVMモジュールは、標準的なEthereum開発ワークフローをサポートするJSON-RPCインターフェースを**ポート8545**（WebSocketは**8546**）で公開しています。
 
 :::note
-以下の例は、2026年6月29日から稼働しているノードリリース**v3.2.1**（コンセンサスルールはv3.2.0アップグレード由来）を実行中の**`qorechain-vladi`**メインネット（EVMチェーンID**9801**）を対象としています。**`qorechain-diana`**テストネット（v3.2.2）の場合は、EVMチェーンID**9800**を使用してください。コードサンプルでは、ご自身で運用するノード向けに `http://localhost:8545` を使用しています。公開メインネットのエンドポイントは `https://evm.qore.host`、テストネットのエンドポイントは `https://evm-testnet.qore.host` です。
+以下の例は、2026年6月7日から稼働している**`qorechain-vladi`**メインネット（EVMチェーンID**9801**）を対象としています。このネットワークはノードリリース**v3.2.3**（2026年10月20日、高さ3,662,051で適用）を実行しています。**`qorechain-diana`**テストネット（v3.2.4、2026年10月19日、高さ8,337,253で適用。メインネットではまだ未適用。ガバナンス提案13がブロック高3,742,566で適用する予定）の場合は、EVMチェーンID**9800**を使用してください。コードサンプルでは、ご自身で運用するノード向けに `http://localhost:8545` を使用しています。公開メインネットのエンドポイントは `https://evm.qore.host`、テストネットのエンドポイントは `https://evm-testnet.qore.host` です。
 :::
 
 :::caution EVMトランザクションには、登録済みのPQC鍵と、開いている認可ウィンドウが必要です
 v3.2.0アップグレード（メインネットの高さ2,981,742、テストネットの高さ5,920,000）以降、EVMレーンは、**(1) 登録済みのML-DSA-87ポスト量子鍵**と**(2) そのトランザクションを収める余地が残っている、開いているEVM認可ウィンドウ**の両方を持つアカウントからのトランザクションのみを受け付けます。署名は通常のツール（MetaMask、ethers.js、Hardhat、Foundry）で行えますが、登録済みの鍵と開いているウィンドウがない場合、`eth_sendRawTransaction` は拒否されます（コードスペース `pqc`、コード26、27、または28）。読み取り、`eth_call`、ガス見積もりにはどちらも不要です。下記の[EVM認可ウィンドウ](#evm-window)と、[最初のトランザクション](/getting-started/first-transaction#evm-window)のステップバイステップのガイドを参照してください。
+
+v3.2.2以降、メインネットではさらに2つのルールが適用されます。**保護されていない（EIP-155以前の）トランザクションは、ノードのメモリプールでもブロック実行でも拒否されます**。そのため、チェーンIDを付けて署名してください（現在のすべてのウォレットとライブラリはそうしています）。また、**モジュールアカウントはEVM経由で取得できません**。
 :::
 
 ---
@@ -30,7 +32,7 @@ v3.2.0アップグレード（メインネットの高さ2,981,742、テスト�
 | チェーンID（テストネット）   | `9800` (`qorechain-diana`)                 |
 | 通貨シンボル      | `QOR`                                      |
 
-QoreChain固有の読み取りはREST（`api.qore.host`）で提供されます。[下記](#custom-qor_-namespace)で説明する `qor_` JSON-RPC名前空間は、公開エンドポイントでも、デフォルトのノード設定でも**有効になっていません**。
+QoreChain固有の読み取りはREST（`api.qore.host`）で提供されます。[下記](#custom-qor_-namespace)で説明する `qor_` JSON-RPC名前空間は、公開エンドポイントでも、デフォルトのノード設定でも**有効になっていません**。新しく初期化したノード（v3.2.3以降）のデフォルトの `api` リストは `eth,net,web3` です。`txpool` はノードの保留中トランザクションを公開してしまうため、オプトインです。
 
 ---
 
@@ -200,7 +202,16 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
 | `max-txs`   | 1 – 1,000          | ウィンドウが受け付けるEVMトランザクションの件数 |
 | `max-value` | 0より大きい値、`uqor`単位 | ウィンドウが受け付ける総流出額：送金額**に加えて**、各トランザクションが支払い得る最大手数料（ガスリミット × ガスあたりの最大手数料）を `uqor` に換算し、切り上げた値 |
 
-いずれかの上限が先に尽きた時点で、ウィンドウは閉じます。すべてのフィールドは必須です。ウィンドウを開くと既存のウィンドウは置き換えられます。受け付けられた後に失敗したトランザクションも、スロットと金額の予算を消費します。コントラクトのデプロイも他のトランザクションと同様に数えられます。`blocks` はブロック数であり、時間ではありません。17,280ブロックは、メインネットでは約15時間（1ブロックあたり約3.2秒）、テストネットでは約5時間（1ブロックあたり約1.0秒）です。
+いずれかの上限が先に尽きた時点で、ウィンドウは閉じます。3つの上限はすべて必須です。ウィンドウを開くと既存のウィンドウは置き換えられます。受け付けられた後に失敗したトランザクションも、スロットと金額の予算を消費します。コントラクトのデプロイも他のトランザクションと同様に数えられます。`blocks` はブロック数であり、時間ではありません。17,280ブロックは、メインネットでは約15時間（1ブロックあたり約3.2秒）、テストネットでは約5時間（1ブロックあたり約1.0秒）です。
+
+**金額の上限はネイティブのQORのみを数えます。** トークン送金、approve、その他のコントラクト呼び出しは金額がゼロであるため、`max-value` には数えられません（最大手数料のみが数えられます）。これらにも上限を設けるには、ウィンドウの**スコープ**を絞り込みます（メインネットv3.2.3以降）。
+
+| スコープオプション（CLIフラグ） | メッセージフィールド | ウィンドウが受け付けるもの |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | ネイティブQORの通常の送金のみ：calldataなし、コントラクト作成なし、コードを持つ受取先なし、EIP-7702の認可なし |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | 受取先が列挙された20バイトアドレスのいずれかであるトランザクションのみ。コントラクト作成は拒否されます |
+
+スコープなしで開いたウィンドウは、これまでとまったく同じ動作をします。スコープ外のトランザクションは、コード27で拒否されます（メッセージには、ウィンドウが「このトランザクションを受け付けない」と示されます）。`GET /qorechain/pqc/v1/evm_window/{address}` と `qorechaind query pqc evm-window` は `native_only` と `allowed_targets` を報告し、`pqc_evm_window_opened` イベントは、設定されている場合にそれらを含みます。
 
 **手順**（完全なウォークスルーは[最初のトランザクション](/getting-started/first-transaction#evm-window)にあります）:
 
@@ -211,6 +222,10 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. 残りを確認します。`qorechaind query pqc evm-window <address>` または `GET /qorechain/pqc/v1/evm_window/{address}`（ウィンドウがない場合は `found: false` を返します）。
@@ -218,13 +233,17 @@ EVMトランザクションは**従来のECDSA（secp256k1）**で署名され�
 
 ウィンドウは `qorechaind tx pqc close-evm-window` で早期に閉じることができます（`--generate-only` と `cosign` のパターンは同じです）。たとえば従来型の鍵が漏えいした疑いがある場合に使います。ウィンドウがまだ受け付けていたものは、次のブロックから拒否されます。
 
+### EIP-7702の委任 {#eip-7702}
+
+アカウントのEIP-7702委任（type-4トランザクション）は、v3.2.2以降、そのアカウント自身のポスト量子同意がある場合にのみ有効になります。まず、ハイブリッド署名したCosmosレーンのメッセージ `MsgAuthorizeEVMDelegation`（`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`）で同意を記録してください。この同意は1回限りで、指定したブロック数が経過すると失効し、`close-evm-window` によって取り消されます。委任されたアカウントから出ていく金額は、**そのアカウント自身の**ウィンドウに課金されます。失敗したtype-4トランザクションは、適用済みの認可を保持します。`qorechaind tx pqc clear-evm-delegation` は委任を削除します。拒否された委任には、コード60〜63で応答します。同意は `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` で読み取れます。
+
 | 拒否（コードスペース `pqc`） | 意味 |
 | ------------------------- | ------- |
 | code 26 | 送信者に開いているウィンドウがない、または送信者に登録済みのPQC鍵がない |
-| code 27 | ウィンドウが期限切れまたは使い切り（メッセージにどの上限かが示されます） |
+| code 27 | ウィンドウが期限切れまたは使い切り（メッセージにどの上限かが示されます）、またはトランザクションがウィンドウのスコープ外 |
 | code 28 | ウィンドウを開く際の上限値が無効、またはその時点で登録済みの鍵がない |
 
-TypeScript SDK（0.8.2以降）では、`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow({ rest, address })`、`classifyEvmWindowRejection(err)`（`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`）が利用できます。
+TypeScript SDK（0.8.2以降）では、`openEvmWindowMsg`、`closeEvmWindowMsg`、`fetchEvmWindow({ rest, address })`、`classifyEvmWindowRejection(err)`（`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`）が利用できます。SDK 0.9.0 では、`openEvmWindowMsg` にスコープオプション（`nativeOnly`、`allowedTargets`）が加わり、EIP-7702の同意ビルダー（`authorizeEvmDelegationMsg`、`clearEvmDelegationMsg`、`fetchEvmDelegationConsent`）が追加されます。0.9.0より前のリリースはスコープなしのウィンドウしか構築できないため、それ以外には `qorechaind` を使用してください（[SDK EVMガイド](/sdk/guides/evm#evm-window-scope)を参照）。
 
 ---
 
@@ -233,7 +252,7 @@ TypeScript SDK（0.8.2以降）では、`openEvmWindowMsg`、`closeEvmWindowMsg`
 QoreChainは、チェーン固有のクエリのために`qor_`名前空間でJSON-RPCを拡張しています。
 
 :::warning まだ提供されていません
-リリース済みのノードビルドは、まだ `qor_` 名前空間を提供していません。公開エンドポイントの `rpc_modules` には `eth`、`net`、`rpc`、`txpool`、`web3` しか表示されず、以下のすべてのメソッドは、メインネット、テストネット、およびデフォルト設定（`eth`、`net`、`web3`、`txpool`）の自己運用ノードで `-32601`（メソッドが見つかりません）を返します。状況とRESTによる代替手段（たとえばPQC鍵の状態には `GET /qorechain/pqc/v1/account/{address}`）については、[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
+リリース済みのノードビルドは、まだ `qor_` 名前空間を提供していません。公開エンドポイントの `rpc_modules` には `eth`、`net`、`rpc`、`txpool`、`web3` しか表示されず、以下のすべてのメソッドは、メインネット、テストネット、およびデフォルト設定（`eth`、`net`、`web3`）の自己運用ノードで `-32601`（メソッドが見つかりません）を返します。状況とRESTによる代替手段（たとえばPQC鍵の状態には `GET /qorechain/pqc/v1/account/{address}`）については、[`qor_` 名前空間](/api-reference/json-rpc-qor_-namespace)を参照してください。
 :::
 
 | メソッド                      | 説明                                                       |

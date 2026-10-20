@@ -24,7 +24,7 @@ Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir ancak henü
 | PRISM Consensus Params | `0x…0C01` | Etkin değil | Etkin değil |
 | CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
 
-Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve CrossVM köprüsü ise yalnızca journaling, değer kontrolleri ve VM'ler arası devre kesiciyle yeniden inşa edildikten sonra. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
+Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve test ağının v3.2.4 sürümü bunu değiştirmedi. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
 
 Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
 
@@ -271,10 +271,10 @@ Mevcut düğüm derlemesinde `rlConsensusParams`, canlı PRISM ile ayarlanmış 
 ### CrossVM Bridge — EVM'den CosmWasm Çağırma
 
 :::warning
-CrossVM köprü ön derlemesi mevcut haliyle **etkinleştirilmeyecektir**. Çağıran sözleşmedeki bir revert'in CosmWasm tarafını da geri alması, değer transferlerinin reddedilmesi, EVM'den EVM'ye yeniden girişin (re-entry) engellenmesi ve VM'ler arası devre kesicinin uygulanması için yeniden inşa edilmektedir. O zamana kadar senkron bir EVM'den CosmWasm'a yol yoktur; bugün mainnet'te kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+CrossVM köprü ön derlemesi her iki ağda da **etkin değildir**. v3.2.3'ten beri ikili dosya, onun güçlendirilmiş bir sürümünü taşır: `STATICCALL` çağrısını reddeder; iç içe çağrıyı, çağıran çerçevede kalan gazla sınırlı bir gaz sayacında çalıştırır ve günlüğe kaydeder, böylece çağıran sözleşmedeki bir revert CosmWasm tarafını da geri alır; yalnızca izin listesindeki CosmWasm hedeflerine ulaşır (EVM hedefleri reddedilir); ve VM'ler arası devre kesiciye uyar. Yönetişim onaylı bir yükseltme onu etkinleştirene kadar senkron bir EVM'den CosmWasm'a yol yoktur; bugün ana ağda kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 :::
 
-Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Belgelenen kullanım EVM'den CosmWasm'adır; ABI yeniden inşayla değişebilir.
+Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Desteklenen tek kullanım EVM'den CosmWasm'adır (`targetVM` = 1); ABI etkinleştirmeden önce yine de değişebilir.
 
 **Gaz maliyeti:** 50,000 temel + giriş baytı başına 4 gaz, artı hedef sözleşme yürütme maliyeti. Ayrıntılar için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 

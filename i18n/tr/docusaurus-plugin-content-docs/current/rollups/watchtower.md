@@ -19,8 +19,8 @@ sağlarsınız**. Watchtower hiçbir zaman bir yığının hileli olduğuna kend
 karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğünüz değere
 göre hareket eder.
 
-:::caution Erken aşama: RDK REST rotaları gerekir
-Watchtower yığınları RDK REST istemcisi aracılığıyla okur. `/qorechain/rdk/v1/…` REST rotaları bugün ana ağda sunulmamaktadır, bu nedenle Watchtower henüz ana ağa karşı çalışamaz. Henüz hiçbir ağda rollup oluşturulmamıştır, dolayısıyla izlenecek bir şey yoktur.
+:::caution Erken aşama: izlenecek bir şey yok ve 0.5.0 son tarih uyarıları yanlış
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (20 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur. `@qorechain/rdk` 0.5.0 sürümünde itiraz penceresi son tarih mantığı da güvenilir değildir: bir yığının `submittedAt` değeri bir **blok yüksekliğidir**, ancak Watchtower (ve `qorollup status` komutunun arkasındaki sağlık kontrolü) saniye cinsinden pencereyi buna ekler ve toplamı duvar saatiyle karşılaştırır; bu yüzden `secondsRemaining` anlamsızdır ve `onDeadline` bir yığın ilk görüldüğü anda tetiklenir. Kararlar için `onDeadline` veya geri sayımı kullanmayın; son tarihi kendiniz hesaplayın (aşağıdaki nota bakın). İzleyici ayrıca yığınların yalnızca ilk sayfasını (50) okur.
 :::
 
 ## `watchBatches`
@@ -31,9 +31,9 @@ import { createRdkClient, watchBatches } from "@qorechain/rdk";
 const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
-// the networks require. See "Signing with the published clients" in
-// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
-// cannot get a challenge accepted.
+// the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
+// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
+// classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -57,9 +57,10 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called as a batch approaches the end of its challenge window.
+  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
+  // deadline mixes a block height with the wall clock, so treat this as unreliable.
   onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
+    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -79,7 +80,7 @@ itiraz aracına dönüştürür; yalnızca gözlem (observe-only) modunda çalı
 onu ayarlanmamış bırakın.
 
 :::note İtiraz penceresi
-Watchtower'ın bildirdiği son tarih, itiraz penceresinin blok başına 6 saniye üzerinden bloğa dönüştürülmüş halini kullanır (varsayılan olarak 100.800 blok); bu nedenle ana ağın ≈3,2 sn'lik bloklarında gerçek pencere "7 gün"den daha kısadır. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
+Bir yığının son tarihini saniye olarak değil, blok olarak hesaplayın: `submitted_at` (bir blok yüksekliği) artı pencere. **Ana ağda (v3.2.3)** pencere, blok başına sabit 6 saniye üzerinden bloğa dönüştürülmüş varsayılan 604.800 "saniye"dir, yani **100.800 blok** (gerçek süre blok süresini izler, bu nedenle ana ağın ≈3,2 sn'lik bloklarında "7 gün"den daha kısadır). **Yalnızca testnet'te (v3.2.4)**, 8.337.253 yüksekliğinden itibaren gönderilen bir yığın, blok süresinin saniyesi cinsinden ölçülen bir pencere alır. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
 :::
 
 ## CLI

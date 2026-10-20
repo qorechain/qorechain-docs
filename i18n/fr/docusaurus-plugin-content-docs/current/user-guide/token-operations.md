@@ -10,7 +10,7 @@ sidebar_position: 1
 Ce guide couvre le jeton QOR, l'envoi et la réception de jetons, la consultation des soldes, ainsi que le modèle de répartition des frais sur QoreChain.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 29 juin 2026 sur la ligne v3.2 (version de nœud **v3.2.1** ; le testnet exécute **v3.2.2**) — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.3** ; le testnet exécute **v3.2.4** — remplacez le chain ID et les points de terminaison du mainnet indiqués sur la page **Connecting to Mainnet** lors de transactions sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`
@@ -94,11 +94,11 @@ Les frais de transaction sur QoreChain sont répartis entre cinq destinations af
 | **Stakers**     | 10%   | Distribués proportionnellement à tous les délégants                    |
 | **Nœuds légers** | 3%    | Réservés aux récompenses des nœuds légers (voir la note ci-dessous)            |
 
-La répartition s'applique à tout ce qui entre dans le collecteur de frais, qui contient les frais de transaction et l'émission de staking frappée à chaque époque. La part des nœuds légers alimente une réserve ; l'enregistrement des récompenses de nœuds légers n'est pas encore ouvert, donc aucun nœud n'est actuellement payé sur cette réserve (voir [Nœud léger](/light-node/overview)). Depuis la mise à niveau v3.2.0, la part des stakers est versée comme une récompense de staking normale (voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+La répartition s'applique à tout ce qui entre dans le collecteur de frais, qui contient les frais de transaction et l'émission de staking frappée à chaque époque. La part des nœuds légers alimente le pool de récompenses des nœuds légers ; l'enregistrement est ouvert et soumis à licence, mais aucun nœud léger ne s'est encore enregistré, donc aucun nœud n'est payé sur ce pool aujourd'hui (voir [Nœud léger](/light-node/overview#reward-program-status)). Depuis la mise à niveau v3.2.0, la part des stakers est versée comme une récompense de staking normale (voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canaux de destruction
 
-Le module de destruction de QoreChain définit 12 sources de destruction. Les QOR détruits via l'une d'elles sont retirés définitivement de la circulation. Sur le mainnet, seul le canal des frais de gas a enregistré des destructions jusqu'à présent ; les autres sont définis mais n'ont rien enregistré.
+Le module de destruction de QoreChain définit 12 sources de destruction. Les QOR détruits via l'une d'elles sont retirés définitivement de la circulation. Sur le mainnet, seuls les canaux des frais de gas et des transactions échouées ont enregistré des destructions jusqu'à présent ; les autres sont définis mais n'ont rien enregistré. Le testnet enregistre une treizième source, `staking_tier_penalty`, pour son module facultatif de staking à verrouillage temporel.
 
 | Canal              | Description                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ Le module de destruction de QoreChain définit 12 sources de destruction. Les QO
 | `ai_service`       | 50% des frais de service d'IA détruits (inactif : les frais de service d'IA ne sont pas en service)           |
 | `bridge_fee`       | 100% des frais de pont détruits (inactif : le pont n'est pas en service)                    |
 | `treasury_buyback` | Rachat et destruction périodiques depuis la trésorerie                                      |
-| `failed_tx`        | Gas des transactions échouées ; appliqué par la chaîne à partir de v3.2.2 (testnet uniquement pour l'instant)   |
+| `failed_tx`        | 10 % du gas des transactions échouées ; appliqué par la chaîne depuis v3.2.2   |
 | `xqore_penalty`    | Pénalités de sortie anticipée xQORE acheminées vers la destruction (xQORE n'est pas en service)               |
 | `auto_buyback`     | Destructions automatisées au niveau du protocole (inactif)                                        |
 | `tge`              | Réservé ; la destruction du TGE a eu lieu avant la genèse et ce canal n'enregistre rien  |

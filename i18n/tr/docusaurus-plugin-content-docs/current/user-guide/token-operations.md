@@ -10,7 +10,7 @@ sidebar_position: 1
 Bu kılavuz QOR token'ını, token gönderme ve alma işlemlerini, bakiye sorgulamayı ve QoreChain üzerindeki ücret dağıtım modelini ele alır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 29 Haziran 2026'dan beri v3.2 hattında (node sürümü **v3.2.1**; testnet **v3.2.2** çalıştırır) canlıdır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.3** sürümünü çalıştırır; testnet **v3.2.4** çalıştırır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -92,13 +92,13 @@ QoreChain üzerindeki işlem ücretleri, ağ teşviklerini uyumlu hale getirmek 
 | **Yakılan**       | %30 | Arzdan kalıcı olarak kaldırılır                                     |
 | **Hazine**        | %20 | Protokol geliştirmesini ve ekosistem hibelerini finanse eder        |
 | **Stake Edenler** | %10 | Tüm delegatörlere orantılı olarak dağıtılır                        |
-| **Hafif Node'lar**| %3  | Hafif node ödülleri için ayrılmıştır (aşağıdaki nota bakın)         |
+| **Hafif Node'lar**| %3  | Hafif node ödülleri (aşağıdaki nota bakın)                          |
 
-Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret toplayıcı, işlem ücretlerini ve her epoch'ta basılan staking emisyonunu tutar. Hafif node payı bir rezerve birikir; hafif node ödül kaydı henüz açık değildir, bu nedenle şu anda hiçbir node bundan ödeme almamaktadır (bkz. [Hafif Node](/light-node/overview)). v3.2.0 yükseltmesinden bu yana staker payı normal bir staking ödülü olarak ödenir (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret toplayıcı, işlem ücretlerini ve her epoch'ta basılan staking emisyonunu tutar. Hafif node payı, hafif node ödül havuzuna birikir; kayıt açıktır ve lisansa bağlıdır, ancak henüz hiçbir hafif node kayıt olmamıştır; bu nedenle şu anda hiçbir node bundan ödeme almamaktadır (bkz. [Hafif Node](/light-node/overview#reward-program-status)). v3.2.0 yükseltmesinden bu yana staker payı normal bir staking ödülü olarak ödenir (bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Yakma Kanalları
 
-QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi biri aracılığıyla yakılan QOR, dolaşımdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca gas ücreti kanalında yakma kaydedilmiştir; diğerleri tanımlıdır ancak hiçbir şey kaydetmemiştir.
+QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi biri aracılığıyla yakılan QOR, dolaşımdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca gas ücreti ve başarısız işlem kanallarında yakma kaydedilmiştir; diğerleri tanımlıdır ancak hiçbir şey kaydetmemiştir. Testnet, isteğe bağlı zaman kilitli staking modülü için on üçüncü bir kaynak olan `staking_tier_penalty` kaydeder.
 
 | Kanal              | Açıklama                                                                         |
 | ------------------ | -------------------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi bir
 | `ai_service`       | AI servis ücretlerinin %50'si yakılır (devre dışı: AI servis ücretleri canlı değil) |
 | `bridge_fee`       | Köprü ücretlerinin %100'ü yakılır (devre dışı: köprü canlı değil)                 |
 | `treasury_buyback` | Hazineden periyodik geri alım ve yakma                                            |
-| `failed_tx`        | Başarısız işlemlerin gas'ı; zincir tarafından v3.2.2'den itibaren uygulanır (şimdilik yalnızca testnet) |
+| `failed_tx`        | Başarısız işlemlerin gas'ının %10'u; zincir tarafından v3.2.2'den itibaren uygulanır |
 | `xqore_penalty`    | Yakma yoluyla yönlendirilen xQORE erken çıkış cezaları (xQORE canlı değil)        |
 | `auto_buyback`     | Protokol düzeyinde otomatik yakmalar (devre dışı)                                 |
 | `tge`              | Ayrılmış; TGE yakması genesis'ten önce gerçekleşti ve bu kanal hiçbir şey kaydetmez |

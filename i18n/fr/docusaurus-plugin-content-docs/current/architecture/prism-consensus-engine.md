@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain intègre **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), une couche d'optimisation par apprentissage par renforcement, directement dans la couche de consensus via le module `x/rlconsensus`. PRISM observe les métriques de la chaîne tous les N blocs et est conçu pour exécuter une inférence à travers un réseau de neurones en virgule fixe et proposer des ajustements des paramètres de consensus — le tout de manière déterministe, sans aucune arithmétique en virgule flottante dans les chemins critiques pour le consensus.
 
-:::note État actuel (octobre 2026)
-Sur le mainnet comme sur le testnet, l'agent est en mode `conservative`, collecte une observation et une récompense tous les 10 blocs, et n'a **aucun poids de politique chargé** : il a effectué 0 pas et n'applique aucun changement de paramètre. Le temps de bloc est déterminé par la configuration des nœuds des validateurs, pas par PRISM. Charger une politique et changer de mode sont des actions de gouvernance actuellement désactivées sur le mainnet par le disjoncteur.
+:::note État actuel (20 octobre 2026 : mainnet v3.2.3, testnet v3.2.4)
+Sur le mainnet comme sur le testnet, l'agent est en mode `conservative`, collecte une observation et une récompense tous les 10 blocs, et n'a **aucun poids de politique chargé** : il a effectué 0 pas et n'applique aucun changement de paramètre (vérifié via les requêtes `AgentStatus` et `Policy` sur les deux réseaux). Le temps de bloc est déterminé par la configuration des nœuds des validateurs, pas par PRISM. Charger une politique, changer de mode, reprendre l'agent et mettre à jour les poids de récompense sont des actions de gouvernance actuellement désactivées sur le mainnet par le disjoncteur ; elles ne sont pas désactivées sur le testnet.
+
+Deux changements de version restreignent ce qu'une future politique ou un futur changement de paramètre pourra faire. Depuis v3.2.2, une mise à jour de politique par la gouvernance est validée avec une arithmétique vérifiée. Depuis v3.2.3, les messages de gouvernance sont contrôlés en plage sur la valeur brute transmise (le mode de l'agent) et chaque poids de récompense doit être compris entre 0 et 1.
 :::
 
 *La boucle d'optimisation PRISM : observer l'état de la chaîne, exécuter l'inférence de la politique, borner et appliquer les changements de paramètres, puis réinjecter le résultat.*

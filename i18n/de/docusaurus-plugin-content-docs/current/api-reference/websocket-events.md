@@ -141,7 +141,7 @@ Filtern Sie nach Ereignistyp, um nur Ereignisse eines bestimmten Moduls zu erhal
 
 ## Referenz der Modul-Ereignisse
 
-Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.0.
+Ereignisse werden als Standard-Ereignisse der Consensus Engine ausgegeben. Abonnieren Sie mit einer `tm.event='Tx'`-Query, die nach Ereignistyp und Attribut gefiltert ist (zum Beispiel `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Ereignisse auf Blockebene (also solche, die von der End-of-Block-Logik ausgegeben werden, wie die PRISM-Ereignisse unten) werden mit `tm.event='NewBlock'` zugestellt, nicht mit `Tx`. Die unten aufgeführten Namen und Attribute entsprechen der Chain-Version v3.2.3 (Mainnet); Ereignisse, die nur im Testnet v3.2.4 existieren, sind gekennzeichnet.
 
 :::note Welche Ereignisse Sie tatsächlich sehen werden
 Viele dieser Module sind in den öffentlichen Netzwerken inaktiv: Die Bridge ist nicht live, es sind noch keine Multilayer-Layer oder Rollups registriert, und xQORE ist nicht nutzbar. Ihre Ereignisse sind zwar definiert, werden aber erst ausgelöst, wenn es Aktivität gibt. Die PRISM-Beobachtungs- und Belohnungsereignisse (`rl_observation_collected`, `rl_reward_computed`) werden in beiden Netzwerken etwa alle 10 Blöcke ausgegeben.
@@ -157,8 +157,11 @@ Viele dieser Module sind in den öffentlichen Netzwerken inaktiv: Die Bridge ist
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Wird ausgegeben, wenn ein PQC-Schlüssel registriert wird                 |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Wird ausgegeben, wenn ein PQC-Schlüssel rotiert wird                    |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Wird ausgegeben, wenn ein Schlüssel auf einen neuen Algorithmus migriert wird    |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Wird ausgegeben, wenn sich ein Autorisierungsfenster der EVM-Lane öffnet  |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`; `native_only` und `allowed_targets`, wenn das Fenster einen Scope hat (v3.2.3) | Wird ausgegeben, wenn sich ein Autorisierungsfenster der EVM-Lane öffnet  |
 | `pqc_evm_window_closed`     | `address`                                                 | Wird ausgegeben, wenn sich ein Autorisierungsfenster der EVM-Lane schließt |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | Wird ausgegeben, wenn ein Konto seine Einwilligung zu einer EIP-7702-Delegation erfasst (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | Wird ausgegeben, wenn die EIP-7702-Delegation eines Kontos aufgehoben wird (v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id` sowie `name`/`category`, `old_status`/`new_status` oder `reason` | Änderungen an der Algorithmus-Registry durch die Governance |
 
 PQC-Schlüssel werden explizit mit einer Registrierungstransaktion registriert; es gibt kein Ereignis für eine automatische Registrierung.
 
@@ -195,6 +198,8 @@ PQC-Schlüssel werden explizit mit einer Registrierungstransaktion registriert; 
 | Ereignistyp       | Schlüsselattribute                                          | Beschreibung                                      |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Wird ausgegeben, wenn ein neuer Rollup registriert wird          |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id` und, wo angegeben, ein Grund | Wird ausgegeben, wenn ein Rollup pausiert, fortgesetzt oder gestoppt wird |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index` (und `fraud_upheld` bei einer Auflösung) | Wird ausgegeben, wenn ein Batch angefochten wird, die Anfechtung aufgelöst wird oder ein Batch abgelehnt wird |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Wird ausgegeben, wenn ein Abwicklungs-Batch übermittelt wird     |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | Wird ausgegeben, wenn ein Batch sein Challenge-Fenster erfolgreich durchläuft |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Wird ausgegeben, wenn ein DA-Blob gespeichert wird                |
@@ -207,6 +212,29 @@ PQC-Schlüssel werden explizit mit einer Registrierungstransaktion registriert; 
 | `burn`                   | `source`, `amount`                                        | Wird ausgegeben, wenn Tokens dauerhaft verbrannt werden          |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | Wird ausgegeben, wenn ein Meilenstein-Burn für die Transaktionsanzahl ausgeführt wird |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Wird ausgegeben, wenn die Governance einen Teil des gestrandeten Staker-Anteils freigibt |
+
+### Inflations-, Gas-Abstraction-, Lizenz-, Light-Node- und KI-Module
+
+| Ereignistyp | Schlüsselattribute | Beschreibung |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | Wird ausgegeben, wenn die Governance die Emissionsparameter ändert |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | Wird ausgegeben, wenn eine Gebühr in einem anderen akzeptierten Token konvertiert wird und wenn der Float wieder aufgefüllt wird (keines davon wird ausgelöst, solange nur `uqor` akzeptiert wird) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount`; `accepted_tokens`, `block_conversion_cap` | Wird ausgegeben, wenn der Float finanziert wird und wenn die Governance die Konfiguration aktualisiert |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | Berechtigter und Feature | Lizenz-Lebenszyklus |
+| `license_authority_updated` | `new_authority` | Wird ausgegeben, wenn die Governance die Lizenzautorität ersetzt (v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Ereignisse zu Lebenszyklus und Belohnungen von Light Nodes |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Wird ausgegeben, wenn die Governance die KI-Screening-Konfiguration aktualisiert |
+
+### Staking-Tiers-Modul (nur Testnet)
+
+Diese Ereignisse existieren nur im `qorechain-diana`-Testnet (v3.2.4); das Mainnet hat das Modul noch nicht (der Governance-Vorschlag 13 würde v3.2.4 bei Höhe 3,742,566 anwenden).
+
+| Ereignistyp | Schlüsselattribute | Beschreibung |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Ein Delegations-Lock wurde erstellt |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Ein Lock wurde vorzeitig beendet oder hat sein Ende erreicht |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; Abrechnungssummen | Ein Bonus wurde beansprucht; der Pool wurde abgerechnet |
+| `staking_tier_params_updated` | Parameter | Die Governance hat die Modulparameter geändert |
 
 ### xQORE-Modul
 

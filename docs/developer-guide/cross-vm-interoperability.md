@@ -15,7 +15,7 @@ Cross-VM calls are only as available as their target lane:
 * `MsgCrossVMCall` is **switched off on mainnet** by the circuit breaker (`qorechaind query circuit disabled-list`); it is enabled on the testnet.
 * The **SVM lane is disabled** for transactions on both networks, so an SVM leg cannot run.
 * **CosmWasm upload and instantiate are permissioned** on both networks and mainnet has no stored contract code, so there is no CosmWasm contract to call yet.
-* The synchronous **EVM precompile is not active** (see below).
+* The synchronous **EVM precompile is not active** (see below). A hardened version has been in the binary since v3.2.3, but no precompile is activated on either network.
 
 The module's REST routes (`/qorechain/crossvm/v1/...`) are not served by the public gateway; read messages with the CLI or a gRPC/ABCI query client.
 :::
@@ -51,7 +51,7 @@ The endpoints below default to a local node. On mainnet, use the **`qorechain-vl
 The synchronous path uses an EVM **precompile** at address `0x0000000000000000000000000000000000000901`. It is designed to let Solidity contracts call CosmWasm contracts and receive a response within the same transaction.
 
 :::warning Not active on mainnet or testnet
-The CrossVM bridge precompile is **not active** on `qorechain-vladi` or `qorechain-diana`: a call to `0x…0901` succeeds and returns empty data. It will not be activated in its current form; it is being rebuilt so that a revert in the calling contract also undoes the CosmWasm side, value transfers are rejected, EVM-to-EVM re-entry is refused and the cross-VM circuit breaker applies. The example below shows the intended shape only. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+The CrossVM bridge precompile is **not active** on `qorechain-vladi` or `qorechain-diana`: a call to `0x…0901` succeeds and returns empty data. The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the CosmWasm side, reaches only allowlisted CosmWasm targets, and honours the cross-VM circuit breaker), but it only runs once a governance-approved upgrade adds it to the active list. The example below shows the intended shape only. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Example
@@ -78,7 +78,7 @@ contract CrossVMCaller {
 }
 ```
 
-Once active, the precompile executes the CosmWasm contract immediately and returns the result. The current node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; the ABI may change with the rebuild. Gas cost: **50,000 base + 4 per input byte + execution cost**.
+Once active, the precompile executes the CosmWasm contract immediately and returns the result. The current node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; the ABI may still change before activation. Gas cost: **50,000 base + 4 per input byte + execution cost**.
 
 ---
 
@@ -88,17 +88,17 @@ Other cross-VM calls use the `MsgCrossVMCall` transaction. The chain works out t
 
 ### CLI
 
-`tx crossvm call` takes the target VM (`evm`, `cosmwasm` or `svm`) and the target contract as positional arguments, with the payload as hex:
+`tx crossvm call` takes the target VM (`evm`, `cosmwasm` or `svm`) and the target contract as positional arguments, with the payload as hex. The CLI does not ask for the source VM: the chain derives the caller's lane from state and ignores the declared field (the CLI fills in a placeholder so the message passes its own validation):
 
 ```bash
 qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Other flags: `--funds <coins>` (CosmWasm targets only) and `--async` to queue the call instead of executing it now. Sign and broadcast `tx.json` with `tx pqc cosign` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); the fee floor is 0.1 uqor per gas.
+Other flags: `--funds <coins>` (CosmWasm targets only) and `--async` to queue the call instead of executing it now. Sign and broadcast `tx.json` with `tx pqc cosign` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); the fee floor is 0.1 uqor per gas. A call into the caller's own lane is refused (since v3.2.3).
 
-:::caution Disabled on mainnet, and the CLI form needs a fix
-`MsgCrossVMCall` is switched off on mainnet by the circuit breaker. In the current release binaries, `tx crossvm call` also builds a message that does not pass the message's own validation (it leaves the source VM empty), so the command is documented here for reference only.
+:::caution Disabled on mainnet
+`MsgCrossVMCall` is switched off on mainnet by the circuit breaker, so the command cannot succeed there today. (Release binaries before v3.2.3 also built a message that failed its own validation because the source VM was empty; the v3.2.3 binary fixes that.) On the testnet the message is enabled, but its CosmWasm and SVM targets are not usable (see above), so only an EVM target can be reached.
 :::
 
 ---
@@ -122,6 +122,8 @@ Submitted --> Pending --> Executed
 | **Executed**  | Target contract called successfully; response recorded    |
 | **Failed**    | Target contract execution reverted; error recorded        |
 | **Timed Out** | Message exceeded `queue_timeout_blocks` without execution |
+
+Since v3.2.3 a queued call that fails is rolled back as a whole: only its `Failed` record remains, and the funds attached to a failed CosmWasm call are no longer moved into the contract. While the module is disabled, or `MsgCrossVMCall` is switched off by the circuit breaker, the queue is **not executed**: queued messages stay pending and expire at their timeout unless the switch is lifted first.
 
 ---
 

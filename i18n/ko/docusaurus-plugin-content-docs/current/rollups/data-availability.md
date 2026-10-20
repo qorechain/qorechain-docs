@@ -16,7 +16,7 @@ sidebar_position: 4
 | **`both`** | 중복성을 위해 native와 Celestia를 함께 사용 | 현재는 `native`와 정확히 동일하게 동작 |
 
 :::caution 초기 단계 기능
-어느 네트워크에서도 아직 롤업이 생성되지 않았으며, DA 백엔드는 부분적으로만 구현되어 있습니다. 각 백엔드의 상태는 아래에 명시되어 있습니다. 어느 것이든 의존하기 전에 **`qorechain-diana`** 테스트넷에서 검증하세요.
+어느 네트워크에서도 아직 롤업이 생성되지 않았으며(2026년 10월 20일 확인), DA 백엔드는 부분적으로만 구현되어 있습니다. 각 백엔드의 상태는 아래에 명시되어 있습니다. 어느 것이든 의존하기 전에 **`qorechain-diana`** 테스트넷에서 검증하세요.
 :::
 
 ---
@@ -41,6 +41,8 @@ Native DA는 `x/rdk` 내부의 온체인 블롭 저장소입니다. 각 블롭�
 ```bash
 qorechaind query rdk config
 ```
+
+블롭 메타데이터(바이트가 아님)는 REST의 `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`에서 읽을 수 있으며, 두 네트워크 모두 이를 제공합니다. 여기에는 `expires_at_height`가 포함됩니다.
 
 ---
 

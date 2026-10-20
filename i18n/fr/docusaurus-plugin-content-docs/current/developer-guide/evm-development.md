@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain exécute un environnement d'exécution entièrement compatible EVM sur le QoreChain EVM Engine, ce qui vous permet de déployer des contrats intelligents Solidity et d'interagir avec eux à l'aide d'outils familiers. Le module EVM expose une interface JSON-RPC sur le **port 8545** (WebSocket sur le **8546**) qui prend en charge les flux de travail de développement Ethereum standard.
 
 :::note
-Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 29 juin 2026, qui exécute la version de nœud **v3.2.1** (règles de consensus issues de la mise à niveau v3.2.0). Pour le testnet **`qorechain-diana`** (v3.2.2), utilisez l'EVM chain ID **9800**. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
+Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée à la hauteur 3,662,051 le 20 octobre 2026). Pour le testnet **`qorechain-diana`** (v3.2.4, appliquée à la hauteur 8,337,253 le 19 octobre 2026 ; pas encore appliquée sur le mainnet ; la proposition de gouvernance 13 l'appliquerait à la hauteur 3,742,566), utilisez l'EVM chain ID **9800**. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
 :::
 
 :::caution Une transaction EVM exige une clé PQC enregistrée et une fenêtre d'autorisation ouverte
 Depuis la mise à niveau v3.2.0 (hauteur 2,981,742 sur le mainnet, hauteur 5,920,000 sur le testnet), la voie EVM n'admet une transaction que d'un compte qui possède **(1) une clé post-quantique ML-DSA-87 enregistrée** et **(2) une fenêtre d'autorisation EVM ouverte** disposant encore de place pour elle. Vous signez avec des outils ordinaires (MetaMask, ethers.js, Hardhat, Foundry), mais sans clé enregistrée ni fenêtre ouverte, `eth_sendRawTransaction` est refusé (codespace `pqc`, codes 26, 27 ou 28). Les lectures, `eth_call` et l'estimation du gas n'ont besoin ni de l'une ni de l'autre. Voir [Fenêtre d'autorisation EVM](#evm-window) ci-dessous et le guide pas à pas dans [Votre première transaction](/getting-started/first-transaction#evm-window).
+
+Deux autres règles s'appliquent sur le mainnet depuis la v3.2.2 : **les transactions non protégées (antérieures à EIP-155) sont refusées**, à la fois par le mempool du nœud et lors de l'exécution des blocs ; signez donc avec un chain id (tous les portefeuilles et bibliothèques actuels le font) ; et **les comptes de module ne peuvent pas être revendiqués via l'EVM**.
 :::
 
 ---
@@ -30,7 +32,7 @@ Depuis la mise à niveau v3.2.0 (hauteur 2,981,742 sur le mainnet, hauteur 5,920
 | Chain ID (testnet)   | `9800` (`qorechain-diana`)                 |
 | Symbole de la devise | `QOR`                                      |
 
-Les lectures propres à QoreChain sont servies via REST (`api.qore.host`) ; l'espace de noms JSON-RPC `qor_` décrit [ci-dessous](#custom-qor_-namespace) n'est **pas activé** sur les points de terminaison publics ni dans la configuration par défaut d'un nœud.
+Les lectures propres à QoreChain sont servies via REST (`api.qore.host`) ; l'espace de noms JSON-RPC `qor_` décrit [ci-dessous](#custom-qor_-namespace) n'est **pas activé** sur les points de terminaison publics ni dans la configuration par défaut d'un nœud. La liste `api` par défaut d'un nœud fraîchement initialisé (v3.2.3 et ultérieures) est `eth,net,web3` ; `txpool` est à activer explicitement, car il publie les transactions en attente du nœud.
 
 ---
 
@@ -200,7 +202,16 @@ Une signature post-quantique ne peut pas voyager *avec* une transaction Ethereum
 | `max-txs`   | 1 – 1,000          | Nombre de transactions EVM qu'elle admet |
 | `max-value` | supérieur à 0, en `uqor` | Sortie totale qu'elle admet : valeur transférée **plus** les frais maximaux que chaque transaction pourrait payer (limite de gas × frais max par gas), convertis en `uqor` et arrondis à l'unité supérieure |
 
-La première borne atteinte ferme la fenêtre. Tous les champs sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 5 heures sur le testnet (environ 1,0 s par bloc).
+La première borne atteinte ferme la fenêtre. Les trois bornes sont obligatoires ; ouvrir une fenêtre remplace celle qui existe ; une transaction admise puis en échec consomme tout de même son emplacement et son budget de valeur ; les déploiements de contrat comptent comme n'importe quelle autre transaction. `blocks` est un nombre de blocs, pas une durée : 17,280 blocs représentent environ 15 heures sur le mainnet (environ 3,2 s par bloc) et environ 5 heures sur le testnet (environ 1,0 s par bloc).
+
+**La borne de valeur ne compte que le QOR natif.** Un transfert de jeton, une approbation ou tout autre appel de contrat porte une valeur nulle ; il n'est donc pas décompté de `max-value` (seuls ses frais maximaux le sont). Pour borner aussi ces opérations, restreignez la **portée** de la fenêtre (mainnet v3.2.3 et ultérieures) :
+
+| Option de portée (drapeau CLI) | Champ du message | Ce que la fenêtre admet |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | Uniquement les transferts simples de QOR natif : pas de calldata, pas de création de contrat, pas de destinataire qui porte du code, pas d'autorisation EIP-7702 |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | Uniquement les transactions dont le destinataire figure parmi les adresses de 20 octets listées ; la création de contrat est refusée |
+
+Une fenêtre ouverte sans portée se comporte exactement comme auparavant. Une transaction hors de la portée est refusée avec le code 27 (le message indique que la fenêtre « n'admet pas cette transaction »). `GET /qorechain/pqc/v1/evm_window/{address}` et `qorechaind query pqc evm-window` renvoient `native_only` et `allowed_targets`, et l'événement `pqc_evm_window_opened` les porte lorsqu'ils sont définis.
 
 **Étapes** (le pas-à-pas complet se trouve dans [Votre première transaction](/getting-started/first-transaction#evm-window)) :
 
@@ -211,6 +222,10 @@ La première borne atteinte ferme la fenêtre. Tous les champs sont obligatoires
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. Vérifiez ce qu'il reste : `qorechaind query pqc evm-window <address>` ou `GET /qorechain/pqc/v1/evm_window/{address}` (répond `found: false` lorsqu'il n'y en a pas).
@@ -218,13 +233,17 @@ La première borne atteinte ferme la fenêtre. Tous les champs sont obligatoires
 
 Fermez une fenêtre de façon anticipée avec `qorechaind tx pqc close-evm-window` (même schéma `--generate-only` et `cosign`), par exemple si vous soupçonnez que la clé classique est exposée : tout ce que la fenêtre admettait encore est refusé à partir du bloc suivant.
 
+### Délégations EIP-7702 {#eip-7702}
+
+Depuis la v3.2.2, une délégation EIP-7702 de votre compte (une transaction de type 4) ne prend effet qu'avec le consentement post-quantique de votre propre compte. Enregistrez d'abord le consentement avec le message de la voie Cosmos signé en hybride `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`) ; il est à usage unique, expire après le nombre de blocs indiqué et est révoqué par `close-evm-window`. La valeur qui quitte un compte délégué est imputée à la fenêtre de **ce** compte, une transaction de type 4 en échec conserve les autorisations qu'elle a appliquées, et `qorechaind tx pqc clear-evm-delegation` supprime une délégation. Une délégation refusée répond avec les codes 60 à 63. Lisez le consentement avec `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+
 | Refus (codespace `pqc`) | Signification |
 | ------------------------- | ------- |
 | code 26 | Aucune fenêtre ouverte pour l'expéditeur, ou l'expéditeur n'a pas de clé PQC enregistrée |
-| code 27 | La fenêtre est expirée ou épuisée (le message indique quelle borne) |
+| code 27 | La fenêtre est expirée ou épuisée (le message indique quelle borne), ou la transaction est hors de la portée de la fenêtre |
 | code 28 | Bornes de fenêtre invalides à l'ouverture, ou aucune clé enregistrée à ce moment |
 
-Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` et `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
+Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` et `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Le SDK 0.9.0 ajoute à `openEvmWindowMsg` les options de portée (`nativeOnly`, `allowedTargets`) ainsi que les constructeurs de consentement EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`) ; les versions antérieures à la 0.9.0 ne construisent que la fenêtre sans portée, utilisez donc `qorechaind` pour le reste (voir le [guide EVM du SDK](/sdk/guides/evm#evm-window-scope)).
 
 ---
 
@@ -233,7 +252,7 @@ Avec le SDK TypeScript (0.8.2 et versions ultérieures) : `openEvmWindowMsg`, `c
 QoreChain étend le JSON-RPC avec un espace de noms `qor_` pour les requêtes spécifiques à la chaîne :
 
 :::warning Pas encore servi
-Aucune version publiée du nœud ne sert encore l'espace de noms `qor_` : `rpc_modules` sur les points de terminaison publics ne liste que `eth`, `net`, `rpc`, `txpool` et `web3`, et chaque méthode ci-dessous renvoie `-32601` (méthode introuvable) sur le mainnet, le testnet et les nœuds auto-hébergés avec la configuration par défaut (`eth`, `net`, `web3`, `txpool`). Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace) pour l'état d'avancement et les alternatives REST (par exemple `GET /qorechain/pqc/v1/account/{address}` pour l'état de la clé PQC).
+Aucune version publiée du nœud ne sert encore l'espace de noms `qor_` : `rpc_modules` sur les points de terminaison publics ne liste que `eth`, `net`, `rpc`, `txpool` et `web3`, et chaque méthode ci-dessous renvoie `-32601` (méthode introuvable) sur le mainnet, le testnet et les nœuds auto-hébergés avec la configuration par défaut (`eth`, `net`, `web3`). Voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace) pour l'état d'avancement et les alternatives REST (par exemple `GET /qorechain/pqc/v1/account/{address}` pour l'état de la clé PQC).
 :::
 
 | Méthode                     | Description                                                       |

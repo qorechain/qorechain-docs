@@ -9,8 +9,9 @@ sidebar_position: 8
 
 ## Mainnet yayında mı?
 
-Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`). Testnet hazır ayarı
-(`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
+Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
+canlı) ve 20 Ekim 2026 itibarıyla zincir sürümü v3.2.3'ü çalıştırıyor. Testnet hazır
+ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
 ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
 URL'lerinizle geçersiz kılın.
@@ -83,15 +84,14 @@ EVM çalışma zamanının QOR'u **18** ondalık basamakla temsil ettiğini unut
 
 ## Hangi paketler yayımlandı ve nerede?
 
-Hepsi. TypeScript çekirdeği (`@qorechain/sdk`, 0.8.3), EVM/SVM adaptörleri
-(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), React kiti (`@qorechain/react`,
-0.8.3) ve `create-qorechain-dapp` iskele aracı (0.8.0) npm'de; Python istemcisi
-PyPI'da (`pip install qorechain-sdk`, sürüm 0.8.3, import `qorsdk`); Go
-istemcisi modül proxy'sinde
-(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, etiket
-`packages/go/v0.8.4`); Rust istemcisi crates.io'da (`cargo add qorechain-sdk`,
-0.8.3); Java istemcisi ise Maven Central'da
-(`io.github.qorechain:qorechain-sdk:0.8.3`). Dil başına tüm komutlar için
+Hepsi (21 Ekim 2026'da kontrol edildi). TypeScript çekirdeği (`@qorechain/sdk`, 0.9.0),
+React kiti (`@qorechain/react`, 0.9.0), `create-qorechain-dapp` iskele aracı
+(0.9.0) ve EVM/SVM adaptörleri (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) npm'de;
+Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.9.0, import
+`qorsdk`); Go istemcisi modül proxy'sinde
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); Rust istemcisi
+crates.io'da (`cargo add qorechain-sdk`, 0.9.0); Java istemcisi ise Maven
+Central'da (`io.github.qorechain:qorechain-sdk:0.9.0`). Dil başına tüm komutlar için
 [Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor
@@ -109,16 +109,19 @@ v3.2.0). Bir hibrit işlemin PQC doğrulamasından geçebilmesi için imzalayan�
 PQC açık anahtarının `MsgRegisterPQCKeyV2` ile (klasik imzalı, hibritten muaf bir
 işlem) **açıkça kaydedilmiş** olması gerekir; açık anahtarı uzantıya gömmek
 (`includePqcPublicKey: true`) anahtarı kaydetmez ve zincir ilk kullanımda bir
-anahtarı kaydetmez.
+anahtarı kaydetmez. TypeScript'te istemciye anahtar çiftini verin
+(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0); gönderdiği her işlem
+hibrit olarak imzalanır.
 Zincir, hedged veya deterministik, FIPS-204'e uygun her geçerli ML-DSA-87
 imzasını kabul eder. SDK, bir işlemin her zaman aynı imzaya ve tx hash'ine sahip
 olması için (0.5.1 sürümünden beri) varsayılan olarak deterministik imzalar.
 Hibrit bir tx `pqc` kodu 21 (`hybrid_verify_failed`) ile başarısız olursa neden
-sign-bytes sürümü, chain-id, eski bir PQC kütüphanesi veya kayıtlı olmayan bir
-anahtardır; hedged imzalama asla neden değildir.
+sign-bytes sürümü, chain-id, eski bir PQC kütüphanesi veya kayıtlı olmayan ya da
+farklı bir anahtardır; hedged imzalama asla neden değildir.
 Her iki ağ da v2 sign-bytes biçimini doğrular; bu yüzden SDK **0.8.1 veya daha
-yenisini** kullanın ve `rest` (veya `signBytesVersion`) geçirin: bunlardan biri
-yoksa oluşturucular `qorechain-vladi` / `qorechain-diana` üzerinde hata fırlatır.
+yenisini** kullanın (güncel sürüm 0.9.0) ve `rest` (veya `signBytesVersion`) geçirin:
+bunlardan biri yoksa oluşturucular `qorechain-vladi` / `qorechain-diana` üzerinde
+hata fırlatır.
 [Kod 21 sorun giderme](/developer-guide/post-quantum-signing#code-21) ve
 [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) bölümlerine bakın.
 
@@ -140,6 +143,44 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 (değer `0x08` ile başlar) — eski sürümlerle oluşturulan hibrit işlemler, her
 şeritte (eth-native dahil) zincir üzerinde reddedilir.
 
+## SDK hangi zincir sürümleriyle çalışır?
+
+SDK **0.9.0**, zincir v3.2.2 ve v3.2.3 için istemci sürümüdür: mainnet **v3.2.3** ve
+testnet **v3.2.4** üzerinde işlem yapar; kayıt sırasında isteğe bağlı sahiplik
+kanıtı (proof of possession; ağ v3.2.3'ü uyguladıktan sonra `ensurePqcRegistered`
+tarafından otomatik eklenir), kapsamlı EVM pencereleri ve EIP-7702 onay mesajları
+için oluşturuculara sahiptir. SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
+yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
+değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
+CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). v3.2.4 şimdilik
+yalnızca testnet'te yayındadır (mainnet yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır) ve SDK hiçbir v3.2.4 alanı ayarlamaz.
+
+## PQC anahtar kaydım reddedildi ama ücret alındı
+
+Zaten bir anahtara sahip olan bir hesap için yapılan kayıt, ücret düşüldükten sonra
+zincir tarafından reddedilir. 0.9.0'daki `ensurePqcRegistered` önce
+`GET /qorechain/pqc/v1/account/{address}` adresini okur (`rest` geçirin), bu anahtar
+çiftinin anahtarı kayıtlıysa kaydı atlar ve farklı bir anahtar kayıtlıysa
+`PqcKeyMismatchError` fırlatır. Önceki sürümler, siz kendiniz
+`status: { registered: found }` geçirmedikçe önce bakmazdı; burada `found` o rotadan
+gelir. v3.2.3'ten beri zincir ayrıca zayıf, dejenere ve yeniden kullanılmış
+anahtarları da reddeder; `derivePqcCanonical` veya `tx pqc gen-key` ile elde edilen
+anahtarlar sorunsuzdur.
+
+## `create-qorechain-dapp` imzalayamayan bir SDK kuruyor
+
+Yalnızca iskele aracının 0.8.0 sürümü böyleydi: `@qorechain/sdk` ve
+`@qorechain/evm` için `^0.3.0` aralıkları yazıyordu ve 0.x bir sürümde şapka işaretli
+aralık 0.3 içinde kalır. 0.9.0 sürümü güncel SDK üzerinde iskeleler; 0.8.0'ı
+kullandıysanız iskelelemeden sonra `npm i @qorechain/sdk@latest` (ve
+`@qorechain/evm@latest`) komutunu çalıştırın.
+
+## `VERSION` 0.8.0 diyor ama ben 0.8.3'ü kurdum
+
+0.8.3'ün dışa aktarılan `VERSION` sabiti güncellenmemişti ve `0.8.0` bildiriyor;
+0.9.0'dan itibaren paketle eşleşir. Daha önceki sürümlerde kurulu sürümü
+`package.json` dosyasından okuyun.
+
 ## Authenticator harcamam `authenticator_replay` ile reddediliyor
 
 (`abstractaccount` modülü bugün her iki ağda da kapalıdır; bir harcama, herhangi
@@ -147,12 +188,15 @@ bir nonce kontrol edilmeden önce `abstract account module is disabled` ile
 reddedilir. Bkz. [Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).
 Aşağıdaki yönergeler modül etkinleştirildikten sonra geçerlidir.)
 
-Nonce yanlış. `MsgExecuteEVM.nonce`, hesabın **güncel** EVM nonce'u olmalıdır
-(relayer farklı bir hesaptır, bu yüzden 1 **eklemeyin**);
-`MsgExecuteCosmos.nonce` ise `(account, pubkey)` için **authenticator başına
-sıra numarasıdır** ve ayrı bir depo sayacıdır. Değeri yeniden alın ve yeniden
-imzalayın. Diğer authenticator hataları `decodeTxError` ile çözümlenir:
-`abstractaccount` kodları 5 (`spending_limit_exceeded`), 6
-(`session_key_expired`) ve 10 (`permission_denied`).
-[Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators)
-bölümüne bakın.
+Nonce yanlış. Hem `MsgExecuteEVM.nonce` hem de `MsgExecuteCosmos.nonce`, `(account, pubkey)`
+için bağlı anahtarın **authenticator sıra numarasıdır**: zincirin bağlı anahtar başına
+tuttuğu, 0'dan başlayan ve her başarılı yürütmede artan bir sayaç. Bu, hesabın EVM
+nonce'u **değildir** ve bunun için henüz bir sorgu yoktur; bu yüzden bağlı anahtar
+başına kendiniz takip edin. v3.2.3'ten beri EVM şeridi ayrıca çağrının gas sınırını
+bağlayan `evmAuthSignBytesV2`'yi imzalar (`resolveEvmAuthDigestVersion` biçimi
+seçer). O anahtar için takip ettiğiniz sayacı kullanın ve yeniden imzalayın.
+
+Diğer authenticator hataları `decodeTxError` ile çözümlenir: `abstractaccount`
+kodları 5 (`spending_limit_exceeded`), 6 (`session_key_expired`) ve
+10 (`permission_denied`). Bkz.
+[Authenticator'lar ve yetkilendirilmiş harcama](/sdk/guides/authenticators).

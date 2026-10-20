@@ -9,8 +9,8 @@ sidebar_position: 1
 
 QoreChain implementa **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mecanismo de consenso que clasifica a los validadores en tres pools especializados y utiliza una selección ponderada por reputación para equilibrar seguridad, descentralización y rendimiento. CPoS está implementado en el módulo `x/qca` y opera sobre el **QoreChain Consensus Engine**.
 
-:::note Estado actual (octubre de 2026)
-La lógica de Triple-Pool CPoS descrita en esta página — clasificación de pools, selección de proponente ponderada por pool, curva de vinculación de recompensas, slashing progresivo y conteo QDRW — está implementada en el módulo `x/qca` y sus parámetros están on-chain, pero **todavía no está conectada a la producción de bloques, las recompensas, el slashing ni el conteo de gobernanza**. Hoy la rotación de proponentes es la rotación estándar de validadores ponderada por stake, el slashing sigue los parámetros estándar de `x/slashing` (ventana de downtime de 10,000 bloques, jail por debajo del 5 % de bloques firmados, slash del 1 % por downtime y del 5 % por double-sign, jail de 10 minutos) y las propuestas se cuentan sobre el stake vinculado (quórum 33.4 %, umbral 50 %, veto 33.4 %). El diseño que sigue describe hacia dónde evoluciona el módulo.
+:::note Estado actual (20 de octubre de 2026: mainnet v3.2.3, testnet v3.2.4)
+La lógica de Triple-Pool CPoS descrita en esta página — clasificación de pools, selección de proponente ponderada por pool, curva de vinculación de recompensas, slashing progresivo y conteo QDRW — está implementada en el módulo `x/qca` y sus parámetros están on-chain, pero **todavía no está conectada a la producción de bloques, las recompensas, el slashing ni el conteo de gobernanza**. Hoy la rotación de proponentes es la rotación estándar de validadores ponderada por stake, el slashing sigue los parámetros estándar de `x/slashing` (ventana de downtime de 10,000 bloques, jail por debajo del 5 % de bloques firmados, slash del 1 % por downtime y del 5 % por double-sign, jail de 10 minutos) y las propuestas se cuentan sobre el stake vinculado (quórum 33.4 %, umbral 50 %, veto 33.4 %). El diseño que sigue describe hacia dónde evoluciona el módulo. Ninguna versión hasta mainnet v3.2.3 o testnet v3.2.4 cambia esto; las reglas que **sí** se aplican hoy figuran en [Reglas de admisión de validadores y de staking en vigor](#admission).
 :::
 
 La capa de optimización por aprendizaje por refuerzo diseñada para ajustar los parámetros de consenso en tiempo de ejecución se denomina **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consulta el [Motor de Consenso PRISM](/architecture/prism-consensus-engine) para más detalles.
@@ -28,6 +28,22 @@ flowchart TD
     P["PRISM<br/>RL optimization"] -. tunes params .-> B
     P -. tunes params .-> C
 ```
+
+---
+
+## Reglas de admisión de validadores y de staking en vigor {#admission}
+
+Estas reglas se aplican en mainnet (desde v3.2.2, con un endurecimiento adicional en v3.2.3) y en la testnet. Forman parte del servidor de mensajes de staking, por lo que se aplican a todo mensaje sea cual sea la forma en que llegue a la cadena: una transacción, `x/authz`, `x/group`, un contrato CosmWasm, un precompile o una propuesta de gobernanza. Las transacciones de génesis están exentas.
+
+| Regla | Qué aplica la cadena |
+| --- | --- |
+| Crear un validador | El self-bond es de al menos **100,000 QOR** (100,000,000,000 uqor) **y** la cuenta del operador tiene una licencia `validator_operator` activa. Consulta [Licencias de la cadena](/architecture/chain-licensing) |
+| Mínimo operativo | El propio operador de un validador no puede deshacer su delegación ni redelegar de un modo que deje su self-bond **por debajo de 100,000 QOR**. Se permite una salida completa (self-bond a cero); el validador queda entonces en jail |
+| Unjail | `MsgUnjail` se rechaza mientras el self-bond del operador esté por debajo del mínimo, de modo que un validador que salió o fue penalizado por debajo de él debe reponerlo primero. Una cuenta de operador sin clave poscuántica registrada sigue pudiendo hacer unjail (consulta [Seguridad poscuántica](/architecture/post-quantum-security#hybrid-signatures)) |
+| Autorizaciones de stake (v3.2.3) | Las listas de permitidos y denegados de una autorización de stake de `x/authz` comparan las direcciones de validador por sus bytes decodificados, de modo que la forma de escribir una dirección (por ejemplo, todo en mayúsculas) no puede eludir una lista de denegados |
+| Slashing por redelegación (v3.2.0) | El slash total aplicado a una entrada de redelegación está limitado a la fracción de slash multiplicada por el saldo inicial de la entrada |
+
+Parámetros de staking leídos en ambas redes el 20 de octubre de 2026: `max_validators` 100, tiempo de unbonding de 21 días (1,814,400 s), `max_entries` 7, `min_commission_rate` 0. La autoridad de licencias, la cuenta que concede las licencias `validator_operator`, puede ser reemplazada por la gobernanza desde v3.2.3 (`MsgUpdateAuthority`).
 
 ---
 

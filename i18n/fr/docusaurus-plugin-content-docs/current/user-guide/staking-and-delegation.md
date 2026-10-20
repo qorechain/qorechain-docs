@@ -10,7 +10,7 @@ sidebar_position: 2
 Ce guide explique comment déléguer des tokens QOR à des validateurs, redéléguer entre validateurs, désengager votre mise, réclamer vos récompenses, et comprendre quelles parties de la conception du staking de QoreChain sont actives aujourd'hui.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 29 juin 2026 sur la ligne v3.2 (version de nœud **v3.2.1** ; le testnet exécute la **v3.2.2**) — substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est actif depuis le 7 juin 2026 et exécute la version **v3.2.3** ; le testnet exécute la **v3.2.4** — substituez le chain ID et les endpoints du mainnet indiqués sur la page **Connexion au mainnet** lorsque vous staker sur le mainnet.
 :::
 
 :::caution Signer avec `tx pqc cosign`
@@ -19,9 +19,9 @@ Le mainnet et le testnet exigent une signature post-quantique hybride sur chaque
 
 ## Existe-t-il une période de blocage ? {#lock-in-period}
 
-**Aujourd'hui**, non — il n'y a pas de durée à choisir, car le staking n'est pas proposé ici sous forme de durées fixes comme c'est souvent le cas sur une plateforme d'échange. La délégation reste active, avec des récompenses versées dès le bloc suivant, aussi longtemps que vous le souhaitez, jusqu'à ce que vous décidiez de la désengager ; rien n'expire et rien n'est à renouveler. La **période de désengagement de 21 jours** mentionnée tout au long de ce guide n'est pas un blocage que vous acceptez à l'avance — elle ne débute qu'une fois que vous *demandez* le désengagement, et ne s'applique qu'au QOR que vous retirez. Déplacer une délégation d'un validateur à un autre (redélégation) évite entièrement cette attente, puisque la mise ne quitte jamais le pool lié. Le terme de « fidélité » de la [courbe de liaison](#bonding-curve) plus bas fait partie de la conception de QoreChain mais **n'est pas appliqué par la chaîne en service aujourd'hui** : la durée pendant laquelle vous restez délégué ne modifie donc pas votre taux de récompense.
+**Sur le mainnet aujourd'hui**, non — il n'y a pas de durée à choisir, car le staking n'est pas proposé ici sous forme de durées fixes comme c'est souvent le cas sur une plateforme d'échange. La délégation reste active, avec des récompenses versées dès le bloc suivant, aussi longtemps que vous le souhaitez, jusqu'à ce que vous décidiez de la désengager ; rien n'expire et rien n'est à renouveler. La **période de désengagement de 21 jours** mentionnée tout au long de ce guide n'est pas un blocage que vous acceptez à l'avance — elle ne débute qu'une fois que vous *demandez* le désengagement, et ne s'applique qu'au QOR que vous retirez. Déplacer une délégation d'un validateur à un autre (redélégation) évite entièrement cette attente, puisque la mise ne quitte jamais le pool lié. Le terme de « fidélité » de la [courbe de liaison](#bonding-curve) plus bas fait partie de la conception de QoreChain mais **n'est pas appliqué par la chaîne en service aujourd'hui** : la durée pendant laquelle vous restez délégué ne modifie donc pas votre taux de récompense. Une forme optionnelle de staking à verrouillage temporel existe uniquement sur le testnet ; voir [Staking à verrouillage temporel (testnet uniquement)](#time-locked-staking).
 
-Ceci décrit le comportement actuel de la chaîne, et non une garantie permanente — une durée minimale de staking est un paramètre que la gouvernance pourrait introduire à l'avenir, de la même manière que tout autre paramètre de staking sur cette page peut être modifié par vote. Si cela devait arriver, le wallet affichera le délai résultant (toute durée minimale plus les 21 jours de désengagement) avant que vous ne confirmiez une délégation, et cette page sera mise à jour en conséquence.
+Ceci décrit le comportement actuel du mainnet, et non une garantie permanente — une durée minimale de staking est un paramètre que la gouvernance pourrait introduire à l'avenir, de la même manière que tout autre paramètre de staking sur cette page peut être modifié par vote. Si cela devait arriver, le wallet affichera le délai résultant (toute durée minimale plus les 21 jours de désengagement) avant que vous ne confirmiez une délégation, et cette page sera mise à jour en conséquence.
 
 ---
 
@@ -119,7 +119,35 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --gas 400000 --fees 40000uqor
 ```
 
-Les récompenses de staking sont financées par deux sources : le budget d'émission plafonné du protocole (voir [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pour le plafond actuel, en vigueur depuis un changement de gouvernance du 26 août 2026) et la part des stakers sur chaque frais de transaction (versée comme une récompense de staking normale depuis la mise à niveau v3.2.0 ; voir [la part des stakers bloquée](/architecture/tokenomics#stranded-and-reserve)). Les récompenses dépendent de la commission du validateur et de l'activité du réseau, et ne sont pas garanties.
+Les récompenses de staking sont financées par deux sources : le budget d'émission plafonné du protocole (voir [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pour le montant actuel par epoch et le plafond, tous deux fixés par la gouvernance — le plus récemment par la proposition 10 du 19 octobre 2026) et la part des stakers sur chaque frais de transaction (versée comme une récompense de staking normale depuis la mise à niveau v3.2.0 ; voir [la part des stakers bloquée](/architecture/tokenomics#stranded-and-reserve)). Les récompenses dépendent de la commission du validateur et de l'activité du réseau, et ne sont pas garanties.
+
+---
+
+## Staking à verrouillage temporel (testnet uniquement) {#time-locked-staking}
+
+:::note Pas sur le mainnet
+La version v3.2.4 ajoute un module optionnel de staking à verrouillage temporel, `x/stakingtier`, **uniquement au testnet `qorechain-diana`**. Il n'est pas encore en service sur le mainnet (la proposition de gouvernance 13 du mainnet appliquerait la v3.2.4 à la hauteur 3,742,566) ; sur le mainnet, la délégation n'a aucun blocage (voir [ci-dessus](#lock-in-period)). Tout ce qui suit décrit le testnet.
+:::
+
+Sur le testnet, un délégant peut engager une partie d'une délégation existante auprès d'un validateur pour une durée fixe de 3, 6 ou 12 mois. Les durées et les montants sont des paramètres de la chaîne ; lisez les valeurs actuelles depuis `GET /qorechain/stakingtier/v1/params` plutôt que depuis cette page.
+
+* **Le verrouillage est optionnel.** Une délégation, une redélégation et un désengagement ordinaires fonctionnent exactement comme décrit sur cette page. Seul le montant verrouillé est restreint : tant qu'un verrouillage est ouvert, il ne peut être ni désengagé ni redélégué, et cela vaut pour toutes les voies (transaction, authz, group, contrat, gouvernance).
+* **Verrouillage minimal** de 10 QOR, et au plus 16 verrouillages ouverts par délégant.
+* **Le déverrouillage anticipé** est autorisé : il met fin au verrouillage, fait perdre le bonus de verrouillage non versé et brûle une partie du montant verrouillé (enregistrée sous la source de burn `staking_tier_penalty`) ; le reste demeure délégué et déverrouillé.
+* **Le slashing** s'applique à une délégation verrouillée comme à toute autre ; le verrouillage diminue avec la délégation.
+* **Réclamation.** Les bonus de verrouillage s'accumulent par epoch et sont versés lorsque vous les réclamez.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind query stakingtier locks <holder_address>
+```
+
+Comme sur le reste de cette page, signez chaque transaction générée avec `tx pqc cosign`.
 
 ---
 

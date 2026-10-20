@@ -11,7 +11,7 @@ QoreChain hakkında dokümantasyondan yanıtlanan genel sorular. Her yanıt, ayr
 
 ### Ana ağ canlı mı?
 
-Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 29 Haziran 2026'dan beri canlıdır ve v3.2.1 sürümünü çalıştırır. Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.3 sürümünü çalıştırır (test ağı `qorechain-diana` v3.2.4 çalıştırır). Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
 
 ### Zincir kimlikleri ve EVM zincir kimlikleri nelerdir?
 
@@ -39,15 +39,19 @@ Dashboard'daki test ağı musluğunu kullanın. Bkz. [Dashboard Musluğu](/dashb
 
 ### Bir düğümü, doğrulayıcıyı veya hafif düğümü nasıl çalıştırırım?
 
-Tam düğüm için bkz. [Bir Düğüm Çalıştırma](/developer-guide/running-a-node). Doğrulayıcı için bkz. [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator). Hafif düğüm için bkz. [Hafif Düğüm](/light-node/overview).
+Tam düğüm için bkz. [Bir Düğüm Çalıştırma](/developer-guide/running-a-node). Doğrulayıcı için bkz. [Bir Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator). Hafif düğüm için bkz. [Hafif Düğüm](/light-node/overview); hafif düğüm ödül programına kayıt açıktır ve lisansa bağlıdır ([durum](/light-node/overview#reward-program-status)).
 
 ### QoreChain hangi imza şemasını kullanır?
 
-QoreChain, klasik **secp256k1 (ECDSA)** ile kuantum sonrası **ML-DSA-87 (Dilithium-5)**'i birleştiren bir kuantum sonrası hibrit şema kullanır. Bu hibrit şema, Cosmos işlem yolunda varsayılan olarak zorunludur ve uygulama modu yönetişim tarafından kontrol edilir. EVM hattında imza secp256k1 olarak kalır ve bir hesabın ayrıca kayıtlı bir ML-DSA anahtarına ve açık bir yetkilendirme penceresine sahip olması gerekir (v3.2.0). Bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security).
+QoreChain, klasik **secp256k1 (ECDSA)** ile kuantum sonrası **ML-DSA-87 (Dilithium-5)**'i birleştiren bir kuantum sonrası hibrit şema kullanır. Bu hibrit şema, Cosmos işlem yolunda varsayılan olarak zorunludur ve uygulama modu yönetişim tarafından kontrol edilir. EVM hattında imza secp256k1 olarak kalır ve bir hesabın ayrıca kayıtlı bir ML-DSA anahtarına ve açık bir yetkilendirme penceresine sahip olması gerekir (v3.2.0'dan beri). Bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security).
 
 ### EVM işlemim neden "no open EVM authorisation window" ile reddediliyor?
 
 v3.2.0'dan itibaren EVM hattı, bir işlemi yalnızca kayıtlı bir kuantum sonrası anahtara ve açık bir yetkilendirme penceresine sahip bir hesaptan kabul eder. Kuantum sonrası imzalı bir Cosmos hattı işlemiyle bir pencere açın, ardından yeniden deneyin. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+
+### Ana ağda kaç doğrulayıcı var?
+
+20 Ekim 2026'da sekiz bağlı (bonded) doğrulayıcı vardı ve yaklaşık 55,1 milyon QOR bağlanmıştı (aktif küme en fazla 100 doğrulayıcı alabilir). Test ağında üç tane var. Canlı kümeyi `https://api.qore.host` üzerinde `GET /cosmos/staking/v1beta1/validators` adresinden okuyun.
 
 ### Ne kadar blok süresi beklemeliyim?
 
@@ -59,7 +63,7 @@ Henüz değil. Muhasebe modülü mevcut, ancak kilitleme ve kilit açma işlemle
 
 ### QOR arzı sabit mi?
 
-Genesis arzı 4.420.000.000 QOR idi. Staking emisyonu, 114.285.714 QOR'luk katı bir kümülatif üst sınır altında basılır ve yakımlar tokenları kalıcı olarak ortadan kaldırır. Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Genesis arzı 4.420.000.000 QOR idi. Staking emisyonu, 590.000.000 QOR'luk katı bir kümülatif üst sınır altında basılır (Ekim 2026'daki 10 numaralı yönetişim önerisinden beri dönem başına 86.000 QOR) ve yakımlar tokenları kalıcı olarak ortadan kaldırır. Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Bir rollup'ı nasıl oluştururum?
 
@@ -71,7 +75,7 @@ QoreChain'in EVM, SVM ve CosmWasm yürütme ortamlarında uygulama oluşturmaya 
 
 ### Soruları nereye sorabilirim?
 
-QCAIA topluluk botu, Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) ve Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)) üzerinde soruları yanıtlar. Bkz. [QCAIA Topluluk Botu](/qcaia/overview).
+QCAIA topluluk botu, Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) ve Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)) üzerinde soruları yanıtlar. Bkz. [QCAIA Topluluk Botu](/qcaia/overview).
 
 ## İlgili
 

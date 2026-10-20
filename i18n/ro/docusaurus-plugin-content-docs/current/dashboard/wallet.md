@@ -127,12 +127,12 @@ Această fixare este stocată doar în propriul tău browser, nu pe niciun serve
 Calea EVM admite o tranzacție doar de la un cont care deține o cheie post-cuantică înregistrată și are o **fereastră de autorizare EVM deschisă**: o permisiune limitată ca timp, număr și valoare, pe care contul o deschide cu un mesaj semnat post-cuantic. MetaMask nu poate produce acel mesaj. Dacă trimiți fără o fereastră, lanțul refuză tranzacția (erori tipice: fără fereastră, fereastră epuizată, fără cheie post-cuantică).
 :::
 
-1. În **QoreX** (portofelul propriu al contului), înregistrează cheia post-cuantică a contului dacă nu are una, apoi deschide o fereastră de autorizare EVM — vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window). Alege limite cu care te simți confortabil; deschiderea unei ferestre noi o înlocuiește pe cea anterioară.
+1. În **QoreX** (portofelul propriu al contului), înregistrează cheia post-cuantică a contului dacă nu are una (primul tău transfer QoreX de pe acel cont o face), apoi deschide o fereastră de autorizare EVM — vezi [Fereastra de acces EVM](/qorex/security-and-recovery#evm-window). Aceasta este pentru **contul în stil Ethereum (coin 60)** care împarte cheia cu MetaMask — adaugă-l în QoreX cu **Add an Ethereum account (coin 60)**, folosind aceeași frază de recuperare ([cum](/qorex/getting-started#restore-dashboard)); nicio cheie MetaMask nu poate trimite de pe un cont obișnuit coin-118 `qor1…`. O fereastră este limitată de blocuri (cel mult 17,280, aproximativ 15 ore pe mainnet), de numărul de tranzacții (cel mult 1,000) și de un plafon de cheltuire în QOR care numără fiecare sumă **plus** comisionul său maxim. Alege limite cu care te simți confortabil și păstrează-le mici: cât timp o fereastră este deschisă, tranzacțiile MetaMask mută QOR fără o semnătură post-cuantică. Deschiderea unei ferestre noi o înlocuiește pe cea anterioară și avansează nonce-ul contului, așa că deschide-o **înainte** de a trimite din MetaMask (o tranzacție pregătită mai devreme eșuează cu „nonce too low"). Începând cu v3.2.3, lanțul acceptă și ferestre mai înguste, cu domeniu restrâns; QoreX nu oferă încă un ecran pentru ele.
 2. Deschide MetaMask și confirmă că este setat pe rețeaua EVM QoreChain.
 3. Selectează **Send** în interiorul MetaMask, introdu adresa `0x...` a destinatarului și suma, verifică taxa de gas și confirmă.
 4. Înapoi în pagina Portofel a Dashboard-ului, tranzacția apare în istoricul tău de îndată ce este pe blockchain (dă refresh dacă nu a apărut încă).
 
-Fiecare tranzacție consumă o parte din fereastră; când se atinge limita de timp, de număr de tranzacții sau de valoare, deschide una nouă în QoreX.
+Fiecare tranzacție consumă o parte din fereastră; când se atinge limita de timp, de număr de tranzacții sau de valoare, deschide una nouă în QoreX. Închide fereastra din QoreX când ai terminat.
 
 ### Primește pe un traseu specific {#receive-mainnet}
 

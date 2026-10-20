@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> `create-qorechain-dapp`(`0.8.0`)으로 npm에 게시되어 있습니다. 생성되는
-> `package.json` 파일은 `@qorechain/sdk` / `@qorechain/evm`을 `^0.3.0`으로 고정하는데,
-> npm은 이를 실제 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다. 스캐폴딩 후
-> `npm i @qorechain/sdk@latest`를 실행하세요(EVM 템플릿은 `npm i @qorechain/evm@latest`도
-> 실행하세요).
+> `create-qorechain-dapp`(`0.9.0`)으로 npm에 게시되어 있습니다. 생성되는
+> `package.json` 파일은 `@qorechain/sdk` `^0.9.0`에 의존합니다(EVM 템플릿은
+> `@qorechain/evm` `^0.8.0`). 스캐폴더의 0.8.0 버전은 `^0.3.0` 범위를 기록했는데,
+> npm은 이를 실제 네트워크에 서명할 수 없는 0.3 릴리스로 해석합니다. 0.8.0으로
+> 스캐폴딩했다면 `npm i @qorechain/sdk@latest`를 실행하세요.
 
 ## 템플릿
 
@@ -32,6 +32,12 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Solidity `Counter` 컨트랙트 + viem 배포/상호작용 스크립트(`@qorechain/evm`). |
 | `fullstack-web` | 잔액과 토크노믹스를 읽는 Vite + React + TypeScript dApp(`@qorechain/sdk`). |
 | `rollup-app` | `RollupClient`와 멀티레이어 헬퍼를 사용하는 롤업 + 사이드체인/페이체인 앱(`@qorechain/sdk`). |
+
+`rollup-app` 템플릿(0.9.0)은 기본적으로 드라이 런을 실행합니다. `QORE_BROADCAST=1`을
+지정하면 니모닉에서 계정의 ML-DSA-87 키를 파생하고, 한 번 등록한 뒤 하이브리드로
+서명하는데, 이전 템플릿은 이를 할 수 없었습니다. 샘플 롤업 값(`profile: "default"`,
+스테이크)은 예시일 뿐입니다. 브로드캐스트하기 전에 [프리셋 프로필](/rollups/preset-profiles)과
+라이브 모듈 파라미터에서 실제 프로필 이름과 스테이크를 가져오세요.
 
 `fullstack-web` 템플릿은 `client.qor`를 통해 토크노믹스 개요를 읽는데, 이는 공개 엔드포인트가
 제공하지 않는 `qor_` JSON-RPC 호출이므로 메인넷과 테스트넷에서는 해당 패널에 오류가 표시되며,

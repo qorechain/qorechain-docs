@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architecture Overview
 
-QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 29 June 2026 on release **v3.2.1** (consensus rules of v3.2.0), with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
+QoreChain is a modular blockchain node composed of three primary processes — the chain node, AI sidecar, and block indexer — backed by a Postgres database and monitored via Prometheus and Grafana. Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 on release **v3.2.3**, with a parallel testnet (`qorechain-diana`, EVM chain ID **9800**, release v3.2.4, testnet only). The chain is built on the Cosmos SDK v0.53. The following diagram shows the high-level component layout.
 
 The transaction lifecycle below summarises how a submitted transaction flows through the node — from the AnteHandler decorator chain (security and fee checks) into VM execution and on-chain settlement:
 
@@ -50,7 +50,7 @@ flowchart LR
 │  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
 │  │  │20/10/│   │PvP    │   │emission   │                    │           │
-│  │  │3     │   │       │   │114.3M cap │                    │           │
+│  │  │3     │   │       │   │590M cap   │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
@@ -170,7 +170,7 @@ QoreChain registers **48 genesis modules, 20 of them QoreChain-specific**, group
 
 * `x/burn` — 12 burn sources, EndBlocker fee distribution (37/30/20/10/3 split)
 * `x/xqore` — Governance-boosted staking design: lock/unlock, graduated exit penalties, PvP rebase (accounting only; lock and unlock transactions are not yet wired on the live networks)
-* `x/inflation` — Capped emission: a fixed amount minted per epoch until a hard cumulative cap (114,285,714 QOR) is reached
+* `x/inflation` — Capped emission: a fixed amount minted per epoch until a hard cumulative cap (590,000,000 QOR) is reached
 * `x/amm` — On-chain liquidity / automated market maker
 
 **Bridges and Interoperability**
@@ -194,7 +194,7 @@ QoreChain registers **48 genesis modules, 20 of them QoreChain-specific**, group
 
 Every transaction passes through a decorator chain before execution; any decorator can reject it. There are two chains.
 
-**Cosmos lane** (in order): `RejectMessages` (no `MsgEthereumTx` on this lane) → `AuthzLimiter` (no EVM or vesting-creation messages inside authz) → `SetUpContext` → mempool and multisig-depth guards → CosmWasm simulation-gas, tx-counter, gas-register and contracts decorators → `CircuitBreaker` → extension-option check → `ValidateBasic` → `TxTimeout` → `Memo` → validator-licence gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (includes the per-sender rate limit) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → burn transaction counter → IBC redundant-relay check → gas-wanted tracking.
+**Cosmos lane** (in order): `RejectMessages` (no `MsgEthereumTx` on this lane) → `AuthzLimiter` (no EVM or vesting-creation messages inside authz, and from v3.2.3 no post-quantum key-management messages) → `SetUpContext` → mempool and multisig-depth guards → CosmWasm simulation-gas, tx-counter, gas-register and contracts decorators → `CircuitBreaker` → extension-option check → `ValidateBasic` → `TxTimeout` → `Memo` → validator-licence gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (includes the per-sender rate limit) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → burn transaction counter → IBC redundant-relay check → gas-wanted tracking.
 
 **EVM lane** (transactions carrying the Ethereum extension option): `CircuitBreaker` → the EVM mono decorator (signature, nonce, fee and balance checks) → `EVMWindowDecorator` (registered post-quantum key and a live authorisation window; see [EVM authorisation window](/getting-started/first-transaction#evm-window)).
 

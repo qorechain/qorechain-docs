@@ -43,6 +43,13 @@ pnpm --filter @qorechain/sdk docs:api
 - **PQC:** ‏`generatePqcKeypair`، `pqcSign`، `pqcVerify`، وثوابت الأطوال،
   ومعرّفات الخوارزميات ودوالها المساعدة، `PqcSigner`، `HybridSigner`،
   `buildHybridSignatureExtension`، `HYBRID_SIG_TYPE_URL`.
+- **دورة حياة مفتاح PQC (0.9.0):** ‏`ensurePqcRegistered` (تقرأ الحالة عبر REST،
+  `PqcKeyMismatchError`)، `fetchPqcStatus`، `isRegisteredPqcKey`،
+  `buildRegisterPqcKeyMsg`، `signProofOfPossession` / `verifyProofOfPossession`
+  (‏`PROOF_OF_POSSESSION_DOMAIN`)، `validateRegisteredPqcKey`،
+  `isDegeneratePqcPublicKey`، `migrateToHybrid`، `migratePqcKeyHybrid`،
+  `isUpgradeApplied` / `requireUpgradeApplied` (‏`CHAIN_UPGRADE_V3_2_2`،
+  `CHAIN_UPGRADE_V3_2_3`).
 - **عملاء القراءة (Read clients):** ‏`RestClient` (بما في ذلك `getPermissionSchema`)،
   `JsonRpcClient`، `QorClient`، ودوال HTTP المساعدة (`getJson`، `postJsonRpc`،
   `buildUrl`، `joinUrl`، `QoreHttpError`)؛ وعملاء استعلام منمّطون لكل
@@ -50,17 +57,17 @@ pnpm --filter @qorechain/sdk docs:api
   (‏`permissionSchema`)، واستعلامات مرساة الحالة `Anchor`/`Anchors` الخاصة بوحدة
   `multilayer`. على نقاط النهاية العامة تستدعي بعض دوال REST المنمّطة مسارات
   لا تقدّمها البوابة: `getAiStats`، `getFeeEstimate`، `getXqorePosition`،
-  `getInflationRate`، `getReputation` و`getPqcAccount` (التي تستدعي مسارًا
-  بصيغة الجمع `accounts`؛ أما المسار المُقدَّم فهو بصيغة المفرد
-  `/qorechain/pqc/v1/account/{address}`، ويمكن الوصول إليه عبر `rest.get(...)`).
-  أما `getBurnStats` و`getAllBalances` و`getBridgeChains` و`getPermissionSchema`
-  فتعمل.
+  `getInflationRate` و`getReputation`.
+  أما `getBurnStats` و`getAllBalances` و`getBridgeChains` و`getPermissionSchema` و(منذ
+  0.9.0، الذي أصلح مسارها بصيغة الجمع `accounts` إلى المسار المُقدَّم بصيغة المفرد
+  `/qorechain/pqc/v1/account/{address}`) `getPqcAccount` فتعمل.
 - **عبر الأجهزة الافتراضية (Cross-VM):** ‏`getCrossVmMessage`، `getPendingCrossVmMessages`،
   `getCrossVmParams`.
 - **CosmWasm:** ‏`createCosmWasmClient`، `connectCosmWasmSigner`،
   `queryContractSmart`، `getContractInfo`، `instantiate`، `execute`،
   `uploadCode`.
-- **المعاملات (Transactions):** ‏`estimateFee`، `directSignerFromPrivateKey`، `TxClient`،
+- **المعاملات (Transactions):** ‏`estimateFee`، `directSignerFromPrivateKey`، `TxClient` (هجين
+  عند الاتصال بـ `pqcKeypair`، 0.9.0؛ `HYBRID_VERIFY_GAS`)،
   `MSG_SEND_TYPE_URL`، والدوال الهجينة المساعدة (`encodeHybridExtension`،
   `attachHybridExtension`، `buildHybridTx`، `signAndBroadcastHybrid`)؛
   وفكّ ترميز الأخطاء المهيكل عبر `decodeTxError` (بما في ذلك رموز `abstractaccount`
@@ -87,13 +94,21 @@ pnpm --filter @qorechain/sdk docs:api
   `signHybridEth` و`EthNativeSigner`؛ و`resolveSignBytesVersion`،
   `SIGN_BYTES_V2_UPGRADES`، `isHybridSignBytesRejection`، `hybridSignBytesV1` /
   `hybridSignBytesV2`، `migrationSignBytes`، `bridgeAttestationSignBytes`.
-- **نافذة تفويض EVM ‏(0.8.2+):** ‏`openEvmWindowMsg`، `closeEvmWindowMsg`،
-  `fetchEvmWindow`، `classifyEvmWindowRejection`، `isEvmWindowRejection`،
-  `MAX_EVM_WINDOW_BLOCKS`، `MAX_EVM_WINDOW_TXS`. راجع
+- **نافذة تفويض EVM ‏(0.8.2+):** ‏`openEvmWindowMsg` (مع `nativeOnly` و
+  `allowedTargets` منذ 0.9.0)، `closeEvmWindowMsg`، `fetchEvmWindow`،
+  `classifyEvmWindowRejection`، `isEvmWindowRejection`، `MAX_EVM_WINDOW_BLOCKS`،
+  `MAX_EVM_WINDOW_TXS`، `MAX_EVM_WINDOW_TARGETS`. راجع
   [نافذة تفويض EVM](/sdk/guides/evm#evm-window).
+- **موافقة EIP-7702 ‏(0.9.0):** ‏`authorizeEvmDelegationMsg`، `clearEvmDelegationMsg`،
+  `fetchEvmDelegationConsent`، `evmDelegationTupleNonce`،
+  `classifyEvmDelegationRejection`، `EVM_DELEGATION_CLEAR`،
+  `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
+- **ملخّص الحساب المجرَّد v2 ‏(0.9.0):** ‏`evmAuthSignBytesV2`،
+  `resolveEvmAuthDigestVersion`؛ `validateSpendingRules`.
 - **الاشتقاق القياسي لـ PQC ‏(0.8.3+):** ‏`derivePqcCanonical(account, mnemonic)`،
   `canonicalAccount(account)`؛ ورسالة تسجيل PQC هي
-  `buildRegisterPqcKeyMsg` (تستخدمها `ensurePqcRegistered`).
+  `buildRegisterPqcKeyMsg` (تستخدمها `ensurePqcRegistered`). `derivePqcLegacy`
+  مهجورة للمفاتيح الجديدة.
 
 ### `@qorechain/evm`
 
@@ -117,10 +132,10 @@ pnpm --filter @qorechain/sdk docs:api
 
 | اللغة | التوثيق المولَّد | التثبيت |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.8.3` (الاستيراد `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (الوسم `packages/go/v0.8.4`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.8.3؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.8.3` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.9.0` (الاستيراد `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (الوسم `packages/go/v0.9.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.9.0؛ الاستيراد `qorechain`) |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.9.0` |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

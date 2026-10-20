@@ -26,8 +26,10 @@ El binario actual, el génesis, los peers, las seeds y un punto de confianza par
 Los campos del manifiesto incluyen `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punto de confianza actualizado cada hora) y `minCompatible`. Los pasos de instalación y unión a la red que siguen obtienen este manifiesto y usan sus valores actuales.
 :::
 
-:::caution Se requiere v3.2.0 o posterior para un nodo que se une desde cero
-Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (por ejemplo, el tope de emisión v3.1.94 en la altura 2,122,074 y la actualización v3.2.0 en la altura 2,981,742), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. Un nodo de mainnet nuevo necesita **v3.2.0 o posterior**: `minCompatible` en el manifiesto es `3.2.0`, el lanzamiento más antiguo que todavía sigue la cadena, y `version` (actualmente `3.2.1`) es el recomendado, un lanzamiento local del nodo sin altura de actualización. El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`. En testnet, `minCompatible` es igual a `version` (actualmente `3.2.2`).
+:::caution Usa el lanzamiento que indica el manifiesto: v3.2.3 en mainnet
+Un nodo que sincroniza desde el génesis o reproduce desde un snapshot atraviesa varias actualizaciones de gobernanza (consulta [Actualizaciones](#upgrades) más abajo), así que instala siempre el binario al que apunta el manifiesto: incluye todos los manejadores de actualización. En **mainnet**, `minCompatible` y `version` del manifiesto son ambos `3.2.3` (la actualización coordinada aplicada en la altura 3,662,051 el 20 de octubre de 2026), por lo que un nodo que se une ahora necesita v3.2.3: un binario anterior se detiene en la altura de actualización que no conoce. En la **testnet** son ambos `3.2.4` (aplicada en la altura 8,337,253 el 19 de octubre de 2026); la v3.2.4 aún no está aplicada en mainnet (la propuesta de gobernanza 13 la aplicaría en mainnet en la altura 3,742,566), así que no ejecutes un binario de testnet contra mainnet. El manifiesto se promueve de forma deliberada (primero testnet, mainnet después de un período de rodaje), así que comprueba su campo `"version"` frente a `minCompatible` antes de confiar en `binary.url`.
+
+Un binario compilado a partir del código fuente público (la compilación community) se niega a arrancar en cualquiera de las dos redes públicas (v3.2.3 y posteriores): no puede verificar firmas poscuánticas y no puede reproducir fielmente los bloques de las redes. Usa solo el archivo de lanzamiento.
 
 Dos ajustes importan desde v3.2.1: mantén el reloj del sistema sincronizado con NTP (el nodo se detiene cuando su reloj se desvía más de 60 segundos) y establece `evm-chain-id` en `app.toml` (consulta [Límites del nodo](#node-limits)).
 :::
@@ -50,8 +52,8 @@ Dos ajustes importan desde v3.2.1: mantén el reloj del sistema sincronizado con
 
 | Red      | Chain ID            | EVM chain ID          | Notas                              |
 | -------- | ------------------- | ---------------------- | ----------------------------------- |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 29 de junio de 2026 |
-| Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — activa desde el 7 jun 2026; versión de nodo v3.2.3 |
+| Testnet  | `qorechain-diana`   | `9800`                 | Ensaya aquí primero tus integraciones; versión de nodo v3.2.4 (solo testnet) |
 
 Sustituye el `--chain-id` apropiado para tu red objetivo a lo largo de esta guía. Los ejemplos usan mainnet por defecto.
 
@@ -73,7 +75,7 @@ Se recomienda encarecidamente SSD NVMe — el estado de la cadena y los almacene
 
 ### Docker Compose
 
-Un despliegue de solo nodo con Docker Compose. Todavía no hay una imagen `qorechaind` publicada públicamente para descargar. El `Dockerfile` del repositorio público compila el binario **community** (sin biblioteca poscuántica, keepers stub): sirve para el desarrollo local, pero no puede seguir mainnet ni testnet. Para un nodo de red, compila tu propia imagen a partir del **archivo de lanzamiento** indicado en `latest.json`, etiquétala con la versión del lanzamiento (**v3.2.1** en mainnet, **v3.2.2** en testnet) y luego monta un volumen persistente para los datos de la cadena:
+Un despliegue de solo nodo con Docker Compose. No hay ninguna imagen `qorechaind` publicada públicamente para descargar (no se publica nada bajo la organización del proyecto en Docker Hub). El `Dockerfile` del repositorio público compila el binario **community** (sin biblioteca poscuántica, keepers stub): sirve para el desarrollo local, pero no puede seguir mainnet ni testnet, y desde v3.2.3 se niega a arrancar en ellas. Para un nodo de red, compila tu propia imagen a partir del **archivo de lanzamiento** indicado en `latest.json`, etiquétala con la versión del lanzamiento (**v3.2.3** en mainnet, **v3.2.4** en testnet) y luego monta un volumen persistente para los datos de la cadena:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -90,7 +92,7 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.1 release/
+docker build -t qorechain-node:v3.2.3 release/
 ```
 
 El archivo contiene `qorechaind` y un directorio `lib/` con sus bibliotecas compartidas (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); la imagen anterior es solo `linux/amd64`, igual que el archivo de lanzamiento.
@@ -99,7 +101,7 @@ El archivo contiene `qorechaind` y un directorio `lib/` con sus bibliotecas comp
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.1
+    image: qorechain-node:v3.2.3
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -250,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restauración desde snapshot
 
-Alternativamente, descarga el snapshot publicado de los datos de la cadena, verifica su checksum y extráelo sobre tu directorio de datos. En mainnet, el objeto `snapshot` del manifiesto indica la URL, la `height` del bloque, el tamaño y el SHA-256 (el manifiesto de testnet solo incluye por ahora la URL, así que usa state sync allí). Lee `snapshot.height` antes de usarlo: el snapshot de mainnet es un único archivo de unos 27 GB, y uno antiguo implica una puesta al día larga (el snapshot de mainnet publicado actualmente es anterior a las alturas de actualización de v3.1.94 y v3.2.0, así que un nodo restaurado a partir de él debe reproducirlas con un binario v3.2.x).
+Alternativamente, descarga el snapshot publicado de los datos de la cadena, verifica su checksum y extráelo sobre tu directorio de datos. En mainnet, el objeto `snapshot` del manifiesto indica la URL, la `height` del bloque, el tamaño y el SHA-256. **La URL del snapshot del manifiesto de testnet devuelve actualmente `404` (no se publica ningún snapshot de testnet), así que usa state sync allí.** Lee `snapshot.height` antes de usar el de mainnet: es un único archivo de unos 27 GB, y uno antiguo implica una puesta al día larga. El snapshot de mainnet publicado actualmente es del 21 de agosto de 2026 (altura 1,966,629): es anterior a las alturas de actualización de v3.1.94, v3.2.0, v3.2.2 y v3.2.3, así que un nodo restaurado a partir de él reproduce unos dos meses de bloques con el binario v3.2.3. State sync es casi siempre la mejor opción.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -265,6 +267,25 @@ qorechaind start --minimum-gas-prices=0.1uqor
 :::note
 Los campos `snapshot.height` y `snapshot.ts` del manifiesto indican lo reciente que es el archivo, y state sync (arriba) suele ser más rápido que una descarga de 27 GB. Verifica siempre el checksum antes de extraer, y usa una versión del nodo que incluya todos los manejadores de actualización (consulta la advertencia al principio de esta página) al reproducir desde un snapshot.
 :::
+
+---
+
+## Actualizaciones {#upgrades}
+
+Los cambios de consenso llegan como **actualizaciones de gobernanza coordinadas**: una propuesta aprobada nombra un plan (por ejemplo `v3.2.3`) y una altura de bloque. El binario del lanzamiento incluye los manejadores de actualización; en la altura del plan todos los nodos deben estar ejecutándolo, y un nodo que siga con el binario anterior **se detiene en esa altura** (este es el comportamiento previsto del módulo de actualización). El manifiesto te indica de qué tipo es un lanzamiento: `upgradeType` es `height` para una actualización coordinada (con `upgradeHeight` establecido) y `rolling` para un lanzamiento local del nodo que puede cambiarse nodo por nodo. Instala el nuevo binario **antes** de la altura; si tu nodo se detuvo antes, cambia el binario y reinicia (consulta la nota sobre rollback en [Troubleshooting](#troubleshooting)).
+
+| Lanzamiento | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
+| ------- | ------------------------- | ------------------------- |
+| v3.1.94 | altura 2,122,074 | no aplicada |
+| v3.2.0 | altura 2,981,742 | altura 5,920,000 |
+| v3.2.1 | local del nodo, sin altura | local del nodo |
+| v3.2.2 | altura 3,556,788 (16 oct 2026) | altura 6,905,034 (2 oct 2026) |
+| v3.2.3 | altura 3,662,051 (20 oct 2026, propuesta de gobernanza 11) | altura 8,003,746 (15 oct 2026) |
+| v3.2.4 | **aún no aplicada en mainnet (la propuesta de gobernanza 13 la aplicaría en la altura 3,742,566); hoy solo en la testnet** | altura 8,337,253 (19 oct 2026, propuesta de gobernanza 13) |
+
+Lee el registro en vivo con `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = no aplicada) y cualquier plan pendiente con `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 actualizó el motor de consenso, el Cosmos SDK (v0.53.8) y las dependencias de IBC, y las comprobaciones de transacciones más estrictas del SDK hacen que ese lanzamiento sustituya al binario anterior en la altura de actualización en lugar de nodo por nodo. La firma de transacciones, las direcciones, los decimales, los memos y las comisiones no cambiaron en v3.2.2 ni en v3.2.3.
+
+**State sync y el reloj.** State sync toma su punto de confianza del bloque `stateSync` del manifiesto (`trustHeight`, `trustHash`, actualizados cada hora); el servidor RPC que lista es el propio del proyecto, así que para un nodo de producción añade servidores RPC en los que confíes y comprueba el hash de confianza contra otra fuente. Mantén el reloj sincronizado con NTP: el nodo se detiene cuando se desvía más de 60 segundos de la red.
 
 ---
 
@@ -338,7 +359,7 @@ ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
 
-Los endpoints públicos sirven los namespaces `eth_`, `net_`, `web3_` y `txpool_`. El namespace `qor_` no lo sirve ninguna compilación de nodo publicada, así que no lo añadas (consulta [el namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
+Los endpoints públicos sirven los namespaces `eth_`, `net_`, `web3_` y `txpool_` (solo estado); un nodo inicializado con v3.2.3 o posterior usa por defecto `eth,net,web3` y deja fuera `txpool` (publica las transacciones pendientes del nodo), así que añádelo solo si lo necesitas. El namespace `qor_` no lo sirve ninguna compilación de nodo publicada, así que no lo añadas (consulta [el namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 Y el listener RPC en `config.toml`:
 
@@ -403,7 +424,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Buenas prácticas operativas
 
-1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.1** en mainnet), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
+1. **Fija la versión de la cadena.** Ejecuta el lanzamiento que recomienda el manifiesto (**v3.2.3** en mainnet), sigue los lanzamientos oficiales para las actualizaciones coordinadas y mantén el reloj del sistema sincronizado con NTP.
 
 2. **Ejecuta nodos redundantes.** Opera al menos dos nodos detrás de un balanceador de carga para que un único reinicio o resincronización no interrumpa el tráfico de integración.
 
@@ -421,7 +442,7 @@ Para observar la red sin ejecutar un nodo completo, consulta la [documentación 
 
 ---
 
-## Solución de problemas
+## Troubleshooting {#troubleshooting}
 
 ### El nodo se detiene con un error de reloj
 

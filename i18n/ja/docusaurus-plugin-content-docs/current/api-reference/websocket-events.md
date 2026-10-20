@@ -141,7 +141,7 @@ RPC WebSocketはQoreChain Consensus Engineのイベントサブスクリプシ�
 
 ## モジュールイベントリファレンス
 
-イベントは標準のコンセンサスエンジンイベントとして発行されます。イベントタイプと属性でフィルタした `tm.event='Tx'` クエリでサブスクライブしてください（例: `tm.event='Tx' AND bridge_deposit.chain EXISTS`）。ブロックレベルのイベント（下記のPRISMイベントなど、ブロック終了時のロジックが発行するもの）は、`Tx` ではなく `tm.event='NewBlock'` で配信されます。以下のイベント名と属性は、チェーンバージョン v3.2.0 のものです。
+イベントは標準のコンセンサスエンジンイベントとして発行されます。イベントタイプと属性でフィルタした `tm.event='Tx'` クエリでサブスクライブしてください（例: `tm.event='Tx' AND bridge_deposit.chain EXISTS`）。ブロックレベルのイベント（下記のPRISMイベントなど、ブロック終了時のロジックが発行するもの）は、`Tx` ではなく `tm.event='NewBlock'` で配信されます。以下のイベント名と属性は、チェーンバージョン v3.2.3（メインネット）のものです。v3.2.4 テストネットにのみ存在するイベントには、その旨を記載しています。
 
 :::note 実際に目にするイベント
 これらのモジュールの多くは、公開ネットワークでは稼働していません。ブリッジは稼働しておらず、マルチレイヤーのレイヤーやロールアップはまだ登録されておらず、xQOREも利用できません。これらのイベントは定義されていますが、アクティビティが発生するまで発行されません。PRISMの観測イベントと報酬イベント（`rl_observation_collected`、`rl_reward_computed`）は、両ネットワークで約10ブロックごとに発行されます。
@@ -157,8 +157,11 @@ RPC WebSocketはQoreChain Consensus Engineのイベントサブスクリプシ�
 | `pqc_key_registered`        | `address`、`key_type`、`algorithm_id`                  | PQC鍵が登録された際に発行                         |
 | `pqc_key_rotated`           | `address`、`algorithm_id`                              | PQC鍵がローテーションされた際に発行               |
 | `pqc_key_migrated`          | `address`、`from_algorithm`、`to_algorithm`            | 鍵が新しいアルゴリズムへ移行された際に発行         |
-| `pqc_evm_window_opened`     | `address`、`expiry_height`、`max_txs`、`max_value`     | EVMレーンの承認ウィンドウが開いた際に発行          |
+| `pqc_evm_window_opened`     | `address`、`expiry_height`、`max_txs`、`max_value`。ウィンドウにスコープがある場合は `native_only` と `allowed_targets`（v3.2.3） | EVMレーンの承認ウィンドウが開いた際に発行          |
 | `pqc_evm_window_closed`     | `address`                                              | EVMレーンの承認ウィンドウが閉じた際に発行          |
+| `pqc_evm_delegation_consent` | `address`、`delegate`、`expiry_height`                | アカウントが EIP-7702 委任への同意を記録した際に発行（v3.2.2） |
+| `pqc_evm_delegation_cleared` | `address`、`delegate`                                 | アカウントの EIP-7702 委任が解除された際に発行（v3.2.2） |
+| `pqc_algorithm_registered`、`pqc_algorithm_status_updated`、`pqc_algorithm_disabled` | `algorithm_id`、および `name`/`category`、`old_status`/`new_status`、または `reason` | ガバナンスによるアルゴリズムレジストリの変更 |
 
 PQC鍵は登録トランザクションで明示的に登録されます。自動登録のイベントはありません。
 
@@ -195,6 +198,8 @@ PQC鍵は登録トランザクションで明示的に登録されます。自�
 | イベントタイプ     | 主な属性                                              | 説明                                              |
 | --------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
 | `rollup_created`      | `rollup_id`、`creator`、`profile`、`settlement_mode`       | 新しいロールアップが登録された際に発行             |
+| `rollup_paused`、`rollup_resumed`、`rollup_stopped` | `rollup_id`、および指定がある場合は理由 | ロールアップが一時停止、再開、または停止された際に発行 |
+| `batch_challenged`、`challenge_resolved`、`batch_rejected` | `rollup_id`、`batch_index`（解決時は `fraud_upheld` も） | バッチに異議が申し立てられた際、異議が解決された際、またはバッチが却下された際に発行 |
 | `batch_submitted`     | `rollup_id`、`batch_index`、`tx_count`                     | 決済バッチが送信された際に発行                     |
 | `batch_finalized`     | `rollup_id`、`batch_index`                                 | バッチがチャレンジウィンドウを通過した際に発行     |
 | `da_blob_stored`      | `rollup_id`、`blob_index`、`backend`、`size`               | DAブロブが保存された際に発行                       |
@@ -207,6 +212,29 @@ PQC鍵は登録トランザクションで明示的に登録されます。自�
 | `burn`                   | `source`、`amount`                                        | トークンが恒久的にバーンされた際に発行       |
 | `milestone_burn`         | `tx_threshold`、`burn_amount`、`cumulative_tx_count`      | トランザクション数のマイルストーンバーンが実行された際に発行 |
 | `burn_stranded_released` | `amount`、`destination`、`remaining`                      | ガバナンスが滞留していたステーカー分の一部を解放した際に発行 |
+
+### Inflation、Gas Abstraction、Licence、Light Node、AIモジュール
+
+| イベントタイプ | 主な属性 | 説明 |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`、`fixed_epoch_emission`、`max_total_emission` | ガバナンスが発行パラメータを変更した際に発行 |
+| `gas_abstraction_conversion`、`gas_abstraction_refill` | `paid`、`native_equivalent`、`rate`、`price_source`、`result` | 別の受け入れ可能なトークンで支払われた手数料が変換された際、およびフロートが補充された際に発行（`uqor` のみが受け入れられている間は発行されません） |
+| `gas_abstraction_float_funded`、`gas_abstraction_config_updated` | `sender`、`amount`、`accepted_tokens`、`block_conversion_cap` | フロートに資金が投入された際、およびガバナンスが設定を更新した際に発行 |
+| `license_granted`、`license_revoked`、`license_suspended`、`license_resumed`、`license_expired` | 付与先と機能 | ライセンスのライフサイクル |
+| `license_authority_updated` | `new_authority` | ガバナンスがライセンス権限者を置き換えた際に発行（v3.2.3） |
+| `lightnode_register`、`lightnode_heartbeat`、`lightnode_claim_rewards`、`lightnode_deregister`、`lightnode_status_change`、`lightnode_reward_distribution`、`lightnode_reserve_release` | `address`、`node_type`、`status`、`reward_amount`、`destination` | ライトノードのライフサイクルと報酬のイベント |
+| `ai_config_updated` | `max_tx_per_minute`、`max_evm_tx_per_minute`、`anomaly_action`、`anomaly_threshold` | ガバナンスが AI スクリーニング設定を更新した際に発行 |
+
+### Staking Tiersモジュール（テストネットのみ）
+
+これらのイベントは `qorechain-diana` テストネット（v3.2.4）にのみ存在します。メインネットにはまだこのモジュールがありません（ガバナンス提案 13 により、v3.2.4 は高さ 3,742,566 で適用される見込みです）。
+
+| イベントタイプ | 主な属性 | 説明 |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`、`delegator`、`validator`、`amount`、`months`、`end_time` | デリゲーションのロックが作成された |
+| `staking_tier_lock_unlocked_early`、`staking_tier_lock_released` | `lock_id`、`delegator`、`penalty_burned`、`bonus_forfeited` | ロックが早期に終了した、または終了時点に達した |
+| `staking_tier_bonus_claimed`、`staking_tier_bonus_settled` | `delegator`、`amount`。決済の合計 | ボーナスが請求された。プールが決済された |
+| `staking_tier_params_updated` | パラメータ | ガバナンスがモジュールのパラメータを変更した |
 
 ### xQOREモジュール
 

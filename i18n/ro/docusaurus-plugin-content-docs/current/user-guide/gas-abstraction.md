@@ -7,14 +7,13 @@ sidebar_position: 7
 
 # Abstractizare Gas
 
-Această pagină descrie funcția de abstractizare a gazului din QoreChain, a cărei concepție le permite utilizatorilor să plătească taxele de tranzacție într-un token non-nativ acceptat, în loc de QOR. **Nu poate fi folosită astăzi în niciuna dintre rețele**; această pagină explică designul și ce faceți în schimb.
+Abstractizarea gazului îi permite unui utilizator să plătească o taxă de tranzacție într-un token non-nativ acceptat, în loc de QOR. Codul de conversie a taxelor face parte din lanț, dar **astăzi nu este acceptat niciun token non-nativ în niciuna dintre rețele**, deci fiecare taxă se plătește în QOR. Această pagină explică ce este activ, cum funcționează conversia așa cum a fost construită și ce faceți în schimb.
 
-:::caution Încă indisponibil
-Plata taxelor într-un token non-nativ **nu** funcționează astăzi pe rețeaua principală (**`qorechain-vladi`**, versiunea de nod **v3.2.1**) și nici pe rețeaua de test (**`qorechain-diana`**).
+:::caution Încă indisponibil: plătiți fiecare taxă în uqor
+Pe mainnet (**`qorechain-vladi`**, versiunea de nod **v3.2.3**) și pe testnet (**`qorechain-diana`**, versiunea de nod **v3.2.4**), verificat la 20 octombrie 2026:
 
-* Interogările de abstractizare a gazului nu sunt servite pe rețeaua principală: `qorechaind query gasabstraction accepted-tokens` afișează textul de ajutor, iar ruta REST `/qorechain/gasabstraction/v1/config` returnează `Not Implemented`.
-* Niciun canal IBC nu este deschis în vreuna dintre rețele, deci nu poate exista niciun sold `ibc/USDC` sau `ibc/ATOM` cu care să se plătească.
-* Pragul minim al taxei de rețea este verificat în `uqor`, deci o taxă în orice altă denominare este respinsă.
+* Lista activă a tokenurilor acceptate conține **doar `uqor`**. Conversia taxelor a fost activată cu v3.2.2, dar nimic altceva nu este listat, plafonul de conversie per bloc este `0` (conversie oprită), iar float-ul de conversie nu deține niciun sold. O taxă plătită în orice altă denominare este refuzată cu o eroare „denom not accepted for fee payment”, atât în simulare, cât și într-o tranzacție reală.
+* Niciun canal sau client IBC nu există în vreuna dintre rețele, deci nu poate exista niciun sold `ibc/…` cu care să se plătească.
 
 Plătiți fiecare taxă în `uqor`. Această pagină va fi actualizată atunci când un token este acceptat pe o rețea activă.
 :::
@@ -23,7 +22,7 @@ Plătiți fiecare taxă în `uqor`. Această pagină va fi actualizată atunci c
 
 ## Ce funcționează astăzi: plătiți taxele în uqor
 
-Fiecare tranzacție plătește cel puțin **0,1 uqor per unitate de gaz**. Setați limita de gaz și taxa împreună:
+Fiecare tranzacție plătește cel puțin **0.1 uqor per unitate de gaz**. Setați limita de gaz și taxa împreună:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 5000000uqor \
@@ -35,35 +34,59 @@ Apoi semnați-o hibrid și transmiteți-o cu `qorechaind tx pqc cosign`, așa cu
 
 ---
 
-## Prezentare generală
+## Configurația activă {#live-configuration}
 
-Abstractizarea gazului este concepută pentru a elimina cerința de a deține QOR pentru plata taxelor de tranzacție. Un utilizator care deține un token alternativ acceptat (de exemplu un stablecoin transferat prin IBC) ar plăti taxa în acel token, iar protocolul ar converti suma taxei în echivalentul său nativ înainte de procesare.
+Modulul își servește configurația prin REST și gRPC. Acestea sunt valorile de pe ambele rețele la 20 octombrie 2026:
+
+| Câmp | Valoare | Semnificație |
+| --- | --- | --- |
+| `enabled` | `true` | Comutatorul modulului |
+| `native_denom` | `uqor` | Denominarea în care se plătește în final fiecare taxă |
+| `accepted_tokens` | doar `uqor` | Tokenurile care pot plăti o taxă. `uqor` nu are nevoie de o sursă de preț |
+| `premium_bps` | `300` | Partea din valoarea unei taxe convertite pe care float-ul o păstrează pentru a-și acoperi riscul de preț (3 %) |
+| `max_tip_multiplier` | `3` | O taxă convertită nu poate depăși acest multiplu al taxei minime pentru gazul său; `0` ar însemna fără limită |
+| `float_min` | `0` | Soldul nativ pe care float-ul îl păstrează mereu în rezervă |
+| `block_conversion_cap` | `0` | Cel mult cât plătește float-ul per bloc; `0` înseamnă că conversia este oprită |
+
+Versiunile anterioare ale acestei pagini arătau intrări de substituție `ibc/USDC` și `ibc/ATOM` cu rate fixe. Ele nu se află în lista activă.
+
+Citiți-o singuri:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate uqor
+qorechaind query gasabstraction float
+
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
+curl -s "https://api.qore.host/qorechain/gasabstraction/v1/conversion_rate?denom=uqor"
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/float
+```
+
+`conversion_rate` raportează `rate`, `effective_rate` (rata minus prima), `price_source` și dacă tokenul este `usable` la această înălțime, cu un `reason` atunci când nu este. `float` raportează adresa și soldurile float-ului și utilizarea blocului curent față de `block_cap`. Metoda JSON-RPC `qor_getGasAbstractionConfig` nu este servită pe niciun punct de acces public (vezi [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace)); folosiți REST sau gRPC.
 
 ---
 
-## Designul vizat
+## Cum funcționează conversia (așa cum a fost construită) {#how-it-works}
 
-### Tokenuri acceptate
+Începând cu v3.2.2, decoratorul de taxe direcționează fiecare tranzacție pe una dintre două căi:
 
-Configurația de geneză a modulului listează aceste tokenuri și ratele de conversie definite de protocol. Acestea sunt rapoarte de schimb în scopul taxelor, nu prețuri de piață. Astăzi pot exista în rețele doar `uqor` (vezi anunțul de mai sus).
+* O taxă în `uqor`, sau în mai multe denominări, urmează **calea nativă**, neschimbată.
+* O taxă în **exact o** denominare non-nativă urmează **calea de conversie**.
 
-| Token              | Denominare   | Rată de conversie |
-| ------------------ | ------------ | ----------------- |
-| **QOR**            | `uqor`       | 1.0 (nativă)      |
-| **USDC** (prin IBC) | `ibc/USDC`   | 1.0               |
-| **ATOM** (prin IBC) | `ibc/ATOM`   | 10.0              |
+Pe calea de conversie:
 
-### Cum este menit să funcționeze
+1. **Acceptat?** Denominarea trebuie să se afle în lista tokenurilor acceptate și să aibă o sursă de preț, altfel tranzacția este refuzată.
+2. **Preț.** Prețul tokenului provine dintr-una din două surse: o rată statică stabilită prin guvernanță, care expiră la o înălțime de bloc declarată, sau prețul mediu ponderat în timp al pool-ului [AMM](/architecture/amm) care asociază tokenul cu QOR. Un preț din pool este folosit doar dacă pool-ul este activ, deține cel puțin lichiditatea minimă configurată pe partea QOR, iar prețul său spot se află în abaterea configurată față de media sa.
+3. **Valoare.** Valoarea nativă a taxei este suma în token înmulțită cu prețul, minus prima.
+4. **Aceleași reguli ca la o taxă nativă.** Regulile taxei minime native și ale taxei dinamice se aplică acelei valori native, deci o taxă convertită trebuie să îndeplinească exact ce trebuie să îndeplinească o taxă în QOR (0.1 uqor per unitate de gaz ca prag minim) și este limitată de `max_tip_multiplier`.
+5. **Decontare.** Tokenurile plătitorului merg către **float**-ul modulului de abstractizare a gazului, iar float-ul plătește valoarea nativă în `uqor` colectorului de taxe. Tot ce se află în aval de colectorul de taxe (arderea și părțile validatorilor, stakerilor, trezoreriei și nodurilor light) vede astfel doar `uqor`.
 
-`GasAbstractionDecorator` din QoreChain este integrat în fluxul de procesare a tranzacțiilor. Pentru o tranzacție a cărei taxă este într-o denominare non-nativă:
+Conversia este limitată în trei moduri: per tranzacție (`max_tip_multiplier`), per bloc (`block_conversion_cap`) și prin soldul pe care float-ul îl păstrează mereu (`float_min`). Fiecare refuz are loc și în timpul simulării, așa că estimarea gazului eșuează la fel ca tranzacția reală.
 
-1. **Verificarea taxei** — decoratorul citește denominarea taxei.
-2. **Căutarea ratei** — dacă denominarea se află în lista tokenurilor acceptate, se caută rata de conversie corespunzătoare.
-3. **Conversia** — taxa este convertită în echivalentul său nativ în `uqor`.
-4. **Procesarea standard** — taxa convertită trece prin handler-ul standard de deducere a taxei, astfel încât procesarea ulterioară a taxei (distribuirea către validatori, arderea, trezoreria, părțile stakerilor și ale nodurilor light) operează pe echivalentul nativ.
+### Obținerea acceptării unui token
 
----
+* **Guvernanța** înlocuiește configurația cu `MsgUpdateConfig` (autoritate: contul de modul al guvernanței). Așa ar fi adăugat un token de taxă real `ibc/<hash>` și pool-ul sau rata sa statică și ar fi deschisă conversia.
+* **Float-ul** este un cont de modul care refuză transferurile bancare obișnuite. Este alimentat cu `MsgFundFloat` (`qorechaind tx gasabstraction fund-float <amount>uqor`), de exemplu de un cont care a primit o cheltuială din community pool în acest scop.
 
-## Interogarea configurației
-
-Rețeaua principală nu servește încă interogările de abstractizare a gazului, iar metoda JSON-RPC `qor_getGasAbstractionConfig` nu este servită pe niciun punct de acces public (vezi [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace)). În prezent nu există nicio modalitate publică de a citi o listă activă de tokenuri acceptate.
+Nicio propunere pentru niciuna dintre cele două nu a fost făcută pe mainnet, iar lista rămâne doar `uqor` până când una este adoptată.

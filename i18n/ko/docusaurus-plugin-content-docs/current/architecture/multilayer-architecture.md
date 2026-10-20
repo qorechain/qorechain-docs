@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain은 `x/multilayer` 모듈을 통해 **4계층 계층형 체인 아키텍처**를 구현합니다. 메인 체인은 정산 및 신뢰 루트 역할을 하며, 하위 레이어(사이드체인, 페이체인, 롤업)는 서로 다른 성능 및 보안 트레이드오프를 가지고 특화된 워크로드를 처리합니다.
 
 :::caution 초기 단계 기능
-이 모듈은 메인넷(체인 버전 **v3.2.1**)과 테스트넷에 배포되어 있지만, **두 네트워크 모두에 아직 레이어와 앵커가 존재하지 않습니다**. 아래 내용은 구현된 모듈을 설명하며, 매개변수는 실제 운영 값입니다.
+이 모듈은 메인넷(체인 버전 **v3.2.3**)과 테스트넷(**v3.2.4**)에 배포되어 있지만, **두 네트워크 모두에 아직 레이어와 앵커가 존재하지 않습니다**(2026년 10월 20일 확인: 두 네트워크 모두에서 `GET /qorechain/multilayer/v1/layers`가 빈 목록을 반환합니다). 아래 내용은 구현된 모듈을 설명하며, 매개변수는 실제 운영 값입니다. 메인넷에서는 `MsgUpdateLayerStatus` 메시지가 현재 서킷 브레이커에 의해 꺼져 있으며([체인 매개변수](/appendix/chain-parameters#circuit-breaker) 참조), 테스트넷에서는 꺼져 있지 않습니다.
 :::
 
 ---
@@ -64,7 +64,7 @@ flowchart TD
 | 합의       | QoreChain 합의 (현재 연결된 내용은 [합의 메커니즘](/architecture/consensus-mechanism) 참조) |
 | 보안       | Dilithium-5 서명으로 PQC 보안 적용                                             |
 | 역할       | 정산 레이어, 상태 앵커 저장, QCAI 라우팅 엔진, 신뢰 루트                       |
-| 블록 시간  | 네트워크에 따라 다름: 메인넷 약 3.2초, 테스트넷 약 1.0초 (2026년 10월 측정)     |
+| 블록 시간  | 네트워크에 따라 다름: 메인넷 약 3.2초, 테스트넷 약 1.0초 (2026년 10월 20일 측정) |
 
 모든 하위 레이어는 계층적 커밋먼트 스킴(HCS)을 통해 주기적으로 자신의 상태 루트를 메인 체인에 앵커링합니다.
 
@@ -160,13 +160,19 @@ Score = w_congestion * (1 - Congestion) + w_capability * Capability + w_cost * (
 | `transaction_count`       | 마지막 앵커 이후의 트랜잭션 수                       |
 | `compressed_state_proof`  | 압축된 상태 전이 증명                                |
 
-### 앵커 제출
+### 레이어 및 롤업 ID {#id-grammar}
+
+v3.2.2부터 **새** 레이어 ID(그리고 레이어와 공유되는 롤업 ID)는 `^[a-z0-9][a-z0-9._-]{2,63}$`와 일치해야 합니다. 즉 3자에서 64자, 소문자, 숫자, `.`, `_`, `-`로 구성되며 문자 또는 숫자로 시작해야 합니다. 키퍼는 레이어가 생성될 때 이를 확인하며, 이를 통과하지 못한 트랜잭션도 수수료는 지불하므로 클라이언트에서 먼저 ID를 검증하세요. v3.2.2 이전에 생성된 ID는 영향을 받지 않습니다.
+
+### 앵커 제출 {#anchor-submission}
 
 앵커는 `MsgAnchorState`를 통해 메인 체인에 제출됩니다. 키퍼는 다음 단계에 따라 앵커를 검증합니다:
 
 1. **레이어 존재 및 활성 여부** — 키퍼는 레이어가 상태에 존재하며 현재 `active` 상태인지 확인합니다.
 2. **최소 앵커 간격 경과** — 키퍼는 이 레이어의 마지막 앵커 이후 최소 `min_anchor_interval` 블록(기본값: 100)이 경과했는지 확인합니다.
 3. **PQC 집계 서명** — 키퍼는 PQC 집계 서명이 존재하며 앵커 데이터에 대해 유효한지 확인합니다. 서명은 **레이어 생성자**가 등록한 ML-DSA-87 키로 검증되며, 생성자에게 등록된 키가 없으면 앵커는 거부됩니다.
+
+`x/rdk`를 통해 기록되는 **정산 앵커**(v3.2.2부터 `anchor_signature`와 함께 제출되는 배치)는 특별한 경우입니다. 배치가 순서대로 도착하므로 최소 간격 확인을 건너뛰고, 아직 `proposed` 상태인 레이어도 앵커링할 수 있으며(RDK 롤업이 등록한 레이어를 승격시키는 것은 체인상에 없습니다), 제출자가 해당 레이어의 생성자 본인일 때만 수락됩니다. 서명 확인은 동일합니다.
 
 ### 챌린지 기간
 
@@ -181,7 +187,24 @@ Score = w_congestion * (1 - Congestion) + w_capability * Capability + w_cost * (
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — 레이어의 가장 최근 상태 앵커를 반환합니다.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — 레이어의 앵커 이력을 반환합니다.
 
-각 앵커는 메시지 `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`에 대한 레이어 생성자의 Dilithium-5 서명을 포함합니다. 이후 체인 릴리스에서 서명 대상 메시지가 변경되므로 클라이언트는 이를 하드코딩해서는 안 됩니다. 서명은 등록된 생성자 키가 해당 바이트에 서명했음을 증명할 뿐이며, 앵커가 실제로 존재하는지는 체인에 물어야 할 문제이므로 검증자는 신뢰하는 노드에서 앵커를 읽어야 합니다. 현재 두 네트워크 어디에도 레이어나 앵커가 존재하지 않습니다. 이것은 Rollup Development Kit의 [정산 영수증](/rollups/settlement-receipts) 뒤에 있는 온체인 프리미티브입니다.
+각 앵커는 레이어 생성자의 Dilithium-5(ML-DSA-87) 서명을 포함합니다. 서명 대상 메시지는 앵커가 제출된 높이에 따라 달라집니다:
+
+* **v3.2.2부터(메인넷 높이 3,556,788, 테스트넷 높이 6,905,034): v2.** 모든 가변 길이 필드에는 8바이트 빅엔디언 길이가 붙고, 체인 ID가 메시지의 일부이며, 트랜잭션 수와 압축된 상태 증명이 포함됩니다:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **v3.2.2 미만: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, 길이 접두사와 체인 ID가 없으므로 v1 서명은 모든 체인에서 유효합니다). 체인은 v3.2.2 높이부터 v1 앵커를 수락하지 않습니다.
+
+메시지는 릴리스 간에 변경될 수 있으므로, 클라이언트는 형식을 하드코딩하는 대신 적용된 플랜의 높이(`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"`은 적용되지 않았다는 뜻)로 형식을 선택해야 합니다. RDK 배치의 매핑은 다음과 같습니다. `layer_id` = 롤업의 레이어 ID, `layer_height` = 배치 인덱스, `state_root` = 배치 상태 루트, `transaction_count` = 배치의 트랜잭션 수, 그리고 비어 있는 `compressed_state_proof`. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>`는 이 바이트를 오프라인으로 출력합니다. 서명은 등록된 생성자 키가 해당 바이트에 서명했음을 증명할 뿐이며, 앵커가 실제로 존재하는지는 체인에 물어야 할 문제이므로 검증자는 신뢰하는 노드에서 앵커를 읽어야 합니다. 현재 두 네트워크 어디에도 레이어나 앵커가 존재하지 않습니다. 이것은 Rollup Development Kit의 [정산 영수증](/rollups/settlement-receipts) 뒤에 있는 온체인 프리미티브입니다.
 
 ---
 
@@ -250,3 +273,5 @@ Proposed --> Active --> Suspended --> Decommissioned
 | `routing_enabled`              | bool   | `true`          | QCAI 기반 트랜잭션 라우팅 활성화                        |
 | `routing_confidence_threshold` | string | `0.6`           | QCAI 라우팅 결정을 위한 최소 신뢰도                     |
 | `cross_layer_fee_bundling`     | bool   | `true`          | 전역 크로스 레이어 수수료 번들링 활성화                 |
+
+이 값들은 2026년 10월 20일 메인넷과 테스트넷에서 `qorechaind query multilayer params`(REST: `/qorechain/multilayer/v1/params`)가 반환한 값입니다. v3.2.2부터 이 모듈의 `MsgUpdateParams`를 라우팅할 수 있으므로 거버넌스 제안으로 이 값들을 변경할 수 있습니다.

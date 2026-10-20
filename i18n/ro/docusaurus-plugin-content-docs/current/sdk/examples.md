@@ -62,7 +62,8 @@ QOR: derivare → semnare → simulare → estimare comision → `bankSend`. Nec
 RPC de consens accesibil, plus REST și un cont finanțat. Acest exemplu semnează doar cu
 semnătura **clasică**, deci funcționează pe un nod local sau de dezvoltare, dar este
 refuzat de mainnet și de testnet, care cer semnătura hibridă pentru fiecare
-tranzacție pe calea Native. Pentru rețelele publice folosiți transferul hibrid din
+tranzacție pe calea Native. Pentru rețelele publice conectați-vă cu perechea de chei
+a contului, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), ca în
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts

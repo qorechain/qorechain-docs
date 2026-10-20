@@ -10,7 +10,7 @@ sidebar_position: 12
 Le module `x/rdk` fournit un kit complet de développement de rollups (Rollup Development Kit, RDK) qui permet aux développeurs de déployer des rollups spécifiques à une application sur QoreChain. Il prend en charge quatre paradigmes de règlement, plusieurs modes de séquenceur, des backends de disponibilité des données enfichables et une optimisation de la configuration assistée par IA.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.1**) et sur le testnet, mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau**. Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
+Le module est déployé sur le mainnet (version de chaîne **v3.2.3**) et sur le testnet (**v3.2.4**), mais **aucun rollup n'a encore été créé sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026 : `GET /qorechain/rdk/v1/rollups` renvoie une liste vide sur les deux). Plusieurs capacités décrites ci-dessous ne sont pas utilisables de bout en bout aujourd'hui ; le statut est indiqué là où chacune est décrite. Pour le guide pratique destiné aux développeurs, voir [Présentation des rollups](/rollups/overview).
 :::
 
 ---
@@ -19,12 +19,12 @@ Le module est déployé sur le mainnet (version de chaîne **v3.2.1**) et sur le
 
 Le RDK de QoreChain prend en charge quatre modes de règlement distincts — **optimistic**, **zk**, **based** et **sovereign** — chacun avec des hypothèses de confiance, des caractéristiques de finalité et des exigences de preuve différentes.
 
-### Règlement optimiste
+### Règlement optimiste {#optimistic-settlement}
 
 Les rollups optimistes supposent que les transactions sont valides par défaut et s'appuient sur des preuves de fraude pour la résolution des litiges.
 
 * **Système de preuve** : preuves de fraude interactives
-* **Fenêtre de contestation** : 604 800 « secondes » (par défaut), converties par la chaîne en blocs à raison fixe de 6 secondes par bloc — soit **100 800 blocs**. Le temps réel écoulé dépend du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s), il faut donc planifier en blocs, pas en jours.
+* **Fenêtre de contestation** : 604 800 secondes (par défaut, 7 jours). **Mainnet (v3.2.3) :** la chaîne la convertit en blocs à raison fixe de 6 secondes par bloc, soit **100 800 blocs** ; le temps réel écoulé dépend donc du temps de bloc effectif (environ 3,7 jours avec les blocs actuels du mainnet d'environ 3,2 s) ; planifiez en blocs, pas en jours. **Testnet uniquement (v3.2.4, appliqué à la hauteur 8 337 253) :** pour un lot soumis à partir de cette hauteur, la fenêtre est mesurée en secondes de temps de bloc (7 jours pleins). Un lot soumis plus tôt conserve la règle du nombre de blocs. Sur le mainnet, ce changement ne prendrait effet qu'avec la v3.2.4 (la proposition de gouvernance 13 l'appliquerait à la hauteur 3 742 566).
 * **Caution de contestation** : 1 000 QOR (1 000 000 000 uqor) — requise pour soumettre une contestation par preuve de fraude (profils `nft` et `custom` ; les profils `defi`, `gaming` et `enterprise` ne définissent aucune caution car ils n'ont pas de fenêtre de contestation)
 * **Finalité** : différée jusqu'à l'expiration de la fenêtre de contestation sans contestation valide
 * **Finalisation automatique** : l'`EndBlocker` finalise automatiquement les lots une fois la fenêtre de contestation passée sans litige. Un lot contesté n'est jamais finalisé automatiquement : le créateur du rollup doit d'abord résoudre la contestation (voir [Déployer un rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup enregistré mais pas encore activé                      |
 | **Active**  | Le rollup est en service et traite des lots                        |
 | **Paused**  | Temporairement suspendu par le créateur (peut reprendre)                   |
-| **Stopped** | Définitivement mis hors service — caution de stake retournée au créateur  |
+| **Stopped** | Définitivement mis hors service — ce qui reste du séquestre du créateur lui est restitué (voir [Registre de séquestre](#escrow-ledger)) |
 
 À la création, le statut du rollup est défini sur `Active` immédiatement après la réussite de la mise sous séquestre du stake et du brûlage de création (l'enregistrement de la couche est tenté mais n'est pas bloquant). Seul le créateur peut mettre en pause, reprendre ou arrêter un rollup (imposé depuis la version de chaîne v3.2.0).
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mode de règlement | Déclencheur de finalisation                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100 800 blocs après la soumission (fenêtre par défaut) sans contestation |
+| **Optimistic**  | 100 800 blocs après la soumission (fenêtre par défaut) sans contestation ; sur le testnet, pour les lots soumis depuis la v3.2.4, 604 800 secondes de temps de bloc |
 | **ZK**          | Instantanée à la soumission d'une preuve valide                           |
 | **Based**       | 2 blocs L1 après la soumission                                |
 | **Sovereign**   | Aucune — gérée par le propre consensus du rollup                |
@@ -255,18 +255,46 @@ Lorsqu'un rollup est créé, le module enregistre une couche pour celui-ci via `
 * Les types de VM et domaines pris en charge
 * L'intervalle de règlement
 
-L'enregistrement est **non fatal** : s'il échoue (solde insuffisant ou limite atteinte), le rollup est tout de même créé, mais il n'a pas de couche et ne peut pas être ancré.
+L'enregistrement est **non fatal** : s'il échoue (solde insuffisant ou limite atteinte), le rollup est tout de même créé, mais il n'a pas de couche et ne peut pas être ancré. Un ancrage de règlement n'exige pas que la couche soit `active` : la couche qu'un rollup RDK enregistre reste `proposed` et reste ancrable par son créateur (voir [Soumission d'une ancre](/architecture/multilayer-architecture#anchor-submission)).
 
 ### Ancrage d'état {#state-anchoring}
 
 Un lot de règlement peut être ancré à `x/multilayer`, qui enregistre l'ID de couche, la hauteur de couche (l'index du lot), la racine d'état, le hachage de l'ensemble de validateurs et le nombre de transactions sous une signature post-quantique du créateur du rollup.
 
-* **Mainnet aujourd'hui :** les lots sont réglés mais **ne sont pas** ancrés — le RDK ne fournit pas la signature du créateur que l'ancrage exige, de sorte que l'étape d'ancrage n'aboutit pas et qu'aucun ancrage n'a été écrit. L'ancrage est non fatal : il n'empêche jamais le traitement des lots.
+* **Depuis la v3.2.2 (actif sur le mainnet et le testnet) :** `MsgSubmitBatch` possède deux champs optionnels. `anchor_signature` est la signature ML-DSA-87 du créateur sur les **octets de signature d'ancre v2** du lot (voir [Lecture des ancres](/architecture/multilayer-architecture#reading-anchors)) ; lorsqu'elle est présente, le lot est ancré dans `x/multilayer` dans la **même transaction**, et une ancre refusée refuse le lot. `validator_set_hash` est l'engagement de l'ensemble de validateurs du rollup, porté dans l'ancre et couvert par la signature. En CLI : `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` affiche les octets à signer, et `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` les soumet.
+* **Sans la signature**, le lot est réglé sans ancrage, exactement comme avant. Un client qui n'envoie pas ce champ produit des lots non ancrés ; vérifiez donc que l'outil que vous utilisez le prend en charge. Aucun rollup, aucune couche ni aucune ancre n'existe encore sur l'un ou l'autre réseau ; aucune ancre n'a donc été écrite.
 
 Voir [Reçus de règlement](/rollups/settlement-receipts) pour ce qu'un ancrage prouve et ne prouve pas.
 
 ---
 
+## Registre de séquestre et retraits {#escrow-ledger}
+
+Le séquestre de tous les rollups se trouve dans un seul solde de module mutualisé. Depuis la **v3.2.3** (hauteur mainnet 3 662 051, 20 octobre 2026), un **registre de séquestre** par rollup est l'unique compte de ce que chaque rollup détient dans ce pool :
+
+* `create-rollup` crédite le registre du séquestre que le rollup conserve réellement : le stake moins le brûlage de création de 1 %.
+* Un retrait (`tx rdk execute-withdrawal`) et une récompense de preuve de fraude sont payés à partir du registre et y sont débités. Un retrait supérieur à ce que le rollup détient encore est refusé avec une erreur de séquestre insuffisant.
+* `stop-rollup` ne rembourse que ce qui reste dans le registre et le remet à zéro. Un rollup arrêté ne paie plus aucun retrait.
+* La `RollupView` en lecture seule renvoyée par les requêtes de rollup porte `escrow_balance` : les uqor encore détenus pour ce rollup.
+
+Avant la v3.2.3, le registre était crédité de zéro, de sorte que chaque retrait échouait en mode fermé ; `execute-withdrawal` ne peut donc réussir sur le mainnet qu'à partir de la v3.2.3. Les vérifications qu'un client doit effectuer avant de payer des frais : le denom doit être exactement `uqor`, le montant doit être positif, la preuve de Merkle compte au plus 64 niveaux et chaque nœud frère fait exactement 32 octets, et l'émetteur comme le destinataire doivent être des adresses `qor1…` valides. Un retrait nécessite aussi un lot finalisé qui a engagé un `withdrawals_root`, et chaque feuille de retrait ne peut être payée qu'une seule fois.
+
+## Lecture de l'état du RDK {#reading-state}
+
+Les requêtes du RDK sont servies en REST sur le mainnet et le testnet sous `/qorechain/rdk/v1/` :
+
+| Route | Renvoie |
+| --- | --- |
+| `/params` | Paramètres du module (le tableau ci-dessus) |
+| `/rollups` et `/rollup/{rollup_id}` | Enregistrements de rollup, y compris `escrow_balance` |
+| `/batches/{rollup_id}` | Lots, paginés (`start_index`, `limit` par défaut 50, au plus 100, `next_index`) |
+| `/batch/{rollup_id}/{batch_index}` et `/latest_batch/{rollup_id}` | Un lot, ou le plus récent |
+| `/blob/{rollup_id}/{blob_index}` | Métadonnées du blob, y compris `expires_at_height` (les octets du blob ne sont pas renvoyés) |
+
+`qorechaind query rdk config` affiche les paramètres du module (la route est `/params` ; il n'existe pas de route `/config`). Les identifiants de rollup et de couche doivent respecter la grammaire décrite dans [Identifiants de couche et de rollup](/architecture/multilayer-architecture#id-grammar), imposée depuis la v3.2.2.
+
+---
+
 ## Intégration du burn
 
-À la création d'un rollup, **1 % du montant du stake** est brûlé via le module `x/burn` à travers le canal de burn `rollup_create`. Par exemple, créer un rollup avec le stake minimal de 10 000 QOR brûle 100 QOR de manière permanente. Les 9 900 QOR restants sont conservés sous séquestre et restitués lorsque le rollup est arrêté. Le brûlage à la création est imposé depuis la version de chaîne v3.2.0 ; les versions antérieures ne l'appliquaient pas.
+À la création d'un rollup, **1 % du montant du stake** est brûlé via le module `x/burn` à travers le canal de burn `rollup_create`. Par exemple, créer un rollup avec le stake minimal de 10 000 QOR brûle 100 QOR de manière permanente. Les 9 900 QOR restants sont conservés sous séquestre et, lorsque le rollup est arrêté, ce qu'il en reste est restitué au créateur (les retraits et les récompenses de preuve de fraude payés à partir du séquestre réduisent le remboursement). Le brûlage à la création est imposé depuis la version de chaîne v3.2.0 ; les versions antérieures ne l'appliquaient pas.

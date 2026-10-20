@@ -10,7 +10,7 @@ sidebar_position: 3
 Esta guía explica cómo funciona la gobernanza on-chain en QoreChain: cómo se cuentan los votos, cómo presentar propuestas y cómo votar.
 
 :::note
-Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 29 de junio de 2026 en la línea v3.2 (versión de nodo **v3.2.1**; la testnet ejecuta **v3.2.2**) — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
+Los comandos a continuación usan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.3**; la testnet ejecuta **v3.2.4** — sustituye el chain ID y los endpoints de mainnet de la página **Conexión a Mainnet** al participar en la gobernanza en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -29,7 +29,7 @@ Las propuestas se cuentan sobre el **stake vinculado (bonded)**: cada QOR que ha
 | Umbral    | 50%        | Proporción de "sí" entre los votos no abstenidos necesaria para aprobar       |
 | Veto      | 33.4%      | Si "no con veto" alcanza esta proporción, la propuesta se rechaza y su depósito se quema |
 
-Estos valores se leyeron de la cadena el 14 de octubre de 2026; confírmalos con `qorechaind query gov params`, ya que la gobernanza puede cambiarlos.
+Estos valores se leyeron de mainnet el 20 de octubre de 2026 (y son los mismos en la testnet); confírmalos con `qorechaind query gov params`, ya que la gobernanza puede cambiarlos.
 
 :::note QDRW está diseñado pero no está activo
 El diseño de QoreChain incluye una fórmula de poder de voto **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, que amortiguaría los stakes grandes y ponderaría la reputación. Está implementada en el módulo `x/qca`, pero está **desactivada** en ambas redes (`qdrw_enabled` es `false` en `qorechaind query qca config`) y no forma parte del recuento de gobernanza, por lo que hoy no afecta a ningún voto. xQORE tampoco está activo (consulta [Staking de xQORE](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Los parámetros clave incluyen:
 
-| Parámetro            | Descripción                                                      | Valor actual (14 oct. 2026) |
+| Parámetro            | Descripción                                                      | Valor actual (20 oct. 2026) |
 | -------------------- | ---------------------------------------------------------------- | ------------------------ |
 | `min_deposit`        | Depósito mínimo requerido para que una propuesta entre en votación | 10 QOR (`10000000uqor`)  |
 | `max_deposit_period` | Ventana de tiempo para alcanzar el depósito mínimo               | 2 días                   |
@@ -170,6 +170,12 @@ Los parámetros clave incluyen:
 | `threshold`          | Porcentaje mínimo de "sí" para aprobar (excluyendo las abstenciones) | 0.5                      |
 | `veto_threshold`     | Porcentaje mínimo de "no con veto" para rechazar y quemar el depósito | 0.334                    |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Período de votación, umbral de aprobación y depósito de las propuestas expeditas | 1 día / 0.667 / 50 QOR |
+
+---
+
+## La gobernanza en mainnet hasta ahora {#mainnet-history}
+
+La gobernanza de mainnet se ha usado para cambios de parámetros, decisiones de cortacircuitos, actualizaciones coordinadas y, desde octubre de 2026, para liberar cantidades que la cadena registró en la actualización v3.2.0. Las propuestas 7 a 11 se aprobaron en mainnet en octubre de 2026 y la propuesta 12 estaba en su período de votación al momento de escribir esto; la lista y los resultados están en el [Historial de versiones](/appendix/version-history#governance-timeline), y cada propuesta puede leerse en vivo en `GET /cosmos/gov/v1/proposals`.
 
 ---
 

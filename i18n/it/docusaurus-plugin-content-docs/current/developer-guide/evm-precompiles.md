@@ -24,7 +24,7 @@ I sei precompilati QoreChain qui sotto sono **compilati nel nodo ma non ancora a
 | PRISM Consensus Params | `0x…0C01` | Non attivo | Non attivo |
 | CrossVM Bridge | `0x…0901` | Non attivo | Non attivo |
 
-L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge solo dopo essere stato ricostruito con journaling, controlli sul valore e il circuit breaker cross-VM. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
+L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge per ultimo. La release v3.2.3 (mainnet, 20 ottobre 2026) ha inserito nel binario, dietro una funzionalità di protocollo, le versioni rinforzate del CrossVM bridge e del precompilato AI anomaly, **ma non ha attivato alcun precompilato**: la lista `active_static_precompiles` è ancora vuota su entrambe le reti, e la release v3.2.4 della testnet non l'ha cambiato. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
 
 Controlla tu stesso la lista attuale (vuota significa nessuno attivo):
 
@@ -271,10 +271,10 @@ Nell'attuale build del nodo `rlConsensusParams` restituisce valori predefiniti f
 ### CrossVM Bridge — Chiamare CosmWasm dalla EVM
 
 :::warning
-Il precompilato CrossVM bridge **non** verrà attivato nella sua forma attuale. Viene ricostruito in modo che un revert nel contratto chiamante annulli anche il lato CosmWasm, i trasferimenti di valore vengano rifiutati, la rientranza da EVM a EVM venga negata e si applichi il circuit breaker cross-VM. Fino ad allora non esiste alcun percorso sincrono da EVM a CosmWasm; vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il percorso del messaggio `MsgCrossVMCall`, che oggi è a sua volta disattivato su mainnet.
+Il precompilato CrossVM bridge **non è attivo** su nessuna delle due reti. Il binario dalla v3.2.3 ne contiene una versione rinforzata che: rifiuta una `STATICCALL`; esegue la chiamata annidata su un contatore di gas limitato a quanto resta al frame chiamante e la registra nel journal, così un revert nel contratto chiamante annulla anche il lato CosmWasm; raggiunge solo destinazioni CosmWasm in allowlist (le destinazioni EVM vengono rifiutate); e rispetta il circuit breaker cross-VM. Finché un upgrade approvato dalla governance non lo attiva non esiste alcun percorso sincrono da EVM a CosmWasm; vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il percorso del messaggio `MsgCrossVMCall`, che oggi è a sua volta disattivato su mainnet.
 :::
 
-Il nodo decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selettore di 4 byte, poi gli argomenti codificati in ABI). L'uso documentato è da EVM a CosmWasm; l'ABI potrebbe cambiare con la ricostruzione.
+Il nodo decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selettore di 4 byte, poi gli argomenti codificati in ABI). L'unico uso supportato è da EVM a CosmWasm (`targetVM` = 1); l'ABI potrebbe ancora cambiare prima dell'attivazione.
 
 **Costo in gas:** 50.000 base + 4 gas per byte di input, più il costo di esecuzione del contratto di destinazione. Consulta [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per i dettagli.
 

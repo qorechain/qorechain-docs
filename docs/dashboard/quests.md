@@ -13,7 +13,7 @@ Sign in so your progress is tracked — see [Sign in](/dashboard/overview#sign-i
 
 ## Browse quests
 
-The Quests page opens with a quick summary of how many quests are available, how many you have in progress, and how many you have completed. **Category tabs** — such as onboarding, trading, social, community, learning, daily, and weekly — let you filter the list.
+The Quests page has an **Eigenstate 1** and an **Eigenstate 2** tab; when no Eigenstate 2 quests are active, its tab says new challenges are coming soon. The page opens with a quick summary of how many quests are available, how many you have in progress, and how many you have completed. **Category tabs** — such as onboarding, trading, social, community, learning, daily, and weekly — let you filter the list.
 
 Each quest appears as a card showing:
 
@@ -24,6 +24,8 @@ Each quest appears as a card showing:
 - A **status**: completed, in progress, started, or locked.
 
 A locked quest lists the quest you need to finish first before it unlocks.
+
+**Social quests.** Quests that involve X or Telegram count only once you have connected those accounts in your **Profile** (the page shows *Connect Social Accounts* with a **Go to Profile** link until you have) and the connection is verified.
 
 ## Complete a quest
 

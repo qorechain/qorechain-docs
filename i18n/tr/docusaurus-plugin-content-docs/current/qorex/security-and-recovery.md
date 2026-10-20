@@ -16,7 +16,7 @@ QoreX **saklayıcısızdır (non-custodial)**: anahtarlarınız yalnızca kendi 
 
 **Aşağıdakilerden en az birini yapın — cüzdanınızı oluşturduktan hemen sonra, sonraya bırakmadan:**
 
-1. **24 kelimelik kurtarma ifadenizi yazıya dökün** ve çevrimdışı, dayanıklı bir yerde saklayın (bir ekran görüntüsü değil, buluta senkronize bir not değil, kendinize gönderilen bir mesaj değil). Cüzdanınızı herhangi bir cihazda, herhangi bir zamanda geri yükleyebilecek tek şeydir — mobilde **Ayarlar → Güvenlik → Kurtarma ifadesini göster** yolundan görüntüleyin (uygulama cüzdanı oluştururken ifadeyi göstermez, bu yüzden gidip kendiniz almanız gerekir — hemen yapın); eklentide cüzdanı oluşturduğunuzda bir kez gösterilir ve sonrasında istediğiniz zaman açılır penceredeki **Kurtarma ifadesini göster** üzerinden görüntülenebilir. Bkz. [Mevcut bir cüzdanı geri yükleyin](/qorex/getting-started#2-restore-an-existing-wallet).
+1. **24 kelimelik kurtarma ifadenizi yazıya dökün** ve çevrimdışı, dayanıklı bir yerde saklayın (bir ekran görüntüsü değil, buluta senkronize bir not değil, kendinize gönderilen bir mesaj değil). Cüzdanınızı herhangi bir cihazda, herhangi bir zamanda geri yükleyebilecek tek şeydir — mobilde **Ayarlar → Güvenlik → Kurtarma ifadesini göster** yolundan görüntüleyin (uygulama cüzdanı oluştururken ifadeyi **göstermez**, bu yüzden gidip kendiniz almanız gerekir — hemen yapın); eklentide cüzdanı oluşturduğunuzda bir kez gösterilir ve sonrasında istediğiniz zaman açılır penceredeki **Kurtarma ifadesini göster** üzerinden görüntülenebilir. Bkz. [Mevcut bir cüzdanı geri yükleyin](/qorex/getting-started#2-restore-an-existing-wallet).
 2. Güvendiğiniz vasilerle **[sosyal kurtarma](#social-recovery)** kurun. Bu, ifadeyi kaybetseniz bile cüzdanınızı kurtarmanızı sağlar, ve hiçbir tek vasi tek başına fonlarınıza erişemez.
 
 İkisini birden yapmak en güvenli seçenektir — ifade, cihaz değiştirdiğinizde veya uygulama kullanılamaz olduğunda sizi korur; vasiler ise ifadenin kendisini kaybettiğinizde sizi korur.
@@ -28,7 +28,7 @@ QoreX **saklayıcısızdır (non-custodial)**: anahtarlarınız yalnızca kendi 
 
 Güvenlik ekranı, kuantum-sonrası anahtarınızın canlı zincir-üstü durumunu gösterir: **"İlk transferinizle kaydolur"** → **"Zincir üstünde kayıtlı ✓"**. Algoritma **ML-DSA-87**'dir (deterministik, secp256k1 ile hibrit).
 
-**Anahtar rotasyonu** — kuantum-sonrası anahtarınızı döndürmek (zincir üstünde bir `MsgRotatePQCKey` işlemi) **henüz QoreX içinde kullanılamıyor**; daha sonraki bir anahtar yönetimi güncellemesiyle gelecek, yeni bir biyometrik onay gerektirecek ve **asla otomatikleştirilmeyecek**. Web siteleri QoreX'ten kuantum-sonrası anahtarınızı kaydetmesini, taşımasını veya döndürmesini isteyemez. Alttaki mekanizma için bkz. [Anahtar rotasyonu](/developer-guide/post-quantum-signing#key-rotation).
+**Anahtar rotasyonu** — kuantum-sonrası anahtarınızı döndürmek (zincir üstünde bir `MsgRotatePQCKey` işlemi) **henüz QoreX içinde kullanılamıyor**; daha sonraki bir anahtar yönetimi güncellemesiyle gelecek, yeni bir biyometrik onay gerektirecek ve **asla otomatikleştirilmeyecek**. Web siteleri QoreX'ten kuantum-sonrası anahtarınızı kaydetmesini, taşımasını veya döndürmesini isteyemez. Kayıt, ilk transferinizle kendiliğinden gerçekleşir ve sizden hiçbir şey gerektirmez — mainnet v3.2.3'te zincir, kayıtla birlikte isteğe bağlı bir *sahiplik kanıtı* da kabul eder; QoreX bunu güncel mağaza sürümlerinde görünmez şekilde halleder. Alttaki mekanizma için bkz. [Anahtar rotasyonu](/developer-guide/post-quantum-signing#key-rotation).
 
 ## Sosyal kurtarma {#social-recovery}
 
@@ -64,6 +64,8 @@ Cihaz bağlama bir **kolaylıktır**, bir kurtarma yöntemi değildir. 24 kelime
 
 Zincir **v3.2.0**'dan itibaren, **EVM hattındaki (lane)** bir işlem — örneğin QoreChain'in EVM ağında MetaMask ile imzaladığınız bir işlem — yalnızca **kayıtlı bir kuantum-sonrası anahtarı** *ve* **açık bir yetkilendirme penceresi** olan bir hesaptan kabul edilir. Pencere açmak, MetaMask'in üretemediği bir QoreChain Native-lane mesajıdır; bu yüzden pencereyi açacağınız yer QoreX'tir. QoreX'in kendi gönderimleri Native hattını kullanır ve hiçbir zaman pencere gerektirmez.
 
+**Kimin ihtiyacı var.** Bir pencere, **Ethereum tarzı (coin 60) hesaplar** içindir — ilk olarak MetaMask'ta kullanılmış bir ifade için *Ethereum hesabı ekle (coin 60)* ile eklediğiniz hesaplar (bkz. [MetaMask'tan veya Dashboard'dan bir ifadeyi geri yükleme](/qorex/getting-started#restore-dashboard)). MetaMask bir Ethereum anahtarıyla imzalar; bu, bir coin-60 hesabının anahtarıdır. Hiçbir MetaMask anahtarı sıradan bir coin-118 `qor1…` hesabından gönderemez; bu yüzden ona açılan bir pencere hiçbir işe yaramaz ve yalnızca ücrete mal olur.
+
 Uygulamada **Ayarlar → Güvenlik → EVM erişim penceresi** yolundan veya eklenti açılır penceresindeki **EVM erişim penceresi** düğmesiyle açın. Şunları seçersiniz:
 
 | Alan | Anlamı | Sınır |
@@ -72,12 +74,12 @@ Uygulamada **Ayarlar → Güvenlik → EVM erişim penceresi** yolundan veya ekl
 | **Kaç işlem (en fazla 1000)** | kaç EVM işlemine izin verdiği | 1.000'e kadar |
 | **Harcama sınırı, QOR — gönderilen her tutarı VE onun azami ücretini kapsar** | geçmesine izin verdiği en yüksek tutar | değeri **artı** her işlemin azami ücretini sayar |
 
-Varsayılanlar 300 blok (mainnet'te yaklaşık 16 dakika), 5 işlem ve 1 QOR'dur. Pencereyi açmak normal bir ağ ücretine mal olur ve olağan hibrit kuantum-sonrası imzayla imzalanır; yeni bir pencere, zaten açık olan pencerenin **yerini alır**. Açmak hesabınızın nonce değerini de ilerletir; bu yüzden pencereyi **önce** açın, sonra MetaMask'ten gönderin — daha önce hazırlanmış bir işlem "nonce too low" ile reddedilir. **Pencereyi kapat** yalnızca bir pencere canlıyken sunulur.
+Zincir, v3.2.3'ten beri daha dar, *kapsamlı* pencereleri de destekler; QoreX bunlar için bir ekran sunmaz. Varsayılanlar 300 blok (mainnet'te yaklaşık 16 dakika), 5 işlem ve 1 QOR'dur. Pencereyi açmak normal bir ağ ücretine mal olur ve olağan hibrit kuantum-sonrası imzayla imzalanır; yeni bir pencere, zaten açık olan pencerenin **yerini alır**. Açmak hesabınızın nonce değerini de ilerletir; bu yüzden pencereyi **önce** açın, sonra MetaMask'ten gönderin — daha önce hazırlanmış bir işlem "nonce too low" ile reddedilir. **Pencereyi kapat** yalnızca bir pencere canlıyken sunulur.
 
 Ekran dört durumdan birini gösterir: *\{blocks\} blok daha · \{txs\} işlem · \{value\} QOR kalana kadar açık*; *Hiçbir pencere açık değil. Bu hesaptan gelen MetaMask işlemleri reddedilir.*; *Bu pencerenin süresi doldu veya tükendi*; ya da *QoreX pencereyi ağdan okuyamadı* — bu, QoreX'in bilmediği anlamına gelir, hiç pencereniz olmadığı anlamına **gelmez**. Hesabınızın henüz kuantum-sonrası anahtarı yoksa önce bir tane kaydedin (ilk QoreX transferiniz bunu yapar); ondan önce bir pencere işe yaramaz.
 
 :::caution Küçük ve kısa tutun
-Bir pencere, sıradan MetaMask işlemlerinin QOR'unuzu **kuantum-sonrası imza olmadan** taşımasına izin verir. Sınırları düşük tutun ve işiniz bitince pencereyi kapatın.
+Bir pencere, sıradan MetaMask işlemlerinin QOR'unuzu **kuantum-sonrası imza olmadan** taşımasına izin verir. Sınırları düşük tutun — küçük bir harcama sınırı, az işlem, kısa bir süre — ve işiniz bitince pencereyi kapatın. Yeni bir pencere açmak eskisinin yerini alır ve sınır, gönderdiğiniz her tutarı azami ücretiyle **birlikte** sayar; bu yüzden sınırı aşacak bir işlem reddedilir.
 :::
 
 QoreX'in kendisi hiçbir zaman QoreChain'in EVM hattından göndermez; bunun için açık bir pencere içinde MetaMask veya başka bir EVM cüzdanı kullanın. (QoreX'ten *diğer* ağlarda ETH, BNB ve başka varlıklar göndermek farklı bir şeydir — bkz. [Harici ağlar ve token'lar](/qorex/send-and-receive#external-networks-tokens).)
@@ -88,15 +90,17 @@ QoreX'in ürettiği her imza sizin tarafınızdan onaylanır ve onay, tam olarak
 
 - istekteki **her mesaj** için bir başlık ve etiketli alanlar; bir authz **MsgExec** içine yerleştirilmiş mesajlar ve izin verme koşulları dahil — ve gösteremediği her şeyi **reddeder** ("QoreX cannot read this message … Approve only if you trust this site completely");
 - **ücret** (*Fee: \{amount\} · gas \{gas\}*), onu kimin ödediği ve varsa ücret desteği (fee grant) — ücret okunamıyorsa QoreX bunu söyler ve onaylamamanızı bildirir;
-- harcama izinlerinin ve authz yetkilerinin **sınırı, izin verilen eylemi ve son kullanma tarihi**; *UNLIMITED* ve *NEVER* açıkça yazılır. Okunamayan, sınırsız veya sonsuz olan her şey Onayla üzerinde **ikinci bir dokunuş** gerektirir (*Tap again to approve*);
+- harcama izinlerinin ve authz yetkilerinin **sınırı, izin verilen eylemi ve son kullanma tarihi**; *UNLIMITED* ve *NEVER* açıkça yazılır; son kullanma tarihi saniyesine kadar gösterilir (`YYYY-MM-DD HH:MM:SS UTC`) ve bir yönetişim oyu çözülür, böylece neye oy verdiğinizi görürsünüz. Okunamayan, sınırsız veya sonsuz olan her şey Onayla üzerinde **ikinci bir dokunuş** gerektirir (*Tap again to approve*);
 - birden fazla hesabınız olduğunda imzalayan hesap (*Signed by …*);
 - çok sayıda mesaj içeren bir istekte, ilk 50 mesaj ve geri kalanların sayısı.
+
+QoreX ayrıca **baytları iki şekilde okunabilen bir isteği de reddeder** (1.1.7 / 0.3.7'den beri). Bir kez görünmesi gereken bir alanı tekrarlayan bir istek — örneğin iki katına çıkarılmış bir ücret veya tutar — bir şekilde gösterilip başka bir şekilde yürütülebilir; bu yüzden QoreX onay için onu hiç göstermez. Web siteleri için QoreX, isteyen siteyi isteğin kendisi hakkında söylediğiyle değil, tarayıcının kendisinin doğruladığı kaynak (origin) ile tanımlar.
 
 Bir cüzdan veya hesap değişikliği ya da cüzdanı kilitlemek, bekleyen isteklere "hayır" yanıtı verir; bir site tek bir isteği bekletebilir ve toplamda üç istek bekleyebilir. Onay pencerelerindeki alan adları bazı sürümlerde İngilizce gösterilir.
 
 ## Kurtarma ifadeniz ve erişilebilirlik araçları {#phrase-privacy}
 
-Kurtarma ifadesi ekranı, ekran görüntülerinden ve uygulama değiştiriciden gizlenir. **Android 14 ve sonrasında**, kelimeler gerçek erişilebilirlik araçları olmayan erişilebilirlik hizmetlerinden de saklanır (TalkBack ve diğer gerçek ekran okuyucular bunları yine de okuyabilir). Daha eski Android sürümlerinde ve iOS'ta kelimeler varsayılan olarak ekran okuyuculardan gizlenir; bir ekran okuyucuya güveniyorsanız, onların okumasına izin vermek için o ekrandaki bildirime dokunun. İfadeyi yalnızca kimse ekranınızı göremiyorken gösterin.
+Kurtarma ifadesi ekranı her seferinde yeni bir biyometrik veya cihaz PIN'i ister, kelimeleri **kopyalama düğmesi olmayan**, numaralandırılmış, salt okunur bir ızgara olarak gösterir, Android'de ekran görüntülerine karşı engellenir ve uygulama değiştiriciden gizlenir. **Android 14 ve sonrasında**, kelimeler gerçek erişilebilirlik araçları olmayan erişilebilirlik hizmetlerinden de saklanır (TalkBack ve diğer gerçek ekran okuyucular bunları yine de okuyabilir). Daha eski Android sürümlerinde ve iOS'ta kelimeler varsayılan olarak ekran okuyuculardan gizlenir; bir ekran okuyucuya güveniyorsanız, onların okumasına izin vermek için o ekrandaki bildirime dokunun. İfadeyi yalnızca kimse ekranınızı göremiyorken gösterin.
 
 ## Bağlı dApp'ler {#connected-dapps}
 
@@ -115,5 +119,5 @@ Harici bir anahtarı (Phantom veya MetaMask) kendi harcama limitleriyle bir **ba
 1. **Saklayıcısız (Non-custodial)** — anahtarlar cihaz üzerinde üretilir, donanım destekli kasalarda (mobil) ya da şifreli bir kasada (eklenti) yaşar ve asla dışarı çıkmaz.
 2. **Onay olmadan hiçbir şey** — her bağlantı köken başınadır, her imza tek tek onaylanır (mobilde biyometrik ile) ve yükler imzalanmadan önce her zaman çözülür — QoreX'in çözemediğini reddeder.
 3. **Varsayılan olarak kuantuma karşı güvenli** — Native-lane QOR transferleri her zaman ML-DSA-87 + secp256k1 taşır; klasik olan her şey etiketlenir, asla sessiz geçmez.
-4. **Analitik yok, izleme yok, reklam yok.** İsteğe bağlı hesap girişi ve anlık bildirimler yalnızca siz açtığınızda bir sunucu kullanır ve [QoreChain gizlilik politikası](https://qorechain.io/privacy) kapsamındadır.
+4. **Analitik yok, çökme raporlama yok, izleme SDK'sı yok.** Anahtarlar, kurtarma ifadesi, kasa ve onaylar cihazdan asla çıkmaz. İsteğe bağlı oturum açma, anlık bildirimler ve sosyal kurtarma yalnızca siz açtığınızda bir sunucu kullanır; QoreX'in gönderdiklerinin tam listesi [QoreX'in ağ üzerinden neler gönderdiği](/qorex/overview#data-and-privacy) bölümündedir ve [QoreChain gizlilik politikası](https://qorechain.io/privacy) bunu kapsar.
 5. **Kurtarma yolları** — 24 kelimelik ifade (her zaman), vasilerle sosyal kurtarma + 48 saatlik zaman kilidi (isteğe bağlı), Legacy mirası (isteğe bağlı), cihaz bağlama (kolaylık).

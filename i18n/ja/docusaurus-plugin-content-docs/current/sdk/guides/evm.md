@@ -89,7 +89,8 @@ viem、ethers、Hardhat、Foundry などのウォレットやライブラリは�
 CLI の形式、拒否コードは
 [EVM 認可ウィンドウ](/getting-started/first-transaction#evm-window)にあります。
 
-SDK **0.8.2 以降**では、コードからウィンドウを開くことができます。鍵の登録（1 回のみ）は
+SDK **0.8.2 以降**では、コードからウィンドウを開くことができます（下記のスコープオプションは
+**0.9.0** で追加されました）。鍵の登録（1 回のみ）は
 [量子耐性](/sdk/guides/quantum-safe)で説明しています。以下の例では、その後に
 統合 eth ネイティブアカウント用のウィンドウを開きます（`npm i @cosmjs/stargate`）:
 
@@ -156,6 +157,96 @@ try {
 
 `closeEvmWindowMsg` は対応するクローズメッセージを構築し、`MAX_EVM_WINDOW_BLOCKS` と
 `MAX_EVM_WINDOW_TXS` は上限をエクスポートします。
+
+### ウィンドウのスコープを絞る（チェーン v3.2.3、SDK 0.9.0） {#evm-window-scope}
+
+ウィンドウは開くときに絞り込めます。`nativeOnly` はネイティブ QOR の通常の送金のみを受け付けます
+（calldata なし、コントラクト作成なし、コードを持つ受取先なし、EIP-7702 認可なし）。
+`allowedTargets` は、受取先が列挙された最大 16 個の `0x` アドレス（重複なし）のいずれかである
+トランザクションのみを受け付けます（コントラクト作成は拒否されます）。どちらも新しい
+メッセージフィールドです。v3.2.3 未満のノードは、どちらかが設定されているとトランザクション全体を
+拒否するため、v3.2.3 を適用済みのネットワークでのみ設定してください（両方の公開ネットワークが
+適用済みです）。`fetchEvmWindow` は両方を読み戻します（`nativeOnly`、
+`allowedTargets`。v3.2.3 より前は `false` と空になります）。QOR の送信のためだけに
+開くウィンドウには、`nativeOnly` を推奨します。
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  openEvmWindowMsg,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on-chain
+const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
+
+await tx.signAndBroadcast(
+  [
+    openEvmWindowMsg({
+      sender: account.address,
+      blocks: 7200,
+      maxTxs: 20,
+      maxValue: "1000000000", // uqor: value PLUS the maximum fee of each transaction
+      nativeOnly: true,
+      // or: allowedTargets: ["0x…", "0x…"],
+    }),
+  ],
+  "auto",
+);
+```
+
+### EIP-7702 の同意（チェーン v3.2.2、SDK 0.9.0） {#evm-delegation-consent}
+
+type-4（EIP-7702）トランザクションは、認可が有効になるすべてのアカウントが、まさにその委任先に対して
+ポスト量子の同意を、ハイブリッド署名された `MsgAuthorizeEVMDelegation` で与えた後にのみ
+受け付けられます。同意は、委任をインストールするトランザクションによって使い切られ、設定した
+`blocks`（1 から 17,280）の経過後に失効します。委任先としてゼロアドレスを指定すると、解除への
+同意になります。SDK はメッセージを構築し、認可タプルが持つべき nonce を含めて、同意を
+読み戻します:
+
+```ts
+import {
+  authorizeEvmDelegationMsg,
+  clearEvmDelegationMsg,
+  fetchEvmDelegationConsent,
+  evmDelegationTupleNonce,
+} from "@qorechain/sdk";
+
+// 1) Consent to one delegate (hybrid-signed Native-lane message, `tx` as above).
+await tx.signAndBroadcast(
+  [authorizeEvmDelegationMsg({ sender: account.address, delegate: "0xDelegate…", blocks: 600 })],
+  "auto",
+);
+
+// 2) Read the consent: the tuple's nonce is the account's EVM nonce for a
+//    sponsored transaction, and that nonce + 1 when the account sends it itself.
+const consent = await fetchEvmDelegationConsent({ rest: "https://api.qore.host", address: account.address });
+const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
+
+// 3) Sign the authorisation tuple with `tupleNonce` and send the type-4
+//    transaction (the sender still needs an open window; a sponsor pays from its own).
+
+// Remove an installed delegation directly, without any EVM transaction:
+// await tx.signAndBroadcast([clearEvmDelegationMsg(account.address)], "auto");
+```
+
+`classifyEvmDelegationRejection(err)` は、EVM レーンが委任を拒否した場合に `"no-consent"` または
+`"invalid"` を返します。同意クエリにはチェーン v3.2.2 以降が必要です。チェーンレベルの
+ルールは
+[EIP-7702 の委任](/architecture/post-quantum-security#eip-7702)にあります。CLI の形式は
+`qorechaind tx pqc authorize-evm-delegation` と `clear-evm-delegation` です。
+
+0.9.0 より前のリリースはスコープなしのウィンドウしか構築できず（スコープなしのウィンドウは
+両ネットワークで引き続き動作します）、同意ビルダーもありません。その場合は
+[EVM 認可ウィンドウ](/getting-started/first-transaction#evm-window)の CLI の形式を使用してください。
 
 ## プリコンパイル
 

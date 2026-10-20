@@ -15,7 +15,7 @@ Le chiamate cross-VM sono disponibili solo quanto lo è la loro lane di destinaz
 * `MsgCrossVMCall` è **disattivato sulla mainnet** dal circuit breaker (`qorechaind query circuit disabled-list`); è abilitato sulla testnet.
 * La **lane SVM è disabilitata** per le transazioni su entrambe le reti, quindi un tratto SVM non può essere eseguito.
 * **Upload e instanziazione di CosmWasm sono soggetti ad autorizzazione** su entrambe le reti e la mainnet non ha alcun codice di contratto memorizzato, quindi non esiste ancora alcun contratto CosmWasm da chiamare.
-* La **precompile EVM sincrona non è attiva** (vedi sotto).
+* La **precompile EVM sincrona non è attiva** (vedi sotto). Una versione rinforzata è presente nel binario dalla v3.2.3, ma su nessuna delle due reti è attivata alcuna precompile.
 
 Le route REST del modulo (`/qorechain/crossvm/v1/...`) non sono servite dal gateway pubblico; leggi i messaggi con la CLI o con un client di query gRPC/ABCI.
 :::
@@ -51,7 +51,7 @@ Gli endpoint seguenti utilizzano per impostazione predefinita un nodo locale. Su
 Il percorso sincrono utilizza una **precompile** EVM all'indirizzo `0x0000000000000000000000000000000000000901`. È progettata per consentire ai contratti Solidity di chiamare i contratti CosmWasm e di ricevere una risposta all'interno della stessa transazione.
 
 :::warning Non attiva su mainnet né su testnet
-La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi` né su `qorechain-diana`: una chiamata a `0x…0901` riesce e restituisce dati vuoti. Non verrà attivata nella sua forma attuale; viene ricostruita in modo che un revert nel contratto chiamante annulli anche il lato CosmWasm, i trasferimenti di valore vengano rifiutati, la rientranza da EVM a EVM venga negata e si applichi il circuit breaker cross-VM. L'esempio seguente mostra solo la forma prevista. Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
+La precompile del bridge CrossVM **non è attiva** su `qorechain-vladi` né su `qorechain-diana`: una chiamata a `0x…0901` riesce e restituisce dati vuoti. Il binario v3.2.3 include una versione rinforzata (rifiuta una `STATICCALL`, misura la sua chiamata annidata sul gas del frame chiamante e la registra nel journal in modo che un revert EVM annulli anche il lato CosmWasm, raggiunge solo destinazioni CosmWasm in allowlist e rispetta il circuit breaker cross-VM), ma viene eseguita solo quando un aggiornamento approvato dalla governance la aggiunge all'elenco attivo. L'esempio seguente mostra solo la forma prevista. Vedi [Precompile EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Esempio Solidity
@@ -78,7 +78,7 @@ contract CrossVMCaller {
 }
 ```
 
-Una volta attiva, la precompile esegue il contratto CosmWasm immediatamente e restituisce il risultato. Il nodo attuale decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; l'ABI potrebbe cambiare con la ricostruzione. Costo del gas: **50.000 base + 4 per byte di input + costo di esecuzione**.
+Una volta attiva, la precompile esegue il contratto CosmWasm immediatamente e restituisce il risultato. Il nodo attuale decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; l'ABI potrebbe ancora cambiare prima dell'attivazione. Costo del gas: **50.000 base + 4 per byte di input + costo di esecuzione**.
 
 ---
 
@@ -88,17 +88,17 @@ Le altre chiamate cross-VM usano la transazione `MsgCrossVMCall`. La chain ricav
 
 ### CLI
 
-`tx crossvm call` accetta la VM di destinazione (`evm`, `cosmwasm` o `svm`) e il contratto di destinazione come argomenti posizionali, con il payload in esadecimale:
+`tx crossvm call` accetta la VM di destinazione (`evm`, `cosmwasm` o `svm`) e il contratto di destinazione come argomenti posizionali, con il payload in esadecimale. La CLI non chiede la VM di origine: la chain ricava la lane del chiamante dallo stato e ignora il campo dichiarato (la CLI inserisce un segnaposto affinché il messaggio superi la propria validazione):
 
 ```bash
 qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Altri flag: `--funds <coins>` (solo destinazioni CosmWasm) e `--async` per mettere in coda la chiamata invece di eseguirla subito. Firma e trasmetti `tx.json` con `tx pqc cosign` (vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing)); il floor delle commissioni è 0.1 uqor per gas.
+Altri flag: `--funds <coins>` (solo destinazioni CosmWasm) e `--async` per mettere in coda la chiamata invece di eseguirla subito. Firma e trasmetti `tx.json` con `tx pqc cosign` (vedi [Firma Post-Quantistica](/developer-guide/post-quantum-signing)); il floor delle commissioni è 0.1 uqor per gas. Una chiamata verso la lane del chiamante stesso viene rifiutata (dalla v3.2.3).
 
-:::caution Disattivato sulla mainnet, e la forma CLI richiede una correzione
-`MsgCrossVMCall` è disattivato sulla mainnet dal circuit breaker. Nei binari della release attuale, `tx crossvm call` costruisce inoltre un messaggio che non supera la validazione propria del messaggio (lascia vuota la VM di origine), quindi il comando è documentato qui solo come riferimento.
+:::caution Disattivato sulla mainnet
+`MsgCrossVMCall` è disattivato sulla mainnet dal circuit breaker, quindi oggi il comando non può riuscire lì. (Anche i binari di release precedenti alla v3.2.3 costruivano un messaggio che non superava la propria validazione perché la VM di origine era vuota; il binario v3.2.3 lo corregge.) Sulla testnet il messaggio è abilitato, ma le sue destinazioni CosmWasm e SVM non sono utilizzabili (vedi sopra), quindi si può raggiungere solo una destinazione EVM.
 :::
 
 ---
@@ -122,6 +122,8 @@ Submitted --> Pending --> Executed
 | **Executed**  | Contratto target chiamato con successo; risposta registrata |
 | **Failed**    | L'esecuzione del contratto target è stata annullata (revert); errore registrato |
 | **Timed Out** | Il messaggio ha superato `queue_timeout_blocks` senza esecuzione |
+
+Dalla v3.2.3 una chiamata in coda che fallisce viene annullata per intero: resta solo il suo record `Failed`, e i fondi allegati a una chiamata CosmWasm fallita non vengono più spostati nel contratto. Mentre il modulo è disabilitato, o `MsgCrossVMCall` è disattivato dal circuit breaker, la coda **non viene eseguita**: i messaggi in coda restano in attesa e scadono al loro timeout, a meno che l'interruttore non venga prima riattivato.
 
 ---
 

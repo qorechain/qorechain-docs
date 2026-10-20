@@ -14,7 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています(メインネットのノードリリースは **v3.2.1**、テストネットは **v3.2.2**。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください)。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
+稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています。メインネットのノードリリースは **v3.2.3**(2026年10月20日にブロック高 3,662,051 で適用)、テストネットは **v3.2.4**(2026年10月19日にブロック高 8,337,253 で適用。メインネットではまだ未適用。ガバナンス提案 13 がブロック高 3,742,566 で適用する予定)です。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
+
+このページのコマンドとフラグは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 のテストネットにのみ存在するものには **テストネット専用** と明記しています。
 :::
 
 共通フラグはすべての `tx` サブコマンドに適用されます。
@@ -51,9 +53,15 @@ qorechaind tx <module> <command> [args] [flags]
 
 ## Cosmosレーンではハイブリッド署名が必須です {#hybrid-signing}
 
-`hybrid_signature_mode` は両ネットワークで `required` です(`qorechaind query pqc hybrid-mode`)。すべてのCosmosレーンのトランザクションには、secp256k1署名に加えてML-DSA-87(Dilithium-5)署名が必要です。単純な `tx bank send ... -y` は拒否されます。例外は、PQC鍵の登録と移行(新しいアカウントが最初の鍵を登録できるようにするため)、およびPQC鍵が登録されていないアカウントによる `tx slashing unjail` のみです。
+`hybrid_signature_mode` は両ネットワークで `required` です(`qorechaind query pqc hybrid-mode`)。すべてのCosmosレーンのトランザクションには、secp256k1署名に加えてML-DSA-87(Dilithium-5)署名が必要です。単純な `tx bank send ... -y` は拒否されます(codespace `pqc`、コード 20)。メインネット v3.2.3 以降の例外は次のもののみです。
 
-したがって、このページのコマンドのうち `pqc register-key`、`pqc register-key-v2`、`pqc migrate-key` を除くすべては、2段階で実行します。まず `--generate-only` でトランザクションを構築し、次に `tx pqc cosign` で署名してブロードキャストします。
+- まだ鍵を持たないアカウントの**最初の**PQC鍵登録(`register-key` または `register-key-v2`)。新しいアカウントがブートストラップできるようにするためです。
+- 使用可能な鍵を保持していないアカウントレコードの、`register-key-v2` による修復。
+- PQC鍵が登録されていないアカウントによる `tx slashing unjail`。
+
+すでにPQC鍵を保持しているアカウントは、`register-key-v2` と `migrate-key` を**含め**、すべてにハイブリッド署名をしなければなりません(従来型のみの試みはコード 234 で拒否されます)。鍵のないアカウントはハイブリッド署名も付けられません。照合する対象がないため、最初に登録を行います。
+
+したがって、このページのコマンドのうち、最初の登録(鍵のないアカウントでの `pqc register-key` / `pqc register-key-v2`)を除くすべては、2段階で実行します。まず `--generate-only` でトランザクションを構築し、次に `tx pqc cosign` で署名してブロードキャストします。`pqc rotate-key` は自身で共同署名とブロードキャストを行います。`pqc gen-key` と `pqc recover-key` はローカルに鍵ファイルを作成するだけです。
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
@@ -221,25 +229,40 @@ Dilithium-5(ML-DSA-87)鍵を生成し、`<home>/pqc/<name>.dilithium` に保存�
 qorechaind tx pqc gen-key <name>
 ```
 
+`gen-key` と `recover-key` は、同名の既存の鍵ファイルの上書きを拒否します。`--force` を指定すると置き換えられ、古いファイルは `<name>.dilithium.bak-<unix-time>` として残されます。
+
 ### register-key
 
-アカウントにPQC公開鍵を登録します(レガシーコマンド: アルゴリズムはDilithium-5)。従来型の鍵のみで署名します。これがブートストラップの例外です。
+アカウントにPQC公開鍵を登録します(レガシーコマンド: アルゴリズムはDilithium-5)。最初の登録は従来型の鍵のみで署名します。これがブートストラップの例外です。すでに鍵があるアカウントはハイブリッド署名をしなければなりません(`--generate-only`、続いて `tx pqc cosign`)。
 
 ```bash
 qorechaind tx pqc register-key <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`key_type` は `hybrid`(推奨)、`pqc_only`、または `classical_only` です。2,592バイトの公開鍵のため、登録は送金よりもコストが高くなります。これが、より大きなガスリミットが必要な理由です。
+`key_type` は `hybrid`(推奨)または `pqc_only` です。`classical_only` は拒否されます(コード 230)。ポスト量子鍵が登録されず、アカウントが二度と署名できなくなるためです。2,592バイトの公開鍵のため、登録は送金よりもコストが高くなります。これが、より大きなガスリミットが必要な理由です。
+
+チェーンは、ポスト量子の保護を提供しない鍵(コード 230)と、このアカウントが以前に使用した鍵(コード 232)も拒否します。従来型の鍵が署名者自身のものではない登録も拒否します(コード 45)。
 
 ### register-key-v2
 
-アルゴリズムを明示的に選択して鍵を登録します。
+アルゴリズムを明示的に選択して鍵を登録し、必要に応じて、その鍵の秘密を保持していることを証明します。
 
 ```bash
-qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> [--pqc-key <name>] \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`algorithm` は `dilithium5`(または `1`)、もしくは `mlkem1024`(または `2`)です。
+`algorithm` は `dilithium5`(または `1`)、もしくは `mlkem1024`(または `2`)です。`key_type` は `hybrid` または `pqc_only` です。
+
+**所有証明(任意)。** `--pqc-key <name>`(`gen-key` または `recover-key` で作成した鍵)を指定すると、コマンドは所有証明を付加します。これは、新しい鍵自身による `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` に対する署名です。チェーンは、所有証明がある場合はそれを検証し、検証に失敗した場合は登録を拒否します(コード 231)。所有証明のない登録も引き続き受け付けられます。この証明にはチェーン、アルゴリズム、アカウント、鍵が含まれているため、別のアカウントやネットワークに対しては何も証明しません。トランザクションに4,627バイトの署名が1つ追加されるため、ガスリミットは `600000` のままにしてください。証明はメッセージの `proof_of_possession` フィールドで運ばれます。TypeScript SDK 0.9.0 は、ネットワークが v3.2.3 を適用すると、`ensurePqcRegistered` を通じて自動的に証明を付加します。それ以前のSDKリリースと `@qorechain/wallet-adapter` は付加しないため、それらを通じた登録には証明が付きません(引き続き受け付けられます)。
+
+```bash
+qorechaind tx pqc gen-key mypqc                      # prints the public key hex
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+```
+
+テストネット(v3.2.4、**テストネット専用**)では、アカウントレコードに証明が検証されたかどうかも `possession_proven` として報告されます([REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照)。メインネットではまだ報告されません。
 
 ### cosign
 
@@ -256,14 +279,15 @@ qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name> --chai
 | `--generate-only` / `--offline` | ブロードキャストせず、署名済みトランザクションをJSONで出力する。後で `tx broadcast` で送信する。`--offline` には `--account-number`、`--sequence`、`--sign-bytes v1\|v2` も必要 |
 | `--dry-run`    | シミュレートしてガス見積もりを出力する                                                            |
 
-両ネットワークとも、ハイブリッド検証をv2のsign-bytesに移行するアップグレードを適用済みです。v1形式は拒否されます。
+両ネットワークとも、ハイブリッド検証をv2のsign-bytesに移行するアップグレードを適用済みです。v1形式は拒否されます。トランザクションが持てるハイブリッド署名拡張は1つだけです(v3.2.3 以降、複数あると拒否されます)。
 
 ### migrate-key
 
-アカウントのPQC鍵をあるアルゴリズムから別のアルゴリズムへ移行します。現在のアルゴリズムに対する移行が有効になっている必要があります(ガバナンスによって開始されます)。両方の鍵が移行バイト列に署名します。
+アカウントのPQC鍵をあるアルゴリズムから別のアルゴリズムへ移行します。現在のアルゴリズムに対する移行が有効になっている必要があります(ガバナンスによって開始されます)。両方の鍵が移行バイト列に署名し、トランザクション自体にもあなたのハイブリッド署名が必要です(`--generate-only`、続いて `tx pqc cosign`)。アカウントが以前に使用した鍵は拒否されます(コード 232)。
 
 ```bash
-qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> [flags]
+qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> --generate-only [flags] > m.json
+qorechaind tx pqc cosign m.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
 
 ### recover-key
@@ -295,6 +319,8 @@ echo "<mnemonic>" | qorechaind tx pqc rotate-key --from mykey --old-derivation b
 | `--new-key-out`    | string | 何かを送信する前に、新しい秘密鍵を `<home>/pqc/<name>.dilithium` として保存する      |
 | `--sign-bytes`     | string | `auto`(デフォルト)、`v1`、または `v2`                                                |
 
+v3.2.3 以降、ローテーションは、ポスト量子の保護を提供しない新しい鍵(コード 230)と、アカウントが以前に使用した鍵(コード 232)を拒否します。アカウントはローテーションで手放した鍵を記憶しているため、ローテーションを再生して古い鍵に戻すことはできません。
+
 ### open-evm-window
 
 EVMレーンは、登録済みのPQC鍵を保持し、**かつ**認可ウィンドウが開いているアカウントからのトランザクションのみを受け付けます。ウィンドウはCosmosレーンのメッセージで開くため、Ethereumウォレットでは提供できないPQC署名がそこに含まれます。ウィンドウ内では、通常のMetaMaskトランザクションがそのまま機能します。
@@ -313,14 +339,43 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 ウィンドウを開くと、既存のウィンドウは置き換えられます。`qorechaind query pqc evm-window <address>` で確認できます。
 
+**範囲を限定したウィンドウ(メインネット v3.2.3 以降)。** 価値の上限はネイティブQORのみを数えます。トークン送金、承認、その他のコントラクト呼び出しは価値ゼロとなり、上限には数えられません。任意の2つのフラグで、ウィンドウが受け付ける内容を絞り込めます。
+
+| フラグ                | 効果                                                                                                                       |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--native-only`     | 通常のQOR送金のみを受け付ける: calldataなし、コントラクト作成なし、コードを持つ宛先なし、EIP-7702認可なし |
+| `--allowed-targets` | これらの宛先のみを受け付ける(カンマ区切りの `0x` アドレス)。コントラクト作成は拒否される                                  |
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
+```
+
+どちらのフラグも付けずに開いたウィンドウは、従来どおりの内容を受け付けます。範囲は、ウィンドウのクエリで `native_only` と `allowed_targets` として報告されます。
+
 ### close-evm-window
 
-たとえば従来型の鍵が漏洩した疑いがある場合に、ウィンドウをただちに閉じます。
+たとえば従来型の鍵が漏洩した疑いがある場合に、ウィンドウをただちに閉じます。保留中のEIP-7702委任の同意も取り消します。
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > c.json
 qorechaind tx pqc cosign c.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
+
+### authorize-evm-delegation と clear-evm-delegation
+
+アカウントのEIP-7702委任は、あなた自身のポスト量子の同意がある場合にのみ有効になります(メインネットでは v3.2.2 以降)。`authorize-evm-delegation` は、1つの委任先アドレスに対するその同意を記録します。同意は1回限りで、指定したブロック数の経過後に失効し、`close-evm-window` によって取り消されます。`clear-evm-delegation` は、すでに設定されている委任を削除します。どちらもハイブリッド署名のCosmosレーンのメッセージです(`--generate-only`、続いて `tx pqc cosign`)。
+
+```bash
+qorechaind tx pqc authorize-evm-delegation <delegate_0x_address> <blocks> --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+qorechaind tx pqc clear-evm-delegation --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+```
+
+`delegate` にゼロアドレスを指定すると、委任の解除に同意したことになります。状態は `qorechaind query pqc evm-delegation-consent <address>` で確認できます。
+
+PQC鍵のメッセージ(`register-key`、`register-key-v2`、`rotate-key`、`migrate-key`)は、いずれも `authz` を通じてアカウントの代理として送信することはできません(メインネット v3.2.3 以降)。
 
 ---
 
@@ -332,7 +387,9 @@ qorechaind tx lightnode register <node_type> <version> [--capabilities <csv>] --
 qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-id qorechain-vladi
 ```
 
-`node_type` は `sx` または `ux` です。登録には有効な `lightnode_operator` ライセンスが必要で、ライトノード報酬プログラムへの登録は**まだ開始されていません**。その他のコマンド: `tx lightnode heartbeat`、`tx lightnode claim-rewards`、`tx lightnode deregister`。[ライトノード](/light-node/overview) を参照してください。
+`node_type` は `sx` または `ux` です。登録には、ネットワークのライセンス権限者が付与する有効な `lightnode_operator` ライセンスが必要です。プログラムの現在のステータスについては[ライトノード](/light-node/overview)を参照してください。その他のコマンド: `tx lightnode heartbeat`、`tx lightnode claim-rewards`、`tx lightnode deregister`。
+
+v3.2.3 以降、ノードが蓄積できる報酬は**月ごと**に上限が設けられています(`GET /qorechain/lightnode/v1/reward_pool` の `max_reward_per_month_per_node`、30日あたり2,000 QOR)。これはブロック時間とアップタイムに応じて按分されるため、上限はブロック生成の速さに左右されなくなりました。上限は天井であり、約束された金額ではありません。テストネット(v3.2.4、**テストネット専用**)では、ノードの上限は前回の精算ではなく、そのノード自身の登録時点から始まります。
 
 ---
 
@@ -354,14 +411,21 @@ qorechaind tx bridge withdraw <destination_chain> <destination_address> <asset> 
 qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [flags]
 ```
 
-### update-chain-config / set-verifier-bootstrap
+### register-validator / attest
 
-管理用です(`bridge_admin` または `qcb_bridge` ライセンス)。
+ブリッジバリデータ用のメッセージです。`register-validator <pqc_pubkey_hex> <supported_chains_csv>` はアテステーション任務のためにバリデータを登録し、`attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` はアテステーションを送信します。どちらのネットワークにも、ブリッジバリデータは登録されていません。テストネット(v3.2.4、**テストネット専用**)では、ブリッジバリデータの登録には所有証明と、他のブリッジバリデータが使用していない鍵も必要です。
+
+### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
+
+管理用です(`bridge_admin` または `qcb_bridge` ライセンス。サーキットブレーカーの上限はガバナンスでも設定できます)。
 
 ```bash
 qorechaind tx bridge update-chain-config <chain_id> [--status active|paused|pending] [--verifier <kind>] [--contract <addr>] [--confirmations <n>] [--architecture <a>] [--lock-event-sig <hex>] [flags]
 qorechaind tx bridge set-verifier-bootstrap <kind> <chain_id> [flags]
+qorechaind tx bridge update-circuit-breaker-limits <chain_id> <max_single_transfer> <daily_limit> [flags]
 ```
+
+上限は基本単位で、`0` は無制限を意味します。価値を移動するのは、ステータスがちょうど `active` のルートだけです。
 
 ---
 
@@ -375,11 +439,65 @@ qorechaind tx ibc-transfer transfer transfer <channel> <receiver> <amount> [flag
 
 ---
 
+## amm
+
+ネイティブAMMのメッセージです。執筆時点ではどちらのネットワークにもプールが存在しないため、これらのコマンドはまだ作用する対象がありません。
+
+```bash
+qorechaind tx amm create-pool <pool_type> <deposit_a> <deposit_b> [flags]     # pool_type: constant_product | stable_swap; deposits as coins, e.g. 1000000uqor
+qorechaind tx amm add-liquidity <pool_id> <amount_a> <amount_b> <min_lp_out> [flags]
+qorechaind tx amm remove-liquidity <pool_id> <lp_amount> <min_a> <min_b> [flags]
+qorechaind tx amm swap-exact-in <pool_id> <token_in> <denom_out> <min_out> [flags]
+qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flags]
+```
+
+v3.2.2 以降、スワップではプールの両方のデノミネーションを指定する必要があり、`max_swap_impact_bps` が強制され、プロトコル手数料はバーンモジュールを経由して処理されます。
+
+---
+
+## gasabstraction
+
+```bash
+qorechaind tx gasabstraction fund-float <amount> [flags]
+```
+
+ネイティブトークン(例: `1000000uqor`)を手数料変換フロートに移します。これは、手数料が他の受け入れ対象トークンで支払われた際に、モジュールがバリデータへの支払いに使うQORの準備金です。どのトークンを受け入れるかはガバナンスが決定します。両ネットワークとも、設定ではネイティブの `uqor` のみを受け入れるため、変換は行われません。`qorechaind query gasabstraction accepted-tokens` で確認できます。
+
+---
+
+## crossvm
+
+```bash
+qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> [--funds <coins>] [--async] [flags]
+```
+
+`call` は、サーキットブレーカーによりメインネットで無効化されており([下記](#disabled-messages)を参照)、テストネットでは対象のレーンが利用可能な場合にのみ機能します。キューに入れられた呼び出し(`--async`)が失敗しても副作用は残らず、`Failed` レコードのみが残ります(v3.2.3 以降)。また、導出された送信元レーンが対象レーンと同じ呼び出しは拒否されます。[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。
+
+---
+
+## stakingtier (テストネット専用) {#stakingtier}
+
+:::note テストネット専用
+ステーキングティアモジュールは **v3.2.4** リリースで登場し、`qorechain-diana` テストネットに適用されました。メインネットには**ありません**。メインネットのアップグレードは現時点では提案されているだけです(ガバナンス提案 13、ブロック高 3,742,566)。適用されるまでは、これを前提にメインネット向けのツールを構築しないでください。
+:::
+
+任意の期間ロック付き委任です。委任者は既存の委任の一部を3、6、または12か月ロックでき、後でモジュールがそれに対してクレジットするボーナスをクレームできます。ロックは委任の上に載るレコードであり、委任された資金はバリデータに残ります。
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount_uqor> <months> [flags]    # months: 3, 6 or 12
+qorechaind tx stakingtier unlock-early <lock_id> [flags]
+qorechaind tx stakingtier claim [flags]
+```
+
+ロックはステーキングのメッセージサーバーによって強制されるため、`authz`、グループ、またはコントラクトを通じたアンデリゲートにも適用されます。ロックを早期に終了すると、未払いのボーナスは失われ、ペナルティがバーンされます。最小ロック額とその他のパラメータは `GET /qorechain/stakingtier/v1/params` にあります。他のすべてのCosmosレーンのトランザクションと同様に、これらにもハイブリッド共同署名(`--generate-only`、続いて `tx pqc cosign`)と、余裕のあるガスリミット(例: `--gas 900000 --fees 90000uqor`)が必要です。
+
+---
+
 ## rdk
 
 ```bash
 qorechaind tx rdk create-rollup <rollup_id> <profile> <stake_amount> [--vm evm|cosmwasm|svm|custom] [flags]
-qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [flags]
+qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [--prev-state-root <hex>] [--tx-count <n>] [--data-hash <hex>] [--withdrawals-root <hex>] [--validator-set-hash <hex>] [--anchor-signature <hex>] [flags]
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> --proof <hex> [flags]
 qorechaind tx rdk pause-rollup <rollup_id> <reason> [flags]
 qorechaind tx rdk resume-rollup <rollup_id> [flags]
@@ -388,6 +506,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 ```
 
 `profile` は `defi`、`gaming`、`nft`、`enterprise`、または `custom` です。`stake_amount` はuqor単位です(現在の最小値は `query rdk config` にあります)。プロファイルのプリセットが決済、シーケンサー、DA、ガスモデルを提供し、コマンドラインで上書きできるのはVMのみです。`finalize-batch` コマンドはありません。
+
+`--anchor-signature` は、**v2のアンカー署名バイト列**に対するロールアップ作成者のML-DSA署名です。これを付けると、バッチはマルチレイヤーモジュールにもアンカーされます。署名すべき正確なバイト列は `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>` で出力できます。値は `submit-batch` のフラグと一致していなければなりません。v3.2.3 以降、モジュールは**ロールアップごとのエスクロー台帳**を保持します。引き出しはそのロールアップの台帳が保持している範囲からのみ支払われ、デノミネーション、正の金額、証明の深さ、兄弟ノードのサイズが検査されます。ロールアップを停止すると、その台帳に残っているものだけが返金され、停止したロールアップはそれ以上の引き出しを支払いません。執筆時点では、どちらのネットワークにもロールアップは存在しません。
 
 ---
 
@@ -413,10 +533,12 @@ qorechaind tx multilayer update-layer-status <layer_id> <new_status> <reason> [f
 | コマンド                                                  | 理由                                                                                           |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `tx wasm store`、`tx wasm instantiate`、`instantiate2`    | アップロードとインスタンス化の権限は両ネットワークで `Nobody` であり、これらのメッセージタイプはサーキットブレーカーのリストにも含まれています |
-| `tx crossvm call`                                         | サーキットブレーカーによりメインネットで無効                                                   |
+| `tx crossvm call`                                         | サーキットブレーカーによりメインネットで無効。テストネットでは有効                             |
+| `tx vesting create-vesting-account`、`create-periodic-vesting-account`、`create-permanent-locked-account` | メインネットのサーキットブレーカーのリストに含まれています。v3.2.3 以降は、いずれにしてもベスティングアカウントは署名者自身に対してしか作成できません |
+| PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | ガバナンス提案のメッセージ(CLIコマンドなし)で、メインネットのサーキットブレーカーのリストに含まれています。v3.2.3 以降、ガバナンスでも最後の有効な署名アルゴリズムは削除できません |
 | `tx svm deploy-program`、`execute`、`create-account`      | SVMトランザクションレーンはネットワーク全体で無効                                              |
 | `tx abstractaccount create`、`register-authenticator`、`execute-cosmos`、`execute-evm` | アブストラクトアカウントモジュールはオフになっています(`query abstractaccount config` は `enabled: false` を示します) |
 | `tx rlconsensus *`、`tx amm pause-pool`/`resume-pool`      | ガバナンス権限のメッセージ。メインネットのサーキットブレーカーのリストにも含まれています       |
-| `tx license *`                                            | 権限者専用(ライセンスはネットワークのライセンス権限者によって付与されます)                     |
+| `tx license *`                                            | 権限者専用(ライセンスはネットワークのライセンス権限者によって付与されます。v3.2.3 以降、ガバナンスは `MsgUpdateAuthority` でその権限者を置き換えられます) |
 
 現在の一覧は `qorechaind query circuit disabled-list` で確認できます。

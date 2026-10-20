@@ -31,7 +31,11 @@ Apelurile cross-VM sunt disponibile doar în măsura în care este disponibilă 
   public nu le servește. Citește în schimb mesajele cu
   `connectQueryClients(rpc).crossvm`.
 - Ca orice tranzacție pe calea Native, un apel cross-VM trebuie să poarte semnătura
-  hibridă (vezi [Conturi și semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  hibridă: conectează clientul de semnare cu perechea de chei a contului
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0), astfel încât clientul
+  cross-VM să semneze hibrid (vezi
+  [Conturi și semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  Versiunile anterioare lui 0.9.0 îl semnează clasic, iar rețelele publice îl refuză.
 :::
 
 ## Apeluri cross-VM unificate
@@ -47,7 +51,7 @@ clientului este adresa `TxClient`-ului conectat; `sourceVm` are valoarea implici
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

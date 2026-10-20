@@ -141,7 +141,7 @@ Filtrez par type d'événement pour ne recevoir que les événements d'un module
 
 ## Référence des événements de module
 
-Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.0.
+Les événements sont émis comme des événements standard du moteur de consensus. Abonnez-vous avec une requête `tm.event='Tx'` filtrée sur le type d'événement et l'attribut (par exemple `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Les événements au niveau du bloc (ceux émis par la logique de fin de bloc, comme les événements PRISM ci-dessous) sont délivrés avec `tm.event='NewBlock'`, et non `Tx`. Les noms et attributs ci-dessous sont ceux de la version de chaîne v3.2.3 (mainnet) ; les événements qui n'existent que sur le testnet v3.2.4 sont signalés.
 
 :::note Quels événements verrez-vous réellement
 Beaucoup de ces modules sont inactifs sur les réseaux publics : le bridge n'est pas en production, aucune couche multilayer ni aucun rollup n'est encore enregistré, et xQORE n'est pas utilisable. Leurs événements sont définis mais ne se déclenchent pas tant qu'il n'y a pas d'activité. Les événements d'observation et de récompense PRISM (`rl_observation_collected`, `rl_reward_computed`) sont émis environ tous les 10 blocs sur les deux réseaux.
@@ -157,8 +157,11 @@ Beaucoup de ces modules sont inactifs sur les réseaux publics : le bridge n'est
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Émis lorsqu'une clé PQC est enregistrée                 |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Émis lorsqu'une clé PQC est renouvelée                    |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Émis lorsqu'une clé est migrée vers un nouvel algorithme    |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Émis lorsqu'une fenêtre d'autorisation de la voie EVM s'ouvre  |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value` ; `native_only` et `allowed_targets` lorsque la fenêtre a une portée (v3.2.3) | Émis lorsqu'une fenêtre d'autorisation de la voie EVM s'ouvre  |
 | `pqc_evm_window_closed`     | `address`                                                 | Émis lorsqu'une fenêtre d'autorisation de la voie EVM se ferme |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | Émis lorsqu'un compte enregistre son consentement à une délégation EIP-7702 (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | Émis lorsque la délégation EIP-7702 d'un compte est effacée (v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id`, et `name`/`category`, `old_status`/`new_status` ou `reason` | Modifications du registre d'algorithmes effectuées par la gouvernance |
 
 Les clés PQC sont enregistrées explicitement par une transaction d'enregistrement ; il n'existe pas d'événement d'enregistrement automatique.
 
@@ -195,6 +198,8 @@ Les clés PQC sont enregistrées explicitement par une transaction d'enregistrem
 | Type d'événement  | Attributs clés                                              | Description                                      |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Émis lorsqu'un nouveau rollup est enregistré          |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id` et un motif lorsqu'il est fourni | Émis lorsqu'un rollup est mis en pause, repris ou arrêté |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index` (et `fraud_upheld` lors d'une résolution) | Émis lorsqu'un lot est contesté, que la contestation est résolue, ou qu'un lot est rejeté |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Émis lorsqu'un lot de règlement est soumis     |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | Émis lorsqu'un lot franchit sa fenêtre de contestation |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Émis lorsqu'un blob DA est stocké                 |
@@ -207,6 +212,29 @@ Les clés PQC sont enregistrées explicitement par une transaction d'enregistrem
 | `burn`                   | `source`, `amount`                                        | Émis lorsque des jetons sont brûlés définitivement          |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | Émis lorsqu'un burn par palier du nombre de transactions est exécuté |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Émis lorsque la gouvernance libère une partie de la part bloquée des stakers |
+
+### Modules Inflation, Gas Abstraction, Licence, Light Node et IA
+
+| Type d'événement | Attributs clés | Description |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | Émis lorsque la gouvernance modifie les paramètres d'émission |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | Émis lorsque des frais payés dans un autre token accepté sont convertis, et lorsque le float est réapprovisionné (aucun ne se déclenche tant que seul l'`uqor` est accepté) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount` ; `accepted_tokens`, `block_conversion_cap` | Émis lorsque le float est alimenté et lorsque la gouvernance met à jour la configuration |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | bénéficiaire et fonctionnalité | Cycle de vie des licences |
+| `license_authority_updated` | `new_authority` | Émis lorsque la gouvernance remplace l'autorité de licence (v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Événements du cycle de vie et des récompenses des light nodes |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Émis lorsque la gouvernance met à jour la configuration du filtrage IA |
+
+### Module Staking Tiers (testnet uniquement)
+
+Ces événements n'existent que sur le testnet `qorechain-diana` (v3.2.4) ; le mainnet n'a pas encore ce module (la proposition de gouvernance 13 appliquerait la v3.2.4 à la hauteur 3 742 566).
+
+| Type d'événement | Attributs clés | Description |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Un verrouillage de délégation a été créé |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un verrouillage a été terminé de façon anticipée, ou a atteint son terme |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount` ; totaux de règlement | Un bonus a été réclamé ; le pool a été réglé |
+| `staking_tier_params_updated` | paramètres | La gouvernance a modifié les paramètres du module |
 
 ### Module xQORE
 

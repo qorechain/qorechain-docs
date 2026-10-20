@@ -17,17 +17,18 @@ QoreChain's Layer 1 rather than the tooling:
 - a **triple-VM** runtime with cross-VM calls.
 
 :::caution Early stage: read the status column
-No rollup has been created on either network yet. The table below states what
-works today. If you only need a generic optimistic/zk rollup, any kit will do;
+No rollup has been created on either network yet (checked 20 October 2026). The
+table below states what works today; the limits of the released 0.5.0 clients are
+collected in [RDK 0.5.0 limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
 the capabilities here are what the RDK adds on top, in TypeScript, Python, Go,
 Rust, and Java.
 :::
 
 | Capability | Status | What it relies on |
 | --- | --- | --- |
-| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet |
+| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, and the 0.5.0 verifier cannot complete its chain check against the live networks |
 | **QCAI Rollup Copilot** | 🟡 Not available on the public endpoints yet | On-chain AI/RL advisory services that the public endpoints do not expose today |
-| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated, and CosmWasm upload is closed |
+| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated, a 0.5.0 encoder that does not match the chain's layout, and CosmWasm upload is closed |
 
 ---
 
@@ -52,8 +53,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
+In 0.5.0, `verifySettlementReceipt` checks against the chain and refuses to say
+`valid` without a `client`, but its chain check does not complete against the live
+networks yet, so it fails closed rather than reporting a genuine receipt as valid.
 See [Quantum-safe settlement receipts](/rollups/settlement-receipts) for what a
-receipt does and does not prove.
+receipt does and does not prove and for the exact limits.
 
 ---
 
@@ -87,18 +91,34 @@ From the CLI: `qorollup advise my-rollup`. See [QCAI Copilot](/rollups/qcai-copi
 The RDK includes helpers that encode a call from an EVM (Solidity) contract to a
 **CosmWasm** contract through a fixed precompile at `0x…0901`. That precompile is
 **not active** on mainnet or testnet (see
-[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)).
+[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)):
+`eth_getCode` for `0x…0901` returns `0x` on both, and a contract call to it
+succeeds with no effect.
+
+The 0.5.0 helper `encodeCrossVmCalldata` builds calldata for
+`executeCrossVMCall(string,bytes)`, but the node decodes
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, so its
+output does not match what the chain reads. Encode the call with the chain's layout
+instead (shown here with viem; `targetVM` 1 is CosmWasm, the only supported target):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 Or directly from Solidity on your rollup:
@@ -110,12 +130,16 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+`ok` alone proves nothing today: while the precompile has no code, the call returns
+success with empty data and executes nothing, so confirm the effect on the target
+contract.
 
 Scaffold a starter with `npm create qorechain-rollup my-app -- --template multivm-rollup`.
 (EVM↔CosmWasm only; SVM cross-calls are separate.)

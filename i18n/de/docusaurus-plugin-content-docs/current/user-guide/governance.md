@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 29. Juni 2026 live auf der v3.2-Linie (Node-Release **v3.2.1**; das Testnet läuft mit **v3.2.2**) — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live auf Release **v3.2.3**; das Testnet läuft mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -26,10 +26,10 @@ Vorschläge werden anhand des **gebondeten Stakes** ausgezählt: Jedes QOR, das 
 | Regel     | Aktueller Wert | Bedeutung                                                                     |
 | --------- | ---------- | ----------------------------------------------------------------------------- |
 | Quorum    | 33.4%      | Anteil des gebondeten Stakes, der abstimmen muss                              |
-| Schwellenwert | 50%   | Anteil der „Ja"-Stimmen unter den nicht enthaltenen Stimmen, der zur Annahme nötig ist |
-| Veto      | 33.4%      | Erreicht „Nein mit Veto" diesen Anteil, wird der Vorschlag abgelehnt und seine Einzahlung verbrannt |
+| Schwellenwert | 50%   | Anteil der „Ja“-Stimmen unter den nicht enthaltenen Stimmen, der zur Annahme nötig ist |
+| Veto      | 33.4%      | Erreicht „Nein mit Veto“ diesen Anteil, wird der Vorschlag abgelehnt und seine Einzahlung verbrannt |
 
-Diese Werte wurden am 14. Oktober 2026 von der Chain ausgelesen; bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
+Diese Werte wurden am 20. Oktober 2026 vom Mainnet ausgelesen (und sind im Testnet dieselben); bestätige sie mit `qorechaind query gov params`, da die Governance sie ändern kann.
 
 :::note QDRW ist entworfen, aber nicht aktiv
 Das Design von QoreChain sieht eine Stimmgewicht-Formel **Quadratic Delegation-Reputation Weighted (QDRW)** vor, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, die große Stakes dämpfen und Reputation gewichten würde. Sie ist im Modul `x/qca` implementiert, aber auf beiden Netzwerken **abgeschaltet** (`qdrw_enabled` ist in `qorechaind query qca config` `false`) und nicht Teil der Governance-Auszählung, beeinflusst also heute keine Abstimmung. xQORE ist ebenfalls noch nicht live (siehe [xQORE-Staking](/user-guide/xqore-staking)).
@@ -161,15 +161,21 @@ qorechaind query gov params
 
 Wichtige Parameter sind unter anderem:
 
-| Parameter             | Beschreibung                                                                    | Aktueller Wert (14. Okt. 2026) |
+| Parameter             | Beschreibung                                                                    | Aktueller Wert (20. Okt. 2026) |
 | ---------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
 | `min_deposit`          | Mindesteinzahlung, damit ein Vorschlag in die Abstimmung eintritt                   | 10 QOR (`10000000uqor`)  |
 | `max_deposit_period`   | Zeitfenster zum Erreichen der Mindesteinzahlung                                     | 2 Tage                   |
 | `voting_period`        | Dauer der Abstimmungsphase, sobald ein Vorschlag aktiv ist                          | 2 Tage                   |
 | `quorum`               | Mindestbeteiligung, die für eine gültige Abstimmung erforderlich ist                | 0.334                    |
-| `threshold`            | Mindestanteil an „Ja"-Stimmen zur Annahme (Enthaltungen ausgenommen)                | 0.5                      |
-| `veto_threshold`       | Mindestanteil an „Nein mit Veto"-Stimmen, um abzulehnen und die Einzahlung zu verbrennen | 0.334                    |
+| `threshold`            | Mindestanteil an „Ja“-Stimmen zur Annahme (Enthaltungen ausgenommen)                | 0.5                      |
+| `veto_threshold`       | Mindestanteil an „Nein mit Veto“-Stimmen, um abzulehnen und die Einzahlung zu verbrennen | 0.334                    |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Abstimmungsdauer, Annahme-Schwellenwert und Einzahlung für beschleunigte Vorschläge | 1 Tag / 0.667 / 50 QOR |
+
+---
+
+## Governance im Mainnet bisher {#mainnet-history}
+
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 11 wurden im Oktober 2026 im Mainnet angenommen, und Vorschlag 12 befand sich zum Zeitpunkt der Erstellung in der Abstimmungsphase; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

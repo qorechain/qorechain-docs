@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain; native, EVM ve SVM yürütme ortamlarında birden fazla cüzdan türünü destekler. Kullanım senaryonuza uygun cüzdanı seçin.
 
 :::note
-Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 29 Haziran 2026'dan beri yayında) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
+Aşağıdaki değerler hem **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri yayında, v3.2.3 sürümü) hem de **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**, v3.2.4 sürümü) kapsar. Her iki ağın herkese açık uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasında listelenmiştir.
 :::
 
 ## QoreX (önerilir) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-PQC anahtar dosyasını anımsatıcı ifadeniz kadar dikkatle yedekleyin. (Bir anahtar, anımsatıcı ifadeden `qorechaind tx pqc recover-key` ile yeniden türetilebilir ve `tx pqc rotate-key` ile değiştirilebilir.) QoreX ve QoreChain SDK anahtarı sizin yerinize kaydeder. İmzalanmış eksiksiz bir gönderim için [İlk İşlem](/getting-started/first-transaction#register-pqc-key) sayfasına bakın.
+v3.2.3'ten beri `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...` ile kayıt yaparak isteğe bağlı bir sahiplik kanıtı ekleyebilirsiniz; zincir ayrıca zayıf, dejenere veya daha önce kullanılmış anahtarları reddeder. PQC anahtar dosyasını anımsatıcı ifadeniz kadar dikkatle yedekleyin. (Bir anahtar, anımsatıcı ifadeden `qorechaind tx pqc recover-key` ile yeniden türetilebilir ve `tx pqc rotate-key` ile değiştirilebilir.) QoreX ve QoreChain SDK anahtarı sizin yerinize kaydeder. İmzalanmış eksiksiz bir gönderim için [İlk İşlem](/getting-started/first-transaction#register-pqc-key) sayfasına bakın.
 
 ### SDK ile Hibrit İmzalama
 

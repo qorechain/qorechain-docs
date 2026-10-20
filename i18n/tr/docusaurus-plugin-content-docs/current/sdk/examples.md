@@ -62,9 +62,9 @@ yayınlayın: türet → imzala → simüle et → ücreti tahmin et → `bankSe
 Erişilebilir bir konsensüs RPC'si ile REST ve fonlanmış bir hesap gerektirir.
 Bu örnek yalnızca **klasik** imzayla imzalar; bu nedenle yerel veya geliştirme
 düğümüne karşı çalışır, ancak her Native yol işleminde hibrit imza isteyen
-mainnet ve testnet tarafından reddedilir. Herkese açık ağlar için
-[Hızlı Başlangıç](/sdk/quickstart#send-qor) sayfasındaki hibrit gönderimi
-kullanın.
+mainnet ve testnet tarafından reddedilir. Herkese açık ağlar için hesabın
+anahtar çiftiyle bağlanın: `client.connectTx(signer, { pqcKeypair })`
+(SDK 0.9.0), [Hızlı Başlangıç](/sdk/quickstart#send-qor) sayfasındaki gibi.
 
 ```ts
 import {

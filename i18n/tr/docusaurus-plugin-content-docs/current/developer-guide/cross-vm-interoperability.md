@@ -15,7 +15,7 @@ VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ö
 * `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
 * **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
 * **CosmWasm yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir CosmWasm sözleşmesi bulunmamaktadır.
-* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın).
+* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir.
 
 Modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz; mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
 :::
@@ -51,7 +51,7 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin CosmWasm sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
 
 :::warning Ana ağda veya test ağında etkin değil
-CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. Mevcut haliyle etkinleştirilmeyecektir; çağıran sözleşmedeki bir geri alma (revert) CosmWasm tarafını da geri alacak, değer transferleri reddedilecek, EVM'den EVM'e yeniden giriş (re-entry) engellenecek ve VM'ler arası devre kesici uygulanacak şekilde yeniden inşa edilmektedir. Aşağıdaki örnek yalnızca amaçlanan biçimi gösterir. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) CosmWasm tarafını da geri alır, yalnızca izin listesindeki CosmWasm hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir yükseltme onu etkin listeye ekledikten sonra çalışır. Aşağıdaki örnek yalnızca amaçlanan biçimi gösterir. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Örneği
@@ -78,7 +78,7 @@ contract CrossVMCaller {
 }
 ```
 
-Etkinleştirildiğinde, önderlenmiş işlev CosmWasm sözleşmesini hemen yürütür ve sonucu döndürür. Mevcut düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözer; ABI yeniden inşa ile birlikte değişebilir. Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
+Etkinleştirildiğinde, önderlenmiş işlev CosmWasm sözleşmesini hemen yürütür ve sonucu döndürür. Mevcut düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözer; ABI etkinleştirmeden önce yine de değişebilir. Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 
 ---
 
@@ -88,17 +88,17 @@ Diğer VM'ler arası çağrılar `MsgCrossVMCall` işlemini kullanır. Zincir, k
 
 ### CLI
 
-`tx crossvm call`, hedef VM'i (`evm`, `cosmwasm` veya `svm`) ve hedef sözleşmeyi konumsal argümanlar olarak, yükü ise hex olarak alır:
+`tx crossvm call`, hedef VM'i (`evm`, `cosmwasm` veya `svm`) ve hedef sözleşmeyi konumsal argümanlar olarak, yükü ise hex olarak alır. CLI kaynak VM'i sormaz: zincir, çağıranın şeridini durumdan türetir ve bildirilen alanı yok sayar (CLI, mesajın kendi doğrulamasından geçmesi için bir yer tutucu doldurur):
 
 ```bash
 qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Diğer bayraklar: `--funds <coins>` (yalnızca CosmWasm hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur.
+Diğer bayraklar: `--funds <coins>` (yalnızca CosmWasm hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur. Çağıranın kendi şeridine yapılan bir çağrı reddedilir (v3.2.3'ten beri).
 
-:::caution Ana ağda devre dışı ve CLI biçiminin düzeltilmesi gerekiyor
-`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır. Mevcut sürüm ikili dosyalarında `tx crossvm call` ayrıca mesajın kendi doğrulamasından geçemeyen bir mesaj oluşturur (kaynak VM'i boş bırakır); bu nedenle komut burada yalnızca başvuru amacıyla belgelenmiştir.
+:::caution Ana ağda devre dışı
+`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır; bu nedenle komut bugün orada başarılı olamaz. (v3.2.3 öncesi sürüm ikili dosyaları ayrıca, kaynak VM boş olduğu için kendi doğrulamasından geçemeyen bir mesaj oluşturuyordu; v3.2.3 ikili dosyası bunu düzeltir.) Test ağında mesaj etkindir, ancak CosmWasm ve SVM hedefleri kullanılamaz (yukarıya bakın); bu nedenle yalnızca bir EVM hedefine ulaşılabilir.
 :::
 
 ---
@@ -122,6 +122,8 @@ Submitted --> Pending --> Executed
 | **Executed**  | Hedef sözleşme başarıyla çağrıldı; yanıt kaydedildi       |
 | **Failed**    | Hedef sözleşme yürütmesi geri alındı; hata kaydedildi     |
 | **Timed Out** | Mesaj, yürütülmeden `queue_timeout_blocks` değerini aştı  |
+
+v3.2.3'ten beri başarısız olan kuyruğa alınmış bir çağrı bütünüyle geri alınır: yalnızca `Failed` kaydı kalır ve başarısız bir CosmWasm çağrısına eklenen fonlar artık sözleşmeye aktarılmaz. Modül devre dışıyken veya `MsgCrossVMCall` devre kesici tarafından kapatılmışken kuyruk **yürütülmez**: kuyruğa alınmış mesajlar, anahtar önceden açılmadıkça bekleyen durumda kalır ve zaman aşımında sona erer.
 
 ---
 

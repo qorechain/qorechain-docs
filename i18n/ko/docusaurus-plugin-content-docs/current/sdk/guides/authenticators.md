@@ -43,8 +43,9 @@ Phantom **ed25519** 키 또는 MetaMask / EVM **secp256k1** 키 — 가 최소 �
                                                                   spend FROM canonical account
 ```
 
-릴레이어는 소유자와 **다른** 계정이므로 해당 계정의 EVM 논스를 증가시키지
-않습니다.
+릴레이어는 소유자와 **다른** 계정입니다. 인증자가 서명하는 논스는 계정의 EVM
+논스가 아니라, 체인이 관리하는 연결된 키 자체의 시퀀스입니다([논스(Nonce)](#nonces)
+참조).
 
 ## 세 가지 레인
 
@@ -244,7 +245,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -272,6 +274,21 @@ sha256( "qorechain-evm-auth-v1"
 `to`는 `0x`-hex 수신자, `value`는 10진수 wei 문자열, `data`는 원시
 calldata입니다.
 
+**EVM 레인, v2 (체인 v3.2.3)** — `evmAuthSignBytesV2({ …, gasLimit })`는 호출의
+가스 한도를 덧붙이므로, 릴레이어가 유효한 서명을 다른 한도로 재사용할 수
+없습니다. 체인은 블록마다 정확히 한 가지 형식만 검증합니다. v3.2.3 업그레이드
+이전에는 v1, 그 이후에는 v2입니다. `resolveEvmAuthDigestVersion({ rest })`는
+네트워크가 v3.2.3을 적용한 뒤에는 `"v2"`를, 그 전에는 `"v1"`을 반환하며,
+`buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm`은 `digestVersion`을
+받습니다(기본값은 `"v1"`이므로 v3.2.3 이상의 네트워크에서는 `"v2"`를
+전달하세요). `gasLimit`은 0이 아니어야 합니다.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Native 레인** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 는 32바이트 다이제스트를 반환합니다:
 
@@ -290,24 +307,20 @@ sha256( "qorechain-cosmos-auth-v1"
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## 논스(Nonce)
+## 논스(Nonce) {#nonces}
 
-- `MsgExecuteEVM.nonce` = 계정의 **현재 EVM 논스** (릴레이어는 다른 계정이라
-  소유자의 논스를 증가시키지 않으므로 1을 더하면 **안 됩니다**).
-- `MsgExecuteCosmos.nonce` = `(account, pubkey)`에 대한 **인증자별 시퀀스** —
-  계정 자체의 시퀀스와는 별개인 스토어 카운터로, Native 레인 지출이 성공할
-  때마다 증가합니다.
+두 레인 모두 `(account, pubkey)`에 대한 **인증자별 시퀀스**를 사용합니다. 이는
+체인이 연결된 키마다 관리하는 카운터로, 0에서 시작하여 실행이 성공할 때마다
+증가합니다.
 
-논스를 잘못 지정하면 리플레이 거부가 발생합니다
-(`abstractaccount` 코드 11, 아래 참조).
+- `MsgExecuteEVM.nonce`는 계정의 EVM 논스(`eth_getTransactionCount`)가 **아니라**
+  이 카운터입니다.
+- `MsgExecuteCosmos.nonce`도 같은 종류의 카운터입니다.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+아직 이 카운터를 조회하는 쿼리가 없으므로 연결된 키별로 직접 추적하세요.
+새로 연결된 키는 0이고, 체인이 수락한 실행마다 +1입니다. 체인의 현재 카운터가
+아닌 값을 보내면 리플레이 거부(`abstractaccount` 코드 11, 아래 참조)가
+발생합니다.
 
 ## 권한 스키마
 

@@ -56,6 +56,10 @@ All four actions live on the **Wallet** page (`/wallet`), not on the Validators 
 8. The panel now shows **Approve it in QoreX** with an **Open QoreX** link and a request ID. QoreX will show you the validator and amount before signing — nothing is sent until you approve it there. If the QoreX browser extension is detected, an **Approve in the browser extension** button is offered as well.
 9. Open QoreX (the link/deeplink does this) and approve the delegation. QoreX builds, signs, and broadcasts the transaction; the dashboard never sees your key.
 
+:::note Time-locked staking is testnet only
+An optional time-locked staking module exists on the testnet (chain v3.2.4) only — see [Time-locked staking](/user-guide/staking-and-delegation#time-locked-staking). It is not on mainnet yet (mainnet governance proposal 13 would apply it at height 3,742,566), and neither the Dashboard nor QoreX has a screen for it. Delegations made here are ordinary delegations with no lock-in; the only wait is the 21-day unbonding on the way out.
+:::
+
 ### Redelegate {#redelegate}
 
 The dashboard itself does not have a dedicated Redelegate panel — but you don't need one anymore. **QoreX itself now moves stake between validators directly** (app 1.0.8+ and extension 0.2.6+): no 21-day unbonding wait, no lost rewards, and it can even split a move across several destination validators in one transaction. Open **Stake** in QoreX, tap the validator you want to leave, and choose where the stake should go — see [Move stake between validators](/qorex/portfolio-and-staking#move-stake) for the full walkthrough. This is a better answer than anything the dashboard's own request contract could offer, so use QoreX directly for this rather than the workaround below.

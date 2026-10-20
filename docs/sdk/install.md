@@ -12,9 +12,18 @@ EVM and SVM adapters (`@qorechain/evm`, `@qorechain/svm`), the React kit
 (`@qorechain/react`), and the Python, Go, Rust, and Java clients are all
 **published** to their registries with full native-chain parity (typed messages,
 queries, the tx lifecycle, hybrid PQC transactions, and WebSocket
-subscriptions). The current release line is **0.8**: TypeScript, Python, Rust and
-Java are at **0.8.3**, and the Go module is at **v0.8.4**. Pick your language
-below.
+subscriptions). The current release line is **0.9**, published on 21 October
+2026 (checked against each registry on that day):
+
+| Registry | Package | Version |
+| --- | --- | --- |
+| npm | `@qorechain/sdk`, `@qorechain/react`, `create-qorechain-dapp` | 0.9.0 |
+| PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
+| crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
+| Go module proxy | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+
+Pick your language below.
 
 ## Upgrade notes {#upgrade}
 
@@ -24,13 +33,59 @@ bound to the chain id) and refuse the old form with `pqc` code 21. Every SDK
 release before **0.8.0** signs the old form, and **0.8.0** looks for the switch
 under only one of the two upgrade names the networks used (mainnet recorded it as
 `v3.2.0`, the testnet as `v3.1.98` and later `v3.2.0`), so it signs the wrong form
-on mainnet. Use **0.8.1 or later** in every language; **0.8.2 or later** is needed
-to open an [EVM authorization window](/sdk/guides/evm#evm-window). Hybrid
-builders take a `signBytesVersion` option (`"auto"` | `"v1"` | `"v2"`); `"auto"`
+on mainnet. Use **0.9.0** (or at least **0.8.1**) in every language; **0.8.2 or
+later** is needed to open an [EVM authorization window](/sdk/guides/evm#evm-window).
+Hybrid builders take a `signBytesVersion` option (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 asks the network and therefore needs the REST endpoint (`rest`) on
 `qorechain-vladi` / `qorechain-diana`: it throws instead of guessing. See
 [Which sign-bytes form?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
+The form did not change in chain v3.2.3 (mainnet) or v3.2.4 (testnet): `"auto"`
+resolves to v2 on both networks.
 :::
+
+## What 0.9.0 adds {#whats-new-090}
+
+SDK 0.9.0 is the client release for chain **v3.2.2** and **v3.2.3** (mainnet
+applied them at heights 3,556,788 and 3,662,051; testnet runs v3.2.4). The
+signing format, addresses, decimals, memos and fees did not change, so the
+v2 hybrid sign-bytes form that 0.8.1 and later sign is still the right one.
+What is new:
+
+| Area | In 0.9.0 |
+| --- | --- |
+| Hybrid `TxClient` (TypeScript) | Pass the account's keypair: `client.connectTx(signer, { pqcKeypair })` or `TxClient.connect({ …, pqcKeypair, rest })`. Every transaction is then signed hybrid and `fee: "auto"` simulates the hybrid transaction itself; a bare key registration stays classical (the chain's bootstrap path). `bankSend` and the SDK's rollup, multilayer and cross-VM clients use it. Without a keypair nothing changes |
+| Recoverable PQC key | `derivePqcCanonical(address, mnemonic)` and its equivalents in every language (see [Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)) |
+| `ensurePqcRegistered` | Reads the key status over REST first (`rest`), refuses to register when it cannot tell, throws `PqcKeyMismatchError` when the account already holds a different key, and treats the chain's "already registered" refusal as success. From chain v3.2.3 it signs and attaches the **proof of possession** by itself; before v3.2.3 it leaves the field off |
+| Scoped EVM windows | `openEvmWindowMsg` takes `nativeOnly` and `allowedTargets` (at most 16, no duplicates); `fetchEvmWindow` reads both back (see [EVM guide](/sdk/guides/evm#evm-window)) |
+| EIP-7702 consent | `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`, `classifyEvmDelegationRejection` |
+| Key integrity | The registration builders refuse `classical_only`, an empty key and a degenerate ML-DSA-87 key, which the chain refuses from v3.2.3. `signProofOfPossession` / `verifyProofOfPossession` are exported; `migratePqcKeyHybrid` sends the hybrid-signed `MsgMigratePQCKey` that keyed accounts need from v3.2.3 |
+| Abstract-account digest v2 | `evmAuthSignBytesV2` (binds the call's gas limit) and `resolveEvmAuthDigestVersion`. The `abstractaccount` module is switched off on both networks, so this is for reference |
+| Upgrade detection | `isUpgradeApplied`, `requireUpgradeApplied`: new optional fields are set only after `applied_plan` reports the release, because a node that has not applied a release refuses the whole transaction when one of that release's new fields is set |
+| Error decoding | A failure inside a block keeps its codespace (for example `pqc` 231, not `sdk_231`); `rate_limited` and the delegation codes are decoded; `decodeTxError` reads a thrown error's log or message |
+| Spending rules | `validateSpendingRules` runs in the `MsgUpdateSpendingRules` builders and refuses a rule that bounds nothing |
+| Fixes | The PQC account route is the singular `/qorechain/pqc/v1/account/{address}` in every SDK (and in `client.rest.getPqcAccount`, `isPqcRegistered` and `getPqcStatus` when given the composed client); the exported `VERSION` matches the package; Go and Rust clients created by the SDK time out instead of hanging; `create-qorechain-dapp` templates depend on the release they ship with |
+
+The legacy PQC derivation for new keys (`derivePqcLegacy`, `"bridge"`) is
+deprecated: it is not bound to the account, so one mnemonic would give one key to
+every account. The rotation helpers refuse it as the **new** key; recovering or
+rotating away from an existing legacy key still works.
+
+## Versions before 0.9.0 {#before-090}
+
+If you are on 0.8.x, it still signs the form both networks verify and works on
+mainnet v3.2.3 and testnet v3.2.4. These are the limits that 0.9.0 removes, and
+some of them cost a fee if you do not know them:
+
+| Release before 0.9.0 | Workaround |
+| --- | --- |
+| No proof-of-possession, scoped-window or EIP-7702 consent builders | Use `qorechaind tx pqc register-key-v2 … --pqc-key <name>`, `open-evm-window --native-only` / `--allowed-targets`, and `authorize-evm-delegation` / `clear-evm-delegation` (see [EVM authorisation window](/getting-started/first-transaction#evm-window), [EIP-7702 delegations](/architecture/post-quantum-security#eip-7702)) |
+| `ensurePqcRegistered` without a `status` broadcast the registration unchecked, and reported success when a different key was registered | A second registration for an account that already holds a key is refused **after the fee is taken**. Read `GET /qorechain/pqc/v1/account/{address}` first and pass `status: { registered: found }` |
+| `client.rest.getPqcAccount`, `isPqcRegistered`, `getPqcStatus` | They called a plural `/accounts/` path or the `qor_` namespace, which the public endpoints do not serve (HTTP 501, `-32601`). Read the singular REST route above |
+| `TxClient` / `bankSend` and the rollup, multilayer and cross-VM clients signed classical-only | The networks refuse that for any account that has a key. Send through `signAndBroadcastHybrid` |
+| Failed in-block transactions lost their codespace | Read the transaction from `GET /cosmos/tx/v1beta1/txs/{hash}` |
+| The exported `VERSION` constant of 0.8.3 reported `0.8.0` | Read the installed version from `package.json` |
+| `create-qorechain-dapp` 0.8.0 pinned `@qorechain/sdk` / `@qorechain/evm` to `^0.3.0` (a caret on a 0.x version stays inside 0.3) | Run `npm i @qorechain/sdk@latest` after scaffolding |
+| `@qorechain/react` 0.8.x kept the registered-key status unreadable on the public endpoints | Use `@qorechain/react` 0.9.0 |
 
 :::caution Older fixes
 SDK **0.6.1** fixed a consensus-critical bug: the
@@ -86,21 +141,21 @@ provider, hooks, and the `ConnectButton` / `QuantumSafeBadge` components.
 npm i @qorechain/react
 ```
 
-Published to npm at `0.8.3`. See the [React kit guide](/sdk/guides/react).
+Published to npm at `0.9.0`; it depends on `@qorechain/sdk` `^0.9.0`. See the [React kit guide](/sdk/guides/react).
 
 ### Scaffolder
 
-`create-qorechain-dapp` (npm, `0.8.0`) scaffolds a ready-to-run dApp:
+`create-qorechain-dapp` (npm, `0.9.0`) scaffolds a ready-to-run dApp:
 
 ```bash
 npm create qorechain-dapp@latest my-dapp
 ```
 
-The generated `package.json` files pin `@qorechain/sdk` / `@qorechain/evm` to
-`^0.3.0`, which npm resolves to a 0.3 release that cannot sign for the live
-networks. After scaffolding, run `npm i @qorechain/sdk@latest` (and
-`npm i @qorechain/evm@latest` for the EVM template). See the
-[CLI reference](/sdk/reference/cli).
+The generated `package.json` files depend on the SDK release the scaffolder ships
+with (`@qorechain/sdk` `^0.9.0`; the EVM template uses `@qorechain/evm` `^0.8.0`).
+Version 0.8.0 of the scaffolder wrote `^0.3.0` ranges, which on a 0.x version stay
+inside 0.3 and cannot sign for the live networks; if you scaffolded with 0.8.0, run
+`npm i @qorechain/sdk@latest`. See the [CLI reference](/sdk/reference/cli).
 
 ## Python
 
@@ -110,7 +165,7 @@ pip install qorechain-sdk
 
 Requires Python 3.10+. The package ships type hints and a `py.typed` marker.
 
-> The distribution installs as `qorechain-sdk` (published to PyPI at `0.8.3`)
+> The distribution installs as `qorechain-sdk` (published to PyPI at `0.9.0`)
 > but **imports as `qorsdk`**:
 >
 > ```python
@@ -132,7 +187,8 @@ import (
 )
 ```
 
-Published as a self-contained Go module (tagged `packages/go/v0.8.4`).
+Published as a self-contained Go module (tag `packages/go/v0.9.0`). Pin the version
+explicitly: `go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`.
 
 ## Rust
 
@@ -151,7 +207,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Requires Rust 1.74+. The read clients are async (Tokio). The crate imports as
 `qorechain` (`use qorechain;`).
 
-> Published to crates.io as `qorechain-sdk` (0.8.3); `cargo add qorechain-sdk`
+> Published to crates.io as `qorechain-sdk` (0.9.0); `cargo add qorechain-sdk`
 > installs the latest release.
 
 ## Java
@@ -162,28 +218,32 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.8.3</version>
+  <version>0.9.0</version>
 </dependency>
 ```
 
 Or Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.8.3'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 ```
 
-> Published to Maven Central as `io.github.qorechain:qorechain-sdk:0.8.3`. Central
-> has no 0.8.0 or 0.8.1 build, so on the live networks use 0.8.2 or later.
+> Published to Maven Central as `io.github.qorechain:qorechain-sdk:0.9.0` (checked
+> 21 October 2026). Central has no 0.8.0 or 0.8.1 build, so on the live networks use
+> 0.9.0 (or 0.8.2 or later).
 
 ## Related packages {#related-packages}
 
 | Package | Purpose | Version |
 | --- | --- | --- |
-| `@qorechain/wallet-adapter` | Wallet-side helpers: wallet generation (`generateQoreWallet`), `eth_secp256k1` hybrid signing (`signHybridEth`, `QoreChainSigner`), MetaMask network registration (`addQoreEvmToWallet`), authenticator and EVM-window message builders. Peer dependencies: `@cosmjs/proto-signing` and `@cosmjs/stargate` `^0.32` | 0.3.0 |
-| `@qorechain/chain-bridge` | Server-side worker for backends: derives the PQC key, hybrid-signs and broadcasts (`sendTokens`, `registerPqc`, and more). Pass `cosmosRest` | 0.2.2 |
-| `@qorechain/pqc` | Standards-only ML-DSA / ML-KEM / SHAKE-256 primitives and `hybridSignBytes` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)) | 0.2.1 |
+| `@qorechain/wallet-adapter` | Wallet-side helpers: wallet generation (`generateQoreWallet`), `eth_secp256k1` hybrid signing (`signHybridEth`, `QoreChainSigner`), MetaMask network registration (`addQoreEvmToWallet`), authenticator and EVM-window message builders (its `openEvmWindowMsg` builds the unscoped form only), the v2 abstract-account digest. It does not attach a proof of possession. Peer dependencies: `@cosmjs/proto-signing` and `@cosmjs/stargate` `^0.32` (the SDK uses cosmjs 0.39, so installing both in one project makes npm report a peer conflict, `ERESOLVE`; keep them in separate projects or pass `--legacy-peer-deps`) | 0.4.0 |
+| `@qorechain/chain-bridge` | Server-side worker for backends: derives the PQC key, hybrid-signs and broadcasts (`sendTokens`, `registerPqc`, and more). Pass `cosmosRest`: with it, a registration carries the proof of possession once the network has applied v3.2.3, and a PQC-looking refusal is checked against the chain before any re-registration (a different registered key raises `pqc_key_mismatch` instead of paying for a second registration) | 0.2.3 |
+| `@qorechain/pqc` | Standards-only ML-DSA / ML-KEM / SHAKE-256 primitives and `hybridSignBytes` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); also on PyPI, crates.io, Maven Central and the Go proxy (Go `v0.2.2`) at the same version | 0.2.2 |
 | `@qorechain/handles` | Verified `@handle` resolution with trust-on-first-use pinning (`HandleClient`) | 0.1.0 |
-| `@qorechain/rdk` | Rollup Development Kit client (see [Rollups](/rollups/why)). The npm release (0.4.4) signs transactions classical-only, which the networks refuse, so it can read but not send; hybrid signing is in 0.5.0, currently on PyPI and the Go module only | 0.4.4 (npm) |
+| `@qorechain/connect` | One connector for EVM, Cosmos and SVM wallets, built on the wallet adapter (its peer range is `@qorechain/wallet-adapter` `^0.2.1`, which does not include 0.4.0). It does not open an [EVM authorization window](/sdk/guides/evm#evm-window), so an EVM send through it is refused until the account has a registered key and an open window | 0.2.1 |
+| `@qorechain/rdk` | Rollup Development Kit client (see [Rollups](/rollups/why)). It depends on `@qorechain/sdk` `^0.8.0`, so npm installs SDK 0.8.3 as its own copy even when your app uses SDK 0.9.0. Signs hybrid only when you pass a `pqcKeypair`; reads work without it. See the [limits of 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits) | 0.5.0 |
+| `@qorechain/rdk-cli` | The `qorollup` operator CLI for the RDK. Its transaction commands sign classical-only and are refused by the networks | 0.5.0 |
+| `create-qorechain-rollup` | Rollup starter scaffolder; its templates depend on `@qorechain/rdk` `^0.5.0` | 0.5.0 |
 
 ## Next
 

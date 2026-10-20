@@ -10,7 +10,7 @@ sidebar_position: 1
 This guide covers the QOR token, how to send and receive tokens, query balances, and understand the fee distribution model on QoreChain.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 29 June 2026 on the v3.2 line (node release **v3.2.1**; the testnet runs **v3.2.2**) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3**; the testnet runs **v3.2.4** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -92,13 +92,13 @@ Transaction fees on QoreChain are distributed across five destinations to align 
 | **Burned**      | 30%   | Permanently removed from supply                                 |
 | **Treasury**    | 20%   | Funds protocol development and ecosystem grants                 |
 | **Stakers**     | 10%   | Distributed proportionally to all delegators                    |
-| **Light Nodes** | 3%    | Reserved for light-node rewards (see the note below)            |
+| **Light Nodes** | 3%    | Light-node rewards (see the note below)                         |
 
-The split applies to everything that enters the fee collector, which holds transaction fees and the staking emission minted each epoch. The light-node share accrues to a reserve; light-node reward registration is not open yet, so no node is currently paid from it (see [Light Node](/light-node/overview)). Since the v3.2.0 upgrade the staker share is paid out as a normal staking reward (see [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+The split applies to everything that enters the fee collector, which holds transaction fees and the staking emission minted each epoch. The light-node share accrues to the light-node reward pool; registration is open and licence-gated, but no light node has registered yet, so no node is paid from it today (see [Light Node](/light-node/overview#reward-program-status)). Since the v3.2.0 upgrade the staker share is paid out as a normal staking reward (see [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Burn Channels
 
-QoreChain's burn module defines 12 burn sources. QOR burned through any of them is permanently removed from circulation. On mainnet only the gas-fee channel has recorded burns so far; the others are defined but have recorded nothing.
+QoreChain's burn module defines 12 burn sources. QOR burned through any of them is permanently removed from circulation. On mainnet only the gas-fee and failed-transaction channels have recorded burns so far; the others are defined but have recorded nothing. The testnet records a thirteenth source, `staking_tier_penalty`, for its optional time-locked staking module.
 
 | Channel            | Description                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ QoreChain's burn module defines 12 burn sources. QOR burned through any of them 
 | `ai_service`       | 50% of AI service fees burned (inactive: AI service fees are not live)           |
 | `bridge_fee`       | 100% of bridge fees burned (inactive: the bridge is not live)                    |
 | `treasury_buyback` | Periodic buyback-and-burn from the treasury                                      |
-| `failed_tx`        | Failed-transaction gas; applied by the chain from v3.2.2 (testnet only so far)   |
+| `failed_tx`        | 10% of the gas of failed transactions; applied by the chain since v3.2.2         |
 | `xqore_penalty`    | xQORE early-exit penalties routed through burn (xQORE is not live)               |
 | `auto_buyback`     | Protocol-level automated burns (inactive)                                        |
 | `tge`              | Reserved; the TGE burn happened before genesis and this channel records nothing  |

@@ -80,7 +80,7 @@ Por defecto, QoreX deriva tu dirección `qor1…` de una frase de recuperación 
 3. Abre Ajustes → **Tus cuentas** y toca **Añadir una cuenta Ethereum (coin 60)**. El primer toque añade la cuenta en el índice 0 — la misma dirección `0x…` que MetaMask muestra para esas palabras, y la misma clave que tu dirección de QoreChain `qor1…` para esa cuenta. Tus QOR están ahí.
 4. Cambia a esa cuenta (está etiquetada como *Ethereum · coin 60*). Puedes enviar, hacer staking y reclamar desde ella. El primer envío también registra la clave poscuántica de esa cuenta, lo que cuesta una pequeña comisión única.
 
-Una cuenta de estilo Ethereum no tiene @handle (los handles se reclaman en una cuenta `qor1…` de QoreChain con tipo de moneda 118), y los sitios web firman con ella mediante `signAndBroadcast` en lugar de `signDirect`. Cada toque en **Añadir una cuenta Ethereum (coin 60)** añade el siguiente índice.
+Una cuenta de estilo Ethereum no tiene @handle (los handles se reclaman en una cuenta `qor1…` de QoreChain con tipo de moneda 118), y los sitios web firman con ella mediante `signAndBroadcast` en lugar de `signDirect`. También es el tipo de cuenta para el que importa la [ventana de acceso EVM](/qorex/security-and-recovery#evm-window): MetaMask firma con la misma clave, así que las transacciones de MetaMask pueden mover su QOR una vez que hay una ventana abierta. Cada toque en **Añadir una cuenta Ethereum (coin 60)** añade el siguiente índice.
 
 ## Orientarte {#find-your-way}
 
@@ -89,7 +89,7 @@ Una cuenta de estilo Ethereum no tiene @handle (los handles se reclaman en una c
 
 ## Opcional: reclama un @handle
 
-Después de crear tu wallet puedes reclamar un **@handle** único (por ejemplo, `@liviu`) para que la gente pueda enviarte fondos por tu nombre en lugar de una dirección `qor1…`. Esto es opcional y se puede omitir — tu wallet nunca depende de ello. (En la extensión de navegador, algunas versiones no permiten reclamarlo; si el popup no lo ofrece, reclámalo desde la app móvil.) Un handle se vincula a una dirección específica y no a la wallet en su conjunto, algo relevante en cuanto tengas más de una cuenta — consulta [Varias cuentas desde una misma frase](/qorex/account-and-dashboard#accounts) y [@handle](/qorex/account-and-dashboard#handle).
+Después de crear tu wallet puedes reclamar un **@handle** único (por ejemplo, `@liviu`) para que la gente pueda enviarte fondos por tu nombre en lugar de una dirección `qor1…`. Reclamarlo requiere una [cuenta con sesión iniciada](/qorex/account-and-dashboard#sign-in) y se hace **en la app móvil** (la extensión de navegador te remite a ella). Es opcional y se puede omitir — tu wallet nunca depende de ello. Un handle se vincula a una dirección específica y no a la wallet en su conjunto, algo relevante en cuanto tengas más de una cuenta — consulta [Varias cuentas desde una misma frase](/qorex/account-and-dashboard#accounts) y [@handle](/qorex/account-and-dashboard#handle).
 
 ## Idioma
 

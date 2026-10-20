@@ -49,7 +49,7 @@ sidebar_position: 4
 | `getTokenAccountsByOwner`           | `owner`، مرشّح          | تُعيد حسابات الرموز الخاصة بمالك                               |
 | `getTokenAccountsByDelegate`        | `delegate`، مرشّح       | تُعيد حسابات الرموز الخاصة بمفوَّض                             |
 
-الطرق الواقعة خارج هذه القائمة، مثل `getGenesisHash` و`getEpochInfo`، تُعيد `-32601 method not found`. تُقبل الطريقة `getTransaction` لكنها تردّ حاليًا بغلاف لا يحتوي على الحقل `result`، فلا تعتمد عليها. وتتبع الفتحة (slot) التي تُبلغ عنها `getSlot` ارتفاع كتل السلسلة.
+الطرق الواقعة خارج هذه القائمة، مثل `getGenesisHash` و`getEpochInfo`، تُعيد `-32601 method not found` (جرى التحقق منها مقابل `https://svm.qore.host` و`https://svm-testnet.qore.host`، في 20 أكتوبر 2026). ومنذ v3.2.2 يجب أن تكون عناوين base58 في استعلامات RPC وgRPC قانونية (canonical) ومحدودة الطول؛ ويُرفض العنوان المشوَّه. تُقبل الطريقة `getTransaction` لكنها تردّ حاليًا بغلاف لا يحتوي على الحقل `result`، فلا تعتمد عليها. وتتبع الفتحة (slot) التي تُبلغ عنها `getSlot` ارتفاع كتل السلسلة.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## ملاحظات
 
 - **تنسيق العناوين**: تستخدم حسابات SVM مفاتيح عامة مرمّزة بترميز base58 (تنسيق Solana القياسي)، وليس بادئة Bech32 `qor1` المستخدمة في وحدات Cosmos SDK الأصلية.
-- **الجسور بين الآلات الافتراضية (Cross-VM)**: لنقل الأصول بين بيئتَي تشغيل EVM وSVM، استخدم وحدة Cross-VM (`x/crossvm`). راجع [أوامر المعاملات](/cli-reference/transaction-commands) لصيغة الأمر `crossvm call`.
+- **الجسور بين الآلات الافتراضية (Cross-VM)**: لنقل الأصول بين بيئتَي تشغيل EVM وSVM، استخدم وحدة Cross-VM (`x/crossvm`). راجع [أوامر المعاملات](/cli-reference/transaction-commands#crossvm) لصيغة الأمر `crossvm call`. مسار SVM معطّل و`MsgCrossVMCall` مُوقَف على الشبكة الرئيسية، لذا فهذا للرجوع فقط اليوم.
 - **نشر البرامج**: انشر برامج BPF عبر سطر الأوامر (`qorechaind tx svm deploy-program`) أو برمجيًا من خلال بيئة تشغيل SVM.
 - **ميزانية الحوسبة**: تفرض بيئة تشغيل SVM افتراضيًا ميزانية حوسبة قدرها 1,400,000 وحدة حوسبة لكل معاملة. وهذا قابل للتهيئة عبر معاملات الوحدة (module parameters).

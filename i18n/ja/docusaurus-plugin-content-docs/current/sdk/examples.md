@@ -63,7 +63,8 @@ const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 このサンプルは**古典的**署名のみで署名するため、ローカルノードや開発ノードに対しては
 動作しますが、Native パスのすべてのトランザクションにハイブリッド署名を要求する
 メインネットとテストネットでは拒否されます。公開ネットワークでは、
-[クイックスタート](/sdk/quickstart#send-qor)のハイブリッド送信を使用してください。
+[クイックスタート](/sdk/quickstart#send-qor)のように、アカウントの
+鍵ペアを使って `client.connectTx(signer, { pqcKeypair })`（SDK 0.9.0）で接続してください。
 
 ```ts
 import {

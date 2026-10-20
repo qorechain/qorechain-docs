@@ -46,8 +46,9 @@ imzasıdır.
                                                                   spend FROM canonical account
 ```
 
-Aktarıcı, sahipten **farklı** bir hesaptır; dolayısıyla hesabın EVM nonce
-değerini artırmaz.
+Aktarıcı, sahipten **farklı** bir hesaptır. Kimlik doğrulayıcının imzaladığı
+nonce, zincir tarafından tutulan bağlı anahtarın kendi sıra numarasıdır
+([Nonce değerleri](#nonces) bölümüne bakın); hesabın EVM nonce değeri değildir.
 
 ## Üç şerit
 
@@ -250,7 +251,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -279,6 +281,21 @@ sha256( "qorechain-evm-auth-v1"
 `to` `0x`-hex alıcı adresi, `value` ondalık wei dizesi, `data` ise ham
 calldata'dır.
 
+**EVM şeridi, v2 (zincir v3.2.3)** — `evmAuthSignBytesV2({ …, gasLimit })`
+çağrının gas limitini ekler; böylece bir aktarıcı geçerli bir imzayı başka bir
+limitle yeniden oynatamaz. Zincir her blokta tam olarak tek bir biçimi doğrular:
+v3.2.3 yükseltmesinin altında v1, ondan itibaren v2. `resolveEvmAuthDigestVersion({ rest })`
+ağ v3.2.3'ü uyguladıktan sonra `"v2"`, öncesinde `"v1"` döndürür; 
+`buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm` ise `digestVersion` alır
+(varsayılan `"v1"`'dir; bu yüzden v3.2.3 veya sonrasındaki bir ağda `"v2"` geçirin).
+`gasLimit` sıfırdan farklı olmalıdır.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Native şeridi** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 32 baytlık bir özet döndürür:
 
@@ -297,24 +314,21 @@ her iki anahtarın da imzaladığı dizeyi (UTF-8 halini) döndürür:
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## Nonce değerleri
+## Nonce değerleri {#nonces}
 
-- `MsgExecuteEVM.nonce` = hesabın **güncel EVM nonce değeri** (aktarıcı farklı
-  bir hesaptır ve sahibin nonce değerini artırmaz; bu yüzden 1 **eklemeyin**).
-- `MsgExecuteCosmos.nonce` = `(account, pubkey)` için **kimlik doğrulayıcı
-  başına sıra numarası** — hesabın kendi sırasından ayrı bir depo sayacıdır ve
-  her başarılı Native şeridi harcamasında artırılır.
+Her iki şerit de `(account, pubkey)` için **kimlik doğrulayıcı başına sıra
+numarasını** kullanır: zincirin her bağlı anahtar için tuttuğu, 0'dan başlayan ve
+her başarılı yürütmede artırılan bir sayaç.
 
-Nonce değerini yanlış vermek bir tekrar oynatma (replay) reddiyle sonuçlanır
-(`abstractaccount` kodu 11, aşağıya bakın).
+- `MsgExecuteEVM.nonce` bu sayaçtır, hesabın EVM nonce değeri
+  (`eth_getTransactionCount`) **değildir**.
+- `MsgExecuteCosmos.nonce` aynı türden bir sayaçtır.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+Sayaç için henüz bir sorgu yoktur; bu yüzden onu bağlı anahtar başına kendiniz
+takip edin: yeni bağlanmış bir anahtar için 0, zincirin kabul ettiği her
+yürütmeden sonra +1. Zincirin güncel sayacı olmayan bir değer göndermek bir
+tekrar oynatma (replay) reddiyle sonuçlanır (`abstractaccount` kodu 11, aşağıya
+bakın).
 
 ## Yetki şeması
 

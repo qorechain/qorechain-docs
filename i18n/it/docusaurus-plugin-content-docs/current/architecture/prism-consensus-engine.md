@@ -9,8 +9,10 @@ sidebar_position: 2
 
 QoreChain incorpora **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines), un livello di ottimizzazione tramite apprendimento per rinforzo, direttamente nel livello di consenso tramite il modulo `x/rlconsensus`. PRISM osserva le metriche della chain ogni N blocchi ed è progettato per eseguire l'inferenza attraverso una rete neurale a virgola fissa e proporre aggiustamenti dei parametri di consenso — il tutto in modo deterministico, senza aritmetica in virgola mobile nei percorsi critici per il consenso.
 
-:::note Stato attuale (ottobre 2026)
-Sia su mainnet che su testnet l'agente è in modalità `conservative`, raccoglie un'osservazione e una ricompensa ogni 10 blocchi e **non ha pesi di policy caricati**: ha eseguito 0 passi e non applica alcuna modifica ai parametri. Il block time è determinato dalla configurazione dei nodi dei validatori, non da PRISM. Caricare una policy e cambiare la modalità sono azioni di governance attualmente disabilitate su mainnet dal circuit breaker.
+:::note Stato attuale (20 ottobre 2026: mainnet v3.2.3, testnet v3.2.4)
+Sia su mainnet che su testnet l'agente è in modalità `conservative`, raccoglie un'osservazione e una ricompensa ogni 10 blocchi e **non ha pesi di policy caricati**: ha eseguito 0 passi e non applica alcuna modifica ai parametri (verificato tramite le query `AgentStatus` e `Policy` su entrambe le reti). Il block time è determinato dalla configurazione dei nodi dei validatori, non da PRISM. Caricare una policy, cambiare la modalità, riprendere l'agente e aggiornare i pesi della ricompensa sono azioni di governance attualmente disabilitate su mainnet dal circuit breaker; sulla testnet non sono disabilitate.
+
+Due modifiche di release restringono ciò che una futura policy o modifica dei parametri può fare. Dalla v3.2.2 un aggiornamento della policy tramite governance viene validato con aritmetica controllata. Dalla v3.2.3 i messaggi di governance sono sottoposti a controllo di intervallo sul valore grezzo trasmesso (la modalità dell'agente) e ogni peso della ricompensa deve essere compreso tra 0 e 1.
 :::
 
 *Il ciclo di ottimizzazione di PRISM: osserva lo stato della chain, esegue l'inferenza della policy, limita e applica le modifiche dei parametri, quindi retroaziona il risultato.*

@@ -9,8 +9,10 @@ sidebar_position: 10
 
 Modulul `x/fairblock` este designul QoreChain pentru apărarea împotriva atacurilor de tip Maximal Extractable Value (MEV), folosind criptare bazată pe identitate cu prag (threshold). Combinat cu un sistem de prioritizare a tranzacțiilor pe 5 benzi, este menit să formeze o arhitectură anti-MEV care protejează utilizatorii împotriva front-running-ului, a atacurilor sandwich și a altor forme de extragere de valoare din mempool.
 
-:::note Stare curentă (octombrie 2026)
-FairBlock este **dezactivat atât pe mainnet, cât și pe testnet** (`enabled = false`), iar definițiile celor 5 benzi sunt doar configurație: benzile de spațiu în bloc nu sunt impuse de mempool-ul sau de gestionarul de propuneri aflate în funcțiune. Această pagină descrie designul intenționat.
+:::note Stare curentă (20 octombrie 2026: mainnet v3.2.3, testnet v3.2.4)
+FairBlock este **dezactivat atât pe mainnet, cât și pe testnet** (`enabled = false`), iar definițiile celor 5 benzi sunt doar configurație: benzile de spațiu în bloc nu sunt impuse de mempool-ul sau de gestionarul de propuneri aflate în funcțiune. Nodul nu expune niciun serviciu de tranzacții sau de interogări FairBlock, iar nicio versiune până la mainnet v3.2.3 sau testnet v3.2.4 nu schimbă nimic din toate acestea. Această pagină descrie designul intenționat.
+
+Ce fac în schimb rețelele live pentru swap-urile AMM este descris în [AMM și lichiditate on-chain](/architecture/amm#swap-rules): un plafon al impactului asupra prețului și o verificare a prețului la deschiderea blocului pentru swap-urile care nu stabilesc o limită de slippage. Acestea sunt reguli de protocol aplicate swap-ului, nu criptare a tranzacțiilor.
 :::
 
 ## Problema MEV

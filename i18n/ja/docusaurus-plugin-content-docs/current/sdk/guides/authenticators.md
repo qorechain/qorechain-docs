@@ -29,7 +29,7 @@ module is disabled`（コード 9）でそれらを拒否します。トラン�
                                                                   spend FROM canonical account
 ```
 
-リレイヤーはオーナーとは**別の**アカウントであるため、アカウントの EVM ノンスを進めることはありません。
+リレイヤーはオーナーとは**別の**アカウントです。オーセンティケーターが署名するノンスは、チェーンが保持するリンク済みキー自身のシーケンス（[ノンス](#nonces)を参照）であり、アカウントの EVM ノンスではありません。
 
 ## 3 つのレーン
 
@@ -210,7 +210,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -237,6 +238,21 @@ sha256( "qorechain-evm-auth-v1"
 `to` は `0x` 16 進の受取人、`value` は 10 進の wei 文字列、`data` は生の
 calldata です。
 
+**EVM レーン、v2（チェーン v3.2.3）** — `evmAuthSignBytesV2({ …, gasLimit })` は
+呼び出しのガスリミットを追加するため、リレイヤーが有効な署名を別のリミットで
+リプレイすることはできません。チェーンはブロックごとに正確に 1 つの形式のみを検証します。
+v3.2.3 アップグレードより前は v1、それ以降は v2 です。`resolveEvmAuthDigestVersion({ rest })` は、
+ネットワークが v3.2.3 を適用した後は `"v2"`、それ以前は `"v1"` を返し、
+`buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm` は
+`digestVersion` を受け取ります（デフォルトは `"v1"` なので、v3.2.3 以降のネットワークでは `"v2"` を渡してください）。
+`gasLimit` はゼロ以外でなければなりません。
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Native レーン** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 は 32 バイトのダイジェストを返します。
 
@@ -255,21 +271,16 @@ sha256( "qorechain-cosmos-auth-v1"
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## ノンス
+## ノンス {#nonces}
 
-- `MsgExecuteEVM.nonce` = アカウントの**現在の EVM ノンス**（リレイヤーは別アカウントであり、オーナーのノンスを進めないため、1 を足しては**いけません**）。
-- `MsgExecuteCosmos.nonce` = `(account, pubkey)` ごとの**オーセンティケーターごとのシーケンス** — アカウント自身のシーケンスとは別のストアカウンターで、Native レーンの支出が成功するたびにインクリメントされます。
+両レーンとも、`(account, pubkey)` ごとの**オーセンティケーターごとのシーケンス**を使用します。これはチェーンがリンク済みキーごとに保持するカウンターで、0 から始まり、実行が成功するたびにインクリメントされます。
 
-ノンスを間違えるとリプレイとして拒否されます
+- `MsgExecuteEVM.nonce` はこのカウンターであり、アカウントの EVM ノンス
+  （`eth_getTransactionCount`）では**ありません**。
+- `MsgExecuteCosmos.nonce` も同種のカウンターです。
+
+このカウンターを照会するクエリはまだないため、リンク済みキーごとに自分で追跡してください。新しくリンクしたキーは 0 で、チェーンが受理した実行のたびに +1 します。チェーンの現在のカウンターと異なる値を送ると、リプレイとして拒否されます
 （`abstractaccount` コード 11、下記参照）。
-
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
 
 ## パーミッションスキーマ
 

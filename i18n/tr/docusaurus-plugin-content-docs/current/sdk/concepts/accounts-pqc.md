@@ -138,7 +138,12 @@ tüm dil SDK'larında birebir aynıdır. (`unifiedAccountFromSeed` için anımsa
 ifade yuvası `"seed:" + hex(seed32)` değeridir.) SDK 0.8.3 sürümünden itibaren
 `derivePqcCanonical(account, mnemonic)` önce `account` değerini küçük harfli
 `qor1…` biçimine (`canonicalAccount`) çözer; böylece büyük harfli bir bech32
-veya aynı hesabın `0x` biçimi de aynı anahtarı üretir.
+veya aynı hesabın `0x` biçimi de aynı anahtarı üretir. Her dilde aynı işlev
+vardır (Python `derive_pqc_canonical`, Go `authenticator.DerivePQCCanonical`,
+Rust `try_derive_pqc_canonical`, Java `Authenticator.derivePqcCanonical`; bkz.
+[Kuantuma dayanıklı kılavuzundaki tablo](/sdk/guides/quantum-safe#canonical-derivation)),
+ve aynı `{ address, mnemonic }` hepsinde aynı anahtarı verir (Ekim 2026'da
+TypeScript, Python, Go ve Rust için doğrulandı).
 
 ### Native hatta eth anahtarıyla gönderim
 
@@ -157,8 +162,8 @@ kuraldan muaf tek işlemdir: onu `signMode: "classical"` ile imzalayın. Hesabı
 çözün. İkincisi, imzalayıcının ağın hangi
 [imza baytı biçimini](#sign-bytes-versions) doğruladığını ağa sorabilmesi için
 imzalayıcıya `rest` verin (`qorechain-vladi` ve `qorechain-diana` üzerinde tahmin
-etmek yerine hata fırlatır). SDK 0.8.1 veya sonrası ve
-`npm i @cosmjs/stargate` gerekir:
+etmek yerine hata fırlatır). SDK 0.8.1 veya sonrası (sahiplik kanıtı yardımcıları
+için 0.9.0) ve `npm i @cosmjs/stargate` gerekir:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -167,6 +172,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -196,6 +202,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -286,7 +300,7 @@ sonrası koruma kazanır. Kuantum sonrası kısım, işlem üzerinde bir
 `PQCHybridSignature` uzantısı olarak taşınır.
 
 :::caution Native yolda hibrit imzalama zorunludur
-Zincir sürümü **v3.2.0** (her iki ağın da çalıştırdığı sürüm) itibarıyla ağ
+Zincir sürümü **v3.2.0** itibarıyla (mainnet v3.2.3, testnet v3.2.4 çalıştırır) ağ
 varsayılanı `hybrid_signature_mode = required` ve
 `allow_classical_fallback = false` şeklindedir. `buildHybridTx` /
 `signAndBroadcastHybrid` üzerinden (`rest` geçirerek) hibrit imzalama — veya
@@ -308,7 +322,34 @@ başarısız olur — 0.6.1+ sürümüne yükseltin.
 Coin type 118 hesabı için uçtan uca oluşturucu `signAndBroadcastHybrid`
 işlevidir (yayınlamadan oluşturmak için `buildHybridTx`). Klasik imzalayıcıya,
 hesabın ML-DSA-87 anahtar çiftine, hesap numarasına ve sequence değerine ve
-`rest` adresine ihtiyaç duyar. SDK 0.8.3 veya sonrası, `npm i @cosmjs/stargate`:
+`rest` adresine ihtiyaç duyar.
+TypeScript'te coin type 118 hesabı için en kısa yol hibrit `TxClient`'tır
+(SDK 0.9.0): bağlanırken anahtar çiftini geçin; her işlem hibrit imzalanır ve
+`fee: "auto"` hibrit işlemin kendisini simüle eder (yalnızca kayıt klasik kalır):
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+Ücret, hesap numarası ve sequence üzerinde açık denetim için
+`signAndBroadcastHybrid` kullanın (SDK 0.8.1 veya sonrası, `npm i @cosmjs/stargate`):
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -357,12 +398,19 @@ const result = await signAndBroadcastHybrid({
 ### Zincir üstü ön koşul
 
 Bir hibrit işlemin PQC doğrulamasından geçebilmesi için, imzalayanın PQC genel
-anahtarı `MsgRegisterPQCKeyV2` ile (klasik imzalı, hibrit kuraldan muaf)
-**kaydedilmiş** olmalıdır. SDK'nın `ensurePqcRegistered` /
-`buildRegisterPqcKeyMsg` işlevleri, `qorechaind tx pqc register-key` veya bir
-QoreChain cüzdanı bunu yapar. `includePqcPublicKey: true` yalnızca anahtarı
-uzantıya gömer; anahtarı **kaydetmez** ve zincir bir anahtarı ilk kullanımda
-kaydetmez.
+anahtarı `MsgRegisterPQCKeyV2` ile (klasik imzalı, henüz anahtarı olmayan bir
+hesap için hibrit kuraldan muaf) **kaydedilmiş** olmalıdır. SDK'nın
+`ensurePqcRegistered` / `buildRegisterPqcKeyMsg` işlevleri, `qorechaind tx pqc
+register-key` veya bir QoreChain cüzdanı bunu yapar. `includePqcPublicKey: true`
+yalnızca anahtarı uzantıya gömer; anahtarı **kaydetmez** ve zincir bir anahtarı
+ilk kullanımda kaydetmez. v3.2.3'ten beri zincir zayıf, dejenere ve yeniden
+kullanılmış anahtarları reddeder ve isteğe bağlı bir sahiplik kanıtını (proof of
+possession) kabul eder (bkz.
+[Anahtar bütünlüğü kuralları](/architecture/post-quantum-security#key-integrity)).
+SDK 0.9.0'da `ensurePqcRegistered`, ağ v3.2.3'ü uyguladıktan sonra kanıtı kendisi
+ekler; `signProofOfPossession` / `verifyProofOfPossession` ise elle oluşturulan
+kayıtlar için dışa aktarılır; 0.8.x oluşturucuları kanıtsız kaydeder, buna izin
+verilir.
 
 ### Hangi imza baytı biçimi? {#sign-bytes-versions}
 

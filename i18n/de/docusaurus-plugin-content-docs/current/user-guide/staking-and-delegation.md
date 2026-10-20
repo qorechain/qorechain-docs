@@ -10,7 +10,7 @@ sidebar_position: 2
 Dieser Leitfaden behandelt, wie du QOR-Token an Validatoren delegierst, zwischen Validatoren neu delegierst, dein Stake entbindest, Belohnungen einforderst und verstehst, welche Teile des Staking-Designs von QoreChain heute live sind.
 
 :::note
-Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 auf der v3.2-Linie live (Node-Release **v3.2.1**; das Testnet läuft mit **v3.2.2**) — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
+Die nachstehenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft mit dem Release **v3.2.3**; das Testnet läuft mit **v3.2.4** — ersetze für das Staking im Mainnet die Mainnet-Chain-ID und die Endpunkte von der Seite **Verbindung zum Mainnet**.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -19,9 +19,9 @@ Mainnet und Testnet verlangen für jede Transaktion auf der Cosmos-Lane eine hyb
 
 ## Gibt es eine Sperrfrist? {#lock-in-period}
 
-**Heute** nicht — es gibt keine Laufzeit auszuwählen, denn Staking wird hier nicht in festen Zeiträumen angeboten, wie es an einer Börse oft üblich ist. Die Delegation bleibt aktiv, wobei ab dem nächsten Block Belohnungen fließen, so lange du möchtest, bis du dich entscheidest, sie aufzuheben; nichts läuft ab und nichts muss verlängert werden. Die **21-tägige Entbindungsperiode**, auf die in diesem Leitfaden immer wieder verwiesen wird, ist keine Sperrfrist, der du im Voraus zustimmst — sie beginnt erst, wenn du *tatsächlich* die Entbindung beantragst, und betrifft nur das QOR, das du entnimmst. Eine Delegation zwischen Validatoren zu verschieben (Neudelegation) umgeht diese Wartezeit vollständig, da der Stake den gebundenen Pool nie verlässt. Der „Treue“-Begriff in der [Bonding-Curve](#bonding-curve) weiter unten ist Teil des Designs von QoreChain, wird aber **von der Live-Chain heute nicht angewendet**; wie lange du delegiert bleibst, ändert daher deine Belohnungsrate nicht.
+**Im Mainnet heute** nicht — es gibt keine Laufzeit auszuwählen, denn Staking wird hier nicht in festen Zeiträumen angeboten, wie es an einer Börse oft üblich ist. Die Delegation bleibt aktiv, wobei ab dem nächsten Block Belohnungen fließen, so lange du möchtest, bis du dich entscheidest, sie aufzuheben; nichts läuft ab und nichts muss verlängert werden. Die **21-tägige Entbindungsperiode**, auf die in diesem Leitfaden immer wieder verwiesen wird, ist keine Sperrfrist, der du im Voraus zustimmst — sie beginnt erst, wenn du *tatsächlich* die Entbindung beantragst, und betrifft nur das QOR, das du entnimmst. Eine Delegation zwischen Validatoren zu verschieben (Neudelegation) umgeht diese Wartezeit vollständig, da der Stake den gebundenen Pool nie verlässt. Der „Treue“-Begriff in der [Bonding-Curve](#bonding-curve) weiter unten ist Teil des Designs von QoreChain, wird aber **von der Live-Chain heute nicht angewendet**; wie lange du delegiert bleibst, ändert daher deine Belohnungsrate nicht. Eine optionale, zeitgesperrte Form des Stakings gibt es nur im Testnet; siehe [Zeitgesperrtes Staking (nur Testnet)](#time-locked-staking).
 
-Dies beschreibt das aktuelle Chain-Verhalten, keine dauerhafte Garantie — eine Mindest-Staking-Dauer ist ein Parameter, den die Governance in Zukunft einführen könnte, genau wie jeder andere Staking-Parameter auf dieser Seite per Abstimmung geändert werden kann. Sollte das jemals geschehen, zeigt die Wallet die daraus resultierende Wartezeit (jedes Minimum zuzüglich der 21-tägigen Entbindung) an, bevor du eine Delegation bestätigst, und diese Seite wird entsprechend aktualisiert.
+Dies beschreibt das aktuelle Mainnet-Verhalten, keine dauerhafte Garantie — eine Mindest-Staking-Dauer ist ein Parameter, den die Governance in Zukunft einführen könnte, genau wie jeder andere Staking-Parameter auf dieser Seite per Abstimmung geändert werden kann. Sollte das jemals geschehen, zeigt die Wallet die daraus resultierende Wartezeit (jedes Minimum zuzüglich der 21-tägigen Entbindung) an, bevor du eine Delegation bestätigst, und diese Seite wird entsprechend aktualisiert.
 
 ---
 
@@ -119,7 +119,35 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --gas 400000 --fees 40000uqor
 ```
 
-Staking-Belohnungen werden aus zwei Quellen finanziert: dem gedeckelten Emissionsbudget des Protokolls (siehe [Tokenomics](/architecture/tokenomics#staking-reward-schedule) für die aktuelle Obergrenze, gültig seit einer Governance-Änderung vom 26. August 2026) und dem Staker-Anteil jeder Transaktionsgebühr (seit dem Upgrade v3.2.0 als normale Staking-Belohnung ausgezahlt; siehe [der gestrandete Staker-Anteil](/architecture/tokenomics#stranded-and-reserve)). Die Belohnungen hängen von der Provision des Validators und der Netzwerkaktivität ab und sind nicht garantiert.
+Staking-Belohnungen werden aus zwei Quellen finanziert: dem gedeckelten Emissionsbudget des Protokolls (siehe [Tokenomics](/architecture/tokenomics#staking-reward-schedule) für den aktuellen Betrag pro Epoche und die Obergrenze, beide per Governance festgelegt — zuletzt mit dem Vorschlag 10 am 19. Oktober 2026) und dem Staker-Anteil jeder Transaktionsgebühr (seit dem Upgrade v3.2.0 als normale Staking-Belohnung ausgezahlt; siehe [der gestrandete Staker-Anteil](/architecture/tokenomics#stranded-and-reserve)). Die Belohnungen hängen von der Provision des Validators und der Netzwerkaktivität ab und sind nicht garantiert.
+
+---
+
+## Zeitgesperrtes Staking (nur Testnet) {#time-locked-staking}
+
+:::note Nicht im Mainnet
+Das Release v3.2.4 fügt **nur dem Testnet `qorechain-diana`** ein optionales Modul für zeitgesperrtes Staking hinzu, `x/stakingtier`. Es ist im Mainnet noch nicht live (der Mainnet-Governance-Vorschlag 13 würde v3.2.4 bei Höhe 3.742.566 anwenden); im Mainnet hat die Delegation keine Sperrfrist (siehe [oben](#lock-in-period)). Alles Folgende beschreibt das Testnet.
+:::
+
+Im Testnet kann ein Delegator einen Teil einer bestehenden Delegation an einen Validator für eine feste Laufzeit von 3, 6 oder 12 Monaten festlegen. Laufzeiten und Beträge sind Chain-Parameter; lies die aktuellen aus `GET /qorechain/stakingtier/v1/params` aus, statt von dieser Seite.
+
+* **Das Sperren ist optional.** Eine gewöhnliche Delegation, Neudelegation und Entbindung funktionieren genau wie auf dieser Seite beschrieben. Eingeschränkt ist nur der gesperrte Betrag: Solange eine Sperre offen ist, kann er weder entbunden noch neu delegiert werden, und das gilt für jeden Weg (Transaktion, Authz, Gruppe, Contract, Governance).
+* **Mindestsperre** von 10 QOR und höchstens 16 offene Sperren pro Delegator.
+* **Vorzeitiges Entsperren** ist erlaubt: Es beendet die Sperre, verwirkt den nicht ausgezahlten Sperrbonus und verbrennt einen Teil des gesperrten Betrags (erfasst unter der Burn-Quelle `staking_tier_penalty`); der Rest bleibt delegiert und entsperrt.
+* **Slashing** gilt für eine gesperrte Delegation wie für jede andere; die Sperre schrumpft mit der Delegation.
+* **Einfordern.** Sperrboni laufen pro Epoche auf und werden ausgezahlt, wenn du sie einforderst.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind query stakingtier locks <holder_address>
+```
+
+Wie auf dem Rest dieser Seite signierst du jede erzeugte Transaktion mit `tx pqc cosign`.
 
 ---
 

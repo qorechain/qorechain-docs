@@ -13,7 +13,7 @@ Autentifică-te pentru ca progresul tău să fie urmărit — vezi [Autentificar
 
 ## Răsfoiește misiunile
 
-Pagina Misiuni se deschide cu un rezumat rapid al numărului de misiuni disponibile, câte ai în desfășurare și câte ai finalizat. **Filele de categorii** — precum onboarding, tranzacționare, social, comunitate, învățare, zilnice și săptămânale — îți permit să filtrezi lista.
+Pagina Misiuni are o filă **Eigenstate 1** și o filă **Eigenstate 2**; când nu este activă nicio misiune Eigenstate 2, fila acesteia anunță că provocări noi urmează în curând. Pagina se deschide cu un rezumat rapid al numărului de misiuni disponibile, câte ai în desfășurare și câte ai finalizat. **Filele de categorii** — precum onboarding, tranzacționare, social, comunitate, învățare, zilnice și săptămânale — îți permit să filtrezi lista.
 
 Fiecare misiune apare ca un card care afișează:
 
@@ -24,6 +24,8 @@ Fiecare misiune apare ca un card care afișează:
 - Un **status**: finalizată, în desfășurare, începută sau blocată.
 
 O misiune blocată indică misiunea pe care trebuie să o finalizezi mai întâi pentru ca aceasta să se deblocheze.
+
+**Misiuni sociale.** Misiunile care implică X sau Telegram se contorizează doar după ce ți-ai conectat acele conturi în **Profil** (pagina afișează *Connect Social Accounts* cu un link **Go to Profile** până când o faci), iar conexiunea este verificată.
 
 ## Finalizează o misiune
 

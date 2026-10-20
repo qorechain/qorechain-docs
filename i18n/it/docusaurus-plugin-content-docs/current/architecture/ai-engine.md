@@ -13,13 +13,22 @@ QoreChain integra funzionalità di AI a più livelli dello stack di protocollo t
 
 Il motore QCAI (QoreChain AI) opera su tre livelli:
 
-| Livello                | Ambito                                                       | Esecuzione               | Deterministico |
-| ---------------------- | ----------------------------------------------------------- | ------------------------ | -------------- |
-| **Livello consenso**   | Produzione dei blocchi, regolazione dei parametri           | On-chain (x/rlconsensus) — oggi solo osservazione | Sì             |
-| **Livello rete**       | Instradamento delle transazioni, rilevamento frodi, ottimizzazione delle commissioni | On-chain (x/ai)          | Sì             |
-| **Livello applicazione** | Generazione di contratti, auditing, analisi approfondita  | Off-chain (sidecar)      | No             |
+| Livello                  | Ambito                                                                               | Esecuzione                                        | Deterministico |
+| ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------- | -------------- |
+| **Livello consenso**     | Produzione dei blocchi, regolazione dei parametri                                    | On-chain (x/rlconsensus) — oggi solo osservazione | Sì             |
+| **Livello rete**         | Instradamento delle transazioni, rilevamento frodi, ottimizzazione delle commissioni | On-chain (x/ai)                                   | Sì             |
+| **Livello applicazione** | Generazione di contratti, auditing, analisi approfondita                             | Off-chain (sidecar)                               | No             |
 
 Il livello di consenso è documentato separatamente in [Motore di Consenso PRISM](/architecture/prism-consensus-engine). Questa pagina copre i livelli di rete e applicazione.
+
+:::note Cosa viene applicato sulle reti attive (mainnet v3.2.3, testnet v3.2.4)
+Due parti di `x/ai` agiscono oggi sulle transazioni, sia sulla corsia Cosmos sia sulla corsia EVM:
+
+* Un **limite di frequenza per mittente**. Il limite attivo è di **600 transazioni al minuto per mittente** (`max_tx_per_minute`; la corsia EVM ha un proprio limite facoltativo, che non è impostato, quindi si applica lo stesso valore). Il "minuto" è contato su una finestra fissa di blocchi, non sul tempo reale, perché l'altezza del blocco è l'unico orologio condiviso da tutti i validatori. Un mittente che ha raggiunto il limite si vede rifiutare le transazioni successive finché quelle più vecchie non escono dalla finestra. Il limite è applicato sulla corsia Cosmos dalla v3.2.0 e su entrambe le corsie dalla v3.2.2.
+* Un **punteggio di anomalia** per ogni transazione. L'`anomaly_action` attiva è `flag`: un punteggio alto emette un evento `ai_anomaly_check` e conta la transazione come segnalata, ma non la rifiuta. Rifiutare in base al punteggio è un'impostazione di governance che non è abilitata.
+
+Tutto il resto di questa pagina (il router, la pipeline antifrode a sei livelli, l'ottimizzatore delle commissioni, l'ottimizzatore di rete, il sidecar) descrive analisi e consulenza: nulla di tutto ciò modifica quali transazioni la catena accetta, e la pipeline a sei livelli non viene chiamata dal percorso delle transazioni. Leggi le impostazioni attive con `qorechaind query ai config` e i contatori con `qorechaind query ai stats`.
+:::
 
 ## Router delle transazioni
 
@@ -31,11 +40,11 @@ Il router potenziato dall'AI seleziona i validatori e i percorsi ottimali per og
 OptimalRoute = argmin_r( alpha * Latency(r) + beta * Cost(r) + gamma * Security(r)^-1 )
 ```
 
-| Peso     | Simbolo | Predefinito | Descrizione                                                                      |
-| -------- | ------- | ----------- | -------------------------------------------------------------------------------- |
-| Latenza  | alpha   | 0.4         | Tempo di risposta normalizzato (0=migliore, 1=peggiore). 0ms corrisponde a 0.0, 1000ms a 1.0. |
-| Costo    | beta    | 0.3         | Percentuale di carico attuale come proxy del costo.                              |
-| Sicurezza | gamma  | 0.3         | Inverso del punteggio di reputazione. Una reputazione più alta produce un punteggio più basso (migliore). |
+| Peso      | Simbolo | Predefinito | Descrizione                                                                                               |
+| --------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| Latenza   | alpha   | 0.4         | Tempo di risposta normalizzato (0=migliore, 1=peggiore). 0ms corrisponde a 0.0, 1000ms a 1.0.            |
+| Costo     | beta    | 0.3         | Percentuale di carico attuale come proxy del costo.                                                       |
+| Sicurezza | gamma   | 0.3         | Inverso del punteggio di reputazione. Una reputazione più alta produce un punteggio più basso (migliore). |
 
 Il router mantiene una **cache delle metriche** (TTL predefinito: 30 secondi) con dati di performance per validatore, inclusi latenza media, percentuale di uptime, percentuale di carico e punteggio di reputazione. Quando le metriche memorizzate nella cache non sono disponibili, il sistema ricade sul router euristico.
 
@@ -56,14 +65,14 @@ Il rilevatore di frodi implementa una **pipeline di rilevamento a sei livelli** 
 
 ### Livelli di rilevamento
 
-| Livello | Rilevatore              | Metodo                                                                | Soglia di attivazione                                      |
-| ------- | ----------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
-| 1       | **Isolation Forest**    | Z-score statistico su caratteristiche di importo, gas e frequenza del mittente | Punteggio di anomalia > 0.7                       |
-| 2       | **Sequence Analyzer**   | Rileva schemi alternati di invio/ricezione (wash trading)            | > 3 trasferimenti alternati tra la stessa coppia          |
-| 3       | **Sybil Detector**      | Traccia nuovi indirizzi univoci; segnala picchi di nuovi mittenti    | > 30% delle transazioni recenti da nuovi indirizzi        |
-| 4       | **DDoS Detector**       | Monitora la frequenza delle transazioni per mittente                 | > 100 transazioni al minuto da un singolo mittente        |
+| Livello | Rilevatore              | Metodo                                                                             | Soglia di attivazione                                              |
+| ------- | ----------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 1       | **Isolation Forest**    | Z-score statistico su caratteristiche di importo, gas e frequenza del mittente     | Punteggio di anomalia > 0.7                                        |
+| 2       | **Sequence Analyzer**   | Rileva schemi alternati di invio/ricezione (wash trading)                          | > 3 trasferimenti alternati tra la stessa coppia                   |
+| 3       | **Sybil Detector**      | Traccia nuovi indirizzi univoci; segnala picchi di nuovi mittenti                  | > 30% delle transazioni recenti da nuovi indirizzi                 |
+| 4       | **DDoS Detector**       | Monitora la frequenza delle transazioni per mittente                               | > 100 transazioni al minuto da un singolo mittente                 |
 | 5       | **Flash Loan Detector** | Identifica schemi prestito-manipolazione-rimborso all'interno di un singolo blocco | >= 3 transazioni nello stesso blocco con varianza di importo > 10x |
-| 6       | **Exploit Detector**    | Segnala un consumo di gas anomalo nelle chiamate ai contratti        | > 5x del gas medio per lo stesso tipo di transazione      |
+| 6       | **Exploit Detector**    | Segnala un consumo di gas anomalo nelle chiamate ai contratti                      | > 5x del gas medio per lo stesso tipo di transazione               |
 
 ### Classificazione delle minacce
 
@@ -77,16 +86,16 @@ Il rilevatore di frodi implementa una **pipeline di rilevamento a sei livelli** 
 
 ### Azioni di risposta
 
-| Livello di minaccia | Confidenza | Azione                                                       |
-| ------------------- | ---------- | ------------------------------------------------------------ |
-| Critico             | > 0.8      | `circuit_break` — Sospende l'esecuzione di contratti specifici |
+| Livello di minaccia | Confidenza | Azione                                                                 |
+| ------------------- | ---------- | ---------------------------------------------------------------------- |
+| Critico             | > 0.8      | `circuit_break` — Sospende l'esecuzione di contratti specifici         |
 | Critico             | &lt;= 0.8  | `rate_limit` — Riduce temporaneamente l'accettazione di TX dalla fonte |
-| Alto                | > 0.7      | `rate_limit`                                                 |
-| Alto                | &lt;= 0.7  | `alert` — Emette un evento per validatori e operatori        |
-| Medio               | Qualsiasi  | `alert`                                                      |
-| Basso / Nessuno     | Qualsiasi  | `allow`                                                      |
+| Alto                | > 0.7      | `rate_limit`                                                           |
+| Alto                | &lt;= 0.7  | `alert` — Emette un evento per validatori e operatori                  |
+| Medio               | Qualsiasi  | `alert`                                                                |
+| Basso / Nessuno     | Qualsiasi  | `allow`                                                                |
 
-Quando viene attivata un'azione diversa da `allow`, viene creato un record di indagine sulla frode con un ID univoco (formato: `INV-{timestamp}-{txhash_prefix}`).
+Quando viene attivata un'azione diversa da `allow`, la pipeline crea un record di indagine sulla frode con un ID univoco (formato: `INV-{block_height}-{txhash}`, troncato a 48 caratteri). Sulle reti attive la pipeline non viene chiamata dal percorso delle transazioni (vedi la nota all'inizio di questa pagina), quindi oggi non viene prodotto alcun record di indagine e la pipeline non imposta alcun circuit breaker sui contratti.
 
 ## Ottimizzatore delle commissioni
 
@@ -118,12 +127,12 @@ L'ottimizzatore di rete monitora continuamente le metriche di performance e gene
 R(s, a, s') = alpha * DeltaPerformance + beta * DeltaLatency + gamma * DeltaEnergy - delta * StabilityPenalty
 ```
 
-| Peso  | Valore | Obiettivo                    |
-| ----- | ------ | ---------------------------- |
+| Peso  | Valore | Obiettivo                       |
+| ----- | ------ | ------------------------------- |
 | alpha | 0.35   | Miglioramento delle performance |
-| beta  | 0.30   | Riduzione della latenza      |
-| gamma | 0.15   | Risparmio di energia/risorse |
-| delta | 0.20   | Preservazione della stabilità |
+| beta  | 0.30   | Riduzione della latenza         |
+| gamma | 0.15   | Risparmio di energia/risorse    |
+| delta | 0.20   | Preservazione della stabilità   |
 
 ### Tipi di raccomandazione
 
@@ -142,19 +151,19 @@ Il Sidecar QCAI estende l'AI on-chain con modelli di deep learning off-chain sup
 
 ### Capacità
 
-| Capacità                  | Descrizione                                                                          |
-| ------------------------- | ----------------------------------------------------------------------------------- |
-| **Generazione di contratti** | Genera smart contract da specifiche in linguaggio naturale su 17 piattaforme     |
-| **Auditing dei contratti** | Analisi approfondita della sicurezza del codice degli smart contract               |
+| Capacità                             | Descrizione                                                                             |
+| ------------------------------------ | --------------------------------------------------------------------------------------- |
+| **Generazione di contratti**         | Genera smart contract da specifiche in linguaggio naturale su 17 piattaforme            |
+| **Auditing dei contratti**           | Analisi approfondita della sicurezza del codice degli smart contract                    |
 | **Analisi approfondita delle frodi** | Indagine estesa sulle frodi tramite modelli addestrati (integra le euristiche on-chain) |
-| **Consulenza sulla rete** | Raccomandazioni avanzate di ottimizzazione dei parametri                            |
+| **Consulenza sulla rete**            | Raccomandazioni avanzate di ottimizzazione dei parametri                                |
 
 ### Modelli
 
-| Nome del modello | Caso d'uso                                                       |
-| ---------------- | --------------------------------------------------------------- |
+| Nome del modello | Caso d'uso                                                                |
+| ---------------- | ------------------------------------------------------------------------- |
 | QCAI Fast        | Risposte a bassa latenza per la stima delle commissioni e l'instradamento |
-| QCAI Balanced    | Analisi approfondita per l'auditing e le indagini sulle frodi   |
+| QCAI Balanced    | Analisi approfondita per l'auditing e le indagini sulle frodi             |
 
 Il sidecar viene eseguito come servizio off-chain indipendente, in modo che i carichi di lavoro di deep learning non blocchino né influenzino mai l'esecuzione critica per il consenso.
 
@@ -162,16 +171,16 @@ Il sidecar viene eseguito come servizio off-chain indipendente, in modo che i ca
 
 Due contratti precompilati espongono le capacità di AI on-chain agli smart contract EVM:
 
-| Precompilato     | Indirizzo | Descrizione                                                          |
-| ---------------- | --------- | ------------------------------------------------------------------- |
-| `aiRiskScore`    | `0x0B01`  | Restituisce un punteggio di rischio (0-100) per un dato indirizzo o hash di transazione |
+| Precompilato     | Indirizzo | Descrizione                                                                               |
+| ---------------- | --------- | ----------------------------------------------------------------------------------------- |
+| `aiRiskScore`    | `0x0B01`  | Restituisce un punteggio di rischio (0-100) per un dato indirizzo o hash di transazione   |
 | `aiAnomalyCheck` | `0x0B02`  | Restituisce un flag booleano di anomalia e un punteggio di confidenza per una transazione |
 
 :::warning Non ancora attivo
 Questi precompilati **non sono attivi** sulla mainnet (`qorechain-vladi`) né sulla testnet (`qorechain-diana`); una chiamata restituisce dati vuoti. Verranno attivati solo dopo aver ottenuto un percorso di scoring in sola lettura e a virgola fissa. Vedi [Precompilati EVM: stato della rete](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Importante**: I precompilati EVM utilizzano **esclusivamente il motore euristico deterministico**. Non chiamano mai il sidecar, garantendo che tutta l'esecuzione EVM rimanga completamente deterministica e riproducibile.
+**Importante**: I precompilati EVM utilizzano **esclusivamente il motore euristico deterministico**. Non chiamano mai il sidecar, garantendo che tutta l'esecuzione EVM rimanga completamente deterministica e riproducibile. Dalla v3.2.3 il precompilato di controllo delle anomalie analizza una transazione senza scrivere stato; l'altro rafforzamento dei precompilati in quella release (il bridge CrossVM che rifiuta `STATICCALL`, misura la propria chiamata annidata sul gas del frame chiamante e raggiunge solo target CosmWasm in allowlist) si applica una volta attivato il precompilato CrossVM. Al 20 ottobre 2026 l'elenco `active_static_precompiles` è vuoto su entrambe le reti.
 
 ## Attestazione TEE
 
@@ -201,11 +210,11 @@ Il modulo AI definisce le interfacce per il coordinamento dell'**apprendimento f
 
 ### Metodi di aggregazione
 
-| Metodo     | Descrizione                                                                |
-| ---------- | ------------------------------------------------------------------------- |
+| Metodo     | Descrizione                                                                       |
+| ---------- | --------------------------------------------------------------------------------- |
 | `fedavg`   | Federated Averaging — media ponderata dei gradienti in base al numero di campioni |
-| `fedprox`  | Federated Proximal — aggiunge un termine prossimale per gestire dati eterogenei |
-| `scaffold` | SCAFFOLD — usa variabili di controllo per correggere il drift del client  |
+| `fedprox`  | Federated Proximal — aggiunge un termine prossimale per gestire dati eterogenei   |
+| `scaffold` | SCAFFOLD — usa variabili di controllo per correggere il drift del client          |
 
 ### Ciclo di vita di un round
 

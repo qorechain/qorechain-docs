@@ -76,7 +76,7 @@ Cela crée les répertoires de configuration et de données par défaut sous `~/
 Le nœud démarre avec les paramètres par défaut. Voir [Connexion au testnet](/getting-started/connecting-to-testnet) pour rejoindre le réseau en service avec une configuration genesis et de pairs appropriée.
 
 :::note
-Les exemples de cette page ciblent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 29 juin 2026 et dispose de sa propre page dédiée **Connexion au mainnet**.
+Les exemples de cette page ciblent le testnet **`qorechain-diana`** (EVM chain ID **9800**). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) est en service depuis le 7 juin 2026 (version v3.2.3 ; le testnet exécute la v3.2.4) et dispose de sa propre page dédiée **Connexion au mainnet**.
 :::
 
 ---

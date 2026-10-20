@@ -50,10 +50,10 @@ Jede Sprache stellt dieselbe API bereit, jeweils gestützt auf eine andere audit
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (Import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (statische Bibliothek + Header) | Build aus dem [Repo](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info Verfügbarkeit
-Die Bindings für JavaScript, Rust, Python, Go und Java sind alle in Version **0.2.1** **veröffentlicht** — installieren Sie sie direkt von npm, crates.io, PyPI, dem Go-Modul-Proxy und Maven Central mit den obigen Befehlen. Die Python-Distribution wird als `qorechain-pqc` installiert, **importiert aber als `qorpqc`**. Das **Java**-Paket ist auf Maven Central als `io.github.qorechain:qorechain-pqc:0.2.1` verfügbar (Bouncy-Castle-Backend). Version **0.2.0** brachte das versionsbewusste `hybridSignBytes` (unten), und **0.2.1** korrigierte, welcher Upgrade-Name den Wechsel zu v2 für das Mainnet markiert; verwenden Sie daher 0.2.1 oder neuer. Das **C**-Binding ist eine statische Bibliothek + Header, die Sie aus [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) selbst bauen.
+Die Bindings für JavaScript, Rust, Python, Go und Java sind alle in Version **0.2.2** **veröffentlicht** (npm, crates.io, PyPI, der Go-Modul-Proxy als `v0.2.2` und Maven Central; geprüft am 21. Oktober 2026). Installieren Sie sie mit den obigen Befehlen. Die Python-Distribution wird als `qorechain-pqc` installiert, **importiert aber als `qorpqc`**. Das **Java**-Paket ist `io.github.qorechain:qorechain-pqc:0.2.2` (Bouncy-Castle-Backend). Version **0.2.0** brachte das versionsbewusste `hybridSignBytes` (unten), **0.2.1** korrigierte, welcher Upgrade-Name den Wechsel zu v2 für das Mainnet markiert, und **0.2.2** korrigierte Dokumentation und Kommentare zu hedged gegenüber deterministischer Signierung (die Chain akzeptiert beides; im JavaScript-Binding hat sich im Code nur die Versionskonstante geändert); verwenden Sie daher 0.2.1 oder neuer. Das **C**-Binding ist eine statische Bibliothek + Header, die Sie aus [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) selbst bauen.
 :::
 
 ## Deterministische Signierung (Standard) {#deterministic-signing}
@@ -68,23 +68,62 @@ Kernfakten:
 
 ## Schlüssel registrieren {#pqc-key-registration}
 
-Jedes Konto registriert seinen öffentlichen ML-DSA-87-Schlüssel **einmalig und explizit**. Es gibt keine automatische Registrierung: Ein öffentlicher Schlüssel, der in einer späteren hybriden Transaktion eingebettet ist (zum Beispiel über die SDK-Option `includePqcPublicKey`), wird in der Erweiterung mitgeführt, registriert ihn aber **nicht**. Die Registrierung ist die eine Cosmos-Lane-Transaktion, die klassisch signiert werden darf, damit ein brandneues Konto seinen ersten Schlüssel bootstrappen kann. Führen Sie sie mit dem Release-`qorechaind` aus (ein aus dem öffentlichen Quellcode gebautes Binary kann nicht signieren; siehe [Aus dem Quellcode bauen](/developer-guide/building-from-source)), mit QoreX oder mit `ensurePqcRegistered` des SDK:
+Jedes Konto registriert seinen öffentlichen ML-DSA-87-Schlüssel **einmalig und explizit**. Es gibt keine automatische Registrierung: Ein öffentlicher Schlüssel, der in einer späteren hybriden Transaktion eingebettet ist (zum Beispiel über die SDK-Option `includePqcPublicKey`), wird in der Erweiterung mitgeführt, registriert ihn aber **nicht**. Eine **erste** Registrierung ist die eine Cosmos-Lane-Transaktion, die klassisch signiert werden darf, damit ein brandneues Konto seinen ersten Schlüssel bootstrappen kann; ein Konto, das bereits einen Schlüssel hat, muss jede spätere Schlüsselnachricht hybrid signieren. Führen Sie sie mit dem Release-`qorechaind` aus (ein aus dem öffentlichen Quellcode gebautes Binary kann nicht signieren; siehe [Aus dem Quellcode bauen](/developer-guide/building-from-source)), mit QoreX oder mit `ensurePqcRegistered` des SDK:
 
 ```bash
 # 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
 qorechaind tx pqc gen-key mypqc
 
-# 2. Register the public key on your account (classical-signed).
-qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+# 2. Register the public key on your account (classical-signed, because the account has no key yet).
+#    --pqc-key mypqc also attaches the optional proof of possession (see below).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid --pqc-key mypqc \
   --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
 
 # 3. Verify.
 qorechaind query pqc account <address>
 ```
 
-Setzen Sie `--gas` explizit: Der 2.592 Byte große öffentliche Schlüssel kann die standardmäßigen 200.000 Gas überschreiten (Mainnet-Registrierungen haben etwa 220.000 bis 350.000 verbraucht), und die Gebühr muss mindestens Gas × 0,1 uqor betragen, sodass `--gas 600000` mindestens `--fees 60000uqor` erfordert. Die alte Form `qorechaind tx pqc register-key <pubkey-hex> hybrid` ist für Dilithium-5 gleichwertig. Danach bauen Sie jede Cosmos-Lane-Transaktion mit `--generate-only` und signieren sie mit `qorechaind tx pqc cosign`. Die Schlüsseldatei ist der Post-Quanten-Signierschlüssel des Kontos: Wer sie lesen kann, kann zusammen mit dem klassischen Schlüssel für das Konto kosignieren; sichern Sie sie daher wie die Mnemonic (sie lässt sich aus der Mnemonic neu ableiten, siehe unten).
+Setzen Sie `--gas` explizit: Der 2.592 Byte große öffentliche Schlüssel kann die standardmäßigen 200.000 Gas überschreiten (Mainnet-Registrierungen haben etwa 220.000 bis 310.000 verbraucht; eine Registrierung mit Besitznachweis trägt eine weitere 4.627 Byte große Signatur, etwa 46.000 Gas mehr), und die Gebühr muss mindestens Gas × 0,1 uqor betragen, sodass `--gas 600000` mindestens `--fees 60000uqor` erfordert. Die alte Form `qorechaind tx pqc register-key <pubkey-hex> hybrid` ist für Dilithium-5 gleichwertig. Danach bauen Sie jede Cosmos-Lane-Transaktion mit `--generate-only` und signieren sie mit `qorechaind tx pqc cosign`. Die Schlüsseldatei ist der Post-Quanten-Signierschlüssel des Kontos: Wer sie lesen kann, kann zusammen mit dem klassischen Schlüssel für das Konto kosignieren; sichern Sie sie daher wie die Mnemonic (sie lässt sich aus der Mnemonic neu ableiten, siehe unten).
 
 Ein registrierter Schlüssel ist außerdem die erste von zwei Voraussetzungen für das Senden von EVM-Transaktionen; die zweite ist ein offenes [EVM-Autorisierungsfenster](/developer-guide/evm-development#evm-window).
+
+### Was die Chain bei der Registrierung prüft (Mainnet v3.2.3 und später) {#key-integrity}
+
+Seit dem Upgrade v3.2.3 (auf dem Mainnet angewendet auf Höhe 3,662,051 am 20. Oktober 2026) prüft die Chain den Schlüssel selbst und nicht nur, ob er die richtige Länge hat:
+
+| Regel | Ablehnung (Codespace `pqc`) |
+| --- | --- |
+| `key_type` muss `hybrid` oder `pqc_only` sein; `classical_only` registriert keinen Post-Quanten-Schlüssel und würde das Konto daran hindern, jemals wieder zu signieren | Code 230 |
+| Ein Schlüssel, der keinen Post-Quanten-Schutz bietet (ein degenerierter Schlüssel, für den niemand ein Geheimnis braucht), wird abgelehnt, und zwar bei Registrierung, Rotation und Migration gleichermaßen | Code 230 |
+| Ein Schlüssel, den das Konto zuvor schon verwendet hat, kann nicht erneut registriert werden und es kann auch nicht auf ihn zurückrotiert werden (das Konto merkt sich stillgelegte Schlüssel) | Code 232 |
+| Der klassische Schlüssel in der Registrierung muss der eigene komprimierte secp256k1-Schlüssel des Signierers sein (seit v3.2.2) | Code 45 |
+| Ein optionaler Besitznachweis muss, falls vorhanden, verifizieren | Code 231 |
+| Ein Konto, das bereits einen Schlüssel besitzt, muss jede weitere Schlüsselnachricht (Registrierung, Migration) hybrid signieren; nur die Reparatur eines Eintrags ohne brauchbaren Schlüssel darf klassisch sein | Code 234 |
+| Das Veralten oder Deaktivieren eines Algorithmus darf die Chain nicht ohne aktiven Signaturalgorithmus zurücklassen | Code 233 |
+
+Außerdem kann seit v3.2.3 keine der Schlüsselnachrichten (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey`, `MsgMigratePQCKey`) im Namen eines Kontos über `authz` gesendet werden; eine Transaktion kann höchstens **eine** hybride Signaturerweiterung tragen; und ein Konto, das **keinen** registrierten Schlüssel hat, kann keine hybride Erweiterung mehr anhängen, die nichts hat, wogegen sie verifiziert werden könnte (nur eine Registrierung darf passieren, genau wie ganz ohne Erweiterung).
+
+### Besitznachweis (optional) {#proof-of-possession}
+
+Eine Registrierung kann zusätzlich nachweisen, dass der Registrierende das Geheimnis des neuen Schlüssels besitzt. Der Schlüssel signiert `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` (die Algorithmus-ID ist `1` für ML-DSA-87; der öffentliche Schlüssel ist Hex in Kleinbuchstaben), und die Signatur kommt in das Feld `proof_of_possession` von `MsgRegisterPQCKeyV2`. Mit der CLI baut und hängt `register-key-v2 ... --pqc-key <name>` ihn an. Mit dem TypeScript-SDK 0.9.0 hängt `ensurePqcRegistered` den Nachweis von selbst an, sobald das Netzwerk v3.2.3 angewendet hat (und `signProofOfPossession` / `verifyProofOfPossession` erstellen und prüfen einen von Hand); `@qorechain/chain-bridge` 0.2.3 tut dasselbe, wenn `cosmosRest` übergeben wird. `@qorechain/wallet-adapter` (0.4.0) und SDK-Releases vor 0.9.0 hängen keinen an, daher trägt eine über sie vorgenommene Registrierung keinen, was die Chain weiterhin akzeptiert. Die Chain verifiziert den Nachweis, **wenn er vorhanden ist**, und lehnt die Registrierung ab, wenn er nicht verifiziert (Code 231); eine Registrierung ohne Nachweis wird im Mainnet weiterhin akzeptiert. Da die Nachricht die Chain, den Algorithmus, das Konto und den Schlüssel benennt, beweist ein für eines davon erstellter Nachweis nichts für ein anderes.
+
+Im Testnet (v3.2.4, **nur Testnet**) meldet der Kontoeintrag, ob ein Nachweis verifiziert wurde (`possession_proven`, in `GET /qorechain/pqc/v1/account/{address}`), und die Registrierung von Bridge-Validatoren verlangt einen Nachweis. Beides gibt es im Mainnet noch nicht; der Mainnet-Governance-Vorschlag 13 würde v3.2.4 bei Höhe 3,742,566 anwenden.
+
+## Ablehnungscodes (Codespace `pqc`) {#pqc-codes}
+
+| Code | Bedeutung |
+| --- | --- |
+| 20 | Hybride Signatur erforderlich: Die Transaktion trägt keine PQC-Erweiterung (nur eine erste Registrierung und ein Unjail durch ein Konto ohne Schlüssel sind ausgenommen) |
+| 21 | Die ML-DSA-87-Hälfte wurde nicht verifiziert, siehe [unten](#code-21) |
+| 26, 27, 28 | EVM-Lane: kein offenes Fenster oder kein Schlüssel / Fenster erschöpft / ungültige Fenstergrenzen, siehe [EVM-Entwicklung](/developer-guide/evm-development#evm-window) |
+| 45 | Der klassische Schlüssel in einer Registrierung ist nicht der eigene komprimierte secp256k1-Schlüssel des Signierers |
+| 60, 61 | EIP-7702-Delegation: keine Post-Quanten-Zustimmung für diese Delegation / ungültige Delegationsanfrage |
+| 62, 63 | Ein delegiertes Konto hat kein Fenster, das die Aktion abdeckt / eine Ethereum-Transaktion wird nur auf der EVM-Lane ausgeführt |
+| 230 | Schwacher Schlüssel oder `classical_only`-Registrierung |
+| 231 | Besitznachweis verifiziert nicht |
+| 232 | Schlüssel wurde von diesem Konto bereits früher verwendet |
+| 233 | Es würde kein aktiver Signaturalgorithmus übrig bleiben |
+| 234 | Schlüsselpflege von einem Konto mit Schlüssel erfordert die hybride Signatur |
 
 ## Fehlerbehebung für `pqc`-Code 21 (`hybrid_verify_failed`) {#code-21}
 
@@ -147,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-Nach einer erfolgreichen Rotation signiert der neue Schlüssel (Code 0) und der alte Schlüssel wird abgelehnt (`pqc`-Code 21).
+Die Rotations-Helfer von SDK 0.9.0 und `@qorechain/wallet-adapter` 0.4.0 lehnen die Legacy-Ableitung als **neuen** Schlüssel ab (sie ist nicht an das Konto gebunden); ein Legacy-Schlüssel kann weiterhin der alte Schlüssel sein. Nach einer erfolgreichen Rotation signiert der neue Schlüssel (Code 0) und der alte Schlüssel wird abgelehnt (`pqc`-Code 21). Seit v3.2.3 lehnt eine Rotation (wie eine Migration) einen neuen Schlüssel ab, der keinen Post-Quanten-Schutz bietet (Code 230), sowie einen Schlüssel, den das Konto zuvor schon verwendet hat (Code 232), und sie kann nicht über `authz` gesendet werden.
 
 ## Konsistente API
 
@@ -223,7 +262,7 @@ Die klassische secp256k1-Signatur wird über die standardmäßigen Sign-Bytes be
 Es gibt drei Wege, diese hybride Signatur zu erzeugen:
 
 * **Die CLI** — `qorechaind tx pqc cosign` hängt die Dilithium-5-Kosignatur an eine Transaktion an und sendet sie (nach `qorechaind tx pqc gen-key` und der Registrierung des Schlüssels). Sie ist nur Teil des Release-Binaries. Siehe [Transaktionsbefehle](/cli-reference/transaction-commands).
-* **Das QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (übergeben Sie `rest`, damit die Form der Sign-Bytes aufgelöst wird) erledigen das Äquivalent in TypeScript, Python, Go, Rust und Java; registrieren Sie zuerst Ihren Schlüssel (siehe oben). Siehe [SDK-Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
+* **Das QoreChain SDK** — `buildHybridTx` / `signAndBroadcastHybrid` (übergeben Sie `rest`, damit die Form der Sign-Bytes aufgelöst wird) erledigen das Äquivalent in TypeScript, Python, Go, Rust und Java; in TypeScript signiert `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) jede Transaktion hybrid. Registrieren Sie zuerst Ihren Schlüssel (siehe oben). Siehe [SDK-Konten & PQC-Signierung](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` direkt** — verwenden Sie `hybridSignBytes`, um die Sign-Bytes zu rahmen, und `mldsa.sign`, um die Dilithium-5-Signatur zu erzeugen, wenn Sie Tooling außerhalb des SDK in einer der sechs unterstützten Sprachen bauen.
 
 ## Optimierung des On-Chain-Fußabdrucks

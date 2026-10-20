@@ -13,7 +13,7 @@ Inicia sesión para que se registre tu progreso —consulta [Iniciar sesión](/d
 
 ## Explorar misiones
 
-La página de Misiones se abre con un resumen rápido de cuántas misiones hay disponibles, cuántas tienes en curso y cuántas has completado. Las **pestañas de categoría** —como incorporación, trading, social, comunidad, aprendizaje, diarias y semanales— te permiten filtrar la lista.
+La página de Misiones tiene una pestaña **Eigenstate 1** y una pestaña **Eigenstate 2**; cuando no hay misiones de Eigenstate 2 activas, su pestaña indica que pronto llegarán nuevos desafíos. La página se abre con un resumen rápido de cuántas misiones hay disponibles, cuántas tienes en curso y cuántas has completado. Las **pestañas de categoría** —como incorporación, trading, social, comunidad, aprendizaje, diarias y semanales— te permiten filtrar la lista.
 
 Cada misión aparece como una tarjeta que muestra:
 
@@ -24,6 +24,8 @@ Cada misión aparece como una tarjeta que muestra:
 - Un **estado**: completada, en curso, iniciada o bloqueada.
 
 Una misión bloqueada indica la misión que necesitas terminar primero antes de que se desbloquee.
+
+**Misiones sociales.** Las misiones que implican X o Telegram solo cuentan una vez que has conectado esas cuentas en tu **Perfil** (la página muestra *Connect Social Accounts* con un enlace **Go to Profile** hasta que lo hagas) y la conexión está verificada.
 
 ## Completar una misión
 

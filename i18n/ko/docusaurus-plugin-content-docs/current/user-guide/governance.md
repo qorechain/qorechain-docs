@@ -10,7 +10,7 @@ sidebar_position: 3
 이 가이드는 QoreChain에서 온체인 거버넌스가 작동하는 방식을 다루며, 여기에는 투표가 집계되는 방식, 제안 제출 방법, 그리고 투표 방법이 포함됩니다.
 
 :::note
-아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 29일부터 v3.2 라인에서 가동 중입니다(노드 릴리스 **v3.2.1**, 테스트넷은 **v3.2.2** 실행) — 메인넷에서 거버넌스에 참여할 때는 **메인넷 연결** 페이지의 메인넷 체인 ID와 엔드포인트로 대체하세요.
+아래 명령어는 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 사용합니다. 메인넷(**`qorechain-vladi`**, EVM 체인 ID **9801**)은 2026년 6월 7일부터 가동 중이며 릴리스 **v3.2.3**을 실행합니다. 테스트넷은 **v3.2.4**를 실행합니다 — 메인넷에서 거버넌스에 참여할 때는 **메인넷 연결** 페이지의 메인넷 체인 ID와 엔드포인트로 대체하세요.
 :::
 
 :::caution `tx pqc cosign`으로 서명하기
@@ -29,7 +29,7 @@ sidebar_position: 3
 | 임계값    | 50%        | 통과에 필요한, 기권하지 않은 투표 중 "yes"의 비율                             |
 | 거부권    | 33.4%      | "no with veto"가 이 비율에 도달하면 제안은 거부되고 예치금은 소각됩니다       |
 
-이 값들은 2026년 10월 14일에 체인에서 읽은 것입니다. 거버넌스가 값을 변경할 수 있으므로 `qorechaind query gov params`로 확인하세요.
+이 값들은 2026년 10월 20일에 메인넷에서 읽은 것이며(테스트넷도 동일합니다), 거버넌스가 값을 변경할 수 있으므로 `qorechaind query gov params`로 확인하세요.
 
 :::note QDRW는 설계되어 있으나 활성화되어 있지 않습니다
 QoreChain의 설계에는 큰 스테이크를 완화하고 평판에 가중치를 부여하는 **QDRW(Quadratic Delegation-Reputation Weighted)** 투표권 공식 `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`이 포함되어 있습니다. 이 공식은 `x/qca` 모듈에 구현되어 있지만 두 네트워크 모두에서 **꺼져 있으며**(`qorechaind query qca config`에서 `qdrw_enabled`가 `false`), 거버넌스 집계에 포함되지 않으므로 현재 어떤 투표에도 영향을 주지 않습니다. xQORE 역시 아직 출시되지 않았습니다([xQORE 스테이킹](/user-guide/xqore-staking) 참조).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 주요 매개변수는 다음과 같습니다:
 
-| 매개변수             | 설명                                                             | 현재 값 (2026년 10월 14일) |
+| 매개변수             | 설명                                                             | 현재 값 (2026년 10월 20일) |
 | -------------------- | ---------------------------------------------------------------- | -------------------------- |
 | `min_deposit`        | 제안이 투표에 진입하기 위해 필요한 최소 예치금                   | 10 QOR (`10000000uqor`)    |
 | `max_deposit_period` | 최소 예치금에 도달해야 하는 시간 창                              | 2일                        |
@@ -170,6 +170,12 @@ qorechaind query gov params
 | `threshold`          | 통과에 필요한 최소 "yes" 비율(기권 제외)                         | 0.5                        |
 | `veto_threshold`     | 제안을 거부하고 예치금을 소각하기 위한 최소 "no with veto" 비율  | 0.334                      |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | 긴급 제안의 투표 기간, 통과 임계값, 예치금 | 1일 / 0.667 / 50 QOR |
+
+---
+
+## 지금까지의 메인넷 거버넌스 {#mainnet-history}
+
+메인넷 거버넌스는 매개변수 변경, 서킷 브레이커 결정, 조율된 업그레이드에 사용되어 왔으며, 2026년 10월부터는 체인이 v3.2.0 업그레이드 시점에 기록해 둔 금액을 해제하는 데에도 사용되었습니다. 제안 7~11은 2026년 10월에 메인넷에서 통과되었고 제안 12는 이 글을 작성하는 시점에 투표 기간 중이었습니다. 목록과 결과는 [버전 기록](/appendix/version-history#governance-timeline)에 있으며, 모든 제안은 `GET /cosmos/gov/v1/proposals`에서 실시간으로 확인할 수 있습니다.
 
 ---
 

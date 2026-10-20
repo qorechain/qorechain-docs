@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Cont și Dashboard
 
-QoreX funcționează **complet fără cont** — cheile tale nu depind niciodată de unul. Autentificarea adaugă facilități precum cererile de plată și asocierea cu Dashboard; revendicarea unui @handle îți poate cere, de asemenea, să te autentifici.
+QoreX funcționează **complet fără cont** — cheile tale nu depind niciodată de unul. Autentificarea adaugă facilități precum cererile de plată și asocierea cu Dashboard și este **necesară pentru a revendica un @handle**. Autentificarea se face prin e-mail sau prin Apple ori Google — vezi mai jos.
 
 ## Autentificare {#sign-in}
 
@@ -35,7 +35,7 @@ Settings → **Your accounts** îți permite să creezi și să comuți între p
 
 Revendică un nume unic (de exemplu `@liviu`) legat de adresa ta prin **semnături duble** (o semnătură ed25519 de registru + propria ta semnătură secp256k1). Oricine poate apoi trimite către @handle-ul tău. Rezolvarea este **verify-then-pin** (trust-on-first-use), astfel încât, dacă cheia unui handle este schimbată vreodată pe tăcute, QoreX semnalează acest lucru.
 
-Pentru că un handle se leagă de o adresă, nu de portofelul tău, revendicarea unuia este **per adresă** — dacă ai [mai multe conturi](#accounts), fiecare poate avea propriul @handle, iar revendicarea unuia pentru un cont nu dă automat un nume și celorlalte. În extensia de browser poți plăti către un handle; revendicarea din popup este oferită pe conturile QoreChain obișnuite în unele versiuni și nu în altele — dacă popup-ul nu o oferă, revendică din aplicația mobilă. Conturile de tip Ethereum (coin 60) nu au handle.
+Pentru că un handle se leagă de o adresă, nu de portofelul tău, revendicarea unuia este **per adresă** — dacă ai [mai multe conturi](#accounts), fiecare poate avea propriul @handle, iar revendicarea unuia pentru un cont nu dă automat un nume și celorlalte. Revendicarea necesită un cont autentificat și se face **în aplicația mobilă**. În extensia de browser poți plăti către un handle (căutările funcționează în extensia 0.3.7 și în versiunile ulterioare), dar nu poți revendica unul — extensia te trimite la aplicație. Conturile de tip Ethereum (coin 60) nu au handle. Numele QoreChain care imită proiectul sunt rezervate: un handle nou care imită proiectul (numele sale de brand sau cuvinte de încredere precum *official*, *support*, *airdrop* sau *treasury*, inclusiv scrieri asemănătoare) este refuzat. Proprietarii existenți își pot șterge în continuare handle-ul.
 
 Dacă registrul de handle-uri este temporar inaccesibil, ecranul se reduce la **„Handles coming soon”** și restul continuă să funcționeze; handle-urile se reactivează automat când registrul revine.
 

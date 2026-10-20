@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain runs a fully EVM-compatible execution environment on the QoreChain EVM Engine, allowing you to deploy and interact with Solidity smart contracts using familiar tooling. The EVM module exposes a JSON-RPC interface on **port 8545** (WebSocket on **8546**) that supports standard Ethereum development workflows.
 
 :::note
-The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 29 June 2026, which runs node release **v3.2.1** (consensus rules from the v3.2.0 upgrade). For the **`qorechain-diana`** testnet (v3.2.2), use EVM chain ID **9800**. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
+The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.3** (applied at height 3,662,051 on 20 October 2026). For the **`qorechain-diana`** testnet (v3.2.4, applied at height 8,337,253 on 19 October 2026; not yet applied on mainnet; governance proposal 13 would apply it at height 3,742,566), use EVM chain ID **9800**. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
 :::
 
 :::caution An EVM transaction needs a registered PQC key and an open authorisation window
 Since the v3.2.0 upgrade (mainnet height 2,981,742, testnet height 5,920,000) the EVM lane admits a transaction only from an account that has **(1) a registered ML-DSA-87 post-quantum key** and **(2) an open EVM authorisation window** that still has room for it. You sign with ordinary tools (MetaMask, ethers.js, Hardhat, Foundry), but without a registered key and an open window `eth_sendRawTransaction` is refused (codespace `pqc`, codes 26, 27 or 28). Reads, `eth_call` and gas estimation need neither. See [EVM authorisation window](#evm-window) below and the step-by-step how-to in [Your First Transaction](/getting-started/first-transaction#evm-window).
+
+Two more rules apply on mainnet since v3.2.2: **unprotected (pre-EIP-155) transactions are refused**, both by the node's mempool and in block execution, so sign with a chain id (every current wallet and library does); and **module accounts cannot be claimed through the EVM**.
 :::
 
 ---
@@ -30,7 +32,7 @@ Since the v3.2.0 upgrade (mainnet height 2,981,742, testnet height 5,920,000) th
 | Chain ID (testnet)   | `9800` (`qorechain-diana`)                 |
 | Currency symbol      | `QOR`                                      |
 
-QoreChain-specific reads are served over REST (`api.qore.host`); the `qor_` JSON-RPC namespace described [below](#custom-qor_-namespace) is **not enabled** on the public endpoints or in the default node configuration.
+QoreChain-specific reads are served over REST (`api.qore.host`); the `qor_` JSON-RPC namespace described [below](#custom-qor_-namespace) is **not enabled** on the public endpoints or in the default node configuration. The default `api` list of a freshly initialised node (v3.2.3 and later) is `eth,net,web3`; `txpool` is opt-in, because it publishes the node's pending transactions.
 
 ---
 
@@ -200,7 +202,16 @@ A post-quantum signature cannot travel *with* an Ethereum transaction (wallets s
 | `max-txs`   | 1 – 1,000          | How many EVM transactions it admits |
 | `max-value` | above 0, in `uqor` | Total outflow it admits: transferred value **plus** the maximum fee each transaction could pay (gas limit × max fee per gas), converted to `uqor` and rounded up |
 
-Whichever bound runs out first closes the window. Every field is required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 5 hours on the testnet (about 1.0 s per block).
+Whichever bound runs out first closes the window. The three bounds are required; opening a window replaces an existing one; a transaction that is admitted and then fails still uses its slot and its value budget; contract deployments count like any other transaction. `blocks` is a block count, not a duration: 17,280 blocks is about 15 hours on mainnet (about 3.2 s per block) and about 5 hours on the testnet (about 1.0 s per block).
+
+**The value bound counts native QOR only.** A token transfer, an approval or any other contract call carries value zero, so it is not counted against `max-value` (only its maximum fee is). To bound those as well, narrow the window's **scope** (mainnet v3.2.3 and later):
+
+| Scope option (CLI flag) | Message field | What the window admits |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | Plain transfers of native QOR only: no calldata, no contract creation, no recipient that carries code, no EIP-7702 authorisation |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | Only transactions whose recipient is one of the listed 20-byte addresses; contract creation is refused |
+
+A window opened without a scope behaves exactly as before. A transaction outside the scope is refused with code 27 (the message says the window "does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` and `qorechaind query pqc evm-window` report `native_only` and `allowed_targets`, and the `pqc_evm_window_opened` event carries them when set.
 
 **Steps** (the full walkthrough is in [Your First Transaction](/getting-started/first-transaction#evm-window)):
 
@@ -211,6 +222,10 @@ Whichever bound runs out first closes the window. Every field is required; openi
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. Check what is left: `qorechaind query pqc evm-window <address>` or `GET /qorechain/pqc/v1/evm_window/{address}` (answers `found: false` when there is none).
@@ -218,13 +233,17 @@ Whichever bound runs out first closes the window. Every field is required; openi
 
 Close a window early with `qorechaind tx pqc close-evm-window` (same `--generate-only` and `cosign` pattern), for example if you suspect the classical key is exposed: whatever the window still admitted is refused from the next block.
 
+### EIP-7702 delegations {#eip-7702}
+
+An EIP-7702 delegation of your account (a type-4 transaction) takes effect only with your account's own post-quantum consent, since v3.2.2. Record the consent first with the hybrid-signed Cosmos-lane message `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); it is single-use, expires after the given number of blocks and is revoked by `close-evm-window`. Value that leaves a delegated account is charged to **that** account's own window, a failed type-4 transaction keeps the authorisations it applied, and `qorechaind tx pqc clear-evm-delegation` removes a delegation. A refused delegation answers with codes 60 to 63. Read the consent with `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+
 | Refusal (codespace `pqc`) | Meaning |
 | ------------------------- | ------- |
 | code 26 | No open window for the sender, or the sender has no registered PQC key |
-| code 27 | The window is expired or exhausted (the message shows which bound) |
+| code 27 | The window is expired or exhausted (the message shows which bound), or the transaction is outside the window's scope |
 | code 28 | Invalid window bounds when opening one, or no registered key at that point |
 
-With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` and `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
+With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` and `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 adds the scope options (`nativeOnly`, `allowedTargets`) to `openEvmWindowMsg` and the EIP-7702 consent builders (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); releases before 0.9.0 build only the unscoped window, so use `qorechaind` for the rest (see the [SDK EVM guide](/sdk/guides/evm#evm-window-scope)).
 
 ---
 
@@ -233,7 +252,7 @@ With the TypeScript SDK (0.8.2 and later): `openEvmWindowMsg`, `closeEvmWindowMs
 QoreChain extends the JSON-RPC with a `qor_` namespace for chain-specific queries:
 
 :::warning Not served yet
-No released node build serves the `qor_` namespace yet: `rpc_modules` on the public endpoints lists only `eth`, `net`, `rpc`, `txpool` and `web3`, and every method below returns `-32601` (method not found) on mainnet, testnet and self-run nodes with the default configuration (`eth`, `net`, `web3`, `txpool`). See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace) for the status and the REST alternatives (for example `GET /qorechain/pqc/v1/account/{address}` for PQC key status).
+No released node build serves the `qor_` namespace yet: `rpc_modules` on the public endpoints lists only `eth`, `net`, `rpc`, `txpool` and `web3`, and every method below returns `-32601` (method not found) on mainnet, testnet and self-run nodes with the default configuration (`eth`, `net`, `web3`). See [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace) for the status and the REST alternatives (for example `GET /qorechain/pqc/v1/account/{address}` for PQC key status).
 :::
 
 | Method                      | Description                                                       |

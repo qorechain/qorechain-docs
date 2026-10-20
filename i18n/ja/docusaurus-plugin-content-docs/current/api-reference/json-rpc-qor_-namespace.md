@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | 予定されているメソッド                | 現在使用すべきもの |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}`（`found`、`account.key_type`、`account.created_at_height`）。[REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照してください。 |
-| `qor_getHybridSignatureMode`  | 公開されているクエリルートはありません。 |
-| `qor_getAIStats`              | 自分で運用するノード上の gRPC `qorechain.ai.v1.Query/Stats`。REST ルートはありません。 |
+| `qor_getHybridSignatureMode`  | 公開されている REST ルートはありません。ノードに対して、または `--node https://rpc.qore.host:443` を指定して `qorechaind query pqc hybrid-mode`（または `query pqc params`）を実行してください。 |
+| `qor_getAIStats`              | 自分で運用するノード上の gRPC `qorechain.ai.v1.Query/Stats`、または `qorechaind query ai stats`。REST ルートはありません。 |
 | `qor_getCrossVMMessage`       | 自分で運用するノード上の gRPC `qorechain.crossvm.v1.Query/Message`。REST ルートはありません。 |
 | `qor_getReputationScore`      | 公開されているクエリルートはありません（レピュテーションモジュールが公開しているのは gRPC の `Params` のみです）。 |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` および `anchor/{layer_id}`。[マルチレイヤーモジュール](/api-reference/rest-grpc-endpoints#multilayer-module)を参照してください。 |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | 公開されているクエリルートはありません。 |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`。[バーンモジュール](/api-reference/rest-grpc-endpoints#burn-module)を参照してください。 |
 | `qor_getXQOREPosition`        | なし。xQORE は稼働していません（[xQORE ステーキング](/user-guide/xqore-staking)を参照）。 |
-| `qor_getInflationRate`        | メインネットで公開されているクエリルートはありません。 |
-| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats` と `GET /cosmos/bank/v1beta1/supply` を組み合わせます。 |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | 自分で運用するノード上の gRPC `qorechain.rdk.v1.Query`（`Rollup`、`Rollups`、`Batch`、`LatestBatch`）または CLI。`/qorechain/rdk/v1/...` の REST ルートはメインネットでは提供されていません。 |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` と `/epoch_info`（発行モード、エポックごとの量、上限、進捗。v3.2.2 から提供）。[インフレーションモジュール](/api-reference/rest-grpc-endpoints#inflation-module)を参照してください。 |
+| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats`、`GET /qorechain/inflation/v1/epoch_info`、`GET /cosmos/bank/v1beta1/supply` を組み合わせます。 |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`、`/rollups`、`/batch/{id}/{index}`、`/latest_batch/{id}`、`/batches/{id}`、`/blob/{id}/{index}`（v3.2.2 から提供。[RDK モジュール](/api-reference/rest-grpc-endpoints#rdk-module)を参照）、または `qorechaind query rdk`。 |
 | `qor_suggestRollupProfile`    | 公開サービスはありません。[プリセットプロファイル](/rollups/preset-profiles)を参照してください。 |
 | `qor_getBTCStakingPosition`   | なし。BTC リステーキングモジュールにはまだクエリサービスがありません。 |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`。アブストラクトアカウントは現在、両ネットワークで無効です。 |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | なし。 |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config`（v3.2.2 から提供）。[ガスアブストラクションモジュール](/api-reference/rest-grpc-endpoints#gas-abstraction-module)を参照してください。 |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | なし。 |
 
-アカウントの EVM レーンの状態（登録済みの PQC 鍵と認可ウィンドウ）については、`GET /qorechain/pqc/v1/account/{address}` と `GET /qorechain/pqc/v1/evm_window/{address}` を使用してください。
+アカウントの EVM レーンの状態（登録済みの PQC 鍵、認可ウィンドウ、EIP-7702 の同意）については、`GET /qorechain/pqc/v1/account/{address}`、`GET /qorechain/pqc/v1/evm_window/{address}`、`GET /qorechain/pqc/v1/evm_delegation_consent/{address}` を使用してください。ステータスルートは**単数形**の `account` です。複数形の `/accounts/` は提供されておらず、`501` を返します。
 
 ---
 

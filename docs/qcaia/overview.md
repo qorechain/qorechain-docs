@@ -22,6 +22,8 @@ QCAIA is built to help newcomers and community members get oriented quickly. It 
 
 If a question falls outside what QCAIA knows, it will say so rather than guess. QCAIA is a community helper, not financial or investment advice.
 
+QCAIA's answers follow QoreChain's public documentation, so they can lag a release. For what is live on each network right now (mainnet `qorechain-vladi` runs v3.2.3 and the testnet `qorechain-diana` runs v3.2.4 as of 20 October 2026), check [Networks](/appendix/networks) and [Version History](/appendix/version-history), or query a node directly. Several parts of the platform that QCAIA is asked about, such as the bridge, the AMM pools, rollups and xQORE, are described in the docs as designed but are not live yet; if QCAIA gives a different answer, trust the documentation and the live network.
+
 ## Multi-language support
 
 QCAIA understands questions in many languages. If you ask in a language other than English, it automatically translates your question, answers it, and replies — so you can use your own language and still get a clear response. See [Examples](/qcaia/examples) for a worked non-English example.
@@ -38,7 +40,7 @@ QCAIA is in **beta**. It is improving continuously, and occasionally it may not 
 
 | Platform | How to reach it | Guide |
 | --- | --- | --- |
-| **Discord** | Join **[discord.gg/qorechain](https://discord.gg/qorechain)** and use slash commands | [Using QCAIA on Discord](/qcaia/discord) |
+| **Discord** | Join **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** and use slash commands | [Using QCAIA on Discord](/qcaia/discord) |
 | **Telegram** | Join **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** and mention the bot | [Using QCAIA on Telegram](/qcaia/telegram) |
 
 Pick your platform above to learn exactly how to ask, or jump straight to the [Examples](/qcaia/examples) page to see QCAIA in action.

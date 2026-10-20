@@ -16,15 +16,15 @@ QoreChain ağları için birleştirilmiş bir başvuru kaynağı — zincir tan�
 | **Durum** | Canlı | Aktif testnet |
 | **Cosmos zincir kimliği** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM zincir kimliği (EIP-155)** | **9801** (onaltılık `0x2649`) | **9800** (onaltılık `0x2648`) |
-| **Canlıya geçiş tarihi** | 29 Haziran 2026, 17:03 UTC (genesis bloğu) | 1 Temmuz 2026 (o tarihten beri kesintisiz; sıfırlama yok) |
-| **Zincir sürümü** | v3.2.1 (v3.2.0 konsensüs kuralları) | v3.2.2 |
+| **Canlıya geçiş tarihi** | 7 Haziran 2026 | 1 Temmuz 2026 (o tarihten beri kesintisiz; sıfırlama yok) |
+| **Zincir sürümü** | v3.2.3 (3.662.051 yüksekliğinde uygulandı, 20 Ekim 2026) | v3.2.4 (8.337.253 yüksekliğinde uygulandı, 19 Ekim 2026; yalnızca testnet) |
 | **Blok süresi (ölçülen ortalama)** | yaklaşık 3,2 sn | yaklaşık 1,0 sn |
 | **Sürüm manifestosu** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Çerçeve** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gaz fiyatı** | `0.1uqor` | `0.1uqor` |
 | **Bağlantı kılavuzu** | [Mainnet'e Bağlanma](/getting-started/connecting-to-mainnet) | [Testnet'e Bağlanma](/getting-started/connecting-to-testnet) |
 
-Her iki manifesto da yeni bir düğümün çalıştırması gereken sürüm için tek doğru kaynaktır. Testnet manifestosu (v3.2.2) bir yükseltme yüksekliği içerir; çünkü testnet, yönetişim üzerinden koordineli yükseltmeler alır. Mainnet'in v3.2.1 sürümü ise v3.2.0 konsensüs kuralları üzerinde, düğüme özgü, kademeli bir sürümdür.
+Her iki manifesto da yeni bir düğümün çalıştırması gereken sürüm için tek doğru kaynaktır. Her iki ağ da yönetişim üzerinden koordineli yükseltmeler alır; bu nedenle her manifesto, güncel sürümünün `upgradeHeight` değerini ve bu sürüme eşit bir `minCompatible` değerini taşır (mainnet 3.2.3, testnet 3.2.4). v3.2.4 şimdiye kadar yalnızca testnet'te mevcuttur; mainnet yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır (oylama 21 Ekim 2026, 21:18 UTC'ye kadar sürer).
 
 ## Genel uç noktalar {#public-endpoints}
 

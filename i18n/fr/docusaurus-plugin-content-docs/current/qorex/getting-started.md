@@ -80,7 +80,7 @@ Par défaut, QoreX dérive votre adresse `qor1…` à partir d'une phrase de ré
 3. Ouvrez Paramètres → **Vos comptes** et appuyez sur **Ajouter un compte Ethereum (coin 60)**. La première pression ajoute le compte à l'index 0 — la même adresse `0x…` que MetaMask affiche pour ces mots, et la même clé que votre adresse QoreChain `qor1…` pour ce compte. Vos QOR s'y trouvent.
 4. Passez sur ce compte (il est libellé *Ethereum · coin 60*). Vous pouvez en envoyer, staker et réclamer des fonds. Le premier envoi enregistre aussi la clé post-quantique de ce compte, ce qui entraîne de faibles frais uniques.
 
-Un compte de type Ethereum n'a pas de @handle (les handles se réclament sur un compte QoreChain `qor1…` au coin type 118), et les sites web signent avec lui via `signAndBroadcast` plutôt que `signDirect`. Chaque pression sur **Ajouter un compte Ethereum (coin 60)** ajoute l'index suivant.
+Un compte de type Ethereum n'a pas de @handle (les handles se réclament sur un compte QoreChain `qor1…` au coin type 118), et les sites web signent avec lui via `signAndBroadcast` plutôt que `signDirect` avec lui. C'est aussi le type de compte pour lequel la [fenêtre d'accès EVM](/qorex/security-and-recovery#evm-window) compte : MetaMask signe avec la même clé, de sorte que les transactions MetaMask peuvent déplacer ses QOR une fois une fenêtre ouverte. Chaque pression sur **Ajouter un compte Ethereum (coin 60)** ajoute l'index suivant.
 
 ## Se repérer {#find-your-way}
 
@@ -89,7 +89,7 @@ Un compte de type Ethereum n'a pas de @handle (les handles se réclament sur un 
 
 ## Facultatif : réclamer un @handle
 
-Une fois votre portefeuille créé, vous pouvez réclamer un **@handle** unique (par exemple `@liviu`) afin que l'on puisse vous envoyer des fonds par nom plutôt qu'à une adresse `qor1…`. C'est facultatif et vous pouvez passer cette étape — votre portefeuille n'en dépend jamais. (Dans l'extension de navigateur, certaines versions ne proposent pas la réclamation ; si la fenêtre contextuelle ne la propose pas, réclamez depuis l'application mobile.) Un handle est associé à une adresse précise plutôt qu'au portefeuille dans son ensemble, ce qui compte dès que vous avez plus d'un compte — voir [Plusieurs comptes issus d'une seule phrase](/qorex/account-and-dashboard#accounts) et [@handle](/qorex/account-and-dashboard#handle).
+Une fois votre portefeuille créé, vous pouvez réclamer un **@handle** unique (par exemple `@liviu`) afin que l'on puisse vous envoyer des fonds par nom plutôt qu'à une adresse `qor1…`. La réclamation nécessite un [compte connecté](/qorex/account-and-dashboard#sign-in) et se fait **dans l'application mobile** (l'extension de navigateur vous y renvoie). C'est facultatif et vous pouvez passer cette étape — votre portefeuille n'en dépend jamais. Un handle est associé à une adresse précise plutôt qu'au portefeuille dans son ensemble, ce qui compte dès que vous avez plus d'un compte — voir [Plusieurs comptes issus d'une seule phrase](/qorex/account-and-dashboard#accounts) et [@handle](/qorex/account-and-dashboard#handle).
 
 ## Langue
 

@@ -49,7 +49,7 @@ A partir de la versión de cadena **v3.1.82**, la interfaz SVM sirve el **saldo 
 | `getTokenAccountsByOwner`           | `owner`, filtro          | Devuelve las cuentas de token de un propietario                |
 | `getTokenAccountsByDelegate`        | `delegate`, filtro       | Devuelve las cuentas de token de un delegado                   |
 
-Los métodos fuera de esta lista, como `getGenesisHash` y `getEpochInfo`, devuelven `-32601 method not found`. `getTransaction` se acepta, pero actualmente responde con un sobre que no tiene el campo `result`, así que no cuentes con él. El slot que informa `getSlot` sigue la altura de bloque de la cadena.
+Los métodos fuera de esta lista, como `getGenesisHash` y `getEpochInfo`, devuelven `-32601 method not found` (comprobado contra `https://svm.qore.host` y `https://svm-testnet.qore.host`, 20 de octubre de 2026). Desde v3.2.2, las direcciones base58 en las consultas RPC y gRPC deben ser canónicas y de longitud acotada; una dirección mal formada se rechaza. `getTransaction` se acepta, pero actualmente responde con un sobre que no tiene el campo `result`, así que no cuentes con él. El slot que informa `getSlot` sigue la altura de bloque de la cadena.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Notas
 
 - **Formato de direcciones**: las cuentas SVM usan claves públicas codificadas en base58 (formato estándar de Solana), no el prefijo Bech32 `qor1` utilizado por los módulos nativos del Cosmos SDK.
-- **Puente entre VMs**: para mover activos entre los entornos de ejecución EVM y SVM, usa el módulo Cross-VM (`x/crossvm`). Consulta los [Comandos de transacción](/cli-reference/transaction-commands) para la sintaxis de `crossvm call`.
+- **Puente entre VMs**: para mover activos entre los entornos de ejecución EVM y SVM, usa el módulo Cross-VM (`x/crossvm`). Consulta los [Comandos de transacción](/cli-reference/transaction-commands#crossvm) para la sintaxis de `crossvm call`. El lane SVM está deshabilitado y `MsgCrossVMCall` está desactivado en la mainnet, por lo que hoy es solo de referencia.
 - **Despliegue de programas**: despliega programas BPF mediante la CLI (`qorechaind tx svm deploy-program`) o de forma programática a través del entorno de ejecución SVM.
 - **Presupuesto de cómputo**: el entorno de ejecución SVM aplica por defecto un presupuesto de cómputo de 1,400,000 unidades de cómputo por transacción. Esto es configurable mediante los parámetros del módulo.

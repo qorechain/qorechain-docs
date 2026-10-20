@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, die es Entwicklern ermöglicht, SBF/BPF-Programme mit vertrauten Solana-Tools bereitzustellen und auszuführen. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 29. Juni 2026), das die Node-Version **v3.2.1** ausführt. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.2 ausführt. **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.3** ausführt. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.4 ausführt (nur Testnet). **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
 :::
 
 ---
@@ -104,7 +104,7 @@ Die Standardwerte sind `enable = true` und `address = "127.0.0.1:8899"`, sodass 
      --generate-only > tx.json
    ```
 
-   Auf einem Netzwerk, in dem die Spur aktiviert ist, ist jeder `tx svm`-Befehl eine Transaktion auf dem Cosmos-Pfad: Signieren und übertragen Sie `tx.json` mit `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` und legen Sie ein explizites Gas-Limit fest, mit einer Gebühr von mindestens Gas × 0,1 uqor. Die Transaktionsantwort enthält die **Programm-ID** im Base58-Format.
+   Auf einem Netzwerk, in dem die Spur aktiviert ist, ist jeder `tx svm`-Befehl eine Transaktion auf dem Cosmos-Pfad: Signieren und übertragen Sie `tx.json` mit `qorechaind tx pqc cosign tx.json --from mykey --pqc-key mypqc --chain-id <chain-id>` und legen Sie ein explizites Gas-Limit fest, mit einer Gebühr von mindestens Gas × 0.1 uqor. Die Transaktionsantwort enthält die **Programm-ID** im Base58-Format.
 
 2. **Eine Instruktion ausführen** — Rufen Sie ein On-Chain-BPF-Programm mit Instruktionsdaten auf:
 
@@ -197,8 +197,8 @@ Das SVM-Modul verwendet ein **mietbasiertes Speichermodell**, um Zustandsaufblä
 
 | Parameter                  | Wert      |
 | -------------------------- | ---------- |
-| Lamports pro Byte pro Jahr | `3.480`    |
-| Rent-Befreiungsmultiplikator  | `2,0`      |
+| Lamports pro Byte pro Jahr | `3,480`    |
+| Rent-Befreiungsmultiplikator  | `2.0`      |
 | Erhebungshäufigkeit       | Jede Epoche |
 
 * Accounts mit einem Guthaben **über** `2 * (data_size * 3480 / seconds_per_year)` Lamports sind **rent-befreit** und werden nie belastet.
@@ -216,7 +216,7 @@ Jede Instruktionsausführung wird mit Compute-Units gemessen:
 
 | Parameter                                | Wert       |
 | ---------------------------------------- | ----------- |
-| Max. Compute-Units pro Instruktion        | `1.400.000` |
+| Max. Compute-Units pro Instruktion        | `1,400,000` |
 | Max. CPI-Tiefe (Cross-Program Invocation) | `4`         |
 | Max. Programmgröße                         | `10 MB`     |
 | Max. Konto-Datengröße                    | `10 MB`     |
@@ -231,10 +231,10 @@ Programme, die das Compute-Budget überschreiten, werden angehalten, und die Tra
 | --------------------------- | ------------ |
 | `max_program_size`          | 10 MB        |
 | `max_account_data_size`     | 10 MB        |
-| `compute_budget_max`        | 1.400.000 CU |
+| `compute_budget_max`        | 1,400,000 CU |
 | `max_cpi_depth`             | 4            |
-| `lamports_per_byte_year`    | 3.480        |
-| `rent_exemption_multiplier` | 2,0          |
+| `lamports_per_byte_year`    | 3,480        |
+| `rent_exemption_multiplier` | 2.0          |
 | JSON-RPC-Port               | 8899         |
 
 ---

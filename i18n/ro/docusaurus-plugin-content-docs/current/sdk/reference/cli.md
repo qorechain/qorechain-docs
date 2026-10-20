@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicat pe npm ca `create-qorechain-dapp` (`0.8.0`). Fișierele `package.json`
-> generate fixează `@qorechain/sdk` / `@qorechain/evm` la `^0.3.0`, pe care npm îl
-> rezolvă la o versiune 0.3 care nu poate semna pentru rețelele live. După
-> schelărie, rulează `npm i @qorechain/sdk@latest` (și `npm i @qorechain/evm@latest`
-> pentru șablonul EVM).
+> Publicat pe npm ca `create-qorechain-dapp` (`0.9.0`). Fișierele `package.json`
+> generate depind de `@qorechain/sdk` `^0.9.0` (șablonul EVM de `@qorechain/evm`
+> `^0.8.0`). Versiunea 0.8.0 a schelei scria intervale `^0.3.0`, pe care npm le
+> rezolvă la o versiune 0.3 care nu poate semna pentru rețelele live; dacă ai generat
+> proiectul cu 0.8.0, rulează `npm i @qorechain/sdk@latest`.
 
 ## Șabloane
 
@@ -32,6 +32,13 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Un contract Solidity `Counter` + un script viem de deploy/interacțiune (`@qorechain/evm`). |
 | `fullstack-web` | Un dApp Vite + React + TypeScript care citește solduri și tokenomics (`@qorechain/sdk`). |
 | `rollup-app` | O aplicație rollup + sidechain/paychain care folosește `RollupClient` și ajutorul multilayer (`@qorechain/sdk`). |
+
+Șablonul `rollup-app` (0.9.0) rulează implicit o simulare (dry run). Cu `QORE_BROADCAST=1`
+derivă cheia ML-DSA-87 a contului din mnemonic, o înregistrează o singură dată și
+semnează hibrid, ceea ce șablonul anterior nu putea face. Valorile sale de rollup de
+exemplu (`profile: "default"`, stake-ul) sunt ilustrative: ia numele reale de profil și
+stake-ul din [Profiluri presetate](/rollups/preset-profiles) și din parametrii live ai
+modulului înainte de a difuza.
 
 Șablonul `fullstack-web` citește prezentarea generală a tokenomics prin `client.qor`,
 un apel JSON-RPC `qor_` pe care endpoint-urile publice nu îl servesc, așa că pe mainnet

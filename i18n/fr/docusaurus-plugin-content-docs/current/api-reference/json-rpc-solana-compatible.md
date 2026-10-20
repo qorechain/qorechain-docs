@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain fournit une interface JSON-RPC compatible avec Solana via son runtime SVM (Solana Virtual Machine), permettant aux outils et SDK Solana existants d'interagir nativement avec QoreChain.
 
 :::caution La soumission de transactions SVM est actuellement désactivée
-Depuis la version de chaîne v3.1.89 (22 août), suite à un incident, la voie d'exécution SVM est **désactivée pour l'ensemble du réseau pour la soumission de transactions** — toute transaction renvoie `code 11, "SVM module is disabled"`. Cela s'applique à l'ensemble du réseau, pas seulement aux points de terminaison publics en lecture seule. Les méthodes de type lecture du tableau ci-dessous (par ex. `getBalance`, `getAccountInfo`) répondent normalement sur les points de terminaison publics, mais ne tentez pas d'intégration en production qui soumet des transactions SVM tant que la voie n'a pas rouvert — il s'agit d'une désactivation au moment de la compilation, et non d'un paramètre d'exécution, elle ne peut donc pas être réactivée par un vote de gouvernance ; elle devrait rester désactivée jusqu'à ce qu'un audit externe la valide.
+Depuis la version de chaîne v3.1.89 (22 août), suite à un incident, la voie d'exécution SVM est **désactivée pour l'ensemble du réseau pour la soumission de transactions** — toute transaction renvoie `code 11, "SVM module is disabled"`. Cela s'applique à l'ensemble du réseau, pas seulement aux points de terminaison publics en lecture seule. Les méthodes de type lecture du tableau ci-dessous (par ex. `getBalance`, `getAccountInfo`) répondent normalement sur les points de terminaison publics, mais ne tentez pas d'intégration réelle qui soumet des transactions SVM tant que la voie n'a pas rouvert — il s'agit d'une désactivation au moment de la compilation, et non d'un paramètre d'exécution, elle ne peut donc pas être réactivée par un vote de gouvernance ; elle devrait rester désactivée jusqu'à ce qu'un audit externe la valide.
 :::
 
 ## Connexion
@@ -49,7 +49,7 @@ Depuis la version de chaîne **v3.1.82**, l'interface SVM sert le **solde QOR na
 | `getTokenAccountsByOwner`           | `owner`, filtre          | Renvoie les comptes de tokens d'un propriétaire                 |
 | `getTokenAccountsByDelegate`        | `delegate`, filtre       | Renvoie les comptes de tokens d'un délégué                      |
 
-Les méthodes absentes de cette liste, telles que `getGenesisHash` et `getEpochInfo`, renvoient `-32601 method not found`. `getTransaction` est accepté mais répond actuellement par une enveloppe sans champ `result` ; ne vous y fiez donc pas. Le slot rapporté par `getSlot` suit la hauteur de bloc de la chaîne.
+Les méthodes absentes de cette liste, telles que `getGenesisHash` et `getEpochInfo`, renvoient `-32601 method not found` (vérifié sur `https://svm.qore.host` et `https://svm-testnet.qore.host`, le 20 octobre 2026). Depuis la v3.2.2, les adresses base58 dans les requêtes RPC et gRPC doivent être canoniques et de longueur bornée ; une adresse mal formée est refusée. `getTransaction` est accepté mais répond actuellement par une enveloppe sans champ `result` ; ne vous y fiez donc pas. Le slot rapporté par `getSlot` suit la hauteur de bloc de la chaîne.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Notes
 
 - **Format d'adresse** : les comptes SVM utilisent des clés publiques encodées en base58 (format Solana standard), et non le préfixe Bech32 `qor1` utilisé par les modules natifs du SDK Cosmos.
-- **Pont inter-VM** : pour déplacer des actifs entre les runtimes EVM et SVM, utilisez le module Cross-VM (`x/crossvm`). Voir [Transaction Commands](/cli-reference/transaction-commands) pour la syntaxe `crossvm call`.
+- **Pont inter-VM** : pour déplacer des actifs entre les runtimes EVM et SVM, utilisez le module Cross-VM (`x/crossvm`). Voir [Commandes de transaction](/cli-reference/transaction-commands#crossvm) pour la syntaxe `crossvm call`. La voie SVM est désactivée et `MsgCrossVMCall` est désactivé sur le mainnet ; il s'agit donc aujourd'hui d'une simple référence.
 - **Déploiement de programmes** : déployez des programmes BPF via la CLI (`qorechaind tx svm deploy-program`) ou par programmation via le runtime SVM.
 - **Budget de calcul** : le runtime SVM applique par défaut un budget de calcul de 1,400,000 unités de calcul par transaction. Ceci est configurable via les paramètres du module.

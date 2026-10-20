@@ -9,10 +9,11 @@ sidebar_position: 8
 
 ## Le mainnet est-il en ligne ?
 
-Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`). Le
-préréglage testnet (`qorechain-diana`) reste également disponible. Les deux
-préréglages utilisent par défaut des points de terminaison localhost ;
-sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
+Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`, en
+production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.3 au
+20 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
+disponible. Les deux préréglages utilisent par défaut des points de terminaison
+localhost ; sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
 remplacez `endpoints` par les URL de vos nœuds. Voir
 [Réseau et points de terminaison](/sdk/reference/network).
 
@@ -86,15 +87,14 @@ décimales (convention EVM), ce qui est distinct de la base native `uqor` de
 
 ## Quels paquets sont publiés, et où ?
 
-Tous. Le cœur TypeScript (`@qorechain/sdk`, 0.8.3), les adaptateurs EVM/SVM
-(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), le kit React (`@qorechain/react`,
-0.8.3) et le générateur `create-qorechain-dapp` (0.8.0) sont sur npm ; le
-client Python est sur PyPI (`pip install qorechain-sdk` en version 0.8.3,
-import `qorsdk`) ; le client Go est sur le proxy de modules
-(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, tag
-`packages/go/v0.8.4`) ; le client Rust est sur crates.io
-(`cargo add qorechain-sdk`, 0.8.3) ; et le client Java est sur Maven Central
-(`io.github.qorechain:qorechain-sdk:0.8.3`). Voir
+Tous (vérifié le 21 octobre 2026). Le cœur TypeScript (`@qorechain/sdk`, 0.9.0),
+le kit React (`@qorechain/react`, 0.9.0), le générateur `create-qorechain-dapp`
+(0.9.0) et les adaptateurs EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0)
+sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en
+version 0.9.0, import `qorsdk`) ; le client Go est sur le proxy de modules
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`) ; le client Rust
+est sur crates.io (`cargo add qorechain-sdk`, 0.9.0) ; et le client Java est sur
+Maven Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Voir
 [Installation](/sdk/install) pour la liste complète des commandes par
 langage.
 
@@ -115,16 +115,19 @@ du signataire doit être **enregistrée explicitement** avec
 `MsgRegisterPQCKeyV2` (une transaction signée de manière classique et exemptée
 de la signature hybride) ; intégrer la clé publique dans l'extension
 (`includePqcPublicKey: true`) ne l'enregistre **pas**, et la chaîne
-n'enregistre pas de clé à la première utilisation.
+n'enregistre pas de clé à la première utilisation. En TypeScript, donnez la paire
+de clés au client (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) et
+chaque transaction qu'il envoie est signée en mode hybride.
 La chaîne accepte toute signature ML-DSA-87 valide selon FIPS-204, hedged ou
 déterministe. Le SDK signe de manière déterministe par défaut (depuis la 0.5.1)
 pour qu'une transaction ait toujours la même signature et le même hash de tx. Si
 une tx hybride échoue avec le code `pqc` 21 (`hybrid_verify_failed`), la cause
 est la version des sign-bytes, le chain-id, une bibliothèque PQC obsolète ou une
-clé non enregistrée, jamais la signature hedged.
+clé non enregistrée ou différente, jamais la signature hedged.
 Les deux réseaux vérifient la forme v2 des sign-bytes ; utilisez donc le SDK
-**0.8.1 ou ultérieur** et passez `rest` (ou `signBytesVersion`) : les builders
-lèvent une erreur sur `qorechain-vladi` / `qorechain-diana` sans l'un des deux.
+**0.8.1 ou ultérieur** (la 0.9.0 est la version actuelle) et passez `rest` (ou
+`signBytesVersion`) : les builders lèvent une erreur sur `qorechain-vladi` /
+`qorechain-diana` sans l'un des deux.
 Voir
 [Dépannage du code 21](/developer-guide/post-quantum-signing#code-21) et
 [Comptes et signature PQC](/sdk/concepts/accounts-pqc).
@@ -148,6 +151,48 @@ protobuf (la valeur commence par `0x08`) dans les cinq langages — les
 transactions hybrides construites avec des versions plus anciennes sont
 rejetées on-chain, sur toutes les voies (y compris eth-native).
 
+## Avec quelles versions de chaîne le SDK fonctionne-t-il ?
+
+Le SDK **0.9.0** est la version cliente pour la chaîne v3.2.2 et v3.2.3 : il
+transige sur le mainnet **v3.2.3** et le testnet **v3.2.4**, et dispose de
+constructeurs pour la preuve de possession facultative à l'enregistrement
+(jointe automatiquement par `ensurePqcRegistered` une fois que le réseau a
+appliqué la v3.2.3), les fenêtres EVM à portée limitée et les messages de
+consentement EIP-7702. Le SDK **0.8.1 ou ultérieur** transige aussi sur les deux
+réseaux (la forme v2 des sign-bytes hybrides, l'enregistrement, les envois
+hybrides et la fenêtre EVM fonctionnent sans changement), mais n'a aucun de ces
+constructeurs : utilisez la CLI pour ceux-ci (voir
+[Versions antérieures à la 0.9.0](/sdk/install#before-090)). La v3.2.4 n'est en
+production que sur le testnet pour l'instant (la proposition de gouvernance 13
+du mainnet l'appliquerait à la hauteur 3,742,566), et le SDK ne définit aucun
+champ de la v3.2.4.
+
+## Mon enregistrement de clé PQC a été refusé mais les frais ont été prélevés
+
+Un enregistrement pour un compte qui détient déjà une clé est refusé par la
+chaîne après la déduction des frais. `ensurePqcRegistered` en 0.9.0 lit d'abord
+`GET /qorechain/pqc/v1/account/{address}` (passez `rest`), ignore
+l'enregistrement lorsque la clé de cette paire de clés est enregistrée, et lève
+`PqcKeyMismatchError` lorsqu'une autre l'est. Les versions antérieures ne
+regardaient pas d'abord, sauf si vous passiez vous-même
+`status: { registered: found }`, où `found` provient de cette route. Depuis la
+v3.2.3, la chaîne refuse aussi les clés faibles, dégénérées et réutilisées ; les
+clés issues de `derivePqcCanonical` ou de `tx pqc gen-key` conviennent.
+
+## `create-qorechain-dapp` installe un SDK qui ne peut pas signer
+
+Seule la version 0.8.0 du générateur le faisait : elle écrivait des plages
+`^0.3.0` pour `@qorechain/sdk` et `@qorechain/evm`, et une plage caret sur une
+version 0.x reste dans la 0.3. La version 0.9.0 génère sur le SDK actuel ; si
+vous avez utilisé la 0.8.0, exécutez `npm i @qorechain/sdk@latest` (et
+`@qorechain/evm@latest`) après la génération.
+
+## `VERSION` indique 0.8.0 mais j'ai installé la 0.8.3
+
+La constante exportée `VERSION` de la 0.8.3 n'a pas été mise à jour et indique
+`0.8.0` ; à partir de la 0.9.0, elle correspond au paquet. Sur les versions
+antérieures, lisez la version installée dans `package.json`.
+
 ## Ma dépense via authenticator est rejetée avec `authenticator_replay`
 
 (Le module `abstractaccount` est désactivé sur les deux réseaux aujourd'hui ;
@@ -156,12 +201,16 @@ le moindre nonce ne soit vérifié. Voir
 [Authenticators et dépense déléguée](/sdk/guides/authenticators). Les
 indications ci-dessous s'appliquent une fois le module activé.)
 
-Le nonce est incorrect. `MsgExecuteEVM.nonce` doit être le nonce EVM
-**actuel** du compte (le relayeur est un compte différent, donc n'ajoutez
-**pas** 1) ; `MsgExecuteCosmos.nonce` est le **compteur de séquence par
-authenticator** pour `(account, pubkey)`, un compteur de stockage distinct.
-Récupérez à nouveau la valeur et re-signez. Les autres échecs d'authenticator
-se décodent via `decodeTxError` : codes `abstractaccount` 5
-(`spending_limit_exceeded`), 6 (`session_key_expired`), et 10
+Le nonce est incorrect. `MsgExecuteEVM.nonce` et `MsgExecuteCosmos.nonce` sont
+tous deux la **séquence d'authenticator** de la clé liée pour
+`(account, pubkey)` : un compteur que la chaîne tient par clé liée, qui démarre
+à 0 et est incrémenté à chaque exécution réussie. Ce n'est **pas** le nonce EVM
+du compte, et il n'existe pas encore de requête pour le lire ; suivez-le donc par
+clé liée. Depuis la v3.2.3, la voie EVM signe aussi `evmAuthSignBytesV2`, qui lie
+la limite de gas de l'appel (`resolveEvmAuthDigestVersion` choisit la forme).
+Utilisez le compteur que vous suivez pour cette clé et re-signez.
+
+Les autres échecs d'authenticator se décodent via `decodeTxError` : codes
+`abstractaccount` 5 (`spending_limit_exceeded`), 6 (`session_key_expired`), et 10
 (`permission_denied`). Voir
 [Authenticators et dépense déléguée](/sdk/guides/authenticators).

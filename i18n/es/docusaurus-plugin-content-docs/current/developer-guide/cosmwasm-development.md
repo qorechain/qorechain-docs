@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain admite contratos inteligentes **CosmWasm**, lo que permite a los desarrolladores escribir programas seguros y aislados (sandboxed) en Rust que se compilan a WebAssembly. Los contratos CosmWasm se ejecutan junto con los programas EVM y SVM dentro de la arquitectura triple-VM de QoreChain.
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 29 de junio de 2026), que ejecuta la versión de nodo **v3.2.1**. Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.2.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.3**. Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta la v3.2.4 (solo testnet).
 :::
 
 :::caution La subida y la instanciación de código actualmente requieren permiso explícito
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Llamadas entre VMs
 
-Las llamadas entre VMs se envían como transacciones `MsgCrossVMCall` a través del módulo `x/crossvm`; consulte [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el ciclo de vida del mensaje. Hoy los contratos CosmWasm no tienen un enlace del lado del contrato para iniciar una llamada entre VMs (no existe un mensaje personalizado `QoreChainMsg` que los contratos puedan emitir), por lo que un contrato no puede llamar a un contrato EVM o SVM desde dentro de su punto de entrada `execute`.
+Las llamadas entre VMs se envían como transacciones `MsgCrossVMCall` a través del módulo `x/crossvm`; consulte [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el ciclo de vida del mensaje. Los contratos CosmWasm no tienen un enlace dedicado del lado del contrato para iniciar una llamada entre VMs (no existe un mensaje personalizado `QoreChainMsg` que los contratos puedan emitir), por lo que un contrato no puede llamar a un contrato EVM o SVM desde dentro de su punto de entrada `execute`. Desde v3.2.3 se rechaza una llamada hacia el propio carril del llamante, y una llamada en cola que falla no deja efectos secundarios.
 
 :::caution Las llamadas entre VMs están actualmente desactivadas en mainnet
 `MsgCrossVMCall` está en la lista del interruptor de circuito de la mainnet (`qorechaind query circuit disabled-list`), y el carril SVM está desactivado en ambas redes, por lo que la ruta entre VMs hoy no es utilizable para transacciones ordinarias.

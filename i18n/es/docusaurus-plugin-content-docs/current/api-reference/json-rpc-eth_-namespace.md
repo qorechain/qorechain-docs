@@ -17,7 +17,7 @@ QoreChain implementa una interfaz JSON-RPC compatible con EVM, de modo que las h
 | WebSocket  | `ws://localhost:8546`    |
 
 :::note
-La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`, versión de nodo **v3.2.1**) y la testnet **`qorechain-diana`** (ID de cadena EVM **9800**, hex `0x2648`, versión de nodo **v3.2.2**). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo. Los endpoints HTTP públicos son `https://evm.qore.host` (mainnet) y `https://evm-testnet.qore.host` (testnet), que figuran en [Redes](/appendix/networks#public-endpoints). El único WebSocket EVM público es el de la testnet (`wss://evm-ws-testnet.qore.host`); no hay un WebSocket EVM público en la mainnet.
+La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de cadena EVM **9801**, hex `0x2649`, versión de nodo **v3.2.3**, en funcionamiento desde el 7 de junio de 2026) y la testnet **`qorechain-diana`** (ID de cadena EVM **9800**, hex `0x2648`, versión de nodo **v3.2.4**, solo testnet). Las direcciones locales anteriores se aplican a un nodo que ejecutes tú mismo. Los endpoints HTTP públicos son `https://evm.qore.host` (mainnet) y `https://evm-testnet.qore.host` (testnet), que figuran en [Redes](/appendix/networks#public-endpoints). El único WebSocket EVM público es el de la testnet (`wss://evm-ws-testnet.qore.host`); no hay un WebSocket EVM público en la mainnet.
 :::
 
 ## Espacios de nombres compatibles
@@ -69,8 +69,8 @@ La interfaz JSON-RPC de la EVM la sirven la mainnet **`qorechain-vladi`** (ID de
 | Método            | Parámetros | Descripción                                                                   |
 | ------------------ | ----------- | ------------------------------------------------------------------------------- |
 | `txpool_status`    | ninguno     | Devuelve el número de transacciones pendientes y en cola                       |
-| `txpool_content`   | ninguno     | Devuelve las transacciones pendientes y en cola (no disponible en la mainnet pública) |
-| `txpool_inspect`   | ninguno     | Devuelve un resumen del pool (no disponible en la mainnet pública)             |
+| `txpool_content`   | ninguno     | Devuelve las transacciones pendientes y en cola (no disponible en los endpoints públicos) |
+| `txpool_inspect`   | ninguno     | Devuelve un resumen del pool (no disponible en los endpoints públicos)         |
 
 ## Métodos net_
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs` acepta como máximo **10,000 bloques** entre `fromBlock` y `toBlock`. Un rango más amplio devuelve `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Consulta en ventanas de 10,000 bloques o menos. El ajuste independiente `filter-cap` limita el número de logs devueltos.
-- `txpool_status` funciona en el endpoint público de la mainnet. `txpool_content` y `txpool_inspect` están deshabilitados allí (funcionan en el endpoint público de la testnet y en un nodo que ejecutes tú mismo).
+- `txpool_status` funciona en los endpoints públicos. `txpool_content` y `txpool_inspect` están deshabilitados tanto en el endpoint público de la mainnet como en el de la testnet (funcionan en un nodo que ejecutes tú mismo, con `txpool` en su lista `api`).
 - Los métodos `debug_*` y `eth_signTransaction` no están disponibles.
 - `eth_subscribe` necesita una conexión WebSocket. Por HTTP devuelve `-32601 notifications not supported`. Consulta [Eventos WebSocket](/api-reference/websocket-events).
 - El estado en alturas antiguas se poda en los endpoints públicos, por lo que `eth_call` contra un bloque histórico lejano puede fallar con un error de versión de estado.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## Envío de transacciones {#sending-transactions}
 
 :::caution La lane EVM necesita una clave PQC y una ventana abierta
-Desde la versión de cadena v3.2.0, la lane EVM admite una transacción (`MsgEthereumTx`, incluidos los despliegues de contratos) solo desde una cuenta que tenga una **clave poscuántica registrada** y una **ventana de autorización EVM abierta**. Una wallet EVM común que no haya hecho esta configuración no puede enviar transacciones: el nodo las rechaza con un error del módulo `pqc` (códigos 26, 27 o 28) en lugar de incluirlas. Leer saldos, llamar a `eth_call` y estimar gas no requieren ventana.
+Desde la versión de cadena v3.2.0, la lane EVM admite una transacción (`MsgEthereumTx`, incluidos los despliegues de contratos) solo desde una cuenta que tenga una **clave poscuántica registrada** y una **ventana de autorización EVM abierta**. Una wallet EVM común que no haya hecho esta configuración no puede enviar transacciones: el nodo las rechaza con un error del módulo `pqc` (códigos 26, 27 o 28) en lugar de incluirlas. Leer saldos, llamar a `eth_call` y estimar gas no requieren ventana. Desde v3.2.2 también se rechaza una transacción firmada **sin ID de cadena** (pre-EIP-155), y desde v3.2.3 una ventana puede limitarse a transferencias simples de QOR (`native_only`) o a destinatarios listados (`allowed_targets`); una transacción fuera de ese alcance se rechaza con el código 27.
 
 Comprueba una cuenta antes de enviar:
 
 - `GET /qorechain/pqc/v1/account/{address}` (`found: true` significa que hay una clave registrada)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` significa que una ventana admite transacciones en este momento)
 
-Ambos se describen en [Endpoints REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module). Una ventana se abre con una transacción de QoreChain (`MsgOpenEVMWindow`, limitada a un máximo de 17,280 bloques y 1,000 transacciones más un tope de valor), no con una transacción de Ethereum. Consulta [Desarrollo EVM](/developer-guide/evm-development) para la visión general de la lane.
+Ambos se describen en [Endpoints REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module) (la respuesta de la ventana también informa `native_only` y `allowed_targets`). Una ventana se abre con una transacción de QoreChain (`MsgOpenEVMWindow`, limitada a un máximo de 17,280 bloques y 1,000 transacciones más un tope de valor), no con una transacción de Ethereum. Consulta [Desarrollo EVM](/developer-guide/evm-development) para la visión general de la lane.
 :::
 
 ## Ejemplos
@@ -161,7 +162,7 @@ Respuesta:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

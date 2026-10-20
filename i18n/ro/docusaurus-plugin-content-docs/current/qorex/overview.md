@@ -7,7 +7,7 @@ sidebar_position: 1
 
 # Portofelul QoreX
 
-**QoreX** este portofelul oficial **non-custodial** pentru **QoreChain**, Layer 1 rezistent cuantic (mainnet `qorechain-vladi`). Cheile tale private sunt generate și păstrate **doar pe dispozitivul tău** — QoreChain Association nu are niciodată acces la fondurile tale, iar aplicațiile nu conțin **nicio analiză, urmărire sau reclamă**. Fiecare transfer de QOR pe banda Native poartă o **semnătură post-cuantică hibridă** (ML-DSA-87, NIST FIPS-204, împerecheată cu secp256k1), astfel încât fondurile tale sunt protejate atât împotriva atacatorilor clasici, cât și a celor cuantici.
+**QoreX** este portofelul oficial **non-custodial** pentru **QoreChain**, Layer 1 rezistent cuantic (mainnet `qorechain-vladi`). Cheile tale private sunt generate și păstrate **doar pe dispozitivul tău** — QoreChain Association nu are niciodată acces la fondurile tale, iar aplicațiile nu au **nicio analiză, nicio raportare de erori și niciun SDK de urmărire** — cheile, fraza de recuperare, seiful și aprobările nu părăsesc niciodată dispozitivul tău (vezi [Ce trimite QoreX prin rețea](#data-and-privacy)). Fiecare transfer de QOR pe banda Native poartă o **semnătură post-cuantică hibridă** (ML-DSA-87, NIST FIPS-204, împerecheată cu secp256k1), astfel încât fondurile tale sunt protejate atât împotriva atacatorilor clasici, cât și a celor cuantici.
 
 QoreX are două componente care funcționează împreună:
 
@@ -28,7 +28,8 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 | Cont în stil Ethereum (coin 60), adăugat manual | ✅ | ✅ |
 | Trimitere și primire de QOR (post-cuantic) | ✅ | ✅ (Trimite; Primește cu QR) |
 | Primire pe orice rețea suportată | ✅ | ✅ |
-| Plată / revendicare @handle | ✅ | ✅ plată; revendicarea este oferită pe conturile QoreChain obișnuite în unele versiuni ale extensiei — altfel revendică în aplicație |
+| Plată către un @handle | ✅ | ✅ |
+| Revendicare @handle | ✅ (necesită un cont autentificat) | — (extensia te trimite la aplicație) |
 | Staking: delegare, retragere din delegare, mutare stake, revendicare, revendicare și re-stake | ✅ | ✅ |
 | Rețele externe (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokenuri) | ✅ | ✅ (trimitere din popup) |
 | Adăugare token prin contract (rețele EVM) | ✅ | ✅ |
@@ -46,7 +47,7 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 
 - **Rezistent cuantic implicit** — transferurile de QOR pe banda Native poartă întotdeauna o semnătură hibridă ML-DSA-87 + secp256k1. Orice element clasic (lanțuri externe) este marcat clar, niciodată în tăcere.
 - **Cu adevărat non-custodial** — cheile sunt generate pe dispozitiv și stau într-un seif susținut hardware (Secure Enclave pe iOS, StrongBox pe Android) sau într-un seif criptat (extensia). Ele nu părăsesc niciodată dispozitivul tău.
-- **Fără analiză, fără urmărire, fără reclame** în nicio aplicație QoreX. Elementele opționale suplimentare folosesc un server doar atunci când le activezi: autentificarea în cont (vezi [Cont și Dashboard](/qorex/account-and-dashboard)) și notificările push, care îți înregistrează dispozitivul și adresele tale *publice*, astfel încât QoreX să te poată anunța când ajunge QOR. Portofelul nu depinde niciodată de niciuna dintre ele.
+- **Fără analiză, fără raportare de erori, fără SDK de urmărire** în nicio aplicație QoreX. Câteva elemente opționale suplimentare comunică cu un server doar atunci când le activezi: autentificarea în cont (vezi [Cont și Dashboard](/qorex/account-and-dashboard)) și notificările push, care îți înregistrează dispozitivul și adresele tale *publice*, astfel încât QoreX să te poată anunța când ajunge QOR. Portofelul nu depinde niciodată de niciuna dintre ele. Lista completă se află în [Ce trimite QoreX prin rețea](#data-and-privacy).
 - **Un singur sold unificat** — QOR-ul tău este un singur sold pe benzile Native, EVM și SVM; QoreX îl afișează ca o cifră unică.
 - **Mai multe căi de recuperare** — o frază de recuperare de 24 de cuvinte (întotdeauna; pe mobil, dezvăluie-o din Setări → Securitate), recuperare socială opțională cu garanți și un blocaj temporal de 48 de ore, moștenire Legacy opțională și asocierea comodă a mai multor dispozitive.
 
@@ -65,17 +66,28 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 
 ## Ce versiune este disponibilă unde {#versions}
 
-Revizuirea din magazine se desfășoară după propriul program, astfel încât un magazin poate servi pentru scurt timp o versiune mai veche sau mai nouă decât altul. Începând cu **15 octombrie 2026**:
+Revizuirea din magazine se desfășoară după propriul program, astfel încât fiecare magazin servește propria versiune, iar Google Play și Chrome Web Store sunt în prezent în urma celorlalte. Aceasta este versiunea curentă **din fiecare magazin** la **20 octombrie 2026**:
 
-| Platformă | Versiune activă |
-|---|---|
-| Android | 1.1.6 |
-| iOS | 1.1.6 |
-| Chrome | 0.3.6 |
-| Firefox | 0.3.7 (o versiune intermediară după 0.3.6) |
-| Safari (macOS) | 1.7.6, cu extensia 0.3.6 |
+| Magazin | Versiune curentă | Notă |
+|---|---|---|
+| Apple App Store (iOS) | 1.1.7 | lansată pe 15 octombrie |
+| Google Play (Android) | 1.1.6 | 1.1.7 este încărcată, dar încă nu este publică — listarea publică afișează în continuare 1.1.6 |
+| Chrome Web Store | 0.3.6 | încă servește 0.3.6 |
+| Firefox Add-ons | 0.3.7 | |
+| Safari (Mac App Store) | 1.7.7, cu extensia 0.3.7 | Mac App Store folosește propria numerotare `1.x` |
 
-Această documentație descrie setul de funcționalități 1.1.6 / 0.3.6. Un magazin care încă servește o versiune mai veche se va actualiza automat; magazinele afișează întotdeauna versiunea lor curentă. Principalele noutăți față de 1.0.9 / 0.2.6:
+Magazinele afișează întotdeauna versiunea lor curentă, iar un magazin care încă servește o versiune mai veche se va actualiza automat. Funcțiile de mai jos marcate **1.1.7 / 0.3.7** sunt disponibile în magazinele din tabel care au deja acea versiune (iOS, Firefox, Safari) și ajung pe Google Play și Chrome când aceste listări se actualizează. Nimic mai nou decât 1.1.7 / 0.3.7 nu este descris în acest manual ca disponibil.
+
+Ce au schimbat pentru tine versiunile 1.1.7 / 0.3.7:
+
+- **Aprobările refuză o cerere ai cărei octeți pot fi citiți în două moduri.** Dacă același câmp apare de două ori într-o cerere, un ecran și lanțul ar putea să nu cadă de acord asupra a ceea ce se semnează — de exemplu o taxă sau o sumă afișată diferit de cea executată. QoreX refuză acum o astfel de cerere, în loc să arate o singură interpretare a ei. Vezi [Ce arată fereastra de aprobare](/qorex/security-and-recovery#approvals).
+- **Expirarea unei permisiuni este afișată la secundă**, iar voturile de guvernanță sunt decodate și afișate pe ecranul de aprobare.
+- **Site-urile sunt identificate prin originea pe care o atestă browserul însuși**, nu prin ceea ce afirmă o cerere despre sine.
+- **Căutările de @handle funcționează din nou în extensie.**
+- **Revendicarea unui @handle necesită un cont autentificat și se face în aplicație**; extensia te trimite acolo.
+- **Numele QoreChain care imită proiectul sunt rezervate**, astfel încât un handle nou nu poate imita proiectul sau personalul său.
+
+Noutăți principale față de 1.0.9 / 0.2.6:
 
 - **Mai multe portofele** pe același telefon sau browser, fiecare cu propria frază de recuperare, cu comutare dintr-o atingere — vezi [Mai multe portofele](/qorex/getting-started#several-wallets).
 - **Cont în stil Ethereum (coin 60)**, adăugat manual, pentru fraze folosite inițial în MetaMask sau pe Dashboard — vezi [Restaurează o frază din MetaMask sau Dashboard](/qorex/getting-started#restore-dashboard).
@@ -83,3 +95,28 @@ Această documentație descrie setul de funcționalități 1.1.6 / 0.3.6. Un mag
 - **Revendicare și re-stake**, o verificare a comisionului înainte de revendicare, o listă **Unstaking în curs** și avertismente înainte să faci stake într-o măsură care te-ar împiedica să mai poți retrage — vezi [Portofoliu și staking](/qorex/portfolio-and-staking).
 - Ecrane de aprobare care arată fiecare mesaj, comisionul, limitele de cheltuire și expirarea, și refuză ceea ce QoreX nu poate afișa; **`signAndBroadcast`** pentru dApp-uri; **Site-uri conectate** cu Revocare (extensia); **fereastra de acces EVM** — vezi [Securitate și recuperare](/qorex/security-and-recovery) și [Extensia de browser](/qorex/browser-extension).
 - Remedieri: un cont alimentat putea dispărea momentan din „Conturile tale" (1.0.9); butonul hardware Înapoi de pe Android revine acum cu un ecran (1.1.1); fraza de recuperare este ascunsă serviciilor care nu sunt de accesibilitate pe Android 14 și versiunile ulterioare (1.1.6).
+
+QoreX funcționează pe mainnet `qorechain-vladi`, care rulează chain **v3.2.3** (activ din 7 iunie 2026). Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în acea actualizare, așa că nu este necesară nicio actualizare QoreX pentru ea.
+
+## Ce trimite QoreX prin rețea {#data-and-privacy}
+
+QoreX nu are **nicio analiză, nicio raportare de erori și niciun SDK de urmărire**. Cheile tale, fraza de recuperare, seiful și aprobările tale **nu părăsesc niciodată dispozitivul**. Aplicațiile comunică totuși cu rețeaua, așa cum trebuie să o facă orice portofel; aceasta este lista completă.
+
+**Întotdeauna (necesar pentru a afișa solduri și a trimite):**
+
+- **Punctele finale publice QoreChain** (`api`, `rpc`, `evm` și `svm` pe `qore.host`, plus echivalentele `-testnet`) pentru solduri, istoric și transmitere. Aceste cereri conțin adresa ta **publică** `qor1…`.
+- **Căutarea prețului** — o singură cerere pentru prețul QOR, care **nu conține nicio adresă**.
+- **Rețelele externe pe care le deții sau le vizualizezi** — servicii RPC/REST publice ale unor terți pentru acea rețea, care conțin adresa ta **publică** pe acea rețea.
+- **Registrul de @handle-uri** — conține handle-ul pe care îl cauți sau o adresă publică.
+
+**Doar dacă le activezi:**
+
+- **Notificări push** (mobil) — dezactivate până când le activezi. Serverul primește apoi token-ul dispozitivului tău și adresele publice `qor1…` ale portofelului în uz (până la 10). Un dispozitiv de la care serverul nu a mai primit semnale timp de 90 de zile este uitat.
+- **Recuperare socială** — releul stochează **doar text cifrat**.
+- **Autentificare** (e-mail, sau Apple ori Google) — necesară pentru a revendica un @handle, pentru a te asocia cu Dashboard și pentru a folosi cererile de plată.
+- **Conectarea la Dashboard și adresele asociate** — trimite o dovadă semnată că deții adresa.
+- **Cereri de plată** — trimit handle-ul expeditorului, handle-ul destinatarului, suma și o notă opțională.
+
+**Widget-ul de pe ecranul principal** nu face nicio cerere proprie către serverele QoreChain: aplicația îi transmite local adresa, soldul și indicatorul de confidențialitate, iar widget-ul reîmprospătează soldul de la punctul final REST public QoreChain.
+
+În niciuna dintre aplicații nu există **nici chat AI, nici serviciu QCAI**.

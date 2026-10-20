@@ -14,7 +14,7 @@ The abstract-account module is currently **switched off** on both networks: `qor
 :::
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 29 June 2026), which runs node release **v3.2.1** (consensus rules from v3.2.0). Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.2.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.3**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.4 (testnet only).
 :::
 
 :::caution Every Cosmos-lane transaction needs the hybrid post-quantum cosign
@@ -86,7 +86,9 @@ Spending rules add financial guardrails to abstract accounts:
 | ---------------- | ----------------------------------------------------- |
 | `daily_limit`    | Maximum total spend per UTC calendar day              |
 | `per_tx_limit`   | Maximum spend per individual authorised execution     |
-| `allowed_denoms` | Restrict which token denominations can be spent       |
+| `allowed_denoms` | Restrict which token denominations can be spent (an ERC-20 is listed as `erc20/<contract>`) |
+| `denom_limits`   | Per-denomination limits as decimal strings (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; they replace `per_tx_limit` and `daily_limit` for the denominations they name, so an 18-decimal token can be capped |
+| `allowed_evm_calls` | EVM calls a rule-bound key may make **with call data** (v3.2.2), as `0x<target>` (any function of that contract) or `0x<target>/0x<selector>` (that function only). Without an entry a rule-bound key can only send value, deploy (with the `deploy` permission) and move the ERC-20 tokens listed in `allowed_denoms`. Listing a target trusts every argument of calls made to it, recipients included |
 
 ### Set Spending Rules
 
@@ -98,7 +100,13 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Limits are in the base unit (`uqor`) and count per authorised execution; the daily limit bounds the total per UTC calendar day. The rules replace the stored ones as a whole, so a field you leave out is removed.
+Limits are in the base unit (`uqor`) and count per authorised execution; the daily limit bounds the total per UTC calendar day. The rules replace the stored ones as a whole, so a field you leave out is removed. Since v3.2.2 the EVM lane measures what a call actually moves (native value, the account's native balance decrease, bank coins spent, and the balance or allowance change of every listed ERC-20) instead of only `msg.value`, and contract creation needs the separate `deploy` permission. A richer example:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
+```
 
 ### Query Current Rules
 
@@ -149,7 +157,7 @@ Eleven canonical permissions gate what a registered authenticator may do. The ma
 | `amm` / `ibc` / `deploy` | AMM operations, IBC transfers, contract deployment |
 | `all` | Any *delegable* message |
 
-**Key-management messages are never delegable** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, PQC key registration/migration, and `MsgRotatePQCKey` always require the root key, so a linked key can never escalate its own privileges.
+**Key-management messages are never delegable** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, PQC key registration/migration, and `MsgRotatePQCKey` always require the root key, so a linked key can never escalate its own privileges. The schema (`schema_version` 2) also lists `lane_rules`: contract creation from the account's address, a call that advances the account's EVM nonce, and a call to the account itself when its code is an EIP-7702 delegation each need the `deploy` or `all` permission. Since v3.2.3 registration refuses unknown permission strings and 65-byte secp256k1 keys that could never verify.
 
 Read the live taxonomy (with `schema_version` for drift detection) instead of hardcoding it:
 
@@ -162,13 +170,13 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Two messages carry authenticator-authorized actions. In both, the relayer is the transaction's signer/fee-payer; the authenticator's signature travels inside the message.
 
-**`MsgExecuteEVM`** — an EVM call or transfer **from the canonical account's `0x…` address**. The authenticator signs `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (all fields length-prefixed). Replay protection is the account's own EVM nonce.
+**`MsgExecuteEVM`** — an EVM call or transfer **from the canonical account's `0x…` address**. The authenticator signs `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (all fields length-prefixed). From v3.2.3 (the `abstractaccount-hardening` feature) the chain requires the **v2 digest**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, which also binds the call's gas limit (8-byte big-endian) so a relayer cannot replay the signature with a different limit; no block accepts both forms. `qorechaind query abstractaccount auth-sign-evm` takes `--gas-limit` for this, and you pass the same value to `execute-evm`. Replay protection is the account's own EVM nonce.
 
 **`MsgExecuteCosmos`** — a Native-lane bank send from the canonical account. The authenticator signs `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. Replay protection is a **per-authenticator sequence** kept by the module (a bank send does not bump the account nonce). Self-sends are rejected.
 
 :::caution Nonce rules
 * `MsgExecuteEVM.nonce` = the account's **current** EVM nonce (`eth_getTransactionCount(account0x, "latest")`). In production the relayer is a *different* account, so do **not** add +1. Signing a stale nonce returns code `11`.
-* `MsgExecuteCosmos.nonce` = the per-authenticator sequence (query the account's authenticator state), **not** the account's Cosmos sequence.
+* `MsgExecuteCosmos.nonce` = the per-authenticator sequence (query the account's authenticator state), **not** the account's Cosmos sequence. On the testnet only (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returns that sequence directly (`nonce`, `linked`).
 :::
 
 **Phantom example** (browser: Phantom signs, your backend relays):

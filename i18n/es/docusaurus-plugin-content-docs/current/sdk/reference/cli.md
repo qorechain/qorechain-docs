@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Publicado en npm como `create-qorechain-dapp` (`0.8.0`). Los archivos
-> `package.json` generados fijan `@qorechain/sdk` / `@qorechain/evm` en `^0.3.0`, que
-> npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo. Tras
-> generar el andamiaje, ejecuta `npm i @qorechain/sdk@latest` (y `npm i @qorechain/evm@latest`
-> para la plantilla EVM).
+> Publicado en npm como `create-qorechain-dapp` (`0.9.0`). Los archivos
+> `package.json` generados dependen de `@qorechain/sdk` `^0.9.0` (la plantilla EVM, de
+> `@qorechain/evm` `^0.8.0`). La versión 0.8.0 del generador escribía rangos `^0.3.0`,
+> que npm resuelve a una versión 0.3 que no puede firmar para las redes en vivo; si
+> generaste el andamiaje con la 0.8.0, ejecuta `npm i @qorechain/sdk@latest`.
 
 ## Plantillas
 
@@ -32,6 +32,13 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Un contrato `Counter` de Solidity + un script de despliegue/interacción con viem (`@qorechain/evm`). |
 | `fullstack-web` | Una dApp Vite + React + TypeScript que lee saldos y tokenomics (`@qorechain/sdk`). |
 | `rollup-app` | Una app de rollup + sidechain/paychain que usa el `RollupClient` y el asistente multilayer (`@qorechain/sdk`). |
+
+La plantilla `rollup-app` (0.9.0) ejecuta una simulación por defecto. Con `QORE_BROADCAST=1`
+deriva la clave ML-DSA-87 de la cuenta a partir del mnemónico, la registra una vez y firma de
+forma híbrida, algo que la plantilla anterior no podía hacer. Sus valores de rollup de ejemplo
+(`profile: "default"`, el stake) son ilustrativos: toma los nombres de perfil y el stake reales
+de [Perfiles predefinidos](/rollups/preset-profiles) y de los parámetros del módulo en vivo antes
+de difundir.
 
 La plantilla `fullstack-web` lee el resumen de tokenomics mediante `client.qor`, una
 llamada JSON-RPC `qor_` que los endpoints públicos no sirven, por lo que en mainnet y

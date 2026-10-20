@@ -10,7 +10,15 @@ sidebar_position: 11
 Bir borsanın, saklama kuruluşunun (custodian) veya ödeme entegratörünün QOR'u listelemek ve para yatırma/çekme işlemlerini gerçekleştirmek için ihtiyaç duyacağı her şey: bir arayüz seçmek, yatırmaları güvenli şekilde tespit etmek ve çekim işlemlerini imzalamak.
 
 :::note
-Bu rehber **`qorechain-vladi`** mainnet'ini hedefler (29 Haziran 2026'dan beri yayında; düğüm sürümü **v3.2.1**, v3.2.0 yükseltmesinin konsensüs kurallarıyla). Önce tüm akışı **`qorechain-diana`** testnet'inde (v3.2.2) prova edin — her iki ağın uç noktaları da [Ağlar](/appendix/networks#public-endpoints) sayfasındadır. Kendi tam düğümünüzü (full node) çalıştırıyorsanız, onu indirme manifestosunun önerdiği sürümde tutun ve asla manifestodaki `minCompatible` değerinin altına düşürmeyin (yeni bir mainnet düğümü v3.2.0 veya daha yenisini gerektirir) — güncel olmayan bir düğüm zincirin yükseltmelerini takip edemez ve senkronizasyonu durur.
+Bu rehber **`qorechain-vladi`** mainnet'ini hedefler (7 Haziran 2026'dan beri yayında; düğüm sürümü **v3.2.3**, 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı). Önce tüm akışı **`qorechain-diana`** testnet'inde prova edin — v3.2.4 çalıştırır; bu, mainnet'te henüz uygulanmamış bir sürümdür (yönetişim önerisi 13 bunu mainnet'te 3.742.566 yüksekliğinde uygulayacaktır), bu nedenle bazı davranışları mainnet'ten farklıdır (her iki ağın uç noktaları [Ağlar](/appendix/networks#public-endpoints) sayfasındadır). Kendi tam düğümünüzü (full node) çalıştırıyorsanız, onu indirme manifestosunun önerdiği sürümde tutun ve asla manifestodaki `minCompatible` değerinin altına düşürmeyin (mainnet'te **3.2.3**) — güncel olmayan bir düğüm zincirin yükseltmelerini takip edemez ve yükseltme yüksekliğinde durur.
+
+**v3.2.2 ve v3.2.3'te entegratörler için neler değişti** (imzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler değişmedi):
+
+* **Korumasız (EIP-155 öncesi) Ethereum işlemleri reddedilir**, hem mempool'da hem de blok yürütmede (v3.2.2). Para yatıranın cüzdanı bir zincir kimliğiyle imzalamalıdır; günümüzdeki her cüzdan bunu yapar.
+* **Modül hesapları EVM üzerinden sahiplenilemez** (v3.2.2); bir modül hesabı adresini yatırım veya çekim adresi olarak kullanmayın.
+* **Vesting hesapları yalnızca imzalayanın kendisi için oluşturulabilir** (v3.2.3); üç vesting oluşturma mesajı ayrıca şu anda mainnet'in devre kesici listesindedir.
+* **Bir hesabın anahtarı olduktan sonra PQC anahtar mesajları hibrit imza gerektirir** (v3.2.3): bkz. [Kuantum-Sonrası İmzalama](/developer-guide/post-quantum-signing#key-integrity). Sıcak cüzdanın anahtarını bir kez, erkenden kaydedin.
+* **EVM pencereleri kapsamlandırılabilir** (v3.2.3): yalnızca düz QOR gönderen bir sıcak cüzdan `native_only` penceresi açabilir, bkz. [EVM Geliştirme](/developer-guide/evm-development#evm-window).
 :::
 
 ## Entegrasyon yolu seçme {#choosing-a-path}
@@ -44,16 +52,16 @@ Temel REST URL'si: `https://api.qore.host` (veya kendi düğümünüzde `http://
 ### Yatırmaları izleme
 
 ```bash
-# en son yükseklik
+# latest height
 curl -s https://rpc.qore.host/status | jq -r .result.sync_info.latest_block_height
 
-# bir yükseklikteki tüm işlemler (yatırım tarama)
+# all txs in a height (deposit scanning)
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs/block/{HEIGHT}" | jq '.txs'
 
-# bir adrese gelen transferler
+# incoming transfers to an address
 curl -s "https://api.qore.host/cosmos/tx/v1beta1/txs?query=transfer.recipient='qor1...'&limit=50" | jq '.tx_responses[].txhash'
 
-# bakiye (uqor — QOR için 1e6'ya bölün)
+# balance (uqor — divide by 1e6 for QOR)
 curl -s "https://api.qore.host/cosmos/bank/v1beta1/balances/qor1.../by_denom?denom=uqor" | jq -r .balance.amount
 ```
 
@@ -82,7 +90,7 @@ npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing@0.32 @cosmj
 
 İmzalama **iki adımlı** bir akıştır (`qorechaind tx pqc cosign` ile aynı mantık):
 
-**Adım 1 — sıcak cüzdan başına tek seferlik: ML-DSA-87 anahtarını kaydedin.** Bu tek seferlik kayıt işlemi **klasik-imzalıdır** (önyükleme muafiyeti): mesaj `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`, içeriği `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. ML-DSA anahtarını mevcut sırrınızdan geri kurtarılabilir olacak şekilde deterministik olarak türetin — örn. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, ardından `mldsa.keygen(seed)` — ve tohumu (seed) sıcak cüzdan anahtarınızın yanında saklayın. Kayıt açıktır (explicit): ilk hibrit işlem göründüğünde anahtarı sizin yerinize hiçbir şey kaydetmez ve bir işlemin içine gömülü bir anahtar kayıtlı değildir. Gas'i açıkça ayarlayın (2.592 baytlık anahtar varsayılan 200.000'den fazlasına ihtiyaç duyar; CLI'da `--gas 600000`, kodda 600.000 gas limiti ve en az gas × 0.1 uqor, yani 60.000 uqor ücret kullanın).
+**Adım 1 — sıcak cüzdan başına tek seferlik: ML-DSA-87 anahtarını kaydedin.** Bu tek seferlik kayıt işlemi **klasik-imzalıdır** (henüz anahtarı olmayan bir hesap için önyükleme muafiyeti; bir anahtar oluştuktan sonra her ek anahtar mesajı hibrit imzalı olmalıdır): mesaj `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`, içeriği `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`. ML-DSA anahtarını mevcut sırrınızdan geri kurtarılabilir olacak şekilde deterministik olarak türetin — örn. `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)`, ardından `mldsa.keygen(seed)` — ve tohumu (seed) sıcak cüzdan anahtarınızın yanında saklayın. Kayıt açıktır (explicit): ilk hibrit işlem göründüğünde anahtarı sizin yerinize hiçbir şey kaydetmez ve bir işlemin içine gömülü bir anahtar kayıtlı değildir. Zincir `classical_only` anahtarları ve kuantum-sonrası koruma sağlamayan anahtarları reddeder (kod 230) ve bir sahiplik kanıtı (proof of possession) eklerseniz bunu doğrular (CLI: `register-key-v2 ... --pqc-key`; `@qorechain/sdk` 0.9.0, ağ v3.2.3'ü uyguladıktan sonra `ensurePqcRegistered` aracılığıyla kendiliğinden bir tane ekler; `@qorechain/wallet-adapter` 0.4.0 eklemez, bu kabul edilir). Gas'i açıkça ayarlayın (2.592 baytlık anahtar varsayılan 200.000'den fazlasına ihtiyaç duyar; CLI'da `--gas 600000`, kodda 600.000 gas limiti ve en az gas × 0.1 uqor, yani 60.000 uqor ücret kullanın).
 
 **Adım 2 — bundan sonraki her çekim: `MsgSend`'i hibrit-imzalayın.** Adaptör, ML-DSA-87 imzasını normal secp256k1 `signDirect`'ten *önce* bir işlem gövdesi (tx-body) uzantısına gömer, böylece mevcut imzalayıcınız değişmeden kalır:
 
@@ -141,15 +149,15 @@ const { txHash } = await bridge.sendTokens({
 });
 ```
 
-Hesabın henüz kayıtlı bir anahtarı yoksa, kütüphanenin kendisi açık `MsgRegisterPQCKeyV2` işlemini gönderir ve bir kez yeniden dener; bu, zincirin değil kütüphanenin davranışıdır, bu nedenle bir sıcak cüzdan hattı anahtarı önceden kaydetmeli ve ilk çekimden önce onaylamalıdır (`GET /qorechain/pqc/v1/account/{address}`). `chain-bridge` (≥0.1.1), yığının geri kalanıyla aynı kanonik adres-bağlı PQC türetimini kullanır — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — bu yüzden anahtar, mnemonic'ten `qorechaind tx pqc recover-key` ile kurtarılabilir. Daha eski araçlarla kaydedilmiş hesaplar otomatik olarak yönetilir (eski-anahtar yedeği), ve [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) ile bir kereliğine kanonik anahtara geçirilebilir.
+Hesabın henüz kayıtlı bir anahtarı yoksa, kütüphanenin kendisi açık `MsgRegisterPQCKeyV2` işlemini gönderir ve bir kez yeniden dener; bu, zincirin değil kütüphanenin davranışıdır, bu nedenle bir sıcak cüzdan hattı anahtarı önceden kaydetmeli ve ilk çekimden önce onaylamalıdır (`GET /qorechain/pqc/v1/account/{address}`). `chain-bridge` 0.2.3'ten itibaren, `cosmosRest` ayarlıysa, kayıt ağ v3.2.3'ü uyguladıktan sonra sahiplik kanıtını taşır ve herhangi bir yeniden kayıttan önce kütüphane zinciri okur: hesap zaten mnemonic'inizin ne kanonik ne de eski anahtarı olan bir anahtar tutuyorsa `pqc_key_mismatch` hatası fırlatır ve hiçbir şey göndermez (tekrarlanan bir kayıt ücretini harcatır ve reddedilir). `chain-bridge` (≥0.1.1), yığının geri kalanıyla aynı kanonik adres-bağlı PQC türetimini kullanır — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — bu yüzden anahtar, mnemonic'ten `qorechaind tx pqc recover-key` ile kurtarılabilir. Daha eski araçlarla kaydedilmiş hesaplar otomatik olarak yönetilir (eski-anahtar yedeği), ve [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation) ile bir kereliğine kanonik anahtara geçirilebilir.
 
 ## Yol B — EVM {#path-b-evm}
 
 `https://evm.qore.host` (zincir kimliği **9801**) veya kendi düğümünüzün 8545 portuna karşı standart Ethereum entegrasyonu.
 
 * **Ondalık basamaklar:** native QOR, EVM hattında **18 ondalık basamaklıdır** (1 uqor = 10¹² wei). Bunu yanlış almak, yatırmaları 10¹² kat yanlış hesaba geçirir.
-* **Yatırmalar:** adreslerinize native transferler için `eth_getBlockByNumber` ile blokları tarayın; `eth_getTransactionReceipt` (`status == 0x1`) ile doğrulayın. Para yatıranların kendi EVM işlemleri de pencere kuralına tabidir; bu nedenle hesabında kayıtlı anahtar veya açık pencere bulunmayan bir kullanıcı EVM hattından yatırım gönderemez (bunun yerine Cosmos hattını kullanabilir).
-* **Çekimler:** standart secp256k1 / EIP-155 imzalama, **ancak yalnızca kayıtlı bir ML-DSA-87 anahtarı ve açık bir EVM yetkilendirme penceresi olan bir hesaptan** (v3.2.0'dan beri; bkz. [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window) ve [İlk İşleminiz](/getting-started/first-transaction#evm-window) içindeki adım adım anlatım). Pencere dışındaki bir işlem reddedilir (codespace `pqc`, kod 26, 27 veya 28). Pencere, hibrit imzalı bir Cosmos hattı işlemiyle açılmalıdır; dolayısıyla Yol B, kuantum-sonrası imzalama ihtiyacını ortadan kaldırmaz. `max-value` değerini, pencere içinde beklediğiniz her çekimin değerini artı azami ücretini (gas limiti × gas başına azami ücret) karşılayacak şekilde boyutlandırın ve sıcak cüzdanın bir toplu işlemin ortasında tükenmemesi için `GET /qorechain/pqc/v1/evm_window/{address}` adresini izleyin. Bir pencere açmak hesabın sequence değerini (aynı zamanda EVM nonce'udur) ilerletir; bu yüzden nonce'u pencere açıldıktan sonra okuyun.
+* **Yatırmalar:** adreslerinize native transferler için `eth_getBlockByNumber` ile blokları tarayın; `eth_getTransactionReceipt` (`status == 0x1`) ile doğrulayın. Para yatıranların kendi EVM işlemleri de pencere kuralına tabidir; bu nedenle hesabında kayıtlı anahtar veya açık pencere bulunmayan bir kullanıcı EVM hattından yatırım gönderemez (bunun yerine Cosmos hattını kullanabilir) ve zincir kimliği olmadan imzalanmış bir işlem (EIP-155 öncesi) doğrudan reddedilir. Bir pencere kapsamlandırılabilir (`native_only`, `allowed_targets`); dolayısıyla kabul edilen bir yatırım her zaman native bir transfer veya pencerenin izin verdiği bir çağrıdır; yine de varsaymak yerine makbuzu (receipt) okuyun.
+* **Çekimler:** standart secp256k1 / EIP-155 imzalama, **ancak yalnızca kayıtlı bir ML-DSA-87 anahtarı ve açık bir EVM yetkilendirme penceresi olan bir hesaptan** (v3.2.0'dan beri; bkz. [EVM yetkilendirme penceresi](/developer-guide/evm-development#evm-window) ve [İlk İşleminiz](/getting-started/first-transaction#evm-window) içindeki adım adım anlatım). Pencere dışındaki bir işlem reddedilir (codespace `pqc`, kod 26, 27 veya 28). Pencere, hibrit imzalı bir Cosmos hattı işlemiyle açılmalıdır; dolayısıyla Yol B, kuantum-sonrası imzalama ihtiyacını ortadan kaldırmaz. `max-value` değerini, pencere içinde beklediğiniz her çekimin değerini artı azami ücretini (gas limiti × gas başına azami ücret) karşılayacak şekilde boyutlandırın (yalnızca düz QOR gönderen bir sıcak cüzdan için pencereyi açarken `--native-only` ekleyin) ve sıcak cüzdanın bir toplu işlemin ortasında tükenmemesi için `GET /qorechain/pqc/v1/evm_window/{address}` adresini izleyin. Bir pencere açmak hesabın sequence değerini (aynı zamanda EVM nonce'udur) ilerletir; bu yüzden nonce'u pencere açıldıktan sonra okuyun.
 * **Sahte-yatırım karşıtı:** makbuz (receipt) durumunu, hareket eden değerin indekslemediğiniz bir ERC-20 olayı değil **native** bir transfer olduğunu doğrulayın ve kendi düğümünüze karşı teyit edin.
 * **Adres eşleme:** `0x` adresi ve `qor1` adresi aynı hesabın iki kodlamasıdır — fonlar paylaşılır. Bkz. [EVM Geliştirme](/developer-guide/evm-development).
 

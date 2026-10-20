@@ -10,7 +10,9 @@ sidebar_position: 1
 مرجع لأوامر `qorechaind` المستخدمة لتهيئة عقدة QoreChain وضبطها وتشغيلها.
 
 :::note
-تُشغّل QoreChain شبكتين: الشبكة الرئيسية **`qorechain-vladi`** (تعمل منذ 29 يونيو 2026؛ إصدار العقدة الحالي **v3.2.1**) والشبكة التجريبية **`qorechain-diana`** (إصدار العقدة **v3.2.2**). مرّر قيمة `--chain-id` المناسبة للشبكة التي تريد الانضمام إليها — الأمثلة أدناه تستهدف الشبكة التجريبية؛ استخدم `--chain-id qorechain-vladi` للشبكة الرئيسية. الإصدار الحالي لكل شبكة مدرج في `latest.json` ضمن [download.qore.host](https://download.qore.host).
+تُشغّل QoreChain شبكتين: الشبكة الرئيسية **`qorechain-vladi`** (تعمل منذ 7 يونيو 2026؛ إصدار العقدة **v3.2.3**، طُبّق عند الارتفاع 3,662,051 في 20 أكتوبر 2026) والشبكة التجريبية **`qorechain-diana`** (إصدار العقدة **v3.2.4**، طُبّق عند الارتفاع 8,337,253 في 19 أكتوبر 2026؛ الإصدار v3.2.4 لم يُطبَّق بعد على الشبكة الرئيسية؛ ومن شأن مقترح الحوكمة 13 أن يطبّقه عند الارتفاع 3,742,566). مرّر قيمة `--chain-id` المناسبة للشبكة التي تريد الانضمام إليها — الأمثلة أدناه تستهدف الشبكة التجريبية؛ استخدم `--chain-id qorechain-vladi` للشبكة الرئيسية. الإصدار الحالي لكل شبكة مدرج في `latest.json` ضمن [download.qore.host](https://download.qore.host).
+
+جرى التحقق من الأوامر في هذه الصفحة مقابل الملف الثنائي للإصدار v3.2.3، وهو إصدار الشبكة الرئيسية. ويضيف الملف الثنائي v3.2.4 للشبكة التجريبية أوامر ليست موجودة على الشبكة الرئيسية؛ وحيثما يذكر هذا الدليل أحدها فإنه يُوسَم بعبارة **للشبكة التجريبية فقط**.
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ------------------------------------------------------ |
 | `--home`               | string | دليل العقدة الرئيسي                                    |
 | `--minimum-gas-prices` | string | الحد الأدنى لسعر الغاز الذي تقبله هذه العقدة. الحد الأدنى للشبكة هو `0.1uqor`؛ اضبط هذه القيمة عند هذا الحد على الأقل |
-| `--pruning`            | string | استراتيجية التقليم: `default`، `nothing`، `everything` |
+| `--pruning`            | string | استراتيجية التقليم: `default`، `nothing`، `everything`، `custom` (مع `--pruning-keep-recent` و`--pruning-interval`) |
 | `--halt-height`        | uint   | إيقاف العقدة عند هذا الارتفاع للكتلة                    |
 | `--halt-time`          | uint   | إيقاف العقدة عند هذا الطابع الزمني من نوع Unix          |
 | `--log_level`          | string | مستوى تفصيل السجلّ: `info`، `debug`، `warn`، `error`   |
 | `--trace`              | bool   | تفعيل تتبّع المكدّس الكامل عند حدوث أخطاء               |
 
+الملف الثنائي المبني من شجرة المصدر العامة (بناء المجتمع) يرفض البدء على `qorechain-vladi` أو `qorechain-diana`: فهو لا يستطيع التحقق من التوقيعات ما بعد الكمومية ولا يستطيع إعادة تشغيل كتل الشبكتين بأمانة (إصدار العقدة v3.2.3 وما بعده). استخدم الملف الثنائي للإصدار من [download.qore.host](https://download.qore.host)؛ انظر [البناء من المصدر](/developer-guide/building-from-source).
+
 ---
 
 ## version
 
-طباعة إصدار الملف الثنائي `qorechaind` ومعلومات البناء.
+لا يُبلغ `qorechaind version` عن رقم الإصدار في الملفات الثنائية للإصدارات: فهو يطبع سطرًا فارغًا، ولا يضيف `version --long` أي تفاصيل بناء. لا تعتمد عليه للتمييز بين الإصدارات. للتأكد مما تشغّله:
+
+- قارن SHA-256 للأرشيف **الذي نزّلته** مع `binary.sha256` في [البيان (manifest)](https://download.qore.host/mainnet/latest.json) الخاص بالشبكة قبل فك ضغطه (واحتفظ بذلك الأرشيف، أو بمجموعه الاختباري، كسجل لما ثبّتّه).
+- اسأل السلسلة عن الترقيات التي طبّقتها: يُرجع `GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>` الارتفاع الذي طُبّقت عنده الترقية، أو `0` إن لم تُطبَّق.
 
 ```bash
-qorechaind version
-```
-
-استخدم `--long` للحصول على تفاصيل بناء موسّعة تشمل إصدار Go وتجزئة الالتزام (commit hash) وعلامات البناء:
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

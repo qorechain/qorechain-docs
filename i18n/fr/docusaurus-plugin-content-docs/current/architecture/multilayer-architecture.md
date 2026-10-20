@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain met en œuvre une **architecture de chaînes hiérarchique à 4 niveaux** via le module `x/multilayer`. La chaîne principale sert de racine de règlement et de confiance, tandis que les couches subsidiaires (sidechains, paychains et rollups) prennent en charge des charges de travail spécialisées avec différents compromis de performance et de sécurité.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.1**) et sur le testnet, mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau**. Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur.
+Le module est déployé sur le mainnet (version de chaîne **v3.2.3**) et sur le testnet (**v3.2.4**), mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026 : `GET /qorechain/multilayer/v1/layers` renvoie une liste vide sur les deux). Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur. Sur le mainnet, le message `MsgUpdateLayerStatus` est actuellement désactivé par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; sur le testnet, il ne l'est pas.
 :::
 
 ---
@@ -64,7 +64,7 @@ La chaîne principale est la racine de confiance de l'ensemble de l'écosystème
 | Consensus       | Consensus QoreChain (voir [Mécanisme de consensus](/architecture/consensus-mechanism) pour ce qui est branché aujourd'hui) |
 | Sécurité        | Sécurisé par PQC avec signatures Dilithium-5                                    |
 | Rôle            | Couche de règlement, stockage des ancres d'état, moteur de routage QCAI, racine de confiance |
-| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,0 seconde sur le testnet (mesuré en octobre 2026) |
+| Temps de bloc   | Variable selon le réseau : environ 3,2 secondes sur le mainnet, environ 1,0 seconde sur le testnet (mesuré le 20 octobre 2026) |
 
 Toutes les couches subsidiaires ancrent périodiquement leurs racines d'état à la chaîne principale via des schémas d'engagement hiérarchiques (HCS).
 
@@ -160,13 +160,19 @@ Les couches subsidiaires engagent périodiquement leur état sur la chaîne prin
 | `transaction_count`       | Nombre de transactions depuis la dernière ancre      |
 | `compressed_state_proof`  | Preuve compressée de transition d'état               |
 
-### Soumission d'une ancre
+### Identifiants de couche et de rollup {#id-grammar}
+
+Depuis la v3.2.2, un **nouvel** identifiant de couche (et un identifiant de rollup, qu'un rollup partage avec sa couche) doit respecter `^[a-z0-9][a-z0-9._-]{2,63}$` : de 3 à 64 caractères, lettres minuscules, chiffres, `.`, `_` et `-`, commençant par une lettre ou un chiffre. Le keeper le vérifie lors de la création de la couche, et une transaction qui échoue à cette vérification paie tout de même ses frais ; validez donc les identifiants côté client d'abord. Les identifiants créés avant la v3.2.2 ne sont pas affectés.
+
+### Soumission d'une ancre {#anchor-submission}
 
 Les ancres sont soumises à la chaîne principale via `MsgAnchorState`. Le keeper valide l'ancre selon les étapes suivantes :
 
 1. **La couche existe et est active** — Le keeper vérifie que la couche existe dans l'état et possède actuellement le statut `active`.
 2. **Intervalle minimal d'ancrage écoulé** — Le keeper vérifie qu'au moins `min_anchor_interval` blocs (par défaut : 100) se sont écoulés depuis la dernière ancre de cette couche.
 3. **Signature agrégée PQC** — Le keeper s'assure que la signature agrégée PQC est présente et valide pour les données de l'ancre. La signature est vérifiée par rapport à la clé ML-DSA-87 enregistrée du **créateur de la couche** ; une ancre est refusée lorsque le créateur n'a enregistré aucune clé.
+
+Une **ancre de règlement** écrite via `x/rdk` (un lot soumis avec une `anchor_signature`, depuis la v3.2.2) est un cas particulier : elle saute la vérification de l'intervalle minimal parce que les lots arrivent dans l'ordre, elle peut ancrer une couche encore à l'état `proposed` (rien sur la chaîne ne promeut une couche enregistrée par un rollup RDK), et elle n'est acceptée que si l'émetteur est le créateur de la couche lui-même. La vérification de la signature est la même.
 
 ### Période de contestation
 
@@ -181,7 +187,24 @@ Les ancres sont **lisibles** via le service de requête multilayer. Deux requêt
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — renvoie la dernière ancre d'état d'une couche.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — renvoie l'historique des ancres d'une couche.
 
-Chaque ancre porte une signature Dilithium-5 du créateur de la couche sur le message `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Une version plus récente de la chaîne modifie le message signé ; les clients ne doivent donc pas le coder en dur. Une signature prouve que la clé enregistrée du créateur a signé ces octets ; l'existence de l'ancre est une question qui relève de la chaîne, de sorte qu'un vérificateur doit lire l'ancre auprès d'un nœud de confiance. Aucune couche ni aucune ancre n'existe encore sur l'un ou l'autre réseau. Il s'agit de la primitive on-chain qui sous-tend les [reçus de règlement](/rollups/settlement-receipts) du Rollup Development Kit.
+Chaque ancre porte une signature Dilithium-5 (ML-DSA-87) du créateur de la couche. Le message signé dépend de la hauteur à laquelle l'ancre est soumise :
+
+* **À partir de la v3.2.2 (hauteur mainnet 3,556,788, hauteur testnet 6,905,034) : v2.** Chaque champ de longueur variable est précédé d'une longueur sur 8 octets en big-endian, l'identifiant de chaîne fait partie du message, et le nombre de transactions ainsi que la preuve d'état compressée sont couverts :
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Avant la v3.2.2 : v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, sans préfixe de longueur et sans identifiant de chaîne, de sorte qu'une signature v1 est valide sur toutes les chaînes). La chaîne n'accepte plus d'ancre v1 à partir de la hauteur de la v3.2.2.
+
+Le message pouvant changer d'une version à l'autre, un client doit choisir la forme d'après la hauteur du plan appliqué (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2` ; `"height":"0"` signifie non appliqué) plutôt que de la coder en dur. Pour un lot RDK, la correspondance est la suivante : `layer_id` = l'identifiant de couche du rollup, `layer_height` = l'indice du lot, `state_root` = la racine d'état du lot, `transaction_count` = le nombre de transactions du lot et une `compressed_state_proof` vide. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` affiche ces octets hors ligne. Une signature prouve que la clé enregistrée du créateur a signé ces octets ; l'existence de l'ancre est une question qui relève de la chaîne, de sorte qu'un vérificateur doit lire l'ancre auprès d'un nœud de confiance. Aucune couche ni aucune ancre n'existe encore sur l'un ou l'autre réseau. Il s'agit de la primitive on-chain qui sous-tend les [reçus de règlement](/rollups/settlement-receipts) du Rollup Development Kit.
 
 ---
 
@@ -250,3 +273,5 @@ Les transitions de statut sont imposées par le keeper. Les transitions invalide
 | `routing_enabled`              | bool   | `true`          | Activer le routage des transactions basé sur QCAI      |
 | `routing_confidence_threshold` | string | `0.6`           | Confiance minimale pour les décisions de routage QCAI  |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Activer le regroupement de frais inter-couches global  |
+
+Ce sont les valeurs renvoyées par `qorechaind query multilayer params` (REST : `/qorechain/multilayer/v1/params`) sur le mainnet et le testnet le 20 octobre 2026. Depuis la v3.2.2, le `MsgUpdateParams` du module peut être routé, de sorte qu'une proposition de gouvernance peut les modifier.

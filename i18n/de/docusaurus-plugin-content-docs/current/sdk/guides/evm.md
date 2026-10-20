@@ -78,7 +78,7 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 // const hash = await writeContract(walletClient, { address, abi, functionName, args });
 ```
 
-## EVM-Autorisierungsfenster (Chain v3.2.0) {#evm-window}
+## EVM-Autorisierungsfenster (seit Chain v3.2.0) {#evm-window}
 
 Seit Chain-Version **v3.2.0** (Mainnet ab Block 2.981.742, Testnet ab Block
 5.920.000) lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das einen
@@ -89,7 +89,8 @@ neu ist, dass die Post-Quantum-Autorisierung der Transaktion *vorausgeht*, und z
 hybrid-signierte Native-Lane-Nachricht. Die Regeln auf Chain-Ebene, die Grenzwerte, die CLI-Formen und die Ablehnungscodes stehen unter
 [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
 
-Mit SDK **0.8.2 oder neuer** können Sie ein Fenster aus Code heraus öffnen. Das (einmalige)
+Mit SDK **0.8.2 oder neuer** können Sie ein Fenster aus Code heraus öffnen (**0.9.0** ergänzt die
+unten beschriebenen Scope-Optionen). Das (einmalige)
 Registrieren des Schlüssels ist unter [Quantensicher](/sdk/guides/quantum-safe) beschrieben; das
 folgende Beispiel öffnet dann ein Fenster für ein vereinheitlichtes eth-natives Konto (`npm i @cosmjs/stargate`):
 
@@ -156,6 +157,97 @@ try {
 
 `closeEvmWindowMsg` baut die passende Schließen-Nachricht, und `MAX_EVM_WINDOW_BLOCKS`
 sowie `MAX_EVM_WINDOW_TXS` exportieren die Grenzwerte.
+
+### Ein Fenster einschränken (seit Chain v3.2.3, SDK 0.9.0) {#evm-window-scope}
+
+Ein Fenster kann beim Öffnen eingeschränkt werden: `nativeOnly` lässt nur einfache Transfers
+von nativem QOR zu (keine Calldata, keine Vertragserstellung, keinen Empfänger, der Code trägt,
+keine EIP-7702-Autorisierung), und `allowedTargets` lässt nur Transaktionen zu, deren
+Empfänger eine von bis zu 16 aufgelisteten `0x`-Adressen ist (keine Duplikate; die Vertragserstellung
+wird abgelehnt). Beides sind neue Nachrichtenfelder: Ein Node unterhalb von v3.2.3 lehnt die gesamte
+Transaktion ab, wenn eines davon gesetzt ist; setzen Sie sie daher nur in einem Netzwerk, das
+v3.2.3 angewendet hat (beide öffentlichen Netzwerke haben das). `fetchEvmWindow` liest beide zurück (`nativeOnly`,
+`allowedTargets`; vor v3.2.3 lesen sie sich als `false` und leer). Für ein Fenster, das
+nur zum Senden von QOR geöffnet wird, bevorzugen Sie `nativeOnly`.
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  openEvmWindowMsg,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on-chain
+const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
+
+await tx.signAndBroadcast(
+  [
+    openEvmWindowMsg({
+      sender: account.address,
+      blocks: 7200,
+      maxTxs: 20,
+      maxValue: "1000000000", // uqor: value PLUS the maximum fee of each transaction
+      nativeOnly: true,
+      // or: allowedTargets: ["0x…", "0x…"],
+    }),
+  ],
+  "auto",
+);
+```
+
+### EIP-7702-Einwilligung (seit Chain v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
+
+Eine Typ-4-Transaktion (EIP-7702) wird erst zugelassen, nachdem jedes Konto, dessen
+Autorisierung wirksam wird, mit einer hybrid-signierten `MsgAuthorizeEVMDelegation` eine
+Post-Quanten-Einwilligung genau für diesen Delegate erteilt hat. Die Einwilligung wird von
+der Transaktion verbraucht, die die Delegation installiert, und läuft nach den von Ihnen
+festgelegten `blocks` ab (1 bis 17.280); die Nulladresse als Delegate willigt in das Löschen ein. Das SDK
+baut die Nachrichten und liest die Einwilligung zurück, einschließlich der Nonce, die das
+Autorisierungs-Tupel tragen muss:
+
+```ts
+import {
+  authorizeEvmDelegationMsg,
+  clearEvmDelegationMsg,
+  fetchEvmDelegationConsent,
+  evmDelegationTupleNonce,
+} from "@qorechain/sdk";
+
+// 1) Consent to one delegate (hybrid-signed Native-lane message, `tx` as above).
+await tx.signAndBroadcast(
+  [authorizeEvmDelegationMsg({ sender: account.address, delegate: "0xDelegate…", blocks: 600 })],
+  "auto",
+);
+
+// 2) Read the consent: the tuple's nonce is the account's EVM nonce for a
+//    sponsored transaction, and that nonce + 1 when the account sends it itself.
+const consent = await fetchEvmDelegationConsent({ rest: "https://api.qore.host", address: account.address });
+const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
+
+// 3) Sign the authorisation tuple with `tupleNonce` and send the type-4
+//    transaction (the sender still needs an open window; a sponsor pays from its own).
+
+// Remove an installed delegation directly, without any EVM transaction:
+// await tx.signAndBroadcast([clearEvmDelegationMsg(account.address)], "auto");
+```
+
+`classifyEvmDelegationRejection(err)` liefert `"no-consent"` oder `"invalid"`, wenn die
+EVM-Lane eine Delegation ablehnt. Die Einwilligungsabfrage erfordert Chain v3.2.2 oder neuer. Die
+Regeln auf Chain-Ebene stehen unter
+[EIP-7702-Delegationen](/architecture/post-quantum-security#eip-7702); die CLI-Formen
+lauten `qorechaind tx pqc authorize-evm-delegation` und `clear-evm-delegation`.
+
+Releases vor 0.9.0 bauen nur das Fenster ohne Scope (ein Fenster ohne Scope funktioniert
+weiterhin auf beiden Netzwerken) und haben keine Einwilligungs-Builder; verwenden Sie dort die CLI-Formen unter
+[EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
 
 ## Precompiles
 

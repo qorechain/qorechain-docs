@@ -10,7 +10,9 @@ sidebar_position: 1
 Riferimento per i comandi `qorechaind` usati per inizializzare, configurare e gestire un nodo QoreChain.
 
 :::note
-QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 29 giugno 2026; release attuale del nodo **v3.2.1**) e la testnet **`qorechain-diana`** (release del nodo **v3.2.2**). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
+QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026; release del nodo **v3.2.3**, applicata all'altezza 3.662.051 il 20 ottobre 2026) e la testnet **`qorechain-diana`** (release del nodo **v3.2.4**, applicata all'altezza 8.337.253 il 19 ottobre 2026; la v3.2.4 non è ancora applicata sulla mainnet; la proposta di governance 13 la applicherebbe all'altezza 3.742.566). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
+
+I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, ovvero la release della mainnet. Il binario v3.2.4 della testnet aggiunge comandi che la mainnet non ha; dove questo manuale ne cita uno, è contrassegnato come **solo testnet**.
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ------------------------------------------------------------ |
 | `--home`               | string | Directory home del nodo                                       |
 | `--minimum-gas-prices` | string | Prezzo minimo del gas accettato da questo nodo. Il minimo della rete è `0.1uqor`; imposta almeno questo valore |
-| `--pruning`            | string | Strategia di pruning: `default`, `nothing`, `everything`      |
+| `--pruning`            | string | Strategia di pruning: `default`, `nothing`, `everything`, `custom` (con `--pruning-keep-recent` e `--pruning-interval`) |
 | `--halt-height`        | uint   | Ferma il nodo a questa altezza di blocco                      |
 | `--halt-time`          | uint   | Ferma il nodo a questo timestamp Unix                         |
 | `--log_level`          | string | Livello di verbosità dei log: `info`, `debug`, `warn`, `error` |
 | `--trace`              | bool   | Abilita lo stack trace completo in caso di errori             |
 
+Un binario compilato dall'albero dei sorgenti pubblico (la build della community) rifiuta di avviarsi su `qorechain-vladi` o `qorechain-diana`: non può verificare le firme post-quantistiche e non può rieseguire fedelmente i blocchi delle reti (release del nodo v3.2.3 e successive). Usa il binario di release da [download.qore.host](https://download.qore.host); vedi [Compilazione dal sorgente](/developer-guide/building-from-source).
+
 ---
 
 ## version
 
-Stampa la versione del binario `qorechaind` e le informazioni di build.
+`qorechaind version` **non** riporta il numero di release sui binari di release: stampa una riga vuota, e `version --long` non aggiunge dettagli di build. Non fare affidamento su di esso per distinguere le release. Per confermare cosa stai eseguendo:
+
+- Confronta lo SHA-256 dell'**archivio scaricato** con `binary.sha256` nel [manifest](https://download.qore.host/mainnet/latest.json) della rete prima di estrarlo (e conserva quell'archivio, o il suo checksum, come registrazione di ciò che hai installato).
+- Chiedi alla chain quali upgrade ha applicato: `GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>` restituisce l'altezza a cui un upgrade è stato applicato, oppure `0` se non è stato applicato.
 
 ```bash
-qorechaind version
-```
-
-Usa `--long` per dettagli di build estesi, tra cui la versione di Go, l'hash del commit e i build tag:
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

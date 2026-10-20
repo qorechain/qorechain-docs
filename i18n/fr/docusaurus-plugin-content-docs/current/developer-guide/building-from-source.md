@@ -10,7 +10,7 @@ sidebar_position: 1
 Ce guide vous accompagne dans la compilation du binaire communautaire `qorechaind` depuis les sources publiques, et explique à quoi ce binaire sert et ne sert pas.
 
 :::caution Une compilation depuis les sources ne peut pas rejoindre le mainnet ni le testnet
-Le dépôt public contient les interfaces de module avec des **keepers factices (stub)** ; les implémentations de keepers critiques pour le consensus et le signataire post-quantique ne figurent pas dans l'arborescence de sources publique. Un binaire compilé à partir de celle-ci ne peut pas reproduire l'état de consensus des réseaux, et il ne peut pas créer la signature post-quantique hybride que requiert chaque transaction de la voie Cosmos. Pour exécuter un nœud ou un validateur sur le mainnet ou le testnet, installez le **binaire de release** indiqué dans le manifeste en production (`https://download.qore.host/mainnet/latest.json` ou `.../testnet/latest.json`) ; voir [Exécuter un nœud](/developer-guide/running-a-node) et [Exécuter un validateur](/developer-guide/running-a-validator).
+Le dépôt public contient les interfaces de module avec des **keepers factices (stub)** ; les implémentations de keepers critiques pour le consensus et le signataire post-quantique ne figurent pas dans l'arborescence de sources publique. Un binaire compilé à partir de celle-ci ne peut pas reproduire l'état de consensus des réseaux, et il ne peut pas créer la signature post-quantique hybride que requiert chaque transaction de la voie Cosmos. Depuis la v3.2.3, il **refuse aussi de démarrer** sur `qorechain-vladi` ou `qorechain-diana` (il les reconnaît à l'identifiant de chaîne et à l'heure de genèse ; un devnet local qui réutilise un identifiant de chaîne public avec sa propre genèse n'est pas concerné). `qorechaind start --community-unenforced-pqc` outrepasse ce refus pour des expérimentations ; le nœud ne vérifie alors aucune signature post-quantique et peut diverger du réseau sans avertissement, ne l'utilisez donc jamais pour un nœud sur lequel vous comptez. Pour exécuter un nœud ou un validateur sur le mainnet ou le testnet, installez le **binaire de release** indiqué dans le manifeste en production (`https://download.qore.host/mainnet/latest.json` ou `.../testnet/latest.json`) ; voir [Exécuter un nœud](/developer-guide/running-a-node) et [Exécuter un validateur](/developer-guide/running-a-validator).
 :::
 
 ## Prérequis
@@ -106,11 +106,11 @@ Les tests qui exercent les bibliothèques natives ou les keepers propriétaires 
 Après une compilation réussie, vérifiez le binaire :
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-La commande `init` doit créer un fichier genesis et une configuration de nœud dans `~/.qorechaind/` sans erreur. L'exemple ci-dessus initialise le nœud sur le testnet **`qorechain-diana`** — pour le mainnet, remplacez par `--chain-id qorechain-vladi`, le réseau en production (version du nœud **v3.2.1**).
+La commande `init` doit créer un fichier genesis et une configuration de nœud dans `~/.qorechaind/` sans erreur. L'exemple ci-dessus initialise le nœud sur le testnet **`qorechain-diana`** — pour le mainnet, remplacez par `--chain-id qorechain-vladi`, le réseau en production (version du nœud **v3.2.3**).
 
 ## Compilation Docker
 

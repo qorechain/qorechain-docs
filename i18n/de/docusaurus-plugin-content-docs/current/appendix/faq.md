@@ -11,7 +11,7 @@ Allgemeine Fragen zu QoreChain, beantwortet anhand der Dokumentation. Jede Antwo
 
 ### Ist das Mainnet live?
 
-Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 29. Juni 2026 live und läuft mit Release v3.2.1. Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
+Ja. Das QoreChain-Mainnet (Chain `qorechain-vladi`, EVM-Chain-ID 9801) ist seit dem 7. Juni 2026 live und läuft mit Release v3.2.3 (das Testnet `qorechain-diana` läuft mit v3.2.4). Siehe [Netzwerke](/appendix/networks) und [Verbindung mit dem Mainnet](/getting-started/connecting-to-mainnet).
 
 ### Welche Chain-IDs und EVM-Chain-IDs gibt es?
 
@@ -39,15 +39,19 @@ Verwenden Sie den Testnet-Faucet im Dashboard. Siehe [Dashboard-Faucet](/dashboa
 
 ### Wie betreibe ich einen Node, Validator oder Light Node?
 
-Für einen Full Node siehe [Einen Node betreiben](/developer-guide/running-a-node). Für einen Validator siehe [Einen Validator betreiben](/developer-guide/running-a-validator). Für einen Light Node siehe [Light Node](/light-node/overview).
+Für einen Full Node siehe [Einen Node betreiben](/developer-guide/running-a-node). Für einen Validator siehe [Einen Validator betreiben](/developer-guide/running-a-validator). Für einen Light Node siehe [Light Node](/light-node/overview); die Registrierung für das Light-Node-Belohnungsprogramm ist offen und lizenzpflichtig ([Status](/light-node/overview#reward-program-status)).
 
 ### Welches Signaturverfahren verwendet QoreChain?
 
-QoreChain verwendet ein Post-Quantum-Hybridverfahren, das klassisches **secp256k1 (ECDSA)** mit Post-Quantum-**ML-DSA-87 (Dilithium-5)** kombiniert. Dieses Hybridverfahren ist auf dem Cosmos-Transaktionspfad standardmäßig erforderlich, wobei der Durchsetzungsmodus per Governance gesteuert wird. Auf der EVM-Lane bleibt die Signatur secp256k1, und ein Konto muss zusätzlich einen registrierten ML-DSA-Schlüssel und ein offenes Autorisierungsfenster besitzen (v3.2.0). Siehe [Post-Quantum-Sicherheit](/architecture/post-quantum-security).
+QoreChain verwendet ein Post-Quantum-Hybridverfahren, das klassisches **secp256k1 (ECDSA)** mit Post-Quantum-**ML-DSA-87 (Dilithium-5)** kombiniert. Dieses Hybridverfahren ist auf dem Cosmos-Transaktionspfad standardmäßig erforderlich, wobei der Durchsetzungsmodus per Governance gesteuert wird. Auf der EVM-Lane bleibt die Signatur secp256k1, und ein Konto muss zusätzlich einen registrierten ML-DSA-Schlüssel und ein offenes Autorisierungsfenster besitzen (seit v3.2.0). Siehe [Post-Quantum-Sicherheit](/architecture/post-quantum-security).
 
 ### Warum wird meine EVM-Transaktion mit „no open EVM authorisation window“ abgelehnt?
 
 Seit v3.2.0 lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das einen registrierten Post-Quantum-Schlüssel und ein offenes Autorisierungsfenster besitzt. Öffnen Sie ein Fenster mit einer Post-Quantum-signierten Transaktion auf der Cosmos-Lane und versuchen Sie es dann erneut. Siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window).
+
+### Wie viele Validatoren hat das Mainnet?
+
+Acht gebondete Validatoren am 20. Oktober 2026, mit etwa 55,1 Millionen gebondeten QOR (das aktive Set kann bis zu 100 umfassen). Das Testnet hat drei. Das aktuelle Set können Sie unter `GET /cosmos/staking/v1beta1/validators` auf `https://api.qore.host` auslesen.
 
 ### Welche Blockzeit kann ich erwarten?
 
@@ -59,7 +63,7 @@ Noch nicht. Das Accounting-Modul existiert, aber Lock- und Unlock-Transaktionen 
 
 ### Ist das QOR-Angebot festgelegt?
 
-Das Genesis-Angebot betrug 4.420.000.000 QOR. Die Staking-Emission wird unter einer harten kumulativen Obergrenze von 114.285.714 QOR geprägt, und Burns entfernen Token dauerhaft. Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Das Genesis-Angebot betrug 4.420.000.000 QOR. Die Staking-Emission wird unter einer harten kumulativen Obergrenze von 590.000.000 QOR geprägt (86.000 QOR pro Epoche seit Governance-Vorschlag 10, Oktober 2026), und Burns entfernen Token dauerhaft. Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Wie erstelle ich ein Rollup?
 
@@ -71,7 +75,7 @@ Verwenden Sie das [QoreChain SDK](/sdk/overview), das öffentliche SDK zum Erste
 
 ### Wo kann ich Fragen stellen?
 
-Der QCAIA-Community-Bot beantwortet Fragen auf Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) und Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Siehe [QCAIA-Community-Bot](/qcaia/overview).
+Der QCAIA-Community-Bot beantwortet Fragen auf Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) und Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Siehe [QCAIA-Community-Bot](/qcaia/overview).
 
 ## Verwandt
 

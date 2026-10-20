@@ -15,7 +15,7 @@ Apelurile între VM-uri sunt disponibile doar în măsura în care este disponib
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
 * **Încărcarea și instanțierea CosmWasm sunt permisionate** pe ambele rețele, iar mainnet-ul nu are cod de contract stocat, deci nu există încă niciun contract CosmWasm de apelat.
-* **Precompile-ul EVM sincron nu este activ** (vezi mai jos).
+* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele.
 
 Rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public; citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::
@@ -51,7 +51,7 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte CosmWasm și să primească un răspuns în cadrul aceleiași tranzacții.
 
 :::warning Inactiv pe mainnet și testnet
-Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi` și nici pe `qorechain-diana`: un apel către `0x…0901` reușește și returnează date goale. Nu va fi activat în forma sa actuală; este reconstruit astfel încât un revert în contractul apelant să anuleze și partea CosmWasm, transferurile de valoare să fie respinse, reintrarea EVM-către-EVM să fie refuzată, iar circuit breaker-ul cross-VM să se aplice. Exemplul de mai jos arată doar forma intenționată. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi` și nici pe `qorechain-diana`: un apel către `0x…0901` reușește și returnează date goale. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea CosmWasm, ajunge doar la ținte CosmWasm din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia după ce o actualizare aprobată prin guvernanță îl adaugă în lista activă. Exemplul de mai jos arată doar forma intenționată. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Exemplu Solidity
@@ -78,7 +78,7 @@ contract CrossVMCaller {
 }
 ```
 
-Odată activ, precompile-ul execută imediat contractul CosmWasm și returnează rezultatul. Nodul actual decodifică calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; ABI-ul se poate schimba odată cu reconstrucția. Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+Odată activ, precompile-ul execută imediat contractul CosmWasm și returnează rezultatul. Nodul actual decodifică calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; ABI-ul se mai poate schimba înainte de activare. Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
 
 ---
 
@@ -88,17 +88,17 @@ Celelalte apeluri între VM-uri folosesc tranzacția `MsgCrossVMCall`. Chain-ul 
 
 ### CLI
 
-`tx crossvm call` primește VM-ul țintă (`evm`, `cosmwasm` sau `svm`) și contractul țintă ca argumente poziționale, cu payload-ul în hex:
+`tx crossvm call` primește VM-ul țintă (`evm`, `cosmwasm` sau `svm`) și contractul țintă ca argumente poziționale, cu payload-ul în hex. CLI-ul nu cere VM-ul sursă: chain-ul deduce lane-ul apelantului din stare și ignoră câmpul declarat (CLI-ul completează o valoare provizorie pentru ca mesajul să treacă de propria validare):
 
 ```bash
 qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Alte flag-uri: `--funds <coins>` (doar pentru ținte CosmWasm) și `--async` pentru a pune apelul în coadă în loc să fie executat acum. Semnează și transmite `tx.json` cu `tx pqc cosign` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); pragul taxei este de 0.1 uqor per gaz.
+Alte flag-uri: `--funds <coins>` (doar pentru ținte CosmWasm) și `--async` pentru a pune apelul în coadă în loc să fie executat acum. Semnează și transmite `tx.json` cu `tx pqc cosign` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); pragul taxei este de 0.1 uqor per gaz. Un apel către propriul lane al apelantului este refuzat (începând cu v3.2.3).
 
-:::caution Dezactivat pe mainnet, iar forma CLI necesită o corecție
-`MsgCrossVMCall` este oprit pe mainnet de circuit breaker. În binarele versiunii curente, `tx crossvm call` construiește și un mesaj care nu trece de propria validare a mesajului (lasă VM-ul sursă gol), deci comanda este documentată aici doar pentru referință.
+:::caution Dezactivat pe mainnet
+`MsgCrossVMCall` este oprit pe mainnet de circuit breaker, deci comanda nu poate reuși acolo astăzi. (Binarele de release anterioare v3.2.3 construiau și un mesaj care nu trecea de propria validare, deoarece VM-ul sursă era gol; binarul v3.2.3 corectează acest lucru.) Pe testnet mesajul este activat, dar țintele sale CosmWasm și SVM nu sunt utilizabile (vezi mai sus), așa că poate fi atinsă doar o țintă EVM.
 :::
 
 ---
@@ -122,6 +122,8 @@ Submitted --> Pending --> Executed
 | **Executed**  | Contractul țintă a fost apelat cu succes; răspuns înregistrat |
 | **Failed**    | Execuția contractului țintă a fost anulată (revert); eroare înregistrată |
 | **Timed Out** | Mesajul a depășit `queue_timeout_blocks` fără execuție    |
+
+Începând cu v3.2.3, un apel din coadă care eșuează este anulat în întregime: rămâne doar înregistrarea sa `Failed`, iar fondurile atașate unui apel CosmWasm eșuat nu mai sunt mutate în contract. Cât timp modulul este dezactivat sau `MsgCrossVMCall` este oprit de circuit breaker, coada **nu este executată**: mesajele din coadă rămân în așteptare și expiră la termenul lor, cu excepția cazului în care comutatorul este ridicat mai întâi.
 
 ---
 

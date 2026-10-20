@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Account e Dashboard
 
-QoreX funziona **completamente senza un account** — le tue chiavi non dipendono mai da uno. L'accesso aggiunge comodità come le richieste di pagamento e l'associazione con la Dashboard; anche rivendicare un @handle può richiederti di accedere.
+QoreX funziona **completamente senza un account** — le tue chiavi non dipendono mai da uno. L'accesso aggiunge comodità come le richieste di pagamento e l'associazione con la Dashboard, ed è **necessario per rivendicare un @handle**. L'accesso avviene tramite email, oppure tramite Apple o Google — vedi sotto.
 
 ## Accesso {#sign-in}
 
@@ -35,7 +35,7 @@ Impostazioni → **Your accounts** ti permette di creare e passare da uno all'al
 
 Rivendica un nome univoco (ad esempio `@liviu`) associato al tuo indirizzo tramite **doppia firma** (una firma ed25519 del registro + la tua firma secp256k1). Chiunque può quindi inviarti fondi al tuo @handle. La risoluzione avviene con logica **verify-then-pin** (trust-on-first-use): se la chiave di un handle viene mai modificata silenziosamente, QoreX lo segnala.
 
-Poiché un handle è legato a un indirizzo e non al tuo wallet, rivendicarne uno è un'operazione **per singolo indirizzo** — se hai [più account](#accounts), ciascuno può avere il proprio @handle, e rivendicarne uno per un account non assegna automaticamente un nome agli altri. Nell'estensione per browser puoi pagare un handle; rivendicarlo dal popup è offerto sugli account QoreChain ordinari in alcune versioni e in altre no — se il popup non lo offre, rivendicalo dall'app mobile. Gli account in stile Ethereum (coin 60) non hanno un handle.
+Poiché un handle è legato a un indirizzo e non al tuo wallet, rivendicarne uno è un'operazione **per singolo indirizzo** — se hai [più account](#accounts), ciascuno può avere il proprio @handle, e rivendicarne uno per un account non assegna automaticamente un nome agli altri. Per rivendicarlo serve un account con accesso effettuato e avviene **nell'app mobile**. Nell'estensione per browser puoi pagare un handle (le ricerche funzionano dall'estensione 0.3.7 in poi) ma non rivendicarne uno — l'estensione ti indirizza all'app. Gli account in stile Ethereum (coin 60) non hanno un handle. I nomi QoreChain che imitano quelli ufficiali sono riservati: un nuovo handle che imita il progetto (i suoi nomi di marchio, o parole di fiducia come *official*, *support*, *airdrop* o *treasury*, comprese le grafie simili) viene rifiutato. I titolari esistenti possono comunque eliminare il proprio handle.
 
 Se il registro degli handle è temporaneamente irraggiungibile, la schermata passa alla modalità **"Handles coming soon"** e tutto il resto continua a funzionare; gli handle tornano automaticamente attivi quando il registro torna disponibile.
 

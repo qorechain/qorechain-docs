@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain은 **CosmWasm** 스마트 컨트랙트를 지원하여, 개발자가 WebAssembly로 컴파일되는 안전하고 샌드박스화된 프로그램을 Rust로 작성할 수 있게 합니다. CosmWasm 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
 
 :::note
-아래 명령은 2026년 6월 29일부터 운영 중이며 노드 릴리스 **v3.2.1**을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 테스트넷(v3.2.2 실행)의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.3**을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 테스트넷(v3.2.4 실행, 테스트넷 전용)의 경우 `--chain-id qorechain-diana`로 대체하세요.
 :::
 
 :::caution 코드 업로드 및 인스턴스화에는 현재 명시적 권한이 필요합니다
@@ -211,7 +211,7 @@ pub fn query(
 
 ## 크로스 VM 호출
 
-크로스 VM 호출은 `x/crossvm` 모듈을 통해 `MsgCrossVMCall` 트랜잭션으로 전송됩니다. 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요. 현재 CosmWasm 컨트랙트에는 크로스 VM 호출을 시작하기 위한 컨트랙트 측 바인딩이 없으므로(컨트랙트가 내보낼 수 있는 커스텀 `QoreChainMsg` 메시지가 없음), 컨트랙트는 자신의 `execute` 진입점 내부에서 EVM 또는 SVM 컨트랙트를 호출할 수 없습니다.
+크로스 VM 호출은 `x/crossvm` 모듈을 통해 `MsgCrossVMCall` 트랜잭션으로 전송됩니다. 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요. CosmWasm 컨트랙트에는 크로스 VM 호출을 시작하기 위한 전용 컨트랙트 측 바인딩이 없으므로(컨트랙트가 내보낼 수 있는 커스텀 `QoreChainMsg` 메시지가 없음), 컨트랙트는 자신의 `execute` 진입점 내부에서 EVM 또는 SVM 컨트랙트를 호출할 수 없습니다. v3.2.3부터는 호출자 자신의 레인으로 향하는 호출이 거부되며, 실패한 대기열 호출은 부작용을 남기지 않습니다.
 
 :::caution 크로스 VM 호출은 현재 메인넷에서 꺼져 있습니다
 `MsgCrossVMCall`은 메인넷의 서킷 브레이커 목록(`qorechaind query circuit disabled-list`)에 올라 있고 SVM 레인은 두 네트워크 모두에서 비활성화되어 있으므로, 현재 크로스 VM 경로는 일반 트랜잭션에 사용할 수 없습니다.

@@ -64,8 +64,9 @@ QOR-Transfer broadcasten: ableiten → signieren → simulieren → Gebühr sch�
 mit Guthaben. Dieses Beispiel signiert nur mit der **klassischen** Signatur,
 funktioniert daher gegen einen lokalen oder Dev-Node, wird aber von Mainnet und
 Testnet abgelehnt, die für jede Transaktion auf dem Native-Pfad die hybride
-Signatur verlangen. Für die öffentlichen Netzwerke verwenden Sie den hybriden
-Versand im [Quickstart](/sdk/quickstart#send-qor).
+Signatur verlangen. Für die öffentlichen Netzwerke verbinden Sie sich mit dem
+Schlüsselpaar des Kontos, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0),
+wie im [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts
 import {

@@ -23,7 +23,7 @@ Todo lo que hay en esta sección es una guía práctica para el usuario: qué ha
 | **[Staking y Validadores](/dashboard/staking-and-validators)** | Revisa los validadores y delega tus QOR. |
 | **[Faucet](/dashboard/faucet)** | Solicita tokens de prueba en testnet. |
 | **[Misiones](/dashboard/quests)** | Completa tareas guiadas para aprender a usar la red. |
-| **[Tools Hub](/dashboard/tools-hub)** | Accede a las descargas y el estado del nodo ligero, el registro de nodos, las solicitudes de rollups, el SDK y las herramientas de licencias. |
+| **[Tools Hub](/dashboard/tools-hub)** | Herramientas para operadores y desarrolladores en seis pestañas: Validator Program, Validator Application, Light Node, Node Registration, Rollups y SDK. |
 
 ## Inicia sesión {#sign-in}
 
@@ -39,7 +39,7 @@ Navegar por el Panel nunca requiere un monedero; conectar uno es un paso aparte,
 
 La mayoría de las acciones que modifican el estado on-chain — enviar tokens, intercambiar, hacer staking — requieren un monedero conectado. La forma en que el Panel gestiona las claves depende de la red:
 
-- **Mainnet es no custodio.** El Panel nunca guarda tus claves de mainnet. Conectas tu propio monedero — **QoreX** (el monedero oficial de QoreChain, como extensión o como app), **Keplr** o **MetaMask** — y el Panel lee tu saldo y tu historial reales desde la cadena. Cada transacción en mainnet se firma en tu propio monedero, nunca en el Panel. Enviar y hacer staking en el **raíl Native requieren QoreX**, ya que las cuentas de QoreChain firman con una firma híbrida post-cuántica que hoy solo QoreX puede generar; Keplr aún puede conectarse para consultar tu saldo en el raíl Native. **MetaMask** se conecta en el **raíl EVM**; enviar desde ahí requiere además una ventana de autorización EVM abierta, que se abre desde QoreX (consulta [Enviar con MetaMask](/dashboard/wallet#send-metamask)).
+- **Mainnet es no custodio.** El Panel nunca guarda tus claves de mainnet. Conectas tu propio monedero — **QoreX** (el monedero oficial de QoreChain, como extensión o como app), **Keplr** o **MetaMask** — y el Panel lee tu saldo y tu historial reales desde la cadena. Cada transacción en mainnet se firma en tu propio monedero, nunca en el Panel. Enviar y hacer staking en el **raíl Native requieren QoreX**, ya que las cuentas de QoreChain firman con una firma híbrida post-cuántica que hoy solo QoreX puede generar; Keplr aún puede conectarse para consultar tu saldo en el raíl Native. **MetaMask** se conecta en el **raíl EVM**; enviar desde ahí requiere además la clave post-cuántica de la cuenta y una ventana de autorización EVM abierta, que se abre desde QoreX en la cuenta de estilo Ethereum (coin 60) que comparte la clave de MetaMask (consulta [Enviar con MetaMask](/dashboard/wallet#send-metamask)).
 - **Testnet es custodio.** El Panel gestiona un monedero de prueba por ti, para que puedas experimentar sin configuración alguna y sin poner en riesgo valor real.
 
 ### Conecta con QoreX (recomendado) {#connect-qorex}
@@ -77,8 +77,8 @@ El Panel funciona con dos redes. La cabecera muestra la red a la que estás cone
 
 | Red | Chain ID | Cuándo usarla |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Red en vivo para valor real y uso en producción. No custodio: conectas tu propio monedero. |
-| **Testnet** | `qorechain-diana` | Entorno gratuito para pruebas, con un monedero de prueba gestionado por el panel y el [Faucet](/dashboard/faucet) para obtener tokens de prueba. |
+| **Mainnet** | `qorechain-vladi` | Red en vivo (en funcionamiento desde el 7 de junio de 2026, con la versión de cadena v3.2.3) para valor real y uso en producción. No custodio: conectas tu propio monedero. |
+| **Testnet** | `qorechain-diana` | Entorno gratuito para pruebas (con la versión de cadena v3.2.4, una versión solo de testnet), con un monedero de prueba gestionado por el panel y el [Faucet](/dashboard/faucet) para obtener tokens de prueba. |
 
 El token nativo es **QOR** (denominación base `uqor`, donde 1 QOR = 10^6 uqor). Si eres nuevo, empieza en testnet, reclama tokens del Faucet y prueba una primera transferencia antes de pasar a mainnet.
 
@@ -91,5 +91,5 @@ Sigue [Conexión a Testnet](/getting-started/connecting-to-testnet) y [Tu primer
 * [Explorador](/dashboard/explorer) — navega por bloques, transacciones y cuentas.
 * [Monedero](/dashboard/wallet) — gestiona cuentas y envía transacciones.
 * [Trade / DEX](/dashboard/trade) — intercambia tokens contra los pools del AMM on-chain.
-* [Tools Hub](/dashboard/tools-hub) — descargas y estado del nodo ligero, registro de nodos, solicitudes de rollups, SDK y licencias.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups y SDK.
 * [Faucet](/dashboard/faucet) — tokens de prueba en testnet.

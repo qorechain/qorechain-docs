@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Chain-Parameter
 
-Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`, und `gasabstraction` ist nur im Testnet abfragbar), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. REST ist für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar.
+Konsolidierte Referenz der Modulparameter der QoreChain-Netzwerke, nach Modul gruppiert. Die Parameter können mit `qorechaind query <module> params` abgefragt werden, sofern das Modul eine Params-Abfrage besitzt (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` und `gasabstraction` verwenden `config`, und `gasabstraction` ist nur im Testnet abfragbar), und über REST nur für die in der [REST- / gRPC-Referenz](/api-reference/rest-grpc-endpoints) aufgeführten Routen. Die Parameter von `x/inflation` werden im Mainnet seit v3.2.3 ebenfalls über REST bereitgestellt (`/qorechain/inflation/v1/params`). REST ist für `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` und `xqore` nicht verfügbar.
 
 :::note
-Die angezeigten Werte wurden am 14. Oktober 2026 live ausgelesen (Genesis-Werte des Mainnets, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt). Die Parameter gelten für das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**) und das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) und sind auf beiden Netzwerken identisch, sofern nicht anders angegeben. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa jede Sekunde einen Block).
+Die angezeigten Werte wurden am 20. Oktober 2026 live aus dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, Release **v3.2.3**) ausgelesen (Genesis-Werte, sofern kein Governance-Vorschlag sie geändert hat; solche Fälle sind vermerkt). Sie sind auf dem Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**, Release **v3.2.4**) identisch, sofern nicht anders angegeben; die heute bestehenden Unterschiede sind unter [Testnet-Unterschiede (v3.2.4)](#testnet-differences) zusammengefasst. In Blöcken angegebene Dauern werden mit der gemessenen Mainnet-Blockzeit von etwa 3,2 Sekunden umgerechnet (das Testnet erzeugt etwa jede Sekunde einen Block).
 :::
 
 ---
@@ -26,7 +26,20 @@ Die angezeigten Werte wurden am 14. Oktober 2026 live ausgelesen (Genesis-Werte 
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (erforderlich)         | Durchsetzungsmodus: 0=deaktiviert, 1=optional, 2=erforderlich             |
 
-Die Algorithmus-Registry (ID 1 `dilithium5`, ID 2 `mlkem1024`) ist Chain-State und kein Parameter. Schlüssel werden explizit mit `MsgRegisterPQCKey` registriert; es gibt keine automatische Registrierung.
+Die Algorithmus-Registry (ID 1 `dilithium5`, ID 2 `mlkem1024`) ist Chain-State und kein Parameter. Schlüssel werden explizit mit `MsgRegisterPQCKey` oder `MsgRegisterPQCKeyV2` registriert; es gibt keine automatische Registrierung. Seit v3.2.3 weist die Chain schwache, degenerierte und bereits verwendete öffentliche Schlüssel zurück, und `MsgRegisterPQCKeyV2` akzeptiert einen optionalen Besitznachweis (`tx pqc register-key-v2 ... --pqc-key <name>`), den die Chain prüft, sofern er vorliegt.
+
+### Grenzen des EVM-Autorisierungsfensters {#evm-window-limits}
+
+Die Grenzen eines [EVM-Autorisierungsfensters](/getting-started/first-transaction#evm-window) sind Protokollkonstanten und keine Modulparameter:
+
+| Grenze | Wert |
+| ----- | ----- |
+| Maximale `blocks` | 17.280 (etwa 15 Stunden bei Blöcken von ≈3,2 s) |
+| Maximale `max_txs` | 1.000 |
+| `max_value` | größer als 0 (uqor; übertragener Wert plus die maximale Gebühr jeder Transaktion) |
+| Maximale `allowed_targets` | 16 Empfängeradressen (optionale Einschränkung, v3.2.3) |
+
+Ein Fenster kann ab v3.2.3 zusätzlich mit `native_only` eingeschränkt werden (nur einfache native QOR-Transfers).
 
 ---
 
@@ -99,7 +112,7 @@ Die Konfiguration (`qorechaind query qca config`):
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Pauschale Burn-Gebühr für die Vertragserstellung       |
 | `ai_service_burn_rate` | `0.50`                       | Anteil der AI-Servicegebühren, der verbrannt wird      |
 | `bridge_burn_rate`     | `1.00`                       | Anteil der Bridge-Gebühren, der verbrannt wird         |
-| `failed_tx_burn_rate`  | `0.10`                       | Anteil des Gas fehlgeschlagener Transaktionen, der verbrannt wird |
+| `failed_tx_burn_rate`  | `0.10`                       | Anteil des Gas fehlgeschlagener Transaktionen, der verbrannt wird (von der Chain seit v3.2.2 angewendet) |
 | `validator_share`      | `0.37`                       | An Validatoren verteilter Anteil                      |
 | `treasury_share`       | `0.20`                       | An die Treasury gesendeter Anteil                     |
 | `staker_share`         | `0.10`                       | An Staker verteilter Anteil                           |
@@ -133,13 +146,13 @@ Ausstiegsstrafen: 50 % (Sperre kürzer als 30 Tage), 35 % (30–90 Tage), 15 % (
 | Parameter              | Wert                    | Beschreibung                                          |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule` (veraltet) oder `fixed` (seit v3.1.94)      |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16.239 QOR) | Pro Epoche im Fixed-Modus geprägt          |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114.285.714 QOR) | Harte kumulative Obergrenze     |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Pro Epoche im Fixed-Modus geprägt (16.239 QOR vor Governance-Vorschlag 10, 19. Oktober 2026) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Harte kumulative Obergrenze (114.285.714 QOR vor Vorschlag 10) |
 | `epoch_length`         | `43,200` Blöcke         | Blöcke pro Epoche (etwa 38,6 Stunden bei Blöcken von ≈3,2 s) |
 | `schedule`             | 17,5 %, 11 %, 7 %, 7 %, 2 % | Veraltete jahresbasierte Raten, im Fixed-Modus ungenutzt |
 | `enabled`              | `true`                  | Modul-Aktivierungsflag                                |
 
-Das Modul prägt diese Emission in das Gebühren-Sammelkonto, bis die Obergrenze erreicht ist. Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission). Im Mainnet werden diese Werte über keine REST-Route bereitgestellt.
+Das Modul prägt diese Emission in das Gebühren-Sammelkonto, bis die Obergrenze erreicht ist. Die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000. Am 20. Oktober 2026 (Epoche 84) waren 105.248.896,21 QOR geprägt, und 484.751.103,79 QOR verblieben unter der Obergrenze (`GET /qorechain/inflation/v1/epoch_info`). Siehe [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -281,7 +294,7 @@ Genesis-Konfiguration (`enabled = true`, `native_denom = uqor`):
 Der Umrechnungskurs ist der Kurs, der beim Umrechnen einer in diesem Token gezahlten Gebühr verwendet wird.
 
 :::note Kein IBC-Kanal offen
-In keinem der beiden Netzwerke ist ein IBC-Kanal offen, daher kann es noch kein `ibc/USDC` oder `ibc/ATOM` geben; Gebühren werden in `uqor` bezahlt. Der Gebührenpfad wurde in v3.2.2 überarbeitet (nur Testnet).
+In keinem der beiden Netzwerke ist ein IBC-Kanal offen, daher kann es noch kein `ibc/USDC` oder `ibc/ATOM` geben; Gebühren werden in `uqor` bezahlt.
 :::
 
 ---
@@ -298,7 +311,7 @@ In keinem der beiden Netzwerke ist ein IBC-Kanal offen, daher kann es noch kein 
 | `max_light_nodes`        | `10,000`           | Maximale Anzahl registrierter Light Nodes            |
 | `heartbeat_grace_period` | `100` Blöcke       | Karenzzeit für einen verspäteten Heartbeat           |
 
-Die Belohnungsbuchführung ist live (`GET /qorechain/lightnode/v1/reward_pool` meldet `max_reward_per_block_per_node` von 1.713 uqor, ausgelesen am 14. Oktober 2026), die Registrierung ist derzeit jedoch geschlossen und es ist kein Light Node registriert. Siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Die Belohnungsbuchführung ist live. `GET /qorechain/lightnode/v1/reward_pool` meldet den Pool (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) und die Belohnungsobergrenze pro Node. Seit v3.2.3 lautet die Obergrenze `max_reward_per_month_per_node`, **2.000 QOR (`2000000000` uqor) pro Node und 30 Tage**, anteilig nach Blockzeit berechnet und mit der Verfügbarkeit des Nodes skaliert; der ältere Wert pro Block (`max_reward_per_block_per_node`, `1713` uqor) wird weiterhin gemeldet. Am 20. Oktober 2026 hielt der Pool eine Reserve von 487,2318 QOR, ohne ausstehende Beträge. Die Registrierung ist offen und lizenzpflichtig: Im Mainnet wurden sechs `lightnode_operator`-Lizenzen vergeben, und es hat sich noch kein Light Node registriert (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Siehe [Light Node](/light-node/overview#reward-program-status) und [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -336,7 +349,7 @@ Weder im Mainnet noch im Testnet existieren bisher Pools, und `MsgPausePool` / `
 
 ## Staking, Slashing, Governance, Gebühren und EVM {#core-modules}
 
-Standardmodule des Cosmos SDK und EVM-Module, live ausgelesen (auf beiden Netzwerken identisch, sofern nicht anders angegeben).
+Standardmodule des Cosmos SDK und EVM-Module, am 20. Oktober 2026 live ausgelesen (auf beiden Netzwerken identisch, sofern nicht anders angegeben; unverändert seit der Auslesung vom 14. Oktober).
 
 | Modul | Parameter | Wert |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ Standardmodule des Cosmos SDK und EVM-Module, live ausgelesen (auf beiden Netzwe
 
 Die Chain kann einzelne Nachrichtentypen mit dem Circuit Breaker des Cosmos SDK abschalten; gesteuert wird er vom Betriebskonto der Foundation und per Governance. Ein deaktivierter Nachrichtentyp wird vom Ante-Handler auf jeder Lane abgelehnt. Die aktuelle Liste ist unter `GET /cosmos/circuit/v1/disable_list` abrufbar.
 
-**Mainnet (14. Oktober 2026, 16 Einträge):** Erstellung von Vesting-Konten (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; sowie die vier PRISM-Steuernachrichten (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Die EVM-Lane (`MsgEthereumTx`) ist **offen**: Sie war vom 16. bis 25. September abgeschaltet und wurde durch das Upgrade v3.2.0 wieder geöffnet.
+**Mainnet (20. Oktober 2026, 16 Einträge, unverändert seit dem 14. Oktober):** Erstellung von Vesting-Konten (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; sowie die vier PRISM-Steuernachrichten (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Die EVM-Lane (`MsgEthereumTx`) ist **offen**: Sie war vom 16. bis 25. September abgeschaltet und wurde durch das Upgrade v3.2.0 wieder geöffnet.
 
-**Testnet:** nur die drei CosmWasm-Nachrichten.
+**Testnet (20. Oktober 2026):** nur die drei CosmWasm-Nachrichten.
 
 Jeder andere Nachrichtentyp, einschließlich aller Standardnachrichten für Bank, Staking, Governance, Distribution, Authz und der `x/pqc`-Registrierung, ist aktiviert. Die Liste unterliegt der Governance und kann sich ändern; fragen Sie sie immer ab.
+
+---
+
+## Testnet-Unterschiede (v3.2.4) {#testnet-differences}
+
+Das Testnet `qorechain-diana` läuft mit v3.2.4 (angewendet bei Blockhöhe 8,337,253 am 19. Oktober 2026); v3.2.4 gilt heute **nur für das Testnet**; der Mainnet-Governance-Vorschlag 13 würde es bei Blockhöhe 3,742,566 anwenden. Stand 20. Oktober 2026 unterscheiden sich folgende Punkte vom Mainnet:
+
+| Bereich | Testnet |
+| ---- | ------- |
+| Module | 49 statt 48: das optionale zeitgesperrte Staking-Modul `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; Mindestsperre 10 QOR). Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking). |
+| `x/inflation` | Frühere Emissionswerte (16.239 QOR pro Epoche, Obergrenze 114.285.714 QOR, bereits erreicht) und ein dritter `emission_mode`, `target_apy`, mit einem Parameter `target_apy_bps`, der derzeit `0` ist. |
+| `x/burn` | Eine dreizehnte erfasste Quelle, `staking_tier_penalty`. |
+| `x/lightnode`-Belohnungspool | Zusätzliche Berichtsfelder (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); die Belohnungsobergrenze eines Nodes beginnt bei dessen eigener Registrierung. |
+| `x/pqc` | Ein Flag `possession_proven` an PQC-Konten; der Besitznachweis ist für Kontoschlüssel weiterhin optional und für Bridge-Validator-Schlüssel erforderlich. |
+| `x/rdk` | Das optimistische Anfechtungsfenster wird in Blockzeit gezählt. |
+| Circuit Breaker | Nur die drei CosmWasm-Nachrichten (siehe oben). |
+| Abfragen | Neue Abfragen `protocol_features` und `auth_nonce`. |
+
+Jeder hier nicht aufgeführte Parameter ist auf beiden Netzwerken identisch.

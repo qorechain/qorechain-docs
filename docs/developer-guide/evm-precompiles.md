@@ -24,7 +24,7 @@ The six QoreChain precompiles below are **compiled into the node but not yet act
 | PRISM Consensus Params | `0x…0C01` | Not active | Not active |
 | CrossVM Bridge | `0x…0901` | Not active | Not active |
 
-Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge only after it is rebuilt with journaling, value checks and the cross-VM circuit breaker. This table is updated in the same operation as the upgrade that activates any of them.
+Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and the testnet's v3.2.4 release did not change that. This table is updated in the same operation as the upgrade that activates any of them.
 
 Check the live list yourself (an empty list means none is active):
 
@@ -271,10 +271,10 @@ In the current node build `rlConsensusParams` returns fixed placeholder defaults
 ### CrossVM Bridge — Call CosmWasm from EVM
 
 :::warning
-The CrossVM bridge precompile will **not** be activated in its current form. It is being rebuilt so that a revert in the calling contract also undoes the CosmWasm side, value transfers are rejected, EVM-to-EVM re-entry is refused and the cross-VM circuit breaker applies. Until then there is no synchronous EVM-to-CosmWasm path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
+The CrossVM bridge precompile is **not active** on either network. The binary since v3.2.3 carries a hardened version of it that: refuses a `STATICCALL`; runs the nested call on a gas meter bounded by what the calling frame has left and journals it, so a revert in the calling contract also undoes the CosmWasm side; reaches only allowlisted CosmWasm targets (EVM targets are refused); and honours the cross-VM circuit breaker. Until a governance-approved upgrade activates it there is no synchronous EVM-to-CosmWasm path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
 :::
 
-The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The documented use is EVM to CosmWasm; the ABI may change with the rebuild.
+The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The only supported use is EVM to CosmWasm (`targetVM` = 1); the ABI may still change before activation.
 
 **Gas cost:** 50,000 base + 4 gas per byte of input, plus the target contract execution cost. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for details.
 

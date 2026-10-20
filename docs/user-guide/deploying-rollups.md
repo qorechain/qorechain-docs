@@ -10,7 +10,7 @@ sidebar_position: 6
 This guide is a short orientation to launching an application-specific rollup that settles on QoreChain with the Rollup Development Kit (RDK). The step-by-step commands live in **[Deploying a Rollup](/rollups/deploying-a-rollup)**; this page covers what you need before you start.
 
 :::caution Early-stage capability
-No rollup has been created on either network yet. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.1**; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs a newer release (**v3.2.2**). Validate on testnet first.
+No rollup has been created on either network yet (checked 20 October 2026). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.3**; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs a newer release (**v3.2.4**). Validate on testnet first; one behaviour differs between the two (see the challenge-window note in [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
 :::
 
 ---
@@ -42,7 +42,8 @@ See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (
 | Requirement | Details |
 | ----------- | ------- |
 | **Rollup stake** | At least 10,000 QOR (`min_stake_for_rollup`, 10,000,000,000 uqor). Read the live value: `qorechaind query rdk config` |
-| **Creation burn** | 1 % of the stake you supply is burned on creation; the remainder is escrowed and returned when you stop the rollup |
+| **Creation burn** | 1 % of the stake you supply is burned on creation; the remainder is escrowed in a per-rollup ledger. When you stop the rollup you get back what is left in it (withdrawals and fraud-proof rewards paid out of it reduce the refund) |
+| **Rollup id** | 3 to 64 characters: lowercase letters, digits, `.`, `_` and `-`, starting with a letter or digit. An id that breaks this is refused after you have paid the fee, so check it first |
 | **Layer registration stake** | Creating a rollup also registers a layer with the multilayer module, which locks a further 1,000 QOR from the creator (returned when the rollup is stopped). Without that balance the layer is not created and the rollup cannot be anchored |
 | **Account** | A funded account with a registered post-quantum key (every native-lane transaction is hybrid-signed) |
 
@@ -52,6 +53,8 @@ See [Preset Profiles](/rollups/preset-profiles) for details and maturity notes (
 
 * Start with a preset profile. Presets set the settlement mode, sequencer, data-availability backend and VM; `create-rollup` takes only the id, the profile, the stake and an optional `--vm`.
 * The 1 % creation burn applies to the stake you supply.
+* Batches settle without an anchor unless you send the creator's post-quantum signature with them (`--anchor-signature` on `tx rdk submit-batch`, available since v3.2.2). See [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
+* Withdrawals to L1 (`tx rdk execute-withdrawal`) are paid from your rollup's escrow ledger and work on mainnet since v3.2.3; they need a finalized batch with a withdrawals root and use `uqor` only.
 * The rollup creator is the batch submitter today (no sequencer address is set by any preset), so keep the creator key safe: only the creator can pause, resume or stop the rollup.
 * The `suggest-profile` helper currently returns a fixed `defi` fallback on the public endpoints, so choose from the profile table.
 

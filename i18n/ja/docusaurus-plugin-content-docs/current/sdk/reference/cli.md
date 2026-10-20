@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> npm には `create-qorechain-dapp`（`0.8.0`）として公開されています。生成される
-> `package.json` ファイルは `@qorechain/sdk` / `@qorechain/evm` を `^0.3.0` に固定しており、
+> npm には `create-qorechain-dapp`（`0.9.0`）として公開されています。生成される
+> `package.json` ファイルは `@qorechain/sdk` `^0.9.0` に依存します（EVM テンプレートは
+> `@qorechain/evm` `^0.8.0`）。スキャフォルダのバージョン 0.8.0 は `^0.3.0` の範囲を書き込んでおり、
 > npm はこれを、稼働中のネットワークに対して署名できない 0.3 リリースに解決します。
-> スキャフォールド後に `npm i @qorechain/sdk@latest`（EVM テンプレートでは
-> `npm i @qorechain/evm@latest` も）を実行してください。
+> 0.8.0 でスキャフォールドした場合は、`npm i @qorechain/sdk@latest` を実行してください。
 
 ## テンプレート
 
@@ -32,6 +32,13 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | Solidity の `Counter` コントラクト + viem によるデプロイ/操作スクリプト（`@qorechain/evm`）。 |
 | `fullstack-web` | 残高とトークノミクスを読み取る Vite + React + TypeScript の dApp（`@qorechain/sdk`）。 |
 | `rollup-app` | `RollupClient` と multilayer ヘルパーを使うロールアップ + サイドチェーン/ペイチェーンのアプリ（`@qorechain/sdk`）。 |
+
+`rollup-app` テンプレート（0.9.0）は、デフォルトでドライランを実行します。`QORE_BROADCAST=1` を指定すると、
+ニーモニックからアカウントの ML-DSA-87 鍵を導出し、一度だけ登録して、
+ハイブリッドで署名します。以前のテンプレートにはこれができませんでした。サンプルのロールアップの値
+（`profile: "default"`、ステーク）は例示です。ブロードキャストする前に、実際のプロファイル名と
+ステークを[プリセットプロファイル](/rollups/preset-profiles)と稼働中のモジュール
+パラメータから取得してください。
 
 `fullstack-web` テンプレートは、トークノミクスの概要を `client.qor` 経由で読み取ります。これは
 公開エンドポイントが提供していない `qor_` JSON-RPC 呼び出しであるため、メインネットとテストネットでは

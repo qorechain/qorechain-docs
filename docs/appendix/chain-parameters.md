@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Chain Parameters
 
-Consolidated reference of the module parameters of the QoreChain networks, grouped by module. Parameters can be queried with `qorechaind query <module> params` where the module has a params query (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` and `gasabstraction` use `config`, and `gasabstraction` is queryable on the testnet only), and over REST only for the routes listed in the [REST / gRPC reference](/api-reference/rest-grpc-endpoints). REST is not available for `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` or `xqore`.
+Consolidated reference of the module parameters of the QoreChain networks, grouped by module. Parameters can be queried with `qorechaind query <module> params` where the module has a params query (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` and `gasabstraction` use `config`, and `gasabstraction` is queryable on the testnet only), and over REST only for the routes listed in the [REST / gRPC reference](/api-reference/rest-grpc-endpoints). The `x/inflation` parameters are also served over REST on mainnet since v3.2.3 (`/qorechain/inflation/v1/params`). REST is not available for `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` or `xqore`.
 
 :::note
-Values shown were read live on 14 October 2026 (mainnet genesis values unless a governance proposal changed them; those are noted). Parameters apply to mainnet **`qorechain-vladi`** (EVM chain ID **9801**) and testnet **`qorechain-diana`** (EVM chain ID **9800**), and are identical on both networks except where stated. Durations given in blocks convert at the measured mainnet block time of about 3.2 seconds (the testnet produces a block about every second).
+Values shown were read live from mainnet **`qorechain-vladi`** (EVM chain ID **9801**, release **v3.2.3**) on 20 October 2026 (genesis values unless a governance proposal changed them; those are noted). They are identical on the testnet **`qorechain-diana`** (EVM chain ID **9800**, release **v3.2.4**) except where stated; the differences that exist today are collected in [Testnet differences (v3.2.4)](#testnet-differences). Durations given in blocks convert at the measured mainnet block time of about 3.2 seconds (the testnet produces a block about every second).
 :::
 
 ---
@@ -26,7 +26,20 @@ Values shown were read live on 14 October 2026 (mainnet genesis values unless a 
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | Enforcement mode: 0=disabled, 1=optional, 2=required                     |
 
-The algorithm registry (id 1 `dilithium5`, id 2 `mlkem1024`) is chain state rather than a parameter. Keys are registered explicitly with `MsgRegisterPQCKey`; there is no auto-registration.
+The algorithm registry (id 1 `dilithium5`, id 2 `mlkem1024`) is chain state rather than a parameter. Keys are registered explicitly with `MsgRegisterPQCKey` or `MsgRegisterPQCKeyV2`; there is no auto-registration. Since v3.2.3 the chain refuses weak, degenerate and already-used public keys, and `MsgRegisterPQCKeyV2` accepts an optional proof of possession (`tx pqc register-key-v2 ... --pqc-key <name>`) that the chain verifies when present.
+
+### EVM authorisation window limits {#evm-window-limits}
+
+The bounds of an [EVM authorisation window](/getting-started/first-transaction#evm-window) are protocol constants rather than module parameters:
+
+| Bound | Value |
+| ----- | ----- |
+| Maximum `blocks` | 17,280 (about 15 hours at ≈3.2 s blocks) |
+| Maximum `max_txs` | 1,000 |
+| `max_value` | greater than 0 (uqor; transferred value plus the maximum fee of each transaction) |
+| Maximum `allowed_targets` | 16 recipient addresses (optional scope, v3.2.3) |
+
+A window can also be narrowed with `native_only` (plain native QOR transfers only) from v3.2.3.
 
 ---
 
@@ -99,7 +112,7 @@ The configuration (`qorechaind query qca config`):
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Flat burn fee for contract creation                   |
 | `ai_service_burn_rate` | `0.50`                       | Fraction of AI service fees burned                    |
 | `bridge_burn_rate`     | `1.00`                       | Fraction of bridge fees burned                        |
-| `failed_tx_burn_rate`  | `0.10`                       | Fraction of failed-transaction gas burned             |
+| `failed_tx_burn_rate`  | `0.10`                       | Fraction of failed-transaction gas burned (applied by the chain since v3.2.2) |
 | `validator_share`      | `0.37`                       | Fraction distributed to validators                    |
 | `treasury_share`       | `0.20`                       | Fraction sent to the treasury                         |
 | `staker_share`         | `0.10`                       | Fraction distributed to stakers                       |
@@ -133,13 +146,13 @@ Exit penalties: 50 % (lock shorter than 30 days), 35 % (30–90 days), 15 % (90�
 | Parameter              | Value                   | Description                                           |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule` (legacy) or `fixed` (since v3.1.94)        |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16,239 QOR) | Minted per epoch in fixed mode             |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114,285,714 QOR) | Hard cumulative ceiling         |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86,000 QOR) | Minted per epoch in fixed mode (16,239 QOR before governance proposal 10, 19 October 2026) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590,000,000 QOR) | Hard cumulative ceiling (114,285,714 QOR before proposal 10) |
 | `epoch_length`         | `43,200` blocks         | Blocks per epoch (about 38.6 hours at ≈3.2 s blocks)  |
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | Legacy year-based rates, unused in fixed mode     |
 | `enabled`              | `true`                  | Module activation flag                                |
 
-The module mints this emission into the fee collector until the cap is reached. See [Tokenomics](/architecture/tokenomics#supply-and-emission). On mainnet these values are not exposed over a REST route.
+The module mints this emission into the fee collector until the cap is reached. The first epoch at 86,000 QOR starts at block 3,672,000. On 20 October 2026 (epoch 84) 105,248,896.21 QOR had been minted and 484,751,103.79 QOR remained under the cap (`GET /qorechain/inflation/v1/epoch_info`). See [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -281,7 +294,7 @@ Genesis configuration (`enabled = true`, `native_denom = uqor`):
 The conversion rate is the rate used when converting a fee paid in that token.
 
 :::note No IBC channel is open
-No IBC channel is open on either network, so no `ibc/USDC` or `ibc/ATOM` can exist yet; fees are paid in `uqor`. The fee path was reworked in v3.2.2 (testnet only).
+No IBC channel is open on either network, so no `ibc/USDC` or `ibc/ATOM` can exist yet; fees are paid in `uqor`.
 :::
 
 ---
@@ -298,7 +311,7 @@ No IBC channel is open on either network, so no `ibc/USDC` or `ibc/ATOM` can exi
 | `max_light_nodes`        | `10,000`           | Maximum registered light nodes                       |
 | `heartbeat_grace_period` | `100` blocks       | Grace period for a late heartbeat                    |
 
-Reward accounting is live (`GET /qorechain/lightnode/v1/reward_pool` reports `max_reward_per_block_per_node` of 1,713 uqor as read on 14 October 2026), but registration is currently closed and no light node is registered. See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Reward accounting is live. `GET /qorechain/lightnode/v1/reward_pool` reports the pool (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) and the per-node reward bound. Since v3.2.3 the bound is `max_reward_per_month_per_node`, **2,000 QOR (`2000000000` uqor) per node per 30 days**, prorated by block time and scaled by the node's uptime; the older per-block value (`max_reward_per_block_per_node`, `1713` uqor) is still reported. On 20 October 2026 the pool held a reserve of 487.2318 QOR with nothing outstanding. Registration is open and licence-gated: six `lightnode_operator` licences have been granted on mainnet and no light node has registered yet (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). See [Light Node](/light-node/overview#reward-program-status) and [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -336,7 +349,7 @@ No pools exist yet on mainnet or testnet, and `MsgPausePool` / `MsgResumePool` a
 
 ## Staking, Slashing, Governance, Fees and EVM {#core-modules}
 
-Standard Cosmos SDK and EVM modules, read live (identical on both networks unless noted).
+Standard Cosmos SDK and EVM modules, read live on 20 October 2026 (identical on both networks unless noted; unchanged since the 14 October reading).
 
 | Module | Parameter | Value |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ Standard Cosmos SDK and EVM modules, read live (identical on both networks unles
 
 The chain can switch individual message types off with the Cosmos SDK circuit breaker, controlled by the foundation operations account and governance. A disabled message type is rejected at the ante handler on every lane. The live list is at `GET /cosmos/circuit/v1/disable_list`.
 
-**Mainnet (14 October 2026, 16 entries):** vesting-account creation (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; and the four PRISM control messages (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). The EVM lane (`MsgEthereumTx`) is **open**: it was switched off from 16 to 25 September and reopened by the v3.2.0 upgrade.
+**Mainnet (20 October 2026, 16 entries, unchanged since 14 October):** vesting-account creation (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; and the four PRISM control messages (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). The EVM lane (`MsgEthereumTx`) is **open**: it was switched off from 16 to 25 September and reopened by the v3.2.0 upgrade.
 
-**Testnet:** only the three CosmWasm messages.
+**Testnet (20 October 2026):** only the three CosmWasm messages.
 
 Every other message type, including all standard bank, staking, governance, distribution, authz and `x/pqc` registration messages, is enabled. The list is governance-controlled and can change; always query it.
+
+---
+
+## Testnet Differences (v3.2.4) {#testnet-differences}
+
+The testnet `qorechain-diana` runs v3.2.4 (applied at height 8,337,253 on 19 October 2026); v3.2.4 is **testnet only** today; mainnet governance proposal 13 would apply it at height 3,742,566. As of 20 October 2026 these differ from mainnet:
+
+| Area | Testnet |
+| ---- | ------- |
+| Modules | 49 instead of 48: the optional time-locked staking module `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; minimum lock 10 QOR). See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking). |
+| `x/inflation` | Earlier emission values (16,239 QOR per epoch, cap 114,285,714 QOR, already reached) and a third `emission_mode`, `target_apy`, with a `target_apy_bps` parameter that is currently `0`. |
+| `x/burn` | A thirteenth recorded source, `staking_tier_penalty`. |
+| `x/lightnode` reward pool | Extra reporting fields (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); a node's reward bound starts at its own registration. |
+| `x/pqc` | A `possession_proven` flag on PQC accounts; proof of possession is still optional for account keys and required for bridge validator keys. |
+| `x/rdk` | The optimistic challenge window is counted in block time. |
+| Circuit breaker | Only the three CosmWasm messages (see above). |
+| Queries | New `protocol_features` and `auth_nonce` queries. |
+
+Every parameter not listed here is identical on both networks.

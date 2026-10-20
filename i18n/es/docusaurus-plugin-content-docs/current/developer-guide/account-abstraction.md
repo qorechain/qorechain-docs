@@ -14,7 +14,7 @@ El módulo de cuentas abstractas está actualmente **desactivado** en ambas rede
 :::
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 29 de junio de 2026), que ejecuta la versión de nodo **v3.2.1** (reglas de consenso de v3.2.0). Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.2.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (en funcionamiento desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.3**. Sustituye por `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.4 (solo testnet).
 :::
 
 :::caution Toda transacción de la vía Cosmos necesita la cofirma post-cuántica híbrida
@@ -86,7 +86,9 @@ Las reglas de gasto añaden barreras financieras a las cuentas abstractas:
 | ---------------- | --------------------------------------------------------------- |
 | `daily_limit`    | Gasto total máximo por día natural UTC                          |
 | `per_tx_limit`   | Gasto máximo por cada ejecución autorizada                      |
-| `allowed_denoms` | Restringe qué denominaciones de token pueden gastarse           |
+| `allowed_denoms` | Restringe qué denominaciones de token pueden gastarse (un ERC-20 se indica como `erc20/<contract>`) |
+| `denom_limits`   | Límites por denominación como cadenas decimales (v3.2.2): `{"denom","per_tx_limit","daily_limit"}`; sustituyen a `per_tx_limit` y `daily_limit` para las denominaciones que nombran, de modo que se puede limitar un token de 18 decimales |
+| `allowed_evm_calls` | Llamadas EVM que una clave sujeta a reglas puede hacer **con datos de llamada** (v3.2.2), como `0x<target>` (cualquier función de ese contrato) o `0x<target>/0x<selector>` (solo esa función). Sin una entrada, una clave sujeta a reglas solo puede enviar valor, desplegar (con el permiso `deploy`) y mover los tokens ERC-20 listados en `allowed_denoms`. Incluir un destino en la lista implica confiar en todos los argumentos de las llamadas que se le hagan, destinatarios incluidos |
 
 ### Establecer reglas de gasto
 
@@ -98,7 +100,13 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-Los límites están en la unidad base (`uqor`) y cuentan por cada ejecución autorizada; el límite diario acota el total por día natural UTC. Las reglas sustituyen a las almacenadas en su conjunto, así que un campo que omitas se elimina.
+Los límites están en la unidad base (`uqor`) y cuentan por cada ejecución autorizada; el límite diario acota el total por día natural UTC. Las reglas sustituyen a las almacenadas en su conjunto, así que un campo que omitas se elimina. Desde v3.2.2, la vía EVM mide lo que una llamada realmente mueve (valor nativo, la disminución del saldo nativo de la cuenta, las monedas del banco gastadas y el cambio de saldo o de allowance de cada ERC-20 listado) en lugar de solo `msg.value`, y la creación de contratos necesita el permiso `deploy` por separado. Un ejemplo más completo:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
+```
 
 ### Consultar las reglas actuales
 
@@ -149,7 +157,7 @@ Once permisos canónicos controlan lo que un autenticador registrado puede hacer
 | `amm` / `ibc` / `deploy` | Operaciones AMM, transferencias IBC, despliegue de contratos |
 | `all` | Cualquier mensaje *delegable* |
 
-**Los mensajes de gestión de claves nunca son delegables** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, el registro/migración de claves PQC y `MsgRotatePQCKey` siempre requieren la clave raíz, de modo que una clave vinculada nunca puede escalar sus propios privilegios.
+**Los mensajes de gestión de claves nunca son delegables** — `MsgRegisterAuthenticator`, `MsgRevokeAuthenticator`, el registro/migración de claves PQC y `MsgRotatePQCKey` siempre requieren la clave raíz, de modo que una clave vinculada nunca puede escalar sus propios privilegios. El esquema (`schema_version` 2) también lista `lane_rules`: la creación de un contrato desde la dirección de la cuenta, una llamada que avanza el nonce EVM de la cuenta y una llamada a la propia cuenta cuando su código es una delegación EIP-7702 necesitan cada una el permiso `deploy` o `all`. Desde v3.2.3, el registro rechaza cadenas de permiso desconocidas y claves secp256k1 de 65 bytes que nunca podrían verificarse.
 
 Lee la taxonomía en vivo (con `schema_version` para detectar desviaciones) en lugar de codificarla de forma fija:
 
@@ -162,13 +170,13 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 Dos mensajes transportan acciones autorizadas por un autenticador. En ambos, el relayer es el firmante/pagador de comisiones de la transacción; la firma del autenticador viaja dentro del mensaje.
 
-**`MsgExecuteEVM`** — una llamada o transferencia EVM **desde la dirección `0x…` de la cuenta canónica**. El autenticador firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (todos los campos con prefijo de longitud). La protección contra repetición es el propio nonce EVM de la cuenta.
+**`MsgExecuteEVM`** — una llamada o transferencia EVM **desde la dirección `0x…` de la cuenta canónica**. El autenticador firma `sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)` (todos los campos con prefijo de longitud). Desde v3.2.3 (la función `abstractaccount-hardening`), la cadena exige el **digest v2**, `sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`, que además vincula el límite de gas de la llamada (8 bytes big-endian) para que un relayer no pueda repetir la firma con un límite distinto; ningún bloque acepta ambas formas. `qorechaind query abstractaccount auth-sign-evm` admite `--gas-limit` para esto, y pasas el mismo valor a `execute-evm`. La protección contra repetición es el propio nonce EVM de la cuenta.
 
 **`MsgExecuteCosmos`** — un envío bancario en la vía nativa desde la cuenta canónica. El autenticador firma `sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`. La protección contra repetición es una **secuencia por autenticador** que mantiene el módulo (un envío bancario no incrementa el nonce de la cuenta). Los envíos a uno mismo se rechazan.
 
 :::caution Reglas del nonce
 * `MsgExecuteEVM.nonce` = el nonce EVM **actual** de la cuenta (`eth_getTransactionCount(account0x, "latest")`). En producción el relayer es una cuenta *distinta*, así que **no** sumes +1. Firmar un nonce obsoleto devuelve el código `11`.
-* `MsgExecuteCosmos.nonce` = la secuencia por autenticador (consulta el estado de autenticadores de la cuenta), **no** la secuencia Cosmos de la cuenta.
+* `MsgExecuteCosmos.nonce` = la secuencia por autenticador (consulta el estado de autenticadores de la cuenta), **no** la secuencia Cosmos de la cuenta. Solo en la testnet (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` devuelve directamente esa secuencia (`nonce`, `linked`).
 :::
 
 **Ejemplo con Phantom** (navegador: Phantom firma, tu backend actúa como relayer):

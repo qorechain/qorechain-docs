@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementează o **arhitectură ierarhică de lanțuri pe 4 niveluri** prin modulul `x/multilayer`. Lanțul principal servește drept rădăcină de decontare și de încredere, în timp ce straturile subsidiare (sidechain-uri, paychain-uri și rollup-uri) gestionează sarcini de lucru specializate, cu compromisuri diferite de performanță și securitate.
 
 :::caution Capabilitate în stadiu incipient
-Modulul este implementat pe mainnet (versiunea de lanț **v3.2.1**) și pe testnet, dar **încă nu există niciun strat și nicio ancoră în niciuna dintre rețele**. Tot ce urmează descrie modulul așa cum a fost construit; parametrii sunt valorile live.
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.3**) și pe testnet (**v3.2.4**), dar **încă nu există niciun strat și nicio ancoră în niciuna dintre rețele** (verificat la 20 octombrie 2026: `GET /qorechain/multilayer/v1/layers` returnează o listă goală pe ambele). Tot ce urmează descrie modulul așa cum a fost construit; parametrii sunt valorile live. Pe mainnet, mesajul `MsgUpdateLayerStatus` este în prezent oprit de circuit breaker (vezi [Parametrii lanțului](/appendix/chain-parameters#circuit-breaker)); pe testnet nu este.
 :::
 
 ---
@@ -64,7 +64,7 @@ Lanțul principal este rădăcina de încredere pentru întregul ecosistem QoreC
 | Consens     | Consens QoreChain (vezi [Mecanismul de consens](/architecture/consensus-mechanism) pentru ce este conectat astăzi) |
 | Securitate  | Securizat cu PQC, prin semnături Dilithium-5                                     |
 | Rol         | Strat de decontare, stocarea ancorelor de stare, motorul de rutare QCAI, rădăcina de încredere |
-| Timp de bloc | Depinde de rețea: aproximativ 3,2 secunde pe mainnet, aproximativ 1,0 secundă pe testnet (măsurat în octombrie 2026) |
+| Timp de bloc | Depinde de rețea: aproximativ 3,2 secunde pe mainnet, aproximativ 1,0 secundă pe testnet (măsurat la 20 octombrie 2026) |
 
 Toate straturile subsidiare își ancorează periodic rădăcinile de stare la lanțul principal prin Scheme de Angajament Ierarhic (HCS).
 
@@ -160,13 +160,19 @@ Straturile subsidiare își angajează periodic starea către lanțul principal 
 | `transaction_count`       | Numărul de tranzacții de la ultima ancoră            |
 | `compressed_state_proof`  | Dovada comprimată a tranziției de stare              |
 
-### Trimiterea ancorei
+### Id-urile straturilor și ale rollup-urilor {#id-grammar}
+
+Începând cu v3.2.2, un id **nou** de strat (și un id de rollup, pe care un rollup îl împarte cu stratul său) trebuie să respecte `^[a-z0-9][a-z0-9._-]{2,63}$`: de la 3 la 64 de caractere, litere mici, cifre, `.`, `_` și `-`, începând cu o literă sau o cifră. Keeper-ul verifică acest lucru la crearea stratului, iar o tranzacție care îl încalcă își plătește totuși taxa, așa că validați id-urile mai întâi în client. Id-urile create înainte de v3.2.2 nu sunt afectate.
+
+### Trimiterea ancorei {#anchor-submission}
 
 Ancorele sunt trimise către lanțul principal prin `MsgAnchorState`. Keeper-ul validează ancora conform pașilor următori:
 
 1. **Stratul există și este activ** — Keeper-ul verifică dacă stratul există în stare și are în prezent statusul `active`.
 2. **Intervalul minim de ancorare a trecut** — Keeper-ul verifică dacă au trecut cel puțin `min_anchor_interval` blocuri (implicit: 100) de la ultima ancoră pentru acest strat.
 3. **Semnătura agregată PQC** — Keeper-ul se asigură că semnătura agregată PQC este prezentă și validă pentru datele ancorei. Semnătura este verificată față de cheia ML-DSA-87 înregistrată a **creatorului stratului**; o ancoră este refuzată atunci când creatorul nu are nicio cheie înregistrată.
+
+O **ancoră de decontare** scrisă prin `x/rdk` (un lot trimis cu un `anchor_signature`, începând cu v3.2.2) este un caz special: sare peste verificarea intervalului minim, deoarece loturile sosesc în ordine, poate ancora un strat care este încă `proposed` (nimic on-chain nu promovează un strat înregistrat de un rollup RDK) și este acceptată numai când expeditorul este chiar creatorul stratului. Verificarea semnăturii este aceeași.
 
 ### Perioada de contestare
 
@@ -181,7 +187,24 @@ Ancorele sunt **lizibile** prin serviciul de interogare multilayer. Două intero
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returnează cea mai recentă ancoră de stare pentru un strat.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — returnează istoricul ancorelor pentru un strat.
 
-Fiecare ancoră poartă o semnătură Dilithium-5 a creatorului stratului peste mesajul `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. O versiune mai nouă a lanțului schimbă mesajul semnat, deci clienții nu ar trebui să îl codifice fix în cod. O semnătură dovedește că cheia înregistrată a creatorului a semnat acei octeți; dacă ancora există este o întrebare pentru lanț, așa că un verificator ar trebui să citească ancora de la un nod în care are încredere. În prezent nu există niciun strat și nicio ancoră în niciuna dintre rețele. Aceasta este primitiva on-chain din spatele [chitanțelor de decontare](/rollups/settlement-receipts) ale Rollup Development Kit.
+Fiecare ancoră poartă o semnătură Dilithium-5 (ML-DSA-87) a creatorului stratului. Mesajul semnat depinde de înălțimea la care este trimisă ancora:
+
+* **Începând cu v3.2.2 (înălțimea mainnet 3,556,788, înălțimea testnet 6,905,034): v2.** Fiecare câmp de lungime variabilă poartă o lungime de 8 octeți big-endian, id-ul lanțului face parte din mesaj, iar numărul de tranzacții și dovada de stare comprimată sunt acoperite:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Sub v3.2.2: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, fără prefixe de lungime și fără id de lanț, deci o semnătură v1 este valabilă pe orice lanț). Lanțul nu acceptă o ancoră v1 începând cu înălțimea v3.2.2.
+
+Deoarece mesajul se poate schimba între versiuni, un client ar trebui să aleagă forma pe baza înălțimii planului aplicat (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` înseamnă neaplicat), în loc să o codifice fix în cod. Pentru un lot RDK corespondența este: `layer_id` = id-ul stratului rollup-ului, `layer_height` = indexul lotului, `state_root` = rădăcina de stare a lotului, `transaction_count` = numărul de tranzacții al lotului și un `compressed_state_proof` gol. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` afișează acești octeți offline. O semnătură dovedește că cheia înregistrată a creatorului a semnat acei octeți; dacă ancora există este o întrebare pentru lanț, așa că un verificator ar trebui să citească ancora de la un nod în care are încredere. În prezent nu există niciun strat și nicio ancoră în niciuna dintre rețele. Aceasta este primitiva on-chain din spatele [chitanțelor de decontare](/rollups/settlement-receipts) ale Rollup Development Kit.
 
 ---
 
@@ -250,3 +273,5 @@ Tranzițiile de status sunt impuse de keeper. Tranzițiile invalide (de ex., de 
 | `routing_enabled`              | bool   | `true`          | Activează rutarea tranzacțiilor bazată pe QCAI         |
 | `routing_confidence_threshold` | string | `0.6`           | Încrederea minimă pentru deciziile de rutare QCAI      |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Activează la nivel global Cross-Layer Fee Bundling     |
+
+Acestea sunt valorile returnate de `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) pe mainnet și testnet la 20 octombrie 2026. Începând cu v3.2.2, `MsgUpdateParams` al modulului poate fi rutat, deci o propunere de guvernanță le poate schimba.

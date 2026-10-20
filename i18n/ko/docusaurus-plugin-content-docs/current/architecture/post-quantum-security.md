@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain은 **제네시스 단계부터 포스트 양자 암호화(PQC)**를 기반으로 구축되었으며 — 업그레이드로 사후 적용된 것이 아닙니다. `x/pqc` 모듈은 격자 기반 디지털 서명과 키 캡슐화를 기본 암호화 프리미티브로 제공하며, 장기적 회복력을 위한 거버넌스 제어 알고리즘 민첩성 프레임워크를 갖추고 있습니다.
 
-전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 라이브 네트워크(v3.2.x)에서는 cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다.
+전체 PQC 베이스라인 — **Dilithium-5 (서명) + ML-KEM-1024 (KEM) + SHAKE-256 (해시)** — 은 이제 완성되었으며 네트워크 기본값입니다. 라이브 네트워크(v3.2.x)에서는 cosmos 트랜잭션 경로에서 하이브리드 서명이 **기본적으로 필수**입니다: `hybrid_signature_mode = required` 및 `allow_classical_fallback = false`. 모든 cosmos 경로 트랜잭션은 고전적인 secp256k1 서명과 함께 Dilithium-5 서명을 포함해야 합니다; PQC 계정에서 발생한 고전적 전용 트랜잭션은 거부되며, 고전적 다운그레이드 경로는 닫혀 있습니다. 메인넷은 v3.2.3을, 테스트넷은 v3.2.4를 실행합니다. v3.2.2와 v3.2.3 릴리스가 포스트 양자 규칙에 추가한 내용(키 무결성, 선택적 소유 증명, 범위가 지정된 EVM 윈도우, EIP-7702 동의)은 [키 무결성 규칙](#key-integrity), [소유 증명](#proof-of-possession), [EIP-7702 위임](#eip-7702)에 설명되어 있습니다.
 
 ## 설계 원칙
 
@@ -56,21 +56,74 @@ PQC 작업은 격자 기반 서명, 검증, 키 캡슐화를 QoreChain 런타임
 * **Sender**: 키를 등록하는 계정 주소.
 * **PublicKey**: PQC 공개 키 바이트.
 * **AlgorithmID**: PQC 알고리즘 식별자(v2 전용).
-* **KeyType**: 세 가지 등록 모드 중 하나:
+* **ProofOfPossession**: 새 키에 의한 선택적 서명(v2 전용, v3.2.3부터). [소유 증명](#proof-of-possession)을 참조하세요.
+* **KeyType**: `hybrid` 또는 `pqc_only` 중 하나(세 번째 값인 `classical_only`는 스키마에 여전히 존재하지만 v3.2.3부터 거부됩니다):
 
 | 키 유형           | 설명                                                                      |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | 고전적(ECDSA) 및 PQC 키 모두. 트랜잭션은 이중 서명을 포함합니다.            |
 | `pqc_only`       | `hybrid`와 동일하게 등록됩니다: 고전적 secp256k1 서명은 여전히 표준 서명 검사로 검증되며, PQC 서명도 추가로 필요합니다. |
-| `classical_only` | 고전적 키 전용. PQC 보호 없음(권장하지 않음).                              |
+| `classical_only` | **v3.2.3부터 거부됨.** 이 키 유형의 등록은 사용 가능한 포스트 양자 키를 기록하지 않으며 계정이 서명할 수 없게 만들 것이므로 체인이 이를 거부합니다. |
 
-## 하이브리드 서명
+### 키 무결성 규칙 (v3.2.3) {#key-integrity}
+
+v3.2.3 업그레이드(메인넷 높이 3,662,051, 2026년 10월 20일; 테스트넷 높이 8,003,746) 이후 체인은 포스트 양자 키에 다음 규칙을 적용합니다. 해당 높이 이전에는 이 중 어느 것도 강제되지 않았습니다.
+
+| 규칙 | 동작 |
+| --- | --- |
+| 취약한 키 불가 | 키 유형이 `classical_only`이거나, 키가 비어 있거나, 키가 퇴화된 경우(길이는 맞지만 구조상 포스트 양자 보호를 제공하지 못하는 키) 등록이 거부됩니다. `tx pqc gen-key` 또는 `qorechain-pqc` 라이브러리로 키를 생성하고 그 출력값을 등록하세요 |
+| 키 재사용 불가 | 새 키가 계정이 이전에 사용한 적이 있는 키이면 교체 또는 마이그레이션이 거부됩니다. 체인은 계정이 교체하거나 마이그레이션하여 떠난 모든 키의 해시를 기억합니다 |
+| 키가 있는 계정은 하이브리드 서명이 필요 | 이미 사용 가능한 키를 보유한 계정은 등록 또는 마이그레이션 트랜잭션에도 하이브리드 서명을 포함해야 합니다. 고전적 전용 면제는 이제 등록된 키가 **없는** 계정, 또는 저장된 기록에 사용 가능한 키가 없는 계정(이 경우 `MsgRegisterPQCKeyV2`가 이를 대체할 수 있음)에만 적용됩니다 |
+| 키 없는 확장 불가 | `required` 모드에서 등록된 키가 없는 계정은 아무것도 검증할 수 없는 하이브리드 확장을 첨부하는 것으로 통과할 수 없습니다. 등록만 확장 없이 통과할 수 있습니다 |
+| 확장은 하나 | 트랜잭션은 최대 하나의 하이브리드 서명 확장을 포함합니다 |
+| authz를 통한 키 메시지 불가 | `MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey`, `MsgMigratePQCKey`는 `x/authz`를 통해 계정을 대신하여 실행할 수 없으며, 계정 자체의 서명이 필요합니다 |
+| 알고리즘 거버넌스 보호 장치 | 알고리즘을 폐기하거나 비활성화해도 체인에 활성 서명 알고리즘이 없는 상태가 될 수 없으며, 대체 알고리즘은 서명할 수 있어야 합니다 |
+
+v3.2.2는 관련 검사를 추가했습니다. 등록은 포함된 고전적 `ecdsa_pubkey`를 검증하고 이를 서명 계정에 바인딩하므로, 계정이 자신의 것이 아닌 고전적 키를 기록할 수 없습니다.
+
+노드는 멤풀에서도 이러한 경우를 걸러내므로, 실패할 수밖에 없는 트랜잭션은 중계되지 않으며 수수료도 들지 않습니다.
+
+### 소유 증명 (선택 사항) {#proof-of-possession}
+
+`MsgRegisterPQCKeyV2`에는 선택적 `proof_of_possession` 필드가 있습니다. 존재하면 체인이 이를 검증하고, 없으면 등록은 이전과 같이 진행됩니다(증명은 **필수가 아닙니다**). 증명은 등록되는 키가 다음 데이터에 대해 만든 서명입니다:
+
+```text
+qorechain-pqc-pop-v1|<chain-id>|<algorithm-id>|<account-address>|<hex(public-key)>
+```
+
+따라서 한 계정이나 체인을 위해 만든 증명은 다른 곳에서는 아무것도 증명하지 않습니다. 로컬 키 파일을 지정하면 CLI가 이를 대신 만들어 줍니다:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
+  --pqc-key mypqc --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+등록은 키가 없는 계정에 대해서만 하이브리드 요구 사항에서 면제되므로, 이 트랜잭션은 계정의 고전적 키만으로 서명됩니다. 형식이 잘못된 증명은 `ErrInvalidProofOfPossession`(모듈 `pqc`의 코드 231)으로 거부됩니다.
+
+**테스트넷 전용(v3.2.4, 메인넷에는 없음):** 계정 기록에 불리언 `possession_proven`이 추가되며, 테스트넷에서 `GET /qorechain/pqc/v1/account/{address}`가 이를 반환합니다. 현재 키가 유효한 증명과 함께 등록되었거나 교체 또는 마이그레이션을 통해 들어온 경우(둘 다 체인, 계정, 키를 명시하는 바이트에 대한 새 키의 서명을 검증함) `true`이며, 증명 없는 등록은 `false`를 기록하고, 증명 없이 키가 변경되면 이 플래그가 지워집니다. 메인넷 v3.2.3은 이 필드를 보고하지 않습니다. 테스트넷에서도 증명은 여전히 선택 사항입니다.
+
+## 하이브리드 서명 {#hybrid-signatures}
 
 하이브리드 서명 시스템은 cosmos 경로 트랜잭션이 고전적 서명과 PQC 서명을 **둘 다** 동시에 포함하도록 요구합니다. 이는 심층 방어를 제공합니다: 한 기법이 깨지더라도 다른 기법이 트랜잭션을 보호합니다.
 
-`hybrid_signature_mode = required`라는 네트워크 기본값에서, 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 Dilithium-5 확장을 포함해야 합니다. 유일한 예외(부트스트랩용)는 **제네시스 gentxs(높이 0)**와 **PQC 키 등록/마이그레이션 트랜잭션**(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`)으로, 계정이 첫 PQC 키를 등록할 수 있도록 고전적 전용이 허용되며, 등록된 키가 없는 운영자 계정의 unjail도 마찬가지입니다.
+`hybrid_signature_mode = required`라는 네트워크 기본값에서, 모든 cosmos 경로 트랜잭션은 secp256k1 서명과 함께 Dilithium-5 확장을 포함해야 합니다. 유일한 예외(부트스트랩용)는 **제네시스 gentxs(높이 0)**, 등록된 키가 없는(또는 기록에 사용 가능한 키가 없는) 계정의 **PQC 키 등록**(`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`)으로, 계정이 첫 PQC 키를 등록할 수 있도록 고전적 전용이 허용되며, 등록된 키가 없는 운영자 계정의 unjail도 마찬가지입니다. v3.2.3부터는 이미 사용 가능한 키를 보유한 계정의 등록 또는 마이그레이션도 다른 트랜잭션과 마찬가지로 하이브리드 서명이 필요합니다([키 무결성 규칙](#key-integrity) 참조).
 
 **EVM 레인은 대신 인가 윈도우로 보호됩니다.** EVM 트랜잭션은 두 번째(ML-DSA) 서명을 담을 수 없습니다 — 표준 지갑은 이더리움 트랜잭션에 secp256k1 서명 하나만 하며, 다른 서명을 첨부할 방법을 제공하지 않습니다. 그래서 포스트 양자 인가는 트랜잭션보다 *앞서* 전달됩니다: 계정이 일반적인 하이브리드 서명을 담은 Cosmos 레인 메시지(`MsgOpenEVMWindow`)로 제한된 **EVM 인가 윈도우**를 열고, 이후 EVM 레인은 유효한 윈도우가 적용되는 트랜잭션만 허용합니다. v3.2.0부터 EVM 트랜잭션은 발신자가 (1) 등록된 포스트 양자 키를 가지고 있고 (2) 블록, 트랜잭션, 금액이 남아 있는 유효한 윈도우를 가지고 있지 않으면 거부됩니다. 윈도우 내에서는 검사가 트랜잭션이 아니라 체인 상태를 읽기 때문에 일반적인 MetaMask/ethers/Hardhat 트랜잭션이 수정 없이 동작합니다. [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)를 참조하세요.
+
+v3.2.3부터 윈도우는 열 때 **범위를 지정**할 수도 있습니다. `--native-only`는 네이티브 QOR의 단순 전송(calldata 없음, 컨트랙트 생성 없음, 코드를 가진 수신자 없음, EIP-7702 인가 없음)으로 좁히고, `--allowed-targets 0x…,0x…`는 나열된 수신자만 허용하며 컨트랙트 생성을 거부합니다. 범위 없이 열린 윈도우는 기존과 같은 것을 허용합니다. 범위는 `MsgOpenEVMWindow`의 일부입니다(`native_only`, `allowed_targets`).
+
+### EIP-7702 위임 {#eip-7702}
+
+EIP-7702 인가 튜플은 이에 서명한 계정에 코드를 설치하며, 그 서명은 누구나 타입 4 트랜잭션에 실어 나를 수 있는 고전적 secp256k1 서명입니다. 따라서 v3.2.2(메인넷 높이 3,556,788)부터 EVM 레인은 **튜플이 효력을 가지게 되는 모든 권한자**가 등록된 포스트 양자 키를 보유하고, 튜플이 설치하는 위임 그대로에 대해 하이브리드 서명된 Cosmos 레인 메시지로 **동의**한 경우에만 타입 4 트랜잭션을 허용합니다.
+
+| 항목 | 상세 |
+| --- | --- |
+| 동의하기 | `qorechaind tx pqc authorize-evm-delegation <delegate-0x-address> <blocks>` (`MsgAuthorizeEVMDelegation`): 튜플이 담아야 하는 위임 대상 주소와 동의가 사용 가능한 기간을 지정합니다(최대 17,280 블록, 윈도우와 같은 한도) |
+| 위임 해제 | 위임 대상으로 제로 주소를 지정하면 해제에 동의하는 것입니다. `tx pqc clear-evm-delegation` (`MsgClearEVMDelegation`)은 EVM 트랜잭션 없이 기존 위임을 해제합니다 |
+| 일회성 | 동의는 위임을 설치하는 트랜잭션에서 소진되고, 해당 계정의 이전 동의를 대체하며, `MsgCloseEVMWindow`로 취소됩니다 |
+| 조회 | `qorechaind query pqc evm-delegation-consent <address>` 또는 `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` (필드 `live`, `delegate`, `granted_height`, `expiry_height`, `current_delegate`, `nonce`) |
+| 제한 | 타입 4 트랜잭션당 최대 8개의 인가. 위임된 계정에서 나가는 금액은 해당 계정 자체의 윈도우에 부과됩니다. 실패한 타입 4 트랜잭션은 이미 적용한 인가를 유지합니다 |
+| 후원된 위임 | 여전히 동작합니다. 후원자가 자신의 윈도우에서 비용을 지불하고, 권한자는 사전에 동의만 합니다 |
 
 ### 공동 서명 흐름
 
@@ -113,7 +166,7 @@ curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0        
 curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
 ```
 
-(`"height":"0"`은 적용되지 않았다는 뜻입니다.) CLI는 `--sign-bytes auto`로 이를 수행하며, SDK 0.8.x와 wallet-adapter 0.2.x도 동일하게 동작하고 테스트넷의 이 변경 사항 사전 적용 버전도 인식합니다. 잘못된 형식을 사용하는 클라이언트는 체인이 거부하는 다이제스트를 생성하며 — 안전하게 실패합니다(fails closed).
+(`"height":"0"`은 적용되지 않았다는 뜻입니다.) 두 네트워크 모두 이 변경을 오래전에 적용했으므로 현재 클라이언트는 어디서나 v2 형식으로 서명합니다. 이 확인은 오래된 블록을 재생하거나 검증할 때 중요합니다. CLI는 `--sign-bytes auto`로 이를 수행하며, 현재 SDK와 wallet-adapter 릴리스도 동일하게 동작합니다. 잘못된 형식을 사용하는 클라이언트는 체인이 거부하는 다이제스트를 생성하며 — 안전하게 실패합니다(fails closed).
 
 ### TX 확장 형식
 
@@ -186,13 +239,14 @@ active --> migrating --> deprecated --> disabled
 | 메시지                  | 설명                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | 계정의 PQC 키를 등록합니다([키 등록](#key-registration) 참조). 새 계정이 부트스트랩할 수 있도록 고전적 서명이 허용될 수 있습니다.                  |
-| `MsgMigratePQCKey`      | 마이그레이션 기간 중 한 알고리즘의 키에서 다른 알고리즘의 키로의 이중 서명 마이그레이션.                                                                              |
-| `MsgRotatePQCKey`       | 계정의 ML-DSA-87 키를 동일한 알고리즘 내에서 교체합니다(이전 키와 새 키의 이중 서명; `tx pqc rotate-key`).                                         |
-| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM 인가 윈도우를 열거나 닫습니다(v3.2.0); [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)를 참조하세요.                  |
+| `MsgMigratePQCKey`      | 마이그레이션 기간 중 한 알고리즘의 키에서 다른 알고리즘의 키로의 이중 서명 마이그레이션. 계정이 이전에 사용한 키는 거부합니다(v3.2.3).                                                                              |
+| `MsgRotatePQCKey`       | 계정의 ML-DSA-87 키를 동일한 알고리즘 내에서 교체합니다(이전 키와 새 키의 이중 서명; `tx pqc rotate-key`). 계정이 이전에 사용한 키는 거부합니다(v3.2.3). |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | EVM 인가 윈도우를 열거나 닫습니다(v3.2.0; v3.2.3부터 선택적 범위 지정); [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)를 참조하세요.                  |
+| `MsgAuthorizeEVMDelegation` / `MsgClearEVMDelegation` | 발신자 본인 계정의 EIP-7702 위임에 동의하거나 이를 해제합니다(v3.2.2); [EIP-7702 위임](#eip-7702)을 참조하세요. |
 | `MsgDeprecateAlgorithm` | 거버넌스 메시지: 알고리즘에 대한 폐기 프로세스를 시작합니다. 대체 알고리즘과 블록 단위 마이그레이션 기간을 지정합니다.                          |
 | `MsgDisableAlgorithm`   | 거버넌스 메시지: 알고리즘을 즉시 긴급 비활성화합니다. 이유 문자열이 필요합니다. 암호화 취약점이 발견되었을 때 사용됩니다.                |
 
-`MsgDeprecateAlgorithm`과 `MsgDisableAlgorithm`은 현재 메인넷에서 서킷 브레이커에 의해 꺼져 있습니다([Chain Parameters](/appendix/chain-parameters#circuit-breaker) 참조).
+`MsgDeprecateAlgorithm`과 `MsgDisableAlgorithm`은 현재 메인넷에서 서킷 브레이커에 의해 꺼져 있습니다([Chain Parameters](/appendix/chain-parameters#circuit-breaker) 참조). 테스트넷에서는 꺼져 있지 않습니다. 두 네트워크 모두에서 v3.2.3부터 [키 무결성 규칙](#key-integrity)의 알고리즘 거버넌스 보호 장치가 적용됩니다.
 
 ### 확장성
 
@@ -219,7 +273,7 @@ v3.1.73 기준으로, **SHAKE-256**(SHA-3 확장 출력 함수)은 QoreChain 전
 
 모든 교차 체인 브리지 어테스테이션과 상태 커밋먼트는 **Dilithium-5** 서명을 사용합니다. `x/multilayer` 모듈은 모든 `MsgAnchorState` 제출에 대해 PQC 집계 서명을 요구하며, ML-KEM 커밋먼트는 브리지 릴레이어 간의 키 교환 채널을 보호합니다.
 
-이는 브리지 인프라에서 고전적 암호화를 사용함으로써 교차 체인 보안이 저하되지 않도록 보장하여, 전체 프로토콜 스택에 걸쳐 양자 저항성을 유지합니다.
+이는 브리지 인프라에서 고전적 암호화를 사용함으로써 교차 체인 보안이 저하되지 않도록 보장하여, 전체 프로토콜 스택에 걸쳐 양자 저항성을 유지합니다. 라이브 브리지 경로는 없습니다([Bridge Architecture](/architecture/bridge-architecture#current-status) 참조). 테스트넷에서만(v3.2.4) 브리지 검증자를 등록할 때 PQC 키의 소유 증명도 필요합니다.
 
 ## 모듈 파라미터
 

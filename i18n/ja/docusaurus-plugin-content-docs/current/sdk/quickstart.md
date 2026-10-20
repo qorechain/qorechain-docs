@@ -104,20 +104,25 @@ const burn = await client.rest.getBurnStats();
 メインネットとテストネットでは、Native パスのすべてのトランザクションに**ハイブリッド**
 （古典 secp256k1 + ML-DSA-87）署名を付ける必要があり、アカウントの ML-DSA-87 鍵は
 **先にオンチェーンで登録**されていなければなりません。登録は明示的に行います。最初の
-トランザクション時の自動登録はありません。単純な `tx.bankSend`（古典署名のみ）は稼働中の
-ネットワークに拒否されます。以下の 2 つのステップには **SDK 0.8.3 以降**
-（`derivePqcCanonical`。ハイブリッド送信全般は 0.8.1 以降）と、資金のあるアカウントが
-必要です：
+トランザクション時の自動登録はありません。古典署名のみのトランザクションは稼働中の
+ネットワークに拒否されるため、トランザクションクライアントにアカウントの
+ML-DSA-87 鍵ペアを渡すと、すべてのトランザクションをハイブリッドで署名します。以下の 2 つのステップには
+**SDK 0.9.0 以降**と、資金のあるアカウントが必要です：
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. ポスト量子鍵の登録（初回のみ）
 
-登録は古典署名で行われ、ハイブリッド要件の対象外となっているため、新しいアカウントでも
-最初の鍵をブートストラップできます。手数料はアカウントが支払います。2,592 バイトの鍵には
-約 600,000 のガスリミットが必要です。
+手数料はアカウントが支払います。2,592 バイトの鍵には約 600,000 のガスリミットが必要です。
+`ensurePqcRegistered` はまず REST（`rest`）で鍵の状態を読み取るため、鍵がすでに登録済みの場合は
+トランザクションをスキップし、アカウントが*別の*鍵を保持している場合は、何も送信せずに
+`PqcKeyMismatchError` を投げます（2 回目の登録は**手数料が徴収された後に**拒否されます）。
+登録は、鍵を持たないアカウントからチェーンが受け入れる唯一の古典署名トランザクションであるため、
+ハイブリッドクライアントはこれを自動的に古典署名で送信します。ネットワークが
+v3.2.3 を適用した後は（両ネットワークとも適用済み）、このヘルパーは任意の所有証明も添付します。
+チェーンは脆弱な鍵、縮退した鍵、再利用された鍵を拒否します。`derivePqcCanonical` で導出した鍵であれば問題ありません。
 
 ```ts
 import {
@@ -135,20 +140,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -156,51 +157,24 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. ハイブリッド署名での送信
 
-`signAndBroadcastHybrid` は、構築、署名、ブロードキャストを行います。`rest` を渡すと、
-ネットワークが検証する sign-bytes の形式を SDK が問い合わせられます
-（[どの sign-bytes 形式？](/sdk/concepts/accounts-pqc#sign-bytes-versions)を参照）。
-QOR を基本単位の `uqor` に変換するには `toBase("1.5")` を使用します。ネットワークの
-最低ガス価格はガス 1 単位あたり 0.1 uqor であるため、ガスリミット 400,000 には少なくとも
-40,000 uqor の手数料が必要です。
+`tx.bankSend` はハイブリッドで署名するようになりました。手数料のデフォルトは `"auto"` です。クライアントは
+ハイブリッドトランザクションそのものをシミュレートし、シミュレーションでは課金されない
+ポスト量子検証のガスを加算します。ネットワークの最低ガス価格はガス 1 単位あたり 0.1 uqor です
+（クライアントは 0.15 で価格設定します）。QOR を基本単位の `uqor` に変換するには `toBase("1.5")` を使用します。
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` は `"1500000"` を返します（QOR の基本単位 `uqor` は 10^6 です）。
+`toBase("1.5")` は `"1500000"` を返します（QOR の基本単位 `uqor` は 10^6 です）。他の
+メッセージを同じ方法で送信するには、`tx.signAndBroadcast([message], "auto")` に渡します。
+手数料、アカウント番号、シーケンスを明示的に制御するには、`signAndBroadcastHybrid` を使用します
+（[アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)を参照）。
 
 :::info 統合アカウント
 統合 eth-native アカウント（`deriveUnifiedAccount`）では、代わりに
@@ -208,11 +182,12 @@ console.log(result.transactionHash);
 [アカウントと PQC 署名](/sdk/concepts/accounts-pqc#hybrid-signing)にあります。
 :::
 
-:::note 古典送信が機能するのはローカルノードと開発ノードのみ
-古典的な `client.connectTx(signer)` と `tx.bankSend(...)` のパスは引き続き存在し、
-`ensurePqcRegistered` が 1 回限りの登録トランザクションに使用しているのもこのパスです。
-ハイブリッド拡張を要求しないノード（ローカル開発ノード）に対しては、通常の送金にも
-使えます。公開ネットワークはこれを拒否します。
+:::note 鍵ペアなしではクライアントは古典署名を行います
+`pqcKeypair` なしの `client.connectTx(signer)` は古典署名のみを行います。公開ネットワークは、
+これを鍵登録（まだ鍵を持たないアカウント）に限って受け入れます。ハイブリッド拡張を要求しない
+ノード（ローカル開発ノード）に対しては、通常の送金にも使えます。0.9.0 より前の SDK バージョンには
+ハイブリッドの `TxClient` がありません。`signAndBroadcastHybrid` を通じて送信してください
+（[0.9.0 より前のバージョン](/sdk/install#before-090)を参照）。
 :::
 
 ## その他の言語：接続と読み取り

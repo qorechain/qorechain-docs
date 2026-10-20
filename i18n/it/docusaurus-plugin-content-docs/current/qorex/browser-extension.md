@@ -9,7 +9,7 @@ sidebar_position: 2
 
 L'**estensione browser** QoreX è il wallet desktop di QoreChain. È un **wallet autonomo** — crea o importa un wallet, detieni e invia QOR, e connettiti alle dApp — ed è l'elemento che permette a qualsiasi sito web di rilevare QoreX e trasformare ogni richiesta in un'approvazione esplicita e decodificata.
 
-È **live e pubblica** su tre store.
+È **live e pubblica** su tre store (Chrome, Firefox e Safari); Chrome al momento è indietro di una release rispetto agli altri — vedi [quale versione è live dove](#versions).
 
 ## Installazione {#install}
 
@@ -21,7 +21,15 @@ L'**estensione browser** QoreX è il wallet desktop di QoreChain. È un **wallet
 
 ### Quale versione è live dove {#versions}
 
-Al **15 ottobre 2026**: **Chrome 0.3.6**, **Firefox 0.3.7** (una point release dopo la 0.3.6) e **Safari** all'interno dell'app macOS **QoreX Wallet** (**1.7.6**, che include l'estensione 0.3.6; il Mac App Store usa una propria numerazione `1.x`). Le revisioni degli store arrivano in momenti diversi, quindi uno store può servire per breve tempo una build più vecchia o più recente; la scheda dello store mostra sempre la sua versione attuale. Questa pagina descrive il set di funzionalità della 0.3.6. Vedi anche [Quale versione è live dove](/qorex/overview#versions).
+Versione attuale su ciascuno store, al **20 ottobre 2026**:
+
+| Store | Versione attuale |
+|---|---|
+| Chrome Web Store | 0.3.6 (non ancora aggiornato alla 0.3.7) |
+| Firefox Add-ons | 0.3.7 |
+| Safari (Mac App Store, app macOS **QoreX Wallet**) | 1.7.7, che include l'estensione 0.3.7 — il Mac App Store usa una propria numerazione `1.x` |
+
+Le revisioni degli store arrivano in momenti diversi, quindi uno store può servire una build più vecchia di un altro; la scheda dello store mostra sempre la sua versione attuale. Questa pagina descrive il set di funzionalità della 0.3.7; dove un punto richiede la 0.3.7 lo dice, e gli utenti di Chrome la ottengono quando la scheda di Chrome si aggiorna. Vedi anche [Quale versione è live dove](/qorex/overview#versions).
 
 Dalla 0.2.6 l'estensione ha acquisito: [più wallet con un'unica password](#wallets), un [account in stile Ethereum che aggiungi a mano](#coin60), [Claim & restake](#stake), un elenco **Unstaking in corso**, l'[aggiunta di un token tramite contratto](#custom-tokens), [Ricevi su qualsiasi rete](#receive), i [Siti connessi con Revoca](#connected-sites), la [finestra di accesso EVM](#evm-window), [`signAndBroadcast` per le dApp](#sign-and-broadcast) e schermate di approvazione che mostrano ogni messaggio, la commissione e la scadenza.
 
@@ -53,7 +61,7 @@ L'estensione conserva le proprie chiavi; non richiede l'app mobile. Le chiavi no
 
 Dalla 0.3.2, **Aggiungi un account Ethereum (coin 60)** (nella schermata **I tuoi account**) aggiunge l'account per una phrase usata per la prima volta in MetaMask o sulla Dashboard; vedi [Ripristinare una phrase da MetaMask o dalla Dashboard](/qorex/getting-started#restore-dashboard). Il suo indirizzo 0x è quello che MetaMask mostra per le stesse parole. Gli handle non sono offerti su di esso.
 
-Portfolio, Q-Day Scanner, recovery sociale, Legacy Protocol, richieste di pagamento e collegamento dei dispositivi restano esclusivi dell'app mobile — vedi [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, recovery sociale, Legacy Protocol, richieste di pagamento, accesso all'account e collegamento dei dispositivi restano esclusivi dell'app mobile — vedi [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Il tuo account, saldo e @handle {#account}
 
@@ -65,11 +73,11 @@ Se il tuo account detiene QOR in vesting (ad esempio un'allocazione TGE non anco
 
 ### Rivendica un @handle
 
-Alcune versioni dell'estensione ti permettono di rivendicare un **@handle** unico (ad esempio `@liviu`) per l'indirizzo di questo account dal popup, allo stesso modo dell'app mobile; se il tuo popup non lo offre, rivendicalo dall'app mobile (la rivendicazione non è offerta sugli account in stile Ethereum). La rivendicazione viene firmata con la chiave dell'account e si lega a quell'indirizzo, così l'app mobile e la Dashboard possono risolverlo quando qualcuno ti invia fondi. Vedi [@handle](/qorex/account-and-dashboard#handle) per come gli handle sono legati agli indirizzi (non a un wallet nel suo insieme).
+Rivendicare un **@handle** unico (ad esempio `@liviu`) richiede un **account con accesso effettuato** e avviene **nell'app mobile**; l'estensione ti indirizza lì e non rivendica da sola gli handle. Una volta rivendicato, l'handle si lega a quell'indirizzo, così l'estensione lo risolve quando lo paghi e gli altri possono pagarti per nome. Vedi [@handle](/qorex/account-and-dashboard#handle) per come gli handle sono legati agli indirizzi (non a un wallet nel suo insieme).
 
 ## Invia a un @handle {#handle-send}
 
-Dalla 0.1.9 puoi pagare un @handle registrato direttamente, invece di cercare un indirizzo:
+Dalla 0.1.9 puoi pagare un @handle registrato direttamente, invece di cercare un indirizzo (le ricerche erano interrotte da un difetto nelle versioni fino alla 0.3.6 e funzionano di nuovo dalla 0.3.7):
 
 1. Apri il popup e tocca **Invia**.
 2. Nel campo destinatario, digita `@` seguito dall'handle (ad esempio `@liviu`) invece di un indirizzo `qor1…`.
@@ -144,7 +152,7 @@ La schermata **Monete e token** del popup ti permette di aggiungere un **token E
 
 ## Finestra di accesso EVM {#evm-window}
 
-La schermata **Finestra di accesso EVM** del popup apre e chiude la finestra che permette a un account di inviare sulla lane EVM di QoreChain (v3.2.0 e successive) — la stessa schermata dell'app. Vedi [Finestra di accesso EVM](/qorex/security-and-recovery#evm-window).
+La schermata **Finestra di accesso EVM** del popup apre e chiude la finestra che permette a un account in stile Ethereum (coin 60) di inviare sulla lane EVM di QoreChain (v3.2.0 e successive) — la stessa schermata dell'app, con gli stessi limiti (fino a 17.280 blocchi e 1.000 transazioni, e un tetto in QOR che conta ogni importo più la sua commissione massima). Vedi [Finestra di accesso EVM](/qorex/security-and-recovery#evm-window).
 
 ## Lingua {#language}
 
@@ -161,7 +169,7 @@ QoreX è costruito per essere verificabile, non solo per essere ritenuto affidab
   QoreX rileva automaticamente WebAuthn e mostra l'opzione **Abilita sblocco con passkey** solo dove il browser la espone alle pagine dell'estensione — cioè **Chrome ed Edge**. Su **Firefox** l'opzione è nascosta, perché Firefox non espone WebAuthn alle pagine delle estensioni. Questo è previsto, non un bug.
   :::
 - **Manifest V3 + CSP rigorosa** — `script-src 'self'; object-src 'self'; base-uri 'self'`. Non c'è **nessun caricamento di codice remoto** dopo l'installazione e nessun `wasm-unsafe-eval`.
-- **Nessun account, nessuna telemetria** — nessuna analisi, nessun tracciamento, nessun logging remoto, nessuna registrazione e nessuna email. La scheda di Firefox dichiara la raccolta dati come `none`.
+- **Nessuna analisi, nessun report di crash, nessun SDK di tracciamento, nessuna registrazione** — l'estensione non richiede alcun account per detenere, inviare o mettere in staking QOR. Le tue chiavi, la recovery phrase, il vault e le approvazioni non lasciano mai il browser. Effettua però richieste di rete: verso gli endpoint pubblici di QoreChain per saldi, cronologia e trasmissione (queste portano il tuo indirizzo pubblico `qor1…`), una ricerca del prezzo (senza indirizzo), i servizi pubblici di qualsiasi rete esterna che detieni o consulti (il tuo indirizzo pubblico su quella rete) e il registro degli @handle (l'handle, o un indirizzo pubblico). Solo se usi l'[abbinamento con la Dashboard](#dashboard-bridge) invia una prova firmata che sei il proprietario dell'indirizzo. Vedi [Cosa invia QoreX sulla rete](/qorex/overview#data-and-privacy).
 
 ### Quali permessi richiede QoreX, e perché {#permissions}
 

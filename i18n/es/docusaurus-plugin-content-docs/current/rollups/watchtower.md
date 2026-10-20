@@ -17,8 +17,8 @@ El framework observa y decide *cuándo*; **tú aportas la comprobación de valid
 El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a tu
 función `validate` y actúa según lo que devuelvas.
 
-:::caution Etapa temprana: necesita las rutas REST del RDK
-El Watchtower lee los lotes a través del cliente REST del RDK. Las rutas REST `/qorechain/rdk/v1/…` hoy no se sirven en mainnet, por lo que el Watchtower todavía no puede ejecutarse contra mainnet. No se ha creado ningún rollup en ninguna de las dos redes, así que no hay nada que vigilar.
+:::caution Etapa temprana: nada que vigilar, y las alertas de fecha límite de la 0.5.0 son erróneas
+El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 20 de octubre de 2026), así que todavía no hay nada que vigilar. En `@qorechain/rdk` 0.5.0 la lógica de la fecha límite de la ventana de desafío tampoco es fiable: el `submittedAt` de un lote es una **altura de bloque**, pero el Watchtower (y la comprobación de salud que hay detrás de `qorollup status`) le suma la ventana en segundos y compara la suma con el reloj real, por lo que `secondsRemaining` carece de sentido y `onDeadline` se dispara en cuanto se ve un lote por primera vez. No uses `onDeadline` ni la cuenta atrás para tomar decisiones; calcula tú mismo la fecha límite (consulta la nota de abajo). El observador también lee solo la primera página de lotes (50).
 :::
 
 ## `watchBatches`
@@ -29,9 +29,9 @@ import { createRdkClient, watchBatches } from "@qorechain/rdk";
 const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
-// the networks require. See "Signing with the published clients" in
-// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
-// cannot get a challenge accepted.
+// the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
+// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
+// classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -55,9 +55,10 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called as a batch approaches the end of its challenge window.
+  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
+  // deadline mixes a block height with the wall clock, so treat this as unreliable.
   onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
+    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -76,7 +77,7 @@ auto-challenger completo; déjalo sin definir para ejecutarlo en modo de solo
 observación.
 
 :::note Ventana de desafío
-La fecha límite que informa el Watchtower usa la ventana de desafío convertida a bloques a 6 segundos por bloque (100,800 bloques por defecto), por lo que con los bloques de ≈3.2 s de mainnet la ventana real es más corta que "7 días". Publicar un desafío también requiere la fianza de desafío del rollup (1,000 QOR para los presets `nft` y `custom`).
+Calcula la fecha límite de un lote en bloques, no en segundos: `submitted_at` (una altura de bloque) más la ventana. **En mainnet (v3.2.3)** la ventana es el valor por defecto de 604,800 «segundos» convertido a 6 segundos fijos por bloque, es decir **100,800 bloques** (el tiempo real sigue al tiempo de bloque, así que es más corto que «7 días» con los bloques de ≈3.2 s de mainnet). **Solo en la testnet (v3.2.4)**, un lote enviado a partir de la altura 8,337,253 recibe una ventana medida en segundos de tiempo de bloque. Publicar un desafío también requiere la fianza de desafío del rollup (1,000 QOR para los presets `nft` y `custom`).
 :::
 
 ## CLI

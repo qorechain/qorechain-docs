@@ -15,20 +15,23 @@ provider, une poignée de hooks, et deux composants prêts à l'emploi — y com
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) est une dépendance pair ; `@qorechain/sdk` est une dépendance directe,
-épinglée à la même version que le kit. Utilisez `@qorechain/react` **0.8.3 ou ultérieur** :
-la 0.8.0 épingle le SDK 0.8.0, qui signe la mauvaise forme hybride sur le mainnet, et les
+`react` (>=18) est une dépendance pair ; `@qorechain/sdk` est une dépendance directe
+(`^0.9.0` depuis le kit 0.9.0 ; sur une version 0.x, le caret reste dans la 0.9, de sorte qu'un
+correctif du SDK n'installe pas une seconde copie). Utilisez `@qorechain/react` **0.9.0** : la 0.8.0 épingle
+le SDK 0.8.0, qui signe la mauvaise forme hybride sur le mainnet, et les
 versions 0.8.x antérieures peuvent afficher un solde ou un statut obsolète après un changement d'adresse.
 
-:::caution Limites du kit React sur les réseaux en direct (0.8.x)
-`useTx` envoie uniquement avec la signature classique du wallet connecté, que les
-réseaux en direct rejettent (le chemin Native exige l'extension hybride ML-DSA-87), de sorte que
-`send` / `sendTokens` ne peuvent pas faire aboutir une transaction sur le mainnet ni sur le testnet ; utilisez les
-[constructeurs hybrides](/sdk/concepts/accounts-pqc#hybrid-signing) du SDK pour les envois.
-`usePqcStatus` et `<QuantumSafeBadge/>` lisent `qor_getPQCKeyStatus`, que les
-endpoints publics ne servent pas (voir
-[l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace)), ils ne peuvent donc pas
-confirmer une clé auprès de `*.qore.host`. Les lectures de solde (`useBalance`) et la connexion
+:::caution Limites du kit React sur les réseaux en direct (0.9.0)
+`useTx` se connecte avec le signataire du wallet et sans paire de clés post-quantique ; il envoie donc
+uniquement avec la signature classique, que les réseaux en direct rejettent (le chemin Native
+exige l'extension hybride ML-DSA-87) : `send` / `sendTokens` ne peuvent pas faire aboutir une
+transaction sur le mainnet ni sur le testnet. Pour les envois, utilisez le `TxClient` hybride du SDK
+(`client.connectTx(signer, { pqcKeypair })`, voir
+[Résistant au quantique](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` et `<QuantumSafeBadge/>` lisent le statut via
+`getPqcStatus` avec le client composé du provider, qui depuis le SDK 0.9.0 lit via
+REST (`/qorechain/pqc/v1/account/{address}`) ; ils fonctionnent donc contre `*.qore.host`
+(le kit 0.8.x lisait `qor_getPQCKeyStatus`, que les endpoints publics ne servent pas, et
+ne pouvait pas y confirmer une clé). Les lectures de solde (`useBalance`) et la connexion
 du wallet fonctionnent.
 :::
 

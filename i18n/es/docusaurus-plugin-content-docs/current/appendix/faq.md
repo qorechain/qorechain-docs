@@ -11,7 +11,7 @@ Preguntas generales sobre QoreChain, respondidas a partir de la documentación. 
 
 ### ¿Está la mainnet en funcionamiento?
 
-Sí. La mainnet de QoreChain (cadena `qorechain-vladi`, EVM chain ID 9801) está en funcionamiento desde el 29 de junio de 2026 y ejecuta la versión v3.2.1. Consulta [Redes](/appendix/networks) y [Conectarse a la mainnet](/getting-started/connecting-to-mainnet).
+Sí. La mainnet de QoreChain (cadena `qorechain-vladi`, EVM chain ID 9801) está en funcionamiento desde el 7 de junio de 2026 y ejecuta la versión v3.2.3 (la testnet, `qorechain-diana`, ejecuta la v3.2.4). Consulta [Redes](/appendix/networks) y [Conectarse a la mainnet](/getting-started/connecting-to-mainnet).
 
 ### ¿Cuáles son los chain ID y los EVM chain ID?
 
@@ -39,19 +39,23 @@ Usa el faucet de testnet en el Dashboard. Consulta [Faucet del Dashboard](/dashb
 
 ### ¿Cómo ejecuto un nodo, un validador o un nodo ligero?
 
-Para un nodo completo, consulta [Ejecutar un nodo](/developer-guide/running-a-node). Para un validador, consulta [Ejecutar un validador](/developer-guide/running-a-validator). Para un nodo ligero, consulta [Nodo ligero](/light-node/overview).
+Para un nodo completo, consulta [Ejecutar un nodo](/developer-guide/running-a-node). Para un validador, consulta [Ejecutar un validador](/developer-guide/running-a-validator). Para un nodo ligero, consulta [Nodo ligero](/light-node/overview); el registro en el programa de recompensas de nodos ligeros está abierto y sujeto a licencia ([estado](/light-node/overview#reward-program-status)).
 
 ### ¿Qué esquema de firma usa QoreChain?
 
-QoreChain usa un esquema híbrido post-cuántico que combina el clásico **secp256k1 (ECDSA)** con el post-cuántico **ML-DSA-87 (Dilithium-5)**. Este esquema híbrido es obligatorio de forma predeterminada en la ruta de transacciones de Cosmos, con el modo de cumplimiento controlado por gobernanza. En el carril EVM la firma sigue siendo secp256k1, y además la cuenta debe tener una clave ML-DSA registrada y una ventana de autorización abierta (v3.2.0). Consulta [Seguridad post-cuántica](/architecture/post-quantum-security).
+QoreChain usa un esquema híbrido post-cuántico que combina el clásico **secp256k1 (ECDSA)** con el post-cuántico **ML-DSA-87 (Dilithium-5)**. Este esquema híbrido es obligatorio de forma predeterminada en la ruta de transacciones de Cosmos, con el modo de cumplimiento controlado por gobernanza. En el carril EVM la firma sigue siendo secp256k1, y además la cuenta debe tener una clave ML-DSA registrada y una ventana de autorización abierta (desde la v3.2.0). Consulta [Seguridad post-cuántica](/architecture/post-quantum-security).
 
 ### ¿Por qué se rechaza mi transacción EVM con "no open EVM authorisation window"?
 
 Desde la v3.2.0, el carril EVM admite una transacción solo de una cuenta que tenga una clave post-cuántica registrada y una ventana de autorización abierta. Abre una ventana con una transacción del carril Cosmos firmada con firma post-cuántica y vuelve a intentarlo. Consulta [Ventana de autorización EVM](/getting-started/first-transaction#evm-window).
 
+### ¿Cuántos validadores tiene la mainnet?
+
+Ocho validadores en bonding el 20 de octubre de 2026, con unos 55,1 millones de QOR en bonding (el conjunto activo puede tener hasta 100). La testnet tiene tres. Consulta el conjunto en vivo en `GET /cosmos/staking/v1beta1/validators` en `https://api.qore.host`.
+
 ### ¿Qué tiempo de bloque debo esperar?
 
-Unos 3.2 segundos en la mainnet y unos 1 segundo en la testnet (promedios medidos, octubre de 2026). El tiempo de bloque lo fija la configuración de los nodos de los validadores.
+Unos 3,2 segundos en la mainnet y unos 1 segundo en la testnet (promedios medidos, octubre de 2026). El tiempo de bloque lo fija la configuración de los nodos de los validadores.
 
 ### ¿Está disponible xQORE?
 
@@ -59,7 +63,7 @@ Todavía no. El módulo de contabilidad existe, pero las transacciones de bloque
 
 ### ¿Es fijo el suministro de QOR?
 
-El suministro en génesis fue de 4,420,000,000 QOR. La emisión por staking se acuña bajo un tope acumulado estricto de 114,285,714 QOR, y las quemas retiran tokens de forma permanente. Consulta [Tokenomics](/architecture/tokenomics#supply-and-emission).
+El suministro en génesis fue de 4,420,000,000 QOR. La emisión por staking se acuña bajo un tope acumulado estricto de 590,000,000 QOR (86,000 QOR por época desde la propuesta de gobernanza 10, de octubre de 2026), y las quemas retiran tokens de forma permanente. Consulta [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### ¿Cómo construyo un rollup?
 
@@ -71,7 +75,7 @@ Usa el [QoreChain SDK](/sdk/overview), el SDK público para construir aplicacion
 
 ### ¿Dónde puedo hacer preguntas?
 
-El bot comunitario QCAIA responde preguntas en Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) y Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Consulta [Bot comunitario QCAIA](/qcaia/overview).
+El bot comunitario QCAIA responde preguntas en Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) y Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Consulta [Bot comunitario QCAIA](/qcaia/overview).
 
 ## Relacionado
 

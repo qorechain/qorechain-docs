@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain은 QoreChain EVM 엔진에서 완전한 EVM 호환 실행 환경을 구동하므로, 익숙한 툴체인을 사용해 Solidity 스마트 컨트랙트를 배포하고 상호작용할 수 있습니다. EVM 모듈은 **8545 포트**에서 JSON-RPC 인터페이스를 노출하며(웹소켓은 **8546** 포트), 표준 이더리움 개발 워크플로를 지원합니다.
 
 :::note
-아래 예제는 2026년 6월 29일부터 가동 중이며 노드 릴리스 **v3.2.1**(v3.2.0 업그레이드의 합의 규칙)을 실행하는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 합니다. **`qorechain-diana`** 테스트넷(v3.2.2)의 경우 EVM 체인 ID **9800**을 사용하세요. 코드 샘플은 직접 운영하는 노드를 위해 `http://localhost:8545`를 사용하며, 공개 메인넷 엔드포인트는 `https://evm.qore.host`, 테스트넷 엔드포인트는 `https://evm-testnet.qore.host`입니다.
+아래 예제는 2026년 6월 7일부터 가동 중이며 노드 릴리스 **v3.2.3**(2026년 10월 20일 높이 3,662,051에서 적용)을 실행하는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 합니다. **`qorechain-diana`** 테스트넷(v3.2.4, 2026년 10월 19일 높이 8,337,253에서 적용. 메인넷에는 아직 적용되지 않았으며, 거버넌스 제안 13이 높이 3,742,566에서 적용할 예정)의 경우 EVM 체인 ID **9800**을 사용하세요. 코드 샘플은 직접 운영하는 노드를 위해 `http://localhost:8545`를 사용하며, 공개 메인넷 엔드포인트는 `https://evm.qore.host`, 테스트넷 엔드포인트는 `https://evm-testnet.qore.host`입니다.
 :::
 
 :::caution EVM 트랜잭션에는 등록된 PQC 키와 열려 있는 인가 윈도우가 필요합니다
 v3.2.0 업그레이드(메인넷 높이 2,981,742, 테스트넷 높이 5,920,000) 이후 EVM 레인은 **(1) 등록된 ML-DSA-87 양자 내성 키**와 **(2) 해당 트랜잭션을 수용할 여유가 있는, 열려 있는 EVM 인가 윈도우**를 모두 가진 계정의 트랜잭션만 받아들입니다. 서명은 일반 도구(MetaMask, ethers.js, Hardhat, Foundry)로 하지만, 등록된 키와 열려 있는 윈도우가 없으면 `eth_sendRawTransaction`은 거부됩니다(코드스페이스 `pqc`, 코드 26, 27 또는 28). 읽기, `eth_call`, 가스 추정에는 둘 다 필요하지 않습니다. 아래의 [EVM 인가 윈도우](#evm-window)와 [첫 트랜잭션](/getting-started/first-transaction#evm-window)의 단계별 안내를 참조하세요.
+
+v3.2.2부터 메인넷에는 두 가지 규칙이 더 적용됩니다. **보호되지 않은(EIP-155 이전) 트랜잭션은 거부됩니다**(노드의 멤풀과 블록 실행 모두에서). 따라서 체인 ID를 포함해 서명하세요(현재의 모든 지갑과 라이브러리가 그렇게 합니다). 또한 **모듈 계정은 EVM을 통해 점유할 수 없습니다**.
 :::
 
 ---
@@ -30,7 +32,7 @@ v3.2.0 업그레이드(메인넷 높이 2,981,742, 테스트넷 높이 5,920,000
 | 체인 ID (테스트넷)    | `9800` (`qorechain-diana`)                 |
 | 통화 심볼            | `QOR`                                      |
 
-QoreChain 전용 읽기는 REST(`api.qore.host`)로 제공됩니다. [아래](#custom-qor_-namespace)에 설명된 `qor_` JSON-RPC 네임스페이스는 공개 엔드포인트와 기본 노드 구성에서 **활성화되어 있지 않습니다**.
+QoreChain 전용 읽기는 REST(`api.qore.host`)로 제공됩니다. [아래](#custom-qor_-namespace)에 설명된 `qor_` JSON-RPC 네임스페이스는 공개 엔드포인트와 기본 노드 구성에서 **활성화되어 있지 않습니다**. 새로 초기화한 노드(v3.2.3 이상)의 기본 `api` 목록은 `eth,net,web3`이며, `txpool`은 노드의 대기 중인 트랜잭션을 공개하기 때문에 선택 사항(opt-in)입니다.
 
 ---
 
@@ -200,7 +202,16 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 | `max-txs`   | 1 – 1,000          | 수용하는 EVM 트랜잭션 수 |
 | `max-value` | 0 초과, `uqor` 단위 | 수용하는 총 유출액: 전송 값 **더하기** 각 트랜잭션이 지불할 수 있는 최대 수수료(가스 한도 × 가스당 최대 수수료)를 `uqor`로 환산해 올림한 값 |
 
-먼저 소진되는 한도가 윈도우를 닫습니다. 모든 필드는 필수이며, 윈도우를 열면 기존 윈도우가 대체됩니다. 수용된 후 실패한 트랜잭션도 슬롯과 값 예산을 소모하며, 컨트랙트 배포도 다른 트랜잭션과 동일하게 계산됩니다. `blocks`는 기간이 아니라 블록 수입니다. 17,280 블록은 메인넷에서 약 15시간(블록당 약 3.2초), 테스트넷에서 약 5시간(블록당 약 1.0초)입니다.
+먼저 소진되는 한도가 윈도우를 닫습니다. 세 가지 한도는 모두 필수이며, 윈도우를 열면 기존 윈도우가 대체됩니다. 수용된 후 실패한 트랜잭션도 슬롯과 값 예산을 소모하며, 컨트랙트 배포도 다른 트랜잭션과 동일하게 계산됩니다. `blocks`는 기간이 아니라 블록 수입니다. 17,280 블록은 메인넷에서 약 15시간(블록당 약 3.2초), 테스트넷에서 약 5시간(블록당 약 1.0초)입니다.
+
+**값 한도는 네이티브 QOR만 계산합니다.** 토큰 전송, 승인(approval) 또는 기타 컨트랙트 호출은 값이 0이므로 `max-value`에 계산되지 않습니다(최대 수수료만 계산됨). 이들도 제한하려면 윈도우의 **범위(scope)**를 좁히세요(메인넷 v3.2.3 이상):
+
+| 범위 옵션(CLI 플래그) | 메시지 필드 | 윈도우가 수용하는 것 |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | 네이티브 QOR의 일반 전송만: calldata 없음, 컨트랙트 생성 없음, 코드를 가진 수신자 없음, EIP-7702 인가 없음 |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | 수신자가 나열된 20바이트 주소 중 하나인 트랜잭션만. 컨트랙트 생성은 거부됨 |
+
+범위 없이 연 윈도우는 이전과 정확히 동일하게 동작합니다. 범위를 벗어난 트랜잭션은 코드 27로 거부됩니다(메시지는 윈도우가 "이 트랜잭션을 수용하지 않는다"고 표시). `GET /qorechain/pqc/v1/evm_window/{address}`와 `qorechaind query pqc evm-window`는 `native_only`와 `allowed_targets`를 보고하며, `pqc_evm_window_opened` 이벤트에도 설정된 경우 이 값이 포함됩니다.
 
 **단계**(전체 안내는 [첫 트랜잭션](/getting-started/first-transaction#evm-window)에 있습니다):
 
@@ -211,6 +222,10 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. 남은 한도를 확인합니다: `qorechaind query pqc evm-window <address>` 또는 `GET /qorechain/pqc/v1/evm_window/{address}`(윈도우가 없으면 `found: false`로 응답).
@@ -218,13 +233,17 @@ EVM 트랜잭션은 **고전적인 ECDSA(secp256k1)**로 서명되므로, MetaMa
 
 윈도우를 일찍 닫으려면 `qorechaind tx pqc close-evm-window`를 사용합니다(동일한 `--generate-only` 및 `cosign` 패턴). 예를 들어 고전 키가 노출되었다고 의심되는 경우, 윈도우가 아직 허용하던 모든 것이 다음 블록부터 거부됩니다.
 
+### EIP-7702 위임 {#eip-7702}
+
+계정의 EIP-7702 위임(타입 4 트랜잭션)은 v3.2.2부터 계정 자신의 양자 내성 동의가 있어야만 효력이 발생합니다. 먼저 하이브리드 서명된 Cosmos 레인 메시지 `MsgAuthorizeEVMDelegation`(`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`)으로 동의를 기록하세요. 이 동의는 일회용이며, 지정한 블록 수가 지나면 만료되고 `close-evm-window`로 철회됩니다. 위임된 계정에서 나가는 값은 **해당** 계정 자신의 윈도우에 청구되며, 실패한 타입 4 트랜잭션도 이미 적용한 인가는 유지하고, `qorechaind tx pqc clear-evm-delegation`은 위임을 제거합니다. 거부된 위임은 코드 60에서 63으로 응답합니다. 동의 내용은 `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`로 읽을 수 있습니다.
+
 | 거부 (코드스페이스 `pqc`) | 의미 |
 | ------------------------- | ------- |
 | code 26 | 발신자에게 열려 있는 윈도우가 없거나, 발신자에게 등록된 PQC 키가 없음 |
-| code 27 | 윈도우가 만료되었거나 소진됨(메시지에 어떤 한도인지 표시) |
+| code 27 | 윈도우가 만료되었거나 소진됨(메시지에 어떤 한도인지 표시), 또는 트랜잭션이 윈도우의 범위를 벗어남 |
 | code 28 | 윈도우를 열 때 한도가 유효하지 않거나, 그 시점에 등록된 키가 없음 |
 
-TypeScript SDK(0.8.2 이상)에서는: `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })`, `classifyEvmWindowRejection(err)`(`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`)를 사용할 수 있습니다.
+TypeScript SDK(0.8.2 이상)에서는: `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })`, `classifyEvmWindowRejection(err)`(`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`)를 사용할 수 있습니다. SDK 0.9.0은 `openEvmWindowMsg`에 범위 옵션(`nativeOnly`, `allowedTargets`)을 추가하고 EIP-7702 동의 빌더(`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`)를 추가합니다. 0.9.0 이전 릴리스는 범위가 없는 윈도우만 만들 수 있으므로, 나머지에는 `qorechaind`를 사용하세요([SDK EVM 가이드](/sdk/guides/evm#evm-window-scope) 참조).
 
 ---
 
@@ -233,7 +252,7 @@ TypeScript SDK(0.8.2 이상)에서는: `openEvmWindowMsg`, `closeEvmWindowMsg`, 
 QoreChain은 체인 전용 조회를 위해 JSON-RPC를 `qor_` 네임스페이스로 확장합니다.
 
 :::warning 아직 제공되지 않음
-공개된 노드 빌드 중 `qor_` 네임스페이스를 제공하는 것은 아직 없습니다. 공개 엔드포인트의 `rpc_modules`에는 `eth`, `net`, `rpc`, `txpool`, `web3`만 나열되며, 아래의 모든 메서드는 메인넷, 테스트넷, 기본 구성(`eth`, `net`, `web3`, `txpool`)의 자체 운영 노드에서 `-32601`(메서드를 찾을 수 없음)을 반환합니다. 현황과 REST 대안(예: PQC 키 상태는 `GET /qorechain/pqc/v1/account/{address}`)은 [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참조하세요.
+공개된 노드 빌드 중 `qor_` 네임스페이스를 제공하는 것은 아직 없습니다. 공개 엔드포인트의 `rpc_modules`에는 `eth`, `net`, `rpc`, `txpool`, `web3`만 나열되며, 아래의 모든 메서드는 메인넷, 테스트넷, 기본 구성(`eth`, `net`, `web3`)의 자체 운영 노드에서 `-32601`(메서드를 찾을 수 없음)을 반환합니다. 현황과 REST 대안(예: PQC 키 상태는 `GET /qorechain/pqc/v1/account/{address}`)은 [`qor_` 네임스페이스](/api-reference/json-rpc-qor_-namespace)를 참조하세요.
 :::
 
 | 메서드                       | 설명                                                        |

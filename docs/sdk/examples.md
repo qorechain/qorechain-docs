@@ -62,7 +62,8 @@ transfer: derive → sign → simulate → estimate fee → `bankSend`. Needs a
 reachable consensus RPC plus REST and a funded account. This example signs with
 the **classical** signature only, so it works against a local or dev node but is
 refused by mainnet and testnet, which require the hybrid signature on every
-Native-path transaction. For the public networks use the hybrid send in the
+Native-path transaction. For the public networks connect with the account's
+keypair, `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0), as in the
 [Quickstart](/sdk/quickstart#send-qor).
 
 ```ts

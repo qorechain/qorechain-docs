@@ -127,12 +127,12 @@ This pin is stored only in your own browser, not on any server, so a different c
 The EVM lane admits a transaction only from an account that holds a registered post-quantum key and has an **open EVM authorisation window**: a time-, count- and value-bounded permission that the account opens with a post-quantum-signed message. MetaMask cannot produce that message. If you send without a window the chain refuses the transaction (typical errors: no window, window exhausted, no post-quantum key).
 :::
 
-1. In **QoreX** (the account's own wallet), register the account's post-quantum key if it has none, then open an EVM authorisation window — see [EVM access window](/qorex/security-and-recovery#evm-window). Choose limits you are comfortable with; opening a new window replaces the previous one.
+1. In **QoreX** (the account's own wallet), register the account's post-quantum key if it has none (your first QoreX transfer from that account does it), then open an EVM authorisation window — see [EVM access window](/qorex/security-and-recovery#evm-window). This is for the **Ethereum-style (coin 60) account** that shares MetaMask's key — add it in QoreX with **Add an Ethereum account (coin 60)** using the same recovery phrase ([how](/qorex/getting-started#restore-dashboard)); no MetaMask key can send from an ordinary coin-118 `qor1…` account. A window is bounded by blocks (at most 17,280, about 15 hours on mainnet), by transaction count (at most 1,000) and by a QOR spending cap that counts each amount **plus** its maximum fee. Choose limits you are comfortable with and keep them small: while a window is open, MetaMask transactions move QOR without a post-quantum signature. Opening a new window replaces the previous one, and it advances the account's nonce, so open it **before** you send from MetaMask (a transaction prepared earlier fails with "nonce too low"). Since v3.2.3 the chain also supports narrower, scoped windows; QoreX does not offer a screen for them yet.
 2. Open MetaMask and confirm it is set to the QoreChain EVM network.
 3. Select **Send** inside MetaMask, enter the recipient's `0x...` address and the amount, review the gas fee, and confirm.
 4. Back on the Dashboard Wallet page, the transaction appears in your history once it is on-chain (refresh if it hasn't shown up yet).
 
-Each transaction uses up part of the window; when its time, transaction count or value limit is reached, open a new one in QoreX.
+Each transaction uses up part of the window; when its time, transaction count or value limit is reached, open a new one in QoreX. Close the window from QoreX when you are done.
 
 ### Receive on a specific rail {#receive-mainnet}
 

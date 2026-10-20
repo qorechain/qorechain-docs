@@ -49,7 +49,7 @@ As of chain version **v3.1.82**, the SVM interface serves the account's **native
 | `getTokenAccountsByOwner`           | `owner`, filter          | Returns token accounts for an owner                            |
 | `getTokenAccountsByDelegate`        | `delegate`, filter       | Returns token accounts for a delegate                          |
 
-Methods outside this list, such as `getGenesisHash` and `getEpochInfo`, return `-32601 method not found`. `getTransaction` is accepted but currently answers with an envelope that has no `result` field, so do not rely on it. The slot reported by `getSlot` tracks the chain's block height.
+Methods outside this list, such as `getGenesisHash` and `getEpochInfo`, return `-32601 method not found` (checked against `https://svm.qore.host` and `https://svm-testnet.qore.host`, 20 October 2026). Since v3.2.2 base58 addresses in the RPC and gRPC queries must be canonical and bounded in length; a malformed one is refused. `getTransaction` is accepted but currently answers with an envelope that has no `result` field, so do not rely on it. The slot reported by `getSlot` tracks the chain's block height.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Notes
 
 - **Address format**: SVM accounts use base58-encoded public keys (standard Solana format), not the `qor1` Bech32 prefix used by the native Cosmos SDK modules.
-- **Cross-VM bridging**: To move assets between EVM and SVM runtimes, use the Cross-VM module (`x/crossvm`). See the [Transaction Commands](/cli-reference/transaction-commands) for `crossvm call` syntax.
+- **Cross-VM bridging**: To move assets between EVM and SVM runtimes, use the Cross-VM module (`x/crossvm`). See the [Transaction Commands](/cli-reference/transaction-commands#crossvm) for `crossvm call` syntax. The SVM lane is disabled and `MsgCrossVMCall` is switched off on mainnet, so this is reference only today.
 - **Program deployment**: Deploy BPF programs via the CLI (`qorechaind tx svm deploy-program`) or programmatically through the SVM runtime.
 - **Compute budget**: The SVM runtime enforces a compute budget of 1,400,000 compute units per transaction by default. This is configurable via module parameters.

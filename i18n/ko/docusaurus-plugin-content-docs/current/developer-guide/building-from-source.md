@@ -10,7 +10,7 @@ sidebar_position: 1
 이 가이드는 공개 소스에서 커뮤니티 `qorechaind` 바이너리를 빌드하는 과정을 안내하고, 이 바이너리가 무엇을 위한 것이며 무엇을 위한 것이 아닌지를 설명합니다.
 
 :::caution 소스 빌드로는 메인넷이나 테스트넷에 참여할 수 없습니다
-공개 리포지토리에는 **스텁 keeper**와 함께 모듈 인터페이스가 들어 있으며, 합의에 필수적인 keeper 구현과 포스트 퀀텀 서명기는 공개 소스 트리에 포함되어 있지 않습니다. 이로부터 빌드한 바이너리는 네트워크의 합의 상태를 재현할 수 없으며, 모든 Cosmos 레인 트랜잭션이 요구하는 하이브리드 포스트 퀀텀 서명도 생성할 수 없습니다. 메인넷이나 테스트넷에서 노드 또는 밸리데이터를 실행하려면, 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json` 또는 `.../testnet/latest.json`)에 명시된 **릴리스 바이너리**를 설치하세요. [노드 실행하기](/developer-guide/running-a-node)와 [밸리데이터 실행하기](/developer-guide/running-a-validator)를 참고하세요.
+공개 리포지토리에는 **스텁 keeper**와 함께 모듈 인터페이스가 들어 있으며, 합의에 필수적인 keeper 구현과 포스트 퀀텀 서명기는 공개 소스 트리에 포함되어 있지 않습니다. 이로부터 빌드한 바이너리는 네트워크의 합의 상태를 재현할 수 없으며, 모든 Cosmos 레인 트랜잭션이 요구하는 하이브리드 포스트 퀀텀 서명도 생성할 수 없습니다. v3.2.3부터는 `qorechain-vladi` 또는 `qorechain-diana`에서 **시작 자체를 거부**합니다(체인 ID와 제네시스 시간으로 이 네트워크들을 인식하며, 공개 체인 ID를 재사용하되 자체 제네시스를 쓰는 로컬 데브넷은 영향을 받지 않습니다). `qorechaind start --community-unenforced-pqc`는 실험을 위해 이 거부를 무시하게 하지만, 이 경우 노드는 포스트 퀀텀 서명을 전혀 검증하지 않으며 경고 없이 네트워크와 분기될 수 있으므로, 의존하는 노드에는 절대 사용하지 마세요. 메인넷이나 테스트넷에서 노드 또는 밸리데이터를 실행하려면, 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json` 또는 `.../testnet/latest.json`)에 명시된 **릴리스 바이너리**를 설치하세요. [노드 실행하기](/developer-guide/running-a-node)와 [밸리데이터 실행하기](/developer-guide/running-a-validator)를 참고하세요.
 :::
 
 ## 사전 요구 사항
@@ -106,11 +106,11 @@ CGO_ENABLED=1 go test ./x/svm/... -count=1 -v
 빌드가 성공한 후, 바이너리를 검증하세요:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` 명령은 오류 없이 `~/.qorechaind/`에 제네시스 파일과 노드 구성을 생성해야 합니다. 위 예시는 **`qorechain-diana`** 테스트넷에 대해 초기화합니다. 메인넷의 경우, 운영 중인 네트워크인 `--chain-id qorechain-vladi`로 대체하세요(노드 릴리스 **v3.2.1**).
+`init` 명령은 오류 없이 `~/.qorechaind/`에 제네시스 파일과 노드 구성을 생성해야 합니다. 위 예시는 **`qorechain-diana`** 테스트넷에 대해 초기화합니다. 메인넷의 경우, 운영 중인 네트워크인 `--chain-id qorechain-vladi`로 대체하세요(노드 릴리스 **v3.2.3**).
 
 ## Docker 빌드
 

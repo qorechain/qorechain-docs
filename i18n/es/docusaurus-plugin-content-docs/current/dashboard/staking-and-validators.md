@@ -56,6 +56,10 @@ Las cuatro acciones están en la página **Billetera** (`/wallet`), no en la pá
 8. El panel ahora muestra **Apruébalo en QoreX** con un enlace **Abrir QoreX** y un ID de solicitud. QoreX te mostrará el validador y el importe antes de firmar — no se envía nada hasta que lo apruebes allí. Si se detecta la extensión de navegador de QoreX, también se ofrece un botón **Aprobar en la extensión del navegador**.
 9. Abre QoreX (el enlace/deeplink hace esto) y aprueba la delegación. QoreX construye, firma y transmite la transacción; el panel nunca ve tu clave.
 
+:::note El staking con bloqueo temporal es solo de testnet
+Existe un módulo opcional de staking con bloqueo temporal únicamente en la testnet (cadena v3.2.4) — consulta [Staking con bloqueo temporal](/user-guide/staking-and-delegation#time-locked-staking). Todavía no está en mainnet (la propuesta de gobernanza 13 de mainnet lo aplicaría en la altura 3,742,566), y ni el Panel ni QoreX tienen una pantalla para él. Las delegaciones hechas aquí son delegaciones ordinarias sin bloqueo; la única espera es la desvinculación de 21 días al salir.
+:::
+
 ### Redelegar {#redelegate}
 
 El panel en sí no tiene un panel dedicado de Redelegar — pero ya no lo necesitas. **QoreX ahora mueve el stake entre validadores directamente** (app 1.0.8+ y extensión 0.2.6+): sin espera de desvinculación de 21 días, sin recompensas perdidas, e incluso puede repartir un movimiento entre varios validadores de destino en una sola transacción. Abre **Stake** en QoreX, toca el validador que quieres dejar y elige a dónde debe ir el stake — consulta [Mover stake entre validadores](/qorex/portfolio-and-staking#move-stake) para el recorrido completo. Esta es una mejor solución que cualquier cosa que el propio contrato de solicitud del panel pudiera ofrecer, así que usa QoreX directamente para esto en lugar de la solución alternativa de abajo.

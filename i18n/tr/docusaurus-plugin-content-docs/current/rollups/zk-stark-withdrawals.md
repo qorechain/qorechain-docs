@@ -10,7 +10,7 @@ sidebar_position: 5
 Bu sayfa birbiriyle ilişkili iki konuyu kapsar: ZK ile çözümlenen (ZK-settled) rollup'lar tarafından kullanılan **ZK kanıt sistemleri** (`snark` ve `stark`) ve bir yığın (batch) sonuçlandırıldığında (finalized) fonları bir rollup'tan QoreChain'e geri taşıyan **L2 → L1 para çekme akışı**.
 
 :::caution Erken aşama yeteneği
-Henüz hiçbir ağda rollup oluşturulmadığından, burada açıklanan kanıt doğrulaması ve para çekme akışı canlı bir rollup üzerinde denenmemiştir. SNARK doğrulaması mevcuttur ancak `create-rollup` ile oluşturulan bir rollup henüz bir ZK yığınını sonuçlandıramaz ve STARK doğrulaması deneyseldir. **`qorechain-diana`** testnet'inde doğrulayın ve mainnet'te üretim düzeyinde sağlamlaştırılmış (production-hardened) garantiler varsaymayın.
+Henüz hiçbir ağda rollup oluşturulmadığından (20 Ekim 2026 itibarıyla kontrol edildi), burada açıklanan kanıt doğrulaması ve para çekme akışı canlı bir rollup üzerinde denenmemiştir. Para çekme işlemleri ana ağda yalnızca v3.2.3'ten itibaren (yükseklik 3,662,051, 20 Ekim 2026) başarılı olabilir; o tarihte rollup başına emanet defteri (escrow ledger) canlıya geçti ([Fonlar nereden gelir](#where-the-funds-come-from) bölümüne bakın); ondan önce her para çekme işlemi başarısız oluyordu. SNARK doğrulaması mevcuttur ancak `create-rollup` ile oluşturulan bir rollup henüz bir ZK yığınını sonuçlandıramaz ve STARK doğrulaması deneyseldir. **`qorechain-diana`** testnet'inde doğrulayın ve mainnet'te üretim düzeyinde sağlamlaştırılmış (production-hardened) garantiler varsaymayın.
 :::
 
 ---
@@ -52,7 +52,7 @@ Yığınların nasıl gönderildiği ve sonuçlandırıldığı — optimistic r
 
 ## Bir para çekme işlemini yürütme: `execute-withdrawal`
 
-`execute-withdrawal` komutu, sonuçlandırılmış bir yığının para çekme köküne karşı bir L2 → L1 para çekme işlemini sonuçlandırır. Bir para çekme yaprağının o kökte işlendiğini kanıtlar ve alıcıya rdk modül emanetinden (escrow) ödeme yapar. Bu eylem **izinsizdir (permissionless)** — herkes geçerli bir kanıt gönderebilir. Her yerel hat (native-lane) işlemi gibi hibrit kuantum sonrası ortak imzaya (co-signature) ihtiyaç duyar; bu yüzden `--generate-only` ile oluşturun ve cosign edin (bkz. [Bir Rollup Dağıtma](/rollups/deploying-a-rollup)). Para çekme işlemleri henüz canlı bir rollup üzerinde denenmemiştir; akışı test edilmemiş olarak değerlendirin.
+`execute-withdrawal` komutu, sonuçlandırılmış bir yığının para çekme köküne karşı bir L2 → L1 para çekme işlemini sonuçlandırır. Bir para çekme yaprağının o kökte işlendiğini kanıtlar ve alıcıya rdk modül emanetinden (escrow) ödeme yapar. Bu eylem **izinsizdir (permissionless)** — herkes geçerli bir kanıt gönderebilir. Her yerel hat (native-lane) işlemi gibi hibrit kuantum sonrası ortak imzaya (co-signature) ihtiyaç duyar; bu yüzden `--generate-only` ile oluşturun ve cosign edin (bkz. [Bir Rollup Dağıtma](/rollups/deploying-a-rollup)). Para çekme işlemleri henüz canlı bir rollup üzerinde denenmemiştir; akışı test edilmemiş olarak değerlendirin. Bir ücret ödemeden önce şunları kontrol edin, çünkü aksi halde zincir işlemi reddeder: birim (denom) tam olarak `uqor` olmalı, miktar pozitif olmalı, kanıt en fazla 64 seviyeli olmalı ve her kardeş tam olarak 32 bayt olmalı, gönderen ve alıcı geçerli `qor1…` adresleri olmalı, yığın sonuçlandırılmış olmalı ve bir `withdrawals_root` işlemiş olmalı, rollup durdurulmamış olmalı ve o para çekme yaprağı daha önce ödenmemiş olmalıdır.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -96,7 +96,7 @@ RDK'nın genel `binaryMerkleRoot` / `binaryMerkleProof` yardımcıları varsayı
 
 ### Fonlar nereden gelir {#where-the-funds-come-from}
 
-Bir para çekme işlemi, **rollup'ın kendi emanete alınmış stake'inden** (stake eksi oluşturma yakması) ödenir. Modül rollup başına bir defter tutar; böylece bir rollup için kanıtlanan bir para çekme işlemi başka bir rollup'ın stake'inden ödenemez. Modülde L1 → L2 para yatırma mesajı yoktur, bu nedenle bu, kullanıcı fonlarının bir köprüsü değildir.
+Bir para çekme işlemi, **rollup'ın kendi emanete alınmış stake'inden** (stake eksi %1'lik oluşturma yakması) ödenir. Tüm rollup'ların emaneti tek bir havuzlanmış modül bakiyesinde durur ve **v3.2.3**'ten beri rollup başına bir **emanet defteri (escrow ledger)**, her rollup'ın neyi elinde tuttuğunun hesabıdır: `create-rollup` onu rollup'ın tuttuğu emanetle alacaklandırır, bir para çekme işlemi veya hile-kanıtı ödülü ondan ödenir ve ona borç yazılır, ve rollup'ın hâlâ elinde tuttuğundan büyük bir para çekme işlemi emanet yetersiz hatasıyla reddedilir. `stop-rollup` yalnızca kalanı iade eder ve defteri sıfırlar; durdurulmuş bir rollup başka para çekme işlemi ödemez. Bu nedenle bir rollup için kanıtlanan bir para çekme işlemi başka bir rollup'ın stake'inden ödenemez. Rollup sorguları `escrow_balance` taşır (o rollup için hâlâ tutulan uqor). Modülde L1 → L2 para yatırma mesajı yoktur, bu nedenle bu, kullanıcı fonlarının bir köprüsü değildir.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Bir yığını çözümleyin.** Rollup operatörü, `submit-batch` ile bir çözüm yığını gönderir. Yığın, giden L2 → L1 mesajları üzerinde bir para çekme kökü işleyebilir.
-2. **Sonuçlandırın.** Yığın, rollup'ın çözüm moduna göre sonuçlandırılır — `zk` için geçerli kanıt doğrulamasıyla veya `optimistic` için itiraz penceresinden sonra (bu sırada `challenge-batch` ona itiraz edebilir).
+2. **Sonuçlandırın.** Yığın, rollup'ın çözüm moduna göre sonuçlandırılır — `zk` için geçerli kanıt doğrulamasıyla veya `optimistic` için itiraz penceresinden sonra (bu sırada `challenge-batch` ona itiraz edebilir). Ana ağda optimistic pencere varsayılan olarak 100,800 bloktur; yalnızca testnet'te (v3.2.4) pencere, 8,337,253 yüksekliğinden itibaren gönderilen yığınlar için blok zamanının saniyesi cinsinden ölçülür.
 3. **Kanıtlayın ve yürütün.** Sonuçlandırıldığında, herkes belirli para çekme yaprağı için Merkle dahil etme kanıtıyla (`--proof`) `execute-withdrawal`'ı gönderir. Modül, dahil etmeyi sonuçlandırılmış yığının para çekme köküne karşı doğrular ve alıcıya emanetten ödeme yapar.
 
 Adım 3 izinsiz ve kanıt tabanlı olduğundan, onu taşıyan yığın sonuçlandırıldıktan sonra bir para çekme işlemi rollup operatörünün işbirliğine bağlı değildir.

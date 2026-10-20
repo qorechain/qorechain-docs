@@ -10,7 +10,7 @@ sidebar_position: 1
 Acest ghid acoperă token-ul QOR, modul de trimitere și primire a token-urilor, interogarea soldurilor și înțelegerea modelului de distribuire a comisioanelor pe QoreChain.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 29 iunie 2026, pe linia v3.2 (versiunea de nod **v3.2.1**; testnet-ul rulează **v3.2.2**) — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.3**; testnet-ul rulează **v3.2.4** — înlocuiți chain ID-ul și endpoint-urile de mainnet din pagina **Connecting to Mainnet** atunci când efectuați tranzacții pe mainnet.
 :::
 
 :::caution Semnați cu `tx pqc cosign`
@@ -92,13 +92,13 @@ Comisioanele de tranzacție pe QoreChain sunt distribuite către cinci destinaț
 | **Ars**         | 30%   | Eliminat permanent din ofertă                                     |
 | **Trezorerie**  | 20%   | Finanțează dezvoltarea protocolului și granturile ecosistemului   |
 | **Stakeri**     | 10%   | Distribuit proporțional tuturor delegatorilor                     |
-| **Light Nodes** | 3%    | Rezervat pentru recompensele light node-urilor (vezi nota de mai jos) |
+| **Light Nodes** | 3%    | Recompensele light node-urilor (vezi nota de mai jos)             |
 
-Împărțirea se aplică tuturor sumelor care intră în colectorul de comisioane, care deține comisioanele de tranzacție și emisia de staking creată la fiecare epocă. Cota light node-urilor se acumulează într-o rezervă; înregistrarea pentru recompensele light node-urilor nu este încă deschisă, astfel încât în prezent niciun nod nu este plătit din ea (vezi [Light Node](/light-node/overview)). De la upgrade-ul v3.2.0, cota stakerilor este plătită ca o recompensă obișnuită de staking (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Împărțirea se aplică tuturor sumelor care intră în colectorul de comisioane, care deține comisioanele de tranzacție și emisia de staking creată la fiecare epocă. Cota light node-urilor se acumulează în rezerva de recompense pentru light node-uri; înregistrarea este deschisă și condiționată de licență, dar încă nu s-a înregistrat niciun light node, astfel încât în prezent niciun nod nu este plătit din ea (vezi [Light Node](/light-node/overview#reward-program-status)). De la upgrade-ul v3.2.0, cota stakerilor este plătită ca o recompensă obișnuită de staking (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canale de ardere
 
-Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin oricare dintre ele este eliminat permanent din circulație. Pe mainnet, până acum doar canalul comisioanelor de gaz a înregistrat arderi; celelalte sunt definite, dar nu au înregistrat nimic.
+Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin oricare dintre ele este eliminat permanent din circulație. Pe mainnet, până acum doar canalele comisioanelor de gaz și ale tranzacțiilor eșuate au înregistrat arderi; celelalte sunt definite, dar nu au înregistrat nimic. Testnet-ul înregistrează o a treisprezecea sursă, `staking_tier_penalty`, pentru modulul său opțional de staking cu blocare în timp.
 
 | Canal              | Descriere                                                                        |
 | ------------------ | -------------------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ Modulul de ardere al QoreChain definește 12 surse de ardere. QOR ars prin orica
 | `ai_service`       | 50% din comisioanele serviciilor AI sunt arse (inactiv: comisioanele serviciilor AI nu sunt live) |
 | `bridge_fee`       | 100% din comisioanele bridge-ului sunt arse (inactiv: bridge-ul nu este live)     |
 | `treasury_buyback` | Răscumpărare și ardere periodică din trezorerie                                   |
-| `failed_tx`        | Gazul tranzacțiilor eșuate; aplicat de lanț începând cu v3.2.2 (deocamdată doar pe testnet) |
+| `failed_tx`        | 10% din gazul tranzacțiilor eșuate; aplicat de lanț începând cu v3.2.2            |
 | `xqore_penalty`    | Penalizările de ieșire anticipată xQORE direcționate prin ardere (xQORE nu este live) |
 | `auto_buyback`     | Arderi automate la nivel de protocol (inactiv)                                    |
 | `tge`              | Rezervat; arderea TGE a avut loc înainte de genesis, iar acest canal nu înregistrează nimic |

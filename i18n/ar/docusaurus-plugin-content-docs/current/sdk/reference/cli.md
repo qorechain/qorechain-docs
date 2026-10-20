@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> منشورة على npm باسم `create-qorechain-dapp` (`0.8.0`). تثبّت ملفات
-> `package.json` المُنشأة `@qorechain/sdk` / `@qorechain/evm` على `^0.3.0`، وهو ما
-> يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة. بعد
-> إنشاء الهيكل، نفّذ `npm i @qorechain/sdk@latest` (و`npm i @qorechain/evm@latest`
-> لقالب EVM).
+> منشورة على npm باسم `create-qorechain-dapp` (`0.9.0`). تعتمد ملفات
+> `package.json` المُنشأة على `@qorechain/sdk` ‏`^0.9.0` (وقالب EVM على
+> `@qorechain/evm` ‏`^0.8.0`). كان الإصدار 0.8.0 من أداة الهيكلة يكتب نطاقات `^0.3.0`،
+> وهو ما يحلّه npm إلى إصدار 0.3 لا يستطيع التوقيع للشبكات الحيّة؛ وإن كنت قد
+> أنشأت الهيكل بـ 0.8.0، فنفّذ `npm i @qorechain/sdk@latest`.
 
 ## القوالب
 
@@ -32,6 +32,13 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | عقد `Counter` بلغة Solidity + سكربت نشر/تفاعل بـ viem (`@qorechain/evm`). |
 | `fullstack-web` | تطبيق لامركزي بـ Vite + React + TypeScript يقرأ الأرصدة واقتصاديات الرمز (`@qorechain/sdk`). |
 | `rollup-app` | تطبيق rollup + سلسلة جانبية/paychain يستخدم `RollupClient` ومساعد multilayer (`@qorechain/sdk`). |
+
+يُجري قالب `rollup-app` (0.9.0) تشغيلًا تجريبيًا افتراضيًا. ومع `QORE_BROADCAST=1`
+يشتق مفتاح ML-DSA-87 للحساب من عبارة الاسترجاع، ويسجّله مرة واحدة ويوقّع
+توقيعًا هجينًا، وهو ما لم يكن القالب السابق قادرًا عليه. وقيم الـ rollup النموذجية فيه
+(`profile: "default"`، والحصة) توضيحية: خذ أسماء الملفات التعريفية الحقيقية والحصة
+من [الإعدادات المسبقة](/rollups/preset-profiles) ومن معاملات الوحدة الحيّة
+قبل أن تبثّ.
 
 يقرأ قالب `fullstack-web` نظرة اقتصاديات الرمز عبر `client.qor`، وهو
 استدعاء JSON-RPC من نوع `qor_` لا تخدمه نقاط النهاية العامة، لذا تعرض تلك اللوحة خطأً على الشبكة الرئيسية

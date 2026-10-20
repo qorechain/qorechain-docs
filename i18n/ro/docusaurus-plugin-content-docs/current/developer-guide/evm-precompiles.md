@@ -24,7 +24,7 @@ Cele șase precompilate QoreChain de mai jos sunt **compilate în nod, dar înc�
 | PRISM Consensus Params | `0x…0C01` | Neactiv | Neactiv |
 | CrossVM Bridge | `0x…0901` | Neactiv | Neactiv |
 
-Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM doar după ce este reconstruită cu journaling, verificări de valoare și cu circuit breaker-ul cross-VM. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
+Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar versiunea v3.2.4 de pe testnet nu a schimbat acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
 
 Verifică singur lista curentă (goală înseamnă că niciunul nu e activ):
 
@@ -58,7 +58,7 @@ Cifrele de gaz sunt cele pe care nodul le taxează după ce un precompilat este 
 | **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
 | **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
 | **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
-| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40.000          | Verifică dacă un transfer este marcat drept anomal  |
+| **AI Anomaly Check**     | `0x0000000000000000000000000000000000000B02` | 40.000          | Verifică dacă un transfer este marcat drept anormal |
 | **PRISM Consensus Params** | `0x0000000000000000000000000000000000000C01` | 1.500        | Citește parametrii de consens curenți, ajustați de PRISM |
 
 ---
@@ -271,10 +271,10 @@ contract ConsensusReader {
 ### CrossVM Bridge — Apelarea CosmWasm din EVM
 
 :::warning
-Precompilatul CrossVM bridge **nu** va fi activat în forma sa actuală. Este reconstruit astfel încât un revert în contractul apelant să anuleze și partea CosmWasm, transferurile de valoare să fie respinse, reintrarea EVM-la-EVM să fie refuzată și circuit breaker-ul cross-VM să se aplice. Până atunci nu există o cale sincronă de la EVM la CosmWasm; vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru calea de mesaj `MsgCrossVMCall`, care este ea însăși oprită pe mainnet în prezent.
+Precompilatul CrossVM bridge **nu este activ** pe nicio rețea. Binarul, începând cu v3.2.3, conține o versiune întărită a acestuia care: refuză un `STATICCALL`; rulează apelul imbricat pe un contor de gaz limitat de ceea ce îi mai rămâne frame-ului apelant și îl jurnalizează, astfel încât un revert în contractul apelant anulează și partea CosmWasm; ajunge doar la ținte CosmWasm din lista permisă (țintele EVM sunt refuzate); și respectă circuit breaker-ul cross-VM. Până când o actualizare aprobată prin guvernanță îl activează, nu există o cale sincronă de la EVM la CosmWasm; vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru calea de mesaj `MsgCrossVMCall`, care este ea însăși oprită pe mainnet în prezent.
 :::
 
-Nodul decodează calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 octeți, apoi argumentele codificate ABI). Utilizarea documentată este de la EVM la CosmWasm; ABI-ul se poate schimba odată cu reconstrucția.
+Nodul decodează calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 octeți, apoi argumentele codificate ABI). Singura utilizare acceptată este de la EVM la CosmWasm (`targetVM` = 1); ABI-ul se mai poate schimba înainte de activare.
 
 **Cost de gaz:** 50.000 de bază + 4 gaz per octet de date de intrare, plus costul de execuție al contractului țintă. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
 

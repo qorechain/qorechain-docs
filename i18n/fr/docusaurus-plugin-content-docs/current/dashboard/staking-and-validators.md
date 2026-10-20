@@ -56,6 +56,10 @@ Ces quatre actions se trouvent toutes sur la page **Portefeuille** (`/wallet`), 
 8. Le panneau affiche alors **Approve it in QoreX** avec un lien **Open QoreX** et un identifiant de demande. QoreX vous montrera le validateur et le montant avant la signature — rien n'est envoyé tant que vous ne l'approuvez pas là-bas. Si l'extension de navigateur QoreX est détectée, un bouton **Approve in the browser extension** est également proposé.
 9. Ouvrez QoreX (le lien/deeplink s'en charge) et approuvez la délégation. QoreX construit, signe et diffuse (broadcast) la transaction ; le dashboard ne voit jamais votre clé.
 
+:::note Le staking à verrouillage temporel n'existe que sur le testnet
+Un module facultatif de staking à verrouillage temporel existe uniquement sur le testnet (chaîne v3.2.4) — voir [Staking à verrouillage temporel](/user-guide/staking-and-delegation#time-locked-staking). Il n'est pas encore sur le mainnet (la proposition de gouvernance 13 du mainnet l'appliquerait à la hauteur 3 742 566), et ni le Dashboard ni QoreX n'ont d'écran pour lui. Les délégations effectuées ici sont des délégations ordinaires, sans verrouillage ; la seule attente est la déliaison de 21 jours à la sortie.
+:::
+
 ### Redéléguer {#redelegate}
 
 Le dashboard lui-même ne dispose pas d'un panneau Redelegate dédié — mais ce n'est plus nécessaire. **QoreX déplace désormais lui-même le stake directement d'un validateur à un autre** (application 1.0.8+ et extension 0.2.6+) : pas d'attente de déliaison de 21 jours, pas de récompenses perdues, et il peut même répartir un déplacement sur plusieurs validateurs de destination en une seule transaction. Ouvrez **Stake** dans QoreX, appuyez sur le validateur que vous souhaitez quitter, et choisissez la destination du stake — voir [Déplacer un stake entre validateurs](/qorex/portfolio-and-staking#move-stake) pour le déroulé complet. C'est une meilleure solution que tout ce que le contrat de requête propre au dashboard pourrait offrir : utilisez donc directement QoreX pour cela plutôt que le contournement ci-dessous.

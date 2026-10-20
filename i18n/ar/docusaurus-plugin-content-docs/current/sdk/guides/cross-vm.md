@@ -28,7 +28,10 @@ sidebar_position: 4
 - تستدعي مساعِدات القراءة المُنمَّطة عبر REST الواردة أدناه مسارات لا تخدمها البوابة العامة.
   اقرأ الرسائل باستخدام `connectQueryClients(rpc).crossvm` بدلًا من ذلك.
 - مثل كل معاملة على المسار الأصلي (Native)، يجب أن تحمل استدعاءات cross-VM التوقيع
-  الهجين (انظر [الحسابات وتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  الهجين: صِل عميل التوقيع بزوج مفاتيح الحساب
+  (`client.connectTx(signer, { pqcKeypair })`، SDK 0.9.0) كي يوقّع عميل cross-VM
+  توقيعًا هجينًا (انظر [الحسابات وتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
+  وتوقّعها الإصدارات السابقة لـ 0.9.0 توقيعًا كلاسيكيًا وترفضها الشبكات العامة.
 :::
 
 ## استدعاءات cross-VM موحّدة
@@ -42,7 +45,7 @@ value }` يدويًا أو ترميز حمولة بنفسك. مُرسِل الع
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

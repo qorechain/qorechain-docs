@@ -22,6 +22,8 @@ QCAIA está diseñado para ayudar a los recién llegados y a los miembros de la 
 
 Si una pregunta queda fuera de lo que QCAIA conoce, lo dirá en lugar de adivinar. QCAIA es un ayudante comunitario, no asesoramiento financiero ni de inversión.
 
+Las respuestas de QCAIA siguen la documentación pública de QoreChain, por lo que pueden ir por detrás de una versión. Para saber qué está activo ahora mismo en cada red (la mainnet `qorechain-vladi` ejecuta v3.2.3 y la testnet `qorechain-diana` ejecuta v3.2.4 a fecha de 20 de octubre de 2026), consulta [Redes](/appendix/networks) y [Historial de versiones](/appendix/version-history), o consulta un nodo directamente. Varias partes de la plataforma sobre las que se le pregunta a QCAIA, como el puente, los pools del AMM, los rollups y xQORE, se describen en la documentación como diseñadas pero todavía no están activas; si QCAIA da una respuesta distinta, confía en la documentación y en la red en vivo.
+
 ## Soporte multilingüe
 
 QCAIA entiende preguntas en muchos idiomas. Si preguntas en un idioma distinto del inglés, traduce automáticamente tu pregunta, la responde y contesta — de modo que puedes usar tu propio idioma y aun así obtener una respuesta clara. Consulta [Ejemplos](/qcaia/examples) para ver un ejemplo práctico en un idioma distinto del inglés.
@@ -38,7 +40,7 @@ QCAIA se encuentra en **beta**. Mejora continuamente y, en ocasiones, puede no t
 
 | Plataforma | Cómo acceder | Guía |
 | --- | --- | --- |
-| **Discord** | Únete a **[discord.gg/qorechain](https://discord.gg/qorechain)** y usa comandos de barra | [Usar QCAIA en Discord](/qcaia/discord) |
+| **Discord** | Únete a **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** y usa comandos de barra | [Usar QCAIA en Discord](/qcaia/discord) |
 | **Telegram** | Únete a **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** y menciona al bot | [Usar QCAIA en Telegram](/qcaia/telegram) |
 
 Elige tu plataforma arriba para aprender exactamente cómo preguntar, o ve directamente a la página de [Ejemplos](/qcaia/examples) para ver a QCAIA en acción.

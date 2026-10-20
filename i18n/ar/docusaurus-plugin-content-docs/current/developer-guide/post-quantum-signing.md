@@ -50,10 +50,10 @@ sidebar_position: 8
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (الاستيراد باسم `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (مكتبة ساكنة + ترويسة) | البناء من [المستودع](https://github.com/qorechain/qorechain-pqc) | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.1` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info التوفر
-روابط JavaScript وRust وPython وGo وJava اللغوية كلها **منشورة** بالإصدار **0.2.1** — ثبّتها مباشرة من npm وcrates.io وPyPI ووكيل وحدات Go وMaven Central باستخدام الأوامر أعلاه. توزيعة Python تُثبَّت باسم `qorechain-pqc` لكنها **تُستورَد باسم `qorpqc`**. حزمة **Java** متوفرة على Maven Central باسم `io.github.qorechain:qorechain-pqc:0.2.1` (بخلفية Bouncy Castle). أضاف الإصدار **0.2.0** الدالة `hybridSignBytes` الواعية بالإصدار (أدناه)، وصحّح الإصدار **0.2.1** اسم الترقية الذي يحدد الانتقال إلى v2 على الشبكة الرئيسية، لذا استخدم 0.2.1 أو أحدث. ربط **C** هو مكتبة ساكنة + ترويسة تبنيها بنفسك من [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
+روابط JavaScript وRust وPython وGo وJava اللغوية كلها **منشورة** بالإصدار **0.2.2** (npm وcrates.io وPyPI ووكيل وحدات Go باسم `v0.2.2` وMaven Central؛ جرى التحقق في 21 أكتوبر 2026). ثبّتها باستخدام الأوامر أعلاه. توزيعة Python تُثبَّت باسم `qorechain-pqc` لكنها **تُستورَد باسم `qorpqc`**. حزمة **Java** هي `io.github.qorechain:qorechain-pqc:0.2.2` (بخلفية Bouncy Castle). أضاف الإصدار **0.2.0** الدالة `hybridSignBytes` الواعية بالإصدار (أدناه)، وصحّح الإصدار **0.2.1** اسم الترقية الذي يحدد الانتقال إلى v2 على الشبكة الرئيسية، وصحّح الإصدار **0.2.2** الوثائق والتعليقات المتعلقة بالتوقيع المُحوَّط مقابل الحتمي (تقبل السلسلة كليهما؛ وفي رابط JavaScript لم يتغير في الشيفرة سوى ثابت الإصدار)، لذا استخدم 0.2.1 أو أحدث. ربط **C** هو مكتبة ساكنة + ترويسة تبنيها بنفسك من [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc).
 :::
 
 ## التوقيع الحتمي (الافتراضي) {#deterministic-signing}
@@ -68,23 +68,62 @@ sidebar_position: 8
 
 ## تسجيل مفتاحك {#pqc-key-registration}
 
-يسجّل كل حساب مفتاحه العام ML-DSA-87 **مرة واحدة وبشكل صريح**. لا يوجد تسجيل تلقائي: فالمفتاح العام المضمَّن في معاملة هجينة لاحقة (مثل خيار `includePqcPublicKey` في SDK) يُحمَل في الامتداد لكنه **لا** يسجّله. التسجيل هو معاملة مسار Cosmos الوحيدة التي يجوز توقيعها توقيعًا كلاسيكيًا، بحيث يتمكن الحساب الجديد كليًا من تهيئة مفتاحه الأول. نفّذه باستخدام `qorechaind` الخاص بالإصدار الرسمي (فالملف التنفيذي المبني من المصدر العام لا يستطيع التوقيع؛ راجع [البناء من المصدر](/developer-guide/building-from-source))، أو باستخدام QoreX، أو باستخدام `ensurePqcRegistered` في SDK:
+يسجّل كل حساب مفتاحه العام ML-DSA-87 **مرة واحدة وبشكل صريح**. لا يوجد تسجيل تلقائي: فالمفتاح العام المضمَّن في معاملة هجينة لاحقة (مثل خيار `includePqcPublicKey` في SDK) يُحمَل في الامتداد لكنه **لا** يسجّله. **التسجيل الأول** هو معاملة مسار Cosmos الوحيدة التي يجوز توقيعها توقيعًا كلاسيكيًا، بحيث يتمكن الحساب الجديد كليًا من تهيئة مفتاحه الأول؛ أما الحساب الذي لديه مفتاح بالفعل فيجب أن يوقّع توقيعًا هجينًا كل رسالة مفاتيح لاحقة. نفّذه باستخدام `qorechaind` الخاص بالإصدار الرسمي (فالملف التنفيذي المبني من المصدر العام لا يستطيع التوقيع؛ راجع [البناء من المصدر](/developer-guide/building-from-source))، أو باستخدام QoreX، أو باستخدام `ensurePqcRegistered` في SDK:
 
 ```bash
 # 1. Create a key. It is stored unencrypted under ~/.qorechaind/pqc/mypqc.dilithium (mode 0600) and the public key hex is printed.
 qorechaind tx pqc gen-key mypqc
 
-# 2. Register the public key on your account (classical-signed).
-qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid \
+# 2. Register the public key on your account (classical-signed, because the account has no key yet).
+#    --pqc-key mypqc also attaches the optional proof of possession (see below).
+qorechaind tx pqc register-key-v2 dilithium5 <printed-pubkey-hex> hybrid --pqc-key mypqc \
   --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor -y
 
 # 3. Verify.
 qorechaind query pqc account <address>
 ```
 
-حدّد `--gas` صراحةً: فالمفتاح العام البالغ 2,592 بايتًا قد يتجاوز الغاز الافتراضي البالغ 200,000 (استخدمت تسجيلات الشبكة الرئيسية ما يقارب 220,000 إلى 350,000)، ويجب ألا تقل الرسوم عن الغاز × 0.1 uqor، لذا يتطلب `--gas 600000` رسومًا قدرها `--fees 60000uqor` أو أكثر. الصيغة القديمة `qorechaind tx pqc register-key <pubkey-hex> hybrid` مكافئة لـ Dilithium-5. بعد ذلك، ابنِ كل معاملة على مسار Cosmos باستخدام `--generate-only` ووقّعها باستخدام `qorechaind tx pqc cosign`. ملف المفتاح هو مفتاح التوقيع ما بعد الكمومي للحساب: كل من يستطيع قراءته يمكنه التوقيع المصاحب عن الحساب مع المفتاح الكلاسيكي، لذا احتفظ بنسخة احتياطية منه كما تفعل مع العبارة الاستذكارية (ويمكن إعادة اشتقاقه من العبارة الاستذكارية، انظر أدناه).
+حدّد `--gas` صراحةً: فالمفتاح العام البالغ 2,592 بايتًا قد يتجاوز الغاز الافتراضي البالغ 200,000 (استخدمت تسجيلات الشبكة الرئيسية ما يقارب 220,000 إلى 310,000؛ ويحمل التسجيل المصحوب بإثبات امتلاك توقيعًا إضافيًا واحدًا بحجم 4,627 بايتًا، أي نحو 46,000 غاز إضافي)، ويجب ألا تقل الرسوم عن الغاز × 0.1 uqor، لذا يتطلب `--gas 600000` رسومًا قدرها `--fees 60000uqor` أو أكثر. الصيغة القديمة `qorechaind tx pqc register-key <pubkey-hex> hybrid` مكافئة لـ Dilithium-5. بعد ذلك، ابنِ كل معاملة على مسار Cosmos باستخدام `--generate-only` ووقّعها باستخدام `qorechaind tx pqc cosign`. ملف المفتاح هو مفتاح التوقيع ما بعد الكمومي للحساب: كل من يستطيع قراءته يمكنه التوقيع المصاحب عن الحساب مع المفتاح الكلاسيكي، لذا احتفظ بنسخة احتياطية منه كما تفعل مع العبارة الاستذكارية (ويمكن إعادة اشتقاقه من العبارة الاستذكارية، انظر أدناه).
 
 المفتاح المسجَّل هو أيضًا أول متطلبَين اثنين لإرسال معاملات EVM؛ والثاني هو [نافذة تفويض EVM](/developer-guide/evm-development#evm-window) المفتوحة.
+
+### ما تتحقق منه السلسلة عند التسجيل (الشبكة الرئيسية v3.2.3 وما بعده) {#key-integrity}
+
+منذ ترقية v3.2.3 (طُبِّقت على الشبكة الرئيسية عند الارتفاع 3,662,051 في 20 أكتوبر 2026) تتحقق السلسلة من المفتاح نفسه، لا من أن طوله صحيح فحسب:
+
+| القاعدة | الرفض (النطاق `pqc`) |
+| --- | --- |
+| يجب أن يكون `key_type` إما `hybrid` أو `pqc_only`؛ إذ لا يسجّل `classical_only` أي مفتاح ما بعد كمومي وسيترك الحساب عاجزاً عن التوقيع مجدداً | الرمز 230 |
+| يُرفض أي مفتاح لا يوفّر أي حماية ما بعد كمومية (مفتاح منحلّ لا يحتاج أحد إلى سر له)، سواء عند التسجيل أو التدوير أو الترحيل | الرمز 230 |
+| لا يمكن تسجيل مفتاح سبق للحساب استخدامه مرة أخرى ولا التدوير إليه مجدداً (يتذكّر الحساب المفاتيح المسحوبة من الخدمة) | الرمز 232 |
+| يجب أن يكون المفتاح الكلاسيكي في التسجيل هو مفتاح secp256k1 المضغوط الخاص بالمُوقِّع نفسه (منذ v3.2.2) | الرمز 45 |
+| إثبات الامتلاك الاختياري، إن وُجد، يجب أن يتحقق | الرمز 231 |
+| الحساب الذي يحتفظ بمفتاح بالفعل يجب أن يوقّع توقيعاً هجيناً أي رسالة مفاتيح أخرى (تسجيل، ترحيل)؛ ولا يجوز أن يكون كلاسيكياً إلا إصلاح سجل لا يحتوي على أي مفتاح صالح للاستخدام | الرمز 234 |
+| لا يجوز أن يؤدي إيقاف خوارزمية أو تعطيلها إلى ترك السلسلة دون خوارزمية توقيع نشطة | الرمز 233 |
+
+علاوة على ذلك، منذ v3.2.3، لا يمكن إرسال أي من رسائل المفاتيح (`MsgRegisterPQCKey` و`MsgRegisterPQCKeyV2` و`MsgRotatePQCKey` و`MsgMigratePQCKey`) نيابةً عن حساب عبر `authz`؛ ويمكن للمعاملة أن تحمل **امتداد توقيع هجين واحداً** على الأكثر؛ ولم يعد بإمكان الحساب الذي **ليس** له مفتاح مسجَّل أن يرفق امتداداً هجيناً لا يوجد ما يُتحقَّق منه مقابله (لا يجتاز إلا التسجيل، تماماً كما هي الحال دون أي امتداد).
+
+### إثبات الامتلاك (اختياري) {#proof-of-possession}
+
+يمكن للتسجيل أيضاً أن يثبت أن المُسجِّل يحوز السر الخاص بالمفتاح الجديد. يوقّع المفتاح الرسالة `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` (معرّف الخوارزمية هو `1` لـ ML-DSA-87؛ والمفتاح العام بصيغة سداسية عشرية بأحرف صغيرة) ويوضع التوقيع في الحقل `proof_of_possession` ضمن `MsgRegisterPQCKeyV2`. وفي سطر الأوامر، يبنيه `register-key-v2 ... --pqc-key <name>` ويرفقه. ومع TypeScript SDK بالإصدار 0.9.0، ترفق `ensurePqcRegistered` الإثبات بنفسها متى طبّقت الشبكة v3.2.3 (وتبني `signProofOfPossession` / `verifyProofOfPossession` إثباتاً وتتحقق منه يدوياً)؛ وتفعل `@qorechain/chain-bridge` 0.2.3 الشيء نفسه عند تمرير `cosmosRest`. أما `@qorechain/wallet-adapter` (0.4.0) وإصدارات SDK السابقة للإصدار 0.9.0 فلا ترفق إثباتاً، لذا فالتسجيل الذي يُجرى عبرها لا يحمل أياً منه، وما زالت السلسلة تقبله. تتحقق السلسلة من الإثبات **عند وجوده** وترفض التسجيل إذا لم يتحقق (الرمز 231)؛ أما التسجيل دون إثبات فما زال مقبولاً على الشبكة الرئيسية. ولأن الرسالة تسمّي السلسلة والخوارزمية والحساب والمفتاح، فإن إثباتاً صُنع لأحدها لا يثبت شيئاً بالنسبة لغيره.
+
+على الشبكة الاختبارية (v3.2.4، **للشبكة الاختبارية فقط**) يبيّن سجل الحساب ما إذا كان قد جرى التحقق من إثبات (`possession_proven`، في `GET /qorechain/pqc/v1/account/{address}`)، ويتطلب تسجيل مدقّق الجسر إثباتاً. وكلاهما غير موجود على الشبكة الرئيسية بعد؛ ومن شأن مقترح حوكمة الشبكة الرئيسية 13 أن يطبّق v3.2.4 عند الارتفاع 3,742,566.
+
+## رموز الرفض (النطاق `pqc`) {#pqc-codes}
+
+| الرمز | المعنى |
+| --- | --- |
+| 20 | التوقيع الهجين مطلوب: المعاملة لا تحمل أي امتداد PQC (لا يُعفى إلا التسجيل الأول، وإلغاء السجن (unjail) من حساب بلا مفتاح) |
+| 21 | لم يتحقق جزء ML-DSA-87، انظر [أدناه](#code-21) |
+| 26, 27, 28 | مسار EVM: لا توجد نافذة مفتوحة أو لا يوجد مفتاح / استُنفدت النافذة / حدود النافذة غير صالحة، انظر [تطوير EVM](/developer-guide/evm-development#evm-window) |
+| 45 | المفتاح الكلاسيكي في التسجيل ليس مفتاح secp256k1 المضغوط الخاص بالمُوقِّع نفسه |
+| 60, 61 | تفويض EIP-7702: لا توجد موافقة ما بعد كمومية على هذا التفويض / طلب التفويض غير صالح |
+| 62, 63 | لا توجد للحساب المفوَّض نافذة تغطي الإجراء / معاملة Ethereum تُنفَّذ على مسار EVM فقط |
+| 230 | مفتاح ضعيف أو تسجيل `classical_only` |
+| 231 | إثبات الامتلاك لا يتحقق |
+| 232 | سبق لهذا الحساب استخدام المفتاح |
+| 233 | لن تبقى أي خوارزمية توقيع نشطة |
+| 234 | صيانة المفاتيح من حساب لديه مفتاح تحتاج إلى التوقيع الهجين |
 
 ## استكشاف أخطاء رمز `pqc` رقم 21 (`hybrid_verify_failed`) وإصلاحها {#code-21}
 
@@ -147,7 +186,7 @@ const { msg, oldKeypair, newKeypair } = rotatePqcKeyMsgFromMnemonic({
 // Sign & broadcast `msg` with the account's normal hybrid signer, using `oldKeypair` for the envelope's PQC signature.
 ```
 
-بعد نجاح التدوير، يوقّع المفتاح الجديد (الرمز 0) ويُرفض المفتاح القديم (الرمز 21 في `pqc`).
+ترفض أدوات التدوير المساعدة في SDK 0.9.0 و`@qorechain/wallet-adapter` 0.4.0 الاشتقاق القديم بوصفه المفتاح **الجديد** (فهو غير مرتبط بالحساب)؛ ويمكن أن يبقى المفتاح القديم هو المفتاح السابق. بعد نجاح التدوير، يوقّع المفتاح الجديد (الرمز 0) ويُرفض المفتاح القديم (الرمز 21 في `pqc`). منذ v3.2.3 يرفض التدوير (مثل الترحيل) مفتاحاً جديداً لا يوفّر أي حماية ما بعد كمومية (الرمز 230) ومفتاحاً سبق للحساب استخدامه (الرمز 232)، ولا يمكن إرساله عبر `authz`.
 
 ## واجهة برمجية متسقة
 
@@ -223,7 +262,7 @@ pqc.MLDSA.Verify(pk, msg, sig) // true
 هناك ثلاث طرق لإنتاج هذا التوقيع الهجين:
 
 * **سطر الأوامر** — يُرفق `qorechaind tx pqc cosign` توقيع Dilithium-5 المصاحب بالمعاملة ويبثّها (بعد `qorechaind tx pqc gen-key` وتسجيل المفتاح). وهو جزء من الملف التنفيذي الرسمي فقط. راجع [أوامر المعاملات](/cli-reference/transaction-commands).
-* **حزمة QoreChain SDK** — تقوم `buildHybridTx` / `signAndBroadcastHybrid` (مرّر `rest` كي تُحدَّد صيغة بايتات التوقيع) بالعمل المكافئ في TypeScript وPython وGo وRust وJava؛ سجّل مفتاحك أولًا (انظر أعلاه). راجع [حسابات SDK وتوقيع PQC](/sdk/concepts/accounts-pqc).
+* **حزمة QoreChain SDK** — تقوم `buildHybridTx` / `signAndBroadcastHybrid` (مرّر `rest` كي تُحدَّد صيغة بايتات التوقيع) بالعمل المكافئ في TypeScript وPython وGo وRust وJava؛ وفي TypeScript توقّع `client.connectTx(signer, { pqcKeypair })` (SDK 0.9.0) كل معاملة توقيعاً هجيناً. سجّل مفتاحك أولًا (انظر أعلاه). راجع [حسابات SDK وتوقيع PQC](/sdk/concepts/accounts-pqc).
 * **`qorechain-pqc` مباشرة** — استخدم `hybridSignBytes` لتأطير بايتات التوقيع و`mldsa.sign` لإنتاج توقيع Dilithium-5، عندما تبني أدوات خارج SDK بإحدى اللغات الست المدعومة.
 
 ## تحسين البصمة على السلسلة

@@ -10,7 +10,7 @@ sidebar_position: 2
 This guide covers how to delegate QOR tokens to validators, redelegate between validators, unbond your stake, claim rewards, and understand which parts of QoreChain's staking design are live today.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 29 June 2026 on the v3.2 line (node release **v3.2.1**; the testnet runs **v3.2.2**) — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3**; the testnet runs **v3.2.4** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when staking on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -19,9 +19,9 @@ Mainnet and testnet require a hybrid post-quantum signature on every Cosmos-lane
 
 ## Is there a lock-in period? {#lock-in-period}
 
-**Today**, no — there's no term to pick, because staking isn't sold in fixed durations here the way it often is on an exchange. Delegating stays active with rewards flowing from the next block, for as long as you want, until you choose to undelegate; there's nothing expiring and nothing to renew. The **21-day unbonding period** you'll see referenced throughout this guide is not a lock-in you agree to up front — it only starts once you *ask* to undelegate, and only applies to the QOR you're taking out. Moving a delegation between validators (redelegate) skips that wait entirely, since the stake never leaves the bonded pool. The "loyalty" term in the [bonding curve](#bonding-curve) further down is part of QoreChain's design but is **not applied by the live chain today**, so how long you stay delegated does not change your reward rate.
+**On mainnet today**, no — there's no term to pick, because staking isn't sold in fixed durations here the way it often is on an exchange. Delegating stays active with rewards flowing from the next block, for as long as you want, until you choose to undelegate; there's nothing expiring and nothing to renew. The **21-day unbonding period** you'll see referenced throughout this guide is not a lock-in you agree to up front — it only starts once you *ask* to undelegate, and only applies to the QOR you're taking out. Moving a delegation between validators (redelegate) skips that wait entirely, since the stake never leaves the bonded pool. The "loyalty" term in the [bonding curve](#bonding-curve) further down is part of QoreChain's design but is **not applied by the live chain today**, so how long you stay delegated does not change your reward rate. An optional, time-locked form of staking exists on the testnet only; see [Time-locked staking (testnet only)](#time-locked-staking).
 
-This describes current chain behavior, not a permanent guarantee — a minimum staking period is a parameter governance could introduce in the future, the same way any other staking parameter on this page can change by vote. If that ever happens, the wallet will show the resulting wait (any minimum plus the 21-day unbonding) before you confirm a delegation, and this page will be updated to match.
+This describes current mainnet behavior, not a permanent guarantee — a minimum staking period is something governance could introduce in the future, the same way any other staking parameter on this page can change by vote. If that ever happens, the wallet will show the resulting wait (any minimum plus the 21-day unbonding) before you confirm a delegation, and this page will be updated to match.
 
 ---
 
@@ -119,7 +119,35 @@ qorechaind tx distribution withdraw-rewards <validator_address> \
   --gas 400000 --fees 40000uqor
 ```
 
-Staking rewards are funded from two sources: the protocol's capped emission budget (see [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current cap, in effect since a 26 August 2026 governance change) and the staker share of every transaction fee (paid out as a normal staking reward since the v3.2.0 upgrade; see [the stranded staker share](/architecture/tokenomics#stranded-and-reserve)). Rewards depend on the validator's commission and on network activity, and are not guaranteed.
+Staking rewards are funded from two sources: the protocol's capped emission budget (see [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current amount per epoch and the cap, both set by governance — most recently proposal 10 on 19 October 2026) and the staker share of every transaction fee (paid out as a normal staking reward since the v3.2.0 upgrade; see [the stranded staker share](/architecture/tokenomics#stranded-and-reserve)). Rewards depend on the validator's commission and on network activity, and are not guaranteed.
+
+---
+
+## Time-locked staking (testnet only) {#time-locked-staking}
+
+:::note Not on mainnet
+Release v3.2.4 adds an optional time-locked staking module, `x/stakingtier`, to the **`qorechain-diana` testnet only**. It is not live on mainnet yet (mainnet governance proposal 13 would apply v3.2.4 at height 3,742,566); on mainnet, delegation has no lock-in (see [above](#lock-in-period)). Everything below describes the testnet.
+:::
+
+On the testnet a delegator can commit part of an existing delegation to a validator for a fixed term of 3, 6 or 12 months. Terms and amounts are chain parameters; read the current ones from `GET /qorechain/stakingtier/v1/params` rather than from this page.
+
+* **Locking is optional.** An ordinary delegation, redelegation and unbonding work exactly as described on this page. Only the locked amount is restricted: while a lock is open it cannot be undelegated or redelegated, and this holds for every route (transaction, authz, group, contract, governance).
+* **Minimum lock** of 10 QOR, and at most 16 open locks per delegator.
+* **Early unlock** is allowed: it ends the lock, forfeits the unpaid lock bonus and burns a part of the locked amount (recorded under the `staking_tier_penalty` burn source); the rest stays delegated and unlocked.
+* **Slashing** applies to a locked delegation like any other; the lock shrinks with the delegation.
+* **Claiming.** Lock bonuses accrue per epoch and are paid when you claim them.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
+  --gas 400000 --fees 40000uqor --generate-only > tx.json
+qorechaind query stakingtier locks <holder_address>
+```
+
+As on the rest of this page, sign each generated transaction with `tx pqc cosign`.
 
 ---
 

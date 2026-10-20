@@ -141,7 +141,7 @@ Filter by event type to receive only events from a specific module:
 
 ## Module Events Reference
 
-Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.0.
+Events are emitted as standard consensus-engine events. Subscribe with a `tm.event='Tx'` query filtered on the event type and attribute (for example `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Block-level events (those emitted by end-of-block logic, such as the PRISM events below) are delivered with `tm.event='NewBlock'`, not `Tx`. The names and attributes below are those of chain version v3.2.3 (mainnet); events that exist only on the v3.2.4 testnet are marked.
 
 :::note Which events you will actually see
 Many of these modules are idle on the public networks: the bridge is not live, no multilayer layers or rollups are registered yet, and xQORE is not usable. Their events are defined but do not fire until there is activity. The PRISM observation and reward events (`rl_observation_collected`, `rl_reward_computed`) are emitted about every 10 blocks on both networks.
@@ -157,8 +157,11 @@ Many of these modules are idle on the public networks: the bridge is not live, n
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Emitted when a PQC key is registered                 |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Emitted when a PQC key is rotated                    |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Emitted when a key is migrated to a new algorithm    |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Emitted when an EVM-lane authorisation window opens  |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`; `native_only` and `allowed_targets` when the window is scoped (v3.2.3) | Emitted when an EVM-lane authorisation window opens  |
 | `pqc_evm_window_closed`     | `address`                                                 | Emitted when an EVM-lane authorisation window closes |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | Emitted when an account records its consent to an EIP-7702 delegation (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | Emitted when an account's EIP-7702 delegation is cleared (v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id`, and `name`/`category`, `old_status`/`new_status` or `reason` | Algorithm-registry changes made by governance |
 
 PQC keys are registered explicitly with a registration transaction; there is no automatic registration event.
 
@@ -195,6 +198,8 @@ PQC keys are registered explicitly with a registration transaction; there is no 
 | Event Type        | Key Attributes                                              | Description                                      |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Emitted when a new rollup is registered          |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id` and a reason where given | Emitted when a rollup is paused, resumed or stopped |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index` (and `fraud_upheld` on a resolution) | Emitted when a batch is challenged, the challenge is resolved, or a batch is rejected |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Emitted when a settlement batch is submitted     |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | Emitted when a batch passes its challenge window |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Emitted when a DA blob is stored                 |
@@ -207,6 +212,29 @@ PQC keys are registered explicitly with a registration transaction; there is no 
 | `burn`                   | `source`, `amount`                                        | Emitted when tokens are permanently burned          |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | Emitted when a transaction-count milestone burn runs |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Emitted when governance releases part of the stranded staker share |
+
+### Inflation, Gas Abstraction, Licence, Light Node and AI Modules
+
+| Event Type | Key Attributes | Description |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | Emitted when governance changes the emission parameters |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | Emitted when a fee in another accepted token is converted, and when the float is refilled (none fire while only `uqor` is accepted) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount`; `accepted_tokens`, `block_conversion_cap` | Emitted when the float is funded and when governance updates the configuration |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | grantee and feature | Licence lifecycle |
+| `license_authority_updated` | `new_authority` | Emitted when governance replaces the licence authority (v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Light-node lifecycle and reward events |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Emitted when governance updates the AI screening configuration |
+
+### Staking Tiers Module (testnet only)
+
+These events exist only on the `qorechain-diana` testnet (v3.2.4); mainnet does not have the module yet (governance proposal 13 would apply v3.2.4 at height 3,742,566).
+
+| Event Type | Key Attributes | Description |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | A delegation lock was created |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | A lock was ended early, or reached its end |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; settlement totals | A bonus was claimed; the pool was settled |
+| `staking_tier_params_updated` | parameters | Governance changed the module parameters |
 
 ### xQORE Module
 

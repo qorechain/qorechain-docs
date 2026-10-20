@@ -7,10 +7,10 @@ sidebar_position: 3
 
 # Distribuire un Rollup
 
-Puoi configurare un rollup specifico per applicazione in tre modi: tramite la **Dashboard** (un modulo di richiesta, non una transazione on-chain), tramite la **CLI** della chain (`qorechaind`, con pieno controllo sulla transazione on-chain), oppure con l'**RDK TypeScript** (`@qorechain/rdk` più lo scaffolder `create-qorechain-rollup`), che oggi copre la configurazione e le letture. Questa pagina copre tutti e tre i metodi, oltre al ciclo di vita dell'operatore e ai comandi per i batch.
+Puoi configurare un rollup specifico per applicazione in tre modi: tramite la **Dashboard** (un modulo di richiesta, non una transazione on-chain), tramite la **CLI** della chain (`qorechaind`, con pieno controllo sulla transazione on-chain), oppure con l'**RDK TypeScript** (`@qorechain/rdk` più lo scaffolder `create-qorechain-rollup`), che copre la configurazione e le letture e può firmare transazioni ibride quando gli fornisci una chiave post-quantistica (vedi [Limiti di RDK 0.5.0](#rdk-050-limits)). Questa pagina copre tutti e tre i metodi, oltre al ciclo di vita dell'operatore e ai comandi per i batch.
 
 :::caution Funzionalità in fase iniziale
-Nessun rollup è ancora stato creato su nessuna delle due reti. I comandi seguenti usano la testnet **`qorechain-diana`** (EVM chain ID **9800**, versione della chain **v3.2.2**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) esegue la versione della chain **v3.2.1**; questa pagina descrive il comportamento della mainnet, e la versione più recente della testnet può differire nei dettagli. Valida sempre ogni distribuzione prima su testnet.
+Nessun rollup è ancora stato creato su nessuna delle due reti (verificato il 20 ottobre 2026). I comandi seguenti usano la testnet **`qorechain-diana`** (EVM chain ID **9800**, versione della chain **v3.2.4**, solo testnet). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, attiva dal 7 giugno 2026) esegue la versione della chain **v3.2.3**; questa pagina descrive il comportamento della mainnet, e la release più recente della testnet può differire nei dettagli (le differenze sono indicate con "solo testnet"). Valida sempre ogni distribuzione prima su testnet.
 :::
 
 :::note Fee e firma
@@ -26,7 +26,7 @@ La rete impone un prezzo minimo del gas di `0.1uqor`, quindi un semplice `--fees
 | **Stake minimo** | Almeno 10.000 QOR (`min_stake_for_rollup`); lo stake viene messo in escrow alla creazione del rollup |
 | **Burn di creazione** | L'1 % dello stake che fornisci viene bruciato permanentemente alla creazione (una creazione che non può applicare il burn viene rifiutata); il resto resta in escrow e viene restituito quando il rollup viene fermato |
 | **Stake di registrazione del layer** | La creazione registra anche il layer del rollup nel modulo multilayer, il che blocca ulteriori **1.000 QOR** (`min_sidechain_stake`) del creatore, restituiti quando il layer viene dismesso allo stop. Se il layer non può essere registrato (saldo troppo basso, oppure è stato raggiunto il limite di 10 sidechain del multilayer) il rollup viene comunque creato ma non ha un layer, quindi i suoi batch non possono essere ancorati |
-| **ID del rollup** | Usa da 3 a 64 caratteri: lettere minuscole, cifre, `.`, `_` e `-`, iniziando con una lettera o una cifra. Le versioni più recenti della chain applicano questa regola, quindi usala fin dall'inizio |
+| **ID del rollup** | Usa da 3 a 64 caratteri: lettere minuscole, cifre, `.`, `_` e `-`, iniziando con una lettera o una cifra. La chain applica questa regola su entrambe le reti dalla v3.2.2 (la CLI la controlla prima di costruire la transazione), quindi un ID non conforme viene rifiutato |
 | **Account** | Un account QoreChain finanziato con una chiave post-quantistica registrata, con saldo sufficiente per lo stake, lo stake del layer e le fee di transazione |
 
 Interroga i parametri live del modulo per conoscere lo stake minimo e il tasso di burn correnti prima di distribuire:
@@ -122,30 +122,42 @@ qorechaind query rdk list-rollups
 
 ## Distribuire con l'RDK TypeScript (`@qorechain/rdk`) {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-Il Rollup Development Kit è distribuito come due pacchetti npm pubblici per lo stesso modulo on-chain `x/rdk` della CLI. Oggi sono più utili per costruire e validare configurazioni e per leggere lo stato; vedi l'avvertenza sulla firma qui sotto prima di affidarti a loro per inviare transazioni:
+Il Rollup Development Kit è distribuito come due pacchetti npm pubblici per lo stesso modulo on-chain `x/rdk` della CLI. Sono più utili per costruire e validare configurazioni e per leggere lo stato; leggi i [Limiti di RDK 0.5.0](#rdk-050-limits) prima di affidarti a loro per inviare transazioni:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.4.4`) — l'SDK TypeScript: un config builder con profili preimpostati, helper di transazione per i cicli di vita del rollup e dei batch di settlement, DA nativa, client di lettura tipizzati, e le aggiunte della v0.4 — ricevute di settlement quantum-safe, il QCAI Rollup Copilot, helper di calldata cross-VM e il watchtower.
-* **`create-qorechain-rollup`** (`v0.4.4`) — uno scaffolder che clona un template di partenza eseguibile per ogni profilo (incluso il template `multivm-rollup`).
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.5.0`) — l'SDK TypeScript: un config builder con profili preimpostati, helper di transazione per i cicli di vita del rollup e dei batch di settlement, DA nativa, client di lettura tipizzati, e le aggiunte della v0.4 — ricevute di settlement quantum-safe, il QCAI Rollup Copilot, helper di calldata cross-VM e il watchtower.
+* **`create-qorechain-rollup`** (`v0.5.0`) — uno scaffolder che clona un template di partenza eseguibile per ogni profilo (incluso il template `multivm-rollup`).
 
-Questi sono pubblicati su npm. Il repository distribuisce inoltre una CLI per operatori pubblicata, **`@qorechain/rdk-cli`** (`qorollup`, `v0.4.4`), con i comandi `doctor`, `create`, `status`, `watch`, `params`, `suggest`, ciclo di vita (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` e `faucet`, più i comandi v0.4 `receipt`, `advise` e `watchtower`.
+Questi sono pubblicati su npm. Il repository distribuisce inoltre una CLI per operatori pubblicata, **`@qorechain/rdk-cli`** (`qorollup`, `v0.5.0`), con i comandi `doctor`, `create`, `status`, `watch`, `params`, `suggest`, ciclo di vita (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` e `faucet`, più i comandi v0.4 `receipt`, `advise` e `watchtower`.
 
 Novità principali dalla release iniziale v0.4.0:
 
 * **v0.4.2 — funziona con la rete live fin da subito.** I preset `mainnet` e `testnet` ora includono gli endpoint pubblici `qore.host` (REST su `api.qore.host` / `api-testnet.qore.host`), quindi `createRdkClient({ network })` raggiunge la chain senza `endpoints` manuali — sovrascrivili solo per puntare al tuo nodo. La stessa release ha rinominato l'identificatore della VM Wasm del rollup in **`native`** (QoreChain Native); `cosmwasm` resta un alias legacy accettato, ed entrambi corrispondono a `cosmwasm` on-the-wire — la chain, l'explorer e la Dashboard restano invariati.
-* **v0.4.3 — aggiornamento di dipendenza per la correzione della codifica della firma ibrida dell'SDK.** Il client di transazione dell'RDK in sé firma ancora solo in modalità classica (vedi l'avvertenza qui sotto).
+* **v0.4.3 — aggiornamento di dipendenza per la correzione della codifica della firma ibrida dell'SDK.** Il client di transazione dell'RDK in sé firma ancora solo in modalità classica (vedi [Limiti di RDK 0.5.0](#rdk-050-limits)).
 * **v0.4.4 — segue `@qorechain/sdk` `^0.7.0`**, la release dell'SDK per le lane di autenticatore della chain **v3.1.85**, così queste funzionalità raggiungono direttamente gli utenti TypeScript dell'RDK tramite l'SDK. Nessuna modifica all'API dell'RDK.
+* **v0.5.0 (pubblicata il 18 ottobre 2026 su npm, PyPI, crates.io, Maven Central e sul proxy Go)** — la verifica delle ricevute di settlement ora controlla rispetto allo stato della chain e non dichiara mai valida una ricevuta in base ai suoi stessi campi; il client di transazione TypeScript firma in modalità ibrida quando gli viene fornito un `pqcKeypair`; ogni template dello scaffolder fissa `@qorechain/rdk` `^0.5.0`; `@qorechain/sdk` è `^0.8.0`, quindi npm installa l'SDK **0.8.3** come copia propria dell'RDK (l'SDK 0.9.0 è stato pubblicato il 21 ottobre 2026, dopo l'RDK, e non è quello usato dall'RDK 0.5.0 pubblicato).
 
-:::caution Firmare con i client pubblicati
-Entrambe le reti richiedono una firma ibrida (secp256k1 + ML-DSA-87) su ogni transazione della lane nativa. L'attuale pacchetto npm pubblicato (`@qorechain/rdk` 0.4.4) firma tramite un client solo classico, quindi può **leggere** lo stato della chain ma non può far accettare una transazione. Per le transazioni oggi, costruisci e firma con la CLI (`--generate-only`, poi `qorechaind tx pqc cosign`) oppure con la firma ibrida di [`@qorechain/sdk`](/sdk/overview). Anche i client RDK Python, Go, Rust e Java firmano solo in modalità classica e **non sono adatti alle transazioni** su queste reti. Controlla la versione che installi; le release che aggiungeranno la firma ibrida ai client RDK saranno annotate qui.
-:::
+#### Limiti di RDK 0.5.0 {#rdk-050-limits}
 
-:::note Le letture richiedono le route REST dell'RDK
-Gli helper di lettura TypeScript (`rdk.params()`, `rdk.rest.getRollup()`) chiamano route REST `/qorechain/rdk/v1/…`, che gli endpoint pubblici della mainnet oggi non servono. Su mainnet usa `qorechaind query rdk …` (gRPC).
-:::
+Questi limiti dei client 0.5.0 rilasciati sono indicati così come sono oggi; nessuno di essi è un comportamento della chain. Una release successiva non viene annunciata qui finché non è pubblicata.
+
+**Firma.** Entrambe le reti richiedono una firma ibrida (secp256k1 + ML-DSA-87) su ogni transazione della lane nativa.
+
+* Il `RdkClient.connectTx(signer, { pqcKeypair, rest })` **TypeScript** firma in modalità ibrida tramite la propria copia di `@qorechain/sdk` (0.8.3, vedi sopra) quando gli passi il `pqcKeypair` di un account la cui chiave è già registrata on-chain (`signer` deve essere un `OfflineDirectSigner`, ad esempio da `directSignerFromPrivateKey`; passa un `gasPrice` o una fee esplicita). Senza `pqcKeypair` il client firma solo in modalità classica e le reti rifiutano la transazione. Nessun rollup è stato creato su nessuna delle due reti, quindi questo percorso non è stato messo alla prova su un rollup live.
+* Anche il client rollup dell'SDK (`createRollupClient(tx)`, SDK 0.9.0) firma in modalità ibrida quando il suo `TxClient` è connesso con un `pqcKeypair` (`client.connectTx(signer, { pqcKeypair })`). Neanche il suo `submitBatch` ha `anchor_signature` o `validator_set_hash`. Nulla è stato creato tramite esso su una rete live, quindi è non testato live allo stesso modo.
+* La CLI **`qorollup`**, gli script dei template generati dallo scaffolder (`create`, `submit-batch`) e i client **Python, Go, Rust e Java** firmano solo in modalità classica e non possono far accettare una transazione. Per le transazioni da questi, costruisci e firma con la CLI della chain (`--generate-only`, poi `qorechaind tx pqc cosign`) oppure usa il client TypeScript con un `pqcKeypair`.
+* `submitBatchMsg` non ha `anchor_signature` né `validator_set_hash`, quindi un batch inviato tramite l'RDK non è ancorato (vedi [Invia un batch](#submit-a-batch)).
+
+**Letture.** Le route REST `/qorechain/rdk/v1/…` sono servite su entrambe le reti, e `rdk.params()`, `rdk.rest.getRollup()` e `rdk.rest.getBatch()` chiamano route che la chain serve. Due helper chiamano route che la chain non serve in quella forma: `getLatestBatch` richiede `/batches/{id}?latest=true`, che la chain tratta come l'elenco paginato (usa `/qorechain/rdk/v1/latest_batch/{rollup_id}`), e `listBatches` restituisce solo la prima pagina di 50 (la route accetta `start_index` e `limit`, al massimo 100). La ricerca dell'account PQC alla base della verifica delle ricevute usa un percorso al plurale che le reti non servono (vedi [Ricevute di settlement](/rollups/settlement-receipts)).
+
+**Scadenze.** Il watchtower e il controllo di salute alla base di `qorollup status` trattano il `submitted_at` di un batch (un'altezza di blocco) come un timestamp, quindi i conti alla rovescia della finestra di contestazione e gli avvisi `onDeadline` sono errati (vedi [Watchtower](/rollups/watchtower)).
+
+**Cross-VM.** L'helper di calldata codifica una firma di funzione diversa da quella che il nodo decodifica, e il precompile a `0x…0901` non ha codice su nessuna delle due reti (vedi [Multi-VM](/rollups/multi-vm)).
+
+**Disponibilità dei dati.** `buildDaBlob` calcola l'hash con SHA-256, mentre il commitment del blob della chain è SHAKE-256 (vedi [Disponibilità dei Dati](/rollups/data-availability)).
 
 #### Client Python, Go, Rust e Java
 
-Accanto al pacchetto TypeScript, l'RDK fornisce client completi **Python**, **Go**, **Rust** e **Java** che rispecchiano la superficie TypeScript: il config builder con validazione, i cinque profili preimpostati, utility per denom/economics/bech32, helper per Merkle binari e prove di prelievo, manifest dei rollup, client di lettura REST e JSON-RPC `qor_`, controlli preflight/health, account (mnemonic → indirizzo `qor`) e firma + trasmissione di transazioni classiche (`SIGN_MODE_DIRECT`, non accettata sulle reti a firma ibrida — vedi l'avvertenza sopra). Tutti sono verificati rispetto a golden vector condivisi tra linguaggi e sono **pubblicati** sui rispettivi registri:
+Accanto al pacchetto TypeScript, l'RDK fornisce client completi **Python**, **Go**, **Rust** e **Java** che rispecchiano la superficie TypeScript: il config builder con validazione, i cinque profili preimpostati, utility per denom/economics/bech32, helper per Merkle binari e prove di prelievo, manifest dei rollup, client di lettura REST e JSON-RPC `qor_`, controlli preflight/health, account (mnemonic → indirizzo `qor`) e firma + trasmissione di transazioni classiche (`SIGN_MODE_DIRECT`, non accettata sulle reti a firma ibrida — vedi [Limiti di RDK 0.5.0](#rdk-050-limits)). Tutti sono verificati rispetto a golden vector condivisi tra linguaggi e sono **pubblicati** sui rispettivi registri:
 
 ```bash
 # Python — installs as qorechain-rdk, imports as qorrdk
@@ -158,17 +170,17 @@ cargo add qorechain-rdk
 go get github.com/qorechain/qorechain-rdk/packages/go
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.4.4
+# io.github.qorechain:qorechain-rdk:0.5.0
 ```
 
 ```python
 import qorrdk
 ```
 
-Versioni attualmente pubblicate: Python `qorechain-rdk` **0.5.0** (PyPI, import `qorrdk`), modulo Go `github.com/qorechain/qorechain-rdk/packages/go` (**v0.5.0**), Rust `qorechain-rdk` **0.4.4** (crates.io) e Java `io.github.qorechain:qorechain-rdk` **0.4.4** (Maven Central). Questi client leggono lo stato della chain; non producono la firma ibrida richiesta dalle reti (vedi l'avvertenza sopra).
+Versioni attualmente pubblicate, tutte **0.5.0**: Python `qorechain-rdk` (PyPI, import `qorrdk`), modulo Go `github.com/qorechain/qorechain-rdk/packages/go` (`v0.5.0`), Rust `qorechain-rdk` (crates.io) e Java `io.github.qorechain:qorechain-rdk` (Maven Central). Questi client leggono lo stato della chain; non producono la firma ibrida richiesta dalle reti (vedi [Limiti di RDK 0.5.0](#rdk-050-limits)).
 
 :::note
-L'RDK TypeScript e i suoi template usano per default la testnet **`qorechain-diana`**, e dalla v0.4.2 i preset raggiungono fin da subito gli endpoint pubblici live. Fissa le versioni e valida su testnet prima della mainnet.
+L'RDK TypeScript e i suoi template usano per default la testnet **`qorechain-diana`**, e i preset raggiungono fin da subito gli endpoint pubblici live. Fissa le versioni e valida su testnet prima della mainnet.
 :::
 
 ### Scaffolda un progetto con `create-qorechain-rollup` {#scaffold-a-project-with-create-qorechain-rollup}
@@ -189,13 +201,13 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 
 Lo scaffolder stampa il costo documentato di stake e burn di creazione e i prossimi passi per creare il tuo rollup e leggerne lo stato.
 
-:::caution Controlla la versione dell'RDK che il template installa
-I template attualmente fissano `@qorechain/rdk` alla serie 0.2. Dopo lo scaffolding, esegui `npm install @qorechain/rdk@latest` per ottenere i preset degli endpoint pubblici `qore.host` e gli attuali client di lettura. Lo script `submit-batch` dello starter è solo un flusso di riferimento: invia radici illustrative e una prova di esempio e non è previsto che finalizzi un batch su una rete live.
+:::caution Cosa possono fare gli script generati
+I template di `create-qorechain-rollup` 0.5.0 dipendono da `@qorechain/rdk` `^0.5.0`. I loro script `create` e `submit-batch` si connettono senza una chiave post-quantistica, quindi le transazioni che costruiscono sono solo classiche e vengono rifiutate da entrambe le reti; aggiungi un `pqcKeypair` a `connectTx` (vedi [Limiti di RDK 0.5.0](#rdk-050-limits)) prima di affidarti a loro. Lo script `submit-batch` dello starter è solo un flusso di riferimento: invia radici illustrative e una prova di esempio e non è previsto che finalizzi un batch su una rete live.
 :::
 
 ### Costruisci una configurazione di rollup da codice
 
-Costruisci una configurazione da un preset, leggi dalla chain lo stake e il tasso di burn live e produci il messaggio di creazione. Il config builder applica la matrice di compatibilità settlement → prova in `validate()` / `build()`. Invia i valori risultanti con la CLI qui sopra (o con un client che firma in modalità ibrida) — vedi l'avvertenza sulla firma.
+Costruisci una configurazione da un preset, leggi dalla chain lo stake e il tasso di burn live e produci il messaggio di creazione. Il config builder applica la matrice di compatibilità settlement → prova in `validate()` / `build()`. Invia i valori risultanti con la CLI qui sopra (o con un client che firma in modalità ibrida) — vedi [Limiti di RDK 0.5.0](#rdk-050-limits).
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -204,8 +216,7 @@ import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qore
 const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
 
 // The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2).
-// `params()` is a REST read: it works where the RDK REST routes are served and
-// is refused (HTTP 501) on mainnet today — use `qorechaind query rdk config` there.
+// `params()` is a REST read of /qorechain/rdk/v1/params, served on both networks.
 const rdk = createRdkClient({ network: "testnet" });
 
 // Read the live module parameters — never hardcode the stake or burn rate.
@@ -225,14 +236,14 @@ Non sai quale profilo sia adatto? `rdk.suggestProfile(...)` dovrebbe restituire 
 
 ### Leggi lo stato da codice
 
-Il client REST tipizzato non richiede alcun firmatario e funziona dove le route REST dell'RDK sono servite (non su mainnet oggi):
+Il client REST tipizzato non richiede alcun firmatario e legge entrambe le reti:
 
 ```ts
 const rollup = await rdk.rest.getRollup("my-defi-rollup");
 console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
 ```
 
-Per i batch, usa `qorechaind query rdk batch [rollup-id]` (qui sotto).
+Per i batch, usa `rdk.rest.getBatch(rollupId, index)` oppure `qorechaind query rdk batch [rollup-id]` (qui sotto); `getLatestBatch` e `listBatches` hanno dei limiti nella 0.5.0 (vedi [Limiti di RDK 0.5.0](#rdk-050-limits)).
 
 ---
 
@@ -268,7 +279,7 @@ qorechaind tx pqc cosign resume.json --from mykey --pqc-key mypqckey --chain-id 
 
 ### Arresto
 
-Dismette permanentemente il rollup e rilascia il suo stake. I QOR messi in stake — meno il burn di creazione una tantum — vengono restituiti al creatore. Lo stake di registrazione del layer di 1.000 QOR viene restituito separatamente quando il layer del rollup viene dismesso.
+Dismette permanentemente il rollup e rilascia il suo stake. I QOR messi in stake — meno il burn di creazione una tantum, e meno qualsiasi importo già pagato dall'escrow del rollup tramite prelievi o ricompense per prove di frode — vengono restituiti al creatore: dalla v3.2.3 un registro di escrow per rollup tiene traccia di ciò che ogni rollup detiene ancora, `stop-rollup` rimborsa esattamente quel saldo, e un rollup fermato non paga più alcun prelievo. Lo stake di registrazione del layer di 1.000 QOR viene restituito separatamente quando il layer del rollup viene dismesso.
 
 ```bash
 qorechaind tx rdk stop-rollup [rollup-id] \
@@ -296,12 +307,13 @@ Gli operatori dei rollup inviano batch di settlement, e i challenger possono con
 * Un batch che porta un data hash su un rollup `native` o `both` viene rifiutato a meno che non sia già memorizzato un blob corrispondente (vedi [Disponibilità dei Dati](/rollups/data-availability)). Un batch senza data hash non viene controllato.
 * Un rollup `zk` deve allegare una prova, e la prova deve essere verificata (vedi [ZK / STARK e Prelievi](/rollups/zk-stark-withdrawals)).
 
-### Invia un batch
+### Invia un batch {#submit-a-batch}
 
-Invia un batch di settlement per un rollup. Accetta l'ID del rollup, un indice di batch e una radice di stato codificata in esadecimale.
+Invia un batch di settlement per un rollup. Accetta l'ID del rollup, un indice di batch e una radice di stato codificata in esadecimale. Per ogni batch dopo il primo, passa la radice di stato del batch precedente come `--prev-state-root`.
 
 ```bash
 qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
+  --prev-state-root <previous-state-root-hex> --tx-count 120 \
   --from mykey \
   --chain-id qorechain-diana \
   --gas 400000 --fees 40000uqor \
@@ -309,11 +321,27 @@ qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
 qorechaind tx pqc cosign batch.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-Il comando CLI accetta solo questi tre argomenti posizionali, quindi può inviare solo il **batch 0**; i batch successivi richiedono un client in grado di impostare `prev_state_root` (e, dove usati, `data_hash`, `withdrawals_root` e `tx_count`). I batch di un rollup vengono regolati ma **non sono ancorati** a `x/multilayer` su mainnet oggi (vedi [Rollup Development Kit](/architecture/rollup-development-kit#state-anchoring)).
+| Flag | Descrizione |
+| ---- | ----------- |
+| `--prev-state-root` | Radice di stato in esadecimale da cui parte il batch (obbligatoria per ogni batch dopo l'indice `0`) |
+| `--tx-count` | Numero di transazioni del rollup nel batch |
+| `--data-hash` | Hash in esadecimale dei dati del batch pubblicati come blob DA (lascialo vuoto oggi: non esiste un modo per pubblicare un blob, vedi [Disponibilità dei Dati](/rollups/data-availability)) |
+| `--withdrawals-root` | Radice di Merkle in esadecimale dei prelievi L2 → L1 del batch (vedi [ZK / STARK e Prelievi](/rollups/zk-stark-withdrawals)) |
+| `--anchor-signature` | Firma ML-DSA-87 in esadecimale del **creatore** del rollup sui byte di firma dell'ancora v2 (dalla v3.2.2); il batch viene poi ancorato in `x/multilayer` nella stessa transazione, e un'ancora rifiutata rifiuta il batch |
+| `--validator-set-hash` | Commitment in esadecimale del set di validatori, incluso nell'ancora e coperto dalla firma |
+
+Senza `--anchor-signature` il batch viene regolato **non ancorato**. Per ancorare un batch, stampa i byte da firmare, firmali con la chiave post-quantistica registrata del creatore e passa la firma (i valori `--tx-count` e `--validator-set-hash` devono corrispondere a quelli che invii):
+
+```bash
+qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex] \
+  --chain-id qorechain-diana --tx-count 120
+```
+
+`layer-id` è l'ID del layer del rollup (l'ID del rollup per i rollup creati dall'RDK). Il `--proof` ZK per un rollup `zk` oggi non ha alcun flag della CLI, e il messaggio resolve-challenge non è un comando CLI: usa un client. Vedi [Ricevute di settlement](/rollups/settlement-receipts) per ciò che un'ancora dimostra e ciò che non dimostra. Nessun rollup, layer o ancora esiste ancora su nessuna delle due reti.
 
 ### Contesta un batch (rollup ottimistici) {#challenge-a-batch-optimistic-rollups}
 
-Qualsiasi account può contestare un batch `submitted` entro la finestra di contestazione depositando un bond (il `challenge_bond` del rollup; 1.000 QOR per i preset `nft` e `custom`) e una prova di frode. Accetta l'ID del rollup e l'indice del batch; passa la prova di frode con `--proof`:
+Qualsiasi account può contestare un batch `submitted` entro la finestra di contestazione (su mainnet 100.800 blocchi per default; solo sulla testnet, dalla v3.2.4, una finestra in secondi di block time per i nuovi batch) depositando un bond (il `challenge_bond` del rollup; 1.000 QOR per i preset `nft` e `custom`) e una prova di frode. Accetta l'ID del rollup e l'indice del batch; passa la prova di frode con `--proof`:
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \
@@ -339,6 +367,9 @@ qorechaind query rdk batch [rollup-id]
 
 # A specific batch by index
 qorechaind query rdk batch [rollup-id] --index 42
+
+# A page of batches in index order (--limit up to 100, default 50)
+qorechaind query rdk batches [rollup-id] --start 0 --limit 50
 ```
 
 ---
@@ -350,6 +381,8 @@ qorechaind query rdk batch [rollup-id] --index 42
 | `qorechaind query rdk rollup [rollup-id]` | Dettagli di un rollup specifico |
 | `qorechaind query rdk list-rollups` | Tutti i rollup registrati |
 | `qorechaind query rdk batch [rollup-id]` | Ultimo batch di settlement (o `--index`) |
+| `qorechaind query rdk batches [rollup-id]` | Una pagina di batch in ordine di indice (`--start`, `--limit`) |
+| `qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex]` | I byte di firma dell'ancora v2 per un batch (offline) |
 | `qorechaind query rdk config` | Parametri del modulo RDK |
 | `qorechaind query rdk suggest-profile [use-case]` | Stampa un rimando all'RPC `qor_suggestRollupProfile`; gli endpoint pubblici non lo servono, quindi scegli un profilo dalla tabella dei [Profili Preset](/rollups/preset-profiles) |
 

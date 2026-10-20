@@ -43,8 +43,9 @@ disabled` (الرمز 9). لا توجد معاملة تستطيع تفعيلها
                                                                   spend FROM canonical account
 ```
 
-المُرحِّل حساب **مختلف** عن المالك، ولذلك لا يزيد قيمة nonce الخاصة بـ EVM
-للحساب.
+المُرحِّل حساب **مختلف** عن المالك. أما الـ nonce الذي يوقّعه الموثِّق فهو التسلسل
+الخاص بالمفتاح المرتبط نفسه، وتحتفظ به السلسلة (انظر [Nonces](#nonces))، وليس
+nonce الخاص بـ EVM للحساب.
 
 ## المسارات الثلاثة
 
@@ -241,7 +242,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -270,6 +272,20 @@ sha256( "qorechain-evm-auth-v1"
 `to` هو عنوان المستلم بصيغة `0x` السداسية عشرية، و`value` سلسلة wei العشرية،
 و`data` بيانات الاستدعاء (calldata) الخام.
 
+**مسار EVM، الصيغة v2 (السلسلة v3.2.3)** — تُلحق `evmAuthSignBytesV2({ …, gasLimit })`
+حدَّ الغاز الخاص بالاستدعاء، بحيث لا يستطيع المُرحِّل إعادة استخدام توقيع صالح مع حد
+آخر. تتحقق السلسلة من صيغة واحدة فقط في كل كتلة: v1 قبل ترقية v3.2.3، وv2 ابتداءً
+منها. تُرجع `resolveEvmAuthDigestVersion({ rest })` القيمة `"v2"` متى طبّقت الشبكة
+v3.2.3 والقيمة `"v1"` قبل ذلك، وتقبل `buildPhantomExecuteEvm` /
+`buildMetaMaskExecuteEvm` الوسيط `digestVersion` (الافتراضي `"v1"`، لذا مرّر `"v2"`
+على شبكة بالإصدار v3.2.3 أو أحدث). يجب أن يكون `gasLimit` غير صفري.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **المسار الأصلي** — تُرجع
 `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 ملخّصًا بطول 32 بايتًا:
@@ -290,24 +306,19 @@ sha256( "qorechain-cosmos-auth-v1"
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## قيم Nonce
+## Nonces {#nonces}
 
-- `MsgExecuteEVM.nonce` = **قيمة nonce الحالية لـ EVM** الخاصة بالحساب
-  (المُرحِّل حساب مختلف ولا يزيد nonce المالك، لذا **لا** تُضف 1).
-- `MsgExecuteCosmos.nonce` = **التسلسل الخاص بكل موثِّق** للزوج
-  `(account, pubkey)` — عدّاد في المخزن منفصل عن تسلسل الحساب نفسه، يُزاد مع
-  كل عملية إنفاق ناجحة عبر المسار الأصلي.
+يستخدم كلا المسارين **التسلسل الخاص بكل موثِّق** للزوج `(account, pubkey)`: عدّاد
+تحتفظ به السلسلة لكل مفتاح مرتبط، يبدأ من 0 ويزداد مع كل تنفيذ ناجح.
 
-الخطأ في قيمة nonce يؤدي إلى رفضٍ بسبب إعادة التشغيل
-(الرمز 11 في `abstractaccount`، انظر أدناه).
+- `MsgExecuteEVM.nonce` هو هذا العدّاد، **وليس** nonce الخاص بـ EVM للحساب
+  (`eth_getTransactionCount`).
+- `MsgExecuteCosmos.nonce` هو عدّاد من النوع نفسه.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+لا يوجد استعلام عن العدّاد حتى الآن، لذا تتبّعه لكل مفتاح مرتبط: القيمة 0 لمفتاح
+جرى ربطه حديثًا، و+1 بعد كل تنفيذ تقبله السلسلة. إرسال قيمة ليست هي العدّاد
+الحالي لدى السلسلة يعني رفضًا بسبب إعادة التشغيل (الرمز 11 في `abstractaccount`،
+انظر أدناه).
 
 ## مخطط الأذونات
 

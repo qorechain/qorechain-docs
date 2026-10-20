@@ -10,7 +10,7 @@ sidebar_position: 3
 Alătură-te mainnet-ului live QoreChain Vladi configurându-ți nodul cu fișierul genesis oficial, peers și setările de rețea.
 
 :::note
-Această pagină acoperă mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), live din **29 iunie 2026** (blocul genesis la 17:03 UTC), rulând versiunea **v3.2.1** pe Cosmos SDK v0.53. Pentru testnet-ul **`qorechain-diana`** (EVM chain ID **9800**), vezi [Conectarea la Testnet](/getting-started/connecting-to-testnet) și repetă configurarea acolo înainte de a trece live.
+Această pagină acoperă mainnet-ul **`qorechain-vladi`** (EVM chain ID **9801**, hex `0x2649`), live din **7 iunie 2026**, rulând versiunea **v3.2.3** pe Cosmos SDK v0.53. Pentru testnet-ul **`qorechain-diana`** (EVM chain ID **9800**), vezi [Conectarea la Testnet](/getting-started/connecting-to-testnet) și repetă configurarea acolo înainte de a trece live.
 :::
 
 ## Endpoint-uri publice
@@ -54,15 +54,15 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Pachetul conține `qorechaind` plus bibliotecile partajate necesare (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Menține-ți nodul actualizat — este necesară v3.2.0 sau o versiune mai nouă
-Nodurile complete trebuie să urmărească versiunea live a rețelei — instalează întotdeauna binarul indicat de manifest, nu fixa unul vechi. Manifestul curent este **v3.2.1**, cu `minCompatible` **3.2.0**. Mainnet-ul a aplicat două upgrade-uri de guvernanță pe care fiecare nod trebuie să le gestioneze: **v3.1.94** la înălțimea 2.122.074 (plafonul de emisiune) și **v3.2.0** la înălțimea 2.981.742 (fereastra de autorizare EVM și octeții de semnătură hibridă v2). Un nod care se alătură de la zero are deci nevoie de un binar v3.2.x; preferă state sync (mai jos) în locul replay-ului de la genesis. Snapshot-ul publicat al datelor de chain este anterior ambelor înălțimi de upgrade, așa că un nod restaurat din el trebuie să le reia (replay) cu un binar v3.2.x.
+:::caution Menține-ți nodul actualizat — este necesară v3.2.3
+Nodurile complete trebuie să urmărească versiunea live a rețelei — instalează întotdeauna binarul indicat de manifest, nu fixa unul vechi. Manifestul curent este **v3.2.3**, cu `minCompatible` **3.2.3** și `upgradeHeight` **3,662,051**: mainnet-ul a aplicat acolo v3.2.3 la 20 octombrie 2026 prin propunerea de guvernanță 11, iar un nod aflat încă pe o versiune mai veche nu poate urmări chain-ul dincolo de acea înălțime. Upgrade-urile de guvernanță anterioare de pe mainnet au fost **v3.1.94** la înălțimea 2,122,074 (plafonul de emisiune), **v3.2.0** la înălțimea 2,981,742 (fereastra de autorizare EVM și octeții de semnătură hibridă v2) și **v3.2.2** la înălțimea 3,556,788 (16 octombrie 2026, propunerea 7). v3.2.1 a fost o versiune locală nodului, fără înălțime. Un nod care se alătură de la zero are deci nevoie de binarul v3.2.3; preferă state sync (mai jos) în locul replay-ului de la genesis. Snapshot-ul publicat al datelor de chain este anterior tuturor acestor înălțimi de upgrade, așa că un nod restaurat din el trebuie să le reia (replay).
 
-v3.2.1 este o versiune locală nodului (fără înălțime de upgrade, fără vot de guvernanță): nodurile pe v3.2.0 continuă să urmeze chain-ul, dar upgrade-ul este recomandat. După trecerea la v3.2.1 setează `evm-chain-id = 9801` în `app.toml` (o valoare diferită este înregistrată ca eroare) și menține ceasul sistemului sincronizat prin NTP: un nod se oprește dacă ceasul său este în afara intervalului cu mai mult de 60 de secunde. Verifică întotdeauna câmpurile `"version"` și `"minCompatible"` ale manifestului înainte de a avea încredere în `binary.url` — manifestul este promovat în mod deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj).
+Setează `evm-chain-id = 9801` în `app.toml` (o valoare diferită este înregistrată ca eroare) și menține ceasul sistemului sincronizat prin NTP: un nod se oprește dacă ceasul său este în afara intervalului cu mai mult de 60 de secunde. Verifică întotdeauna câmpurile `"version"` și `"minCompatible"` ale manifestului înainte de a avea încredere în `binary.url` — manifestul este promovat în mod deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj). Formatul de semnare, adresele, zecimalele, memo-urile și taxele nu s-au schimbat în v3.2.3.
+
+Testnet-ul (`qorechain-diana`) rulează v3.2.4, care este o versiune doar pentru testnet: nu o instala pe un nod de mainnet, iar manifestul de mainnet nu o va oferi.
 :::
 
-:::caution Este programat un upgrade coordonat al mainnet-ului — citește înainte de a porni sau reporni un nod
-Propunerea de guvernanță **7** de pe mainnet (procedură accelerată, votare până la 15 octombrie 2026 21:24 UTC) ar aplica **v3.2.2** la înălțimea **3.556.788** — cam două zile după 14 octombrie, la aproximativ 3,2 s per bloc. Textul propunerii spune: rămâi pe v3.2.1 (sau v3.2.0) până la acea înălțime; nodul se oprește acolo, iar tu îl repornești pe v3.2.2; semnarea tranzacțiilor rămâne neschimbată. **Dacă se întâmplă sau nu depinde de vot** — verifică rezultatul (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, câmpul `status`) și câmpurile `version` și `upgradeHeight` din [manifestul mainnet](https://download.qore.host/mainnet/latest.json) înainte de a schimba orice binar. Nu instala v3.2.2 mai devreme: un nod care o are înainte de acea înălțime se oprește și el. Dacă propunerea eșuează sau înălțimea a trecut, această notă nu se mai aplică.
-:::
+Când este programat un upgrade coordonat, textul propunerii numește înălțimea și îți spune să rămâi pe versiunea anterioară până atunci: nodul se oprește la acea înălțime, iar tu îl repornești pe noul binar. Citește `status` al propunerii (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) și câmpurile `version` și `upgradeHeight` din [manifestul mainnet](https://download.qore.host/mainnet/latest.json) înainte de a schimba orice binar și nu instala niciodată un binar de upgrade înainte de înălțimea sa: un nod care îl are mai devreme se oprește și el. La momentul scrierii nu este programat niciun upgrade (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` returnează `"plan": null`).
 
 ### Construire din sursă (doar pentru dezvoltare)
 
@@ -150,7 +150,7 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Apoi setează secțiunea `[statesync]` din `config.toml` cu aceste valori — vezi [Rularea unui nod](/developer-guide/running-a-node) pentru fluxul complet de lucru, inclusiv un fallback manual bazat pe RPC dacă trebuie să derivezi singur un punct de încredere.
 
-Un snapshot al datelor de chain este listat de asemenea în manifest (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Citește valorile din manifest în loc să hardcodezi un nume de fișier sau o înălțime, deoarece un snapshot nou îl înlocuiește pe cel vechi. Snapshot-ul este mare (zeci de gigaocteți) și, așa cum a fost publicat în octombrie 2026, a fost luat la înălțimea 1.966.629 (21 august 2026) — înainte de înălțimile de upgrade v3.1.94 și v3.2.0 — deci un nod restaurat din el reia ambele upgrade-uri și trebuie să ruleze un binar v3.2.x; state sync este de obicei mai rapid:
+Un snapshot al datelor de chain este listat de asemenea în manifest (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Citește valorile din manifest în loc să hardcodezi un nume de fișier sau o înălțime, deoarece un snapshot nou îl înlocuiește pe cel vechi. Snapshot-ul este mare (zeci de gigaocteți) și, așa cum a fost publicat în octombrie 2026, a fost luat la înălțimea 1,966,629 (21 august 2026) — înainte de fiecare înălțime de upgrade listată mai sus — deci un nod restaurat din el trebuie să reia acele upgrade-uri; state sync este de obicei mai rapid și evită acest lucru:
 
 ```bash
 SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
@@ -256,8 +256,8 @@ http://localhost:1317
 | ------------------ | --------------------------------------- |
 | Chain ID           | `qorechain-vladi`                      |
 | EVM chain ID       | `9801` (hex `0x2649`)                  |
-| Versiune de chain  | v3.2.1 (regulile de consens din v3.2.0) |
-| Live din           | 29 iunie 2026 17:03 UTC (blocul genesis) |
+| Versiune de chain  | v3.2.3 (aplicată la înălțimea 3,662,051) |
+| Live din           | 7 iunie 2026                           |
 | Timp de bloc       | aproximativ 3,2 secunde (medie măsurată) |
 | Token              | QOR (`uqor`, 10^6 micro-unități = 1 QOR) |
 | Preț minim gas     | `0.1uqor`                              |

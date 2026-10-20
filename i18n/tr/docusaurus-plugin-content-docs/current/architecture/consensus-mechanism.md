@@ -9,8 +9,8 @@ sidebar_position: 1
 
 QoreChain, doğrulayıcıları üç uzmanlaşmış havuza ayıran ve güvenlik, merkeziyetsizlik ile performansı dengelemek için itibar ağırlıklı seçim kullanan bir konsensüs mekanizması olan **Üçlü Havuz Bileşik Hisse Kanıtı'nı (Triple-Pool Composite Proof-of-Stake, CPoS)** uygular. CPoS, `x/qca` modülünde uygulanır ve **QoreChain Konsensüs Motoru** üzerinde çalışır.
 
-:::note Güncel durum (Ekim 2026)
-Bu sayfada açıklanan Üçlü Havuz CPoS mantığı — havuz sınıflandırması, havuz ağırlıklı öneren seçimi, ödül bağlanma eğrisi, aşamalı kesme ve QDRW sayımı — `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir, ancak **henüz blok üretimine, ödüllere, kesmeye veya yönetişim sayımına bağlanmamıştır**. Bugün öneren rotasyonu standart hisse ağırlıklı doğrulayıcı rotasyonudur, kesme standart `x/slashing` parametrelerini izler (kesinti penceresi 10,000 blok, imzalanan oran %5'in altına düştüğünde hapis, %1 kesinti kesmesi ve %5 çift imza kesmesi, 10 dakikalık hapis) ve öneriler bağlanmış hisse üzerinden sayılır (yeter sayı %33.4, eşik %50, veto %33.4). Aşağıdaki tasarım, modülün nereye doğru ilerlediğini açıklar.
+:::note Güncel durum (20 Ekim 2026: ana ağ v3.2.3, test ağı v3.2.4)
+Bu sayfada açıklanan Üçlü Havuz CPoS mantığı — havuz sınıflandırması, havuz ağırlıklı öneren seçimi, ödül bağlanma eğrisi, aşamalı kesme ve QDRW sayımı — `x/qca` modülünde uygulanmıştır ve parametreleri zincir üzerindedir, ancak **henüz blok üretimine, ödüllere, kesmeye veya yönetişim sayımına bağlanmamıştır**. Bugün öneren rotasyonu standart hisse ağırlıklı doğrulayıcı rotasyonudur, kesme standart `x/slashing` parametrelerini izler (kesinti penceresi 10,000 blok, imzalanan oran %5'in altına düştüğünde hapis, %1 kesinti kesmesi ve %5 çift imza kesmesi, 10 dakikalık hapis) ve öneriler bağlanmış hisse üzerinden sayılır (yeter sayı %33.4, eşik %50, veto %33.4). Aşağıdaki tasarım, modülün nereye doğru ilerlediğini açıklar. Ana ağ v3.2.3 veya test ağı v3.2.4'e kadar hiçbir sürüm bunu değiştirmemiştir; bugün uygulanan **kurallar** [Yürürlükteki doğrulayıcı kabul ve staking kuralları](#admission) bölümünde listelenmiştir.
 :::
 
 Konsensüs parametrelerini çalışma zamanında ayarlamak üzere tasarlanan pekiştirmeli öğrenme optimizasyon katmanı **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines) markasıyla anılır. Ayrıntılar için [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine) sayfasına bakın.
@@ -28,6 +28,22 @@ flowchart TD
     P["PRISM<br/>RL optimization"] -. tunes params .-> B
     P -. tunes params .-> C
 ```
+
+---
+
+## Yürürlükteki doğrulayıcı kabul ve staking kuralları {#admission}
+
+Bu kurallar ana ağda (v3.2.2'den beri, v3.2.3'te ek bir sertleştirmeyle) ve test ağında uygulanır. Staking mesaj sunucusunun parçasıdırlar; bu nedenle zincire hangi yolla ulaşırsa ulaşsın her mesaj için geçerlidirler: bir işlem, `x/authz`, `x/group`, bir CosmWasm sözleşmesi, bir precompile veya bir yönetişim önerisi. Genesis işlemleri muaftır.
+
+| Kural | Zincirin uyguladığı şey |
+| --- | --- |
+| Doğrulayıcı oluşturma | Öz-bağlanma en az **100,000 QOR** (100,000,000,000 uqor) olmalıdır **ve** operatör hesabı etkin bir `validator_operator` lisansına sahip olmalıdır. Bkz. [Zincir Lisanslama](/architecture/chain-licensing) |
+| İşletme tabanı | Bir doğrulayıcının kendi operatörü, öz-bağlanmasını **100,000 QOR'un altında** bırakacak şekilde delegasyondan çıkış veya yeniden delegasyon yapamaz. Tam çıkışa (öz-bağlanmanın sıfıra inmesi) izin verilir; doğrulayıcı bu durumda hapse atılır |
+| Hapisten çıkarma (Unjail) | Operatörün öz-bağlanması tabanın altındayken `MsgUnjail` reddedilir; bu nedenle tabanın altında çıkış yapan veya kesilen bir doğrulayıcının önce bakiyeyi tamamlaması gerekir. Kayıtlı kuantum-sonrası anahtarı olmayan bir operatör hesabı yine de hapisten çıkabilir (bkz. [Kuantum-Sonrası Güvenlik](/architecture/post-quantum-security#hybrid-signatures)) |
+| Stake yetkilendirmeleri (v3.2.3) | Bir `x/authz` stake yetkilendirmesinin izin ve ret listeleri doğrulayıcı adreslerini çözülmüş baytlarına göre karşılaştırır; bu nedenle bir adresin yazılışı (örneğin tamamen büyük harf) bir ret listesini atlatamaz |
+| Yeniden delegasyon kesmesi (v3.2.0) | Bir yeniden delegasyon kaydına uygulanan toplam kesme, kesme oranı çarpı kaydın başlangıç bakiyesi ile sınırlandırılmıştır |
+
+20 Ekim 2026'da her iki ağda okunan staking parametreleri: `max_validators` 100, unbonding süresi 21 gün (1,814,400 sn), `max_entries` 7, `min_commission_rate` 0. `validator_operator` lisanslarını veren hesap olan lisans otoritesi, v3.2.3'ten beri yönetişim tarafından değiştirilebilir (`MsgUpdateAuthority`).
 
 ---
 

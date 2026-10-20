@@ -14,7 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2 (versiunea de nod pentru mainnet **v3.2.1**, testnet **v3.2.2**; verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă). Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
+Setați `--chain-id qorechain-vladi` pentru a difuza tranzacția pe mainnet-ul live sau `--chain-id qorechain-diana` pentru testnet. Ambele rețele rulează linia v3.2: versiunea de nod pentru mainnet **v3.2.3** (aplicată la înălțimea 3.662.051 pe 20 octombrie 2026), testnet **v3.2.4** (aplicată la înălțimea 8.337.253 pe 19 octombrie 2026; încă neaplicată pe mainnet; propunerea de guvernanță 13 ar aplica-o la înălțimea 3.742.566). Verificați `latest.json` de pe [download.qore.host](https://download.qore.host) pentru versiunea curentă. Dacă `--chain-id` este omis, clientul folosește `chain-id`-ul din configurația locală a clientului.
+
+Comenzile și flag-urile de pe această pagină au fost verificate pe binarul de release v3.2.3. Tot ce există doar pe testnet-ul v3.2.4 este marcat **doar testnet**.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `tx`:
@@ -51,9 +53,15 @@ O semnătură hibridă adaugă aproximativ 4,7 KB unei tranzacții, taxați la 1
 
 ## Semnarea hibridă este obligatorie pe calea Cosmos {#hybrid-signing}
 
-`hybrid_signature_mode` este `required` pe ambele rețele (`qorechaind query pqc hybrid-mode`). Fiecare tranzacție de pe calea Cosmos trebuie să poarte o semnătură ML-DSA-87 (Dilithium-5) alături de semnătura secp256k1; un simplu `tx bank send ... -y` este respins. Singurele excepții sunt înregistrarea și migrarea cheii PQC (astfel încât un cont nou să își poată înregistra prima cheie) și `tx slashing unjail` pentru un cont care nu are nicio cheie PQC înregistrată.
+`hybrid_signature_mode` este `required` pe ambele rețele (`qorechaind query pqc hybrid-mode`). Fiecare tranzacție de pe calea Cosmos trebuie să poarte o semnătură ML-DSA-87 (Dilithium-5) alături de semnătura secp256k1; un simplu `tx bank send ... -y` este respins (codespace `pqc`, cod 20). Singurele excepții, începând cu mainnet v3.2.3, sunt:
 
-Fiecare comandă de pe această pagină, cu excepția `pqc register-key`, `pqc register-key-v2` și `pqc migrate-key`, se rulează așadar în doi pași: construiți tranzacția cu `--generate-only`, apoi o semnați și o difuzați cu `tx pqc cosign`:
+- **prima** înregistrare a unei chei PQC pentru un cont care nu are încă nicio cheie (`register-key` sau `register-key-v2`), astfel încât un cont nou să poată face bootstrap;
+- repararea unei înregistrări de cont care nu conține nicio cheie utilizabilă, cu `register-key-v2`;
+- `tx slashing unjail` pentru un cont care nu are nicio cheie PQC înregistrată.
+
+Un cont care deține deja o cheie PQC trebuie să semneze hibrid totul, **inclusiv** `register-key-v2` și `migrate-key` (o încercare doar cu semnătură clasică este refuzată cu codul 234). Un cont fără cheie nu poate atașa nici el o semnătură hibridă: nu are față de ce să verifice, deci se înregistrează mai întâi.
+
+Fiecare comandă de pe această pagină, cu excepția primei înregistrări (`pqc register-key` / `pqc register-key-v2` pe un cont fără cheie), se rulează așadar în doi pași: construiți tranzacția cu `--generate-only`, apoi o semnați și o difuzați cu `tx pqc cosign`. `pqc rotate-key` face singură cosemnarea și difuzarea; `pqc gen-key` și `pqc recover-key` doar creează local un fișier de cheie:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
@@ -221,25 +229,40 @@ Generează o cheie Dilithium-5 (ML-DSA-87) și o stochează în `<home>/pqc/<nam
 qorechaind tx pqc gen-key <name>
 ```
 
+`gen-key` și `recover-key` refuză să suprascrie un fișier de cheie existent cu acel nume; `--force` îl înlocuiește și păstrează vechiul fișier ca `<name>.dilithium.bak-<unix-time>`.
+
 ### register-key
 
-Înregistrează o cheie publică PQC pentru contul dvs. (comandă legacy: algoritmul este Dilithium-5). Semnată doar cu cheia clasică; aceasta este excepția de bootstrap.
+Înregistrează o cheie publică PQC pentru contul dvs. (comandă legacy: algoritmul este Dilithium-5). O primă înregistrare se semnează doar cu cheia clasică; aceasta este excepția de bootstrap. Un cont care are deja o cheie trebuie să o semneze hibrid (`--generate-only`, apoi `tx pqc cosign`).
 
 ```bash
 qorechaind tx pqc register-key <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`key_type` este `hybrid` (recomandat), `pqc_only` sau `classical_only`. Cheia publică de 2.592 de octeți face înregistrarea mai costisitoare decât un transfer, motiv pentru care are nevoie de o limită de gas mai mare.
+`key_type` este `hybrid` (recomandat) sau `pqc_only`. `classical_only` este refuzat (codul 230): nu înregistrează nicio cheie post-cuantică, deci contul nu ar mai putea semna niciodată. Cheia publică de 2.592 de octeți face înregistrarea mai costisitoare decât un transfer, motiv pentru care are nevoie de o limită de gas mai mare.
+
+Chain-ul refuză și o cheie care nu oferă nicio protecție post-cuantică (codul 230) și o cheie pe care acest cont a mai folosit-o (codul 232). Refuză o înregistrare a cărei cheie clasică nu este cea proprie a semnatarului (codul 45).
 
 ### register-key-v2
 
-Înregistrează o cheie cu selecție explicită a algoritmului.
+Înregistrează o cheie cu selecție explicită a algoritmului și, opțional, dovedește că dețineți secretul cheii.
 
 ```bash
-qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> [--pqc-key <name>] \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`algorithm` este `dilithium5` (sau `1`) ori `mlkem1024` (sau `2`).
+`algorithm` este `dilithium5` (sau `1`) ori `mlkem1024` (sau `2`); `key_type` este `hybrid` sau `pqc_only`.
+
+**Dovada de posesie (opțională).** Cu `--pqc-key <name>` (o cheie creată cu `gen-key` sau `recover-key`), comanda atașează o dovadă de posesie: semnătura proprie a noii chei peste `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>`. Chain-ul o verifică atunci când este prezentă și refuză înregistrarea dacă nu se verifică (codul 231); o înregistrare fără ea este în continuare acceptată. Dovada numește chain-ul, algoritmul, contul și cheia, deci nu dovedește nimic pentru un alt cont sau o altă rețea. Adaugă tranzacției o semnătură de 4.627 de octeți, așa că păstrați limita de gas la `600000`. Dovada călătorește în câmpul `proof_of_possession` al mesajului. SDK-ul TypeScript 0.9.0 atașează una singur prin `ensurePqcRegistered`, odată ce rețeaua a aplicat v3.2.3; versiunile anterioare ale SDK-ului și `@qorechain/wallet-adapter` nu o fac, deci o înregistrare făcută prin ele nu poartă nicio dovadă (este în continuare acceptată).
+
+```bash
+qorechaind tx pqc gen-key mypqc                      # prints the public key hex
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+```
+
+Pe testnet (v3.2.4, **doar testnet**) înregistrarea contului raportează și dacă o dovadă a fost verificată, ca `possession_proven` (vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)); mainnet-ul nu îl raportează încă.
 
 ### cosign
 
@@ -256,14 +279,15 @@ qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name> --chai
 | `--generate-only` / `--offline` | Afișează tranzacția semnată ca JSON în loc să o difuzeze; o trimiteți mai târziu cu `tx broadcast`; `--offline` necesită și `--account-number`, `--sequence` și `--sign-bytes v1\|v2` |
 | `--dry-run`    | Simulează și afișează estimarea de gas                                                            |
 
-Ambele rețele au aplicat upgrade-ul care a mutat verificarea hibridă pe sign-bytes v2; forma v1 este refuzată.
+Ambele rețele au aplicat upgrade-ul care a mutat verificarea hibridă pe sign-bytes v2; forma v1 este refuzată. O tranzacție poate purta o singură extensie de semnătură hibridă (mai multe sunt refuzate începând cu v3.2.3).
 
 ### migrate-key
 
-Migrează cheia PQC a contului dvs. de la un algoritm la altul. Trebuie să fie activă o migrare pentru algoritmul dvs. curent (pornită prin guvernanță); ambele chei semnează octeții migrării.
+Migrează cheia PQC a contului dvs. de la un algoritm la altul. Trebuie să fie activă o migrare pentru algoritmul dvs. curent (pornită prin guvernanță); ambele chei semnează octeții migrării, iar tranzacția în sine are nevoie de semnătura dvs. hibridă (`--generate-only`, apoi `tx pqc cosign`). O cheie pe care contul a mai folosit-o este refuzată (codul 232).
 
 ```bash
-qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> [flags]
+qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> --generate-only [flags] > m.json
+qorechaind tx pqc cosign m.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
 
 ### recover-key
@@ -295,6 +319,8 @@ echo "<mnemonic>" | qorechaind tx pqc rotate-key --from mykey --old-derivation b
 | `--new-key-out`    | string | Salvează noua cheie privată ca `<home>/pqc/<name>.dilithium` înainte de a se trimite orice |
 | `--sign-bytes`     | string | `auto` (implicit), `v1` sau `v2`                                                     |
 
+Începând cu v3.2.3, o rotație refuză o cheie nouă care nu oferă nicio protecție post-cuantică (codul 230) și o cheie pe care contul a mai folosit-o (codul 232); contul își amintește cheile de la care a făcut rotația, deci o rotație nu poate fi reluată pentru a reveni la o cheie veche.
+
 ### open-evm-window
 
 Calea EVM admite o tranzacție doar de la un cont care deține o cheie PQC înregistrată **și** are o fereastră de autorizare deschisă. O fereastră se deschide cu un mesaj de pe calea Cosmos, deci poartă semnătura PQC pe care un portofel Ethereum nu o poate produce. În interiorul ferestrei, tranzacțiile obișnuite MetaMask funcționează neschimbat.
@@ -313,14 +339,43 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 Deschiderea unei ferestre o înlocuiește pe cea existentă. Verificați-o cu `qorechaind query pqc evm-window <address>`.
 
+**Ferestre cu domeniu limitat (mainnet v3.2.3 și ulterioare).** Limita de valoare numără doar QOR nativ: un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero și nu este numărat în ea. Două flag-uri opționale restrâng ce admite fereastra:
+
+| Flag                | Efect                                                                                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--native-only`     | Admite doar transferuri simple de QOR: fără calldata, fără creare de contract, fără destinatar care poartă cod, fără autorizare EIP-7702 |
+| `--allowed-targets` | Admite doar acești destinatari (adrese `0x` separate prin virgulă); crearea de contracte este refuzată                      |
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
+```
+
+O fereastră deschisă fără niciunul dintre flag-uri admite ce a admis întotdeauna. Domeniul este raportat de interogarea ferestrei ca `native_only` și `allowed_targets`.
+
 ### close-evm-window
 
-Închide imediat fereastra dvs., de exemplu atunci când bănuiți că cheia clasică este compromisă.
+Închide imediat fereastra dvs., de exemplu atunci când bănuiți că cheia clasică este compromisă. Revocă și un consimțământ de delegare EIP-7702 în așteptare.
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > c.json
 qorechaind tx pqc cosign c.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
+
+### authorize-evm-delegation și clear-evm-delegation
+
+O delegare EIP-7702 a contului dvs. intră în vigoare doar cu propriul dvs. consimțământ post-cuantic (mainnet din v3.2.2). `authorize-evm-delegation` înregistrează acest consimțământ pentru o singură adresă delegată; este de unică folosință, expiră după numărul dat de blocuri și este revocat de `close-evm-window`. `clear-evm-delegation` elimină o delegare deja setată. Ambele sunt mesaje de pe calea Cosmos semnate hibrid (`--generate-only`, apoi `tx pqc cosign`).
+
+```bash
+qorechaind tx pqc authorize-evm-delegation <delegate_0x_address> <blocks> --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+qorechaind tx pqc clear-evm-delegation --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+```
+
+Adresa zero ca `delegate` consimte la eliminarea delegării. Verificați starea cu `qorechaind query pqc evm-delegation-consent <address>`.
+
+Niciunul dintre mesajele de cheie PQC (`register-key`, `register-key-v2`, `rotate-key`, `migrate-key`) nu poate fi trimis în numele unui cont prin `authz` (mainnet v3.2.3 și ulterioare).
 
 ---
 
@@ -332,7 +387,9 @@ qorechaind tx lightnode register <node_type> <version> [--capabilities <csv>] --
 qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-id qorechain-vladi
 ```
 
-`node_type` este `sx` sau `ux`. Înregistrarea necesită o licență `lightnode_operator` activă, iar înregistrarea pentru programul de recompense al nodurilor light **nu este încă deschisă**. Alte comenzi: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`. Vezi [Nod light](/light-node/overview).
+`node_type` este `sx` sau `ux`. Înregistrarea necesită o licență `lightnode_operator` activă, acordată de autoritatea de licențiere a rețelei; vezi [Nod light](/light-node/overview) pentru starea curentă a programului. Alte comenzi: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
+
+Începând cu v3.2.3, recompensa pe care o poate acumula un nod este limitată **pe lună** (`max_reward_per_month_per_node` în `GET /qorechain/lightnode/v1/reward_pool`, 2.000 QOR per 30 de zile), proporțional cu timpul de bloc și uptime-ul, deci limita nu mai depinde de cât de repede sunt produse blocurile. O limită este un plafon, nu o sumă promisă. Pe testnet (v3.2.4, **doar testnet**) limita unui nod începe de la propria sa înregistrare, nu de la decontarea anterioară.
 
 ---
 
@@ -354,14 +411,21 @@ Creditează active transferate prin bridge dintr-un chain sursă. Poartă semnă
 qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [flags]
 ```
 
-### update-chain-config / set-verifier-bootstrap
+### register-validator / attest
 
-Administrative (licență `bridge_admin` sau `qcb_bridge`).
+Mesaje de validator de bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` înregistrează un validator pentru îndatorirea de atestare, iar `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` trimite o atestare. Niciun validator de bridge nu este înregistrat pe vreuna dintre rețele. Pe testnet (v3.2.4, **doar testnet**), o înregistrare de validator de bridge necesită și o dovadă de posesie și o cheie pe care niciun alt validator de bridge nu o folosește.
+
+### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
+
+Administrative (licență `bridge_admin` sau `qcb_bridge`; limitele circuit breaker-ului pot fi setate și prin guvernanță).
 
 ```bash
 qorechaind tx bridge update-chain-config <chain_id> [--status active|paused|pending] [--verifier <kind>] [--contract <addr>] [--confirmations <n>] [--architecture <a>] [--lock-event-sig <hex>] [flags]
 qorechaind tx bridge set-verifier-bootstrap <kind> <chain_id> [flags]
+qorechaind tx bridge update-circuit-breaker-limits <chain_id> <max_single_transfer> <daily_limit> [flags]
 ```
+
+Limitele sunt în unități de bază, iar `0` înseamnă nelimitat. Doar o rută al cărei status este exact `active` mută valoare.
 
 ---
 
@@ -375,11 +439,65 @@ Primul `transfer` este subcomanda, iar al doilea este portul sursă. La momentul
 
 ---
 
+## amm
+
+Mesaje AMM native. La momentul redactării nu există niciun pool pe vreuna dintre rețele, deci aceste comenzi nu au încă asupra a ce să acționeze.
+
+```bash
+qorechaind tx amm create-pool <pool_type> <deposit_a> <deposit_b> [flags]     # pool_type: constant_product | stable_swap; deposits as coins, e.g. 1000000uqor
+qorechaind tx amm add-liquidity <pool_id> <amount_a> <amount_b> <min_lp_out> [flags]
+qorechaind tx amm remove-liquidity <pool_id> <lp_amount> <min_a> <min_b> [flags]
+qorechaind tx amm swap-exact-in <pool_id> <token_in> <denom_out> <min_out> [flags]
+qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flags]
+```
+
+Începând cu v3.2.2, un swap trebuie să numească ambele denominații ale pool-ului, `max_swap_impact_bps` este impus, iar taxa de protocol este direcționată prin modulul burn.
+
+---
+
+## gasabstraction
+
+```bash
+qorechaind tx gasabstraction fund-float <amount> [flags]
+```
+
+Mută tokeni nativi (de exemplu `1000000uqor`) în float-ul de conversie a taxelor, rezerva de QOR pe care modulul o folosește pentru a plăti validatorii atunci când o taxă este plătită într-un alt token acceptat. Guvernanța decide ce tokeni sunt acceptați. Pe ambele rețele configurația acceptă doar `uqor` nativ, deci nu are loc nicio conversie; verificați cu `qorechaind query gasabstraction accepted-tokens`.
+
+---
+
+## crossvm
+
+```bash
+qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> [--funds <coins>] [--async] [flags]
+```
+
+`call` este oprit pe mainnet de circuit breaker (vezi [mai jos](#disabled-messages)) și funcționează pe testnet doar acolo unde calea țintă este disponibilă. Un apel pus în coadă (`--async`) care eșuează nu lasă efecte secundare, doar înregistrarea sa `Failed` (începând cu v3.2.3), iar un apel a cărui cale sursă derivată este egală cu calea țintă este refuzat. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability).
+
+---
+
+## stakingtier (doar testnet) {#stakingtier}
+
+:::note Doar testnet
+Modulul de niveluri de staking a apărut cu versiunea **v3.2.4**, aplicată pe testnet-ul `qorechain-diana`. **Nu** este pe mainnet, iar o actualizare a mainnet-ului la el este deocamdată doar propusă (propunerea de guvernanță 13, la înălțimea 3.742.566); nu construiți unelte pentru mainnet pe baza lui până nu este aplicat.
+:::
+
+Delegări opționale blocate în timp: un delegator poate bloca o parte dintr-o delegare existentă pentru 3, 6 sau 12 luni și poate revendica ulterior bonusul pe care modulul îl creditează pentru ea. O blocare este o înregistrare adăugată peste delegare: fondurile delegate rămân la validator.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount_uqor> <months> [flags]    # months: 3, 6 or 12
+qorechaind tx stakingtier unlock-early <lock_id> [flags]
+qorechaind tx stakingtier claim [flags]
+```
+
+Blocarea este impusă de serverul de mesaje de staking, deci acoperă și anularea delegării prin `authz`, un grup sau un contract. Încheierea timpurie a unei blocări pierde bonusul neplătit și arde o penalizare; suma minimă de blocare și ceilalți parametri se găsesc în `GET /qorechain/stakingtier/v1/params`. Ca orice tranzacție de pe calea Cosmos, acestea au nevoie de cosemnarea hibridă (`--generate-only`, apoi `tx pqc cosign`) și de o limită de gas generoasă (de exemplu `--gas 900000 --fees 90000uqor`).
+
+---
+
 ## rdk
 
 ```bash
 qorechaind tx rdk create-rollup <rollup_id> <profile> <stake_amount> [--vm evm|cosmwasm|svm|custom] [flags]
-qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [flags]
+qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [--prev-state-root <hex>] [--tx-count <n>] [--data-hash <hex>] [--withdrawals-root <hex>] [--validator-set-hash <hex>] [--anchor-signature <hex>] [flags]
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> --proof <hex> [flags]
 qorechaind tx rdk pause-rollup <rollup_id> <reason> [flags]
 qorechaind tx rdk resume-rollup <rollup_id> [flags]
@@ -388,6 +506,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 ```
 
 `profile` este `defi`, `gaming`, `nft`, `enterprise` sau `custom`; `stake_amount` este în uqor (minimul curent se află în `query rdk config`). Presetarea profilului furnizează settlement-ul, sequencer-ul, DA și modelul de gas; doar VM-ul poate fi suprascris din linia de comandă. Nu există nicio comandă `finalize-batch`.
+
+`--anchor-signature` este semnătura ML-DSA a creatorului rollup-ului peste **octeții de semnare v2 ai ancorei**; cu ea, batch-ul este ancorat și în modulul multilayer. Afișați octeții exacți de semnat cu `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`; valorile trebuie să corespundă flag-urilor `submit-batch`. Începând cu v3.2.3, modulul ține un **registru de escrow per rollup**: o retragere se plătește doar din ceea ce conține registrul acelui rollup și este verificată pentru denominație, sumă pozitivă, adâncimea dovezii și dimensiunea nodurilor vecine; oprirea unui rollup restituie doar ceea ce a rămas în registrul său, iar un rollup oprit nu mai plătește retrageri. La momentul redactării nu există niciun rollup pe vreuna dintre rețele.
 
 ---
 
@@ -413,10 +533,12 @@ Unele comenzi există în binar, dar nu pot reuși pe rețelele live:
 | Comandă                                                   | Motiv                                                                                          |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Permisiunea de upload și instanțiere este `Nobody` pe ambele rețele, iar tipurile de mesaj sunt și pe lista circuit breaker-ului |
-| `tx crossvm call`                                         | Dezactivată pe mainnet de circuit breaker                                                      |
+| `tx crossvm call`                                         | Dezactivată pe mainnet de circuit breaker; activată pe testnet                                 |
+| `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | Pe lista circuit breaker-ului de mainnet; începând cu v3.2.3, un cont de vesting poate fi oricum creat doar pentru semnatarul însuși |
+| PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Mesaje de propunere de guvernanță (fără comandă CLI), pe lista circuit breaker-ului de mainnet; începând cu v3.2.3, guvernanța nu poate elimina nici ultimul algoritm de semnătură activ |
 | `tx svm deploy-program`, `execute`, `create-account`      | Calea de tranzacție SVM este dezactivată la nivelul întregii rețele                            |
 | `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Modulul abstract-account este oprit (`query abstractaccount config` afișează `enabled: false`) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Mesaje cu autoritate de guvernanță; sunt și pe lista circuit breaker-ului de mainnet           |
-| `tx license *`                                            | Doar pentru autoritate (licențele sunt acordate de autoritatea de licențiere a rețelei)        |
+| `tx license *`                                            | Doar pentru autoritate (licențele sunt acordate de autoritatea de licențiere a rețelei; începând cu v3.2.3, guvernanța poate înlocui acea autoritate cu `MsgUpdateAuthority`) |
 
 Lista live se obține cu `qorechaind query circuit disabled-list`.

@@ -9,7 +9,8 @@ sidebar_position: 8
 
 ## メインネットは稼働していますか？
 
-はい。メインネットは**稼働中**です（チェーン ID `qorechain-vladi`）。テストネットのプリセット
+はい。メインネットは**稼働中**です（チェーン ID `qorechain-vladi`、2026年6月7日から稼働）。
+2026年10月20日時点でチェーンバージョン v3.2.3 を実行しています。テストネットのプリセット
 （`qorechain-diana`）も引き続き利用できます。どちらのプリセットも既定では localhost の
 エンドポイントが設定されています。`createClient({ network: "mainnet" })` でネットワークを
 選択し、`endpoints` を自分のノードの URL で上書きしてください。詳細は
@@ -82,15 +83,14 @@ fromBase("1500000"); // "1.5"
 
 ## どのパッケージがどこで公開されていますか？
 
-すべて公開されています。TypeScript コア（`@qorechain/sdk`、0.8.3）、EVM/SVM アダプタ
-（`@qorechain/evm`、`@qorechain/svm`、0.8.0）、React キット（`@qorechain/react`、
-0.8.3）、および `create-qorechain-dapp` スキャフォルダ（0.8.0）は npm で公開されています。Python
-クライアントは PyPI にあります（`pip install qorechain-sdk`、バージョン 0.8.3、インポート名は
-`qorsdk`）。Go クライアントはモジュールプロキシにあります
-（`go get github.com/qorechain/qorechain-sdk/packages/go/...`、タグ
-`packages/go/v0.8.4`）。Rust クライアントは crates.io にあります
-（`cargo add qorechain-sdk`、0.8.3）。Java クライアントは Maven Central にあります
-（`io.github.qorechain:qorechain-sdk:0.8.3`）。
+すべて公開されています（2026年10月21日確認）。TypeScript コア（`@qorechain/sdk`、0.9.0）、
+React キット（`@qorechain/react`、0.9.0）、`create-qorechain-dapp` スキャフォルダ
+（0.9.0）、および EVM/SVM アダプタ（`@qorechain/evm`、`@qorechain/svm`、0.8.0）は
+npm で公開されています。Python クライアントは PyPI にあります（`pip install qorechain-sdk`、
+バージョン 0.9.0、インポート名は `qorsdk`）。Go クライアントはモジュールプロキシにあります
+（`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`）。Rust クライアントは
+crates.io にあります（`cargo add qorechain-sdk`、0.9.0）。Java クライアントは Maven
+Central にあります（`io.github.qorechain:qorechain-sdk:0.9.0`）。
 言語ごとの完全なコマンドは [インストール](/sdk/install) を参照してください。
 
 ## ニーモニックが拒否されます
@@ -108,11 +108,14 @@ v3.2.0）。
 `MsgRegisterPQCKeyV2`（古典署名で行う、ハイブリッド署名が免除されたトランザクション）で
 **明示的に登録**されている必要があります。公開鍵を拡張に埋め込んでも
 （`includePqcPublicKey: true`）登録**されません**。チェーンは初回利用時に鍵を登録することはありません。
+TypeScript では、クライアントに鍵ペアを渡すと
+（`client.connectTx(signer, { pqcKeypair })`、SDK 0.9.0）、そのクライアントが送信する
+すべてのトランザクションがハイブリッドで署名されます。
 チェーンは hedged か決定的かにかかわらず、有効な FIPS-204 ML-DSA-87 署名をすべて受け入れます。
 SDK は（0.5.1 以降）既定で決定的に署名するため、トランザクションの署名と tx ハッシュは常に同じになります。
 ハイブリッド tx が `pqc` コード 21（`hybrid_verify_failed`）で失敗する原因は、sign-bytes のバージョン、
-チェーン ID、古い PQC ライブラリ、または未登録の鍵であり、hedged 署名が原因になることはありません。
-両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**を使用し、
+チェーン ID、古い PQC ライブラリ、または未登録もしくは別の鍵であり、hedged 署名が原因になることはありません。
+両ネットワークとも v2 形式の sign-bytes を検証するため、SDK **0.8.1 以降**（現行は 0.9.0）を使用し、
 `rest`（または `signBytesVersion`）を渡してください。どちらも指定しない場合、ビルダーは
 `qorechain-vladi` / `qorechain-diana` で例外を送出します。詳細は
 [コード 21 のトラブルシューティング](/developer-guide/post-quantum-signing#code-21) と
@@ -135,6 +138,41 @@ SDK をアップグレードしてください。**0.6.0 以前**のバージョ
 構築されたハイブリッドトランザクションは、すべてのレーン（eth-native を含む）で
 オンチェーンで拒否されます。
 
+## SDK はどのチェーンバージョンで動作しますか？
+
+SDK **0.9.0** は、チェーン v3.2.2 と v3.2.3 向けのクライアントリリースです。メインネット
+**v3.2.3** とテストネット **v3.2.4** でトランザクションを送信でき、登録時の任意の所有証明
+（ネットワークが v3.2.3 を適用すると `ensurePqcRegistered` が自動的に付加します）、
+スコープ付き EVM ウィンドウ、EIP-7702 同意メッセージ向けのビルダーを備えています。
+SDK **0.8.1 以降**も両ネットワークでトランザクションを送信できます（v2 ハイブリッド sign-bytes
+形式、登録、ハイブリッド送信、EVM ウィンドウは変更なしで動作します）が、それらのビルダーは
+ありません。それらには CLI を使用してください（
+[0.9.0 より前のバージョン](/sdk/install#before-090) を参照）。v3.2.4 は現時点ではテストネットでのみ
+稼働しており（メインネットのガバナンス提案 13 がブロック高 3,742,566 で適用する予定です）、SDK は v3.2.4 のフィールドを設定しません。
+
+## PQC 鍵の登録が拒否されたのに手数料が引かれました
+
+すでに鍵を保持しているアカウントの登録は、手数料が差し引かれた後にチェーンによって拒否されます。
+0.9.0 の `ensurePqcRegistered` は、まず
+`GET /qorechain/pqc/v1/account/{address}` を読み取り（`rest` を渡してください）、この鍵ペアの鍵が
+登録済みであれば登録をスキップし、別の鍵が登録されている場合は `PqcKeyMismatchError` を投げます。
+以前のリリースでは、自分で `status: { registered: found }`（`found` はそのルートから得た値）を
+渡さない限り、最初に確認することはありませんでした。v3.2.3 以降、チェーンは弱い鍵、縮退した鍵、
+再利用された鍵も拒否します。`derivePqcCanonical` または `tx pqc gen-key` で作成した鍵は問題ありません。
+
+## `create-qorechain-dapp` が署名できない SDK をインストールします
+
+スキャフォルダのバージョン 0.8.0 だけがそうでした。`@qorechain/sdk` と `@qorechain/evm` に
+`^0.3.0` の範囲を書き込み、0.x バージョンに対するキャレット範囲は 0.3 の内側にとどまります。
+バージョン 0.9.0 は現行の SDK でスキャフォールドします。0.8.0 を使った場合は、スキャフォールド後に
+`npm i @qorechain/sdk@latest`（および `@qorechain/evm@latest`）を実行してください。
+
+## `VERSION` が 0.8.0 と表示されますが、0.8.3 をインストールしました
+
+0.8.3 のエクスポートされた `VERSION` 定数は更新されておらず、`0.8.0` と報告します。0.9.0 以降は
+パッケージと一致します。それ以前のリリースでは、インストール済みのバージョンを `package.json` から
+読み取ってください。
+
 ## authenticator による支出が `authenticator_replay` で拒否されます
 
 （`abstractaccount` モジュールは現在、両ネットワークで無効化されています。支出は、
@@ -142,10 +180,15 @@ nonce が確認される前に `abstract account module is disabled` で拒否�
 [Authenticator と委任支出](/sdk/guides/authenticators) を参照してください。
 以下の説明は、モジュールが有効化された後に適用されます。）
 
-nonce が誤っています。`MsgExecuteEVM.nonce` はアカウントの**現在の** EVM nonce で
-なければなりません（リレイヤーは別のアカウントなので、1 を**加算しない**でください）。
-`MsgExecuteCosmos.nonce` は `(account, pubkey)` ごとの **per-authenticator シーケンス**で、
-独立したストアカウンターです。値を再取得して署名し直してください。
+nonce が誤っています。`MsgExecuteEVM.nonce` と `MsgExecuteCosmos.nonce` はどちらも、
+`(account, pubkey)` に対するリンク済みキーの **authenticator シーケンス**です。これはチェーンが
+リンク済みキーごとに保持するカウンターで、0 から始まり、実行が成功するたびに加算されます。
+これはアカウントの EVM nonce では**ありません**。また、これを取得するクエリはまだないため、
+リンク済みキーごとに自分で追跡してください。v3.2.3 以降、EVM レーンは
+`evmAuthSignBytesV2` にも署名します。これは呼び出しのガスリミットを束縛します
+（`resolveEvmAuthDigestVersion` が形式を選びます）。そのキーについて追跡しているカウンターを使って、
+署名し直してください。
+
 その他の authenticator 失敗は `decodeTxError` でデコードできます: `abstractaccount`
 コード 5（`spending_limit_exceeded`）、6（`session_key_expired`）、
 10（`permission_denied`）。詳細は

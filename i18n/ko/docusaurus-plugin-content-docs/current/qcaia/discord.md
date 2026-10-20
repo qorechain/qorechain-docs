@@ -13,7 +13,7 @@ Discord에서 QCAIA는 **슬래시 명령**을 통해 동작합니다. `/`를 �
 
 공식 QoreChain Discord 서버에 참여하세요:
 
-**[discord.gg/qorechain](https://discord.gg/qorechain)**
+**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
 
 들어오면 **#general** 채널로 이동하여 QCAIA와 대화하세요.
 

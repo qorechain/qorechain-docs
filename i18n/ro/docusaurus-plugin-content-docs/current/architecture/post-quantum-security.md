@@ -9,7 +9,7 @@ sidebar_position: 3
 
 QoreChain este construit cu **criptografie post-cuantică (PQC) de la genesis** — nu adăugată ulterior ca actualizare. Modulul `x/pqc` oferă semnături digitale bazate pe rețele (lattice) și încapsulare de chei drept primitive criptografice principale, cu un cadru de agilitate a algoritmilor controlat prin guvernanță pentru reziliență pe termen lung.
 
-Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă.
+Baza completă PQC — **Dilithium-5 (semnături) + ML-KEM-1024 (KEM) + SHAKE-256 (hash)** — este acum finalizată și reprezintă valoarea implicită a rețelei. Pe rețelele live (v3.2.x), semnăturile hibride sunt **obligatorii implicit** pe calea de tranzacții cosmos: `hybrid_signature_mode = required` și `allow_classical_fallback = false`. Fiecare tranzacție de pe calea cosmos trebuie să poarte o semnătură Dilithium-5 alături de semnătura sa clasică secp256k1; tranzacțiile exclusiv clasice de la un cont PQC sunt respinse, iar calea de retrogradare clasică este închisă. Mainnet rulează v3.2.3, iar testnet v3.2.4; ce au adăugat versiunile v3.2.2 și v3.2.3 la regulile post-cuantice (integritatea cheilor, dovada deținerii opțională, ferestre EVM cu domeniu limitat, consimțământul EIP-7702) este descris în [Reguli de integritate a cheilor](#key-integrity), [Dovada deținerii](#proof-of-possession) și [Delegările EIP-7702](#eip-7702).
 
 ## Principii de proiectare
 
@@ -56,21 +56,74 @@ Conturile înregistrează chei PQC în mod explicit prin `MsgRegisterPQCKey` (le
 * **Sender**: Adresa contului care înregistrează cheia.
 * **PublicKey**: Octeții cheii publice PQC.
 * **AlgorithmID**: Identificatorul algoritmului PQC (doar v2).
-* **KeyType**: Unul dintre cele trei moduri de înregistrare:
+* **ProofOfPossession**: Semnătură opțională făcută de noua cheie (doar v2, începând cu v3.2.3); vezi [Dovada deținerii](#proof-of-possession).
+* **KeyType**: Unul dintre `hybrid` sau `pqc_only` (o a treia valoare, `classical_only`, există încă în schemă, dar este refuzată începând cu v3.2.3):
 
 | Tip de cheie         | Descriere                                                              |
 | ---------------- | ------------------------------------------------------------------------ |
 | `hybrid`         | Atât chei clasice (ECDSA), cât și PQC. Tranzacțiile poartă semnături duble. |
 | `pqc_only`       | Înregistrat ca `hybrid`: semnătura clasică secp256k1 este în continuare verificată de verificările standard de semnătură, iar semnătura PQC este necesară și ea. |
-| `classical_only` | Doar cheie clasică. Fără protecție PQC (nerecomandat).                 |
+| `classical_only` | **Refuzat începând cu v3.2.3.** O înregistrare cu acest tip de cheie nu înregistrează nicio cheie post-cuantică utilizabilă și ar lăsa contul incapabil să semneze, așa că lanțul o respinge. |
 
-## Semnături hibride
+### Reguli de integritate a cheilor (v3.2.3) {#key-integrity}
+
+Începând cu upgrade-ul v3.2.3 (înălțimea mainnet 3,662,051, 20 octombrie 2026; înălțimea testnet 8,003,746), lanțul aplică aceste reguli cheilor post-cuantice. Sub acea înălțime, niciuna dintre ele nu era aplicată.
+
+| Regulă | Comportament |
+| --- | --- |
+| Fără chei slabe | O înregistrare este refuzată dacă tipul de cheie este `classical_only`, cheia este goală sau cheia este degenerată: o cheie de lungime corectă a cărei structură nu oferă nicio protecție post-cuantică. Generați chei cu `tx pqc gen-key` sau cu biblioteca `qorechain-pqc` și înregistrați ce afișează acestea |
+| Fără reutilizarea cheilor | O rotație sau o migrare este refuzată dacă noua cheie este una pe care contul a mai folosit-o. Lanțul reține un hash al fiecărei chei de la care un cont a făcut rotația sau migrarea |
+| Conturile cu cheie au nevoie de semnătura hibridă | Un cont care deține deja o cheie utilizabilă trebuie să poarte semnătura sa hibridă și pe o tranzacție de înregistrare sau de migrare. Excepția exclusiv clasică acoperă acum doar un cont **fără** nicio cheie înregistrată sau unul a cărui înregistrare stocată nu conține nicio cheie utilizabilă (pe care `MsgRegisterPQCKeyV2` o poate atunci înlocui) |
+| Fără extensie fără cheie | În modul `required`, un cont fără cheie înregistrată nu poate trece atașând o extensie hibridă pe care nimic nu o poate verifica; doar o înregistrare poate trece fără una |
+| O singură extensie | O tranzacție poartă cel mult o extensie de semnătură hibridă |
+| Fără mesaje de chei prin authz | `MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgRotatePQCKey` și `MsgMigratePQCKey` nu pot fi executate în numele unui cont prin `x/authz`; este necesară semnătura proprie a contului |
+| Garduri de guvernanță pentru algoritmi | Retragerea sau dezactivarea unui algoritm nu poate lăsa lanțul fără un algoritm de semnătură activ, iar algoritmul de înlocuire trebuie să poată semna |
+
+v3.2.2 a adăugat o verificare conexă: o înregistrare validează cheia clasică `ecdsa_pubkey` pe care o poartă și o leagă de contul semnatar, astfel încât un cont nu poate înregistra o cheie clasică care nu este a sa.
+
+Nodurile filtrează aceste cazuri și în mempool, astfel încât o tranzacție care nu poate decât să eșueze nu este retransmisă și nu costă o taxă.
+
+### Dovada deținerii (opțională) {#proof-of-possession}
+
+`MsgRegisterPQCKeyV2` are un câmp opțional `proof_of_possession`. Când este prezent, lanțul îl verifică; când lipsește, înregistrarea continuă ca înainte (dovada **nu este obligatorie**). Dovada este o semnătură făcută de cheia care se înregistrează peste
+
+```text
+qorechain-pqc-pop-v1|<chain-id>|<algorithm-id>|<account-address>|<hex(public-key)>
+```
+
+astfel încât o dovadă făcută pentru un cont sau un lanț nu dovedește nimic pe altul. CLI o construiește pentru dvs. atunci când indicați fișierul cheii locale:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
+  --pqc-key mypqc --from mykey --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
+```
+
+Înregistrarea este scutită de cerința hibridă doar pentru un cont fără cheie, așa că această tranzacție este semnată doar cu cheia clasică a contului. O dovadă malformată este refuzată cu `ErrInvalidProofOfPossession` (codul 231 în modulul `pqc`).
+
+**Doar testnet (v3.2.4, nu pe mainnet):** înregistrarea contului primește un câmp boolean `possession_proven`, returnat de `GET /qorechain/pqc/v1/account/{address}` pe testnet. Este `true` când cheia curentă a fost înregistrată cu o dovadă validă sau a ajuns printr-o rotație ori migrare (ambele verifică o semnătură a noii chei peste octeți care numesc lanțul, contul și cheia); o înregistrare fără dovadă înregistrează `false`, iar o cheie care se schimbă fără una șterge indicatorul. Mainnet v3.2.3 nu raportează câmpul. Dovada rămâne opțională și pe testnet.
+
+## Semnături hibride {#hybrid-signatures}
 
 Sistemul de semnături hibride necesită ca tranzacțiile de pe calea cosmos să poarte **atât** o semnătură clasică, **cât și** o semnătură PQC simultan. Aceasta oferă apărare în profunzime: chiar dacă o schemă este spartă, cealaltă protejează tranzacția.
 
-Cu valoarea implicită a rețelei `hybrid_signature_mode = required`, fiecare tranzacție de pe calea cosmos trebuie să includă extensia Dilithium-5 alături de semnătura secp256k1. Singurele excepții (pentru bootstrap) sunt **gentx-urile de genesis (înălțimea 0)** și **tranzacțiile de înregistrare/migrare a cheilor PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`, `MsgMigratePQCKey`), cărora li se permite să fie exclusiv clasice pentru ca conturile să își poată înregistra prima cheie PQC, precum și o deblocare (unjail) de la un cont de operator care nu are nicio cheie înregistrată.
+Cu valoarea implicită a rețelei `hybrid_signature_mode = required`, fiecare tranzacție de pe calea cosmos trebuie să includă extensia Dilithium-5 alături de semnătura secp256k1. Singurele excepții (pentru bootstrap) sunt **gentx-urile de genesis (înălțimea 0)**, **înregistrarea cheii PQC** (`MsgRegisterPQCKey`, `MsgRegisterPQCKeyV2`) de la un cont care nu are nicio cheie înregistrată (sau a cărui înregistrare nu conține nicio cheie utilizabilă), căreia i se permite să fie exclusiv clasică pentru ca contul să își poată înregistra prima cheie PQC, precum și o deblocare (unjail) de la un cont de operator care nu are nicio cheie înregistrată. Începând cu v3.2.3, o înregistrare sau o migrare de la un cont care deține deja o cheie utilizabilă are nevoie de semnătura hibridă ca orice altă tranzacție (vezi [Reguli de integritate a cheilor](#key-integrity)).
 
 **Calea EVM este protejată în schimb de o fereastră de autorizare.** O tranzacție EVM nu poate purta o a doua semnătură (ML-DSA) — portofelele standard semnează o singură semnătură secp256k1 peste o tranzacție Ethereum și nu oferă nicio posibilitate de a atașa alta. Astfel, autorizarea post-cuantică circulă *înaintea* tranzacției: contul deschide o **fereastră de autorizare EVM** limitată printr-un mesaj de pe calea Cosmos (`MsgOpenEVMWindow`), care poartă semnătura hibridă obișnuită, iar calea EVM admite apoi doar tranzacțiile acoperite de o fereastră activă. Începând cu v3.2.0, o tranzacție EVM este refuzată dacă expeditorul ei nu (1) are o cheie post-cuantică înregistrată și (2) are o fereastră activă cu blocuri, tranzacții și valoare rămase. În interiorul unei ferestre, o tranzacție obișnuită MetaMask/ethers/Hardhat funcționează nemodificată, deoarece verificarea citește starea lanțului, nu tranzacția. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+
+Începând cu v3.2.3, o fereastră poate fi și **cu domeniu limitat** (scoped) atunci când este deschisă: `--native-only` o restrânge la transferuri simple de QOR nativ (fără calldata, fără creare de contract, fără destinatar care poartă cod, fără autorizare EIP-7702), iar `--allowed-targets 0x…,0x…` admite doar destinatarii listați și refuză crearea de contracte. O fereastră deschisă fără domeniu admite ce a admis întotdeauna. Domeniul face parte din `MsgOpenEVMWindow` (`native_only`, `allowed_targets`).
+
+### Delegările EIP-7702 {#eip-7702}
+
+Un tuplu de autorizare EIP-7702 instalează cod pe contul care l-a semnat, iar acea semnătură este o semnătură clasică secp256k1 pe care oricine o poate purta într-o tranzacție de tip 4. Începând cu v3.2.2 (înălțimea mainnet 3,556,788), calea EVM admite așadar o tranzacție de tip 4 doar dacă **fiecare autoritate al cărei tuplu ar avea efect** deține o cheie post-cuantică înregistrată și a **consimțit**, printr-un mesaj de pe calea Cosmos semnat hibrid, exact la delegarea pe care o instalează tuplul.
+
+| Element | Detaliu |
+| --- | --- |
+| Acordați consimțământul | `qorechaind tx pqc authorize-evm-delegation <delegate-0x-address> <blocks>` (`MsgAuthorizeEVMDelegation`): numește adresa delegatului pe care trebuie să o poarte tuplul și cât timp rămâne utilizabil consimțământul (cel mult 17,280 de blocuri, aceeași limită ca pentru o fereastră) |
+| Ștergeți o delegare | Adresa zero ca delegat consimte la ștergere. `tx pqc clear-evm-delegation` (`MsgClearEVMDelegation`) șterge o delegare existentă fără nicio tranzacție EVM |
+| Utilizare unică | Un consimțământ este consumat de tranzacția care instalează delegarea, înlocuiește orice consimțământ anterior al contului și este revocat de `MsgCloseEVMWindow` |
+| Citiți-l | `qorechaind query pqc evm-delegation-consent <address>` sau `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` (câmpurile `live`, `delegate`, `granted_height`, `expiry_height`, `current_delegate`, `nonce`) |
+| Limite | Cel mult 8 autorizări per tranzacție de tip 4. Valoarea care părăsește un cont delegat este imputată propriei sale ferestre. O tranzacție de tip 4 eșuată păstrează autorizările pe care le-a aplicat |
+| Delegare sponsorizată | Funcționează în continuare: sponsorul plătește din propria fereastră, iar autoritatea doar consimte în prealabil |
 
 ### Fluxul de cosemnare
 
@@ -113,7 +166,7 @@ curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0        
 curl -s https://api-testnet.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.0 # height 5920000 on testnet
 ```
 
-(`"height":"0"` înseamnă neaplicat.) CLI face acest lucru cu `--sign-bytes auto`; SDK 0.8.x și wallet-adapter 0.2.x fac la fel și recunosc, de asemenea, previzualizarea anterioară a modificării de pe testnet. Un client pe forma greșită produce un digest pe care lanțul îl respinge — eșuează în siguranță (fail closed).
+(`"height":"0"` înseamnă neaplicat.) Ambele rețele au aplicat schimbarea de mult timp, așa că un client actual semnează forma v2 peste tot; verificarea contează atunci când reluați sau verificați blocuri vechi. CLI face acest lucru cu `--sign-bytes auto`, iar versiunile actuale de SDK și wallet-adapter fac la fel. Un client pe forma greșită produce un digest pe care lanțul îl respinge — eșuează în siguranță (fail closed).
 
 ### Formatul extensiei TX
 
@@ -186,13 +239,14 @@ Când un algoritm este retras, începe o **perioadă de migrare** (implicit: 1,0
 | Mesaj                 | Descriere                                                                                                                                                       |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MsgRegisterPQCKey` / `MsgRegisterPQCKeyV2` | Înregistrează cheia PQC a unui cont (vezi [Înregistrarea cheilor](#key-registration)). Poate fi semnat clasic, astfel încât un cont nou să poată face bootstrap. |
-| `MsgMigratePQCKey`      | Migrare cu semnătură dublă de la cheia unui algoritm la cea a altuia în timpul unei perioade de migrare.                                                         |
-| `MsgRotatePQCKey`       | Rotește cheia ML-DSA-87 a contului în cadrul aceluiași algoritm (semnat dublu de cheia veche și cea nouă; `tx pqc rotate-key`).                                  |
-| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Deschide sau închide fereastra de autorizare EVM (v3.2.0); vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).                  |
+| `MsgMigratePQCKey`      | Migrare cu semnătură dublă de la cheia unui algoritm la cea a altuia în timpul unei perioade de migrare. Refuză o cheie pe care contul a mai folosit-o (v3.2.3).                                                         |
+| `MsgRotatePQCKey`       | Rotește cheia ML-DSA-87 a contului în cadrul aceluiași algoritm (semnat dublu de cheia veche și cea nouă; `tx pqc rotate-key`). Refuză o cheie pe care contul a mai folosit-o (v3.2.3). |
+| `MsgOpenEVMWindow` / `MsgCloseEVMWindow` | Deschide sau închide fereastra de autorizare EVM (v3.2.0; domeniu opțional începând cu v3.2.3); vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).                  |
+| `MsgAuthorizeEVMDelegation` / `MsgClearEVMDelegation` | Consimte la sau șterge o delegare EIP-7702 a propriului cont al expeditorului (v3.2.2); vezi [Delegările EIP-7702](#eip-7702). |
 | `MsgDeprecateAlgorithm` | Mesaj de guvernanță: începe procesul de retragere a unui algoritm. Specifică algoritmul de înlocuire și perioada de migrare în blocuri.                          |
 | `MsgDisableAlgorithm`   | Mesaj de guvernanță: dezactivează de urgență un algoritm imediat. Necesită un șir de motiv. Folosit când se descoperă o vulnerabilitate criptografică.           |
 
-`MsgDeprecateAlgorithm` și `MsgDisableAlgorithm` sunt în prezent dezactivate pe mainnet de întrerupătorul de circuit (circuit breaker) (vezi [Chain Parameters](/appendix/chain-parameters#circuit-breaker)).
+`MsgDeprecateAlgorithm` și `MsgDisableAlgorithm` sunt în prezent dezactivate pe mainnet de întrerupătorul de circuit (circuit breaker) (vezi [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); pe testnet nu sunt dezactivate. Pe ambele rețele, începând cu v3.2.3, se aplică gardurile de guvernanță pentru algoritmi din [Reguli de integritate a cheilor](#key-integrity).
 
 ### Extensibilitate
 
@@ -219,7 +273,7 @@ Aceste utilitare stau la baza hash-ului implicit al aplicației și sunt folosit
 
 Toate atestările de bridge inter-lanț și angajamentele de stare folosesc semnături **Dilithium-5**. Modulul `x/multilayer` necesită semnături agregate PQC la fiecare trimitere `MsgAnchorState`, iar angajamentele ML-KEM securizează canalele de schimb de chei dintre relayer-ele de bridge.
 
-Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea criptografiei clasice în infrastructura de bridge, menținând rezistența cuantică pe întreaga stivă de protocol.
+Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea criptografiei clasice în infrastructura de bridge, menținând rezistența cuantică pe întreaga stivă de protocol. Nicio rută de bridge nu este activă (vezi [Bridge Architecture](/architecture/bridge-architecture#current-status)); doar pe testnet (v3.2.4), înregistrarea unui validator de bridge necesită și o dovadă a deținerii cheii sale PQC.
 
 ## Parametrii modulului
 

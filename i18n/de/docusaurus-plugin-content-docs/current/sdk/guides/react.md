@@ -15,20 +15,23 @@ Provider, eine Handvoll Hooks und zwei Drop-in-Komponenten — einschließlich e
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) ist eine Peer-Abhängigkeit; `@qorechain/sdk` ist eine direkte Abhängigkeit,
-die auf dieselbe Version wie das Kit festgelegt ist. Verwenden Sie `@qorechain/react` **0.8.3 oder neuer**:
-0.8.0 legt SDK 0.8.0 fest, das im Mainnet die falsche Hybridform signiert, und frühere
-0.8.x-Versionen können nach einem Adresswechsel ein veraltetes Guthaben oder einen veralteten Status anzeigen.
+`react` (>=18) ist eine Peer-Abhängigkeit; `@qorechain/sdk` ist eine direkte Abhängigkeit
+(`^0.9.0` seit Kit 0.9.0; bei einer 0.x-Version bleibt das Caret innerhalb von 0.9, sodass ein SDK-
+Patch keine zweite Kopie installiert). Verwenden Sie `@qorechain/react` **0.9.0**: 0.8.0 legt
+SDK 0.8.0 fest, das im Mainnet die falsche Hybridform signiert, und frühere 0.8.x-Versionen
+können nach einem Adresswechsel ein veraltetes Guthaben oder einen veralteten Status anzeigen.
 
-:::caution Einschränkungen des React-Kits im Live-Netzwerk (0.8.x)
-`useTx` sendet nur mit der klassischen Signatur der verbundenen Wallet, die die
-Live-Netzwerke ablehnen (der native Pfad erfordert die hybride ML-DSA-87-Erweiterung), sodass
-`send` / `sendTokens` im Mainnet oder Testnet keine Transaktion platzieren können; verwenden Sie für das Senden die
-[Hybrid-Builder](/sdk/concepts/accounts-pqc#hybrid-signing) des SDK.
-`usePqcStatus` und `<QuantumSafeBadge/>` lesen `qor_getPQCKeyStatus`, das die
-öffentlichen Endpunkte nicht bereitstellen (siehe
-[den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace)), sodass sie einen Schlüssel
-gegenüber `*.qore.host` nicht bestätigen können. Guthabenabfragen (`useBalance`) und die Wallet-Verbindung
+:::caution Einschränkungen des React-Kits im Live-Netzwerk (0.9.0)
+`useTx` verbindet sich mit dem Signierer der Wallet und ohne Post-Quanten-Schlüsselpaar, sodass es
+nur mit der klassischen Signatur sendet, die die Live-Netzwerke ablehnen (der native Pfad
+erfordert die hybride ML-DSA-87-Erweiterung): `send` / `sendTokens` können im
+Mainnet oder Testnet keine Transaktion platzieren. Senden Sie mit dem hybriden `TxClient` des SDK
+(`client.connectTx(signer, { pqcKeypair })`, siehe
+[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)). `usePqcStatus` und `<QuantumSafeBadge/>` lesen den Status über
+`getPqcStatus` mit dem zusammengesetzten Client des Providers, der seit SDK 0.9.0 über
+REST liest (`/qorechain/pqc/v1/account/{address}`), sodass sie gegen `*.qore.host` funktionieren
+(Kit 0.8.x las `qor_getPQCKeyStatus`, das die öffentlichen Endpunkte nicht bereitstellen, und
+konnte dort einen Schlüssel nicht bestätigen). Guthabenabfragen (`useBalance`) und die Wallet-Verbindung
 funktionieren.
 :::
 

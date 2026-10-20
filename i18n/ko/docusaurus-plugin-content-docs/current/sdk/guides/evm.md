@@ -89,7 +89,8 @@ import { deployContract, readContract, writeContract } from "@qorechain/evm";
 것입니다. 체인 수준 규칙, 한도, CLI 형식, 거부 코드는
 [EVM 인가 윈도우](/getting-started/first-transaction#evm-window)에 있습니다.
 
-SDK **0.8.2 이상**에서는 코드로 윈도우를 열 수 있습니다. 키 등록(1회)은
+SDK **0.8.2 이상**에서는 코드로 윈도우를 열 수 있습니다(**0.9.0**은 아래의
+범위 옵션을 추가합니다). 키 등록(1회)은
 [양자 내성](/sdk/guides/quantum-safe)에 설명되어 있으며, 아래 예제는 그 다음에
 통합 eth-네이티브 계정을 위한 윈도우를 엽니다(`npm i @cosmjs/stargate`):
 
@@ -156,6 +157,97 @@ try {
 
 `closeEvmWindowMsg`는 대응하는 종료 메시지를 만들며, `MAX_EVM_WINDOW_BLOCKS`와
 `MAX_EVM_WINDOW_TXS`는 한도를 내보냅니다.
+
+### 윈도우 범위 지정 (체인 v3.2.3, SDK 0.9.0) {#evm-window-scope}
+
+윈도우는 열 때 범위를 좁힐 수 있습니다. `nativeOnly`는 네이티브 QOR의 일반
+전송만 허용하며(calldata 없음, 컨트랙트 생성 없음, 코드를 가진 수신자 없음,
+EIP-7702 인가 없음), `allowedTargets`는 수신자가 나열된 최대 16개의 `0x` 주소
+중 하나인 트랜잭션만 허용합니다(중복 불가, 컨트랙트 생성은 거부됨). 둘 다 새
+메시지 필드입니다. v3.2.3 미만의 노드는 둘 중 하나라도 설정되면 트랜잭션 전체를
+거부하므로, v3.2.3을 적용한 네트워크에서만 설정하세요(두 공개 네트워크 모두
+적용했습니다). `fetchEvmWindow`는 두 값을 다시 읽어 옵니다(`nativeOnly`,
+`allowedTargets`. v3.2.3 이전에는 `false`와 빈 값으로 읽힙니다). QOR 전송만을
+위해 여는 윈도우에는 `nativeOnly`를 사용하세요.
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  openEvmWindowMsg,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on-chain
+const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
+
+await tx.signAndBroadcast(
+  [
+    openEvmWindowMsg({
+      sender: account.address,
+      blocks: 7200,
+      maxTxs: 20,
+      maxValue: "1000000000", // uqor: value PLUS the maximum fee of each transaction
+      nativeOnly: true,
+      // or: allowedTargets: ["0x…", "0x…"],
+    }),
+  ],
+  "auto",
+);
+```
+
+### EIP-7702 동의 (체인 v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
+
+타입 4(EIP-7702) 트랜잭션은 인가가 효력을 발휘하는 모든 계정이 정확히 그 위임
+대상에게 하이브리드 서명된 `MsgAuthorizeEVMDelegation`으로 포스트 양자 동의를
+한 뒤에야 허용됩니다. 동의는 위임을 설치하는 트랜잭션에서 소진되며, 설정한
+`blocks`(1~17,280)가 지나면 만료됩니다. 위임 대상으로 영 주소를 지정하면 해제에
+동의하는 것입니다. SDK는 메시지를 만들고 동의를 다시 읽어 옵니다. 여기에는
+인가 튜플이 담아야 하는 nonce도 포함됩니다:
+
+```ts
+import {
+  authorizeEvmDelegationMsg,
+  clearEvmDelegationMsg,
+  fetchEvmDelegationConsent,
+  evmDelegationTupleNonce,
+} from "@qorechain/sdk";
+
+// 1) Consent to one delegate (hybrid-signed Native-lane message, `tx` as above).
+await tx.signAndBroadcast(
+  [authorizeEvmDelegationMsg({ sender: account.address, delegate: "0xDelegate…", blocks: 600 })],
+  "auto",
+);
+
+// 2) Read the consent: the tuple's nonce is the account's EVM nonce for a
+//    sponsored transaction, and that nonce + 1 when the account sends it itself.
+const consent = await fetchEvmDelegationConsent({ rest: "https://api.qore.host", address: account.address });
+const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
+
+// 3) Sign the authorisation tuple with `tupleNonce` and send the type-4
+//    transaction (the sender still needs an open window; a sponsor pays from its own).
+
+// Remove an installed delegation directly, without any EVM transaction:
+// await tx.signAndBroadcast([clearEvmDelegationMsg(account.address)], "auto");
+```
+
+`classifyEvmDelegationRejection(err)`는 EVM 레인이 위임을 거부할 때 `"no-consent"`
+또는 `"invalid"`를 반환합니다. 동의 쿼리에는 체인 v3.2.2 이상이 필요합니다. 체인
+수준 규칙은 [EIP-7702 위임](/architecture/post-quantum-security#eip-7702)에
+있으며, CLI 형식은 `qorechaind tx pqc authorize-evm-delegation`과
+`clear-evm-delegation`입니다.
+
+0.9.0 이전 릴리스는 범위가 없는 윈도우만 만들 수 있고(범위 없는 윈도우는 두
+네트워크 모두에서 여전히 동작합니다) 동의 빌더가 없으므로, 그 경우에는
+[EVM 인가 윈도우](/getting-started/first-transaction#evm-window)의 CLI 형식을
+사용하세요.
 
 ## 프리컴파일
 

@@ -23,16 +23,16 @@ QoreChain'in ekonomik modeli yerel **QOR** token'ını merkeze alır ve **sonlu,
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 29 Haziran 2026'dan bu yana **v3.2.1** sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'i (EVM zincir ID **9800**) aynı modül parametrelerini paylaşır; arz ve emisyon geçmişi farklıdır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın.
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.2.3** sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, sürüm **v3.2.4**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (20 Ekim 2026).
 :::
 
 ---
 
 ## Arz ve Emisyon Modeli {#supply-and-emission}
 
-QoreChain'in **sonlu, üst sınırlı bir arz yolu** vardır. Genesis arzı **4.420.000.000 QOR**'du (4.500.000.000 QOR planlanmıştı; 80.000.000 QOR, %1,78, genesis'ten önce Token Üretim Etkinliği'nde yakıldı). Genesis'ten sonra arzı yalnızca iki şey değiştirir:
+QoreChain'in **sonlu, üst sınırlı bir arz yolu** vardır. Genesis arzı **4.420.000.000 QOR**'du (4.500.000.000 QOR planlanmıştı; 80.000.000 QOR, %1,78, genesis'ten önce Token Üretim Etkinliği'nde yakıldı). Genesis'ten sonra protokol arzı iki mekanizmayla değiştirir:
 
-* **Emisyon** — `x/inflation` modülü, **114.285.714 QOR'luk sabit kümülatif üst sınır** altında her epoch'ta sabit bir miktar basar. Basılan token'lar ücret toplayıcıya girer ve işlem ücretleriyle aynı ücret bölüşümünden geçer (bkz. [Ücret Dağılımı](#fee-distribution)).
+* **Emisyon** — `x/inflation` modülü, **590.000.000 QOR'luk sabit kümülatif üst sınır** altında her epoch'ta sabit bir miktar basar. Basılan token'lar ücret toplayıcıya girer ve işlem ücretleriyle aynı ücret bölüşümünden geçer (bkz. [Ücret Dağılımı](#fee-distribution)).
 * **Yakmalar** — `x/burn` modülü, ücret toplayıcıdaki her şeyin yakma payını kalıcı olarak kaldırır.
 
 ### Emisyon {#staking-reward-schedule}
@@ -40,21 +40,23 @@ QoreChain'in **sonlu, üst sınırlı bir arz yolu** vardır. Genesis arzı **4.
 | Parametre | Değer |
 | --- | --- |
 | Emisyon modu | `fixed` (v3.1.94'ten beri, yükseklik 2.122.074 — 26 Ağustos 2026) |
-| Epoch başına emisyon | 16.239 QOR |
+| Epoch başına emisyon | **86.000 QOR** (yönetişim önerisi 10'a kadar 16.239 QOR; 86.000 QOR'luk ilk epoch 3.672.000 numaralı blokta başlar) |
 | Epoch uzunluğu | 43.200 blok (şu anki ≈3,2 sn blok süresiyle yaklaşık 38,6 saat) |
-| Kümülatif üst sınır (`max_total_emission`) | 114.285.714 QOR |
-| Şimdiye kadar basılan (14 Ekim 2026, epoch 81) | 105.200.179 QOR (üst sınırın %92,05'i) |
-| Üst sınıra kalan | 9.085.535 QOR (epoch başına 16.239 QOR ile yaklaşık 559 epoch) |
+| Kümülatif üst sınır (`max_total_emission`) | **590.000.000 QOR** (öneri 10'a kadar 114.285.714 QOR) |
+| Şimdiye kadar basılan (20 Ekim 2026, epoch 84) | 105.248.896,21 QOR (üst sınırın %17,84'ü) |
+| Üst sınıra kalan | 484.751.103,79 QOR (epoch başına 86.000 QOR ile yaklaşık 5.637 epoch; sonuncusu kısmidir) |
 
-Üst sınıra ulaşıldığında modül kalıcı olarak basmayı durdurur; bundan sonra ödüller yalnızca işlem ücretlerinden gelir. Üst sınır, yönetişim önerisi #4 ile belirlendi (tüm bağlı stake lehte oy kullanarak kabul edildi) ve olgun, tamamen bağlı bir ağ için kalibre edilmiş, fiilen bağlı stake'e kıyasla amaçlanandan çok daha hızlı ödeme yapan özgün azalan takvimin yerini aldı. Takvim değerleri (1–5. yıllar için %17,5, %11, %7, %7, %2) modül parametrelerinde saklanmaya devam eder ancak `fixed` modunda kullanılmaz.
+Üst sınıra ulaşıldığında modül kalıcı olarak basmayı durdurur; bundan sonra ödüller yalnızca işlem ücretlerinden gelir. Emisyon rakamları yönetişim tarafından belirlendi: öneri #4 (26 Ağustos 2026) özgün azalan takvimin yerine sabit bir üst sınır altında sabit bir miktar koydu ve öneri #10 (tüm bağlı stake lehte oy kullanarak 19 Ekim 2026'da kabul edildi) bu miktarı epoch başına 16.239 QOR'dan 86.000 QOR'a değiştirdi ve üst sınırı 114.285.714 QOR'dan 590.000.000 QOR'a yükseltti. Epoch uzunluğu değişmedi. Takvim değerleri (1–5. yıllar için %17,5, %11, %7, %7, %2) modül parametrelerinde saklanmaya devam eder ancak `fixed` modunda kullanılmaz.
 
-QoreChain canlı bir staking getirisi rakamı sunmaz; alıntılanan her yüzdeyi doğrulanmamış olarak değerlendirin. Güncel rakamlar zincir durumundan okunabilir: arz `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` adresinde, yakma toplamları ise `GET /qorechain/burn/v1/stats` adresindedir.
+Basılan toplam, kalan miktar ve sonraki epoch yüksekliği `GET /qorechain/inflation/v1/epoch_info` adresinde canlıdır (`current_inflation_rate` alanı, `fixed` modunun kullanmadığı eski yıl bazlı oranı bildirir).
+
+QoreChain canlı bir staking getirisi rakamı sunmaz; alıntılanan her yüzdeyi doğrulanmamış olarak değerlendirin. Güncel rakamlar zincir durumundan okunabilir: arz `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` adresinde (20 Ekim 2026'da 4.493.665.185,83 QOR), yakma toplamları ise `GET /qorechain/burn/v1/stats` adresindedir.
 
 ---
 
 ## x/burn — Çok Kanallı Yakma Motoru
 
-`x/burn` modülü **12 yakma kaynağı** tanımlar. Yakılan her token arzdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca `gas_fee` için kayıtlı yakma vardır (14 Ekim 2026 itibarıyla 31.560.093 QOR); diğerleri tanımlıdır ancak kayıtlı yakma yoktur.
+`x/burn` modülü **12 yakma kaynağı** tanımlar. Yakılan her token arzdan kalıcı olarak kaldırılır. Mainnet'te yalnızca `gas_fee` (20 Ekim 2026 itibarıyla 31.574.710,28 QOR) ve v3.2.2'den beri `failed_tx` (0,0855 QOR) için kayıtlı yakma vardır; diğerleri tanımlıdır ancak kayıtlı yakma yoktur. Testnet'te, yalnızca testnet'te bulunan isteğe bağlı zaman kilitli staking modülü için on üçüncü bir kaynak olan `staking_tier_penalty` vardır (bkz. [Staking ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Yakma Kanalları
 
@@ -65,7 +67,7 @@ QoreChain canlı bir staking getirisi rakamı sunmaz; alıntılanan her yüzdeyi
 | 3  | `ai_service`        | AI modülü kullanım ücretleri   | AI hizmet ücretlerinin %50'si yakılır           |
 | 4  | `bridge_fee`        | Zincirler arası köprü ücretleri | Köprü ücretlerinin %100'ü yakılır               |
 | 5  | `treasury_buyback`  | Hazine işlemleri                | Hazineden periyodik geri alım ve yakma          |
-| 6  | `failed_tx`         | Başarısız işlem gası            | Başarısız işlemlerden gelen gas'ın %10'u yakılır (zincir tarafından v3.2.2'den itibaren uygulanır; şimdilik yalnızca testnet) |
+| 6  | `failed_tx`         | Başarısız işlem gası            | Başarısız işlemlerden gelen gas'ın %10'u yakılır (zincir tarafından v3.2.2'den itibaren uygulanır) |
 | 7  | `xqore_penalty`     | xQORE erken çıkış cezaları      | Ceza tutarları yakma sürecinden geçirilir       |
 | 8  | `auto_buyback`      | Otomatik geri alım programı     | Protokol düzeyinde otomatik yakmalar            |
 | 9  | `tge`               | Token üretim etkinliği          | 80.000.000 QOR'luk TGE yakması genesis'ten önce gerçekleşti (genesis arzı 4.420.000.000 QOR'dur); bu kanal ayrılmıştır ve 0 kaydeder |
@@ -102,7 +104,7 @@ Paylar şunlardır:
 Paylar zincir üzerinde uygulanır ve her zaman tam olarak %100'e ulaşmalıdır.
 
 :::note Bölüşümden fiilen ne geçiyor
-Bölüşüm, hem işlem ücretlerini hem de `x/inflation` tarafından basılan epoch emisyonunu tutan ücret toplayıcıdaki her şeye uygulanır. Pratikte bugün neredeyse tamamı emisyondur: basılan 105.200.179 QOR'un 31.560.093 QOR'u (%30,0) yakıldı ve 3.156.009 QOR'u (%3,0) light node rezervinde duruyor. v3.2.0 yükseltmesine (25 Eylül 2026, yükseklik 2.981.742) kadar, %10'luk staker payı hiçbir talebi karşılamadan dağıtım modülünün bakiyesine taşınıyordu; bu yüzden stakerlar ve validatörler birlikte %47 değil %37 alıyordu; o yükseklikten itibaren staker payı normal bir staking ödülü olarak ödenir ve halihazırda sıkışmış tutar (6.693.045,92 QOR) kayıt altına alındı ve yalnızca bir yönetişim oylamasıyla hareket ettirilebilir — bkz. [Sıkışmış Staker Payı ve Light Node Rezervi](#stranded-and-reserve).
+Bölüşüm, hem işlem ücretlerini hem de `x/inflation` tarafından basılan epoch emisyonunu tutan ücret toplayıcıdaki her şeye uygulanır. Pratikte bugün neredeyse tamamı emisyondur: basılan 105.248.896 QOR'un 31.574.710 QOR'u (%30,0) gas ücreti kanalı üzerinden yakıldı. v3.2.0 yükseltmesine (25 Eylül 2026, yükseklik 2.981.742) kadar, %10'luk staker payı hiçbir talebi karşılamadan dağıtım modülünün bakiyesine taşınıyordu; bu yüzden stakerlar ve validatörler birlikte %47 değil %37 alıyordu; o yükseklikten itibaren staker payı normal bir staking ödülü olarak ödenir. Halihazırda sıkışmış tutar zincir üzerinde kayıt altına alındı ve o zamandan beri yönetişim oylamalarıyla serbest bırakıldı — bkz. [Sıkışmış Staker Payı ve Light Node Rezervi](#stranded-and-reserve).
 :::
 
 ### Yakma Parametreleri
@@ -126,16 +128,16 @@ Her yakma olayı; kaynağı, tutarı, blok yüksekliği ve ilişkili işlem hash
 
 ## Sıkışmış Staker Payı ve Light Node Rezervi {#stranded-and-reserve}
 
-İki tutar, v3.2.0 yükseltmesinden (25 Eylül 2026, yükseklik 2.981.742) önce mainnet'te birikti ve şimdi **kayıt altında, herhangi bir dağıtımın dışında** tutuluyor. İkisi de yalnızca bir yönetişim oylamasıyla hareket ettirilebilir.
+İki tutar, v3.2.0 yükseltmesinden (25 Eylül 2026, yükseklik 2.981.742) önce mainnet'te birikti. Yükseltme bunları **zincir üzerinde, herhangi bir dağıtımın dışında** kayıt altına aldı ve yalnızca bir yönetişim oylamasıyla hareket ettirilebilir kıldı. Yönetişim, Ekim 2026'da her ikisini de vakfa serbest bıraktı:
 
-| Kayıt | Mainnet'teki tutar | Sorgu | Yönetişim mesajı |
+| Kayıt | Serbest bırakma | Tutar | Yönetişim mesajı |
 | --- | --- | --- | --- |
-| **Sıkışmış staker payı** — hiçbir staking ödülü talebini karşılamayan bir yere yatırılmış olan %10'luk staker payı | 6.693.045,921330 QOR kayıtlı, 0 serbest bırakılmış | `GET /qorechain/burn/v1/stranded_rewards` | `MsgReleaseStrandedRewards` (yönetişim yetkilisi; adı belirtilmiş hedef; kaydı aşamaz) |
-| **Light node rezervi** — hiçbir light node uygun değilken biriken %3'lük light node payı | 3.156.009,326407 QOR ayrılmış, 0 ödenmemiş | `GET /qorechain/lightnode/v1/reward_pool` | `MsgReleaseLightNodeReserve` (yönetişim yetkilisi) |
+| **Sıkışmış staker payı** — hiçbir staking ödülü talebini karşılamayan bir yere yatırılmış olan %10'luk staker payı | Öneri 9 (19 Ekim 2026'da kabul edildi) | 6.693.045,921330 QOR serbest bırakıldı | `MsgReleaseStrandedRewards` (yönetişim yetkilisi; adı belirtilmiş hedef; kaydı aşamaz) |
+| **Light node rezervi** — hiçbir light node uygun değilken biriken %3'lük light node payı | Öneri 8 (19 Ekim 2026'da kabul edildi) | 3.156.983,796395 QOR serbest bırakıldı | `MsgReleaseLightNodeReserve` (yönetişim yetkilisi) |
 
-Yükseltme yüksekliğinden itibaren staker payı normal bir staking ödülü olarak ödenir ve light node ödülleri yalnızca bir önceki dağıtım çalışmasından bu yana biriken tutardan, node başına ve blok başına bir tavanla (`max_reward_per_block_per_node`, 14 Ekim 2026'da okunduğu üzere 1.713 uqor) ödenir. Light node kaydı şu anda kapalıdır, dolayısıyla uygun node yoktur ve %3'lük pay rezerve birikmeye devam eder. Yükseltme anlık görüntüsünden önceki, kayıtlı tutarı aşan veya geçersiz bir hedefe yönelik bir serbest bırakma reddedilir.
+**Sıkışmış payın düzeltilmiş kalanı.** v3.2.3 yükseltmesinde (yükseklik 3.662.051, 20 Ekim 2026) zincir, sıkışmış pay kaydını yeniden hesapladı; kayıt o zaman 3.807.496,785528 QOR olarak duruyordu (`GET /qorechain/burn/v1/stranded_rewards` içindeki `reserved`; yanında `released`, 6.693.045,921330 QOR). Yönetişim önerisi 12, bu kalanın vakfa serbest bırakılmasını önerir; bu yazıldığı sırada (20 Ekim 2026) oylama dönemindedir ve oylama 21 Ekim 2026'da 20:01 UTC'de sona erer. Sonuç için kaydı ve öneriyi (`GET /cosmos/gov/v1/proposals/12`) kontrol edin.
 
----
+**Light node havuzu şimdi.** v3.2.0 yükseltmesinden itibaren light node ödülleri yalnızca bir önceki dağıtım çalışmasından bu yana biriken tutardan, node başına bir tavanla ödenir. v3.2.3'ten beri tavan, **node başına 30 günde 2.000 QOR**'dur (`max_reward_per_month_per_node`); blok süresine ve node'un çalışma süresine göre orantılanır; blok başına değer (`max_reward_per_block_per_node`, 1.713 uqor) hâlâ bildirilir ancak artık kural değildir. Kazanılmayan her şey, yalnızca bir yönetişim oylamasının serbest bırakabileceği havuz rezervinde kalır. Öneri 8'den sonra rezerv yeniden birikir: 20 Ekim 2026'da 487,2318 QOR tutuyordu (`GET /qorechain/lightnode/v1/reward_pool` içindeki `reserved`); henüz hiçbir light node kayıt olmadığı için ödenmemiş veya ödenebilir bir şey yoktu. Kayıt açıktır ve lisans kapılıdır (bkz. [Light Node](/light-node/overview#reward-program-status)). Yükseltme anlık görüntüsünden önceki, kayıtlı tutarı aşan veya geçersiz bir hedefe yönelik bir serbest bırakma reddedilir.
 
 ## x/xqore — Kilitli Staking ve Yönetişim Güçlendirmesi {#x-xqore}
 
@@ -185,31 +187,38 @@ Bu, uzun vadeli sahipler için pozitif toplamlı bir dinamik yaratır: her erken
 
 ## x/inflation — Üst Sınırlı Emisyon
 
-`x/inflation` modülü, 114.285.714 QOR'luk kümülatif üst sınıra ulaşılana kadar epoch başına emisyonu (16.239 QOR, `emission_mode = fixed`) basar ve ücret toplayıcıya gönderir. Parametre değişiklikleri normal bir yönetişim parametre önerisi (`MsgUpdateParams`, v3.1.94'te eklendi) üzerinden yapılır.
+`x/inflation` modülü, 590.000.000 QOR'luk kümülatif üst sınıra ulaşılana kadar epoch başına emisyonu (öneri 10'dan beri 86.000 QOR, `emission_mode = fixed`) basar ve ücret toplayıcıya gönderir. Parametre değişiklikleri normal bir yönetişim parametre önerisi (`MsgUpdateParams`, v3.1.94'te eklendi) üzerinden yapılır.
 
 ### Epoch Mekaniği
 
 * **Epoch uzunluğu**: 43.200 blok (blok başına ≈3,2 sn ile yaklaşık 38,6 saat).
 * Her epoch sınırında modül epoch emisyonunu (veya üst sınıra kalan miktarı) basar, epoch kaydını günceller ve `total_minted` üst sınıra ulaştığında basmayı durdurur.
+* v3.2.3'ten beri emisyon yılı, sabit bir blok sayısı yerine epoch uzunluğundan türetilir.
 
 ### Parametreler
+
+20 Ekim 2026'da `GET /qorechain/inflation/v1/params` adresinden canlı okundu:
 
 | Parametre | Değer (mainnet) | Açıklama |
 | --- | --- | --- |
 | `emission_mode` | `fixed` | `schedule` (eski, yıl bazlı oranlar) veya `fixed` |
-| `fixed_epoch_emission` | 16.239.000.000 uqor | fixed modda epoch başına basılan |
-| `max_total_emission` | 114.285.714.000.000 uqor | Sabit kümülatif tavan |
+| `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | fixed modda epoch başına basılan |
+| `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Sabit kümülatif tavan |
 | `epoch_length` | 43.200 blok | Emisyon epoch'u başına blok |
 | `schedule` | %17,5, %11, %7, %7, %2 (1–5. yıllar) | Eski takvim, fixed modda kullanılmaz |
 | `enabled` | `true` | Modül etkinleştirme bayrağı |
 
-Mainnet'te bu değerler bir REST rotası üzerinden sunulmaz; RPC `abci_query` ham depo arayüzüyle (depo `inflation`, anahtarlar `inflation/params` ve `inflation/epoch`) zincir durumundan okunabilir. Bunlar için özel bir sorgu hizmeti yalnızca testnet'te vardır (v3.2.2).
+Modülün parametreleri ve epoch kaydı, v3.2.3'ten beri mainnet'te REST üzerinden sunulur (`/qorechain/inflation/v1/params` ve `/qorechain/inflation/v1/epoch_info`); ayrıca RPC `abci_query` ham depo arayüzüyle (depo `inflation`, anahtarlar `inflation/params` ve `inflation/epoch`) zincir durumundan da okunabilirler.
+
+:::note Yalnızca testnet (v3.2.4)
+`qorechain-diana` testnet'i önceki emisyon ayarlarını korur (114.285.714 QOR üst sınırı altında epoch başına 16.239 QOR; üst sınıra orada zaten ulaşıldı). `x/inflation` parametreleri, şu anda 0 olan ve emisyonu yönlendirmeyen bir `target_apy_bps` parametresiyle üçüncü bir emisyon modu olan `target_apy`'yi kazandı. Bu mod, onu kullanan isteğe bağlı zaman kilitli staking modülü ve testnet'teki tutarlar henüz mainnet'te canlı değildir; mainnet yönetişim önerisi 13, staking modülünü içeren v3.2.4 sürümünü 3.742.566 yüksekliğinde uygulayacaktır ve emisyon modunun kendisi yalnızca kendi sonraki oylamasıyla değişecektir.
+:::
 
 ---
 
 ## Yakma ve Emisyon Karşılaştırması
 
-Emisyon üst sınırlıdır (114.285.714 QOR) ve yakma payı, emisyon dahil ücret toplayıcıya giren her şeye uygulanır. Bugüne kadar 105.200.179 QOR basılmasına karşılık 31.560.093 QOR yakıldı, dolayısıyla arz şu anda genesis seviyesinin üzerindedir. Üst sınıra ulaşıldıktan sonra arz yalnızca yakılan miktar kadar azalabilir.
+Emisyon üst sınırlıdır (toplamda 590.000.000 QOR) ve yakma payı, emisyon dahil ücret toplayıcıya giren her şeye uygulanır. Bugüne kadar (20 Ekim 2026) 105.248.896 QOR basılmasına karşılık 31.574.710 QOR yakıldı, dolayısıyla arz (4.493.665.186 QOR) şu anda genesis seviyesinin üzerindedir. Üst sınıra ulaşıldıktan sonra arz yalnızca yakılan miktar kadar azalabilir.
 
 ---
 

@@ -123,6 +123,11 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 SDK 0.8.3以降、`derivePqcCanonical(account, mnemonic)`は、まず`account`を小文字の
 `qor1…`形式(`canonicalAccount`)に解決するため、大文字のbech32や同じアカウントの
 `0x`形式でも同じ鍵が得られます。
+どの言語にも同じ関数があり(Python `derive_pqc_canonical`、Go
+`authenticator.DerivePQCCanonical`、Rust `try_derive_pqc_canonical`、Java
+`Authenticator.derivePqcCanonical`。[量子安全ガイドの表](/sdk/guides/quantum-safe#canonical-derivation)を参照)、
+同じ`{ address, mnemonic }`からは、そのすべてで同じ鍵が得られます
+(2026年10月にTypeScript、Python、Go、Rustで確認済み)。
 
 ### eth鍵によるNativeレーンでの送金
 
@@ -139,7 +144,7 @@ SDK 0.8.3以降、`derivePqcCanonical(account, mnemonic)`は、まず`account`�
 `0x`で始まる16進文字列なので、`ecdsaPubkey`用にバイト列へデコードします。2つ目は、署名者に
 `rest`を渡して、ネットワークがどの[署名対象バイト列の形式](#sign-bytes-versions)を検証するかを
 問い合わせられるようにすることです(`qorechain-vladi`と`qorechain-diana`では、推測せずに
-例外を投げます)。SDK 0.8.1以降と`npm i @cosmjs/stargate`が必要です。
+例外を投げます)。SDK 0.8.1以降(所有証明ヘルパーには0.9.0)と`npm i @cosmjs/stargate`が必要です。
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -148,6 +153,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -177,6 +183,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -265,7 +279,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 ポスト量子部分は、トランザクションの`PQCHybridSignature`拡張として運ばれます。
 
 :::caution Nativeパスではハイブリッド署名が必須です
-チェーンバージョン**v3.2.0**(両ネットワークが稼働しているバージョン)の時点で、
+チェーンバージョン**v3.2.0**(メインネットはv3.2.3、テストネットはv3.2.4で稼働)以降、
 ネットワークのデフォルトは`hybrid_signature_mode = required`、
 `allow_classical_fallback = false`です。`buildHybridTx` / `signAndBroadcastHybrid`
 (`rest`を渡す)によるハイブリッド署名 — または統一eth-nativeアカウント向けの
@@ -285,7 +299,34 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 コインタイプ118のアカウント向けのエンドツーエンドのビルダーは`signAndBroadcastHybrid`
 (ブロードキャストせずに構築のみ行う場合は`buildHybridTx`)です。これには、古典署名者、
 アカウントのML-DSA-87鍵ペア、アカウント番号とシーケンス、そして`rest`が必要です。
-SDK 0.8.3以降、`npm i @cosmjs/stargate`:
+TypeScriptでのコインタイプ118のアカウントにとって最短の経路は、ハイブリッドの
+`TxClient`(SDK 0.9.0)です。接続時に鍵ペアを渡すと、すべてのトランザクションが
+ハイブリッドで署名され、`fee: "auto"`はハイブリッドトランザクション自体を
+シミュレートします(登録だけは古典署名のままです)。
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+手数料、アカウント番号、シーケンスを明示的に制御するには、
+`signAndBroadcastHybrid`を使用します(SDK 0.8.1以降、`npm i @cosmjs/stargate`)。
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -338,7 +379,11 @@ const result = await signAndBroadcastHybrid({
 SDKの`ensurePqcRegistered` / `buildRegisterPqcKeyMsg`、`qorechaind tx pqc
 register-key`、またはQoreChainウォレットがこれを行います。`includePqcPublicKey: true`は
 鍵を拡張に埋め込むだけで、鍵を登録するものでは**ありません**。チェーンも初回使用時に
-鍵を登録することはありません。
+鍵を登録することはありません。v3.2.3以降、チェーンは弱い鍵、縮退した鍵、再利用された鍵を
+拒否し、任意の所有証明を受け付けます([鍵の完全性ルール](/architecture/post-quantum-security#key-integrity)を参照)。
+SDK 0.9.0では、ネットワークがv3.2.3を適用すると`ensurePqcRegistered`が自動的に証明を付加し、
+`signProofOfPossession` / `verifyProofOfPossession`は手作業で構築する登録向けにエクスポートされています。
+0.8.xのビルダーは証明なしで登録しますが、これは許可されています。
 
 ### どの署名対象バイト列形式か? {#sign-bytes-versions}
 

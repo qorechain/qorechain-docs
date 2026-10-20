@@ -10,7 +10,7 @@ sidebar_position: 1
 Esta guía cubre el token QOR, cómo enviar y recibir tokens, consultar saldos y comprender el modelo de distribución de comisiones en QoreChain.
 
 :::note
-Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 29 de junio de 2026 en la línea v3.2 (versión de nodo **v3.2.1**; la testnet ejecuta **v3.2.2**) — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
+Los comandos siguientes utilizan la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) está activa desde el 7 de junio de 2026 y ejecuta la versión **v3.2.3**; la testnet ejecuta **v3.2.4** — sustituye el chain ID y los endpoints de mainnet de la página **Conectarse a la Mainnet** cuando realices transacciones en mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -92,13 +92,13 @@ Las comisiones de transacción en QoreChain se distribuyen entre cinco destinos 
 | **Quemado**      | 30%   | Eliminado permanentemente del suministro |
 | **Tesorería**    | 20%   | Financia el desarrollo del protocolo y las subvenciones del ecosistema                 |
 | **Stakers**     | 10%   | Distribuido proporcionalmente entre todos los delegadores                    |
-| **Nodos Ligeros** | 3%    | Reservado para las recompensas de nodos ligeros (consulta la nota siguiente)            |
+| **Nodos Ligeros** | 3%    | Recompensas de nodos ligeros (consulta la nota siguiente)            |
 
-El reparto se aplica a todo lo que entra en el fee collector, que contiene las comisiones de transacción y la emisión de staking acuñada en cada época. La cuota de nodos ligeros se acumula en una reserva; el registro de recompensas de nodos ligeros todavía no está abierto, por lo que actualmente no se paga a ningún nodo con ella (consulta [Nodo Ligero](/light-node/overview)). Desde la actualización v3.2.0, la cuota de los stakers se paga como una recompensa de staking normal (consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+El reparto se aplica a todo lo que entra en el fee collector, que contiene las comisiones de transacción y la emisión de staking acuñada en cada época. La cuota de nodos ligeros se acumula en el pool de recompensas de nodos ligeros; el registro está abierto y sujeto a licencia, pero todavía no se ha registrado ningún nodo ligero, por lo que actualmente no se paga a ningún nodo con ella (consulta [Nodo Ligero](/light-node/overview#reward-program-status)). Desde la actualización v3.2.0, la cuota de los stakers se paga como una recompensa de staking normal (consulta [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canales de Quema
 
-El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a través de cualquiera de ellas se elimina permanentemente de la circulación. En mainnet, hasta ahora solo el canal de comisiones de gas ha registrado quemas; los demás están definidos pero no han registrado nada.
+El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a través de cualquiera de ellas se elimina permanentemente de la circulación. En mainnet, hasta ahora solo los canales de comisiones de gas y de transacciones fallidas han registrado quemas; los demás están definidos pero no han registrado nada. La testnet registra una decimotercera fuente, `staking_tier_penalty`, para su módulo opcional de staking con bloqueo temporal.
 
 | Canal              | Descripción                                                         |
 | -------------------- | ------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ El módulo de quema de QoreChain define 12 fuentes de quema. El QOR quemado a tr
 | `ai_service`       | Se quema el 50% de las comisiones de servicios de IA (inactivo: las comisiones de servicios de IA no están activas) |
 | `bridge_fee`       | Se quema el 100% de las comisiones del bridge (inactivo: el bridge no está activo) |
 | `treasury_buyback` | Recompra y quema periódica desde la tesorería                                  |
-| `failed_tx`        | Gas de transacciones fallidas; la cadena lo aplica desde v3.2.2 (hasta ahora solo en testnet) |
+| `failed_tx`        | 10% del gas de las transacciones fallidas; la cadena lo aplica desde v3.2.2         |
 | `xqore_penalty`    | Penalizaciones de salida anticipada de xQORE canalizadas mediante quema (xQORE no está activo) |
 | `auto_buyback`     | Quemas automatizadas a nivel de protocolo (inactivo)                           |
 | `tge`              | Reservado; la quema del TGE ocurrió antes del génesis y este canal no registra nada |

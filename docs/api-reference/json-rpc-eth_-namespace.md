@@ -17,7 +17,7 @@ QoreChain implements an EVM-compatible JSON-RPC interface, so standard Ethereum 
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, node release **v3.2.1**) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`, node release **v3.2.2**). The local addresses above apply to a node you run yourself. The public HTTP endpoints are `https://evm.qore.host` (mainnet) and `https://evm-testnet.qore.host` (testnet), listed in [Networks](/appendix/networks#public-endpoints). The only public EVM WebSocket is the testnet's (`wss://evm-ws-testnet.qore.host`); there is no public mainnet EVM WebSocket.
+The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, node release **v3.2.3**, live since 7 June 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`, node release **v3.2.4**, testnet only). The local addresses above apply to a node you run yourself. The public HTTP endpoints are `https://evm.qore.host` (mainnet) and `https://evm-testnet.qore.host` (testnet), listed in [Networks](/appendix/networks#public-endpoints). The only public EVM WebSocket is the testnet's (`wss://evm-ws-testnet.qore.host`); there is no public mainnet EVM WebSocket.
 :::
 
 ## Supported Namespaces
@@ -69,8 +69,8 @@ The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM c
 | Method           | Parameters | Description                                                         |
 | ---------------- | ---------- | ------------------------------------------------------------------- |
 | `txpool_status`  | none       | Returns the number of pending and queued transactions               |
-| `txpool_content` | none       | Returns the pending and queued transactions (not on public mainnet) |
-| `txpool_inspect` | none       | Returns a summary of the pool (not on public mainnet)               |
+| `txpool_content` | none       | Returns the pending and queued transactions (not on the public endpoints) |
+| `txpool_inspect` | none       | Returns a summary of the pool (not on the public endpoints)         |
 
 ## net_ Methods
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs` accepts at most **10,000 blocks** between `fromBlock` and `toBlock`. A wider range returns `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`. Query in windows of 10,000 blocks or fewer. The separate `filter-cap` setting limits the number of logs returned.
-- `txpool_status` works on the public mainnet endpoint. `txpool_content` and `txpool_inspect` are disabled there (they work on the public testnet endpoint and on a node you run yourself).
+- `txpool_status` works on the public endpoints. `txpool_content` and `txpool_inspect` are disabled on both the public mainnet and the public testnet endpoint (they work on a node you run yourself, with `txpool` in its `api` list).
 - `debug_*` methods and `eth_signTransaction` are not available.
 - `eth_subscribe` needs a WebSocket connection. Over HTTP it returns `-32601 notifications not supported`. See [WebSocket Events](/api-reference/websocket-events).
 - State at old heights is pruned on the public endpoints, so `eth_call` against a distant historical block can fail with a state-version error.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## Sending transactions {#sending-transactions}
 
 :::caution The EVM lane needs a PQC key and an open window
-Since chain version v3.2.0 the EVM lane admits a transaction (`MsgEthereumTx`, including contract deployments) only from an account that has a **registered post-quantum key** and an **open EVM authorisation window**. A plain EVM wallet that has not done this setup cannot submit transactions: the node refuses them with a `pqc` module error (codes 26, 27 or 28) instead of including them. Reading balances, calling `eth_call` and estimating gas need no window.
+Since chain version v3.2.0 the EVM lane admits a transaction (`MsgEthereumTx`, including contract deployments) only from an account that has a **registered post-quantum key** and an **open EVM authorisation window**. A plain EVM wallet that has not done this setup cannot submit transactions: the node refuses them with a `pqc` module error (codes 26, 27 or 28) instead of including them. Reading balances, calling `eth_call` and estimating gas need no window. Since v3.2.2 a transaction signed **without a chain id** (pre-EIP-155) is refused as well, and since v3.2.3 a window can be scoped to plain QOR transfers (`native_only`) or to listed recipients (`allowed_targets`); a transaction outside the scope is refused with code 27.
 
 Check an account before sending:
 
 - `GET /qorechain/pqc/v1/account/{address}` (`found: true` means a key is registered)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true` means a window currently admits transactions)
 
-Both are described in [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module). A window is opened with a QoreChain transaction (`MsgOpenEVMWindow`, bounded to at most 17,280 blocks and 1,000 transactions plus a value cap), not with an Ethereum transaction. See [EVM Development](/developer-guide/evm-development) for the lane overview.
+Both are described in [REST / gRPC Endpoints](/api-reference/rest-grpc-endpoints#pqc-module) (the window response also reports `native_only` and `allowed_targets`). A window is opened with a QoreChain transaction (`MsgOpenEVMWindow`, bounded to at most 17,280 blocks and 1,000 transactions plus a value cap), not with an Ethereum transaction. See [EVM Development](/developer-guide/evm-development) for the lane overview.
 :::
 
 ## Examples
@@ -161,7 +162,7 @@ Response:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

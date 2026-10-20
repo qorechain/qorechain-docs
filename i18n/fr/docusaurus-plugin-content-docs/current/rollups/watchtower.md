@@ -18,8 +18,8 @@ vérification de validité**. La Tour de guet ne décide jamais d'elle-même qu'
 lot est frauduleux — elle appelle votre fonction `validate` et agit selon ce que
 vous renvoyez.
 
-:::caution Stade précoce : nécessite les routes REST du RDK
-La Tour de guet lit les lots via le client REST du RDK. Les routes REST `/qorechain/rdk/v1/…` ne sont pas servies sur le mainnet aujourd'hui ; la Tour de guet ne peut donc pas encore fonctionner sur le mainnet. Aucun rollup n'a été créé sur l'un ou l'autre réseau, il n'y a donc rien à surveiller.
+:::caution Stade précoce : rien à surveiller, et les alertes d'échéance de la version 0.5.0 sont erronées
+La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 20 octobre 2026) ; il n'y a donc encore rien à surveiller. Dans `@qorechain/rdk` 0.5.0, la logique d'échéance de la fenêtre de contestation n'est en outre pas fiable : le `submittedAt` d'un lot est une **hauteur de bloc**, mais la Tour de guet (ainsi que le contrôle de santé derrière `qorollup status`) lui ajoute la fenêtre exprimée en secondes et compare la somme à l'horloge murale ; `secondsRemaining` n'a donc aucun sens, et `onDeadline` se déclenche dès qu'un lot est vu pour la première fois. N'utilisez pas `onDeadline` ni le compte à rebours pour prendre des décisions ; calculez vous-même l'échéance (voir la note ci-dessous). L'observateur ne lit en outre que la première page de lots (50).
 :::
 
 ## `watchBatches`
@@ -30,9 +30,9 @@ import { createRdkClient, watchBatches } from "@qorechain/rdk";
 const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
-// the networks require. See "Signing with the published clients" in
-// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
-// cannot get a challenge accepted.
+// the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
+// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
+// classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -56,9 +56,10 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called as a batch approaches the end of its challenge window.
+  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
+  // deadline mixes a block height with the wall clock, so treat this as unreliable.
   onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
+    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -77,7 +78,7 @@ contestataire automatique complet ; laissez-le non défini pour fonctionner en
 mode observation seule.
 
 :::note Fenêtre de contestation
-L'échéance rapportée par la Tour de guet utilise la fenêtre de contestation convertie en blocs à raison de 6 secondes par bloc (100 800 blocs par défaut) ; ainsi, avec les blocs d'environ 3,2 s du mainnet, la fenêtre réelle est plus courte que « 7 jours ». Publier une contestation exige également la caution de contestation du rollup (1 000 QOR pour les profils `nft` et `custom`).
+Calculez l'échéance d'un lot en blocs, pas en secondes : `submitted_at` (une hauteur de bloc) plus la fenêtre. **Sur le mainnet (v3.2.3)**, la fenêtre correspond aux 604 800 « secondes » par défaut converties à raison fixe de 6 secondes par bloc, soit **100 800 blocs** (le temps réel suit le temps de bloc, donc plus court que « 7 jours » avec les blocs d'environ 3,2 s du mainnet). **Sur le testnet uniquement (v3.2.4)**, un lot soumis à partir de la hauteur 8 337 253 reçoit une fenêtre mesurée en secondes de temps de bloc. Publier une contestation exige également la caution de contestation du rollup (1 000 QOR pour les profils `nft` et `custom`).
 :::
 
 ## CLI

@@ -10,11 +10,15 @@ sidebar_position: 8
 يتضمّن الـ RDK أدوات مساعدة بلغة TypeScript تُرمّز استدعاءً من عقد EVM إلى **precompile الاستدعاءات عبر الأجهزة الافتراضية** عند العنوان `0x0000000000000000000000000000000000000901`، وهو مصمَّم لتوجيهه إلى عقد CosmWasm على بيئة تشغيل **QoreChain Native** (Wasm)، إضافةً إلى قالب هيكلي `multivm-rollup` يربط بينها. تغطّي هذه الأدوات **EVM ← QoreChain Native** فقط؛ أما SVM فهو بيئة تشغيل منفصلة وليس جزءًا من الـ precompile.
 
 :::caution غير قابل للاستخدام على الشبكات الحيّة بعد
-الـ precompile الخاص بالاستدعاءات عبر الأجهزة الافتراضية **غير مُفعَّل** على أيٍّ من الشبكتين: قائمة الـ precompiles الثابتة النشطة في وحدة EVM فارغة على الشبكة الرئيسية وعلى شبكة الاختبار، لذا فإن استدعاء `0x…0901` يُرجع بيانات فارغة ولا ينفّذ شيئًا. كما أن رفع عقود CosmWasm مغلق على الشبكتين، ومسار معاملات SVM معطَّل على مستوى الشبكة بأكملها. وإلى أن يتم تفعيل الـ precompile وإعادة فتح رفع عقود CosmWasm، لا يوجد ما يمكن استدعاؤه. توثّق هذه الصفحة الأدوات لتتمكّن من الاستعداد؛ فلا تبنِ عليها تدفقات إنتاجية. راجع [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+الـ precompile الخاص بالاستدعاءات عبر الأجهزة الافتراضية **غير مُفعَّل** على أيٍّ من الشبكتين: قائمة الـ precompiles الثابتة النشطة في وحدة EVM فارغة على الشبكة الرئيسية وعلى شبكة الاختبار، واستدعاء `eth_getCode` للعنوان `0x…0901` يُرجع `0x`، والاستدعاء الموجَّه إليه ينجح ببيانات فارغة ولا ينفّذ شيئًا. كما أن رفع عقود CosmWasm مغلق على الشبكتين، ومسار معاملات SVM معطَّل على مستوى الشبكة بأكملها. وإلى أن يتم تفعيل الـ precompile وإعادة فتح رفع عقود CosmWasm، لا يوجد ما يمكن استدعاؤه. توثّق هذه الصفحة الأدوات لتتمكّن من الاستعداد؛ فلا تبنِ عليها تدفقات إنتاجية. راجع [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+:::
+
+:::caution المُرمِّز في الإصدار 0.5.0 لا يطابق تخطيط السلسلة
+تستخدم الدالة `encodeCrossVmCalldata` في `@qorechain/rdk` الإصدار 0.5.0 (وكذلك نقطة البداية `CrossVmCaller.sol` في قالب `multivm-rollup`) الدالة `executeCrossVMCall(string,bytes)`. أما العقدة فتفكّ ترميز `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (محدِّد من 4 بايتات، ثم المعاملات المرمَّزة وفق ABI؛ والقيمة `targetVM` 1 تعني CosmWasm، وهي الوجهة الوحيدة المدعومة)، وقد تتغيّر واجهة ABI قبل التفعيل. لذلك لا تُفكّ بيانات الاستدعاء الصادرة عن الأداة المساعدة على العقدة حتى بعد وجود الـ precompile. تعرض الأقسام التالية تخطيط العقدة.
 :::
 
 :::note
-اعتبارًا من RDK v0.4.2 أصبح معرّف خيار الجهاز الافتراضي لبيئة تشغيل Wasm هو **`native`** ‏(QoreChain Native)؛ ويبقى `cosmwasm` اسمًا بديلًا قديمًا مقبولًا، وكلاهما يُترجم إلى `cosmwasm` على مستوى الشبكة. أما دالة ABI الخاصة بالـ precompile فهي `executeCrossVMCall(string,bytes)`.
+اعتبارًا من RDK v0.4.2 أصبح معرّف خيار الجهاز الافتراضي لبيئة تشغيل Wasm هو **`native`** ‏(QoreChain Native)؛ ويبقى `cosmwasm` اسمًا بديلًا قديمًا مقبولًا، وكلاهما يُترجم إلى `cosmwasm` على مستوى الشبكة.
 :::
 
 ## عنوان الـ precompile
@@ -27,16 +31,27 @@ console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
 
 ## ترميز استدعاء عبر الأجهزة الافتراضية
 
-تبني الدالة `encodeCrossVmCalldata` بيانات الاستدعاء (calldata) للدالة `executeCrossVMCall(string contract, bytes msg)`. والمعامل `msg` هو رسالة التنفيذ الخاصة بالعقد، إما كسلسلة JSON بترميز UTF-8 أو كبايتات خام.
+رمِّز تخطيط العقدة مباشرةً. والمعامل `payload` هو رسالة التنفيذ الخاصة بالعقد على هيئة بايتات JSON بترميز UTF-8 (يظهر المثال باستخدام viem):
 
 ```ts
-import { encodeCrossVmCalldata } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1cosmwasmcontractaddress...",
-  msg: JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }),
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1, // CosmWasm
+    "qor1cosmwasmcontractaddress...",
+    toHex(new TextEncoder().encode(JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }))),
+  ],
 });
 ```
+
+تبني الدالة `encodeCrossVmCalldata({ contract, msg })` من `@qorechain/rdk` الصيغة `(string,bytes)` بدلًا من ذلك، وهي صيغة لا تقرؤها العقدة (راجع التنبيه أعلاه).
 
 ## جانب Solidity
 
@@ -48,15 +63,16 @@ address constant CROSS_VM_PRECOMPILE = 0x000000000000000000000000000000000000090
 function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
-    bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+    bytes memory data = abi.encodeWithSignature(
+        "executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_
+    );
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
 
-ولأن الـ precompile غير نشط، فإن استدعاء `.call` عاديًا إليه يُرجع نجاحًا مع بيانات فارغة؛ لذا تحقّق من طول البيانات المُرجَعة بدلًا من الاعتماد على العلم `ok` وحده إذا جرّبت ذلك اليوم.
+ولأن الـ precompile غير نشط، فإن استدعاء `.call` عاديًا إليه يُرجع **نجاحًا مع بيانات فارغة ولا ينفّذ شيئًا**؛ فالعلم `ok` لا يدل على أن الاستدعاء قد أحدث أثرًا. إذا جرّبت ذلك اليوم، فتحقّق من الأثر على العقد الهدف.
 
 ## إنشاء هيكل rollup متعدد الأجهزة الافتراضية
 
@@ -64,4 +80,4 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-يتضمّن القالب نقطة بداية في `contracts/CrossVmCaller.sol`؛ قارِنها بواجهة ABI أعلاه قبل الاعتماد عليها. راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب أداة الإنشاء الهيكلي.
+يتضمّن القالب نقطة بداية في `contracts/CrossVmCaller.sol`؛ قارِنها بتخطيط العقدة أعلاه قبل الاعتماد عليها. راجع [نشر Rollup](/rollups/deploying-a-rollup) للاطلاع على جميع قوالب أداة الإنشاء الهيكلي.

@@ -10,7 +10,7 @@ sidebar_position: 12
 Das `x/rdk`-Modul stellt ein umfassendes Rollup Development Kit (RDK) bereit, mit dem Entwickler anwendungsspezifische Rollups auf QoreChain bereitstellen können. Es unterstützt vier Settlement-Paradigmen, mehrere Sequencer-Modi, austauschbare Datenverfügbarkeits-Backends und KI-gestützte Konfigurationsoptimierung.
 
 :::caution Frühphasige Funktion
-Das Modul ist auf Mainnet (Chain-Version **v3.2.1**) und Testnet bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt**. Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
+Das Modul ist auf Mainnet (Chain-Version **v3.2.3**) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 20. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -19,12 +19,12 @@ Das Modul ist auf Mainnet (Chain-Version **v3.2.1**) und Testnet bereitgestellt,
 
 QoreChain RDK unterstützt vier unterschiedliche Settlement-Modi — **optimistic**, **zk**, **based** und **sovereign** — jeweils mit unterschiedlichen Vertrauensannahmen, Finalitätseigenschaften und Beweisanforderungen.
 
-### Optimistic Settlement
+### Optimistic Settlement {#optimistic-settlement}
 
 Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig sind, und verlassen sich für die Streitbeilegung auf Betrugsbeweise (Fraud Proofs).
 
 * **Beweissystem**: Interaktive Betrugsbeweise
-* **Challenge-Fenster**: 604.800 „Sekunden“ (Standard), von der Chain mit festen 6 Sekunden pro Block in Blöcke umgerechnet — **100.800 Blöcke**. Die tatsächlich verstreichende Zeit hängt von der realen Blockzeit ab (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets), planen Sie daher in Blöcken, nicht in Tagen.
+* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Mainnet (v3.2.3):** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Nur Testnet (v3.2.4, angewendet auf Höhe 8.337.253):** Für einen Batch, der ab dieser Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Im Mainnet würde diese Änderung erst mit v3.2.4 wirksam (der Governance-Vorschlag 13 würde sie bei Höhe 3,742,566 anwenden).
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
 * **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup registriert, aber noch nicht aktiviert                      |
 | **Active**  | Rollup ist live und verarbeitet Batches                        |
 | **Paused**  | Vom Ersteller vorübergehend angehalten (kann fortgesetzt werden)                   |
-| **Stopped** | Dauerhaft außer Betrieb genommen — Stake-Bond an den Ersteller zurückgegeben  |
+| **Stopped** | Dauerhaft außer Betrieb genommen — was vom Escrow des Erstellers übrig ist, wird zurückgegeben (siehe [Escrow-Ledger](#escrow-ledger))  |
 
 Bei der Erstellung wird der Rollup-Status unmittelbar nach erfolgreichem Stake-Escrow und erfolgreichem Erstellungs-Burn auf `Active` gesetzt (die Schichtregistrierung wird versucht, ist aber nicht fatal). Nur der Ersteller kann ein Rollup pausieren, fortsetzen oder stoppen (erzwungen seit Chain-Version v3.2.0).
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement-Modus | Finalisierungs-Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung |
+| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung; im Testnet bei Batches, die seit v3.2.4 eingereicht wurden, 604.800 Sekunden Blockzeit |
 | **ZK**          | Sofort bei Übermittlung eines gültigen Beweises                           |
 | **Based**       | 2 L1-Blöcke nach Übermittlung                                |
 | **Sovereign**   | Keine — verwaltet durch den eigenen Konsens des Rollups                |
@@ -255,18 +255,46 @@ Wenn ein Rollup erstellt wird, registriert das Modul dafür über `RegisterSidec
 * Unterstützte VM-Typen und Domänen
 * Settlement-Intervall
 
-Die Registrierung ist **nicht fatal**: Schlägt sie fehl (unzureichendes Guthaben oder Limit erreicht), wird der Rollup dennoch erstellt, hat aber keine Schicht und kann nicht verankert werden.
+Die Registrierung ist **nicht fatal**: Schlägt sie fehl (unzureichendes Guthaben oder Limit erreicht), wird das Rollup dennoch erstellt, hat aber keine Schicht und kann nicht verankert werden. Ein Settlement-Anchor setzt nicht voraus, dass die Schicht `active` ist: Die Schicht, die ein RDK-Rollup registriert, bleibt `proposed` und kann von ihrem Ersteller trotzdem verankert werden (siehe [Übermittlung von Anchors](/architecture/multilayer-architecture#anchor-submission)).
 
 ### State-Anchoring {#state-anchoring}
 
-Ein Settlement-Batch kann in `x/multilayer` verankert werden, das Layer-ID, Schichthöhe (den Batch-Index), State-Root, Hash des Validator-Sets und Transaktionsanzahl unter einer Post-Quanten-Signatur des Rollup-Erstellers erfasst.
+Ein Settlement-Batch kann in `x/multilayer` verankert werden, das Layer-ID, Schichthöhe (den Batch-Index), State-Root, Hash des Validator-Sets und Transaktionsanzahl unter einer Post-Quantum-Signatur des Rollup-Erstellers erfasst.
 
-* **Heute auf Mainnet:** Batches werden abgewickelt, aber **nicht** verankert — das RDK liefert die vom Anker geforderte Signatur des Erstellers nicht, daher gelingt der Anchoring-Schritt nicht und es wurde noch kein Anker geschrieben. Das Anchoring ist nicht fatal: Es verhindert nie die Batch-Verarbeitung.
+* **Seit v3.2.2 (live auf Mainnet und Testnet):** `MsgSubmitBatch` hat zwei optionale Felder. `anchor_signature` ist die ML-DSA-87-Signatur des Erstellers über die **v2-Anchor-Sign-Bytes** des Batches (siehe [Lesen von Anchors](/architecture/multilayer-architecture#reading-anchors)); ist sie vorhanden, wird der Batch in **derselben Transaktion** in `x/multilayer` verankert, und ein abgelehnter Anchor lehnt den Batch ab. `validator_set_hash` ist das Commitment des Validator-Sets des Rollups, das im Anchor mitgeführt und von der Signatur abgedeckt wird. In der CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` gibt die zu signierenden Bytes aus, und `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` übermittelt sie.
+* **Ohne die Signatur** wird der Batch unverankert abgewickelt, genau wie zuvor. Ein Client, der das Feld nicht sendet, erzeugt unverankerte Batches; prüfen Sie daher, ob das von Ihnen verwendete Toolkit es unterstützt. In keinem der beiden Netzwerke existiert bisher ein Rollup, eine Schicht oder ein Anchor, daher wurde noch kein Anchor geschrieben.
 
-Siehe [Settlement Receipts](/rollups/settlement-receipts), was ein Anker beweist und was nicht.
+Siehe [Settlement Receipts](/rollups/settlement-receipts), was ein Anchor beweist und was nicht.
+
+---
+
+## Escrow-Ledger und Auszahlungen {#escrow-ledger}
+
+Das Escrow aller Rollups liegt in einem gemeinsamen Modulguthaben. Seit **v3.2.3** (Mainnet-Höhe 3.662.051, 20. Oktober 2026) ist ein **Escrow-Ledger** pro Rollup die einzige Buchführung darüber, was jedes Rollup in diesem Pool hält:
+
+* `create-rollup` schreibt dem Ledger das Escrow gut, das das Rollup tatsächlich behält: den Stake abzüglich des 1-%-Erstellungs-Burns.
+* Eine Auszahlung (`tx rdk execute-withdrawal`) und eine Betrugsbeweis-Belohnung werden aus dem Ledger gezahlt und davon abgebucht. Eine Auszahlung, die größer ist als das, was das Rollup noch hält, wird mit einem Insufficient-Escrow-Fehler abgelehnt.
+* `stop-rollup` erstattet nur, was im Ledger übrig ist, und setzt es auf null. Ein gestopptes Rollup zahlt keine weiteren Auszahlungen.
+* Die schreibgeschützte `RollupView`, die von den Rollup-Queries zurückgegeben wird, trägt `escrow_balance`: das für dieses Rollup noch gehaltene uqor.
+
+Vor v3.2.3 wurde dem Ledger null gutgeschrieben, sodass jede Auszahlung geschlossen fehlschlug (fail closed); `execute-withdrawal` kann im Mainnet daher erst ab v3.2.3 erfolgreich sein. Die Prüfungen, die ein Client vor dem Bezahlen einer Gebühr ausführen sollte: Der Denom muss genau `uqor` sein, der Betrag muss positiv sein, der Merkle-Proof hat höchstens 64 Ebenen, wobei jedes Geschwister genau 32 Bytes umfasst, und Einreicher und Empfänger müssen gültige `qor1…`-Adressen sein. Eine Auszahlung braucht außerdem einen finalisierten Batch, der eine `withdrawals_root` committet hat, und jedes Auszahlungs-Blatt kann nur einmal bezahlt werden.
+
+## RDK-State lesen {#reading-state}
+
+Die RDK-Queries werden im Mainnet und im Testnet per REST unter `/qorechain/rdk/v1/` bereitgestellt:
+
+| Route | Liefert |
+| --- | --- |
+| `/params` | Modulparameter (die Tabelle oben) |
+| `/rollups` und `/rollup/{rollup_id}` | Rollup-Datensätze, einschließlich `escrow_balance` |
+| `/batches/{rollup_id}` | Batches, seitenweise (`start_index`, `limit` Standard 50, höchstens 100, `next_index`) |
+| `/batch/{rollup_id}/{batch_index}` und `/latest_batch/{rollup_id}` | Ein Batch oder der neueste |
+| `/blob/{rollup_id}/{blob_index}` | Blob-Metadaten, einschließlich `expires_at_height` (die Blob-Bytes werden nicht zurückgegeben) |
+
+`qorechaind query rdk config` gibt die Modulparameter aus (die Route ist `/params`; eine Route `/config` gibt es nicht). Rollup- und Schicht-IDs müssen der ID-Grammatik unter [Schicht- und Rollup-IDs](/architecture/multilayer-architecture#id-grammar) entsprechen, durchgesetzt seit v3.2.2.
 
 ---
 
 ## Burn-Integration
 
-Bei der Rollup-Erstellung wird **1 % des Stake-Betrags** über das `x/burn`-Modul über den `rollup_create`-Burn-Kanal verbrannt. Beispiel: Das Erstellen eines Rollups mit dem Mindest-Stake von 10.000 QOR verbrennt 100 QOR dauerhaft. Die verbleibenden 9.900 QOR werden im Escrow gehalten und bei Beendigung des Rollups zurückgegeben. Der Erstellungs-Burn wird seit Chain-Version v3.2.0 erzwungen; frühere Releases wendeten ihn nicht an.
+Bei der Rollup-Erstellung werden **1 % des Stake-Betrags** über das `x/burn`-Modul über den `rollup_create`-Burn-Kanal verbrannt. Beispiel: Das Erstellen eines Rollups mit dem Mindest-Stake von 10.000 QOR verbrennt 100 QOR dauerhaft. Die verbleibenden 9.900 QOR werden im Escrow gehalten, und wenn das Rollup gestoppt wird, wird das, was davon übrig ist, an den Ersteller zurückgegeben (Auszahlungen und Betrugsbeweis-Belohnungen, die aus dem Escrow gezahlt werden, verringern die Erstattung). Der Erstellungs-Burn wird seit Chain-Version v3.2.0 erzwungen; frühere Releases wendeten ihn nicht an.

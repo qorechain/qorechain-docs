@@ -90,7 +90,8 @@ tranzacției, ca mesaj de bandă Native semnat hibrid. Regulile la nivel de lan�
 formele CLI și codurile de refuz se găsesc în
 [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 
-Cu SDK **0.8.2 sau mai nou** poți deschide o fereastră din cod. Înregistrarea cheii
+Cu SDK **0.8.2 sau mai nou** poți deschide o fereastră din cod (**0.9.0** adaugă
+opțiunile de domeniu de mai jos). Înregistrarea cheii
 (o singură dată) este descrisă în [Quantum-safe](/sdk/guides/quantum-safe); exemplul
 de mai jos deschide apoi o fereastră pentru un cont eth-native unificat (`npm i @cosmjs/stargate`):
 
@@ -157,6 +158,99 @@ try {
 
 `closeEvmWindowMsg` construiește mesajul de închidere corespunzător, iar
 `MAX_EVM_WINDOW_BLOCKS` și `MAX_EVM_WINDOW_TXS` exportă limitele.
+
+### Domeniul unei ferestre (lanț v3.2.3, SDK 0.9.0) {#evm-window-scope}
+
+O fereastră poate fi restrânsă la deschidere: `nativeOnly` admite doar transferuri
+simple de QOR nativ (fără calldata, fără creare de contract, fără destinatar care
+poartă cod, fără autorizare EIP-7702), iar `allowedTargets` admite doar tranzacții al
+căror destinatar este una dintre cel mult 16 adrese `0x` listate (fără duplicate;
+crearea de contract este refuzată). Ambele sunt câmpuri noi de mesaj: un nod sub v3.2.3
+refuză întreaga tranzacție când oricare dintre ele este setat, așa că setează-le doar pe
+o rețea care a aplicat v3.2.3 (ambele rețele publice au aplicat-o). `fetchEvmWindow` le
+citește înapoi pe ambele (`nativeOnly`, `allowedTargets`; înainte de v3.2.3 se citesc
+`false` și gol). Pentru o fereastră deschisă doar pentru a trimite QOR, preferă
+`nativeOnly`.
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  openEvmWindowMsg,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic); // already registered on-chain
+const tx = await client.connectTx(signer, { pqcKeypair });         // signs hybrid
+
+await tx.signAndBroadcast(
+  [
+    openEvmWindowMsg({
+      sender: account.address,
+      blocks: 7200,
+      maxTxs: 20,
+      maxValue: "1000000000", // uqor: value PLUS the maximum fee of each transaction
+      nativeOnly: true,
+      // or: allowedTargets: ["0x…", "0x…"],
+    }),
+  ],
+  "auto",
+);
+```
+
+### Consimțământul EIP-7702 (lanț v3.2.2, SDK 0.9.0) {#evm-delegation-consent}
+
+O tranzacție de tip 4 (EIP-7702) este admisă doar după ce fiecare cont a cărui
+autorizare intră în vigoare a dat un consimțământ post-cuantic exact pentru acel
+delegat, printr-un `MsgAuthorizeEVMDelegation` semnat hibrid. Consimțământul este
+consumat de tranzacția care instalează delegarea și expiră după `blocks` pe care îl
+setezi (1 până la 17,280); adresa zero ca delegat consimte la ștergere. SDK-ul
+construiește mesajele și citește înapoi consimțământul, inclusiv nonce-ul pe care
+trebuie să-l poarte tuplul de autorizare:
+
+```ts
+import {
+  authorizeEvmDelegationMsg,
+  clearEvmDelegationMsg,
+  fetchEvmDelegationConsent,
+  evmDelegationTupleNonce,
+} from "@qorechain/sdk";
+
+// 1) Consent to one delegate (hybrid-signed Native-lane message, `tx` as above).
+await tx.signAndBroadcast(
+  [authorizeEvmDelegationMsg({ sender: account.address, delegate: "0xDelegate…", blocks: 600 })],
+  "auto",
+);
+
+// 2) Read the consent: the tuple's nonce is the account's EVM nonce for a
+//    sponsored transaction, and that nonce + 1 when the account sends it itself.
+const consent = await fetchEvmDelegationConsent({ rest: "https://api.qore.host", address: account.address });
+const tupleNonce = evmDelegationTupleNonce(consent, /* sponsored */ true);
+
+// 3) Sign the authorisation tuple with `tupleNonce` and send the type-4
+//    transaction (the sender still needs an open window; a sponsor pays from its own).
+
+// Remove an installed delegation directly, without any EVM transaction:
+// await tx.signAndBroadcast([clearEvmDelegationMsg(account.address)], "auto");
+```
+
+`classifyEvmDelegationRejection(err)` returnează `"no-consent"` sau `"invalid"` când
+banda EVM refuză o delegare. Interogarea consimțământului necesită lanț v3.2.2 sau mai
+nou. Regulile la nivel de lanț se găsesc în
+[Delegări EIP-7702](/architecture/post-quantum-security#eip-7702); formele CLI sunt
+`qorechaind tx pqc authorize-evm-delegation` și `clear-evm-delegation`.
+
+Versiunile anterioare lui 0.9.0 construiesc doar fereastra fără domeniu (o fereastră
+fără domeniu funcționează în continuare pe ambele rețele) și nu au constructori de
+consimțământ; folosește acolo formele CLI din
+[Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 
 ## Precompile
 

@@ -10,7 +10,7 @@ sidebar_position: 5
 Această pagină acoperă două subiecte conexe: **sistemele de demonstrații ZK** (`snark` și `stark`) folosite de rollup-urile decontate prin ZK și **fluxul de retragere L2 → L1** care mută fondurile dintr-un rollup înapoi în QoreChain odată ce un lot este finalizat.
 
 :::caution Capabilitate în etapă timpurie
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele, așa că nici verificarea demonstrațiilor, nici fluxul de retragere descrise aici nu au fost exersate pe un rollup live. Verificarea SNARK există, dar un rollup creat prin `create-rollup` nu poate încă finaliza un lot ZK, iar verificarea STARK este experimentală. Validează pe testnet-ul **`qorechain-diana`** și nu presupune garanții consolidate pentru producție pe mainnet.
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 20 octombrie 2026), așa că nici verificarea demonstrațiilor, nici fluxul de retragere descrise aici nu au fost exersate pe un rollup live. Retragerile pot reuși pe mainnet doar începând cu v3.2.3 (înălțimea 3,662,051, 20 octombrie 2026), când registrul de escrow pe fiecare rollup a intrat în funcțiune (vezi [De unde provin fondurile](#where-the-funds-come-from)); înainte de aceasta, fiecare retragere eșua. Verificarea SNARK există, dar un rollup creat prin `create-rollup` nu poate încă finaliza un lot ZK, iar verificarea STARK este experimentală. Validează pe testnet-ul **`qorechain-diana`** și nu presupune garanții consolidate pentru producție pe mainnet.
 :::
 
 ---
@@ -52,7 +52,7 @@ Pentru modul în care loturile sunt trimise și finalizate — inclusiv `submit-
 
 ## Executarea unei retrageri: `execute-withdrawal`
 
-Comanda `execute-withdrawal` finalizează o retragere L2 → L1 față de rădăcina de retrageri a unui lot finalizat. Aceasta dovedește că o frunză de retragere este angajată în acea rădăcină și plătește destinatarul din escrow-ul modulului rdk. Acțiunea este **fără permisiuni (permissionless)** — oricine poate trimite o demonstrație validă. Ca orice tranzacție pe lane-ul nativ, necesită co-semnătura post-cuantică hibridă, așa că construiește-o cu `--generate-only` și co-semn-o (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup)). Retragerile nu au fost încă exersate pe un rollup live; tratează fluxul ca netestat.
+Comanda `execute-withdrawal` finalizează o retragere L2 → L1 față de rădăcina de retrageri a unui lot finalizat. Aceasta dovedește că o frunză de retragere este angajată în acea rădăcină și plătește destinatarul din escrow-ul modulului rdk. Acțiunea este **fără permisiuni (permissionless)** — oricine poate trimite o demonstrație validă. Ca orice tranzacție pe lane-ul nativ, necesită co-semnătura post-cuantică hibridă, așa că construiește-o cu `--generate-only` și co-semn-o (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup)). Retragerile nu au fost încă exersate pe un rollup live; tratează fluxul ca netestat. Verifică următoarele înainte de a plăti o taxă, deoarece altfel lanțul refuză tranzacția: denominația trebuie să fie exact `uqor`, suma trebuie să fie pozitivă, demonstrația are cel mult 64 de niveluri și fiecare frate are exact 32 de octeți, trimițătorul și destinatarul sunt adrese `qor1…` valide, lotul este finalizat și a angajat un `withdrawals_root`, rollup-ul nu este oprit, iar frunza respectivă de retragere nu a mai fost plătită înainte.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -96,7 +96,7 @@ Helperele generice `binaryMerkleRoot` / `binaryMerkleProof` ale RDK folosesc imp
 
 ### De unde provin fondurile {#where-the-funds-come-from}
 
-O retragere este plătită din **stake-ul aflat în escrow al rollup-ului însuși** (stake-ul minus arderea de la creare). Modulul ține un registru pe fiecare rollup, astfel încât o retragere dovedită pentru un rollup nu poate fi plătită din stake-ul altui rollup. Modulul nu are niciun mesaj de depunere L1 → L2, deci aceasta nu este o punte (bridge) pentru fondurile utilizatorilor.
+O retragere este plătită din **stake-ul aflat în escrow al rollup-ului însuși** (stake-ul minus arderea de 1% de la creare). Escrow-ul tuturor rollup-urilor se află într-un singur sold comun al modulului, iar începând cu **v3.2.3** un **registru de escrow** pe fiecare rollup ține evidența a ceea ce deține fiecare rollup: `create-rollup` îl creditează cu escrow-ul pe care rollup-ul îl păstrează, o retragere sau o recompensă pentru demonstrație de fraudă este plătită din el și debitată din el, iar o retragere mai mare decât ceea ce rollup-ul încă deține este refuzată cu o eroare de escrow insuficient. `stop-rollup` rambursează doar ce a rămas și aduce registrul la zero, iar un rollup oprit nu mai plătește retrageri. O retragere dovedită pentru un rollup nu poate fi, așadar, plătită din stake-ul altui rollup. Interogările rollup-ului conțin `escrow_balance` (uqor încă deținuți pentru acel rollup). Modulul nu are niciun mesaj de depunere L1 → L2, deci aceasta nu este o punte (bridge) pentru fondurile utilizatorilor.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Decontează un lot.** Operatorul rollup-ului trimite un lot de decontare cu `submit-batch`. Lotul poate angaja o rădăcină de retrageri peste mesajele sale de ieșire L2 → L1.
-2. **Finalizează.** Lotul se finalizează conform modului de decontare al rollup-ului — la verificarea unei demonstrații valide pentru `zk` sau după fereastra de contestare pentru `optimistic` (în timpul căreia `challenge-batch` îl poate disputa).
+2. **Finalizează.** Lotul se finalizează conform modului de decontare al rollup-ului — la verificarea unei demonstrații valide pentru `zk` sau după fereastra de contestare pentru `optimistic` (în timpul căreia `challenge-batch` îl poate disputa). Pe mainnet, fereastra optimistă este implicit de 100,800 de blocuri; doar pe testnet (v3.2.4) se măsoară în secunde de timp de bloc pentru loturile trimise începând de la înălțimea 8,337,253.
 3. **Dovedește și execută.** Odată finalizat, oricine trimite `execute-withdrawal` cu demonstrația de incluziune Merkle (`--proof`) pentru frunza de retragere specifică. Modulul verifică incluziunea față de rădăcina de retrageri a lotului finalizat și plătește destinatarul din escrow.
 
 Deoarece pasul 3 este fără permisiuni și bazat pe demonstrație, o retragere nu depinde de cooperarea operatorului rollup-ului odată ce lotul care o transportă este finalizat.

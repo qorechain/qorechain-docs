@@ -17,7 +17,7 @@ QoreChain은 EVM 호환 JSON-RPC 인터페이스를 구현하여, 표준 이더�
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-EVM JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`, 노드 릴리스 **v3.2.1**)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 16진수 `0x2648`, 노드 릴리스 **v3.2.2**)에서 제공됩니다. 위의 로컬 주소는 직접 실행하는 노드에 적용됩니다. 공개 HTTP 엔드포인트는 `https://evm.qore.host`(메인넷)와 `https://evm-testnet.qore.host`(테스트넷)이며, [네트워크](/appendix/networks#public-endpoints)에 나열되어 있습니다. 공개 EVM WebSocket은 테스트넷 것(`wss://evm-ws-testnet.qore.host`)뿐이며, 공개 메인넷 EVM WebSocket은 없습니다.
+EVM JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 16진수 `0x2649`, 노드 릴리스 **v3.2.3**, 2026년 6월 7일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 16진수 `0x2648`, 노드 릴리스 **v3.2.4**, 테스트넷 전용)에서 제공됩니다. 위의 로컬 주소는 직접 실행하는 노드에 적용됩니다. 공개 HTTP 엔드포인트는 `https://evm.qore.host`(메인넷)와 `https://evm-testnet.qore.host`(테스트넷)이며, [네트워크](/appendix/networks#public-endpoints)에 나열되어 있습니다. 공개 EVM WebSocket은 테스트넷 것(`wss://evm-ws-testnet.qore.host`)뿐이며, 공개 메인넷 EVM WebSocket은 없습니다.
 :::
 
 ## 지원되는 네임스페이스
@@ -69,8 +69,8 @@ EVM JSON-RPC 인터페이스는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **
 | 메서드           | 매개변수 | 설명                                                         |
 | ---------------- | ---------- | ------------------------------------------------------------------- |
 | `txpool_status`  | 없음       | 대기 중 및 큐에 있는 트랜잭션 수를 반환합니다               |
-| `txpool_content` | 없음       | 대기 중 및 큐에 있는 트랜잭션을 반환합니다(공개 메인넷에서는 사용 불가) |
-| `txpool_inspect` | 없음       | 풀의 요약을 반환합니다(공개 메인넷에서는 사용 불가)               |
+| `txpool_content` | 없음       | 대기 중 및 큐에 있는 트랜잭션을 반환합니다(공개 엔드포인트에서는 사용 불가) |
+| `txpool_inspect` | 없음       | 풀의 요약을 반환합니다(공개 엔드포인트에서는 사용 불가)         |
 
 ## net_ 메서드
 
@@ -95,7 +95,8 @@ address = "0.0.0.0:8545"
 # WebSocket server address
 ws-address = "0.0.0.0:8546"
 
-# Enabled API namespaces
+# Enabled API namespaces (a node initialised by v3.2.3 or later defaults to "eth,net,web3";
+# txpool is opt-in because it publishes the node's pending transactions)
 api = "eth,web3,net,txpool"
 
 # Maximum number of logs returned by eth_getLogs
@@ -118,7 +119,7 @@ max-open-connections = 0
 
 :::note
 - `eth_getLogs`는 `fromBlock`과 `toBlock` 사이에 최대 **10,000블록**까지만 허용합니다. 더 넓은 범위는 `{"code":-32000,"message":"maximum [from, to] blocks distance: 10000"}`를 반환합니다. 10,000블록 이하의 구간으로 나누어 조회하세요. 별도의 `filter-cap` 설정은 반환되는 로그 수를 제한합니다.
-- `txpool_status`는 공개 메인넷 엔드포인트에서 동작합니다. `txpool_content`와 `txpool_inspect`는 그곳에서 비활성화되어 있습니다(공개 테스트넷 엔드포인트와 직접 실행하는 노드에서는 동작합니다).
+- `txpool_status`는 공개 엔드포인트에서 동작합니다. `txpool_content`와 `txpool_inspect`는 공개 메인넷과 공개 테스트넷 엔드포인트 모두에서 비활성화되어 있습니다(`api` 목록에 `txpool`이 있는 직접 실행 노드에서는 동작합니다).
 - `debug_*` 메서드와 `eth_signTransaction`은 사용할 수 없습니다.
 - `eth_subscribe`에는 WebSocket 연결이 필요합니다. HTTP에서는 `-32601 notifications not supported`를 반환합니다. [WebSocket 이벤트](/api-reference/websocket-events)를 참조하세요.
 - 공개 엔드포인트에서는 오래된 높이의 상태가 프루닝되므로, 먼 과거 블록에 대한 `eth_call`은 상태 버전 오류로 실패할 수 있습니다.
@@ -128,14 +129,14 @@ max-open-connections = 0
 ## 트랜잭션 전송 {#sending-transactions}
 
 :::caution EVM 레인에는 PQC 키와 열린 윈도우가 필요합니다
-체인 버전 v3.2.0부터 EVM 레인은 **등록된 양자내성 키**와 **열려 있는 EVM 승인 윈도우**가 있는 계정의 트랜잭션(컨트랙트 배포를 포함한 `MsgEthereumTx`)만 수락합니다. 이 설정을 마치지 않은 일반 EVM 지갑은 트랜잭션을 제출할 수 없습니다: 노드는 해당 트랜잭션을 포함하지 않고 `pqc` 모듈 오류(코드 26, 27 또는 28)로 거부합니다. 잔액 조회, `eth_call` 호출, 가스 추정에는 윈도우가 필요하지 않습니다.
+체인 버전 v3.2.0부터 EVM 레인은 **등록된 양자내성 키**와 **열려 있는 EVM 승인 윈도우**가 있는 계정의 트랜잭션(컨트랙트 배포를 포함한 `MsgEthereumTx`)만 수락합니다. 이 설정을 마치지 않은 일반 EVM 지갑은 트랜잭션을 제출할 수 없습니다: 노드는 해당 트랜잭션을 포함하지 않고 `pqc` 모듈 오류(코드 26, 27 또는 28)로 거부합니다. 잔액 조회, `eth_call` 호출, 가스 추정에는 윈도우가 필요하지 않습니다. v3.2.2부터는 **체인 ID 없이** 서명된(EIP-155 이전 방식) 트랜잭션도 거부되며, v3.2.3부터는 윈도우의 범위를 일반 QOR 전송(`native_only`) 또는 지정한 수신자(`allowed_targets`)로 제한할 수 있습니다. 범위를 벗어난 트랜잭션은 코드 27로 거부됩니다.
 
 전송하기 전에 계정을 확인하세요:
 
 - `GET /qorechain/pqc/v1/account/{address}` (`found: true`는 키가 등록되어 있음을 의미)
 - `GET /qorechain/pqc/v1/evm_window/{address}` (`live: true`는 현재 윈도우가 트랜잭션을 허용하고 있음을 의미)
 
-두 엔드포인트 모두 [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module)에 설명되어 있습니다. 윈도우는 이더리움 트랜잭션이 아니라 QoreChain 트랜잭션(`MsgOpenEVMWindow`, 최대 17,280블록 및 1,000개 트랜잭션과 값 상한으로 제한됨)으로 엽니다. 레인 개요는 [EVM 개발](/developer-guide/evm-development)을 참조하세요.
+두 엔드포인트 모두 [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module)에 설명되어 있습니다(윈도우 응답에는 `native_only`와 `allowed_targets`도 함께 표시됩니다). 윈도우는 이더리움 트랜잭션이 아니라 QoreChain 트랜잭션(`MsgOpenEVMWindow`, 최대 17,280블록 및 1,000개 트랜잭션과 값 상한으로 제한됨)으로 엽니다. 레인 개요는 [EVM 개발](/developer-guide/evm-development)을 참조하세요.
 :::
 
 ## 예제
@@ -161,7 +162,7 @@ curl -X POST http://localhost:8545 \
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "result": "0x53b35"
+  "result": "0x37f559"
 }
 ```
 

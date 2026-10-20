@@ -10,7 +10,7 @@ sidebar_position: 1
 Dieser Leitfaden behandelt den QOR-Token, das Senden und Empfangen von Token, das Abfragen von Guthaben sowie das Verständnis des Gebührenverteilungsmodells von QoreChain.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 live und läuft auf der v3.2-Linie (Node-Release **v3.2.1**; das Testnet läuft mit **v3.2.2**) — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live und läuft auf Release **v3.2.3**; das Testnet läuft mit **v3.2.4** — ersetzen Sie die Mainnet-Chain-ID und -Endpunkte von der Seite **Connecting to Mainnet**, wenn Sie im Mainnet Transaktionen durchführen.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -92,13 +92,13 @@ Transaktionsgebühren auf QoreChain werden auf fünf Ziele verteilt, um die Netz
 | **Verbrannt**    | 30%   | Wird dauerhaft aus dem Umlauf entfernt                           |
 | **Treasury**     | 20%   | Finanziert die Protokollentwicklung und Ökosystem-Grants         |
 | **Staker**       | 10%   | Proportional an alle Delegatoren verteilt                        |
-| **Light Nodes**  | 3%    | Für Light-Node-Belohnungen reserviert (siehe Hinweis unten)      |
+| **Light Nodes**  | 3%    | Light-Node-Belohnungen (siehe Hinweis unten)                     |
 
-Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transaktionsgebühren und die in jeder Epoche geprägte Staking-Emission enthält. Der Light-Node-Anteil sammelt sich in einer Reserve an; die Registrierung für Light-Node-Belohnungen ist noch nicht geöffnet, daher wird derzeit kein Node daraus bezahlt (siehe [Light Node](/light-node/overview)). Seit dem Upgrade v3.2.0 wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt (siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+Die Aufteilung gilt für alles, was in den Fee Collector fließt, der die Transaktionsgebühren und die in jeder Epoche geprägte Staking-Emission enthält. Der Light-Node-Anteil sammelt sich im Belohnungspool für Light Nodes an; die Registrierung ist offen und lizenzgebunden, aber noch hat sich kein Light Node registriert, sodass derzeit kein Node daraus bezahlt wird (siehe [Light Node](/light-node/overview#reward-program-status)). Seit dem Upgrade v3.2.0 wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt (siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Burn-Kanäle
 
-Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davon verbrannt wird, wird dauerhaft aus dem Umlauf entfernt. Im Mainnet hat bisher nur der Gas-Gebühren-Kanal Burns verzeichnet; die anderen sind definiert, haben aber nichts verzeichnet.
+Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davon verbrannt wird, wird dauerhaft aus dem Umlauf entfernt. Im Mainnet haben bisher nur der Gas-Gebühren-Kanal und der Kanal für fehlgeschlagene Transaktionen Burns verzeichnet; die anderen sind definiert, haben aber nichts verzeichnet. Das Testnet verzeichnet eine dreizehnte Quelle, `staking_tier_penalty`, für sein optionales Modul für zeitgesperrtes Staking.
 
 | Kanal               | Beschreibung                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ Das Burn-Modul von QoreChain definiert 12 Burn-Quellen. QOR, das über eine davo
 | `ai_service`       | 50% der KI-Dienstgebühren werden verbrannt (inaktiv: KI-Dienstgebühren sind nicht live) |
 | `bridge_fee`       | 100% der Bridge-Gebühren werden verbrannt (inaktiv: die Bridge ist nicht live)   |
 | `treasury_buyback` | Periodischer Buyback-and-Burn aus der Treasury                                   |
-| `failed_tx`        | Gas fehlgeschlagener Transaktionen; wird von der Chain ab v3.2.2 angewendet (bisher nur im Testnet) |
+| `failed_tx`        | 10% des Gas fehlgeschlagener Transaktionen; wird von der Chain ab v3.2.2 angewendet |
 | `xqore_penalty`    | xQORE-Strafen für vorzeitigen Ausstieg, die über Burn geleitet werden (xQORE ist nicht live) |
 | `auto_buyback`     | Automatisierte Burns auf Protokollebene (inaktiv)                                |
 | `tge`              | Reserviert; der TGE-Burn fand vor dem Genesis statt, und dieser Kanal verzeichnet nichts |

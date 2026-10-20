@@ -14,7 +14,7 @@ QoreChainは`x/abstractaccount`モジュールを通じて**プロトコルレ�
 :::
 
 :::note
-以下のコマンドは、メインネット**`qorechain-vladi`**（2026年6月29日から稼働）を使用しています。このネットワークはノードリリース**v3.2.1**（コンセンサスルールはv3.2.0から）で動作しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。テストネットはv3.2.2で動作しています。
+以下のコマンドは、メインネット**`qorechain-vladi`**（2026年6月7日から稼働）を使用しています。このネットワークはノードリリース**v3.2.3**で動作しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。テストネットはv3.2.4（テストネット専用）で動作しています。
 :::
 
 :::caution Cosmosレーンのトランザクションにはすべて、ポスト量子ハイブリッドの副署名が必要です
@@ -86,7 +86,9 @@ qorechaind tx abstractaccount revoke-authenticator <account-address> <scheme> <p
 | ---------------- | ----------------------------------------------------- |
 | `daily_limit`    | UTC暦日あたりの最大合計支出額              |
 | `per_tx_limit`   | 承認された個々の実行あたりの最大支出額     |
-| `allowed_denoms` | 使用可能なトークンデノミネーションの制限       |
+| `allowed_denoms` | 使用可能なトークンデノミネーションの制限（ERC-20は`erc20/<contract>`として列挙します）       |
+| `denom_limits`   | デノミネーションごとの上限を10進数文字列で指定（v3.2.2）: `{"denom","per_tx_limit","daily_limit"}`。指定したデノミネーションについては`per_tx_limit`と`daily_limit`の代わりに適用されるため、18桁のトークンにも上限を設けられます |
+| `allowed_evm_calls` | ルールに縛られた鍵が**コールデータ付きで**行えるEVMコール（v3.2.2）。`0x<target>`（そのコントラクトの任意の関数）または`0x<target>/0x<selector>`（その関数のみ）の形式で指定します。エントリがない場合、ルールに縛られた鍵は、価値の送信、（`deploy`権限があれば）デプロイ、`allowed_denoms`に列挙されたERC-20トークンの移動しかできません。ターゲットを列挙すると、そのターゲットへのコールのすべての引数（受取人を含む）を信頼することになります |
 
 ### 支出ルールの設定
 
@@ -98,7 +100,13 @@ qorechaind tx abstractaccount update-rules <account-address> \
   --from mykey --gas 400000 --fees 40000uqor
 ```
 
-上限は基本単位（`uqor`）で表され、承認された実行ごとにカウントされます。1日あたりの上限は、UTC暦日あたりの合計を制限します。ルールは保存済みのものを丸ごと置き換えるため、省略したフィールドは削除されます。
+上限は基本単位（`uqor`）で表され、承認された実行ごとにカウントされます。1日あたりの上限は、UTC暦日あたりの合計を制限します。ルールは保存済みのものを丸ごと置き換えるため、省略したフィールドは削除されます。v3.2.2以降、EVMレーンは`msg.value`だけでなく、コールが実際に動かすもの（ネイティブ価値、アカウントのネイティブ残高の減少、使用されたバンクコイン、列挙された各ERC-20の残高またはアローワンスの変化）を測定します。また、コントラクト作成には別の`deploy`権限が必要です。より詳しい例:
+
+```bash
+qorechaind tx abstractaccount update-rules <account-address> \
+  '[{"id":"daily","enabled":true,"daily_limit":5000000,"allowed_denoms":["uqor","erc20/0xTOKEN"],"allowed_evm_calls":["0xROUTER/0x38ed1739"],"denom_limits":[{"denom":"erc20/0xTOKEN","per_tx_limit":"100000000000000000000","daily_limit":"500000000000000000000"}]}]' \
+  --from mykey --gas 400000 --fees 40000uqor
+```
 
 ### 現在のルールの照会
 
@@ -149,7 +157,7 @@ Phantomの鍵も同じ方法で、スキーム`ed25519`とPhantomの公開鍵を
 | `amm` / `ibc` / `deploy` | AMM操作、IBC送金、コントラクトデプロイ |
 | `all` | *委任可能な*あらゆるメッセージ |
 
-**鍵管理メッセージは決して委任できません**——`MsgRegisterAuthenticator`、`MsgRevokeAuthenticator`、PQC鍵の登録／移行、そして`MsgRotatePQCKey`は常にルートキーを必要とし、連携された鍵が自身の権限をエスカレーションすることはできません。
+**鍵管理メッセージは決して委任できません**——`MsgRegisterAuthenticator`、`MsgRevokeAuthenticator`、PQC鍵の登録／移行、そして`MsgRotatePQCKey`は常にルートキーを必要とし、連携された鍵が自身の権限をエスカレーションすることはできません。スキーマ（`schema_version` 2）には`lane_rules`も列挙されています。アカウントのアドレスからのコントラクト作成、アカウントのEVMナンスを進めるコール、およびコードがEIP-7702委任であるアカウント自身へのコールには、いずれも`deploy`または`all`権限が必要です。v3.2.3以降、登録は未知の権限文字列と、検証できるはずのない65バイトのsecp256k1鍵を拒否します。
 
 ハードコーディングするのではなく、（ドリフト検出用の`schema_version`付き）ライブのタクソノミーを参照してください。
 
@@ -162,13 +170,13 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 オーセンティケーターによって承認されたアクションは2つのメッセージで運ばれます。どちらの場合も、リレイヤーがトランザクションの署名者／手数料負担者であり、オーセンティケーターの署名はメッセージの内部に含まれます。
 
-**`MsgExecuteEVM`** — **正規アカウントの`0x…`アドレスから**行われるEVMコールまたは送金。オーセンティケーターは`sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`（すべてのフィールドは長さ接頭辞付き）に署名します。リプレイ対策はアカウント自身のEVMナンスです。
+**`MsgExecuteEVM`** — **正規アカウントの`0x…`アドレスから**行われるEVMコールまたは送金。オーセンティケーターは`sha256("qorechain-evm-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ value ‖ data ‖ nonce)`（すべてのフィールドは長さ接頭辞付き）に署名します。v3.2.3（`abstractaccount-hardening`機能）以降、チェーンは**v2ダイジェスト**`sha256("qorechain-evm-auth-v2" ‖ … ‖ nonce ‖ gasLimit)`を要求します。これはコールのガスリミット（8バイトのビッグエンディアン）も束縛するため、リレイヤーが異なるリミットで署名をリプレイすることはできません。どのブロックも両方の形式を受け付けることはありません。`qorechaind query abstractaccount auth-sign-evm`にはこのための`--gas-limit`があり、同じ値を`execute-evm`にも渡します。リプレイ対策はアカウント自身のEVMナンスです。
 
 **`MsgExecuteCosmos`** — 正規アカウントからのネイティブレーンの銀行送金。オーセンティケーターは`sha256("qorechain-cosmos-auth-v1" ‖ chainId ‖ account ‖ pubkey ‖ to ‖ amount ‖ nonce)`に署名します。リプレイ対策は、モジュールが保持する**オーセンティケーターごとのシーケンス**です（銀行送金はアカウントのナンスを増やしません）。自分自身への送金は拒否されます。
 
 :::caution ナンスに関するルール
 * `MsgExecuteEVM.nonce`はアカウントの**現在の**EVMナンス（`eth_getTransactionCount(account0x, "latest")`）です。本番環境ではリレイヤーは*別の*アカウントであるため、+1を加算しては**いけません**。古いナンスで署名するとコード`11`が返されます。
-* `MsgExecuteCosmos.nonce`は（アカウントのオーセンティケーター状態を照会して得られる）オーセンティケーターごとのシーケンスであり、アカウントのCosmosシーケンス**ではありません**。
+* `MsgExecuteCosmos.nonce`は（アカウントのオーセンティケーター状態を照会して得られる）オーセンティケーターごとのシーケンスであり、アカウントのCosmosシーケンス**ではありません**。テストネットのみ（v3.2.4）、`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`がそのシーケンスを直接返します（`nonce`、`linked`）。
 :::
 
 **Phantomの例**（ブラウザ: Phantomが署名し、バックエンドがリレーする）

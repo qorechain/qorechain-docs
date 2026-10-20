@@ -16,7 +16,7 @@ La disponibilità dei dati (DA, data availability) è la garanzia che i dati di 
 | **`both`** | Native e Celestia insieme, per ridondanza | Si comporta esattamente come `native` oggi |
 
 :::caution Capacità in fase iniziale
-Nessun rollup è stato ancora creato su nessuna delle due reti, e i backend DA sono implementati solo in parte. Lo stato di ciascun backend è indicato di seguito; verifica sulla testnet **`qorechain-diana`** prima di affidarti a uno qualsiasi di essi.
+Nessun rollup è stato ancora creato su nessuna delle due reti (verificato il 20 ottobre 2026), e i backend DA sono implementati solo in parte. Lo stato di ciascun backend è indicato di seguito; verifica sulla testnet **`qorechain-diana`** prima di affidarti a uno qualsiasi di essi.
 :::
 
 ---
@@ -41,6 +41,8 @@ La dimensione massima del blob e la finestra di conservazione sono governate dai
 ```bash
 qorechaind query rdk config
 ```
+
+I metadati del blob (non i byte) sono leggibili via REST all'indirizzo `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`, servito da entrambe le reti; includono `expires_at_height`.
 
 ---
 

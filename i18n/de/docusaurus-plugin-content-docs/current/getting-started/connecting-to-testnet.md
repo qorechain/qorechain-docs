@@ -10,7 +10,7 @@ sidebar_position: 4
 Treten Sie dem laufenden QoreChain-Diana-Testnet bei, indem Sie Ihren Node mit der korrekten Genesis-Datei, den richtigen Peers und Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 live und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft derzeit mit **v3.2.2**; sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Diese Seite behandelt das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 live (Release **v3.2.3**) und hat eine eigene Seite **Verbindung zum Mainnet** mit separater Genesis, eigenen Peers und Verbindungsdetails. Das Testnet läuft derzeit mit **v3.2.4**, einem reinen Testnet-Release, der nicht Teil des Mainnets ist; sein Release-Manifest finden Sie unter [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Öffentliche Endpunkte
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight` (v3.2.2 wurde bei Höhe 6.905.034 angewendet), und `minCompatible` entspricht der aktuellen Version. Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Halten Sie die Systemuhr per NTP synchronisiert.
+Das Testnet erhält koordinierte Upgrades über Governance-Vorschläge, daher enthält sein Manifest eine `upgradeHeight` (v3.2.4 wurde am 19. Oktober 2026 bei Höhe 8.337.253 angewendet; davor v3.2.3 bei 8.003.746 und v3.2.2 bei 6.905.034), und `minCompatible` entspricht der aktuellen Version (3.2.4). Ein Node, der jetzt beitritt, benötigt das im Manifest genannte Release. Halten Sie die Systemuhr per NTP synchronisiert. Das Mainnet-Manifest verweist auf ein anderes Release (v3.2.3), kopieren Sie daher niemals ein Binary von einem Netzwerk ins andere.
 
 ---
 

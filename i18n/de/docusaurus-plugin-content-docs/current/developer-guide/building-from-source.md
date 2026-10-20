@@ -10,7 +10,7 @@ sidebar_position: 1
 Diese Anleitung führt Sie durch das Bauen der Community-Binärdatei `qorechaind` aus dem öffentlichen Quellcode und erklärt, wofür diese Binärdatei gedacht ist und wofür nicht.
 
 :::caution Ein Build aus dem Quellcode kann dem Mainnet oder Testnet nicht beitreten
-Das öffentliche Repository enthält die Modulschnittstellen mit **Stub-Keepern**; die konsenskritischen Keeper-Implementierungen und der Post-Quanten-Signierer befinden sich nicht im öffentlichen Quellbaum. Eine daraus gebaute Binärdatei kann den Konsenszustand der Netzwerke nicht reproduzieren und kann die hybride Post-Quanten-Signatur nicht erzeugen, die jede Transaktion auf dem Cosmos-Pfad erfordert. Um einen Knoten oder Validator im Mainnet oder Testnet zu betreiben, installieren Sie die **Release-Binärdatei**, die im Live-Manifest genannt wird (`https://download.qore.host/mainnet/latest.json` oder `.../testnet/latest.json`); siehe [Einen Knoten betreiben](/developer-guide/running-a-node) und [Einen Validator betreiben](/developer-guide/running-a-validator).
+Das öffentliche Repository enthält die Modulschnittstellen mit **Stub-Keepern**; die konsenskritischen Keeper-Implementierungen und der Post-Quanten-Signierer befinden sich nicht im öffentlichen Quellbaum. Eine daraus gebaute Binärdatei kann den Konsenszustand der Netzwerke nicht reproduzieren und kann die hybride Post-Quanten-Signatur nicht erzeugen, die jede Transaktion auf dem Cosmos-Pfad erfordert. Seit v3.2.3 **verweigert sie zudem den Start** auf `qorechain-vladi` oder `qorechain-diana` (sie erkennt diese anhand von Chain-ID und Genesis-Zeit; ein lokales Devnet, das eine öffentliche Chain-ID mit eigener Genesis wiederverwendet, ist davon nicht betroffen). `qorechaind start --community-unenforced-pqc` hebt die Verweigerung für Experimente auf; der Knoten prüft dann keine Post-Quanten-Signaturen und kann ohne Warnung vom Netzwerk abweichen, verwenden Sie ihn daher niemals für einen Knoten, auf den Sie sich verlassen. Um einen Knoten oder Validator im Mainnet oder Testnet zu betreiben, installieren Sie die **Release-Binärdatei**, die im Live-Manifest genannt wird (`https://download.qore.host/mainnet/latest.json` oder `.../testnet/latest.json`); siehe [Einen Knoten betreiben](/developer-guide/running-a-node) und [Einen Validator betreiben](/developer-guide/running-a-validator).
 :::
 
 ## Voraussetzungen
@@ -106,11 +106,11 @@ Tests, die die nativen Bibliotheken oder die proprietären Keeper ausführen, we
 Überprüfen Sie nach einem erfolgreichen Build die Binärdatei:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk (Knoten-Release **v3.2.1**).
+Der Befehl `init` sollte ohne Fehler eine Genesis-Datei und eine Knotenkonfiguration in `~/.qorechaind/` erstellen. Das obige Beispiel initialisiert gegen das **`qorechain-diana`**-Testnet — für das Mainnet ersetzen Sie `--chain-id qorechain-vladi`, das Live-Netzwerk (Knoten-Release **v3.2.3**).
 
 ## Docker-Build
 

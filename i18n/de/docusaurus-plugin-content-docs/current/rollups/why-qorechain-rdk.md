@@ -17,18 +17,20 @@ Fähigkeiten, die um QoreChains Layer 1 herum gebaut sind und nicht um das Tooli
 - eine **Triple-VM**-Laufzeitumgebung mit VM-übergreifenden Aufrufen.
 
 :::caution Frühe Phase: Lesen Sie die Statusspalte
-Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt. Die folgende
-Tabelle gibt an, was heute funktioniert. Wenn Sie nur ein generisches
-optimistisches/zk-Rollup benötigen, tut es jedes Kit; die hier genannten
-Fähigkeiten sind das, was das RDK obendrauf bietet — in TypeScript, Python, Go,
-Rust und Java.
+Bisher wurde auf keinem der beiden Netzwerke ein Rollup erstellt (geprüft am
+20. Oktober 2026). Die folgende Tabelle gibt an, was heute funktioniert; die
+Grenzen der veröffentlichten 0.5.0-Clients sind unter
+[RDK-0.5.0-Grenzen](/rollups/deploying-a-rollup#rdk-050-limits) zusammengefasst.
+Wenn Sie nur ein generisches optimistisches/zk-Rollup benötigen, tut es jedes Kit;
+die hier genannten Fähigkeiten sind das, was das RDK obendrauf bietet — in
+TypeScript, Python, Go, Rust und Java.
 :::
 
 | Fähigkeit | Status | Wovon sie abhängt |
 | --- | --- | --- |
-| **Quantensichere Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker |
+| **Quantensichere Abwicklungsquittungen** | 🟡 Frühe Phase | Anker werden mit ML-DSA-87 signiert, dem Post-Quanten-Schema der Main Chain; es existieren noch keine Anker, und der 0.5.0-Verifizierer schließt seine Chain-Prüfung gegen die Live-Netzwerke nicht ab |
 | **QCAI Rollup Copilot** | 🟡 Auf den öffentlichen Endpunkten noch nicht verfügbar | On-Chain-KI/RL-Beratungsdienste, die die öffentlichen Endpunkte heute nicht bereitstellen |
-| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist, und der CosmWasm-Upload ist geschlossen |
+| **Multi-VM: VM-übergreifende Aufrufe** | 🟡 Auf den Live-Netzwerken noch nicht nutzbar | Ein VM-übergreifendes Precompile, das nicht aktiviert ist, ein 0.5.0-Encoder, der nicht zum Layout der Chain passt, und der CosmWasm-Upload ist geschlossen |
 
 ---
 
@@ -55,8 +57,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Siehe [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts), was
-eine Quittung beweist und was nicht.
+In 0.5.0 prüft `verifySettlementReceipt` gegen die Chain und weigert sich, ohne
+`client` `valid` zu melden, doch seine Chain-Prüfung wird gegen die Live-Netzwerke
+noch nicht abgeschlossen, sodass es fail-closed reagiert, statt eine echte Quittung
+als gültig zu melden. Siehe [Quantensichere Abwicklungsquittungen](/rollups/settlement-receipts),
+was eine Quittung beweist und was nicht und welche Grenzen genau gelten.
 
 ---
 
@@ -92,18 +97,35 @@ console.log(advice.warnings); // services that could not be reached
 Das RDK enthält Helfer, die einen Aufruf von einem EVM-(Solidity-)Contract an einen
 **CosmWasm**-Contract über ein festes Precompile unter `0x…0901` kodieren. Dieses
 Precompile ist im Mainnet und im Testnet **nicht aktiv** (siehe
-[EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)).
+[EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status)):
+`eth_getCode` für `0x…0901` liefert auf beiden `0x` zurück, und ein Contract-Aufruf
+darauf ist erfolgreich, bleibt aber ohne Wirkung.
+
+Der 0.5.0-Helfer `encodeCrossVmCalldata` baut Calldata für
+`executeCrossVMCall(string,bytes)`, der Node dekodiert jedoch
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, sodass
+seine Ausgabe nicht zu dem passt, was die Chain liest. Kodieren Sie den Aufruf
+stattdessen mit dem Layout der Chain (hier mit viem gezeigt; `targetVM` 1 ist
+CosmWasm, das einzige unterstützte Ziel):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 Oder direkt aus Solidity auf Ihrem Rollup:
@@ -115,12 +137,16 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+`ok` allein beweist heute nichts: Solange das Precompile keinen Code hat, liefert der
+Aufruf Erfolg mit leeren Daten zurück und führt nichts aus, bestätigen Sie daher die
+Wirkung am Ziel-Contract.
 
 Erstellen Sie ein Starter-Gerüst mit `npm create qorechain-rollup my-app -- --template multivm-rollup`.
 (Nur EVM↔CosmWasm; SVM-Cross-Calls sind separat.)

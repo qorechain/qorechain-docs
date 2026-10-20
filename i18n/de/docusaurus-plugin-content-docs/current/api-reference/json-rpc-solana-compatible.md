@@ -49,7 +49,7 @@ Seit Chain-Version **v3.1.82** liefert die SVM-Schnittstelle das native **QOR-Gu
 | `getTokenAccountsByOwner`           | `owner`, Filter          | Liefert die Token-Accounts eines Owners                        |
 | `getTokenAccountsByDelegate`        | `delegate`, Filter       | Liefert die Token-Accounts eines Delegates                     |
 
-Methoden außerhalb dieser Liste, wie `getGenesisHash` und `getEpochInfo`, liefern `-32601 method not found`. `getTransaction` wird akzeptiert, antwortet derzeit aber mit einem Envelope ohne `result`-Feld, verlassen Sie sich daher nicht darauf. Der von `getSlot` gemeldete Slot folgt der Blockhöhe der Chain.
+Methoden außerhalb dieser Liste, wie `getGenesisHash` und `getEpochInfo`, liefern `-32601 method not found` (geprüft gegen `https://svm.qore.host` und `https://svm-testnet.qore.host`, 20. Oktober 2026). Seit v3.2.2 müssen Base58-Adressen in den RPC- und gRPC-Abfragen kanonisch und in der Länge begrenzt sein; eine fehlerhafte wird abgewiesen. `getTransaction` wird akzeptiert, antwortet derzeit aber mit einem Envelope ohne `result`-Feld, verlassen Sie sich daher nicht darauf. Der von `getSlot` gemeldete Slot folgt der Blockhöhe der Chain.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Hinweise
 
 - **Adressformat**: SVM-Accounts verwenden Base58-kodierte Public Keys (Standard-Solana-Format), nicht das `qor1`-Bech32-Präfix der nativen Cosmos-SDK-Module.
-- **Cross-VM-Bridging**: Um Assets zwischen der EVM- und der SVM-Runtime zu bewegen, wird das Cross-VM-Modul (`x/crossvm`) verwendet. Siehe die [Transaktionsbefehle](/cli-reference/transaction-commands) für die `crossvm call`-Syntax.
+- **Cross-VM-Bridging**: Um Assets zwischen der EVM- und der SVM-Runtime zu bewegen, wird das Cross-VM-Modul (`x/crossvm`) verwendet. Siehe die [Transaktionsbefehle](/cli-reference/transaction-commands#crossvm) für die `crossvm call`-Syntax. Die SVM-Lane ist deaktiviert und `MsgCrossVMCall` ist im Mainnet abgeschaltet, daher dient dies heute nur als Referenz.
 - **Programm-Deployment**: BPF-Programme werden über die CLI (`qorechaind tx svm deploy-program`) oder programmatisch über die SVM-Runtime deployt.
 - **Compute-Budget**: Die SVM-Runtime erzwingt standardmäßig ein Compute-Budget von 1.400.000 Compute-Einheiten pro Transaktion. Dies ist über Modulparameter konfigurierbar.

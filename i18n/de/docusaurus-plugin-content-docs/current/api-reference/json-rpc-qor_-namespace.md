@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | Geplante Methode                | Was Sie heute nutzen |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Siehe [REST- / gRPC-Endpunkte](/api-reference/rest-grpc-endpoints#pqc-module). |
-| `qor_getHybridSignatureMode`  | Keine öffentliche Abfrage-Route. |
-| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` auf einem selbst betriebenen Node; keine REST-Route. |
+| `qor_getHybridSignatureMode`  | Keine öffentliche REST-Route; `qorechaind query pqc hybrid-mode` (oder `query pqc params`) gegen einen Node oder `--node https://rpc.qore.host:443`. |
+| `qor_getAIStats`              | gRPC `qorechain.ai.v1.Query/Stats` auf einem selbst betriebenen Node oder `qorechaind query ai stats`; keine REST-Route. |
 | `qor_getCrossVMMessage`       | gRPC `qorechain.crossvm.v1.Query/Message` auf einem selbst betriebenen Node; keine REST-Route. |
 | `qor_getReputationScore`      | Keine öffentliche Abfrage-Route (das Reputationsmodul stellt nur gRPC `Params` bereit). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` und `anchor/{layer_id}`. Siehe [Multilayer-Modul](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | Keine öffentliche Abfrage-Route. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Siehe [Burn-Modul](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Keine. xQORE ist nicht live (siehe [xQORE-Staking](/user-guide/xqore-staking)). |
-| `qor_getInflationRate`        | Keine öffentliche Abfrage-Route im Mainnet. |
-| `qor_getTokenomicsOverview`   | Kombinieren Sie `GET /qorechain/burn/v1/stats` mit `GET /cosmos/bank/v1beta1/supply`. |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) oder die CLI auf einem selbst betriebenen Node; die REST-Routen `/qorechain/rdk/v1/...` werden im Mainnet nicht bereitgestellt. |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` und `/epoch_info` (Emissionsmodus, Betrag pro Epoche, Obergrenze, Fortschritt; bereitgestellt seit v3.2.2). Siehe [Inflationsmodul](/api-reference/rest-grpc-endpoints#inflation-module). |
+| `qor_getTokenomicsOverview`   | Kombinieren Sie `GET /qorechain/burn/v1/stats`, `GET /qorechain/inflation/v1/epoch_info` und `GET /cosmos/bank/v1beta1/supply`. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (bereitgestellt seit v3.2.2; siehe [RDK-Modul](/api-reference/rest-grpc-endpoints#rdk-module)) oder `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Kein öffentlicher Dienst; siehe [Vorkonfigurierte Profile](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Keine. Das BTC-Restaking-Modul hat noch keinen Abfragedienst. |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Abstract Accounts sind heute auf beiden Netzwerken deaktiviert. |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | Keine. |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (bereitgestellt seit v3.2.2). Siehe [Gas-Abstraction-Modul](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Keine. |
 
-Für den EVM-Lane-Zustand eines Kontos (registrierter PQC-Schlüssel und Autorisierungsfenster) nutzen Sie `GET /qorechain/pqc/v1/account/{address}` und `GET /qorechain/pqc/v1/evm_window/{address}`.
+Für den EVM-Lane-Zustand eines Kontos (registrierter PQC-Schlüssel, Autorisierungsfenster und EIP-7702-Einwilligung) nutzen Sie `GET /qorechain/pqc/v1/account/{address}`, `GET /qorechain/pqc/v1/evm_window/{address}` und `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`. Die Status-Route ist der **Singular** `account`; der Plural `/accounts/` wird nicht bereitgestellt und antwortet mit `501`.
 
 ---
 

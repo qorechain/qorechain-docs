@@ -16,15 +16,15 @@ O referință consolidată pentru rețelele QoreChain — identificatori de lan�
 | **Stare** | Activă | Testnet activ |
 | **ID lanț Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **ID lanț EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **Activă din** | 29 iunie 2026, 17:03 UTC (blocul genesis) | 1 iulie 2026 (continuu de atunci; fără reset) |
-| **Versiune lanț** | v3.2.1 (reguli de consens din v3.2.0) | v3.2.2 |
+| **Activă din** | 7 iunie 2026 | 1 iulie 2026 (continuu de atunci; fără reset) |
+| **Versiune lanț** | v3.2.3 (aplicată la înălțimea 3.662.051, 20 octombrie 2026) | v3.2.4 (aplicată la înălțimea 8.337.253, 19 octombrie 2026; doar testnet) |
 | **Timp de bloc (medie măsurată)** | aproximativ 3,2 s | aproximativ 1,0 s |
 | **Manifest de versiune** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Preț minim gas** | `0.1uqor` | `0.1uqor` |
 | **Ghid de conectare** | [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) | [Conectarea la Testnet](/getting-started/connecting-to-testnet) |
 
-Ambele manifeste sunt sursa de adevăr pentru versiunea pe care ar trebui să o ruleze un nod nou. Manifestul testnet-ului (v3.2.2) conține o înălțime de upgrade, deoarece testnet-ul primește upgrade-uri coordonate prin guvernanță, în timp ce v3.2.1 de pe mainnet este o versiune graduală, locală fiecărui nod, peste regulile de consens din v3.2.0.
+Ambele manifeste sunt sursa de adevăr pentru versiunea pe care ar trebui să o ruleze un nod nou. Ambele rețele primesc upgrade-uri coordonate prin guvernanță, așa că fiecare manifest conține `upgradeHeight` pentru versiunea sa curentă și un `minCompatible` egal cu acea versiune (mainnet 3.2.3, testnet 3.2.4). v3.2.4 există deocamdată doar pe testnet; propunerea de guvernanță 13 de pe mainnet ar aplica-o la înălțimea 3.742.566 (votul rămâne deschis până la 21 octombrie 2026, ora 21:18 UTC).
 
 ## Puncte finale publice {#public-endpoints}
 

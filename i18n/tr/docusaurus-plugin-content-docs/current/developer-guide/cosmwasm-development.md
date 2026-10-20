@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain, geliştiricilerin WebAssembly'ye derlenen güvenli, sandbox'lanmış Rust programları yazmasına olanak tanıyan **CosmWasm** akıllı sözleşmelerini destekler. CosmWasm sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 29 Haziran 2026'dan beri yayında olan ve **v3.2.1** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. v3.2.2 çalıştıran test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.2.3** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. v3.2.4 çalıştıran (yalnızca test ağı) test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme şu anda açık izin gerektirir
@@ -211,7 +211,7 @@ pub fn query(
 
 ## VM'ler Arası Çağrılar
 
-VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall` işlemleri olarak gönderilir; mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın. CosmWasm sözleşmelerinin bugün VM'ler arası çağrı başlatmak için sözleşme tarafında bir bağlaması (binding) yoktur (sözleşmelerin yayabileceği özel bir `QoreChainMsg` mesajı bulunmaz); bu nedenle bir sözleşme, kendi `execute` giriş noktasının içinden bir EVM veya SVM sözleşmesini çağıramaz.
+VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall` işlemleri olarak gönderilir; mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın. CosmWasm sözleşmelerinin bugün VM'ler arası çağrı başlatmak için sözleşme tarafında bir bağlaması (binding) yoktur (sözleşmelerin yayabileceği özel bir `QoreChainMsg` mesajı bulunmaz); bu nedenle bir sözleşme, kendi `execute` giriş noktasının içinden bir EVM veya SVM sözleşmesini çağıramaz. v3.2.3'ten itibaren çağıranın kendi şeridine yapılan bir çağrı reddedilir ve başarısız olan sıraya alınmış bir çağrı geride hiçbir yan etki bırakmaz.
 
 :::caution VM'ler arası çağrılar şu anda ana ağda kapalıdır
 `MsgCrossVMCall`, ana ağın devre kesici listesindedir (`qorechaind query circuit disabled-list`) ve SVM şeridi her iki ağda da devre dışıdır; dolayısıyla VM'ler arası yol bugün sıradan işlemler için kullanılamaz.

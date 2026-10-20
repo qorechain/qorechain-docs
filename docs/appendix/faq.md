@@ -11,7 +11,7 @@ General questions about QoreChain, answered from the documentation. Each answer 
 
 ### Is mainnet live?
 
-Yes. QoreChain mainnet (chain `qorechain-vladi`, EVM chain ID 9801) has been live since 29 June 2026 and runs release v3.2.1. See [Networks](/appendix/networks) and [Connecting to Mainnet](/getting-started/connecting-to-mainnet).
+Yes. QoreChain mainnet (chain `qorechain-vladi`, EVM chain ID 9801) has been live since 7 June 2026 and runs release v3.2.3 (the testnet, `qorechain-diana`, runs v3.2.4). See [Networks](/appendix/networks) and [Connecting to Mainnet](/getting-started/connecting-to-mainnet).
 
 ### What are the chain IDs and EVM chain IDs?
 
@@ -39,15 +39,19 @@ Use the testnet faucet on the Dashboard. See [Dashboard Faucet](/dashboard/fauce
 
 ### How do I run a node, validator, or light node?
 
-For a full node, see [Running a Node](/developer-guide/running-a-node). For a validator, see [Running a Validator](/developer-guide/running-a-validator). For a light node, see [Light Node](/light-node/overview).
+For a full node, see [Running a Node](/developer-guide/running-a-node). For a validator, see [Running a Validator](/developer-guide/running-a-validator). For a light node, see [Light Node](/light-node/overview); registration for the light-node reward program is open and licence-gated ([status](/light-node/overview#reward-program-status)).
 
 ### What signature scheme does QoreChain use?
 
-QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. This hybrid scheme is required by default on the Cosmos transaction path, with enforcement mode governance-controlled. On the EVM lane the signature stays secp256k1, and an account must additionally hold a registered ML-DSA key and an open authorisation window (v3.2.0). See [Post-Quantum Security](/architecture/post-quantum-security).
+QoreChain uses a post-quantum hybrid scheme combining classical **secp256k1 (ECDSA)** with post-quantum **ML-DSA-87 (Dilithium-5)**. This hybrid scheme is required by default on the Cosmos transaction path, with enforcement mode governance-controlled. On the EVM lane the signature stays secp256k1, and an account must additionally hold a registered ML-DSA key and an open authorisation window (since v3.2.0). See [Post-Quantum Security](/architecture/post-quantum-security).
 
 ### Why is my EVM transaction refused with "no open EVM authorisation window"?
 
 Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered post-quantum key and an open authorisation window. Open a window with a post-quantum-signed Cosmos-lane transaction, then retry. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+
+### How many validators does mainnet have?
+
+Eight bonded validators on 20 October 2026, with about 55.1 million QOR bonded (the active set can hold up to 100). The testnet has three. Read the live set at `GET /cosmos/staking/v1beta1/validators` on `https://api.qore.host`.
 
 ### Which block time should I expect?
 
@@ -59,7 +63,7 @@ Not yet. The accounting module exists, but lock and unlock transactions are not 
 
 ### Is the QOR supply fixed?
 
-Genesis supply was 4,420,000,000 QOR. Staking emission is minted under a hard cumulative cap of 114,285,714 QOR, and burns remove tokens permanently. See [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Genesis supply was 4,420,000,000 QOR. Staking emission is minted under a hard cumulative cap of 590,000,000 QOR (86,000 QOR per epoch since governance proposal 10, October 2026), and burns remove tokens permanently. See [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### How do I build a rollup?
 
@@ -71,7 +75,7 @@ Use the [QoreChain SDK](/sdk/overview), the public SDK for building applications
 
 ### Where can I ask questions?
 
-The QCAIA community bot answers questions on Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) and Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). See [QCAIA Community Bot](/qcaia/overview).
+The QCAIA community bot answers questions on Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) and Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). See [QCAIA Community Bot](/qcaia/overview).
 
 ## Related
 

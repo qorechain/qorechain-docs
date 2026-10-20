@@ -10,7 +10,7 @@ sidebar_position: 1
 The QoreChain **Rollup Development Kit (RDK)** — the `x/rdk` module — lets developers launch application-specific rollups that settle on QoreChain. Each rollup is an independent execution environment with its own block time, virtual machine, fee model, and sequencing, while it inherits QoreChain's security, post-quantum cryptography, and data availability guarantees.
 
 :::caution Early-stage capability
-The RDK is deployed on both networks, but **no rollup has been created on either one yet**, so the flows described in this section have not been exercised by third parties. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) runs chain version **v3.2.1**; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs a newer release (**v3.2.2**), so details can differ there. This section describes mainnet behaviour. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today.
+The RDK is deployed on both networks, but **no rollup has been created on either one yet** (checked 20 October 2026), so the flows described in this section have not been exercised by third parties. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**, live since 7 June 2026) runs chain version **v3.2.3**; the testnet (**`qorechain-diana`**, EVM chain ID **9800**) runs **v3.2.4**, which is not yet applied on mainnet (governance proposal 13 would apply it at height 3,742,566), so details can differ there. This section describes mainnet behaviour. Validate every deployment on the testnet first, and read the status notes on each page: several capabilities (ZK verification, Celestia data availability, the QCAI Copilot, cross-VM calls, settlement receipts) are not usable end to end today, and the released RDK clients have limits of their own (see [RDK 0.5.0 limits](/rollups/deploying-a-rollup#rdk-050-limits)).
 :::
 
 ## What exists today {#what-exists-today}
@@ -19,9 +19,10 @@ The RDK is deployed on both networks, but **no rollup has been created on either
 |---|---|
 | Rollups registered (mainnet and testnet) | None |
 | `x/rdk` module and its parameters | Deployed on both networks; read them with `qorechaind query rdk config` |
-| RDK queries | Available through the CLI and gRPC. The `/qorechain/rdk/v1/…` REST routes are not served on mainnet, so REST-based reads (including the TypeScript `rdk.params()`) do not work against mainnet |
-| Settlement anchors written by the RDK | None. Settlement batches are recorded, but the RDK does not write anchors to `x/multilayer` on mainnet yet |
+| RDK queries | Served on both networks over the CLI, gRPC and REST (`/qorechain/rdk/v1/…`), so REST-based reads such as the TypeScript `rdk.params()` work against mainnet |
+| Settlement anchors written by the RDK | None. Since v3.2.2 a batch can carry an `anchor_signature` and is then anchored in `x/multilayer` in the same transaction; without it the batch settles unanchored. No rollup, layer or anchor exists yet, and the released RDK clients do not send the field |
 | Rollup layers registered in `x/multilayer` | None |
+| Withdrawals | Paid from a per-rollup escrow ledger since v3.2.3 (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)); none has been made, because no rollup exists |
 
 For the lower-level module reference — module parameters, lifecycle internals, burn integration, and multilayer anchoring — see the **[Rollup Development Kit](/architecture/rollup-development-kit)** page in the Architecture section. This Rollups section is the developer-facing how-to: what the RDK is, which paradigm to choose, how to deploy, how data availability works, and how withdrawals settle from L2 back to L1.
 
@@ -44,14 +45,14 @@ Each rollup is registered with a unique `rollup-id`, backed by a stake bond in Q
 
 ## What makes the QoreChain RDK different
 
-Beyond the table-stakes of any rollup kit, the QoreChain RDK includes three QoreChain-specific capabilities that are built around QoreChain's Layer 1 — plus a watchtower auto-challenger. Their status differs; the table says what works today. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java). Current published versions: npm **0.4.4**, PyPI **0.5.0**, Go **v0.5.0**, crates.io **0.4.4**, Maven Central **0.4.4**. Since v0.4.2 the `mainnet` and `testnet` presets ship the public `qore.host` endpoints baked in, so `createRdkClient({ network })` needs no manual endpoint configuration (note that its REST reads work only where the RDK REST routes are served; mainnet does not serve them today).
+Beyond the table-stakes of any rollup kit, the QoreChain RDK includes three QoreChain-specific capabilities that are built around QoreChain's Layer 1 — plus a watchtower auto-challenger. Their status differs; the table says what works today. The RDK ships in five languages (TypeScript, Python, Go, Rust, Java). **Version 0.5.0 is published on all five registries** (npm `@qorechain/rdk`, `@qorechain/rdk-cli` and `create-qorechain-rollup`; PyPI `qorechain-rdk`; crates.io `qorechain-rdk`; Maven Central `io.github.qorechain:qorechain-rdk`; Go module `v0.5.0`). The `mainnet` and `testnet` presets ship the public `qore.host` endpoints baked in, so `createRdkClient({ network })` needs no manual endpoint configuration, and its REST reads work against both networks.
 
 | Differentiator | What it does |
 | -------------- | ------------ |
-| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Package a settlement anchor as a portable receipt that carries a post-quantum (ML-DSA-87 / Dilithium-5) signature. Early stage: no anchors exist yet, and a receipt is a claim that must be checked against chain state. |
+| **[Quantum-safe settlement receipts](/rollups/settlement-receipts)** | Package a settlement anchor as a portable receipt that carries a post-quantum (ML-DSA-87 / Dilithium-5) signature. Early stage: no anchors exist yet, a receipt is a claim that must be checked against chain state, and the 0.5.0 verifier cannot complete that check against the live networks yet. |
 | **[QCAI Rollup Copilot](/rollups/qcai-copilot)** | A read-only advisory helper for one rollup (fee estimate, recommendations, fraud investigations). The advisory services it reads are not exposed on the public endpoints yet. |
-| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Tooling to encode an EVM → CosmWasm call through the cross-VM precompile (`0x…0901`). The precompile is not activated on the live networks yet. |
-| **[Watchtower](/rollups/watchtower)** | An auto-challenger framework for optimistic rollups that surfaces new batches and challenge-window deadlines and challenges invalid batches against your validity predicate. It needs the RDK REST routes, which mainnet does not serve today. |
+| **[Multi-VM cross-VM calls](/rollups/multi-vm)** | Tooling to encode an EVM → CosmWasm call through the cross-VM precompile (`0x…0901`). The precompile is not activated on the live networks, and the 0.5.0 encoder does not match the layout the chain decodes. |
+| **[Watchtower](/rollups/watchtower)** | An auto-challenger framework for optimistic rollups that surfaces new batches and challenge-window deadlines and challenges invalid batches against your validity predicate. It reads over REST, which both networks serve; its deadline alerts are wrong in 0.5.0. |
 
 See **[Why QoreChain RDK](/rollups/why)** for the full rationale and code samples.
 
@@ -84,7 +85,7 @@ Optimistic rollups assume submitted batches are valid by default and rely on **f
 * **Sequencer**: `dedicated` or `shared`
 * **Finality**: Delayed until a configurable challenge window expires with no successful challenge
 * **Disputes**: Anyone may challenge a submitted batch within the window by posting a bond and a fraud proof. A challenge freezes the batch; the rollup creator then resolves it, and the chain checks the proof itself — upheld fraud rejects the batch and pays the challenger, a dismissed challenge returns the batch to `submitted`. See [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups).
-* **Window length**: the default window is 604,800 "seconds", which the chain converts to blocks at a fixed 6 seconds per block — **100,800 blocks**. Real elapsed time follows actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks), so plan in blocks, not days.
+* **Window length**: the default window is 604,800 "seconds". **On mainnet (v3.2.3)** the chain converts this to blocks at a fixed 6 seconds per block — **100,800 blocks** — so real elapsed time follows actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks); plan in blocks, not days. **On the testnet only (v3.2.4)**, a batch submitted from height 8,337,253 on gets a window measured in seconds of block time (a full 7 days); earlier batches keep the block-count rule. On mainnet that change would take effect only with v3.2.4 (governance proposal 13 would apply it at height 3,742,566).
 
 ### ZK (Zero-Knowledge)
 

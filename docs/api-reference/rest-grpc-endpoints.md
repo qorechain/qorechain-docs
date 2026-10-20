@@ -18,7 +18,7 @@ QoreChain exposes three primary interfaces for programmatic access:
 All REST endpoints return JSON. gRPC endpoints use Protocol Buffers and can be consumed with any gRPC client. The RPC interface provides consensus-level queries and transaction broadcast.
 
 :::note
-These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 29 June 2026) and the **`qorechain-diana`** testnet. The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
+These interfaces are available on both the **`qorechain-vladi`** mainnet (live since 7 June 2026; node release **v3.2.3**) and the **`qorechain-diana`** testnet (node release **v3.2.4**). The base URLs below assume a locally running node. The public hosted endpoints are `https://api.qore.host` / `https://api-testnet.qore.host` (REST) and `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC), listed in [Networks](/appendix/networks#public-endpoints). **There is no public gRPC endpoint**: the hostnames `grpc.qore.host` and `grpc-testnet.qore.host` do not exist, so run your own node if you need gRPC.
 :::
 
 ## Base URLs
@@ -35,7 +35,7 @@ QoreChain-specific modules are exposed over REST under the `/qorechain/<module>/
 
 A route that does not exist answers HTTP `501` with `{"code":12,"message":"Not Implemented"}`. That means the route is not served, not that the query came back empty. Shortened paths without the `/qorechain/` prefix (for example `/bridge/v1/chains` or `/pqc/v1/params`) are **not** served. An unknown record on a route that does exist returns HTTP `404` with `{"code":5,"message":"... not found"}`.
 
-The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet.
+The examples below use the public mainnet host; replace it with `https://api-testnet.qore.host` for the testnet. Values in the samples were read from the live networks around 20 October 2026 (mainnet v3.2.3, testnet v3.2.4) and change over time; use them for the shape of a response. The testnet runs the newer v3.2.4 release, so it serves a few routes and fields that mainnet does not have; they are marked **testnet only** below and answer `501` on mainnet.
 
 ## PQC Module {#pqc-module}
 
@@ -43,8 +43,10 @@ The examples below use the public mainnet host; replace it with `https://api-tes
 | ------ | ---------------------------------------- | --------------------------------------------------------------------------- |
 | GET    | `/qorechain/pqc/v1/account/{address}`    | Post-quantum key registration for an account (`found`, key type, algorithm) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | The account's EVM-lane authorisation window and what remains of it          |
+| GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | The account's EIP-7702 delegation consent, current delegation and EVM nonce (since v3.2.2) |
+| GET    | `/qorechain/pqc/v1/protocol_features`    | **Testnet only (v3.2.4).** Every protocol feature the binary knows, with `enabled`, `known` and `staged` flags |
 
-Note that the path segment is the singular `account`. There is no `/qorechain/pqc/v1/params` or `/stats` route.
+Note that the path segment is the singular `account`. There is no `/qorechain/pqc/v1/params` or `/stats` route (use `qorechaind query pqc params` and `stats` for those).
 
 ```bash
 curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
@@ -62,10 +64,13 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
     "key_type": "hybrid",
     "created_at_height": "209015",
     "migration_public_key": null,
-    "migration_algorithm_id": 0
+    "migration_algorithm_id": 0,
+    "classical_key_source": "auth_account"
   }
 }
 ```
+
+`classical_key_source` says where `ecdsa_pubkey` comes from: `stored` (the key given at registration), `auth_account` (nothing was stored, so it is the account's own on-chain public key) or `none`. On the testnet (v3.2.4, **testnet only**) the record also carries `"possession_proven": false`, which is `true` once a key was registered with a verified [proof of possession](/developer-guide/post-quantum-signing#proof-of-possession); mainnet does not report the field yet.
 
 An account with no registered key returns `{"found": false, "account": null}`. Use `found` to decide whether an account must register a key before it can send.
 
@@ -85,11 +90,31 @@ curl -s https://api.qore.host/qorechain/pqc/v1/evm_window/qor1...
   "used_value": "",
   "remaining_blocks": "0",
   "remaining_txs": "0",
-  "remaining_value": ""
+  "remaining_value": "",
+  "native_only": false,
+  "allowed_targets": []
 }
 ```
 
-This route never fails for an address without a window; it returns `found: false`. Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered PQC key **and** an open window. `live` is `true` while the window admits at least one more transaction at the current height. `remaining_blocks`, `remaining_txs` and `remaining_value` show which bound is closest to running out; values are `uqor` integers returned as strings. See [EVM Development](/developer-guide/evm-development) for how the EVM lane works.
+This route never fails for an address without a window; it returns `found: false`. Since v3.2.0 the EVM lane admits a transaction only from an account that has a registered PQC key **and** an open window. `live` is `true` while the window admits at least one more transaction at the current height. `remaining_blocks`, `remaining_txs` and `remaining_value` show which bound is closest to running out; values are `uqor` integers returned as strings. Since v3.2.3 a window can carry a scope: `native_only` (plain QOR transfers only) and `allowed_targets` (listed recipients only). See [EVM Development](/developer-guide/evm-development#evm-window) for how the EVM lane works.
+
+```bash
+curl -s https://api.qore.host/qorechain/pqc/v1/evm_delegation_consent/qor1...
+```
+
+```json
+{
+  "found": false,
+  "live": false,
+  "delegate": "",
+  "granted_height": "0",
+  "expiry_height": "0",
+  "current_delegate": "",
+  "nonce": "0"
+}
+```
+
+An EIP-7702 delegation of an account takes effect only with the account's own post-quantum consent (`MsgAuthorizeEVMDelegation`). `found` and `live` report a recorded, still-usable consent for `delegate`; `current_delegate` is the delegation the account has set now and `nonce` is its EVM nonce.
 
 ## Bridge Module {#bridge-module}
 
@@ -140,7 +165,7 @@ The multilayer module's full query service is exposed over REST under `/qorechai
 | GET    | `/qorechain/multilayer/v1/anchors/{layer_id}`   | State-anchor history for a layer                  |
 | GET    | `/qorechain/multilayer/v1/routing-stats`        | Transaction routing statistics across layers      |
 
-A `StateAnchorView` contains the `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, `main_chain_height`, `anchored_at`, `pqc_aggregate_signature`, `transaction_count`, and `compressed_state_proof`. The signed canonical message is `layer_id || layer_height || state_root || validator_set_hash`, verified against the layer creator's registered PQC key. A layer with no anchor returns HTTP `404` (`no anchor for layer ...`) from `anchor/{layer_id}` and an empty list (`{"anchors": []}`) from `anchors/{layer_id}`.
+A `StateAnchorView` contains the `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, `main_chain_height`, `anchored_at`, `pqc_aggregate_signature`, `transaction_count`, and `compressed_state_proof`. Since v3.2.2 the signed message is the **v2 anchor message**: the domain tag `qorechain-multilayer-anchor-v2`, then the chain id, layer id, layer height, state root, validator-set hash, transaction count and compressed state proof, each variable-length field prefixed with its 8-byte big-endian length (the earlier v1 message had no chain id and no length prefixes, so a signature was valid on every chain). It is verified against the layer creator's registered PQC key. `qorechaind query rdk anchor-sign-bytes` prints the bytes for a rollup batch. A layer with no anchor returns HTTP `404` (`no anchor for layer ...`) from `anchor/{layer_id}` and an empty list (`{"anchors": []}`) from `anchors/{layer_id}`.
 
 ```bash
 curl -s https://api.qore.host/qorechain/multilayer/v1/params
@@ -175,7 +200,7 @@ The burn module's read-only state is exposed over REST under `/qorechain/burn/v1
 | GET    | `/qorechain/burn/v1/stats`            | Cumulative burn total, broken down by source                   |
 | GET    | `/qorechain/burn/v1/records`          | Lists recent burn records                                      |
 | GET    | `/qorechain/burn/v1/milestone`        | Burn milestone progress (cumulative transaction count)         |
-| GET    | `/qorechain/burn/v1/stranded_rewards` | Staker share set aside by the v3.2.0 upgrade and not yet released |
+| GET    | `/qorechain/burn/v1/stranded_rewards` | Staker share set aside and not yet released by governance |
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stats
@@ -184,30 +209,30 @@ curl -s https://api.qore.host/qorechain/burn/v1/stats
 ```json
 {
   "stats": {
-    "total_burned": "31560093291491",
+    "total_burned": "31574710367921",
     "burns_by_source": {
-      "gas_fee": "31560093291491",
-      "failed_tx": "0",
+      "gas_fee": "31574710282421",
+      "failed_tx": "85500",
       "milestone": "0",
       "amm": "0",
       "xqore_penalty": "0"
     },
-    "last_burn_height": "3506945"
+    "last_burn_height": "3666968"
   }
 }
 ```
 
-The real response lists every burn source (`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty`); the sample is trimmed. Amounts are in `uqor`.
+The real response lists every burn source (`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty`); the sample is trimmed. Amounts are in `uqor`. `failed_tx` has been non-zero since the v3.2.2 upgrade, when the failed-transaction burn started to apply to the fee actually charged. Since v3.2.3 old per-burn `records` are pruned, so `records` is a recent window, not the full history; the totals in `stats` are cumulative.
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
 ```json
-{ "reserved": "6693045921330", "released": "0", "initialized": true, "snapshot_height": "2981742" }
+{ "reserved": "3807496785528", "released": "6693045921330", "initialized": true, "snapshot_height": "2981742" }
 ```
 
-`reserved` is what is left to release, `released` is how much governance has already moved out, and `snapshot_height` is the height of the v3.2.0 upgrade that recorded the reserve. See [Tokenomics](/architecture/tokenomics).
+`reserved` is what is left to release, `released` is how much governance has already moved out, and `snapshot_height` is the height of the v3.2.0 upgrade that recorded the reserve. The values above are those at the time of writing: governance released the first amount (6,693,045.921330 QOR) on 19 October 2026, and the v3.2.3 upgrade recomputed the remaining reserve at its own height (3,807,496.785528 QOR). A further governance proposal to release that recomputed amount was still in its voting period at the time of writing, so read the live values. See [Tokenomics](/architecture/tokenomics).
 
 ## Abstract Account Module {#abstract-account-module}
 
@@ -218,7 +243,8 @@ The abstract-account query service is exposed over REST under `/qorechain/abstra
 | GET    | `/qorechain/abstractaccount/v1/config`                | Module configuration (feature-probe: `enabled`)                     |
 | GET    | `/qorechain/abstractaccount/v1/accounts`              | Lists abstract accounts                                             |
 | GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | Abstract-account state for an address (`404` if none)               |
-| GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs` |
+| GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs`, `lane_rules` |
+| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **Testnet only (v3.2.4).** The sequence a linked authenticator key must sign next (`nonce`, `linked`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -280,8 +306,23 @@ curl -s https://api.qore.host/qorechain/license/v1/holders/lightnode_operator
 ```
 
 ```json
-{ "licenses": [] }
+{
+  "licenses": [
+    {
+      "grantee": "qor1...",
+      "feature_id": "lightnode_operator",
+      "expires_at": "0",
+      "granted_at": "3536305",
+      "granted_by": "qor1...",
+      "suspended": false,
+      "metadata": "",
+      "active": true
+    }
+  ]
+}
 ```
+
+`expires_at: "0"` means the grant does not expire. Since v3.2.3 governance can replace the licence authority that grants these licences (`MsgUpdateAuthority`); grants already made stay in place.
 
 ## Light Node Module {#light-node-module}
 
@@ -292,7 +333,7 @@ curl -s https://api.qore.host/qorechain/license/v1/holders/lightnode_operator
 | GET    | `/qorechain/lightnode/v1/nodes`               | Lists registered light nodes                                       |
 | GET    | `/qorechain/lightnode/v1/node/{address}`      | One node (`{"node": null, "found": false}` if not registered)     |
 | GET    | `/qorechain/lightnode/v1/rewards/{address}`   | Rewards accumulated for an operator address (`accumulated_rewards`) |
-| GET    | `/qorechain/lightnode/v1/reward_pool`         | Reward pool accounting (`balance`, `reserved`, `outstanding`, `payable`, `distributable`, `max_reward_per_block_per_node`, `initialized`) |
+| GET    | `/qorechain/lightnode/v1/reward_pool`         | Reward pool accounting (`balance`, `reserved`, `outstanding`, `payable`, `distributable`, `max_reward_per_block_per_node`, `max_reward_per_month_per_node`, `initialized`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/params
@@ -316,39 +357,134 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 
 ```json
 {
-  "balance": "<uqor>",
-  "reserved": "<uqor>",
+  "balance": "487231800",
+  "reserved": "487231800",
   "outstanding": "0",
   "payable": "0",
   "max_reward_per_block_per_node": "1713",
   "distributable": "0",
-  "initialized": true
+  "initialized": true,
+  "max_reward_per_month_per_node": "2000000000"
 }
 ```
 
-`reserved` is the part of the pool that is held back and can only be moved by a governance vote, and `max_reward_per_block_per_node` (in `uqor`) is the per-node, per-block ceiling on what the chain credits. A ceiling is not a promised amount. `balance` and `reserved` are shown as placeholders here.
+`reserved` is the part of the pool that is held back and can only be moved by a governance vote. The per-node bounds are in `uqor`: `max_reward_per_block_per_node` is the per-block ceiling and, since v3.2.3, `max_reward_per_month_per_node` (`2000000000` uqor = 2,000 QOR per 30 days) is the monthly ceiling, prorated by block time and uptime so it no longer depends on how fast blocks come. A ceiling is not a promised amount. The sample is the live mainnet response at the time of writing, after governance released the earlier reserve (proposal 8, 19 October 2026). On the testnet (v3.2.4, **testnet only**) the response also has `monthly_cap_active`, `last_distribution_time` and `last_distribution_height`, and a node's bound starts at its own registration.
 
-:::note Registration is not open
-`stats` reports `"total_registered": "0"` and `nodes` is empty on both networks, and the chain refuses a light-node registration without a `lightnode_operator` licence grant. See [Light Nodes](/light-node/overview) for the program status.
+:::note Registration needs a licence
+The chain refuses a light-node registration without an active `lightnode_operator` licence grant (`holders/lightnode_operator` lists the grants). At the time of writing `stats` reports `"total_registered": "0"` on mainnet and one registered node on the testnet. See [Light Nodes](/light-node/overview) for the programme status.
 :::
+
+## RDK Module {#rdk-module}
+
+The Rollup Development Kit query service is exposed over REST under `/qorechain/rdk/v1/...` (since chain version **v3.2.2**; on v3.2.0 and v3.2.1 it was gRPC only).
+
+| Method | Endpoint                                              | Description                                          |
+| ------ | ----------------------------------------------------- | ---------------------------------------------------- |
+| GET    | `/qorechain/rdk/v1/params`                            | Module parameters                                    |
+| GET    | `/qorechain/rdk/v1/rollups`                           | Lists rollups                                        |
+| GET    | `/qorechain/rdk/v1/rollup/{rollup_id}`                | One rollup (`404` if unknown)                        |
+| GET    | `/qorechain/rdk/v1/latest_batch/{rollup_id}`          | The rollup's latest settlement batch                 |
+| GET    | `/qorechain/rdk/v1/batch/{rollup_id}/{batch_index}`   | One settlement batch                                 |
+| GET    | `/qorechain/rdk/v1/batches/{rollup_id}`               | The rollup's batches in index order (paginated)      |
+| GET    | `/qorechain/rdk/v1/blob/{rollup_id}/{blob_index}`     | One data-availability blob record                    |
+
+```bash
+curl -s https://api.qore.host/qorechain/rdk/v1/params
+```
+
+```json
+{
+  "params": {
+    "max_rollups": 100,
+    "min_stake_for_rollup": "10000000000",
+    "rollup_creation_burn_rate": "0.01",
+    "default_challenge_window": "604800",
+    "max_da_blob_size": "2097152",
+    "blob_retention_blocks": "432000",
+    "max_batches_per_block": 10
+  }
+}
+```
+
+At the time of writing `rollups` is an empty list on both networks, so the per-rollup routes answer `404` (for example `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` is expressed in seconds (`604800`). On the testnet (v3.2.4, **testnet only**) the optimistic challenge window is measured in block time.
+
+## Inflation Module {#inflation-module}
+
+The emission settings and progress are exposed over REST under `/qorechain/inflation/v1/...` (since chain version **v3.2.2**). They are not available through a CLI command.
+
+| Method | Endpoint                              | Description                                                                 |
+| ------ | ------------------------------------- | --------------------------------------------------------------------------- |
+| GET    | `/qorechain/inflation/v1/params`      | Emission parameters: `emission_mode`, `fixed_epoch_emission`, `max_total_emission`, `epoch_length`, `enabled` |
+| GET    | `/qorechain/inflation/v1/epoch_info`  | Progress: `current_epoch`, `block_start`, `next_epoch_height`, `total_minted`, `max_total_emission`, `remaining_emission` |
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
+```
+
+On mainnet, `emission_mode` is `"fixed"`, `fixed_epoch_emission` is `"86000000000"` (86,000 QOR per epoch), `epoch_length` is `"43200"` blocks and `max_total_emission` is `"590000000000000"` (590,000,000 QOR, the cumulative cap). These were set by governance proposal 10 (passed 19 October 2026); the first epoch that uses the new fixed amount starts at block 3,672,000, and `epoch_info` shows the epoch in progress and the amount minted so far. The `schedule` list in the response belongs to the original `schedule` mode; it does not describe what a fixed-mode epoch mints. All amounts are `uqor`. The testnet reports its own, different values. On the testnet only (v3.2.4, **testnet only**) there is a third mode, `target_apy`, with a `target_apy_bps` field, used by the staking-tiers module's bonus; mainnet has no such mode.
+
+## Gas Abstraction Module {#gas-abstraction-module}
+
+| Method | Endpoint                                              | Description                                                                 |
+| ------ | ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| GET    | `/qorechain/gasabstraction/v1/config`                 | Accepted fee tokens, premium, per-block conversion cap                      |
+| GET    | `/qorechain/gasabstraction/v1/conversion_rate?denom=` | What one unit of a fee token is worth in `uqor`, and whether it is `usable` |
+| GET    | `/qorechain/gasabstraction/v1/float`                  | The conversion float's address, balances and this block's usage             |
+
+```bash
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
+```
+
+```json
+{
+  "config": {
+    "enabled": true,
+    "native_denom": "uqor",
+    "accepted_tokens": [
+      { "denom": "uqor", "conversion_rate": "1.0", "price_source": "", "rate_expiry_height": "0",
+        "pool_id": "0", "min_liquidity": "", "max_deviation_bps": 0 }
+    ],
+    "premium_bps": 300,
+    "max_tip_multiplier": 3,
+    "float_min": "0",
+    "block_conversion_cap": "0"
+  }
+}
+```
+
+The accepted list holds native `uqor` only on both networks, so fees are paid in `uqor` and no conversion takes place. Governance adds a token (with a pool, a minimum liquidity and a maximum deviation between the time-weighted and spot price); a fee paid in such a token is converted through a QOR float and refilled through an AMM pool. `conversion_rate` without `?denom=` answers `500` (`denom is required`).
+
+## Staking Tiers Module (testnet only) {#stakingtier-module}
+
+:::note Testnet only
+The staking-tiers module is part of **v3.2.4**, which runs on the testnet only. On mainnet these routes answer `501`, and a mainnet upgrade to v3.2.4 is only proposed so far (governance proposal 13, at height 3,742,566).
+:::
+
+| Method | Endpoint                                  | Description                                                        |
+| ------ | ----------------------------------------- | ------------------------------------------------------------------ |
+| GET    | `/qorechain/stakingtier/v1/params`        | Lock tiers, the minimum lock amount, the early-unlock penalty      |
+| GET    | `/qorechain/stakingtier/v1/locks/{holder}` | A holder's locks, what each currently accrues and what can be claimed |
+| GET    | `/qorechain/stakingtier/v1/pool`          | The bonus pool: balance, outstanding, surplus and the last settlement |
+
+`params` lists the three lock lengths (3, 6 and 12 months) with their parameters and `min_lock_amount` (`"10000000"` uqor, 10 QOR). Locks are made with `tx stakingtier lock` (see [Transaction Commands](/cli-reference/transaction-commands#stakingtier)).
 
 ## gRPC-only modules {#grpc-only-modules}
 
 These modules have a gRPC `Query` service but **no REST route**. Service names follow `qorechain.<module>.v1.Query`.
 
-| Module        | gRPC query methods (chain version v3.2.0)              |
+| Module        | gRPC query methods (chain version v3.2.3)              |
 | ------------- | ------------------------------------------------------ |
 | `ai`          | `Config`, `Stats`                                      |
 | `crossvm`     | `Params`, `PendingMessages`, `Message`                 |
 | `reputation`  | `Params`                                               |
 | `rlconsensus` | `AgentStatus`, `Params`, `Observation`, `Reward`, `Policy` |
-| `rdk`         | `Params`, `Rollup`, `Rollups`, `Batch`, `LatestBatch`  |
 | `svm`         | `Slot`, `Account`, `Program`                           |
 | `qca`         | `Config`                                               |
 
-Use `grpcurl` against your own node, or the [CLI query commands](/cli-reference/query-commands). The `rdk` queries in particular are **not** available over REST on mainnet (`/qorechain/rdk/v1/...` answers `501`), so REST-based rollup readers cannot work against mainnet today.
+Use `grpcurl` against your own node, or the [CLI query commands](/cli-reference/query-commands). The `rdk` queries are also available over REST (see [RDK Module](#rdk-module)); they were gRPC only before v3.2.2.
 
-The xQORE, inflation, BTC-restaking (Babylon), FairBlock and gas-abstraction modules have no query service in the current mainnet release at all, over REST or gRPC.
+The xQORE, BTC-restaking (Babylon) and FairBlock modules have no query service in the current release at all, over REST or gRPC. The inflation and gas-abstraction modules, which had none before v3.2.2, are served over REST (see [Inflation Module](#inflation-module) and [Gas Abstraction Module](#gas-abstraction-module)).
 
 ## Standard routes {#standard-routes}
 
@@ -363,7 +499,8 @@ The standard Cosmos SDK, IBC, EVM and CosmWasm REST routes are also served. Exam
 | `/cosmos/distribution/v1beta1/params`                 | Distribution parameters                       |
 | `/cosmos/gov/v1/params/voting`                        | Governance parameters                         |
 | `/cosmos/slashing/v1beta1/params`                     | Slashing parameters                           |
-| `/cosmos/upgrade/v1beta1/current_plan`, `/applied_plan/{name}` | Pending / applied upgrades          |
+| `/cosmos/upgrade/v1beta1/current_plan`, `/applied_plan/{name}` | Pending / applied upgrades (`applied_plan/v3.2.3` returns `{"height":"3662051"}` on mainnet) |
+| `/cosmos/circuit/v1/disable_list`                     | Message types switched off network-wide       |
 | `/cosmos/base/node/v1beta1/config`                    | Node minimum gas price (`0.1uqor` on both networks) |
 | `/cosmos/base/tendermint/v1beta1/blocks/latest`       | Latest block                                  |
 | `/cosmos/tx/v1beta1/txs`, `/txs/{hash}`, `/txs/block/{height}` | Transaction search / lookup / by block |
@@ -388,7 +525,7 @@ To query a specific service:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` has two methods, `Account` and `EVMWindow`. There is no `Params` method.
+`qorechain.pqc.v1.Query` has three methods on mainnet, `Account`, `EVMWindow` and `EVMDelegationConsent`, and a fourth on the testnet only (v3.2.4), `ProtocolFeatures`. There is no `Params` method.
 
 ## Authentication
 

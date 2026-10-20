@@ -12,7 +12,8 @@ sidebar_position: 1
 | Champ | Valeur |
 | --- | --- |
 | Préréglage réseau | `mainnet` |
-| Chain id | `qorechain-vladi` (en ligne) |
+| Chain id | `qorechain-vladi` (en ligne depuis le 7 juin 2026) |
+| Version de la chaîne (20 octobre 2026) | v3.2.3 |
 | EVM chain ID | `9801` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |
@@ -26,6 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `testnet` |
 | Chain id | `qorechain-diana` (en ligne) |
+| Version de la chaîne (20 octobre 2026) | v3.2.4 (testnet uniquement pour l'instant ; la proposition 13 du mainnet l'appliquerait à la hauteur 3,742,566) |
 | EVM chain ID | `9800` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |

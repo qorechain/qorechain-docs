@@ -10,7 +10,9 @@ sidebar_position: 1
 Bir QoreChain düğümünü başlatmak, yapılandırmak ve işletmek için kullanılan `qorechaind` komutlarına yönelik referans.
 
 :::note
-QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (29 Haziran 2026'dan beri canlı; güncel düğüm sürümü **v3.2.1**) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.2**). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
+QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.3**, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulandı) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.4**, 19 Ekim 2026'da 8,337,253 yüksekliğinde uygulandı; v3.2.4 henüz ana ağda uygulanmamıştır; yönetişim önerisi 13 bunu 3,742,566 yüksekliğinde uygulayacaktır). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
+
+Bu sayfadaki komutlar, ana ağ sürümü olan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. Test ağının v3.2.4 ikili dosyası, ana ağda bulunmayan komutlar ekler; bu kılavuz bunlardan birini andığında **yalnızca test ağı** olarak işaretlenir.
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ---------------------------------------------------- |
 | `--home`               | string | Düğüm ana dizini                                     |
 | `--minimum-gas-prices` | string | Bu düğümün kabul ettiği minimum gaz fiyatı. Ağ tabanı `0.1uqor`'dur; en az bu değeri ayarlayın |
-| `--pruning`            | string | Budama stratejisi: `default`, `nothing`, `everything` |
+| `--pruning`            | string | Budama stratejisi: `default`, `nothing`, `everything`, `custom` (`--pruning-keep-recent` ve `--pruning-interval` ile) |
 | `--halt-height`        | uint   | Düğümü bu blok yüksekliğinde durdur                  |
 | `--halt-time`          | uint   | Düğümü bu Unix zaman damgasında durdur               |
 | `--log_level`          | string | Günlük ayrıntı düzeyi: `info`, `debug`, `warn`, `error` |
 | `--trace`              | bool   | Hatalarda tam yığın izini (stack trace) etkinleştir  |
 
+Genel kaynak ağacından derlenen bir ikili dosya (topluluk derlemesi), `qorechain-vladi` veya `qorechain-diana` üzerinde başlamayı reddeder: kuantum sonrası imzaları doğrulayamaz ve ağların bloklarını aslına uygun biçimde yeniden oynatamaz (düğüm sürümü v3.2.3 ve sonrası). [download.qore.host](https://download.qore.host) adresindeki sürüm ikili dosyasını kullanın; bkz. [Kaynaktan Derleme](/developer-guide/building-from-source).
+
 ---
 
 ## version
 
-`qorechaind` ikili dosyasının sürümünü ve derleme bilgilerini yazdırın.
+`qorechaind version`, sürüm ikili dosyalarında sürüm numarasını **bildirmez**: boş bir satır yazdırır ve `version --long` hiçbir derleme ayrıntısı eklemez. Sürümleri birbirinden ayırt etmek için buna güvenmeyin. Çalıştırdığınız sürümü doğrulamak için:
+
+- **İndirilen arşivin** SHA-256 değerini, arşivi açmadan önce ağın [manifestindeki](https://download.qore.host/mainnet/latest.json) `binary.sha256` ile karşılaştırın (ve neyi kurduğunuzun kaydı olarak bu arşivi veya sağlama toplamını saklayın).
+- Zincire hangi yükseltmeleri uyguladığını sorun: `GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>`, bir yükseltmenin uygulandığı yüksekliği veya uygulanmadıysa `0` değerini döndürür.
 
 ```bash
-qorechaind version
-```
-
-Go sürümü, commit karması ve derleme etiketleri dahil genişletilmiş derleme ayrıntıları için `--long` kullanın:
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

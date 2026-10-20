@@ -11,7 +11,7 @@ Questions générales sur QoreChain, répondues à partir de la documentation. C
 
 ### Le mainnet est-il en ligne ?
 
-Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 29 juin 2026 et exécute la version v3.2.1. Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
+Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 7 juin 2026 et exécute la version v3.2.3 (le testnet, `qorechain-diana`, exécute v3.2.4). Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quels sont les chain IDs et les EVM chain IDs ?
 
@@ -39,15 +39,19 @@ Utilisez le faucet de testnet sur le tableau de bord. Voir [Faucet du tableau de
 
 ### Comment exécuter un nœud, un validateur ou un nœud léger ?
 
-Pour un nœud complet, voir [Exécuter un nœud](/developer-guide/running-a-node). Pour un validateur, voir [Exécuter un validateur](/developer-guide/running-a-validator). Pour un nœud léger, voir [Nœud léger](/light-node/overview).
+Pour un nœud complet, voir [Exécuter un nœud](/developer-guide/running-a-node). Pour un validateur, voir [Exécuter un validateur](/developer-guide/running-a-validator). Pour un nœud léger, voir [Nœud léger](/light-node/overview) ; l'enregistrement au programme de récompenses des nœuds légers est ouvert et soumis à licence ([statut](/light-node/overview#reward-program-status)).
 
 ### Quel schéma de signature QoreChain utilise-t-il ?
 
-QoreChain utilise un schéma hybride post-quantique combinant le **secp256k1 (ECDSA)** classique avec le **ML-DSA-87 (Dilithium-5)** post-quantique. Ce schéma hybride est requis par défaut sur le chemin de transaction Cosmos, le mode d'application étant contrôlé par la gouvernance. Sur la lane EVM, la signature reste secp256k1, et un compte doit en outre détenir une clé ML-DSA enregistrée et une fenêtre d'autorisation ouverte (v3.2.0). Voir [Sécurité post-quantique](/architecture/post-quantum-security).
+QoreChain utilise un schéma hybride post-quantique combinant le **secp256k1 (ECDSA)** classique avec le **ML-DSA-87 (Dilithium-5)** post-quantique. Ce schéma hybride est requis par défaut sur le chemin de transaction Cosmos, le mode d'application étant contrôlé par la gouvernance. Sur la lane EVM, la signature reste secp256k1, et un compte doit en outre détenir une clé ML-DSA enregistrée et une fenêtre d'autorisation ouverte (depuis v3.2.0). Voir [Sécurité post-quantique](/architecture/post-quantum-security).
 
 ### Pourquoi ma transaction EVM est-elle refusée avec « no open EVM authorisation window » ?
 
 Depuis la v3.2.0, la lane EVM n'admet une transaction que si elle provient d'un compte disposant d'une clé post-quantique enregistrée et d'une fenêtre d'autorisation ouverte. Ouvrez une fenêtre avec une transaction de la lane Cosmos signée en post-quantique, puis réessayez. Voir [Fenêtre d'autorisation EVM](/getting-started/first-transaction#evm-window).
+
+### Combien de validateurs le mainnet compte-t-il ?
+
+Huit validateurs bonded le 20 octobre 2026, avec environ 55,1 millions de QOR bonded (l'ensemble actif peut en contenir jusqu'à 100). Le testnet en compte trois. Consultez l'ensemble en direct à `GET /cosmos/staking/v1beta1/validators` sur `https://api.qore.host`.
 
 ### Quel temps de bloc dois-je attendre ?
 
@@ -59,7 +63,7 @@ Pas encore. Le module de comptabilité existe, mais les transactions de verrouil
 
 ### L'offre de QOR est-elle fixe ?
 
-L'offre à la genèse était de 4 420 000 000 QOR. L'émission de staking est frappée sous un plafond cumulatif strict de 114 285 714 QOR, et les burns retirent définitivement des tokens. Voir [Tokenomics](/architecture/tokenomics#supply-and-emission).
+L'offre à la genèse était de 4 420 000 000 QOR. L'émission de staking est frappée sous un plafond cumulatif strict de 590 000 000 QOR (86 000 QOR par époque depuis la proposition de gouvernance 10, octobre 2026), et les burns retirent définitivement des tokens. Voir [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Comment construire un rollup ?
 
@@ -71,7 +75,7 @@ Utilisez le [QoreChain SDK](/sdk/overview), le SDK public pour construire des ap
 
 ### Où puis-je poser des questions ?
 
-Le bot communautaire QCAIA répond aux questions sur Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) et Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Voir [Bot communautaire QCAIA](/qcaia/overview).
+Le bot communautaire QCAIA répond aux questions sur Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) et Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Voir [Bot communautaire QCAIA](/qcaia/overview).
 
 ## Voir aussi
 

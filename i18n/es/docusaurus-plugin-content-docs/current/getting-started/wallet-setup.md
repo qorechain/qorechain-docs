@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain admite múltiples tipos de billeteras en sus entornos de ejecución nativo, EVM y SVM. Elige la billetera que se ajuste a tu caso de uso.
 
 :::note
-Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 29 de junio de 2026) como la testnet **`qorechain-diana`** (chain ID EVM **9800**). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
+Los valores a continuación cubren tanto la mainnet **`qorechain-vladi`** (chain ID EVM **9801**, activa desde el 7 de junio de 2026, versión v3.2.3) como la testnet **`qorechain-diana`** (chain ID EVM **9800**, versión v3.2.4). Los endpoints públicos de ambas redes se listan en [Redes](/appendix/networks#public-endpoints).
 :::
 
 ## QoreX (recomendada) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-Respalda el archivo de la clave PQC con el mismo cuidado que tu mnemónica. (Una clave puede volver a derivarse de la mnemónica con `qorechaind tx pqc recover-key` y reemplazarse con `tx pqc rotate-key`.) QoreX y el SDK de QoreChain registran la clave por ti. Consulta [Primera transacción](/getting-started/first-transaction#register-pqc-key) para ver un envío firmado completo.
+Desde v3.2.3 puedes adjuntar una prueba de posesión opcional registrando con `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`; la cadena también rechaza claves débiles, degeneradas o ya utilizadas. Respalda el archivo de la clave PQC con el mismo cuidado que tu mnemónica. (Una clave puede volver a derivarse de la mnemónica con `qorechaind tx pqc recover-key` y reemplazarse con `tx pqc rotate-key`.) QoreX y el SDK de QoreChain registran la clave por ti. Consulta [Primera transacción](/getting-started/first-transaction#register-pqc-key) para ver un envío firmado completo.
 
 ### Firma híbrida con el SDK
 

@@ -102,19 +102,25 @@ const burn = await client.rest.getBurnStats();
 على الشبكة الرئيسية وشبكة الاختبار، يجب أن تحمل كل معاملة على المسار الأصلي (Native)
 التوقيع **الهجين** (secp256k1 الكلاسيكي بالإضافة إلى ML-DSA-87)، ويجب
 **تسجيل مفتاح ML-DSA-87 الخاص بالحساب على السلسلة أولًا**. التسجيل صريح: لا
-يوجد تسجيل تلقائي عند أول معاملة. وترفض الشبكات الحية `tx.bankSend` العادي
-(توقيع كلاسيكي فقط). تتطلب الخطوتان أدناه **SDK 0.8.3 أو أحدث**
-(`derivePqcCanonical`؛ و0.8.1 أو أحدث لعمليات الإرسال الهجينة عمومًا) وحسابًا ممولًا:
+يوجد تسجيل تلقائي عند أول معاملة. وترفض الشبكات الحية المعاملة الموقَّعة توقيعًا
+كلاسيكيًا فقط، لذا مرّر إلى عميل المعاملات زوج مفاتيح ML-DSA-87 الخاص بالحساب
+فيوقّع كل معاملة توقيعًا هجينًا. تتطلب الخطوتان أدناه **SDK 0.9.0 أو أحدث** وحسابًا ممولًا:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. سجِّل مفتاحك ما بعد الكمّي (مرة واحدة)
 
-يُوقَّع التسجيل توقيعًا كلاسيكيًا ويُستثنى من اشتراط التوقيع الهجين، بحيث يستطيع
-الحساب الجديد تهيئة مفتاحه الأول. يدفع الحساب الرسوم: يحتاج المفتاح البالغ حجمه
-2,592 بايت إلى حدّ غاز يبلغ نحو 600,000.
+يدفع الحساب الرسوم: يحتاج المفتاح البالغ حجمه 2,592 بايت إلى حدّ غاز يبلغ نحو 600,000.
+تقرأ `ensurePqcRegistered` حالة المفتاح عبر REST أولًا (`rest`)، لذا تتخطى المعاملة
+عندما يكون المفتاح مسجَّلًا بالفعل، وترمي `PqcKeyMismatchError` دون إرسال أي شيء
+عندما يحمل الحساب مفتاحًا *مختلفًا* (فالتسجيل الثاني يُرفض **بعد خصم الرسوم**).
+التسجيل هو المعاملة الوحيدة الموقَّعة كلاسيكيًا التي تقبلها السلسلة من حساب بلا
+مفتاح، لذا يرسله العميل الهجين كلاسيكيًا من تلقاء نفسه. وبعد أن تطبّق الشبكة v3.2.3
+(طبّقتها الشبكتان)، تُرفق الدالة المساعدة أيضًا إثبات الحيازة الاختياري. ترفض
+السلسلة المفاتيح الضعيفة أو المنحلّة أو المُعاد استخدامها؛ أما المفتاح الصادر عن
+`derivePqcCanonical` فهو سليم.
 
 ```ts
 import {
@@ -132,20 +138,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -153,51 +155,24 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. أرسل بتوقيع هجين
 
-تقوم `signAndBroadcastHybrid` بالبناء والتوقيع والبثّ. مرِّر `rest` ليتمكّن SDK من
-سؤال الشبكة عن صيغة sign-bytes التي تتحقق منها (راجع
-[أي صيغة sign-bytes؟](/sdk/concepts/accounts-pqc#sign-bytes-versions)). استخدم
-`toBase("1.5")` لتحويل QOR إلى وحدة الأساس `uqor`. الحدّ الأدنى لسعر الغاز في
-الشبكة هو 0.1 uqor لكل وحدة غاز، لذا فإن حدّ غاز قدره 400,000 يتطلب رسومًا لا تقل
-عن 40,000 uqor.
+ترسل `tx.bankSend` الآن بتوقيع هجين. تكون الرسوم افتراضيًا `"auto"`: يحاكي العميل
+المعاملة الهجينة بنفسه ويضيف غاز التحقق ما بعد الكمّي، الذي لا تحتسبه المحاكاة.
+الحدّ الأدنى لسعر الغاز في الشبكة هو 0.1 uqor لكل وحدة غاز (ويسعّر العميل عند 0.15).
+استخدم `toBase("1.5")` لتحويل QOR إلى وحدة الأساس `uqor`.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
 تُرجع `toBase("1.5")` القيمة `"1500000"` (تحتوي QOR على 10^6 من وحدات الأساس `uqor`).
+ولإرسال أي رسالة أخرى بالطريقة نفسها، مرّرها إلى `tx.signAndBroadcast([message], "auto")`.
+وللتحكم الصريح بالرسوم ورقم الحساب والتسلسل، استخدم `signAndBroadcastHybrid` (انظر
+[الحسابات والتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info الحسابات الموحّدة
 بالنسبة إلى حساب موحّد eth-native (`deriveUnifiedAccount`)، استخدم
@@ -205,11 +180,12 @@ console.log(result.transactionHash);
 [الحسابات والتوقيع PQC](/sdk/concepts/accounts-pqc#hybrid-signing).
 :::
 
-:::note عمليات الإرسال الكلاسيكية تعمل فقط على العقد المحلية وعقد التطوير
-لا يزال المسار الكلاسيكي `client.connectTx(signer)` مع `tx.bankSend(...)` موجودًا،
-وهو ما تستخدمه `ensurePqcRegistered` لمعاملة التسجيل الواحدة. وعلى عقدة لا
-تشترط امتداد التوقيع الهجين (عقدة تطوير محلية) فإنه يرسل أيضًا التحويلات العادية.
-أما الشبكات العامة فترفضه.
+:::note دون زوج مفاتيح يوقّع العميل توقيعًا كلاسيكيًا
+يوقّع `client.connectTx(signer)` بدون `pqcKeypair` توقيعًا كلاسيكيًا فقط. تقبل
+الشبكات العامة ذلك لتسجيل المفتاح وحده (حساب بلا مفتاح بعد)؛ أما مع عقدة لا تشترط
+امتداد التوقيع الهجين (عقدة تطوير محلية) فإنه يرسل أيضًا التحويلات العادية. وليس في
+إصدارات SDK السابقة للإصدار 0.9.0 `TxClient` هجين: أرسل عبر `signAndBroadcastHybrid`
+(انظر [الإصدارات السابقة للإصدار 0.9.0](/sdk/install#before-090)).
 :::
 
 ## لغات أخرى: الاتصال والقراءة

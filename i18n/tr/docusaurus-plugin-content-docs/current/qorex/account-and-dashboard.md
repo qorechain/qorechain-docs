@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Hesap ve Dashboard
 
-QoreX **hesap olmadan da tamamen çalışır** — anahtarlarınız asla bir hesaba bağlı olmaz. Oturum açmak ödeme istekleri ve Dashboard eşleştirmesi gibi kolaylıklar ekler; bir @handle talep etmek de oturum açmanızı isteyebilir.
+QoreX **hesap olmadan da tamamen çalışır** — anahtarlarınız asla bir hesaba bağlı olmaz. Oturum açmak ödeme istekleri ve Dashboard eşleştirmesi gibi kolaylıklar ekler ve **bir @handle talep etmek için gereklidir**. Oturum açma e-posta ile ya da Apple veya Google ile yapılır — aşağıya bakın.
 
 ## Oturum açma {#sign-in}
 
@@ -35,7 +35,7 @@ Ayarlar → **Hesaplarınız**, cüzdan başına **20 hesaba** kadar oluşturman
 
 **Çift imza** (bir kayıt defteri ed25519 imzası + kendi secp256k1 imzanız) ile adresinize bağlı benzersiz bir isim (örneğin `@liviu`) talep edin. Bundan sonra herkes @handle'ınıza gönderim yapabilir. Çözümleme **önce doğrula, sonra sabitle** (ilk kullanımda güven) mantığıyla çalışır; bu nedenle bir handle'ın anahtarı sessizce değiştirilirse QoreX bunu işaretler.
 
-Bir handle cüzdanınıza değil bir adrese bağlı olduğundan, bir handle talep etmek **adres başınadır** — [birden fazla hesabınız](#accounts) varsa, her biri kendi @handle'ını taşıyabilir ve bir hesap için handle talep etmek diğerlerine otomatik olarak isim kazandırmaz. Tarayıcı eklentisinde bir handle'a ödeme yapabilirsiniz; açılır pencereden talep etme, bazı sürümlerde sıradan QoreChain hesaplarında sunulur, bazılarında sunulmaz — açılır pencere sunmuyorsa mobil uygulamadan talep edin. Ethereum tarzı (coin 60) hesapların handle'ı yoktur.
+Bir handle cüzdanınıza değil bir adrese bağlı olduğundan, bir handle talep etmek **adres başınadır** — [birden fazla hesabınız](#accounts) varsa, her biri kendi @handle'ını taşıyabilir ve bir hesap için handle talep etmek diğerlerine otomatik olarak isim kazandırmaz. Talep etmek için oturum açmış bir hesap gerekir ve **mobil uygulamada** yapılır. Tarayıcı eklentisinde bir handle'a ödeme yapabilirsiniz (sorgulamalar eklenti 0.3.7 ve sonrasında çalışır) ancak handle talep edemezsiniz — eklenti sizi uygulamaya yönlendirir. Ethereum tarzı (coin 60) hesapların handle'ı yoktur. QoreChain'e benzeyen isimler ayrılmıştır: projeyi taklit eden yeni bir handle (marka adları veya *official*, *support*, *airdrop* ya da *treasury* gibi güven sözcükleri, benzer yazımlar dahil) reddedilir. Mevcut sahipler handle'larını yine de silebilir.
 
 Handle kayıt defterine geçici olarak ulaşılamıyorsa ekran **"Handle'lar yakında"** durumuna geçer ve geri kalan her şey çalışmaya devam eder; kayıt defteri tekrar erişilebilir olduğunda handle'lar otomatik olarak yeniden etkinleşir.
 

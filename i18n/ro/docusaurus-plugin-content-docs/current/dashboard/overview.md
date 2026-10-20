@@ -23,7 +23,7 @@ Tot ce se află în această secțiune este un ghid pentru utilizator: ce face f
 | **[Staking & Validators](/dashboard/staking-and-validators)** | Trece în revistă validatorii și delegă-ți QOR. |
 | **[Faucet](/dashboard/faucet)** | Solicită tokenuri de test pe testnet. |
 | **[Quests](/dashboard/quests)** | Finalizează sarcini ghidate pentru a învăța cum funcționează rețeaua. |
-| **[Tools Hub](/dashboard/tools-hub)** | Ajungi la descărcările și starea nodurilor light, înregistrarea nodurilor, cererile de rollup, SDK și uneltele de licențiere. |
+| **[Tools Hub](/dashboard/tools-hub)** | Unelte pentru operatori și dezvoltatori în șase file: Validator Program, Validator Application, Light Node, Node Registration, Rollups și SDK. |
 
 ## Autentificare {#sign-in}
 
@@ -39,7 +39,7 @@ Navigarea prin Dashboard nu necesită niciodată un portofel; conectarea unuia e
 
 Majoritatea acțiunilor care schimbă starea on-chain — trimiterea de tokenuri, swap-uri, staking — necesită un portofel conectat. Modul în care Dashboard-ul gestionează cheile depinde de rețea:
 
-- **Mainnet-ul este non-custodial.** Dashboard-ul nu deține niciodată cheile tale de mainnet. Îți conectezi propriul portofel — **QoreX** (portofelul oficial QoreChain, extensie sau aplicație), **Keplr** sau **MetaMask** — iar Dashboard-ul îți citește soldul și istoricul reale direct din chain. Fiecare tranzacție de mainnet este semnată în propriul tău portofel, niciodată de Dashboard. Trimiterea și staking-ul pe **rail-ul Native necesită QoreX**, deoarece conturile QoreChain semnează cu o semnătură hibridă post-cuantică pe care doar QoreX o produce în prezent; Keplr se poate conecta totuși pentru a vizualiza soldul tău pe rail-ul Native. **MetaMask** se conectează pe **rail-ul EVM**; trimiterea de acolo necesită și o fereastră de autorizare EVM deschisă, care se deschide din QoreX (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)).
+- **Mainnet-ul este non-custodial.** Dashboard-ul nu deține niciodată cheile tale de mainnet. Îți conectezi propriul portofel — **QoreX** (portofelul oficial QoreChain, extensie sau aplicație), **Keplr** sau **MetaMask** — iar Dashboard-ul îți citește soldul și istoricul reale direct din chain. Fiecare tranzacție de mainnet este semnată în propriul tău portofel, niciodată de Dashboard. Trimiterea și staking-ul pe **rail-ul Native necesită QoreX**, deoarece conturile QoreChain semnează cu o semnătură hibridă post-cuantică pe care doar QoreX o produce în prezent; Keplr se poate conecta totuși pentru a vizualiza soldul tău pe rail-ul Native. **MetaMask** se conectează pe **rail-ul EVM**; trimiterea de acolo necesită și cheia post-cuantică a contului și o fereastră de autorizare EVM deschisă, care se deschide din QoreX, pe contul în stil Ethereum (coin 60) care împarte cheia cu MetaMask (vezi [Trimiterea cu MetaMask](/dashboard/wallet#send-metamask)).
 - **Testnet-ul este custodial.** Dashboard-ul îți gestionează un portofel de test, astfel încât poți experimenta fără nicio configurare și fără nicio valoare reală în joc.
 
 ### Conectează-te cu QoreX (recomandat) {#connect-qorex}
@@ -77,8 +77,8 @@ Dashboard-ul funcționează pe două rețele. Antetul afișează rețeaua la car
 
 | Rețea | Chain ID | Când se folosește |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Rețeaua live pentru valoare reală și utilizare în producție. Non-custodial: îți conectezi propriul portofel. |
-| **Testnet** | `qorechain-diana` | Mediu gratuit pentru testare, cu un portofel de test gestionat de dashboard și [Faucet](/dashboard/faucet) pentru tokenuri de test. |
+| **Mainnet** | `qorechain-vladi` | Rețeaua live (live din 7 iunie 2026, rulează chain v3.2.3) pentru valoare reală și utilizare în producție. Non-custodial: îți conectezi propriul portofel. |
+| **Testnet** | `qorechain-diana` | Mediu gratuit pentru testare (rulează chain v3.2.4, o versiune doar pentru testnet), cu un portofel de test gestionat de dashboard și [Faucet](/dashboard/faucet) pentru tokenuri de test. |
 
 Tokenul nativ este **QOR** (denominarea de bază `uqor`, unde 1 QOR = 10^6 uqor). Dacă ești nou, începe pe testnet, revendică tokenuri de la Faucet și încearcă un prim transfer înainte de a trece pe mainnet.
 
@@ -91,5 +91,5 @@ Urmează [Connecting to Testnet](/getting-started/connecting-to-testnet) și [Yo
 * [Explorer](/dashboard/explorer) — răsfoiește blocuri, tranzacții și conturi.
 * [Wallet](/dashboard/wallet) — gestionează conturi și trimite tranzacții.
 * [Trade / DEX](/dashboard/trade) — schimbă tokenuri prin pool-urile AMM on-chain.
-* [Tools Hub](/dashboard/tools-hub) — descărcări și stare noduri light, înregistrarea nodurilor, cereri de rollup, SDK și licențiere.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups și SDK.
 * [Faucet](/dashboard/faucet) — tokenuri de test pe testnet.

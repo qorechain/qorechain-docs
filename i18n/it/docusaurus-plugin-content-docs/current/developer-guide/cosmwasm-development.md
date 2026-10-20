@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain supporta gli smart contract **CosmWasm**, che consentono agli sviluppatori di scrivere programmi sicuri e isolati (sandboxed) in Rust, compilati in WebAssembly. I contratti CosmWasm vengono eseguiti insieme ai programmi EVM e SVM all'interno dell'architettura tripla-VM di QoreChain.
 
 :::note
-I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 29 giugno 2026), che esegue la release di nodo **v3.2.1**. Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.2.
+I comandi seguenti utilizzano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release di nodo **v3.2.3**. Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 (solo testnet).
 :::
 
 :::caution Il caricamento del codice e l'istanziazione richiedono attualmente un permesso esplicito
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Chiamate Cross-VM
 
-Le chiamate cross-VM vengono inviate come transazioni `MsgCrossVMCall` attraverso il modulo `x/crossvm`; consulta [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il ciclo di vita del messaggio. I contratti CosmWasm oggi non dispongono di un binding lato contratto per avviare una chiamata cross-VM (non esiste alcun messaggio personalizzato `QoreChainMsg` che i contratti possano emettere), quindi un contratto non può chiamare un contratto EVM o SVM dall'interno del proprio entry point `execute`.
+Le chiamate cross-VM vengono inviate come transazioni `MsgCrossVMCall` attraverso il modulo `x/crossvm`; consulta [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il ciclo di vita del messaggio. I contratti CosmWasm oggi non dispongono di un binding lato contratto per avviare una chiamata cross-VM (non esiste alcun messaggio personalizzato `QoreChainMsg` che i contratti possano emettere), quindi un contratto non può chiamare un contratto EVM o SVM dall'interno del proprio entry point `execute`. Dalla v3.2.3 una chiamata verso la corsia del chiamante stesso viene rifiutata e una chiamata in coda che fallisce non lascia effetti collaterali.
 
 :::caution Le chiamate cross-VM sono attualmente disattivate sulla mainnet
 `MsgCrossVMCall` si trova nell'elenco del circuit breaker della mainnet (`qorechaind query circuit disabled-list`) e la corsia SVM è disattivata su entrambe le reti, quindi il percorso cross-VM oggi non è utilizzabile per le transazioni ordinarie.

@@ -23,7 +23,7 @@ El módulo del puente está desplegado en mainnet y testnet, pero **ninguna ruta
 | Operaciones del puente | 0 | 0 |
 | Canales / clientes IBC | 0 / 0 | 0 / 0 |
 
-(Comprobado en octubre de 2026. Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`.)
+(Comprobado el 20 de octubre de 2026 con la mainnet v3.2.3 y la testnet v3.2.4. Lea los valores en vivo con `qorechaind query bridge chains` y `qorechaind query bridge validators`, o por REST en `/qorechain/bridge/v1/chains` y `/qorechain/bridge/v1/validators`.) La configuración del módulo es la misma en ambas redes: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86.400 y `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). La pila IBC que usaría el módulo es ibc-go v10.7 (desde v3.2.2), pero no se ha creado ningún cliente ni canal.
 
 ## Resumen de Conexiones
 
@@ -193,6 +193,8 @@ Todas las operaciones del puente QCB requieren un **umbral de 7 de 10** firmas p
 * Una lista de cadenas admitidas
 * Una puntuación de reputación (mantenida por `x/reputation`)
 
+Desde v3.2.2 el módulo valida de forma coherente los montos cero y su configuración en todas las rutas. **Solo testnet (v3.2.4, no en mainnet):** registrar un validador de puente también requiere una prueba de posesión de la clave Dilithium-5 (el mismo formato `proof_of_possession` que el registro de claves PQC, véase [Seguridad Poscuántica](/architecture/post-quantum-security#proof-of-possession)) y rechaza una clave que otro validador de puente ya esté usando. La mainnet v3.2.3 no tiene esa comprobación, y no hay ningún validador de puente registrado en ninguna de las dos redes.
+
 ### Disyuntores (Circuit Breakers)
 
 Cada cadena conectada dispone de protecciones de disyuntor independientes:
@@ -234,6 +236,8 @@ A partir de la versión de cadena **v3.1.78**, una cadena del puente puede activ
 * **`tx bridge set-verifier-bootstrap`** — seleccionar el verificador activo de una cadena e instalar su raíz de confianza (`MsgSetVerifierBootstrap`).
 
 Esto permite a un operador poner en línea el puente de una cadena conectada — o rotar su verificador — directamente, con la autorización verificada contra la clave de administrador del puente. A partir de la versión de cadena **v3.2.0**, el módulo del puente también tiene su propia cuenta de módulo (las versiones anteriores no tenían ninguna, por lo que el primer depósito en una ruta activada habría fallado).
+
+Las licencias como `qcb_bridge` las concede la cuenta de la autoridad de licencias. Desde v3.2.3 (mainnet), la gobernanza puede sustituir esa cuenta con una propuesta `MsgUpdateAuthority`; el propio módulo se describe en [Licenciamiento de Cadena](/architecture/chain-licensing).
 
 ### Validación de redes conectadas
 

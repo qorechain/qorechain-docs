@@ -9,8 +9,8 @@ sidebar_position: 1
 
 QoreChain implementează **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mecanism de consens care clasifică validatorii în trei grupuri specializate și folosește o selecție ponderată cu reputație pentru a echilibra securitatea, descentralizarea și performanța. CPoS este implementat în modulul `x/qca` și operează deasupra **QoreChain Consensus Engine**.
 
-:::note Stare curentă (octombrie 2026)
-Logica Triple-Pool CPoS descrisă în această pagină — clasificarea grupurilor, selecția propunătorului ponderată pe grupuri, curba de bondare a recompenselor, slashing-ul progresiv și numărarea voturilor QDRW — este implementată în modulul `x/qca`, iar parametrii săi sunt on-chain, dar **nu este încă conectată la producerea blocurilor, la recompense, la slashing sau la numărarea voturilor de guvernanță**. Astăzi rotația propunătorilor este rotația standard a validatorilor ponderată pe miză, slashing-ul urmează parametrii standard `x/slashing` (fereastră de downtime de 10,000 de blocuri, validator închis („jailed”) sub 5 % semnat, slash de 1 % pentru downtime și de 5 % pentru dublă semnare, închisoare de 10 minute), iar propunerile sunt numărate pe baza mizei bondate (cvorum 33.4 %, prag 50 %, veto 33.4 %). Designul de mai jos descrie direcția în care evoluează modulul.
+:::note Stare curentă (20 octombrie 2026: mainnet v3.2.3, testnet v3.2.4)
+Logica Triple-Pool CPoS descrisă în această pagină — clasificarea grupurilor, selecția propunătorului ponderată pe grupuri, curba de bondare a recompenselor, slashing-ul progresiv și numărarea voturilor QDRW — este implementată în modulul `x/qca`, iar parametrii săi sunt on-chain, dar **nu este încă conectată la producerea blocurilor, la recompense, la slashing sau la numărarea voturilor de guvernanță**. Astăzi rotația propunătorilor este rotația standard a validatorilor ponderată pe miză, slashing-ul urmează parametrii standard `x/slashing` (fereastră de downtime de 10,000 de blocuri, validator închis („jailed”) sub 5 % semnat, slash de 1 % pentru downtime și de 5 % pentru dublă semnare, închisoare de 10 minute), iar propunerile sunt numărate pe baza mizei bondate (cvorum 33.4 %, prag 50 %, veto 33.4 %). Designul de mai jos descrie direcția în care evoluează modulul. Nicio versiune până la mainnet v3.2.3 sau testnet v3.2.4 nu schimbă acest lucru; regulile care **sunt** aplicate astăzi sunt listate în [Regulile de admitere a validatorilor și de staking în vigoare](#admission).
 :::
 
 Stratul de optimizare prin învățare prin întărire, conceput pentru a regla parametrii de consens în timpul execuției, poartă marca **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Consultați [PRISM Consensus Engine](/architecture/prism-consensus-engine) pentru detalii.
@@ -28,6 +28,22 @@ flowchart TD
     P["PRISM<br/>RL optimization"] -. tunes params .-> B
     P -. tunes params .-> C
 ```
+
+---
+
+## Regulile de admitere a validatorilor și de staking în vigoare {#admission}
+
+Aceste reguli sunt aplicate pe mainnet (din v3.2.2, cu o consolidare suplimentară în v3.2.3) și pe testnet. Fac parte din serverul de mesaje de staking, deci se aplică fiecărui mesaj, indiferent cum ajunge în lanț: o tranzacție, `x/authz`, `x/group`, un contract CosmWasm, un precompile sau o propunere de guvernanță. Tranzacțiile de genesis sunt exceptate.
+
+| Regulă | Ce aplică lanțul |
+| --- | --- |
+| Crearea unui validator | Auto-bondarea este de cel puțin **100.000 QOR** (100.000.000.000 uqor) **și** contul operatorului deține o licență `validator_operator` activă. Vezi [Licențierea lanțului](/architecture/chain-licensing) |
+| Pragul operațional | Operatorul propriu al unui validator nu poate dezdelega sau redelega astfel încât auto-bondarea să rămână **sub 100.000 QOR**. O ieșire completă (auto-bondare la zero) este permisă; validatorul este apoi închis (jailed) |
+| Unjail | `MsgUnjail` este refuzat cât timp auto-bondarea operatorului este sub prag, deci un validator care a ieșit sau a fost slash-uit sub acesta trebuie mai întâi să suplimenteze. Un cont de operator fără cheie post-cuantică înregistrată poate totuși să facă unjail (vezi [Securitate post-cuantică](/architecture/post-quantum-security#hybrid-signatures)) |
+| Autorizări de stake (v3.2.3) | Listele de permitere și de blocare ale unei autorizări de stake `x/authz` compară adresele validatorilor după octeții lor decodați, deci scrierea unei adrese (de exemplu, toată cu majuscule) nu poate ocoli o listă de blocare |
+| Slashing la redelegare (v3.2.0) | Slash-ul total aplicat unei intrări de redelegare este plafonat la fracția de slash înmulțită cu soldul inițial al intrării |
+
+Parametrii de staking citiți pe ambele rețele pe 20 octombrie 2026: `max_validators` 100, timp de dezlegare 21 de zile (1.814.400 s), `max_entries` 7, `min_commission_rate` 0. Autoritatea de licențiere, contul care acordă licențele `validator_operator`, poate fi înlocuită prin guvernanță din v3.2.3 (`MsgUpdateAuthority`).
 
 ---
 

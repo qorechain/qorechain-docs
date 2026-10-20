@@ -7,10 +7,10 @@ sidebar_position: 3
 
 # ロールアップのデプロイ
 
-アプリケーション専用ロールアップは3通りの方法でセットアップできます。**ダッシュボード**(リクエストフォーム。オンチェーントランザクションではありません)、チェーンの**CLI**(`qorechaind`、オンチェーントランザクションを完全に制御)、または**TypeScript RDK**(`@qorechain/rdk` と `create-qorechain-rollup` スキャフォルダー)を使う方法です。TypeScript RDKは現時点では設定と読み取りを対象としています。このページではこの3つすべてに加えて、オペレーターのライフサイクルとバッチコマンドについても解説します。
+アプリケーション専用ロールアップは3通りの方法でセットアップできます。**ダッシュボード**(リクエストフォーム。オンチェーントランザクションではありません)、チェーンの**CLI**(`qorechaind`、オンチェーントランザクションを完全に制御)、または**TypeScript RDK**(`@qorechain/rdk` と `create-qorechain-rollup` スキャフォルダー)を使う方法です。TypeScript RDKは設定と読み取りを対象としており、ポスト量子鍵を渡せばハイブリッドトランザクションに署名することもできます([RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。このページではこの3つすべてに加えて、オペレーターのライフサイクルとバッチコマンドについても解説します。
 
 :::caution 初期段階の機能
-どちらのネットワークでも、ロールアップはまだ1つも作成されていません。以下のコマンドは **`qorechain-diana`** テストネット(EVMチェーンID **9800**、チェーンバージョン **v3.2.2**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)はチェーンバージョン **v3.2.1** で稼働しています。このページはメインネットの挙動を説明しており、より新しいテストネットのリリースでは細部が異なる場合があります。すべてのデプロイはまずテストネットで検証してください。
+どちらのネットワークでも、ロールアップはまだ1つも作成されていません(2026年10月20日確認)。以下のコマンドは **`qorechain-diana`** テストネット(EVMチェーンID **9800**、チェーンバージョン **v3.2.4**、テストネットのみ)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**、2026年6月7日から稼働)はチェーンバージョン **v3.2.3** で稼働しています。このページはメインネットの挙動を説明しており、より新しいテストネットのリリースでは細部が異なる場合があります(違いには「テストネットのみ」と記しています)。すべてのデプロイはまずテストネットで検証してください。
 :::
 
 :::note 手数料と署名
@@ -26,7 +26,7 @@ sidebar_position: 3
 | **最低ステーク額** | 最低10,000 QOR(`min_stake_for_rollup`)。ステークはロールアップ作成時にエスクローされます |
 | **作成時バーン** | 提供したステークの1 %が作成時に永久にバーンされます(バーンを適用できない作成は拒否されます)。残りはエスクローに保持され、ロールアップが停止された際に返還されます |
 | **レイヤー登録ステーク** | 作成時にロールアップのレイヤーがマルチレイヤーモジュールにも登録され、作成者からさらに **1,000 QOR**(`min_sidechain_stake`)がロックされます。これはレイヤーが停止時に廃止される際に返還されます。レイヤーを登録できない場合(残高不足、またはマルチレイヤーのサイドチェーン上限10に到達)でもロールアップは作成されますが、レイヤーを持たないため、そのバッチをアンカーできません |
-| **ロールアップID** | 3〜64文字を使用します。小文字の英字、数字、`.`、`_`、`-` が使え、先頭は英字または数字にします。新しいチェーンリリースではこのルールが強制されるため、最初からこの形式を使ってください |
+| **ロールアップID** | 3〜64文字を使用します。小文字の英字、数字、`.`、`_`、`-` が使え、先頭は英字または数字にします。チェーンはv3.2.2以降、両ネットワークでこのルールを強制しており(CLIはトランザクションを構築する前にチェックします)、規則に合わないIDは拒否されます |
 | **アカウント** | ポスト量子鍵が登録済みで、ステーク額、レイヤーステーク、トランザクション手数料をまかなうのに十分な残高を持つ、資金の入ったQoreChainアカウント |
 
 デプロイ前に、現在の最低ステーク額とバーン率のライブなモジュールパラメータを照会してください。
@@ -122,30 +122,42 @@ qorechaind query rdk list-rollups
 
 ## TypeScript RDK(`@qorechain/rdk`)でのデプロイ {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-Rollup Development Kitは、CLIと同じオンチェーンの `x/rdk` モジュール向けに、2つの公開npmパッケージとして提供されています。現時点では、構成の構築と検証、および状態の読み取りに最も役立ちます。トランザクション送信にこれらを頼る前に、以下の署名に関する注意を確認してください。
+Rollup Development Kitは、CLIと同じオンチェーンの `x/rdk` モジュール向けに、2つの公開npmパッケージとして提供されています。構成の構築と検証、および状態の読み取りに最も役立ちます。トランザクション送信にこれらを頼る前に、[RDK 0.5.0 の制限事項](#rdk-050-limits)を確認してください。
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)**(`v0.4.4`)— TypeScript SDK:プリセットプロファイル付きのコンフィグビルダー、ロールアップおよび決済バッチのライフサイクル向けトランザクションヘルパー、ネイティブDA、型付き読み取りクライアント、そしてv0.4で追加された機能 — 量子安全な決済レシート、QCAI Rollup Copilot、クロスVMのcalldataヘルパー、ウォッチタワー。
-* **`create-qorechain-rollup`**(`v0.4.4`)— プロファイルごとに実行可能なスターターテンプレートを1つクローンするスキャフォルダー(`multivm-rollup` テンプレートを含む)。
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)**(`v0.5.0`)— TypeScript SDK:プリセットプロファイル付きのコンフィグビルダー、ロールアップおよび決済バッチのライフサイクル向けトランザクションヘルパー、ネイティブDA、型付き読み取りクライアント、そしてv0.4で追加された機能 — 量子安全な決済レシート、QCAI Rollup Copilot、クロスVMのcalldataヘルパー、ウォッチタワー。
+* **`create-qorechain-rollup`**(`v0.5.0`)— プロファイルごとに実行可能なスターターテンプレートを1つクローンするスキャフォルダー(`multivm-rollup` テンプレートを含む)。
 
-これらはnpmで公開されています。リポジトリには公開済みのオペレーターCLI **`@qorechain/rdk-cli`**(`qorollup`、`v0.4.4`)も含まれており、`doctor`、`create`、`status`、`watch`、`params`、`suggest`、ライフサイクル(`pause`/`resume`/`stop`)、`keygen`、`manifest`、`withdraw`、`faucet` の各コマンドと、v0.4の `receipt`、`advise`、`watchtower` コマンドが利用できます。
+これらはnpmで公開されています。リポジトリには公開済みのオペレーターCLI **`@qorechain/rdk-cli`**(`qorollup`、`v0.5.0`)も含まれており、`doctor`、`create`、`status`、`watch`、`params`、`suggest`、ライフサイクル(`pause`/`resume`/`stop`)、`keygen`、`manifest`、`withdraw`、`faucet` の各コマンドと、v0.4の `receipt`、`advise`、`watchtower` コマンドが利用できます。
 
 初回のv0.4.0リリース以降のハイライト:
 
 * **v0.4.2 — ライブネットワークでそのまま動作。** `mainnet` と `testnet` のプリセットに公開 `qore.host` エンドポイント(RESTは `api.qore.host` / `api-testnet.qore.host`)が組み込まれたため、`createRdkClient({ network })` は手動で `endpoints` を設定しなくてもチェーンに到達できます — 自分のノードを対象にする場合のみ上書きしてください。同じリリースでWasmロールアップのVM識別子が **`native`**(QoreChain Native)に改名されました。`cosmwasm` は受け付けられるレガシーエイリアスとして残り、どちらもワイヤー上では `cosmwasm` にマッピングされます — チェーン、エクスプローラー、ダッシュボードは変わりません。
-* **v0.4.3 — SDKのハイブリッド署名エンコーディング修正のための依存関係更新。** RDKのトランザクションクライアント自体は引き続きクラシック署名のみです(以下の注意を参照)。
+* **v0.4.3 — SDKのハイブリッド署名エンコーディング修正のための依存関係更新。** RDKのトランザクションクライアント自体は引き続きクラシック署名のみです([RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。
 * **v0.4.4 — `@qorechain/sdk` `^0.7.0` に追従**。チェーン **v3.1.85** のオーセンティケーターレーン向けのSDKリリースで、これらの機能がSDK経由でRDKのTypeScriptユーザーに直接届きます。RDKのAPI変更はありません。
+* **v0.5.0(2026年10月18日にnpm、PyPI、crates.io、Maven Central、Goプロキシで公開)** — 決済レシートの検証はチェーンの状態に対して照合するようになり、レシート自身のフィールドだけで有効と報告することはなくなりました。TypeScriptのトランザクションクライアントは `pqcKeypair` を渡されるとハイブリッドで署名します。すべてのスキャフォルダーテンプレートは `@qorechain/rdk` `^0.5.0` に固定され、`@qorechain/sdk` は `^0.8.0` であるため、npmはRDK自身のコピーとしてSDK **0.8.3** をインストールします(SDK 0.9.0 は2026年10月21日、RDKの後に公開されたもので、公開済みのRDK 0.5.0が使用するものではありません)。
 
-:::caution 公開クライアントでの署名
-両ネットワークでは、ネイティブレーンのすべてのトランザクションにハイブリッド(secp256k1 + ML-DSA-87)署名が必要です。現在公開されているnpmパッケージ(`@qorechain/rdk` 0.4.4)はクラシック署名のみのクライアントを通じて署名するため、チェーンの状態を**読み取る**ことはできますが、トランザクションを受理させることはできません。現時点でトランザクションを送るには、CLI(`--generate-only`、続いて `qorechaind tx pqc cosign`)または[`@qorechain/sdk`](/sdk/overview)のハイブリッド署名で構築・署名してください。Python、Go、Rust、JavaのRDKクライアントもクラシック署名のみで、これらのネットワークでの**トランザクションには適していません**。インストールするバージョンを確認してください。RDKクライアントにハイブリッド署名を追加するリリースがあれば、ここに記載されます。
-:::
+#### RDK 0.5.0 の制限事項 {#rdk-050-limits}
 
-:::note 読み取りにはRDKのRESTルートが必要です
-TypeScriptの読み取りヘルパー(`rdk.params()`、`rdk.rest.getRollup()`)は `/qorechain/rdk/v1/…` のRESTルートを呼び出しますが、公開メインネットのエンドポイントは現在これを提供していません。メインネットでは `qorechaind query rdk …`(gRPC)を使用してください。
-:::
+リリース済みの0.5.0クライアントのこれらの制限は、現時点の状態としてそのまま記載しています。いずれもチェーンの挙動ではありません。後続のリリースは、公開されるまでここでは告知しません。
+
+**署名。** 両ネットワークでは、ネイティブレーンのすべてのトランザクションにハイブリッド(secp256k1 + ML-DSA-87)署名が必要です。
+
+* **TypeScript** の `RdkClient.connectTx(signer, { pqcKeypair, rest })` は、鍵がすでにオンチェーンに登録済みのアカウントの `pqcKeypair` を渡すと、自身の `@qorechain/sdk` のコピー(0.8.3、上記参照)を通じてハイブリッドで署名します(`signer` は `OfflineDirectSigner` である必要があり、たとえば `directSignerFromPrivateKey` から得られます。`gasPrice` または明示的な手数料を渡してください)。`pqcKeypair` がない場合、クライアントはクラシック署名のみで署名し、ネットワークはそのトランザクションを拒否します。どちらのネットワークにもロールアップは作成されていないため、この経路は実際のロールアップでは試されていません。
+* SDK自身のロールアップクライアント(`createRollupClient(tx)`、SDK 0.9.0)も、その `TxClient` が `pqcKeypair` 付きで接続されている場合(`client.connectTx(signer, { pqcKeypair })`)、ハイブリッドで署名します。その `submitBatch` にも `anchor_signature` や `validator_set_hash` はありません。ライブネットワーク上でこれを通じて作成されたものはまだなく、同様にライブでは未検証です。
+* **`qorollup` CLI**、スキャフォールドされたテンプレートのスクリプト(`create`、`submit-batch`)、および **Python、Go、Rust、Java** のクライアントはクラシック署名のみで、トランザクションを受理させることはできません。これらからトランザクションを送るには、チェーンのCLI(`--generate-only`、続いて `qorechaind tx pqc cosign`)で構築・署名するか、`pqcKeypair` 付きのTypeScriptクライアントを使用してください。
+* `submitBatchMsg` には `anchor_signature` も `validator_set_hash` もないため、RDK経由で送信されたバッチはアンカーされません([バッチを提出する](#submit-a-batch)を参照)。
+
+**読み取り。** REST ルート `/qorechain/rdk/v1/…` は両方のネットワークで提供されており、`rdk.params()`、`rdk.rest.getRollup()`、`rdk.rest.getBatch()` はチェーンが提供するルートを呼び出します。2つのヘルパーは、チェーンがその形式では提供していないルートを呼び出します。`getLatestBatch` は `/batches/{id}?latest=true` をリクエストしますが、チェーンはこれをページ付きの一覧として扱います(`/qorechain/rdk/v1/latest_batch/{rollup_id}` を使用してください)。また `listBatches` は最初の50件のページしか返しません(このルートは `start_index` と `limit` を取り、最大100です)。レシート検証の背後にあるPQCアカウントの照会は、ネットワークが提供していない複数形のパスを使用しています([決済レシート](/rollups/settlement-receipts)を参照)。
+
+**期限。** ウォッチタワーと `qorollup status` の背後にあるヘルスチェックは、バッチの `submitted_at`(ブロック高)をタイムスタンプとして扱うため、チャレンジウィンドウのカウントダウンと `onDeadline` アラートは誤ったものになります([ウォッチタワー](/rollups/watchtower)を参照)。
+
+**クロスVM。** calldataヘルパーは、ノードがデコードするものとは異なる関数シグネチャをエンコードし、`0x…0901` のプリコンパイルはどちらのネットワークにもコードがありません([マルチVM](/rollups/multi-vm)を参照)。
+
+**データ可用性。** `buildDaBlob` はSHA-256でハッシュ化しますが、チェーンのblobコミットメントはSHAKE-256です([データ可用性](/rollups/data-availability)を参照)。
 
 #### Python、Go、Rust、Javaクライアント
 
-TypeScriptパッケージに加えて、RDKはTypeScriptの機能面をそのまま反映した、**Python**、**Go**、**Rust**、**Java** の完全なクライアントを提供します:検証付きのコンフィグビルダー、5つのプリセットプロファイル、denom/economics/bech32ユーティリティ、バイナリMerkleと出金証明のヘルパー、ロールアップマニフェスト、RESTおよび `qor_` JSON-RPC読み取りクライアント、プリフライト/ヘルスチェック、アカウント(ニーモニック → `qor` アドレス)、そしてクラシックなトランザクション署名とブロードキャスト(`SIGN_MODE_DIRECT`。ハイブリッド署名のネットワークでは受け付けられません — 上の注意を参照)。すべて言語間で共有されるゴールデンベクターで検証されており、各レジストリで**公開**されています。
+TypeScriptパッケージに加えて、RDKはTypeScriptの機能面をそのまま反映した、**Python**、**Go**、**Rust**、**Java** の完全なクライアントを提供します:検証付きのコンフィグビルダー、5つのプリセットプロファイル、denom/economics/bech32ユーティリティ、バイナリMerkleと出金証明のヘルパー、ロールアップマニフェスト、RESTおよび `qor_` JSON-RPC読み取りクライアント、プリフライト/ヘルスチェック、アカウント(ニーモニック → `qor` アドレス)、そしてクラシックなトランザクション署名とブロードキャスト(`SIGN_MODE_DIRECT`。ハイブリッド署名のネットワークでは受け付けられません — [RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。すべて言語間で共有されるゴールデンベクターで検証されており、各レジストリで**公開**されています。
 
 ```bash
 # Python — installs as qorechain-rdk, imports as qorrdk
@@ -158,17 +170,17 @@ cargo add qorechain-rdk
 go get github.com/qorechain/qorechain-rdk/packages/go
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.4.4
+# io.github.qorechain:qorechain-rdk:0.5.0
 ```
 
 ```python
 import qorrdk
 ```
 
-現在公開されているバージョン:Python `qorechain-rdk` **0.5.0**(PyPI、インポート名 `qorrdk`)、Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`(**v0.5.0**)、Rust `qorechain-rdk` **0.4.4**(crates.io)、Java `io.github.qorechain:qorechain-rdk` **0.4.4**(Maven Central)。これらのクライアントはチェーンの状態を読み取りますが、ネットワークが要求するハイブリッド署名は生成しません(上の注意を参照)。
+現在公開されているバージョンはすべて **0.5.0** です:Python `qorechain-rdk`(PyPI、インポート名 `qorrdk`)、Goモジュール `github.com/qorechain/qorechain-rdk/packages/go`(`v0.5.0`)、Rust `qorechain-rdk`(crates.io)、Java `io.github.qorechain:qorechain-rdk`(Maven Central)。これらのクライアントはチェーンの状態を読み取りますが、ネットワークが要求するハイブリッド署名は生成しません([RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。
 
 :::note
-TypeScript RDKとそのテンプレートはデフォルトで **`qorechain-diana`** テストネットを対象としており、v0.4.2以降はプリセットが公開ライブエンドポイントにそのまま到達します。バージョンを固定し、メインネットの前にテストネットで検証してください。
+TypeScript RDKとそのテンプレートはデフォルトで **`qorechain-diana`** テストネットを対象としており、プリセットは公開ライブエンドポイントにそのまま到達します。バージョンを固定し、メインネットの前にテストネットで検証してください。
 :::
 
 ### `create-qorechain-rollup` でプロジェクトをスキャフォールドする {#scaffold-a-project-with-create-qorechain-rollup}
@@ -189,13 +201,13 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 
 スキャフォルダーは、ドキュメント化されたステーク額と作成時バーンのコスト、およびロールアップを作成してそのステータスを読み取るための次のステップを表示します。
 
-:::caution テンプレートがインストールするRDKのバージョンを確認する
-テンプレートは現在 `@qorechain/rdk` を0.2系に固定しています。スキャフォールド後に `npm install @qorechain/rdk@latest` を実行して、公開 `qore.host` エンドポイントのプリセットと現行の読み取りクライアントを取得してください。スターターの `submit-batch` スクリプトは参照用のフローにすぎません。例示的なルートとサンプル証明を送信するもので、ライブネットワーク上でバッチをファイナライズすることは想定されていません。
+:::caution スキャフォールドされたスクリプトにできること
+`create-qorechain-rollup` 0.5.0 のテンプレートは `@qorechain/rdk` `^0.5.0` に依存しています。その `create` と `submit-batch` のスクリプトはポスト量子鍵なしで接続するため、構築されるトランザクションはクラシック署名のみとなり、両ネットワークに拒否されます。これらに頼る前に、`connectTx` に `pqcKeypair` を追加してください([RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。スターターの `submit-batch` スクリプトは参照用のフローにすぎません。例示的なルートとサンプル証明を送信するもので、ライブネットワーク上でバッチをファイナライズすることは想定されていません。
 :::
 
 ### コードからロールアップ構成を構築する
 
-プリセットから構成を構築し、チェーンからライブのステーク額とバーン率を読み取って、作成メッセージを生成します。コンフィグビルダーは `validate()` / `build()` で決済 → 証明の互換性マトリクスを強制します。得られた値は、上記のCLI(またはハイブリッド署名に対応したクライアント)で送信してください — 署名に関する注意を参照してください。
+プリセットから構成を構築し、チェーンからライブのステーク額とバーン率を読み取って、作成メッセージを生成します。コンフィグビルダーは `validate()` / `build()` で決済 → 証明の互換性マトリクスを強制します。得られた値は、上記のCLI(またはハイブリッド署名に対応したクライアント)で送信してください — [RDK 0.5.0 の制限事項](#rdk-050-limits)を参照してください。
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -204,8 +216,7 @@ import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qore
 const config = presets.defi({ rollupId: "my-defi-rollup" }).validate();
 
 // The public qore.host endpoints are baked into the presets (RDK ≥ 0.4.2).
-// `params()` is a REST read: it works where the RDK REST routes are served and
-// is refused (HTTP 501) on mainnet today — use `qorechaind query rdk config` there.
+// `params()` is a REST read of /qorechain/rdk/v1/params, served on both networks.
 const rdk = createRdkClient({ network: "testnet" });
 
 // Read the live module parameters — never hardcode the stake or burn rate.
@@ -225,14 +236,14 @@ console.log(msg.rollupId, msg.profile, msg.vmType, msg.stakeAmount);
 
 ### コードから状態を読み取る
 
-型付きRESTクライアントは署名者を必要とせず、RDKのRESTルートが提供されている環境で動作します(現在のメインネットでは動作しません)。
+型付きRESTクライアントは署名者を必要とせず、両方のネットワークを読み取れます。
 
 ```ts
 const rollup = await rdk.rest.getRollup("my-defi-rollup");
 console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
 ```
 
-バッチについては、`qorechaind query rdk batch [rollup-id]`(後述)を使用してください。
+バッチについては、`rdk.rest.getBatch(rollupId, index)` または `qorechaind query rdk batch [rollup-id]`(後述)を使用してください。`getLatestBatch` と `listBatches` には0.5.0で制限があります([RDK 0.5.0 の制限事項](#rdk-050-limits)を参照)。
 
 ---
 
@@ -268,7 +279,7 @@ qorechaind tx pqc cosign resume.json --from mykey --pqc-key mypqckey --chain-id 
 
 ### 停止(Stop)
 
-ロールアップを永久に廃止し、そのステークを解放します。ステークされたQOR — 1回限りの作成時バーンを差し引いた額 — が作成者に返還されます。1,000 QORのレイヤー登録ステークは、ロールアップのレイヤーが廃止される際に別途返還されます。
+ロールアップを永久に廃止し、そのステークを解放します。ステークされたQOR — 1回限りの作成時バーン、および出金や不正証明の報酬としてすでにロールアップのエスクローから支払われた分を差し引いた額 — が作成者に返還されます。v3.2.3以降、ロールアップごとのエスクロー台帳が各ロールアップの保有残高を記録しており、`stop-rollup` はまさにその残高を返還します。停止したロールアップは、以降の出金を支払いません。1,000 QORのレイヤー登録ステークは、ロールアップのレイヤーが廃止される際に別途返還されます。
 
 ```bash
 qorechaind tx rdk stop-rollup [rollup-id] \
@@ -296,12 +307,13 @@ qorechaind tx pqc cosign stop.json --from mykey --pqc-key mypqckey --chain-id qo
 * `native` または `both` のロールアップで、データハッシュを持つバッチは、一致するブロブがすでに保存されていない限り拒否されます([データ可用性](/rollups/data-availability)を参照)。データハッシュのないバッチはチェックされません。
 * `zk` ロールアップは証明を添付する必要があり、その証明は検証を通過しなければなりません([ZK / STARKと出金](/rollups/zk-stark-withdrawals)を参照)。
 
-### バッチを提出する
+### バッチを提出する {#submit-a-batch}
 
-ロールアップの決済バッチを提出します。ロールアップID、バッチインデックス、16進エンコードされた状態ルートを取ります。
+ロールアップの決済バッチを提出します。ロールアップID、バッチインデックス、16進エンコードされた状態ルートを取ります。最初のバッチ以降のすべてのバッチでは、直前のバッチの状態ルートを `--prev-state-root` として渡してください。
 
 ```bash
 qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
+  --prev-state-root <previous-state-root-hex> --tx-count 120 \
   --from mykey \
   --chain-id qorechain-diana \
   --gas 400000 --fees 40000uqor \
@@ -309,11 +321,27 @@ qorechaind tx rdk submit-batch [rollup-id] [batch-index] [state-root-hex] \
 qorechaind tx pqc cosign batch.json --from mykey --pqc-key mypqckey --chain-id qorechain-diana
 ```
 
-CLIコマンドはこの3つの位置引数しか取らないため、提出できるのは**バッチ0**のみです。以降のバッチには、`prev_state_root`(および、使う場合は `data_hash`、`withdrawals_root`、`tx_count`)を設定できるクライアントが必要です。ロールアップのバッチは決済されますが、現在のメインネットでは `x/multilayer` に**アンカーされません**([Rollup Development Kit](/architecture/rollup-development-kit#state-anchoring)を参照)。
+| フラグ | 説明 |
+| ---- | ----------- |
+| `--prev-state-root` | バッチの開始点となる16進の状態ルート(インデックス `0` より後のすべてのバッチで必須) |
+| `--tx-count` | バッチに含まれるロールアップのトランザクション数 |
+| `--data-hash` | DA blobとして投稿されたバッチデータの16進ハッシュ(現時点では空のままにしてください。blobを投稿する手段がありません。[データ可用性](/rollups/data-availability)を参照) |
+| `--withdrawals-root` | バッチのL2 → L1出金の16進Merkleルート([ZK / STARKと出金](/rollups/zk-stark-withdrawals)を参照) |
+| `--anchor-signature` | v2アンカー署名バイト列に対する、ロールアップ**作成者**によるML-DSA-87の16進署名(v3.2.2以降)。バッチはその後、同じトランザクション内で `x/multilayer` にアンカーされ、アンカーが拒否されるとバッチも拒否されます |
+| `--validator-set-hash` | アンカーに含まれ、署名の対象となる16進のバリデーターセットのコミットメント |
+
+`--anchor-signature` がない場合、バッチは**アンカーされずに**決済されます。バッチをアンカーするには、署名対象のバイト列を出力し、作成者の登録済みポスト量子鍵で署名して、その署名を渡してください(`--tx-count` と `--validator-set-hash` の値は、提出するものと一致している必要があります)。
+
+```bash
+qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex] \
+  --chain-id qorechain-diana --tx-count 120
+```
+
+`layer-id` はロールアップのレイヤーIDです(RDKで作成されたロールアップでは、ロールアップIDと同じです)。`zk` ロールアップ用のZK `--proof` には現在CLIフラグがなく、resolve-challengeメッセージもCLIコマンドではありません。クライアントを使用してください。アンカーが何を証明し、何を証明しないかについては、[決済レシート](/rollups/settlement-receipts)を参照してください。どちらのネットワークにも、ロールアップ、レイヤー、アンカーはまだ存在しません。
 
 ### バッチにチャレンジする(オプティミスティックロールアップ) {#challenge-a-batch-optimistic-rollups}
 
-どのアカウントでも、チャレンジ期間内であれば、保証金(ロールアップの `challenge_bond`。`nft` と `custom` プリセットでは1,000 QOR)と不正証明を提出することで、`submitted` 状態のバッチにチャレンジできます。ロールアップIDとバッチインデックスを取り、不正証明は `--proof` で渡します。
+どのアカウントでも、チャレンジ期間内(メインネットではデフォルトで100,800ブロック。テストネットのみ、v3.2.4以降の新しいバッチでは、ブロック時間の秒数で表されるウィンドウ)であれば、保証金(ロールアップの `challenge_bond`。`nft` と `custom` プリセットでは1,000 QOR)と不正証明を提出することで、`submitted` 状態のバッチにチャレンジできます。ロールアップIDとバッチインデックスを取り、不正証明は `--proof` で渡します。
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \
@@ -339,6 +367,9 @@ qorechaind query rdk batch [rollup-id]
 
 # A specific batch by index
 qorechaind query rdk batch [rollup-id] --index 42
+
+# A page of batches in index order (--limit up to 100, default 50)
+qorechaind query rdk batches [rollup-id] --start 0 --limit 50
 ```
 
 ---
@@ -350,6 +381,8 @@ qorechaind query rdk batch [rollup-id] --index 42
 | `qorechaind query rdk rollup [rollup-id]` | 特定のロールアップの詳細 |
 | `qorechaind query rdk list-rollups` | 登録済みのすべてのロールアップ |
 | `qorechaind query rdk batch [rollup-id]` | 最新の決済バッチ(または `--index`) |
+| `qorechaind query rdk batches [rollup-id]` | インデックス順のバッチのページ(`--start`、`--limit`) |
+| `qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex]` | バッチのv2アンカー署名バイト列(オフライン) |
 | `qorechaind query rdk config` | RDKモジュールのパラメータ |
 | `qorechaind query rdk suggest-profile [use-case]` | `qor_suggestRollupProfile` RPCへの案内を表示します。公開エンドポイントはこれを提供していないため、[プリセットプロファイル](/rollups/preset-profiles)の表からプロファイルを選んでください |
 

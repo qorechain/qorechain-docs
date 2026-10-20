@@ -80,7 +80,7 @@ Implicit, QoreX derivă adresa ta `qor1…` dintr-o frază de recuperare pe coin
 3. Deschide Setări → **Conturile tale** și atinge **Adaugă un cont Ethereum (coin 60)**. Prima atingere adaugă contul la indexul 0 — aceeași adresă `0x…` pe care o arată MetaMask pentru acele cuvinte și aceeași cheie ca adresa ta QoreChain `qor1…` pentru acel cont. QOR-ul tău se află acolo.
 4. Comută la acel cont (este etichetat *Ethereum · coin 60*). Poți trimite, face staking și revendica din el. Prima trimitere înregistrează și cheia post-cuantică a contului respectiv, ceea ce costă o mică taxă unică.
 
-Un cont de tip Ethereum nu are @handle (handle-urile se revendică pe un cont QoreChain `qor1…` la coin type 118), iar site-urile web semnează prin `signAndBroadcast`, nu prin `signDirect`, cu el. Fiecare atingere pe **Adaugă un cont Ethereum (coin 60)** adaugă următorul index.
+Un cont de tip Ethereum nu are @handle (handle-urile se revendică pe un cont QoreChain `qor1…` la coin type 118), iar site-urile web semnează prin `signAndBroadcast`, nu prin `signDirect`, cu el. Este, de asemenea, tipul de cont pentru care contează [fereastra de acces EVM](/qorex/security-and-recovery#evm-window): MetaMask semnează cu aceeași cheie, deci tranzacțiile MetaMask pot muta QOR-ul său odată ce o fereastră este deschisă. Fiecare atingere pe **Adaugă un cont Ethereum (coin 60)** adaugă următorul index.
 
 ## Orientează-te în aplicație {#find-your-way}
 
@@ -89,7 +89,7 @@ Un cont de tip Ethereum nu are @handle (handle-urile se revendică pe un cont Qo
 
 ## Opțional: revendică un @handle
 
-După ce portofelul tău este creat, poți revendica un **@handle** unic (de exemplu `@liviu`) astfel încât oamenii să îți poată trimite fonduri folosind un nume, nu o adresă `qor1…`. Acest lucru este opțional și poate fi omis — portofelul tău nu depinde niciodată de el. (În extensia de browser, unele versiuni nu oferă revendicarea; dacă popup-ul nu o oferă, revendică din aplicația mobilă.) Un handle se leagă de o adresă anume, nu de portofel în ansamblu, ceea ce contează odată ce ai mai mult de un cont — vezi [Mai multe conturi dintr-o singură frază](/qorex/account-and-dashboard#accounts) și [@handle](/qorex/account-and-dashboard#handle).
+După ce portofelul tău este creat, poți revendica un **@handle** unic (de exemplu `@liviu`) astfel încât oamenii să îți poată trimite fonduri folosind un nume, nu o adresă `qor1…`. Revendicarea necesită un [cont autentificat](/qorex/account-and-dashboard#sign-in) și se face **în aplicația mobilă** (extensia de browser te trimite acolo). Este opțională și poate fi omisă — portofelul tău nu depinde niciodată de ea. Un handle se leagă de o adresă anume, nu de portofel în ansamblu, ceea ce contează odată ce ai mai mult de un cont — vezi [Mai multe conturi dintr-o singură frază](/qorex/account-and-dashboard#accounts) și [@handle](/qorex/account-and-dashboard#handle).
 
 ## Limbă
 

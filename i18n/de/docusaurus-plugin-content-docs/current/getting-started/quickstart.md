@@ -76,7 +76,7 @@ Dies erstellt die Standardkonfiguration und die Datenverzeichnisse unter `~/.qor
 Der Knoten startet mit den Standardeinstellungen. Siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) für den Beitritt zum aktiven Netzwerk mit korrekter Genesis- und Peer-Konfiguration.
 
 :::note
-Die Beispiele auf dieser Seite zielen auf das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) ab. Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 29. Juni 2026 aktiv und hat seine eigene dedizierte Seite **Verbindung zum Mainnet**.
+Die Beispiele auf dieser Seite zielen auf das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) ab. Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv (Release v3.2.3; das Testnet läuft auf v3.2.4) und hat seine eigene dedizierte Seite **Verbindung zum Mainnet**.
 :::
 
 ---

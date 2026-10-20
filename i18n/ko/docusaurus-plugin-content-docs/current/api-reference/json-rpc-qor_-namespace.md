@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | 계획된 메서드                | 현재 사용할 수 있는 방법 |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). [REST / gRPC 엔드포인트](/api-reference/rest-grpc-endpoints#pqc-module)를 참조하세요. |
-| `qor_getHybridSignatureMode`  | 공개 쿼리 경로가 없습니다. |
-| `qor_getAIStats`              | 직접 운영하는 노드의 gRPC `qorechain.ai.v1.Query/Stats`; REST 경로는 없습니다. |
+| `qor_getHybridSignatureMode`  | 공개 REST 경로는 없습니다. 노드를 대상으로 하거나 `--node https://rpc.qore.host:443`을 지정하여 `qorechaind query pqc hybrid-mode`(또는 `query pqc params`)를 사용하세요. |
+| `qor_getAIStats`              | 직접 운영하는 노드의 gRPC `qorechain.ai.v1.Query/Stats` 또는 `qorechaind query ai stats`; REST 경로는 없습니다. |
 | `qor_getCrossVMMessage`       | 직접 운영하는 노드의 gRPC `qorechain.crossvm.v1.Query/Message`; REST 경로는 없습니다. |
 | `qor_getReputationScore`      | 공개 쿼리 경로가 없습니다(reputation 모듈은 gRPC `Params`만 노출합니다). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` 및 `anchor/{layer_id}`. [Multilayer 모듈](/api-reference/rest-grpc-endpoints#multilayer-module)을 참조하세요. |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | 공개 쿼리 경로가 없습니다. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. [Burn 모듈](/api-reference/rest-grpc-endpoints#burn-module)을 참조하세요. |
 | `qor_getXQOREPosition`        | 없음. xQORE는 라이브가 아닙니다([xQORE 스테이킹](/user-guide/xqore-staking) 참조). |
-| `qor_getInflationRate`        | 메인넷에는 공개 쿼리 경로가 없습니다. |
-| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats`와 `GET /cosmos/bank/v1beta1/supply`를 조합하세요. |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | 직접 운영하는 노드의 gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) 또는 CLI; `/qorechain/rdk/v1/...` REST 경로는 메인넷에서 제공되지 않습니다. |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` 및 `/epoch_info`(발행 모드, 에포크당 발행량, 상한, 진행률; v3.2.2부터 제공). [Inflation 모듈](/api-reference/rest-grpc-endpoints#inflation-module)을 참조하세요. |
+| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats`, `GET /qorechain/inflation/v1/epoch_info`, `GET /cosmos/bank/v1beta1/supply`를 조합하세요. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}`(v3.2.2부터 제공; [RDK 모듈](/api-reference/rest-grpc-endpoints#rdk-module) 참조) 또는 `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | 공개 서비스가 없습니다. [프리셋 프로필](/rollups/preset-profiles)을 참조하세요. |
 | `qor_getBTCStakingPosition`   | 없음. BTC 리스테이킹 모듈에는 아직 쿼리 서비스가 없습니다. |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. 추상 계정은 현재 두 네트워크 모두에서 비활성화되어 있습니다. |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | 없음. |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config`(v3.2.2부터 제공). [Gas Abstraction 모듈](/api-reference/rest-grpc-endpoints#gas-abstraction-module)을 참조하세요. |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | 없음. |
 
-계정의 EVM 레인 상태(등록된 PQC 키 및 승인 창)는 `GET /qorechain/pqc/v1/account/{address}`와 `GET /qorechain/pqc/v1/evm_window/{address}`를 사용하세요.
+계정의 EVM 레인 상태(등록된 PQC 키, 승인 창 및 EIP-7702 동의)는 `GET /qorechain/pqc/v1/account/{address}`, `GET /qorechain/pqc/v1/evm_window/{address}`, `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`를 사용하세요. 상태 경로는 **단수형** `account`이며, 복수형 `/accounts/`는 제공되지 않고 `501`로 응답합니다.
 
 ---
 

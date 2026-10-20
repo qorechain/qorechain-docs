@@ -56,6 +56,10 @@ Tutte e quattro le azioni si trovano nella pagina **Wallet** (`/wallet`), non ne
 8. Il pannello ora mostra **Approve it in QoreX** con un link **Open QoreX** e un ID di richiesta. QoreX ti mostrerà il validatore e l'importo prima della firma — non viene inviato nulla finché non lo approvi lì. Se viene rilevata l'estensione del browser QoreX, viene offerto anche un pulsante **Approve in the browser extension**.
 9. Apri QoreX (il link/deeplink lo fa per te) e approva la delega. QoreX costruisce, firma e trasmette la transazione; il dashboard non vede mai la tua chiave.
 
+:::note Lo staking con blocco temporale è solo su testnet
+Un modulo opzionale di staking con blocco temporale esiste solo sulla testnet (chain v3.2.4) — vedi [Staking con blocco temporale](/user-guide/staking-and-delegation#time-locked-staking). Non è ancora sulla mainnet (la proposta di governance 13 della mainnet la applicherebbe all'altezza 3.742.566), e né la Dashboard né QoreX hanno una schermata per esso. Le deleghe effettuate qui sono deleghe ordinarie senza vincolo di blocco; l'unica attesa è l'unbonding di 21 giorni in uscita.
+:::
+
 ### Ridelegare {#redelegate}
 
 Il dashboard in sé non ha un pannello Redelegate dedicato — ma non ne serve più uno. **QoreX stesso ora sposta lo stake direttamente tra validatori** (app 1.0.8+ ed estensione 0.2.6+): niente attesa di 21 giorni di unbonding, nessuna ricompensa persa, e può persino suddividere uno spostamento su più validatori di destinazione in un'unica transazione. Apri **Stake** in QoreX, tocca il validatore da cui vuoi uscire e scegli dove far confluire lo stake — vedi [Spostare lo stake tra validatori](/qorex/portfolio-and-staking#move-stake) per la procedura completa. Questa è una soluzione migliore di qualsiasi cosa possa offrire il contratto di richiesta del dashboard, quindi usa direttamente QoreX per questa operazione anziché il metodo alternativo indicato sotto.

@@ -29,7 +29,7 @@ QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث 
 وحدة IBC للتشغيل البيني عبر السلاسل (لا توجد قنوات IBC مفتوحة بعد على الشبكة
 الرئيسية ولا على شبكة الاختبار).
 
-:::note ما يعمل على الشبكات الحية اليوم (السلسلة v3.2.0 وما بعدها)
+:::note ما يعمل على الشبكات الحية اليوم (الشبكة الرئيسية v3.2.3، وشبكة الاختبار v3.2.4)
 **يعمل:** القراءات على كل مسار، ومعاملات المسار الأصلي (Native) الموقَّعة
 توقيعاً هجيناً، والحسابات الموحّدة، ومعاملات EVM داخل
 [نافذة التفويض](/sdk/guides/evm#evm-window)، وقراءات SVM.
@@ -38,6 +38,14 @@ QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث 
 الرئيسية (`MsgCrossVMCall` متوقفة بواسطة قاطع الدائرة)، ورفع عقود CosmWasm
 وإنشاء نسخ منها للحسابات العادية، ومسارات المصادِق / الحساب المجرّد (الوحدة
 متوقفة)، وxQORE وتجريد الغاز. يكرر كل دليل هذا التنبيه حيثما ينطبق.
+
+تُوقِّع SDK المنشورة (0.9.0، 21 أكتوبر 2026) بالصيغة التي تتحقق منها الشبكتان
+(بايتات التوقيع الهجينة v2، تُحدَّد من حالة السلسلة)، ولم تتغير صيغة التوقيع
+والعناوين والمنازل العشرية والمذكرات والرسوم في v3.2.3 ولا في v3.2.4. وهي تحمل
+جانب العميل من القواعد اللاحقة للتشفير ما بعد الكمومي (إثبات الحيازة عند
+تسجيل المفتاح، ونوافذ EVM ذات النطاق المحدد، ورسائل الموافقة الخاصة بـ
+EIP-7702)؛ أما الإصدارات السابقة للإصدار 0.9.0 فلا تحمله، راجع
+[الإصدارات السابقة للإصدار 0.9.0](/sdk/install#before-090).
 :::
 
 ### آمنة كمومياً بحكم التصميم
@@ -104,15 +112,15 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 
 | الحزمة | اللغة | التثبيت | الحالة |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.8.3) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.8.3) |
-| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.8.4`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.8.3) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | منشورة (Maven Central، الإصدار v0.8.3) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | منشورة (npm، الإصدار v0.9.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.9.0) |
+| `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.9.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | منشورة (Maven Central، الإصدار v0.9.0) |
 | `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.8.0) |
 | `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.8.0) |
-| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.8.3) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.8.0) |
+| `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.9.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | منشورة (npm، الإصدار v0.9.0) |
 
 > توزيعة Python تُثبَّت باسم `qorechain-sdk` لكنها **تُستورَد باسم
 > `qorsdk`**. جميع العملاء منشورون في سجلاتهم — راجع
@@ -126,17 +134,17 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 القياسية، وعملاء استعلام منمَّطون، ودورة حياة المعاملة الكاملة (الغاز
 التلقائي، وفك ترميز الأخطاء، وتتبع المعاملات، والبحث في الكتل/المعاملات)،
 والمعاملات الهجينة ما بعد الكمومية، واشتراكات WebSocket. جميع هؤلاء العملاء
-**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.8.3)، و Python على
-PyPI ‏(`qorechain-sdk` 0.8.3، الاستيراد باسم `qorsdk`)، و Go على وكيل
-الوحدات (الوسم `packages/go/v0.8.4`)، و Rust على crates.io
-‏(`qorechain-sdk` 0.8.3)، و Java على Maven Central
-‏(`io.github.qorechain:qorechain-sdk` 0.8.3). أما محوِّلات التنفيذ EVM/SVM
+**منشورون**: ‏TypeScript على npm ‏(`@qorechain/sdk` 0.9.0)، و Python على
+PyPI ‏(`qorechain-sdk` 0.9.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
+الوحدات (الوسم `packages/go/v0.9.0`)، و Rust على crates.io
+‏(`qorechain-sdk` 0.9.0)، و Java على Maven Central
+‏(`io.github.qorechain:qorechain-sdk` 0.9.0). أما محوِّلات التنفيذ EVM/SVM
 ‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.8.0)، وحزمة
-`@qorechain/react` ‏(0.8.3)، وأداة السقالة `create-qorechain-dapp` ‏(0.8.0)
+`@qorechain/react` ‏(0.9.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.9.0)
 فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع
 [التثبيت](/sdk/install#related-packages) للاطلاع على الحزم المصاحبة.
 
-## الجديد في 0.6 و 0.7 و 0.8
+## الجديد في 0.6 و 0.7 و 0.8 و 0.9
 
 **0.6.0 — الحسابات الموحّدة الأصلية بنمط eth (السلسلة v3.1.83).** مفتاح
 `eth_secp256k1` واحد هو هوية واحدة من 20 بايت تُعرض بجميع ترميزات العناوين
@@ -179,7 +187,7 @@ TypeScript ‏(`buildPhantomExecuteCosmos` و `buildMetaMaskExecuteEvm`، …).
 v3.2.0).** يُوقَّع النصف ما بعد الكمومي من المعاملة الهجينة الآن بالصيغة التي
 تتحقق منها الشبكة المستهدفة (v1 أو v2، `signBytesVersion: "auto" | "v1" | "v2"`).
 كلتا الشبكتين العامتين على v2، لذا يلزم SDK **0.8.1 أو أحدث** للتعامل على
-الشبكة الرئيسية. تضيف **0.8.2** الدوال `openEvmWindowMsg` و `closeEvmWindowMsg`
+الشبكة الرئيسية (استخدم 0.9.0). تضيف **0.8.2** الدوال `openEvmWindowMsg` و `closeEvmWindowMsg`
 و `fetchEvmWindow` و `classifyEvmWindowRejection` الخاصة بـ
 [نافذة التفويض](/sdk/guides/evm#evm-window) على مسار EVM.
 أزالت **0.8.0** مساعدات الحساب المعتمدة على توقيع المحفظة (`connectPhantomUnified` و
@@ -189,6 +197,19 @@ v3.2.0).** يُوقَّع النصف ما بعد الكمومي من المعا�
 وسباقات خطافات React، وترتيب تسلسل `migrate_to_hybrid` في Python، والاشتقاق
 القانوني لـ PQC المستقل عن صيغة العنوان (`derivePqcCanonical`، `canonicalAccount`).
 راجع [ملاحظات الترقية](/sdk/install#upgrade).
+
+**0.9.0 — دعم العميل للسلسلة v3.2.2 وv3.2.3.** يوقّع `TxClient` في TypeScript
+توقيعاً هجيناً عندما تمرّر زوج مفاتيح الحساب
+(`client.connectTx(signer, { pqcKeypair })`)، فتعمل `bankSend` وعملاء SDK الخاصون
+بـ rollup وmultilayer وcross-VM على الشبكات العامة. وتتحقق `ensurePqcRegistered`
+من المفتاح المسجَّل عبر REST أولاً، وترفض تسجيل مفتاح ثانٍ مختلف، وترفق إثبات
+الحيازة بنفسها متى طبّقت الشبكة v3.2.3. وتغطي مُنشئات جديدة نوافذ EVM المحدّدة
+النطاق (`nativeOnly` و`allowedTargets`) ورسائل موافقة EIP-7702، وتعطي
+`derivePqcCanonical(address, mnemonic)` مفتاحاً يمكنك استرداده من العبارة
+الاستذكارية في كل لغة. ومسار حساب PQC هو المفرد
+`/qorechain/pqc/v1/account/{address}`، وتحتفظ حالات الفشل داخل الكتلة بالـ
+codespace الخاص بها، وتهيّئ `create-qorechain-dapp` المشاريع على SDK الحالية.
+راجع [ما الذي يضيفه الإصدار 0.9.0](/sdk/install#whats-new-090).
 
 ## إلى أين تتجه بعد ذلك
 

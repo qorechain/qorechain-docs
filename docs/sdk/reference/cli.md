@@ -19,11 +19,11 @@ npx create-qorechain-dapp my-dapp
 npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 ```
 
-> Published to npm as `create-qorechain-dapp` (`0.8.0`). The generated
-> `package.json` files pin `@qorechain/sdk` / `@qorechain/evm` to `^0.3.0`, which
-> npm resolves to a 0.3 release that cannot sign for the live networks. After
-> scaffolding, run `npm i @qorechain/sdk@latest` (and `npm i @qorechain/evm@latest`
-> for the EVM template).
+> Published to npm as `create-qorechain-dapp` (`0.9.0`). The generated
+> `package.json` files depend on `@qorechain/sdk` `^0.9.0` (the EVM template on
+> `@qorechain/evm` `^0.8.0`). Version 0.8.0 of the scaffolder wrote `^0.3.0` ranges,
+> which npm resolves to a 0.3 release that cannot sign for the live networks; if you
+> scaffolded with 0.8.0, run `npm i @qorechain/sdk@latest`.
 
 ## Templates
 
@@ -32,6 +32,13 @@ npx create-qorechain-dapp my-dapp --template evm-solidity --yes --no-install
 | `evm-solidity` | A Solidity `Counter` contract + a viem deploy/interact script (`@qorechain/evm`). |
 | `fullstack-web` | A Vite + React + TypeScript dApp reading balances and tokenomics (`@qorechain/sdk`). |
 | `rollup-app` | A rollup + sidechain/paychain app using the `RollupClient` and the multilayer helper (`@qorechain/sdk`). |
+
+The `rollup-app` template (0.9.0) runs a dry run by default. With `QORE_BROADCAST=1` it
+derives the account's ML-DSA-87 key from the mnemonic, registers it once and signs
+hybrid, which the earlier template could not do. Its sample rollup values
+(`profile: "default"`, the stake) are illustrative: take the real profile names and
+stake from [Preset profiles](/rollups/preset-profiles) and the live module
+parameters before you broadcast.
 
 The `fullstack-web` template reads the tokenomics overview through `client.qor`, a
 `qor_` JSON-RPC call that the public endpoints do not serve, so on mainnet and

@@ -10,7 +10,7 @@ sidebar_position: 1
 This guide walks you through building the community `qorechaind` binary from the public source, and explains what that binary is and is not for.
 
 :::caution A source build cannot join mainnet or testnet
-The public repository contains the module interfaces with **stub keepers**; the consensus-critical keeper implementations and the post-quantum signer are not in the public source tree. A binary built from it cannot reproduce the networks' consensus state, and it cannot create the hybrid post-quantum signature that every Cosmos-lane transaction requires. To run a node or validator on mainnet or testnet, install the **release binary** named in the live manifest (`https://download.qore.host/mainnet/latest.json` or `.../testnet/latest.json`); see [Running a Node](/developer-guide/running-a-node) and [Running a Validator](/developer-guide/running-a-validator).
+The public repository contains the module interfaces with **stub keepers**; the consensus-critical keeper implementations and the post-quantum signer are not in the public source tree. A binary built from it cannot reproduce the networks' consensus state, and it cannot create the hybrid post-quantum signature that every Cosmos-lane transaction requires. Since v3.2.3 it also **refuses to start** on `qorechain-vladi` or `qorechain-diana` (it recognises them by chain id and genesis time; a local devnet that reuses a public chain id with its own genesis is not affected). `qorechaind start --community-unenforced-pqc` overrides the refusal for experiments; the node then verifies no post-quantum signatures and can diverge from the network without warning, so never use it for a node you rely on. To run a node or validator on mainnet or testnet, install the **release binary** named in the live manifest (`https://download.qore.host/mainnet/latest.json` or `.../testnet/latest.json`); see [Running a Node](/developer-guide/running-a-node) and [Running a Validator](/developer-guide/running-a-validator).
 :::
 
 ## Prerequisites
@@ -106,11 +106,11 @@ Tests that exercise the native libraries or the proprietary keepers are compiled
 After a successful build, verify the binary:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-The `init` command should create a genesis file and node configuration in `~/.qorechaind/` without errors. The example above initializes against the **`qorechain-diana`** testnet — for mainnet, substitute `--chain-id qorechain-vladi`, the live network (node release **v3.2.1**).
+The `init` command should create a genesis file and node configuration in `~/.qorechaind/` without errors. The example above initializes against the **`qorechain-diana`** testnet — for mainnet, substitute `--chain-id qorechain-vladi`, the live network (node release **v3.2.3**).
 
 ## Docker Build
 

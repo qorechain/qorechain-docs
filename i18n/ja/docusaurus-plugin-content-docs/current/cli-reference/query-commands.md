@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットはノードリリース v3.2.1、テストネットは v3.2.2 で動作しています。テストネットでは、メインネットにまだ存在しないルートがいくつか提供されている場合があるため、テストネットで動作するクエリがメインネットでは `Not Implemented` を返すことがあります。
+クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットはノードリリース v3.2.3、テストネットは v3.2.4 で動作しています。テストネットでは、メインネットにはないルートやコマンドがいくつか提供されている(以下では **テストネット専用** と明記)ため、テストネットで動作するクエリがメインネットでは `Not Implemented` を返すことがあります。このページのコマンドは、`https://rpc.qore.host:443` に対して実行した v3.2.3 リリースバイナリで確認しています。
 :::
 
 すべての `query` サブコマンドに共通のフラグがあります。
@@ -110,11 +110,15 @@ qorechaind query pqc params
 qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
 qorechaind query pqc evm-window <address>
+qorechaind query pqc evm-delegation-consent <address>
 ```
 
 - `algorithm` にはアルゴリズム名(`dilithium5`、`mlkem1024`)または数値 ID を指定します。
 - `migration` にはアドレスではなく**アルゴリズム ID**(例: `1`)を指定し、実行中の移行がない場合は `No active migration` を返します。
-- `evm-window` は、そのアドレスに EVM レーンの承認ウィンドウが開いているかどうか、および残りのブロック数、トランザクション数、価値を示します(`found`、`live`、`remaining_blocks`、`remaining_txs`、`remaining_value`)。REST: `GET /qorechain/pqc/v1/evm_window/{address}`。
+- `account` は登録済みの鍵を報告します。鍵、`key_type`、`algorithm_name` のほかに、レコードには `classical_key_source`(`stored`、`auth_account`、または `none`: クラシカル公開鍵の取得元)があります。テストネット(v3.2.4、**テストネット専用**)では `possession_proven` も含まれ、鍵が検証済みの所有証明とともに登録された場合は `true` になります。
+- `evm-window` は、そのアドレスに EVM レーンの承認ウィンドウが開いているかどうか、および残りのブロック数、トランザクション数、価値を示します(`found`、`live`、`remaining_blocks`、`remaining_txs`、`remaining_value`)。さらにウィンドウの適用範囲(`native_only`、`allowed_targets`。メインネット v3.2.3 以降)も示します。REST: `GET /qorechain/pqc/v1/evm_window/{address}`。
+- `evm-delegation-consent` は、そのアドレスの EIP-7702 委任の同意(`found`、`live`、`delegate`、`granted_height`、`expiry_height`)、現在の委任、およびその EVM ナンスを示します。REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`。
+- `params` と `hybrid-mode` は `hybrid_signature_mode`(`2` = 両ネットワークで必須)と `allow_classical_fallback`(`false`)を報告します。
 
 ---
 
@@ -130,13 +134,22 @@ curl -s https://api.qore.host/qorechain/burn/v1/milestone
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-`stranded_rewards` は、どの請求の裏付けもないままディストリビューションモジュールに入金されたステーカー取り分を、v3.2.0 アップグレード時の記録として報告します(`reserved`、`released`、`snapshot_height`)。これはガバナンス投票によってのみ解放できます。
+`stranded_rewards` は、どの請求の裏付けもないままディストリビューションモジュールに入金されたステーカー取り分を報告します(`reserved`、`released`、`snapshot_height`)。これはガバナンス投票によってのみ解放できます。この準備金は v3.2.0 アップグレード時に最初に記録され、v3.2.3 アップグレードのブロック高で再計算されたため、他所で引用されている数値ではなく、ライブの値を読み取ってください。
+
+`stats` は累積バーン量を発生源別に分けて示します。その中の `failed_tx` は、v3.2.2 アップグレード以降、ゼロ以外の値になっています。
 
 ---
 
 ## mint と inflation
 
-`qorechaind query mint params|inflation|annual-provisions` は標準の mint モジュールを読み取ります。このレートは両ネットワークで `0` であり、プロトコルの発行スケジュールは**報告しません**。`query inflation` コマンドは存在しません。
+`qorechaind query mint params|inflation|annual-provisions` は標準の mint モジュールを読み取ります。このレートは両ネットワークで `0` であり、プロトコルの発行スケジュールは**報告しません**。`query inflation` コマンドは存在しません。プロトコル独自の発行設定と進捗は、v3.2.2 以降 REST で提供されています。
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mode, fixed_epoch_emission, max_total_emission, epoch_length
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
+```
+
+メインネットでは、これらは `emission_mode: "fixed"`、43,200 ブロックのエポックごとに 86,000 QOR の固定発行、累積上限 590,000,000 QOR を報告します(ガバナンス提案 10、2026年10月19日に可決。新しい発行量での最初のエポックはブロック 3,672,000 から開始)。金額の単位は `uqor` です。テストネットは引き続き、それとは異なる独自の値を報告します。テストネットの v3.2.4 リリースでは、メインネットにはない発行モードがさらに追加されています(**テストネット専用**)。
 
 ---
 
@@ -171,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` は、モジュールの報酬残高が `reserved`、`outstanding`、`payable`、`distributable` にどのように分かれるかを示します。
+`reward-pool` は、モジュールの報酬残高が `reserved`、`outstanding`、`payable`、`distributable` にどのように分かれるかと、ノードごとの上限を示します。上限は `max_reward_per_block_per_node` と、v3.2.3 以降は `max_reward_per_month_per_node`(2,000 QOR。ブロック時間とアップタイムに応じて按分)です。テストネット(v3.2.4、**テストネット専用**)では、`monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も報告します。
 
 ---
 
@@ -242,7 +255,12 @@ qorechaind query rdk batch <rollup_id>            # latest batch
 qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-`config` は、モジュールのパラメータ(最小ステーク、作成時のバーン率、チャレンジウィンドウ、DA の上限)を表示します。`suggest-profile <use_case>` はチェーンに問い合わせません。パブリックエンドポイントが提供していない JSON-RPC メソッドへの案内を表示するだけなので、[プリセットプロファイル](/rollups/preset-profiles)からプロファイルを選んでください。
+```bash
+qorechaind query rdk batches <rollup_id> [--start 0] [--limit 100]   # batches in index order
+qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>
+```
+
+`config` は、モジュールのパラメータ(最小ステーク、作成時のバーン率、チャレンジウィンドウ、DA の上限)を表示します。`anchor-sign-bytes` は、ロールアップ作成者が `tx rdk submit-batch --anchor-signature` のために署名する v2 のアンカー署名バイト列を 16 進数で出力します。同じクエリは v3.2.2 以降、`/qorechain/rdk/v1/...` 配下の REST でも提供されています([REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#rdk-module)を参照)。`suggest-profile <use_case>` はチェーンに問い合わせません。パブリックエンドポイントが提供していない JSON-RPC メソッドへの案内を表示するだけなので、[プリセットプロファイル](/rollups/preset-profiles)からプロファイルを選んでください。
 
 ---
 
@@ -275,7 +293,44 @@ qorechaind query abstractaccount permission-schema
 
 ## gasabstraction
 
-メインネットはまだガスアブストラクションのクエリを提供していません(`qorechaind query gasabstraction ...` はヘルプテキストを表示し、REST ルートは `Not Implemented` を返します)。手数料は `uqor` のみで支払います。[ガスアブストラクション](/user-guide/gas-abstraction)を参照してください。
+ガスアブストラクションのクエリは、v3.2.2 以降、両ネットワークで提供されています。
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate <denom>   # what one unit of a fee token is worth in uqor, and whether it can pay fees
+qorechaind query gasabstraction float                     # the conversion float's balances and this block's usage
+```
+
+受け入れトークンのリストには、両ネットワークともネイティブの `uqor` だけが含まれるため、手数料は `uqor` で支払われ、変換は行われません。他にどのトークンを受け入れるかはガバナンスが決定します。REST: `/qorechain/gasabstraction/v1/config`、`/conversion_rate?denom=`、`/float`。[ガスアブストラクション](/user-guide/gas-abstraction)を参照してください。
+
+---
+
+## amm
+
+```bash
+qorechaind query amm params
+qorechaind query amm pools
+qorechaind query amm pool <pool_id>
+qorechaind query amm pool-by-denoms <denom_a> <denom_b>
+qorechaind query amm lp-balance <pool_id> <address>
+qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
+qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
+```
+
+執筆時点では、どちらのネットワークにもプールは存在しません。
+
+---
+
+## stakingtier (テストネット専用)
+
+```bash
+qorechaind query stakingtier params
+qorechaind query stakingtier locks <holder_address>
+qorechaind query stakingtier pool
+```
+
+ステーキングティアモジュールは **v3.2.4** リリースの一部で、テストネットでのみ稼働しています。メインネットにはまだこのモジュールがありません（ガバナンス提案 13 により、v3.2.4 は高さ 3,742,566 で適用される見込みです）。REST: `/qorechain/stakingtier/v1/params`、`/locks/{holder}`、`/pool`。[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照してください。
 
 ---
 
@@ -289,6 +344,8 @@ qorechaind query upgrade plan
 qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
+
+`query upgrade applied <name>` は、アップグレードがいつ有効になったかを読み取る方法です。メインネットでは `v3.2.2` がブロック高 3,556,788 で、`v3.2.3` がブロック高 3,662,051 で適用されました。テストネットでは `v3.2.2` が 6,905,034、`v3.2.3` が 8,003,746、`v3.2.4` が 8,337,253 で適用されています(`0` は未適用を意味します)。メインネットのサーキットブレーカーリスト(`disabled-list`)には現在、ベスティングアカウント作成メッセージ、CosmWasm の store と instantiate、AMM プールの一時停止と再開、クロス VM 呼び出し、マルチレイヤーのレイヤーステータス更新、PQC アルゴリズムの非推奨化と無効化、PRISM コンセンサスのガバナンスメッセージが含まれています。テストネットのリストには CosmWasm の 3 つのメッセージだけが含まれています。
 
 ---
 

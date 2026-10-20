@@ -10,7 +10,7 @@ sidebar_position: 1
 Bu kılavuz, herkese açık kaynaktan topluluk `qorechaind` ikili dosyasını derleme sürecinde size yol gösterir ve bu ikili dosyanın ne için olduğunu, ne için olmadığını açıklar.
 
 :::caution Kaynaktan yapılan bir derleme ana ağa veya test ağına katılamaz
-Herkese açık depo, modül arabirimlerini **stub keeper'larla** birlikte içerir; konsensüs açısından kritik keeper uygulamaları ve kuantum sonrası imzalayıcı herkese açık kaynak ağacında yer almaz. Bu kaynaktan derlenen bir ikili dosya, ağların konsensüs durumunu yeniden üretemez ve her Cosmos hattı işleminin gerektirdiği hibrit kuantum sonrası imzayı oluşturamaz. Ana ağda veya test ağında bir düğüm ya da doğrulayıcı çalıştırmak için, canlı manifestte (`https://download.qore.host/mainnet/latest.json` veya `.../testnet/latest.json`) belirtilen **sürüm ikili dosyasını** kurun; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node) ve [Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator).
+Herkese açık depo, modül arabirimlerini **stub keeper'larla** birlikte içerir; konsensüs açısından kritik keeper uygulamaları ve kuantum sonrası imzalayıcı herkese açık kaynak ağacında yer almaz. Bu kaynaktan derlenen bir ikili dosya, ağların konsensüs durumunu yeniden üretemez ve her Cosmos hattı işleminin gerektirdiği hibrit kuantum sonrası imzayı oluşturamaz. v3.2.3'ten itibaren ayrıca `qorechain-vladi` veya `qorechain-diana` üzerinde **başlamayı reddeder** (bu ağları zincir kimliği ve genesis zamanından tanır; herkese açık bir zincir kimliğini kendi genesis'iyle yeniden kullanan yerel bir devnet bundan etkilenmez). `qorechaind start --community-unenforced-pqc` bu reddi deneyler için aşar; bu durumda düğüm hiçbir kuantum sonrası imzayı doğrulamaz ve ağdan uyarı vermeden ayrışabilir, bu yüzden güvendiğiniz bir düğüm için asla kullanmayın. Ana ağda veya test ağında bir düğüm ya da doğrulayıcı çalıştırmak için, canlı manifestte (`https://download.qore.host/mainnet/latest.json` veya `.../testnet/latest.json`) belirtilen **sürüm ikili dosyasını** kurun; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node) ve [Doğrulayıcı Çalıştırma](/developer-guide/running-a-validator).
 :::
 
 ## Önkoşullar
@@ -106,11 +106,11 @@ Yerel kütüphaneleri veya tescilli keeper'ları kullanan testler yalnızca tam 
 Başarılı bir derlemenin ardından ikili dosyayı doğrulayın:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için canlı ağ olan `--chain-id qorechain-vladi` değerini kullanın (düğüm sürümü **v3.2.1**).
+`init` komutu, `~/.qorechaind/` içinde hatasız bir genesis dosyası ve düğüm yapılandırması oluşturmalıdır. Yukarıdaki örnek, **`qorechain-diana`** test ağına karşı başlatma yapar — ana ağ için canlı ağ olan `--chain-id qorechain-vladi` değerini kullanın (düğüm sürümü **v3.2.3**).
 
 ## Docker Derlemesi
 

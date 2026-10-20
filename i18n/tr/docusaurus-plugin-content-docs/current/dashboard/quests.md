@@ -13,7 +13,7 @@ sidebar_position: 10
 
 ## Görevlere göz atın
 
-Görevler sayfası, kaç görevin mevcut olduğunu, kaçının devam ettiğini ve kaçını tamamladığınızı gösteren hızlı bir özetle açılır. **Kategori sekmeleri** — örneğin başlangıç, ticaret, sosyal, topluluk, öğrenme, günlük ve haftalık gibi — listeyi filtrelemenizi sağlar.
+Görevler sayfasında bir **Eigenstate 1** ve bir **Eigenstate 2** sekmesi vardır; etkin Eigenstate 2 görevi olmadığında sekmesi yeni zorlukların yakında geleceğini belirtir. Sayfa, kaç görevin mevcut olduğunu, kaçının devam ettiğini ve kaçını tamamladığınızı gösteren hızlı bir özetle açılır. **Kategori sekmeleri** — örneğin başlangıç, ticaret, sosyal, topluluk, öğrenme, günlük ve haftalık gibi — listeyi filtrelemenizi sağlar.
 
 Her görev şunları gösteren bir kart olarak görünür:
 
@@ -24,6 +24,8 @@ Her görev şunları gösteren bir kart olarak görünür:
 - Bir **durum**: tamamlandı, devam ediyor, başlatıldı veya kilitli.
 
 Kilitli bir görev, kilidinin açılmasından önce tamamlamanız gereken görevi listeler.
+
+**Sosyal görevler.** X veya Telegram içeren görevler, yalnızca bu hesapları **Profile**'ınızda bağladığınızda (bağlayana kadar sayfa, bir **Go to Profile** bağlantısıyla birlikte *Connect Social Accounts* gösterir) ve bağlantı doğrulandığında sayılır.
 
 ## Bir görevi tamamlayın
 

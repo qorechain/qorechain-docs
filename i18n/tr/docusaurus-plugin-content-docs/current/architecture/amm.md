@@ -21,8 +21,32 @@ Aşağıdaki komutlar `qorechaind` kullanır. Ortamınız için olağan işlem b
 :::
 
 :::caution Henüz hiç havuz yok
-AMM modülü ana ağda ve test ağında canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
+AMM modülü ana ağda (v3.2.3) ve test ağında (v3.2.4) canlıdır, ancak **henüz hiçbir havuz oluşturulmamıştır** (20 Ekim 2026'da kontrol edildi: `GET /qorechain/amm/v1/pools` her ikisinde de boş bir liste döndürür) ve aşağıdaki örneklerdeki birimler (`uusdc`, `uusdt`) açıklayıcıdır: bugün ağlarda böyle varlıklar bulunmaz. Bir havuz oluşana kadar her takas veya likidite ekleme komutu, havuz bulunamadı hatasıyla başarısız olur.
 :::
+
+## Modül parametreleri {#parameters}
+
+Canlı değerleri `qorechaind query amm params` veya `GET /qorechain/amm/v1/params` ile okuyun. Ana ağ ve test ağı şu anda aynı değerleri bildirir:
+
+| Parametre | Değer | Anlamı |
+| --- | --- | --- |
+| `enabled` | `true` | Modül anahtarı |
+| `swap_fee_bps` | `30` | Takas ücreti, giriş tutarının %0,30'u |
+| `protocol_fee_bps` | `10` | Takas ücretinin protokol payı olarak havuzdan çıkan kısmı (girişin %0,10'u). Geri kalanı likidite sağlayıcıları için havuzda kalır |
+| `pool_creation_fee` | `100000000` | 100 QOR (uqor cinsinden); ilk yatırımlara ek olarak tahsil edilir ve bir havuz oluşturulduğunda yakılır |
+| `min_liquidity` | `1000` | Yeni bir havuzun iki ilk yatırımından küçük olanı en az bu kadar temel birim olmalıdır |
+| `max_pools_per_creator` | `50` | Bir hesabın oluşturabileceği havuz sayısı |
+| `max_swap_impact_bps` | `500` | Bir takasın sahip olabileceği en büyük fiyat etkisi (%5); bkz. [Takas kuralları](#swap-rules) |
+| `lp_token_decimals` | `6` | Bir havuzun LP tokenının ondalık basamak sayısı |
+
+## v3.2.2'den beri uygulanan takas kuralları {#swap-rules}
+
+Aşağıdaki AMM bütünlük düzeltmeleri ana ağda v3.2.2 ile (3.556.788 yüksekliği, 16 Ekim 2026) uygulandı ve v3.2.3'te (3.662.051 yüksekliği, 20 Ekim 2026) iyileştirildi. Hangi hattan gelirse gelsin her takas için geçerlidirler.
+
+* **Her iki birim de havuza bağlıdır.** Bir takas, hedeflediği havuzun iki birimini de belirtmelidir. Stable-swap havuzları her iki yönde de (tam-giriş ve tam-çıkış) stable-swap eğrisiyle fiyatlandırılır.
+* **Protokol ücreti.** Takas ücretinin protokol payı havuzdan çıkar. QOR ile ödendiğinde ücret toplayıcıya gider ve bloğun diğer ücretleriyle bölüştürülür (bkz. [Tokenomik](/architecture/tokenomics)); yakılan kısım `amm` yakma kaynağı altında kaydedilir; başka herhangi bir birimde ise topluluk havuzuna gider. Havuz oluşturma ücreti yakılır ve aynı `amm` kaynağı altında kaydedilir.
+* **Fiyat etkisi tavanı.** `max_swap_impact_bps` uygulanır: havuzun fiyatına göre fiyat etkisi %5'i aşan bir takas reddedilir. Kayma sınırı belirlemeyen bir takas (tam-girişte `min-out` değerinin 0 olması veya tam-çıkışta tüm giriş rezervini kapsayan bir `max-in`) ayrıca havuzun blok başındaki fiyatına göre ölçülür ve aynı bloktaki önceki işlemler fiyatı tavanın ötesine taşıdıysa reddedilir. Her takasta gerçek bir `min-out` / `max-in` belirleyin.
+* **Sınırlandırılmış blok sonu işi (v3.2.3).** Her bloğun sonunda modül, en fazla 100 havuzun sürekli ağırlıklı ortalama fiyatını sırayla (round-robin) yeniler. 100 veya daha az havuz olduğu sürece her havuz her blokta yenilenir; bunun ötesinde bir havuzun ortalaması `ceil(pools / 100)` blokluk her turda bir güncellenir. Ortalama bilgilendirme amaçlıdır (`pool` sorgularıyla döndürülür) ve takas fiyatlandırmasını değiştirmez.
 
 ## Havuzlar ve LP payları
 
@@ -127,7 +151,7 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Bir havuzu duraklatma ve sürdürme
 
-Havuzlar, yönetişim yetkilisi tarafından duraklatılabilir ve sürdürülebilir. Ana ağda bu iki mesaj şu anda devre kesici tarafından kapatılmıştır. Duraklatılmış bir havuz, sürdürülene kadar takasları ve likidite değişikliklerini reddeder — olay müdahalesi veya koordineli bakım için kullanışlıdır.
+Havuzlar, yönetişim yetkilisi tarafından duraklatılabilir ve sürdürülebilir. Ana ağda bu iki mesaj şu anda devre kesici tarafından kapatılmıştır; test ağında kapatılmamıştır. Duraklatılmış bir havuz, sürdürülene kadar takasları ve likidite değişikliklerini reddeder — olay müdahalesi veya koordineli bakım için kullanışlıdır.
 
 
 ## Komut özeti
@@ -161,4 +185,5 @@ Havuzlar, yönetişim yetkilisi tarafından duraklatılabilir ve sürdürülebil
 - **Kontrol Paneli Trade / DEX**, bu havuzları, teklifleri ve takasları günlük kullanıcılar için grafiksel bir arayüzde sunar.
 - QOR arzının, ücretlerin ve değerin zincir boyunca nasıl aktığını öğrenmek için [Tokenomik](/architecture/tokenomics) sayfasına bakın.
 - Takasları kendiniz [Trade / DEX](/dashboard/trade) arayüzünde deneyin.
-- Varlıkları önce QoreChain'e getirmek için [Varlık Köprüleme](/user-guide/bridging-assets) sayfasına bakın.
+- Varlıkları önce QoreChain'e getirmek için [Varlık Köprüleme](/user-guide/bridging-assets) sayfasına bakın (köprü henüz canlı değildir).
+- Havuzlar ayrıca [Gaz Soyutlaması](/user-guide/gas-abstraction) için bir ücret fiyat kaynağı olabilir; bugün ücretler için hiçbir token kabul edilmemektedir.

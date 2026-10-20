@@ -10,7 +10,7 @@ sidebar_position: 3
 Ce guide explique le fonctionnement de la gouvernance on-chain sur QoreChain : comment les votes sont décomptés, comment soumettre des propositions et comment voter.
 
 :::note
-Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 29 juin 2026 sur la ligne v3.2 (version de nœud **v3.2.1** ; le testnet exécute la **v3.2.2**) — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
+Les commandes ci-dessous utilisent le testnet **`qorechain-diana`** (chain ID EVM **9800**). Le mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) est en production depuis le 7 juin 2026 et exécute la version **v3.2.3** ; le testnet exécute la **v3.2.4** — remplacez le chain ID et les endpoints du mainnet indiqués sur la page **Connecting to Mainnet** lorsque vous participez à la gouvernance sur le mainnet.
 :::
 
 :::caution Signez avec `tx pqc cosign`
@@ -29,7 +29,7 @@ Les propositions sont décomptées sur le **stake bonded** : chaque QOR que vous
 | Seuil     | 50%                  | Part de « yes » parmi les votes hors abstentions nécessaire pour être adoptée |
 | Veto      | 33.4%                | Si « no with veto » atteint cette part, la proposition est rejetée et son dépôt est brûlé |
 
-Ces valeurs ont été lues sur la chaîne le 14 octobre 2026 ; confirmez-les avec `qorechaind query gov params`, car la gouvernance peut les modifier.
+Ces valeurs ont été lues sur le mainnet le 20 octobre 2026 (et sont identiques sur le testnet) ; confirmez-les avec `qorechaind query gov params`, car la gouvernance peut les modifier.
 
 :::note QDRW est conçu mais n'est pas actif
 La conception de QoreChain inclut une formule de pouvoir de vote **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, qui amortirait les stakes importants et pondérerait la réputation. Elle est implémentée dans le module `x/qca` mais est **désactivée** sur les deux réseaux (`qdrw_enabled` vaut `false` dans `qorechaind query qca config`) et ne fait pas partie du décompte de gouvernance ; elle n'affecte donc aucun vote aujourd'hui. xQORE n'est pas non plus en production (voir [xQORE Staking](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Paramètres clés :
 
-| Paramètre             | Description                                                             | Valeur en production (14 oct. 2026) |
+| Paramètre             | Description                                                             | Valeur en production (20 oct. 2026) |
 | --------------------- | ------------------------------------------------------------------------ | ----------------------------------- |
 | `min_deposit`         | Dépôt minimum requis pour qu'une proposition entre en période de vote   | 10 QOR (`10000000uqor`)             |
 | `max_deposit_period`  | Fenêtre de temps pour atteindre le dépôt minimum                        | 2 jours                             |
@@ -170,6 +170,12 @@ Paramètres clés :
 | `threshold`           | Pourcentage minimum de « yes » pour être adoptée (abstentions exclues)  | 0.5                                 |
 | `veto_threshold`      | Pourcentage minimum de « no with veto » pour rejeter et brûler le dépôt | 0.334                               |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Période de vote, seuil d'adoption et dépôt pour les propositions expedited | 1 jour / 0.667 / 50 QOR |
+
+---
+
+## La gouvernance sur le mainnet jusqu'ici {#mainnet-history}
+
+La gouvernance du mainnet a servi à des changements de paramètres, à des décisions de disjoncteur, à des mises à niveau coordonnées et, depuis octobre 2026, à la libération de montants que la chaîne avait enregistrés lors de la mise à niveau v3.2.0. Les propositions 7 à 11 ont été adoptées sur le mainnet en octobre 2026 et la proposition 12 était en période de vote au moment de la rédaction ; la liste et les résultats se trouvent dans l'[Historique des versions](/appendix/version-history#governance-timeline), et chaque proposition peut être lue en direct à `GET /cosmos/gov/v1/proposals`.
 
 ---
 

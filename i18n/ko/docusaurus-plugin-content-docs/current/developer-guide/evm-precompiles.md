@@ -24,7 +24,7 @@ QoreChain은 QoreChain EVM 엔진을 **6개의 커스텀 프리컴파일 컨트�
 | PRISM Consensus Params | `0x…0C01` | 비활성 | 비활성 |
 | CrossVM Bridge | `0x…0901` | 비활성 | 비활성 |
 
-활성화에는 체인 업그레이드가 필요하며 단계적으로 진행될 예정입니다. 읽기 전용인 PQC 및 합의 프리컴파일이 먼저, AI 2종은 읽기 전용 고정소수점 경로가 갖춰진 뒤에, CrossVM 브리지는 저널링, 값 검사, 크로스 VM 서킷 브레이커와 함께 재구축된 이후에만 활성화됩니다. 이 표는 이들 중 어느 것이든 활성화하는 업그레이드와 같은 작업에서 갱신됩니다.
+활성화에는 체인 업그레이드가 필요하며 단계적으로 진행될 예정입니다. 읽기 전용인 PQC 및 합의 프리컴파일이 먼저, AI 2종은 읽기 전용 고정소수점 경로가 갖춰진 뒤에, CrossVM 브리지는 마지막에 활성화됩니다. v3.2.3 릴리스(메인넷, 2026년 10월 20일)는 CrossVM 브리지와 AI 이상 탐지 프리컴파일의 강화된 버전을 프로토콜 기능 뒤에 두고 바이너리에 포함했지만, **어떤 프리컴파일도 활성화하지 않았습니다**. `active_static_precompiles` 목록은 두 네트워크 모두 여전히 비어 있으며, 테스트넷의 v3.2.4 릴리스도 이를 바꾸지 않았습니다. 이 표는 이들 중 어느 것이든 활성화하는 업그레이드와 같은 작업에서 갱신됩니다.
 
 현재 목록을 직접 확인하세요 (비어 있으면 활성화된 것이 없음).
 
@@ -271,10 +271,10 @@ contract ConsensusReader {
 ### CrossVM Bridge — EVM에서 CosmWasm 호출
 
 :::warning
-CrossVM 브리지 프리컴파일은 현재 형태로는 활성화되지 **않을** 것입니다. 호출하는 컨트랙트의 리버트가 CosmWasm 쪽도 함께 되돌리고, 값 전송은 거부되며, EVM-to-EVM 재진입은 거절되고, 크로스 VM 서킷 브레이커가 적용되도록 재구축 중입니다. 그때까지는 동기식 EVM-to-CosmWasm 경로가 없습니다. `MsgCrossVMCall` 메시지 경로는 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요. 이 경로 자체도 현재 메인넷에서는 꺼져 있습니다.
+CrossVM 브리지 프리컴파일은 어느 네트워크에서도 **활성화되어 있지 않습니다**. v3.2.3부터 바이너리에는 강화된 버전이 들어 있으며, 이 버전은 `STATICCALL`을 거부하고, 중첩 호출을 호출 프레임에 남은 가스로 제한되는 가스 미터에서 실행하며 저널에 기록해 호출하는 컨트랙트의 되돌림이 CosmWasm 쪽도 함께 취소하게 하고, 허용 목록에 있는 CosmWasm 대상에만 접근하며(EVM 대상은 거부됨), 크로스 VM 서킷 브레이커를 준수합니다. 거버넌스에서 승인된 업그레이드가 이를 활성화하기 전까지는 동기식 EVM-to-CosmWasm 경로가 없습니다. `MsgCrossVMCall` 메시지 경로는 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요. 이 경로 자체도 현재 메인넷에서는 꺼져 있습니다.
 :::
 
-노드는 calldata를 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`로 디코딩합니다 (4바이트 셀렉터 다음에 ABI 인코딩된 인자). 문서화된 용도는 EVM에서 CosmWasm으로의 호출이며, 재구축에 따라 ABI가 변경될 수 있습니다.
+노드는 calldata를 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`로 디코딩합니다 (4바이트 셀렉터 다음에 ABI 인코딩된 인자). 지원되는 용도는 EVM에서 CosmWasm으로의 호출(`targetVM` = 1)뿐이며, ABI는 활성화 전에 변경될 수 있습니다.
 
 **가스 비용:** 기본 50,000 + 입력 바이트당 4 가스, 여기에 대상 컨트랙트 실행 비용이 더해집니다. 자세한 내용은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 

@@ -21,8 +21,32 @@ Los comandos a continuación utilizan `qorechaind`. Añade los indicadores de tr
 :::
 
 :::caution Todavía no existen pools
-El módulo AMM está activo en mainnet y en la testnet, pero **todavía no se ha creado ningún pool**, y los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
+El módulo AMM está activo en mainnet (v3.2.3) y en la testnet (v3.2.4), pero **todavía no se ha creado ningún pool** (comprobado el 20 de octubre de 2026: `GET /qorechain/amm/v1/pools` devuelve una lista vacía en ambas), y los denoms de los ejemplos siguientes (`uusdc`, `uusdt`) son ilustrativos: hoy no existen tales activos en las redes. Mientras no exista un pool, todo comando de swap o de aportar liquidez falla con un error de pool no encontrado.
 :::
+
+## Parámetros del módulo {#parameters}
+
+Lee los valores actuales con `qorechaind query amm params` o `GET /qorechain/amm/v1/params`. Mainnet y testnet informan actualmente los mismos valores:
+
+| Parámetro | Valor | Significado |
+| --- | --- | --- |
+| `enabled` | `true` | Interruptor del módulo |
+| `swap_fee_bps` | `30` | Comisión de swap, 0,30 % del monto de entrada |
+| `protocol_fee_bps` | `10` | La parte de la comisión de swap que sale del pool como parte del protocolo (0,10 % de la entrada). El resto se queda en el pool para los proveedores de liquidez |
+| `pool_creation_fee` | `100000000` | 100 QOR (en uqor), cobrados además de los depósitos iniciales y quemados cuando se crea un pool |
+| `min_liquidity` | `1000` | El menor de los dos depósitos iniciales de un pool nuevo debe ser al menos esta cantidad de unidades base |
+| `max_pools_per_creator` | `50` | Pools que una cuenta puede crear |
+| `max_swap_impact_bps` | `500` | Mayor impacto en el precio que puede tener un swap (5 %); consulta [Reglas de swap](#swap-rules) |
+| `lp_token_decimals` | `6` | Decimales del token LP de un pool |
+
+## Reglas de swap aplicadas desde v3.2.2 {#swap-rules}
+
+Las correcciones de integridad del AMM siguientes se aplicaron a mainnet con v3.2.2 (altura 3,556,788, 16 de octubre de 2026) y se refinaron en v3.2.3 (altura 3,662,051, 20 de octubre de 2026). Se aplican a todo swap, sea cual sea la vía por la que llegue.
+
+* **Ambos denoms están vinculados al pool.** Un swap debe nombrar los dos denoms del pool al que apunta. Los pools stable-swap se valoran con la curva stable-swap en ambas direcciones (exact-in y exact-out).
+* **Comisión del protocolo.** La parte del protocolo de la comisión de swap sale del pool. Cuando se paga en QOR va al recolector de comisiones y se reparte con las demás comisiones del bloque (consulta [Tokenómica](/architecture/tokenomics)), registrando la parte quemada bajo la fuente de quema `amm`; en cualquier otra denominación va al pool comunitario. La comisión de creación de pool se quema y se registra bajo la misma fuente `amm`.
+* **Tope de impacto en el precio.** `max_swap_impact_bps` se aplica: se rechaza un swap cuyo impacto en el precio respecto al precio del pool supere el 5 %. Un swap que no establece ningún límite de deslizamiento (un `min-out` de 0 en exact-in, o un `max-in` que cubre toda la reserva de entrada en exact-out) se mide además contra el precio del pool al inicio del bloque y se rechaza si operaciones anteriores del mismo bloque lo movieron más allá del tope. Establece un `min-out` / `max-in` real en cada swap.
+* **Trabajo acotado al final del bloque (v3.2.3).** Al final de cada bloque el módulo actualiza el precio promedio ponderado continuo de como máximo 100 pools, de forma rotativa. Mientras haya 100 pools o menos, cada pool se actualiza en cada bloque; por encima de eso, el promedio de un pool se actualiza una vez por ronda de `ceil(pools / 100)` bloques. El promedio es informativo (lo devuelven las consultas `pool`) y no cambia la fijación de precios de los swaps.
 
 ## Pools y participaciones LP
 
@@ -127,7 +151,7 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Pausar y reanudar un pool
 
-Los pools pueden ser pausados y reanudados por la autoridad de gobernanza. En mainnet, estos dos mensajes están actualmente desactivados por el cortacircuitos. Un pool pausado rechaza los swaps y los cambios de liquidez hasta que se reanude, lo que resulta útil para la respuesta a incidentes o el mantenimiento coordinado.
+Los pools pueden ser pausados y reanudados por la autoridad de gobernanza. En mainnet, estos dos mensajes están actualmente desactivados por el cortacircuitos; en la testnet no están desactivados. Un pool pausado rechaza los swaps y los cambios de liquidez hasta que se reanude, lo que resulta útil para la respuesta a incidentes o el mantenimiento coordinado.
 
 
 ## Resumen de comandos
@@ -161,4 +185,5 @@ Los pools pueden ser pausados y reanudados por la autoridad de gobernanza. En ma
 - **Trade / DEX del Dashboard** expone estos pools, cotizaciones y swaps en una interfaz gráfica para usuarios cotidianos.
 - Para saber cómo el suministro de QOR, las comisiones y el valor fluyen a través de la cadena, consulta [Tokenómica](/architecture/tokenomics).
 - Prueba los swaps tú mismo en la interfaz [Trade / DEX](/dashboard/trade).
-- Para llevar primero activos a QoreChain, consulta [Puentear activos](/user-guide/bridging-assets).
+- Para llevar primero activos a QoreChain, consulta [Puentear activos](/user-guide/bridging-assets) (el puente todavía no está activo).
+- Los pools también pueden ser una fuente de precios de comisiones para la [Abstracción de gas](/user-guide/gas-abstraction); hoy no se acepta ningún token para pagar comisiones.

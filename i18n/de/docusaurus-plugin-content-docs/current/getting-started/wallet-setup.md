@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain unterstützt mehrere Wallet-Typen über seine nativen, EVM- und SVM-Ausführungsumgebungen hinweg. Wählen Sie das Wallet, das zu Ihrem Anwendungsfall passt.
 
 :::note
-Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 29. Juni 2026) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
+Die folgenden Werte gelten sowohl für das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, live seit dem 7. Juni 2026, Release v3.2.3) als auch für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release v3.2.4). Öffentliche Endpunkte für beide Netzwerke sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt.
 :::
 
 ## QoreX (empfohlen) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-Sichern Sie die PQC-Schlüsseldatei ebenso sorgfältig wie Ihre Mnemonic. (Ein Schlüssel lässt sich mit `qorechaind tx pqc recover-key` aus der Mnemonic neu ableiten und mit `tx pqc rotate-key` ersetzen.) QoreX und das QoreChain SDK registrieren den Schlüssel für Sie. Eine vollständige signierte Überweisung finden Sie unter [Erste Transaktion](/getting-started/first-transaction#register-pqc-key).
+Seit v3.2.3 können Sie einen optionalen Besitznachweis anhängen, indem Sie mit `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...` registrieren; die Chain lehnt außerdem schwache, degenerierte oder bereits verwendete Schlüssel ab. Sichern Sie die PQC-Schlüsseldatei ebenso sorgfältig wie Ihre Mnemonic. (Ein Schlüssel lässt sich mit `qorechaind tx pqc recover-key` aus der Mnemonic neu ableiten und mit `tx pqc rotate-key` ersetzen.) QoreX und das QoreChain SDK registrieren den Schlüssel für Sie. Eine vollständige signierte Überweisung finden Sie unter [Erste Transaktion](/getting-started/first-transaction#register-pqc-key).
 
 ### Hybrides Signieren mit dem SDK
 

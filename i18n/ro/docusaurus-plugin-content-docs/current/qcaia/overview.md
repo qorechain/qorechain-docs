@@ -22,6 +22,8 @@ QCAIA este construit pentru a-i ajuta pe noii veniți și pe membrii comunităț
 
 Dacă o întrebare iese din ceea ce știe QCAIA, va spune asta în loc să ghicească. QCAIA este un ajutor comunitar, nu sfaturi financiare sau de investiții.
 
+Răspunsurile QCAIA urmează documentația publică a QoreChain, așa că pot rămâne în urma unei versiuni. Pentru ce este activ acum pe fiecare rețea (mainnet `qorechain-vladi` rulează v3.2.3, iar testnet `qorechain-diana` rulează v3.2.4, la 20 octombrie 2026), consultă [Rețele](/appendix/networks) și [Istoricul versiunilor](/appendix/version-history) sau interoghează direct un nod. Mai multe părți ale platformei despre care este întrebat QCAIA, precum bridge-ul, pool-urile AMM, rollup-urile și xQORE, sunt descrise în documentație ca proiectate, dar nu sunt încă active; dacă QCAIA dă un răspuns diferit, ai încredere în documentație și în rețeaua live.
+
 ## Suport multi-limbă
 
 QCAIA înțelege întrebări în multe limbi. Dacă întrebi într-o altă limbă decât engleza, traduce automat întrebarea ta, îi răspunde și răspunde înapoi — astfel încât poți folosi propria limbă și totuși să primești un răspuns clar. Vezi [Exemple](/qcaia/examples) pentru un exemplu concret într-o limbă alta decât engleza.
@@ -38,7 +40,7 @@ QCAIA este în **beta**. Se îmbunătățește continuu și, ocazional, este pos
 
 | Platformă | Cum să ajungi la el | Ghid |
 | --- | --- | --- |
-| **Discord** | Intră pe **[discord.gg/qorechain](https://discord.gg/qorechain)** și folosește comenzile slash | [Folosirea QCAIA pe Discord](/qcaia/discord) |
+| **Discord** | Intră pe **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** și folosește comenzile slash | [Folosirea QCAIA pe Discord](/qcaia/discord) |
 | **Telegram** | Intră pe **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** și menționează bot-ul | [Folosirea QCAIA pe Telegram](/qcaia/telegram) |
 
 Alege platforma ta de mai sus pentru a afla exact cum să întrebi sau sari direct la pagina de [Exemple](/qcaia/examples) pentru a vedea QCAIA în acțiune.

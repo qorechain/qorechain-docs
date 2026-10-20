@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain betreibt eine vollständig EVM-kompatible Ausführungsumgebung auf der QoreChain EVM Engine und ermöglicht es, Solidity-Smart-Contracts mit vertrauten Werkzeugen bereitzustellen und mit ihnen zu interagieren. Das EVM-Modul stellt eine JSON-RPC-Schnittstelle auf **Port 8545** bereit (WebSocket auf **8546**), die gängige Ethereum-Entwicklungsworkflows unterstützt.
 
 :::note
-Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 29. Juni 2026 live ist und die Node-Version **v3.2.1** ausführt (Konsensregeln aus dem Upgrade v3.2.0). Für das **`qorechain-diana`**-Testnet (v3.2.2) verwenden Sie die EVM-Chain-ID **9800**. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
+Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das Node-Release **v3.2.3** ausführt (angewendet bei Höhe 3.662.051 am 20. Oktober 2026). Für das **`qorechain-diana`**-Testnet (v3.2.4, angewendet bei Höhe 8.337.253 am 19. Oktober 2026; im Mainnet noch nicht angewendet; der Governance-Vorschlag 13 würde es bei Höhe 3.742.566 anwenden) verwenden Sie die EVM-Chain-ID **9800**. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
 :::
 
 :::caution Eine EVM-Transaktion benötigt einen registrierten PQC-Schlüssel und ein offenes Autorisierungsfenster
 Seit dem Upgrade v3.2.0 (Mainnet-Höhe 2,981,742, Testnet-Höhe 5,920,000) lässt die EVM-Lane eine Transaktion nur von einem Konto zu, das **(1) einen registrierten post-quantensicheren ML-DSA-87-Schlüssel** und **(2) ein offenes EVM-Autorisierungsfenster** besitzt, in dem noch Platz für sie ist. Sie signieren mit gewöhnlichen Werkzeugen (MetaMask, ethers.js, Hardhat, Foundry), aber ohne registrierten Schlüssel und offenes Fenster wird `eth_sendRawTransaction` abgelehnt (Codespace `pqc`, Codes 26, 27 oder 28). Lesezugriffe, `eth_call` und die Gasschätzung benötigen weder das eine noch das andere. Siehe [EVM-Autorisierungsfenster](#evm-window) weiter unten und die Schritt-für-Schritt-Anleitung unter [Ihre erste Transaktion](/getting-started/first-transaction#evm-window).
+
+Zwei weitere Regeln gelten seit v3.2.2 im Mainnet: **Ungeschützte Transaktionen (vor EIP-155) werden abgelehnt**, sowohl vom Mempool des Nodes als auch bei der Blockausführung; signieren Sie daher mit einer Chain-ID (das tun alle aktuellen Wallets und Bibliotheken); und **Modulkonten können nicht über die EVM beansprucht werden**.
 :::
 
 ---
@@ -30,7 +32,7 @@ Seit dem Upgrade v3.2.0 (Mainnet-Höhe 2,981,742, Testnet-Höhe 5,920,000) läss
 | Chain-ID (Testnet)      | `9800` (`qorechain-diana`)                 |
 | Währungssymbol          | `QOR`                                      |
 
-QoreChain-spezifische Lesezugriffe werden über REST (`api.qore.host`) bereitgestellt; der [unten](#custom-qor_-namespace) beschriebene JSON-RPC-Namespace `qor_` ist auf den öffentlichen Endpunkten und in der Standard-Node-Konfiguration **nicht aktiviert**.
+QoreChain-spezifische Lesezugriffe werden über REST (`api.qore.host`) bereitgestellt; der [unten](#custom-qor_-namespace) beschriebene JSON-RPC-Namespace `qor_` ist auf den öffentlichen Endpunkten und in der Standard-Node-Konfiguration **nicht aktiviert**. Die Standardliste `api` eines frisch initialisierten Nodes (v3.2.3 und später) lautet `eth,net,web3`; `txpool` muss ausdrücklich aktiviert werden, weil es die ausstehenden Transaktionen des Nodes veröffentlicht.
 
 ---
 
@@ -200,7 +202,16 @@ Eine post-quantensichere Signatur kann nicht *mit* einer Ethereum-Transaktion re
 | `max-txs`   | 1 – 1,000          | Wie viele EVM-Transaktionen es zulässt |
 | `max-value` | über 0, in `uqor`  | Gesamter Abfluss, den es zulässt: übertragener Wert **plus** die maximale Gebühr, die jede Transaktion zahlen könnte (Gaslimit × maximale Gebühr pro Gas), in `uqor` umgerechnet und aufgerundet |
 
-Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Alle Felder sind erforderlich; das Öffnen eines Fensters ersetzt ein bestehendes; eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht trotzdem ihren Platz und ihr Wertbudget; Contract-Bereitstellungen zählen wie jede andere Transaktion. `blocks` ist eine Blockanzahl, keine Dauer: 17,280 Blöcke entsprechen im Mainnet etwa 15 Stunden (etwa 3.2 s pro Block) und im Testnet etwa 5 Stunden (etwa 1.0 s pro Block).
+Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Die drei Grenzen sind erforderlich; das Öffnen eines Fensters ersetzt ein bestehendes; eine Transaktion, die zugelassen wird und dann fehlschlägt, verbraucht trotzdem ihren Platz und ihr Wertbudget; Contract-Bereitstellungen zählen wie jede andere Transaktion. `blocks` ist eine Blockanzahl, keine Dauer: 17,280 Blöcke entsprechen im Mainnet etwa 15 Stunden (etwa 3.2 s pro Block) und im Testnet etwa 5 Stunden (etwa 1.0 s pro Block).
+
+**Die Wertgrenze zählt nur natives QOR.** Ein Token-Transfer, eine Genehmigung (Approval) oder jeder andere Contract-Aufruf trägt den Wert null und wird daher nicht auf `max-value` angerechnet (nur seine maximale Gebühr). Um auch diese zu begrenzen, schränken Sie den **Scope** des Fensters ein (Mainnet v3.2.3 und später):
+
+| Scope-Option (CLI-Flag) | Nachrichtenfeld | Was das Fenster zulässt |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | Nur einfache Transfers von nativem QOR: keine Calldata, keine Contract-Erstellung, kein Empfänger, der Code trägt, keine EIP-7702-Autorisierung |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | Nur Transaktionen, deren Empfänger eine der aufgelisteten 20-Byte-Adressen ist; die Contract-Erstellung wird abgelehnt |
+
+Ein ohne Scope geöffnetes Fenster verhält sich exakt wie zuvor. Eine Transaktion außerhalb des Scopes wird mit Code 27 abgelehnt (die Meldung besagt, dass das Fenster „diese Transaktion nicht zulässt“). `GET /qorechain/pqc/v1/evm_window/{address}` und `qorechaind query pqc evm-window` melden `native_only` und `allowed_targets`, und das Ereignis `pqc_evm_window_opened` trägt sie, wenn sie gesetzt sind.
 
 **Schritte** (die vollständige Anleitung finden Sie unter [Ihre erste Transaktion](/getting-started/first-transaction#evm-window)):
 
@@ -211,6 +222,10 @@ Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Alle Felder sind e
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. Prüfen Sie, was übrig ist: `qorechaind query pqc evm-window <address>` oder `GET /qorechain/pqc/v1/evm_window/{address}` (antwortet mit `found: false`, wenn keines vorhanden ist).
@@ -218,13 +233,17 @@ Welche Grenze zuerst aufgebraucht ist, schließt das Fenster. Alle Felder sind e
 
 Schließen Sie ein Fenster vorzeitig mit `qorechaind tx pqc close-evm-window` (gleiches Muster mit `--generate-only` und `cosign`), zum Beispiel wenn Sie vermuten, dass der klassische Schlüssel offengelegt wurde: Was das Fenster noch zugelassen hätte, wird ab dem nächsten Block abgelehnt.
 
+### EIP-7702-Delegationen {#eip-7702}
+
+Eine EIP-7702-Delegation Ihres Kontos (eine Typ-4-Transaktion) wird seit v3.2.2 nur mit der eigenen post-quantensicheren Einwilligung Ihres Kontos wirksam. Erfassen Sie die Einwilligung zuerst mit der hybrid signierten Cosmos-Lane-Nachricht `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); sie ist einmalig verwendbar, läuft nach der angegebenen Anzahl von Blöcken ab und wird durch `close-evm-window` widerrufen. Wert, der ein delegiertes Konto verlässt, wird dem Fenster **dieses** Kontos belastet, eine fehlgeschlagene Typ-4-Transaktion behält die Autorisierungen, die sie angewendet hat, und `qorechaind tx pqc clear-evm-delegation` entfernt eine Delegation. Eine abgelehnte Delegation antwortet mit den Codes 60 bis 63. Lesen Sie die Einwilligung mit `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+
 | Ablehnung (Codespace `pqc`) | Bedeutung |
 | ------------------------- | ------- |
 | Code 26 | Kein offenes Fenster für den Absender, oder der Absender hat keinen registrierten PQC-Schlüssel |
-| Code 27 | Das Fenster ist abgelaufen oder erschöpft (die Meldung zeigt, welche Grenze) |
+| Code 27 | Das Fenster ist abgelaufen oder erschöpft (die Meldung zeigt, welche Grenze), oder die Transaktion liegt außerhalb des Scopes des Fensters |
 | Code 28 | Ungültige Fenstergrenzen beim Öffnen, oder zu diesem Zeitpunkt kein registrierter Schlüssel |
 
-Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` und `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
+Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` und `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). Das SDK 0.9.0 ergänzt `openEvmWindowMsg` um die Scope-Optionen (`nativeOnly`, `allowedTargets`) und fügt die Builder für die EIP-7702-Einwilligung hinzu (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); Releases vor 0.9.0 bauen nur das Fenster ohne Scope, nutzen Sie für den Rest daher `qorechaind` (siehe den [SDK-EVM-Leitfaden](/sdk/guides/evm#evm-window-scope)).
 
 ---
 
@@ -233,7 +252,7 @@ Mit dem TypeScript-SDK (ab 0.8.2): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fet
 QoreChain erweitert JSON-RPC um einen `qor_`-Namespace für kettenspezifische Abfragen:
 
 :::warning Noch nicht bereitgestellt
-Kein veröffentlichter Node-Build stellt den Namespace `qor_` bisher bereit: `rpc_modules` auf den öffentlichen Endpunkten listet nur `eth`, `net`, `rpc`, `txpool` und `web3`, und jede Methode unten liefert `-32601` (Methode nicht gefunden) im Mainnet, im Testnet und auf selbst betriebenen Nodes mit der Standardkonfiguration (`eth`, `net`, `web3`, `txpool`). Siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace) für den Status und die REST-Alternativen (zum Beispiel `GET /qorechain/pqc/v1/account/{address}` für den Status des PQC-Schlüssels).
+Kein veröffentlichter Node-Build stellt den Namespace `qor_` bisher bereit: `rpc_modules` auf den öffentlichen Endpunkten listet nur `eth`, `net`, `rpc`, `txpool` und `web3`, und jede Methode unten liefert `-32601` (Methode nicht gefunden) im Mainnet, im Testnet und auf selbst betriebenen Nodes mit der Standardkonfiguration (`eth`, `net`, `web3`). Siehe [den `qor_`-Namespace](/api-reference/json-rpc-qor_-namespace) für den Status und die REST-Alternativen (zum Beispiel `GET /qorechain/pqc/v1/account/{address}` für den Status des PQC-Schlüssels).
 :::
 
 | Methode                      | Beschreibung                                                       |

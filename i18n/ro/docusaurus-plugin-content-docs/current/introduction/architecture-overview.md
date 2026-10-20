@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Prezentare generală a arhitecturii
 
-QoreChain este un nod blockchain modular compus din trei procese principale — nodul de chain, sidecar-ul AI și indexerul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Mainnet-ul (`qorechain-vladi`, EVM chain ID **9801**) rulează live din 29 iunie 2026 pe versiunea **v3.2.1** (reguli de consens din v3.2.0), alături de un testnet paralel (`qorechain-diana`, EVM chain ID **9800**). Chain-ul este construit pe Cosmos SDK v0.53. Diagrama de mai jos arată dispunerea componentelor la nivel înalt.
+QoreChain este un nod blockchain modular compus din trei procese principale — nodul de chain, sidecar-ul AI și indexerul de blocuri — susținute de o bază de date Postgres și monitorizate prin Prometheus și Grafana. Mainnet-ul (`qorechain-vladi`, EVM chain ID **9801**) rulează live din 7 iunie 2026 pe versiunea **v3.2.3**, alături de un testnet paralel (`qorechain-diana`, EVM chain ID **9800**, versiunea v3.2.4, doar testnet). Chain-ul este construit pe Cosmos SDK v0.53. Diagrama de mai jos arată dispunerea componentelor la nivel înalt.
 
 Ciclul de viață al tranzacției de mai jos rezumă modul în care o tranzacție trimisă traversează nodul — de la lanțul de decoratori AnteHandler (verificări de securitate și taxe) până la execuția în VM și decontarea on-chain:
 
@@ -50,7 +50,7 @@ flowchart LR
 │  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
 │  │  │20/10/│   │PvP    │   │emission   │                    │           │
-│  │  │3     │   │       │   │114.3M cap │                    │           │
+│  │  │3     │   │       │   │590M cap   │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
@@ -170,7 +170,7 @@ QoreChain înregistrează **48 de module la genesis, dintre care 20 sunt specifi
 
 * `x/burn` — 12 surse de burn, distribuție a taxelor în EndBlocker (împărțire 37/30/20/10/3)
 * `x/xqore` — Design de staking cu bonus de guvernanță: lock/unlock, penalități de ieșire graduale, rebase PvP (doar contabilitate; tranzacțiile de lock și unlock nu sunt încă conectate pe rețelele live)
-* `x/inflation` — Emisiune plafonată: o sumă fixă emisă la fiecare epocă până la atingerea unui plafon cumulativ strict (114.285.714 QOR)
+* `x/inflation` — Emisiune plafonată: o sumă fixă emisă la fiecare epocă până la atingerea unui plafon cumulativ strict (590.000.000 QOR)
 * `x/amm` — Lichiditate on-chain / automated market maker
 
 **Punți și interoperabilitate**
@@ -194,7 +194,7 @@ QoreChain înregistrează **48 de module la genesis, dintre care 20 sunt specifi
 
 Fiecare tranzacție trece printr-un lanț de decoratori înainte de execuție; oricare dintre decoratori o poate respinge. Există două lanțuri.
 
-**Lane-ul Cosmos** (în ordine): `RejectMessages` (fără `MsgEthereumTx` pe acest lane) → `AuthzLimiter` (fără mesaje EVM sau de creare a vesting-ului în interiorul authz) → `SetUpContext` → gărzi pentru mempool și adâncimea multisig → decoratori CosmWasm pentru gazul de simulare, contorul de tranzacții, registrul de gaz și contracte → `CircuitBreaker` → verificarea opțiunii de extensie → `ValidateBasic` → `TxTimeout` → `Memo` → poarta de licență a validatorului (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (include limita de rată per expeditor) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → contorul tranzacțiilor de burn → verificarea relay-ului IBC redundant → urmărirea gazului solicitat.
+**Lane-ul Cosmos** (în ordine): `RejectMessages` (fără `MsgEthereumTx` pe acest lane) → `AuthzLimiter` (fără mesaje EVM sau de creare a vesting-ului în interiorul authz și, din v3.2.3, fără mesaje de management al cheilor post-cuantice) → `SetUpContext` → gărzi pentru mempool și adâncimea multisig → decoratori CosmWasm pentru gazul de simulare, contorul de tranzacții, registrul de gaz și contracte → `CircuitBreaker` → verificarea opțiunii de extensie → `ValidateBasic` → `TxTimeout` → `Memo` → poarta de licență a validatorului (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (include limita de rată per expeditor) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → contorul tranzacțiilor de burn → verificarea relay-ului IBC redundant → urmărirea gazului solicitat.
 
 **Lane-ul EVM** (tranzacții care poartă opțiunea de extensie Ethereum): `CircuitBreaker` → decoratorul mono EVM (verificări de semnătură, nonce, taxe și sold) → `EVMWindowDecorator` (cheie post-cuantică înregistrată și o fereastră de autorizare activă; vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window)).
 

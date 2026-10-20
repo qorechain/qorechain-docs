@@ -47,7 +47,7 @@ Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/wallet`), nicht auf
 ### Delegieren {#delegate}
 
 1. Wähle auf der Seite **Wallet** den Tab **Stake / Delegate**.
-2. Prüfe im Panel **Delegate QOR** die Infobox oben – sie zeigt deinen aktuell gebundenen Gesamtbetrag im Vergleich zur Light-Node-Stake-Schwelle und ob du sie bereits erreichst. Diese Schwelle wird gegen deinen **insgesamt delegierten Stake über alle Validatoren hinweg** geprüft, nicht pro Validator, sodass ein Fehlbetrag auf mehrere verteilt werden kann – es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren", da Delegation immer auf einen Validator zielt und die Light-Node-Berechtigung eine separate Prüfung deines Gesamtbetrags ist.
+2. Prüfe im Panel **Delegate QOR** die Infobox oben – sie zeigt deinen aktuell gebundenen Gesamtbetrag im Vergleich zur Light-Node-Stake-Schwelle und ob du sie bereits erreichst. Diese Schwelle wird gegen deinen **insgesamt delegierten Stake über alle Validatoren hinweg** geprüft, nicht pro Validator, sodass ein Fehlbetrag auf mehrere verteilt werden kann – es gibt keine Möglichkeit, direkt „an einen Light Node zu delegieren“, da Delegation immer auf einen Validator zielt und die Light-Node-Berechtigung eine separate Prüfung deines Gesamtbetrags ist.
 3. Öffne das Dropdown **Validator** und wähle einen aus. Der erste Eintrag wird zufällig aus der kleineren Hälfte der Validatoren gezogen und kann sich beim Neuladen ändern; die übrigen werden nach dem kleinsten Stake zuerst aufgelistet. Gesperrte (jailed) Validatoren werden nicht angeboten.
 4. Gib einen **Amount (QOR)** ein.
 5. Lies den Hinweis unter dem Betragsfeld: Das Unbonding dauert 21 Tage, und sobald QOR gebunden ist, kann es bis zum Ablauf dieser Frist weder bewegt noch verkauft werden.
@@ -56,13 +56,17 @@ Alle vier Aktionen befinden sich auf der Seite **Wallet** (`/wallet`), nicht auf
 8. Das Panel zeigt jetzt **Approve it in QoreX** mit einem Link **Open QoreX** und einer Request-ID. QoreX zeigt dir vor dem Signieren den Validator und den Betrag – es wird nichts gesendet, bevor du es dort genehmigst. Wird die QoreX-Browser-Erweiterung erkannt, wird zusätzlich eine Schaltfläche **Approve in the browser extension** angeboten.
 9. Öffne QoreX (der Link/Deeplink erledigt das) und genehmige die Delegation. QoreX erstellt, signiert und sendet die Transaktion; das Dashboard bekommt deinen Schlüssel niemals zu Gesicht.
 
+:::note Zeitgesperrtes Staking gibt es nur im Testnet
+Ein optionales Modul für zeitgesperrtes Staking existiert nur im Testnet (Chain v3.2.4) — siehe [Zeitgesperrtes Staking](/user-guide/staking-and-delegation#time-locked-staking). Es ist noch nicht im Mainnet (der Mainnet-Governance-Vorschlag 13 würde es bei Höhe 3.742.566 anwenden), und weder das Dashboard noch QoreX haben dafür einen Bildschirm. Die hier vorgenommenen Delegationen sind gewöhnliche Delegationen ohne Sperrbindung; die einzige Wartezeit ist das 21-tägige Unbonding beim Ausstieg.
+:::
+
 ### Umdelegieren {#redelegate}
 
 Das Dashboard selbst hat kein eigenes Redelegate-Panel – das brauchst du aber auch nicht mehr. **QoreX selbst verschiebt Stake inzwischen direkt zwischen Validatoren** (App ab 1.0.8, Erweiterung ab 0.2.6): keine 21-tägige Unbonding-Wartezeit, keine verlorenen Belohnungen, und es kann eine Verschiebung sogar in einer einzigen Transaktion auf mehrere Ziel-Validatoren aufteilen. Öffne **Stake** in QoreX, tippe auf den Validator, den du verlassen möchtest, und wähle, wohin der Stake gehen soll – die vollständige Anleitung findest du unter [Stake zwischen Validatoren verschieben](/qorex/portfolio-and-staking#move-stake). Das ist eine bessere Lösung als alles, was der eigene Request-Vertrag des Dashboards bieten könnte – verwende dafür also direkt QoreX statt des unten stehenden Workarounds.
 
 Falls du noch eine ältere QoreX-Version ohne diese Funktion nutzt, verschiebe einen Stake stattdessen in zwei Schritten mithilfe der Abläufe auf dieser Seite zu einem anderen Validator:
 
-1. Hebe die **[Delegierung auf](#undelegate)** für den Betrag beim Validator, den du verlassen möchtest.
+1. **[Hebe die Delegierung auf](#undelegate)** für den Betrag beim Validator, den du verlassen möchtest.
 2. Warte die in diesem Ablauf angezeigte Unbonding-Frist ab – das QOR ist während dieser Zeit weder bewegbar noch verdient es etwas.
 3. Sobald das entbundene QOR wieder verfügbar (spendable) ist, **[delegiere](#delegate)** es an den neuen Validator.
 

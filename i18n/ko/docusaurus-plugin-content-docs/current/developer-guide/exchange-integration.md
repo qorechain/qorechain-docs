@@ -10,7 +10,15 @@ sidebar_position: 11
 거래소, 커스터디, 결제 통합사가 QOR을 상장하고 입출금을 처리하는 데 필요한 모든 것: 인터페이스 선택, 안전한 입금 감지, 출금 서명까지 다룹니다.
 
 :::note
-이 가이드는 **`qorechain-vladi`** 메인넷(2026년 6월 29일부터 가동 중, 노드 릴리스 **v3.2.1**, v3.2.0 업그레이드의 합의 규칙 적용)을 대상으로 합니다. 먼저 **`qorechain-diana`** 테스트넷(v3.2.2)에서 전체 흐름을 리허설하세요 — 두 네트워크의 엔드포인트는 [네트워크](/appendix/networks#public-endpoints)에서 확인할 수 있습니다. 자체 풀 노드를 운영한다면 다운로드 매니페스트가 권장하는 릴리스로 유지하고, 매니페스트의 `minCompatible` 미만으로 내려가지 않도록 하세요(새 메인넷 노드는 v3.2.0 이상이 필요합니다) — 오래된 노드는 체인 업그레이드를 따라갈 수 없고 동기화가 멈춥니다.
+이 가이드는 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중, 노드 릴리스 **v3.2.3**, 2026년 10월 20일 높이 3,662,051에서 적용)을 대상으로 합니다. 먼저 **`qorechain-diana`** 테스트넷에서 전체 흐름을 리허설하세요 — 테스트넷은 아직 메인넷에 적용되지 않은 릴리스인 v3.2.4를 실행하므로(거버넌스 제안 13이 통과되면 메인넷에서 높이 3,742,566에 적용됩니다) 일부 동작이 메인넷과 다릅니다(두 네트워크의 엔드포인트는 [네트워크](/appendix/networks#public-endpoints)에서 확인할 수 있습니다). 자체 풀 노드를 운영한다면 다운로드 매니페스트가 권장하는 릴리스로 유지하고, 매니페스트의 `minCompatible` 미만으로 내려가지 않도록 하세요(메인넷에서는 **3.2.3**) — 오래된 노드는 체인 업그레이드를 따라갈 수 없고 업그레이드 높이에서 멈춥니다.
+
+**v3.2.2와 v3.2.3에서 통합사에게 달라진 점** (서명 형식, 주소, 소수 자릿수, 메모, 수수료는 모두 그대로입니다):
+
+* **보호되지 않은(EIP-155 이전) Ethereum 트랜잭션은 거부됩니다**(v3.2.2). 멤풀과 블록 실행 모두에서 해당됩니다. 입금자의 지갑은 체인 ID로 서명해야 하며, 현재의 모든 지갑이 그렇게 합니다.
+* **모듈 계정은 EVM을 통해 점유할 수 없습니다**(v3.2.2). 모듈 계정 주소를 입금 또는 출금 주소로 사용하지 마세요.
+* **베스팅 계정은 서명자 자신에 대해서만 생성할 수 있습니다**(v3.2.3). 세 가지 베스팅 생성 메시지는 현재 메인넷의 서킷 브레이커 목록에도 올라 있습니다.
+* **계정에 키가 생기면 PQC 키 메시지에 하이브리드 서명이 필요합니다**(v3.2.3): [양자내성 서명](/developer-guide/post-quantum-signing#key-integrity)을 참고하세요. 핫월렛의 키는 일찍 한 번만 등록하세요.
+* **EVM 창의 범위를 제한할 수 있습니다**(v3.2.3): 순수 QOR만 보내는 핫월렛은 `native_only` 창을 열 수 있습니다. [EVM 개발](/developer-guide/evm-development#evm-window)을 참고하세요.
 :::
 
 ## 통합 경로 선택 {#choosing-a-path}
@@ -82,7 +90,7 @@ npm i @qorechain/wallet-adapter @qorechain/pqc @cosmjs/proto-signing@0.32 @cosmj
 
 서명은 **2단계** 흐름입니다 (`qorechaind tx pqc cosign`과 동일한 방식):
 
-**1단계 — 핫월렛당 최초 1회: ML-DSA-87 키를 등록합니다.** 이 등록 트랜잭션 한 건만 **클래식 서명**으로 처리됩니다(부트스트랩 예외): 메시지 `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`에 `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`를 담습니다. ML-DSA 키는 결정론적으로 파생하여 기존 시크릿으로부터 복구 가능하게 하세요 — 예: `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` 후 `mldsa.keygen(seed)` — 그리고 이 시드를 핫월렛 키와 함께 보관하세요. 등록은 명시적입니다. 하이브리드 트랜잭션이 처음 나타날 때 키가 자동으로 등록되지 않으며, 트랜잭션에 포함된 키는 등록된 것이 아닙니다. 가스를 명시적으로 설정하세요(2,592바이트 키에는 기본값 200,000보다 많은 가스가 필요합니다. CLI에서는 `--gas 600000`, 코드에서는 가스 한도 600,000, 수수료는 최소 gas × 0.1 uqor, 즉 60,000 uqor를 사용하세요).
+**1단계 — 핫월렛당 최초 1회: ML-DSA-87 키를 등록합니다.** 이 등록 트랜잭션 한 건만 **클래식 서명**으로 처리됩니다(아직 키가 없는 계정에 대한 부트스트랩 예외이며, 키가 한 번 생기면 이후의 모든 키 메시지는 하이브리드 서명이어야 합니다): 메시지 `/qorechain.pqc.v1.MsgRegisterPQCKeyV2`에 `{sender, public_key, algorithm_id: 1, key_type: "hybrid"}`를 담습니다. ML-DSA 키는 결정론적으로 파생하여 기존 시크릿으로부터 복구 가능하게 하세요 — 예: `seed = SHAKE-256("qorechain:pqc:v1|" + address + "|" + mnemonic)` 후 `mldsa.keygen(seed)` — 그리고 이 시드를 핫월렛 키와 함께 보관하세요. 등록은 명시적입니다. 하이브리드 트랜잭션이 처음 나타날 때 키가 자동으로 등록되지 않으며, 트랜잭션에 포함된 키는 등록된 것이 아닙니다. 체인은 `classical_only` 키와 양자내성 보호를 제공하지 않는 키를 거부하며(코드 230), 소유 증명을 첨부하면 이를 검증합니다(CLI: `register-key-v2 ... --pqc-key`. `@qorechain/sdk` 0.9.0은 네트워크가 v3.2.3을 적용한 뒤에는 `ensurePqcRegistered`를 통해 스스로 이를 첨부하며, `@qorechain/wallet-adapter` 0.4.0은 첨부하지 않지만 첨부하지 않아도 수락됩니다). 가스를 명시적으로 설정하세요(2,592바이트 키에는 기본값 200,000보다 많은 가스가 필요합니다. CLI에서는 `--gas 600000`, 코드에서는 가스 한도 600,000, 수수료는 최소 gas × 0.1 uqor, 즉 60,000 uqor를 사용하세요).
 
 **2단계 — 이후 모든 출금: `MsgSend`를 하이브리드 서명합니다.** 어댑터는 일반적인 secp256k1 `signDirect` *이전에* ML-DSA-87 서명을 트랜잭션 본문 확장(tx-body extension)에 포함시키므로 기존 서명 로직은 변경할 필요가 없습니다:
 
@@ -141,15 +149,15 @@ const { txHash } = await bridge.sendTokens({
 });
 ```
 
-계정에 아직 등록된 키가 없으면 라이브러리가 직접 명시적인 `MsgRegisterPQCKeyV2` 트랜잭션을 보내고 한 번 재시도합니다. 이는 체인의 동작이 아니라 라이브러리의 동작이므로, 핫월렛 레일은 키를 미리 등록하고 첫 출금 전에 확인(`GET /qorechain/pqc/v1/account/{address}`)해야 합니다. `chain-bridge`(≥0.1.1)는 스택의 나머지 부분과 동일한 표준 주소 결합 PQC 파생 방식을 사용합니다 — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — 따라서 니모닉으로부터 `qorechaind tx pqc recover-key`를 통해 키를 복구할 수 있습니다. 이전 버전 도구로 등록된 계정도 자동으로 처리되며(레거시 키 폴백), [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation)를 통해 표준 키로 한 번에 마이그레이션할 수 있습니다.
+계정에 아직 등록된 키가 없으면 라이브러리가 직접 명시적인 `MsgRegisterPQCKeyV2` 트랜잭션을 보내고 한 번 재시도합니다. 이는 체인의 동작이 아니라 라이브러리의 동작이므로, 핫월렛 레일은 키를 미리 등록하고 첫 출금 전에 확인(`GET /qorechain/pqc/v1/account/{address}`)해야 합니다. `chain-bridge` 0.2.3부터는 `cosmosRest`를 설정하면 네트워크가 v3.2.3을 적용한 뒤 등록 트랜잭션에 소유 증명이 포함되며, 라이브러리는 재등록에 앞서 체인을 읽어 계정에 이미 키가 있고 그 키가 니모닉의 표준 키도 레거시 키도 아니면 `pqc_key_mismatch`를 던지고 아무것도 전송하지 않습니다(반복 등록은 수수료만 소모하고 거부됩니다). `chain-bridge`(≥0.1.1)는 스택의 나머지 부분과 동일한 표준 주소 결합 PQC 파생 방식을 사용합니다 — `SHAKE-256("qorechain:pqc:v1|address|mnemonic")` — 따라서 니모닉으로부터 `qorechaind tx pqc recover-key`를 통해 키를 복구할 수 있습니다. 이전 버전 도구로 등록된 계정도 자동으로 처리되며(레거시 키 폴백), [`MsgRotatePQCKey`](/developer-guide/post-quantum-signing#key-rotation)를 통해 표준 키로 한 번에 마이그레이션할 수 있습니다.
 
 ## 경로 B — EVM {#path-b-evm}
 
 `https://evm.qore.host`(체인 ID **9801**) 또는 자체 노드의 8545 포트를 대상으로 하는 표준 Ethereum 통합입니다.
 
 * **소수 자릿수:** EVM 레일에서 네이티브 QOR은 **18 소수 자릿수**입니다(1 uqor = 10¹² wei). 이를 잘못 처리하면 입금이 10¹² 배로 잘못 인정됩니다.
-* **입금:** `eth_getBlockByNumber`로 블록을 스캔하여 여러분의 주소로의 네이티브 전송을 찾고, `eth_getTransactionReceipt`(`status == 0x1`)로 확인하세요. 입금자 본인의 EVM 트랜잭션에도 창 규칙이 적용되므로, 등록된 키가 없거나 열려 있는 창이 없는 계정의 사용자는 EVM 레인에서 입금을 보낼 수 없습니다(대신 Cosmos 레인을 사용할 수 있습니다).
-* **출금:** 표준 secp256k1 / EIP-155 서명이지만, **등록된 ML-DSA-87 키와 열려 있는 EVM 승인 창이 있는 계정에서만** 가능합니다(v3.2.0부터. [EVM 승인 창](/developer-guide/evm-development#evm-window) 및 [첫 트랜잭션](/getting-started/first-transaction#evm-window)의 안내 참고). 창 밖의 트랜잭션은 거부됩니다(codespace `pqc`, 코드 26, 27 또는 28). 창은 하이브리드 서명된 Cosmos 레인 트랜잭션으로 열어야 하므로, 경로 B를 사용해도 양자내성 서명이 필요 없어지지는 않습니다. `max-value`는 창 안에서 예상되는 모든 출금의 금액과 최대 수수료(가스 한도 × 가스당 최대 수수료)를 합한 값을 감당하도록 설정하고, 일괄 처리 도중 핫월렛이 바닥나지 않도록 `GET /qorechain/pqc/v1/evm_window/{address}`를 지켜보세요. 창을 열면 계정의 시퀀스(곧 EVM 논스)가 증가하므로, 논스는 창이 열린 뒤에 읽으세요.
+* **입금:** `eth_getBlockByNumber`로 블록을 스캔하여 여러분의 주소로의 네이티브 전송을 찾고, `eth_getTransactionReceipt`(`status == 0x1`)로 확인하세요. 입금자 본인의 EVM 트랜잭션에도 창 규칙이 적용되므로, 등록된 키가 없거나 열려 있는 창이 없는 계정의 사용자는 EVM 레인에서 입금을 보낼 수 없으며(대신 Cosmos 레인을 사용할 수 있습니다), 체인 ID 없이 서명된 트랜잭션(EIP-155 이전)은 즉시 거부됩니다. 창은 범위가 제한될 수 있으므로(`native_only`, `allowed_targets`), 통과된 입금은 항상 네이티브 전송이거나 창이 허용하는 호출입니다. 그래도 가정하지 말고 영수증을 읽으세요.
+* **출금:** 표준 secp256k1 / EIP-155 서명이지만, **등록된 ML-DSA-87 키와 열려 있는 EVM 승인 창이 있는 계정에서만** 가능합니다(v3.2.0부터. [EVM 승인 창](/developer-guide/evm-development#evm-window) 및 [첫 트랜잭션](/getting-started/first-transaction#evm-window)의 안내 참고). 창 밖의 트랜잭션은 거부됩니다(codespace `pqc`, 코드 26, 27 또는 28). 창은 하이브리드 서명된 Cosmos 레인 트랜잭션으로 열어야 하므로, 경로 B를 사용해도 양자내성 서명이 필요 없어지지는 않습니다. `max-value`는 창 안에서 예상되는 모든 출금의 금액과 최대 수수료(가스 한도 × 가스당 최대 수수료)를 합한 값을 감당하도록 설정하고(순수 QOR만 보내는 핫월렛이라면 창을 열 때 `--native-only`를 추가하세요), 일괄 처리 도중 핫월렛이 바닥나지 않도록 `GET /qorechain/pqc/v1/evm_window/{address}`를 지켜보세요. 창을 열면 계정의 시퀀스(곧 EVM 논스)가 증가하므로, 논스는 창이 열린 뒤에 읽으세요.
 * **가짜 입금 방지:** 영수증 상태를 검증하고, 이동한 값이 인덱싱하지 않는 ERC-20 이벤트가 아니라 **네이티브** 전송인지 확인하며, 자체 노드로 재확인하세요.
 * **주소 매핑:** `0x` 주소와 `qor1` 주소는 동일한 계정의 두 가지 인코딩이며 자금이 공유됩니다. [EVM 개발](/developer-guide/evm-development) 참고.
 

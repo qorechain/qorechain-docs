@@ -16,7 +16,7 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 ```
 
 :::note
-Die untenstehenden Werte pro Preset entsprechen den ausgelieferten Profil-Standardwerten von **`@qorechain/rdk`**, die die veröffentlichte Profiltabelle des Netzwerks widerspiegeln. Bisher wurde in keinem der beiden Netzwerke ein Rollup erstellt. Fragen Sie die aktuellen Modulparameter mit `qorechaind query rdk config` ab (oder `RdkClient.params()` aus dem SDK, wo die RDK-REST-Routen bereitgestellt werden — heute nicht im Mainnet), um die maßgebliche Konfiguration zu erhalten, und validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie ins Mainnet gehen.
+Die untenstehenden Werte pro Preset entsprechen den ausgelieferten Profil-Standardwerten von **`@qorechain/rdk`**, die die veröffentlichte Profiltabelle des Netzwerks widerspiegeln. Bisher wurde in keinem der beiden Netzwerke ein Rollup erstellt. Fragen Sie die aktuellen Modulparameter mit `qorechaind query rdk config` ab (oder `rdk.params()` aus `@qorechain/rdk`, das `GET /qorechain/rdk/v1/params` liest, in beiden Netzwerken bereitgestellt), um die maßgebliche Konfiguration zu erhalten, und validieren Sie auf dem **`qorechain-diana`**-Testnet, bevor Sie ins Mainnet gehen.
 :::
 
 ---
@@ -38,7 +38,7 @@ Einige Einschränkungen ergeben sich aus der [Settlement-→-Beweis-Matrix](/rol
 Seit RDK v0.4.2 heißt die Wasm-VM-Option (die Laufzeitumgebung, die CosmWasm-Verträge ausführt) **`native`** — QoreChain Native. `cosmwasm` bleibt als Legacy-Alias akzeptiert, und beide werden auf der Leitung auf `cosmwasm` abgebildet, sodass Chain, Explorer und Dashboard unverändert bleiben.
 
 :::note
-Die Konfiguration pro Preset wurde anhand der Profiltabelle der Chain ab Chain-Version **v3.2.0** verifiziert (das Mainnet läuft auf v3.2.1), wo `create-rollup` das Preset des Profils automatisch anwendet: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (Standardwerte)**. Das `custom`-Preset lässt jedes Feld offen — die gezeigten Werte sind seine Ausgangs-Standardwerte.
+Die Konfiguration pro Preset wurde anhand der Profiltabelle der Chain im Quellcode von v3.2.3 verifiziert (das Mainnet läuft auf v3.2.3, das Testnet auf v3.2.4), wo `create-rollup` das Preset des Profils automatisch anwendet: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (Standardwerte)**. Das `custom`-Preset lässt jedes Feld offen — die gezeigten Werte sind seine Ausgangs-Standardwerte.
 :::
 
 Betrachten Sie die vier Domänen-Presets als sinnvolle Ausgangspunkte und das **`custom`**-Profil als die vollständig offene Option. Die genauen gebündelten Parameter können sich zwischen Releases ändern — fragen Sie `rdk config` (unten) für die maßgeblichen Werte ab, starten Sie dann vom nächstliegenden Preset und verfeinern Sie es.
@@ -52,7 +52,7 @@ Die CLI [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-proje
 Einige Details nimmt man leicht als gegeben an, und es lohnt sich, sie vor der Wahl eines Profils zu kennen:
 
 * **`defi` hat keinen Verifying Key.** ZK-Batches benötigen einen, und ein über `create-rollup` erstelltes Rollup trägt ihn nicht, sodass ZK-Settlement heute nicht Ende-zu-Ende finalisiert werden kann (siehe [ZK / STARK & Auszahlungen](/rollups/zk-stark-withdrawals)).
-* **`nft` und `custom`** settlen optimistisch mit einer Challenge-Bond von 1.000 QOR und einem Challenge-Fenster von 100.800 Blöcken (die Standard-604.800 „Sekunden“, umgerechnet mit festen 6 Sekunden pro Block; etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets).
+* **`nft` und `custom`** settlen optimistisch mit einer Challenge-Bond von 1.000 QOR und einem Challenge-Fenster von 100.800 Blöcken im Mainnet (die Standard-604.800 „Sekunden“, umgerechnet mit festen 6 Sekunden pro Block; etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets). Nur im Testnet erhält ein Batch, der ab v3.2.4 (Höhe 8.337.253) eingereicht wird, stattdessen ein in Sekunden Blockzeit gemessenes Fenster.
 * **`gaming` und `enterprise`** verwenden `based`-Sequencing, was heute bedeutet, dass der Ersteller des Rollups die Batches einreicht.
 * **Blockzeit und Transaktionslimits** (zum Beispiel `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` und `custom` 1.000 ms) werden im On-Chain-Eintrag gespeichert. Sie beschreiben die eigene Chain des Rollups und werden von der Host-Chain nicht erzwungen.
 

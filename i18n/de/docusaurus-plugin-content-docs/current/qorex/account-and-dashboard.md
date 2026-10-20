@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Konto & Dashboard
 
-QoreX funktioniert **vollständig ohne Konto** — Ihre Schlüssel hängen niemals von einem Konto ab. Die Anmeldung fügt Annehmlichkeiten wie Zahlungsanfragen und die Dashboard-Kopplung hinzu; auch das Beanspruchen eines @handle kann eine Anmeldung verlangen.
+QoreX funktioniert **vollständig ohne Konto** — Ihre Schlüssel hängen niemals von einem Konto ab. Die Anmeldung fügt Annehmlichkeiten wie Zahlungsanfragen und die Dashboard-Kopplung hinzu und ist **erforderlich, um einen @handle zu beanspruchen**. Die Anmeldung erfolgt per E-Mail oder über Apple oder Google — siehe unten.
 
 ## Anmelden {#sign-in}
 
@@ -35,9 +35,9 @@ Einstellungen → **Ihre Konten** lässt Sie bis zu **20 Konten** pro Wallet ers
 
 Beanspruchen Sie einen eindeutigen Namen (zum Beispiel `@liviu`), der durch **doppelte Signaturen** an Ihre Adresse gebunden wird (eine ed25519-Signatur der Registry + Ihre eigene secp256k1-Signatur). Jeder kann dann an Ihren @handle senden. Die Auflösung erfolgt nach dem Prinzip **verify-then-pin** (Trust-on-First-Use), sodass QoreX es meldet, falls der Schlüssel eines Handles jemals stillschweigend geändert wird.
 
-Weil ein Handle an eine Adresse gebunden ist und nicht an Ihre Wallet, erfolgt die Beanspruchung **pro Adresse** — wenn Sie [mehrere Konten](#accounts) haben, kann jedes sein eigenes @handle tragen, und die Beanspruchung eines Handles für ein Konto gibt den anderen nicht automatisch einen Namen. In der Browser-Erweiterung können Sie an einen Handle zahlen; das Beanspruchen aus dem Popup wird in manchen Versionen für gewöhnliche QoreChain-Konten angeboten, in anderen nicht — bietet das Popup es nicht an, beanspruchen Sie den Handle in der mobilen App. Konten im Ethereum-Stil (coin 60) haben keinen Handle.
+Weil ein Handle an eine Adresse gebunden ist und nicht an Ihre Wallet, erfolgt die Beanspruchung **pro Adresse** — wenn Sie [mehrere Konten](#accounts) haben, kann jedes sein eigenes @handle tragen, und die Beanspruchung eines Handles für ein Konto gibt den anderen nicht automatisch einen Namen. Die Beanspruchung erfordert ein angemeldetes Konto und erfolgt **in der mobilen App**. In der Browser-Erweiterung können Sie an einen Handle zahlen (Abfragen funktionieren ab Erweiterung 0.3.7), ihn aber nicht beanspruchen — die Erweiterung verweist Sie auf die App. Konten im Ethereum-Stil (coin 60) haben keinen Handle. Zum Verwechseln ähnliche QoreChain-Namen sind reserviert: Ein neuer Handle, der das Projekt nachahmt (seine Markennamen oder Vertrauenswörter wie *official*, *support*, *airdrop* oder *treasury*, einschließlich ähnlich aussehender Schreibweisen), wird abgelehnt. Bestehende Inhaber können ihren Handle weiterhin löschen.
 
-Wenn die Handle-Registry vorübergehend nicht erreichbar ist, wird der Bildschirm auf **„Handles demnächst verfügbar"** heruntergestuft und alles andere funktioniert weiter; Handles werden automatisch wieder aktiv, sobald die Registry zurückkehrt.
+Wenn die Handle-Registry vorübergehend nicht erreichbar ist, wird der Bildschirm auf **„Handles demnächst verfügbar“** heruntergestuft und alles andere funktioniert weiter; Handles werden automatisch wieder aktiv, sobald die Registry zurückkehrt.
 
 :::note Beanspruchung eines Handles vs. Verknüpfung mit dem Dashboard
 Dies sind zwei getrennte, voneinander unabhängige Aktionen. Die Beanspruchung eines @handle ermöglicht es **anderen Personen, Ihnen unter Ihrem Namen zu senden** — mehr bewirkt sie von sich aus nicht. Die Verknüpfung mit dem Dashboard (unten) verbindet Ihre Wallet mit einem Dashboard-Konto, sodass beide dieselben Daten anzeigen können. Sie können das eine tun, ohne das andere zu tun.
@@ -60,7 +60,7 @@ Wenn das Dashboard verbunden ist:
 
 - **Connect with QoreX** auf dem Dashboard koppelt es über einen `qorex://connect` Deep Link plus einen signierten Eigentumsnachweis mit Ihrer Wallet.
 - **Auf dem Dashboard initiierte Überweisungen** treffen in QoreX als `qorex://tx`-Anfragen ein. Sie werden dekodiert, Ihnen vollständig angezeigt und **nur in der App** nach biometrischer Freigabe signiert — und nur von der eigenen abgeleiteten Adresse der App. Weil eine `qor1…`-Adresse auf Mainnet und Testnet gleichermaßen gültig ist, gibt jede vom Dashboard initiierte Anfrage an, welches Netzwerk sie anspricht, und QoreX verweigert die Ausführung, falls dies nicht mit dem Netzwerk übereinstimmt, mit dem Sie gerade verbunden sind — es wechselt niemals im Auftrag einer Anfrage das Netzwerk.
-- Wenn eine Connect- oder Überweisungsanfrage eintrifft, während Sie **nicht angemeldet** sind, bietet QoreX einen eingebetteten Schritt **„Am Dashboard anmelden"** an, damit Sie fortfahren können, ohne in eine Sackgasse zu geraten.
+- Wenn eine Connect- oder Überweisungsanfrage eintrifft, während Sie **nicht angemeldet** sind, bietet QoreX einen eingebetteten Schritt **„Am Dashboard anmelden“** an, damit Sie fortfahren können, ohne in eine Sackgasse zu geraten.
 - **Ihre Adressen (Einstellungen)** — listet jedes von dieser Wallet abgeleitete Konto sowie **schreibgeschützte** Adressen auf, die Sie aus anderen Wallets verknüpft haben (Keplr / MetaMask / Phantom). Schreibgeschützte Einträge sind mit der Wallet gekennzeichnet, die sie erstellt hat; beim Versuch, von einer solchen zu senden, wird erklärt, dass Sie von der Wallet senden müssen, die sie erstellt hat.
 
 ## Konto löschen {#delete-account}

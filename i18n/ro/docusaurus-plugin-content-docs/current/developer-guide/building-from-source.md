@@ -10,7 +10,7 @@ sidebar_position: 1
 Acest ghid vă parcurge procesul de compilare a binarului comunitar `qorechaind` din sursa publică și explică pentru ce este și pentru ce nu este destinat acest binar.
 
 :::caution Un build din sursă nu se poate alătura mainnetului sau testnetului
-Repository-ul public conține interfețele modulelor cu **keeperi stub**; implementările keeperilor critice pentru consens și semnatarul post-cuantic nu se află în arborele public de surse. Un binar compilat din el nu poate reproduce starea de consens a rețelelor și nu poate crea semnătura hibridă post-cuantică pe care o cere fiecare tranzacție de pe lane-ul Cosmos. Pentru a rula un nod sau un validator pe mainnet sau testnet, instalați **binarul de release** indicat în manifestul live (`https://download.qore.host/mainnet/latest.json` sau `.../testnet/latest.json`); consultați [Running a Node](/developer-guide/running-a-node) și [Running a Validator](/developer-guide/running-a-validator).
+Repository-ul public conține interfețele modulelor cu **keeperi stub**; implementările keeperilor critice pentru consens și semnatarul post-cuantic nu se află în arborele public de surse. Un binar compilat din el nu poate reproduce starea de consens a rețelelor și nu poate crea semnătura hibridă post-cuantică pe care o cere fiecare tranzacție de pe lane-ul Cosmos. Începând cu v3.2.3, el **refuză să pornească** pe `qorechain-vladi` sau `qorechain-diana` (le recunoaște după chain id și timpul genesis; un devnet local care reutilizează un chain id public cu propriul genesis nu este afectat). `qorechaind start --community-unenforced-pqc` anulează refuzul pentru experimente; nodul nu mai verifică atunci nicio semnătură post-cuantică și poate diverge de rețea fără avertisment, așa că nu îl folosiți niciodată pentru un nod pe care vă bazați. Pentru a rula un nod sau un validator pe mainnet sau testnet, instalați **binarul de release** indicat în manifestul live (`https://download.qore.host/mainnet/latest.json` sau `.../testnet/latest.json`); consultați [Running a Node](/developer-guide/running-a-node) și [Running a Validator](/developer-guide/running-a-validator).
 :::
 
 ## Cerințe preliminare
@@ -106,11 +106,11 @@ Testele care folosesc bibliotecile native sau keeperii proprietari sunt compilat
 După o compilare reușită, verificați binarul:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-Comanda `init` ar trebui să creeze un fișier genesis și o configurație de nod în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează pe testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiți cu `--chain-id qorechain-vladi`, rețeaua live (versiunea de nod **v3.2.1**).
+Comanda `init` ar trebui să creeze un fișier genesis și o configurație de nod în `~/.qorechaind/` fără erori. Exemplul de mai sus inițializează pe testnet-ul **`qorechain-diana`** — pentru mainnet, înlocuiți cu `--chain-id qorechain-vladi`, rețeaua live (versiunea de nod **v3.2.3**).
 
 ## Build Docker
 

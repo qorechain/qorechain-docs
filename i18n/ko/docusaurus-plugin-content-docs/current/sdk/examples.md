@@ -61,8 +61,9 @@ const burn = await client.rest.getBurnStats(); // GET /qorechain/burn/v1/stats
 REST, 그리고 자금이 있는 계정이 필요합니다. 이 예제는 **클래식** 서명만으로
 서명하므로 로컬 또는 개발 노드에서는 동작하지만, 모든 Native 경로 트랜잭션에
 하이브리드 서명을 요구하는 메인넷과 테스트넷에서는 거부됩니다. 공개
-네트워크에서는 [퀵스타트](/sdk/quickstart#send-qor)의 하이브리드 전송을
-사용하세요.
+네트워크에서는 [퀵스타트](/sdk/quickstart#send-qor)와 같이 계정의
+키페어로 `client.connectTx(signer, { pqcKeypair })`(SDK 0.9.0)를 사용해
+연결하세요.
 
 ```ts
 import {

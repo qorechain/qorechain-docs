@@ -45,8 +45,9 @@ digest **sign-bytes** separat pe domenii și protejat împotriva reluării
                                                                   spend FROM canonical account
 ```
 
-Relayer-ul este un cont **diferit** de cel al proprietarului, deci nu
-incrementează nonce-ul EVM al contului.
+Relayer-ul este un cont **diferit** de cel al proprietarului. Nonce-ul pe care îl
+semnează autentificatorul este propria secvență a cheii conectate, ținută de
+chain (vezi [Nonces](#nonces)), nu nonce-ul EVM al contului.
 
 ## Cele trei benzi
 
@@ -249,7 +250,8 @@ const msgExecute = await buildMetaMaskExecuteEvm({
   to: "0xRecipient…",          // 0x-hex recipient
   value: "1000000000000000000",// decimal wei string (EVM lane: 18 decimals)
   gasLimit: 100000,
-  nonce: evmNonce,             // the account's CURRENT EVM nonce — do NOT +1
+  nonce: authSequence,         // the linked key's authenticator sequence (see Nonces) — NOT the EVM nonce
+  digestVersion: "v2",         // from chain v3.2.3 (see "Sign-bytes"); use resolveEvmAuthDigestVersion
 });
 // hand `msgExecute` to the relayer, exactly as in the Phantom flow
 ```
@@ -277,6 +279,21 @@ sha256( "qorechain-evm-auth-v1"
 `to` este destinatarul în format hex `0x`, `value` este șirul zecimal în wei,
 `data` este calldata brută.
 
+**Banda EVM, v2 (chain v3.2.3)** — `evmAuthSignBytesV2({ …, gasLimit })` adaugă
+limita de gaz a apelului, astfel încât un relayer să nu poată relua o semnătură
+validă cu o altă limită. Chain-ul verifică exact o singură formă pe bloc: v1 sub
+upgrade-ul v3.2.3, v2 de la acesta încolo. `resolveEvmAuthDigestVersion({ rest })`
+returnează `"v2"` după ce rețeaua a aplicat v3.2.3 și `"v1"` înainte, iar
+`buildPhantomExecuteEvm` / `buildMetaMaskExecuteEvm` primesc `digestVersion`
+(implicit `"v1"`, deci transmiteți `"v2"` pe o rețea cu v3.2.3 sau mai nou).
+`gasLimit` trebuie să fie nenul.
+
+```text
+sha256( "qorechain-evm-auth-v2"
+        ‖ LP(chainId) ‖ LP(account) ‖ LP(pubkey)
+        ‖ LP(to) ‖ LP(value) ‖ LP(data) ‖ BE64(nonce) ‖ BE64(gasLimit) )
+```
+
 **Banda Nativă** — `cosmosAuthSignBytes({ chainId, account, pubkey, to, amount, nonce })`
 returnează un digest de 32 de octeți:
 
@@ -295,25 +312,20 @@ returnează șirul pe care îl semnează ambele chei (UTF-8 al acestuia):
 qorechain-pqc-rotate-v1|<chainId>|<algorithmId>|<account>|<oldHex>|<newHex>
 ```
 
-## Nonce-uri
+## Nonces {#nonces}
 
-- `MsgExecuteEVM.nonce` = **nonce-ul EVM curent** al contului (relayer-ul este
-  un cont diferit și nu incrementează nonce-ul proprietarului, deci **nu**
-  adăugați 1).
-- `MsgExecuteCosmos.nonce` = **secvența per-autentificator** pentru
-  `(account, pubkey)` — un contor din store distinct de secvența proprie a
-  contului, incrementat la fiecare cheltuială reușită pe banda Nativă.
+Ambele benzi folosesc **secvența per-autentificator** pentru `(account, pubkey)`:
+un contor pe care chain-ul îl ține pentru fiecare cheie conectată, începând de
+la 0 și incrementat la fiecare execuție reușită.
 
-Un nonce greșit înseamnă o respingere pentru reluare (replay)
-(`abstractaccount` cod 11, vezi mai jos).
+- `MsgExecuteEVM.nonce` este acest contor, **nu** nonce-ul EVM al contului
+  (`eth_getTransactionCount`).
+- `MsgExecuteCosmos.nonce` este același tip de contor.
 
-```ts
-// EVM lane: the account's current nonce, straight from the EVM JSON-RPC.
-const evmNonce = await client.evm.call<string>("eth_getTransactionCount", [
-  account0x,
-  "latest",
-]);
-```
+Nu există încă o interogare pentru contor, deci urmăriți-l pentru fiecare cheie
+conectată: 0 pentru o cheie nou conectată, +1 după fiecare execuție acceptată de
+chain. Trimiterea unei valori care nu este contorul curent al chain-ului este o
+respingere pentru reluare (replay) (`abstractaccount` cod 11, vezi mai jos).
 
 ## Schema de permisiuni
 

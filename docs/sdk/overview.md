@@ -29,7 +29,7 @@ Accounts, balances, and tokens are shared across the runtimes, and the chain
 includes the IBC module for cross-chain interoperability (no IBC channels are
 open on mainnet or testnet yet).
 
-:::note What works on the live networks today (chain v3.2.0 and later)
+:::note What works on the live networks today (mainnet v3.2.3, testnet v3.2.4)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
@@ -38,6 +38,13 @@ namespace, SVM transactions, cross-VM calls on mainnet (`MsgCrossVMCall` is
 switched off by the circuit breaker), CosmWasm upload and instantiate for ordinary
 accounts, the authenticator / abstract-account flows (module switched off), xQORE
 and gas abstraction. Each guide repeats the caveat where it applies.
+
+The published SDK (0.9.0, 21 October 2026) signs in the form both networks verify
+(v2 hybrid sign-bytes, resolved from chain state), and the signing format,
+addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4. It carries
+the client side of the later post-quantum rules (the proof of possession on key
+registration, scoped EVM windows, EIP-7702 consent messages); versions before 0.9.0
+do not, see [Versions before 0.9.0](/sdk/install#before-090).
 :::
 
 ### Quantum-safe by design
@@ -99,15 +106,15 @@ math, and read surfaces.
 
 | Package | Language | Install | Status |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.8.3) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.8.3) |
-| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.8.4`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.8.3) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | Published (Maven Central, v0.8.3) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Published (npm, v0.9.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.9.0) |
+| `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.9.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Published (Maven Central, v0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.8.3) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.9.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Published (npm, v0.9.0) |
 
 > The Python distribution installs as `qorechain-sdk` but **imports as
 > `qorsdk`**. All clients are published to their registries — see
@@ -121,16 +128,16 @@ for every custom module plus the standard Cosmos modules, typed query clients,
 the complete transaction lifecycle (auto-gas, error decoding, tx tracking,
 block/tx search), hybrid post-quantum transactions, and WebSocket
 subscriptions. All of these clients are **published**: TypeScript to npm
-(`@qorechain/sdk` 0.8.3), Python to PyPI (`qorechain-sdk` 0.8.3, import
-`qorsdk`), Go to the module proxy (tag `packages/go/v0.8.4`), Rust to crates.io
-(`qorechain-sdk` 0.8.3), and Java to Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.8.3). The EVM/SVM execution adapters
+(`@qorechain/sdk` 0.9.0), Python to PyPI (`qorechain-sdk` 0.9.0, import
+`qorsdk`), Go to the module proxy (tag `packages/go/v0.9.0`), Rust to crates.io
+(`qorechain-sdk` 0.9.0), and Java to Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.9.0). The EVM/SVM execution adapters
 (`@qorechain/evm`, `@qorechain/svm`, both 0.8.0), the `@qorechain/react` kit
-(0.8.3), and the `create-qorechain-dapp` scaffolding CLI (0.8.0) are
+(0.9.0), and the `create-qorechain-dapp` scaffolding CLI (0.9.0) are
 TypeScript-only and likewise published to npm. See
 [Install](/sdk/install#related-packages) for the companion packages.
 
-## What's new in 0.6, 0.7 and 0.8
+## What's new in 0.6, 0.7, 0.8 and 0.9
 
 **0.6.0 — unified eth-native accounts (chain v3.1.83).** One `eth_secp256k1`
 key is one 20-byte identity rendered as all three address encodings, sharing
@@ -171,7 +178,7 @@ and TypeScript wallet builders (`buildPhantomExecuteCosmos`,
 v3.2.0).** The post-quantum half of a hybrid transaction is now signed in the form
 the target network verifies (v1 or v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Both public networks are on v2, so SDK **0.8.1 or later** is required to
-transact on mainnet. **0.8.2** adds `openEvmWindowMsg`, `closeEvmWindowMsg`,
+transact on mainnet (use 0.9.0). **0.8.2** adds `openEvmWindowMsg`, `closeEvmWindowMsg`,
 `fetchEvmWindow` and `classifyEvmWindowRejection` for the EVM-lane
 [authorization window](/sdk/guides/evm#evm-window).
 **0.8.0** removed the wallet-signature account helpers (`connectPhantomUnified` and
@@ -181,6 +188,19 @@ to cross-VM calls. **0.8.3** fixes tx search, React hook races, Python
 `migrate_to_hybrid` sequencing and address-form-independent canonical PQC
 derivation (`derivePqcCanonical`, `canonicalAccount`). See
 [Upgrade notes](/sdk/install#upgrade).
+
+**0.9.0 — client support for chain v3.2.2 and v3.2.3.** The TypeScript `TxClient`
+signs hybrid when you pass the account's keypair
+(`client.connectTx(signer, { pqcKeypair })`), so `bankSend` and the SDK's rollup,
+multilayer and cross-VM clients work on the public networks. `ensurePqcRegistered`
+checks the registered key over REST first, refuses to register a second, different
+key, and attaches the proof of possession by itself once the network has applied
+v3.2.3. New builders cover scoped EVM windows (`nativeOnly`, `allowedTargets`) and
+the EIP-7702 consent messages, and `derivePqcCanonical(address, mnemonic)` gives a
+key you can recover from the mnemonic in every language. The PQC account route is
+the singular `/qorechain/pqc/v1/account/{address}`, failures inside a block keep
+their codespace, and `create-qorechain-dapp` scaffolds on the current SDK. See
+[What 0.9.0 adds](/sdk/install#whats-new-090).
 
 ## Where to go next
 

@@ -14,7 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva, oppure `--chain-id qorechain-diana` per la testnet. Entrambe le reti eseguono la linea v3.2 (release del nodo mainnet **v3.2.1**, testnet **v3.2.2**; consulta `latest.json` sotto [download.qore.host](https://download.qore.host) per la release corrente). Se `--chain-id` è omesso, il client usa il `chain-id` della tua configurazione client locale.
+Imposta `--chain-id qorechain-vladi` per trasmettere sulla mainnet attiva, oppure `--chain-id qorechain-diana` per la testnet. Entrambe le reti eseguono la linea v3.2: release del nodo mainnet **v3.2.3** (applicata all'altezza 3.662.051 il 20 ottobre 2026), testnet **v3.2.4** (applicata all'altezza 8.337.253 il 19 ottobre 2026; non ancora applicata sulla mainnet; la proposta di governance 13 la applicherebbe all'altezza 3.742.566). Consulta `latest.json` sotto [download.qore.host](https://download.qore.host) per la release corrente. Se `--chain-id` è omesso, il client usa il `chain-id` della tua configurazione client locale.
+
+I comandi e i flag di questa pagina sono stati verificati con il binario della release v3.2.3. Tutto ciò che esiste solo sulla testnet v3.2.4 è contrassegnato come **solo testnet**.
 :::
 
 I flag comuni si applicano a ogni sottocomando `tx`:
@@ -49,11 +51,17 @@ Una firma ibrida aggiunge circa 4,7 KB a una transazione, addebitati a 10 gas pe
 
 ---
 
-## La firma ibrida è obbligatoria sulla corsia Cosmos {#hybrid-signing}
+## La firma ibrida è obbligatoria sulla lane Cosmos {#hybrid-signing}
 
-`hybrid_signature_mode` è `required` su entrambe le reti (`qorechaind query pqc hybrid-mode`). Ogni transazione della corsia Cosmos deve portare una firma ML-DSA-87 (Dilithium-5) accanto alla firma secp256k1; un semplice `tx bank send ... -y` viene rifiutato. Le uniche esenzioni sono la registrazione e la migrazione della chiave PQC (così un nuovo account può registrare la sua prima chiave) e `tx slashing unjail` per un account che non ha alcuna chiave PQC registrata.
+`hybrid_signature_mode` è `required` su entrambe le reti (`qorechaind query pqc hybrid-mode`). Ogni transazione della lane Cosmos deve portare una firma ML-DSA-87 (Dilithium-5) accanto alla firma secp256k1; un semplice `tx bank send ... -y` viene rifiutato (codespace `pqc`, codice 20). Le uniche esenzioni, dalla v3.2.3 della mainnet, sono:
 
-Ogni comando di questa pagina, tranne `pqc register-key`, `pqc register-key-v2` e `pqc migrate-key`, si esegue quindi in due passaggi: costruisci la transazione con `--generate-only`, poi firmala e trasmettila con `tx pqc cosign`:
+- la **prima** registrazione della chiave PQC di un account che non ha ancora alcuna chiave (`register-key` o `register-key-v2`), così un nuovo account può eseguire il bootstrap;
+- la riparazione di un record di account che non contiene alcuna chiave utilizzabile, con `register-key-v2`;
+- `tx slashing unjail` per un account che non ha alcuna chiave PQC registrata.
+
+Un account che detiene già una chiave PQC deve firmare tutto con firma ibrida, **incluse** `register-key-v2` e `migrate-key` (un tentativo solo classico viene rifiutato con il codice 234). Nemmeno un account senza chiave può allegare una firma ibrida: non ha nulla rispetto a cui verificarla, quindi prima si registra.
+
+Ogni comando di questa pagina, tranne la prima registrazione (`pqc register-key` / `pqc register-key-v2` su un account senza chiave), si esegue quindi in due passaggi: costruisci la transazione con `--generate-only`, poi firmala e trasmettila con `tx pqc cosign`. `pqc rotate-key` esegue da sé la cofirma e la trasmissione; `pqc gen-key` e `pqc recover-key` creano soltanto un file di chiave in locale:
 
 ```bash
 qorechaind tx bank send mykey qor1recipient... 1000000uqor \
@@ -221,25 +229,40 @@ Genera una chiave Dilithium-5 (ML-DSA-87) e la memorizza in `<home>/pqc/<name>.d
 qorechaind tx pqc gen-key <name>
 ```
 
+`gen-key` e `recover-key` rifiutano di sovrascrivere un file di chiave esistente con quel nome; `--force` lo sostituisce e conserva il vecchio file come `<name>.dilithium.bak-<unix-time>`.
+
 ### register-key
 
-Registra una chiave pubblica PQC per il tuo account (comando legacy: l'algoritmo è Dilithium-5). Firmata solo con la chiave classica; questa è l'esenzione di bootstrap.
+Registra una chiave pubblica PQC per il tuo account (comando legacy: l'algoritmo è Dilithium-5). Una prima registrazione è firmata solo con la chiave classica; questa è l'esenzione di bootstrap. Un account che ha già una chiave deve firmarla con firma ibrida (`--generate-only`, poi `tx pqc cosign`).
 
 ```bash
 qorechaind tx pqc register-key <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`key_type` è `hybrid` (consigliato), `pqc_only` oppure `classical_only`. La chiave pubblica di 2.592 byte rende la registrazione più costosa di un trasferimento, motivo per cui richiede il limite di gas più alto.
+`key_type` è `hybrid` (consigliato) oppure `pqc_only`. `classical_only` viene rifiutato (codice 230): non registra alcuna chiave post-quantistica, quindi l'account non potrebbe mai più firmare. La chiave pubblica di 2.592 byte rende la registrazione più costosa di un trasferimento, motivo per cui richiede il limite di gas più alto.
+
+La chain rifiuta anche una chiave che non offre alcuna protezione post-quantistica (codice 230) e una chiave che questo account ha già usato in precedenza (codice 232). Rifiuta una registrazione la cui chiave classica non è quella del firmatario stesso (codice 45).
 
 ### register-key-v2
 
-Registra una chiave con selezione esplicita dell'algoritmo.
+Registra una chiave con selezione esplicita dell'algoritmo e, facoltativamente, dimostra di possedere il segreto della chiave.
 
 ```bash
-qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+qorechaind tx pqc register-key-v2 <algorithm> <pubkey_hex> <key_type> [--pqc-key <name>] \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-`algorithm` è `dilithium5` (o `1`) oppure `mlkem1024` (o `2`).
+`algorithm` è `dilithium5` (o `1`) oppure `mlkem1024` (o `2`); `key_type` è `hybrid` oppure `pqc_only`.
+
+**Prova di possesso (facoltativa).** Con `--pqc-key <name>` (una chiave creata da `gen-key` o `recover-key`) il comando allega una prova di possesso: la firma della nuova chiave stessa su `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>`. La chain la verifica quando è presente e rifiuta la registrazione se non risulta valida (codice 231); una registrazione senza di essa viene comunque accettata. La prova indica la chain, l'algoritmo, l'account e la chiave, quindi non dimostra nulla per un altro account o un'altra rete. Aggiunge alla transazione una firma di 4.627 byte, quindi mantieni il limite di gas a `600000`. La prova viaggia nel campo `proof_of_possession` del messaggio. L'SDK TypeScript 0.9.0 ne allega una da sé tramite `ensurePqcRegistered` una volta che la rete ha applicato la v3.2.3; le release precedenti dell'SDK e `@qorechain/wallet-adapter` non lo fanno, quindi una registrazione effettuata tramite di essi non porta alcuna prova (viene comunque accettata).
+
+```bash
+qorechaind tx pqc gen-key mypqc                      # prints the public key hex
+qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc \
+  --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
+```
+
+Sulla testnet (v3.2.4, **solo testnet**) il record dell'account riporta anche se una prova è stata verificata, come `possession_proven` (vedi [Endpoint REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)); la mainnet non lo riporta ancora.
 
 ### cosign
 
@@ -256,14 +279,15 @@ qorechaind tx pqc cosign <unsigned_tx_file> --from <key> --pqc-key <name> --chai
 | `--generate-only` / `--offline` | Stampa la transazione firmata come JSON invece di trasmetterla; inviala in seguito con `tx broadcast`; `--offline` richiede anche `--account-number`, `--sequence` e `--sign-bytes v1\|v2` |
 | `--dry-run`    | Simula e stampa la stima del gas                                                                  |
 
-Entrambe le reti hanno applicato l'aggiornamento che ha spostato la verifica ibrida ai sign-bytes v2; la forma v1 viene rifiutata.
+Entrambe le reti hanno applicato l'aggiornamento che ha spostato la verifica ibrida ai sign-bytes v2; la forma v1 viene rifiutata. Una transazione può portare una sola estensione di firma ibrida (più di una viene rifiutata dalla v3.2.3).
 
 ### migrate-key
 
-Migra la chiave PQC del tuo account da un algoritmo a un altro. Deve essere attiva una migrazione per il tuo algoritmo attuale (avviata dalla governance); entrambe le chiavi firmano i byte della migrazione.
+Migra la chiave PQC del tuo account da un algoritmo a un altro. Deve essere attiva una migrazione per il tuo algoritmo attuale (avviata dalla governance); entrambe le chiavi firmano i byte della migrazione, e la transazione stessa richiede la tua firma ibrida (`--generate-only`, poi `tx pqc cosign`). Una chiave che l'account ha già usato in precedenza viene rifiutata (codice 232).
 
 ```bash
-qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> [flags]
+qorechaind tx pqc migrate-key <new_algorithm> <old_pubkey_hex> <new_pubkey_hex> <old_sig_hex> <new_sig_hex> --generate-only [flags] > m.json
+qorechaind tx pqc cosign m.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
 
 ### recover-key
@@ -295,9 +319,11 @@ echo "<mnemonic>" | qorechaind tx pqc rotate-key --from mykey --old-derivation b
 | `--new-key-out`    | string | Salva la nuova chiave privata come `<home>/pqc/<name>.dilithium` prima di inviare qualsiasi cosa |
 | `--sign-bytes`     | string | `auto` (predefinito), `v1` oppure `v2`                                               |
 
+Dalla v3.2.3 una rotazione rifiuta una nuova chiave che non offre alcuna protezione post-quantistica (codice 230) e una chiave che l'account ha già usato in precedenza (codice 232); l'account ricorda le chiavi da cui è passato, quindi una rotazione non può essere riprodotta per tornare a una chiave vecchia.
+
 ### open-evm-window
 
-La corsia EVM ammette una transazione solo da un account che detiene una chiave PQC registrata **e** ha una finestra di autorizzazione aperta. Una finestra si apre con un messaggio della corsia Cosmos, che quindi porta la firma PQC che un wallet Ethereum non può fornire. All'interno della finestra, le normali transazioni MetaMask funzionano senza modifiche.
+La lane EVM ammette una transazione solo da un account che detiene una chiave PQC registrata **e** ha una finestra di autorizzazione aperta. Una finestra si apre con un messaggio della lane Cosmos, che quindi porta la firma PQC che un wallet Ethereum non può fornire. All'interno della finestra, le normali transazioni MetaMask funzionano senza modifiche.
 
 ```bash
 qorechaind tx pqc open-evm-window <blocks> <max-txs> <max-value> --from mykey \
@@ -313,14 +339,43 @@ qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechai
 
 L'apertura di una finestra sostituisce qualsiasi finestra esistente. Verificala con `qorechaind query pqc evm-window <address>`.
 
+**Finestre con ambito limitato (mainnet v3.2.3 e successive).** Il limite di valore conta solo QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a contratto porta valore zero e non viene conteggiata. Due flag facoltativi restringono ciò che la finestra ammette:
+
+| Flag                | Effetto                                                                                                                    |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--native-only`     | Ammette solo semplici trasferimenti di QOR: nessun calldata, nessuna creazione di contratti, nessun destinatario che contenga codice, nessuna autorizzazione EIP-7702 |
+| `--allowed-targets` | Ammette solo questi destinatari (indirizzi `0x` separati da virgole); la creazione di contratti viene rifiutata            |
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > w.json
+```
+
+Una finestra aperta senza nessuno dei due flag ammette ciò che ha sempre ammesso. L'ambito è riportato dalla query della finestra come `native_only` e `allowed_targets`.
+
 ### close-evm-window
 
-Chiude subito la tua finestra, ad esempio quando sospetti che la chiave classica sia compromessa.
+Chiude subito la tua finestra, ad esempio quando sospetti che la chiave classica sia compromessa. Revoca anche un consenso alla delega EIP-7702 in sospeso.
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > c.json
 qorechaind tx pqc cosign c.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
 ```
+
+### authorize-evm-delegation e clear-evm-delegation
+
+Una delega EIP-7702 del tuo account ha effetto solo con il tuo consenso post-quantistico (mainnet dalla v3.2.2). `authorize-evm-delegation` registra tale consenso per un indirizzo delegato; è monouso, scade dopo il numero di blocchi indicato ed è revocato da `close-evm-window`. `clear-evm-delegation` rimuove una delega già impostata. Entrambi sono messaggi della lane Cosmos con firma ibrida (`--generate-only`, poi `tx pqc cosign`).
+
+```bash
+qorechaind tx pqc authorize-evm-delegation <delegate_0x_address> <blocks> --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+qorechaind tx pqc clear-evm-delegation --from mykey \
+  --gas 400000 --fees 40000uqor --chain-id qorechain-vladi --generate-only > d.json
+```
+
+L'indirizzo zero come `delegate` acconsente alla rimozione della delega. Verifica lo stato con `qorechaind query pqc evm-delegation-consent <address>`.
+
+Nessuno dei messaggi sulle chiavi PQC (`register-key`, `register-key-v2`, `rotate-key`, `migrate-key`) può essere inviato per conto di un account tramite `authz` (mainnet v3.2.3 e successive).
 
 ---
 
@@ -332,7 +387,9 @@ qorechaind tx lightnode register <node_type> <version> [--capabilities <csv>] --
 qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-id qorechain-vladi
 ```
 
-`node_type` è `sx` oppure `ux`. La registrazione richiede una licenza `lightnode_operator` attiva, e la registrazione al programma di ricompense dei light node **non è ancora aperta**. Altri comandi: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`. Vedi [Light Node](/light-node/overview).
+`node_type` è `sx` oppure `ux`. La registrazione richiede una licenza `lightnode_operator` attiva, concessa dall'autorità delle licenze della rete; vedi [Light Node](/light-node/overview) per lo stato attuale del programma. Altri comandi: `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
+
+Dalla v3.2.3 la ricompensa che un nodo può accumulare è limitata **per mese** (`max_reward_per_month_per_node` in `GET /qorechain/lightnode/v1/reward_pool`, 2.000 QOR per 30 giorni), proporzionata al tempo di blocco e all'uptime, quindi il limite non dipende più dalla velocità con cui vengono prodotti i blocchi. Un limite è un tetto, non un importo promesso. Sulla testnet (v3.2.4, **solo testnet**) il limite di un nodo parte dalla sua registrazione anziché dal precedente settlement.
 
 ---
 
@@ -354,14 +411,21 @@ Accredita asset trasferiti da una chain di origine. Porta firme dei validator (`
 qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [flags]
 ```
 
-### update-chain-config / set-verifier-bootstrap
+### register-validator / attest
 
-Amministrativo (licenza `bridge_admin` o `qcb_bridge`).
+Messaggi dei validator del bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` registra un validator per il compito di attestazione e `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` invia un'attestazione. Su nessuna delle due reti è registrato un validator del bridge. Sulla testnet (v3.2.4, **solo testnet**) la registrazione di un validator del bridge richiede anche una prova di possesso e una chiave che nessun altro validator del bridge usa.
+
+### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
+
+Amministrativo (licenza `bridge_admin` o `qcb_bridge`; i limiti del circuit breaker possono essere impostati anche dalla governance).
 
 ```bash
 qorechaind tx bridge update-chain-config <chain_id> [--status active|paused|pending] [--verifier <kind>] [--contract <addr>] [--confirmations <n>] [--architecture <a>] [--lock-event-sig <hex>] [flags]
 qorechaind tx bridge set-verifier-bootstrap <kind> <chain_id> [flags]
+qorechaind tx bridge update-circuit-breaker-limits <chain_id> <max_single_transfer> <daily_limit> [flags]
 ```
+
+I limiti sono in unità base e `0` significa illimitato. Solo una route il cui stato è esattamente `active` sposta valore.
 
 ---
 
@@ -375,11 +439,65 @@ Il primo `transfer` è il sottocomando e il secondo è la porta di origine. Al m
 
 ---
 
+## amm
+
+Messaggi dell'AMM nativo. Al momento della stesura non esiste alcun pool su nessuna delle due reti, quindi questi comandi non hanno ancora nulla su cui agire.
+
+```bash
+qorechaind tx amm create-pool <pool_type> <deposit_a> <deposit_b> [flags]     # pool_type: constant_product | stable_swap; deposits as coins, e.g. 1000000uqor
+qorechaind tx amm add-liquidity <pool_id> <amount_a> <amount_b> <min_lp_out> [flags]
+qorechaind tx amm remove-liquidity <pool_id> <lp_amount> <min_a> <min_b> [flags]
+qorechaind tx amm swap-exact-in <pool_id> <token_in> <denom_out> <min_out> [flags]
+qorechaind tx amm swap-exact-out <pool_id> <denom_in> <token_out> <max_in> [flags]
+```
+
+Dalla v3.2.2 uno swap deve indicare entrambe le denominazioni del pool, `max_swap_impact_bps` viene applicato e la commissione di protocollo è instradata attraverso il modulo burn.
+
+---
+
+## gasabstraction
+
+```bash
+qorechaind tx gasabstraction fund-float <amount> [flags]
+```
+
+Sposta token nativi (ad esempio `1000000uqor`) nel float di conversione delle commissioni, la riserva di QOR che il modulo usa per pagare i validator quando una commissione viene pagata in un altro token accettato. La governance decide quali token sono accettati. Su entrambe le reti la configurazione accetta solo `uqor` nativo, quindi non avviene alcuna conversione; verificalo con `qorechaind query gasabstraction accepted-tokens`.
+
+---
+
+## crossvm
+
+```bash
+qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> [--funds <coins>] [--async] [flags]
+```
+
+`call` è disattivato sulla mainnet dal circuit breaker (vedi [sotto](#disabled-messages)) e sulla testnet funziona solo dove la lane di destinazione è disponibile. Una chiamata accodata (`--async`) che fallisce non lascia effetti collaterali, solo il suo record `Failed` (dalla v3.2.3), e una chiamata la cui lane di origine derivata coincide con la lane di destinazione viene rifiutata. Vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability).
+
+---
+
+## stakingtier (solo testnet) {#stakingtier}
+
+:::note Solo testnet
+Il modulo dei tier di staking è arrivato con la release **v3.2.4**, applicata sulla testnet `qorechain-diana`. **Non** è sulla mainnet e un upgrade della mainnet a esso è finora solo proposto (proposta di governance 13, all'altezza 3.742.566); non costruire tooling per la mainnet su di esso finché non viene applicato.
+:::
+
+Deleghe facoltative con blocco temporale: un delegatore può bloccare una parte di una delega esistente per 3, 6 o 12 mesi e in seguito riscuotere il bonus che il modulo accredita per essa. Un blocco è un record che si aggiunge alla delega: i fondi delegati restano presso il validator.
+
+```bash
+qorechaind tx stakingtier lock <validator_address> <amount_uqor> <months> [flags]    # months: 3, 6 or 12
+qorechaind tx stakingtier unlock-early <lock_id> [flags]
+qorechaind tx stakingtier claim [flags]
+```
+
+Il blocco è applicato dal message server dello staking, quindi copre anche la revoca della delega tramite `authz`, un gruppo o un contratto. Terminare un blocco in anticipo comporta la perdita del bonus non pagato e il burn di una penale; l'importo minimo del blocco e gli altri parametri sono in `GET /qorechain/stakingtier/v1/params`. Come ogni transazione della lane Cosmos, richiedono la cofirma ibrida (`--generate-only`, poi `tx pqc cosign`) e un limite di gas generoso (ad esempio `--gas 900000 --fees 90000uqor`).
+
+---
+
 ## rdk
 
 ```bash
 qorechaind tx rdk create-rollup <rollup_id> <profile> <stake_amount> [--vm evm|cosmwasm|svm|custom] [flags]
-qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [flags]
+qorechaind tx rdk submit-batch <rollup_id> <batch_index> <state_root_hex> [--prev-state-root <hex>] [--tx-count <n>] [--data-hash <hex>] [--withdrawals-root <hex>] [--validator-set-hash <hex>] [--anchor-signature <hex>] [flags]
 qorechaind tx rdk challenge-batch <rollup_id> <batch_index> --proof <hex> [flags]
 qorechaind tx rdk pause-rollup <rollup_id> <reason> [flags]
 qorechaind tx rdk resume-rollup <rollup_id> [flags]
@@ -388,6 +506,8 @@ qorechaind tx rdk execute-withdrawal <rollup_id> <batch_index> <withdrawal_index
 ```
 
 `profile` è `defi`, `gaming`, `nft`, `enterprise` oppure `custom`; `stake_amount` è espresso in uqor (il minimo attuale si trova in `query rdk config`). Il preset del profilo fornisce settlement, sequencer, DA e modello del gas; da riga di comando si può sovrascrivere solo la VM. Non esiste alcun comando `finalize-batch`.
+
+`--anchor-signature` è la firma ML-DSA del creatore del rollup sui **sign bytes v2 dell'ancora**; con essa il batch viene ancorato anche nel modulo multilayer. Stampa i byte esatti da firmare con `qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>`; i valori devono corrispondere ai flag di `submit-batch`. Dalla v3.2.3 il modulo mantiene un **registro di escrow per rollup**: un prelievo viene pagato solo con quanto contiene il registro di quel rollup, e vengono controllati denominazione, importo positivo, profondità della prova e dimensione dei sibling; l'arresto di un rollup rimborsa solo ciò che resta nel suo registro, e un rollup arrestato non paga ulteriori prelievi. Al momento della stesura non esiste alcun rollup su nessuna delle due reti.
 
 ---
 
@@ -413,10 +533,12 @@ Alcuni comandi esistono nel binario ma non possono andare a buon fine sulle reti
 | Comando                                                   | Motivo                                                                                         |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `tx wasm store`, `tx wasm instantiate`, `instantiate2`    | Il permesso di upload e istanziazione è `Nobody` su entrambe le reti, e i tipi di messaggio sono anche nell'elenco del circuit breaker |
-| `tx crossvm call`                                         | Disabilitato sulla mainnet dal circuit breaker                                                 |
-| `tx svm deploy-program`, `execute`, `create-account`      | La corsia di transazioni SVM è disabilitata su tutta la rete                                   |
+| `tx crossvm call`                                         | Disabilitato sulla mainnet dal circuit breaker; abilitato sulla testnet                        |
+| `tx vesting create-vesting-account`, `create-periodic-vesting-account`, `create-permanent-locked-account` | Nell'elenco del circuit breaker della mainnet; dalla v3.2.3 un account in vesting può comunque essere creato solo per il firmatario stesso |
+| PQC `MsgDeprecateAlgorithm` / `MsgDisableAlgorithm`        | Messaggi di proposta di governance (nessun comando CLI), nell'elenco del circuit breaker della mainnet; dalla v3.2.3 la governance non può inoltre rimuovere l'ultimo algoritmo di firma attivo |
+| `tx svm deploy-program`, `execute`, `create-account`      | La lane di transazioni SVM è disabilitata su tutta la rete                                     |
 | `tx abstractaccount create`, `register-authenticator`, `execute-cosmos`, `execute-evm` | Il modulo abstract-account è disattivato (`query abstractaccount config` mostra `enabled: false`) |
 | `tx rlconsensus *`, `tx amm pause-pool`/`resume-pool`      | Messaggi dell'autorità di governance; anch'essi nell'elenco del circuit breaker della mainnet  |
-| `tx license *`                                            | Riservato all'autorità (le licenze sono concesse dall'autorità delle licenze della rete)       |
+| `tx license *`                                            | Riservato all'autorità (le licenze sono concesse dall'autorità delle licenze della rete; dalla v3.2.3 la governance può sostituire tale autorità con `MsgUpdateAuthority`) |
 
 L'elenco in vigore si ottiene con `qorechaind query circuit disabled-list`.

@@ -23,7 +23,7 @@ sidebar_position: 7
 | 브리지 작업 | 0 | 0 |
 | IBC 채널 / 클라이언트 | 0 / 0 | 0 / 0 |
 
-(2026년 10월 확인. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽을 수 있습니다.)
+(2026년 10월 20일에 메인넷 v3.2.3과 테스트넷 v3.2.4를 기준으로 확인했습니다. 라이브 값은 `qorechaind query bridge chains` 및 `qorechaind query bridge validators`로 읽거나, REST의 `/qorechain/bridge/v1/chains` 및 `/qorechain/bridge/v1/validators`로 읽을 수 있습니다.) 모듈 구성은 두 네트워크에서 동일합니다. `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400, `large_transfer_threshold` 100,000 QOR(`100000000000` uqor)입니다. 모듈이 사용하게 될 IBC 스택은 ibc-go v10.7(v3.2.2부터)이지만, 생성된 클라이언트나 채널은 없습니다.
 
 ## 연결 개요
 
@@ -193,6 +193,8 @@ QoreChain               QoreChain Validators           External Chain
 * 지원되는 체인 목록
 * 평판 점수 (`x/reputation`에 의해 유지됨)
 
+v3.2.2부터 모듈은 모든 경로에서 0 금액과 자체 구성을 일관되게 검증합니다. **테스트넷 전용(v3.2.4, 메인넷에는 없음):** 브리지 검증인을 등록할 때 Dilithium-5 키의 소유 증명도 필요하며(PQC 키 등록과 동일한 `proof_of_possession` 형식, [포스트 양자 보안](/architecture/post-quantum-security#proof-of-possession) 참조), 다른 브리지 검증인이 이미 사용 중인 키는 거부됩니다. 메인넷 v3.2.3에는 이러한 검사가 없으며, 어느 네트워크에도 등록된 브리지 검증인이 없습니다.
+
 ### 서킷 브레이커
 
 각 연결된 체인은 독립적인 서킷 브레이커 보호 기능을 갖습니다:
@@ -234,6 +236,8 @@ QoreChain               QoreChain Validators           External Chain
 * **`tx bridge set-verifier-bootstrap`** — 체인의 활성 검증기를 선택하고 신뢰 루트를 설치합니다 (`MsgSetVerifierBootstrap`).
 
 이를 통해 운영자는 브리지 관리자 키에 대해 권한이 확인된 상태로 연결된 체인의 브리지를 직접 온라인 상태로 만들거나 검증기를 교체할 수 있습니다. 체인 버전 **v3.2.0**부터 브리지 모듈은 자체 모듈 계정도 갖습니다(이전 릴리스에는 없었기 때문에, 활성화된 경로의 첫 입금은 실패했을 것입니다).
+
+`qcb_bridge` 같은 라이선스는 라이선스 권한 계정이 부여합니다. v3.2.3(메인넷)부터 거버넌스는 `MsgUpdateAuthority` 제안으로 이 계정을 교체할 수 있습니다. 해당 모듈은 [체인 라이선싱](/architecture/chain-licensing)에 설명되어 있습니다.
 
 ### 연결된 네트워크 검증
 

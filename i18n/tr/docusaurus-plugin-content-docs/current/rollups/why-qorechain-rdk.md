@@ -17,17 +17,19 @@ Katmanı (Layer 1) etrafında inşa edilmiş, QoreChain'e özgü üç yetenek ek
 - zincirler arası VM çağrılarına sahip **üçlü-VM** çalışma zamanı.
 
 :::caution Erken aşama: durum sütununu okuyun
-Henüz hiçbir ağda rollup oluşturulmadı. Aşağıdaki tablo bugün nelerin çalıştığını
-belirtir. Yalnızca genel bir optimistic/zk rollup'a ihtiyacınız varsa, herhangi
-bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine eklediği
+Henüz hiçbir ağda rollup oluşturulmadı (20 Ekim 2026 itibarıyla kontrol edildi).
+Aşağıdaki tablo bugün nelerin çalıştığını belirtir; yayınlanmış 0.5.0
+istemcilerinin sınırları [RDK 0.5.0 sınırları](/rollups/deploying-a-rollup#rdk-050-limits)
+bölümünde toplanmıştır. Yalnızca genel bir optimistic/zk rollup'a ihtiyacınız varsa,
+herhangi bir kit işinizi görür; buradaki yetenekler RDK'nın bunun üzerine eklediği
 şeylerdir ve TypeScript, Python, Go, Rust ve Java dillerinde sunulur.
 :::
 
 | Yetenek | Durum | Neye dayanır |
 | --- | --- | --- |
-| **Kuantum güvenli yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok |
+| **Kuantum güvenli yerleşim makbuzları** | 🟡 Erken aşama | Sabitlemeler (anchor), Ana Zincirin kuantum sonrası şeması olan ML-DSA-87 ile imzalanır; henüz sabitleme yok ve 0.5.0 doğrulayıcısı zincir kontrolünü canlı ağlara karşı tamamlayamaz |
 | **QCAI Rollup Copilot** | 🟡 Genel uç noktalarda henüz mevcut değil | Genel uç noktaların bugün sunmadığı zincir üstü AI/RL danışma servisleri |
-| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı ve CosmWasm yüklemesi kapalı |
+| **Çoklu-VM zincirler arası VM çağrıları** | 🟡 Canlı ağlarda henüz kullanılamaz | Etkinleştirilmemiş bir zincirler arası VM precompile'ı, zincirin yerleşimiyle eşleşmeyen bir 0.5.0 kodlayıcısı ve kapalı CosmWasm yüklemesi |
 
 ---
 
@@ -53,7 +55,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Bir makbuzun neyi kanıtlayıp neyi kanıtlamadığı için bkz.
+0.5.0'da `verifySettlementReceipt` zincire karşı kontrol eder ve bir `client` olmadan
+`valid` demeyi reddeder; ancak zincir kontrolü canlı ağlara karşı henüz
+tamamlanmaz, bu nedenle gerçek bir makbuzu geçerli olarak bildirmek yerine
+güvenli biçimde başarısız olur (fail closed). Bir makbuzun neyi kanıtlayıp neyi
+kanıtlamadığı ve tam sınırlar için bkz.
 [Kuantum güvenli yerleşim makbuzları](/rollups/settlement-receipts).
 
 ---
@@ -88,18 +94,35 @@ CLI üzerinden: `qorollup advise my-rollup`. Bkz. [QCAI Copilot](/rollups/qcai-c
 RDK, bir EVM (Solidity) sözleşmesinden bir **CosmWasm** sözleşmesine yapılan
 çağrıyı, `0x…0901` adresindeki sabit bir precompile aracılığıyla kodlayan
 yardımcılar içerir. Bu precompile ana ağda (mainnet) ya da testnet'te **etkin
-değildir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)).
+değildir** (bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status)):
+`0x…0901` için `eth_getCode` her ikisinde de `0x` döndürür ve ona yapılan bir
+sözleşme çağrısı hiçbir etki olmadan başarılı olur.
+
+0.5.0'daki `encodeCrossVmCalldata` yardımcısı `executeCrossVMCall(string,bytes)`
+için çağrı verisi (calldata) oluşturur, ancak düğüm
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`
+imzasını çözer; dolayısıyla çıktısı zincirin okuduğuyla eşleşmez. Çağrıyı bunun
+yerine zincirin yerleşimiyle kodlayın (burada viem ile gösterilmiştir;
+`targetVM` 1, desteklenen tek hedef olan CosmWasm'dır):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 Veya doğrudan rollup'ınızdaki Solidity kodundan:
@@ -111,12 +134,16 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+Bugün tek başına `ok` hiçbir şey kanıtlamaz: precompile'ın kodu olmadığı sürece
+çağrı boş veriyle başarı döndürür ve hiçbir şey yürütmez; bu nedenle etkiyi hedef
+sözleşme üzerinde doğrulayın.
 
 `npm create qorechain-rollup my-app -- --template multivm-rollup` komutuyla bir
 başlangıç projesi iskeleti oluşturun. (Yalnızca EVM↔CosmWasm; SVM zincirler

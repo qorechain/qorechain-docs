@@ -45,6 +45,13 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, Längenkonstanten,
   Algorithmus-IDs/-Helfer, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
+- **PQC-Schlüssel-Lebenszyklus (0.9.0):** `ensurePqcRegistered` (liest den Status über REST,
+  `PqcKeyMismatchError`), `fetchPqcStatus`, `isRegisteredPqcKey`,
+  `buildRegisterPqcKeyMsg`, `signProofOfPossession` / `verifyProofOfPossession`
+  (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
+  `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
+  `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
+  `CHAIN_UPGRADE_V3_2_3`).
 - **Read-Clients:** `RestClient` (inkl. `getPermissionSchema`),
   `JsonRpcClient`, `QorClient`, HTTP-Helfer (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); typisierte Query-Clients für jedes
@@ -52,18 +59,18 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   (`permissionSchema`) sowie der `multilayer`-State-Anchor-Abfragen
   `Anchor`/`Anchors`. Auf den öffentlichen Endpunkten rufen einige typisierte
   REST-Helfer Routen auf, die das Gateway nicht bereitstellt: `getAiStats`,
-  `getFeeEstimate`, `getXqorePosition`, `getInflationRate`, `getReputation` und
-  `getPqcAccount` (das einen Pfad mit Plural `accounts` aufruft; die
-  bereitgestellte Route ist das Singular `/qorechain/pqc/v1/account/{address}`,
-  erreichbar mit `rest.get(...)`).
-  `getBurnStats`, `getAllBalances`, `getBridgeChains` und `getPermissionSchema`
+  `getFeeEstimate`, `getXqorePosition`, `getInflationRate` und `getReputation`.
+  `getBurnStats`, `getAllBalances`, `getBridgeChains`, `getPermissionSchema` und (seit
+  0.9.0, das seinen Pfad mit Plural `accounts` auf die bereitgestellte Singular-Route
+  `/qorechain/pqc/v1/account/{address}` korrigiert hat) `getPqcAccount`
   funktionieren.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
-- **Transaktionen:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`,
+- **Transaktionen:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient` (hybrid,
+  wenn mit `pqcKeypair` verbunden, 0.9.0; `HYBRID_VERIFY_GAS`),
   `MSG_SEND_TYPE_URL`, Hybrid-Helfer (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   strukturierte Fehlerdekodierung über `decodeTxError` (inkl. der
@@ -90,13 +97,21 @@ Die bewusst gewählten, unterstützten Exporte von `@qorechain/sdk`:
   `signHybridEth` und `EthNativeSigner`; `resolveSignBytesVersion`,
   `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
   `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
-- **EVM-Autorisierungsfenster (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
-  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
-  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. Siehe
+- **EVM-Autorisierungsfenster (0.8.2+):** `openEvmWindowMsg` (`nativeOnly` und
+  `allowedTargets` ab 0.9.0), `closeEvmWindowMsg`, `fetchEvmWindow`,
+  `classifyEvmWindowRejection`, `isEvmWindowRejection`, `MAX_EVM_WINDOW_BLOCKS`,
+  `MAX_EVM_WINDOW_TXS`, `MAX_EVM_WINDOW_TARGETS`. Siehe
   [EVM-Autorisierungsfenster](/sdk/guides/evm#evm-window).
+- **EIP-7702-Zustimmung (0.9.0):** `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`,
+  `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`,
+  `classifyEvmDelegationRejection`, `EVM_DELEGATION_CLEAR`,
+  `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
+- **Abstract-Account-Digest v2 (0.9.0):** `evmAuthSignBytesV2`,
+  `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
 - **Kanonische PQC-Ableitung (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; die PQC-Registrierungsnachricht ist
-  `buildRegisterPqcKeyMsg` (verwendet von `ensurePqcRegistered`).
+  `buildRegisterPqcKeyMsg` (verwendet von `ensurePqcRegistered`). `derivePqcLegacy` ist
+  für neue Schlüssel veraltet.
 
 ### `@qorechain/evm`
 
@@ -121,10 +136,10 @@ Program-ID-Konstanten.
 
 | Sprache | Generierte Dokumentation | Installation |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.8.3` (Import `qorsdk`) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (Tag `packages/go/v0.8.4`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; Import `qorechain`) |
-| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — Docstrings auf der öffentlichen API | `pip install qorechain-sdk` in Version `0.9.0` (Import `qorsdk`) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (Tag `packages/go/v0.9.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; Import `qorechain`) |
+| Java | Maven-Central-Javadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
 
 Jedes Paket spiegelt dieselbe Oberfläche wider (Netzwerk-Presets,
 Denom-/Adress-Hilfsfunktionen, HD-Ableitung — einschließlich unified

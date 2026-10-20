@@ -26,8 +26,10 @@ Binarul curent, genesis-ul, peers, seeds și un punct de încredere pentru state
 Câmpurile manifestului includ `binary` (url + sha256), `genesis` (url + sha256 + sizeBytes), `peers`, `seeds`, `p2pPort`, `stateSync` (un punct de încredere actualizat orar) și `minCompatible`. Pașii de instalare și conectare de mai jos preiau acest manifest și folosesc valorile lui curente.
 :::
 
-:::caution v3.2.0 sau mai nou necesar pentru un nod care se alătură de la zero
-Un nod care se sincronizează de la genesis sau reface starea dintr-un instantaneu trece prin mai multe upgrade-uri de guvernanță (de exemplu plafonul de emisiune v3.1.94 la înălțimea 2.122.074 și upgrade-ul v3.2.0 la înălțimea 2.981.742), așa că instalați întotdeauna binarul indicat de manifest: acesta conține toate handler-ele de upgrade. Un nod nou de mainnet are nevoie de **v3.2.0 sau mai nou**: `minCompatible` din manifest este `3.2.0`, cea mai veche versiune care încă urmează lanțul, iar `version` (în prezent `3.2.1`) este cea recomandată, o versiune locală a nodului, fără înălțime de upgrade. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj), așa că verificați câmpul său `"version"` în raport cu `minCompatible` înainte de a avea încredere în `binary.url`. Pe testnet, `minCompatible` este egal cu `version` (în prezent `3.2.2`).
+:::caution Folosiți versiunea indicată de manifest: v3.2.3 pe mainnet
+Un nod care se sincronizează de la genesis sau reface starea dintr-un instantaneu trece prin mai multe upgrade-uri de guvernanță (consultați [Upgrade-uri](#upgrades) mai jos), așa că instalați întotdeauna binarul indicat de manifest: acesta conține toate handler-ele de upgrade. Pe **mainnet**, `minCompatible` și `version` din manifest sunt ambele `3.2.3` (upgrade-ul coordonat aplicat la înălțimea 3.662.051 pe 20 octombrie 2026), deci un nod care se alătură acum are nevoie de v3.2.3: un binar mai vechi se oprește la înălțimea de upgrade pe care nu o cunoaște. Pe **testnet**, ambele sunt `3.2.4` (aplicat la înălțimea 8.337.253 pe 19 octombrie 2026); v3.2.4 nu este încă aplicată pe mainnet (propunerea de guvernanță 13 ar aplica-o pe mainnet la înălțimea 3.742.566), așa că nu rulați un binar de testnet împotriva mainnet-ului. Manifestul este promovat deliberat (mai întâi pe testnet, apoi pe mainnet după o perioadă de rodaj), așa că verificați câmpul său `"version"` în raport cu `minCompatible` înainte de a avea încredere în `binary.url`.
+
+Un binar compilat din sursa publică (build-ul comunitar) refuză să pornească pe oricare dintre rețelele publice (v3.2.3 și mai nou): nu poate verifica semnăturile post-cuantice și nu poate reda fidel blocurile rețelelor. Folosiți doar arhiva de release.
 
 Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sincronizat prin NTP (nodul se oprește dacă ceasul său are o abatere de mai mult de 60 de secunde) și setați `evm-chain-id` în `app.toml` (consultați [Limitele nodului](#node-limits)).
 :::
@@ -50,8 +52,8 @@ Două setări contează începând cu v3.2.1: mențineți ceasul sistemului sinc
 
 | Rețea    | Chain ID            | Chain ID EVM          | Note                          |
 | -------- | ------------------- | ---------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 29 iunie 2026 |
-| Testnet  | `qorechain-diana`   | `9800`                 | Testați integrările aici mai întâi |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principală — live din 7 iun 2026; versiunea de nod v3.2.3 |
+| Testnet  | `qorechain-diana`   | `9800`                 | Testați integrările aici mai întâi; versiunea de nod v3.2.4 (doar testnet) |
 
 Înlocuiți `--chain-id`-ul corespunzător pentru rețeaua țintă pe parcursul acestui ghid. Exemplele folosesc implicit mainnet.
 
@@ -73,7 +75,7 @@ Un SSD NVMe este puternic recomandat — starea lanțului și magaziile EVM/SVM 
 
 ### Docker Compose
 
-O implementare doar-nod cu Docker Compose. Nu există încă o imagine `qorechaind` publicată public de descărcat. `Dockerfile`-ul din repository-ul public construiește binarul **community** (fără bibliotecă post-cuantică, keepers de tip stub): este potrivit pentru dezvoltare locală, dar nu poate urmări mainnet-ul sau testnet-ul. Pentru un nod de rețea, construiți-vă propria imagine din **arhiva de versiune** indicată în `latest.json`, etichetați-o cu versiunea (**v3.2.1** pe mainnet, **v3.2.2** pe testnet), apoi montați un volum persistent pentru datele lanțului:
+O implementare doar-nod cu Docker Compose. Nu există o imagine `qorechaind` publicată public de descărcat (nu este publicat nimic sub organizația Docker Hub a proiectului). `Dockerfile`-ul din repository-ul public construiește binarul **community** (fără bibliotecă post-cuantică, keepers de tip stub): este potrivit pentru dezvoltare locală, dar nu poate urmări mainnet-ul sau testnet-ul, iar începând cu v3.2.3 refuză să pornească pe ele. Pentru un nod de rețea, construiți-vă propria imagine din **arhiva de release** indicată în `latest.json`, etichetați-o cu versiunea de release (**v3.2.3** pe mainnet, **v3.2.4** pe testnet), apoi montați un volum persistent pentru datele lanțului:
 
 ```bash
 # Fetch and verify the release archive (see "Joining the Network" below for the manifest steps)
@@ -90,16 +92,16 @@ COPY lib/ /opt/qorechain/lib/
 ENV LD_LIBRARY_PATH=/opt/qorechain/lib
 ENTRYPOINT ["qorechaind"]
 EOF
-docker build -t qorechain-node:v3.2.1 release/
+docker build -t qorechain-node:v3.2.3 release/
 ```
 
-Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); imaginea de mai sus este doar `linux/amd64`, ca și arhiva de versiune.
+Arhiva conține `qorechaind` și un director `lib/` cu bibliotecile sale partajate (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`); imaginea de mai sus este doar `linux/amd64`, ca și arhiva de release.
 
 ```yaml
 # docker-compose.yml
 services:
   qorechain-node:
-    image: qorechain-node:v3.2.1
+    image: qorechain-node:v3.2.3
     container_name: qorechain-node
     restart: unless-stopped
     command: ["start", "--home", "/root/.qorechaind"]
@@ -250,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restaurare din instantaneu (snapshot)
 
-Alternativ, descărcați instantaneul publicat al datelor lanțului, verificați-i suma de control și extrageți-l peste directorul dumneavoastră de date. Pe mainnet, obiectul `snapshot` din manifest oferă URL-ul, `height` (înălțimea blocului), dimensiunea și SHA-256 (manifestul de testnet conține în prezent doar URL-ul, așa că folosiți state sync acolo). Citiți `snapshot.height` înainte de a-l folosi: instantaneul de mainnet este o singură arhivă de aproximativ 27 GB, iar unul vechi înseamnă o recuperare lungă (instantaneul de mainnet publicat în prezent este anterior înălțimilor ambelor upgrade-uri, v3.1.94 și v3.2.0, așa că un nod restaurat din el trebuie să le redea cu un binar v3.2.x).
+Alternativ, descărcați instantaneul publicat al datelor lanțului, verificați-i suma de control și extrageți-l peste directorul dumneavoastră de date. Pe mainnet, obiectul `snapshot` din manifest oferă URL-ul, `height` (înălțimea blocului), dimensiunea și SHA-256. **URL-ul instantaneului din manifestul de testnet returnează în prezent `404` (nu este publicat niciun instantaneu de testnet), așa că folosiți state sync acolo.** Citiți `snapshot.height` înainte de a-l folosi pe cel de mainnet: este o singură arhivă de aproximativ 27 GB, iar una veche înseamnă o recuperare lungă. Instantaneul de mainnet publicat în prezent este din 21 august 2026 (înălțimea 1.966.629): este anterior înălțimilor upgrade-urilor v3.1.94, v3.2.0, v3.2.2 și v3.2.3, așa că un nod restaurat din el redă aproximativ două luni de blocuri cu binarul v3.2.3. State sync este aproape întotdeauna alegerea mai bună.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -265,6 +267,25 @@ qorechaind start --minimum-gas-prices=0.1uqor
 :::note
 Câmpurile `snapshot.height` și `snapshot.ts` din manifest arată cât de proaspătă este arhiva, iar state sync (mai sus) este de obicei mai rapid decât o descărcare de 27 GB. Verificați întotdeauna suma de control înainte de a extrage și folosiți o versiune de nod care conține toate handler-ele de upgrade (consultați avertismentul de la începutul acestei pagini) când redați starea dintr-un instantaneu.
 :::
+
+---
+
+## Upgrade-uri {#upgrades}
+
+Schimbările de consens sosesc ca **upgrade-uri de guvernanță coordonate**: o propunere adoptată denumește un plan (de exemplu `v3.2.3`) și o înălțime de bloc. Binarul de release conține handler-ele de upgrade; la înălțimea planului fiecare nod trebuie să ruleze acest binar, iar un nod rămas pe binarul anterior **se oprește la acea înălțime** (acesta este comportamentul intenționat al modulului de upgrade). Manifestul vă spune de ce tip este o versiune: `upgradeType` este `height` pentru un upgrade coordonat (cu `upgradeHeight` setat) și `rolling` pentru o versiune locală a nodului, care poate fi înlocuită nod cu nod. Instalați noul binar **înainte** de înălțime; dacă nodul dumneavoastră s-a oprit primul, înlocuiți binarul și reporniți (consultați nota despre rollback din [Depanare](#troubleshooting)).
+
+| Versiune | Mainnet `qorechain-vladi` | Testnet `qorechain-diana` |
+| ------- | ------------------------- | ------------------------- |
+| v3.1.94 | înălțimea 2.122.074 | neaplicat |
+| v3.2.0 | înălțimea 2.981.742 | înălțimea 5.920.000 |
+| v3.2.1 | local nodului, fără înălțime | local nodului |
+| v3.2.2 | înălțimea 3.556.788 (16 oct 2026) | înălțimea 6.905.034 (2 oct 2026) |
+| v3.2.3 | înălțimea 3.662.051 (20 oct 2026, propunerea de guvernanță 11) | înălțimea 8.003.746 (15 oct 2026) |
+| v3.2.4 | **încă neaplicat pe mainnet (propunerea de guvernanță 13 ar aplica-o la înălțimea 3.742.566); deocamdată doar testnet** | înălțimea 8.337.253 (19 oct 2026, propunerea de guvernanță 13) |
+
+Citiți înregistrarea live cu `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = neaplicat) și orice plan în așteptare cu `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 a ridicat versiunile dependențelor motorului de consens, Cosmos SDK (v0.53.8) și IBC, iar verificările mai stricte ale tranzacțiilor din SDK fac ca această versiune să înlocuiască binarul anterior la înălțimea de upgrade, nu nod cu nod. Semnarea tranzacțiilor, adresele, zecimalele, memo-urile și taxele nu s-au schimbat în v3.2.2 sau v3.2.3.
+
+**State sync și ceasul.** State sync își preia punctul de încredere din blocul `stateSync` al manifestului (`trustHeight`, `trustHash`, actualizate orar); serverul RPC pe care îl listează este al proiectului, așa că pentru un nod de producție adăugați servere RPC în care aveți încredere și verificați hash-ul de încredere față de o altă sursă. Mențineți ceasul sincronizat prin NTP: nodul se oprește când are o abatere de mai mult de 60 de secunde față de rețea.
 
 ---
 
@@ -338,7 +359,7 @@ ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
 
-Endpoint-urile publice servesc namespace-urile `eth_`, `net_`, `web3_` și `txpool_`. Namespace-ul `qor_` nu este servit de nicio versiune lansată a nodului, așa că nu îl adăugați (consultați [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace)).
+Endpoint-urile publice servesc namespace-urile `eth_`, `net_`, `web3_` și `txpool_` (doar status); un nod inițializat de v3.2.3 sau mai nou folosește implicit `eth,net,web3` și lasă `txpool` deoparte (acesta publică tranzacțiile în așteptare ale nodului), așa că adăugați-l doar dacă aveți nevoie de el. Namespace-ul `qor_` nu este servit de nicio versiune lansată a nodului, așa că nu îl adăugați (consultați [namespace-ul `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
 Și listenerul RPC în `config.toml`:
 
@@ -403,7 +424,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bune practici operaționale
 
-1. **Fixați versiunea de lanț.** Rulați versiunea recomandată de manifest (**v3.2.1** pe mainnet), urmăriți versiunile oficiale pentru upgrade-uri coordonate și mențineți ceasul sistemului sincronizat prin NTP.
+1. **Fixați versiunea de lanț.** Rulați versiunea recomandată de manifest (**v3.2.3** pe mainnet), urmăriți versiunile oficiale pentru upgrade-uri coordonate și mențineți ceasul sistemului sincronizat prin NTP.
 
 2. **Rulați noduri redundante.** Operați cel puțin două noduri în spatele unui load balancer, astfel încât o singură repornire sau resincronizare să nu întrerupă traficul de integrare.
 
@@ -421,7 +442,7 @@ Pentru a observa rețeaua fără a rula un nod complet, consultați [documentaț
 
 ---
 
-## Depanare (Troubleshooting)
+## Depanare (Troubleshooting) {#troubleshooting}
 
 ### Nodul se oprește cu o eroare de ceas
 

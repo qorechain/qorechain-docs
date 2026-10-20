@@ -10,7 +10,7 @@ sidebar_position: 1
 Esta guía te explica cómo compilar el binario comunitario `qorechaind` a partir del código fuente público, y aclara para qué sirve ese binario y para qué no.
 
 :::caution Una compilación desde el código fuente no puede unirse a la mainnet ni a la testnet
-El repositorio público contiene las interfaces de los módulos con **keepers stub**; las implementaciones de keepers críticas para el consenso y el firmante poscuántico no están en el árbol de código fuente público. Un binario compilado a partir de él no puede reproducir el estado de consenso de las redes, y no puede crear la firma híbrida poscuántica que exige toda transacción de la vía Cosmos. Para ejecutar un nodo o un validador en la mainnet o la testnet, instala el **binario de la versión publicada** indicado en el manifiesto en vivo (`https://download.qore.host/mainnet/latest.json` o `.../testnet/latest.json`); consulta [Ejecutar un nodo](/developer-guide/running-a-node) y [Ejecutar un validador](/developer-guide/running-a-validator).
+El repositorio público contiene las interfaces de los módulos con **keepers stub**; las implementaciones de keepers críticas para el consenso y el firmante poscuántico no están en el árbol de código fuente público. Un binario compilado a partir de él no puede reproducir el estado de consenso de las redes, y no puede crear la firma híbrida poscuántica que exige toda transacción de la vía Cosmos. Desde v3.2.3 además **se niega a arrancar** en `qorechain-vladi` o `qorechain-diana` (las reconoce por el id de cadena y la hora de génesis; una devnet local que reutilice un id de cadena público con su propio génesis no se ve afectada). `qorechaind start --community-unenforced-pqc` anula esa negativa para experimentos; el nodo entonces no verifica ninguna firma poscuántica y puede divergir de la red sin previo aviso, así que nunca lo uses para un nodo del que dependas. Para ejecutar un nodo o un validador en la mainnet o la testnet, instala el **binario de la versión publicada** indicado en el manifiesto en vivo (`https://download.qore.host/mainnet/latest.json` o `.../testnet/latest.json`); consulta [Ejecutar un nodo](/developer-guide/running-a-node) y [Ejecutar un validador](/developer-guide/running-a-validator).
 :::
 
 ## Requisitos previos
@@ -106,11 +106,11 @@ Las pruebas que ejercitan las bibliotecas nativas o los keepers propietarios sol
 Tras una compilación exitosa, verifica el binario:
 
 ```bash
-./qorechaind version
+./qorechaind version   # may print nothing: release binaries do not report a version string
 ./qorechaind init test-node --chain-id qorechain-diana
 ```
 
-El comando `init` debería crear un archivo de génesis y una configuración de nodo en `~/.qorechaind/` sin errores. El ejemplo anterior se inicializa contra la testnet **`qorechain-diana`** — para mainnet, sustituye por `--chain-id qorechain-vladi`, la red en vivo (versión de nodo **v3.2.1**).
+El comando `init` debería crear un archivo de génesis y una configuración de nodo en `~/.qorechaind/` sin errores. El ejemplo anterior se inicializa contra la testnet **`qorechain-diana`** — para mainnet, sustituye por `--chain-id qorechain-vladi`, la red en vivo (versión de nodo **v3.2.3**).
 
 ## Compilación con Docker
 

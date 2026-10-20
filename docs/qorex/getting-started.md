@@ -80,7 +80,7 @@ By default QoreX derives your `qor1…` address from a recovery phrase on coin t
 3. Open Settings → **Your accounts** and tap **Add an Ethereum account (coin 60)**. The first tap adds the account at index 0 — the same `0x…` address MetaMask shows for those words, and the same key as your QoreChain `qor1…` address for that account. Your QOR sits there.
 4. Switch to that account (it is labelled *Ethereum · coin 60*). You can send, stake and claim from it. The first send also registers that account's post-quantum key, which costs a small one-time fee.
 
-An Ethereum-style account has no @handle (handles are claimed on a QoreChain `qor1…` account at coin type 118), and websites sign through `signAndBroadcast` rather than `signDirect` with it. Each tap on **Add an Ethereum account (coin 60)** adds the next index.
+An Ethereum-style account has no @handle (handles are claimed on a QoreChain `qor1…` account at coin type 118), and websites sign through `signAndBroadcast` rather than `signDirect` with it. It is also the kind of account for which the [EVM access window](/qorex/security-and-recovery#evm-window) matters: MetaMask signs with the same key, so MetaMask transactions can move its QOR once a window is open. Each tap on **Add an Ethereum account (coin 60)** adds the next index.
 
 ## Find your way around {#find-your-way}
 
@@ -89,7 +89,7 @@ An Ethereum-style account has no @handle (handles are claimed on a QoreChain `qo
 
 ## Optional: claim an @handle
 
-After your wallet is created you can claim a unique **@handle** (for example `@liviu`) so people can send to you by name instead of a `qor1…` address. This is optional and skippable — your wallet never depends on it. (In the browser extension, some versions do not offer claiming; if the popup does not, claim from the mobile app.) A handle binds to a specific address rather than to the wallet as a whole, which matters once you have more than one account — see [Several accounts from one phrase](/qorex/account-and-dashboard#accounts) and [@handle](/qorex/account-and-dashboard#handle).
+After your wallet is created you can claim a unique **@handle** (for example `@liviu`) so people can send to you by name instead of a `qor1…` address. Claiming needs a [signed-in account](/qorex/account-and-dashboard#sign-in) and happens **in the mobile app** (the browser extension points you there). It is optional and skippable — your wallet never depends on it. A handle binds to a specific address rather than to the wallet as a whole, which matters once you have more than one account — see [Several accounts from one phrase](/qorex/account-and-dashboard#accounts) and [@handle](/qorex/account-and-dashboard#handle).
 
 ## Language
 

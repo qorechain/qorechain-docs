@@ -137,6 +137,12 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 `derivePqcCanonical(account, mnemonic)` أولًا بتحويل `account` إلى صيغته
 `qor1…` بأحرف صغيرة (`canonicalAccount`)، لذا فإن عنوان bech32 بأحرف كبيرة أو
 صيغة `0x` للحساب نفسه تُنتج المفتاح نفسه.
+لكل لغة الدالة نفسها (Python `derive_pqc_canonical`، وGo
+`authenticator.DerivePQCCanonical`، وRust `try_derive_pqc_canonical`، وJava
+`Authenticator.derivePqcCanonical`؛ راجع
+[الجدول في دليل الأمان الكمومي](/sdk/guides/quantum-safe#canonical-derivation))،
+ويعطي `{ address, mnemonic }` نفسه المفتاح نفسه في جميعها (جرى التحقق من
+TypeScript وPython وGo وRust في أكتوبر 2026).
 
 ### الإرسال على مسار Native باستخدام مفتاح eth
 
@@ -155,7 +161,7 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 إلى بايتات لاستخدامها في `ecdsaPubkey`. ثانيًا، مرِّر `rest` إلى الموقِّع
 ليتمكن من سؤال الشبكة عن [صيغة بايتات التوقيع](#sign-bytes-versions) التي
 تتحقق منها (وعلى `qorechain-vladi` و`qorechain-diana` يرمي خطأ بدلًا من
-التخمين). يتطلب SDK 0.8.1 أو أحدث، و`npm i @cosmjs/stargate`:
+التخمين). يتطلب SDK 0.8.1 أو أحدث (و0.9.0 لدوال إثبات الحيازة المساعدة)، و`npm i @cosmjs/stargate`:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -164,6 +170,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -193,6 +200,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -282,7 +297,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 الجزء ما بعد الكمومي كامتداد `PQCHybridSignature` على المعاملة.
 
 :::caution التوقيع الهجين مطلوب على مسار Native
-اعتبارًا من إصدار السلسلة **v3.2.0** (الإصدار الذي تعمل به الشبكتان)،
+اعتبارًا من إصدار السلسلة **v3.2.0** (تعمل الشبكة الرئيسية بالإصدار v3.2.3 وشبكة الاختبار بالإصدار v3.2.4)،
 الإعداد الافتراضي للشبكة هو
 `hybrid_signature_mode = required` مع `allow_classical_fallback = false`.
 التوقيع الهجين عبر `buildHybridTx` / `signAndBroadcastHybrid` (مرِّر `rest`)،
@@ -302,7 +317,34 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 أداة البناء الشاملة لحساب من نوع coin type 118 هي `signAndBroadcastHybrid`
 (أو `buildHybridTx` للبناء دون بث). وتحتاج إلى الموقِّع الكلاسيكي، وزوج مفاتيح
 ML-DSA-87 الخاص بالحساب، ورقم الحساب والتسلسل (sequence)، و`rest`.
-يتطلب SDK 0.8.3 أو أحدث، و`npm i @cosmjs/stargate`:
+بالنسبة إلى حساب من نوع coin type 118 في TypeScript، أقصر مسار هو `TxClient`
+الهجين (SDK 0.9.0): مرِّر زوج المفاتيح عند الاتصال فتُوقَّع كل معاملة توقيعًا
+هجينًا، مع `fee: "auto"` الذي يحاكي المعاملة الهجينة نفسها (أما التسجيل وحده
+فيبقى كلاسيكيًا):
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+للتحكم الصريح في الرسوم ورقم الحساب والتسلسل، استخدم `signAndBroadcastHybrid`
+(SDK 0.8.1 أو أحدث، و`npm i @cosmjs/stargate`):
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -352,11 +394,17 @@ const result = await signAndBroadcastHybrid({
 
 قبل أن تجتاز المعاملة الهجينة تحقق PQC، يجب **تسجيل** المفتاح العام PQC الخاص
 بالموقّع عبر `MsgRegisterPQCKeyV2` (موقَّعة كلاسيكيًا ومعفاة من التوقيع
-الهجين). وتقوم بذلك الدالتان `ensurePqcRegistered` / `buildRegisterPqcKeyMsg`
-في SDK، أو الأمر `qorechaind tx pqc
+الهجين لحساب لا يملك مفتاحًا بعد). وتقوم بذلك الدالتان
+`ensurePqcRegistered` / `buildRegisterPqcKeyMsg` في SDK، أو الأمر
+`qorechaind tx pqc
 register-key`، أو محفظة QoreChain. أما `includePqcPublicKey: true` فتضمّن
 المفتاح في الامتداد فقط؛ وهي **لا** تسجّله، والسلسلة لا تسجّل مفتاحًا عند أول
-استخدام.
+استخدام. منذ الإصدار v3.2.3 ترفض السلسلة المفاتيح الضعيفة والمنحلّة والمُعاد
+استخدامها، وتقبل إثبات حيازة (proof of possession) اختياريًا (راجع
+[قواعد سلامة المفاتيح](/architecture/post-quantum-security#key-integrity))؛
+وفي SDK 0.9.0 تُرفق `ensurePqcRegistered` الإثبات تلقائيًا متى طبّقت الشبكة v3.2.3، وتُصدَّر
+`signProofOfPossession` / `verifyProofOfPossession` لعمليات التسجيل المبنية يدويًا؛ أما أدوات
+البناء في 0.8.x فتسجّل دون إثبات، وهذا مسموح.
 
 ### أي صيغة لبايتات التوقيع؟ {#sign-bytes-versions}
 

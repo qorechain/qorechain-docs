@@ -28,7 +28,7 @@ QoreChain은 하나의 체인 위에서 세 가지 일급(first-class) 스마트
 위한 IBC 모듈을 포함합니다(메인넷과 테스트넷에는 아직 열려 있는 IBC 채널이
 없습니다).
 
-:::note 현재 라이브 네트워크에서 동작하는 것 (체인 v3.2.0 이상)
+:::note 현재 라이브 네트워크에서 동작하는 것 (메인넷 v3.2.3, 테스트넷 v3.2.4)
 **동작함:** 모든 레인에서의 읽기, 하이브리드 서명된 Native 트랜잭션, 통합
 계정, [인가 윈도우](/sdk/guides/evm#evm-window) 안에서의 EVM 트랜잭션, 그리고
 SVM 읽기.
@@ -37,6 +37,13 @@ SVM 읽기.
 꺼져 있음), 일반 계정의 CosmWasm 업로드 및 인스턴스화, 인증자 / 추상 계정
 플로우(모듈 꺼짐), xQORE, 가스 추상화. 각 가이드는 해당되는 곳마다 이 주의
 사항을 반복합니다.
+
+게시된 SDK(0.9.0, 2026년 10월 21일)는 두 네트워크가 검증하는 형태(체인 상태로부터
+결정되는 v2 하이브리드 sign-bytes)로 서명하며, 서명 형식, 주소, 소수 자릿수,
+메모, 수수료는 v3.2.3이나 v3.2.4에서 바뀌지 않았습니다. 이후의 포스트 양자
+규칙에 대한 클라이언트 측 지원(키 등록 시 소유 증명, 범위가 제한된 EVM 윈도우,
+EIP-7702 동의 메시지)을 포함하며, 0.9.0 이전 버전은 포함하지 않습니다.
+[0.9.0 이전 버전](/sdk/install#before-090)을 참고하세요.
 :::
 
 ### 설계부터 양자 내성
@@ -100,15 +107,15 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 
 | 패키지 | 언어 | 설치 | 상태 |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.8.3) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.8.3) |
-| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.8.4`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.8.3) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | 게시됨 (Maven Central, v0.8.3) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | 게시됨 (npm, v0.9.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.9.0) |
+| `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.9.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | 게시됨 (Maven Central, v0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.8.3) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.9.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | 게시됨 (npm, v0.9.0) |
 
 > Python 배포판은 `qorechain-sdk`라는 이름으로 설치되지만 **`qorsdk`로
 > import**합니다. 모든 클라이언트는 각 레지스트리에 게시되어 있습니다 —
@@ -122,16 +129,16 @@ Python, Go, Rust, Java 클라이언트는 TypeScript와 **완전한 네이티브
 트랜잭션 라이프사이클(자동 가스, 오류 디코딩, 트랜잭션 추적, 블록/트랜잭션
 검색), 하이브리드 포스트 양자 트랜잭션, 그리고 WebSocket 구독까지
 지원합니다. 이 모든 클라이언트는 **게시**되어 있습니다: TypeScript는
-npm(`@qorechain/sdk` 0.8.3), Python은 PyPI(`qorechain-sdk` 0.8.3, import
-`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.8.4`), Rust는
-crates.io(`qorechain-sdk` 0.8.3), Java는 Maven
-Central(`io.github.qorechain:qorechain-sdk` 0.8.3)에 게시되어 있습니다.
+npm(`@qorechain/sdk` 0.9.0), Python은 PyPI(`qorechain-sdk` 0.9.0, import
+`qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.9.0`), Rust는
+crates.io(`qorechain-sdk` 0.9.0), Java는 Maven
+Central(`io.github.qorechain:qorechain-sdk` 0.9.0)에 게시되어 있습니다.
 EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.8.0),
-`@qorechain/react` 키트(0.8.3), `create-qorechain-dapp` 스캐폴딩 CLI(0.8.0)는
+`@qorechain/react` 키트(0.9.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.9.0)는
 TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는
 [설치](/sdk/install#related-packages)를 참고하세요.
 
-## 0.6, 0.7, 0.8의 새로운 기능
+## 0.6, 0.7, 0.8, 0.9의 새로운 기능
 
 **0.6.0 — 통합 eth-네이티브 계정 (체인 v3.1.83).** 하나의 `eth_secp256k1`
 키가 세 가지 주소 인코딩 모두로 표현되는 하나의 20바이트 아이덴티티이며,
@@ -173,7 +180,7 @@ MetaMask(secp256k1, 20바이트 주소 기준) 키가 최소 권한·지출 한�
 v3.2.0).** 하이브리드 트랜잭션의 포스트 양자 부분은 이제 대상 네트워크가
 검증하는 형식(v1 또는 v2, `signBytesVersion: "auto" | "v1" | "v2"`)으로
 서명됩니다. 두 퍼블릭 네트워크 모두 v2를 사용하므로, 메인넷에서 트랜잭션을
-보내려면 SDK **0.8.1 이상**이 필요합니다. **0.8.2**는 EVM 레인
+보내려면 SDK **0.8.1 이상**이 필요합니다(0.9.0을 사용하세요). **0.8.2**는 EVM 레인
 [인가 윈도우](/sdk/guides/evm#evm-window)를 위한 `openEvmWindowMsg`,
 `closeEvmWindowMsg`, `fetchEvmWindow`, `classifyEvmWindowRejection`을
 추가합니다.
@@ -184,6 +191,18 @@ v3.2.0).** 하이브리드 트랜잭션의 포스트 양자 부분은 이제 대
 React 훅 경쟁 상태, Python `migrate_to_hybrid` 시퀀싱, 그리고 주소 형식에
 독립적인 정식 PQC 파생(`derivePqcCanonical`, `canonicalAccount`)을
 수정합니다. [업그레이드 노트](/sdk/install#upgrade)를 참고하세요.
+
+**0.9.0 — 체인 v3.2.2와 v3.2.3에 대한 클라이언트 지원.** TypeScript `TxClient`는
+계정의 키페어를 전달하면(`client.connectTx(signer, { pqcKeypair })`) 하이브리드로
+서명하므로, `bankSend`와 SDK의 롤업, 멀티레이어, 크로스 VM 클라이언트가 퍼블릭
+네트워크에서 동작합니다. `ensurePqcRegistered`는 먼저 REST로 등록된 키를 확인하고,
+서로 다른 두 번째 키의 등록을 거부하며, 네트워크가 v3.2.3을 적용한 뒤에는
+소유 증명을 스스로 첨부합니다. 새 빌더는 범위가 제한된 EVM 윈도우(`nativeOnly`,
+`allowedTargets`)와 EIP-7702 동의 메시지를 지원하며, `derivePqcCanonical(address,
+mnemonic)`은 모든 언어에서 니모닉으로 복구할 수 있는 키를 제공합니다. PQC 계정
+경로는 단수형 `/qorechain/pqc/v1/account/{address}`이고, 블록 안에서 실패한
+경우에도 codespace가 유지되며, `create-qorechain-dapp`은 현재 SDK를 기준으로
+스캐폴딩합니다. [0.9.0에서 추가된 것](/sdk/install#whats-new-090)을 참고하세요.
 
 ## 다음 단계
 

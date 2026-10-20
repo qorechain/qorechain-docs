@@ -10,7 +10,7 @@ sidebar_position: 1
 Questa guida illustra il token QOR, come inviare e ricevere token, interrogare i saldi e comprendere il modello di distribuzione delle commissioni su QoreChain.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 29 giugno 2026 sulla linea v3.2 (release del nodo **v3.2.1**; la testnet esegue **v3.2.2**) — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è live dal 7 giugno 2026 ed esegue la release **v3.2.3**; la testnet esegue la **v3.2.4** — sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connecting to Mainnet** quando effettui transazioni sulla mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -92,13 +92,13 @@ Le commissioni di transazione su QoreChain vengono distribuite tra cinque destin
 | **Bruciati**      | 30%   | Rimossi permanentemente dalla supply |
 | **Tesoreria**     | 20%   | Finanzia lo sviluppo del protocollo e le grant per l'ecosistema |
 | **Staker**        | 10%   | Distribuiti proporzionalmente a tutti i delegatori              |
-| **Light Node**    | 3%    | Riservati alle ricompense dei light node (vedi la nota sotto) |
+| **Light Node**    | 3%    | Ricompense dei light node (vedi la nota sotto) |
 
-La ripartizione si applica a tutto ciò che entra nel fee collector, che contiene le commissioni di transazione e l'emissione di staking coniata a ogni epoca. La quota dei light node si accumula in una riserva; la registrazione delle ricompense dei light node non è ancora aperta, quindi al momento nessun nodo viene pagato da essa (vedi [Light Node](/light-node/overview)). Dall'aggiornamento v3.2.0 la quota degli staker viene pagata come una normale ricompensa di staking (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+La ripartizione si applica a tutto ciò che entra nel fee collector, che contiene le commissioni di transazione e l'emissione di staking coniata a ogni epoca. La quota dei light node si accumula nel pool di ricompense dei light node; la registrazione è aperta e vincolata a una licenza, ma nessun light node si è ancora registrato, quindi al momento nessun nodo viene pagato da esso (vedi [Light Node](/light-node/overview#reward-program-status)). Dall'aggiornamento v3.2.0 la quota degli staker viene pagata come una normale ricompensa di staking (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
 
 ## Canali di Burn
 
-Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati attraverso una qualsiasi di esse vengono rimossi permanentemente dalla circolazione. Sulla mainnet finora solo il canale delle gas fee ha registrato burn; gli altri sono definiti ma non hanno registrato nulla.
+Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati attraverso una qualsiasi di esse vengono rimossi permanentemente dalla circolazione. Sulla mainnet finora solo i canali delle gas fee e delle transazioni fallite hanno registrato burn; gli altri sono definiti ma non hanno registrato nulla. La testnet registra una tredicesima sorgente, `staking_tier_penalty`, per il suo modulo opzionale di staking con blocco temporale.
 
 | Canale                | Descrizione                                                         |
 | --------------------- | -------------------------------------------------------------------- |
@@ -107,7 +107,7 @@ Il modulo di burn di QoreChain definisce 12 sorgenti di burn. I QOR bruciati att
 | `ai_service`           | Il 50% delle commissioni dei servizi AI viene bruciato (inattivo: le commissioni dei servizi AI non sono live) |
 | `bridge_fee`           | Il 100% delle commissioni del bridge viene bruciato (inattivo: il bridge non è live) |
 | `treasury_buyback`     | Buyback-and-burn periodico dalla tesoreria |
-| `failed_tx`            | Gas delle transazioni fallite; applicato dalla chain dalla v3.2.2 (finora solo testnet) |
+| `failed_tx`            | Il 10% del gas delle transazioni fallite; applicato dalla chain dalla v3.2.2 |
 | `xqore_penalty`        | Penali di uscita anticipata xQORE instradate nel burn (xQORE non è live) |
 | `auto_buyback`         | Burn automatizzati a livello di protocollo (inattivo) |
 | `tge`                  | Riservato; il burn del TGE è avvenuto prima del genesis e questo canale non registra nulla |

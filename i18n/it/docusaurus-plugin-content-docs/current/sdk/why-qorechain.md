@@ -118,15 +118,13 @@ utenti che sono protetti.
 ```ts
 import { ensurePqcRegistered, migrateToHybrid } from "@qorechain/sdk";
 
-// Registers the signer's ML-DSA-87 key on-chain unless `status` says it already is
-// (read it over REST on the public endpoints; see the Quantum-safe guide).
-const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, {
-  pqcKeypair,
-  status: { registered },
-});
+// Registers the signer's ML-DSA-87 key on-chain unless the chain already has it:
+// it reads the status over REST first and never registers blind.
+const rest = "https://api.qore.host";
+const { alreadyRegistered, txHash } = await ensurePqcRegistered(tx, { pqcKeypair, rest });
 
 // Switch the signing path to hybrid (classical + post-quantum).
-const hybrid = await migrateToHybrid(tx, { pqcKeypair, status: { registered } });
+const hybrid = await migrateToHybrid(tx, { pqcKeypair, rest });
 await hybrid.signAndBroadcastHybrid({
   registry, signer, messages, fee, chainId, accountNumber, sequence,
   rest: "https://api.qore.host", // resolves the v1/v2 PQC sign-bytes form
@@ -138,7 +136,7 @@ await hybrid.signAndBroadcastHybrid({
 import { QuantumSafeBadge } from "@qorechain/react";
 
 // Shows a "Quantum-safe" indicator when the address has a registered PQC key
-// (needs a node that serves the `qor_` namespace; see the React guide).
+// (read over REST, so it works on the public endpoints from `@qorechain/react` 0.9.0).
 <QuantumSafeBadge address={account.address} />
 ```
 

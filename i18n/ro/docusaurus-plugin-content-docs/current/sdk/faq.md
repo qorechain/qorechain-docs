@@ -9,7 +9,8 @@ sidebar_position: 8
 
 ## Este mainnet-ul activ?
 
-Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`). Presetul de testnet
+Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
+și rulează versiunea de chain v3.2.3 la data de 20 octombrie 2026. Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
 endpoint-uri implicite pe localhost; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
@@ -84,16 +85,15 @@ ceea ce este diferit de baza `uqor` Native de 10^6.
 
 ## Ce pachete sunt publicate și unde?
 
-Toate. Nucleul TypeScript (`@qorechain/sdk`, 0.8.3), adaptoarele EVM/SVM
-(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), kitul React (`@qorechain/react`,
-0.8.3) și scaffolder-ul `create-qorechain-dapp` (0.8.0) sunt pe npm; clientul
-Python este pe PyPI (`pip install qorechain-sdk` la 0.8.3, import `qorsdk`);
-clientul Go este pe module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, tag
-`packages/go/v0.8.4`); clientul Rust este pe crates.io (`cargo add qorechain-sdk`,
-0.8.3); iar clientul Java este pe Maven Central
-(`io.github.qorechain:qorechain-sdk:0.8.3`). Vedeți [Instalare](/sdk/install)
-pentru comenzile complete pentru fiecare limbaj.
+Toate (verificat la 21 octombrie 2026). Nucleul TypeScript (`@qorechain/sdk`, 0.9.0),
+kitul React (`@qorechain/react`, 0.9.0), scaffolder-ul `create-qorechain-dapp`
+(0.9.0) și adaptoarele EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) sunt pe
+npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.9.0, import
+`qorsdk`); clientul Go este pe module proxy
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); clientul Rust este
+pe crates.io (`cargo add qorechain-sdk`, 0.9.0); iar clientul Java este pe Maven
+Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Vedeți [Instalare](/sdk/install) pentru comenzile complete
+pentru fiecare limbaj.
 
 ## Mnemonicul meu este respins
 
@@ -111,16 +111,19 @@ publică PQC a semnatarului trebuie să fie **înregistrată explicit** cu
 `MsgRegisterPQCKeyV2` (o tranzacție semnată clasic, exceptată de la cerința
 hibridă); încorporarea cheii publice în extensie
 (`includePqcPublicKey: true`) **nu** o înregistrează, iar lanțul nu înregistrează
-o cheie la prima utilizare.
+o cheie la prima utilizare. În TypeScript, dați clientului perechea de chei
+(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) și fiecare tranzacție pe
+care o trimite este semnată hibrid.
 Lanțul acceptă orice semnătură ML-DSA-87 validă conform FIPS-204, hedged sau
 deterministă. SDK-ul semnează determinist în mod implicit (începând cu 0.5.1)
 pentru ca o tranzacție să aibă mereu aceeași semnătură și același hash de tx.
 Dacă o tx hibridă eșuează cu `pqc` cod 21 (`hybrid_verify_failed`), cauza este
 versiunea sign-bytes, chain-id-ul, o bibliotecă PQC învechită sau o cheie
-neînregistrată, niciodată semnarea hedged.
+neînregistrată ori diferită, niciodată semnarea hedged.
 Ambele rețele verifică forma v2 a sign-bytes, așa că folosiți SDK **0.8.1 sau
-mai nou** și transmiteți `rest` (sau `signBytesVersion`): builder-ele aruncă o
-eroare pe `qorechain-vladi` / `qorechain-diana` dacă lipsesc amândouă. Vedeți
+mai nou** (0.9.0 este cel curent) și transmiteți `rest` (sau `signBytesVersion`):
+builder-ele aruncă o eroare pe `qorechain-vladi` / `qorechain-diana` dacă lipsesc
+amândouă. Vedeți
 [Depanarea codului 21](/developer-guide/post-quantum-signing#code-21) și
 [Conturi și semnare PQC](/sdk/concepts/accounts-pqc).
 
@@ -142,6 +145,46 @@ decodorul de tranzacții al lanțului o respinge la CheckTx. Începând cu
 toate cele cinci limbaje — tranzacțiile hibride construite cu versiuni mai
 vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 
+## Cu ce versiuni de chain funcționează SDK-ul?
+
+SDK **0.9.0** este versiunea de client pentru chain v3.2.2 și v3.2.3: tranzacționează pe
+mainnet **v3.2.3** și pe testnet **v3.2.4** și are constructori pentru dovada de
+posesie opțională la înregistrare (atașată automat de `ensurePqcRegistered` odată ce
+rețeaua a aplicat v3.2.3), pentru ferestrele EVM cu domeniu limitat și pentru mesajele
+de consimțământ EIP-7702.
+SDK **0.8.1 sau mai nou** tranzacționează de asemenea pe ambele rețele (forma v2 a
+sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcționează
+neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
+(vedeți
+[Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). v3.2.4 este activ deocamdată
+doar pe testnet (propunerea de guvernanță 13 de pe mainnet ar aplica-o la înălțimea
+3.742.566), iar SDK-ul nu setează niciun câmp v3.2.4.
+
+## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
+
+O înregistrare pentru un cont care deține deja o cheie este refuzată de chain după
+ce taxa a fost dedusă. `ensurePqcRegistered` din 0.9.0 citește mai întâi
+`GET /qorechain/pqc/v1/account/{address}` (transmiteți `rest`), omite înregistrarea
+când cheia acestei perechi de chei este înregistrată și aruncă `PqcKeyMismatchError`
+când este înregistrată alta. Versiunile anterioare nu verificau mai întâi, decât dacă
+transmiteați dvs. `status: { registered: found }`, unde `found` provine din acea rută.
+Începând cu v3.2.3, chain-ul refuză de asemenea cheile slabe, degenerate și
+refolosite; cheile de la `derivePqcCanonical` sau `tx pqc gen-key` sunt în regulă.
+
+## `create-qorechain-dapp` instalează un SDK care nu poate semna
+
+Doar versiunea 0.8.0 a scaffolder-ului: scria intervale `^0.3.0` pentru
+`@qorechain/sdk` și `@qorechain/evm`, iar un interval caret pe o versiune 0.x rămâne
+în interiorul lui 0.3. Versiunea 0.9.0 generează proiectul pe SDK-ul curent; dacă ați
+folosit 0.8.0, rulați `npm i @qorechain/sdk@latest` (și `@qorechain/evm@latest`) după
+generarea proiectului.
+
+## `VERSION` spune 0.8.0, dar am instalat 0.8.3
+
+Constanta exportată `VERSION` din 0.8.3 nu a fost actualizată și raportează `0.8.0`;
+începând cu 0.9.0 corespunde pachetului. În versiunile anterioare, citiți versiunea
+instalată din `package.json`.
+
 ## Cheltuirea mea prin authenticator este respinsă cu `authenticator_replay`
 
 (Modulul `abstractaccount` este dezactivat acum pe ambele rețele; o cheltuire
@@ -149,11 +192,16 @@ este refuzată cu `abstract account module is disabled` înainte de verificarea
 oricărui nonce. Vedeți [Authenticators și cheltuire delegată](/sdk/guides/authenticators).
 Indicațiile de mai jos se aplică după ce modulul este activat.)
 
-Nonce-ul este greșit. `MsgExecuteEVM.nonce` trebuie să fie nonce-ul EVM
-**curent** al contului (relayer-ul este un cont diferit, deci **nu** adăugați
-1); `MsgExecuteCosmos.nonce` este **secvența per-authenticator** pentru
-`(account, pubkey)`, un contor de stocare separat. Reobțineți valoarea și
-semnați din nou. Alte eșecuri ale authenticator-ului se decodează prin
-`decodeTxError`: codurile `abstractaccount` 5 (`spending_limit_exceeded`),
-6 (`session_key_expired`) și 10 (`permission_denied`). Vedeți
+Nonce-ul este greșit. Atât `MsgExecuteEVM.nonce`, cât și `MsgExecuteCosmos.nonce`
+sunt **secvența de authenticator** a cheii legate pentru `(account, pubkey)`: un
+contor pe care chain-ul îl ține pentru fiecare cheie legată, pornind de la 0 și
+incrementat la fiecare execuție reușită. **Nu** este nonce-ul EVM al contului și nu
+există încă o interogare pentru el, așa că urmăriți-l pentru fiecare cheie legată.
+Începând cu v3.2.3, lane-ul EVM semnează și `evmAuthSignBytesV2`, care leagă limita
+de gas a apelului (`resolveEvmAuthDigestVersion` alege forma). Folosiți contorul pe
+care îl urmăriți pentru acea cheie și semnați din nou.
+
+Alte eșecuri ale authenticator-ului se decodează prin `decodeTxError`: codurile
+`abstractaccount` 5 (`spending_limit_exceeded`), 6 (`session_key_expired`) și
+10 (`permission_denied`). Vedeți
 [Authenticators și cheltuire delegată](/sdk/guides/authenticators).

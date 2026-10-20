@@ -23,7 +23,7 @@ Everything in this section is a user how-to: what each page does and how to use 
 | **[Staking & Validators](/dashboard/staking-and-validators)** | Review validators and delegate your QOR. |
 | **[Faucet](/dashboard/faucet)** | Request test tokens on testnet. |
 | **[Quests](/dashboard/quests)** | Complete guided tasks to learn the network. |
-| **[Tools Hub](/dashboard/tools-hub)** | Reach light-node downloads and status, node registration, rollup requests, SDK, and licensing tooling. |
+| **[Tools Hub](/dashboard/tools-hub)** | Operator and builder tooling in six tabs: Validator Program, Validator Application, Light Node, Node Registration, Rollups and SDK. |
 
 ## Sign in {#sign-in}
 
@@ -39,7 +39,7 @@ Browsing the Dashboard never needs a wallet; connecting one is a separate step, 
 
 Most actions that change on-chain state — sending tokens, swapping, staking — require a connected wallet. How the Dashboard handles keys depends on the network:
 
-- **Mainnet is non-custodial.** The Dashboard never holds your mainnet keys. You connect your own wallet — **QoreX** (the official QoreChain wallet, extension or app), **Keplr**, or **MetaMask** — and the Dashboard reads your real balance and history from the chain. Every mainnet transaction is signed in your own wallet, never by the Dashboard. Sending and staking on the **Native rail require QoreX**, since QoreChain accounts sign with a post-quantum hybrid signature that only QoreX produces today; Keplr can still connect to view your Native-rail balance. **MetaMask** connects on the **EVM rail**; sending there also needs an open EVM authorisation window, which is opened from QoreX (see [Sending with MetaMask](/dashboard/wallet#send-metamask)).
+- **Mainnet is non-custodial.** The Dashboard never holds your mainnet keys. You connect your own wallet — **QoreX** (the official QoreChain wallet, extension or app), **Keplr**, or **MetaMask** — and the Dashboard reads your real balance and history from the chain. Every mainnet transaction is signed in your own wallet, never by the Dashboard. Sending and staking on the **Native rail require QoreX**, since QoreChain accounts sign with a post-quantum hybrid signature that only QoreX produces today; Keplr can still connect to view your Native-rail balance. **MetaMask** connects on the **EVM rail**; sending there also needs the account's post-quantum key and an open EVM authorisation window, which is opened from QoreX on the Ethereum-style (coin 60) account that shares MetaMask's key (see [Sending with MetaMask](/dashboard/wallet#send-metamask)).
 - **Testnet is custodial.** The Dashboard manages a test wallet for you, so you can experiment with zero setup and no real value at risk.
 
 ### Connect with QoreX (recommended) {#connect-qorex}
@@ -77,8 +77,8 @@ The Dashboard works against two networks. The header shows the network you are c
 
 | Network | Chain ID | When to use it |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Live network for real value and production use. Non-custodial: you connect your own wallet. |
-| **Testnet** | `qorechain-diana` | Free environment for testing, with a dashboard-managed test wallet and the [Faucet](/dashboard/faucet) for test tokens. |
+| **Mainnet** | `qorechain-vladi` | Live network (live since 7 June 2026, running chain v3.2.3) for real value and production use. Non-custodial: you connect your own wallet. |
+| **Testnet** | `qorechain-diana` | Free environment for testing (running chain v3.2.4, a testnet-only release), with a dashboard-managed test wallet and the [Faucet](/dashboard/faucet) for test tokens. |
 
 The native token is **QOR** (base denomination `uqor`, where 1 QOR = 10^6 uqor). If you are new, start on testnet, claim tokens from the Faucet, and try a first transfer before moving to mainnet.
 
@@ -91,5 +91,5 @@ Follow [Connecting to Testnet](/getting-started/connecting-to-testnet) and [Your
 * [Explorer](/dashboard/explorer) — browse blocks, transactions, and accounts.
 * [Wallet](/dashboard/wallet) — manage accounts and send transactions.
 * [Trade / DEX](/dashboard/trade) — swap tokens against on-chain AMM pools.
-* [Tools Hub](/dashboard/tools-hub) — light-node downloads and status, node registration, rollup requests, SDK, and licensing.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups and SDK.
 * [Faucet](/dashboard/faucet) — test tokens on testnet.

@@ -10,7 +10,7 @@ sidebar_position: 12
 `x/rdk` modülü, geliştiricilerin QoreChain üzerinde uygulamaya özel rollup'lar dağıtmasına olanak tanıyan kapsamlı bir Rollup Geliştirme Kiti (RDK) sağlar. Dört uzlaşma (settlement) paradigmasını, birden fazla sıralayıcı (sequencer) modunu, takılabilir veri erişilebilirliği (data availability) arka uçlarını ve yapay zeka destekli yapılandırma optimizasyonunu destekler.
 
 :::caution Erken aşama yetenek
-Modül mainnet üzerinde (zincir sürümü **v3.2.1**) ve testnet üzerinde dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır**. Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
+Modül mainnet üzerinde (zincir sürümü **v3.2.3**) ve testnet üzerinde (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (20 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
 :::
 
 ---
@@ -19,13 +19,13 @@ Modül mainnet üzerinde (zincir sürümü **v3.2.1**) ve testnet üzerinde dağ
 
 QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik (finality) özelliklerine ve kanıt gereksinimlerine sahip dört farklı uzlaşma modunu destekler: **optimistic**, **zk**, **based** ve **sovereign**.
 
-### Optimistic Uzlaşma
+### Optimistic Uzlaşma {#optimistic-settlement}
 
 Optimistic rollup'lar işlemlerin varsayılan olarak geçerli olduğunu kabul eder ve anlaşmazlık çözümü için dolandırıcılık kanıtlarına (fraud proofs) dayanır.
 
 * **Kanıt sistemi**: Etkileşimli dolandırıcılık kanıtları
-* **İtiraz penceresi**: 604.800 "saniye" (varsayılan); zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür — **100.800 blok**. Gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3,2 sn'lik bloklarında yaklaşık 3,7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın.
-* **İtiraz teminatı**: 1.000 QOR (1.000.000.000 uqor) — bir dolandırıcılık kanıtı itirazı göndermek için gereklidir (`nft` ve `custom` hazır profilleri; `defi`, `gaming` ve `enterprise` hazır profillerinde itiraz penceresi olmadığı için teminat belirlenmez)
+* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **Mainnet (v3.2.3):** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **Yalnızca testnet (v3.2.4, 8,337,253 yüksekliğinde uygulandı):** o yükseklikten itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Mainnet'te bu değişiklik yalnızca v3.2.4 ile yürürlüğe girecektir (yönetişim önerisi 13 bunu 3,742,566 yüksekliğinde uygulayacaktır).
+* **İtiraz teminatı**: 1,000 QOR (1,000,000,000 uqor) — bir dolandırıcılık kanıtı itirazı göndermek için gereklidir (`nft` ve `custom` hazır profilleri; `defi`, `gaming` ve `enterprise` hazır profillerinde itiraz penceresi olmadığı için teminat belirlenmez)
 * **Kesinlik**: Geçerli bir itiraz olmadan itiraz penceresi sona erene kadar ertelenir
 * **Otomatik kesinleştirme**: `EndBlocker`, itiraz penceresi anlaşmazlık olmadan geçtiğinde partileri (batch) otomatik olarak kesinleştirir. İtiraz edilen bir parti asla otomatik olarak kesinleştirilmez: rollup oluşturucusu önce itirazı çözer ([Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups) bölümüne bakın).
 
@@ -42,7 +42,7 @@ ZK rollup'lar, durum geçişinin doğruluğunu garanti eden kriptografik geçerl
 
 * **Kanıt sistemi**: SNARK (BLS12-381 üzerinde Groth16) veya STARK (şeffaf, güvenilir kurulum gerektirmez)
 * **Kesinlik**: Kanıt doğrulamasında anında — itiraz penceresi gerekmez
-* **Maksimum kanıt boyutu**: 1 MB (1.048.576 bayt)
+* **Maksimum kanıt boyutu**: 1 MB (1,048,576 bayt)
 * **Özyineleme derinliği**: Yapılandırılabilir kanıt toplama derinliği (varsayılan: 1)
 * **Olgunluk**: SNARK partileri, rollup ile birlikte saklanan bir doğrulama anahtarına karşı zincir üstünde doğrulanır (BLS12-381 üzerinde Groth16). `create-rollup` ile oluşturulan bir rollup şu anda doğrulama anahtarı taşımaz, bu nedenle ZK partileri henüz uçtan uca kesinleştirilemez. STARK doğrulaması deneyseldir: isteğe bağlıdır (opt-in) ve rollup'ınızın kendi durum geçişini değil, bir gösterim devresini kontrol eder. ZK uzlaşmayı üretime hazır değil olarak değerlendirin.
 
@@ -157,8 +157,8 @@ Modül blob depolamayı, saklamayı ve budamayı tanımlar, ancak mevcut sürüm
 
 | Parametre            | Değer                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
-| **Maksimum blob boyutu** | 2 MB (2.097.152 bayt)                                                                            |
-| **Saklama süresi**   | 432.000 blok (mainnet'in mevcut ≈3,2 sn'lik bloklarında yaklaşık 16 gün; rakam blok süresiyle birlikte değişir) |
+| **Maksimum blob boyutu** | 2 MB (2,097,152 bayt)                                                                            |
+| **Saklama süresi**   | 432,000 blok (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 16 gün; rakam blok süresiyle birlikte değişir) |
 | **Otomatik budama**  | Süresi dolan blob'lar `EndBlocker` içinde budanır — veriler kaldırılır ancak taahhüt meta verileri korunur |
 | **Taahhüt**          | Blob verisinin SHAKE-256 (32 baytlık) karması                                                        |
 
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup kaydedildi ancak henüz etkinleştirilmedi             |
 | **Active**  | Rollup canlı ve partileri işliyor                            |
 | **Paused**  | Oluşturucu tarafından geçici olarak durduruldu (devam edebilir) |
-| **Stopped** | Kalıcı olarak hizmet dışı bırakıldı — teminat (stake) oluşturucuya iade edildi |
+| **Stopped** | Kalıcı olarak hizmet dışı bırakıldı — oluşturucunun emanetinde (escrow) kalan tutar iade edilir (bkz. [Emanet defteri](#escrow-ledger)) |
 
 Oluşturma sırasında, teminat emanetinin (escrow) ve oluşturma yakımının başarılı olmasının hemen ardından rollup durumu `Active` olarak ayarlanır (katman kaydı denenir ancak ölümcül değildir). Bir rollup'ı yalnızca oluşturucu duraklatabilir, devam ettirebilir veya durdurabilir (zincir sürümü v3.2.0'dan beri zorunlu kılınır).
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Uzlaşma Modu    | Kesinleştirme Tetikleyicisi                                  |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | Gönderimden 100.800 blok sonra (varsayılan pencere) itiraz olmadan |
+| **Optimistic**  | Gönderimden 100,800 blok sonra (varsayılan pencere) itiraz olmadan; testnet'te, v3.2.4'ten beri gönderilen partiler için blok süresinin 604,800 saniyesi |
 | **ZK**          | Geçerli kanıt gönderiminde anında                           |
 | **Based**       | Gönderimden 2 L1 bloğu sonra                                 |
 | **Sovereign**   | Yok — rollup'ın kendi uzlaşması tarafından yönetilir        |
@@ -233,11 +233,11 @@ Otomatik kesinleştirme, optimistic ve based rollup'lar için `EndBlocker` için
 | Parametre                   |                        Varsayılan | Açıklama                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
 | `max_rollups`               |                              100 | Kaydedilebilecek maksimum rollup sayısı          |
-| `min_stake_for_rollup`      | 10.000.000.000 uqor (10.000 QOR) | Bir rollup oluşturmak için gereken minimum teminat |
+| `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Bir rollup oluşturmak için gereken minimum teminat |
 | `rollup_creation_burn_rate` |                        0.01 (%1) | `x/burn` aracılığıyla yakılan oluşturma teminatının oranı |
-| `default_challenge_window`  | 604.800 (100.800 bloğa dönüştürülür) | Varsayılan optimistic itiraz penceresi           |
-| `max_da_blob_size`          |          2.097.152 bayt (2 MB)   | Maksimum veri erişilebilirliği blob boyutu       |
-| `blob_retention_blocks`     |                   432.000 blok   | DA blob'larının budanmasından önceki blok sayısı |
+| `default_challenge_window`  | 604,800 (100,800 bloğa dönüştürülür) | Varsayılan optimistic itiraz penceresi           |
+| `max_da_blob_size`          |          2,097,152 bayt (2 MB)   | Maksimum veri erişilebilirliği blob boyutu       |
+| `blob_retention_blocks`     |                   432,000 blok   | DA blob'larının budanmasından önceki blok sayısı |
 | `max_batches_per_block`     |                               10 | Blok başına işlenen maksimum uzlaşma partisi     |
 
 ---
@@ -248,25 +248,53 @@ RDK modülü, katmanlar arası durum yönetimi için `x/multilayer` ile entegre 
 
 ### Katman Kaydı {#layer-registration}
 
-Bir rollup oluşturulduğunda, modül onun için `RegisterSidechain` aracılığıyla bir katman kaydeder; dolayısıyla zincir üstünde katman türü **`sidechain`**'dir, `proposed` durumunda başlar, multilayer yan zincir sınırına (`max_sidechains`, varsayılan **10**) dahil edilir ve oluşturucunun `min_sidechain_stake` tutarını (1.000 QOR) kilitler. Kayıt şunları içerir:
+Bir rollup oluşturulduğunda, modül onun için `RegisterSidechain` aracılığıyla bir katman kaydeder; dolayısıyla zincir üstünde katman türü **`sidechain`**'dir, `proposed` durumunda başlar, multilayer yan zincir sınırına (`max_sidechains`, varsayılan **10**) dahil edilir ve oluşturucunun `min_sidechain_stake` tutarını (1,000 QOR) kilitler. Kayıt şunları içerir:
 
 * Katman kimliği (rollup kimliğiyle eşleşir)
 * Hedef blok süresi ve blok başına maksimum işlem sayısı
 * Desteklenen VM türleri ve alanlar (domain)
 * Uzlaşma aralığı
 
-Kayıt **ölümcül değildir**: başarısız olursa (yetersiz bakiye veya sınıra ulaşılması) rollup yine de oluşturulur, ancak katmanı olmaz ve demirlenemez.
+Kayıt **ölümcül değildir**: başarısız olursa (yetersiz bakiye veya sınıra ulaşılması) rollup yine de oluşturulur, ancak katmanı olmaz ve demirlenemez. Bir uzlaşma demiri, katmanın `active` olmasını gerektirmez: bir RDK rollup'ının kaydettiği katman `proposed` durumunda kalır ve yine de oluşturucusu tarafından demirlenebilir ([Bağlantı Gönderimi](/architecture/multilayer-architecture#anchor-submission) bölümüne bakın).
 
 ### Durum Demirleme {#state-anchoring}
 
 Bir uzlaşma partisi `x/multilayer`'a demirlenebilir; bu, rollup oluşturucusunun kuantum sonrası imzası altında katman kimliğini, katman yüksekliğini (parti indeksi), durum kökünü, doğrulayıcı kümesi karmasını ve işlem sayısını kaydeder.
 
-* **Bugün mainnet'te:** partiler uzlaştırılır ancak demirlenmez — RDK, demirlemenin gerektirdiği oluşturucu imzasını sağlamaz, bu nedenle demirleme adımı başarılı olmaz ve hiçbir demir yazılmamıştır. Demirleme ölümcül değildir: parti işlemeyi asla engellemez.
+* **v3.2.2'den beri (mainnet ve testnet'te canlı):** `MsgSubmitBatch` iki isteğe bağlı alana sahiptir. `anchor_signature`, oluşturucunun partinin **v2 demir imza baytları** üzerindeki ML-DSA-87 imzasıdır ([Bağlantıları Okuma](/architecture/multilayer-architecture#reading-anchors) bölümüne bakın); mevcut olduğunda parti `x/multilayer` içinde **aynı işlemde** demirlenir ve reddedilen bir demir partiyi de reddeder. `validator_set_hash`, demirde taşınan ve imzayla kapsanan rollup'ın doğrulayıcı kümesi taahhüdüdür. CLI'da: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imzalanacak baytları yazdırır ve `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` bunları gönderir.
+* **İmza olmadan** parti, eskisi gibi demirlenmeden uzlaştırılır. Alanı göndermeyen bir istemci demirlenmemiş partiler üretir, bu nedenle kullandığınız araç setinin bunu desteklediğini kontrol edin. Her iki ağda da henüz hiçbir rollup, katman veya demir yoktur, dolayısıyla hiçbir demir yazılmamıştır.
 
 Bir demirin neyi kanıtlayıp neyi kanıtlamadığı için [Uzlaşma Makbuzları](/rollups/settlement-receipts) bölümüne bakın.
 
 ---
 
+## Emanet defteri ve çekimler {#escrow-ledger}
+
+Tüm rollup'ların emaneti tek bir havuzlanmış modül bakiyesinde durur. **v3.2.3**'ten itibaren (mainnet yüksekliği 3,662,051, 20 Ekim 2026) rollup başına bir **emanet defteri**, her rollup'ın bu havuzda ne tuttuğunun tek kaydıdır:
+
+* `create-rollup`, deftere rollup'ın gerçekten elinde tuttuğu emaneti yazar: teminat eksi %1 oluşturma yakımı.
+* Bir çekim (`tx rdk execute-withdrawal`) ve bir dolandırıcılık kanıtı ödülü defterden ödenir ve defterden düşülür. Rollup'ın hâlâ tuttuğundan büyük bir çekim, yetersiz emanet hatasıyla reddedilir.
+* `stop-rollup` yalnızca defterde kalanı iade eder ve defteri sıfırlar. Durdurulmuş bir rollup başka çekim ödemez.
+* Rollup sorgularının döndürdüğü salt okunur `RollupView`, `escrow_balance` alanını taşır: o rollup için hâlâ tutulan uqor.
+
+v3.2.3'ten önce deftere sıfır yazılıyordu, bu yüzden her çekim güvenli biçimde başarısız oluyordu (fail closed); dolayısıyla `execute-withdrawal` mainnet'te yalnızca v3.2.3'ten itibaren başarılı olabilir. Bir istemcinin ücret ödemeden önce çalıştırması gereken kontroller: denom tam olarak `uqor` olmalı, tutar pozitif olmalı, Merkle kanıtı en fazla 64 seviyeye sahip olmalı ve her kardeş düğüm tam olarak 32 bayt olmalı, ayrıca gönderen ve alıcı geçerli `qor1…` adresleri olmalıdır. Bir çekim ayrıca bir `withdrawals_root` taahhüt etmiş kesinleşmiş bir parti gerektirir ve her çekim yaprağı yalnızca bir kez ödenebilir.
+
+## RDK durumunu okuma {#reading-state}
+
+RDK sorguları mainnet ve testnet'te REST üzerinden `/qorechain/rdk/v1/` altında sunulur:
+
+| Rota | Döndürür |
+| --- | --- |
+| `/params` | Modül parametreleri (yukarıdaki tablo) |
+| `/rollups` ve `/rollup/{rollup_id}` | `escrow_balance` dahil rollup kayıtları |
+| `/batches/{rollup_id}` | Sayfalanmış partiler (`start_index`, `limit` varsayılan 50, en fazla 100, `next_index`) |
+| `/batch/{rollup_id}/{batch_index}` ve `/latest_batch/{rollup_id}` | Tek bir parti veya en yenisi |
+| `/blob/{rollup_id}/{blob_index}` | `expires_at_height` dahil blob meta verileri (blob baytları döndürülmez) |
+
+`qorechaind query rdk config` modül parametrelerini yazdırır (rota `/params`'tır; `/config` rotası yoktur). Rollup ve katman kimlikleri, v3.2.2'den beri zorunlu kılınan [Katman ve rollup kimlikleri](/architecture/multilayer-architecture#id-grammar) bölümündeki kimlik dilbilgisiyle eşleşmelidir.
+
+---
+
 ## Yakma Entegrasyonu
 
-Rollup oluşturma sırasında, **teminat tutarının %1'i** `rollup_create` yakma kanalı aracılığıyla `x/burn` modülü ile yakılır. Örneğin, minimum 10.000 QOR teminat ile bir rollup oluşturmak 100 QOR'u kalıcı olarak yakar. Kalan 9.900 QOR emanette tutulur ve rollup durdurulduğunda iade edilir. Oluşturma yakımı zincir sürümü v3.2.0'dan beri zorunlu kılınır; önceki sürümler bunu uygulamıyordu.
+Rollup oluşturma sırasında, **teminat tutarının %1'i** `rollup_create` yakma kanalı aracılığıyla `x/burn` modülü ile yakılır. Örneğin, minimum 10,000 QOR teminat ile bir rollup oluşturmak 100 QOR'u kalıcı olarak yakar. Kalan 9,900 QOR emanette tutulur ve rollup durdurulduğunda, geriye kalanı oluşturucuya iade edilir (emanetten ödenen çekimler ve dolandırıcılık kanıtı ödülleri iadeyi azaltır). Oluşturma yakımı zincir sürümü v3.2.0'dan beri zorunlu kılınır; önceki sürümler bunu uygulamıyordu.

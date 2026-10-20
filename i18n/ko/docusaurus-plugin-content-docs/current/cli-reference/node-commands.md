@@ -10,7 +10,9 @@ sidebar_position: 1
 QoreChain 노드를 초기화, 설정, 운영하는 데 사용하는 `qorechaind` 명령어 레퍼런스입니다.
 
 :::note
-QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 29일부터 운영 중이며, 현재 노드 릴리스는 **v3.2.1**)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.2**)입니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요. 각 네트워크의 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에 나와 있습니다.
+QoreChain은 두 개의 네트워크를 운영합니다: **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 운영 중이며, 노드 릴리스 **v3.2.3**은 2026년 10월 20일 높이 3,662,051에서 적용됨)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.4**는 2026년 10월 19일 높이 8,337,253에서 적용됨. v3.2.4는 아직 메인넷에 적용되지 않았으며, 거버넌스 제안 13이 통과되면 높이 3,742,566에서 적용됨)입니다. 참여하려는 네트워크에 맞는 `--chain-id`를 지정하세요 — 아래 예시는 테스트넷을 대상으로 하며, 메인넷의 경우 `--chain-id qorechain-vladi`를 사용하세요. 각 네트워크의 현재 릴리스는 [download.qore.host](https://download.qore.host)의 `latest.json`에 나와 있습니다.
+
+이 페이지의 명령어는 메인넷 릴리스인 v3.2.3 릴리스 바이너리를 기준으로 확인했습니다. 테스트넷의 v3.2.4 바이너리에는 메인넷에 없는 명령어가 추가되어 있으며, 이 매뉴얼에서 그런 명령어를 언급하는 경우 **테스트넷 전용**으로 표시합니다.
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ---------------------------------------------- |
 | `--home`               | string | 노드 홈 디렉터리                                  |
 | `--minimum-gas-prices` | string | 이 노드가 수락하는 최소 가스 가격. 네트워크 하한은 `0.1uqor`이므로 최소한 그 값 이상으로 설정하세요 |
-| `--pruning`            | string | 프루닝 전략: `default`, `nothing`, `everything` |
+| `--pruning`            | string | 프루닝 전략: `default`, `nothing`, `everything`, `custom` (`--pruning-keep-recent` 및 `--pruning-interval`과 함께 사용) |
 | `--halt-height`        | uint   | 해당 블록 높이에서 노드를 정지합니다                   |
 | `--halt-time`          | uint   | 해당 Unix 타임스탬프에서 노드를 정지합니다                |
 | `--log_level`          | string | 로그 상세 수준: `info`, `debug`, `warn`, `error`      |
 | `--trace`              | bool   | 오류 발생 시 전체 스택 트레이스를 활성화합니다                |
 
+공개 소스 트리로 빌드한 바이너리(커뮤니티 빌드)는 `qorechain-vladi` 또는 `qorechain-diana`에서 시작을 거부합니다. 양자내성 서명을 검증할 수 없고 네트워크의 블록을 정확하게 재생할 수 없기 때문입니다(노드 릴리스 v3.2.3 이후). [download.qore.host](https://download.qore.host)의 릴리스 바이너리를 사용하세요. [소스에서 빌드하기](/developer-guide/building-from-source)를 참조하세요.
+
 ---
 
 ## version
 
-`qorechaind` 바이너리 버전과 빌드 정보를 출력합니다.
+릴리스 바이너리에서 `qorechaind version`은 릴리스 번호를 **출력하지 않습니다**: 빈 줄을 출력하며, `version --long`도 빌드 세부 정보를 추가하지 않습니다. 릴리스를 구분하는 데 이 명령어에 의존하지 마세요. 실행 중인 버전을 확인하려면 다음을 사용하세요.
+
+- 압축을 풀기 전에 **다운로드한 아카이브**의 SHA-256을 네트워크 [매니페스트](https://download.qore.host/mainnet/latest.json)의 `binary.sha256`과 비교하세요(설치한 내용의 기록으로 그 아카이브 또는 체크섬을 보관하세요).
+- 체인에 적용된 업그레이드를 조회하세요: `GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>`은 업그레이드가 적용된 높이를 반환하며, 적용되지 않았으면 `0`을 반환합니다.
 
 ```bash
-qorechaind version
-```
-
-Go 버전, 커밋 해시, 빌드 태그를 포함한 확장 빌드 정보를 보려면 `--long`을 사용하세요.
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

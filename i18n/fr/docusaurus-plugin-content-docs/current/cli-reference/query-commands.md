@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** pour des données en direct (par exemple `--node https://rpc.qore.host:443`), ou un point d'accès du testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même. Le mainnet exécute la version de nœud v3.2.1 et le testnet la v3.2.2 ; le testnet peut servir quelques routes supplémentaires que le mainnet n'a pas encore, de sorte qu'une requête qui fonctionne sur le testnet peut renvoyer `Not Implemented` sur le mainnet.
+Les requêtes s'exécutent sur le nœud vers lequel pointe `--node`. Utilisez un point d'accès RPC du mainnet **`qorechain-vladi`** pour des données en direct (par exemple `--node https://rpc.qore.host:443`), ou un point d'accès du testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pour les tests. La valeur par défaut `tcp://localhost:26657` cible un nœud que vous exécutez vous-même. Le mainnet exécute la version de nœud v3.2.3 et le testnet la v3.2.4 ; le testnet sert quelques routes et commandes supplémentaires que le mainnet n'a pas (signalées **testnet uniquement** ci-dessous), de sorte qu'une requête qui fonctionne sur le testnet peut renvoyer `Not Implemented` sur le mainnet. Les commandes de cette page ont été vérifiées avec le binaire de la version v3.2.3, exécuté sur `https://rpc.qore.host:443`.
 :::
 
 Des indicateurs communs s'appliquent à chaque sous-commande `query` :
@@ -110,11 +110,15 @@ qorechaind query pqc params
 qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
 qorechaind query pqc evm-window <address>
+qorechaind query pqc evm-delegation-consent <address>
 ```
 
 - `algorithm` prend un nom d'algorithme (`dilithium5`, `mlkem1024`) ou un ID numérique.
 - `migration` prend un **ID d'algorithme** (par exemple `1`), et non une adresse, et renvoie `No active migration` lorsqu'aucune n'est en cours.
-- `evm-window` indique si l'adresse dispose d'une fenêtre d'autorisation ouverte sur la voie EVM et combien de blocs, de transactions et de valeur il reste (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`). REST : `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `account` indique la clé enregistrée. Outre la clé, `key_type` et `algorithm_name`, l'enregistrement contient `classical_key_source` (`stored`, `auth_account` ou `none` : d'où provient la clé publique classique). Sur le testnet (v3.2.4, **testnet uniquement**), il contient aussi `possession_proven`, qui vaut `true` lorsque la clé a été enregistrée avec une preuve de possession vérifiée.
+- `evm-window` indique si l'adresse dispose d'une fenêtre d'autorisation ouverte sur la voie EVM et combien de blocs, de transactions et de valeur il reste (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`), ainsi que le périmètre de la fenêtre (`native_only`, `allowed_targets` ; depuis la v3.2.3 du mainnet). REST : `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `evm-delegation-consent` indique le consentement de délégation EIP-7702 de l'adresse (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), sa délégation actuelle et son nonce EVM. REST : `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+- `params` et `hybrid-mode` indiquent `hybrid_signature_mode` (`2` = requis sur les deux réseaux) et `allow_classical_fallback` (`false`).
 
 ---
 
@@ -130,13 +134,22 @@ curl -s https://api.qore.host/qorechain/burn/v1/milestone
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-`stranded_rewards` indique la part des stakers qui a été déposée dans le module de distribution sans adosser de réclamation, telle qu'enregistrée lors de la mise à niveau v3.2.0 (`reserved`, `released`, `snapshot_height`). Elle ne peut être libérée que par un vote de gouvernance.
+`stranded_rewards` indique la part des stakers qui a été déposée dans le module de distribution sans adosser de réclamation (`reserved`, `released`, `snapshot_height`). Elle ne peut être libérée que par un vote de gouvernance. La réserve a été enregistrée pour la première fois lors de la mise à niveau v3.2.0 et recalculée à la hauteur de la mise à niveau v3.2.3 ; lisez donc les valeurs en direct plutôt qu'un chiffre cité ailleurs.
+
+`stats` ventile le burn cumulé par source, y compris `failed_tx`, qui est non nul depuis la mise à niveau v3.2.2.
 
 ---
 
 ## mint et inflation
 
-`qorechaind query mint params|inflation|annual-provisions` lit le module mint standard, dont le taux est `0` sur les deux réseaux ; il ne rapporte **pas** le calendrier d'émission du protocole. Il n'existe pas de commande `query inflation`.
+`qorechaind query mint params|inflation|annual-provisions` lit le module mint standard, dont le taux est `0` sur les deux réseaux ; il ne rapporte **pas** le calendrier d'émission du protocole. Il n'existe pas de commande CLI `query inflation`. Les paramètres d'émission propres au protocole et leur progression sont servis via REST depuis la v3.2.2 :
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mode, fixed_epoch_emission, max_total_emission, epoch_length
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
+```
+
+Sur le mainnet, ces routes indiquent `emission_mode: "fixed"`, une émission fixe de 86 000 QOR par époque de 43 200 blocs et un plafond cumulé de 590 000 000 QOR (proposition de gouvernance 10, adoptée le 19 octobre 2026 ; la première époque au nouveau montant commence au bloc 3 672 000). Les montants sont en `uqor`. Le testnet indique toujours ses propres valeurs, différentes ; la version v3.2.4 du testnet ajoute un autre mode d'émission que le mainnet n'a pas (**testnet uniquement**).
 
 ---
 
@@ -171,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` indique comment le solde de récompenses du module se répartit en `reserved`, `outstanding`, `payable` et `distributable`.
+`reward-pool` indique comment le solde de récompenses du module se répartit en `reserved`, `outstanding`, `payable` et `distributable`, ainsi que les bornes par nœud : `max_reward_per_block_per_node` et, depuis la v3.2.3, `max_reward_per_month_per_node` (2 000 QOR, au prorata du temps de bloc et de la disponibilité). Sur le testnet (v3.2.4, **testnet uniquement**), il indique aussi `monthly_cap_active`, `last_distribution_time` et `last_distribution_height`.
 
 ---
 
@@ -242,7 +255,12 @@ qorechaind query rdk batch <rollup_id>            # latest batch
 qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-`config` affiche les paramètres du module (mise minimale, taux de burn à la création, fenêtre de contestation, limites DA). `suggest-profile <use_case>` n'interroge pas la chaîne ; il se contente d'afficher un pointeur vers une méthode JSON-RPC que les points d'accès publics ne servent pas, donc choisissez un profil dans [Profils prédéfinis](/rollups/preset-profiles).
+```bash
+qorechaind query rdk batches <rollup_id> [--start 0] [--limit 100]   # batches in index order
+qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>
+```
+
+`config` affiche les paramètres du module (mise minimale, taux de burn à la création, fenêtre de contestation, limites DA). `anchor-sign-bytes` affiche, en hexadécimal, les octets de signature d'ancrage v2 que le créateur d'un rollup signe pour `tx rdk submit-batch --anchor-signature`. Les mêmes requêtes sont servies via REST sous `/qorechain/rdk/v1/...` depuis la v3.2.2 (voir [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#rdk-module)). `suggest-profile <use_case>` n'interroge pas la chaîne ; il se contente d'afficher un pointeur vers une méthode JSON-RPC que les points d'accès publics ne servent pas, donc choisissez un profil dans [Profils prédéfinis](/rollups/preset-profiles).
 
 ---
 
@@ -275,7 +293,44 @@ qorechaind query abstractaccount permission-schema
 
 ## gasabstraction
 
-Le mainnet ne sert pas encore de requêtes d'abstraction de gaz (`qorechaind query gasabstraction ...` affiche son texte d'aide et la route REST renvoie `Not Implemented`). Les frais se paient uniquement en `uqor` ; voir [Abstraction de gaz](/user-guide/gas-abstraction).
+Les requêtes d'abstraction de gaz sont servies sur les deux réseaux depuis la v3.2.2 :
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate <denom>   # what one unit of a fee token is worth in uqor, and whether it can pay fees
+qorechaind query gasabstraction float                     # the conversion float's balances and this block's usage
+```
+
+La liste des tokens acceptés ne contient que l'`uqor` natif sur les deux réseaux : les frais se paient donc en `uqor` et aucune conversion n'a lieu ; la gouvernance décide quels autres tokens sont acceptés. REST : `/qorechain/gasabstraction/v1/config`, `/conversion_rate?denom=`, `/float`. Voir [Abstraction de gaz](/user-guide/gas-abstraction).
+
+---
+
+## amm
+
+```bash
+qorechaind query amm params
+qorechaind query amm pools
+qorechaind query amm pool <pool_id>
+qorechaind query amm pool-by-denoms <denom_a> <denom_b>
+qorechaind query amm lp-balance <pool_id> <address>
+qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
+qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
+```
+
+Aucun pool n'existe sur l'un ou l'autre réseau au moment de la rédaction.
+
+---
+
+## stakingtier (testnet uniquement)
+
+```bash
+qorechaind query stakingtier params
+qorechaind query stakingtier locks <holder_address>
+qorechaind query stakingtier pool
+```
+
+Le module de paliers de staking fait partie de la version **v3.2.4**, qui ne s'exécute que sur le testnet ; le mainnet n'a pas encore ce module (la proposition de gouvernance 13 appliquerait la v3.2.4 à la hauteur 3 742 566). REST : `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Voir [Commandes de transaction](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -289,6 +344,8 @@ qorechaind query upgrade plan
 qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
+
+`query upgrade applied <name>` permet de lire quand une mise à niveau a pris effet : sur le mainnet, la `v3.2.2` a été appliquée à la hauteur 3 556 788 et la `v3.2.3` à la hauteur 3 662 051 ; sur le testnet, la `v3.2.2` à 6 905 034, la `v3.2.3` à 8 003 746 et la `v3.2.4` à 8 337 253 (`0` signifie non appliquée). La liste du coupe-circuit du mainnet (`disabled-list`) contient actuellement les messages de création de comptes de vesting, le stockage et l'instanciation CosmWasm, la pause et la reprise des pools AMM, l'appel cross-VM, la mise à jour du statut des couches multilayer, la dépréciation et la désactivation des algorithmes PQC, et les messages de gouvernance du consensus PRISM ; celle du testnet ne contient que les trois messages CosmWasm.
 
 ---
 

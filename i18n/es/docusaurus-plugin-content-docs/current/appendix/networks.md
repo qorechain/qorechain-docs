@@ -16,15 +16,15 @@ Una referencia consolidada de las redes de QoreChain: identificadores de cadena,
 | **Estado** | En producción | Testnet activa |
 | **Chain ID de Cosmos** | `qorechain-vladi` | `qorechain-diana` |
 | **Chain ID de EVM (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **En producción desde** | 29 de junio de 2026, 17:03 UTC (bloque génesis) | 1 de julio de 2026 (continua desde entonces; sin reinicio) |
-| **Versión de la cadena** | v3.2.1 (reglas de consenso de v3.2.0) | v3.2.2 |
+| **En producción desde** | 7 de junio de 2026 | 1 de julio de 2026 (continua desde entonces; sin reinicio) |
+| **Versión de la cadena** | v3.2.3 (aplicada en la altura 3,662,051, 20 de octubre de 2026) | v3.2.4 (aplicada en la altura 8,337,253, 19 de octubre de 2026; solo testnet) |
 | **Tiempo de bloque (promedio medido)** | unos 3,2 s | unos 1,0 s |
 | **Manifiesto de versión** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Precio mínimo de gas** | `0.1uqor` | `0.1uqor` |
 | **Guía de conexión** | [Conexión a Mainnet](/getting-started/connecting-to-mainnet) | [Conexión a Testnet](/getting-started/connecting-to-testnet) |
 
-Ambos manifiestos son la fuente de verdad de la versión que debe ejecutar un nodo nuevo. El manifiesto de testnet (v3.2.2) incluye una altura de actualización porque la testnet recibe actualizaciones coordinadas mediante gobernanza, mientras que la v3.2.1 de mainnet es una versión progresiva, local al nodo, sobre las reglas de consenso de v3.2.0.
+Ambos manifiestos son la fuente de verdad de la versión que debe ejecutar un nodo nuevo. Ambas redes reciben actualizaciones coordinadas mediante gobernanza, por lo que cada manifiesto incluye el `upgradeHeight` de su versión actual y un `minCompatible` igual a esa versión (mainnet 3.2.3, testnet 3.2.4). La v3.2.4 existe hasta ahora solo en la testnet; la propuesta de gobernanza 13 de la mainnet la aplicaría en la altura 3,742,566 (votación hasta el 21 de octubre de 2026, 21:18 UTC).
 
 ## Endpoints públicos {#public-endpoints}
 

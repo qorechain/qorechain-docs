@@ -11,7 +11,7 @@ QoreChain に関する一般的な質問にドキュメントから回答しま�
 
 ### メインネットは稼働していますか？
 
-はい。QoreChain メインネット（チェーン `qorechain-vladi`、EVM チェーン ID 9801）は 2026 年 6 月 29 日から稼働しており、リリース v3.2.1 を実行しています。[ネットワーク](/appendix/networks) および [メインネットへの接続](/getting-started/connecting-to-mainnet) を参照してください。
+はい。QoreChain メインネット（チェーン `qorechain-vladi`、EVM チェーン ID 9801）は 2026 年 6 月 7 日から稼働しており、リリース v3.2.3 を実行しています（テストネット `qorechain-diana` は v3.2.4 を実行しています）。[ネットワーク](/appendix/networks) および [メインネットへの接続](/getting-started/connecting-to-mainnet) を参照してください。
 
 ### チェーン ID と EVM チェーン ID は何ですか？
 
@@ -39,15 +39,19 @@ PRISM は、QoreChain コンセンサスエンジンに組み込まれた強化�
 
 ### ノード、バリデータ、またはライトノードを実行するにはどうすればよいですか？
 
-フルノードについては [ノードの実行](/developer-guide/running-a-node) を参照してください。バリデータについては [バリデータの実行](/developer-guide/running-a-validator) を参照してください。ライトノードについては [ライトノード](/light-node/overview) を参照してください。
+フルノードについては [ノードの実行](/developer-guide/running-a-node) を参照してください。バリデータについては [バリデータの実行](/developer-guide/running-a-validator) を参照してください。ライトノードについては [ライトノード](/light-node/overview) を参照してください。ライトノード報酬プログラムの登録は受付中で、ライセンスによる制限があります（[ステータス](/light-node/overview#reward-program-status)）。
 
 ### QoreChain はどの署名方式を使用していますか？
 
-QoreChain は、古典的な **secp256k1 (ECDSA)** とポスト量子の **ML-DSA-87 (Dilithium-5)** を組み合わせたポスト量子ハイブリッド方式を使用します。このハイブリッド方式は Cosmos トランザクションパスでデフォルトで必須であり、強制モードはガバナンスによって制御されます。EVM レーンでは署名は secp256k1 のままで、アカウントはさらに、登録済みの ML-DSA 鍵と開いている承認ウィンドウを保持している必要があります（v3.2.0）。[ポスト量子セキュリティ](/architecture/post-quantum-security) を参照してください。
+QoreChain は、古典的な **secp256k1 (ECDSA)** とポスト量子の **ML-DSA-87 (Dilithium-5)** を組み合わせたポスト量子ハイブリッド方式を使用します。このハイブリッド方式は Cosmos トランザクションパスでデフォルトで必須であり、強制モードはガバナンスによって制御されます。EVM レーンでは署名は secp256k1 のままで、アカウントはさらに、登録済みの ML-DSA 鍵と開いている承認ウィンドウを保持している必要があります（v3.2.0 以降）。[ポスト量子セキュリティ](/architecture/post-quantum-security) を参照してください。
 
 ### EVM トランザクションが「no open EVM authorisation window」で拒否されるのはなぜですか？
 
 v3.2.0 以降、EVM レーンは、登録済みのポスト量子鍵と開いている承認ウィンドウを持つアカウントからのトランザクションのみを受け付けます。ポスト量子署名付きの Cosmos レーントランザクションでウィンドウを開いてから、再試行してください。[EVM 承認ウィンドウ](/getting-started/first-transaction#evm-window) を参照してください。
+
+### メインネットには何人のバリデータがいますか？
+
+2026 年 10 月 20 日時点で、ボンドされているバリデータは 8 人で、ボンドされている QOR は約 5,510 万 QOR です（アクティブセットは最大 100 まで保持できます）。テストネットには 3 人います。稼働中のセットは `https://api.qore.host` の `GET /cosmos/staking/v1beta1/validators` で確認できます。
 
 ### ブロック時間はどれくらいを想定すればよいですか？
 
@@ -59,7 +63,7 @@ v3.2.0 以降、EVM レーンは、登録済みのポスト量子鍵と開いて
 
 ### QOR の供給量は固定ですか？
 
-ジェネシス時の供給量は 4,420,000,000 QOR でした。ステーキング発行は累計上限 114,285,714 QOR の下でミントされ、バーンによってトークンは恒久的に除去されます。[トークノミクス](/architecture/tokenomics#supply-and-emission) を参照してください。
+ジェネシス時の供給量は 4,420,000,000 QOR でした。ステーキング発行は累計上限 590,000,000 QOR の下でミントされ（ガバナンス提案 10 以降、1 エポックあたり 86,000 QOR、2026 年 10 月）、バーンによってトークンは恒久的に除去されます。[トークノミクス](/architecture/tokenomics#supply-and-emission) を参照してください。
 
 ### ロールアップを構築するにはどうすればよいですか？
 
@@ -71,7 +75,7 @@ QoreChain の EVM、SVM、CosmWasm 実行環境全体でアプリケーション
 
 ### 質問はどこでできますか？
 
-QCAIA コミュニティボットが Discord（[discord.gg/qorechain](https://discord.gg/qorechain)）および Telegram（[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)）で質問に回答します。[QCAIA コミュニティボット](/qcaia/overview) を参照してください。
+QCAIA コミュニティボットが Discord（[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)）および Telegram（[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)）で質問に回答します。[QCAIA コミュニティボット](/qcaia/overview) を参照してください。
 
 ## 関連項目
 

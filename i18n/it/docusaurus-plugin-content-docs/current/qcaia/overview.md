@@ -22,6 +22,8 @@ QCAIA è progettato per aiutare i nuovi arrivati e i membri della community a or
 
 Se una domanda esula da ciò che QCAIA conosce, lo dirà invece di tirare a indovinare. QCAIA è un aiutante della community, non una consulenza finanziaria o di investimento.
 
+Le risposte di QCAIA seguono la documentazione pubblica di QoreChain, quindi possono restare indietro di una release. Per ciò che è attivo oggi su ciascuna rete (la mainnet `qorechain-vladi` esegue la v3.2.3 e la testnet `qorechain-diana` esegue la v3.2.4 al 20 ottobre 2026), consulta [Reti](/appendix/networks) e [Cronologia delle versioni](/appendix/version-history), oppure interroga direttamente un nodo. Diverse parti della piattaforma su cui a QCAIA vengono poste domande, come il bridge, i pool AMM, i rollup e xQORE, sono descritte nella documentazione come progettate ma non sono ancora attive; se QCAIA dà una risposta diversa, fidati della documentazione e della rete attiva.
+
 ## Supporto multilingua
 
 QCAIA comprende domande in molte lingue. Se chiedi in una lingua diversa dall'inglese, traduce automaticamente la tua domanda, vi risponde e replica — così puoi usare la tua lingua e ottenere comunque una risposta chiara. Vedi [Esempi](/qcaia/examples) per un esempio pratico non in inglese.
@@ -38,7 +40,7 @@ QCAIA è in **beta**. Migliora continuamente e occasionalmente potrebbe non aver
 
 | Piattaforma | Come raggiungerlo | Guida |
 | --- | --- | --- |
-| **Discord** | Entra su **[discord.gg/qorechain](https://discord.gg/qorechain)** e usa i comandi slash | [Usare QCAIA su Discord](/qcaia/discord) |
+| **Discord** | Entra su **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** e usa i comandi slash | [Usare QCAIA su Discord](/qcaia/discord) |
 | **Telegram** | Entra su **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** e menziona il bot | [Usare QCAIA su Telegram](/qcaia/telegram) |
 
 Scegli la tua piattaforma qui sopra per scoprire esattamente come chiedere, oppure vai direttamente alla pagina [Esempi](/qcaia/examples) per vedere QCAIA in azione.

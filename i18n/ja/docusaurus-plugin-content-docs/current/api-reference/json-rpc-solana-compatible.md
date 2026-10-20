@@ -49,7 +49,7 @@ JSON-RPC サーバーは **`qorechaind start` によって起動され**、**デ
 | `getTokenAccountsByOwner`           | `owner`、フィルター          | 所有者のトークンアカウントを返します                            |
 | `getTokenAccountsByDelegate`        | `delegate`、フィルター       | デリゲートのトークンアカウントを返します                          |
 
-`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
+`getGenesisHash` や `getEpochInfo` など、この一覧にないメソッドは `-32601 method not found` を返します(`https://svm.qore.host` と `https://svm-testnet.qore.host` に対して確認、2026年10月20日)。v3.2.2 以降、RPC および gRPC クエリの base58 アドレスは正規の形式で、かつ長さが制限内でなければならず、不正な形式のものは拒否されます。`getTransaction` は受け付けられますが、現在は `result` フィールドのないエンベロープを返すため、これに依存しないでください。`getSlot` が報告するスロットは、チェーンのブロック高に連動します。
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## 注意事項
 
 - **アドレス形式**: SVM アカウントは base58 エンコードされた公開鍵(標準的な Solana 形式)を使用し、ネイティブの Cosmos SDK モジュールで使われる `qor1` Bech32 プレフィックスは使用しません。
-- **クロス VM ブリッジ**: EVM ランタイムと SVM ランタイムの間で資産を移動するには、Cross-VM モジュール(`x/crossvm`)を使用します。`crossvm call` の構文については[トランザクションコマンド](/cli-reference/transaction-commands)を参照してください。
+- **クロス VM ブリッジ**: EVM ランタイムと SVM ランタイムの間で資産を移動するには、Cross-VM モジュール(`x/crossvm`)を使用します。`crossvm call` の構文については[トランザクションコマンド](/cli-reference/transaction-commands#crossvm)を参照してください。SVM レーンは無効化されており、メインネットでは `MsgCrossVMCall` もオフになっているため、現時点では参照用です。
 - **プログラムのデプロイ**: BPF プログラムは CLI(`qorechaind tx svm deploy-program`)またはプログラムから SVM ランタイムを通じてデプロイできます。
 - **コンピュートバジェット**: SVM ランタイムはデフォルトでトランザクションあたり 1,400,000 コンピュートユニットのコンピュートバジェットを適用します。この値はモジュールパラメータで設定可能です。

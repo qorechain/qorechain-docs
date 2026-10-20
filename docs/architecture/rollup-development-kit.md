@@ -10,7 +10,7 @@ sidebar_position: 12
 The `x/rdk` module provides a comprehensive Rollup Development Kit (RDK) that allows developers to deploy application-specific rollups on QoreChain. It supports four settlement paradigms, multiple sequencer modes, pluggable data availability backends, and AI-assisted configuration optimization.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.1**) and testnet, but **no rollup has been created on either network yet**. Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
+The module is deployed on mainnet (chain version **v3.2.3**) and testnet (**v3.2.4**), but **no rollup has been created on either network yet** (checked 20 October 2026: `GET /qorechain/rdk/v1/rollups` returns an empty list on both). Several capabilities described below are not usable end to end today; the status is stated where each is described. For the developer-facing how-to, see [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -19,12 +19,12 @@ The module is deployed on mainnet (chain version **v3.2.1**) and testnet, but **
 
 QoreChain RDK supports four distinct settlement modes — **optimistic**, **zk**, **based**, and **sovereign** — each with different trust assumptions, finality characteristics, and proof requirements.
 
-### Optimistic Settlement
+### Optimistic Settlement {#optimistic-settlement}
 
 Optimistic rollups assume transactions are valid by default and rely on fraud proofs for dispute resolution.
 
 * **Proof system**: Interactive fraud proofs
-* **Challenge window**: 604,800 "seconds" (default), converted by the chain to blocks at a fixed 6 seconds per block — **100,800 blocks**. The real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks), so plan in blocks, not days.
+* **Challenge window**: 604,800 seconds (default, 7 days). **Mainnet (v3.2.3):** the chain converts this to blocks at a fixed 6 seconds per block, **100,800 blocks**, so the real elapsed time depends on actual block time (about 3.7 days at mainnet's current ≈3.2 s blocks); plan in blocks, not days. **Testnet only (v3.2.4, applied at height 8,337,253):** for a batch submitted from that height on, the window is measured in seconds of block time (a full 7 days). A batch submitted earlier keeps the block-count rule. On mainnet this change would take effect only with v3.2.4 (governance proposal 13 would apply it at height 3,742,566).
 * **Challenge bond**: 1,000 QOR (1,000,000,000 uqor) — required to submit a fraud proof challenge (`nft` and `custom` presets; the `defi`, `gaming` and `enterprise` presets set no bond because they have no challenge window)
 * **Finality**: Delayed until the challenge window expires with no valid challenge
 * **Auto-finalization**: The `EndBlocker` automatically finalizes batches once the challenge window has passed without dispute. A challenged batch is never auto-finalised: the rollup creator resolves the challenge first (see [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup registered but not yet activated                      |
 | **Active**  | Rollup is live and processing batches                        |
 | **Paused**  | Temporarily halted by creator (can resume)                   |
-| **Stopped** | Permanently decommissioned — stake bond returned to creator  |
+| **Stopped** | Permanently decommissioned — what remains of the creator's escrow is returned (see [Escrow ledger](#escrow-ledger)) |
 
 On creation, rollup status is set to `Active` immediately after stake escrow and the creation burn succeed (layer registration is attempted but non-fatal). Only the creator can pause, resume or stop a rollup (enforced since chain version v3.2.0).
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement Mode | Finalization Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 blocks after submission (default window) with no challenge |
+| **Optimistic**  | 100,800 blocks after submission (default window) with no challenge; on the testnet, for batches submitted since v3.2.4, 604,800 seconds of block time |
 | **ZK**          | Instant on valid proof submission                           |
 | **Based**       | 2 L1 blocks after submission                                |
 | **Sovereign**   | None — managed by the rollup's own consensus                |
@@ -255,18 +255,46 @@ When a rollup is created, the module registers a layer for it through `RegisterS
 * Supported VM types and domains
 * Settlement interval
 
-Registration is **non-fatal**: if it fails (insufficient balance or limit reached), the rollup is still created, but it has no layer and cannot be anchored.
+Registration is **non-fatal**: if it fails (insufficient balance or limit reached), the rollup is still created, but it has no layer and cannot be anchored. A settlement anchor does not require the layer to be `active`: the layer an RDK rollup registers stays `proposed` and is still anchorable by its creator (see [Anchor Submission](/architecture/multilayer-architecture#anchor-submission)).
 
 ### State Anchoring {#state-anchoring}
 
 A settlement batch can be anchored to `x/multilayer`, which records the layer ID, layer height (the batch index), state root, validator-set hash and transaction count under a post-quantum signature by the rollup creator.
 
-* **Mainnet today:** batches are settled but are **not** anchored — the RDK does not supply the creator signature the anchor requires, so the anchoring step does not succeed and no anchor has been written. Anchoring is non-fatal: it never prevents batch processing.
+* **Since v3.2.2 (live on mainnet and testnet):** `MsgSubmitBatch` has two optional fields. `anchor_signature` is the creator's ML-DSA-87 signature over the **v2 anchor sign bytes** of the batch (see [Reading Anchors](/architecture/multilayer-architecture#reading-anchors)); when it is present the batch is anchored in `x/multilayer` in the **same transaction**, and a refused anchor refuses the batch. `validator_set_hash` is the rollup's validator-set commitment carried in the anchor and covered by the signature. On the CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` prints the bytes to sign, and `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` submits them.
+* **Without the signature** the batch settles unanchored, exactly as before. A client that does not send the field produces unanchored batches, so check that the toolkit you use supports it. No rollup, layer or anchor exists on either network yet, so no anchor has been written.
 
 See [Settlement Receipts](/rollups/settlement-receipts) for what an anchor does and does not prove.
 
 ---
 
+## Escrow ledger and withdrawals {#escrow-ledger}
+
+All rollups' escrow sits in one pooled module balance. Since **v3.2.3** (mainnet height 3,662,051, 20 October 2026) a per-rollup **escrow ledger** is the single account of what each rollup holds in that pool:
+
+* `create-rollup` credits the ledger with the escrow the rollup actually keeps: the stake less the 1% creation burn.
+* A withdrawal (`tx rdk execute-withdrawal`) and a fraud-proof reward are paid out of the ledger and debited from it. A withdrawal larger than what the rollup still holds is refused with an insufficient-escrow error.
+* `stop-rollup` refunds only what is left in the ledger and zeroes it. A stopped rollup pays no further withdrawals.
+* The read-only `RollupView` returned by the rollup queries carries `escrow_balance`: the uqor still held for that rollup.
+
+Before v3.2.3 the ledger was credited with zero, so every withdrawal failed closed; `execute-withdrawal` can therefore succeed on mainnet only from v3.2.3 on. The checks a client should run before paying a fee: the denom must be exactly `uqor`, the amount must be positive, the Merkle proof has at most 64 levels with every sibling exactly 32 bytes, and the submitter and recipient must be valid `qor1…` addresses. A withdrawal also needs a finalized batch that committed a `withdrawals_root`, and each withdrawal leaf can be paid only once.
+
+## Reading RDK state {#reading-state}
+
+The RDK queries are served over REST on mainnet and testnet under `/qorechain/rdk/v1/`:
+
+| Route | Returns |
+| --- | --- |
+| `/params` | Module parameters (the table above) |
+| `/rollups` and `/rollup/{rollup_id}` | Rollup records, including `escrow_balance` |
+| `/batches/{rollup_id}` | Batches, paged (`start_index`, `limit` default 50, at most 100, `next_index`) |
+| `/batch/{rollup_id}/{batch_index}` and `/latest_batch/{rollup_id}` | One batch, or the newest one |
+| `/blob/{rollup_id}/{blob_index}` | Blob metadata, including `expires_at_height` (the blob bytes are not returned) |
+
+`qorechaind query rdk config` prints the module parameters (the route is `/params`; there is no `/config` route). Rollup and layer ids must match the id grammar in [Layer and rollup ids](/architecture/multilayer-architecture#id-grammar), enforced since v3.2.2.
+
+---
+
 ## Burn Integration
 
-On rollup creation, **1% of the stake amount** is burned via the `x/burn` module through the `rollup_create` burn channel. For example, creating a rollup with the minimum 10,000 QOR stake burns 100 QOR permanently. The remaining 9,900 QOR is held in escrow and returned when the rollup is stopped. The creation burn is enforced since chain version v3.2.0; earlier releases did not apply it.
+On rollup creation, **1% of the stake amount** is burned via the `x/burn` module through the `rollup_create` burn channel. For example, creating a rollup with the minimum 10,000 QOR stake burns 100 QOR permanently. The remaining 9,900 QOR is held in escrow and, when the rollup is stopped, whatever is left of it is returned to the creator (withdrawals and fraud-proof rewards paid out of the escrow reduce the refund). The creation burn is enforced since chain version v3.2.0; earlier releases did not apply it.

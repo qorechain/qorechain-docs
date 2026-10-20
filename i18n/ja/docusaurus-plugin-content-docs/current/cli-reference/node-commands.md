@@ -10,7 +10,9 @@ sidebar_position: 1
 QoreChainノードの初期化・設定・運用に使用する `qorechaind` コマンドのリファレンスです。
 
 :::note
-QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月29日から稼働中、現在のノードリリースは **v3.2.1**)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.2**)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
+QoreChainは2つのネットワークを運用しています。**`qorechain-vladi`** メインネット(2026年6月7日から稼働中、ノードリリース **v3.2.3**、2026年10月20日にブロック高 3,662,051 で適用)と、**`qorechain-diana`** テストネット(ノードリリース **v3.2.4**、2026年10月19日にブロック高 8,337,253 で適用。v3.2.4 はまだメインネットには適用されておらず、ガバナンス提案 13 が可決されればブロック高 3,742,566 で適用されます)です。参加するネットワークに応じて適切な `--chain-id` を指定してください — 以下の例はテストネットを対象としています。メインネットの場合は `--chain-id qorechain-vladi` を使用してください。各ネットワークの現在のリリースは、[download.qore.host](https://download.qore.host) の `latest.json` に記載されています。
+
+このページのコマンドは、メインネットのリリースである v3.2.3 のリリースバイナリで確認しています。テストネットの v3.2.4 バイナリには、メインネットにはないコマンドが追加されています。このマニュアルでそれに触れる箇所には **テストネット専用** と明記しています。
 :::
 
 ---
@@ -48,26 +50,28 @@ qorechaind start [flags]
 | ---------------------- | ------ | ----------------------------------------------------- |
 | `--home`               | string | ノードのホームディレクトリ                            |
 | `--minimum-gas-prices` | string | このノードが受け入れる最小ガス価格。ネットワークの下限は `0.1uqor` です。少なくともこの値を設定してください |
-| `--pruning`            | string | プルーニング戦略: `default`、`nothing`、`everything` |
+| `--pruning`            | string | プルーニング戦略: `default`、`nothing`、`everything`、`custom`(`--pruning-keep-recent` および `--pruning-interval` と併用) |
 | `--halt-height`        | uint   | このブロック高でノードを停止します                   |
 | `--halt-time`          | uint   | このUnixタイムスタンプでノードを停止します            |
 | `--log_level`          | string | ログの詳細度: `info`、`debug`、`warn`、`error`       |
 | `--trace`              | bool   | エラー時に完全なスタックトレースを有効にします        |
 
+公開ソースツリーからビルドしたバイナリ(コミュニティビルド)は、`qorechain-vladi` や `qorechain-diana` では起動を拒否します。このバイナリはポスト量子署名を検証できず、ネットワークのブロックを忠実にリプレイできないためです(ノードリリース v3.2.3 以降)。[download.qore.host](https://download.qore.host) のリリースバイナリを使用してください。[ソースからのビルド](/developer-guide/building-from-source)も参照してください。
+
 ---
 
 ## version
 
-`qorechaind` バイナリのバージョンとビルド情報を表示します。
+`qorechaind version` はリリースバイナリではリリース番号を**表示しません**。空行が出力されるだけで、`version --long` を付けてもビルド詳細は追加されません。リリースの区別にこれを使わないでください。実行中のものを確認するには次の方法を使います。
+
+- 展開する前に、**ダウンロードしたアーカイブ**のSHA-256を、ネットワークの[マニフェスト](https://download.qore.host/mainnet/latest.json)にある `binary.sha256` と比較します(インストールしたものの記録として、そのアーカイブまたはそのチェックサムを保管してください)。
+- チェーンに適用済みのアップグレードを問い合わせます。`GET /cosmos/upgrade/v1beta1/applied_plan/<upgrade_name>` は、アップグレードが適用されたブロック高を返し、未適用の場合は `0` を返します。
 
 ```bash
-qorechaind version
-```
-
-Goのバージョン、コミットハッシュ、ビルドタグを含む詳細なビルド情報を表示するには `--long` を使用します。
-
-```bash
-qorechaind version --long
+# archive checksum, as published
+curl -s https://download.qore.host/mainnet/latest.json | jq -r '.version, .binary.sha256'
+# has v3.2.3 been applied on mainnet, and at which height?
+curl -s https://api.qore.host/cosmos/upgrade/v1beta1/applied_plan/v3.2.3   # {"height":"3662051"}
 ```
 
 ---

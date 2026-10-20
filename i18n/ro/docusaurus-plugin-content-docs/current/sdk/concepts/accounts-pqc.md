@@ -142,7 +142,12 @@ identică în toate SDK-urile QoreChain, indiferent de limbaj. (Pentru
 Începând cu SDK 0.8.3, `derivePqcCanonical(account, mnemonic)` rezolvă mai
 întâi `account` la forma sa `qor1…` cu litere mici (`canonicalAccount`), astfel
 încât un bech32 cu litere mari sau forma `0x` a aceluiași cont produce aceeași
-cheie.
+cheie. Fiecare limbaj are aceeași funcție (Python `derive_pqc_canonical`, Go
+`authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
+`Authenticator.derivePqcCanonical`; vezi
+[tabelul din ghidul Quantum-safe](/sdk/guides/quantum-safe#canonical-derivation)),
+iar același `{ address, mnemonic }` produce aceeași cheie în toate (verificat
+pentru TypeScript, Python, Go și Rust în octombrie 2026).
 
 ### Trimiterea pe lane-ul Native cu cheia eth
 
@@ -162,7 +167,8 @@ decodează-l în bytes pentru `ecdsaPubkey`. În al doilea rând, transmite `res
 semnatarului, ca să poată întreba rețeaua ce
 [formă a sign-bytes](#sign-bytes-versions) verifică (pe `qorechain-vladi` și
 `qorechain-diana` aruncă o eroare în loc să ghicească). Necesită SDK 0.8.1 sau
-mai nou și `npm i @cosmjs/stargate`:
+mai nou (0.9.0 pentru funcțiile ajutătoare de dovadă de posesie) și
+`npm i @cosmjs/stargate`:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -171,6 +177,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -200,6 +207,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -297,8 +312,8 @@ timp ce câștigă protecție post-cuantică. Partea post-cuantică călătoreș
 o extensie `PQCHybridSignature` pe tranzacție.
 
 :::caution Semnarea hibridă este obligatorie pe calea Native
-Începând cu versiunea de chain **v3.2.0** (versiunea pe care rulează ambele
-rețele), valoarea implicită a rețelei este `hybrid_signature_mode = required`,
+Începând cu versiunea de chain **v3.2.0** (mainnet rulează v3.2.3, testnet
+v3.2.4), valoarea implicită a rețelei este `hybrid_signature_mode = required`,
 cu `allow_classical_fallback = false`. Semnarea hibridă prin `buildHybridTx` /
 `signAndBroadcastHybrid` (transmite `rest`), sau `signHybridEth` /
 `EthNativeSigner` pentru conturile unificate eth-native, este **obligatorie**
@@ -319,7 +334,34 @@ Constructorul end-to-end pentru un cont coin-type-118 este
 `signAndBroadcastHybrid` (sau `buildHybridTx` pentru a construi fără a
 difuza). Are nevoie de semnatarul clasic, de perechea de chei ML-DSA-87 a
 contului, de numărul contului și de sequence, precum și de `rest`.
-SDK 0.8.3 sau mai nou, `npm i @cosmjs/stargate`:
+Pentru un cont coin-type-118 în TypeScript, cea mai scurtă cale este `TxClient`-ul
+hibrid (SDK 0.9.0): transmite perechea de chei la conectare și fiecare
+tranzacție este semnată hibrid, iar `fee: "auto"` simulează chiar tranzacția
+hibridă (doar înregistrarea rămâne clasică):
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+Pentru control explicit asupra taxei, a numărului contului și a sequence, folosește
+`signAndBroadcastHybrid` (SDK 0.8.1 sau mai nou, `npm i @cosmjs/stargate`):
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -369,11 +411,19 @@ const result = await signAndBroadcastHybrid({
 
 Înainte ca o tranzacție hibridă să poată fi verificată PQC, cheia publică PQC a
 semnatarului trebuie să fie **înregistrată** prin `MsgRegisterPQCKeyV2`
-(semnată clasic, scutită de regula hibridă). O fac
+(semnată clasic, scutită de regula hibridă pentru un cont care nu are încă nicio
+cheie). O fac
 `ensurePqcRegistered` / `buildRegisterPqcKeyMsg` din SDK,
 `qorechaind tx pqc register-key` sau un portofel QoreChain.
 `includePqcPublicKey: true` doar încapsulează cheia în extensie; **nu** o
-înregistrează, iar chain-ul nu înregistrează o cheie la prima utilizare.
+înregistrează, iar chain-ul nu înregistrează o cheie la prima utilizare. Începând
+cu v3.2.3, chain-ul refuză cheile slabe, degenerate și refolosite și acceptă o
+dovadă de posesie opțională (vezi
+[Reguli de integritate a cheii](/architecture/post-quantum-security#key-integrity)). În SDK
+0.9.0, `ensurePqcRegistered` atașează singur dovada odată ce rețeaua a aplicat
+v3.2.3, iar `signProofOfPossession` / `verifyProofOfPossession` sunt exportate
+pentru înregistrările construite manual; constructorii 0.8.x înregistrează fără
+dovadă, ceea ce este permis.
 
 ### Ce formă a sign-bytes? {#sign-bytes-versions}
 

@@ -10,7 +10,7 @@ sidebar_position: 6
 Ce guide est une courte présentation du lancement d'un rollup spécifique à une application qui se règle sur QoreChain à l'aide du Rollup Development Kit (RDK). Les commandes pas à pas se trouvent dans **[Déployer un rollup](/rollups/deploying-a-rollup)** ; cette page couvre ce dont vous avez besoin avant de commencer.
 
 :::caution Capacité à un stade précoce
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau. Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.1** ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute une version plus récente (**v3.2.2**). Validez d'abord sur le testnet.
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 20 octobre 2026). Le mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) exécute la version de chaîne **v3.2.3** ; le testnet (**`qorechain-diana`**, EVM chain ID **9800**) exécute une version plus récente (**v3.2.4**). Validez d'abord sur le testnet ; un comportement diffère entre les deux (voir la note sur la fenêtre de contestation dans [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
 :::
 
 ---
@@ -42,7 +42,8 @@ Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les n
 | Prérequis | Détails |
 | ----------- | ------- |
 | **Mise du rollup** | Au moins 10 000 QOR (`min_stake_for_rollup`, 10 000 000 000 uqor). Lisez la valeur en vigueur : `qorechaind query rdk config` |
-| **Brûlage à la création** | 1 % de la mise que vous fournissez est brûlé à la création ; le reste est placé sous séquestre et restitué lorsque vous arrêtez le rollup |
+| **Brûlage à la création** | 1 % de la mise que vous fournissez est brûlé à la création ; le reste est placé sous séquestre dans un registre propre à chaque rollup. Lorsque vous arrêtez le rollup, vous récupérez ce qu'il en reste (les retraits et les récompenses de preuve de fraude payés sur ce registre réduisent le remboursement) |
+| **Id du rollup** | 3 à 64 caractères : lettres minuscules, chiffres, `.`, `_` et `-`, commençant par une lettre ou un chiffre. Un id qui enfreint ces règles est refusé une fois les frais payés ; vérifiez-le donc d'abord |
 | **Mise d'enregistrement de la couche** | La création d'un rollup enregistre aussi une couche auprès du module multilayer, ce qui verrouille 1 000 QOR supplémentaires du créateur (restitués à l'arrêt du rollup). Sans ce solde, la couche n'est pas créée et le rollup ne peut pas être ancré |
 | **Compte** | Un compte approvisionné avec une clé post-quantique enregistrée (chaque transaction du lane natif est signée en hybride) |
 
@@ -52,6 +53,8 @@ Voir [Profils prédéfinis](/rollups/preset-profiles) pour les détails et les n
 
 * Commencez par un profil prédéfini. Les profils prédéfinis fixent le mode de règlement, le séquenceur, le backend de disponibilité des données et la VM ; `create-rollup` ne prend que l'id, le profil, la mise et un `--vm` facultatif.
 * Le brûlage à la création de 1 % s'applique à la mise que vous fournissez.
+* Les lots se règlent sans ancrage, sauf si vous leur joignez la signature post-quantique du créateur (`--anchor-signature` sur `tx rdk submit-batch`, disponible depuis la v3.2.2). Voir [Ancrage d'état](/architecture/rollup-development-kit#state-anchoring).
+* Les retraits vers L1 (`tx rdk execute-withdrawal`) sont payés depuis le registre de séquestre de votre rollup et fonctionnent sur le mainnet depuis la v3.2.3 ; ils nécessitent un lot finalisé avec une racine de retraits et n'utilisent que `uqor`.
 * Le créateur du rollup est aujourd'hui celui qui soumet les lots (aucun profil prédéfini ne définit d'adresse de séquenceur) ; gardez donc la clé du créateur en sécurité : seul le créateur peut mettre en pause, reprendre ou arrêter le rollup.
 * L'assistant `suggest-profile` renvoie actuellement un repli fixe `defi` sur les points de terminaison publics ; choisissez donc dans le tableau des profils.
 

@@ -9,7 +9,7 @@ sidebar_position: 2
 
 The QoreX **browser extension** is the desktop QoreChain wallet. It is a **standalone wallet** — create or import a wallet, hold and send QOR, and connect to dApps — and it is the piece that lets any website discover QoreX and turn every request into an explicit, decoded approval.
 
-It is **live and public** on three stores.
+It is **live and public** on three stores (Chrome, Firefox and Safari); Chrome currently lags the others by one release — see [which version is live where](#versions).
 
 ## Install {#install}
 
@@ -21,7 +21,15 @@ It is **live and public** on three stores.
 
 ### Which version is live where {#versions}
 
-As of **15 October 2026**: **Chrome 0.3.6**, **Firefox 0.3.7** (a point release after 0.3.6), and **Safari** inside the **QoreX Wallet** macOS app (**1.7.6**, which carries extension 0.3.6; the Mac App Store uses its own `1.x` numbering). Store reviews land at different times, so a store can briefly serve an older or newer build; the store listing always shows its current version. This page describes the 0.3.6 feature set. See also [Which version is live where](/qorex/overview#versions).
+Current version on each store, as of **20 October 2026**:
+
+| Store | Current version |
+|---|---|
+| Chrome Web Store | 0.3.6 (not yet updated to 0.3.7) |
+| Firefox Add-ons | 0.3.7 |
+| Safari (Mac App Store, **QoreX Wallet** macOS app) | 1.7.7, carrying extension 0.3.7 — the Mac App Store uses its own `1.x` numbering |
+
+Store reviews land at different times, so a store can serve an older build than another; the store listing always shows its current version. This page describes the 0.3.7 feature set; where a point needs 0.3.7 it says so, and Chrome users get it when the Chrome listing updates. See also [Which version is live where](/qorex/overview#versions).
 
 Since 0.2.6 the extension gained: [several wallets with one password](#wallets), an [Ethereum-style account you add by hand](#coin60), [Claim & restake](#stake), an **Unstaking in progress** list, [adding a token by contract](#custom-tokens), [Receive on any network](#receive), [Connected sites with Revoke](#connected-sites), the [EVM access window](#evm-window), [`signAndBroadcast` for dApps](#sign-and-broadcast), and approval screens that show every message, fee and expiry.
 
@@ -53,7 +61,7 @@ The extension holds its own keys; it does not require the mobile app. Keys never
 
 From 0.3.2, **Add an Ethereum account (coin 60)** (on the **Your accounts** screen) adds the account for a phrase first used in MetaMask or on the Dashboard; see [Restore a phrase from MetaMask or the Dashboard](/qorex/getting-started#restore-dashboard). Its 0x address is the one MetaMask shows for the same words. Handles are not offered on it.
 
-Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests and device linking remain mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability).
+Portfolio, Q-Day Scanner, social recovery, Legacy Protocol, payment requests, account sign-in and device linking remain mobile-only — see [QoreX Wallet](/qorex/overview#platform-availability).
 
 ## Your account, balance & @handle {#account}
 
@@ -65,11 +73,11 @@ If your account holds vesting QOR (for example, an unreleased TGE allocation), t
 
 ### Claim an @handle
 
-Some extension versions let you claim a unique **@handle** (for example `@liviu`) for this account's address from the popup, the same as in the mobile app; if your popup does not offer it, claim from the mobile app (claiming is not offered on Ethereum-style accounts). The claim is signed with the account's own key and binds to that address, so the mobile app and the Dashboard can resolve it when someone sends to you. See [@handle](/qorex/account-and-dashboard#handle) for how handles are bound to addresses (not to a wallet as a whole).
+Claiming a unique **@handle** (for example `@liviu`) needs a **signed-in account** and happens **in the mobile app**; the extension points you there and does not claim handles itself. Once claimed, the handle binds to that address, so the extension resolves it when you pay it and others can pay you by name. See [@handle](/qorex/account-and-dashboard#handle) for how handles are bound to addresses (not to a wallet as a whole).
 
 ## Send to an @handle {#handle-send}
 
-Since 0.1.9 you can pay a registered @handle directly instead of looking up an address:
+Since 0.1.9 you can pay a registered @handle directly instead of looking up an address (lookups were interrupted by a fault in versions up to 0.3.6 and work again from 0.3.7):
 
 1. Open the popup and tap **Send**.
 2. In the recipient field, type `@` followed by the handle (for example `@liviu`) instead of a `qor1…` address.
@@ -144,7 +152,7 @@ The popup's **Coins and tokens** screen lets you add an **ERC-20 token by its co
 
 ## EVM access window {#evm-window}
 
-The popup's **EVM access window** screen opens and closes the window that lets an account send on QoreChain's EVM lane (v3.2.0 and later) — the same screen as in the app. See [EVM access window](/qorex/security-and-recovery#evm-window).
+The popup's **EVM access window** screen opens and closes the window that lets an Ethereum-style (coin 60) account send on QoreChain's EVM lane (v3.2.0 and later) — the same screen as in the app, with the same limits (up to 17,280 blocks and 1,000 transactions, and a QOR cap that counts each amount plus its maximum fee). See [EVM access window](/qorex/security-and-recovery#evm-window).
 
 ## Language {#language}
 
@@ -161,7 +169,7 @@ QoreX is built to be verifiable, not just trusted:
   QoreX feature-detects WebAuthn and only shows **Enable passkey unlock** where the browser exposes it to extension pages — that is **Chrome and Edge**. On **Firefox** the option is hidden, because Firefox does not expose WebAuthn to extension pages. This is expected, not a bug.
   :::
 - **Manifest V3 + strict CSP** — `script-src 'self'; object-src 'self'; base-uri 'self'`. There is **no remote code loading** after install and no `wasm-unsafe-eval`.
-- **No account, no telemetry** — no analytics, no tracking, no remote logging, no sign-up, and no email. The Firefox listing declares data collection as `none`.
+- **No analytics, no crash reporting, no tracking SDK, no sign-up** — the extension needs no account to hold, send or stake QOR. Your keys, recovery phrase, vault and approvals never leave the browser. It does make network requests: to the public QoreChain endpoints for balances, history and broadcasting (these carry your public `qor1…` address), a price lookup (no address), the public services of any external network you hold or view (your public address on that network), and the @handle registry (the handle, or a public address). Only if you use [Dashboard pairing](#dashboard-bridge) does it send a signed proof that you own the address. See [What QoreX sends over the network](/qorex/overview#data-and-privacy).
 
 ### What permissions QoreX asks for, and why {#permissions}
 

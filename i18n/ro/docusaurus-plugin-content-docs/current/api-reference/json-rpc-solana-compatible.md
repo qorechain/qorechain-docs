@@ -49,7 +49,7 @@ Serverul JSON-RPC este **pornit de `qorechaind start`** și este **activat impli
 | `getTokenAccountsByOwner`           | `owner`, filtru          | Returnează conturile de token ale unui proprietar                           |
 | `getTokenAccountsByDelegate`        | `delegate`, filtru       | Returnează conturile de token ale unui delegat                          |
 
-Metodele din afara acestei liste, precum `getGenesisHash` și `getEpochInfo`, returnează `-32601 method not found`. `getTransaction` este acceptată, dar în prezent răspunde cu un înveliș fără câmpul `result`, așa că nu te baza pe ea. Slotul raportat de `getSlot` urmărește înălțimea blocului lanțului.
+Metodele din afara acestei liste, precum `getGenesisHash` și `getEpochInfo`, returnează `-32601 method not found` (verificat pe `https://svm.qore.host` și `https://svm-testnet.qore.host`, 20 octombrie 2026). Începând cu v3.2.2, adresele base58 din interogările RPC și gRPC trebuie să fie canonice și cu lungime limitată; o adresă malformată este refuzată. `getTransaction` este acceptată, dar în prezent răspunde cu un înveliș fără câmpul `result`, așa că nu te baza pe ea. Slotul raportat de `getSlot` urmărește înălțimea blocului lanțului.
 
 ---
 
@@ -211,6 +211,6 @@ if (accountInfo) {
 ## Note
 
 - **Formatul adreselor**: Conturile SVM folosesc chei publice codificate base58 (formatul standard Solana), nu prefixul Bech32 `qor1` folosit de modulele native Cosmos SDK.
-- **Punte cross-VM**: Pentru a muta active între runtime-urile EVM și SVM, folosește modulul Cross-VM (`x/crossvm`). Vezi [Comenzile de tranzacție](/cli-reference/transaction-commands) pentru sintaxa `crossvm call`.
+- **Punte cross-VM**: Pentru a muta active între runtime-urile EVM și SVM, folosește modulul Cross-VM (`x/crossvm`). Vezi [Comenzile de tranzacție](/cli-reference/transaction-commands#crossvm) pentru sintaxa `crossvm call`. Lane-ul SVM este dezactivat, iar `MsgCrossVMCall` este oprit pe mainnet, deci aceasta este astăzi doar referință.
 - **Implementarea programelor**: Implementează programe BPF prin CLI (`qorechaind tx svm deploy-program`) sau programatic prin runtime-ul SVM.
 - **Buget de calcul**: Runtime-ul SVM impune implicit un buget de calcul de 1.400.000 de unități de calcul per tranzacție. Acesta este configurabil prin parametrii modulului.

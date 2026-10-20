@@ -104,20 +104,27 @@ okuyun. Bkz. [`qor_` ad alanı](/api-reference/json-rpc-qor_-namespace).
 Mainnet ve testnet üzerinde her Native yol işlemi **hibrit** (klasik secp256k1
 artı ML-DSA-87) imza taşımalıdır ve hesabın ML-DSA-87 anahtarı önce
 **zincir üzerinde kaydedilmiş** olmalıdır. Kayıt açıkça yapılır: ilk işlemde
-otomatik kayıt yoktur. Düz bir `tx.bankSend` (yalnızca klasik imza) canlı ağlar
-tarafından reddedilir. Aşağıdaki iki adım **SDK 0.8.3 veya üstünü**
-(`derivePqcCanonical`; genel olarak hibrit gönderimler için 0.8.1 veya üstü) ve
-bakiyesi olan bir hesabı gerektirir:
+otomatik kayıt yoktur. Yalnızca klasik imzalanmış bir işlem canlı ağlar
+tarafından reddedilir; bu nedenle işlem istemcisine hesabın ML-DSA-87 anahtar
+çiftini verin, o da her işlemi hibrit imzalasın. Aşağıdaki iki adım **SDK 0.9.0
+veya üstünü** ve bakiyesi olan bir hesabı gerektirir:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. Kuantum sonrası anahtarınızı kaydedin (bir kez)
 
-Kayıt klasik imzalıdır ve hibrit gereklilikten muaftır; böylece yeni bir hesap
-ilk anahtarını başlatabilir. Ücreti hesap öder: 2.592 baytlık anahtar yaklaşık
-600.000 gas limiti gerektirir.
+Ücreti hesap öder: 2.592 baytlık anahtar yaklaşık 600.000 gas limiti gerektirir.
+`ensurePqcRegistered` anahtar durumunu önce REST üzerinden okur (`rest`); böylece
+anahtar zaten kayıtlıysa işlemi atlar ve hesap *farklı* bir anahtar tutuyorsa hiçbir
+şey göndermeden `PqcKeyMismatchError` fırlatır (ikinci bir kayıt **ücret alındıktan
+sonra** reddedilir). Kayıt, zincirin anahtarı olmayan bir hesaptan kabul ettiği tek
+klasik imzalı işlemdir; bu nedenle hibrit istemci onu kendiliğinden klasik olarak
+gönderir. Ağ v3.2.3'ü uyguladıktan sonra (her iki ağ da uyguladı) yardımcı,
+isteğe bağlı sahiplik kanıtını da ekler. Zincir zayıf, dejenere veya yeniden
+kullanılmış anahtarları reddeder; `derivePqcCanonical`'dan gelen bir anahtar
+sorun çıkarmaz.
 
 ```ts
 import {
@@ -135,20 +142,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -156,52 +159,26 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. Hibrit imzayla gönderin
 
-`signAndBroadcastHybrid` işlemi oluşturur, imzalar ve yayınlar. SDK'nın ağa
-hangi sign-bytes biçimini doğruladığını sorabilmesi için `rest` parametresini
-geçirin (bkz. [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
-QOR'u taban `uqor` birimine çevirmek için `toBase("1.5")` kullanın. Ağın asgari
-gas fiyatı gas birimi başına 0,1 uqor'dur; dolayısıyla 400.000'lik bir gas
-limiti en az 40.000 uqor ücret gerektirir.
+`tx.bankSend` artık hibrit imzalar. Ücret varsayılan olarak `"auto"`'dur: istemci
+hibrit işlemin kendisini simüle eder ve simülasyonun ücretlendirmediği kuantum
+sonrası doğrulamanın gas'ini ekler. Ağın asgari gas fiyatı gas birimi başına 0,1
+uqor'dur (istemci 0,15 üzerinden fiyatlar). QOR'u taban `uqor` birimine çevirmek
+için `toBase("1.5")` kullanın.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
 `toBase("1.5")`, `"1500000"` döndürür (QOR'un taban birimi `uqor`, 10^6
-hassasiyetindedir).
+hassasiyetindedir). Başka bir mesajı aynı şekilde göndermek için onu
+`tx.signAndBroadcast([message], "auto")` çağrısına geçirin. Ücret, hesap numarası
+ve sıra numarası üzerinde açık denetim için `signAndBroadcastHybrid` kullanın
+(bkz. [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info Birleşik hesaplar
 Birleşik bir eth-native hesap (`deriveUnifiedAccount`) için bunun yerine
@@ -210,11 +187,13 @@ Birleşik bir eth-native hesap (`deriveUnifiedAccount`) için bunun yerine
 sayfasındadır.
 :::
 
-:::note Klasik gönderimler yalnızca yerel ve geliştirme düğümlerinde çalışır
-Klasik `client.connectTx(signer)` artı `tx.bankSend(...)` yolu hâlâ mevcuttur
-ve `ensurePqcRegistered` tek seferlik kayıt işlemi için bu yolu kullanır.
-Hibrit uzantıyı gerektirmeyen bir düğümde (yerel bir geliştirme düğümü) sıradan
-transferleri de bu yolla gönderebilir. Genel ağlar bunu reddeder.
+:::note Anahtar çifti olmadan istemci klasik imzalar
+`pqcKeypair` olmadan `client.connectTx(signer)` yalnızca klasik imzalar. Genel
+ağlar bunu yalnızca anahtar kaydı için kabul eder (henüz anahtarı olmayan bir
+hesap); hibrit uzantıyı gerektirmeyen bir düğümde (yerel bir geliştirme düğümü)
+sıradan transferleri de gönderir. 0.9.0 öncesi SDK sürümlerinde hibrit `TxClient`
+yoktur: `signAndBroadcastHybrid` üzerinden gönderin (bkz.
+[0.9.0 öncesi sürümler](/sdk/install#before-090)).
 :::
 
 ## Diğer diller: bağlan ve oku

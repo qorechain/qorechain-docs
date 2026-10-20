@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # 체인 파라미터
 
-QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용하며, `gasabstraction`은 테스트넷에서만 조회할 수 있습니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`는 REST를 지원하지 않습니다.
+QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용하며, `gasabstraction`은 테스트넷에서만 조회할 수 있습니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `x/inflation` 파라미터는 v3.2.3부터 메인넷에서도 REST(`/qorechain/inflation/v1/params`)로 제공됩니다. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`는 REST를 지원하지 않습니다.
 
 :::note
-표시된 값은 2026년 10월 14일에 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 메인넷 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 파라미터는 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**)와 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**)에 적용되며, 별도 표기가 없는 한 두 네트워크에서 동일합니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
+표시된 값은 2026년 10월 20일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.3**)에서 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 별도 표기가 없는 한 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**, 릴리스 **v3.2.4**)에서도 동일합니다. 현재 존재하는 차이점은 [테스트넷 차이점(v3.2.4)](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
 :::
 
 ---
@@ -26,7 +26,20 @@ QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정�
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | 강제 모드: 0=비활성, 1=선택, 2=필수                                      |
 
-알고리즘 레지스트리(id 1 `dilithium5`, id 2 `mlkem1024`)는 파라미터가 아니라 체인 상태입니다. 키는 `MsgRegisterPQCKey`로 명시적으로 등록하며, 자동 등록은 없습니다.
+알고리즘 레지스트리(id 1 `dilithium5`, id 2 `mlkem1024`)는 파라미터가 아니라 체인 상태입니다. 키는 `MsgRegisterPQCKey` 또는 `MsgRegisterPQCKeyV2`로 명시적으로 등록하며, 자동 등록은 없습니다. v3.2.3부터 체인은 취약한 키, 퇴화된 키, 이미 사용된 공개 키를 거부하며, `MsgRegisterPQCKeyV2`는 선택적 소유 증명(`tx pqc register-key-v2 ... --pqc-key <name>`)을 받아 이 증명이 있으면 체인이 검증합니다.
+
+### EVM 승인 윈도우 한도 {#evm-window-limits}
+
+[EVM 승인 윈도우](/getting-started/first-transaction#evm-window)의 한도는 모듈 파라미터가 아니라 프로토콜 상수입니다.
+
+| 한도 | 값 |
+| ----- | ----- |
+| 최대 `blocks` | 17,280 (≈3.2초 블록 기준 약 15시간) |
+| 최대 `max_txs` | 1,000 |
+| `max_value` | 0보다 큼 (uqor; 전송 금액과 각 트랜잭션의 최대 수수료의 합) |
+| 최대 `allowed_targets` | 수신 주소 16개 (선택적 범위 지정, v3.2.3) |
+
+v3.2.3부터는 윈도우를 `native_only`(일반 네이티브 QOR 전송만 허용)로 더 좁힐 수도 있습니다.
 
 ---
 
@@ -99,7 +112,7 @@ Triple-Pool CPoS 로직은 `x/qca`에 구현되어 있고 이 파라미터들도
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | 컨트랙트 생성 시 고정 소각 수수료                     |
 | `ai_service_burn_rate` | `0.50`                       | AI 서비스 수수료 중 소각되는 비율                     |
 | `bridge_burn_rate`     | `1.00`                       | 브리지 수수료 중 소각되는 비율                        |
-| `failed_tx_burn_rate`  | `0.10`                       | 실패한 트랜잭션 가스 중 소각되는 비율                 |
+| `failed_tx_burn_rate`  | `0.10`                       | 실패한 트랜잭션 가스 중 소각되는 비율(v3.2.2부터 체인이 적용) |
 | `validator_share`      | `0.37`                       | 검증자에게 분배되는 비율                              |
 | `treasury_share`       | `0.20`                       | 트레저리로 보내지는 비율                              |
 | `staker_share`         | `0.10`                       | 스테이커에게 분배되는 비율                            |
@@ -133,13 +146,13 @@ xQORE 모듈의 회계 로직은 존재하지만, 잠금 및 잠금 해제 트�
 | 파라미터               | 값                      | 설명                                                  |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule`(레거시) 또는 `fixed`(v3.1.94부터)          |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16,239 QOR) | fixed 모드에서 에포크마다 발행되는 양      |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114,285,714 QOR) | 누적 발행 하드 상한            |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86,000 QOR) | fixed 모드에서 에포크마다 발행되는 양(2026년 10월 19일 거버넌스 제안 10 이전에는 16,239 QOR) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590,000,000 QOR) | 누적 발행 하드 상한(제안 10 이전에는 114,285,714 QOR) |
 | `epoch_length`         | `43,200` blocks         | 에포크당 블록 수(≈3.2초 블록 기준 약 38.6시간)        |
 | `schedule`             | 17.5 %, 11 %, 7 %, 7 %, 2 % | 연도별 레거시 비율, fixed 모드에서는 사용되지 않음 |
 | `enabled`              | `true`                  | 모듈 활성화 플래그                                    |
 
-이 모듈은 상한에 도달할 때까지 이 발행량을 수수료 수집기로 발행합니다. [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요. 메인넷에서는 이 값들이 REST 경로로 노출되지 않습니다.
+이 모듈은 상한에 도달할 때까지 이 발행량을 수수료 수집기로 발행합니다. 86,000 QOR로 시작하는 첫 에포크는 블록 3,672,000에서 시작됩니다. 2026년 10월 20일(에포크 84) 기준으로 105,248,896.21 QOR가 발행되었고 상한까지 484,751,103.79 QOR가 남아 있었습니다(`GET /qorechain/inflation/v1/epoch_info`). [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요.
 
 ---
 
@@ -281,7 +294,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 변환 비율은 해당 토큰으로 수수료를 지불할 때 환산에 사용되는 비율입니다.
 
 :::note 열린 IBC 채널 없음
-어느 네트워크에도 열린 IBC 채널이 없으므로 `ibc/USDC`나 `ibc/ATOM`은 아직 존재할 수 없으며, 수수료는 `uqor`로 지불합니다. 수수료 경로는 v3.2.2에서 개편되었습니다(테스트넷 전용).
+어느 네트워크에도 열린 IBC 채널이 없으므로 `ibc/USDC`나 `ibc/ATOM`은 아직 존재할 수 없으며, 수수료는 `uqor`로 지불합니다.
 :::
 
 ---
@@ -298,7 +311,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | `max_light_nodes`        | `10,000`           | 등록 가능한 최대 라이트 노드 수                      |
 | `heartbeat_grace_period` | `100` blocks       | 늦은 하트비트에 대한 유예 기간                       |
 
-보상 회계는 라이브 상태이지만(`GET /qorechain/lightnode/v1/reward_pool`은 2026년 10월 14일 기준 `max_reward_per_block_per_node` 1,713 uqor를 반환합니다), 현재 등록은 닫혀 있으며 등록된 라이트 노드는 없습니다. [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
+보상 회계는 라이브 상태입니다. `GET /qorechain/lightnode/v1/reward_pool`은 풀(`balance`, `reserved`, `outstanding`, `payable`, `distributable`)과 노드별 보상 한도를 보고합니다. v3.2.3부터 이 한도는 `max_reward_per_month_per_node`로, **노드당 30일에 2,000 QOR(`2000000000` uqor)** 이며 블록 시간에 비례해 안분되고 노드의 가동률에 따라 조정됩니다. 이전의 블록당 값(`max_reward_per_block_per_node`, `1713` uqor)도 계속 보고됩니다. 2026년 10월 20일 기준으로 풀에는 487.2318 QOR의 준비금이 있었고 미지급 금액은 없었습니다. 등록은 열려 있으며 라이선스로 제한됩니다. 메인넷에서 `lightnode_operator` 라이선스 6개가 부여되었으며 아직 등록한 라이트 노드는 없습니다(`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). [라이트 노드](/light-node/overview#reward-program-status)와 [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
 
 ---
 
@@ -336,7 +349,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 
 ## 스테이킹, 슬래싱, 거버넌스, 수수료, EVM {#core-modules}
 
-표준 Cosmos SDK 및 EVM 모듈이며, 실시간으로 읽은 값입니다(별도 표기가 없는 한 두 네트워크에서 동일).
+표준 Cosmos SDK 및 EVM 모듈이며, 2026년 10월 20일에 실시간으로 읽은 값입니다(별도 표기가 없는 한 두 네트워크에서 동일하며, 10월 14일 조회 이후 변경 없음).
 
 | 모듈 | 파라미터 | 값 |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 
 체인은 Cosmos SDK 서킷 브레이커로 개별 메시지 유형을 끌 수 있으며, 이는 재단 운영 계정과 거버넌스가 제어합니다. 비활성화된 메시지 유형은 모든 레인에서 앤티 핸들러가 거부합니다. 실시간 목록은 `GET /cosmos/circuit/v1/disable_list`에서 확인할 수 있습니다.
 
-**메인넷(2026년 10월 14일, 16개 항목):** 베스팅 계정 생성(`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; 그리고 PRISM 제어 메시지 네 가지(`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM 레인(`MsgEthereumTx`)은 **열려 있습니다**. 9월 16일부터 25일까지 꺼져 있었으며 v3.2.0 업그레이드로 다시 열렸습니다.
+**메인넷(2026년 10월 20일, 16개 항목, 10월 14일 이후 변경 없음):** 베스팅 계정 생성(`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; 그리고 PRISM 제어 메시지 네 가지(`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM 레인(`MsgEthereumTx`)은 **열려 있습니다**. 9월 16일부터 25일까지 꺼져 있었으며 v3.2.0 업그레이드로 다시 열렸습니다.
 
-**테스트넷:** CosmWasm 메시지 세 가지만 해당됩니다.
+**테스트넷(2026년 10월 20일):** CosmWasm 메시지 세 가지만 해당됩니다.
 
 표준 bank, staking, governance, distribution, authz, `x/pqc` 등록 메시지를 포함한 그 밖의 모든 메시지 유형은 활성화되어 있습니다. 이 목록은 거버넌스로 제어되며 변경될 수 있으므로 항상 조회하세요.
+
+---
+
+## 테스트넷 차이점(v3.2.4) {#testnet-differences}
+
+테스트넷 `qorechain-diana`는 v3.2.4를 실행합니다(2026년 10월 19일 높이 8,337,253에서 적용). v3.2.4는 현재 **테스트넷 전용**이며, 메인넷 거버넌스 제안 13이 통과되면 높이 3,742,566에서 적용됩니다. 2026년 10월 20일 기준으로 메인넷과 다음 항목이 다릅니다.
+
+| 영역 | 테스트넷 |
+| ---- | ------- |
+| 모듈 | 48개 대신 49개: 선택적 시간 잠금 스테이킹 모듈 `x/stakingtier`(`GET /qorechain/stakingtier/v1/params`; 최소 잠금 10 QOR). [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요. |
+| `x/inflation` | 이전 발행 값(에포크당 16,239 QOR, 상한 114,285,714 QOR, 이미 도달함)과 세 번째 `emission_mode`인 `target_apy`, 그리고 현재 `0`인 `target_apy_bps` 파라미터. |
+| `x/burn` | 열세 번째 기록 소스인 `staking_tier_penalty`. |
+| `x/lightnode` 보상 풀 | 추가 보고 필드(`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); 노드의 보상 한도는 해당 노드 자신의 등록 시점부터 시작됩니다. |
+| `x/pqc` | PQC 계정의 `possession_proven` 플래그; 소유 증명은 계정 키에는 여전히 선택 사항이며 브리지 검증자 키에는 필수입니다. |
+| `x/rdk` | 낙관적 챌린지 윈도우가 블록 시간으로 계산됩니다. |
+| 서킷 브레이커 | CosmWasm 메시지 세 가지만 해당(위 참조). |
+| 쿼리 | 새로운 `protocol_features` 및 `auth_nonce` 쿼리. |
+
+여기에 나열되지 않은 모든 파라미터는 두 네트워크에서 동일합니다.

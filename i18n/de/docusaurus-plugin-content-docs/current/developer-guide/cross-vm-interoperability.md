@@ -15,9 +15,9 @@ Cross-VM-Aufrufe sind nur so verfügbar wie ihre Ziel-Lane:
 * `MsgCrossVMCall` ist im **Mainnet durch den Circuit Breaker abgeschaltet** (`qorechaind query circuit disabled-list`); im Testnet ist sie aktiviert.
 * Die **SVM-Lane ist für Transaktionen in beiden Netzwerken deaktiviert**, daher kann ein SVM-Teil nicht ausgeführt werden.
 * **CosmWasm-Upload und -Instanziierung sind in beiden Netzwerken zugriffsbeschränkt**, und das Mainnet hat keinen gespeicherten Contract-Code, daher gibt es noch keinen CosmWasm-Contract, der aufgerufen werden könnte.
-* Das synchrone **EVM-Precompile ist nicht aktiv** (siehe unten).
+* Das synchrone **EVM-Precompile ist nicht aktiv** (siehe unten). Seit v3.2.3 befindet sich eine gehärtete Version in der Binärdatei, aber in keinem der beiden Netzwerke ist ein Precompile aktiviert.
 
-Die REST-Routen des Moduls (`/qorechain/crossvm/v1/...`) werden vom öffentlichen Gateway nicht bereitgestellt; lies Nachrichten mit der CLI oder einem gRPC-/ABCI-Query-Client.
+Die REST-Routen des Moduls (`/qorechain/crossvm/v1/...`) werden vom öffentlichen Gateway nicht bereitgestellt; lesen Sie Nachrichten mit der CLI oder einem gRPC-/ABCI-Query-Client.
 :::
 
 :::note
@@ -51,7 +51,7 @@ Die folgenden Endpunkte verweisen standardmäßig auf einen lokalen Knoten. Verw
 Der synchrone Pfad verwendet ein EVM-**Precompile** an der Adresse `0x0000000000000000000000000000000000000901`. Er soll es Solidity-Contracts ermöglichen, CosmWasm-Contracts aufzurufen und innerhalb derselben Transaktion eine Antwort zu erhalten.
 
 :::warning Weder im Mainnet noch im Testnet aktiv
-Das CrossVM-Bridge-Precompile ist auf `qorechain-vladi` und `qorechain-diana` **nicht aktiv**: Ein Aufruf von `0x…0901` ist erfolgreich und liefert leere Daten. Es wird in seiner jetzigen Form nicht aktiviert; es wird neu aufgebaut, sodass ein Revert im aufrufenden Contract auch die CosmWasm-Seite rückgängig macht, Wertübertragungen abgelehnt werden, EVM-zu-EVM-Re-Entry verweigert wird und der Cross-VM-Circuit-Breaker greift. Das Beispiel unten zeigt nur die beabsichtigte Form. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
+Das CrossVM-Bridge-Precompile ist auf `qorechain-vladi` und `qorechain-diana` **nicht aktiv**: Ein Aufruf von `0x…0901` ist erfolgreich und liefert leere Daten. Die Binärdatei v3.2.3 enthält eine gehärtete Version (sie verweigert einen `STATICCALL`, misst ihren verschachtelten Aufruf am Gas des aufrufenden Frames und führt ihn im Journal, sodass ein EVM-Revert auch die CosmWasm-Seite rückgängig macht, erreicht nur CosmWasm-Ziele auf der Allowlist und beachtet den Cross-VM-Circuit-Breaker), aber sie läuft erst, wenn ein per Governance genehmigtes Upgrade sie der Liste der aktiven Precompiles hinzufügt. Das Beispiel unten zeigt nur die beabsichtigte Form. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity-Beispiel
@@ -78,7 +78,7 @@ contract CrossVMCaller {
 }
 ```
 
-Sobald aktiv, führt das Precompile den CosmWasm-Contract sofort aus und gibt das Ergebnis zurück. Der aktuelle Node dekodiert die Calldata als `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; die ABI kann sich mit dem Neuaufbau ändern. Gas-Kosten: **50.000 Basis + 4 pro Eingabe-Byte + Ausführungskosten**.
+Sobald aktiv, führt das Precompile den CosmWasm-Contract sofort aus und gibt das Ergebnis zurück. Der aktuelle Knoten dekodiert die Calldata als `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; die ABI kann sich vor der Aktivierung noch ändern. Gas-Kosten: **50.000 Basis + 4 pro Eingabe-Byte + Ausführungskosten**.
 
 ---
 
@@ -88,17 +88,17 @@ Andere Cross-VM-Aufrufe verwenden die Transaktion `MsgCrossVMCall`. Die Chain er
 
 ### CLI
 
-`tx crossvm call` erhält die Ziel-VM (`evm`, `cosmwasm` oder `svm`) und den Ziel-Contract als Positionsargumente, die Payload als Hex:
+`tx crossvm call` erhält die Ziel-VM (`evm`, `cosmwasm` oder `svm`) und den Ziel-Contract als Positionsargumente, die Payload als Hex. Die CLI fragt nicht nach der Quell-VM: Die Chain leitet die Lane des Aufrufers aus dem Zustand ab und ignoriert das angegebene Feld (die CLI setzt einen Platzhalter ein, damit die Nachricht ihre eigene Validierung besteht):
 
 ```bash
 qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Weitere Flags: `--funds <coins>` (nur bei CosmWasm-Zielen) und `--async`, um den Aufruf in die Warteschlange zu stellen, statt ihn sofort auszuführen. Signiere und sende `tx.json` mit `tx pqc cosign` (siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)); die Gebühren-Untergrenze beträgt 0.1 uqor pro Gas.
+Weitere Flags: `--funds <coins>` (nur bei CosmWasm-Zielen) und `--async`, um den Aufruf in die Warteschlange zu stellen, statt ihn sofort auszuführen. Signieren und senden Sie `tx.json` mit `tx pqc cosign` (siehe [Post-Quanten-Signierung](/developer-guide/post-quantum-signing)); die Gebühren-Untergrenze beträgt 0.1 uqor pro Gas. Ein Aufruf in die eigene Lane des Aufrufers wird abgelehnt (seit v3.2.3).
 
-:::caution Im Mainnet deaktiviert, und die CLI-Form benötigt eine Korrektur
-`MsgCrossVMCall` ist im Mainnet durch den Circuit Breaker abgeschaltet. In den aktuellen Release-Binaries baut `tx crossvm call` außerdem eine Nachricht, die die eigene Validierung der Nachricht nicht besteht (die Quell-VM bleibt leer), daher ist der Befehl hier nur als Referenz dokumentiert.
+:::caution Im Mainnet deaktiviert
+`MsgCrossVMCall` ist im Mainnet durch den Circuit Breaker abgeschaltet, daher kann der Befehl dort heute nicht erfolgreich sein. (Release-Binärdateien vor v3.2.3 bauten außerdem eine Nachricht, die ihre eigene Validierung nicht bestand, weil die Quell-VM leer war; die Binärdatei v3.2.3 behebt das.) Im Testnet ist die Nachricht aktiviert, aber ihre CosmWasm- und SVM-Ziele sind nicht nutzbar (siehe oben), sodass nur ein EVM-Ziel erreichbar ist.
 :::
 
 ---
@@ -122,6 +122,8 @@ Submitted --> Pending --> Executed
 | **Executed**  | Ziel-Contract erfolgreich aufgerufen; Antwort aufgezeichnet |
 | **Failed**    | Ausführung des Ziel-Contracts zurückgesetzt; Fehler aufgezeichnet |
 | **Timed Out** | Nachricht hat `queue_timeout_blocks` ohne Ausführung überschritten |
+
+Seit v3.2.3 wird ein fehlgeschlagener Aufruf in der Warteschlange als Ganzes zurückgerollt: Nur sein `Failed`-Eintrag bleibt bestehen, und die an einen fehlgeschlagenen CosmWasm-Aufruf angehängten Mittel werden nicht mehr in den Contract bewegt. Solange das Modul deaktiviert ist oder `MsgCrossVMCall` durch den Circuit Breaker abgeschaltet ist, wird die Warteschlange **nicht ausgeführt**: Nachrichten in der Warteschlange bleiben ausstehend und laufen zu ihrem Timeout ab, sofern der Schalter nicht vorher wieder umgelegt wird.
 
 ---
 
@@ -172,7 +174,7 @@ qorechaind query crossvm params
 
 ### JSON-RPC
 
-> **Noch nicht bereitgestellt:** Kein veröffentlichter Node-Build stellt den JSON-RPC-Namespace `qor_` bereit, daher liefert dieser Aufruf heute an jedem öffentlichen Endpunkt `-32601` (Methode nicht gefunden). Siehe [den Namespace `qor_`](/api-reference/json-rpc-qor_-namespace).
+> **Noch nicht bereitgestellt:** Kein veröffentlichter Knoten-Build stellt den JSON-RPC-Namespace `qor_` bereit, daher liefert dieser Aufruf heute an jedem öffentlichen Endpunkt `-32601` (Methode nicht gefunden). Siehe [den Namespace `qor_`](/api-reference/json-rpc-qor_-namespace).
 
 ```bash
 curl -X POST http://localhost:8545 \

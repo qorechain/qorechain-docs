@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain은 네이티브, EVM, SVM 실행 환경 전반에서 여러 지갑 유형을 지원합니다. 사용 목적에 맞는 지갑을 선택하세요.
 
 :::note
-아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 29일부터 운영 중)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
+아래 값들은 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**, 2026년 6월 7일부터 운영 중, 릴리스 v3.2.3)과 **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, 릴리스 v3.2.4)을 모두 다룹니다. 두 네트워크의 공개 엔드포인트는 [네트워크](/appendix/networks#public-endpoints) 문서에 정리되어 있습니다.
 :::
 
 ## QoreX (권장) {#qorex}
@@ -164,7 +164,7 @@ qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
   --chain-id qorechain-vladi --gas 600000 --fees 60000uqor
 ```
 
-PQC 키 파일을 니모닉만큼 신중하게 백업하세요. (키는 `qorechaind tx pqc recover-key`로 니모닉에서 다시 도출할 수 있으며, `tx pqc rotate-key`로 교체할 수 있습니다.) QoreX와 QoreChain SDK는 키를 대신 등록해 줍니다. 서명된 송금의 전체 예시는 [첫 번째 트랜잭션](/getting-started/first-transaction#register-pqc-key)을 참고하세요.
+v3.2.3부터는 `qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --pqc-key mypqc --from mykey ...`로 등록하여 선택적인 소유 증명을 첨부할 수 있으며, 체인은 약한 키, 퇴화(degenerate) 키, 이미 사용된 키도 거부합니다. PQC 키 파일을 니모닉만큼 신중하게 백업하세요. (키는 `qorechaind tx pqc recover-key`로 니모닉에서 다시 도출할 수 있으며, `tx pqc rotate-key`로 교체할 수 있습니다.) QoreX와 QoreChain SDK는 키를 대신 등록해 줍니다. 서명된 송금의 전체 예시는 [첫 번째 트랜잭션](/getting-started/first-transaction#register-pqc-key)을 참고하세요.
 
 ### SDK를 사용한 하이브리드 서명
 

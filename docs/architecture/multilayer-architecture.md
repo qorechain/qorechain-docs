@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implements a **4-tier hierarchical chain architecture** through the `x/multilayer` module. The main chain serves as the settlement and trust root, while subsidiary layers (sidechains, paychains, and rollups) handle specialized workloads with different performance and security trade-offs.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.1**) and testnet, but **no layer and no anchor exists on either network yet**. Everything below describes the module as built; the parameters are the live values.
+The module is deployed on mainnet (chain version **v3.2.3**) and testnet (**v3.2.4**), but **no layer and no anchor exists on either network yet** (checked 20 October 2026: `GET /qorechain/multilayer/v1/layers` returns an empty list on both). Everything below describes the module as built; the parameters are the live values. On mainnet the `MsgUpdateLayerStatus` message is currently switched off by the circuit breaker (see [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); on the testnet it is not.
 :::
 
 ---
@@ -64,7 +64,7 @@ The main chain is the trust root for the entire QoreChain ecosystem.
 | Consensus  | QoreChain consensus (see [Consensus Mechanism](/architecture/consensus-mechanism) for what is wired today) |
 | Security   | PQC-secured with Dilithium-5 signatures                                        |
 | Role       | Settlement layer, state anchor storage, QCAI routing engine, trust root        |
-| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.0 second on testnet (measured October 2026) |
+| Block time | Network-dependent: about 3.2 seconds on mainnet, about 1.0 second on testnet (measured 20 October 2026) |
 
 All subsidiary layers periodically anchor their state roots to the main chain via Hierarchical Commitment Schemes (HCS).
 
@@ -160,13 +160,19 @@ Subsidiary layers periodically commit their state to the main chain via **state 
 | `transaction_count`       | Number of transactions since the last anchor         |
 | `compressed_state_proof`  | Compressed state transition proof                    |
 
-### Anchor Submission
+### Layer and rollup ids {#id-grammar}
+
+Since v3.2.2 a **new** layer id (and a rollup id, which a rollup shares with its layer) must match `^[a-z0-9][a-z0-9._-]{2,63}$`: 3 to 64 characters, lowercase letters, digits, `.`, `_` and `-`, starting with a letter or digit. The keeper checks this when the layer is created, and a transaction that fails it still pays its fee, so validate ids on the client first. Ids created before v3.2.2 are unaffected.
+
+### Anchor Submission {#anchor-submission}
 
 Anchors are submitted to the main chain via `MsgAnchorState`. The keeper validates the anchor according to the following steps:
 
 1. **Layer exists and is active** — The keeper verifies that the layer exists in state and currently has `active` status.
 2. **Minimum anchor interval elapsed** — The keeper checks that at least `min_anchor_interval` blocks (default: 100) have elapsed since the last anchor for this layer.
 3. **PQC aggregate signature** — The keeper ensures the PQC aggregate signature is present and valid for the anchor data. The signature is checked against the **layer creator's** registered ML-DSA-87 key; an anchor is refused when the creator has no registered key.
+
+A **settlement anchor** written through `x/rdk` (a batch submitted with an `anchor_signature`, since v3.2.2) is a special case: it skips the minimum-interval check because batches arrive in order, it may anchor a layer that is still `proposed` (nothing on chain promotes a layer an RDK rollup registered), and it is accepted only when the submitter is the layer's own creator. The signature check is the same.
 
 ### Challenge Period
 
@@ -181,7 +187,24 @@ Anchors are **readable** through the multilayer query service. Two queries expos
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — returns the latest state anchor for a layer.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — returns the anchor history for a layer.
 
-Each anchor carries a Dilithium-5 signature by the layer creator over the message `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. A newer chain release changes the signed message, so clients should not hard-code it. A signature proves that the registered creator key signed those bytes; whether the anchor exists is a question for the chain, so a verifier should read the anchor from a node it trusts. No layer or anchor exists on either network yet. This is the on-chain primitive behind the Rollup Development Kit's [settlement receipts](/rollups/settlement-receipts).
+Each anchor carries a Dilithium-5 (ML-DSA-87) signature by the layer creator. The signed message depends on the height at which the anchor is submitted:
+
+* **From v3.2.2 (mainnet height 3,556,788, testnet height 6,905,034): v2.** Every variable-length field carries an 8-byte big-endian length, the chain id is part of the message, and the transaction count and compressed state proof are covered:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Below v3.2.2: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, with no length prefixes and no chain id, so a v1 signature is valid on every chain). The chain does not accept a v1 anchor from the v3.2.2 height on.
+
+Because the message can change between releases, a client should select the form from the applied-plan height (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` means not applied) instead of hard-coding it. For an RDK batch the mapping is: `layer_id` = the rollup's layer id, `layer_height` = the batch index, `state_root` = the batch state root, `transaction_count` = the batch's transaction count and an empty `compressed_state_proof`. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` prints these bytes offline. A signature proves that the registered creator key signed those bytes; whether the anchor exists is a question for the chain, so a verifier should read the anchor from a node it trusts. No layer or anchor exists on either network yet. This is the on-chain primitive behind the Rollup Development Kit's [settlement receipts](/rollups/settlement-receipts).
 
 ---
 
@@ -250,3 +273,5 @@ Status transitions are enforced by the keeper. Invalid transitions (e.g., Decomm
 | `routing_enabled`              | bool   | `true`          | Enable QCAI-based transaction routing                   |
 | `routing_confidence_threshold` | string | `0.6`           | Minimum confidence for QCAI routing decisions           |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Enable global Cross-Layer Fee Bundling                  |
+
+These are the values returned by `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) on mainnet and testnet on 20 October 2026. Since v3.2.2 the module's `MsgUpdateParams` can be routed, so a governance proposal can change them.

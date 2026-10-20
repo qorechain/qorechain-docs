@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architektur-Überblick
 
-QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 29. Juni 2026 live, auf Release **v3.2.1** (Konsensregeln von v3.2.0), mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
+QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Release **v3.2.3**, mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**, Release v3.2.4, nur Testnet). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
 
 Der nachfolgende Transaktions-Lebenszyklus fasst zusammen, wie eine übermittelte Transaktion durch den Node läuft — von der AnteHandler-Decorator-Kette (Sicherheits- und Gebührenprüfungen) über die VM-Ausführung bis zur On-Chain-Abwicklung:
 
@@ -50,7 +50,7 @@ flowchart LR
 │  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
 │  │  │20/10/│   │PvP    │   │emission   │                    │           │
-│  │  │3     │   │       │   │114.3M cap │                    │           │
+│  │  │3     │   │       │   │590M cap   │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
@@ -121,10 +121,10 @@ flowchart LR
 QoreChain läuft als drei zusammenarbeitende Prozesse, jeder mit eigenem Go-Modul und eigener Binary:
 
 | Komponente          | Beschreibung                                                                                                                                                                                                                                                                                          | Ort                  |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | **qorechain-node** | Der zentrale Blockchain-Node. Betreibt die QoreChain Consensus Engine, führt alle Custom-Module aus, verwaltet alle drei VM-Laufzeiten und stellt RPC-, REST-, gRPC- und JSON-RPC-Endpunkte bereit.                                                                                                                      | `qorechain-core/`         |
 | **ai-sidecar**     | Ein gRPC-Dienst, der erweiterte KI-Inferenz-Fähigkeiten bereitstellt, gestützt durch das QCAI-Backend. Der Sidecar behandelt Inferenz-Anfragen, die über den Umfang des On-Chain-RL-Agenten hinausgehen, etwa Analyse natürlicher Sprache und komplexe Mustererkennung. Kommuniziert mit dem Node per gRPC auf Port 50051. | `qorechain-core/sidecar/` |
-| **block-indexer**  | Ein WebSocket-Listener, der neue Blöcke und Transaktionen vom RPC-Endpunkt des Nodes abonniert, Events parst und strukturierte Daten in eine Postgres-Datenbank schreibt, für schnelle Abfragen durch Explorer und APIs.                                                                                                          | `qorechain-core/indexer/` |
+| **block-indexer**  | Ein WebSocket-Listener, der neue Blöcke und Transaktionen vom RPC-Endpunkt des Nodes abonniert, Events parst und strukturierte Daten in eine Postgres-Datenbank schreibt, für schnelle Abfragen durch Explorer und APIs.                                                                                          | `qorechain-core/indexer/` |
 
 ## Ports
 
@@ -170,7 +170,7 @@ QoreChain registriert **48 Genesis-Module, davon 20 QoreChain-spezifische**, gru
 
 * `x/burn` — 12 Burn-Quellen, EndBlocker-Gebührenverteilung (37/30/20/10/3-Split)
 * `x/xqore` — Design für Governance-verstärktes Staking: Lock/Unlock, gestaffelte Ausstiegsstrafen, PvP-Rebase (nur Buchführung; Lock- und Unlock-Transaktionen sind in den Live-Netzwerken noch nicht eingebunden)
-* `x/inflation` — Begrenzte Emission: pro Epoche wird ein fester Betrag geprägt, bis eine harte kumulative Obergrenze (114.285.714 QOR) erreicht ist
+* `x/inflation` — Begrenzte Emission: pro Epoche wird ein fester Betrag geprägt, bis eine harte kumulative Obergrenze (590.000.000 QOR) erreicht ist
 * `x/amm` — On-Chain-Liquidität / automatisierter Market Maker
 
 **Bridges und Interoperabilität**
@@ -194,7 +194,7 @@ QoreChain registriert **48 Genesis-Module, davon 20 QoreChain-spezifische**, gru
 
 Jede Transaktion durchläuft vor der Ausführung eine Decorator-Kette; jeder Decorator kann sie ablehnen. Es gibt zwei Ketten.
 
-**Cosmos-Lane** (der Reihe nach): `RejectMessages` (kein `MsgEthereumTx` auf dieser Lane) → `AuthzLimiter` (keine EVM- oder Vesting-Erstellungsnachrichten innerhalb von authz) → `SetUpContext` → Mempool- und Multisig-Tiefen-Guards → CosmWasm-Simulations-Gas-, Tx-Zähler-, Gas-Register- und Contracts-Decorators → `CircuitBreaker` → Extension-Option-Prüfung → `ValidateBasic` → `TxTimeout` → `Memo` → Validator-Lizenz-Gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (enthält das Ratenlimit pro Absender) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → Burn-Transaktionszähler → IBC-Redundant-Relay-Prüfung → Tracking des angeforderten Gas.
+**Cosmos-Lane** (der Reihe nach): `RejectMessages` (kein `MsgEthereumTx` auf dieser Lane) → `AuthzLimiter` (keine EVM- oder Vesting-Erstellungsnachrichten innerhalb von authz und ab v3.2.3 keine Nachrichten zur Verwaltung von Post-Quanten-Schlüsseln) → `SetUpContext` → Mempool- und Multisig-Tiefen-Guards → CosmWasm-Simulations-Gas-, Tx-Zähler-, Gas-Register- und Contracts-Decorators → `CircuitBreaker` → Extension-Option-Prüfung → `ValidateBasic` → `TxTimeout` → `Memo` → Validator-Lizenz-Gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (enthält das Ratenlimit pro Absender) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → Burn-Transaktionszähler → IBC-Redundant-Relay-Prüfung → Tracking des angeforderten Gas.
 
 **EVM-Lane** (Transaktionen mit der Ethereum-Extension-Option): `CircuitBreaker` → der EVM-Mono-Decorator (Signatur-, Nonce-, Gebühren- und Guthabenprüfungen) → `EVMWindowDecorator` (registrierter Post-Quanten-Schlüssel und ein aktives Autorisierungsfenster; siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window)).
 

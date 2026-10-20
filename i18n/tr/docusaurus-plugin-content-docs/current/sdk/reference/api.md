@@ -43,6 +43,13 @@ projesinden de yeniden üretebilirsiniz.
 - **PQC:** `generatePqcKeypair`, `pqcSign`, `pqcVerify`, uzunluk sabitleri,
   algoritma kimlikleri/yardımcıları, `PqcSigner`, `HybridSigner`,
   `buildHybridSignatureExtension`, `HYBRID_SIG_TYPE_URL`.
+- **PQC anahtar yaşam döngüsü (0.9.0):** `ensurePqcRegistered` (durumu REST
+  üzerinden okur, `PqcKeyMismatchError`), `fetchPqcStatus`, `isRegisteredPqcKey`,
+  `buildRegisterPqcKeyMsg`, `signProofOfPossession` / `verifyProofOfPossession`
+  (`PROOF_OF_POSSESSION_DOMAIN`), `validateRegisteredPqcKey`,
+  `isDegeneratePqcPublicKey`, `migrateToHybrid`, `migratePqcKeyHybrid`,
+  `isUpgradeApplied` / `requireUpgradeApplied` (`CHAIN_UPGRADE_V3_2_2`,
+  `CHAIN_UPGRADE_V3_2_3`).
 - **Okuma istemcileri:** `RestClient` (`getPermissionSchema` dahil),
   `JsonRpcClient`, `QorClient`, HTTP yardımcıları (`getJson`, `postJsonRpc`,
   `buildUrl`, `joinUrl`, `QoreHttpError`); `amm`, `license`, `abstractaccount`
@@ -50,17 +57,18 @@ projesinden de yeniden üretebilirsiniz.
   sorguları dahil olmak üzere her modül için tipli sorgu istemcileri.
   Genel uç noktalarda bazı tipli REST yardımcıları, ağ geçidinin sunmadığı
   rotaları çağırır: `getAiStats`, `getFeeEstimate`, `getXqorePosition`,
-  `getInflationRate`, `getReputation` ve `getPqcAccount` (çoğul bir `accounts`
-  yolunu çağırır; sunulan rota tekil
-  `/qorechain/pqc/v1/account/{address}` olup `rest.get(...)` ile erişilebilir).
-  `getBurnStats`, `getAllBalances`, `getBridgeChains` ve `getPermissionSchema`
-  çalışır.
+  `getInflationRate` ve `getReputation`.
+  `getBurnStats`, `getAllBalances`, `getBridgeChains`, `getPermissionSchema` ve
+  (çoğul `accounts` yolunu sunulan tekil
+  `/qorechain/pqc/v1/account/{address}` rotasına düzelten 0.9.0'dan beri)
+  `getPqcAccount` çalışır.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
 - **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
-- **İşlemler:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`,
+- **İşlemler:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`
+  (`pqcKeypair` ile bağlanıldığında hibrit, 0.9.0; `HYBRID_VERIFY_GAS`),
   `MSG_SEND_TYPE_URL`, hibrit yardımcılar (`encodeHybridExtension`,
   `attachHybridExtension`, `buildHybridTx`, `signAndBroadcastHybrid`);
   `decodeTxError` ile yapılandırılmış hata çözümleme (`abstractaccount`
@@ -88,13 +96,21 @@ projesinden de yeniden üretebilirsiniz.
   (`"auto" | "v1" | "v2"`); `resolveSignBytesVersion`,
   `SIGN_BYTES_V2_UPGRADES`, `isHybridSignBytesRejection`, `hybridSignBytesV1` /
   `hybridSignBytesV2`, `migrationSignBytes`, `bridgeAttestationSignBytes`.
-- **EVM yetkilendirme penceresi (0.8.2+):** `openEvmWindowMsg`, `closeEvmWindowMsg`,
-  `fetchEvmWindow`, `classifyEvmWindowRejection`, `isEvmWindowRejection`,
-  `MAX_EVM_WINDOW_BLOCKS`, `MAX_EVM_WINDOW_TXS`. Bkz.
+- **EVM yetkilendirme penceresi (0.8.2+):** `openEvmWindowMsg` (`nativeOnly` ve
+  `allowedTargets` 0.9.0'dan itibaren), `closeEvmWindowMsg`, `fetchEvmWindow`,
+  `classifyEvmWindowRejection`, `isEvmWindowRejection`, `MAX_EVM_WINDOW_BLOCKS`,
+  `MAX_EVM_WINDOW_TXS`, `MAX_EVM_WINDOW_TARGETS`. Bkz.
   [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window).
+- **EIP-7702 onayı (0.9.0):** `authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`,
+  `fetchEvmDelegationConsent`, `evmDelegationTupleNonce`,
+  `classifyEvmDelegationRejection`, `EVM_DELEGATION_CLEAR`,
+  `MAX_EVM_DELEGATION_CONSENT_BLOCKS`.
+- **Abstract-account özeti v2 (0.9.0):** `evmAuthSignBytesV2`,
+  `resolveEvmAuthDigestVersion`; `validateSpendingRules`.
 - **Kanonik PQC türetme (0.8.3+):** `derivePqcCanonical(account, mnemonic)`,
   `canonicalAccount(account)`; PQC kayıt mesajı
   `buildRegisterPqcKeyMsg`'dir (`ensurePqcRegistered` tarafından kullanılır).
+  `derivePqcLegacy` yeni anahtarlar için kullanımdan kaldırılmıştır.
 
 ### `@qorechain/evm`
 
@@ -118,10 +134,10 @@ sabitleri.
 
 | Dil | Oluşturulan dokümanlar | Kurulum |
 | --- | --- | --- |
-| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.8.3` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
-| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...` (etiket `packages/go/v0.8.4`) |
-| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.8.3; `qorechain` olarak içe aktarılır) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.8.3` |
+| Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — herkese açık API üzerinde docstring'ler | `0.9.0` sürümünde `pip install qorechain-sdk` (`qorsdk` olarak içe aktarılır) |
+| Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (etiket `packages/go/v0.9.0`) |
+| Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; `qorechain` olarak içe aktarılır) |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
 
 Her paket aynı yüzeyi yansıtır (ağ hazır ayarları, denom/adres yardımcıları,
 HD türetme — birleşik eth-native hesaplar dahil — PQC temel bileşenleri ve

@@ -23,7 +23,7 @@ sidebar_position: 1
 | **[Staking & Validators](/dashboard/staking-and-validators)** | 밸리데이터를 검토하고 QOR을 위임합니다. |
 | **[Faucet](/dashboard/faucet)** | 테스트넷에서 테스트 토큰을 요청합니다. |
 | **[Quests](/dashboard/quests)** | 안내된 과제를 완료하며 네트워크를 배웁니다. |
-| **[Tools Hub](/dashboard/tools-hub)** | 라이트 노드 다운로드 및 상태, 노드 등록, 롤업 요청, SDK, 라이선싱 도구에 접근합니다. |
+| **[Tools Hub](/dashboard/tools-hub)** | 여섯 개의 탭으로 구성된 운영자 및 빌더 도구: Validator Program, Validator Application, Light Node, Node Registration, Rollups, SDK. |
 
 ## 로그인 {#sign-in}
 
@@ -39,7 +39,7 @@ sidebar_position: 1
 
 온체인 상태를 변경하는 대부분의 작업 — 토큰 전송, 스왑, 스테이킹 — 은 지갑 연결이 필요합니다. 대시보드가 키를 다루는 방식은 네트워크에 따라 다릅니다.
 
-- **메인넷은 비수탁형입니다.** 대시보드는 여러분의 메인넷 키를 절대 보관하지 않습니다. 본인 소유의 지갑 — **QoreX**(공식 QoreChain 지갑, 확장 프로그램 또는 앱), **Keplr**, 또는 **MetaMask** — 를 연결하면 대시보드가 체인에서 실제 잔액과 내역을 읽어옵니다. 모든 메인넷 트랜잭션은 대시보드가 아니라 반드시 본인의 지갑에서 서명됩니다. **네이티브 레일**에서의 전송과 스테이킹은 **QoreX가 필요**합니다. QoreChain 계정은 포스트 양자 하이브리드 서명으로 서명되며, 오늘 기준 이 서명을 생성할 수 있는 것은 QoreX뿐이기 때문입니다. Keplr은 네이티브 레일 잔액을 조회하기 위해 연결할 수는 있습니다. **MetaMask**는 **EVM 레일**에서 연결되며, 그곳에서 전송하려면 QoreX에서 여는 EVM 승인 창도 열려 있어야 합니다([MetaMask로 전송하기](/dashboard/wallet#send-metamask) 참고).
+- **메인넷은 비수탁형입니다.** 대시보드는 여러분의 메인넷 키를 절대 보관하지 않습니다. 본인 소유의 지갑 — **QoreX**(공식 QoreChain 지갑, 확장 프로그램 또는 앱), **Keplr**, 또는 **MetaMask** — 를 연결하면 대시보드가 체인에서 실제 잔액과 내역을 읽어옵니다. 모든 메인넷 트랜잭션은 대시보드가 아니라 반드시 본인의 지갑에서 서명됩니다. **네이티브 레일**에서의 전송과 스테이킹은 **QoreX가 필요**합니다. QoreChain 계정은 포스트 양자 하이브리드 서명으로 서명되며, 오늘 기준 이 서명을 생성할 수 있는 것은 QoreX뿐이기 때문입니다. Keplr은 네이티브 레일 잔액을 조회하기 위해 연결할 수는 있습니다. **MetaMask**는 **EVM 레일**에서 연결되며, 그곳에서 전송하려면 계정의 포스트 양자 키와 열려 있는 EVM 승인 창도 필요합니다. 이 창은 MetaMask와 키를 공유하는 이더리움 방식(코인 60) 계정에서 QoreX로 엽니다([MetaMask로 전송하기](/dashboard/wallet#send-metamask) 참고).
 - **테스트넷은 수탁형입니다.** 대시보드가 여러분을 위해 테스트 지갑을 관리하므로, 별도 설정 없이 실제 자산 위험 없이 자유롭게 실험할 수 있습니다.
 
 ### QoreX로 연결하기 (권장) {#connect-qorex}
@@ -77,8 +77,8 @@ QoreChain 계정은 `qor` bech32 프리픽스를 사용하므로, 연결된 주�
 
 | 네트워크 | 체인 ID | 사용 시점 |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | 실제 가치와 프로덕션 사용을 위한 라이브 네트워크. 비수탁형: 본인의 지갑을 연결합니다. |
-| **Testnet** | `qorechain-diana` | 테스트를 위한 무료 환경으로, 대시보드가 관리하는 테스트 지갑과 테스트 토큰을 위한 [Faucet](/dashboard/faucet)이 제공됩니다. |
+| **Mainnet** | `qorechain-vladi` | 실제 가치와 프로덕션 사용을 위한 라이브 네트워크(2026년 6월 7일부터 라이브, 체인 v3.2.3 실행 중). 비수탁형: 본인의 지갑을 연결합니다. |
+| **Testnet** | `qorechain-diana` | 테스트를 위한 무료 환경(체인 v3.2.4 실행 중, 테스트넷 전용 릴리스)으로, 대시보드가 관리하는 테스트 지갑과 테스트 토큰을 위한 [Faucet](/dashboard/faucet)이 제공됩니다. |
 
 네이티브 토큰은 **QOR**입니다(기본 단위는 `uqor`이며, 1 QOR = 10^6 uqor). 처음이라면 테스트넷에서 시작해 Faucet에서 토큰을 청구하고, 메인넷으로 넘어가기 전에 첫 전송을 먼저 시도해 보세요.
 
@@ -91,5 +91,5 @@ QoreChain 계정은 `qor` bech32 프리픽스를 사용하므로, 연결된 주�
 * [Explorer](/dashboard/explorer) — 블록, 트랜잭션, 계정을 조회합니다.
 * [Wallet](/dashboard/wallet) — 계정을 관리하고 트랜잭션을 전송합니다.
 * [Trade / DEX](/dashboard/trade) — 온체인 AMM 풀에서 토큰을 스왑합니다.
-* [Tools Hub](/dashboard/tools-hub) — 라이트 노드 다운로드 및 상태, 노드 등록, 롤업 요청, SDK, 라이선싱.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups, SDK.
 * [Faucet](/dashboard/faucet) — 테스트넷의 테스트 토큰.

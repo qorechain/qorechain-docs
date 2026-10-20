@@ -22,6 +22,8 @@ QCAIA는 신규 사용자와 커뮤니티 구성원이 빠르게 방향을 잡�
 
 질문이 QCAIA가 아는 범위를 벗어나면, 추측하기보다는 모른다고 말합니다. QCAIA는 커뮤니티 도우미이며, 금융 또는 투자 조언이 아닙니다.
 
+QCAIA의 답변은 QoreChain의 공개 문서를 따르므로 릴리스보다 뒤처질 수 있습니다. 각 네트워크에서 지금 실제로 운영 중인 것(2026년 10월 20일 기준 메인넷 `qorechain-vladi`는 v3.2.3, 테스트넷 `qorechain-diana`는 v3.2.4를 실행)은 [네트워크](/appendix/networks)와 [버전 이력](/appendix/version-history)을 확인하거나 노드를 직접 쿼리하세요. QCAIA에 자주 질문되는 플랫폼의 여러 부분, 예를 들어 브리지, AMM 풀, 롤업, xQORE는 문서에 설계된 것으로 설명되어 있지만 아직 라이브가 아닙니다. QCAIA가 다른 답을 주면 문서와 라이브 네트워크를 신뢰하세요.
+
 ## 다국어 지원
 
 QCAIA는 여러 언어로 된 질문을 이해합니다. 영어가 아닌 언어로 질문하면, 자동으로 질문을 번역하고 답변한 후 회신합니다 — 따라서 자신의 언어를 사용하면서도 명확한 응답을 받을 수 있습니다. 영어가 아닌 실제 예시는 [예시](/qcaia/examples)를 참조하세요.
@@ -38,7 +40,7 @@ QCAIA는 **베타** 상태입니다. 지속적으로 개선되고 있으며, 가
 
 | 플랫폼 | 접속 방법 | 가이드 |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)** 에 참여하여 슬래시 명령어 사용 | [Discord에서 QCAIA 사용하기](/qcaia/discord) |
+| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** 에 참여하여 슬래시 명령어 사용 | [Discord에서 QCAIA 사용하기](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** 에 참여하여 봇 멘션 | [Telegram에서 QCAIA 사용하기](/qcaia/telegram) |
 
 위에서 플랫폼을 선택하여 질문하는 정확한 방법을 알아보거나, [예시](/qcaia/examples) 페이지로 바로 이동하여 QCAIA가 작동하는 모습을 확인하세요.

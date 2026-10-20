@@ -16,8 +16,8 @@ The framework watches and decides *when*; **you supply the validity check**. The
 Watchtower never decides on its own that a batch is fraudulent — it calls your
 `validate` function and acts on what you return.
 
-:::caution Early-stage: needs the RDK REST routes
-The Watchtower reads batches through the RDK REST client. The `/qorechain/rdk/v1/…` REST routes are not served on mainnet today, so the Watchtower cannot run against mainnet yet. No rollup has been created on either network, so there is nothing to watch.
+:::caution Early-stage: nothing to watch, and the 0.5.0 deadline alerts are wrong
+The Watchtower reads batches through the RDK REST client, and the `/qorechain/rdk/v1/…` routes are served on both networks. No rollup has been created on either network (checked 20 October 2026), so there is nothing to watch yet. In `@qorechain/rdk` 0.5.0 the challenge-window deadline logic is also unreliable: a batch's `submittedAt` is a **block height**, but the Watchtower (and the health check behind `qorollup status`) adds the window in seconds to it and compares the sum with the wall clock, so `secondsRemaining` is meaningless and `onDeadline` fires as soon as a batch is first seen. Do not use `onDeadline` or the countdown for decisions; compute the deadline yourself (see the note below). The watcher also reads only the first page of batches (50).
 :::
 
 ## `watchBatches`
@@ -28,9 +28,9 @@ import { createRdkClient, watchBatches } from "@qorechain/rdk";
 const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
-// the networks require. See "Signing with the published clients" in
-// Deploying a Rollup — the classical-only client in @qorechain/rdk 0.4.4
-// cannot get a challenge accepted.
+// the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
+// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
+// classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -54,9 +54,10 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called as a batch approaches the end of its challenge window.
+  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
+  // deadline mixes a block height with the wall clock, so treat this as unreliable.
   onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window closing for batch", batch.batchIndex, secondsRemaining);
+    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
   },
 });
 
@@ -74,7 +75,7 @@ Wiring `onInvalid` to a challenge turns the Watchtower into a complete
 auto-challenger; leave it unset to run in observe-only mode.
 
 :::note Challenge window
-The deadline the Watchtower reports uses the challenge window converted to blocks at 6 seconds per block (100,800 blocks by default), so on mainnet's ≈3.2 s blocks the real window is shorter than "7 days". Posting a challenge also requires the rollup's challenge bond (1,000 QOR for the `nft` and `custom` presets).
+Compute a batch's deadline in blocks, not seconds: `submitted_at` (a block height) plus the window. **On mainnet (v3.2.3)** the window is the default 604,800 "seconds" converted at a fixed 6 seconds per block, **100,800 blocks** (real time follows block time, so shorter than "7 days" at mainnet's ≈3.2 s blocks). **On the testnet only (v3.2.4)**, a batch submitted from height 8,337,253 on gets a window measured in seconds of block time. Posting a challenge also requires the rollup's challenge bond (1,000 QOR for the `nft` and `custom` presets).
 :::
 
 ## CLI

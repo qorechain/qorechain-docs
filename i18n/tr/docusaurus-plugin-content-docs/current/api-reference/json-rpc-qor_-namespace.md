@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # JSON-RPC — qor_ Ad Alanı
 
-`qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik ve rollup altyapısı ile PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlamak üzere tasarlanmıştır.
+`qor_` ad alanı; kuantum sonrası kriptografi durumu, AI analitiği, VM'ler arası mesajlaşma, çok katmanlı durum, köprü işlemleri, tokenomik, rollup altyapısı ve PRISM konsensüs durumunu sorgulamak için QoreChain'e özgü JSON-RPC yöntemleri sağlamak üzere tasarlanmıştır.
 
 :::warning Henüz sunulmuyor
 **Yayınlanmış hiçbir düğüm derlemesi henüz `qor_` ad alanını sunmuyor**; ana ağ (`qorechain-vladi`), test ağı (`qorechain-diana`) ve kendi çalıştırdığınız düğüm için de durum aynıdır. Genel EVM uç noktalarında `rpc_modules` yalnızca `eth`, `net`, `rpc`, `txpool` ve `web3` değerlerini listeler ve her iki ağda da **her `qor_` yöntemi `-32601` (method not found) döndürür**. Yöntemler düğüm kaynak kodunda uygulanmıştır ancak JSON-RPC sunucusuna kaydedilmemiştir; bu yüzden `app.toml` içindeki `api` listesine `qor` eklemenin hiçbir etkisi yoktur. Ad alanının kaydedilmesi bir düğüm sürümü için planlanmıştır ve yayınlandığında bu sayfa hangi sürüm olduğunu belirtecektir.
@@ -34,8 +34,8 @@ curl -s -X POST https://evm.qore.host \
 | Planlanan yöntem              | Bugün ne kullanılmalı |
 | ----------------------------- | ----------------- |
 | `qor_getPQCKeyStatus`         | `GET /qorechain/pqc/v1/account/{address}` (`found`, `account.key_type`, `account.created_at_height`). Bkz. [REST / gRPC Uç Noktaları](/api-reference/rest-grpc-endpoints#pqc-module). |
-| `qor_getHybridSignatureMode`  | Genel bir sorgu rotası yok. |
-| `qor_getAIStats`              | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.ai.v1.Query/Stats`; REST rotası yok. |
+| `qor_getHybridSignatureMode`  | Genel bir REST rotası yok; bir düğüme karşı `qorechaind query pqc hybrid-mode` (veya `query pqc params`) ya da `--node https://rpc.qore.host:443`. |
+| `qor_getAIStats`              | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.ai.v1.Query/Stats` veya `qorechaind query ai stats`; REST rotası yok. |
 | `qor_getCrossVMMessage`       | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.crossvm.v1.Query/Message`; REST rotası yok. |
 | `qor_getReputationScore`      | Genel bir sorgu rotası yok (reputation modülü yalnızca gRPC `Params` sunar). |
 | `qor_getLayerInfo`            | `GET /qorechain/multilayer/v1/layers/{layer_id}` ve `anchor/{layer_id}`. Bkz. [Multilayer Modülü](/api-reference/rest-grpc-endpoints#multilayer-module). |
@@ -44,15 +44,16 @@ curl -s -X POST https://evm.qore.host \
 | `qor_getPoolClassification`   | Genel bir sorgu rotası yok. |
 | `qor_getBurnStats`            | `GET /qorechain/burn/v1/stats`. Bkz. [Burn Modülü](/api-reference/rest-grpc-endpoints#burn-module). |
 | `qor_getXQOREPosition`        | Yok. xQORE canlı değil (bkz. [xQORE Staking](/user-guide/xqore-staking)). |
-| `qor_getInflationRate`        | Ana ağda genel bir sorgu rotası yok. |
-| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats` ile `GET /cosmos/bank/v1beta1/supply` çağrılarını birleştirin. |
-| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | Kendi çalıştırdığınız bir düğümde gRPC `qorechain.rdk.v1.Query` (`Rollup`, `Rollups`, `Batch`, `LatestBatch`) veya CLI; `/qorechain/rdk/v1/...` REST rotaları ana ağda sunulmaz. |
+| `qor_getInflationRate`        | `GET /qorechain/inflation/v1/params` ve `/epoch_info` (emisyon modu, dönem başına miktar, tavan, ilerleme; v3.2.2'den beri sunuluyor). Bkz. [Inflation Modülü](/api-reference/rest-grpc-endpoints#inflation-module). |
+| `qor_getTokenomicsOverview`   | `GET /qorechain/burn/v1/stats`, `GET /qorechain/inflation/v1/epoch_info` ve `GET /cosmos/bank/v1beta1/supply` çağrılarını birleştirin. |
+| `qor_getRollupStatus`, `qor_listRollups`, `qor_getSettlementBatch`, `qor_getDABlobStatus` | `GET /qorechain/rdk/v1/rollup/{id}`, `/rollups`, `/batch/{id}/{index}`, `/latest_batch/{id}`, `/batches/{id}`, `/blob/{id}/{index}` (v3.2.2'den beri sunuluyor; bkz. [RDK Modülü](/api-reference/rest-grpc-endpoints#rdk-module)) veya `qorechaind query rdk`. |
 | `qor_suggestRollupProfile`    | Genel bir hizmet yok; bkz. [Hazır Profiller](/rollups/preset-profiles). |
 | `qor_getBTCStakingPosition`   | Yok. BTC yeniden stake etme (restaking) modülünün henüz bir sorgu hizmeti yok. |
 | `qor_getAbstractAccount`      | `GET /qorechain/abstractaccount/v1/accounts/{address}`. Soyut hesaplar bugün her iki ağda da devre dışıdır. |
-| `qor_getFairBlockStatus`, `qor_getGasAbstractionConfig`, `qor_getLaneConfiguration` | Yok. |
+| `qor_getGasAbstractionConfig` | `GET /qorechain/gasabstraction/v1/config` (v3.2.2'den beri sunuluyor). Bkz. [Gas Abstraction Modülü](/api-reference/rest-grpc-endpoints#gas-abstraction-module). |
+| `qor_getFairBlockStatus`, `qor_getLaneConfiguration` | Yok. |
 
-Bir hesabın EVM şeridi durumu (kayıtlı PQC anahtarı ve yetkilendirme penceresi) için `GET /qorechain/pqc/v1/account/{address}` ve `GET /qorechain/pqc/v1/evm_window/{address}` kullanın.
+Bir hesabın EVM şeridi durumu (kayıtlı PQC anahtarı, yetkilendirme penceresi ve EIP-7702 onayı) için `GET /qorechain/pqc/v1/account/{address}`, `GET /qorechain/pqc/v1/evm_window/{address}` ve `GET /qorechain/pqc/v1/evm_delegation_consent/{address}` kullanın. Durum rotası **tekil** `account` biçimindedir; çoğul `/accounts/` sunulmaz ve `501` ile yanıt verir.
 
 ---
 

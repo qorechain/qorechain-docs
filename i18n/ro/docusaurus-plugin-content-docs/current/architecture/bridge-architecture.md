@@ -23,7 +23,7 @@ Modulul podului este implementat pe mainnet și testnet, dar **nicio rută de po
 | Operațiuni de pod | 0 | 0 |
 | Canale / clienți IBC | 0 / 0 | 0 / 0 |
 
-(Verificat în octombrie 2026. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`.)
+(Verificat la 20 octombrie 2026 pe mainnet v3.2.3 și testnet v3.2.4. Citiți valorile live cu `qorechaind query bridge chains` și `qorechaind query bridge validators`, sau prin REST la `/qorechain/bridge/v1/chains` și `/qorechain/bridge/v1/validators`.) Configurația modulului este aceeași pe ambele rețele: `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 și `large_transfer_threshold` 100.000 QOR (`100000000000` uqor). Stiva IBC pe care ar folosi-o modulul este ibc-go v10.7 (începând cu v3.2.2), dar nu a fost creat niciun client sau canal.
 
 ## Prezentare generală a conexiunilor
 
@@ -193,6 +193,8 @@ Toate operațiunile podului QCB necesită un **prag de 7-din-10** semnături pos
 * O listă de lanțuri suportate
 * Un scor de reputație (menținut de `x/reputation`)
 
+Începând cu v3.2.2, modulul validează consecvent sumele zero și configurația sa pe fiecare cale. **Doar pe testnet (v3.2.4, nu și pe mainnet):** înregistrarea unui validator de pod necesită și o dovadă de posesie a cheii Dilithium-5 (același format `proof_of_possession` ca la înregistrarea cheii PQC, vezi [Securitate post-cuantică](/architecture/post-quantum-security#proof-of-possession)) și refuză o cheie pe care o folosește deja alt validator de pod. Mainnet v3.2.3 nu are o astfel de verificare, iar pe niciuna dintre rețele nu este înregistrat vreun validator de pod.
+
 ### Disjunctoare (circuit breakers)
 
 Fiecare lanț conectat are protecții independente de tip disjunctor:
@@ -234,6 +236,8 @@ Modulul podului se integrează cu subsistemul AI pentru optimizarea rutelor (nee
 * **`tx bridge set-verifier-bootstrap`** — selectează verificatorul activ pentru un lanț și instalează rădăcina sa de încredere (`MsgSetVerifierBootstrap`).
 
 Aceasta permite unui operator să aducă online podul unui lanț conectat — sau să-i rotească verificatorul — direct, cu autorizarea verificată față de cheia de administrator al podului. Începând cu versiunea de lanț **v3.2.0**, modulul podului are și propriul cont de modul (versiunile anterioare nu aveau, așa că primul depozit pe o rută activată ar fi eșuat).
+
+Licențe precum `qcb_bridge` sunt acordate de contul autorității de licențiere. Începând cu v3.2.3 (mainnet), guvernanța poate înlocui acel cont cu o propunere `MsgUpdateAuthority`; modulul în sine este descris în [Licențiere de lanț](/architecture/chain-licensing).
 
 ### Validarea rețelelor conectate
 

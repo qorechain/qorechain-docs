@@ -7,14 +7,13 @@ sidebar_position: 7
 
 # Astrazione del Gas
 
-Questa pagina descrive la funzionalità di astrazione del gas di QoreChain, il cui design consente agli utenti di pagare le commissioni di transazione in un token non nativo accettato invece che in QOR. **Oggi non è utilizzabile su nessuna delle due reti**; questa pagina spiega il design e cosa fare invece.
+L'astrazione del gas consente a un utente di pagare la commissione di una transazione in un token non nativo accettato invece che in QOR. Il codice di conversione delle commissioni fa parte della chain, ma **oggi su nessuna delle due reti è accettato alcun token non nativo**, quindi ogni commissione viene pagata in QOR. Questa pagina spiega cosa è attivo, come funziona la conversione così come è stata realizzata e cosa fare invece.
 
-:::caution Non ancora disponibile
-Pagare le commissioni in un token non nativo **non** funziona oggi sulla mainnet (**`qorechain-vladi`**, release del nodo **v3.2.1**) né sulla testnet (**`qorechain-diana`**).
+:::caution Non ancora utilizzabile: paga ogni commissione in uqor
+Sulla mainnet (**`qorechain-vladi`**, release del nodo **v3.2.3**) e sulla testnet (**`qorechain-diana`**, release del nodo **v3.2.4**), verificato il 20 ottobre 2026:
 
-* Le query di astrazione del gas non sono servite sulla mainnet: `qorechaind query gasabstraction accepted-tokens` stampa il proprio testo di aiuto e la route REST `/qorechain/gasabstraction/v1/config` restituisce `Not Implemented`.
-* Nessun canale IBC è aperto su nessuna delle due reti, quindi non può esistere alcun saldo `ibc/USDC` o `ibc/ATOM` con cui pagare.
-* Il minimo delle commissioni di rete viene verificato in `uqor`, quindi una commissione in qualsiasi altra denominazione viene rifiutata.
+* L'elenco attivo dei token accettati contiene **solo `uqor`**. La conversione delle commissioni è stata attivata con la v3.2.2, ma nient'altro è elencato, il limite di conversione per blocco è `0` (conversione disattivata) e il float di conversione non detiene alcun saldo. Una commissione pagata in qualsiasi altra denominazione viene rifiutata con un errore "denom not accepted for fee payment", sia in simulazione sia in una transazione reale.
+* Nessun canale o client IBC esiste su nessuna delle due reti, quindi non può esistere alcun saldo `ibc/…` con cui pagare.
 
 Paga ogni commissione in `uqor`. Questa pagina verrà aggiornata quando un token sarà accettato su una rete live.
 :::
@@ -35,35 +34,59 @@ Poi firmala in modalità ibrida e trasmettila con `qorechaind tx pqc cosign`, co
 
 ---
 
-## Panoramica
+## La configurazione attiva {#live-configuration}
 
-L'astrazione del gas è progettata per eliminare l'obbligo di possedere QOR per pagare le commissioni di transazione. Un utente che possiede un token alternativo accettato (ad esempio una stablecoin trasferita via IBC) pagherebbe la commissione in quel token, e il protocollo convertirebbe l'importo della commissione nel suo equivalente nativo prima dell'elaborazione.
+Il modulo serve la propria configurazione via REST e gRPC. Questi sono i valori su entrambe le reti al 20 ottobre 2026:
+
+| Campo | Valore | Significato |
+| --- | --- | --- |
+| `enabled` | `true` | Interruttore del modulo |
+| `native_denom` | `uqor` | La denominazione in cui ogni commissione viene infine pagata |
+| `accepted_tokens` | solo `uqor` | Token che possono pagare una commissione. `uqor` non richiede alcuna fonte di prezzo |
+| `premium_bps` | `300` | La quota del valore di una commissione convertita che il float trattiene per coprire il proprio rischio di prezzo (3 %) |
+| `max_tip_multiplier` | `3` | Una commissione convertita non può superare questo multiplo della commissione minima per il suo gas; `0` significherebbe nessun limite |
+| `float_min` | `0` | Il saldo nativo che il float tiene sempre da parte |
+| `block_conversion_cap` | `0` | Il massimo che il float paga per blocco; `0` significa che la conversione è disattivata |
+
+Le versioni precedenti di questa pagina mostravano voci segnaposto `ibc/USDC` e `ibc/ATOM` con tassi fissi. Non sono nell'elenco attivo.
+
+Leggila tu stesso:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate uqor
+qorechaind query gasabstraction float
+
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
+curl -s "https://api.qore.host/qorechain/gasabstraction/v1/conversion_rate?denom=uqor"
+curl -s https://api.qore.host/qorechain/gasabstraction/v1/float
+```
+
+`conversion_rate` riporta `rate`, `effective_rate` (il tasso meno il premio), `price_source` e se il token è `usable` a questa altezza, con un `reason` quando non lo è. `float` riporta l'indirizzo e i saldi del float e l'uso del blocco corrente rispetto a `block_cap`. Il metodo JSON-RPC `qor_getGasAbstractionConfig` non è servito su nessun endpoint pubblico (vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace)); usa REST o gRPC.
 
 ---
 
-## Design previsto
+## Come funziona la conversione (così come è stata realizzata) {#how-it-works}
 
-### Token accettati
+Dalla v3.2.2 il decoratore delle commissioni instrada ogni transazione lungo uno di due percorsi:
 
-La configurazione di genesis del modulo elenca questi token e tassi di conversione definiti dal protocollo. Sono rapporti di cambio ai fini delle commissioni, non prezzi di mercato. Oggi sulle reti può esistere solo `uqor` (vedi l'avviso sopra).
+* Una commissione in `uqor`, o in più di una denominazione, segue il **percorso nativo**, invariato.
+* Una commissione in **esattamente una** denominazione non nativa segue il **percorso di conversione**.
 
-| Token              | Denominazione | Tasso di Conversione |
-| ------------------ | ------------- | -------------------- |
-| **QOR**            | `uqor`        | 1.0 (nativo)         |
-| **USDC** (via IBC) | `ibc/USDC`    | 1.0                  |
-| **ATOM** (via IBC) | `ibc/ATOM`    | 10.0                 |
+Sul percorso di conversione:
 
-### Come dovrebbe funzionare
+1. **Accettata?** La denominazione deve essere nell'elenco dei token accettati e avere una fonte di prezzo, altrimenti la transazione viene rifiutata.
+2. **Prezzo.** Il prezzo del token proviene da una di due fonti: un tasso statico impostato dalla governance che scade a un'altezza di blocco indicata, oppure il prezzo medio ponderato nel tempo del pool [AMM](/architecture/amm) che abbina il token a QOR. Un prezzo del pool viene usato solo se il pool è attivo, detiene almeno la liquidità minima configurata sul lato QOR, e il suo prezzo spot rientra nello scostamento configurato rispetto alla sua media.
+3. **Valore.** Il valore nativo della commissione è l'importo del token moltiplicato per il prezzo, meno il premio.
+4. **Stesse regole di una commissione nativa.** Le regole sulla commissione minima nativa e sulla commissione dinamica vengono applicate a quel valore nativo, quindi una commissione convertita deve superare esattamente ciò che deve superare una commissione in QOR (0.1 uqor per unità di gas come soglia minima), ed è limitata da `max_tip_multiplier`.
+5. **Regolamento.** I token del pagatore vanno al **float** del modulo di astrazione del gas, e il float paga il valore nativo in `uqor` al fee collector. Tutto ciò che sta a valle del fee collector (burning, quote di validatori, staker, treasury e light node) vede quindi sempre e solo `uqor`.
 
-Il `GasAbstractionDecorator` di QoreChain è integrato nella pipeline di elaborazione delle transazioni. Per una transazione la cui commissione è in una denominazione non nativa:
+La conversione è limitata in tre modi: per transazione (`max_tip_multiplier`), per blocco (`block_conversion_cap`) e dal saldo che il float tiene sempre da parte (`float_min`). Ogni rifiuto avviene anche durante la simulazione, quindi la stima del gas fallisce nello stesso modo in cui fallirebbe la transazione reale.
 
-1. **Ispezione della commissione** — il decoratore legge la denominazione della commissione.
-2. **Ricerca del tasso** — se la denominazione è presente nell'elenco dei token accettati, viene ricercato il tasso di conversione corrispondente.
-3. **Conversione** — la commissione viene convertita nel suo equivalente nativo in `uqor`.
-4. **Elaborazione standard** — la commissione convertita passa attraverso il gestore standard di deduzione delle commissioni, quindi l'elaborazione successiva delle commissioni (distribuzione ai validatori, burning, treasury, quote degli staker e dei light node) opera sull'equivalente nativo.
+### Come far accettare un token
 
----
+* La **governance** sostituisce la configurazione con `MsgUpdateConfig` (autorità: l'account del modulo di governance). È così che verrebbero aggiunti un vero token di commissione `ibc/<hash>` e il suo pool o tasso statico, e aperta la conversione.
+* Il **float** è un account di modulo che rifiuta i normali invii bancari. Viene finanziato con `MsgFundFloat` (`qorechaind tx gasabstraction fund-float <amount>uqor`), ad esempio da un account che ha ricevuto una spesa dalla community pool a questo scopo.
 
-## Interrogare la configurazione
-
-La mainnet non serve ancora le query di astrazione del gas, e il metodo JSON-RPC `qor_getGasAbstractionConfig` non è servito su nessun endpoint pubblico (vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace)). Al momento non esiste alcun modo pubblico per leggere un elenco di token accettati live.
+Nessuna proposta per fare l'una o l'altra cosa è stata presentata sulla mainnet, e l'elenco resta solo `uqor` finché una non passa.

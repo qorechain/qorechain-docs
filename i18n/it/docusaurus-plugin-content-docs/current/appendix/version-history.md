@@ -7,13 +7,62 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release è la **v3.2.1**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 29 giugno 2026) con le regole di consenso della **v3.2.0** (applicate all'altezza 2.981.742). La testnet **`qorechain-diana`** (chain ID EVM **9800**) esegue attualmente la **v3.2.2**, che vi è stata applicata tramite governance e non è ancora sulla mainnet.
+Cronologia pubblica delle versioni di QoreChain. L'ultima release della mainnet è la **v3.2.3**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026); è stata applicata tramite governance all'altezza 3.662.051 il 20 ottobre 2026. La testnet **`qorechain-diana`** (chain ID EVM **9800**) esegue la **v3.2.4**, applicata lì all'altezza 8.337.253 il 19 ottobre 2026. **La v3.2.4 non fa ancora parte della mainnet: la proposta di governance 13 della mainnet (votazione aperta fino al 21 ottobre 2026, ore 21:18 UTC) la applicherebbe all'altezza 3.742.566.**
 
 :::note
 Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet. Il manifest di release ([Connessione alla Mainnet](/getting-started/connecting-to-mainnet)) viene promosso separatamente dal tagging e può essere in ritardo rispetto a un tag di un certo periodo — verificalo direttamente per sapere cosa scarica realmente una nuova installazione.
 :::
 
+## Cronologia della governance della mainnet {#governance-timeline}
+
+Proposte che hanno modificato la mainnet in esecuzione dal 14 ottobre 2026. Tutte e sette sono proposte accelerate (periodo di votazione di un giorno); le proposte da 7 a 11 sono passate con tutto lo stake bonded votante a favore. L'elenco completo è disponibile su `GET /cosmos/gov/v1/proposals` all'indirizzo `https://api.qore.host`.
+
+| Proposta | Cosa fa | Votazione | Esito |
+| --- | --- | --- | --- |
+| 7 | Applica la v3.2.2 all'altezza 3.556.788 | 14–15 ottobre 2026 (termina alle 21:24 UTC) | Approvata; applicata il 16 ottobre 2026 |
+| 8 | Rilascia la riserva dei light node (3.156.983,796395 QOR) alla fondazione | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata |
+| 9 | Rilascia la quota degli staker rimasta bloccata (6.693.045,921330 QOR) alla fondazione | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata |
+| 10 | Emissione: imposta l'emissione fissa a 86.000 QOR per epoca e il cap cumulativo a 590.000.000 QOR (durata dell'epoca invariata; la prima epoca da 86.000 QOR inizia al blocco 3.672.000) | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata |
+| 11 | Applica la v3.2.3 all'altezza 3.662.051 | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata; applicata il 20 ottobre 2026 |
+| 12 | Rilascia alla fondazione la quota corretta degli staker rimasta bloccata (3.807.496,785528 QOR, ricalcolata all'altezza della v3.2.3) | dal 20 ottobre 2026 alle 20:01 UTC al 21 ottobre 2026 alle 20:01 UTC | In periodo di votazione al momento della stesura |
+| 13 | Upgrade coordinato alla v3.2.4 all'altezza 3.742.566 (livelli di staking, limite di ricompensa dei light node contato dalla registrazione, un flag di possesso per le chiavi post-quantistiche, prova di possesso per i validatori del bridge e hardening locale al nodo) | dal 20 ottobre 2026 alle 21:18 UTC al 21 ottobre 2026 alle 21:18 UTC | In periodo di votazione al momento della stesura |
+
+Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) per il significato delle release e [Governance](/user-guide/governance) per come votare.
+
 ---
+
+## v3.2.4 — Finestra di registrazione dei light node e staking opzionale con blocco temporale (solo testnet)
+
+**Focus della release:** una release solo testnet, applicata su `qorechain-diana` dalla proposta di governance della testnet 13 all'altezza **8.337.253** (19 ottobre 2026). **Non è ancora sulla mainnet**: la proposta di governance 13 della mainnet (votazione aperta fino al 21 ottobre 2026, ore 21:18 UTC) la applicherebbe all'altezza 3.742.566, e fino ad allora nulla di quanto segue si applica a `qorechain-vladi`. Il manifest della testnet imposta `minCompatible` a 3.2.4.
+
+* **Finestra di registrazione dei light node.** Il limite di ricompensa di un light node parte dal più recente tra il settlement precedente e la registrazione del nodo stesso, così una nuova registrazione non incassa un importo accumulato prima del suo ingresso.
+* **Staking opzionale con blocco temporale (`x/stakingtier`, un nuovo modulo).** Un delegante può bloccare una parte di una delega per un termine fisso; la parte bloccata non può essere undelegata né ridelegata, e uno sblocco anticipato è consentito con una penalità. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
+* **Nuova modalità di emissione.** `x/inflation` acquisisce una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps` (attualmente `0`).
+* **Flag `possession_proven`** sui record degli account post-quantistici; la prova di possesso per le chiavi degli account resta opzionale.
+* **Prova di possesso dei validatori del bridge.** La registrazione di un validatore del bridge richiede una prova di possesso e una chiave che nessun altro validatore del bridge utilizzi.
+* **Finestra di challenge dell'RDK in tempo di blocco.** La finestra di challenge ottimistica è contata in tempo di blocco anziché in un numero di blocchi da esso derivato.
+* **Hardening locale al nodo** (limiti alle richieste JSON-RPC, budget dei chunk di state-sync, pre-controlli sulla registrazione delle chiavi) e nuove query (`protocol_features`, `auth_nonce` e i campi aggiuntivi del pool di ricompense dei light node, come `monthly_cap_active`).
+
+## v3.2.3 — Secondo batch di sicurezza di ottobre (mainnet)
+
+**Focus della release:** il secondo batch di hardening di ottobre, applicato sulla mainnet dalla proposta di governance 11 all'altezza **3.662.051** (20 ottobre 2026, 16:01 UTC); applicato in precedenza sulla testnet all'altezza 8.003.746 (15 ottobre). Il manifest della mainnet imposta `minCompatible` a 3.2.3: un nodo che si unisce alla mainnet ora ha bisogno della v3.2.3. L'upgrade attiva 52 funzionalità del protocollo a quell'altezza; formato di firma, indirizzi, decimali, memo e fee restano invariati.
+
+* **Integrità delle chiavi post-quantistiche.** Chiavi deboli, degeneri e già utilizzate vengono rifiutate alla registrazione; la manutenzione delle chiavi ibride è irrigidita; i messaggi di gestione delle chiavi post-quantistiche non possono più essere eseguiti tramite authz; un account non può rimuovere il proprio ultimo algoritmo di firma. La registrazione (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) accetta una **prova di possesso opzionale**, verificata quando presente.
+* **Finestre EVM con ambito limitato.** `MsgOpenEVMWindow` accetta i campi opzionali `native_only` (solo trasferimenti semplici di QOR nativo) e `allowed_targets` (fino a 16 destinatari) che restringono una finestra. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
+* **Ledger di escrow dei rollup** per l'RDK, una **coda cross-VM atomica** con hardening dei precompile e **autorizzazione canonica dello stake**.
+* **Creazione del vesting solo verso sé stessi.** La creazione di un account di vesting può finanziare solo l'account del creatore (i tre messaggi di vesting restano inoltre disattivati sul circuit breaker).
+* **Correzioni economiche.** L'anno di emissione è derivato dalla durata dell'epoca; il lavoro di end-block dell'AMM è limitato; i record di burn vengono potati; la quota degli staker rimasta bloccata registrata è stata ricalcolata all'altezza dell'upgrade da 0 a 3.807.496,79 QOR (vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Limite mensile dei light node.** Il limite di ricompensa per nodo è ora espresso su base mensile: 2.000 QOR per nodo ogni 30 giorni, in proporzione al tempo di blocco e all'uptime.
+* **Authority delle licenze governabile.** Un nuovo `MsgUpdateAuthority` consente alla governance di sostituire l'authority che concede le licenze.
+* **Le build pubbliche rifiutano le reti pubbliche.** Un binario compilato dall'albero dei sorgenti pubblico si arresta se viene puntato a una rete live.
+* **Nuove route di lettura.** I parametri e il record di epoca di `x/inflation` sono serviti via REST sulla mainnet (`/qorechain/inflation/v1/params`, `/epoch_info`).
+
+## v3.2.2 — Aggiornamento delle dipendenze e primo batch di sicurezza di ottobre (mainnet)
+
+**Focus della release:** un upgrade coordinato applicato sulla mainnet dalla proposta di governance 7 all'altezza **3.556.788** (16 ottobre 2026, 17:59 UTC); applicato sulla testnet all'altezza 6.905.034 (2 ottobre). Il formato di firma è invariato.
+
+* **Dipendenze.** Cosmos SDK v0.53.8, motore di consenso v0.38.26 e ibc-go v10.7.
+* **26 funzionalità del protocollo** si attivano all'altezza di upgrade, tra cui: la delega EIP-7702 richiede un consenso post-quantistico (`MsgAuthorizeEVMDelegation`, annullato da `MsgClearEVMDelegation` o `MsgCloseEVMWindow`); i limiti dei multisig sono applicati nell'esecuzione dei blocchi; l'ammissione dei validatori è controllata su ogni percorso; controlli di integrità dell'AMM; gli account di modulo non possono essere rivendicati tramite l'EVM; le transazioni pre-EIP-155 vengono rifiutate; la registrazione delle chiavi post-quantistiche convalida la chiave classica; il messaggio di anchor dell'RDK e del multilayer passa a una seconda forma (v2); e viene applicato il canale di burn delle transazioni fallite.
 
 ## v3.2.1 — Hardening dei nodi
 
@@ -22,9 +71,9 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 * Irrigidisce i limiti di risorse dell'API pubblica, pone dei limiti all'EVM JSON-RPC e al mempool, e propaga via gossip le transazioni EVM promosse.
 * Fissa l'EVM chain ID nella configurazione del nodo e lo confronta con il chain ID di Cosmos; gli operatori devono impostare `evm-chain-id = 9801` in `app.toml` (un valore diverso viene registrato nei log come errore).
 * Aggiorna la dipendenza del motore di consenso; mantieni l'orologio di sistema sincronizzato via NTP (uno scostamento superiore a 60 secondi arresta il nodo).
-* Consigliata a ogni operatore; `minCompatible` nel manifest della mainnet è 3.2.0.
+* Consigliata a ogni operatore; `minCompatible` nel manifest della mainnet era 3.2.0 all'epoca.
 
-La testnet esegue attualmente la v3.2.2, applicata tramite governance all'altezza 6.905.034; per ora è una release solo testnet e le sue modifiche non fanno parte della mainnet. La proposta di governance 7 della mainnet (in periodo di votazione al momento della stesura) programmerebbe la v3.2.2 sulla mainnet all'altezza 3.556.788 — vedi [Connessione alla Mainnet](/getting-started/connecting-to-mainnet) per i passaggi per gli operatori e come verificare l'esito.
+La v3.2.1 è stata applicata nodo per nodo e non ha un'altezza di upgrade; è stata superata sulla mainnet dalla v3.2.2 (16 ottobre) e dalla v3.2.3 (20 ottobre).
 
 ## v3.2.0 — Finestra di autorizzazione EVM e correzioni contabili
 
@@ -32,8 +81,8 @@ La testnet esegue attualmente la v3.2.2, applicata tramite governance all'altezz
 
 * **Finestra di autorizzazione EVM (breaking per i wallet EVM).** Una transazione EVM è ora ammessa solo da un account che abbia una chiave ML-DSA-87 registrata **e** una finestra aperta. La finestra viene aperta con un messaggio della corsia Cosmos (`MsgOpenEVMWindow`, firmato post-quantistico) ed è limitata da blocchi (≤ 17.280), transazioni (≤ 1.000) e valore totale (valore trasferito più la fee massima di ciascuna transazione); `MsgCloseEVMWindow` la revoca. La firma Ethereum standard resta invariata all'interno di una finestra. La corsia EVM, che era stata disattivata sulla mainnet tramite il circuit breaker dal 16 settembre, è stata riaperta nello stesso blocco in cui la regola è entrata in vigore. Vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window).
 * **Firma ibrida v2.** Le firme post-quantistiche sono ora calcolate su sign-bytes con tag di dominio e vincolati alla chain; la prima forma viene rifiutata dall'altezza di upgrade. I client consultano i piani di upgrade applicati del nodo per scegliere la forma; la CLI (`--sign-bytes auto`), l'SDK 0.8.x e wallet-adapter 0.2.x lo fanno. I payload di migrazione delle chiavi e di attestazione del bridge sono passati allo stesso schema. Vedi [Sicurezza post-quantistica](/architecture/post-quantum-security#sign-bytes-v2).
-* **Quota degli staker pagata.** La quota del 10 % degli staker nella ripartizione delle fee veniva depositata dove non copriva alcun credito; da questo upgrade viene pagata come normale ricompensa di staking. L'importo già accumulato (6.693.045,92 QOR sulla mainnet) è registrato on-chain (`GET /qorechain/burn/v1/stranded_rewards`) e può essere spostato solo da un voto di governance (`MsgReleaseStrandedRewards`). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
-* **Riserva delle ricompense dei light node.** La quota del 3 % dei light node accumulata mentre nessun nodo era idoneo (3.156.009,33 QOR sulla mainnet) è registrata come riserva (`GET /qorechain/lightnode/v1/reward_pool`), esclusa dalla distribuzione e spostabile solo dalla governance; in seguito la distribuzione paga solo quanto accumulato dall'esecuzione precedente, con un limite per nodo e per blocco. La registrazione dei light node resta chiusa.
+* **Quota degli staker pagata.** La quota del 10 % degli staker nella ripartizione delle fee veniva depositata dove non copriva alcun credito; da questo upgrade viene pagata come normale ricompensa di staking. L'importo già accumulato (6.693.045,92 QOR sulla mainnet) è registrato on-chain (`GET /qorechain/burn/v1/stranded_rewards`) e poteva essere spostato solo da un voto di governance (`MsgReleaseStrandedRewards`); la governance lo ha rilasciato a ottobre 2026 (vedi la [cronologia della governance](#governance-timeline) e [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Riserva delle ricompense dei light node.** La quota del 3 % dei light node accumulata mentre nessun nodo era idoneo (3.156.009,33 QOR sulla mainnet) è registrata come riserva (`GET /qorechain/lightnode/v1/reward_pool`), esclusa dalla distribuzione e spostabile solo dalla governance (rilasciata a ottobre 2026); in seguito la distribuzione paga solo quanto accumulato dall'esecuzione precedente, con un limite per nodo. La registrazione dei light node era ancora chiusa con questa release e da allora è stata aperta (vedi [Light Node](/light-node/overview#reward-program-status)).
 * **Il limite di transazioni per mittente** è ora applicato (600 transazioni ogni 30 blocchi per mittente, in modo che i relayer possano operare).
 * **La mappa delle versioni dei moduli dell'upgrade** ora elenca tutti i moduli (48), correggendo una lacuna che avrebbe interessato le migrazioni successive.
 * Inoltre: account di modulo del bridge e payload di attestazione rafforzati, blocchi proposti convalidati, settlement dei rollup limitato al sequencer del rollup con escrow per rollup e un burn di creazione effettivo, stake del creatore multilayer bloccato alla registrazione e restituito alla dismissione, flag `enabled` dello smart account applicato su ogni percorso, e percorsi di ammissione dei validatori e di creazione del vesting chiusi all'annidamento authz.
@@ -55,7 +104,7 @@ La testnet esegue attualmente la v3.2.2, applicata tramite governance all'altezz
 
 **Focus della release:** allineare l'emissione delle ricompense di staking alle reali condizioni della rete, e irrigidire i controlli di autorizzazione sui messaggi amministrativi privilegiati.
 
-* **Cap di emissione** — Una proposta di governance, approvata con il pieno supporto dello stake bonded e applicata all'altezza 2.122.074 (26 agosto 2026), ha sostituito il programma di emissione a decadimento originale con un importo fisso per epoca sotto un cap cumulativo rigido. Il programma originale era stato calibrato per una rete molto più matura e completamente bonded; rispetto allo stake bonded reale stava erogando molto più velocemente del previsto. Vedi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) per i numeri attuali.
+* **Cap di emissione** — Una proposta di governance, approvata con il pieno supporto dello stake bonded e applicata all'altezza 2.122.074 (26 agosto 2026), ha sostituito il programma di emissione a decadimento originale con un importo fisso per epoca sotto un cap cumulativo rigido. Il programma originale era stato calibrato per una rete molto più matura e completamente bonded; rispetto allo stake bonded reale stava erogando molto più velocemente del previsto. L'importo per epoca e il cap sono stati aumentati dalla proposta di governance 10 il 19 ottobre 2026. Vedi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) per i numeri attuali.
 * **Hardening dei messaggi amministrativi** — Un insieme di messaggi amministrativi privilegiati, protetti da authority, ora verifica il firmatario rispetto all'indirizzo proprio del modulo di governance, invece di fidarsi di un valore trasportato nel messaggio stesso.
 * Include inoltre la correzione di affidabilità dell'onboarding dei nodi della v3.1.92, per qualsiasi nodo che effettui l'upgrade direttamente a questa release.
 
@@ -210,7 +259,7 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 
 **Focus della release:** lancio della mainnet ed evento di generazione del token.
 
-* **Genesis della mainnet** — La mainnet QoreChain (`qorechain-vladi`, chain ID EVM 9801) è stata lanciata il **29 giugno 2026**, con il token generation event (TGE) alla genesis.
+* **Genesis della mainnet** — La mainnet QoreChain (`qorechain-vladi`, chain ID EVM 9801) è attiva dal **7 giugno 2026**, con il token generation event (TGE) alla genesis.
 * **Ripartizione delle fee a cinque vie** — Distribuzione delle fee di protocollo tra validatori, burn, treasury, staker e light node (**37 / 30 / 20 / 10 / 3**), con l'aggiunta di una quota dedicata ai light node.
 * **AMM on-chain** — Modulo nativo di automated market maker (`x/amm`) per pool di liquidità e swap on-chain.
 * **Licensing on-chain** — Modulo di licenze on-chain (`x/license`) per registrare e gestire i diritti di protocollo.

@@ -9,9 +9,10 @@ sidebar_position: 8
 
 ## La mainnet è attiva?
 
-Sì. La mainnet è **attiva** (chain id `qorechain-vladi`). Anche il preset
-testnet (`qorechain-diana`) rimane disponibile. Entrambi i preset forniscono
-endpoint predefiniti su localhost; seleziona la rete con
+Sì. La mainnet è **attiva** (chain id `qorechain-vladi`, attiva dal 7 giugno
+2026) e al 20 ottobre 2026 esegue la versione della chain v3.2.3. Anche il
+preset testnet (`qorechain-diana`) rimane disponibile. Entrambi i preset
+forniscono endpoint predefiniti su localhost; seleziona la rete con
 `createClient({ network: "mainnet" })` e sovrascrivi `endpoints` con gli URL
 dei tuoi nodi. Vedi [Rete ed endpoint](/sdk/reference/network).
 
@@ -83,17 +84,15 @@ EVM), che è distinto dalla base Native `uqor` di 10^6.
 
 ## Quali pacchetti sono pubblicati, e dove?
 
-Tutti. Il core TypeScript (`@qorechain/sdk`, 0.8.3), gli adapter EVM/SVM
-(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), il kit React (`@qorechain/react`,
-0.8.3) e lo scaffolder `create-qorechain-dapp` (0.8.0) sono su npm; il
-client Python è su PyPI (`pip install qorechain-sdk` alla 0.8.3, import
+Tutti (verificato il 21 ottobre 2026). Il core TypeScript (`@qorechain/sdk`, 0.9.0),
+il kit React (`@qorechain/react`, 0.9.0), lo scaffolder `create-qorechain-dapp`
+(0.9.0) e gli adapter EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) sono su
+npm; il client Python è su PyPI (`pip install qorechain-sdk` alla 0.9.0, import
 `qorsdk`); il client Go è sul module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, tag
-`packages/go/v0.8.4`); il client Rust è su crates.io
-(`cargo add qorechain-sdk`, 0.8.3); e il client Java è su Maven Central
-(`io.github.qorechain:qorechain-sdk:0.8.3`). Vedi
-[Installazione](/sdk/install) per i comandi completi per ogni
-linguaggio.
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); il client Rust è su
+crates.io (`cargo add qorechain-sdk`, 0.9.0); e il client Java è su Maven
+Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Vedi [Installazione](/sdk/install)
+per i comandi completi per ogni linguaggio.
 
 ## Il mio mnemonic viene rifiutato
 
@@ -112,16 +111,19 @@ firmatario deve essere **registrata esplicitamente** con
 `MsgRegisterPQCKeyV2` (una transazione firmata in modo classico ed esente dalla
 firma ibrida); incorporare la chiave pubblica nell'estensione
 (`includePqcPublicKey: true`) **non** la registra, e la chain non registra una
-chiave al primo utilizzo.
+chiave al primo utilizzo. In TypeScript, passa al client la coppia di chiavi
+(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) e ogni transazione che
+invia viene firmata in modalità ibrida.
 La chain accetta qualsiasi firma ML-DSA-87 valida secondo FIPS-204, hedged o
 deterministica. L'SDK firma in modo deterministico per default (dalla versione
 0.5.1) affinché una transazione abbia sempre la stessa firma e lo stesso hash di
 tx. Se una tx ibrida fallisce con codice `pqc` 21 (`hybrid_verify_failed`), la
 causa è la versione dei sign-bytes, il chain-id, una libreria PQC obsoleta o una
-chiave non registrata, mai la firma hedged.
+chiave non registrata o diversa, mai la firma hedged.
 Entrambe le reti verificano la forma v2 dei sign-bytes, quindi usa l'SDK
-**0.8.1 o successivo** e passa `rest` (oppure `signBytesVersion`): i builder
-lanciano un errore su `qorechain-vladi` / `qorechain-diana` se manca uno dei due.
+**0.8.1 o successivo** (la 0.9.0 è quella attuale) e passa `rest` (oppure
+`signBytesVersion`): i builder lanciano un errore su `qorechain-vladi` /
+`qorechain-diana` se manca uno dei due.
 Vedi
 [Risoluzione del codice 21](/developer-guide/post-quantum-signing#code-21) e
 [Account e firma PQC](/sdk/concepts/accounts-pqc).
@@ -144,6 +146,47 @@ codificata in protobuf (il valore inizia con `0x08`) in tutti e cinque i
 linguaggi — le transazioni ibride costruite con versioni più vecchie vengono
 rifiutate on-chain, in ogni lane (incluso eth-native).
 
+## Con quali versioni della chain funziona l'SDK?
+
+L'SDK **0.9.0** è la release client per la chain v3.2.2 e v3.2.3: transa sulla
+mainnet **v3.2.3** e sulla testnet **v3.2.4**, e ha builder per la prova di
+possesso facoltativa alla registrazione (allegata automaticamente da
+`ensurePqcRegistered` una volta che la rete ha applicato la v3.2.3), per le
+finestre EVM con ambito limitato e per i messaggi di consenso EIP-7702.
+L'SDK **0.8.1 o successivo** transa anch'esso su entrambe le reti (la forma v2
+dei sign-bytes ibridi, la registrazione, gli invii ibridi e la finestra EVM
+funzionano senza modifiche), ma non ha nessuno di quei builder: usa la CLI per
+quelli (vedi [Versioni precedenti alla 0.9.0](/sdk/install#before-090)). La
+v3.2.4 è finora attiva solo sulla testnet (la proposta di governance 13 della
+mainnet la applicherebbe all'altezza 3.742.566), e l'SDK non imposta alcun campo
+della v3.2.4.
+
+## La registrazione della mia chiave PQC è stata rifiutata ma la fee è stata prelevata
+
+Una registrazione per un account che detiene già una chiave viene rifiutata
+dalla chain dopo che la fee è stata detratta. `ensurePqcRegistered` nella 0.9.0
+legge prima `GET /qorechain/pqc/v1/account/{address}` (passa `rest`), salta la
+registrazione quando la chiave di questa coppia di chiavi è registrata, e lancia
+`PqcKeyMismatchError` quando ne è registrata una diversa. Le release precedenti
+non controllavano prima, a meno che tu non passassi di tuo conto
+`status: { registered: found }`, dove `found` proviene da quella route. Dalla
+v3.2.3 la chain rifiuta inoltre chiavi deboli, degeneri e riutilizzate; le
+chiavi da `derivePqcCanonical` o `tx pqc gen-key` vanno bene.
+
+## `create-qorechain-dapp` installa un SDK che non può firmare
+
+Solo la versione 0.8.0 dello scaffolder lo faceva: scriveva intervalli `^0.3.0`
+per `@qorechain/sdk` e `@qorechain/evm`, e un intervallo con caret su una
+versione 0.x resta dentro la 0.3. La versione 0.9.0 genera lo scaffolding
+sull'SDK attuale; se hai usato la 0.8.0, esegui `npm i @qorechain/sdk@latest`
+(e `@qorechain/evm@latest`) dopo lo scaffolding.
+
+## `VERSION` dice 0.8.0 ma ho installato la 0.8.3
+
+La costante esportata `VERSION` della 0.8.3 non era stata aggiornata e riporta
+`0.8.0`; dalla 0.9.0 corrisponde al pacchetto. Nelle release precedenti leggi la
+versione installata da `package.json`.
+
 ## La mia spesa tramite authenticator viene rifiutata con `authenticator_replay`
 
 (Il modulo `abstractaccount` è disattivato su entrambe le reti oggi; una
@@ -152,11 +195,16 @@ venga controllato qualsiasi nonce. Vedi
 [Authenticator e spesa delegata](/sdk/guides/authenticators). Le indicazioni
 qui sotto valgono una volta abilitato il modulo.)
 
-Il nonce è sbagliato. `MsgExecuteEVM.nonce` deve essere il nonce EVM
-**corrente** dell'account (il relayer è un account diverso, quindi **non**
-aggiungere 1); `MsgExecuteCosmos.nonce` è la **sequenza per authenticator**
-per `(account, pubkey)`, un contatore di store separato. Recupera di nuovo il
-valore e ri-firma. Gli altri errori dell'authenticator si decodificano con
-`decodeTxError`: codici `abstractaccount` 5 (`spending_limit_exceeded`), 6
-(`session_key_expired`) e 10 (`permission_denied`). Vedi
+Il nonce è sbagliato. Sia `MsgExecuteEVM.nonce` sia `MsgExecuteCosmos.nonce` sono
+la **sequenza dell'authenticator** della chiave collegata per `(account, pubkey)`:
+un contatore che la chain mantiene per ogni chiave collegata, parte da 0 e viene
+incrementato a ogni esecuzione riuscita. **Non** è il nonce EVM dell'account, e
+per ora non esiste alcuna query per esso, quindi tienine traccia per ogni chiave
+collegata. Dalla v3.2.3 la lane EVM firma anche `evmAuthSignBytesV2`, che lega il
+gas limit della chiamata (`resolveEvmAuthDigestVersion` sceglie la forma). Usa il
+contatore di cui tieni traccia per quella chiave e ri-firma.
+
+Gli altri errori dell'authenticator si decodificano con `decodeTxError`: codici
+`abstractaccount` 5 (`spending_limit_exceeded`), 6 (`session_key_expired`) e 10
+(`permission_denied`). Vedi
 [Authenticator e spesa delegata](/sdk/guides/authenticators).

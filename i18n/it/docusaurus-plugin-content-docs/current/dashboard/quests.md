@@ -13,7 +13,7 @@ Accedi affinché i tuoi progressi vengano monitorati — vedi [Accedi](/dashboar
 
 ## Sfoglia le quest
 
-La pagina Quest si apre con un breve riepilogo di quante quest sono disponibili, quante ne hai in corso e quante ne hai completate. Le **schede categoria** — come onboarding, trading, social, community, apprendimento, giornaliere e settimanali — ti consentono di filtrare l'elenco.
+La pagina Quest ha una scheda **Eigenstate 1** e una scheda **Eigenstate 2**; quando non ci sono quest di Eigenstate 2 attive, la sua scheda indica che nuove sfide arriveranno presto. La pagina si apre con un breve riepilogo di quante quest sono disponibili, quante ne hai in corso e quante ne hai completate. Le **schede categoria** — come onboarding, trading, social, community, apprendimento, giornaliere e settimanali — ti consentono di filtrare l'elenco.
 
 Ogni quest appare come una card che mostra:
 
@@ -24,6 +24,8 @@ Ogni quest appare come una card che mostra:
 - Uno **stato**: completata, in corso, avviata o bloccata.
 
 Una quest bloccata indica la quest che devi terminare prima affinché si sblocchi.
+
+**Quest social.** Le quest che coinvolgono X o Telegram vengono conteggiate solo dopo che hai collegato quegli account nel tuo **Profilo** (finché non lo fai, la pagina mostra *Connect Social Accounts* con un link **Go to Profile**) e la connessione è verificata.
 
 ## Completa una quest
 

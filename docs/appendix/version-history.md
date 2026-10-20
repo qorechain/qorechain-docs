@@ -7,13 +7,62 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest release is **v3.2.1**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 29 June 2026) with the consensus rules of **v3.2.0** (applied at height 2,981,742). The testnet **`qorechain-diana`** (EVM chain ID **9800**) currently runs **v3.2.2**, which is applied there by governance and is not yet on mainnet.
+Public version history for QoreChain. The latest mainnet release is **v3.2.3**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026); it was applied by governance at height 3,662,051 on 20 October 2026. The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.4**, applied there at height 8,337,253 on 19 October 2026. **v3.2.4 is not part of mainnet yet: mainnet governance proposal 13 (voting until 21 October 2026, 21:18 UTC) would apply it at height 3,742,566.**
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
 :::
 
+## Mainnet governance timeline {#governance-timeline}
+
+Proposals that changed the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 11 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+
+| Proposal | What it does | Voting | Outcome |
+| --- | --- | --- | --- |
+| 7 | Applies v3.2.2 at height 3,556,788 | 14–15 October 2026 (ends 21:24 UTC) | Passed; applied 16 October 2026 |
+| 8 | Releases the light-node reserve (3,156,983.796395 QOR) to the foundation | 18–19 October 2026 (ends 19:15 UTC) | Passed |
+| 9 | Releases the stranded staker share (6,693,045.921330 QOR) to the foundation | 18–19 October 2026 (ends 19:15 UTC) | Passed |
+| 10 | Emission: sets the fixed emission to 86,000 QOR per epoch and the cumulative cap to 590,000,000 QOR (epoch length unchanged; the first 86,000 QOR epoch starts at block 3,672,000) | 18–19 October 2026 (ends 19:15 UTC) | Passed |
+| 11 | Applies v3.2.3 at height 3,662,051 | 18–19 October 2026 (ends 19:15 UTC) | Passed; applied 20 October 2026 |
+| 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | In its voting period at the time of writing |
+| 13 | Coordinated upgrade to v3.2.4 at height 3,742,566 (staking tiers, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, and node-local hardening) | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | In its voting period at the time of writing |
+
+See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
+
 ---
+
+## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (testnet only)
+
+**Release focus:** A testnet-only release, applied on `qorechain-diana` by testnet governance proposal 13 at height **8,337,253** (19 October 2026). It is **not on mainnet yet**: mainnet governance proposal 13 (voting until 21 October 2026, 21:18 UTC) would apply it at height 3,742,566, and until then nothing below applies to `qorechain-vladi`. The testnet manifest sets `minCompatible` to 3.2.4.
+
+* **Light-node registration window.** A light node's reward bound starts at the later of the previous settlement and the node's own registration, so a new registration does not collect an accumulated amount from before it joined.
+* **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for a fixed term; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
+* **New emission mode.** `x/inflation` gains a third emission mode, `target_apy`, with a `target_apy_bps` parameter (currently `0`).
+* **`possession_proven` flag** on post-quantum account records; proof of possession for account keys stays optional.
+* **Bridge validator proof of possession.** Registering a bridge validator needs a proof of possession and a key no other bridge validator uses.
+* **RDK challenge window in block time.** The optimistic challenge window is counted in block time rather than a block count derived from it.
+* **Node-local hardening** (JSON-RPC request bounds, state-sync chunk budget, key-registration pre-checks) and new queries (`protocol_features`, `auth_nonce`, and the extra light-node reward-pool fields such as `monthly_cap_active`).
+
+## v3.2.3 — Second October Security Batch (mainnet)
+
+**Release focus:** The second October hardening batch, applied on mainnet by governance proposal 11 at height **3,662,051** (20 October 2026, 16:01 UTC); applied earlier on the testnet at height 8,003,746 (15 October). The mainnet manifest sets `minCompatible` to 3.2.3: a node joining mainnet now needs v3.2.3. The upgrade turns on 52 protocol features at that height; signing format, addresses, decimals, memos and fees are unchanged.
+
+* **Post-quantum key integrity.** Weak, degenerate and already-used keys are refused at registration; hybrid-key maintenance is tightened; post-quantum key-management messages can no longer run through authz; an account cannot remove its last signing algorithm. Registration (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) accepts an **optional proof of possession**, verified when present.
+* **Scoped EVM windows.** `MsgOpenEVMWindow` takes optional `native_only` (plain native QOR transfers only) and `allowed_targets` (up to 16 recipients) fields that narrow a window. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
+* **Rollup escrow ledger** for the RDK, an **atomic cross-VM queue** with precompile hardening, and **canonical stake authorisation**.
+* **Self-only vesting creation.** Vesting-account creation can only fund the creator's own account (the three vesting messages also remain switched off on the circuit breaker).
+* **Economics fixes.** The emission year is derived from the epoch length; the AMM end-block work is bounded; burn records are pruned; the recorded stranded staker share was recomputed at the upgrade height from 0 to 3,807,496.79 QOR (see [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Light-node monthly bound.** The per-node reward bound is now stated per month: 2,000 QOR per node per 30 days, prorated by block time and uptime.
+* **Governable licence authority.** A new `MsgUpdateAuthority` lets governance replace the authority that grants licences.
+* **Public builds refuse public networks.** A binary built from the public source tree stops if it is pointed at a live network.
+* **New read routes.** The `x/inflation` parameters and epoch record are served over REST on mainnet (`/qorechain/inflation/v1/params`, `/epoch_info`).
+
+## v3.2.2 — Dependency Update and First October Security Batch (mainnet)
+
+**Release focus:** A coordinated upgrade applied on mainnet by governance proposal 7 at height **3,556,788** (16 October 2026, 17:59 UTC); applied on the testnet at height 6,905,034 (2 October). Signing format is unchanged.
+
+* **Dependencies.** Cosmos SDK v0.53.8, consensus engine v0.38.26 and ibc-go v10.7.
+* **26 protocol features** turn on at the upgrade height, including: EIP-7702 delegation needs a post-quantum consent (`MsgAuthorizeEVMDelegation`, cleared by `MsgClearEVMDelegation` or `MsgCloseEVMWindow`); multisig bounds are enforced in block execution; validator admission is checked on every path; AMM integrity checks; module accounts cannot be claimed through the EVM; pre-EIP-155 transactions are refused; post-quantum key registration validates the classical key; the RDK and multilayer anchor message moves to a second form (v2); and the failed-transaction burn channel is applied.
 
 ## v3.2.1 — Node Hardening
 
@@ -22,9 +71,9 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 * Hardens the public API's resource limits, bounds the EVM JSON-RPC and the mempool, and gossips promoted EVM transactions.
 * Pins the EVM chain ID in the node configuration and cross-checks it against the Cosmos chain ID; operators must set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error).
 * Updates the consensus-engine dependency; keep the system clock NTP-synchronised (a skew of more than 60 seconds stops the node).
-* Recommended for every operator; `minCompatible` in the mainnet manifest is 3.2.0.
+* Recommended for every operator; `minCompatible` in the mainnet manifest was 3.2.0 at the time.
 
-The testnet currently runs v3.2.2, applied by governance at height 6,905,034; it is a testnet-only release for now and its changes are not part of mainnet. Mainnet governance proposal 7 (in its voting period when this was written) would schedule v3.2.2 on mainnet at height 3,556,788 — see [Connecting to Mainnet](/getting-started/connecting-to-mainnet) for the operator steps and how to check the outcome.
+v3.2.1 was applied node by node and has no upgrade height; it was superseded on mainnet by v3.2.2 (16 October) and v3.2.3 (20 October).
 
 ## v3.2.0 — EVM Authorisation Window and Accounting Fixes
 
@@ -32,8 +81,8 @@ The testnet currently runs v3.2.2, applied by governance at height 6,905,034; it
 
 * **EVM authorisation window (breaking for EVM wallets).** An EVM transaction is now admitted only from an account that has a registered ML-DSA-87 key **and** an open window. The window is opened with a Cosmos-lane message (`MsgOpenEVMWindow`, post-quantum signed) and bounded by blocks (≤ 17,280), transactions (≤ 1,000) and total value (transferred value plus the maximum fee of each transaction); `MsgCloseEVMWindow` revokes it. Standard Ethereum signing is unchanged inside a window. The EVM lane, which had been switched off on mainnet on the circuit breaker since 16 September, was reopened in the same block the rule took effect. See [EVM authorisation window](/getting-started/first-transaction#evm-window).
 * **Hybrid signature v2.** Post-quantum signatures are now over domain-tagged, chain-bound sign-bytes; the first form is refused from the upgrade height. Clients check the node's applied upgrade plans to choose the form; the CLI (`--sign-bytes auto`), SDK 0.8.x and wallet-adapter 0.2.x do this. Key-migration and bridge-attestation payloads moved to the same scheme. See [Post-Quantum Security](/architecture/post-quantum-security#sign-bytes-v2).
-* **Staker share paid.** The 10 % staker share of the fee split was being deposited where it backed no claim; from this upgrade it is paid as a normal staking reward. The amount already accumulated (6,693,045.92 QOR on mainnet) is recorded on chain (`GET /qorechain/burn/v1/stranded_rewards`) and can move only by a governance vote (`MsgReleaseStrandedRewards`). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
-* **Light-node reward reserve.** The 3 % light-node share that accumulated while no node was eligible (3,156,009.33 QOR on mainnet) is recorded as a reserve (`GET /qorechain/lightnode/v1/reward_pool`), excluded from distribution and movable only by governance; distribution afterwards pays only what accrued since the previous run, bounded per node per block. Light-node registration remains closed.
+* **Staker share paid.** The 10 % staker share of the fee split was being deposited where it backed no claim; from this upgrade it is paid as a normal staking reward. The amount already accumulated (6,693,045.92 QOR on mainnet) is recorded on chain (`GET /qorechain/burn/v1/stranded_rewards`) and could move only by a governance vote (`MsgReleaseStrandedRewards`); governance released it in October 2026 (see the [governance timeline](#governance-timeline) and [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Light-node reward reserve.** The 3 % light-node share that accumulated while no node was eligible (3,156,009.33 QOR on mainnet) is recorded as a reserve (`GET /qorechain/lightnode/v1/reward_pool`), excluded from distribution and movable only by governance (released in October 2026); distribution afterwards pays only what accrued since the previous run, bounded per node. Light-node registration was still closed at this release and has since opened (see [Light Node](/light-node/overview#reward-program-status)).
 * **Per-sender transaction limit** is now enforced (600 transactions per 30 blocks per sender, so relayers can operate).
 * **Upgrade module version map** now lists every module (48), fixing a gap that would have affected later migrations.
 * Also: bridge module account and attestation payloads hardened, proposed blocks validated, rollup settlement restricted to the rollup's sequencer with per-rollup escrow and an effective creation burn, multilayer creator stake locked at registration and returned on decommission, the smart-account `enabled` flag enforced on every path, and validator-admission and vesting-creation paths closed to authz nesting.
@@ -55,7 +104,7 @@ The testnet currently runs v3.2.2, applied by governance at height 6,905,034; it
 
 **Release focus:** Bring staking-reward emission in line with actual network conditions, and tighten authorization checks on privileged administrative messages.
 
-* **Emission cap** — A governance proposal, passed with full bonded-stake support and applied at height 2,122,074 (26 August 2026), replaced the original decaying emission schedule with a fixed per-epoch amount under a hard, cumulative cap. The original schedule had been calibrated for a much more mature, fully-bonded network; against actual bonded stake it was paying out far faster than intended. See [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current numbers.
+* **Emission cap** — A governance proposal, passed with full bonded-stake support and applied at height 2,122,074 (26 August 2026), replaced the original decaying emission schedule with a fixed per-epoch amount under a hard, cumulative cap. The original schedule had been calibrated for a much more mature, fully-bonded network; against actual bonded stake it was paying out far faster than intended. The amount per epoch and the cap were raised by governance proposal 10 on 19 October 2026. See [Tokenomics](/architecture/tokenomics#staking-reward-schedule) for the current numbers.
 * **Administrative message hardening** — A set of privileged, authority-gated administrative messages now have their signer verified against the governance module's own address rather than trusting a value carried in the message itself.
 * Also carries the node-onboarding reliability fix from v3.1.92, for any node updating directly to this release.
 
@@ -210,7 +259,7 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 
 **Release focus:** Mainnet launch and token generation event.
 
-* **Mainnet genesis** — QoreChain mainnet (`qorechain-vladi`, EVM chain ID 9801) launched on **29 June 2026**, with the token generation event (TGE) at genesis.
+* **Mainnet genesis** — QoreChain mainnet (`qorechain-vladi`, EVM chain ID 9801) has been live since **7 June 2026**, with the token generation event (TGE) at genesis.
 * **Five-way fee split** — Protocol fee distribution across validators, burn, treasury, stakers, and light nodes (**37 / 30 / 20 / 10 / 3**), adding a dedicated light-node share.
 * **On-chain AMM** — Native automated-market-maker module (`x/amm`) for on-chain liquidity pools and swaps.
 * **Chain licensing** — On-chain license module (`x/license`) for registering and managing protocol entitlements.

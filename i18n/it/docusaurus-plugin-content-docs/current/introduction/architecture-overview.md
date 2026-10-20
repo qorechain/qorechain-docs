@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Panoramica dell'Architettura
 
-QoreChain è un nodo blockchain modulare composto da tre processi principali — il nodo della chain, il sidecar AI e l'indicizzatore di blocchi — supportati da un database Postgres e monitorati tramite Prometheus e Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 29 giugno 2026 sulla release **v3.2.1** (regole di consenso della v3.2.0), con una testnet parallela (`qorechain-diana`, EVM chain ID **9800**). La chain è costruita su Cosmos SDK v0.53. Il diagramma seguente mostra la disposizione di alto livello dei componenti.
+QoreChain è un nodo blockchain modulare composto da tre processi principali — il nodo della chain, il sidecar AI e l'indicizzatore di blocchi — supportati da un database Postgres e monitorati tramite Prometheus e Grafana. La mainnet (`qorechain-vladi`, EVM chain ID **9801**) è attiva dal 7 giugno 2026 sulla release **v3.2.3**, con una testnet parallela (`qorechain-diana`, EVM chain ID **9800**, release v3.2.4, solo testnet). La chain è costruita su Cosmos SDK v0.53. Il diagramma seguente mostra la disposizione di alto livello dei componenti.
 
 Il ciclo di vita della transazione riportato di seguito riassume come una transazione inviata attraversa il nodo — dalla catena di decorator dell'AnteHandler (controlli di sicurezza e delle commissioni) all'esecuzione nella VM e al regolamento on-chain:
 
@@ -50,7 +50,7 @@ flowchart LR
 │  │  │12 src│   │lock/  │   │capped     │                    │           │
 │  │  │37/30/│   │unlock │   │emission   │                    │           │
 │  │  │20/10/│   │PvP    │   │emission   │                    │           │
-│  │  │3     │   │       │   │114.3M cap │                    │           │
+│  │  │3     │   │       │   │590M cap   │                    │           │
 │  │  └──────┘   └───────┘   └───────────┘                    │           │
 │  └────────────────────────────────────────────────────────────┘           │
 │                                                                            │
@@ -170,7 +170,7 @@ QoreChain registra **48 moduli di genesis, 20 dei quali specifici di QoreChain**
 
 * `x/burn` — 12 fonti di burn, distribuzione delle commissioni nell'EndBlocker (suddivisione 37/30/20/10/3)
 * `x/xqore` — Design di staking potenziato dalla governance: lock/unlock, penalità di uscita graduate, rebase PvP (solo contabilità; le transazioni di lock e unlock non sono ancora collegate sulle reti attive)
-* `x/inflation` — Emissione con tetto: un importo fisso viene coniato a ogni epoca fino al raggiungimento di un tetto cumulativo rigido (114.285.714 QOR)
+* `x/inflation` — Emissione con tetto: un importo fisso viene coniato a ogni epoca fino al raggiungimento di un tetto cumulativo rigido (590.000.000 QOR)
 * `x/amm` — Liquidità on-chain / market maker automatizzato
 
 **Bridge e Interoperabilità**
@@ -194,7 +194,7 @@ QoreChain registra **48 moduli di genesis, 20 dei quali specifici di QoreChain**
 
 Ogni transazione passa attraverso una catena di decorator prima dell'esecuzione; qualsiasi decorator può rifiutarla. Esistono due catene.
 
-**Lane Cosmos** (in ordine): `RejectMessages` (nessun `MsgEthereumTx` su questa lane) → `AuthzLimiter` (nessun messaggio EVM o di creazione di vesting dentro authz) → `SetUpContext` → protezioni su mempool e profondità multisig → decorator CosmWasm per simulation-gas, tx-counter, gas-register e contratti → `CircuitBreaker` → controllo dell'extension option → `ValidateBasic` → `TxTimeout` → `Memo` → gate della licenza validatore (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (include il rate limit per mittente) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → contatore delle transazioni di burn → controllo del relay IBC ridondante → tracciamento del gas richiesto.
+**Lane Cosmos** (in ordine): `RejectMessages` (nessun `MsgEthereumTx` su questa lane) → `AuthzLimiter` (nessun messaggio EVM o di creazione di vesting dentro authz, e dalla v3.2.3 nessun messaggio di gestione delle chiavi post-quantistiche) → `SetUpContext` → protezioni su mempool e profondità multisig → decorator CosmWasm per simulation-gas, tx-counter, gas-register e contratti → `CircuitBreaker` → controllo dell'extension option → `ValidateBasic` → `TxTimeout` → `Memo` → gate della licenza validatore (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (include il rate limit per mittente) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → contatore delle transazioni di burn → controllo del relay IBC ridondante → tracciamento del gas richiesto.
 
 **Lane EVM** (transazioni che portano l'extension option di Ethereum): `CircuitBreaker` → il decorator monolitico EVM (controlli di firma, nonce, commissioni e saldo) → `EVMWindowDecorator` (chiave post-quantistica registrata e finestra di autorizzazione attiva; vedi [Finestra di autorizzazione EVM](/getting-started/first-transaction#evm-window)).
 

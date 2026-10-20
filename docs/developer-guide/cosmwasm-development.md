@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain supports **CosmWasm** smart contracts, enabling developers to write secure, sandboxed programs in Rust that compile to WebAssembly. CosmWasm contracts run alongside EVM and SVM programs within the QoreChain triple-VM architecture.
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 29 June 2026), which runs node release **v3.2.1**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.2.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.3**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.4 (testnet only).
 :::
 
 :::caution Code upload and instantiation currently require explicit permission
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Cross-VM Calls
 
-Cross-VM calls are sent as `MsgCrossVMCall` transactions through the `x/crossvm` module; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the message lifecycle. CosmWasm contracts do not have a contract-side binding for initiating a cross-VM call today (there is no custom `QoreChainMsg` message for contracts to emit), so a contract cannot call an EVM or SVM contract from inside its `execute` entry point.
+Cross-VM calls are sent as `MsgCrossVMCall` transactions through the `x/crossvm` module; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the message lifecycle. CosmWasm contracts do not have a dedicated contract-side binding for initiating a cross-VM call (there is no custom `QoreChainMsg` message for contracts to emit), so a contract cannot call an EVM or SVM contract from inside its `execute` entry point. Since v3.2.3 a call into the caller's own lane is refused and a queued call that fails leaves no side effects behind.
 
 :::caution Cross-VM calls are currently switched off on mainnet
 `MsgCrossVMCall` is on mainnet's circuit-breaker list (`qorechaind query circuit disabled-list`), and the SVM lane is disabled on both networks, so the cross-VM path is not usable for ordinary transactions today.

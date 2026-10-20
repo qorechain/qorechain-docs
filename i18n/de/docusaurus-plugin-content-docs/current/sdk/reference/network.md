@@ -12,7 +12,8 @@ sidebar_position: 1
 | Feld | Wert |
 | --- | --- |
 | Netzwerk-Voreinstellung | `mainnet` |
-| Chain-ID | `qorechain-vladi` (live) |
+| Chain-ID | `qorechain-vladi` (live seit 7. Juni 2026) |
+| Chain-Version (20. Oktober 2026) | v3.2.3 |
 | EVM-Chain-ID | `9801` |
 | Anzeige-Token | `QOR` |
 | Basis-Denomination | `uqor` |
@@ -26,6 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Netzwerk-Voreinstellung | `testnet` |
 | Chain-ID | `qorechain-diana` (live) |
+| Chain-Version (20. Oktober 2026) | v3.2.4 (bisher nur Testnet; der Mainnet-Vorschlag 13 würde es bei Höhe 3,742,566 anwenden) |
 | EVM-Chain-ID | `9800` |
 | Anzeige-Token | `QOR` |
 | Basis-Denomination | `uqor` |

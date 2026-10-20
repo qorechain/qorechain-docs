@@ -30,7 +30,7 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (încă nu este deschis
 niciun canal IBC pe mainnet sau testnet).
 
-:::note Ce funcționează astăzi pe rețelele live (lanț v3.2.0 și mai nou)
+:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.3, testnet v3.2.4)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
@@ -39,6 +39,14 @@ conturi unificate, tranzacții EVM în interiorul unei
 oprit de circuit breaker), încărcarea și instanțierea CosmWasm pentru conturile
 obișnuite, fluxurile de autentificator / cont abstract (modul oprit), xQORE și
 abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
+
+SDK-ul publicat (0.9.0, 21 octombrie 2026) semnează în forma pe care o verifică
+ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
+de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
+v3.2.3 sau v3.2.4. Poartă partea de client a regulilor post-cuantice ulterioare
+(dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
+mesaje de consimțământ EIP-7702); versiunile anterioare lui 0.9.0 nu o au, vezi
+[Versiuni anterioare lui 0.9.0](/sdk/install#before-090).
 :::
 
 ### Rezistent la atacuri cuantice prin design
@@ -105,15 +113,15 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 
 | Pachet | Limbaj | Instalare | Stare |
 | --- | --- | --- | --- |
-| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.8.3) |
-| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.8.3) |
-| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.8.4`) |
-| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.8.3) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.8.3` | Publicat (Maven Central, v0.8.3) |
+| `@qorechain/sdk` | TypeScript | `npm i @qorechain/sdk` | Publicat (npm, v0.9.0) |
+| `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.9.0) |
+| `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.9.0`) |
+| `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Publicat (Maven Central, v0.9.0) |
 | `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.8.0) |
-| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.8.3) |
-| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.8.0) |
+| `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.9.0) |
+| `create-qorechain-dapp` | CLI | `npm create qorechain-dapp` | Publicat (npm, v0.9.0) |
 
 > Distribuția Python se instalează ca `qorechain-sdk`, dar **se importă ca
 > `qorsdk`**. Toți clienții sunt publicați în registrele lor — vezi
@@ -128,16 +136,16 @@ plus modulele Cosmos standard, clienți de interogare tipizați, ciclul de viaț
 complet al tranzacției (auto-gas, decodarea erorilor, urmărirea tranzacțiilor,
 căutare de blocuri/tranzacții), tranzacții post-cuantice hibride și abonamente
 WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
-(`@qorechain/sdk` 0.8.3), Python pe PyPI (`qorechain-sdk` 0.8.3, import
-`qorsdk`), Go pe module proxy (tag `packages/go/v0.8.4`), Rust pe crates.io
-(`qorechain-sdk` 0.8.3) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.8.3). Adaptoarele de
+(`@qorechain/sdk` 0.9.0), Python pe PyPI (`qorechain-sdk` 0.9.0, import
+`qorsdk`), Go pe module proxy (tag `packages/go/v0.9.0`), Rust pe crates.io
+(`qorechain-sdk` 0.9.0) și Java pe Maven Central
+(`io.github.qorechain:qorechain-sdk` 0.9.0). Adaptoarele de
 execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.8.0), kitul
-`@qorechain/react` (0.8.3) și CLI-ul de schelet `create-qorechain-dapp`
-(0.8.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
+`@qorechain/react` (0.9.0) și CLI-ul de schelet `create-qorechain-dapp`
+(0.9.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi
 [Instalare](/sdk/install#related-packages) pentru pachetele însoțitoare.
 
-## Noutăți în 0.6, 0.7 și 0.8
+## Noutăți în 0.6, 0.7, 0.8 și 0.9
 
 **0.6.0 — conturi eth-native unificate (lanț v3.1.83).** O singură cheie
 `eth_secp256k1` este o singură identitate de 20 de octeți redată ca toate cele
@@ -181,7 +189,7 @@ portofel TypeScript (`buildPhantomExecuteCosmos`, `buildMetaMaskExecuteEvm`,
 v3.2.0).** Jumătatea post-cuantică a unei tranzacții hibride este acum semnată în
 forma pe care o verifică rețeaua țintă (v1 sau v2, `signBytesVersion: "auto" | "v1" | "v2"`).
 Ambele rețele publice sunt pe v2, așa că este necesar SDK **0.8.1 sau mai nou**
-pentru a tranzacționa pe mainnet. **0.8.2** adaugă `openEvmWindowMsg`,
+pentru a tranzacționa pe mainnet (folosește 0.9.0). **0.8.2** adaugă `openEvmWindowMsg`,
 `closeEvmWindowMsg`, `fetchEvmWindow` și `classifyEvmWindowRejection` pentru
 [fereastra de autorizare](/sdk/guides/evm#evm-window) a benzii EVM.
 **0.8.0** a eliminat helperii de cont bazați pe semnătura portofelului (`connectPhantomUnified` și
@@ -192,6 +200,20 @@ tranzacțiilor, cursele (race conditions) din hook-urile React, secvențierea
 `migrate_to_hybrid` din Python și derivarea PQC canonică independentă de forma
 adresei (`derivePqcCanonical`, `canonicalAccount`). Vezi
 [Note de upgrade](/sdk/install#upgrade).
+
+**0.9.0 — suport de client pentru chain v3.2.2 și v3.2.3.** `TxClient` din TypeScript
+semnează hibrid când transmiți perechea de chei a contului
+(`client.connectTx(signer, { pqcKeypair })`), astfel încât `bankSend` și clienții
+SDK-ului pentru rollup, multilayer și cross-VM funcționează pe rețelele publice.
+`ensurePqcRegistered` verifică mai întâi prin REST cheia înregistrată, refuză să
+înregistreze o a doua cheie, diferită, și atașează singur dovada de posesie după ce
+rețeaua a aplicat v3.2.3. Constructori noi acoperă ferestrele EVM cu domeniu restrâns
+(`nativeOnly`, `allowedTargets`) și mesajele de consimțământ EIP-7702, iar
+`derivePqcCanonical(address, mnemonic)` oferă în fiecare limbaj o cheie pe care o
+poți recupera din mnemonic. Ruta contului PQC este cea la singular
+`/qorechain/pqc/v1/account/{address}`, eșecurile din interiorul unui bloc își păstrează
+codespace-ul, iar `create-qorechain-dapp` generează proiecte pe SDK-ul curent. Vezi
+[Ce adaugă 0.9.0](/sdk/install#whats-new-090).
 
 ## Unde să mergi mai departe
 

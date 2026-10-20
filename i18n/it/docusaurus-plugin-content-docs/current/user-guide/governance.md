@@ -10,7 +10,7 @@ sidebar_position: 3
 Questa guida illustra come funziona la governance on-chain su QoreChain: come vengono conteggiati i voti, come presentare proposte e come votare.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 29 giugno 2026 sulla linea v3.2 (release del nodo **v3.2.1**; la testnet esegue la **v3.2.2**) — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release **v3.2.3**; la testnet esegue la **v3.2.4** — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -29,7 +29,7 @@ Le proposte vengono conteggiate sullo **stake bonded**: ogni QOR che hai delegat
 | Soglia    | 50%            | Quota di "yes" tra i voti non di astensione necessaria per l'approvazione     |
 | Veto      | 33.4%          | Se "no with veto" raggiunge questa quota, la proposta viene respinta e il suo deposito viene bruciato |
 
-Questi valori sono stati letti dalla chain il 14 ottobre 2026; confermali con `qorechaind query gov params`, perché la governance può modificarli.
+Questi valori sono stati letti dalla mainnet il 20 ottobre 2026 (e sono gli stessi sulla testnet); confermali con `qorechaind query gov params`, perché la governance può modificarli.
 
 :::note QDRW è progettato ma non è attivo
 Il design di QoreChain include una formula di potere di voto **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, che attenuerebbe gli stake di grandi dimensioni e peserebbe la reputazione. È implementata nel modulo `x/qca` ma è **disattivata** su entrambe le reti (`qdrw_enabled` è `false` in `qorechaind query qca config`) e non fa parte del conteggio di governance, quindi oggi non influisce su nessun voto. Anche xQORE non è attivo (vedi [Staking di xQORE](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 I parametri principali includono:
 
-| Parametro            | Descrizione                                                      | Valore attuale (14 ott 2026) |
+| Parametro            | Descrizione                                                      | Valore attuale (20 ott 2026) |
 | -------------------- | ---------------------------------------------------------------- | ---------------------------- |
 | `min_deposit`        | Deposito minimo richiesto affinché una proposta entri in votazione | 10 QOR (`10000000uqor`)      |
 | `max_deposit_period` | Finestra temporale per raggiungere il deposito minimo           | 2 giorni                     |
@@ -170,6 +170,12 @@ I parametri principali includono:
 | `threshold`          | Percentuale minima di "yes" per l'approvazione (escluse le astensioni) | 0.5                   |
 | `veto_threshold`     | Percentuale minima di "no with veto" per respingere e bruciare il deposito | 0.334             |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Periodo di voto, soglia di approvazione e deposito per le proposte expedited | 1 giorno / 0.667 / 50 QOR |
+
+---
+
+## La governance sulla mainnet finora {#mainnet-history}
+
+La governance della mainnet è stata usata per modifiche ai parametri, decisioni sui circuit breaker, upgrade coordinati e, da ottobre 2026, per rilasciare importi che la chain aveva registrato all'upgrade v3.2.0. Le proposte da 7 a 11 sono state approvate sulla mainnet a ottobre 2026 e la proposta 12 era nel suo periodo di votazione al momento della stesura; l'elenco e gli esiti sono in [Cronologia delle Versioni](/appendix/version-history#governance-timeline), e ogni proposta può essere letta in tempo reale a `GET /cosmos/gov/v1/proposals`.
 
 ---
 

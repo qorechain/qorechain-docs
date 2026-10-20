@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 29 iunie 2026 și rulează versiunea v3.2.1. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.3 (testnet-ul, `qorechain-diana`, rulează v3.2.4). Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 
@@ -39,15 +39,19 @@ Folosiți faucet-ul de testnet din Dashboard. Vezi [Faucet Dashboard](/dashboard
 
 ### Cum rulez un nod, un validator sau un nod light?
 
-Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node). Pentru un validator, vezi [Rularea unui validator](/developer-guide/running-a-validator). Pentru un nod light, vezi [Nod light](/light-node/overview).
+Pentru un nod complet, vezi [Rularea unui nod](/developer-guide/running-a-node). Pentru un validator, vezi [Rularea unui validator](/developer-guide/running-a-validator). Pentru un nod light, vezi [Nod light](/light-node/overview); înregistrarea pentru programul de recompense al nodurilor light este deschisă și condiționată de licență ([stare](/light-node/overview#reward-program-status)).
 
 ### Ce schemă de semnătură folosește QoreChain?
 
-QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Pe banda EVM semnătura rămâne secp256k1, iar un cont trebuie să dețină în plus o cheie ML-DSA înregistrată și o fereastră de autorizare deschisă (v3.2.0). Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
+QoreChain folosește o schemă hibridă post-cuantică care combină **secp256k1 (ECDSA)** clasic cu **ML-DSA-87 (Dilithium-5)** post-cuantic. Această schemă hibridă este obligatorie implicit pe calea de tranzacții Cosmos, cu modul de aplicare controlat prin guvernanță. Pe banda EVM semnătura rămâne secp256k1, iar un cont trebuie să dețină în plus o cheie ML-DSA înregistrată și o fereastră de autorizare deschisă (începând cu v3.2.0). Vezi [Securitate post-cuantică](/architecture/post-quantum-security).
 
 ### De ce este refuzată tranzacția mea EVM cu „no open EVM authorisation window"?
 
 Începând cu v3.2.0, banda EVM admite o tranzacție doar de la un cont care are o cheie post-cuantică înregistrată și o fereastră de autorizare deschisă. Deschide o fereastră cu o tranzacție pe banda Cosmos semnată post-cuantic, apoi reîncearcă. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+
+### Câți validatori are mainnet-ul?
+
+Opt validatori bonded la 20 octombrie 2026, cu aproximativ 55,1 milioane de QOR bonded (setul activ poate cuprinde până la 100). Testnet-ul are trei. Citiți setul live la `GET /cosmos/staking/v1beta1/validators` pe `https://api.qore.host`.
 
 ### Ce timp de bloc ar trebui să mă aștept?
 
@@ -59,7 +63,7 @@ Aproximativ 3,2 secunde pe mainnet și aproximativ 1 secundă pe testnet (medii 
 
 ### Este oferta de QOR fixă?
 
-Oferta la genesis a fost de 4.420.000.000 QOR. Emisia de staking este bătută sub un plafon cumulativ strict de 114.285.714 QOR, iar arderile elimină definitiv tokenuri. Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
+Oferta la genesis a fost de 4.420.000.000 QOR. Emisia de staking este bătută sub un plafon cumulativ strict de 590.000.000 QOR (86.000 QOR per epocă începând cu propunerea de guvernanță 10, octombrie 2026), iar arderile elimină definitiv tokenuri. Vezi [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ### Cum construiesc un rollup?
 
@@ -71,7 +75,7 @@ Folosiți [QoreChain SDK](/sdk/overview), SDK-ul public pentru construirea de ap
 
 ### Unde pot pune întrebări?
 
-Botul comunitar QCAIA răspunde la întrebări pe Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) și Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Vezi [Botul comunitar QCAIA](/qcaia/overview).
+Botul comunitar QCAIA răspunde la întrebări pe Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) și Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Vezi [Botul comunitar QCAIA](/qcaia/overview).
 
 ## Resurse conexe
 

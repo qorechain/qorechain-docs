@@ -7,13 +7,62 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Cea mai recentă versiune este **v3.2.1**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 29 iunie 2026) cu regulile de consens din **v3.2.0** (aplicate la înălțimea 2.981.742). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează în prezent **v3.2.2**, care este aplicată acolo prin guvernanță și nu se află încă pe mainnet.
+Istoricul public al versiunilor QoreChain. Cea mai recentă versiune de mainnet este **v3.2.3**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026); a fost aplicată prin guvernanță la înălțimea 3.662.051, pe 20 octombrie 2026. Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.4**, aplicată acolo la înălțimea 8.337.253, pe 19 octombrie 2026. **v3.2.4 nu face încă parte din mainnet: propunerea 13 de guvernanță a mainnet-ului (votare până la 21 octombrie 2026, 21:18 UTC) ar aplica-o la înălțimea 3.742.566.**
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
 :::
 
+## Cronologia guvernanței mainnet {#governance-timeline}
+
+Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 octombrie 2026. Toate cele șapte sunt propuneri accelerate (perioadă de votare de o zi); propunerile 7 până la 11 au trecut cu tot stake-ul bonded care a votat în favoare. Lista completă se află la `GET /cosmos/gov/v1/proposals` pe `https://api.qore.host`.
+
+| Propunere | Ce face | Votare | Rezultat |
+| --- | --- | --- | --- |
+| 7 | Aplică v3.2.2 la înălțimea 3.556.788 | 14–15 octombrie 2026 (se încheie la 21:24 UTC) | Adoptată; aplicată pe 16 octombrie 2026 |
+| 8 | Eliberează rezerva light node (3.156.983,796395 QOR) către fundație | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată |
+| 9 | Eliberează cota blocată a stakerilor (6.693.045,921330 QOR) către fundație | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată |
+| 10 | Emisiune: stabilește emisiunea fixă la 86.000 QOR per epocă și plafonul cumulativ la 590.000.000 QOR (lungimea epocii rămâne neschimbată; prima epocă de 86.000 QOR începe la blocul 3.672.000) | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată |
+| 11 | Aplică v3.2.3 la înălțimea 3.662.051 | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată; aplicată pe 20 octombrie 2026 |
+| 12 | Eliberează cota blocată corectată a stakerilor (3.807.496,785528 QOR, recalculată la înălțimea v3.2.3) către fundație | 20 octombrie 2026, 20:01 UTC, până la 21 octombrie 2026, 20:01 UTC | În perioada de votare la momentul scrierii |
+| 13 | Upgrade coordonat la v3.2.4 la înălțimea 3.742.566 (niveluri de staking, limita de recompensă a light node-urilor numărată de la înregistrare, un flag de deținere pentru cheile post-cuantice, dovada deținerii pentru validatorii de bridge și consolidare locală nodului) | 20 octombrie 2026, 21:18 UTC, până la 21 octombrie 2026, 21:18 UTC | În perioada de votare la momentul scrierii |
+
+Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pentru ce înseamnă eliberările și [Guvernanță](/user-guide/governance) pentru cum se votează.
+
 ---
+
+## v3.2.4 — Fereastra de înregistrare a light node-urilor și staking opțional cu blocare în timp (doar testnet)
+
+**Focus lansare:** O lansare doar pentru testnet, aplicată pe `qorechain-diana` prin propunerea 13 de guvernanță a testnet-ului la înălțimea **8.337.253** (19 octombrie 2026). **Nu se află încă pe mainnet**: propunerea 13 de guvernanță a mainnet-ului (votare până la 21 octombrie 2026, 21:18 UTC) ar aplica-o la înălțimea 3.742.566, iar până atunci nimic din cele de mai jos nu se aplică pentru `qorechain-vladi`. Manifestul testnet setează `minCompatible` la 3.2.4.
+
+* **Fereastra de înregistrare a light node-urilor.** Limita de recompensă a unui light node începe la cea mai târzie dintre decontarea anterioară și propria înregistrare a nodului, astfel încât o înregistrare nouă nu încasează o sumă acumulată înainte de alăturarea sa.
+* **Staking opțional cu blocare în timp (`x/stakingtier`, un modul nou).** Un delegator poate bloca o parte dintr-o delegare pentru un termen fix; partea blocată nu poate fi dezdelegată sau redelegată, iar deblocarea anticipată este permisă cu o penalitate. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
+* **Mod nou de emisiune.** `x/inflation` primește un al treilea mod de emisiune, `target_apy`, cu un parametru `target_apy_bps` (în prezent `0`).
+* **Flag-ul `possession_proven`** pe înregistrările de cont post-cuantice; dovada deținerii pentru cheile de cont rămâne opțională.
+* **Dovada deținerii pentru validatorii de bridge.** Înregistrarea unui validator de bridge necesită o dovadă a deținerii și o cheie pe care nu o folosește niciun alt validator de bridge.
+* **Fereastra de contestare RDK în timp de bloc.** Fereastra optimistă de contestare este numărată în timp de bloc, nu într-un număr de blocuri derivat din acesta.
+* **Consolidare locală nodului** (limite pentru cererile JSON-RPC, buget pentru fragmentele state-sync, verificări prealabile la înregistrarea cheilor) și interogări noi (`protocol_features`, `auth_nonce` și câmpurile suplimentare ale pool-ului de recompense light node, precum `monthly_cap_active`).
+
+## v3.2.3 — Al doilea lot de securitate din octombrie (mainnet)
+
+**Focus lansare:** Al doilea lot de consolidare din octombrie, aplicat pe mainnet prin propunerea 11 de guvernanță la înălțimea **3.662.051** (20 octombrie 2026, 16:01 UTC); aplicat mai devreme pe testnet la înălțimea 8.003.746 (15 octombrie). Manifestul mainnet setează `minCompatible` la 3.2.3: un nod care se alătură mainnet-ului are acum nevoie de v3.2.3. Upgrade-ul activează 52 de funcționalități de protocol la acea înălțime; formatul de semnare, adresele, zecimalele, memo-urile și taxele rămân neschimbate.
+
+* **Integritatea cheilor post-cuantice.** Cheile slabe, degenerate și deja folosite sunt refuzate la înregistrare; întreținerea cheilor hibride este strânsă; mesajele de management al cheilor post-cuantice nu mai pot rula prin authz; un cont nu își poate elimina ultimul algoritm de semnare. Înregistrarea (`MsgRegisterPQCKeyV2`, `tx pqc register-key-v2 ... --pqc-key <name>`) acceptă o **dovadă opțională a deținerii**, verificată atunci când este prezentă.
+* **Ferestre EVM cu domeniu restrâns.** `MsgOpenEVMWindow` primește câmpurile opționale `native_only` (doar transferuri simple de QOR nativ) și `allowed_targets` (până la 16 destinatari) care restrâng o fereastră. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
+* **Registru escrow pentru rollup-uri** în RDK, o **coadă cross-VM atomică** cu precompile consolidate și **autorizare canonică a stake-ului**.
+* **Creare de vesting doar pentru sine.** Crearea unui cont de vesting poate finanța doar propriul cont al creatorului (cele trei mesaje de vesting rămân, de asemenea, oprite prin circuit breaker).
+* **Corecții de economie.** Anul de emisiune este derivat din lungimea epocii; munca AMM la sfârșit de bloc este limitată; înregistrările de burn sunt tăiate (pruned); cota blocată înregistrată a stakerilor a fost recalculată la înălțimea upgrade-ului, de la 0 la 3.807.496,79 QOR (vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Limita lunară pentru light node.** Limita de recompensă per nod este acum exprimată lunar: 2.000 QOR per nod la 30 de zile, proporțional cu timpul de bloc și uptime-ul.
+* **Autoritate de licențiere guvernabilă.** Un nou `MsgUpdateAuthority` permite guvernanței să înlocuiască autoritatea care acordă licențe.
+* **Build-urile publice refuză rețelele publice.** Un binar construit din arborele sursă public se oprește dacă este îndreptat către o rețea live.
+* **Rute de citire noi.** Parametrii `x/inflation` și înregistrarea epocii sunt servite prin REST pe mainnet (`/qorechain/inflation/v1/params`, `/epoch_info`).
+
+## v3.2.2 — Actualizare de dependențe și primul lot de securitate din octombrie (mainnet)
+
+**Focus lansare:** Un upgrade coordonat aplicat pe mainnet prin propunerea 7 de guvernanță la înălțimea **3.556.788** (16 octombrie 2026, 17:59 UTC); aplicat pe testnet la înălțimea 6.905.034 (2 octombrie). Formatul de semnare este neschimbat.
+
+* **Dependențe.** Cosmos SDK v0.53.8, motor de consens v0.38.26 și ibc-go v10.7.
+* **26 de funcționalități de protocol** se activează la înălțimea upgrade-ului, printre care: delegarea EIP-7702 necesită un consimțământ post-cuantic (`MsgAuthorizeEVMDelegation`, anulat prin `MsgClearEVMDelegation` sau `MsgCloseEVMWindow`); limitele multisig sunt aplicate în execuția blocului; admiterea validatorilor este verificată pe fiecare cale; verificări de integritate AMM; conturile de modul nu pot fi revendicate prin EVM; tranzacțiile pre-EIP-155 sunt refuzate; înregistrarea cheii post-cuantice validează cheia clasică; mesajul de ancorare RDK și multilayer trece la o a doua formă (v2); și este aplicat canalul de burn pentru tranzacțiile eșuate.
 
 ## v3.2.1 — Consolidarea nodurilor
 
@@ -22,9 +71,9 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 * Întărește limitele de resurse ale API-ului public, limitează EVM JSON-RPC și mempool-ul și propagă (gossip) tranzacțiile EVM promovate.
 * Fixează EVM chain ID în configurația nodului și îl verifică încrucișat cu chain ID-ul Cosmos; operatorii trebuie să seteze `evm-chain-id = 9801` în `app.toml` (o valoare diferită este înregistrată ca eroare).
 * Actualizează dependența motorului de consens; mențineți ceasul sistemului sincronizat prin NTP (o abatere de peste 60 de secunde oprește nodul).
-* Recomandată pentru fiecare operator; `minCompatible` din manifestul mainnet este 3.2.0.
+* Recomandată pentru fiecare operator; `minCompatible` din manifestul mainnet era 3.2.0 la acel moment.
 
-Testnetul rulează în prezent v3.2.2, aplicată prin guvernanță la înălțimea 6.905.034; deocamdată este o lansare doar pentru testnet, iar modificările ei nu fac parte din mainnet. Propunerea de guvernanță 7 de pe mainnet (în perioada de votare la momentul scrierii) ar programa v3.2.2 pe mainnet la înălțimea 3.556.788 — vezi [Conectarea la Mainnet](/getting-started/connecting-to-mainnet) pentru pașii operatorului și pentru cum să verifici rezultatul.
+v3.2.1 a fost aplicată nod cu nod și nu are înălțime de upgrade; a fost înlocuită pe mainnet de v3.2.2 (16 octombrie) și v3.2.3 (20 octombrie).
 
 ## v3.2.0 — Fereastra de autorizare EVM și corecții de contabilitate
 
@@ -32,8 +81,8 @@ Testnetul rulează în prezent v3.2.2, aplicată prin guvernanță la înălțim
 
 * **Fereastra de autorizare EVM (breaking pentru portofelele EVM).** O tranzacție EVM este acum admisă doar de la un cont care are o cheie ML-DSA-87 înregistrată **și** o fereastră deschisă. Fereastra se deschide cu un mesaj de pe lane-ul Cosmos (`MsgOpenEVMWindow`, semnat post-cuantic) și este delimitată de blocuri (≤ 17.280), tranzacții (≤ 1.000) și valoare totală (valoarea transferată plus taxa maximă a fiecărei tranzacții); `MsgCloseEVMWindow` o revocă. Semnarea Ethereum standard rămâne neschimbată în interiorul unei ferestre. Lane-ul EVM, care fusese oprit pe mainnet prin circuit breaker din 16 septembrie, a fost redeschis în același bloc în care a intrat în vigoare regula. Vezi [Fereastra de autorizare EVM](/getting-started/first-transaction#evm-window).
 * **Semnătura hibridă v2.** Semnăturile post-cuantice se fac acum peste octeți de semnat etichetați pe domeniu și legați de chain; prima formă este refuzată începând de la înălțimea upgrade-ului. Clienții verifică planurile de upgrade aplicate ale nodului pentru a alege forma; CLI-ul (`--sign-bytes auto`), SDK 0.8.x și wallet-adapter 0.2.x fac acest lucru. Payload-urile de migrare a cheilor și de atestare a bridge-ului au trecut la aceeași schemă. Vezi [Securitate post-cuantică](/architecture/post-quantum-security#sign-bytes-v2).
-* **Cota stakerilor plătită.** Cota de 10 % a stakerilor din distribuția taxelor era depusă într-un loc unde nu susținea nicio creanță; de la acest upgrade este plătită ca recompensă normală de staking. Suma deja acumulată (6.693.045,92 QOR pe mainnet) este înregistrată on-chain (`GET /qorechain/burn/v1/stranded_rewards`) și poate fi mutată doar printr-un vot de guvernanță (`MsgReleaseStrandedRewards`). Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
-* **Rezerva de recompense pentru light node.** Cota de 3 % pentru light node care s-a acumulat cât timp niciun nod nu era eligibil (3.156.009,33 QOR pe mainnet) este înregistrată ca rezervă (`GET /qorechain/lightnode/v1/reward_pool`), exclusă din distribuție și mutabilă doar prin guvernanță; ulterior, distribuția plătește doar ce s-a acumulat de la rularea anterioară, cu limită per nod și per bloc. Înregistrarea light node-urilor rămâne închisă.
+* **Cota stakerilor plătită.** Cota de 10 % a stakerilor din distribuția taxelor era depusă într-un loc unde nu susținea nicio creanță; de la acest upgrade este plătită ca recompensă normală de staking. Suma deja acumulată (6.693.045,92 QOR pe mainnet) este înregistrată on-chain (`GET /qorechain/burn/v1/stranded_rewards`) și putea fi mutată doar printr-un vot de guvernanță (`MsgReleaseStrandedRewards`); guvernanța a eliberat-o în octombrie 2026 (vezi [cronologia guvernanței](#governance-timeline) și [Tokenomics](/architecture/tokenomics#stranded-and-reserve)).
+* **Rezerva de recompense pentru light node.** Cota de 3 % pentru light node care s-a acumulat cât timp niciun nod nu era eligibil (3.156.009,33 QOR pe mainnet) este înregistrată ca rezervă (`GET /qorechain/lightnode/v1/reward_pool`), exclusă din distribuție și mutabilă doar prin guvernanță (eliberată în octombrie 2026); ulterior, distribuția plătește doar ce s-a acumulat de la rularea anterioară, cu limită per nod. Înregistrarea light node-urilor era încă închisă la această lansare și s-a deschis între timp (vezi [Light Node](/light-node/overview#reward-program-status)).
 * **Limita de tranzacții per expeditor** este acum aplicată (600 de tranzacții la 30 de blocuri per expeditor, astfel încât relayer-ii să poată funcționa).
 * **Harta versiunilor modulelor din upgrade** listează acum fiecare modul (48), remediind un gol care ar fi afectat migrările ulterioare.
 * De asemenea: modulul de cont și payload-urile de atestare ale bridge-ului consolidate, blocuri propuse validate, decontarea rollup-urilor restricționată la sequencer-ul rollup-ului, cu escrow per rollup și un burn de creare efectiv, stake-ul creatorului multilayer blocat la înregistrare și returnat la dezafectare, flag-ul `enabled` al contului inteligent aplicat pe fiecare cale, iar căile de admitere a validatorilor și de creare a vesting-ului închise față de imbricarea authz.
@@ -55,7 +104,7 @@ Testnetul rulează în prezent v3.2.2, aplicată prin guvernanță la înălțim
 
 **Focus lansare:** Aducerea emisiunii recompenselor de staking în linie cu condițiile reale ale rețelei și strângerea verificărilor de autorizare pe mesajele administrative privilegiate.
 
-* **Plafon de emisiune** — O propunere de guvernanță, adoptată cu susținerea integrală a stake-ului bonded și aplicată la înălțimea 2.122.074 (26 august 2026), a înlocuit programul original de emisiune în declin cu o sumă fixă per epocă, sub un plafon cumulativ dur. Programul original fusese calibrat pentru o rețea mult mai matură, complet bonded; raportat la stake-ul bonded real, plătea mult mai rapid decât se intenționase. Vezi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pentru cifrele curente.
+* **Plafon de emisiune** — O propunere de guvernanță, adoptată cu susținerea integrală a stake-ului bonded și aplicată la înălțimea 2.122.074 (26 august 2026), a înlocuit programul original de emisiune în declin cu o sumă fixă per epocă, sub un plafon cumulativ dur. Programul original fusese calibrat pentru o rețea mult mai matură, complet bonded; raportat la stake-ul bonded real, plătea mult mai rapid decât se intenționase. Suma per epocă și plafonul au fost majorate prin propunerea de guvernanță 10, pe 19 octombrie 2026. Vezi [Tokenomics](/architecture/tokenomics#staking-reward-schedule) pentru cifrele curente.
 * **Consolidarea mesajelor administrative** — Un set de mesaje administrative privilegiate, controlate prin autoritate, își verifică acum semnatarul față de adresa proprie a modulului de guvernanță, în loc să aibă încredere într-o valoare purtată în mesajul însuși.
 * De asemenea, include corecția de fiabilitate la onboarding-ul nodurilor din v3.1.92, pentru orice nod care face upgrade direct la această versiune.
 
@@ -210,7 +259,7 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 
 **Focus lansare:** Lansarea mainnet-ului și evenimentul de generare a token-ului.
 
-* **Geneza mainnet-ului** — Mainnet-ul QoreChain (`qorechain-vladi`, ID chain EVM 9801) a fost lansat pe **29 iunie 2026**, cu evenimentul de generare a token-ului (TGE) la geneză.
+* **Geneza mainnet-ului** — Mainnet-ul QoreChain (`qorechain-vladi`, ID chain EVM 9801) este live din **7 iunie 2026**, cu evenimentul de generare a token-ului (TGE) la geneză.
 * **Distribuție a taxelor în cinci direcții** — Distribuția taxelor de protocol pe validatori, burn, trezorerie, stakeri și light node-uri (**37 / 30 / 20 / 10 / 3**), adăugând o cotă dedicată pentru light node-uri.
 * **AMM on-chain** — Modul nativ de automated-market-maker (`x/amm`) pentru pool-uri de lichiditate și swap-uri on-chain.
 * **Licențiere pe chain** — Modul de licențiere on-chain (`x/license`) pentru înregistrarea și gestionarea drepturilor de protocol.

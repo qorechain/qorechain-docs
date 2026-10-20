@@ -9,8 +9,10 @@ sidebar_position: 10
 
 Il modulo `x/fairblock` è il progetto di QoreChain per difendersi dagli attacchi MEV (Maximal Extractable Value) utilizzando la crittografia a soglia basata sull'identità. Combinato con un sistema di prioritizzazione delle transazioni a 5 corsie, è pensato per costituire un'architettura anti-MEV che protegge gli utenti da front-running, attacchi sandwich e altre forme di estrazione di valore basate sul mempool.
 
-:::note Stato attuale (ottobre 2026)
-FairBlock è **disabilitato sia sulla mainnet sia sulla testnet** (`enabled = false`), e le definizioni delle 5 corsie sono solo configurazione: le corsie di spazio nel blocco non sono applicate dal mempool né dal gestore delle proposte in produzione. Questa pagina descrive il progetto previsto.
+:::note Stato attuale (20 ottobre 2026: mainnet v3.2.3, testnet v3.2.4)
+FairBlock è **disabilitato sia sulla mainnet sia sulla testnet** (`enabled = false`), e le definizioni delle 5 corsie sono solo configurazione: le corsie di spazio nel blocco non sono applicate dal mempool né dal gestore delle proposte in produzione. Il nodo non serve alcun servizio di transazioni o di query FairBlock, e nessuna release fino alla mainnet v3.2.3 o alla testnet v3.2.4 cambia nulla di tutto ciò. Questa pagina descrive il progetto previsto.
+
+Ciò che le reti attive fanno invece per gli swap AMM è descritto in [AMM e liquidità on-chain](/architecture/amm#swap-rules): un tetto all'impatto sul prezzo e un controllo del prezzo all'apertura del blocco per gli swap che non impostano alcun limite di slippage. Sono regole di protocollo sullo swap, non crittografia delle transazioni.
 :::
 
 ## Il problema MEV
@@ -37,23 +39,23 @@ Questo approccio garantisce che nessuna singola parte possa decrittografare una 
 
 Ogni transazione crittografata contiene:
 
-| Campo            | Descrizione                                       |
-| ---------------- | ------------------------------------------------ |
-| `encrypted_data` | Payload della transazione crittografato con tIBE |
+| Campo            | Descrizione                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `encrypted_data` | Payload della transazione crittografato con tIBE                        |
 | `sender`         | Indirizzo del mittente della transazione (visibile per l'instradamento) |
-| `target_height`  | Altezza del blocco in cui deve avvenire la decrittografia |
-| `submitted_at`   | Timestamp della crittografia                      |
+| `target_height`  | Altezza del blocco in cui deve avvenire la decrittografia               |
+| `submitted_at`   | Timestamp della crittografia                                            |
 
 ### Quote di decrittografia
 
 I validatori contribuiscono con quote di decrittografia per le transazioni committate:
 
-| Campo        | Descrizione                           |
-| ------------ | ------------------------------------- |
-| `validator`  | Indirizzo del validatore che contribuisce |
-| `tx_id`      | ID della transazione crittografata    |
+| Campo        | Descrizione                                            |
+| ------------ | ------------------------------------------------------ |
+| `validator`  | Indirizzo del validatore che contribuisce              |
+| `tx_id`      | ID della transazione crittografata                     |
 | `share_data` | La quota della chiave di decrittografia del validatore |
-| `height`     | Altezza del blocco di invio della quota |
+| `height`     | Altezza del blocco di invio della quota                |
 
 ## Stato dell'implementazione
 
@@ -65,12 +67,12 @@ Su entrambe le reti in produzione (mainnet e testnet), il modulo FairBlock è un
 
 ### Configurazione di FairBlock
 
-| Parametro            | Predefinito  | Descrizione                                      |
-| -------------------- | ------------ | ------------------------------------------------ |
-| `enabled`            | `false`      | Interruttore principale per la crittografia tIBE |
-| `tibe_threshold`     | 5            | Numero di quote di decrittografia dei validatori richieste |
-| `decryption_delay`   | 3 blocchi    | Blocchi dopo l'inclusione prima dell'inizio della decrittografia |
-| `max_encrypted_size` | 65.536 byte  | Dimensione massima di un payload di transazione crittografato |
+| Parametro            | Predefinito | Descrizione                                                      |
+| -------------------- | ----------- | ---------------------------------------------------------------- |
+| `enabled`            | `false`     | Interruttore principale per la crittografia tIBE                 |
+| `tibe_threshold`     | 5           | Numero di quote di decrittografia dei validatori richieste       |
+| `decryption_delay`   | 3 blocchi   | Blocchi dopo l'inclusione prima dell'inizio della decrittografia |
+| `max_encrypted_size` | 65.536 byte | Dimensione massima di un payload di transazione crittografato    |
 
 ## Prioritizzazione delle transazioni a 5 corsie
 
@@ -78,13 +80,13 @@ QoreChain implementa un'architettura del mempool a 5 corsie che categorizza le t
 
 ### Configurazione delle corsie
 
-| Corsia      |     Priorità  | Spazio nel blocco | Tipo di transazione                              |
-| ----------- | ------------: | ----------------: | ------------------------------------------------ |
-| **PQC**     | 100 (massima) |               15% | Transazioni con firme ibride post-quantistiche   |
-| **MEV**     |            90 |               20% | Transazioni crittografate con tIBE di FairBlock  |
+| Corsia      |     Priorità  | Spazio nel blocco | Tipo di transazione                                          |
+| ----------- | ------------: | ----------------: | ------------------------------------------------------------ |
+| **PQC**     | 100 (massima) |               15% | Transazioni con firme ibride post-quantistiche               |
+| **MEV**     |            90 |               20% | Transazioni crittografate con tIBE di FairBlock              |
 | **AI**      |            80 |               15% | Transazioni valutate dall'AI e ottimizzate sulle commissioni |
-| **Default** |            50 |               40% | Transazioni standard                             |
-| **Free**    |   10 (minima) |               10% | Transazioni con gas astratto e sponsorizzate     |
+| **Default** |            50 |               40% | Transazioni standard                                         |
+| **Free**    |   10 (minima) |               10% | Transazioni con gas astratto e sponsorizzate                 |
 
 ### Descrizione delle corsie
 

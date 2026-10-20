@@ -80,7 +80,7 @@ Standardmäßig leitet QoreX Ihre `qor1…`-Adresse aus einer Wiederherstellungs
 3. Öffnen Sie Einstellungen → **Ihre Konten** und tippen Sie auf **Ethereum-Konto hinzufügen (Coin 60)**. Der erste Tipp fügt das Konto bei Index 0 hinzu — dieselbe `0x…`-Adresse, die MetaMask für diese Wörter anzeigt, und derselbe Schlüssel wie Ihre QoreChain-Adresse `qor1…` für dieses Konto. Ihre QOR liegen dort.
 4. Wechseln Sie zu diesem Konto (es ist mit *Ethereum · Coin 60* beschriftet). Sie können davon senden, staken und Rewards einfordern. Der erste Versand registriert außerdem den Post-Quanten-Schlüssel dieses Kontos, wofür eine geringe einmalige Gebühr anfällt.
 
-Ein Konto im Ethereum-Stil hat kein @Handle (Handles werden auf einem QoreChain-`qor1…`-Konto mit Coin-Typ 118 beansprucht), und Websites signieren damit über `signAndBroadcast` statt über `signDirect`. Jeder Tipp auf **Ethereum-Konto hinzufügen (Coin 60)** fügt den nächsten Index hinzu.
+Ein Konto im Ethereum-Stil hat kein @Handle (Handles werden auf einem QoreChain-`qor1…`-Konto mit Coin-Typ 118 beansprucht), und Websites signieren damit über `signAndBroadcast` statt über `signDirect`. Es ist außerdem die Art von Konto, für die das [EVM-Zugriffsfenster](/qorex/security-and-recovery#evm-window) wichtig ist: MetaMask signiert mit demselben Schlüssel, daher können MetaMask-Transaktionen dessen QOR bewegen, sobald ein Fenster geöffnet ist. Jeder Tipp auf **Ethereum-Konto hinzufügen (Coin 60)** fügt den nächsten Index hinzu.
 
 ## Orientierung {#find-your-way}
 
@@ -89,7 +89,7 @@ Ein Konto im Ethereum-Stil hat kein @Handle (Handles werden auf einem QoreChain-
 
 ## Optional: Ein @Handle beanspruchen
 
-Nachdem Ihre Wallet erstellt wurde, können Sie ein eindeutiges **@Handle** beanspruchen (zum Beispiel `@liviu`), damit andere Personen Ihnen anhand des Namens statt einer `qor1…`-Adresse senden können. Dies ist optional und kann übersprungen werden — Ihre Wallet ist nie davon abhängig. (In der Browser-Erweiterung bieten manche Versionen das Beanspruchen nicht an; falls das Popup es nicht anbietet, beanspruchen Sie das Handle in der mobilen App.) Ein Handle ist an eine bestimmte Adresse gebunden, nicht an die Wallet als Ganzes, was relevant wird, sobald Sie mehr als ein Konto haben — siehe [Mehrere Konten aus einer Phrase](/qorex/account-and-dashboard#accounts) und [@Handle](/qorex/account-and-dashboard#handle).
+Nachdem Ihre Wallet erstellt wurde, können Sie ein eindeutiges **@Handle** beanspruchen (zum Beispiel `@liviu`), damit andere Personen Ihnen anhand des Namens statt einer `qor1…`-Adresse senden können. Das Beanspruchen erfordert ein [angemeldetes Konto](/qorex/account-and-dashboard#sign-in) und erfolgt **in der mobilen App** (die Browser-Erweiterung verweist Sie dorthin). Es ist optional und kann übersprungen werden — Ihre Wallet ist nie davon abhängig. Ein Handle ist an eine bestimmte Adresse gebunden, nicht an die Wallet als Ganzes, was relevant wird, sobald Sie mehr als ein Konto haben — siehe [Mehrere Konten aus einer Phrase](/qorex/account-and-dashboard#accounts) und [@Handle](/qorex/account-and-dashboard#handle).
 
 ## Sprache
 

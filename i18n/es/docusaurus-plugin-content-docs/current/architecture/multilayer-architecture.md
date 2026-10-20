@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implementa una **arquitectura jerárquica de cadenas de 4 niveles** a través del módulo `x/multilayer`. La cadena principal actúa como la raíz de liquidación y de confianza, mientras que las capas subsidiarias (sidechains, paychains y rollups) gestionan cargas de trabajo especializadas con diferentes compromisos de rendimiento y seguridad.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en la mainnet (versión de cadena **v3.2.1**) y en la testnet, pero **todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes**. Todo lo que sigue describe el módulo tal como está construido; los parámetros son los valores vigentes.
+El módulo está desplegado en la mainnet (versión de cadena **v3.2.3**) y en la testnet (**v3.2.4**), pero **todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes** (comprobado el 20 de octubre de 2026: `GET /qorechain/multilayer/v1/layers` devuelve una lista vacía en ambas). Todo lo que sigue describe el módulo tal como está construido; los parámetros son los valores vigentes. En la mainnet el mensaje `MsgUpdateLayerStatus` está actualmente desactivado por el interruptor de circuito (consulta [Parámetros de la cadena](/appendix/chain-parameters#circuit-breaker)); en la testnet no lo está.
 :::
 
 ---
@@ -64,7 +64,7 @@ La cadena principal es la raíz de confianza para todo el ecosistema de QoreChai
 | Consenso            | Consenso de QoreChain (ver [Mecanismo de Consenso](/architecture/consensus-mechanism) para lo que está conectado hoy) |
 | Seguridad           | Protegida con PQC mediante firmas Dilithium-5                                  |
 | Función             | Capa de liquidación, almacenamiento de anclas de estado, motor de enrutamiento QCAI, raíz de confianza |
-| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,0 segundos en la testnet (medido en octubre de 2026) |
+| Tiempo de bloque    | Depende de la red: unos 3,2 segundos en la mainnet y unos 1,0 segundos en la testnet (medido el 20 de octubre de 2026) |
 
 Todas las capas subsidiarias anclan periódicamente sus raíces de estado a la cadena principal mediante Esquemas de Compromiso Jerárquico (HCS).
 
@@ -160,13 +160,19 @@ Las capas subsidiarias comprometen periódicamente su estado a la cadena princip
 | `transaction_count`       | Número de transacciones desde el último ancla        |
 | `compressed_state_proof`  | Prueba comprimida de transición de estado            |
 
-### Envío de Anclas
+### Ids de capa y de rollup {#id-grammar}
+
+Desde v3.2.2, un id de capa **nuevo** (y un id de rollup, que un rollup comparte con su capa) debe cumplir `^[a-z0-9][a-z0-9._-]{2,63}$`: de 3 a 64 caracteres, letras minúsculas, dígitos, `.`, `_` y `-`, empezando por una letra o un dígito. El keeper lo comprueba cuando se crea la capa, y una transacción que no lo cumple paga igualmente su comisión, así que valida los ids primero en el cliente. Los ids creados antes de v3.2.2 no se ven afectados.
+
+### Envío de Anclas {#anchor-submission}
 
 Las anclas se envían a la cadena principal mediante `MsgAnchorState`. El keeper valida el ancla según los siguientes pasos:
 
 1. **La capa existe y está activa** — El keeper verifica que la capa existe en el estado y actualmente tiene el estado `active`.
 2. **Intervalo mínimo de anclaje transcurrido** — El keeper comprueba que han transcurrido al menos `min_anchor_interval` bloques (por defecto: 100) desde el último ancla de esta capa.
 3. **Firma agregada PQC** — El keeper garantiza que la firma agregada PQC está presente y es válida para los datos del ancla. La firma se comprueba con la clave ML-DSA-87 registrada del **creador de la capa**; se rechaza un ancla cuando el creador no tiene ninguna clave registrada.
+
+Un **ancla de liquidación** escrita a través de `x/rdk` (un lote enviado con un `anchor_signature`, desde v3.2.2) es un caso especial: omite la comprobación del intervalo mínimo porque los lotes llegan en orden, puede anclar una capa que sigue en estado `proposed` (nada en la cadena promueve una capa que registró un rollup del RDK) y solo se acepta cuando quien la envía es el propio creador de la capa. La comprobación de la firma es la misma.
 
 ### Período de Impugnación
 
@@ -181,7 +187,24 @@ Las anclas son **legibles** a través del servicio de consulta de multilayer. Do
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — devuelve el último ancla de estado para una capa.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — devuelve el historial de anclas para una capa.
 
-Cada ancla lleva una firma Dilithium-5 del creador de la capa sobre el mensaje `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash`. Una versión más reciente de la cadena cambia el mensaje firmado, por lo que los clientes no deben codificarlo de forma fija. Una firma demuestra que la clave registrada del creador firmó esos bytes; si el ancla existe es una cuestión que concierne a la cadena, por lo que un verificador debe leer el ancla desde un nodo en el que confíe. Todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes. Este es el primitivo on-chain detrás de los [recibos de liquidación](/rollups/settlement-receipts) del Rollup Development Kit.
+Cada ancla lleva una firma Dilithium-5 (ML-DSA-87) del creador de la capa. El mensaje firmado depende de la altura a la que se envía el ancla:
+
+* **Desde v3.2.2 (altura 3,556,788 en la mainnet, altura 6,905,034 en la testnet): v2.** Cada campo de longitud variable lleva una longitud de 8 bytes big-endian, el id de la cadena forma parte del mensaje, y quedan cubiertos el número de transacciones y la prueba de estado comprimida:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **Antes de v3.2.2: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`, sin prefijos de longitud ni id de cadena, por lo que una firma v1 es válida en todas las cadenas). La cadena no acepta un ancla v1 a partir de la altura de v3.2.2.
+
+Como el mensaje puede cambiar entre versiones, un cliente debe elegir la forma a partir de la altura del plan aplicado (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` significa no aplicado) en lugar de codificarla de forma fija. Para un lote del RDK la correspondencia es: `layer_id` = el id de capa del rollup, `layer_height` = el índice del lote, `state_root` = la raíz de estado del lote, `transaction_count` = el número de transacciones del lote y un `compressed_state_proof` vacío. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` imprime estos bytes sin conexión. Una firma demuestra que la clave registrada del creador firmó esos bytes; si el ancla existe es una cuestión que concierne a la cadena, por lo que un verificador debe leer el ancla desde un nodo en el que confíe. Todavía no existe ninguna capa ni ningún ancla en ninguna de las dos redes. Este es el primitivo on-chain detrás de los [recibos de liquidación](/rollups/settlement-receipts) del Rollup Development Kit.
 
 ---
 
@@ -250,3 +273,5 @@ Las transiciones de estado son aplicadas por el keeper. Las transiciones inváli
 | `routing_enabled`              | bool   | `true`          | Habilitar el enrutamiento de transacciones basado en QCAI |
 | `routing_confidence_threshold` | string | `0.6`           | Confianza mínima para las decisiones de enrutamiento QCAI |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Habilitar la Agrupación de Comisiones Entre Capas global |
+
+Estos son los valores que devuelve `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) en la mainnet y en la testnet el 20 de octubre de 2026. Desde v3.2.2 el `MsgUpdateParams` del módulo puede enrutarse, de modo que una propuesta de gobernanza puede cambiarlos.

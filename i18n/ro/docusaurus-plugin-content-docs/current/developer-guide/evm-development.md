@@ -10,11 +10,13 @@ sidebar_position: 2
 QoreChain rulează un mediu de execuție complet compatibil cu EVM pe QoreChain EVM Engine, permițându-vă să implementați și să interacționați cu contracte inteligente Solidity folosind uneltele obișnuite. Modulul EVM expune o interfață JSON-RPC pe **portul 8545** (WebSocket pe **8546**) care suportă fluxurile de lucru standard de dezvoltare Ethereum.
 
 :::note
-Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activă din 29 iunie 2026, care rulează versiunea de nod **v3.2.1** (regulile de consens din upgrade-ul v3.2.0). Pentru testnet-ul **`qorechain-diana`** (v3.2.2), folosiți chain ID EVM **9800**. Exemplele de cod folosesc `http://localhost:8545` pentru un nod pe care îl rulați singuri; endpointul public de mainnet este `https://evm.qore.host`, iar cel de testnet este `https://evm-testnet.qore.host`.
+Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID EVM **9801**), activă din 7 iunie 2026, care rulează versiunea de nod **v3.2.3** (aplicată la înălțimea 3.662.051, pe 20 octombrie 2026). Pentru testnet-ul **`qorechain-diana`** (v3.2.4, aplicată la înălțimea 8.337.253, pe 19 octombrie 2026; încă neaplicată pe mainnet; propunerea de guvernanță 13 ar aplica-o la înălțimea 3.742.566), folosiți chain ID EVM **9800**. Exemplele de cod folosesc `http://localhost:8545` pentru un nod pe care îl rulați singuri; endpointul public de mainnet este `https://evm.qore.host`, iar cel de testnet este `https://evm-testnet.qore.host`.
 :::
 
 :::caution O tranzacție EVM necesită o cheie PQC înregistrată și o fereastră de autorizare deschisă
 Începând cu upgrade-ul v3.2.0 (înălțimea mainnet 2.981.742, înălțimea testnet 5.920.000), lane-ul EVM admite o tranzacție doar de la un cont care are **(1) o cheie post-cuantică ML-DSA-87 înregistrată** și **(2) o fereastră de autorizare EVM deschisă** care mai are loc pentru ea. Semnați cu unelte obișnuite (MetaMask, ethers.js, Hardhat, Foundry), dar fără o cheie înregistrată și o fereastră deschisă, `eth_sendRawTransaction` este respins (codespace `pqc`, codurile 26, 27 sau 28). Citirile, `eth_call` și estimarea de gas nu au nevoie de niciuna. Vedeți [Fereastra de autorizare EVM](#evm-window) mai jos și ghidul pas cu pas din [Prima ta tranzacție](/getting-started/first-transaction#evm-window).
+
+Încă două reguli se aplică pe mainnet începând cu v3.2.2: **tranzacțiile neprotejate (pre-EIP-155) sunt respinse**, atât de mempool-ul nodului, cât și la execuția blocului, așa că semnați cu un chain id (orice portofel și bibliotecă actuală o face); iar **conturile de modul nu pot fi revendicate prin EVM**.
 :::
 
 ---
@@ -30,7 +32,7 @@ Exemplele de mai jos vizează rețeaua mainnet **`qorechain-vladi`** (chain ID E
 | Chain ID (testnet)          | `9800` (`qorechain-diana`)                 |
 | Simbol monedă               | `QOR`                                      |
 
-Citirile specifice QoreChain sunt servite prin REST (`api.qore.host`); spațiul de nume JSON-RPC `qor_` descris [mai jos](#custom-qor_-namespace) **nu este activat** pe endpointurile publice și nici în configurația implicită a nodului.
+Citirile specifice QoreChain sunt servite prin REST (`api.qore.host`); spațiul de nume JSON-RPC `qor_` descris [mai jos](#custom-qor_-namespace) **nu este activat** pe endpointurile publice și nici în configurația implicită a nodului. Lista implicită `api` a unui nod inițializat de curând (v3.2.3 și ulterior) este `eth,net,web3`; `txpool` este opțional (opt-in), deoarece publică tranzacțiile în așteptare ale nodului.
 
 ---
 
@@ -200,7 +202,16 @@ O semnătură post-cuantică nu poate călători *împreună* cu o tranzacție E
 | `max-txs`   | 1 – 1.000          | Câte tranzacții EVM admite |
 | `max-value` | peste 0, în `uqor` | Ieșirea totală pe care o admite: valoarea transferată **plus** taxa maximă pe care ar putea-o plăti fiecare tranzacție (limita de gas × taxa maximă per gas), convertită în `uqor` și rotunjită în sus |
 
-Limita care se epuizează prima închide fereastra. Toate câmpurile sunt obligatorii; deschiderea unei ferestre o înlocuiește pe cea existentă; o tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare; implementările de contracte contează ca orice altă tranzacție. `blocks` este un număr de blocuri, nu o durată: 17.280 de blocuri înseamnă aproximativ 15 ore pe mainnet (circa 3,2 s per bloc) și aproximativ 5 ore pe testnet (circa 1,0 s per bloc).
+Limita care se epuizează prima închide fereastra. Toate cele trei limite sunt obligatorii; deschiderea unei ferestre o înlocuiește pe cea existentă; o tranzacție care este admisă și apoi eșuează își consumă totuși slotul și bugetul de valoare; implementările de contracte contează ca orice altă tranzacție. `blocks` este un număr de blocuri, nu o durată: 17.280 de blocuri înseamnă aproximativ 15 ore pe mainnet (circa 3,2 s per bloc) și aproximativ 5 ore pe testnet (circa 1,0 s per bloc).
+
+**Limita de valoare numără doar QOR nativ.** Un transfer de token, o aprobare sau orice alt apel de contract poartă valoarea zero, deci nu se socotește la `max-value` (se socotește doar taxa sa maximă). Pentru a le limita și pe acestea, restrângeți **domeniul de aplicare** (scope) al ferestrei (mainnet v3.2.3 și ulterior):
+
+| Opțiune de domeniu (flag CLI) | Câmp de mesaj | Ce admite fereastra |
+| ----------------------- | ------------- | ---------------------- |
+| `--native-only`         | `native_only` | Doar transferuri simple de QOR nativ: fără calldata, fără creare de contract, fără destinatar care poartă cod, fără autorizare EIP-7702 |
+| `--allowed-targets 0xA,0xB` | `allowed_targets` | Doar tranzacțiile al căror destinatar este una dintre adresele de 20 de octeți listate; crearea de contract este respinsă |
+
+O fereastră deschisă fără domeniu de aplicare se comportă exact ca înainte. O tranzacție în afara domeniului este respinsă cu codul 27 (mesajul spune că fereastra „does not admit this transaction"). `GET /qorechain/pqc/v1/evm_window/{address}` și `qorechaind query pqc evm-window` raportează `native_only` și `allowed_targets`, iar evenimentul `pqc_evm_window_opened` le poartă atunci când sunt setate.
 
 **Pași** (ghidul complet este în [Prima ta tranzacție](/getting-started/first-transaction#evm-window)):
 
@@ -211,6 +222,10 @@ Limita care se epuizează prima închide fereastra. Toate câmpurile sunt obliga
    qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
      --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    qorechaind tx pqc cosign w.json --from mykey --pqc-key mypqc --chain-id qorechain-vladi
+
+   # the same window narrowed to plain QOR transfers (mainnet v3.2.3 and later):
+   qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+     --chain-id qorechain-vladi --gas 400000 --fees 40000uqor --generate-only > w.json
    ```
 
 3. Verificați ce a rămas: `qorechaind query pqc evm-window <address>` sau `GET /qorechain/pqc/v1/evm_window/{address}` (răspunde `found: false` când nu există nicio fereastră).
@@ -218,13 +233,17 @@ Limita care se epuizează prima închide fereastra. Toate câmpurile sunt obliga
 
 Închideți o fereastră mai devreme cu `qorechaind tx pqc close-evm-window` (același tipar `--generate-only` și `cosign`), de exemplu dacă bănuiți că cheia clasică este expusă: tot ce mai admitea fereastra este respins începând cu blocul următor.
 
+### Delegări EIP-7702 {#eip-7702}
+
+O delegare EIP-7702 a contului vostru (o tranzacție de tip 4) intră în vigoare doar cu consimțământul post-cuantic propriu al contului, începând cu v3.2.2. Înregistrați mai întâi consimțământul cu mesajul din lane-ul Cosmos semnat hibrid `MsgAuthorizeEVMDelegation` (`qorechaind tx pqc authorize-evm-delegation <delegate_0x> <blocks>`); este de unică folosință, expiră după numărul de blocuri dat și este revocat de `close-evm-window`. Valoarea care părăsește un cont delegat este imputată ferestrei **acelui** cont, o tranzacție de tip 4 eșuată își păstrează autorizările pe care le-a aplicat, iar `qorechaind tx pqc clear-evm-delegation` elimină o delegare. O delegare respinsă răspunde cu codurile 60 până la 63. Citiți consimțământul cu `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+
 | Respingere (codespace `pqc`) | Semnificație |
 | ------------------------- | ------- |
 | code 26 | Nu există nicio fereastră deschisă pentru expeditor sau expeditorul nu are o cheie PQC înregistrată |
-| code 27 | Fereastra a expirat sau este epuizată (mesajul arată care limită) |
+| code 27 | Fereastra a expirat sau este epuizată (mesajul arată care limită) sau tranzacția este în afara domeniului ferestrei |
 | code 28 | Limite invalide la deschiderea unei ferestre sau nicio cheie înregistrată în acel moment |
 
-Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` și `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`).
+Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMsg`, `fetchEvmWindow({ rest, address })` și `classifyEvmWindowRejection(err)` (`"no-pqc-key" | "no-window" | "exhausted" | "invalid"`). SDK 0.9.0 adaugă opțiunile de domeniu (`nativeOnly`, `allowedTargets`) la `openEvmWindowMsg` și constructorii de consimțământ EIP-7702 (`authorizeEvmDelegationMsg`, `clearEvmDelegationMsg`, `fetchEvmDelegationConsent`); versiunile anterioare lui 0.9.0 construiesc doar fereastra fără domeniu, așa că folosiți `qorechaind` pentru restul (vedeți [ghidul SDK pentru EVM](/sdk/guides/evm#evm-window-scope)).
 
 ---
 
@@ -233,7 +252,7 @@ Cu SDK-ul TypeScript (0.8.2 și ulterior): `openEvmWindowMsg`, `closeEvmWindowMs
 QoreChain extinde JSON-RPC cu un spațiu de nume `qor_` pentru interogări specifice chain-ului:
 
 :::warning Încă nu este servit
-Niciun build de nod publicat nu servește încă spațiul de nume `qor_`: `rpc_modules` de pe endpointurile publice listează doar `eth`, `net`, `rpc`, `txpool` și `web3`, iar fiecare metodă de mai jos returnează `-32601` (metodă negăsită) pe mainnet, testnet și pe nodurile rulate de voi cu configurația implicită (`eth`, `net`, `web3`, `txpool`). Vedeți [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace) pentru stare și pentru alternativele REST (de exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC).
+Niciun build de nod publicat nu servește încă spațiul de nume `qor_`: `rpc_modules` de pe endpointurile publice listează doar `eth`, `net`, `rpc`, `txpool` și `web3`, iar fiecare metodă de mai jos returnează `-32601` (metodă negăsită) pe mainnet, testnet și pe nodurile rulate de voi cu configurația implicită (`eth`, `net`, `web3`). Vedeți [spațiul de nume `qor_`](/api-reference/json-rpc-qor_-namespace) pentru stare și pentru alternativele REST (de exemplu `GET /qorechain/pqc/v1/account/{address}` pentru starea cheii PQC).
 :::
 
 | Metodă                        | Descriere                                                            |

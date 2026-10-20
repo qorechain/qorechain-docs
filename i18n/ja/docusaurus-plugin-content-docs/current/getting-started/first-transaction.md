@@ -10,7 +10,7 @@ sidebar_position: 5
 このガイドでは、QORトークンの送信、トランザクションの照会、そしてQoreChainのネイティブ、EVM、SVMの各インターフェースとの対話について説明します。
 
 :::note
-以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)は2026年6月29日から稼働しています — メインネット上で取引する場合は、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
+以下のコマンドは**`qorechain-diana`**テストネット(EVMチェーンID **9800**)を使用しています。メインネット(**`qorechain-vladi`**、EVMチェーンID **9801**)は2026年6月7日から稼働しており、リリースv3.2.3を実行しています(テストネットはv3.2.4を実行しています) — メインネット上で取引する場合は、**メインネットへの接続**ページに記載のメインネットのチェーンIDとエンドポイントに置き換えてください。
 :::
 
 ## 残高の確認
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+v3.2.3以降、チェーンは登録時にオプションの**所有証明**も受け付け、脆弱な鍵、縮退した鍵、すでに使用済みの鍵を拒否します。所有証明を添付するには、`register-key-v2`で登録し、ローカルの鍵を指定します。
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ EVMレーンのそれ以外の点は変わりません。引き続きMetaMask、
 * 受け付けられた後に失敗したトランザクションも、スロットと金額の枠を消費します。
 * 新しいウィンドウを開くと、前のウィンドウは**置き換えられ**、消費量はゼロから再開します。
 * CLIは`max-value`を`uqor`または`qor`で受け付けます(`1000qor` = 1,000,000,000 uqor)。
+* 金額の制限はネイティブQORのみを対象とします。トークン送金、approve、その他のコントラクト呼び出しの金額はゼロです。これらも制限するには、ウィンドウのスコープを絞り込んでください(下記)。
 
 **ステップ1 — ポスト量子鍵を登録する**(一度だけ): 上記の[ポスト量子鍵を登録する](#register-pqc-key)を参照してください。
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**スコープの絞り込み(v3.2.3以降)。** 2つのオプションフラグにより、開いているウィンドウが受け付けるものを制限できます。`--native-only`はネイティブQORの単純送金のみを受け付けます(calldataなし、コントラクト作成なし、コードを持つ受取先なし)。`--allowed-targets 0xAAA...,0xBBB...`は、それらの受取先へのトランザクションのみを受け付けます(最大16件。この場合、コントラクト作成は拒否されます)。例:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 メインネットでは、ウィンドウを開くのに約180,000ガスを使用しました。[QoreX](/qorex/security-and-recovery#evm-window)では、同じ手順は**設定 → セキュリティ → EVMアクセスウィンドウ**(アプリ)、または**EVMアクセスウィンドウ**ボタン(拡張機能)です。ウィンドウを開くとアカウントのnonceが進むため、ウォレットでEVMトランザクションを準備する**前に**ウィンドウを開いてください。
@@ -162,7 +177,7 @@ curl -s https://api-testnet.qore.host/qorechain/pqc/v1/evm_window/qor1youraddres
 
 **ステップ4 — 通常どおりEVMレーンを使う。** MetaMaskやお使いのツールからいつもどおり送信します。各トランザクションは、ウィンドウからトランザクションスロットを1つと、(金額 + 最大手数料)を消費します。
 
-**ウィンドウを早めに閉じる。** クラシック鍵が漏えいした疑いがある場合は、ウィンドウを閉じてください。ウィンドウがまだ受け付けていたものは、次のブロックから拒否されます。
+**ウィンドウを早めに閉じる。** クラシック鍵が漏えいした疑いがある場合は、ウィンドウを閉じてください。ウィンドウがまだ受け付けていたものは、次のブロックから拒否されます。ウィンドウを閉じると、保留中のEIP-7702委任の同意も取り消されます(v3.2.2以降。アカウントのコードを変更するtype-4トランザクションは、ポスト量子の`authorize-evm-delegation`による同意があった後にのみ受け付けられます)。
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

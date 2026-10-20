@@ -10,7 +10,7 @@ sidebar_position: 5
 Esta página cubre dos temas relacionados: los **sistemas de pruebas ZK** (`snark` y `stark`) utilizados por los rollups liquidados con ZK, y el **flujo de retiro L2 → L1** que mueve fondos desde un rollup de vuelta a QoreChain una vez que un lote se finaliza.
 
 :::caution Capacidad en etapa temprana
-Todavía no se ha creado ningún rollup en ninguna de las dos redes, por lo que ni la verificación de pruebas ni el flujo de retiro descritos aquí se han ejercitado en un rollup en vivo. La verificación SNARK existe, pero un rollup creado mediante `create-rollup` todavía no puede finalizar un lote ZK, y la verificación STARK es experimental. Valida en la testnet **`qorechain-diana`** y no asumas garantías reforzadas para producción en mainnet.
+Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el 20 de octubre de 2026), por lo que ni la verificación de pruebas ni el flujo de retiro descritos aquí se han ejercitado en un rollup en vivo. Los retiros solo pueden tener éxito en mainnet desde v3.2.3 (altura 3,662,051, 20 de octubre de 2026), cuando entró en servicio el libro mayor de escrow por rollup (consulta [De dónde salen los fondos](#where-the-funds-come-from)); antes de eso, todos los retiros fallaban. La verificación SNARK existe, pero un rollup creado mediante `create-rollup` todavía no puede finalizar un lote ZK, y la verificación STARK es experimental. Valida en la testnet **`qorechain-diana`** y no asumas garantías reforzadas para producción en mainnet.
 :::
 
 ---
@@ -52,7 +52,7 @@ Para saber cómo se envían y finalizan los lotes —incluyendo `submit-batch` y
 
 ## Ejecutar un retiro: `execute-withdrawal`
 
-El comando `execute-withdrawal` finaliza un retiro L2 → L1 contra la raíz de retiros de un lote finalizado. Demuestra que una hoja de retiro está comprometida en esa raíz y paga al destinatario desde el escrow del módulo rdk. La acción es **sin permisos**: cualquiera puede enviar una prueba válida. Como toda transacción de la lane nativa, necesita la cofirma híbrida post-cuántica, así que constrúyela con `--generate-only` y cofírmala (consulta [Desplegar un Rollup](/rollups/deploying-a-rollup)). Los retiros todavía no se han ejercitado en un rollup en vivo; trata el flujo como no probado.
+El comando `execute-withdrawal` finaliza un retiro L2 → L1 contra la raíz de retiros de un lote finalizado. Demuestra que una hoja de retiro está comprometida en esa raíz y paga al destinatario desde el escrow del módulo rdk. La acción es **sin permisos**: cualquiera puede enviar una prueba válida. Como toda transacción de la lane nativa, necesita la cofirma híbrida post-cuántica, así que constrúyela con `--generate-only` y cofírmala (consulta [Desplegar un Rollup](/rollups/deploying-a-rollup)). Los retiros todavía no se han ejercitado en un rollup en vivo; trata el flujo como no probado. Comprueba esto antes de pagar una comisión, porque de lo contrario la cadena rechaza la transacción: el denom debe ser exactamente `uqor`, la cantidad debe ser positiva, la prueba tiene como máximo 64 niveles y cada hermano mide exactamente 32 bytes, el remitente y el destinatario son direcciones `qor1…` válidas, el lote está finalizado y comprometió un `withdrawals_root`, el rollup no está detenido, y esa hoja de retiro no se ha pagado antes.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -96,7 +96,7 @@ Los helpers genéricos `binaryMerkleRoot` / `binaryMerkleProof` del RDK usan por
 
 ### De dónde salen los fondos {#where-the-funds-come-from}
 
-Un retiro se paga desde el **stake en escrow propio del rollup** (el stake menos la quema de creación). El módulo mantiene un libro mayor por rollup, de modo que un retiro demostrado para un rollup no pueda pagarse con el stake de otro rollup. El módulo no tiene ningún mensaje de depósito L1 → L2, por lo que esto no es un bridge de fondos de usuarios.
+Un retiro se paga desde el **stake en escrow propio del rollup** (el stake menos la quema de creación del 1%). El escrow de todos los rollups está en un único saldo agrupado del módulo, y desde **v3.2.3** un **libro mayor de escrow** por rollup es la cuenta de lo que tiene cada rollup: `create-rollup` lo acredita con el escrow que conserva el rollup, un retiro o una recompensa de prueba de fraude se paga desde él y se debita de él, y un retiro mayor que lo que el rollup aún conserva se rechaza con un error de escrow insuficiente. `stop-rollup` reembolsa solo lo que queda y deja el libro mayor a cero, y un rollup detenido no paga más retiros. Por tanto, un retiro demostrado para un rollup no puede pagarse con el stake de otro rollup. Las consultas del rollup incluyen `escrow_balance` (uqor que aún se conservan para ese rollup). El módulo no tiene ningún mensaje de depósito L1 → L2, por lo que esto no es un bridge de fondos de usuarios.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Liquidar un lote.** El operador del rollup envía un lote de liquidación con `submit-batch`. El lote puede comprometer una raíz de retiros sobre sus mensajes salientes L2 → L1.
-2. **Finalizar.** El lote se finaliza según el modo de liquidación del rollup: con la verificación de una prueba válida para `zk`, o tras la ventana de impugnación para `optimistic` (durante la cual `challenge-batch` puede disputarlo).
+2. **Finalizar.** El lote se finaliza según el modo de liquidación del rollup: con la verificación de una prueba válida para `zk`, o tras la ventana de impugnación para `optimistic` (durante la cual `challenge-batch` puede disputarlo). En mainnet la ventana optimista es de 100,800 bloques por defecto; solo en la testnet (v3.2.4) se mide en segundos de tiempo de bloque para los lotes enviados a partir de la altura 8,337,253.
 3. **Demostrar y ejecutar.** Una vez finalizado, cualquiera envía `execute-withdrawal` con la prueba de inclusión de Merkle (`--proof`) para la hoja de retiro específica. El módulo verifica la inclusión contra la raíz de retiros del lote finalizado y paga al destinatario desde el escrow.
 
 Como el paso 3 es sin permisos y basado en pruebas, un retiro no depende de la cooperación del operador del rollup una vez que el lote que lo transporta está finalizado.

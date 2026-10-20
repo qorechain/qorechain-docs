@@ -23,7 +23,7 @@ Le module de pont est déployé sur le mainnet et le testnet, mais **aucune rout
 | Opérations de pont | 0 | 0 |
 | Canaux / clients IBC | 0 / 0 | 0 / 0 |
 
-(Vérifié en octobre 2026. Lisez les valeurs en direct avec `qorechaind query bridge chains` et `qorechaind query bridge validators`.)
+(Vérifié le 20 octobre 2026 sur le mainnet v3.2.3 et le testnet v3.2.4. Lisez les valeurs en direct avec `qorechaind query bridge chains` et `qorechaind query bridge validators`, ou via REST à `/qorechain/bridge/v1/chains` et `/qorechain/bridge/v1/validators`.) La configuration du module est identique sur les deux réseaux : `min_validators` 10, `attestation_threshold` 7, `challenge_period_secs` 86,400 et `large_transfer_threshold` 100 000 QOR (`100000000000` uqor). La pile IBC que le module utiliserait est ibc-go v10.7 (depuis v3.2.2), mais aucun client ni canal n'a été créé.
 
 ## Vue d'ensemble des connexions
 
@@ -193,6 +193,8 @@ Toutes les opérations de pont QCB requièrent un **seuil de 7-sur-10** signatur
 * Une liste des chaînes prises en charge
 * Un score de réputation (maintenu par `x/reputation`)
 
+Depuis v3.2.2, le module valide de manière cohérente les montants nuls et sa configuration sur chaque chemin. **Testnet uniquement (v3.2.4, pas sur le mainnet) :** l'enregistrement d'un validateur de pont exige aussi une preuve de possession de la clé Dilithium-5 (le même format `proof_of_possession` que l'enregistrement de clé PQC, voir [Sécurité post-quantique](/architecture/post-quantum-security#proof-of-possession)) et refuse une clé qu'un autre validateur de pont utilise déjà. Le mainnet v3.2.3 n'a pas cette vérification, et aucun validateur de pont n'est enregistré sur l'un ou l'autre réseau.
+
 ### Disjoncteurs
 
 Chaque chaîne connectée dispose de protections par disjoncteur indépendantes :
@@ -234,6 +236,8 @@ Le module de pont s'intègre au sous-système d'IA pour l'optimisation des route
 * **`tx bridge set-verifier-bootstrap`** — sélectionner le vérificateur actif pour une chaîne et installer sa racine de confiance (`MsgSetVerifierBootstrap`).
 
 Cela permet à un opérateur de mettre en ligne le pont d'une chaîne connectée — ou de faire tourner son vérificateur — directement, l'autorisation étant vérifiée par rapport à la clé d'administration du pont. À partir de la version de chaîne **v3.2.0**, le module de pont dispose également de son propre compte de module (les versions antérieures n'en avaient pas, de sorte que le premier dépôt sur une route activée aurait échoué).
+
+Les licences telles que `qcb_bridge` sont accordées par le compte d'autorité des licences. Depuis v3.2.3 (mainnet), la gouvernance peut remplacer ce compte par une proposition `MsgUpdateAuthority` ; le module lui-même est décrit dans [Licences de chaîne](/architecture/chain-licensing).
 
 ### Validation des réseaux connectés
 

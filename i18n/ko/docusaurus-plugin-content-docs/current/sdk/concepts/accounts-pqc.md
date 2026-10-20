@@ -135,6 +135,12 @@ pqcSeed = shake256("qorechain:pqc:v1|" + cosmosAddress + "|" + mnemonic, 32)
 `derivePqcCanonical(account, mnemonic)`은 먼저 `account`를 소문자 `qor1…`
 형태(`canonicalAccount`)로 정규화하므로, 대문자 bech32나 같은 계정의 `0x`
 형태도 동일한 키를 생성합니다.
+모든 언어에 같은 함수가 있으며(Python `derive_pqc_canonical`, Go
+`authenticator.DerivePQCCanonical`, Rust `try_derive_pqc_canonical`, Java
+`Authenticator.derivePqcCanonical`; [양자 안전 가이드의
+표](/sdk/guides/quantum-safe#canonical-derivation) 참고), 같은
+`{ address, mnemonic }`은 모든 언어에서 같은 키를 생성합니다(2026년 10월에
+TypeScript, Python, Go, Rust에 대해 확인).
 
 ### eth 키로 Native 레인에서 전송하기
 
@@ -153,8 +159,8 @@ secp256k1 서명이며, `SignerInfo`의 공개키는 타입 URL
 넘기려면 바이트로 디코딩하세요. 둘째, 네트워크가 어떤
 [서명 바이트 형식](#sign-bytes-versions)을 검증하는지 서명자가 물어볼 수
 있도록 `rest`를 서명자에 전달하세요(`qorechain-vladi`와 `qorechain-diana`에서는
-추측하는 대신 예외를 발생시킵니다). SDK 0.8.1 이상과
-`npm i @cosmjs/stargate`가 필요합니다:
+추측하는 대신 예외를 발생시킵니다). SDK 0.8.1 이상(소유 증명 헬퍼는
+0.9.0)과 `npm i @cosmjs/stargate`가 필요합니다:
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -163,6 +169,7 @@ import {
   deriveUnifiedAccount,
   EthNativeSigner,
   buildRegisterPqcKeyMsg,
+  signProofOfPossession,
   toBase,
 } from "@qorechain/sdk";
 
@@ -192,6 +199,14 @@ await classical.signAndBroadcast(transport, {
     buildRegisterPqcKeyMsg(account.cosmos, {
       pqcKeypair: account.pqc,
       ecdsaPubkey: Uint8Array.from(Buffer.from(account.publicKey.slice(2), "hex")),
+      // Optional since v3.2.3 (SDK 0.9.0+): the new key signs a proof that its owner
+      // holds the secret. Leave it out on a network that has not applied v3.2.3,
+      // because an older node refuses the whole transaction when the field is set.
+      proofOfPossession: signProofOfPossession({
+        chainId: CHAIN_ID,
+        account: account.cosmos,
+        keypair: account.pqc,
+      }),
     }),
   ],
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" }, // the 2,592-byte key needs about 600k gas
@@ -286,7 +301,7 @@ const ok = pqcVerify(keypair.publicKey, message, signature);
 전달됩니다.
 
 :::caution Native 경로에서는 하이브리드 서명이 필수입니다
-체인 버전 **v3.2.0**(두 네트워크가 실행 중인 버전) 기준으로, 네트워크
+체인 버전 **v3.2.0**(메인넷은 v3.2.3, 테스트넷은 v3.2.4 실행 중) 이후, 네트워크
 기본값은 `hybrid_signature_mode = required`이며
 `allow_classical_fallback = false`입니다. `buildHybridTx` /
 `signAndBroadcastHybrid`(`rest` 전달)를 통한 하이브리드 서명 —
@@ -307,7 +322,34 @@ Native 경로 트랜잭션에서 **필수**이며, 클래식 서명만 사용한
 코인 타입 118 계정을 위한 엔드투엔드 빌더는 `signAndBroadcastHybrid`
 (브로드캐스트 없이 빌드만 하려면 `buildHybridTx`)입니다. 클래식 서명자,
 계정의 ML-DSA-87 키쌍, 계정 번호와 시퀀스, 그리고 `rest`가 필요합니다.
-SDK 0.8.3 이상, `npm i @cosmjs/stargate`:
+TypeScript의 코인 타입 118 계정에서 가장 짧은 경로는 하이브리드
+`TxClient`(SDK 0.9.0)입니다. 연결할 때 키쌍을 전달하면 모든 트랜잭션이
+하이브리드로 서명되며, `fee: "auto"`는 하이브리드 트랜잭션 자체를
+시뮬레이션합니다(등록만은 클래식으로 유지됩니다):
+
+```ts
+import {
+  createClient,
+  deriveNativeAccount,
+  directSignerFromPrivateKey,
+  derivePqcCanonical,
+  toBase,
+} from "@qorechain/sdk";
+
+const client = createClient({
+  network: "mainnet",
+  endpoints: { rest: "https://api.qore.host", rpc: "https://rpc.qore.host", evmRpc: "https://evm.qore.host" },
+});
+const account = await deriveNativeAccount(mnemonic);                  // coin type 118
+const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
+const pqcKeypair = derivePqcCanonical(account.address, mnemonic);     // the key registered on-chain
+
+const tx = await client.connectTx(signer, { pqcKeypair });            // signs every transaction hybrid
+await tx.bankSend("qor1recipient…", [{ denom: "uqor", amount: toBase("1.5") }]);
+```
+
+수수료, 계정 번호, 시퀀스를 직접 제어하려면 `signAndBroadcastHybrid`를
+사용하세요(SDK 0.8.1 이상, `npm i @cosmjs/stargate`):
 
 ```ts
 import { StargateClient } from "@cosmjs/stargate";
@@ -360,7 +402,13 @@ const result = await signAndBroadcastHybrid({
 합니다. SDK의 `ensurePqcRegistered` / `buildRegisterPqcKeyMsg`,
 `qorechaind tx pqc register-key`, 또는 QoreChain 지갑이 이를 수행합니다.
 `includePqcPublicKey: true`는 확장에 키를 포함시킬 뿐이며 키를 등록하지
-**않습니다**. 체인은 첫 사용 시 키를 자동으로 등록하지 않습니다.
+**않습니다**. 체인은 첫 사용 시 키를 자동으로 등록하지 않습니다. v3.2.3부터
+체인은 약하거나 퇴화한 키, 재사용된 키를 거부하며 선택적 소유 증명을
+받아들입니다([키 무결성 규칙](/architecture/post-quantum-security#key-integrity)
+참고). SDK 0.9.0에서 `ensurePqcRegistered`는 네트워크가 v3.2.3을 적용한 뒤에는
+증명을 자동으로 첨부하며, 직접 구성하는 등록을 위해
+`signProofOfPossession` / `verifyProofOfPossession`이 내보내집니다. 0.8.x
+빌더는 증명 없이 등록하며, 이는 허용됩니다.
 
 ### 어떤 서명 바이트 형식인가? {#sign-bytes-versions}
 

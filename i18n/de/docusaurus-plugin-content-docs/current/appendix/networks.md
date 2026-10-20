@@ -16,15 +16,15 @@ Eine konsolidierte Referenz für die QoreChain-Netzwerke — Chain-Identifikator
 | **Status** | Live | Aktives Testnet |
 | **Cosmos-Chain-ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM-Chain-ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
-| **Live seit** | 29. Juni 2026, 17:03 UTC (Genesis-Block) | 1. Juli 2026 (seitdem durchgehend; kein Reset) |
-| **Chain-Version** | v3.2.1 (Konsensregeln von v3.2.0) | v3.2.2 |
+| **Live seit** | 7. Juni 2026 | 1. Juli 2026 (seitdem durchgehend; kein Reset) |
+| **Chain-Version** | v3.2.3 (angewendet bei Höhe 3.662.051, 20. Oktober 2026) | v3.2.4 (angewendet bei Höhe 8.337.253, 19. Oktober 2026; nur Testnet) |
 | **Blockzeit (gemessener Durchschnitt)** | etwa 3,2 s | etwa 1,0 s |
 | **Release-Manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimaler Gaspreis** | `0.1uqor` | `0.1uqor` |
 | **Verbindungsanleitung** | [Verbindung zum Mainnet](/getting-started/connecting-to-mainnet) | [Verbindung zum Testnet](/getting-started/connecting-to-testnet) |
 
-Beide Manifeste sind die maßgebliche Quelle für das Release, das ein neuer Node ausführen sollte. Das Testnet-Manifest (v3.2.2) enthält eine Upgrade-Höhe, weil das Testnet koordinierte Upgrades über die Governance erhält, während v3.2.1 des Mainnets ein rollierendes, Node-lokales Release auf Basis der Konsensregeln von v3.2.0 ist.
+Beide Manifeste sind die maßgebliche Quelle für das Release, das ein neuer Node ausführen sollte. Beide Netzwerke erhalten koordinierte Upgrades über die Governance, daher enthält jedes Manifest die `upgradeHeight` seines aktuellen Releases und ein `minCompatible`, das diesem Release entspricht (Mainnet 3.2.3, Testnet 3.2.4). v3.2.4 existiert bisher nur im Testnet; der Mainnet-Governance-Vorschlag 13 würde es bei Blockhöhe 3.742.566 anwenden (Abstimmung bis 21. Oktober 2026, 21:18 UTC).
 
 ## Öffentliche Endpunkte {#public-endpoints}
 

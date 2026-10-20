@@ -10,7 +10,7 @@ sidebar_position: 5
 Questa pagina copre due argomenti correlati: i **sistemi di proof ZK** (`snark` e `stark`) usati dai rollup con settlement ZK, e il **flusso di prelievo L2 → L1** che sposta i fondi da un rollup verso QoreChain una volta che un batch è finalizzato.
 
 :::caution Funzionalità in fase iniziale
-Nessun rollup è ancora stato creato su nessuna delle due reti, quindi né la verifica delle proof né il flusso di prelievo qui descritti sono stati messi alla prova su un rollup live. La verifica SNARK esiste, ma un rollup creato tramite `create-rollup` non può ancora finalizzare un batch ZK, e la verifica STARK è sperimentale. Valida sulla testnet **`qorechain-diana`** e non dare per scontate garanzie pronte per la produzione sulla mainnet.
+Nessun rollup è ancora stato creato su nessuna delle due reti (verificato il 20 ottobre 2026), quindi né la verifica delle proof né il flusso di prelievo qui descritti sono stati messi alla prova su un rollup live. Sulla mainnet i prelievi possono andare a buon fine solo dalla v3.2.3 (altezza 3,662,051, 20 ottobre 2026), quando è entrato in funzione il registro di escrow per rollup (vedi [Da dove provengono i fondi](#where-the-funds-come-from)); prima di allora ogni prelievo falliva. La verifica SNARK esiste, ma un rollup creato tramite `create-rollup` non può ancora finalizzare un batch ZK, e la verifica STARK è sperimentale. Valida sulla testnet **`qorechain-diana`** e non dare per scontate garanzie pronte per la produzione sulla mainnet.
 :::
 
 ---
@@ -52,7 +52,7 @@ Per come i batch vengono sottomessi e finalizzati — incluso `submit-batch` e i
 
 ## Eseguire un prelievo: `execute-withdrawal`
 
-Il comando `execute-withdrawal` finalizza un prelievo L2 → L1 contro la root dei prelievi di un batch finalizzato. Dimostra che una foglia di prelievo è sottoposta a commit in quella root e paga il destinatario dall'escrow del modulo rdk. L'azione è **permissionless** — chiunque può sottomettere una proof valida. Come ogni transazione della lane nativa, richiede la co-firma post-quantistica ibrida, quindi costruiscila con `--generate-only` e co-firmala (vedi [Distribuire un Rollup](/rollups/deploying-a-rollup)). I prelievi non sono ancora stati messi alla prova su un rollup live; considera il flusso come non testato.
+Il comando `execute-withdrawal` finalizza un prelievo L2 → L1 contro la root dei prelievi di un batch finalizzato. Dimostra che una foglia di prelievo è sottoposta a commit in quella root e paga il destinatario dall'escrow del modulo rdk. L'azione è **permissionless** — chiunque può sottomettere una proof valida. Come ogni transazione della lane nativa, richiede la co-firma post-quantistica ibrida, quindi costruiscila con `--generate-only` e co-firmala (vedi [Distribuire un Rollup](/rollups/deploying-a-rollup)). I prelievi non sono ancora stati messi alla prova su un rollup live; considera il flusso come non testato. Controlla questi punti prima di pagare una fee, perché altrimenti la chain rifiuta la transazione: la denom deve essere esattamente `uqor`, l'importo deve essere positivo, la proof ha al massimo 64 livelli e ogni sibling è esattamente di 32 byte, il submitter e il destinatario sono indirizzi `qor1…` validi, il batch è finalizzato e ha fatto il commit di un `withdrawals_root`, il rollup non è fermato, e quella foglia di prelievo non è già stata pagata in precedenza.
 
 ```bash
 qorechaind tx rdk execute-withdrawal \
@@ -96,7 +96,7 @@ Gli helper generici `binaryMerkleRoot` / `binaryMerkleProof` dell'RDK usano per 
 
 ### Da dove provengono i fondi {#where-the-funds-come-from}
 
-Un prelievo viene pagato dallo **stake in escrow del rollup stesso** (lo stake meno il burn di creazione). Il modulo mantiene un registro per rollup, così un prelievo dimostrato per un rollup non può essere pagato dallo stake di un altro rollup. Nel modulo non esiste alcun messaggio di deposito L1 → L2, quindi questo non è un bridge di fondi degli utenti.
+Un prelievo viene pagato dallo **stake in escrow del rollup stesso** (lo stake meno il burn di creazione dell'1%). L'escrow di tutti i rollup si trova in un unico saldo aggregato del modulo e, dalla **v3.2.3**, un **registro di escrow** per rollup è la contabilità di ciò che ciascun rollup detiene: `create-rollup` lo accredita con l'escrow che il rollup conserva, un prelievo o una ricompensa per fraud proof viene pagato da esso e addebitato su di esso, e un prelievo superiore a quanto il rollup detiene ancora viene rifiutato con un errore di escrow insufficiente. `stop-rollup` rimborsa solo ciò che resta e azzera il registro, e un rollup fermato non paga più prelievi. Un prelievo dimostrato per un rollup non può quindi essere pagato dallo stake di un altro rollup. Le query dei rollup riportano `escrow_balance` (uqor ancora detenuti per quel rollup). Nel modulo non esiste alcun messaggio di deposito L1 → L2, quindi questo non è un bridge di fondi degli utenti.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 ```
 
 1. **Effettua il settlement di un batch.** L'operatore del rollup sottomette un batch di settlement con `submit-batch`. Il batch può fare il commit di una root dei prelievi sui suoi messaggi L2 → L1 in uscita.
-2. **Finalizza.** Il batch si finalizza in base alla modalità di settlement del rollup — alla verifica di una proof valida per `zk`, oppure dopo la finestra di contestazione per `optimistic` (durante la quale `challenge-batch` può contestarlo).
+2. **Finalizza.** Il batch si finalizza in base alla modalità di settlement del rollup — alla verifica di una proof valida per `zk`, oppure dopo la finestra di contestazione per `optimistic` (durante la quale `challenge-batch` può contestarlo). Sulla mainnet la finestra optimistic è per impostazione predefinita di 100,800 blocchi; solo sulla testnet (v3.2.4) è misurata in secondi di tempo di blocco per i batch sottomessi dall'altezza 8,337,253 in poi.
 3. **Dimostra ed esegui.** Una volta finalizzato, chiunque sottomette `execute-withdrawal` con la Merkle inclusion proof (`--proof`) per la specifica foglia di prelievo. Il modulo verifica l'inclusione rispetto alla root dei prelievi del batch finalizzato e paga il destinatario dall'escrow.
 
 Poiché il passaggio 3 è permissionless e basato su proof, un prelievo non dipende dalla cooperazione dell'operatore del rollup una volta che il batch che lo trasporta è finalizzato.

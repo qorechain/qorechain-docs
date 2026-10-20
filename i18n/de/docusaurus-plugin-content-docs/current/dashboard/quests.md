@@ -13,7 +13,7 @@ Melde dich an, damit dein Fortschritt erfasst wird – siehe [Anmelden](/dashboa
 
 ## Quests durchsuchen
 
-Die Quests-Seite öffnet sich mit einer kurzen Übersicht darüber, wie viele Quests verfügbar sind, wie viele du in Bearbeitung hast und wie viele du abgeschlossen hast. **Kategorie-Tabs** – etwa Onboarding, Trading, Social, Community, Learning, Daily und Weekly – ermöglichen es dir, die Liste zu filtern.
+Die Quests-Seite hat einen Tab **Eigenstate 1** und einen Tab **Eigenstate 2**; solange keine Eigenstate-2-Quests aktiv sind, weist dessen Tab darauf hin, dass neue Herausforderungen bald folgen. Die Seite öffnet sich mit einer kurzen Übersicht darüber, wie viele Quests verfügbar sind, wie viele du in Bearbeitung hast und wie viele du abgeschlossen hast. **Kategorie-Tabs** – etwa Onboarding, Trading, Social, Community, Learning, Daily und Weekly – ermöglichen es dir, die Liste zu filtern.
 
 Jede Quest erscheint als Karte und zeigt:
 
@@ -24,6 +24,8 @@ Jede Quest erscheint als Karte und zeigt:
 - Einen **Status**: abgeschlossen, in Bearbeitung, gestartet oder gesperrt.
 
 Eine gesperrte Quest nennt die Quest, die du zuerst abschließen musst, bevor sie freigeschaltet wird.
+
+**Social-Quests.** Quests, die X oder Telegram betreffen, zählen erst, wenn du diese Konten in deinem **Profil** verbunden hast (die Seite zeigt *Connect Social Accounts* mit einem Link **Go to Profile**, bis du das getan hast) und die Verbindung verifiziert ist.
 
 ## Eine Quest abschließen
 

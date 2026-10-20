@@ -7,7 +7,7 @@ sidebar_position: 1
 
 # Monedero QoreX
 
-**QoreX** es el monedero oficial **no custodial** de **QoreChain**, la Layer 1 resistente a la computación cuántica (mainnet `qorechain-vladi`). Tus claves privadas se generan y se almacenan **únicamente en tu dispositivo**: QoreChain Association nunca tiene acceso a tus fondos y las aplicaciones **no contienen analíticas, rastreo ni publicidad**. Cada transferencia de QOR en el carril Native lleva una **firma híbrida poscuántica** (ML-DSA-87, NIST FIPS-204, combinada con secp256k1), de modo que tus fondos quedan protegidos frente a atacantes clásicos y cuánticos.
+**QoreX** es el monedero oficial **no custodial** de **QoreChain**, la Layer 1 resistente a la computación cuántica (mainnet `qorechain-vladi`). Tus claves privadas se generan y se almacenan **únicamente en tu dispositivo**: QoreChain Association nunca tiene acceso a tus fondos y las aplicaciones **no tienen analíticas, ni informes de fallos, ni ningún SDK de rastreo** — las claves, la frase de recuperación, la bóveda y las aprobaciones nunca salen de tu dispositivo (consulta [Qué envía QoreX por la red](#data-and-privacy)). Cada transferencia de QOR en el carril Native lleva una **firma híbrida poscuántica** (ML-DSA-87, NIST FIPS-204, combinada con secp256k1), de modo que tus fondos quedan protegidos frente a atacantes clásicos y cuánticos.
 
 QoreX se compone de dos partes que funcionan juntas:
 
@@ -28,7 +28,8 @@ QoreX es no custodial: QoreChain Association no puede recuperar un monedero perd
 | Cuenta de estilo Ethereum (coin 60), añadida a mano | ✅ | ✅ |
 | Enviar y recibir QOR (poscuántico) | ✅ | ✅ (Enviar; Recibir con QR) |
 | Recibir en cualquier red compatible | ✅ | ✅ |
-| Pagar / reclamar un @handle | ✅ | ✅ pagar; reclamar se ofrece en cuentas ordinarias de QoreChain en algunas versiones de la extensión — si no, reclámalo en la aplicación |
+| Pagar a un @handle | ✅ | ✅ |
+| Reclamar un @handle | ✅ (requiere una cuenta con sesión iniciada) | — (la extensión te remite a la aplicación) |
 | Staking: delegar, deshacer delegación, mover el stake, reclamar, reclamar y volver a hacer staking | ✅ | ✅ |
 | Redes externas (Ethereum, BNB Chain, Polygon, Arbitrum, Base, OP Mainnet, Avalanche, Solana, Cosmos Hub, Osmosis, Celestia + tokens) | ✅ | ✅ (envío desde la ventana emergente) |
 | Añadir un token por contrato (redes EVM) | ✅ | ✅ |
@@ -46,7 +47,7 @@ QoreX es no custodial: QoreChain Association no puede recuperar un monedero perd
 
 - **Resistente a la computación cuántica por defecto** — las transferencias de QOR en el carril Native llevan siempre una firma híbrida ML-DSA-87 + secp256k1. Todo lo que sea clásico (cadenas externas) se indica con claridad, nunca en silencio.
 - **Verdaderamente no custodial** — las claves se generan en el dispositivo y residen en una bóveda respaldada por hardware (Secure Enclave en iOS, StrongBox en Android) o en una bóveda cifrada (extensión). Nunca salen de tu dispositivo.
-- **Sin analíticas, sin rastreo, sin publicidad** en ninguna aplicación de QoreX. Los extras opcionales usan un servidor solo cuando tú los activas: el inicio de sesión de cuenta (consulta [Cuenta y Dashboard](/qorex/account-and-dashboard)) y las notificaciones push, que registran tu dispositivo y tus direcciones *públicas* para que QoreX pueda avisarte cuando llegue QOR. El monedero nunca depende de ninguno de los dos.
+- **Sin analíticas, sin informes de fallos y sin ningún SDK de rastreo** en ninguna aplicación de QoreX. Unos pocos extras opcionales usan un servidor solo cuando tú los activas: el inicio de sesión de cuenta (consulta [Cuenta y Dashboard](/qorex/account-and-dashboard)) y las notificaciones push, que registran tu dispositivo y tus direcciones *públicas* para que QoreX pueda avisarte cuando llegue QOR. El monedero nunca depende de ninguno de los dos. La lista completa está en [Qué envía QoreX por la red](#data-and-privacy).
 - **Un único saldo unificado** — tus QOR forman un solo saldo entre los carriles Native, EVM y SVM; QoreX lo muestra como una sola cifra.
 - **Varias vías de recuperación** — una frase de recuperación de 24 palabras (siempre; en el móvil, revélala desde Ajustes → Seguridad), recuperación social opcional con guardianes y un bloqueo temporal de 48 horas, herencia Legacy opcional y una cómoda vinculación de varios dispositivos.
 
@@ -65,17 +66,28 @@ QoreX es no custodial: QoreChain Association no puede recuperar un monedero perd
 
 ## Qué versión está disponible en cada plataforma {#versions}
 
-La revisión de cada tienda sigue su propio calendario, así que una tienda puede servir brevemente una compilación más antigua o más reciente que otra. A fecha de **15 de octubre de 2026**:
+La revisión de cada tienda sigue su propio calendario, así que cada tienda sirve su propia compilación, y Google Play y Chrome Web Store van actualmente por detrás de las demás. Esta es la versión actual **en cada tienda** a fecha de **20 de octubre de 2026**:
 
-| Plataforma | Versión disponible |
-|---|---|
-| Android | 1.1.6 |
-| iOS | 1.1.6 |
-| Chrome | 0.3.6 |
-| Firefox | 0.3.7 (una versión puntual posterior a 0.3.6) |
-| Safari (macOS) | 1.7.6, con la extensión 0.3.6 |
+| Tienda | Versión actual | Nota |
+|---|---|---|
+| Apple App Store (iOS) | 1.1.7 | publicada el 15 de octubre |
+| Google Play (Android) | 1.1.6 | la 1.1.7 está subida pero todavía no es pública — la ficha pública sigue mostrando la 1.1.6 |
+| Chrome Web Store | 0.3.6 | sigue sirviendo la 0.3.6 |
+| Firefox Add-ons | 0.3.7 | |
+| Safari (Mac App Store) | 1.7.7, con la extensión 0.3.7 | la Mac App Store usa su propia numeración `1.x` |
 
-Esta documentación describe el conjunto de funciones de 1.1.6 / 0.3.6. Una tienda que todavía sirva una compilación anterior se pondrá al día automáticamente; las tiendas siempre muestran su versión actual. Novedades destacadas desde 1.0.9 / 0.2.6:
+Las tiendas siempre muestran su versión actual, y una tienda que todavía sirva una compilación anterior se pondrá al día automáticamente. Las funciones que se indican a continuación como **1.1.7 / 0.3.7** están activas en las tiendas de la tabla que ya incluyen esa compilación (iOS, Firefox, Safari) y llegarán a Google Play y Chrome cuando esas fichas se actualicen. En este manual no se describe como disponible nada más reciente que 1.1.7 / 0.3.7.
+
+Qué han cambiado para ti las compilaciones 1.1.7 / 0.3.7:
+
+- **Las aprobaciones rechazan una solicitud cuyos bytes pueden leerse de dos maneras.** Si el mismo campo aparece dos veces en una solicitud, una pantalla y la cadena podrían discrepar sobre lo que se está firmando — por ejemplo, una comisión o un importe mostrados de forma distinta a la ejecutada. Ahora QoreX rechaza una solicitud así en lugar de mostrar una sola lectura de ella. Consulta [Qué muestra la ventana de aprobación](/qorex/security-and-recovery#approvals).
+- **La caducidad de las concesiones se muestra al segundo**, y los votos de gobernanza se decodifican y se muestran en la pantalla de aprobación.
+- **Los sitios se identifican por el origen que atestigua el propio navegador**, no por lo que una solicitud afirma de sí misma.
+- **Las búsquedas de @handle vuelven a funcionar en la extensión.**
+- **Reclamar un @handle requiere una cuenta con sesión iniciada y se hace en la aplicación**; la extensión te remite a ella.
+- **Los nombres de QoreChain que se le parecen están reservados**, de modo que un handle nuevo no puede imitar al proyecto ni a su personal.
+
+Novedades destacadas desde 1.0.9 / 0.2.6:
 
 - **Varios monederos** en un mismo teléfono o navegador, cada uno con su propia frase de recuperación, con cambio en un toque — consulta [Varios monederos](/qorex/getting-started#several-wallets).
 - **Cuenta de estilo Ethereum (coin 60)**, añadida a mano, para frases que se usaron primero en MetaMask o en el Dashboard — consulta [Restaurar una frase de MetaMask o del Dashboard](/qorex/getting-started#restore-dashboard).
@@ -83,3 +95,28 @@ Esta documentación describe el conjunto de funciones de 1.1.6 / 0.3.6. Una tien
 - **Reclamar y volver a hacer staking**, una comprobación de comisión antes de reclamar, una lista de **Unstaking en curso** y avisos antes de que hagas staking de forma que te quedes sin poder deshacerlo — consulta [Portafolio y staking](/qorex/portfolio-and-staking).
 - Pantallas de aprobación que muestran cada mensaje, la comisión, los límites de gasto y la caducidad, y rechazan lo que QoreX no puede mostrar; **`signAndBroadcast`** para dApps; **Sitios conectados** con Revocar (extensión); la **ventana de acceso EVM** — consulta [Seguridad y recuperación](/qorex/security-and-recovery) y la [Extensión de navegador](/qorex/browser-extension).
 - Correcciones: una cuenta con fondos podía desaparecer momentáneamente de "Tus cuentas" (1.0.9); el botón físico Atrás de Android ahora retrocede una pantalla (1.1.1); la frase de recuperación se oculta a los servicios que no son de accesibilidad en Android 14 y posteriores (1.1.6).
+
+QoreX funciona en la mainnet `qorechain-vladi`, que ejecuta la cadena **v3.2.3** (activa desde el 7 de junio de 2026). El formato de firma, las direcciones, los decimales, los memos y las comisiones no cambiaron en esa actualización, por lo que no hace falta ninguna actualización de QoreX para ella.
+
+## Qué envía QoreX por la red {#data-and-privacy}
+
+QoreX **no tiene analíticas, ni informes de fallos, ni ningún SDK de rastreo**. Tus claves, tu frase de recuperación, la bóveda y tus aprobaciones **nunca salen del dispositivo**. Las aplicaciones sí se comunican con la red, como debe hacer cualquier monedero; esta es la lista completa.
+
+**Siempre (necesario para mostrar saldos y enviar):**
+
+- **Endpoints públicos de QoreChain** (`api`, `rpc`, `evm` y `svm` en `qore.host`, y los equivalentes `-testnet`) para saldos, historial y difusión de transacciones. Estas solicitudes llevan tu dirección `qor1…` **pública**.
+- **Consulta de precio** — una solicitud para el precio de QOR, que **no lleva ninguna dirección**.
+- **Redes externas que tienes o consultas** — servicios RPC/REST públicos de terceros para esa red, que llevan tu dirección **pública** en esa red.
+- **Registro de @handle** — lleva el handle que consultas, o una dirección pública.
+
+**Solo si lo activas:**
+
+- **Notificaciones push** (móvil) — desactivadas hasta que las actives. El servidor recibe entonces el token de tu dispositivo y las direcciones `qor1…` públicas del monedero en uso (hasta 10). Un dispositivo del que el servidor no ha tenido noticias en 90 días se olvida.
+- **Recuperación social** — el relé almacena **solo texto cifrado**.
+- **Inicio de sesión** (correo electrónico, o Apple o Google) — necesario para reclamar un @handle, para vincular con el Dashboard y para usar las solicitudes de pago.
+- **Conexión con el Dashboard y direcciones vinculadas** — envía una prueba firmada de que eres el propietario de la dirección.
+- **Solicitudes de pago** — envían el handle de origen, el handle de destino, el importe y una nota opcional.
+
+**El widget de pantalla de inicio** no hace ninguna solicitud propia a los servidores de QoreChain: la aplicación le entrega localmente tu dirección, tu saldo y el indicador de privacidad, y el widget actualiza el saldo desde el endpoint REST público de QoreChain.
+
+**No hay chat de IA ni servicio QCAI** en ninguna de las dos aplicaciones.

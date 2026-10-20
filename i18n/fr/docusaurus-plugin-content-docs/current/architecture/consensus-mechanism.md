@@ -9,8 +9,8 @@ sidebar_position: 1
 
 QoreChain met en œuvre le **Triple-Pool Composite Proof-of-Stake (CPoS)**, un mécanisme de consensus qui classe les validateurs en trois pools spécialisés et utilise une sélection pondérée par la réputation pour équilibrer sécurité, décentralisation et performance. Le CPoS est implémenté dans le module `x/qca` et fonctionne au-dessus du **QoreChain Consensus Engine**.
 
-:::note État actuel (octobre 2026)
-La logique du Triple-Pool CPoS décrite sur cette page — classification des pools, sélection du proposant pondérée par pool, courbe de bonding des récompenses, slashing progressif et décompte QDRW — est implémentée dans le module `x/qca` et ses paramètres sont on-chain, mais **elle n'est pas encore branchée sur la production de blocs, les récompenses, le slashing ni le décompte de gouvernance**. Aujourd'hui, la rotation des proposants est la rotation standard des validateurs pondérée par le stake, le slashing suit les paramètres standard de `x/slashing` (fenêtre de downtime de 10,000 blocs, mise en prison en dessous de 5 % de blocs signés, slash de 1 % pour downtime et de 5 % pour double-sign, prison de 10 minutes) et les propositions sont décomptées sur le stake bondé (quorum 33.4 %, seuil 50 %, veto 33.4 %). Le design ci-dessous décrit la direction que prend le module.
+:::note État actuel (20 octobre 2026 : mainnet v3.2.3, testnet v3.2.4)
+La logique du Triple-Pool CPoS décrite sur cette page — classification des pools, sélection du proposant pondérée par pool, courbe de bonding des récompenses, slashing progressif et décompte QDRW — est implémentée dans le module `x/qca` et ses paramètres sont on-chain, mais **elle n'est pas encore branchée sur la production de blocs, les récompenses, le slashing ni le décompte de gouvernance**. Aujourd'hui, la rotation des proposants est la rotation standard des validateurs pondérée par le stake, le slashing suit les paramètres standard de `x/slashing` (fenêtre de downtime de 10,000 blocs, mise en prison en dessous de 5 % de blocs signés, slash de 1 % pour downtime et de 5 % pour double-sign, prison de 10 minutes) et les propositions sont décomptées sur le stake bondé (quorum 33.4 %, seuil 50 %, veto 33.4 %). Le design ci-dessous décrit la direction que prend le module. Aucune version jusqu'à la v3.2.3 du mainnet ou la v3.2.4 du testnet ne change cela ; les règles qui **sont** appliquées aujourd'hui sont listées dans [Règles d'admission des validateurs et de staking en vigueur](#admission).
 :::
 
 La couche d'optimisation par apprentissage par renforcement conçue pour ajuster les paramètres de consensus à l'exécution porte le nom de marque **PRISM** (Policy-driven Reinforcement-learning for Intelligent State Machines). Voir le [moteur de consensus PRISM](/architecture/prism-consensus-engine) pour plus de détails.
@@ -28,6 +28,22 @@ flowchart TD
     P["PRISM<br/>RL optimization"] -. tunes params .-> B
     P -. tunes params .-> C
 ```
+
+---
+
+## Règles d'admission des validateurs et de staking en vigueur {#admission}
+
+Ces règles sont appliquées sur le mainnet (depuis v3.2.2, avec un durcissement supplémentaire dans v3.2.3) et sur le testnet. Elles font partie du serveur de messages de staking ; elles s'appliquent donc à chaque message quelle que soit la manière dont il parvient à la chaîne : une transaction, `x/authz`, `x/group`, un contrat CosmWasm, un precompile ou une proposition de gouvernance. Les transactions de genèse en sont exemptées.
+
+| Règle | Ce que la chaîne applique |
+| --- | --- |
+| Création d'un validateur | L'auto-délégation est d'au moins **100 000 QOR** (100 000 000 000 uqor) **et** le compte opérateur détient une licence `validator_operator` active. Voir [Licences de chaîne](/architecture/chain-licensing) |
+| Plancher d'exploitation | L'opérateur d'un validateur ne peut pas retirer ou redéléguer son stake d'une manière qui laisse son auto-délégation **sous 100 000 QOR**. Une sortie complète (auto-délégation ramenée à zéro) est autorisée ; le validateur est alors mis en prison |
+| Sortie de prison | `MsgUnjail` est refusé tant que l'auto-délégation de l'opérateur est sous le plancher ; un validateur qui est sorti ou a été slashé en dessous doit donc d'abord compléter. Un compte opérateur sans clé post-quantique enregistrée peut toujours sortir de prison (voir [Sécurité post-quantique](/architecture/post-quantum-security#hybrid-signatures)) |
+| Autorisations de stake (v3.2.3) | Les listes d'autorisation et de refus d'une autorisation de stake `x/authz` comparent les adresses de validateurs par leurs octets décodés ; la graphie d'une adresse (par exemple tout en majuscules) ne permet donc pas de contourner une liste de refus |
+| Slashing de redélégation (v3.2.0) | Le slash total appliqué à une entrée de redélégation est plafonné à la fraction de slash multipliée par le solde initial de l'entrée |
+
+Paramètres de staking lus sur les deux réseaux le 20 octobre 2026 : `max_validators` 100, délai d'unbonding de 21 jours (1 814 400 s), `max_entries` 7, `min_commission_rate` 0. L'autorité de licence, le compte qui accorde les licences `validator_operator`, peut être remplacée par la gouvernance depuis v3.2.3 (`MsgUpdateAuthority`).
 
 ---
 

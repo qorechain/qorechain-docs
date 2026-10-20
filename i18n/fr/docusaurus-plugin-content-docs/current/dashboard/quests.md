@@ -13,7 +13,7 @@ Connectez-vous pour que votre progression soit suivie — voir [Se connecter](/d
 
 ## Parcourir les quêtes
 
-La page Quêtes s'ouvre sur un récapitulatif rapide du nombre de quêtes disponibles, du nombre de quêtes en cours et du nombre de quêtes terminées. Les **onglets de catégorie** — tels qu'intégration, trading, social, communauté, apprentissage, quotidien et hebdomadaire — vous permettent de filtrer la liste.
+La page Quêtes comporte un onglet **Eigenstate 1** et un onglet **Eigenstate 2** ; lorsqu'aucune quête Eigenstate 2 n'est active, son onglet indique que de nouveaux défis arrivent bientôt. La page s'ouvre sur un récapitulatif rapide du nombre de quêtes disponibles, du nombre de quêtes en cours et du nombre de quêtes terminées. Les **onglets de catégorie** — tels qu'intégration, trading, social, communauté, apprentissage, quotidien et hebdomadaire — vous permettent de filtrer la liste.
 
 Chaque quête apparaît sous forme de carte affichant :
 
@@ -24,6 +24,8 @@ Chaque quête apparaît sous forme de carte affichant :
 - Un **statut** : terminé, en cours, démarré ou verrouillé.
 
 Une quête verrouillée indique la quête que vous devez terminer d'abord avant qu'elle ne se déverrouille.
+
+**Quêtes sociales.** Les quêtes qui impliquent X ou Telegram ne comptent qu'une fois que vous avez connecté ces comptes dans votre **Profil** (la page affiche *Connect Social Accounts* avec un lien **Go to Profile** tant que ce n'est pas fait) et que la connexion est vérifiée.
 
 ## Terminer une quête
 

@@ -103,20 +103,27 @@ endpoints: no released node build serves that namespace, so every call returns
 On mainnet and testnet every Native-path transaction must carry the **hybrid**
 (classical secp256k1 plus ML-DSA-87) signature, and the account's ML-DSA-87 key
 must be **registered on-chain first**. Registration is explicit: there is no
-auto-registration on the first transaction. A plain `tx.bankSend` (classical
-signature only) is refused by the live networks. The two steps below need
-**SDK 0.8.3 or later** (`derivePqcCanonical`; 0.8.1 or later for hybrid sends in
-general) and a funded account:
+auto-registration on the first transaction. A transaction signed classically only
+is refused by the live networks, so give the transaction client the account's
+ML-DSA-87 keypair and it signs every transaction hybrid. The two steps below need
+**SDK 0.9.0 or later** and a funded account:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. Register your post-quantum key (once)
 
-Registration is classical-signed and exempt from the hybrid requirement, so a
-new account can bootstrap its first key. The account pays the fee: the 2,592-byte
-key needs a gas limit of about 600,000.
+The account pays the fee: the 2,592-byte key needs a gas limit of about 600,000.
+`ensurePqcRegistered` reads the key status over REST first (`rest`), so it skips the
+transaction when the key is already registered, and it throws
+`PqcKeyMismatchError` without sending anything when the account holds a *different*
+key (a second registration is refused **after the fee is taken**). Registration is
+the one classical-signed transaction the chain accepts from an account without a
+key, so the hybrid client sends it classically by itself. Once the network has
+applied v3.2.3 (both networks have), the helper also attaches the optional proof of
+possession. The chain refuses weak, degenerate or reused keys; a key from
+`derivePqcCanonical` is fine.
 
 ```ts
 import {
@@ -134,20 +141,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -155,51 +158,26 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. Send with a hybrid signature
 
-`signAndBroadcastHybrid` builds, signs and broadcasts. Pass `rest` so the SDK can
-ask the network which sign-bytes form it verifies (see
-[Which sign-bytes form?](/sdk/concepts/accounts-pqc#sign-bytes-versions)). Use
-`toBase("1.5")` to convert QOR to base `uqor`. The network's minimum gas price is
-0.1 uqor per unit of gas, so a 400,000 gas limit needs a fee of at least 40,000
-uqor.
+`tx.bankSend` now signs hybrid. The fee defaults to `"auto"`: the client simulates
+the hybrid transaction itself and adds the gas of the post-quantum verification,
+which simulation does not charge. The network's minimum gas price is 0.1 uqor per
+unit of gas (the client prices at 0.15). Use `toBase("1.5")` to convert QOR to base
+`uqor`.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` returns `"1500000"` (QOR has 10^6 base `uqor` units).
+`toBase("1.5")` returns `"1500000"` (QOR has 10^6 base `uqor` units). To send any
+other message the same way, pass it to `tx.signAndBroadcast([message], "auto")`.
+For explicit control over the fee, account number and sequence, use
+`signAndBroadcastHybrid` (see
+[Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info Unified accounts
 For a unified eth-native account (`deriveUnifiedAccount`), use
@@ -207,11 +185,13 @@ For a unified eth-native account (`deriveUnifiedAccount`), use
 [Accounts & PQC signing](/sdk/concepts/accounts-pqc#hybrid-signing).
 :::
 
-:::note Classical sends work only on local and dev nodes
-The classical `client.connectTx(signer)` plus `tx.bankSend(...)` path still
-exists, and it is what `ensurePqcRegistered` uses for the one registration
-transaction. Against a node that does not require the hybrid extension (a local
-dev node) it also sends ordinary transfers. The public networks refuse it.
+:::note Without a keypair the client signs classically
+`client.connectTx(signer)` without `pqcKeypair` signs classically only. The public
+networks accept that for the key registration alone (an account with no key yet);
+against a node that does not require the hybrid extension (a local dev node) it
+also sends ordinary transfers. SDK versions before 0.9.0 have no hybrid
+`TxClient`: send through `signAndBroadcastHybrid` (see
+[Versions before 0.9.0](/sdk/install#before-090)).
 :::
 
 ## Other languages: connect & read

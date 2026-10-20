@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.1, iar testnet-ul v3.2.2; testnet-ul poate servi câteva rute suplimentare pe care mainnet-ul încă nu le are, așa că o interogare care funcționează acolo poate returna `Not Implemented` pe mainnet.
+Interogările rulează pe nodul indicat de `--node`. Folosește un endpoint RPC mainnet **`qorechain-vladi`** pentru date live (de exemplu `--node https://rpc.qore.host:443`) sau un endpoint testnet **`qorechain-diana`** (`--node https://rpc-testnet.qore.host:443`) pentru testare. Valoarea implicită `tcp://localhost:26657` țintește un nod pe care îl rulezi tu însuți. Mainnet-ul rulează versiunea de nod v3.2.3, iar testnet-ul v3.2.4; testnet-ul servește câteva rute și comenzi suplimentare pe care mainnet-ul nu le are (marcate **doar testnet** mai jos), așa că o interogare care funcționează acolo poate returna `Not Implemented` pe mainnet. Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, rulat pe `https://rpc.qore.host:443`.
 :::
 
 Flag-urile comune se aplică fiecărei subcomenzi `query`:
@@ -110,11 +110,15 @@ qorechaind query pqc params
 qorechaind query pqc migration <algorithm_id>
 qorechaind query pqc hybrid-mode
 qorechaind query pqc evm-window <address>
+qorechaind query pqc evm-delegation-consent <address>
 ```
 
 - `algorithm` primește un nume de algoritm (`dilithium5`, `mlkem1024`) sau un ID numeric.
 - `migration` primește un **ID de algoritm** (de exemplu `1`), nu o adresă, și raportează `No active migration` când nu rulează nicio migrare.
-- `evm-window` arată dacă adresa are o fereastră de autorizare deschisă pe lane-ul EVM și câte blocuri, tranzacții și câtă valoare au rămas (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `account` raportează cheia înregistrată. Pe lângă cheie, `key_type` și `algorithm_name`, înregistrarea conține `classical_key_source` (`stored`, `auth_account` sau `none`: de unde provine cheia publică clasică). Pe testnet (v3.2.4, **doar testnet**) conține și `possession_proven`, care este `true` când cheia a fost înregistrată cu o dovadă de posesie verificată.
+- `evm-window` arată dacă adresa are o fereastră de autorizare deschisă pe lane-ul EVM și câte blocuri, tranzacții și câtă valoare au rămas (`found`, `live`, `remaining_blocks`, `remaining_txs`, `remaining_value`), plus domeniul ferestrei (`native_only`, `allowed_targets`; începând cu mainnet v3.2.3). REST: `GET /qorechain/pqc/v1/evm_window/{address}`.
+- `evm-delegation-consent` arată consimțământul de delegare EIP-7702 al adresei (`found`, `live`, `delegate`, `granted_height`, `expiry_height`), delegarea sa curentă și nonce-ul EVM. REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`.
+- `params` și `hybrid-mode` raportează `hybrid_signature_mode` (`2` = obligatoriu pe ambele rețele) și `allow_classical_fallback` (`false`).
 
 ---
 
@@ -130,13 +134,22 @@ curl -s https://api.qore.host/qorechain/burn/v1/milestone
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 ```
 
-`stranded_rewards` raportează partea stakerilor care a fost depusă în modulul distribution fără să acopere vreo cerere, așa cum a fost înregistrată la upgrade-ul v3.2.0 (`reserved`, `released`, `snapshot_height`). Poate fi eliberată numai printr-un vot de guvernanță.
+`stranded_rewards` raportează partea stakerilor care a fost depusă în modulul distribution fără să acopere vreo cerere (`reserved`, `released`, `snapshot_height`). Poate fi eliberată numai printr-un vot de guvernanță. Rezerva a fost înregistrată prima dată la upgrade-ul v3.2.0 și recalculată la înălțimea upgrade-ului v3.2.3, așa că citește valorile live, nu o cifră citată în altă parte.
+
+`stats` împarte arderea cumulată după sursă, inclusiv `failed_tx`, care este nenulă de la upgrade-ul v3.2.2.
 
 ---
 
 ## mint și inflation
 
-`qorechaind query mint params|inflation|annual-provisions` citește modulul mint standard, a cărui rată este `0` pe ambele rețele; **nu** raportează programul de emisie al protocolului. Nu există comanda `query inflation`.
+`qorechaind query mint params|inflation|annual-provisions` citește modulul mint standard, a cărui rată este `0` pe ambele rețele; **nu** raportează programul de emisie al protocolului. Nu există comanda CLI `query inflation`. Setările de emisie proprii ale protocolului și progresul acesteia sunt servite prin REST începând cu v3.2.2:
+
+```bash
+curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mode, fixed_epoch_emission, max_total_emission, epoch_length
+curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
+```
+
+Pe mainnet acestea raportează `emission_mode: "fixed"`, o emisie fixă de 86.000 QOR per epocă de 43.200 de blocuri și un plafon cumulat de 590.000.000 QOR (propunerea de guvernanță 10, adoptată pe 19 octombrie 2026; prima epocă cu noua sumă începe la blocul 3.672.000). Sumele sunt în `uqor`. Testnet-ul raportează în continuare propriile valori, diferite; versiunea v3.2.4 a testnet-ului adaugă un alt mod de emisie pe care mainnet-ul nu îl are (**doar testnet**).
 
 ---
 
@@ -171,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` arată cum se împarte soldul de recompense al modulului în `reserved`, `outstanding`, `payable` și `distributable`.
+`reward-pool` arată cum se împarte soldul de recompense al modulului în `reserved`, `outstanding`, `payable` și `distributable`, precum și limitele per nod: `max_reward_per_block_per_node` și, începând cu v3.2.3, `max_reward_per_month_per_node` (2.000 QOR, proporțional cu timpul de bloc și uptime-ul). Pe testnet (v3.2.4, **doar testnet**) raportează și `monthly_cap_active`, `last_distribution_time` și `last_distribution_height`.
 
 ---
 
@@ -242,7 +255,12 @@ qorechaind query rdk batch <rollup_id>            # latest batch
 qorechaind query rdk batch <rollup_id> --index 42 # a specific batch
 ```
 
-`config` arată parametrii modulului (stake minim, rata de ardere la creare, fereastra de contestare, limitele DA). `suggest-profile <use_case>` nu interoghează chain-ul; doar afișează o trimitere către o metodă JSON-RPC pe care endpoint-urile publice nu o servesc, așa că alege un profil din [Profiluri presetate](/rollups/preset-profiles).
+```bash
+qorechaind query rdk batches <rollup_id> [--start 0] [--limit 100]   # batches in index order
+qorechaind query rdk anchor-sign-bytes <layer_id> <batch_index> <state_root_hex> --tx-count <n> --validator-set-hash <hex>
+```
+
+`config` arată parametrii modulului (stake minim, rata de ardere la creare, fereastra de contestare, limitele DA). `anchor-sign-bytes` afișează, în hex, octeții de semnare v2 ai ancorei pe care creatorul unui rollup îi semnează pentru `tx rdk submit-batch --anchor-signature`. Aceleași interogări sunt servite prin REST sub `/qorechain/rdk/v1/...` începând cu v3.2.2 (vezi [Endpoint-uri REST / gRPC](/api-reference/rest-grpc-endpoints#rdk-module)). `suggest-profile <use_case>` nu interoghează chain-ul; doar afișează o trimitere către o metodă JSON-RPC pe care endpoint-urile publice nu o servesc, așa că alege un profil din [Profiluri presetate](/rollups/preset-profiles).
 
 ---
 
@@ -275,7 +293,44 @@ qorechaind query abstractaccount permission-schema
 
 ## gasabstraction
 
-Mainnet-ul nu servește încă interogări de abstractizare a gazului (`qorechaind query gasabstraction ...` afișează textul de ajutor, iar ruta REST returnează `Not Implemented`). Taxele se plătesc doar în `uqor`; consultă [Abstractizarea Gazului](/user-guide/gas-abstraction).
+Interogările de abstractizare a gazului sunt servite pe ambele rețele începând cu v3.2.2:
+
+```bash
+qorechaind query gasabstraction config
+qorechaind query gasabstraction accepted-tokens
+qorechaind query gasabstraction conversion-rate <denom>   # what one unit of a fee token is worth in uqor, and whether it can pay fees
+qorechaind query gasabstraction float                     # the conversion float's balances and this block's usage
+```
+
+Lista tokenurilor acceptate conține doar `uqor` nativ pe ambele rețele, deci taxele se plătesc în `uqor` și nu are loc nicio conversie; guvernanța decide ce alte tokenuri sunt acceptate. REST: `/qorechain/gasabstraction/v1/config`, `/conversion_rate?denom=`, `/float`. Consultă [Abstractizarea Gazului](/user-guide/gas-abstraction).
+
+---
+
+## amm
+
+```bash
+qorechaind query amm params
+qorechaind query amm pools
+qorechaind query amm pool <pool_id>
+qorechaind query amm pool-by-denoms <denom_a> <denom_b>
+qorechaind query amm lp-balance <pool_id> <address>
+qorechaind query amm quote-exact-in <pool_id> <denom_in> <amount_in>
+qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
+```
+
+La momentul redactării, nu există niciun pool pe niciuna dintre rețele.
+
+---
+
+## stakingtier (doar testnet)
+
+```bash
+qorechaind query stakingtier params
+qorechaind query stakingtier locks <holder_address>
+qorechaind query stakingtier pool
+```
+
+Modulul de niveluri de staking face parte din versiunea **v3.2.4**, care rulează doar pe testnet; mainnet-ul nu are încă modulul (propunerea de guvernanță 13 ar aplica v3.2.4 la înălțimea 3.742.566). REST: `/qorechain/stakingtier/v1/params`, `/locks/{holder}`, `/pool`. Vezi [Comenzi de tranzacție](/cli-reference/transaction-commands#stakingtier).
 
 ---
 
@@ -289,6 +344,8 @@ qorechaind query upgrade plan
 qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
+
+`query upgrade applied <name>` este modul de a citi când a intrat în vigoare un upgrade: pe mainnet `v3.2.2` a fost aplicat la înălțimea 3.556.788 și `v3.2.3` la înălțimea 3.662.051; pe testnet `v3.2.2` la 6.905.034, `v3.2.3` la 8.003.746 și `v3.2.4` la 8.337.253 (`0` înseamnă neaplicat). Lista circuit-breaker a mainnet-ului (`disabled-list`) conține în prezent mesajele de creare a conturilor de vesting, store și instantiate CosmWasm, pauza și reluarea pool-urilor AMM, apelul cross-VM, actualizarea stării unui strat multilayer, depreciarea și dezactivarea algoritmilor PQC și mesajele de guvernanță a consensului PRISM; cea a testnet-ului conține doar cele trei mesaje CosmWasm.
 
 ---
 

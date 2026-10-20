@@ -10,7 +10,7 @@ sidebar_position: 6
 QoreChain erweitert die QoreChain-EVM-Engine um **sechs benutzerdefinierte precompiled Contracts**, die Protokollfunktionen auf Protokollebene direkt für Solidity zugänglich machen. Diese Precompiles bieten On-Chain-Zugriff auf Post-Quanten-Kryptografie, KI-Risikobewertung, Cross-VM-Messaging und PRISM-Konsensparameter.
 
 :::warning Noch nicht aktiv auf Mainnet oder Testnet
-Die sechs untenstehenden QoreChain-Precompiles sind **in den Node kompiliert, aber noch nicht aktiviert**, weder im **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**) noch im **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Die EVM ruft nur Adressen auf, die im Parameter `active_static_precompiles` stehen, und diese Liste ist in beiden Netzwerken leer. Bis ein Chain-Upgrade sie aktiviert, **gelingt ein Aufruf dieser Adressen und liefert leere Daten (`0x`)**; er revertiert nicht und liefert keinen Fehler. Siehe [Netzwerkstatus](#network-status), bevor Sie sich auf eines davon verlassen.
+Die sechs untenstehenden QoreChain-Precompiles sind **in den Knoten kompiliert, aber noch nicht aktiviert**, weder im **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**) noch im **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Die EVM ruft nur Adressen auf, die im Parameter `active_static_precompiles` stehen, und diese Liste ist in beiden Netzwerken leer. Bis ein Chain-Upgrade sie aktiviert, **gelingt ein Aufruf dieser Adressen und liefert leere Daten (`0x`)**; er revertiert nicht und liefert keinen Fehler. Siehe [Netzwerkstatus](#network-status), bevor Sie sich auf eines davon verlassen.
 :::
 
 ## Netzwerkstatus {#network-status}
@@ -24,7 +24,7 @@ Die sechs untenstehenden QoreChain-Precompiles sind **in den Node kompiliert, ab
 | PRISM Consensus Params | `0x…0C01` | Nicht aktiv | Nicht aktiv |
 | CrossVM Bridge | `0x…0901` | Nicht aktiv | Nicht aktiv |
 
-Die Aktivierung erfordert ein Chain-Upgrade und ist in Stufen geplant: zuerst die schreibgeschützten PQC- und Konsens-Precompiles, das KI-Paar, sobald ihr schreibgeschützter Festkomma-Pfad vorhanden ist, und die CrossVM Bridge erst, nachdem sie mit Journaling, Wertprüfungen und dem Cross-VM-Circuit-Breaker neu aufgebaut wurde. Diese Tabelle wird im selben Schritt wie das Upgrade aktualisiert, das eines davon aktiviert.
+Die Aktivierung erfordert ein Chain-Upgrade und ist in Stufen geplant: zuerst die schreibgeschützten PQC- und Konsens-Precompiles, das KI-Paar, sobald ihr schreibgeschützter Festkomma-Pfad vorhanden ist, und die CrossVM Bridge zuletzt. Das Release v3.2.3 (Mainnet, 20. Oktober 2026) hat die gehärteten Versionen der CrossVM Bridge und des AI-Anomaly-Precompiles hinter einem Protokoll-Feature in die Binärdatei aufgenommen, **aber kein Precompile aktiviert**: Die Liste `active_static_precompiles` ist in beiden Netzwerken weiterhin leer, und das Release v3.2.4 des Testnets hat daran nichts geändert. Diese Tabelle wird im selben Schritt wie das Upgrade aktualisiert, das eines davon aktiviert.
 
 Prüfen Sie die aktuelle Liste selbst (eine leere Liste bedeutet: keines ist aktiv):
 
@@ -50,7 +50,7 @@ Senden Sie keinen Wert an diese Adressen. Sie sind nicht payable, und an eine in
 
 ## Adresskarte der Precompiles
 
-Die Gas-Angaben sind das, was der Node berechnet, sobald ein Precompile aktiv ist (pro Byte bedeutet pro Byte der Aufrufeingabe).
+Die Gas-Angaben sind das, was der Knoten berechnet, sobald ein Precompile aktiv ist (pro Byte bedeutet pro Byte der Aufrufeingabe).
 
 | Precompile               | Adresse                                       | Basis-Gas        | Beschreibung                                        |
 | ------------------------ | ---------------------------------------------- | ----------------- | ---------------------------------------------------- |
@@ -265,16 +265,16 @@ contract ConsensusReader {
 **Gaskosten:** 1.500 pauschal.
 
 :::note
-Im aktuellen Node-Build liefert `rlConsensusParams` feste Platzhalter-Standardwerte, keine live PRISM-abgestimmten Werte (es meldet beispielsweise nicht die gemessene Blockzeit, die im Mainnet etwa 3,2 s und im Testnet etwa 1,0 s beträgt). Die Anbindung an die Live-Konsensparameter ist Teil der Aktivierungsarbeit.
+Im aktuellen Knoten-Build liefert `rlConsensusParams` feste Platzhalter-Standardwerte, keine live PRISM-abgestimmten Werte (es meldet beispielsweise nicht die gemessene Blockzeit, die im Mainnet etwa 3,2 s und im Testnet etwa 1,0 s beträgt). Die Anbindung an die Live-Konsensparameter ist Teil der Aktivierungsarbeit.
 :::
 
 ### CrossVM Bridge — Aufruf von CosmWasm aus der EVM
 
 :::warning
-Das CrossVM-Bridge-Precompile wird in seiner aktuellen Form **nicht** aktiviert. Es wird neu aufgebaut, sodass ein Revert im aufrufenden Contract auch die CosmWasm-Seite rückgängig macht, Wertübertragungen abgelehnt werden, EVM-zu-EVM-Reentranz verweigert wird und der Cross-VM-Circuit-Breaker greift. Bis dahin gibt es keinen synchronen EVM-zu-CosmWasm-Pfad; siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den Nachrichtenpfad `MsgCrossVMCall`, der im Mainnet derzeit selbst abgeschaltet ist.
+Das CrossVM-Bridge-Precompile ist auf keinem der beiden Netzwerke **aktiv**. Die Binärdatei enthält seit v3.2.3 eine gehärtete Version davon, die: einen `STATICCALL` verweigert; den verschachtelten Aufruf auf einem Gas-Zähler ausführt, der durch das begrenzt ist, was dem aufrufenden Frame noch bleibt, und ihn im Journal führt, sodass ein Revert im aufrufenden Contract auch die CosmWasm-Seite rückgängig macht; nur CosmWasm-Ziele auf der Allowlist erreicht (EVM-Ziele werden abgelehnt); und den Cross-VM-Circuit-Breaker beachtet. Bis ein per Governance genehmigtes Upgrade es aktiviert, gibt es keinen synchronen EVM-zu-CosmWasm-Pfad; siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den Nachrichtenpfad `MsgCrossVMCall`, der im Mainnet derzeit selbst abgeschaltet ist.
 :::
 
-Der Node dekodiert die Calldata als `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-Byte-Selektor, dann die ABI-kodierten Argumente). Der dokumentierte Anwendungsfall ist EVM zu CosmWasm; das ABI kann sich mit dem Neuaufbau ändern.
+Der Knoten dekodiert die Calldata als `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-Byte-Selektor, dann die ABI-kodierten Argumente). Die einzige unterstützte Verwendung ist EVM zu CosmWasm (`targetVM` = 1); die ABI kann sich vor der Aktivierung noch ändern.
 
 **Gaskosten:** 50.000 Basis + 4 Gas pro Byte Eingabe, zuzüglich der Ausführungskosten des Ziel-Contracts. Details siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
 

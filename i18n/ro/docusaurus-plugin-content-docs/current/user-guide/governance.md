@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 29 iunie 2026 pe linia v3.2 (versiunea de nod **v3.2.1**; testnet-ul rulează **v3.2.2**) — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.3**; testnet-ul rulează **v3.2.4** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`
@@ -29,7 +29,7 @@ Propunerile sunt numărate pe baza **stake-ului bonded**: fiecare QOR pe care l-
 | Prag      | 50%             | Partea de „yes" dintre voturile care nu se abțin, necesară pentru a trece   |
 | Veto      | 33.4%           | Dacă „no with veto" atinge această pondere, propunerea este respinsă și depozitul ei este ars |
 
-Aceste valori au fost citite din lanț la 14 octombrie 2026; confirmă-le cu `qorechaind query gov params`, deoarece guvernanța le poate modifica.
+Aceste valori au fost citite de pe mainnet la 20 octombrie 2026 (și sunt aceleași pe testnet); confirmă-le cu `qorechaind query gov params`, deoarece guvernanța le poate modifica.
 
 :::note QDRW este proiectat, dar nu este activ
 Designul QoreChain include o formulă de putere de vot **Quadratic Delegation-Reputation Weighted (QDRW)**, `VP = sqrt(staked + 2 * xQORE) * ReputationMultiplier(r)`, care ar atenua stake-urile mari și ar pondera reputația. Este implementată în modulul `x/qca`, dar este **dezactivată** pe ambele rețele (`qdrw_enabled` este `false` în `qorechaind query qca config`) și nu face parte din numărătoarea de guvernanță, deci nu afectează niciun vot în prezent. xQORE nu este nici el activ (vezi [Staking xQORE](/user-guide/xqore-staking)).
@@ -161,7 +161,7 @@ qorechaind query gov params
 
 Parametrii cheie includ:
 
-| Parametru            | Descriere                                                        | Valoare curentă (14 oct. 2026) |
+| Parametru            | Descriere                                                        | Valoare curentă (20 oct. 2026) |
 | -------------------- | ---------------------------------------------------------------- | ------------------------------ |
 | `min_deposit`        | Depozitul minim necesar pentru ca o propunere să intre la vot    | 10 QOR (`10000000uqor`)        |
 | `max_deposit_period` | Fereastra de timp pentru atingerea depozitului minim             | 2 zile                         |
@@ -170,6 +170,12 @@ Parametrii cheie includ:
 | `threshold`          | Procentul minim de „yes" pentru a trece (excluzând abținerile)   | 0.5                            |
 | `veto_threshold`     | Procentul minim de „no with veto" pentru a respinge și arde depozitul | 0.334                     |
 | `expedited_voting_period` / `expedited_threshold` / `expedited_min_deposit` | Perioada de vot, pragul de trecere și depozitul pentru propunerile accelerate | 1 zi / 0.667 / 50 QOR |
+
+---
+
+## Guvernanța pe mainnet până acum {#mainnet-history}
+
+Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 11 au trecut pe mainnet în octombrie 2026, iar propunerea 12 se afla în perioada de vot la momentul scrierii; lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
 
 ---
 

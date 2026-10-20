@@ -106,21 +106,28 @@ namespace, așa că fiecare apel returnează `-32601` (method not found). Citiț
 Pe mainnet și pe testnet, fiecare tranzacție pe calea Native trebuie să poarte
 semnătura **hibridă** (secp256k1 clasic plus ML-DSA-87), iar cheia ML-DSA-87 a
 contului trebuie să fie **înregistrată mai întâi on-chain**. Înregistrarea este
-explicită: nu există înregistrare automată la prima tranzacție. Un simplu
-`tx.bankSend` (doar cu semnătură clasică) este refuzat de rețelele live. Cei
-doi pași de mai jos necesită **SDK 0.8.3 sau mai nou** (`derivePqcCanonical`;
-0.8.1 sau mai nou pentru trimiterile hibride în general) și un cont alimentat
-cu fonduri:
+explicită: nu există înregistrare automată la prima tranzacție. O tranzacție
+semnată doar clasic este refuzată de rețelele live, așa că dați clientului de
+tranzacții perechea de chei ML-DSA-87 a contului și acesta semnează hibrid fiecare
+tranzacție. Cei doi pași de mai jos necesită **SDK 0.9.0 sau mai nou** și un cont
+alimentat cu fonduri:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. Înregistrați cheia post-cuantică (o singură dată)
 
-Înregistrarea este semnată clasic și este exceptată de la cerința hibridă, așa
-că un cont nou își poate inițializa prima cheie. Contul plătește taxa: cheia de
-2.592 de octeți necesită o limită de gas de aproximativ 600.000.
+Contul plătește taxa: cheia de 2.592 de octeți necesită o limită de gas de
+aproximativ 600.000. `ensurePqcRegistered` citește mai întâi starea cheii prin
+REST (`rest`), deci sare peste tranzacție când cheia este deja înregistrată și
+aruncă `PqcKeyMismatchError`, fără să trimită nimic, când contul deține o cheie
+*diferită* (o a doua înregistrare este refuzată **după ce taxa este percepută**).
+Înregistrarea este singura tranzacție semnată clasic pe care lanțul o acceptă de la
+un cont fără cheie, așa că clientul hibrid o trimite singur în mod clasic. După ce
+rețeaua a aplicat v3.2.3 (ambele rețele au făcut-o), helperul atașează și dovada
+opțională de posesie. Lanțul refuză cheile slabe, degenerate sau refolosite; o cheie
+de la `derivePqcCanonical` este în regulă.
 
 ```ts
 import {
@@ -138,20 +145,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -159,52 +162,26 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. Trimiterea cu semnătură hibridă
 
-`signAndBroadcastHybrid` construiește, semnează și transmite tranzacția. Pasați
-`rest` pentru ca SDK-ul să poată întreba rețeaua ce formă de sign-bytes
-verifică (vedeți
-[Ce formă de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
-Folosiți `toBase("1.5")` pentru a converti QOR în `uqor` de bază. Prețul minim
-al gas-ului în rețea este de 0,1 uqor per unitate de gas, deci o limită de gas
-de 400.000 necesită o taxă de cel puțin 40.000 uqor.
+`tx.bankSend` semnează acum hibrid. Taxa este implicit `"auto"`: clientul simulează
+chiar tranzacția hibridă și adaugă gazul verificării post-cuantice, pe care
+simularea nu îl taxează. Prețul minim al gazului în rețea este de 0,1 uqor per
+unitate de gaz (clientul calculează la 0,15). Folosiți `toBase("1.5")` pentru a
+converti QOR în `uqor` de bază.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` returnează `"1500000"` (QOR are 10^6 unități de bază `uqor`).
+`toBase("1.5")` returnează `"1500000"` (QOR are 10^6 unități de bază `uqor`). Pentru
+a trimite în același mod orice alt mesaj, pasați-l către
+`tx.signAndBroadcast([message], "auto")`. Pentru control explicit asupra taxei,
+numărului de cont și secvenței, folosiți `signAndBroadcastHybrid` (consultați
+[Conturi & semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info Conturi unificate
 Pentru un cont unificat eth-native (`deriveUnifiedAccount`), folosiți în
@@ -212,12 +189,13 @@ schimb `EthNativeSigner`; exemplele de înregistrare și trimitere se găsesc î
 [Conturi & semnare PQC](/sdk/concepts/accounts-pqc#hybrid-signing).
 :::
 
-:::note Trimiterile clasice funcționează doar pe noduri locale și de dezvoltare
-Calea clasică `client.connectTx(signer)` plus `tx.bankSend(...)` există în
-continuare și este cea pe care o folosește `ensurePqcRegistered` pentru
-singura tranzacție de înregistrare. Pe un nod care nu cere extensia hibridă (un
-nod local de dezvoltare), trimite și transferuri obișnuite. Rețelele publice o
-refuză.
+:::note Fără o pereche de chei, clientul semnează clasic
+`client.connectTx(signer)` fără `pqcKeypair` semnează doar clasic. Rețelele
+publice acceptă asta doar pentru înregistrarea cheii (un cont fără cheie încă);
+pe un nod care nu cere extensia hibridă (un nod local de dezvoltare), trimite și
+transferuri obișnuite. Versiunile SDK anterioare lui 0.9.0 nu au un `TxClient`
+hibrid: trimiteți prin `signAndBroadcastHybrid` (consultați
+[Versiuni anterioare lui 0.9.0](/sdk/install#before-090)).
 :::
 
 ## Alte limbaje: conectare & citire

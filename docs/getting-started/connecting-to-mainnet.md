@@ -10,7 +10,7 @@ sidebar_position: 3
 Join the live QoreChain Vladi mainnet by configuring your node with the official genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **29 June 2026** (genesis block at 17:03 UTC) running release **v3.2.1** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
+This page covers the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`), live since **7 June 2026**, running release **v3.2.3** on Cosmos SDK v0.53. For the **`qorechain-diana`** testnet (EVM chain ID **9800**), see [Connecting to Testnet](/getting-started/connecting-to-testnet) and rehearse your setup there before going live.
 :::
 
 ## Public Endpoints
@@ -54,15 +54,15 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 The bundle contains `qorechaind` plus its required shared libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Keep your node current — v3.2.0 or later required
-Full nodes must track the network's live release — always install the binary the manifest points to, don't pin an old one. The current manifest is **v3.2.1** with `minCompatible` **3.2.0**. Mainnet has applied two governance upgrades that every node must handle: **v3.1.94** at height 2,122,074 (the emission cap) and **v3.2.0** at height 2,981,742 (the EVM authorisation window and the v2 hybrid-signature bytes). A node that joins fresh therefore needs a v3.2.x binary; prefer state sync (below) over replaying from genesis. The published chain-data snapshot predates both upgrade heights, so a node restored from it must replay them with a v3.2.x binary.
+:::caution Keep your node current — v3.2.3 required
+Full nodes must track the network's live release — always install the binary the manifest points to, don't pin an old one. The current manifest is **v3.2.3** with `minCompatible` **3.2.3** and `upgradeHeight` **3,662,051**: mainnet applied v3.2.3 there on 20 October 2026 through governance proposal 11, and a node still on an older release cannot follow the chain past that height. Earlier governance upgrades on mainnet were **v3.1.94** at height 2,122,074 (the emission cap), **v3.2.0** at height 2,981,742 (the EVM authorisation window and the v2 hybrid-signature bytes) and **v3.2.2** at height 3,556,788 (16 October 2026, proposal 7). v3.2.1 was a node-local release with no height. A node that joins fresh therefore needs the v3.2.3 binary; prefer state sync (below) over replaying from genesis. The published chain-data snapshot predates all of these upgrade heights, so a node restored from it has to replay them.
 
-v3.2.1 is a node-local release (no upgrade height, no governance vote): nodes on v3.2.0 keep following the chain, but upgrading is recommended. After switching to v3.2.1 set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error) and keep the system clock NTP-synchronised: a node stops when its clock is more than 60 seconds out. Always check the manifest's `"version"` and `"minCompatible"` fields before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period).
+Set `evm-chain-id = 9801` in `app.toml` (a different value is logged as an error) and keep the system clock NTP-synchronised: a node stops when its clock is more than 60 seconds out. Always check the manifest's `"version"` and `"minCompatible"` fields before trusting `binary.url` — the manifest is promoted deliberately (testnet first, mainnet after a soak period). Signing format, addresses, decimals, memos and fees did not change in v3.2.3.
+
+The testnet (`qorechain-diana`) runs v3.2.4, which is a testnet-only release: do not install it on a mainnet node, and the mainnet manifest will not offer it.
 :::
 
-:::caution A coordinated mainnet upgrade is scheduled — read before you start or restart a node
-Mainnet governance proposal **7** (expedited, voting until 15 October 2026 21:24 UTC) would apply **v3.2.2** at height **3,556,788** — roughly two days after 14 October at about 3.2 s per block. The proposal text says: stay on v3.2.1 (or v3.2.0) until that height; the node halts there, and you restart it on v3.2.2; transaction signing is unchanged. **Whether it happens depends on the vote** — check the outcome (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/7`, field `status`) and the `version` and `upgradeHeight` fields of the [mainnet manifest](https://download.qore.host/mainnet/latest.json) before you swap any binary. Do not install v3.2.2 early: a node that carries it before the height halts too. If the proposal fails or the height has passed, this note no longer applies.
-:::
+When a coordinated upgrade is scheduled, the proposal text names the height and tells you to stay on the previous release until then: the node halts at that height and you restart it on the new binary. Read the `status` of the proposal (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) and the `version` and `upgradeHeight` fields of the [mainnet manifest](https://download.qore.host/mainnet/latest.json) before you swap any binary, and never install an upgrade binary before its height: a node that carries it early halts too. No upgrade is scheduled at the time of writing (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` returns `"plan": null`).
 
 ### Build from source (development only)
 
@@ -150,7 +150,7 @@ TRUST_HASH=$(jq -r .stateSync.trustHash latest.json)
 
 Then set the `[statesync]` section of `config.toml` with those values — see [Running a Node](/developer-guide/running-a-node) for the full workflow, including a manual RPC-based fallback if you need to derive a trust point yourself.
 
-A chain-data snapshot is also listed in the manifest (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Read the values from the manifest rather than hardcoding a filename or height, since a new snapshot supersedes the old one. The snapshot is large (tens of gigabytes) and, as published in October 2026, was taken at height 1,966,629 (21 August 2026) — before the v3.1.94 and v3.2.0 upgrade heights — so a node restored from it replays both upgrades and must run a v3.2.x binary; state sync is usually faster:
+A chain-data snapshot is also listed in the manifest (`snapshot.url`, `snapshot.sha256`, `snapshot.height`). Read the values from the manifest rather than hardcoding a filename or height, since a new snapshot supersedes the old one. The snapshot is large (tens of gigabytes) and, as published in October 2026, was taken at height 1,966,629 (21 August 2026) — before every upgrade height listed above — so a node restored from it has to replay those upgrades; state sync is usually faster and avoids that:
 
 ```bash
 SNAPSHOT_URL=$(jq -r .snapshot.url latest.json)
@@ -256,8 +256,8 @@ http://localhost:1317
 | ----------------- | -------------------------------------- |
 | Chain ID          | `qorechain-vladi`                      |
 | EVM chain ID      | `9801` (hex `0x2649`)                  |
-| Chain version     | v3.2.1 (consensus rules of v3.2.0)     |
-| Live since        | 29 June 2026 17:03 UTC (genesis block) |
+| Chain version     | v3.2.3 (applied at height 3,662,051)   |
+| Live since        | 7 June 2026                            |
 | Block time        | about 3.2 seconds (measured average)   |
 | Token             | QOR (`uqor`, 10^6 micro-units = 1 QOR) |
 | Minimum gas price | `0.1uqor`                              |

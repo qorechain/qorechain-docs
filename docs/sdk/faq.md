@@ -9,7 +9,8 @@ sidebar_position: 8
 
 ## Is mainnet live?
 
-Yes. Mainnet is **live** (chain id `qorechain-vladi`). The testnet preset
+Yes. Mainnet is **live** (chain id `qorechain-vladi`, live since 7 June 2026) and
+runs chain version v3.2.3 as of 20 October 2026. The testnet preset
 (`qorechain-diana`) also remains available. Both presets ship localhost endpoint
 defaults; select the network with `createClient({ network: "mainnet" })` and
 override `endpoints` with your node URLs. See
@@ -81,16 +82,15 @@ is distinct from the Native `uqor` base of 10^6.
 
 ## Which packages are published, and where?
 
-All of them. The TypeScript core (`@qorechain/sdk`, 0.8.3), the EVM/SVM adapters
-(`@qorechain/evm`, `@qorechain/svm`, 0.8.0), the React kit (`@qorechain/react`,
-0.8.3) and the `create-qorechain-dapp` scaffolder (0.8.0) are on npm; the Python
-client is on PyPI (`pip install qorechain-sdk` at 0.8.3, import `qorsdk`); the Go
-client is on the module proxy
-(`go get github.com/qorechain/qorechain-sdk/packages/go/...`, tag
-`packages/go/v0.8.4`); the Rust client is on crates.io (`cargo add qorechain-sdk`,
-0.8.3); and the Java client is on Maven Central
-(`io.github.qorechain:qorechain-sdk:0.8.3`). See [Install](/sdk/install) for the
-full per-language commands.
+All of them (checked 21 October 2026). The TypeScript core (`@qorechain/sdk`, 0.9.0),
+the React kit (`@qorechain/react`, 0.9.0), the `create-qorechain-dapp` scaffolder
+(0.9.0) and the EVM/SVM adapters (`@qorechain/evm`, `@qorechain/svm`, 0.8.0) are on
+npm; the Python client is on PyPI (`pip install qorechain-sdk` at 0.9.0, import
+`qorsdk`); the Go client is on the module proxy
+(`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); the Rust client is
+on crates.io (`cargo add qorechain-sdk`, 0.9.0); and the Java client is on Maven
+Central (`io.github.qorechain:qorechain-sdk:0.9.0`). See [Install](/sdk/install) for the full
+per-language commands.
 
 ## My mnemonic is rejected
 
@@ -106,15 +106,18 @@ Before a hybrid tx PQC-verifies, the signer's PQC public key must be **registere
 explicitly** with `MsgRegisterPQCKeyV2` (a classical-signed, hybrid-exempt
 transaction); embedding the public key in the extension
 (`includePqcPublicKey: true`) does **not** register it, and the chain does not
-register a key on first use.
+register a key on first use. In TypeScript, give the client the keypair
+(`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) and every transaction it
+sends is signed hybrid.
 The chain accepts any valid FIPS-204 ML-DSA-87 signature, hedged or
 deterministic. The SDK signs deterministically by default (since 0.5.1) so a
 transaction always has the same signature and tx hash. If a hybrid tx fails with
 `pqc` code 21 (`hybrid_verify_failed`), the cause is the sign-bytes version,
-the chain-id, a stale PQC library or an unregistered key, never hedged signing.
-Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** and
-pass `rest` (or `signBytesVersion`): the builders throw on `qorechain-vladi` /
-`qorechain-diana` without one of them. See
+the chain-id, a stale PQC library or an unregistered or different key, never hedged
+signing.
+Both networks verify the v2 sign-bytes form, so use SDK **0.8.1 or later** (0.9.0
+is current) and pass `rest` (or `signBytesVersion`): the builders throw on
+`qorechain-vladi` / `qorechain-diana` without one of them. See
 [Troubleshooting code 21](/developer-guide/post-quantum-signing#code-21) and
 [Accounts & PQC signing](/sdk/concepts/accounts-pqc).
 
@@ -135,6 +138,42 @@ decoder rejects at CheckTx. Since **0.6.1** the extension is protobuf-encoded
 built with older versions are rejected on-chain, in every lane (including
 eth-native).
 
+## Which chain versions does the SDK work with?
+
+SDK **0.9.0** is the client release for chain v3.2.2 and v3.2.3: it transacts on
+mainnet **v3.2.3** and testnet **v3.2.4**, and has builders for the optional proof of
+possession on registration (attached automatically by `ensurePqcRegistered` once the
+network has applied v3.2.3), scoped EVM windows and the EIP-7702 consent messages.
+SDK **0.8.1 or later** also transacts on both networks (the v2 hybrid sign-bytes
+form, registration, hybrid sends and the EVM window work unchanged), but it has none
+of those builders: use the CLI for them (see
+[Versions before 0.9.0](/sdk/install#before-090)). v3.2.4 is live on the testnet
+only so far (mainnet governance proposal 13 would apply it at height 3,742,566), and the SDK sets no v3.2.4 field.
+
+## My PQC key registration was refused but the fee was taken
+
+A registration for an account that already holds a key is refused by the chain
+after the fee is deducted. `ensurePqcRegistered` in 0.9.0 reads
+`GET /qorechain/pqc/v1/account/{address}` first (pass `rest`), skips the registration
+when this keypair's key is registered, and throws `PqcKeyMismatchError` when a
+different one is. Earlier releases did not look first unless you passed
+`status: { registered: found }` yourself, where `found` comes from that route. Since
+v3.2.3 the chain also refuses weak, degenerate and reused keys; keys from
+`derivePqcCanonical` or `tx pqc gen-key` are fine.
+
+## `create-qorechain-dapp` installs an SDK that cannot sign
+
+Only version 0.8.0 of the scaffolder did: it wrote `^0.3.0` ranges for
+`@qorechain/sdk` and `@qorechain/evm`, and a caret range on a 0.x version stays
+inside 0.3. Version 0.9.0 scaffolds on the current SDK; if you used 0.8.0, run
+`npm i @qorechain/sdk@latest` (and `@qorechain/evm@latest`) after scaffolding.
+
+## `VERSION` says 0.8.0 but I installed 0.8.3
+
+The exported `VERSION` constant of 0.8.3 was not updated and reports `0.8.0`; from
+0.9.0 it matches the package. Read the installed version from `package.json` on
+earlier releases.
+
 ## My authenticator spend is rejected with `authenticator_replay`
 
 (The `abstractaccount` module is switched off on both networks today; a spend is
@@ -142,10 +181,14 @@ refused with `abstract account module is disabled` before any nonce is checked.
 See [Authenticators & delegated spending](/sdk/guides/authenticators). The
 guidance below applies once the module is enabled.)
 
-The nonce is wrong. `MsgExecuteEVM.nonce` must be the account's **current** EVM
-nonce (the relayer is a different account, so do **not** add 1);
-`MsgExecuteCosmos.nonce` is the **per-authenticator sequence** for
-`(account, pubkey)`, a separate store counter. Refetch the value and re-sign.
+The nonce is wrong. Both `MsgExecuteEVM.nonce` and `MsgExecuteCosmos.nonce` are the
+linked key's **authenticator sequence** for `(account, pubkey)`: a counter the chain
+keeps per linked key, starting at 0 and incremented by each successful execution. It
+is **not** the account's EVM nonce, and there is no query for it yet, so track it per
+linked key. Since v3.2.3 the EVM lane also signs `evmAuthSignBytesV2`, which binds the
+call's gas limit (`resolveEvmAuthDigestVersion` picks the form). Use the counter you
+track for that key and re-sign.
+
 Other authenticator failures decode via `decodeTxError`: `abstractaccount`
 codes 5 (`spending_limit_exceeded`), 6 (`session_key_expired`), and
 10 (`permission_denied`). See

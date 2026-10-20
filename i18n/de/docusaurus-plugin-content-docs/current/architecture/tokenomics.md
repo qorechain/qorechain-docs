@@ -23,16 +23,16 @@ Das Wirtschaftsmodell von QoreChain basiert auf dem nativen **QOR**-Token und fo
 | **Bech32-Präfix**       | `qor` (Konten: `qor1...`, Validatoren: `qorvaloper...`)    |
 
 :::note
-Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 29. Juni 2026 auf Release **v3.2.1**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) teilt sich dieselben Modulparameter; sein Angebots- und Emissionsverlauf unterscheidet sich jedoch (das Testnet-Angebot liegt weit über dem des Mainnets, und seine Emission hat die Obergrenze bereits überschritten) — verwenden Sie daher die Mainnet-Zahlen.
+Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Release **v3.2.3**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release **v3.2.4**) hat einen eigenen Emissions- und Angebotsverlauf (das Testnet-Angebot liegt weit über dem des Mainnets, und seine Emission hat die Obergrenze bereits überschritten) — verwenden Sie daher die Mainnet-Zahlen. Beträge, die sich mit jedem Block ändern, sind mit dem Datum gekennzeichnet, an dem sie gelesen wurden (20. Oktober 2026).
 :::
 
 ---
 
 ## Angebots- und Emissionsmodell {#supply-and-emission}
 
-QoreChain hat einen **endlichen, gedeckelten Angebotspfad**. Das Genesis-Angebot betrug **4.420.000.000 QOR** (geplant waren 4.500.000.000 QOR; 80.000.000 QOR, 1,78 %, wurden beim Token Generation Event vor dem Genesis verbrannt). Nach dem Genesis verändern nur zwei Dinge das Angebot:
+QoreChain hat einen **endlichen, gedeckelten Angebotspfad**. Das Genesis-Angebot betrug **4.420.000.000 QOR** (geplant waren 4.500.000.000 QOR; 80.000.000 QOR, 1,78 %, wurden beim Token Generation Event vor dem Genesis verbrannt). Nach dem Genesis verändert das Protokoll das Angebot über zwei Mechanismen:
 
-* **Emission** — das `x/inflation`-Modul prägt in jeder Epoche einen festen Betrag, unter einer **harten kumulativen Obergrenze von 114.285.714 QOR**. Geprägte Token gelangen in den Fee-Collector und durchlaufen dieselbe Gebührenaufteilung wie Transaktionsgebühren (siehe [Gebührenverteilung](#fee-distribution)).
+* **Emission** — das `x/inflation`-Modul prägt in jeder Epoche einen festen Betrag, unter einer **harten kumulativen Obergrenze von 590.000.000 QOR**. Geprägte Token gelangen in den Fee-Collector und durchlaufen dieselbe Gebührenaufteilung wie Transaktionsgebühren (siehe [Gebührenverteilung](#fee-distribution)).
 * **Burns** — das `x/burn`-Modul entfernt den Burn-Anteil von allem im Fee-Collector dauerhaft.
 
 ### Emission {#staking-reward-schedule}
@@ -40,21 +40,23 @@ QoreChain hat einen **endlichen, gedeckelten Angebotspfad**. Das Genesis-Angebot
 | Parameter | Wert |
 | --- | --- |
 | Emissionsmodus | `fixed` (seit v3.1.94, Höhe 2.122.074 — 26. August 2026) |
-| Emission pro Epoche | 16.239 QOR |
+| Emission pro Epoche | **86.000 QOR** (16.239 QOR bis Governance-Vorschlag 10; die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000) |
 | Epochenlänge | 43.200 Blöcke (etwa 38,6 Stunden bei der aktuellen Blockzeit von ≈3,2 s) |
-| Kumulative Obergrenze (`max_total_emission`) | 114.285.714 QOR |
-| Bisher geprägt (14. Oktober 2026, Epoche 81) | 105.200.179 QOR (92,05 % der Obergrenze) |
-| Verbleibend unter der Obergrenze | 9.085.535 QOR (etwa 559 Epochen bei 16.239 QOR pro Epoche) |
+| Kumulative Obergrenze (`max_total_emission`) | **590.000.000 QOR** (bis Vorschlag 10: 114.285.714 QOR) |
+| Bisher geprägt (20. Oktober 2026, Epoche 84) | 105.248.896,21 QOR (17,84 % der Obergrenze) |
+| Verbleibend unter der Obergrenze | 484.751.103,79 QOR (etwa 5.637 Epochen bei 86.000 QOR pro Epoche; die letzte ist unvollständig) |
 
-Sobald die Obergrenze erreicht ist, stellt das Modul das Prägen dauerhaft ein; danach stammen Belohnungen allein aus Transaktionsgebühren. Die Obergrenze wurde durch Governance-Vorschlag #4 festgelegt (angenommen, wobei der gesamte gebondete Stake dafür stimmte) und ersetzte den ursprünglichen abnehmenden Zeitplan, der für ein ausgereiftes, vollständig gebondetes Netzwerk kalibriert war und gemessen am tatsächlich gebondeten Stake weit schneller auszahlte als beabsichtigt. Die Zeitplanwerte (17,5 %, 11 %, 7 %, 7 %, 2 % für die Jahre 1–5) bleiben in den Modulparametern gespeichert, werden im `fixed`-Modus jedoch nicht verwendet.
+Sobald die Obergrenze erreicht ist, stellt das Modul das Prägen dauerhaft ein; danach stammen Belohnungen allein aus Transaktionsgebühren. Die Emissionswerte wurden per Governance festgelegt: Vorschlag #4 (26. August 2026) ersetzte den ursprünglichen abnehmenden Zeitplan durch einen festen Betrag unter einer harten Obergrenze, und Vorschlag #10 (angenommen am 19. Oktober 2026, wobei der gesamte gebondete Stake dafür stimmte) änderte diesen Betrag von 16.239 QOR auf 86.000 QOR pro Epoche und hob die Obergrenze von 114.285.714 QOR auf 590.000.000 QOR an. Die Epochenlänge blieb unverändert. Die Zeitplanwerte (17,5 %, 11 %, 7 %, 7 %, 2 % für die Jahre 1–5) bleiben in den Modulparametern gespeichert, werden im `fixed`-Modus jedoch nicht verwendet.
 
-QoreChain stellt keine Live-Zahl zur Staking-Rendite bereit; behandeln Sie jede genannte Prozentzahl als nicht verifiziert. Aktuelle Zahlen lassen sich aus dem Chain-Zustand lesen: das Angebot unter `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` und die Burn-Summen unter `GET /qorechain/burn/v1/stats`.
+Die geprägte Gesamtmenge, der verbleibende Betrag und die Höhe der nächsten Epoche sind live unter `GET /qorechain/inflation/v1/epoch_info` abrufbar (sein Feld `current_inflation_rate` meldet den alten jahresbasierten Satz, den der `fixed`-Modus nicht verwendet).
+
+QoreChain stellt keine Live-Zahl zur Staking-Rendite bereit; behandeln Sie jede genannte Prozentzahl als nicht verifiziert. Aktuelle Zahlen lassen sich aus dem Chain-Zustand lesen: das Angebot unter `GET /cosmos/bank/v1beta1/supply/by_denom?denom=uqor` (4.493.665.185,83 QOR am 20. Oktober 2026) und die Burn-Summen unter `GET /qorechain/burn/v1/stats`.
 
 ---
 
 ## x/burn — Mehrkanalige Burn-Engine
 
-Das `x/burn`-Modul definiert **12 Burn-Quellen**. Jeder verbrannte Token wird dauerhaft aus dem Angebot entfernt. Auf dem Mainnet wurden bisher nur für `gas_fee` Burns verzeichnet (31.560.093 QOR Stand 14. Oktober 2026); die übrigen sind definiert, haben aber keine verzeichnet.
+Das `x/burn`-Modul definiert **12 Burn-Quellen**. Jeder verbrannte Token wird dauerhaft aus dem Angebot entfernt. Auf dem Mainnet haben bisher nur `gas_fee` (31.574.710,28 QOR Stand 20. Oktober 2026) und seit v3.2.2 `failed_tx` (0,0855 QOR) Burns verzeichnet; die übrigen sind definiert, haben aber keine verzeichnet. Das Testnet hat eine dreizehnte Quelle, `staking_tier_penalty`, für das optionale zeitgesperrte Staking-Modul, das nur im Testnet existiert (siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Burn-Kanäle
 
@@ -65,7 +67,7 @@ Das `x/burn`-Modul definiert **12 Burn-Quellen**. Jeder verbrannte Token wird da
 | 3  | `ai_service`        | Nutzungsgebühren des KI-Moduls | 50 % der KI-Servicegebühren werden verbrannt     |
 | 4  | `bridge_fee`        | Cross-Chain-Bridge-Gebühren   | 100 % der Bridge-Gebühren werden verbrannt        |
 | 5  | `treasury_buyback`  | Treasury-Operationen          | Periodischer Buyback-and-Burn aus der Treasury    |
-| 6  | `failed_tx`         | Gas fehlgeschlagener Transaktionen | 10 % des Gas fehlgeschlagener Transaktionen werden verbrannt (von der Chain ab v3.2.2 angewendet; bisher nur im Testnet) |
+| 6  | `failed_tx`         | Gas fehlgeschlagener Transaktionen | 10 % des Gas fehlgeschlagener Transaktionen werden verbrannt (von der Chain ab v3.2.2 angewendet) |
 | 7  | `xqore_penalty`     | Strafen bei vorzeitigem xQORE-Ausstieg | Strafbeträge werden über den Burn-Mechanismus geleitet |
 | 8  | `auto_buyback`      | Automatisiertes Buyback-Programm | Automatisierte Burns auf Protokollebene         |
 | 9  | `tge`               | Token Generation Event        | Der TGE-Burn von 80.000.000 QOR erfolgte vor dem Genesis (das Genesis-Angebot beträgt 4.420.000.000 QOR); dieser Kanal ist reserviert und verzeichnet 0 |
@@ -102,7 +104,7 @@ Die Anteile sind:
 Die Anteile werden on-chain erzwungen und müssen immer exakt 100 % ergeben.
 
 :::note Was tatsächlich durch die Aufteilung fließt
-Die Aufteilung gilt für alles im Fee-Collector, der sowohl Transaktionsgebühren als auch die von `x/inflation` geprägte Epochen-Emission hält. In der Praxis ist es heute fast ausschließlich Emission: Von 105.200.179 geprägten QOR wurden 31.560.093 QOR (30,0 %) verbrannt, und 3.156.009 QOR (3,0 %) liegen in der Light-Node-Reserve. Bis zum Upgrade auf v3.2.0 (25. September 2026, Höhe 2.981.742) wurde der 10-%-Staker-Anteil in den Bestand des Distribution-Moduls verschoben, ohne einen Anspruch zu decken — Staker und Validatoren erhielten daher zusammen 37 %, nicht 47 %; ab dieser Höhe wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt, und der bereits gestrandete Betrag (6.693.045,92 QOR) wurde verzeichnet und kann nur per Governance-Abstimmung bewegt werden — siehe [Gestrandeter Staker-Anteil und Light-Node-Reserve](#stranded-and-reserve).
+Die Aufteilung gilt für alles im Fee-Collector, der sowohl Transaktionsgebühren als auch die von `x/inflation` geprägte Epochen-Emission hält. In der Praxis ist es heute fast ausschließlich Emission: Von 105.248.896 geprägten QOR wurden 31.574.710 QOR (30,0 %) über den Gas-Gebühren-Kanal verbrannt. Bis zum Upgrade auf v3.2.0 (25. September 2026, Höhe 2.981.742) wurde der 10-%-Staker-Anteil in den Bestand des Distribution-Moduls verschoben, ohne einen Anspruch zu decken — Staker und Validatoren erhielten daher zusammen 37 %, nicht 47 %; ab dieser Höhe wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt. Der bereits gestrandete Betrag wurde on-chain verzeichnet und ist inzwischen durch Governance-Abstimmungen freigegeben worden — siehe [Gestrandeter Staker-Anteil und Light-Node-Reserve](#stranded-and-reserve).
 :::
 
 ### Burn-Parameter
@@ -126,16 +128,16 @@ Jedes Burn-Ereignis wird on-chain mit seiner Quelle, dem Betrag, der Blockhöhe 
 
 ## Gestrandeter Staker-Anteil und Light-Node-Reserve {#stranded-and-reserve}
 
-Zwei Beträge haben sich auf dem Mainnet vor dem Upgrade auf v3.2.0 (25. September 2026, Höhe 2.981.742) angesammelt und werden nun **verzeichnet, außerhalb jeder Verteilung** gehalten. Beide können nur per Governance-Abstimmung bewegt werden.
+Zwei Beträge haben sich auf dem Mainnet vor dem Upgrade auf v3.2.0 (25. September 2026, Höhe 2.981.742) angesammelt. Das Upgrade hat sie **on-chain, außerhalb jeder Verteilung** verzeichnet und nur noch per Governance-Abstimmung bewegbar gemacht. Die Governance hat beide inzwischen im Oktober 2026 an die Foundation freigegeben:
 
-| Datensatz | Betrag auf dem Mainnet | Abfrage | Governance-Nachricht |
+| Datensatz | Freigabe | Betrag | Governance-Nachricht |
 | --- | --- | --- | --- |
-| **Gestrandeter Staker-Anteil** — der 10-%-Staker-Anteil, der dort hinterlegt wurde, wo er keinen Staking-Belohnungsanspruch deckte | 6.693.045,921330 QOR verzeichnet, 0 freigegeben | `GET /qorechain/burn/v1/stranded_rewards` | `MsgReleaseStrandedRewards` (Governance-Autorität; benanntes Ziel; darf den Datensatz nicht übersteigen) |
-| **Light-Node-Reserve** — der 3-%-Light-Node-Anteil, der sich ansammelte, während kein Light Node berechtigt war | 3.156.009,326407 QOR reserviert, 0 ausstehend | `GET /qorechain/lightnode/v1/reward_pool` | `MsgReleaseLightNodeReserve` (Governance-Autorität) |
+| **Gestrandeter Staker-Anteil** — der 10-%-Staker-Anteil, der dort hinterlegt wurde, wo er keinen Staking-Belohnungsanspruch deckte | Vorschlag 9 (angenommen am 19. Oktober 2026) | 6.693.045,921330 QOR freigegeben | `MsgReleaseStrandedRewards` (Governance-Autorität; benanntes Ziel; darf den Datensatz nicht übersteigen) |
+| **Light-Node-Reserve** — der 3-%-Light-Node-Anteil, der sich ansammelte, während kein Light Node berechtigt war | Vorschlag 8 (angenommen am 19. Oktober 2026) | 3.156.983,796395 QOR freigegeben | `MsgReleaseLightNodeReserve` (Governance-Autorität) |
 
-Ab der Upgrade-Höhe wird der Staker-Anteil als normale Staking-Belohnung ausgezahlt, und Light-Node-Belohnungen werden nur aus dem gezahlt, was seit dem vorherigen Verteilungslauf angefallen ist, mit einer Obergrenze pro Node und Block (`max_reward_per_block_per_node`, 1.713 uqor, gelesen am 14. Oktober 2026). Die Light-Node-Registrierung ist derzeit geschlossen, sodass kein Node berechtigt ist und der 3-%-Anteil weiter der Reserve zufließt. Eine Freigabe vor dem Upgrade-Snapshot, über dem verzeichneten Betrag oder an ein ungültiges Ziel wird abgelehnt.
+**Korrigierter Rest des gestrandeten Anteils.** Beim Upgrade auf v3.2.3 (Höhe 3.662.051, 20. Oktober 2026) hat die Chain den Datensatz des gestrandeten Anteils neu berechnet; er stand danach bei 3.807.496,785528 QOR (`reserved` in `GET /qorechain/burn/v1/stranded_rewards`, neben `released`, 6.693.045,921330 QOR). Governance-Vorschlag 12 schlägt vor, diesen Rest an die Foundation freizugeben; zum Zeitpunkt der Erstellung (20. Oktober 2026) befindet er sich in der Abstimmungsphase, die am 21. Oktober 2026 um 20:01 UTC endet. Prüfen Sie den Datensatz und den Vorschlag (`GET /cosmos/gov/v1/proposals/12`) auf das Ergebnis.
 
----
+**Der Light-Node-Pool jetzt.** Ab dem Upgrade auf v3.2.0 werden Light-Node-Belohnungen nur aus dem gezahlt, was seit dem vorherigen Verteilungslauf angefallen ist, mit einer Obergrenze pro Node. Seit v3.2.3 beträgt die Grenze **2.000 QOR pro Node und 30 Tage** (`max_reward_per_month_per_node`), anteilig nach Blockzeit und Uptime des Nodes; der Wert pro Block (`max_reward_per_block_per_node`, 1.713 uqor) wird weiterhin gemeldet, ist aber nicht mehr die maßgebliche Regel. Was nicht verdient wird, bleibt in der Reserve des Pools, die nur eine Governance-Abstimmung freigeben kann. Nach Vorschlag 8 füllt sich die Reserve wieder: Am 20. Oktober 2026 enthielt sie 487,2318 QOR (`reserved` in `GET /qorechain/lightnode/v1/reward_pool`), ohne ausstehende oder zahlbare Beträge, da sich noch kein Light Node registriert hat. Die Registrierung ist offen und lizenzgebunden (siehe [Light Node](/light-node/overview#reward-program-status)). Eine Freigabe vor dem Upgrade-Snapshot, über dem verzeichneten Betrag oder an ein ungültiges Ziel wird abgelehnt.
 
 ## x/xqore — Gesperrtes Staking und Governance-Verstärkung {#x-xqore}
 
@@ -185,31 +187,38 @@ Dies erzeugt eine positiv-summige Dynamik für langfristige Inhaber: Jeder vorze
 
 ## x/inflation — Gedeckelte Emission
 
-Das `x/inflation`-Modul prägt die Emission pro Epoche (16.239 QOR, `emission_mode = fixed`) und sendet sie an den Fee-Collector, bis die kumulative Obergrenze von 114.285.714 QOR erreicht ist. Parameteränderungen laufen über einen normalen Governance-Parametervorschlag (`MsgUpdateParams`, hinzugefügt in v3.1.94).
+Das `x/inflation`-Modul prägt die Emission pro Epoche (86.000 QOR seit Vorschlag 10, `emission_mode = fixed`) und sendet sie an den Fee-Collector, bis die kumulative Obergrenze von 590.000.000 QOR erreicht ist. Parameteränderungen laufen über einen normalen Governance-Parametervorschlag (`MsgUpdateParams`, hinzugefügt in v3.1.94).
 
 ### Epochen-Mechanik
 
 * **Epochenlänge**: 43.200 Blöcke (etwa 38,6 Stunden bei ≈3,2 s pro Block).
 * An jeder Epochengrenze prägt das Modul die Epochen-Emission (oder den Rest bis zur Obergrenze), aktualisiert den Epochen-Datensatz und stellt das Prägen ein, sobald `total_minted` die Obergrenze erreicht.
+* Seit v3.2.3 wird das Emissionsjahr aus der Epochenlänge abgeleitet statt aus einer festen Blockanzahl.
 
 ### Parameter
+
+Live gelesen am 20. Oktober 2026 von `GET /qorechain/inflation/v1/params`:
 
 | Parameter | Wert (Mainnet) | Beschreibung |
 | --- | --- | --- |
 | `emission_mode` | `fixed` | `schedule` (Legacy, jahresbasierte Sätze) oder `fixed` |
-| `fixed_epoch_emission` | 16.239.000.000 uqor | Pro Epoche im Fixed-Modus geprägt |
-| `max_total_emission` | 114.285.714.000.000 uqor | Harte kumulative Obergrenze |
+| `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | Pro Epoche im Fixed-Modus geprägt |
+| `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Harte kumulative Obergrenze |
 | `epoch_length` | 43.200 Blöcke | Blöcke pro Emissionsepoche |
 | `schedule` | 17,5 %, 11 %, 7 %, 7 %, 2 % (Jahre 1–5) | Legacy-Zeitplan, im Fixed-Modus ungenutzt |
 | `enabled` | `true` | Flag zur Modulaktivierung |
 
-Auf dem Mainnet sind diese Werte nicht über eine REST-Route verfügbar; sie lassen sich aus dem Chain-Zustand über die rohe Store-Schnittstelle des RPC `abci_query` lesen (Store `inflation`, Schlüssel `inflation/params` und `inflation/epoch`). Ein eigener Abfragedienst dafür existiert nur im Testnet (v3.2.2).
+Die Parameter und der Epochen-Datensatz des Moduls werden auf dem Mainnet seit v3.2.3 über REST bereitgestellt (`/qorechain/inflation/v1/params` und `/qorechain/inflation/v1/epoch_info`); sie lassen sich auch aus dem Chain-Zustand über die rohe Store-Schnittstelle des RPC `abci_query` lesen (Store `inflation`, Schlüssel `inflation/params` und `inflation/epoch`).
+
+:::note Nur Testnet (v3.2.4)
+Das `qorechain-diana`-Testnet behält seine früheren Emissionseinstellungen (16.239 QOR pro Epoche unter einer Obergrenze von 114.285.714 QOR, dort bereits erreicht). Die `x/inflation`-Parameter haben einen dritten Emissionsmodus erhalten, `target_apy`, mit einem Parameter `target_apy_bps`, der derzeit 0 ist und die Emission nicht steuert. Der Modus, das optionale zeitgesperrte Staking-Modul, das ihn nutzt, und die Beträge im Testnet sind auf dem Mainnet noch nicht live; der Mainnet-Governance-Vorschlag 13 würde das Release v3.2.4, das das Staking-Modul enthält, bei Höhe 3.742.566 anwenden, und der Emissionsmodus selbst würde sich nur durch eine eigene spätere Abstimmung ändern.
+:::
 
 ---
 
 ## Burn gegenüber Emission
 
-Die Emission ist gedeckelt (114.285.714 QOR), und der Burn-Anteil gilt für alles, was in den Fee-Collector gelangt, einschließlich der Emission. Bislang wurden 31.560.093 QOR verbrannt, bei 105.200.179 QOR geprägt; das Angebot liegt daher derzeit über seinem Genesis-Niveau. Nachdem die Obergrenze erreicht ist, kann das Angebot nur noch sinken, und zwar um den verbrannten Betrag.
+Die Emission ist gedeckelt (insgesamt 590.000.000 QOR), und der Burn-Anteil gilt für alles, was in den Fee-Collector gelangt, einschließlich der Emission. Bislang (20. Oktober 2026) wurden 31.574.710 QOR verbrannt, bei 105.248.896 QOR geprägt; das Angebot (4.493.665.186 QOR) liegt daher derzeit über seinem Genesis-Niveau. Nachdem die Obergrenze erreicht ist, kann das Angebot nur noch sinken, und zwar um den verbrannten Betrag.
 
 ---
 

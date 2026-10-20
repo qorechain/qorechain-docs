@@ -23,7 +23,7 @@ Bu bölümdeki her şey bir kullanıcı kılavuzudur: her sayfanın ne işe yara
 | **[Staking & Validators](/dashboard/staking-and-validators)** | Doğrulayıcıları inceleyin ve QOR'unuzu delege edin. |
 | **[Faucet](/dashboard/faucet)** | Testnet üzerinde test tokenleri talep edin. |
 | **[Quests](/dashboard/quests)** | Ağı öğrenmek için rehberli görevleri tamamlayın. |
-| **[Tools Hub](/dashboard/tools-hub)** | Light node indirmelerine ve durumuna, node kaydına, rollup taleplerine, SDK'ya ve lisanslama araçlarına ulaşın. |
+| **[Tools Hub](/dashboard/tools-hub)** | Altı sekmede operatör ve geliştirici araçları: Validator Program, Validator Application, Light Node, Node Registration, Rollups ve SDK. |
 
 ## Oturum açın {#sign-in}
 
@@ -39,7 +39,7 @@ Dashboard'da gezinmek hiçbir zaman cüzdan gerektirmez; bir cüzdan bağlamak, 
 
 Zincir üzerindeki durumu değiştiren çoğu işlem — token gönderme, takas, stake etme — bağlı bir cüzdan gerektirir. Dashboard'ın anahtarları nasıl ele aldığı ağa göre değişir:
 
-- **Mainnet non-custodial'dır.** Dashboard hiçbir zaman mainnet anahtarlarınızı tutmaz. Kendi cüzdanınızı bağlarsınız — **QoreX** (resmi QoreChain cüzdanı, uzantı veya uygulama olarak), **Keplr** veya **MetaMask** — ve Dashboard gerçek bakiyenizi ve geçmişinizi zincirden okur. Her mainnet işlemi kendi cüzdanınızda imzalanır, asla Dashboard tarafından değil. **Native rayda** gönderme ve stake etme işlemleri **QoreX gerektirir**, çünkü QoreChain hesapları yalnızca bugün QoreX'in üretebildiği kuantum-sonrası hibrit bir imza ile imzalanır; Keplr yine de Native raydaki bakiyenizi görüntülemek için bağlanabilir. **MetaMask**, **EVM rayında** bağlanır; oradan göndermek için ayrıca QoreX'ten açılan, açık bir EVM yetkilendirme penceresi gerekir ([MetaMask ile gönderme](/dashboard/wallet#send-metamask) bölümüne bakın).
+- **Mainnet non-custodial'dır.** Dashboard hiçbir zaman mainnet anahtarlarınızı tutmaz. Kendi cüzdanınızı bağlarsınız — **QoreX** (resmi QoreChain cüzdanı, uzantı veya uygulama olarak), **Keplr** veya **MetaMask** — ve Dashboard gerçek bakiyenizi ve geçmişinizi zincirden okur. Her mainnet işlemi kendi cüzdanınızda imzalanır, asla Dashboard tarafından değil. **Native rayda** gönderme ve stake etme işlemleri **QoreX gerektirir**, çünkü QoreChain hesapları yalnızca bugün QoreX'in üretebildiği kuantum-sonrası hibrit bir imza ile imzalanır; Keplr yine de Native raydaki bakiyenizi görüntülemek için bağlanabilir. **MetaMask**, **EVM rayında** bağlanır; oradan göndermek için ayrıca hesabın kuantum-sonrası anahtarı ve açık bir EVM yetkilendirme penceresi gerekir; bu pencere, MetaMask'in anahtarını paylaşan Ethereum tarzı (coin 60) hesap üzerinde QoreX'ten açılır ([MetaMask ile gönderme](/dashboard/wallet#send-metamask) bölümüne bakın).
 - **Testnet custodial'dır.** Dashboard sizin için bir test cüzdanı yönetir, böylece sıfır kurulumla ve gerçek değer riske atmadan deneyebilirsiniz.
 
 ### QoreX ile bağlanın (önerilen) {#connect-qorex}
@@ -77,8 +77,8 @@ Dashboard iki ağa karşı çalışır. Başlık, o anda bağlı olduğunuz ağ�
 
 | Ağ | Chain ID | Ne zaman kullanılır |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Gerçek değer ve üretim kullanımı için canlı ağ. Non-custodial: kendi cüzdanınızı bağlarsınız. |
-| **Testnet** | `qorechain-diana` | Dashboard tarafından yönetilen bir test cüzdanı ve test tokenleri için [Faucet](/dashboard/faucet) ile birlikte test için ücretsiz ortam. |
+| **Mainnet** | `qorechain-vladi` | Gerçek değer ve üretim kullanımı için canlı ağ (7 Haziran 2026'dan beri canlı, zincir v3.2.3 çalıştırıyor). Non-custodial: kendi cüzdanınızı bağlarsınız. |
+| **Testnet** | `qorechain-diana` | Dashboard tarafından yönetilen bir test cüzdanı ve test tokenleri için [Faucet](/dashboard/faucet) ile birlikte test için ücretsiz ortam (zincir v3.2.4 çalıştırıyor; yalnızca testnet'e özel bir sürüm). |
 
 Yerel token **QOR**'dur (temel birim `uqor`, burada 1 QOR = 10^6 uqor). Yeniyseniz, testnet ile başlayın, Faucet'ten token talep edin ve mainnet'e geçmeden önce ilk bir transfer deneyin.
 
@@ -91,5 +91,5 @@ Hızlıca uygulamalı deneyim kazanmak için [Connecting to Testnet](/getting-st
 * [Explorer](/dashboard/explorer) — blokları, işlemleri ve hesapları inceleyin.
 * [Wallet](/dashboard/wallet) — hesapları yönetin ve işlem gönderin.
 * [Trade / DEX](/dashboard/trade) — zincir üzerindeki AMM havuzlarına karşı token takas edin.
-* [Tools Hub](/dashboard/tools-hub) — light node indirmeleri ve durumu, node kaydı, rollup talepleri, SDK ve lisanslama.
+* [Tools Hub](/dashboard/tools-hub) — Validator Program, Validator Application, Light Node, Node Registration, Rollups ve SDK.
 * [Faucet](/dashboard/faucet) — testnet'te test tokenleri.

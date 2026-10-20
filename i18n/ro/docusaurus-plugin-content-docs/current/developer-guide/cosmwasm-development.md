@@ -10,7 +10,7 @@ sidebar_position: 3
 QoreChain acceptă contracte inteligente **CosmWasm**, permițând dezvoltatorilor să scrie programe sigure, izolate în sandbox, în Rust, care se compilează în WebAssembly. Contractele CosmWasm rulează alături de programele EVM și SVM în cadrul arhitecturii triple-VM a QoreChain.
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 29 iunie 2026, care rulează versiunea de nod **v3.2.1**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.2.
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`**, activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.3**. Înlocuiește cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 (doar testnet).
 :::
 
 :::caution Încărcarea codului și instanțierea necesită momentan permisiune explicită
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Apeluri între VM-uri
 
-Apelurile între VM-uri se trimit ca tranzacții `MsgCrossVMCall` prin modulul `x/crossvm`; vezi [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) pentru ciclul de viață al mesajelor. Contractele CosmWasm nu au astăzi o legătură (binding) pe partea contractului pentru a iniția un apel între VM-uri (nu există un mesaj personalizat `QoreChainMsg` pe care contractele să îl emită), așa că un contract nu poate apela un contract EVM sau SVM din interiorul punctului său de intrare `execute`.
+Apelurile între VM-uri se trimit ca tranzacții `MsgCrossVMCall` prin modulul `x/crossvm`; vezi [Interoperabilitate între VM-uri](/developer-guide/cross-vm-interoperability) pentru ciclul de viață al mesajelor. Contractele CosmWasm nu au o legătură (binding) dedicată pe partea contractului pentru a iniția un apel între VM-uri (nu există un mesaj personalizat `QoreChainMsg` pe care contractele să îl emită), așa că un contract nu poate apela un contract EVM sau SVM din interiorul punctului său de intrare `execute`. Începând cu v3.2.3, un apel către propriul lane al apelantului este refuzat, iar un apel aflat în coadă care eșuează nu lasă în urmă niciun efect secundar.
 
 :::caution Apelurile între VM-uri sunt în prezent oprite pe mainnet
 `MsgCrossVMCall` se află pe lista circuit breaker-ului mainnet-ului (`qorechaind query circuit disabled-list`), iar lane-ul SVM este dezactivat pe ambele rețele, așa că ruta între VM-uri nu poate fi folosită astăzi pentru tranzacții obișnuite.

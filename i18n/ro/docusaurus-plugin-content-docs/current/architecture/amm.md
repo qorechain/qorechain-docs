@@ -21,8 +21,32 @@ Comenzile de mai jos folosesc `qorechaind`. Adăugați flag-urile uzuale de tran
 :::
 
 :::caution Nu există încă pool-uri
-Modulul AMM este activ pe mainnet și pe testnet, dar **nu a fost creat încă niciun pool**, iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
+Modulul AMM este activ pe mainnet (v3.2.3) și pe testnet (v3.2.4), dar **nu a fost creat încă niciun pool** (verificat pe 20 octombrie 2026: `GET /qorechain/amm/v1/pools` returnează o listă goală pe ambele), iar denom-urile din exemplele de mai jos (`uusdc`, `uusdt`) sunt ilustrative: astăzi nu există astfel de active pe rețele. Până când există un pool, orice comandă de schimb sau de adăugare de lichiditate eșuează cu o eroare de tip pool negăsit.
 :::
+
+## Parametrii modulului {#parameters}
+
+Citiți valorile curente cu `qorechaind query amm params` sau `GET /qorechain/amm/v1/params`. Mainnet și testnet raportează în prezent aceleași valori:
+
+| Parametru | Valoare | Semnificație |
+| --- | --- | --- |
+| `enabled` | `true` | Comutatorul modulului |
+| `swap_fee_bps` | `30` | Taxa de schimb, 0,30 % din suma de intrare |
+| `protocol_fee_bps` | `10` | Partea din taxa de schimb care părăsește pool-ul ca cotă a protocolului (0,10 % din intrare). Restul rămâne în pool pentru furnizorii de lichiditate |
+| `pool_creation_fee` | `100000000` | 100 QOR (în uqor), percepuți peste depozitele inițiale și arși la crearea unui pool |
+| `min_liquidity` | `1000` | Cel mai mic dintre cele două depozite inițiale ale unui pool nou trebuie să fie de cel puțin atâtea unități de bază |
+| `max_pools_per_creator` | `50` | Pool-uri pe care le poate crea un cont |
+| `max_swap_impact_bps` | `500` | Cel mai mare impact asupra prețului pe care îl poate avea un schimb (5 %); vedeți [Regulile de schimb](#swap-rules) |
+| `lp_token_decimals` | `6` | Zecimalele token-ului LP al unui pool |
+
+## Regulile de schimb aplicate începând cu v3.2.2 {#swap-rules}
+
+Corecțiile de integritate AMM de mai jos au fost aplicate pe mainnet cu v3.2.2 (înălțimea 3.556.788, 16 octombrie 2026) și rafinate în v3.2.3 (înălțimea 3.662.051, 20 octombrie 2026). Se aplică fiecărui schimb, indiferent de lane-ul din care sosește.
+
+* **Ambele denominări sunt legate de pool.** Un schimb trebuie să numească cele două denom-uri ale pool-ului vizat. Pool-urile stable-swap sunt evaluate cu curba stable-swap în ambele direcții (exact-in și exact-out).
+* **Taxa de protocol.** Cota de protocol din taxa de schimb părăsește pool-ul. Când este plătită în QOR, ajunge la colectorul de taxe și este împărțită cu celelalte taxe ale blocului (vedeți [Tokenomics](/architecture/tokenomics)), iar partea arsă este înregistrată sub sursa de ardere `amm`; în orice altă denominare ajunge în community pool. Taxa de creare a pool-ului este arsă și înregistrată sub aceeași sursă `amm`.
+* **Plafonul impactului asupra prețului.** `max_swap_impact_bps` este aplicat: un schimb al cărui impact asupra prețului pool-ului depășește 5 % este refuzat. Un schimb care nu stabilește nicio limită de alunecare (`min-out` de 0 la exact-in, sau un `max-in` care acoperă întreaga rezervă de intrare la exact-out) este măsurat suplimentar față de prețul pool-ului de la începutul blocului și este refuzat dacă tranzacțiile anterioare din același bloc l-au mutat peste plafon. Setați un `min-out` / `max-in` real la fiecare schimb.
+* **Muncă limitată la sfârșit de bloc (v3.2.3).** La sfârșitul fiecărui bloc, modulul reîmprospătează prețul mediu ponderat curent al cel mult 100 de pool-uri, în rotație (round-robin). Cât timp există 100 de pool-uri sau mai puține, fiecare pool este reîmprospătat în fiecare bloc; peste acest număr, media unui pool se actualizează o dată la fiecare rundă de `ceil(pools / 100)` blocuri. Media este informativă (este returnată de interogările `pool`) și nu modifică prețul schimburilor.
 
 ## Pool-uri și cote LP
 
@@ -127,7 +151,7 @@ qorechaind query amm lp-balance 1 qor1youraddr...
 
 ## Suspendarea și reluarea unui pool
 
-Pool-urile pot fi suspendate și reluate de către autoritatea de guvernanță. Pe mainnet, aceste două mesaje sunt în prezent dezactivate de întrerupătorul de circuit (circuit breaker). Un pool suspendat respinge schimburile și modificările de lichiditate până când este reluat — util pentru răspunsul la incidente sau pentru mentenanță coordonată.
+Pool-urile pot fi suspendate și reluate de către autoritatea de guvernanță. Pe mainnet, aceste două mesaje sunt în prezent dezactivate de întrerupătorul de circuit (circuit breaker); pe testnet nu sunt dezactivate. Un pool suspendat respinge schimburile și modificările de lichiditate până când este reluat — util pentru răspunsul la incidente sau pentru mentenanță coordonată.
 
 
 ## Rezumatul comenzilor
@@ -161,4 +185,5 @@ Pool-urile pot fi suspendate și reluate de către autoritatea de guvernanță. 
 - **Trade / DEX din Dashboard** expune aceste pool-uri, cotații și schimburi într-o interfață grafică pentru utilizatorii de zi cu zi.
 - Pentru modul în care oferta de QOR, taxele și valoarea circulă prin lanț, vedeți [Tokenomics](/architecture/tokenomics).
 - Încercați singur schimburile în interfața [Trade / DEX](/dashboard/trade).
-- Pentru a aduce mai întâi active pe QoreChain, vedeți [Transferul de active prin punte](/user-guide/bridging-assets).
+- Pentru a aduce mai întâi active pe QoreChain, vedeți [Transferul de active prin punte](/user-guide/bridging-assets) (bridge-ul nu este încă activ).
+- Pool-urile pot fi, de asemenea, o sursă de preț pentru taxe în [Abstractizarea gazului](/user-guide/gas-abstraction); în prezent nu este acceptat niciun token pentru taxe.

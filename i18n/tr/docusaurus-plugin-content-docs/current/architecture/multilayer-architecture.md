@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain, `x/multilayer` modülü aracılığıyla **4 katmanlı hiyerarşik zincir mimarisi** uygular. Ana zincir, uzlaştırma ve güven kökü olarak hizmet ederken, alt katmanlar (yan zincirler, ödeme zincirleri ve rollup'lar) farklı performans ve güvenlik dengeleriyle özelleşmiş iş yüklerini ele alır.
 
 :::caution Erken aşama yeteneği
-Modül ana ağda (zincir sürümü **v3.2.1**) ve test ağında dağıtılmıştır, ancak **her iki ağda da henüz hiçbir katman ve hiçbir bağlantı (anchor) yoktur**. Aşağıdakilerin tamamı modülü inşa edildiği şekliyle anlatır; parametreler canlı değerlerdir.
+Modül ana ağda (zincir sürümü **v3.2.3**) ve test ağında (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir katman ve hiçbir bağlantı (anchor) yoktur** (20 Ekim 2026'da kontrol edildi: `GET /qorechain/multilayer/v1/layers` her ikisinde de boş bir liste döndürür). Aşağıdakilerin tamamı modülü inşa edildiği şekliyle anlatır; parametreler canlı değerlerdir. Ana ağda `MsgUpdateLayerStatus` mesajı şu anda devre kesici tarafından kapatılmıştır (bkz. [Zincir Parametreleri](/appendix/chain-parameters#circuit-breaker)); test ağında kapatılmamıştır.
 :::
 
 ---
@@ -64,7 +64,7 @@ Ana zincir, tüm QoreChain ekosisteminin güven köküdür.
 | Uzlaşma    | QoreChain uzlaşması (bugün devrede olanlar için bkz. [Uzlaşma Mekanizması](/architecture/consensus-mechanism)) |
 | Güvenlik   | Dilithium-5 imzalarıyla PQC güvenceli                                          |
 | Rol        | Uzlaştırma katmanı, durum bağlantısı (anchor) depolama, QCAI yönlendirme motoru, güven kökü |
-| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3,2 saniye, test ağında yaklaşık 1,0 saniye (Ekim 2026'da ölçülmüştür) |
+| Blok süresi | Ağa bağlıdır: ana ağda yaklaşık 3.2 saniye, test ağında yaklaşık 1.0 saniye (20 Ekim 2026'da ölçülmüştür) |
 
 Tüm alt katmanlar, durum köklerini Hiyerarşik Bağlılık Şemaları (HCS) aracılığıyla periyodik olarak ana zincire bağlar.
 
@@ -160,7 +160,11 @@ Alt katmanlar, durumlarını **durum bağlantıları (state anchors)** aracılı
 | `transaction_count`       | Son bağlantıdan bu yana işlem sayısı                 |
 | `compressed_state_proof`  | Sıkıştırılmış durum geçiş kanıtı                     |
 
-### Bağlantı Gönderimi
+### Katman ve rollup kimlikleri {#id-grammar}
+
+v3.2.2'den itibaren **yeni** bir katman kimliği (ve bir rollup'ın katmanıyla paylaştığı rollup kimliği) `^[a-z0-9][a-z0-9._-]{2,63}$` ifadesiyle eşleşmelidir: 3 ila 64 karakter; küçük harfler, rakamlar, `.`, `_` ve `-`; bir harf veya rakamla başlamalıdır. Keeper bunu katman oluşturulurken kontrol eder ve bu kontrolden geçemeyen bir işlem yine de ücretini öder, bu nedenle kimlikleri önce istemcide doğrulayın. v3.2.2'den önce oluşturulan kimlikler bundan etkilenmez.
+
+### Bağlantı Gönderimi {#anchor-submission}
 
 Bağlantılar, `MsgAnchorState` aracılığıyla ana zincire gönderilir. Keeper, bağlantıyı aşağıdaki adımlara göre doğrular:
 
@@ -168,9 +172,11 @@ Bağlantılar, `MsgAnchorState` aracılığıyla ana zincire gönderilir. Keeper
 2. **Minimum bağlantı aralığı geçti** — Keeper, bu katman için son bağlantıdan bu yana en az `min_anchor_interval` blok (varsayılan: 100) geçtiğini kontrol eder.
 3. **PQC toplu imzası** — Keeper, PQC toplu imzasının mevcut olduğundan ve bağlantı verileri için geçerli olduğundan emin olur. İmza, **katman oluşturucusunun** kayıtlı ML-DSA-87 anahtarına karşı kontrol edilir; oluşturucunun kayıtlı anahtarı yoksa bağlantı reddedilir.
 
+`x/rdk` aracılığıyla yazılan bir **uzlaştırma bağlantısı** (v3.2.2'den beri bir `anchor_signature` ile gönderilen bir toplu iş) özel bir durumdur: toplu işler sırayla geldiği için minimum aralık kontrolünü atlar, hâlâ `proposed` durumunda olan bir katmanı bağlayabilir (zincir üstünde bir RDK rollup'ının kaydettiği bir katmanı yükselten hiçbir şey yoktur) ve yalnızca gönderen katmanın kendi oluşturucusuysa kabul edilir. İmza kontrolü aynıdır.
+
 ### İtiraz Süresi
 
-Her bağlantı, **24 saatlik** (86.400 saniye, katman başına yapılandırılabilir) bir **itiraz süresine** girer. Bu süre boyunca herhangi bir taraf, `MsgChallengeAnchor` aracılığıyla bir dolandırıcılık kanıtı sunarak bağlantıya itiraz edebilir. Dolandırıcılık kanıtı geçerliyse, bağlantı geçersiz kılınır ve alt zincirin durumu önceki bağlantıya geri alınır.
+Her bağlantı, **24 saatlik** (86,400 saniye, katman başına yapılandırılabilir) bir **itiraz süresine** girer. Bu süre boyunca herhangi bir taraf, `MsgChallengeAnchor` aracılığıyla bir dolandırıcılık kanıtı sunarak bağlantıya itiraz edebilir. Dolandırıcılık kanıtı geçerliyse, bağlantı geçersiz kılınır ve alt zincirin durumu önceki bağlantıya geri alınır.
 
 İtiraz süresi başarılı bir itiraz olmadan sona erdikten sonra, bağlantı kesinleşmiş kabul edilir.
 
@@ -181,7 +187,24 @@ Bağlantılar, çok katmanlı sorgu hizmeti aracılığıyla **okunabilir**. İk
 * **`Anchor`** (`/qorechain/multilayer/v1/anchor/{layer_id}`) — bir katman için en son durum bağlantısını döndürür.
 * **`Anchors`** (`/qorechain/multilayer/v1/anchors/{layer_id}`) — bir katman için bağlantı geçmişini döndürür.
 
-Her bağlantı, `layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash` mesajı üzerinde katman oluşturucusunun Dilithium-5 imzasını taşır. Daha yeni bir zincir sürümü imzalanan mesajı değiştirir, bu nedenle istemciler bunu koda sabit olarak yazmamalıdır. Bir imza, kayıtlı oluşturucu anahtarının bu baytları imzaladığını kanıtlar; bağlantının var olup olmadığı ise zincire sorulması gereken bir sorudur, dolayısıyla bir doğrulayıcı bağlantıyı güvendiği bir düğümden okumalıdır. Şu anda her iki ağda da hiçbir katman veya bağlantı yoktur. Bu, Rollup Geliştirme Kiti'nin [uzlaştırma makbuzlarının](/rollups/settlement-receipts) arkasındaki zincir üstü ilkeldir.
+Her bağlantı, katman oluşturucusunun Dilithium-5 (ML-DSA-87) imzasını taşır. İmzalanan mesaj, bağlantının gönderildiği yüksekliğe bağlıdır:
+
+* **v3.2.2'den itibaren (mainnet yüksekliği 3,556,788, testnet yüksekliği 6,905,034): v2.** Her değişken uzunluklu alan 8 baytlık big-endian bir uzunluk taşır, zincir kimliği mesajın bir parçasıdır ve işlem sayısı ile sıkıştırılmış durum kanıtı kapsanır:
+
+```text
+"qorechain-multilayer-anchor-v2"
+‖ BE64(len(chain_id))            ‖ chain_id
+‖ BE64(len(layer_id))            ‖ layer_id
+‖ BE64(layer_height)
+‖ BE64(len(state_root))          ‖ state_root
+‖ BE64(len(validator_set_hash))  ‖ validator_set_hash
+‖ BE64(transaction_count)
+‖ BE64(len(compressed_state_proof)) ‖ compressed_state_proof
+```
+
+* **v3.2.2'den önce: v1** (`layer_id ‖ layer_height (8-byte big-endian) ‖ state_root ‖ validator_set_hash`; uzunluk öneki ve zincir kimliği yoktur, dolayısıyla bir v1 imzası her zincirde geçerlidir). Zincir, v3.2.2 yüksekliğinden itibaren v1 bağlantısını kabul etmez.
+
+Mesaj sürümler arasında değişebileceğinden, bir istemci biçimi koda sabit yazmak yerine uygulanmış plan yüksekliğinden (`GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.2`; `"height":"0"` uygulanmadığı anlamına gelir) seçmelidir. Bir RDK toplu işi için eşleme şöyledir: `layer_id` = rollup'ın katman kimliği, `layer_height` = toplu iş dizini, `state_root` = toplu işin durum kökü, `transaction_count` = toplu işin işlem sayısı ve boş bir `compressed_state_proof`. `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id>` bu baytları çevrimdışı yazdırır. Bir imza, kayıtlı oluşturucu anahtarının bu baytları imzaladığını kanıtlar; bağlantının var olup olmadığı ise zincire sorulması gereken bir sorudur, dolayısıyla bir doğrulayıcı bağlantıyı güvendiği bir düğümden okumalıdır. Şu anda her iki ağda da hiçbir katman veya bağlantı yoktur. Bu, Rollup Geliştirme Kiti'nin [uzlaştırma makbuzlarının](/rollups/settlement-receipts) arkasındaki zincir üstü ilkeldir.
 
 ---
 
@@ -250,3 +273,5 @@ Durum geçişleri keeper tarafından zorunlu kılınır. Geçersiz geçişler (�
 | `routing_enabled`              | bool   | `true`          | QCAI tabanlı işlem yönlendirmeyi etkinleştir            |
 | `routing_confidence_threshold` | string | `0.6`           | QCAI yönlendirme kararları için minimum güven           |
 | `cross_layer_fee_bundling`     | bool   | `true`          | Genel Katmanlar Arası Ücret Paketlemeyi etkinleştir     |
+
+Bunlar, 20 Ekim 2026'da mainnet ve testnet üzerinde `qorechaind query multilayer params` (REST: `/qorechain/multilayer/v1/params`) tarafından döndürülen değerlerdir. v3.2.2'den beri modülün `MsgUpdateParams` mesajı yönlendirilebilir, dolayısıyla bir yönetişim önerisi bunları değiştirebilir.

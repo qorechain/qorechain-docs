@@ -104,21 +104,29 @@ tramite REST. Vedi [il namespace `qor_`](/api-reference/json-rpc-qor_-namespace)
 Su mainnet e testnet ogni transazione del percorso Native deve portare la firma
 **ibrida** (secp256k1 classica più ML-DSA-87), e la chiave ML-DSA-87
 dell'account deve essere **registrata prima on-chain**. La registrazione è
-esplicita: non esiste alcuna registrazione automatica alla prima transazione. Un
-semplice `tx.bankSend` (solo firma classica) viene rifiutato dalle reti live. I
-due passaggi seguenti richiedono **SDK 0.8.3 o successivo**
-(`derivePqcCanonical`; 0.8.1 o successivo per gli invii ibridi in generale) e un
-account con fondi:
+esplicita: non esiste alcuna registrazione automatica alla prima transazione. Una
+transazione firmata solo in modo classico viene rifiutata dalle reti live, quindi
+dai al client delle transazioni la coppia di chiavi ML-DSA-87 dell'account e
+firmerà ogni transazione in modo ibrido. I due passaggi seguenti richiedono
+**SDK 0.9.0 o successivo** e un account con fondi:
 
 ```bash
-npm i @qorechain/sdk @cosmjs/stargate
+npm i @qorechain/sdk
 ```
 
 ### 4a. Registrare la tua chiave post-quantistica (una sola volta)
 
-La registrazione è firmata in modo classico ed esente dal requisito ibrido,
-così un nuovo account può avviare la sua prima chiave. L'account paga la
-commissione: la chiave da 2.592 byte richiede un gas limit di circa 600.000.
+L'account paga la commissione: la chiave da 2.592 byte richiede un gas limit di
+circa 600.000. `ensurePqcRegistered` legge prima lo stato della chiave via REST
+(`rest`), quindi salta la transazione quando la chiave è già registrata, e lancia
+`PqcKeyMismatchError` senza inviare nulla quando l'account detiene una chiave
+*diversa* (una seconda registrazione viene rifiutata **dopo che la commissione è
+stata prelevata**). La registrazione è l'unica transazione firmata in modo classico
+che la chain accetta da un account senza chiave, quindi il client ibrido la invia
+da sé in modo classico. Una volta che la rete ha applicato la v3.2.3 (lo hanno
+fatto entrambe le reti), l'helper allega anche la prova di possesso opzionale. La
+chain rifiuta chiavi deboli, degeneri o riutilizzate; una chiave ottenuta da
+`derivePqcCanonical` va bene.
 
 ```ts
 import {
@@ -136,20 +144,16 @@ const client = createClient({ endpoints: { rest: REST, rpc: RPC } });
 
 const account = await deriveNativeAccount(mnemonic);
 const signer = await directSignerFromPrivateKey(account.privateKey, "qor");
-const tx = await client.connectTx(signer);
 
 // The address-bound ML-DSA-87 key, recoverable from { address, mnemonic }.
 const pqcKeypair = derivePqcCanonical(account.address, mnemonic);
 
-// Read the status over REST (the default status source needs `qor_`).
-const { found } = await client.rest.get<{ found: boolean }>(
-  `/qorechain/pqc/v1/account/${account.address}`,
-);
+// With the keypair, every transaction this client sends is signed hybrid.
+const tx = await client.connectTx(signer, { pqcKeypair });
 
 const res = await ensurePqcRegistered(tx, {
   pqcKeypair,
-  ecdsaPubkey: account.publicKey,
-  status: { registered: found },          // skips the transaction when already registered
+  rest: client.network.endpoints.rest, // reads the status first; never registers blind
   fee: { amount: [{ denom: "uqor", amount: "60000" }], gas: "600000" },
 });
 console.log(res.alreadyRegistered ? "already registered" : res.txHash);
@@ -157,51 +161,26 @@ console.log(res.alreadyRegistered ? "already registered" : res.txHash);
 
 ### 4b. Inviare con una firma ibrida
 
-`signAndBroadcastHybrid` costruisce, firma e trasmette. Passa `rest` in modo che
-l'SDK possa chiedere alla rete quale forma di sign-bytes verifica (vedi
-[Quale forma di sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions)).
-Usa `toBase("1.5")` per convertire QOR in `uqor` base. Il prezzo minimo del gas
-della rete è 0,1 uqor per unità di gas, quindi un gas limit di 400.000 richiede
-una commissione di almeno 40.000 uqor.
+`tx.bankSend` ora firma in modo ibrido. La commissione è `"auto"` per impostazione
+predefinita: il client simula da sé la transazione ibrida e aggiunge il gas della
+verifica post-quantistica, che la simulazione non addebita. Il prezzo minimo del
+gas della rete è 0,1 uqor per unità di gas (il client applica 0,15). Usa
+`toBase("1.5")` per convertire QOR in `uqor` base.
 
 ```ts
-import { StargateClient } from "@cosmjs/stargate";
-import {
-  signAndBroadcastHybrid,
-  qorechainRegistry,
-  MSG_SEND_TYPE_URL,
-  toBase,
-} from "@qorechain/sdk";
+import { toBase } from "@qorechain/sdk";
 
-const transport = await StargateClient.connect(RPC);
-const info = await transport.getSequence(account.address); // { accountNumber, sequence }
-
-const result = await signAndBroadcastHybrid({
-  registry: qorechainRegistry(),
-  signer,
-  pqcKeypair,
-  messages: [
-    {
-      typeUrl: MSG_SEND_TYPE_URL,
-      value: {
-        fromAddress: account.address,
-        toAddress: "qor1recipientaddress...",
-        amount: [{ denom: "uqor", amount: toBase("1.5") }],
-      },
-    },
-  ],
-  fee: { amount: [{ denom: "uqor", amount: "40000" }], gas: "400000" },
-  chainId: client.network.chainId,
-  accountNumber: info.accountNumber,
-  sequence: info.sequence,
-  rest: REST,
-  transport,
-});
-
+const result = await tx.bankSend("qor1recipientaddress...", [
+  { denom: "uqor", amount: toBase("1.5") },
+]);
 console.log(result.transactionHash);
 ```
 
-`toBase("1.5")` restituisce `"1500000"` (QOR ha 10^6 unità base `uqor`).
+`toBase("1.5")` restituisce `"1500000"` (QOR ha 10^6 unità base `uqor`). Per
+inviare allo stesso modo qualsiasi altro messaggio, passalo a
+`tx.signAndBroadcast([message], "auto")`. Per un controllo esplicito di
+commissione, numero di account e sequence, usa `signAndBroadcastHybrid` (vedi
+[Account e firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing)).
 
 :::info Account unificati
 Per un account unificato eth-native (`deriveUnifiedAccount`), usa invece
@@ -209,12 +188,14 @@ Per un account unificato eth-native (`deriveUnifiedAccount`), usa invece
 [Account e firma PQC](/sdk/concepts/accounts-pqc#hybrid-signing).
 :::
 
-:::note Gli invii classici funzionano solo su nodi locali e di sviluppo
-Il percorso classico `client.connectTx(signer)` più `tx.bankSend(...)` esiste
-ancora, ed è quello che `ensurePqcRegistered` usa per l'unica transazione di
-registrazione. Su un nodo che non richiede l'estensione ibrida (un nodo di
-sviluppo locale) invia anche trasferimenti ordinari. Le reti pubbliche lo
-rifiutano.
+:::note Senza una coppia di chiavi il client firma in modo classico
+`client.connectTx(signer)` senza `pqcKeypair` firma solo in modo classico. Le reti
+pubbliche lo accettano soltanto per la registrazione della chiave (un account
+senza ancora una chiave); contro un nodo che non richiede l'estensione ibrida (un
+nodo di sviluppo locale) invia anche i trasferimenti ordinari. Le versioni
+dell'SDK precedenti alla 0.9.0 non hanno un `TxClient` ibrido: invia tramite
+`signAndBroadcastHybrid` (vedi
+[Versioni precedenti alla 0.9.0](/sdk/install#before-090)).
 :::
 
 ## Altri linguaggi: connessione e lettura

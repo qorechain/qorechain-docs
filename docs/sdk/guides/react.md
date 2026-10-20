@@ -15,21 +15,24 @@ provider, a handful of hooks, and two drop-in components — including a one-lin
 npm i @qorechain/react @qorechain/sdk react react-dom
 ```
 
-`react` (>=18) is a peer dependency; `@qorechain/sdk` is a direct dependency,
-pinned to the same version as the kit. Use `@qorechain/react` **0.8.3 or later**:
-0.8.0 pins SDK 0.8.0, which signs the wrong hybrid form on mainnet, and earlier
-0.8.x releases can show a stale balance or status after an address change.
+`react` (>=18) is a peer dependency; `@qorechain/sdk` is a direct dependency
+(`^0.9.0` since kit 0.9.0; on a 0.x version the caret stays inside 0.9, so an SDK
+patch does not install a second copy). Use `@qorechain/react` **0.9.0**: 0.8.0 pins
+SDK 0.8.0, which signs the wrong hybrid form on mainnet, and earlier 0.8.x releases
+can show a stale balance or status after an address change.
 
-:::caution Live-network limits of the React kit (0.8.x)
-`useTx` sends with the connected wallet's classical signature only, which the
-live networks reject (the Native path requires the hybrid ML-DSA-87 extension), so
-`send` / `sendTokens` cannot land a transaction on mainnet or testnet; use the
-SDK's [hybrid builders](/sdk/concepts/accounts-pqc#hybrid-signing) for sends.
-`usePqcStatus` and `<QuantumSafeBadge/>` read `qor_getPQCKeyStatus`, which the
-public endpoints do not serve (see
-[the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)), so they cannot
-confirm a key against `*.qore.host`. Balance reads (`useBalance`) and wallet
-connection work.
+:::caution Live-network limits of the React kit (0.9.0)
+`useTx` connects with the wallet's signer and no post-quantum keypair, so it sends
+with the classical signature only, which the live networks reject (the Native path
+requires the hybrid ML-DSA-87 extension): `send` / `sendTokens` cannot land a
+transaction on mainnet or testnet. Send with the SDK's hybrid `TxClient`
+(`client.connectTx(signer, { pqcKeypair })`, see
+[Quantum-safe](/sdk/guides/quantum-safe#register-in-one-call)) for sends. `usePqcStatus` and `<QuantumSafeBadge/>` read the status through
+`getPqcStatus` with the provider's composed client, which since SDK 0.9.0 reads over
+REST (`/qorechain/pqc/v1/account/{address}`), so they work against `*.qore.host`
+(kit 0.8.x read `qor_getPQCKeyStatus`, which the public endpoints do not serve, and
+could not confirm a key there). Balance reads (`useBalance`) and wallet connection
+work.
 :::
 
 ## Provider

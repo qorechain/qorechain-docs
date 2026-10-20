@@ -13,7 +13,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **AMM** — Automated Market Maker (Otomatik Piyasa Yapıcı). QoreChain'in yerel zincir üstü likidite modülü (`x/amm`); harici bir akıllı sözleşme dağıtımı olmadan doğrudan protokol düzeyinde sabit-çarpım havuzları, takaslar ve likidite sağlama sunar. Bkz. [AMM](/architecture/amm).
 
-**Authorisation window (EVM) (EVM yetkilendirme penceresi)** — Kuantum sonrası imzalı bir Cosmos hattı mesajıyla açılan, sınırlı bir izin (blok, işlem sayısı, toplam değer); v3.2.0'dan itibaren bir EVM hattı işleminin bu sınırın içinde kalması gerekir. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
+**Authorisation window (EVM) (EVM yetkilendirme penceresi)** — Kuantum sonrası imzalı bir Cosmos hattı mesajıyla açılan, sınırlı bir izin (blok, işlem sayısı, toplam değer); v3.2.0'dan itibaren bir EVM hattı işleminin bu sınırın içinde kalması gerekir. v3.2.3'ten itibaren bir pencere yalnızca yerel transferlerle veya bir alıcı listesiyle daraltılabilir. Bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window).
 
 **BPF** — Berkeley Packet Filter. SVM çalışma zamanının zincir üstü programları yürütmek için kullandığı bayt kodu formatı. Programlar dağıtımdan önce BPF'ye derlenir.
 
@@ -39,7 +39,7 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **IBC** — Inter-Blockchain Communication (Zincirler Arası İletişim). Bağımsız blok zincirleri arasında kimliği doğrulanmış mesaj iletimi için bir protokol. QoreChain, çapraz zincir token transferleri ve veri aktarımı için IBC kanallarını destekler.
 
-**Light Node** — Tam durumu tutmadan, blok başlıklarını bir veya daha fazla RPC uç noktasıyla çapraz kontrol ederek zinciri takip eden, kaynak açısından hafif bir istemci. Başkalarına sorgu hizmeti vermez. Protokol ücret bölüşümü, hafif düğüm ödül programı için **%3** pay ayırır; bu program henüz kayıtlara açık değildir. Bkz. [Hafif Düğüm](/light-node/overview) ve [ödül programı durumu](/light-node/overview#reward-program-status).
+**Light Node** — Tam durumu tutmadan, blok başlıklarını bir veya daha fazla RPC uç noktasıyla çapraz kontrol ederek zinciri takip eden, kaynak açısından hafif bir istemci. Başkalarına sorgu hizmeti vermez. Protokol ücret bölüşümü, hafif düğüm ödül programı için **%3** pay ayırır. Programa kayıt açıktır ve bir `lightnode_operator` lisansına (50 $, Dashboard'dan satın alınır) bağlıdır; 20 Ekim 2026 itibarıyla ana ağda altı lisans verilmişti ve henüz hiçbir hafif düğüm kaydolmamıştı. Bir düğüm çalıştırmak lisans gerektirmez. Bkz. [Hafif Düğüm](/light-node/overview) ve [ödül programı durumu](/light-node/overview#reward-program-status).
 
 **MEV** — Maximal Extractable Value (Maksimum Çıkarılabilir Değer). Bir blok içindeki işlemleri yeniden sıralayarak, ekleyerek veya sansürleyerek elde edilebilecek kâr. QoreChain'in FairBlock modülü (tIBE şifrelemesi) MEV çıkarımını azaltmak üzere tasarlanmıştır; henüz etkin değildir.
 
@@ -54,6 +54,8 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 **PQC** — Post-Quantum Cryptography (Kuantum Sonrası Kriptografi). Hem klasik hem de kuantum bilgisayarlardan gelen saldırılara karşı güvenli olacak şekilde tasarlanmış kriptografik algoritmalar. QoreChain, birincil imza şeması olarak ML-DSA-87 ile `x/pqc` modülü aracılığıyla PQC uygular.
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. QoreChain Konsensüs Motoruna (`x/rlconsensus` modülü aracılığıyla) gömülü pekiştirmeli öğrenme optimizasyon katmanı. PRISM, ağ metriklerini gözlemler ve devre kesici güvenlik kontrolleri altında deterministik konsensüs parametresi ayarlamaları önermek üzere tasarlanmıştır; bugün gözlem modunda çalışır. Bkz. [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine).
+
+**Proof of possession (PoP) (sahiplik kanıtı)** — Bir kuantum sonrası anahtarın kendi kayıt ayrıntıları üzerinde attığı ve kaydeden tarafın özel anahtarı elinde tuttuğunu kanıtlayan imza. v3.2.3'ten beri hesap anahtarı kaydında isteğe bağlıdır (`tx pqc register-key-v2 ... --pqc-key <name>`); test ağında (v3.2.4) köprü doğrulayıcı anahtarları için zorunludur.
 
 **Protocol feature (protokol özelliği)** — Bir sürümün yükseltme işleyicisinin her düğümde tek bir blok yüksekliğinde açtığı davranış anahtarı (örneğin `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`); böylece bu yüksekliğin altındaki geçmiş değişmeden yeniden oynatılır.
 
@@ -77,13 +79,15 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **STARK** — Scalable Transparent Argument of Knowledge. Güvenilir kurulum gerektirmeyen ve kuantuma dayanıklı bir sıfır bilgi kanıt sistemi. RDK'da zk-rollup mutabakatı için alternatif bir kanıt sistemi olarak mevcuttur.
 
-**Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar. Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+**Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar; yönetişim bunları Ekim 2026'da serbest bıraktı (sıkışmış payın düzeltilmiş bir kalanı v3.2.3'ten sonra önerildi). Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 **SVM** — Solana Virtual Machine (Solana Sanal Makinesi). BPF programları için yüksek performanslı bir yürütme ortamı. QoreChain, SVM'yi QoreChain EVM Motoru ve CosmWasm ile birlikte desteklenen üç çalışma zamanından biri olarak entegre eder.
 
 **TEE** — Trusted Execution Environment (Güvenilir Yürütme Ortamı). Kod ve verilerin harici erişimden korunmasını sağlayan, bir işlemcinin güvenli alanı. QoreChain, TEE tasdiki için arayüz spesifikasyonları tanımlar; henüz bir uygulama yoktur.
 
 **tIBE** — Threshold Identity-Based Encryption (Eşik Kimlik Tabanlı Şifreleme). Bir mesajın yalnızca bir eşik sayıda tarafın işbirliği yapması durumunda çözülebildiği bir kriptografik şema. FairBlock modülü tarafından, MEV çıkarımını önlemek için işlem içeriklerini blok sonlandırmaya kadar şifrelemek üzere kullanılır.
+
+**Time-locked staking (zaman kilitli stake)** — Bir delegasyonun bir kısmının sabit bir süreyle taahhüt edilmesi; `x/stakingtier` modülü tarafından sağlanan isteğe bağlı bir özelliktir. **Yalnızca test ağında** (v3.2.4); ana ağda canlı değildir. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — QOR tokeninin temel denomu. 1 QOR = 1.000.000 uqor (10^6). Tüm zincir üstü miktarlar, ücretler ve stake değerleri uqor cinsindendir.
 

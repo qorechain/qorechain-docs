@@ -22,6 +22,8 @@ QCAIA, yeni gelenlerin ve topluluk üyelerinin hızlıca yön bulmasına yardım
 
 Bir soru QCAIA'nın bildiklerinin dışında kalırsa, tahmin yürütmek yerine bunu belirtir. QCAIA bir topluluk yardımcısıdır; finansal veya yatırım tavsiyesi değildir.
 
+QCAIA'nın yanıtları QoreChain'in herkese açık belgelerini izler, bu nedenle bir sürümün gerisinde kalabilirler. Her ağda şu anda nelerin canlı olduğu için (20 Ekim 2026 itibarıyla mainnet `qorechain-vladi` v3.2.3'ü, testnet `qorechain-diana` ise v3.2.4'ü çalıştırıyor) [Ağlar](/appendix/networks) ve [Sürüm Geçmişi](/appendix/version-history) sayfalarına bakın veya doğrudan bir düğümü sorgulayın. QCAIA'ya sorulan platformun köprü, AMM havuzları, rollup'lar ve xQORE gibi birkaç bölümü belgelerde tasarlandığı şekliyle anlatılır ancak henüz canlı değildir; QCAIA farklı bir yanıt verirse belgelere ve canlı ağa güvenin.
+
 ## Çok dilli destek
 
 QCAIA, birçok dildeki soruları anlar. İngilizce dışında bir dilde sorarsanız, sorunuzu otomatik olarak çevirir, yanıtlar ve cevap verir — böylece kendi dilinizi kullanıp yine de net bir yanıt alabilirsiniz. İngilizce olmayan işlenmiş bir örnek için [Örnekler](/qcaia/examples) sayfasına bakın.
@@ -38,7 +40,7 @@ QCAIA **beta** aşamasındadır. Sürekli olarak gelişmektedir ve zaman zaman b
 
 | Platform | Nasıl ulaşılır | Kılavuz |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)**'e katılın ve slash komutlarını kullanın | [QCAIA'yı Discord'da Kullanma](/qcaia/discord) |
+| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**'ye katılın ve slash komutlarını kullanın | [QCAIA'yı Discord'da Kullanma](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)**'ye katılın ve bottan bahsedin | [QCAIA'yı Telegram'da Kullanma](/qcaia/telegram) |
 
 Tam olarak nasıl soru sorulacağını öğrenmek için yukarıdan platformunuzu seçin veya QCAIA'yı iş başında görmek için doğrudan [Örnekler](/qcaia/examples) sayfasına geçin.

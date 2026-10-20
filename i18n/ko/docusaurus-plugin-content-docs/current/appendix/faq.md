@@ -11,7 +11,7 @@ QoreChain에 관한 일반적인 질문을 문서 기반으로 답변합니다. 
 
 ### 메인넷이 가동 중인가요?
 
-네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 29일부터 가동되고 있으며 릴리스 v3.2.1을 실행합니다. [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
+네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 7일부터 가동되고 있으며 릴리스 v3.2.3을 실행합니다(테스트넷 `qorechain-diana`는 v3.2.4를 실행합니다). [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
 
 ### 체인 ID와 EVM 체인 ID는 무엇인가요?
 
@@ -39,15 +39,19 @@ PRISM은 QoreChain 컨센서스 엔진에 내장된 강화학습 최적화 계�
 
 ### 노드, 검증자, 라이트 노드는 어떻게 운영하나요?
 
-풀 노드는 [노드 운영하기](/developer-guide/running-a-node)를 참조하세요. 검증자는 [검증자 운영하기](/developer-guide/running-a-validator)를 참조하세요. 라이트 노드는 [라이트 노드](/light-node/overview)를 참조하세요.
+풀 노드는 [노드 운영하기](/developer-guide/running-a-node)를 참조하세요. 검증자는 [검증자 운영하기](/developer-guide/running-a-validator)를 참조하세요. 라이트 노드는 [라이트 노드](/light-node/overview)를 참조하세요. 라이트 노드 보상 프로그램의 등록은 열려 있으며 라이선스로 제한됩니다([현황](/light-node/overview#reward-program-status)).
 
 ### QoreChain은 어떤 서명 체계를 사용하나요?
 
-QoreChain은 고전 **secp256k1 (ECDSA)**와 포스트 양자 **ML-DSA-87 (Dilithium-5)**를 결합한 포스트 양자 하이브리드 체계를 사용합니다. 이 하이브리드 체계는 Cosmos 트랜잭션 경로에서 기본적으로 필수이며, 강제 모드는 거버넌스로 제어됩니다. EVM 레인에서는 서명이 secp256k1로 유지되며, 계정은 추가로 등록된 ML-DSA 키와 열려 있는 인가 창(authorisation window)을 보유해야 합니다(v3.2.0). [포스트 양자 보안](/architecture/post-quantum-security)을 참조하세요.
+QoreChain은 고전 **secp256k1 (ECDSA)**와 포스트 양자 **ML-DSA-87 (Dilithium-5)**를 결합한 포스트 양자 하이브리드 체계를 사용합니다. 이 하이브리드 체계는 Cosmos 트랜잭션 경로에서 기본적으로 필수이며, 강제 모드는 거버넌스로 제어됩니다. EVM 레인에서는 서명이 secp256k1로 유지되며, 계정은 추가로 등록된 ML-DSA 키와 열려 있는 인가 창(authorisation window)을 보유해야 합니다(v3.2.0부터). [포스트 양자 보안](/architecture/post-quantum-security)을 참조하세요.
 
 ### EVM 트랜잭션이 "no open EVM authorisation window"로 거부되는 이유는 무엇인가요?
 
 v3.2.0부터 EVM 레인은 등록된 포스트 양자 키와 열려 있는 인가 창을 가진 계정의 트랜잭션만 받아들입니다. 포스트 양자 서명이 된 Cosmos 레인 트랜잭션으로 창을 연 다음 다시 시도하세요. [EVM 인가 창](/getting-started/first-transaction#evm-window)을 참조하세요.
+
+### 메인넷에는 검증자가 몇 명인가요?
+
+2026년 10월 20일 기준으로 본딩된 검증자는 8명이며, 본딩된 QOR는 약 5,510만 개입니다(활성 집합은 최대 100명까지 가능합니다). 테스트넷에는 3명이 있습니다. 실시간 집합은 `https://api.qore.host`의 `GET /cosmos/staking/v1beta1/validators`에서 확인하세요.
 
 ### 블록 시간은 어느 정도로 예상해야 하나요?
 
@@ -59,7 +63,7 @@ v3.2.0부터 EVM 레인은 등록된 포스트 양자 키와 열려 있는 인�
 
 ### QOR 공급량은 고정되어 있나요?
 
-제네시스 공급량은 4,420,000,000 QOR였습니다. 스테이킹 발행량은 누적 114,285,714 QOR의 하드 캡 아래에서 발행되며, 소각은 토큰을 영구적으로 제거합니다. [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요.
+제네시스 공급량은 4,420,000,000 QOR였습니다. 스테이킹 발행량은 누적 590,000,000 QOR의 하드 캡 아래에서 발행되며(2026년 10월 거버넌스 제안 10 이후 에포크당 86,000 QOR), 소각은 토큰을 영구적으로 제거합니다. [토크노믹스](/architecture/tokenomics#supply-and-emission)를 참조하세요.
 
 ### 롤업은 어떻게 구축하나요?
 
@@ -71,7 +75,7 @@ QoreChain의 EVM, SVM, CosmWasm 실행 환경 전반에 걸쳐 애플리케이�
 
 ### 질문은 어디서 할 수 있나요?
 
-QCAIA 커뮤니티 봇이 Discord([discord.gg/qorechain](https://discord.gg/qorechain))와 Telegram([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity))에서 질문에 답합니다. [QCAIA 커뮤니티 봇](/qcaia/overview)을 참조하세요.
+QCAIA 커뮤니티 봇이 Discord([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG))와 Telegram([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity))에서 질문에 답합니다. [QCAIA 커뮤니티 봇](/qcaia/overview)을 참조하세요.
 
 ## 관련 문서
 

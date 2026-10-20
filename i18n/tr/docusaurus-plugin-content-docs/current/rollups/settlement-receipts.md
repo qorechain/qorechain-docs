@@ -10,7 +10,7 @@ sidebar_position: 6
 Bir **uzlaşma makbuzu**, bir rollup'un uzlaşma partisinin kuantum sonrası bir imza altında Ana Zincire çapalandığına dair taşınabilir bir kayıttır. Rollup'u, partiyi ve çapayı adlandırır ve çapanın **ML-DSA-87** (Dilithium-5, FIPS-204) imzasını taşır; bu, Ana Zincirin kullandığı şemanın aynısıdır.
 
 :::caution Erken aşama: henüz hiçbir çapa yok
-Makbuzlar çapalara bağlıdır ve **henüz hiçbir ağda bir rollup veya çapa yoktur**. Ana ağda RDK henüz çapa yazmaz: uzlaşma partileri kaydedilir, ancak çapalama adımı atlanır. Bu sayfayı bugün güvenebileceğiniz bir hizmetin değil, tasarımın ve yapı taşlarının bir açıklaması olarak değerlendirin.
+Makbuzlar çapalara bağlıdır ve **henüz hiçbir ağda bir rollup veya çapa yoktur** (20 Ekim 2026 itibarıyla kontrol edildi). v3.2.2'den beri (her iki ağda da canlı) `anchor_signature` ile gönderilen bir parti, aynı işlemde `x/multilayer` içinde çapalanır; bu olmadan gönderilen bir parti çapasız olarak uzlaşır. Yayınlanmış RDK istemcileri (0.5.0) bu alanı göndermez, dolayısıyla gönderdikleri partiler çapasızdır. Bu sayfayı bugün güvenebileceğiniz bir hizmetin değil, tasarımın ve yapı taşlarının bir açıklaması olarak değerlendirin.
 :::
 
 ## Bir makbuz kanıt değil, bir iddiadır {#a-receipt-is-a-claim}
@@ -19,17 +19,13 @@ Bir makbuzdaki her alan, onu size veren kişi tarafından sağlanır. İmzayı s
 
 ## Çapanın neyi imzaladığı {#what-the-anchor-signs}
 
-Çapanın imzası, **rollup oluşturucusunun** kayıtlı ML-DSA-87 anahtarıyla atılır. Bugün ana ağda imzalanan mesaj şudur
+Çapanın imzası, **rollup oluşturucusunun** kayıtlı ML-DSA-87 anahtarıyla atılır. İmzalanan mesaj, çapanın gönderildiği yüksekliğe bağlıdır. **v3.2.2'den itibaren (ana ağ yüksekliği 3,556,788, testnet yüksekliği 6,905,034) bu, v2 mesajıdır**: bir alan etiketi (domain tag), zincir kimliği ve uzunluk önekli `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, işlem sayısı ve sıkıştırılmış durum kanıtı (tam yerleşim [Çapaları Okuma](/architecture/multilayer-architecture#reading-anchors) bölümündedir). Zincir, o yükseklikten itibaren v1 çapayı (`layer_id || layer_height || state_root || validator_set_hash`, zincir kimliği yok) kabul etmez. İki biçimi de koda sabit yazmayın: hedeflediğiniz ağın imza baytlarını okuyun, örneğin `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` ile.
 
-```
-layer_id || layer_height (8-byte big-endian) || state_root || validator_set_hash
-```
-
-Daha yeni bir zincir sürümü imzalanan mesajı değiştirir, bu nedenle bunu koda sabit yazmayın: hedeflediğiniz ağın imza baytlarını okuyun. Çapa, katman düzeyinde bir nesnedir: rollup'u veya partiyi adlandırmaz, bu nedenle bir doğrulayıcı bunları zincir okumaları aracılığıyla bağlar (bkz. [Çok Katmanlı Mimari](/architecture/multilayer-architecture#reading-anchors)).
+Çapa, katman düzeyinde bir nesnedir: rollup'u veya partiyi adlandırmaz, bu nedenle bir doğrulayıcı bunları zincir okumaları aracılığıyla bağlar (bkz. [Çok Katmanlı Mimari](/architecture/multilayer-architecture#reading-anchors)).
 
 ## Çapaları okuma {#reading-anchors}
 
-Çapalar REST ve gRPC üzerinden okunabilir (en son çapa için `/qorechain/multilayer/v1/anchor/{layer_id}` ve geçmiş için `/qorechain/multilayer/v1/anchors/{layer_id}`), bir hesabın kayıtlı kuantum sonrası anahtarı ise `/qorechain/pqc/v1/account/{address}` adresinden okunabilir. Bir rollup'un partileri `qorechaind query rdk batch [rollup-id]` ile okunur (RDK REST rotaları bugün ana ağda sunulmaz).
+Çapalar REST ve gRPC üzerinden okunabilir (en son çapa için `/qorechain/multilayer/v1/anchor/{layer_id}` ve geçmiş için `/qorechain/multilayer/v1/anchors/{layer_id}`), bir hesabın kayıtlı kuantum sonrası anahtarı ise `/qorechain/pqc/v1/account/{address}` adresinden okunabilir (tekil `account`). Bir rollup'un partileri, her iki ağın da sunduğu RDK REST rotaları (`/qorechain/rdk/v1/batch/{rollup_id}/{batch_index}`, `/qorechain/rdk/v1/latest_batch/{rollup_id}`, `/qorechain/rdk/v1/batches/{rollup_id}`) üzerinden veya `qorechaind query rdk batch [rollup-id]` ile okunur.
 
 ## Oluşturma ve doğrulama (TypeScript) {#build-and-verify}
 
@@ -50,10 +46,15 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Her doğrulama için bir `client` iletin. RDK istemcinizin yayınlanmış en son sürümünü kullanın: makbuz API'si ve kontrolleri sürümler arasında değişmiştir ve Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar (ML-DSA-87 doğrulamasını [`qorechain-pqc`](https://github.com/qorechain) kütüphanesi aracılığıyla gerçekleştirirler).
+Her doğrulama için bir `client` iletin. Makbuz API'si ve kontrolleri sürümler arasında değişmiştir; bu nedenle zincire karşı doğrulama yapan bir sürüm kullanın (0.5.0 veya sonrası). Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar (Go ve Rust istemcileri, aşağıdaki sınırlamadaki çoğul anahtar arama yolunun aynısını kullanır).
 
-:::note Mevcut istemci sınırlamaları
-Yayınlanmış RDK istemcileri oluşturucunun anahtarını canlı zincirin sunmadığı bir yol üzerinden arar; bu nedenle çevrimiçi doğrulama canlı ağlarda henüz tamamlanmaz. Bir istemci sürümü bunu ele alana kadar, bir makbuzu yalnızca kendi düğümünüzden okuduğunuz çapayla çapraz kontrol edilecek bir kayıt olarak kullanın.
+:::caution Mevcut istemci sınırlamaları (RDK 0.5.0)
+0.5.0'daki `verifySettlementReceipt`, yalnızca makbuza dayanarak asla `valid` bildirmez (`client` olmadan sonuç `mode: "signature-only"` ve `valid: false` olur) ve zincir kontrolü canlı ağlara karşı henüz tamamlanmaz; bunun iki nedeni vardır ve ikisi de zincirde değil, istemcidedir:
+
+* oluşturucunun anahtarını, kuantum sonrası hesap rotasının ağların sunmadığı çoğul `accounts` biçimi üzerinden arar (HTTP 501; çalışan rota tekil `account` olandır); bu nedenle bir `client` ile sonuç, oluşturucunun kuantum sonrası anahtarının çözümlenemediği gerekçesiyle `valid: false` olur; ve
+* imzalanan mesajı, zincirin v3.2.2'den beri çapalar için artık kabul etmediği v1 yerleşiminde yeniden oluşturur; bu nedenle anahtar elde olsa bile gerçek bir v2 imzasını doğrulayamazdı.
+
+`buildSettlementReceipt` yalnızca bir çapa partiyi kapsadığında çalışır ve hiçbiri yoktur. Bir makbuzu yalnızca, kendi düğümünüzden okuduğunuz çapa ve oluşturucunun anahtarıyla, ağa ait v2 imza baytları kullanılarak çapraz kontrol edilecek bir kayıt olarak kullanın.
 :::
 
 ## CLI {#cli}

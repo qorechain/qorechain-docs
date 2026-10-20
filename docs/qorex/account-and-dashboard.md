@@ -7,7 +7,7 @@ sidebar_position: 6
 
 # Account & Dashboard
 
-QoreX works **fully without an account** — your keys never depend on one. Signing in adds conveniences such as payment requests and Dashboard pairing; claiming an @handle may also ask you to sign in.
+QoreX works **fully without an account** — your keys never depend on one. Signing in adds conveniences such as payment requests and Dashboard pairing, and it is **required to claim an @handle**. Sign-in is by email, or by Apple or Google — see below.
 
 ## Sign in {#sign-in}
 
@@ -35,7 +35,7 @@ Settings → **Your accounts** lets you create and switch between up to **20 acc
 
 Claim a unique name (for example `@liviu`) bound to your address by **dual signatures** (a registry ed25519 signature + your own secp256k1 signature). Anyone can then send to your @handle. Resolution is **verify-then-pin** (trust-on-first-use), so if a handle's key is ever silently changed, QoreX flags it.
 
-Because a handle binds to an address rather than to your wallet, claiming one is **per address** — if you have [several accounts](#accounts), each can carry its own @handle, and claiming one for an account doesn't automatically give the others a name. In the browser extension you can pay a handle; claiming from the popup is offered on ordinary QoreChain accounts in some versions and not in others — if the popup does not offer it, claim from the mobile app. Ethereum-style (coin 60) accounts have no handle.
+Because a handle binds to an address rather than to your wallet, claiming one is **per address** — if you have [several accounts](#accounts), each can carry its own @handle, and claiming one for an account doesn't automatically give the others a name. Claiming needs a signed-in account and happens **in the mobile app**. In the browser extension you can pay a handle (lookups work in extension 0.3.7 and later) but not claim one — the extension points you to the app. Ethereum-style (coin 60) accounts have no handle. Look-alike QoreChain names are reserved: a new handle that imitates the project (its brand names, or trust words such as *official*, *support*, *airdrop* or *treasury*, including look-alike spellings) is refused. Existing owners can still delete their handle.
 
 If the handle registry is temporarily unreachable, the screen degrades to **"Handles coming soon"** and everything else keeps working; handles light up again automatically when the registry returns.
 

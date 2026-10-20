@@ -10,7 +10,7 @@ sidebar_position: 12
 El módulo `x/rdk` proporciona un Rollup Development Kit (RDK) completo que permite a los desarrolladores desplegar rollups específicos de aplicación en QoreChain. Admite cuatro paradigmas de liquidación, múltiples modos de secuenciador, backends de disponibilidad de datos conectables y optimización de configuración asistida por IA.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en mainnet (versión de cadena **v3.2.1**) y en testnet, pero **todavía no se ha creado ningún rollup en ninguna de las dos redes**. Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
+El módulo está desplegado en mainnet (versión de cadena **v3.2.3**) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 20 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -19,13 +19,13 @@ El módulo está desplegado en mainnet (versión de cadena **v3.2.1**) y en test
 
 El RDK de QoreChain admite cuatro modos de liquidación distintos — **optimistic**, **zk**, **based** y **sovereign** — cada uno con diferentes supuestos de confianza, características de finalidad y requisitos de prueba.
 
-### Liquidación optimista
+### Liquidación optimista {#optimistic-settlement}
 
 Los rollups optimistas asumen que las transacciones son válidas por defecto y dependen de pruebas de fraude para la resolución de disputas.
 
 * **Sistema de pruebas**: pruebas de fraude interactivas
-* **Ventana de impugnación**: 604.800 «segundos» (por defecto), convertidos por la cadena a bloques a razón fija de 6 segundos por bloque — **100.800 bloques**. El tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet), así que planifique en bloques, no en días.
-* **Fianza de impugnación**: 1.000 QOR (1.000.000.000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
+* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Mainnet (v3.2.3):** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Solo testnet (v3.2.4, aplicado en la altura 8,337,253):** para un lote enviado a partir de esa altura, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. En mainnet este cambio solo entraría en vigor con la v3.2.4 (la propuesta de gobernanza 13 la aplicaría en la altura 3,742,566).
+* **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
 * **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
 
@@ -42,7 +42,7 @@ Los rollups ZK proporcionan pruebas criptográficas de validez que garantizan la
 
 * **Sistema de pruebas**: SNARK (Groth16 sobre BLS12-381) o STARK (transparente, sin configuración de confianza)
 * **Finalidad**: instantánea al verificar la prueba — no se requiere ventana de impugnación
-* **Tamaño máximo de prueba**: 1 MB (1.048.576 bytes)
+* **Tamaño máximo de prueba**: 1 MB (1,048,576 bytes)
 * **Profundidad de recursión**: profundidad de agregación de pruebas configurable (por defecto: 1)
 * **Madurez**: los lotes SNARK se verifican on-chain (Groth16 sobre BLS12-381) contra una clave de verificación almacenada junto con el rollup. Un rollup creado mediante `create-rollup` no incluye actualmente una clave de verificación, por lo que los lotes ZK todavía no pueden finalizarse de extremo a extremo. La verificación STARK es experimental: es opcional y comprueba un circuito de demostración, no la transición de estado de su propio rollup. Trate la liquidación ZK como no apta para producción.
 
@@ -157,8 +157,8 @@ El módulo define el almacenamiento, la retención y la poda de blobs, pero en l
 
 | Parámetro            | Valor                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
-| **Tamaño máximo de blob** | 2 MB (2.097.152 bytes)                                                                          |
-| **Período de retención** | 432.000 bloques (unos 16 días con los bloques actuales de ≈3,2 s de mainnet; la cifra varía con el tiempo de bloque) |
+| **Tamaño máximo de blob** | 2 MB (2,097,152 bytes)                                                                          |
+| **Período de retención** | 432,000 bloques (unos 16 días con los bloques actuales de ≈3,2 s de mainnet; la cifra varía con el tiempo de bloque) |
 | **Auto-poda**        | Los blobs expirados se podan en el `EndBlocker` — los datos se eliminan pero se conservan los metadatos del compromiso |
 | **Compromiso**       | Hash SHAKE-256 (32 bytes) de los datos del blob                                                     |
 
@@ -193,7 +193,7 @@ Pending → Active → Paused → Active → Stopped
 | **Pending** | Rollup registrado pero aún no activado                       |
 | **Active**  | El rollup está en vivo y procesando lotes                    |
 | **Paused**  | Detenido temporalmente por el creador (puede reanudarse)     |
-| **Stopped** | Desmantelado permanentemente — la fianza de stake se devuelve al creador |
+| **Stopped** | Desmantelado permanentemente — se devuelve lo que queda del escrow del creador (consulte [Libro de escrow](#escrow-ledger)) |
 
 En la creación, el estado del rollup se establece en `Active` inmediatamente después de que el escrow de stake y la quema de creación tengan éxito (se intenta el registro de la capa, pero no es fatal). Solo el creador puede pausar, reanudar o detener un rollup (impuesto desde la versión de cadena v3.2.0).
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Modo de liquidación | Disparador de finalización                                   |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100.800 bloques después del envío (ventana por defecto) sin impugnación |
+| **Optimistic**  | 100,800 bloques después del envío (ventana por defecto) sin impugnación; en la testnet, para los lotes enviados desde v3.2.4, 604,800 segundos de tiempo de bloque |
 | **ZK**          | Instantánea al enviar una prueba válida                      |
 | **Based**       | 2 bloques de L1 después del envío                            |
 | **Sovereign**   | Ninguna — gestionada por el propio consenso del rollup       |
@@ -233,11 +233,11 @@ La auto-finalización se ejecuta en el `EndBlocker` para los rollups optimistic 
 | Parámetro                   |                       Por defecto | Descripción                                      |
 | --------------------------- | -------------------------------: | ------------------------------------------------ |
 | `max_rollups`               |                              100 | Número máximo de rollups que pueden registrarse  |
-| `min_stake_for_rollup`      | 10.000.000.000 uqor (10.000 QOR) | Stake mínimo requerido para crear un rollup      |
+| `min_stake_for_rollup`      | 10,000,000,000 uqor (10,000 QOR) | Stake mínimo requerido para crear un rollup      |
 | `rollup_creation_burn_rate` |                        0.01 (1%) | Fracción del stake de creación quemada vía `x/burn` |
-| `default_challenge_window`  | 604.800 (convertidos a 100.800 bloques) | Ventana de impugnación optimista por defecto |
-| `max_da_blob_size`          |           2.097.152 bytes (2 MB) | Tamaño máximo de blob de disponibilidad de datos |
-| `blob_retention_blocks`     |                   432.000 bloques | Bloques antes de que se poden los blobs de DA    |
+| `default_challenge_window`  | 604,800 (convertidos a 100,800 bloques) | Ventana de impugnación optimista por defecto |
+| `max_da_blob_size`          |           2,097,152 bytes (2 MB) | Tamaño máximo de blob de disponibilidad de datos |
+| `blob_retention_blocks`     |                   432,000 bloques | Bloques antes de que se poden los blobs de DA    |
 | `max_batches_per_block`     |                               10 | Lotes máximos de liquidación procesados por bloque |
 
 ---
@@ -248,25 +248,53 @@ El módulo RDK se integra con `x/multilayer` para la gestión de estado entre ca
 
 ### Registro de capa {#layer-registration}
 
-Cuando se crea un rollup, el módulo registra una capa para él mediante `RegisterSidechain`, de modo que on-chain el tipo de capa es **`sidechain`**, comienza en estado `proposed`, cuenta para el límite de sidechains de multilayer (`max_sidechains`, por defecto **10**) y bloquea el `min_sidechain_stake` del creador (1.000 QOR). El registro incluye:
+Cuando se crea un rollup, el módulo registra una capa para él mediante `RegisterSidechain`, de modo que on-chain el tipo de capa es **`sidechain`**, comienza en estado `proposed`, cuenta para el límite de sidechains de multilayer (`max_sidechains`, por defecto **10**) y bloquea el `min_sidechain_stake` del creador (1,000 QOR). El registro incluye:
 
 * ID de capa (coincide con el ID del rollup)
 * Tiempo de bloque objetivo y máximo de transacciones por bloque
 * Tipos de VM y dominios soportados
 * Intervalo de liquidación
 
-El registro es **no fatal**: si falla (saldo insuficiente o límite alcanzado), el rollup se crea de todos modos, pero no tiene capa y no puede anclarse.
+El registro es **no fatal**: si falla (saldo insuficiente o límite alcanzado), el rollup se crea de todos modos, pero no tiene capa y no puede anclarse. Un ancla de liquidación no requiere que la capa esté `active`: la capa que registra un rollup del RDK permanece en `proposed` y su creador todavía puede anclarla (consulte [Envío de Anclas](/architecture/multilayer-architecture#anchor-submission)).
 
 ### Anclaje de estado {#state-anchoring}
 
 Un lote de liquidación puede anclarse a `x/multilayer`, que registra el ID de capa, la altura de capa (el índice del lote), la raíz de estado, el hash del conjunto de validadores y el recuento de transacciones bajo una firma poscuántica del creador del rollup.
 
-* **Hoy en mainnet:** los lotes se liquidan pero **no** se anclan — el RDK no aporta la firma del creador que requiere el anclaje, por lo que el paso de anclaje no tiene éxito y no se ha escrito ningún ancla. El anclaje es no fatal: nunca impide el procesamiento del lote.
+* **Desde v3.2.2 (activo en mainnet y testnet):** `MsgSubmitBatch` tiene dos campos opcionales. `anchor_signature` es la firma ML-DSA-87 del creador sobre los **bytes de firma de ancla v2** del lote (consulte [Lectura de Anclas](/architecture/multilayer-architecture#reading-anchors)); cuando está presente, el lote se ancla en `x/multilayer` en la **misma transacción**, y un ancla rechazada rechaza el lote. `validator_set_hash` es el compromiso del conjunto de validadores del rollup que se incluye en el ancla y queda cubierto por la firma. En la CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imprime los bytes que hay que firmar, y `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` los envía.
+* **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite. Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla.
 
 Consulte [Settlement Receipts](/rollups/settlement-receipts) para saber qué prueba y qué no prueba un ancla.
 
 ---
 
+## Libro de escrow y retiros {#escrow-ledger}
+
+El escrow de todos los rollups está en un único saldo de módulo agrupado. Desde **v3.2.3** (altura 3,662,051 en mainnet, 20 de octubre de 2026) un **libro de escrow** por rollup es el registro único de lo que cada rollup tiene en ese fondo:
+
+* `create-rollup` abona al libro el escrow que el rollup conserva realmente: el stake menos la quema de creación del 1%.
+* Un retiro (`tx rdk execute-withdrawal`) y una recompensa de prueba de fraude se pagan desde el libro y se cargan a él. Un retiro mayor que lo que el rollup todavía tiene se rechaza con un error de escrow insuficiente.
+* `stop-rollup` devuelve solo lo que queda en el libro y lo pone a cero. Un rollup detenido no paga más retiros.
+* El `RollupView` de solo lectura que devuelven las consultas de rollup incluye `escrow_balance`: los uqor que todavía se conservan para ese rollup.
+
+Antes de v3.2.3 el libro se abonaba con cero, de modo que todo retiro fallaba de forma segura; por tanto, `execute-withdrawal` solo puede tener éxito en mainnet a partir de v3.2.3. Las comprobaciones que un cliente debe hacer antes de pagar una comisión: el denom debe ser exactamente `uqor`, el monto debe ser positivo, la prueba Merkle tiene como máximo 64 niveles y cada hermano mide exactamente 32 bytes, y quien envía y el destinatario deben ser direcciones `qor1…` válidas. Un retiro también necesita un lote finalizado que haya comprometido un `withdrawals_root`, y cada hoja de retiro solo puede pagarse una vez.
+
+## Lectura del estado del RDK {#reading-state}
+
+Las consultas del RDK se sirven por REST en mainnet y testnet bajo `/qorechain/rdk/v1/`:
+
+| Ruta | Devuelve |
+| --- | --- |
+| `/params` | Parámetros del módulo (la tabla anterior) |
+| `/rollups` y `/rollup/{rollup_id}` | Registros de rollups, incluido `escrow_balance` |
+| `/batches/{rollup_id}` | Lotes, paginados (`start_index`, `limit` por defecto 50, máximo 100, `next_index`) |
+| `/batch/{rollup_id}/{batch_index}` y `/latest_batch/{rollup_id}` | Un lote, o el más reciente |
+| `/blob/{rollup_id}/{blob_index}` | Metadatos del blob, incluido `expires_at_height` (no se devuelven los bytes del blob) |
+
+`qorechaind query rdk config` imprime los parámetros del módulo (la ruta es `/params`; no hay ninguna ruta `/config`). Los ids de rollup y de capa deben cumplir la gramática de ids de [Ids de capa y de rollup](/architecture/multilayer-architecture#id-grammar), impuesta desde v3.2.2.
+
+---
+
 ## Integración de quema
 
-Al crear un rollup, **el 1% del monto del stake** se quema vía el módulo `x/burn` a través del canal de quema `rollup_create`. Por ejemplo, crear un rollup con el stake mínimo de 10.000 QOR quema 100 QOR permanentemente. Los 9.900 QOR restantes se mantienen en escrow y se devuelven cuando se detiene el rollup. La quema de creación se impone desde la versión de cadena v3.2.0; las versiones anteriores no la aplicaban.
+Al crear un rollup, **el 1% del monto del stake** se quema vía el módulo `x/burn` a través del canal de quema `rollup_create`. Por ejemplo, crear un rollup con el stake mínimo de 10,000 QOR quema 100 QOR permanentemente. Los 9,900 QOR restantes se mantienen en escrow y, cuando se detiene el rollup, lo que quede de ellos se devuelve al creador (los retiros y las recompensas de prueba de fraude pagados desde el escrow reducen el reembolso). La quema de creación se impone desde la versión de cadena v3.2.0; las versiones anteriores no la aplicaban.

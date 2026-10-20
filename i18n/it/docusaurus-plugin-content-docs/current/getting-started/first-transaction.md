@@ -10,7 +10,7 @@ sidebar_position: 5
 Questa guida illustra l'invio di token QOR, l'interrogazione delle transazioni e l'interazione con QoreChain attraverso le sue interfacce native, EVM e SVM.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 29 giugno 2026 — sostituisci il chain ID e gli endpoint della mainnet riportati nella pagina **Connessione alla mainnet** quando esegui transazioni sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release v3.2.3 (la testnet esegue la v3.2.4) — sostituisci il chain ID e gli endpoint della mainnet riportati nella pagina **Connessione alla mainnet** quando esegui transazioni sulla mainnet.
 :::
 
 ## Verifica del saldo
@@ -50,6 +50,13 @@ qorechaind tx pqc gen-key mypqc
 
 # register the printed public key for your account
 qorechaind tx pqc register-key <public_key_hex> hybrid --from mykey \
+  --chain-id qorechain-diana --gas 600000 --fees 60000uqor
+```
+
+Dalla v3.2.3 la chain accetta inoltre una **prova di possesso** opzionale con la registrazione, e rifiuta chiavi deboli, degeneri o già utilizzate. Per allegarne una, registra con `register-key-v2` e indica il nome della tua chiave locale:
+
+```bash
+qorechaind tx pqc register-key-v2 dilithium5 <public_key_hex> hybrid --from mykey --pqc-key mypqc \
   --chain-id qorechain-diana --gas 600000 --fees 60000uqor
 ```
 
@@ -136,6 +143,7 @@ Tutto il resto della lane EVM è invariato: continui a firmare con MetaMask, eth
 * Una transazione ammessa che poi fallisce consuma comunque il suo slot e il suo budget di valore.
 * L'apertura di una nuova finestra **sostituisce** la precedente; il consumo riparte da zero.
 * La CLI accetta `max-value` in `uqor` o `qor` (`1000qor` = 1,000,000,000 uqor).
+* Il limite di valore conta solo il QOR nativo: un trasferimento di token, un'approvazione o qualsiasi altra chiamata a un contratto porta valore zero. Per limitare anche queste, restringi l'ambito della finestra (sotto).
 
 **Passo 1 — registra la tua chiave post-quantistica** (una volta): vedi [Registra la tua chiave post-quantistica](#register-pqc-key) sopra.
 
@@ -147,6 +155,13 @@ qorechaind tx pqc open-evm-window 7200 20 1000qor --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 
 qorechaind tx pqc cosign window.json --from mykey --pqc-key mypqc --chain-id qorechain-diana
+```
+
+**Restringere l'ambito (v3.2.3 e successive).** Due flag opzionali limitano ciò che una finestra aperta ammette: `--native-only` ammette solo semplici trasferimenti di QOR nativo (nessun calldata, nessuna creazione di contratti, nessun destinatario che contenga codice), e `--allowed-targets 0xAAA...,0xBBB...` ammette solo transazioni verso quei destinatari (al massimo 16; la creazione di contratti viene in tal caso rifiutata). Ad esempio:
+
+```bash
+qorechaind tx pqc open-evm-window 7200 20 1000qor --native-only --from mykey \
+  --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > window.json
 ```
 
 Sulla mainnet, l'apertura di una finestra ha usato circa 180.000 di gas. In [QoreX](/qorex/security-and-recovery#evm-window) lo stesso passaggio è **Impostazioni → Sicurezza → Finestra di accesso EVM** (app) oppure il pulsante **Finestra di accesso EVM** (estensione). L'apertura della finestra fa avanzare il nonce del tuo account, quindi aprila **prima** di preparare la transazione EVM nel tuo wallet.
@@ -162,7 +177,7 @@ La risposta REST non fallisce mai per un indirizzo senza finestra; restituisce `
 
 **Passo 4 — usa normalmente la lane EVM.** Invia da MetaMask o dai tuoi strumenti come al solito. Ogni transazione consuma uno slot di transazione e (valore + commissione massima) dalla finestra.
 
-**Chiudere una finestra in anticipo.** Se sospetti che la tua chiave classica sia compromessa, chiudi la finestra; tutto ciò che ancora ammetteva viene rifiutato dal blocco successivo:
+**Chiudere una finestra in anticipo.** Se sospetti che la tua chiave classica sia compromessa, chiudi la finestra; tutto ciò che ancora ammetteva viene rifiutato dal blocco successivo. La chiusura revoca anche qualsiasi consenso di delega EIP-7702 in sospeso (dalla v3.2.2; una transazione di tipo 4 che modifica il codice di un account viene ammessa solo dopo un consenso post-quantistico `authorize-evm-delegation`):
 
 ```bash
 qorechaind tx pqc close-evm-window --from mykey --chain-id qorechain-diana \

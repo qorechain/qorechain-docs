@@ -21,6 +21,15 @@ El motor QCAI (QoreChain AI) opera a través de tres capas:
 
 El nivel de consenso se documenta por separado en el [Motor de consenso PRISM](/architecture/prism-consensus-engine). Esta página cubre los niveles de red y de aplicación.
 
+:::note Qué se aplica en las redes en producción (mainnet v3.2.3, testnet v3.2.4)
+Dos partes de `x/ai` actúan hoy sobre las transacciones, tanto en el carril Cosmos como en el carril EVM:
+
+* Un **límite de frecuencia por emisor**. El límite en producción es de **600 transacciones por minuto por emisor** (`max_tx_per_minute`; el carril EVM tiene su propio límite opcional, que no está configurado, por lo que se aplica el mismo valor). El «minuto» se cuenta sobre una ventana fija de bloques, no en tiempo real, porque la altura de bloque es el único reloj que comparten todos los validadores. A un emisor que alcanza el límite se le rechazan las transacciones siguientes hasta que las más antiguas salgan de la ventana. El límite se aplica en el carril Cosmos desde v3.2.0 y en ambos carriles desde v3.2.2.
+* Una **puntuación de anomalía** para cada transacción. El `anomaly_action` en producción es `flag`: una puntuación alta emite un evento `ai_anomaly_check` y cuenta la transacción como señalada, pero no la rechaza. Rechazar según la puntuación es un ajuste de gobernanza que no está habilitado.
+
+Todo lo demás en esta página (el enrutador, la canalización de fraude de seis capas, el optimizador de comisiones, el optimizador de red, el sidecar) describe análisis y asesoramiento: nada de ello cambia qué transacciones acepta la cadena, y la canalización de seis capas no se invoca desde la ruta de las transacciones. Consulta los ajustes en producción con `qorechaind query ai config` y los contadores con `qorechaind query ai stats`.
+:::
+
 ## Enrutador de transacciones
 
 El enrutador mejorado con IA selecciona los validadores y las rutas óptimas para cada transacción mediante una puntuación ponderada multifactorial.
@@ -86,7 +95,7 @@ El detector de fraudes implementa una **canalización de detección de seis capa
 | Medio       | Cualquiera        | `alert`                                                      |
 | Bajo / Ninguno   | Cualquiera        | `allow`                                                      |
 
-Cuando se activa una acción distinta de `allow`, se crea un registro de investigación de fraude con un ID único (formato: `INV-{timestamp}-{txhash_prefix}`).
+Cuando se activa una acción distinta de `allow`, la canalización crea un registro de investigación de fraude con un ID único (formato: `INV-{block_height}-{txhash}`, truncado a 48 caracteres). En las redes en producción la canalización no se invoca desde la ruta de las transacciones (consulta la nota al principio de esta página), por lo que hoy no se genera ningún registro de investigación ni la canalización activa ningún interruptor de circuito de contratos.
 
 ## Optimizador de comisiones
 
@@ -171,7 +180,7 @@ Dos contratos precompilados exponen las capacidades de IA on-chain a los contrat
 Estos precompilados **no están activos** en la mainnet (`qorechain-vladi`) ni en la testnet (`qorechain-diana`); una llamada devuelve datos vacíos. Solo se activarán cuando dispongan de una ruta de puntuación de solo lectura en coma fija. Consulta [Precompilados de EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Importante**: Los precompilados de EVM utilizan **únicamente el motor heurístico determinista**. Nunca llaman al sidecar, lo que garantiza que toda la ejecución de EVM siga siendo totalmente determinista y reproducible.
+**Importante**: Los precompilados de EVM utilizan **únicamente el motor heurístico determinista**. Nunca llaman al sidecar, lo que garantiza que toda la ejecución de EVM siga siendo totalmente determinista y reproducible. Desde v3.2.3 el precompilado de comprobación de anomalías analiza una transacción sin escribir estado; el resto del refuerzo de los precompilados en esa versión (el puente CrossVM rechaza `STATICCALL`, mide su llamada anidada contra el gas del marco que llama y solo alcanza destinos CosmWasm de una lista permitida) se aplica cuando se active el precompilado CrossVM. A fecha de 20 de octubre de 2026, la lista `active_static_precompiles` está vacía en ambas redes.
 
 ## Atestación TEE
 

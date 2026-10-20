@@ -17,17 +17,19 @@ sidebar_position: 2
 - 크로스 VM 호출을 지원하는 **트리플 VM** 런타임.
 
 :::caution 초기 단계: 상태 열을 확인하세요
-아직 어느 네트워크에서도 롤업이 생성된 적이 없습니다. 아래 표는 현재 실제로
-동작하는 것이 무엇인지 설명합니다. 일반적인 옵티미스틱/zk 롤업만 필요하다면
+아직 어느 네트워크에서도 롤업이 생성된 적이 없습니다(2026년 10월 20일 확인).
+아래 표는 현재 실제로 동작하는 것이 무엇인지 설명합니다. 릴리스된 0.5.0
+클라이언트의 제한 사항은 [RDK 0.5.0 제한 사항](/rollups/deploying-a-rollup#rdk-050-limits)에
+정리되어 있습니다. 일반적인 옵티미스틱/zk 롤업만 필요하다면
 어떤 키트든 상관없습니다. 여기에 나열된 기능은 RDK가 그 위에 더하는 것이며,
 TypeScript, Python, Go, Rust, Java로 제공됩니다.
 :::
 
 | 기능 | 상태 | 의존하는 요소 |
 | --- | --- | --- |
-| **양자 내성 정산 영수증** | 🟡 초기 단계 | 앵커는 메인 체인의 포스트 양자 방식인 ML-DSA-87로 서명되며, 아직 앵커는 존재하지 않음 |
+| **양자 내성 정산 영수증** | 🟡 초기 단계 | 앵커는 메인 체인의 포스트 양자 방식인 ML-DSA-87로 서명되며, 아직 앵커는 존재하지 않고 0.5.0 검증기는 라이브 네트워크에 대한 체인 검사를 완료할 수 없음 |
 | **QCAI Rollup Copilot** | 🟡 아직 공개 엔드포인트에서 사용할 수 없음 | 현재 공개 엔드포인트가 노출하지 않는 온체인 AI/RL 자문 서비스 |
-| **멀티 VM 크로스 VM 호출** | 🟡 아직 라이브 네트워크에서 사용할 수 없음 | 활성화되지 않은 크로스 VM 프리컴파일, 그리고 CosmWasm 업로드가 닫혀 있음 |
+| **멀티 VM 크로스 VM 호출** | 🟡 아직 라이브 네트워크에서 사용할 수 없음 | 활성화되지 않은 크로스 VM 프리컴파일, 체인의 레이아웃과 일치하지 않는 0.5.0 인코더, 그리고 닫혀 있는 CosmWasm 업로드 |
 
 ---
 
@@ -52,8 +54,12 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-영수증이 무엇을 증명하고 무엇을 증명하지 않는지는
-[양자 내성 정산 영수증](/rollups/settlement-receipts)을 참조하세요.
+0.5.0에서 `verifySettlementReceipt`는 체인에 대해 검사하며 `client` 없이는
+`valid`라고 말하지 않지만, 체인 검사가 아직 라이브 네트워크에 대해 완료되지
+않으므로 정상적인 영수증을 유효하다고 보고하는 대신 안전하게 실패(fail
+closed)합니다. 영수증이 무엇을 증명하고 무엇을 증명하지 않는지, 그리고 정확한
+제한 사항은 [양자 내성 정산 영수증](/rollups/settlement-receipts)을
+참조하세요.
 
 ---
 
@@ -89,18 +95,35 @@ CLI에서: `qorollup advise my-rollup`. [QCAI Copilot](/rollups/qcai-copilot)을
 RDK에는 EVM(Solidity) 컨트랙트에서 `0x…0901`에 고정된 프리컴파일을 통해
 **CosmWasm** 컨트랙트로 보내는 호출을 인코딩하는 헬퍼가 포함되어 있습니다.
 이 프리컴파일은 메인넷과 테스트넷 모두에서 **활성화되어 있지 않습니다**
-([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조).
+([EVM 프리컴파일: 네트워크 상태](/developer-guide/evm-precompiles#network-status) 참조):
+두 네트워크 모두에서 `0x…0901`에 대한 `eth_getCode`는 `0x`를 반환하며, 이
+주소로의 컨트랙트 호출은 아무 효과 없이 성공합니다.
+
+0.5.0 헬퍼 `encodeCrossVmCalldata`는 `executeCrossVMCall(string,bytes)`용
+calldata를 만들지만, 노드는
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`를
+디코딩하므로, 그 출력은 체인이 읽는 형식과 일치하지 않습니다. 대신 체인의
+레이아웃으로 호출을 인코딩하세요(여기서는 viem을 사용하며, `targetVM` 1은
+CosmWasm으로 유일하게 지원되는 대상입니다):
 
 ```ts
-import { encodeCrossVmCalldata, CROSS_VM_PRECOMPILE } from "@qorechain/rdk";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 
-const calldata = encodeCrossVmCalldata({
-  contract: "qor1examplecontract…",       // target CosmWasm contract
-  msg: JSON.stringify({ increment: {} }),  // its execute message
+const abi = parseAbi([
+  "function executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)",
+]);
+
+const calldata = encodeFunctionData({
+  abi,
+  functionName: "executeCrossVMCall",
+  args: [
+    1,                                                          // 1 = CosmWasm
+    "qor1examplecontract…",                                     // target contract
+    toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
+  ],
 });
 
-// Send an EVM transaction:  to = CROSS_VM_PRECOMPILE,  data = calldata
-console.log(CROSS_VM_PRECOMPILE); // 0x0000000000000000000000000000000000000901
+// Send an EVM transaction:  to = 0x0000000000000000000000000000000000000901,  data = calldata
 ```
 
 또는 롤업의 Solidity에서 직접:
@@ -112,12 +135,16 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
     external returns (bytes memory)
 {
     bytes memory data =
-        abi.encodeWithSignature("executeCrossVMCall(string,bytes)", contractAddr, msg_);
+        abi.encodeWithSignature("executeCrossVMCall(uint8,string,bytes)", uint8(1), contractAddr, msg_);
     (bool ok, bytes memory ret) = CROSS_VM_PRECOMPILE.call(data);
     require(ok, "cross-VM call failed");
     return ret;
 }
 ```
+
+현재로서는 `ok`만으로는 아무것도 증명되지 않습니다: 프리컴파일에 코드가 없는
+동안 호출은 빈 데이터와 함께 성공을 반환하고 아무것도 실행하지 않으므로,
+대상 컨트랙트에서 그 효과를 확인하세요.
 
 `npm create qorechain-rollup my-app -- --template multivm-rollup`으로 스타터를
 스캐폴딩하세요. (EVM↔CosmWasm만 해당; SVM 크로스 호출은 별도입니다.)

@@ -127,12 +127,12 @@ Bu sabitleme yalnızca kendi tarayıcınızda saklanır, hiçbir sunucuda değil
 EVM yolu, bir işlemi yalnızca kayıtlı bir kuantum-sonrası anahtarı olan ve **açık bir EVM yetkilendirme penceresi** bulunan bir hesaptan kabul eder: bu, hesabın kuantum-sonrası imzalı bir mesajla açtığı; süre, işlem sayısı ve değer bakımından sınırlı bir izindir. MetaMask bu mesajı üretemez. Pencere olmadan gönderirseniz zincir işlemi reddeder (tipik hatalar: pencere yok, pencere tükendi, kuantum-sonrası anahtar yok).
 :::
 
-1. **QoreX**'te (hesabın kendi cüzdanı), hesabın kuantum-sonrası anahtarı yoksa kaydedin, ardından bir EVM yetkilendirme penceresi açın — bkz. [EVM erişim penceresi](/qorex/security-and-recovery#evm-window). Rahat olduğunuz limitleri seçin; yeni bir pencere açmak öncekinin yerini alır.
+1. **QoreX**'te (hesabın kendi cüzdanı), hesabın kuantum-sonrası anahtarı yoksa kaydedin (o hesaptan yaptığınız ilk QoreX transferi bunu yapar), ardından bir EVM yetkilendirme penceresi açın — bkz. [EVM erişim penceresi](/qorex/security-and-recovery#evm-window). Bu, MetaMask'in anahtarını paylaşan **Ethereum tarzı (coin 60) hesap** içindir — aynı kurtarma ifadesini kullanarak QoreX'te **Add an Ethereum account (coin 60)** ile ekleyin ([nasıl](/qorex/getting-started#restore-dashboard)); hiçbir MetaMask anahtarı sıradan bir coin-118 `qor1…` hesabından gönderemez. Bir pencere, bloklarla (en fazla 17.280, mainnet'te yaklaşık 15 saat), işlem sayısıyla (en fazla 1.000) ve her tutarı maksimum ücretiyle **birlikte** sayan bir QOR harcama üst sınırıyla sınırlandırılır. Rahat olduğunuz limitleri seçin ve küçük tutun: bir pencere açıkken MetaMask işlemleri QOR'u kuantum-sonrası imza olmadan taşır. Yeni bir pencere açmak öncekinin yerini alır ve hesabın nonce değerini ilerletir; bu yüzden MetaMask'ten göndermeden **önce** açın (daha önce hazırlanmış bir işlem "nonce too low" ile başarısız olur). v3.2.3'ten beri zincir ayrıca daha dar, kapsamlı pencereleri de destekler; QoreX henüz bunlar için bir ekran sunmaz.
 2. MetaMask'i açın ve QoreChain EVM ağına ayarlı olduğunu doğrulayın.
 3. MetaMask içinde **Send** seçeneğini seçin, alıcının `0x...` adresini ve tutarı girin, gaz ücretini gözden geçirin ve onaylayın.
 4. Dashboard Cüzdan sayfasına dönün; işlem zincire yazıldığında geçmişinizde görünür (henüz görünmediyse yenileyin).
 
-Her işlem pencerenin bir kısmını tüketir; süre, işlem sayısı veya değer limitine ulaşıldığında QoreX'te yenisini açın.
+Her işlem pencerenin bir kısmını tüketir; süre, işlem sayısı veya değer limitine ulaşıldığında QoreX'te yenisini açın. İşiniz bittiğinde pencereyi QoreX'ten kapatın.
 
 ### Belirli bir ray üzerinden alma {#receive-mainnet}
 

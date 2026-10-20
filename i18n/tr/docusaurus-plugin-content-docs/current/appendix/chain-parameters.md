@@ -7,10 +7,10 @@ sidebar_position: 2
 
 # Zincir Parametreleri
 
-QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır ve `gasabstraction` yalnızca test ağında sorgulanabilir), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
+QoreChain ağlarının modül parametrelerinin, modüle göre gruplanmış birleştirilmiş referansı. Parametreler, modülün bir params sorgusu olduğu yerlerde `qorechaind query <module> params` ile sorgulanabilir (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` ve `gasabstraction` `config` kullanır ve `gasabstraction` yalnızca test ağında sorgulanabilir), REST üzerinden ise yalnızca [REST / gRPC başvurusunda](/api-reference/rest-grpc-endpoints) listelenen rotalar için sorgulanabilir. `x/inflation` parametreleri de v3.2.3'ten beri ana ağda REST üzerinden sunulur (`/qorechain/inflation/v1/params`). `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` ve `xqore` için REST kullanılamaz.
 
 :::note
-Gösterilen değerler 14 Ekim 2026 tarihinde canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında ana ağ genesis değerleridir; değişenler ayrıca belirtilmiştir). Parametreler ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**) ve test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) için geçerlidir ve belirtilen durumlar dışında her iki ağda aynıdır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
+Gösterilen değerler 20 Ekim 2026 tarihinde ana ağ **`qorechain-vladi`**'den (EVM zincir kimliği **9801**, sürüm **v3.2.3**) canlı olarak okunmuştur (bir yönetişim önerisinin değiştirdikleri dışında genesis değerleridir; değişenler ayrıca belirtilmiştir). Belirtilen durumlar dışında test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**, sürüm **v3.2.4**) üzerinde de aynıdır; bugün mevcut olan farklar [Test ağı farkları (v3.2.4)](#testnet-differences) bölümünde toplanmıştır. Blok cinsinden verilen süreler, ölçülen ana ağ blok süresi olan yaklaşık 3,2 saniyeye göre çevrilmiştir (test ağı yaklaşık her saniye bir blok üretir).
 :::
 
 ---
@@ -26,7 +26,20 @@ Gösterilen değerler 14 Ekim 2026 tarihinde canlı olarak okunmuştur (bir yön
 | `default_signature_algo`   | `1`                        | Dilithium-5 / ML-DSA-87                                                  |
 | `hybrid_signature_mode`    | `2` (required)             | Uygulama modu: 0=devre dışı, 1=isteğe bağlı, 2=zorunlu                   |
 
-Algoritma kayıt defteri (id 1 `dilithium5`, id 2 `mlkem1024`) bir parametre değil, zincir durumudur. Anahtarlar `MsgRegisterPQCKey` ile açıkça kaydedilir; otomatik kayıt yoktur.
+Algoritma kayıt defteri (id 1 `dilithium5`, id 2 `mlkem1024`) bir parametre değil, zincir durumudur. Anahtarlar `MsgRegisterPQCKey` veya `MsgRegisterPQCKeyV2` ile açıkça kaydedilir; otomatik kayıt yoktur. v3.2.3'ten beri zincir zayıf, dejenere ve daha önce kullanılmış açık anahtarları reddeder ve `MsgRegisterPQCKeyV2`, zincirin mevcut olduğunda doğruladığı isteğe bağlı bir sahiplik kanıtı kabul eder (`tx pqc register-key-v2 ... --pqc-key <name>`).
+
+### EVM yetkilendirme penceresi sınırları {#evm-window-limits}
+
+Bir [EVM yetkilendirme penceresinin](/getting-started/first-transaction#evm-window) sınırları modül parametresi değil, protokol sabitleridir:
+
+| Sınır | Değer |
+| ----- | ----- |
+| Maksimum `blocks` | 17,280 (≈3,2 sn bloklarda yaklaşık 15 saat) |
+| Maksimum `max_txs` | 1,000 |
+| `max_value` | 0'dan büyük (uqor; aktarılan değer artı her işlemin maksimum ücreti) |
+| Maksimum `allowed_targets` | 16 alıcı adresi (isteğe bağlı kapsam, v3.2.3) |
+
+Bir pencere, v3.2.3'ten itibaren `native_only` ile (yalnızca düz yerel QOR transferleri) de daraltılabilir.
 
 ---
 
@@ -99,7 +112,7 @@ Yapılandırma (`qorechaind query qca config`):
 | `contract_create_fee`  | `100,000,000 uqor` (100 QOR) | Kontrat oluşturma için sabit yakma ücreti             |
 | `ai_service_burn_rate` | `0.50`                       | Yakılan AI hizmet ücretleri oranı                     |
 | `bridge_burn_rate`     | `1.00`                       | Yakılan köprü ücretleri oranı                         |
-| `failed_tx_burn_rate`  | `0.10`                       | Yakılan başarısız işlem gazı oranı                    |
+| `failed_tx_burn_rate`  | `0.10`                       | Yakılan başarısız işlem gazı oranı (zincir tarafından v3.2.2'den beri uygulanır) |
 | `validator_share`      | `0.37`                       | Doğrulayıcılara dağıtılan oran                        |
 | `treasury_share`       | `0.20`                       | Hazineye gönderilen oran                              |
 | `staker_share`         | `0.10`                       | Stake edenlere dağıtılan oran                         |
@@ -133,13 +146,13 @@ xQORE modülünün muhasebesi mevcuttur, ancak kilitleme ve kilit açma işlemle
 | Parametre              | Değer                   | Açıklama                                              |
 | ---------------------- | ----------------------- | ----------------------------------------------------- |
 | `emission_mode`        | `fixed`                 | `schedule` (eski) veya `fixed` (v3.1.94'ten beri)     |
-| `fixed_epoch_emission` | `16,239,000,000 uqor` (16.239 QOR) | Fixed modunda dönem başına basılan miktar  |
-| `max_total_emission`   | `114,285,714,000,000 uqor` (114.285.714 QOR) | Kesin kümülatif üst sınır       |
+| `fixed_epoch_emission` | `86,000,000,000 uqor` (86.000 QOR) | Fixed modunda dönem başına basılan miktar (10 numaralı yönetişim önerisinden, 19 Ekim 2026, önce 16.239 QOR) |
+| `max_total_emission`   | `590,000,000,000,000 uqor` (590.000.000 QOR) | Kesin kümülatif üst sınır (10 numaralı öneriden önce 114.285.714 QOR) |
 | `epoch_length`         | `43,200` blocks         | Dönem başına blok sayısı (≈3,2 sn bloklarda yaklaşık 38,6 saat) |
 | `schedule`             | %17,5, %11, %7, %7, %2  | Eski yıl bazlı oranlar, fixed modunda kullanılmaz     |
 | `enabled`              | `true`                  | Modül etkinleştirme bayrağı                           |
 
-Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basar. Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission). Ana ağda bu değerler bir REST rotası üzerinden sunulmaz.
+Modül, üst sınıra ulaşılana kadar bu emisyonu ücret toplayıcısına basar. 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar. 20 Ekim 2026'da (84. dönem) 105.248.896,21 QOR basılmıştı ve üst sınır altında 484.751.103,79 QOR kalmıştı (`GET /qorechain/inflation/v1/epoch_info`). Bkz. [Tokenomics](/architecture/tokenomics#supply-and-emission).
 
 ---
 
@@ -281,7 +294,7 @@ Genesis yapılandırması (`enabled = true`, `native_denom = uqor`):
 Dönüşüm oranı, o tokenle ödenen bir ücret dönüştürülürken kullanılan orandır.
 
 :::note Açık IBC kanalı yok
-Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `ibc/ATOM` var olamaz; ücretler `uqor` ile ödenir. Ücret yolu v3.2.2'de yeniden düzenlendi (yalnızca test ağı).
+Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `ibc/ATOM` var olamaz; ücretler `uqor` ile ödenir.
 :::
 
 ---
@@ -298,7 +311,7 @@ Her iki ağda da açık bir IBC kanalı olmadığından henüz `ibc/USDC` veya `
 | `max_light_nodes`        | `10,000`           | Maksimum kayıtlı hafif düğüm sayısı                  |
 | `heartbeat_grace_period` | `100` blocks       | Geciken bir heartbeat için ek süre                   |
 
-Ödül muhasebesi canlıdır (`GET /qorechain/lightnode/v1/reward_pool`, 14 Ekim 2026'da okunduğu üzere 1.713 uqor'luk bir `max_reward_per_block_per_node` bildirir), ancak kayıt şu anda kapalıdır ve kayıtlı hafif düğüm yoktur. Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
+Ödül muhasebesi canlıdır. `GET /qorechain/lightnode/v1/reward_pool` havuzu (`balance`, `reserved`, `outstanding`, `payable`, `distributable`) ve düğüm başına ödül sınırını bildirir. v3.2.3'ten beri sınır `max_reward_per_month_per_node`'dur: **düğüm başına 30 günde 2.000 QOR (`2000000000` uqor)**; blok süresine göre orantılanır ve düğümün çalışma süresine göre ölçeklenir; eski blok başına değer (`max_reward_per_block_per_node`, `1713` uqor) hâlâ bildirilmektedir. 20 Ekim 2026'da havuzda 487,2318 QOR'luk bir rezerv vardı ve bekleyen ödeme yoktu. Kayıt açıktır ve lisansa bağlıdır: ana ağda altı `lightnode_operator` lisansı verilmiştir ve henüz hiçbir hafif düğüm kaydolmamıştır (`GET /qorechain/license/v1/holders/lightnode_operator`, `GET /qorechain/lightnode/v1/stats`). Bkz. [Hafif Düğüm](/light-node/overview#reward-program-status) ve [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
 ---
 
@@ -336,7 +349,7 @@ Ana ağda da test ağında da henüz havuz yoktur ve `MsgPausePool` / `MsgResume
 
 ## Stake, Slashing, Yönetişim, Ücretler ve EVM {#core-modules}
 
-Standart Cosmos SDK ve EVM modülleri, canlı olarak okunmuştur (belirtilen durumlar dışında her iki ağda aynıdır).
+Standart Cosmos SDK ve EVM modülleri, 20 Ekim 2026'da canlı olarak okunmuştur (belirtilen durumlar dışında her iki ağda aynıdır; 14 Ekim okumasından beri değişmemiştir).
 
 | Modül | Parametre | Değer |
 | --- | --- | --- |
@@ -373,8 +386,27 @@ Standart Cosmos SDK ve EVM modülleri, canlı olarak okunmuştur (belirtilen dur
 
 Zincir, vakıf operasyon hesabı ve yönetişim tarafından kontrol edilen Cosmos SDK devre kesicisiyle tekil mesaj türlerini kapatabilir. Devre dışı bırakılmış bir mesaj türü, her hatta ante handler'da reddedilir. Canlı liste `GET /cosmos/circuit/v1/disable_list` adresindedir.
 
-**Ana ağ (14 Ekim 2026, 16 kayıt):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
+**Ana ağ (20 Ekim 2026, 16 kayıt, 14 Ekim'den beri değişmedi):** vesting hesabı oluşturma (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; ve dört PRISM kontrol mesajı (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM hattı (`MsgEthereumTx`) **açıktır**: 16 ile 25 Eylül arasında kapatılmış ve v3.2.0 yükseltmesiyle yeniden açılmıştır.
 
-**Test ağı:** yalnızca üç CosmWasm mesajı.
+**Test ağı (20 Ekim 2026):** yalnızca üç CosmWasm mesajı.
 
 Standart bank, staking, governance, distribution, authz ve `x/pqc` kayıt mesajlarının tümü dahil diğer her mesaj türü etkindir. Liste yönetişim tarafından kontrol edilir ve değişebilir; her zaman sorgulayın.
+
+---
+
+## Test Ağı Farkları (v3.2.4) {#testnet-differences}
+
+`qorechain-diana` test ağı v3.2.4 çalıştırır (19 Ekim 2026'da 8.337.253 numaralı blok yüksekliğinde uygulandı); v3.2.4 bugün **yalnızca test ağına özeldir**; ana ağ yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır. 20 Ekim 2026 itibarıyla bunlar ana ağdan farklıdır:
+
+| Alan | Test ağı |
+| ---- | ------- |
+| Modüller | 48 yerine 49: isteğe bağlı zaman kilitli stake modülü `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; minimum kilit 10 QOR). Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking). |
+| `x/inflation` | Daha önceki emisyon değerleri (dönem başına 16.239 QOR, üst sınır 114.285.714 QOR, çoktan ulaşılmış) ve üçüncü bir `emission_mode` olan `target_apy`; `target_apy_bps` parametresi şu anda `0`'dır. |
+| `x/burn` | On üçüncü bir kayıtlı kaynak, `staking_tier_penalty`. |
+| `x/lightnode` ödül havuzu | Ek raporlama alanları (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); bir düğümün ödül sınırı kendi kaydıyla başlar. |
+| `x/pqc` | PQC hesaplarında bir `possession_proven` bayrağı; sahiplik kanıtı hesap anahtarları için hâlâ isteğe bağlıdır, köprü doğrulayıcı anahtarları için zorunludur. |
+| `x/rdk` | İyimser itiraz penceresi blok süresi cinsinden sayılır. |
+| Devre kesici | Yalnızca üç CosmWasm mesajı (yukarıya bakın). |
+| Sorgular | Yeni `protocol_features` ve `auth_nonce` sorguları. |
+
+Burada listelenmeyen her parametre her iki ağda aynıdır.

@@ -28,7 +28,10 @@ EVM→네이티브 라우팅은 여전히 `@qorechain/evm`의 **크로스-VM 브
 - 아래의 타입이 지정된 REST 읽기 헬퍼는 공개 게이트웨이가 제공하지 않는 경로를
   호출합니다. 대신 `connectQueryClients(rpc).crossvm`으로 메시지를 읽으세요.
 - 모든 Native 경로 트랜잭션과 마찬가지로, 크로스-VM 호출도 하이브리드 서명을 담아야
-  합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc#hybrid-signing) 참조).
+  합니다. 서명 클라이언트를 계정의 키쌍과 함께 연결하면
+  (`client.connectTx(signer, { pqcKeypair })`, SDK 0.9.0) 크로스-VM 클라이언트가
+  하이브리드로 서명합니다([계정 및 PQC 서명](/sdk/concepts/accounts-pqc#hybrid-signing) 참조).
+  0.9.0 이전 릴리스는 클래식 방식으로 서명하므로 공개 네트워크가 이를 거부합니다.
 :::
 
 ## 통합 크로스-VM 호출
@@ -43,7 +46,7 @@ value }`를 직접
 import { createClient, createCrossVMClient } from "@qorechain/sdk";
 
 const client = createClient({ network: "testnet", endpoints: { rpc, rest } });
-const tx = await client.connectTx(signer);
+const tx = await client.connectTx(signer, { pqcKeypair }); // hybrid-signed (SDK 0.9.0)
 const xvm = createCrossVMClient(tx);
 
 // Call an EVM contract from a native account — the payload is ABI-encoded.

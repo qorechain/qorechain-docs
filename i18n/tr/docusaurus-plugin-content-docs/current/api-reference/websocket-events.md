@@ -141,7 +141,7 @@ Yalnızca belirli bir modülden gelen olayları almak için olay türüne göre 
 
 ## Modül Olayları Referansı
 
-Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler, zincir sürümü v3.2.0'a aittir.
+Olaylar standart consensus-engine olayları olarak yayınlanır. Olay türü ve niteliğine göre filtrelenmiş bir `tm.event='Tx'` sorgusuyla abone olun (örneğin `tm.event='Tx' AND bridge_deposit.chain EXISTS`). Blok düzeyindeki olaylar (aşağıdaki PRISM olayları gibi, blok sonu mantığı tarafından yayınlananlar) `Tx` ile değil, `tm.event='NewBlock'` ile iletilir. Aşağıdaki adlar ve nitelikler zincir sürümü v3.2.3'e (mainnet) aittir; yalnızca v3.2.4 testnet'inde bulunan olaylar işaretlenmiştir.
 
 :::note Gerçekte hangi olayları göreceksiniz
 Bu modüllerin çoğu herkese açık ağlarda boştadır: köprü canlı değildir, henüz kayıtlı bir multilayer katmanı veya rollup yoktur ve xQORE kullanılamaz. Bu modüllerin olayları tanımlıdır ancak etkinlik olana kadar tetiklenmez. PRISM gözlem ve ödül olayları (`rl_observation_collected`, `rl_reward_computed`) her iki ağda da yaklaşık her 10 blokta bir yayınlanır.
@@ -157,8 +157,11 @@ Bu modüllerin çoğu herkese açık ağlarda boştadır: köprü canlı değild
 | `pqc_key_registered`        | `address`, `key_type`, `algorithm_id`                     | Bir PQC anahtarı kaydedildiğinde yayınlanır        |
 | `pqc_key_rotated`           | `address`, `algorithm_id`                                 | Bir PQC anahtarı döndürüldüğünde (rotate) yayınlanır |
 | `pqc_key_migrated`          | `address`, `from_algorithm`, `to_algorithm`               | Bir anahtar yeni bir algoritmaya taşındığında yayınlanır |
-| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`        | Bir EVM lane yetkilendirme penceresi açıldığında yayınlanır |
+| `pqc_evm_window_opened`     | `address`, `expiry_height`, `max_txs`, `max_value`; pencere kapsamlıysa `native_only` ve `allowed_targets` (v3.2.3) | Bir EVM lane yetkilendirme penceresi açıldığında yayınlanır |
 | `pqc_evm_window_closed`     | `address`                                                 | Bir EVM lane yetkilendirme penceresi kapandığında yayınlanır |
+| `pqc_evm_delegation_consent` | `address`, `delegate`, `expiry_height`                   | Bir hesap, bir EIP-7702 delegasyonuna onayını kaydettiğinde yayınlanır (v3.2.2) |
+| `pqc_evm_delegation_cleared` | `address`, `delegate`                                    | Bir hesabın EIP-7702 delegasyonu temizlendiğinde yayınlanır (v3.2.2) |
+| `pqc_algorithm_registered`, `pqc_algorithm_status_updated`, `pqc_algorithm_disabled` | `algorithm_id` ve `name`/`category`, `old_status`/`new_status` veya `reason` | Yönetişim tarafından yapılan algoritma kayıt defteri değişiklikleri |
 
 PQC anahtarları bir kayıt işlemiyle açıkça kaydedilir; otomatik bir kayıt olayı yoktur.
 
@@ -195,6 +198,8 @@ PQC anahtarları bir kayıt işlemiyle açıkça kaydedilir; otomatik bir kayıt
 | Olay Türü         | Anahtar Nitelikler                                          | Açıklama                                         |
 | ----------------- | ----------------------------------------------------------- | ------------------------------------------------ |
 | `rollup_created`  | `rollup_id`, `creator`, `profile`, `settlement_mode`        | Yeni bir rollup kaydedildiğinde yayınlanır       |
+| `rollup_paused`, `rollup_resumed`, `rollup_stopped` | `rollup_id` ve verilmişse bir neden | Bir rollup duraklatıldığında, devam ettirildiğinde veya durdurulduğunda yayınlanır |
+| `batch_challenged`, `challenge_resolved`, `batch_rejected` | `rollup_id`, `batch_index` (ve bir çözümde `fraud_upheld`) | Bir toplu işe itiraz edildiğinde, itiraz çözüldüğünde veya bir toplu iş reddedildiğinde yayınlanır |
 | `batch_submitted` | `rollup_id`, `batch_index`, `tx_count`                      | Bir mutabakat toplu işi gönderildiğinde yayınlanır |
 | `batch_finalized` | `rollup_id`, `batch_index`                                  | Bir toplu iş itiraz penceresini geçtiğinde yayınlanır |
 | `da_blob_stored`  | `rollup_id`, `blob_index`, `backend`, `size`                | Bir DA blob'u depolandığında yayınlanır          |
@@ -207,6 +212,29 @@ PQC anahtarları bir kayıt işlemiyle açıkça kaydedilir; otomatik bir kayıt
 | `burn`                   | `source`, `amount`                                        | Token'lar kalıcı olarak yakıldığında yayınlanır     |
 | `milestone_burn`         | `tx_threshold`, `burn_amount`, `cumulative_tx_count`      | İşlem sayısı eşiğine bağlı bir yakım çalıştığında yayınlanır |
 | `burn_stranded_released` | `amount`, `destination`, `remaining`                      | Yönetişim, takılı kalan staker payının bir kısmını serbest bıraktığında yayınlanır |
+
+### Inflation, Gas Abstraction, Lisans, Light Node ve AI Modülleri
+
+| Olay Türü | Anahtar Nitelikler | Açıklama |
+| ---------- | -------------- | ----------- |
+| `inflation_params_updated` | `mode`, `fixed_epoch_emission`, `max_total_emission` | Yönetişim emisyon parametrelerini değiştirdiğinde yayınlanır |
+| `gas_abstraction_conversion`, `gas_abstraction_refill` | `paid`, `native_equivalent`, `rate`, `price_source`, `result` | Kabul edilen başka bir token ile ödenen ücret dönüştürüldüğünde ve float yeniden doldurulduğunda yayınlanır (yalnızca `uqor` kabul edildiği sürece hiçbiri tetiklenmez) |
+| `gas_abstraction_float_funded`, `gas_abstraction_config_updated` | `sender`, `amount`; `accepted_tokens`, `block_conversion_cap` | Float fonlandığında ve yönetişim yapılandırmayı güncellediğinde yayınlanır |
+| `license_granted`, `license_revoked`, `license_suspended`, `license_resumed`, `license_expired` | izin alan ve özellik | Lisans yaşam döngüsü |
+| `license_authority_updated` | `new_authority` | Yönetişim lisans otoritesini değiştirdiğinde yayınlanır (v3.2.3) |
+| `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Hafif düğüm yaşam döngüsü ve ödül olayları |
+| `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Yönetişim AI tarama yapılandırmasını güncellediğinde yayınlanır |
+
+### Staking Tiers Modülü (yalnızca testnet)
+
+Bu olaylar yalnızca `qorechain-diana` testnet'inde (v3.2.4) vardır; mainnet'te modül henüz yoktur (yönetişim önerisi 13, v3.2.4'ü 3,742,566 yüksekliğinde uygulayacaktır).
+
+| Olay Türü | Anahtar Nitelikler | Açıklama |
+| ---------- | -------------- | ----------- |
+| `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Bir delegasyon kilidi oluşturuldu |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Bir kilit erken sonlandırıldı veya sonuna ulaştı |
+| `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; uzlaşı toplamları | Bir bonus talep edildi; havuz uzlaştırıldı |
+| `staking_tier_params_updated` | parametreler | Yönetişim modül parametrelerini değiştirdi |
 
 ### xQORE Modülü
 
