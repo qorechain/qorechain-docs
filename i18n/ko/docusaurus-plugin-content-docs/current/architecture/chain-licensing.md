@@ -36,9 +36,9 @@ sidebar_position: 9
 
 ## 누가 라이선스를 변경할 수 있는가
 
-라이선스 부여, 취소, 일시 중지, 재개는 **권한 작업**입니다 — 임의의 사용자가 아니라 체인의 거버넌스 권한에 의해 수행됩니다. 이러한 트랜잭션은 모듈의 명령 표면의 일부로 존재하지만, 일반 사용자가 직접 호출하지는 않습니다. 생명주기는 권한에 의해 온체인에서 관리됩니다.
+라이선스 부여, 취소, 일시 중지, 재개는 **권한 작업**입니다: 임의의 사용자가 아니라 모듈의 라이선스 권한 계정이 서명합니다. v3.2.3부터는 거버넌스가 `MsgUpdateAuthority`로 이 계정을 교체할 수 있으며, 이는 해당 키를 분실했을 때의 복구 경로입니다. 이러한 트랜잭션은 모듈의 명령 표면의 일부로 존재하지만, 일반 사용자가 직접 호출하지는 않습니다. 생명주기는 권한에 의해 온체인에서 관리됩니다.
 
-라이선스를 **획득**하려면 통합자는 **대시보드(Tools → Buy License)**를 거치며, 이것이 요청 흐름을 처리합니다. 그런 다음 권한이 온체인에 부여를 기록합니다.
+라이선스를 **획득**하려면: 라이트 노드 라이선스는 **대시보드**(Tools → Light Node)에서 구매하며, `validator_operator` 부여는 **Validator Program**(Tools → Validator Application: 신청하고, 선정되고, $1,000 프로그램 수수료를 납부)을 통해 받습니다. 그런 다음 권한이 온체인에 부여를 일괄적으로 기록합니다.
 
 권한이 게이팅하는 트랜잭션은 다음과 같습니다:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## 관련 문서
 
 - 브리지 및 검증자 기능에 대한 라이선스는 [브리지 아키텍처](/architecture/bridge-architecture)에 설명된 기능을 뒷받침합니다.
-- 라이선스는 **대시보드(Tools → Buy License)**를 통해 획득됩니다.
+- 라이트 노드 라이선스는 **대시보드**(Tools → Light Node)에서 구매하며, 검증자 부여는 Validator Program(Tools → Validator Application)을 통해 받습니다.
 - 라이트 노드는 [등록 및 라이선싱](/light-node/registration-and-licensing) 중에 라이선스를 획득합니다.
 - [Tools Hub](/dashboard/tools-hub)에서 라이선스를 구매하고 관리하세요.

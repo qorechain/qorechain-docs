@@ -36,9 +36,9 @@ Bir lisans ayrıca, hiç askıya alınmamış veya iptal edilmemiş olsa bile, `
 
 ## Lisansları kim değiştirebilir
 
-Lisansları verme, iptal etme, askıya alma ve sürdürme **yetkili işlemleridir** — bunlar gelişigüzel kullanıcılar tarafından değil, zincirin yönetişim yetkilisi tarafından gerçekleştirilir. Bu işlemler modülün komut yüzeyinin bir parçası olarak mevcuttur, ancak normal bir kullanıcı bunları doğrudan çağırmaz; yaşam döngüsü zincir üstünde yetkili tarafından yönetilir.
+Lisansları verme, iptal etme, askıya alma ve sürdürme **yetkili işlemleridir**: bunlar gelişigüzel kullanıcılar tarafından değil, modülün lisans yetkilisi hesabı tarafından imzalanır. v3.2.3'ten itibaren yönetişim bu hesabı `MsgUpdateAuthority` ile değiştirebilir; bu, hesabın anahtarı kaybolursa kurtarma yoludur. Bu işlemler modülün komut yüzeyinin bir parçası olarak mevcuttur, ancak normal bir kullanıcı bunları doğrudan çağırmaz; yaşam döngüsü zincir üstünde yetkili tarafından yönetilir.
 
-Bir lisans **edinmek** için, entegratörler **Kontrol Paneli (Araçlar → Lisans Satın Al)** üzerinden geçer; bu istek akışını yönetir; ardından yetkili hibeyi zincir üstüne kaydeder.
+Bir lisans **edinmek** için: hafif düğüm lisansı **Kontrol Paneli (Araçlar → Hafif Düğüm)** üzerinden satın alınır; `validator_operator` hibesi ise **Validator Program** aracılığıyla gelir (Araçlar → Doğrulayıcı Başvurusu: başvurun, seçilin, $1,000 program ücretini ödeyin). Ardından yetkili hibeyi zincir üstüne toplu halde kaydeder.
 
 Yetkili sınırlandırmalı işlemler şunlardır:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## İlgili
 
 - Köprü ve doğrulayıcı özellikleri için lisanslar, [Köprü Mimarisi](/architecture/bridge-architecture) sayfasında açıklanan yetenekleri destekler.
-- Lisanslar **Kontrol Paneli (Araçlar → Lisans Satın Al)** üzerinden edinilir.
+- Hafif düğüm lisansları **Kontrol Paneli (Araçlar → Hafif Düğüm)** üzerinden satın alınır; doğrulayıcı hibeleri Validator Program aracılığıyla gelir (Araçlar → Doğrulayıcı Başvurusu).
 - Hafif düğümler, [Kayıt ve Lisanslama](/light-node/registration-and-licensing) sırasında bir lisans edinir.
 - Lisansları [Araçlar Merkezi](/dashboard/tools-hub) üzerinden satın alın ve yönetin.

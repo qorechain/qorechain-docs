@@ -36,9 +36,9 @@ Eine Lizenz ist außerdem nicht mehr aktiv, sobald ihre `expires_at`-Höhe über
 
 ## Wer Lizenzen ändern kann
 
-Das Erteilen, Widerrufen, Suspendieren und Fortsetzen von Lizenzen sind **Autoritätsoperationen** — sie werden von der Governance-Autorität der Chain durchgeführt, nicht von beliebigen Nutzern. Diese Transaktionen existieren als Teil der Befehlsoberfläche des Moduls, aber ein normaler Nutzer ruft sie nicht direkt auf; der Lebenszyklus wird On-Chain von der Autorität verwaltet.
+Das Erteilen, Widerrufen, Suspendieren und Fortsetzen von Lizenzen sind **Autoritätsoperationen**: Sie werden vom Lizenz-Autoritätskonto des Moduls signiert, nicht von beliebigen Nutzern. Ab v3.2.3 kann Governance dieses Konto mit `MsgUpdateAuthority` ersetzen, der Wiederherstellungsweg, falls sein Schlüssel jemals verloren geht. Diese Transaktionen existieren als Teil der Befehlsoberfläche des Moduls, aber ein normaler Nutzer ruft sie nicht direkt auf; der Lebenszyklus wird On-Chain von der Autorität verwaltet.
 
-Um eine Lizenz zu **erhalten**, durchlaufen Integratoren das **Dashboard (Tools → Buy License)**, das den Anfrageablauf abwickelt; die Autorität erfasst die Erteilung dann On-Chain.
+Um eine zu **erhalten**: Eine Light-Node-Lizenz wird im **Dashboard (Tools → Light Node)** gekauft, und eine `validator_operator`-Erteilung erfolgt über das **Validator Program** (Tools → Validator Application: bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen). Die Autorität erfasst die Erteilung dann On-Chain, in Stapeln.
 
 Die autoritätsgesicherten Transaktionen sind:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Verwandte Themen
 
 - Lizenzen für Bridge- und Validator-Funktionen stützen die in der [Bridge-Architektur](/architecture/bridge-architecture) beschriebenen Funktionen.
-- Lizenzen werden über das **Dashboard (Tools → Buy License)** bezogen.
+- Light-Node-Lizenzen werden im **Dashboard (Tools → Light Node)** gekauft; Validator-Erteilungen erfolgen über das Validator Program (Tools → Validator Application).
 - Light Nodes beziehen eine Lizenz während der [Registrierung und Lizenzierung](/light-node/registration-and-licensing).
 - Kaufen und verwalten Sie Lizenzen im [Tools Hub](/dashboard/tools-hub).

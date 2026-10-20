@@ -10,11 +10,11 @@ sidebar_position: 9
 Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel für quantenresistente Sicherheit registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 29. Juni 2026 live ist und das Node-Release **v3.2.1** betreibt (Konsensregeln aus dem Upgrade v3.2.0, angewendet bei Höhe 2.981.742). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, v3.2.2) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 29. Juni 2026 live ist und das Node-Release **v3.2.3** betreibt (per Governance angewendet bei Höhe 3.662.051). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, v3.2.4) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
 :::
 
 :::caution Das Release-Binary verwenden, keinen Build aus dem Quellcode
-Ein Validator muss das **Release-`qorechaind`** betreiben, das im Live-Manifest genannt wird (`https://download.qore.host/mainnet/latest.json`; siehe [Einen Node betreiben](/developer-guide/running-a-node#fetch-the-manifest)). Ein aus dem öffentlichen Quellcode gebautes Binary enthält Stub-Keeper und keinen Post-Quanten-Signierer: Es kann den Konsenszustand des Netzwerks nicht reproduzieren und nicht die hybride Signatur erzeugen, die `create-validator` und jede andere Transaktion auf der Cosmos-Lane benötigen (siehe [Aus dem Quellcode erstellen](/developer-guide/building-from-source)). Ein frischer Mainnet-Node benötigt v3.2.0 oder neuer; halten Sie die Systemuhr per NTP synchronisiert, denn ab v3.2.1 stoppt der Node, wenn seine Uhr um mehr als 60 Sekunden abweicht.
+Ein Validator muss das **Release-`qorechaind`** betreiben, das im Live-Manifest genannt wird (`https://download.qore.host/mainnet/latest.json`; siehe [Einen Node betreiben](/developer-guide/running-a-node#fetch-the-manifest)). Ein aus dem öffentlichen Quellcode gebautes Binary enthält Stub-Keeper und keinen Post-Quanten-Signierer: Es kann den Konsenszustand des Netzwerks nicht reproduzieren und nicht die hybride Signatur erzeugen, die `create-validator` und jede andere Transaktion auf der Cosmos-Lane benötigen (siehe [Aus dem Quellcode erstellen](/developer-guide/building-from-source)). Ab v3.2.3 startet ein aus dem öffentlichen Quellcode gebautes Binary in einem öffentlichen Netzwerk überhaupt nicht mehr. Ein frischer Mainnet-Node benötigt v3.2.0 oder neuer; halten Sie die Systemuhr per NTP synchronisiert, denn ab v3.2.1 stoppt der Node, wenn seine Uhr um mehr als 60 Sekunden abweicht.
 :::
 
 :::note Welche Teile dieser Seite live sind
@@ -28,21 +28,21 @@ Die Blockproduktion verwendet die standardmäßige, nach Stake gewichtete Valida
 * Ein vollständig synchronisierter Release-`qorechaind`-Node (siehe [Mit dem Mainnet verbinden](/getting-started/connecting-to-mainnet) bzw. [Mit dem Testnet verbinden](/getting-started/connecting-to-testnet) zum Proben)
 * Ein **registrierter ML-DSA-87-PQC-Schlüssel** auf dem Operator-Konto (siehe [PQC-Schlüsselregistrierung](#pqc-key-registration)) — `create-validator` benötigt die hybride Signatur
 * Ein finanziertes Konto mit mindestens **100.000 QOR** (100.000.000.000 uqor) für die anfängliche Self-Delegation — dieses Minimum wird on-chain erzwungen, und `create-validator` wird darunter abgelehnt
-* Eine aktive **`validator_operator`-Lizenz** auf Ihrem Konto — siehe den Hinweis unten; ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl, unabhängig davon, wie viel QOR Sie self-bonden
+* Eine aktive **`validator_operator`-Erteilung** auf Ihrer Operator-Adresse, ausgestellt über das [Validator Program](/dashboard/tools-hub#validator-application) (bewerben, ausgewählt werden, die Programmgebühr von $1,000 zahlen); siehe den Hinweis unten. Ohne sie schlägt `create-validator` mit `ErrUnauthorized` fehl, unabhängig davon, wie viel QOR Sie self-bonden
 * Vertrautheit mit dem Modell [Staking und Delegation](/user-guide/staking-and-delegation)
 
 ---
 
 ## Einen Validator erstellen
 
-### Lizenzsperre: `validator_operator` {#validator-license-gate}
+### Operator-Erteilung: `validator_operator` {#validator-license-gate}
 
 `create-validator` wird durch zwei unabhängige, jeweils on-chain erzwungene Prüfungen abgesichert, und Sie benötigen beide — ein großer Self-Bond allein genügt nicht:
 
 1. **Mindest-Self-Bond von 100.000 QOR.**
-2. **Eine aktive `validator_operator`-Lizenz** auf dem Konto, das die Transaktion einreicht.
+2. **Eine aktive `validator_operator`-Erteilung** auf dem Konto, das die Transaktion einreicht.
 
-Lizenzen werden on-chain von der Lizenzbehörde vergeben (die Schritte zur Bewerbung finden Sie im [Tools Hub](/dashboard/tools-hub#validator-application)); prüfen Sie Ihre mit `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Das `expires_at` einer Lizenz ist eine **Blockhöhe**, kein Datum und keine Dauer — `0` bedeutet keine Ablauffrist. Fehlt die Lizenz oder ist sie abgelaufen, schlägt `create-validator` mit `ErrUnauthorized` fehl, egal wie viel Sie self-bonden; dies ist der mit Abstand häufigste Grund, warum ein gut finanzierter Versuch scheitert und unerklärlich wirkt. Diese Sperre existiert gerade deshalb, weil die EVM-Ausführungsebene sie weder sehen noch durchsetzen kann (ein einzelner Ante-Decorator dort würde sie vollständig umgehen) — das ist einer der Gründe, warum Staking und Validierung ausschließlich auf der nativen Lane verbleiben.
+Die Erteilung wird on-chain von der QoreChain Association über das **Validator Program** ausgestellt: Bewerben Sie sich im [Tools Hub](/dashboard/tools-hub#validator-application), betreiben Sie für die 14-tägige Probephase einen Validator im diana-Testnet und zahlen Sie nach Ihrer Auswahl die **Programmgebühr von $1,000**; die Erteilung wird dann in Stapeln für die Operator-Adresse aus Ihrer Bewerbung signiert. Prüfen Sie Ihre mit `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Das `expires_at` einer Lizenz ist eine **Blockhöhe**, kein Datum und keine Dauer — `0` bedeutet keine Ablauffrist. Fehlt die Lizenz oder ist sie abgelaufen, schlägt `create-validator` mit `ErrUnauthorized` fehl, egal wie viel Sie self-bonden; dies ist der mit Abstand häufigste Grund, warum ein gut finanzierter Versuch scheitert und unerklärlich wirkt. Diese Sperre existiert gerade deshalb, weil die EVM-Ausführungsebene sie weder sehen noch durchsetzen kann (ein einzelner Ante-Decorator dort würde sie vollständig umgehen) — das ist einer der Gründe, warum Staking und Validierung ausschließlich auf der nativen Lane verbleiben.
 
 Erstellen Sie eine Datei `validator.json` (die flag-basierte Form wurde im aktuellen SDK entfernt):
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC-Schlüsselregistrierung {#pqc-key-registration}
 
-Registrieren Sie Ihren **post-quantenkryptografischen (PQC) Public Key** — ML-DSA-87 — **bevor** Sie eine Validator-Lizenz beantragen oder `create-validator` ausführen. Dies ist **nicht optional und nicht automatisch**: Die Chain verlangt eine hybride PQC-Signatur für jede Transaktion auf der Cosmos-Lane, `MsgCreateValidator` gehört nicht zu den ausgenommenen Nachrichtentypen, und kein Konto registriert seinen Schlüssel automatisch: Die Registrierung ist eine explizite Transaktion, die jedes Konto (Validator-Operatoren eingeschlossen) selbst und im Voraus senden muss. Erzeugen Sie zuerst den Schlüssel:
+Registrieren Sie Ihren **post-quantenkryptografischen (PQC) Public Key** (ML-DSA-87) **bevor** Sie `create-validator` ausführen, und zwar so früh wie möglich: Das Panel [Validator Readiness](/dashboard/tools-hub#validator-application) prüft ihn ab dem Moment Ihrer Bewerbung. Dies ist **nicht optional und nicht automatisch**: Die Chain verlangt eine hybride PQC-Signatur für jede Transaktion auf der Cosmos-Lane, `MsgCreateValidator` gehört nicht zu den ausgenommenen Nachrichtentypen, und kein Konto registriert seinen Schlüssel automatisch: Die Registrierung ist eine explizite Transaktion, die jedes Konto (Validator-Operatoren eingeschlossen) selbst und im Voraus senden muss. Erzeugen Sie zuerst den Schlüssel:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` hängt einen **Besitznachweis (Proof of Possession)** an: Der Schlüssel signiert `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, und die Chain verifiziert dies, sodass niemand einen Public Key registrieren kann, dessen privaten Teil er nicht besitzt. In v3.2.3 ist es optional und wird empfohlen.
+
+:::note Was v3.2.3 an der Schlüsselregistrierung geändert hat
+* Ein Konto **ohne** registrierten Schlüssel kann nur die Registrierung selbst senden: Jede andere Transaktion mit einer hybriden Signaturerweiterung wird abgelehnt. Registrieren Sie zuerst und signieren Sie dann alles Weitere mit `tx pqc cosign`.
+* `classical_only`, leere und degenerierte Schlüssel werden bei der Registrierung abgelehnt.
+* Sobald ein Konto einen Schlüssel hält, muss jede weitere Schlüsselpflege (Rotation, Migration, Neuregistrierung) selbst hybrid signiert sein und kann nicht über `authz` gesendet werden.
+* `tx pqc gen-key` überschreibt niemals eine vorhandene Schlüsseldatei.
+:::
 
 | Parameter      | Beschreibung                                       |
 | -------------- | ------------------------------------------------- |

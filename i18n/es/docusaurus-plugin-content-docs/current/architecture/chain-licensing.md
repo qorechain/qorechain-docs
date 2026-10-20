@@ -36,9 +36,9 @@ Una licencia también deja de estar activa una vez que pasa su altura `expires_a
 
 ## Quién puede cambiar las licencias
 
-Otorgar, revocar, suspender y reanudar licencias son **operaciones de autoridad** — las realiza la autoridad de gobernanza de la cadena, no usuarios arbitrarios. Estas transacciones existen como parte de la superficie de comandos del módulo, pero un usuario normal no las invoca directamente; el ciclo de vida lo administra on-chain la autoridad.
+Otorgar, revocar, suspender y reanudar licencias son **operaciones de autoridad**: las firma la cuenta de autoridad de licencias del módulo, no usuarios arbitrarios. Desde v3.2.3, la gobernanza puede sustituir esa cuenta con `MsgUpdateAuthority`, la vía de recuperación si alguna vez se pierde su clave. Estas transacciones existen como parte de la superficie de comandos del módulo, pero un usuario normal no las invoca directamente; el ciclo de vida lo administra on-chain la autoridad.
 
-Para **obtener** una licencia, los integradores pasan por el **Dashboard (Herramientas → Comprar licencia)**, que gestiona el flujo de solicitud; la autoridad registra entonces la concesión on-chain.
+Para **obtener** una: una licencia de light node se compra en el **Dashboard (Herramientas → Light Node)**, y una concesión `validator_operator` llega a través del **Validator Program** (Herramientas → Validator Application: presentar la solicitud, ser seleccionado y pagar la tarifa de programa de $1,000). La autoridad registra entonces la concesión on-chain, por lotes.
 
 Las transacciones restringidas a la autoridad son:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Relacionado
 
 - Las licencias para funciones de puente y de validador respaldan las capacidades descritas en [Arquitectura del puente](/architecture/bridge-architecture).
-- Las licencias se obtienen a través del **Dashboard (Herramientas → Comprar licencia)**.
+- Las licencias de light node se compran en el **Dashboard (Herramientas → Light Node)**; las concesiones de validador llegan a través del Validator Program (Herramientas → Validator Application).
 - Los nodos ligeros obtienen una licencia durante el [Registro y licencias](/light-node/registration-and-licensing).
 - Compra y gestiona licencias desde el [Centro de herramientas](/dashboard/tools-hub).

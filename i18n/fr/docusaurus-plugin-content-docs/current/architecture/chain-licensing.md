@@ -36,9 +36,9 @@ Une licence cesse également d'être active une fois sa hauteur `expires_at` dé
 
 ## Qui peut modifier les licences
 
-L'octroi, la révocation, la suspension et la reprise de licences sont des **opérations d'autorité** — elles sont effectuées par l'autorité de gouvernance de la chaîne, et non par des utilisateurs arbitraires. Ces transactions existent dans la surface de commandes du module, mais un utilisateur normal ne les appelle pas directement ; le cycle de vie est administré on-chain par l'autorité.
+L'octroi, la révocation, la suspension et la reprise de licences sont des **opérations d'autorité** : elles sont signées par le compte d'autorité de licence du module, et non par des utilisateurs arbitraires. À partir de v3.2.3, la gouvernance peut remplacer ce compte avec `MsgUpdateAuthority`, la voie de récupération si sa clé venait à être perdue. Ces transactions existent dans la surface de commandes du module, mais un utilisateur normal ne les appelle pas directement ; le cycle de vie est administré on-chain par l'autorité.
 
-Pour **obtenir** une licence, les intégrateurs passent par le **Dashboard (Outils → Acheter une licence)**, qui gère le flux de demande ; l'autorité enregistre ensuite l'octroi on-chain.
+Pour en **obtenir** une : une licence de nœud léger s'achète sur le **Dashboard (Outils → Light Node)**, et un octroi `validator_operator` passe par le **Validator Program** (Outils → Validator Application : candidater, être sélectionné, payer les frais de programme de $1,000). L'autorité enregistre ensuite l'octroi on-chain, par lots.
 
 Les transactions restreintes à l'autorité sont :
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Voir aussi
 
 - Les licences pour les fonctionnalités de bridge et de validateur sous-tendent les capacités décrites dans [Architecture du bridge](/architecture/bridge-architecture).
-- Les licences s'obtiennent via le **Dashboard (Outils → Acheter une licence)**.
+- Les licences de nœud léger s'achètent sur le **Dashboard (Outils → Light Node)** ; les octrois de validateur passent par le Validator Program (Outils → Validator Application).
 - Les nœuds légers obtiennent une licence lors de l'[Enregistrement et licences](/light-node/registration-and-licensing).
 - Achetez et gérez vos licences depuis le [Hub d'outils](/dashboard/tools-hub).

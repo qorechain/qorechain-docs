@@ -36,9 +36,9 @@ O licență încetează de asemenea să fie activă odată ce înălțimea sa `e
 
 ## Cine poate modifica licențele
 
-Acordarea, revocarea, suspendarea și reluarea licențelor sunt **operațiuni de autoritate** — sunt efectuate de autoritatea de guvernanță a lanțului, nu de utilizatori arbitrari. Aceste tranzacții există ca parte a suprafeței de comenzi a modulului, dar un utilizator obișnuit nu le apelează direct; ciclul de viață este administrat on-chain de autoritate.
+Acordarea, revocarea, suspendarea și reluarea licențelor sunt **operațiuni de autoritate**: sunt semnate de contul autorității de licențiere a modulului, nu de utilizatori arbitrari. Începând cu v3.2.3, guvernanța poate înlocui acel cont cu `MsgUpdateAuthority`, calea de recuperare dacă cheia lui se pierde vreodată. Aceste tranzacții există ca parte a suprafeței de comenzi a modulului, dar un utilizator obișnuit nu le apelează direct; ciclul de viață este administrat on-chain de autoritate.
 
-Pentru a **obține** o licență, integratorii parcurg **Dashboard-ul (Tools → Buy License)**, care gestionează fluxul de cerere; autoritatea înregistrează apoi acordarea on-chain.
+Pentru a **obține** una: o licență de light node se cumpără din **Dashboard (Tools → Light Node)**, iar o acordare `validator_operator` vine prin **Validator Program** (Tools → Validator Application: aplicați, sunteți selectat, plătiți taxa de program de $1,000). Autoritatea înregistrează apoi acordarea on-chain, în loturi.
 
 Tranzacțiile restricționate la autoritate sunt:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Conexe
 
 - Licențele pentru funcțiile de punte și de validator susțin capabilitățile descrise în [Arhitectura punții](/architecture/bridge-architecture).
-- Licențele sunt obținute prin **Dashboard (Tools → Buy License)**.
+- Licențele de light node se cumpără din **Dashboard (Tools → Light Node)**; acordările pentru validatori vin prin Validator Program (Tools → Validator Application).
 - Nodurile ușoare obțin o licență în timpul [Înregistrării și licențierii](/light-node/registration-and-licensing).
 - Cumpărați și gestionați licențe din [Hub-ul de instrumente](/dashboard/tools-hub).

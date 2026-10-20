@@ -10,11 +10,11 @@ sidebar_position: 9
 Questa guida spiega come creare un validatore sulla rete QoreChain, comprendere il sistema di classificazione a pool, registrare una chiave PQC per una sicurezza resistente ai computer quantistici e monitorare il proprio nodo.
 
 :::note
-Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 29 giugno 2026, che esegue la release di nodo **v3.2.1** (regole di consenso dell'upgrade v3.2.0, applicato all'altezza 2,981,742). La testnet **`qorechain-diana`** (EVM chain ID **9800**, v3.2.2) è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,2 s sulla mainnet e circa 1,0 s sulla testnet, quindi converti il numero di blocchi in tempo per ciascuna rete.
+Questa guida si riferisce alla mainnet **`qorechain-vladi`** (EVM chain ID **9801**), attiva dal 29 giugno 2026, che esegue la release di nodo **v3.2.3** (applicata tramite governance all'altezza 3,662,051). La testnet **`qorechain-diana`** (EVM chain ID **9800**, v3.2.4) è consigliata per provare la configurazione prima di andare in produzione. Sostituisci il `--chain-id` appropriato per la rete di destinazione. I tempi di blocco differiscono: circa 3,2 s sulla mainnet e circa 1,0 s sulla testnet, quindi converti il numero di blocchi in tempo per ciascuna rete.
 :::
 
 :::caution Usa il binario di release, non una build dal sorgente
-Un validatore deve eseguire il **`qorechaind` di release** indicato nel manifest live (`https://download.qore.host/mainnet/latest.json`; vedi [Gestire un Nodo](/developer-guide/running-a-node#fetch-the-manifest)). Un binario compilato dal sorgente pubblico ha keeper stub e nessun firmatario post-quantistico: non può riprodurre lo stato di consenso della rete e non può creare la firma ibrida richiesta da `create-validator` e da ogni altra transazione sul lane Cosmos (vedi [Compilare dal Sorgente](/developer-guide/building-from-source)). Un nuovo nodo mainnet richiede la v3.2.0 o successiva; mantieni l'orologio di sistema sincronizzato via NTP, perché dalla v3.2.1 il nodo si ferma quando il suo orologio è sfasato di più di 60 secondi.
+Un validatore deve eseguire il **`qorechaind` di release** indicato nel manifest live (`https://download.qore.host/mainnet/latest.json`; vedi [Gestire un Nodo](/developer-guide/running-a-node#fetch-the-manifest)). Un binario compilato dal sorgente pubblico ha keeper stub e nessun firmatario post-quantistico: non può riprodurre lo stato di consenso della rete e non può creare la firma ibrida richiesta da `create-validator` e da ogni altra transazione sul lane Cosmos (vedi [Compilare dal Sorgente](/developer-guide/building-from-source)). Dalla v3.2.3 un binario compilato dal sorgente pubblico si rifiuta del tutto di avviarsi su una rete pubblica. Un nuovo nodo mainnet richiede la v3.2.0 o successiva; mantieni l'orologio di sistema sincronizzato via NTP, perché dalla v3.2.1 il nodo si ferma quando il suo orologio è sfasato di più di 60 secondi.
 :::
 
 :::note Quali parti di questa pagina sono attive
@@ -28,21 +28,21 @@ La produzione dei blocchi usa la rotazione standard dei validatori pesata per st
 * Un nodo `qorechaind` di release completamente sincronizzato (vedi [Connessione alla Mainnet](/getting-started/connecting-to-mainnet), oppure [Connessione alla Testnet](/getting-started/connecting-to-testnet) per fare prove)
 * Una **chiave PQC ML-DSA-87 registrata** sull'account operatore (vedi [Registrazione della Chiave PQC](#pqc-key-registration)) — `create-validator` richiede la firma ibrida
 * Un account con fondi per almeno **100.000 QOR** (100.000.000.000 uqor) per l'auto-delega iniziale — questo minimo è imposto on-chain e `create-validator` viene rifiutato se non raggiunto
-* Una **licenza `validator_operator`** attiva sul tuo account — vedi la nota sotto; senza di essa, `create-validator` fallisce con `ErrUnauthorized` indipendentemente da quanto QOR auto-vincoli
+* Una **concessione `validator_operator`** attiva sul tuo indirizzo operatore, emessa tramite il [Validator Program](/dashboard/tools-hub#validator-application) (fai domanda, vieni selezionato, paga la quota di programma di $1,000); vedi la nota sotto. Senza di essa, `create-validator` fallisce con `ErrUnauthorized` indipendentemente da quanto QOR auto-vincoli
 * Familiarità con il modello di [Staking e Delega](/user-guide/staking-and-delegation)
 
 ---
 
 ## Creare un Validatore
 
-### Gate della licenza: `validator_operator` {#validator-license-gate}
+### Concessione operatore: `validator_operator` {#validator-license-gate}
 
 `create-validator` è soggetto a due controlli indipendenti, entrambi applicati on-chain, ed entrambi sono necessari — un grande auto-bond da solo non basta:
 
 1. **Auto-bond minimo di 100.000 QOR.**
-2. **Una licenza `validator_operator` attiva** sull'account che invia la transazione.
+2. **Una concessione `validator_operator` attiva** sull'account che invia la transazione.
 
-Le licenze sono concesse on-chain dall'autorità di licenza (vedi il [Tools Hub](/dashboard/tools-hub#validator-application) per i passaggi della richiesta); verifica la tua con `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Il campo `expires_at` di una licenza è un'**altezza di blocco**, non una data o una durata — `0` significa nessuna scadenza. Se mancante o scaduta, `create-validator` fallisce con `ErrUnauthorized`, indipendentemente da quanto auto-vincoli; questo è il motivo più comune per cui un tentativo ben finanziato fallisce senza apparente spiegazione. Questo gate esiste specificamente perché il lane di esecuzione EVM non può vederlo né applicarlo (un singolo decoratore ante lì lo aggirerebbe completamente) — è uno dei motivi per cui staking e validazione restano esclusivamente sul lane Nativo.
+La concessione viene emessa on-chain dalla QoreChain Association tramite il **Validator Program**: fai domanda sul [Tools Hub](/dashboard/tools-hub#validator-application), gestisci un validatore sulla testnet diana per la prova di 14 giorni e, una volta selezionato, paga la **quota di programma di $1,000**; la concessione viene poi firmata in batch per l'indirizzo operatore indicato nella domanda. Verifica la tua con `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Il campo `expires_at` di una licenza è un'**altezza di blocco**, non una data o una durata — `0` significa nessuna scadenza. Se mancante o scaduta, `create-validator` fallisce con `ErrUnauthorized`, indipendentemente da quanto auto-vincoli; questo è il motivo più comune per cui un tentativo ben finanziato fallisce senza apparente spiegazione. Questo gate esiste specificamente perché il lane di esecuzione EVM non può vederlo né applicarlo (un singolo decoratore ante lì lo aggirerebbe completamente) — è uno dei motivi per cui staking e validazione restano esclusivamente sul lane Nativo.
 
 Crea un file `validator.json` (la forma basata su flag è stata rimossa nell'SDK attuale):
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## Registrazione della Chiave PQC {#pqc-key-registration}
 
-Registra la tua **chiave pubblica crittografica post-quantistica (PQC)** — ML-DSA-87 — **prima** di richiedere una licenza da validatore o di eseguire `create-validator`. Questo passaggio **non è opzionale né automatico**: la chain richiede una firma ibrida PQC su ogni transazione sul lane Cosmos, `MsgCreateValidator` non è uno dei tipi di messaggio esentati e nessun account registra la propria chiave automaticamente: la registrazione è una transazione esplicita che ogni account (operatori di validatori inclusi) deve inviare da sé, in anticipo. Genera prima la chiave:
+Registra la tua **chiave pubblica crittografica post-quantistica (PQC)** — ML-DSA-87 — **prima** di eseguire `create-validator`, e il prima possibile: il pannello [Validator Readiness](/dashboard/tools-hub#validator-application) la verifica dal momento in cui fai domanda. Questo passaggio **non è opzionale né automatico**: la chain richiede una firma ibrida PQC su ogni transazione sul lane Cosmos, `MsgCreateValidator` non è uno dei tipi di messaggio esentati e nessun account registra la propria chiave automaticamente: la registrazione è una transazione esplicita che ogni account (operatori di validatori inclusi) deve inviare da sé, in anticipo. Genera prima la chiave:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` allega una **prova di possesso** (proof of possession): la chiave firma `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` e la chain la verifica, così nessuno può registrare una chiave pubblica di cui non possiede la metà privata. Nella v3.2.3 è facoltativa e consigliata.
+
+:::note Cosa ha cambiato la v3.2.3 per la registrazione delle chiavi
+* Un account **senza** chiave registrata può inviare solo la registrazione stessa: qualsiasi altra transazione che porti un'estensione di firma ibrida viene rifiutata. Registra prima la chiave, poi firma tutto il resto con `tx pqc cosign`.
+* Le chiavi `classical_only`, vuote e degeneri vengono rifiutate alla registrazione.
+* Una volta che un account possiede una chiave, l'ulteriore manutenzione della chiave (rotazione, migrazione, nuova registrazione) deve essere a sua volta firmata in modo ibrido e non può essere inviata tramite `authz`.
+* `tx pqc gen-key` non sovrascrive mai un file di chiave esistente.
+:::
 
 | Parametro      | Descrizione                                       |
 | -------------- | -------------------------------------------------- |

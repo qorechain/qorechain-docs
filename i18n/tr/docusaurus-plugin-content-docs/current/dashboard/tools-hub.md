@@ -7,69 +7,59 @@ sidebar_position: 11
 
 # Araç Merkezi
 
-**Araçlar** sayfası, QoreChain'in operatör ve geliştirici araçlarını tek bir yerde toplar ve şu sırayla yedi sekmeye ayırır: **Information**, **Validator Application**, **Buy License**, **Light Node**, **Node Registration**, **Rollups** ve **SDK**. **Information** sekmesi, doğrulayıcı ve hafif düğüm programlarına dair salt okunur bir genel bakıştır — katılmanın üç yolu (genesis doğrulayıcısı, hafif düğüm, delegatör), lisans katmanları, stake etme ve kesinti (slashing) temelleri, donanım gereksinimleri, programı kimin işlettiği ve bir SSS. Diğer sekmeler aşağıda, eksiksiz belgelere nereden ulaşılacağıyla birlikte özetlenmiştir. Yayınlanan sürümler ağlar arasında farklılık gösterebileceğinden, Araçlar sayfası üst bilgideki ağ anahtarını izler.
+**Araçlar** sayfası, QoreChain'in operatör ve geliştirici araçlarını tek bir yerde toplar ve şu sırayla altı sekmeye ayırır: **Validator Program**, **Validator Application**, **Light Node**, **Node Registration**, **Rollups** ve **SDK**. Sayfa, üst bilgideki ağ anahtarını izler: zincir kontrolleri, indirmeler ve düğüm durumu seçtiğiniz ağdan okunur. Lisanslar **yalnızca mainnet'te** satılır (bkz. [Hafif Düğüm](#light-node)).
 
-Kayıtları kaydeden veya başvuru gönderen araçları kullanmak için oturum açın — bkz. [Oturum açma](/dashboard/overview#sign-in).
+Kayıtları kaydeden, başvuru gönderen veya ödeme alan araçları kullanmak için oturum açın; bkz. [Oturum açma](/dashboard/overview#sign-in).
 
-## Hafif Düğüm
+## Doğrulayıcı Programı
 
-Bir hafif düğüm çalıştırmak ile onun ödül programına katılmak iki farklı şeydir ve Hafif Düğüm sekmesi bunları tek bir kayıt akışında sunmak yerine ayrı tutar:
+Doğrulayıcıların ağa katılma yolu olan **QoreChain Validator Program**'a dair salt okunur bir genel bakış: programın sağladıkları (zincir üzerindeki operatör verilmesi, Association'ın kontrol ettiği stake'ten delegasyon ve hizmet seviyelerini karşılayan bağımsız operatörler için QOR cinsinden bir ödenek), gerektirdikleri, seçim süreci ve bir SSS. Bu sekmedeki protokol parametreleri (unbonding süresi, kesinti, azami doğrulayıcı sayısı) zincirden canlı olarak okunur; program kuralları (100.000 QOR öz stake, komisyon aralığı, ödenek) Association'a aittir ve bu şekilde işaretlenmiştir. Doğrulayıcılar bir paket satın almaz: başvururlar ve yalnızca seçildikten sonra **$1,000 program ücreti** öderler.
 
-1. **Yazılımı edinin — bugünden çalışır.** Lisans, zincir üzerinde kontrol veya onay gerekmez; bu adım lisans durumunuzdan bağımsız olarak ilk sırada gösterilir. Sekme canlı ağ manifestini okur ve size tam bir QoreChain düğümü için kopyalamaya hazır komutlar verir (ikili dosyayı indirip doğrulama, düğümü genesis ile başlatma, ağın eşlerine yönlendirme ve genesis'ten senkronize olmak yerine state-sync yapma). Bir hafif düğümün kendisi yalnızca `lightnode-sx` veya `lightnode-ux` ikili dosyasına ihtiyaç duyar — bkz. [Hafif Düğüm Genel Bakış](/light-node/overview). Komutların altında, **Download the light node** yayınlanmış derlemeleri sha256 sağlama toplamlarıyla listeler — altı platformda bir **Desktop edition** (web panosunu içerir) ve bir **Server edition** (başsız, komut satırı); çalıştırmadan önce dosyayı sağlama toplamına karşı kontrol edin. Seçtiğiniz ağ için yayınlanmış bir derleme yoksa panel bunu belirtir.
-2. **Zincirin gereksinimlerini kontrol edin — Light node status.** Bu panel canlı zincir parametrelerini okur (bunlar yönetişim parametreleridir ve bu sayfa düzenlenmeden değişebilir): gereken delege stake — delege ettiğiniz her doğrulayıcı başına değil, tüm doğrulayıcılar genelindeki toplamınız (şu anda 1.000 QOR) — kayıt ücreti (şu anda 1 QOR), ödüller için gereken çalışma süresi, bir heartbeat'in ne sıklıkta beklendiği (ve tanınan hoşgörü süresi) ve hafif düğümlerin azami sayısı. İsteğe bağlı olarak bir operatör adresi girerek ona kayıtlı bir hafif düğüm olup olmadığını, zamanında rapor verip vermediğini ve birikmiş ödüllerini görebilirsiniz.
-3. **Ödül kaydı henüz açık değil.** Hafif düğüm ödül payına katılmak, zincir üzerinde verilmiş aktif bir `lightnode_operator` lisansı, minimum delege stake ve kayıt ücreti gerektirir. Kaydın kendisi açık değildir (bkz. [Ödül programının durumu](/light-node/overview#reward-program-status)) ve bir lisans satın almak bunu erken açmaz, dolayısıyla bugün için kaydolunacak bir şey yoktur; bu arada düğümünüzü çalıştırın ve senkronize edin. Çalışma süresi, düğümünüzün zincir üzerinde kaydolduğu bloktan itibaren sayılır, öncesinden değil.
-4. **Kayıt kaydı.** Hesabınız aktif olarak kaydedilmiş bir lisansa sahipse, bu sekme ayrıca kısa bir form gösterir — operatör adresi (`qor1…`), takma ad, genel uç nokta URL'si ve stake taahhüdünün onayı — ve ardından gönderdiklerinizin bir özetini. Bu form, kayıt talebinizi Dashboard üzerinde The Qore Trust'a kaydeder; zincir üzerindeki kayıt işlemini **göndermez** ve zinciri kontrol etmez. Zincir üzerindeki kayıt düğümün kendisinden `lightnode-sx register` ile yapılır (bkz. [Kayıt ve Lisanslama](/light-node/registration-and-licensing)) ve yalnızca zincir aktif bir verilme gösterdiğinde, stake operatör adresinizden zaten bağlanmış (bonded) olduğunda ve kayıt açık olduğunda başarılı olur.
+## Doğrulayıcı Başvurusu {#validator-application}
 
-Tüm tablo için bkz. [Hafif Düğüm Genel Bakış](/light-node/overview) ve [Kayıt ve Lisanslama](/light-node/registration-and-licensing).
+Validator Program'a başvurun:
+
+1. **Başvuruyu doldurun.** Kuruluş adı, yargı bölgesi ve iletişim e-postası; **operatör adresi** (`qor1…`, `create-validator`'ı çalıştıracağınız hesap: zincir üzerindeki operatör verilmesi bu adrese yapılır); barındırma sağlayıcısı, bölge ve tür; halihazırda işlettiğiniz ağlar; isteğe bağlı olarak testnet doğrulayıcı adresiniz ve sunduğunuz genel altyapı (genel RPC, anlık görüntüler, arşiv); kanal (standart veya ayrılmış koltuklar için global); ve program koşullarının kabulü. Başvurmak ücretsizdir.
+2. **İnceleme ve testnet denemesi.** Başvuru incelenirken **Submitted** olarak görünür. İlerleyen başvurular, diana testnet'inde 14 günlük bir deneme için bir doğrulayıcı çalıştırır; bu **Testnet trial** olarak gösterilir.
+3. **Seçim ve program ücreti.** Seçilen bir başvuru, bir **Pay $1,000** düğmesiyle birlikte **Selected** gösterir. Ödeme adımı, hafif düğüm lisansındakiyle aynı şekilde işler (ERC-20, BEP-20 veya TRC-20 üzerinde USDT, zincir üzerinde doğrulanır). Ücret, başvurunuzdaki operatör adresine bağlıdır; başka bir adres için ödenemez. Onay ve ödeme her zaman ayrı gösterilir: bir başvuru seçilmiş ve henüz ödenmemiş olabilir.
+4. **Zincir üzerindeki operatör verilmesi.** Ödemeden sonra Association, `validator_operator` verilmesini zincir üzerinde operatör adresinize yapar. Verilmeler elle, toplu halde imzalanır; bu nedenle anlık değildir. Sekme, zincir verilmeyi kaydeder kaydetmez **Operator grant on chain**, doğrulayıcınız bağlandığında (bonded) ise **In the active set** gösterir.
+
+Başvuru gönderildiği andan itibaren bir **Doğrulayıcı Hazırlığı** paneli, operatör adresi için doğrudan zinciri kontrol eder: kayıtlı bir kuantum sonrası anahtar, öz stake için yeterli harcanabilir QOR, operatör verilmesi ve doğrulayıcının bağlanıp bağlanmadığı. [PQC anahtar kaydını](/developer-guide/running-a-validator#pqc-key-registration) kendi düğümünüzde erkenden çalıştırın: bu anahtarı sizin yerinize hiçbir şey kaydetmez.
+
+Önceki doğrulayıcı teklifi kapsamında (Ekim 2026'dan önce) onaylanan başvurular **Earlier application** olarak görünür; Association bu başvuru sahipleriyle doğrudan iletişime geçer.
+
+## Hafif Düğüm {#light-node}
+
+Bir hafif düğüm operatörünün lisanstan zincir üzerinde kayıtlı bir düğüme kadar ihtiyaç duyduğu her şey.
+
+1. **Lisansı satın alın (mainnet).** Bir hafif düğüm lisansı **$50**'dır; ERC-20, BEP-20 veya TRC-20 üzerinde USDT ile ödenir ve zincir üzerinde doğrulanır. Ödemeden önce lisansın verileceği `qor1…` adresini girin; kurtarma kelimelerine sahip olduğunuz bir hesap kullanın (kendi kelimeleriniz, Keplr veya `qorechaind`), ideal olarak yalnızca düğüm için kullanılan bir hesap. Üst bilgi **testnet** olarak ayarlıyken hiçbir şey satılmaz: testnet hafif düğüm lisansları ücretsizdir ve QoreChain ekibi tarafından verilir.
+2. **Zincir üzerinde verilmesini bekleyin.** Ödemeden sonra lisans **Paid, awaiting on-chain grant** olarak görünür; yalnızca zincir `lightnode_operator` verilmesini onayladığında **Active on chain** olarak değişir. Verilmeler elle, toplu halde imzalanır.
+3. **Düğümü kurun ve kaydedin.** Sekme, ağınız için yayınlanmış derlemeleri sağlama toplamlarıyla birlikte (sunucu sürümü `lightnode-sx`, masaüstü sürümü `lightnode-ux`; Linux, macOS ve Windows üzerinde) ve güncel sürüm için adımları listeler: bir keyring parolası belirleyin, `lightnode-sx onboard`, `lightnode-sx keys add-operator --recover` (lisansın ait olduğu hesabı ekler), `lightnode-sx register` (düğümün kuantum sonrası anahtarını ekler ve düğümü kaydeder; adreste gereken stake eksikse `--delegate-to <qorvaloper…>` ekleyerek), ardından `lightnode-sx start` ve `lightnode-sx status`. Adımlar yalnızca ağın sürüm manifesti bunları destekleyen bir derleme yayınladığında güncel olarak gösterilir ve sekme, o ağda kaydın açık olup olmadığını belirtir.
+4. **Adresiniz için bildirimler.** Sekme, lisans adresi kendi saklama (custodial) Dashboard cüzdanlarınızdan biri olduğunda uyarır (o anahtarı Dashboard tutar, bu yüzden bir düğüm onunla imzalayamaz) ve adresin zincir üzerinde zaten bir kuantum sonrası anahtarı olduğunda bunu belirtir (düğüm, anahtar kurtarma kelimelerinizden türetilmişse onu yeniden kullanır, aksi halde reddeder ve özel bir hesap önerir).
+5. **Durum.** Bir panel zinciri okur: yürürlükteki gereksinimler (kayıt ücreti, delege stake, çalışma süresi, heartbeat penceresi, azami hafif düğüm sayısı) ve bir adres için, ona kayıtlı bir hafif düğüm olup olmadığı ve zamanında rapor verip vermediği.
+
+Bkz. [Hafif Düğüm Genel Bakış](/light-node/overview) ve [Kayıt ve Lisanslama](/light-node/registration-and-licensing).
+
+:::note Adres zorunlu hale gelmeden önce satın alınan lisanslar
+Adres toplanmadan önce bir lisans satın aldıysanız, sekme **This licence needs a QoreChain address** ile açılır: adresi girin ve **Save address**'i seçin. Kaydedilene kadar lisans verilemez.
+:::
 
 ## Düğüm Kaydı
 
-Düğüm Kaydı sekmesi, Dashboard üzerinde The Qore Trust'a bir doğrulayıcı kaydını kaydeder. Doğrulayıcıyı kendisi zincir üzerinde oluşturmaz; bu, kendi düğümünüzden yapılır (aşağıdaki 1. ve 5. adımlar). Ön koşullar ve adımlar:
+Doğrulayıcınızın bilgilerini Association'a kaydeder. Doğrulayıcıyı zincir üzerinde oluşturmaz; bunu kendi düğümünüzden `create-validator` ile yaparsınız.
 
-1. **Önce PQC anahtarınızı kaydedin — CLI üzerinden, kendi doğrulayıcı düğümünüzde.** Bir doğrulayıcı, lisans başvurusunda bulunmadan veya lisansı kullanmadan ve doğrulayıcıyı oluşturmadan önce PQC anahtar kaydını kendisi çalıştırmalıdır — bu otomatik gerçekleşmez. CLI komutu için bkz. [Bir Doğrulayıcı Çalıştırmak](/developer-guide/running-a-validator#pqc-key-registration).
-2. **Lisanslı olduğunuzu onaylayın.** Form, hesabınızda aktif olarak kaydedilmiş bir doğrulayıcı lisansı gerektirir. `create-validator`'ın kabul edilip edilmeyeceğine **zincir** karar verir ve zincir üzerinde operatör verilmesini şart koşar: **Buy License** üzerinden satın alınan bir lisans bizim tarafımızda kaydedilir ve zincir üzerinde verilmesi, bunu izleyen ayrı, manuel bir adımdır. Zincirin şu anda neyi tanıdığını görmek için (Validator Application sekmesindeki) **Validator Readiness** panelini kontrol edin. Henüz lisanslı değilseniz bu sekme **Buy License**'a bağlantı verir — doğrulayıcı lisansları öncelikle onaylanmış bir [Doğrulayıcı Başvurusu](#validator-application) gerektirir.
-3. **Kayıt formunu doldurun.** Doğrulayıcı adresinizi veya konsensüs açık anahtarınızı, bir takma ad, bir komisyon oranını (lisansınızın izin verdiği aralık içinde) ve isteğe bağlı bir genel uç nokta girin. Lisanslarınız ağlar arası zincirler içeriyorsa, bu doğrulayıcının hizmet vereceği zincirleri seçin.
-4. **Öz stake gereksinimini onaylayın.** Doğrulayıcı öz stake tabanı sabit bir değer olan 100.000 QOR'dur — ayarlanabilir bir seçenek değil, protokol düzeyinde bir sabittir — bir unbonding (çözülme) süresine tabidir ve çevrimdışı kalma veya çifte imzalama durumunda kesintiye uğrar. Bunu onaylayın, ardından kaydolmak için gönderin.
-5. **Senkronize edin ve doğrulayıcıyı oluşturun.** Burada kayıt yapmak doğrulayıcınızı kaydeder; düğümünüzü zincirin güncel tepe noktasına siz getirmeli ve `create-validator`'ı, her QoreChain işlemi gibi hibrit PQC ortak imzalı olarak siz göndermelisiniz — bu imzayı geçerli kılan, 1. adımdaki anahtardır.
-6. **Onaylayın ve stake bağlayın.** Bir özet paneli kaydı gösterir (takma ad, doğrulayıcı adresi, komisyon, öz stake niyeti, ağlar arası zincirler, durum) ve aktif doğrulayıcı setine girmek için öz stake'inizi bağlamanızı ister. Bağlama işlemi, Dashboard'da değil, düğümünüzde kuantum sonrası ortak imzalı işlemle gerçekleşir.
+Form, zincir operatör adresiniz için aktif bir `validator_operator` verilmesi gösterdiğinde ve seçilmiş bir Validator Program başvurusuna (veya programdan önceki bir doğrulayıcı lisansına) sahip olduğunuzda açılır. Doğrulayıcı operatör adresinizi, bir takma adı, %5 ile %20 arasında bir komisyon oranını ve isteğe bağlı bir genel uç noktayı girin, ardından 100.000 QOR öz stake'i, 21 günlük unbonding süresini ve kesintiyi onaylayın.
 
-Stake etme ve doğrulayıcı oluşturma yalnızca QoreChain'in yerel (native) işlem hattında gerçekleşir — MetaMask gibi bağlı bir EVM cüzdanı üzerinden bir doğrulayıcıyı kaydetmenin veya bağlamanın hiçbir yolu yoktur.
+Zincir üzerindeki adımlar [Bir Doğrulayıcı Çalıştırmak](/developer-guide/running-a-validator) sayfasındadır: PQC anahtarınızı kaydedin, ardından her QoreChain işlemi gibi PQC ortak imzalı olarak en az 100.000 QOR öz stake ile `create-validator` gönderin. Stake etme ve doğrulayıcı oluşturma yalnızca QoreChain'in yerel (native) işlem hattında gerçekleşir; MetaMask gibi bağlı bir EVM cüzdanı üzerinden bir doğrulayıcıyı kaydetmenin veya bağlamanın hiçbir yolu yoktur. Formun altında sekme, ağın sürüm manifestinden tam bir düğümün ihtiyaç duyduklarını da (sürüm ikili dosyası, genesis, eşler) listeler.
 
-Bkz. [Bir Doğrulayıcı Çalıştırmak](/developer-guide/running-a-validator) ve [Stake Etme ve Doğrulayıcılar](/dashboard/staking-and-validators).
+Bkz. [Stake Etme ve Doğrulayıcılar](/dashboard/staking-and-validators).
 
 ## Rollup'lar
 
-QoreChain destekli bir rollup talep edin. Form; rollup'ı adlandırmanıza ve istediğiniz sanal makineyi (EVM, CosmWasm veya SVM), veri kullanılabilirliği katmanını, gas token'ını, sıralayıcı (sequencer) modelini ve uzlaşma hedefini belirtmenize olanak tanır. Göndermek, The Qore Trust'ın incelediği bir sağlama (provisioning) talebini kaydeder; rollup'ı zincir üzerinde oluşturmaz. Seçenekler, zincir üzerindeki rollup modülünün şu anda desteklediğinden daha geniştir. Bir rollup'ı zincir üzerinde kendiniz kaydetmek için bkz. [Bir Rollup Dağıtmak](/rollups/deploying-a-rollup); kavramlar için bkz. [Rollup'lar Genel Bakış](/rollups/overview).
+QoreChain destekli bir rollup talep edin. Form; rollup'ı adlandırmanıza ve istediğiniz sanal makineyi (EVM, CosmWasm veya SVM), veri kullanılabilirliği katmanını, gas token'ını, sıralayıcı (sequencer) modelini ve uzlaşma hedefini belirtmenize olanak tanır. Göndermek, incelenen bir sağlama (provisioning) talebini kaydeder; rollup'ı zincir üzerinde oluşturmaz. Seçenekler, zincir üzerindeki rollup modülünün şu anda desteklediğinden daha geniştir. Bir rollup'ı zincir üzerinde kendiniz kaydetmek için bkz. [Bir Rollup Dağıtmak](/rollups/deploying-a-rollup); kavramlar için bkz. [Rollup'lar Genel Bakış](/rollups/overview).
 
 ## SDK
 
 QoreChain üzerinde kodla geliştirme yapmak için bir hızlı başlangıç ve referans merkezi. Bölüm; bağlanma, üç çalışma zamanı genelinde hesap türetme, durum okuma, transfer gönderme ve kuantuma dayanıklı imzalama için kurulum adımlarını ve kopyalamaya hazır kod parçacıklarını, ayrıca bir dil paketleri tablosunu ve depoya, örneklere ve gezgine bağlantıları gösterir. Bkz. [QoreChain SDK Genel Bakış](/sdk/overview) ve [Kurulum](/sdk/install).
-
-## Doğrulayıcı Başvurusu {#validator-application}
-
-Bir Genesis Doğrulayıcısı olmak için başvurun:
-
-1. **Kuruluş bilgilerinizi girin.** Yasal kuruluş adı, ülke/yargı bölgesi ve bir iletişim e-postası.
-2. **İstediğiniz katmanı seçin.** Doğrulayıcı katman kataloğundan seçim yapın (her katman kendi slot sayısını ve özellik setini listeler) — bu, onaylandıktan sonra lisanslamayı düşündüğünüz katmandır, henüz bir satın alma değildir.
-3. **Altyapınızı tanımlayın.** Altyapı bölgeniz ve donanım/veri merkezi detayları.
-4. **Motivasyonunuzu açıklayın.** Ekibinizin doğrulayıcı/altyapı deneyimi ve neden bir QoreChain Genesis Doğrulayıcısı çalıştırmak istediğinize dair kısa bir açıklama.
-5. **Uyumluluğu onaylayın ve gönderin.** Bir lisans verilmeden önce başvuran kuruluşun ve gerçek yararlanıcılarının KYC/AML doğrulamasının gerekli olduğunu onaylayın, ardından gönderin.
-6. **Durumunuzu takip edin.** Sekme, başvurunuzu inceleniyor, onaylandı veya bir nedenle onaylanmadı (gözden geçirip yeniden gönderme seçeneğiyle) olarak gösterir. Başvurunuz beklemede veya onaylandığında, canlı bir **Doğrulayıcı Hazırlığı** paneli, satın aldığınız şeye göre değil, doğrudan zincire göre üç şeyi kontrol eder: PQC anahtar kaydınız, öz-bağınız (sabit 100.000 QOR — yalnızca harcanabilir bakiye, vesting fonları sayılmaz) ve operatör lisansınızın zincir üzerinde fiilen verilip verilmediği ve şu anda geçerli olup olmadığı (askıya alınmamış ve süresi dolmamış — lisanslar bir blok yüksekliğinde sona erer ve zincirin tepe noktası okunamazsa, süresi dolmakta olan bir lisans geçerli olarak değil *doğrulanamadı* olarak bildirilir). Her kontrol üç durumdan birini bildirir — karşılandı, henüz karşılanmadı veya zincire ulaşılamadığında *doğrulanamadı* — ve başarısız bir okuma asla "buna sahip değilsiniz" olarak gösterilmez, çünkü bu sizi zaten sahip olduğunuz bir şeyi yeniden yapmaya yönlendirir. Onaylandıktan sonra, bir doğrulayıcı lisansı edinmek için **Buy License**'a geçebilirsiniz.
-
-Bkz. [Bir Doğrulayıcı Çalıştırmak](/developer-guide/running-a-validator).
-
-## Lisans Satın Al
-
-Ağ altyapısını çalıştırmak için gereken lisansları edinin:
-
-1. **Lisanslanacak adresi girin.** En üstteki **QoreChain address** alanı her satın alma için zorunludur: lisansın zincir üzerinde verileceği `qor1…` adresini yazın. Kontrol ettiğiniz ve elinizde tutacağınız bir adres kullanın — verilme ona bağlanır ve sonradan değiştirmek destek gerektirir. Adres olmadan lisans sipariş edilemez.
-2. **Bir ödeme ağı seçin.** **Pay with USDT on:** altında ERC-20, BEP-20 veya TRC-20 seçin.
-3. **Ne satın alacağınızı seçin.** Bir hafif düğüm lisansı herkese açıktır. Doğrulayıcı lisansları (katman kataloğu genelinde) yalnızca [Doğrulayıcı Başvurunuz](#validator-application) onaylandıktan sonra açılır. Ağlar arası eklentiler, bir doğrulayıcı lisansını ek zincirlere genişletir; zincir başına yıllık olarak fiyatlandırılır — istediğiniz zincirleri seçin, ardından satın alın.
-4. **Ödemeyi tamamlayın.** Her satın alma sizi, tutarı ve ağı onaylayan ve lisans ödenmiş olarak kaydedilmeden önce ödemeyi zincir üzerinde doğrulayan bir ödeme adımına götürür.
-5. **Zincir üzerinde verilmesini bekleyin, ardından kaydolun.** Ödemeden sonra lisans **Paid — awaiting on-chain grant** olarak görünür. Verilmeler elle, toplu halde yapılır; bu nedenle anlık değildir. Durum, yalnızca zincirin kendisi verilmeyi onayladıktan sonra **Active** olarak değişir. Zincir üzerindeki kayıt, bizim kayıtlarımızı değil zinciri kontrol eder, bu yüzden verilme gerçekleşmeden önce kaydolmaya çalışmak reddedilecektir. Rozet **Active** olarak göründüğünde, eşleşen kayıt için **Light Node** veya **Node Registration**'a dönün.
-
-:::note Adres zorunlu hale gelmeden önce satın alınan lisanslar
-Adres toplanmadan önce bir lisans satın aldıysanız, Buy License sekmesi **This licence needs a QoreChain address** ile açılır — adresi girin ve **Save address**'i seçin. Kaydedilene kadar lisans verilemez.
-:::
 
 Lisanslamanın ağ genelinde nasıl işlediği için bkz. [Zincir Lisanslama](/architecture/chain-licensing).

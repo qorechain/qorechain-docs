@@ -10,11 +10,11 @@ sidebar_position: 9
 이 가이드는 QoreChain 네트워크에서 밸리데이터를 생성하는 방법, 풀 분류 설계 이해하기, 양자내성 보안을 위한 PQC 키 등록, 노드 모니터링 방법을 다룹니다.
 
 :::note
-이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 29일부터 운영 중이고 노드 릴리스 **v3.2.1**을 실행합니다(합의 규칙은 높이 2,981,742에서 적용된 v3.2.0 업그레이드 기준). **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, v3.2.2)은 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요. 블록 시간은 네트워크마다 다릅니다. 메인넷은 약 3.2초, 테스트넷은 약 1.0초이므로, 블록 수를 시간으로 환산할 때는 네트워크별로 계산하세요.
+이 가이드는 **`qorechain-vladi`** 메인넷(EVM 체인 ID **9801**)을 대상으로 하며, 2026년 6월 29일부터 운영 중이고 노드 릴리스 **v3.2.3**을 실행합니다(높이 3,662,051에서 거버넌스를 통해 적용). **`qorechain-diana`** 테스트넷(EVM 체인 ID **9800**, v3.2.4)은 실제 배포 전에 설정을 미리 연습해보는 용도로 권장됩니다. 대상 네트워크에 맞는 `--chain-id`로 대체하세요. 블록 시간은 네트워크마다 다릅니다. 메인넷은 약 3.2초, 테스트넷은 약 1.0초이므로, 블록 수를 시간으로 환산할 때는 네트워크별로 계산하세요.
 :::
 
 :::caution 소스 빌드가 아닌 릴리스 바이너리를 사용하세요
-밸리데이터는 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json`, [노드 운영하기](/developer-guide/running-a-node#fetch-the-manifest) 참고)에 명시된 **릴리스 `qorechaind`**를 실행해야 합니다. 공개 소스에서 빌드한 바이너리에는 스텁 키퍼가 들어 있고 양자내성 서명기가 없습니다. 그래서 네트워크의 합의 상태를 재현할 수 없고, `create-validator` 및 모든 Cosmos 레인 트랜잭션에 필요한 하이브리드 서명도 만들 수 없습니다([소스에서 빌드하기](/developer-guide/building-from-source) 참고). 새로 구성하는 메인넷 노드에는 v3.2.0 이상이 필요합니다. v3.2.1부터는 노드의 시계가 60초 넘게 어긋나면 노드가 멈추므로, 시스템 시계를 NTP로 동기화된 상태로 유지하세요.
+밸리데이터는 라이브 매니페스트(`https://download.qore.host/mainnet/latest.json`, [노드 운영하기](/developer-guide/running-a-node#fetch-the-manifest) 참고)에 명시된 **릴리스 `qorechaind`**를 실행해야 합니다. 공개 소스에서 빌드한 바이너리에는 스텁 키퍼가 들어 있고 양자내성 서명기가 없습니다. 그래서 네트워크의 합의 상태를 재현할 수 없고, `create-validator` 및 모든 Cosmos 레인 트랜잭션에 필요한 하이브리드 서명도 만들 수 없습니다([소스에서 빌드하기](/developer-guide/building-from-source) 참고). v3.2.3부터는 공개 소스에서 빌드한 바이너리가 공개 네트워크에서 아예 시작되지 않습니다. 새로 구성하는 메인넷 노드에는 v3.2.0 이상이 필요합니다. v3.2.1부터는 노드의 시계가 60초 넘게 어긋나면 노드가 멈추므로, 시스템 시계를 NTP로 동기화된 상태로 유지하세요.
 :::
 
 :::note 이 페이지에서 실제로 적용되는 부분
@@ -28,21 +28,21 @@ sidebar_position: 9
 * 완전히 동기화된 릴리스 `qorechaind` 노드 ([메인넷에 연결하기](/getting-started/connecting-to-mainnet) 참고, 연습하려면 [테스트넷에 연결하기](/getting-started/connecting-to-testnet))
 * 운영자 계정에 **등록된 ML-DSA-87 PQC 키** ([PQC 키 등록](#pqc-key-registration) 참고) — `create-validator`에는 하이브리드 서명이 필요합니다
 * 초기 셀프 위임을 위해 최소 **100,000 QOR**(100,000,000,000 uqor)가 있는 자금이 있는 계정 — 이 최소값은 온체인에서 강제되며, 미달 시 `create-validator`가 거부됩니다
-* 계정에 활성화된 **`validator_operator` 라이선스** — 아래 참고 사항을 확인하세요. 라이선스가 없으면 얼마나 많은 QOR을 셀프 본딩하든 상관없이 `create-validator`가 `ErrUnauthorized`로 실패합니다
+* 운영자 주소에 활성화된 **`validator_operator` 부여** — [Validator Program](/dashboard/tools-hub#validator-application)을 통해 발급됩니다(신청하고, 선정되고, $1,000 프로그램 수수료를 납부). 아래 참고 사항을 확인하세요. 부여가 없으면 얼마나 많은 QOR을 셀프 본딩하든 상관없이 `create-validator`가 `ErrUnauthorized`로 실패합니다
 * [스테이킹과 위임](/user-guide/staking-and-delegation) 모델에 대한 이해
 
 ---
 
 ## 밸리데이터 생성하기
 
-### 라이선스 게이트: `validator_operator` {#validator-license-gate}
+### 운영자 부여: `validator_operator` {#validator-license-gate}
 
 `create-validator`는 온체인에서 강제되는 두 가지 독립적인 검사로 게이트되며, 둘 다 필요합니다 — 큰 규모의 셀프 본딩만으로는 충분하지 않습니다.
 
 1. **최소 100,000 QOR 셀프 본딩.**
-2. **트랜잭션을 제출하는 계정에 활성화된 `validator_operator` 라이선스.**
+2. **트랜잭션을 제출하는 계정에 활성화된 `validator_operator` 부여.**
 
-라이선스는 라이선스 기관이 온체인에서 부여합니다(신청 절차는 [Tools Hub](/dashboard/tools-hub#validator-application) 참고). 내 라이선스는 `GET /qorechain/license/v1/check/{grantee}/validator_operator`로 확인하세요. 라이선스의 `expires_at`은 날짜나 기간이 아니라 **블록 높이**입니다 — `0`은 만료 없음을 의미합니다. 라이선스가 없거나 만료된 경우, 셀프 본딩 금액과 무관하게 `create-validator`는 `ErrUnauthorized`로 실패합니다. 이는 자금이 충분한데도 원인을 알 수 없이 실패하는 가장 흔한 이유입니다. 이 게이트가 존재하는 이유는 EVM 실행 레인이 이를 확인하거나 강제할 수 없기 때문입니다(그곳의 단일 ante 데코레이터로는 완전히 우회될 수 있습니다) — 이는 스테이킹과 검증이 오직 Native 레인에만 남아 있는 이유 중 하나입니다.
+이 부여는 QoreChain Association이 **Validator Program**을 통해 온체인에서 발급합니다: [Tools Hub](/dashboard/tools-hub#validator-application)에서 신청하고, 14일간의 시험 운영 기간 동안 diana 테스트넷에서 밸리데이터를 운영한 뒤, 선정되면 **$1,000 프로그램 수수료**를 납부하세요. 그러면 신청서에 기재한 운영자 주소에 대해 부여가 일괄 서명됩니다. 내 부여는 `GET /qorechain/license/v1/check/{grantee}/validator_operator`로 확인하세요. 라이선스의 `expires_at`은 날짜나 기간이 아니라 **블록 높이**입니다 — `0`은 만료 없음을 의미합니다. 라이선스가 없거나 만료된 경우, 셀프 본딩 금액과 무관하게 `create-validator`는 `ErrUnauthorized`로 실패합니다. 이는 자금이 충분한데도 원인을 알 수 없이 실패하는 가장 흔한 이유입니다. 이 게이트가 존재하는 이유는 EVM 실행 레인이 이를 확인하거나 강제할 수 없기 때문입니다(그곳의 단일 ante 데코레이터로는 완전히 우회될 수 있습니다) — 이는 스테이킹과 검증이 오직 Native 레인에만 남아 있는 이유 중 하나입니다.
 
 `validator.json` 파일을 만드세요(플래그 방식은 현재 SDK에서 제거되었습니다).
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC 키 등록 {#pqc-key-registration}
 
-밸리데이터 라이선스를 신청하거나 `create-validator`를 실행하기 **전에** **양자내성 암호화(PQC) 공개 키**(ML-DSA-87)를 등록하세요. 이는 **선택 사항이 아니며 자동으로 처리되지도 않습니다.** 체인은 모든 Cosmos 레인 트랜잭션에 하이브리드 PQC 서명을 요구하며, `MsgCreateValidator`는 예외 대상 메시지 유형에 포함되지 않고, 어떤 계정도 키를 자동으로 등록하지 않습니다. 등록은 명시적인 트랜잭션이며, 모든 계정(밸리데이터 운영자 포함)이 사전에 직접 보내야 합니다. 먼저 키를 생성하세요.
+`create-validator`를 실행하기 **전에**, 그리고 가능한 한 일찍 **양자내성 암호화(PQC) 공개 키**(ML-DSA-87)를 등록하세요. [Validator Readiness](/dashboard/tools-hub#validator-application) 패널은 신청하는 순간부터 이를 확인합니다. 이는 **선택 사항이 아니며 자동으로 처리되지도 않습니다.** 체인은 모든 Cosmos 레인 트랜잭션에 하이브리드 PQC 서명을 요구하며, `MsgCreateValidator`는 예외 대상 메시지 유형에 포함되지 않고, 어떤 계정도 키를 자동으로 등록하지 않습니다. 등록은 명시적인 트랜잭션이며, 모든 계정(밸리데이터 운영자 포함)이 사전에 직접 보내야 합니다. 먼저 키를 생성하세요.
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc`는 **소유 증명**(proof of possession)을 첨부합니다: 키가 `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`에 서명하고 체인이 이를 검증하므로, 개인 키를 보유하지 않은 공개 키는 누구도 등록할 수 없습니다. v3.2.3에서는 선택 사항이지만 권장됩니다.
+
+:::note v3.2.3에서 키 등록에 관해 달라진 점
+* 등록된 키가 **없는** 계정은 등록 트랜잭션 자체만 보낼 수 있습니다: 하이브리드 서명 확장을 포함한 다른 트랜잭션은 모두 거부됩니다. 먼저 등록한 다음, 나머지는 모두 `tx pqc cosign`으로 서명하세요.
+* `classical_only` 키, 빈 키, 퇴화된(degenerate) 키는 등록 시 거부됩니다.
+* 계정이 키를 보유한 이후에는 추가적인 키 관리(교체, 마이그레이션, 재등록) 자체도 하이브리드 서명되어야 하며, `authz`를 통해 보낼 수 없습니다.
+* `tx pqc gen-key`는 기존 키 파일을 절대 덮어쓰지 않습니다.
+:::
 
 | 매개변수       | 설명                                              |
 | -------------- | ------------------------------------------------- |

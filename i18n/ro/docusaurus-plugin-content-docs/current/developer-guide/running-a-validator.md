@@ -10,11 +10,11 @@ sidebar_position: 9
 Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculatoarele cuantice și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 29 iunie 2026, care rulează versiunea de nod **v3.2.1** (regulile de consens provin din upgrade-ul v3.2.0, aplicat la înălțimea 2.981.742). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**, v3.2.2) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,0 s pe testnet, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 29 iunie 2026, care rulează versiunea de nod **v3.2.3** (aplicată prin guvernanță la înălțimea 3.662.051). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**, v3.2.4) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,0 s pe testnet, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
 :::
 
 :::caution Folosește binarul de release, nu un build din sursă
-Un validator trebuie să ruleze **`qorechaind` de release** indicat în manifestul live (`https://download.qore.host/mainnet/latest.json`; vezi [Rularea unui Nod](/developer-guide/running-a-node#fetch-the-manifest)). Un binar construit din sursa publică are keeper-i stub și nu are semnatar post-cuantic: nu poate reproduce starea de consens a rețelei și nu poate crea semnătura hibridă de care au nevoie `create-validator` și orice altă tranzacție de pe lane-ul Cosmos (vezi [Construirea din Sursă](/developer-guide/building-from-source)). Un nod de mainnet nou are nevoie de v3.2.0 sau mai nou; ține ceasul sistemului sincronizat prin NTP, deoarece începând cu v3.2.1 nodul se oprește dacă ceasul lui deviază cu mai mult de 60 de secunde.
+Un validator trebuie să ruleze **`qorechaind` de release** indicat în manifestul live (`https://download.qore.host/mainnet/latest.json`; vezi [Rularea unui Nod](/developer-guide/running-a-node#fetch-the-manifest)). Un binar construit din sursa publică are keeper-i stub și nu are semnatar post-cuantic: nu poate reproduce starea de consens a rețelei și nu poate crea semnătura hibridă de care au nevoie `create-validator` și orice altă tranzacție de pe lane-ul Cosmos (vezi [Construirea din Sursă](/developer-guide/building-from-source)). Începând cu v3.2.3, un binar construit din sursa publică refuză cu totul să pornească pe o rețea publică. Un nod de mainnet nou are nevoie de v3.2.0 sau mai nou; ține ceasul sistemului sincronizat prin NTP, deoarece începând cu v3.2.1 nodul se oprește dacă ceasul lui deviază cu mai mult de 60 de secunde.
 :::
 
 :::note Care părți ale acestei pagini sunt active
@@ -28,21 +28,21 @@ Producerea de blocuri folosește rotația standard de validatori ponderată dup�
 * Un nod `qorechaind` de release complet sincronizat (vezi [Conectarea la Mainnet](/getting-started/connecting-to-mainnet), sau [Conectarea la Testnet](/getting-started/connecting-to-testnet) pentru a repeta configurația)
 * O **cheie PQC ML-DSA-87 înregistrată** pe contul operatorului (vezi [Înregistrarea Cheii PQC](#pqc-key-registration)) — `create-validator` are nevoie de semnătura hibridă
 * Un cont alimentat cu cel puțin **100.000 QOR** (100.000.000.000 uqor) pentru auto-delegarea inițială — acest minim este impus on-chain, iar `create-validator` este respins sub acest prag
-* O **licență `validator_operator`** activă pe contul tău — vezi nota de mai jos; fără ea, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult QOR auto-bondezi
+* O **acordare `validator_operator`** activă pe adresa ta de operator, emisă prin [Validator Program](/dashboard/tools-hub#validator-application) (aplici, ești selectat, plătești taxa de program de $1,000); vezi nota de mai jos. Fără ea, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult QOR auto-bondezi
 * Familiaritate cu modelul [Staking și Delegare](/user-guide/staking-and-delegation)
 
 ---
 
 ## Crearea unui Validator
 
-### Poarta de licență: `validator_operator` {#validator-license-gate}
+### Acordarea de operator: `validator_operator` {#validator-license-gate}
 
 `create-validator` este condiționat de două verificări independente, ambele impuse on-chain, și ai nevoie de amândouă — un auto-bond mare, de unul singur, nu este suficient:
 
 1. **Auto-bond minim de 100.000 QOR.**
-2. **O licență `validator_operator` activă** pe contul care trimite tranzacția.
+2. **O acordare `validator_operator` activă** pe contul care trimite tranzacția.
 
-Licențele sunt acordate on-chain de autoritatea de licențiere (vezi [Tools Hub](/dashboard/tools-hub#validator-application) pentru pașii de aplicare); verifică-o pe a ta cu `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Câmpul `expires_at` al unei licențe este o **înălțime de bloc**, nu o dată sau o durată — `0` înseamnă fără expirare. Dacă lipsește sau a expirat, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult auto-bondezi; acesta este cel mai frecvent motiv pentru care o încercare bine finanțată eșuează și pare inexplicabilă. Această poartă există special pentru că lane-ul de execuție EVM nu o poate vedea sau impune (un singur decorator ante acolo ar ocoli-o complet) — este unul dintre motivele pentru care staking-ul și validarea rămân exclusiv pe lane-ul Nativ.
+Acordarea este emisă on-chain de QoreChain Association prin **Validator Program**: aplici în [Tools Hub](/dashboard/tools-hub#validator-application), rulezi un validator pe testnet-ul diana pentru perioada de probă de 14 zile și, odată selectat, plătești **taxa de program de $1,000**; acordarea este apoi semnată în loturi pentru adresa de operator din aplicația ta. Verifică-o pe a ta cu `GET /qorechain/license/v1/check/{grantee}/validator_operator`. Câmpul `expires_at` al unei licențe este o **înălțime de bloc**, nu o dată sau o durată — `0` înseamnă fără expirare. Dacă lipsește sau a expirat, `create-validator` eșuează cu `ErrUnauthorized`, indiferent cât de mult auto-bondezi; acesta este cel mai frecvent motiv pentru care o încercare bine finanțată eșuează și pare inexplicabilă. Această poartă există special pentru că lane-ul de execuție EVM nu o poate vedea sau impune (un singur decorator ante acolo ar ocoli-o complet) — este unul dintre motivele pentru care staking-ul și validarea rămân exclusiv pe lane-ul Nativ.
 
 Creează un fișier `validator.json` (forma bazată pe flag-uri a fost eliminată în SDK-ul actual):
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## Înregistrarea Cheii PQC {#pqc-key-registration}
 
-Înregistrează-ți **cheia publică post-cuantică (PQC)** — ML-DSA-87 — **înainte** de a solicita o licență de validator sau de a rula `create-validator`. Acest lucru **nu este opțional și nu este automat**: chain-ul impune o semnătură hibridă PQC pe fiecare tranzacție de pe lane-ul Cosmos, `MsgCreateValidator` nu se numără printre tipurile de mesaje exceptate, iar niciun cont nu își înregistrează cheia automat: înregistrarea este o tranzacție explicită pe care fiecare cont (inclusiv operatorii de validatori) trebuie să o trimită el însuși, din timp. Generează mai întâi cheia:
+Înregistrează-ți **cheia publică post-cuantică (PQC)** — ML-DSA-87 — **înainte** de a rula `create-validator`, și cât mai devreme: panoul [Validator Readiness](/dashboard/tools-hub#validator-application) o verifică din momentul în care aplici. Acest lucru **nu este opțional și nu este automat**: chain-ul impune o semnătură hibridă PQC pe fiecare tranzacție de pe lane-ul Cosmos, `MsgCreateValidator` nu se numără printre tipurile de mesaje exceptate, iar niciun cont nu își înregistrează cheia automat: înregistrarea este o tranzacție explicită pe care fiecare cont (inclusiv operatorii de validatori) trebuie să o trimită el însuși, din timp. Generează mai întâi cheia:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` atașează o **dovadă de posesie** (proof of possession): cheia semnează `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, iar chain-ul o verifică, astfel încât nimeni nu poate înregistra o cheie publică a cărei jumătăți private nu o deține. În v3.2.3 este opțională și recomandată.
+
+:::note Ce a schimbat v3.2.3 la înregistrarea cheilor
+* Un cont **fără** cheie înregistrată poate trimite doar înregistrarea însăși: orice altă tranzacție care poartă o extensie de semnătură hibridă este refuzată. Înregistrează mai întâi cheia, apoi semnează tot restul cu `tx pqc cosign`.
+* Cheile `classical_only`, goale și degenerate sunt refuzate la înregistrare.
+* Odată ce un cont deține o cheie, întreținerea ulterioară a cheii (rotație, migrare, reînregistrare) trebuie să fie ea însăși semnată hibrid și nu poate fi trimisă prin `authz`.
+* `tx pqc gen-key` nu suprascrie niciodată un fișier de cheie existent.
+:::
 
 | Parametru      | Descriere                                              |
 | -------------- | --------------------------------------------------------- |

@@ -10,11 +10,11 @@ sidebar_position: 9
 このガイドでは、QoreChain ネットワーク上でバリデータを作成する方法、プール分類システムの仕組み、量子耐性セキュリティのための PQC 鍵の登録方法、そしてノードの監視方法について説明します。
 
 :::note
-このガイドは、2026年6月29日から稼働しているメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）を対象としており、ノードリリース **v3.2.1** で稼働しています（コンセンサスルールは v3.2.0 アップグレードによるもので、ブロック高 2,981,742 で適用されました）。本番稼働前のセットアップのリハーサルには、テストネット **`qorechain-diana`**（EVM チェーン ID **9800**、v3.2.2）の利用を推奨します。対象ネットワークに応じて `--chain-id` を適宜置き換えてください。ブロック時間はネットワークによって異なります。メインネットで約 3.2 秒、テストネットで約 1.0 秒のため、ブロック数はネットワークごとに時間へ換算してください。
+このガイドは、2026年6月29日から稼働しているメインネット **`qorechain-vladi`**（EVM チェーン ID **9801**）を対象としており、ノードリリース **v3.2.3** で稼働しています（ガバナンスによりブロック高 3,662,051 で適用されました）。本番稼働前のセットアップのリハーサルには、テストネット **`qorechain-diana`**（EVM チェーン ID **9800**、v3.2.4）の利用を推奨します。対象ネットワークに応じて `--chain-id` を適宜置き換えてください。ブロック時間はネットワークによって異なります。メインネットで約 3.2 秒、テストネットで約 1.0 秒のため、ブロック数はネットワークごとに時間へ換算してください。
 :::
 
 :::caution ソースビルドではなくリリースバイナリを使用してください
-バリデータは、ライブのマニフェスト（`https://download.qore.host/mainnet/latest.json`。[ノードの運用](/developer-guide/running-a-node#fetch-the-manifest)を参照）に記載された**リリース版の `qorechaind`** を実行する必要があります。公開ソースからビルドしたバイナリにはスタブのキーパーしかなく、耐量子署名機能もありません。そのためネットワークのコンセンサス状態を再現できず、`create-validator` やその他すべての Cosmos レーンのトランザクションに必要なハイブリッド署名も作成できません（[ソースからのビルド](/developer-guide/building-from-source)を参照）。新規のメインネットノードには v3.2.0 以降が必要です。v3.2.1 以降ではノードの時計が 60 秒以上ずれると停止するため、システムクロックは NTP で同期してください。
+バリデータは、ライブのマニフェスト（`https://download.qore.host/mainnet/latest.json`。[ノードの運用](/developer-guide/running-a-node#fetch-the-manifest)を参照）に記載された**リリース版の `qorechaind`** を実行する必要があります。公開ソースからビルドしたバイナリにはスタブのキーパーしかなく、耐量子署名機能もありません。そのためネットワークのコンセンサス状態を再現できず、`create-validator` やその他すべての Cosmos レーンのトランザクションに必要なハイブリッド署名も作成できません（[ソースからのビルド](/developer-guide/building-from-source)を参照）。v3.2.3 以降、公開ソースからビルドしたバイナリは公開ネットワーク上ではそもそも起動しません。新規のメインネットノードには v3.2.0 以降が必要です。v3.2.1 以降ではノードの時計が 60 秒以上ずれると停止するため、システムクロックは NTP で同期してください。
 :::
 
 :::note このページのうち稼働中の部分
@@ -28,21 +28,21 @@ sidebar_position: 9
 * 完全に同期済みのリリース版 `qorechaind` ノード（[メインネットへの接続](/getting-started/connecting-to-mainnet)を参照。リハーサルには[テストネットへの接続](/getting-started/connecting-to-testnet)を参照）
 * オペレーターアカウントに**登録済みの ML-DSA-87 PQC 鍵**があること（[PQC 鍵の登録](#pqc-key-registration)を参照）— `create-validator` にはハイブリッド署名が必要です
 * 初期自己委任のために少なくとも **100,000 QOR**（100,000,000,000 uqor）を保有する資金入りアカウント — この最小額はオンチェーンで強制されており、これを下回ると `create-validator` は拒否されます
-* アカウントに有効な **`validator_operator` ライセンス**があること — 詳細は下記の注記を参照してください。ライセンスがない場合、どれだけ多くの QOR を自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します
+* オペレーターアドレスに有効な **`validator_operator` 付与**があること。付与は [Validator Program](/dashboard/tools-hub#validator-application) を通じて発行されます（申請し、選考を通過し、$1,000 のプログラム手数料を支払う）。詳細は下記の注記を参照してください。付与がない場合、どれだけ多くの QOR を自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します
 * [ステーキングとデリゲーション](/user-guide/staking-and-delegation)モデルへの理解
 
 ---
 
 ## バリデータの作成
 
-### ライセンスゲート: `validator_operator` {#validator-license-gate}
+### オペレーター付与: `validator_operator` {#validator-license-gate}
 
 `create-validator` は、いずれもオンチェーンで強制される2つの独立したチェックによってゲートされており、両方を満たす必要があります — 大きな自己ボンドだけでは不十分です。
 
 1. **100,000 QOR の最小自己ボンド。**
-2. **トランザクションを送信するアカウントに有効な `validator_operator` ライセンス**があること。
+2. **トランザクションを送信するアカウントに有効な `validator_operator` 付与**があること。
 
-ライセンスはライセンス認可機関によってオンチェーンで付与されます（申請手順は [Tools Hub](/dashboard/tools-hub#validator-application) を参照）。ご自身のライセンスは `GET /qorechain/license/v1/check/{grantee}/validator_operator` で確認できます。ライセンスの `expires_at` は日付や期間ではなく**ブロック高**であり、`0` は無期限を意味します。ライセンスが存在しない、または期限切れの場合、どれだけ自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します。これは、資金は十分にあるのに原因が分かりにくい失敗として最も多い理由です。このゲートが存在するのは、EVM 実行レーンではこれを検知・強制できないためです（そこに単一の ante デコレータを置いてしまうと完全に迂回されてしまいます）。これは、ステーキングと検証が Native レーンに限定されている理由の一つでもあります。
+この付与は、QoreChain Association が **Validator Program** を通じてオンチェーンで発行します。[Tools Hub](/dashboard/tools-hub#validator-application) で申請し、14日間の試験期間中に diana テストネットでバリデータを稼働させ、選考を通過したら **$1,000 のプログラム手数料** を支払ってください。その後、申請書に記載したオペレーターアドレスに対して付与がバッチ単位で署名されます。ご自身の付与は `GET /qorechain/license/v1/check/{grantee}/validator_operator` で確認できます。ライセンスの `expires_at` は日付や期間ではなく**ブロック高**であり、`0` は無期限を意味します。ライセンスが存在しない、または期限切れの場合、どれだけ自己ボンドしても `create-validator` は `ErrUnauthorized` で失敗します。これは、資金は十分にあるのに原因が分かりにくい失敗として最も多い理由です。このゲートが存在するのは、EVM 実行レーンではこれを検知・強制できないためです（そこに単一の ante デコレータを置いてしまうと完全に迂回されてしまいます）。これは、ステーキングと検証が Native レーンに限定されている理由の一つでもあります。
 
 `validator.json` ファイルを作成します（フラグ形式は現行の SDK では削除されました）。
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC 鍵の登録 {#pqc-key-registration}
 
-バリデータライセンスへの申請や `create-validator` の実行**前**に、**耐量子暗号（PQC）公開鍵**（ML-DSA-87）を登録してください。これは**任意ではなく、また自動でもありません**。チェーンはすべての Cosmos レーンのトランザクションにハイブリッド PQC 署名を要求し、`MsgCreateValidator` は例外対象のメッセージタイプには含まれていません。また、鍵を自動的に登録するアカウントは存在せず、登録は明示的なトランザクションであり、バリデータ運営者を含むすべてのアカウントが事前に自分で送信する必要があります。まず鍵を生成します。
+`create-validator` の実行**前**に、できるだけ早く **耐量子暗号（PQC）公開鍵**（ML-DSA-87）を登録してください。[Validator Readiness](/dashboard/tools-hub#validator-application) パネルは、申請した時点からこれを確認します。これは**任意ではなく、また自動でもありません**。チェーンはすべての Cosmos レーンのトランザクションにハイブリッド PQC 署名を要求し、`MsgCreateValidator` は例外対象のメッセージタイプには含まれていません。また、鍵を自動的に登録するアカウントは存在せず、登録は明示的なトランザクションであり、バリデータ運営者を含むすべてのアカウントが事前に自分で送信する必要があります。まず鍵を生成します。
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` は **所有証明**（proof of possession）を添付します。鍵が `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` に署名し、チェーンがそれを検証するため、秘密鍵を保持していない公開鍵は誰も登録できません。v3.2.3 では任意ですが、推奨されます。
+
+:::note v3.2.3 で鍵登録について変わった点
+* 登録済みの鍵を**持たない**アカウントが送信できるのは、登録そのものだけです。ハイブリッド署名拡張を含むその他のトランザクションはすべて拒否されます。まず登録し、それ以外はすべて `tx pqc cosign` で署名してください。
+* `classical_only` の鍵、空の鍵、縮退した（degenerate）鍵は登録時に拒否されます。
+* アカウントが鍵を保持した後は、それ以降の鍵のメンテナンス（ローテーション、移行、再登録）自体もハイブリッド署名が必要であり、`authz` 経由では送信できません。
+* `tx pqc gen-key` は既存の鍵ファイルを決して上書きしません。
+:::
 
 | パラメータ      | 説明                                              |
 | -------------- | ------------------------------------------------- |

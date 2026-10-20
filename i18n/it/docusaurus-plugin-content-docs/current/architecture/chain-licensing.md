@@ -36,9 +36,9 @@ Una licenza smette inoltre di essere attiva una volta superata l'altezza `expire
 
 ## Chi può modificare le licenze
 
-La concessione, la revoca, la sospensione e il ripristino delle licenze sono **operazioni dell'autorità** — vengono eseguite dall'autorità di governance della chain, non da utenti arbitrari. Queste transazioni esistono come parte della superficie di comando del modulo, ma un normale utente non le chiama direttamente; il ciclo di vita è amministrato on-chain dall'autorità.
+La concessione, la revoca, la sospensione e il ripristino delle licenze sono **operazioni dell'autorità**: vengono firmate dall'account dell'autorità di licenza del modulo, non da utenti arbitrari. Dalla v3.2.3 la governance può sostituire quell'account con `MsgUpdateAuthority`, il percorso di recupero nel caso in cui la sua chiave venga persa. Queste transazioni esistono come parte della superficie di comando del modulo, ma un normale utente non le chiama direttamente; il ciclo di vita è amministrato on-chain dall'autorità.
 
-Per **ottenere** una licenza, gli integratori passano attraverso la **Dashboard (Tools → Buy License)**, che gestisce il flusso di richiesta; l'autorità registra quindi la concessione on-chain.
+Per **ottenerne** una: una licenza light node si acquista sulla **Dashboard (Tools → Light Node)**, e una concessione `validator_operator` arriva tramite il **Validator Program** (Tools → Validator Application: fai domanda, vieni selezionato, paga la quota di programma di $1,000). L'autorità registra quindi la concessione on-chain, in batch.
 
 Le transazioni soggette a restrizioni dell'autorità sono:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Correlati
 
 - Le licenze per le feature di bridge e validatore supportano le capacità descritte in [Architettura del bridge](/architecture/bridge-architecture).
-- Le licenze si ottengono attraverso la **Dashboard (Tools → Buy License)**.
+- Le licenze light node si acquistano sulla **Dashboard (Tools → Light Node)**; le concessioni per validatori arrivano tramite il Validator Program (Tools → Validator Application).
 - I light node ottengono una licenza durante [Registrazione e Licensing](/light-node/registration-and-licensing).
 - Acquista e gestisci le licenze dal [Tools Hub](/dashboard/tools-hub).

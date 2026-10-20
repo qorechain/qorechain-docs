@@ -10,11 +10,11 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 29 Haziran 2026'dan beri canlı olup **v3.2.1** düğüm sürümünü çalıştırır (konsensüs kuralları, 2.981.742 yüksekliğinde uygulanan v3.2.0 yükseltmesinden gelir). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.2), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 29 Haziran 2026'dan beri canlı olup **v3.2.3** düğüm sürümünü çalıştırır (yönetişim yoluyla 3.662.051 yüksekliğinde uygulandı). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.4), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
 :::
 
 :::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın
-Bir doğrulayıcı, canlı manifestte (`https://download.qore.host/mainnet/latest.json`; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node#fetch-the-manifest)) belirtilen **yayın sürümü `qorechaind`** dosyasını çalıştırmalıdır. Herkese açık kaynaktan derlenen bir ikili dosyada stub keeper'lar bulunur ve kuantum sonrası imzalayıcı yoktur: ağın konsensüs durumunu yeniden üretemez ve `create-validator` ile diğer tüm Cosmos yolu işlemlerinin gerektirdiği hibrit imzayı oluşturamaz (bkz. [Kaynaktan Derleme](/developer-guide/building-from-source)). Yeni bir ana ağ düğümü v3.2.0 veya üstünü gerektirir; sistem saatini NTP ile senkronize tutun, çünkü v3.2.1'den itibaren düğüm, saati 60 saniyeden fazla saptığında durur.
+Bir doğrulayıcı, canlı manifestte (`https://download.qore.host/mainnet/latest.json`; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node#fetch-the-manifest)) belirtilen **yayın sürümü `qorechaind`** dosyasını çalıştırmalıdır. Herkese açık kaynaktan derlenen bir ikili dosyada stub keeper'lar bulunur ve kuantum sonrası imzalayıcı yoktur: ağın konsensüs durumunu yeniden üretemez ve `create-validator` ile diğer tüm Cosmos yolu işlemlerinin gerektirdiği hibrit imzayı oluşturamaz (bkz. [Kaynaktan Derleme](/developer-guide/building-from-source)). v3.2.3'ten itibaren herkese açık kaynaktan derlenen bir ikili dosya, herkese açık bir ağda hiç başlamayı reddeder. Yeni bir ana ağ düğümü v3.2.0 veya üstünü gerektirir; sistem saatini NTP ile senkronize tutun, çünkü v3.2.1'den itibaren düğüm, saati 60 saniyeden fazla saptığında durur.
 :::
 
 :::note Bu sayfanın hangi bölümleri canlı
@@ -28,21 +28,21 @@ Blok üretimi standart, stake ağırlıklı doğrulayıcı rotasyonunu kullanır
 * Tam olarak senkronize edilmiş bir yayın sürümü `qorechaind` düğümü (bkz. [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet) veya prova için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet))
 * Operatör hesabında **kayıtlı bir ML-DSA-87 PQC anahtarı** (bkz. [PQC Anahtar Kaydı](#pqc-key-registration)) — `create-validator` hibrit imzayı gerektirir
 * İlk öz-delegasyon için en az **100.000 QOR** (100.000.000.000 uqor) bakiyeli, fonlanmış bir hesap — bu minimum zincir üzerinde zorunlu kılınır ve bunun altında `create-validator` reddedilir
-* Hesabınızda etkin bir **`validator_operator` lisansı** — aşağıdaki nota bakın; bu lisans olmadan, ne kadar QOR öz-bağlarsanız bağlayın, `create-validator` `ErrUnauthorized` hatasıyla başarısız olur
+* Operatör adresinizde, [Validator Program](/dashboard/tools-hub#validator-application) aracılığıyla verilen (başvurun, seçilin, $1,000 program ücretini ödeyin) etkin bir **`validator_operator` verilmesi**; aşağıdaki nota bakın. Bu verilme olmadan, ne kadar QOR öz-bağlarsanız bağlayın, `create-validator` `ErrUnauthorized` hatasıyla başarısız olur
 * [Staking ve Delegasyon](/user-guide/staking-and-delegation) modeline aşinalık
 
 ---
 
 ## Doğrulayıcı Oluşturma
 
-### Lisans kontrolü: `validator_operator` {#validator-license-gate}
+### Operatör verilmesi: `validator_operator` {#validator-license-gate}
 
 `create-validator`, ikisi de zincir üzerinde uygulanan iki bağımsız kontrolle kısıtlanır ve ikisine de ihtiyacınız vardır — yalnızca büyük bir öz-bağlama yeterli değildir:
 
 1. **Minimum 100.000 QOR öz-bağlama.**
-2. İşlemi gönderen hesapta **etkin bir `validator_operator` lisansı**.
+2. İşlemi gönderen hesapta **etkin bir `validator_operator` verilmesi**.
 
-Lisanslar zincir üzerinde lisans otoritesi tarafından verilir (başvuru adımları için bkz. [Tools Hub](/dashboard/tools-hub#validator-application)); kendi lisansınızı `GET /qorechain/license/v1/check/{grantee}/validator_operator` ile kontrol edin. Bir lisansın `expires_at` değeri bir **tarih veya süre değil, bir blok yüksekliğidir** — `0` süresiz geçerlilik anlamına gelir. Lisans eksik veya süresi dolmuşsa, ne kadar öz-bağlama yaparsanız yapın `create-validator` `ErrUnauthorized` hatasıyla başarısız olur; iyi fonlanmış bir denemenin açıklanamaz görünüp başarısız olmasının en yaygın tek nedeni budur. Bu kontrol, özellikle EVM yürütme yolunun bunu görüp uygulayamaması nedeniyle vardır (oradaki tek bir ante dekoratörü bunu tamamen atlar) — staking ve doğrulamanın yalnızca Native yolunda kalmasının nedenlerinden biri de budur.
+Verilme, zincir üzerinde QoreChain Association tarafından **Validator Program** aracılığıyla yapılır: [Tools Hub](/dashboard/tools-hub#validator-application) üzerinden başvurun, 14 günlük deneme için diana test ağında bir doğrulayıcı çalıştırın ve seçildikten sonra **$1,000 program ücretini** ödeyin; verilme ardından başvurunuzdaki operatör adresi için toplu halde imzalanır. Kendi verilmenizi `GET /qorechain/license/v1/check/{grantee}/validator_operator` ile kontrol edin. Bir lisansın `expires_at` değeri bir **tarih veya süre değil, bir blok yüksekliğidir** — `0` süresiz geçerlilik anlamına gelir. Lisans eksik veya süresi dolmuşsa, ne kadar öz-bağlama yaparsanız yapın `create-validator` `ErrUnauthorized` hatasıyla başarısız olur; iyi fonlanmış bir denemenin açıklanamaz görünüp başarısız olmasının en yaygın tek nedeni budur. Bu kontrol, özellikle EVM yürütme yolunun bunu görüp uygulayamaması nedeniyle vardır (oradaki tek bir ante dekoratörü bunu tamamen atlar) — staking ve doğrulamanın yalnızca Native yolunda kalmasının nedenlerinden biri de budur.
 
 Bir `validator.json` dosyası oluşturun (bayrak tabanlı biçim mevcut SDK'dan kaldırılmıştır):
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC Anahtar Kaydı {#pqc-key-registration}
 
-**Post-kuantum kriptografik (PQC) açık anahtarınızı** — ML-DSA-87 — bir doğrulayıcı lisansına başvurmadan veya `create-validator` komutunu çalıştırmadan **önce** kaydedin. Bu **isteğe bağlı değildir ve otomatik gerçekleşmez**: zincir, her Cosmos yolu işleminde hibrit bir PQC imzası zorunlu kılar, `MsgCreateValidator` muaf tutulan mesaj türlerinden biri değildir ve hiçbir hesap anahtarını otomatik olarak kaydetmez: kayıt, her hesabın (doğrulayıcı operatörleri dahil) önceden kendisinin göndermesi gereken açık bir işlemdir. Önce anahtarı oluşturun:
+**Post-kuantum kriptografik (PQC) açık anahtarınızı** — ML-DSA-87 — `create-validator` komutunu çalıştırmadan **önce** ve mümkün olduğunca erken kaydedin: [Doğrulayıcı Hazırlığı](/dashboard/tools-hub#validator-application) paneli, başvurduğunuz andan itibaren bunu kontrol eder. Bu **isteğe bağlı değildir ve otomatik gerçekleşmez**: zincir, her Cosmos yolu işleminde hibrit bir PQC imzası zorunlu kılar, `MsgCreateValidator` muaf tutulan mesaj türlerinden biri değildir ve hiçbir hesap anahtarını otomatik olarak kaydetmez: kayıt, her hesabın (doğrulayıcı operatörleri dahil) önceden kendisinin göndermesi gereken açık bir işlemdir. Önce anahtarı oluşturun:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` bir **sahiplik kanıtı** (proof of possession) ekler: anahtar `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` değerini imzalar ve zincir bunu doğrular; böylece hiç kimse özel yarısına sahip olmadığı bir açık anahtarı kaydedemez. v3.2.3'te isteğe bağlıdır ve önerilir.
+
+:::note v3.2.3'ün anahtar kaydında değiştirdikleri
+* Kayıtlı anahtarı **olmayan** bir hesap yalnızca kaydın kendisini gönderebilir: hibrit imza uzantısı taşıyan diğer tüm işlemler reddedilir. Önce kaydolun, ardından diğer her şeyi `tx pqc cosign` ile imzalayın.
+* `classical_only`, boş ve dejenere anahtarlar kayıt sırasında reddedilir.
+* Bir hesap bir anahtara sahip olduktan sonra, sonraki anahtar bakımı (rotasyon, geçiş, yeniden kayıt) kendisi de hibrit imzalı olmalıdır ve `authz` üzerinden gönderilemez.
+* `tx pqc gen-key` mevcut bir anahtar dosyasının üzerine asla yazmaz.
+:::
 
 | Parametre      | Açıklama                                              |
 | -------------- | -------------------------------------------------------- |
