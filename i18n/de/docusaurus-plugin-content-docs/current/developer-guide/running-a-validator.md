@@ -10,7 +10,7 @@ sidebar_position: 9
 Dieser Leitfaden erklärt, wie man einen Validator im QoreChain-Netzwerk erstellt, das Design der Pool-Klassifizierung versteht, einen PQC-Schlüssel für quantenresistente Sicherheit registriert und den eigenen Node überwacht.
 
 :::note
-Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 29. Juni 2026 live ist und das Node-Release **v3.2.3** betreibt (per Governance angewendet bei Höhe 3.662.051). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, v3.2.4) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
+Dieser Leitfaden bezieht sich auf das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das Node-Release **v3.2.3** betreibt (per Governance angewendet bei Höhe 3.662.051). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, v3.2.4) wird empfohlen, um das eigene Setup zu proben, bevor man live geht. Setzen Sie die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Blockzeiten unterscheiden sich: etwa 3,2 s im Mainnet und etwa 1,0 s im Testnet, rechnen Sie Blockanzahlen daher pro Netzwerk in Zeit um.
 :::
 
 :::caution Das Release-Binary verwenden, keinen Build aus dem Quellcode

@@ -10,7 +10,7 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 29 Haziran 2026'dan beri canlı olup **v3.2.3** düğüm sürümünü çalıştırır (yönetişim yoluyla 3.662.051 yüksekliğinde uygulandı). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.4), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.3** düğüm sürümünü çalıştırır (yönetişim yoluyla 3.662.051 yüksekliğinde uygulandı). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.4), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
 :::
 
 :::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın

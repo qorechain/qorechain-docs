@@ -10,7 +10,7 @@ sidebar_position: 9
 Ce guide explique comment créer un validateur sur le réseau QoreChain, comprendre le système de classification des pools, enregistrer une clé PQC pour une sécurité résistante au quantique, et surveiller votre nœud.
 
 :::note
-Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 29 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée par la gouvernance à la hauteur 3,662,051). Le testnet **`qorechain-diana`** (EVM chain ID **9800**, v3.2.4) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,2 s sur le mainnet et environ 1,0 s sur le testnet ; convertissez donc les nombres de blocs en durée pour chaque réseau.
+Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée par la gouvernance à la hauteur 3,662,051). Le testnet **`qorechain-diana`** (EVM chain ID **9800**, v3.2.4) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,2 s sur le mainnet et environ 1,0 s sur le testnet ; convertissez donc les nombres de blocs en durée pour chaque réseau.
 :::
 
 :::caution Utilisez le binaire de release, pas une compilation depuis les sources

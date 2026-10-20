@@ -10,7 +10,7 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification design, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 29 June 2026, which runs node release **v3.2.3** (applied by governance at height 3,662,051). The **`qorechain-diana`** testnet (EVM chain ID **9800**, v3.2.4) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.3** (applied by governance at height 3,662,051). The **`qorechain-diana`** testnet (EVM chain ID **9800**, v3.2.4) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
 :::
 
 :::caution Use the release binary, not a source build
