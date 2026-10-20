@@ -9,17 +9,17 @@ sidebar_position: 5
 
 Un light node registrato viene accreditato di una quota dell'allocazione dei light node e **deve restare in salute** per continuare a qualificarsi. Questa pagina descrive la quota del 3% di ricompensa riservata ai light node, come le ricompense vengono accreditate e riscattate, cosa fa e cosa non fa il nodo con le deleghe, e come monitorare il nodo.
 
-:::note La registrazione al programma di ricompense non è ancora aperta
-Nessun light node è ancora registrato su nessuna delle due reti, perché la registrazione richiede una licenza `lightnode_operator` e nessuna è stata concessa. La contabilità delle ricompense descritta qui è attiva on-chain, ma oggi non viene pagato nulla ai nodi e nulla in questa pagina è una promessa di guadagni. Vedi [Stato del programma di ricompense](/light-node/overview#reward-program-status).
+:::note Nulla di quanto descritto qui è una promessa di guadagni
+La registrazione è aperta su entrambe le reti; vedi [Stato del programma di ricompense](/light-node/overview#reward-program-status) per lo stato attuale. Quanto viene accreditato a un nodo dipende dall'allocazione dei light node, dal numero di nodi idonei, dal loro stake e uptime, e dal limite per nodo descritto di seguito.
 :::
 
 ## La quota del 3% sulle ricompense di blocco
 
 La distribuzione delle commissioni di QoreChain riserva una quota fissa del **3% ai light node** che servono dati di rete. Questa è una delle cinque destinazioni nella ripartizione delle ricompense del protocollo — validatori (37%), bruciato (30%), tesoreria (20%), staker (10%) e **light node (3%)** — applicata on-chain. Vedi [Tokenomics](/architecture/tokenomics) per la ripartizione completa.
 
-Per partecipare a questa quota un nodo deve soddisfare le seguenti condizioni, verificate on-chain e non auto-dichiarate: una licenza `lightnode_operator` attiva (verificata al momento della registrazione), almeno **1.000 QOR in bonding** — conteggiati come totale su tutti i validatori a cui deleghi, non per singolo validatore, richiesti al momento della registrazione e riletti dallo staking ogni volta che vengono accreditate le ricompense — e una commissione di registrazione di **1 QOR**, pagata una sola volta al momento della registrazione. La partecipazione è limitata a livello di rete a **10.000 light node**. Vedi [Registrazione e Licenze](/light-node/registration-and-licensing) per come funziona la registrazione e [Stato del programma di ricompense](/light-node/overview#reward-program-status) per sapere se l'iscrizione è aperta.
+Per partecipare a questa quota un nodo deve soddisfare le seguenti condizioni, verificate on-chain e non auto-dichiarate: una licenza `lightnode_operator` attiva (verificata al momento della registrazione), almeno **1.000 QOR delegati a validatori bonded** — conteggiati come totale su tutti i validatori a cui deleghi, non per singolo validatore; le deleghe a validatori in jail o non bonded non contano; richiesti al momento della registrazione e riletti dallo staking ogni volta che vengono accreditate le ricompense — e una commissione di registrazione di **1 QOR**, pagata una sola volta al momento della registrazione. La partecipazione è limitata a livello di rete a **10.000 light node**. Vedi [Registrazione e Licenze](/light-node/registration-and-licensing) per come funziona la registrazione e [Stato del programma di ricompense](/light-node/overview#reward-program-status) per lo stato attuale.
 
-Il 3% è ciò che affluisce nel modulo light-node, non un diritto per singolo nodo: a ogni nodo idoneo viene accreditata la sua quota, ponderata per lo stake, di quanto si è accumulato, limitata per nodo da `max_reward_per_block_per_node` (attualmente `1713` uqor per blocco, scalati in base all'uptime), e tutto ciò che non viene guadagnato va in una riserva che solo un voto di governance può sbloccare. Vedi [la quota del 3% di ricompensa dei light node](/light-node/overview#the-3-light-node-reward-share).
+Il 3% è ciò che affluisce nel modulo light-node, non un diritto per singolo nodo: a ogni nodo idoneo viene accreditata la sua quota, ponderata per lo stake, di quanto si è accumulato, limitata per nodo, e tutto ciò che non viene guadagnato va in una riserva che solo un voto di governance può sbloccare. Dalla chain v3.2.3 il limite per nodo è di **2.000 QOR ogni 30 giorni** (`max_reward_per_month_per_node`), ripartito proporzionalmente sul tempo di blocco trascorso tra un settlement e l'altro e scalato in base all'uptime (la regola `lightnode-monthly-cap`); sostituisce il precedente limite per blocco (`max_reward_per_block_per_node`, `1713` uqor per blocco). Vedi [la quota del 3% di ricompensa dei light node](/light-node/overview#the-3-light-node-reward-share).
 
 Una volta registrato e con la delega attiva, restare idonei è solo questione di restare attivi. Un nodo deve mantenere almeno l'**80% di uptime**, e deve continuare a inviare prove di liveness tramite heartbeat a un intervallo di **1.000 blocchi** (circa 54 minuti sulla mainnet con il tempo medio di blocco misurato di circa 3,2 s; circa 17 minuti sulla testnet, che produce un blocco circa ogni secondo).
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Accredito
 
-Ogni 100 blocchi la chain accredita a ciascun nodo idoneo (attivo, con almeno lo stake minimo in bonding e almeno l'uptime minimo) la sua quota di quanto si è accumulato, limitata per nodo come descritto in [la quota del 3% di ricompensa dei light node](/light-node/overview#the-3-light-node-reward-share). L'importo viene aggiunto agli `accumulated_rewards` del nodo. Leggilo con:
+Ogni 100 blocchi la chain accredita a ciascun nodo idoneo (attivo, con almeno lo stake minimo delegato e almeno l'uptime minimo) la sua quota di quanto si è accumulato, limitata per nodo (al massimo 2.000 QOR ogni 30 giorni, ripartiti proporzionalmente sul tempo trascorso dal settlement precedente) come descritto in [la quota del 3% di ricompensa dei light node](/light-node/overview#the-3-light-node-reward-share). L'importo viene aggiunto agli `accumulated_rewards` del nodo. Leggilo con:
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Riscatto
 
-Le ricompense accreditate restano sul record del nodo finché non le riscatti. Riscatta con la stessa coppia genera-poi-co-firma usata per la registrazione:
+Le ricompense accreditate restano sul record del nodo finché non le riscatti. Il nodo può riscattarle per te: imposta `auto_claim = true` sotto `[delegation]` e il daemon riscatta le ricompense light-node maturate verso l'account dell'operatore non appena superano `min_reward_claim` (predefinito `1000000` uqor, 1 QOR), controllando ogni `compound_interval` (predefinito `1h`). Firma il riscatto allo stesso modo degli heartbeat (in modo nativo, o tramite l'alternativa `qorechaind`). Il riscatto automatico è **disattivato per impostazione predefinita**, e riscatta soltanto: il nodo non ridelega né sposta mai lo stake.
+
+Per riscattare manualmente con `qorechaind` (la chiave dell'operatore in un keyring `qorechaind`, e la chiave post-quantistica esportata con `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), usa una coppia genera-poi-co-firma:
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-In alternativa imposta `auto_claim = true` sotto `[delegation]`: il daemon riscatta allora le ricompense light-node maturate verso l'account dell'operatore tramite il signer non appena superano `min_reward_claim` (predefinito `1000000` uqor, 1 QOR), controllando ogni `compound_interval` (predefinito `1h`). Il riscatto automatico è **disattivato per impostazione predefinita**, e riscatta soltanto: il nodo non ridelega né sposta mai lo stake. `qorechaind tx lightnode deregister` rimuove la registrazione e paga quanto ancora accreditato; la commissione di registrazione non viene rimborsata.
+`qorechaind tx lightnode deregister` rimuove la registrazione e paga quanto ancora accreditato; la commissione di registrazione non viene rimborsata.
 
 ### Tracciamento delle deleghe e avvisi di reputazione
 
-Il nodo rispecchia le deleghe dell'account dell'operatore dalla chain ogni cinque minuti. Quando `rebalance_enabled` è attivo (il predefinito), controlla anche il punteggio di reputazione di ciascun validatore a cui deleghi e registra un avviso per ogni punteggio inferiore a `min_reputation` (predefinito `0.5`). Non sposta lo stake: modifica le deleghe dal tuo wallet. (Le opzioni `validators` e `split_weights` in `[delegation]` sono accettate ma al momento non vengono utilizzate.)
+Il nodo rispecchia le deleghe dell'account dell'operatore dalla chain all'avvio e poi ogni cinque minuti. Quando `rebalance_enabled` è attivo (il predefinito), controlla anche il punteggio di reputazione di ciascun validatore a cui deleghi e registra un avviso per ogni punteggio inferiore a `min_reputation` (predefinito `0.5`). Non sposta lo stake: modifica le deleghe dal tuo wallet. (Le opzioni `validators` e `split_weights` in `[delegation]` sono accettate ma al momento non vengono utilizzate.)
 
 ### Ispezionare ricompense e deleghe
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution Limitazione nota nella v3.1.3 / v3.1.4
-`lightnode-sx delegation`, `lightnode-sx rewards` e la vista **Delegation** dell'UX cercano l'indirizzo derivato dalla chiave del nodo. Una chiave di nodo post-quantistica non ha un indirizzo, quindi attualmente questi comandi non mostrano nulla (`rewards` riporta `chain REST endpoint not available`). Usa invece le query della chain:
+Dalla 3.1.6 questi comandi, e la vista **Delegation** dell'UX, leggono l'account in `operator_address`. `rewards` mostra le ricompense di **staking** delle tue deleghe, non le ricompense dei light node. Per leggere tutto direttamente dalla chain:
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## Monitoraggio
 
@@ -110,7 +112,7 @@ L'edizione UX mostra gli stessi dati in tempo reale nelle sue viste **Overview**
 
 ### Salute di sincronizzazione e heartbeat
 
-Il comando `status` riporta l'ID della chain, l'altezza dell'ultimo blocco, se la chain è in fase di recupero (catching up), l'altezza sincronizzata e lo stato di sincronizzazione del light client e — una volta impostato `operator_address` — lo stato di `Signer`, `Licence` e `Registration` (inclusi lo stato del nodo e l'altezza dell'ultimo heartbeat). Un nodo che è registrato, sincronizzato e in esecuzione continua a inviare **prove di liveness tramite heartbeat** e quindi resta idoneo alle ricompense. Questi heartbeat vengono prodotti tramite una **pipeline di transazioni co-firmate PQC** (ibrida Dilithium-5 / ML-DSA-87), coerentemente con il requisito PQC predefinito della chain — vedi [Registrazione e Licenze](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) per il funzionamento della pipeline e come abilitare gli heartbeat on-chain. Se `status` mostra il nodo bloccato o non in sincronizzazione, potrebbe non riuscire a dimostrare la liveness — indaga prima che l'idoneità venga compromessa.
+Il comando `status` riporta l'ID della chain, l'altezza dell'ultimo blocco, se la chain è in fase di recupero (catching up), l'altezza sincronizzata e lo stato di sincronizzazione del light client, il `Signer` (nativo, `qorechaind` oppure non disponibile con il motivo) e — una volta impostato `operator_address` — lo stato di `Licence` e `Registration` (inclusi lo stato del nodo e l'altezza dell'ultimo heartbeat). Un nodo che è registrato, sincronizzato e in esecuzione continua a inviare **prove di liveness tramite heartbeat** e quindi resta idoneo alle ricompense. Questi heartbeat vengono prodotti tramite una **pipeline di transazioni co-firmate PQC** (ibrida Dilithium-5 / ML-DSA-87), coerentemente con il requisito PQC predefinito della chain — vedi [Registrazione e Licenze](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) per il funzionamento della pipeline e come il nodo sceglie il proprio firmatario. Se `status` mostra il nodo bloccato o non in sincronizzazione, potrebbe non riuscire a dimostrare la liveness — indaga prima che l'idoneità venga compromessa.
 
 ### Salute tramite self-test
 
@@ -132,7 +134,7 @@ URL di base: `https://api.qore.host` (mainnet) e `https://api-testnet.qore.host`
 | `GET /qorechain/lightnode/v1/stats` | Numero di nodi registrati e attivi, totale delle ricompense accreditate. |
 | `GET /qorechain/lightnode/v1/node/{address}` | Il record di un nodo (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | Ricompense accreditate e non ancora riscattate. |
-| `GET /qorechain/lightnode/v1/reward_pool` | Come il saldo del modulo si ripartisce tra riserva, ricompense accreditate e prossimo pagamento; include il limite per nodo. |
+| `GET /qorechain/lightnode/v1/reward_pool` | Come il saldo del modulo si ripartisce tra riserva, ricompense accreditate e prossimo pagamento; include i limiti per nodo (`max_reward_per_month_per_node` e il precedente `max_reward_per_block_per_node`). |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Se un indirizzo possiede una licenza attiva. |
 
 ## Prossimi passi

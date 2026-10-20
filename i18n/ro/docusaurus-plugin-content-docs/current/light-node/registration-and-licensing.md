@@ -7,58 +7,111 @@ sidebar_position: 4
 
 # Înregistrare și licențiere
 
-Pentru a câștiga [cota de recompensă de 3% pentru nodurile light](/light-node/rewards-and-monitoring), un nod light trebuie să fie **înregistrat on-chain** și trebuie să continue să demonstreze că este activ. Această pagină descrie cum funcționează înregistrarea, cum demonstrează nodul că este viu (liveness) și cum să licențiezi un nod prin Dashboard și să îl înregistrezi on-chain.
+Pentru a câștiga [cota de recompensă de 3% pentru nodurile light](/light-node/rewards-and-monitoring), un nod light trebuie să fie **înregistrat on-chain** și trebuie să continue să demonstreze că este activ. Această pagină descrie ce cere chain-ul, cum obții o licență, cum se înregistrează nodul singur și cum demonstrează că este viu (liveness).
 
-:::note Înregistrarea în programul de recompense nu este încă deschisă
-Nicio licență `lightnode_operator` nu a fost acordată pe vreuna dintre rețele și niciun nod nu este înregistrat, așa că chain-ul refuză astăzi orice înregistrare. Rularea și sincronizarea unui nod nu necesită licență. Vezi [Starea programului de recompense](/light-node/overview#reward-program-status) pentru cum verifici starea curentă.
+:::note Înregistrarea este deschisă
+Înregistrarea este deschisă pe mainnet (`qorechain-vladi`) și pe testnet (`qorechain-diana`). Rularea și sincronizarea unui nod nu necesită licență. Vezi [Starea programului de recompense](/light-node/overview#reward-program-status) pentru cum verifici starea curentă.
 :::
 
 ## Înregistrarea on-chain
 
-Înregistrarea înscrie nodul tău light pe chain, astfel încât protocolul să știe că există, ce tip este (`sx` sau `ux`) și ce cheie de operator îl controlează. Odată înregistrat și activ, nodul devine eligibil pentru cota de recompensă pentru nodurile light.
+Înregistrarea înscrie nodul tău light pe chain, astfel încât protocolul să știe că există, ce tip este (`sx` sau `ux`) și ce cont de operator îl controlează. Odată înregistrat și activ, nodul devine eligibil pentru cota de recompensă pentru nodurile light.
 
 ### Cerințe {#requirements}
 
 Chain-ul verifică toate acestea atunci când se execută tranzacția ta de înregistrare:
 
 1. O licență `lightnode_operator` activă pe adresa operatorului.
-2. Cel puțin **1.000 QOR delegați (bonded)** către validatori de la aceeași adresă (totalul tău pe toți validatorii). Delegă **înainte** de a te înregistra: din pagina de staking a Dashboard-ului sau cu `qorechaind tx staking delegate` (și cu co-semnătura post-cuantică, ca orice tranzacție).
-3. Un sold în contul operatorului pentru a plăti taxa de înregistrare de **1 QOR** și taxele de tranzacție. Daemon-ul plătește o taxă pentru fiecare heartbeat din acest cont (implicit `50000uqor` per heartbeat, `[heartbeat] fees`).
+2. Cel puțin **1.000 QOR delegați** de la aceeași adresă către validatori **bonded** (totalul tău pe oricâți validatori; delegările către validatori în jail sau unbonded nu se iau în calcul).
+3. Un sold în contul operatorului pentru a plăti taxa de înregistrare de **1 QOR** și taxele de tranzacție. Nodul plătește din acest cont și o taxă pentru fiecare heartbeat: cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas, adică 75.000 uqor (0,075 QOR) la valoarea implicită `[heartbeat] gas` de 300.000.
 4. Mai puțin de 10.000 de noduri light înregistrate la nivelul întregii rețele.
 
-### Generarea comenzilor de înregistrare
+După înregistrare, nodul trebuie să trimită un heartbeat la fiecare **1.000 de blocuri** (cu o toleranță de 100 de blocuri) și să păstreze un uptime de cel puțin **80%** pentru a fi plătit. Citește valorile curente cu `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
 
-Înregistrarea se face de la **adresa ta de operator**: un cont `qor1…` finanțat, creat cu `qorechaind` (sau cu orice portofel Cosmos), care primește și recompensele. Cheia Dilithium-5 a nodului nu are adresă; ea devine cheia post-cuantică a contului. Pune adresa în `config.toml` ca `operator_address` și asigură-te că `key_name` și `chain_id` sunt setate așa cum este descris în [Prima rulare](/light-node/sx-edition#first-run-onboard) (`onboard` nu le setează corect în locul tău). Apoi rulează:
+### Contul operatorului {#operator-account}
+
+Înregistrarea se face de la **adresa ta de operator**: un cont `qor1…` obișnuit care deține licența și stake-ul, plătește taxele și primește recompensele. Nodul trebuie să poată semna pentru el, deci trebuie să fie un cont **ale cărui cuvinte de recuperare le deții**: cuvinte pe care le-ai notat tu, un cont din Keplr sau o cheie `qorechaind` (calea de derivare `m/44'/118'/0'/0/0`). Cea mai bună alegere este un cont dedicat, folosit doar pentru nod.
+
+Un portofel custodial din Dashboard (unul al cărui seed este păstrat de Dashboard pentru tine) nu poate rula un nod decât dacă îi exporți mai întâi seed-ul.
+
+Cheia Dilithium-5 a nodului nu are o adresă proprie: pe QoreChain, o cheie post-cuantică se atașează unui cont, nu creează unul. Nodul își atașează cheia la contul operatorului ca cheie post-cuantică a acelui cont, cu excepția cazului în care contul are deja una (vezi [Conturi care au deja o cheie post-cuantică](#accounts-with-a-pqc-key)).
+
+## Obținerea unei licențe
+
+### Mainnet: cumpărare din Dashboard
+
+Licențele se cumpără din QoreChain Dashboard, la **Tools → Light Node**. O licență costă **50 $**, plătiți în USDT pe ERC-20, BEP-20 sau TRC-20; plata este verificată pe chain-ul respectiv. Trebuie să introduci adresa `qor1…` pentru care este licența **înainte** de a plăti; folosește adresa de operator descrisă mai sus.
+
+Acordarea este un pas on-chain separat, semnat manual și trimis în loturi. Până când chain-ul o confirmă, tab-ul afișează **Paid, awaiting on-chain grant**, iar nodul raportează în continuare că adresa nu are licență. `lightnode-sx status` afișează o linie `Licence:` care trece pe `active` când acordarea ajunge. O poți verifica și direct:
 
 ```bash
-lightnode-sx register
+curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-Înainte de a afișa orice, comanda întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. O face pentru că chain-ul refuză o înregistrare fără ea și nu are rost să ți se dea comenzi care vor fi refuzate. Fără licență, se oprește cu:
+### Testnet: la cerere
 
-```text
-operator address qor1... has no lightnode_operator licence. Buy one at
-https://dashboard.qorechain.io -> Tools -> Buy License, and enter this operator
-address there; the on-chain grant follows and register works once it lands.
+Pe testnet nu se vinde nimic. Licențele de testnet sunt acordate la cerere de autoritatea de licențiere a testnet-ului.
+
+## Înregistrarea nodului
+
+Pașii de mai jos sunt fluxul de configurare al nodului însuși. Sunt aceiași pentru ambele ediții: `lightnode-ux` are aceleași comenzi ca `lightnode-sx` și folosește același director home (`~/.qorechain-lightnode`). Vezi [Ediția SX](/light-node/sx-edition#first-run-onboard) pentru detalii despre fiecare comandă.
+
+```bash
+# 1. Keys are stored encrypted. Keep this set for every command below and for start.
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
+
+# 2. Self-test, RPC endpoint (mainnet: https://rpc.qore.host), node key
+lightnode-sx onboard
+
+# 3. The operator account: the one the licence is for. --recover reads its
+#    recovery words from standard input.
+lightnode-sx keys add-operator --recover
+
+# 4. Post-quantum key, missing stake (only if you name a validator), registration
+lightnode-sx register --delegate-to qorvaloper1...
+
+# 5. Run the node; it sends heartbeats on its own
+lightnode-sx start
+lightnode-sx status
 ```
 
-O licență cumpărată în Dashboard este acordată on-chain într-un pas separat, așa că `register` poate spune în continuare „no licence” o vreme după achiziție; `lightnode-sx status` afișează aceeași linie `Licence:` și trece pe `active` când acordarea ajunge. Un nod care este deja înregistrat este raportat ca atare, în loc să fie înregistrat de două ori.
+Parola protejează ambele chei din keyring-ul nodului: cheia post-cuantică a nodului și cheia contului de operator.
 
-Cu o licență activă, comanda citește cheia nodului din keyring și afișează, completate cu valorile tale:
+### Ce face `register`
 
-1. **O singură dată**, comanda care atașează cheia nodului la contul operatorului ca cheie post-cuantică a acestuia (`qorechaind tx pqc register-key-v2 dilithium5 <pubkey> hybrid --from operator …`), după exportarea cheii în directorul de chei al `qorechaind` cu `lightnode-sx keys export`. Sari peste ea dacă contul are deja o cheie post-cuantică (`GET /qorechain/pqc/v1/account/<address>` răspunde `found: true`). Dacă limita de gas afișată se epuizează, repet-o cu `--gas 600000 --fees 60000uqor`.
-2. Înregistrarea propriu-zisă: `qorechaind tx lightnode register <type> <version> --from operator --generate-only > register.json`, apoi `qorechaind tx pqc cosign register.json --from operator --pqc-key <key>`. Chain-ul cere co-semnătura post-cuantică pe fiecare tranzacție, așa că înregistrarea este o pereche generare-apoi-co-semnare.
+`register` citește `operator_address` și cheile din keyring, apoi:
 
-Comanda acceptă două flag-uri opționale:
+1. **Verifică licența.** Întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. Fără una, se oprește și spune de unde se poate obține. (În 3.1.9, acel mesaj încă numește vechiul tab "Buy License" din Dashboard; licențele se cumpără la **Tools → Light Node**.) O licență expirată sau suspendată este raportată ca atare. Un nod deja înregistrat este raportat ca atare și nu se trimite nimic.
+2. **Atașează cheia post-cuantică**, cu excepția cazului în care contul are deja una. Un cont fără cheie post-cuantică poate trimite doar acest mesaj, semnat clasic (fără extensia hibridă); nodul îl trimite astfel și include o dovadă de posesie a cheii acolo unde chain-ul o suportă.
+3. **Delegă stake-ul lipsă**, doar dacă numești un validator cu `--delegate-to qorvaloper1...`. Fără `--delegate-to`, dacă contul este sub minim, se oprește și spune cât lipsește.
+4. **Înregistrează nodul** cu taxa de 1 QOR.
 
-- `--type` — tipul nodului, `sx` sau `ux` (implicit `sx`).
+Fiecare pas este semnat de nodul însuși și confirmat într-un bloc înainte ca următorul să fie trimis. Fiecare tranzacție de după înregistrarea cheii poartă semnătura hibridă ML-DSA-87 + secp256k1 cerută de chain.
+
+Comanda acceptă aceste flag-uri:
+
+- `--delegate-to` — validatorul `qorvaloper1…` către care se delegă stake-ul lipsă.
+- `--type` — tipul nodului, `sx` sau `ux` (implicit ediția binarului).
 - `--version` — versiunea nodului de înregistrat (implicit versiunea proprie a binarului).
+- `--print` — afișează comenzile `qorechaind` echivalente în loc să semneze (vezi mai jos).
 
-Trimite pe rețeaua la care te alături (testnet `qorechain-diana` sau mainnet `qorechain-vladi`). Înregistrarea necesită o licență `lightnode_operator` activă, acordată pe adresa operatorului; în caz contrar, chain-ul o refuză.
+Contul trebuie să existe deja pe chain (trebuie să fi primit fonduri) înainte ca `register` să poată semna pentru el.
 
-:::note
-`lightnode-sx register` **afișează** comenzile pentru ca tu să le examinezi și să le rulezi — nu difuzează nimic singură. Astfel rămâi tu în control asupra momentului și modului în care este înregistrat nodul.
-:::
+### Conturi care au deja o cheie post-cuantică {#accounts-with-a-pqc-key}
+
+Un cont configurat într-un portofel are adesea deja o cheie post-cuantică, derivată din aceleași cuvinte de recuperare. Conform regulilor chain-ului v3.2.3, chain-ul acceptă doar cheia înregistrată pe cont și refuză cheile de tip `classical_only` sau o cheie goală.
+
+Începând cu 3.1.9, `keys add-operator --recover` gestionează această situație: când contul are deja o cheie post-cuantică, reconstruiește acea cheie din cuvinte, folosind aceeași derivare ca wallet-adapter și Dashboard-ul (aceeași ca `qorechaind tx pqc recover-key`), iar nodul semnează cu ea. Când contul nu are cheie, nodul derivă una din cuvinte, astfel încât cuvintele restaurează și cheia nodului. Dacă contul are o cheie post-cuantică pe care cuvintele nu o pot reproduce (un portofel care își generează și își păstrează propria cheie), comanda refuză și recomandă un cont de operator dedicat.
+
+### Alternativă: cheia operatorului într-un keyring `qorechaind`
+
+Dacă păstrezi cheia contului de operator într-un keyring `qorechaind` și nu vrei să o stochezi în nod, sari peste pasul 3 și rulează:
+
+```bash
+lightnode-sx register --print
+```
+
+Rulează aceleași verificări de licență și de înregistrare și afișează, completate cu valorile tale, comenzile `qorechaind` pentru fiecare pas: exportarea cheii nodului în directorul de chei al `qorechaind` (`keys export <name> --out ~/.qorechaind/pqc/<name>.dilithium`), `tx pqc register-key-v2 … hybrid`, un `tx staking delegate` când stake-ul nu ajunge și `tx lightnode register` ca pereche generare-apoi-`tx pqc cosign`. Pe această cale, daemon-ul folosește `qorechaind` și pentru heartbeat-uri; vezi [setările `[heartbeat]`](/light-node/sx-edition#configure).
 
 ## Dovezi de liveness prin heartbeat
 
@@ -68,21 +121,27 @@ Doar înregistrarea nu este suficientă pentru a rămâne eligibil. Un nod light
 
 ### Pipeline-ul de heartbeat co-semnat PQC {#pqc-cosigned-heartbeat-pipeline}
 
-QoreChain este **PQC obligatoriu în mod implicit**, așa că tranzacția de liveness prin heartbeat este produsă printr-un pipeline post-cuantic co-semnat, nu printr-o semnătură exclusiv clasică. Daemon-ul construiește heartbeat-ul nesemnat, apoi îl co-semnează cu o semnătură **hibridă Dilithium-5 (ML-DSA-87)** înainte de difuzare — aceeași postură post-cuantică pe care chain-ul o impune pentru fiecare tranzacție. Nodul trimite un heartbeat per fereastră `interval_blocks` (corespunzând parametrului `heartbeat_interval` al chain-ului), reglându-și ritmul după înălțimea blocului pentru a evita respingerile pentru trimitere prematură.
+QoreChain este **PQC obligatoriu în mod implicit**, așa că fiecare heartbeat poartă o **semnătură hibridă**: ML-DSA-87 (Dilithium-5) cu cheia post-cuantică a contului și secp256k1 cu cheia contului de operator. Nodul construiește și semnează singur tranzacția pe Linux, macOS și Windows; `qorechaind` nu este necesar. Citește din rețea ce versiune de sign-bytes să folosească.
 
-Heartbeat-urile on-chain sunt activate implicit. Daemon-ul are nevoie de: `operator_address` în configurație; un binar `qorechaind` **v3.2.0 sau mai nou** (în `PATH` sau la `[heartbeat] qorechaind_path`; imaginea Docker SX construită din tag-ul `v3.1.4` include unul — semnatarii mai vechi sunt refuzați de chain); și home-ul `qorechaind` care conține cheia operatorului și cheia exportată a nodului (`qorechaind_home`, implicit `~/.qorechaind`). Două parole de keyring își au locul în mediu: `QORE_LIGHTNODE_KEYRING_PASSPHRASE` pentru keyring-ul nodului și `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` pentru keyring-ul `qorechaind` (a doua este transmisă către `qorechaind` pe stdin, niciodată plasată pe linia de comandă). `qorechaind` este publicat **doar pentru Linux amd64** (vezi intrarea `binary` din `https://download.qore.host/mainnet/latest.json`), așa că pe gazde macOS, Windows sau ARM nodul rulează și se sincronizează, dar nu poate semna nativ heartbeat-uri; un nod înregistrat ar trebui să ruleze ediția SX pe Linux amd64 sau imaginea Docker pe o gazdă amd64. Își reglează ritmul după `last_heartbeat` al chain-ului pentru acel nod, așa că o repornire nici nu trimite un duplicat, nici nu așteaptă un interval întreg. Până când nodul este înregistrat, nu trimite heartbeat; în schimb loghează motivul, o dată la fiecare schimbare de stare: lipsa licenței (cu indicația unde se poate cumpăra una) sau licență activă, dar nod neînregistrat (rulează `lightnode-sx register`). `lightnode-sx status` afișează liniile `Signer:`, `Licence:` și `Registration:`, astfel încât motivul să fie vizibil fără a citi log-urile. Când lipsește semnatarul, nodul rulează și se sincronizează în continuare; doar că nu poate rămâne activ pe chain, iar `status` spune acest lucru.
+Heartbeat-urile on-chain sunt activate implicit. Daemon-ul trimite unul când au trecut 1.000 de blocuri (`[heartbeat] interval_blocks`, corespunzând `heartbeat_interval` al chain-ului) de la `last_heartbeat` înregistrat de chain pentru nod, verificând la fiecare 60 de secunde, așa că o repornire nici nu trimite un duplicat, nici nu așteaptă un interval întreg. Fiecare heartbeat este raportat doar după ce a intrat într-un bloc.
 
-## Înregistrare și licențiere prin Dashboard
+Daemon-ul își alege semnatarul la pornire:
 
-Poți verifica starea licențierii și poți păstra detaliile nodului tău în tab-ul **Tools → Light Node** din QoreChain Dashboard. Rularea unui nod și înscrierea în programul lui de recompense sunt două lucruri diferite, iar Dashboard-ul le păstrează separate:
+- **Nativ** — keyring-ul conține cheia operatorului (din `keys add-operator`) și aceasta corespunde cu `operator_address`. Acesta este cazul normal.
+- **Alternativa `qorechaind`** — altfel, dacă un binar `qorechaind` se află în `PATH` sau la `[heartbeat] qorechaind_path`. Folosește cheia operatorului din keyring-ul `qorechaind` (`[heartbeat] key_name`, home `qorechaind_home`, implicit `~/.qorechaind`) și cheia exportată a nodului din `pqc/<key_name>.dilithium`. Parola keyring-ului `qorechaind` se pune în `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE`; este transmisă către `qorechaind` pe stdin, niciodată plasată pe linia de comandă.
 
-1. **Obține software-ul (nu este nevoie de licență).** Tab-ul oferă linkuri către binarele nodului light pentru rețeaua selectată (aceleași fișiere ca `https://download.qore.host/<net>/lightnode/latest.json`, cu sumele lor de control sha256) și afișează un pachet de punere în funcțiune pentru un nod QoreChain complet. Un nod light are nevoie doar de binarul `lightnode-sx` sau `lightnode-ux` și de un endpoint RPC; urmează [Ediția SX](/light-node/sx-edition).
-2. **Verifică starea ta în programul de recompense.** Înscrierea în cota de recompensă pentru nodurile light este un pas separat, condiționat on-chain: o licență `lightnode_operator` activă, acordată on-chain, cel puțin 1.000 QOR delegați (totalul tău pe toți validatorii, citit în timp real din staking) și o taxă de înregistrare de 1 QOR. **Înscrierea nu este deschisă încă** (vezi [Starea programului de recompense](/light-node/overview#reward-program-status)), iar cumpărarea unei licențe nu o deschide mai devreme. Uptime-ul se numără de la blocul în care nodul tău se înregistrează on-chain, nu mai devreme.
-3. **Licența.** O licență cumpărată prin **Buy License** este înregistrată mai întâi pe partea noastră; acordarea care o face recunoscută on-chain este un pas separat, iar chain-ul refuză o înregistrare până când aceasta ajunge. Achiziția necesită adresa `qor1…` căreia i se va acorda licența și afișează **Paid — awaiting on-chain grant** până când chain-ul o confirmă. `lightnode-sx status` afișează linia `Licence:` de pe chain.
-4. **Înregistrarea în evidență.** Dacă contul tău deține o licență înregistrată ca activă, tab-ul afișează și un scurt formular (adresa operatorului, moniker, URL-ul endpoint-ului public și o confirmare a angajamentului de stake), urmat de un rezumat al celor trimise. Acesta înregistrează cererea ta în Dashboard; **nu** trimite tranzacția de înregistrare on-chain.
-5. **Înregistrează-te on-chain.** Odată ce licența este acordată și 1.000 QOR sunt delegați de la adresa ta de operator, înregistrează-te cu `lightnode-sx register` și cu comenzile `qorechaind` pe care le afișează (vezi mai sus).
+Până când nodul este înregistrat, nu trimite heartbeat-uri; în schimb loghează motivul, o dată la fiecare schimbare de stare: lipsa licenței sau licență activă, dar nod neînregistrat (rulează `register`). `lightnode-sx status` afișează liniile `Signer:`, `Licence:` și `Registration:`, astfel încât motivul să fie vizibil fără a citi log-urile. Când nu există semnatar, nodul rulează și se sincronizează în continuare, dar nu poate rămâne activ pe chain, iar `status` spune acest lucru.
 
-Dashboard-ul este util pentru descărcarea nodului, verificarea cerințelor chain-ului și a sănătății nodului tău și cumpărarea unei licențe. Înregistrarea on-chain propriu-zisă este întotdeauna tranzacția `lightnode-sx register`.
+## Tab-ul Light Node din Dashboard
+
+Tab-ul **Tools → Light Node** din QoreChain Dashboard reunește pașii:
+
+1. **Descărcări.** Oferă linkuri către binarele nodului light pentru rețeaua selectată (aceleași fișiere ca `https://download.qore.host/<net>/lightnode/latest.json`, cu sumele lor de control sha256).
+2. **Pașii de configurare.** Afișează cei cinci pași de mai sus, potriviți cu versiunea din manifestul de lansare, și dacă înregistrarea este deschisă, citit din câmpul `registration` al manifestului.
+3. **Cumpărarea licenței** (doar pe mainnet). Preia adresa licenței înainte de plată și afișează **Paid, awaiting on-chain grant** până când chain-ul confirmă acordarea. Te avertizează dacă adresa introdusă este propriul tău portofel custodial din Dashboard și menționează, cu titlu informativ, dacă adresa are deja o cheie post-cuantică.
+4. **Stare.** Un panou de stare afișează starea nodului așa cum este citită de pe chain.
+
+Înregistrarea propriu-zisă este întotdeauna tranzacția trimisă de `lightnode-sx register` (sau `lightnode-ux register`). Dashboard-ul nu înregistrează noduri; vechiul său formular de înregistrare, care doar stoca o înregistrare în evidență, a fost eliminat.
 
 ## Unde să mergi mai departe
 

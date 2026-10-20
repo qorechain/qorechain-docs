@@ -7,58 +7,111 @@ sidebar_position: 4
 
 # Registrazione e licenze
 
-Per ottenere la [quota di ricompensa del 3% per i light node](/light-node/rewards-and-monitoring), un light node deve essere **registrato on-chain** e deve continuare a dimostrare di essere attivo. Questa pagina spiega come funziona la registrazione, come il nodo dimostra la propria attività (liveness) e come ottenere una licenza per un nodo tramite la Dashboard e registrarlo on-chain.
+Per ottenere la [quota di ricompensa del 3% per i light node](/light-node/rewards-and-monitoring), un light node deve essere **registrato on-chain** e deve continuare a dimostrare di essere attivo. Questa pagina spiega cosa richiede la chain, come ottenere una licenza, come il nodo si registra da solo e come dimostra la propria attività (liveness).
 
-:::note La registrazione al programma di ricompense non è ancora aperta
-Su nessuna delle due reti è stata concessa alcuna licenza `lightnode_operator` e nessun nodo è registrato, quindi oggi la chain rifiuta ogni registrazione. Eseguire e sincronizzare un nodo non richiede alcuna licenza. Vedi [Stato del programma di ricompense](/light-node/overview#reward-program-status) per sapere come verificare lo stato attuale.
+:::note La registrazione è aperta
+La registrazione è aperta su mainnet (`qorechain-vladi`) e su testnet (`qorechain-diana`). Eseguire e sincronizzare un nodo non richiede alcuna licenza. Vedi [Stato del programma di ricompense](/light-node/overview#reward-program-status) per sapere come verificare lo stato attuale.
 :::
 
 ## Registrazione on-chain
 
-La registrazione inserisce il tuo light node sulla chain, in modo che il protocollo sappia che esiste, quale tipo è (`sx` o `ux`) e quale chiave operatore lo controlla. Una volta registrato e attivo, il nodo diventa idoneo per la quota di ricompensa dei light node.
+La registrazione inserisce il tuo light node sulla chain, in modo che il protocollo sappia che esiste, quale tipo è (`sx` o `ux`) e quale account operatore lo controlla. Una volta registrato e attivo, il nodo diventa idoneo per la quota di ricompensa dei light node.
 
 ### Requisiti {#requirements}
 
 La chain verifica tutti i seguenti punti quando viene eseguita la tua transazione di registrazione:
 
 1. Una licenza `lightnode_operator` attiva sull'indirizzo operatore.
-2. Almeno **1.000 QOR vincolati** (bonded) ai validatori da quello stesso indirizzo (il tuo totale su tutti i validatori). Delega **prima** di registrarti: dalla pagina di staking della Dashboard, oppure con `qorechaind tx staking delegate` (e la co-firma post-quantistica, come ogni transazione).
-3. Un saldo sull'account operatore per pagare la **commissione di registrazione di 1 QOR** e le commissioni di transazione. Il daemon paga una commissione per ogni heartbeat da questo account (predefinita `50000uqor` per heartbeat, `[heartbeat] fees`).
+2. Almeno **1.000 QOR delegati** da quello stesso indirizzo a validatori **bonded** (il tuo totale su qualsiasi validatore; le deleghe a validatori in jail o non bonded non contano).
+3. Un saldo sull'account operatore per pagare la **commissione di registrazione di 1 QOR** e le commissioni di transazione. Il nodo paga inoltre da questo account una commissione per ogni heartbeat: con la firma nativa la commissione è di 0,25 uqor per unità di gas, quindi 75.000 uqor (0,075 QOR) con il valore predefinito di `[heartbeat] gas` pari a 300.000.
 4. Meno di 10.000 light node registrati a livello di rete.
 
-### Generare i comandi di registrazione
+Dopo la registrazione il nodo deve inviare un heartbeat ogni **1.000 blocchi** (con una tolleranza di 100 blocchi) e mantenere almeno l'**80% di uptime** per essere pagato. Leggi i valori in tempo reale con `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
 
-La registrazione si effettua dal tuo **indirizzo operatore**: un account `qor1…` finanziato, creato con `qorechaind` (o con qualsiasi wallet Cosmos), che riceve anche le ricompense. La chiave Dilithium-5 del nodo non ha un indirizzo; diventa la chiave post-quantistica dell'account. Inserisci l'indirizzo in `config.toml` come `operator_address` e assicurati che `key_name` e `chain_id` siano impostati come descritto in [Primo avvio](/light-node/sx-edition#first-run-onboard) (`onboard` non li imposta correttamente al posto tuo). Poi esegui:
+### L'account operatore {#operator-account}
+
+La registrazione si effettua dal tuo **indirizzo operatore**: un normale account `qor1…` che detiene la licenza e lo stake, paga le commissioni e riceve le ricompense. Il nodo deve poter firmare per esso, quindi deve essere un account **di cui possiedi le parole di recupero**: parole che hai annotato tu stesso, un account di Keplr oppure una chiave `qorechaind` (percorso di derivazione `m/44'/118'/0'/0/0`). La scelta migliore è un account dedicato, usato solo per il nodo.
+
+Un wallet custodial sulla Dashboard (uno il cui seed è conservato dalla Dashboard per te) non può far funzionare un nodo, a meno che tu non ne esporti prima il seed.
+
+La chiave Dilithium-5 del nodo non ha un indirizzo proprio: su QoreChain una chiave post-quantistica viene associata a un account, non ne crea uno. Il nodo associa la propria chiave all'account operatore come chiave post-quantistica di quell'account, a meno che l'account non ne abbia già una (vedi [Account che hanno già una chiave post-quantistica](#accounts-with-a-pqc-key)).
+
+## Ottenere una licenza
+
+### Mainnet: acquisto sulla Dashboard
+
+Le licenze si acquistano sulla Dashboard di QoreChain in **Tools → Light Node**. Una licenza costa **50 $**, pagati in USDT su ERC-20, BEP-20 o TRC-20; il pagamento viene verificato sulla sua chain. Devi inserire l'indirizzo `qor1…` a cui è destinata la licenza **prima** di pagare; usa l'indirizzo operatore descritto sopra.
+
+La concessione è un passaggio on-chain separato, firmato manualmente e inviato a lotti. Finché la chain non la conferma, la scheda mostra **Paid, awaiting on-chain grant** e il nodo continua a segnalare che l'indirizzo non ha una licenza. `lightnode-sx status` mostra una riga `Licence:` che passa a `active` quando la concessione arriva. Puoi anche verificarla direttamente:
 
 ```bash
-lightnode-sx register
+curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/lightnode_operator
 ```
 
-Prima di stampare qualsiasi cosa, il comando chiede alla chain se `operator_address` possiede una licenza `lightnode_operator` attiva. Lo fa perché la chain rifiuta una registrazione senza licenza, e non ha senso consegnarti comandi che verranno rifiutati. Senza licenza si ferma con:
+### Testnet: su richiesta
 
-```text
-operator address qor1... has no lightnode_operator licence. Buy one at
-https://dashboard.qorechain.io -> Tools -> Buy License, and enter this operator
-address there; the on-chain grant follows and register works once it lands.
+Sulla testnet non si vende nulla. Le licenze testnet vengono concesse su richiesta dall'autorità delle licenze della testnet.
+
+## Registrare il nodo
+
+I passaggi seguenti sono il flusso di configurazione del nodo stesso. Sono identici per entrambe le edizioni: `lightnode-ux` ha gli stessi comandi di `lightnode-sx` e usa la stessa directory home (`~/.qorechain-lightnode`). Vedi [Edizione SX](/light-node/sx-edition#first-run-onboard) per i dettagli su ciascun comando.
+
+```bash
+# 1. Keys are stored encrypted. Keep this set for every command below and for start.
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
+
+# 2. Self-test, RPC endpoint (mainnet: https://rpc.qore.host), node key
+lightnode-sx onboard
+
+# 3. The operator account: the one the licence is for. --recover reads its
+#    recovery words from standard input.
+lightnode-sx keys add-operator --recover
+
+# 4. Post-quantum key, missing stake (only if you name a validator), registration
+lightnode-sx register --delegate-to qorvaloper1...
+
+# 5. Run the node; it sends heartbeats on its own
+lightnode-sx start
+lightnode-sx status
 ```
 
-Una licenza acquistata sulla Dashboard viene concessa on-chain in un passaggio separato, quindi `register` può dire ancora «no licence» per un po' dopo l'acquisto; `lightnode-sx status` mostra la stessa riga `Licence:` e passa a `active` quando la concessione arriva. Un nodo già registrato viene segnalato come tale invece di essere registrato due volte.
+La passphrase protegge entrambe le chiavi nel keyring del nodo: la chiave post-quantistica del nodo e la chiave dell'account operatore.
 
-Con una licenza attiva, il comando legge la chiave del nodo dal keyring e stampa, già compilati con i tuoi valori:
+### Cosa fa `register`
 
-1. **Una sola volta**, il comando che associa la chiave del nodo all'account operatore come sua chiave post-quantistica (`qorechaind tx pqc register-key-v2 dilithium5 <pubkey> hybrid --from operator …`), dopo aver esportato la chiave nella directory delle chiavi di `qorechaind` con `lightnode-sx keys export`. Saltalo se l'account ha già una chiave post-quantistica (`GET /qorechain/pqc/v1/account/<address>` restituisce `found: true`). Se il limite di gas stampato si esaurisce, ripeti il comando con `--gas 600000 --fees 60000uqor`.
-2. La registrazione vera e propria: `qorechaind tx lightnode register <type> <version> --from operator --generate-only > register.json`, poi `qorechaind tx pqc cosign register.json --from operator --pqc-key <key>`. La chain richiede la co-firma post-quantistica su ogni transazione, quindi la registrazione è una coppia genera-poi-co-firma.
+`register` legge `operator_address` e le chiavi dal keyring, quindi:
 
-Il comando accetta due flag opzionali:
+1. **Verifica la licenza.** Chiede alla chain se `operator_address` possiede una licenza `lightnode_operator` attiva. Se non ce l'ha, si ferma e indica dove ottenerne una. (Nella 3.1.9 quel messaggio nomina ancora la vecchia scheda "Buy License" della Dashboard; le licenze si acquistano in **Tools → Light Node**.) Una licenza scaduta o sospesa viene segnalata come tale. Un nodo già registrato viene segnalato come tale e non viene inviato nulla.
+2. **Associa la chiave post-quantistica**, a meno che l'account non ne abbia già una. Un account senza chiave post-quantistica può inviare solo questo messaggio, firmato in modo classico (senza l'estensione ibrida); il nodo lo invia in questo modo e include una prova di possesso della chiave dove la chain la supporta.
+3. **Delega lo stake mancante**, solo se indichi un validatore con `--delegate-to qorvaloper1...`. Senza `--delegate-to`, se l'account è sotto il minimo, si ferma e indica quanto manca.
+4. **Registra il nodo** con la commissione di 1 QOR.
 
-- `--type` — il tipo di nodo, `sx` o `ux` (predefinito `sx`).
+Ogni passaggio è firmato dal nodo stesso e confermato in un blocco prima che venga inviato il successivo. Ogni transazione successiva alla registrazione della chiave porta la firma ibrida ML-DSA-87 + secp256k1 richiesta dalla chain.
+
+Il comando accetta questi flag:
+
+- `--delegate-to` — il validatore `qorvaloper1…` a cui delegare lo stake mancante.
+- `--type` — il tipo di nodo, `sx` o `ux` (predefinito: l'edizione del binario).
 - `--version` — la versione del nodo da registrare (predefinita: la versione del binario stesso).
+- `--print` — stampa i comandi `qorechaind` equivalenti invece di firmare (vedi sotto).
 
-Invia sulla rete a cui ti stai unendo (testnet `qorechain-diana` o mainnet `qorechain-vladi`). La registrazione richiede una licenza `lightnode_operator` attiva concessa sull'indirizzo operatore; altrimenti la chain la rifiuta.
+L'account deve già esistere on-chain (deve aver ricevuto fondi) prima che `register` possa firmare per esso.
 
-:::note
-`lightnode-sx register` **stampa** i comandi perché tu li esamini ed esegua — non trasmette nulla da solo. Questo ti lascia il pieno controllo su quando e come il nodo viene registrato.
-:::
+### Account che hanno già una chiave post-quantistica {#accounts-with-a-pqc-key}
+
+Un account configurato in un wallet ha spesso già una chiave post-quantistica, derivata dalle stesse parole di recupero. Con le regole della chain v3.2.3, la chain accetta solo la chiave registrata sull'account e rifiuta chiavi di tipo `classical_only` o una chiave vuota.
+
+Dalla 3.1.9, `keys add-operator --recover` gestisce questo caso: quando l'account ha già una chiave post-quantistica, ricostruisce quella chiave dalle parole, usando la stessa derivazione del wallet-adapter e della Dashboard (la stessa di `qorechaind tx pqc recover-key`), e il nodo firma con essa. Quando l'account non ha una chiave, il nodo ne deriva una dalle parole, così le parole ripristinano anche la chiave del nodo. Se l'account ha una chiave post-quantistica che le parole non possono riprodurre (un wallet che genera e conserva una propria chiave), il comando rifiuta e consiglia un account operatore dedicato.
+
+### Alternativa: chiave operatore in un keyring `qorechaind`
+
+Se conservi la chiave dell'account operatore in un keyring `qorechaind` e non vuoi memorizzarla nel nodo, salta il passaggio 3 ed esegui:
+
+```bash
+lightnode-sx register --print
+```
+
+Esegue gli stessi controlli di licenza e di registrazione e stampa, già compilati con i tuoi valori, i comandi `qorechaind` per ogni passaggio: l'esportazione della chiave del nodo nella directory delle chiavi di `qorechaind` (`keys export <name> --out ~/.qorechaind/pqc/<name>.dilithium`), `tx pqc register-key-v2 … hybrid`, un `tx staking delegate` quando lo stake è insufficiente, e `tx lightnode register` come coppia genera-poi-`tx pqc cosign`. Su questo percorso il daemon usa `qorechaind` anche per gli heartbeat; vedi [impostazioni `[heartbeat]`](/light-node/sx-edition#configure).
 
 ## Prove di liveness tramite heartbeat
 
@@ -68,21 +121,27 @@ In pratica, un nodo registrato e mantenuto in funzione (e sincronizzato) conserv
 
 ### Pipeline di heartbeat co-firmata PQC {#pqc-cosigned-heartbeat-pipeline}
 
-QoreChain richiede la PQC **per impostazione predefinita**, quindi la transazione di liveness tramite heartbeat viene prodotta attraverso una pipeline co-firmata post-quantistica anziché con una firma puramente classica. Il daemon costruisce l'heartbeat non firmato, quindi lo co-firma con una firma **ibrida Dilithium-5 (ML-DSA-87)** prima della trasmissione — la stessa impostazione post-quantistica che la chain impone per ogni transazione. Il nodo invia un heartbeat per ogni finestra di `interval_blocks` (corrispondente al parametro `heartbeat_interval` della chain), regolando il proprio ritmo in base all'altezza dei blocchi per evitare rifiuti dovuti a invii anticipati.
+QoreChain richiede la PQC **per impostazione predefinita**, quindi ogni heartbeat porta una **firma ibrida**: ML-DSA-87 (Dilithium-5) con la chiave post-quantistica dell'account, e secp256k1 con la chiave dell'account operatore. Il nodo costruisce e firma la transazione da solo su Linux, macOS e Windows; `qorechaind` non è necessario. Legge dalla rete quale versione dei sign-bytes usare.
 
-Gli heartbeat on-chain sono attivi per impostazione predefinita. Il daemon richiede: `operator_address` nella configurazione; un binario `qorechaind` **v3.2.0 o successivo** (nel `PATH` o in `[heartbeat] qorechaind_path`; l'immagine Docker SX costruita dal tag `v3.1.4` ne include uno — i firmatari più vecchi vengono rifiutati dalla chain); e la home di `qorechaind` che contiene la chiave operatore e la chiave del nodo esportata (`qorechaind_home`, predefinita `~/.qorechaind`). Due passphrase del keyring vanno impostate nell'ambiente: `QORE_LIGHTNODE_KEYRING_PASSPHRASE` per il keyring del nodo e `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` per il keyring di `qorechaind` (la seconda viene passata a `qorechaind` tramite stdin, mai inserita in una riga di comando). `qorechaind` è pubblicato **solo per Linux amd64** (vedi la voce `binary` di `https://download.qore.host/mainnet/latest.json`), quindi su host macOS, Windows o ARM il nodo funziona e si sincronizza ma non può firmare nativamente gli heartbeat; un nodo registrato dovrebbe eseguire l'edizione SX su Linux amd64, oppure l'immagine Docker su un host amd64. Regola il proprio ritmo in base al `last_heartbeat` della chain per quel nodo, quindi un riavvio non invia un duplicato né attende un intero intervallo. Finché il nodo non è registrato, non invia heartbeat; registra invece nei log il motivo, una volta a ogni cambio di stato: nessuna licenza (con indicazione di dove acquistarne una) oppure licenza attiva ma non registrato (esegui `lightnode-sx register`). `lightnode-sx status` mostra le righe `Signer:`, `Licence:` e `Registration:` così che il motivo sia visibile senza leggere i log. Quando il firmatario manca, il nodo continua comunque a funzionare e a sincronizzarsi; semplicemente non può restare attivo on-chain, e `status` lo segnala.
+Gli heartbeat on-chain sono attivi per impostazione predefinita. Il daemon ne invia uno quando sono trascorsi 1.000 blocchi (`[heartbeat] interval_blocks`, corrispondente al `heartbeat_interval` della chain) dal `last_heartbeat` registrato dalla chain per il nodo, controllando ogni 60 secondi, quindi un riavvio non invia un duplicato né attende un intero intervallo. Ogni heartbeat viene segnalato solo quando è incluso in un blocco.
 
-## Registrazione e licenze tramite la Dashboard
+Il daemon sceglie il proprio firmatario all'avvio:
 
-Puoi verificare lo stato della tua licenza e conservare i dettagli del tuo nodo nella scheda **Tools → Light Node** della Dashboard di QoreChain. Eseguire un nodo e aderire al suo programma di ricompense sono due cose diverse, e la Dashboard le tiene separate:
+- **Nativo** — il keyring contiene la chiave operatore (da `keys add-operator`) e corrisponde a `operator_address`. Questo è il caso normale.
+- **Alternativa `qorechaind`** — altrimenti, se un binario `qorechaind` si trova nel `PATH` o in `[heartbeat] qorechaind_path`. Usa la chiave operatore nel keyring di `qorechaind` (`[heartbeat] key_name`, home `qorechaind_home`, predefinita `~/.qorechaind`) e la chiave del nodo esportata in `pqc/<key_name>.dilithium`. La passphrase del keyring di `qorechaind` va in `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE`; viene passata a `qorechaind` tramite stdin, mai inserita in una riga di comando.
 
-1. **Ottieni il software (nessuna licenza necessaria).** La scheda collega i binari del light node per la rete selezionata (gli stessi file di `https://download.qore.host/<net>/lightnode/latest.json`, con i relativi checksum sha256) e mostra un kit di avvio per un nodo QoreChain completo. Un light node richiede solo il binario `lightnode-sx` o `lightnode-ux` e un endpoint RPC; segui [Edizione SX](/light-node/sx-edition).
-2. **Controlla lo stato del tuo programma di ricompense.** Aderire alla quota di ricompensa dei light node è un passaggio separato, vincolato on-chain: una licenza `lightnode_operator` attiva concessa on-chain, almeno 1.000 QOR vincolati (il tuo totale su tutti i validatori, letto in tempo reale dallo staking) e una commissione di registrazione di 1 QOR. **L'iscrizione non è ancora aperta** (vedi [Stato del programma di ricompense](/light-node/overview#reward-program-status)), e acquistare una licenza non la apre in anticipo. L'uptime viene conteggiato dal blocco in cui il tuo nodo si registra on-chain, non prima.
-3. **Licenza.** Una licenza acquistata tramite **Buy License** viene registrata prima sul nostro sistema; la concessione che la rende riconosciuta on-chain è un passaggio separato, e la chain rifiuta la registrazione finché non arriva. L'acquisto richiede l'indirizzo `qor1…` a cui verrà concessa la licenza e mostra **Paid — awaiting on-chain grant** finché la chain non lo conferma. `lightnode-sx status` mostra la riga `Licence:` on-chain.
-4. **Registrazione della richiesta.** Se il tuo account possiede una licenza registrata come attiva, la scheda mostra anche un breve modulo (indirizzo operatore, moniker, URL dell'endpoint pubblico e conferma dell'impegno di stake) seguito da un riepilogo di ciò che hai inviato. Questo registra la tua richiesta presso la Dashboard; **non** invia la transazione di registrazione on-chain.
-5. **Registrati on-chain.** Una volta concessa la licenza e vincolati 1.000 QOR dal tuo indirizzo operatore, registrati con `lightnode-sx register` e i comandi `qorechaind` che stampa (vedi sopra).
+Finché il nodo non è registrato, non invia heartbeat; registra invece nei log il motivo, una volta a ogni cambio di stato: nessuna licenza, oppure licenza attiva ma non registrato (esegui `register`). `lightnode-sx status` mostra le righe `Signer:`, `Licence:` e `Registration:` così che il motivo sia visibile senza leggere i log. Quando non c'è alcun firmatario, il nodo continua comunque a funzionare e a sincronizzarsi, ma non può restare attivo on-chain, e `status` lo segnala.
 
-La Dashboard è utile per scaricare il nodo, verificare i requisiti della chain e lo stato di salute del tuo nodo, e acquistare una licenza. La registrazione on-chain vera e propria è sempre la transazione `lightnode-sx register`.
+## La scheda Light Node della Dashboard
+
+La scheda **Tools → Light Node** della Dashboard di QoreChain riunisce i passaggi:
+
+1. **Download.** Collega i binari del light node per la rete selezionata (gli stessi file di `https://download.qore.host/<net>/lightnode/latest.json`, con i relativi checksum sha256).
+2. **Passaggi di configurazione.** Mostra i cinque passaggi descritti sopra, allineati alla versione del manifest di rilascio, e se la registrazione è aperta, letto dal campo `registration` del manifest.
+3. **Acquisto della licenza** (solo mainnet). Richiede l'indirizzo della licenza prima del pagamento e mostra **Paid, awaiting on-chain grant** finché la chain non conferma la concessione. Ti avvisa se l'indirizzo inserito è il tuo wallet custodial della Dashboard e segnala, a titolo informativo, se l'indirizzo ha già una chiave post-quantistica.
+4. **Stato.** Un pannello di stato mostra lo stato del nodo così come letto dalla chain.
+
+La registrazione vera e propria è sempre la transazione inviata da `lightnode-sx register` (o `lightnode-ux register`). La Dashboard non registra nodi; il suo vecchio modulo di registrazione, che memorizzava solo un record, è stato rimosso.
 
 ## Dove andare ora
 

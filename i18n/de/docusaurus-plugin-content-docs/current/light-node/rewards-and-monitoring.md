@@ -9,17 +9,17 @@ sidebar_position: 5
 
 Einem registrierten Light Node wird ein Anteil der Light-Node-Zuteilung gutgeschrieben, und er **muss gesund bleiben**, um dafür weiterhin berechtigt zu sein. Diese Seite behandelt den 3%-Belohnungsanteil für Light Nodes, wie Belohnungen gutgeschrieben und eingefordert werden, was der Node mit Delegationen tut und was nicht, und wie man den Node überwacht.
 
-:::note Die Registrierung für das Belohnungsprogramm ist noch nicht geöffnet
-Auf keinem der beiden Netzwerke ist bisher ein Light Node registriert, da die Registrierung eine `lightnode_operator`-Lizenz erfordert und noch keine vergeben wurde. Die hier beschriebene Belohnungsabrechnung ist on-chain live, aber heute wird an Nodes nichts ausgezahlt, und nichts auf dieser Seite ist ein Ertragsversprechen. Siehe [Status des Belohnungsprogramms](/light-node/overview#reward-program-status).
+:::note Nichts hier ist ein Ertragsversprechen
+Die Registrierung ist auf beiden Netzwerken offen; den aktuellen Stand findest du unter [Status des Belohnungsprogramms](/light-node/overview#reward-program-status). Was einem Node gutgeschrieben wird, hängt von der Light-Node-Zuteilung, der Anzahl berechtigter Nodes, deren Stake und Uptime sowie der unten beschriebenen Obergrenze pro Node ab.
 :::
 
 ## Der 3%-Anteil an den Blockbelohnungen
 
 Die Gebührenverteilung von QoreChain reserviert einen festen **3%-Anteil für Light Nodes**, die Netzwerkdaten bereitstellen. Dies ist eines der fünf Ziele in der Belohnungsaufteilung des Protokolls — Validatoren (37%), verbrannt (30%), Treasury (20%), Staker (10%) und **Light Nodes (3%)** — on-chain erzwungen. Siehe [Tokenomics](/architecture/tokenomics) für die vollständige Aufschlüsselung.
 
-Um an diesem Anteil teilzunehmen, benötigt ein Node Folgendes, on-chain geprüft statt nur selbst angegeben: eine aktive `lightnode_operator`-Lizenz (wird bei der Registrierung geprüft), mindestens **1.000 QOR gebunden** — gezählt als deine Gesamtsumme über alle Validatoren, an die du delegierst, nicht pro Validator, bei der Registrierung erforderlich und bei jeder Gutschrift von Belohnungen erneut aus dem Staking gelesen — und eine Registrierungsgebühr von **1 QOR**, die einmalig bei der Registrierung gezahlt wird. Die Teilnahme ist netzwerkweit auf **10.000 Light Nodes** begrenzt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie die Registrierung funktioniert, und [Status des Belohnungsprogramms](/light-node/overview#reward-program-status), ob die Anmeldung geöffnet ist.
+Um an diesem Anteil teilzunehmen, benötigt ein Node Folgendes, on-chain geprüft statt nur selbst angegeben: eine aktive `lightnode_operator`-Lizenz (wird bei der Registrierung geprüft), mindestens **1.000 QOR, die an gebondete Validatoren delegiert sind** — gezählt als deine Gesamtsumme über alle Validatoren, an die du delegierst, nicht pro Validator; Delegationen an gejailte oder ungebondete Validatoren zählen nicht; bei der Registrierung erforderlich und bei jeder Gutschrift von Belohnungen erneut aus dem Staking gelesen — und eine Registrierungsgebühr von **1 QOR**, die einmalig bei der Registrierung gezahlt wird. Die Teilnahme ist netzwerkweit auf **10.000 Light Nodes** begrenzt. Siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing) dazu, wie die Registrierung funktioniert, und [Status des Belohnungsprogramms](/light-node/overview#reward-program-status) für den aktuellen Stand.
 
-Die 3% sind das, was in das Light-Node-Modul fließt, kein Anspruch pro Node: Jedem berechtigten Node wird sein stakegewichteter Anteil des Angesammelten gutgeschrieben, pro Node begrenzt durch `max_reward_per_block_per_node` (derzeit `1713` uqor pro Block, skaliert mit der Uptime), und alles Nichtverdiente fließt in eine Reserve, die nur eine Governance-Abstimmung freigeben kann. Siehe [den 3%-Belohnungsanteil für Light Nodes](/light-node/overview#the-3-light-node-reward-share).
+Die 3% sind das, was in das Light-Node-Modul fließt, kein Anspruch pro Node: Jedem berechtigten Node wird sein stakegewichteter Anteil des Angesammelten gutgeschrieben, pro Node begrenzt, und alles Nichtverdiente fließt in eine Reserve, die nur eine Governance-Abstimmung freigeben kann. Seit Chain v3.2.3 liegt die Grenze pro Node bei **2.000 QOR pro 30 Tage** (`max_reward_per_month_per_node`), anteilig über die zwischen den Abrechnungen verstrichene Blockzeit berechnet und mit der Uptime skaliert (die Regel `lightnode-monthly-cap`); sie ersetzt die frühere Grenze pro Block (`max_reward_per_block_per_node`, `1713` uqor pro Block). Siehe [den 3%-Belohnungsanteil für Light Nodes](/light-node/overview#the-3-light-node-reward-share).
 
 Sobald registriert und delegiert, ist aktiv zu bleiben, was über die weitere Berechtigung entscheidet. Ein Node benötigt mindestens **80% Uptime** und muss weiterhin Heartbeat-Liveness-Nachweise in einem Intervall von **1.000 Blöcken** einreichen (etwa 54 Minuten auf dem Mainnet bei der gemessenen durchschnittlichen Blockzeit von rund 3,2 s; etwa 17 Minuten auf dem Testnet, das etwa einen Block pro Sekunde erzeugt).
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Gutschrift
 
-Alle 100 Blöcke schreibt die Chain jedem berechtigten Node (aktiv, mit mindestens dem minimal gebundenen Stake und mindestens der Mindest-Uptime) seinen Anteil des Angesammelten gut, pro Node begrenzt wie unter [den 3%-Belohnungsanteil für Light Nodes](/light-node/overview#the-3-light-node-reward-share) beschrieben. Der Betrag wird zu `accumulated_rewards` des Nodes addiert. Lies ihn aus mit:
+Alle 100 Blöcke schreibt die Chain jedem berechtigten Node (aktiv, mit mindestens dem minimal delegierten Stake und mindestens der Mindest-Uptime) seinen Anteil des Angesammelten gut, pro Node begrenzt (höchstens 2.000 QOR pro 30 Tage, anteilig über die Zeit seit der vorherigen Abrechnung), wie unter [den 3%-Belohnungsanteil für Light Nodes](/light-node/overview#the-3-light-node-reward-share) beschrieben. Der Betrag wird zu `accumulated_rewards` des Nodes addiert. Lies ihn aus mit:
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Einfordern
 
-Gutgeschriebene Belohnungen bleiben im Node-Datensatz, bis du sie einforderst. Fordere sie mit demselben Generate-then-Cosign-Paar ein, das auch für die Registrierung verwendet wird:
+Gutgeschriebene Belohnungen bleiben im Node-Datensatz, bis du sie einforderst. Der Node kann sie für dich einfordern: Setze `auto_claim = true` unter `[delegation]`, und der Daemon fordert angesammelte Light-Node-Belohnungen auf das Betreiberkonto ein, sobald sie `min_reward_claim` überschreiten (Standard `1000000` uqor, 1 QOR), und prüft dies alle `compound_interval` (Standard `1h`). Er signiert die Anforderung auf dieselbe Weise wie Heartbeats (nativ oder über den `qorechaind`-Fallback). Auto-Claim ist **standardmäßig aus**, und er fordert nur ein: Der Node delegiert nie neu und bewegt keinen Stake.
+
+Um von Hand mit `qorechaind` einzufordern (der Operator-Schlüssel in einem `qorechaind`-Keyring und der Post-Quantum-Schlüssel exportiert mit `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), verwende ein Generate-then-Cosign-Paar:
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-Alternativ setzt du `auto_claim = true` unter `[delegation]`: Der Daemon fordert dann angesammelte Light-Node-Belohnungen über den Signierer auf das Betreiberkonto ein, sobald sie `min_reward_claim` überschreiten (Standard `1000000` uqor, 1 QOR), und prüft dies alle `compound_interval` (Standard `1h`). Auto-Claim ist **standardmäßig aus**, und er fordert nur ein: Der Node delegiert nie neu und bewegt keinen Stake. `qorechaind tx lightnode deregister` entfernt die Registrierung und zahlt alles noch Gutgeschriebene aus; die Registrierungsgebühr wird nicht erstattet.
+`qorechaind tx lightnode deregister` entfernt die Registrierung und zahlt alles noch Gutgeschriebene aus; die Registrierungsgebühr wird nicht erstattet.
 
 ### Delegationsverfolgung und Reputationswarnungen
 
-Der Node spiegelt die Delegationen des Betreiberkontos alle fünf Minuten von der Chain. Ist `rebalance_enabled` aktiv (der Standard), prüft er außerdem den Reputationswert jedes Validators, an den du delegierst, und protokolliert eine Warnung für jeden Wert unter `min_reputation` (Standard `0.5`). Er bewegt keinen Stake: Ändere Delegationen aus deiner eigenen Wallet. (Die Optionen `validators` und `split_weights` in `[delegation]` werden akzeptiert, aber derzeit nicht ausgewertet.)
+Der Node spiegelt die Delegationen des Betreiberkontos beim Start und danach alle fünf Minuten von der Chain. Ist `rebalance_enabled` aktiv (der Standard), prüft er außerdem den Reputationswert jedes Validators, an den du delegierst, und protokolliert eine Warnung für jeden Wert unter `min_reputation` (Standard `0.5`). Er bewegt keinen Stake: Ändere Delegationen aus deiner eigenen Wallet. (Die Optionen `validators` und `split_weights` in `[delegation]` werden akzeptiert, aber derzeit nicht ausgewertet.)
 
 ### Belohnungen und Delegationen einsehen
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution Bekannte Einschränkung in v3.1.3 / v3.1.4
-`lightnode-sx delegation`, `lightnode-sx rewards` und die Ansicht **Delegation** der UX schlagen die vom Node-Schlüssel abgeleitete Adresse nach. Ein Post-Quantum-Node-Schlüssel hat keine Adresse, daher zeigen diese derzeit nichts an (`rewards` meldet `chain REST endpoint not available`). Verwende stattdessen die Chain-Abfragen:
+Seit 3.1.6 lesen diese Befehle sowie die UX-Ansicht **Delegation** das Konto in `operator_address`. `rewards` zeigt die **Staking**-Belohnungen aus deinen Delegationen, nicht die Light-Node-Belohnungen. Um alles direkt von der Chain zu lesen:
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## Überwachung
 
@@ -110,7 +112,7 @@ Die UX-Edition zeigt dieselben Daten live über ihre Ansichten **Overview**, **N
 
 ### Sync- und Heartbeat-Zustand
 
-Der Befehl `status` meldet die Chain-ID, die neueste Blockhöhe, ob die Chain aufholt (catching up), die synchronisierte Höhe und den Sync-Zustand des Light Clients sowie — sobald `operator_address` gesetzt ist — den Zustand von `Signer`, `Licence` und `Registration` (einschließlich des Status des Nodes und der Höhe des letzten Heartbeats). Ein Node, der registriert, synchronisiert ist und läuft, reicht weiterhin **Heartbeat-Liveness-Nachweise** ein und bleibt so für Belohnungen berechtigt. Diese Heartbeats werden über eine **PQC-mitsignierte Transaktions-Pipeline** (hybrid Dilithium-5 / ML-DSA-87) erzeugt, konsistent mit dem standardmäßig PQC-erforderlichen Verhalten der Chain — siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) dazu, wie die Pipeline funktioniert und wie man On-Chain-Heartbeats aktiviert. Wenn `status` anzeigt, dass der Node hängt oder nicht synchronisiert, könnte er seine Aktivität nicht nachweisen — untersuche dies, bevor die Berechtigung beeinträchtigt wird.
+Der Befehl `status` meldet die Chain-ID, die neueste Blockhöhe, ob die Chain aufholt (catching up), die synchronisierte Höhe und den Sync-Zustand des Light Clients, den `Signer` (nativ, `qorechaind` oder nicht verfügbar mit Angabe des Grundes) sowie — sobald `operator_address` gesetzt ist — den Zustand von `Licence` und `Registration` (einschließlich des Status des Nodes und der Höhe des letzten Heartbeats). Ein Node, der registriert, synchronisiert ist und läuft, reicht weiterhin **Heartbeat-Liveness-Nachweise** ein und bleibt so für Belohnungen berechtigt. Diese Heartbeats werden über eine **PQC-mitsignierte Transaktions-Pipeline** (hybrid Dilithium-5 / ML-DSA-87) erzeugt, konsistent mit dem standardmäßig PQC-erforderlichen Verhalten der Chain — siehe [Registrierung und Lizenzierung](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) dazu, wie die Pipeline funktioniert und wie der Node seinen Signierer wählt. Wenn `status` anzeigt, dass der Node hängt oder nicht synchronisiert, könnte er seine Aktivität nicht nachweisen — untersuche dies, bevor die Berechtigung beeinträchtigt wird.
 
 ### Selbsttest-Zustand
 
@@ -132,7 +134,7 @@ Basis-URLs: `https://api.qore.host` (Mainnet) und `https://api-testnet.qore.host
 | `GET /qorechain/lightnode/v1/stats` | Anzahl registrierter und aktiver Nodes, insgesamt gutgeschriebene Belohnungen. |
 | `GET /qorechain/lightnode/v1/node/{address}` | Datensatz eines Nodes (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | Gutgeschriebene, noch nicht eingeforderte Belohnungen. |
-| `GET /qorechain/lightnode/v1/reward_pool` | Wie sich das Modul-Guthaben auf Reserve, gutgeschriebene Belohnungen und die nächste Auszahlung verteilt; enthält die Obergrenze pro Node. |
+| `GET /qorechain/lightnode/v1/reward_pool` | Wie sich das Modul-Guthaben auf Reserve, gutgeschriebene Belohnungen und die nächste Auszahlung verteilt; enthält die Obergrenzen pro Node (`max_reward_per_month_per_node` und das frühere `max_reward_per_block_per_node`). |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Ob eine Adresse eine aktive Lizenz besitzt. |
 
 ## Wie es weitergeht

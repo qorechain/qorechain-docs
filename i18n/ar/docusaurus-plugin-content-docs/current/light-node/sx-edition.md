@@ -7,11 +7,11 @@ sidebar_position: 2
 
 # إصدار SX — عفريت الخادم
 
-إصدار **SX (تجربة الخادم - Server eXperience)** هو العقدة الخفيفة بلا واجهة: عفريت إضافةً إلى سطر أوامر إدارة كامل، مبني للخوادم والأتمتة. الثنائي هو `lightnode-sx`. هذا هو خط **v3.1.3** للعقدة الخفيفة للثنائيات الجاهزة (وسم المصدر `v3.1.4` لبناءات Docker)، وهو إصدارها الخاص، منفصل عن إصدار السلسلة.
+إصدار **SX (تجربة الخادم - Server eXperience)** هو العقدة الخفيفة بلا واجهة: عفريت إضافةً إلى سطر أوامر إدارة كامل، مبني للخوادم والأتمتة. الثنائي هو `lightnode-sx`. تصف هذه الصفحة العقدة الخفيفة **3.1.9** (وسم المصدر `v3.1.9`)، وهي على خط إصداراتها الخاص، المنفصل عن إصدار السلسلة.
 
 ## التثبيت {#install}
 
-الثنائيات الجاهزة هي الطريق الأسهل — عميل العقدة الخفيفة يعمل بشكل أصلي على **ست منصات بلا أي تبعيات أصلية**: لينكس (amd64، arm64)، ماك macOS (Intel، Apple Silicon)، وويندوز (amd64، arm64) — أي 12 ثنائيًا إجمالًا بين إصداري SX وUX. حجم كل ثنائي نحو 11–12 ميغابايت — حمِّله وشغِّله، بلا مكتبات منفصلة يجب تثبيتها.
+الثنائيات الجاهزة هي الطريق الأسهل — عميل العقدة الخفيفة يعمل بشكل أصلي على **ست منصات بلا أي تبعيات أصلية**: لينكس (amd64، arm64)، ماك macOS (Intel، Apple Silicon)، وويندوز (amd64، arm64) — أي 12 ثنائيًا إجمالًا بين إصداري SX وUX. حجم كل ثنائي نحو 13 ميغابايت — حمِّله وشغِّله، بلا مكتبات منفصلة يجب تثبيتها. توقّع العقدة معاملاتها بنفسها على كل واحدة من هذه المنصات، لذا لا حاجة إلى أي شيء آخر (ولا سيما `qorechaind`) لتسجيل عقدة وتشغيلها.
 
 **تحقَّق من المجموع الاختباري قبل تشغيله.** يحمل بيان الإصدار على `https://download.qore.host/<net>/lightnode/latest.json` قيمة `sha256` لكل ثنائي، وحقل `checksums.url` يشير إلى ملف `SHA256SUMS` يغطي الإصدار بأكمله، وقيمة `checksums.sha256` لذلك الملف نفسه. تحقَّق مما حمَّلته — هذه ليست ملاحظة هامشية، بل هي الفارق بين تشغيل الثنائي الذي بُني فعلًا وتشغيل أيًّا كان ما هبط على ذلك الرابط:
 
@@ -24,7 +24,7 @@ grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-على ويندوز، قارن ناتج `certutil -hashfile lightnode-sx-<platform>.exe SHA256` بقيمة البيان. تخدم الشبكتان حاليًا بناء v3.1.3 نفسه. المصدر عام على `github.com/qorechain/qorechain-lightnode` (Apache 2.0).
+على ويندوز، قارن ناتج `certutil -hashfile lightnode-sx-<platform>.exe SHA256` بقيمة البيان. تخدم الشبكتان بناء 3.1.9 نفسه، ويشترطه البيانان كلاهما (`minCompatible: 3.1.9`). المصدر عام على `github.com/qorechain/qorechain-lightnode` (Apache 2.0). يُرفَق بناء Android بإصدار GitHub بوصفه معاينة؛ وهو لا يسجّل ولا يكسب مكافآت.
 
 يمكنك أيضًا بناء الثنائي من المصدر أو تشغيله عبر Docker.
 
@@ -36,34 +36,34 @@ chmod +x $F
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-ينتج هذا `build/lightnode-sx`. شغِّله مباشرة، أو انسخه إلى `PATH` الخاص بك. قبل التسجيل، تحقَّق من سلامة حزمة التوقيع ما بعد الكمّي عبر [`selftest`](#verify-the-pqc-stack-selftest).
+ابنِ من وسم الإصدار (`git checkout v3.1.9`). ينتج هذا `build/lightnode-sx`. شغِّله مباشرة، أو انسخه إلى `PATH` الخاص بك. قبل التسجيل، تحقَّق من سلامة حزمة التوقيع ما بعد الكمّي عبر [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-لا توجد صورة جاهزة في سجل الصور؛ تبنيها من وسم المصدر. استخدم الوسم **`v3.1.4` أو أحدث**: الصورة المبنية من `v3.1.3` تضم موقِّعًا `qorechaind` أقدم ترفضه السلسلة الآن، فتفشل نبضاتها (heartbeats) ومطالباتها بالمكافآت. لتحديث تثبيت قائم، أعد البناء من الوسم الجديد (`git fetch --tags && git checkout v3.1.4 && docker compose build --no-cache lightnode-sx`)؛ السحب (pull) لا يفعل شيئًا.
+لا توجد صورة جاهزة في سجل الصور؛ تبنيها من وسم المصدر. استخدم الوسم **`v3.1.9`**. لتحديث تثبيت قائم، أعد البناء من الوسم الجديد (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`)؛ فالأمر `docker compose up` أو `restart` وحده يعيد استخدام الصورة القديمة. تنتقل المفاتيح والإعدادات ووحدة تخزين البيانات كما هي.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.4
+git checkout v3.1.9
 
-export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring
-export QORE_LIGHTNODE_QORECHAIND_PASSPHRASE='...'   # qorechaind keyring (operator key)
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
 
-# Once: write config.toml and the node key into the data volume.
+# Once: the same setup as outside Docker, written into the data volume.
 docker compose run --rm lightnode-sx onboard
-# Then set chain_id, key_name, operator_address and [heartbeat] key_name in
-# /root/.qorechain-lightnode/config.toml inside the volume (see "First run").
+docker compose run --rm lightnode-sx keys add-operator --recover
+docker compose run --rm lightnode-sx register --delegate-to qorvaloper1...
 
 docker compose up -d lightnode-sx
+docker compose run --rm lightnode-sx status
 ```
 
-أبقِ `QORECHAIN_RPC_ADDR` مُصدَّرًا مع كل أمر `docker compose`: فهو يتجاوز `rpc_addr` من ملف الإعدادات، بينما القيمة الافتراضية في compose تشير إلى `host.docker.internal:26657`. تحفظ حاوية SX بياناتها في وحدة تخزين مسمّاة مركَّبة عند `/root/.qorechain-lightnode`.
+أبقِ `QORECHAIN_RPC_ADDR` مُصدَّرًا مع كل أمر `docker compose`: فهو يتجاوز `rpc_addr` من ملف الإعدادات، بينما القيمة الافتراضية في compose تشير إلى `host.docker.internal:26657`. تحفظ حاوية SX بياناتها، بما فيها حلقة المفاتيح، في وحدة تخزين مسمّاة مركَّبة عند `/root/.qorechain-lightnode`.
 
-تحمل الصورة أيضًا `qorechaind` منشورًا (v3.2.0، linux/amd64، يُنزَّل من قناة الإصدارات وقت البناء ويُفحص مقابل بصمة مثبَّتة). يشغِّله العفريت لتوقيع النبضات ومطالبات المكافآت، فتستطيع عقدة الحاوية البقاء نشطة على السلسلة دون تثبيت ثانٍ. إذا رقّت شبكة لاحقًا إلى إصدار يرفض الموقِّع المضمَّن، فوجِّه `[heartbeat] qorechaind_path` إلى `qorechaind` الأحدث المدرج في بيان تلك الشبكة (`https://download.qore.host/<net>/latest.json`). على مضيف arm64 (مثل Apple Silicon) لا يحتوي البناء على موقِّع؛ ابنِ باستخدام `DOCKER_DEFAULT_PLATFORM=linux/amd64` إن احتجت إليه. يحتاج الموقِّع إلى محفظة المشغِّل: ركِّب الدليل الرئيسي لـ `qorechaind` (حلقة المفاتيح التي تحمل مفتاح المشغِّل، إضافةً إلى مفتاح العقدة المُصدَّر تحت `pqc/<key_name>.dilithium`) عند `/root/.qorechaind`؛ يركِّب `docker-compose.yml` المجلد `~/.qorechaind` افتراضيًا، أو عيِّن `QORECHAIND_HOME`. عبارتا المرور هما عبارة حلقة مفاتيح العقدة وعبارة حلقة مفاتيح `qorechaind`؛ تُمرَّر الثانية إلى `qorechaind` عبر الدخل القياسي ولا تظهر أبدًا في سطر أوامر. راجع [محفظة المشغِّل](#operator-wallet).
+توقّع العقدة توقيعًا أصليًا داخل الحاوية، لذا لا حاجة إلى أي شيء آخر. ولا تزال صورة SX تحمل أيضًا `qorechaind` منشورًا (v3.2.0، لـ linux/amd64 فقط، يُفحص مقابل بصمة مثبَّتة) من أجل [البديل الاحتياطي `qorechaind`](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline): يركِّب `docker-compose.yml` المجلد `~/.qorechaind` (أو `QORECHAIND_HOME`) عند `/root/.qorechaind` ويمرّر `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` لذلك المسار. أما العقدة التي يوجد مفتاح مشغِّلها في حلقة مفاتيحها الخاصة فلا تستخدم أيًّا منهما.
 
-## التهيئة
+## التهيئة {#configure}
 
 تقرأ العقدة الخفيفة ملف إعدادات TOML. افتراضيًا تبحث عن `config.toml` في الدليل الرئيسي (`~/.qorechain-lightnode/config.toml`). عادةً لا تكتب هذا الملف يدويًا — يُنشئه لك [معالج `onboard`](#first-run-onboard) — لكن من المفيد فهم الخيارات.
 
@@ -76,25 +76,26 @@ docker compose up -d lightnode-sx
 
 | الخيار | ما يتحكم به |
 | --- | --- |
-| `chain_id` | معرّف الشبكة (مثل `qorechain-diana` على شبكة الاختبار، `qorechain-vladi` على الشبكة الرئيسية). اضبطه بنفسك بعد `onboard` الذي يترك `qorechain-diana`؛ يستخدمه الموقِّع. |
+| `chain_id` | معرّف الشبكة (`qorechain-vladi` على الشبكة الرئيسية، `qorechain-diana` على شبكة الاختبار). يقرؤه `onboard` من نقطة نهاية RPC؛ وإذا تعذّر الوصول إلى نقطة النهاية أثناء `onboard`، تبقى القيمة الافتراضية `qorechain-diana` ويجب أن تضبطه بنفسك. تُوقَّع المعاملات لهذه السلسلة. |
 | `rpc_addr` | نقطة نهاية RPC للسلسلة التي يتصل بها العفريت. اتركها فارغة للتشغيل في **الوضع المحلي فقط**. |
 | `primary_addr` / `witness_addrs` | نقطة نهاية RPC الأساسية، ونقاط نهاية الشهود التي تُثبَت الترويسة المُبلَّغ عنها في مقابلها — راجع [لماذا تشغِّل عقدة خفيفة](/light-node/overview#why-run-a-light-node). وجود شاهد واحد مميّز وقابل للوصول على الأقل هو ما ينقل قيمة `assurance` (المسجَّلة على مستوى debug) من `trusted-single-source` إلى `corroborated-across-sources`. |
 | `trust_period` / `max_clock_drift` | مقبولان للتوافق لكنهما غير مستخدمين حاليًا. تأتي ثقة الترويسة من تثبيت الأساسي/الشهود الموصوف أعلاه. |
 | `data_dir` | حيث تخزِّن العقدة قاعدة بياناتها وترويساتها. |
-| `keyring_backend` / `key_name` | خلفية حلقة المفاتيح (`file` أو `os`، أو `test` لشبكات التطوير المحلية فقط) واسم مفتاح العقدة ما بعد الكمّي. تتطلب خلفية `file` وجود `QORE_LIGHTNODE_KEYRING_PASSPHRASE` في البيئة. |
-| `operator_address` | الحساب الذي تنتمي إليه هذه العقدة (`qor1...`)؛ يُتحقَّق منه عند التحميل. مطلوب لـ `register` و`status` والنبضات. راجع [محفظة المشغِّل](#operator-wallet). |
+| `keyring_backend` / `key_name` | خلفية حلقة المفاتيح (`file` أو `os`، أو `test` لشبكات التطوير المحلية فقط) واسم المفتاح ما بعد الكمّي الذي توقّع به العقدة. يضبط `onboard` قيمة `key_name` على المفتاح الذي ينشئه (`validator`)؛ ويغيّرها `keys add-operator` إلى `operator-pqc` عندما يشتق المفتاح أو يستعيده من كلمات الحساب. تتطلب خلفية `file` وجود `QORE_LIGHTNODE_KEYRING_PASSPHRASE` في البيئة. |
+| `operator_address` | الحساب الذي تنتمي إليه هذه العقدة (`qor1...`)؛ يُتحقَّق منه عند التحميل. يملؤه `keys add-operator`. مطلوب لـ `register` و`status` والنبضات. راجع [محفظة المشغِّل](#operator-wallet). |
 | `api_addr` | نقطة نهاية REST. تُشتق من `rpc_addr` عند تركها فارغة (يصبح المنفذ 26657 هو 1317؛ وتصبح مضيفات `rpc.` هي `api.`)، لذا لا حاجة إليها إلا لنقاط نهاية لا تتبع أيًّا من الاصطلاحين. |
-| `[heartbeat]` | مفعَّل افتراضيًا. `qorechaind_path` (الفارغ يعني `qorechaind` على `PATH`؛ وتشحنه صورة Docker)، `qorechaind_home` (الفارغ يعني `~/.qorechaind`)، `key_name` (مفتاح حساب `qorechaind`؛ افتراضيًا `key_name` على المستوى الأعلى)، `interval_blocks` (طابِق `heartbeat_interval` للسلسلة، أي 1000)، `check_interval` (الافتراضي `60s`)، `fees` (الافتراضي `50000uqor`) و`gas` (الافتراضي `300000`). |
-| `[delegation]` | `auto_claim` (متوقف افتراضيًا: يطالب بمكافآت العقدة الخفيفة المتراكمة إلى محفظة المشغِّل عبر الموقِّع؛ ولا تعيد العقدة التفويض أبدًا من الخادم)، وفترة الفحص، والحد الأدنى للمكافأة للمطالبة، و`rebalance_enabled` و`min_reputation` (تنبيهات السمعة فقط — لا تنقل العقدة الحصة أبدًا). يُقبل `validators` و`split_weights` لكن لا يُعمل بهما حاليًا. |
+| `[heartbeat]` | مفعَّل افتراضيًا (`enabled`). `interval_blocks` (طابِق `heartbeat_interval` للسلسلة، أي 1000)، و`check_interval` (الافتراضي `60s`) و`gas` (الافتراضي `300000`؛ ومع التوقيع الأصلي يبلغ الرسم 0.25 uqor لكل وحدة غاز، أي 75,000 uqor). تُستخدم فقط مع البديل الاحتياطي `qorechaind`: `fees` (الافتراضي `50000uqor`)، و`qorechaind_path` (الفارغ يعني `qorechaind` على `PATH`)، و`qorechaind_home` (الفارغ يعني `~/.qorechaind`)، و`keyring_backend`، و`key_name` (مفتاح `qorechaind` الذي يحمل حساب المشغِّل؛ افتراضيًا `key_name` على المستوى الأعلى). |
+| `[delegation]` | `auto_claim` (متوقف افتراضيًا: يطالب بمكافآت العقدة الخفيفة المتراكمة إلى حساب المشغِّل عبر الموقِّع؛ ولا تعيد العقدة التفويض أبدًا من الخادم)، وفترة الفحص، والحد الأدنى للمكافأة للمطالبة، و`rebalance_enabled` و`min_reputation` (تنبيهات السمعة فقط — لا تنقل العقدة الحصة أبدًا). يُقبل `validators` و`split_weights` لكن لا يُعمل بهما حاليًا. |
 | `[telemetry]` | ما إذا كان القياس عن بُعد مفعَّلًا وفترات تحديث المُدققين والشبكة والجسر واقتصاد الرمز. |
-| `log_level` / `log_format` | مستوى تفصيل التسجيل (`debug`, `info`, `warn`, `error`) والصيغة (`text` أو `json`). |
+| `[dashboard]` | واجهة API للوحة التحكم المحلية. يقدّمها إصدار UX دائمًا؛ ولا يقدّمها إصدار SX إلا مع `enabled = true`. `bind_addr` (الافتراضي `127.0.0.1:8420`) و`token` (عند ضبطه، يتطلب كل مسار `/api` و`/ws` الترويسة `Authorization: Bearer <token>`). راجع [إصدار UX](/light-node/ux-edition). |
+| `log_level` / `log_format` | مستوى تفصيل التسجيل (`debug`, `info`, `warn`, `error`) والصيغة (`text` أو `json`). مفاتيح على المستوى الأعلى: ضعها قبل أول `[table]`. |
 
 ### متغيرات البيئة {#environment-variables}
 
 | المتغير | الاستخدام |
 | --- | --- |
-| `QORE_LIGHTNODE_KEYRING_PASSPHRASE` | عبارة مرور حلقة مفاتيح العقدة (`keyring_backend = "file"`). مطلوبة؛ ترفض العقدة عبارة فارغة. |
-| `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` | عبارة مرور حلقة مفاتيح `qorechaind` التي تحمل مفتاح المشغِّل؛ تُمرَّر إلى `qorechaind` عبر الدخل القياسي، ولا تظهر أبدًا في سطر أوامر. |
+| `QORE_LIGHTNODE_KEYRING_PASSPHRASE` | عبارة مرور حلقة مفاتيح العقدة (`keyring_backend = "file"`)، التي تحمل المفتاح ما بعد الكمّي للعقدة ومفتاح حساب المشغِّل. مطلوبة لكل أمر يفتح حلقة المفاتيح ولـ `start`؛ ترفض العقدة عبارة فارغة. |
+| `QORE_LIGHTNODE_QORECHAIND_PASSPHRASE` | للبديل الاحتياطي `qorechaind` فقط: عبارة مرور حلقة مفاتيح `qorechaind` التي تحمل مفتاح المشغِّل؛ تُمرَّر إلى `qorechaind` عبر الدخل القياسي، ولا تظهر أبدًا في سطر أوامر. |
 | `QORECHAIN_RPC_ADDR` | يتجاوز `rpc_addr` (و`primary_addr` عندما كان مساويًا لـ `rpc_addr`). يضبطه `docker-compose.yml`. |
 
 :::note يجري التحقق من نقاط نهاية الشهود عند بدء التشغيل
@@ -105,18 +106,19 @@ docker compose up -d lightnode-sx
 
 ## التشغيل الأول: `onboard` {#first-run-onboard}
 
-عند أول إطلاق، سيتوقف `start` ويوجِّهك إلى معالج التهيئة الأولية إن لم يوجد ملف إعدادات بعد. شغِّل المعالج:
+عند أول إطلاق، سيتوقف `start` ويوجِّهك إلى معالج التهيئة الأولية إن لم يوجد ملف إعدادات بعد. اضبط عبارة مرور حلقة المفاتيح أولًا — يرفض `onboard` البدء بدونها، فلا يولّد أبدًا مفتاحًا لا يستطيع تخزينه — ثم شغِّل المعالج:
 
 ```bash
-build/lightnode-sx onboard
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
+lightnode-sx onboard
 ```
 
 يرشدك `onboard` خلال الإعداد في أربع خطوات:
 
 1. **الاختبار الذاتي لـ PQC** — يشغِّل دورة Dilithium-5 الكاملة (نفس فحوص [`selftest`](#verify-the-pqc-stack-selftest)). إذا فشلت حزمة PQC، يرفض المعالج المتابعة.
-2. **نقطة نهاية RPC للسلسلة** — الصق رابط RPC الخاص بـ QoreChain، أو اتركه فارغًا للتشغيل في **الوضع المحلي فقط** بينما لا حاجة لاتصال بالسلسلة. إذا قدّمت رابطًا، يختبر المعالج إمكانية الوصول حيًّا.
+2. **نقطة نهاية RPC للسلسلة** — الصق رابط RPC الخاص بـ QoreChain (الشبكة الرئيسية `https://rpc.qore.host`، شبكة الاختبار `https://rpc-testnet.qore.host`)، أو اتركه فارغًا للتشغيل في **الوضع المحلي فقط**. إذا قدّمت رابطًا، يختبره المعالج حيًّا ويقرأ منه معرّف السلسلة.
 3. **مفتاح العقدة** — يسمّيه المعالج «المفتاح الخاص للمُدقق»، لكنه مفتاح Dilithium-5 الخاص بالعقدة الخفيفة نفسها، وليس مفتاح مُدقق. الصق مفتاحًا خاصًا بصيغة Dilithium-5 مرمَّزًا بالست عشري، أو اكتب `g` (أو `generate`) لسك زوج مفاتيح جديد على هذه العقدة.
-4. **الحفظ** — يكتب `config.toml` ويخزِّن المفتاح في حلقة المفاتيح تحت الاسم `validator` (أو `validator-<hex>` إن كان ذلك الاسم مأخوذًا). تحتاج حلقة مفاتيح الملف إلى ضبط `QORE_LIGHTNODE_KEYRING_PASSPHRASE` في البيئة لهذه الخطوة ولكل أمر لاحق يفتحها.
+4. **الحفظ** — يكتب `config.toml` (مع نقطة النهاية ومعرّف السلسلة) ويخزِّن المفتاح في حلقة المفاتيح تحت الاسم `validator` (أو `validator-<hex>` إن كان ذلك الاسم مأخوذًا)، ويضبط `key_name` عليه.
 
 :::note الوضع المحلي فقط
 إذا تركت نقطة النهاية فارغة، يبدأ العفريت في الوضع المحلي فقط: تُمارَس حزمة PQC بالكامل، لكن العقدة لا تتزامن مع أي سلسلة. أعد تشغيل `onboard` بمجرد أن تكون نقطة نهاية سلسلتك جاهزة لتوجيه العقدة إليها.
@@ -124,19 +126,8 @@ build/lightnode-sx onboard
 
 يكتب `onboard` دائمًا فوق الإعدادات النشطة. استخدم `--config` للكتابة إلى مسار غير افتراضي، أو `--non-interactive` للفشل السريع بدلًا من المطالبة (مفيد في CI).
 
-:::caution أكمل الإعدادات بعد التهيئة الأولية
-لا يعرف `onboard` أي شبكة تنضم إليها ولا أي حساب هو حسابك. قبل تشغيل `register` أو الاعتماد على النبضات، عدِّل `config.toml`:
-
-```toml
-chain_id         = "qorechain-vladi"   # mainnet; testnet is "qorechain-diana". onboard leaves "qorechain-diana".
-key_name         = "validator"         # the key onboard created; see `lightnode-sx keys list`
-operator_address = "qor1..."           # your funded operator account
-
-[heartbeat]
-key_name = "operator"                  # the qorechaind key that holds operator_address
-```
-
-`key_name` على المستوى الأعلى هو مفتاح العقدة ما بعد الكمّي (ملفه `pqc/<key_name>.dilithium` في الدليل الرئيسي لـ `qorechaind`)؛ أما `[heartbeat] key_name` فهو مفتاح حساب `qorechaind` الذي يدفع الرسوم. إذا تركت `key_name = "operator"` بينما المفتاح اسمه `validator`، يتوقف `register` مع الرسالة `node key "operator" not found`.
+:::caution الخطوة التالية: حساب المشغِّل
+لا يعرف `onboard` أي حساب هو حسابك. قبل تشغيل `register`، أضف حساب المشغِّل باستخدام [`keys add-operator`](#operator-wallet). يملأ هذا الأمر `operator_address` نيابةً عنك. وإذا تعذّر الوصول إلى نقطة النهاية أثناء `onboard`، فتحقق أيضًا من أن `chain_id` في `config.toml` هو `qorechain-vladi` (الشبكة الرئيسية) أو `qorechain-diana` (شبكة الاختبار).
 :::
 
 ## التشغيل: `start`
@@ -169,43 +160,52 @@ lightnode-sx selftest
 
 ## محفظة المشغِّل {#operator-wallet}
 
-مفتاح Dilithium-5 الخاص بالعقدة **ليس** محفظة. على QoreChain يُرفَق مفتاح ما بعد كمّي بحساب؛ ولا ينشئ حسابًا. لهذا لا يعرض `keys list` أي عنوان له. **عنوان المشغِّل** الخاص بك هو حساب `qor1…` عادي ممول، يُنشأ باستخدام `qorechaind`، تُسجَّل العقدة منه وتستلم عليه مكافآت العقدة الخفيفة. يصبح مفتاح العقدة هو المفتاح ما بعد الكمّي لذلك الحساب.
+مفتاح Dilithium-5 الخاص بالعقدة **ليس** محفظة. على QoreChain يُرفَق مفتاح ما بعد كمّي بحساب؛ ولا ينشئ حسابًا. لهذا لا يعرض `keys list` أي عنوان له. **عنوان المشغِّل** الخاص بك هو حساب `qor1…` عادي يحمل الترخيص والتفويض، ويدفع الرسوم، ويتلقى مكافآت العقدة الخفيفة. يجب أن يكون حسابًا تحتفظ أنت بكلمات الاسترداد الخاصة به (كلماتك الخاصة، أو Keplr، أو `qorechaind`)؛ والأفضل حساب مخصَّص. لا يمكن لمحفظة احتجازية على لوحة التحكم أن تشغّل عقدة ما لم تُصدِّر بذرتها. راجع [حساب المشغِّل](/light-node/registration-and-licensing#operator-account).
 
-أعدّه مرة واحدة:
+خزِّن مفتاح حساب المشغِّل في حلقة مفاتيح العقدة:
 
 ```bash
-# 1. Create and fund the operator account (any Cosmos wallet works; qorechaind shown)
-qorechaind keys add operator
-qorechaind keys show operator -a          # -> qor1..., fund it with a little QOR for fees
+# The account the licence is for: type its recovery words, then Enter
+lightnode-sx keys add-operator --recover
 
-# 2. Tell the node which account it belongs to
-#    config.toml:  operator_address = "qor1..."
-
-# 3. Let the node print the two chain commands (attach the key, register the node)
-lightnode-sx register
+# Or create a new account; its 24 words are shown once
+lightnode-sx keys add-operator
 ```
 
-يطبع `register`، مملوءًا بقيمك: الأمر `qorechaind tx pqc register-key-v2 dilithium5 … hybrid` الذي يرفق مفتاح العقدة بالحساب (مرة واحدة)، والزوج `tx lightnode register … --generate-only` و`tx pqc cosign` اللذان يسجّلان العقدة. تشترط السلسلة التوقيع المشترك ما بعد الكمّي على كل معاملة، ولهذا يتطلب التسجيل أمرين لا أمرًا واحدًا. يتطلب التسجيل أيضًا ترخيص `lightnode_operator` نشطًا على عنوان المشغِّل؛ وبدونه ترفض السلسلة المعاملة. التسجيل غير مفتوح بعد: راجع [حالة برنامج المكافآت](/light-node/overview#reward-program-status).
+يقوم `keys add-operator` بما يلي:
+
+- يشتق مفتاح الحساب من الكلمات تمامًا كما يفعل `qorechaind` وKeplr (`m/44'/118'/0'/0/0`)، ويخزّنه في حلقة المفاتيح باسم `operator`، ويكتب الحساب في `operator_address` داخل `config.toml`. وإذا كان `operator_address` مضبوطًا بالفعل على حساب مختلف، فإنه يرفض؛
+- يختار المفتاح ما بعد الكمّي الذي توقّع به العقدة، ويخزّنه باسم `operator-pqc` ويضبط `key_name` عليه. إذا كان للحساب مفتاح ما بعد كمّي بالفعل — يسجّله عادةً محفظة من الكلمات نفسها — فإنه يُعاد بناء ذلك المفتاح من الكلمات (باشتقاقات wallet-adapter ولوحة التحكم، وهي نفسها التي يستخدمها `qorechaind tx pqc recover-key`). وإذا لم يكن للحساب مفتاح، يُشتق مفتاح من الكلمات، فتستعيد الكلمات أيضًا مفتاح العقدة. وإذا كان المفتاح المسجَّل على الحساب هو بالفعل المفتاح الحالي للعقدة، فيُحتفظ به. وإذا تعذّرت إعادة إنتاج مفتاح الحساب من الكلمات، يرفض الأمر وينصح بحساب مخصَّص؛
+- بدون `--recover`، ينشئ حسابًا جديدًا ويعرض كلماته الـ 24 مرة واحدة. دوّنها؛ فهي النسخة الاحتياطية الوحيدة. موّل الحساب واشترِ الترخيص لعنوانه قبل التسجيل.
+
+تحمي عبارة مرور حلقة المفاتيح (`QORE_LIGHTNODE_KEYRING_PASSPHRASE`) هذا المفتاح كما تحمي مفتاح العقدة. ثم سجِّل:
+
+```bash
+lightnode-sx register --delegate-to qorvaloper1...
+```
+
+يتحقق `register` من الترخيص، ويُرفِق المفتاح ما بعد الكمّي ما لم يكن للحساب مفتاح بالفعل، ويفوِّض التفويض الناقص فقط إذا حدّدت مدقِّقًا عبر `--delegate-to`، ثم يسجّل العقدة؛ وتُؤكَّد كل خطوة في كتلة قبل التالية. راجع [التسجيل والترخيص](/light-node/registration-and-licensing) للتفاصيل وللبديل الاحتياطي `register --print` المخصَّص للمشغّلين الذين يحتفظون بمفتاح الحساب في حلقة مفاتيح `qorechaind`.
 
 ## أوامر الإدارة
 
-يتضمن سطر أوامر SX أوامر لفحص حالة العقدة وإدارة المفاتيح:
+يتضمن سطر أوامر SX أوامر لفحص حالة العقدة وإدارة المفاتيح. ومنذ 3.1.7 يملك ثنائي UX (`lightnode-ux`) الأوامر نفسها.
 
 | الأمر | الغرض |
 | --- | --- |
 | `onboard` | معالج التشغيل الأول التفاعلي. |
 | `start` | تشغيل العفريت. |
 | `selftest` | تشغيل الاختبار الذاتي لـ PQC. |
-| `status` | عرض حالة مزامنة العقدة والعميل الخفيف (معرّف السلسلة، أحدث ارتفاع، حالة اللحاق بالركب) إضافةً إلى الأسطر `Signer` و`Operator` و`Licence` و`Registration`. |
+| `status` | عرض حالة مزامنة العقدة والعميل الخفيف (معرّف السلسلة، أحدث ارتفاع، حالة اللحاق بالركب) إضافةً إلى الأسطر `Signer` (أصلي أو `qorechaind`) و`Operator` و`Licence` و`Registration`. |
 | `keys create <name>` | إنشاء مفتاح Dilithium-5 جديد للعقدة وطباعة مفتاحه العام. |
 | `keys list` | سرد المفاتيح في حلقة المفاتيح (الاسم، النوع، العنوان إن وُجد، المفتاح العام). |
 | `keys show <name>` | طباعة نوع المفتاح ومفتاحه العام الكامل. |
 | `keys import <name> <hex-privkey>` | استيراد مفتاح خاص مرمَّز بالست عشري. |
-| `keys export <name>` | تصدير مفتاح خاص بالست عشري (الصيغة نفسها التي يقرؤها `qorechaind` من `~/.qorechaind/pqc/`). |
-| `register` | طباعة أوامر السلسلة التي ترفق مفتاح العقدة بحساب المشغِّل وتسجّل العقدة — راجع [التسجيل والترخيص](/light-node/registration-and-licensing). |
+| `keys export <name> [--out <file>]` | تصدير مفتاح خاص بالست عشري. يكتب `--out` الملف الذي يقرؤه `qorechaind --pqc-key` (بلا سطر جديد في النهاية، بالوضع 0600). |
+| `keys add-operator [--recover]` | تخزين مفتاح حساب المشغِّل (جديد، أو مُستعاد من كلماته عبر الدخل القياسي) واختيار المفتاح ما بعد الكمّي؛ ويملأ `operator_address`. راجع [محفظة المشغِّل](#operator-wallet). |
+| `register [--delegate-to <qorvaloper>] [--print]` | تسجيل العقدة على السلسلة: المفتاح ما بعد الكمّي، والتفويض الناقص، والتسجيل، وتُؤكَّد كلٌّ منها في كتلة. يطبع `--print` أوامر `qorechaind` بدلًا من ذلك — راجع [التسجيل والترخيص](/light-node/registration-and-licensing). |
 | `validators` | سرد المُدققين المربوطين. |
-| `delegation` | عرض التفويضات الحالية من قاعدة البيانات المحلية (راجع القيد المعروف في [المكافآت والمراقبة](/light-node/rewards-and-monitoring#how-rewards-work)). |
-| `rewards` | عرض مكافآت الستيكينغ المعلَّقة (القيد نفسه). |
+| `delegation` | عرض تفويضات حساب المشغِّل، كما يعكسها العفريت قيد التشغيل في قاعدة البيانات المحلية. |
+| `rewards` | عرض مكافآت الستيكينغ المعلَّقة لحساب المشغِّل (لا مكافآت العقدة الخفيفة؛ راجع [المكافآت والمراقبة](/light-node/rewards-and-monitoring#how-rewards-work)). |
 | `network` | عرض القياس عن بُعد للشبكة (الترويسات المتزامنة الأخيرة) من قاعدة البيانات المحلية. |
 | `version` | طباعة إصدار الثنائي. |
 

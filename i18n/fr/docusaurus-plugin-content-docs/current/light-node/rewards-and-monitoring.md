@@ -9,17 +9,17 @@ sidebar_position: 5
 
 Un light node enregistré est crédité d'une part de l'allocation des light nodes et **doit rester en bonne santé** pour continuer à y être éligible. Cette page couvre la part de récompenses de 3 % réservée aux light nodes, la manière dont les récompenses sont créditées et réclamées, ce que le nœud fait et ne fait pas avec les délégations, ainsi que la surveillance du nœud.
 
-:::note L'inscription au programme de récompenses n'est pas encore ouverte
-Aucun light node n'est encore enregistré sur l'un ou l'autre réseau, car l'enregistrement nécessite une licence `lightnode_operator` et aucune n'a été accordée. La comptabilité des récompenses décrite ici est active on-chain, mais rien n'est versé aux nœuds aujourd'hui et rien sur cette page ne constitue une promesse de gains. Voir [Statut du programme de récompenses](/light-node/overview#reward-program-status).
+:::note Rien ici ne constitue une promesse de gains
+L'enregistrement est ouvert sur les deux réseaux ; voir [Statut du programme de récompenses](/light-node/overview#reward-program-status) pour l'état actuel. Ce dont un nœud est crédité dépend de l'allocation des light nodes, du nombre de nœuds éligibles, de leur stake et de leur disponibilité, ainsi que du plafond par nœud décrit ci-dessous.
 :::
 
 ## La part de 3 % des récompenses de bloc
 
 La distribution des frais de QoreChain réserve une part fixe de **3 % aux light nodes** qui servent des données réseau. C'est l'une des cinq destinations de la répartition des récompenses du protocole — validateurs (37 %), brûlés (30 %), trésorerie (20 %), stakers (10 %) et **light nodes (3 %)** — appliquée on-chain. Voir [Tokenomics](/architecture/tokenomics) pour la répartition complète.
 
-Pour participer à cette part, un nœud doit remplir les conditions suivantes, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active (vérifiée lors de l'enregistrement), au moins **1 000 QOR bondés** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur, exigés lors de l'enregistrement et relus depuis le staking à chaque crédit de récompenses — et des frais d'enregistrement de **1 QOR**, payés une seule fois lors de l'enregistrement. La participation est plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et [Statut du programme de récompenses](/light-node/overview#reward-program-status) pour savoir si l'inscription est ouverte.
+Pour participer à cette part, un nœud doit remplir les conditions suivantes, vérifiées on-chain plutôt que déclarées par le nœud lui-même : une licence `lightnode_operator` active (vérifiée lors de l'enregistrement), au moins **1 000 QOR délégués à des validateurs bondés** — comptabilisés comme votre total cumulé sur l'ensemble des validateurs auxquels vous déléguez, et non par validateur ; les délégations à des validateurs emprisonnés (jailed) ou non bondés ne comptent pas ; exigés lors de l'enregistrement et relus depuis le staking à chaque crédit de récompenses — et des frais d'enregistrement de **1 QOR**, payés une seule fois lors de l'enregistrement. La participation est plafonnée à l'échelle du réseau à **10 000 light nodes**. Voir [Enregistrement et licences](/light-node/registration-and-licensing) pour le fonctionnement de l'enregistrement et [Statut du programme de récompenses](/light-node/overview#reward-program-status) pour l'état actuel.
 
-Les 3 % correspondent à ce qui afflue dans le module light-node, et non à un droit par nœud : chaque nœud éligible est crédité de sa part, pondérée par le stake, de ce qui s'est accumulé, plafonnée par nœud par `max_reward_per_block_per_node` (actuellement `1713` uqor par bloc, mis à l'échelle selon la disponibilité), et tout ce qui n'est pas gagné va dans une réserve que seul un vote de gouvernance peut libérer. Voir [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share).
+Les 3 % correspondent à ce qui afflue dans le module light-node, et non à un droit par nœud : chaque nœud éligible est crédité de sa part, pondérée par le stake, de ce qui s'est accumulé, plafonnée par nœud, et tout ce qui n'est pas gagné va dans une réserve que seul un vote de gouvernance peut libérer. Depuis la chaîne v3.2.3, le plafond par nœud est de **2 000 QOR par 30 jours** (`max_reward_per_month_per_node`), au prorata du temps de bloc écoulé entre les règlements et mis à l'échelle selon la disponibilité (la règle `lightnode-monthly-cap`) ; il remplace l'ancien plafond par bloc (`max_reward_per_block_per_node`, `1713` uqor par bloc). Voir [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share).
 
 Une fois enregistré et délégué, rester éligible revient à rester actif. Un nœud doit maintenir au moins **80 % de disponibilité (uptime)**, et doit continuer à soumettre des preuves de vivacité (heartbeats) sur un intervalle de **1 000 blocs** (environ 54 minutes sur le mainnet, pour un temps de bloc moyen mesuré d'environ 3,2 s ; environ 17 minutes sur le testnet, qui produit un bloc à peu près toutes les secondes).
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Crédit
 
-Toutes les 100 blocs, la chaîne crédite chaque nœud éligible (actif, avec au moins le stake bondé minimum et au moins la disponibilité minimale) de sa part de ce qui s'est accumulé, plafonnée par nœud comme décrit dans [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share). Le montant est ajouté aux `accumulated_rewards` du nœud. Lisez-le avec :
+Toutes les 100 blocs, la chaîne crédite chaque nœud éligible (actif, avec au moins le stake délégué minimum et au moins la disponibilité minimale) de sa part de ce qui s'est accumulé, plafonnée par nœud (au plus 2 000 QOR par 30 jours, au prorata du temps écoulé depuis le règlement précédent) comme décrit dans [la part de 3 % des récompenses des light nodes](/light-node/overview#the-3-light-node-reward-share). Le montant est ajouté aux `accumulated_rewards` du nœud. Lisez-le avec :
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Réclamation
 
-Les récompenses créditées restent sur l'enregistrement du nœud jusqu'à ce que vous les réclamiez. Réclamez avec la même paire génération puis co-signature que celle utilisée pour l'enregistrement :
+Les récompenses créditées restent sur l'enregistrement du nœud jusqu'à ce que vous les réclamiez. Le nœud peut les réclamer pour vous : définissez `auto_claim = true` sous `[delegation]`, et le daemon réclame les récompenses de light node accumulées vers le compte de l'opérateur dès qu'elles dépassent `min_reward_claim` (par défaut `1000000` uqor, soit 1 QOR), en vérifiant toutes les `compound_interval` (par défaut `1h`). Il signe la réclamation de la même manière que les heartbeats (nativement, ou via le repli `qorechaind`). La réclamation automatique est **désactivée par défaut**, et elle ne fait que réclamer : le nœud ne re-délègue jamais et ne déplace jamais de stake.
+
+Pour réclamer manuellement avec `qorechaind` (la clé de l'opérateur dans un keyring `qorechaind`, et la clé post-quantique exportée avec `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), utilisez une paire génération puis co-signature :
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-Vous pouvez aussi définir `auto_claim = true` sous `[delegation]` : le daemon réclame alors les récompenses de light node accumulées vers le compte de l'opérateur via le signataire dès qu'elles dépassent `min_reward_claim` (par défaut `1000000` uqor, soit 1 QOR), en vérifiant toutes les `compound_interval` (par défaut `1h`). La réclamation automatique est **désactivée par défaut**, et elle ne fait que réclamer : le nœud ne re-délègue jamais et ne déplace jamais de stake. `qorechaind tx lightnode deregister` supprime l'enregistrement et verse tout ce qui est encore crédité ; les frais d'enregistrement ne sont pas remboursés.
+`qorechaind tx lightnode deregister` supprime l'enregistrement et verse tout ce qui est encore crédité ; les frais d'enregistrement ne sont pas remboursés.
 
 ### Suivi des délégations et alertes de réputation
 
-Le nœud reflète les délégations du compte de l'opérateur depuis la chaîne toutes les cinq minutes. Lorsque `rebalance_enabled` est activé (par défaut), il vérifie aussi le score de réputation de chaque validateur auquel vous déléguez et consigne un avertissement pour tout score inférieur à `min_reputation` (par défaut `0.5`). Il ne déplace pas de stake : modifiez les délégations depuis votre propre portefeuille. (Les options `validators` et `split_weights` de `[delegation]` sont acceptées mais ne sont pas exploitées pour l'instant.)
+Le nœud reflète les délégations du compte de l'opérateur depuis la chaîne au démarrage, puis toutes les cinq minutes. Lorsque `rebalance_enabled` est activé (par défaut), il vérifie aussi le score de réputation de chaque validateur auquel vous déléguez et consigne un avertissement pour tout score inférieur à `min_reputation` (par défaut `0.5`). Il ne déplace pas de stake : modifiez les délégations depuis votre propre portefeuille. (Les options `validators` et `split_weights` de `[delegation]` sont acceptées mais ne sont pas exploitées pour l'instant.)
 
 ### Inspection des récompenses et des délégations
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution Limitation connue dans la v3.1.3 / v3.1.4
-`lightnode-sx delegation`, `lightnode-sx rewards` et la vue **Delegation** de l'UX recherchent l'adresse dérivée de la clé du nœud. Une clé de nœud post-quantique n'a pas d'adresse, ces commandes n'affichent donc actuellement rien (`rewards` indique `chain REST endpoint not available`). Utilisez plutôt les requêtes de la chaîne :
+Depuis la version 3.1.6, ces commandes, ainsi que la vue **Delegation** de l'UX, lisent le compte indiqué dans `operator_address`. `rewards` affiche les récompenses de **staking** issues de vos délégations, et non les récompenses de light node. Pour tout lire directement depuis la chaîne :
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## Surveillance
 
@@ -110,7 +112,7 @@ L'édition UX affiche les mêmes données en direct dans ses vues **Overview**, 
 
 ### Santé de la synchronisation et des heartbeats
 
-La commande `status` indique l'ID de la chaîne, la hauteur de bloc la plus récente, si la chaîne est en train de rattraper son retard, la hauteur synchronisée et l'état de synchronisation du light client, ainsi que — une fois `operator_address` défini — l'état du `Signer`, de la `Licence` et de la `Registration` (y compris le statut du nœud et la hauteur de son dernier heartbeat). Un nœud enregistré, synchronisé et en cours d'exécution continue à soumettre des **preuves de vivacité (heartbeats)** et reste ainsi éligible aux récompenses. Ces heartbeats sont produits via un **pipeline de transactions co-signées PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le défaut de la chaîne exigeant la PQC — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour le fonctionnement du pipeline et la manière d'activer les heartbeats on-chain. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il se peut qu'il échoue à prouver sa vivacité — investiguez avant que l'éligibilité ne soit affectée.
+La commande `status` indique l'ID de la chaîne, la hauteur de bloc la plus récente, si la chaîne est en train de rattraper son retard, la hauteur synchronisée et l'état de synchronisation du light client, le `Signer` (natif, ou `qorechaind`, ou indisponible avec la raison), ainsi que — une fois `operator_address` défini — l'état de la `Licence` et de la `Registration` (y compris le statut du nœud et la hauteur de son dernier heartbeat). Un nœud enregistré, synchronisé et en cours d'exécution continue à soumettre des **preuves de vivacité (heartbeats)** et reste ainsi éligible aux récompenses. Ces heartbeats sont produits via un **pipeline de transactions co-signées PQC** (hybride Dilithium-5 / ML-DSA-87), cohérent avec le défaut de la chaîne exigeant la PQC — voir [Enregistrement et licences](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pour le fonctionnement du pipeline et la manière dont le nœud choisit son signataire. Si `status` indique que le nœud est bloqué ou ne se synchronise pas, il se peut qu'il échoue à prouver sa vivacité — investiguez avant que l'éligibilité ne soit affectée.
 
 ### Santé de l'auto-test
 
@@ -132,7 +134,7 @@ URL de base : `https://api.qore.host` (mainnet) et `https://api-testnet.qore.hos
 | `GET /qorechain/lightnode/v1/stats` | Nombre de nœuds enregistrés et actifs, total des récompenses créditées. |
 | `GET /qorechain/lightnode/v1/node/{address}` | L'enregistrement d'un nœud (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | Récompenses créditées et pas encore réclamées. |
-| `GET /qorechain/lightnode/v1/reward_pool` | Comment le solde du module se répartit entre la réserve, les récompenses créditées et le prochain versement ; inclut le plafond par nœud. |
+| `GET /qorechain/lightnode/v1/reward_pool` | Comment le solde du module se répartit entre la réserve, les récompenses créditées et le prochain versement ; inclut les plafonds par nœud (`max_reward_per_month_per_node`, et l'ancien `max_reward_per_block_per_node`). |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Indique si une adresse détient une licence active. |
 
 ## Où aller ensuite

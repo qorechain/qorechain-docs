@@ -9,17 +9,17 @@ sidebar_position: 5
 
 Un light node înregistrat primește o parte din alocarea pentru light nodes și **trebuie să rămână sănătos** pentru a continua să se califice pentru ea. Această pagină acoperă cota de 3% din recompensele pentru light nodes, modul în care recompensele sunt creditate și revendicate, ce face și ce nu face nodul cu delegările, precum și modul de monitorizare a nodului.
 
-:::note Înregistrarea în programul de recompense nu este încă deschisă
-Niciun light node nu este încă înregistrat pe vreuna dintre rețele, deoarece înregistrarea necesită o licență `lightnode_operator`, iar niciuna nu a fost acordată. Contabilitatea recompenselor descrisă aici este activă on-chain, dar astăzi nu se plătește nimic nodurilor, iar nimic de pe această pagină nu reprezintă o promisiune de câștiguri. Consultați [Starea programului de recompense](/light-node/overview#reward-program-status).
+:::note Nimic de aici nu reprezintă o promisiune de câștiguri
+Înregistrarea este deschisă în ambele rețele; consultați [Starea programului de recompense](/light-node/overview#reward-program-status) pentru starea curentă. Suma creditată unui nod depinde de alocarea pentru light nodes, de numărul de noduri eligibile, de stake-ul și uptime-ul acestora și de limita per nod descrisă mai jos.
 :::
 
 ## Cota de 3% din recompensa pe bloc
 
 Distribuția comisioanelor din QoreChain rezervă o cotă fixă de **3% pentru light nodes** care furnizează date de rețea. Aceasta este una dintre cele cinci destinații din împărțirea recompenselor protocolului — validatori (37%), arse (30%), trezorerie (20%), stakeri (10%) și **light nodes (3%)** — impusă on-chain. Consultați [Tokenomics](/architecture/tokenomics) pentru detalierea completă.
 
-Pentru a participa la această cotă, un nod are nevoie de următoarele, verificate on-chain, nu auto-declarate: o licență activă `lightnode_operator` (verificată la înregistrare), un minimum de **1,000 QOR bonded** — calculat ca total pe toți validatorii cărora le delegați, nu per validator, necesar la înregistrare și recitit din staking de fiecare dată când sunt creditate recompense — și o taxă de înregistrare de **1 QOR**, plătită o singură dată la înregistrare. Participarea este plafonată la nivel de rețea la **10,000 de light nodes**. Consultați [Registration and Licensing](/light-node/registration-and-licensing) pentru modul în care funcționează înregistrarea și [Starea programului de recompense](/light-node/overview#reward-program-status) pentru a afla dacă înscrierea este deschisă.
+Pentru a participa la această cotă, un nod are nevoie de următoarele, verificate on-chain, nu auto-declarate: o licență activă `lightnode_operator` (verificată la înregistrare), un minimum de **1,000 QOR delegați către validatori bonded** — calculat ca total pe toți validatorii cărora le delegați, nu per validator; delegările către validatori în jail sau unbonded nu se iau în calcul; necesar la înregistrare și recitit din staking de fiecare dată când sunt creditate recompense — și o taxă de înregistrare de **1 QOR**, plătită o singură dată la înregistrare. Participarea este plafonată la nivel de rețea la **10,000 de light nodes**. Consultați [Registration and Licensing](/light-node/registration-and-licensing) pentru modul în care funcționează înregistrarea și [Starea programului de recompense](/light-node/overview#reward-program-status) pentru starea curentă.
 
-Cei 3% reprezintă suma care curge în modulul light-node, nu un drept per nod: fiecare nod eligibil este creditat cu partea sa ponderată după stake din ceea ce s-a acumulat, limitată per nod de `max_reward_per_block_per_node` (în prezent `1713` uqor pe bloc, scalat după uptime), iar tot ce nu este câștigat merge într-o rezervă pe care o poate elibera doar un vot de guvernanță. Consultați [cota de 3% din recompensele pentru light nodes](/light-node/overview#the-3-light-node-reward-share).
+Cei 3% reprezintă suma care curge în modulul light-node, nu un drept per nod: fiecare nod eligibil este creditat cu partea sa ponderată după stake din ceea ce s-a acumulat, limitată per nod, iar tot ce nu este câștigat merge într-o rezervă pe care o poate elibera doar un vot de guvernanță. De la lanțul v3.2.3, limita per nod este de **2,000 QOR la 30 de zile** (`max_reward_per_month_per_node`), proporțională cu timpul de bloc scurs între decontări și scalată după uptime (regula `lightnode-monthly-cap`); aceasta înlocuiește limita anterioară per bloc (`max_reward_per_block_per_node`, `1713` uqor pe bloc). Consultați [cota de 3% din recompensele pentru light nodes](/light-node/overview#the-3-light-node-reward-share).
 
 Odată înregistrat și cu stake delegat, menținerea eligibilității ține de a rămâne activ. Un nod are nevoie de cel puțin **80% uptime** și trebuie să continue să trimită dovezi de liveness prin heartbeat la un **interval de 1,000 de blocuri** (aproximativ 54 de minute pe mainnet la timpul mediu de bloc măsurat de circa 3.2 s; aproximativ 17 minute pe testnet, care produce blocuri aproximativ o dată pe secundă).
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Creditare
 
-La fiecare 100 de blocuri lanțul creditează fiecare nod eligibil (activ, cu cel puțin stake-ul minim bonded și cel puțin uptime-ul minim) cu partea sa din ceea ce s-a acumulat, limitată per nod așa cum este descris în [cota de 3% din recompensele pentru light nodes](/light-node/overview#the-3-light-node-reward-share). Suma este adăugată la `accumulated_rewards` al nodului. Citiți-o cu:
+La fiecare 100 de blocuri lanțul creditează fiecare nod eligibil (activ, cu cel puțin stake-ul minim delegat și cel puțin uptime-ul minim) cu partea sa din ceea ce s-a acumulat, limitată per nod (cel mult 2,000 QOR la 30 de zile, proporțional cu timpul scurs de la decontarea anterioară) așa cum este descris în [cota de 3% din recompensele pentru light nodes](/light-node/overview#the-3-light-node-reward-share). Suma este adăugată la `accumulated_rewards` al nodului. Citiți-o cu:
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### Revendicare
 
-Recompensele creditate rămân în înregistrarea nodului până când le revendicați. Revendicați cu aceeași pereche generate-then-cosign folosită pentru înregistrare:
+Recompensele creditate rămân în înregistrarea nodului până când le revendicați. Nodul le poate revendica pentru dvs.: setați `auto_claim = true` sub `[delegation]`, iar daemonul revendică recompensele light-node acumulate în contul operatorului odată ce depășesc `min_reward_claim` (implicit `1000000` uqor, 1 QOR), verificând la fiecare `compound_interval` (implicit `1h`). Semnează revendicarea la fel ca heartbeat-urile (nativ sau prin alternativa `qorechaind`). Auto-revendicarea este **dezactivată implicit** și doar revendică: nodul nu re-delegă și nu mută niciodată stake-ul.
+
+Pentru a revendica manual cu `qorechaind` (cheia operatorului într-un keyring `qorechaind` și cheia post-cuantică exportată cu `lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`), folosiți o pereche generate-then-cosign:
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-Alternativ, setați `auto_claim = true` sub `[delegation]`: daemonul revendică atunci recompensele light-node acumulate în contul operatorului prin intermediul semnatarului, odată ce depășesc `min_reward_claim` (implicit `1000000` uqor, 1 QOR), verificând la fiecare `compound_interval` (implicit `1h`). Auto-revendicarea este **dezactivată implicit** și doar revendică: nodul nu re-delegă și nu mută niciodată stake-ul. `qorechaind tx lightnode deregister` elimină înregistrarea și plătește tot ce a rămas creditat; taxa de înregistrare nu este rambursată.
+`qorechaind tx lightnode deregister` elimină înregistrarea și plătește tot ce a rămas creditat; taxa de înregistrare nu este rambursată.
 
 ### Urmărirea delegărilor și alertele de reputație
 
-Nodul oglindește delegările contului operatorului din lanț la fiecare cinci minute. Când `rebalance_enabled` este activat (implicit), verifică și scorul de reputație al fiecărui validator căruia îi delegați și înregistrează un avertisment pentru oricare sub `min_reputation` (implicit `0.5`). Nu mută stake-ul: modificați delegările din propriul portofel. (Opțiunile `validators` și `split_weights` din `[delegation]` sunt acceptate, dar în prezent nu sunt utilizate.)
+Nodul oglindește delegările contului operatorului din lanț la pornire și apoi la fiecare cinci minute. Când `rebalance_enabled` este activat (implicit), verifică și scorul de reputație al fiecărui validator căruia îi delegați și înregistrează un avertisment pentru oricare sub `min_reputation` (implicit `0.5`). Nu mută stake-ul: modificați delegările din propriul portofel. (Opțiunile `validators` și `split_weights` din `[delegation]` sunt acceptate, dar în prezent nu sunt utilizate.)
 
 ### Inspectarea recompenselor și a delegărilor
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution Limitare cunoscută în v3.1.3 / v3.1.4
-`lightnode-sx delegation`, `lightnode-sx rewards` și vizualizarea UX **Delegation** caută adresa derivată din cheia nodului. O cheie de nod post-cuantică nu are adresă, așa că în prezent acestea nu afișează nimic (`rewards` raportează `chain REST endpoint not available`). Folosiți în schimb interogările lanțului:
+Începând cu 3.1.6, aceste comenzi și vizualizarea UX **Delegation** citesc contul din `operator_address`. `rewards` afișează recompensele de **staking** din delegările dvs., nu recompensele light-node. Pentru a citi totul direct din lanț:
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## Monitorizare
 
@@ -110,7 +112,7 @@ Ediția UX afișează aceleași date live în vizualizările **Overview**, **Net
 
 ### Starea de sincronizare și de heartbeat
 
-Comanda `status` raportează ID-ul lanțului, înălțimea celui mai recent bloc, dacă lanțul este în curs de recuperare (catching up), înălțimea sincronizată și starea de sincronizare a light client-ului și — odată ce `operator_address` este setat — starea `Signer`, `Licence` și `Registration` (inclusiv statusul nodului și înălțimea ultimului heartbeat). Un nod care este înregistrat, sincronizat și în funcțiune continuă să trimită **dovezi de liveness prin heartbeat** și astfel rămâne eligibil pentru recompense. Aceste heartbeat-uri sunt produse printr-un **pipeline de tranzacții co-semnate PQC** (hibrid Dilithium-5 / ML-DSA-87), în concordanță cu setarea implicită a lanțului care impune PQC — consultați [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pentru modul în care funcționează pipeline-ul și cum se activează heartbeat-urile on-chain. Dacă `status` arată nodul blocat sau nesincronizat, este posibil să nu reușească să dovedească liveness — investigați înainte ca eligibilitatea să fie afectată.
+Comanda `status` raportează ID-ul lanțului, înălțimea celui mai recent bloc, dacă lanțul este în curs de recuperare (catching up), înălțimea sincronizată și starea de sincronizare a light client-ului, `Signer` (nativ, `qorechaind` sau indisponibil, cu motivul) și — odată ce `operator_address` este setat — starea `Licence` și `Registration` (inclusiv statusul nodului și înălțimea ultimului heartbeat). Un nod care este înregistrat, sincronizat și în funcțiune continuă să trimită **dovezi de liveness prin heartbeat** și astfel rămâne eligibil pentru recompense. Aceste heartbeat-uri sunt produse printr-un **pipeline de tranzacții co-semnate PQC** (hibrid Dilithium-5 / ML-DSA-87), în concordanță cu setarea implicită a lanțului care impune PQC — consultați [Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline) pentru modul în care funcționează pipeline-ul și cum își alege nodul semnatarul. Dacă `status` arată nodul blocat sau nesincronizat, este posibil să nu reușească să dovedească liveness — investigați înainte ca eligibilitatea să fie afectată.
 
 ### Starea autotestării
 
@@ -132,7 +134,7 @@ URL-uri de bază: `https://api.qore.host` (mainnet) și `https://api-testnet.qor
 | `GET /qorechain/lightnode/v1/stats` | Numărul de noduri înregistrate și active, totalul recompenselor creditate. |
 | `GET /qorechain/lightnode/v1/node/{address}` | Înregistrarea unui nod (`status`, `last_heartbeat`, `total_heartbeats`, `expected_heartbeats`, `accumulated_rewards`). |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | Recompensele creditate și încă nerevendicate. |
-| `GET /qorechain/lightnode/v1/reward_pool` | Cum se împarte soldul modulului între rezervă, recompense creditate și următoarea plată; include limita per nod. |
+| `GET /qorechain/lightnode/v1/reward_pool` | Cum se împarte soldul modulului între rezervă, recompense creditate și următoarea plată; include limitele per nod (`max_reward_per_month_per_node` și anteriorul `max_reward_per_block_per_node`). |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | Dacă o adresă deține o licență activă. |
 
 ## Unde continuați

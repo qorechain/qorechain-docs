@@ -7,13 +7,13 @@ sidebar_position: 3
 
 # Edizione UX — Dashboard Web
 
-L'edizione **UX (User eXperience)** esegue lo stesso demone light node dell'edizione SX, ma aggiunge una **dashboard web integrata** che permette di monitorare il nodo e la rete dal browser. Il binario è `lightnode-ux`. Come l'edizione SX, appartiene alla linea **v3.1.3** del light node (una versione propria, separata dalla versione della chain).
+L'edizione **UX (User eXperience)** esegue lo stesso demone light node dell'edizione SX, ma aggiunge una **dashboard web integrata** che permette di monitorare il nodo e la rete dal browser. Il binario è `lightnode-ux`. Come l'edizione SX, questa pagina descrive il light node **3.1.9** (una propria linea di versione, separata dalla versione della chain).
 
 L'edizione UX è la scelta giusta per l'uso desktop e per gli operatori che preferiscono un'interfaccia visiva alla riga di comando.
 
 ## Installazione
 
-I binari precompilati funzionano nativamente su **sei piattaforme senza dipendenze native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64) — ciascuno di circa 11–12 MB. Verifica il checksum del download rispetto al manifest prima di eseguirlo — vedi [Edizione SX](/light-node/sx-edition#install) per il procedimento.
+I binari precompilati funzionano nativamente su **sei piattaforme senza dipendenze native** — Linux (amd64, arm64), macOS (Intel, Apple Silicon) e Windows (amd64, arm64) — ciascuno di circa 13 MB. Verifica il checksum del download rispetto al manifest prima di eseguirlo — vedi [Edizione SX](/light-node/sx-edition#install) per il procedimento.
 
 ### Compilazione da sorgente
 
@@ -23,11 +23,22 @@ L'edizione UX richiede **Go 1.26.1**. La sua crittografia post-quantistica è un
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Questo produce `build/lightnode-ux`.
+Compila dal tag della release (`git checkout v3.1.9`). Questo produce `build/lightnode-ux`.
 
 ### Docker
 
-Il servizio UX viene compilato da `Dockerfile.ux` nel repository dei sorgenti (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.4` o successivo). Il container ha bisogno di un `config.toml` nel proprio volume di dati prima di potersi avviare; la procedura guidata di configurazione si trova nel binario SX, quindi crea prima la configurazione con l'edizione SX (vedi [Edizione SX](/light-node/sx-edition#first-run-onboard)) e copiala nel volume. All'interno di un container la dashboard deve ascoltare su tutte le interfacce del container, quindi imposta questo valore in quella configurazione e pubblica la porta solo sul loopback dell'host:
+Il servizio UX viene compilato da `Dockerfile.ux` nel repository dei sorgenti (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.9`). Il container ha bisogno di un `config.toml` nel proprio volume di dati prima di potersi avviare. Il binario UX dispone dei comandi di configurazione, quindi puoi crearlo direttamente nel volume:
+
+```bash
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'
+export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
+
+docker compose run --rm lightnode-ux onboard
+docker compose run --rm lightnode-ux keys add-operator --recover   # to register this node
+docker compose run --rm lightnode-ux register --delegate-to qorvaloper1...
+```
+
+All'interno di un container la dashboard deve ascoltare su tutte le interfacce del container, quindi imposta questo valore in quella configurazione (`/root/.qorechain-lightnode/config.toml` nel volume) e pubblica la porta solo sul loopback dell'host. Il `docker-compose.yml` fornito pubblica `8420:8420`, che è raggiungibile da altre macchine; modificalo:
 
 ```toml
 [dashboard]
@@ -41,10 +52,10 @@ ports:
 ```
 
 ```bash
-QORECHAIN_RPC_ADDR=https://rpc.qore.host docker compose up lightnode-ux
+docker compose up -d lightnode-ux
 ```
 
-Il container UX persiste i dati in un volume denominato su `/root/.qorechain-lightnode` e legge l'indirizzo RPC della chain dalla variabile d'ambiente `QORECHAIN_RPC_ADDR`. L'immagine UX non include il firmatario `qorechaind`, quindi un container UX non può inviare heartbeat on-chain; esegui un nodo registrato con l'edizione SX.
+Il container UX persiste i dati, keyring compreso, in un volume denominato su `/root/.qorechain-lightnode` e legge l'indirizzo RPC della chain dalla variabile d'ambiente `QORECHAIN_RPC_ADDR`. Il nodo firma da solo le proprie transazioni, quindi un container UX può registrarsi e inviare heartbeat come l'edizione SX. L'immagine UX non include `qorechaind`, quindi l'alternativa `qorechaind` non è disponibile al suo interno.
 
 ## Esecuzione
 
@@ -56,7 +67,17 @@ build/lightnode-ux start
 
 Questo avvia insieme il demone e il server della dashboard integrata. L'edizione UX abilita sempre la dashboard. All'avvio il binario stampa l'URL della dashboard.
 
-L'edizione UX condivide la configurazione con l'edizione SX: legge lo stesso `config.toml` da `~/.qorechain-lightnode` e usa lo stesso keyring Dilithium-5. Se non hai ancora configurato il nodo, esegui prima la procedura guidata SX (`lightnode-sx onboard`) per scrivere la configurazione e importare o generare la tua chiave — vedi [Edizione SX](/light-node/sx-edition). Il binario UX dispone solo dei comandi `start` e `version`; usa `lightnode-sx` per `register`, `status` e `keys`. Il demone dell'edizione UX invia gli heartbeat allo stesso modo dell'edizione SX quando è disponibile un firmatario `qorechaind`.
+L'edizione UX condivide la configurazione con l'edizione SX: legge lo stesso `config.toml` da `~/.qorechain-lightnode` e usa lo stesso keyring, e dispone degli stessi comandi (`onboard`, `keys`, `register`, `status`, `selftest` e gli altri). La configurazione iniziale consiste negli stessi cinque passaggi, con `lightnode-ux` al posto di `lightnode-sx`:
+
+```bash
+export QORE_LIGHTNODE_KEYRING_PASSPHRASE='choose-a-passphrase'
+lightnode-ux onboard
+lightnode-ux keys add-operator --recover
+lightnode-ux register --delegate-to qorvaloper1...
+lightnode-ux start
+```
+
+Vedi [Edizione SX](/light-node/sx-edition#first-run-onboard) per cosa fa ciascun comando e [Registrazione e Licenze](/light-node/registration-and-licensing) per i requisiti. Il demone dell'edizione UX firma e invia gli heartbeat allo stesso modo dell'edizione SX, su Linux, macOS e Windows. Quando `register` viene eseguito dal binario UX, il nodo viene registrato con tipo `ux`.
 
 ## La dashboard web sulla porta 8420
 
@@ -70,8 +91,8 @@ http://localhost:8420
 Alcuni testi altrove fanno riferimento alla porta 8080 per la dashboard. Il valore autorevole è **8420** — è quello che l'immagine espone effettivamente e su cui il demone si collega per impostazione predefinita. Se adatti il tuo `docker-compose.yml` o un reverse proxy, mappa alla porta **8420**, non 8080.
 :::
 
-:::caution Nessuna rotta della dashboard è autenticata
-Nulla dietro la porta 8420 dispone di login o controllo degli accessi — chiunque possa raggiungerla può leggere la tua configurazione, le tue delegazioni e i tuoi reward; nessuna chiave privata viene mai servita. Il binario ora **si collega per impostazione predefinita solo al loopback** (`127.0.0.1:8420`) anziché a tutte le interfacce, e stampa un avviso all'avvio se lo hai configurato per ascoltare più ampiamente — ma l'avviso non è un rifiuto, e non aggiunge autenticazione. Se estendi deliberatamente il bind (ad esempio per raggiungerlo da un'altra macchina, o perché stai pubblicando la porta da Docker), mettilo dietro un reverse proxy che richieda autenticazione anziché esporlo direttamente. La connessione WebSocket della telemetria controlla anche l'`Origin` del browser, poiché un bind di rete ampio da solo non impedisce ad un'altra pagina aperta nello stesso browser di connettersi.
+:::caution Proteggi la dashboard
+La dashboard non ha login. A meno che tu non imposti `[dashboard] token`, chiunque possa raggiungere la porta 8420 può leggere la tua configurazione, le tue delegazioni e i tuoi reward; nessuna chiave privata viene mai servita. Con un token impostato, ogni rotta `/api` e la connessione `/ws` richiedono `Authorization: Bearer <token>` (il token che QoreX invia quando si associa al nodo); su `http` semplice quel token attraversa la rete in chiaro. Il binario ora **si collega per impostazione predefinita solo al loopback** (`127.0.0.1:8420`) anziché a tutte le interfacce, e stampa un avviso all'avvio se lo hai configurato per ascoltare più ampiamente — ma l'avviso non è un rifiuto. Se estendi deliberatamente il bind (ad esempio per raggiungerlo da un'altra macchina, o perché stai pubblicando la porta da Docker), imposta un token e mettilo dietro https (un reverse proxy o un tunnel SSH) anziché esporlo direttamente. La connessione WebSocket della telemetria controlla anche l'`Origin` del browser, poiché un bind di rete ampio da solo non impedisce ad un'altra pagina aperta nello stesso browser di connettersi.
 :::
 
 ## Cosa mostra la dashboard
@@ -80,7 +101,7 @@ La dashboard è organizzata nelle seguenti viste:
 
 - **Overview** — altezza del blocco e stato del nodo a colpo d'occhio.
 - **Validators** — l'insieme dei validatori bonded.
-- **Delegation** — le delegazioni rispecchiate dal tuo account operatore (vedi la limitazione nota in [Reward e Monitoraggio](/light-node/rewards-and-monitoring#how-rewards-work)).
+- **Delegation** — le delegazioni rispecchiate dal tuo account operatore (`operator_address`).
 - **Network** — telemetria di rete in tempo reale e header sincronizzati di recente.
 - **Bridge** — telemetria del bridge cross-chain.
 - **Tokenomics** — telemetria dell'economia del token.
@@ -90,7 +111,7 @@ La telemetria si aggiorna in tempo reale, con il demone che aggiorna i dati di v
 
 ### Banner solo locale
 
-Se il nodo **non ha un endpoint RPC della chain configurato**, la dashboard funziona in **modalità solo locale** e mostra un banner ben visibile che spiega lo stato: lo stack PQC è verificato, ma il nodo non sta sincronizzando alcuna chain, quindi l'altezza del blocco resta a `0`. Il banner invita a eseguire la procedura guidata di onboarding sull'host:
+Se il nodo **non ha un endpoint RPC della chain configurato**, la dashboard funziona in **modalità solo locale** e mostra un banner ben visibile che spiega lo stato: lo stack PQC è verificato, ma il nodo non sta sincronizzando alcuna chain, quindi l'altezza del blocco resta a `0`. Il banner invita a eseguire la procedura guidata di onboarding sull'host (nomina `lightnode-sx`; `lightnode-ux onboard` fa lo stesso):
 
 ```bash
 lightnode-sx onboard

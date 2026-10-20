@@ -9,17 +9,17 @@ sidebar_position: 5
 
 登録済みのライトノードには、ライトノード割り当ての一部が付与されますが、その対象資格を維持し続けるには**健全な状態を保つ**必要があります。このページでは、ライトノード報酬シェア3%、報酬の付与と請求の仕組み、ノードが委任に対して行うこと・行わないこと、そしてノードのモニタリング方法について説明します。
 
-:::note 報酬プログラムへの登録はまだ開始されていません
-登録には`lightnode_operator`ライセンスが必要ですが、まだ1件も付与されていないため、どちらのネットワークにも登録済みのライトノードはありません。ここで説明している報酬の計上はオンチェーンで稼働していますが、現時点でノードへの支払いは行われておらず、このページの内容はいかなる収益の約束でもありません。[報酬プログラムの状況](/light-node/overview#reward-program-status)を参照してください。
+:::note このページの内容はいかなる収益の約束でもありません
+登録は両方のネットワークで開放されています。現在の状況については[報酬プログラムの状況](/light-node/overview#reward-program-status)を参照してください。ノードに付与される額は、ライトノード割り当て、対象となるノードの数、それらのステークと稼働率、そして以下で説明するノードごとの上限によって決まります。
 :::
 
 ## ブロック報酬シェア3%
 
 QoreChainの手数料分配は、ネットワークデータを提供するライトノードのために固定の**3%シェア**を確保しています。これはプロトコルの報酬配分における5つの分配先の1つで — バリデータ(37%)、バーン(30%)、トレジャリー(20%)、ステーカー(10%)、そして**ライトノード(3%)** — オンチェーンで強制されています。全体の内訳については[Tokenomics](/architecture/tokenomics)を参照してください。
 
-このシェアに参加するには、自己申告ではなくオンチェーンで確認される次の条件が必要です。有効な`lightnode_operator`ライセンス(登録時に確認されます)、最低**1,000 QORのボンド**(これは委任先の全バリデータにわたる合計であり、バリデータごとではありません。登録時に必須で、報酬が付与されるたびにステーキングから再度読み取られます)、そして登録時に一度だけ支払う**1 QOR**の登録手数料です。参加はネットワーク全体で**10,000ライトノード**が上限となっています。登録の仕組みについては[Registration and Licensing](/light-node/registration-and-licensing)を、登録受付が開始されているかどうかについては[報酬プログラムの状況](/light-node/overview#reward-program-status)を参照してください。
+このシェアに参加するには、自己申告ではなくオンチェーンで確認される次の条件が必要です。有効な`lightnode_operator`ライセンス(登録時に確認されます)、**ボンド済みバリデータに委任された最低1,000 QOR**(これは委任先の全バリデータにわたる合計であり、バリデータごとではありません。jail されたバリデータやアンボンドされたバリデータへの委任はカウントされません。登録時に必須で、報酬が付与されるたびにステーキングから再度読み取られます)、そして登録時に一度だけ支払う**1 QOR**の登録手数料です。参加はネットワーク全体で**10,000ライトノード**が上限となっています。登録の仕組みについては[Registration and Licensing](/light-node/registration-and-licensing)を、現在の状況については[報酬プログラムの状況](/light-node/overview#reward-program-status)を参照してください。
 
-3%とは、ライトノードモジュールに流れ込む分を指すものであり、ノードごとの受給権ではありません。対象となる各ノードには、蓄積された分のうちステーク加重のシェアが付与され、ノードごとに`max_reward_per_block_per_node`(現在は1ブロックあたり`1713` uqor、稼働率に応じてスケール)で上限が設けられます。獲得されなかった分は、ガバナンス投票でのみ解放できるリザーブに入ります。[ライトノード報酬シェア3%](/light-node/overview#the-3-light-node-reward-share)を参照してください。
+3%とは、ライトノードモジュールに流れ込む分を指すものであり、ノードごとの受給権ではありません。対象となる各ノードには、蓄積された分のうちステーク加重のシェアが付与され、ノードごとに上限が設けられます。獲得されなかった分は、ガバナンス投票でのみ解放できるリザーブに入ります。チェーン v3.2.3 以降、ノードごとの上限は**30日あたり2,000 QOR**(`max_reward_per_month_per_node`)で、決済間に経過したブロック時間に応じて按分され、稼働率に応じてスケールされます(`lightnode-monthly-cap` ルール)。これは以前のブロック単位の上限(`max_reward_per_block_per_node`、1ブロックあたり`1713` uqor)に代わるものです。[ライトノード報酬シェア3%](/light-node/overview#the-3-light-node-reward-share)を参照してください。
 
 登録と委任が済んだら、対象資格を維持するにはノードを稼働させ続けるだけです。ノードは最低**80%の稼働率**を維持し、**1,000ブロック間隔**(平均ブロック時間を約3.2秒と実測した場合、メインネットで約54分。ほぼ1秒に1ブロックを生成するテストネットでは約17分)でハートビート稼働証明を送信し続ける必要があります。
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### 付与
 
-100ブロックごとに、チェーンは対象となる各ノード(アクティブで、最低ボンドステーク量と最低稼働率を満たすもの)に、蓄積された分のシェアを付与します。上限はノードごとに[ライトノード報酬シェア3%](/light-node/overview#the-3-light-node-reward-share)で説明されているとおりです。この額はノードの`accumulated_rewards`に加算されます。次のコマンドで確認できます。
+100ブロックごとに、チェーンは対象となる各ノード(アクティブで、最低委任ステーク量と最低稼働率を満たすもの)に、蓄積された分のシェアを付与します。ノードごとの上限(前回の決済からの経過時間に応じて按分された、30日あたり最大2,000 QOR)は[ライトノード報酬シェア3%](/light-node/overview#the-3-light-node-reward-share)で説明されているとおりです。この額はノードの`accumulated_rewards`に加算されます。次のコマンドで確認できます。
 
 ```bash
 curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
@@ -64,34 +64,36 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
 
 ### 請求
 
-付与された報酬は、請求するまでノードの記録上に残ります。請求には、登録時と同じ「生成してから共同署名」の組み合わせを使用します。
+付与された報酬は、請求するまでノードの記録上に残ります。ノードに代わりに請求させることもできます。`[delegation]`の下で`auto_claim = true`を設定すると、デーモンは、蓄積されたライトノード報酬が`min_reward_claim`(デフォルトは`1000000` uqor、つまり1 QOR)を超えた時点でオペレーターアカウントへ請求します。確認は`compound_interval`(デフォルトは`1h`)ごとに行われます。請求はハートビートと同じ方法(ネイティブ、または`qorechaind`によるフォールバック)で署名されます。自動請求は**デフォルトでオフ**であり、請求のみを行います。ノードが再委任したりステークを移動したりすることはありません。
+
+`qorechaind`で手動で請求するには(オペレーターキーを`qorechaind`のキーリングに置き、耐量子キーを`lightnode-sx keys export <key-name> --out ~/.qorechaind/pqc/<key-name>.dilithium`でエクスポートしたうえで)、「生成してから共同署名」の組み合わせを使用します。
 
 ```bash
-qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --gas 300000 --fees 30000uqor --generate-only > claim.json
-qorechaind tx pqc cosign claim.json --from operator --pqc-key <node-key-name> --chain-id <chain-id>
+qorechaind tx lightnode claim-rewards --from operator --chain-id <chain-id> --node https://rpc.qore.host --gas 300000 --fees 30000uqor --generate-only > claim.json
+qorechaind tx pqc cosign claim.json --from operator --pqc-key <key-name> --chain-id <chain-id> --node https://rpc.qore.host
 ```
 
-あるいは、`[delegation]`の下で`auto_claim = true`を設定します。するとデーモンは、蓄積されたライトノード報酬が`min_reward_claim`(デフォルトは`1000000` uqor、つまり1 QOR)を超えた時点で、署名者を通じてオペレーターアカウントへ請求します。確認は`compound_interval`(デフォルトは`1h`)ごとに行われます。自動請求は**デフォルトでオフ**であり、請求のみを行います。ノードが再委任したりステークを移動したりすることはありません。`qorechaind tx lightnode deregister`は登録を解除し、まだ付与されたままの分を支払います。登録手数料は返金されません。
+`qorechaind tx lightnode deregister`は登録を解除し、まだ付与されたままの分を支払います。登録手数料は返金されません。
 
 ### 委任の追跡とレピュテーションアラート
 
-ノードは5分ごとに、オペレーターアカウントの委任をチェーンから反映します。`rebalance_enabled`が有効(デフォルト)の場合、委任先の各バリデータのレピュテーションスコアも確認し、`min_reputation`(デフォルトは`0.5`)を下回るものについて警告をログに記録します。ステークは移動しません。委任の変更はご自身のウォレットから行ってください。(`[delegation]`の`validators`と`split_weights`オプションは受け付けられますが、現在は動作に反映されません。)
+ノードは起動時、およびその後5分ごとに、オペレーターアカウントの委任をチェーンから反映します。`rebalance_enabled`が有効(デフォルト)の場合、委任先の各バリデータのレピュテーションスコアも確認し、`min_reputation`(デフォルトは`0.5`)を下回るものについて警告をログに記録します。ステークは移動しません。委任の変更はご自身のウォレットから行ってください。(`[delegation]`の`validators`と`split_weights`オプションは受け付けられますが、現在は動作に反映されません。)
 
 ### 報酬と委任の確認
 
 ```bash
 lightnode-sx validators   # the bonded validator set
+lightnode-sx delegation   # the operator account's delegations, as mirrored by the running daemon
+lightnode-sx rewards      # the operator account's pending staking rewards
 ```
 
-:::caution v3.1.3 / v3.1.4 の既知の制限
-`lightnode-sx delegation`、`lightnode-sx rewards`、およびUXの**Delegation**ビューは、ノードキーから導出されるアドレスを参照します。耐量子ノードキーにはアドレスがないため、現時点ではこれらは何も表示しません(`rewards`は`chain REST endpoint not available`を報告します)。代わりにチェーンのクエリを使用してください。
+3.1.6以降、これらのコマンドとUXの**Delegation**ビューは、`operator_address`のアカウントを読み取ります。`rewards`が表示するのは委任から得られる**ステーキング**報酬であり、ライトノード報酬ではありません。すべてをチェーンから直接読み取るには、次を使用します。
 
 ```bash
 curl -s https://api.qore.host/cosmos/staking/v1beta1/delegations/<operator-address>
 curl -s https://api.qore.host/cosmos/distribution/v1beta1/delegators/<operator-address>/rewards
-curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>
+curl -s https://api.qore.host/qorechain/lightnode/v1/rewards/<operator-address>   # light-node rewards
 ```
-:::
 
 ## モニタリング
 
@@ -110,7 +112,7 @@ UXエディションは、**Overview**、**Network**、**Bridge**、**Tokenomics
 
 ### 同期とハートビートの健全性
 
-`status`コマンドは、チェーンID、最新のブロック高、チェーンがキャッチアップ中かどうか、ライトクライアントの同期済み高さと同期状態、そして — `operator_address`が設定されている場合は — `Signer`、`Licence`、`Registration`の状態(ノードのステータスと最後のハートビートの高さを含む)を報告します。登録済みで、同期しており、稼働しているノードは**ハートビート稼働証明**の送信を継続し、報酬の対象資格を維持します。これらのハートビートは**PQC共同署名トランザクションパイプライン**(ハイブリッドDilithium-5 / ML-DSA-87)を通じて生成され、チェーンのPQC必須のデフォルト方針と整合しています — パイプラインの仕組みとオンチェーンハートビートの有効化方法については[Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline)を参照してください。`status`がノードの停滞や未同期を示している場合、稼働証明に失敗している可能性があります — 対象資格に影響が及ぶ前に調査してください。
+`status`コマンドは、チェーンID、最新のブロック高、チェーンがキャッチアップ中かどうか、ライトクライアントの同期済み高さと同期状態、`Signer`(ネイティブ、`qorechaind`、または理由付きで利用不可)、そして — `operator_address`が設定されている場合は — `Licence`と`Registration`の状態(ノードのステータスと最後のハートビートの高さを含む)を報告します。登録済みで、同期しており、稼働しているノードは**ハートビート稼働証明**の送信を継続し、報酬の対象資格を維持します。これらのハートビートは**PQC共同署名トランザクションパイプライン**(ハイブリッドDilithium-5 / ML-DSA-87)を通じて生成され、チェーンのPQC必須のデフォルト方針と整合しています — パイプラインの仕組みとノードが署名者を選択する方法については[Registration and Licensing](/light-node/registration-and-licensing#pqc-cosigned-heartbeat-pipeline)を参照してください。`status`がノードの停滞や未同期を示している場合、稼働証明に失敗している可能性があります — 対象資格に影響が及ぶ前に調査してください。
 
 ### セルフテストの健全性
 
@@ -132,7 +134,7 @@ lightnode-sx selftest
 | `GET /qorechain/lightnode/v1/stats` | 登録済みおよびアクティブなノード数、付与された報酬の合計。 |
 | `GET /qorechain/lightnode/v1/node/{address}` | 1つのノードの記録(`status`、`last_heartbeat`、`total_heartbeats`、`expected_heartbeats`、`accumulated_rewards`)。 |
 | `GET /qorechain/lightnode/v1/rewards/{address}` | 付与済みで未請求の報酬。 |
-| `GET /qorechain/lightnode/v1/reward_pool` | モジュール残高が、リザーブ、付与済み報酬、次回の支払いにどう分割されているか。ノードごとの上限も含みます。 |
+| `GET /qorechain/lightnode/v1/reward_pool` | モジュール残高が、リザーブ、付与済み報酬、次回の支払いにどう分割されているか。ノードごとの上限(`max_reward_per_month_per_node`、および以前の`max_reward_per_block_per_node`)も含みます。 |
 | `GET /qorechain/license/v1/check/{address}/lightnode_operator` | アドレスが有効なライセンスを保有しているかどうか。 |
 
 ## 次に読むべきページ
