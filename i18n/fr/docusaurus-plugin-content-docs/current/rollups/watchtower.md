@@ -18,8 +18,8 @@ vérification de validité**. La Tour de guet ne décide jamais d'elle-même qu'
 lot est frauduleux — elle appelle votre fonction `validate` et agit selon ce que
 vous renvoyez.
 
-:::caution Stade précoce : rien à surveiller, et les alertes d'échéance de la version 0.5.0 sont erronées
-La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 20 octobre 2026) ; il n'y a donc encore rien à surveiller. Dans `@qorechain/rdk` 0.5.0, la logique d'échéance de la fenêtre de contestation n'est en outre pas fiable : le `submittedAt` d'un lot est une **hauteur de bloc**, mais la Tour de guet (ainsi que le contrôle de santé derrière `qorollup status`) lui ajoute la fenêtre exprimée en secondes et compare la somme à l'horloge murale ; `secondsRemaining` n'a donc aucun sens, et `onDeadline` se déclenche dès qu'un lot est vu pour la première fois. N'utilisez pas `onDeadline` ni le compte à rebours pour prendre des décisions ; calculez vous-même l'échéance (voir la note ci-dessous). L'observateur ne lit en outre que la première page de lots (50).
+:::caution Stade précoce : rien à surveiller pour l'instant
+La Tour de guet lit les lots via le client REST du RDK, et les routes `/qorechain/rdk/v1/…` sont servies sur les deux réseaux. Aucun rollup n'a été créé sur l'un ou l'autre réseau (vérifié le 21 octobre 2026) ; il n'y a donc encore rien à surveiller et la Tour de guet n'a jamais tourné face à un lot réel. Dans `@qorechain/rdk` 0.5.0, sa logique d'échéance était erronée (elle lisait une hauteur de bloc comme un horodatage Unix, de sorte que `onDeadline` se déclenchait dès qu'un lot était vu pour la première fois) et elle ne lisait que la première page de 50 lots ; **la 0.6.0 corrige les deux** (voir ci-dessous). Utilisez la 0.6.0 ou une version ultérieure.
 :::
 
 ## `watchBatches`
@@ -31,8 +31,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -56,10 +56,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -73,12 +75,14 @@ Le framework fait remonter :
 - les **échéances de fenêtre de contestation** via `onDeadline`, et
 - les **lots invalides** (ceux pour lesquels votre `validate` a renvoyé `false`) via `onInvalid`.
 
+Depuis la 0.6.0, elle parcourt chaque page de la liste de lots d'un rollup, rejuge un lot à mesure que son échéance approche (elle continue d'interroger à partir du plus ancien lot dont la fenêtre est encore ouverte, au lieu de juger chaque lot une seule fois à sa première apparition), et mesure chaque fenêtre par rapport à la tête de la chaîne (`getChainTip`, le statut du nœud) plutôt qu'à l'horloge locale. Un lot déjà `finalized` n'est ni validé ni signalé.
+
 Relier `onInvalid` à une contestation transforme la Tour de guet en un
 contestataire automatique complet ; laissez-le non défini pour fonctionner en
 mode observation seule.
 
 :::note Fenêtre de contestation
-Calculez l'échéance d'un lot en blocs, pas en secondes : `submitted_at` (une hauteur de bloc) plus la fenêtre. **Sur le mainnet (v3.2.3)**, la fenêtre correspond aux 604 800 « secondes » par défaut converties à raison fixe de 6 secondes par bloc, soit **100 800 blocs** (le temps réel suit le temps de bloc, donc plus court que « 7 jours » avec les blocs d'environ 3,2 s du mainnet). **Sur le testnet uniquement (v3.2.4)**, un lot soumis à partir de la hauteur 8 337 253 reçoit une fenêtre mesurée en secondes de temps de bloc. Publier une contestation exige également la caution de contestation du rollup (1 000 QOR pour les profils `nft` et `custom`).
+La chaîne mesure la fenêtre d'un lot de l'une de deux manières, et `batchChallengeWindow` (utilisée par la Tour de guet et par le contrôle de santé derrière `qorollup status`) indique laquelle. **Fenêtre en nombre de blocs, règle du mainnet avant la hauteur 3 742 566 (v3.2.3) :** la fenêtre correspond aux secondes configurées du rollup converties à raison fixe de 6 secondes par bloc, soit **100 800 blocs** pour les 604 800 par défaut, comptés à partir de la hauteur `submitted_at` du lot ; le temps réel suit le temps de bloc, donc plus court que « 7 jours » avec les blocs d'environ 3,2 s du mainnet. Le package rapporte séparément `open` et `finalizable`, car selon la règle qu'il implémente un bloc est à la fois l'un et l'autre (une contestation est considérée ouverte tant que `height - submitted_at <= window`, finalisable dès que `height - submitted_at >= window`). **Fenêtre basée sur le temps, à partir de la v3.2.4 (le testnet depuis la hauteur 8 337 253, le mainnet à partir de la hauteur 3 742 566) :** un lot soumis à partir de la hauteur de mise à niveau enregistre son temps de bloc et sa fenêtre est ce nombre de secondes de temps de bloc. La Tour de guet utilise la fenêtre propre au rollup lorsque le nœud la rapporte (le package documente cela comme v3.2.4 et ultérieures) ; sinon elle se rabat sur la fenêtre par défaut du module, donc passez `challengeWindowSecs` pour un rollup qui a configuré la sienne. Publier une contestation exige également la caution de contestation du rollup (1 000 QOR pour les profils `nft` et `custom`).
 :::
 
 ## CLI

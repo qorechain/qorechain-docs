@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-すべての `go build`、`go test`、`go run` の呼び出しでは、`CGO_ENABLED=1` を設定する**必要があります**。ノードは cgo を通じてネイティブライブラリ（CosmWasm ランタイム、およびリリースビルドでは PQC と SVM のライブラリ）をリンクします。
+すべての `go build`、`go test`、`go run` の呼び出しでは、`CGO_ENABLED=1` を設定する**必要があります**。ノードは cgo を通じてネイティブライブラリ（QoreChain Native ランタイム、およびリリースビルドでは PQC と SVM のライブラリ）をリンクします。
 :::
 
 ## ネイティブライブラリ

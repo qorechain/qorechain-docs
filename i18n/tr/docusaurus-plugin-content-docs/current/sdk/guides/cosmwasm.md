@@ -1,20 +1,22 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: CosmWasm Kılavuzu
-sidebar_label: CosmWasm
+title: QoreChain Native Kılavuzu
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# CosmWasm kılavuzu
+# QoreChain Native kılavuzu
 
-TypeScript çekirdeği (`@qorechain/sdk`), CosmWasm sözleşmelerini sorgulamak ve
+QoreChain Native, QoreChain'in CosmWasm akıllı sözleşme çalışma zamanı için kullandığı addır; bu nedenle bu sayfada adı geçen CosmWasm kütüphaneleri ve istemci paketleri, onunla birlikte kullandığınız paketlerdir.
+
+TypeScript çekirdeği (`@qorechain/sdk`), QoreChain Native sözleşmelerini sorgulamak ve
 yürütmek için `@cosmjs/cosmwasm-stargate` üzerinde ince, tipli sarmalayıcılar
 içerir. Okumalar salt okunur bir istemci kullanır; durum değişiklikleri ise
 imzalayan bir istemci kullanır.
 
 ## Salt okunur sorgular
 
-`createClient()` örneğinizden salt okunur bir CosmWasm istemcisi açın — konsensüs
+`createClient()` örneğinizden salt okunur bir QoreChain Native istemcisi açın — konsensüs
 RPC uç noktası üzerinden bağlanır ve istemcide önbelleğe alınır (memoized).
 
 ```ts
@@ -51,10 +53,10 @@ oluşturabilirsiniz.
 `uploadCode` ve `instantiate` reddedilir. Halihazırda var olan sözleşmeler
 sorgulanabilir (yukarıda) ve yürütülebilir. Güncel izinler için
 `GET /cosmwasm/wasm/v1/codes/params` adresine bakın.
-Bkz. [CosmWasm Geliştirme](/developer-guide/cosmwasm-development).
+Bkz. [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development).
 :::
 
-:::caution CosmWasm imzalayan istemci klasik olarak imzalar
+:::caution QoreChain Native imzalayan istemci klasik olarak imzalar
 `connectCosmWasmSigner`, yalnızca klasik secp256k1 imzasını ekleyen CosmJS imzalayan
 istemcisini sarmalar. Canlı ağlar, her Native yol işleminde hibrit
 (secp256k1 + ML-DSA-87) imza gerektirir; bu nedenle onun üzerinden gönderilen bir
@@ -110,7 +112,7 @@ Tam argüman şekilleri `@cosmjs/cosmwasm-stargate`'i izler; SDK, tipli
 
 ### Canlı bir ağda yürütme (hibrit)
 
-CosmWasm mesaj türlerini bir registry'ye ekleyin ve `MsgExecuteContract`'ı hibrit
+QoreChain Native mesaj türlerini bir registry'ye ekleyin ve `MsgExecuteContract`'ı hibrit
 oluşturucu üzerinden gönderin. Hesabın ML-DSA-87 anahtarı önce kaydedilmiş olmalıdır
 (bkz. [Kuantum güvenli](/sdk/guides/quantum-safe)). Şunu gerektirir:
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:

@@ -10,7 +10,7 @@ sidebar_position: 9
 Ce guide explique comment créer un validateur sur le réseau QoreChain, comprendre le système de classification des pools, enregistrer une clé PQC pour une sécurité résistante au quantique, et surveiller votre nœud.
 
 :::note
-Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée par la gouvernance à la hauteur 3,662,051). Le testnet **`qorechain-diana`** (EVM chain ID **9800**, v3.2.4) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,2 s sur le mainnet et environ 1,0 s sur le testnet ; convertissez donc les nombres de blocs en durée pour chaque réseau.
+Ce guide cible le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée par la gouvernance à la hauteur 3,662,051) jusqu'à la hauteur 3,742,566 et la **v3.2.4** à partir de ce bloc (proposition de gouvernance 13). Un validateur doit avoir installé le binaire v3.2.4 avant cette hauteur, faute de quoi son nœud s'y arrête et manque des blocs jusqu'à son redémarrage ; voir [Exécuter un nœud : mises à niveau](/developer-guide/running-a-node#upgrades). Le testnet **`qorechain-diana`** (EVM chain ID **9800**, en v3.2.4 depuis le 19 octobre 2026) est recommandé pour répéter votre configuration avant la mise en production. Remplacez `--chain-id` par la valeur appropriée pour votre réseau cible. Les temps de bloc diffèrent : environ 3,2 s sur le mainnet et environ 1,0 s sur le testnet ; convertissez donc les nombres de blocs en durée pour chaque réseau.
 :::
 
 :::caution Utilisez le binaire de release, pas une compilation depuis les sources
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` joint une **preuve de possession** : la clé signe `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` et la chaîne la vérifie, de sorte que personne ne peut enregistrer une clé publique dont il ne détient pas la moitié privée. Elle est facultative en v3.2.3 et recommandée.
+`--pqc-key mypqc` joint une **preuve de possession** : la clé signe `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` et la chaîne la vérifie, de sorte que personne ne peut enregistrer une clé publique dont il ne détient pas la moitié privée. Elle est facultative en v3.2.3 et recommandée. À partir de la v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3,742,566), l'enregistrement du compte indique aussi si une preuve a été vérifiée (`possession_proven`, dans `GET /qorechain/pqc/v1/account/{address}`).
 
 :::note Ce que la v3.2.3 a changé pour l'enregistrement des clés
 * Un compte **sans** clé enregistrée ne peut envoyer que l'enregistrement lui-même : toute autre transaction portant une extension de signature hybride est refusée. Enregistrez d'abord, puis signez tout le reste avec `tx pqc cosign`.

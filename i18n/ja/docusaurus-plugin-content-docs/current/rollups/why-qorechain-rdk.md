@@ -14,14 +14,14 @@ sidebar_position: 2
 - クロス VM 呼び出しを備えた **トリプル VM** ランタイム。
 
 :::caution 初期段階: ステータス列をお読みください
-どちらのネットワークにも、まだロールアップは作成されていません（2026年10月20日時点で確認）。下の表は、現時点で動作するものを示しています。リリース済みの 0.5.0 クライアントの制限は [RDK 0.5.0 の制限](/rollups/deploying-a-rollup#rdk-050-limits) にまとめてあります。汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ここで説明する機能は、RDK が TypeScript、Python、Go、Rust、Java で上乗せするものです。
+どちらのネットワークにも、まだロールアップは作成されていません（2026年10月21日時点で確認）。下の表は、現時点で動作するものを示しています。リリース済みの 0.6.0 クライアントが変更した点と、残る制限は [RDK 0.6.0：変更点と制限](/rollups/deploying-a-rollup#rdk-050-limits) にまとめてあります。汎用的な optimistic/zk ロールアップだけが必要なら、どのキットでも構いません。ここで説明する機能は、RDK が TypeScript、Python、Go、Rust、Java で上乗せするものです。
 :::
 
 | 機能 | ステータス | 依存するもの |
 | --- | --- | --- |
-| **量子耐性のある決済レシート** | 🟡 初期段階 | アンカーは Main Chain のポスト量子方式である ML-DSA-87 で署名されます。アンカーはまだ存在せず、0.5.0 の検証器は稼働中のネットワークに対するチェーン検証を完了できません |
+| **量子耐性のある決済レシート** | 🟡 初期段階 | アンカーは Main Chain のポスト量子方式である ML-DSA-87 で署名されます。アンカーはまだ存在しないため、0.6.0 の検証器（チェーンに対して検証します）は実際のアンカーに対して一度も実行されていません |
 | **QCAI Rollup Copilot** | 🟡 公開エンドポイントではまだ利用不可 | 現在、公開エンドポイントが公開していないオンチェーン AI/RL アドバイザリーサービス |
-| **マルチ VM のクロス VM 呼び出し** | 🟡 稼働中のネットワークではまだ利用不可 | 有効化されていないクロス VM プリコンパイルがあり、0.5.0 のエンコーダーはチェーンのレイアウトと一致せず、CosmWasm のアップロードは閉じられています |
+| **マルチ VM のクロス VM 呼び出し** | 🟡 稼働中のネットワークではまだ利用不可 | 有効化されていないクロス VM プリコンパイルがあり（0.6.0 のエンコーダーはチェーンのレイアウトと一致します）、QoreChain Native のアップロードは閉じられています |
 
 ---
 
@@ -40,7 +40,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-0.5.0 では、`verifySettlementReceipt` はチェーンに対して検証を行い、`client` なしでは `valid` と報告することを拒否します。ただし、そのチェーン検証は稼働中のネットワークに対してまだ完了しないため、本物のレシートを有効と報告する代わりに、フェイルクローズで失敗します。レシートが何を証明し、何を証明しないのか、また正確な制限については、[量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
+`verifySettlementReceipt` はチェーンに対して検証を行い、`client` なしでは `valid` と報告することを拒否します。0.5.0 では、そのチェーン検証は稼働中のネットワークに対して完了できませんでした（本物のレシートを有効と報告する代わりに、フェイルクローズで失敗していました）。0.6.0 でこれは修正されていますが、アンカーがまだ存在しないため、実際のアンカーに対しては実行されていません。レシートが何を証明し、何を証明しないのか、また正確な制限については、[量子耐性のある決済レシート](/rollups/settlement-receipts) を参照してください。
 
 ---
 
@@ -64,11 +64,11 @@ CLI から: `qorollup advise my-rollup`。詳細は [QCAI Copilot](/rollups/qcai
 
 ## 3. マルチ VM のクロス VM 呼び出し
 
-> 🟡 **稼働中のネットワークではまだ利用できません** — プリコンパイルは有効化されておらず、CosmWasm のアップロードは閉じられています。[マルチ VM](/rollups/multi-vm) を参照してください。
+> 🟡 **稼働中のネットワークではまだ利用できません** — プリコンパイルは有効化されておらず、QoreChain Native のアップロードは閉じられています。[マルチ VM](/rollups/multi-vm) を参照してください。
 
-RDK には、EVM（Solidity）コントラクトから **CosmWasm** コントラクトへの呼び出しを、`0x…0901` の固定プリコンパイル経由でエンコードするヘルパーが含まれています。このプリコンパイルは、メインネットでもテストネットでも **有効ではありません**（[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status) を参照）。どちらでも `0x…0901` に対する `eth_getCode` は `0x` を返し、そこへのコントラクト呼び出しは何の効果もなく成功します。
+RDK には、EVM（Solidity）コントラクトから **QoreChain Native** コントラクトへの呼び出しを、`0x…0901` の固定プリコンパイル経由でエンコードするヘルパーが含まれています。このプリコンパイルは、メインネットでもテストネットでも **有効ではありません**（[EVM プリコンパイル: ネットワークの状況](/developer-guide/evm-precompiles#network-status) を参照）。どちらでも `0x…0901` に対する `eth_getCode` は `0x` を返し、そこへのコントラクト呼び出しは何の効果もなく成功します。
 
-0.5.0 のヘルパー `encodeCrossVmCalldata` は `executeCrossVMCall(string,bytes)` 用のコールデータを作成しますが、ノードがデコードするのは `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` であるため、その出力はチェーンが読み取る内容と一致しません。代わりに、チェーンのレイアウトで呼び出しをエンコードしてください（ここでは viem を使用。`targetVM` の 1 は CosmWasm で、サポートされる唯一のターゲットです）。
+0.6.0 のヘルパー `encodeCrossVmCalldata` は、ノードがデコードするレイアウトである `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` 用のコールデータを作成します（0.5.0 以前は、セレクターの異なる 2 引数の形式をエンコードしており、プリコンパイルに届くことは決してあり得ませんでした）。同じ呼び出しは自分でエンコードすることもできます（ここでは viem を使用。`targetVM` の 1 は QoreChain Native で、サポートされる唯一のターゲットです）。
 
 ```ts
 import { encodeFunctionData, parseAbi, toHex } from "viem";
@@ -81,7 +81,7 @@ const calldata = encodeFunctionData({
   abi,
   functionName: "executeCrossVMCall",
   args: [
-    1,                                                          // 1 = CosmWasm
+    1,                                                          // 1 = QoreChain Native
     "qor1examplecontract…",                                     // target contract
     toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
   ],
@@ -108,7 +108,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 
 現時点では `ok` だけでは何も証明されません。プリコンパイルにコードがない間は、呼び出しは空のデータとともに成功を返し、何も実行しないため、ターゲットコントラクトへの効果を確認してください。
 
-スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔CosmWasm のみ。SVM のクロス呼び出しは別枠です。）
+スターターは `npm create qorechain-rollup my-app -- --template multivm-rollup` でスキャフォールドできます。（EVM↔QoreChain Native のみ。SVM のクロス呼び出しは別枠です。）
 
 ---
 

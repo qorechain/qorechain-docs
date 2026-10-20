@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # Ce este QoreChain?
 
-QoreChain este primul blockchain de tip Layer 1 construit cu criptografie post-cuantică de la geneză, procesare a tranzacțiilor nativă AI și un runtime triplu-VM care execută programe EVM, CosmWasm și SVM pe un singur lanț. În loc să adapteze rezistența cuantică pe un protocol existent, QoreChain a fost proiectat de la zero pentru a fi sigur împotriva adversarilor atât clasici, cât și cuantici, oferind în același timp experiența de dezvoltare și interoperabilitatea așteptate de la un blockchain modern de uz general.
+QoreChain este primul blockchain de tip Layer 1 construit cu criptografie post-cuantică de la geneză, procesare a tranzacțiilor nativă AI și un runtime triplu-VM care execută programe EVM, QoreChain Native (runtime-ul CosmWasm) și SVM pe un singur lanț. În loc să adapteze rezistența cuantică pe un protocol existent, QoreChain a fost proiectat de la zero pentru a fi sigur împotriva adversarilor atât clasici, cât și cuantici, oferind în același timp experiența de dezvoltare și interoperabilitatea așteptate de la un blockchain modern de uz general.
 
-Rețeaua principală (`qorechain-vladi`, EVM chain ID **9801**) este activă din 7 iunie 2026 și rulează versiunea de lanț **v3.2.3** (aplicată prin guvernanță la 20 octombrie 2026). O rețea de test publică (`qorechain-diana`, EVM chain ID **9800**, în prezent v3.2.4, o versiune doar pentru testnet) rulează în paralel pentru staging și testare de integrare. Token-ul nativ este **QOR** (afișare) / **uqor** (bază, 10^6), cu prefixele Bech32 `qor` pentru conturi și `qorvaloper` pentru validatori. Lanțul este construit pe Cosmos SDK v0.53.
+Rețeaua principală (`qorechain-vladi`, EVM chain ID **9801**) este activă din 7 iunie 2026 și rulează versiunea de lanț **v3.2.3** (aplicată prin guvernanță la 20 octombrie 2026) până la înălțimea 3,742,566 și **v3.2.4** de la acel bloc (propunerea de guvernanță 13). O rețea de test publică (`qorechain-diana`, EVM chain ID **9800**, care rulează v3.2.4 din 19 octombrie 2026) rulează în paralel pentru staging și testare de integrare. Token-ul nativ este **QOR** (afișare) / **uqor** (bază, 10^6), cu prefixele Bech32 `qor` pentru conturi și `qorvaloper` pentru validatori. Lanțul este construit pe Cosmos SDK v0.53.
 
 ## Inovații de bază
 
@@ -26,10 +26,10 @@ QoreChain folosește ML-DSA-87 (Dilithium-5) standardizat de NIST pentru semnăt
 QoreChain este singurul Layer 1 care rulează nativ trei mașini virtuale într-un singur consens:
 
 * **EVM** — Compatibilitate completă cu Ethereum cu prețuri de gaz EIP-1559 și JSON-RPC pe portul 8545. Implementați contracte Solidity folosind instrumente standard (Hardhat, Foundry, Remix).
-* **CosmWasm** — Contracte inteligente WebAssembly scrise în Rust cu suport complet pentru ciclul de viață (instanțiere, execuție, interogare, migrare).
+* **QoreChain Native** — Contracte inteligente WebAssembly scrise în Rust cu suport complet pentru ciclul de viață (instanțiere, execuție, interogare, migrare).
 * **SVM** — Implementare și execuție de programe BPF cu un server JSON-RPC compatibil Solana pe portul 8899. Clienții și instrumentele Solana existente funcționează imediat.
 
-Mesageria între VM-uri permite tuturor celor trei runtime-uri să comunice: contractele EVM apelează CosmWasm prin precompilare (odată ce acea precompilare este activată), contractele CosmWasm apelează EVM prin mesaje personalizate, iar programele SVM participă prin punte bazată pe evenimente asincrone. Astăzi, doar runtime-ul EVM acceptă tranzacții în rețelele active: încărcarea și instanțierea codului CosmWasm sunt dezactivate, banda de tranzacții SVM este dezactivată, nicio precompilare EVM nu este activă, iar mesajul de apel între VM-uri este oprit pe rețeaua principală.
+Mesageria între VM-uri permite tuturor celor trei runtime-uri să comunice: contractele EVM apelează QoreChain Native prin precompilare (odată ce acea precompilare este activată), contractele QoreChain Native apelează EVM prin mesaje personalizate, iar programele SVM participă prin punte bazată pe evenimente asincrone. Astăzi, doar runtime-ul EVM acceptă tranzacții în rețelele active: încărcarea și instanțierea codului QoreChain Native sunt dezactivate, banda de tranzacții SVM este dezactivată, nicio precompilare EVM nu este activă, iar mesajul de apel între VM-uri este oprit pe rețeaua principală.
 
 ### 4. Tokenomică cu emisie plafonată
 

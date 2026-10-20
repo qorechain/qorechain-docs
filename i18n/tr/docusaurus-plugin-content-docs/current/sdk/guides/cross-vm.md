@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Çapraz VM kılavuzu
 
-QoreChain, **EVM, SVM ve CosmWasm'ı yan yana** çalıştırır ve `x/crossvm` modülü,
+QoreChain, **EVM, SVM ve QoreChain Native'ı yan yana** çalıştırır ve `x/crossvm` modülü,
 tek bir yerel hesabın bunlardan herhangi birinde bir sözleşmeyi çağırmasına olanak
 tanır. SDK, bu çağrıları oluşturmak, imzalamak ve yayınlamak için — birkaçını
 **üç VM'nin tümünde tek bir atomik işlemde** paketlemek dahil — üst düzey bir
@@ -23,7 +23,7 @@ zincir üzerinde çalışır.
   kapatılmıştır (`GET /cosmos/circuit/v1/disable_list`,
   `/qorechain.crossvm.v1.MsgCrossVMCall` kaydını listeler); testnet üzerinde
   etkindir.
-- SVM işlem şeridi ağ genelinde devre dışıdır, CosmWasm yükleme ve örnekleme
+- SVM işlem şeridi ağ genelinde devre dışıdır, QoreChain Native yükleme ve örnekleme
   izne tabidir (ve mainnet üzerinde sözleşme yoktur), EVM köprüsü precompile'ı da
   etkin değildir (bkz.
   [EVM Precompile'ları](/developer-guide/evm-precompiles#network-status)).
@@ -72,7 +72,7 @@ dizisi olarak da dışa aktarılır).
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | ham baytlar, değişmeden geçirilir |
 | `{ evm: { abi, functionName, args } }` | viem'in `encodeFunctionData`'sı ile ABI olarak kodlanır (seçici + argümanlar) |
-| `{ cosmwasm: object }` | `JSON.stringify`, ardından UTF-8 baytları (CosmWasm execute-msg kuralı) |
+| `{ cosmwasm: object }` | `JSON.stringify`, ardından UTF-8 baytları (QoreChain Native execute-msg kuralı) |
 | `{ svm: { data: Uint8Array \| Hex } }` | ham baytlar (bir SVM talimat blob'u) |
 
 EVM yolu `viem`'i geç (lazy) içe aktarır, bu nedenle isteğe bağlı `viem` peer'ı
@@ -97,7 +97,7 @@ const msg = xvm.buildCall({
 
 `callAtomic`, birden çok `MsgCrossVMCall` mesajını **tek bir işlem gövdesinde**
 paketler, böylece tek bir imza altında atomik olarak yürütülürler — üçlü VM
-başlığı. Tek imza, EVM + SVM + CosmWasm'da yapılan çağrıların hepsi birlikte iner
+başlığı. Tek imza, EVM + SVM + QoreChain Native'da yapılan çağrıların hepsi birlikte iner
 veya hiçbiri inmez:
 
 ```ts

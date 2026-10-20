@@ -10,7 +10,7 @@ sidebar_position: 4
 Alăturați-vă rețelei de test active QoreChain Diana configurând nodul cu fișierul genesis, partenerii și setările de rețea corecte.
 
 :::note
-Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.3**) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează în prezent **v3.2.4**, o versiune doar pentru rețeaua de test, care nu face parte din rețeaua principală; manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Această pagină acoperă rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea **v3.2.3** până la înălțimea 3.742.566, **v3.2.4** de la acel bloc) și are propria pagină dedicată **Conectarea la rețeaua principală**, cu genesis, parteneri și detalii de conectare separate. Rețeaua de test rulează **v3.2.4** din 19 octombrie 2026; manifestul său de lansare se află la [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Puncte finale publice
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight` (v3.2.4 a fost aplicată la înălțimea 8.337.253, la 19 octombrie 2026; înaintea ei, v3.2.3 la 8.003.746 și v3.2.2 la 6.905.034), iar `minCompatible` este egal cu versiunea curentă (3.2.4). Un nod care se alătură acum are nevoie de versiunea din manifest. Păstrați ceasul sistemului sincronizat prin NTP. Manifestul rețelei principale indică o altă versiune (v3.2.3), așa că nu copiați niciodată un binar de pe o rețea pe cealaltă.
+Rețeaua de test primește upgrade-uri coordonate prin propuneri de guvernanță, așa că manifestul său conține un `upgradeHeight` (v3.2.4 a fost aplicată la înălțimea 8.337.253, la 19 octombrie 2026; înaintea ei, v3.2.3 la 8.003.746 și v3.2.2 la 6.905.034), iar `minCompatible` este egal cu versiunea curentă (3.2.4). Un nod care se alătură acum are nevoie de versiunea din manifest. Păstrați ceasul sistemului sincronizat prin NTP. Manifestul rețelei principale indică o altă versiune (v3.2.3 până la upgrade-ul de la înălțimea 3.742.566), așa că nu copiați niciodată un binar de pe o rețea pe cealaltă.
 
 ---
 

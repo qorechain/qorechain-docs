@@ -10,7 +10,7 @@ sidebar_position: 2
 مرجع موحَّد لمعاملات الوحدات في شبكات QoreChain، مُجمَّعة حسب الوحدة. يمكن الاستعلام عن المعاملات باستخدام `qorechaind query <module> params` حيثما تتوفر للوحدة استعلامات params (`pqc` و`amm` و`crossvm` و`lightnode` و`multilayer` و`reputation` و`rlconsensus`؛ أما `ai` و`qca` و`rdk` و`bridge` و`abstractaccount` و`gasabstraction` فتستخدم `config`، ويمكن الاستعلام عن `gasabstraction` على الشبكة التجريبية فقط)، وعبر REST فقط للمسارات المذكورة في [مرجع REST / gRPC](/api-reference/rest-grpc-endpoints). كما تُتاح معاملات `x/inflation` عبر REST على الشبكة الرئيسية منذ v3.2.3 (`/qorechain/inflation/v1/params`). REST غير متاح للوحدات `ai` و`qca` و`reputation` و`crossvm` و`rlconsensus` و`fairblock` و`xqore`.
 
 :::note
-القيم المعروضة قُرئت مباشرةً من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM رقم **9801**، الإصدار **v3.2.3**) بتاريخ 20 أكتوبر 2026 (قيم المنشأ ما لم يغيّرها مقترح حوكمة؛ وتُذكر تلك الحالات). وهي متطابقة على الشبكة التجريبية **`qorechain-diana`** (معرّف سلسلة EVM رقم **9800**، الإصدار **v3.2.4**) إلا حيث يُذكر خلاف ذلك؛ والفروق القائمة اليوم مجمَّعة في [فروق الشبكة التجريبية (v3.2.4)](#testnet-differences). المدد المعطاة بالكتل تُحوَّل وفق زمن الكتلة المقيس على الشبكة الرئيسية وهو نحو 3.2 ثانية (تنتج الشبكة التجريبية كتلة كل ثانية تقريبًا).
+القيم المعروضة قُرئت مباشرةً من الشبكة الرئيسية **`qorechain-vladi`** (معرّف سلسلة EVM رقم **9801**، الإصدار **v3.2.3**) بتاريخ 20 أكتوبر 2026 (قيم المنشأ ما لم يغيّرها مقترح حوكمة؛ وتُذكر تلك الحالات). وهي متطابقة على الشبكة التجريبية **`qorechain-diana`** (معرّف سلسلة EVM رقم **9800**، الإصدار **v3.2.4** منذ 19 أكتوبر 2026) إلا حيث يُذكر خلاف ذلك؛ والفروق القائمة إلى أن تعتمد الشبكة الرئيسية ترقية v3.2.4 (الارتفاع 3,742,566) مجمَّعة في [الفروق حتى ترقية v3.2.4](#testnet-differences). المدد المعطاة بالكتل تُحوَّل وفق زمن الكتلة المقيس على الشبكة الرئيسية وهو نحو 3.2 ثانية (تنتج الشبكة التجريبية كتلة كل ثانية تقريبًا).
 :::
 
 ---
@@ -378,7 +378,7 @@ sidebar_position: 2
 | | `active_static_precompiles` | فارغة (لا يوجد precompile مفعَّل في EVM) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
-| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+| QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
 
 ---
 
@@ -386,27 +386,33 @@ sidebar_position: 2
 
 يمكن للسلسلة تعطيل أنواع رسائل بعينها بواسطة قاطع الدائرة في Cosmos SDK، ويتحكم فيه حساب عمليات المؤسسة والحوكمة. يُرفض نوع الرسالة المعطَّل في معالج ante على كل مسار. القائمة الحية متاحة على `GET /cosmos/circuit/v1/disable_list`.
 
-**الشبكة الرئيسية (20 أكتوبر 2026، 16 إدخالًا، دون تغيير منذ 14 أكتوبر):** إنشاء حسابات الاستحقاق التدريجي (`MsgCreateVestingAccount` و`MsgCreatePermanentLockedAccount` و`MsgCreatePeriodicVestingAccount`)؛ رسائل CosmWasm `MsgStoreCode` و`MsgInstantiateContract` و`MsgInstantiateContract2`؛ رسائل AMM `MsgPausePool` و`MsgResumePool`؛ `crossvm.MsgCrossVMCall`؛ `multilayer.MsgUpdateLayerStatus`؛ `pqc.MsgDeprecateAlgorithm` و`pqc.MsgDisableAlgorithm`؛ ورسائل التحكم الأربع في PRISM (`MsgSetAgentMode` و`MsgUpdatePolicy` و`MsgUpdateRewardWeights` و`MsgResumeAgent`). مسار EVM (`MsgEthereumTx`) **مفتوح**: كان معطَّلًا من 16 إلى 25 سبتمبر وأُعيد فتحه بترقية v3.2.0.
+**الشبكة الرئيسية (20 أكتوبر 2026، 16 إدخالًا، دون تغيير منذ 14 أكتوبر):** إنشاء حسابات الاستحقاق التدريجي (`MsgCreateVestingAccount` و`MsgCreatePermanentLockedAccount` و`MsgCreatePeriodicVestingAccount`)؛ رسائل QoreChain Native `MsgStoreCode` و`MsgInstantiateContract` و`MsgInstantiateContract2`؛ رسائل AMM `MsgPausePool` و`MsgResumePool`؛ `crossvm.MsgCrossVMCall`؛ `multilayer.MsgUpdateLayerStatus`؛ `pqc.MsgDeprecateAlgorithm` و`pqc.MsgDisableAlgorithm`؛ ورسائل التحكم الأربع في PRISM (`MsgSetAgentMode` و`MsgUpdatePolicy` و`MsgUpdateRewardWeights` و`MsgResumeAgent`). مسار EVM (`MsgEthereumTx`) **مفتوح**: كان معطَّلًا من 16 إلى 25 سبتمبر وأُعيد فتحه بترقية v3.2.0.
 
-**الشبكة التجريبية (20 أكتوبر 2026):** رسائل CosmWasm الثلاث فقط.
+**الشبكة التجريبية (20 أكتوبر 2026):** رسائل QoreChain Native الثلاث فقط.
 
 كل نوع رسالة آخر، بما في ذلك جميع رسائل bank وstaking والحوكمة والتوزيع وauthz وتسجيل `x/pqc` القياسية، مفعَّل. القائمة تخضع للحوكمة وقد تتغير؛ استعلم عنها دائمًا.
 
 ---
 
-## فروق الشبكة التجريبية (v3.2.4) {#testnet-differences}
+## الفروق حتى ترقية v3.2.4 {#testnet-differences}
 
-تعمل الشبكة التجريبية `qorechain-diana` بالإصدار v3.2.4 (طُبِّق عند الارتفاع 8,337,253 بتاريخ 19 أكتوبر 2026)؛ والإصدار v3.2.4 **للشبكة التجريبية فقط** حاليًا؛ ومن شأن مقترح الحوكمة 13 على الشبكة الرئيسية أن يطبّقه عند الارتفاع 3,742,566. اعتبارًا من 20 أكتوبر 2026 تختلف هذه العناصر عن الشبكة الرئيسية:
+تعمل الشبكة التجريبية `qorechain-diana` بالإصدار v3.2.4 منذ الارتفاع 8,337,253 (19 أكتوبر 2026). وتعمل الشبكة الرئيسية بالإصدار v3.2.3 حتى الارتفاع 3,742,566 وبالإصدار v3.2.4 من تلك الكتلة (مقترح الحوكمة 13)؛ ومن ذلك الحين تسري صفوف v3.2.4 أدناه على الشبكتين معًا ولا تبقى مختلفة إلا القيم الخاصة بكل شبكة. اعتبارًا من 20 أكتوبر 2026 تختلف الشبكة التجريبية عن الشبكة الرئيسية على النحو التالي:
 
-| المجال | الشبكة التجريبية |
+| المجال | الشبكة التجريبية الآن؛ والشبكة الرئيسية من الارتفاع 3,742,566 |
 | ---- | ------- |
 | الوحدات | 49 بدلًا من 48: وحدة الرهن المقفل زمنيًا الاختيارية `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`؛ الحد الأدنى للقفل 10 QOR). راجع [الرهن والتفويض](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | قيم إصدار أقدم (16,239 QOR لكل حقبة، وسقف 114,285,714 QOR، وقد بُلغ بالفعل) ووضع ثالث لـ `emission_mode` هو `target_apy`، مع معامل `target_apy_bps` قيمته حاليًا `0`. |
+| `x/inflation` | وضع ثالث لـ `emission_mode` هو `target_apy`، مع معامل `target_apy_bps` قيمته `0` على الشبكة التجريبية. أيّ الأوضاع هو السارِي قرارُ حوكمة منفصل على كل شبكة. |
 | `x/burn` | مصدر مسجَّل ثالث عشر، `staking_tier_penalty`. |
 | مجمَّع مكافآت `x/lightnode` | حقول إبلاغ إضافية (`monthly_cap_active` و`last_distribution_time` و`last_distribution_height`)؛ ويبدأ الحد الأقصى لمكافأة العقدة من تسجيلها هي. |
 | `x/pqc` | علَم `possession_proven` على حسابات PQC؛ وإثبات الامتلاك ما زال اختياريًا لمفاتيح الحسابات ومطلوبًا لمفاتيح مُصدِّقي الجسر. |
 | `x/rdk` | تُحتسب نافذة الطعن المتفائلة بزمن الكتلة. |
-| قاطع الدائرة | رسائل CosmWasm الثلاث فقط (انظر أعلاه). |
 | الاستعلامات | استعلامان جديدان هما `protocol_features` و`auth_nonce`. |
+
+هذه القيم خاصة بالشبكة التجريبية وتبقى مختلفة بعد الترقية:
+
+| المجال | الشبكة التجريبية |
+| ---- | ------- |
+| قيم `x/inflation` | قيم إصدار أقدم (16,239 QOR لكل حقبة، وسقف 114,285,714 QOR، وقد بُلغ بالفعل)؛ وتستخدم الشبكة الرئيسية القيم التي حدّدها مقترح الحوكمة 10. |
+| قاطع الدائرة | رسائل QoreChain Native الثلاث فقط (انظر أعلاه). |
 
 كل معامل غير مذكور هنا متطابق على الشبكتين.

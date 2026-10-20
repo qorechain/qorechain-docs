@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Ghid Cross-VM
 
-QoreChain rulează **EVM, SVM și CosmWasm una lângă alta**, iar modulul `x/crossvm`
+QoreChain rulează **EVM, SVM și QoreChain Native una lângă alta**, iar modulul `x/crossvm`
 permite unui singur cont nativ să invoce un contract pe oricare dintre ele. SDK-ul
 oferă un utilitar de nivel înalt `createCrossVMClient` pentru a construi, semna și
 difuza aceste apeluri — inclusiv împachetarea mai multora într-o **singură
@@ -24,7 +24,7 @@ Apelurile cross-VM sunt disponibile doar în măsura în care este disponibilă 
   (`GET /cosmos/circuit/v1/disable_list` listează `/qorechain.crossvm.v1.MsgCrossVMCall`);
   este activat pe testnet.
 - Calea de tranzacții SVM este dezactivată la nivelul întregii rețele, încărcarea și
-  instanțierea CosmWasm sunt cu permisiuni (și nu există contracte pe mainnet), iar
+  instanțierea QoreChain Native sunt cu permisiuni (și nu există contracte pe mainnet), iar
   precompile-ul bridge EVM nu este activ (vezi
   [Precompile-uri EVM](/developer-guide/evm-precompiles#network-status)).
 - Utilitarele REST tipizate de citire de mai jos apelează rute pe care gateway-ul
@@ -74,7 +74,7 @@ Alege exact **o** singură formă de payload per apel:
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | octeți bruți, transmiși nemodificați |
 | `{ evm: { abi, functionName, args } }` | codificat ABI cu `encodeFunctionData` din viem (selector + args) |
-| `{ cosmwasm: object }` | `JSON.stringify` apoi octeți UTF-8 (convenția execute-msg CosmWasm) |
+| `{ cosmwasm: object }` | `JSON.stringify` apoi octeți UTF-8 (convenția execute-msg QoreChain Native) |
 | `{ svm: { data: Uint8Array \| Hex } }` | octeți bruți (un blob de instrucțiune SVM) |
 
 Calea EVM importă `viem` în mod leneș (lazy), deci peer-ul opțional `viem` este
@@ -99,7 +99,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` împachetează mai multe mesaje `MsgCrossVMCall` într-un **singur corp
 de tranzacție**, astfel încât să se execute atomic sub o singură semnătură —
-titlul triple-VM. O singură semnătură, apeluri pe EVM + SVM + CosmWasm care toate
+titlul triple-VM. O singură semnătură, apeluri pe EVM + SVM + QoreChain Native care toate
 ajung împreună sau deloc:
 
 ```ts

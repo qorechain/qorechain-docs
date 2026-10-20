@@ -10,7 +10,7 @@ sidebar_position: 12
 `x/rdk` modülü, geliştiricilerin QoreChain üzerinde uygulamaya özel rollup'lar dağıtmasına olanak tanıyan kapsamlı bir Rollup Geliştirme Kiti (RDK) sağlar. Dört uzlaşma (settlement) paradigmasını, birden fazla sıralayıcı (sequencer) modunu, takılabilir veri erişilebilirliği (data availability) arka uçlarını ve yapay zeka destekli yapılandırma optimizasyonunu destekler.
 
 :::caution Erken aşama yetenek
-Modül mainnet üzerinde (zincir sürümü **v3.2.3**) ve testnet üzerinde (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (20 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
+Modül mainnet üzerinde (zincir sürümü 3,742,566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4**) ve testnet üzerinde (**v3.2.4**) dağıtılmıştır, ancak **her iki ağda da henüz hiçbir rollup oluşturulmamıştır** (21 Ekim 2026'da kontrol edildi: `GET /qorechain/rdk/v1/rollups` her ikisinde de boş bir liste döndürür). Aşağıda açıklanan çeşitli yetenekler bugün uçtan uca kullanılabilir değildir; durum, her biri anlatıldığı yerde belirtilmiştir. Geliştiricilere yönelik nasıl yapılır kılavuzu için [Rollup'lara Genel Bakış](/rollups/overview) bölümüne bakın.
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK, her biri farklı güven varsayımlarına, kesinlik (finality) öz
 Optimistic rollup'lar işlemlerin varsayılan olarak geçerli olduğunu kabul eder ve anlaşmazlık çözümü için dolandırıcılık kanıtlarına (fraud proofs) dayanır.
 
 * **Kanıt sistemi**: Etkileşimli dolandırıcılık kanıtları
-* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **Mainnet (v3.2.3):** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **Yalnızca testnet (v3.2.4, 8,337,253 yüksekliğinde uygulandı):** o yükseklikten itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Mainnet'te bu değişiklik yalnızca v3.2.4 ile yürürlüğe girecektir (yönetişim önerisi 13 bunu 3,742,566 yüksekliğinde uygulayacaktır).
+* **İtiraz penceresi**: 604,800 saniye (varsayılan, 7 gün). **v3.2.4'e kadar (3,742,566 yüksekliğinden önce mainnet v3.2.3):** zincir bunu blok başına sabit 6 saniyeden bloklara dönüştürür, yani **100,800 blok**; gerçek geçen süre fiili blok süresine bağlıdır (mainnet'in mevcut ≈3.2 sn'lik bloklarında yaklaşık 3.7 gün), bu nedenle günlere göre değil bloklara göre planlama yapın. **v3.2.4'ten itibaren:** yükseltme yüksekliğinden itibaren gönderilen bir parti için pencere, blok süresinin saniyeleriyle ölçülür (tam 7 gün). Daha önce gönderilen bir parti blok sayısı kuralını korur. Testnet v3.2.4'ü 8,337,253 yüksekliğinde (19 Ekim 2026) uyguladı; mainnet bunu 3,742,566 yüksekliğinde uygular (yönetişim önerisi 13).
 * **İtiraz teminatı**: 1,000 QOR (1,000,000,000 uqor) — bir dolandırıcılık kanıtı itirazı göndermek için gereklidir (`nft` ve `custom` hazır profilleri; `defi`, `gaming` ve `enterprise` hazır profillerinde itiraz penceresi olmadığı için teminat belirlenmez)
 * **Kesinlik**: Geçerli bir itiraz olmadan itiraz penceresi sona erene kadar ertelenir
 * **Otomatik kesinleştirme**: `EndBlocker`, itiraz penceresi anlaşmazlık olmadan geçtiğinde partileri (batch) otomatik olarak kesinleştirir. İtiraz edilen bir parti asla otomatik olarak kesinleştirilmez: rollup oluşturucusu önce itirazı çözer ([Rollup Dağıtma](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups) bölümüne bakın).
@@ -100,7 +100,7 @@ RDK, yaygın kullanım durumları için optimize edilmiş, anahtar teslim rollup
 | ---------------- | ------------------------ | --------- | --------------- | ------------ | ------- | --------------- |
 | **`defi`**       | zk (SNARK)               | dedicated | native          | EIP-1559     | EVM     | Alım satım, borç verme ve AMM tarzı uygulamalar |
 | **`gaming`**     | based                    | based     | native          | flat         | custom  | Yüksek verimli, düşük gecikmeli oyun durumu ve oyun içi ekonomiler |
-| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planlandı) | standard | CosmWasm | NFT basımı, pazar yerleri ve dijital koleksiyon ürünleri |
+| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planlandı) | standard | QoreChain Native | NFT basımı, pazar yerleri ve dijital koleksiyon ürünleri |
 | **`enterprise`** | based                    | based     | native          | subsidized   | EVM     | Sponsorlu ücretlerle izinli ve konsorsiyum dağıtımları |
 | **`custom`**     | tamamen parametreli      | tamamen parametreli | tamamen parametreli | tamamen parametreli | tamamen parametreli | Her alan kullanıcı tarafından tanımlanır |
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Uzlaşma Modu    | Kesinleştirme Tetikleyicisi                                  |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | Gönderimden 100,800 blok sonra (varsayılan pencere) itiraz olmadan; testnet'te, v3.2.4'ten beri gönderilen partiler için blok süresinin 604,800 saniyesi |
+| **Optimistic**  | Gönderimden 100,800 blok sonra (varsayılan pencere) itiraz olmadan; v3.2.4'ten beri gönderilen partiler için (testnet'te 8,337,253 yüksekliğinden, mainnet'te 3,742,566 yüksekliğinden itibaren) blok süresinin 604,800 saniyesi |
 | **ZK**          | Geçerli kanıt gönderiminde anında                           |
 | **Based**       | Gönderimden 2 L1 bloğu sonra                                 |
 | **Sovereign**   | Yok — rollup'ın kendi uzlaşması tarafından yönetilir        |
@@ -261,8 +261,8 @@ Kayıt **ölümcül değildir**: başarısız olursa (yetersiz bakiye veya sın�
 
 Bir uzlaşma partisi `x/multilayer`'a demirlenebilir; bu, rollup oluşturucusunun kuantum sonrası imzası altında katman kimliğini, katman yüksekliğini (parti indeksi), durum kökünü, doğrulayıcı kümesi karmasını ve işlem sayısını kaydeder.
 
-* **v3.2.2'den beri (mainnet ve testnet'te canlı):** `MsgSubmitBatch` iki isteğe bağlı alana sahiptir. `anchor_signature`, oluşturucunun partinin **v2 demir imza baytları** üzerindeki ML-DSA-87 imzasıdır ([Bağlantıları Okuma](/architecture/multilayer-architecture#reading-anchors) bölümüne bakın); mevcut olduğunda parti `x/multilayer` içinde **aynı işlemde** demirlenir ve reddedilen bir demir partiyi de reddeder. `validator_set_hash`, demirde taşınan ve imzayla kapsanan rollup'ın doğrulayıcı kümesi taahhüdüdür. CLI'da: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imzalanacak baytları yazdırır ve `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` bunları gönderir.
-* **İmza olmadan** parti, eskisi gibi demirlenmeden uzlaştırılır. Alanı göndermeyen bir istemci demirlenmemiş partiler üretir, bu nedenle kullandığınız araç setinin bunu desteklediğini kontrol edin. Her iki ağda da henüz hiçbir rollup, katman veya demir yoktur, dolayısıyla hiçbir demir yazılmamıştır.
+* **v3.2.2'den beri (mainnet ve testnet'te canlı):** `MsgSubmitBatch` iki isteğe bağlı alana sahiptir. `anchor_signature`, oluşturucunun partinin **v2 demir imza baytları** üzerindeki ML-DSA-87 imzasıdır ([Bağlantıları Okuma](/architecture/multilayer-architecture#reading-anchors) bölümüne bakın); mevcut olduğunda parti `x/multilayer` içinde **aynı işlemde** demirlenir ve reddedilen bir demir partiyi de reddeder. `validator_set_hash`, demirde taşınan ve imzayla kapsanan rollup'ın doğrulayıcı kümesi taahhüdüdür. CLI'da: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imzalanacak baytları yazdırır (`<layer-id>`, rollup'ın katman kimliğidir; RDK ile oluşturulan rollup'larda rollup kimliğine eşittir) ve `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` bunları gönderir.
+* **İmza olmadan** parti, eskisi gibi demirlenmeden uzlaştırılır. Alanı göndermeyen bir istemci demirlenmemiş partiler üretir, bu nedenle kullandığınız araç setinin bunu desteklediğini kontrol edin: TypeScript `@qorechain/rdk` 0.6.0, istemcisi hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda demiri imzalar (aksi halde demirlenmeden gönderir); Python, Go, Rust ve Java istemcileri ise alanı oluşturmaz. Her iki ağda da henüz hiçbir rollup, katman veya demir yoktur, dolayısıyla hiçbir demir yazılmamıştır ve bu yol canlıda test edilmemiştir.
 
 Bir demirin neyi kanıtlayıp neyi kanıtlamadığı için [Uzlaşma Makbuzları](/rollups/settlement-receipts) bölümüne bakın.
 

@@ -14,7 +14,7 @@ QoreChain هي سلسلة طبقة أولى (Layer 1) واحدة تُشغّل ث
 
 | الجهاز الافتراضي | العقود | سطح العميل في الـ SDK |
 | --- | --- | --- |
-| **CosmWasm** | عقود Rust/Wasm | `client.cosmwasm()` ومساعِدات `queryContractSmart` / `execute` في `@qorechain/sdk` |
+| **QoreChain Native** | عقود Rust/Wasm (وقت تشغيل CosmWasm) | `client.cosmwasm()` ومساعِدات `queryContractSmart` / `execute` في `@qorechain/sdk` |
 | **محرك QoreChain EVM** | Solidity / Vyper | `@qorechain/evm` (محوّل viem) |
 | **SVM** | برامج Solana | `@qorechain/svm` (محوّل `@solana/web3.js`) |
 
@@ -27,7 +27,7 @@ QoreChain هي سلسلة طبقة أولى (Layer 1) واحدة تُشغّل ث
 
 - **Cosmos REST (LCD)** — أرصدة بنكية، معلومات الحساب، استعلامات الوحدات.
 - **Consensus RPC** — يُستخدم لتوقيع/بث المعاملات الأصلية ولعميل قراءة
-  CosmWasm.
+  QoreChain Native.
 - **EVM JSON-RPC** — استدعاءات `eth_*` و`net_*` و`web3_*` و`txpool_*` المعيارية
   على نقاط النهاية العامة. مساحة الأسماء `qor_*` الخاصة بـ QoreChain وأجهزة EVM
   precompiles غير متاحة هناك بعد (انظر أدناه).

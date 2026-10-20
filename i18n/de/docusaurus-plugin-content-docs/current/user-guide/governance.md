@@ -10,7 +10,7 @@ sidebar_position: 3
 Dieser Leitfaden erklärt, wie die On-Chain-Governance bei QoreChain funktioniert: wie Stimmen ausgezählt werden, wie man Vorschläge einreicht und wie man abstimmt.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live auf Release **v3.2.3**; das Testnet läuft mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live auf Release **v3.2.3** bis Höhe 3.742.566 und ab diesem Block auf **v3.2.4**; das Testnet läuft seit dem 19. Oktober 2026 mit **v3.2.4** — ersetze die Chain-ID und Endpunkte des Mainnets gemäß der Seite **Connecting to Mainnet**, wenn du an der Governance im Mainnet teilnimmst.
 :::
 
 :::caution Mit `tx pqc cosign` signieren
@@ -175,7 +175,7 @@ Wichtige Parameter sind unter anderem:
 
 ## Governance im Mainnet bisher {#mainnet-history}
 
-Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 11 wurden im Oktober 2026 im Mainnet angenommen, und Vorschlag 12 befand sich zum Zeitpunkt der Erstellung in der Abstimmungsphase; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
+Die Mainnet-Governance wurde für Parameteränderungen, Circuit-Breaker-Entscheidungen, koordinierte Upgrades und seit Oktober 2026 auch für die Freigabe von Beträgen genutzt, die die Chain beim Upgrade v3.2.0 verzeichnet hat. Die Vorschläge 7 bis 11 wurden im Oktober 2026 im Mainnet angenommen, während sich die Vorschläge 12 (eine weitere Freigabe) und 13 (das Upgrade auf v3.2.4 bei Höhe 3.742.566) zum Zeitpunkt der Erstellung in ihren Abstimmungsphasen befanden; die Liste und die Ergebnisse stehen in der [Versionshistorie](/appendix/version-history#governance-timeline), und jeder Vorschlag lässt sich live unter `GET /cosmos/gov/v1/proposals` abrufen.
 
 ---
 

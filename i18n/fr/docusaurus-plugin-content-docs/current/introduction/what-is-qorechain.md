@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # Qu'est-ce que QoreChain ?
 
-QoreChain est la première blockchain de couche 1 construite avec une cryptographie post-quantique dès le genesis, un traitement des transactions natif à l'IA et un environnement d'exécution triple-VM qui exécute des programmes EVM, CosmWasm et SVM sur une seule chaîne. Plutôt que de greffer la résistance quantique sur un protocole existant, QoreChain a été conçue de fond en comble pour être sécurisée face aux adversaires classiques comme quantiques, tout en offrant l'expérience développeur et l'interopérabilité attendues d'une blockchain moderne à usage général.
+QoreChain est la première blockchain de couche 1 construite avec une cryptographie post-quantique dès le genesis, un traitement des transactions natif à l'IA et un environnement d'exécution triple-VM qui exécute des programmes EVM, QoreChain Native (le runtime CosmWasm) et SVM sur une seule chaîne. Plutôt que de greffer la résistance quantique sur un protocole existant, QoreChain a été conçue de fond en comble pour être sécurisée face aux adversaires classiques comme quantiques, tout en offrant l'expérience développeur et l'interopérabilité attendues d'une blockchain moderne à usage général.
 
-Le mainnet (`qorechain-vladi`, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.2.3** (appliquée par la gouvernance le 20 octobre 2026). Un testnet public (`qorechain-diana`, EVM chain ID **9800**, actuellement en v3.2.4, une version réservée au testnet) fonctionne en parallèle pour les tests de pré-production et d'intégration. Le jeton natif est **QOR** (affichage) / **uqor** (base, 10^6), avec les préfixes Bech32 `qor` pour les comptes et `qorvaloper` pour les validateurs. La chaîne est construite sur le Cosmos SDK v0.53.
+Le mainnet (`qorechain-vladi`, EVM chain ID **9801**) est en service depuis le 7 juin 2026 et exécute la version de chaîne **v3.2.3** (appliquée par la gouvernance le 20 octobre 2026) jusqu'à la hauteur 3 742 566 et la **v3.2.4** à partir de ce bloc (proposition de gouvernance 13). Un testnet public (`qorechain-diana`, EVM chain ID **9800**, en v3.2.4 depuis le 19 octobre 2026) fonctionne en parallèle pour les tests de pré-production et d'intégration. Le jeton natif est **QOR** (affichage) / **uqor** (base, 10^6), avec les préfixes Bech32 `qor` pour les comptes et `qorvaloper` pour les validateurs. La chaîne est construite sur le Cosmos SDK v0.53.
 
 ## Innovations majeures
 
@@ -26,10 +26,10 @@ QoreChain utilise ML-DSA-87 (Dilithium-5) standardisé par le NIST pour les sign
 QoreChain est la seule couche 1 à exécuter nativement trois machines virtuelles au sein d'un même consensus :
 
 * **EVM** — Compatibilité Ethereum complète avec tarification du gas EIP-1559 et JSON-RPC sur le port 8545. Déployez des contrats Solidity avec l'outillage standard (Hardhat, Foundry, Remix).
-* **CosmWasm** — Contrats intelligents WebAssembly écrits en Rust avec prise en charge complète du cycle de vie (instanciation, exécution, requête, migration).
+* **QoreChain Native** — Contrats intelligents WebAssembly écrits en Rust avec prise en charge complète du cycle de vie (instanciation, exécution, requête, migration).
 * **SVM** — Déploiement et exécution de programmes BPF avec un serveur JSON-RPC compatible Solana sur le port 8899. Les clients et l'outillage Solana existants fonctionnent immédiatement.
 
-La messagerie inter-VM permet aux trois environnements de communiquer : les contrats EVM appellent CosmWasm via precompile (une fois ce precompile activé), les contrats CosmWasm appellent l'EVM via des messages personnalisés, et les programmes SVM participent par un pontage asynchrone basé sur les événements. Aujourd'hui, seul l'environnement EVM accepte des transactions sur les réseaux en service : le téléversement et l'instanciation de code CosmWasm sont désactivés, la voie de transaction SVM est désactivée, aucun precompile EVM n'est actif, et le message d'appel inter-VM est désactivé sur le mainnet.
+La messagerie inter-VM permet aux trois environnements de communiquer : les contrats EVM appellent QoreChain Native via precompile (une fois ce precompile activé), les contrats QoreChain Native appellent l'EVM via des messages personnalisés, et les programmes SVM participent par un pontage asynchrone basé sur les événements. Aujourd'hui, seul l'environnement EVM accepte des transactions sur les réseaux en service : le téléversement et l'instanciation de code QoreChain Native sont désactivés, la voie de transaction SVM est désactivée, aucun precompile EVM n'est actif, et le message d'appel inter-VM est désactivé sur le mainnet.
 
 ### 4. Tokenomics à émission plafonnée
 

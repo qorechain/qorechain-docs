@@ -67,7 +67,7 @@ if (!preflight.safe) {
 
 **استدعِ عقدًا على أي آلة افتراضية، وادمج استدعاءات عبر الآلات الثلاث كلها بشكل ذرّي.**
 
-تشغّل QoreChain عقود CosmWasm وEVM وSVM على السلسلة نفسها مع جسر أصلي عابر
+تشغّل QoreChain عقود QoreChain Native وEVM وSVM على السلسلة نفسها مع جسر أصلي عابر
 للآلات الافتراضية. تعرض SDK واجهة واحدة لاستدعاء أي منها — ولحزم عدة
 استدعاءات عابرة للآلات الافتراضية في معاملة ذرّية واحدة تُوقَّع مرة واحدة.
 
@@ -84,7 +84,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -97,7 +97,7 @@ await crossVM.callAtomic([
 تفعيلها)، ولذلك تستطيع واجهة SDK واحدة مخاطبة الآلات الثلاث كلها. السلاسل ذات
 الآلة الافتراضية الواحدة ليس لديها ما يماثل ذلك لتغليفه. واليوم يقتصر مدى
 الاستدعاء على المسار الذي يستهدفه: فرسالة `MsgCrossVMCall` معطّلة على الشبكة
-الرئيسية، ومعاملات SVM معطّلة، ورفع عقود CosmWasm وإنشاء نسخ منها يتطلبان إذنًا.
+الرئيسية، ومعاملات SVM معطّلة، ورفع عقود QoreChain Native وإنشاء نسخ منها يتطلبان إذنًا.
 راجع [الاستدعاءات عبر الآلات الافتراضية](/sdk/guides/cross-vm).
 
 ---

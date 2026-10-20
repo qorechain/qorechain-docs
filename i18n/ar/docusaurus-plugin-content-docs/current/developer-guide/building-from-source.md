@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-يجب أن يحمل كل استدعاء لـ `go build` و`go test` و`go run` القيمة `CGO_ENABLED=1`. تربط العقدة مكتبات أصلية (بيئة تشغيل CosmWasm، وفي بناء الإصدار مكتبتا PQC وSVM) عبر cgo.
+يجب أن يحمل كل استدعاء لـ `go build` و`go test` و`go run` القيمة `CGO_ENABLED=1`. تربط العقدة مكتبات أصلية (بيئة تشغيل QoreChain Native، وفي بناء الإصدار مكتبتا PQC وSVM) عبر cgo.
 :::
 
 ## المكتبات الأصلية (Native Libraries)

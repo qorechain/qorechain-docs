@@ -10,7 +10,7 @@ sidebar_position: 12
 Modulul `x/rdk` oferă un Rollup Development Kit (RDK) cuprinzător, care permite dezvoltatorilor să implementeze rollup-uri specifice aplicațiilor pe QoreChain. Suportă patru paradigme de decontare, mai multe moduri de secvențiere, backend-uri de disponibilitate a datelor conectabile și optimizare a configurației asistată de AI.
 
 :::caution Capabilitate în stadiu incipient
-Modulul este implementat pe mainnet (versiunea de lanț **v3.2.3**) și pe testnet (**v3.2.4**), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 20 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
+Modulul este implementat pe mainnet (versiunea de lanț **v3.2.3** până la înălțimea 3,742,566, **v3.2.4** de la acel bloc) și pe testnet (**v3.2.4**), dar **niciun rollup nu a fost creat încă pe niciuna dintre rețele** (verificat la 21 octombrie 2026: `GET /qorechain/rdk/v1/rollups` returnează o listă goală pe ambele). Mai multe capabilități descrise mai jos nu pot fi folosite în prezent de la un capăt la altul; starea este indicată acolo unde fiecare este descrisă. Pentru ghidul practic destinat dezvoltatorilor, consultați [Prezentare generală a rollup-urilor](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK suportă patru moduri distincte de decontare — **optimistic**, *
 Rollup-urile optimiste presupun că tranzacțiile sunt valide în mod implicit și se bazează pe demonstrații de fraudă pentru rezolvarea disputelor.
 
 * **Sistem de demonstrare**: Demonstrații de fraudă interactive
-* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Mainnet (v3.2.3):** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **Doar testnet (v3.2.4, aplicat la înălțimea 8,337,253):** pentru un lot trimis începând cu acea înălțime, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Pe mainnet, această schimbare ar intra în vigoare doar cu v3.2.4 (propunerea de guvernanță 13 ar aplica-o la înălțimea 3,742,566).
+* **Fereastră de contestare**: 604,800 de secunde (implicit, 7 zile). **Până la v3.2.4 (mainnet v3.2.3 înainte de înălțimea 3,742,566):** lanțul o convertește în blocuri la un raport fix de 6 secunde per bloc, **100,800 de blocuri**, deci timpul real scurs depinde de timpul efectiv al blocurilor (aproximativ 3,7 zile la blocurile actuale de ≈3.2 s de pe mainnet); planificați în blocuri, nu în zile. **De la v3.2.4:** pentru un lot trimis începând cu înălțimea upgrade-ului, fereastra este măsurată în secunde de timp de bloc (7 zile întregi). Un lot trimis mai devreme păstrează regula numărului de blocuri. Testnet-ul a aplicat v3.2.4 la înălțimea 8,337,253 (19 octombrie 2026); mainnet-ul o aplică la înălțimea 3,742,566 (propunerea de guvernanță 13).
 * **Garanție de contestare**: 1,000 QOR (1,000,000,000 uqor) — necesară pentru a depune o contestare prin demonstrație de fraudă (profilurile `nft` și `custom`; profilurile `defi`, `gaming` și `enterprise` nu setează nicio garanție deoarece nu au fereastră de contestare)
 * **Finalitate**: Întârziată până la expirarea ferestrei de contestare fără o contestare validă
 * **Auto-finalizare**: `EndBlocker` finalizează automat loturile odată ce fereastra de contestare a trecut fără dispută. Un lot contestat nu este niciodată finalizat automat: creatorul rollup-ului rezolvă mai întâi contestarea (vezi [Implementarea unui rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -100,7 +100,7 @@ RDK include **cinci profiluri prestabilite** care oferă configurații de rollup
 | ---------------- | ------------------------ | --------- | --------------- | ------------ | ------- | --------------- |
 | **`defi`**       | zk (SNARK)               | dedicated | native          | EIP-1559     | EVM     | Aplicații de tranzacționare, creditare și de tip AMM |
 | **`gaming`**     | based                    | based     | native          | flat         | custom  | Stare de joc și economii în joc cu debit ridicat și latență scăzută |
-| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planificat) | standard | CosmWasm | Emitere NFT, marketplace-uri și obiecte de colecție digitale |
+| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planificat) | standard | QoreChain Native | Emitere NFT, marketplace-uri și obiecte de colecție digitale |
 | **`enterprise`** | based                    | based     | native          | subsidized   | EVM     | Implementări cu permisiuni și de consorțiu cu taxe sponsorizate |
 | **`custom`**     | complet parametrizat      | complet parametrizat | complet parametrizat | complet parametrizat | complet parametrizat | Fiecare câmp este definit de utilizator |
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Mod de decontare | Declanșator de finalizare                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 de blocuri după trimitere (fereastra implicită) fără contestare; pe testnet, pentru loturile trimise începând cu v3.2.4, 604,800 de secunde de timp de bloc |
+| **Optimistic**  | 100,800 de blocuri după trimitere (fereastra implicită) fără contestare; pentru loturile trimise începând cu v3.2.4 (testnet de la înălțimea 8,337,253; mainnet de la înălțimea 3,742,566), 604,800 de secunde de timp de bloc |
 | **ZK**          | Instantaneu la depunerea unei demonstrații valide                           |
 | **Based**       | 2 blocuri L1 după trimitere                                |
 | **Sovereign**   | Niciunul — gestionat de propriul consens al rollup-ului                |
@@ -261,8 +261,8 @@ Când un rollup este creat, modulul înregistrează un strat pentru acesta prin 
 
 Un lot de decontare poate fi ancorat la `x/multilayer`, care înregistrează ID-ul stratului, înălțimea stratului (indexul lotului), rădăcina de stare, hash-ul setului de validatori și numărul de tranzacții sub o semnătură post-cuantică a creatorului rollup-ului.
 
-* **Începând cu v3.2.2 (live pe mainnet și testnet):** `MsgSubmitBatch` are două câmpuri opționale. `anchor_signature` este semnătura ML-DSA-87 a creatorului peste **octeții de semnare v2 ai ancorei** lotului (vezi [Citirea ancorelor](/architecture/multilayer-architecture#reading-anchors)); când este prezentă, lotul este ancorat în `x/multilayer` în **aceeași tranzacție**, iar o ancoră refuzată refuză lotul. `validator_set_hash` este angajamentul setului de validatori al rollup-ului, purtat în ancoră și acoperit de semnătură. În CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` afișează octeții de semnat, iar `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` îi trimite.
-* **Fără semnătură**, lotul se decontează neancorat, exact ca înainte. Un client care nu trimite câmpul produce loturi neancorate, așa că verificați dacă toolkit-ul pe care îl folosiți îl suportă. Niciun rollup, strat sau ancoră nu există încă pe niciuna dintre rețele, deci nu a fost scrisă nicio ancoră.
+* **Începând cu v3.2.2 (live pe mainnet și testnet):** `MsgSubmitBatch` are două câmpuri opționale. `anchor_signature` este semnătura ML-DSA-87 a creatorului peste **octeții de semnare v2 ai ancorei** lotului (vezi [Citirea ancorelor](/architecture/multilayer-architecture#reading-anchors)); când este prezentă, lotul este ancorat în `x/multilayer` în **aceeași tranzacție**, iar o ancoră refuzată refuză lotul. `validator_set_hash` este angajamentul setului de validatori al rollup-ului, purtat în ancoră și acoperit de semnătură. În CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` afișează octeții de semnat (`<layer-id>` este id-ul de strat al rollup-ului, care este egal cu id-ul rollup-ului pentru rollup-urile create prin RDK), iar `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` îi trimite.
+* **Fără semnătură**, lotul se decontează neancorat, exact ca înainte. Un client care nu trimite câmpul produce loturi neancorate, așa că verificați dacă toolkit-ul pe care îl folosiți îl suportă: `@qorechain/rdk` 0.6.0 în TypeScript semnează ancora atunci când clientul său semnează hibrid și este creatorul rollup-ului (altfel trimite lotul neancorat), în timp ce clienții Python, Go, Rust și Java nu construiesc câmpul. Niciun rollup, strat sau ancoră nu există încă pe niciuna dintre rețele, deci nu a fost scrisă nicio ancoră, iar acea cale nu a fost testată live.
 
 Vezi [Chitanțe de decontare](/rollups/settlement-receipts) pentru ce dovedește și ce nu dovedește o ancoră.
 

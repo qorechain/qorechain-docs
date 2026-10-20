@@ -19,7 +19,7 @@ QoreChain SDK는 양자 내성(quantum-safe) 트리플 VM 레이어 1 네트워�
 QoreChain은 하나의 체인 위에서 세 가지 일급(first-class) 스마트 컨트랙트
 런타임을 제공하는 레이어 1 블록체인입니다:
 
-- **CosmWasm** — Cosmos SDK 기반의 Wasm 스마트 컨트랙트.
+- **QoreChain Native** — Cosmos SDK 기반의 Wasm 스마트 컨트랙트(CosmWasm 런타임).
 - **QoreChain EVM Engine** — 이더리움 호환 실행 환경(Solidity, viem, 표준
   JSON-RPC).
 - **SVM** — 솔라나 스타일 JSON-RPC를 갖춘 솔라나 호환 런타임.
@@ -28,19 +28,19 @@ QoreChain은 하나의 체인 위에서 세 가지 일급(first-class) 스마트
 위한 IBC 모듈을 포함합니다(메인넷과 테스트넷에는 아직 열려 있는 IBC 채널이
 없습니다).
 
-:::note 현재 라이브 네트워크에서 동작하는 것 (메인넷 v3.2.3, 테스트넷 v3.2.4)
+:::note 현재 라이브 네트워크에서 동작하는 것 (메인넷 v3.2.3, 높이 3,742,566부터는 v3.2.4, 테스트넷 v3.2.4)
 **동작함:** 모든 레인에서의 읽기, 하이브리드 서명된 Native 트랜잭션, 통합
 계정, [인가 윈도우](/sdk/guides/evm#evm-window) 안에서의 EVM 트랜잭션, 그리고
 SVM 읽기.
 **아직 사용 불가:** EVM 프리컴파일(비활성), `qor_` JSON-RPC 네임스페이스, SVM
 트랜잭션, 메인넷에서의 크로스 VM 호출(`MsgCrossVMCall`은 서킷 브레이커로
-꺼져 있음), 일반 계정의 CosmWasm 업로드 및 인스턴스화, 인증자 / 추상 계정
+꺼져 있음), 일반 계정의 QoreChain Native 업로드 및 인스턴스화, 인증자 / 추상 계정
 플로우(모듈 꺼짐), xQORE, 가스 추상화. 각 가이드는 해당되는 곳마다 이 주의
 사항을 반복합니다.
 
 게시된 SDK(0.9.0, 2026년 10월 21일)는 두 네트워크가 검증하는 형태(체인 상태로부터
 결정되는 v2 하이브리드 sign-bytes)로 서명하며, 서명 형식, 주소, 소수 자릿수,
-메모, 수수료는 v3.2.3이나 v3.2.4에서 바뀌지 않았습니다. 이후의 포스트 양자
+메모, 수수료는 v3.2.3이나 v3.2.4에서 바뀌지 않았습니다(메인넷은 높이 3,742,566부터 v3.2.4를 실행합니다). 이후의 포스트 양자
 규칙에 대한 클라이언트 측 지원(키 등록 시 소유 증명, 범위가 제한된 EVM 윈도우,
 EIP-7702 동의 메시지)을 포함하며, 0.9.0 이전 버전은 포함하지 않습니다.
 [0.9.0 이전 버전](/sdk/install#before-090)을 참고하세요.
@@ -111,7 +111,7 @@ SDK는 원하는 언어로 개발할 수 있도록 패키지 제품군으로 배
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | 게시됨 (PyPI, v0.9.0) |
 | `qorechain-sdk` (Go 모듈) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | 게시됨 (Go 프록시, 태그 `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | 게시됨 (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | 게시됨 (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | 게시됨 (Maven Central, v0.9.1. 다른 언어는 0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM 어댑터) | `npm i @qorechain/evm viem` | 게시됨 (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM 어댑터) | `npm i @qorechain/svm @solana/web3.js` | 게시됨 (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (React 키트) | `npm i @qorechain/react` | 게시됨 (npm, v0.9.0) |
@@ -132,7 +132,7 @@ Python, Go, Rust, Java 클라이언트는 TypeScript와 **완전한 네이티브
 npm(`@qorechain/sdk` 0.9.0), Python은 PyPI(`qorechain-sdk` 0.9.0, import
 `qorsdk`), Go는 모듈 프록시(태그 `packages/go/v0.9.0`), Rust는
 crates.io(`qorechain-sdk` 0.9.0), Java는 Maven
-Central(`io.github.qorechain:qorechain-sdk` 0.9.0)에 게시되어 있습니다.
+Central(`io.github.qorechain:qorechain-sdk` 0.9.1, Java 전용 업데이트이며 다른 클라이언트는 0.9.0)에 게시되어 있습니다.
 EVM/SVM 실행 어댑터(`@qorechain/evm`, `@qorechain/svm`, 둘 다 0.8.0),
 `@qorechain/react` 키트(0.9.0), `create-qorechain-dapp` 스캐폴딩 CLI(0.9.0)는
 TypeScript 전용이며 마찬가지로 npm에 게시되어 있습니다. 부속 패키지는

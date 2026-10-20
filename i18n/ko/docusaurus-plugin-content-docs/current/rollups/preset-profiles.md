@@ -35,10 +35,10 @@ qorechaind tx rdk create-rollup [rollup-id] [profile] [stake-amount]
 
 몇 가지 제약은 [정산 → 증명 매트릭스](/rollups/overview)에서 따라옵니다: `optimistic` 정산은 `fraud` 증명을 사용하고, `zk`는 `snark`(또는 `stark`)를 사용하며, `based`와 `sovereign`은 증명이 없습니다. `based` 정산은 항상 `based` 시퀀서 모드와 짝을 이룹니다. `nft` 프리셋은 현재 네이티브로 정산하며 **Celestia DA 도입이 예정**되어 있습니다.
 
-RDK v0.4.2부터 Wasm VM 옵션(CosmWasm 컨트랙트를 실행하는 런타임)의 이름은 **`native`** — QoreChain Native 입니다. `cosmwasm`은 여전히 허용되는 레거시 별칭이며, 두 값 모두 와이어 상에서는 `cosmwasm`으로 매핑되므로 체인, 익스플로러, Dashboard는 변경되지 않습니다.
+RDK v0.4.2부터 Wasm VM 옵션(QoreChain Native 컨트랙트를 실행하는 런타임)의 이름은 **`native`** — QoreChain Native 입니다. `cosmwasm`은 여전히 허용되는 레거시 별칭이며, 두 값 모두 와이어 상에서는 `cosmwasm`으로 매핑되므로 체인, 익스플로러, Dashboard는 변경되지 않습니다.
 
 :::note
-프리셋별 구성은 v3.2.3 소스의 체인 프로필 표를 기준으로 검증되었으며(메인넷은 v3.2.3, 테스트넷은 v3.2.4 실행 중), 여기서 `create-rollup`은 프로필의 프리셋을 자동으로 적용합니다: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (기본값)**. `custom` 프리셋은 모든 필드를 열어 두며, 표시된 값은 그 시작 기본값일 뿐입니다.
+프리셋별 구성은 v3.2.3 소스의 체인 프로필 표를 기준으로 검증되었으며(메인넷은 높이 3,742,566까지 v3.2.3을 실행하고 그 블록부터 v3.2.4를 실행하며, 테스트넷은 v3.2.4 실행 중), 여기서 `create-rollup`은 프로필의 프리셋을 자동으로 적용합니다: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (기본값)**. `custom` 프리셋은 모든 필드를 열어 두며, 표시된 값은 그 시작 기본값일 뿐입니다.
 :::
 
 네 가지 도메인 프리셋은 합리적인 출발점으로, **`custom`** 프로필은 완전히 열린 옵션으로 생각하세요. 번들된 정확한 파라미터는 릴리스 간에 변경될 수 있으므로, 신뢰할 수 있는 값은 아래의 `rdk config` 조회로 확인한 뒤, 가장 가까운 프리셋에서 시작하여 다듬어 나가세요.
@@ -52,7 +52,7 @@ RDK v0.4.2부터 Wasm VM 옵션(CosmWasm 컨트랙트를 실행하는 런타임)
 프로필을 고르기 전에 알아 두면 좋은, 쉽게 오해하기 쉬운 세부 사항이 있습니다:
 
 * **`defi`에는 검증 키(verifying key)가 없습니다.** ZK 배치에는 검증 키가 필요한데, `create-rollup`으로 생성된 롤업에는 이것이 포함되지 않으므로 현재로서는 ZK 정산을 끝까지 최종 확정할 수 없습니다([ZK / STARK 및 출금](/rollups/zk-stark-withdrawals) 참조).
-* **`nft`와 `custom`**은 1,000 QOR의 챌린지 본드와 메인넷 기준 100,800 블록의 챌린지 윈도우로 옵티미스틱하게 정산합니다(기본값 604,800 "초"를 블록당 6초로 고정 환산한 값이며, 메인넷의 현재 ≈3.2초 블록에서는 약 3.7일입니다). 테스트넷에서만, v3.2.4(높이 8,337,253)부터 제출된 배치는 대신 블록 타임의 초 단위로 측정되는 윈도우를 갖습니다.
+* **`nft`와 `custom`**은 1,000 QOR의 챌린지 본드와 높이 3,742,566 이전의 메인넷 기준 100,800 블록의 챌린지 윈도우로 옵티미스틱하게 정산합니다(기본값 604,800 "초"를 블록당 6초로 고정 환산한 값이며, 메인넷의 현재 ≈3.2초 블록에서는 약 3.7일입니다). v3.2.4부터 배치는 대신 블록 타임의 초 단위로 측정되는 윈도우를 갖습니다. 테스트넷은 높이 8,337,253부터, 메인넷은 높이 3,742,566부터입니다.
 * **`gaming`과 `enterprise`**는 `based` 시퀀싱을 사용하며, 현재는 롤업 생성자가 배치를 제출한다는 뜻입니다.
 * **블록 시간과 트랜잭션 한도**(예: `defi` 500 ms, `gaming` 200 ms, `nft` 2,000 ms, `enterprise`와 `custom` 1,000 ms)는 온체인 레코드에 저장됩니다. 이는 해당 롤업 자체 체인을 설명하는 값이며 호스트 체인이 강제하지 않습니다.
 

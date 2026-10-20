@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # دليل Cross-VM
 
-تشغّل QoreChain **EVM وSVM وCosmWasm جنبًا إلى جنب**، وتتيح وحدة `x/crossvm`
+تشغّل QoreChain **EVM وSVM وQoreChain Native جنبًا إلى جنب**، وتتيح وحدة `x/crossvm`
 لحساب أصلي واحد استدعاء عقد على أيٍّ منها. يوفّر الـ SDK
 مساعِدًا عالي المستوى هو `createCrossVMClient` لبناء هذه الاستدعاءات وتوقيعها وبثها —
 بما في ذلك تجميع عدة استدعاءات في **معاملة ذرّية واحدة عبر الأنظمة الافتراضية الثلاثة جميعًا** —
@@ -21,7 +21,7 @@ sidebar_position: 4
 - `MsgCrossVMCall` معطَّلة بواسطة قاطع الدائرة (circuit breaker) الخاص بالسلسلة على **الشبكة الرئيسية**
   (يسرد `GET /cosmos/circuit/v1/disable_list` الرسالة `/qorechain.crossvm.v1.MsgCrossVMCall`)؛
   وهي مفعّلة على الشبكة التجريبية.
-- مسار معاملات SVM معطَّل على مستوى الشبكة كلها، ورفع عقود CosmWasm وإنشاء
+- مسار معاملات SVM معطَّل على مستوى الشبكة كلها، ورفع عقود QoreChain Native وإنشاء
   نسخ منها خاضعان لصلاحيات (ولا توجد عقود على الشبكة الرئيسية)، كما أن
   precompile جسر EVM غير فعّال (انظر
   [EVM Precompiles](/developer-guide/evm-precompiles#network-status)).
@@ -67,7 +67,7 @@ const { messageId, result } = await xvm.call({
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | بايتات خام، تُمرَّر كما هي دون تغيير |
 | `{ evm: { abi, functionName, args } }` | مُرمَّز بـ ABI باستخدام `encodeFunctionData` من viem (المحدِّد + الوسائط) |
-| `{ cosmwasm: object }` | `JSON.stringify` ثم بايتات UTF-8 (اصطلاح execute-msg في CosmWasm) |
+| `{ cosmwasm: object }` | `JSON.stringify` ثم بايتات UTF-8 (اصطلاح execute-msg في QoreChain Native) |
 | `{ svm: { data: Uint8Array \| Hex } }` | بايتات خام (كتلة تعليمة SVM) |
 
 يستورد مسار EVM `viem` بشكل كسول (lazily)، لذا فإن النظير الاختياري `viem`
@@ -92,7 +92,7 @@ const msg = xvm.buildCall({
 
 تجمع `callAtomic` عدة رسائل `MsgCrossVMCall` في **جسم معاملة واحد**
 بحيث تُنفَّذ ذرّيًا تحت توقيع واحد — وهي الميزة البارزة للأنظمة الثلاثة. توقيع
-واحد، واستدعاءات عبر EVM + SVM + CosmWasm تنجح جميعًا معًا
+واحد، واستدعاءات عبر EVM + SVM + QoreChain Native تنجح جميعًا معًا
 أو لا تنجح إطلاقًا:
 
 ```ts

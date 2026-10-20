@@ -10,7 +10,7 @@ sidebar_position: 3
 Acest ghid descrie cum funcționează guvernanța on-chain pe QoreChain: cum sunt numărate voturile, cum să trimiți propuneri și cum să votezi.
 
 :::note
-Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.3**; testnet-ul rulează **v3.2.4** — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
+Comenzile de mai jos folosesc testnet-ul **`qorechain-diana`** (EVM chain ID **9800**). Mainnet-ul (**`qorechain-vladi`**, EVM chain ID **9801**) este activ din 7 iunie 2026 și rulează versiunea **v3.2.3** până la înălțimea 3,742,566 și **v3.2.4** de la acel bloc; testnet-ul rulează **v3.2.4** din 19 octombrie 2026 — înlocuiește chain ID-ul și endpoint-urile de mainnet din pagina **Conectarea la Mainnet** când participi la guvernanță pe mainnet.
 :::
 
 :::caution Semnează cu `tx pqc cosign`
@@ -175,7 +175,7 @@ Parametrii cheie includ:
 
 ## Guvernanța pe mainnet până acum {#mainnet-history}
 
-Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 11 au trecut pe mainnet în octombrie 2026, iar propunerea 12 se afla în perioada de vot la momentul scrierii; lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
+Guvernanța mainnet-ului a fost folosită pentru modificări de parametri, decizii privind circuit breaker-ul, upgrade-uri coordonate și, din octombrie 2026, pentru eliberarea unor sume pe care lanțul le-a înregistrat la upgrade-ul v3.2.0. Propunerile 7 până la 11 au trecut pe mainnet în octombrie 2026, în timp ce propunerile 12 (o eliberare ulterioară) și 13 (upgrade-ul v3.2.4 la înălțimea 3,742,566) se aflau în perioada de vot la momentul scrierii; lista și rezultatele se află în [Istoric versiuni](/appendix/version-history#governance-timeline), iar fiecare propunere poate fi citită live la `GET /cosmos/gov/v1/proposals`.
 
 ---
 

@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 Kayıt, hibrit gereksiniminden yalnızca anahtarı olmayan bir hesap için muaftır, bu nedenle bu işlem yalnızca hesabın klasik anahtarıyla imzalanır. Hatalı biçimlendirilmiş bir kanıt `ErrInvalidProofOfPossession` ile (`pqc` modülünde kod 231) reddedilir.
 
-**Yalnızca testnet (v3.2.4, mainnet'te yok):** hesap kaydı, testnet'te `GET /qorechain/pqc/v1/account/{address}` tarafından döndürülen bir boolean `possession_proven` alanı kazanır. Geçerli anahtar geçerli bir kanıtla kaydedildiyse veya bir döndürme ya da geçiş yoluyla geldiyse (her ikisi de yeni anahtarın zinciri, hesabı ve anahtarı adlandıran baytlar üzerindeki imzasını doğrular) `true` olur; kanıtsız bir kayıt `false` kaydeder ve kanıtsız değişen bir anahtar bayrağı temizler. Mainnet v3.2.3 bu alanı bildirmez. Kanıt testnet'te de isteğe bağlı kalır.
+**v3.2.4'ten itibaren (testnet'te 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren):** hesap kaydı, `GET /qorechain/pqc/v1/account/{address}` tarafından döndürülen bir boolean `possession_proven` alanı kazanır. Geçerli anahtar geçerli bir kanıtla kaydedildiyse veya bir döndürme ya da geçiş yoluyla geldiyse (her ikisi de yeni anahtarın zinciri, hesabı ve anahtarı adlandıran baytlar üzerindeki imzasını doğrular) `true` olur; kanıtsız bir kayıt `false` kaydeder ve kanıtsız değişen bir anahtar bayrağı temizler. Mainnet v3.2.3 bu alanı yükseltme yüksekliğinden önce bildirmez. Kanıt, v3.2.4 altında hesap anahtarları için isteğe bağlı kalır.
 
 ## Hibrit İmzalar {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Bu yardımcı programlar, varsayılan uygulama hash'ini destekler ve şunlar iç
 
 Tüm çapraz zincir köprü kanıtlamaları ve durum taahhütleri **Dilithium-5** imzaları kullanır. `x/multilayer` modülü, her `MsgAnchorState` gönderiminde PQC toplu imzalar gerektirir ve ML-KEM taahhütleri, köprü aktarıcıları arasındaki anahtar değişim kanallarını güvence altına alır.
 
-Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmamasını sağlayarak protokol yığını genelinde kuantum direncini korur. Hiçbir köprü rotası canlı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture#current-status)); yalnızca testnet'te (v3.2.4) bir köprü doğrulayıcısı kaydetmek, ayrıca PQC anahtarının sahiplik kanıtını da gerektirir.
+Bu, köprü altyapısında klasik kriptografi kullanımıyla çapraz zincir güvenliğinin bozulmamasını sağlayarak protokol yığını genelinde kuantum direncini korur. Hiçbir köprü rotası canlı değildir (bkz. [Köprü Mimarisi](/architecture/bridge-architecture#current-status)); v3.2.4'ten itibaren (testnet'te şimdi; mainnet'te 3.742.566 yüksekliğinden itibaren) bir köprü doğrulayıcısı kaydetmek, ayrıca PQC anahtarının sahiplik kanıtını da gerektirir.
 
 ## Modül Parametreleri
 

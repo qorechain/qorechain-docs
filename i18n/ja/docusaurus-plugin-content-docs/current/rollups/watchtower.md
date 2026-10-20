@@ -11,8 +11,8 @@ sidebar_position: 9
 
 フレームワークは監視と*いつ*行うかの判断を担い、**有効性チェックはあなたが提供します**。ウォッチタワーは、バッチが不正であると自ら判断することは決してありません。あなたの `validate` 関数を呼び出し、その戻り値に基づいて動作します。
 
-:::caution 初期段階: 監視対象はなく、0.5.0 の期限アラートは誤っています
-ウォッチタワーは RDK の REST クライアントを通じてバッチを読み取ります。`/qorechain/rdk/v1/…` のルートは両方のネットワークで提供されています。どちらのネットワークにもロールアップは作成されていないため（2026年10月20日確認）、まだ監視対象はありません。また、`@qorechain/rdk` 0.5.0 では、チャレンジウィンドウの期限ロジックも信頼できません。バッチの `submittedAt` は**ブロック高**ですが、ウォッチタワー（および `qorollup status` の背後にあるヘルスチェック）は、これに秒単位のウィンドウを加算し、その合計を実時間と比較します。そのため `secondsRemaining` は意味を持たず、`onDeadline` はバッチが最初に検出された時点ですぐに発火します。判断に `onDeadline` やカウントダウンを使用しないでください。期限は自分で計算してください（下記の注記を参照）。また、ウォッチャーが読み取るのはバッチの最初のページ（50 件）のみです。
+:::caution 初期段階: まだ監視対象はありません
+ウォッチタワーは RDK の REST クライアントを通じてバッチを読み取ります。`/qorechain/rdk/v1/…` のルートは両方のネットワークで提供されています。どちらのネットワークにもロールアップは作成されていないため（2026年10月21日確認）、まだ監視対象はなく、ウォッチタワーは実際のバッチに対して動作したことがありません。`@qorechain/rdk` 0.5.0 では、その期限ロジックが誤っており（ブロック高を Unix タイムスタンプとして読んでいたため、`onDeadline` はバッチが最初に検出された時点ですぐに発火しました）、読み取るのもバッチの最初の 50 件のページだけでした。**0.6.0 ではその両方が修正されています**（下記を参照）。0.6.0 以降を使用してください。
 :::
 
 ## `watchBatches`
@@ -24,8 +24,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -49,10 +49,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -66,10 +68,12 @@ watcher.stop();
 - `onDeadline` による **チャレンジウィンドウの期限**、そして
 - `onInvalid` による **無効なバッチ**（あなたの `validate` が `false` を返したもの）。
 
+0.6.0 以降、ウォッチタワーはロールアップのバッチ一覧のすべてのページをたどり、期限が近づくにつれてバッチを再判定し（各バッチを最初に見たときに一度だけ判定するのではなく、ウィンドウがまだ開いている最も古いバッチから先へポーリングを続けます）、各ウィンドウをローカルの時計ではなくチェーンのチップ（`getChainTip`、ノードのステータス）に照らして測定します。すでに `finalized` のバッチは、検証も警告も行われません。
+
 `onInvalid` をチャレンジに接続すると、ウォッチタワーは完全な自動チャレンジャーになります。未設定のままにすると、観測のみのモードで動作します。
 
 :::note チャレンジウィンドウ
-バッチの期限は、秒ではなくブロック数で計算してください。`submitted_at`（ブロック高）にウィンドウを加えた値です。**メインネット（v3.2.3）** では、ウィンドウはデフォルトの 604,800「秒」を 1 ブロックあたり 6 秒の固定値で換算した **100,800 ブロック** です（実時間はブロック時間に従うため、メインネットの ≈3.2 秒ブロックでは「7 日」より短くなります）。**テストネットのみ（v3.2.4）** では、高さ 8,337,253 以降に提出されたバッチには、ブロック時間の秒数で測られるウィンドウが適用されます。チャレンジを投稿するには、ロールアップのチャレンジボンド（`nft` および `custom` プリセットでは 1,000 QOR）も必要です。
+チェーンはバッチのウィンドウを 2 通りのいずれかの方法で測定し、`batchChallengeWindow`（ウォッチタワーと、`qorollup status` の背後にあるヘルスチェックが使用します）はそのどちらかを報告します。**ブロック数ウィンドウ（高さ 3,742,566 より前のメインネット（v3.2.3）のルール）：** ウィンドウは、ロールアップに設定された秒数を 1 ブロックあたり 6 秒の固定値でブロック数に換算したもので、デフォルトの 604,800 では **100,800 ブロック** となり、バッチの `submitted_at` の高さから数えます。実時間はブロック時間に従うため、メインネットの ≈3.2 秒ブロックでは「7 日」より短くなります。パッケージは `open` と `finalizable` を別々に報告します。パッケージが実装するルールでは 1 つのブロックがその両方になり得るためです（チャレンジは `height - submitted_at <= window` の間は開いているとみなされ、`height - submitted_at >= window` から確定可能になります）。**時間ベースのウィンドウ（v3.2.4 以降。テストネットでは高さ 8,337,253 から、メインネットでは高さ 3,742,566 から）：** アップグレード高さ以降に提出されたバッチはそのブロック時間を記録し、そのウィンドウはその秒数分のブロック時間になります。ウォッチタワーは、ノードが報告する場合はロールアップ自身のウィンドウを使用します（パッケージはこれを v3.2.4 以降としてドキュメント化しています）。報告されない場合はモジュールのデフォルトウィンドウにフォールバックするため、独自のウィンドウを設定したロールアップには `challengeWindowSecs` を渡してください。チャレンジを投稿するには、ロールアップのチャレンジボンド（`nft` および `custom` プリセットでは 1,000 QOR）も必要です。
 :::
 
 ## CLI

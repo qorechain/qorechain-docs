@@ -193,7 +193,7 @@ QoreChain               QoreChain Validators           External Chain
 * 지원되는 체인 목록
 * 평판 점수 (`x/reputation`에 의해 유지됨)
 
-v3.2.2부터 모듈은 모든 경로에서 0 금액과 자체 구성을 일관되게 검증합니다. **테스트넷 전용(v3.2.4, 메인넷에는 없음):** 브리지 검증인을 등록할 때 Dilithium-5 키의 소유 증명도 필요하며(PQC 키 등록과 동일한 `proof_of_possession` 형식, [포스트 양자 보안](/architecture/post-quantum-security#proof-of-possession) 참조), 다른 브리지 검증인이 이미 사용 중인 키는 거부됩니다. 메인넷 v3.2.3에는 이러한 검사가 없으며, 어느 네트워크에도 등록된 브리지 검증인이 없습니다.
+v3.2.2부터 모듈은 모든 경로에서 0 금액과 자체 구성을 일관되게 검증합니다. **v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 블록 높이 3,742,566부터):** 브리지 검증인을 등록할 때 Dilithium-5 키의 소유 증명도 필요하며(PQC 키 등록과 동일한 `proof_of_possession` 형식, [포스트 양자 보안](/architecture/post-quantum-security#proof-of-possession) 참조), 다른 브리지 검증인이 이미 사용 중인 키는 거부됩니다. 해당 높이까지 실행되는 메인넷 v3.2.3에는 이러한 검사가 없으며, 어느 네트워크에도 등록된 브리지 검증인이 없습니다.
 
 ### 서킷 브레이커
 

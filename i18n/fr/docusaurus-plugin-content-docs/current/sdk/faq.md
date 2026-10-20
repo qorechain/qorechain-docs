@@ -10,8 +10,7 @@ sidebar_position: 8
 ## Le mainnet est-il en ligne ?
 
 Oui. Le mainnet est **en ligne** (identifiant de chaîne `qorechain-vladi`, en
-production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.3 au
-20 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
+production depuis le 7 juin 2026) et exécute la version de chaîne v3.2.3 jusqu'à la hauteur 3,742,566 et la v3.2.4 à partir de ce bloc (proposition de gouvernance 13) ; le testnet exécute la v3.2.4 depuis le 19 octobre 2026. Le préréglage testnet (`qorechain-diana`) reste également
 disponible. Les deux préréglages utilisent par défaut des points de terminaison
 localhost ; sélectionnez le réseau avec `createClient({ network: "mainnet" })` et
 remplacez `endpoints` par les URL de vos nœuds. Voir
@@ -33,7 +32,7 @@ const client = createClient({
 ```
 
 Le chemin de signature (`connectTx`) a besoin du point de terminaison
-consensus **`rpc`** ; les lectures CosmWasm l'utilisent également. Les
+consensus **`rpc`** ; les lectures QoreChain Native l'utilisent également. Les
 lectures REST utilisent `rest` ; les appels EVM utilisent `evmRpc` (ainsi que
 les appels `qor_`, sur un nœud qui sert cet espace de noms). Les URL du mainnet
 figurent dans la
@@ -94,7 +93,7 @@ sont sur npm ; le client Python est sur PyPI (`pip install qorechain-sdk` en
 version 0.9.0, import `qorsdk`) ; le client Go est sur le proxy de modules
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`) ; le client Rust
 est sur crates.io (`cargo add qorechain-sdk`, 0.9.0) ; et le client Java est sur
-Maven Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Voir
+Maven Central (`io.github.qorechain:qorechain-sdk:0.9.1` ; les autres langages sont en 0.9.0). Voir
 [Installation](/sdk/install) pour la liste complète des commandes par
 langage.
 
@@ -154,7 +153,7 @@ rejetées on-chain, sur toutes les voies (y compris eth-native).
 ## Avec quelles versions de chaîne le SDK fonctionne-t-il ?
 
 Le SDK **0.9.0** est la version cliente pour la chaîne v3.2.2 et v3.2.3 : il
-transige sur le mainnet **v3.2.3** et le testnet **v3.2.4**, et dispose de
+transige sur le mainnet **v3.2.3** (et **v3.2.4** à partir de la hauteur 3,742,566) et le testnet **v3.2.4**, et dispose de
 constructeurs pour la preuve de possession facultative à l'enregistrement
 (jointe automatiquement par `ensurePqcRegistered` une fois que le réseau a
 appliqué la v3.2.3), les fenêtres EVM à portée limitée et les messages de
@@ -162,10 +161,9 @@ consentement EIP-7702. Le SDK **0.8.1 ou ultérieur** transige aussi sur les deu
 réseaux (la forme v2 des sign-bytes hybrides, l'enregistrement, les envois
 hybrides et la fenêtre EVM fonctionnent sans changement), mais n'a aucun de ces
 constructeurs : utilisez la CLI pour ceux-ci (voir
-[Versions antérieures à la 0.9.0](/sdk/install#before-090)). La v3.2.4 n'est en
-production que sur le testnet pour l'instant (la proposition de gouvernance 13
-du mainnet l'appliquerait à la hauteur 3,742,566), et le SDK ne définit aucun
-champ de la v3.2.4.
+[Versions antérieures à la 0.9.0](/sdk/install#before-090)). La v3.2.4 s'exécute sur
+le testnet depuis le 19 octobre 2026 et sur le mainnet à partir de la hauteur 3,742,566 (proposition de gouvernance 13) ; le SDK ne définit aucun
+champ de la v3.2.4, de sorte que ses transactions restent valides des deux côtés de cette hauteur.
 
 ## Mon enregistrement de clé PQC a été refusé mais les frais ont été prélevés
 

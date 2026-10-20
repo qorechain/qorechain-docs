@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています。メインネットのノードリリースは **v3.2.3**(2026年10月20日にブロック高 3,662,051 で適用)、テストネットは **v3.2.4**(2026年10月19日にブロック高 8,337,253 で適用。メインネットではまだ未適用。ガバナンス提案 13 がブロック高 3,742,566 で適用する予定)です。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
+稼働中のメインネットに対してブロードキャストするには `--chain-id qorechain-vladi` を設定し、テストネットには `--chain-id qorechain-diana` を設定します。どちらのネットワークもv3.2系で稼働しています。メインネットのノードリリースは **v3.2.3**(2026年10月20日にブロック高 3,662,051 で適用。メインネットはブロック高 3,742,566 までは v3.2.3、そのブロックからは **v3.2.4** で稼働します。ガバナンス提案 13 により予定されています)、テストネットは **v3.2.4**(2026年10月19日にブロック高 8,337,253 で適用)です。現在のリリースは [download.qore.host](https://download.qore.host) 配下の `latest.json` で確認してください。`--chain-id` を省略した場合、クライアントはローカルのクライアント設定にある `chain-id` を使用します。
 
-このページのコマンドとフラグは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 のテストネットにのみ存在するものには **テストネット専用** と明記しています。
+このページのコマンドとフラグは、v3.2.3 のリリースバイナリで確認しています。v3.2.4 以降にのみ存在するもの(テストネットでは現在、メインネットではブロック高 3,742,566 から)には、その旨を明記しています。
 :::
 
 共通フラグはすべての `tx` サブコマンドに適用されます。
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-テストネット(v3.2.4、**テストネット専用**)では、アカウントレコードに証明が検証されたかどうかも `possession_proven` として報告されます([REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照)。メインネットではまだ報告されません。
+v3.2.4 以降(テストネットでは2026年10月19日から、メインネットではブロック高 3,742,566 から)は、アカウントレコードに証明が検証されたかどうかも `possession_proven` として報告されます([REST / gRPC エンドポイント](/api-reference/rest-grpc-endpoints#pqc-module)を参照)。まだ v3.2.3 のメインネットノードは報告しません。
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type` は `sx` または `ux` です。登録には、ネットワークのライセンス権限者が付与する有効な `lightnode_operator` ライセンスが必要です。プログラムの現在のステータスについては[ライトノード](/light-node/overview)を参照してください。その他のコマンド: `tx lightnode heartbeat`、`tx lightnode claim-rewards`、`tx lightnode deregister`。
 
-v3.2.3 以降、ノードが蓄積できる報酬は**月ごと**に上限が設けられています(`GET /qorechain/lightnode/v1/reward_pool` の `max_reward_per_month_per_node`、30日あたり2,000 QOR)。これはブロック時間とアップタイムに応じて按分されるため、上限はブロック生成の速さに左右されなくなりました。上限は天井であり、約束された金額ではありません。テストネット(v3.2.4、**テストネット専用**)では、ノードの上限は前回の精算ではなく、そのノード自身の登録時点から始まります。
+v3.2.3 以降、ノードが蓄積できる報酬は**月ごと**に上限が設けられています(`GET /qorechain/lightnode/v1/reward_pool` の `max_reward_per_month_per_node`、30日あたり2,000 QOR)。これはブロック時間とアップタイムに応じて按分されるため、上限はブロック生成の速さに左右されなくなりました。上限は天井であり、約束された金額ではありません。v3.2.4 以降(テストネットでは2026年10月19日から、メインネットではブロック高 3,742,566 から)は、ノードの上限は前回の精算ではなく、そのノード自身の登録時点から始まります。
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-ブリッジバリデータ用のメッセージです。`register-validator <pqc_pubkey_hex> <supported_chains_csv>` はアテステーション任務のためにバリデータを登録し、`attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` はアテステーションを送信します。どちらのネットワークにも、ブリッジバリデータは登録されていません。テストネット(v3.2.4、**テストネット専用**)では、ブリッジバリデータの登録には所有証明と、他のブリッジバリデータが使用していない鍵も必要です。
+ブリッジバリデータ用のメッセージです。`register-validator <pqc_pubkey_hex> <supported_chains_csv>` はアテステーション任務のためにバリデータを登録し、`attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` はアテステーションを送信します。どちらのネットワークにも、ブリッジバリデータは登録されていません。v3.2.4 以降(テストネットでは2026年10月19日から、メインネットではブロック高 3,742,566 から)は、ブリッジバリデータの登録には所有証明と、他のブリッジバリデータが使用していない鍵も必要です。
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -475,13 +475,13 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 
 ---
 
-## stakingtier (テストネット専用) {#stakingtier}
+## stakingtier (v3.2.4) {#stakingtier}
 
-:::note テストネット専用
-ステーキングティアモジュールは **v3.2.4** リリースで登場し、`qorechain-diana` テストネットに適用されました。メインネットには**ありません**。メインネットのアップグレードは現時点では提案されているだけです(ガバナンス提案 13、ブロック高 3,742,566)。適用されるまでは、これを前提にメインネット向けのツールを構築しないでください。
+:::note v3.2.4 から利用可能
+ステーキングティアモジュールは **v3.2.4** リリースで登場しました。`qorechain-diana` テストネットでは2026年10月19日から稼働しており、メインネットではブロック高 3,742,566 から稼働します(ガバナンス提案 13)。そのブロック高より前は、メインネットのノードにこのモジュールはなく、これらのコマンドは拒否されます。対象のノードで、まず `GET /qorechain/stakingtier/v1/params` を確認してください。
 :::
 
-任意の期間ロック付き委任です。委任者は既存の委任の一部を3、6、または12か月ロックでき、後でモジュールがそれに対してクレジットするボーナスをクレームできます。ロックは委任の上に載るレコードであり、委任された資金はバリデータに残ります。
+任意の期間ロック付き委任です。委任者は既存の委任の一部を3、6、または12か月(最小ロックは 10 QOR)ロックでき、後でモジュールがそれに対してクレジットするボーナスをクレームできます。ロックは委任の上に載るレコードであり、委任された資金はバリデータに残ります。
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_uqor> <months> [flags]    # months: 3, 6 or 12

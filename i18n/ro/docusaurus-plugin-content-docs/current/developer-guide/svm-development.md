@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain include un mediu de execuție **Solana Virtual Machine (SVM)**, care permite dezvoltatorilor să implementeze și să execute programe SBF/BPF folosind uneltele Solana cu care sunt deja obișnuiți. Modulul SVM expune o interfață JSON-RPC compatibilă cu Solana pe **portul 8899**, pe care `qorechaind start` o pornește automat (vezi [Server JSON-RPC](#json-rpc-server) mai jos).
 
 :::note
-Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.3**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 (doar testnet). **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
+Comenzile de mai jos folosesc rețeaua mainnet **`qorechain-vladi`** (live din 7 iunie 2026), care rulează versiunea de nod **v3.2.3** până la înălțimea 3.742.566 și **v3.2.4** de la acel bloc (propunerea de guvernanță 13). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 din 19 octombrie 2026. **Tranzacțiile SVM sunt dezactivate pe ambele rețele** (vezi caseta următoare), așa că comenzile `tx svm` de pe această pagină sunt doar de referință: nu pot reuși în prezent.
 :::
 
 ---
@@ -241,12 +241,12 @@ Programele care depășesc bugetul de calcul sunt oprite, iar tranzacția este a
 
 ## Interoperabilitate cross-VM
 
-Programele SVM sunt concepute să comunice cu contractele EVM și CosmWasm prin mesajul `MsgCrossVMCall` al modulului `x/crossvm` (chain-ul stabilește singur lane-ul sursă). Deoarece lane-ul SVM este dezactivat pentru tranzacții, iar `MsgCrossVMCall` este oprit pe mainnet, în prezent nu există nicio cale cross-VM SVM funcțională. Vezi [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) pentru starea curentă, ciclul de viață al mesajelor și comportamentul de timeout.
+Programele SVM sunt concepute să comunice cu contractele EVM și QoreChain Native prin mesajul `MsgCrossVMCall` al modulului `x/crossvm` (chain-ul stabilește singur lane-ul sursă). Deoarece lane-ul SVM este dezactivat pentru tranzacții, iar `MsgCrossVMCall` este oprit pe mainnet, în prezent nu există nicio cale cross-VM SVM funcțională. Vezi [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) pentru starea curentă, ciclul de viață al mesajelor și comportamentul de timeout.
 
 ---
 
 ## Pașii următori
 
-* [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) — Comunicare între SVM, EVM și CosmWasm
+* [Interoperabilitate cross-VM](/developer-guide/cross-vm-interoperability) — Comunicare între SVM, EVM și QoreChain Native
 * [Dezvoltare EVM](/developer-guide/evm-development) — Contracte inteligente Solidity pe QoreChain
-* [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) — Contracte WebAssembly bazate pe Rust
+* [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development) — Contracte WebAssembly bazate pe Rust

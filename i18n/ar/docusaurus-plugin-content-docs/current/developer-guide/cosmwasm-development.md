@@ -1,20 +1,20 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: تطوير CosmWasm
-sidebar_label: تطوير CosmWasm
+title: تطوير QoreChain Native
+sidebar_label: تطوير QoreChain Native
 sidebar_position: 3
 ---
 
-# تطوير CosmWasm
+# تطوير QoreChain Native
 
-تدعم QoreChain عقود **CosmWasm** الذكية، ما يتيح للمطورين كتابة برامج آمنة ومعزولة بلغة Rust تُجمَّع إلى WebAssembly. تعمل عقود CosmWasm جنباً إلى جنب مع برامج EVM وSVM ضمن بنية QoreChain ثلاثية الآلة الافتراضية.
+تدعم QoreChain عقود **QoreChain Native** الذكية. QoreChain Native هو اسم QoreChain لبيئة تشغيل **CosmWasm** الخاصة بها: يكتب المطورون برامج آمنة ومعزولة بلغة Rust باستخدام مكتبات CosmWasm القياسية (`cosmwasm-std`) ويُجمِّعونها إلى WebAssembly. تعمل عقود QoreChain Native جنباً إلى جنب مع برامج EVM وSVM ضمن بنية QoreChain ثلاثية الآلة الافتراضية.
 
 :::note
-تستخدم الأوامر أدناه الشبكة الرئيسية **`qorechain-vladi`** (العاملة منذ 7 يونيو 2026)، التي تشغّل إصدار العقدة **v3.2.3**. استبدل `--chain-id qorechain-diana` لشبكة الاختبار، التي تشغّل الإصدار v3.2.4 (على شبكة الاختبار فقط).
+تستخدم الأوامر أدناه الشبكة الرئيسية **`qorechain-vladi`** (العاملة منذ 7 يونيو 2026)، التي تشغّل إصدار العقدة **v3.2.3** حتى الارتفاع 3,742,566 والإصدار **v3.2.4** من تلك الكتلة (مقترح الحوكمة 13). استبدل `--chain-id qorechain-diana` لشبكة الاختبار، التي تشغّل الإصدار v3.2.4 منذ 19 أكتوبر 2026.
 :::
 
 :::caution رفع الكود والتهيئة يتطلبان حالياً إذناً صريحاً
-حتى وقت كتابة هذا النص، تم ضبط كل من `code_upload_access` و`instantiate_default_permission` على **`Nobody`** على **كل من الشبكة الرئيسية وشبكة الاختبار** — أي أن `MsgStoreCode` و`MsgInstantiateContract` ليستا متاحتين لأي حساب بشكل افتراضي، وذلك تبعاً لتنبيه أمني صادر على مستوى صناعة CosmWasm بأكملها. ستحتاج إلى قرار حوكمة يمنح حسابك (أو قائمة عناوين محددة) إذن الرفع/التهيئة قبل أن تنجح الخطوات أدناه. تحقّق أولاً من المعاملات الفعلية على الشبكة، لأن هذا بالضبط نوع الإعداد الذي يمكن للحوكمة تغييره (لا يوجد حالياً أي كود عقد مخزَّن على الشبكة الرئيسية إطلاقاً):
+حتى وقت كتابة هذا النص، تم ضبط كل من `code_upload_access` و`instantiate_default_permission` على **`Nobody`** على **كل من الشبكة الرئيسية وشبكة الاختبار** — أي أن `MsgStoreCode` و`MsgInstantiateContract` ليستا متاحتين لأي حساب بشكل افتراضي، وذلك عقب استشارة أمنية على مستوى الصناعة بشأن CosmWasm، وهي بيئة التشغيل التي تُبنى عليها QoreChain Native. ستحتاج إلى قرار حوكمة يمنح حسابك (أو قائمة عناوين محددة) إذن الرفع/التهيئة قبل أن تنجح الخطوات أدناه. تحقّق أولاً من المعاملات الفعلية على الشبكة، لأن هذا بالضبط نوع الإعداد الذي يمكن للحوكمة تغييره (لا يوجد حالياً أي كود عقد مخزَّن على الشبكة الرئيسية إطلاقاً):
 
 ```bash
 qorechaind query wasm params
@@ -39,7 +39,7 @@ qorechaind query wasm params
 | **Rust**                    | أحدث إصدار مستقر | تجميع العقود                  |
 | **wasm32-unknown-unknown**  | الهدف         | هدف تجميع WebAssembly          |
 | **cargo-generate**          | الأحدث        | هيكلة المشروع                  |
-| **cosmwasm-std**            | 1.5+          | مكتبة CosmWasm القياسية        |
+| **cosmwasm-std**           | 1.5+          | مكتبة CosmWasm القياسية              |
 
 ثبّت هدف Wasm:
 
@@ -51,7 +51,7 @@ rustup target add wasm32-unknown-unknown
 
 ## دورة حياة العقد
 
-تتّبع عقود CosmWasm دورة حياة من خمس خطوات: **البناء**، و**التخزين**، و**التهيئة**، و**التنفيذ**، و**الاستعلام**.
+تتّبع عقود QoreChain Native دورة حياة من خمس خطوات: **البناء**، و**التخزين**، و**التهيئة**، و**التنفيذ**، و**الاستعلام**.
 
 1. **البناء** — جمّع عقدك إلى WebAssembly محسَّن:
 
@@ -166,7 +166,7 @@ qorechaind query wasm contract-history <contract-addr>
 
 ## بنية العقد
 
-يحتوي عقد CosmWasm النموذجي على ثلاث نقاط دخول:
+يحتوي عقد QoreChain Native النموذجي على ثلاث نقاط دخول:
 
 ```rust
 use cosmwasm_std::{
@@ -221,7 +221,7 @@ pub fn query(
 
 ## تكامل الوحدات
 
-يمكن لعقود CosmWasm التفاعل مع وحدات Cosmos SDK من خلال تمرير الرسائل القياسي:
+يمكن لعقود QoreChain Native التفاعل مع وحدات Cosmos SDK من خلال تمرير الرسائل القياسي:
 
 ```rust
 // Send native tokens via the bank module
@@ -263,6 +263,6 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 ## الخطوات التالية
 
-* [التشغيل البيني عبر الآلات الافتراضية](/developer-guide/cross-vm-interoperability) — استدعِ عقود EVM وSVM من CosmWasm
+* [التشغيل البيني عبر الآلات الافتراضية](/developer-guide/cross-vm-interoperability) — استدعِ عقود EVM وSVM من QoreChain Native
 * [تطوير SVM](/developer-guide/svm-development) — انشر برامج BPF على QoreChain
 * [إضافات EVM المدمجة](/developer-guide/evm-precompiles) — مرجع لإضافات Solidity المدمجة المخطط لها (لا توجد أي منها مفعّلة بعد)

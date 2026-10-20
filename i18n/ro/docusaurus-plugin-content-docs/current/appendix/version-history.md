@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Istoric versiuni
 
-Istoricul public al versiunilor QoreChain. Cea mai recentă versiune de mainnet este **v3.2.3**, care rulează pe mainnet **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026); a fost aplicată prin guvernanță la înălțimea 3.662.051, pe 20 octombrie 2026. Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.4**, aplicată acolo la înălțimea 8.337.253, pe 19 octombrie 2026. **v3.2.4 nu face încă parte din mainnet: propunerea 13 de guvernanță a mainnet-ului (votare până la 21 octombrie 2026, 21:18 UTC) ar aplica-o la înălțimea 3.742.566.**
+Istoricul public al versiunilor QoreChain. Mainnet-ul **`qorechain-vladi`** (ID chain EVM **9801**, live din 7 iunie 2026) rulează **v3.2.3** (aplicată prin guvernanță la înălțimea 3.662.051, pe 20 octombrie 2026) până la înălțimea **3.742.566**, iar de la acel bloc rulează **v3.2.4** (propunerea 13 de guvernanță a mainnet-ului). Testnetul **`qorechain-diana`** (ID chain EVM **9800**) rulează **v3.2.4** de la înălțimea 8.337.253 (19 octombrie 2026).
 
 :::note
 Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intrările `v1.x` mai vechi sunt păstrate ca înregistrare istorică a liniei de lansări testnet care a precedat mainnet-ul. Manifestul de lansare ([Conectarea la Mainnet](/getting-started/connecting-to-mainnet)) este promovat separat de etichetare (tagging) și poate rămâne în urma unui tag pentru o perioadă — verificați-l direct pentru a afla ce descarcă efectiv o instalare nouă.
@@ -15,7 +15,7 @@ Intrările de mai jos sunt rezumate de nivel înalt ale capabilităților. Intr�
 
 ## Cronologia guvernanței mainnet {#governance-timeline}
 
-Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 octombrie 2026. Toate cele șapte sunt propuneri accelerate (perioadă de votare de o zi); propunerile 7 până la 11 au trecut cu tot stake-ul bonded care a votat în favoare. Lista completă se află la `GET /cosmos/gov/v1/proposals` pe `https://api.qore.host`.
+Propunerile care au modificat sau programează modificări ale mainnet-ului aflat în funcțiune începând cu 14 octombrie 2026. Toate cele șapte sunt propuneri accelerate (perioadă de votare de o zi); propunerile 7 până la 11 au trecut cu tot stake-ul bonded care a votat în favoare. Lista completă se află la `GET /cosmos/gov/v1/proposals` pe `https://api.qore.host`.
 
 | Propunere | Ce face | Votare | Rezultat |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Propunerile care au modificat mainnet-ul aflat în funcțiune începând cu 14 o
 | 10 | Emisiune: stabilește emisiunea fixă la 86.000 QOR per epocă și plafonul cumulativ la 590.000.000 QOR (lungimea epocii rămâne neschimbată; prima epocă de 86.000 QOR începe la blocul 3.672.000) | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată |
 | 11 | Aplică v3.2.3 la înălțimea 3.662.051 | 18–19 octombrie 2026 (se încheie la 19:15 UTC) | Adoptată; aplicată pe 20 octombrie 2026 |
 | 12 | Eliberează cota blocată corectată a stakerilor (3.807.496,785528 QOR, recalculată la înălțimea v3.2.3) către fundație | 20 octombrie 2026, 20:01 UTC, până la 21 octombrie 2026, 20:01 UTC | În perioada de votare la momentul scrierii |
-| 13 | Upgrade coordonat la v3.2.4 la înălțimea 3.742.566 (niveluri de staking, limita de recompensă a light node-urilor numărată de la înregistrare, un flag de deținere pentru cheile post-cuantice, dovada deținerii pentru validatorii de bridge și consolidare locală nodului) | 20 octombrie 2026, 21:18 UTC, până la 21 octombrie 2026, 21:18 UTC | În perioada de votare la momentul scrierii |
+| 13 | Upgrade coordonat la v3.2.4 la înălțimea 3.742.566 (aproximativ 23 octombrie 2026, la blocuri de 3,2 secunde): staking opțional cu blocare în timp, limita de recompensă a light node-urilor numărată de la înregistrare, un flag de deținere pentru cheile post-cuantice, dovada deținerii pentru validatorii de bridge, fereastra de contestare RDK în timp de bloc și consolidare locală nodului | 20 octombrie 2026, 21:18 UTC, până la 21 octombrie 2026, 21:18 UTC | În perioada de votare la momentul scrierii, cu toate voturile exprimate până acum în favoare; verificați `GET /cosmos/gov/v1/proposals/13` pentru rezultatul final |
 
 Vezi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pentru ce înseamnă eliberările și [Guvernanță](/user-guide/governance) pentru cum se votează.
 
 ---
 
-## v3.2.4 — Fereastra de înregistrare a light node-urilor și staking opțional cu blocare în timp (doar testnet)
+## v3.2.4 — Fereastra de înregistrare a light node-urilor și staking opțional cu blocare în timp (programată pentru mainnet)
 
-**Focus lansare:** O lansare doar pentru testnet, aplicată pe `qorechain-diana` prin propunerea 13 de guvernanță a testnet-ului la înălțimea **8.337.253** (19 octombrie 2026). **Nu se află încă pe mainnet**: propunerea 13 de guvernanță a mainnet-ului (votare până la 21 octombrie 2026, 21:18 UTC) ar aplica-o la înălțimea 3.742.566, iar până atunci nimic din cele de mai jos nu se aplică pentru `qorechain-vladi`. Manifestul testnet setează `minCompatible` la 3.2.4.
+**Focus lansare:** Următoarea lansare programată pentru mainnet. Rulează pe testnetul `qorechain-diana` de când propunerea 13 de guvernanță a testnet-ului a aplicat-o la înălțimea **8.337.253** (19 octombrie 2026; manifestul testnet setează `minCompatible` la 3.2.4). Pe mainnet, propunerea 13 de guvernanță o programează la înălțimea **3.742.566**: nodurile rămân pe v3.2.3 până la acel bloc, se opresc acolo și repornesc pe v3.2.4, iar semnarea tranzacțiilor rămâne neschimbată. Fiecare funcționalitate de mai jos este, așadar, live acum pe testnet și se aplică pe `qorechain-vladi` de la înălțimea 3.742.566 (după ce propunerea trece).
 
 * **Fereastra de înregistrare a light node-urilor.** Limita de recompensă a unui light node începe la cea mai târzie dintre decontarea anterioară și propria înregistrare a nodului, astfel încât o înregistrare nouă nu încasează o sumă acumulată înainte de alăturarea sa.
-* **Staking opțional cu blocare în timp (`x/stakingtier`, un modul nou).** Un delegator poate bloca o parte dintr-o delegare pentru un termen fix; partea blocată nu poate fi dezdelegată sau redelegată, iar deblocarea anticipată este permisă cu o penalitate. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
-* **Mod nou de emisiune.** `x/inflation` primește un al treilea mod de emisiune, `target_apy`, cu un parametru `target_apy_bps` (în prezent `0`).
+* **Staking opțional cu blocare în timp (`x/stakingtier`, un modul nou).** Un delegator poate bloca o parte dintr-o delegare pentru 3, 6 sau 12 luni; partea blocată nu poate fi dezdelegată sau redelegată, iar deblocarea anticipată este permisă cu o penalitate care este arsă. Blocarea minimă este de 10 QOR. Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking).
+* **Mod nou de emisiune.** `x/inflation` primește un al treilea mod de emisiune, `target_apy`, cu un parametru `target_apy_bps` (`0` pe testnet). Modificarea modului de emisiune al unei rețele este o decizie separată de guvernanță; modul în vigoare este afișat la `/qorechain/inflation/v1/params`.
 * **Flag-ul `possession_proven`** pe înregistrările de cont post-cuantice; dovada deținerii pentru cheile de cont rămâne opțională.
 * **Dovada deținerii pentru validatorii de bridge.** Înregistrarea unui validator de bridge necesită o dovadă a deținerii și o cheie pe care nu o folosește niciun alt validator de bridge.
 * **Fereastra de contestare RDK în timp de bloc.** Fereastra optimistă de contestare este numărată în timp de bloc, nu într-un număr de blocuri derivat din acesta.
@@ -87,11 +87,11 @@ v3.2.1 a fost aplicată nod cu nod și nu are înălțime de upgrade; a fost în
 * **Harta versiunilor modulelor din upgrade** listează acum fiecare modul (48), remediind un gol care ar fi afectat migrările ulterioare.
 * De asemenea: modulul de cont și payload-urile de atestare ale bridge-ului consolidate, blocuri propuse validate, decontarea rollup-urilor restricționată la sequencer-ul rollup-ului, cu escrow per rollup și un burn de creare efectiv, stake-ul creatorului multilayer blocat la înregistrare și returnat la dezafectare, flag-ul `enabled` al contului inteligent aplicat pe fiecare cale, iar căile de admitere a validatorilor și de creare a vesting-ului închise față de imbricarea authz.
 
-## v3.1.96 + v3.1.97 — Blocarea accesului CosmWasm
+## v3.1.96 + v3.1.97 — Blocarea accesului QoreChain Native
 
-**Focus lansare:** Închiderea încărcării și instanțierii permisionless de cod de contract, în urma unui avertisment de securitate CosmWasm la nivel de industrie.
+**Focus lansare:** Închiderea încărcării și instanțierii permisionless de cod de contract, în urma unui avertisment de securitate la nivel de industrie pentru CosmWasm, runtime-ul pe care este construit QoreChain Native.
 
-* **Încărcarea și instanțierea contractelor necesită acum permisiune explicită.** `code_upload_access` și `instantiate_default_permission` sunt setate la `Nobody` atât pe mainnet, cât și pe testnet — verificat live, indiferent de care dintre aceste două taguri rulează un anumit nod, deoarece este un parametru on-chain, nu ceva aplicat doar de binarele mai noi. Vezi [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) pentru ce înseamnă acest lucru dacă dezvoltați un contract. Contractele deja instanțiate rămân neafectate — `execute` și `query` funcționează ca înainte. Ambele rețele au, de asemenea, cele trei mesaje CosmWasm de încărcare și instanțiere oprite prin circuit breaker.
+* **Încărcarea și instanțierea contractelor necesită acum permisiune explicită.** `code_upload_access` și `instantiate_default_permission` sunt setate la `Nobody` atât pe mainnet, cât și pe testnet — verificat live, indiferent de care dintre aceste două taguri rulează un anumit nod, deoarece este un parametru on-chain, nu ceva aplicat doar de binarele mai noi. Vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development) pentru ce înseamnă acest lucru dacă dezvoltați un contract. Contractele deja instanțiate rămân neafectate — `execute` și `query` funcționează ca înainte. Ambele rețele au, de asemenea, cele trei mesaje QoreChain Native de încărcare și instanțiere oprite prin circuit breaker.
 * **Build-uri de lansare cu poziție independentă (PIE)**, conform aceluiași ghid de întărire (hardening) din avertisment, astfel încât adresa de memorie pe care ar trebui să o ghicească un exploit este randomizată per proces. Binarele legate dinamic au avut nevoie doar de un flag de build; verificat că nu rupe starea (state-breaking).
 
 ## v3.1.95 — Consolidare EVM Cosmos
@@ -319,8 +319,8 @@ Nodurile complete trebuie să ruleze **v3.1.83+**. Un nod pre-3.1.83 nu poate de
 * **Stratul de consens PRISM** — Optimizare prin învățare prin întărire (PPO) pentru ajustarea dinamică a parametrilor chain-ului, cu controale de siguranță de tip circuit-breaker
 * **CPoS cu trei pool-uri** — Composite Proof-of-Stake cu pool-uri de validatori RPoS, DPoS și PoS, ponderate după scoruri de reputație (implementat în `x/qca`; încă neconectat la producția de blocuri)
 * **Guvernanță QDRW** — Formula de putere de vot Quadratic Delegation with Reputation Weighting (implementată; dezactivată pe rețelele live)
-* **Runtime-uri EVM + CosmWasm + SVM** — Trei medii de execuție concurente: motorul EVM QoreChain, contractele inteligente CosmWasm și Solana Virtual Machine
-* **Bridge cross-VM** — Transmitere de mesaje și transferuri de active între runtime-urile EVM, CosmWasm și SVM în cadrul aceluiași bloc
+* **Runtime-uri EVM + QoreChain Native + SVM** — Trei medii de execuție concurente: motorul EVM QoreChain, contractele inteligente QoreChain Native și Solana Virtual Machine
+* **Bridge cross-VM** — Transmitere de mesaje și transferuri de active între runtime-urile EVM, QoreChain Native și SVM în cadrul aceluiași bloc
 * **Criptografie post-cuantică** — Semnare rezistentă cuantic, susținută de o bibliotecă PQC de înaltă performanță
 * **QCAI** — Analiză euristică on-chain, cu un sidecar opțional off-chain pentru detectarea fraudei, estimarea taxelor și optimizarea rețelei
 * **Desfășurare containerizată** — Desfășurare completă de testnet multi-validator, cu serviciu sidecar și indexer de blocuri

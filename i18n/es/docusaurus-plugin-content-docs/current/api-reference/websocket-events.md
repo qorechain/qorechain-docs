@@ -225,14 +225,14 @@ Las claves PQC se registran explícitamente con una transacción de registro; no
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Eventos del ciclo de vida y de las recompensas de los nodos ligeros |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Se emite cuando la gobernanza actualiza la configuración del filtrado de IA |
 
-### Módulo Staking Tiers (solo testnet)
+### Módulo Staking Tiers (v3.2.4)
 
-Estos eventos existen solo en la testnet `qorechain-diana` (v3.2.4); la mainnet todavía no tiene el módulo (la propuesta de gobernanza 13 aplicaría la v3.2.4 en la altura 3,742,566).
+Estos eventos llegan con la versión v3.2.4: la testnet `qorechain-diana` los emite desde el 19 de octubre de 2026 y la mainnet los emite desde la altura 3.742.566 (propuesta de gobernanza 13). Un nodo de la mainnet que todavía ejecute v3.2.3 no tiene el módulo staking-tiers y no emite ninguno de ellos.
 
 | Tipo de evento | Atributos clave | Descripción |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Se creó un bloqueo de delegación |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un bloqueo terminó anticipadamente, o llegó a su fin |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un bloqueo terminó anticipadamente (la penalización se quema bajo el origen de quema `staking_tier_penalty`), o llegó a su fin |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; totales de la liquidación | Se reclamó un bonus; se liquidó el pool |
 | `staking_tier_params_updated` | parámetros | La gobernanza cambió los parámetros del módulo |
 

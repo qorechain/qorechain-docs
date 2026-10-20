@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 El registro está exento del requisito híbrido solo para una cuenta sin clave, así que esta transacción se firma únicamente con la clave clásica de la cuenta. Una prueba mal formada se rechaza con `ErrInvalidProofOfPossession` (código 231 en el módulo `pqc`).
 
-**Solo testnet (v3.2.4, no en la mainnet):** el registro de la cuenta gana un booleano `possession_proven`, devuelto por `GET /qorechain/pqc/v1/account/{address}` en la testnet. Es `true` cuando la clave actual se registró con una prueba válida, o llegó mediante una rotación o migración (ambas verifican una firma de la nueva clave sobre bytes que nombran la cadena, la cuenta y la clave); un registro sin prueba registra `false`, y una clave que cambia sin ella borra el indicador. La mainnet v3.2.3 no informa de este campo. La prueba sigue siendo opcional también en la testnet.
+**Desde la v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566):** el registro de la cuenta gana un booleano `possession_proven`, devuelto por `GET /qorechain/pqc/v1/account/{address}`. Es `true` cuando la clave actual se registró con una prueba válida, o llegó mediante una rotación o migración (ambas verifican una firma de la nueva clave sobre bytes que nombran la cadena, la cuenta y la clave); un registro sin prueba registra `false`, y una clave que cambia sin ella borra el indicador. La mainnet v3.2.3 no informa de este campo antes de la altura de actualización. La prueba sigue siendo opcional para las claves de cuenta con la v3.2.4.
 
 ## Firmas Híbridas {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Estas utilidades respaldan el hash de aplicación por defecto y se utilizan para
 
 Todas las atestaciones de puente entre cadenas y los compromisos de estado utilizan firmas **Dilithium-5**. El módulo `x/multilayer` requiere firmas agregadas PQC en cada envío de `MsgAnchorState`, y los compromisos ML-KEM aseguran los canales de intercambio de claves entre los relayers del puente.
 
-Esto garantiza que la seguridad entre cadenas no se degrade por el uso de criptografía clásica en la infraestructura del puente, manteniendo la resistencia a la computación cuántica en toda la pila del protocolo. No hay ninguna ruta de puente activa (consulta [Arquitectura del Puente](/architecture/bridge-architecture#current-status)); solo en la testnet (v3.2.4), registrar un validador del puente requiere además una prueba de posesión de su clave PQC.
+Esto garantiza que la seguridad entre cadenas no se degrade por el uso de criptografía clásica en la infraestructura del puente, manteniendo la resistencia a la computación cuántica en toda la pila del protocolo. No hay ninguna ruta de puente activa (consulta [Arquitectura del Puente](/architecture/bridge-architecture#current-status)); desde la v3.2.4 (testnet ahora; mainnet desde la altura 3,742,566), registrar un validador del puente requiere además una prueba de posesión de su clave PQC.
 
 ## Parámetros del Módulo
 

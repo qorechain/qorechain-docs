@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Guida Cross-VM
 
-QoreChain esegue **EVM, SVM e CosmWasm fianco a fianco**, e il modulo `x/crossvm`
+QoreChain esegue **EVM, SVM e QoreChain Native fianco a fianco**, e il modulo `x/crossvm`
 permette a un singolo account nativo di invocare un contratto su uno qualsiasi di essi. L'SDK
 fornisce un helper di alto livello `createCrossVMClient` per costruire, firmare e trasmettere
 queste chiamate — incluso il raggruppamento di più chiamate in **un'unica transazione atomica
@@ -22,7 +22,7 @@ Le chiamate cross-VM sono disponibili solo quanto la loro corsia di destinazione
   (`GET /cosmos/circuit/v1/disable_list` elenca `/qorechain.crossvm.v1.MsgCrossVMCall`);
   è abilitato sul testnet.
 - La corsia di transazioni SVM è disabilitata su tutta la rete, l'upload e
-  l'istanziazione CosmWasm sono soggetti a permessi (e su mainnet non ci sono contratti), e il
+  l'istanziazione QoreChain Native sono soggetti a permessi (e su mainnet non ci sono contratti), e il
   precompilato del bridge EVM non è attivo (vedi
   [Precompilati EVM](/developer-guide/evm-precompiles#network-status)).
 - Gli helper di lettura REST tipizzati qui sotto chiamano route che il gateway pubblico non serve.
@@ -68,7 +68,7 @@ Scegli esattamente **una** forma di payload per chiamata:
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | byte grezzi, passati invariati |
 | `{ evm: { abi, functionName, args } }` | codificato in ABI con `encodeFunctionData` di viem (selector + args) |
-| `{ cosmwasm: object }` | `JSON.stringify` poi byte UTF-8 (la convenzione execute-msg di CosmWasm) |
+| `{ cosmwasm: object }` | `JSON.stringify` poi byte UTF-8 (la convenzione execute-msg di QoreChain Native) |
 | `{ svm: { data: Uint8Array \| Hex } }` | byte grezzi (un blob di istruzioni SVM) |
 
 Il percorso EVM importa `viem` in modo lazy, quindi il peer opzionale `viem` serve solo
@@ -93,7 +93,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` raggruppa più messaggi `MsgCrossVMCall` in **un unico corpo di
 transazione** così che vengano eseguiti in modo atomico con una sola firma — il punto di forza
-della tripla VM. Una firma, chiamate su EVM + SVM + CosmWasm che vanno a buon fine tutte insieme
+della tripla VM. Una firma, chiamate su EVM + SVM + QoreChain Native che vanno a buon fine tutte insieme
 oppure per nulla:
 
 ```ts

@@ -35,10 +35,10 @@ Each preset bundles a settlement paradigm (and the proof system its settlement r
 
 A few constraints follow from the [settlement → proof matrix](/rollups/overview): `optimistic` settlement uses `fraud` proofs, `zk` uses `snark` (or `stark`), and `based` and `sovereign` carry no proof. `based` settlement always pairs with the `based` sequencer mode. The `nft` preset settles natively today with **Celestia DA planned**.
 
-As of RDK v0.4.2, the Wasm VM option (the runtime that executes CosmWasm contracts) is named **`native`** — QoreChain Native. `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire, so the chain, explorer, and Dashboard are unchanged.
+As of RDK v0.4.2, the Wasm VM option (the runtime that executes QoreChain Native contracts) is named **`native`** — QoreChain Native. `cosmwasm` remains an accepted legacy alias, and both map to `cosmwasm` on the wire, so the chain, explorer, and Dashboard are unchanged.
 
 :::note
-Per-preset configuration was checked against the chain's profile table in the v3.2.3 source (mainnet runs v3.2.3, the testnet v3.2.4), where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
+Per-preset configuration was checked against the chain's profile table in the v3.2.3 source (mainnet runs v3.2.3 until height 3,742,566 and v3.2.4 from that block; the testnet runs v3.2.4), where `create-rollup` applies the profile's preset automatically: **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (defaults)**. The `custom` preset leaves every field open — the values shown are its starting defaults.
 :::
 
 Treat the four domain presets as sensible starting points and the **`custom`** profile as the fully open option. The precise bundled parameters can change between releases — query `rdk config` (below) for the authoritative values, then start from the closest preset and refine.
@@ -52,7 +52,7 @@ The [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-project-w
 Some details are easy to assume and are worth knowing before you pick a profile:
 
 * **`defi` has no verifying key.** ZK batches need one, and a rollup created through `create-rollup` does not carry it, so ZK settlement cannot finalise end to end today (see [ZK / STARK & Withdrawals](/rollups/zk-stark-withdrawals)).
-* **`nft` and `custom`** settle optimistically with a 1,000 QOR challenge bond and a challenge window of 100,800 blocks on mainnet (the default 604,800 "seconds" converted at a fixed 6 seconds per block; about 3.7 days at mainnet's current ≈3.2 s blocks). On the testnet only, a batch submitted from v3.2.4 (height 8,337,253) on gets a window measured in seconds of block time instead.
+* **`nft` and `custom`** settle optimistically with a 1,000 QOR challenge bond and a challenge window of 100,800 blocks on mainnet before height 3,742,566 (the default 604,800 "seconds" converted at a fixed 6 seconds per block; about 3.7 days at mainnet's current ≈3.2 s blocks). From v3.2.4 a batch gets a window measured in seconds of block time instead: on the testnet from height 8,337,253, on mainnet from height 3,742,566.
 * **`gaming` and `enterprise`** use `based` sequencing, which today means the rollup's creator submits batches.
 * **Block time and transaction limits** (for example `defi` 500 ms, `gaming` 200 ms, `nft` 2,000 ms, `enterprise` and `custom` 1,000 ms) are stored in the on-chain record. They describe the rollup's own chain and are not enforced by the host chain.
 

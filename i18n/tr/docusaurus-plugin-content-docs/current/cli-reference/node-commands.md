@@ -10,9 +10,9 @@ sidebar_position: 1
 Bir QoreChain düğümünü başlatmak, yapılandırmak ve işletmek için kullanılan `qorechaind` komutlarına yönelik referans.
 
 :::note
-QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.3**, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulandı) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.4**, 19 Ekim 2026'da 8,337,253 yüksekliğinde uygulandı; v3.2.4 henüz ana ağda uygulanmamıştır; yönetişim önerisi 13 bunu 3,742,566 yüksekliğinde uygulayacaktır). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
+QoreChain iki ağ çalıştırır: **`qorechain-vladi`** ana ağı (7 Haziran 2026'dan beri canlı; düğüm sürümü **v3.2.3**, 20 Ekim 2026'da 3,662,051 yüksekliğinde uygulandı; ana ağ 3,742,566 yüksekliğine kadar v3.2.3 çalıştırır ve o bloktan itibaren **v3.2.4** çalıştırır, bu geçiş yönetişim önerisi 13 ile planlanmıştır) ve **`qorechain-diana`** test ağı (düğüm sürümü **v3.2.4**, 19 Ekim 2026'da 8,337,253 yüksekliğinde uygulandı). Katılmak istediğiniz ağ için uygun `--chain-id` değerini geçirin — aşağıdaki örnekler test ağını hedefler; ana ağ için `--chain-id qorechain-vladi` kullanın. Her ağın güncel sürümü, [download.qore.host](https://download.qore.host) altındaki `latest.json` dosyasında listelenir.
 
-Bu sayfadaki komutlar, ana ağ sürümü olan v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. Test ağının v3.2.4 ikili dosyası, ana ağda bulunmayan komutlar ekler; bu kılavuz bunlardan birini andığında **yalnızca test ağı** olarak işaretlenir.
+Bu sayfadaki komutlar, v3.2.3 sürüm ikili dosyasına karşı denetlenmiştir. v3.2.4 ikili dosyası, v3.2.3 ikili dosyasında bulunmayan komutlar ekler (örneğin `stakingtier`); bunlar test ağında şimdi, ana ağda ise 3,742,566 yüksekliğinden itibaren çalışır ve bu kılavuz bunlardan birini andığında bunu belirtir.
 :::
 
 ---

@@ -186,7 +186,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-Exécutez une smart query en lecture seule sur un contrat CosmWasm déployé.
+Exécutez une smart query en lecture seule sur un contrat QoreChain Native déployé.
 Nécessite un RPC de consensus accessible et l'adresse d'un contrat déployé.
 
 ```ts

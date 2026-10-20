@@ -14,7 +14,7 @@ Il modulo bridge è distribuito su mainnet e testnet, ma **nessuna route del bri
 :::
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**, versione della chain **v3.2.4**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.3**. Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route. Stato verificato il 20 ottobre 2026: tutte le 37 configurazioni di chain sono `pending` su entrambe le reti.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (chain ID EVM **9800**, versione della chain **v3.2.4**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) esegue la versione della chain **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco. Sostituisci il chain ID e gli endpoint della mainnet indicati nella pagina **Connessione alla Mainnet** una volta attivata una route. Stato verificato il 20 ottobre 2026: tutte le 37 configurazioni di chain sono `pending` su entrambe le reti.
 :::
 
 ---

@@ -52,9 +52,9 @@ Dacă vrei să participi acum la guvernanță, deleagă QOR unui validator (vezi
 
 ---
 
-## Stakingul cu blocare în timp este o funcționalitate diferită (doar testnet) {#staking-tiers}
+## Stakingul cu blocare în timp este o funcționalitate diferită (v3.2.4) {#staking-tiers}
 
-Versiunea **v3.2.4**, care rulează doar pe testnet (un upgrade al mainnet-ului la ea este propus: propunerea de guvernanță 13, la înălțimea 3,742,566), adaugă un modul separat, `x/stakingtier`, pentru **staking opțional cu blocare în timp**. Nu este xQORE: nu emite xQORE, nu schimbă puterea de vot și nu atinge parametrii xQORE de mai sus. Pe scurt:
+Versiunea **v3.2.4**, care rulează pe testnet din 19 octombrie 2026 și este programată pentru mainnet de la înălțimea 3,742,566 (propunerea de guvernanță 13), adaugă un modul separat, `x/stakingtier`, pentru **staking opțional cu blocare în timp**. Nu este xQORE: nu emite xQORE, nu schimbă puterea de vot și nu atinge parametrii xQORE de mai sus. Pe scurt:
 
 * Un delegator blochează o delegare către un validator pentru un termen ales (modulul oferă 3, 6 și 12 luni). Cât timp blocarea este în curs, suma blocată nu poate fi dedelegată sau redelegată, prin nicio cale de mesaj (o tranzacție, authz, un contract sau guvernanța).
 * Blocările au o dimensiune minimă și o limită privind câte poate deține un delegator; citiți-le de la `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ Versiunea **v3.2.4**, care rulează doar pe testnet (un upgrade al mainnet-ului 
 * O blocare poate fi eliberată anticipat. Eliberarea anticipată pierde ce s-a acumulat și nu a fost revendicat și implică o penalizare, din care o parte este arsă.
 * Blocările și starea contului de modul pot fi citite la `/qorechain/stakingtier/v1/locks/{holder}` și `/qorechain/stakingtier/v1/pool`.
 
-Nimic din această secțiune nu există pe mainnet v3.2.3: `GET https://api.qore.host/qorechain/stakingtier/v1/params` returnează acolo `Not Implemented`. Staking-ul pe mainnet este delegare obișnuită, tratată în [Staking și delegare](/user-guide/staking-and-delegation).
+Mainnet-ul rulează v3.2.3 până la înălțimea 3,742,566, deci până atunci `GET https://api.qore.host/qorechain/stakingtier/v1/params` returnează acolo `Not Implemented`; de la acel bloc modulul există pe mainnet la fel ca pe testnet. Delegarea obișnuită este tratată în [Staking și delegare](/user-guide/staking-and-delegation).

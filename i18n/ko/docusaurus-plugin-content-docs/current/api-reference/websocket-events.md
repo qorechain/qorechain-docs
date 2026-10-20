@@ -225,14 +225,14 @@ PQC 키는 등록 트랜잭션으로 명시적으로 등록됩니다. 자동 등
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | 라이트 노드 수명 주기 및 보상 이벤트 |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | 거버넌스가 AI 스크리닝 구성을 업데이트할 때 발생합니다 |
 
-### 스테이킹 티어 모듈 (테스트넷 전용)
+### 스테이킹 티어 모듈 (v3.2.4)
 
-이 이벤트들은 `qorechain-diana` 테스트넷(v3.2.4)에만 존재합니다. 메인넷에는 아직 이 모듈이 없습니다(거버넌스 제안 13이 통과되면 높이 3,742,566에 v3.2.4가 적용됩니다).
+이 이벤트들은 v3.2.4 릴리스와 함께 제공됩니다. `qorechain-diana` 테스트넷은 2026년 10월 19일부터 이를 발생시키고 있으며 메인넷은 높이 3,742,566부터 발생시킵니다(거버넌스 제안 13). 아직 v3.2.3인 메인넷 노드에는 스테이킹 티어 모듈이 없으므로 이 이벤트를 하나도 발생시키지 않습니다.
 
 | 이벤트 유형 | 주요 속성 | 설명 |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | 위임 락이 생성되었습니다 |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | 락이 조기에 종료되었거나 만기에 도달했습니다 |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | 락이 조기에 종료되었거나(페널티는 `staking_tier_penalty` 소각 소스로 소각됩니다) 만기에 도달했습니다 |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; 정산 합계 | 보너스가 청구되었습니다. 풀이 정산되었습니다 |
 | `staking_tier_params_updated` | 파라미터 | 거버넌스가 모듈 파라미터를 변경했습니다 |
 

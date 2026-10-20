@@ -21,7 +21,7 @@ depolarında **yayımlanmıştır**. Güncel sürüm hattı **0.9**'dur ve 21 Ek
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
 | Go modül proxy'si | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.1 (Bouncy Castle bağımlılığının yalnızca Java'ya özel güncellemesi, API değişikliği yok; diğer diller 0.9.0'da kalır) |
 
 Aşağıdan dilinizi seçin.
 
@@ -40,15 +40,15 @@ seçeneği alır (`"auto"` | `"v1"` | `"v2"`); `"auto"` ağa sorar ve bu nedenle
 `qorechain-vladi` / `qorechain-diana` üzerinde REST uç noktasına (`rest`) ihtiyaç
 duyar: tahmin etmek yerine hata fırlatır. Bkz.
 [Hangi sign-bytes biçimi?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Biçim, zincir v3.2.3 (mainnet) veya v3.2.4 (testnet) ile değişmedi: `"auto"` her
+Biçim, zincir v3.2.3 veya v3.2.4 ile değişmedi (v3.2.4 test ağında 19 Ekim 2026'dan beri, mainnet'te 3.742.566 yüksekliğinden itibaren): `"auto"` her
 iki ağda da v2'ye çözümlenir.
 :::
 
 ## 0.9.0 neler ekliyor {#whats-new-090}
 
 SDK 0.9.0, zincir **v3.2.2** ve **v3.2.3** için istemci sürümüdür (mainnet
-bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; testnet v3.2.4
-çalıştırır). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
+bunları 3.556.788 ve 3.662.051 yüksekliklerinde uyguladı; testnet 19 Ekim 2026'dan beri v3.2.4
+çalıştırır ve mainnet ona 3.742.566 yüksekliğinde geçer). İmzalama biçimi, adresler, ondalık basamaklar, memo'lar ve ücretler
 değişmedi; dolayısıyla 0.8.1 ve sonrasının imzaladığı v2 hibrit sign-bytes biçimi
 hâlâ doğru olandır. Yenilikler:
 
@@ -74,7 +74,7 @@ bir eski anahtarı kurtarmak veya ondan rotasyonla uzaklaşmak hâlâ çalışı
 ## 0.9.0 öncesi sürümler {#before-090}
 
 0.8.x kullanıyorsanız, her iki ağın da doğruladığı biçimi imzalamaya devam eder ve
-mainnet v3.2.3 ile testnet v3.2.4 üzerinde çalışır. Bunlar, 0.9.0'ın kaldırdığı
+mainnet (v3.2.3, ardından 3.742.566 yüksekliğinden itibaren v3.2.4) ve testnet (v3.2.4) üzerinde çalışır. Bunlar, 0.9.0'ın kaldırdığı
 sınırlardır ve bazıları bilmediğinizde ücrete mal olur:
 
 | 0.9.0 öncesi sürüm | Geçici çözüm |
@@ -224,20 +224,22 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 
 Ya da Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.1'
 ```
 
-> Maven Central'da `io.github.qorechain:qorechain-sdk:0.9.0` adıyla
-> yayımlanmıştır (21 Ekim 2026'da kontrol edildi). Central'da 0.8.0 veya 0.8.1
-> derlemesi yoktur; bu nedenle canlı ağlarda 0.9.0 (veya 0.8.2 ya da sonrasını)
-> kullanın.
+> Maven Central'da `io.github.qorechain:qorechain-sdk` adıyla yayımlanmıştır
+> (0.9.0 ve 0.9.1'in ikisi de sunulur; 0.9.1 en son ve sürüm (release) olanıdır;
+> 21 Ekim 2026'da kontrol edildi). 0.9.1, sürüm notlarına göre Bouncy Castle'ı
+> 1.80'den 1.85'e taşıyan yalnızca Java'ya özel bir sürümdür; API değişikliği
+> yoktur. Central'da 0.8.0 veya 0.8.1 derlemesi yoktur; bu nedenle canlı ağlarda
+> 0.9.x (veya 0.8.2 ya da sonrasını) kullanın.
 
 ## İlgili paketler {#related-packages}
 
@@ -245,12 +247,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | Cüzdan tarafı yardımcıları: cüzdan oluşturma (`generateQoreWallet`), `eth_secp256k1` hibrit imzalama (`signHybridEth`, `QoreChainSigner`), MetaMask ağ kaydı (`addQoreEvmToWallet`), authenticator ve EVM penceresi mesaj oluşturucuları (`openEvmWindowMsg` yalnızca kapsamsız biçimi oluşturur), v2 abstract-account özeti. Sahiplik kanıtı eklemez. Peer dependency'ler: `@cosmjs/proto-signing` ve `@cosmjs/stargate` `^0.32` (SDK cosmjs 0.39 kullanır; bu nedenle ikisini aynı projeye kurmak npm'in bir peer çakışması, `ERESOLVE`, bildirmesine yol açar; onları ayrı projelerde tutun veya `--legacy-peer-deps` geçin) | 0.4.0 |
 | `@qorechain/chain-bridge` | Arka uçlar için sunucu tarafı worker: PQC anahtarını türetir, hibrit imzalar ve yayınlar (`sendTokens`, `registerPqc` ve daha fazlası). `cosmosRest` geçin: bununla, ağ v3.2.3'ü uyguladıktan sonra bir kayıt sahiplik kanıtını taşır ve PQC'ye benzeyen bir ret, herhangi bir yeniden kayıttan önce zincire karşı kontrol edilir (farklı bir kayıtlı anahtar, ikinci bir kayıt için ücret ödetmek yerine `pqc_key_mismatch` hatası verir) | 0.2.3 |
-| `@qorechain/pqc` | Yalnızca standartlara uygun ML-DSA / ML-KEM / SHAKE-256 ilkelleri ve `hybridSignBytes` (bkz. [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing)); ayrıca aynı sürümde PyPI, crates.io, Maven Central ve Go proxy'sinde (Go `v0.2.2`) | 0.2.2 |
+| `@qorechain/pqc` | Yalnızca standartlara uygun ML-DSA / ML-KEM / SHAKE-256 ilkelleri ve `hybridSignBytes` (bkz. [Post-Kuantum İmzalama](/developer-guide/post-quantum-signing)); ayrıca aynı sürümde PyPI, crates.io, Maven Central ve Go proxy'sinde (Go `v0.2.3`) | 0.2.3 |
 | `@qorechain/handles` | İlk kullanımda güven (trust-on-first-use) sabitlemesiyle doğrulanmış `@handle` çözümlemesi (`HandleClient`) | 0.1.0 |
 | `@qorechain/connect` | EVM, Cosmos ve SVM cüzdanları için, cüzdan adaptörü üzerine kurulu tek bir bağlayıcı (peer aralığı `@qorechain/wallet-adapter` `^0.2.1`'dir ve 0.4.0'ı içermez). Bir [EVM yetkilendirme penceresi](/sdk/guides/evm#evm-window) açmaz; bu nedenle hesabın kayıtlı bir anahtarı ve açık bir penceresi olana kadar onun üzerinden yapılan bir EVM gönderimi reddedilir | 0.2.1 |
-| `@qorechain/rdk` | Rollup Development Kit istemcisi (bkz. [Rollup'lar](/rollups/why)). `@qorechain/sdk` `^0.8.0` sürümüne bağımlıdır; bu nedenle uygulamanız SDK 0.9.0 kullansa bile npm, SDK 0.8.3'ü kendi kopyası olarak kurar. Yalnızca bir `pqcKeypair` verdiğinizde hibrit imzalar; okumalar onsuz çalışır. [0.5.0 sınırlarına](/rollups/deploying-a-rollup#rdk-050-limits) bakın | 0.5.0 |
-| `@qorechain/rdk-cli` | RDK için `qorollup` operatör CLI'ı. İşlem komutları yalnızca klasik imzalar ve ağlar tarafından reddedilir | 0.5.0 |
-| `create-qorechain-rollup` | Rollup başlangıç iskelet oluşturucusu; şablonları `@qorechain/rdk` `^0.5.0` sürümüne bağımlıdır | 0.5.0 |
+| `@qorechain/rdk` | Rollup Development Kit istemcisi (bkz. [Rollup'lar](/rollups/why)). `@qorechain/sdk` `^0.9.0` ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır; bu nedenle SDK 0.9.0 kullanan bir uygulama onunla tek bir SDK kopyasını paylaşır (0.5.0, SDK 0.8.3'ü iç içe bir kopya olarak çekiyordu). Yalnızca bir `pqcKeypair` verdiğinizde hibrit imzalar; okumalar onsuz çalışır. Ayrıca PyPI, crates.io ve Maven Central'da `qorechain-rdk` olarak ve bir Go modülü olarak yayımlanmıştır (`@v0.6.0` sabitleyin); bu dört istemci yalnızca klasik imzalar. Bkz. [RDK 0.6.0: değişiklikler ve sınırlar](/rollups/deploying-a-rollup#rdk-050-limits) | 0.6.0 |
+| `@qorechain/rdk-cli` | RDK için `qorollup` operatör CLI'ı. İşlem komutları (`create`, `pause`, `resume`, `stop`, `withdraw`) yalnızca klasik imzalar ve ağlar tarafından reddedilir | 0.6.0 |
+| `create-qorechain-rollup` | Rollup başlangıç iskelet oluşturucusu; şablonları `@qorechain/rdk` `^0.6.0` sürümüne bağımlıdır ve post-kuantum anahtarınızı `QORE_MNEMONIC` veya `QORE_PQC_SEED_HEX` içinden çözümleyebildiklerinde hibrit imzalar | 0.6.0 |
 
 ## Sıradaki adım
 

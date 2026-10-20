@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain betreibt eine vollständig EVM-kompatible Ausführungsumgebung auf der QoreChain EVM Engine und ermöglicht es, Solidity-Smart-Contracts mit vertrauten Werkzeugen bereitzustellen und mit ihnen zu interagieren. Das EVM-Modul stellt eine JSON-RPC-Schnittstelle auf **Port 8545** bereit (WebSocket auf **8546**), die gängige Ethereum-Entwicklungsworkflows unterstützt.
 
 :::note
-Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das Node-Release **v3.2.3** ausführt (angewendet bei Höhe 3.662.051 am 20. Oktober 2026). Für das **`qorechain-diana`**-Testnet (v3.2.4, angewendet bei Höhe 8.337.253 am 19. Oktober 2026; im Mainnet noch nicht angewendet; der Governance-Vorschlag 13 würde es bei Höhe 3.742.566 anwenden) verwenden Sie die EVM-Chain-ID **9800**. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
+Die folgenden Beispiele richten sich an das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**), das seit dem 7. Juni 2026 live ist und das Node-Release **v3.2.3** ausführt (angewendet bei Höhe 3.662.051 am 20. Oktober 2026). Das Mainnet wechselt bei Höhe 3.742.566 auf das Node-Release **v3.2.4** (Governance-Vorschlag 13). Das **`qorechain-diana`**-Testnet läuft seit Höhe 8.337.253 (19. Oktober 2026) mit v3.2.4; verwenden Sie dort die EVM-Chain-ID **9800**. Die Codebeispiele verwenden `http://localhost:8545` für einen selbst betriebenen Node; der öffentliche Mainnet-Endpunkt ist `https://evm.qore.host` und der Testnet-Endpunkt ist `https://evm-testnet.qore.host`.
 :::
 
 :::caution Eine EVM-Transaktion benötigt einen registrierten PQC-Schlüssel und ein offenes Autorisierungsfenster
@@ -33,6 +33,8 @@ Zwei weitere Regeln gelten seit v3.2.2 im Mainnet: **Ungeschützte Transaktionen
 | Währungssymbol          | `QOR`                                      |
 
 QoreChain-spezifische Lesezugriffe werden über REST (`api.qore.host`) bereitgestellt; der [unten](#custom-qor_-namespace) beschriebene JSON-RPC-Namespace `qor_` ist auf den öffentlichen Endpunkten und in der Standard-Node-Konfiguration **nicht aktiviert**. Die Standardliste `api` eines frisch initialisierten Nodes (v3.2.3 und später) lautet `eth,net,web3`; `txpool` muss ausdrücklich aktiviert werden, weil es die ausstehenden Transaktionen des Nodes veröffentlicht.
+
+Ab dem Node-Release v3.2.4 (Testnet seit 19. Oktober 2026; Mainnet-Nodes ab Höhe 3.742.566) begrenzt ein Node seinen eigenen JSON-RPC-Server: Anfragekörper über 256 KiB werden abgelehnt (HTTP 413), es werden nicht mehr als 256 Anfragen gleichzeitig bedient (darüber hinaus HTTP 503), und ein `eth_getLogs`- oder `eth_newFilter`-Filter mit mehr als 4 Topic-Positionen, 1000 Alternativen in einer Position oder 1000 Adressen wird abgelehnt. Die Grenzen sind node-lokale Einstellungen im Abschnitt `[json-rpc]` der `app.toml`; siehe [Einen Node betreiben](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 
@@ -188,7 +190,7 @@ EVM-Transaktionen werden mit **klassischem ECDSA (secp256k1)** signiert, sodass 
 Für post-quantensichere Sicherheit innerhalb von Contracts:
 
 * Das **PQC-Verify-Precompile** (`0x0000...0A01`) wird ML-DSA-87-Signaturen on-chain aus Solidity heraus verifizieren, sobald es aktiviert ist; es ist im Mainnet und im Testnet **noch nicht aktiv**. Siehe [EVM-Precompiles: Netzwerkstatus](/developer-guide/evm-precompiles#network-status).
-* **Cross-VM-Nachrichten** von der EVM zu CosmWasm oder SVM sind Transaktionen der Cosmos-Lane und tragen wie jede andere die hybride Signatur; ihre aktuelle Verfügbarkeit finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
+* **Cross-VM-Nachrichten** von der EVM zu QoreChain Native oder SVM sind Transaktionen der Cosmos-Lane und tragen wie jede andere die hybride Signatur; ihre aktuelle Verfügbarkeit finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability).
 
 ---
 

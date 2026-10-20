@@ -43,7 +43,7 @@ Le déploiement sur le mainnet est non custodial : le Dashboard compile votre co
 4. Vérifiez la transaction dans MetaMask — réseau, gas et données — puis confirmez pour la signer et la diffuser vous-même.
 5. Une fois le déploiement confirmé on-chain, le Dashboard enregistre l'adresse du contrat résultant parmi vos contrats sauvegardés.
 
-Seuls les contrats **EVM** (Solidity) peuvent être déployés depuis le Dashboard. Les déploiements CosmWasm et de programmes Solana ne sont pas disponibles pour le moment sur l'un ou l'autre réseau.
+Seuls les contrats **EVM** (Solidity) peuvent être déployés depuis le Dashboard. Les déploiements QoreChain Native et de programmes Solana ne sont pas disponibles pour le moment sur l'un ou l'autre réseau.
 
 ### Sur le testnet — en un clic {#deploy-testnet}
 

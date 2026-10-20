@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Toda invocación de `go build`, `go test` y `go run` **debe** tener `CGO_ENABLED=1` configurado. El nodo enlaza bibliotecas nativas (el entorno de ejecución de CosmWasm y, en la compilación de la versión publicada, las bibliotecas PQC y SVM) mediante cgo.
+Toda invocación de `go build`, `go test` y `go run` **debe** tener `CGO_ENABLED=1` configurado. El nodo enlaza bibliotecas nativas (el entorno de ejecución de QoreChain Native y, en la compilación de la versión publicada, las bibliotecas PQC y SVM) mediante cgo.
 :::
 
 ## Bibliotecas nativas

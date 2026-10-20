@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Historique des versions
 
-Historique public des versions de QoreChain. La dernière version du mainnet est **v3.2.3**, en cours d'exécution sur le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026) ; elle a été appliquée par la gouvernance à la hauteur 3 662 051 le 20 octobre 2026. Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute **v3.2.4**, appliquée là-bas à la hauteur 8 337 253 le 19 octobre 2026. **v3.2.4 ne fait pas encore partie du mainnet : la proposition de gouvernance 13 du mainnet (vote jusqu'au 21 octobre 2026, 21:18 UTC) l'appliquerait à la hauteur 3 742 566.**
+Historique public des versions de QoreChain. Le mainnet **`qorechain-vladi`** (EVM chain ID **9801**, en production depuis le 7 juin 2026) exécute **v3.2.3** (appliquée par la gouvernance à la hauteur 3 662 051 le 20 octobre 2026) jusqu'à la hauteur **3 742 566**, puis **v3.2.4** à partir de ce bloc (proposition de gouvernance 13 du mainnet). Le testnet **`qorechain-diana`** (EVM chain ID **9800**) exécute **v3.2.4** depuis la hauteur 8 337 253 (19 octobre 2026).
 
 :::note
 Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les entrées `v1.x` antérieures sont conservées comme trace historique de la lignée de versions testnet qui a précédé le mainnet. Le manifeste de version ([Se connecter au mainnet](/getting-started/connecting-to-mainnet)) est promu séparément du tag et peut avoir un certain décalage par rapport à celui-ci — vérifiez-le directement pour savoir ce qu'une nouvelle installation télécharge réellement.
@@ -15,7 +15,7 @@ Les entrées ci-dessous sont des résumés de capacités de haut niveau. Les ent
 
 ## Chronologie de gouvernance du mainnet {#governance-timeline}
 
-Propositions qui ont modifié le mainnet en production depuis le 14 octobre 2026. Les sept sont des propositions accélérées (période de vote d'un jour) ; les propositions 7 à 11 ont été adoptées avec tout le stake bonded votant en faveur. La liste complète se trouve à `GET /cosmos/gov/v1/proposals` sur `https://api.qore.host`.
+Propositions qui ont modifié, ou programment des modifications du, mainnet en production depuis le 14 octobre 2026. Les sept sont des propositions accélérées (période de vote d'un jour) ; les propositions 7 à 11 ont été adoptées avec tout le stake bonded votant en faveur. La liste complète se trouve à `GET /cosmos/gov/v1/proposals` sur `https://api.qore.host`.
 
 | Proposition | Ce qu'elle fait | Vote | Résultat |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Propositions qui ont modifié le mainnet en production depuis le 14 octobre 2026
 | 10 | Émission : fixe l'émission fixe à 86 000 QOR par époque et le plafond cumulatif à 590 000 000 QOR (durée d'époque inchangée ; la première époque à 86 000 QOR commence au bloc 3 672 000) | 18–19 octobre 2026 (se termine à 19:15 UTC) | Adoptée |
 | 11 | Applique v3.2.3 à la hauteur 3 662 051 | 18–19 octobre 2026 (se termine à 19:15 UTC) | Adoptée ; appliquée le 20 octobre 2026 |
 | 12 | Libère la part des stakers bloquée corrigée (3 807 496,785528 QOR, recalculée à la hauteur de v3.2.3) vers la fondation | 20 octobre 2026 à 20:01 UTC jusqu'au 21 octobre 2026 à 20:01 UTC | En période de vote au moment de la rédaction |
-| 13 | Mise à niveau coordonnée vers v3.2.4 à la hauteur 3 742 566 (niveaux de staking, borne de récompense des light nodes comptée depuis l'enregistrement, indicateur de possession pour les clés post-quantiques, preuve de possession pour les validateurs de pont, et durcissement local au nœud) | 20 octobre 2026 à 21:18 UTC jusqu'au 21 octobre 2026 à 21:18 UTC | En période de vote au moment de la rédaction |
+| 13 | Mise à niveau coordonnée vers v3.2.4 à la hauteur 3 742 566 (vers le 23 octobre 2026 avec des blocs de 3,2 secondes) : staking à verrouillage temporel facultatif, borne de récompense des light nodes comptée depuis l'enregistrement, indicateur de possession pour les clés post-quantiques, preuve de possession pour les validateurs de pont, fenêtre de contestation du RDK exprimée en temps de bloc, et durcissement local au nœud | 20 octobre 2026 à 21:18 UTC jusqu'au 21 octobre 2026 à 21:18 UTC | En période de vote au moment de la rédaction, avec tous les votes exprimés jusqu'ici en faveur ; consultez `GET /cosmos/gov/v1/proposals/13` pour le résultat final |
 
 Voir [Tokenomics](/architecture/tokenomics#stranded-and-reserve) pour la signification de ces libérations et [Gouvernance](/user-guide/governance) pour savoir comment voter.
 
 ---
 
-## v3.2.4 — Fenêtre d'enregistrement des light nodes et staking à verrouillage temporel facultatif (testnet uniquement)
+## v3.2.4 — Fenêtre d'enregistrement des light nodes et staking à verrouillage temporel facultatif (programmée pour le mainnet)
 
-**Axe de la version :** Une version réservée au testnet, appliquée sur `qorechain-diana` par la proposition de gouvernance 13 du testnet à la hauteur **8 337 253** (19 octobre 2026). Elle n'est **pas encore sur le mainnet** : la proposition de gouvernance 13 du mainnet (vote jusqu'au 21 octobre 2026, 21:18 UTC) l'appliquerait à la hauteur 3 742 566, et d'ici là rien de ce qui suit ne s'applique à `qorechain-vladi`. Le manifeste du testnet fixe `minCompatible` à 3.2.4.
+**Axe de la version :** La prochaine version du mainnet programmée. Elle s'exécute sur le testnet `qorechain-diana` depuis que la proposition de gouvernance 13 du testnet l'a appliquée à la hauteur **8 337 253** (19 octobre 2026 ; le manifeste du testnet fixe `minCompatible` à 3.2.4). Sur le mainnet, la proposition de gouvernance 13 la programme à la hauteur **3 742 566** : les nœuds restent sur v3.2.3 jusqu'à ce bloc, s'y arrêtent et redémarrent sur v3.2.4, et la signature des transactions est inchangée. Chaque fonctionnalité ci-dessous est donc active dès maintenant sur le testnet et s'applique à `qorechain-vladi` à partir de la hauteur 3 742 566 (une fois la proposition adoptée).
 
 * **Fenêtre d'enregistrement des light nodes.** La borne de récompense d'un light node commence au plus tardif du règlement précédent et de l'enregistrement du nœud lui-même, de sorte qu'un nouvel enregistrement ne perçoit pas un montant accumulé avant son arrivée.
-* **Staking à verrouillage temporel facultatif (`x/stakingtier`, un nouveau module).** Un délégateur peut verrouiller une partie d'une délégation pour une durée fixe ; la partie verrouillée ne peut être ni retirée de la délégation ni redéléguée, et un déverrouillage anticipé est autorisé moyennant une pénalité. Voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking).
-* **Nouveau mode d'émission.** `x/inflation` gagne un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` (actuellement `0`).
+* **Staking à verrouillage temporel facultatif (`x/stakingtier`, un nouveau module).** Un délégateur peut verrouiller une partie d'une délégation pour 3, 6 ou 12 mois ; la partie verrouillée ne peut être ni retirée de la délégation ni redéléguée, et un déverrouillage anticipé est autorisé moyennant une pénalité qui est brûlée. Le verrouillage minimal est de 10 QOR. Voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking).
+* **Nouveau mode d'émission.** `x/inflation` gagne un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` (`0` sur le testnet). Modifier le mode d'émission d'un réseau est une décision de gouvernance distincte ; le mode en vigueur est affiché à `/qorechain/inflation/v1/params`.
 * **Indicateur `possession_proven`** sur les enregistrements de compte post-quantiques ; la preuve de possession des clés de compte reste facultative.
 * **Preuve de possession des validateurs de pont.** L'enregistrement d'un validateur de pont exige une preuve de possession et une clé qu'aucun autre validateur de pont n'utilise.
 * **Fenêtre de contestation RDK en temps de bloc.** La fenêtre de contestation optimiste est comptée en temps de bloc plutôt qu'en un nombre de blocs qui en est dérivé.
@@ -87,11 +87,11 @@ v3.2.1 a été appliquée nœud par nœud et n'a pas de hauteur de mise à nivea
 * **La table des versions de modules de l'upgrade** liste désormais tous les modules (48), corrigeant une lacune qui aurait affecté les migrations ultérieures.
 * Également : module de compte du pont et charges utiles d'attestation durcis, blocs proposés validés, règlement des rollups restreint au séquenceur du rollup avec escrow par rollup et une combustion de création effective, stake du créateur multilayer verrouillé à l'enregistrement et restitué au démantèlement, indicateur `enabled` du compte intelligent appliqué sur tous les chemins, et chemins d'admission de validateurs et de création de vesting fermés à l'imbrication authz.
 
-## v3.1.96 + v3.1.97 — Verrouillage de l'accès CosmWasm
+## v3.1.96 + v3.1.97 — Verrouillage de l'accès QoreChain Native
 
-**Axe de la version :** Fermer le téléversement et l'instanciation permissionless de code de contrat, suite à un avis de sécurité CosmWasm à l'échelle de l'industrie.
+**Axe de la version :** Fermer le téléversement et l'instanciation permissionless de code de contrat, suite à un avis de sécurité de l'industrie portant sur CosmWasm, le runtime sur lequel QoreChain Native est construit.
 
-* **Le téléversement et l'instanciation de contrats nécessitent désormais une permission explicite.** `code_upload_access` et `instantiate_default_permission` sont réglés sur `Nobody` sur le mainnet comme sur le testnet — vérifié en production, indépendamment de celui de ces deux tags qu'exécute un nœud donné, puisqu'il s'agit d'un paramètre on-chain plutôt que d'une règle appliquée seulement par les binaires les plus récents. Voir [Développement CosmWasm](/developer-guide/cosmwasm-development) pour ce que cela signifie si vous développez un contrat. Les contrats déjà instanciés ne sont pas affectés — `execute` et `query` fonctionnent comme avant. Les deux réseaux ont également les trois messages CosmWasm de téléversement et d'instanciation désactivés sur le disjoncteur.
+* **Le téléversement et l'instanciation de contrats nécessitent désormais une permission explicite.** `code_upload_access` et `instantiate_default_permission` sont réglés sur `Nobody` sur le mainnet comme sur le testnet — vérifié en production, indépendamment de celui de ces deux tags qu'exécute un nœud donné, puisqu'il s'agit d'un paramètre on-chain plutôt que d'une règle appliquée seulement par les binaires les plus récents. Voir [Développement QoreChain Native](/developer-guide/cosmwasm-development) pour ce que cela signifie si vous développez un contrat. Les contrats déjà instanciés ne sont pas affectés — `execute` et `query` fonctionnent comme avant. Les deux réseaux ont également les trois messages QoreChain Native de téléversement et d'instanciation désactivés sur le disjoncteur.
 * **Builds de version à adresse indépendante de la position (PIE)**, conformément aux recommandations de durcissement du même avis, de sorte que l'adresse mémoire qu'un exploit devrait deviner est randomisée par processus. Les binaires à liaison dynamique n'ont nécessité qu'un seul indicateur de build ; vérifié comme n'affectant pas l'état.
 
 ## v3.1.95 — Durcissement de l'EVM Cosmos
@@ -319,8 +319,8 @@ Les full nodes doivent exécuter **v3.1.83+**. Un nœud antérieur à 3.1.83 ne 
 * **Couche de consensus PRISM** — Optimisation par apprentissage par renforcement (PPO) pour l'ajustement dynamique des paramètres de chaîne avec des contrôles de sécurité de type disjoncteur
 * **CPoS à triple pool** — Composite Proof-of-Stake avec des pools de validateurs RPoS, DPoS et PoS pondérés par des scores de réputation (implémenté dans `x/qca` ; pas encore branché à la production de blocs)
 * **Gouvernance QDRW** — Formule de pouvoir de vote Quadratic Delegation with Reputation Weighting (implémentée ; désactivée sur les réseaux en production)
-* **Runtimes EVM + CosmWasm + SVM** — Trois environnements d'exécution concurrents : le moteur EVM de QoreChain, les contrats intelligents CosmWasm, et la Solana Virtual Machine
-* **Pont cross-VM** — Passage de messages et transferts d'actifs entre les runtimes EVM, CosmWasm et SVM au sein d'un même bloc
+* **Runtimes EVM + QoreChain Native + SVM** — Trois environnements d'exécution concurrents : le moteur EVM de QoreChain, les contrats intelligents QoreChain Native, et la Solana Virtual Machine
+* **Pont cross-VM** — Passage de messages et transferts d'actifs entre les runtimes EVM, QoreChain Native et SVM au sein d'un même bloc
 * **Cryptographie post-quantique** — Signature résistante au quantique soutenue par une bibliothèque PQC haute performance
 * **QCAI** — Analyse heuristique on-chain avec un sidecar hors chaîne facultatif pour la détection de fraude, l'estimation des frais et l'optimisation du réseau
 * **Déploiement conteneurisé** — Déploiement complet de testnet multi-validateur avec service sidecar et indexeur de blocs

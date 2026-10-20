@@ -40,7 +40,7 @@ QCAIA befindet sich in der **Beta**-Phase. Er wird kontinuierlich verbessert, un
 
 | Plattform | Wie man sie erreicht | Anleitung |
 | --- | --- | --- |
-| **Discord** | Treten Sie **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** bei und verwenden Sie Slash-Befehle | [QCAIA auf Discord nutzen](/qcaia/discord) |
+| **Discord** | Treten Sie **[discord.gg/qorechain](https://discord.gg/qorechain)** bei und verwenden Sie Slash-Befehle | [QCAIA auf Discord nutzen](/qcaia/discord) |
 | **Telegram** | Treten Sie **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** bei und erwähnen Sie den Bot | [QCAIA auf Telegram nutzen](/qcaia/telegram) |
 
 Wählen Sie oben Ihre Plattform aus, um genau zu erfahren, wie man fragt, oder springen Sie direkt zur Seite [Beispiele](/qcaia/examples), um QCAIA in Aktion zu sehen.

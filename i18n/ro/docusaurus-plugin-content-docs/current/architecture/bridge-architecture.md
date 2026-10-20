@@ -193,7 +193,7 @@ Toate operațiunile podului QCB necesită un **prag de 7-din-10** semnături pos
 * O listă de lanțuri suportate
 * Un scor de reputație (menținut de `x/reputation`)
 
-Începând cu v3.2.2, modulul validează consecvent sumele zero și configurația sa pe fiecare cale. **Doar pe testnet (v3.2.4, nu și pe mainnet):** înregistrarea unui validator de pod necesită și o dovadă de posesie a cheii Dilithium-5 (același format `proof_of_possession` ca la înregistrarea cheii PQC, vezi [Securitate post-cuantică](/architecture/post-quantum-security#proof-of-possession)) și refuză o cheie pe care o folosește deja alt validator de pod. Mainnet v3.2.3 nu are o astfel de verificare, iar pe niciuna dintre rețele nu este înregistrat vreun validator de pod.
+Începând cu v3.2.2, modulul validează consecvent sumele zero și configurația sa pe fiecare cale. **De la v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566):** înregistrarea unui validator de pod necesită și o dovadă de posesie a cheii Dilithium-5 (același format `proof_of_possession` ca la înregistrarea cheii PQC, vezi [Securitate post-cuantică](/architecture/post-quantum-security#proof-of-possession)) și refuză o cheie pe care o folosește deja alt validator de pod. Mainnet v3.2.3, care rulează până la acea înălțime, nu are o astfel de verificare, iar pe niciuna dintre rețele nu este înregistrat vreun validator de pod.
 
 ### Disjunctoare (circuit breakers)
 

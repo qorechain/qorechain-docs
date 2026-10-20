@@ -11,7 +11,7 @@ Questions générales sur QoreChain, répondues à partir de la documentation. C
 
 ### Le mainnet est-il en ligne ?
 
-Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 7 juin 2026 et exécute la version v3.2.3 (le testnet, `qorechain-diana`, exécute v3.2.4). Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
+Oui. Le mainnet de QoreChain (chaîne `qorechain-vladi`, EVM chain ID 9801) est en ligne depuis le 7 juin 2026 et exécute la version v3.2.3 jusqu'à la hauteur 3 742 566 et la v3.2.4 à partir de ce bloc (proposition de gouvernance 13) ; le testnet, `qorechain-diana`, exécute la v3.2.4 depuis le 19 octobre 2026. Voir [Réseaux](/appendix/networks) et [Se connecter au mainnet](/getting-started/connecting-to-mainnet).
 
 ### Quels sont les chain IDs et les EVM chain IDs ?
 
@@ -71,11 +71,11 @@ Utilisez le Rollup Development Kit de QoreChain. Voir [Rollups](/rollups/overvie
 
 ### Comment construire une dApp ?
 
-Utilisez le [QoreChain SDK](/sdk/overview), le SDK public pour construire des applications sur QoreChain à travers ses environnements d'exécution EVM, SVM et CosmWasm.
+Utilisez le [QoreChain SDK](/sdk/overview), le SDK public pour construire des applications sur QoreChain à travers ses environnements d'exécution EVM, SVM et QoreChain Native.
 
 ### Où puis-je poser des questions ?
 
-Le bot communautaire QCAIA répond aux questions sur Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) et Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Voir [Bot communautaire QCAIA](/qcaia/overview).
+Le bot communautaire QCAIA répond aux questions sur Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) et Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Voir [Bot communautaire QCAIA](/qcaia/overview).
 
 ## Voir aussi
 

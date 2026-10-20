@@ -11,7 +11,7 @@ QoreChain hakkında dokümantasyondan yanıtlanan genel sorular. Her yanıt, ayr
 
 ### Ana ağ canlı mı?
 
-Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve v3.2.3 sürümünü çalıştırır (test ağı `qorechain-diana` v3.2.4 çalıştırır). Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
+Evet. QoreChain ana ağı (zincir `qorechain-vladi`, EVM zincir kimliği 9801) 7 Haziran 2026'dan beri canlıdır ve 3.742.566 numaralı yüksekliğe kadar v3.2.3 sürümünü, o bloktan itibaren v3.2.4'ü çalıştırır (yönetişim önerisi 13); test ağı `qorechain-diana` 19 Ekim 2026'dan beri v3.2.4 çalıştırır. Bkz. [Ağlar](/appendix/networks) ve [Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet).
 
 ### Zincir kimlikleri ve EVM zincir kimlikleri nelerdir?
 
@@ -71,11 +71,11 @@ QoreChain Rollup Development Kit'i kullanın. Bkz. [Rollups](/rollups/overview) 
 
 ### Bir dApp'i nasıl oluştururum?
 
-QoreChain'in EVM, SVM ve CosmWasm yürütme ortamlarında uygulama oluşturmaya yönelik genel SDK olan [QoreChain SDK](/sdk/overview)'i kullanın.
+QoreChain'in EVM, SVM ve QoreChain Native yürütme ortamlarında uygulama oluşturmaya yönelik genel SDK olan [QoreChain SDK](/sdk/overview)'i kullanın.
 
 ### Soruları nereye sorabilirim?
 
-QCAIA topluluk botu, Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) ve Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)) üzerinde soruları yanıtlar. Bkz. [QCAIA Topluluk Botu](/qcaia/overview).
+QCAIA topluluk botu, Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) ve Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)) üzerinde soruları yanıtlar. Bkz. [QCAIA Topluluk Botu](/qcaia/overview).
 
 ## İlgili
 

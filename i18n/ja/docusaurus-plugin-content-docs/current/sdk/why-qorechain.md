@@ -67,7 +67,7 @@ if (!preflight.safe) {
 
 **任意の VM 上のコントラクトを呼び出し、3 つの VM をまたぐ呼び出しをアトミックにバッチ処理します。**
 
-QoreChain は CosmWasm、EVM、SVM のコントラクトを、ネイティブなクロス VM ブリッジを
+QoreChain は QoreChain Native、EVM、SVM のコントラクトを、ネイティブなクロス VM ブリッジを
 備えた同一チェーン上で実行します。SDK はそのいずれをも呼び出せる単一のインター
 フェースを公開しており、複数のクロス VM 呼び出しを 1 回の署名で済む単一のアトミック
 トランザクションにまとめることもできます。
@@ -85,7 +85,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -98,7 +98,7 @@ await crossVM.callAtomic([
 SDK インターフェースで 3 つすべてを扱えます。単一 VM のチェーンには、ラップできる
 同等のものがありません。現時点では、呼び出しの到達範囲は対象とするレーンによって
 制限されます: `MsgCrossVMCall` はメインネットで無効化されており、SVM トランザクションは
-無効化されており、CosmWasm のアップロードとインスタンス化は許可制です。詳細は
+無効化されており、QoreChain Native のアップロードとインスタンス化は許可制です。詳細は
 [クロス VM 呼び出し](/sdk/guides/cross-vm) を参照してください。
 
 ---

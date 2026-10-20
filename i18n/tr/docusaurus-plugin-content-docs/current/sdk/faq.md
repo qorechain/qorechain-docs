@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Mainnet yayında mı?
 
 Evet. Mainnet **yayında** (zincir kimliği `qorechain-vladi`, 7 Haziran 2026'dan beri
-canlı) ve 20 Ekim 2026 itibarıyla zincir sürümü v3.2.3'ü çalıştırıyor. Testnet hazır
+canlı) ve 3.742.566 yüksekliğine kadar zincir sürümü v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırıyor (yönetişim önerisi 13); testnet 19 Ekim 2026'dan beri v3.2.4'ü çalıştırıyor. Testnet hazır
 ayarı (`qorechain-diana`) da kullanılabilir durumda kalmaya devam eder. Her iki hazır
 ayar da localhost uç nokta varsayılanlarıyla gelir; ağı
 `createClient({ network: "mainnet" })` ile seçin ve `endpoints`'i kendi düğüm
@@ -33,7 +33,7 @@ const client = createClient({
 ```
 
 İmzalama yolu (`connectTx`) konsensüs **`rpc`** uç noktasına ihtiyaç duyar;
-CosmWasm okumaları da onu kullanır. REST okumaları `rest` kullanır; EVM çağrıları
+QoreChain Native okumaları da onu kullanır. REST okumaları `rest` kullanır; EVM çağrıları
 `evmRpc` kullanır (bu ad alanını sunan bir düğümde `qor_` çağrıları da). Mainnet
 URL'leri [ağ referansında](/sdk/reference/network#public-endpoints) yer alır.
 
@@ -91,7 +91,7 @@ Python istemcisi PyPI'da (`pip install qorechain-sdk`, sürüm 0.9.0, import
 `qorsdk`); Go istemcisi modül proxy'sinde
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); Rust istemcisi
 crates.io'da (`cargo add qorechain-sdk`, 0.9.0); Java istemcisi ise Maven
-Central'da (`io.github.qorechain:qorechain-sdk:0.9.0`). Dil başına tüm komutlar için
+Central'da (`io.github.qorechain:qorechain-sdk:0.9.1`; diğer dillerde 0.9.0). Dil başına tüm komutlar için
 [Kurulum](/sdk/install) bölümüne bakın.
 
 ## Anımsatıcı ifadem (mnemonic) reddediliyor
@@ -145,15 +145,15 @@ serileştiriyordu ve zincirin tx kod çözücüsü bunu CheckTx aşamasında red
 
 ## SDK hangi zincir sürümleriyle çalışır?
 
-SDK **0.9.0**, zincir v3.2.2 ve v3.2.3 için istemci sürümüdür: mainnet **v3.2.3** ve
+SDK **0.9.0**, zincir v3.2.2 ve v3.2.3 için istemci sürümüdür: mainnet **v3.2.3** (ve 3.742.566 yüksekliğinden itibaren **v3.2.4**) ve
 testnet **v3.2.4** üzerinde işlem yapar; kayıt sırasında isteğe bağlı sahiplik
 kanıtı (proof of possession; ağ v3.2.3'ü uyguladıktan sonra `ensurePqcRegistered`
 tarafından otomatik eklenir), kapsamlı EVM pencereleri ve EIP-7702 onay mesajları
 için oluşturuculara sahiptir. SDK **0.8.1 veya daha yenisi** de her iki ağda işlem
 yapar (v2 hibrit sign-bytes biçimi, kayıt, hibrit gönderimler ve EVM penceresi
 değişmeden çalışır), ancak bu oluşturucuların hiçbirine sahip değildir: bunlar için
-CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). v3.2.4 şimdilik
-yalnızca testnet'te yayındadır (mainnet yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır) ve SDK hiçbir v3.2.4 alanı ayarlamaz.
+CLI'yı kullanın (bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090)). v3.2.4,
+testnet'te 19 Ekim 2026'dan beri çalışır ve mainnet'te 3.742.566 yüksekliğinden itibaren çalışır (yönetişim önerisi 13); SDK hiçbir v3.2.4 alanı ayarlamaz, bu nedenle işlemleri bu yüksekliğin her iki tarafında da geçerli kalır.
 
 ## PQC anahtar kaydım reddedildi ama ücret alındı
 

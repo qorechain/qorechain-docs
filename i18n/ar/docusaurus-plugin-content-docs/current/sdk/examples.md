@@ -181,7 +181,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-نفّذ استعلامًا ذكيًا للقراءة فقط على عقد CosmWasm منشور. يتطلب
+نفّذ استعلامًا ذكيًا للقراءة فقط على عقد QoreChain Native منشور. يتطلب
 RPC إجماع يمكن الوصول إليه وعنوان عقد منشور.
 
 ```ts

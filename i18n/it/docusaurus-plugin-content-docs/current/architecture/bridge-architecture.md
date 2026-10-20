@@ -193,7 +193,7 @@ Tutte le operazioni del bridge QCB richiedono una **soglia 7-su-10** di firme po
 * Un elenco di catene supportate
 * Un punteggio di reputazione (mantenuto da `x/reputation`)
 
-Dalla v3.2.2 il modulo convalida in modo coerente su ogni percorso gli importi pari a zero e la propria configurazione. **Solo testnet (v3.2.4, non sulla mainnet):** la registrazione di un validatore del bridge richiede inoltre una prova di possesso della chiave Dilithium-5 (lo stesso formato `proof_of_possession` della registrazione delle chiavi PQC, vedi [Sicurezza Post-Quantistica](/architecture/post-quantum-security#proof-of-possession)) e rifiuta una chiave già utilizzata da un altro validatore del bridge. La mainnet v3.2.3 non ha un controllo di questo tipo, e su nessuna delle due reti è registrato alcun validatore del bridge.
+Dalla v3.2.2 il modulo convalida in modo coerente su ogni percorso gli importi pari a zero e la propria configurazione. **Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566):** la registrazione di un validatore del bridge richiede inoltre una prova di possesso della chiave Dilithium-5 (lo stesso formato `proof_of_possession` della registrazione delle chiavi PQC, vedi [Sicurezza Post-Quantistica](/architecture/post-quantum-security#proof-of-possession)) e rifiuta una chiave già utilizzata da un altro validatore del bridge. La mainnet v3.2.3, che resta in esecuzione fino a quell'altezza, non ha un controllo di questo tipo, e su nessuna delle due reti è registrato alcun validatore del bridge.
 
 ### Circuit Breaker
 

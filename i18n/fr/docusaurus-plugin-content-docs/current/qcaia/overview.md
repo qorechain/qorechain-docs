@@ -40,7 +40,7 @@ QCAIA est en **bêta**. Il s'améliore continuellement et, à l'occasion, il peu
 
 | Plateforme | Comment y accéder | Guide |
 | --- | --- | --- |
-| **Discord** | Rejoignez **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** et utilisez les commandes slash | [Utiliser QCAIA sur Discord](/qcaia/discord) |
+| **Discord** | Rejoignez **[discord.gg/qorechain](https://discord.gg/qorechain)** et utilisez les commandes slash | [Utiliser QCAIA sur Discord](/qcaia/discord) |
 | **Telegram** | Rejoignez **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** et mentionnez le bot | [Utiliser QCAIA sur Telegram](/qcaia/telegram) |
 
 Choisissez votre plateforme ci-dessus pour apprendre exactement comment poser vos questions, ou allez directement à la page [Exemples](/qcaia/examples) pour voir QCAIA en action.

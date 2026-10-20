@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain implements a **4-tier hierarchical chain architecture** through the `x/multilayer` module. The main chain serves as the settlement and trust root, while subsidiary layers (sidechains, paychains, and rollups) handle specialized workloads with different performance and security trade-offs.
 
 :::caution Early-stage capability
-The module is deployed on mainnet (chain version **v3.2.3**) and testnet (**v3.2.4**), but **no layer and no anchor exists on either network yet** (checked 20 October 2026: `GET /qorechain/multilayer/v1/layers` returns an empty list on both). Everything below describes the module as built; the parameters are the live values. On mainnet the `MsgUpdateLayerStatus` message is currently switched off by the circuit breaker (see [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); on the testnet it is not.
+The module is deployed on mainnet (chain version **v3.2.3** until height 3,742,566, **v3.2.4** from that block) and testnet (**v3.2.4**), but **no layer and no anchor exists on either network yet** (checked 20 October 2026: `GET /qorechain/multilayer/v1/layers` returns an empty list on both). Everything below describes the module as built; the parameters are the live values. On mainnet the `MsgUpdateLayerStatus` message is currently switched off by the circuit breaker (see [Chain Parameters](/appendix/chain-parameters#circuit-breaker)); on the testnet it is not.
 :::
 
 ---

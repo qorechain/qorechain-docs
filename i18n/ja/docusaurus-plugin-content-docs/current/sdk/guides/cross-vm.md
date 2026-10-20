@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # クロス VM ガイド
 
-QoreChain は **EVM、SVM、CosmWasm を並行して**実行し、`x/crossvm`
+QoreChain は **EVM、SVM、QoreChain Native を並行して**実行し、`x/crossvm`
 モジュールによって、単一のネイティブアカウントがそのいずれのコントラクトも呼び出せます。SDK は
 これらの呼び出しを構築・署名・ブロードキャストするための高レベルヘルパー `createCrossVMClient` を提供しており、
 複数の呼び出しを**3 つの VM すべてにまたがる 1 つのアトミックなトランザクション**にまとめることもできます。
@@ -21,7 +21,7 @@ QoreChain は **EVM、SVM、CosmWasm を並行して**実行し、`x/crossvm`
 - `MsgCrossVMCall` は **メインネット**ではチェーンのサーキットブレーカーによって無効化されています
   （`GET /cosmos/circuit/v1/disable_list` に `/qorechain.crossvm.v1.MsgCrossVMCall` が列挙されています）。
   テストネットでは有効です。
-- SVM のトランザクションレーンはネットワーク全体で無効化されており、CosmWasm のアップロードと
+- SVM のトランザクションレーンはネットワーク全体で無効化されており、QoreChain Native のアップロードと
   インスタンス化は許可制です（メインネットにはコントラクトがありません）。また、EVM
   ブリッジプリコンパイルは有効ではありません（
   [EVM プリコンパイル](/developer-guide/evm-precompiles#network-status)を参照）。
@@ -68,7 +68,7 @@ const { messageId, result } = await xvm.call({
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | 生のバイト列、変更せずにそのまま渡される |
 | `{ evm: { abi, functionName, args } }` | viem の `encodeFunctionData` で ABI エンコードされる（セレクター + 引数） |
-| `{ cosmwasm: object }` | `JSON.stringify` した後 UTF-8 バイト列に変換（CosmWasm の execute-msg の慣例） |
+| `{ cosmwasm: object }` | `JSON.stringify` した後 UTF-8 バイト列に変換（QoreChain Native の execute-msg の慣例） |
 | `{ svm: { data: Uint8Array \| Hex } }` | 生のバイト列（SVM 命令ブロブ） |
 
 EVM パスは `viem` を遅延インポートするため、オプションのピア依存 `viem` は、
@@ -93,7 +93,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` は複数の `MsgCrossVMCall` メッセージを **1 つのトランザクション
 本体**にまとめ、1 つの署名のもとでアトミックに実行します。これがトリプル VM の
-目玉機能です。1 つの署名で、EVM + SVM + CosmWasm にまたがる呼び出しがすべて同時に成功するか、
+目玉機能です。1 つの署名で、EVM + SVM + QoreChain Native にまたがる呼び出しがすべて同時に成功するか、
 まったく成功しないかのどちらかになります:
 
 ```ts

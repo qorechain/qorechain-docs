@@ -13,7 +13,7 @@ QoreChain は、3 つのスマートコントラクト仮想マシンを並行�
 
 | VM | コントラクト | SDK でのクライアント面 |
 | --- | --- | --- |
-| **CosmWasm** | Rust/Wasm コントラクト | `@qorechain/sdk` の `client.cosmwasm()` および `queryContractSmart` / `execute` ヘルパー |
+| **QoreChain Native** | Rust/Wasm コントラクト（CosmWasm ランタイム） | `@qorechain/sdk` の `client.cosmwasm()` および `queryContractSmart` / `execute` ヘルパー |
 | **QoreChain EVM Engine** | Solidity / Vyper | `@qorechain/evm`（viem アダプター） |
 | **SVM** | Solana プログラム | `@qorechain/svm`（`@solana/web3.js` アダプター） |
 
@@ -24,7 +24,7 @@ QoreChain は、3 つのスマートコントラクト仮想マシンを並行�
 SDK は、いくつかのエンドポイントを通じてノードと通信します。
 
 - **Cosmos REST (LCD)** — 銀行残高、アカウント情報、モジュールクエリ。
-- **コンセンサス RPC** — ネイティブトランザクションの署名/ブロードキャスト、および CosmWasm 読み取りクライアントに使用されます。
+- **コンセンサス RPC** — ネイティブトランザクションの署名/ブロードキャスト、および QoreChain Native 読み取りクライアントに使用されます。
 - **EVM JSON-RPC** — 公開エンドポイント上の標準的な `eth_*`、`net_*`、`web3_*`、`txpool_*` 呼び出し。QoreChain の `qor_*` 名前空間と EVM プリコンパイルは、現時点ではそこでは利用できません（下記参照）。
 - **SVM JSON-RPC** — SVM ランタイム向けの Solana 互換 RPC（公開エンドポイントでは読み取り専用。SVM トランザクションの送信はネットワーク全体で無効化されています）。
 

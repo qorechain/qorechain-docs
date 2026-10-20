@@ -225,14 +225,14 @@ sidebar_position: 5
 | `lightnode_register`، `lightnode_heartbeat`، `lightnode_claim_rewards`، `lightnode_deregister`، `lightnode_status_change`، `lightnode_reward_distribution`، `lightnode_reserve_release` | `address`، `node_type`، `status`، `reward_amount`، `destination` | أحداث دورة حياة العقدة الخفيفة والمكافآت |
 | `ai_config_updated` | `max_tx_per_minute`، `max_evm_tx_per_minute`، `anomaly_action`، `anomaly_threshold` | يُصدَر عندما تحدّث الحوكمة إعدادات الفحص بالذكاء الاصطناعي |
 
-### وحدة مستويات الرهن (الشبكة الاختبارية فقط)
+### وحدة مستويات الرهن (v3.2.4)
 
-توجد هذه الأحداث فقط على الشبكة الاختبارية `qorechain-diana` (v3.2.4)؛ ولا تملك الشبكة الرئيسية هذه الوحدة بعد (سيطبّق مقترح الحوكمة 13 الإصدار v3.2.4 عند الارتفاع 3,742,566).
+تأتي هذه الأحداث مع إصدار v3.2.4: تُصدرها الشبكة الاختبارية `qorechain-diana` منذ 19 أكتوبر 2026، وتُصدرها الشبكة الرئيسية من الارتفاع 3,742,566 (مقترح الحوكمة 13). أما عقدة الشبكة الرئيسية التي ما زالت على v3.2.3 فليست لديها وحدة مستويات الرهن ولا تُصدر أيًّا من هذه الأحداث.
 
 | نوع الحدث | السمات الرئيسية | الوصف |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`، `delegator`، `validator`، `amount`، `months`، `end_time` | أُنشئ قفل تفويض |
-| `staking_tier_lock_unlocked_early`، `staking_tier_lock_released` | `lock_id`، `delegator`، `penalty_burned`، `bonus_forfeited` | أُنهي قفل مبكرًا، أو بلغ نهايته |
+| `staking_tier_lock_unlocked_early`، `staking_tier_lock_released` | `lock_id`، `delegator`، `penalty_burned`، `bonus_forfeited` | أُنهي قفل مبكرًا (تُحرق العقوبة تحت مصدر الحرق `staking_tier_penalty`)، أو بلغ نهايته |
 | `staking_tier_bonus_claimed`، `staking_tier_bonus_settled` | `delegator`، `amount`؛ إجماليات التسوية | جرت المطالبة بمكافأة إضافية؛ وسُوِّي المجمّع |
 | `staking_tier_params_updated` | المعاملات | غيّرت الحوكمة معاملات الوحدة |
 

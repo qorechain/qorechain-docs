@@ -43,7 +43,7 @@ Mainnet dağıtımı emanetsizdir (non-custodial): Kontrol Paneli sözleşmenizi
 4. İşlemi MetaMask'te inceleyin — ağ, gas ve veri — ardından imzalayıp kendiniz yayınlamak için onaylayın.
 5. Dağıtım zincir üzerinde onaylandığında, Kontrol Paneli ortaya çıkan sözleşme adresini kayıtlı sözleşmelerinizin yanına kaydeder.
 
-Kontrol Paneli'nden yalnızca **EVM** (Solidity) sözleşmeleri dağıtılabilir. CosmWasm ve Solana programı dağıtımları şu anda her iki ağda da kullanılamamaktadır.
+Kontrol Paneli'nden yalnızca **EVM** (Solidity) sözleşmeleri dağıtılabilir. QoreChain Native ve Solana programı dağıtımları şu anda her iki ağda da kullanılamamaktadır.
 
 ### Testnet üzerinde — tek tıkla {#deploy-testnet}
 

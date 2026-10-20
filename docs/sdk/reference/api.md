@@ -63,7 +63,7 @@ The deliberate, supported exports of `@qorechain/sdk`:
   `/qorechain/pqc/v1/account/{address}`) `getPqcAccount` work.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
-- **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
+- **QoreChain Native:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
 - **Transactions:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient` (hybrid
@@ -135,7 +135,7 @@ constants.
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstrings on the public API | `pip install qorechain-sdk` at `0.9.0` (import `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.1` (the other languages are 0.9.0) |
 
 Each package mirrors the same surface (network presets, denom/address
 utilities, HD derivation — including unified eth-native accounts — PQC

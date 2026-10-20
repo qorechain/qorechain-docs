@@ -7,15 +7,15 @@ sidebar_position: 5
 
 # Cross-VM Interoperability
 
-QoreChain's **triple-VM architecture** (EVM, CosmWasm, SVM) is designed to let smart contracts on any virtual machine communicate with contracts on any other VM. The `x/crossvm` module provides a call message with a same-transaction path and a queued path.
+QoreChain's **triple-VM architecture** (EVM, QoreChain Native, SVM) is designed to let smart contracts on any virtual machine communicate with contracts on any other VM. The `x/crossvm` module provides a call message with a same-transaction path and a queued path.
 
 :::caution What works today
 Cross-VM calls are only as available as their target lane:
 
 * `MsgCrossVMCall` is **switched off on mainnet** by the circuit breaker (`qorechaind query circuit disabled-list`); it is enabled on the testnet.
 * The **SVM lane is disabled** for transactions on both networks, so an SVM leg cannot run.
-* **CosmWasm upload and instantiate are permissioned** on both networks and mainnet has no stored contract code, so there is no CosmWasm contract to call yet.
-* The synchronous **EVM precompile is not active** (see below). A hardened version has been in the binary since v3.2.3, but no precompile is activated on either network.
+* **QoreChain Native upload and instantiate are permissioned** on both networks and mainnet has no stored contract code, so there is no QoreChain Native contract to call yet.
+* The synchronous **EVM precompile is not active** (see below). A hardened version has been in the binary since v3.2.3, but no precompile is activated on either network, and v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566) does not change that.
 
 The module's REST routes (`/qorechain/crossvm/v1/...`) are not served by the public gateway; read messages with the CLI or a gRPC/ABCI query client.
 :::
@@ -29,7 +29,7 @@ The endpoints below default to a local node. On mainnet, use the **`qorechain-vl
 ## Architecture Overview
 
 ```
- EVM (Solidity)          CosmWasm (Rust/Wasm)         SVM (BPF)
+ EVM (Solidity)     QoreChain Native (Rust/Wasm)     SVM (BPF)
       |                        |                        |
       |--- sync (precompile) ->|                        |
       |                        |                        |
@@ -40,45 +40,55 @@ The endpoints below default to a local node. On mainnet, use the **`qorechain-vl
 
 | Path             | Direction       | Timing           | Mechanism                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Synchronous**  | EVM to CosmWasm | Same transaction | Precompile at `0x0000...0901` (not active yet, see below) |
+| **Synchronous**  | EVM to QoreChain Native | Same transaction | Precompile at `0x0000...0901` (not active yet, see below) |
 | **Message, default** | Any VM to any other VM | Same transaction | `MsgCrossVMCall`; the call executes immediately and a failure reverts the whole transaction |
 | **Message, queued**  | Any VM to any other VM | Next block (or later) | `MsgCrossVMCall` with `async` set; the message waits in the queue |
 
 ---
 
-## Synchronous Path (EVM to CosmWasm)
+## Synchronous Path (EVM to QoreChain Native)
 
-The synchronous path uses an EVM **precompile** at address `0x0000000000000000000000000000000000000901`. It is designed to let Solidity contracts call CosmWasm contracts and receive a response within the same transaction.
+The synchronous path uses an EVM **precompile** at address `0x0000000000000000000000000000000000000901`. It is designed to let Solidity contracts call QoreChain Native contracts and receive a response within the same transaction.
 
 :::warning Not active on mainnet or testnet
-The CrossVM bridge precompile is **not active** on `qorechain-vladi` or `qorechain-diana`: a call to `0x…0901` succeeds and returns empty data. The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the CosmWasm side, reaches only allowlisted CosmWasm targets, and honours the cross-VM circuit breaker), but it only runs once a governance-approved upgrade adds it to the active list. The example below shows the intended shape only. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+The CrossVM bridge precompile is **not active** on `qorechain-vladi` or `qorechain-diana`: a call to `0x…0901` succeeds and returns empty data. The v3.2.3 binary carries a hardened version (it refuses a `STATICCALL`, meters its nested call against the calling frame's gas and journals it so an EVM revert also undoes the QoreChain Native side, reaches only allowlisted QoreChain Native targets, and honours the cross-VM circuit breaker), but it only runs once a governance-approved upgrade adds it to the active list. The example below is the layout the node decodes, but it cannot run until the precompile is active. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Example
+
+The node decodes the precompile's input as a 4-byte selector followed by the ABI-encoded arguments of `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector `0x3c11078c`). `targetVM` is `1` for a QoreChain Native contract (QoreChain Native is the CosmWasm runtime; `0` is the EVM, which the hardened bridge refuses as a target). `targetContract` is the contract's bech32 address as a string, and `payload` is the contract's execute message as UTF-8 JSON bytes. The precompile returns the target's raw response bytes.
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
-
 contract CrossVMCaller {
-    ICrossVM constant CROSSVM = ICrossVM(0x0000000000000000000000000000000000000901);
+    address constant CROSSVM = 0x0000000000000000000000000000000000000901;
+    uint8 constant TARGET_QORECHAIN_NATIVE = 1;
 
-    function callCosmWasmContract(
-        string memory cosmwasmAddr,
-        string memory executeMsg,
-        uint256 funds
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(cosmwasmAddr, executeMsg, funds);
-        return CROSSVM.call(payload);
+    function callQoreChainNative(string calldata contractAddr, bytes calldata executeMsg)
+        external
+        returns (bytes memory)
+    {
+        bytes memory data = abi.encodeWithSignature(
+            "executeCrossVMCall(uint8,string,bytes)",
+            TARGET_QORECHAIN_NATIVE,
+            contractAddr,
+            executeMsg
+        );
+        (bool ok, bytes memory ret) = CROSSVM.call(data);
+        require(ok, "cross-VM call failed");
+        // While the precompile is not active, the call succeeds with empty data
+        // and nothing executes; treat an empty reply as a failure.
+        require(ret.length > 0, "cross-VM precompile not active or empty reply");
+        return ret;
     }
 }
 ```
 
-Once active, the precompile executes the CosmWasm contract immediately and returns the result. The current node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; the ABI may still change before activation. Gas cost: **50,000 base + 4 per input byte + execution cost**.
+This is the layout the node decodes; it is the same layout the `@qorechain/rdk` encoder builds, and the contract above matches the starter in [Multi-VM](/rollups/multi-vm). Funds cannot be attached through the precompile (the `MsgCrossVMCall` message path takes `--funds`). The sample cannot do anything on either network today, because the precompile is not active (see the warning above); the ABI may still change before activation.
+
+Once active, the precompile executes the QoreChain Native contract immediately and returns the result. (The `@qorechain/rdk` 0.6.0 helper `encodeCrossVmCalldata` builds the calldata; see [Multi-VM](/rollups/multi-vm).) Gas cost: **50,000 base + 4 per input byte + execution cost**.
 
 ---
 
@@ -95,10 +105,10 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Other flags: `--funds <coins>` (CosmWasm targets only) and `--async` to queue the call instead of executing it now. Sign and broadcast `tx.json` with `tx pqc cosign` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); the fee floor is 0.1 uqor per gas. A call into the caller's own lane is refused (since v3.2.3).
+Other flags: `--funds <coins>` (QoreChain Native targets only) and `--async` to queue the call instead of executing it now. Sign and broadcast `tx.json` with `tx pqc cosign` (see [Post-Quantum Signing](/developer-guide/post-quantum-signing)); the fee floor is 0.1 uqor per gas. A call into the caller's own lane is refused (since v3.2.3).
 
 :::caution Disabled on mainnet
-`MsgCrossVMCall` is switched off on mainnet by the circuit breaker, so the command cannot succeed there today. (Release binaries before v3.2.3 also built a message that failed its own validation because the source VM was empty; the v3.2.3 binary fixes that.) On the testnet the message is enabled, but its CosmWasm and SVM targets are not usable (see above), so only an EVM target can be reached.
+`MsgCrossVMCall` is switched off on mainnet by the circuit breaker, so the command cannot succeed there today. (Release binaries before v3.2.3 also built a message that failed its own validation because the source VM was empty; the v3.2.3 binary fixes that.) On the testnet the message is enabled, but its QoreChain Native and SVM targets are not usable (see above), so only an EVM target can be reached.
 :::
 
 ---
@@ -123,7 +133,7 @@ Submitted --> Pending --> Executed
 | **Failed**    | Target contract execution reverted; error recorded        |
 | **Timed Out** | Message exceeded `queue_timeout_blocks` without execution |
 
-Since v3.2.3 a queued call that fails is rolled back as a whole: only its `Failed` record remains, and the funds attached to a failed CosmWasm call are no longer moved into the contract. While the module is disabled, or `MsgCrossVMCall` is switched off by the circuit breaker, the queue is **not executed**: queued messages stay pending and expire at their timeout unless the switch is lifted first.
+Since v3.2.3 a queued call that fails is rolled back as a whole: only its `Failed` record remains, and the funds attached to a failed QoreChain Native call are no longer moved into the contract. While the module is disabled, or `MsgCrossVMCall` is switched off by the circuit breaker, the queue is **not executed**: queued messages stay pending and expire at their timeout unless the switch is lifted first.
 
 ---
 
@@ -208,14 +218,14 @@ curl -X POST http://localhost:8545 \
 
 ## Design Considerations
 
-**Atomicity:** Synchronous calls (EVM to CosmWasm via precompile) are designed to be atomic, so that if either side reverts the entire transaction reverts. The current precompile does not yet guarantee this, which is one reason it is not active (see above). Asynchronous calls are **not atomic** across blocks; design your contracts to handle the `Failed` and `Timed Out` states gracefully.
+**Atomicity:** Synchronous calls (EVM to QoreChain Native via precompile) are designed to be atomic, so that if either side reverts the entire transaction reverts. The current precompile does not yet guarantee this, which is one reason it is not active (see above). Asynchronous calls are **not atomic** across blocks; design your contracts to handle the `Failed` and `Timed Out` states gracefully.
 
 **Ordering:** Messages in the queue are processed FIFO within each EndBlocker pass. There is no guaranteed ordering across different source VMs.
 
 **Payload encoding:** The payload format depends on the target VM:
 
 * **EVM targets:** ABI-encoded function calls
-* **CosmWasm targets:** JSON-encoded execute messages
+* **QoreChain Native targets:** JSON-encoded execute messages
 * **SVM targets:** Hex-encoded BPF instruction data
 
 ---
@@ -224,5 +234,5 @@ curl -X POST http://localhost:8545 \
 
 * [EVM Precompiles](/developer-guide/evm-precompiles) — Status of the synchronous CrossVM precompile and the other planned precompiles
 * [EVM Development](/developer-guide/evm-development) — Solidity development on QoreChain
-* [CosmWasm Development](/developer-guide/cosmwasm-development) — Rust/Wasm contract development
+* [QoreChain Native Development](/developer-guide/cosmwasm-development) — Rust/Wasm contract development
 * [SVM Development](/developer-guide/svm-development) — BPF program deployment

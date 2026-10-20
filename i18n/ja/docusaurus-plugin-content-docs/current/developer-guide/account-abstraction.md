@@ -14,7 +14,7 @@ QoreChainは`x/abstractaccount`モジュールを通じて**プロトコルレ�
 :::
 
 :::note
-以下のコマンドは、メインネット**`qorechain-vladi`**（2026年6月7日から稼働）を使用しています。このネットワークはノードリリース**v3.2.3**で動作しています。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。テストネットはv3.2.4（テストネット専用）で動作しています。
+以下のコマンドは、メインネット**`qorechain-vladi`**（2026年6月7日から稼働）を使用しています。このネットワークはノードリリース**v3.2.3**で高さ3,742,566まで、そのブロックからは**v3.2.4**で動作します（ガバナンス提案13）。テストネットの場合は`--chain-id qorechain-diana`に置き換えてください。テストネットは2026年10月19日からv3.2.4で動作しています。
 :::
 
 :::caution Cosmosレーンのトランザクションにはすべて、ポスト量子ハイブリッドの副署名が必要です
@@ -176,7 +176,7 @@ curl -s https://api.qore.host/qorechain/abstractaccount/v1/permission_schema | j
 
 :::caution ナンスに関するルール
 * `MsgExecuteEVM.nonce`はアカウントの**現在の**EVMナンス（`eth_getTransactionCount(account0x, "latest")`）です。本番環境ではリレイヤーは*別の*アカウントであるため、+1を加算しては**いけません**。古いナンスで署名するとコード`11`が返されます。
-* `MsgExecuteCosmos.nonce`は（アカウントのオーセンティケーター状態を照会して得られる）オーセンティケーターごとのシーケンスであり、アカウントのCosmosシーケンス**ではありません**。テストネットのみ（v3.2.4）、`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`がそのシーケンスを直接返します（`nonce`、`linked`）。
+* `MsgExecuteCosmos.nonce`は（アカウントのオーセンティケーター状態を照会して得られる）オーセンティケーターごとのシーケンスであり、アカウントのCosmosシーケンス**ではありません**。v3.2.4以降（テストネットでは2026年10月19日から、メインネットでは高さ3,742,566から）、`GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}`がそのシーケンスを直接返します（`nonce`、`linked`）。
 :::
 
 **Phantomの例**（ブラウザ: Phantomが署名し、バックエンドがリレーする）

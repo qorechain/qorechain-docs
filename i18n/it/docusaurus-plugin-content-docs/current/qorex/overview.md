@@ -96,7 +96,7 @@ Novità principali dalla 1.0.9 / 0.2.6:
 - Schermate di approvazione che mostrano ogni messaggio, la commissione, i limiti di spesa e la scadenza, e rifiutano ciò che QoreX non può visualizzare; **`signAndBroadcast`** per le dApp; **Siti connessi** con Revoca (estensione); la **finestra di accesso EVM** — vedi [Sicurezza e recupero](/qorex/security-and-recovery) e l'[Estensione browser](/qorex/browser-extension).
 - Correzioni: un account con fondi poteva scomparire per un momento da «I tuoi account» (1.0.9); il tasto Indietro hardware di Android ora torna indietro di una schermata (1.1.1); la passphrase di recupero viene nascosta ai servizi non di accessibilità su Android 14 e successivi (1.1.6).
 
-QoreX funziona sulla mainnet `qorechain-vladi`, che esegue la chain **v3.2.3** (attiva dal 7 giugno 2026). Formato di firma, indirizzi, decimali, memo e commissioni non sono cambiati in quell'upgrade, quindi per esso non serve alcun aggiornamento di QoreX.
+QoreX funziona sulla mainnet `qorechain-vladi`, che esegue la chain **v3.2.3** (attiva dal 7 giugno 2026) fino all'altezza 3.742.566 e la v3.2.4 da quel blocco. Formato di firma, indirizzi, decimali, memo e commissioni non cambiano in questi upgrade, quindi per essi non serve alcun aggiornamento di QoreX.
 
 ## Cosa invia QoreX in rete {#data-and-privacy}
 

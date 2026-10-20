@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Guide Cross-VM
 
-QoreChain exécute **EVM, SVM et CosmWasm côte à côte**, et le module `x/crossvm`
+QoreChain exécute **EVM, SVM et QoreChain Native côte à côte**, et le module `x/crossvm`
 permet à un seul compte natif d'invoquer un contrat sur n'importe lequel d'entre eux. Le SDK
 fournit un assistant de haut niveau `createCrossVMClient` pour construire, signer et diffuser
 ces appels — y compris en empaquetant plusieurs d'entre eux dans **une seule transaction atomique
@@ -22,7 +22,7 @@ Les appels cross-VM ne sont disponibles que dans la mesure où leur voie cible l
   (`GET /cosmos/circuit/v1/disable_list` liste `/qorechain.crossvm.v1.MsgCrossVMCall`) ;
   il est activé sur le testnet.
 - La voie de transaction SVM est désactivée sur l'ensemble du réseau, le téléversement et
-  l'instanciation CosmWasm sont soumis à permission (et il n'y a aucun contrat sur le mainnet), et le
+  l'instanciation QoreChain Native sont soumis à permission (et il n'y a aucun contrat sur le mainnet), et le
   précompilé de pont EVM n'est pas actif (voir
   [Précompilés EVM](/developer-guide/evm-precompiles#network-status)).
 - Les assistants de lecture REST typés ci-dessous appellent des routes que la passerelle publique ne sert pas.
@@ -68,7 +68,7 @@ Choisissez exactement **une** forme de charge utile par appel :
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | octets bruts, transmis tels quels |
 | `{ evm: { abi, functionName, args } }` | encodé en ABI avec `encodeFunctionData` de viem (sélecteur + args) |
-| `{ cosmwasm: object }` | `JSON.stringify` puis octets UTF-8 (la convention execute-msg de CosmWasm) |
+| `{ cosmwasm: object }` | `JSON.stringify` puis octets UTF-8 (la convention execute-msg de QoreChain Native) |
 | `{ svm: { data: Uint8Array \| Hex } }` | octets bruts (un blob d'instruction SVM) |
 
 Le chemin EVM importe `viem` de façon paresseuse ; le pair optionnel `viem` n'est donc nécessaire
@@ -93,7 +93,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` empaquette plusieurs messages `MsgCrossVMCall` dans **un seul corps de
 transaction** afin qu'ils s'exécutent de façon atomique sous une seule signature — l'argument phare
-tri-VM. Une signature, des appels à travers EVM + SVM + CosmWasm qui aboutissent tous ensemble
+tri-VM. Une signature, des appels à travers EVM + SVM + QoreChain Native qui aboutissent tous ensemble
 ou pas du tout :
 
 ```ts

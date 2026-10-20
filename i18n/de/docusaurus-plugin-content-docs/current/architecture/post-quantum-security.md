@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 Die Registrierung ist nur für ein Konto ohne Schlüssel von der Hybrid-Anforderung ausgenommen, daher wird diese Transaktion allein mit dem klassischen Schlüssel des Kontos signiert. Ein fehlerhafter Nachweis wird mit `ErrInvalidProofOfPossession` (Code 231 im Modul `pqc`) abgelehnt.
 
-**Nur Testnet (v3.2.4, nicht im Mainnet):** Der Kontoeintrag erhält ein boolesches Feld `possession_proven`, das im Testnet von `GET /qorechain/pqc/v1/account/{address}` zurückgegeben wird. Es ist `true`, wenn der aktuelle Schlüssel mit einem gültigen Nachweis registriert wurde oder über eine Rotation oder Migration kam (beide verifizieren eine Signatur des neuen Schlüssels über Bytes, die die Chain, das Konto und den Schlüssel benennen); eine Registrierung ohne Nachweis erfasst `false`, und ein Schlüssel, der sich ohne Nachweis ändert, löscht das Flag. Das Mainnet v3.2.3 meldet das Feld nicht. Der Nachweis bleibt auch im Testnet optional.
+**Ab v3.2.4 (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566):** Der Kontoeintrag erhält ein boolesches Feld `possession_proven`, das von `GET /qorechain/pqc/v1/account/{address}` zurückgegeben wird. Es ist `true`, wenn der aktuelle Schlüssel mit einem gültigen Nachweis registriert wurde oder über eine Rotation oder Migration kam (beide verifizieren eine Signatur des neuen Schlüssels über Bytes, die die Chain, das Konto und den Schlüssel benennen); eine Registrierung ohne Nachweis erfasst `false`, und ein Schlüssel, der sich ohne Nachweis ändert, löscht das Flag. Das Mainnet v3.2.3 meldet das Feld vor der Upgrade-Höhe nicht. Der Nachweis bleibt unter v3.2.4 für Kontoschlüssel optional.
 
 ## Hybridsignaturen {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Diese Utilities bilden die Grundlage des Standard-Anwendungs-Hashes und werden v
 
 Alle Cross-Chain-Bridge-Attestierungen und State-Commitments verwenden **Dilithium-5**-Signaturen. Das Modul `x/multilayer` verlangt PQC-Aggregatsignaturen bei jeder `MsgAnchorState`-Übermittlung, und ML-KEM-Commitments sichern die Schlüsselaustauschkanäle zwischen Bridge-Relayern ab.
 
-Dies stellt sicher, dass die Cross-Chain-Sicherheit nicht durch die Verwendung klassischer Kryptografie in der Bridge-Infrastruktur beeinträchtigt wird, und erhält die Quantenresistenz über den gesamten Protokoll-Stack hinweg. Keine Bridge-Route ist live (siehe [Bridge-Architektur](/architecture/bridge-architecture#current-status)); nur im Testnet (v3.2.4) erfordert die Registrierung eines Bridge-Validators zusätzlich einen Besitznachweis für dessen PQC-Schlüssel.
+Dies stellt sicher, dass die Cross-Chain-Sicherheit nicht durch die Verwendung klassischer Kryptografie in der Bridge-Infrastruktur beeinträchtigt wird, und erhält die Quantenresistenz über den gesamten Protokoll-Stack hinweg. Keine Bridge-Route ist live (siehe [Bridge-Architektur](/architecture/bridge-architecture#current-status)); ab v3.2.4 (jetzt im Testnet; im Mainnet ab Höhe 3.742.566) erfordert die Registrierung eines Bridge-Validators zusätzlich einen Besitznachweis für dessen PQC-Schlüssel.
 
 ## Modulparameter
 

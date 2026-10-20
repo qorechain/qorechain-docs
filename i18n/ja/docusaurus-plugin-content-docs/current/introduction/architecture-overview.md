@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # アーキテクチャ概要
 
-QoreChainは、チェーンノード、AIサイドカー、ブロックインデクサーという3つの主要プロセスで構成されたモジュール型ブロックチェーンノードであり、Postgresデータベースを裏側に持ち、PrometheusおよびGrafanaによって監視されています。メインネット（`qorechain-vladi`、EVMチェーンID **9801**）は2026年6月7日以降、リリース **v3.2.3** で稼働しており、並行してテストネット（`qorechain-diana`、EVMチェーンID **9800**、リリースv3.2.4、テストネットのみ）も運用されています。チェーンはCosmos SDK v0.53上に構築されています。以下の図はコンポーネントの高レベルな配置を示しています。
+QoreChainは、チェーンノード、AIサイドカー、ブロックインデクサーという3つの主要プロセスで構成されたモジュール型ブロックチェーンノードであり、Postgresデータベースを裏側に持ち、PrometheusおよびGrafanaによって監視されています。メインネット（`qorechain-vladi`、EVMチェーンID **9801**）は2026年6月7日以降、リリース **v3.2.3** で高さ3,742,566まで、そのブロックからは **v3.2.4** で稼働しており、並行してテストネット（`qorechain-diana`、EVMチェーンID **9800**、2026年10月19日からv3.2.4を実行）も運用されています。チェーンはCosmos SDK v0.53上に構築されています。以下の図はコンポーネントの高レベルな配置を示しています。
 
 以下のトランザクションライフサイクルは、送信されたトランザクションがAnteHandlerデコレータチェーン（セキュリティおよび手数料チェック）からVM実行、オンチェーンでの確定に至るまで、ノードをどのように流れていくかを要約したものです。
 
@@ -24,7 +24,7 @@ flowchart LR
     Fair --> Fee[Fee deduction & gas abstraction]
     Fee --> Router{VM router}
     Router -->|Solidity| EVM[EVM]
-    Router -->|Wasm| Wasm[CosmWasm]
+    Router -->|Wasm| Wasm[QoreChain Native]
     Router -->|BPF| SVM[SVM]
     EVM --> Commit[Block commit & indexing]
     Wasm --> Commit
@@ -37,8 +37,8 @@ flowchart LR
 │                                                                            │
 │  ┌──────────────────── Virtual Machines ──────────────────────┐           │
 │  │  ┌───────┐    ┌──────────┐    ┌───────┐                   │           │
-│  │  │  EVM  │    │ CosmWasm │    │  SVM  │                   │           │
-│  │  │(Sol.) │◄──►│ (Wasm)   │◄──►│ (BPF) │                   │           │
+│  │  │  EVM  │    │QoreChain │    │  SVM  │                   │           │
+│  │  │(Sol.) │◄──►│ Native   │◄──►│ (BPF) │                   │           │
 │  │  └───┬───┘    └────┬─────┘    └───┬───┘                   │           │
 │  │      └─────────┬───┘──────────────┘                       │           │
 │  │           x/crossvm (bridge)                               │           │
@@ -164,11 +164,11 @@ QoreChainは **48のジェネシスモジュール（うち20がQoreChain固有�
 
 * `x/vm` — VMルーティングとライフサイクル管理
 * `x/svm` — SVMランタイム：BPFのデプロイ/実行、レント徴収、Solana互換RPC
-* `x/crossvm` — クロスVM通信：EVM-CosmWasmプリコンパイル + SVM非同期イベント
+* `x/crossvm` — クロスVM通信：EVM-QoreChain Nativeプリコンパイル + SVM非同期イベント
 
 **トークノミクスと流動性**
 
-* `x/burn` — 12のバーンソース、EndBlockerでの手数料分配（37/30/20/10/3の配分）
+* `x/burn` — 12のバーンソース(v3.2.4からは13)、EndBlockerでの手数料分配（37/30/20/10/3の配分）
 * `x/xqore` — ガバナンスブーストステーキングの設計：ロック/アンロック、段階的な出口ペナルティ、PvPリベース（会計処理のみ。ロックおよびアンロックのトランザクションは、稼働中のネットワークではまだ接続されていません）
 * `x/inflation` — 上限付き発行：厳格な累積上限（590,000,000 QOR）に達するまで、エポックごとに固定量をミントします
 * `x/amm` — オンチェーン流動性 / 自動マーケットメーカー
@@ -194,7 +194,7 @@ QoreChainは **48のジェネシスモジュール（うち20がQoreChain固有�
 
 すべてのトランザクションは、実行前にデコレータチェーンを通過します。いずれのデコレータもトランザクションを拒否できます。チェーンは2つあります。
 
-**Cosmosレーン**（順序どおり）：`RejectMessages`（このレーンでは `MsgEthereumTx` を許可しない）→ `AuthzLimiter`（authz内でEVMメッセージやベスティング作成メッセージを許可せず、v3.2.3以降はポスト量子鍵管理メッセージも許可しない）→ `SetUpContext` → メンプールおよびマルチシグ深度のガード → CosmWasmのシミュレーションガス、トランザクションカウンター、ガスレジスター、コントラクトの各デコレータ → `CircuitBreaker` → 拡張オプションのチェック → `ValidateBasic` → `TxTimeout` → `Memo` → バリデータライセンスのゲート（`MsgCreateValidator`）→ `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly`（送信者ごとのレート制限を含む）→ `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → バーントランザクションカウンター → IBC冗長リレーのチェック → 要求ガスの追跡。
+**Cosmosレーン**（順序どおり）：`RejectMessages`（このレーンでは `MsgEthereumTx` を許可しない）→ `AuthzLimiter`（authz内でEVMメッセージやベスティング作成メッセージを許可せず、v3.2.3以降はポスト量子鍵管理メッセージも許可しない）→ `SetUpContext` → メンプールおよびマルチシグ深度のガード → QoreChain Nativeのシミュレーションガス、トランザクションカウンター、ガスレジスター、コントラクトの各デコレータ → `CircuitBreaker` → 拡張オプションのチェック → `ValidateBasic` → `TxTimeout` → `Memo` → バリデータライセンスのゲート（`MsgCreateValidator`）→ `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly`（送信者ごとのレート制限を含む）→ `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → バーントランザクションカウンター → IBC冗長リレーのチェック → 要求ガスの追跡。
 
 **EVMレーン**（Ethereum拡張オプションを持つトランザクション）：`CircuitBreaker` → EVMモノデコレータ（署名、ノンス、手数料、残高のチェック）→ `EVMWindowDecorator`（登録済みのポスト量子鍵と有効な認可ウィンドウ。[EVM authorisation window](/getting-started/first-transaction#evm-window) を参照）。
 

@@ -55,13 +55,15 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. QoreChain Konsensüs Motoruna (`x/rlconsensus` modülü aracılığıyla) gömülü pekiştirmeli öğrenme optimizasyon katmanı. PRISM, ağ metriklerini gözlemler ve devre kesici güvenlik kontrolleri altında deterministik konsensüs parametresi ayarlamaları önermek üzere tasarlanmıştır; bugün gözlem modunda çalışır. Bkz. [PRISM Konsensüs Motoru](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP) (sahiplik kanıtı)** — Bir kuantum sonrası anahtarın kendi kayıt ayrıntıları üzerinde attığı ve kaydeden tarafın özel anahtarı elinde tuttuğunu kanıtlayan imza. v3.2.3'ten beri hesap anahtarı kaydında isteğe bağlıdır (`tx pqc register-key-v2 ... --pqc-key <name>`); test ağında (v3.2.4) köprü doğrulayıcı anahtarları için zorunludur.
+**Proof of possession (PoP) (sahiplik kanıtı)** — Bir kuantum sonrası anahtarın kendi kayıt ayrıntıları üzerinde attığı ve kaydeden tarafın özel anahtarı elinde tuttuğunu kanıtlayan imza. v3.2.3'ten beri hesap anahtarı kaydında isteğe bağlıdır (`tx pqc register-key-v2 ... --pqc-key <name>`); v3.2.4'ten itibaren köprü doğrulayıcı anahtarları için zorunludur (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren).
 
 **Protocol feature (protokol özelliği)** — Bir sürümün yükseltme işleyicisinin her düğümde tek bir blok yüksekliğinde açtığı davranış anahtarı (örneğin `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`); böylece bu yüksekliğin altındaki geçmiş değişmeden yeniden oynatılır.
 
 **PvP Rebase** — Player versus Player Rebase. xQORE modülünde, erken açmadan kaynaklanan cezaların kalan kilitli stake edenlere orantılı olarak yeniden dağıtıldığı ve uzun vadeli bağlılığı ödüllendiren bir mekanizma (henüz zincir üzerinde bağlanmamıştır).
 
 **QCAI** — QoreChain Artificial Intelligence (QoreChain Yapay Zekası). QoreChain'in zincir üstü sezgisel motoru (`x/ai` modülü) ve gelişmiş çıkarım yetenekleri sağlayan zincir dışı QCAI yardımcı bileşeni dahil olmak üzere YZ alt sistemini kapsayan terim.
+
+**QoreChain Native** — QoreChain'in CosmWasm akıllı sözleşme çalışma zamanına verdiği ad: sözleşmeler standart CosmWasm kütüphanelerine karşı Rust ile yazılır ve WebAssembly'ye derlenir. Üç çalışma zamanından biridir (EVM, QoreChain Native, SVM). Sıradan sözleşme yükleme ve örnekleme şu anda her iki ağda da kapalıdır (bkz. [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development)).
 
 **QCB** — QoreChain Bridge (QoreChain Köprüsü). QoreChain'in IBC olmayan zincirlere (örneğin Ethereum, Bitcoin, Solana, Avalanche) bağlanmaya yönelik yerel köprü protokolü. QCB, çapraz zincir tasdiki için bir doğrulayıcı tasdik eşiği (10 ML-DSA-87 imzasından 7'si) kullanır. Bkz. [Köprü Mimarisi](/architecture/bridge-architecture).
 
@@ -81,13 +83,13 @@ QoreChain dokümantasyonu boyunca kullanılan terimlerin, kısaltmaların ve akr
 
 **Stranded staker share / reward-pool reserve (sıkışmış staker payı / ödül havuzu rezervi)** — v3.2.0 yükseltmesinde kaydedilen ve yalnızca bir yönetişim oyuyla hareket eden tutarlar; yönetişim bunları Ekim 2026'da serbest bıraktı (sıkışmış payın düzeltilmiş bir kalanı v3.2.3'ten sonra önerildi). Bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
-**SVM** — Solana Virtual Machine (Solana Sanal Makinesi). BPF programları için yüksek performanslı bir yürütme ortamı. QoreChain, SVM'yi QoreChain EVM Motoru ve CosmWasm ile birlikte desteklenen üç çalışma zamanından biri olarak entegre eder.
+**SVM** — Solana Virtual Machine (Solana Sanal Makinesi). BPF programları için yüksek performanslı bir yürütme ortamı. QoreChain, SVM'yi QoreChain EVM Motoru ve QoreChain Native ile birlikte desteklenen üç çalışma zamanından biri olarak entegre eder.
 
 **TEE** — Trusted Execution Environment (Güvenilir Yürütme Ortamı). Kod ve verilerin harici erişimden korunmasını sağlayan, bir işlemcinin güvenli alanı. QoreChain, TEE tasdiki için arayüz spesifikasyonları tanımlar; henüz bir uygulama yoktur.
 
 **tIBE** — Threshold Identity-Based Encryption (Eşik Kimlik Tabanlı Şifreleme). Bir mesajın yalnızca bir eşik sayıda tarafın işbirliği yapması durumunda çözülebildiği bir kriptografik şema. FairBlock modülü tarafından, MEV çıkarımını önlemek için işlem içeriklerini blok sonlandırmaya kadar şifrelemek üzere kullanılır.
 
-**Time-locked staking (zaman kilitli stake)** — Bir delegasyonun bir kısmının sabit bir süreyle taahhüt edilmesi; `x/stakingtier` modülü tarafından sağlanan isteğe bağlı bir özelliktir. **Yalnızca test ağında** (v3.2.4); ana ağda canlı değildir. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking (zaman kilitli stake)** — Bir delegasyonun bir kısmının sabit bir süreyle taahhüt edilmesi; `x/stakingtier` modülü tarafından sağlanan isteğe bağlı bir özelliktir. v3.2.4'ün parçasıdır: test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 numaralı yükseklikten itibaren. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — QOR tokeninin temel denomu. 1 QOR = 1.000.000 uqor (10^6). Tüm zincir üstü miktarlar, ücretler ve stake değerleri uqor cinsindendir.
 

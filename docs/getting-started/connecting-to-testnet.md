@@ -10,7 +10,7 @@ sidebar_position: 4
 Join the live QoreChain Diana testnet by configuring your node with the correct genesis file, peers, and network settings.
 
 :::note
-This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.3**) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet currently runs **v3.2.4**, a testnet-only release that is not part of mainnet; its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+This page covers the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 (release **v3.2.3** until height 3,742,566, **v3.2.4** from that block) and has its own dedicated **Connecting to Mainnet** page with separate genesis, peers, and connection details. The testnet has run **v3.2.4** since 19 October 2026; its release manifest is at [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Public Endpoints
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` (v3.2.4 was applied at height 8,337,253 on 19 October 2026; v3.2.3 at 8,003,746 and v3.2.2 at 6,905,034 before it) and `minCompatible` equals the current version (3.2.4). A node that joins now needs the release in the manifest. Keep the system clock NTP-synchronised. The mainnet manifest points at a different release (v3.2.3), so never copy a binary between the two networks.
+The testnet takes coordinated upgrades through governance proposals, so its manifest carries an `upgradeHeight` (v3.2.4 was applied at height 8,337,253 on 19 October 2026; v3.2.3 at 8,003,746 and v3.2.2 at 6,905,034 before it) and `minCompatible` equals the current version (3.2.4). A node that joins now needs the release in the manifest. Keep the system clock NTP-synchronised. The mainnet manifest points at a different release (v3.2.3 until its upgrade at height 3,742,566), so never copy a binary between the two networks.
 
 ---
 

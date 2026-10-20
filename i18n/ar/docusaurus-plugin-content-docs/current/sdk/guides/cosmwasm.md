@@ -1,19 +1,21 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: دليل CosmWasm
-sidebar_label: CosmWasm
+title: دليل QoreChain Native
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# دليل CosmWasm
+# دليل QoreChain Native
+
+QoreChain Native هو اسم QoreChain لوقت تشغيل العقود الذكية CosmWasm الخاص بها، ولذلك فإن مكتبات CosmWasm وحزم العميل المذكورة في هذه الصفحة هي التي تستخدمها معه.
 
 تتضمن النواة TypeScript (`@qorechain/sdk`) أغلفة رقيقة ومُنمَّطة فوق
-`@cosmjs/cosmwasm-stargate` للاستعلام عن عقود CosmWasm وتنفيذها. تستخدم القراءات
+`@cosmjs/cosmwasm-stargate` للاستعلام عن عقود QoreChain Native وتنفيذها. تستخدم القراءات
 عميلًا للقراءة فقط؛ بينما تستخدم تغييرات الحالة عميل توقيع.
 
 ## استعلامات للقراءة فقط
 
-افتح عميل CosmWasm للقراءة فقط من نسخة `createClient()` الخاصة بك — فهو
+افتح عميل QoreChain Native للقراءة فقط من نسخة `createClient()` الخاصة بك — فهو
 يتصل عبر نقطة نهاية الإجماع RPC ويُخزَّن مؤقتًا (memoized) على العميل.
 
 ```ts
@@ -48,10 +50,10 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 الدائرة (circuit breaker) في السلسلة، ولذلك يتم رفض `uploadCode` و`instantiate`
 للحسابات العادية. أما العقود الموجودة بالفعل فيمكن الاستعلام عنها (أعلاه)
 وتنفيذها. تحقّق من `GET /cosmwasm/wasm/v1/codes/params` لمعرفة الأذونات الحالية.
-راجع [تطوير CosmWasm](/developer-guide/cosmwasm-development).
+راجع [تطوير QoreChain Native](/developer-guide/cosmwasm-development).
 :::
 
-:::caution عميل التوقيع في CosmWasm يوقّع توقيعًا تقليديًا
+:::caution عميل التوقيع في QoreChain Native يوقّع توقيعًا تقليديًا
 تغلّف `connectCosmWasmSigner` عميل التوقيع في CosmJS، وهو يرفق فقط التوقيع
 التقليدي secp256k1. تشترط الشبكات الحية التوقيع الهجين
 (secp256k1 + ML-DSA-87) على كل معاملة عبر المسار الأصلي (Native)، ولذلك تُرفض
@@ -106,7 +108,7 @@ const res = await execute(
 
 ### التنفيذ على شبكة حية (هجين)
 
-أضف أنواع رسائل CosmWasm إلى سجل (registry) وأرسل `MsgExecuteContract`
+أضف أنواع رسائل QoreChain Native إلى سجل (registry) وأرسل `MsgExecuteContract`
 عبر المُنشئ الهجين. يجب تسجيل مفتاح ML-DSA-87 للحساب أولًا
 (راجع [الآمن كميًا](/sdk/guides/quantum-safe)). يتطلب
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:

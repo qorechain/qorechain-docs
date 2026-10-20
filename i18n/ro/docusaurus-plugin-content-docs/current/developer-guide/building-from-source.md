@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Fiecare invocare `go build`, `go test` și `go run` **trebuie** să aibă `CGO_ENABLED=1` setat. Nodul leagă biblioteci native (runtime-ul CosmWasm și, în build-ul de release, bibliotecile PQC și SVM) prin cgo.
+Fiecare invocare `go build`, `go test` și `go run` **trebuie** să aibă `CGO_ENABLED=1` setat. Nodul leagă biblioteci native (runtime-ul QoreChain Native și, în build-ul de release, bibliotecile PQC și SVM) prin cgo.
 :::
 
 ## Biblioteci native

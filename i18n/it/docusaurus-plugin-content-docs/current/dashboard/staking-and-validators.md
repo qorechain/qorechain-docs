@@ -56,8 +56,8 @@ Tutte e quattro le azioni si trovano nella pagina **Wallet** (`/wallet`), non ne
 8. Il pannello ora mostra **Approve it in QoreX** con un link **Open QoreX** e un ID di richiesta. QoreX ti mostrerà il validatore e l'importo prima della firma — non viene inviato nulla finché non lo approvi lì. Se viene rilevata l'estensione del browser QoreX, viene offerto anche un pulsante **Approve in the browser extension**.
 9. Apri QoreX (il link/deeplink lo fa per te) e approva la delega. QoreX costruisce, firma e trasmette la transazione; il dashboard non vede mai la tua chiave.
 
-:::note Lo staking con blocco temporale è solo su testnet
-Un modulo opzionale di staking con blocco temporale esiste solo sulla testnet (chain v3.2.4) — vedi [Staking con blocco temporale](/user-guide/staking-and-delegation#time-locked-staking). Non è ancora sulla mainnet (la proposta di governance 13 della mainnet la applicherebbe all'altezza 3.742.566), e né la Dashboard né QoreX hanno una schermata per esso. Le deleghe effettuate qui sono deleghe ordinarie senza vincolo di blocco; l'unica attesa è l'unbonding di 21 giorni in uscita.
+:::note Lo staking con blocco temporale non fa parte della dashboard
+La release v3.2.4 aggiunge un modulo opzionale di staking con blocco temporale (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) — vedi [Staking con blocco temporale](/user-guide/staking-and-delegation#time-locked-staking). Né la Dashboard né QoreX hanno una schermata per esso. Le deleghe effettuate qui sono deleghe ordinarie senza vincolo di blocco; l'unica attesa è l'unbonding di 21 giorni in uscita.
 :::
 
 ### Ridelegare {#redelegate}

@@ -35,10 +35,10 @@ Her ön ayar; bir uzlaşma paradigmasını (ve bu uzlaşmanın gerektirdiği kan
 
 Bazı kısıtlamalar [uzlaşma → kanıt matrisinden](/rollups/overview) kaynaklanır: `optimistic` uzlaşma `fraud` kanıtları kullanır, `zk` uzlaşma `snark` (veya `stark`) kullanır; `based` ve `sovereign` ise kanıt taşımaz. `based` uzlaşma her zaman `based` sıralayıcı moduyla eşleşir. `nft` ön ayarı bugün yerel (native) olarak uzlaşır ve **Celestia DA planlanmaktadır**.
 
-RDK v0.4.2 itibarıyla, Wasm VM seçeneğinin (CosmWasm sözleşmelerini yürüten çalışma zamanı) adı **`native`** — yani QoreChain Native — olmuştur. `cosmwasm` kabul edilen eski (legacy) bir takma ad olarak kalmaya devam eder ve her ikisi de aktarım katmanında `cosmwasm` olarak eşlenir; dolayısıyla zincir, gezgin (explorer) ve Dashboard değişmemiştir.
+RDK v0.4.2 itibarıyla, Wasm VM seçeneğinin (QoreChain Native sözleşmelerini yürüten çalışma zamanı) adı **`native`** — yani QoreChain Native — olmuştur. `cosmwasm` kabul edilen eski (legacy) bir takma ad olarak kalmaya devam eder ve her ikisi de aktarım katmanında `cosmwasm` olarak eşlenir; dolayısıyla zincir, gezgin (explorer) ve Dashboard değişmemiştir.
 
 :::note
-Ön ayar bazlı yapılandırma, `create-rollup` komutunun profilin ön ayarını otomatik olarak uyguladığı v3.2.3 kaynak kodundaki zincirin profil tablosuna karşı doğrulanmıştır (ana ağ v3.2.3, test ağı v3.2.4 çalıştırır): **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (varsayılanlar)**. `custom` ön ayarı her alanı açık bırakır — gösterilen değerler onun başlangıç varsayılanlarıdır.
+Ön ayar bazlı yapılandırma, `create-rollup` komutunun profilin ön ayarını otomatik olarak uyguladığı v3.2.3 kaynak kodundaki zincirin profil tablosuna karşı doğrulanmıştır (ana ağ 3.742.566 yüksekliğine kadar v3.2.3'ü, o bloktan itibaren v3.2.4'ü çalıştırır; test ağı v3.2.4 çalıştırır): **`defi` = zk + EVM, `gaming` = based + custom VM, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (varsayılanlar)**. `custom` ön ayarı her alanı açık bırakır — gösterilen değerler onun başlangıç varsayılanlarıdır.
 :::
 
 Dört alan (domain) ön ayarını makul başlangıç noktaları, **`custom`** profilini ise tamamen açık seçenek olarak değerlendirin. Bir araya getirilen kesin parametreler sürümler arasında değişebilir — yetkili değerler için `rdk config` komutunu (aşağıda) sorgulayın, ardından size en yakın ön ayardan başlayıp ince ayar yapın.
@@ -52,7 +52,7 @@ Dört alan (domain) ön ayarını makul başlangıç noktaları, **`custom`** pr
 Bazı ayrıntıları yanlış varsaymak kolaydır ve bir profil seçmeden önce bilmeye değerdir:
 
 * **`defi` için doğrulama anahtarı (verifying key) yoktur.** ZK yığınlarının buna ihtiyacı vardır ve `create-rollup` ile oluşturulan bir rollup bunu taşımaz; bu nedenle ZK uzlaşması bugün uçtan uca kesinleşemez (bkz. [ZK / STARK ve Çekimler](/rollups/zk-stark-withdrawals)).
-* **`nft` ve `custom`**, 1.000 QOR'luk bir itiraz teminatı (challenge bond) ve ana ağda 100.800 blokluk bir itiraz penceresiyle optimistic olarak uzlaşır (varsayılan 604.800 "saniyenin" blok başına sabit 6 saniyeden dönüştürülmüş hali; ana ağın şu anki ≈3,2 sn'lik blokları ile yaklaşık 3,7 gün). Yalnızca test ağında, v3.2.4'ten (yükseklik 8.337.253) itibaren gönderilen bir batch bunun yerine blok süresinin saniyesi cinsinden ölçülen bir pencere alır.
+* **`nft` ve `custom`**, 1.000 QOR'luk bir itiraz teminatı (challenge bond) ve ana ağda 3.742.566 yüksekliğinden önce 100.800 blokluk bir itiraz penceresiyle optimistic olarak uzlaşır (varsayılan 604.800 "saniyenin" blok başına sabit 6 saniyeden dönüştürülmüş hali; ana ağın şu anki ≈3,2 sn'lik blokları ile yaklaşık 3,7 gün). v3.2.4'ten itibaren bir batch bunun yerine blok süresinin saniyesi cinsinden ölçülen bir pencere alır: test ağında 8.337.253 yüksekliğinden, ana ağda 3.742.566 yüksekliğinden itibaren.
 * **`gaming` ve `enterprise`** `based` sıralama kullanır; bu, bugün yığınları rollup'ın oluşturucusunun gönderdiği anlamına gelir.
 * **Blok süresi ve işlem sınırları** (örneğin `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` ve `custom` 1.000 ms) zincir üzerindeki kayıtta saklanır. Bunlar rollup'ın kendi zincirini tanımlar ve ana (host) zincir tarafından uygulanmaz.
 

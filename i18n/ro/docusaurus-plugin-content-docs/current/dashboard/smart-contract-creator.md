@@ -43,7 +43,7 @@ Implementarea pe mainnet este non-custodială: Panoul compilează contractul și
 4. Analizează tranzacția în MetaMask — rețeaua, gas-ul și datele — apoi confirmă pentru a o semna și a o transmite tu însuți.
 5. Odată ce implementarea este confirmată on-chain, Panoul înregistrează adresa contractului rezultat alături de contractele tale salvate.
 
-Din Panou pot fi implementate doar contractele **EVM** (Solidity). Implementările CosmWasm și de programe Solana nu sunt disponibile deocamdată pe niciuna dintre rețele.
+Din Panou pot fi implementate doar contractele **EVM** (Solidity). Implementările QoreChain Native și de programe Solana nu sunt disponibile deocamdată pe niciuna dintre rețele.
 
 ### Pe testnet — un singur clic {#deploy-testnet}
 

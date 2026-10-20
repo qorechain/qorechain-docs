@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `mainnet` |
 | Chain id | `qorechain-vladi` (7 Haziran 2026'dan beri yayında) |
-| Zincir sürümü (20 Ekim 2026) | v3.2.3 |
+| Zincir sürümü (21 Ekim 2026) | 3.742.566 yüksekliğine kadar v3.2.3, o bloktan itibaren v3.2.4 (yönetişim önerisi 13) |
 | EVM zincir kimliği | `9801` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Ağ ön ayarı | `testnet` |
 | Chain id | `qorechain-diana` (yayında) |
-| Zincir sürümü (20 Ekim 2026) | v3.2.4 (şimdilik yalnızca testnet; mainnet önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır) |
+| Zincir sürümü (21 Ekim 2026) | v3.2.4 (8.337.253 yüksekliğinden beri, 19 Ekim 2026) |
 | EVM zincir kimliği | `9800` |
 | Görünen token | `QOR` |
 | Temel denominasyon | `uqor` |
@@ -57,7 +57,7 @@ düğüme işaret etmek için `endpoints` parametresini geçersiz kılın.
 | --- | --- | --- |
 | Cosmos REST (LCD) | `1317` | bank bakiyeleri, hesap bilgisi, modül sorguları |
 | gRPC | `9090` | gRPC sorguları |
-| Consensus RPC | `26657` | yerel tx'leri imzalama/yayınlama, CosmWasm okumaları |
+| Consensus RPC | `26657` | yerel tx'leri imzalama/yayınlama, QoreChain Native okumaları |
 | EVM JSON-RPC | `8545` | `eth_*` (ve bunları etkinleştiren düğümlerde `qor_*` / precompile'lar) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket abonelikleri |
 | SVM JSON-RPC | `8899` | Solana uyumlu RPC |

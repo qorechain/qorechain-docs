@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Guía Cross-VM
 
-QoreChain ejecuta **EVM, SVM y CosmWasm en paralelo**, y el módulo `x/crossvm`
+QoreChain ejecuta **EVM, SVM y QoreChain Native en paralelo**, y el módulo `x/crossvm`
 permite que una sola cuenta nativa invoque un contrato en cualquiera de ellos. El
 SDK proporciona un ayudante de alto nivel `createCrossVMClient` para construir,
 firmar y difundir estas llamadas, incluso empaquetando varias en **una
@@ -23,7 +23,7 @@ Las llamadas cross-VM solo están disponibles en la medida en que lo esté su ca
   (`GET /cosmos/circuit/v1/disable_list` lista `/qorechain.crossvm.v1.MsgCrossVMCall`);
   está habilitado en la testnet.
 - El carril de transacciones SVM está deshabilitado en toda la red, la subida e
-  instanciación de CosmWasm requieren permisos (y no hay contratos en mainnet), y el
+  instanciación de QoreChain Native requieren permisos (y no hay contratos en mainnet), y el
   precompilado del puente EVM no está activo (consulta
   [Precompilados EVM](/developer-guide/evm-precompiles#network-status)).
 - Los ayudantes de lectura REST tipados de abajo llaman a rutas que la pasarela pública no sirve.
@@ -73,7 +73,7 @@ Elige exactamente **una** forma de carga útil por llamada:
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | bytes en bruto, pasados sin cambios |
 | `{ evm: { abi, functionName, args } }` | codificada en ABI con `encodeFunctionData` de viem (selector + args) |
-| `{ cosmwasm: object }` | `JSON.stringify` y luego bytes UTF-8 (la convención de mensaje de ejecución de CosmWasm) |
+| `{ cosmwasm: object }` | `JSON.stringify` y luego bytes UTF-8 (la convención de mensaje de ejecución de QoreChain Native) |
 | `{ svm: { data: Uint8Array \| Hex } }` | bytes en bruto (un blob de instrucción SVM) |
 
 La ruta EVM importa `viem` de forma diferida, por lo que el par opcional `viem`
@@ -98,7 +98,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` empaqueta varios mensajes `MsgCrossVMCall` en **un único cuerpo de
 transacción** para que se ejecuten de forma atómica bajo una sola firma: el
-titular de las tres VM. Una firma, llamadas a través de EVM + SVM + CosmWasm que
+titular de las tres VM. Una firma, llamadas a través de EVM + SVM + QoreChain Native que
 aterrizan todas juntas o ninguna:
 
 ```ts

@@ -56,7 +56,7 @@ Consulta [Staking y Validadores](/dashboard/staking-and-validators).
 
 ## Rollups
 
-Solicita un rollup impulsado por QoreChain. El formulario te permite nombrar el rollup e indicar la máquina virtual (EVM, CosmWasm o SVM), la capa de disponibilidad de datos, el token de gas, el modelo de secuenciador y el objetivo de settlement que quieres. Al enviarlo se registra una solicitud de aprovisionamiento que se revisa; no crea el rollup on-chain. Las opciones son más amplias de lo que el módulo de rollups on-chain admite actualmente. Para registrar tú mismo un rollup on-chain, consulta [Desplegar un Rollup](/rollups/deploying-a-rollup); para los conceptos, consulta [Visión General de Rollups](/rollups/overview).
+Solicita un rollup impulsado por QoreChain. El formulario te permite nombrar el rollup e indicar la máquina virtual (EVM, QoreChain Native o SVM), la capa de disponibilidad de datos, el token de gas, el modelo de secuenciador y el objetivo de settlement que quieres. Al enviarlo se registra una solicitud de aprovisionamiento que se revisa; no crea el rollup on-chain. Las opciones son más amplias de lo que el módulo de rollups on-chain admite actualmente. Para registrar tú mismo un rollup on-chain, consulta [Desplegar un Rollup](/rollups/deploying-a-rollup); para los conceptos, consulta [Visión General de Rollups](/rollups/overview).
 
 ## SDK
 

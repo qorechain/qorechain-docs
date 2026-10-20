@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain, QoreChain EVM Motoru üzerinde tam EVM uyumlu bir yürütme ortamı çalıştırır ve bu sayede tanıdık araçları kullanarak Solidity akıllı sözleşmelerini dağıtmanıza ve onlarla etkileşime geçmenize olanak tanır. EVM modülü, standart Ethereum geliştirme iş akışlarını destekleyen bir JSON-RPC arayüzünü **8545 portunda** (WebSocket için **8546** portunda) sunar.
 
 :::note
-Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.2.3** düğüm sürümünü çalıştıran (20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. **`qorechain-diana`** test ağı (v3.2.4, 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı; ana ağda henüz uygulanmadı; yönetişim önerisi 13 bunu 3.742.566 yüksekliğinde uygulayacaktır) için EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
+Aşağıdaki örnekler, 7 Haziran 2026'dan beri canlı olan ve **v3.2.3** düğüm sürümünü çalıştıran (20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedef almaktadır. Ana ağ, 3.742.566 yüksekliğinde **v3.2.4** düğüm sürümüne geçer (yönetişim önerisi 13). **`qorechain-diana`** test ağı 8.337.253 yüksekliğinden (19 Ekim 2026) beri v3.2.4 çalıştırır; orada EVM zincir kimliği **9800**'ü kullanın. Kod örnekleri, kendi çalıştırdığınız bir düğüm için `http://localhost:8545` adresini kullanır; herkese açık ana ağ uç noktası `https://evm.qore.host`, test ağı uç noktası ise `https://evm-testnet.qore.host` adresidir.
 :::
 
 :::caution Bir EVM işlemi, kayıtlı bir PQC anahtarı ve açık bir yetkilendirme penceresi gerektirir
@@ -33,6 +33,8 @@ v3.2.2'den beri ana ağda iki kural daha geçerlidir: **korumasız (EIP-155 önc
 | Para birimi sembolü     | `QOR`                                      |
 
 QoreChain'e özgü okumalar REST üzerinden (`api.qore.host`) sunulur; [aşağıda](#custom-qor_-namespace) açıklanan `qor_` JSON-RPC ad alanı, herkese açık uç noktalarda ve varsayılan düğüm yapılandırmasında **etkin değildir**. Yeni başlatılmış bir düğümün varsayılan `api` listesi (v3.2.3 ve sonrası) `eth,net,web3`'tür; `txpool` isteğe bağlıdır, çünkü düğümün bekleyen işlemlerini yayınlar.
+
+v3.2.4 düğüm sürümünden itibaren (test ağında 19 Ekim 2026'dan beri; mainnet düğümlerinde 3.742.566 yüksekliğinden itibaren) bir düğüm kendi JSON-RPC sunucusunu sınırlar: 256 KiB'tan büyük istek gövdeleri reddedilir (HTTP 413), aynı anda en fazla 256 istek sunulur (bunun ötesinde HTTP 503) ve 4'ten fazla topic konumu, tek bir konumda 1000 alternatif veya 1000 adres içeren bir `eth_getLogs` ya da `eth_newFilter` filtresi reddedilir. Sınırlar, `app.toml` dosyasının `[json-rpc]` bölümündeki düğüm-yerel ayarlardır; bkz. [Düğüm Çalıştırma](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 
@@ -188,7 +190,7 @@ EVM işlemleri **klasik ECDSA (secp256k1)** ile imzalanır; bu nedenle MetaMask,
 Sözleşmeler içinde kuantum-sonrası güvenlik için:
 
 * **PQC Verify precompile'ı** (`0x0000...0A01`), etkinleştirildiğinde Solidity'den zincir üzerinde ML-DSA-87 imzalarını doğrulayacaktır; ana ağda veya test ağında **henüz etkin değildir**. Bkz. [EVM Precompile'ları: Ağ durumu](/developer-guide/evm-precompiles#network-status).
-* EVM'den CosmWasm veya SVM'ye giden **VM'ler arası mesajlar** Cosmos şeridi işlemleridir ve diğerleri gibi hibrit imza taşır; mevcut kullanılabilirlikleri için bkz. [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability).
+* EVM'den QoreChain Native veya SVM'ye giden **VM'ler arası mesajlar** Cosmos şeridi işlemleridir ve diğerleri gibi hibrit imza taşır; mevcut kullanılabilirlikleri için bkz. [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability).
 
 ---
 

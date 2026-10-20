@@ -264,7 +264,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## 次のステップ
 
-- [ガイド](/sdk/guides/evm) — 各 VM（EVM、SVM、CosmWasm、クロス VM）の使い方。
+- [ガイド](/sdk/guides/evm) — 各 VM（EVM、SVM、QoreChain Native、クロス VM）の使い方。
 - [アカウントと PQC 署名](/sdk/concepts/accounts-pqc) — HD 導出、統合
   eth-native アカウント、ポスト量子署名。
 - [オーセンティケータと委任支出](/sdk/guides/authenticators) — リンク済みの

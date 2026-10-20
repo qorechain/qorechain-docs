@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Versionshistorie
 
-Öffentliche Versionshistorie für QoreChain. Das aktuelle Mainnet-Release ist **v3.2.3**, im Einsatz auf dem Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026); es wurde per Governance bei Höhe 3.662.051 am 20. Oktober 2026 angewendet. Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft mit **v3.2.4**, dort bei Höhe 8.337.253 am 19. Oktober 2026 angewendet. **v3.2.4 ist noch nicht Teil des Mainnets: Der Mainnet-Governance-Vorschlag 13 (Abstimmung bis 21. Oktober 2026, 21:18 UTC) würde es bei Blockhöhe 3.742.566 anwenden.**
+Öffentliche Versionshistorie für QoreChain. Das Mainnet **`qorechain-vladi`** (EVM-Chain-ID **9801**, live seit 7. Juni 2026) läuft mit **v3.2.3** (per Governance bei Höhe 3.662.051 am 20. Oktober 2026 angewendet) bis zur Höhe **3.742.566** und ab diesem Block mit **v3.2.4** (Mainnet-Governance-Vorschlag 13). Das Testnet **`qorechain-diana`** (EVM-Chain-ID **9800**) läuft seit Höhe 8.337.253 (19. Oktober 2026) mit **v3.2.4**.
 
 :::note
 Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf hoher Ebene. Frühere `v1.x`-Einträge werden als historische Aufzeichnung der Testnet-Releaselinie vor dem Mainnet beibehalten. Das Release-Manifest ([Verbindung zum Mainnet](/getting-started/connecting-to-mainnet)) wird separat vom Taggen freigegeben und kann einem Tag zeitlich etwas hinterherhinken — prüfen Sie es direkt, um zu sehen, was eine frische Installation tatsächlich herunterlädt.
@@ -15,7 +15,7 @@ Die folgenden Einträge sind Zusammenfassungen der wichtigsten Funktionen auf ho
 
 ## Mainnet-Governance-Zeitleiste {#governance-timeline}
 
-Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben. Alle sieben sind beschleunigte Vorschläge (Abstimmungszeitraum von einem Tag); die Vorschläge 7 bis 11 wurden mit allen abstimmenden gebundenen Stakes dafür verabschiedet. Die vollständige Liste steht unter `GET /cosmos/gov/v1/proposals` auf `https://api.qore.host`.
+Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben oder Änderungen daran vorsehen. Alle sieben sind beschleunigte Vorschläge (Abstimmungszeitraum von einem Tag); die Vorschläge 7 bis 11 wurden mit allen abstimmenden gebundenen Stakes dafür verabschiedet. Die vollständige Liste steht unter `GET /cosmos/gov/v1/proposals` auf `https://api.qore.host`.
 
 | Vorschlag | Was er bewirkt | Abstimmung | Ergebnis |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Vorschläge, die das laufende Mainnet seit dem 14. Oktober 2026 verändert haben
 | 10 | Emission: setzt die feste Emission auf 86.000 QOR pro Epoche und die kumulative Obergrenze auf 590.000.000 QOR (Epochenlänge unverändert; die erste Epoche mit 86.000 QOR beginnt bei Block 3.672.000) | 18.–19. Oktober 2026 (endet 19:15 UTC) | Verabschiedet |
 | 11 | Wendet v3.2.3 bei Höhe 3.662.051 an | 18.–19. Oktober 2026 (endet 19:15 UTC) | Verabschiedet; angewendet am 20. Oktober 2026 |
 | 12 | Gibt den korrigierten gestrandeten Staker-Anteil (3.807.496,785528 QOR, bei der v3.2.3-Höhe neu berechnet) an die Foundation frei | 20. Oktober 2026 20:01 UTC bis 21. Oktober 2026 20:01 UTC | Zum Zeitpunkt der Erstellung in der Abstimmungsphase |
-| 13 | Koordiniertes Upgrade auf v3.2.4 bei Höhe 3.742.566 (Staking-Stufen, Light-Node-Belohnungsgrenze ab der Registrierung gezählt, ein Besitz-Flag für Post-Quanten-Schlüssel, Besitznachweis für Bridge-Validatoren und node-lokale Härtung) | 20. Oktober 2026 21:18 UTC bis 21. Oktober 2026 21:18 UTC | Zum Zeitpunkt der Erstellung in der Abstimmungsphase |
+| 13 | Koordiniertes Upgrade auf v3.2.4 bei Höhe 3.742.566 (etwa am 23. Oktober 2026 bei Blöcken von 3,2 Sekunden): optionales zeitgesperrtes Staking, Light-Node-Belohnungsgrenze ab der Registrierung gezählt, ein Besitz-Flag für Post-Quanten-Schlüssel, Besitznachweis für Bridge-Validatoren, das RDK-Challenge-Fenster in Blockzeit und node-lokale Härtung | 20. Oktober 2026 21:18 UTC bis 21. Oktober 2026 21:18 UTC | Zum Zeitpunkt der Erstellung in der Abstimmungsphase, alle bisher abgegebenen Stimmen dafür; das Endergebnis steht unter `GET /cosmos/gov/v1/proposals/13` |
 
 Siehe [Tokenomics](/architecture/tokenomics#stranded-and-reserve) dazu, was die Freigaben bedeuten, und [Governance](/user-guide/governance) dazu, wie man abstimmt.
 
 ---
 
-## v3.2.4 — Light-Node-Registrierungsfenster und optionales zeitgesperrtes Staking (nur Testnet)
+## v3.2.4 — Light-Node-Registrierungsfenster und optionales zeitgesperrtes Staking (für das Mainnet geplant)
 
-**Release-Schwerpunkt:** Ein reines Testnet-Release, auf `qorechain-diana` per Testnet-Governance-Vorschlag 13 bei Höhe **8.337.253** angewendet (19. Oktober 2026). Es ist **noch nicht auf dem Mainnet**: Der Mainnet-Governance-Vorschlag 13 (Abstimmung bis 21. Oktober 2026, 21:18 UTC) würde es bei Blockhöhe 3.742.566 anwenden, und bis dahin gilt nichts davon für `qorechain-vladi`. Das Testnet-Manifest setzt `minCompatible` auf 3.2.4.
+**Release-Schwerpunkt:** Das geplante nächste Mainnet-Release. Es läuft auf dem Testnet `qorechain-diana`, seit der Testnet-Governance-Vorschlag 13 es bei Höhe **8.337.253** angewendet hat (19. Oktober 2026; das Testnet-Manifest setzt `minCompatible` auf 3.2.4). Auf dem Mainnet plant der Governance-Vorschlag 13 es für die Höhe **3.742.566** ein: Die Nodes bleiben bis zu diesem Block auf v3.2.3, halten dort an und starten mit v3.2.4 neu, und die Transaktionssignierung bleibt unverändert. Jede der folgenden Funktionen ist daher jetzt auf dem Testnet live und gilt für `qorechain-vladi` ab Höhe 3.742.566 (sobald der Vorschlag verabschiedet ist).
 
 * **Light-Node-Registrierungsfenster.** Die Belohnungsgrenze eines Light-Nodes beginnt zum späteren Zeitpunkt aus der vorherigen Abrechnung und der eigenen Registrierung des Nodes, sodass eine neue Registrierung keinen aufgelaufenen Betrag aus der Zeit vor ihrem Beitritt erhält.
-* **Optionales zeitgesperrtes Staking (`x/stakingtier`, ein neues Modul).** Ein Delegator kann einen Teil einer Delegation für eine feste Laufzeit sperren; der gesperrte Teil kann weder undelegiert noch redelegiert werden, und eine vorzeitige Entsperrung ist mit einer Strafe möglich. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking).
-* **Neuer Emissionsmodus.** `x/inflation` erhält einen dritten Emissionsmodus, `target_apy`, mit einem Parameter `target_apy_bps` (derzeit `0`).
+* **Optionales zeitgesperrtes Staking (`x/stakingtier`, ein neues Modul).** Ein Delegator kann einen Teil einer Delegation für 3, 6 oder 12 Monate sperren; der gesperrte Teil kann weder undelegiert noch redelegiert werden, und eine vorzeitige Entsperrung ist mit einer Strafe möglich, die verbrannt wird. Die Mindestsperre beträgt 10 QOR. Siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking).
+* **Neuer Emissionsmodus.** `x/inflation` erhält einen dritten Emissionsmodus, `target_apy`, mit einem Parameter `target_apy_bps` (`0` auf dem Testnet). Die Änderung des Emissionsmodus eines Netzwerks ist eine eigene Governance-Entscheidung; der geltende Modus wird unter `/qorechain/inflation/v1/params` angezeigt.
 * **`possession_proven`-Flag** bei Post-Quanten-Kontodatensätzen; der Besitznachweis für Kontoschlüssel bleibt optional.
 * **Besitznachweis für Bridge-Validatoren.** Die Registrierung eines Bridge-Validators erfordert einen Besitznachweis und einen Schlüssel, den kein anderer Bridge-Validator verwendet.
 * **RDK-Challenge-Fenster in Blockzeit.** Das optimistische Challenge-Fenster wird in Blockzeit gezählt statt in einer daraus abgeleiteten Blockanzahl.
@@ -87,11 +87,11 @@ v3.2.1 wurde Node für Node angewendet und hat keine Upgrade-Höhe; es wurde auf
 * **Versionsübersicht des Upgrade-Moduls** listet nun jedes Modul (48) auf und behebt eine Lücke, die spätere Migrationen beeinträchtigt hätte.
 * Außerdem: Bridge-Modulkonto und Attestierungs-Payloads gehärtet, vorgeschlagene Blöcke werden validiert, Rollup-Settlement auf den Sequencer des Rollups beschränkt mit Escrow pro Rollup und einem wirksamen Burn bei der Erstellung, Multilayer-Creator-Stake bei der Registrierung gesperrt und bei der Stilllegung zurückgegeben, das `enabled`-Flag des Smart-Accounts auf jedem Pfad durchgesetzt sowie Validator-Zulassungs- und Vesting-Erstellungspfade für Authz-Verschachtelung geschlossen.
 
-## v3.1.96 + v3.1.97 — Sperrung des CosmWasm-Zugriffs
+## v3.1.96 + v3.1.97 — Sperrung des QoreChain Native-Zugriffs
 
-**Release-Schwerpunkt:** Schließung des permissionless Contract-Uploads und der Instanziierung, im Anschluss an eine branchenweite CosmWasm-Sicherheitswarnung.
+**Release-Schwerpunkt:** Schließung des permissionless Contract-Uploads und der Instanziierung, im Anschluss an eine branchenweite Sicherheitswarnung für CosmWasm, die Runtime, auf der QoreChain Native aufbaut.
 
-* **Contract-Upload und -Instanziierung erfordern nun eine explizite Berechtigung.** `code_upload_access` und `instantiate_default_permission` sind sowohl auf dem Mainnet als auch auf dem Testnet auf `Nobody` gesetzt — verifiziert live, unabhängig davon, welchen der beiden Tags ein gegebener Node ausführt, da es sich um einen On-Chain-Parameter handelt und nicht um etwas, das nur von den neueren Binaries erzwungen wird. Siehe [CosmWasm-Entwicklung](/developer-guide/cosmwasm-development) dafür, was das für Sie bedeutet, wenn Sie einen Contract entwickeln. Bereits instanziierte Contracts sind davon nicht betroffen — `execute` und `query` funktionieren wie zuvor. Auf beiden Netzwerken sind außerdem die drei CosmWasm-Nachrichten für Upload und Instanziierung über den Circuit Breaker abgeschaltet.
+* **Contract-Upload und -Instanziierung erfordern nun eine explizite Berechtigung.** `code_upload_access` und `instantiate_default_permission` sind sowohl auf dem Mainnet als auch auf dem Testnet auf `Nobody` gesetzt — verifiziert live, unabhängig davon, welchen der beiden Tags ein gegebener Node ausführt, da es sich um einen On-Chain-Parameter handelt und nicht um etwas, das nur von den neueren Binaries erzwungen wird. Siehe [QoreChain Native-Entwicklung](/developer-guide/cosmwasm-development) dafür, was das für Sie bedeutet, wenn Sie einen Contract entwickeln. Bereits instanziierte Contracts sind davon nicht betroffen — `execute` und `query` funktionieren wie zuvor. Auf beiden Netzwerken sind außerdem die drei QoreChain Native-Nachrichten für Upload und Instanziierung über den Circuit Breaker abgeschaltet.
 * **Position-Independent (PIE) Release-Builds**, gemäß der Härtungsvorgabe derselben Warnung, sodass die Speicheradresse, die ein Exploit erraten müsste, pro Prozess randomisiert wird. Dynamisch gelinkte Binaries benötigten dafür nur ein einziges Build-Flag; verifiziert als nicht konsensbrechend.
 
 ## v3.1.95 — Cosmos-EVM-Härtung
@@ -319,8 +319,8 @@ Full Nodes müssen **v3.1.83+** ausführen. Ein Node vor 3.1.83 kann eine eth-na
 * **PRISM-Konsensschicht** — Reinforcement-Learning-Optimierung (PPO) für dynamische Chain-Parameteranpassung mit Circuit-Breaker-Sicherheitskontrollen
 * **Triple-Pool-CPoS** — Composite Proof-of-Stake mit RPoS-, DPoS- und PoS-Validator-Pools, gewichtet nach Reputationswerten (in `x/qca` implementiert; noch nicht in die Blockproduktion eingebunden)
 * **QDRW-Governance** — Stimmrechtsformel Quadratic Delegation with Reputation Weighting (implementiert; auf den Live-Netzwerken deaktiviert)
-* **EVM- + CosmWasm- + SVM-Runtimes** — Drei gleichzeitige Ausführungsumgebungen: die QoreChain-EVM-Engine, CosmWasm-Smart-Contracts und die Solana Virtual Machine
-* **Cross-VM-Bridge** — Nachrichtenübermittlung und Asset-Transfers zwischen EVM-, CosmWasm- und SVM-Runtimes innerhalb eines einzigen Blocks
+* **EVM- + QoreChain Native- + SVM-Runtimes** — Drei gleichzeitige Ausführungsumgebungen: die QoreChain-EVM-Engine, QoreChain Native-Smart-Contracts und die Solana Virtual Machine
+* **Cross-VM-Bridge** — Nachrichtenübermittlung und Asset-Transfers zwischen EVM-, QoreChain Native- und SVM-Runtimes innerhalb eines einzigen Blocks
 * **Post-Quanten-Kryptografie** — Quantenresistente Signierung, gestützt auf eine leistungsstarke PQC-Bibliothek
 * **QCAI** — On-Chain-heuristische Analyse mit optionalem Off-Chain-Sidecar für Betrugserkennung, Gebührenschätzung und Netzwerkoptimierung
 * **Containerisiertes Deployment** — Vollständiges Multi-Validator-Testnet-Deployment mit Sidecar-Dienst und Block-Indexer

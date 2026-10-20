@@ -181,7 +181,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-Rulați o interogare smart read-only pe un contract CosmWasm implementat. Necesită un
+Rulați o interogare smart read-only pe un contract QoreChain Native implementat. Necesită un
 RPC de consens accesibil și o adresă de contract implementat.
 
 ```ts

@@ -52,9 +52,9 @@ Tasarıma göre cezalar **yakılmaz** (`penalty_burn_rate` değeri `0`'dır): ce
 
 ---
 
-## Zamana kilitli stake etme farklı bir özelliktir (yalnızca testnet) {#staking-tiers}
+## Zamana kilitli stake etme farklı bir özelliktir (v3.2.4) {#staking-tiers}
 
-Yalnızca testnet'te çalışan **v3.2.4** sürümü (mainnet yükseltmesi önerilmiştir: yönetişim önerisi 13, 3.742.566 yüksekliğinde), **isteğe bağlı zamana kilitli stake etme** için ayrı bir modül olan `x/stakingtier`'ı ekler. Bu xQORE değildir: xQORE basmaz, oy gücünü değiştirmez ve yukarıdaki xQORE parametrelerine dokunmaz. Özetle:
+19 Ekim 2026'dan beri testnet'te çalışan ve mainnet için 3.742.566 yüksekliğinden itibaren planlanan **v3.2.4** sürümü (yönetişim önerisi 13), **isteğe bağlı zamana kilitli stake etme** için ayrı bir modül olan `x/stakingtier`'ı ekler. Bu xQORE değildir: xQORE basmaz, oy gücünü değiştirmez ve yukarıdaki xQORE parametrelerine dokunmaz. Özetle:
 
 * Bir delegatör, bir validatöre yaptığı delegasyonu seçilen bir süre için kilitler (modül 3, 6 ve 12 ay sunar). Kilit sürerken, kilitli tutar hiçbir mesaj yolu üzerinden (bir işlem, authz, bir sözleşme veya yönetişim) delegasyondan çıkarılamaz veya yeniden delege edilemez.
 * Kilitlerin asgari bir boyutu ve bir delegatörün tutabileceği sayıya bir sınır vardır; bunları `GET /qorechain/stakingtier/v1/params` ile okuyun.
@@ -62,4 +62,4 @@ Yalnızca testnet'te çalışan **v3.2.4** sürümü (mainnet yükseltmesi öner
 * Bir kilit erken serbest bırakılabilir. Erken serbest bırakma, birikmiş ve talep edilmemiş olanı kaybettirir ve bir kısmı yakılan bir ceza içerir.
 * Kilitler ve modül hesabının durumu `/qorechain/stakingtier/v1/locks/{holder}` ve `/qorechain/stakingtier/v1/pool` adreslerinde okunabilir.
 
-Bu bölümdeki hiçbir şey mainnet v3.2.3'te mevcut değildir: `GET https://api.qore.host/qorechain/stakingtier/v1/params` orada `Not Implemented` döndürür. Mainnet'te stake etme, [Stake Etme ve Yetkilendirme](/user-guide/staking-and-delegation) sayfasında ele alınan olağan delegasyondur.
+Mainnet 3.742.566 yüksekliğine kadar v3.2.3 çalıştırdığından, o zamana kadar `GET https://api.qore.host/qorechain/stakingtier/v1/params` orada `Not Implemented` döndürür; o bloktan itibaren modül testnet'te olduğu gibi mainnet'te de bulunur. Olağan delegasyon [Stake Etme ve Yetkilendirme](/user-guide/staking-and-delegation) sayfasında ele alınmıştır.

@@ -33,7 +33,7 @@ flowchart TD
 
 ## Regulile de admitere a validatorilor și de staking în vigoare {#admission}
 
-Aceste reguli sunt aplicate pe mainnet (din v3.2.2, cu o consolidare suplimentară în v3.2.3) și pe testnet. Fac parte din serverul de mesaje de staking, deci se aplică fiecărui mesaj, indiferent cum ajunge în lanț: o tranzacție, `x/authz`, `x/group`, un contract CosmWasm, un precompile sau o propunere de guvernanță. Tranzacțiile de genesis sunt exceptate.
+Aceste reguli sunt aplicate pe mainnet (din v3.2.2, cu o consolidare suplimentară în v3.2.3) și pe testnet. Fac parte din serverul de mesaje de staking, deci se aplică fiecărui mesaj, indiferent cum ajunge în lanț: o tranzacție, `x/authz`, `x/group`, un contract QoreChain Native, un precompile sau o propunere de guvernanță. Tranzacțiile de genesis sunt exceptate.
 
 | Regulă | Ce aplică lanțul |
 | --- | --- |

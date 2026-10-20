@@ -225,14 +225,14 @@ Cheile PQC se înregistrează explicit printr-o tranzacție de înregistrare; nu
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Evenimente de ciclu de viață și de recompensă ale nodurilor light |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Emis atunci când guvernanța actualizează configurația de screening AI |
 
-### Modulul Staking Tiers (doar testnet)
+### Modulul Staking Tiers (v3.2.4)
 
-Aceste evenimente există doar pe testnet-ul `qorechain-diana` (v3.2.4); mainnet-ul nu are încă modulul (propunerea de guvernanță 13 ar aplica v3.2.4 la înălțimea 3.742.566).
+Aceste evenimente vin cu versiunea v3.2.4: testnet-ul `qorechain-diana` le emite din 19 octombrie 2026, iar mainnet-ul le emite de la înălțimea 3.742.566 (propunerea de guvernanță 13). Un nod de mainnet aflat încă pe v3.2.3 nu are modulul staking-tiers și nu emite niciunul dintre ele.
 
 | Tip eveniment | Atribute cheie | Descriere |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | A fost creată o blocare a delegării |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | O blocare a fost încheiată anticipat sau și-a atins sfârșitul |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | O blocare a fost încheiată anticipat (penalizarea este arsă sub sursa de ardere `staking_tier_penalty`) sau și-a atins sfârșitul |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; totaluri de decontare | A fost revendicat un bonus; pool-ul a fost decontat |
 | `staking_tier_params_updated` | parametri | Guvernanța a schimbat parametrii modulului |
 

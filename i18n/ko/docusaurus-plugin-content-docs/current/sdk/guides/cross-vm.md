@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # 크로스-VM 가이드
 
-QoreChain은 **EVM, SVM, CosmWasm을 나란히** 실행하며, `x/crossvm` 모듈을 통해
+QoreChain은 **EVM, SVM, QoreChain Native을 나란히** 실행하며, `x/crossvm` 모듈을 통해
 하나의 네이티브 계정이 그중 어느 것에 있는 컨트랙트라도 호출할 수 있습니다. SDK는 이러한
 호출을 빌드, 서명, 브로드캐스트하기 위한 고수준 `createCrossVMClient` 헬퍼를 제공하며 —
 여러 호출을 **세 VM 전체에 걸친 하나의 원자적 트랜잭션**으로 묶는 것을 포함합니다 —
@@ -21,7 +21,7 @@ EVM→네이티브 라우팅은 여전히 `@qorechain/evm`의 **크로스-VM 브
 - `MsgCrossVMCall`은 **메인넷**에서 체인의 서킷 브레이커에 의해 꺼져 있습니다
   (`GET /cosmos/circuit/v1/disable_list`에 `/qorechain.crossvm.v1.MsgCrossVMCall`이
   나열됩니다). 테스트넷에서는 활성화되어 있습니다.
-- SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있고, CosmWasm 업로드와
+- SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있고, QoreChain Native 업로드와
   인스턴스화는 허가제이며(메인넷에는 컨트랙트가 없습니다), EVM 브리지 프리컴파일은
   활성화되어 있지 않습니다
   ([EVM 프리컴파일](/developer-guide/evm-precompiles#network-status) 참조).
@@ -69,7 +69,7 @@ const { messageId, result } = await xvm.call({
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | 원시 바이트, 변경 없이 그대로 전달 |
 | `{ evm: { abi, functionName, args } }` | viem의 `encodeFunctionData`로 ABI 인코딩(셀렉터 + 인자) |
-| `{ cosmwasm: object }` | `JSON.stringify` 후 UTF-8 바이트(CosmWasm execute-msg 관례) |
+| `{ cosmwasm: object }` | `JSON.stringify` 후 UTF-8 바이트(QoreChain Native execute-msg 관례) |
 | `{ svm: { data: Uint8Array \| Hex } }` | 원시 바이트(SVM 명령어 blob) |
 
 EVM 경로는 `viem`을 지연 임포트하므로, 선택적 `viem` 피어는 실제로 `{ evm: ... }`
@@ -94,7 +94,7 @@ const msg = xvm.buildCall({
 
 `callAtomic`은 여러 `MsgCrossVMCall` 메시지를 **하나의 트랜잭션 본문**으로 묶어서
 단일 서명 하에 원자적으로 실행되도록 합니다 — 바로 트리플-VM의 핵심입니다. 하나의 서명으로,
-EVM + SVM + CosmWasm 전체에 걸친 호출이 모두 함께 처리되거나 전혀 처리되지 않습니다:
+EVM + SVM + QoreChain Native 전체에 걸친 호출이 모두 함께 처리되거나 전혀 처리되지 않습니다:
 
 ```ts
 const { messageIds, result } = await xvm.callAtomic([

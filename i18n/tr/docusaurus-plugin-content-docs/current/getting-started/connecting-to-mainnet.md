@@ -10,7 +10,7 @@ sidebar_position: 3
 Düğümünüzü resmi genesis dosyası, eşler (peers) ve ağ ayarlarıyla yapılandırarak canlı QoreChain Vladi ana ağına katılın.
 
 :::note
-Bu sayfa, Cosmos SDK v0.53 üzerinde **v3.2.3** sürümünü çalıştıran ve **7 Haziran 2026** tarihinden beri canlı olan **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
+Bu sayfa, Cosmos SDK v0.53 üzerinde **7 Haziran 2026** tarihinden beri canlı olan, **3,742,566** yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** sürümünü çalıştıran (yönetişim önerisi 13) **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**, onaltılık `0x2649`) kapsar. **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**) için [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) bölümüne bakın ve canlıya geçmeden önce kurulumunuzu orada prova edin.
 :::
 
 ## Genel Erişime Açık Uç Noktalar
@@ -54,12 +54,12 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Bu paket, `qorechaind` ile birlikte gerekli paylaşılan kitaplıklarını (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`) içerir.
 
-:::caution Düğümünüzü güncel tutun — v3.2.3 gerekli
-Tam düğümler ağın canlı sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Güncel manifesto **v3.2.3**'tür; `minCompatible` değeri **3.2.3** ve `upgradeHeight` değeri **3,662,051**'dir: ana ağ v3.2.3'ü orada, 20 Ekim 2026'da, 11 numaralı yönetişim önerisiyle uyguladı ve daha eski bir sürümde kalan bir düğüm zinciri o yüksekliğin ötesinde takip edemez. Ana ağdaki önceki yönetişim yükseltmeleri; 2,122,074 yüksekliğinde **v3.1.94** (emisyon tavanı), 2,981,742 yüksekliğinde **v3.2.0** (EVM yetkilendirme penceresi ve v2 hibrit imza baytları) ve 3,556,788 yüksekliğinde **v3.2.2** (16 Ekim 2026, öneri 7) idi. v3.2.1, yüksekliği olmayan düğüm-yerel bir sürümdü. Bu nedenle taze katılan bir düğümün v3.2.3 ikili dosyasına ihtiyacı vardır; genesis'ten yeniden oynatmak yerine state sync'i (aşağıda) tercih edin. Yayımlanan zincir verisi anlık görüntüsü bu yükseltme yüksekliklerinin hepsinden öncesine aittir; bu nedenle ondan geri yüklenen bir düğüm bunları yeniden oynatmalıdır.
+:::caution Düğümünüzü güncel tutun — v3.2.3, ardından v3.2.4
+Tam düğümler ağın canlı sürümünü takip etmek zorundadır — her zaman manifestonun işaret ettiği ikili dosyayı kurun, eski bir sürümü sabitlemeyin. Güncel manifesto **v3.2.3**'tür; `minCompatible` değeri **3.2.3** ve `upgradeHeight` değeri **3,662,051**'dir: ana ağ v3.2.3'ü orada, 20 Ekim 2026'da, 11 numaralı yönetişim önerisiyle uyguladı ve daha eski bir sürümde kalan bir düğüm zinciri o yüksekliğin ötesinde takip edemez. Ana ağdaki önceki yönetişim yükseltmeleri; 2,122,074 yüksekliğinde **v3.1.94** (emisyon tavanı), 2,981,742 yüksekliğinde **v3.2.0** (EVM yetkilendirme penceresi ve v2 hibrit imza baytları) ve 3,556,788 yüksekliğinde **v3.2.2** (16 Ekim 2026, öneri 7) idi. v3.2.1, yüksekliği olmayan düğüm-yerel bir sürümdü. **3,742,566 yüksekliğinde v3.2.4 (yönetişim önerisi 13, 3,2 saniyelik bloklarla yaklaşık 23 Ekim 2026).** Düğümler o yüksekliğe kadar v3.2.3'te kalır, orada durur ve v3.2.4 ile yeniden başlar; yükseltme uygulandıktan sonra manifesto 3.2.4'e geçer (`minCompatible` 3.2.4 olur) ve işlem imzalama değişmez. Yükseltmeden önce katılan taze bir düğümün v3.2.3 ikili dosyasına, sonrasında katılanın ise v3.2.4'e ihtiyacı vardır — her zaman manifestoyu okuyun; genesis'ten yeniden oynatmak yerine state sync'i (aşağıda) tercih edin. Yayımlanan zincir verisi anlık görüntüsü bu yükseltme yüksekliklerinin hepsinden öncesine aittir; bu nedenle ondan geri yüklenen bir düğüm bunları yeniden oynatmalıdır.
 
 `app.toml` içinde `evm-chain-id = 9801` ayarlayın (farklı bir değer hata olarak günlüğe yazılır) ve sistem saatini NTP ile senkronize tutun: saati 60 saniyeden fazla sapan bir düğüm durur. `binary.url` değerine güvenmeden önce her zaman manifestonun `"version"` ve `"minCompatible"` alanlarını kontrol edin — manifesto kasıtlı olarak yükseltilir (önce test ağı, ardından bir olgunlaşma süresinin sonunda ana ağ). İmzalama biçimi, adresler, ondalık basamaklar, memolar ve ücretler v3.2.3'te değişmedi.
 
-Test ağı (`qorechain-diana`) yalnızca test ağına özel bir sürüm olan v3.2.4'ü çalıştırır: onu bir ana ağ düğümüne kurmayın; ana ağ manifestosu da onu sunmaz.
+Test ağı (`qorechain-diana`) 19 Ekim 2026'dan beri v3.2.4'ü çalıştırmaktadır. 3,742,566 yüksekliğinden önce bir ana ağ düğümünde v3.2.4 ikili dosyasını başlatmayın ve ikili dosyaları asla iki ağ arasında kopyalamayın: yükseltme uygulandıktan sonra v3.2.4'ü sunan ana ağ manifestosunu izleyin.
 :::
 
 Koordineli bir yükseltme planlandığında, öneri metni yüksekliği belirtir ve o zamana kadar önceki sürümde kalmanızı söyler: düğüm o yükseklikte durur ve siz onu yeni ikili dosyayla yeniden başlatırsınız. Herhangi bir ikili dosyayı değiştirmeden önce önerinin `status` değerini (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) ve [ana ağ manifestosunun](https://download.qore.host/mainnet/latest.json) `version` ile `upgradeHeight` alanlarını okuyun ve bir yükseltme ikili dosyasını yüksekliğinden önce asla kurmayın: onu erken taşıyan bir düğüm de durur. Bu yazı yazılırken planlanmış bir yükseltme yoktur (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` komutu `"plan": null` döndürür).
@@ -256,7 +256,7 @@ http://localhost:1317
 | ----------------- | --------------------------------------- |
 | Zincir kimliği     | `qorechain-vladi`                      |
 | EVM zincir kimliği | `9801` (onaltılık `0x2649`)            |
-| Zincir sürümü      | v3.2.3 (3,662,051 yüksekliğinde uygulandı) |
+| Zincir sürümü      | v3.2.3 (3,662,051 yüksekliğinde uygulandı); 3,742,566 yüksekliğinden itibaren v3.2.4 |
 | Canlıya geçiş tarihi | 7 Haziran 2026                       |
 | Blok süresi        | yaklaşık 3.2 saniye (ölçülen ortalama) |
 | Token              | QOR (`uqor`, 10^6 mikro birim = 1 QOR) |

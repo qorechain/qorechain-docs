@@ -50,10 +50,10 @@ sidebar_position: 8
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc` (import `qorpqc`) | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/` (정적 라이브러리 + 헤더) | [리포지토리](https://github.com/qorechain/qorechain-pqc)에서 빌드 | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.3` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info 가용성
-JavaScript, Rust, Python, Go, Java 바인딩은 모두 버전 **0.2.2**로 **게시**되어 있습니다(npm, crates.io, PyPI, `v0.2.2`로 Go 모듈 프록시, Maven Central. 2026년 10월 21일 확인) — 위의 명령어로 설치하세요. Python 배포판은 `qorechain-pqc`로 설치되지만 **`qorpqc`로 임포트**합니다. **Java** 패키지는 `io.github.qorechain:qorechain-pqc:0.2.2`(Bouncy Castle 백엔드)입니다. 버전 **0.2.0**에서 버전 인식형 `hybridSignBytes`(아래 참조)가 추가되었고, **0.2.1**에서는 메인넷에서 v2로의 전환을 나타내는 업그레이드 이름이 수정되었으며, **0.2.2**에서는 헤지드 서명과 결정론적 서명에 관한 문서와 주석이 수정되었으므로(체인은 둘 다 수락하며, JavaScript 바인딩에서는 코드상 버전 상수만 바뀌었습니다) 0.2.1 이상을 사용하세요. **C** 바인딩은 [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc)에서 직접 빌드하는 정적 라이브러리 + 헤더입니다.
+JavaScript, Rust, Python, Go, Java 바인딩은 모두 버전 **0.2.3**으로 **게시**되어 있습니다(npm, crates.io, PyPI, `v0.2.3`으로 Go 모듈 프록시, Maven Central. 2026년 10월 21일 확인) — 위의 명령어로 설치하세요. Python 배포판은 `qorechain-pqc`로 설치되지만 **`qorpqc`로 임포트**합니다. **Java** 패키지는 `io.github.qorechain:qorechain-pqc:0.2.3`(Bouncy Castle 백엔드)입니다. 버전 **0.2.0**에서 버전 인식형 `hybridSignBytes`(아래 참조)가 추가되었고, **0.2.1**에서는 메인넷에서 v2로의 전환을 나타내는 업그레이드 이름이 수정되었으며, **0.2.2**에서는 헤지드 서명과 결정론적 서명에 관한 문서와 주석이 수정되었으므로(체인은 둘 다 수락하며, JavaScript 바인딩에서는 코드상 버전 상수만 바뀌었습니다), **0.2.3**에서는 동일한 출력을 유지한 채 암호화 의존성(Java의 Bouncy Castle, JavaScript의 `@noble/post-quantum`)이 업데이트되었습니다. 0.2.1 이상을 사용하세요. **C** 바인딩은 [`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc)에서 직접 빌드하는 정적 라이브러리 + 헤더입니다.
 :::
 
 ## 결정론적 서명 (기본값) {#deterministic-signing}
@@ -107,7 +107,7 @@ v3.2.3 업그레이드(2026년 10월 20일 메인넷 높이 3,662,051에서 적�
 
 등록 시 등록자가 새 키의 비밀을 보유하고 있음을 함께 증명할 수도 있습니다. 키가 `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>`에 서명하고(알고리즘 ID는 ML-DSA-87의 경우 `1`이며, 공개 키는 소문자 hex입니다) 그 서명을 `MsgRegisterPQCKeyV2`의 `proof_of_possession` 필드에 넣습니다. CLI에서는 `register-key-v2 ... --pqc-key <name>`이 이를 만들어 첨부합니다. TypeScript SDK 0.9.0에서는 네트워크가 v3.2.3을 적용한 뒤 `ensurePqcRegistered`가 증명을 스스로 첨부하며(`signProofOfPossession` / `verifyProofOfPossession`으로 직접 만들고 검증할 수도 있습니다), `@qorechain/chain-bridge` 0.2.3도 `cosmosRest`가 주어지면 동일하게 동작합니다. `@qorechain/wallet-adapter`(0.4.0)와 0.9.0 이전의 SDK 릴리스는 증명을 첨부하지 않으므로 이들을 통한 등록에는 증명이 없으며, 체인은 이를 여전히 수락합니다. 체인은 증명이 **있을 때** 이를 검증하고, 검증되지 않으면 등록을 거부합니다(코드 231). 증명이 없는 등록은 메인넷에서 여전히 수락됩니다. 메시지에 체인, 알고리즘, 계정, 키가 모두 명시되므로, 그중 하나를 위해 만든 증명은 다른 것에 대해서는 아무것도 증명하지 못합니다.
 
-테스트넷(v3.2.4, **테스트넷 전용**)에서는 계정 레코드가 증명이 검증되었는지 여부를 보고하며(`GET /qorechain/pqc/v1/account/{address}`의 `possession_proven`), 브리지 밸리데이터 등록에는 증명이 필요합니다. 둘 다 아직 메인넷에는 없으며, 메인넷 거버넌스 제안 13이 통과되면 v3.2.4가 높이 3,742,566에서 적용됩니다.
+**소유 플래그와 브리지 밸리데이터(v3.2.4).** 계정 레코드는 계정의 현재 키가 증명되었는지 여부를 보고합니다: `GET /qorechain/pqc/v1/account/{address}`의 `possession_proven`입니다. 키가 검증된 소유 증명과 함께 등록되었거나 로테이션으로 설치된 경우(새 키가 로테이션에 서명하므로 이것이 증명이 됩니다) `true`이며, 증명 없이 등록한 계정에서는 `false`로 유지됩니다. 이 플래그는 누가 송금하거나 수신할 수 있는지에 아무런 영향을 주지 않습니다. **브리지 밸리데이터**를 등록하려면 추가로 밸리데이터의 포스트 양자 키에 대한 소유 증명이 필요하며(등록 시의 `proof_of_possession`; 키는 `qorechain-pqc-pop-v1|<chain-id>|1|<validator address>|<public key hex>`에 서명하고, CLI에서는 `--pqc-key`를 사용합니다), 두 브리지 밸리데이터가 같은 키를 등록할 수 없습니다. 크로스체인 브리지 자체는 프로덕션 단계가 아닙니다. 두 변경 사항은 테스트넷에서는 2026년 10월 19일부터, 메인넷에서는 높이 3,742,566부터 적용됩니다(거버넌스 제안 13): 메인넷은 해당 블록까지 v3.2.3을, 그 블록부터 v3.2.4를 실행합니다.
 
 ## 거부 코드 (codespace `pqc`) {#pqc-codes}
 

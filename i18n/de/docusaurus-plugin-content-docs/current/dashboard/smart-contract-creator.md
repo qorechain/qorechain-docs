@@ -43,7 +43,7 @@ Das Mainnet-Deployment ist non-custodial: Das Dashboard kompiliert deinen Contra
 4. Überprüfe die Transaktion in MetaMask – Netzwerk, Gas und Daten – und bestätige dann, um sie selbst zu signieren und zu senden.
 5. Sobald das Deployment on-chain bestätigt ist, erfasst das Dashboard die resultierende Contract-Adresse bei deinen gespeicherten Contracts.
 
-Über das Dashboard können nur **EVM**-Contracts (Solidity) deployt werden. CosmWasm- und Solana-Programm-Deployments sind derzeit auf keinem der beiden Netzwerke verfügbar.
+Über das Dashboard können nur **EVM**-Contracts (Solidity) deployt werden. QoreChain Native- und Solana-Programm-Deployments sind derzeit auf keinem der beiden Netzwerke verfügbar.
 
 ### Auf dem Testnet – mit einem Klick {#deploy-testnet}
 

@@ -180,7 +180,7 @@ Două contracte precompilate expun capabilitățile AI on-chain către contracte
 Aceste precompilate **nu sunt active** pe mainnet (`qorechain-vladi`) și nici pe testnet (`qorechain-diana`); un apel returnează date goale. Vor fi activate abia după ce vor avea o cale de scorare read-only, în virgulă fixă. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
-**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă. Începând cu v3.2.3, precompilatul de verificare a anomaliilor analizează o tranzacție fără a scrie în stare; celelalte întăriri ale precompilatelor din acea versiune (puntea CrossVM care refuză `STATICCALL`, care măsoară apelul imbricat din gazul cadrului apelant și care atinge doar ținte CosmWasm din lista de permise) se aplică odată ce precompilatul CrossVM este activat. La 20 octombrie 2026, lista `active_static_precompiles` este goală pe ambele rețele.
+**Important**: Precompilatele EVM folosesc **doar motorul euristic determinist**. Ele nu apelează niciodată sidecar-ul, asigurând că întreaga execuție EVM rămâne complet deterministă și reproductibilă. Începând cu v3.2.3, precompilatul de verificare a anomaliilor analizează o tranzacție fără a scrie în stare; celelalte întăriri ale precompilatelor din acea versiune (puntea CrossVM care refuză `STATICCALL`, care măsoară apelul imbricat din gazul cadrului apelant și care atinge doar ținte QoreChain Native din lista de permise) se aplică odată ce precompilatul CrossVM este activat. La 20 octombrie 2026, lista `active_static_precompiles` este goală pe ambele rețele.
 
 ## Atestare TEE
 

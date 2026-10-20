@@ -96,7 +96,7 @@ Highlights seit 1.0.9 / 0.2.6:
 - Freigabe-Bildschirme, die jede Nachricht, die Gebühr, Ausgabenlimits und den Ablauf anzeigen und ablehnen, was QoreX nicht darstellen kann; **`signAndBroadcast`** für dApps; **Verbundene Websites** mit Widerrufen (Erweiterung); das **EVM-Zugriffsfenster** — siehe [Sicherheit & Wiederherstellung](/qorex/security-and-recovery) und die [Browser-Erweiterung](/qorex/browser-extension).
 - Korrekturen: Ein finanziertes Konto konnte kurzzeitig aus „Deine Konten“ verschwinden (1.0.9); die Android-Hardware-Zurück-Taste geht jetzt einen Bildschirm zurück (1.1.1); die Wiederherstellungsphrase wird unter Android 14 und neuer Nicht-Bedienungshilfen-Diensten vorenthalten (1.1.6).
 
-QoreX arbeitet auf dem Mainnet `qorechain-vladi`, das mit Chain **v3.2.3** läuft (live seit dem 7. Juni 2026). Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren haben sich bei diesem Upgrade nicht geändert, daher ist dafür kein QoreX-Update nötig.
+QoreX arbeitet auf dem Mainnet `qorechain-vladi`, das mit Chain **v3.2.3** läuft (live seit dem 7. Juni 2026) bis Höhe 3.742.566 und ab diesem Block mit v3.2.4. Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren ändern sich bei diesen Upgrades nicht, daher ist dafür kein QoreX-Update nötig.
 
 ## Was QoreX über das Netzwerk sendet {#data-and-privacy}
 

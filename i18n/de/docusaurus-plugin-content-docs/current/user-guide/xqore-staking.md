@@ -52,9 +52,9 @@ Wenn Sie jetzt an der Governance teilnehmen möchten, delegieren Sie QOR an eine
 
 ---
 
-## Zeitgesperrtes Staking ist ein anderes Feature (nur Testnet) {#staking-tiers}
+## Zeitgesperrtes Staking ist ein anderes Feature (v3.2.4) {#staking-tiers}
 
-Das Release **v3.2.4**, das nur im Testnet läuft (ein Mainnet-Upgrade darauf ist vorgeschlagen: Governance-Vorschlag 13, bei Höhe 3,742,566), fügt ein separates Modul hinzu, `x/stakingtier`, für **optionales zeitgesperrtes Staking**. Es ist nicht xQORE: Es prägt kein xQORE, ändert die Stimmkraft nicht und berührt die oben genannten xQORE-Parameter nicht. In Umrissen:
+Das Release **v3.2.4**, das seit dem 19. Oktober 2026 im Testnet läuft und für das Mainnet ab Höhe 3.742.566 vorgesehen ist (Governance-Vorschlag 13), fügt ein separates Modul hinzu, `x/stakingtier`, für **optionales zeitgesperrtes Staking**. Es ist nicht xQORE: Es prägt kein xQORE, ändert die Stimmkraft nicht und berührt die oben genannten xQORE-Parameter nicht. In Umrissen:
 
 * Ein Delegator sperrt eine Delegation an einen Validator für eine gewählte Laufzeit (das Modul bietet 3, 6 und 12 Monate an). Solange die Sperre läuft, kann der gesperrte Betrag über keinen Nachrichtenweg entbunden oder neu delegiert werden (eine Transaktion, Authz, ein Contract oder die Governance).
 * Sperren haben eine Mindestgröße und eine Begrenzung, wie viele ein Delegator halten darf; lesen Sie sie mit `GET /qorechain/stakingtier/v1/params` aus.
@@ -62,4 +62,4 @@ Das Release **v3.2.4**, das nur im Testnet läuft (ein Mainnet-Upgrade darauf is
 * Eine Sperre kann vorzeitig aufgehoben werden. Die vorzeitige Aufhebung verwirkt das, was aufgelaufen und nicht eingefordert ist, und zieht eine Strafe nach sich, von der ein Teil verbrannt wird.
 * Sperren und der Zustand des Modulkontos sind unter `/qorechain/stakingtier/v1/locks/{holder}` und `/qorechain/stakingtier/v1/pool` lesbar.
 
-Nichts in diesem Abschnitt existiert im Mainnet v3.2.3: `GET https://api.qore.host/qorechain/stakingtier/v1/params` liefert dort `Not Implemented`. Staking im Mainnet ist die gewöhnliche Delegation, behandelt unter [Staking und Delegation](/user-guide/staking-and-delegation).
+Das Mainnet läuft bis Höhe 3.742.566 mit v3.2.3, daher liefert `GET https://api.qore.host/qorechain/stakingtier/v1/params` dort bis dahin `Not Implemented`; ab diesem Block gibt es das Modul im Mainnet ebenso wie im Testnet. Die gewöhnliche Delegation ist behandelt unter [Staking und Delegation](/user-guide/staking-and-delegation).

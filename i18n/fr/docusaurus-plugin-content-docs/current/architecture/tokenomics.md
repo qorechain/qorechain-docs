@@ -23,7 +23,7 @@ Le modèle économique de QoreChain est centré sur le jeton natif **QOR** et su
 | **Préfixe Bech32**     | `qor` (comptes : `qor1...`, validateurs : `qorvaloper...`) |
 
 :::note
-Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version **v3.2.3**. Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version **v3.2.4**) a son propre historique d'offre et d'émission (l'offre du testnet est très supérieure à celle du mainnet et son émission a déjà dépassé le plafond), utilisez donc les chiffres du mainnet. Les montants qui évoluent à chaque bloc sont accompagnés de la date à laquelle ils ont été lus (20 octobre 2026).
+Les chiffres de cette page décrivent le **mainnet** (`qorechain-vladi`, ID de chaîne EVM **9801**), actif depuis le 7 juin 2026 sur la version **v3.2.3** (v3.2.4 à partir de la hauteur 3 742 566). Le testnet **`qorechain-diana`** (ID de chaîne EVM **9800**, version **v3.2.4** depuis le 19 octobre 2026) a son propre historique d'offre et d'émission (l'offre du testnet est très supérieure à celle du mainnet et son émission a déjà dépassé le plafond), utilisez donc les chiffres du mainnet. Les montants qui évoluent à chaque bloc sont accompagnés de la date à laquelle ils ont été lus (20 octobre 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain n'expose aucun chiffre de rendement de staking en direct ; considérez
 
 ## x/burn — Moteur de burn multicanal
 
-Le module `x/burn` définit **12 sources de burn**. Chaque jeton brûlé est retiré définitivement de l'offre. Sur le mainnet, seuls `gas_fee` (31 574 710,28 QOR au 20 octobre 2026) et, depuis v3.2.2, `failed_tx` (0,0855 QOR) ont enregistré des burns ; les autres sont définis mais n'en ont enregistré aucun. Le testnet possède une treizième source, `staking_tier_penalty`, pour le module facultatif de staking à verrouillage temporel qui n'existe que sur le testnet (voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking)).
+Le module `x/burn` définit aujourd'hui **12 sources de burn** sur le mainnet. Chaque jeton brûlé est retiré définitivement de l'offre. Sur le mainnet, seuls `gas_fee` (31 574 710,28 QOR au 20 octobre 2026) et, depuis v3.2.2, `failed_tx` (0,0855 QOR) ont enregistré des burns ; les autres sont définis mais n'en ont enregistré aucun. À partir de la v3.2.4, il existe une treizième source, `staking_tier_penalty`, qui enregistre la pénalité brûlée lorsqu'une délégation verrouillée dans le temps est déverrouillée de façon anticipée (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566 ; voir [Staking et délégation](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Canaux de burn
 
@@ -75,7 +75,7 @@ Le module `x/burn` définit **12 sources de burn**. Chaque jeton brûlé est ret
 | 11 | `milestone`        | Jalons du nombre de transactions | Burns programmés à des nombres cumulés de transactions fixes (aucun déclenché pour l'instant) |
 | 12 | `amm`              | AMM                        | Réservé aux frais de protocole de l'AMM (aucun enregistré) |
 
-Les canaux `contract_create`, `ai_service`, `bridge_fee` et `auto_buyback` sont inactifs aujourd'hui : le téléversement CosmWasm est fermé, et les frais de service IA ainsi que le pont ne sont pas en production.
+Les canaux `contract_create`, `ai_service`, `bridge_fee` et `auto_buyback` sont inactifs aujourd'hui : le téléversement QoreChain Native est fermé, et les frais de service IA ainsi que le pont ne sont pas en production.
 
 ### Répartition des frais {#fee-distribution}
 
@@ -201,7 +201,7 @@ Lus en direct le 20 octobre 2026 à `GET /qorechain/inflation/v1/params` :
 
 | Paramètre | Valeur (mainnet) | Description |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (hérité, taux par année) ou `fixed` |
+| `emission_mode` | `fixed` | `schedule` (hérité, taux par année) ou `fixed` ; la v3.2.4 ajoute un troisième mode, `target_apy` |
 | `fixed_epoch_emission` | 86 000 000 000 uqor (86 000 QOR) | Frappé par époque en mode fixe |
 | `max_total_emission` | 590 000 000 000 000 uqor (590 000 000 QOR) | Plafond cumulatif strict |
 | `epoch_length` | 43 200 blocs | Blocs par époque d'émission |
@@ -210,8 +210,8 @@ Lus en direct le 20 octobre 2026 à `GET /qorechain/inflation/v1/params` :
 
 Les paramètres du module et l'enregistrement d'époque sont exposés via REST sur le mainnet depuis v3.2.3 (`/qorechain/inflation/v1/params` et `/qorechain/inflation/v1/epoch_info`) ; ils peuvent aussi être lus dans l'état de la chaîne avec l'interface de store brut RPC `abci_query` (store `inflation`, clés `inflation/params` et `inflation/epoch`).
 
-:::note Testnet uniquement (v3.2.4)
-Le testnet `qorechain-diana` conserve ses paramètres d'émission antérieurs (16 239 QOR par époque sous un plafond de 114 285 714 QOR, déjà atteint là-bas). Les paramètres de son `x/inflation` ont gagné un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` actuellement à 0 qui ne pilote pas l'émission. Ce mode, le module facultatif de staking à verrouillage temporel qui l'utilise et les montants du testnet ne sont pas encore en production sur le mainnet ; la proposition de gouvernance 13 du mainnet appliquerait la version v3.2.4, qui contient le module de staking, à la hauteur 3 742 566, et le mode d'émission lui-même ne changerait que par son propre vote ultérieur.
+:::note v3.2.4 et l'émission du testnet
+Le testnet `qorechain-diana` conserve ses paramètres d'émission antérieurs (16 239 QOR par époque sous un plafond de 114 285 714 QOR, déjà atteint là-bas) ; le mainnet utilise les valeurs ci-dessus. La version v3.2.4 ajoute un troisième mode d'émission, `target_apy`, avec un paramètre `target_apy_bps` : sur le testnet depuis le 19 octobre 2026, sur le mainnet à partir de la hauteur 3 742 566 (proposition de gouvernance 13). Le paramètre vaut `0` sur le testnet et n'y pilote pas l'émission. Faire passer un réseau à ce mode relève d'un vote de gouvernance distinct, qui n'a pas été proposé sur le mainnet ; tant qu'aucun n'est adopté, le mainnet reste en mode `fixed` à 86 000 QOR par époque.
 :::
 
 ---

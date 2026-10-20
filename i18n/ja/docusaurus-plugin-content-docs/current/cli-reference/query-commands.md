@@ -14,7 +14,7 @@ qorechaind query <module> <command> [args] [flags]
 ```
 
 :::note
-クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットはノードリリース v3.2.3、テストネットは v3.2.4 で動作しています。テストネットでは、メインネットにはないルートやコマンドがいくつか提供されている(以下では **テストネット専用** と明記)ため、テストネットで動作するクエリがメインネットでは `Not Implemented` を返すことがあります。このページのコマンドは、`https://rpc.qore.host:443` に対して実行した v3.2.3 リリースバイナリで確認しています。
+クエリは `--node` が指す先のノードに対して実行されます。ライブデータには **`qorechain-vladi`** メインネットの RPC エンドポイント(例: `--node https://rpc.qore.host:443`)を、テストには **`qorechain-diana`** テストネットのエンドポイント(`--node https://rpc-testnet.qore.host:443`)を使用してください。デフォルトの `tcp://localhost:26657` は、自分で運用しているノードを指します。メインネットは高さ 3,742,566 まではノードリリース v3.2.3、そのブロックからは v3.2.4 で動作します(ガバナンス提案 13)。テストネットは 2026年10月19日から v3.2.4 で動作しています。v3.2.4 リリースでは、ルートやコマンドがいくつか追加されます(以下では **v3.2.4** と明記)。これらはテストネットでは現在すでに、メインネットでは高さ 3,742,566 から動作し、まだ v3.2.3 のメインネットノードは `Not Implemented` で応答します。このページのコマンドは、`https://rpc.qore.host:443` に対して実行した v3.2.3 リリースバイナリで確認しています。
 :::
 
 すべての `query` サブコマンドに共通のフラグがあります。
@@ -115,7 +115,7 @@ qorechaind query pqc evm-delegation-consent <address>
 
 - `algorithm` にはアルゴリズム名(`dilithium5`、`mlkem1024`)または数値 ID を指定します。
 - `migration` にはアドレスではなく**アルゴリズム ID**(例: `1`)を指定し、実行中の移行がない場合は `No active migration` を返します。
-- `account` は登録済みの鍵を報告します。鍵、`key_type`、`algorithm_name` のほかに、レコードには `classical_key_source`(`stored`、`auth_account`、または `none`: クラシカル公開鍵の取得元)があります。テストネット(v3.2.4、**テストネット専用**)では `possession_proven` も含まれ、鍵が検証済みの所有証明とともに登録された場合は `true` になります。
+- `account` は登録済みの鍵を報告します。鍵、`key_type`、`algorithm_name` のほかに、レコードには `classical_key_source`(`stored`、`auth_account`、または `none`: クラシカル公開鍵の取得元)があります。v3.2.4 以降(テストネットでは 2026年10月19日から、メインネットでは高さ 3,742,566 から)は `possession_proven` も含まれ、鍵が検証済みの所有証明とともに登録された場合は `true` になります。
 - `evm-window` は、そのアドレスに EVM レーンの承認ウィンドウが開いているかどうか、および残りのブロック数、トランザクション数、価値を示します(`found`、`live`、`remaining_blocks`、`remaining_txs`、`remaining_value`)。さらにウィンドウの適用範囲(`native_only`、`allowed_targets`。メインネット v3.2.3 以降)も示します。REST: `GET /qorechain/pqc/v1/evm_window/{address}`。
 - `evm-delegation-consent` は、そのアドレスの EIP-7702 委任の同意(`found`、`live`、`delegate`、`granted_height`、`expiry_height`)、現在の委任、およびその EVM ナンスを示します。REST: `GET /qorechain/pqc/v1/evm_delegation_consent/{address}`。
 - `params` と `hybrid-mode` は `hybrid_signature_mode`(`2` = 両ネットワークで必須)と `allow_classical_fallback`(`false`)を報告します。
@@ -149,7 +149,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params       # emission_mod
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info   # current_epoch, next_epoch_height, total_minted, remaining_emission
 ```
 
-メインネットでは、これらは `emission_mode: "fixed"`、43,200 ブロックのエポックごとに 86,000 QOR の固定発行、累積上限 590,000,000 QOR を報告します(ガバナンス提案 10、2026年10月19日に可決。新しい発行量での最初のエポックはブロック 3,672,000 から開始)。金額の単位は `uqor` です。テストネットは引き続き、それとは異なる独自の値を報告します。テストネットの v3.2.4 リリースでは、メインネットにはない発行モードがさらに追加されています(**テストネット専用**)。
+メインネットでは、これらは `emission_mode: "fixed"`、43,200 ブロックのエポックごとに 86,000 QOR の固定発行、累積上限 590,000,000 QOR を報告します(ガバナンス提案 10、2026年10月19日に可決。新しい発行量での最初のエポックはブロック 3,672,000 から開始)。金額の単位は `uqor` です。テストネットは引き続き、それとは異なる独自の値を報告します。v3.2.4 リリースでは発行モードがさらに追加されます(テストネットでは 2026年10月19日から、メインネットでは高さ 3,742,566 から)が、ネットワークがそのモードに切り替わるのは各ネットワーク自身のガバナンス投票によってのみであるため、そのような投票が可決されるまでメインネットは `fixed` のままです。
 
 ---
 
@@ -184,7 +184,7 @@ qorechaind query lightnode rewards <operator_address>
 qorechaind query lightnode reward-pool
 ```
 
-`reward-pool` は、モジュールの報酬残高が `reserved`、`outstanding`、`payable`、`distributable` にどのように分かれるかと、ノードごとの上限を示します。上限は `max_reward_per_block_per_node` と、v3.2.3 以降は `max_reward_per_month_per_node`(2,000 QOR。ブロック時間とアップタイムに応じて按分)です。テストネット(v3.2.4、**テストネット専用**)では、`monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も報告します。
+`reward-pool` は、モジュールの報酬残高が `reserved`、`outstanding`、`payable`、`distributable` にどのように分かれるかと、ノードごとの上限を示します。上限は `max_reward_per_block_per_node` と、v3.2.3 以降は `max_reward_per_month_per_node`(2,000 QOR。ブロック時間とアップタイムに応じて按分)です。v3.2.4 以降(テストネットでは 2026年10月19日から、メインネットでは高さ 3,742,566 から)は、`monthly_cap_active`、`last_distribution_time`、`last_distribution_height` も報告します。
 
 ---
 
@@ -322,7 +322,7 @@ qorechaind query amm quote-exact-out <pool_id> <denom_out> <amount_out>
 
 ---
 
-## stakingtier (テストネット専用)
+## stakingtier (v3.2.4)
 
 ```bash
 qorechaind query stakingtier params
@@ -330,7 +330,7 @@ qorechaind query stakingtier locks <holder_address>
 qorechaind query stakingtier pool
 ```
 
-ステーキングティアモジュールは **v3.2.4** リリースの一部で、テストネットでのみ稼働しています。メインネットにはまだこのモジュールがありません（ガバナンス提案 13 により、v3.2.4 は高さ 3,742,566 で適用される見込みです）。REST: `/qorechain/stakingtier/v1/params`、`/locks/{holder}`、`/pool`。[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照してください。
+ステーキングティアモジュールは **v3.2.4** リリースの一部です。テストネットでは 2026年10月19日から稼働しており、メインネットでは高さ 3,742,566 から稼働します（ガバナンス提案 13）。その高さより前は、メインネットノードはこれらのクエリに `Not Implemented` で応答します。REST: `/qorechain/stakingtier/v1/params`、`/locks/{holder}`、`/pool`。[トランザクションコマンド](/cli-reference/transaction-commands#stakingtier)を参照してください。
 
 ---
 
@@ -345,11 +345,13 @@ qorechaind query upgrade applied <upgrade_name>
 qorechaind query upgrade module-versions
 ```
 
-`query upgrade applied <name>` は、アップグレードがいつ有効になったかを読み取る方法です。メインネットでは `v3.2.2` がブロック高 3,556,788 で、`v3.2.3` がブロック高 3,662,051 で適用されました。テストネットでは `v3.2.2` が 6,905,034、`v3.2.3` が 8,003,746、`v3.2.4` が 8,337,253 で適用されています(`0` は未適用を意味します)。メインネットのサーキットブレーカーリスト(`disabled-list`)には現在、ベスティングアカウント作成メッセージ、CosmWasm の store と instantiate、AMM プールの一時停止と再開、クロス VM 呼び出し、マルチレイヤーのレイヤーステータス更新、PQC アルゴリズムの非推奨化と無効化、PRISM コンセンサスのガバナンスメッセージが含まれています。テストネットのリストには CosmWasm の 3 つのメッセージだけが含まれています。
+`query upgrade applied <name>` は、アップグレードがいつ有効になったかを読み取る方法です。メインネットでは `v3.2.2` がブロック高 3,556,788 で、`v3.2.3` がブロック高 3,662,051 で適用されました。テストネットでは `v3.2.2` が 6,905,034、`v3.2.3` が 8,003,746、`v3.2.4` が 8,337,253 で適用されています(`0` は未適用を意味します)。メインネットのサーキットブレーカーリスト(`disabled-list`)には現在、ベスティングアカウント作成メッセージ、QoreChain Native の store と instantiate、AMM プールの一時停止と再開、クロス VM 呼び出し、マルチレイヤーのレイヤーステータス更新、PQC アルゴリズムの非推奨化と無効化、PRISM コンセンサスのガバナンスメッセージが含まれています。テストネットのリストには QoreChain Native の 3 つのメッセージだけが含まれています。
 
 ---
 
 ## evm, erc20, wasm
+
+`wasm` コマンドは QoreChain Native、すなわち QoreChain が CosmWasm スマートコントラクトランタイムに付けている名称を読み取ります。コマンド名とモジュール名は `wasm` という表記のままです。
 
 ```bash
 qorechaind query evm params

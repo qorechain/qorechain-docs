@@ -14,7 +14,7 @@ Das Abstract-Account-Modul ist derzeit auf beiden Netzwerken **abgeschaltet**: `
 :::
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.3** ausführt. Ersetzen Sie für das Testnet, das v3.2.4 ausführt (nur Testnet), `--chain-id qorechain-diana`.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das die Node-Version **v3.2.3** bis Höhe 3.742.566 und **v3.2.4** ab diesem Block ausführt (Governance-Vorschlag 13). Ersetzen Sie für das Testnet, das seit dem 19. Oktober 2026 v3.2.4 ausführt, `--chain-id qorechain-diana`.
 :::
 
 :::caution Jede Cosmos-Lane-Transaktion benötigt die hybride Post-Quantum-Mitsignatur
@@ -176,7 +176,7 @@ Zwei Nachrichten transportieren authenticator-autorisierte Aktionen. In beiden F
 
 :::caution Nonce-Regeln
 * `MsgExecuteEVM.nonce` = die **aktuelle** EVM-Nonce des Kontos (`eth_getTransactionCount(account0x, "latest")`). In Produktion ist der Relayer ein *anderes* Konto, addieren Sie also **kein** +1. Das Signieren einer veralteten Nonce liefert Code `11`.
-* `MsgExecuteCosmos.nonce` = die Pro-Authenticator-Sequenz (fragen Sie den Authenticator-Zustand des Kontos ab), **nicht** die Cosmos-Sequenz des Kontos. Nur im Testnet (v3.2.4) liefert `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` diese Sequenz direkt (`nonce`, `linked`).
+* `MsgExecuteCosmos.nonce` = die Pro-Authenticator-Sequenz (fragen Sie den Authenticator-Zustand des Kontos ab), **nicht** die Cosmos-Sequenz des Kontos. Ab v3.2.4 (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566) liefert `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` diese Sequenz direkt (`nonce`, `linked`).
 :::
 
 **Phantom-Beispiel** (Browser: Phantom signiert, Ihr Backend relayt):

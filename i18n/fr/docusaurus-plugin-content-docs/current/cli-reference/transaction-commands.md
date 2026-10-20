@@ -14,9 +14,9 @@ qorechaind tx <module> <command> [args] [flags]
 ```
 
 :::note
-Définissez `--chain-id qorechain-vladi` pour diffuser vers le mainnet en production, ou `--chain-id qorechain-diana` pour le testnet. Les deux réseaux exécutent la lignée v3.2 : version de nœud du mainnet **v3.2.3** (appliquée à la hauteur 3 662 051 le 20 octobre 2026), testnet **v3.2.4** (appliquée à la hauteur 8 337 253 le 19 octobre 2026 ; pas encore appliquée sur le mainnet ; la proposition de gouvernance 13 l'appliquerait à la hauteur 3 742 566). Consultez `latest.json` sous [download.qore.host](https://download.qore.host) pour la version actuelle. Si `--chain-id` est omis, le client utilise le `chain-id` de votre configuration cliente locale.
+Définissez `--chain-id qorechain-vladi` pour diffuser vers le mainnet en production, ou `--chain-id qorechain-diana` pour le testnet. Les deux réseaux exécutent la lignée v3.2 : version de nœud du mainnet **v3.2.3** (appliquée à la hauteur 3 662 051 le 20 octobre 2026 ; le mainnet exécute la v3.2.3 jusqu'à la hauteur 3 742 566 et la **v3.2.4** à partir de ce bloc, programmée par la proposition de gouvernance 13), testnet **v3.2.4** (appliquée à la hauteur 8 337 253 le 19 octobre 2026). Consultez `latest.json` sous [download.qore.host](https://download.qore.host) pour la version actuelle. Si `--chain-id` est omis, le client utilise le `chain-id` de votre configuration cliente locale.
 
-Les commandes et drapeaux de cette page ont été vérifiés avec le binaire de la version v3.2.3. Tout ce qui n'existe que sur le testnet v3.2.4 est signalé **testnet uniquement**.
+Les commandes et drapeaux de cette page ont été vérifiés avec le binaire de la version v3.2.3. Tout ce qui n'existe qu'à partir de la v3.2.4 (le testnet dès maintenant, le mainnet à partir de la hauteur 3 742 566) est signalé comme tel.
 :::
 
 Les drapeaux communs s'appliquent à chaque sous-commande `tx` :
@@ -262,7 +262,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey_hex> hybrid --pqc-key mypqc
   --from mykey --gas 600000 --fees 60000uqor --chain-id qorechain-vladi -y
 ```
 
-Sur le testnet (v3.2.4, **testnet uniquement**), l'enregistrement du compte indique aussi si une preuve a été vérifiée, sous la forme `possession_proven` (voir [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)) ; le mainnet ne l'indique pas encore.
+À partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566), l'enregistrement du compte indique aussi si une preuve a été vérifiée, sous la forme `possession_proven` (voir [Points de terminaison REST / gRPC](/api-reference/rest-grpc-endpoints#pqc-module)) ; un nœud du mainnet encore en v3.2.3 ne l'indique pas.
 
 ### cosign
 
@@ -389,7 +389,7 @@ qorechaind tx pqc cosign register.json --from operator --pqc-key <name> --chain-
 
 `node_type` vaut `sx` ou `ux`. L'enregistrement exige une licence `lightnode_operator` active accordée par l'autorité de licences du réseau ; voir [Light Node](/light-node/overview) pour l'état actuel du programme. Autres commandes : `tx lightnode heartbeat`, `tx lightnode claim-rewards`, `tx lightnode deregister`.
 
-Depuis la v3.2.3, la récompense qu'un nœud peut accumuler est bornée **par mois** (`max_reward_per_month_per_node` dans `GET /qorechain/lightnode/v1/reward_pool`, 2 000 QOR par 30 jours), au prorata du temps de bloc et de la disponibilité ; la borne ne dépend donc plus de la vitesse de production des blocs. Une borne est un plafond, et non un montant promis. Sur le testnet (v3.2.4, **testnet uniquement**), la borne d'un nœud commence à sa propre inscription plutôt qu'au règlement précédent.
+Depuis la v3.2.3, la récompense qu'un nœud peut accumuler est bornée **par mois** (`max_reward_per_month_per_node` dans `GET /qorechain/lightnode/v1/reward_pool`, 2 000 QOR par 30 jours), au prorata du temps de bloc et de la disponibilité ; la borne ne dépend donc plus de la vitesse de production des blocs. Une borne est un plafond, et non un montant promis. À partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566), la borne d'un nœud commence à sa propre inscription plutôt qu'au règlement précédent.
 
 ---
 
@@ -413,7 +413,7 @@ qorechaind tx bridge deposit <source_chain> <source_tx_hash> <asset> <amount> [f
 
 ### register-validator / attest
 
-Messages de validateur de bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` enregistre un validateur pour la tâche d'attestation et `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` soumet une attestation. Aucun validateur de bridge n'est enregistré sur l'un ou l'autre réseau. Sur le testnet (v3.2.4, **testnet uniquement**), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession et une clé qu'aucun autre validateur de bridge n'utilise.
+Messages de validateur de bridge. `register-validator <pqc_pubkey_hex> <supported_chains_csv>` enregistre un validateur pour la tâche d'attestation et `attest <chain> <event_type> <operation_id> <tx_hash> <amount> <asset> [--pqc-signature <hex>] [--proof <hex>]` soumet une attestation. Aucun validateur de bridge n'est enregistré sur l'un ou l'autre réseau. À partir de la v3.2.4 (sur le testnet depuis le 19 octobre 2026 ; sur le mainnet à partir de la hauteur 3 742 566), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession et une clé qu'aucun autre validateur de bridge n'utilise.
 
 ### update-chain-config / set-verifier-bootstrap / update-circuit-breaker-limits
 
@@ -475,13 +475,13 @@ qorechaind tx crossvm call <evm|cosmwasm|svm> <target_contract> --payload <hex> 
 
 ---
 
-## stakingtier (testnet uniquement) {#stakingtier}
+## stakingtier (v3.2.4) {#stakingtier}
 
-:::note Testnet uniquement
-Le module de paliers de staking est arrivé avec la version **v3.2.4**, appliquée sur le testnet `qorechain-diana`. Il n'est **pas** sur le mainnet et une mise à niveau du mainnet vers cette version n'est pour l'instant que proposée (proposition de gouvernance 13, à la hauteur 3 742 566) ; ne construisez pas d'outillage mainnet dessus tant qu'elle n'est pas appliquée.
+:::note Disponible à partir de la v3.2.4
+Le module de paliers de staking est arrivé avec la version **v3.2.4** : il s'exécute sur le testnet `qorechain-diana` depuis le 19 octobre 2026 et sur le mainnet à partir de la hauteur 3 742 566 (proposition de gouvernance 13). Avant cette hauteur, un nœud du mainnet n'a pas le module et ces commandes sont refusées ; vérifiez d'abord `GET /qorechain/stakingtier/v1/params` sur le nœud que vous ciblez.
 :::
 
-Délégations facultatives verrouillées dans le temps : un délégateur peut verrouiller une partie d'une délégation existante pendant 3, 6 ou 12 mois, puis réclamer plus tard le bonus que le module crédite en échange. Un verrou est un enregistrement posé sur la délégation : les fonds délégués restent auprès du validateur.
+Délégations facultatives verrouillées dans le temps : un délégateur peut verrouiller une partie d'une délégation existante pendant 3, 6 ou 12 mois (le verrou minimal est de 10 QOR), puis réclamer plus tard le bonus que le module crédite en échange. Un verrou est un enregistrement posé sur la délégation : les fonds délégués restent auprès du validateur.
 
 ```bash
 qorechaind tx stakingtier lock <validator_address> <amount_uqor> <months> [flags]    # months: 3, 6 or 12

@@ -225,14 +225,14 @@ PQC鍵は登録トランザクションで明示的に登録されます。自�
 | `lightnode_register`、`lightnode_heartbeat`、`lightnode_claim_rewards`、`lightnode_deregister`、`lightnode_status_change`、`lightnode_reward_distribution`、`lightnode_reserve_release` | `address`、`node_type`、`status`、`reward_amount`、`destination` | ライトノードのライフサイクルと報酬のイベント |
 | `ai_config_updated` | `max_tx_per_minute`、`max_evm_tx_per_minute`、`anomaly_action`、`anomaly_threshold` | ガバナンスが AI スクリーニング設定を更新した際に発行 |
 
-### Staking Tiersモジュール（テストネットのみ）
+### Staking Tiersモジュール（v3.2.4）
 
-これらのイベントは `qorechain-diana` テストネット（v3.2.4）にのみ存在します。メインネットにはまだこのモジュールがありません（ガバナンス提案 13 により、v3.2.4 は高さ 3,742,566 で適用される見込みです）。
+これらのイベントは v3.2.4 リリースに伴うものです。`qorechain-diana` テストネットでは 2026年10月19日から発行されており、メインネットではブロック高 3,742,566 から発行されます（ガバナンス提案 13）。まだ v3.2.3 のメインネットノードには Staking Tiers モジュールがなく、これらのイベントは一切発行されません。
 
 | イベントタイプ | 主な属性 | 説明 |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`、`delegator`、`validator`、`amount`、`months`、`end_time` | デリゲーションのロックが作成された |
-| `staking_tier_lock_unlocked_early`、`staking_tier_lock_released` | `lock_id`、`delegator`、`penalty_burned`、`bonus_forfeited` | ロックが早期に終了した、または終了時点に達した |
+| `staking_tier_lock_unlocked_early`、`staking_tier_lock_released` | `lock_id`、`delegator`、`penalty_burned`、`bonus_forfeited` | ロックが早期に終了した（ペナルティは `staking_tier_penalty` Burn ソースとして Burn されます）、または終了時点に達した |
 | `staking_tier_bonus_claimed`、`staking_tier_bonus_settled` | `delegator`、`amount`。決済の合計 | ボーナスが請求された。プールが決済された |
 | `staking_tier_params_updated` | パラメータ | ガバナンスがモジュールのパラメータを変更した |
 

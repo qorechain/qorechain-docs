@@ -21,7 +21,7 @@ WebSocket). خط الإصدارات الحالي هو **0.9**، ونُشر في 
 | PyPI | `qorechain-sdk` (الاستيراد `qorsdk`) | 0.9.0 |
 | crates.io | `qorechain-sdk` (الاستيراد `qorechain`) | 0.9.0 |
 | وكيل وحدات Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.1 (تحديث خاص بـ Java لاعتمادية Bouncy Castle الخاصة بها، دون تغيير في واجهة API؛ وتبقى اللغات الأخرى على 0.9.0) |
 
 اختر لغتك أدناه.
 
@@ -40,14 +40,14 @@ WebSocket). خط الإصدارات الحالي هو **0.9**، ونُشر في 
 ولذلك يحتاج إلى نقطة نهاية REST (`rest`) على
 `qorechain-vladi` / `qorechain-diana`: فهو يرمي خطأً بدلًا من التخمين. انظر
 [أي صيغة لبايتات التوقيع؟](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-لم تتغير الصيغة في إصدار السلسلة v3.2.3 (الشبكة الرئيسية) ولا v3.2.4 (الشبكة التجريبية):
+لم تتغير الصيغة في إصدار السلسلة v3.2.3 ولا v3.2.4 (الشبكة التجريبية منذ 19 أكتوبر 2026، والشبكة الرئيسية من الارتفاع 3,742,566):
 فـ `"auto"` يحلّ إلى v2 على الشبكتين.
 :::
 
 ## ما الذي يضيفه الإصدار 0.9.0 {#whats-new-090}
 
 الإصدار SDK 0.9.0 هو إصدار العميل للسلسلة **v3.2.2** و**v3.2.3** (طبّقتهما الشبكة
-الرئيسية عند الارتفاعين 3,556,788 و3,662,051؛ وتعمل الشبكة التجريبية بالإصدار v3.2.4).
+الرئيسية عند الارتفاعين 3,556,788 و3,662,051؛ وتعمل الشبكة التجريبية بالإصدار v3.2.4 منذ 19 أكتوبر 2026، وتنتقل الشبكة الرئيسية إليه عند الارتفاع 3,742,566).
 لم تتغير صيغة التوقيع ولا العناوين ولا المنازل العشرية ولا الـ memo ولا الرسوم، لذا
 فصيغة sign-bytes الهجينة v2 التي يوقّعها 0.8.1 وما بعده لا تزال الصيغة الصحيحة.
 الجديد:
@@ -74,7 +74,7 @@ WebSocket). خط الإصدارات الحالي هو **0.9**، ونُشر في 
 ## الإصدارات السابقة للإصدار 0.9.0 {#before-090}
 
 إذا كنت على 0.8.x فهو لا يزال يوقّع الصيغة التي تتحقق منها الشبكتان ويعمل على
-الشبكة الرئيسية v3.2.3 والشبكة التجريبية v3.2.4. هذه هي الحدود التي يزيلها 0.9.0،
+الشبكة الرئيسية (v3.2.3، ثم v3.2.4 من الارتفاع 3,742,566) والشبكة التجريبية (v3.2.4). هذه هي الحدود التي يزيلها 0.9.0،
 وبعضها يكلّف رسومًا إن لم تعرفها:
 
 | الإصدار السابق للإصدار 0.9.0 | الحل البديل |
@@ -219,19 +219,21 @@ Maven‏ (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 
 أو Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.1'
 ```
 
-> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk:0.9.0` (جرى التحقق
-> في 21 أكتوبر 2026). لا يحتوي Central على إصدار 0.8.0 أو 0.8.1، لذا استخدم على
-> الشبكات الحيّة 0.9.0 (أو 0.8.2 أو أحدث).
+> منشورة على Maven Central باسم `io.github.qorechain:qorechain-sdk` (الإصداران 0.9.0
+> و0.9.1 كلاهما متاح؛ و0.9.1 هو الأحدث وإصدار الإطلاق، جرى التحقق في 21 أكتوبر 2026).
+> الإصدار 0.9.1 خاص بـ Java فقط وينقل Bouncy Castle من 1.80 إلى 1.85 بحسب ملاحظات
+> إصداره؛ ولا تغيير في واجهة API. لا يحتوي Central على إصدار 0.8.0 أو 0.8.1، لذا استخدم على
+> الشبكات الحيّة 0.9.x (أو 0.8.2 أو أحدث).
 
 ## الحزم ذات الصلة {#related-packages}
 
@@ -239,12 +241,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | مساعِدات من جانب المحفظة: إنشاء المحافظ (`generateQoreWallet`)، والتوقيع الهجين بـ `eth_secp256k1` (`signHybridEth`، `QoreChainSigner`)، وتسجيل شبكة MetaMask (`addQoreEvmToWallet`)، وبُناة رسائل المصادِقين ونافذة EVM (تبني `openEvmWindowMsg` فيها الصيغة غير المحدّدة النطاق فقط)، وملخّص v2 للحساب المجرَّد. لا ترفق إثبات حيازة. الاعتماديات النظيرة: `@cosmjs/proto-signing` و`@cosmjs/stargate` ‏`^0.32` (يستخدم SDK الإصدار 0.39 من cosmjs، لذا يؤدي تثبيت الاثنين في مشروع واحد إلى أن يُبلغ npm عن تعارض في الاعتماديات النظيرة، `ERESOLVE`؛ أبقِهما في مشروعين منفصلين أو مرّر `--legacy-peer-deps`) | 0.4.0 |
 | `@qorechain/chain-bridge` | عامل (worker) من جانب الخادم للأنظمة الخلفية: يشتق مفتاح PQC، ويوقّع هجينًا ويبثّ (`sendTokens` و`registerPqc` وغيرهما). مرّر `cosmosRest`: فمعه يحمل التسجيل إثبات الحيازة متى طبّقت الشبكة v3.2.3، ويُفحص أي رفض يبدو متعلقًا بـ PQC مقابل السلسلة قبل أي إعادة تسجيل (يثير مفتاح مسجَّل مختلف الخطأ `pqc_key_mismatch` بدلًا من دفع رسوم تسجيل ثانٍ) | 0.2.3 |
-| `@qorechain/pqc` | بدائيات ML-DSA / ML-KEM / SHAKE-256 المطابقة للمعايير فقط و`hybridSignBytes` (انظر [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing))؛ وهي متاحة أيضًا على PyPI وcrates.io وMaven Central ووكيل Go (Go `v0.2.2`) بالإصدار نفسه | 0.2.2 |
+| `@qorechain/pqc` | بدائيات ML-DSA / ML-KEM / SHAKE-256 المطابقة للمعايير فقط و`hybridSignBytes` (انظر [التوقيع ما بعد الكمّي](/developer-guide/post-quantum-signing))؛ وهي متاحة أيضًا على PyPI وcrates.io وMaven Central ووكيل Go (Go `v0.2.3`) بالإصدار نفسه | 0.2.3 |
 | `@qorechain/handles` | حلّ `@handle` الموثَّق مع تثبيت الثقة عند أول استخدام (`HandleClient`) | 0.1.0 |
 | `@qorechain/connect` | موصِّل واحد لمحافظ EVM وCosmos وSVM، مبني على محوّل المحفظة (نطاق اعتماديته النظيرة هو `@qorechain/wallet-adapter` ‏`^0.2.1`، الذي لا يشمل 0.4.0). وهو لا يفتح [نافذة تفويض EVM](/sdk/guides/evm#evm-window)، لذا يُرفض أي إرسال EVM عبره إلى أن يكون للحساب مفتاح مسجّل ونافذة مفتوحة | 0.2.1 |
-| `@qorechain/rdk` | عميل Rollup Development Kit (انظر [Rollups](/rollups/why)). يعتمد على `@qorechain/sdk` ‏`^0.8.0`، لذا يثبّت npm الإصدار SDK 0.8.3 كنسخة خاصة به حتى عندما يستخدم تطبيقك SDK 0.9.0. يوقّع هجينًا فقط عندما تمرّر `pqcKeypair`؛ وتعمل القراءات بدونه. انظر [حدود الإصدار 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits) | 0.5.0 |
-| `@qorechain/rdk-cli` | واجهة CLI للمشغّلين `qorollup` الخاصة بـ RDK. أوامر معاملاتها توقّع توقيعًا كلاسيكيًا فقط وترفضها الشبكتان | 0.5.0 |
-| `create-qorechain-rollup` | أداة تهيئة بدايات الـ rollup؛ تعتمد قوالبها على `@qorechain/rdk` ‏`^0.5.0` | 0.5.0 |
+| `@qorechain/rdk` | عميل Rollup Development Kit (انظر [Rollups](/rollups/why)). يعتمد على `@qorechain/sdk` ‏`^0.9.0` و`@qorechain/evm` ‏`^0.8.0`، لذا يشارك التطبيق الذي يستخدم SDK 0.9.0 نسخة SDK واحدة معه (أما 0.5.0 فكان يجلب SDK 0.8.3 كنسخة متداخلة). يوقّع هجينًا فقط عندما تمرّر `pqcKeypair`؛ وتعمل القراءات بدونه. وهو منشور أيضًا باسم `qorechain-rdk` على PyPI وcrates.io وMaven Central، وكوحدة Go (ثبّت `@v0.6.0`)؛ وهذه العملاء الأربعة توقّع توقيعًا كلاسيكيًا فقط. انظر [RDK 0.6.0: التغييرات والحدود](/rollups/deploying-a-rollup#rdk-050-limits) | 0.6.0 |
+| `@qorechain/rdk-cli` | واجهة CLI للمشغّلين `qorollup` الخاصة بـ RDK. أوامر معاملاتها (`create` و`pause` و`resume` و`stop` و`withdraw`) توقّع توقيعًا كلاسيكيًا فقط وترفضها الشبكتان | 0.6.0 |
+| `create-qorechain-rollup` | أداة تهيئة بدايات الـ rollup؛ تعتمد قوالبها على `@qorechain/rdk` ‏`^0.6.0` وتوقّع هجينًا حين تستطيع استخلاص مفتاحك ما بعد الكمّي من `QORE_MNEMONIC` أو `QORE_PQC_SEED_HEX` | 0.6.0 |
 
 ## التالي
 

@@ -23,7 +23,7 @@ QoreChain'in ekonomik modeli yerel **QOR** token'ını merkeze alır ve **sonlu,
 | **Bech32 öneki**          | `qor` (hesaplar: `qor1...`, validatörler: `qorvaloper...`) |
 
 :::note
-Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.2.3** sürümünde canlı olan **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, sürüm **v3.2.4**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (20 Ekim 2026).
+Bu sayfadaki rakamlar, 7 Haziran 2026'dan bu yana **v3.2.3** sürümünde canlı olan (3.742.566 yüksekliğinden itibaren v3.2.4) **mainnet**'i (`qorechain-vladi`, EVM zincir ID **9801**) tanımlar. **`qorechain-diana`** testnet'inin (EVM zincir ID **9800**, 19 Ekim 2026'dan beri sürüm **v3.2.4**) kendi emisyon ve arz geçmişi vardır (testnet arzı mainnet'inkinin çok üzerindedir ve emisyonu zaten üst sınırı aşmıştır), bu nedenle mainnet rakamlarını kullanın. Her blokla değişen tutarlar, okundukları tarihle işaretlenmiştir (20 Ekim 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain canlı bir staking getirisi rakamı sunmaz; alıntılanan her yüzdeyi
 
 ## x/burn — Çok Kanallı Yakma Motoru
 
-`x/burn` modülü **12 yakma kaynağı** tanımlar. Yakılan her token arzdan kalıcı olarak kaldırılır. Mainnet'te yalnızca `gas_fee` (20 Ekim 2026 itibarıyla 31.574.710,28 QOR) ve v3.2.2'den beri `failed_tx` (0,0855 QOR) için kayıtlı yakma vardır; diğerleri tanımlıdır ancak kayıtlı yakma yoktur. Testnet'te, yalnızca testnet'te bulunan isteğe bağlı zaman kilitli staking modülü için on üçüncü bir kaynak olan `staking_tier_penalty` vardır (bkz. [Staking ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking)).
+`x/burn` modülü bugün mainnet'te **12 yakma kaynağı** tanımlar. Yakılan her token arzdan kalıcı olarak kaldırılır. Mainnet'te yalnızca `gas_fee` (20 Ekim 2026 itibarıyla 31.574.710,28 QOR) ve v3.2.2'den beri `failed_tx` (0,0855 QOR) için kayıtlı yakma vardır; diğerleri tanımlıdır ancak kayıtlı yakma yoktur. v3.2.4'ten itibaren on üçüncü bir kaynak olan `staking_tier_penalty` vardır; zaman kilitli bir delegasyon erken açıldığında yakılan cezayı kaydeder (testnet'te 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren; bkz. [Staking ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Yakma Kanalları
 
@@ -75,7 +75,7 @@ QoreChain canlı bir staking getirisi rakamı sunmaz; alıntılanan her yüzdeyi
 | 11 | `milestone`         | İşlem sayısı kilometre taşları  | Sabit kümülatif işlem sayılarında planlanmış yakmalar (henüz tetiklenen yok) |
 | 12 | `amm`               | AMM                             | AMM protokol ücretleri için ayrılmıştır (kayıt yok) |
 
-`contract_create`, `ai_service`, `bridge_fee` ve `auto_buyback` kanalları bugün etkin değildir: CosmWasm yüklemesi kapalıdır, AI hizmet ücretleri ve köprü canlı değildir.
+`contract_create`, `ai_service`, `bridge_fee` ve `auto_buyback` kanalları bugün etkin değildir: QoreChain Native yüklemesi kapalıdır, AI hizmet ücretleri ve köprü canlı değildir.
 
 ### Ücret Dağılımı {#fee-distribution}
 
@@ -201,7 +201,7 @@ Bu, uzun vadeli sahipler için pozitif toplamlı bir dinamik yaratır: her erken
 
 | Parametre | Değer (mainnet) | Açıklama |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (eski, yıl bazlı oranlar) veya `fixed` |
+| `emission_mode` | `fixed` | `schedule` (eski, yıl bazlı oranlar) veya `fixed`; v3.2.4 üçüncü bir mod olan `target_apy`'yi ekler |
 | `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | fixed modda epoch başına basılan |
 | `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Sabit kümülatif tavan |
 | `epoch_length` | 43.200 blok | Emisyon epoch'u başına blok |
@@ -210,8 +210,8 @@ Bu, uzun vadeli sahipler için pozitif toplamlı bir dinamik yaratır: her erken
 
 Modülün parametreleri ve epoch kaydı, v3.2.3'ten beri mainnet'te REST üzerinden sunulur (`/qorechain/inflation/v1/params` ve `/qorechain/inflation/v1/epoch_info`); ayrıca RPC `abci_query` ham depo arayüzüyle (depo `inflation`, anahtarlar `inflation/params` ve `inflation/epoch`) zincir durumundan da okunabilirler.
 
-:::note Yalnızca testnet (v3.2.4)
-`qorechain-diana` testnet'i önceki emisyon ayarlarını korur (114.285.714 QOR üst sınırı altında epoch başına 16.239 QOR; üst sınıra orada zaten ulaşıldı). `x/inflation` parametreleri, şu anda 0 olan ve emisyonu yönlendirmeyen bir `target_apy_bps` parametresiyle üçüncü bir emisyon modu olan `target_apy`'yi kazandı. Bu mod, onu kullanan isteğe bağlı zaman kilitli staking modülü ve testnet'teki tutarlar henüz mainnet'te canlı değildir; mainnet yönetişim önerisi 13, staking modülünü içeren v3.2.4 sürümünü 3.742.566 yüksekliğinde uygulayacaktır ve emisyon modunun kendisi yalnızca kendi sonraki oylamasıyla değişecektir.
+:::note v3.2.4 ve testnet'in emisyonu
+`qorechain-diana` testnet'i önceki emisyon ayarlarını korur (114.285.714 QOR üst sınırı altında epoch başına 16.239 QOR; üst sınıra orada zaten ulaşıldı); mainnet yukarıdaki değerleri kullanır. v3.2.4 sürümü, bir `target_apy_bps` parametresiyle üçüncü bir emisyon modu olan `target_apy`'yi ekler: testnet'te 19 Ekim 2026'dan beri, mainnet'te 3.742.566 yüksekliğinden itibaren (yönetişim önerisi 13). Parametre testnet'te `0`'dır ve orada emisyonu yönlendirmez. Bir ağı bu moda geçirmek ayrı bir yönetişim oyudur ve mainnet'te önerilmemiştir; bir oy kabul edilene kadar mainnet, epoch başına 86.000 QOR ile `fixed` modunda kalır.
 :::
 
 ---

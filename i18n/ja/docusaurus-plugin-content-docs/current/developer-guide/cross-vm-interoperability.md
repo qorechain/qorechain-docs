@@ -7,15 +7,15 @@ sidebar_position: 5
 
 # クロス VM 相互運用性
 
-QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）は、いずれかの仮想マシン上のスマートコントラクトが、他のいずれの VM 上のコントラクトとも通信できるように設計されています。`x/crossvm` モジュールは、同一トランザクション内のパスとキューに入るパスを持つ呼び出しメッセージを提供します。
+QoreChain の**トリプル VM アーキテクチャ**（EVM、QoreChain Native、SVM）は、いずれかの仮想マシン上のスマートコントラクトが、他のいずれの VM 上のコントラクトとも通信できるように設計されています。`x/crossvm` モジュールは、同一トランザクション内のパスとキューに入るパスを持つ呼び出しメッセージを提供します。
 
 :::caution 現時点で動作するもの
 クロス VM 呼び出しは、ターゲットとなるレーンが利用可能な範囲でのみ利用できます。
 
 * `MsgCrossVMCall` は、メインネットではサーキットブレーカーによって**無効化されています**（`qorechaind query circuit disabled-list`）。テストネットでは有効です。
 * 両ネットワークとも、トランザクションに対して **SVM レーンは無効**であるため、SVM 側の処理は実行できません。
-* 両ネットワークとも、**CosmWasm のアップロードとインスタンス化は許可制**であり、メインネットには保存されたコントラクトコードがないため、呼び出せる CosmWasm コントラクトはまだありません。
-* 同期の **EVM プリコンパイルは有効ではありません**（下記参照）。強化版が v3.2.3 以降バイナリに含まれていますが、どちらのネットワークでもプリコンパイルは有効化されていません。
+* 両ネットワークとも、**QoreChain Native のアップロードとインスタンス化は許可制**であり、メインネットには保存されたコントラクトコードがないため、呼び出せる QoreChain Native コントラクトはまだありません。
+* 同期の **EVM プリコンパイルは有効ではありません**（下記参照）。強化版が v3.2.3 以降バイナリに含まれていますが、どちらのネットワークでもプリコンパイルは有効化されておらず、v3.2.4(テストネットは 2026 年 10 月 19 日から、メインネットは高さ 3,742,566 から)でもこれは変わりません。
 
 モジュールの REST ルート（`/qorechain/crossvm/v1/...`）は公開ゲートウェイでは提供されていません。メッセージは CLI または gRPC/ABCI クエリクライアントで読み取ってください。
 :::
@@ -29,7 +29,7 @@ QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）
 ## アーキテクチャの概要
 
 ```
- EVM (Solidity)          CosmWasm (Rust/Wasm)         SVM (BPF)
+ EVM (Solidity)     QoreChain Native (Rust/Wasm)     SVM (BPF)
       |                        |                        |
       |--- sync (precompile) ->|                        |
       |                        |                        |
@@ -40,45 +40,55 @@ QoreChain の**トリプル VM アーキテクチャ**（EVM、CosmWasm、SVM）
 
 | パス             | 方向       | タイミング           | メカニズム                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **同期**  | EVM から CosmWasm | 同一トランザクション | `0x0000...0901` のプリコンパイル（まだ有効ではありません。下記参照） |
+| **同期**  | EVM から QoreChain Native | 同一トランザクション | `0x0000...0901` のプリコンパイル（まだ有効ではありません。下記参照） |
 | **メッセージ（デフォルト）** | 任意の VM から他の任意の VM | 同一トランザクション | `MsgCrossVMCall`。呼び出しは即座に実行され、失敗するとトランザクション全体がリバートされます |
 | **メッセージ（キュー）**  | 任意の VM から他の任意の VM | 次のブロック（またはそれ以降） | `async` を指定した `MsgCrossVMCall`。メッセージはキューで待機します |
 
 ---
 
-## 同期パス（EVM から CosmWasm）
+## 同期パス（EVM から QoreChain Native）
 
-同期パスは、アドレス `0x0000000000000000000000000000000000000901` にある EVM **プリコンパイル**を使用します。Solidity コントラクトが CosmWasm コントラクトを呼び出し、同一トランザクション内でレスポンスを受け取れるように設計されています。
+同期パスは、アドレス `0x0000000000000000000000000000000000000901` にある EVM **プリコンパイル**を使用します。Solidity コントラクトが QoreChain Native コントラクトを呼び出し、同一トランザクション内でレスポンスを受け取れるように設計されています。
 
 :::warning メインネットでもテストネットでも有効ではありません
-CrossVM ブリッジのプリコンパイルは、`qorechain-vladi` でも `qorechain-diana` でも**有効ではありません**。`0x…0901` への呼び出しは成功し、空のデータを返します。v3.2.3 バイナリには強化版が含まれています（`STATICCALL` を拒否し、ネストした呼び出しを呼び出しフレームのガスで計量し、EVM のリバートが CosmWasm 側も取り消すようにジャーナルに記録し、許可リストに載った CosmWasm ターゲットにのみ到達し、クロス VM サーキットブレーカーを尊重します）が、ガバナンスで承認されたアップグレードによって有効リストに追加されて初めて動作します。以下の例は想定される形のみを示しています。[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status) を参照してください。
+CrossVM ブリッジのプリコンパイルは、`qorechain-vladi` でも `qorechain-diana` でも**有効ではありません**。`0x…0901` への呼び出しは成功し、空のデータを返します。v3.2.3 バイナリには強化版が含まれています（`STATICCALL` を拒否し、ネストした呼び出しを呼び出しフレームのガスで計量し、EVM のリバートが QoreChain Native 側も取り消すようにジャーナルに記録し、許可リストに載った QoreChain Native ターゲットにのみ到達し、クロス VM サーキットブレーカーを尊重します）が、ガバナンスで承認されたアップグレードによって有効リストに追加されて初めて動作します。以下の例はノードがデコードするレイアウトですが、プリコンパイルが有効になるまで実行できません。[EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status) を参照してください。
 :::
 
 ### Solidity の例
+
+ノードは、プリコンパイルの入力を、4 バイトのセレクターと、それに続く `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` の ABI エンコードされた引数としてデコードします(セレクターは `0x3c11078c`)。`targetVM` は、QoreChain Native コントラクトの場合は `1` です(QoreChain Native は CosmWasm ランタイムです。`0` は EVM で、強化版ブリッジはこれをターゲットとして拒否します)。`targetContract` はコントラクトの bech32 アドレスを文字列にしたもので、`payload` はコントラクトの execute メッセージを UTF-8 の JSON バイト列にしたものです。プリコンパイルは、ターゲットの生のレスポンスバイト列を返します。
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
-
 contract CrossVMCaller {
-    ICrossVM constant CROSSVM = ICrossVM(0x0000000000000000000000000000000000000901);
+    address constant CROSSVM = 0x0000000000000000000000000000000000000901;
+    uint8 constant TARGET_QORECHAIN_NATIVE = 1;
 
-    function callCosmWasmContract(
-        string memory cosmwasmAddr,
-        string memory executeMsg,
-        uint256 funds
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(cosmwasmAddr, executeMsg, funds);
-        return CROSSVM.call(payload);
+    function callQoreChainNative(string calldata contractAddr, bytes calldata executeMsg)
+        external
+        returns (bytes memory)
+    {
+        bytes memory data = abi.encodeWithSignature(
+            "executeCrossVMCall(uint8,string,bytes)",
+            TARGET_QORECHAIN_NATIVE,
+            contractAddr,
+            executeMsg
+        );
+        (bool ok, bytes memory ret) = CROSSVM.call(data);
+        require(ok, "cross-VM call failed");
+        // While the precompile is not active, the call succeeds with empty data
+        // and nothing executes; treat an empty reply as a failure.
+        require(ret.length > 0, "cross-VM precompile not active or empty reply");
+        return ret;
     }
 }
 ```
 
-有効化された後は、プリコンパイルが CosmWasm コントラクトを即座に実行して結果を返します。現在のノードは calldata を `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` としてデコードしますが、有効化までに ABI が変更される可能性があります。ガスコスト：**基本 50,000 + 入力 1 バイトあたり 4 + 実行コスト**。
+これはノードがデコードするレイアウトであり、`@qorechain/rdk` のエンコーダーが構築するレイアウトと同じです。上記のコントラクトは、[マルチ VM](/rollups/multi-vm) のスターターと一致します。プリコンパイルを通じて資金を添付することはできません(`MsgCrossVMCall` のメッセージパスは `--funds` を受け付けます)。プリコンパイルが有効ではないため(上記の警告を参照)、このサンプルは現在どちらのネットワークでも何も実行できません。有効化までに ABI が変更される可能性があります。
+
+有効化された後は、プリコンパイルが QoreChain Native コントラクトを即座に実行して結果を返します。(`@qorechain/rdk` 0.6.0 のヘルパー `encodeCrossVmCalldata` が calldata を構築します。[マルチ VM](/rollups/multi-vm) を参照してください。)ガスコスト：**基本 50,000 + 入力 1 バイトあたり 4 + 実行コスト**。
 
 ---
 
@@ -95,10 +105,10 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-その他のフラグ：`--funds <coins>`（CosmWasm ターゲットのみ）と、呼び出しを即時実行せずキューに入れる `--async`。`tx.json` は `tx pqc cosign` で署名してブロードキャストします（[ポスト量子署名](/developer-guide/post-quantum-signing)を参照）。手数料の下限はガス 1 単位あたり 0.1 uqor です。呼び出し元自身のレーンへの呼び出しは拒否されます（v3.2.3 以降）。
+その他のフラグ：`--funds <coins>`（QoreChain Native ターゲットのみ）と、呼び出しを即時実行せずキューに入れる `--async`。`tx.json` は `tx pqc cosign` で署名してブロードキャストします（[ポスト量子署名](/developer-guide/post-quantum-signing)を参照）。手数料の下限はガス 1 単位あたり 0.1 uqor です。呼び出し元自身のレーンへの呼び出しは拒否されます（v3.2.3 以降）。
 
 :::caution メインネットでは無効です
-`MsgCrossVMCall` は、メインネットではサーキットブレーカーによって無効化されているため、現時点ではこのコマンドは成功しません。（v3.2.3 より前のリリースバイナリは、送信元 VM が空のためメッセージ自身の検証を通過しないメッセージも構築していましたが、v3.2.3 バイナリでこれは修正されています。）テストネットではこのメッセージは有効ですが、その CosmWasm および SVM ターゲットは使用できないため（上記参照）、到達できるのは EVM ターゲットのみです。
+`MsgCrossVMCall` は、メインネットではサーキットブレーカーによって無効化されているため、現時点ではこのコマンドは成功しません。（v3.2.3 より前のリリースバイナリは、送信元 VM が空のためメッセージ自身の検証を通過しないメッセージも構築していましたが、v3.2.3 バイナリでこれは修正されています。）テストネットではこのメッセージは有効ですが、その QoreChain Native および SVM ターゲットは使用できないため（上記参照）、到達できるのは EVM ターゲットのみです。
 :::
 
 ---
@@ -123,7 +133,7 @@ Submitted --> Pending --> Executed
 | **Failed**    | ターゲットコントラクトの実行がリバートされ、エラーが記録された        |
 | **Timed Out** | メッセージが実行されずに `queue_timeout_blocks` を超過した |
 
-v3.2.3 以降、失敗したキュー内の呼び出しは全体がロールバックされます。残るのはその `Failed` レコードのみで、失敗した CosmWasm 呼び出しに添付された資金がコントラクトに移されることもなくなりました。モジュールが無効化されている間、または `MsgCrossVMCall` がサーキットブレーカーによって無効化されている間は、キューは**実行されません**。キュー内のメッセージは保留のままとなり、先にスイッチが解除されない限りタイムアウト時に失効します。
+v3.2.3 以降、失敗したキュー内の呼び出しは全体がロールバックされます。残るのはその `Failed` レコードのみで、失敗した QoreChain Native 呼び出しに添付された資金がコントラクトに移されることもなくなりました。モジュールが無効化されている間、または `MsgCrossVMCall` がサーキットブレーカーによって無効化されている間は、キューは**実行されません**。キュー内のメッセージは保留のままとなり、先にスイッチが解除されない限りタイムアウト時に失効します。
 
 ---
 
@@ -208,14 +218,14 @@ curl -X POST http://localhost:8545 \
 
 ## 設計上の考慮事項
 
-**アトミック性:** 同期呼び出し（プリコンパイル経由の EVM から CosmWasm）は、いずれかの側がリバートするとトランザクション全体がリバートされるよう、アトミックになるように設計されています。現在のプリコンパイルはまだこれを保証しておらず、これが有効化されていない理由の一つです（上記参照）。非同期呼び出しはブロックをまたいでアトミックでは**ありません**。`Failed` および `Timed Out` の状態を適切に処理できるようコントラクトを設計してください。
+**アトミック性:** 同期呼び出し（プリコンパイル経由の EVM から QoreChain Native）は、いずれかの側がリバートするとトランザクション全体がリバートされるよう、アトミックになるように設計されています。現在のプリコンパイルはまだこれを保証しておらず、これが有効化されていない理由の一つです（上記参照）。非同期呼び出しはブロックをまたいでアトミックでは**ありません**。`Failed` および `Timed Out` の状態を適切に処理できるようコントラクトを設計してください。
 
 **順序付け:** キュー内のメッセージは、各 EndBlocker パス内で FIFO で処理されます。異なるソース VM をまたぐ順序付けは保証されません。
 
 **ペイロードのエンコーディング:** ペイロード形式はターゲット VM に依存します。
 
 * **EVM ターゲット:** ABI エンコードされた関数呼び出し
-* **CosmWasm ターゲット:** JSON エンコードされた実行メッセージ
+* **QoreChain Native ターゲット:** JSON エンコードされた実行メッセージ
 * **SVM ターゲット:** 16 進エンコードされた BPF 命令データ
 
 ---
@@ -224,5 +234,5 @@ curl -X POST http://localhost:8545 \
 
 * [EVM プリコンパイル](/developer-guide/evm-precompiles) — 同期 CrossVM プリコンパイルの状況と、その他の計画中のプリコンパイル
 * [EVM 開発](/developer-guide/evm-development) — QoreChain 上での Solidity 開発
-* [CosmWasm 開発](/developer-guide/cosmwasm-development) — Rust/Wasm コントラクト開発
+* [QoreChain Native 開発](/developer-guide/cosmwasm-development) — Rust/Wasm コントラクト開発
 * [SVM 開発](/developer-guide/svm-development) — BPF プログラムのデプロイ

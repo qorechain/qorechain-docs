@@ -15,7 +15,7 @@ partagé.
 
 | VM | Contrats | Surface client dans le SDK |
 | --- | --- | --- |
-| **CosmWasm** | Contrats Rust/Wasm | `client.cosmwasm()` et les helpers `queryContractSmart` / `execute` dans `@qorechain/sdk` |
+| **QoreChain Native** | Contrats Rust/Wasm (le runtime CosmWasm) | `client.cosmwasm()` et les helpers `queryContractSmart` / `execute` dans `@qorechain/sdk` |
 | **QoreChain EVM Engine** | Solidity / Vyper | `@qorechain/evm` (un adaptateur viem) |
 | **SVM** | Programmes Solana | `@qorechain/svm` (un adaptateur `@solana/web3.js`) |
 
@@ -28,7 +28,7 @@ Le SDK communique avec un nœud via plusieurs endpoints :
 
 - **REST Cosmos (LCD)** — soldes bancaires, infos de compte, requêtes de module.
 - **RPC de consensus** — utilisé pour signer/diffuser les transactions natives et
-  pour le client de lecture CosmWasm.
+  pour le client de lecture QoreChain Native.
 - **JSON-RPC EVM** — appels standard `eth_*`, `net_*`, `web3_*` et `txpool_*` sur
   les endpoints publics. L'espace de noms QoreChain `qor_*` et les précompilations
   EVM n'y sont pas encore disponibles (voir ci-dessous).

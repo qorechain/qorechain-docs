@@ -7,15 +7,15 @@ sidebar_position: 5
 
 # قابلية التشغيل البيني عبر الأنوية الافتراضية
 
-صُمّمت **بنية الأنوية الافتراضية الثلاثية** في QoreChain (‏EVM، CosmWasm، SVM) لتتيح للعقود الذكية على أي آلة افتراضية التواصل مع العقود على أي آلة افتراضية أخرى. توفر وحدة `x/crossvm` رسالة استدعاء لها مسار ضمن المعاملة نفسها ومسار عبر الطابور.
+صُمّمت **بنية الأنوية الافتراضية الثلاثية** في QoreChain (‏EVM، QoreChain Native، SVM) لتتيح للعقود الذكية على أي آلة افتراضية التواصل مع العقود على أي آلة افتراضية أخرى. توفر وحدة `x/crossvm` رسالة استدعاء لها مسار ضمن المعاملة نفسها ومسار عبر الطابور.
 
 :::caution ما الذي يعمل اليوم
 لا تتوفر الاستدعاءات عبر الأنوية الافتراضية إلا بقدر توفر المسار (lane) الهدف:
 
 * `MsgCrossVMCall` **معطّلة على الشبكة الرئيسية** بواسطة قاطع الدائرة (circuit breaker) (`qorechaind query circuit disabled-list`)؛ وهي مفعّلة على شبكة الاختبار.
 * **مسار SVM معطّل** للمعاملات على كلتا الشبكتين، لذا لا يمكن تشغيل مقطع SVM.
-* **رفع عقود CosmWasm وإنشاء نسخ منها مقيّدان بأذونات** على كلتا الشبكتين، ولا تحتوي الشبكة الرئيسية على أي شيفرة عقد مخزّنة، لذا لا يوجد بعدُ عقد CosmWasm يمكن استدعاؤه.
-* **الـ precompile المتزامن في EVM غير مفعّل** (انظر أدناه). توجد نسخة مُحصَّنة منه في الملف الثنائي منذ v3.2.3، لكن لا يوجد precompile مفعّل على أي من الشبكتين.
+* **رفع عقود QoreChain Native وإنشاء نسخ منها مقيّدان بأذونات** على كلتا الشبكتين، ولا تحتوي الشبكة الرئيسية على أي شيفرة عقد مخزّنة، لذا لا يوجد بعدُ عقد QoreChain Native يمكن استدعاؤه.
+* **الـ precompile المتزامن في EVM غير مفعّل** (انظر أدناه). توجد نسخة مُحصَّنة منه في الملف الثنائي منذ v3.2.3، لكن لا يوجد precompile مفعّل على أي من الشبكتين، ولا يغيّر الإصدار v3.2.4 (على شبكة الاختبار منذ 19 أكتوبر 2026؛ وعلى الشبكة الرئيسية اعتبارًا من الارتفاع 3,742,566) ذلك.
 
 مسارات REST الخاصة بالوحدة (`/qorechain/crossvm/v1/...`) لا تقدّمها البوابة العامة؛ اقرأ الرسائل عبر واجهة سطر الأوامر أو عبر عميل استعلام gRPC/ABCI.
 :::
@@ -29,7 +29,7 @@ sidebar_position: 5
 ## نظرة عامة على البنية
 
 ```
- EVM (Solidity)          CosmWasm (Rust/Wasm)         SVM (BPF)
+ EVM (Solidity)     QoreChain Native (Rust/Wasm)     SVM (BPF)
       |                        |                        |
       |--- sync (precompile) ->|                        |
       |                        |                        |
@@ -40,45 +40,55 @@ sidebar_position: 5
 
 | المسار             | الاتجاه       | التوقيت           | الآلية                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **المتزامن**  | EVM إلى CosmWasm | المعاملة نفسها | Precompile عند `0x0000...0901` (غير مفعّل بعد، انظر أدناه)   |
+| **المتزامن**  | EVM إلى QoreChain Native | المعاملة نفسها | Precompile عند `0x0000...0901` (غير مفعّل بعد، انظر أدناه)   |
 | **رسالة، الافتراضي** | أي آلة افتراضية إلى أي آلة افتراضية أخرى | المعاملة نفسها | `MsgCrossVMCall`؛ ينفَّذ الاستدعاء فوراً، ويؤدي أي إخفاق إلى ارتداد المعاملة بأكملها |
 | **رسالة، عبر الطابور** | أي آلة افتراضية إلى أي آلة افتراضية أخرى | الكتلة التالية (أو لاحقاً) | `MsgCrossVMCall` مع ضبط `async`؛ تنتظر الرسالة في الطابور |
 
 ---
 
-## المسار المتزامن (EVM إلى CosmWasm)
+## المسار المتزامن (EVM إلى QoreChain Native)
 
-يستخدم المسار المتزامن **precompile** في EVM عند العنوان `0x0000000000000000000000000000000000000901`. وهو مصمَّم ليتيح لعقود Solidity استدعاء عقود CosmWasm وتلقي استجابة ضمن المعاملة نفسها.
+يستخدم المسار المتزامن **precompile** في EVM عند العنوان `0x0000000000000000000000000000000000000901`. وهو مصمَّم ليتيح لعقود Solidity استدعاء عقود QoreChain Native وتلقي استجابة ضمن المعاملة نفسها.
 
 :::warning غير مفعّل على الشبكة الرئيسية ولا على شبكة الاختبار
-الـ precompile الخاص بجسر CrossVM **غير مفعّل** على `qorechain-vladi` ولا على `qorechain-diana`: ينجح الاستدعاء إلى `0x…0901` ويعيد بيانات فارغة. يحمل الملف الثنائي v3.2.3 نسخة مُحصَّنة منه (يرفض `STATICCALL`، ويحتسب استدعاءه المتداخل ضمن غاز الإطار المستدعي ويسجّله في السجل بحيث يتراجع جانب CosmWasm أيضاً عند ارتداد EVM، ولا يصل إلا إلى أهداف CosmWasm المدرجة في قائمة السماح، ويحترم قاطع الدائرة الخاص بالاستدعاءات عبر الأنوية الافتراضية)، لكنه لا يعمل إلا بعد أن تضيفه ترقية معتمدة بالحوكمة إلى القائمة المفعّلة. يعرض المثال أدناه الشكل المقصود فقط. راجع [الـ Precompiles في EVM: حالة الشبكة](/developer-guide/evm-precompiles#network-status).
+الـ precompile الخاص بجسر CrossVM **غير مفعّل** على `qorechain-vladi` ولا على `qorechain-diana`: ينجح الاستدعاء إلى `0x…0901` ويعيد بيانات فارغة. يحمل الملف الثنائي v3.2.3 نسخة مُحصَّنة منه (يرفض `STATICCALL`، ويحتسب استدعاءه المتداخل ضمن غاز الإطار المستدعي ويسجّله في السجل بحيث يتراجع جانب QoreChain Native أيضاً عند ارتداد EVM، ولا يصل إلا إلى أهداف QoreChain Native المدرجة في قائمة السماح، ويحترم قاطع الدائرة الخاص بالاستدعاءات عبر الأنوية الافتراضية)، لكنه لا يعمل إلا بعد أن تضيفه ترقية معتمدة بالحوكمة إلى القائمة المفعّلة. المثال أدناه هو الشكل الذي تفكّ العقدة ترميزه، لكنه لا يمكن أن يعمل ما لم يُفعَّل الـ precompile. راجع [الـ Precompiles في EVM: حالة الشبكة](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### مثال Solidity
+
+تفكّ العقدة ترميز مُدخل الـ precompile على أنه محدِّد (selector) من 4 بايتات يليه الوسائط المُرمَّزة بـ ABI للدالة `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (المحدِّد `0x3c11078c`). تكون قيمة `targetVM` هي `1` لعقد QoreChain Native (وQoreChain Native هو وقت تشغيل CosmWasm؛ أما `0` فهو EVM، الذي يرفضه الجسر المُحصَّن هدفًا). أما `targetContract` فهو عنوان bech32 للعقد كسلسلة نصية، و`payload` هو رسالة execute الخاصة بالعقد كبايتات JSON بترميز UTF-8. ويعيد الـ precompile بايتات استجابة الهدف الخام.
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
-
 contract CrossVMCaller {
-    ICrossVM constant CROSSVM = ICrossVM(0x0000000000000000000000000000000000000901);
+    address constant CROSSVM = 0x0000000000000000000000000000000000000901;
+    uint8 constant TARGET_QORECHAIN_NATIVE = 1;
 
-    function callCosmWasmContract(
-        string memory cosmwasmAddr,
-        string memory executeMsg,
-        uint256 funds
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(cosmwasmAddr, executeMsg, funds);
-        return CROSSVM.call(payload);
+    function callQoreChainNative(string calldata contractAddr, bytes calldata executeMsg)
+        external
+        returns (bytes memory)
+    {
+        bytes memory data = abi.encodeWithSignature(
+            "executeCrossVMCall(uint8,string,bytes)",
+            TARGET_QORECHAIN_NATIVE,
+            contractAddr,
+            executeMsg
+        );
+        (bool ok, bytes memory ret) = CROSSVM.call(data);
+        require(ok, "cross-VM call failed");
+        // While the precompile is not active, the call succeeds with empty data
+        // and nothing executes; treat an empty reply as a failure.
+        require(ret.length > 0, "cross-VM precompile not active or empty reply");
+        return ret;
     }
 }
 ```
 
-عند تفعيله، ينفّذ الـ precompile عقد CosmWasm فوراً ويُرجع النتيجة. تفكّ العقدة الحالية ترميز بيانات الاستدعاء (calldata) على أنها `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`؛ وقد تتغير ABI قبل التفعيل. تكلفة الغاز: **50,000 أساسية + 4 لكل بايت إدخال + تكلفة التنفيذ**.
+هذا هو الشكل الذي تفكّ العقدة ترميزه؛ وهو الشكل نفسه الذي يبنيه مرمِّز `@qorechain/rdk`، ويطابق العقد أعلاه نموذج البداية في [Multi-VM](/rollups/multi-vm). لا يمكن إرفاق أموال عبر الـ precompile (فمسار الرسالة `MsgCrossVMCall` يقبل `--funds`). ولا يستطيع هذا النموذج فعل أي شيء اليوم على أي من الشبكتين، لأن الـ precompile غير مفعّل (انظر التحذير أعلاه)؛ وقد تتغير ABI قبل التفعيل.
+
+عند تفعيله، ينفّذ الـ precompile عقد QoreChain Native فوراً ويُرجع النتيجة. (تبني دالة المساعدة `encodeCrossVmCalldata` في `@qorechain/rdk` بالإصدار 0.6.0 بيانات الاستدعاء (calldata)؛ راجع [Multi-VM](/rollups/multi-vm).) تكلفة الغاز: **50,000 أساسية + 4 لكل بايت إدخال + تكلفة التنفيذ**.
 
 ---
 
@@ -95,10 +105,10 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-أعلام أخرى: `--funds <coins>` (لأهداف CosmWasm فقط) و`--async` لوضع الاستدعاء في الطابور بدلاً من تنفيذه الآن. وقّع `tx.json` وأذِعه باستخدام `tx pqc cosign` (راجع [التوقيع المقاوم للحوسبة الكمومية](/developer-guide/post-quantum-signing))؛ والحد الأدنى للرسوم هو 0.1 uqor لكل وحدة غاز. يُرفض الاستدعاء إلى مسار المُستدعي نفسه (منذ v3.2.3).
+أعلام أخرى: `--funds <coins>` (لأهداف QoreChain Native فقط) و`--async` لوضع الاستدعاء في الطابور بدلاً من تنفيذه الآن. وقّع `tx.json` وأذِعه باستخدام `tx pqc cosign` (راجع [التوقيع المقاوم للحوسبة الكمومية](/developer-guide/post-quantum-signing))؛ والحد الأدنى للرسوم هو 0.1 uqor لكل وحدة غاز. يُرفض الاستدعاء إلى مسار المُستدعي نفسه (منذ v3.2.3).
 
 :::caution معطّلة على الشبكة الرئيسية
-`MsgCrossVMCall` معطّلة على الشبكة الرئيسية بواسطة قاطع الدائرة، لذا لا يمكن أن ينجح الأمر هناك اليوم. (كانت الملفات التنفيذية للإصدارات السابقة لـ v3.2.3 تبني أيضاً رسالة تفشل في التحقق الخاص بها لأن الآلة الافتراضية المصدر فارغة؛ ويصلح الملف الثنائي v3.2.3 ذلك.) وعلى شبكة الاختبار تكون الرسالة مفعّلة، لكن أهداف CosmWasm وSVM فيها غير قابلة للاستخدام (انظر أعلاه)، لذا لا يمكن الوصول إلا إلى هدف EVM.
+`MsgCrossVMCall` معطّلة على الشبكة الرئيسية بواسطة قاطع الدائرة، لذا لا يمكن أن ينجح الأمر هناك اليوم. (كانت الملفات التنفيذية للإصدارات السابقة لـ v3.2.3 تبني أيضاً رسالة تفشل في التحقق الخاص بها لأن الآلة الافتراضية المصدر فارغة؛ ويصلح الملف الثنائي v3.2.3 ذلك.) وعلى شبكة الاختبار تكون الرسالة مفعّلة، لكن أهداف QoreChain Native وSVM فيها غير قابلة للاستخدام (انظر أعلاه)، لذا لا يمكن الوصول إلا إلى هدف EVM.
 :::
 
 ---
@@ -123,7 +133,7 @@ Submitted --> Pending --> Executed
 | **Failed**    | ارتدّ تنفيذ العقد الهدف؛ سُجِّل الخطأ        |
 | **Timed Out** | تجاوزت الرسالة `queue_timeout_blocks` دون تنفيذ |
 
-منذ v3.2.3 يُتراجع عن الاستدعاء الموضوع في الطابور والذي يفشل بكامله: لا يبقى منه سوى سجل `Failed`، ولم تعد الأموال المرفقة باستدعاء CosmWasm فاشل تُنقل إلى العقد. وما دامت الوحدة معطّلة، أو دامت `MsgCrossVMCall` معطّلة بواسطة قاطع الدائرة، فإن الطابور **لا يُنفَّذ**: تبقى الرسائل الموضوعة فيه معلّقة وتنتهي صلاحيتها عند انتهاء مهلتها ما لم يُرفع التعطيل قبل ذلك.
+منذ v3.2.3 يُتراجع عن الاستدعاء الموضوع في الطابور والذي يفشل بكامله: لا يبقى منه سوى سجل `Failed`، ولم تعد الأموال المرفقة باستدعاء QoreChain Native فاشل تُنقل إلى العقد. وما دامت الوحدة معطّلة، أو دامت `MsgCrossVMCall` معطّلة بواسطة قاطع الدائرة، فإن الطابور **لا يُنفَّذ**: تبقى الرسائل الموضوعة فيه معلّقة وتنتهي صلاحيتها عند انتهاء مهلتها ما لم يُرفع التعطيل قبل ذلك.
 
 ---
 
@@ -208,14 +218,14 @@ curl -X POST http://localhost:8545 \
 
 ## اعتبارات التصميم
 
-**الذرّية (Atomicity):** صُمّمت الاستدعاءات المتزامنة (‏EVM إلى CosmWasm عبر الـ precompile) لتكون ذرّية، بحيث إذا ارتدّ أي من الطرفين ترتدّ المعاملة بأكملها. لا يضمن الـ precompile الحالي ذلك بعد، وهذا أحد أسباب عدم تفعيله (انظر أعلاه). أما الاستدعاءات غير المتزامنة فهي **ليست ذرّية** عبر الكتل؛ صمّم عقودك لتتعامل مع حالتي `Failed` و`Timed Out` بسلاسة.
+**الذرّية (Atomicity):** صُمّمت الاستدعاءات المتزامنة (‏EVM إلى QoreChain Native عبر الـ precompile) لتكون ذرّية، بحيث إذا ارتدّ أي من الطرفين ترتدّ المعاملة بأكملها. لا يضمن الـ precompile الحالي ذلك بعد، وهذا أحد أسباب عدم تفعيله (انظر أعلاه). أما الاستدعاءات غير المتزامنة فهي **ليست ذرّية** عبر الكتل؛ صمّم عقودك لتتعامل مع حالتي `Failed` و`Timed Out` بسلاسة.
 
 **الترتيب:** تُعالَج الرسائل في الطابور بنظام الوارد أولاً يخرج أولاً (FIFO) ضمن كل تمريرة EndBlocker. لا يوجد ترتيب مضمون عبر الأنوية الافتراضية المصدرية المختلفة.
 
 **ترميز الحمولة:** تعتمد صيغة الحمولة على الآلة الافتراضية الهدف:
 
 * **أهداف EVM:** استدعاءات دوال مُرمَّزة بـ ABI
-* **أهداف CosmWasm:** رسائل execute مُرمَّزة بـ JSON
+* **أهداف QoreChain Native:** رسائل execute مُرمَّزة بـ JSON
 * **أهداف SVM:** بيانات تعليمات BPF مُرمَّزة بصيغة Hex
 
 ---
@@ -224,5 +234,5 @@ curl -X POST http://localhost:8545 \
 
 * [الـ Precompiles في EVM](/developer-guide/evm-precompiles) — حالة الـ precompile المتزامن لـ CrossVM والـ precompiles المخطَّط لها الأخرى
 * [تطوير EVM](/developer-guide/evm-development) — تطوير Solidity على QoreChain
-* [تطوير CosmWasm](/developer-guide/cosmwasm-development) — تطوير عقود Rust/Wasm
+* [تطوير QoreChain Native](/developer-guide/cosmwasm-development) — تطوير عقود Rust/Wasm
 * [تطوير SVM](/developer-guide/svm-development) — نشر برامج BPF

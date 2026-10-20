@@ -23,7 +23,7 @@ Das Wirtschaftsmodell von QoreChain basiert auf dem nativen **QOR**-Token und fo
 | **Bech32-Präfix**       | `qor` (Konten: `qor1...`, Validatoren: `qorvaloper...`)    |
 
 :::note
-Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Release **v3.2.3**. Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release **v3.2.4**) hat einen eigenen Emissions- und Angebotsverlauf (das Testnet-Angebot liegt weit über dem des Mainnets, und seine Emission hat die Obergrenze bereits überschritten) — verwenden Sie daher die Mainnet-Zahlen. Beträge, die sich mit jedem Block ändern, sind mit dem Datum gekennzeichnet, an dem sie gelesen wurden (20. Oktober 2026).
+Die Angaben auf dieser Seite beschreiben das **Mainnet** (`qorechain-vladi`, EVM-Chain-ID **9801**), live seit dem 7. Juni 2026 auf Release **v3.2.3** (v3.2.4 ab Höhe 3.742.566). Das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**, Release **v3.2.4** seit dem 19. Oktober 2026) hat einen eigenen Emissions- und Angebotsverlauf (das Testnet-Angebot liegt weit über dem des Mainnets, und seine Emission hat die Obergrenze bereits überschritten) — verwenden Sie daher die Mainnet-Zahlen. Beträge, die sich mit jedem Block ändern, sind mit dem Datum gekennzeichnet, an dem sie gelesen wurden (20. Oktober 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain stellt keine Live-Zahl zur Staking-Rendite bereit; behandeln Sie jede 
 
 ## x/burn — Mehrkanalige Burn-Engine
 
-Das `x/burn`-Modul definiert **12 Burn-Quellen**. Jeder verbrannte Token wird dauerhaft aus dem Angebot entfernt. Auf dem Mainnet haben bisher nur `gas_fee` (31.574.710,28 QOR Stand 20. Oktober 2026) und seit v3.2.2 `failed_tx` (0,0855 QOR) Burns verzeichnet; die übrigen sind definiert, haben aber keine verzeichnet. Das Testnet hat eine dreizehnte Quelle, `staking_tier_penalty`, für das optionale zeitgesperrte Staking-Modul, das nur im Testnet existiert (siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking)).
+Das `x/burn`-Modul definiert heute auf dem Mainnet **12 Burn-Quellen**. Jeder verbrannte Token wird dauerhaft aus dem Angebot entfernt. Auf dem Mainnet haben bisher nur `gas_fee` (31.574.710,28 QOR Stand 20. Oktober 2026) und seit v3.2.2 `failed_tx` (0,0855 QOR) Burns verzeichnet; die übrigen sind definiert, haben aber keine verzeichnet. Ab v3.2.4 gibt es eine dreizehnte Quelle, `staking_tier_penalty`, die die Strafe erfasst, die beim vorzeitigen Entsperren einer zeitgesperrten Delegation verbrannt wird (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566; siehe [Staking und Delegation](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Burn-Kanäle
 
@@ -75,7 +75,7 @@ Das `x/burn`-Modul definiert **12 Burn-Quellen**. Jeder verbrannte Token wird da
 | 11 | `milestone`         | Meilensteine der Transaktionsanzahl | Geplante Burns bei festen kumulativen Transaktionszahlen (bisher keiner ausgelöst) |
 | 12 | `amm`               | AMM                           | Reserviert für AMM-Protokollgebühren (keine verzeichnet) |
 
-Die Kanäle `contract_create`, `ai_service`, `bridge_fee` und `auto_buyback` sind derzeit inaktiv: Der CosmWasm-Upload ist geschlossen, KI-Servicegebühren und die Bridge sind nicht live.
+Die Kanäle `contract_create`, `ai_service`, `bridge_fee` und `auto_buyback` sind derzeit inaktiv: Der QoreChain Native-Upload ist geschlossen, KI-Servicegebühren und die Bridge sind nicht live.
 
 ### Gebührenverteilung {#fee-distribution}
 
@@ -201,7 +201,7 @@ Live gelesen am 20. Oktober 2026 von `GET /qorechain/inflation/v1/params`:
 
 | Parameter | Wert (Mainnet) | Beschreibung |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (Legacy, jahresbasierte Sätze) oder `fixed` |
+| `emission_mode` | `fixed` | `schedule` (Legacy, jahresbasierte Sätze) oder `fixed`; v3.2.4 fügt einen dritten Modus hinzu, `target_apy` |
 | `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | Pro Epoche im Fixed-Modus geprägt |
 | `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Harte kumulative Obergrenze |
 | `epoch_length` | 43.200 Blöcke | Blöcke pro Emissionsepoche |
@@ -210,8 +210,8 @@ Live gelesen am 20. Oktober 2026 von `GET /qorechain/inflation/v1/params`:
 
 Die Parameter und der Epochen-Datensatz des Moduls werden auf dem Mainnet seit v3.2.3 über REST bereitgestellt (`/qorechain/inflation/v1/params` und `/qorechain/inflation/v1/epoch_info`); sie lassen sich auch aus dem Chain-Zustand über die rohe Store-Schnittstelle des RPC `abci_query` lesen (Store `inflation`, Schlüssel `inflation/params` und `inflation/epoch`).
 
-:::note Nur Testnet (v3.2.4)
-Das `qorechain-diana`-Testnet behält seine früheren Emissionseinstellungen (16.239 QOR pro Epoche unter einer Obergrenze von 114.285.714 QOR, dort bereits erreicht). Die `x/inflation`-Parameter haben einen dritten Emissionsmodus erhalten, `target_apy`, mit einem Parameter `target_apy_bps`, der derzeit 0 ist und die Emission nicht steuert. Der Modus, das optionale zeitgesperrte Staking-Modul, das ihn nutzt, und die Beträge im Testnet sind auf dem Mainnet noch nicht live; der Mainnet-Governance-Vorschlag 13 würde das Release v3.2.4, das das Staking-Modul enthält, bei Höhe 3.742.566 anwenden, und der Emissionsmodus selbst würde sich nur durch eine eigene spätere Abstimmung ändern.
+:::note v3.2.4 und die Emission des Testnets
+Das `qorechain-diana`-Testnet behält seine früheren Emissionseinstellungen (16.239 QOR pro Epoche unter einer Obergrenze von 114.285.714 QOR, dort bereits erreicht); das Mainnet verwendet die oben genannten Werte. Das Release v3.2.4 fügt einen dritten Emissionsmodus hinzu, `target_apy`, mit einem Parameter `target_apy_bps`: im Testnet seit dem 19. Oktober 2026, im Mainnet ab Höhe 3.742.566 (Governance-Vorschlag 13). Der Parameter ist im Testnet `0` und steuert dort die Emission nicht. Das Umschalten eines Netzwerks auf diesen Modus ist eine eigene Governance-Abstimmung und wurde im Mainnet nicht vorgeschlagen; bis eine solche angenommen wird, bleibt das Mainnet im Modus `fixed` bei 86.000 QOR pro Epoche.
 :::
 
 ---

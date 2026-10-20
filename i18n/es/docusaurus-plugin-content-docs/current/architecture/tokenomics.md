@@ -23,7 +23,7 @@ El modelo económico de QoreChain se centra en el token nativo **QOR** y sigue u
 | **Prefijo Bech32**    | `qor` (cuentas: `qor1...`, validadores: `qorvaloper...`) |
 
 :::note
-Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión **v3.2.3**. La testnet **`qorechain-diana`** (EVM chain ID **9800**, versión **v3.2.4**) tiene su propio historial de suministro y emisión (el suministro de la testnet es muy superior al de la mainnet y su emisión ya superó el tope), así que usa las cifras de la mainnet. Las cantidades que cambian con cada bloque se marcan con la fecha en que se leyeron (20 de octubre de 2026).
+Las cifras de esta página describen la **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), en vivo desde el 7 de junio de 2026 en la versión **v3.2.3** (v3.2.4 desde la altura 3.742.566). La testnet **`qorechain-diana`** (EVM chain ID **9800**, versión **v3.2.4** desde el 19 de octubre de 2026) tiene su propio historial de suministro y emisión (el suministro de la testnet es muy superior al de la mainnet y su emisión ya superó el tope), así que usa las cifras de la mainnet. Las cantidades que cambian con cada bloque se marcan con la fecha en que se leyeron (20 de octubre de 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain no expone una cifra de retorno de staking en vivo; trata cualquier por
 
 ## x/burn — Motor de quema multicanal
 
-El módulo `x/burn` define **12 orígenes de quema**. Cada token quemado se elimina permanentemente del suministro. En la mainnet solo `gas_fee` (31.574.710,28 QOR a 20 de octubre de 2026) y, desde v3.2.2, `failed_tx` (0,0855 QOR) tienen quemas registradas; los demás están definidos pero no han registrado ninguna. La testnet tiene un decimotercer origen, `staking_tier_penalty`, para el módulo opcional de staking con bloqueo temporal que existe solo en la testnet (consulta [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking)).
+El módulo `x/burn` define hoy **12 orígenes de quema** en la mainnet. Cada token quemado se elimina permanentemente del suministro. En la mainnet solo `gas_fee` (31.574.710,28 QOR a 20 de octubre de 2026) y, desde v3.2.2, `failed_tx` (0,0855 QOR) tienen quemas registradas; los demás están definidos pero no han registrado ninguna. Desde v3.2.4 hay un decimotercer origen, `staking_tier_penalty`, que registra la penalización quemada cuando una delegación con bloqueo temporal se desbloquea anticipadamente (en la testnet desde el 19 de octubre de 2026; en la mainnet desde la altura 3.742.566; consulta [Staking y delegación](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Canales de quema
 
@@ -75,7 +75,7 @@ El módulo `x/burn` define **12 orígenes de quema**. Cada token quemado se elim
 | 11 | `milestone`        | Hitos de recuento de transacciones | Quemas programadas en recuentos acumulados fijos de transacciones (ninguna activada todavía) |
 | 12 | `amm`              | AMM                        | Reservado para las tarifas de protocolo del AMM (ninguna registrada) |
 
-Los canales `contract_create`, `ai_service`, `bridge_fee` y `auto_buyback` están inactivos hoy: la carga de CosmWasm está cerrada, y las tarifas de servicios de IA y el bridge no están en vivo.
+Los canales `contract_create`, `ai_service`, `bridge_fee` y `auto_buyback` están inactivos hoy: la carga de QoreChain Native está cerrada, y las tarifas de servicios de IA y el bridge no están en vivo.
 
 ### Distribución de tarifas {#fee-distribution}
 
@@ -201,7 +201,7 @@ Leídos en vivo el 20 de octubre de 2026 desde `GET /qorechain/inflation/v1/para
 
 | Parámetro | Valor (mainnet) | Descripción |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (heredado, tasas por año) o `fixed` |
+| `emission_mode` | `fixed` | `schedule` (heredado, tasas por año) o `fixed`; v3.2.4 añade un tercer modo, `target_apy` |
 | `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | Acuñado por época en modo fijo |
 | `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Techo acumulado estricto |
 | `epoch_length` | 43.200 bloques | Bloques por época de emisión |
@@ -210,8 +210,8 @@ Leídos en vivo el 20 de octubre de 2026 desde `GET /qorechain/inflation/v1/para
 
 Los parámetros del módulo y el registro de la época se exponen por REST en la mainnet desde v3.2.3 (`/qorechain/inflation/v1/params` y `/qorechain/inflation/v1/epoch_info`); también pueden leerse del estado de la cadena con la interfaz de almacén en bruto de la RPC `abci_query` (almacén `inflation`, claves `inflation/params` y `inflation/epoch`).
 
-:::note Solo testnet (v3.2.4)
-La testnet `qorechain-diana` conserva sus ajustes de emisión anteriores (16.239 QOR por época bajo un límite de 114.285.714 QOR, ya alcanzado allí). Sus parámetros de `x/inflation` incorporaron un tercer modo de emisión, `target_apy`, con un parámetro `target_apy_bps` que actualmente es 0 y no determina la emisión. El modo, el módulo opcional de staking con bloqueo temporal que lo utiliza y las cantidades de la testnet no están en vivo en la mainnet todavía; la propuesta de gobernanza 13 de la mainnet aplicaría la versión v3.2.4 que contiene el módulo de staking en la altura 3.742.566, y el modo de emisión en sí solo cambiaría mediante su propia votación posterior.
+:::note v3.2.4 y la emisión de la testnet
+La testnet `qorechain-diana` conserva sus ajustes de emisión anteriores (16.239 QOR por época bajo un límite de 114.285.714 QOR, ya alcanzado allí); la mainnet usa los valores anteriores. La versión v3.2.4 añade un tercer modo de emisión, `target_apy`, con un parámetro `target_apy_bps`: en la testnet desde el 19 de octubre de 2026, en la mainnet desde la altura 3.742.566 (propuesta de gobernanza 13). El parámetro es `0` en la testnet y no determina allí la emisión. Cambiar una red a ese modo es una votación de gobernanza aparte y no se ha propuesto en la mainnet; hasta que se apruebe una, la mainnet permanece en modo `fixed` con 86.000 QOR por época.
 :::
 
 ---

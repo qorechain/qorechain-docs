@@ -10,7 +10,7 @@ sidebar_position: 5
 Acest ghid parcurge trimiterea de token-uri QOR, interogarea tranzacțiilor și interacțiunea cu QoreChain prin interfețele sale native, EVM și SVM.
 
 :::note
-Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.3 (testnet-ul rulează v3.2.4) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
+Comenzile de mai jos folosesc rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 și rulează versiunea v3.2.3 până la înălțimea 3.742.566 și v3.2.4 de la acel bloc (testnet-ul rulează v3.2.4 din 19 octombrie 2026) — înlocuiți ID-ul chain-ului și punctele finale ale rețelei principale de pe pagina **Conectarea la rețeaua principală** atunci când efectuați tranzacții pe rețeaua principală.
 :::
 
 ## Verificarea soldului

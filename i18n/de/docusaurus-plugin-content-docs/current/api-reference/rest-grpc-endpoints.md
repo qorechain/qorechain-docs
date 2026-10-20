@@ -18,7 +18,7 @@ QoreChain stellt drei primäre Schnittstellen für den programmatischen Zugriff 
 Alle REST-Endpunkte liefern JSON zurück. gRPC-Endpunkte verwenden Protocol Buffers und können mit jedem gRPC-Client genutzt werden. Die RPC-Schnittstelle stellt Abfragen auf Konsensebene sowie das Broadcasten von Transaktionen bereit.
 
 :::note
-Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026; Node-Release **v3.2.3**) als auch im **`qorechain-diana`**-Testnet (Node-Release **v3.2.4**) verfügbar. Die unten angegebenen Basis-URLs gehen von einem lokal laufenden Node aus. Die öffentlich gehosteten Endpunkte sind `https://api.qore.host` / `https://api-testnet.qore.host` (REST) und `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC); sie sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt. **Es gibt keinen öffentlichen gRPC-Endpunkt**: Die Hostnamen `grpc.qore.host` und `grpc-testnet.qore.host` existieren nicht, betreiben Sie daher einen eigenen Node, wenn Sie gRPC benötigen.
+Diese Schnittstellen sind sowohl im **`qorechain-vladi`**-Mainnet (live seit 7. Juni 2026; Node-Release **v3.2.3**) als auch im **`qorechain-diana`**-Testnet (Node-Release **v3.2.4**) verfügbar. Das Mainnet läuft bis zur Höhe 3.742.566 mit v3.2.3 und ab diesem Block mit v3.2.4 (Governance-Vorschlag 13). Die unten angegebenen Basis-URLs gehen von einem lokal laufenden Node aus. Die öffentlich gehosteten Endpunkte sind `https://api.qore.host` / `https://api-testnet.qore.host` (REST) und `https://rpc.qore.host` / `https://rpc-testnet.qore.host` (RPC); sie sind unter [Netzwerke](/appendix/networks#public-endpoints) aufgeführt. **Es gibt keinen öffentlichen gRPC-Endpunkt**: Die Hostnamen `grpc.qore.host` und `grpc-testnet.qore.host` existieren nicht, betreiben Sie daher einen eigenen Node, wenn Sie gRPC benötigen.
 :::
 
 ## Basis-URLs
@@ -31,11 +31,11 @@ RPC:   http://localhost:26657
 
 ## Welche Routen es gibt {#which-routes-exist}
 
-QoreChain-spezifische Module werden über REST unter dem Präfix `/qorechain/<module>/v1/...` bereitgestellt, und nur die unten aufgeführten Module haben REST-Routen. Die übrigen Module sind **ausschließlich über gRPC** erreichbar (siehe [Nur-gRPC-Module](#grpc-only-modules)). Standardrouten für Cosmos SDK, EVM und CosmWasm sind unter [Standardrouten](#standard-routes) aufgeführt.
+QoreChain-spezifische Module werden über REST unter dem Präfix `/qorechain/<module>/v1/...` bereitgestellt, und nur die unten aufgeführten Module haben REST-Routen. Die übrigen Module sind **ausschließlich über gRPC** erreichbar (siehe [Nur-gRPC-Module](#grpc-only-modules)). Standardrouten für Cosmos SDK, EVM und QoreChain Native sind unter [Standardrouten](#standard-routes) aufgeführt.
 
 Eine Route, die nicht existiert, antwortet mit HTTP `501` und `{"code":12,"message":"Not Implemented"}`. Das bedeutet, dass die Route nicht bereitgestellt wird, nicht, dass die Abfrage ein leeres Ergebnis geliefert hat. Verkürzte Pfade ohne das Präfix `/qorechain/` (zum Beispiel `/bridge/v1/chains` oder `/pqc/v1/params`) werden **nicht** bereitgestellt. Ein unbekannter Datensatz auf einer Route, die existiert, liefert HTTP `404` mit `{"code":5,"message":"... not found"}`.
 
-Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie ihn für das Testnet durch `https://api-testnet.qore.host`. Die Werte in den Beispielen wurden um den 20. Oktober 2026 von den Live-Netzwerken gelesen (Mainnet v3.2.3, Testnet v3.2.4) und ändern sich im Lauf der Zeit; nutzen Sie sie für die Form einer Antwort. Das Testnet läuft mit dem neueren Release v3.2.4 und stellt daher einige Routen und Felder bereit, die das Mainnet nicht hat; sie sind unten mit **nur Testnet** gekennzeichnet und antworten im Mainnet mit `501`.
+Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie ihn für das Testnet durch `https://api-testnet.qore.host`. Die Werte in den Beispielen wurden um den 20. und 21. Oktober 2026 von den Live-Netzwerken gelesen (Mainnet v3.2.3, Testnet v3.2.4) und ändern sich im Lauf der Zeit; nutzen Sie sie für die Form einer Antwort. Das Release v3.2.4 fügt einige Routen und Felder hinzu. Sie sind unten mit **v3.2.4** gekennzeichnet: Das Testnet stellt sie seit dem 19. Oktober 2026 bereit, das Mainnet stellt sie ab Höhe 3.742.566 bereit, und bis dahin antwortet ein Mainnet-Node darauf mit `501`.
 
 ## PQC-Modul {#pqc-module}
 
@@ -44,7 +44,7 @@ Die folgenden Beispiele verwenden den öffentlichen Mainnet-Host; ersetzen Sie i
 | GET     | `/qorechain/pqc/v1/account/{address}`    | Registrierung des Post-Quanten-Schlüssels für ein Konto (`found`, Schlüsseltyp, Algorithmus) |
 | GET     | `/qorechain/pqc/v1/evm_window/{address}` | Das Autorisierungsfenster der EVM-Lane des Kontos und was davon übrig ist             |
 | GET     | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | Die EIP-7702-Delegationseinwilligung des Kontos, die aktuelle Delegation und die EVM-Nonce (seit v3.2.2) |
-| GET     | `/qorechain/pqc/v1/protocol_features`    | **Nur Testnet (v3.2.4).** Jedes Protokoll-Feature, das das Binary kennt, mit den Flags `enabled`, `known` und `staged` |
+| GET     | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4** (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566; davor `501` im Mainnet). Jedes Protokoll-Feature, das das Binary kennt, mit den Flags `enabled`, `known` und `staged` |
 
 Beachten Sie, dass das Pfadsegment die Singularform `account` ist. Eine Route `/qorechain/pqc/v1/params` oder `/stats` gibt es nicht (nutzen Sie dafür `qorechaind query pqc params` und `stats`).
 
@@ -70,7 +70,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
 }
 ```
 
-`classical_key_source` gibt an, woher `ecdsa_pubkey` stammt: `stored` (der bei der Registrierung angegebene Schlüssel), `auth_account` (es wurde nichts gespeichert, daher ist es der eigene On-Chain-Public-Key des Kontos) oder `none`. Im Testnet (v3.2.4, **nur Testnet**) trägt der Datensatz außerdem `"possession_proven": false`; das Feld ist `true`, sobald ein Schlüssel mit einem verifizierten [Besitznachweis](/developer-guide/post-quantum-signing#proof-of-possession) registriert wurde; das Mainnet meldet das Feld noch nicht.
+`classical_key_source` gibt an, woher `ecdsa_pubkey` stammt: `stored` (der bei der Registrierung angegebene Schlüssel), `auth_account` (es wurde nichts gespeichert, daher ist es der eigene On-Chain-Public-Key des Kontos) oder `none`. Ab v3.2.4 (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566) trägt der Datensatz außerdem `"possession_proven": false`; das Feld ist `true`, sobald ein Schlüssel mit einem verifizierten [Besitznachweis](/developer-guide/post-quantum-signing#proof-of-possession) registriert wurde; ein Mainnet-Node, der noch auf v3.2.3 läuft, meldet das Feld nicht.
 
 Ein Konto ohne registrierten Schlüssel liefert `{"found": false, "account": null}`. Verwenden Sie `found`, um zu entscheiden, ob ein Konto einen Schlüssel registrieren muss, bevor es senden kann.
 
@@ -222,7 +222,7 @@ curl -s https://api.qore.host/qorechain/burn/v1/stats
 }
 ```
 
-Die echte Antwort listet jede Burn-Quelle auf (`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty`); das Beispiel ist gekürzt. Beträge sind in `uqor` angegeben. `failed_tx` ist seit dem Upgrade v3.2.2 ungleich null, als der Burn für fehlgeschlagene Transaktionen begann, auf die tatsächlich berechnete Gebühr angewendet zu werden. Seit v3.2.3 werden alte `records` einzelner Burns bereinigt, sodass `records` ein aktuelles Fenster ist und nicht den vollständigen Verlauf zeigt; die Summen in `stats` sind kumuliert.
+Die echte Antwort listet jede Burn-Quelle auf (`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty` und ab v3.2.4 `staking_tier_penalty`, die Strafe für das vorzeitige Entsperren einer Staking-Tier-Sperre, die verbrannt wird); das Beispiel ist gekürzt. Beträge sind in `uqor` angegeben. `failed_tx` ist seit dem Upgrade v3.2.2 ungleich null, als der Burn für fehlgeschlagene Transaktionen begann, auf die tatsächlich berechnete Gebühr angewendet zu werden. Seit v3.2.3 werden alte `records` einzelner Burns bereinigt, sodass `records` ein aktuelles Fenster ist und nicht den vollständigen Verlauf zeigt; die Summen in `stats` sind kumuliert.
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
@@ -244,7 +244,7 @@ Der Abfragedienst für Abstract Accounts wird über REST unter `/qorechain/abstr
 | GET     | `/qorechain/abstractaccount/v1/accounts`           | Listet Abstract Accounts auf                                                |
 | GET     | `/qorechain/abstractaccount/v1/accounts/{address}` | Abstract-Account-Zustand für eine Adresse (`404`, falls keiner existiert)   |
 | GET     | `/qorechain/abstractaccount/v1/permission_schema`  | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs`, `lane_rules` |
-| GET     | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **Nur Testnet (v3.2.4).** Die Sequenz, die ein verknüpfter Authenticator-Schlüssel als Nächstes signieren muss (`nonce`, `linked`) |
+| GET     | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4** (Testnet seit dem 19. Oktober 2026; Mainnet ab Höhe 3.742.566; davor `501` im Mainnet). Die Sequenz, die ein verknüpfter Authenticator-Schlüssel als Nächstes signieren muss (`nonce`, `linked`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -368,7 +368,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 }
 ```
 
-`reserved` ist der Teil des Pools, der zurückgehalten wird und nur per Governance-Abstimmung bewegt werden kann. Die Grenzen pro Node sind in `uqor` angegeben: `max_reward_per_block_per_node` ist die Obergrenze pro Block, und seit v3.2.3 ist `max_reward_per_month_per_node` (`2000000000` uqor = 2.000 QOR pro 30 Tage) die Monatsobergrenze, anteilig nach Blockzeit und Uptime berechnet, sodass sie nicht mehr davon abhängt, wie schnell Blöcke kommen. Eine Obergrenze ist kein zugesicherter Betrag. Das Beispiel ist die Live-Antwort des Mainnets zum Zeitpunkt der Erstellung, nachdem die Governance die frühere Reserve freigegeben hatte (Vorschlag 8, 19. Oktober 2026). Im Testnet (v3.2.4, **nur Testnet**) enthält die Antwort zusätzlich `monthly_cap_active`, `last_distribution_time` und `last_distribution_height`, und die Grenze eines Nodes beginnt mit seiner eigenen Registrierung.
+`reserved` ist der Teil des Pools, der zurückgehalten wird und nur per Governance-Abstimmung bewegt werden kann. Die Grenzen pro Node sind in `uqor` angegeben: `max_reward_per_block_per_node` ist die Obergrenze pro Block, und seit v3.2.3 ist `max_reward_per_month_per_node` (`2000000000` uqor = 2.000 QOR pro 30 Tage) die Monatsobergrenze, anteilig nach Blockzeit und Uptime berechnet, sodass sie nicht mehr davon abhängt, wie schnell Blöcke kommen. Eine Obergrenze ist kein zugesicherter Betrag. Das Beispiel ist die Live-Antwort des Mainnets zum Zeitpunkt der Erstellung, nachdem die Governance die frühere Reserve freigegeben hatte (Vorschlag 8, 19. Oktober 2026). Ab v3.2.4 (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566) enthält die Antwort zusätzlich `monthly_cap_active`, `last_distribution_time` und `last_distribution_height`, und die Grenze eines Nodes beginnt mit seiner eigenen Registrierung.
 
 :::note Die Registrierung erfordert eine Lizenz
 Die Chain lehnt eine Light-Node-Registrierung ohne eine aktive `lightnode_operator`-Lizenzberechtigung ab (`holders/lightnode_operator` listet die Berechtigungen auf). Zum Zeitpunkt der Erstellung meldet `stats` im Mainnet `"total_registered": "0"` und im Testnet einen registrierten Node. Den Programmstatus finden Sie unter [Light Nodes](/light-node/overview).
@@ -406,7 +406,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-Zum Zeitpunkt der Erstellung ist `rollups` in beiden Netzwerken eine leere Liste, sodass die Routen pro Rollup mit `404` antworten (zum Beispiel `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` wird in Sekunden angegeben (`604800`). Im Testnet (v3.2.4, **nur Testnet**) wird das optimistische Challenge-Fenster in Blockzeit gemessen.
+Zum Zeitpunkt der Erstellung ist `rollups` in beiden Netzwerken eine leere Liste, sodass die Routen pro Rollup mit `404` antworten (zum Beispiel `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window` wird in Sekunden angegeben (`604800`). Ab v3.2.4 wird das optimistische Challenge-Fenster eines neu eingereichten Batches in Blockzeit gemessen: im Testnet seit Höhe 8.337.253 (19. Oktober 2026), im Mainnet ab Höhe 3.742.566. Bis dahin rechnet das Mainnet den Sekundenwert mit festen 6 Sekunden pro Block in Blöcke um.
 
 ## Inflationsmodul {#inflation-module}
 
@@ -422,7 +422,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-Im Mainnet ist `emission_mode` `"fixed"`, `fixed_epoch_emission` ist `"86000000000"` (86.000 QOR pro Epoche), `epoch_length` ist `"43200"` Blöcke und `max_total_emission` ist `"590000000000000"` (590.000.000 QOR, die kumulative Obergrenze). Diese Werte wurden durch Governance-Vorschlag 10 festgelegt (angenommen am 19. Oktober 2026); die erste Epoche, die den neuen festen Betrag verwendet, beginnt bei Block 3.672.000, und `epoch_info` zeigt die laufende Epoche und den bisher geminteten Betrag. Die Liste `schedule` in der Antwort gehört zum ursprünglichen Modus `schedule`; sie beschreibt nicht, was eine Epoche im Modus fixed mintet. Alle Beträge sind `uqor`. Das Testnet meldet eigene, abweichende Werte. Nur im Testnet (v3.2.4, **nur Testnet**) gibt es einen dritten Modus, `target_apy`, mit einem Feld `target_apy_bps`, der vom Bonus des Staking-Tiers-Moduls verwendet wird; das Mainnet hat keinen solchen Modus.
+Im Mainnet ist `emission_mode` `"fixed"`, `fixed_epoch_emission` ist `"86000000000"` (86.000 QOR pro Epoche), `epoch_length` ist `"43200"` Blöcke und `max_total_emission` ist `"590000000000000"` (590.000.000 QOR, die kumulative Obergrenze). Diese Werte wurden durch Governance-Vorschlag 10 festgelegt (angenommen am 19. Oktober 2026); die erste Epoche, die den neuen festen Betrag verwendet, beginnt bei Block 3.672.000, und `epoch_info` zeigt die laufende Epoche und den bisher geminteten Betrag. Die Liste `schedule` in der Antwort gehört zum ursprünglichen Modus `schedule`; sie beschreibt nicht, was eine Epoche im Modus fixed mintet. Alle Beträge sind `uqor`. Das Testnet meldet eigene, abweichende Werte. Ab v3.2.4 gibt es einen dritten Modus, `target_apy`, mit einem Feld `target_apy_bps` (im Testnet seit dem 19. Oktober 2026; im Mainnet ab Höhe 3.742.566). Ein Netzwerk wechselt nur durch eine eigene Governance-Abstimmung in diesen Modus, sodass das Mainnet bei `fixed` bleibt, bis eine solche Abstimmung angenommen wird; das Testnet meldet zum Zeitpunkt der Erstellung `"emission_mode": "fixed"`.
 
 ## Gas-Abstraction-Modul {#gas-abstraction-module}
 
@@ -455,10 +455,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 Die Liste der akzeptierten Token enthält in beiden Netzwerken nur natives `uqor`, sodass Gebühren in `uqor` bezahlt werden und keine Konvertierung stattfindet. Die Governance fügt ein Token hinzu (mit einem Pool, einer Mindestliquidität und einer maximalen Abweichung zwischen zeitgewichtetem und Spot-Preis); eine in einem solchen Token bezahlte Gebühr wird über einen QOR-Float konvertiert und über einen AMM-Pool wieder aufgefüllt. `conversion_rate` ohne `?denom=` antwortet mit `500` (`denom is required`).
 
-## Staking-Tiers-Modul (nur Testnet) {#stakingtier-module}
+## Staking-Tiers-Modul (v3.2.4) {#stakingtier-module}
 
-:::note Nur Testnet
-Das Staking-Tiers-Modul ist Teil von **v3.2.4**, das nur im Testnet läuft. Im Mainnet antworten diese Routen mit `501`, und ein Mainnet-Upgrade auf v3.2.4 ist bisher nur vorgeschlagen (Governance-Vorschlag 13, bei Höhe 3.742.566).
+:::note Verfügbar ab v3.2.4
+Das Staking-Tiers-Modul ist Teil von **v3.2.4**. Diese Routen werden vom Testnet seit dem 19. Oktober 2026 bereitgestellt und vom Mainnet ab Höhe 3.742.566 (Governance-Vorschlag 13). Bis zu dieser Höhe antwortet ein Mainnet-Node darauf mit `501`.
 :::
 
 | Methode | Endpunkt                                  | Beschreibung                                                       |
@@ -488,7 +488,7 @@ Die Module xQORE, BTC-Restaking (Babylon) und FairBlock haben im aktuellen Relea
 
 ## Standardrouten {#standard-routes}
 
-Die standardmäßigen REST-Routen von Cosmos SDK, IBC, EVM und CosmWasm werden ebenfalls bereitgestellt. In beiden Netzwerken verifizierte Beispiele:
+Die standardmäßigen REST-Routen von Cosmos SDK, IBC, EVM und QoreChain Native werden ebenfalls bereitgestellt. In beiden Netzwerken verifizierte Beispiele:
 
 | Endpunkt                                                       | Beschreibung                                           |
 | -------------------------------------------------------------- | ------------------------------------------------------ |
@@ -506,10 +506,10 @@ Die standardmäßigen REST-Routen von Cosmos SDK, IBC, EVM und CosmWasm werden e
 | `/cosmos/tx/v1beta1/txs`, `/txs/{hash}`, `/txs/block/{height}` | Transaktionssuche / -abruf / nach Block                |
 | `/cosmos/evm/vm/v1/params`                                     | Parameter des EVM-Moduls                               |
 | `/cosmos/evm/feemarket/v1/params`                              | Parameter des EVM-Gebührenmarkts                       |
-| `/cosmwasm/wasm/v1/codes/params`                               | CosmWasm-Upload-/Instanziierungsberechtigungen         |
+| `/cosmwasm/wasm/v1/codes/params`                               | QoreChain Native-Upload-/Instanziierungsberechtigungen         |
 | `/ibc/apps/transfer/v1/params`                                 | IBC-Transferparameter                                  |
 
-Das CosmWasm-Präfix lautet `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` wird nicht bereitgestellt.
+Das QoreChain Native-Präfix lautet `/cosmwasm/wasm/v1/...`; `/cosmos/wasm/v1/...` wird nicht bereitgestellt.
 
 ## gRPC-Reflection
 
@@ -525,7 +525,7 @@ Um einen bestimmten Dienst abzufragen:
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query` hat im Mainnet drei Methoden, `Account`, `EVMWindow` und `EVMDelegationConsent`, und nur im Testnet (v3.2.4) eine vierte, `ProtocolFeatures`. Eine Methode `Params` gibt es nicht.
+`qorechain.pqc.v1.Query` hat auf einem v3.2.3-Node drei Methoden, `Account`, `EVMWindow` und `EVMDelegationConsent`, und ab v3.2.4 (Testnet seit dem 19. Oktober 2026, Mainnet ab Höhe 3.742.566) eine vierte, `ProtocolFeatures`. Eine Methode `Params` gibt es nicht.
 
 ## Authentifizierung
 

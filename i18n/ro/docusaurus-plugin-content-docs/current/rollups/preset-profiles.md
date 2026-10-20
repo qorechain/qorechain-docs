@@ -35,10 +35,10 @@ Fiecare presetare grupează o paradigmă de decontare (și sistemul de dovezi pe
 
 Câteva constrângeri decurg din [matricea decontare → dovadă](/rollups/overview): decontarea `optimistic` folosește dovezi `fraud`, `zk` folosește `snark` (sau `stark`), iar `based` și `sovereign` nu au nicio dovadă asociată. Decontarea `based` se asociază întotdeauna cu modul de sequencer `based`. Presetarea `nft` se decontează nativ astăzi, cu **Celestia DA planificat**.
 
-Începând cu RDK v0.4.2, opțiunea de VM Wasm (runtime-ul care execută contractele CosmWasm) se numește **`native`** — QoreChain Native. `cosmwasm` rămâne un alias istoric acceptat, iar ambele se mapează la `cosmwasm` pe fir, astfel încât lanțul, exploratorul și Dashboard-ul rămân neschimbate.
+Începând cu RDK v0.4.2, opțiunea de VM Wasm (runtime-ul care execută contractele QoreChain Native) se numește **`native`** — QoreChain Native. `cosmwasm` rămâne un alias istoric acceptat, iar ambele se mapează la `cosmwasm` pe fir, astfel încât lanțul, exploratorul și Dashboard-ul rămân neschimbate.
 
 :::note
-Configurația per presetare a fost verificată față de tabelul de profiluri al lanțului în sursa v3.2.3 (mainnet rulează v3.2.3, testnetul v3.2.4), unde `create-rollup` aplică automat presetarea profilului: **`defi` = zk + EVM, `gaming` = based + VM personalizat, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (valori implicite)**. Presetarea `custom` lasă fiecare câmp deschis — valorile afișate sunt doar valorile sale implicite de pornire.
+Configurația per presetare a fost verificată față de tabelul de profiluri al lanțului în sursa v3.2.3 (mainnet rulează v3.2.3 până la înălțimea 3,742,566 și v3.2.4 de la acel bloc; testnetul rulează v3.2.4), unde `create-rollup` aplică automat presetarea profilului: **`defi` = zk + EVM, `gaming` = based + VM personalizat, `nft` = optimistic + QoreChain Native (Wasm), `enterprise` = based + EVM, `custom` = optimistic + EVM (valori implicite)**. Presetarea `custom` lasă fiecare câmp deschis — valorile afișate sunt doar valorile sale implicite de pornire.
 :::
 
 Tratează cele patru presetări de domeniu ca puncte de plecare rezonabile, iar profilul **`custom`** ca opțiunea complet deschisă. Parametrii exacți grupați se pot schimba între versiuni — interoghează `rdk config` (mai jos) pentru valorile autoritative, apoi pornește de la presetarea cea mai apropiată și rafinează.
@@ -52,7 +52,7 @@ CLI-ul [`create-qorechain-rollup`](/rollups/deploying-a-rollup#scaffold-a-projec
 Unele detalii sunt ușor de presupus greșit și merită cunoscute înainte de a alege un profil:
 
 * **`defi` nu are cheie de verificare.** Loturile ZK au nevoie de una, iar un rollup creat prin `create-rollup` nu o poartă, deci decontarea ZK nu poate fi finalizată cap-coadă astăzi (vezi [ZK / STARK și retrageri](/rollups/zk-stark-withdrawals)).
-* **`nft` și `custom`** se decontează optimistic, cu o garanție de contestare de 1.000 QOR și o fereastră de contestare de 100.800 de blocuri pe mainnet (cele 604.800 de „secunde" implicite convertite la 6 secunde fixe per bloc; aproximativ 3,7 zile la blocurile actuale de ≈3,2 s ale mainnet-ului). Doar pe testnet, un lot trimis de la v3.2.4 (înălțimea 8.337.253) încolo primește în schimb o fereastră măsurată în secunde de timp de bloc.
+* **`nft` și `custom`** se decontează optimistic, cu o garanție de contestare de 1.000 QOR și o fereastră de contestare de 100.800 de blocuri pe mainnet înainte de înălțimea 3,742,566 (cele 604.800 de „secunde" implicite convertite la 6 secunde fixe per bloc; aproximativ 3,7 zile la blocurile actuale de ≈3,2 s ale mainnet-ului). De la v3.2.4, un lot primește în schimb o fereastră măsurată în secunde de timp de bloc: pe testnet de la înălțimea 8.337.253, pe mainnet de la înălțimea 3,742,566.
 * **`gaming` și `enterprise`** folosesc sequencing `based`, ceea ce astăzi înseamnă că loturile sunt trimise de creatorul rollup-ului.
 * **Timpul de bloc și limitele de tranzacție** (de exemplu `defi` 500 ms, `gaming` 200 ms, `nft` 2.000 ms, `enterprise` și `custom` 1.000 ms) sunt stocate în înregistrarea on-chain. Ele descriu propriul lanț al rollup-ului și nu sunt impuse de lanțul gazdă.
 

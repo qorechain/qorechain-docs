@@ -43,7 +43,7 @@ El despliegue en mainnet es sin custodia: el Dashboard compila tu contrato y dev
 4. Revisa la transacción en MetaMask — red, gas y datos — y luego confirma para firmarla y difundirla tú mismo.
 5. Una vez que el despliegue se confirma en la cadena, el Dashboard registra la dirección del contrato resultante junto a tus contratos guardados.
 
-Solo se pueden desplegar desde el Dashboard los contratos **EVM** (Solidity). Los despliegues de CosmWasm y de programas de Solana no están disponibles por el momento en ninguna de las dos redes.
+Solo se pueden desplegar desde el Dashboard los contratos **EVM** (Solidity). Los despliegues de QoreChain Native y de programas de Solana no están disponibles por el momento en ninguna de las dos redes.
 
 ### En testnet — con un clic {#deploy-testnet}
 

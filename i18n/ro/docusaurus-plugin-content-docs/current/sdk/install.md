@@ -21,7 +21,7 @@ tipizate, interogări, ciclul de viață al tranzacțiilor, tranzacții PQC hibr
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
 | Proxy de module Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.1 (actualizare doar pentru Java a dependenței Bouncy Castle, fără modificări de API; celelalte limbaje rămân la 0.9.0) |
 
 Alege limbajul tău mai jos.
 
@@ -40,14 +40,14 @@ primesc o opțiune `signBytesVersion` (`"auto"` | `"v1"` | `"v2"`); `"auto"`
 interoghează rețeaua și are deci nevoie de endpoint-ul REST (`rest`) pe
 `qorechain-vladi` / `qorechain-diana`: aruncă o eroare în loc să ghicească. Vezi
 [Ce formă de sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-Forma nu s-a schimbat în chain v3.2.3 (mainnet) sau v3.2.4 (testnet): `"auto"`
+Forma nu s-a schimbat în chain v3.2.3 sau v3.2.4 (testnet din 19 octombrie 2026, mainnet de la înălțimea 3.742.566): `"auto"`
 se rezolvă la v2 pe ambele rețele.
 :::
 
 ## Ce adaugă 0.9.0 {#whats-new-090}
 
 SDK 0.9.0 este versiunea de client pentru chain **v3.2.2** și **v3.2.3** (mainnet
-le-a aplicat la înălțimile 3.556.788 și 3.662.051; testnet rulează v3.2.4).
+le-a aplicat la înălțimile 3.556.788 și 3.662.051; testnet-ul rulează v3.2.4 din 19 octombrie 2026, iar mainnet trece la ea la înălțimea 3.742.566).
 Formatul de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au
 schimbat, deci forma v2 a sign-bytes hibride pe care o semnează 0.8.1 și versiunile
 ulterioare este în continuare cea corectă. Ce este nou:
@@ -74,7 +74,7 @@ sau rotirea dintr-o cheie legacy existentă funcționează în continuare.
 ## Versiuni anterioare lui 0.9.0 {#before-090}
 
 Dacă ești pe 0.8.x, aceasta semnează în continuare forma pe care o verifică ambele
-rețele și funcționează pe mainnet v3.2.3 și testnet v3.2.4. Acestea sunt limitele pe
+rețele și funcționează pe mainnet (v3.2.3, apoi v3.2.4 de la înălțimea 3.742.566) și pe testnet (v3.2.4). Acestea sunt limitele pe
 care 0.9.0 le elimină, iar unele dintre ele costă un comision dacă nu le cunoști:
 
 | Versiune anterioară lui 0.9.0 | Soluție ocolitoare |
@@ -219,19 +219,21 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 
 Sau Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.1'
 ```
 
-> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk:0.9.0` (verificat
-> la 21 octombrie 2026). Central nu are o versiune 0.8.0 sau 0.8.1, așa că pe rețelele live folosește
-> 0.9.0 (sau 0.8.2 ori mai nou).
+> Publicat pe Maven Central ca `io.github.qorechain:qorechain-sdk` (0.9.0 și 0.9.1
+> sunt ambele servite; 0.9.1 este cea mai recentă și versiunea de lansare, verificat la 21 octombrie 2026).
+> 0.9.1 este o versiune doar pentru Java care mută Bouncy Castle de la 1.80 la 1.85, conform
+> notelor sale de lansare; nu are modificări de API. Central nu are o versiune 0.8.0 sau 0.8.1, așa că
+> pe rețelele live folosește 0.9.x (sau 0.8.2 ori mai nou).
 
 ## Pachete conexe {#related-packages}
 
@@ -239,12 +241,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | Utilitare pentru partea de portofel: generarea portofelului (`generateQoreWallet`), semnare hibridă `eth_secp256k1` (`signHybridEth`, `QoreChainSigner`), înregistrarea rețelei în MetaMask (`addQoreEvmToWallet`), constructori de mesaje pentru authenticator și fereastra EVM (`openEvmWindowMsg` al său construiește doar forma fără restricții), digestul v2 pentru abstract account. Nu atașează o dovadă de posesie. Dependențe peer: `@cosmjs/proto-signing` și `@cosmjs/stargate` `^0.32` (SDK-ul folosește cosmjs 0.39, deci instalarea ambelor în același proiect face ca npm să raporteze un conflict de peer, `ERESOLVE`; păstrează-le în proiecte separate sau transmite `--legacy-peer-deps`) | 0.4.0 |
 | `@qorechain/chain-bridge` | Worker pe partea de server pentru backend-uri: derivă cheia PQC, semnează hibrid și difuzează (`sendTokens`, `registerPqc` și altele). Transmite `cosmosRest`: cu el, o înregistrare poartă dovada de posesie după ce rețeaua a aplicat v3.2.3, iar un refuz de aspect PQC este verificat față de lanț înainte de orice reînregistrare (o cheie înregistrată diferită ridică `pqc_key_mismatch` în loc să plătești pentru o a doua înregistrare) | 0.2.3 |
-| `@qorechain/pqc` | Primitive ML-DSA / ML-KEM / SHAKE-256 strict conforme standardelor și `hybridSignBytes` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); disponibil și pe PyPI, crates.io, Maven Central și proxy-ul Go (Go `v0.2.2`) la aceeași versiune | 0.2.2 |
+| `@qorechain/pqc` | Primitive ML-DSA / ML-KEM / SHAKE-256 strict conforme standardelor și `hybridSignBytes` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); disponibil și pe PyPI, crates.io, Maven Central și proxy-ul Go (Go `v0.2.3`) la aceeași versiune | 0.2.3 |
 | `@qorechain/handles` | Rezolvare verificată de `@handle` cu fixare trust-on-first-use (`HandleClient`) | 0.1.0 |
 | `@qorechain/connect` | Un singur conector pentru portofelele EVM, Cosmos și SVM, construit peste wallet adapter (intervalul său peer este `@qorechain/wallet-adapter` `^0.2.1`, care nu include 0.4.0). Nu deschide o [fereastră de autorizare EVM](/sdk/guides/evm#evm-window), deci o trimitere EVM prin el este refuzată până când contul are o cheie înregistrată și o fereastră deschisă | 0.2.1 |
-| `@qorechain/rdk` | Client Rollup Development Kit (vezi [Rollup-uri](/rollups/why)). Depinde de `@qorechain/sdk` `^0.8.0`, deci npm instalează SDK 0.8.3 ca propria copie chiar și când aplicația ta folosește SDK 0.9.0. Semnează hibrid doar când transmiți un `pqcKeypair`; citirile funcționează fără el. Vezi [limitele versiunii 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits) | 0.5.0 |
-| `@qorechain/rdk-cli` | CLI-ul de operator `qorollup` pentru RDK. Comenzile sale de tranzacție semnează doar clasic și sunt refuzate de rețele | 0.5.0 |
-| `create-qorechain-rollup` | Generator de proiecte starter pentru rollup; șabloanele sale depind de `@qorechain/rdk` `^0.5.0` | 0.5.0 |
+| `@qorechain/rdk` | Client Rollup Development Kit (vezi [Rollup-uri](/rollups/why)). Depinde de `@qorechain/sdk` `^0.9.0` și `@qorechain/evm` `^0.8.0`, deci o aplicație pe SDK 0.9.0 partajează o singură copie a SDK-ului cu el (0.5.0 aducea SDK 0.8.3 ca o copie imbricată). Semnează hibrid doar când transmiți un `pqcKeypair`; citirile funcționează fără el. Publicat și ca `qorechain-rdk` pe PyPI, crates.io și Maven Central și ca modul Go (fixează `@v0.6.0`); acei patru clienți semnează doar clasic. Vezi [RDK 0.6.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits) | 0.6.0 |
+| `@qorechain/rdk-cli` | CLI-ul de operator `qorollup` pentru RDK. Comenzile sale de tranzacție (`create`, `pause`, `resume`, `stop`, `withdraw`) semnează doar clasic și sunt refuzate de rețele | 0.6.0 |
+| `create-qorechain-rollup` | Generator de proiecte starter pentru rollup; șabloanele sale depind de `@qorechain/rdk` `^0.6.0` și semnează hibrid când își pot rezolva cheia post-cuantică din `QORE_MNEMONIC` sau `QORE_PQC_SEED_HEX` | 0.6.0 |
 
 ## Următorul pas
 

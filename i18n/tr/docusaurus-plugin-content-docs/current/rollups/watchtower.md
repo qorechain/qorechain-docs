@@ -19,8 +19,8 @@ sağlarsınız**. Watchtower hiçbir zaman bir yığının hileli olduğuna kend
 karar vermez — sizin `validate` fonksiyonunuzu çağırır ve döndürdüğünüz değere
 göre hareket eder.
 
-:::caution Erken aşama: izlenecek bir şey yok ve 0.5.0 son tarih uyarıları yanlış
-Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (20 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur. `@qorechain/rdk` 0.5.0 sürümünde itiraz penceresi son tarih mantığı da güvenilir değildir: bir yığının `submittedAt` değeri bir **blok yüksekliğidir**, ancak Watchtower (ve `qorollup status` komutunun arkasındaki sağlık kontrolü) saniye cinsinden pencereyi buna ekler ve toplamı duvar saatiyle karşılaştırır; bu yüzden `secondsRemaining` anlamsızdır ve `onDeadline` bir yığın ilk görüldüğü anda tetiklenir. Kararlar için `onDeadline` veya geri sayımı kullanmayın; son tarihi kendiniz hesaplayın (aşağıdaki nota bakın). İzleyici ayrıca yığınların yalnızca ilk sayfasını (50) okur.
+:::caution Erken aşama: henüz izlenecek bir şey yok
+Watchtower yığınları RDK REST istemcisi aracılığıyla okur ve `/qorechain/rdk/v1/…` rotaları her iki ağda da sunulmaktadır. Hiçbir ağda rollup oluşturulmamıştır (21 Ekim 2026 itibarıyla kontrol edildi), dolayısıyla henüz izlenecek bir şey yoktur ve Watchtower canlı bir yığına karşı çalıştırılmamıştır. `@qorechain/rdk` 0.5.0 sürümünde son tarih mantığı yanlıştı (bir blok yüksekliğini Unix zaman damgası olarak okuyordu; bu yüzden `onDeadline` bir yığın ilk görüldüğü anda tetikleniyordu) ve yalnızca 50 yığınlık ilk sayfayı okuyordu; **0.6.0 ikisini de düzeltir** (aşağıya bakın). 0.6.0 veya üstünü kullanın.
 :::
 
 ## `watchBatches`
@@ -32,8 +32,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -57,10 +57,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -75,12 +77,14 @@ watcher.stop();
 - **geçersiz yığınlar** (sizin `validate` fonksiyonunuzun `false` döndürdüğü
   durumlar) `onInvalid` aracılığıyla.
 
+0.6.0'dan itibaren bir rollup'ın batch listesinin her sayfasını izler, bir batch'i son tarihi yaklaştıkça yeniden değerlendirir (her batch'i ilk görüşte bir kez yargılamak yerine, penceresi hâlâ açık olan en eski batch'ten itibaren ileriye doğru yoklamayı sürdürür) ve her pencereyi yerel saate göre değil, zincir ucuna (`getChainTip`, düğümün durumu) göre ölçer. Zaten `finalized` olan bir batch doğrulanmaz veya hakkında uyarı verilmez.
+
 `onInvalid`'i bir itiraza bağlamak, Watchtower'ı eksiksiz bir otomatik
 itiraz aracına dönüştürür; yalnızca gözlem (observe-only) modunda çalıştırmak için
 onu ayarlanmamış bırakın.
 
 :::note İtiraz penceresi
-Bir yığının son tarihini saniye olarak değil, blok olarak hesaplayın: `submitted_at` (bir blok yüksekliği) artı pencere. **Ana ağda (v3.2.3)** pencere, blok başına sabit 6 saniye üzerinden bloğa dönüştürülmüş varsayılan 604.800 "saniye"dir, yani **100.800 blok** (gerçek süre blok süresini izler, bu nedenle ana ağın ≈3,2 sn'lik bloklarında "7 gün"den daha kısadır). **Yalnızca testnet'te (v3.2.4)**, 8.337.253 yüksekliğinden itibaren gönderilen bir yığın, blok süresinin saniyesi cinsinden ölçülen bir pencere alır. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
+Zincir bir yığının penceresini iki yoldan biriyle ölçer ve `batchChallengeWindow` (Watchtower ve `qorollup status` arkasındaki sağlık kontrolü tarafından kullanılır) hangisinin geçerli olduğunu bildirir. **Blok sayısı penceresi, 3.742.566 yüksekliğinden önce mainnet'te geçerli olan kural (v3.2.3):** pencere, rollup'ın yapılandırılmış saniyelerinin blok başına sabit 6 saniye üzerinden bloğa dönüştürülmüş halidir; varsayılan 604.800 için **100.800 blok**, yığının `submitted_at` yüksekliğinden itibaren sayılır; gerçek süre blok süresini izler, bu nedenle ana ağın ≈3,2 sn'lik bloklarında "7 gün"den daha kısadır. Paket `open` ve `finalizable` durumlarını ayrı bildirir, çünkü uyguladığı kurala göre tek bir blok her ikisidir (bir itiraz `height - submitted_at <= window` iken açık sayılır, `height - submitted_at >= window` olduğunda sonlandırılabilir). **Zaman tabanlı pencere, v3.2.4'ten itibaren (test ağında 8.337.253 yüksekliğinden beri, mainnet'te 3.742.566 yüksekliğinden itibaren):** yükseltme yüksekliğinden itibaren gönderilen bir yığın kendi blok süresini kaydeder ve penceresi o kadar saniyelik blok süresidir. Watchtower, düğüm rollup'ın kendi penceresini bildirdiğinde onu kullanır (paket bunu v3.2.4 ve sonrası olarak belgeler); aksi halde modülün varsayılan penceresine döner, bu nedenle kendi penceresini yapılandırmış bir rollup için `challengeWindowSecs` geçin. Bir itiraz göndermek ayrıca rollup'ın itiraz teminatını (`nft` ve `custom` ön ayarları için 1.000 QOR) gerektirir.
 :::
 
 ## CLI

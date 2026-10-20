@@ -52,9 +52,9 @@ Se vuoi partecipare alla governance adesso, delega QOR a un validatore (vedi [St
 
 ---
 
-## Lo staking con blocco temporale è una funzione diversa (solo testnet) {#staking-tiers}
+## Lo staking con blocco temporale è una funzione diversa (v3.2.4) {#staking-tiers}
 
-La release **v3.2.4**, che gira solo sulla testnet (un upgrade della mainnet a essa è proposto: proposta di governance 13, all'altezza 3.742.566), aggiunge un modulo separato, `x/stakingtier`, per lo **staking facoltativo con blocco temporale**. Non è xQORE: non conia xQORE, non modifica il potere di voto e non tocca i parametri xQORE descritti sopra. In sintesi:
+La release **v3.2.4**, che gira sulla testnet dal 19 ottobre 2026 ed è prevista sulla mainnet dall'altezza 3.742.566 (proposta di governance 13), aggiunge un modulo separato, `x/stakingtier`, per lo **staking facoltativo con blocco temporale**. Non è xQORE: non conia xQORE, non modifica il potere di voto e non tocca i parametri xQORE descritti sopra. In sintesi:
 
 * Un delegatore blocca una delega a un validatore per un termine scelto (il modulo offre 3, 6 e 12 mesi). Mentre il blocco è in corso, l'importo bloccato non può essere annullato (undelegate) né ridelegato, attraverso alcun percorso di messaggio (una transazione, authz, un contratto o la governance).
 * I blocchi hanno una dimensione minima e un limite al numero che un singolo delegatore può detenere; leggili con `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ La release **v3.2.4**, che gira solo sulla testnet (un upgrade della mainnet a e
 * Un blocco può essere rilasciato in anticipo. Il rilascio anticipato fa perdere ciò che è maturato e non è stato riscosso e comporta una penale, di cui una parte viene bruciata.
 * I blocchi e lo stato dell'account del modulo sono leggibili su `/qorechain/stakingtier/v1/locks/{holder}` e `/qorechain/stakingtier/v1/pool`.
 
-Nulla di questa sezione esiste sulla mainnet v3.2.3: `GET https://api.qore.host/qorechain/stakingtier/v1/params` vi restituisce `Not Implemented`. Lo staking sulla mainnet è la normale delega, trattata in [Staking e Delega](/user-guide/staking-and-delegation).
+La mainnet esegue la v3.2.3 fino all'altezza 3.742.566, quindi fino ad allora `GET https://api.qore.host/qorechain/stakingtier/v1/params` vi restituisce `Not Implemented`; da quel blocco il modulo esiste sulla mainnet come sulla testnet. La normale delega è trattata in [Staking e Delega](/user-guide/staking-and-delegation).

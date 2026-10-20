@@ -7,15 +7,15 @@ sidebar_position: 5
 
 # VM'ler Arası Birlikte Çalışabilirlik
 
-QoreChain'in **üçlü VM mimarisi** (EVM, CosmWasm, SVM), herhangi bir sanal makinedeki akıllı sözleşmelerin başka herhangi bir VM'deki sözleşmelerle iletişim kurmasına olanak tanımak üzere tasarlanmıştır. `x/crossvm` modülü, aynı işlem içinde çalışan bir yol ve kuyruğa alınan bir yol sunan bir çağrı mesajı sağlar.
+QoreChain'in **üçlü VM mimarisi** (EVM, QoreChain Native, SVM), herhangi bir sanal makinedeki akıllı sözleşmelerin başka herhangi bir VM'deki sözleşmelerle iletişim kurmasına olanak tanımak üzere tasarlanmıştır. `x/crossvm` modülü, aynı işlem içinde çalışan bir yol ve kuyruğa alınan bir yol sunan bir çağrı mesajı sağlar.
 
 :::caution Bugün neler çalışıyor
 VM'ler arası çağrılar yalnızca hedef şeritlerinin (lane) sunulabildiği ölçüde kullanılabilir:
 
 * `MsgCrossVMCall`, devre kesici tarafından **ana ağda kapatılmıştır** (`qorechaind query circuit disabled-list`); test ağında etkindir.
 * **SVM şeridi, her iki ağda da işlemler için devre dışıdır**, bu nedenle bir SVM adımı çalışamaz.
-* **CosmWasm yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir CosmWasm sözleşmesi bulunmamaktadır.
-* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir.
+* **QoreChain Native yükleme ve örnekleme (instantiate) her iki ağda da izne tabidir** ve ana ağda kayıtlı sözleşme kodu yoktur, dolayısıyla henüz çağrılacak bir QoreChain Native sözleşmesi bulunmamaktadır.
+* Senkron **EVM önderlenmiş işlevi etkin değildir** (aşağıya bakın). Güçlendirilmiş bir sürüm v3.2.3'ten beri ikili dosyada bulunur, ancak hiçbir ağda hiçbir önderlenmiş işlev etkinleştirilmemiştir ve v3.2.4 (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) bunu değiştirmez.
 
 Modülün REST rotaları (`/qorechain/crossvm/v1/...`) genel ağ geçidi tarafından sunulmaz; mesajları CLI ile veya bir gRPC/ABCI sorgu istemcisiyle okuyun.
 :::
@@ -29,7 +29,7 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 ## Mimariye Genel Bakış
 
 ```
- EVM (Solidity)          CosmWasm (Rust/Wasm)         SVM (BPF)
+ EVM (Solidity)     QoreChain Native (Rust/Wasm)     SVM (BPF)
       |                        |                        |
       |--- sync (precompile) ->|                        |
       |                        |                        |
@@ -40,45 +40,55 @@ Aşağıdaki uç noktalar varsayılan olarak yerel bir düğüme yöneliktir. An
 
 | Yol              | Yön             | Zamanlama        | Mekanizma                       |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Senkron**      | EVM'den CosmWasm'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev (henüz etkin değil, aşağıya bakın) |
+| **Senkron**      | EVM'den QoreChain Native'a | Aynı işlem    | `0x0000...0901` adresindeki önderlenmiş işlev (henüz etkin değil, aşağıya bakın) |
 | **Mesaj, varsayılan** | Herhangi bir VM'den başka herhangi bir VM'e | Aynı işlem | `MsgCrossVMCall`; çağrı hemen yürütülür ve bir başarısızlık tüm işlemi geri alır |
 | **Mesaj, kuyruğa alınmış**  | Herhangi bir VM'den başka herhangi bir VM'e | Sonraki blok (veya daha sonra) | `async` ayarlı `MsgCrossVMCall`; mesaj kuyrukta bekler |
 
 ---
 
-## Senkron Yol (EVM'den CosmWasm'a)
+## Senkron Yol (EVM'den QoreChain Native'a)
 
-Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin CosmWasm sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
+Senkron yol, `0x0000000000000000000000000000000000000901` adresinde bir EVM **önderlenmiş işlevi** kullanır. Solidity sözleşmelerinin QoreChain Native sözleşmelerini çağırmasına ve aynı işlem içinde bir yanıt almasına olanak tanımak üzere tasarlanmıştır.
 
 :::warning Ana ağda veya test ağında etkin değil
-CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) CosmWasm tarafını da geri alır, yalnızca izin listesindeki CosmWasm hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir yükseltme onu etkin listeye ekledikten sonra çalışır. Aşağıdaki örnek yalnızca amaçlanan biçimi gösterir. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
+CrossVM köprüsü önderlenmiş işlevi `qorechain-vladi` veya `qorechain-diana` üzerinde **etkin değildir**: `0x…0901` adresine yapılan bir çağrı başarılı olur ve boş veri döndürür. v3.2.3 ikili dosyası güçlendirilmiş bir sürümü taşır (`STATICCALL` çağrısını reddeder, iç içe çağrısını çağıran çerçevenin gazına göre ölçer ve günlüğe kaydeder; böylece bir EVM geri alması (revert) QoreChain Native tarafını da geri alır, yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır ve VM'ler arası devre kesiciye uyar), ancak yalnızca yönetişim onaylı bir yükseltme onu etkin listeye ekledikten sonra çalışır. Aşağıdaki örnek, düğümün çözdüğü düzendir; ancak önderlenmiş işlev etkinleşene kadar çalışamaz. Bkz. [EVM Önderlenmiş İşlevleri: Ağ durumu](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Solidity Örneği
+
+Düğüm, önderlenmiş işlevin girdisini 4 baytlık bir seçici (selector) ve ardından `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` işlevinin ABI ile kodlanmış argümanları olarak çözer (seçici `0x3c11078c`). `targetVM`, bir QoreChain Native sözleşmesi için `1`'dir (QoreChain Native, CosmWasm çalışma zamanıdır; `0` EVM'dir ve güçlendirilmiş köprü onu hedef olarak reddeder). `targetContract`, sözleşmenin bech32 adresidir (dize olarak) ve `payload`, sözleşmenin execute mesajıdır (UTF-8 JSON baytları olarak). Önderlenmiş işlev, hedefin ham yanıt baytlarını döndürür.
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
-
 contract CrossVMCaller {
-    ICrossVM constant CROSSVM = ICrossVM(0x0000000000000000000000000000000000000901);
+    address constant CROSSVM = 0x0000000000000000000000000000000000000901;
+    uint8 constant TARGET_QORECHAIN_NATIVE = 1;
 
-    function callCosmWasmContract(
-        string memory cosmwasmAddr,
-        string memory executeMsg,
-        uint256 funds
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(cosmwasmAddr, executeMsg, funds);
-        return CROSSVM.call(payload);
+    function callQoreChainNative(string calldata contractAddr, bytes calldata executeMsg)
+        external
+        returns (bytes memory)
+    {
+        bytes memory data = abi.encodeWithSignature(
+            "executeCrossVMCall(uint8,string,bytes)",
+            TARGET_QORECHAIN_NATIVE,
+            contractAddr,
+            executeMsg
+        );
+        (bool ok, bytes memory ret) = CROSSVM.call(data);
+        require(ok, "cross-VM call failed");
+        // While the precompile is not active, the call succeeds with empty data
+        // and nothing executes; treat an empty reply as a failure.
+        require(ret.length > 0, "cross-VM precompile not active or empty reply");
+        return ret;
     }
 }
 ```
 
-Etkinleştirildiğinde, önderlenmiş işlev CosmWasm sözleşmesini hemen yürütür ve sonucu döndürür. Mevcut düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözer; ABI etkinleştirmeden önce yine de değişebilir. Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
+Bu, düğümün çözdüğü düzendir; `@qorechain/rdk` kodlayıcısının oluşturduğu düzenle aynıdır ve yukarıdaki sözleşme [Multi-VM](/rollups/multi-vm) sayfasındaki başlangıç şablonuyla eşleşir. Önderlenmiş işlev üzerinden fon eklenemez (`MsgCrossVMCall` mesaj yolu `--funds` alır). Önderlenmiş işlev etkin olmadığı için örnek bugün hiçbir ağda bir şey yapamaz (yukarıdaki uyarıya bakın); ABI etkinleştirmeden önce yine de değişebilir.
+
+Etkinleştirildiğinde, önderlenmiş işlev QoreChain Native sözleşmesini hemen yürütür ve sonucu döndürür. (`@qorechain/rdk` 0.6.0'ın `encodeCrossVmCalldata` yardımcısı calldata'yı oluşturur; bkz. [Multi-VM](/rollups/multi-vm).) Gaz maliyeti: **50.000 taban + girdi baytı başına 4 + yürütme maliyeti**.
 
 ---
 
@@ -95,10 +105,10 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Diğer bayraklar: `--funds <coins>` (yalnızca CosmWasm hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur. Çağıranın kendi şeridine yapılan bir çağrı reddedilir (v3.2.3'ten beri).
+Diğer bayraklar: `--funds <coins>` (yalnızca QoreChain Native hedefleri için) ve çağrıyı şimdi yürütmek yerine kuyruğa almak için `--async`. `tx.json` dosyasını `tx pqc cosign` ile imzalayıp yayınlayın (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing)); ücret tabanı gaz başına 0.1 uqor'dur. Çağıranın kendi şeridine yapılan bir çağrı reddedilir (v3.2.3'ten beri).
 
 :::caution Ana ağda devre dışı
-`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır; bu nedenle komut bugün orada başarılı olamaz. (v3.2.3 öncesi sürüm ikili dosyaları ayrıca, kaynak VM boş olduğu için kendi doğrulamasından geçemeyen bir mesaj oluşturuyordu; v3.2.3 ikili dosyası bunu düzeltir.) Test ağında mesaj etkindir, ancak CosmWasm ve SVM hedefleri kullanılamaz (yukarıya bakın); bu nedenle yalnızca bir EVM hedefine ulaşılabilir.
+`MsgCrossVMCall`, devre kesici tarafından ana ağda kapatılmıştır; bu nedenle komut bugün orada başarılı olamaz. (v3.2.3 öncesi sürüm ikili dosyaları ayrıca, kaynak VM boş olduğu için kendi doğrulamasından geçemeyen bir mesaj oluşturuyordu; v3.2.3 ikili dosyası bunu düzeltir.) Test ağında mesaj etkindir, ancak QoreChain Native ve SVM hedefleri kullanılamaz (yukarıya bakın); bu nedenle yalnızca bir EVM hedefine ulaşılabilir.
 :::
 
 ---
@@ -123,7 +133,7 @@ Submitted --> Pending --> Executed
 | **Failed**    | Hedef sözleşme yürütmesi geri alındı; hata kaydedildi     |
 | **Timed Out** | Mesaj, yürütülmeden `queue_timeout_blocks` değerini aştı  |
 
-v3.2.3'ten beri başarısız olan kuyruğa alınmış bir çağrı bütünüyle geri alınır: yalnızca `Failed` kaydı kalır ve başarısız bir CosmWasm çağrısına eklenen fonlar artık sözleşmeye aktarılmaz. Modül devre dışıyken veya `MsgCrossVMCall` devre kesici tarafından kapatılmışken kuyruk **yürütülmez**: kuyruğa alınmış mesajlar, anahtar önceden açılmadıkça bekleyen durumda kalır ve zaman aşımında sona erer.
+v3.2.3'ten beri başarısız olan kuyruğa alınmış bir çağrı bütünüyle geri alınır: yalnızca `Failed` kaydı kalır ve başarısız bir QoreChain Native çağrısına eklenen fonlar artık sözleşmeye aktarılmaz. Modül devre dışıyken veya `MsgCrossVMCall` devre kesici tarafından kapatılmışken kuyruk **yürütülmez**: kuyruğa alınmış mesajlar, anahtar önceden açılmadıkça bekleyen durumda kalır ve zaman aşımında sona erer.
 
 ---
 
@@ -208,14 +218,14 @@ curl -X POST http://localhost:8545 \
 
 ## Tasarım Hususları
 
-**Atomiklik:** Senkron çağrılar (önderlenmiş işlev aracılığıyla EVM'den CosmWasm'a), taraflardan biri geri alınırsa tüm işlemin geri alınması için atomik olacak şekilde tasarlanmıştır. Mevcut önderlenmiş işlev bunu henüz garanti etmez; etkin olmamasının nedenlerinden biri budur (yukarıya bakın). Asenkron çağrılar bloklar arasında **atomik değildir**; sözleşmelerinizi `Failed` ve `Timed Out` durumlarını sorunsuzca ele alacak şekilde tasarlayın.
+**Atomiklik:** Senkron çağrılar (önderlenmiş işlev aracılığıyla EVM'den QoreChain Native'a), taraflardan biri geri alınırsa tüm işlemin geri alınması için atomik olacak şekilde tasarlanmıştır. Mevcut önderlenmiş işlev bunu henüz garanti etmez; etkin olmamasının nedenlerinden biri budur (yukarıya bakın). Asenkron çağrılar bloklar arasında **atomik değildir**; sözleşmelerinizi `Failed` ve `Timed Out` durumlarını sorunsuzca ele alacak şekilde tasarlayın.
 
 **Sıralama:** Kuyruktaki mesajlar, her EndBlocker geçişi içinde FIFO olarak işlenir. Farklı kaynak VM'ler arasında garantili bir sıralama yoktur.
 
 **Yük kodlaması:** Yük biçimi hedef VM'e bağlıdır:
 
 * **EVM hedefleri:** ABI ile kodlanmış işlev çağrıları
-* **CosmWasm hedefleri:** JSON ile kodlanmış yürütme mesajları
+* **QoreChain Native hedefleri:** JSON ile kodlanmış yürütme mesajları
 * **SVM hedefleri:** Hex ile kodlanmış BPF talimat verileri
 
 ---
@@ -224,5 +234,5 @@ curl -X POST http://localhost:8545 \
 
 * [EVM Önderlenmiş İşlevleri](/developer-guide/evm-precompiles) — Senkron CrossVM önderlenmiş işlevinin ve planlanan diğer önderlenmiş işlevlerin durumu
 * [EVM Geliştirme](/developer-guide/evm-development) — QoreChain üzerinde Solidity geliştirme
-* [CosmWasm Geliştirme](/developer-guide/cosmwasm-development) — Rust/Wasm sözleşme geliştirme
+* [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development) — Rust/Wasm sözleşme geliştirme
 * [SVM Geliştirme](/developer-guide/svm-development) — BPF program dağıtımı

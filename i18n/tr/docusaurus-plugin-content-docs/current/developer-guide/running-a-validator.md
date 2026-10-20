@@ -10,7 +10,7 @@ sidebar_position: 9
 Bu kılavuz, QoreChain ağında bir doğrulayıcı (validator) oluşturmayı, havuz sınıflandırma tasarımını anlamayı, kuantuma dayanıklı güvenlik için bir PQC anahtarı kaydetmeyi ve düğümünüzü izlemeyi kapsar.
 
 :::note
-Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.3** düğüm sürümünü çalıştırır (yönetişim yoluyla 3.662.051 yüksekliğinde uygulandı). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, v3.2.4), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
+Bu kılavuz **`qorechain-vladi`** ana ağını (EVM zincir kimliği **9801**) hedefler; 7 Haziran 2026'dan beri canlı olup **v3.2.3** düğüm sürümünü (yönetişim yoluyla 3.662.051 yüksekliğinde uygulandı) 3.742.566 yüksekliğine kadar, o bloktan itibaren ise **v3.2.4**'ü çalıştırır (yönetişim önerisi 13). Bir doğrulayıcının v3.2.4 ikili dosyasını o yükseklikten önce kurmuş olması gerekir; aksi halde düğümü orada durur ve yeniden başlatılana kadar blok kaçırır; bkz. [Düğüm Çalıştırma: Yükseltmeler](/developer-guide/running-a-node#upgrades). **`qorechain-diana`** test ağı (EVM zincir kimliği **9800**, 19 Ekim 2026'dan beri v3.2.4 çalıştırıyor), canlıya geçmeden önce kurulumunuzu prova etmek için önerilir. Hedef ağınız için uygun `--chain-id` değerini kullanın. Blok süreleri farklıdır: ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn; bu nedenle blok sayılarını her ağ için ayrı ayrı süreye çevirin.
 :::
 
 :::caution Kaynak derlemesi değil, yayın (release) ikili dosyasını kullanın
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` bir **sahiplik kanıtı** (proof of possession) ekler: anahtar `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` değerini imzalar ve zincir bunu doğrular; böylece hiç kimse özel yarısına sahip olmadığı bir açık anahtarı kaydedemez. v3.2.3'te isteğe bağlıdır ve önerilir.
+`--pqc-key mypqc` bir **sahiplik kanıtı** (proof of possession) ekler: anahtar `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` değerini imzalar ve zincir bunu doğrular; böylece hiç kimse özel yarısına sahip olmadığı bir açık anahtarı kaydedemez. v3.2.3'te isteğe bağlıdır ve önerilir. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) hesap kaydı ayrıca bir kanıtın doğrulanıp doğrulanmadığını da bildirir (`possession_proven`, `GET /qorechain/pqc/v1/account/{address}` içinde).
 
 :::note v3.2.3'ün anahtar kaydında değiştirdikleri
 * Kayıtlı anahtarı **olmayan** bir hesap yalnızca kaydın kendisini gönderebilir: hibrit imza uzantısı taşıyan diğer tüm işlemler reddedilir. Önce kaydolun, ardından diğer her şeyi `tx pqc cosign` ile imzalayın.

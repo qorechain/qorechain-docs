@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Her `go build`, `go test` ve `go run` çağrısında `CGO_ENABLED=1` ayarlı **olmalıdır**. Düğüm, yerel kütüphaneleri (CosmWasm çalışma zamanı ve sürüm derlemesinde PQC ile SVM kütüphaneleri) cgo aracılığıyla bağlar.
+Her `go build`, `go test` ve `go run` çağrısında `CGO_ENABLED=1` ayarlı **olmalıdır**. Düğüm, yerel kütüphaneleri (QoreChain Native çalışma zamanı ve sürüm derlemesinde PQC ile SVM kütüphaneleri) cgo aracılığıyla bağlar.
 :::
 
 ## Yerel Kütüphaneler

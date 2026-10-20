@@ -76,7 +76,7 @@ Aceasta creează configurația implicită și directoarele de date sub `~/.qorec
 Nodul pornește cu setările implicite. Vezi [Conectarea la rețeaua de test](/getting-started/connecting-to-testnet) pentru alăturarea la rețeaua activă cu configurarea corectă a fișierului genesis și a partenerilor.
 
 :::note
-Exemplele de pe această pagină vizează rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea v3.2.3; testnet-ul rulează v3.2.4) și are propria pagină dedicată **Conectarea la rețeaua principală**.
+Exemplele de pe această pagină vizează rețeaua de test **`qorechain-diana`** (ID-ul EVM al chain-ului **9800**). Rețeaua principală (**`qorechain-vladi`**, ID-ul EVM al chain-ului **9801**) este activă din 7 iunie 2026 (versiunea v3.2.3 până la înălțimea 3.742.566 și v3.2.4 de la acel bloc; testnet-ul rulează v3.2.4 din 19 octombrie 2026) și are propria pagină dedicată **Conectarea la rețeaua principală**.
 :::
 
 ---

@@ -10,7 +10,7 @@ sidebar_position: 5
 Diese Anleitung führt durch das Senden von QOR-Token, das Abfragen von Transaktionen und die Interaktion mit QoreChain über seine nativen, EVM- und SVM-Schnittstellen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft auf Release v3.2.3 (das Testnet läuft auf v3.2.4) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
+Die folgenden Befehle verwenden das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**). Das Mainnet (**`qorechain-vladi`**, EVM-Chain-ID **9801**) ist seit dem 7. Juni 2026 aktiv und läuft bis Höhe 3.742.566 auf Release v3.2.3 und ab diesem Block auf v3.2.4 (das Testnet läuft seit dem 19. Oktober 2026 auf v3.2.4) — ersetzen Sie beim Durchführen von Transaktionen auf dem Mainnet die Chain-ID und die Endpunkte durch die des Mainnets von der Seite **Verbindung zum Mainnet**.
 :::
 
 ## Ihr Guthaben prüfen

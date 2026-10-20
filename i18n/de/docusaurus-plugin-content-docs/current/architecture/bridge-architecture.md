@@ -193,7 +193,7 @@ Alle QCB-Bridge-Operationen erfordern einen **7-aus-10-Schwellenwert** von Dilit
 * Einer Liste unterstützter Chains
 * Einem Reputationswert (verwaltet von `x/reputation`)
 
-Seit v3.2.2 validiert das Modul Nullbeträge und seine Konfiguration auf jedem Pfad einheitlich. **Nur Testnet (v3.2.4, nicht im Mainnet):** Die Registrierung eines Bridge-Validators erfordert zusätzlich einen Besitznachweis des Dilithium-5-Schlüssels (dasselbe `proof_of_possession`-Format wie bei der PQC-Schlüsselregistrierung, siehe [Post-Quanten-Sicherheit](/architecture/post-quantum-security#proof-of-possession)) und weist einen Schlüssel zurück, den bereits ein anderer Bridge-Validator verwendet. Das Mainnet v3.2.3 hat keine solche Prüfung, und auf keinem der beiden Netzwerke ist ein Bridge-Validator registriert.
+Seit v3.2.2 validiert das Modul Nullbeträge und seine Konfiguration auf jedem Pfad einheitlich. **Ab v3.2.4 (Testnet seit 19. Oktober 2026; Mainnet ab Höhe 3.742.566):** Die Registrierung eines Bridge-Validators erfordert zusätzlich einen Besitznachweis des Dilithium-5-Schlüssels (dasselbe `proof_of_possession`-Format wie bei der PQC-Schlüsselregistrierung, siehe [Post-Quanten-Sicherheit](/architecture/post-quantum-security#proof-of-possession)) und weist einen Schlüssel zurück, den bereits ein anderer Bridge-Validator verwendet. Das Mainnet v3.2.3, das bis zu dieser Höhe läuft, hat keine solche Prüfung, und auf keinem der beiden Netzwerke ist ein Bridge-Validator registriert.
 
 ### Circuit Breaker
 

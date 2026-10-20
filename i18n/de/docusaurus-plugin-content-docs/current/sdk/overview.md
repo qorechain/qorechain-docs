@@ -21,7 +21,7 @@ arbeiten.
 QoreChain ist eine Layer-1-Blockchain mit drei vollwertigen
 Smart-Contract-Laufzeitumgebungen auf einer einzigen Chain:
 
-- **CosmWasm** — Wasm-Smart-Contracts über das Cosmos SDK.
+- **QoreChain Native** — Wasm-Smart-Contracts über das Cosmos SDK (die CosmWasm-Runtime).
 - **QoreChain EVM Engine** — Ethereum-kompatible Ausführung (Solidity, viem,
   Standard-JSON-RPC).
 - **SVM** — eine Solana-kompatible Laufzeitumgebung mit einem JSON-RPC im
@@ -31,20 +31,20 @@ Konten, Guthaben und Token werden über die Laufzeitumgebungen hinweg geteilt,
 und die Chain enthält das IBC-Modul für Cross-Chain-Interoperabilität (im
 Mainnet und im Testnet sind noch keine IBC-Channels geöffnet).
 
-:::note Was heute auf den Live-Netzwerken funktioniert (Mainnet v3.2.3, Testnet v3.2.4)
+:::note Was heute auf den Live-Netzwerken funktioniert (Mainnet v3.2.3, ab Höhe 3.742.566 v3.2.4; Testnet v3.2.4)
 **Funktioniert:** Lesezugriffe auf jeder Lane, hybrid-signierte Native-Transaktionen,
 vereinheitlichte Konten, EVM-Transaktionen innerhalb eines
 [Autorisierungsfensters](/sdk/guides/evm#evm-window) und SVM-Lesezugriffe.
 **Noch nicht verfügbar:** die EVM-Precompiles (inaktiv), der `qor_`-JSON-RPC-Namespace,
 SVM-Transaktionen, Cross-VM-Aufrufe im Mainnet (`MsgCrossVMCall` ist durch den
-Circuit Breaker abgeschaltet), CosmWasm-Upload und -Instanziierung für normale
+Circuit Breaker abgeschaltet), QoreChain Native-Upload und -Instanziierung für normale
 Konten, die Authenticator-/Abstract-Account-Abläufe (Modul abgeschaltet), xQORE
 und Gas-Abstraktion. Jeder Leitfaden wiederholt den Vorbehalt dort, wo er zutrifft.
 
 Das veröffentlichte SDK (0.9.0, 21. Oktober 2026) signiert in der Form, die beide
 Netzwerke verifizieren (v2-Hybrid-Sign-Bytes, aus dem Chain-Zustand aufgelöst),
 und das Signaturformat, die Adressen, Dezimalstellen, Memos und Gebühren haben
-sich in v3.2.3 oder v3.2.4 nicht geändert. Es enthält die Client-Seite der
+sich in v3.2.3 oder v3.2.4 nicht geändert (das Mainnet läuft ab Höhe 3.742.566 mit v3.2.4). Es enthält die Client-Seite der
 späteren Post-Quanten-Regeln (den Besitznachweis bei der Schlüsselregistrierung,
 EVM-Fenster mit Gültigkeitsbereich, EIP-7702-Einwilligungsnachrichten); Versionen
 vor 0.9.0 tun das nicht, siehe [Versionen vor 0.9.0](/sdk/install#before-090).
@@ -120,7 +120,7 @@ Ableitungsschemata, Denominations-Arithmetik und Lese-Schnittstellen.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (Import `qorsdk`) | Veröffentlicht (PyPI, v0.9.0) |
 | `qorechain-sdk` (Go-Modul) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Veröffentlicht (Go-Proxy, Tag `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (Import `qorechain`) | Veröffentlicht (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Veröffentlicht (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Veröffentlicht (Maven Central, v0.9.1; die anderen Sprachen sind 0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM-Adapter) | `npm i @qorechain/evm viem` | Veröffentlicht (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM-Adapter) | `npm i @qorechain/svm @solana/web3.js` | Veröffentlicht (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (React-Kit) | `npm i @qorechain/react` | Veröffentlicht (npm, v0.9.0) |
@@ -142,7 +142,7 @@ WebSocket-Subscriptions. Alle diese Clients sind **veröffentlicht**: TypeScript
 auf npm (`@qorechain/sdk` 0.9.0), Python auf PyPI (`qorechain-sdk` 0.9.0,
 Import `qorsdk`), Go auf dem Modul-Proxy (Tag `packages/go/v0.9.0`), Rust auf
 crates.io (`qorechain-sdk` 0.9.0) und Java auf Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.0). Die
+(`io.github.qorechain:qorechain-sdk` 0.9.1, ein reines Java-Update; die anderen Clients sind 0.9.0). Die
 EVM-/SVM-Ausführungsadapter (`@qorechain/evm`, `@qorechain/svm`, beide 0.8.0),
 das `@qorechain/react`-Kit (0.9.0) und die
 `create-qorechain-dapp`-Scaffolding-CLI (0.9.0) sind reine TypeScript-Pakete

@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Every `go build`, `go test`, and `go run` invocation **must** have `CGO_ENABLED=1` set. The node links native libraries (the CosmWasm runtime, and in the release build the PQC and SVM libraries) through cgo.
+Every `go build`, `go test`, and `go run` invocation **must** have `CGO_ENABLED=1` set. The node links native libraries (the QoreChain Native runtime, and in the release build the PQC and SVM libraries) through cgo.
 :::
 
 ## Native Libraries

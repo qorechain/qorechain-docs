@@ -56,7 +56,7 @@ pnpm --filter @qorechain/sdk docs:api
   `getPqcAccount`は動作します。
 - **クロスVM:** `getCrossVmMessage`、`getPendingCrossVmMessages`、
   `getCrossVmParams`。
-- **CosmWasm:** `createCosmWasmClient`、`connectCosmWasmSigner`、
+- **QoreChain Native:** `createCosmWasmClient`、`connectCosmWasmSigner`、
   `queryContractSmart`、`getContractInfo`、`instantiate`、`execute`、
   `uploadCode`。
 - **トランザクション:** `estimateFee`、`directSignerFromPrivateKey`、`TxClient`（
@@ -119,6 +119,6 @@ pnpm --filter @qorechain/sdk docs:api
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 公開APIにdocstringを完備 | `pip install qorechain-sdk`（バージョン`0.9.0`、インポート名は`qorsdk`） |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go)（godoc） | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0`（タグ `packages/go/v0.9.0`） |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk)（rustdoc） | `cargo add qorechain-sdk`（0.9.0、インポート名は`qorechain`） |
-| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
+| Java | Maven Central のjavadoc | `io.github.qorechain:qorechain-sdk:0.9.1`（他の言語は 0.9.0） |
 
 各パッケージは同一のサーフェス（ネットワークプリセット、denom／アドレスユーティリティ、HD導出 — 統合ethネイティブアカウントを含む — PQCプリミティブとハイブリッド署名、型付きメッセージとクエリ、オーセンティケータレーン、REST + `qor_` JSON-RPC読み取りクライアント）を提供し、各言語ネイティブのドキュメントツールでレンダリングされるようソース内にインラインで文書化されています。TypeScriptのウォレットビルダー（`buildPhantom*` / `buildMetaMask*`）とブラウザウォレットアダプタはTypeScript専用です。

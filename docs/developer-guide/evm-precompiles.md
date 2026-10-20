@@ -24,7 +24,7 @@ The six QoreChain precompiles below are **compiled into the node but not yet act
 | PRISM Consensus Params | `0x…0C01` | Not active | Not active |
 | CrossVM Bridge | `0x…0901` | Not active | Not active |
 
-Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and the testnet's v3.2.4 release did not change that. This table is updated in the same operation as the upgrade that activates any of them.
+Activation needs a chain upgrade and is planned in stages: the read-only PQC and consensus precompiles first, the AI pair once their read-only, fixed-point path is in place, and the CrossVM bridge last. The v3.2.3 release (mainnet, 20 October 2026) put the hardened versions of the CrossVM bridge and the AI anomaly precompile into the binary behind a protocol feature, **but it did not activate any precompile**: the `active_static_precompiles` list is still empty on both networks, and v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566) does not change that. This table is updated in the same operation as the upgrade that activates any of them.
 
 Check the live list yourself (an empty list means none is active):
 
@@ -54,7 +54,7 @@ Gas figures are what the node charges once a precompile is active (per byte mean
 
 | Precompile              | Address                                      | Base Gas        | Description                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Synchronous cross-VM calls (EVM to CosmWasm)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Synchronous cross-VM calls (EVM to QoreChain Native)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | Verify ML-DSA-87 post-quantum signatures         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Check if an account has a registered PQC key     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | Get AI-generated risk score for transaction data |
@@ -94,6 +94,8 @@ interface IQorePQC {
         returns (bool registered, uint8 algorithmId, bytes memory pubkey);
 }
 ```
+
+From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566), once this precompile is active its output carries a fourth value, `bool possessionProven`, after `pubkey`: whether the account's current key was proven by a verified proof of possession (see [Post-Quantum Signing](/developer-guide/post-quantum-signing#proof-of-possession)). The interface above lists the first three outputs; a contract that must trust the key should read the fourth as well.
 
 ### IQoreAI.sol
 
@@ -268,13 +270,13 @@ contract ConsensusReader {
 In the current node build `rlConsensusParams` returns fixed placeholder defaults, not live PRISM-tuned values (for example, it does not report the measured block time, which is about 3.2 s on mainnet and about 1.0 s on the testnet). Wiring it to the live consensus parameters is part of the activation work.
 :::
 
-### CrossVM Bridge — Call CosmWasm from EVM
+### CrossVM Bridge — Call QoreChain Native from EVM
 
 :::warning
-The CrossVM bridge precompile is **not active** on either network. The binary since v3.2.3 carries a hardened version of it that: refuses a `STATICCALL`; runs the nested call on a gas meter bounded by what the calling frame has left and journals it, so a revert in the calling contract also undoes the CosmWasm side; reaches only allowlisted CosmWasm targets (EVM targets are refused); and honours the cross-VM circuit breaker. Until a governance-approved upgrade activates it there is no synchronous EVM-to-CosmWasm path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
+The CrossVM bridge precompile is **not active** on either network. The binary since v3.2.3 carries a hardened version of it that: refuses a `STATICCALL`; runs the nested call on a gas meter bounded by what the calling frame has left and journals it, so a revert in the calling contract also undoes the QoreChain Native side; reaches only allowlisted QoreChain Native targets (EVM targets are refused); and honours the cross-VM circuit breaker. Until a governance-approved upgrade activates it there is no synchronous EVM-to-QoreChain Native path; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the `MsgCrossVMCall` message path, which is itself switched off on mainnet today.
 :::
 
-The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The only supported use is EVM to CosmWasm (`targetVM` = 1); the ABI may still change before activation.
+The node decodes calldata as `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-byte selector, then the ABI-encoded arguments). The only supported use is EVM to QoreChain Native (`targetVM` = 1); the ABI may still change before activation. The `@qorechain/rdk` helper `encodeCrossVmCalldata` encodes this layout from 0.6.0 (earlier releases encoded a different function), and its `isCrossVmPrecompileActive` reads the live `active_static_precompiles` list; see [Multi-VM](/rollups/multi-vm).
 
 **Gas cost:** 50,000 base + 4 gas per byte of input, plus the target contract execution cost. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for details.
 

@@ -19,7 +19,7 @@ Mainnet and testnet require a hybrid post-quantum signature on every Cosmos-lane
 
 ## Is there a lock-in period? {#lock-in-period}
 
-**On mainnet today**, no — there's no term to pick, because staking isn't sold in fixed durations here the way it often is on an exchange. Delegating stays active with rewards flowing from the next block, for as long as you want, until you choose to undelegate; there's nothing expiring and nothing to renew. The **21-day unbonding period** you'll see referenced throughout this guide is not a lock-in you agree to up front — it only starts once you *ask* to undelegate, and only applies to the QOR you're taking out. Moving a delegation between validators (redelegate) skips that wait entirely, since the stake never leaves the bonded pool. The "loyalty" term in the [bonding curve](#bonding-curve) further down is part of QoreChain's design but is **not applied by the live chain today**, so how long you stay delegated does not change your reward rate. An optional, time-locked form of staking exists on the testnet only; see [Time-locked staking (testnet only)](#time-locked-staking).
+**On mainnet today**, no — there's no term to pick, because staking isn't sold in fixed durations here the way it often is on an exchange. Delegating stays active with rewards flowing from the next block, for as long as you want, until you choose to undelegate; there's nothing expiring and nothing to renew. The **21-day unbonding period** you'll see referenced throughout this guide is not a lock-in you agree to up front — it only starts once you *ask* to undelegate, and only applies to the QOR you're taking out. Moving a delegation between validators (redelegate) skips that wait entirely, since the stake never leaves the bonded pool. The "loyalty" term in the [bonding curve](#bonding-curve) further down is part of QoreChain's design but is **not applied by the live chain today**, so how long you stay delegated does not change your reward rate. An optional, time-locked form of staking is on the testnet now and is scheduled for mainnet from height 3,742,566; see [Time-locked staking (v3.2.4)](#time-locked-staking).
 
 This describes current mainnet behavior, not a permanent guarantee — a minimum staking period is something governance could introduce in the future, the same way any other staking parameter on this page can change by vote. If that ever happens, the wallet will show the resulting wait (any minimum plus the 21-day unbonding) before you confirm a delegation, and this page will be updated to match.
 
@@ -123,22 +123,25 @@ Staking rewards are funded from two sources: the protocol's capped emission budg
 
 ---
 
-## Time-locked staking (testnet only) {#time-locked-staking}
+## Time-locked staking (v3.2.4) {#time-locked-staking}
 
-:::note Not on mainnet
-Release v3.2.4 adds an optional time-locked staking module, `x/stakingtier`, to the **`qorechain-diana` testnet only**. It is not live on mainnet yet (mainnet governance proposal 13 would apply v3.2.4 at height 3,742,566); on mainnet, delegation has no lock-in (see [above](#lock-in-period)). Everything below describes the testnet.
+:::note When this applies
+Release v3.2.4 adds an optional time-locked staking module, `x/stakingtier`. It has been live on the **`qorechain-diana` testnet** since 19 October 2026, and it is scheduled for **mainnet from height 3,742,566** (governance proposal 13; mainnet runs v3.2.3 until that block). Until the mainnet upgrade, delegation on mainnet has no lock-in (see [above](#lock-in-period)); from the upgrade, locking is available as an option and ordinary delegation stays lock-free. The mechanism below was checked against the live testnet parameters.
 :::
 
-On the testnet a delegator can commit part of an existing delegation to a validator for a fixed term of 3, 6 or 12 months. Terms and amounts are chain parameters; read the current ones from `GET /qorechain/stakingtier/v1/params` rather than from this page.
+A delegator can commit part of an existing delegation to a validator for a fixed term of 3, 6 or 12 months. Terms and amounts are chain parameters; read the current ones from `GET /qorechain/stakingtier/v1/params` rather than from this page.
 
-* **Locking is optional.** An ordinary delegation, redelegation and unbonding work exactly as described on this page. Only the locked amount is restricted: while a lock is open it cannot be undelegated or redelegated, and this holds for every route (transaction, authz, group, contract, governance).
+* **Locking is optional.** Ordinary delegation, redelegation and unbonding work exactly as described on this page. Only the locked amount is restricted: while a lock is open it cannot be undelegated or redelegated, and this holds for every route (transaction, authz, group, contract, governance).
 * **Minimum lock** of 10 QOR, and at most 16 open locks per delegator.
-* **Early unlock** is allowed: it ends the lock, forfeits the unpaid lock bonus and burns a part of the locked amount (recorded under the `staking_tier_penalty` burn source); the rest stays delegated and unlocked.
+* **Early unlock** is allowed: it ends the lock, forfeits whatever lock reward has not been paid, and burns a penalty taken from the locked amount (5% in the testnet parameters, recorded under the `staking_tier_penalty` burn source); the rest stays delegated and unlocked.
 * **Slashing** applies to a locked delegation like any other; the lock shrinks with the delegation.
-* **Claiming.** Lock bonuses accrue per epoch and are paid when you claim them.
+* **Claiming.** A lock earns an additional per-epoch reward component set by the module parameters; it is paid when you claim it, not automatically. This page does not quote rates: read `params` for the live settings.
+* **At expiry** the lock is released and the delegation continues as an ordinary one.
+
+The commands are available through the command line and the REST routes `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` and `/pool`; the amount is an integer number of `uqor` (1 QOR = 1,000,000 uqor).
 
 ```bash
-qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
 qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
   --gas 400000 --fees 40000uqor --generate-only > tx.json
@@ -147,7 +150,7 @@ qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
 qorechaind query stakingtier locks <holder_address>
 ```
 
-As on the rest of this page, sign each generated transaction with `tx pqc cosign`.
+The chain ID above is the testnet's; use `qorechain-vladi` on mainnet once it has taken the v3.2.4 upgrade. As on the rest of this page, sign each generated transaction with `tx pqc cosign`.
 
 ---
 

@@ -10,7 +10,7 @@ sidebar_position: 4
 تتضمن QoreChain بيئة تنفيذ **Solana Virtual Machine (SVM)**، تتيح للمطورين نشر وتنفيذ برامج SBF/BPF باستخدام أدوات Solana المألوفة. توفّر وحدة SVM واجهة JSON-RPC متوافقة مع Solana على **المنفذ 8899**، والتي يشغّلها أمر `qorechaind start` تلقائيًا (انظر [خادم JSON-RPC](#json-rpc-server) أدناه).
 
 :::note
-تستخدم الأوامر أدناه شبكة **`qorechain-vladi`** الرئيسية (العاملة منذ 7 يونيو 2026)، التي تشغّل إصدار العقدة **v3.2.3**. استبدل `--chain-id qorechain-diana` للشبكة التجريبية، التي تشغّل v3.2.4 (على الشبكة التجريبية فقط). **معاملات SVM معطّلة على الشبكتين** (انظر المربع التالي)، لذا فإن أوامر `tx svm` في هذه الصفحة للاطلاع المرجعي فقط: لا يمكن أن تنجح اليوم.
+تستخدم الأوامر أدناه شبكة **`qorechain-vladi`** الرئيسية (العاملة منذ 7 يونيو 2026)، التي تشغّل إصدار العقدة **v3.2.3** حتى الارتفاع 3,742,566 و**v3.2.4** اعتبارًا من تلك الكتلة (مقترح الحوكمة 13). استبدل `--chain-id qorechain-diana` للشبكة التجريبية، التي تعمل بالإصدار v3.2.4 منذ 19 أكتوبر 2026. **معاملات SVM معطّلة على الشبكتين** (انظر المربع التالي)، لذا فإن أوامر `tx svm` في هذه الصفحة للاطلاع المرجعي فقط: لا يمكن أن تنجح اليوم.
 :::
 
 ---
@@ -241,12 +241,12 @@ address = "127.0.0.1:8899"
 
 ## التشغيل البيني بين الآلات الافتراضية (Cross-VM)
 
-صُمّمت برامج SVM للتواصل مع عقود EVM وCosmWasm عبر رسالة `MsgCrossVMCall` الخاصة بوحدة `x/crossvm` (تحدد السلسلة مسار المصدر بنفسها). ولأن مسار SVM معطّل للمعاملات ولأن `MsgCrossVMCall` متوقفة على الشبكة الرئيسية، فلا يوجد اليوم مسار Cross-VM عامل لـ SVM. انظر [التشغيل البيني بين الآلات الافتراضية](/developer-guide/cross-vm-interoperability) للاطلاع على الحالة الراهنة ودورة حياة الرسالة وسلوك المهلة الزمنية.
+صُمّمت برامج SVM للتواصل مع عقود EVM وQoreChain Native عبر رسالة `MsgCrossVMCall` الخاصة بوحدة `x/crossvm` (تحدد السلسلة مسار المصدر بنفسها). ولأن مسار SVM معطّل للمعاملات ولأن `MsgCrossVMCall` متوقفة على الشبكة الرئيسية، فلا يوجد اليوم مسار Cross-VM عامل لـ SVM. انظر [التشغيل البيني بين الآلات الافتراضية](/developer-guide/cross-vm-interoperability) للاطلاع على الحالة الراهنة ودورة حياة الرسالة وسلوك المهلة الزمنية.
 
 ---
 
 ## الخطوات التالية
 
-* [التشغيل البيني بين الآلات الافتراضية](/developer-guide/cross-vm-interoperability) — التواصل بين SVM وEVM وCosmWasm
+* [التشغيل البيني بين الآلات الافتراضية](/developer-guide/cross-vm-interoperability) — التواصل بين SVM وEVM وQoreChain Native
 * [تطوير EVM](/developer-guide/evm-development) — عقود Solidity الذكية على QoreChain
-* [تطوير CosmWasm](/developer-guide/cosmwasm-development) — عقود WebAssembly المبنية بلغة Rust
+* [تطوير QoreChain Native](/developer-guide/cosmwasm-development) — عقود WebAssembly المبنية بلغة Rust

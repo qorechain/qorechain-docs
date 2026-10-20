@@ -7,14 +7,14 @@ sidebar_position: 8
 
 # Multi-VM (VM-übergreifende Aufrufe)
 
-Das RDK enthält TypeScript-Helfer, die einen Aufruf aus einem EVM-Contract in das **VM-übergreifende Precompile** unter `0x0000000000000000000000000000000000000901` kodieren, das dafür ausgelegt ist, ihn an einen CosmWasm-Contract auf der **QoreChain Native**-Laufzeitumgebung (Wasm) weiterzuleiten, sowie eine `multivm-rollup`-Scaffold-Vorlage, die sie verdrahtet. Das Tooling deckt ausschließlich **EVM → QoreChain Native** ab; SVM ist eine eigene Laufzeitumgebung und nicht Teil des Precompiles.
+Das RDK enthält TypeScript-Helfer, die einen Aufruf aus einem EVM-Contract in das **VM-übergreifende Precompile** unter `0x0000000000000000000000000000000000000901` kodieren, das dafür ausgelegt ist, ihn an einen QoreChain Native-Contract auf der **QoreChain Native**-Laufzeitumgebung (Wasm) weiterzuleiten, sowie eine `multivm-rollup`-Scaffold-Vorlage, die sie verdrahtet. Das Tooling deckt ausschließlich **EVM → QoreChain Native** ab; SVM ist eine eigene Laufzeitumgebung und nicht Teil des Precompiles.
 
 :::caution Auf den Live-Netzwerken noch nicht nutzbar
-Das VM-übergreifende Precompile ist auf keinem der beiden Netzwerke **aktiviert**: Die Liste der aktiven statischen Precompiles des EVM-Moduls ist im Mainnet und im Testnet leer, `eth_getCode` für `0x…0901` gibt `0x` zurück, und ein Aufruf davon gelingt mit leeren Daten und führt nichts aus. Der CosmWasm-Contract-Upload ist ebenfalls auf beiden Netzwerken geschlossen, und die SVM-Transaktionsspur ist netzwerkweit deaktiviert. Solange das Precompile nicht aktiviert und CosmWasm-Uploads nicht wieder geöffnet sind, gibt es nichts aufzurufen. Diese Seite dokumentiert das Tooling, damit Sie sich vorbereiten können; bauen Sie darauf keine Produktionsabläufe auf. Siehe [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
+Das VM-übergreifende Precompile ist auf keinem der beiden Netzwerke **aktiviert**: Die Liste der aktiven statischen Precompiles des EVM-Moduls ist im Mainnet und im Testnet leer, `eth_getCode` für `0x…0901` gibt `0x` zurück, und ein Aufruf davon gelingt mit leeren Daten und führt nichts aus. Der QoreChain Native-Contract-Upload ist ebenfalls auf beiden Netzwerken geschlossen, und die SVM-Transaktionsspur ist netzwerkweit deaktiviert. Solange das Precompile nicht aktiviert und QoreChain Native-Uploads nicht wieder geöffnet sind, gibt es nichts aufzurufen. Diese Seite dokumentiert das Tooling, damit Sie sich vorbereiten können; bauen Sie darauf keine Produktionsabläufe auf. Siehe [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
 :::
 
-:::caution Der Encoder in 0.5.0 entspricht nicht dem Layout der Chain
-`encodeCrossVmCalldata` in `@qorechain/rdk` 0.5.0 (und der Starter `CrossVmCaller.sol` in der `multivm-rollup`-Vorlage) verwenden die Funktion `executeCrossVMCall(string,bytes)`. Der Node dekodiert `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (4-Byte-Selektor, danach die ABI-kodierten Argumente; `targetVM` 1 ist CosmWasm, das einzige unterstützte Ziel), und die ABI kann sich vor der Aktivierung noch ändern. Calldata aus dem Helfer lässt sich daher auf dem Node auch dann nicht dekodieren, wenn das Precompile existiert. Die folgenden Abschnitte zeigen das Layout des Nodes.
+:::note Der Encoder entspricht seit 0.6.0 dem Layout der Chain
+`encodeCrossVmCalldata` in `@qorechain/rdk` **0.5.0 und früher** (und der Starter `CrossVmCaller.sol` in der `multivm-rollup`-Vorlage dieser Releases) verwendete `executeCrossVMCall(string,bytes)`, einen anderen Funktionsselektor als den, den der Node dekodiert; kein damit kodierter Aufruf hätte das Precompile erreichen können, selbst in einem Netzwerk, das es aktiviert hätte. **0.6.0** kodiert `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (Selektor `0x3c11078c`), also das, was der Node dekodiert (4-Byte-Selektor, danach die ABI-kodierten Argumente; `targetVM` 1 ist QoreChain Native, das einzige unterstützte Ziel), und die Calldata des Helfers durchläuft laut den Release-Notes den Round-Trip über den eigenen Dekoder der Chain. Die ABI kann sich vor der Aktivierung noch ändern.
 :::
 
 :::note
@@ -44,14 +44,36 @@ const calldata = encodeFunctionData({
   abi,
   functionName: "executeCrossVMCall",
   args: [
-    1, // CosmWasm
+    1, // QoreChain Native
     "qor1cosmwasmcontractaddress...",
     toHex(new TextEncoder().encode(JSON.stringify({ transfer: { recipient: "qor1...", amount: "100" } }))),
   ],
 });
 ```
 
-`encodeCrossVmCalldata({ contract, msg })` aus `@qorechain/rdk` erstellt stattdessen die Form `(string,bytes)`, die der Node nicht liest (siehe den obigen Warnhinweis).
+`encodeCrossVmCalldata` aus `@qorechain/rdk` 0.6.0 erstellt dieselbe Calldata für Sie:
+
+```ts
+import {
+  CROSS_VM_PRECOMPILE,
+  CROSS_VM_TARGET,
+  encodeCrossVmCalldata,
+  isCrossVmPrecompileActive,
+} from "@qorechain/rdk";
+
+// Ask the node first: today this answers `active: false` on both networks.
+const status = await isCrossVmPrecompileActive("https://api.qore.host");
+console.log(status.active, status.reason);
+
+const calldata = encodeCrossVmCalldata({
+  contract: "qor1cosmwasmcontractaddress...",
+  msg: JSON.stringify({ increment: {} }),
+  targetVm: CROSS_VM_TARGET.NATIVE, // 1 = QoreChain Native (CosmWasm); the default
+});
+// An EVM transaction to CROSS_VM_PRECOMPILE with `data: calldata`.
+```
+
+`isCrossVmPrecompileActive(restBase)` liest den EVM-Parameter `active_static_precompiles` über REST und antwortet nur dann mit `active: true`, wenn die Adresse des Precompiles aufgeführt ist. Das ist die einzige verlässliche Prüfung, und sie muss off-chain erfolgen: Das Precompile gibt die Rohantwort des Ziels zurück, sodass eine leere Antwort ein inaktives Precompile nicht von einem echten Aufruf eines Contracts unterscheiden kann, der nichts zurückgibt, und ein Precompile hat keinen Bytecode, ob aktiv oder nicht. Selbst wenn es `active: true` meldet, dokumentiert das Paket, dass ein Aufruf ab Chain v3.2.3 nur die Ziele erreicht, die die Governance auf die Allowlist gesetzt hat (der VM-übergreifende Parameter `bridge_allowed_targets`, jeder Eintrag `<vm>:<contract>`), und dass EVM-zu-EVM abgelehnt wird.
 
 ## Die Solidity-Seite
 
@@ -72,7 +94,7 @@ function callCosmWasm(string calldata contractAddr, bytes calldata msg_)
 }
 ```
 
-Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Wenn Sie dies heute testen, prüfen Sie die Wirkung auf den Ziel-Contract.
+Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit leeren Daten zurück und bewirkt nichts**; das `ok`-Flag sagt Ihnen nicht, ob der Aufruf eine Wirkung hatte. Der verlässliche Schutz im Contract ist ein Ziel, das stets eine nicht leere Bestätigung zurückgibt, mit einem `require(ret.length > 0)` nach dem Aufruf, sodass eine leere Antwort als Fehler behandelt wird; die `multivm-rollup`-Vorlage von 0.6.0 tut dies.
 
 ## Ein Multi-VM-Rollup per Scaffold erstellen
 
@@ -80,4 +102,4 @@ Da das Precompile inaktiv ist, gibt ein einfacher `.call` darauf **Erfolg mit le
 npm create qorechain-rollup my-app -- --template multivm-rollup
 ```
 
-Die Vorlage enthält einen Ausgangspunkt `contracts/CrossVmCaller.sol`; vergleichen Sie ihn mit dem oben gezeigten Layout des Nodes, bevor Sie sich darauf verlassen. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.
+Die Vorlage von 0.6.0 enthält `src/crossvm-call.ts` (es prüft, ob das Precompile aktiv ist, und gibt dann die Calldata aus) und einen `contracts/CrossVmCaller.sol`, der `executeCrossVMCall(uint8,string,bytes)` aufruft und eine nicht leere Antwort des Ziels verlangt. Er lässt einen Aufruf nicht funktionieren, solange das Precompile inaktiv ist. Siehe [Ein Rollup bereitstellen](/rollups/deploying-a-rollup) für alle Scaffolder-Vorlagen.

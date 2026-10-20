@@ -1,19 +1,21 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: CosmWasm-Leitfaden
-sidebar_label: CosmWasm
+title: QoreChain Native-Leitfaden
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# CosmWasm-Leitfaden
+# QoreChain Native-Leitfaden
+
+QoreChain Native ist QoreChains Name für seine CosmWasm-Smart-Contract-Laufzeitumgebung; die auf dieser Seite genannten CosmWasm-Bibliotheken und Client-Pakete sind also diejenigen, die du damit verwendest.
 
 Der TypeScript-Core (`@qorechain/sdk`) enthält dünne, typisierte Wrapper über
-`@cosmjs/cosmwasm-stargate` zum Abfragen und Ausführen von CosmWasm-Verträgen. Lesevorgänge
+`@cosmjs/cosmwasm-stargate` zum Abfragen und Ausführen von QoreChain Native-Verträgen. Lesevorgänge
 nutzen einen schreibgeschützten Client; Zustandsänderungen nutzen einen signierenden Client.
 
 ## Schreibgeschützte Abfragen
 
-Öffne einen schreibgeschützten CosmWasm-Client aus deiner `createClient()`-Instanz — er
+Öffne einen schreibgeschützten QoreChain Native-Client aus deiner `createClient()`-Instanz — er
 verbindet sich über den Konsens-RPC-Endpunkt und wird auf dem Client memoisiert.
 
 ```ts
@@ -49,10 +51,10 @@ zusätzlich durch den Circuit Breaker der Chain abgeschaltet, sodass `uploadCode
 und `instantiate` für gewöhnliche Konten abgelehnt werden. Bereits vorhandene
 Verträge können abgefragt (siehe oben) und ausgeführt werden. Prüfe
 `GET /cosmwasm/wasm/v1/codes/params` für die aktuellen Berechtigungen.
-Siehe [CosmWasm-Entwicklung](/developer-guide/cosmwasm-development).
+Siehe [QoreChain Native-Entwicklung](/developer-guide/cosmwasm-development).
 :::
 
-:::caution Der CosmWasm-Signing-Client signiert klassisch
+:::caution Der QoreChain Native-Signing-Client signiert klassisch
 `connectCosmWasmSigner` umhüllt den CosmJS-Signing-Client, der nur die klassische
 secp256k1-Signatur anhängt. Die Live-Netzwerke verlangen bei jeder Transaktion
 über den Native-Pfad die Hybrid-Signatur (secp256k1 + ML-DSA-87); eine darüber
@@ -109,7 +111,7 @@ Die genauen Argumentformen folgen `@cosmjs/cosmwasm-stargate`; das SDK fügt typ
 
 ### Ausführen auf einem Live-Netzwerk (Hybrid)
 
-Füge die CosmWasm-Nachrichtentypen zu einer Registry hinzu und sende die
+Füge die QoreChain Native-Nachrichtentypen zu einer Registry hinzu und sende die
 `MsgExecuteContract` über den Hybrid-Builder. Der ML-DSA-87-Schlüssel des Kontos
 muss zuvor registriert sein (siehe [Quantensicher](/sdk/guides/quantum-safe)).
 Benötigt

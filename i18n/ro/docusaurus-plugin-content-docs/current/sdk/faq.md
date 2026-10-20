@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Este mainnet-ul activ?
 
 Da. Mainnet-ul este **activ** (chain id `qorechain-vladi`, activ din 7 iunie 2026)
-și rulează versiunea de chain v3.2.3 la data de 20 octombrie 2026. Presetul de testnet
+și rulează versiunea de chain v3.2.3 până la înălțimea 3.742.566 și v3.2.4 de la acel bloc (propunerea de guvernanță 13); testnet-ul rulează v3.2.4 din 19 octombrie 2026. Presetul de testnet
 (`qorechain-diana`) rămâne de asemenea disponibil. Ambele preseturi vin cu
 endpoint-uri implicite pe localhost; selectați rețeaua cu
 `createClient({ network: "mainnet" })` și suprascrieți `endpoints` cu URL-urile
@@ -33,7 +33,7 @@ const client = createClient({
 ```
 
 Calea de semnare (`connectTx`) are nevoie de endpoint-ul de consens **`rpc`**;
-citirile CosmWasm îl folosesc de asemenea. Citirile REST folosesc `rest`;
+citirile QoreChain Native îl folosesc de asemenea. Citirile REST folosesc `rest`;
 apelurile EVM folosesc `evmRpc` (la fel și apelurile `qor_`, pe un nod care
 servește acel namespace). URL-urile de mainnet se găsesc în
 [referința de rețea](/sdk/reference/network#public-endpoints).
@@ -92,7 +92,7 @@ npm; clientul Python este pe PyPI (`pip install qorechain-sdk` la 0.9.0, import
 `qorsdk`); clientul Go este pe module proxy
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); clientul Rust este
 pe crates.io (`cargo add qorechain-sdk`, 0.9.0); iar clientul Java este pe Maven
-Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Vedeți [Instalare](/sdk/install) pentru comenzile complete
+Central (`io.github.qorechain:qorechain-sdk:0.9.1`; celelalte limbaje au 0.9.0). Vedeți [Instalare](/sdk/install) pentru comenzile complete
 pentru fiecare limbaj.
 
 ## Mnemonicul meu este respins
@@ -148,7 +148,7 @@ vechi sunt respinse on-chain, pe fiecare cale (inclusiv eth-native).
 ## Cu ce versiuni de chain funcționează SDK-ul?
 
 SDK **0.9.0** este versiunea de client pentru chain v3.2.2 și v3.2.3: tranzacționează pe
-mainnet **v3.2.3** și pe testnet **v3.2.4** și are constructori pentru dovada de
+mainnet **v3.2.3** (și **v3.2.4** de la înălțimea 3.742.566) și pe testnet **v3.2.4** și are constructori pentru dovada de
 posesie opțională la înregistrare (atașată automat de `ensurePqcRegistered` odată ce
 rețeaua a aplicat v3.2.3), pentru ferestrele EVM cu domeniu limitat și pentru mesajele
 de consimțământ EIP-7702.
@@ -156,9 +156,9 @@ SDK **0.8.1 sau mai nou** tranzacționează de asemenea pe ambele rețele (forma
 sign-bytes hibride, înregistrarea, trimiterile hibride și fereastra EVM funcționează
 neschimbat), dar nu are niciunul dintre acei constructori: folosiți CLI-ul pentru ei
 (vedeți
-[Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). v3.2.4 este activ deocamdată
-doar pe testnet (propunerea de guvernanță 13 de pe mainnet ar aplica-o la înălțimea
-3.742.566), iar SDK-ul nu setează niciun câmp v3.2.4.
+[Versiuni anterioare lui 0.9.0](/sdk/install#before-090)). v3.2.4 rulează pe testnet
+din 19 octombrie 2026 și pe mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13);
+SDK-ul nu setează niciun câmp v3.2.4, deci tranzacțiile sale rămân valide de ambele părți ale acelei înălțimi.
 
 ## Înregistrarea cheii mele PQC a fost refuzată, dar taxa a fost luată
 

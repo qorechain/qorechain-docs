@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### Este mainnet-ul live?
 
-Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.3 (testnet-ul, `qorechain-diana`, rulează v3.2.4). Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
+Da. Mainnet-ul QoreChain (lanțul `qorechain-vladi`, EVM chain ID 9801) este live din 7 iunie 2026 și rulează versiunea v3.2.3 până la înălțimea 3.742.566 și v3.2.4 începând cu acel bloc (propunerea de guvernanță 13); testnet-ul, `qorechain-diana`, rulează v3.2.4 din 19 octombrie 2026. Vezi [Rețele](/appendix/networks) și [Conectarea la mainnet](/getting-started/connecting-to-mainnet).
 
 ### Care sunt chain ID-urile și EVM chain ID-urile?
 
@@ -71,11 +71,11 @@ Folosiți QoreChain Rollup Development Kit. Vezi [Rollup-uri](/rollups/overview)
 
 ### Cum construiesc un dApp?
 
-Folosiți [QoreChain SDK](/sdk/overview), SDK-ul public pentru construirea de aplicații pe QoreChain în mediile sale de execuție EVM, SVM și CosmWasm.
+Folosiți [QoreChain SDK](/sdk/overview), SDK-ul public pentru construirea de aplicații pe QoreChain în mediile sale de execuție EVM, SVM și QoreChain Native.
 
 ### Unde pot pune întrebări?
 
-Botul comunitar QCAIA răspunde la întrebări pe Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) și Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Vezi [Botul comunitar QCAIA](/qcaia/overview).
+Botul comunitar QCAIA răspunde la întrebări pe Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) și Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Vezi [Botul comunitar QCAIA](/qcaia/overview).
 
 ## Resurse conexe
 

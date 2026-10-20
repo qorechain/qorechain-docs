@@ -17,18 +17,18 @@ QoreChain's Layer 1 rather than the tooling:
 - a **triple-VM** runtime with cross-VM calls.
 
 :::caution Early stage: read the status column
-No rollup has been created on either network yet (checked 20 October 2026). The
-table below states what works today; the limits of the released 0.5.0 clients are
-collected in [RDK 0.5.0 limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
+No rollup has been created on either network yet (checked 21 October 2026). The
+table below states what works today; what the released 0.6.0 clients changed and the
+limits that remain are collected in [RDK 0.6.0: changes and limits](/rollups/deploying-a-rollup#rdk-050-limits). If you only need a generic optimistic/zk rollup, any kit will do;
 the capabilities here are what the RDK adds on top, in TypeScript, Python, Go,
 Rust, and Java.
 :::
 
 | Capability | Status | What it relies on |
 | --- | --- | --- |
-| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, and the 0.5.0 verifier cannot complete its chain check against the live networks |
+| **Quantum-safe settlement receipts** | 🟡 Early stage | Anchors are signed with ML-DSA-87, the Main Chain's post-quantum scheme; no anchors exist yet, so the 0.6.0 verifier (which checks against the chain) has never been run on a real anchor |
 | **QCAI Rollup Copilot** | 🟡 Not available on the public endpoints yet | On-chain AI/RL advisory services that the public endpoints do not expose today |
-| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated, a 0.5.0 encoder that does not match the chain's layout, and CosmWasm upload is closed |
+| **Multi-VM cross-VM calls** | 🟡 Not usable on the live networks yet | A cross-VM precompile that is not activated (the 0.6.0 encoder matches the chain's layout), and QoreChain Native upload is closed |
 
 ---
 
@@ -53,9 +53,10 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-In 0.5.0, `verifySettlementReceipt` checks against the chain and refuses to say
-`valid` without a `client`, but its chain check does not complete against the live
-networks yet, so it fails closed rather than reporting a genuine receipt as valid.
+`verifySettlementReceipt` checks against the chain and refuses to say `valid`
+without a `client`. In 0.5.0 its chain check could not complete against the live
+networks (it failed closed rather than reporting a genuine receipt as valid);
+0.6.0 fixes that, but no anchor exists yet, so it has not been run on a real one.
 See [Quantum-safe settlement receipts](/rollups/settlement-receipts) for what a
 receipt does and does not prove and for the exact limits.
 
@@ -86,20 +87,20 @@ From the CLI: `qorollup advise my-rollup`. See [QCAI Copilot](/rollups/qcai-copi
 ## 3. Multi-VM cross-VM calls
 
 > 🟡 **Not usable on the live networks yet** — the precompile is not activated and
-> CosmWasm upload is closed. See [Multi-VM](/rollups/multi-vm).
+> QoreChain Native upload is closed. See [Multi-VM](/rollups/multi-vm).
 
 The RDK includes helpers that encode a call from an EVM (Solidity) contract to a
-**CosmWasm** contract through a fixed precompile at `0x…0901`. That precompile is
+**QoreChain Native** contract through a fixed precompile at `0x…0901`. That precompile is
 **not active** on mainnet or testnet (see
 [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status)):
 `eth_getCode` for `0x…0901` returns `0x` on both, and a contract call to it
 succeeds with no effect.
 
-The 0.5.0 helper `encodeCrossVmCalldata` builds calldata for
-`executeCrossVMCall(string,bytes)`, but the node decodes
-`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, so its
-output does not match what the chain reads. Encode the call with the chain's layout
-instead (shown here with viem; `targetVM` 1 is CosmWasm, the only supported target):
+The 0.6.0 helper `encodeCrossVmCalldata` builds calldata for
+`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, the layout
+the node decodes (0.5.0 and earlier encoded a two-argument form with a different
+selector, which could never have reached the precompile). You can encode the same call
+yourself, shown here with viem (`targetVM` 1 is QoreChain Native, the only supported target):
 
 ```ts
 import { encodeFunctionData, parseAbi, toHex } from "viem";
@@ -112,7 +113,7 @@ const calldata = encodeFunctionData({
   abi,
   functionName: "executeCrossVMCall",
   args: [
-    1,                                                          // 1 = CosmWasm
+    1,                                                          // 1 = QoreChain Native
     "qor1examplecontract…",                                     // target contract
     toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
   ],
@@ -142,7 +143,7 @@ success with empty data and executes nothing, so confirm the effect on the targe
 contract.
 
 Scaffold a starter with `npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(EVM↔CosmWasm only; SVM cross-calls are separate.)
+(EVM↔QoreChain Native only; SVM cross-calls are separate.)
 
 ---
 

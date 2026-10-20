@@ -24,7 +24,7 @@ Cele șase precompilate QoreChain de mai jos sunt **compilate în nod, dar înc�
 | PRISM Consensus Params | `0x…0C01` | Neactiv | Neactiv |
 | CrossVM Bridge | `0x…0901` | Neactiv | Neactiv |
 
-Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar versiunea v3.2.4 de pe testnet nu a schimbat acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
+Activarea necesită un upgrade al lanțului și este planificată în etape: mai întâi precompilatele PQC și de consens, doar pentru citire, apoi perechea AI, odată ce calea lor de citire, în virgulă fixă, este pusă la punct, iar puntea CrossVM la final. Versiunea v3.2.3 (mainnet, 20 octombrie 2026) a introdus în binar, în spatele unei funcționalități de protocol, versiunile întărite ale punții CrossVM și ale precompilatului AI de anomalii, **dar nu a activat niciun precompilat**: lista `active_static_precompiles` este în continuare goală pe ambele rețele, iar v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3,742,566) nu schimbă acest lucru. Acest tabel se actualizează în aceeași operațiune cu upgrade-ul care activează oricare dintre ele.
 
 Verifică singur lista curentă (goală înseamnă că niciunul nu e activ):
 
@@ -54,7 +54,7 @@ Cifrele de gaz sunt cele pe care nodul le taxează după ce un precompilat este 
 
 | Precompilat              | Adresă                                      | Gaz de bază      | Descriere                                          |
 | ------------------------ | -------------------------------------------- | --------------- | --------------------------------------------------- |
-| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/octet | Apeluri sincrone cross-VM (de la EVM la CosmWasm)   |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/octet | Apeluri sincrone cross-VM (de la EVM la QoreChain Native)   |
 | **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/octet | Verifică semnături post-cuantice ML-DSA-87          |
 | **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifică dacă un cont are o cheie PQC înregistrată  |
 | **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Obține scorul de risc generat de AI pentru date de tranzacție |
@@ -94,6 +94,8 @@ interface IQorePQC {
         returns (bool registered, uint8 algorithmId, bytes memory pubkey);
 }
 ```
+
+Începând cu v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3,742,566), odată ce acest precompilat este activ, ieșirea lui conține o a patra valoare, `bool possessionProven`, după `pubkey`: dacă cheia curentă a contului a fost dovedită printr-o dovadă de posesie verificată (vezi [Semnarea post-cuantică](/developer-guide/post-quantum-signing#proof-of-possession)). Interfața de mai sus listează primele trei ieșiri; un contract care trebuie să aibă încredere în cheie ar trebui să citească și a patra valoare.
 
 ### IQoreAI.sol
 
@@ -268,13 +270,13 @@ contract ConsensusReader {
 În build-ul curent al nodului, `rlConsensusParams` returnează valori implicite fixe, de umplutură (placeholder), nu valori live ajustate de PRISM (de exemplu, nu raportează timpul de bloc măsurat, care este de aproximativ 3,2 s pe mainnet și de aproximativ 1,0 s pe testnet). Conectarea la parametrii de consens live face parte din munca de activare.
 :::
 
-### CrossVM Bridge — Apelarea CosmWasm din EVM
+### CrossVM Bridge — Apelarea QoreChain Native din EVM
 
 :::warning
-Precompilatul CrossVM bridge **nu este activ** pe nicio rețea. Binarul, începând cu v3.2.3, conține o versiune întărită a acestuia care: refuză un `STATICCALL`; rulează apelul imbricat pe un contor de gaz limitat de ceea ce îi mai rămâne frame-ului apelant și îl jurnalizează, astfel încât un revert în contractul apelant anulează și partea CosmWasm; ajunge doar la ținte CosmWasm din lista permisă (țintele EVM sunt refuzate); și respectă circuit breaker-ul cross-VM. Până când o actualizare aprobată prin guvernanță îl activează, nu există o cale sincronă de la EVM la CosmWasm; vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru calea de mesaj `MsgCrossVMCall`, care este ea însăși oprită pe mainnet în prezent.
+Precompilatul CrossVM bridge **nu este activ** pe nicio rețea. Binarul, începând cu v3.2.3, conține o versiune întărită a acestuia care: refuză un `STATICCALL`; rulează apelul imbricat pe un contor de gaz limitat de ceea ce îi mai rămâne frame-ului apelant și îl jurnalizează, astfel încât un revert în contractul apelant anulează și partea QoreChain Native; ajunge doar la ținte QoreChain Native din lista permisă (țintele EVM sunt refuzate); și respectă circuit breaker-ul cross-VM. Până când o actualizare aprobată prin guvernanță îl activează, nu există o cale sincronă de la EVM la QoreChain Native; vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru calea de mesaj `MsgCrossVMCall`, care este ea însăși oprită pe mainnet în prezent.
 :::
 
-Nodul decodează calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 octeți, apoi argumentele codificate ABI). Singura utilizare acceptată este de la EVM la CosmWasm (`targetVM` = 1); ABI-ul se mai poate schimba înainte de activare.
+Nodul decodează calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector de 4 octeți, apoi argumentele codificate ABI). Singura utilizare acceptată este de la EVM la QoreChain Native (`targetVM` = 1); ABI-ul se mai poate schimba înainte de activare. Helper-ul `@qorechain/rdk` `encodeCrossVmCalldata` codifică acest layout începând cu 0.6.0 (versiunile anterioare codificau o altă funcție), iar `isCrossVmPrecompileActive` al său citește lista live `active_static_precompiles`; vezi [Multi-VM](/rollups/multi-vm).
 
 **Cost de gaz:** 50.000 de bază + 4 gaz per octet de date de intrare, plus costul de execuție al contractului țintă. Vezi [Interoperabilitate Cross-VM](/developer-guide/cross-vm-interoperability) pentru detalii.
 

@@ -193,7 +193,7 @@ Tüm QCB köprü işlemleri, kayıtlı köprü doğrulayıcılarından Dilithium
 * Desteklenen zincirlerin listesi
 * Bir itibar puanı (`x/reputation` tarafından sürdürülür)
 
-v3.2.2'den beri modül, sıfır tutarları ve kendi yapılandırmasını her yolda tutarlı biçimde doğrular. **Yalnızca testnet (v3.2.4, mainnet'te yok):** bir köprü doğrulayıcısını kaydetmek ayrıca Dilithium-5 anahtarının sahiplik kanıtını gerektirir (PQC anahtar kaydıyla aynı `proof_of_possession` biçimi; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security#proof-of-possession)) ve başka bir köprü doğrulayıcısının zaten kullandığı bir anahtarı reddeder. Mainnet v3.2.3'te böyle bir kontrol yoktur ve hiçbir ağda kayıtlı köprü doğrulayıcısı bulunmamaktadır.
+v3.2.2'den beri modül, sıfır tutarları ve kendi yapılandırmasını her yolda tutarlı biçimde doğrular. **v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren):** bir köprü doğrulayıcısını kaydetmek ayrıca Dilithium-5 anahtarının sahiplik kanıtını gerektirir (PQC anahtar kaydıyla aynı `proof_of_possession` biçimi; bkz. [Kuantum Sonrası Güvenlik](/architecture/post-quantum-security#proof-of-possession)) ve başka bir köprü doğrulayıcısının zaten kullandığı bir anahtarı reddeder. Bu yüksekliğe kadar çalışan mainnet v3.2.3'te böyle bir kontrol yoktur ve hiçbir ağda kayıtlı köprü doğrulayıcısı bulunmamaktadır.
 
 ### Devre Kesiciler (Circuit Breakers)
 

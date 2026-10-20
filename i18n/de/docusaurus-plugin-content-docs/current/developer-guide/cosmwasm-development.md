@@ -1,20 +1,20 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: CosmWasm-Entwicklung
-sidebar_label: CosmWasm-Entwicklung
+title: QoreChain Native-Entwicklung
+sidebar_label: QoreChain Native-Entwicklung
 sidebar_position: 3
 ---
 
-# CosmWasm-Entwicklung
+# QoreChain Native-Entwicklung
 
-QoreChain unterstützt **CosmWasm**-Smart-Contracts und ermöglicht es Entwicklern, sichere, sandboxed Programme in Rust zu schreiben, die zu WebAssembly kompiliert werden. CosmWasm-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
+QoreChain unterstützt **QoreChain Native**-Smart-Contracts. QoreChain Native ist der Name, den QoreChain für seine **CosmWasm**-Runtime verwendet: Entwickler schreiben sichere, sandboxed Programme in Rust gegen die Standard-CosmWasm-Bibliotheken (`cosmwasm-std`) und kompilieren sie zu WebAssembly. QoreChain Native-Contracts laufen innerhalb der Triple-VM-Architektur von QoreChain parallel zu EVM- und SVM-Programmen.
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.3** läuft. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem v3.2.4 läuft (nur Testnet).
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), auf dem das Node-Release **v3.2.3** bis zur Höhe 3.742.566 und ab diesem Block **v3.2.4** läuft (Governance-Vorschlag 13). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, auf dem seit dem 19. Oktober 2026 v3.2.4 läuft.
 :::
 
 :::caution Code-Upload und Instanziierung erfordern derzeit eine explizite Berechtigung
-Zum Zeitpunkt der Erstellung dieses Dokuments sind `code_upload_access` und `instantiate_default_permission` sowohl im **Mainnet als auch im Testnet** auf **`Nobody`** gesetzt — das bedeutet, `MsgStoreCode` und `MsgInstantiateContract` stehen standardmäßig nicht beliebigen Accounts offen, im Einklang mit einer branchenweiten CosmWasm-Sicherheitswarnung. Sie benötigen eine Governance-Entscheidung, um Ihrem Account (oder einer bestimmten Adressliste) die Upload-/Instanziierungsberechtigung zu erteilen, bevor die untenstehenden Schritte gelingen. Prüfen Sie zunächst die aktuellen Live-Parameter, da genau diese Einstellung durch Governance geändert werden kann (im Mainnet ist derzeit überhaupt kein Contract-Code gespeichert):
+Zum Zeitpunkt der Erstellung dieses Dokuments sind `code_upload_access` und `instantiate_default_permission` sowohl im **Mainnet als auch im Testnet** auf **`Nobody`** gesetzt — das bedeutet, `MsgStoreCode` und `MsgInstantiateContract` stehen standardmäßig nicht beliebigen Accounts offen, im Anschluss an eine branchenweite Sicherheitswarnung für CosmWasm, die Runtime, auf der QoreChain Native aufbaut. Sie benötigen eine Governance-Entscheidung, um Ihrem Account (oder einer bestimmten Adressliste) die Upload-/Instanziierungsberechtigung zu erteilen, bevor die untenstehenden Schritte gelingen. Prüfen Sie zunächst die aktuellen Live-Parameter, da genau diese Einstellung durch Governance geändert werden kann (im Mainnet ist derzeit überhaupt kein Contract-Code gespeichert):
 
 ```bash
 qorechaind query wasm params
@@ -39,7 +39,7 @@ Mainnet und Testnet verlangen für jede Transaktion auf der Cosmos-Lane eine hyb
 | **Rust**                     | Aktuell stabil | Contract-Kompilierung          |
 | **wasm32-unknown-unknown**   | Target        | WebAssembly-Kompilierungsziel  |
 | **cargo-generate**           | Aktuell       | Projekt-Scaffolding            |
-| **cosmwasm-std**             | 1.5+          | CosmWasm-Standardbibliothek    |
+| **cosmwasm-std**             | 1.5+          | CosmWasm-Standardbibliothek            |
 
 Installieren Sie das Wasm-Target:
 
@@ -51,7 +51,7 @@ rustup target add wasm32-unknown-unknown
 
 ## Contract-Lebenszyklus
 
-CosmWasm-Contracts folgen einem fünfstufigen Lebenszyklus: **Build**, **Store**, **Instantiate**, **Execute** und **Query**.
+QoreChain Native-Contracts folgen einem fünfstufigen Lebenszyklus: **Build**, **Store**, **Instantiate**, **Execute** und **Query**.
 
 1. **Build** — Kompilieren Sie Ihren Contract zu optimiertem WebAssembly:
 
@@ -166,7 +166,7 @@ qorechaind query wasm contract-history <contract-addr>
 
 ## Contract-Struktur
 
-Ein typischer CosmWasm-Contract hat drei Einstiegspunkte:
+Ein typischer QoreChain Native-Contract hat drei Einstiegspunkte:
 
 ```rust
 use cosmwasm_std::{
@@ -211,7 +211,7 @@ pub fn query(
 
 ## Cross-VM-Aufrufe
 
-Cross-VM-Aufrufe werden als `MsgCrossVMCall`-Transaktionen über das Modul `x/crossvm` gesendet; den Nachrichten-Lebenszyklus finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability). CosmWasm-Contracts haben keine eigene contractseitige Anbindung, um einen Cross-VM-Aufruf auszulösen (es gibt keine benutzerdefinierte `QoreChainMsg`-Nachricht, die Contracts ausgeben könnten); ein Contract kann daher aus seinem `execute`-Einstiegspunkt heraus keinen EVM- oder SVM-Contract aufrufen. Seit v3.2.3 wird ein Aufruf in die eigene Lane des Aufrufers abgelehnt, und ein eingereihter Aufruf, der fehlschlägt, hinterlässt keine Nebenwirkungen.
+Cross-VM-Aufrufe werden als `MsgCrossVMCall`-Transaktionen über das Modul `x/crossvm` gesendet; den Nachrichten-Lebenszyklus finden Sie unter [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability). QoreChain Native-Contracts haben keine eigene contractseitige Anbindung, um einen Cross-VM-Aufruf auszulösen (es gibt keine benutzerdefinierte `QoreChainMsg`-Nachricht, die Contracts ausgeben könnten); ein Contract kann daher aus seinem `execute`-Einstiegspunkt heraus keinen EVM- oder SVM-Contract aufrufen. Seit v3.2.3 wird ein Aufruf in die eigene Lane des Aufrufers abgelehnt, und ein eingereihter Aufruf, der fehlschlägt, hinterlässt keine Nebenwirkungen.
 
 :::caution Cross-VM-Aufrufe sind im Mainnet derzeit abgeschaltet
 `MsgCrossVMCall` steht auf der Circuit-Breaker-Liste des Mainnets (`qorechaind query circuit disabled-list`), und die SVM-Lane ist in beiden Netzwerken deaktiviert; der Cross-VM-Pfad ist daher für gewöhnliche Transaktionen heute nicht nutzbar.
@@ -221,7 +221,7 @@ Cross-VM-Aufrufe werden als `MsgCrossVMCall`-Transaktionen über das Modul `x/cr
 
 ## Modul-Integration
 
-CosmWasm-Contracts können über standardmäßige Nachrichtenübermittlung mit Cosmos-SDK-Modulen interagieren:
+QoreChain Native-Contracts können über standardmäßige Nachrichtenübermittlung mit Cosmos-SDK-Modulen interagieren:
 
 ```rust
 // Send native tokens via the bank module
@@ -263,6 +263,6 @@ Dies ruft den `migrate`-Einstiegspunkt des neuen Codes mit dem bestehenden Contr
 
 ## Nächste Schritte
 
-* [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — EVM- und SVM-Contracts von CosmWasm aus aufrufen
+* [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — EVM- und SVM-Contracts von QoreChain Native aus aufrufen
 * [SVM-Entwicklung](/developer-guide/svm-development) — BPF-Programme auf QoreChain bereitstellen
 * [EVM-Precompiles](/developer-guide/evm-precompiles) — Referenz für die geplanten Solidity-Precompiles (noch ist keines aktiv)

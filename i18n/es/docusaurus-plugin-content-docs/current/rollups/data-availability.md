@@ -16,7 +16,7 @@ La disponibilidad de datos (DA) es la garantía de que los datos de transacción
 | **`both`** | Native y Celestia juntos, para redundancia | Se comporta exactamente como `native` hoy |
 
 :::caution Capacidad en fase temprana
-Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el 20 de octubre de 2026), y los backends de DA están implementados solo en parte. El estado de cada backend se indica a continuación; valida en la testnet **`qorechain-diana`** antes de confiar en cualquiera de ellos.
+Todavía no se ha creado ningún rollup en ninguna de las dos redes (comprobado el 21 de octubre de 2026), y los backends de DA están implementados solo en parte. El estado de cada backend se indica a continuación; valida en la testnet **`qorechain-diana`** antes de confiar en cualquiera de ellos.
 :::
 
 ---

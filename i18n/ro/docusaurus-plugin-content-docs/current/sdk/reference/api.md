@@ -64,7 +64,7 @@ Exporturile deliberate, suportate, ale `@qorechain/sdk`:
   `/qorechain/pqc/v1/account/{address}`) `getPqcAccount` funcționează.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
-- **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
+- **QoreChain Native:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
 - **Tranzacții:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient` (hibrid
@@ -138,7 +138,7 @@ program-id.
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — docstring-uri pe API-ul public | `pip install qorechain-sdk` la `0.9.0` (import `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (tag `packages/go/v0.9.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.9.0` |
+| Java | Javadoc pe Maven Central | `io.github.qorechain:qorechain-sdk:0.9.1` (celelalte limbaje sunt 0.9.0) |
 
 Fiecare pachet oglindește aceeași suprafață (preseturi de rețea, utilitare
 denom/adrese, derivare HD — inclusiv conturi unificate eth-native — primitive

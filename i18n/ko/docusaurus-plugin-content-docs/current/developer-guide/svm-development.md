@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain에는 **Solana Virtual Machine(SVM)** 실행 환경이 포함되어 있어, 개발자가 익숙한 Solana 툴링을 사용해 SBF/BPF 프로그램을 배포하고 실행할 수 있습니다. SVM 모듈은 **8899번 포트**에서 Solana 호환 JSON-RPC 인터페이스를 노출하며, 이는 `qorechaind start`가 자동으로 실행합니다(아래 [JSON-RPC 서버](#json-rpc-server) 참고).
 
 :::note
-아래 명령은 2026년 6월 7일부터 가동 중이며 노드 릴리스 **v3.2.3**을 실행하는 **`qorechain-vladi`** 메인넷을 기준으로 합니다. v3.2.4를 실행하는 테스트넷(테스트넷 전용)의 경우 `--chain-id qorechain-diana`로 대체하세요. **두 네트워크 모두에서 SVM 트랜잭션은 비활성화되어 있으므로**(다음 상자 참고), 이 페이지의 `tx svm` 명령은 참고용일 뿐이며 현재로서는 성공할 수 없습니다.
+아래 명령은 2026년 6월 7일부터 가동 중이며 노드 릴리스로 높이 3,742,566까지는 **v3.2.3**을, 해당 블록부터는 **v3.2.4**를 실행하는(거버넌스 제안 13) **`qorechain-vladi`** 메인넷을 기준으로 합니다. 2026년 10월 19일부터 v3.2.4를 실행하고 있는 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요. **두 네트워크 모두에서 SVM 트랜잭션은 비활성화되어 있으므로**(다음 상자 참고), 이 페이지의 `tx svm` 명령은 참고용일 뿐이며 현재로서는 성공할 수 없습니다.
 :::
 
 ---
@@ -241,12 +241,12 @@ SVM 모듈은 상태 비대화를 방지하기 위해 **렌트 기반 스토리�
 
 ## 크로스-VM 상호운용성
 
-SVM 프로그램은 `x/crossvm` 모듈의 `MsgCrossVMCall` 메시지를 통해 EVM 및 CosmWasm 컨트랙트와 통신하도록 설계되었습니다(출발 레인은 체인이 스스로 판단합니다). SVM 레인은 트랜잭션에 대해 비활성화되어 있고 `MsgCrossVMCall`은 메인넷에서 꺼져 있으므로, 현재 동작하는 SVM 크로스-VM 경로는 없습니다. 현재 상태, 메시지 생명 주기, 타임아웃 동작에 대한 자세한 내용은 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
+SVM 프로그램은 `x/crossvm` 모듈의 `MsgCrossVMCall` 메시지를 통해 EVM 및 QoreChain Native 컨트랙트와 통신하도록 설계되었습니다(출발 레인은 체인이 스스로 판단합니다). SVM 레인은 트랜잭션에 대해 비활성화되어 있고 `MsgCrossVMCall`은 메인넷에서 꺼져 있으므로, 현재 동작하는 SVM 크로스-VM 경로는 없습니다. 현재 상태, 메시지 생명 주기, 타임아웃 동작에 대한 자세한 내용은 [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 
 ---
 
 ## 다음 단계
 
-* [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — SVM, EVM, CosmWasm 간의 통신
+* [크로스-VM 상호운용성](/developer-guide/cross-vm-interoperability) — SVM, EVM, QoreChain Native 간의 통신
 * [EVM 개발](/developer-guide/evm-development) — QoreChain에서의 Solidity 스마트 컨트랙트
-* [CosmWasm 개발](/developer-guide/cosmwasm-development) — Rust 기반 WebAssembly 컨트랙트
+* [QoreChain Native 개발](/developer-guide/cosmwasm-development) — Rust 기반 WebAssembly 컨트랙트

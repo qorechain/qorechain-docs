@@ -55,13 +55,15 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. The reinforcement-learning optimization layer embedded in the QoreChain Consensus Engine (via the `x/rlconsensus` module). PRISM observes network metrics and is designed to propose deterministic consensus-parameter adjustments under circuit-breaker safety controls; today it runs in observation mode. See [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP)** — A signature a post-quantum key makes over its own registration details, proving that the registrant holds the private key. Optional on account key registration since v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); required for bridge validator keys on the testnet (v3.2.4).
+**Proof of possession (PoP)** — A signature a post-quantum key makes over its own registration details, proving that the registrant holds the private key. Optional on account key registration since v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); required for bridge validator keys from v3.2.4 (on the testnet since 19 October 2026; on mainnet from height 3,742,566).
 
 **Protocol feature** — A behaviour switch that a release's upgrade handler turns on at one block height on every node (for example `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), so history replays unchanged below that height.
 
 **PvP Rebase** — Player versus Player Rebase. A mechanism in the xQORE module where penalties from early unlock are redistributed proportionally to remaining locked stakers, rewarding long-term commitment (not yet wired on-chain).
 
 **QCAI** — QoreChain Artificial Intelligence. The umbrella term for QoreChain's AI subsystem, including the on-chain heuristic engine (`x/ai` module) and the off-chain QCAI sidecar that provides advanced inference capabilities.
+
+**QoreChain Native** — QoreChain's name for its CosmWasm smart-contract runtime: contracts are written in Rust against the standard CosmWasm libraries and compiled to WebAssembly. It is one of the three runtimes (EVM, QoreChain Native, SVM). Ordinary contract upload and instantiation are currently closed on both networks (see [QoreChain Native Development](/developer-guide/cosmwasm-development)).
 
 **QCB** — QoreChain Bridge. QoreChain's native bridge protocol for connecting to non-IBC chains (e.g., Ethereum, Bitcoin, Solana, Avalanche). QCB uses a validator attestation threshold (7 of 10 ML-DSA-87 signatures) for cross-chain attestation. See [Bridge Architecture](/architecture/bridge-architecture).
 
@@ -81,13 +83,13 @@ Alphabetical reference of terms, abbreviations, and acronyms used throughout the
 
 **Stranded staker share / reward-pool reserve** — Amounts recorded at the v3.2.0 upgrade that move only by a governance vote; governance released them in October 2026 (a corrected remainder of the stranded share was proposed after v3.2.3). See [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
-**SVM** — Solana Virtual Machine. A high-performance execution environment for BPF programs. QoreChain integrates the SVM as one of three supported runtimes alongside the QoreChain EVM Engine and CosmWasm.
+**SVM** — Solana Virtual Machine. A high-performance execution environment for BPF programs. QoreChain integrates the SVM as one of three supported runtimes alongside the QoreChain EVM Engine and QoreChain Native.
 
 **TEE** — Trusted Execution Environment. A secure area of a processor that ensures code and data are protected from external access. QoreChain defines interface specifications for TEE attestation; no implementation exists yet.
 
 **tIBE** — Threshold Identity-Based Encryption. A cryptographic scheme where a message can only be decrypted when a threshold of parties collaborate. Used by the FairBlock module to encrypt transaction contents until block finalization, preventing MEV extraction.
 
-**Time-locked staking** — An optional commitment of part of a delegation for a fixed term, provided by the `x/stakingtier` module. **Testnet only** (v3.2.4); not live on mainnet. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking** — An optional commitment of part of a delegation for a fixed term, provided by the `x/stakingtier` module. Part of v3.2.4: on the testnet since 19 October 2026; on mainnet from height 3,742,566. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — The base denomination of the QOR token. 1 QOR = 1,000,000 uqor (10^6). All on-chain amounts, fees, and staking values are denominated in uqor.
 

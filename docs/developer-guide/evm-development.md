@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain runs a fully EVM-compatible execution environment on the QoreChain EVM Engine, allowing you to deploy and interact with Solidity smart contracts using familiar tooling. The EVM module exposes a JSON-RPC interface on **port 8545** (WebSocket on **8546**) that supports standard Ethereum development workflows.
 
 :::note
-The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.3** (applied at height 3,662,051 on 20 October 2026). For the **`qorechain-diana`** testnet (v3.2.4, applied at height 8,337,253 on 19 October 2026; not yet applied on mainnet; governance proposal 13 would apply it at height 3,742,566), use EVM chain ID **9800**. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
+The examples below target the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 7 June 2026, which runs node release **v3.2.3** (applied at height 3,662,051 on 20 October 2026). Mainnet moves to node release **v3.2.4** at height 3,742,566 (governance proposal 13). The **`qorechain-diana`** testnet has run v3.2.4 since height 8,337,253 (19 October 2026); use EVM chain ID **9800** there. The code samples use `http://localhost:8545` for a node you run yourself; the public mainnet endpoint is `https://evm.qore.host` and the testnet endpoint is `https://evm-testnet.qore.host`.
 :::
 
 :::caution An EVM transaction needs a registered PQC key and an open authorisation window
@@ -33,6 +33,8 @@ Two more rules apply on mainnet since v3.2.2: **unprotected (pre-EIP-155) transa
 | Currency symbol      | `QOR`                                      |
 
 QoreChain-specific reads are served over REST (`api.qore.host`); the `qor_` JSON-RPC namespace described [below](#custom-qor_-namespace) is **not enabled** on the public endpoints or in the default node configuration. The default `api` list of a freshly initialised node (v3.2.3 and later) is `eth,net,web3`; `txpool` is opt-in, because it publishes the node's pending transactions.
+
+From node release v3.2.4 (testnet since 19 October 2026; mainnet nodes from height 3,742,566) a node bounds its own JSON-RPC server: request bodies over 256 KiB are refused (HTTP 413), no more than 256 requests are served at once (HTTP 503 beyond that), and an `eth_getLogs` or `eth_newFilter` filter with more than 4 topic positions, 1000 alternatives in one position or 1000 addresses is refused. The limits are node-local settings in the `[json-rpc]` section of `app.toml`; see [Running a Node](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 
@@ -188,7 +190,7 @@ EVM transactions are signed with **classical ECDSA (secp256k1)**, so MetaMask, H
 For post-quantum security inside contracts:
 
 * The **PQC Verify precompile** (`0x0000...0A01`) will verify ML-DSA-87 signatures on-chain from Solidity once it is activated; it is **not active yet** on mainnet or testnet. See [EVM Precompiles: Network status](/developer-guide/evm-precompiles#network-status).
-* **Cross-VM messages** from EVM to CosmWasm or SVM are Cosmos-lane transactions and carry the hybrid signature like any other; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for their current availability.
+* **Cross-VM messages** from EVM to QoreChain Native or SVM are Cosmos-lane transactions and carry the hybrid signature like any other; see [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for their current availability.
 
 ---
 

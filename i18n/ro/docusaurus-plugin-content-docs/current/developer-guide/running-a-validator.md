@@ -10,7 +10,7 @@ sidebar_position: 9
 Acest ghid acoperă modul de creare a unui validator pe rețeaua QoreChain, înțelegerea designului de clasificare pe pool-uri, înregistrarea unei chei PQC pentru securitate rezistentă la calculatoarele cuantice și monitorizarea nodului tău.
 
 :::note
-Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.3** (aplicată prin guvernanță la înălțimea 3.662.051). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**, v3.2.4) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,0 s pe testnet, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
+Acest ghid vizează mainnet-ul **`qorechain-vladi`** (chain ID EVM **9801**), activ din 7 iunie 2026, care rulează versiunea de nod **v3.2.3** (aplicată prin guvernanță la înălțimea 3.662.051) până la înălțimea 3.742.566 și **v3.2.4** începând cu acel bloc (propunerea de guvernanță 13). Un validator trebuie să aibă binarul v3.2.4 instalat înainte de acea înălțime, altfel nodul său se oprește acolo și pierde blocuri până la repornire; consultați [Rularea unui nod: Upgrade-uri](/developer-guide/running-a-node#upgrades). Testnet-ul **`qorechain-diana`** (chain ID EVM **9800**, care rulează v3.2.4 din 19 octombrie 2026) este recomandat pentru a-ți repeta configurația înainte de a trece pe rețeaua live. Înlocuiește `--chain-id` cu valoarea corespunzătoare rețelei tale țintă. Timpii de bloc diferă: aproximativ 3,2 s pe mainnet și aproximativ 1,0 s pe testnet, așa că convertește numărul de blocuri în timp separat pentru fiecare rețea.
 :::
 
 :::caution Folosește binarul de release, nu un build din sursă
@@ -228,7 +228,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   -y
 ```
 
-`--pqc-key mypqc` atașează o **dovadă de posesie** (proof of possession): cheia semnează `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, iar chain-ul o verifică, astfel încât nimeni nu poate înregistra o cheie publică a cărei jumătăți private nu o deține. În v3.2.3 este opțională și recomandată.
+`--pqc-key mypqc` atașează o **dovadă de posesie** (proof of possession): cheia semnează `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)`, iar chain-ul o verifică, astfel încât nimeni nu poate înregistra o cheie publică a cărei jumătăți private nu o deține. În v3.2.3 este opțională și recomandată. Începând cu v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566), înregistrarea contului raportează și dacă o dovadă a fost verificată (`possession_proven`, în `GET /qorechain/pqc/v1/account/{address}`).
 
 :::note Ce a schimbat v3.2.3 la înregistrarea cheilor
 * Un cont **fără** cheie înregistrată poate trimite doar înregistrarea însăși: orice altă tranzacție care poartă o extensie de semnătură hibridă este refuzată. Înregistrează mai întâi cheia, apoi semnează tot restul cu `tx pqc cosign`.

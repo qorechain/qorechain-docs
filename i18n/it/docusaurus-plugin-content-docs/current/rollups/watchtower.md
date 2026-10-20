@@ -17,8 +17,8 @@ Il framework osserva e decide *quando*; **sei tu a fornire il controllo di
 validità**. Il Watchtower non decide mai da solo che un batch è fraudolento —
 chiama la tua funzione `validate` e agisce in base a ciò che restituisci.
 
-:::caution Fase iniziale: nulla da osservare, e gli avvisi di scadenza della 0.5.0 sono errati
-Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 20 ottobre 2026), quindi non c'è ancora nulla da osservare. In `@qorechain/rdk` 0.5.0 anche la logica della scadenza della finestra di challenge è inaffidabile: il `submittedAt` di un batch è un'**altezza di blocco**, ma il Watchtower (e il controllo di salute alla base di `qorollup status`) vi somma la finestra espressa in secondi e confronta il risultato con l'orologio reale, quindi `secondsRemaining` non ha significato e `onDeadline` scatta non appena un batch viene visto per la prima volta. Non usare `onDeadline` né il conto alla rovescia per prendere decisioni; calcola tu stesso la scadenza (vedi la nota qui sotto). Inoltre l'osservatore legge solo la prima pagina di batch (50).
+:::caution Fase iniziale: ancora nulla da osservare
+Il Watchtower legge i batch tramite il client REST dell'RDK, e le route `/qorechain/rdk/v1/…` sono servite su entrambe le reti. Non è stato creato alcun rollup su nessuna delle due reti (verificato il 21 ottobre 2026), quindi non c'è ancora nulla da osservare e il Watchtower non è mai stato eseguito su un batch live. In `@qorechain/rdk` 0.5.0 la sua logica di scadenza era errata (leggeva un'altezza di blocco come timestamp Unix, quindi `onDeadline` scattava non appena un batch veniva visto per la prima volta) e leggeva solo la prima pagina di 50 batch; **la 0.6.0 corregge entrambe le cose** (vedi sotto). Usa la 0.6.0 o successiva.
 :::
 
 ## `watchBatches`
@@ -30,8 +30,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -55,10 +55,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -72,12 +74,14 @@ Il framework segnala:
 - le **scadenze delle finestre di challenge** tramite `onDeadline` e
 - i **batch non validi** (per i quali la tua `validate` ha restituito `false`) tramite `onInvalid`.
 
+Dalla 0.6.0 segue ogni pagina dell'elenco dei batch di un rollup, rivaluta un batch man mano che la sua scadenza si avvicina (continua a interrogare in avanti a partire dal batch più vecchio la cui finestra è ancora aperta, anziché giudicare ciascun batch una sola volta alla prima occasione), e misura ogni finestra rispetto alla punta della chain (`getChainTip`, lo stato del nodo) anziché rispetto all'orologio locale. Un batch già `finalized` non viene validato né segnalato.
+
 Collegare `onInvalid` a una challenge trasforma il Watchtower in un
 auto-challenger completo; lascialo non impostato per operare in modalità di sola
 osservazione.
 
 :::note Finestra di challenge
-Calcola la scadenza di un batch in blocchi, non in secondi: `submitted_at` (un'altezza di blocco) più la finestra. **Su mainnet (v3.2.3)** la finestra è il default di 604.800 «secondi» convertito a 6 secondi fissi per blocco, ovvero **100.800 blocchi** (il tempo reale segue il block time, quindi è più breve di «7 giorni» con i blocchi da ≈3,2 s della mainnet). **Solo sulla testnet (v3.2.4)**, un batch inviato dall'altezza 8.337.253 in poi ottiene una finestra misurata in secondi di block time. Pubblicare una challenge richiede inoltre il bond di challenge del rollup (1.000 QOR per i preset `nft` e `custom`).
+La chain misura la finestra di un batch in due modi possibili, e `batchChallengeWindow` (usata dal Watchtower e dal controllo di salute alla base di `qorollup status`) indica quale. **Finestra a conteggio di blocchi, la regola sulla mainnet prima dell'altezza 3.742.566 (v3.2.3):** la finestra è costituita dai secondi configurati del rollup convertiti a 6 secondi fissi per blocco, ovvero **100.800 blocchi** per il default di 604.800, contati dall'altezza `submitted_at` del batch; il tempo reale segue il block time, quindi è più breve di «7 giorni» con i blocchi da ≈3,2 s della mainnet. Il pacchetto riporta `open` e `finalizable` separatamente, perché secondo la regola che implementa un blocco è entrambe le cose (una challenge risulta aperta finché `height - submitted_at <= window`, finalizzabile da `height - submitted_at >= window`). **Finestra basata sul tempo, dalla v3.2.4 (la testnet dall'altezza 8.337.253, la mainnet dall'altezza 3.742.566):** un batch inviato dall'altezza dell'upgrade in poi registra il proprio block time e la sua finestra è quel numero di secondi di block time. Il Watchtower usa la finestra propria del rollup quando il nodo la riporta (il pacchetto la documenta come v3.2.4 e successive); altrimenti ripiega sulla finestra predefinita del modulo, quindi passa `challengeWindowSecs` per un rollup che ne ha configurata una propria. Pubblicare una challenge richiede inoltre il bond di challenge del rollup (1.000 QOR per i preset `nft` e `custom`).
 :::
 
 ## CLI

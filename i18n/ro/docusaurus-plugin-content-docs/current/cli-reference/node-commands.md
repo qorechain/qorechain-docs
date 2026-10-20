@@ -10,9 +10,9 @@ sidebar_position: 1
 Referință pentru comenzile `qorechaind` utilizate pentru inițializarea, configurarea și operarea unui nod QoreChain.
 
 :::note
-QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026; versiunea nodului **v3.2.3**, aplicată la înălțimea 3.662.051 pe 20 octombrie 2026) și testnet-ul **`qorechain-diana`** (versiunea nodului **v3.2.4**, aplicată la înălțimea 8.337.253 pe 19 octombrie 2026; v3.2.4 nu este încă aplicată pe mainnet; propunerea de guvernanță 13 ar aplica-o la înălțimea 3.742.566). Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet. Versiunea curentă pentru fiecare rețea este listată în `latest.json` de pe [download.qore.host](https://download.qore.host).
+QoreChain rulează două rețele: mainnet-ul **`qorechain-vladi`** (live din 7 iunie 2026; versiunea nodului **v3.2.3**, aplicată la înălțimea 3.662.051 pe 20 octombrie 2026; mainnet-ul rulează v3.2.3 până la înălțimea 3.742.566 și **v3.2.4** de la acel bloc, programată prin propunerea de guvernanță 13) și testnet-ul **`qorechain-diana`** (versiunea nodului **v3.2.4**, aplicată la înălțimea 8.337.253 pe 19 octombrie 2026). Transmite `--chain-id` corespunzător rețelei la care intenționezi să te alături — exemplele de mai jos vizează testnet-ul; folosește `--chain-id qorechain-vladi` pentru mainnet. Versiunea curentă pentru fiecare rețea este listată în `latest.json` de pe [download.qore.host](https://download.qore.host).
 
-Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3, care este versiunea de mainnet. Binarul v3.2.4 al testnet-ului adaugă comenzi pe care mainnet-ul nu le are; unde acest manual menționează una dintre ele, este marcată **doar testnet**.
+Comenzile de pe această pagină au fost verificate pe binarul de release v3.2.3. Binarul v3.2.4 adaugă comenzi pe care un binar v3.2.3 nu le are (de exemplu `stakingtier`); ele rulează pe testnet acum și pe mainnet de la înălțimea 3.742.566, iar unde acest manual menționează una dintre ele, o spune.
 :::
 
 ---

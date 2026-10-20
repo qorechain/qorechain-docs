@@ -27,7 +27,7 @@ Die Felder des Manifests umfassen `binary` (URL + sha256), `genesis` (URL + sha2
 :::
 
 :::caution Verwenden Sie das Release, das das Manifest nennt: v3.2.3 im Mainnet
-Ein Node, der ab Genesis synchronisiert oder aus einem Snapshot repliziert, durchläuft mehrere Governance-Upgrades (siehe [Upgrades](#upgrades) unten). Installieren Sie daher immer das Binary, auf das das Manifest verweist: Es enthält jeden Upgrade-Handler. Im **Mainnet** sind `minCompatible` und `version` des Manifests beide `3.2.3` (das koordinierte Upgrade, angewendet auf Höhe 3,662,051 am 20. Oktober 2026), ein jetzt beitretender Node benötigt also v3.2.3: Ein älteres Binary stoppt auf der Upgrade-Höhe, die es nicht kennt. Im **Testnet** sind sie beide `3.2.4` (angewendet auf Höhe 8,337,253 am 19. Oktober 2026); v3.2.4 ist im Mainnet noch nicht angewendet (der Governance-Vorschlag 13 würde es im Mainnet bei Höhe 3,742,566 anwenden), betreiben Sie daher kein Testnet-Binary gegen das Mainnet. Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase). Prüfen Sie daher sein Feld `"version"` gegen `minCompatible`, bevor Sie `binary.url` vertrauen.
+Ein Node, der ab Genesis synchronisiert oder aus einem Snapshot repliziert, durchläuft mehrere Governance-Upgrades (siehe [Upgrades](#upgrades) unten). Installieren Sie daher immer das Binary, auf das das Manifest verweist: Es enthält jeden Upgrade-Handler. Im **Mainnet** sind `minCompatible` und `version` des Manifests beide `3.2.3` (das koordinierte Upgrade, angewendet auf Höhe 3,662,051 am 20. Oktober 2026), ein jetzt beitretender Node benötigt also v3.2.3: Ein älteres Binary stoppt auf der Upgrade-Höhe, die es nicht kennt. Im **Testnet** sind sie beide `3.2.4` (angewendet auf Höhe 8,337,253 am 19. Oktober 2026). Das Mainnet läuft bis zur Höhe 3,742,566 mit v3.2.3 und ab diesem Block mit v3.2.4 (Governance-Vorschlag 13). Betreiben Sie daher kein Testnet-Binary gegen das Mainnet, und installieren Sie v3.2.4 nicht auf einem Mainnet-Node, bevor das Manifest es nennt (siehe [Upgrades](#upgrades)). Das Manifest wird bewusst gestaffelt befördert (zuerst Testnet, danach Mainnet nach einer Einlaufphase). Prüfen Sie daher sein Feld `"version"` gegen `minCompatible`, bevor Sie `binary.url` vertrauen.
 
 Ein aus dem öffentlichen Quellcode gebautes Binary (der Community-Build) verweigert den Start in beiden öffentlichen Netzwerken (v3.2.3 und später): Es kann keine Post-Quanten-Signaturen verifizieren und die Blöcke der Netzwerke nicht originalgetreu replizieren. Verwenden Sie ausschließlich das Release-Archiv.
 
@@ -52,8 +52,8 @@ Ab v3.2.1 sind zwei Einstellungen wichtig: Halten Sie die Systemuhr per NTP sync
 
 | Netzwerk | Chain-ID            | EVM-Chain-ID         | Hinweise                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026; Node-Release v3.2.3 |
-| Testnet  | `qorechain-diana`   | `9800`               | Integrationen zuerst hier erproben; Node-Release v3.2.4 (nur Testnet) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primär — live seit 7. Juni 2026; Node-Release v3.2.3 (v3.2.4 ab Höhe 3,742,566) |
+| Testnet  | `qorechain-diana`   | `9800`               | Integrationen zuerst hier erproben; Node-Release v3.2.4 (seit 19. Okt. 2026) |
 
 Setzen Sie in diesem Leitfaden durchgehend die passende `--chain-id` für Ihr Zielnetzwerk ein. Die Beispiele verwenden standardmäßig das Mainnet.
 
@@ -252,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot-Wiederherstellung
 
-Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis. Im Mainnet nennt das Objekt `snapshot` des Manifests die URL, die Blockhöhe (`height`), die Größe und die SHA-256-Prüfsumme. **Die Snapshot-URL im Testnet-Manifest liefert derzeit `404` (für das Testnet ist kein Snapshot veröffentlicht), verwenden Sie dort also State Sync.** Lesen Sie `snapshot.height`, bevor Sie den Mainnet-Snapshot verwenden: Er ist ein einzelnes Archiv von etwa 27 GB, und ein alter bedeutet eine lange Aufholphase. Der derzeit veröffentlichte Mainnet-Snapshot stammt vom 21. August 2026 (Höhe 1,966,629): Er liegt vor den Upgrade-Höhen von v3.1.94, v3.2.0, v3.2.2 und v3.2.3, ein daraus wiederhergestellter Node muss also etwa zwei Monate an Blöcken mit dem v3.2.3-Binary replizieren. State Sync ist fast immer die bessere Wahl.
+Alternativ laden Sie den veröffentlichten Chain-Daten-Snapshot herunter, verifizieren dessen Prüfsumme und entpacken ihn über Ihr Datenverzeichnis. Im Mainnet nennt das Objekt `snapshot` des Manifests die URL, die Blockhöhe (`height`), die Größe und die SHA-256-Prüfsumme. **Die Snapshot-URL im Testnet-Manifest liefert derzeit `404` (für das Testnet ist kein Snapshot veröffentlicht), verwenden Sie dort also State Sync.** Lesen Sie `snapshot.height`, bevor Sie den Mainnet-Snapshot verwenden: Er ist ein einzelnes Archiv von etwa 27 GB, und ein alter bedeutet eine lange Aufholphase. Der derzeit veröffentlichte Mainnet-Snapshot stammt vom 21. August 2026 (Höhe 1,966,629): Er liegt vor den Upgrade-Höhen von v3.1.94, v3.2.0, v3.2.2, v3.2.3 und v3.2.4, ein daraus wiederhergestellter Node muss also etwa zwei Monate an Blöcken mit dem Release-Binary replizieren, das das Manifest nennt. State Sync ist fast immer die bessere Wahl.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -281,7 +281,16 @@ Konsensänderungen kommen als **koordinierte Governance-Upgrades**: Ein angenomm
 | v3.2.1 | node-lokal, keine Höhe | node-lokal |
 | v3.2.2 | Höhe 3,556,788 (16. Okt. 2026) | Höhe 6,905,034 (2. Okt. 2026) |
 | v3.2.3 | Höhe 3,662,051 (20. Okt. 2026, Governance-Vorschlag 11) | Höhe 8,003,746 (15. Okt. 2026) |
-| v3.2.4 | **im Mainnet noch nicht angewendet (der Governance-Vorschlag 13 würde es bei Höhe 3,742,566 anwenden); heute nur Testnet** | Höhe 8,337,253 (19. Okt. 2026, Governance-Vorschlag 13) |
+| v3.2.4 | im Mainnet bei Höhe 3,742,566 geplant (Governance-Vorschlag 13) | Höhe 8,337,253 (19. Okt. 2026, Governance-Vorschlag 13) |
+
+**Was ein Mainnet-Node-Betreiber für v3.2.4 tut (Höhe 3,742,566).** Der Governance-Vorschlag 13 nennt den Plan `v3.2.4` bei Höhe 3,742,566 und legt fest, dass Nodes bis zu dieser Höhe auf v3.2.3 bleiben, dort anhalten und auf v3.2.4 neu starten. Konkret:
+
+1. Betreiben Sie weiter **v3.2.3**, bis das Mainnet-Manifest (`https://download.qore.host/mainnet/latest.json`) v3.2.4 aufführt. Solange das Manifest noch `version` und `minCompatible` `3.2.3` und keine Upgrade-Höhe für v3.2.4 zeigt, gibt es nichts zu installieren: Ein v3.2.4-Binary aus dem Testnet-Verzeichnis ist nicht das Mainnet-Release.
+2. Wenn das Manifest v3.2.4 nennt, laden Sie das Archiv von dessen `binary.url` herunter, verifizieren Sie den `sha256` (der Vorschlagstext veröffentlicht ebenfalls den sha256 des Binarys) und stellen Sie es **vor** der Höhe bereit. Prüfen Sie mit `GET /cosmos/upgrade/v1beta1/current_plan` den anstehenden Plan (`name` und `height`) und mit `GET /status` auf dem RPC die aktuelle Höhe.
+3. Auf Höhe 3,742,566 **hält** ein Node, der noch auf v3.2.3 ist, **an** (das ist das beabsichtigte Verhalten des Upgrade-Moduls, kein Fehler); ein Node, der bereits das neue Binary nutzt, wendet den Upgrade-Handler an und läuft weiter. Falls Ihrer zuvor angehalten hat, tauschen Sie das Binary aus und starten Sie neu. Nach dem Upgrade liefert `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` die Höhe statt `0`.
+4. Ein Node, der nach dem Upgrade dem Mainnet beitritt, installiert das Release, das das Manifest zu diesem Zeitpunkt nennt (prüfen Sie `version` gegen `minCompatible`).
+
+Transaktionssignierung, Adressen, Dezimalstellen, Memos und Gebühren bleiben durch v3.2.4 unverändert.
 
 Lesen Sie den Live-Stand mit `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = nicht angewendet) und einen anstehenden Plan mit `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 hat die Abhängigkeiten der Konsens-Engine, des Cosmos SDK (v0.53.8) und von IBC angehoben, und die strengeren Transaktionsprüfungen des SDK führen dazu, dass dieses Release das vorherige Binary auf der Upgrade-Höhe ersetzt und nicht Node für Node. Transaktionssignierung, Adressen, Dezimalstellen, Memos und Gebühren haben sich in v3.2.2 und v3.2.3 nicht geändert.
 
@@ -339,7 +348,7 @@ Setzen Sie `indexer = "kv"` (oder einen umfangreicheren Indexer), damit Transakt
 
 ---
 
-## Endpunkte für Integrationen bereitstellen
+## Endpunkte für Integrationen bereitstellen {#exposing-endpoints-for-integration}
 
 Aktivieren und binden Sie in `app.toml` die API-Server, die Integratoren benötigen:
 
@@ -358,6 +367,8 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
+
+**JSON-RPC-Limits im Node-Release v3.2.4.** Ein Node, der das v3.2.4-Binary ausführt (Testnet seit dem 19. Oktober 2026; Mainnet-Nodes ab Höhe 3,742,566), begrenzt seinen eigenen JSON-RPC-Server. Das sind node-lokale Einstellungen im Abschnitt `[json-rpc]` der `app.toml` und sie wirken sich nicht auf den Konsens aus: `http-body-limit` (Standard 262144 Bytes, 256 KiB; ein größerer Request-Body wird mit HTTP 413 abgelehnt, bevor er gelesen wird), `max-concurrent-requests` (Standard 256; Anfragen darüber hinaus erhalten sofort HTTP 503) und `max-open-connections` (ein fehlender oder auf null gesetzter Wert bedeutet jetzt 1000, nicht unbegrenzt). Zusätzlich wird das Filterargument von `eth_getLogs` und `eth_newFilter` abgelehnt, wenn es mehr als 4 Topic-Positionen, mehr als 1000 Alternativen in einer Position oder mehr als 1000 Adressen auflistet. Ein Integrator, der sehr große gebündelte oder Contract-Deployment-Anfragen an seinen eigenen Node sendet, sollte prüfen, ob seine größte Anfrage in das Body-Limit passt, und es bei Bedarf erhöhen.
 
 Die öffentlichen Endpunkte stellen die Namespaces `eth_`, `net_`, `web3_` und `txpool_` (nur Status) bereit; ein von v3.2.3 oder später initialisierter Node verwendet standardmäßig `eth,net,web3` und lässt `txpool` weg (er veröffentlicht die ausstehenden Transaktionen des Nodes), fügen Sie ihn also nur hinzu, wenn Sie ihn benötigen. Der Namespace `qor_` wird von keinem veröffentlichten Node-Build bereitgestellt, fügen Sie ihn daher nicht hinzu (siehe [den Namespace `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
@@ -424,7 +435,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bewährte Betriebspraktiken
 
-1. **Pinnen Sie die Chain-Version.** Betreiben Sie das vom Manifest empfohlene Release (**v3.2.3** im Mainnet), verfolgen Sie offizielle Releases für koordinierte Upgrades und halten Sie die Systemuhr per NTP synchronisiert.
+1. **Pinnen Sie die Chain-Version.** Betreiben Sie das vom Manifest empfohlene Release (**v3.2.3** im Mainnet bis Höhe 3,742,566, danach v3.2.4), verfolgen Sie offizielle Releases für koordinierte Upgrades und halten Sie die Systemuhr per NTP synchronisiert.
 
 2. **Betreiben Sie redundante Nodes.** Betreiben Sie mindestens zwei Nodes hinter einem Load Balancer, damit ein einzelner Neustart oder Resync den Integrationsverkehr nicht unterbricht.
 

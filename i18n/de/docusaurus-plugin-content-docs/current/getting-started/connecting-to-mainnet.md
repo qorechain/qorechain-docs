@@ -10,7 +10,7 @@ sidebar_position: 3
 Treten Sie dem live laufenden QoreChain-Vladi-Mainnet bei, indem Sie Ihren Node mit der offiziellen Genesis-Datei, den Peers und den Netzwerkeinstellungen konfigurieren.
 
 :::note
-Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hexadezimal `0x2649`), live seit dem **7. Juni 2026**, mit dem Release **v3.2.3** auf Cosmos SDK v0.53. Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und proben Sie dort Ihr Setup, bevor Sie live gehen.
+Diese Seite behandelt das **`qorechain-vladi`**-Mainnet (EVM-Chain-ID **9801**, hexadezimal `0x2649`), live seit dem **7. Juni 2026**, mit dem Release **v3.2.3** auf Cosmos SDK v0.53 bis Höhe **3.742.566** und mit **v3.2.4** ab diesem Block (Governance-Vorschlag 13). Für das **`qorechain-diana`**-Testnet (EVM-Chain-ID **9800**) siehe [Verbindung zum Testnet](/getting-started/connecting-to-testnet) und proben Sie dort Ihr Setup, bevor Sie live gehen.
 :::
 
 ## Öffentliche Endpunkte
@@ -54,12 +54,12 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Das Bundle enthält `qorechaind` sowie die benötigten Shared Libraries (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Halten Sie Ihren Node aktuell — v3.2.3 erforderlich
-Full Nodes müssen dem live laufenden Release des Netzwerks folgen — installieren Sie stets das Binary, auf das das Manifest verweist, und pinnen Sie kein altes fest. Das aktuelle Manifest ist **v3.2.3** mit `minCompatible` **3.2.3** und `upgradeHeight` **3.662.051**: Das Mainnet hat v3.2.3 dort am 20. Oktober 2026 über den Governance-Vorschlag 11 angewendet, und ein Node, der noch auf einem älteren Release läuft, kann der Chain nicht über diese Höhe hinaus folgen. Frühere Governance-Upgrades im Mainnet waren **v3.1.94** bei Höhe 2.122.074 (die Emissions-Obergrenze), **v3.2.0** bei Höhe 2.981.742 (das EVM-Autorisierungsfenster und die v2-Hybridsignatur-Bytes) und **v3.2.2** bei Höhe 3.556.788 (16. Oktober 2026, Vorschlag 7). v3.2.1 war ein node-lokales Release ohne Höhe. Ein Node, der frisch beitritt, benötigt daher das v3.2.3-Binary; bevorzugen Sie State Sync (unten) gegenüber einem Replay ab Genesis. Der veröffentlichte Chain-Daten-Snapshot liegt vor allen diesen Upgrade-Höhen, ein daraus wiederhergestellter Node muss sie daher replayen.
+:::caution Halten Sie Ihren Node aktuell — v3.2.3, dann v3.2.4
+Full Nodes müssen dem live laufenden Release des Netzwerks folgen — installieren Sie stets das Binary, auf das das Manifest verweist, und pinnen Sie kein altes fest. Das aktuelle Manifest ist **v3.2.3** mit `minCompatible` **3.2.3** und `upgradeHeight` **3.662.051**: Das Mainnet hat v3.2.3 dort am 20. Oktober 2026 über den Governance-Vorschlag 11 angewendet, und ein Node, der noch auf einem älteren Release läuft, kann der Chain nicht über diese Höhe hinaus folgen. Frühere Governance-Upgrades im Mainnet waren **v3.1.94** bei Höhe 2.122.074 (die Emissions-Obergrenze), **v3.2.0** bei Höhe 2.981.742 (das EVM-Autorisierungsfenster und die v2-Hybridsignatur-Bytes) und **v3.2.2** bei Höhe 3.556.788 (16. Oktober 2026, Vorschlag 7). v3.2.1 war ein node-lokales Release ohne Höhe. **v3.2.4 bei Höhe 3.742.566 (Governance-Vorschlag 13, etwa am 23. Oktober 2026 bei Blöcken von 3,2 Sekunden).** Nodes bleiben bis zu dieser Höhe auf v3.2.3, halten dort an und starten mit v3.2.4 neu; das Manifest wechselt auf 3.2.4 (mit `minCompatible` 3.2.4), sobald das Upgrade angewendet wurde, und die Transaktionssignierung bleibt unverändert. Ein Node, der vor dem Upgrade frisch beitritt, benötigt das v3.2.3-Binary, und einer, der danach beitritt, benötigt v3.2.4 — lesen Sie immer das Manifest; bevorzugen Sie State Sync (unten) gegenüber einem Replay ab Genesis. Der veröffentlichte Chain-Daten-Snapshot liegt vor allen diesen Upgrade-Höhen, ein daraus wiederhergestellter Node muss sie daher replayen.
 
 Setzen Sie `evm-chain-id = 9801` in `app.toml` (ein anderer Wert wird als Fehler protokolliert) und halten Sie die Systemuhr per NTP synchron: Ein Node hält an, wenn seine Uhr um mehr als 60 Sekunden abweicht. Prüfen Sie stets die Felder `"version"` und `"minCompatible"` des Manifests, bevor Sie `binary.url` vertrauen — das Manifest wird bewusst schrittweise ausgerollt (zuerst Testnet, dann Mainnet nach einer Bewährungsphase). Signaturformat, Adressen, Dezimalstellen, Memos und Gebühren haben sich in v3.2.3 nicht geändert.
 
-Das Testnet (`qorechain-diana`) läuft auf v3.2.4, einem reinen Testnet-Release: Installieren Sie es nicht auf einem Mainnet-Node, und das Mainnet-Manifest bietet es nicht an.
+Das Testnet (`qorechain-diana`) läuft seit dem 19. Oktober 2026 mit v3.2.4. Starten Sie vor Höhe 3.742.566 kein v3.2.4-Binary auf einem Mainnet-Node und kopieren Sie niemals ein Binary von einem Netzwerk ins andere: Folgen Sie dem Mainnet-Manifest, das v3.2.4 anbietet, sobald das Upgrade angewendet wurde.
 :::
 
 Wenn ein koordiniertes Upgrade angesetzt ist, nennt der Vorschlagstext die Höhe und weist Sie an, bis dahin auf dem vorherigen Release zu bleiben: Der Node hält bei dieser Höhe an, und Sie starten ihn mit dem neuen Binary neu. Lesen Sie den `status` des Vorschlags (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) sowie die Felder `version` und `upgradeHeight` des [Mainnet-Manifests](https://download.qore.host/mainnet/latest.json), bevor Sie ein Binary austauschen, und installieren Sie ein Upgrade-Binary niemals vor seiner Höhe: Ein Node, der es früh trägt, hält ebenfalls an. Zum Zeitpunkt der Erstellung ist kein Upgrade angesetzt (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` liefert `"plan": null`).
@@ -256,7 +256,7 @@ http://localhost:1317
 | ----------------- | ---------------------------------------- |
 | Chain-ID          | `qorechain-vladi`                        |
 | EVM-Chain-ID      | `9801` (hexadezimal `0x2649`)            |
-| Chain-Version     | v3.2.3 (angewendet bei Höhe 3.662.051)   |
+| Chain-Version     | v3.2.3 (angewendet bei Höhe 3.662.051); v3.2.4 ab Höhe 3.742.566 |
 | Live seit         | 7. Juni 2026                             |
 | Blockzeit         | etwa 3,2 Sekunden (gemessener Durchschnitt) |
 | Token             | QOR (`uqor`, 10^6 Mikroeinheiten = 1 QOR) |

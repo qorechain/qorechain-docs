@@ -52,9 +52,9 @@ Si vous souhaitez participer à la gouvernance dès maintenant, déléguez du QO
 
 ---
 
-## Le staking à verrouillage temporel est une fonctionnalité différente (testnet uniquement) {#staking-tiers}
+## Le staking à verrouillage temporel est une fonctionnalité différente (v3.2.4) {#staking-tiers}
 
-La version **v3.2.4**, qui ne fonctionne que sur le testnet (une mise à niveau du mainnet vers celle-ci est proposée : proposition de gouvernance 13, à la hauteur 3,742,566), ajoute un module distinct, `x/stakingtier`, pour le **staking optionnel à verrouillage temporel**. Ce n'est pas xQORE : il n'émet aucun xQORE, ne modifie pas le pouvoir de vote et ne touche pas aux paramètres xQORE ci-dessus. En résumé :
+La version **v3.2.4**, qui fonctionne sur le testnet depuis le 19 octobre 2026 et est programmée pour le mainnet à partir de la hauteur 3 742 566 (proposition de gouvernance 13), ajoute un module distinct, `x/stakingtier`, pour le **staking optionnel à verrouillage temporel**. Ce n'est pas xQORE : il n'émet aucun xQORE, ne modifie pas le pouvoir de vote et ne touche pas aux paramètres xQORE ci-dessus. En résumé :
 
 * Un délégateur verrouille une délégation à un validateur pour une durée choisie (le module propose 3, 6 et 12 mois). Tant que le verrouillage court, le montant verrouillé ne peut être ni retiré de la délégation (undelegate) ni redélégué, par aucun chemin de message (une transaction, authz, un contrat ou la gouvernance).
 * Les verrouillages ont une taille minimale et une limite quant au nombre qu'un même délégateur peut détenir ; lisez-les avec `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ La version **v3.2.4**, qui ne fonctionne que sur le testnet (une mise à niveau 
 * Un verrouillage peut être levé de façon anticipée. La levée anticipée fait perdre ce qui s'est accumulé et n'a pas été réclamé, et entraîne une pénalité dont une partie est brûlée.
 * Les verrouillages et l'état du compte de module sont lisibles à `/qorechain/stakingtier/v1/locks/{holder}` et `/qorechain/stakingtier/v1/pool`.
 
-Rien dans cette section n'existe sur le mainnet v3.2.3 : `GET https://api.qore.host/qorechain/stakingtier/v1/params` y renvoie `Not Implemented`. Le staking sur le mainnet est la délégation ordinaire, traitée dans [Staking et délégation](/user-guide/staking-and-delegation).
+Le mainnet exécute la v3.2.3 jusqu'à la hauteur 3 742 566 ; jusque-là, `GET https://api.qore.host/qorechain/stakingtier/v1/params` y renvoie donc `Not Implemented` ; à partir de ce bloc, le module existe sur le mainnet comme sur le testnet. La délégation ordinaire est traitée dans [Staking et délégation](/user-guide/staking-and-delegation).

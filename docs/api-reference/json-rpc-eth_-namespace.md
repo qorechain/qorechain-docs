@@ -17,7 +17,7 @@ QoreChain implements an EVM-compatible JSON-RPC interface, so standard Ethereum 
 | WebSocket | `ws://localhost:8546`   |
 
 :::note
-The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, node release **v3.2.3**, live since 7 June 2026) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`, node release **v3.2.4**, testnet only). The local addresses above apply to a node you run yourself. The public HTTP endpoints are `https://evm.qore.host` (mainnet) and `https://evm-testnet.qore.host` (testnet), listed in [Networks](/appendix/networks#public-endpoints). The only public EVM WebSocket is the testnet's (`wss://evm-ws-testnet.qore.host`); there is no public mainnet EVM WebSocket.
+The EVM JSON-RPC interface is served by the **`qorechain-vladi`** mainnet (EVM chain ID **9801**, hex `0x2649`, node release **v3.2.3**, live since 7 June 2026; v3.2.4 from height 3,742,566) and the **`qorechain-diana`** testnet (EVM chain ID **9800**, hex `0x2648`, node release **v3.2.4** since 19 October 2026). The local addresses above apply to a node you run yourself. The public HTTP endpoints are `https://evm.qore.host` (mainnet) and `https://evm-testnet.qore.host` (testnet), listed in [Networks](/appendix/networks#public-endpoints). The only public EVM WebSocket is the testnet's (`wss://evm-ws-testnet.qore.host`); there is no public mainnet EVM WebSocket.
 :::
 
 ## Supported Namespaces

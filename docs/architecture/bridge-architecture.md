@@ -193,7 +193,7 @@ All QCB bridge operations require a **7-of-10 threshold** of Dilithium-5 post-qu
 * A list of supported chains
 * A reputation score (maintained by `x/reputation`)
 
-Since v3.2.2 the module validates zero amounts and its configuration consistently on every path. **Testnet only (v3.2.4, not on mainnet):** registering a bridge validator also requires a proof of possession of the Dilithium-5 key (the same `proof_of_possession` format as PQC key registration, see [Post-Quantum Security](/architecture/post-quantum-security#proof-of-possession)) and refuses a key that another bridge validator already uses. Mainnet v3.2.3 has no such check, and no bridge validator is registered on either network.
+Since v3.2.2 the module validates zero amounts and its configuration consistently on every path. **From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566):** registering a bridge validator also requires a proof of possession of the Dilithium-5 key (the same `proof_of_possession` format as PQC key registration, see [Post-Quantum Security](/architecture/post-quantum-security#proof-of-possession)) and refuses a key that another bridge validator already uses. Mainnet v3.2.3, which runs until that height, has no such check, and no bridge validator is registered on either network.
 
 ### Circuit Breakers
 

@@ -33,7 +33,7 @@ flowchart TD
 
 ## Yürürlükteki doğrulayıcı kabul ve staking kuralları {#admission}
 
-Bu kurallar ana ağda (v3.2.2'den beri, v3.2.3'te ek bir sertleştirmeyle) ve test ağında uygulanır. Staking mesaj sunucusunun parçasıdırlar; bu nedenle zincire hangi yolla ulaşırsa ulaşsın her mesaj için geçerlidirler: bir işlem, `x/authz`, `x/group`, bir CosmWasm sözleşmesi, bir precompile veya bir yönetişim önerisi. Genesis işlemleri muaftır.
+Bu kurallar ana ağda (v3.2.2'den beri, v3.2.3'te ek bir sertleştirmeyle) ve test ağında uygulanır. Staking mesaj sunucusunun parçasıdırlar; bu nedenle zincire hangi yolla ulaşırsa ulaşsın her mesaj için geçerlidirler: bir işlem, `x/authz`, `x/group`, bir QoreChain Native sözleşmesi, bir precompile veya bir yönetişim önerisi. Genesis işlemleri muaftır.
 
 | Kural | Zincirin uyguladığı şey |
 | --- | --- |

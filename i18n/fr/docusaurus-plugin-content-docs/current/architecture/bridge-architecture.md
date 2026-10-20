@@ -193,7 +193,7 @@ Toutes les opérations de pont QCB requièrent un **seuil de 7-sur-10** signatur
 * Une liste des chaînes prises en charge
 * Un score de réputation (maintenu par `x/reputation`)
 
-Depuis v3.2.2, le module valide de manière cohérente les montants nuls et sa configuration sur chaque chemin. **Testnet uniquement (v3.2.4, pas sur le mainnet) :** l'enregistrement d'un validateur de pont exige aussi une preuve de possession de la clé Dilithium-5 (le même format `proof_of_possession` que l'enregistrement de clé PQC, voir [Sécurité post-quantique](/architecture/post-quantum-security#proof-of-possession)) et refuse une clé qu'un autre validateur de pont utilise déjà. Le mainnet v3.2.3 n'a pas cette vérification, et aucun validateur de pont n'est enregistré sur l'un ou l'autre réseau.
+Depuis v3.2.2, le module valide de manière cohérente les montants nuls et sa configuration sur chaque chemin. **À partir de v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3 742 566) :** l'enregistrement d'un validateur de pont exige aussi une preuve de possession de la clé Dilithium-5 (le même format `proof_of_possession` que l'enregistrement de clé PQC, voir [Sécurité post-quantique](/architecture/post-quantum-security#proof-of-possession)) et refuse une clé qu'un autre validateur de pont utilise déjà. Le mainnet v3.2.3, qui s'exécute jusqu'à cette hauteur, n'a pas cette vérification, et aucun validateur de pont n'est enregistré sur l'un ou l'autre réseau.
 
 ### Disjoncteurs
 

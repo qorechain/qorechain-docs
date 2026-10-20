@@ -271,7 +271,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## Et ensuite
 
-- [Guides](/sdk/guides/evm) — travaillez avec chaque VM (EVM, SVM, CosmWasm,
+- [Guides](/sdk/guides/evm) — travaillez avec chaque VM (EVM, SVM, QoreChain Native,
   cross-VM).
 - [Comptes et signature PQC](/sdk/concepts/accounts-pqc) — dérivation HD,
   comptes unifiés eth-native et signature post-quantique.

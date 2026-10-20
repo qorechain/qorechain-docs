@@ -10,7 +10,7 @@ sidebar_position: 7
 L'astrazione del gas consente a un utente di pagare la commissione di una transazione in un token non nativo accettato invece che in QOR. Il codice di conversione delle commissioni fa parte della chain, ma **oggi su nessuna delle due reti è accettato alcun token non nativo**, quindi ogni commissione viene pagata in QOR. Questa pagina spiega cosa è attivo, come funziona la conversione così come è stata realizzata e cosa fare invece.
 
 :::caution Non ancora utilizzabile: paga ogni commissione in uqor
-Sulla mainnet (**`qorechain-vladi`**, release del nodo **v3.2.3**) e sulla testnet (**`qorechain-diana`**, release del nodo **v3.2.4**), verificato il 20 ottobre 2026:
+Sulla mainnet (**`qorechain-vladi`**, release del nodo **v3.2.3**, v3.2.4 dall'altezza 3.742.566) e sulla testnet (**`qorechain-diana`**, release del nodo **v3.2.4**), verificato il 20 ottobre 2026:
 
 * L'elenco attivo dei token accettati contiene **solo `uqor`**. La conversione delle commissioni è stata attivata con la v3.2.2, ma nient'altro è elencato, il limite di conversione per blocco è `0` (conversione disattivata) e il float di conversione non detiene alcun saldo. Una commissione pagata in qualsiasi altra denominazione viene rifiutata con un errore "denom not accepted for fee payment", sia in simulazione sia in una transazione reale.
 * Nessun canale o client IBC esiste su nessuna delle due reti, quindi non può esistere alcun saldo `ibc/…` con cui pagare.

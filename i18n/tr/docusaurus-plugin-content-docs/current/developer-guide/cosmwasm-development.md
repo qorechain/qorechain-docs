@@ -1,20 +1,20 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: CosmWasm Geliştirme
-sidebar_label: CosmWasm Geliştirme
+title: QoreChain Native Geliştirme
+sidebar_label: QoreChain Native Geliştirme
 sidebar_position: 3
 ---
 
-# CosmWasm Geliştirme
+# QoreChain Native Geliştirme
 
-QoreChain, geliştiricilerin WebAssembly'ye derlenen güvenli, sandbox'lanmış Rust programları yazmasına olanak tanıyan **CosmWasm** akıllı sözleşmelerini destekler. CosmWasm sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
+QoreChain, **QoreChain Native** akıllı sözleşmelerini destekler. QoreChain Native, QoreChain'in **CosmWasm** çalışma zamanına verdiği addır: geliştiriciler standart CosmWasm kütüphanelerine (`cosmwasm-std`) karşı güvenli, sandbox'lanmış Rust programları yazar ve bunları WebAssembly'ye derler. QoreChain Native sözleşmeleri, QoreChain'in üçlü VM mimarisi içinde EVM ve SVM programlarıyla birlikte çalışır.
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve **v3.2.3** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını kullanır. v3.2.4 çalıştıran (yalnızca test ağı) test ağı için `--chain-id qorechain-diana` kullanın.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri yayında olan ve 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13) **`qorechain-vladi`** ana ağını kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı için `--chain-id qorechain-diana` kullanın.
 :::
 
 :::caution Kod yükleme ve örnekleme şu anda açık izin gerektirir
-Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, sektör genelindeki bir CosmWasm güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır (ana ağda şu anda hiç depolanmış sözleşme kodu yoktur):
+Bu yazının kaleme alındığı sırada, `code_upload_access` ve `instantiate_default_permission` hem **ana ağda hem de test ağında** **`Nobody`** olarak ayarlanmıştır — yani `MsgStoreCode` ve `MsgInstantiateContract`, QoreChain Native'in üzerine inşa edildiği çalışma zamanı olan CosmWasm için sektör genelinde yayımlanan bir güvenlik uyarısının ardından varsayılan olarak keyfi hesaplara açık değildir. Aşağıdaki adımların başarılı olabilmesi için önce yönetişimin hesabınıza (veya belirli bir adres listesine) yükleme/örnekleme izni vermesi gerekir — önce canlı parametreleri kontrol edin, çünkü bu tam olarak yönetişimin değiştirebileceği türden bir ayardır (ana ağda şu anda hiç depolanmış sözleşme kodu yoktur):
 
 ```bash
 qorechaind query wasm params
@@ -39,7 +39,7 @@ Ana ağ ve test ağı, her Cosmos şeridi (lane) işleminde hibrit bir kuantum-s
 | **Rust**                    | En güncel kararlı sürüm  | Sözleşme derlemesi               |
 | **wasm32-unknown-unknown**  | hedef                    | WebAssembly derleme hedefi       |
 | **cargo-generate**          | En güncel                | Proje iskeleti oluşturma         |
-| **cosmwasm-std**            | 1.5+                     | CosmWasm standart kütüphanesi    |
+| **cosmwasm-std**            | 1.5+                     | QoreChain Native standart kütüphanesi    |
 
 Wasm hedefini kurun:
 
@@ -51,7 +51,7 @@ rustup target add wasm32-unknown-unknown
 
 ## Sözleşme Yaşam Döngüsü
 
-CosmWasm sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (Build)**, **Depolama (Store)**, **Örnekleme (Instantiate)**, **Çalıştırma (Execute)** ve **Sorgulama (Query)**.
+QoreChain Native sözleşmeleri beş aşamalı bir yaşam döngüsü izler: **Derleme (Build)**, **Depolama (Store)**, **Örnekleme (Instantiate)**, **Çalıştırma (Execute)** ve **Sorgulama (Query)**.
 
 1. **Derleme (Build)** — Sözleşmenizi optimize edilmiş WebAssembly'ye derleyin:
 
@@ -166,7 +166,7 @@ qorechaind query wasm contract-history <contract-addr>
 
 ## Sözleşme Yapısı
 
-Tipik bir CosmWasm sözleşmesinin üç giriş noktası vardır:
+Tipik bir QoreChain Native sözleşmesinin üç giriş noktası vardır:
 
 ```rust
 use cosmwasm_std::{
@@ -211,7 +211,7 @@ pub fn query(
 
 ## VM'ler Arası Çağrılar
 
-VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall` işlemleri olarak gönderilir; mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın. CosmWasm sözleşmelerinin bugün VM'ler arası çağrı başlatmak için sözleşme tarafında bir bağlaması (binding) yoktur (sözleşmelerin yayabileceği özel bir `QoreChainMsg` mesajı bulunmaz); bu nedenle bir sözleşme, kendi `execute` giriş noktasının içinden bir EVM veya SVM sözleşmesini çağıramaz. v3.2.3'ten itibaren çağıranın kendi şeridine yapılan bir çağrı reddedilir ve başarısız olan sıraya alınmış bir çağrı geride hiçbir yan etki bırakmaz.
+VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall` işlemleri olarak gönderilir; mesaj yaşam döngüsü için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın. QoreChain Native sözleşmelerinin bugün VM'ler arası çağrı başlatmak için sözleşme tarafında bir bağlaması (binding) yoktur (sözleşmelerin yayabileceği özel bir `QoreChainMsg` mesajı bulunmaz); bu nedenle bir sözleşme, kendi `execute` giriş noktasının içinden bir EVM veya SVM sözleşmesini çağıramaz. v3.2.3'ten itibaren çağıranın kendi şeridine yapılan bir çağrı reddedilir ve başarısız olan sıraya alınmış bir çağrı geride hiçbir yan etki bırakmaz.
 
 :::caution VM'ler arası çağrılar şu anda ana ağda kapalıdır
 `MsgCrossVMCall`, ana ağın devre kesici listesindedir (`qorechaind query circuit disabled-list`) ve SVM şeridi her iki ağda da devre dışıdır; dolayısıyla VM'ler arası yol bugün sıradan işlemler için kullanılamaz.
@@ -221,7 +221,7 @@ VM'ler arası çağrılar, `x/crossvm` modülü aracılığıyla `MsgCrossVMCall
 
 ## Modül Entegrasyonu
 
-CosmWasm sözleşmeleri, standart mesaj iletimi yoluyla Cosmos SDK modülleriyle etkileşime girebilir:
+QoreChain Native sözleşmeleri, standart mesaj iletimi yoluyla Cosmos SDK modülleriyle etkileşime girebilir:
 
 ```rust
 // Send native tokens via the bank module
@@ -263,6 +263,6 @@ Bu, mevcut sözleşme durumuyla yeni kod üzerindeki `migrate` giriş noktasın�
 
 ## Sonraki Adımlar
 
-* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — CosmWasm'dan EVM ve SVM sözleşmelerini çağırın
+* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — QoreChain Native'dan EVM ve SVM sözleşmelerini çağırın
 * [SVM Geliştirme](/developer-guide/svm-development) — QoreChain üzerinde BPF programları dağıtın
 * [EVM Precompile'ları](/developer-guide/evm-precompiles) — Planlanan Solidity precompile'ları için başvuru (henüz hiçbiri etkin değil)

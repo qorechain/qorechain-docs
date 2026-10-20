@@ -10,7 +10,7 @@ sidebar_position: 1
 Bu kılavuz QOR token'ını, token gönderme ve alma işlemlerini, bakiye sorgulamayı ve QoreChain üzerindeki ücret dağıtım modelini ele alır.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri canlıdır ve **v3.2.3** sürümünü çalıştırır; testnet **v3.2.4** çalıştırır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) 7 Haziran 2026'dan beri canlıdır ve 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** sürümünü çalıştırır; testnet 19 Ekim 2026'dan beri **v3.2.4** çalıştırır — mainnet üzerinde işlem yaparken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID ve endpoint'lerini kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -98,12 +98,12 @@ Bu pay, ücret toplayıcıya (fee collector) giren her şeye uygulanır; ücret 
 
 ## Yakma Kanalları
 
-QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi biri aracılığıyla yakılan QOR, dolaşımdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca gas ücreti ve başarısız işlem kanallarında yakma kaydedilmiştir; diğerleri tanımlıdır ancak hiçbir şey kaydetmemiştir. Testnet, isteğe bağlı zaman kilitli staking modülü için on üçüncü bir kaynak olan `staking_tier_penalty` kaydeder.
+QoreChain'in yakma modülü 12 yakma kaynağı tanımlar. Bunlardan herhangi biri aracılığıyla yakılan QOR, dolaşımdan kalıcı olarak kaldırılır. Mainnet'te şimdiye kadar yalnızca gas ücreti ve başarısız işlem kanallarında yakma kaydedilmiştir; diğerleri tanımlıdır ancak hiçbir şey kaydetmemiştir. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; mainnet'te 3.742.566 yüksekliğinden itibaren) isteğe bağlı zaman kilitli staking modülü için on üçüncü bir kaynak olan `staking_tier_penalty` vardır.
 
 | Kanal              | Açıklama                                                                         |
 | ------------------ | -------------------------------------------------------------------------------- |
 | `gas_fee`          | Tüm gas ücretlerinin %30'u yakılır                                                |
-| `contract_create`  | Sözleşme oluşturma başına sabit 100 QOR ücret yakılır (devre dışı: CosmWasm yüklemesi kapalı) |
+| `contract_create`  | Sözleşme oluşturma başına sabit 100 QOR ücret yakılır (devre dışı: QoreChain Native yüklemesi kapalı) |
 | `ai_service`       | AI servis ücretlerinin %50'si yakılır (devre dışı: AI servis ücretleri canlı değil) |
 | `bridge_fee`       | Köprü ücretlerinin %100'ü yakılır (devre dışı: köprü canlı değil)                 |
 | `treasury_buyback` | Hazineden periyodik geri alım ve yakma                                            |

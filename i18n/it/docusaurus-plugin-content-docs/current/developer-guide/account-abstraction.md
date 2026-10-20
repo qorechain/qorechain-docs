@@ -14,7 +14,7 @@ Il modulo di account astratti è attualmente **disattivato** su entrambe le reti
 :::
 
 :::note
-I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.3**. Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 (solo testnet).
+I comandi seguenti usano la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026), che esegue la release del nodo **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco (proposta di governance 13). Sostituisci con `--chain-id qorechain-diana` per la testnet, che esegue la v3.2.4 dal 19 ottobre 2026.
 :::
 
 :::caution Ogni transazione sulla lane Cosmos richiede la co-firma ibrida post-quantistica
@@ -176,7 +176,7 @@ Due messaggi trasportano azioni autorizzate dall'autenticatore. In entrambi, il 
 
 :::caution Regole sul nonce
 * `MsgExecuteEVM.nonce` = il nonce EVM **corrente** dell'account (`eth_getTransactionCount(account0x, "latest")`). In produzione il relayer è un account *diverso*, quindi **non** aggiungere +1. Firmare un nonce obsoleto restituisce il codice `11`.
-* `MsgExecuteCosmos.nonce` = la sequenza per-autenticatore (interroga lo stato dell'autenticatore dell'account), **non** la sequenza Cosmos dell'account. Solo sulla testnet (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` restituisce direttamente quella sequenza (`nonce`, `linked`).
+* `MsgExecuteCosmos.nonce` = la sequenza per-autenticatore (interroga lo stato dell'autenticatore dell'account), **non** la sequenza Cosmos dell'account. Dalla v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` restituisce direttamente quella sequenza (`nonce`, `linked`).
 :::
 
 **Esempio Phantom** (browser: Phantom firma, il tuo backend inoltra):

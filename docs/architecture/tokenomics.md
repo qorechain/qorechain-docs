@@ -23,7 +23,7 @@ QoreChain's economic model is centered on the native **QOR** token and has a **f
 | **Bech32 prefix**     | `qor` (accounts: `qor1...`, validators: `qorvaloper...`) |
 
 :::note
-The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on release **v3.2.3**. The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.4**) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (20 October 2026).
+The figures on this page describe the **mainnet** (`qorechain-vladi`, EVM chain ID **9801**), live since 7 June 2026 on release **v3.2.3** (v3.2.4 from height 3,742,566). The **`qorechain-diana`** testnet (EVM chain ID **9800**, release **v3.2.4** since 19 October 2026) has its own emission and supply history (testnet supply is far above mainnet's and its emission is already past the cap), so use the mainnet figures. Amounts that move with every block are marked with the date they were read (20 October 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain does not expose a live staking-return figure; treat any quoted percent
 
 ## x/burn — Multi-Channel Burn Engine
 
-The `x/burn` module defines **12 burn sources**. Every burned token is permanently removed from supply. On mainnet only `gas_fee` (31,574,710.28 QOR as of 20 October 2026) and, since v3.2.2, `failed_tx` (0.0855 QOR) have recorded burns; the others are defined but have recorded none. The testnet has a thirteenth source, `staking_tier_penalty`, for the optional time-locked staking module that exists on the testnet only (see [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking)).
+The `x/burn` module defines **12 burn sources** on mainnet today. Every burned token is permanently removed from supply. On mainnet only `gas_fee` (31,574,710.28 QOR as of 20 October 2026) and, since v3.2.2, `failed_tx` (0.0855 QOR) have recorded burns; the others are defined but have recorded none. From v3.2.4 there is a thirteenth source, `staking_tier_penalty`, which records the penalty burned when a time-locked delegation is unlocked early (on the testnet since 19 October 2026; on mainnet from height 3,742,566; see [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Burn Channels
 
@@ -75,7 +75,7 @@ The `x/burn` module defines **12 burn sources**. Every burned token is permanent
 | 11 | `milestone`        | Transaction-count milestones | Scheduled burns at fixed cumulative transaction counts (none triggered yet) |
 | 12 | `amm`              | AMM                        | Reserved for AMM protocol fees (none recorded) |
 
-The `contract_create`, `ai_service`, `bridge_fee` and `auto_buyback` channels are inactive today: CosmWasm upload is closed, AI service fees and the bridge are not live.
+The `contract_create`, `ai_service`, `bridge_fee` and `auto_buyback` channels are inactive today: QoreChain Native upload is closed, AI service fees and the bridge are not live.
 
 ### Fee Distribution {#fee-distribution}
 
@@ -201,7 +201,7 @@ Read live on 20 October 2026 from `GET /qorechain/inflation/v1/params`:
 
 | Parameter | Value (mainnet) | Description |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (legacy, year-based rates) or `fixed` |
+| `emission_mode` | `fixed` | `schedule` (legacy, year-based rates) or `fixed`; v3.2.4 adds a third mode, `target_apy` |
 | `fixed_epoch_emission` | 86,000,000,000 uqor (86,000 QOR) | Minted per epoch in fixed mode |
 | `max_total_emission` | 590,000,000,000,000 uqor (590,000,000 QOR) | Hard cumulative ceiling |
 | `epoch_length` | 43,200 blocks | Blocks per emission epoch |
@@ -210,8 +210,8 @@ Read live on 20 October 2026 from `GET /qorechain/inflation/v1/params`:
 
 The module's parameters and epoch record are exposed over REST on mainnet since v3.2.3 (`/qorechain/inflation/v1/params` and `/qorechain/inflation/v1/epoch_info`); they can also be read from chain state with the RPC `abci_query` raw store interface (store `inflation`, keys `inflation/params` and `inflation/epoch`).
 
-:::note Testnet only (v3.2.4)
-The `qorechain-diana` testnet keeps its earlier emission settings (16,239 QOR per epoch under a 114,285,714 QOR cap, already reached there). Its `x/inflation` parameters gained a third emission mode, `target_apy`, with a `target_apy_bps` parameter that is currently 0 and does not drive emission. The mode, the optional time-locked staking module that uses it, and the amounts on the testnet are not live on mainnet yet; mainnet governance proposal 13 would apply the v3.2.4 release that contains the staking module at height 3,742,566, and the emission mode itself would change only by its own later vote.
+:::note v3.2.4 and the testnet's emission
+The `qorechain-diana` testnet keeps its earlier emission settings (16,239 QOR per epoch under a 114,285,714 QOR cap, already reached there); mainnet uses the values above. The v3.2.4 release adds a third emission mode, `target_apy`, with a `target_apy_bps` parameter: on the testnet since 19 October 2026, on mainnet from height 3,742,566 (governance proposal 13). The parameter is `0` on the testnet and does not drive emission there. Switching a network to that mode is a separate governance vote and has not been proposed on mainnet; until one passes, mainnet stays in `fixed` mode at 86,000 QOR per epoch.
 :::
 
 ---

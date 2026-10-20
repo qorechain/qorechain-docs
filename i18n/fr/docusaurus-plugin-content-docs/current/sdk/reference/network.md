@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `mainnet` |
 | Chain id | `qorechain-vladi` (en ligne depuis le 7 juin 2026) |
-| Version de la chaîne (20 octobre 2026) | v3.2.3 |
+| Version de la chaîne (21 octobre 2026) | v3.2.3 jusqu'à la hauteur 3,742,566, v3.2.4 à partir de ce bloc (proposition de gouvernance 13) |
 | EVM chain ID | `9801` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Préréglage réseau | `testnet` |
 | Chain id | `qorechain-diana` (en ligne) |
-| Version de la chaîne (20 octobre 2026) | v3.2.4 (testnet uniquement pour l'instant ; la proposition 13 du mainnet l'appliquerait à la hauteur 3,742,566) |
+| Version de la chaîne (21 octobre 2026) | v3.2.4 (depuis la hauteur 8,337,253, 19 octobre 2026) |
 | EVM chain ID | `9800` |
 | Token d'affichage | `QOR` |
 | Dénomination de base | `uqor` |
@@ -57,7 +57,7 @@ pour pointer vers un vrai nœud.
 | --- | --- | --- |
 | Cosmos REST (LCD) | `1317` | soldes bank, infos de compte, requêtes de module |
 | gRPC | `9090` | requêtes gRPC |
-| Consensus RPC | `26657` | signature/diffusion des tx native, lectures CosmWasm |
+| Consensus RPC | `26657` | signature/diffusion des tx native, lectures QoreChain Native |
 | EVM JSON-RPC | `8545` | `eth_*` (et `qor_*` / précompilés sur les nœuds qui les activent) |
 | EVM JSON-RPC (WS) | `8546` | abonnements WebSocket EVM |
 | SVM JSON-RPC | `8899` | RPC compatible Solana |

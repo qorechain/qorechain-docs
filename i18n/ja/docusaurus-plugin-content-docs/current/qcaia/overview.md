@@ -40,7 +40,7 @@ QCAIA は **ベータ版** です。継続的に改善されており、まれ�
 
 | プラットフォーム | アクセス方法 | ガイド |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** に参加してスラッシュコマンドを使用 | [Discord での QCAIA の使用](/qcaia/discord) |
+| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)** に参加してスラッシュコマンドを使用 | [Discord での QCAIA の使用](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** に参加してボットにメンション | [Telegram での QCAIA の使用](/qcaia/telegram) |
 
 上記からプラットフォームを選んで、質問の仕方を詳しく学ぶか、[使用例](/qcaia/examples) ページに直接進んで QCAIA の実際の動作を確認してください。

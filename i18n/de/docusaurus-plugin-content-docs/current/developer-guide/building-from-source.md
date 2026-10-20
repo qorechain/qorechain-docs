@@ -30,7 +30,7 @@ echo $CGO_ENABLED # must be 1
 ```
 
 :::danger
-Jeder Aufruf von `go build`, `go test` und `go run` **muss** `CGO_ENABLED=1` gesetzt haben. Der Knoten bindet native Bibliotheken (die CosmWasm-Laufzeit und im Release-Build die PQC- und SVM-Bibliotheken) über cgo ein.
+Jeder Aufruf von `go build`, `go test` und `go run` **muss** `CGO_ENABLED=1` gesetzt haben. Der Knoten bindet native Bibliotheken (die QoreChain Native-Laufzeit und im Release-Build die PQC- und SVM-Bibliotheken) über cgo ein.
 :::
 
 ## Native Bibliotheken

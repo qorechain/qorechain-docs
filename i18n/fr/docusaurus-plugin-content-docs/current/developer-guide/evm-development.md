@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain exécute un environnement d'exécution entièrement compatible EVM sur le QoreChain EVM Engine, ce qui vous permet de déployer des contrats intelligents Solidity et d'interagir avec eux à l'aide d'outils familiers. Le module EVM expose une interface JSON-RPC sur le **port 8545** (WebSocket sur le **8546**) qui prend en charge les flux de travail de développement Ethereum standard.
 
 :::note
-Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée à la hauteur 3,662,051 le 20 octobre 2026). Pour le testnet **`qorechain-diana`** (v3.2.4, appliquée à la hauteur 8,337,253 le 19 octobre 2026 ; pas encore appliquée sur le mainnet ; la proposition de gouvernance 13 l'appliquerait à la hauteur 3,742,566), utilisez l'EVM chain ID **9800**. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
+Les exemples ci-dessous ciblent le mainnet **`qorechain-vladi`** (EVM chain ID **9801**), actif depuis le 7 juin 2026, qui exécute la version de nœud **v3.2.3** (appliquée à la hauteur 3,662,051 le 20 octobre 2026). Le mainnet passe à la version de nœud **v3.2.4** à la hauteur 3,742,566 (proposition de gouvernance 13). Le testnet **`qorechain-diana`** exécute la v3.2.4 depuis la hauteur 8,337,253 (19 octobre 2026) ; utilisez-y l'EVM chain ID **9800**. Les exemples de code utilisent `http://localhost:8545` pour un nœud que vous exploitez vous-même ; le point de terminaison public du mainnet est `https://evm.qore.host` et celui du testnet est `https://evm-testnet.qore.host`.
 :::
 
 :::caution Une transaction EVM exige une clé PQC enregistrée et une fenêtre d'autorisation ouverte
@@ -33,6 +33,8 @@ Deux autres règles s'appliquent sur le mainnet depuis la v3.2.2 : **les transac
 | Symbole de la devise | `QOR`                                      |
 
 Les lectures propres à QoreChain sont servies via REST (`api.qore.host`) ; l'espace de noms JSON-RPC `qor_` décrit [ci-dessous](#custom-qor_-namespace) n'est **pas activé** sur les points de terminaison publics ni dans la configuration par défaut d'un nœud. La liste `api` par défaut d'un nœud fraîchement initialisé (v3.2.3 et ultérieures) est `eth,net,web3` ; `txpool` est à activer explicitement, car il publie les transactions en attente du nœud.
+
+À partir de la version de nœud v3.2.4 (testnet depuis le 19 octobre 2026 ; nœuds du mainnet à partir de la hauteur 3,742,566), un nœud borne son propre serveur JSON-RPC : les corps de requête de plus de 256 KiB sont refusés (HTTP 413), pas plus de 256 requêtes ne sont servies simultanément (HTTP 503 au-delà), et un filtre `eth_getLogs` ou `eth_newFilter` comportant plus de 4 positions de topics, 1000 alternatives dans une position ou 1000 adresses est refusé. Ces limites sont des réglages locaux au nœud dans la section `[json-rpc]` de `app.toml` ; voir [Exécution d'un nœud](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 
@@ -188,7 +190,7 @@ Les transactions EVM sont signées avec **ECDSA classique (secp256k1)** ; MetaMa
 Pour la sécurité post-quantique au sein des contrats :
 
 * Le **précompilé PQC Verify** (`0x0000...0A01`) vérifiera les signatures ML-DSA-87 on-chain depuis Solidity une fois activé ; il n'est **pas encore actif** sur le mainnet ni sur le testnet. Voir [Précompilés EVM : état du réseau](/developer-guide/evm-precompiles#network-status).
-* Les **messages cross-VM** de l'EVM vers CosmWasm ou la SVM sont des transactions de la voie Cosmos et portent la signature hybride comme toutes les autres ; voir [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) pour leur disponibilité actuelle.
+* Les **messages cross-VM** de l'EVM vers QoreChain Native ou la SVM sont des transactions de la voie Cosmos et portent la signature hybride comme toutes les autres ; voir [Interopérabilité cross-VM](/developer-guide/cross-vm-interoperability) pour leur disponibilité actuelle.
 
 ---
 

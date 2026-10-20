@@ -1,19 +1,21 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: CosmWasm 가이드
-sidebar_label: CosmWasm
+title: QoreChain Native 가이드
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# CosmWasm 가이드
+# QoreChain Native 가이드
 
-TypeScript 코어(`@qorechain/sdk`)에는 CosmWasm 컨트랙트를 쿼리하고 실행하기 위한,
+QoreChain Native는 QoreChain이 자체 CosmWasm 스마트 컨트랙트 런타임을 부르는 이름이므로, 이 페이지에 나오는 CosmWasm 라이브러리와 클라이언트 패키지가 이 런타임에서 사용하는 것들입니다.
+
+TypeScript 코어(`@qorechain/sdk`)에는 QoreChain Native 컨트랙트를 쿼리하고 실행하기 위한,
 `@cosmjs/cosmwasm-stargate` 위의 얇고 타입이 지정된 래퍼가 포함되어 있습니다. 읽기에는
 읽기 전용 클라이언트를 사용하고, 상태 변경에는 서명 클라이언트를 사용합니다.
 
 ## 읽기 전용 쿼리
 
-`createClient()` 인스턴스에서 읽기 전용 CosmWasm 클라이언트를 엽니다 — 이는 합의 RPC
+`createClient()` 인스턴스에서 읽기 전용 QoreChain Native 클라이언트를 엽니다 — 이는 합의 RPC
 엔드포인트를 통해 연결되며 클라이언트에 메모이즈됩니다.
 
 ```ts
@@ -48,10 +50,10 @@ const result = await queryContractSmart(cw, contractAddress, { token_info: {} })
 꺼져 있으므로, 일반 계정의 `uploadCode`와 `instantiate`는 거부됩니다. 이미 존재하는
 컨트랙트는 쿼리(위 참고)하고 실행할 수 있습니다. 현재 권한은
 `GET /cosmwasm/wasm/v1/codes/params`에서 확인하세요.
-[CosmWasm 개발](/developer-guide/cosmwasm-development)을 참고하세요.
+[QoreChain Native 개발](/developer-guide/cosmwasm-development)을 참고하세요.
 :::
 
-:::caution CosmWasm 서명 클라이언트는 클래식 방식으로 서명합니다
+:::caution QoreChain Native 서명 클라이언트는 클래식 방식으로 서명합니다
 `connectCosmWasmSigner`는 CosmJS 서명 클라이언트를 감싸며, 이는 클래식 secp256k1
 서명만 첨부합니다. 라이브 네트워크는 모든 Native 경로 트랜잭션에 하이브리드
 (secp256k1 + ML-DSA-87) 서명을 요구하므로, 이를 통해 전송한 트랜잭션은 거기서
@@ -106,7 +108,7 @@ const res = await execute(
 
 ### 라이브 네트워크에서 실행하기 (하이브리드)
 
-CosmWasm 메시지 타입을 레지스트리에 추가하고 `MsgExecuteContract`를 하이브리드
+QoreChain Native 메시지 타입을 레지스트리에 추가하고 `MsgExecuteContract`를 하이브리드
 빌더를 통해 전송합니다. 계정의 ML-DSA-87 키가 먼저 등록되어 있어야 합니다
 ([양자 내성](/sdk/guides/quantum-safe) 참고).
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`가

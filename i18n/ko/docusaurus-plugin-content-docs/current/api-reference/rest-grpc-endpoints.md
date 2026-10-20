@@ -18,7 +18,7 @@ QoreChain은 프로그래밍 방식 접근을 위해 세 가지 기본 인터페
 모든 REST 엔드포인트는 JSON을 반환합니다. gRPC 엔드포인트는 Protocol Buffers를 사용하며 어떤 gRPC 클라이언트로도 사용할 수 있습니다. RPC 인터페이스는 합의 수준의 조회와 트랜잭션 브로드캐스트를 제공합니다.
 
 :::note
-이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중, 노드 릴리스 **v3.2.3**)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.4**) 모두에서 사용할 수 있습니다. 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
+이 인터페이스들은 **`qorechain-vladi`** 메인넷(2026년 6월 7일부터 가동 중, 노드 릴리스 **v3.2.3**)과 **`qorechain-diana`** 테스트넷(노드 릴리스 **v3.2.4**) 모두에서 사용할 수 있습니다. 메인넷은 높이 3,742,566까지 v3.2.3을 실행하고 그 블록부터 v3.2.4를 실행합니다(거버넌스 제안 13). 아래의 기본 URL은 로컬에서 실행 중인 노드를 기준으로 합니다. 공개 호스팅 엔드포인트는 `https://api.qore.host` / `https://api-testnet.qore.host`(REST)와 `https://rpc.qore.host` / `https://rpc-testnet.qore.host`(RPC)이며, [네트워크](/appendix/networks#public-endpoints)에 정리되어 있습니다. **공개 gRPC 엔드포인트는 없습니다**: 호스트 이름 `grpc.qore.host`와 `grpc-testnet.qore.host`는 존재하지 않으므로, gRPC가 필요하면 직접 노드를 실행하십시오.
 :::
 
 ## 기본 URL
@@ -31,11 +31,11 @@ RPC:   http://localhost:26657
 
 ## 존재하는 라우트 {#which-routes-exist}
 
-QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아래에 노출되며, 아래에 나열된 모듈에만 REST 라우트가 있습니다. 나머지 모듈은 **gRPC로만** 접근할 수 있습니다([gRPC 전용 모듈](#grpc-only-modules) 참조). 표준 Cosmos SDK, EVM, CosmWasm 라우트는 [표준 라우트](#standard-routes)에 나열되어 있습니다.
+QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아래에 노출되며, 아래에 나열된 모듈에만 REST 라우트가 있습니다. 나머지 모듈은 **gRPC로만** 접근할 수 있습니다([gRPC 전용 모듈](#grpc-only-modules) 참조). 표준 Cosmos SDK, EVM, QoreChain Native 라우트는 [표준 라우트](#standard-routes)에 나열되어 있습니다.
 
 존재하지 않는 라우트는 HTTP `501`과 `{"code":12,"message":"Not Implemented"}`로 응답합니다. 이는 쿼리 결과가 비어 있다는 뜻이 아니라 해당 라우트가 제공되지 않는다는 뜻입니다. `/qorechain/` 접두사가 없는 짧은 경로(예: `/bridge/v1/chains` 또는 `/pqc/v1/params`)는 제공되지 **않습니다**. 존재하는 라우트에서 알 수 없는 레코드를 조회하면 HTTP `404`와 `{"code":5,"message":"... not found"}`가 반환됩니다.
 
-아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일 무렵(메인넷 v3.2.3, 테스트넷 v3.2.4) 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. 테스트넷은 더 새로운 v3.2.4 릴리스를 실행하므로 메인넷에는 없는 일부 라우트와 필드를 제공합니다. 이들은 아래에서 **테스트넷 전용**으로 표시되며 메인넷에서는 `501`로 응답합니다.
+아래 예시는 공개 메인넷 호스트를 사용합니다. 테스트넷에서는 `https://api-testnet.qore.host`로 바꾸십시오. 샘플의 값은 2026년 10월 20일과 21일 무렵(메인넷 v3.2.3, 테스트넷 v3.2.4) 실제 네트워크에서 읽은 것이며 시간이 지나면 변하므로, 응답의 형태를 파악하는 용도로만 사용하십시오. v3.2.4 릴리스는 일부 라우트와 필드를 추가합니다. 이들은 아래에서 **v3.2.4**로 표시됩니다. 테스트넷은 2026년 10월 19일부터 이를 제공하고 있고, 메인넷은 높이 3,742,566부터 제공하며, 그때까지 메인넷 노드는 `501`로 응답합니다.
 
 ## PQC 모듈 {#pqc-module}
 
@@ -44,7 +44,7 @@ QoreChain 전용 모듈은 REST에서 `/qorechain/<module>/v1/...` 접두사 아
 | GET    | `/qorechain/pqc/v1/account/{address}`    | 계정의 양자내성 키 등록 정보(`found`, 키 유형, 알고리즘) |
 | GET    | `/qorechain/pqc/v1/evm_window/{address}` | 계정의 EVM 레인 승인 윈도우와 그 잔여 한도          |
 | GET    | `/qorechain/pqc/v1/evm_delegation_consent/{address}` | 계정의 EIP-7702 위임 동의, 현재 위임 및 EVM 논스(v3.2.2부터) |
-| GET    | `/qorechain/pqc/v1/protocol_features`    | **테스트넷 전용(v3.2.4).** 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
+| GET    | `/qorechain/pqc/v1/protocol_features`    | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터이며 그 이전의 메인넷에서는 `501`). 바이너리가 알고 있는 모든 프로토콜 기능과 `enabled`, `known`, `staged` 플래그 |
 
 경로 세그먼트는 단수형 `account`입니다. `/qorechain/pqc/v1/params` 또는 `/stats` 라우트는 없습니다(해당 정보는 `qorechaind query pqc params`와 `stats`를 사용하십시오).
 
@@ -70,7 +70,7 @@ curl -s https://api.qore.host/qorechain/pqc/v1/account/qor1...
 }
 ```
 
-`classical_key_source`는 `ecdsa_pubkey`가 어디에서 왔는지를 나타냅니다: `stored`(등록 시 제공된 키), `auth_account`(저장된 것이 없어 계정 자체의 온체인 공개 키를 사용), 또는 `none`입니다. 테스트넷(v3.2.4, **테스트넷 전용**)에서는 레코드에 `"possession_proven": false`도 포함되며, 이 값은 검증된 [소유 증명](/developer-guide/post-quantum-signing#proof-of-possession)과 함께 키가 등록되면 `true`가 됩니다. 메인넷은 아직 이 필드를 보고하지 않습니다.
+`classical_key_source`는 `ecdsa_pubkey`가 어디에서 왔는지를 나타냅니다: `stored`(등록 시 제공된 키), `auth_account`(저장된 것이 없어 계정 자체의 온체인 공개 키를 사용), 또는 `none`입니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 레코드에 `"possession_proven": false`도 포함되며, 이 값은 검증된 [소유 증명](/developer-guide/post-quantum-signing#proof-of-possession)과 함께 키가 등록되면 `true`가 됩니다. 아직 v3.2.3인 메인넷 노드는 이 필드를 보고하지 않습니다.
 
 등록된 키가 없는 계정은 `{"found": false, "account": null}`을 반환합니다. 계정이 전송하기 전에 키를 등록해야 하는지 판단하려면 `found`를 사용하십시오.
 
@@ -222,7 +222,7 @@ curl -s https://api.qore.host/qorechain/burn/v1/stats
 }
 ```
 
-실제 응답에는 모든 소각 소스(`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty`)가 나열되며, 위 샘플은 일부만 보여 줍니다. 금액 단위는 `uqor`입니다. `failed_tx`는 실패한 트랜잭션의 소각이 실제로 부과된 수수료에 적용되기 시작한 v3.2.2 업그레이드 이후로 0이 아닌 값을 유지하고 있습니다. v3.2.3부터 오래된 건별 소각 `records`는 정리(prune)되므로, `records`는 전체 이력이 아니라 최근 구간입니다. `stats`의 합계는 누적 값입니다.
+실제 응답에는 모든 소각 소스(`ai_service`, `amm`, `auto_buyback`, `bridge_fee`, `contract_create`, `failed_tx`, `gas_fee`, `milestone`, `rollup_create`, `tge`, `treasury_buyback`, `xqore_penalty`, 그리고 v3.2.4부터는 스테이킹 티어 잠금의 조기 해제 페널티가 소각되는 `staking_tier_penalty`)가 나열되며, 위 샘플은 일부만 보여 줍니다. 금액 단위는 `uqor`입니다. `failed_tx`는 실패한 트랜잭션의 소각이 실제로 부과된 수수료에 적용되기 시작한 v3.2.2 업그레이드 이후로 0이 아닌 값을 유지하고 있습니다. v3.2.3부터 오래된 건별 소각 `records`는 정리(prune)되므로, `records`는 전체 이력이 아니라 최근 구간입니다. `stats`의 합계는 누적 값입니다.
 
 ```bash
 curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
@@ -244,7 +244,7 @@ curl -s https://api.qore.host/qorechain/burn/v1/stranded_rewards
 | GET    | `/qorechain/abstractaccount/v1/accounts`              | 추상 계정 목록                                |
 | GET    | `/qorechain/abstractaccount/v1/accounts/{address}`    | 주소의 추상 계정 상태(없으면 `404`)                  |
 | GET    | `/qorechain/abstractaccount/v1/permission_schema`     | `schema_version`, `permissions`, `msg_permissions`, `key_management_msgs`, `lane_rules` |
-| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **테스트넷 전용(v3.2.4).** 연결된 인증자 키가 다음에 서명해야 하는 시퀀스(`nonce`, `linked`) |
+| GET    | `/qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` | **v3.2.4**(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터이며 그 이전의 메인넷에서는 `501`). 연결된 인증자 키가 다음에 서명해야 하는 시퀀스(`nonce`, `linked`) |
 
 ```bash
 curl -s https://api.qore.host/qorechain/abstractaccount/v1/config
@@ -368,7 +368,7 @@ curl -s https://api.qore.host/qorechain/lightnode/v1/reward_pool
 }
 ```
 
-`reserved`는 풀에서 따로 보류되어 거버넌스 투표로만 이동할 수 있는 부분입니다. 노드별 한도는 `uqor` 단위입니다. `max_reward_per_block_per_node`는 블록당 상한이며, v3.2.3부터 `max_reward_per_month_per_node`(`2000000000` uqor = 30일당 2,000 QOR)는 월 상한으로서 블록 시간과 가동 시간에 비례해 산정되므로 더 이상 블록 생성 속도에 좌우되지 않습니다. 상한은 약속된 금액이 아닙니다. 이 샘플은 거버넌스가 이전 적립금을 해제한 뒤(제안 8, 2026년 10월 19일) 작성 시점의 실제 메인넷 응답입니다. 테스트넷(v3.2.4, **테스트넷 전용**)에서는 응답에 `monthly_cap_active`, `last_distribution_time`, `last_distribution_height`도 포함되며, 노드의 한도는 해당 노드 자신의 등록 시점부터 시작됩니다.
+`reserved`는 풀에서 따로 보류되어 거버넌스 투표로만 이동할 수 있는 부분입니다. 노드별 한도는 `uqor` 단위입니다. `max_reward_per_block_per_node`는 블록당 상한이며, v3.2.3부터 `max_reward_per_month_per_node`(`2000000000` uqor = 30일당 2,000 QOR)는 월 상한으로서 블록 시간과 가동 시간에 비례해 산정되므로 더 이상 블록 생성 속도에 좌우되지 않습니다. 상한은 약속된 금액이 아닙니다. 이 샘플은 거버넌스가 이전 적립금을 해제한 뒤(제안 8, 2026년 10월 19일) 작성 시점의 실제 메인넷 응답입니다. v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 응답에 `monthly_cap_active`, `last_distribution_time`, `last_distribution_height`도 포함되며, 노드의 한도는 해당 노드 자신의 등록 시점부터 시작됩니다.
 
 :::note 등록에는 라이선스가 필요합니다
 체인은 유효한 `lightnode_operator` 라이선스 부여 없이는 라이트 노드 등록을 거부합니다(`holders/lightnode_operator`가 부여 목록을 보여 줍니다). 작성 시점 기준으로 `stats`는 메인넷에서 `"total_registered": "0"`을, 테스트넷에서 등록된 노드 하나를 보고합니다. 프로그램 상태는 [라이트 노드](/light-node/overview)를 참조하십시오.
@@ -406,7 +406,7 @@ curl -s https://api.qore.host/qorechain/rdk/v1/params
 }
 ```
 
-작성 시점 기준으로 `rollups`는 두 네트워크 모두에서 빈 목록이므로, 롤업별 라우트는 `404`로 응답합니다(예: `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window`는 초 단위(`604800`)로 표현됩니다. 테스트넷(v3.2.4, **테스트넷 전용**)에서는 낙관적 챌린지 윈도우가 블록 시간으로 측정됩니다.
+작성 시점 기준으로 `rollups`는 두 네트워크 모두에서 빈 목록이므로, 롤업별 라우트는 `404`로 응답합니다(예: `{"code":5,"message":"rollup foo not found"}`). `default_challenge_window`는 초 단위(`604800`)로 표현됩니다. v3.2.4부터 새로 제출된 배치의 낙관적 챌린지 윈도우는 블록 시간으로 측정됩니다. 테스트넷에서는 높이 8,337,253(2026년 10월 19일)부터, 메인넷에서는 높이 3,742,566부터입니다. 그때까지 메인넷은 초 값을 블록당 6초로 고정하여 블록 수로 환산합니다.
 
 ## 인플레이션 모듈 {#inflation-module}
 
@@ -422,7 +422,7 @@ curl -s https://api.qore.host/qorechain/inflation/v1/params
 curl -s https://api.qore.host/qorechain/inflation/v1/epoch_info
 ```
 
-메인넷에서 `emission_mode`는 `"fixed"`, `fixed_epoch_emission`은 `"86000000000"`(에포크당 86,000 QOR), `epoch_length`는 `"43200"` 블록, `max_total_emission`은 `"590000000000000"`(590,000,000 QOR, 누적 상한)입니다. 이 값들은 거버넌스 제안 10(2026년 10월 19일 통과)으로 설정되었으며, 새로운 고정 금액을 사용하는 첫 에포크는 블록 3,672,000에서 시작하고, `epoch_info`는 진행 중인 에포크와 지금까지 발행된 금액을 보여 줍니다. 응답의 `schedule` 목록은 원래의 `schedule` 모드에 속하며, 고정 모드 에포크가 발행하는 금액을 설명하지 않습니다. 모든 금액은 `uqor`입니다. 테스트넷은 자체적으로 다른 값을 보고합니다. 테스트넷에서만(v3.2.4, **테스트넷 전용**) 세 번째 모드인 `target_apy`가 있으며 `target_apy_bps` 필드를 갖고, 스테이킹 티어 모듈의 보너스에 사용됩니다. 메인넷에는 이러한 모드가 없습니다.
+메인넷에서 `emission_mode`는 `"fixed"`, `fixed_epoch_emission`은 `"86000000000"`(에포크당 86,000 QOR), `epoch_length`는 `"43200"` 블록, `max_total_emission`은 `"590000000000000"`(590,000,000 QOR, 누적 상한)입니다. 이 값들은 거버넌스 제안 10(2026년 10월 19일 통과)으로 설정되었으며, 새로운 고정 금액을 사용하는 첫 에포크는 블록 3,672,000에서 시작하고, `epoch_info`는 진행 중인 에포크와 지금까지 발행된 금액을 보여 줍니다. 응답의 `schedule` 목록은 원래의 `schedule` 모드에 속하며, 고정 모드 에포크가 발행하는 금액을 설명하지 않습니다. 모든 금액은 `uqor`입니다. 테스트넷은 자체적으로 다른 값을 보고합니다. v3.2.4부터 세 번째 모드인 `target_apy`가 있으며 `target_apy_bps` 필드를 갖습니다(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터). 네트워크는 자체 거버넌스 투표로만 이 모드로 전환하므로, 그러한 투표가 통과될 때까지 메인넷은 `fixed`를 유지합니다. 작성 시점에 테스트넷은 `"emission_mode": "fixed"`를 보고합니다.
 
 ## 가스 추상화 모듈 {#gas-abstraction-module}
 
@@ -455,10 +455,10 @@ curl -s https://api.qore.host/qorechain/gasabstraction/v1/config
 
 허용 목록에는 두 네트워크 모두 네이티브 `uqor`만 들어 있으므로, 수수료는 `uqor`로 지불되며 변환은 이루어지지 않습니다. 거버넌스가 토큰을 추가하며(풀, 최소 유동성, 시간 가중 가격과 현물 가격 간 최대 편차와 함께), 이러한 토큰으로 지불된 수수료는 QOR 플로트를 통해 변환되고 AMM 풀을 통해 다시 채워집니다. `?denom=` 없이 `conversion_rate`를 호출하면 `500`(`denom is required`)으로 응답합니다.
 
-## 스테이킹 티어 모듈 (테스트넷 전용) {#stakingtier-module}
+## 스테이킹 티어 모듈 (v3.2.4) {#stakingtier-module}
 
-:::note 테스트넷 전용
-스테이킹 티어 모듈은 테스트넷에서만 실행되는 **v3.2.4**에 포함되어 있습니다. 메인넷에서는 이 라우트들이 `501`로 응답하며, v3.2.4로의 메인넷 업그레이드는 아직 제안된 상태일 뿐입니다(거버넌스 제안 13, 높이 3,742,566).
+:::note v3.2.4부터 제공
+스테이킹 티어 모듈은 **v3.2.4**에 포함되어 있습니다. 이 라우트들은 테스트넷에서 2026년 10월 19일부터 제공되고 있으며 메인넷에서는 높이 3,742,566부터 제공됩니다(거버넌스 제안 13). 그 높이까지 메인넷 노드는 `501`로 응답합니다.
 :::
 
 | 메서드 | 엔드포인트                                  | 설명                                                        |
@@ -488,7 +488,7 @@ xQORE, BTC 리스테이킹(Babylon), FairBlock 모듈은 현재 릴리스에서 
 
 ## 표준 라우트 {#standard-routes}
 
-표준 Cosmos SDK, IBC, EVM, CosmWasm REST 라우트도 제공됩니다. 두 네트워크에서 확인된 예시는 다음과 같습니다:
+표준 Cosmos SDK, IBC, EVM, QoreChain Native REST 라우트도 제공됩니다. 두 네트워크에서 확인된 예시는 다음과 같습니다:
 
 | 엔드포인트                                              | 설명                                   |
 | ----------------------------------------------------- | --------------------------------------------- |
@@ -506,10 +506,10 @@ xQORE, BTC 리스테이킹(Babylon), FairBlock 모듈은 현재 릴리스에서 
 | `/cosmos/tx/v1beta1/txs`, `/txs/{hash}`, `/txs/block/{height}` | 트랜잭션 검색 / 조회 / 블록별 조회 |
 | `/cosmos/evm/vm/v1/params`                            | EVM 모듈 파라미터                         |
 | `/cosmos/evm/feemarket/v1/params`                     | EVM 수수료 시장 파라미터                     |
-| `/cosmwasm/wasm/v1/codes/params`                      | CosmWasm 업로드/인스턴스화 권한       |
+| `/cosmwasm/wasm/v1/codes/params`                      | QoreChain Native 업로드/인스턴스화 권한       |
 | `/ibc/apps/transfer/v1/params`                        | IBC 전송 파라미터                       |
 
-CosmWasm 접두사는 `/cosmwasm/wasm/v1/...`이며, `/cosmos/wasm/v1/...`은 제공되지 않습니다.
+QoreChain Native 접두사는 `/cosmwasm/wasm/v1/...`이며, `/cosmos/wasm/v1/...`은 제공되지 않습니다.
 
 ## gRPC 리플렉션
 
@@ -525,7 +525,7 @@ grpcurl -plaintext localhost:9090 list
 grpcurl -plaintext -d '{"address":"qor1..."}' localhost:9090 qorechain.pqc.v1.Query/Account
 ```
 
-`qorechain.pqc.v1.Query`에는 메인넷에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, 테스트넷에서만(v3.2.4) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 없습니다.
+`qorechain.pqc.v1.Query`에는 v3.2.3 노드에서 `Account`, `EVMWindow`, `EVMDelegationConsent`의 세 가지 메서드가 있으며, v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) `ProtocolFeatures`라는 네 번째 메서드가 있습니다. `Params` 메서드는 없습니다.
 
 ## 인증
 

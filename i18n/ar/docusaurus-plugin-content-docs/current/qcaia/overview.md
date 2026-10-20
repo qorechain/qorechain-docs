@@ -40,7 +40,7 @@ QCAIA في مرحلة **التجربة (beta)**. وهو يتحسّن باستم�
 
 | المنصة | كيفية الوصول إليه | الدليل |
 | --- | --- | --- |
-| **Discord** | انضم إلى **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** واستخدم أوامر الشرطة المائلة (slash commands) | [استخدام QCAIA على Discord](/qcaia/discord) |
+| **Discord** | انضم إلى **[discord.gg/qorechain](https://discord.gg/qorechain)** واستخدم أوامر الشرطة المائلة (slash commands) | [استخدام QCAIA على Discord](/qcaia/discord) |
 | **Telegram** | انضم إلى **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** وأشِر إلى الروبوت | [استخدام QCAIA على Telegram](/qcaia/telegram) |
 
 اختر منصتك أعلاه لتتعلّم بالضبط كيفية السؤال، أو انتقل مباشرة إلى صفحة [الأمثلة](/qcaia/examples) لترى QCAIA أثناء العمل.

@@ -40,7 +40,7 @@ QCAIA는 **베타** 상태입니다. 지속적으로 개선되고 있으며, 가
 
 | 플랫폼 | 접속 방법 | 가이드 |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)** 에 참여하여 슬래시 명령어 사용 | [Discord에서 QCAIA 사용하기](/qcaia/discord) |
+| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)** 에 참여하여 슬래시 명령어 사용 | [Discord에서 QCAIA 사용하기](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)** 에 참여하여 봇 멘션 | [Telegram에서 QCAIA 사용하기](/qcaia/telegram) |
 
 위에서 플랫폼을 선택하여 질문하는 정확한 방법을 알아보거나, [예시](/qcaia/examples) 페이지로 바로 이동하여 QCAIA가 작동하는 모습을 확인하세요.

@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain includes a **Solana Virtual Machine (SVM)** execution environment, allowing developers to deploy and execute SBF/BPF programs using familiar Solana tooling. The SVM module exposes a Solana-compatible JSON-RPC interface on **port 8899**, which `qorechaind start` launches automatically (see [JSON-RPC Server](#json-rpc-server) below).
 
 :::note
-The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.3**. Substitute `--chain-id qorechain-diana` for the testnet, which runs v3.2.4 (testnet only). **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
+The commands below use the **`qorechain-vladi`** mainnet (live since 7 June 2026), which runs node release **v3.2.3** until height 3,742,566 and **v3.2.4** from that block (governance proposal 13). Substitute `--chain-id qorechain-diana` for the testnet, which has run v3.2.4 since 19 October 2026. **SVM transactions are disabled on both networks** (see the next box), so the `tx svm` commands on this page are reference only: they cannot succeed today.
 :::
 
 ---
@@ -241,12 +241,12 @@ Programs that exceed the compute budget are halted and the transaction is revert
 
 ## Cross-VM Interoperability
 
-SVM programs are designed to communicate with EVM and CosmWasm contracts through the `x/crossvm` module's `MsgCrossVMCall` message (the chain works out the source lane itself). Because the SVM lane is disabled for transactions and `MsgCrossVMCall` is switched off on mainnet, there is no working SVM cross-VM path today. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the current status, the message lifecycle and the timeout behaviour.
+SVM programs are designed to communicate with EVM and QoreChain Native contracts through the `x/crossvm` module's `MsgCrossVMCall` message (the chain works out the source lane itself). Because the SVM lane is disabled for transactions and `MsgCrossVMCall` is switched off on mainnet, there is no working SVM cross-VM path today. See [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) for the current status, the message lifecycle and the timeout behaviour.
 
 ---
 
 ## Next Steps
 
-* [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Communication between SVM, EVM, and CosmWasm
+* [Cross-VM Interoperability](/developer-guide/cross-vm-interoperability) — Communication between SVM, EVM, and QoreChain Native
 * [EVM Development](/developer-guide/evm-development) — Solidity smart contracts on QoreChain
-* [CosmWasm Development](/developer-guide/cosmwasm-development) — Rust-based WebAssembly contracts
+* [QoreChain Native Development](/developer-guide/cosmwasm-development) — Rust-based WebAssembly contracts

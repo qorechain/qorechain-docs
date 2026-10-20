@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 L'enregistrement n'est exempté de l'exigence hybride que pour un compte sans clé ; cette transaction est donc signée avec la seule clé classique du compte. Une preuve mal formée est refusée avec `ErrInvalidProofOfPossession` (code 231 dans le module `pqc`).
 
-**Testnet uniquement (v3.2.4, pas sur le mainnet) :** l'enregistrement du compte gagne un booléen `possession_proven`, renvoyé par `GET /qorechain/pqc/v1/account/{address}` sur le testnet. Il vaut `true` lorsque la clé actuelle a été enregistrée avec une preuve valide, ou est arrivée par une rotation ou une migration (qui vérifient toutes deux une signature par la nouvelle clé sur des octets nommant la chaîne, le compte et la clé) ; un enregistrement sans preuve enregistre `false`, et une clé qui change sans preuve efface l'indicateur. Le mainnet v3.2.3 ne renvoie pas ce champ. La preuve reste également optionnelle sur le testnet.
+**À partir de la v3.2.4 (testnet depuis le 19 octobre 2026 ; mainnet à partir de la hauteur 3 742 566) :** l'enregistrement du compte gagne un booléen `possession_proven`, renvoyé par `GET /qorechain/pqc/v1/account/{address}`. Il vaut `true` lorsque la clé actuelle a été enregistrée avec une preuve valide, ou est arrivée par une rotation ou une migration (qui vérifient toutes deux une signature par la nouvelle clé sur des octets nommant la chaîne, le compte et la clé) ; un enregistrement sans preuve enregistre `false`, et une clé qui change sans preuve efface l'indicateur. Le mainnet v3.2.3 ne renvoie pas ce champ avant la hauteur de mise à niveau. La preuve reste optionnelle pour les clés de compte sous la v3.2.4.
 
 ## Signatures hybrides {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Ces utilitaires sous-tendent le hachage applicatif par défaut et sont utilisés
 
 Toutes les attestations de bridge inter-chaînes et les engagements d'état utilisent des signatures **Dilithium-5**. Le module `x/multilayer` requiert des signatures agrégées PQC sur chaque soumission `MsgAnchorState`, et les engagements ML-KEM sécurisent les canaux d'échange de clés entre les relayers de bridge.
 
-Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge, maintenant la résistance au quantique sur l'ensemble de la pile du protocole. Aucune route de bridge n'est active (voir [Architecture du bridge](/architecture/bridge-architecture#current-status)) ; sur le testnet uniquement (v3.2.4), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession de sa clé PQC.
+Cela garantit que la sécurité inter-chaînes n'est pas dégradée par l'usage de cryptographie classique dans l'infrastructure de bridge, maintenant la résistance au quantique sur l'ensemble de la pile du protocole. Aucune route de bridge n'est active (voir [Architecture du bridge](/architecture/bridge-architecture#current-status)) ; à partir de la v3.2.4 (testnet actuellement ; mainnet à partir de la hauteur 3 742 566), l'enregistrement d'un validateur de bridge exige aussi une preuve de possession de sa clé PQC.
 
 ## Paramètres du module
 

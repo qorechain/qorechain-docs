@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `mainnet` |
 | Chain id | `qorechain-vladi` (live din 7 iunie 2026) |
-| Versiune lanț (20 octombrie 2026) | v3.2.3 |
+| Versiune lanț (21 octombrie 2026) | v3.2.3 până la înălțimea 3,742,566, v3.2.4 de la acel bloc (propunerea de guvernanță 13) |
 | ID lanț EVM | `9801` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Presetare de rețea | `testnet` |
 | Chain id | `qorechain-diana` (live) |
-| Versiune lanț (20 octombrie 2026) | v3.2.4 (deocamdată doar testnet; propunerea 13 de pe mainnet ar aplica-o la înălțimea 3,742,566) |
+| Versiune lanț (21 octombrie 2026) | v3.2.4 (de la înălțimea 8,337,253, 19 octombrie 2026) |
 | ID lanț EVM | `9800` |
 | Token afișat | `QOR` |
 | Denominare de bază | `uqor` |
@@ -57,7 +57,7 @@ Endpoint-urile EVM servesc `eth_`, `net_`, `web3_` și `txpool_`; namespace-ul
 | --- | --- | --- |
 | Cosmos REST (LCD) | `1317` | solduri bank, info cont, interogări de modul |
 | gRPC | `9090` | interogări gRPC |
-| Consensus RPC | `26657` | semnare/difuzare tx native, citiri CosmWasm |
+| Consensus RPC | `26657` | semnare/difuzare tx native, citiri QoreChain Native |
 | EVM JSON-RPC | `8545` | `eth_*` (și `qor_*` / precompilate pe nodurile care le activează) |
 | EVM JSON-RPC (WS) | `8546` | abonamente WebSocket EVM |
 | SVM JSON-RPC | `8899` | RPC compatibil cu Solana |

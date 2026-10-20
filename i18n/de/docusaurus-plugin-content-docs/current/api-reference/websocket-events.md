@@ -225,14 +225,14 @@ PQC-Schlüssel werden explizit mit einer Registrierungstransaktion registriert; 
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Ereignisse zu Lebenszyklus und Belohnungen von Light Nodes |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Wird ausgegeben, wenn die Governance die KI-Screening-Konfiguration aktualisiert |
 
-### Staking-Tiers-Modul (nur Testnet)
+### Staking-Tiers-Modul (v3.2.4)
 
-Diese Ereignisse existieren nur im `qorechain-diana`-Testnet (v3.2.4); das Mainnet hat das Modul noch nicht (der Governance-Vorschlag 13 würde v3.2.4 bei Höhe 3,742,566 anwenden).
+Diese Ereignisse gehören zum Release v3.2.4: Das `qorechain-diana`-Testnet gibt sie seit dem 19. Oktober 2026 aus, und das Mainnet gibt sie ab Höhe 3.742.566 aus (Governance-Vorschlag 13). Ein Mainnet-Node, der noch auf v3.2.3 läuft, hat kein Staking-Tiers-Modul und gibt keines davon aus.
 
 | Ereignistyp | Schlüsselattribute | Beschreibung |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Ein Delegations-Lock wurde erstellt |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Ein Lock wurde vorzeitig beendet oder hat sein Ende erreicht |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Ein Lock wurde vorzeitig beendet (die Strafe wird unter der Burn-Quelle `staking_tier_penalty` verbrannt) oder hat sein Ende erreicht |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; Abrechnungssummen | Ein Bonus wurde beansprucht; der Pool wurde abgerechnet |
 | `staking_tier_params_updated` | Parameter | Die Governance hat die Modulparameter geändert |
 

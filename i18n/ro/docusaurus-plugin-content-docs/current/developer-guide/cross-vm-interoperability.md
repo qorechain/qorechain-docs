@@ -7,15 +7,15 @@ sidebar_position: 5
 
 # Interoperabilitate între VM-uri
 
-**Arhitectura triple-VM** a QoreChain (EVM, CosmWasm, SVM) este concepută pentru a permite contractelor inteligente de pe orice mașină virtuală să comunice cu contracte de pe orice altă VM. Modulul `x/crossvm` oferă un mesaj de apel cu o cale în aceeași tranzacție și o cale în coadă.
+**Arhitectura triple-VM** a QoreChain (EVM, QoreChain Native, SVM) este concepută pentru a permite contractelor inteligente de pe orice mașină virtuală să comunice cu contracte de pe orice altă VM. Modulul `x/crossvm` oferă un mesaj de apel cu o cale în aceeași tranzacție și o cale în coadă.
 
 :::caution Ce funcționează astăzi
 Apelurile între VM-uri sunt disponibile doar în măsura în care este disponibil lane-ul lor țintă:
 
 * `MsgCrossVMCall` este **oprit pe mainnet** de circuit breaker (`qorechaind query circuit disabled-list`); pe testnet este activat.
 * **Lane-ul SVM este dezactivat** pentru tranzacții pe ambele rețele, deci un segment SVM nu poate rula.
-* **Încărcarea și instanțierea CosmWasm sunt permisionate** pe ambele rețele, iar mainnet-ul nu are cod de contract stocat, deci nu există încă niciun contract CosmWasm de apelat.
-* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele.
+* **Încărcarea și instanțierea QoreChain Native sunt permisionate** pe ambele rețele, iar mainnet-ul nu are cod de contract stocat, deci nu există încă niciun contract QoreChain Native de apelat.
+* **Precompile-ul EVM sincron nu este activ** (vezi mai jos). O versiune întărită se află în binar începând cu v3.2.3, dar niciun precompile nu este activat pe vreuna dintre rețele, iar v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566) nu schimbă acest lucru.
 
 Rutele REST ale modulului (`/qorechain/crossvm/v1/...`) nu sunt servite de gateway-ul public; citește mesajele cu CLI-ul sau cu un client de interogare gRPC/ABCI.
 :::
@@ -29,7 +29,7 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 ## Prezentare generală a arhitecturii
 
 ```
- EVM (Solidity)          CosmWasm (Rust/Wasm)         SVM (BPF)
+ EVM (Solidity)     QoreChain Native (Rust/Wasm)     SVM (BPF)
       |                        |                        |
       |--- sync (precompile) ->|                        |
       |                        |                        |
@@ -40,45 +40,55 @@ Endpoint-urile de mai jos folosesc implicit un nod local. Pe mainnet, folosește
 
 | Cale             | Direcție        | Sincronizare     | Mecanism                        |
 | ---------------- | --------------- | ---------------- | ------------------------------- |
-| **Sincronă**     | EVM către CosmWasm | Aceeași tranzacție | Precompile la `0x0000...0901` (încă inactiv, vezi mai jos) |
+| **Sincronă**     | EVM către QoreChain Native | Aceeași tranzacție | Precompile la `0x0000...0901` (încă inactiv, vezi mai jos) |
 | **Mesaj, implicit** | Orice VM către orice altă VM | Aceeași tranzacție | `MsgCrossVMCall`; apelul se execută imediat, iar un eșec anulează întreaga tranzacție |
 | **Mesaj, în coadă** | Orice VM către orice altă VM | Blocul următor (sau mai târziu) | `MsgCrossVMCall` cu `async` setat; mesajul așteaptă în coadă |
 
 ---
 
-## Calea sincronă (EVM către CosmWasm)
+## Calea sincronă (EVM către QoreChain Native)
 
-Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte CosmWasm și să primească un răspuns în cadrul aceleiași tranzacții.
+Calea sincronă folosește un **precompile** EVM la adresa `0x0000000000000000000000000000000000000901`. Este conceput pentru a permite contractelor Solidity să apeleze contracte QoreChain Native și să primească un răspuns în cadrul aceleiași tranzacții.
 
 :::warning Inactiv pe mainnet și testnet
-Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi` și nici pe `qorechain-diana`: un apel către `0x…0901` reușește și returnează date goale. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea CosmWasm, ajunge doar la ținte CosmWasm din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia după ce o actualizare aprobată prin guvernanță îl adaugă în lista activă. Exemplul de mai jos arată doar forma intenționată. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
+Precompile-ul punții CrossVM **nu este activ** pe `qorechain-vladi` și nici pe `qorechain-diana`: un apel către `0x…0901` reușește și returnează date goale. Binarul v3.2.3 conține o versiune întărită (refuză un `STATICCALL`, contorizează apelul său imbricat din gazul frame-ului apelant și îl jurnalizează astfel încât un revert EVM să anuleze și partea QoreChain Native, ajunge doar la ținte QoreChain Native din lista permisă și respectă circuit breaker-ul cross-VM), dar rulează abia după ce o actualizare aprobată prin guvernanță îl adaugă în lista activă. Exemplul de mai jos este structura pe care o decodifică nodul, dar nu poate rula până când precompile-ul nu este activ. Vezi [Precompilate EVM: starea rețelelor](/developer-guide/evm-precompiles#network-status).
 :::
 
 ### Exemplu Solidity
+
+Nodul decodifică intrarea precompile-ului ca un selector de 4 octeți urmat de argumentele codificate ABI ale `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selector `0x3c11078c`). `targetVM` este `1` pentru un contract QoreChain Native (QoreChain Native este runtime-ul CosmWasm; `0` este EVM, pe care puntea întărită îl refuză ca țintă). `targetContract` este adresa bech32 a contractului ca șir, iar `payload` este mesajul de execuție al contractului ca octeți JSON UTF-8. Precompile-ul returnează octeții bruți ai răspunsului țintei.
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface ICrossVM {
-    function call(bytes calldata payload) external returns (bytes memory);
-}
-
 contract CrossVMCaller {
-    ICrossVM constant CROSSVM = ICrossVM(0x0000000000000000000000000000000000000901);
+    address constant CROSSVM = 0x0000000000000000000000000000000000000901;
+    uint8 constant TARGET_QORECHAIN_NATIVE = 1;
 
-    function callCosmWasmContract(
-        string memory cosmwasmAddr,
-        string memory executeMsg,
-        uint256 funds
-    ) external returns (bytes memory) {
-        bytes memory payload = abi.encode(cosmwasmAddr, executeMsg, funds);
-        return CROSSVM.call(payload);
+    function callQoreChainNative(string calldata contractAddr, bytes calldata executeMsg)
+        external
+        returns (bytes memory)
+    {
+        bytes memory data = abi.encodeWithSignature(
+            "executeCrossVMCall(uint8,string,bytes)",
+            TARGET_QORECHAIN_NATIVE,
+            contractAddr,
+            executeMsg
+        );
+        (bool ok, bytes memory ret) = CROSSVM.call(data);
+        require(ok, "cross-VM call failed");
+        // While the precompile is not active, the call succeeds with empty data
+        // and nothing executes; treat an empty reply as a failure.
+        require(ret.length > 0, "cross-VM precompile not active or empty reply");
+        return ret;
     }
 }
 ```
 
-Odată activ, precompile-ul execută imediat contractul CosmWasm și returnează rezultatul. Nodul actual decodifică calldata ca `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`; ABI-ul se mai poate schimba înainte de activare. Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
+Aceasta este structura pe care o decodifică nodul; este aceeași structură pe care o construiește encoderul `@qorechain/rdk`, iar contractul de mai sus corespunde șablonului de pornire din [Multi-VM](/rollups/multi-vm). Fondurile nu pot fi atașate prin precompile (calea prin mesajul `MsgCrossVMCall` acceptă `--funds`). Exemplul nu poate face nimic pe nicio rețea astăzi, deoarece precompile-ul nu este activ (vezi avertismentul de mai sus); ABI-ul se mai poate schimba înainte de activare.
+
+Odată activ, precompile-ul execută imediat contractul QoreChain Native și returnează rezultatul. (Helperul `encodeCrossVmCalldata` din `@qorechain/rdk` 0.6.0 construiește calldata; vezi [Multi-VM](/rollups/multi-vm).) Cost de gaz: **50.000 de bază + 4 per octet de intrare + costul execuției**.
 
 ---
 
@@ -95,10 +105,10 @@ qorechaind tx crossvm call evm 0x1234567890123456789012345678901234567890 \
   --payload 0a0b0c --from mykey --generate-only > tx.json
 ```
 
-Alte flag-uri: `--funds <coins>` (doar pentru ținte CosmWasm) și `--async` pentru a pune apelul în coadă în loc să fie executat acum. Semnează și transmite `tx.json` cu `tx pqc cosign` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); pragul taxei este de 0.1 uqor per gaz. Un apel către propriul lane al apelantului este refuzat (începând cu v3.2.3).
+Alte flag-uri: `--funds <coins>` (doar pentru ținte QoreChain Native) și `--async` pentru a pune apelul în coadă în loc să fie executat acum. Semnează și transmite `tx.json` cu `tx pqc cosign` (vezi [Semnare post-cuantică](/developer-guide/post-quantum-signing)); pragul taxei este de 0.1 uqor per gaz. Un apel către propriul lane al apelantului este refuzat (începând cu v3.2.3).
 
 :::caution Dezactivat pe mainnet
-`MsgCrossVMCall` este oprit pe mainnet de circuit breaker, deci comanda nu poate reuși acolo astăzi. (Binarele de release anterioare v3.2.3 construiau și un mesaj care nu trecea de propria validare, deoarece VM-ul sursă era gol; binarul v3.2.3 corectează acest lucru.) Pe testnet mesajul este activat, dar țintele sale CosmWasm și SVM nu sunt utilizabile (vezi mai sus), așa că poate fi atinsă doar o țintă EVM.
+`MsgCrossVMCall` este oprit pe mainnet de circuit breaker, deci comanda nu poate reuși acolo astăzi. (Binarele de release anterioare v3.2.3 construiau și un mesaj care nu trecea de propria validare, deoarece VM-ul sursă era gol; binarul v3.2.3 corectează acest lucru.) Pe testnet mesajul este activat, dar țintele sale QoreChain Native și SVM nu sunt utilizabile (vezi mai sus), așa că poate fi atinsă doar o țintă EVM.
 :::
 
 ---
@@ -123,7 +133,7 @@ Submitted --> Pending --> Executed
 | **Failed**    | Execuția contractului țintă a fost anulată (revert); eroare înregistrată |
 | **Timed Out** | Mesajul a depășit `queue_timeout_blocks` fără execuție    |
 
-Începând cu v3.2.3, un apel din coadă care eșuează este anulat în întregime: rămâne doar înregistrarea sa `Failed`, iar fondurile atașate unui apel CosmWasm eșuat nu mai sunt mutate în contract. Cât timp modulul este dezactivat sau `MsgCrossVMCall` este oprit de circuit breaker, coada **nu este executată**: mesajele din coadă rămân în așteptare și expiră la termenul lor, cu excepția cazului în care comutatorul este ridicat mai întâi.
+Începând cu v3.2.3, un apel din coadă care eșuează este anulat în întregime: rămâne doar înregistrarea sa `Failed`, iar fondurile atașate unui apel QoreChain Native eșuat nu mai sunt mutate în contract. Cât timp modulul este dezactivat sau `MsgCrossVMCall` este oprit de circuit breaker, coada **nu este executată**: mesajele din coadă rămân în așteptare și expiră la termenul lor, cu excepția cazului în care comutatorul este ridicat mai întâi.
 
 ---
 
@@ -208,14 +218,14 @@ curl -X POST http://localhost:8545 \
 
 ## Considerații de proiectare
 
-**Atomicitate:** Apelurile sincrone (EVM către CosmWasm prin precompile) sunt concepute să fie atomice, astfel încât, dacă oricare parte este anulată (revert), întreaga tranzacție este anulată. Precompile-ul actual nu garantează încă acest lucru, ceea ce este unul dintre motivele pentru care nu este activ (vezi mai sus). Apelurile asincrone **nu sunt atomice** între blocuri; proiectează-ți contractele astfel încât să gestioneze cu eleganță stările `Failed` și `Timed Out`.
+**Atomicitate:** Apelurile sincrone (EVM către QoreChain Native prin precompile) sunt concepute să fie atomice, astfel încât, dacă oricare parte este anulată (revert), întreaga tranzacție este anulată. Precompile-ul actual nu garantează încă acest lucru, ceea ce este unul dintre motivele pentru care nu este activ (vezi mai sus). Apelurile asincrone **nu sunt atomice** între blocuri; proiectează-ți contractele astfel încât să gestioneze cu eleganță stările `Failed` și `Timed Out`.
 
 **Ordonare:** Mesajele din coadă sunt procesate FIFO în cadrul fiecărei treceri EndBlocker. Nu există o ordonare garantată între diferitele VM-uri sursă.
 
 **Codificarea payload-ului:** Formatul payload-ului depinde de VM-ul țintă:
 
 * **Ținte EVM:** apeluri de funcții codificate ABI
-* **Ținte CosmWasm:** mesaje execute codificate JSON
+* **Ținte QoreChain Native:** mesaje execute codificate JSON
 * **Ținte SVM:** date de instrucțiuni BPF codificate hex
 
 ---
@@ -224,5 +234,5 @@ curl -X POST http://localhost:8545 \
 
 * [Precompile EVM](/developer-guide/evm-precompiles) — Starea precompile-ului sincron CrossVM și a celorlalte precompile-uri planificate
 * [Dezvoltare EVM](/developer-guide/evm-development) — Dezvoltare Solidity pe QoreChain
-* [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development) — Dezvoltare de contracte Rust/Wasm
+* [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development) — Dezvoltare de contracte Rust/Wasm
 * [Dezvoltare SVM](/developer-guide/svm-development) — Implementarea programelor BPF

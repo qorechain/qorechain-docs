@@ -21,7 +21,7 @@ makinesiyle nasıl çalışılacağını kapsar.
 QoreChain, tek bir zincir üzerinde üç birinci sınıf akıllı sözleşme çalışma
 ortamına sahip bir Katman 1 blokzinciridir:
 
-- **CosmWasm** — Cosmos SDK aracılığıyla Wasm akıllı sözleşmeleri.
+- **QoreChain Native** — Cosmos SDK aracılığıyla Wasm akıllı sözleşmeleri (CosmWasm çalışma zamanı).
 - **QoreChain EVM Engine** — Ethereum uyumlu yürütme (Solidity, viem,
   standart JSON-RPC).
 - **SVM** — Solana tarzı JSON-RPC'ye sahip, Solana uyumlu bir çalışma ortamı.
@@ -30,19 +30,19 @@ Hesaplar, bakiyeler ve token'lar çalışma ortamları arasında paylaşılır v
 zincir, zincirler arası birlikte çalışabilirlik için IBC modülünü içerir
 (mainnet veya testnet üzerinde henüz açık bir IBC kanalı yoktur).
 
-:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.3, testnet v3.2.4)
+:::note Canlı ağlarda bugün çalışanlar (mainnet v3.2.3, 3.742.566 yüksekliğinden itibaren v3.2.4; testnet v3.2.4)
 **Çalışır:** her şeritte okumalar, hibrit imzalı Native işlemler, birleşik
 hesaplar, bir [yetkilendirme penceresi](/sdk/guides/evm#evm-window) içindeki EVM
 işlemleri ve SVM okumaları.
 **Henüz kullanılamaz:** EVM ön derlemeleri (etkin değil), `qor_` JSON-RPC ad
 alanı, SVM işlemleri, mainnet'te VM'ler arası çağrılar (`MsgCrossVMCall`
-devre kesici tarafından kapatılmıştır), sıradan hesaplar için CosmWasm yükleme ve
+devre kesici tarafından kapatılmıştır), sıradan hesaplar için QoreChain Native yükleme ve
 örnekleme, authenticator / soyut hesap akışları (modül kapalı), xQORE ve gaz
 soyutlaması. Her kılavuz, geçerli olduğu yerde bu uyarıyı yineler.
 
 Yayımlanan SDK (0.9.0, 21 Ekim 2026), her iki ağın doğruladığı biçimde imzalar
 (v2 hibrit sign-bytes, zincir durumundan çözümlenir); imzalama biçimi, adresler,
-ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi. Sonraki
+ondalık basamaklar, memo'lar ve ücretler v3.2.3 veya v3.2.4'te değişmedi (mainnet, 3.742.566 yüksekliğinden itibaren v3.2.4 çalıştırır). Sonraki
 kuantum sonrası kuralların istemci tarafını taşır (anahtar kaydında sahiplik
 kanıtı, kapsamlı EVM pencereleri, EIP-7702 onay mesajları); 0.9.0 öncesi
 sürümler taşımaz, bkz. [0.9.0 öncesi sürümler](/sdk/install#before-090).
@@ -117,7 +117,7 @@ birim (denominasyon) matematiğini ve okuma yüzeylerini paylaşır.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Yayında (PyPI, v0.9.0) |
 | `qorechain-sdk` (Go modülü) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Yayında (Go proxy, etiket `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Yayında (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Yayında (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Yayında (Maven Central, v0.9.1; diğer diller 0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM adaptörü) | `npm i @qorechain/evm viem` | Yayında (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adaptörü) | `npm i @qorechain/svm @solana/web3.js` | Yayında (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (React kiti) | `npm i @qorechain/react` | Yayında (npm, v0.9.0) |
@@ -138,7 +138,7 @@ abonelikleri. Bu istemcilerin tümü **yayınlanmıştır**: TypeScript npm'de
 (`@qorechain/sdk` 0.9.0), Python PyPI'da (`qorechain-sdk` 0.9.0, import
 `qorsdk`), Go modül proxy'sinde (etiket `packages/go/v0.9.0`), Rust
 crates.io'da (`qorechain-sdk` 0.9.0) ve Java Maven
-Central'da (`io.github.qorechain:qorechain-sdk` 0.9.0). EVM/SVM yürütme
+Central'da (`io.github.qorechain:qorechain-sdk` 0.9.1, yalnızca Java'ya özel bir güncelleme; diğer istemciler 0.9.0). EVM/SVM yürütme
 adaptörleri (`@qorechain/evm`, `@qorechain/svm`, ikisi de 0.8.0),
 `@qorechain/react` kiti (0.9.0) ve `create-qorechain-dapp` iskele oluşturma
 CLI'si (0.9.0) yalnızca TypeScript içindir ve aynı şekilde npm'de

@@ -10,7 +10,7 @@ sidebar_position: 5
 QoreChain met en œuvre une **architecture de chaînes hiérarchique à 4 niveaux** via le module `x/multilayer`. La chaîne principale sert de racine de règlement et de confiance, tandis que les couches subsidiaires (sidechains, paychains et rollups) prennent en charge des charges de travail spécialisées avec différents compromis de performance et de sécurité.
 
 :::caution Capacité à un stade précoce
-Le module est déployé sur le mainnet (version de chaîne **v3.2.3**) et sur le testnet (**v3.2.4**), mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026 : `GET /qorechain/multilayer/v1/layers` renvoie une liste vide sur les deux). Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur. Sur le mainnet, le message `MsgUpdateLayerStatus` est actuellement désactivé par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; sur le testnet, il ne l'est pas.
+Le module est déployé sur le mainnet (version de chaîne **v3.2.3** jusqu'à la hauteur 3 742 566, **v3.2.4** à partir de ce bloc) et sur le testnet (**v3.2.4**), mais **aucune couche et aucune ancre n'existe encore sur l'un ou l'autre réseau** (vérifié le 20 octobre 2026 : `GET /qorechain/multilayer/v1/layers` renvoie une liste vide sur les deux). Tout ce qui suit décrit le module tel qu'il est construit ; les paramètres sont les valeurs en vigueur. Sur le mainnet, le message `MsgUpdateLayerStatus` est actuellement désactivé par le disjoncteur (voir [Paramètres de la chaîne](/appendix/chain-parameters#circuit-breaker)) ; sur le testnet, il ne l'est pas.
 :::
 
 ---

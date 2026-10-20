@@ -10,7 +10,7 @@ sidebar_position: 6
 Acest ghid este o scurtă orientare pentru lansarea unui rollup specific unei aplicații, care se decontează pe QoreChain, folosind Rollup Development Kit (RDK). Comenzile pas cu pas se găsesc în **[Implementarea unui Rollup](/rollups/deploying-a-rollup)**; această pagină acoperă ce ai nevoie înainte de a începe.
 
 :::caution Capabilitate în stadiu incipient
-Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 20 octombrie 2026). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de chain **v3.2.3**; testnet-ul (**`qorechain-diana`**, chain ID EVM **9800**) rulează o versiune mai nouă (**v3.2.4**). Validează mai întâi pe testnet; un comportament diferă între cele două (vezi nota despre fereastra de contestare din [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
+Până acum nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 21 octombrie 2026). Mainnet-ul (**`qorechain-vladi`**, chain ID EVM **9801**) rulează versiunea de chain **v3.2.3** până la înălțimea 3,742,566 și **v3.2.4** de la acel bloc; testnet-ul (**`qorechain-diana`**, chain ID EVM **9800**) rulează v3.2.4 din 19 octombrie 2026. Validează mai întâi pe testnet; un comportament diferă până când mainnet-ul preia upgrade-ul (vezi nota despre fereastra de contestare din [Rollup Development Kit](/architecture/rollup-development-kit#optimistic-settlement)).
 :::
 
 ---
@@ -29,7 +29,7 @@ RDK vine cu cinci profiluri predefinite, fiecare ajustat pentru o categorie comu
 | -------------- | ------------------- | --------- | --------------- | ------------ | -------- | ----------------- |
 | **defi**       | zk (SNARK)          | dedicated | native          | EIP-1559     | EVM      | Aplicații DeFi/AMM (lending, DEX-uri, derivate) |
 | **gaming**     | based               | based     | native          | flat         | custom   | Stare de joc cu debit ridicat și experiențe în timp real |
-| **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA planificat) | standard | CosmWasm | Sarcini de mint și marketplace pentru NFT-uri |
+| **nft**        | optimistic (fraud)  | dedicated | native (Celestia DA planificat) | standard | QoreChain Native | Sarcini de mint și marketplace pentru NFT-uri |
 | **enterprise** | based               | based     | native          | subsidized   | EVM      | Implementări permisionate și de consorțiu cu taxe sponsorizate |
 | **custom**     | valori implicite: optimistic (fraud) | dedicated | native | standard | EVM | Valori implicite de pornire; ajustează ce permite mesajul |
 
@@ -43,7 +43,7 @@ Vezi [Profiluri predefinite](/rollups/preset-profiles) pentru detalii și note d
 | ----------- | ------- |
 | **Stake pentru rollup** | Cel puțin 10.000 QOR (`min_stake_for_rollup`, 10.000.000.000 uqor). Citește valoarea curentă: `qorechaind query rdk config` |
 | **Ardere la creare** | 1 % din stake-ul pe care îl furnizezi este ars la creare; restul este depus în escrow într-un registru per rollup. Când oprești rollup-ul, primești înapoi ce a rămas în el (retragerile și recompensele pentru fraud-proof plătite din el reduc rambursarea) |
-| **Id de rollup** | 3 până la 64 de caractere: litere mici, cifre, `.`, `_` și `-`, începând cu o literă sau o cifră. Un id care încalcă aceste reguli este refuzat după ce ai plătit comisionul, așa că verifică-l mai întâi |
+| **Id de rollup** | 3 până la 64 de caractere: litere mici, cifre, `.`, `_` și `-`, începând cu o literă sau o cifră. Un id care încalcă aceste reguli este refuzat după ce ai plătit comisionul, așa că verifică-l mai întâi (RDK-ul TypeScript 0.6.0 îl verifică înainte de a difuza) |
 | **Stake pentru înregistrarea layer-ului** | Crearea unui rollup înregistrează și un layer în modulul multilayer, ceea ce blochează încă 1.000 QOR de la cel care îl creează (returnați când rollup-ul este oprit). Fără acest sold, layer-ul nu este creat, iar rollup-ul nu poate fi ancorat |
 | **Cont** | Un cont alimentat cu fonduri, cu o cheie post-cuantică înregistrată (fiecare tranzacție pe lane-ul nativ este semnată hibrid) |
 
@@ -56,6 +56,7 @@ Vezi [Profiluri predefinite](/rollups/preset-profiles) pentru detalii și note d
 * Loturile se decontează fără ancoră, cu excepția cazului în care trimiți odată cu ele semnătura post-cuantică a creatorului (`--anchor-signature` la `tx rdk submit-batch`, disponibil începând cu v3.2.2). Vezi [State Anchoring](/architecture/rollup-development-kit#state-anchoring).
 * Retragerile către L1 (`tx rdk execute-withdrawal`) sunt plătite din registrul de escrow al rollup-ului tău și funcționează pe mainnet începând cu v3.2.3; necesită un lot finalizat cu o rădăcină a retragerilor și folosesc doar `uqor`.
 * Cel care creează rollup-ul este în prezent cel care trimite loturile (niciun profil predefinit nu setează o adresă de sequencer), așa că păstrează cheia creatorului în siguranță: doar creatorul poate pune pe pauză, relua sau opri rollup-ul.
+* RDK este publicat în cinci limbaje (versiunea 0.6.0 pe fiecare registru, verificat la 21 octombrie 2026), dar doar clientul TypeScript semnează tranzacții hibride, și doar când îi dai perechea ta de chei post-cuantice; CLI-ul `qorollup` și clienții Python, Go, Rust și Java semnează doar clasic, ceea ce ambele rețele refuză. Vezi [RDK 0.6.0: modificări și limite](/rollups/deploying-a-rollup#rdk-050-limits).
 * Ajutorul `suggest-profile` returnează în prezent o variantă de rezervă fixă `defi` pe endpoint-urile publice, așa că alege din tabelul de profiluri.
 
 ---

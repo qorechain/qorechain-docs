@@ -50,10 +50,10 @@ sidebar_position: 8
 | Python | `qorechain-pqc` (PyPI) | `pip install qorechain-pqc`（インポートは `qorpqc`） | [liboqs-python](https://github.com/open-quantum-safe/liboqs-python) |
 | Go | `github.com/qorechain/qorechain-pqc/go` | `go get github.com/qorechain/qorechain-pqc/go` | [Cloudflare CIRCL](https://github.com/cloudflare/circl) |
 | C | `c/`（静的ライブラリ + ヘッダー） | [リポジトリ](https://github.com/qorechain/qorechain-pqc)からビルド | [liboqs](https://github.com/open-quantum-safe/liboqs) + OpenSSL |
-| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.2` | [Bouncy Castle](https://www.bouncycastle.org/) |
+| Java | `io.github.qorechain:qorechain-pqc` (Maven Central) | `io.github.qorechain:qorechain-pqc:0.2.3` | [Bouncy Castle](https://www.bouncycastle.org/) |
 
 :::info 提供状況
-JavaScript、Rust、Python、Go、Java の各バインディングはすべてバージョン **0.2.2** として**公開済み**です（npm、crates.io、PyPI、`v0.2.2` としての Go モジュールプロキシ、Maven Central。2026年10月21日に確認）。上記のコマンドでインストールできます。Python ディストリビューションは `qorechain-pqc` としてインストールされますが、**インポート名は `qorpqc`** です。**Java** パッケージは `io.github.qorechain:qorechain-pqc:0.2.2`（Bouncy Castle バックエンド）です。バージョン **0.2.0** でバージョン対応の `hybridSignBytes`（後述）が追加され、**0.2.1** でメインネットの v2 への切り替えを示すアップグレード名が修正され、**0.2.2** で hedged 署名と決定論的署名に関するドキュメントとコメントが修正されました（チェーンは両方を受け入れます。JavaScript バインディングでは、コード上で変わったのはバージョン定数だけです）。0.2.1 以降を使用してください。**C** バインディングは静的ライブラリ + ヘッダーであり、[`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) からご自身でビルドします。
+JavaScript、Rust、Python、Go、Java の各バインディングはすべてバージョン **0.2.3** として**公開済み**です（npm、crates.io、PyPI、`v0.2.3` としての Go モジュールプロキシ、Maven Central。2026年10月21日に確認）。上記のコマンドでインストールできます。Python ディストリビューションは `qorechain-pqc` としてインストールされますが、**インポート名は `qorpqc`** です。**Java** パッケージは `io.github.qorechain:qorechain-pqc:0.2.3`（Bouncy Castle バックエンド）です。バージョン **0.2.0** でバージョン対応の `hybridSignBytes`（後述）が追加され、**0.2.1** でメインネットの v2 への切り替えを示すアップグレード名が修正され、**0.2.2** で hedged 署名と決定論的署名に関するドキュメントとコメントが修正されました（チェーンは両方を受け入れます。JavaScript バインディングでは、コード上で変わったのはバージョン定数だけです）。**0.2.3** で暗号関連の依存ライブラリ（Java では Bouncy Castle、JavaScript では `@noble/post-quantum`）が更新されました（出力は同一です）。0.2.1 以降を使用してください。**C** バインディングは静的ライブラリ + ヘッダーであり、[`github.com/qorechain/qorechain-pqc`](https://github.com/qorechain/qorechain-pqc) からご自身でビルドします。
 :::
 
 ## 決定論的署名（デフォルト） {#deterministic-signing}
@@ -107,7 +107,7 @@ v3.2.3 アップグレード（2026年10月20日にブロック高 3,662,051 で
 
 登録では、登録者が新しい鍵の秘密を保持していることを証明することもできます。鍵は `qorechain-pqc-pop-v1|<chain-id>|<algorithm id>|<address>|<public key hex>` に署名し（アルゴリズム ID は ML-DSA-87 では `1`、公開鍵は小文字の 16 進数）、その署名を `MsgRegisterPQCKeyV2` の `proof_of_possession` フィールドに入れます。CLI では、`register-key-v2 ... --pqc-key <name>` がこれを構築して添付します。TypeScript SDK 0.9.0 では、ネットワークが v3.2.3 を適用した後は `ensurePqcRegistered` が自動的に証明を添付します（`signProofOfPossession` / `verifyProofOfPossession` で手動で作成・検証することもできます）。`@qorechain/chain-bridge` 0.2.3 も、`cosmosRest` を渡した場合は同様に動作します。`@qorechain/wallet-adapter`（0.4.0）と 0.9.0 より前の SDK リリースは添付しないため、それらを通じた登録には所有証明が含まれませんが、チェーンはそれでも受け入れます。チェーンは所有証明が**存在する場合**にそれを検証し、検証に通らなければ登録を拒否します（コード 231）。証明のない登録は、メインネットでは引き続き受け入れられます。メッセージにはチェーン、アルゴリズム、アカウント、鍵が明記されているため、それらのうち 1 つのために作られた証明は、別のものについては何も証明しません。
 
-テストネット（v3.2.4、**テストネット専用**）では、アカウントレコードが証明の検証済みかどうかを報告し（`GET /qorechain/pqc/v1/account/{address}` の `possession_proven`）、ブリッジバリデーターの登録には証明が必要です。どちらもまだメインネットにはありません。メインネットのガバナンス提案 13 が可決されれば、v3.2.4 は高さ 3,742,566 で適用されます。
+**所有フラグとブリッジバリデーター（v3.2.4）。** アカウントレコードは、そのアカウントの現在の鍵が証明済みかどうかを報告します（`GET /qorechain/pqc/v1/account/{address}` の `possession_proven`）。鍵が検証済みの所有証明つきで登録された場合、またはローテーションによって設定された場合（新しい鍵がローテーションに署名することで、それが証明されます）は `true` となり、証明なしで登録したアカウントでは `false` のままです。このフラグは、誰が送信または受信できるかには何の影響も与えません。**ブリッジバリデーター**の登録には、さらにバリデーターのポスト量子鍵の所有証明が必要で（登録の `proof_of_possession`。鍵は `qorechain-pqc-pop-v1|<chain-id>|1|<validator address>|<public key hex>` に署名し、CLI では `--pqc-key` を使用します）、同じ鍵を 2 つのブリッジバリデーターが登録することはできません。クロスチェーンブリッジ自体は本番稼働していません。どちらの変更も、テストネットでは 2026年10月19日から、メインネットでは高さ 3,742,566 から有効です（ガバナンス提案 13）。メインネットはそのブロックまで v3.2.3 を、そこからは v3.2.4 を実行します。
 
 ## 拒否コード（codespace `pqc`） {#pqc-codes}
 

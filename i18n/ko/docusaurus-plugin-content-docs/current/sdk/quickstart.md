@@ -269,7 +269,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## 다음 단계
 
-- [가이드](/sdk/guides/evm) — 각 VM(EVM, SVM, CosmWasm, 크로스 VM) 다루기.
+- [가이드](/sdk/guides/evm) — 각 VM(EVM, SVM, QoreChain Native, 크로스 VM) 다루기.
 - [계정 및 PQC 서명](/sdk/concepts/accounts-pqc) — HD 파생, 통합
   eth-native 계정, 포스트 양자 서명.
 - [Authenticators 및 위임 지출](/sdk/guides/authenticators) — 연결된

@@ -24,7 +24,7 @@ QoreChain은 QoreChain EVM 엔진을 **6개의 커스텀 프리컴파일 컨트�
 | PRISM Consensus Params | `0x…0C01` | 비활성 | 비활성 |
 | CrossVM Bridge | `0x…0901` | 비활성 | 비활성 |
 
-활성화에는 체인 업그레이드가 필요하며 단계적으로 진행될 예정입니다. 읽기 전용인 PQC 및 합의 프리컴파일이 먼저, AI 2종은 읽기 전용 고정소수점 경로가 갖춰진 뒤에, CrossVM 브리지는 마지막에 활성화됩니다. v3.2.3 릴리스(메인넷, 2026년 10월 20일)는 CrossVM 브리지와 AI 이상 탐지 프리컴파일의 강화된 버전을 프로토콜 기능 뒤에 두고 바이너리에 포함했지만, **어떤 프리컴파일도 활성화하지 않았습니다**. `active_static_precompiles` 목록은 두 네트워크 모두 여전히 비어 있으며, 테스트넷의 v3.2.4 릴리스도 이를 바꾸지 않았습니다. 이 표는 이들 중 어느 것이든 활성화하는 업그레이드와 같은 작업에서 갱신됩니다.
+활성화에는 체인 업그레이드가 필요하며 단계적으로 진행될 예정입니다. 읽기 전용인 PQC 및 합의 프리컴파일이 먼저, AI 2종은 읽기 전용 고정소수점 경로가 갖춰진 뒤에, CrossVM 브리지는 마지막에 활성화됩니다. v3.2.3 릴리스(메인넷, 2026년 10월 20일)는 CrossVM 브리지와 AI 이상 탐지 프리컴파일의 강화된 버전을 프로토콜 기능 뒤에 두고 바이너리에 포함했지만, **어떤 프리컴파일도 활성화하지 않았습니다**. `active_static_precompiles` 목록은 두 네트워크 모두 여전히 비어 있으며, v3.2.4(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터)도 이를 바꾸지 않습니다. 이 표는 이들 중 어느 것이든 활성화하는 업그레이드와 같은 작업에서 갱신됩니다.
 
 현재 목록을 직접 확인하세요 (비어 있으면 활성화된 것이 없음).
 
@@ -54,7 +54,7 @@ require(ok && ret.length >= 96, "precompile not active");
 
 | 프리컴파일              | 주소                                      | 기본 가스        | 설명                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 바이트당 4 | 동기식 크로스 VM 호출(EVM에서 CosmWasm으로)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 바이트당 4 | 동기식 크로스 VM 호출(EVM에서 QoreChain Native으로)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 바이트당 8 | ML-DSA-87 포스트 퀀텀 서명 검증         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | 계정에 등록된 PQC 키가 있는지 확인     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | 트랜잭션 데이터에 대한 AI 생성 리스크 스코어 조회 |
@@ -94,6 +94,8 @@ interface IQorePQC {
         returns (bool registered, uint8 algorithmId, bytes memory pubkey);
 }
 ```
+
+v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 이 프리컴파일이 활성화되면 출력에 `pubkey` 뒤에 네 번째 값 `bool possessionProven`이 추가됩니다. 계정의 현재 키가 검증된 소유 증명으로 증명되었는지 여부입니다([양자내성 서명](/developer-guide/post-quantum-signing#proof-of-possession) 참조). 위 인터페이스에는 처음 세 출력만 나열되어 있으며, 키를 신뢰해야 하는 컨트랙트는 네 번째 값도 읽어야 합니다.
 
 ### IQoreAI.sol
 
@@ -268,13 +270,13 @@ contract ConsensusReader {
 현재 노드 빌드에서 `rlConsensusParams`는 라이브 PRISM 튜닝 값이 아닌 고정된 플레이스홀더 기본값을 반환합니다 (예를 들어 측정된 블록 시간, 즉 메인넷에서 약 3.2초, 테스트넷에서 약 1.0초를 보고하지 않습니다). 이를 라이브 합의 파라미터에 연결하는 것은 활성화 작업의 일부입니다.
 :::
 
-### CrossVM Bridge — EVM에서 CosmWasm 호출
+### CrossVM Bridge — EVM에서 QoreChain Native 호출
 
 :::warning
-CrossVM 브리지 프리컴파일은 어느 네트워크에서도 **활성화되어 있지 않습니다**. v3.2.3부터 바이너리에는 강화된 버전이 들어 있으며, 이 버전은 `STATICCALL`을 거부하고, 중첩 호출을 호출 프레임에 남은 가스로 제한되는 가스 미터에서 실행하며 저널에 기록해 호출하는 컨트랙트의 되돌림이 CosmWasm 쪽도 함께 취소하게 하고, 허용 목록에 있는 CosmWasm 대상에만 접근하며(EVM 대상은 거부됨), 크로스 VM 서킷 브레이커를 준수합니다. 거버넌스에서 승인된 업그레이드가 이를 활성화하기 전까지는 동기식 EVM-to-CosmWasm 경로가 없습니다. `MsgCrossVMCall` 메시지 경로는 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요. 이 경로 자체도 현재 메인넷에서는 꺼져 있습니다.
+CrossVM 브리지 프리컴파일은 어느 네트워크에서도 **활성화되어 있지 않습니다**. v3.2.3부터 바이너리에는 강화된 버전이 들어 있으며, 이 버전은 `STATICCALL`을 거부하고, 중첩 호출을 호출 프레임에 남은 가스로 제한되는 가스 미터에서 실행하며 저널에 기록해 호출하는 컨트랙트의 되돌림이 QoreChain Native 쪽도 함께 취소하게 하고, 허용 목록에 있는 QoreChain Native 대상에만 접근하며(EVM 대상은 거부됨), 크로스 VM 서킷 브레이커를 준수합니다. 거버넌스에서 승인된 업그레이드가 이를 활성화하기 전까지는 동기식 EVM-to-QoreChain Native 경로가 없습니다. `MsgCrossVMCall` 메시지 경로는 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요. 이 경로 자체도 현재 메인넷에서는 꺼져 있습니다.
 :::
 
-노드는 calldata를 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`로 디코딩합니다 (4바이트 셀렉터 다음에 ABI 인코딩된 인자). 지원되는 용도는 EVM에서 CosmWasm으로의 호출(`targetVM` = 1)뿐이며, ABI는 활성화 전에 변경될 수 있습니다.
+노드는 calldata를 `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`로 디코딩합니다 (4바이트 셀렉터 다음에 ABI 인코딩된 인자). 지원되는 용도는 EVM에서 QoreChain Native으로의 호출(`targetVM` = 1)뿐이며, ABI는 활성화 전에 변경될 수 있습니다. `@qorechain/rdk` 헬퍼 `encodeCrossVmCalldata`는 0.6.0부터 이 레이아웃을 인코딩하며(이전 릴리스는 다른 함수를 인코딩했습니다), `isCrossVmPrecompileActive`는 실제 `active_static_precompiles` 목록을 읽습니다. [멀티 VM](/rollups/multi-vm)을 참조하세요.
 
 **가스 비용:** 기본 50,000 + 입력 바이트당 4 가스, 여기에 대상 컨트랙트 실행 비용이 더해집니다. 자세한 내용은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참고하세요.
 

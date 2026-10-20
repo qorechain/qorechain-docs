@@ -18,9 +18,9 @@ l'outillage :
 - un environnement d'exécution **triple-VM** avec des appels inter-VM.
 
 :::caution Stade précoce : lisez la colonne Statut
-Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 20 octobre 2026).
-Le tableau ci-dessous indique ce qui fonctionne aujourd'hui ; les limites des
-clients 0.5.0 publiés sont rassemblées dans [Limites du RDK 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
+Aucun rollup n'a encore été créé sur l'un ou l'autre réseau (vérifié le 21 octobre 2026).
+Le tableau ci-dessous indique ce qui fonctionne aujourd'hui ; ce que les clients
+0.6.0 publiés ont changé et les limites qui subsistent sont rassemblées dans [RDK 0.6.0 : changements et limites](/rollups/deploying-a-rollup#rdk-050-limits). Si vous n'avez besoin que d'un
 rollup optimiste/zk générique, n'importe quel kit fera l'affaire ; les
 capacités décrites ici sont ce que le RDK ajoute par-dessus, en TypeScript,
 Python, Go, Rust et Java.
@@ -28,9 +28,9 @@ Python, Go, Rust et Java.
 
 | Capacité | Statut | Sur quoi elle repose |
 | --- | --- | --- |
-| **Reçus de règlement résistants au quantique** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, et le vérificateur de la 0.5.0 ne peut pas mener à bien son contrôle sur la chaîne face aux réseaux en service |
+| **Reçus de règlement résistants au quantique** | 🟡 Stade précoce | Les ancrages sont signés avec ML-DSA-87, le schéma post-quantique de la Main Chain ; aucun ancrage n'existe encore, de sorte que le vérificateur de la 0.6.0 (qui vérifie par rapport à la chaîne) n'a jamais été exécuté sur un véritable ancrage |
 | **Copilote de rollup QCAI** | 🟡 Pas encore disponible sur les points de terminaison publics | Des services consultatifs d'IA/RL on-chain que les points de terminaison publics n'exposent pas aujourd'hui |
-| **Appels inter-VM multi-VM** | 🟡 Pas encore utilisable sur les réseaux en production | Une précompilation inter-VM qui n'est pas activée, un encodeur 0.5.0 qui ne correspond pas à la disposition de la chaîne, et le téléversement CosmWasm est fermé |
+| **Appels inter-VM multi-VM** | 🟡 Pas encore utilisable sur les réseaux en production | Une précompilation inter-VM qui n'est pas activée, un encodeur 0.5.0 qui ne correspond pas à la disposition de la chaîne, et le téléversement QoreChain Native est fermé |
 
 ---
 
@@ -56,10 +56,11 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Dans la 0.5.0, `verifySettlementReceipt` vérifie par rapport à la chaîne et refuse
-de dire `valid` sans `client`, mais son contrôle sur la chaîne n'aboutit pas encore
-face aux réseaux en service ; il échoue donc de façon fermée au lieu de déclarer
-valide un reçu authentique. Voir [Reçus de règlement résistants au quantique](/rollups/settlement-receipts)
+`verifySettlementReceipt` vérifie par rapport à la chaîne et refuse de dire `valid`
+sans `client`. Dans la 0.5.0, son contrôle sur la chaîne ne pouvait pas aboutir face
+aux réseaux en service (il échouait de façon fermée au lieu de déclarer valide un
+reçu authentique) ; la 0.6.0 corrige cela, mais aucun ancrage n'existe encore, il
+n'a donc pas été exécuté sur un véritable ancrage. Voir [Reçus de règlement résistants au quantique](/rollups/settlement-receipts)
 pour ce qu'un reçu prouve et ce qu'il ne prouve pas, ainsi que pour les limites exactes.
 
 ---
@@ -91,23 +92,23 @@ Depuis la CLI : `qorollup advise my-rollup`. Voir [Copilote QCAI](/rollups/qcai-
 ## 3. Appels inter-VM multi-VM
 
 > 🟡 **Pas encore utilisable sur les réseaux en production** — la précompilation
-> n'est pas activée et le téléversement CosmWasm est fermé. Voir
+> n'est pas activée et le téléversement QoreChain Native est fermé. Voir
 > [Multi-VM](/rollups/multi-vm).
 
 Le RDK inclut des utilitaires qui encodent un appel d'un contrat EVM (Solidity)
-vers un contrat **CosmWasm** via une précompilation fixe à l'adresse `0x…0901`.
+vers un contrat **QoreChain Native** via une précompilation fixe à l'adresse `0x…0901`.
 Cette précompilation n'est **pas active** sur le mainnet ni sur le testnet
 (voir
 [Précompilations EVM : état du réseau](/developer-guide/evm-precompiles#network-status)) :
 `eth_getCode` pour `0x…0901` renvoie `0x` sur les deux, et un appel de contrat
 vers cette adresse réussit sans aucun effet.
 
-L'utilitaire `encodeCrossVmCalldata` de la 0.5.0 construit les données d'appel
-pour `executeCrossVMCall(string,bytes)`, mais le nœud décode
-`executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` ; sa
-sortie ne correspond donc pas à ce que lit la chaîne. Encodez plutôt l'appel avec
-la disposition de la chaîne (illustré ici avec viem ; `targetVM` 1 est CosmWasm,
-la seule cible prise en charge) :
+L'utilitaire `encodeCrossVmCalldata` de la 0.6.0 construit les données d'appel
+pour `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)`, la
+disposition que le nœud décode (la 0.5.0 et les versions antérieures encodaient une
+forme à deux arguments avec un sélecteur différent, qui n'aurait jamais pu atteindre
+la précompilation). Vous pouvez encoder le même appel vous-même, illustré ici avec
+viem (`targetVM` 1 est QoreChain Native, la seule cible prise en charge) :
 
 ```ts
 import { encodeFunctionData, parseAbi, toHex } from "viem";
@@ -120,7 +121,7 @@ const calldata = encodeFunctionData({
   abi,
   functionName: "executeCrossVMCall",
   args: [
-    1,                                                          // 1 = CosmWasm
+    1,                                                          // 1 = QoreChain Native
     "qor1examplecontract…",                                     // target contract
     toHex(new TextEncoder().encode(JSON.stringify({ increment: {} }))), // its execute message
   ],
@@ -150,7 +151,7 @@ l'appel renvoie un succès avec des données vides et n'exécute rien ; confirme
 l'effet sur le contrat cible.
 
 Créez un projet de démarrage avec `npm create qorechain-rollup my-app -- --template multivm-rollup`.
-(EVM↔CosmWasm uniquement ; les appels inter-VM SVM sont distincts.)
+(EVM↔QoreChain Native uniquement ; les appels inter-VM SVM sont distincts.)
 
 ---
 

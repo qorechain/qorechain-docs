@@ -62,7 +62,7 @@ pnpm --filter @qorechain/sdk docs:api
   동작합니다.
 - **Cross-VM:** `getCrossVmMessage`, `getPendingCrossVmMessages`,
   `getCrossVmParams`.
-- **CosmWasm:** `createCosmWasmClient`, `connectCosmWasmSigner`,
+- **QoreChain Native:** `createCosmWasmClient`, `connectCosmWasmSigner`,
   `queryContractSmart`, `getContractInfo`, `instantiate`, `execute`,
   `uploadCode`.
 - **트랜잭션:** `estimateFee`, `directSignerFromPrivateKey`, `TxClient`(0.9.0부터
@@ -134,7 +134,7 @@ pnpm --filter @qorechain/sdk docs:api
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — 공개 API의 docstring | `pip install qorechain-sdk`, 버전 `0.9.0` (import `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (태그 `packages/go/v0.9.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (rustdoc) | `cargo add qorechain-sdk` (0.9.0; import `qorechain`) |
-| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.0` |
+| Java | Maven Central javadoc | `io.github.qorechain:qorechain-sdk:0.9.1` (다른 언어는 0.9.0) |
 
 각 패키지는 동일한 표면(네트워크 프리셋, denom/주소 유틸리티, HD 파생 —
 통합 eth-native 계정 포함 — PQC 프리미티브와 하이브리드 서명, 타입 지정

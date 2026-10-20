@@ -77,8 +77,8 @@ Dashboard iki ağa karşı çalışır. Başlık, o anda bağlı olduğunuz ağ�
 
 | Ağ | Chain ID | Ne zaman kullanılır |
 | --- | --- | --- |
-| **Mainnet** | `qorechain-vladi` | Gerçek değer ve üretim kullanımı için canlı ağ (7 Haziran 2026'dan beri canlı, zincir v3.2.3 çalıştırıyor). Non-custodial: kendi cüzdanınızı bağlarsınız. |
-| **Testnet** | `qorechain-diana` | Dashboard tarafından yönetilen bir test cüzdanı ve test tokenleri için [Faucet](/dashboard/faucet) ile birlikte test için ücretsiz ortam (zincir v3.2.4 çalıştırıyor; yalnızca testnet'e özel bir sürüm). |
+| **Mainnet** | `qorechain-vladi` | Gerçek değer ve üretim kullanımı için canlı ağ (7 Haziran 2026'dan beri canlı, zincir 3.742.566 yüksekliğine kadar v3.2.3, o bloktan itibaren v3.2.4 çalıştırıyor). Non-custodial: kendi cüzdanınızı bağlarsınız. |
+| **Testnet** | `qorechain-diana` | Dashboard tarafından yönetilen bir test cüzdanı ve test tokenleri için [Faucet](/dashboard/faucet) ile birlikte test için ücretsiz ortam (19 Ekim 2026'dan beri zincir v3.2.4 çalıştırıyor). |
 
 Yerel token **QOR**'dur (temel birim `uqor`, burada 1 QOR = 10^6 uqor). Yeniyseniz, testnet ile başlayın, Faucet'ten token talep edin ve mainnet'e geçmeden önce ilk bir transfer deneyin.
 

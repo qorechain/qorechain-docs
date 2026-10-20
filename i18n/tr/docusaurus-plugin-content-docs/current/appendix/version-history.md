@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Sürüm Geçmişi
 
-QoreChain için genel sürüm geçmişi. En son ana ağ sürümü **v3.2.3**'tür ve **`qorechain-vladi`** ana ağında (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) çalışır; yönetişimle 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulanmıştır. Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) ise orada 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulanan **v3.2.4** sürümünü çalıştırır. **v3.2.4 henüz ana ağın parçası değildir: ana ağ yönetişim önerisi 13 (oylama 21 Ekim 2026, 21:18 UTC'ye kadar sürer) bunu 3.742.566 yüksekliğinde uygulayacaktır.**
+QoreChain için genel sürüm geçmişi. Ana ağ **`qorechain-vladi`** (EVM zincir kimliği **9801**, 7 Haziran 2026'dan beri canlı) **3.742.566** yüksekliğine kadar **v3.2.3** (yönetişimle 20 Ekim 2026'da 3.662.051 yüksekliğinde uygulandı) sürümünü, o bloktan itibaren ise **v3.2.4** sürümünü çalıştırır (ana ağ yönetişim önerisi 13). Test ağı **`qorechain-diana`** (EVM zincir kimliği **9800**) 8.337.253 yüksekliğinden (19 Ekim 2026) beri **v3.2.4** çalıştırır.
 
 :::note
 Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıtları, ana ağdan önce gelen test ağı yayın hattının tarihsel kaydı olarak saklanmaktadır. Yayın manifesti ([Ana Ağa Bağlanma](/getting-started/connecting-to-mainnet)) etiketlemeden ayrı olarak yükseltilir ve bir etiketin gerisinde bir süre kalabilir — taze bir kurulumun gerçekte ne indirdiğini görmek için doğrudan kontrol edin.
@@ -15,7 +15,7 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 
 ## Ana ağ yönetişim zaman çizelgesi {#governance-timeline}
 
-14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 11 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
+14 Ekim 2026'dan bu yana çalışan ana ağı değiştiren veya değişiklikleri zamanlayan öneriler. Yedisi de hızlandırılmış önerilerdir (bir günlük oylama süresi); 7 ila 11 numaralı öneriler, oy kullanan tüm bonded stake'in lehte oyuyla kabul edildi. Tam liste `https://api.qore.host` üzerinde `GET /cosmos/gov/v1/proposals` adresindedir.
 
 | Öneri | Ne yapar | Oylama | Sonuç |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Aşağıdaki kayıtlar üst düzey yetenek özetleridir. Daha eski `v1.x` kayıt
 | 10 | Emisyon: sabit emisyonu dönem başına 86.000 QOR'a ve kümülatif tavanı 590.000.000 QOR'a ayarlar (dönem uzunluğu değişmez; 86.000 QOR'luk ilk dönem 3.672.000 numaralı blokta başlar) | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi |
 | 11 | v3.2.3'ü 3.662.051 yüksekliğinde uygular | 18–19 Ekim 2026 (19:15 UTC'de sona erer) | Kabul edildi; 20 Ekim 2026'da uygulandı |
 | 12 | Düzeltilmiş sahipsiz stake sahibi payını (3.807.496,785528 QOR, v3.2.3 yüksekliğinde yeniden hesaplandı) vakfa aktarır | 20 Ekim 2026 20:01 UTC ile 21 Ekim 2026 20:01 UTC arası | Bu yazıldığı sırada oylama döneminde |
-| 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme (stake kademeleri, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı ve düğüm-yerel sertleştirme) | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Bu yazıldığı sırada oylama döneminde |
+| 13 | v3.2.4'e 3.742.566 yüksekliğinde koordineli yükseltme (3,2 saniyelik bloklarla yaklaşık 23 Ekim 2026): isteğe bağlı zaman kilitli stake, kayıttan itibaren sayılan ışık düğümü ödül sınırı, kuantum-sonrası anahtarlar için bir sahiplik bayrağı, köprü doğrulayıcıları için sahiplik kanıtı, blok süresi cinsinden RDK itiraz penceresi ve düğüm-yerel sertleştirme | 20 Ekim 2026 21:18 UTC ile 21 Ekim 2026 21:18 UTC arası | Bu yazıldığı sırada oylama döneminde; şimdiye kadar kullanılan tüm oylar lehte; nihai sonuç için `GET /cosmos/gov/v1/proposals/13` adresine bakın |
 
 Sürümlerin ne anlama geldiği için bkz. [Tokenomics](/architecture/tokenomics#stranded-and-reserve); nasıl oy verileceği için bkz. [Yönetişim](/user-guide/governance).
 
 ---
 
-## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (yalnızca test ağı)
+## v3.2.4 — Işık Düğümü Kayıt Penceresi ve İsteğe Bağlı Zaman Kilitli Stake (ana ağ için zamanlandı)
 
-**Sürüm odağı:** Yalnızca test ağına özel bir sürüm; `qorechain-diana` üzerinde test ağı yönetişim önerisi 13 ile **8.337.253** yüksekliğinde (19 Ekim 2026) uygulandı. **Henüz ana ağda değildir**: ana ağ yönetişim önerisi 13 (oylama 21 Ekim 2026, 21:18 UTC'ye kadar sürer) bunu 3.742.566 yüksekliğinde uygulayacaktır ve o zamana kadar aşağıdakilerin hiçbiri `qorechain-vladi` için geçerli değildir. Test ağı manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar.
+**Sürüm odağı:** Zamanlanmış bir sonraki ana ağ sürümü. Test ağı yönetişim önerisi 13 bunu **8.337.253** yüksekliğinde (19 Ekim 2026) uygulayalı beri `qorechain-diana` test ağında çalışıyor (test ağı manifestosu `minCompatible` değerini 3.2.4 olarak ayarlar). Ana ağda yönetişim önerisi 13 bunu **3.742.566** yüksekliğine zamanlar: düğümler o bloğa kadar v3.2.3'te kalır, orada durur ve v3.2.4 ile yeniden başlar; işlem imzalama değişmez. Dolayısıyla aşağıdaki her özellik şu anda test ağında canlıdır ve (öneri kabul edildiğinde) 3.742.566 yüksekliğinden itibaren `qorechain-vladi` için geçerli olur.
 
 * **Işık düğümü kayıt penceresi.** Bir ışık düğümünün ödül sınırı, önceki yerleşim ile düğümün kendi kaydından hangisi daha geçse oradan başlar; böylece yeni bir kayıt, katılmasından önceki birikmiş bir tutarı toplamaz.
-* **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını belirli bir süre için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise ceza ile izin verilir. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
-* **Yeni emisyon modu.** `x/inflation`, `target_apy_bps` parametresiyle (şu anda `0`) üçüncü bir emisyon modu olan `target_apy`'yi kazanır.
+* **İsteğe bağlı zaman kilitli stake (`x/stakingtier`, yeni bir modül).** Bir delegatör, delegasyonunun bir kısmını 3, 6 veya 12 ay için kilitleyebilir; kilitli kısım delegasyondan çıkarılamaz veya yeniden delege edilemez, erken kilit açmaya ise yakılan bir ceza ile izin verilir. Asgari kilit 10 QOR'dur. Bkz. [Stake ve Delegasyon](/user-guide/staking-and-delegation#time-locked-staking).
+* **Yeni emisyon modu.** `x/inflation`, `target_apy_bps` parametresiyle (test ağında `0`) üçüncü bir emisyon modu olan `target_apy`'yi kazanır. Bir ağın emisyon modunu değiştirmek ayrı bir yönetişim kararıdır; yürürlükteki mod `/qorechain/inflation/v1/params` adresinde gösterilir.
 * Kuantum-sonrası hesap kayıtlarında **`possession_proven` bayrağı**; hesap anahtarları için sahiplik kanıtı isteğe bağlı kalır.
 * **Köprü doğrulayıcısı sahiplik kanıtı.** Bir köprü doğrulayıcısını kaydetmek, bir sahiplik kanıtı ve başka hiçbir köprü doğrulayıcısının kullanmadığı bir anahtar gerektirir.
 * **Blok süresi cinsinden RDK itiraz penceresi.** İyimser itiraz penceresi, ondan türetilen bir blok sayısı yerine blok süresi cinsinden sayılır.
@@ -87,11 +87,11 @@ v3.2.1 düğüm düğüm uygulandı ve yükseltme yüksekliği yoktur; ana ağda
 * **Yükseltme modülü sürüm haritası** artık her modülü (48) listeliyor; bu, sonraki geçişleri etkileyecek bir açığı kapatıyor.
 * Ayrıca: köprü modülü hesabı ve tanıklık yükleri sertleştirildi, önerilen bloklar doğrulanıyor, rollup yerleşimi rollup'ın sıralayıcısıyla (sequencer) sınırlandırıldı ve rollup başına teminat ile etkin bir oluşturma yakımı eklendi, çok katmanlı oluşturucu stake'i kayıtta kilitleniyor ve hizmetten çıkarmada iade ediliyor, akıllı hesap `enabled` bayrağı her yolda uygulanıyor, doğrulayıcı kabul ve vesting oluşturma yolları authz iç içe geçmesine kapatıldı.
 
-## v3.1.96 + v3.1.97 — CosmWasm Erişim Kilidi
+## v3.1.96 + v3.1.97 — QoreChain Native Erişim Kilidi
 
-**Sürüm odağı:** Endüstri genelindeki bir CosmWasm güvenlik uyarısının ardından, izinsiz sözleşme kodu yükleme ve örnekleme (instantiation) kapatılıyor.
+**Sürüm odağı:** QoreChain Native'in üzerine inşa edildiği çalışma zamanı olan CosmWasm için endüstri genelinde yayımlanan bir güvenlik uyarısının ardından, izinsiz sözleşme kodu yükleme ve örnekleme (instantiation) kapatılıyor.
 
-* **Sözleşme yükleme ve örnekleme artık açık izin gerektiriyor.** `code_upload_access` ve `instantiate_default_permission`, hem ana ağda hem de test ağında `Nobody` olarak ayarlandı — canlı olarak doğrulandı, bu iki etiketten hangisinin bir düğümde çalıştığından bağımsız olarak, çünkü bu yalnızca daha yeni ikili dosyaların uyguladığı bir şey değil, zincir üzerinde bir parametre. Bir sözleşme geliştiriyorsanız bunun ne anlama geldiği için bkz. [CosmWasm Geliştirme](/developer-guide/cosmwasm-development). Zaten örneklenmiş sözleşmeler etkilenmez — `execute` ve `query` eskisi gibi çalışır. Her iki ağda da üç CosmWasm yükleme ve örnekleme mesajı devre kesici ile kapatılmıştır.
+* **Sözleşme yükleme ve örnekleme artık açık izin gerektiriyor.** `code_upload_access` ve `instantiate_default_permission`, hem ana ağda hem de test ağında `Nobody` olarak ayarlandı — canlı olarak doğrulandı, bu iki etiketten hangisinin bir düğümde çalıştığından bağımsız olarak, çünkü bu yalnızca daha yeni ikili dosyaların uyguladığı bir şey değil, zincir üzerinde bir parametre. Bir sözleşme geliştiriyorsanız bunun ne anlama geldiği için bkz. [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development). Zaten örneklenmiş sözleşmeler etkilenmez — `execute` ve `query` eskisi gibi çalışır. Her iki ağda da üç QoreChain Native yükleme ve örnekleme mesajı devre kesici ile kapatılmıştır.
 * Aynı uyarının sertleştirme rehberliğine uygun olarak **konum-bağımsız (PIE) yayın derlemeleri**, böylece bir istismarın tahmin etmesi gereken bellek adresi süreç başına rastgeleleştirilir. Dinamik bağlantılı ikili dosyalar yalnızca bir derleme bayrağına ihtiyaç duydu; durumu bozmadığı doğrulandı.
 
 ## v3.1.95 — Cosmos EVM Sertleştirmesi
@@ -319,8 +319,8 @@ Tam düğümler **v3.1.83+** çalıştırmalıdır. v3.1.83 öncesi bir düğüm
 * **PRISM konsensüs katmanı** — Dinamik zincir parametre ayarlaması için pekiştirmeli öğrenme optimizasyonu (PPO), devre kesici güvenlik kontrolleriyle
 * **Üçlü havuzlu CPoS** — İtibar puanlarına göre ağırlıklandırılmış RPoS, DPoS ve PoS doğrulayıcı havuzlarına sahip Bileşik Stake Kanıtı (`x/qca` içinde uygulandı; henüz blok üretimine bağlanmadı)
 * **QDRW yönetişimi** — İtibar Ağırlıklı Kuadratik Delegasyon (Quadratic Delegation with Reputation Weighting) oy gücü formülü (uygulandı; canlı ağlarda devre dışı)
-* **EVM + CosmWasm + SVM çalışma zamanları** — QoreChain EVM Motoru, CosmWasm akıllı sözleşmeleri ve Solana Sanal Makinesi olmak üzere üç eşzamanlı yürütme ortamı
-* **VM'ler arası köprü** — Tek bir blok içinde EVM, CosmWasm ve SVM çalışma zamanları arasında mesaj geçişi ve varlık transferleri
+* **EVM + QoreChain Native + SVM çalışma zamanları** — QoreChain EVM Motoru, QoreChain Native akıllı sözleşmeleri ve Solana Sanal Makinesi olmak üzere üç eşzamanlı yürütme ortamı
+* **VM'ler arası köprü** — Tek bir blok içinde EVM, QoreChain Native ve SVM çalışma zamanları arasında mesaj geçişi ve varlık transferleri
 * **Kuantum-sonrası kriptografi** — Yüksek performanslı bir PQC kütüphanesi tarafından desteklenen kuantuma dayanıklı imzalama
 * **QCAI** — Dolandırıcılık tespiti, ücret tahmini ve ağ optimizasyonu için isteğe bağlı bir çevrimdışı yan bileşenle birlikte zincir üzerinde sezgisel analiz
 * **Konteynerleştirilmiş dağıtım** — Yan bileşen servisi ve blok indeksleyicisiyle tam çoklu-doğrulayıcı test ağı dağıtımı

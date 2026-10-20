@@ -64,7 +64,7 @@ helpers above throw on the public networks (`returned no data ("0x")`). See
 
 **Call a contract on any VM, and batch calls across all three atomically.**
 
-QoreChain runs CosmWasm, EVM, and SVM contracts on the same chain with a native
+QoreChain runs QoreChain Native, EVM, and SVM contracts on the same chain with a native
 cross-VM bridge. The SDK exposes one interface to call any of them — and to pack
 several cross-VM calls into a single, atomic transaction signed once.
 
@@ -81,7 +81,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -93,7 +93,7 @@ await crossVM.callAtomic([
 module (`crossvm`, plus the `CrossVMBridge` precompile once it is active), so one
 SDK interface can address all three. Single-VM chains have nothing equivalent to
 wrap. Today the reach of a call is limited by the lane it targets: `MsgCrossVMCall`
-is switched off on mainnet, SVM transactions are disabled, and CosmWasm upload and
+is switched off on mainnet, SVM transactions are disabled, and QoreChain Native upload and
 instantiate are permissioned. See [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---

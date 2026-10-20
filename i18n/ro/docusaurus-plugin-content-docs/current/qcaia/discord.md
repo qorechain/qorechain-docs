@@ -13,7 +13,7 @@ Pe Discord, QCAIA funcționează prin **comenzi slash**. Tastează `/`, alege o 
 
 Alătură-te serverului Discord oficial QoreChain:
 
-**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
+**[discord.gg/qorechain](https://discord.gg/qorechain)**
 
 Odată intrat, mergi la canalul **#general** pentru a vorbi cu QCAIA.
 

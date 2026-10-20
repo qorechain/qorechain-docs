@@ -20,7 +20,7 @@ cada una de las máquinas virtuales de QoreChain.
 QoreChain es una blockchain Layer 1 con tres entornos de ejecución de contratos
 inteligentes de primera clase en una sola cadena:
 
-- **CosmWasm** — contratos inteligentes Wasm mediante el Cosmos SDK.
+- **QoreChain Native** — contratos inteligentes Wasm mediante el Cosmos SDK (el runtime CosmWasm).
 - **QoreChain EVM Engine** — ejecución compatible con Ethereum (Solidity, viem,
   JSON-RPC estándar).
 - **SVM** — un runtime compatible con Solana con un JSON-RPC al estilo de Solana.
@@ -29,21 +29,21 @@ Las cuentas, los saldos y los tokens se comparten entre los runtimes, y la
 cadena incluye el módulo IBC para la interoperabilidad entre cadenas (aún no hay
 canales IBC abiertos en mainnet ni en testnet).
 
-:::note Qué funciona hoy en las redes en vivo (mainnet v3.2.3, testnet v3.2.4)
+:::note Qué funciona hoy en las redes en vivo (mainnet v3.2.3, v3.2.4 desde la altura 3,742,566; testnet v3.2.4)
 **Funciona:** lecturas en todos los carriles, transacciones Native con firma
 híbrida, cuentas unificadas, transacciones EVM dentro de una
 [ventana de autorización](/sdk/guides/evm#evm-window) y lecturas de SVM.
 **Aún no disponible:** los precompilados EVM (inactivos), el espacio de nombres
 JSON-RPC `qor_`, las transacciones SVM, las llamadas cross-VM en mainnet
 (`MsgCrossVMCall` está desactivado por el circuit breaker), la subida e
-instanciación de CosmWasm para cuentas ordinarias, los flujos de autenticador /
+instanciación de QoreChain Native para cuentas ordinarias, los flujos de autenticador /
 cuenta abstracta (módulo desactivado), xQORE y la abstracción de gas. Cada guía
 repite la advertencia donde corresponde.
 
 El SDK publicado (0.9.0, 21 de octubre de 2026) firma en la forma que verifican ambas
 redes (sign-bytes híbridos v2, resueltos a partir del estado de la cadena), y el
 formato de firma, las direcciones, los decimales, los memos y las comisiones no
-cambiaron en la v3.2.3 ni en la v3.2.4. Incluye el lado cliente de las reglas
+cambiaron en la v3.2.3 ni en la v3.2.4 (mainnet ejecuta la v3.2.4 desde la altura 3,742,566). Incluye el lado cliente de las reglas
 poscuánticas posteriores (la prueba de posesión en el registro de claves, las ventanas
 EVM con alcance, los mensajes de consentimiento EIP-7702); las versiones anteriores
 a la 0.9.0 no lo incluyen, consulta [Versiones anteriores a la 0.9.0](/sdk/install#before-090).
@@ -118,7 +118,7 @@ derivación, aritmética de denominaciones y superficies de lectura.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (se importa como `qorsdk`) | Publicado (PyPI, v0.9.0) |
 | `qorechain-sdk` (módulo Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicado (proxy de Go, tag `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (se importa como `qorechain`) | Publicado (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Publicado (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Publicado (Maven Central, v0.9.1; los demás lenguajes son 0.9.0) |
 | `@qorechain/evm` | TypeScript (adaptador EVM) | `npm i @qorechain/evm viem` | Publicado (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (adaptador SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicado (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (kit de React) | `npm i @qorechain/react` | Publicado (npm, v0.9.0) |
@@ -141,7 +141,7 @@ clientes están **publicados**: TypeScript en npm (`@qorechain/sdk` 0.9.0),
 Python en PyPI (`qorechain-sdk` 0.9.0, se importa como `qorsdk`), Go en el
 proxy de módulos (tag `packages/go/v0.9.0`), Rust en crates.io
 (`qorechain-sdk` 0.9.0) y Java en Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.0). Los adaptadores
+(`io.github.qorechain:qorechain-sdk` 0.9.1, una actualización solo de Java; los demás clientes son 0.9.0). Los adaptadores
 de ejecución EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambos 0.8.0), el kit
 `@qorechain/react` (0.9.0) y la CLI de scaffolding `create-qorechain-dapp`
 (0.9.0) son solo para TypeScript y también están publicados en npm. Consulta

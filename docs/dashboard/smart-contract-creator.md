@@ -43,7 +43,7 @@ Mainnet deployment is non-custodial: the Dashboard compiles your contract and re
 4. Review the transaction in MetaMask — network, gas, and data — then confirm to sign and broadcast it yourself.
 5. Once the deployment is confirmed on-chain, the Dashboard records the resulting contract address alongside your saved contracts.
 
-Only **EVM** (Solidity) contracts can be deployed from the Dashboard. CosmWasm and Solana-program deploys are not available on either network at the moment.
+Only **EVM** (Solidity) contracts can be deployed from the Dashboard. QoreChain Native and Solana-program deploys are not available on either network at the moment.
 
 ### On testnet — one click {#deploy-testnet}
 

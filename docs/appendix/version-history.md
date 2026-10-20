@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Version History
 
-Public version history for QoreChain. The latest mainnet release is **v3.2.3**, running on mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026); it was applied by governance at height 3,662,051 on 20 October 2026. The testnet **`qorechain-diana`** (EVM chain ID **9800**) runs **v3.2.4**, applied there at height 8,337,253 on 19 October 2026. **v3.2.4 is not part of mainnet yet: mainnet governance proposal 13 (voting until 21 October 2026, 21:18 UTC) would apply it at height 3,742,566.**
+Public version history for QoreChain. Mainnet **`qorechain-vladi`** (EVM chain ID **9801**, live since 7 June 2026) runs **v3.2.3** (applied by governance at height 3,662,051 on 20 October 2026) until height **3,742,566**, and **v3.2.4** from that block (mainnet governance proposal 13). The testnet **`qorechain-diana`** (EVM chain ID **9800**) has run **v3.2.4** since height 8,337,253 (19 October 2026).
 
 :::note
 Entries below are high-level capability summaries. Earlier `v1.x` entries are retained as historical record of the testnet release line that preceded mainnet. The release manifest ([Connecting to Mainnet](/getting-started/connecting-to-mainnet)) is promoted separately from tagging and can lag a tag by some time — check it directly for what a fresh install actually downloads.
@@ -15,7 +15,7 @@ Entries below are high-level capability summaries. Earlier `v1.x` entries are re
 
 ## Mainnet governance timeline {#governance-timeline}
 
-Proposals that changed the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 11 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
+Proposals that changed or schedule changes to the running mainnet since 14 October 2026. All seven are expedited proposals (one-day voting period); proposals 7 to 11 passed with all voting bonded stake in favour. The full list is at `GET /cosmos/gov/v1/proposals` on `https://api.qore.host`.
 
 | Proposal | What it does | Voting | Outcome |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Proposals that changed the running mainnet since 14 October 2026. All seven are 
 | 10 | Emission: sets the fixed emission to 86,000 QOR per epoch and the cumulative cap to 590,000,000 QOR (epoch length unchanged; the first 86,000 QOR epoch starts at block 3,672,000) | 18–19 October 2026 (ends 19:15 UTC) | Passed |
 | 11 | Applies v3.2.3 at height 3,662,051 | 18–19 October 2026 (ends 19:15 UTC) | Passed; applied 20 October 2026 |
 | 12 | Releases the corrected stranded staker share (3,807,496.785528 QOR, recomputed at the v3.2.3 height) to the foundation | 20 October 2026 20:01 UTC to 21 October 2026 20:01 UTC | In its voting period at the time of writing |
-| 13 | Coordinated upgrade to v3.2.4 at height 3,742,566 (staking tiers, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, and node-local hardening) | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | In its voting period at the time of writing |
+| 13 | Coordinated upgrade to v3.2.4 at height 3,742,566 (about 23 October 2026 at 3.2-second blocks): optional time-locked staking, light-node reward bound counted from registration, a possession flag for post-quantum keys, proof of possession for bridge validators, the RDK challenge window in block time, and node-local hardening | 20 October 2026 21:18 UTC to 21 October 2026 21:18 UTC | In its voting period at the time of writing, with every vote cast so far in favour; check `GET /cosmos/gov/v1/proposals/13` for the final result |
 
 See [Tokenomics](/architecture/tokenomics#stranded-and-reserve) for what the releases mean and [Governance](/user-guide/governance) for how to vote.
 
 ---
 
-## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (testnet only)
+## v3.2.4 — Light-Node Registration Window and Optional Time-Locked Staking (scheduled for mainnet)
 
-**Release focus:** A testnet-only release, applied on `qorechain-diana` by testnet governance proposal 13 at height **8,337,253** (19 October 2026). It is **not on mainnet yet**: mainnet governance proposal 13 (voting until 21 October 2026, 21:18 UTC) would apply it at height 3,742,566, and until then nothing below applies to `qorechain-vladi`. The testnet manifest sets `minCompatible` to 3.2.4.
+**Release focus:** The scheduled next mainnet release. It has run on the testnet `qorechain-diana` since testnet governance proposal 13 applied it at height **8,337,253** (19 October 2026; the testnet manifest sets `minCompatible` to 3.2.4). On mainnet, governance proposal 13 schedules it at height **3,742,566**: nodes stay on v3.2.3 until that block, halt there and restart on v3.2.4, and transaction signing is unchanged. Every feature below is therefore live on the testnet now and applies to `qorechain-vladi` from height 3,742,566 (once the proposal passes).
 
 * **Light-node registration window.** A light node's reward bound starts at the later of the previous settlement and the node's own registration, so a new registration does not collect an accumulated amount from before it joined.
-* **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for a fixed term; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
-* **New emission mode.** `x/inflation` gains a third emission mode, `target_apy`, with a `target_apy_bps` parameter (currently `0`).
+* **Optional time-locked staking (`x/stakingtier`, a new module).** A delegator may lock part of a delegation for 3, 6 or 12 months; the locked part cannot be undelegated or redelegated, and an early unlock is allowed with a penalty that is burned. The minimum lock is 10 QOR. See [Staking and Delegation](/user-guide/staking-and-delegation#time-locked-staking).
+* **New emission mode.** `x/inflation` gains a third emission mode, `target_apy`, with a `target_apy_bps` parameter (`0` on the testnet). Changing a network's emission mode is a separate governance decision; the mode in force is shown at `/qorechain/inflation/v1/params`.
 * **`possession_proven` flag** on post-quantum account records; proof of possession for account keys stays optional.
 * **Bridge validator proof of possession.** Registering a bridge validator needs a proof of possession and a key no other bridge validator uses.
 * **RDK challenge window in block time.** The optimistic challenge window is counted in block time rather than a block count derived from it.
@@ -87,11 +87,11 @@ v3.2.1 was applied node by node and has no upgrade height; it was superseded on 
 * **Upgrade module version map** now lists every module (48), fixing a gap that would have affected later migrations.
 * Also: bridge module account and attestation payloads hardened, proposed blocks validated, rollup settlement restricted to the rollup's sequencer with per-rollup escrow and an effective creation burn, multilayer creator stake locked at registration and returned on decommission, the smart-account `enabled` flag enforced on every path, and validator-admission and vesting-creation paths closed to authz nesting.
 
-## v3.1.96 + v3.1.97 — CosmWasm Access Lockdown
+## v3.1.96 + v3.1.97 — QoreChain Native Access Lockdown
 
-**Release focus:** Close permissionless contract code upload and instantiation, following an industry-wide CosmWasm security advisory.
+**Release focus:** Close permissionless contract code upload and instantiation, following an industry-wide security advisory for CosmWasm, the runtime that QoreChain Native is built on.
 
-* **Contract upload and instantiation now require explicit permission.** `code_upload_access` and `instantiate_default_permission` are set to `Nobody` on both mainnet and testnet — verified live, independent of which of these two tags a given node is running, since it's an on-chain parameter rather than something only the newer binaries enforce. See [CosmWasm Development](/developer-guide/cosmwasm-development) for what this means if you're building a contract. Already-instantiated contracts are unaffected — `execute` and `query` work as before. Both networks also have the three CosmWasm upload and instantiate messages switched off on the circuit breaker.
+* **Contract upload and instantiation now require explicit permission.** `code_upload_access` and `instantiate_default_permission` are set to `Nobody` on both mainnet and testnet — verified live, independent of which of these two tags a given node is running, since it's an on-chain parameter rather than something only the newer binaries enforce. See [QoreChain Native Development](/developer-guide/cosmwasm-development) for what this means if you're building a contract. Already-instantiated contracts are unaffected — `execute` and `query` work as before. Both networks also have the three QoreChain Native upload and instantiate messages switched off on the circuit breaker.
 * **Position-independent (PIE) release builds**, per the same advisory's hardening guidance, so the memory address an exploit would need to guess is randomized per process. Dynamically linked binaries only needed one build flag; verified not to be state-breaking.
 
 ## v3.1.95 — Cosmos EVM Hardening
@@ -319,8 +319,8 @@ Full nodes must run **v3.1.83+**. A pre-3.1.83 node cannot decode an eth-native 
 * **PRISM consensus layer** — Reinforcement-learning optimization (PPO) for dynamic chain parameter tuning with circuit-breaker safety controls
 * **Triple-pool CPoS** — Composite Proof-of-Stake with RPoS, DPoS and PoS validator pools weighted by reputation scores (implemented in `x/qca`; not yet wired into block production)
 * **QDRW governance** — Quadratic Delegation with Reputation Weighting voting-power formula (implemented; disabled on the live networks)
-* **EVM + CosmWasm + SVM runtimes** — Three concurrent execution environments: the QoreChain EVM Engine, CosmWasm smart contracts, and the Solana Virtual Machine
-* **Cross-VM bridge** — Message passing and asset transfers between EVM, CosmWasm, and SVM runtimes within a single block
+* **EVM + QoreChain Native + SVM runtimes** — Three concurrent execution environments: the QoreChain EVM Engine, QoreChain Native smart contracts, and the Solana Virtual Machine
+* **Cross-VM bridge** — Message passing and asset transfers between EVM, QoreChain Native, and SVM runtimes within a single block
 * **Post-quantum cryptography** — Quantum-resistant signing backed by a high-performance PQC library
 * **QCAI** — On-chain heuristic analysis with an optional off-chain sidecar for fraud detection, fee estimation, and network optimization
 * **Containerized deployment** — Full multi-validator testnet deployment with sidecar service and block indexer

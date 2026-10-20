@@ -24,7 +24,7 @@ I sei precompilati QoreChain qui sotto sono **compilati nel nodo ma non ancora a
 | PRISM Consensus Params | `0x…0C01` | Non attivo | Non attivo |
 | CrossVM Bridge | `0x…0901` | Non attivo | Non attivo |
 
-L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge per ultimo. La release v3.2.3 (mainnet, 20 ottobre 2026) ha inserito nel binario, dietro una funzionalità di protocollo, le versioni rinforzate del CrossVM bridge e del precompilato AI anomaly, **ma non ha attivato alcun precompilato**: la lista `active_static_precompiles` è ancora vuota su entrambe le reti, e la release v3.2.4 della testnet non l'ha cambiato. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
+L'attivazione richiede un upgrade della chain ed è pianificata per fasi: prima i precompilati PQC e di consenso in sola lettura, poi la coppia AI una volta predisposto il loro percorso in sola lettura a virgola fissa, e il CrossVM bridge per ultimo. La release v3.2.3 (mainnet, 20 ottobre 2026) ha inserito nel binario, dietro una funzionalità di protocollo, le versioni rinforzate del CrossVM bridge e del precompilato AI anomaly, **ma non ha attivato alcun precompilato**: la lista `active_static_precompiles` è ancora vuota su entrambe le reti, e la v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566) non lo cambia. Questa tabella viene aggiornata nella stessa operazione dell'upgrade che ne attiva uno qualsiasi.
 
 Controlla tu stesso la lista attuale (vuota significa nessuno attivo):
 
@@ -54,7 +54,7 @@ Le cifre di gas sono quelle che il nodo addebita una volta che un precompilato �
 
 | Precompilato             | Indirizzo                                    | Gas base         | Descrizione                                       |
 | ------------------------ | --------------------------------------------- | --------------- | -------------------------------------------------- |
-| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/byte | Chiamate cross-VM sincrone (EVM verso CosmWasm)    |
+| **CrossVM Bridge**       | `0x0000000000000000000000000000000000000901` | 50.000 + 4/byte | Chiamate cross-VM sincrone (EVM verso QoreChain Native)    |
 | **PQC Verify**           | `0x0000000000000000000000000000000000000A01` | 25.000 + 8/byte | Verifica firme post-quantistiche ML-DSA-87         |
 | **PQC Key Status**       | `0x0000000000000000000000000000000000000A02` | 2.500           | Verifica se un account ha una chiave PQC registrata |
 | **AI Risk Score**        | `0x0000000000000000000000000000000000000B01` | 50.000          | Ottiene il punteggio di rischio generato dall'AI per i dati di una transazione |
@@ -94,6 +94,8 @@ interface IQorePQC {
         returns (bool registered, uint8 algorithmId, bytes memory pubkey);
 }
 ```
+
+Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566), una volta attivo questo precompilato, il suo output contiene un quarto valore, `bool possessionProven`, dopo `pubkey`: indica se la chiave attuale dell'account è stata dimostrata da una prova di possesso verificata (vedi [Firma post-quantistica](/developer-guide/post-quantum-signing#proof-of-possession)). L'interfaccia qui sopra elenca i primi tre output; un contratto che deve fidarsi della chiave dovrebbe leggere anche il quarto.
 
 ### IQoreAI.sol
 
@@ -268,13 +270,13 @@ contract ConsensusReader {
 Nell'attuale build del nodo `rlConsensusParams` restituisce valori predefiniti fissi segnaposto, non valori ottimizzati in tempo reale da PRISM (ad esempio, non riporta il tempo di blocco misurato, che è circa 3,2 s su mainnet e circa 1,0 s su testnet). Collegarlo ai parametri di consenso live fa parte del lavoro di attivazione.
 :::
 
-### CrossVM Bridge — Chiamare CosmWasm dalla EVM
+### CrossVM Bridge — Chiamare QoreChain Native dalla EVM
 
 :::warning
-Il precompilato CrossVM bridge **non è attivo** su nessuna delle due reti. Il binario dalla v3.2.3 ne contiene una versione rinforzata che: rifiuta una `STATICCALL`; esegue la chiamata annidata su un contatore di gas limitato a quanto resta al frame chiamante e la registra nel journal, così un revert nel contratto chiamante annulla anche il lato CosmWasm; raggiunge solo destinazioni CosmWasm in allowlist (le destinazioni EVM vengono rifiutate); e rispetta il circuit breaker cross-VM. Finché un upgrade approvato dalla governance non lo attiva non esiste alcun percorso sincrono da EVM a CosmWasm; vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il percorso del messaggio `MsgCrossVMCall`, che oggi è a sua volta disattivato su mainnet.
+Il precompilato CrossVM bridge **non è attivo** su nessuna delle due reti. Il binario dalla v3.2.3 ne contiene una versione rinforzata che: rifiuta una `STATICCALL`; esegue la chiamata annidata su un contatore di gas limitato a quanto resta al frame chiamante e la registra nel journal, così un revert nel contratto chiamante annulla anche il lato QoreChain Native; raggiunge solo destinazioni QoreChain Native in allowlist (le destinazioni EVM vengono rifiutate); e rispetta il circuit breaker cross-VM. Finché un upgrade approvato dalla governance non lo attiva non esiste alcun percorso sincrono da EVM a QoreChain Native; vedi [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per il percorso del messaggio `MsgCrossVMCall`, che oggi è a sua volta disattivato su mainnet.
 :::
 
-Il nodo decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selettore di 4 byte, poi gli argomenti codificati in ABI). L'unico uso supportato è da EVM a CosmWasm (`targetVM` = 1); l'ABI potrebbe ancora cambiare prima dell'attivazione.
+Il nodo decodifica i calldata come `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` (selettore di 4 byte, poi gli argomenti codificati in ABI). L'unico uso supportato è da EVM a QoreChain Native (`targetVM` = 1); l'ABI potrebbe ancora cambiare prima dell'attivazione. L'helper `encodeCrossVmCalldata` di `@qorechain/rdk` codifica questo layout dalla 0.6.0 (le release precedenti codificavano una funzione diversa), e il suo `isCrossVmPrecompileActive` legge l'elenco attivo `active_static_precompiles`; vedi [Multi-VM](/rollups/multi-vm).
 
 **Costo in gas:** 50.000 base + 4 gas per byte di input, più il costo di esecuzione del contratto di destinazione. Consulta [Interoperabilità Cross-VM](/developer-guide/cross-vm-interoperability) per i dettagli.
 

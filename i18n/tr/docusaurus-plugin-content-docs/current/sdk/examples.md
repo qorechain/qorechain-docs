@@ -182,7 +182,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-Dağıtılmış bir CosmWasm sözleşmesine karşı salt okunur bir smart sorgu
+Dağıtılmış bir QoreChain Native sözleşmesine karşı salt okunur bir smart sorgu
 çalıştırın. Erişilebilir bir konsensüs RPC'si ve dağıtılmış bir sözleşme
 adresi gerektirir.
 

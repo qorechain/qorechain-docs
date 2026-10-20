@@ -11,7 +11,7 @@ QoreChain에 관한 일반적인 질문을 문서 기반으로 답변합니다. 
 
 ### 메인넷이 가동 중인가요?
 
-네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 7일부터 가동되고 있으며 릴리스 v3.2.3을 실행합니다(테스트넷 `qorechain-diana`는 v3.2.4를 실행합니다). [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
+네. QoreChain 메인넷(체인 `qorechain-vladi`, EVM 체인 ID 9801)은 2026년 6월 7일부터 가동되고 있으며 높이 3,742,566까지 릴리스 v3.2.3을, 그 블록부터 v3.2.4를 실행합니다(거버넌스 제안 13). 테스트넷 `qorechain-diana`는 2026년 10월 19일부터 v3.2.4를 실행하고 있습니다. [네트워크](/appendix/networks)와 [메인넷 연결하기](/getting-started/connecting-to-mainnet)를 참조하세요.
 
 ### 체인 ID와 EVM 체인 ID는 무엇인가요?
 
@@ -71,11 +71,11 @@ QoreChain 롤업 개발 키트(Rollup Development Kit)를 사용하세요. [롤�
 
 ### dApp은 어떻게 구축하나요?
 
-QoreChain의 EVM, SVM, CosmWasm 실행 환경 전반에 걸쳐 애플리케이션을 구축하기 위한 공개 SDK인 [QoreChain SDK](/sdk/overview)를 사용하세요.
+QoreChain의 EVM, SVM, QoreChain Native 실행 환경 전반에 걸쳐 애플리케이션을 구축하기 위한 공개 SDK인 [QoreChain SDK](/sdk/overview)를 사용하세요.
 
 ### 질문은 어디서 할 수 있나요?
 
-QCAIA 커뮤니티 봇이 Discord([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG))와 Telegram([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity))에서 질문에 답합니다. [QCAIA 커뮤니티 봇](/qcaia/overview)을 참조하세요.
+QCAIA 커뮤니티 봇이 Discord([discord.gg/qorechain](https://discord.gg/qorechain))와 Telegram([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity))에서 질문에 답합니다. [QCAIA 커뮤니티 봇](/qcaia/overview)을 참조하세요.
 
 ## 관련 문서
 

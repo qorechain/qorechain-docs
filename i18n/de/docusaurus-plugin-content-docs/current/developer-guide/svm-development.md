@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain enthält eine **Solana Virtual Machine (SVM)**-Ausführungsumgebung, die es Entwicklern ermöglicht, SBF/BPF-Programme mit vertrauten Solana-Tools bereitzustellen und auszuführen. Das SVM-Modul stellt eine Solana-kompatible JSON-RPC-Schnittstelle auf **Port 8899** bereit, die von `qorechaind start` automatisch gestartet wird (siehe [JSON-RPC-Server](#json-rpc-server) unten).
 
 :::note
-Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das das Node-Release **v3.2.3** ausführt. Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das v3.2.4 ausführt (nur Testnet). **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
+Die folgenden Befehle verwenden das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026), das bis Höhe 3.742.566 das Node-Release **v3.2.3** und ab diesem Block **v3.2.4** ausführt (Governance-Vorschlag 13). Ersetzen Sie `--chain-id qorechain-diana` für das Testnet, das seit dem 19. Oktober 2026 v3.2.4 ausführt. **SVM-Transaktionen sind auf beiden Netzwerken deaktiviert** (siehe den nächsten Kasten), daher dienen die `tx svm`-Befehle auf dieser Seite nur als Referenz: Sie können heute nicht gelingen.
 :::
 
 ---
@@ -241,12 +241,12 @@ Programme, die das Compute-Budget überschreiten, werden angehalten, und die Tra
 
 ## Cross-VM-Interoperabilität
 
-SVM-Programme sind dafür ausgelegt, über die Nachricht `MsgCrossVMCall` des Moduls `x/crossvm` mit EVM- und CosmWasm-Contracts zu kommunizieren (die Chain ermittelt die Quellspur selbst). Da die SVM-Spur für Transaktionen deaktiviert und `MsgCrossVMCall` auf dem Mainnet abgeschaltet ist, gibt es heute keinen funktionierenden SVM-Cross-VM-Pfad. Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den aktuellen Status, den Nachrichtenlebenszyklus und das Timeout-Verhalten.
+SVM-Programme sind dafür ausgelegt, über die Nachricht `MsgCrossVMCall` des Moduls `x/crossvm` mit EVM- und QoreChain Native-Contracts zu kommunizieren (die Chain ermittelt die Quellspur selbst). Da die SVM-Spur für Transaktionen deaktiviert und `MsgCrossVMCall` auf dem Mainnet abgeschaltet ist, gibt es heute keinen funktionierenden SVM-Cross-VM-Pfad. Siehe [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) für den aktuellen Status, den Nachrichtenlebenszyklus und das Timeout-Verhalten.
 
 ---
 
 ## Nächste Schritte
 
-* [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — Kommunikation zwischen SVM, EVM und CosmWasm
+* [Cross-VM-Interoperabilität](/developer-guide/cross-vm-interoperability) — Kommunikation zwischen SVM, EVM und QoreChain Native
 * [EVM-Entwicklung](/developer-guide/evm-development) — Solidity-Smart-Contracts auf QoreChain
-* [CosmWasm-Entwicklung](/developer-guide/cosmwasm-development) — Rust-basierte WebAssembly-Contracts
+* [QoreChain Native-Entwicklung](/developer-guide/cosmwasm-development) — Rust-basierte WebAssembly-Contracts

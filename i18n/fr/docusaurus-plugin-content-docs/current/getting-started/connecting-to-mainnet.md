@@ -10,7 +10,7 @@ sidebar_position: 3
 Rejoignez le mainnet QoreChain Vladi en service en configurant votre nœud avec le fichier genesis officiel, les pairs et les paramètres réseau.
 
 :::note
-Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026** et exécutant la version **v3.2.3** sur Cosmos SDK v0.53. Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
+Cette page couvre le mainnet **`qorechain-vladi`** (chain ID EVM **9801**, hex `0x2649`), en production depuis le **7 juin 2026** et exécutant la version **v3.2.3** sur Cosmos SDK v0.53 jusqu'à la hauteur **3 742 566**, puis la **v3.2.4** à partir de ce bloc (proposition de gouvernance 13). Pour le testnet **`qorechain-diana`** (chain ID EVM **9800**), consultez [Connexion au testnet](/getting-started/connecting-to-testnet) et répétez-y votre configuration avant de passer en production.
 :::
 
 ## Points d'accès publics
@@ -54,12 +54,12 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 
 Le bundle contient `qorechaind` ainsi que ses bibliothèques partagées requises (`libqorepqc.so`, `libqoresvm.so`, `libwasmvm.x86_64.so`).
 
-:::caution Maintenez votre nœud à jour — v3.2.3 requise
-Les nœuds complets doivent suivre la version en production du réseau — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le manifeste actuel est **v3.2.3** avec `minCompatible` **3.2.3** et `upgradeHeight` **3 662 051** : le mainnet y a appliqué la v3.2.3 le 20 octobre 2026 par la proposition de gouvernance 11, et un nœud encore sur une version antérieure ne peut pas suivre la chaîne au-delà de cette hauteur. Les mises à niveau par gouvernance précédentes sur le mainnet étaient la **v3.1.94** à la hauteur 2 122 074 (le plafond d'émission), la **v3.2.0** à la hauteur 2 981 742 (la fenêtre d'autorisation EVM et les octets de signature hybride v2) et la **v3.2.2** à la hauteur 3 556 788 (16 octobre 2026, proposition 7). La v3.2.1 était une version locale au nœud, sans hauteur. Un nœud qui rejoint le réseau depuis zéro a donc besoin du binaire v3.2.3 ; privilégiez la synchronisation d'état (ci-dessous) plutôt que la relecture depuis le genesis. Le snapshot de données de chaîne publié est antérieur à toutes ces hauteurs de mise à niveau, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer.
+:::caution Maintenez votre nœud à jour — v3.2.3, puis v3.2.4
+Les nœuds complets doivent suivre la version en production du réseau — installez toujours le binaire pointé par le manifeste, ne fixez pas une ancienne version. Le manifeste actuel est **v3.2.3** avec `minCompatible` **3.2.3** et `upgradeHeight` **3 662 051** : le mainnet y a appliqué la v3.2.3 le 20 octobre 2026 par la proposition de gouvernance 11, et un nœud encore sur une version antérieure ne peut pas suivre la chaîne au-delà de cette hauteur. Les mises à niveau par gouvernance précédentes sur le mainnet étaient la **v3.1.94** à la hauteur 2 122 074 (le plafond d'émission), la **v3.2.0** à la hauteur 2 981 742 (la fenêtre d'autorisation EVM et les octets de signature hybride v2) et la **v3.2.2** à la hauteur 3 556 788 (16 octobre 2026, proposition 7). La v3.2.1 était une version locale au nœud, sans hauteur. **La v3.2.4 à la hauteur 3 742 566 (proposition de gouvernance 13, vers le 23 octobre 2026 avec des blocs de 3,2 secondes).** Les nœuds restent sur la v3.2.3 jusqu'à cette hauteur, s'y arrêtent et redémarrent sur la v3.2.4 ; le manifeste passe à 3.2.4 (avec `minCompatible` 3.2.4) une fois la mise à niveau appliquée, et la signature des transactions est inchangée. Un nœud qui rejoint le réseau avant la mise à niveau a besoin du binaire v3.2.3, et celui qui le rejoint après a besoin de la v3.2.4 — lisez toujours le manifeste ; privilégiez la synchronisation d'état (ci-dessous) plutôt que la relecture depuis le genesis. Le snapshot de données de chaîne publié est antérieur à toutes ces hauteurs de mise à niveau, de sorte qu'un nœud restauré à partir de celui-ci doit les rejouer.
 
 Définissez `evm-chain-id = 9801` dans `app.toml` (une valeur différente est journalisée comme une erreur) et maintenez l'horloge système synchronisée par NTP : un nœud s'arrête lorsque son horloge dérive de plus de 60 secondes. Vérifiez toujours les champs `"version"` et `"minCompatible"` du manifeste avant de faire confiance à `binary.url` — le manifeste est promu délibérément (d'abord sur le testnet, puis sur le mainnet après une période de rodage). Le format de signature, les adresses, les décimales, les mémos et les frais n'ont pas changé dans la v3.2.3.
 
-Le testnet (`qorechain-diana`) exécute la v3.2.4, qui est une version réservée au testnet : ne l'installez pas sur un nœud mainnet, et le manifeste du mainnet ne la proposera pas.
+Le testnet (`qorechain-diana`) exécute la v3.2.4 depuis le 19 octobre 2026. Ne démarrez pas un binaire v3.2.4 sur un nœud mainnet avant la hauteur 3 742 566 et ne copiez jamais un binaire d'un réseau à l'autre : suivez le manifeste du mainnet, qui propose la v3.2.4 une fois la mise à niveau appliquée.
 :::
 
 Lorsqu'une mise à niveau coordonnée est programmée, le texte de la proposition indique la hauteur et vous demande de rester sur la version précédente jusque-là : le nœud s'arrête à cette hauteur et vous le redémarrez sous le nouveau binaire. Lisez le `status` de la proposition (`curl -s https://api.qore.host/cosmos/gov/v1/proposals/<id>`) ainsi que les champs `version` et `upgradeHeight` du [manifeste mainnet](https://download.qore.host/mainnet/latest.json) avant de remplacer un binaire, et n'installez jamais un binaire de mise à niveau avant sa hauteur : un nœud qui l'embarque trop tôt s'arrête lui aussi. Aucune mise à niveau n'est programmée au moment de la rédaction (`curl -s https://api.qore.host/cosmos/upgrade/v1beta1/current_plan` renvoie `"plan": null`).
@@ -256,7 +256,7 @@ http://localhost:1317
 | --------------------- | --------------------------------------- |
 | Chain ID               | `qorechain-vladi`                      |
 | Chain ID EVM           | `9801` (hex `0x2649`)                  |
-| Version de chaîne      | v3.2.3 (appliquée à la hauteur 3 662 051) |
+| Version de chaîne      | v3.2.3 (appliquée à la hauteur 3 662 051) ; v3.2.4 à partir de la hauteur 3 742 566 |
 | En production depuis   | 7 juin 2026                            |
 | Temps de bloc          | environ 3,2 secondes (moyenne mesurée) |
 | Jeton                  | QOR (`uqor`, 10^6 micro-unités = 1 QOR) |

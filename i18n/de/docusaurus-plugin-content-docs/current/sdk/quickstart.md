@@ -273,7 +273,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## Nächste Schritte
 
-- [Guides](/sdk/guides/evm) — arbeiten Sie mit jeder VM (EVM, SVM, CosmWasm, Cross-VM).
+- [Guides](/sdk/guides/evm) — arbeiten Sie mit jeder VM (EVM, SVM, QoreChain Native, Cross-VM).
 - [Konten & PQC-Signierung](/sdk/concepts/accounts-pqc) — HD-Ableitung, unified
   eth-native Konten und Post-Quanten-Signierung.
 - [Authenticators & delegiertes Ausgeben](/sdk/guides/authenticators) — lassen

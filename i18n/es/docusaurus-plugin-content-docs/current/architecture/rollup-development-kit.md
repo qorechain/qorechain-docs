@@ -10,7 +10,7 @@ sidebar_position: 12
 El módulo `x/rdk` proporciona un Rollup Development Kit (RDK) completo que permite a los desarrolladores desplegar rollups específicos de aplicación en QoreChain. Admite cuatro paradigmas de liquidación, múltiples modos de secuenciador, backends de disponibilidad de datos conectables y optimización de configuración asistida por IA.
 
 :::caution Capacidad en fase temprana
-El módulo está desplegado en mainnet (versión de cadena **v3.2.3**) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 20 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
+El módulo está desplegado en mainnet (versión de cadena **v3.2.3** hasta la altura 3,742,566, **v3.2.4** desde ese bloque) y en testnet (**v3.2.4**), pero **todavía no se ha creado ningún rollup en ninguna de las dos redes** (comprobado el 21 de octubre de 2026: `GET /qorechain/rdk/v1/rollups` devuelve una lista vacía en ambas). Varias de las capacidades descritas a continuación no son utilizables de extremo a extremo hoy; el estado se indica donde se describe cada una. Para la guía práctica dirigida a desarrolladores, consulte [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ El RDK de QoreChain admite cuatro modos de liquidación distintos — **optimist
 Los rollups optimistas asumen que las transacciones son válidas por defecto y dependen de pruebas de fraude para la resolución de disputas.
 
 * **Sistema de pruebas**: pruebas de fraude interactivas
-* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Mainnet (v3.2.3):** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Solo testnet (v3.2.4, aplicado en la altura 8,337,253):** para un lote enviado a partir de esa altura, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. En mainnet este cambio solo entraría en vigor con la v3.2.4 (la propuesta de gobernanza 13 la aplicaría en la altura 3,742,566).
+* **Ventana de impugnación**: 604,800 segundos (por defecto, 7 días). **Hasta v3.2.4 (mainnet v3.2.3 antes de la altura 3,742,566):** la cadena lo convierte a bloques a razón fija de 6 segundos por bloque, **100,800 bloques**, así que el tiempo real transcurrido depende del tiempo de bloque real (unos 3,7 días con los bloques actuales de ≈3,2 s de mainnet); planifique en bloques, no en días. **Desde v3.2.4:** para un lote enviado a partir de la altura de la actualización, la ventana se mide en segundos de tiempo de bloque (7 días completos). Un lote enviado antes conserva la regla del número de bloques. La testnet aplicó la v3.2.4 en la altura 8,337,253 (19 de octubre de 2026); mainnet la aplica en la altura 3,742,566 (propuesta de gobernanza 13).
 * **Fianza de impugnación**: 1,000 QOR (1,000,000,000 uqor) — requerida para presentar una impugnación con prueba de fraude (presets `nft` y `custom`; los presets `defi`, `gaming` y `enterprise` no establecen fianza porque no tienen ventana de impugnación)
 * **Finalidad**: retrasada hasta que expire la ventana de impugnación sin una impugnación válida
 * **Auto-finalización**: el `EndBlocker` finaliza automáticamente los lotes una vez que la ventana de impugnación ha pasado sin disputa. Un lote impugnado nunca se finaliza automáticamente: el creador del rollup resuelve primero la impugnación (consulte [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -100,7 +100,7 @@ El RDK incluye **cinco perfiles preconfigurados** que proporcionan configuracion
 | ---------------- | ------------------------ | --------- | --------------- | ------------ | ------- | --------------- |
 | **`defi`**       | zk (SNARK)               | dedicated | native          | EIP-1559     | EVM     | Aplicaciones de trading, préstamos y estilo AMM |
 | **`gaming`**     | based                    | based     | native          | flat         | custom  | Estado de juego y economías dentro del juego de alto rendimiento y baja latencia |
-| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planificado) | standard | CosmWasm | Acuñación de NFT, mercados y coleccionables digitales |
+| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA planificado) | standard | QoreChain Native | Acuñación de NFT, mercados y coleccionables digitales |
 | **`enterprise`** | based                    | based     | native          | subsidized   | EVM     | Despliegues permisionados y de consorcio con tarifas patrocinadas |
 | **`custom`**     | totalmente parametrizado | totalmente parametrizado | totalmente parametrizado | totalmente parametrizado | totalmente parametrizado | Cada campo es definido por el usuario |
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Modo de liquidación | Disparador de finalización                                   |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100,800 bloques después del envío (ventana por defecto) sin impugnación; en la testnet, para los lotes enviados desde v3.2.4, 604,800 segundos de tiempo de bloque |
+| **Optimistic**  | 100,800 bloques después del envío (ventana por defecto) sin impugnación; para los lotes enviados desde v3.2.4 (testnet desde la altura 8,337,253; mainnet desde la altura 3,742,566), 604,800 segundos de tiempo de bloque |
 | **ZK**          | Instantánea al enviar una prueba válida                      |
 | **Based**       | 2 bloques de L1 después del envío                            |
 | **Sovereign**   | Ninguna — gestionada por el propio consenso del rollup       |
@@ -261,8 +261,8 @@ El registro es **no fatal**: si falla (saldo insuficiente o límite alcanzado), 
 
 Un lote de liquidación puede anclarse a `x/multilayer`, que registra el ID de capa, la altura de capa (el índice del lote), la raíz de estado, el hash del conjunto de validadores y el recuento de transacciones bajo una firma poscuántica del creador del rollup.
 
-* **Desde v3.2.2 (activo en mainnet y testnet):** `MsgSubmitBatch` tiene dos campos opcionales. `anchor_signature` es la firma ML-DSA-87 del creador sobre los **bytes de firma de ancla v2** del lote (consulte [Lectura de Anclas](/architecture/multilayer-architecture#reading-anchors)); cuando está presente, el lote se ancla en `x/multilayer` en la **misma transacción**, y un ancla rechazada rechaza el lote. `validator_set_hash` es el compromiso del conjunto de validadores del rollup que se incluye en el ancla y queda cubierto por la firma. En la CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imprime los bytes que hay que firmar, y `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` los envía.
-* **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite. Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla.
+* **Desde v3.2.2 (activo en mainnet y testnet):** `MsgSubmitBatch` tiene dos campos opcionales. `anchor_signature` es la firma ML-DSA-87 del creador sobre los **bytes de firma de ancla v2** del lote (consulte [Lectura de Anclas](/architecture/multilayer-architecture#reading-anchors)); cuando está presente, el lote se ancla en `x/multilayer` en la **misma transacción**, y un ancla rechazada rechaza el lote. `validator_set_hash` es el compromiso del conjunto de validadores del rollup que se incluye en el ancla y queda cubierto por la firma. En la CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` imprime los bytes que hay que firmar (`<layer-id>` es el id de capa del rollup, que coincide con el id del rollup en los rollups creados mediante el RDK), y `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` los envía.
+* **Sin la firma** el lote se liquida sin anclar, exactamente como antes. Un cliente que no envía el campo produce lotes sin anclar, así que compruebe que el toolkit que usa lo admite: el `@qorechain/rdk` 0.6.0 de TypeScript firma el ancla cuando su cliente firma en modo híbrido y es el creador del rollup (y en caso contrario envía el lote sin anclar), mientras que los clientes de Python, Go, Rust y Java no construyen el campo. Todavía no existe ningún rollup, capa ni ancla en ninguna de las dos redes, por lo que no se ha escrito ningún ancla y esa vía no se ha probado en vivo.
 
 Consulte [Settlement Receipts](/rollups/settlement-receipts) para saber qué prueba y qué no prueba un ancla.
 

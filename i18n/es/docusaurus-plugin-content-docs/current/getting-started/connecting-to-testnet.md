@@ -10,7 +10,7 @@ sidebar_position: 4
 Únete a la red de pruebas activa QoreChain Diana configurando tu nodo con el archivo génesis, los pares y la configuración de red correctos.
 
 :::note
-Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.3**) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta actualmente la versión **v3.2.4**, una versión exclusiva de la red de pruebas que no forma parte de la red principal; su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Esta página cubre la red de pruebas **`qorechain-diana`** (ID de cadena EVM **9800**). La red principal (**`qorechain-vladi`**, ID de cadena EVM **9801**) está activa desde el 7 de junio de 2026 (versión **v3.2.3** hasta la altura 3,742,566, **v3.2.4** desde ese bloque) y tiene su propia página dedicada **Conexión a la red principal** con génesis, pares y detalles de conexión independientes. La red de pruebas ejecuta la versión **v3.2.4** desde el 19 de octubre de 2026; su manifiesto de versión está en [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoints públicos
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` (v3.2.4 se aplicó en la altura 8,337,253 el 19 de octubre de 2026; antes, v3.2.3 en la 8,003,746 y v3.2.2 en la 6,905,034) y `minCompatible` es igual a la versión actual (3.2.4). Un nodo que se une ahora necesita la versión indicada en el manifiesto. Mantén el reloj del sistema sincronizado por NTP. El manifiesto de la red principal apunta a una versión distinta (v3.2.3), así que nunca copies un binario de una red a la otra.
+La red de pruebas recibe actualizaciones coordinadas mediante propuestas de gobernanza, por lo que su manifiesto incluye un `upgradeHeight` (v3.2.4 se aplicó en la altura 8,337,253 el 19 de octubre de 2026; antes, v3.2.3 en la 8,003,746 y v3.2.2 en la 6,905,034) y `minCompatible` es igual a la versión actual (3.2.4). Un nodo que se une ahora necesita la versión indicada en el manifiesto. Mantén el reloj del sistema sincronizado por NTP. El manifiesto de la red principal apunta a una versión distinta (v3.2.3 hasta su actualización en la altura 3,742,566), así que nunca copies un binario de una red a la otra.
 
 ---
 

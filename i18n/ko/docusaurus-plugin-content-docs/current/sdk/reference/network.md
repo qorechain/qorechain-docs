@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | 네트워크 프리셋 | `mainnet` |
 | 체인 id | `qorechain-vladi` (2026년 6월 7일부터 가동 중) |
-| 체인 버전 (2026년 10월 20일) | v3.2.3 |
+| 체인 버전 (2026년 10월 21일) | 높이 3,742,566까지 v3.2.3, 해당 블록부터 v3.2.4 (거버넌스 제안 13) |
 | EVM 체인 ID | `9801` |
 | 표시 토큰 | `QOR` |
 | 기본 단위 | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | 네트워크 프리셋 | `testnet` |
 | 체인 id | `qorechain-diana` (가동 중) |
-| 체인 버전 (2026년 10월 20일) | v3.2.4 (아직 테스트넷 전용, 메인넷 제안 13이 통과되면 높이 3,742,566에서 적용) |
+| 체인 버전 (2026년 10월 21일) | v3.2.4 (높이 8,337,253부터, 2026년 10월 19일) |
 | EVM 체인 ID | `9800` |
 | 표시 토큰 | `QOR` |
 | 기본 단위 | `uqor` |
@@ -57,7 +57,7 @@ EVM 엔드포인트는 `eth_`, `net_`, `web3_`, `txpool_`를 제공하며, `qor_
 | --- | --- | --- |
 | Cosmos REST (LCD) | `1317` | bank 잔액, 계정 정보, 모듈 쿼리 |
 | gRPC | `9090` | gRPC 쿼리 |
-| Consensus RPC | `26657` | native tx 서명/브로드캐스트, CosmWasm 읽기 |
+| Consensus RPC | `26657` | native tx 서명/브로드캐스트, QoreChain Native 읽기 |
 | EVM JSON-RPC | `8545` | `eth_*` (그리고 이를 활성화한 노드에서는 `qor_*` / 프리컴파일) |
 | EVM JSON-RPC (WS) | `8546` | EVM WebSocket 구독 |
 | SVM JSON-RPC | `8899` | Solana 호환 RPC |

@@ -10,7 +10,7 @@ sidebar_position: 3
 Bu kılavuz, QoreChain üzerinde zincir üstü yönetişimin nasıl çalıştığını, oyların nasıl sayıldığını, tekliflerin nasıl gönderileceğini ve nasıl oy kullanılacağını açıklar.
 
 :::note
-Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve **v3.2.3** sürümünü çalıştırıyor; testnet **v3.2.4** çalıştırıyor — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
+Aşağıdaki komutlar **`qorechain-diana`** testnet'ini (EVM chain ID **9800**) kullanır. Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**), 7 Haziran 2026'dan beri yayında ve 3.742.566 yüksekliğine kadar **v3.2.3** sürümünü, o bloktan itibaren **v3.2.4**'ü çalıştırıyor; testnet 19 Ekim 2026'dan beri **v3.2.4** çalıştırıyor — mainnet üzerinde yönetişime katılırken **Mainnet'e Bağlanma** sayfasındaki mainnet chain ID'sini ve uç noktalarını kullanın.
 :::
 
 :::caution `tx pqc cosign` ile imzalayın
@@ -175,7 +175,7 @@ Başlıca parametreler şunlardır:
 
 ## Mainnet'te şimdiye kadarki yönetişim {#mainnet-history}
 
-Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 11 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi ve 12 numaralı teklif bu yazıldığı sırada oylama dönemindeydi; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
+Mainnet yönetişimi; parametre değişiklikleri, devre kesici kararları, koordineli yükseltmeler ve Ekim 2026'dan itibaren zincirin v3.2.0 yükseltmesinde kaydettiği tutarların serbest bırakılması için kullanılmıştır. 7 ila 11 numaralı teklifler Ekim 2026'da mainnet'te kabul edildi, 12 numaralı (başka bir serbest bırakma) ve 13 numaralı (3.742.566 yüksekliğinde v3.2.4 yükseltmesi) teklifler ise bu yazıldığı sırada oylama dönemindeydi; liste ve sonuçlar [Sürüm Geçmişi](/appendix/version-history#governance-timeline) sayfasındadır ve her teklif `GET /cosmos/gov/v1/proposals` adresinden canlı olarak okunabilir.
 
 ---
 

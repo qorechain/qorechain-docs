@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Cronologia delle Versioni
 
-Cronologia pubblica delle versioni di QoreChain. L'ultima release della mainnet è la **v3.2.3**, in esecuzione sulla mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026); è stata applicata tramite governance all'altezza 3.662.051 il 20 ottobre 2026. La testnet **`qorechain-diana`** (chain ID EVM **9800**) esegue la **v3.2.4**, applicata lì all'altezza 8.337.253 il 19 ottobre 2026. **La v3.2.4 non fa ancora parte della mainnet: la proposta di governance 13 della mainnet (votazione aperta fino al 21 ottobre 2026, ore 21:18 UTC) la applicherebbe all'altezza 3.742.566.**
+Cronologia pubblica delle versioni di QoreChain. La mainnet **`qorechain-vladi`** (chain ID EVM **9801**, attiva dal 7 giugno 2026) esegue la **v3.2.3** (applicata tramite governance all'altezza 3.662.051 il 20 ottobre 2026) fino all'altezza **3.742.566**, e la **v3.2.4** da quel blocco in poi (proposta di governance 13 della mainnet). La testnet **`qorechain-diana`** (chain ID EVM **9800**) esegue la **v3.2.4** dall'altezza 8.337.253 (19 ottobre 2026).
 
 :::note
 Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità. Le voci `v1.x` più datate sono conservate come registro storico della linea di release testnet che ha preceduto la mainnet. Il manifest di release ([Connessione alla Mainnet](/getting-started/connecting-to-mainnet)) viene promosso separatamente dal tagging e può essere in ritardo rispetto a un tag di un certo periodo — verificalo direttamente per sapere cosa scarica realmente una nuova installazione.
@@ -15,7 +15,7 @@ Le voci riportate di seguito sono riepiloghi di alto livello delle funzionalità
 
 ## Cronologia della governance della mainnet {#governance-timeline}
 
-Proposte che hanno modificato la mainnet in esecuzione dal 14 ottobre 2026. Tutte e sette sono proposte accelerate (periodo di votazione di un giorno); le proposte da 7 a 11 sono passate con tutto lo stake bonded votante a favore. L'elenco completo è disponibile su `GET /cosmos/gov/v1/proposals` all'indirizzo `https://api.qore.host`.
+Proposte che hanno modificato, o programmano modifiche a, la mainnet in esecuzione dal 14 ottobre 2026. Tutte e sette sono proposte accelerate (periodo di votazione di un giorno); le proposte da 7 a 11 sono passate con tutto lo stake bonded votante a favore. L'elenco completo è disponibile su `GET /cosmos/gov/v1/proposals` all'indirizzo `https://api.qore.host`.
 
 | Proposta | Cosa fa | Votazione | Esito |
 | --- | --- | --- | --- |
@@ -25,19 +25,19 @@ Proposte che hanno modificato la mainnet in esecuzione dal 14 ottobre 2026. Tutt
 | 10 | Emissione: imposta l'emissione fissa a 86.000 QOR per epoca e il cap cumulativo a 590.000.000 QOR (durata dell'epoca invariata; la prima epoca da 86.000 QOR inizia al blocco 3.672.000) | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata |
 | 11 | Applica la v3.2.3 all'altezza 3.662.051 | 18–19 ottobre 2026 (termina alle 19:15 UTC) | Approvata; applicata il 20 ottobre 2026 |
 | 12 | Rilascia alla fondazione la quota corretta degli staker rimasta bloccata (3.807.496,785528 QOR, ricalcolata all'altezza della v3.2.3) | dal 20 ottobre 2026 alle 20:01 UTC al 21 ottobre 2026 alle 20:01 UTC | In periodo di votazione al momento della stesura |
-| 13 | Upgrade coordinato alla v3.2.4 all'altezza 3.742.566 (livelli di staking, limite di ricompensa dei light node contato dalla registrazione, un flag di possesso per le chiavi post-quantistiche, prova di possesso per i validatori del bridge e hardening locale al nodo) | dal 20 ottobre 2026 alle 21:18 UTC al 21 ottobre 2026 alle 21:18 UTC | In periodo di votazione al momento della stesura |
+| 13 | Upgrade coordinato alla v3.2.4 all'altezza 3.742.566 (circa il 23 ottobre 2026 con blocchi da 3,2 secondi): staking opzionale con blocco temporale, limite di ricompensa dei light node contato dalla registrazione, un flag di possesso per le chiavi post-quantistiche, prova di possesso per i validatori del bridge, la finestra di challenge dell'RDK in tempo di blocco e hardening locale al nodo | dal 20 ottobre 2026 alle 21:18 UTC al 21 ottobre 2026 alle 21:18 UTC | In periodo di votazione al momento della stesura, con tutti i voti espressi finora a favore; controlla `GET /cosmos/gov/v1/proposals/13` per il risultato finale |
 
 Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve) per il significato delle release e [Governance](/user-guide/governance) per come votare.
 
 ---
 
-## v3.2.4 — Finestra di registrazione dei light node e staking opzionale con blocco temporale (solo testnet)
+## v3.2.4 — Finestra di registrazione dei light node e staking opzionale con blocco temporale (programmata per la mainnet)
 
-**Focus della release:** una release solo testnet, applicata su `qorechain-diana` dalla proposta di governance della testnet 13 all'altezza **8.337.253** (19 ottobre 2026). **Non è ancora sulla mainnet**: la proposta di governance 13 della mainnet (votazione aperta fino al 21 ottobre 2026, ore 21:18 UTC) la applicherebbe all'altezza 3.742.566, e fino ad allora nulla di quanto segue si applica a `qorechain-vladi`. Il manifest della testnet imposta `minCompatible` a 3.2.4.
+**Focus della release:** la prossima release della mainnet in programma. Viene eseguita sulla testnet `qorechain-diana` da quando la proposta di governance della testnet 13 l'ha applicata all'altezza **8.337.253** (19 ottobre 2026; il manifest della testnet imposta `minCompatible` a 3.2.4). Sulla mainnet la proposta di governance 13 la programma all'altezza **3.742.566**: i nodi restano sulla v3.2.3 fino a quel blocco, si fermano lì e ripartono sulla v3.2.4, e la firma delle transazioni non cambia. Ogni funzionalità qui sotto è quindi già attiva sulla testnet e si applica a `qorechain-vladi` dall'altezza 3.742.566 (una volta che la proposta sia stata approvata).
 
 * **Finestra di registrazione dei light node.** Il limite di ricompensa di un light node parte dal più recente tra il settlement precedente e la registrazione del nodo stesso, così una nuova registrazione non incassa un importo accumulato prima del suo ingresso.
-* **Staking opzionale con blocco temporale (`x/stakingtier`, un nuovo modulo).** Un delegante può bloccare una parte di una delega per un termine fisso; la parte bloccata non può essere undelegata né ridelegata, e uno sblocco anticipato è consentito con una penalità. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
-* **Nuova modalità di emissione.** `x/inflation` acquisisce una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps` (attualmente `0`).
+* **Staking opzionale con blocco temporale (`x/stakingtier`, un nuovo modulo).** Un delegante può bloccare una parte di una delega per 3, 6 o 12 mesi; la parte bloccata non può essere undelegata né ridelegata, e uno sblocco anticipato è consentito con una penalità che viene bruciata. Il blocco minimo è di 10 QOR. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
+* **Nuova modalità di emissione.** `x/inflation` acquisisce una terza modalità di emissione, `target_apy`, con un parametro `target_apy_bps` (`0` sulla testnet). Cambiare la modalità di emissione di una rete è una decisione di governance separata; la modalità in vigore è mostrata in `/qorechain/inflation/v1/params`.
 * **Flag `possession_proven`** sui record degli account post-quantistici; la prova di possesso per le chiavi degli account resta opzionale.
 * **Prova di possesso dei validatori del bridge.** La registrazione di un validatore del bridge richiede una prova di possesso e una chiave che nessun altro validatore del bridge utilizzi.
 * **Finestra di challenge dell'RDK in tempo di blocco.** La finestra di challenge ottimistica è contata in tempo di blocco anziché in un numero di blocchi da esso derivato.
@@ -87,11 +87,11 @@ La v3.2.1 è stata applicata nodo per nodo e non ha un'altezza di upgrade; è st
 * **La mappa delle versioni dei moduli dell'upgrade** ora elenca tutti i moduli (48), correggendo una lacuna che avrebbe interessato le migrazioni successive.
 * Inoltre: account di modulo del bridge e payload di attestazione rafforzati, blocchi proposti convalidati, settlement dei rollup limitato al sequencer del rollup con escrow per rollup e un burn di creazione effettivo, stake del creatore multilayer bloccato alla registrazione e restituito alla dismissione, flag `enabled` dello smart account applicato su ogni percorso, e percorsi di ammissione dei validatori e di creazione del vesting chiusi all'annidamento authz.
 
-## v3.1.96 + v3.1.97 — Blocco degli accessi CosmWasm
+## v3.1.96 + v3.1.97 — Blocco degli accessi QoreChain Native
 
-**Focus della release:** chiudere l'upload e l'istanziazione permissionless del codice contratto, a seguito di un advisory di sicurezza CosmWasm a livello di settore.
+**Focus della release:** chiudere l'upload e l'istanziazione permissionless del codice contratto, a seguito di un advisory di sicurezza a livello di settore per CosmWasm, il runtime su cui si basa QoreChain Native.
 
-* **L'upload e l'istanziazione dei contratti richiedono ora un permesso esplicito.** `code_upload_access` e `instantiate_default_permission` sono impostati su `Nobody` sia su mainnet sia su testnet — verificato live, indipendentemente da quale dei due tag un dato nodo stia eseguendo, poiché si tratta di un parametro on-chain e non di qualcosa che solo i binari più recenti applicano. Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development) per capire cosa significa questo se stai sviluppando un contratto. I contratti già istanziati non sono interessati — `execute` e `query` funzionano come prima. Su entrambe le reti i tre messaggi CosmWasm di upload e istanziazione sono inoltre disattivati sul circuit breaker.
+* **L'upload e l'istanziazione dei contratti richiedono ora un permesso esplicito.** `code_upload_access` e `instantiate_default_permission` sono impostati su `Nobody` sia su mainnet sia su testnet — verificato live, indipendentemente da quale dei due tag un dato nodo stia eseguendo, poiché si tratta di un parametro on-chain e non di qualcosa che solo i binari più recenti applicano. Vedi [Sviluppo QoreChain Native](/developer-guide/cosmwasm-development) per capire cosa significa questo se stai sviluppando un contratto. I contratti già istanziati non sono interessati — `execute` e `query` funzionano come prima. Su entrambe le reti i tre messaggi QoreChain Native di upload e istanziazione sono inoltre disattivati sul circuit breaker.
 * **Build di release a indirizzo di posizione indipendente (PIE)**, secondo le linee guida di hardening dello stesso advisory, così l'indirizzo di memoria che un exploit dovrebbe indovinare viene randomizzato per ogni processo. I binari con linking dinamico hanno richiesto un solo flag di build; verificato che non rompe lo stato.
 
 ## v3.1.95 — Hardening EVM Cosmos
@@ -319,8 +319,8 @@ I full node devono eseguire la **v3.1.83+**. Un nodo precedente alla 3.1.83 non 
 * **Layer di consenso PRISM** — Ottimizzazione a reinforcement learning (PPO) per il tuning dinamico dei parametri della chain con controlli di sicurezza a circuit-breaker
 * **CPoS a triplo pool** — Composite Proof-of-Stake con pool di validatori RPoS, DPoS e PoS ponderati per punteggio di reputazione (implementato in `x/qca`; non ancora collegato alla produzione dei blocchi)
 * **Governance QDRW** — Formula del potere di voto Quadratic Delegation with Reputation Weighting (implementata; disabilitata sulle reti live)
-* **Runtime EVM + CosmWasm + SVM** — Tre ambienti di esecuzione concorrenti: il QoreChain EVM Engine, gli smart contract CosmWasm e la Solana Virtual Machine
-* **Bridge cross-VM** — Passaggio di messaggi e trasferimenti di asset tra i runtime EVM, CosmWasm e SVM all'interno di un singolo blocco
+* **Runtime EVM + QoreChain Native + SVM** — Tre ambienti di esecuzione concorrenti: il QoreChain EVM Engine, gli smart contract QoreChain Native e la Solana Virtual Machine
+* **Bridge cross-VM** — Passaggio di messaggi e trasferimenti di asset tra i runtime EVM, QoreChain Native e SVM all'interno di un singolo blocco
 * **Crittografia post-quantistica** — Firma resistente al quantistico basata su una libreria PQC ad alte prestazioni
 * **QCAI** — Analisi euristica on-chain con sidecar off-chain opzionale per rilevamento delle frodi, stima delle fee e ottimizzazione della rete
 * **Deployment containerizzato** — Deployment completo di testnet multi-validatore con servizio sidecar e block indexer

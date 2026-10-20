@@ -66,7 +66,7 @@ Netzwerken einen Fehler (`returned no data ("0x")`). Siehe
 **Rufen Sie einen Contract auf jeder beliebigen VM auf — und bündeln Sie Aufrufe über
 alle drei VMs atomar.**
 
-QoreChain betreibt CosmWasm-, EVM- und SVM-Contracts auf derselben Chain mit einer
+QoreChain betreibt QoreChain Native-, EVM- und SVM-Contracts auf derselben Chain mit einer
 nativen Cross-VM-Bridge. Das SDK stellt eine einzige Schnittstelle bereit, um jeden
 davon aufzurufen — und um mehrere Cross-VM-Aufrufe in eine einzige, atomare
 Transaktion zu packen, die nur einmal signiert wird.
@@ -84,7 +84,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -97,7 +97,7 @@ Bridge-Modul (`crossvm`, plus der Precompile `CrossVMBridge`, sobald er aktiv is
 sodass eine einzige SDK-Schnittstelle alle drei ansprechen kann. Single-VM-Chains
 haben nichts Vergleichbares, das sich kapseln ließe. Heute wird die Reichweite eines
 Aufrufs durch die Lane begrenzt, die er anspricht: `MsgCrossVMCall` ist auf Mainnet
-abgeschaltet, SVM-Transaktionen sind deaktiviert, und CosmWasm-Upload und
+abgeschaltet, SVM-Transaktionen sind deaktiviert, und QoreChain Native-Upload und
 -Instanziierung sind erlaubnispflichtig. Siehe
 [Cross-VM-Aufrufe](/sdk/guides/cross-vm).
 

@@ -10,9 +10,9 @@ sidebar_position: 1
 Riferimento per i comandi `qorechaind` usati per inizializzare, configurare e gestire un nodo QoreChain.
 
 :::note
-QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026; release del nodo **v3.2.3**, applicata all'altezza 3.662.051 il 20 ottobre 2026) e la testnet **`qorechain-diana`** (release del nodo **v3.2.4**, applicata all'altezza 8.337.253 il 19 ottobre 2026; la v3.2.4 non è ancora applicata sulla mainnet; la proposta di governance 13 la applicherebbe all'altezza 3.742.566). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
+QoreChain gestisce due reti: la mainnet **`qorechain-vladi`** (attiva dal 7 giugno 2026; release del nodo **v3.2.3**, applicata all'altezza 3.662.051 il 20 ottobre 2026; la mainnet esegue la v3.2.3 fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco, programmata dalla proposta di governance 13) e la testnet **`qorechain-diana`** (release del nodo **v3.2.4**, applicata all'altezza 8.337.253 il 19 ottobre 2026). Passa il `--chain-id` appropriato per la rete a cui vuoi collegarti — gli esempi seguenti fanno riferimento alla testnet; usa `--chain-id qorechain-vladi` per la mainnet. La release attuale di ciascuna rete è indicata in `latest.json` su [download.qore.host](https://download.qore.host).
 
-I comandi di questa pagina sono stati verificati con il binario della release v3.2.3, ovvero la release della mainnet. Il binario v3.2.4 della testnet aggiunge comandi che la mainnet non ha; dove questo manuale ne cita uno, è contrassegnato come **solo testnet**.
+I comandi di questa pagina sono stati verificati con il binario della release v3.2.3. Il binario v3.2.4 aggiunge comandi che un binario v3.2.3 non ha (per esempio `stakingtier`); funzionano sulla testnet ora e sulla mainnet dall'altezza 3.742.566, e dove questo manuale ne cita uno lo indica.
 :::
 
 ---

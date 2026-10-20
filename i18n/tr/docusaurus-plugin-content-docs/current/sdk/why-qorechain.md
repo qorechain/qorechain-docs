@@ -69,7 +69,7 @@ genel ağlarda hata verir (`returned no data ("0x")`). Bkz.
 **Herhangi bir VM üzerindeki bir sözleşmeyi çağırın ve üç VM'e yayılan
 çağrıları atomik olarak paketleyin.**
 
-QoreChain; CosmWasm, EVM ve SVM sözleşmelerini yerleşik bir VM'ler arası
+QoreChain; QoreChain Native, EVM ve SVM sözleşmelerini yerleşik bir VM'ler arası
 köprüyle aynı zincir üzerinde çalıştırır. SDK, bunlardan herhangi birini
 çağırmak — ve birden fazla VM'ler arası çağrıyı tek seferde imzalanan tek bir
 atomik işleme paketlemek — için tek bir arayüz sunar.
@@ -87,7 +87,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -100,7 +100,7 @@ await crossVM.callAtomic([
 çalıştırır; böylece tek bir SDK arayüzü üçünü de adresleyebilir. Tek VM'li
 zincirlerde sarmalanacak eşdeğer bir şey yoktur. Bugün bir çağrının erişimi,
 hedeflediği şerit tarafından sınırlanır: `MsgCrossVMCall` mainnet'te
-kapatılmıştır, SVM işlemleri devre dışıdır ve CosmWasm yükleme ile örnekleme
+kapatılmıştır, SVM işlemleri devre dışıdır ve QoreChain Native yükleme ile örnekleme
 (instantiate) izne tabidir. Bkz. [Cross-VM calls](/sdk/guides/cross-vm).
 
 ---

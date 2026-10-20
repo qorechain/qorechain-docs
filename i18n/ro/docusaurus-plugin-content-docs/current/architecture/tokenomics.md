@@ -23,7 +23,7 @@ Modelul economic al QoreChain este centrat pe tokenul nativ **QOR** și are o **
 | **Prefix Bech32**     | `qor` (conturi: `qor1...`, validatori: `qorvaloper...`) |
 
 :::note
-Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.3**. Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4**) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (20 octombrie 2026).
+Cifrele de pe această pagină descriu **mainnet-ul** (`qorechain-vladi`, EVM chain ID **9801**), live din 7 iunie 2026 pe versiunea **v3.2.3** (v3.2.4 de la înălțimea 3.742.566). Testnet-ul **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026) are propriul istoric de emisie și ofertă (oferta testnet-ului este cu mult peste cea a mainnet-ului, iar emisia sa a depășit deja plafonul), așa că folosește cifrele mainnet-ului. Sumele care se schimbă cu fiecare bloc sunt marcate cu data la care au fost citite (20 octombrie 2026).
 :::
 
 ---
@@ -56,7 +56,7 @@ QoreChain nu expune o cifră live a randamentului de staking; tratează orice pr
 
 ## x/burn — Motor de ardere pe mai multe canale
 
-Modulul `x/burn` definește **12 surse de ardere**. Fiecare token ars este eliminat permanent din ofertă. Pe mainnet, doar `gas_fee` (31.574.710,28 QOR la 20 octombrie 2026) și, din v3.2.2, `failed_tx` (0,0855 QOR) au arderi înregistrate; celelalte sunt definite, dar nu au înregistrat nimic. Testnet-ul are o a treisprezecea sursă, `staking_tier_penalty`, pentru modulul opțional de staking cu blocare în timp, care există doar pe testnet (vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking)).
+Modulul `x/burn` definește astăzi **12 surse de ardere** pe mainnet. Fiecare token ars este eliminat permanent din ofertă. Pe mainnet, doar `gas_fee` (31.574.710,28 QOR la 20 octombrie 2026) și, din v3.2.2, `failed_tx` (0,0855 QOR) au arderi înregistrate; celelalte sunt definite, dar nu au înregistrat nimic. Începând cu v3.2.4 există o a treisprezecea sursă, `staking_tier_penalty`, care înregistrează penalizarea arsă atunci când o delegare blocată în timp este deblocată anticipat (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3.742.566; vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking)).
 
 ### Canale de ardere
 
@@ -75,7 +75,7 @@ Modulul `x/burn` definește **12 surse de ardere**. Fiecare token ars este elimi
 | 11 | `milestone`        | Praguri de număr de tranzacții | Arderi programate la numere cumulative fixe de tranzacții (niciuna declanșată încă) |
 | 12 | `amm`              | AMM                        | Rezervat pentru taxele de protocol AMM (nimic înregistrat) |
 
-Canalele `contract_create`, `ai_service`, `bridge_fee` și `auto_buyback` sunt inactive astăzi: încărcarea CosmWasm este închisă, iar taxele serviciilor AI și bridge-ul nu sunt live.
+Canalele `contract_create`, `ai_service`, `bridge_fee` și `auto_buyback` sunt inactive astăzi: încărcarea QoreChain Native este închisă, iar taxele serviciilor AI și bridge-ul nu sunt live.
 
 ### Distribuția taxelor {#fee-distribution}
 
@@ -201,7 +201,7 @@ Citiți live pe 20 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
 
 | Parametru | Valoare (mainnet) | Descriere |
 | --- | --- | --- |
-| `emission_mode` | `fixed` | `schedule` (vechi, rate pe ani) sau `fixed` |
+| `emission_mode` | `fixed` | `schedule` (vechi, rate pe ani) sau `fixed`; v3.2.4 adaugă un al treilea mod, `target_apy` |
 | `fixed_epoch_emission` | 86.000.000.000 uqor (86.000 QOR) | Emis per epocă în modul fixed |
 | `max_total_emission` | 590.000.000.000.000 uqor (590.000.000 QOR) | Limită cumulativă dură |
 | `epoch_length` | 43.200 de blocuri | Blocuri per epocă de emisie |
@@ -210,8 +210,8 @@ Citiți live pe 20 octombrie 2026 din `GET /qorechain/inflation/v1/params`:
 
 Parametrii modulului și înregistrarea epocii sunt expuse prin REST pe mainnet din v3.2.3 (`/qorechain/inflation/v1/params` și `/qorechain/inflation/v1/epoch_info`); pot fi citite și din starea lanțului prin interfața raw store a RPC-ului `abci_query` (store `inflation`, cheile `inflation/params` și `inflation/epoch`).
 
-:::note Doar testnet (v3.2.4)
-Testnet-ul `qorechain-diana` își păstrează setările anterioare de emisie (16.239 QOR per epocă sub un plafon de 114.285.714 QOR, deja atins acolo). Parametrii săi `x/inflation` au primit un al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps` care este în prezent 0 și nu determină emisia. Modul, modulul opțional de staking cu blocare în timp care îl folosește și sumele de pe testnet nu sunt încă live pe mainnet; propunerea de guvernanță 13 de pe mainnet ar aplica la înălțimea 3.742.566 versiunea v3.2.4 care conține modulul de staking, iar modul de emisie în sine s-ar schimba doar printr-un vot ulterior propriu.
+:::note v3.2.4 și emisia testnet-ului
+Testnet-ul `qorechain-diana` își păstrează setările anterioare de emisie (16.239 QOR per epocă sub un plafon de 114.285.714 QOR, deja atins acolo); mainnet-ul folosește valorile de mai sus. Versiunea v3.2.4 adaugă un al treilea mod de emisie, `target_apy`, cu un parametru `target_apy_bps`: pe testnet din 19 octombrie 2026, pe mainnet de la înălțimea 3.742.566 (propunerea de guvernanță 13). Parametrul este `0` pe testnet și nu determină emisia acolo. Trecerea unei rețele la acel mod este un vot separat de guvernanță și nu a fost propusă pe mainnet; până când unul este aprobat, mainnet-ul rămâne în modul `fixed`, la 86.000 QOR per epocă.
 :::
 
 ---

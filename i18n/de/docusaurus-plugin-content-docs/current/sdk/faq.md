@@ -10,7 +10,7 @@ sidebar_position: 8
 ## Ist das Mainnet live?
 
 Ja. Das Mainnet ist **live** (Chain-ID `qorechain-vladi`, live seit dem 7. Juni 2026)
-und läuft Stand 20. Oktober 2026 mit der Chain-Version v3.2.3. Das Testnet-Preset
+und läuft mit der Chain-Version v3.2.3 bis Höhe 3.742.566 und mit v3.2.4 ab diesem Block (Governance-Vorschlag 13); das Testnet läuft seit dem 19. Oktober 2026 mit v3.2.4. Das Testnet-Preset
 (`qorechain-diana`) bleibt ebenfalls verfügbar. Beide Presets werden mit
 Localhost-Endpoint-Standardwerten ausgeliefert; wählen Sie das Netzwerk mit
 `createClient({ network: "mainnet" })` und überschreiben Sie `endpoints` mit den
@@ -33,7 +33,7 @@ const client = createClient({
 ```
 
 Der Signierpfad (`connectTx`) benötigt den Konsens-Endpoint **`rpc`**;
-CosmWasm-Lesezugriffe verwenden ihn ebenfalls. REST-Lesezugriffe verwenden
+QoreChain Native-Lesezugriffe verwenden ihn ebenfalls. REST-Lesezugriffe verwenden
 `rest`; EVM-Aufrufe verwenden `evmRpc` (ebenso `qor_`-Aufrufe, auf einem Node,
 der diesen Namespace bereitstellt). Die Mainnet-URLs stehen in der
 [Netzwerkreferenz](/sdk/reference/network#public-endpoints).
@@ -94,7 +94,7 @@ npm; der Python-Client ist auf PyPI (`pip install qorechain-sdk` in Version 0.9.
 Import `qorsdk`); der Go-Client ist über den Module-Proxy verfügbar
 (`go get github.com/qorechain/qorechain-sdk/packages/go@v0.9.0`); der Rust-Client ist
 auf crates.io (`cargo add qorechain-sdk`, 0.9.0); und der Java-Client ist auf Maven
-Central (`io.github.qorechain:qorechain-sdk:0.9.0`). Siehe [Installation](/sdk/install)
+Central (`io.github.qorechain:qorechain-sdk:0.9.1`; die anderen Sprachen sind 0.9.0). Siehe [Installation](/sdk/install)
 für die vollständigen Befehle pro Sprache.
 
 ## Meine Mnemonic wird abgelehnt
@@ -150,7 +150,7 @@ werden on-chain abgelehnt, und zwar in jeder Lane (einschließlich eth-native).
 ## Mit welchen Chain-Versionen funktioniert das SDK?
 
 SDK **0.9.0** ist das Client-Release für die Chain v3.2.2 und v3.2.3: Es
-transagiert auf dem Mainnet **v3.2.3** und dem Testnet **v3.2.4** und hat Builder für
+transagiert auf dem Mainnet **v3.2.3** (und **v3.2.4** ab Höhe 3.742.566) und dem Testnet **v3.2.4** und hat Builder für
 den optionalen Besitznachweis (Proof of Possession) bei der Registrierung (automatisch
 angefügt von `ensurePqcRegistered`, sobald das Netzwerk v3.2.3 angewendet hat),
 EVM-Fenster mit Gültigkeitsbereich und die EIP-7702-Einwilligungsnachrichten.
@@ -158,9 +158,8 @@ SDK **0.8.1 oder neuer** transagiert ebenfalls auf beiden Netzwerken (die
 Sign-Bytes-Form v2 für Hybrid, die Registrierung, hybride Sendungen und das
 EVM-Fenster funktionieren unverändert), hat aber keinen dieser Builder: Verwenden Sie
 dafür die CLI (siehe
-[Versionen vor 0.9.0](/sdk/install#before-090)). v3.2.4 ist bisher nur auf dem
-Testnet live (der Mainnet-Governance-Vorschlag 13 würde es bei Höhe 3.742.566
-anwenden), und das SDK setzt kein v3.2.4-Feld.
+[Versionen vor 0.9.0](/sdk/install#before-090)). v3.2.4 läuft seit dem
+19. Oktober 2026 im Testnet und läuft im Mainnet ab Höhe 3.742.566 (Governance-Vorschlag 13); das SDK setzt kein v3.2.4-Feld, sodass seine Transaktionen auf beiden Seiten dieser Höhe gültig bleiben.
 
 ## Meine PQC-Schlüsselregistrierung wurde abgelehnt, aber die Gebühr wurde abgebucht
 

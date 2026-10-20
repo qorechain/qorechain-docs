@@ -63,7 +63,7 @@ pnpm --filter @qorechain/sdk docs:api
   `/qorechain/pqc/v1/account/{address}`) `getPqcAccount` فتعمل.
 - **عبر الأجهزة الافتراضية (Cross-VM):** ‏`getCrossVmMessage`، `getPendingCrossVmMessages`،
   `getCrossVmParams`.
-- **CosmWasm:** ‏`createCosmWasmClient`، `connectCosmWasmSigner`،
+- **QoreChain Native:** ‏`createCosmWasmClient`، `connectCosmWasmSigner`،
   `queryContractSmart`، `getContractInfo`، `instantiate`، `execute`،
   `uploadCode`.
 - **المعاملات (Transactions):** ‏`estimateFee`، `directSignerFromPrivateKey`، `TxClient` (هجين
@@ -135,7 +135,7 @@ pnpm --filter @qorechain/sdk docs:api
 | Python | [PyPI](https://pypi.org/project/qorechain-sdk/) — توثيق docstrings على واجهة الـ API العامة | `pip install qorechain-sdk` بالإصدار `0.9.0` (الاستيراد `qorsdk`) |
 | Go | [pkg.go.dev](https://pkg.go.dev/github.com/qorechain/qorechain-sdk/packages/go) (‏godoc) | `go get github.com/qorechain/qorechain-sdk/packages/go/...@v0.9.0` (الوسم `packages/go/v0.9.0`) |
 | Rust | [docs.rs](https://docs.rs/qorechain-sdk) (‏rustdoc) | `cargo add qorechain-sdk` (0.9.0؛ الاستيراد `qorechain`) |
-| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.9.0` |
+| Java | توثيق javadoc على Maven Central | `io.github.qorechain:qorechain-sdk:0.9.1` (أما اللغات الأخرى فـ 0.9.0) |
 
 كل حزمة تعكس الواجهة نفسها (الإعدادات المسبقة للشبكات، وأدوات الفئات
 النقدية/العناوين، والاشتقاق الهرمي الحتمي HD — بما في ذلك الحسابات الموحّدة الأصيلة بنمط eth — وأساسيات

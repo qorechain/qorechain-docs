@@ -11,7 +11,7 @@ sidebar_position: 5
 
 ### هل الشبكة الرئيسية فعّالة؟
 
-نعم. الشبكة الرئيسية لـ QoreChain (السلسلة `qorechain-vladi`، معرّف سلسلة EVM رقم 9801) فعّالة منذ 7 يونيو 2026 وتعمل بالإصدار v3.2.3 (أما الشبكة التجريبية `qorechain-diana` فتعمل بالإصدار v3.2.4). انظر [الشبكات](/appendix/networks) و[الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet).
+نعم. الشبكة الرئيسية لـ QoreChain (السلسلة `qorechain-vladi`، معرّف سلسلة EVM رقم 9801) فعّالة منذ 7 يونيو 2026 وتعمل بالإصدار v3.2.3 حتى الارتفاع 3,742,566 وبالإصدار v3.2.4 من تلك الكتلة (مقترح الحوكمة 13)؛ أما الشبكة التجريبية `qorechain-diana` فتعمل بالإصدار v3.2.4 منذ 19 أكتوبر 2026. انظر [الشبكات](/appendix/networks) و[الاتصال بالشبكة الرئيسية](/getting-started/connecting-to-mainnet).
 
 ### ما هي معرّفات السلسلة ومعرّفات سلسلة EVM؟
 
@@ -71,11 +71,11 @@ PRISM هو طبقة التحسين بالتعلُّم المعزَّز المض�
 
 ### كيف أبني تطبيقًا لامركزيًا؟
 
-استخدم [QoreChain SDK](/sdk/overview)، وهي SDK العامة لبناء التطبيقات على QoreChain عبر بيئات التنفيذ EVM وSVM وCosmWasm.
+استخدم [QoreChain SDK](/sdk/overview)، وهي SDK العامة لبناء التطبيقات على QoreChain عبر بيئات التنفيذ EVM وSVM وQoreChain Native.
 
 ### أين يمكنني طرح الأسئلة؟
 
-يجيب بوت مجتمع QCAIA على الأسئلة في Discord ([discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)) وTelegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). انظر [بوت مجتمع QCAIA](/qcaia/overview).
+يجيب بوت مجتمع QCAIA على الأسئلة في Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) وTelegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). انظر [بوت مجتمع QCAIA](/qcaia/overview).
 
 ## ذات صلة
 

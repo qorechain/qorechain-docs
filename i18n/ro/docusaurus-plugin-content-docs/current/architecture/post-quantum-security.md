@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 Înregistrarea este scutită de cerința hibridă doar pentru un cont fără cheie, așa că această tranzacție este semnată doar cu cheia clasică a contului. O dovadă malformată este refuzată cu `ErrInvalidProofOfPossession` (codul 231 în modulul `pqc`).
 
-**Doar testnet (v3.2.4, nu pe mainnet):** înregistrarea contului primește un câmp boolean `possession_proven`, returnat de `GET /qorechain/pqc/v1/account/{address}` pe testnet. Este `true` când cheia curentă a fost înregistrată cu o dovadă validă sau a ajuns printr-o rotație ori migrare (ambele verifică o semnătură a noii chei peste octeți care numesc lanțul, contul și cheia); o înregistrare fără dovadă înregistrează `false`, iar o cheie care se schimbă fără una șterge indicatorul. Mainnet v3.2.3 nu raportează câmpul. Dovada rămâne opțională și pe testnet.
+**De la v3.2.4 (testnet din 19 octombrie 2026; mainnet de la înălțimea 3.742.566):** înregistrarea contului primește un câmp boolean `possession_proven`, returnat de `GET /qorechain/pqc/v1/account/{address}`. Este `true` când cheia curentă a fost înregistrată cu o dovadă validă sau a ajuns printr-o rotație ori migrare (ambele verifică o semnătură a noii chei peste octeți care numesc lanțul, contul și cheia); o înregistrare fără dovadă înregistrează `false`, iar o cheie care se schimbă fără una șterge indicatorul. Mainnet v3.2.3 nu raportează câmpul înainte de înălțimea upgrade-ului. Dovada rămâne opțională pentru cheile de cont în v3.2.4.
 
 ## Semnături hibride {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Aceste utilitare stau la baza hash-ului implicit al aplicației și sunt folosit
 
 Toate atestările de bridge inter-lanț și angajamentele de stare folosesc semnături **Dilithium-5**. Modulul `x/multilayer` necesită semnături agregate PQC la fiecare trimitere `MsgAnchorState`, iar angajamentele ML-KEM securizează canalele de schimb de chei dintre relayer-ele de bridge.
 
-Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea criptografiei clasice în infrastructura de bridge, menținând rezistența cuantică pe întreaga stivă de protocol. Nicio rută de bridge nu este activă (vezi [Bridge Architecture](/architecture/bridge-architecture#current-status)); doar pe testnet (v3.2.4), înregistrarea unui validator de bridge necesită și o dovadă a deținerii cheii sale PQC.
+Aceasta asigură că securitatea inter-lanț nu este degradată de utilizarea criptografiei clasice în infrastructura de bridge, menținând rezistența cuantică pe întreaga stivă de protocol. Nicio rută de bridge nu este activă (vezi [Bridge Architecture](/architecture/bridge-architecture#current-status)); de la v3.2.4 (testnet acum; mainnet de la înălțimea 3.742.566), înregistrarea unui validator de bridge necesită și o dovadă a deținerii cheii sale PQC.
 
 ## Parametrii modulului
 

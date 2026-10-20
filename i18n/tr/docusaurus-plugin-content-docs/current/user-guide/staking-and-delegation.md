@@ -19,7 +19,7 @@ Mainnet ve testnet, her Cosmos şeridi işleminde hibrit post-kuantum imza gerek
 
 ## Bağlayıcı bir süre var mı? {#lock-in-period}
 
-**Bugün mainnet'te**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada sıklıkla olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıdaki [bonding curve](#bonding-curve) bölümündeki "sadakat" terimi QoreChain'in tasarımının bir parçasıdır, ancak **bugün canlı zincir tarafından uygulanmaz**; dolayısıyla ne kadar süre delege kaldığınız ödül oranınızı değiştirmez. İsteğe bağlı, zamana kilitli bir stake biçimi yalnızca testnet'te mevcuttur; bkz. [Zamana kilitli stake (yalnızca testnet)](#time-locked-staking).
+**Bugün mainnet'te**, hayır — seçmeniz gereken bir vade yok, çünkü stake burada bir borsada sıklıkla olduğu gibi sabit sürelerle satılmıyor. Delegasyon, siz undelegate etmeyi seçene kadar bir sonraki bloktan itibaren ödüller akmaya devam ederek istediğiniz kadar aktif kalır; süresi dolan ya da yenilenmesi gereken hiçbir şey yoktur. Bu kılavuz boyunca referans verilen **21 günlük çözülme (unbonding) süresi**, önceden kabul ettiğiniz bir bağlayıcı süre değildir — yalnızca undelegate etmeyi *talep ettiğinizde* başlar ve yalnızca çıkardığınız QOR için geçerlidir. Bir delegasyonu doğrulayıcılar arasında taşımak (redelegate), stake hiçbir zaman bonded havuzdan ayrılmadığı için bu bekleme süresini tamamen atlar. Aşağıdaki [bonding curve](#bonding-curve) bölümündeki "sadakat" terimi QoreChain'in tasarımının bir parçasıdır, ancak **bugün canlı zincir tarafından uygulanmaz**; dolayısıyla ne kadar süre delege kaldığınız ödül oranınızı değiştirmez. İsteğe bağlı, zamana kilitli bir stake biçimi şu anda testnet'te mevcuttur ve 3,742,566 yüksekliğinden itibaren mainnet için planlanmıştır; bkz. [Zamana kilitli stake (v3.2.4)](#time-locked-staking).
 
 Bu, mevcut mainnet davranışını tanımlar, kalıcı bir garanti değildir — minimum bir stake süresi, bu sayfadaki diğer herhangi bir stake parametresinin oylamayla değişebileceği gibi, gelecekte governance tarafından getirilebilecek bir parametredir. Bu gerçekleşirse, cüzdan bir delegasyonu onaylamadan önce ortaya çıkan bekleme süresini (varsa minimum süre artı 21 günlük çözülme) gösterecek ve bu sayfa buna uygun şekilde güncellenecektir.
 
@@ -123,22 +123,25 @@ Stake ödülleri iki kaynaktan finanse edilir: protokolün sınırlandırılmı�
 
 ---
 
-## Zamana kilitli stake (yalnızca testnet) {#time-locked-staking}
+## Zamana kilitli stake (v3.2.4) {#time-locked-staking}
 
-:::note Mainnet'te yok
-v3.2.4 sürümü, **yalnızca `qorechain-diana` testnet'ine** isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. Henüz mainnet'te canlı değildir (mainnet yönetişim önerisi 13, v3.2.4'ü 3,742,566 yüksekliğinde uygulayacaktır); mainnet'te delegasyonun bağlayıcı bir süresi yoktur (bkz. [yukarıda](#lock-in-period)). Aşağıdakilerin tümü testnet'i anlatır.
+:::note Bu ne zaman geçerli olur
+v3.2.4 sürümü, isteğe bağlı bir zamana kilitli stake modülü olan `x/stakingtier`'ı ekler. **`qorechain-diana` testnet'inde** 19 Ekim 2026'dan beri canlıdır ve **mainnet'te 3,742,566 yüksekliğinden itibaren** planlanmıştır (yönetişim önerisi 13; mainnet o bloğa kadar v3.2.3 çalıştırır). Mainnet yükseltmesine kadar mainnet'te delegasyonun bağlayıcı bir süresi yoktur (bkz. [yukarıda](#lock-in-period)); yükseltmeden itibaren kilitleme bir seçenek olarak sunulur ve olağan delegasyon kilitsiz kalır. Aşağıdaki mekanizma, canlı testnet parametrelerine karşı kontrol edilmiştir.
 :::
 
-Testnet'te bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kısmını 3, 6 veya 12 aylık sabit bir vade için taahhüt edebilir. Vadeler ve tutarlar zincir parametreleridir; güncel olanları bu sayfadan değil `GET /qorechain/stakingtier/v1/params` adresinden okuyun.
+Bir delegatör, bir doğrulayıcıya yaptığı mevcut bir delegasyonun bir kısmını 3, 6 veya 12 aylık sabit bir vade için taahhüt edebilir. Vadeler ve tutarlar zincir parametreleridir; güncel olanları bu sayfadan değil `GET /qorechain/stakingtier/v1/params` adresinden okuyun.
 
-* **Kilitleme isteğe bağlıdır.** Olağan bir delegasyon, yeniden delegasyon ve çözülme bu sayfada açıklandığı gibi aynen çalışır. Yalnızca kilitli tutar kısıtlanır: bir kilit açıkken, o tutar undelegate edilemez veya yeniden delege edilemez ve bu her yol için geçerlidir (işlem, authz, group, sözleşme, governance).
+* **Kilitleme isteğe bağlıdır.** Olağan delegasyon, yeniden delegasyon ve çözülme bu sayfada açıklandığı gibi aynen çalışır. Yalnızca kilitli tutar kısıtlanır: bir kilit açıkken, o tutar undelegate edilemez veya yeniden delege edilemez ve bu her yol için geçerlidir (işlem, authz, group, sözleşme, governance).
 * **Asgari kilit** 10 QOR'dur ve delegatör başına en fazla 16 açık kilit olabilir.
-* **Erken kilit açma** serbesttir: kilidi sonlandırır, ödenmemiş kilit bonusunu kaybettirir ve kilitli tutarın bir kısmını yakar (`staking_tier_penalty` yakım kaynağı altında kaydedilir); geri kalanı delege edilmiş ve kilitsiz kalır.
+* **Erken kilit açma** serbesttir: kilidi sonlandırır, ödenmemiş kilit ödülünün tamamını kaybettirir ve kilitli tutardan alınan bir cezayı yakar (testnet parametrelerinde %5, `staking_tier_penalty` yakım kaynağı altında kaydedilir); geri kalanı delege edilmiş ve kilitsiz kalır.
 * **Slashing**, kilitli bir delegasyona da diğerleri gibi uygulanır; kilit delegasyonla birlikte küçülür.
-* **Talep etme.** Kilit bonusları dönem başına birikir ve siz talep ettiğinizde ödenir.
+* **Talep etme.** Bir kilit, modül parametreleriyle belirlenen, dönem başına ek bir ödül bileşeni kazanır; otomatik olarak değil, siz talep ettiğinizde ödenir. Bu sayfa oranları belirtmez: canlı ayarlar için `params` değerini okuyun.
+* **Süre sonunda** kilit serbest bırakılır ve delegasyon olağan bir delegasyon olarak devam eder.
+
+Komutlara komut satırı ve `GET /qorechain/stakingtier/v1/params`, `/locks/{holder}` ve `/pool` REST rotaları üzerinden erişilebilir; tutar, tam sayı cinsinden `uqor` miktarıdır (1 QOR = 1.000.000 uqor).
 
 ```bash
-qorechaind tx stakingtier lock <validator_address> <amount>uqor <months> --from mykey \
+qorechaind tx stakingtier lock <validator_address> <amount_in_uqor> <months> --from mykey \
   --chain-id qorechain-diana --gas 400000 --fees 40000uqor --generate-only > tx.json
 qorechaind tx stakingtier unlock-early <lock_id> --from mykey --chain-id qorechain-diana \
   --gas 400000 --fees 40000uqor --generate-only > tx.json
@@ -147,7 +150,7 @@ qorechaind tx stakingtier claim --from mykey --chain-id qorechain-diana \
 qorechaind query stakingtier locks <holder_address>
 ```
 
-Bu sayfanın geri kalanında olduğu gibi, oluşturulan her işlemi `tx pqc cosign` ile imzalayın.
+Yukarıdaki zincir kimliği testnet'e aittir; mainnet v3.2.4 yükseltmesini aldıktan sonra mainnet'te `qorechain-vladi` kullanın. Bu sayfanın geri kalanında olduğu gibi, oluşturulan her işlemi `tx pqc cosign` ile imzalayın.
 
 ---
 

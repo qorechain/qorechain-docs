@@ -69,7 +69,7 @@ sulle reti pubbliche (`returned no data ("0x")`). Vedi
 **Chiama un contratto su qualsiasi VM e raggruppa chiamate su tutte e tre in
 modo atomico.**
 
-QoreChain esegue contratti CosmWasm, EVM e SVM sulla stessa chain con un bridge
+QoreChain esegue contratti QoreChain Native, EVM e SVM sulla stessa chain con un bridge
 cross-VM nativo. L'SDK espone un'unica interfaccia per chiamarli tutti — e per
 raggruppare più chiamate cross-VM in una singola transazione atomica firmata
 una sola volta.
@@ -87,7 +87,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -101,7 +101,7 @@ un'unica interfaccia dell'SDK può indirizzarle tutte e tre. Le chain a VM
 singola non hanno nulla di equivalente da incapsulare. Oggi la portata di una
 chiamata è limitata dalla corsia a cui è destinata: `MsgCrossVMCall` è
 disattivato su mainnet, le transazioni SVM sono disabilitate e il caricamento e
-l'istanziazione di CosmWasm sono soggetti ad autorizzazione. Vedi
+l'istanziazione di QoreChain Native sono soggetti ad autorizzazione. Vedi
 [Chiamate cross-VM](/sdk/guides/cross-vm).
 
 ---

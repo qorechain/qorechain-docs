@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Cross-VM-Leitfaden
 
-QoreChain betreibt **EVM, SVM und CosmWasm nebeneinander**, und das `x/crossvm`-Modul
+QoreChain betreibt **EVM, SVM und QoreChain Native nebeneinander**, und das `x/crossvm`-Modul
 ermöglicht es einem einzigen nativen Konto, einen Vertrag auf jeder davon aufzurufen. Das SDK
 bietet einen High-Level-Helfer `createCrossVMClient`, um diese Aufrufe zu erstellen, zu signieren und zu senden —
 einschließlich des Bündelns mehrerer Aufrufe in **eine atomare Transaktion über alle
@@ -21,7 +21,7 @@ Cross-VM-Aufrufe sind nur so verfügbar wie ihre Ziel-Lane:
 - `MsgCrossVMCall` ist durch den Circuit Breaker der Chain auf dem **Mainnet** abgeschaltet
   (`GET /cosmos/circuit/v1/disable_list` listet `/qorechain.crossvm.v1.MsgCrossVMCall` auf);
   auf dem Testnet ist sie aktiviert.
-- Die SVM-Transaktions-Lane ist netzwerkweit deaktiviert, CosmWasm-Upload und
+- Die SVM-Transaktions-Lane ist netzwerkweit deaktiviert, QoreChain Native-Upload und
   -Instanziierung sind berechtigungsbeschränkt (und auf dem Mainnet gibt es keine Verträge),
   und das EVM-Bridge-Precompile ist nicht aktiv (siehe
   [EVM-Precompiles](/developer-guide/evm-precompiles#network-status)).
@@ -68,7 +68,7 @@ Wähle genau **eine** Payload-Form pro Aufruf:
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | rohe Bytes, unverändert durchgereicht |
 | `{ evm: { abi, functionName, args } }` | ABI-kodiert mit viems `encodeFunctionData` (Selector + Args) |
-| `{ cosmwasm: object }` | `JSON.stringify`, dann UTF-8-Bytes (die CosmWasm-Execute-Msg-Konvention) |
+| `{ cosmwasm: object }` | `JSON.stringify`, dann UTF-8-Bytes (die QoreChain Native-Execute-Msg-Konvention) |
 | `{ svm: { data: Uint8Array \| Hex } }` | rohe Bytes (ein SVM-Instruktions-Blob) |
 
 Der EVM-Pfad importiert `viem` lazy, sodass der optionale `viem`-Peer nur benötigt wird,
@@ -93,7 +93,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` packt mehrere `MsgCrossVMCall`-Nachrichten in **einen Transaktions-Body**,
 sodass sie atomar unter einer einzigen Signatur ausgeführt werden — die Triple-VM-Schlagzeile.
-Eine Signatur, Aufrufe über EVM + SVM + CosmWasm, die alle zusammen oder gar nicht landen:
+Eine Signatur, Aufrufe über EVM + SVM + QoreChain Native, die alle zusammen oder gar nicht landen:
 
 ```ts
 const { messageIds, result } = await xvm.callAtomic([

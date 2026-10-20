@@ -10,7 +10,7 @@ sidebar_position: 12
 Das `x/rdk`-Modul stellt ein umfassendes Rollup Development Kit (RDK) bereit, mit dem Entwickler anwendungsspezifische Rollups auf QoreChain bereitstellen können. Es unterstützt vier Settlement-Paradigmen, mehrere Sequencer-Modi, austauschbare Datenverfügbarkeits-Backends und KI-gestützte Konfigurationsoptimierung.
 
 :::caution Frühphasige Funktion
-Das Modul ist auf Mainnet (Chain-Version **v3.2.3**) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 20. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
+Das Modul ist auf Mainnet (Chain-Version **v3.2.3** bis Blockhöhe 3.742.566, **v3.2.4** ab diesem Block) und Testnet (**v3.2.4**) bereitgestellt, aber **auf keinem der beiden Netzwerke wurde bisher ein Rollup erstellt** (geprüft am 21. Oktober 2026: `GET /qorechain/rdk/v1/rollups` liefert auf beiden eine leere Liste). Mehrere der unten beschriebenen Funktionen sind heute nicht Ende-zu-Ende nutzbar; der jeweilige Status ist dort angegeben, wo die Funktion beschrieben wird. Die Anleitung für Entwickler finden Sie unter [Rollups Overview](/rollups/overview).
 :::
 
 ---
@@ -24,7 +24,7 @@ QoreChain RDK unterstützt vier unterschiedliche Settlement-Modi — **optimisti
 Optimistic Rollups gehen standardmäßig davon aus, dass Transaktionen gültig sind, und verlassen sich für die Streitbeilegung auf Betrugsbeweise (Fraud Proofs).
 
 * **Beweissystem**: Interaktive Betrugsbeweise
-* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Mainnet (v3.2.3):** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Nur Testnet (v3.2.4, angewendet auf Höhe 8.337.253):** Für einen Batch, der ab dieser Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Im Mainnet würde diese Änderung erst mit v3.2.4 wirksam (der Governance-Vorschlag 13 würde sie bei Höhe 3,742,566 anwenden).
+* **Challenge-Fenster**: 604.800 Sekunden (Standard, 7 Tage). **Bis v3.2.4 (Mainnet v3.2.3 vor Blockhöhe 3.742.566):** Die Chain rechnet dies mit festen 6 Sekunden pro Block in Blöcke um, **100.800 Blöcke**, sodass die tatsächlich verstreichende Zeit von der realen Blockzeit abhängt (etwa 3,7 Tage bei den aktuellen ≈3,2-s-Blöcken des Mainnets); planen Sie daher in Blöcken, nicht in Tagen. **Ab v3.2.4:** Für einen Batch, der ab der Upgrade-Höhe eingereicht wird, wird das Fenster in Sekunden der Blockzeit gemessen (volle 7 Tage). Ein früher eingereichter Batch behält die Regel nach Blockanzahl. Das Testnet hat v3.2.4 auf Höhe 8.337.253 angewendet (19. Oktober 2026); das Mainnet wendet es auf Höhe 3.742.566 an (Governance-Vorschlag 13).
 * **Challenge-Bond**: 1.000 QOR (1.000.000.000 uqor) — erforderlich, um eine Betrugsbeweis-Anfechtung einzureichen (Presets `nft` und `custom`; die Presets `defi`, `gaming` und `enterprise` setzen keinen Bond, da sie kein Challenge-Fenster haben)
 * **Finalität**: Verzögert, bis das Challenge-Fenster ohne gültige Anfechtung abläuft
 * **Auto-Finalisierung**: Der `EndBlocker` finalisiert Batches automatisch, sobald das Challenge-Fenster ohne Streitfall abgelaufen ist. Ein angefochtener Batch wird nie automatisch finalisiert: Der Ersteller des Rollups löst die Anfechtung zuerst auf (siehe [Deploying a Rollup](/rollups/deploying-a-rollup#challenge-a-batch-optimistic-rollups)).
@@ -100,7 +100,7 @@ Das RDK liefert **fünf Preset-Profile**, die schlüsselfertige Rollup-Konfigura
 | ---------------- | ------------------------ | --------- | --------------- | ------------ | ------- | --------------- |
 | **`defi`**       | zk (SNARK)               | dedicated | native          | EIP-1559     | EVM     | Trading, Lending und AMM-artige Anwendungen |
 | **`gaming`**     | based                    | based     | native          | flat         | custom  | Spielzustände und In-Game-Ökonomien mit hohem Durchsatz und niedriger Latenz |
-| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA geplant) | standard | CosmWasm | NFT-Minting, Marktplätze und digitale Sammlerstücke |
+| **`nft`**        | optimistic (fraud)       | dedicated | native (Celestia DA geplant) | standard | QoreChain Native | NFT-Minting, Marktplätze und digitale Sammlerstücke |
 | **`enterprise`** | based                    | based     | native          | subsidized   | EVM     | Berechtigungsbasierte und Konsortium-Deployments mit gesponserten Gebühren |
 | **`custom`**     | vollständig parametrisiert      | vollständig parametrisiert | vollständig parametrisiert | vollständig parametrisiert | vollständig parametrisiert | Jedes Feld ist benutzerdefiniert |
 
@@ -219,7 +219,7 @@ Submitted → Challenged → Rejected                  (fraud detected)
 
 | Settlement-Modus | Finalisierungs-Trigger                                        |
 | --------------- | ----------------------------------------------------------- |
-| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung; im Testnet bei Batches, die seit v3.2.4 eingereicht wurden, 604.800 Sekunden Blockzeit |
+| **Optimistic**  | 100.800 Blöcke nach der Übermittlung (Standardfenster) ohne Anfechtung; bei Batches, die seit v3.2.4 eingereicht wurden (Testnet ab Höhe 8.337.253; Mainnet ab Höhe 3.742.566), 604.800 Sekunden Blockzeit |
 | **ZK**          | Sofort bei Übermittlung eines gültigen Beweises                           |
 | **Based**       | 2 L1-Blöcke nach Übermittlung                                |
 | **Sovereign**   | Keine — verwaltet durch den eigenen Konsens des Rollups                |
@@ -261,8 +261,8 @@ Die Registrierung ist **nicht fatal**: Schlägt sie fehl (unzureichendes Guthabe
 
 Ein Settlement-Batch kann in `x/multilayer` verankert werden, das Layer-ID, Schichthöhe (den Batch-Index), State-Root, Hash des Validator-Sets und Transaktionsanzahl unter einer Post-Quantum-Signatur des Rollup-Erstellers erfasst.
 
-* **Seit v3.2.2 (live auf Mainnet und Testnet):** `MsgSubmitBatch` hat zwei optionale Felder. `anchor_signature` ist die ML-DSA-87-Signatur des Erstellers über die **v2-Anchor-Sign-Bytes** des Batches (siehe [Lesen von Anchors](/architecture/multilayer-architecture#reading-anchors)); ist sie vorhanden, wird der Batch in **derselben Transaktion** in `x/multilayer` verankert, und ein abgelehnter Anchor lehnt den Batch ab. `validator_set_hash` ist das Commitment des Validator-Sets des Rollups, das im Anchor mitgeführt und von der Signatur abgedeckt wird. In der CLI: `qorechaind query rdk anchor-sign-bytes <rollup-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` gibt die zu signierenden Bytes aus, und `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` übermittelt sie.
-* **Ohne die Signatur** wird der Batch unverankert abgewickelt, genau wie zuvor. Ein Client, der das Feld nicht sendet, erzeugt unverankerte Batches; prüfen Sie daher, ob das von Ihnen verwendete Toolkit es unterstützt. In keinem der beiden Netzwerke existiert bisher ein Rollup, eine Schicht oder ein Anchor, daher wurde noch kein Anchor geschrieben.
+* **Seit v3.2.2 (live auf Mainnet und Testnet):** `MsgSubmitBatch` hat zwei optionale Felder. `anchor_signature` ist die ML-DSA-87-Signatur des Erstellers über die **v2-Anchor-Sign-Bytes** des Batches (siehe [Lesen von Anchors](/architecture/multilayer-architecture#reading-anchors)); ist sie vorhanden, wird der Batch in **derselben Transaktion** in `x/multilayer` verankert, und ein abgelehnter Anchor lehnt den Batch ab. `validator_set_hash` ist das Commitment des Validator-Sets des Rollups, das im Anchor mitgeführt und von der Signatur abgedeckt wird. In der CLI: `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>` gibt die zu signierenden Bytes aus (`<layer-id>` ist die Layer-ID des Rollups, die bei über das RDK erstellten Rollups der Rollup-ID entspricht), und `tx rdk submit-batch ... --anchor-signature <hex> --validator-set-hash <hex>` übermittelt sie.
+* **Ohne die Signatur** wird der Batch unverankert abgewickelt, genau wie zuvor. Ein Client, der das Feld nicht sendet, erzeugt unverankerte Batches; prüfen Sie daher, ob das von Ihnen verwendete Toolkit es unterstützt: das TypeScript-Paket `@qorechain/rdk` 0.6.0 signiert den Anchor, wenn sein Client hybrid signiert und der Ersteller des Rollups ist (andernfalls übermittelt es unverankert), während die Clients für Python, Go, Rust und Java das Feld nicht aufbauen. In keinem der beiden Netzwerke existiert bisher ein Rollup, eine Schicht oder ein Anchor, daher wurde noch kein Anchor geschrieben und dieser Pfad ist live ungetestet.
 
 Siehe [Settlement Receipts](/rollups/settlement-receipts), was ein Anchor beweist und was nicht.
 

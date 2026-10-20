@@ -225,14 +225,14 @@ Le chiavi PQC vengono registrate esplicitamente con una transazione di registraz
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Eventi del ciclo di vita e delle ricompense dei light node |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Emesso quando la governance aggiorna la configurazione dello screening AI |
 
-### Modulo Staking Tiers (solo testnet)
+### Modulo Staking Tiers (v3.2.4)
 
-Questi eventi esistono solo sulla testnet `qorechain-diana` (v3.2.4); la mainnet non ha ancora il modulo (la proposta di governance 13 applicherebbe la v3.2.4 all'altezza 3.742.566).
+Questi eventi arrivano con la release v3.2.4: la testnet `qorechain-diana` li emette dal 19 ottobre 2026 e la mainnet li emette dall'altezza 3.742.566 (proposta di governance 13). Un nodo mainnet ancora sulla v3.2.3 non ha il modulo staking-tiers e non ne emette nessuno.
 
 | Tipo di evento | Attributi chiave | Descrizione |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | È stato creato un lock di delega |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un lock è stato terminato in anticipo, oppure ha raggiunto la sua fine |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un lock è stato terminato in anticipo (la penale viene bruciata sotto la sorgente di burn `staking_tier_penalty`), oppure ha raggiunto la sua fine |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; totali del settlement | Un bonus è stato riscosso; il pool è stato regolato |
 | `staking_tier_params_updated` | parametri | La governance ha modificato i parametri del modulo |
 

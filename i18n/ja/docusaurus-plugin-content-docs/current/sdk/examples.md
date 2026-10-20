@@ -180,7 +180,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-デプロイ済みの CosmWasm コントラクトに対して読み取り専用のスマートクエリを実行します。
+デプロイ済みの QoreChain Native コントラクトに対して読み取り専用のスマートクエリを実行します。
 到達可能なコンセンサス RPC と、デプロイ済みのコントラクトアドレスが必要です。
 
 ```ts

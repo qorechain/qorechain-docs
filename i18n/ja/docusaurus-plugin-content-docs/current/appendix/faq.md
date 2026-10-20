@@ -11,7 +11,7 @@ QoreChain に関する一般的な質問にドキュメントから回答しま�
 
 ### メインネットは稼働していますか？
 
-はい。QoreChain メインネット（チェーン `qorechain-vladi`、EVM チェーン ID 9801）は 2026 年 6 月 7 日から稼働しており、リリース v3.2.3 を実行しています（テストネット `qorechain-diana` は v3.2.4 を実行しています）。[ネットワーク](/appendix/networks) および [メインネットへの接続](/getting-started/connecting-to-mainnet) を参照してください。
+はい。QoreChain メインネット（チェーン `qorechain-vladi`、EVM チェーン ID 9801）は 2026 年 6 月 7 日から稼働しており、ブロック高 3,742,566 まではリリース v3.2.3 を、そのブロックからは v3.2.4 を実行します（ガバナンス提案 13）。テストネット `qorechain-diana` は 2026 年 10 月 19 日から v3.2.4 を実行しています。[ネットワーク](/appendix/networks) および [メインネットへの接続](/getting-started/connecting-to-mainnet) を参照してください。
 
 ### チェーン ID と EVM チェーン ID は何ですか？
 
@@ -71,11 +71,11 @@ QoreChain Rollup Development Kit を使用します。[ロールアップ](/roll
 
 ### dApp を構築するにはどうすればよいですか？
 
-QoreChain の EVM、SVM、CosmWasm 実行環境全体でアプリケーションを構築するためのパブリック SDK である [QoreChain SDK](/sdk/overview) を使用します。
+QoreChain の EVM、SVM、QoreChain Native 実行環境全体でアプリケーションを構築するためのパブリック SDK である [QoreChain SDK](/sdk/overview) を使用します。
 
 ### 質問はどこでできますか？
 
-QCAIA コミュニティボットが Discord（[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)）および Telegram（[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)）で質問に回答します。[QCAIA コミュニティボット](/qcaia/overview) を参照してください。
+QCAIA コミュニティボットが Discord（[discord.gg/qorechain](https://discord.gg/qorechain)）および Telegram（[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)）で質問に回答します。[QCAIA コミュニティボット](/qcaia/overview) を参照してください。
 
 ## 関連項目
 

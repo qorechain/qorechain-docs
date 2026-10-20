@@ -33,7 +33,7 @@ flowchart TD
 
 ## Validator admission and staking rules in force {#admission}
 
-These rules are enforced on mainnet (since v3.2.2, with a further hardening in v3.2.3) and on the testnet. They are part of the staking message server, so they apply to every message however it reaches the chain: a transaction, `x/authz`, `x/group`, a CosmWasm contract, a precompile or a governance proposal. Genesis transactions are exempt.
+These rules are enforced on mainnet (since v3.2.2, with a further hardening in v3.2.3) and on the testnet. They are part of the staking message server, so they apply to every message however it reaches the chain: a transaction, `x/authz`, `x/group`, a QoreChain Native contract, a precompile or a governance proposal. Genesis transactions are exempt.
 
 | Rule | What the chain enforces |
 | --- | --- |

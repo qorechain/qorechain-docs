@@ -52,9 +52,9 @@ If you want to take part in governance now, delegate QOR to a validator (see [St
 
 ---
 
-## Time-locked staking is a different feature (testnet only) {#staking-tiers}
+## Time-locked staking is a different feature (v3.2.4) {#staking-tiers}
 
-Release **v3.2.4**, which runs on the testnet only (a mainnet upgrade to it is proposed: governance proposal 13, at height 3,742,566), adds a separate module, `x/stakingtier`, for **optional time-locked staking**. It is not xQORE: it mints no xQORE, does not change voting power and does not touch the xQORE parameters above. In outline:
+Release **v3.2.4**, which has run on the testnet since 19 October 2026 and is scheduled for mainnet from height 3,742,566 (governance proposal 13), adds a separate module, `x/stakingtier`, for **optional time-locked staking**. It is not xQORE: it mints no xQORE, does not change voting power and does not touch the xQORE parameters above. In outline:
 
 * A delegator locks a delegation to a validator for a chosen term (the module offers 3, 6 and 12 months). While the lock runs, the locked amount cannot be undelegated or redelegated, through any message path (a transaction, authz, a contract or governance).
 * Locks have a minimum size and a limit on how many one delegator may hold; read them with `GET /qorechain/stakingtier/v1/params`.
@@ -62,4 +62,4 @@ Release **v3.2.4**, which runs on the testnet only (a mainnet upgrade to it is p
 * A lock can be released early. Early release forfeits what has accrued and unclaimed and carries a penalty, part of which is burned.
 * Locks and the module account's state are readable at `/qorechain/stakingtier/v1/locks/{holder}` and `/qorechain/stakingtier/v1/pool`.
 
-Nothing in this section exists on mainnet v3.2.3: `GET https://api.qore.host/qorechain/stakingtier/v1/params` returns `Not Implemented` there. Staking on mainnet is ordinary delegation, covered in [Staking and Delegation](/user-guide/staking-and-delegation).
+Mainnet runs v3.2.3 until height 3,742,566, so until then `GET https://api.qore.host/qorechain/stakingtier/v1/params` returns `Not Implemented` there; from that block the module exists on mainnet as it does on the testnet. Ordinary delegation is covered in [Staking and Delegation](/user-guide/staking-and-delegation).

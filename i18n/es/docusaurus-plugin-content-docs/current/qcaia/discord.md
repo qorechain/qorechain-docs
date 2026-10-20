@@ -13,7 +13,7 @@ En Discord, QCAIA funciona mediante **comandos de barra (slash commands)**. Escr
 
 Únete al servidor oficial de Discord de QoreChain:
 
-**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
+**[discord.gg/qorechain](https://discord.gg/qorechain)**
 
 Una vez dentro, dirígete al canal **#general** para hablar con QCAIA.
 

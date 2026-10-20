@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Architektur-Überblick
 
-QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Release **v3.2.3**, mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**, Release v3.2.4, nur Testnet). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
+QoreChain ist ein modularer Blockchain-Node, der aus drei primären Prozessen besteht — dem Chain-Node, dem AI-Sidecar und dem Block-Indexer — abgesichert durch eine Postgres-Datenbank und überwacht mittels Prometheus und Grafana. Das Mainnet (`qorechain-vladi`, EVM-Chain-ID **9801**) läuft seit dem 7. Juni 2026 live, auf Release **v3.2.3** bis Höhe 3.742.566 und **v3.2.4** ab diesem Block, mit einem parallelen Testnet (`qorechain-diana`, EVM-Chain-ID **9800**, das seit dem 19. Oktober 2026 v3.2.4 ausführt). Die Chain basiert auf dem Cosmos SDK v0.53. Das folgende Diagramm zeigt den Aufbau der Komponenten auf hoher Ebene.
 
 Der nachfolgende Transaktions-Lebenszyklus fasst zusammen, wie eine übermittelte Transaktion durch den Node läuft — von der AnteHandler-Decorator-Kette (Sicherheits- und Gebührenprüfungen) über die VM-Ausführung bis zur On-Chain-Abwicklung:
 
@@ -24,7 +24,7 @@ flowchart LR
     Fair --> Fee[Fee deduction & gas abstraction]
     Fee --> Router{VM router}
     Router -->|Solidity| EVM[EVM]
-    Router -->|Wasm| Wasm[CosmWasm]
+    Router -->|Wasm| Wasm[QoreChain Native]
     Router -->|BPF| SVM[SVM]
     EVM --> Commit[Block commit & indexing]
     Wasm --> Commit
@@ -37,8 +37,8 @@ flowchart LR
 │                                                                            │
 │  ┌──────────────────── Virtual Machines ──────────────────────┐           │
 │  │  ┌───────┐    ┌──────────┐    ┌───────┐                   │           │
-│  │  │  EVM  │    │ CosmWasm │    │  SVM  │                   │           │
-│  │  │(Sol.) │◄──►│ (Wasm)   │◄──►│ (BPF) │                   │           │
+│  │  │  EVM  │    │QoreChain │    │  SVM  │                   │           │
+│  │  │(Sol.) │◄──►│ Native   │◄──►│ (BPF) │                   │           │
 │  │  └───┬───┘    └────┬─────┘    └───┬───┘                   │           │
 │  │      └─────────┬───┘──────────────┘                       │           │
 │  │           x/crossvm (bridge)                               │           │
@@ -164,11 +164,11 @@ QoreChain registriert **48 Genesis-Module, davon 20 QoreChain-spezifische**, gru
 
 * `x/vm` — VM-Routing und Lifecycle-Management
 * `x/svm` — SVM-Laufzeit: BPF-Deployment/-Ausführung, Rent-Erhebung, Solana-kompatible RPC
-* `x/crossvm` — Cross-VM-Kommunikation: EVM-CosmWasm-Precompile + asynchrone SVM-Events
+* `x/crossvm` — Cross-VM-Kommunikation: EVM-QoreChain Native-Precompile + asynchrone SVM-Events
 
 **Tokenomics und Liquidität**
 
-* `x/burn` — 12 Burn-Quellen, EndBlocker-Gebührenverteilung (37/30/20/10/3-Split)
+* `x/burn` — 12 Burn-Quellen (13 ab v3.2.4), EndBlocker-Gebührenverteilung (37/30/20/10/3-Split)
 * `x/xqore` — Design für Governance-verstärktes Staking: Lock/Unlock, gestaffelte Ausstiegsstrafen, PvP-Rebase (nur Buchführung; Lock- und Unlock-Transaktionen sind in den Live-Netzwerken noch nicht eingebunden)
 * `x/inflation` — Begrenzte Emission: pro Epoche wird ein fester Betrag geprägt, bis eine harte kumulative Obergrenze (590.000.000 QOR) erreicht ist
 * `x/amm` — On-Chain-Liquidität / automatisierter Market Maker
@@ -194,7 +194,7 @@ QoreChain registriert **48 Genesis-Module, davon 20 QoreChain-spezifische**, gru
 
 Jede Transaktion durchläuft vor der Ausführung eine Decorator-Kette; jeder Decorator kann sie ablehnen. Es gibt zwei Ketten.
 
-**Cosmos-Lane** (der Reihe nach): `RejectMessages` (kein `MsgEthereumTx` auf dieser Lane) → `AuthzLimiter` (keine EVM- oder Vesting-Erstellungsnachrichten innerhalb von authz und ab v3.2.3 keine Nachrichten zur Verwaltung von Post-Quanten-Schlüsseln) → `SetUpContext` → Mempool- und Multisig-Tiefen-Guards → CosmWasm-Simulations-Gas-, Tx-Zähler-, Gas-Register- und Contracts-Decorators → `CircuitBreaker` → Extension-Option-Prüfung → `ValidateBasic` → `TxTimeout` → `Memo` → Validator-Lizenz-Gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (enthält das Ratenlimit pro Absender) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → Burn-Transaktionszähler → IBC-Redundant-Relay-Prüfung → Tracking des angeforderten Gas.
+**Cosmos-Lane** (der Reihe nach): `RejectMessages` (kein `MsgEthereumTx` auf dieser Lane) → `AuthzLimiter` (keine EVM- oder Vesting-Erstellungsnachrichten innerhalb von authz und ab v3.2.3 keine Nachrichten zur Verwaltung von Post-Quanten-Schlüsseln) → `SetUpContext` → Mempool- und Multisig-Tiefen-Guards → QoreChain Native-Simulations-Gas-, Tx-Zähler-, Gas-Register- und Contracts-Decorators → `CircuitBreaker` → Extension-Option-Prüfung → `ValidateBasic` → `TxTimeout` → `Memo` → Validator-Lizenz-Gate (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (enthält das Ratenlimit pro Absender) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → Burn-Transaktionszähler → IBC-Redundant-Relay-Prüfung → Tracking des angeforderten Gas.
 
 **EVM-Lane** (Transaktionen mit der Ethereum-Extension-Option): `CircuitBreaker` → der EVM-Mono-Decorator (Signatur-, Nonce-, Gebühren- und Guthabenprüfungen) → `EVMWindowDecorator` (registrierter Post-Quanten-Schlüssel und ein aktives Autorisierungsfenster; siehe [EVM-Autorisierungsfenster](/getting-started/first-transaction#evm-window)).
 

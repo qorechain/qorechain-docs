@@ -1,20 +1,22 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: Ghid CosmWasm
-sidebar_label: CosmWasm
+title: Ghid QoreChain Native
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# Ghid CosmWasm
+# Ghid QoreChain Native
+
+QoreChain Native este denumirea QoreChain pentru runtime-ul său de contracte inteligente CosmWasm, deci bibliotecile CosmWasm și pachetele client numite pe această pagină sunt cele pe care le folosești cu el.
 
 Nucleul TypeScript (`@qorechain/sdk`) include învelișuri subțiri, tipizate, peste
-`@cosmjs/cosmwasm-stargate` pentru interogarea și execuția contractelor CosmWasm.
+`@cosmjs/cosmwasm-stargate` pentru interogarea și execuția contractelor QoreChain Native.
 Citirile folosesc un client doar de citire; modificările de stare folosesc un
 client de semnare.
 
 ## Interogări doar de citire
 
-Deschide un client CosmWasm doar de citire din instanța ta `createClient()` — se
+Deschide un client QoreChain Native doar de citire din instanța ta `createClient()` — se
 conectează prin endpoint-ul RPC de consens și este memoizat pe client.
 
 ```ts
@@ -50,10 +52,10 @@ De asemenea, poți construi un client de citire direct cu `createCosmWasmClient`
 `instantiate` sunt refuzate pentru conturile obișnuite. Contractele care există
 deja pot fi interogate (mai sus) și executate. Verifică
 `GET /cosmwasm/wasm/v1/codes/params` pentru permisiunile curente.
-Vezi [Dezvoltare CosmWasm](/developer-guide/cosmwasm-development).
+Vezi [Dezvoltare QoreChain Native](/developer-guide/cosmwasm-development).
 :::
 
-:::caution Clientul de semnare CosmWasm semnează clasic
+:::caution Clientul de semnare QoreChain Native semnează clasic
 `connectCosmWasmSigner` învelește clientul de semnare CosmJS, care atașează doar
 semnătura clasică secp256k1. Rețelele live cer semnătura hibridă
 (secp256k1 + ML-DSA-87) pe fiecare tranzacție de pe calea Native, așa că o
@@ -110,7 +112,7 @@ tipurile tipizate `ContractMsg`, `FeeInput`, `InstantiateOpts`,
 
 ### Execuție pe o rețea live (hibrid)
 
-Adaugă tipurile de mesaje CosmWasm într-un registry și trimite `MsgExecuteContract`
+Adaugă tipurile de mesaje QoreChain Native într-un registry și trimite `MsgExecuteContract`
 prin builderul hibrid. Cheia ML-DSA-87 a contului trebuie înregistrată mai întâi
 (vezi [Rezistență cuantică](/sdk/guides/quantum-safe)). Necesită
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:

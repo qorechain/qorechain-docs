@@ -27,7 +27,7 @@ The manifest's fields include `binary` (url + sha256), `genesis` (url + sha256 +
 :::
 
 :::caution Use the release the manifest names: v3.2.3 on mainnet
-A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.3` (the coordinated upgrade applied at height 3,662,051 on 20 October 2026), so a node joining now needs v3.2.3: an older binary stops at the upgrade height it does not know. On the **testnet** they are both `3.2.4` (applied at height 8,337,253 on 19 October 2026); v3.2.4 is not applied on mainnet yet (governance proposal 13 would apply it on mainnet at height 3,742,566), so do not run a testnet binary against mainnet. The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
+A node that syncs from genesis or replays from a snapshot crosses several governance upgrades (see [Upgrades](#upgrades) below), so always install the binary the manifest points to: it carries every upgrade handler. On **mainnet** the manifest's `minCompatible` and `version` are both `3.2.3` (the coordinated upgrade applied at height 3,662,051 on 20 October 2026), so a node joining now needs v3.2.3: an older binary stops at the upgrade height it does not know. On the **testnet** they are both `3.2.4` (applied at height 8,337,253 on 19 October 2026). Mainnet runs v3.2.3 until height 3,742,566 and v3.2.4 from that block (governance proposal 13), so do not run a testnet binary against mainnet, and do not install v3.2.4 on a mainnet node before the manifest names it (see [Upgrades](#upgrades)). The manifest is promoted deliberately (testnet first, mainnet after a soak period), so check its `"version"` field against `minCompatible` before trusting `binary.url`.
 
 A binary built from the public source (the community build) refuses to start on either public network (v3.2.3 and later): it cannot verify post-quantum signatures and cannot replay the networks' blocks faithfully. Use the release archive only.
 
@@ -52,8 +52,8 @@ Two settings matter from v3.2.1 on: keep the system clock synchronised with NTP 
 
 | Network  | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.3 |
-| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.4 (testnet only) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Primary — live since 7 Jun 2026; node release v3.2.3 (v3.2.4 from height 3,742,566) |
+| Testnet  | `qorechain-diana`   | `9800`               | Rehearse integrations here first; node release v3.2.4 (since 19 Oct 2026) |
 
 Substitute the appropriate `--chain-id` for your target network throughout this guide. The examples default to mainnet.
 
@@ -252,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Snapshot restore
 
-Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. On mainnet the manifest's `snapshot` object gives the URL, the block `height`, the size and the SHA-256. **The testnet manifest's snapshot URL currently returns `404` (no testnet snapshot is published), so use state sync there.** Read `snapshot.height` before using the mainnet one: it is a single archive of about 27 GB, and an old one means a long catch-up. The mainnet snapshot currently published is from 21 August 2026 (height 1,966,629): it predates the v3.1.94, v3.2.0, v3.2.2 and v3.2.3 upgrade heights, so a node restored from it replays about two months of blocks with the v3.2.3 binary. State sync is almost always the better choice.
+Alternatively, download the published chain-data snapshot, verify its checksum, and extract it over your data directory. On mainnet the manifest's `snapshot` object gives the URL, the block `height`, the size and the SHA-256. **The testnet manifest's snapshot URL currently returns `404` (no testnet snapshot is published), so use state sync there.** Read `snapshot.height` before using the mainnet one: it is a single archive of about 27 GB, and an old one means a long catch-up. The mainnet snapshot currently published is from 21 August 2026 (height 1,966,629): it predates the v3.1.94, v3.2.0, v3.2.2, v3.2.3 and v3.2.4 upgrade heights, so a node restored from it replays about two months of blocks with the release binary the manifest names. State sync is almost always the better choice.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -281,7 +281,16 @@ Consensus changes arrive as **coordinated governance upgrades**: a passed propos
 | v3.2.1 | node-local, no height | node-local |
 | v3.2.2 | height 3,556,788 (16 Oct 2026) | height 6,905,034 (2 Oct 2026) |
 | v3.2.3 | height 3,662,051 (20 Oct 2026, governance proposal 11) | height 8,003,746 (15 Oct 2026) |
-| v3.2.4 | **not applied on mainnet yet (governance proposal 13 would apply it at height 3,742,566); testnet only today** | height 8,337,253 (19 Oct 2026, governance proposal 13) |
+| v3.2.4 | scheduled on mainnet at height 3,742,566 (governance proposal 13) | height 8,337,253 (19 Oct 2026, governance proposal 13) |
+
+**What a mainnet node operator does for v3.2.4 (height 3,742,566).** Governance proposal 13 names the plan `v3.2.4` at height 3,742,566 and says that nodes stay on v3.2.3 until that height, halt there, and restart on v3.2.4. Concretely:
+
+1. Keep running **v3.2.3** until the mainnet manifest (`https://download.qore.host/mainnet/latest.json`) lists v3.2.4. While the manifest still shows `version` and `minCompatible` `3.2.3` and no upgrade height for v3.2.4, there is nothing to install: a v3.2.4 binary from the testnet directory is not the mainnet release.
+2. When the manifest names v3.2.4, download the archive from its `binary.url`, verify the `sha256` (the proposal text also publishes the binary's sha256), and stage it **before** the height. Check `GET /cosmos/upgrade/v1beta1/current_plan` for the pending plan (`name` and `height`) and the current height with `GET /status` on the RPC.
+3. At height 3,742,566 a node still on v3.2.3 **halts** (this is the intended behaviour of the upgrade module, not a failure); a node already on the new binary applies the upgrade handler and continues. If yours halted first, swap the binary and restart. After the upgrade, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` returns the height instead of `0`.
+4. A node that joins mainnet after the upgrade installs the release the manifest names at that time (check `version` against `minCompatible`).
+
+Transaction signing, addresses, decimals, memos and fees are unchanged by v3.2.4.
 
 Read the live record with `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = not applied) and any pending plan with `GET /cosmos/upgrade/v1beta1/current_plan`. v3.2.2 raised the consensus engine, Cosmos SDK (v0.53.8) and IBC dependencies, and the SDK's stricter transaction checks make that release replace the previous binary at the upgrade height rather than node by node. Transaction signing, addresses, decimals, memos and fees did not change in v3.2.2 or v3.2.3.
 
@@ -339,7 +348,7 @@ Set `indexer = "kv"` (or a richer indexer) so transactions are queryable by hash
 
 ---
 
-## Exposing Endpoints for Integration
+## Exposing Endpoints for Integration {#exposing-endpoints-for-integration}
 
 Enable and bind the API servers integrators need in `app.toml`:
 
@@ -358,6 +367,8 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
+
+**JSON-RPC limits in node release v3.2.4.** A node running the v3.2.4 binary (testnet since 19 October 2026; mainnet nodes from height 3,742,566) bounds its own JSON-RPC server. These are node-local settings in the `[json-rpc]` section of `app.toml` and do not affect consensus: `http-body-limit` (default 262144 bytes, 256 KiB; a larger request body is refused with HTTP 413 before it is read), `max-concurrent-requests` (default 256; requests beyond it get HTTP 503 at once) and `max-open-connections` (a missing or zero value now means 1000, not unlimited). In addition, the filter argument of `eth_getLogs` and `eth_newFilter` is refused when it lists more than 4 topic positions, more than 1000 alternatives in one position or more than 1000 addresses. An integrator that sends very large batched or contract-deployment requests to its own node should check that its largest request fits the body limit and raise it if needed.
 
 The public endpoints serve the `eth_`, `net_`, `web3_` and `txpool_` (status only) namespaces; a node initialised by v3.2.3 or later defaults to `eth,net,web3` and leaves `txpool` out (it publishes the node's pending transactions), so add it only if you need it. The `qor_` namespace is not served by any released node build, so do not add it (see [the `qor_` namespace](/api-reference/json-rpc-qor_-namespace)).
 
@@ -424,7 +435,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Operational Best Practices
 
-1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.3** on mainnet), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
+1. **Pin the chain version.** Run the release the manifest recommends (**v3.2.3** on mainnet until height 3,742,566, then v3.2.4), track official releases for coordinated upgrades, and keep the system clock NTP-synchronised.
 
 2. **Run redundant nodes.** Operate at least two nodes behind a load balancer so a single restart or resync does not interrupt integration traffic.
 

@@ -55,13 +55,15 @@ QoreChain 문서 전반에서 사용되는 용어, 약어, 두문자어를 알�
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. QoreChain 컨센서스 엔진(`x/rlconsensus` 모듈을 통해)에 내장된 강화학습 최적화 계층. PRISM은 네트워크 지표를 관측하며, 서킷 브레이커 안전 제어 하에 결정론적 컨센서스 파라미터 조정을 제안하도록 설계되었습니다. 현재는 관찰 모드로 실행됩니다. [PRISM 컨센서스 엔진](/architecture/prism-consensus-engine)을 참조하세요.
 
-**Proof of possession (PoP)(소유 증명)** — 포스트 양자 키가 자신의 등록 정보에 대해 만드는 서명으로, 등록자가 개인키를 보유하고 있음을 증명합니다. v3.2.3부터 계정 키 등록 시 선택 사항입니다(`tx pqc register-key-v2 ... --pqc-key <name>`). 테스트넷(v3.2.4)에서는 브리지 검증자 키에 필수입니다.
+**Proof of possession (PoP)(소유 증명)** — 포스트 양자 키가 자신의 등록 정보에 대해 만드는 서명으로, 등록자가 개인키를 보유하고 있음을 증명합니다. v3.2.3부터 계정 키 등록 시 선택 사항입니다(`tx pqc register-key-v2 ... --pqc-key <name>`). v3.2.4부터(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터) 브리지 검증자 키에 필수입니다.
 
 **Protocol feature(프로토콜 기능)** — 릴리스의 업그레이드 핸들러가 모든 노드에서 특정 블록 높이에 켜는 동작 스위치(예: `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`)로, 그 높이 이전의 히스토리는 변경 없이 그대로 재생됩니다.
 
 **PvP Rebase** — Player versus Player Rebase. 조기 해제로 인한 페널티가 남아 있는 잠금 스테이커들에게 비례 재분배되어 장기 참여를 보상하는 xQORE 모듈의 메커니즘(아직 온체인에 연결되지 않음).
 
 **QCAI** — QoreChain Artificial Intelligence. 온체인 휴리스틱 엔진(`x/ai` 모듈)과 고급 추론 기능을 제공하는 오프체인 QCAI 사이드카를 포함한 QoreChain AI 서브시스템을 총칭하는 용어.
+
+**QoreChain Native** — CosmWasm 스마트 컨트랙트 런타임을 가리키는 QoreChain의 명칭: 컨트랙트는 표준 CosmWasm 라이브러리를 기준으로 Rust로 작성되어 WebAssembly로 컴파일됩니다. 세 가지 런타임(EVM, QoreChain Native, SVM) 중 하나입니다. 일반 컨트랙트 업로드와 인스턴스화는 현재 두 네트워크 모두에서 닫혀 있습니다([QoreChain Native 개발](/developer-guide/cosmwasm-development) 참조).
 
 **QCB** — QoreChain Bridge. 비IBC 체인(예: Ethereum, Bitcoin, Solana, Avalanche)에 연결하기 위한 QoreChain의 네이티브 브리지 프로토콜. QCB는 크로스체인 증명을 위해 검증자 증명 임계값(ML-DSA-87 서명 10개 중 7개)을 사용합니다. [브리지 아키텍처](/architecture/bridge-architecture)를 참조하세요.
 
@@ -81,13 +83,13 @@ QoreChain 문서 전반에서 사용되는 용어, 약어, 두문자어를 알�
 
 **Stranded staker share / reward-pool reserve(미지급 스테이커 지분 / 보상 풀 준비금)** — v3.2.0 업그레이드 시점에 기록된 금액으로, 거버넌스 투표를 통해서만 이동합니다. 거버넌스는 2026년 10월에 이를 해제했습니다(미지급 지분의 수정된 잔액은 v3.2.3 이후에 제안되었습니다). [토크노믹스](/architecture/tokenomics#stranded-and-reserve)를 참조하세요.
 
-**SVM** — Solana Virtual Machine. BPF 프로그램을 위한 고성능 실행 환경. QoreChain은 SVM을 QoreChain EVM 엔진 및 CosmWasm과 함께 지원되는 세 가지 런타임 중 하나로 통합합니다.
+**SVM** — Solana Virtual Machine. BPF 프로그램을 위한 고성능 실행 환경. QoreChain은 SVM을 QoreChain EVM 엔진 및 QoreChain Native와 함께 지원되는 세 가지 런타임 중 하나로 통합합니다.
 
 **TEE** — Trusted Execution Environment(신뢰 실행 환경). 코드와 데이터가 외부 접근으로부터 보호되도록 보장하는 프로세서의 보안 영역. QoreChain은 TEE 증명을 위한 인터페이스 사양을 정의하지만, 아직 구현은 없습니다.
 
 **tIBE** — Threshold Identity-Based Encryption(임계값 신원 기반 암호화). 임계값 수의 당사자가 협력할 때만 메시지를 복호화할 수 있는 암호 체계. FairBlock 모듈이 블록 확정 시까지 트랜잭션 내용을 암호화하여 MEV 추출을 방지하는 데 사용합니다.
 
-**Time-locked staking(시간 잠금 스테이킹)** — `x/stakingtier` 모듈이 제공하는, 위임의 일부를 정해진 기간 동안 묶어 두는 선택적 약정. **테스트넷 전용**(v3.2.4)이며 메인넷에서는 라이브가 아닙니다. [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요.
+**Time-locked staking(시간 잠금 스테이킹)** — `x/stakingtier` 모듈이 제공하는, 위임의 일부를 정해진 기간 동안 묶어 두는 선택적 약정. v3.2.4의 일부입니다: 테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터. [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요.
 
 **uqor** — QOR 토큰의 기본 단위. 1 QOR = 1,000,000 uqor(10^6). 모든 온체인 금액, 수수료, 스테이킹 값은 uqor 단위로 표시됩니다.
 

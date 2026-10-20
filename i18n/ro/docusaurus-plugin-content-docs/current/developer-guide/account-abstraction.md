@@ -14,7 +14,7 @@ Modulul de conturi abstracte este în prezent **oprit** pe ambele rețele: `qore
 :::
 
 :::note
-Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.3**. Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 (doar testnet).
+Comenzile de mai jos folosesc mainnet-ul **`qorechain-vladi`** (activ din 7 iunie 2026), care rulează versiunea de nod **v3.2.3** până la înălțimea 3,742,566 și **v3.2.4** de la acel bloc (propunerea de guvernanță 13). Înlocuiți cu `--chain-id qorechain-diana` pentru testnet, care rulează v3.2.4 din 19 octombrie 2026.
 :::
 
 :::caution Fiecare tranzacție pe lane-ul Cosmos necesită cosemnătura hibridă post-cuantică
@@ -176,7 +176,7 @@ Două mesaje transportă acțiuni autorizate de autentificator. În ambele cazur
 
 :::caution Reguli privind nonce-ul
 * `MsgExecuteEVM.nonce` = nonce-ul EVM **curent** al contului (`eth_getTransactionCount(account0x, "latest")`). În producție releul este un cont *diferit*, deci **nu** adăugați +1. Semnarea unui nonce învechit returnează codul `11`.
-* `MsgExecuteCosmos.nonce` = secvența per-autentificator (interogați starea autentificatorului contului), **nu** secvența Cosmos a contului. Doar pe testnet (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returnează direct această secvență (`nonce`, `linked`).
+* `MsgExecuteCosmos.nonce` = secvența per-autentificator (interogați starea autentificatorului contului), **nu** secvența Cosmos a contului. Începând cu v3.2.4 (pe testnet din 19 octombrie 2026; pe mainnet de la înălțimea 3,742,566), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` returnează direct această secvență (`nonce`, `linked`).
 :::
 
 **Exemplu Phantom** (browser: Phantom semnează, backend-ul dvs. transmite):

@@ -40,7 +40,7 @@ QCAIA **beta** aşamasındadır. Sürekli olarak gelişmektedir ve zaman zaman b
 
 | Platform | Nasıl ulaşılır | Kılavuz |
 | --- | --- | --- |
-| **Discord** | **[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**'ye katılın ve slash komutlarını kullanın | [QCAIA'yı Discord'da Kullanma](/qcaia/discord) |
+| **Discord** | **[discord.gg/qorechain](https://discord.gg/qorechain)**'ye katılın ve slash komutlarını kullanın | [QCAIA'yı Discord'da Kullanma](/qcaia/discord) |
 | **Telegram** | **[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)**'ye katılın ve bottan bahsedin | [QCAIA'yı Telegram'da Kullanma](/qcaia/telegram) |
 
 Tam olarak nasıl soru sorulacağını öğrenmek için yukarıdan platformunuzu seçin veya QCAIA'yı iş başında görmek için doğrudan [Örnekler](/qcaia/examples) sayfasına geçin.

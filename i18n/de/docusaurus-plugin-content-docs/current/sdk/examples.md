@@ -186,7 +186,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-Eine schreibgeschützte Smart Query gegen einen deployten CosmWasm-Contract
+Eine schreibgeschützte Smart Query gegen einen deployten QoreChain Native-Contract
 ausführen. Benötigt einen erreichbaren Konsens-RPC und eine deployte
 Contract-Adresse.
 

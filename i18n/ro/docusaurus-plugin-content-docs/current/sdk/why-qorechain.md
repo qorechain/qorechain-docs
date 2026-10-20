@@ -68,7 +68,7 @@ publice (`returned no data ("0x")`). Vezi [AI pre-flight](/sdk/guides/ai-preflig
 **Apelează un contract pe orice VM și grupează apeluri pe toate cele trei în
 mod atomic.**
 
-QoreChain rulează contracte CosmWasm, EVM și SVM pe același lanț, cu un bridge
+QoreChain rulează contracte QoreChain Native, EVM și SVM pe același lanț, cu un bridge
 cross-VM nativ. SDK-ul expune o singură interfață pentru a apela oricare dintre
 ele — și pentru a împacheta mai multe apeluri cross-VM într-o singură
 tranzacție atomică, semnată o singură dată.
@@ -86,7 +86,7 @@ await crossVM.call({
   evm: { abi, functionName: "transfer", args: [recipient, amount] },
 });
 
-// One signature, three VMs, atomic: EVM → SVM → CosmWasm.
+// One signature, three VMs, atomic: EVM → SVM → QoreChain Native.
 await crossVM.callAtomic([
   { targetVm: "evm", targetContract: "0x…", evm: { abi, functionName: "approve", args } },
   { targetVm: "svm", targetContract: "Prog…", svm: { data } },
@@ -100,7 +100,7 @@ activă), astfel încât o singură interfață SDK poate adresa toate cele trei
 Lanțurile cu un singur VM nu au nimic echivalent de încapsulat. Astăzi raza de
 acțiune a unui apel este limitată de banda pe care o vizează: `MsgCrossVMCall`
 este oprit pe mainnet, tranzacțiile SVM sunt dezactivate, iar încărcarea și
-instanțierea CosmWasm sunt cu permisiuni. Vezi
+instanțierea QoreChain Native sunt cu permisiuni. Vezi
 [Apeluri cross-VM](/sdk/guides/cross-vm).
 
 ---

@@ -1,19 +1,21 @@
 ---
 slug: /sdk/guides/cosmwasm
-title: Guida a CosmWasm
-sidebar_label: CosmWasm
+title: Guida a QoreChain Native
+sidebar_label: QoreChain Native
 sidebar_position: 3
 ---
 
-# Guida a CosmWasm
+# Guida a QoreChain Native
+
+QoreChain Native è il nome che QoreChain dà al proprio runtime di smart contract CosmWasm, quindi le librerie CosmWasm e i pacchetti client citati in questa pagina sono quelli che usi con esso.
 
 Il core TypeScript (`@qorechain/sdk`) include wrapper sottili e tipizzati sopra
-`@cosmjs/cosmwasm-stargate` per interrogare ed eseguire contratti CosmWasm. Le letture
+`@cosmjs/cosmwasm-stargate` per interrogare ed eseguire contratti QoreChain Native. Le letture
 usano un client in sola lettura; le modifiche allo stato usano un client di firma.
 
 ## Query in sola lettura
 
-Apri un client CosmWasm in sola lettura dalla tua istanza `createClient()` — si
+Apri un client QoreChain Native in sola lettura dalla tua istanza `createClient()` — si
 connette tramite l'endpoint RPC di consenso ed è memoizzato sul client.
 
 ```ts
@@ -49,10 +51,10 @@ circuit breaker della chain, quindi `uploadCode` e `instantiate` vengono rifiuta
 per gli account ordinari. I contratti già esistenti possono essere interrogati
 (sopra) ed eseguiti. Controlla `GET /cosmwasm/wasm/v1/codes/params` per i permessi
 attuali.
-Vedi [Sviluppo CosmWasm](/developer-guide/cosmwasm-development).
+Vedi [Sviluppo QoreChain Native](/developer-guide/cosmwasm-development).
 :::
 
-:::caution Il client di firma CosmWasm firma in modo classico
+:::caution Il client di firma QoreChain Native firma in modo classico
 `connectCosmWasmSigner` incapsula il client di firma di CosmJS, che allega solo la
 firma classica secp256k1. Le reti live richiedono la firma ibrida
 (secp256k1 + ML-DSA-87) su ogni transazione del percorso Native, quindi una
@@ -108,7 +110,7 @@ tipizzati `ContractMsg`, `FeeInput`, `InstantiateOpts`, `CosmWasmReadClient` e
 
 ### Eseguire su una rete live (ibrido)
 
-Aggiungi i tipi di messaggio CosmWasm a un registry e invia il `MsgExecuteContract`
+Aggiungi i tipi di messaggio QoreChain Native a un registry e invia il `MsgExecuteContract`
 tramite il builder ibrido. La chiave ML-DSA-87 dell'account deve essere registrata
 prima (vedi [Quantum-safe](/sdk/guides/quantum-safe)). Richiede
 `npm i @cosmjs/cosmwasm-stargate @cosmjs/proto-signing cosmjs-types @cosmjs/stargate`:

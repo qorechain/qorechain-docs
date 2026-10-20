@@ -55,13 +55,15 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **PRISM** — Policy-driven Reinforcement-learning for Intelligent State Machines. Il livello di ottimizzazione basato sul reinforcement learning incorporato nel Consensus Engine di QoreChain (tramite il modulo `x/rlconsensus`). PRISM osserva le metriche di rete ed è progettato per proporre aggiustamenti deterministici dei parametri di consenso sotto controlli di sicurezza di tipo circuit breaker; oggi funziona in modalità di osservazione. Vedi [PRISM Consensus Engine](/architecture/prism-consensus-engine).
 
-**Proof of possession (PoP)** (prova di possesso) — Una firma che una chiave post-quantistica produce sui propri dati di registrazione, dimostrando che chi la registra detiene la chiave privata. Opzionale nella registrazione delle chiavi degli account dalla v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obbligatoria per le chiavi dei validatori del bridge sulla testnet (v3.2.4).
+**Proof of possession (PoP)** (prova di possesso) — Una firma che una chiave post-quantistica produce sui propri dati di registrazione, dimostrando che chi la registra detiene la chiave privata. Opzionale nella registrazione delle chiavi degli account dalla v3.2.3 (`tx pqc register-key-v2 ... --pqc-key <name>`); obbligatoria per le chiavi dei validatori del bridge dalla v3.2.4 (sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566).
 
 **Protocol feature** (funzionalità di protocollo) — Un interruttore di comportamento che l'upgrade handler di una release attiva a una determinata altezza di blocco su ogni nodo (ad esempio `pqc-sign-bytes-v2`, `evm-pqc-authorisation-window`), in modo che la cronologia venga rieseguita invariata al di sotto di quell'altezza.
 
 **PvP Rebase** — Player versus Player Rebase. Un meccanismo nel modulo xQORE in cui le penali dagli sblocchi anticipati vengono redistribuite proporzionalmente agli staker che restano bloccati, premiando l'impegno a lungo termine (non ancora collegato on-chain).
 
 **QCAI** — QoreChain Artificial Intelligence. Il termine ombrello per il sottosistema di AI di QoreChain, che include il motore euristico on-chain (modulo `x/ai`) e il sidecar QCAI off-chain che fornisce capacità di inferenza avanzate.
+
+**QoreChain Native** — Il nome che QoreChain dà al suo runtime di smart contract CosmWasm: i contratti sono scritti in Rust con le librerie CosmWasm standard e compilati in WebAssembly. È uno dei tre runtime (EVM, QoreChain Native, SVM). Il normale caricamento e la normale istanziazione di contratti sono attualmente chiusi su entrambe le reti (vedi [Sviluppo con QoreChain Native](/developer-guide/cosmwasm-development)).
 
 **QCB** — QoreChain Bridge. Il protocollo di bridge nativo di QoreChain per connettersi a chain non IBC (ad es. Ethereum, Bitcoin, Solana, Avalanche). QCB usa una soglia di attestazione dei validatori (7 firme ML-DSA-87 su 10) per l'attestazione cross-chain. Vedi [Architettura del bridge](/architecture/bridge-architecture).
 
@@ -81,13 +83,13 @@ Riferimento alfabetico dei termini, abbreviazioni e acronimi utilizzati in tutta
 
 **Stranded staker share / reward-pool reserve** (quota di staker bloccata / riserva del pool di ricompense) — Importi registrati all'upgrade v3.2.0 che si muovono solo tramite voto di governance; la governance li ha rilasciati nell'ottobre 2026 (dopo la v3.2.3 è stato proposto un resto corretto della quota bloccata). Vedi [Tokenomics](/architecture/tokenomics#stranded-and-reserve).
 
-**SVM** — Solana Virtual Machine. Un ambiente di esecuzione ad alte prestazioni per i programmi BPF. QoreChain integra la SVM come uno dei tre runtime supportati insieme al QoreChain EVM Engine e a CosmWasm.
+**SVM** — Solana Virtual Machine. Un ambiente di esecuzione ad alte prestazioni per i programmi BPF. QoreChain integra la SVM come uno dei tre runtime supportati insieme al QoreChain EVM Engine e a QoreChain Native.
 
 **TEE** — Trusted Execution Environment (ambiente di esecuzione fidato). Un'area sicura di un processore che garantisce che codice e dati siano protetti dall'accesso esterno. QoreChain definisce specifiche di interfaccia per l'attestazione TEE; non esiste ancora alcuna implementazione.
 
 **tIBE** — Threshold Identity-Based Encryption (cifratura a soglia basata sull'identità). Uno schema crittografico in cui un messaggio può essere decifrato solo quando una soglia di parti collabora. Usato dal modulo FairBlock per cifrare il contenuto delle transazioni fino alla finalizzazione del blocco, impedendo l'estrazione di MEV.
 
-**Time-locked staking** (staking con blocco temporale) — Un impegno opzionale di una parte di una delega per un periodo fisso, fornito dal modulo `x/stakingtier`. **Solo testnet** (v3.2.4); non attivo sulla mainnet. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
+**Time-locked staking** (staking con blocco temporale) — Un impegno opzionale di una parte di una delega per un periodo fisso, fornito dal modulo `x/stakingtier`. Parte della v3.2.4: sulla testnet dal 19 ottobre 2026; sulla mainnet dall'altezza 3.742.566. Vedi [Staking e delega](/user-guide/staking-and-delegation#time-locked-staking).
 
 **uqor** — La denominazione base del token QOR. 1 QOR = 1.000.000 uqor (10^6). Tutti gli importi on-chain, le commissioni e i valori di staking sono espressi in uqor.
 

@@ -43,7 +43,7 @@ Il deploy su mainnet è non-custodial: la Dashboard compila il tuo contratto e r
 4. Esamina la transazione in MetaMask — rete, gas e dati — quindi conferma per firmarla e trasmetterla tu stesso.
 5. Una volta che il deploy è confermato on-chain, la Dashboard registra l'indirizzo del contratto risultante insieme ai tuoi contratti salvati.
 
-Dalla Dashboard possono essere distribuiti solo contratti **EVM** (Solidity). I deploy di CosmWasm e di programmi Solana al momento non sono disponibili su nessuna delle due reti.
+Dalla Dashboard possono essere distribuiti solo contratti **EVM** (Solidity). I deploy di QoreChain Native e di programmi Solana al momento non sono disponibili su nessuna delle due reti.
 
 ### Su testnet — un solo clic {#deploy-testnet}
 

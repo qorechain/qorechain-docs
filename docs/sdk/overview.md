@@ -20,7 +20,7 @@ of QoreChain's virtual machines.
 QoreChain is a Layer 1 blockchain with three first-class smart-contract
 runtimes on a single chain:
 
-- **CosmWasm** — Wasm smart contracts via the Cosmos SDK.
+- **QoreChain Native** — Wasm smart contracts via the Cosmos SDK (the CosmWasm runtime).
 - **QoreChain EVM Engine** — Ethereum-compatible execution (Solidity, viem,
   standard JSON-RPC).
 - **SVM** — a Solana-compatible runtime with a Solana-style JSON-RPC.
@@ -29,19 +29,19 @@ Accounts, balances, and tokens are shared across the runtimes, and the chain
 includes the IBC module for cross-chain interoperability (no IBC channels are
 open on mainnet or testnet yet).
 
-:::note What works on the live networks today (mainnet v3.2.3, testnet v3.2.4)
+:::note What works on the live networks today (mainnet v3.2.3, v3.2.4 from height 3,742,566; testnet v3.2.4)
 **Works:** reads on every lane, hybrid-signed Native transactions, unified
 accounts, EVM transactions inside an
 [authorization window](/sdk/guides/evm#evm-window), and SVM reads.
 **Not available yet:** the EVM precompiles (inactive), the `qor_` JSON-RPC
 namespace, SVM transactions, cross-VM calls on mainnet (`MsgCrossVMCall` is
-switched off by the circuit breaker), CosmWasm upload and instantiate for ordinary
+switched off by the circuit breaker), QoreChain Native upload and instantiate for ordinary
 accounts, the authenticator / abstract-account flows (module switched off), xQORE
 and gas abstraction. Each guide repeats the caveat where it applies.
 
 The published SDK (0.9.0, 21 October 2026) signs in the form both networks verify
 (v2 hybrid sign-bytes, resolved from chain state), and the signing format,
-addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4. It carries
+addresses, decimals, memos and fees did not change in v3.2.3 or v3.2.4 (mainnet runs v3.2.4 from height 3,742,566). It carries
 the client side of the later post-quantum rules (the proof of possession on key
 registration, scoped EVM windows, EIP-7702 consent messages); versions before 0.9.0
 do not, see [Versions before 0.9.0](/sdk/install#before-090).
@@ -110,7 +110,7 @@ math, and read surfaces.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Published (PyPI, v0.9.0) |
 | `qorechain-sdk` (Go module) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Published (Go proxy, tag `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Published (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Published (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Published (Maven Central, v0.9.1; the other languages are 0.9.0) |
 | `@qorechain/evm` | TypeScript (EVM adapter) | `npm i @qorechain/evm viem` | Published (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (SVM adapter) | `npm i @qorechain/svm @solana/web3.js` | Published (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (React kit) | `npm i @qorechain/react` | Published (npm, v0.9.0) |
@@ -131,7 +131,7 @@ subscriptions. All of these clients are **published**: TypeScript to npm
 (`@qorechain/sdk` 0.9.0), Python to PyPI (`qorechain-sdk` 0.9.0, import
 `qorsdk`), Go to the module proxy (tag `packages/go/v0.9.0`), Rust to crates.io
 (`qorechain-sdk` 0.9.0), and Java to Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.0). The EVM/SVM execution adapters
+(`io.github.qorechain:qorechain-sdk` 0.9.1, a Java-only update; the other clients are 0.9.0). The EVM/SVM execution adapters
 (`@qorechain/evm`, `@qorechain/svm`, both 0.8.0), the `@qorechain/react` kit
 (0.9.0), and the `create-qorechain-dapp` scaffolding CLI (0.9.0) are
 TypeScript-only and likewise published to npm. See

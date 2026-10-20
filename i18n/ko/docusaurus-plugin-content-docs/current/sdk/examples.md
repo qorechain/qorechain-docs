@@ -180,7 +180,7 @@ const built = await buildHybridTx({
 
 ## cosmwasm-query
 
-배포된 CosmWasm 컨트랙트에 대해 읽기 전용 스마트 쿼리를 실행합니다. 연결
+배포된 QoreChain Native 컨트랙트에 대해 읽기 전용 스마트 쿼리를 실행합니다. 연결
 가능한 합의 RPC와 배포된 컨트랙트 주소가 필요합니다.
 
 ```ts

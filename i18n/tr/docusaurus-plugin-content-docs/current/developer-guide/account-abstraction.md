@@ -14,7 +14,7 @@ Soyut hesap modülü şu anda her iki ağda da **kapalıdır**: `qorechaind quer
 :::
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve düğüm sürümü **v3.2.3**'ü çalıştıran **`qorechain-vladi`** ana ağını kullanır. v3.2.4 çalıştıran test ağı (yalnızca test ağı) için `--chain-id qorechain-diana` ile değiştirin.
+Aşağıdaki komutlar, 7 Haziran 2026'dan beri canlı olan ve 3.742.566 yüksekliğine kadar düğüm sürümü **v3.2.3**'ü, o bloktan itibaren **v3.2.4**'ü çalıştıran (yönetişim önerisi 13) **`qorechain-vladi`** ana ağını kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı için `--chain-id qorechain-diana` ile değiştirin.
 :::
 
 :::caution Her Cosmos hattı işlemi hibrit kuantum sonrası eş imza gerektirir
@@ -176,7 +176,7 @@ Kimlik doğrulayıcı tarafından yetkilendirilen eylemleri iki mesaj taşır. H
 
 :::caution Nonce kuralları
 * `MsgExecuteEVM.nonce` = hesabın **mevcut** EVM nonce'u (`eth_getTransactionCount(account0x, "latest")`). Üretimde röle *farklı* bir hesap olduğundan, +1 **eklemeyin**. Eski bir nonce'un imzalanması `11` kodunu döndürür.
-* `MsgExecuteCosmos.nonce` = kimlik doğrulayıcı başına sıra numarası (hesabın kimlik doğrulayıcı durumunu sorgulayın), hesabın Cosmos sıra numarası **değil**. Yalnızca test ağında (v3.2.4), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` bu sıra numarasını doğrudan döndürür (`nonce`, `linked`).
+* `MsgExecuteCosmos.nonce` = kimlik doğrulayıcı başına sıra numarası (hesabın kimlik doğrulayıcı durumunu sorgulayın), hesabın Cosmos sıra numarası **değil**. v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren), `GET /qorechain/abstractaccount/v1/auth_nonce/{address}/{pubkey_hex}` bu sıra numarasını doğrudan döndürür (`nonce`, `linked`).
 :::
 
 **Phantom örneği** (tarayıcı: Phantom imzalar, arka ucunuz röleler):

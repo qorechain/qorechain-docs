@@ -262,7 +262,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## الخطوات التالية
 
-- [الأدلة](/sdk/guides/evm) — العمل مع كل آلة افتراضية (EVM وSVM وCosmWasm والعمليات عبر الآلات الافتراضية).
+- [الأدلة](/sdk/guides/evm) — العمل مع كل آلة افتراضية (EVM وSVM وQoreChain Native والعمليات عبر الآلات الافتراضية).
 - [الحسابات والتوقيع PQC](/sdk/concepts/accounts-pqc) — الاشتقاق الهرمي (HD)، والحسابات
   الموحّدة eth-native، والتوقيع ما بعد الكمّي.
 - [المصادِقات والإنفاق المفوَّض](/sdk/guides/authenticators) — السماح لمفتاح

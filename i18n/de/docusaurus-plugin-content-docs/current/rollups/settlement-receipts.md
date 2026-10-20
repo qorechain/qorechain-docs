@@ -10,7 +10,7 @@ sidebar_position: 6
 Ein **Abwicklungsbeleg** ist ein portabler Nachweis dafür, dass der Abwicklungs-Batch eines Rollups unter einer Post-Quanten-Signatur an der Main Chain verankert wurde. Er benennt das Rollup, den Batch und den Anker und trägt die **ML-DSA-87**-Signatur (Dilithium-5, FIPS-204) des Ankers, also dasselbe Verfahren, das die Main Chain verwendet.
 
 :::caution Frühes Stadium: Es gibt noch keine Anker
-Belege hängen von Ankern ab, und **auf keinem der beiden Netzwerke existiert bisher ein Rollup oder ein Anker** (geprüft am 20. Oktober 2026). Seit v3.2.2 (auf beiden Netzwerken live) wird ein Batch, der mit einer `anchor_signature` eingereicht wird, in derselben Transaktion in `x/multilayer` verankert; ein Batch ohne diese Signatur wird unverankert abgewickelt. Die veröffentlichten RDK-Clients (0.5.0) senden dieses Feld nicht, daher sind die von ihnen eingereichten Batches unverankert. Betrachten Sie diese Seite als Beschreibung des Designs und der Bausteine, nicht eines Dienstes, auf den Sie sich heute verlassen können.
+Belege hängen von Ankern ab, und **auf keinem der beiden Netzwerke existiert bisher ein Rollup oder ein Anker** (geprüft am 21. Oktober 2026). Seit v3.2.2 (auf beiden Netzwerken live) wird ein Batch, der mit einer `anchor_signature` eingereicht wird, in derselben Transaktion in `x/multilayer` verankert; ein Batch ohne diese Signatur wird unverankert abgewickelt. Das TypeScript-RDK (0.6.0) sendet dieses Feld, wenn sein Transaktions-Client hybrid signiert und der Ersteller des Rollups ist, und reicht andernfalls unverankert ein; die Clients für Python, Go, Rust und Java signieren nur klassisch und bauen das Feld nicht. Nichts davon wurde auf einem Live-Rollup erprobt. Betrachten Sie diese Seite als Beschreibung des Designs und der Bausteine, nicht eines Dienstes, auf den Sie sich heute verlassen können.
 :::
 
 ## Ein Beleg ist eine Behauptung, kein Beweis {#a-receipt-is-a-claim}
@@ -19,7 +19,7 @@ Jedes Feld in einem Beleg stammt von demjenigen, der ihn Ihnen übergibt. Die Pr
 
 ## Was der Anker signiert {#what-the-anchor-signs}
 
-Die Signatur des Ankers wird mit dem registrierten ML-DSA-87-Schlüssel des **Rollup-Erstellers** erzeugt. Die signierte Nachricht hängt von der Höhe ab, bei der der Anker eingereicht wird. **Ab v3.2.2 (Mainnet-Höhe 3,556,788, Testnet-Höhe 6,905,034) ist es die v2-Nachricht**: ein Domain-Tag, die Chain-ID sowie längenpräfixierte `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, Transaktionsanzahl und komprimierter State Proof (das genaue Layout steht unter [Anker auslesen](/architecture/multilayer-architecture#reading-anchors)). Die Chain akzeptiert ab dieser Höhe keinen v1-Anker mehr (`layer_id || layer_height || state_root || validator_set_hash`, ohne Chain-ID). Kodieren Sie keine der beiden Formen fest ein: Lesen Sie die Sign-Bytes für das Netzwerk aus, das Sie ansprechen, zum Beispiel mit `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>`.
+Die Signatur des Ankers wird mit dem registrierten ML-DSA-87-Schlüssel des **Rollup-Erstellers** erzeugt. Die signierte Nachricht hängt von der Höhe ab, bei der der Anker eingereicht wird. **Ab v3.2.2 (Mainnet-Höhe 3,556,788, Testnet-Höhe 6,905,034) ist es die v2-Nachricht**: ein Domain-Tag, die Chain-ID sowie längenpräfixierte `layer_id`, `layer_height`, `state_root`, `validator_set_hash`, Transaktionsanzahl und komprimierter State Proof (das genaue Layout steht unter [Anker auslesen](/architecture/multilayer-architecture#reading-anchors)). Die Chain akzeptiert ab dieser Höhe keinen v1-Anker mehr (`layer_id || layer_height || state_root || validator_set_hash`, ohne Chain-ID). Kodieren Sie keine der beiden Formen fest ein: Lesen Sie die Sign-Bytes für das Netzwerk aus, das Sie ansprechen. Das RDK baut die v2-Bytes mit `anchorSignBytesForBatch` (und beide Formen mit `anchorSignBytesV1` / `anchorSignBytesV2`), und die CLI gibt sie aus, zum Beispiel mit `qorechaind query rdk anchor-sign-bytes <layer-id> <batch-index> <state-root-hex> --chain-id <id> --tx-count <n>`.
 
 Ein Anker ist ein Objekt auf Layer-Ebene: Er benennt weder das Rollup noch den Batch, deshalb bindet ein Verifizierer sie über Chain-Lesezugriffe (siehe [Multilayer-Architektur](/architecture/multilayer-architecture#reading-anchors)).
 
@@ -46,15 +46,25 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher eine Version, die gegen die Chain verifiziert (0.5.0 oder neuer). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle (alle fünf Clients verwenden denselben Pluralpfad für die Schlüsselsuche wie in der folgenden Einschränkung).
+Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher 0.6.0 oder neuer: 0.5.0 konnte die Chain-Prüfung nicht abschließen (siehe unten). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle; ihre 0.6.0-Releases verwenden dieselbe Singular-Route für die Schlüsselsuche und dieselbe höhenbasierte Wahl der Anker-Nachricht.
 
-:::caution Aktuelle Einschränkungen der Clients (RDK 0.5.0)
-`verifySettlementReceipt` meldet in 0.5.0 niemals `valid` allein anhand des Belegs (ohne `client` lautet das Ergebnis `mode: "signature-only"` und `valid: false`), und seine Chain-Prüfung wird gegen die Live-Netzwerke noch nicht abgeschlossen, aus zwei Gründen, die im Client liegen, nicht in der Chain:
+### Was 0.6.0 verifiziert {#what-060-verifies}
 
-* Er schlägt den Schlüssel des Erstellers über die Pluralform `accounts` der Post-Quanten-Kontoroute nach, die die Netzwerke nicht bereitstellen (HTTP 501; die funktionierende Route ist die Singularform `account`), sodass das Ergebnis mit einem `client` `valid: false` lautet, mit der Begründung, dass der Post-Quanten-Schlüssel des Erstellers nicht aufgelöst werden konnte; und
-* er baut die signierte Nachricht im v1-Layout nach, das die Chain für Anker seit v3.2.2 nicht mehr akzeptiert, sodass er selbst mit dem Schlüssel in der Hand keine echte v2-Signatur verifizieren könnte.
+`verifySettlementReceipt` meldet niemals `valid` allein anhand des Belegs: Ohne `client` lautet das Ergebnis `mode: "signature-only"` und `valid: false`. Mit einem `client` liest es die Chain erneut aus und meldet jede Prüfung einzeln:
 
-`buildSettlementReceipt` funktioniert erst, wenn ein Anker den Batch abdeckt, und es existiert keiner. Verwenden Sie einen Beleg nur als Aufzeichnung, die Sie mit dem Anker und dem Schlüssel des Erstellers abgleichen, die Sie von Ihrer eigenen Node lesen, mit den v2-Sign-Bytes für das Netzwerk.
+* `rollupLayerBinding`: Die Chain bestätigt, dass das Rollup zum Layer des Belegs gehört;
+* `batchStateRoot`: Der Batch der Chain trägt die State Root des Belegs;
+* `anchorOnChain`: Ein Anker mit dieser State Root, Höhe und Signatur existiert auf der Chain;
+* `creatorAuthority`: Der signierende Schlüssel wurde aus der Chain gelesen (`/qorechain/pqc/v1/account/{address}`), nicht aus dem Beleg übernommen;
+* `pqcSignature`: Die ML-DSA-87-Signatur verifiziert sich über die kanonische Anker-Nachricht;
+* `chainBinding`: Der Beleg benennt die Chain, die tatsächlich abgefragt wurde.
+
+Die Anker-Nachricht wird anhand der Höhe gewählt, bei der der Anker aufgezeichnet wurde (v1 unterhalb des Umschaltpunkts von v3.2.2, v2 ab diesem), niemals durch Ausprobieren beider, denn eine v1-Signatur trägt keine Chain-ID und würde auf jeder Chain verifiziert. Das Paket enthält die Umschalthöhe für das Mainnet (3,556,788) und das Testnet (6,905,034). Das Ergebnis meldet die verwendete Form als `signBytesVersion`. Das Beleg-Schema v2 zeichnet `chainId` auf; ein Beleg der Version 1 trägt keine, daher besteht er `chainBinding` nur, weil sein Anker auf der abgefragten Chain gefunden wurde. Die Verifikation weist einen Beleg zurück, der gegen eine Node einer anderen Chain geprüft wird.
+
+Auf keinem der beiden Netzwerke existiert ein Anker, daher wurde dies nur gegen den Paketcode und offline geprüft, nicht gegen einen echten Anker. `buildSettlementReceipt` funktioniert erst, wenn ein Anker den Batch abdeckt.
+
+:::note Versionen vor 0.6.0
+`verifySettlementReceipt` in 0.5.0 schlug gegen die Live-Netzwerke geschlossen fehl (fail closed), aus zwei Gründen, die im Client lagen, nicht in der Chain: Er schlug den Schlüssel des Erstellers über eine Pluralform `accounts` der Post-Quanten-Kontoroute nach, die die Netzwerke nicht bereitstellen (HTTP 501), und er baute nur die v1-Nachricht nach, die die Chain für Anker seit v3.2.2 nicht mehr akzeptiert. Ein echter Beleg konnte daher nicht verifiziert werden, und ein gefälschter wurde dennoch zurückgewiesen. Verwenden Sie 0.6.0 oder neuer.
 :::
 
 ## CLI {#cli}

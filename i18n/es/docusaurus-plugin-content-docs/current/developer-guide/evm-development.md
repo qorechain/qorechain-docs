@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain ejecuta un entorno de ejecución totalmente compatible con EVM sobre el QoreChain EVM Engine, lo que te permite desplegar e interactuar con contratos inteligentes en Solidity usando herramientas conocidas. El módulo EVM expone una interfaz JSON-RPC en el **puerto 8545** (WebSocket en el **8546**) que admite los flujos de trabajo estándar de desarrollo de Ethereum.
 
 :::note
-Los ejemplos siguientes apuntan a la mainnet **`qorechain-vladi`** (EVM chain ID **9801**), activa desde el 7 de junio de 2026, que ejecuta la versión de nodo **v3.2.3** (aplicada en la altura 3,662,051 el 20 de octubre de 2026). Para la testnet **`qorechain-diana`** (v3.2.4, aplicada en la altura 8,337,253 el 19 de octubre de 2026; todavía no aplicada en mainnet; la propuesta de gobernanza 13 la aplicaría en la altura 3,742,566), usa el EVM chain ID **9800**. Los ejemplos de código usan `http://localhost:8545` para un nodo que ejecutas tú mismo; el endpoint público de mainnet es `https://evm.qore.host` y el de testnet es `https://evm-testnet.qore.host`.
+Los ejemplos siguientes apuntan a la mainnet **`qorechain-vladi`** (EVM chain ID **9801**), activa desde el 7 de junio de 2026, que ejecuta la versión de nodo **v3.2.3** (aplicada en la altura 3,662,051 el 20 de octubre de 2026). La mainnet pasa a la versión de nodo **v3.2.4** en la altura 3,742,566 (propuesta de gobernanza 13). La testnet **`qorechain-diana`** ejecuta la v3.2.4 desde la altura 8,337,253 (19 de octubre de 2026); usa allí el EVM chain ID **9800**. Los ejemplos de código usan `http://localhost:8545` para un nodo que ejecutas tú mismo; el endpoint público de mainnet es `https://evm.qore.host` y el de testnet es `https://evm-testnet.qore.host`.
 :::
 
 :::caution Una transacción EVM necesita una clave PQC registrada y una ventana de autorización abierta
@@ -33,6 +33,8 @@ Desde v3.2.2 se aplican dos reglas más en mainnet: **se rechazan las transaccio
 | Símbolo de la moneda      | `QOR`                                      |
 
 Las lecturas específicas de QoreChain se sirven por REST (`api.qore.host`); el espacio de nombres JSON-RPC `qor_` descrito [más abajo](#custom-qor_-namespace) **no está habilitado** en los endpoints públicos ni en la configuración predeterminada del nodo. La lista `api` predeterminada de un nodo recién inicializado (v3.2.3 y posteriores) es `eth,net,web3`; `txpool` es opcional, porque publica las transacciones pendientes del nodo.
+
+Desde la versión de nodo v3.2.4 (testnet desde el 19 de octubre de 2026; nodos de mainnet desde la altura 3,742,566), un nodo acota su propio servidor JSON-RPC: se rechazan los cuerpos de solicitud de más de 256 KiB (HTTP 413), no se atienden más de 256 solicitudes a la vez (HTTP 503 por encima de ese límite), y se rechaza un filtro de `eth_getLogs` o `eth_newFilter` con más de 4 posiciones de topics, 1000 alternativas en una posición o 1000 direcciones. Los límites son ajustes locales del nodo en la sección `[json-rpc]` de `app.toml`; consulta [Operar un Nodo](/developer-guide/running-a-node#exposing-endpoints-for-integration).
 
 ---
 
@@ -188,7 +190,7 @@ Las transacciones EVM se firman con **ECDSA clásico (secp256k1)**, de modo que 
 Para seguridad poscuántica dentro de los contratos:
 
 * El **precompilado PQC Verify** (`0x0000...0A01`) verificará firmas ML-DSA-87 en cadena desde Solidity una vez que se active; **todavía no está activo** en mainnet ni en testnet. Consulta [Precompilados EVM: estado de la red](/developer-guide/evm-precompiles#network-status).
-* Los **mensajes entre VM** desde el EVM hacia CosmWasm o SVM son transacciones del carril Cosmos y llevan la firma híbrida como cualquier otra; consulta [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) para ver su disponibilidad actual.
+* Los **mensajes entre VM** desde el EVM hacia QoreChain Native o SVM son transacciones del carril Cosmos y llevan la firma híbrida como cualquier otra; consulta [Interoperabilidad entre VM](/developer-guide/cross-vm-interoperability) para ver su disponibilidad actual.
 
 ---
 

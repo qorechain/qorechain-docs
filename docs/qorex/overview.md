@@ -96,7 +96,7 @@ Highlights since 1.0.9 / 0.2.6:
 - Approval screens that show every message, the fee, spending limits and expiry, and refuse what QoreX cannot display; **`signAndBroadcast`** for dApps; **Connected sites** with Revoke (extension); the **EVM access window** — see [Security & Recovery](/qorex/security-and-recovery) and the [Browser Extension](/qorex/browser-extension).
 - Fixes: a funded account could momentarily vanish from "Your accounts" (1.0.9); Android hardware Back now goes back one screen (1.1.1); the recovery phrase is withheld from non-accessibility services on Android 14 and later (1.1.6).
 
-QoreX works on mainnet `qorechain-vladi`, which runs chain **v3.2.3** (live since 7 June 2026). Signing format, addresses, decimals, memos and fees did not change in that upgrade, so no QoreX update is needed for it.
+QoreX works on mainnet `qorechain-vladi`, which runs chain **v3.2.3** (live since 7 June 2026) until height 3,742,566 and v3.2.4 from that block. Signing format, addresses, decimals, memos and fees do not change in these upgrades, so no QoreX update is needed for them.
 
 ## What QoreX sends over the network {#data-and-privacy}
 

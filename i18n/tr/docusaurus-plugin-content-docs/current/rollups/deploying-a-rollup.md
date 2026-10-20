@@ -7,10 +7,10 @@ sidebar_position: 3
 
 # Bir Rollup Dağıtma
 
-Uygulamaya özel bir rollup'ı üç şekilde kurabilirsiniz: **Dashboard** üzerinden (bir talep formu, zincir üstü bir işlem değil), zincir **CLI**'si üzerinden (`qorechaind`, zincir üstü işlem üzerinde tam kontrol) veya **TypeScript RDK** ile (`@qorechain/rdk` artı `create-qorechain-rollup` iskelet oluşturucu); RDK yapılandırmayı ve okumaları kapsar ve kuantum sonrası bir anahtar verdiğinizde hibrit işlemleri imzalayabilir (bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)). Bu sayfa her üçünü de, operatör yaşam döngüsünü ve toplu (batch) komutları kapsar.
+Uygulamaya özel bir rollup'ı üç şekilde kurabilirsiniz: **Dashboard** üzerinden (bir talep formu, zincir üstü bir işlem değil), zincir **CLI**'si üzerinden (`qorechaind`, zincir üstü işlem üzerinde tam kontrol) veya **TypeScript RDK** ile (`@qorechain/rdk` artı `create-qorechain-rollup` iskelet oluşturucu); RDK yapılandırmayı, okumaları ve kuantum sonrası bir anahtar verdiğinizde hibrit imzalı işlemleri kapsar (bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits)). Bu sayfa her üçünü de, operatör yaşam döngüsünü ve toplu (batch) komutları kapsar.
 
 :::caution Erken aşama yetenek
-Henüz her iki ağda da herhangi bir rollup oluşturulmadı (20 Ekim 2026 itibarıyla kontrol edildi). Aşağıdaki komutlar **`qorechain-diana`** test ağını kullanır (EVM zincir ID **9800**, zincir sürümü **v3.2.4**, yalnızca test ağı). Mainnet (**`qorechain-vladi`**, EVM zincir ID **9801**, 7 Haziran 2026'dan beri canlı) **v3.2.3** zincir sürümünü çalıştırır; bu sayfa mainnet davranışını anlatır ve test ağının daha yeni sürümü ayrıntılarda farklılık gösterebilir (farklar "yalnızca test ağı" olarak işaretlenmiştir). Her dağıtımı önce test ağında doğrulayın.
+Henüz her iki ağda da herhangi bir rollup oluşturulmadı (21 Ekim 2026 itibarıyla kontrol edildi). Aşağıdaki komutlar **`qorechain-diana`** test ağını kullanır (EVM zincir ID **9800**, 19 Ekim 2026'dan beri zincir sürümü **v3.2.4**). Mainnet (**`qorechain-vladi`**, EVM zincir ID **9801**, 7 Haziran 2026'dan beri canlı) 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** zincir sürümünü çalıştırır (yönetişim önerisi 13); iki sürüm birkaç ayrıntıda farklılık gösterir ve bu sayfa bunları "v3.2.4'ten itibaren" olarak işaretler. Her dağıtımı önce test ağında doğrulayın.
 :::
 
 :::note Ücretler ve imzalama
@@ -45,9 +45,9 @@ Dashboard, **Tools → Rollups** altında bir **Deploy a Rollup** formu sunar. B
 
 1. **Oturum açın.** Bir talep göndermek ve mevcut taleplerinizi listelemek için form, kimlik doğrulanmış bir oturum gerektirir.
 2. **Rollup'ınıza bir isim verin.** Bir rollup adı girin (2–41 karakter: harfler, rakamlar, boşluklar, tireler veya alt çizgiler).
-3. **Bir sanal makine seçin.** Zincir üstü kayıt bir VM etiketi saklar. Rollup'ınız kendi çalışma zamanında zincir dışında yürütülür; bu seçim QoreChain'in kendi EVM, CosmWasm veya SVM hatlarında çalışmaz:
+3. **Bir sanal makine seçin.** Zincir üstü kayıt bir VM etiketi saklar. Rollup'ınız kendi çalışma zamanında zincir dışında yürütülür; bu seçim QoreChain'in kendi EVM, QoreChain Native veya SVM hatlarında çalışmaz:
    * **EVM** — tam Ethereum araç setiyle (Hardhat, Foundry, MetaMask) Solidity / Vyper sözleşmeleri
-   * **CosmWasm** — Cosmos SDK çalışma zamanında, yerel IBC ile Rust akıllı sözleşmeleri
+   * **QoreChain Native** — Cosmos SDK çalışma zamanında (CosmWasm çalışma zamanı), yerel IBC ile Rust akıllı sözleşmeleri
    * **SVM** — paralel yürütmeli, yüksek verimli uygulamalar için Solana Virtual Machine
 4. **Bir veri kullanılabilirliği (DA) katmanı seçin.** Rollup'ınızın, herkesin durumu yeniden oluşturabilmesi için işlem verisini yayınladığı yer: **QoreChain DA**, **Celestia** veya **EigenDA**. EigenDA'nın bir Dashboard seviyesi seçenek olduğunu, zincir üstü `x/rdk` DA arka uçlarının ise native, Celestia veya her ikisi olduğunu unutmayın — bkz. [Veri Kullanılabilirliği](/rollups/data-availability).
 5. **Bir gaz tokeni belirleyin.** Rollup'ınızda yürütme için ödeme yapmakta kullanılan token. Varsayılan olarak **QOR**'dur; kendi native tokeninizi kullanmak için özel bir sembol girin.
@@ -103,7 +103,7 @@ qorechaind tx pqc cosign create-rollup.json \
 | `--vm` | *(boş — profilin VM'sini kullanır)* | Rollup VM türünü geçersiz kılar: `evm`, `cosmwasm`, `svm` veya `custom`. Ön ayarın VM'sini uygulamak için ayarlamadan bırakın. (RDK istemcilerinde Wasm çalışma zamanı **`native`** VM türüdür — QoreChain Native — `cosmwasm` ise eski (legacy) bir takma ad olarak korunur; `cosmwasm` tel üzerindeki (on-wire) değerdir ve bu zincir seviyesi bayrağın aldığı değer de budur.) |
 
 :::note VM etiketi bir üst veridir
-`--vm`, rollup'ınızın hangi çalışma zamanını kullandığını kaydeder. Ana zincir yalnızca rollup'ı yerleştirir (settle); sözleşmelerini yürütmez. Ana zincirin kendi CosmWasm yüklemesi şu anda kapalıdır ve SVM işlem hattı ağ genelinde devre dışıdır; bu, zincir dışı bir rollup'ın yerleşimini etkilemez, ancak bir rollup için sözleşmeleri bu ana zincir hatlarına dağıtamayacağınız anlamına gelir.
+`--vm`, rollup'ınızın hangi çalışma zamanını kullandığını kaydeder. Ana zincir yalnızca rollup'ı yerleştirir (settle); sözleşmelerini yürütmez. Ana zincirin kendi QoreChain Native yüklemesi şu anda kapalıdır ve SVM işlem hattı ağ genelinde devre dışıdır; bu, zincir dışı bir rollup'ın yerleşimini etkilemez, ancak bir rollup için sözleşmeleri bu ana zincir hatlarına dağıtamayacağınız anlamına gelir.
 :::
 
 `[profile]` argümanı, otomatik olarak uygulanan bir ön ayar yapılandırması seçer — bkz. **[Ön Ayar Profilleri](/rollups/preset-profiles)**. `[stake-amount]`, `uqor` cinsinden bağdır; oluşturma yakımı bunun %1'idir.
@@ -122,42 +122,54 @@ qorechaind query rdk list-rollups
 
 ## TypeScript RDK (`@qorechain/rdk`) ile dağıtım {#deploy-with-the-typescript-rdk-qorechainrdk}
 
-Rollup Development Kit, CLI ile aynı zincir üstü `x/rdk` modülü için iki herkese açık npm paketi olarak sunulur. En çok yapılandırmaları oluşturmak ve doğrulamak ve durumu okumak için işe yararlar; işlem göndermek için onlara güvenmeden önce [RDK 0.5.0 sınırlarını](#rdk-050-limits) okuyun:
+Rollup Development Kit, CLI ile aynı zincir üstü `x/rdk` modülü için iki herkese açık npm paketi olarak sunulur. Henüz her iki ağda da rollup bulunmadığından, kitin hiçbir işlem yolu canlı bir rollup üzerinde denenmemiştir; işlem göndermek için ona güvenmeden önce [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits) bölümünü okuyun:
 
-* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.5.0`) — TypeScript SDK'sı: ön ayar profilleriyle bir yapılandırma oluşturucu, rollup ve yerleşim toplu iş (settlement-batch) yaşam döngüleri için işlem yardımcıları, native DA, tipli okuma istemcileri ve v0.4 eklemeleri — kuantum güvenli yerleşim makbuzları, QCAI Rollup Copilot, VM'ler arası calldata yardımcıları ve watchtower.
-* **`create-qorechain-rollup`** (`v0.5.0`) — profil başına bir çalıştırılabilir başlangıç şablonunu (`multivm-rollup` şablonu dahil) klonlayan bir iskelet oluşturucu.
+* **[`@qorechain/rdk`](https://github.com/qorechain/qorechain-rdk)** (`v0.6.0`) — TypeScript SDK'sı: ön ayar profilleriyle bir yapılandırma oluşturucu, rollup ve yerleşim toplu iş (settlement-batch) yaşam döngüleri için işlem yardımcıları, native DA, tipli okuma istemcileri, kuantum güvenli yerleşim makbuzları, QCAI Rollup Copilot, VM'ler arası calldata yardımcıları ve watchtower. `@qorechain/sdk` `^0.9.0` ve `@qorechain/evm` `^0.8.0` sürümlerine bağımlıdır.
+* **`create-qorechain-rollup`** (`v0.6.0`) — profil başına bir çalıştırılabilir başlangıç şablonunu (`multivm-rollup` şablonu dahil) klonlayan bir iskelet oluşturucu.
 
-Bunlar npm'e yayınlanmıştır. Depo ayrıca yayınlanmış bir operatör CLI'si olan **`@qorechain/rdk-cli`**'yi (`qorollup`, `v0.5.0`) sunar; bu, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, yaşam döngüsü komutları (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` ve `faucet` komutlarına, artı v0.4'ün `receipt`, `advise` ve `watchtower` komutlarına sahiptir.
+Bunlar npm'e yayınlanmıştır. Depo ayrıca yayınlanmış bir operatör CLI'si olan **`@qorechain/rdk-cli`**'yi (`qorollup`, `v0.6.0`) sunar; bu, `doctor`, `create`, `status`, `watch`, `params`, `suggest`, yaşam döngüsü komutları (`pause`/`resume`/`stop`), `keygen`, `manifest`, `withdraw` ve `faucet` komutlarına, artı `receipt`, `advise` ve `watchtower` komutlarına sahiptir. İşlem komutları yalnızca klasik imzalar (aşağıdaki sınırlara bakın).
 
-İlk v0.4.0 sürümünden bu yana öne çıkanlar:
+Sürümlere göre öne çıkanlar:
 
 * **v0.4.2 — kutudan çıktığı gibi canlı ağa karşı çalışır.** `mainnet` ve `testnet` ön ayarları artık herkese açık `qore.host` uç noktalarını (`api.qore.host` / `api-testnet.qore.host` adresindeki REST) barındırıyor, böylece `createRdkClient({ network })` elle bir `endpoints` yapılandırması olmadan zincire ulaşır — yalnızca kendi düğümünüzü hedeflemek için geçersiz kılın. Aynı sürüm, Wasm rollup VM tanımlayıcısını **`native`** (QoreChain Native) olarak yeniden adlandırdı; `cosmwasm` kabul edilen eski bir takma ad olarak kalır ve ikisi de tel üzerinde `cosmwasm`'a eşlenir — zincir, gezgin (explorer) ve Dashboard değişmedi.
-* **v0.4.3 — SDK'nın hibrit imza kodlama düzeltmesi için bağımlılık güncellemesi.** RDK işlem istemcisinin kendisi hâlâ yalnızca klasik imzalama yapar (bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)).
-* **v0.4.4 — `@qorechain/sdk` `^0.7.0`'ı izler**, zincir **v3.1.85** yetkilendirici (authenticator) hatları için olan SDK sürümü; böylece bu yetenekler RDK'nın TypeScript kullanıcılarına SDK üzerinden doğrudan ulaşır. RDK API'sinde değişiklik yok.
-* **v0.5.0 (18 Ekim 2026'da npm, PyPI, crates.io, Maven Central ve Go proxy üzerinde yayınlandı)** — yerleşim makbuzu doğrulaması artık zincir durumuna karşı denetler ve bir makbuzu hiçbir zaman kendi alanlarına dayanarak geçerli bildirmez; TypeScript işlem istemcisi bir `pqcKeypair` verildiğinde hibrit imzalar; her iskelet oluşturucu şablonu `@qorechain/rdk` `^0.5.0` sürümüne sabitlenir; `@qorechain/sdk` `^0.8.0`'dır, bu yüzden npm, RDK'nın kendi kopyası olarak SDK **0.8.3**'ü kurar (SDK 0.9.0, RDK'dan sonra 21 Ekim 2026'da yayınlandı ve yayınlanmış RDK 0.5.0'ın kullandığı sürüm değildir).
+* **v0.4.3 — SDK'nın hibrit imza kodlama düzeltmesi için bağımlılık güncellemesi.** RDK işlem istemcisinin kendisi hâlâ yalnızca klasik imzalama yapıyordu.
+* **v0.4.4 — `@qorechain/sdk` `^0.7.0`'ı izler**, zincir **v3.1.85** yetkilendirici (authenticator) hatları için olan SDK sürümü. RDK API'sinde değişiklik yok.
+* **v0.5.0 (18 Ekim 2026)** — yerleşim makbuzu doğrulaması zincir durumuna karşı denetler ve bir makbuzu hiçbir zaman kendi alanlarına dayanarak geçerli bildirmez; TypeScript işlem istemcisi bir `pqcKeypair` verildiğinde hibrit imzalar. `@qorechain/sdk` `^0.8.0` sürümüne bağımlıdır.
+* **v0.6.0 (20 Ekim 2026 tarihli GitHub sürümü; 21 Ekim 2026'da her kayıt defterinde kontrol edildi)** — zincir v3.2.2'den v3.2.4'e uyumluluk sürümü: demirlenmiş (anchored) toplu işler, doğrulanabilen yerleşim makbuzları, zincirin ölçtüğü gibi ölçülen itiraz pencereleri, zincirin VM'ler arası düzenine uyan bir kodlayıcı, hibrit imzalayan şablonlar ve `@qorechain/sdk` `^0.9.0`. Ayrıntılar ve geriye kalanlar aşağıdadır.
 
-#### RDK 0.5.0 sınırları {#rdk-050-limits}
+**Yayınlanmış sürümler (21 Ekim 2026'da kontrol edildi).** npm `@qorechain/rdk`, `@qorechain/rdk-cli` ve `create-qorechain-rollup`: **0.6.0** (`latest`); PyPI `qorechain-rdk`: 0.6.0; crates.io `qorechain-rdk`: 0.6.0; Maven Central `io.github.qorechain:qorechain-rdk`: 0.6.0 (latest ve release); Go modülü `github.com/qorechain/qorechain-rdk/packages/go`: `v0.6.0` modül proxy'si tarafından sunulur, ancak kontrol edildiğinde proxy'nin `@latest` yanıtı hâlâ `v0.5.0` idi; bu yüzden `@v0.6.0` sürümünü açıkça sabitleyin.
 
-Yayınlanmış 0.5.0 istemcilerinin bu sınırları bugün oldukları gibi belirtilmiştir; hiçbiri bir zincir davranışı değildir. Sonraki bir sürüm, yayınlanana kadar burada duyurulmaz.
+#### RDK 0.6.0: değişiklikler ve sınırlar {#rdk-050-limits}
 
-**İmzalama.** Her iki ağ da her native hat işleminde hibrit (secp256k1 + ML-DSA-87) imza gerektirir.
+Bu bölüm, yayınlanmış 0.6.0 paketlerinin ne yaptığını (paket içerikleri ve GitHub sürüm notlarına karşı denetlenmiş olarak) ve hâlâ neleri yapamadığını belirtir. Bu maddelerin hiçbiri bir zincir davranışı değildir. Bir ifade "canlıda denenmedi" diyorsa, hiçbir ağda rollup bulunmaz; yani yol yalnızca koda karşı ve çevrimdışı denetlenmiştir.
 
-* **TypeScript** `RdkClient.connectTx(signer, { pqcKeypair, rest })`, anahtarı zincir üstünde zaten kayıtlı bir hesabın `pqcKeypair` değerini verdiğinizde `@qorechain/sdk` üzerinden hibrit imzalar (kendi `@qorechain/sdk` kopyası üzerinden, 0.8.3, yukarıya bakın) (`signer` bir `OfflineDirectSigner` olmalıdır, örneğin `directSignerFromPrivateKey`'den; bir `gasPrice` veya açık bir ücret verin). `pqcKeypair` olmadan istemci yalnızca klasik imzalar ve ağlar işlemi reddeder. Hiçbir ağda rollup oluşturulmadığı için bu yol canlı bir rollup üzerinde denenmemiştir.
-* SDK'nın kendi rollup istemcisi (`createRollupClient(tx)`, SDK 0.9.0), `TxClient`'ı bir `pqcKeypair` ile bağlandığında da hibrit imzalar (`client.connectTx(signer, { pqcKeypair })`). Onun `submitBatch` çağrısında da `anchor_signature` veya `validator_set_hash` yoktur. Onun üzerinden canlı bir ağda hiçbir şey oluşturulmamıştır, bu yüzden canlıda aynı şekilde denenmemiştir.
-* **`qorollup` CLI'si**, iskeletlenmiş şablon betikleri (`create`, `submit-batch`) ve **Python, Go, Rust ve Java** istemcileri yalnızca klasik imzalar ve bir işlemin kabul edilmesini sağlayamaz. Bunlardan işlem göndermek için zincir CLI'siyle oluşturup imzalayın (`--generate-only`, ardından `qorechaind tx pqc cosign`) veya TypeScript istemcisini bir `pqcKeypair` ile kullanın.
-* `submitBatchMsg` içinde `anchor_signature` veya `validator_set_hash` yoktur, bu yüzden RDK üzerinden gönderilen bir toplu iş demirlenmemiştir (bkz. [Bir toplu iş gönderme](#submit-a-batch)).
+**0.6.0'da neler değişti** (bir satır aksini söylemedikçe TypeScript):
 
-**Okumalar.** `/qorechain/rdk/v1/…` REST rotaları her iki ağda da sunulur ve `rdk.params()`, `rdk.rest.getRollup()` ve `rdk.rest.getBatch()` zincirin sunduğu rotaları çağırır. İki yardımcı, zincirin bu biçimde sunmadığı rotaları çağırır: `getLatestBatch`, zincirin sayfalanmış liste olarak değerlendirdiği `/batches/{id}?latest=true` adresini ister (bunun yerine `/qorechain/rdk/v1/latest_batch/{rollup_id}` kullanın) ve `listBatches` yalnızca 50'lik ilk sayfayı döndürür (rota `start_index` ve en fazla 100 olan `limit` alır). Makbuz doğrulamasının arkasındaki PQC hesap sorgusu, ağların sunmadığı çoğul bir yol kullanır (bkz. [Yerleşim makbuzları](/rollups/settlement-receipts)).
+* **İmzalama.** `RdkClient.connectTx(signer, { pqcKeypair, rest })`, bir anahtar çifti verdiğinizde hibrit (secp256k1 + ML-DSA-87) imzalar; vermezseniz yalnızca klasik imzalar ve ağlar işlemi reddeder. `signer` bir `OfflineDirectSigner` olmalıdır ve ücret açık olmalıdır (bir `fee` veya bağlanırken bir `gasPrice`). Yeni `resolvePqcKeypair` ve `pqcKeypairFromEnv` yardımcıları, bir mnemonikten hem kanonik hem de eski (legacy) ML-DSA-87 anahtarını türetir ve hesabın zincir üstünde kaydettirdiği hangisiyse onu kullanır; hesap farklı bir anahtar tutuyorsa tahmin etmek yerine reddederler. `QORE_PQC_SEED_HEX`, ham bir özel anahtarla imzalayan bir operatör için bir tohum (seed) sağlar. Kit artık `@qorechain/sdk` `^0.9.0` sürümüne bağımlıdır; bu yüzden yeni bir kurulum tek bir SDK kopyası (0.9.0) tutar; 0.5.0 ile npm, SDK 0.8.3'ü kitin altına iç içe kurmuştu.
+* **Demirlenmiş toplu işler.** `MsgSubmitBatch`, `anchor_signature` ve `validator_set_hash` taşır. `RdkTxClient.submitBatch`, çıpayı yalnızca istemci hibrit imzalıyorsa, bir REST uç noktası varsa ve **rollup'ın oluşturucusuysa** kendisi imzalar (zincir çıpayı oluşturucunun kayıtlı anahtarına karşı denetler); diğer her durumda eskisi gibi demirlenmemiş olarak gönderir. Demirlenmemiş göndermek yerine reddetmesi için `anchor: "require"`, hiç imzalamaması için `anchor: "off"` veya kendi edindiğiniz bir imzayı göndermek için `anchorSignature` geçirin. `anchorSignBytesForBatch`, bant dışında imzalayan bir oluşturucu için v2 baytlarını oluşturur; ayrı bir sıralayıcıya sahip bir rollup buna ihtiyaç duyar. Canlıda denenmedi.
+* **Yerleşim makbuzları.** PQC hesap sorgusu tekil `/qorechain/pqc/v1/account/{address}` rotasını kullanır (0.5.0, ağların sunmadığı çoğul bir yol kullanıyordu). Doğrulama her iki çıpa imzalama baytı biçimini de destekler ve birini çıpanın yüksekliğine göre seçer, asla ikisini de denemez: v3.2.2 geçişinin altında v1, geçişten itibaren v2. Makbuz şeması v2 `chainId` kaydeder; doğrulama, başka bir zincirin düğümüne karşı denetlenen bir makbuzu reddeder ve bir `signBytesVersion` ile bir `chainBinding` denetimi bildirir. Sürüm 1 makbuzları hâlâ doğrulanır. Bkz. [Yerleşim makbuzları](/rollups/settlement-receipts).
+* **Okumalar.** `getLatestBatch`, `/qorechain/rdk/v1/latest_batch/{rollup_id}` adresini çağırır (0.5.0, zincirin sunmadığı bir biçimi çağırıyordu) ve `listBatches` her sayfayı izler (`listBatchesPage` tek bir sayfayı okur). `RollupView`, `escrowBalance` taşır ve düğüm bildirdiğinde `challengeWindowSec`, `challengeBond` ve `proofSystem` taşır; `BatchView`, `submittedTime` taşır.
+* **İtiraz pencereleri.** `batchChallengeWindow`, bir toplu işin penceresini zincirin hesapladığı gibi hesaplar ve yerel saate göre değil zincir ucuna (`getChainTip`) göre değerlendirir: kayıtlı bir gönderim zamanı olan toplu iş için blok süresinin saniyesi cinsinden (v3.2.4 kuralı: testnet'te 8.337.253 yüksekliğinden beri, mainnet'te 3.742.566 yüksekliğinden itibaren), aksi halde gönderim yüksekliğinden itibaren sayılan `window / 6` blok (yükseltme yüksekliğinden önce gönderilen toplu işler için kural). `qorollup status` komutunun arkasındaki sağlık kontrolü ve watchtower bunu kullanır (bkz. [Watchtower](/rollups/watchtower)).
+* **VM'ler arası.** `encodeCrossVmCalldata` artık `executeCrossVMCall(uint8,string,bytes)` işlevini kodlar (düğümün çözdüğü düzen) ve bir `targetVm` alır. `isCrossVmPrecompileActive`, etkin precompile'ların canlı listesini okur (bkz. [Multi-VM](/rollups/multi-vm)).
+* **Bir ücret ödenmeden önce denetlenen kurallar.** `rollupIdError`, bir yapılandırmayı doğrularken ve `createRollup` yayınlamadan önce ID dilbilgisini denetler; `withdrawalErrors`, `executeWithdrawal` yayınlamadan önce bir çekimi denetler.
+* **Şablonlar.** İskeletlenmiş şablonlar `pqcKeypairFromEnv` üzerinden bağlanır; bu yüzden `create` ve `submit-batch` betikleri hibrit imzalar ve `@qorechain/rdk` `^0.6.0` sürümüne bağımlıdır. `multivm-rollup` şablonu, precompile'ın canlı olduğunu denetler ve hedeften boş olmayan bir yanıt zorunlu kılar.
+* **Python, Go, Rust ve Java.** Yukarıdaki okuma tarafı düzeltmeleri (tekil PQC rotası, `latest_batch`, çıpa imzalama baytları v2, itiraz penceresi kuralları, ID ve çekim denetimleri) diğer dört dilin yayınlanmış paketlerinde de bulunur.
+* **Geriye dönük uyumsuz değişiklikler.** `encodeCrossVmCalldata` bir `targetVm` alır ve `CROSS_VM_DEFAULT_SIGNATURE` değişti. `RollupHealth` ve `BatchDeadline`, eski saniye tabanlı son tarih yerine bir `challengeWindow` taşır.
 
-**Son tarihler.** Watchtower ve `qorollup status` komutunun arkasındaki sağlık kontrolü, bir toplu işin `submitted_at` değerini (bir blok yüksekliği) zaman damgası olarak ele alır; bu yüzden itiraz penceresi geri sayımları ve `onDeadline` uyarıları yanlıştır (bkz. [Watchtower](/rollups/watchtower)).
+**0.6.0'da kalan sınırlar:**
 
-**VM'ler arası.** Calldata yardımcısı, düğümün çözdüğünden farklı bir fonksiyon imzası kodlar ve `0x…0901` adresindeki precompile'ın her iki ağda da kodu yoktur (bkz. [Multi-VM](/rollups/multi-vm)).
+* **Yalnızca TypeScript istemcisi hibrit imzalar.** `qorollup` CLI'si (`create`, `pause`, `resume`, `stop` ve `withdraw` komutları kuantum sonrası bir anahtar olmadan bağlanır) ve **Python, Go, Rust ve Java** istemcileri yalnızca klasik imzalar; bunu her iki ağ da native hatta reddeder; README'leri hâlâ bunu söyler. Mesaj oluşturucularında `anchor_signature` veya `validator_set_hash` alanı yoktur. Bunlardan işlem göndermek için zincir CLI'siyle oluşturup imzalayın (`--generate-only`, ardından `qorechaind tx pqc cosign`) veya TypeScript istemcisini bir `pqcKeypair` ile kullanın.
+* **Hiçbir hibrit rollup oluşturma canlıda denenmedi,** çünkü hiçbir ağda rollup yoktur. Aynısı demirlenmiş toplu işler, çekimler ve makbuz akışının tamamı için de geçerlidir.
+* **Demirleme oluşturucuyu gerektirir.** Bir toplu iş, aynı işlemde yalnızca oluşturucunun imzası içindeyse demirlenir. Sıralayıcı başka bir adresse, oluşturucunun v2 baytlarını bant dışında imzalaması ve sıralayıcının sonucu göndermesi gerekir.
+* **`0x…0901` adresindeki VM'ler arası precompile'ın kodu yoktur** ve her iki ağda da etkin precompile'lar listesinde değildir; bu yüzden bir sözleşmeden yapılan çağrı hâlâ hiçbir şey yapmaz (bkz. [Multi-VM](/rollups/multi-vm)).
+* **İtiraz penceresi uzunluğu.** Kit, bir rollup'ın kendi penceresini yalnızca düğüm bildirdiğinde okur (paket bunu v3.2.4 ve sonrası olarak belgeler; testnet bunu şimdi, mainnet ise 3.742.566 yüksekliğinden itibaren çalıştırır). Aksi halde modülün varsayılan penceresini kullanır; kendi penceresini yapılandırmış bir rollup için `challengeWindowSecs` geçirin. Daha eski `challengeWindowDeadline` ve `isChallengeWindowClosed` yardımcıları hâlâ dışa aktarılır ve hâlâ saniye alır; bu yüzden onlara bir blok yüksekliği vermeyin.
+* **Veri kullanılabilirliği.** `buildDaBlob` SHA-256 ile karma alır, oysa zincirin blob taahhüdü SHAKE-256'dır (bkz. [Veri Kullanılabilirliği](/rollups/data-availability)).
 
-**Veri kullanılabilirliği.** `buildDaBlob` SHA-256 ile karma alır, oysa zincirin blob taahhüdü SHAKE-256'dır (bkz. [Veri Kullanılabilirliği](/rollups/data-availability)).
+**0.6.0 öncesi sürümler.** 0.5.0 ve öncesi yerleşim makbuzları, watchtower veya VM'ler arası calldata için kullanılmamalıdır: 0.5.0, oluşturucunun anahtarını ağların sunmadığı bir rotada arıyordu (bu yüzden makbuz doğrulaması her gerçek makbuzda kapalı başarısız oldu), yalnızca v1 çıpa mesajını yeniden oluşturuyordu, bir blok yüksekliğini zaman damgası olarak okuyordu (her toplu iş yaşı ve itiraz son tarihi yanlıştı ve watchtower her toplu iş için son tarih uyarısını hemen veriyordu), zincirin sunmadığı bir latest-batch rotasını çağırıyordu, yalnızca ilk 50 toplu işi okuyordu, precompile'ın çözmediği bir işlevi kodluyordu ve yalnızca klasik imzalayan şablonlar gönderiyordu. 0.4.x işlem istemcisinde hibrit imzalama yoktu.
 
 #### Python, Go, Rust ve Java istemcileri
 
-TypeScript paketinin yanı sıra RDK, TypeScript yüzeyini yansıtan tam **Python**, **Go**, **Rust** ve **Java** istemcileri sunar: doğrulamalı yapılandırma oluşturucu, beş ön ayar profili, denom/ekonomi/bech32 yardımcı programları, ikili-Merkle ve çekim (withdrawal) kanıtı yardımcıları, rollup manifestleri, REST ve `qor_` JSON-RPC okuma istemcileri, ön kontrol/sağlık kontrolleri, hesaplar (mnemonik → `qor` adresi) ve klasik işlem imzalama + yayınlama (`SIGN_MODE_DIRECT`, hibrit imzalı ağlarda kabul edilmez — bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)). Hepsi paylaşılan diller arası altın (golden) vektörlere karşı doğrulanmıştır ve kendi kayıt defterlerine **yayınlanmıştır**:
+TypeScript paketinin yanı sıra RDK, TypeScript yüzeyini yansıtan tam **Python**, **Go**, **Rust** ve **Java** istemcileri sunar: doğrulamalı yapılandırma oluşturucu, beş ön ayar profili, denom/ekonomi/bech32 yardımcı programları, ikili-Merkle ve çekim (withdrawal) kanıtı yardımcıları, rollup manifestleri, REST ve `qor_` JSON-RPC okuma istemcileri, ön kontrol/sağlık kontrolleri, hesaplar (mnemonik → `qor` adresi) ve klasik işlem imzalama + yayınlama (`SIGN_MODE_DIRECT`, hibrit imzalı ağlarda kabul edilmez — bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits)). Hepsi paylaşılan diller arası altın (golden) vektörlere karşı doğrulanmıştır ve kendi kayıt defterlerine **yayınlanmıştır**:
 
 ```bash
 # Python — qorechain-rdk olarak kurulur, qorrdk olarak içe aktarılır
@@ -166,18 +178,18 @@ pip install qorechain-rdk
 # Rust
 cargo add qorechain-rdk
 
-# Go
-go get github.com/qorechain/qorechain-rdk/packages/go
+# Go (sürümü sabitleyin: proxy'nin @latest yanıtı kontrol edildiğinde hâlâ v0.5.0 idi)
+go get github.com/qorechain/qorechain-rdk/packages/go@v0.6.0
 
 # Java (Maven / Gradle)
-# io.github.qorechain:qorechain-rdk:0.5.0
+# io.github.qorechain:qorechain-rdk:0.6.0
 ```
 
 ```python
 import qorrdk
 ```
 
-Güncel yayınlanmış sürümlerin tümü **0.5.0**'dır: Python `qorechain-rdk` (PyPI, `qorrdk` olarak içe aktarılır), Go modülü `github.com/qorechain/qorechain-rdk/packages/go` (`v0.5.0`), Rust `qorechain-rdk` (crates.io) ve Java `io.github.qorechain:qorechain-rdk` (Maven Central). Bu istemciler zincir durumunu okur; ağların gerektirdiği hibrit imzayı üretmezler (bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)).
+Güncel yayınlanmış sürümlerin tümü **0.6.0**'dır (21 Ekim 2026'da kontrol edildi): Python `qorechain-rdk` (PyPI, `qorrdk` olarak içe aktarılır), Go modülü `github.com/qorechain/qorechain-rdk/packages/go` (`v0.6.0`), Rust `qorechain-rdk` (crates.io) ve Java `io.github.qorechain:qorechain-rdk` (Maven Central). Bu istemciler zincir durumunu okur; ağların gerektirdiği hibrit imzayı hâlâ üretmezler ve mesaj oluşturucularında çıpa alanları yoktur (bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits)).
 
 :::note
 TypeScript RDK ve şablonları varsayılan olarak **`qorechain-diana`** test ağını kullanır ve ön ayarlar kutudan çıktığı gibi herkese açık canlı uç noktalara ulaşır. Sürümleri sabitleyin ve mainnet öncesinde test ağında doğrulayın.
@@ -202,12 +214,12 @@ npx create-qorechain-rollup my-rollup --template defi-rollup --network testnet -
 İskelet oluşturucu, belgelenmiş stake ve oluşturma yakımı (creation-burn) maliyetini ve rollup'ınızı oluşturmak ve durumunu okumak için sonraki adımları yazdırır.
 
 :::caution İskeletlenmiş betikler neler yapabilir
-`create-qorechain-rollup` 0.5.0 şablonları `@qorechain/rdk` `^0.5.0` sürümüne bağımlıdır. `create` ve `submit-batch` betikleri kuantum sonrası bir anahtar olmadan bağlanır, bu yüzden oluşturdukları işlemler yalnızca klasiktir ve her iki ağ tarafından da reddedilir; onlara güvenmeden önce `connectTx`'e bir `pqcKeypair` ekleyin (bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)). Başlangıç şablonunun `submit-batch` betiği yalnızca bir referans akıştır: örnek kökler ve örnek bir kanıt gönderir ve canlı bir ağda bir toplu işi sonlandırması beklenmez.
+`create-qorechain-rollup` 0.6.0 şablonları `@qorechain/rdk` `^0.6.0` sürümüne bağımlıdır. `create` ve `submit-batch` betikleri, kuantum sonrası anahtarınızı `QORE_MNEMONIC` değerinden (veya `QORE_OPERATOR_PRIVATE_KEY_HEX` ile imzalıyorsanız `QORE_PQC_SEED_HEX` değerinden) çözen, zincire karşı denetleyen ve hibrit imzalayan `src/signer.ts` içindeki `connectOperator()` üzerinden bağlanır; ikisi de ayarlı değilse betik uyarı verir ve yalnızca klasik imzalar; bunu her iki ağ da reddeder. Hiçbir ağda bir şablon aracılığıyla rollup oluşturulmamıştır; bu yüzden bu yol canlıda denenmemiştir. Başlangıç şablonunun `submit-batch` betiği yalnızca bir referans akıştır: örnek kökler ve örnek bir kanıt gönderir ve canlı bir ağda bir toplu işi sonlandırması beklenmez.
 :::
 
 ### Koddan bir rollup yapılandırması oluşturma
 
-Bir ön ayardan bir yapılandırma oluşturun, zincirden güncel stake ve yakım oranını okuyun ve oluşturma mesajını üretin. Yapılandırma oluşturucu, yerleşim → kanıt uyumluluk matrisini `validate()` / `build()` üzerinde zorunlu kılar. Ortaya çıkan değerleri yukarıdaki CLI ile (veya hibrit imzalayan bir istemciyle) gönderin — bkz. [RDK 0.5.0 sınırları](#rdk-050-limits).
+Bir ön ayardan bir yapılandırma oluşturun, zincirden güncel stake ve yakım oranını okuyun ve oluşturma mesajını üretin. Yapılandırma oluşturucu, yerleşim → kanıt uyumluluk matrisini `validate()` / `build()` üzerinde zorunlu kılar. Ortaya çıkan değerleri yukarıdaki CLI ile veya bir `pqcKeypair` verilmiş TypeScript istemcisiyle gönderin — bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits).
 
 ```ts
 import { createRdkClient, presets, estimateCreationCost, uqorToQor } from "@qorechain/rdk";
@@ -243,7 +255,7 @@ const rollup = await rdk.rest.getRollup("my-defi-rollup");
 console.log(rollup.status, rollup.settlementMode, rollup.daBackend, rollup.vmType);
 ```
 
-Toplu işler için `rdk.rest.getBatch(rollupId, index)` veya `qorechaind query rdk batch [rollup-id]` komutunu kullanın (aşağıda); `getLatestBatch` ve `listBatches` 0.5.0'da sınırlara sahiptir (bkz. [RDK 0.5.0 sınırları](#rdk-050-limits)).
+Toplu işler için `rdk.rest.getBatch(rollupId, index)` veya `qorechaind query rdk batch [rollup-id]` komutunu kullanın (aşağıda); `getLatestBatch` ve `listBatches`, 0.6.0'dan beri zincirin `latest_batch` rotasını ve toplu iş listesinin her sayfasını okur (bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits)).
 
 ---
 
@@ -337,11 +349,11 @@ qorechaind query rdk anchor-sign-bytes [layer-id] [batch-index] [state-root-hex]
   --chain-id qorechain-diana --tx-count 120
 ```
 
-`layer-id`, rollup'ın katman kimliğidir (RDK tarafından oluşturulan rollup'lar için rollup ID'si). Bir `zk` rollup'ı için ZK `--proof` bugün bir CLI bayrağına sahip değildir ve resolve-challenge mesajı bir CLI komutu değildir: bir istemci kullanın. Bir çıpanın neyi kanıtladığı ve neyi kanıtlamadığı için bkz. [Yerleşim makbuzları](/rollups/settlement-receipts). Henüz her iki ağda da rollup, katman veya çıpa yoktur.
+`layer-id`, rollup'ın katman kimliğidir (RDK tarafından oluşturulan rollup'lar için rollup ID'si). TypeScript'ten, `@qorechain/rdk` 0.6.0'daki `RdkTxClient.submitBatch`, istemci hibrit imzaladığında ve rollup'ın oluşturucusu olduğunda çıpayı sizin için imzalar; `anchorSignBytesForBatch` ise bir oluşturucuya bant dışında imzalayacağı baytları verir (bkz. [RDK 0.6.0: değişiklikler ve sınırlar](#rdk-050-limits)). Bir `zk` rollup'ı için ZK `--proof` bugün bir CLI bayrağına sahip değildir ve resolve-challenge mesajı bir CLI komutu değildir: bir istemci kullanın. Bir çıpanın neyi kanıtladığı ve neyi kanıtlamadığı için bkz. [Yerleşim makbuzları](/rollups/settlement-receipts). Henüz her iki ağda da rollup, katman veya çıpa yoktur.
 
 ### Bir toplu işe itiraz etme (iyimser rollup'lar) {#challenge-a-batch-optimistic-rollups}
 
-Herhangi bir hesap, itiraz penceresi içinde (mainnet'te varsayılan olarak 100,800 blok; yalnızca test ağında, v3.2.4'ten itibaren, yeni toplu işler için blok süresinin saniyesi cinsinden bir pencere) `submitted` durumundaki bir toplu işe, bir bağ (rollup'ın `challenge_bond`'u; `nft` ve `custom` ön ayarları için 1,000 QOR) ve bir hile kanıtı yatırarak itiraz edebilir. Rollup ID'sini ve toplu iş dizinini alır; hile kanıtını `--proof` ile geçirin:
+Herhangi bir hesap, itiraz penceresi içinde (mainnet'te 3.742.566 yüksekliğinden önce gönderilen bir toplu iş için varsayılan olarak 100,800 blok; v3.2.4'ten itibaren yeni toplu işler için blok süresinin saniyesi cinsinden bir pencere: testnet'te 8.337.253 yüksekliğinden beri, mainnet'te 3.742.566 yüksekliğinden itibaren) `submitted` durumundaki bir toplu işe, bir bağ (rollup'ın `challenge_bond`'u; `nft` ve `custom` ön ayarları için 1,000 QOR) ve bir hile kanıtı yatırarak itiraz edebilir. Rollup ID'sini ve toplu iş dizinini alır; hile kanıtını `--proof` ile geçirin:
 
 ```bash
 qorechaind tx rdk challenge-batch [rollup-id] [batch-index] \

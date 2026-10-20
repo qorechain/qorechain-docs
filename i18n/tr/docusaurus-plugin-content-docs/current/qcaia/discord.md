@@ -13,7 +13,7 @@ Discord'da QCAIA, **eğik çizgi komutları** aracılığıyla çalışır. `/` 
 
 Resmi QoreChain Discord sunucusuna katılın:
 
-**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
+**[discord.gg/qorechain](https://discord.gg/qorechain)**
 
 İçeri girdikten sonra, QCAIA ile konuşmak için **#general** kanalına gidin.
 

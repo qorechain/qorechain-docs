@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 Registration is exempt from the hybrid requirement only for an account without a key, so this transaction is signed with the account's classical key alone. A malformed proof is refused with `ErrInvalidProofOfPossession` (code 231 in module `pqc`).
 
-**Testnet only (v3.2.4, not on mainnet):** the account record gains a boolean `possession_proven`, returned by `GET /qorechain/pqc/v1/account/{address}` on the testnet. It is `true` when the current key was registered with a valid proof, or arrived through a rotation or migration (both of which verify a signature by the new key over bytes that name the chain, the account and the key); a registration without a proof records `false`, and a key that changes without one clears the flag. Mainnet v3.2.3 does not report the field. The proof remains optional on the testnet as well.
+**From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566):** the account record gains a boolean `possession_proven`, returned by `GET /qorechain/pqc/v1/account/{address}`. It is `true` when the current key was registered with a valid proof, or arrived through a rotation or migration (both of which verify a signature by the new key over bytes that name the chain, the account and the key); a registration without a proof records `false`, and a key that changes without one clears the flag. Mainnet v3.2.3 does not report the field before the upgrade height. The proof remains optional for account keys under v3.2.4.
 
 ## Hybrid Signatures {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ These utilities back the default application hash and are used for:
 
 All cross-chain bridge attestations and state commitments use **Dilithium-5** signatures. The `x/multilayer` module requires PQC aggregate signatures on every `MsgAnchorState` submission, and ML-KEM commitments secure key exchange channels between bridge relayers.
 
-This ensures that cross-chain security is not degraded by the use of classical cryptography in bridge infrastructure, maintaining quantum resistance across the entire protocol stack. No bridge route is live (see [Bridge Architecture](/architecture/bridge-architecture#current-status)); on the testnet only (v3.2.4), registering a bridge validator also requires a proof of possession of its PQC key.
+This ensures that cross-chain security is not degraded by the use of classical cryptography in bridge infrastructure, maintaining quantum resistance across the entire protocol stack. No bridge route is live (see [Bridge Architecture](/architecture/bridge-architecture#current-status)); from v3.2.4 (testnet now; mainnet from height 3,742,566), registering a bridge validator also requires a proof of possession of its PQC key.
 
 ## Module Parameters
 

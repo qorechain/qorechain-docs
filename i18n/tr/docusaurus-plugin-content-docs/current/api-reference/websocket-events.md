@@ -225,14 +225,14 @@ PQC anahtarları bir kayıt işlemiyle açıkça kaydedilir; otomatik bir kayıt
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Hafif düğüm yaşam döngüsü ve ödül olayları |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Yönetişim AI tarama yapılandırmasını güncellediğinde yayınlanır |
 
-### Staking Tiers Modülü (yalnızca testnet)
+### Staking Tiers Modülü (v3.2.4)
 
-Bu olaylar yalnızca `qorechain-diana` testnet'inde (v3.2.4) vardır; mainnet'te modül henüz yoktur (yönetişim önerisi 13, v3.2.4'ü 3,742,566 yüksekliğinde uygulayacaktır).
+Bu olaylar v3.2.4 sürümüyle gelir: `qorechain-diana` testnet'i bunları 19 Ekim 2026'dan beri yayar, mainnet ise 3,742,566 yüksekliğinden itibaren yayar (yönetişim önerisi 13). Hâlâ v3.2.3'te olan bir mainnet düğümünde staking-tiers modülü yoktur ve bunların hiçbirini yaymaz.
 
 | Olay Türü | Anahtar Nitelikler | Açıklama |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Bir delegasyon kilidi oluşturuldu |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Bir kilit erken sonlandırıldı veya sonuna ulaştı |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Bir kilit erken sonlandırıldı (ceza `staking_tier_penalty` yakma kaynağı altında yakılır) veya sonuna ulaştı |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; uzlaşı toplamları | Bir bonus talep edildi; havuz uzlaştırıldı |
 | `staking_tier_params_updated` | parametreler | Yönetişim modül parametrelerini değiştirdi |
 

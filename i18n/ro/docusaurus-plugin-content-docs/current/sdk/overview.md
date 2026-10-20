@@ -21,7 +21,7 @@ QoreChain.
 QoreChain este un blockchain Layer 1 cu trei runtime-uri de contracte
 inteligente de primă clasă pe un singur lanț:
 
-- **CosmWasm** — contracte inteligente Wasm prin Cosmos SDK.
+- **QoreChain Native** — contracte inteligente Wasm prin Cosmos SDK (runtime-ul CosmWasm).
 - **QoreChain EVM Engine** — execuție compatibilă Ethereum (Solidity, viem,
   JSON-RPC standard).
 - **SVM** — un runtime compatibil Solana, cu un JSON-RPC în stil Solana.
@@ -30,20 +30,20 @@ Conturile, soldurile și token-urile sunt partajate între runtime-uri, iar lan�
 include modulul IBC pentru interoperabilitate cross-chain (încă nu este deschis
 niciun canal IBC pe mainnet sau testnet).
 
-:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.3, testnet v3.2.4)
+:::note Ce funcționează astăzi pe rețelele live (mainnet v3.2.3, v3.2.4 de la înălțimea 3.742.566; testnet v3.2.4)
 **Funcționează:** citiri pe fiecare bandă, tranzacții Native semnate hibrid,
 conturi unificate, tranzacții EVM în interiorul unei
 [ferestre de autorizare](/sdk/guides/evm#evm-window) și citiri SVM.
 **Încă indisponibile:** precompilele EVM (inactive), spațiul de nume JSON-RPC
 `qor_`, tranzacțiile SVM, apelurile cross-VM pe mainnet (`MsgCrossVMCall` este
-oprit de circuit breaker), încărcarea și instanțierea CosmWasm pentru conturile
+oprit de circuit breaker), încărcarea și instanțierea QoreChain Native pentru conturile
 obișnuite, fluxurile de autentificator / cont abstract (modul oprit), xQORE și
 abstractizarea gazului. Fiecare ghid repetă avertismentul acolo unde se aplică.
 
 SDK-ul publicat (0.9.0, 21 octombrie 2026) semnează în forma pe care o verifică
 ambele rețele (sign-bytes hibrid v2, stabilit din starea lanțului), iar formatul
 de semnare, adresele, zecimalele, memo-urile și comisioanele nu s-au schimbat în
-v3.2.3 sau v3.2.4. Poartă partea de client a regulilor post-cuantice ulterioare
+v3.2.3 sau v3.2.4 (mainnet rulează v3.2.4 de la înălțimea 3.742.566). Poartă partea de client a regulilor post-cuantice ulterioare
 (dovada de posesie la înregistrarea cheii, ferestre EVM cu domeniu restrâns,
 mesaje de consimțământ EIP-7702); versiunile anterioare lui 0.9.0 nu o au, vezi
 [Versiuni anterioare lui 0.9.0](/sdk/install#before-090).
@@ -117,7 +117,7 @@ derivare, aritmetică a denominărilor și suprafețe de citire.
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (import `qorsdk`) | Publicat (PyPI, v0.9.0) |
 | `qorechain-sdk` (modul Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | Publicat (Go proxy, tag `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (import `qorechain`) | Publicat (crates.io, v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | Publicat (Maven Central, v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | Publicat (Maven Central, v0.9.1; celelalte limbaje sunt 0.9.0) |
 | `@qorechain/evm` | TypeScript (adaptor EVM) | `npm i @qorechain/evm viem` | Publicat (npm, v0.8.0) |
 | `@qorechain/svm` | TypeScript (adaptor SVM) | `npm i @qorechain/svm @solana/web3.js` | Publicat (npm, v0.8.0) |
 | `@qorechain/react` | TypeScript (kit React) | `npm i @qorechain/react` | Publicat (npm, v0.9.0) |
@@ -139,7 +139,7 @@ WebSocket. Toți acești clienți sunt **publicați**: TypeScript pe npm
 (`@qorechain/sdk` 0.9.0), Python pe PyPI (`qorechain-sdk` 0.9.0, import
 `qorsdk`), Go pe module proxy (tag `packages/go/v0.9.0`), Rust pe crates.io
 (`qorechain-sdk` 0.9.0) și Java pe Maven Central
-(`io.github.qorechain:qorechain-sdk` 0.9.0). Adaptoarele de
+(`io.github.qorechain:qorechain-sdk` 0.9.1, o actualizare doar pentru Java; ceilalți clienți sunt 0.9.0). Adaptoarele de
 execuție EVM/SVM (`@qorechain/evm`, `@qorechain/svm`, ambele 0.8.0), kitul
 `@qorechain/react` (0.9.0) și CLI-ul de schelet `create-qorechain-dapp`
 (0.9.0) sunt exclusiv TypeScript și, de asemenea, publicate pe npm. Vezi

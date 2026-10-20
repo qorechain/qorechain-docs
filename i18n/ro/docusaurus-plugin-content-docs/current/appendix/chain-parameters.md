@@ -10,7 +10,7 @@ sidebar_position: 2
 Referință consolidată a parametrilor de modul ai rețelelor QoreChain, grupați pe module. Parametrii pot fi interogați cu `qorechaind query <module> params` acolo unde modulul are o interogare params (`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`; `ai`, `qca`, `rdk`, `bridge`, `abstractaccount` și `gasabstraction` folosesc `config`, iar `gasabstraction` poate fi interogat doar pe testnet) și, prin REST, doar pentru rutele enumerate în [referința REST / gRPC](/api-reference/rest-grpc-endpoints). Parametrii `x/inflation` sunt serviți și prin REST pe mainnet începând cu v3.2.3 (`/qorechain/inflation/v1/params`). REST nu este disponibil pentru `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock` sau `xqore`.
 
 :::note
-Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.3**) la 20 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Ele sunt identice pe testnet **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4**), cu excepția cazurilor indicate; diferențele existente astăzi sunt adunate în [Diferențe ale testnet-ului (v3.2.4)](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
+Valorile afișate au fost citite în direct de pe mainnet **`qorechain-vladi`** (EVM chain ID **9801**, versiunea **v3.2.3**) la 20 octombrie 2026 (valori de genesis, cu excepția cazurilor în care o propunere de guvernanță le-a schimbat; acestea sunt menționate). Ele sunt identice pe testnet **`qorechain-diana`** (EVM chain ID **9800**, versiunea **v3.2.4** din 19 octombrie 2026), cu excepția cazurilor indicate; diferențele care există până când mainnet-ul preia upgrade-ul v3.2.4 (înălțimea 3,742,566) sunt adunate în [Diferențe până la upgrade-ul v3.2.4](#testnet-differences). Duratele exprimate în blocuri sunt convertite la timpul de bloc măsurat pe mainnet, de aproximativ 3,2 secunde (testnet-ul produce un bloc aproximativ la fiecare secundă).
 :::
 
 ---
@@ -378,7 +378,7 @@ Module standard Cosmos SDK și EVM, citite în direct la 20 octombrie 2026 (iden
 | | `active_static_precompiles` | gol (niciun precompile EVM nu este activ) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
-| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+| QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
 
 ---
 
@@ -386,27 +386,33 @@ Module standard Cosmos SDK și EVM, citite în direct la 20 octombrie 2026 (iden
 
 Lanțul poate dezactiva tipuri individuale de mesaje cu întrerupătorul de circuit din Cosmos SDK, controlat de contul de operațiuni al fundației și de guvernanță. Un tip de mesaj dezactivat este respins de ante handler pe orice lane. Lista live se află la `GET /cosmos/circuit/v1/disable_list`.
 
-**Mainnet (20 octombrie 2026, 16 intrări, neschimbate din 14 octombrie):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
+**Mainnet (20 octombrie 2026, 16 intrări, neschimbate din 14 octombrie):** crearea de conturi de vesting (`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; și cele patru mesaje de control PRISM (`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). Lane-ul EVM (`MsgEthereumTx`) este **deschis**: a fost dezactivat între 16 și 25 septembrie și redeschis de upgrade-ul v3.2.0.
 
-**Testnet (20 octombrie 2026):** doar cele trei mesaje CosmWasm.
+**Testnet (20 octombrie 2026):** doar cele trei mesaje QoreChain Native.
 
 Orice alt tip de mesaj, inclusiv toate mesajele standard bank, staking, governance, distribution, authz și de înregistrare `x/pqc`, este activat. Lista este controlată prin guvernanță și se poate schimba; interogați-o întotdeauna.
 
 ---
 
-## Diferențe ale testnet-ului (v3.2.4) {#testnet-differences}
+## Diferențe până la upgrade-ul v3.2.4 {#testnet-differences}
 
-Testnet-ul `qorechain-diana` rulează v3.2.4 (aplicată la înălțimea 8,337,253, la 19 octombrie 2026); v3.2.4 este **doar pentru testnet** în prezent; propunerea de guvernanță 13 de pe mainnet ar aplica-o la înălțimea 3,742,566. La 20 octombrie 2026, următoarele diferă față de mainnet:
+Testnet-ul `qorechain-diana` rulează v3.2.4 de la înălțimea 8,337,253 (19 octombrie 2026). Mainnet-ul rulează v3.2.3 până la înălțimea 3,742,566 și v3.2.4 de la acel bloc (propunerea de guvernanță 13); din acel moment rândurile v3.2.4 de mai jos se aplică ambelor rețele și rămân diferite doar valorile specifice fiecărei rețele. La 20 octombrie 2026, testnet-ul diferă de mainnet astfel:
 
-| Zonă | Testnet |
+| Zonă | Testnet acum; mainnet de la înălțimea 3,742,566 |
 | ---- | ------- |
 | Module | 49 în loc de 48: modulul opțional de staking cu blocare în timp `x/stakingtier` (`GET /qorechain/stakingtier/v1/params`; blocare minimă 10 QOR). Vezi [Staking și delegare](/user-guide/staking-and-delegation#time-locked-staking). |
-| `x/inflation` | Valori de emisie mai vechi (16.239 QOR per epocă, plafon 114.285.714 QOR, deja atins) și un al treilea `emission_mode`, `target_apy`, cu un parametru `target_apy_bps` care este în prezent `0`. |
+| `x/inflation` | Un al treilea `emission_mode`, `target_apy`, cu un parametru `target_apy_bps` care este `0` pe testnet. Care mod este în vigoare este o decizie de guvernanță separată pe fiecare rețea. |
 | `x/burn` | O a treisprezecea sursă înregistrată, `staking_tier_penalty`. |
 | Pool-ul de recompense `x/lightnode` | Câmpuri suplimentare de raportare (`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); limita de recompensă a unui nod începe de la propria înregistrare. |
 | `x/pqc` | Un indicator `possession_proven` pe conturile PQC; dovada de posesie este în continuare opțională pentru cheile de cont și obligatorie pentru cheile validatorilor de bridge. |
 | `x/rdk` | Fereastra optimistă de contestare este numărată în timp de bloc. |
-| Întrerupător de circuit | Doar cele trei mesaje CosmWasm (vezi mai sus). |
 | Interogări | Interogări noi `protocol_features` și `auth_nonce`. |
+
+Aceste valori sunt specifice testnet-ului și rămân diferite și după upgrade:
+
+| Zonă | Testnet |
+| ---- | ------- |
+| Valorile `x/inflation` | Valori de emisie mai vechi (16.239 QOR per epocă, plafon 114.285.714 QOR, deja atins); mainnet-ul folosește valorile stabilite prin propunerea de guvernanță 10. |
+| Întrerupător de circuit | Doar cele trei mesaje QoreChain Native (vezi mai sus). |
 
 Orice parametru care nu este enumerat aici este identic pe ambele rețele.

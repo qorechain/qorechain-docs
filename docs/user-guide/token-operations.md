@@ -10,7 +10,7 @@ sidebar_position: 1
 This guide covers the QOR token, how to send and receive tokens, query balances, and understand the fee distribution model on QoreChain.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3**; the testnet runs **v3.2.4** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3** until height 3,742,566 and **v3.2.4** from that block; the testnet has run **v3.2.4** since 19 October 2026 — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when transacting on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -98,12 +98,12 @@ The split applies to everything that enters the fee collector, which holds trans
 
 ## Burn Channels
 
-QoreChain's burn module defines 12 burn sources. QOR burned through any of them is permanently removed from circulation. On mainnet only the gas-fee and failed-transaction channels have recorded burns so far; the others are defined but have recorded nothing. The testnet records a thirteenth source, `staking_tier_penalty`, for its optional time-locked staking module.
+QoreChain's burn module defines 12 burn sources. QOR burned through any of them is permanently removed from circulation. On mainnet only the gas-fee and failed-transaction channels have recorded burns so far; the others are defined but have recorded nothing. From v3.2.4 (testnet since 19 October 2026; mainnet from height 3,742,566) there is a thirteenth source, `staking_tier_penalty`, for the optional time-locked staking module.
 
 | Channel            | Description                                                                      |
 | ------------------ | -------------------------------------------------------------------------------- |
 | `gas_fee`          | 30% of all gas fees are burned                                                   |
-| `contract_create`  | Flat 100 QOR fee burned per contract creation (inactive: CosmWasm upload is closed) |
+| `contract_create`  | Flat 100 QOR fee burned per contract creation (inactive: QoreChain Native upload is closed) |
 | `ai_service`       | 50% of AI service fees burned (inactive: AI service fees are not live)           |
 | `bridge_fee`       | 100% of bridge fees burned (inactive: the bridge is not live)                    |
 | `treasury_buyback` | Periodic buyback-and-burn from the treasury                                      |

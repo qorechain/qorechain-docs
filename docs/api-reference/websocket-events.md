@@ -225,14 +225,14 @@ PQC keys are registered explicitly with a registration transaction; there is no 
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Light-node lifecycle and reward events |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Emitted when governance updates the AI screening configuration |
 
-### Staking Tiers Module (testnet only)
+### Staking Tiers Module (v3.2.4)
 
-These events exist only on the `qorechain-diana` testnet (v3.2.4); mainnet does not have the module yet (governance proposal 13 would apply v3.2.4 at height 3,742,566).
+These events come with the v3.2.4 release: the `qorechain-diana` testnet has emitted them since 19 October 2026 and mainnet emits them from height 3,742,566 (governance proposal 13). A mainnet node still on v3.2.3 has no staking-tiers module and emits none of them.
 
 | Event Type | Key Attributes | Description |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | A delegation lock was created |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | A lock was ended early, or reached its end |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | A lock was ended early (the penalty is burned under the `staking_tier_penalty` burn source), or reached its end |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount`; settlement totals | A bonus was claimed; the pool was settled |
 | `staking_tier_params_updated` | parameters | Governance changed the module parameters |
 

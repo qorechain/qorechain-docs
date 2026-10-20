@@ -10,7 +10,7 @@ sidebar_position: 3
 Questa guida illustra come funziona la governance on-chain su QoreChain: come vengono conteggiati i voti, come presentare proposte e come votare.
 
 :::note
-I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release **v3.2.3**; la testnet esegue la **v3.2.4** — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
+I comandi seguenti utilizzano la testnet **`qorechain-diana`** (EVM chain ID **9800**). La mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) è attiva dal 7 giugno 2026 ed esegue la release **v3.2.3** fino all'altezza 3.742.566 e la **v3.2.4** da quel blocco; la testnet esegue la **v3.2.4** dal 19 ottobre 2026 — sostituisci il chain ID e gli endpoint della mainnet dalla pagina **Connessione alla Mainnet** quando partecipi alla governance sulla mainnet.
 :::
 
 :::caution Firma con `tx pqc cosign`
@@ -175,7 +175,7 @@ I parametri principali includono:
 
 ## La governance sulla mainnet finora {#mainnet-history}
 
-La governance della mainnet è stata usata per modifiche ai parametri, decisioni sui circuit breaker, upgrade coordinati e, da ottobre 2026, per rilasciare importi che la chain aveva registrato all'upgrade v3.2.0. Le proposte da 7 a 11 sono state approvate sulla mainnet a ottobre 2026 e la proposta 12 era nel suo periodo di votazione al momento della stesura; l'elenco e gli esiti sono in [Cronologia delle Versioni](/appendix/version-history#governance-timeline), e ogni proposta può essere letta in tempo reale a `GET /cosmos/gov/v1/proposals`.
+La governance della mainnet è stata usata per modifiche ai parametri, decisioni sui circuit breaker, upgrade coordinati e, da ottobre 2026, per rilasciare importi che la chain aveva registrato all'upgrade v3.2.0. Le proposte da 7 a 11 sono state approvate sulla mainnet a ottobre 2026, mentre le proposte 12 (un ulteriore rilascio) e 13 (l'upgrade v3.2.4 all'altezza 3.742.566) erano nei rispettivi periodi di votazione al momento della stesura; l'elenco e gli esiti sono in [Cronologia delle Versioni](/appendix/version-history#governance-timeline), e ogni proposta può essere letta in tempo reale a `GET /cosmos/gov/v1/proposals`.
 
 ---
 

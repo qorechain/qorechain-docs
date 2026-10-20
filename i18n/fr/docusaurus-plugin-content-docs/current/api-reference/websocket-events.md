@@ -225,14 +225,14 @@ Les clés PQC sont enregistrées explicitement par une transaction d'enregistrem
 | `lightnode_register`, `lightnode_heartbeat`, `lightnode_claim_rewards`, `lightnode_deregister`, `lightnode_status_change`, `lightnode_reward_distribution`, `lightnode_reserve_release` | `address`, `node_type`, `status`, `reward_amount`, `destination` | Événements du cycle de vie et des récompenses des light nodes |
 | `ai_config_updated` | `max_tx_per_minute`, `max_evm_tx_per_minute`, `anomaly_action`, `anomaly_threshold` | Émis lorsque la gouvernance met à jour la configuration du filtrage IA |
 
-### Module Staking Tiers (testnet uniquement)
+### Module Staking Tiers (v3.2.4)
 
-Ces événements n'existent que sur le testnet `qorechain-diana` (v3.2.4) ; le mainnet n'a pas encore ce module (la proposition de gouvernance 13 appliquerait la v3.2.4 à la hauteur 3 742 566).
+Ces événements viennent avec la version v3.2.4 : le testnet `qorechain-diana` les émet depuis le 19 octobre 2026 et le mainnet les émet à partir de la hauteur 3 742 566 (proposition de gouvernance 13). Un nœud mainnet encore en v3.2.3 n'a pas de module staking-tiers et n'en émet aucun.
 
 | Type d'événement | Attributs clés | Description |
 | ---------- | -------------- | ----------- |
 | `staking_tier_lock_created` | `lock_id`, `delegator`, `validator`, `amount`, `months`, `end_time` | Un verrouillage de délégation a été créé |
-| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un verrouillage a été terminé de façon anticipée, ou a atteint son terme |
+| `staking_tier_lock_unlocked_early`, `staking_tier_lock_released` | `lock_id`, `delegator`, `penalty_burned`, `bonus_forfeited` | Un verrouillage a été terminé de façon anticipée (la pénalité est brûlée sous la source de burn `staking_tier_penalty`), ou a atteint son terme |
 | `staking_tier_bonus_claimed`, `staking_tier_bonus_settled` | `delegator`, `amount` ; totaux de règlement | Un bonus a été réclamé ; le pool a été réglé |
 | `staking_tier_params_updated` | paramètres | La gouvernance a modifié les paramètres du module |
 

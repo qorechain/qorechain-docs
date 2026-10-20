@@ -1,20 +1,20 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: CosmWasm開発
-sidebar_label: CosmWasm開発
+title: QoreChain Native開発
+sidebar_label: QoreChain Native開発
 sidebar_position: 3
 ---
 
-# CosmWasm開発
+# QoreChain Native開発
 
-QoreChainは**CosmWasm**スマートコントラクトをサポートしており、開発者はRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルできます。CosmWasmコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
+QoreChainは**QoreChain Native**スマートコントラクトをサポートしています。QoreChain Nativeは、QoreChainが自身の**CosmWasm**ランタイムにつけた名称で、開発者は標準のCosmWasmライブラリ（`cosmwasm-std`）を使ってRustで安全かつサンドボックス化されたプログラムを記述し、WebAssemblyへコンパイルします。QoreChain Nativeコントラクトは、QoreChainのトリプルVMアーキテクチャの中でEVMおよびSVMプログラムと並行して実行されます。
 
 :::note
-以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（ノードリリース**v3.2.3**）を対象としています。テストネット（v3.2.4、テストネットのみ）の場合は `--chain-id qorechain-diana` に置き換えてください。
+以下のコマンドは、2026年6月7日から稼働しているメインネット**`qorechain-vladi`**（高さ3,742,566まではノードリリース**v3.2.3**、そのブロックからは**v3.2.4**。ガバナンス提案13）を対象としています。テストネット（2026年10月19日からv3.2.4を実行）の場合は `--chain-id qorechain-diana` に置き換えてください。
 :::
 
 :::caution コードのアップロードとインスタンス化には現在、明示的な権限が必要です
-本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、業界全体のCosmWasmセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください（メインネットには現在、保存済みのコントラクトコードが一切ありません）。
+本稿執筆時点で、`code_upload_access` と `instantiate_default_permission` はメインネットとテストネットの**両方**で**`Nobody`**に設定されています。つまり、QoreChain Nativeが基盤とするランタイムであるCosmWasmに対する業界全体のセキュリティ勧告に従い、`MsgStoreCode` と `MsgInstantiateContract` はデフォルトでは任意のアカウントに開放されていません。以下の手順を成功させるには、事前にガバナンスによってアカウント（または特定のアドレスリスト）にアップロード/インスタンス化の権限を付与してもらう必要があります。これはまさにガバナンスによって変更され得る種類の設定であるため、まず現行のパラメータを確認してください（メインネットには現在、保存済みのコントラクトコードが一切ありません）。
 
 ```bash
 qorechaind query wasm params
@@ -51,7 +51,7 @@ rustup target add wasm32-unknown-unknown
 
 ## コントラクトのライフサイクル
 
-CosmWasmコントラクトは、**Build（ビルド）**、**Store（保存）**、**Instantiate（インスタンス化）**、**Execute（実行）**、**Query（クエリ）**という5段階のライフサイクルに従います。
+QoreChain Nativeコントラクトは、**Build（ビルド）**、**Store（保存）**、**Instantiate（インスタンス化）**、**Execute（実行）**、**Query（クエリ）**という5段階のライフサイクルに従います。
 
 1. **Build** — コントラクトを最適化されたWebAssemblyにコンパイルします。
 
@@ -166,7 +166,7 @@ qorechaind query wasm contract-history <contract-addr>
 
 ## コントラクト構造
 
-典型的なCosmWasmコントラクトには、3つのエントリーポイントがあります。
+典型的なQoreChain Nativeコントラクトには、3つのエントリーポイントがあります。
 
 ```rust
 use cosmwasm_std::{
@@ -211,7 +211,7 @@ pub fn query(
 
 ## クロスVM呼び出し
 
-クロスVM呼び出しは、`x/crossvm` モジュールを通じて `MsgCrossVMCall` トランザクションとして送信されます。メッセージのライフサイクルについては、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。CosmWasmコントラクトにはクロスVM呼び出しを開始するためのコントラクト側のバインディングがありません（コントラクトが発行できるカスタムの `QoreChainMsg` メッセージは存在しません）。そのため、コントラクトは自身の `execute` エントリーポイントの内部からEVMまたはSVMのコントラクトを呼び出すことはできません。v3.2.3 以降、呼び出し元自身のレーンへの呼び出しは拒否され、失敗したキュー内の呼び出しは副作用を一切残しません。
+クロスVM呼び出しは、`x/crossvm` モジュールを通じて `MsgCrossVMCall` トランザクションとして送信されます。メッセージのライフサイクルについては、[クロスVM相互運用性](/developer-guide/cross-vm-interoperability)を参照してください。QoreChain NativeコントラクトにはクロスVM呼び出しを開始するためのコントラクト側のバインディングがありません（コントラクトが発行できるカスタムの `QoreChainMsg` メッセージは存在しません）。そのため、コントラクトは自身の `execute` エントリーポイントの内部からEVMまたはSVMのコントラクトを呼び出すことはできません。v3.2.3 以降、呼び出し元自身のレーンへの呼び出しは拒否され、失敗したキュー内の呼び出しは副作用を一切残しません。
 
 :::caution クロスVM呼び出しは現在メインネットで無効化されています
 `MsgCrossVMCall` はメインネットのサーキットブレーカーのリストに含まれており（`qorechaind query circuit disabled-list`）、SVMレーンも両ネットワークで無効化されています。そのため、現時点ではクロスVMのパスを通常のトランザクションで利用することはできません。
@@ -221,7 +221,7 @@ pub fn query(
 
 ## モジュール連携
 
-CosmWasmコントラクトは、標準的なメッセージパッシングを通じてCosmos SDKモジュールと連携できます。
+QoreChain Nativeコントラクトは、標準的なメッセージパッシングを通じてCosmos SDKモジュールと連携できます。
 
 ```rust
 // Send native tokens via the bank module
@@ -263,6 +263,6 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 ## 次のステップ
 
-* [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — CosmWasmからEVMおよびSVMコントラクトを呼び出す
+* [クロスVM相互運用性](/developer-guide/cross-vm-interoperability) — QoreChain NativeからEVMおよびSVMコントラクトを呼び出す
 * [SVM開発](/developer-guide/svm-development) — QoreChain上にBPFプログラムをデプロイする
 * [EVMプリコンパイル](/developer-guide/evm-precompiles) — 計画中のSolidityプリコンパイルのリファレンス（現時点で有効なものはありません）

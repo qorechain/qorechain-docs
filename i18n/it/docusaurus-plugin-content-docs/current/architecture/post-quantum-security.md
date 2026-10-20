@@ -100,7 +100,7 @@ qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
 
 La registrazione è esente dal requisito ibrido solo per un account senza chiave, quindi questa transazione è firmata con la sola chiave classica dell'account. Una prova malformata viene rifiutata con `ErrInvalidProofOfPossession` (codice 231 nel modulo `pqc`).
 
-**Solo testnet (v3.2.4, non sulla mainnet):** il record dell'account acquisisce un booleano `possession_proven`, restituito da `GET /qorechain/pqc/v1/account/{address}` sulla testnet. È `true` quando la chiave attuale è stata registrata con una prova valida, oppure è arrivata tramite una rotazione o una migrazione (entrambe verificano una firma della nuova chiave su byte che nominano la chain, l'account e la chiave); una registrazione senza prova registra `false`, e una chiave che cambia senza prova azzera il flag. La mainnet v3.2.3 non riporta il campo. La prova rimane facoltativa anche sulla testnet.
+**Dalla v3.2.4 (testnet dal 19 ottobre 2026; mainnet dall'altezza 3.742.566):** il record dell'account acquisisce un booleano `possession_proven`, restituito da `GET /qorechain/pqc/v1/account/{address}`. È `true` quando la chiave attuale è stata registrata con una prova valida, oppure è arrivata tramite una rotazione o una migrazione (entrambe verificano una firma della nuova chiave su byte che nominano la chain, l'account e la chiave); una registrazione senza prova registra `false`, e una chiave che cambia senza prova azzera il flag. La mainnet v3.2.3 non riporta il campo prima dell'altezza dell'upgrade. La prova rimane facoltativa per le chiavi degli account con la v3.2.4.
 
 ## Firme ibride {#hybrid-signatures}
 
@@ -273,7 +273,7 @@ Queste utilità supportano l'hash applicativo predefinito e vengono utilizzate p
 
 Tutte le attestazioni e i commitment di stato del bridge cross-chain utilizzano firme **Dilithium-5**. Il modulo `x/multilayer` richiede firme aggregate PQC su ogni invio di `MsgAnchorState`, e i commitment ML-KEM proteggono i canali di scambio di chiavi tra i relayer del bridge.
 
-Ciò garantisce che la sicurezza cross-chain non venga degradata dall'uso della crittografia classica nell'infrastruttura del bridge, mantenendo la resistenza ai quanti su tutto lo stack del protocollo. Nessuna rotta del bridge è attiva (vedi [Architettura del bridge](/architecture/bridge-architecture#current-status)); solo sulla testnet (v3.2.4), la registrazione di un validatore del bridge richiede anche una prova di possesso della sua chiave PQC.
+Ciò garantisce che la sicurezza cross-chain non venga degradata dall'uso della crittografia classica nell'infrastruttura del bridge, mantenendo la resistenza ai quanti su tutto lo stack del protocollo. Nessuna rotta del bridge è attiva (vedi [Architettura del bridge](/architecture/bridge-architecture#current-status)); dalla v3.2.4 (testnet ora; mainnet dall'altezza 3.742.566), la registrazione di un validatore del bridge richiede anche una prova di possesso della sua chiave PQC.
 
 ## Parametri del modulo
 

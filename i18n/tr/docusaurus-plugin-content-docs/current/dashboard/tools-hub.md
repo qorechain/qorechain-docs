@@ -56,7 +56,7 @@ Bkz. [Stake Etme ve Doğrulayıcılar](/dashboard/staking-and-validators).
 
 ## Rollup'lar
 
-QoreChain destekli bir rollup talep edin. Form; rollup'ı adlandırmanıza ve istediğiniz sanal makineyi (EVM, CosmWasm veya SVM), veri kullanılabilirliği katmanını, gas token'ını, sıralayıcı (sequencer) modelini ve uzlaşma hedefini belirtmenize olanak tanır. Göndermek, incelenen bir sağlama (provisioning) talebini kaydeder; rollup'ı zincir üzerinde oluşturmaz. Seçenekler, zincir üzerindeki rollup modülünün şu anda desteklediğinden daha geniştir. Bir rollup'ı zincir üzerinde kendiniz kaydetmek için bkz. [Bir Rollup Dağıtmak](/rollups/deploying-a-rollup); kavramlar için bkz. [Rollup'lar Genel Bakış](/rollups/overview).
+QoreChain destekli bir rollup talep edin. Form; rollup'ı adlandırmanıza ve istediğiniz sanal makineyi (EVM, QoreChain Native veya SVM), veri kullanılabilirliği katmanını, gas token'ını, sıralayıcı (sequencer) modelini ve uzlaşma hedefini belirtmenize olanak tanır. Göndermek, incelenen bir sağlama (provisioning) talebini kaydeder; rollup'ı zincir üzerinde oluşturmaz. Seçenekler, zincir üzerindeki rollup modülünün şu anda desteklediğinden daha geniştir. Bir rollup'ı zincir üzerinde kendiniz kaydetmek için bkz. [Bir Rollup Dağıtmak](/rollups/deploying-a-rollup); kavramlar için bkz. [Rollup'lar Genel Bakış](/rollups/overview).
 
 ## SDK
 

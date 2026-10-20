@@ -17,14 +17,14 @@ A consolidated reference for the QoreChain networks — chain identifiers, EVM c
 | **Cosmos chain ID** | `qorechain-vladi` | `qorechain-diana` |
 | **EVM chain ID (EIP-155)** | **9801** (hex `0x2649`) | **9800** (hex `0x2648`) |
 | **Live since** | 7 June 2026 | 1 July 2026 (continuous since; no reset) |
-| **Chain version** | v3.2.3 (applied at height 3,662,051, 20 October 2026) | v3.2.4 (applied at height 8,337,253, 19 October 2026; testnet only) |
+| **Chain version** | v3.2.3 until height 3,742,566; v3.2.4 from that block (governance proposal 13). v3.2.3 was applied at height 3,662,051 on 20 October 2026 | v3.2.4 (applied at height 8,337,253, 19 October 2026) |
 | **Block time (measured average)** | about 3.2 s | about 1.0 s |
 | **Release manifest** | [download.qore.host/mainnet/latest.json](https://download.qore.host/mainnet/latest.json) | [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) |
 | **Framework** | Cosmos SDK v0.53 | Cosmos SDK v0.53 |
 | **Minimum gas price** | `0.1uqor` | `0.1uqor` |
 | **Connection guide** | [Connecting to Mainnet](/getting-started/connecting-to-mainnet) | [Connecting to Testnet](/getting-started/connecting-to-testnet) |
 
-Both manifests are the source of truth for the release a fresh node should run. Both networks take coordinated upgrades through governance, so each manifest carries the `upgradeHeight` of its current release and a `minCompatible` equal to that release (mainnet 3.2.3, testnet 3.2.4). v3.2.4 exists on the testnet only so far; mainnet governance proposal 13 would apply it at height 3,742,566 (voting until 21 October 2026, 21:18 UTC).
+Both manifests are the source of truth for the release a fresh node should run. Both networks take coordinated upgrades through governance, so each manifest carries the `upgradeHeight` of its current release and a `minCompatible` equal to that release (testnet 3.2.4; mainnet 3.2.3 until the v3.2.4 upgrade at height 3,742,566, after which the mainnet manifest moves to 3.2.4). The testnet has run v3.2.4 since 19 October 2026.
 
 ## Public endpoints {#public-endpoints}
 

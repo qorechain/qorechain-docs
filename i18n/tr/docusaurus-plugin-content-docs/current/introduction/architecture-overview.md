@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Mimari Genel Bakış
 
-QoreChain; üç ana süreçten — zincir düğümü, AI sidecar ve blok dizinleyici (indexer) — oluşan, bir Postgres veritabanıyla desteklenen ve Prometheus ile Grafana aracılığıyla izlenen modüler bir blok zinciri düğümüdür. Ana ağ (`qorechain-vladi`, EVM chain ID **9801**), **v3.2.3** sürümü üzerinde 7 Haziran 2026'dan beri yayında; paralel bir test ağı (`qorechain-diana`, EVM chain ID **9800**, v3.2.4 sürümü, yalnızca test ağı) da çalışmaktadır. Zincir, Cosmos SDK v0.53 üzerine kuruludur. Aşağıdaki şema, üst düzey bileşen yerleşimini göstermektedir.
+QoreChain; üç ana süreçten — zincir düğümü, AI sidecar ve blok dizinleyici (indexer) — oluşan, bir Postgres veritabanıyla desteklenen ve Prometheus ile Grafana aracılığıyla izlenen modüler bir blok zinciri düğümüdür. Ana ağ (`qorechain-vladi`, EVM chain ID **9801**), 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** sürümü üzerinde 7 Haziran 2026'dan beri yayında; paralel bir test ağı (`qorechain-diana`, EVM chain ID **9800**, 19 Ekim 2026'dan beri v3.2.4 çalıştırıyor) da çalışmaktadır. Zincir, Cosmos SDK v0.53 üzerine kuruludur. Aşağıdaki şema, üst düzey bileşen yerleşimini göstermektedir.
 
 Aşağıdaki işlem yaşam döngüsü, gönderilen bir işlemin düğüm boyunca nasıl aktığını özetler — AnteHandler dekoratör zincirinden (güvenlik ve ücret kontrolleri) VM yürütmesine ve zincir üzerinde nihai uzlaşıya kadar:
 
@@ -24,7 +24,7 @@ flowchart LR
     Fair --> Fee[Fee deduction & gas abstraction]
     Fee --> Router{VM router}
     Router -->|Solidity| EVM[EVM]
-    Router -->|Wasm| Wasm[CosmWasm]
+    Router -->|Wasm| Wasm[QoreChain Native]
     Router -->|BPF| SVM[SVM]
     EVM --> Commit[Block commit & indexing]
     Wasm --> Commit
@@ -37,8 +37,8 @@ flowchart LR
 │                                                                            │
 │  ┌──────────────────── Virtual Machines ──────────────────────┐           │
 │  │  ┌───────┐    ┌──────────┐    ┌───────┐                   │           │
-│  │  │  EVM  │    │ CosmWasm │    │  SVM  │                   │           │
-│  │  │(Sol.) │◄──►│ (Wasm)   │◄──►│ (BPF) │                   │           │
+│  │  │  EVM  │    │QoreChain │    │  SVM  │                   │           │
+│  │  │(Sol.) │◄──►│ Native   │◄──►│ (BPF) │                   │           │
 │  │  └───┬───┘    └────┬─────┘    └───┬───┘                   │           │
 │  │      └─────────┬───┘──────────────┘                       │           │
 │  │           x/crossvm (bridge)                               │           │
@@ -164,11 +164,11 @@ QoreChain, işleve göre gruplandırılmış olarak **48 genesis modülü kayded
 
 * `x/vm` — VM yönlendirme ve yaşam döngüsü yönetimi
 * `x/svm` — SVM çalışma zamanı: BPF dağıtımı/yürütmesi, kira toplama, Solana uyumlu RPC
-* `x/crossvm` — VM'ler arası iletişim: EVM-CosmWasm precompile + SVM asenkron olayları
+* `x/crossvm` — VM'ler arası iletişim: EVM-QoreChain Native precompile + SVM asenkron olayları
 
 **Tokenomik ve Likidite**
 
-* `x/burn` — 12 yakım kaynağı, EndBlocker ücret dağıtımı (37/30/20/10/3 bölüşümü)
+* `x/burn` — 12 yakım kaynağı (v3.2.4'ten itibaren 13), EndBlocker ücret dağıtımı (37/30/20/10/3 bölüşümü)
 * `x/xqore` — Yönetişimle güçlendirilmiş stake tasarımı: kilitle/aç, kademeli çıkış cezaları, PvP yeniden tabanlama (rebase) (yalnızca muhasebe; kilitleme ve açma işlemleri canlı ağlara henüz bağlanmamıştır)
 * `x/inflation` — Sınırlı emisyon: sabit bir katı kümülatif üst sınıra (590,000,000 QOR) ulaşılana kadar her dönemde (epoch) basılan sabit bir miktar
 * `x/amm` — Zincir üzeri likidite / otomatik piyasa yapıcı
@@ -194,7 +194,7 @@ QoreChain, işleve göre gruplandırılmış olarak **48 genesis modülü kayded
 
 Her işlem, yürütmeden önce bir dekoratör zincirinden geçer; herhangi bir dekoratör işlemi reddedebilir. İki zincir vardır.
 
-**Cosmos şeridi (lane)** (sırayla): `RejectMessages` (bu şeritte `MsgEthereumTx` yok) → `AuthzLimiter` (authz içinde EVM veya vesting oluşturma mesajı yok, v3.2.3'ten itibaren de kuantum sonrası anahtar yönetimi mesajı yok) → `SetUpContext` → mempool ve multisig derinliği korumaları → CosmWasm simülasyon gazı, işlem sayacı, gaz kaydı ve sözleşme dekoratörleri → `CircuitBreaker` → uzantı seçeneği kontrolü → `ValidateBasic` → `TxTimeout` → `Memo` → doğrulayıcı lisans geçidi (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (gönderen başına hız sınırını içerir) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → yakım işlem sayacı → IBC gereksiz aktarım kontrolü → talep edilen gaz takibi.
+**Cosmos şeridi (lane)** (sırayla): `RejectMessages` (bu şeritte `MsgEthereumTx` yok) → `AuthzLimiter` (authz içinde EVM veya vesting oluşturma mesajı yok, v3.2.3'ten itibaren de kuantum sonrası anahtar yönetimi mesajı yok) → `SetUpContext` → mempool ve multisig derinliği korumaları → QoreChain Native simülasyon gazı, işlem sayacı, gaz kaydı ve sözleşme dekoratörleri → `CircuitBreaker` → uzantı seçeneği kontrolü → `ValidateBasic` → `TxTimeout` → `Memo` → doğrulayıcı lisans geçidi (`MsgCreateValidator`) → `PQCVerify` → `PQCHybridVerify` → `PQCReplayGuard` → `AIAnomaly` (gönderen başına hız sınırını içerir) → `FairBlock` → `SVMComputeBudget` → `SVMDeductFee` → `MinGasPrice` → `ConsumeTxSize` → `GasAbstraction` → `DeductFee` → `SetPubKey` → `ValidateSigCount` → `SigGasConsume` → `SigVerify` → `IncrementSequence` → yakım işlem sayacı → IBC gereksiz aktarım kontrolü → talep edilen gaz takibi.
 
 **EVM şeridi (lane)** (Ethereum uzantı seçeneğini taşıyan işlemler): `CircuitBreaker` → EVM mono dekoratörü (imza, nonce, ücret ve bakiye kontrolleri) → `EVMWindowDecorator` (kayıtlı kuantum sonrası anahtar ve canlı bir yetkilendirme penceresi; bkz. [EVM yetkilendirme penceresi](/getting-started/first-transaction#evm-window)).
 

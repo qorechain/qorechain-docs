@@ -15,7 +15,7 @@ zinciridir.
 
 | VM | Sözleşmeler | SDK'daki istemci yüzeyi |
 | --- | --- | --- |
-| **CosmWasm** | Rust/Wasm sözleşmeleri | `client.cosmwasm()` ve `@qorechain/sdk`'daki `queryContractSmart` / `execute` yardımcıları |
+| **QoreChain Native** | Rust/Wasm sözleşmeleri (CosmWasm çalışma zamanı) | `client.cosmwasm()` ve `@qorechain/sdk`'daki `queryContractSmart` / `execute` yardımcıları |
 | **QoreChain EVM Engine** | Solidity / Vyper | `@qorechain/evm` (bir viem adaptörü) |
 | **SVM** | Solana programları | `@qorechain/svm` (bir `@solana/web3.js` adaptörü) |
 
@@ -28,7 +28,7 @@ SDK, bir node ile birkaç uç nokta aracılığıyla iletişim kurar:
 
 - **Cosmos REST (LCD)** — banka bakiyeleri, hesap bilgileri, modül sorguları.
 - **Konsensüs RPC (Consensus RPC)** — yerel işlemleri imzalamak/yayınlamak ve
-  CosmWasm okuma istemcisi için kullanılır.
+  QoreChain Native okuma istemcisi için kullanılır.
 - **EVM JSON-RPC** — herkese açık uç noktalarda standart `eth_*`, `net_*`, `web3_*`
   ve `txpool_*` çağrıları. QoreChain `qor_*` ad alanı (namespace) ve EVM
   precompile'ları orada henüz kullanılamıyor (aşağıya bakın).

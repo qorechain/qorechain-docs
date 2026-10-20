@@ -10,9 +10,9 @@ sidebar_position: 1
 Referenz für `qorechaind`-Befehle zum Initialisieren, Konfigurieren und Betreiben eines QoreChain-Node.
 
 :::note
-QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026; Node-Version **v3.2.3**, angewendet bei Höhe 3.662.051 am 20. Oktober 2026) und das **`qorechain-diana`**-Testnet (Node-Version **v3.2.4**, angewendet bei Höhe 8.337.253 am 19. Oktober 2026; v3.2.4 ist im Mainnet noch nicht angewendet; der Governance-Vorschlag 13 würde es bei Höhe 3.742.566 anwenden). Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet. Die aktuelle Version jedes Netzwerks ist in `latest.json` unter [download.qore.host](https://download.qore.host) aufgeführt.
+QoreChain betreibt zwei Netzwerke: das **`qorechain-vladi`**-Mainnet (live seit dem 7. Juni 2026; Node-Version **v3.2.3**, angewendet bei Höhe 3.662.051 am 20. Oktober 2026; das Mainnet läuft bis Höhe 3.742.566 mit v3.2.3 und ab diesem Block mit **v3.2.4**, angesetzt durch den Governance-Vorschlag 13) und das **`qorechain-diana`**-Testnet (Node-Version **v3.2.4**, angewendet bei Höhe 8.337.253 am 19. Oktober 2026). Übergeben Sie die passende `--chain-id` für das Netzwerk, dem Sie beitreten möchten — die folgenden Beispiele zielen auf das Testnet ab; verwenden Sie `--chain-id qorechain-vladi` für das Mainnet. Die aktuelle Version jedes Netzwerks ist in `latest.json` unter [download.qore.host](https://download.qore.host) aufgeführt.
 
-Die Befehle auf dieser Seite wurden gegen die Release-Binary v3.2.3 geprüft, die das Mainnet-Release ist. Die v3.2.4-Binary des Testnets enthält Befehle, die das Mainnet nicht hat; wo dieses Handbuch einen solchen erwähnt, ist er mit **nur Testnet** gekennzeichnet.
+Die Befehle auf dieser Seite wurden gegen die Release-Binary v3.2.3 geprüft. Die v3.2.4-Binary enthält Befehle, die eine v3.2.3-Binary nicht hat (zum Beispiel `stakingtier`); sie laufen jetzt im Testnet und im Mainnet ab Höhe 3.742.566, und wo dieses Handbuch einen solchen erwähnt, wird das angegeben.
 :::
 
 ---

@@ -193,7 +193,7 @@ Todas las operaciones del puente QCB requieren un **umbral de 7 de 10** firmas p
 * Una lista de cadenas admitidas
 * Una puntuación de reputación (mantenida por `x/reputation`)
 
-Desde v3.2.2 el módulo valida de forma coherente los montos cero y su configuración en todas las rutas. **Solo testnet (v3.2.4, no en mainnet):** registrar un validador de puente también requiere una prueba de posesión de la clave Dilithium-5 (el mismo formato `proof_of_possession` que el registro de claves PQC, véase [Seguridad Poscuántica](/architecture/post-quantum-security#proof-of-possession)) y rechaza una clave que otro validador de puente ya esté usando. La mainnet v3.2.3 no tiene esa comprobación, y no hay ningún validador de puente registrado en ninguna de las dos redes.
+Desde v3.2.2 el módulo valida de forma coherente los montos cero y su configuración en todas las rutas. **Desde v3.2.4 (testnet desde el 19 de octubre de 2026; mainnet desde la altura 3,742,566):** registrar un validador de puente también requiere una prueba de posesión de la clave Dilithium-5 (el mismo formato `proof_of_possession` que el registro de claves PQC, véase [Seguridad Poscuántica](/architecture/post-quantum-security#proof-of-possession)) y rechaza una clave que otro validador de puente ya esté usando. La mainnet v3.2.3, que se ejecuta hasta esa altura, no tiene esa comprobación, y no hay ningún validador de puente registrado en ninguna de las dos redes.
 
 ### Disyuntores (Circuit Breakers)
 

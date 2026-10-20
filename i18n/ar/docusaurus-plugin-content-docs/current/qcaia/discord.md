@@ -13,7 +13,7 @@ sidebar_position: 2
 
 انضم إلى خادم Discord الرسمي لـ QoreChain:
 
-**[discord.gg/aAtpgbhTWG](https://discord.gg/aAtpgbhTWG)**
+**[discord.gg/qorechain](https://discord.gg/qorechain)**
 
 بمجرد دخولك، توجَّه إلى قناة **#general** للتحدث مع QCAIA.
 

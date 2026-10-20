@@ -269,7 +269,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## Sıradaki adımlar
 
-- [Kılavuzlar](/sdk/guides/evm) — her bir VM ile çalışın (EVM, SVM, CosmWasm,
+- [Kılavuzlar](/sdk/guides/evm) — her bir VM ile çalışın (EVM, SVM, QoreChain Native,
   VM'ler arası).
 - [Hesaplar ve PQC imzalama](/sdk/concepts/accounts-pqc) — HD türetme, birleşik
   eth-native hesaplar ve kuantum sonrası imzalama.

@@ -10,7 +10,7 @@ sidebar_position: 2
 QoreChain 네트워크의 모듈 파라미터를 모듈별로 묶어 통합 정리한 참조 문서입니다. 파라미터는 해당 모듈에 params 쿼리가 있는 경우 `qorechaind query <module> params`로 조회할 수 있습니다(`pqc`, `amm`, `crossvm`, `lightnode`, `multilayer`, `reputation`, `rlconsensus`. `ai`, `qca`, `rdk`, `bridge`, `abstractaccount`, `gasabstraction`은 `config`를 사용하며, `gasabstraction`은 테스트넷에서만 조회할 수 있습니다). REST로는 [REST / gRPC 레퍼런스](/api-reference/rest-grpc-endpoints)에 나열된 경로만 조회할 수 있습니다. `x/inflation` 파라미터는 v3.2.3부터 메인넷에서도 REST(`/qorechain/inflation/v1/params`)로 제공됩니다. `ai`, `qca`, `reputation`, `crossvm`, `rlconsensus`, `fairblock`, `xqore`는 REST를 지원하지 않습니다.
 
 :::note
-표시된 값은 2026년 10월 20일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.3**)에서 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 별도 표기가 없는 한 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**, 릴리스 **v3.2.4**)에서도 동일합니다. 현재 존재하는 차이점은 [테스트넷 차이점(v3.2.4)](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
+표시된 값은 2026년 10월 20일에 메인넷 **`qorechain-vladi`**(EVM 체인 ID **9801**, 릴리스 **v3.2.3**)에서 실시간으로 읽은 값입니다(거버넌스 제안으로 변경된 경우를 제외하면 제네시스 값이며, 변경된 값은 별도로 표기했습니다). 별도 표기가 없는 한 테스트넷 **`qorechain-diana`**(EVM 체인 ID **9800**, 릴리스 **v3.2.4**, 2026년 10월 19일부터)에서도 동일합니다. 메인넷이 v3.2.4 업그레이드(높이 3,742,566)를 적용할 때까지 존재하는 차이점은 [v3.2.4 업그레이드 전까지의 차이점](#testnet-differences)에 정리되어 있습니다. 블록 단위로 표시된 기간은 측정된 메인넷 블록 시간인 약 3.2초로 환산한 것입니다(테스트넷은 약 1초마다 블록을 생성합니다).
 :::
 
 ---
@@ -378,7 +378,7 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 | | `active_static_precompiles` | 비어 있음(활성화된 EVM 프리컴파일 없음) |
 | | `history_serve_window` | 8,192 |
 | ERC-20 | `enable_erc20` / `permissionless_registration` | `true` / `false` |
-| CosmWasm | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
+| QoreChain Native | `code_upload_access` / `instantiate_default_permission` | `Nobody` / `Nobody` |
 
 ---
 
@@ -386,27 +386,33 @@ SVM 트랜잭션 레인은 네트워크 전체에서 비활성화되어 있습�
 
 체인은 Cosmos SDK 서킷 브레이커로 개별 메시지 유형을 끌 수 있으며, 이는 재단 운영 계정과 거버넌스가 제어합니다. 비활성화된 메시지 유형은 모든 레인에서 앤티 핸들러가 거부합니다. 실시간 목록은 `GET /cosmos/circuit/v1/disable_list`에서 확인할 수 있습니다.
 
-**메인넷(2026년 10월 20일, 16개 항목, 10월 14일 이후 변경 없음):** 베스팅 계정 생성(`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); CosmWasm `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; 그리고 PRISM 제어 메시지 네 가지(`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM 레인(`MsgEthereumTx`)은 **열려 있습니다**. 9월 16일부터 25일까지 꺼져 있었으며 v3.2.0 업그레이드로 다시 열렸습니다.
+**메인넷(2026년 10월 20일, 16개 항목, 10월 14일 이후 변경 없음):** 베스팅 계정 생성(`MsgCreateVestingAccount`, `MsgCreatePermanentLockedAccount`, `MsgCreatePeriodicVestingAccount`); QoreChain Native `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`; AMM `MsgPausePool`, `MsgResumePool`; `crossvm.MsgCrossVMCall`; `multilayer.MsgUpdateLayerStatus`; `pqc.MsgDeprecateAlgorithm`, `pqc.MsgDisableAlgorithm`; 그리고 PRISM 제어 메시지 네 가지(`MsgSetAgentMode`, `MsgUpdatePolicy`, `MsgUpdateRewardWeights`, `MsgResumeAgent`). EVM 레인(`MsgEthereumTx`)은 **열려 있습니다**. 9월 16일부터 25일까지 꺼져 있었으며 v3.2.0 업그레이드로 다시 열렸습니다.
 
-**테스트넷(2026년 10월 20일):** CosmWasm 메시지 세 가지만 해당됩니다.
+**테스트넷(2026년 10월 20일):** QoreChain Native 메시지 세 가지만 해당됩니다.
 
 표준 bank, staking, governance, distribution, authz, `x/pqc` 등록 메시지를 포함한 그 밖의 모든 메시지 유형은 활성화되어 있습니다. 이 목록은 거버넌스로 제어되며 변경될 수 있으므로 항상 조회하세요.
 
 ---
 
-## 테스트넷 차이점(v3.2.4) {#testnet-differences}
+## v3.2.4 업그레이드 전까지의 차이점 {#testnet-differences}
 
-테스트넷 `qorechain-diana`는 v3.2.4를 실행합니다(2026년 10월 19일 높이 8,337,253에서 적용). v3.2.4는 현재 **테스트넷 전용**이며, 메인넷 거버넌스 제안 13이 통과되면 높이 3,742,566에서 적용됩니다. 2026년 10월 20일 기준으로 메인넷과 다음 항목이 다릅니다.
+테스트넷 `qorechain-diana`는 높이 8,337,253(2026년 10월 19일)부터 v3.2.4를 실행하고 있습니다. 메인넷은 높이 3,742,566까지 v3.2.3을 실행하고 그 블록부터 v3.2.4를 실행합니다(거버넌스 제안 13). 그때부터 아래 v3.2.4 행은 두 네트워크 모두에 적용되며, 네트워크별 값만 계속 다르게 남습니다. 2026년 10월 20일 기준으로 테스트넷은 메인넷과 다음과 같이 다릅니다.
 
-| 영역 | 테스트넷 |
+| 영역 | 현재 테스트넷, 높이 3,742,566부터 메인넷 |
 | ---- | ------- |
 | 모듈 | 48개 대신 49개: 선택적 시간 잠금 스테이킹 모듈 `x/stakingtier`(`GET /qorechain/stakingtier/v1/params`; 최소 잠금 10 QOR). [스테이킹과 위임](/user-guide/staking-and-delegation#time-locked-staking)을 참조하세요. |
-| `x/inflation` | 이전 발행 값(에포크당 16,239 QOR, 상한 114,285,714 QOR, 이미 도달함)과 세 번째 `emission_mode`인 `target_apy`, 그리고 현재 `0`인 `target_apy_bps` 파라미터. |
+| `x/inflation` | 세 번째 `emission_mode`인 `target_apy`, 그리고 테스트넷에서 `0`인 `target_apy_bps` 파라미터. 어느 모드를 적용할지는 각 네트워크에서 별도의 거버넌스 결정입니다. |
 | `x/burn` | 열세 번째 기록 소스인 `staking_tier_penalty`. |
 | `x/lightnode` 보상 풀 | 추가 보고 필드(`monthly_cap_active`, `last_distribution_time`, `last_distribution_height`); 노드의 보상 한도는 해당 노드 자신의 등록 시점부터 시작됩니다. |
 | `x/pqc` | PQC 계정의 `possession_proven` 플래그; 소유 증명은 계정 키에는 여전히 선택 사항이며 브리지 검증자 키에는 필수입니다. |
 | `x/rdk` | 낙관적 챌린지 윈도우가 블록 시간으로 계산됩니다. |
-| 서킷 브레이커 | CosmWasm 메시지 세 가지만 해당(위 참조). |
 | 쿼리 | 새로운 `protocol_features` 및 `auth_nonce` 쿼리. |
+
+다음 값은 테스트넷 고유이며 업그레이드 후에도 계속 다릅니다.
+
+| 영역 | 테스트넷 |
+| ---- | ------- |
+| `x/inflation` 값 | 이전 발행 값(에포크당 16,239 QOR, 상한 114,285,714 QOR, 이미 도달함). 메인넷은 거버넌스 제안 10으로 설정된 값을 사용합니다. |
+| 서킷 브레이커 | QoreChain Native 메시지 세 가지만 해당(위 참조). |
 
 여기에 나열되지 않은 모든 파라미터는 두 네트워크에서 동일합니다.

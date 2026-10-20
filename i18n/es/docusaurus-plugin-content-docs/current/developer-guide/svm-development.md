@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain incluye un entorno de ejecución **Solana Virtual Machine (SVM)** que permite a los desarrolladores desplegar y ejecutar programas SBF/BPF usando las herramientas habituales de Solana. El módulo SVM expone una interfaz JSON-RPC compatible con Solana en el **puerto 8899**, que `qorechaind start` inicia automáticamente (véase [Servidor JSON-RPC](#json-rpc-server) más abajo).
 
 :::note
-Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.3**. Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.4 (solo testnet). **Las transacciones SVM están deshabilitadas en ambas redes** (véase el recuadro siguiente), por lo que los comandos `tx svm` de esta página son solo de referencia: hoy no pueden tener éxito.
+Los comandos siguientes usan la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026), que ejecuta la versión de nodo **v3.2.3** hasta la altura 3,742,566 y la **v3.2.4** desde ese bloque (propuesta de gobernanza 13). Sustituya `--chain-id qorechain-diana` para la testnet, que ejecuta v3.2.4 desde el 19 de octubre de 2026. **Las transacciones SVM están deshabilitadas en ambas redes** (véase el recuadro siguiente), por lo que los comandos `tx svm` de esta página son solo de referencia: hoy no pueden tener éxito.
 :::
 
 ---
@@ -241,12 +241,12 @@ Los programas que superan el presupuesto de cómputo se detienen y la transacci�
 
 ## Interoperabilidad entre VMs
 
-Los programas SVM están diseñados para comunicarse con contratos EVM y CosmWasm a través del mensaje `MsgCrossVMCall` del módulo `x/crossvm` (la cadena determina por sí misma el carril de origen). Dado que el carril SVM está deshabilitado para transacciones y `MsgCrossVMCall` está desactivado en mainnet, hoy no existe una ruta entre VMs funcional para SVM. Véase [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el estado actual, el ciclo de vida del mensaje y el comportamiento de tiempo de espera.
+Los programas SVM están diseñados para comunicarse con contratos EVM y QoreChain Native a través del mensaje `MsgCrossVMCall` del módulo `x/crossvm` (la cadena determina por sí misma el carril de origen). Dado que el carril SVM está deshabilitado para transacciones y `MsgCrossVMCall` está desactivado en mainnet, hoy no existe una ruta entre VMs funcional para SVM. Véase [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) para conocer el estado actual, el ciclo de vida del mensaje y el comportamiento de tiempo de espera.
 
 ---
 
 ## Próximos pasos
 
-* [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) — Comunicación entre SVM, EVM y CosmWasm
+* [Interoperabilidad entre VMs](/developer-guide/cross-vm-interoperability) — Comunicación entre SVM, EVM y QoreChain Native
 * [Desarrollo con EVM](/developer-guide/evm-development) — Contratos inteligentes en Solidity en QoreChain
-* [Desarrollo con CosmWasm](/developer-guide/cosmwasm-development) — Contratos de WebAssembly basados en Rust
+* [Desarrollo con QoreChain Native](/developer-guide/cosmwasm-development) — Contratos de WebAssembly basados en Rust

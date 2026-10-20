@@ -1,20 +1,20 @@
 ---
 slug: /developer-guide/cosmwasm-development
-title: CosmWasm 개발
-sidebar_label: CosmWasm 개발
+title: QoreChain Native 개발
+sidebar_label: QoreChain Native 개발
 sidebar_position: 3
 ---
 
-# CosmWasm 개발
+# QoreChain Native 개발
 
-QoreChain은 **CosmWasm** 스마트 컨트랙트를 지원하여, 개발자가 WebAssembly로 컴파일되는 안전하고 샌드박스화된 프로그램을 Rust로 작성할 수 있게 합니다. CosmWasm 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
+QoreChain은 **QoreChain Native** 스마트 컨트랙트를 지원합니다. QoreChain Native는 QoreChain이 자사의 **CosmWasm** 런타임에 붙인 이름으로, 개발자는 표준 CosmWasm 라이브러리(`cosmwasm-std`)를 기반으로 안전하고 샌드박스화된 프로그램을 Rust로 작성하고 이를 WebAssembly로 컴파일합니다. QoreChain Native 컨트랙트는 QoreChain의 트리플 VM 아키텍처 내에서 EVM 및 SVM 프로그램과 함께 실행됩니다.
 
 :::note
-아래 명령은 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.3**을 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 테스트넷(v3.2.4 실행, 테스트넷 전용)의 경우 `--chain-id qorechain-diana`로 대체하세요.
+아래 명령은 2026년 6월 7일부터 운영 중이며 노드 릴리스 **v3.2.3**(블록 높이 3,742,566까지)과 해당 블록부터의 **v3.2.4**(거버넌스 제안 13)를 실행하는 **`qorechain-vladi`** 메인넷을 사용합니다. 2026년 10월 19일부터 v3.2.4를 실행해 온 테스트넷의 경우 `--chain-id qorechain-diana`로 대체하세요.
 :::
 
 :::caution 코드 업로드 및 인스턴스화에는 현재 명시적 권한이 필요합니다
-이 글 작성 시점 기준, `code_upload_access`와 `instantiate_default_permission`은 **메인넷과 테스트넷 모두**에서 **`Nobody`**로 설정되어 있습니다. 즉, 업계 전반의 CosmWasm 보안 권고에 따라 `MsgStoreCode`와 `MsgInstantiateContract`는 기본적으로 임의의 계정에 열려 있지 않습니다. 아래 단계가 성공하려면 거버넌스를 통해 계정(또는 특정 주소 목록)에 업로드/인스턴스화 권한을 부여받아야 합니다. 이는 거버넌스가 변경할 수 있는 종류의 설정이므로 먼저 실시간 파라미터를 확인하세요(현재 메인넷에는 저장된 컨트랙트 코드가 전혀 없습니다):
+이 글 작성 시점 기준, `code_upload_access`와 `instantiate_default_permission`은 **메인넷과 테스트넷 모두**에서 **`Nobody`**로 설정되어 있습니다. 즉, QoreChain Native의 기반 런타임인 CosmWasm에 대한 업계 전반의 보안 권고에 따라 `MsgStoreCode`와 `MsgInstantiateContract`는 기본적으로 임의의 계정에 열려 있지 않습니다. 아래 단계가 성공하려면 거버넌스를 통해 계정(또는 특정 주소 목록)에 업로드/인스턴스화 권한을 부여받아야 합니다. 이는 거버넌스가 변경할 수 있는 종류의 설정이므로 먼저 실시간 파라미터를 확인하세요(현재 메인넷에는 저장된 컨트랙트 코드가 전혀 없습니다):
 
 ```bash
 qorechaind query wasm params
@@ -39,7 +39,7 @@ qorechaind query wasm params
 | **Rust**                   | 최신 안정 버전 | 컨트랙트 컴파일           |
 | **wasm32-unknown-unknown** | target        | WebAssembly 컴파일 타깃 |
 | **cargo-generate**         | 최신        | 프로젝트 스캐폴딩            |
-| **cosmwasm-std**           | 1.5+          | CosmWasm 표준 라이브러리      |
+| **cosmwasm-std**           | 1.5+          | CosmWasm 표준 라이브러리              |
 
 Wasm 타깃을 설치하세요:
 
@@ -51,7 +51,7 @@ rustup target add wasm32-unknown-unknown
 
 ## 컨트랙트 라이프사이클
 
-CosmWasm 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **빌드(Build)**, **저장(Store)**, **인스턴스화(Instantiate)**, **실행(Execute)**, **조회(Query)**.
+QoreChain Native 컨트랙트는 다섯 단계의 라이프사이클을 따릅니다: **빌드(Build)**, **저장(Store)**, **인스턴스화(Instantiate)**, **실행(Execute)**, **조회(Query)**.
 
 1. **빌드** — 컨트랙트를 최적화된 WebAssembly로 컴파일합니다:
 
@@ -166,7 +166,7 @@ qorechaind query wasm contract-history <contract-addr>
 
 ## 컨트랙트 구조
 
-일반적인 CosmWasm 컨트랙트에는 세 개의 진입점이 있습니다:
+일반적인 QoreChain Native 컨트랙트에는 세 개의 진입점이 있습니다:
 
 ```rust
 use cosmwasm_std::{
@@ -211,7 +211,7 @@ pub fn query(
 
 ## 크로스 VM 호출
 
-크로스 VM 호출은 `x/crossvm` 모듈을 통해 `MsgCrossVMCall` 트랜잭션으로 전송됩니다. 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요. CosmWasm 컨트랙트에는 크로스 VM 호출을 시작하기 위한 전용 컨트랙트 측 바인딩이 없으므로(컨트랙트가 내보낼 수 있는 커스텀 `QoreChainMsg` 메시지가 없음), 컨트랙트는 자신의 `execute` 진입점 내부에서 EVM 또는 SVM 컨트랙트를 호출할 수 없습니다. v3.2.3부터는 호출자 자신의 레인으로 향하는 호출이 거부되며, 실패한 대기열 호출은 부작용을 남기지 않습니다.
+크로스 VM 호출은 `x/crossvm` 모듈을 통해 `MsgCrossVMCall` 트랜잭션으로 전송됩니다. 메시지 라이프사이클은 [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability)을 참조하세요. QoreChain Native 컨트랙트에는 크로스 VM 호출을 시작하기 위한 전용 컨트랙트 측 바인딩이 없으므로(컨트랙트가 내보낼 수 있는 커스텀 `QoreChainMsg` 메시지가 없음), 컨트랙트는 자신의 `execute` 진입점 내부에서 EVM 또는 SVM 컨트랙트를 호출할 수 없습니다. v3.2.3부터는 호출자 자신의 레인으로 향하는 호출이 거부되며, 실패한 대기열 호출은 부작용을 남기지 않습니다.
 
 :::caution 크로스 VM 호출은 현재 메인넷에서 꺼져 있습니다
 `MsgCrossVMCall`은 메인넷의 서킷 브레이커 목록(`qorechaind query circuit disabled-list`)에 올라 있고 SVM 레인은 두 네트워크 모두에서 비활성화되어 있으므로, 현재 크로스 VM 경로는 일반 트랜잭션에 사용할 수 없습니다.
@@ -221,7 +221,7 @@ pub fn query(
 
 ## 모듈 통합
 
-CosmWasm 컨트랙트는 표준 메시지 전달을 통해 Cosmos SDK 모듈과 상호작용할 수 있습니다:
+QoreChain Native 컨트랙트는 표준 메시지 전달을 통해 Cosmos SDK 모듈과 상호작용할 수 있습니다:
 
 ```rust
 // Send native tokens via the bank module
@@ -263,6 +263,6 @@ qorechaind tx wasm migrate <contract-addr> <new-code-id> \
 
 ## 다음 단계
 
-* [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability) — CosmWasm에서 EVM 및 SVM 컨트랙트 호출
+* [크로스 VM 상호운용성](/developer-guide/cross-vm-interoperability) — QoreChain Native에서 EVM 및 SVM 컨트랙트 호출
 * [SVM 개발](/developer-guide/svm-development) — QoreChain에 BPF 프로그램 배포
 * [EVM 프리컴파일](/developer-guide/evm-precompiles) — 계획된 Solidity 프리컴파일 참조(아직 활성화된 것은 없음)

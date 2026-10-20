@@ -17,8 +17,8 @@ Cadrul urmărește și decide *când*; **tu furnizezi verificarea de validitate*
 Watchtower nu decide niciodată de unul singur că un lot este fraudulos — apelează
 funcția ta `validate` și acționează pe baza a ceea ce returnezi.
 
-:::caution Stadiu incipient: nu există nimic de urmărit, iar alertele de termen-limită din 0.5.0 sunt greșite
-Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 20 octombrie 2026), deci nu există încă nimic de urmărit. În `@qorechain/rdk` 0.5.0, logica termenului-limită al ferestrei de contestare este de asemenea nesigură: `submittedAt` al unui lot este o **înălțime de bloc**, dar Watchtower (și verificarea de sănătate din spatele `qorollup status`) îi adaugă fereastra în secunde și compară suma cu ceasul real, așa că `secondsRemaining` nu are sens, iar `onDeadline` se declanșează imediat ce un lot este văzut prima dată. Nu folosi `onDeadline` sau numărătoarea inversă pentru decizii; calculează tu termenul-limită (vezi nota de mai jos). Watcher-ul citește, de asemenea, doar prima pagină de loturi (50).
+:::caution Stadiu incipient: nu există încă nimic de urmărit
+Watchtower citește loturile prin clientul REST RDK, iar rutele `/qorechain/rdk/v1/…` sunt servite pe ambele rețele. Nu a fost creat niciun rollup pe niciuna dintre rețele (verificat la 21 octombrie 2026), deci nu există încă nimic de urmărit, iar Watchtower nu a rulat împotriva unui lot real. În `@qorechain/rdk` 0.5.0, logica sa de termen-limită era greșită (citea o înălțime de bloc ca timestamp Unix, așa că `onDeadline` se declanșa imediat ce un lot era văzut prima dată) și citea doar prima pagină de 50 de loturi; **0.6.0 le corectează pe amândouă** (vezi mai jos). Folosește 0.6.0 sau mai nou.
 :::
 
 ## `watchBatches`
@@ -30,8 +30,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -55,10 +55,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -72,12 +74,14 @@ Cadrul evidențiază:
 - **termene-limită ale ferestrei de contestare** prin `onDeadline` și
 - **loturi invalide** (pentru care `validate` a returnat `false`) prin `onInvalid`.
 
+De la 0.6.0, urmărește toate paginile listei de loturi a unui rollup, rejudecă un lot pe măsură ce se apropie termenul-limită al acestuia (continuă să interogheze înainte, începând de la cel mai vechi lot a cărui fereastră este încă deschisă, în loc să judece fiecare lot o singură dată, la prima vedere) și măsoară fiecare fereastră față de vârful lanțului (`getChainTip`, starea nodului) în loc de ceasul local. Un lot deja `finalized` nu este validat și nu se emit avertismente pentru el.
+
 Conectarea `onInvalid` la o contestare transformă Watchtower într-un
 auto-contestator complet; lasă-l neconfigurat pentru a rula în mod
 exclusiv de observare.
 
 :::note Fereastra de contestare
-Calculează termenul-limită al unui lot în blocuri, nu în secunde: `submitted_at` (o înălțime de bloc) plus fereastra. **Pe mainnet (v3.2.3)** fereastra este valoarea implicită de 604.800 de „secunde", convertită la 6 secunde fixe per bloc, adică **100.800 de blocuri** (timpul real urmează timpul de bloc, deci este mai scurt decât „7 zile" la blocurile de ≈3,2 s ale mainnet-ului). **Doar pe testnet (v3.2.4)**, un lot trimis începând cu înălțimea 8.337.253 primește o fereastră măsurată în secunde de timp de bloc. Trimiterea unei contestări necesită, de asemenea, garanția de contestare a rollup-ului (1.000 QOR pentru presetările `nft` și `custom`).
+Lanțul măsoară fereastra unui lot în unul din două moduri, iar `batchChallengeWindow` (folosit de Watchtower și de verificarea de sănătate din spatele `qorollup status`) raportează care anume. **Fereastră în număr de blocuri, regula de pe mainnet înainte de înălțimea 3.742.566 (v3.2.3):** fereastra reprezintă secundele configurate ale rollup-ului convertite la 6 secunde fixe per bloc, adică **100.800 de blocuri** pentru valoarea implicită de 604.800, numărate de la înălțimea `submitted_at` a lotului; timpul real urmează timpul de bloc, deci este mai scurt decât „7 zile" la blocurile de ≈3,2 s ale mainnet-ului. Pachetul raportează separat `open` și `finalizable`, deoarece, în regula pe care o implementează, un bloc este ambele (o contestare contează ca deschisă cât timp `height - submitted_at <= window`, iar lotul este finalizabil de la `height - submitted_at >= window`). **Fereastră bazată pe timp, de la v3.2.4 (testnet de la înălțimea 8.337.253, mainnet de la înălțimea 3.742.566):** un lot trimis de la înălțimea upgrade-ului încolo își înregistrează timpul de bloc, iar fereastra sa este acel număr de secunde de timp de bloc. Watchtower folosește fereastra proprie a rollup-ului când nodul o raportează (pachetul documentează aceasta ca v3.2.4 și mai nou); altfel revine la fereastra implicită a modulului, așa că transmite `challengeWindowSecs` pentru un rollup care și-a configurat-o pe a sa. Trimiterea unei contestări necesită, de asemenea, garanția de contestare a rollup-ului (1.000 QOR pentru presetările `nft` și `custom`).
 :::
 
 ## CLI

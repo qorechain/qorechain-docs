@@ -27,7 +27,7 @@ Les champs du manifeste incluent `binary` (url + sha256), `genesis` (url + sha25
 :::
 
 :::caution Utilisez la version que nomme le manifeste : v3.2.3 sur le mainnet
-Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.3` (la mise à niveau coordonnée appliquée à la hauteur 3,662,051 le 20 octobre 2026) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.3 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. Sur le **testnet**, ils valent tous deux `3.2.4` (appliquée à la hauteur 8,337,253 le 19 octobre 2026) ; la v3.2.4 n'est pas encore appliquée sur le mainnet (la proposition de gouvernance 13 l'appliquerait sur le mainnet à la hauteur 3,742,566) : n'exécutez donc pas un binaire de testnet sur le mainnet. Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
+Un nœud qui se synchronise depuis le genesis ou qui rejoue depuis un snapshot franchit plusieurs mises à niveau de gouvernance (voir [Mises à niveau](#upgrades) ci-dessous) : installez donc toujours le binaire vers lequel pointe le manifeste, car il porte tous les gestionnaires de mise à niveau. Sur le **mainnet**, `minCompatible` et `version` du manifeste valent tous deux `3.2.3` (la mise à niveau coordonnée appliquée à la hauteur 3,662,051 le 20 octobre 2026) ; un nœud qui rejoint le réseau maintenant a donc besoin de la v3.2.3 : un binaire plus ancien s'arrête à la hauteur de mise à niveau qu'il ne connaît pas. Sur le **testnet**, ils valent tous deux `3.2.4` (appliquée à la hauteur 8,337,253 le 19 octobre 2026). Le mainnet exécute la v3.2.3 jusqu'à la hauteur 3,742,566 et la v3.2.4 à partir de ce bloc (proposition de gouvernance 13) : n'exécutez donc pas un binaire de testnet sur le mainnet, et n'installez pas la v3.2.4 sur un nœud mainnet avant que le manifeste ne la nomme (voir [Mises à niveau](#upgrades)). Le manifeste est promu de façon délibérée (d'abord sur testnet, puis sur mainnet après une période de rodage) ; vérifiez donc son champ `"version"` par rapport à `minCompatible` avant de faire confiance à `binary.url`.
 
 Un binaire compilé à partir des sources publiques (la compilation communautaire) refuse de démarrer sur l'un ou l'autre des réseaux publics (v3.2.3 et ultérieures) : il ne peut pas vérifier les signatures post-quantiques ni rejouer fidèlement les blocs des réseaux. Utilisez uniquement l'archive de release.
 
@@ -52,8 +52,8 @@ Deux paramètres comptent à partir de la v3.2.1 : gardez l'horloge système syn
 
 | Réseau   | Chain ID            | EVM chain ID         | Notes                          |
 | -------- | ------------------- | -------------------- | ------------------------------ |
-| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 ; version de nœud v3.2.3 |
-| Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici ; version de nœud v3.2.4 (testnet uniquement) |
+| Mainnet  | `qorechain-vladi`   | `9801` (hex `0x2649`) | Principal — en direct depuis le 7 juin 2026 ; version de nœud v3.2.3 (v3.2.4 à partir de la hauteur 3,742,566) |
+| Testnet  | `qorechain-diana`   | `9800`               | Répétez d'abord vos intégrations ici ; version de nœud v3.2.4 (depuis le 19 oct. 2026) |
 
 Remplacez le `--chain-id` approprié pour votre réseau cible tout au long de ce guide. Les exemples utilisent le mainnet par défaut.
 
@@ -252,7 +252,7 @@ curl -s https://rpc.qore.host/block | jq -r '.result.block.header.height, .resul
 
 ### Restauration à partir d'un snapshot
 
-Alternativement, téléchargez le snapshot de données de chaîne publié, vérifiez sa somme de contrôle, puis extrayez-le par-dessus votre répertoire de données. Sur mainnet, l'objet `snapshot` du manifeste fournit l'URL, la `height` du bloc, la taille et le SHA-256. **L'URL du snapshot du manifeste du testnet renvoie actuellement `404` (aucun snapshot de testnet n'est publié) ; utilisez donc le state sync sur ce réseau.** Lisez `snapshot.height` avant d'utiliser celui du mainnet : c'est une archive unique d'environ 27 Go, et un snapshot ancien implique un long rattrapage. Le snapshot mainnet actuellement publié date du 21 août 2026 (hauteur 1,966,629) : il est antérieur aux hauteurs de mise à niveau v3.1.94, v3.2.0, v3.2.2 et v3.2.3, de sorte qu'un nœud restauré à partir de celui-ci rejoue environ deux mois de blocs avec le binaire v3.2.3. Le state sync est presque toujours le meilleur choix.
+Alternativement, téléchargez le snapshot de données de chaîne publié, vérifiez sa somme de contrôle, puis extrayez-le par-dessus votre répertoire de données. Sur mainnet, l'objet `snapshot` du manifeste fournit l'URL, la `height` du bloc, la taille et le SHA-256. **L'URL du snapshot du manifeste du testnet renvoie actuellement `404` (aucun snapshot de testnet n'est publié) ; utilisez donc le state sync sur ce réseau.** Lisez `snapshot.height` avant d'utiliser celui du mainnet : c'est une archive unique d'environ 27 Go, et un snapshot ancien implique un long rattrapage. Le snapshot mainnet actuellement publié date du 21 août 2026 (hauteur 1,966,629) : il est antérieur aux hauteurs de mise à niveau v3.1.94, v3.2.0, v3.2.2, v3.2.3 et v3.2.4, de sorte qu'un nœud restauré à partir de celui-ci rejoue environ deux mois de blocs avec le binaire de la version que nomme le manifeste. Le state sync est presque toujours le meilleur choix.
 
 ```bash
 SNAP_URL=$(jq -r .snapshot.url latest.json)
@@ -281,7 +281,16 @@ Les changements de consensus arrivent sous forme de **mises à niveau de gouvern
 | v3.2.1 | locale au nœud, sans hauteur | locale au nœud |
 | v3.2.2 | hauteur 3,556,788 (16 octobre 2026) | hauteur 6,905,034 (2 octobre 2026) |
 | v3.2.3 | hauteur 3,662,051 (20 octobre 2026, proposition de gouvernance 11) | hauteur 8,003,746 (15 octobre 2026) |
-| v3.2.4 | **pas encore appliquée sur le mainnet (la proposition de gouvernance 13 l'appliquerait à la hauteur 3,742,566) ; testnet uniquement aujourd'hui** | hauteur 8,337,253 (19 octobre 2026, proposition de gouvernance 13) |
+| v3.2.4 | planifiée sur le mainnet à la hauteur 3,742,566 (proposition de gouvernance 13) | hauteur 8,337,253 (19 octobre 2026, proposition de gouvernance 13) |
+
+**Ce que fait l'opérateur d'un nœud mainnet pour la v3.2.4 (hauteur 3,742,566).** La proposition de gouvernance 13 nomme le plan `v3.2.4` à la hauteur 3,742,566 et précise que les nœuds restent en v3.2.3 jusqu'à cette hauteur, s'y arrêtent, puis redémarrent en v3.2.4. Concrètement :
+
+1. Continuez d'exécuter la **v3.2.3** jusqu'à ce que le manifeste du mainnet (`https://download.qore.host/mainnet/latest.json`) indique la v3.2.4. Tant que le manifeste affiche encore `version` et `minCompatible` à `3.2.3` et aucune hauteur de mise à niveau pour la v3.2.4, il n'y a rien à installer : un binaire v3.2.4 du répertoire testnet n'est pas la version du mainnet.
+2. Lorsque le manifeste nomme la v3.2.4, téléchargez l'archive depuis son `binary.url`, vérifiez le `sha256` (le texte de la proposition publie aussi le sha256 du binaire) et préparez-la **avant** la hauteur. Consultez `GET /cosmos/upgrade/v1beta1/current_plan` pour le plan en attente (`name` et `height`) et la hauteur actuelle avec `GET /status` sur le RPC.
+3. À la hauteur 3,742,566, un nœud encore en v3.2.3 **s'arrête** (c'est le comportement voulu du module de mise à niveau, pas une défaillance) ; un nœud déjà sur le nouveau binaire applique le gestionnaire de mise à niveau et continue. Si le vôtre s'est arrêté en premier, remplacez le binaire et redémarrez. Après la mise à niveau, `GET /cosmos/upgrade/v1beta1/applied_plan/v3.2.4` renvoie la hauteur au lieu de `0`.
+4. Un nœud qui rejoint le mainnet après la mise à niveau installe la version que le manifeste nomme à ce moment-là (vérifiez `version` par rapport à `minCompatible`).
+
+La signature des transactions, les adresses, les décimales, les memos et les frais ne changent pas avec la v3.2.4.
 
 Lisez l'enregistrement en direct avec `GET /cosmos/upgrade/v1beta1/applied_plan/<name>` (`0` = non appliquée) et tout plan en attente avec `GET /cosmos/upgrade/v1beta1/current_plan`. La v3.2.2 a relevé les dépendances du moteur de consensus, de Cosmos SDK (v0.53.8) et d'IBC, et les contrôles de transaction plus stricts du SDK font que cette version remplace le binaire précédent à la hauteur de mise à niveau plutôt que nœud par nœud. La signature des transactions, les adresses, les décimales, les memos et les frais n'ont pas changé dans la v3.2.2 ni dans la v3.2.3.
 
@@ -339,7 +348,7 @@ Réglez `indexer = "kv"` (ou un indexeur plus riche) afin que les transactions s
 
 ---
 
-## Exposition des points de terminaison pour l'intégration
+## Exposition des points de terminaison pour l'intégration {#exposing-endpoints-for-integration}
 
 Activez et liez les serveurs API dont les intégrateurs ont besoin dans `app.toml` :
 
@@ -358,6 +367,8 @@ address = "0.0.0.0:8545"
 ws-address = "0.0.0.0:8546"
 api = "eth,net,web3,txpool"
 ```
+
+**Limites JSON-RPC dans la version de nœud v3.2.4.** Un nœud qui exécute le binaire v3.2.4 (testnet depuis le 19 octobre 2026 ; nœuds mainnet à partir de la hauteur 3,742,566) borne son propre serveur JSON-RPC. Ce sont des réglages locaux au nœud, dans la section `[json-rpc]` de `app.toml`, qui n'affectent pas le consensus : `http-body-limit` (par défaut 262144 octets, 256 Kio ; un corps de requête plus grand est refusé avec un HTTP 413 avant d'être lu), `max-concurrent-requests` (par défaut 256 ; les requêtes au-delà reçoivent aussitôt un HTTP 503) et `max-open-connections` (une valeur absente ou nulle signifie désormais 1000, et non plus illimité). En outre, l'argument de filtre de `eth_getLogs` et `eth_newFilter` est refusé lorsqu'il énumère plus de 4 positions de topics, plus de 1000 alternatives dans une même position ou plus de 1000 adresses. Un intégrateur qui envoie à son propre nœud des requêtes très volumineuses (lots ou déploiements de contrats) devrait vérifier que sa plus grande requête respecte la limite de corps et la relever si nécessaire.
 
 Les points de terminaison publics servent les espaces de noms `eth_`, `net_`, `web3_` et `txpool_` (statut uniquement) ; un nœud initialisé par la v3.2.3 ou ultérieure utilise par défaut `eth,net,web3` et laisse `txpool` de côté (il publie les transactions en attente du nœud) : ajoutez-le donc seulement si vous en avez besoin. L'espace de noms `qor_` n'est servi par aucune version de nœud publiée, ne l'ajoutez donc pas (voir [l'espace de noms `qor_`](/api-reference/json-rpc-qor_-namespace)).
 
@@ -424,7 +435,7 @@ curl -s -X POST http://localhost:8545 \
 
 ## Bonnes pratiques opérationnelles
 
-1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.3** sur mainnet), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
+1. **Épinglez la version de la chaîne.** Exécutez la version que recommande le manifeste (**v3.2.3** sur mainnet jusqu'à la hauteur 3,742,566, puis v3.2.4), suivez les versions officielles pour les mises à niveau coordonnées et gardez l'horloge système synchronisée via NTP.
 
 2. **Faites tourner des nœuds redondants.** Faites fonctionner au moins deux nœuds derrière un répartiteur de charge afin qu'un simple redémarrage ou une resynchronisation n'interrompe pas le trafic d'intégration.
 

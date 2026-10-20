@@ -21,7 +21,7 @@ il 21 ottobre 2026 (verificata su ciascun registry in quel giorno):
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
 | Proxy dei moduli Go | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.1 (aggiornamento solo Java della sua dipendenza Bouncy Castle, nessuna modifica all'API; gli altri linguaggi restano alla 0.9.0) |
 
 Scegli il tuo linguaggio qui sotto.
 
@@ -39,14 +39,14 @@ I builder ibridi accettano un'opzione `signBytesVersion` (`"auto"` | `"v1"` | `"
 interroga la rete e quindi richiede l'endpoint REST (`rest`) su
 `qorechain-vladi` / `qorechain-diana`: solleva un errore invece di tirare a indovinare. Vedi
 [Quale forma di sign-bytes?](/sdk/concepts/accounts-pqc#sign-bytes-versions).
-La forma non è cambiata nella chain v3.2.3 (mainnet) né nella v3.2.4 (testnet): `"auto"`
+La forma non è cambiata nella chain v3.2.3 né nella v3.2.4 (la testnet dal 19 ottobre 2026, la mainnet dall'altezza 3.742.566): `"auto"`
 si risolve in v2 su entrambe le reti.
 :::
 
 ## Cosa aggiunge la 0.9.0 {#whats-new-090}
 
 L'SDK 0.9.0 è la release client per la chain **v3.2.2** e **v3.2.3** (la mainnet le
-ha applicate alle altezze 3.556.788 e 3.662.051; la testnet esegue la v3.2.4). Il
+ha applicate alle altezze 3.556.788 e 3.662.051; la testnet esegue la v3.2.4 dal 19 ottobre 2026 e la mainnet passa ad essa all'altezza 3.742.566). Il
 formato di firma, gli indirizzi, i decimali, i memo e le commissioni non sono
 cambiati, quindi la forma sign-bytes ibrida v2 che firmano la 0.8.1 e le successive
 è ancora quella giusta. Le novità:
@@ -73,7 +73,7 @@ ruotare allontanandosi da una chiave legacy esistente funziona ancora.
 ## Versioni precedenti alla 0.9.0 {#before-090}
 
 Se sei sulla 0.8.x, firma ancora la forma che entrambe le reti verificano e funziona
-sulla mainnet v3.2.3 e sulla testnet v3.2.4. Questi sono i limiti che la 0.9.0 rimuove, e
+sulla mainnet (v3.2.3, poi v3.2.4 dall'altezza 3.742.566) e sulla testnet (v3.2.4). Questi sono i limiti che la 0.9.0 rimuove, e
 alcuni di essi costano una commissione se non li conosci:
 
 | Release precedente alla 0.9.0 | Soluzione alternativa |
@@ -218,19 +218,21 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 
 Oppure Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.1'
 ```
 
-> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk:0.9.0` (verificato
-> il 21 ottobre 2026). Central non ha alcuna build 0.8.0 o 0.8.1, quindi sulle reti live usa
-> la 0.9.0 (o la 0.8.2 o successiva).
+> Pubblicato su Maven Central come `io.github.qorechain:qorechain-sdk` (la 0.9.0 e la 0.9.1
+> sono entrambe servite; la 0.9.1 è l'ultima e la versione di release, verificato il
+> 21 ottobre 2026). La 0.9.1 è una release solo Java che porta Bouncy Castle dalla 1.80
+> alla 1.85, secondo le sue note di release; non ha modifiche all'API. Central non ha alcuna
+> build 0.8.0 o 0.8.1, quindi sulle reti live usa la 0.9.x (o la 0.8.2 o successiva).
 
 ## Pacchetti correlati {#related-packages}
 
@@ -238,12 +240,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | Helper lato wallet: generazione del wallet (`generateQoreWallet`), firma ibrida `eth_secp256k1` (`signHybridEth`, `QoreChainSigner`), registrazione della rete in MetaMask (`addQoreEvmToWallet`), builder di messaggi per authenticator e finestre EVM (il suo `openEvmWindowMsg` costruisce solo la forma senza ambito limitato), il digest v2 dell'abstract account. Non allega una prova di possesso. Peer dependency: `@cosmjs/proto-signing` e `@cosmjs/stargate` `^0.32` (l'SDK usa cosmjs 0.39, quindi installarli entrambi nello stesso progetto fa segnalare a npm un conflitto di peer, `ERESOLVE`; tienili in progetti separati oppure passa `--legacy-peer-deps`) | 0.4.0 |
 | `@qorechain/chain-bridge` | Worker lato server per i backend: deriva la chiave PQC, firma in modo ibrido e trasmette (`sendTokens`, `registerPqc` e altro). Passa `cosmosRest`: con esso, una registrazione include la prova di possesso una volta che la rete ha applicato la v3.2.3, e un rifiuto dall'aspetto PQC viene verificato sulla chain prima di qualsiasi nuova registrazione (una chiave registrata diversa solleva `pqc_key_mismatch` invece di pagare una seconda registrazione) | 0.2.3 |
-| `@qorechain/pqc` | Primitive ML-DSA / ML-KEM / SHAKE-256 solo conformi agli standard e `hybridSignBytes` (vedi [Firma post-quantistica](/developer-guide/post-quantum-signing)); anche su PyPI, crates.io, Maven Central e sul proxy Go (Go `v0.2.2`) alla stessa versione | 0.2.2 |
+| `@qorechain/pqc` | Primitive ML-DSA / ML-KEM / SHAKE-256 solo conformi agli standard e `hybridSignBytes` (vedi [Firma post-quantistica](/developer-guide/post-quantum-signing)); anche su PyPI, crates.io, Maven Central e sul proxy Go (Go `v0.2.3`) alla stessa versione | 0.2.3 |
 | `@qorechain/handles` | Risoluzione verificata degli `@handle` con pinning al primo utilizzo (`HandleClient`) | 0.1.0 |
 | `@qorechain/connect` | Un unico connettore per wallet EVM, Cosmos e SVM, costruito sul wallet adapter (il suo intervallo di peer è `@qorechain/wallet-adapter` `^0.2.1`, che non include la 0.4.0). Non apre una [finestra di autorizzazione EVM](/sdk/guides/evm#evm-window), quindi un invio EVM tramite esso viene rifiutato finché l'account non ha una chiave registrata e una finestra aperta | 0.2.1 |
-| `@qorechain/rdk` | Client del Rollup Development Kit (vedi [Rollup](/rollups/why)). Dipende da `@qorechain/sdk` `^0.8.0`, quindi npm installa l'SDK 0.8.3 come copia propria anche quando la tua app usa l'SDK 0.9.0. Firma in modo ibrido solo quando passi una `pqcKeypair`; le letture funzionano senza. Vedi i [limiti della 0.5.0](/rollups/deploying-a-rollup#rdk-050-limits) | 0.5.0 |
-| `@qorechain/rdk-cli` | La CLI operatore `qorollup` per l'RDK. I suoi comandi di transazione firmano solo in modo classico e vengono rifiutati dalle reti | 0.5.0 |
-| `create-qorechain-rollup` | Scaffolder di starter per rollup; i suoi template dipendono da `@qorechain/rdk` `^0.5.0` | 0.5.0 |
+| `@qorechain/rdk` | Client del Rollup Development Kit (vedi [Rollup](/rollups/why)). Dipende da `@qorechain/sdk` `^0.9.0` e `@qorechain/evm` `^0.8.0`, quindi un'app con l'SDK 0.9.0 condivide con esso una sola copia dell'SDK (la 0.5.0 installava l'SDK 0.8.3 come copia annidata). Firma in modo ibrido solo quando passi una `pqcKeypair`; le letture funzionano senza. Pubblicato anche come `qorechain-rdk` su PyPI, crates.io e Maven Central e come modulo Go (fissa `@v0.6.0`); questi quattro client firmano solo in modo classico. Vedi [RDK 0.6.0: modifiche e limiti](/rollups/deploying-a-rollup#rdk-050-limits) | 0.6.0 |
+| `@qorechain/rdk-cli` | La CLI operatore `qorollup` per l'RDK. I suoi comandi di transazione (`create`, `pause`, `resume`, `stop`, `withdraw`) firmano solo in modo classico e vengono rifiutati dalle reti | 0.6.0 |
+| `create-qorechain-rollup` | Scaffolder di starter per rollup; i suoi template dipendono da `@qorechain/rdk` `^0.6.0` e firmano in modo ibrido quando riescono a risolvere la tua chiave post-quantistica da `QORE_MNEMONIC` o `QORE_PQC_SEED_HEX` | 0.6.0 |
 
 ## Avanti
 

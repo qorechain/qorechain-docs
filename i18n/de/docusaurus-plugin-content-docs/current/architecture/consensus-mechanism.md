@@ -33,7 +33,7 @@ flowchart TD
 
 ## Validator-Zulassung und geltende Staking-Regeln {#admission}
 
-Diese Regeln werden auf dem Mainnet (seit v3.2.2, mit einer weiteren Härtung in v3.2.3) und auf dem Testnet durchgesetzt. Sie sind Teil des Staking-Message-Servers und gelten daher für jede Nachricht, gleich auf welchem Weg sie die Chain erreicht: eine Transaktion, `x/authz`, `x/group`, ein CosmWasm-Contract, ein Precompile oder ein Governance-Vorschlag. Genesis-Transaktionen sind ausgenommen.
+Diese Regeln werden auf dem Mainnet (seit v3.2.2, mit einer weiteren Härtung in v3.2.3) und auf dem Testnet durchgesetzt. Sie sind Teil des Staking-Message-Servers und gelten daher für jede Nachricht, gleich auf welchem Weg sie die Chain erreicht: eine Transaktion, `x/authz`, `x/group`, ein QoreChain Native-Contract, ein Precompile oder ein Governance-Vorschlag. Genesis-Transaktionen sind ausgenommen.
 
 | Regel | Was die Chain durchsetzt |
 | --- | --- |

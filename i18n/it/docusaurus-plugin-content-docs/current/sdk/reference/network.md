@@ -13,7 +13,7 @@ sidebar_position: 1
 | --- | --- |
 | Preset di rete | `mainnet` |
 | Chain id | `qorechain-vladi` (attiva dal 7 giugno 2026) |
-| Versione della chain (20 ottobre 2026) | v3.2.3 |
+| Versione della chain (21 ottobre 2026) | v3.2.3 fino all'altezza 3.742.566, v3.2.4 da quel blocco (proposta di governance 13) |
 | EVM chain ID | `9801` |
 | Token visualizzato | `QOR` |
 | Denominazione base | `uqor` |
@@ -27,7 +27,7 @@ sidebar_position: 1
 | --- | --- |
 | Preset di rete | `testnet` |
 | Chain id | `qorechain-diana` (attiva) |
-| Versione della chain (20 ottobre 2026) | v3.2.4 (finora solo testnet; la proposta 13 della mainnet la applicherebbe all'altezza 3.742.566) |
+| Versione della chain (21 ottobre 2026) | v3.2.4 (dall'altezza 8.337.253, 19 ottobre 2026) |
 | EVM chain ID | `9800` |
 | Token visualizzato | `QOR` |
 | Denominazione base | `uqor` |
@@ -57,7 +57,7 @@ Gli endpoint EVM servono `eth_`, `net_`, `web3_` e `txpool_`; il namespace
 | --- | --- | --- |
 | Cosmos REST (LCD) | `1317` | saldi bank, info account, query dei moduli |
 | gRPC | `9090` | query gRPC |
-| Consensus RPC | `26657` | firma/trasmissione tx native, letture CosmWasm |
+| Consensus RPC | `26657` | firma/trasmissione tx native, letture QoreChain Native |
 | EVM JSON-RPC | `8545` | `eth_*` (e `qor_*` / precompile sui nodi che li abilitano) |
 | EVM JSON-RPC (WS) | `8546` | sottoscrizioni WebSocket EVM |
 | SVM JSON-RPC | `8899` | RPC compatibile con Solana |

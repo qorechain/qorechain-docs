@@ -10,7 +10,7 @@ sidebar_position: 4
 Unisciti alla testnet Diana di QoreChain configurando il tuo nodo con il file genesis, i peer e le impostazioni di rete corretti.
 
 :::note
-Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.3**) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue attualmente la **v3.2.4**, una release solo per la testnet che non fa parte della mainnet; il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
+Questa pagina riguarda la testnet **`qorechain-diana`** (chain ID EVM **9800**). La mainnet (**`qorechain-vladi`**, chain ID EVM **9801**) è attiva dal 7 giugno 2026 (release **v3.2.3** fino all'altezza 3.742.566, **v3.2.4** da quel blocco) e dispone di una pagina dedicata **Connessione alla Mainnet** con genesis, peer e dettagli di connessione separati. La testnet esegue la **v3.2.4** dal 19 ottobre 2026; il suo manifesto di rilascio si trova all'indirizzo [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json).
 :::
 
 ## Endpoint Pubblici
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-La testnet adotta aggiornamenti coordinati tramite proposte di governance, quindi il suo manifesto riporta un campo `upgradeHeight` (la v3.2.4 è stata applicata all'altezza 8,337,253 il 19 ottobre 2026; prima di essa la v3.2.3 all'altezza 8,003,746 e la v3.2.2 all'altezza 6,905,034) e `minCompatible` è uguale alla versione attuale (3.2.4). Un nodo che si unisce ora ha bisogno della release indicata nel manifesto. Mantieni l'orologio di sistema sincronizzato via NTP. Il manifesto della mainnet punta a una release diversa (v3.2.3), quindi non copiare mai un binario da una rete all'altra.
+La testnet adotta aggiornamenti coordinati tramite proposte di governance, quindi il suo manifesto riporta un campo `upgradeHeight` (la v3.2.4 è stata applicata all'altezza 8.337.253 il 19 ottobre 2026; prima di essa la v3.2.3 all'altezza 8.003.746 e la v3.2.2 all'altezza 6.905.034) e `minCompatible` è uguale alla versione attuale (3.2.4). Un nodo che si unisce ora ha bisogno della release indicata nel manifesto. Mantieni l'orologio di sistema sincronizzato via NTP. Il manifesto della mainnet punta a una release diversa (v3.2.3 fino al suo upgrade all'altezza 3.742.566), quindi non copiare mai un binario da una rete all'altra.
 
 ---
 

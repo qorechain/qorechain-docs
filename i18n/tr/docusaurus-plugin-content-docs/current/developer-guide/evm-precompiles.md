@@ -24,7 +24,7 @@ Aşağıdaki altı QoreChain ön derlemesi **düğüme derlenmiştir ancak henü
 | PRISM Consensus Params | `0x…0C01` | Etkin değil | Etkin değil |
 | CrossVM Bridge | `0x…0901` | Etkin değil | Etkin değil |
 
-Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve test ağının v3.2.4 sürümü bunu değiştirmedi. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
+Etkinleştirme bir zincir yükseltmesi gerektirir ve aşamalı olarak planlanmıştır: önce salt okunur PQC ve konsensüs ön derlemeleri, salt okunur sabit noktalı yolları hazır olduğunda AI çifti ve en son CrossVM köprüsü. v3.2.3 sürümü (ana ağ, 20 Ekim 2026), CrossVM köprüsünün ve AI anomali ön derlemesinin güçlendirilmiş sürümlerini bir protokol özelliğinin arkasında ikili dosyaya koydu, **ancak hiçbir ön derlemeyi etkinleştirmedi**: `active_static_precompiles` listesi her iki ağda da hâlâ boştur ve v3.2.4 (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren) bunu değiştirmez. Bu tablo, herhangi birini etkinleştiren yükseltmeyle aynı işlemde güncellenir.
 
 Güncel listeyi kendiniz kontrol edin (boşsa hiçbiri etkin değildir):
 
@@ -54,7 +54,7 @@ Gaz rakamları, bir ön derleme etkin olduktan sonra düğümün tahsil ettiği 
 
 | Ön Derleme              | Adres                                      | Temel Gaz        | Açıklama                                      |
 | ----------------------- | -------------------------------------------- | --------------- | ------------------------------------------------ |
-| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Senkron VM'ler arası çağrılar (EVM'den CosmWasm'a)     |
+| **CrossVM Bridge**      | `0x0000000000000000000000000000000000000901` | 50,000 + 4/byte | Senkron VM'ler arası çağrılar (EVM'den QoreChain Native'a)     |
 | **PQC Verify**          | `0x0000000000000000000000000000000000000A01` | 25,000 + 8/byte | ML-DSA-87 kuantum sonrası imzalarını doğrular         |
 | **PQC Key Status**      | `0x0000000000000000000000000000000000000A02` | 2,500           | Bir hesabın kayıtlı bir PQC anahtarı olup olmadığını kontrol eder     |
 | **AI Risk Score**       | `0x0000000000000000000000000000000000000B01` | 50,000          | İşlem verileri için AI tarafından oluşturulan risk puanını alır |
@@ -94,6 +94,8 @@ interface IQorePQC {
         returns (bool registered, uint8 algorithmId, bytes memory pubkey);
 }
 ```
+
+v3.2.4'ten itibaren (test ağında 19 Ekim 2026'dan beri; ana ağda 3.742.566 yüksekliğinden itibaren), bu ön derleme etkin hale geldiğinde çıktısı `pubkey` değerinden sonra dördüncü bir değer taşır, `bool possessionProven`: hesabın geçerli anahtarının doğrulanmış bir sahiplik kanıtıyla kanıtlanıp kanıtlanmadığı (bkz. [Kuantum Sonrası İmzalama](/developer-guide/post-quantum-signing#proof-of-possession)). Yukarıdaki arayüz ilk üç çıktıyı listeler; anahtara güvenmesi gereken bir sözleşme dördüncüyü de okumalıdır.
 
 ### IQoreAI.sol
 
@@ -268,13 +270,13 @@ contract ConsensusReader {
 Mevcut düğüm derlemesinde `rlConsensusParams`, canlı PRISM ile ayarlanmış değerler değil, sabit yer tutucu varsayılanlar döndürür (örneğin ölçülen blok süresini bildirmez; bu süre ana ağda yaklaşık 3,2 sn, test ağında yaklaşık 1,0 sn'dir). Bunu canlı konsensüs parametrelerine bağlamak etkinleştirme çalışmasının bir parçasıdır.
 :::
 
-### CrossVM Bridge — EVM'den CosmWasm Çağırma
+### CrossVM Bridge — EVM'den QoreChain Native Çağırma
 
 :::warning
-CrossVM köprü ön derlemesi her iki ağda da **etkin değildir**. v3.2.3'ten beri ikili dosya, onun güçlendirilmiş bir sürümünü taşır: `STATICCALL` çağrısını reddeder; iç içe çağrıyı, çağıran çerçevede kalan gazla sınırlı bir gaz sayacında çalıştırır ve günlüğe kaydeder, böylece çağıran sözleşmedeki bir revert CosmWasm tarafını da geri alır; yalnızca izin listesindeki CosmWasm hedeflerine ulaşır (EVM hedefleri reddedilir); ve VM'ler arası devre kesiciye uyar. Yönetişim onaylı bir yükseltme onu etkinleştirene kadar senkron bir EVM'den CosmWasm'a yol yoktur; bugün ana ağda kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
+CrossVM köprü ön derlemesi her iki ağda da **etkin değildir**. v3.2.3'ten beri ikili dosya, onun güçlendirilmiş bir sürümünü taşır: `STATICCALL` çağrısını reddeder; iç içe çağrıyı, çağıran çerçevede kalan gazla sınırlı bir gaz sayacında çalıştırır ve günlüğe kaydeder, böylece çağıran sözleşmedeki bir revert QoreChain Native tarafını da geri alır; yalnızca izin listesindeki QoreChain Native hedeflerine ulaşır (EVM hedefleri reddedilir); ve VM'ler arası devre kesiciye uyar. Yönetişim onaylı bir yükseltme onu etkinleştirene kadar senkron bir EVM'den QoreChain Native'a yol yoktur; bugün ana ağda kendisi de kapalı olan `MsgCrossVMCall` mesaj yolu için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 :::
 
-Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Desteklenen tek kullanım EVM'den CosmWasm'adır (`targetVM` = 1); ABI etkinleştirmeden önce yine de değişebilir.
+Düğüm, calldata'yı `executeCrossVMCall(uint8 targetVM, string targetContract, bytes payload)` olarak çözümler (4 baytlık seçici, ardından ABI ile kodlanmış argümanlar). Desteklenen tek kullanım EVM'den QoreChain Native'adır (`targetVM` = 1); ABI etkinleştirmeden önce yine de değişebilir. `@qorechain/rdk` yardımcısı `encodeCrossVmCalldata` bu düzeni 0.6.0'dan itibaren kodlar (önceki sürümler farklı bir fonksiyonu kodluyordu) ve `isCrossVmPrecompileActive` canlı `active_static_precompiles` listesini okur; bkz. [Multi-VM](/rollups/multi-vm).
 
 **Gaz maliyeti:** 50,000 temel + giriş baytı başına 4 gaz, artı hedef sözleşme yürütme maliyeti. Ayrıntılar için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) bölümüne bakın.
 

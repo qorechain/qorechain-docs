@@ -21,7 +21,7 @@ PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게�
 | PyPI | `qorechain-sdk` (import `qorsdk`) | 0.9.0 |
 | crates.io | `qorechain-sdk` (import `qorechain`) | 0.9.0 |
 | Go 모듈 프록시 | `github.com/qorechain/qorechain-sdk/packages/go` | v0.9.0 |
-| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.0 |
+| Maven Central | `io.github.qorechain:qorechain-sdk` | 0.9.1 (Bouncy Castle 의존성만 갱신한 Java 전용 업데이트로 API 변경 없음. 다른 언어는 0.9.0 유지) |
 
 아래에서 언어를 선택하세요.
 
@@ -40,14 +40,14 @@ PQC 트랜잭션, WebSocket 구독)를 갖춘 채 각 레지스트리에 **게�
 추측하는 대신 예외를 던집니다.
 [어떤 sign-bytes 형태인가?](/sdk/concepts/accounts-pqc#sign-bytes-versions)를
 참조하세요.
-이 형태는 체인 v3.2.3(메인넷)과 v3.2.4(테스트넷)에서 바뀌지 않았습니다. `"auto"`는
+이 형태는 체인 v3.2.3과 v3.2.4(테스트넷은 2026년 10월 19일부터, 메인넷은 높이 3,742,566부터)에서 바뀌지 않았습니다. `"auto"`는
 두 네트워크 모두에서 v2로 결정됩니다.
 :::
 
 ## 0.9.0에서 추가된 것 {#whats-new-090}
 
 SDK 0.9.0은 체인 **v3.2.2**와 **v3.2.3**을 위한 클라이언트 릴리스입니다(메인넷은
-이를 높이 3,556,788과 3,662,051에서 적용했으며, 테스트넷은 v3.2.4를 실행합니다).
+이를 높이 3,556,788과 3,662,051에서 적용했으며, 테스트넷은 2026년 10월 19일부터 v3.2.4를 실행했고 메인넷은 높이 3,742,566에서 이로 전환합니다).
 서명 형식, 주소, 소수 자릿수, 메모, 수수료는 바뀌지 않았으므로, 0.8.1 이상이
 서명하는 v2 하이브리드 sign-bytes 형태가 여전히 올바른 형태입니다.
 새로 추가된 내용은 다음과 같습니다.
@@ -75,7 +75,7 @@ SDK 0.9.0은 체인 **v3.2.2**와 **v3.2.3**을 위한 클라이언트 릴리스
 ## 0.9.0 이전 버전 {#before-090}
 
 0.8.x를 사용 중이라면, 이 버전은 여전히 두 네트워크가 검증하는 형태로 서명하며
-메인넷 v3.2.3과 테스트넷 v3.2.4에서 동작합니다. 다음은 0.9.0이 없애 주는
+메인넷(v3.2.3, 높이 3,742,566부터는 v3.2.4)과 테스트넷(v3.2.4)에서 동작합니다. 다음은 0.9.0이 없애 주는
 제약이며, 알지 못하면 수수료가 드는 경우도 있습니다.
 
 | 0.9.0 이전 릴리스 | 우회 방법 |
@@ -222,19 +222,21 @@ Maven (`pom.xml`):
 <dependency>
   <groupId>io.github.qorechain</groupId>
   <artifactId>qorechain-sdk</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 
 또는 Gradle:
 
 ```groovy
-implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
+implementation 'io.github.qorechain:qorechain-sdk:0.9.1'
 ```
 
-> Maven Central에 `io.github.qorechain:qorechain-sdk:0.9.0`으로 게시되어 있습니다
-> (2026년 10월 21일 확인). Central에는 0.8.0 또는 0.8.1 빌드가 없으므로, 라이브
-> 네트워크에서는 0.9.0(또는 0.8.2 이상)을 사용하세요.
+> Maven Central에 `io.github.qorechain:qorechain-sdk`로 게시되어 있습니다
+> (0.9.0과 0.9.1이 모두 제공되며, 0.9.1이 최신이자 릴리스 버전입니다. 2026년 10월
+> 21일 확인). 0.9.1은 릴리스 노트에 따라 Bouncy Castle을 1.80에서 1.85로 올린
+> Java 전용 릴리스이며 API 변경은 없습니다. Central에는 0.8.0 또는 0.8.1 빌드가
+> 없으므로, 라이브 네트워크에서는 0.9.x(또는 0.8.2 이상)를 사용하세요.
 
 ## 관련 패키지 {#related-packages}
 
@@ -242,12 +244,12 @@ implementation 'io.github.qorechain:qorechain-sdk:0.9.0'
 | --- | --- | --- |
 | `@qorechain/wallet-adapter` | 지갑 측 헬퍼: 지갑 생성(`generateQoreWallet`), `eth_secp256k1` 하이브리드 서명(`signHybridEth`, `QoreChainSigner`), MetaMask 네트워크 등록(`addQoreEvmToWallet`), 인증자 및 EVM 윈도우 메시지 빌더(`openEvmWindowMsg`는 범위 제한이 없는 형태만 만듭니다), v2 추상 계정 다이제스트. 소유 증명은 첨부하지 않습니다. 피어 의존성: `@cosmjs/proto-signing` 및 `@cosmjs/stargate` `^0.32`(SDK는 cosmjs 0.39를 사용하므로 한 프로젝트에 둘 다 설치하면 npm이 피어 충돌 `ERESOLVE`를 보고합니다. 별도 프로젝트에 두거나 `--legacy-peer-deps`를 전달하세요) | 0.4.0 |
 | `@qorechain/chain-bridge` | 백엔드용 서버 측 워커: PQC 키를 파생하고, 하이브리드 서명 후 브로드캐스트합니다(`sendTokens`, `registerPqc` 등). `cosmosRest`를 전달하세요. 전달하면 네트워크가 v3.2.3을 적용한 뒤 등록에 소유 증명이 포함되고, PQC로 보이는 거부는 재등록 전에 체인과 대조해 확인합니다(다른 키가 등록되어 있으면 두 번째 등록 비용을 내는 대신 `pqc_key_mismatch`를 발생시킵니다) | 0.2.3 |
-| `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([양자내성 서명](/developer-guide/post-quantum-signing) 참조). PyPI, crates.io, Maven Central, Go 프록시(Go `v0.2.2`)에도 같은 버전으로 있습니다 | 0.2.2 |
+| `@qorechain/pqc` | 표준 전용 ML-DSA / ML-KEM / SHAKE-256 프리미티브와 `hybridSignBytes`([양자내성 서명](/developer-guide/post-quantum-signing) 참조). PyPI, crates.io, Maven Central, Go 프록시(Go `v0.2.3`)에도 같은 버전으로 있습니다 | 0.2.3 |
 | `@qorechain/handles` | 최초 사용 시 신뢰(trust-on-first-use) 고정을 갖춘 검증된 `@handle` 해석(`HandleClient`) | 0.1.0 |
 | `@qorechain/connect` | 지갑 어댑터 위에 구축된, EVM, Cosmos, SVM 지갑을 위한 단일 커넥터(피어 범위는 `@qorechain/wallet-adapter` `^0.2.1`이며 0.4.0은 포함하지 않습니다). [EVM 인증 윈도우](/sdk/guides/evm#evm-window)를 열지 않으므로, 이를 통한 EVM 전송은 계정에 등록된 키와 열린 윈도우가 생길 때까지 거부됩니다 | 0.2.1 |
-| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). `@qorechain/sdk` `^0.8.0`에 의존하므로, 앱이 SDK 0.9.0을 사용하더라도 npm은 SDK 0.8.3을 자체 사본으로 설치합니다. `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. [0.5.0의 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.5.0 |
-| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 트랜잭션 명령은 클래식 전용으로 서명하며 네트워크가 이를 거부합니다 | 0.5.0 |
-| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.5.0`에 의존합니다 | 0.5.0 |
+| `@qorechain/rdk` | 롤업 개발 키트(Rollup Development Kit) 클라이언트([롤업](/rollups/why) 참조). `@qorechain/sdk` `^0.9.0`과 `@qorechain/evm` `^0.8.0`에 의존하므로, SDK 0.9.0을 사용하는 앱은 SDK 사본 하나를 함께 공유합니다(0.5.0은 SDK 0.8.3을 중첩 사본으로 가져왔습니다). `pqcKeypair`를 전달할 때만 하이브리드로 서명하며, 읽기는 없어도 동작합니다. PyPI, crates.io, Maven Central에는 `qorechain-rdk`로, Go 모듈로도 게시되어 있습니다(`@v0.6.0`으로 고정하세요). 이 네 클라이언트는 클래식 전용으로 서명합니다. [RDK 0.6.0: 변경 사항과 한계](/rollups/deploying-a-rollup#rdk-050-limits)를 참조하세요 | 0.6.0 |
+| `@qorechain/rdk-cli` | RDK용 `qorollup` 운영자 CLI. 트랜잭션 명령(`create`, `pause`, `resume`, `stop`, `withdraw`)은 클래식 전용으로 서명하며 네트워크가 이를 거부합니다 | 0.6.0 |
+| `create-qorechain-rollup` | 롤업 스타터 스캐폴더. 템플릿은 `@qorechain/rdk` `^0.6.0`에 의존하며, `QORE_MNEMONIC` 또는 `QORE_PQC_SEED_HEX`에서 양자내성 키를 확보할 수 있으면 하이브리드로 서명합니다 | 0.6.0 |
 
 ## 다음
 

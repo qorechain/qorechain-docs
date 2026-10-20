@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # What is QoreChain?
 
-QoreChain is the first Layer 1 blockchain built with post-quantum cryptography at genesis, AI-native transaction processing, and a triple-VM runtime that executes EVM, CosmWasm, and SVM programs on a single chain. Rather than retrofitting quantum resistance onto an existing protocol, QoreChain was designed from the ground up to be secure against both classical and quantum adversaries while delivering the developer experience and interoperability expected of a modern general-purpose blockchain.
+QoreChain is the first Layer 1 blockchain built with post-quantum cryptography at genesis, AI-native transaction processing, and a triple-VM runtime that executes EVM, QoreChain Native (the CosmWasm runtime), and SVM programs on a single chain. Rather than retrofitting quantum resistance onto an existing protocol, QoreChain was designed from the ground up to be secure against both classical and quantum adversaries while delivering the developer experience and interoperability expected of a modern general-purpose blockchain.
 
-Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.3** (applied by governance on 20 October 2026). A public testnet (`qorechain-diana`, EVM chain ID **9800**, currently v3.2.4, a testnet-only release) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
+Mainnet (`qorechain-vladi`, EVM chain ID **9801**) has been live since 7 June 2026 and runs chain release **v3.2.3** (applied by governance on 20 October 2026) until height 3,742,566 and **v3.2.4** from that block (governance proposal 13). A public testnet (`qorechain-diana`, EVM chain ID **9800**, running v3.2.4 since 19 October 2026) runs in parallel for staging and integration testing. The native token is **QOR** (display) / **uqor** (base, 10^6), with Bech32 prefixes `qor` for accounts and `qorvaloper` for validators. The chain is built on the Cosmos SDK v0.53.
 
 ## Core Innovations
 
@@ -26,10 +26,10 @@ QoreChain uses NIST-standardized ML-DSA-87 (Dilithium-5) for digital signatures,
 QoreChain is the only Layer 1 that natively runs three virtual machines within one consensus:
 
 * **EVM** — Full Ethereum compatibility with EIP-1559 gas pricing and JSON-RPC on port 8545. Deploy Solidity contracts using standard tooling (Hardhat, Foundry, Remix).
-* **CosmWasm** — WebAssembly smart contracts written in Rust with full lifecycle support (instantiate, execute, query, migrate).
+* **QoreChain Native** — WebAssembly smart contracts written in Rust with full lifecycle support (instantiate, execute, query, migrate).
 * **SVM** — BPF program deployment and execution with a Solana-compatible JSON-RPC server on port 8899. Existing Solana clients and tooling work out of the box.
 
-Cross-VM messaging enables all three runtimes to communicate: EVM contracts call CosmWasm via precompile (once that precompile is activated), CosmWasm contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: CosmWasm code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active, and the cross-VM call message is switched off on mainnet.
+Cross-VM messaging enables all three runtimes to communicate: EVM contracts call QoreChain Native via precompile (once that precompile is activated), QoreChain Native contracts call EVM via custom messages, and SVM programs participate through async event-based bridging. Today only the EVM runtime accepts transactions on the live networks: QoreChain Native code upload and instantiation are disabled, the SVM transaction lane is disabled, no EVM precompile is active, and the cross-VM call message is switched off on mainnet.
 
 ### 4. Capped-Emission Tokenomics
 

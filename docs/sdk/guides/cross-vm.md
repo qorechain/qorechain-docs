@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Cross-VM guide
 
-QoreChain runs **EVM, SVM, and CosmWasm side by side**, and the `x/crossvm`
+QoreChain runs **EVM, SVM, and QoreChain Native side by side**, and the `x/crossvm`
 module lets a single native account invoke a contract on any of them. The SDK
 provides a high-level `createCrossVMClient` helper to build, sign, and broadcast
 these calls — including packing several into **one atomic transaction across all
@@ -21,7 +21,7 @@ Cross-VM calls are only as available as their target lane:
 - `MsgCrossVMCall` is switched off by the chain's circuit breaker on **mainnet**
   (`GET /cosmos/circuit/v1/disable_list` lists `/qorechain.crossvm.v1.MsgCrossVMCall`);
   it is enabled on the testnet.
-- The SVM transaction lane is disabled network-wide, CosmWasm upload and
+- The SVM transaction lane is disabled network-wide, QoreChain Native upload and
   instantiate are permissioned (and there are no contracts on mainnet), and the EVM
   bridge precompile is not active (see
   [EVM Precompiles](/developer-guide/evm-precompiles#network-status)).
@@ -68,7 +68,7 @@ Pick exactly **one** payload shape per call:
 |---|---|
 | `{ payload: Uint8Array \| Hex }` | raw bytes, passed through unchanged |
 | `{ evm: { abi, functionName, args } }` | ABI-encoded with viem's `encodeFunctionData` (selector + args) |
-| `{ cosmwasm: object }` | `JSON.stringify` then UTF-8 bytes (the CosmWasm execute-msg convention) |
+| `{ cosmwasm: object }` | `JSON.stringify` then UTF-8 bytes (the QoreChain Native execute-msg convention) |
 | `{ svm: { data: Uint8Array \| Hex } }` | raw bytes (an SVM instruction blob) |
 
 The EVM path lazily imports `viem`, so the optional `viem` peer is only needed
@@ -93,7 +93,7 @@ const msg = xvm.buildCall({
 
 `callAtomic` packs multiple `MsgCrossVMCall` messages into **one transaction
 body** so they execute atomically under a single signature — the triple-VM
-headline. One signature, calls across EVM + SVM + CosmWasm that all land together
+headline. One signature, calls across EVM + SVM + QoreChain Native that all land together
 or not at all:
 
 ```ts

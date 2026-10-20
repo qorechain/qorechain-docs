@@ -10,9 +10,9 @@ sidebar_position: 1
 Referencia de los comandos `qorechaind` utilizados para inicializar, configurar y operar un nodo de QoreChain.
 
 :::note
-QoreChain opera dos redes: la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026; versión del nodo **v3.2.3**, aplicada en la altura 3,662,051 el 20 de octubre de 2026) y la testnet **`qorechain-diana`** (versión del nodo **v3.2.4**, aplicada en la altura 8,337,253 el 19 de octubre de 2026; la v3.2.4 aún no está aplicada en la mainnet; la propuesta de gobernanza 13 la aplicaría en la altura 3,742,566). Indica el `--chain-id` correspondiente a la red a la que quieras unirte — los ejemplos a continuación apuntan a la testnet; usa `--chain-id qorechain-vladi` para la mainnet. La versión actual de cada red figura en `latest.json`, en [download.qore.host](https://download.qore.host).
+QoreChain opera dos redes: la mainnet **`qorechain-vladi`** (activa desde el 7 de junio de 2026; versión del nodo **v3.2.3**, aplicada en la altura 3,662,051 el 20 de octubre de 2026; la mainnet ejecuta la v3.2.3 hasta la altura 3,742,566 y la **v3.2.4** desde ese bloque, programada por la propuesta de gobernanza 13) y la testnet **`qorechain-diana`** (versión del nodo **v3.2.4**, aplicada en la altura 8,337,253 el 19 de octubre de 2026). Indica el `--chain-id` correspondiente a la red a la que quieras unirte — los ejemplos a continuación apuntan a la testnet; usa `--chain-id qorechain-vladi` para la mainnet. La versión actual de cada red figura en `latest.json`, en [download.qore.host](https://download.qore.host).
 
-Los comandos de esta página se comprobaron con el binario de la versión v3.2.3, que es la versión de la mainnet. El binario v3.2.4 de la testnet añade comandos que la mainnet no tiene; cuando este manual menciona uno, se marca como **solo testnet**.
+Los comandos de esta página se comprobaron con el binario de la versión v3.2.3. El binario v3.2.4 añade comandos que un binario v3.2.3 no tiene (por ejemplo `stakingtier`); se ejecutan en la testnet ahora y en la mainnet desde la altura 3,742,566, y cuando este manual menciona uno, lo indica.
 :::
 
 ---

@@ -17,8 +17,8 @@ El framework observa y decide *cuándo*; **tú aportas la comprobación de valid
 El Watchtower nunca decide por sí solo que un lote es fraudulento — llama a tu
 función `validate` y actúa según lo que devuelvas.
 
-:::caution Etapa temprana: nada que vigilar, y las alertas de fecha límite de la 0.5.0 son erróneas
-El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 20 de octubre de 2026), así que todavía no hay nada que vigilar. En `@qorechain/rdk` 0.5.0 la lógica de la fecha límite de la ventana de desafío tampoco es fiable: el `submittedAt` de un lote es una **altura de bloque**, pero el Watchtower (y la comprobación de salud que hay detrás de `qorollup status`) le suma la ventana en segundos y compara la suma con el reloj real, por lo que `secondsRemaining` carece de sentido y `onDeadline` se dispara en cuanto se ve un lote por primera vez. No uses `onDeadline` ni la cuenta atrás para tomar decisiones; calcula tú mismo la fecha límite (consulta la nota de abajo). El observador también lee solo la primera página de lotes (50).
+:::caution Etapa temprana: todavía nada que vigilar
+El Watchtower lee los lotes a través del cliente REST del RDK, y las rutas `/qorechain/rdk/v1/…` se sirven en ambas redes. No se ha creado ningún rollup en ninguna de las dos redes (comprobado el 21 de octubre de 2026), así que todavía no hay nada que vigilar y el Watchtower no se ha ejecutado contra un lote real. En `@qorechain/rdk` 0.5.0 su lógica de fecha límite era incorrecta (leía una altura de bloque como una marca de tiempo Unix, por lo que `onDeadline` se disparaba en cuanto se veía un lote por primera vez) y solo leía la primera página de 50 lotes; **la 0.6.0 corrige ambas cosas** (véase abajo). Usa la 0.6.0 o posterior.
 :::
 
 ## `watchBatches`
@@ -30,8 +30,8 @@ const rdk = createRdkClient({ network: "testnet" });
 
 // `tx` is a signing client that produces the hybrid (post-quantum) signature
 // the networks require: pass `pqcKeypair` to `RdkClient.connectTx` (see
-// "RDK 0.5.0 limits" in Deploying a Rollup). Without it the transaction is
-// classical-only and refused.
+// "RDK 0.6.0: changes and limits" in Deploying a Rollup). Without it the
+// transaction is classical-only and refused.
 declare const tx: {
   challengeBatch(input: { rollupId: string; batchIndex: number; proof: string }): Promise<unknown>;
 };
@@ -55,10 +55,12 @@ const watcher = watchBatches(rdk, "my-rollup", {
     });
   },
 
-  // Called when a batch is within `deadlineWarnSecs` of its deadline. In 0.5.0 the
-  // deadline mixes a block height with the wall clock, so treat this as unreliable.
-  onDeadline: ({ batch, secondsRemaining }) => {
-    console.warn("challenge window alert for batch", batch.batchIndex, secondsRemaining);
+  // Called once per batch when its challenge window is still open and close to
+  // closing: within `deadlineWarnSecs` seconds (time-based window) or
+  // `deadlineWarnBlocks` blocks (block-count window). `window` says which rule
+  // applies and what is left.
+  onDeadline: ({ batch, window }) => {
+    console.warn("challenge window closing for batch", batch.batchIndex, window);
   },
 });
 
@@ -72,12 +74,14 @@ El framework expone:
 - **fechas límite de la ventana de desafío** mediante `onDeadline`, y
 - **lotes inválidos** (aquellos en los que tu `validate` devolvió `false`) mediante `onInvalid`.
 
+Desde la 0.6.0 recorre todas las páginas de la lista de lotes de un rollup, vuelve a juzgar un lote a medida que se acerca su fecha límite (sigue sondeando hacia adelante desde el lote más antiguo cuya ventana sigue abierta, en lugar de juzgar cada lote una sola vez al verlo por primera vez) y mide cada ventana contra la punta de la cadena (`getChainTip`, el estado del nodo) en lugar del reloj local. Un lote que ya está `finalized` no se valida ni genera avisos.
+
 Conectar `onInvalid` a un desafío convierte al Watchtower en un
 auto-challenger completo; déjalo sin definir para ejecutarlo en modo de solo
 observación.
 
 :::note Ventana de desafío
-Calcula la fecha límite de un lote en bloques, no en segundos: `submitted_at` (una altura de bloque) más la ventana. **En mainnet (v3.2.3)** la ventana es el valor por defecto de 604,800 «segundos» convertido a 6 segundos fijos por bloque, es decir **100,800 bloques** (el tiempo real sigue al tiempo de bloque, así que es más corto que «7 días» con los bloques de ≈3.2 s de mainnet). **Solo en la testnet (v3.2.4)**, un lote enviado a partir de la altura 8,337,253 recibe una ventana medida en segundos de tiempo de bloque. Publicar un desafío también requiere la fianza de desafío del rollup (1,000 QOR para los presets `nft` y `custom`).
+La cadena mide la ventana de un lote de una de dos maneras, y `batchChallengeWindow` (usada por el Watchtower y por la comprobación de salud que hay detrás de `qorollup status`) indica cuál. **Ventana por recuento de bloques, la regla de mainnet antes de la altura 3,742,566 (v3.2.3):** la ventana son los segundos configurados del rollup convertidos a 6 segundos fijos por bloque, **100,800 bloques** para el valor por defecto de 604,800, contados desde la altura `submitted_at` del lote; el tiempo real sigue al tiempo de bloque, así que es más corto que «7 días» con los bloques de ≈3.2 s de mainnet. El paquete informa `open` y `finalizable` por separado, porque bajo la regla que implementa un bloque es ambas cosas a la vez (un desafío cuenta como abierto mientras `height - submitted_at <= window`, y es finalizable desde `height - submitted_at >= window`). **Ventana basada en tiempo, desde v3.2.4 (la testnet desde la altura 8,337,253, mainnet desde la altura 3,742,566):** un lote enviado a partir de la altura de la actualización registra su tiempo de bloque y su ventana es esa cantidad de segundos de tiempo de bloque. El Watchtower usa la ventana propia del rollup cuando el nodo la informa (el paquete lo documenta como v3.2.4 y posterior); en caso contrario recurre a la ventana por defecto del módulo, así que pasa `challengeWindowSecs` para un rollup que configuró la suya. Publicar un desafío también requiere la fianza de desafío del rollup (1,000 QOR para los presets `nft` y `custom`).
 :::
 
 ## CLI

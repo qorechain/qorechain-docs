@@ -14,7 +14,7 @@ contracte inteligente una lângă alta, cu conturi partajate și un token partaj
 
 | VM | Contracte | Suprafața de client în SDK |
 | --- | --- | --- |
-| **CosmWasm** | Contracte Rust/Wasm | `client.cosmwasm()` și funcțiile ajutătoare `queryContractSmart` / `execute` din `@qorechain/sdk` |
+| **QoreChain Native** | Contracte Rust/Wasm (runtime-ul CosmWasm) | `client.cosmwasm()` și funcțiile ajutătoare `queryContractSmart` / `execute` din `@qorechain/sdk` |
 | **QoreChain EVM Engine** | Solidity / Vyper | `@qorechain/evm` (un adaptor viem) |
 | **SVM** | Programe Solana | `@qorechain/svm` (un adaptor `@solana/web3.js`) |
 
@@ -27,7 +27,7 @@ SDK-ul comunică cu un nod prin mai multe endpoint-uri:
 
 - **Cosmos REST (LCD)** — solduri bancare, informații despre cont, interogări de modul.
 - **RPC de consens** — folosit pentru semnarea/difuzarea tranzacțiilor native și
-  pentru clientul de citire CosmWasm.
+  pentru clientul de citire QoreChain Native.
 - **EVM JSON-RPC** — apeluri standard `eth_*`, `net_*`, `web3_*` și `txpool_*` pe
   endpoint-urile publice. Spațiul de nume QoreChain `qor_*` și precompile-urile EVM
   nu sunt încă disponibile acolo (vezi mai jos).

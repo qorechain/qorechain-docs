@@ -10,7 +10,7 @@ sidebar_position: 4
 Düğümünüzü doğru genesis dosyası, eşler ve ağ ayarlarıyla yapılandırarak canlı QoreChain Diana test ağına katılın.
 
 :::note
-Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.3**) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı şu anda **v3.2.4** sürümünü çalıştırmaktadır; bu, ana ağın parçası olmayan, yalnızca test ağına özel bir sürümdür; sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
+Bu sayfa **`qorechain-diana`** test ağını (EVM zincir kimliği **9800**) kapsar. Ana ağ (**`qorechain-vladi`**, EVM zincir kimliği **9801**) 7 Haziran 2026'dan bu yana canlıdır (sürüm **v3.2.3**, 3,742,566 yüksekliğine kadar; o bloktan itibaren **v3.2.4**) ve ayrı genesis, eşler ve bağlantı ayrıntılarını içeren kendine ait **Ana Ağa Bağlanma** sayfasına sahiptir. Test ağı 19 Ekim 2026'dan beri **v3.2.4** sürümünü çalıştırmaktadır; sürüm manifestosu [download.qore.host/testnet/latest.json](https://download.qore.host/testnet/latest.json) adresindedir.
 :::
 
 ## Genel Uç Noktalar
@@ -52,7 +52,7 @@ export LD_LIBRARY_PATH=/opt/qorechain/lib
 qorechaind init my-node --chain-id qorechain-diana
 ```
 
-Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur (v3.2.4, 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı; ondan önce v3.2.3 8.003.746'da ve v3.2.2 6.905.034'te uygulanmıştı) ve `minCompatible` güncel sürüme eşittir (3.2.4). Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Sistem saatini NTP ile senkronize tutun. Ana ağ manifestosu farklı bir sürümü (v3.2.3) işaret eder; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın.
+Test ağı, governance önerileri aracılığıyla koordineli yükseltmeler alır; bu nedenle manifestosunda bir `upgradeHeight` bulunur (v3.2.4, 19 Ekim 2026'da 8.337.253 yüksekliğinde uygulandı; ondan önce v3.2.3 8.003.746'da ve v3.2.2 6.905.034'te uygulanmıştı) ve `minCompatible` güncel sürüme eşittir (3.2.4). Şimdi katılan bir düğümün manifestodaki sürüme ihtiyacı vardır. Sistem saatini NTP ile senkronize tutun. Ana ağ manifestosu farklı bir sürümü (3.742.566 yüksekliğindeki yükseltmesine kadar v3.2.3) işaret eder; bu yüzden ikili dosyayı asla iki ağ arasında kopyalamayın.
 
 ---
 

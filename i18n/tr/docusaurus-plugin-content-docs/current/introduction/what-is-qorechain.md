@@ -7,9 +7,9 @@ sidebar_position: 1
 
 # QoreChain Nedir?
 
-QoreChain; genesis'te kuantum sonrası kriptografi, AI-yerel işlem işleme ve tek bir zincir üzerinde EVM, CosmWasm ile SVM programlarını yürüten üçlü VM çalışma zamanıyla inşa edilmiş ilk Katman 1 (Layer 1) blok zinciridir. QoreChain, mevcut bir protokole kuantum direncini sonradan eklemek yerine, modern genel amaçlı bir blok zincirinden beklenen geliştirici deneyimi ve birlikte çalışabilirliği sunarken hem klasik hem de kuantum saldırganlarına karşı güvenli olacak şekilde sıfırdan tasarlanmıştır.
+QoreChain; genesis'te kuantum sonrası kriptografi, AI-yerel işlem işleme ve tek bir zincir üzerinde EVM, QoreChain Native (CosmWasm çalışma zamanı) ile SVM programlarını yürüten üçlü VM çalışma zamanıyla inşa edilmiş ilk Katman 1 (Layer 1) blok zinciridir. QoreChain, mevcut bir protokole kuantum direncini sonradan eklemek yerine, modern genel amaçlı bir blok zincirinden beklenen geliştirici deneyimi ve birlikte çalışabilirliği sunarken hem klasik hem de kuantum saldırganlarına karşı güvenli olacak şekilde sıfırdan tasarlanmıştır.
 
-Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.3**'ü çalıştırıyor (20 Ekim 2026'da yönetişim tarafından uygulandı). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, şu anda yalnızca test ağına özel bir sürüm olan v3.2.4) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
+Ana ağ (`qorechain-vladi`, EVM chain ID **9801**) 7 Haziran 2026'dan beri yayında ve zincir sürümü **v3.2.3**'ü (20 Ekim 2026'da yönetişim tarafından uygulandı) 3.742.566 yüksekliğine kadar, **v3.2.4**'ü ise o bloktan itibaren çalıştırıyor (yönetişim önerisi 13). Hazırlama (staging) ve entegrasyon testi için paralel olarak bir genel test ağı (`qorechain-diana`, EVM chain ID **9800**, 19 Ekim 2026'dan beri v3.2.4 çalıştırıyor) çalışmaktadır. Yerel token, hesaplar için `qor` ve doğrulayıcılar için `qorvaloper` Bech32 önekleriyle **QOR** (görüntüleme) / **uqor** (taban, 10^6)'dur. Zincir, Cosmos SDK v0.53 üzerine kuruludur.
 
 ## Çekirdek Yenilikler
 
@@ -26,10 +26,10 @@ QoreChain; dijital imzalar için NIST tarafından standartlaştırılmış ML-DS
 QoreChain, tek bir uzlaşı içinde üç sanal makineyi yerel olarak çalıştıran tek Katman 1'dir:
 
 * **EVM** — EIP-1559 gaz fiyatlandırması ve 8545 portunda JSON-RPC ile tam Ethereum uyumluluğu. Standart araçları (Hardhat, Foundry, Remix) kullanarak Solidity sözleşmeleri dağıtın.
-* **CosmWasm** — Tam yaşam döngüsü desteğiyle (örnekleme, yürütme, sorgulama, geçiş) Rust ile yazılmış WebAssembly akıllı sözleşmeleri.
+* **QoreChain Native** — Tam yaşam döngüsü desteğiyle (örnekleme, yürütme, sorgulama, geçiş) Rust ile yazılmış WebAssembly akıllı sözleşmeleri.
 * **SVM** — 8899 portunda Solana uyumlu bir JSON-RPC sunucusuyla BPF programı dağıtımı ve yürütmesi. Mevcut Solana istemcileri ve araçları kutudan çıktığı gibi çalışır.
 
-VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla CosmWasm'ı çağırır (bu precompile etkinleştirildiğinde), CosmWasm sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: CosmWasm kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, hiçbir EVM precompile'ı etkin değildir ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
+VM'ler arası mesajlaşma, üç çalışma zamanının tamamının iletişim kurmasını sağlar: EVM sözleşmeleri precompile aracılığıyla QoreChain Native'ı çağırır (bu precompile etkinleştirildiğinde), QoreChain Native sözleşmeleri özel mesajlar aracılığıyla EVM'i çağırır ve SVM programları asenkron olay tabanlı köprüleme yoluyla katılır. Bugün canlı ağlarda yalnızca EVM çalışma zamanı işlem kabul eder: QoreChain Native kodu yükleme ve örnekleme devre dışıdır, SVM işlem şeridi devre dışıdır, hiçbir EVM precompile'ı etkin değildir ve VM'ler arası çağrı mesajı ana ağda kapalıdır.
 
 ### 4. Sabit Üst Sınırlı Emisyonlu Tokenomik
 

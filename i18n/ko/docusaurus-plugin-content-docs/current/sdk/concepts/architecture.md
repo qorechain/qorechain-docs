@@ -14,7 +14,7 @@ QoreChain은 세 개의 스마트 컨트랙트 가상 머신을 나란히 실행
 
 | VM | 컨트랙트 | SDK의 클라이언트 표면 |
 | --- | --- | --- |
-| **CosmWasm** | Rust/Wasm 컨트랙트 | `@qorechain/sdk`의 `client.cosmwasm()` 및 `queryContractSmart` / `execute` 헬퍼 |
+| **QoreChain Native** | Rust/Wasm 컨트랙트 (CosmWasm 런타임) | `@qorechain/sdk`의 `client.cosmwasm()` 및 `queryContractSmart` / `execute` 헬퍼 |
 | **QoreChain EVM Engine** | Solidity / Vyper | `@qorechain/evm` (viem 어댑터) |
 | **SVM** | Solana 프로그램 | `@qorechain/svm` (`@solana/web3.js` 어댑터) |
 
@@ -26,7 +26,7 @@ QoreChain은 세 개의 스마트 컨트랙트 가상 머신을 나란히 실행
 SDK는 여러 엔드포인트를 통해 노드와 통신합니다:
 
 - **Cosmos REST (LCD)** — 뱅크 잔액, 계정 정보, 모듈 쿼리.
-- **합의 RPC** — 네이티브 트랜잭션 서명/브로드캐스트 및 CosmWasm 읽기 클라이언트에
+- **합의 RPC** — 네이티브 트랜잭션 서명/브로드캐스트 및 QoreChain Native 읽기 클라이언트에
   사용.
 - **EVM JSON-RPC** — 공개 엔드포인트의 표준 `eth_*`, `net_*`, `web3_*`, `txpool_*`
   호출. QoreChain `qor_*` 네임스페이스와 EVM 프리컴파일은 아직 그곳에서

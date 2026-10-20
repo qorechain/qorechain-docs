@@ -309,8 +309,8 @@ post-quantique voyage sous forme d'extension `PQCHybridSignature` sur la
 transaction.
 
 :::caution La signature hybride est obligatoire sur le chemin Native
-Depuis la version **v3.2.0** de la chaîne (le mainnet exécute la v3.2.3, le
-testnet la v3.2.4), la valeur par défaut du réseau est
+Depuis la version **v3.2.0** de la chaîne (le mainnet exécute la v3.2.3 jusqu'à la hauteur 3 742 566 puis la v3.2.4 à partir de ce bloc ; le
+testnet exécute la v3.2.4), la valeur par défaut du réseau est
 `hybrid_signature_mode = required` avec `allow_classical_fallback = false`. La
 signature hybride via `buildHybridTx` / `signAndBroadcastHybrid` (passez
 `rest`), ou `signHybridEth` / `EthNativeSigner` pour les comptes unifiés

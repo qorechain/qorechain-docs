@@ -10,7 +10,7 @@ sidebar_position: 3
 This guide covers how on-chain governance works on QoreChain: how votes are tallied, how to submit proposals, and how to vote.
 
 :::note
-The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3**; the testnet runs **v3.2.4** — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
+The commands below use the **`qorechain-diana`** testnet (EVM chain ID **9800**). Mainnet (**`qorechain-vladi`**, EVM chain ID **9801**) has been live since 7 June 2026 and runs release **v3.2.3** until height 3,742,566 and **v3.2.4** from that block; the testnet has run **v3.2.4** since 19 October 2026 — substitute the mainnet chain ID and endpoints from the **Connecting to Mainnet** page when participating in governance on mainnet.
 :::
 
 :::caution Sign with `tx pqc cosign`
@@ -175,7 +175,7 @@ Key parameters include:
 
 ## Governance on mainnet so far {#mainnet-history}
 
-Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 11 passed on mainnet in October 2026 and proposal 12 was in its voting period at the time of writing; the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
+Mainnet governance has been used for parameter changes, circuit-breaker decisions, coordinated upgrades and, since October 2026, for releasing amounts that the chain recorded at the v3.2.0 upgrade. Proposals 7 to 11 passed on mainnet in October 2026, while proposals 12 (a further release) and 13 (the v3.2.4 upgrade at height 3,742,566) were in their voting periods at the time of writing; the list and the outcomes are in [Version History](/appendix/version-history#governance-timeline), and every proposal can be read live at `GET /cosmos/gov/v1/proposals`.
 
 ---
 

@@ -272,7 +272,7 @@ async fn main() -> qorechain::Result<()> {
 
 ## Pașii următori
 
-- [Ghiduri](/sdk/guides/evm) — lucrați cu fiecare VM (EVM, SVM, CosmWasm,
+- [Ghiduri](/sdk/guides/evm) — lucrați cu fiecare VM (EVM, SVM, QoreChain Native,
   cross-VM).
 - [Conturi & semnare PQC](/sdk/concepts/accounts-pqc) — derivare HD, conturi
   unificate eth-native și semnare post-cuantică.

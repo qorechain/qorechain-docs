@@ -20,7 +20,7 @@ sidebar_position: 1
 QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث بيئات تشغيل للعقود الذكية
 من الدرجة الأولى على سلسلة واحدة:
 
-- **CosmWasm** — عقود ذكية بتقنية Wasm عبر Cosmos SDK.
+- **QoreChain Native** — عقود ذكية بتقنية Wasm عبر Cosmos SDK (بيئة تشغيل CosmWasm).
 - **QoreChain EVM Engine** — تنفيذ متوافق مع Ethereum ‏(Solidity و viem
   و JSON-RPC القياسي).
 - **SVM** — بيئة تشغيل متوافقة مع Solana مع واجهة JSON-RPC على نمط Solana.
@@ -29,19 +29,19 @@ QoreChain هي سلسلة كتل من الطبقة الأولى تضم ثلاث 
 وحدة IBC للتشغيل البيني عبر السلاسل (لا توجد قنوات IBC مفتوحة بعد على الشبكة
 الرئيسية ولا على شبكة الاختبار).
 
-:::note ما يعمل على الشبكات الحية اليوم (الشبكة الرئيسية v3.2.3، وشبكة الاختبار v3.2.4)
+:::note ما يعمل على الشبكات الحية اليوم (الشبكة الرئيسية v3.2.3، وv3.2.4 من الارتفاع 3,742,566؛ وشبكة الاختبار v3.2.4)
 **يعمل:** القراءات على كل مسار، ومعاملات المسار الأصلي (Native) الموقَّعة
 توقيعاً هجيناً، والحسابات الموحّدة، ومعاملات EVM داخل
 [نافذة التفويض](/sdk/guides/evm#evm-window)، وقراءات SVM.
 **غير متاح بعد:** مكوّنات EVM ما قبل التجميع (غير مفعَّلة)، ومساحة الأسماء
 `qor_` في JSON-RPC، ومعاملات SVM، والاستدعاءات عبر الآلات الافتراضية على الشبكة
-الرئيسية (`MsgCrossVMCall` متوقفة بواسطة قاطع الدائرة)، ورفع عقود CosmWasm
+الرئيسية (`MsgCrossVMCall` متوقفة بواسطة قاطع الدائرة)، ورفع عقود QoreChain Native
 وإنشاء نسخ منها للحسابات العادية، ومسارات المصادِق / الحساب المجرّد (الوحدة
 متوقفة)، وxQORE وتجريد الغاز. يكرر كل دليل هذا التنبيه حيثما ينطبق.
 
 تُوقِّع SDK المنشورة (0.9.0، 21 أكتوبر 2026) بالصيغة التي تتحقق منها الشبكتان
 (بايتات التوقيع الهجينة v2، تُحدَّد من حالة السلسلة)، ولم تتغير صيغة التوقيع
-والعناوين والمنازل العشرية والمذكرات والرسوم في v3.2.3 ولا في v3.2.4. وهي تحمل
+والعناوين والمنازل العشرية والمذكرات والرسوم في v3.2.3 ولا في v3.2.4 (تعمل الشبكة الرئيسية بالإصدار v3.2.4 من الارتفاع 3,742,566). وهي تحمل
 جانب العميل من القواعد اللاحقة للتشفير ما بعد الكمومي (إثبات الحيازة عند
 تسجيل المفتاح، ونوافذ EVM ذات النطاق المحدد، ورسائل الموافقة الخاصة بـ
 EIP-7702)؛ أما الإصدارات السابقة للإصدار 0.9.0 فلا تحمله، راجع
@@ -116,7 +116,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 | `qorechain-sdk` | Python | `pip install qorechain-sdk` (الاستيراد باسم `qorsdk`) | منشورة (PyPI، الإصدار v0.9.0) |
 | `qorechain-sdk` (وحدة Go) | Go | `go get github.com/qorechain/qorechain-sdk/packages/go/...` | منشورة (وكيل Go، الوسم `packages/go/v0.9.0`) |
 | `qorechain-sdk` | Rust | `cargo add qorechain-sdk` (الاستيراد باسم `qorechain`) | منشورة (crates.io، الإصدار v0.9.0) |
-| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.0` | منشورة (Maven Central، الإصدار v0.9.0) |
+| `io.github.qorechain:qorechain-sdk` | Java | `io.github.qorechain:qorechain-sdk:0.9.1` | منشورة (Maven Central، الإصدار v0.9.1؛ أما اللغات الأخرى فـ 0.9.0) |
 | `@qorechain/evm` | TypeScript (محوِّل EVM) | `npm i @qorechain/evm viem` | منشورة (npm، الإصدار v0.8.0) |
 | `@qorechain/svm` | TypeScript (محوِّل SVM) | `npm i @qorechain/svm @solana/web3.js` | منشورة (npm، الإصدار v0.8.0) |
 | `@qorechain/react` | TypeScript (حزمة React) | `npm i @qorechain/react` | منشورة (npm، الإصدار v0.9.0) |
@@ -138,7 +138,7 @@ QoreChain**، لأنها مبنية على ميزات بروتوكولية لا 
 PyPI ‏(`qorechain-sdk` 0.9.0، الاستيراد باسم `qorsdk`)، و Go على وكيل
 الوحدات (الوسم `packages/go/v0.9.0`)، و Rust على crates.io
 ‏(`qorechain-sdk` 0.9.0)، و Java على Maven Central
-‏(`io.github.qorechain:qorechain-sdk` 0.9.0). أما محوِّلات التنفيذ EVM/SVM
+‏(`io.github.qorechain:qorechain-sdk` 0.9.1، وهو تحديث خاص بـ Java؛ أما بقية العملاء فـ 0.9.0). أما محوِّلات التنفيذ EVM/SVM
 ‏(`@qorechain/evm` و `@qorechain/svm`، وكلاهما 0.8.0)، وحزمة
 `@qorechain/react` ‏(0.9.0)، وأداة السقالة `create-qorechain-dapp` ‏(0.9.0)
 فهي خاصة بـ TypeScript فقط ومنشورة كذلك على npm. راجع

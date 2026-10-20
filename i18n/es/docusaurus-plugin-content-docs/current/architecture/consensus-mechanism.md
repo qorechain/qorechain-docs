@@ -33,7 +33,7 @@ flowchart TD
 
 ## Reglas de admisión de validadores y de staking en vigor {#admission}
 
-Estas reglas se aplican en mainnet (desde v3.2.2, con un endurecimiento adicional en v3.2.3) y en la testnet. Forman parte del servidor de mensajes de staking, por lo que se aplican a todo mensaje sea cual sea la forma en que llegue a la cadena: una transacción, `x/authz`, `x/group`, un contrato CosmWasm, un precompile o una propuesta de gobernanza. Las transacciones de génesis están exentas.
+Estas reglas se aplican en mainnet (desde v3.2.2, con un endurecimiento adicional en v3.2.3) y en la testnet. Forman parte del servidor de mensajes de staking, por lo que se aplican a todo mensaje sea cual sea la forma en que llegue a la cadena: una transacción, `x/authz`, `x/group`, un contrato QoreChain Native, un precompile o una propuesta de gobernanza. Las transacciones de génesis están exentas.
 
 | Regla | Qué aplica la cadena |
 | --- | --- |

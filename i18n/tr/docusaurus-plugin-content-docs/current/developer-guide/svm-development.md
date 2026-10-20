@@ -10,7 +10,7 @@ sidebar_position: 4
 QoreChain, geliştiricilerin tanıdık Solana araçlarını kullanarak SBF/BPF programları dağıtmasına ve çalıştırmasına olanak tanıyan bir **Solana Virtual Machine (SVM)** yürütme ortamı içerir. SVM modülü, `qorechaind start` komutunun otomatik olarak başlattığı, **8899 portu** üzerinde Solana uyumlu bir JSON-RPC arayüzü sunar (aşağıdaki [JSON-RPC Sunucusu](#json-rpc-server) bölümüne bakın).
 
 :::note
-Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve **v3.2.3** düğüm sürümünü çalıştıran **`qorechain-vladi`** ana ağını (mainnet) kullanır. v3.2.4 çalıştıran (yalnızca test ağı) test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
+Aşağıdaki komutlar, 7 Haziran 2026'dan bu yana canlı olan ve 3.742.566 yüksekliğine kadar **v3.2.3**, o bloktan itibaren **v3.2.4** düğüm sürümünü çalıştıran (yönetişim önerisi 13) **`qorechain-vladi`** ana ağını (mainnet) kullanır. 19 Ekim 2026'dan beri v3.2.4 çalıştıran test ağı (testnet) için `--chain-id qorechain-diana` kullanın. **Her iki ağda da SVM işlemleri devre dışıdır** (bir sonraki kutuya bakın); bu nedenle bu sayfadaki `tx svm` komutları yalnızca referans amaçlıdır: bugün başarılı olamazlar.
 :::
 
 ---
@@ -241,12 +241,12 @@ Hesaplama bütçesini aşan programlar durdurulur ve işlem geri alınır.
 
 ## VM'ler Arası Birlikte Çalışabilirlik
 
-SVM programları, `x/crossvm` modülünün `MsgCrossVMCall` mesajı aracılığıyla EVM ve CosmWasm sözleşmeleriyle iletişim kurmak üzere tasarlanmıştır (kaynak hattı zincir kendisi belirler). SVM hattı işlemler için devre dışı olduğundan ve `MsgCrossVMCall` ana ağda kapalı olduğundan, bugün çalışan bir SVM VM'ler arası yolu yoktur. Güncel durum, mesaj yaşam döngüsü ve zaman aşımı davranışı için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
+SVM programları, `x/crossvm` modülünün `MsgCrossVMCall` mesajı aracılığıyla EVM ve QoreChain Native sözleşmeleriyle iletişim kurmak üzere tasarlanmıştır (kaynak hattı zincir kendisi belirler). SVM hattı işlemler için devre dışı olduğundan ve `MsgCrossVMCall` ana ağda kapalı olduğundan, bugün çalışan bir SVM VM'ler arası yolu yoktur. Güncel durum, mesaj yaşam döngüsü ve zaman aşımı davranışı için [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) sayfasına bakın.
 
 ---
 
 ## Sonraki Adımlar
 
-* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — SVM, EVM ve CosmWasm arasında iletişim
+* [VM'ler Arası Birlikte Çalışabilirlik](/developer-guide/cross-vm-interoperability) — SVM, EVM ve QoreChain Native arasında iletişim
 * [EVM Geliştirme](/developer-guide/evm-development) — QoreChain üzerinde Solidity akıllı sözleşmeleri
-* [CosmWasm Geliştirme](/developer-guide/cosmwasm-development) — Rust tabanlı WebAssembly sözleşmeleri
+* [QoreChain Native Geliştirme](/developer-guide/cosmwasm-development) — Rust tabanlı WebAssembly sözleşmeleri

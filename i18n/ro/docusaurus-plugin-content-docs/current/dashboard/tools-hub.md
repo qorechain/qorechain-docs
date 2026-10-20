@@ -56,7 +56,7 @@ Vezi [Staking și Validatori](/dashboard/staking-and-validators).
 
 ## Rollups
 
-Solicitați un rollup alimentat de QoreChain. Formularul vă permite să denumiți rollup-ul și să indicați mașina virtuală (EVM, CosmWasm sau SVM), stratul de disponibilitate a datelor, tokenul de gas, modelul de sequencer și ținta de settlement dorite. Trimiterea înregistrează o cerere de provizionare care este revizuită; nu creează rollup-ul on-chain. Opțiunile sunt mai largi decât ceea ce modulul de rollup on-chain acceptă în prezent. Pentru a înregistra singur un rollup on-chain, vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup); pentru concepte, vezi [Prezentare generală Rollups](/rollups/overview).
+Solicitați un rollup alimentat de QoreChain. Formularul vă permite să denumiți rollup-ul și să indicați mașina virtuală (EVM, QoreChain Native sau SVM), stratul de disponibilitate a datelor, tokenul de gas, modelul de sequencer și ținta de settlement dorite. Trimiterea înregistrează o cerere de provizionare care este revizuită; nu creează rollup-ul on-chain. Opțiunile sunt mai largi decât ceea ce modulul de rollup on-chain acceptă în prezent. Pentru a înregistra singur un rollup on-chain, vezi [Implementarea unui Rollup](/rollups/deploying-a-rollup); pentru concepte, vezi [Prezentare generală Rollups](/rollups/overview).
 
 ## SDK
 
