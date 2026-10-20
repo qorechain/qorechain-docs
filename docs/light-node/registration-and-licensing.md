@@ -23,7 +23,7 @@ The chain checks all of these when your registration transaction executes:
 
 1. An active `lightnode_operator` licence on the operator address.
 2. At least **1,000 QOR delegated** from that same address to **bonded** validators (your total across any validators; delegations to jailed or unbonded validators do not count).
-3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The node also pays a fee for each heartbeat from this account: with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor (0.075 QOR) at the default `[heartbeat] gas` of 300,000.
+3. A balance on the operator account to pay the **1 QOR** registration fee and transaction fees. The node also pays a fee for each heartbeat from this account: with native signing the fee is 0.25 uqor per unit of gas, so 75,000 uqor (0.075 QOR) at the default `[heartbeat] gas` of 300,000, or about 1.9 QOR a month at roughly 25 heartbeats a day.
 4. Fewer than 10,000 light nodes registered network-wide.
 
 After registration the node must send a heartbeat every **1,000 blocks** (with a grace of 100 blocks) and keep at least **80% uptime** to be paid. Read the live values with `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Testnet: on request
 
-Nothing is sold on testnet. Testnet licences are granted by the testnet licence authority on request.
+Nothing is sold on testnet. Testnet licences are free and granted by the testnet licence authority on request: write to nodes@qorechain.io with your testnet `qor1…` address.
 
 ## Registering the node
 
@@ -81,9 +81,9 @@ The passphrase protects both keys in the node's keyring: the node's post-quantum
 
 `register` reads `operator_address` and the keys from the keyring, then:
 
-1. **Checks the licence.** It asks the chain whether `operator_address` holds an active `lightnode_operator` licence. Without one it stops and says where to get one. (In 3.1.9 that message still names the Dashboard's old "Buy License" tab; licences are bought at **Tools → Light Node**.) A licence that has expired or is suspended is reported as such. A node that is already registered is reported as such, and nothing is sent.
+1. **Checks the licence.** It asks the chain whether `operator_address` holds an active `lightnode_operator` licence. Without one it stops and says where to get one. From 3.1.10 the message points to **Tools → Light Node** on mainnet and, on testnet, to a free licence on request at nodes@qorechain.io (3.1.9 still named the Dashboard's old tab). A licence that has expired or is suspended is reported as such. A node that is already registered is reported as such, and nothing is sent.
 2. **Attaches the post-quantum key**, unless the account already has one. An account with no post-quantum key may only send this one message, signed classically (without the hybrid extension); the node sends it that way and includes a proof of possession of the key where the chain supports it.
-3. **Delegates the missing stake**, only if you name a validator with `--delegate-to qorvaloper1...`. Without `--delegate-to`, if the account is below the minimum, it stops and says how much is missing.
+3. **Delegates the missing stake**, only if you name a validator with `--delegate-to qorvaloper1...`. Without `--delegate-to`, if the account is below the minimum, it stops and says how much is missing. From 3.1.10 it counts only stake delegated to **bonded** validators, as the chain does; 3.1.9 also counted jailed or unbonded validators and could then be refused on chain, so delegate to an active validator if you run 3.1.9.
 4. **Registers the node** with the 1 QOR fee.
 
 Each step is signed by the node itself and confirmed in a block before the next one is sent. Every transaction after the key registration carries the hybrid ML-DSA-87 + secp256k1 signature the chain requires.

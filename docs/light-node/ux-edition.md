@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Edition — Web Dashboard
 
-The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this page describes light node **3.1.9** (its own version line, separate from the chain version).
+The **UX (User eXperience)** edition runs the same light node daemon as the SX edition, but adds an **embedded web dashboard** so you can watch the node and the network in a browser. The binary is `lightnode-ux`. Like the SX edition, this page describes light node **3.1.10** (its own version line, separate from the chain version).
 
 The UX edition is the right choice for desktop use and for operators who prefer a visual interface over the command line.
 
@@ -23,11 +23,11 @@ The UX edition requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Build from the release tag (`git checkout v3.1.9`). This produces `build/lightnode-ux`.
+Build from the release tag (`git checkout v3.1.10`). This produces `build/lightnode-ux`.
 
 ### Docker
 
-The UX service builds from `Dockerfile.ux` in the source repository (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.9`). The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
+The UX service builds from `Dockerfile.ux` in the source repository (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.10`). The container needs a `config.toml` in its data volume before it will start. The UX binary has the setup commands, so you can create it in the volume:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

@@ -13,11 +13,11 @@ Running a light node lets you observe the network's state without the storage, b
 
 ## Its own version line
 
-The light node ships on its **own version line — currently 3.1.9** — which is **distinct from the chain release version** (mainnet runs chain `v3.2.3`). Binaries for each network are published with a **SHA-256 checksum manifest** at `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` is `mainnet` or `testnet`). Both channels carry the same 3.1.9 build, and both manifests set `minCompatible` to `3.1.9`, so older light-node builds should be replaced. The release has 12 binaries — SX and UX for Linux, macOS and Windows, each on amd64 and arm64 — plus a `SHA256SUMS` file. See [SX Edition](/light-node/sx-edition#install) for the download and verification steps, and [Docker](/light-node/sx-edition#docker) for building an image from the source tag `v3.1.9`.
+The light node ships on its **own version line, currently 3.1.10** (3.1.9 is still accepted), which is **distinct from the chain release version** (mainnet runs chain `v3.2.3`). Binaries for each network are published with a **SHA-256 checksum manifest** at `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` is `mainnet` or `testnet`). Both channels carry the same 3.1.9 build, and both manifests set `minCompatible` to `3.1.9`, so older light-node builds should be replaced. The release has 12 binaries — SX and UX for Linux, macOS and Windows, each on amd64 and arm64 — plus a `SHA256SUMS` file. See [SX Edition](/light-node/sx-edition#install) for the download and verification steps, and [Docker](/light-node/sx-edition#docker) for building an image from the source tag `v3.1.9`.
 
 An Android build is attached to the GitHub release as a **preview** only: it follows and verifies the chain, but it does not register and does not earn.
 
-When you read documentation or release notes, treat the light node's version (3.1.9) and the chain's version (v3.2.3) as two separate numbers that happen to share a major series.
+When you read documentation or release notes, treat the light node's version (3.1.10) and the chain's version (v3.2.3) as two separate numbers that happen to share a major series.
 
 ## Why run a light node {#why-run-a-light-node}
 

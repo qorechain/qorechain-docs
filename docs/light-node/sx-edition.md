@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Edition — Server Daemon
 
-The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This page describes light node **3.1.9** (source tag `v3.1.9`), which is on its own version line, separate from the chain version.
+The **SX (Server eXperience)** edition is the headless light node: a daemon plus a full management CLI, built for servers and automation. The binary is `lightnode-sx`. This page describes light node **3.1.10** (source tag `v3.1.10`), which is on its own version line, separate from the chain version.
 
 ## Install {#install}
 
@@ -18,13 +18,13 @@ Prebuilt binaries are the easiest path — the light node client runs natively o
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-On Windows, compare `certutil -hashfile lightnode-sx-<platform>.exe SHA256` against the manifest value. Both networks serve the same 3.1.9 build, and both manifests require it (`minCompatible: 3.1.9`). The source is public at `github.com/qorechain/qorechain-lightnode` (Apache 2.0). An Android build is attached to the GitHub release as a preview; it does not register and does not earn.
+On Windows, compare `certutil -hashfile lightnode-sx-<platform>.exe SHA256` against the manifest value. Both networks serve the same 3.1.10 build; the manifests still accept 3.1.9 (`minCompatible: 3.1.9`). Since 3.1.10 each release's binaries sit under a versioned path, `https://download.qore.host/<net>/lightnode/v<version>/<file>`, which is what `artifacts[].url` in the manifest points to; use it rather than the unversioned copy, which can lag behind for a few hours. The source is public at `github.com/qorechain/qorechain-lightnode` (Apache 2.0). An Android build is attached to the GitHub release as a preview; it does not register and does not earn.
 
 You can also build the binary from source or run it with Docker.
 
@@ -36,16 +36,16 @@ The light node requires **Go 1.26.1**. Its post-quantum cryptography is a pure-G
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Build from the release tag (`git checkout v3.1.9`). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
+Build from the release tag (`git checkout v3.1.10`). This produces `build/lightnode-sx`. Run it directly, or copy it onto your `PATH`. Before registering, sanity-check the post-quantum signing stack with [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-There is no pre-built registry image; you build it from the source tag. Use tag **`v3.1.9`**. To update an existing install, rebuild from the new tag (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`); a plain `docker compose up` or `restart` reuses the old image. Keys, config and the data volume carry over.
+There is no pre-built registry image; you build it from the source tag. Use tag **`v3.1.10`**. To update an existing install, rebuild from the new tag (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); a plain `docker compose up` or `restart` reuses the old image. Keys, config and the data volume carry over.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host
