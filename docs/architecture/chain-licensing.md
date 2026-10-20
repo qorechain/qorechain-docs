@@ -36,9 +36,9 @@ A license also stops being active once its `expires_at` height passes, even if i
 
 ## Who can change licenses
 
-Granting, revoking, suspending, and resuming licenses are **authority operations** — they are performed by the chain's governance authority, not by arbitrary users. These transactions exist as part of the module's command surface, but a normal user does not call them directly; the lifecycle is administered on-chain by the authority.
+Granting, revoking, suspending, and resuming licenses are **authority operations**: they are signed by the module's licence authority account, not by arbitrary users. From v3.2.3 governance can replace that account with `MsgUpdateAuthority`, the recovery path if its key is ever lost. These transactions exist as part of the module's command surface, but a normal user does not call them directly; the lifecycle is administered on-chain by the authority.
 
-To **obtain** a license, integrators go through the **Dashboard (Tools → Buy License)**, which handles the request flow; the authority then records the grant on-chain.
+To **obtain** one: a light node licence is bought on the **Dashboard (Tools → Light Node)**, and a `validator_operator` grant comes through the **Validator Program** (Tools → Validator Application: apply, be selected, pay the $1,000 programme fee). The authority then records the grant on-chain, in batches.
 
 The authority-gated transactions are:
 
@@ -108,6 +108,6 @@ qorechaind query license holders bridge_ethereum
 ## Related
 
 - Licenses for bridge and validator features back the capabilities described in [Bridge Architecture](/architecture/bridge-architecture).
-- Licenses are obtained through the **Dashboard (Tools → Buy License)**.
+- Light node licences are bought on the **Dashboard (Tools → Light Node)**; validator grants come through the Validator Program (Tools → Validator Application).
 - Light nodes obtain a license during [Registration and Licensing](/light-node/registration-and-licensing).
 - Buy and manage licenses from the [Tools Hub](/dashboard/tools-hub).

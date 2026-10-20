@@ -10,11 +10,11 @@ sidebar_position: 9
 This guide covers how to create a validator on the QoreChain network, understand the pool classification design, register a PQC key for quantum-resistant security, and monitor your node.
 
 :::note
-This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 29 June 2026, which runs node release **v3.2.1** (consensus rules from the v3.2.0 upgrade, applied at height 2,981,742). The **`qorechain-diana`** testnet (EVM chain ID **9800**, v3.2.2) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
+This guide targets the **`qorechain-vladi`** mainnet (EVM chain ID **9801**), live since 29 June 2026, which runs node release **v3.2.3** (applied by governance at height 3,662,051). The **`qorechain-diana`** testnet (EVM chain ID **9800**, v3.2.4) is recommended for rehearsing your setup before going live. Substitute the appropriate `--chain-id` for your target network. Block times differ: about 3.2 s on mainnet and about 1.0 s on the testnet, so convert block counts to time per network.
 :::
 
 :::caution Use the release binary, not a source build
-A validator must run the **release `qorechaind`** named in the live manifest (`https://download.qore.host/mainnet/latest.json`; see [Running a Node](/developer-guide/running-a-node#fetch-the-manifest)). A binary built from the public source has stub keepers and no post-quantum signer: it cannot reproduce the network's consensus state and cannot create the hybrid signature that `create-validator` and every other Cosmos-lane transaction need (see [Building from Source](/developer-guide/building-from-source)). A fresh mainnet node needs v3.2.0 or later; keep the system clock NTP-synchronised, because from v3.2.1 the node stops when its clock is more than 60 seconds out.
+A validator must run the **release `qorechaind`** named in the live manifest (`https://download.qore.host/mainnet/latest.json`; see [Running a Node](/developer-guide/running-a-node#fetch-the-manifest)). A binary built from the public source has stub keepers and no post-quantum signer: it cannot reproduce the network's consensus state and cannot create the hybrid signature that `create-validator` and every other Cosmos-lane transaction need (see [Building from Source](/developer-guide/building-from-source)). From v3.2.3 a binary built from the public source refuses to start on a public network at all. A fresh mainnet node needs v3.2.0 or later; keep the system clock NTP-synchronised, because from v3.2.1 the node stops when its clock is more than 60 seconds out.
 :::
 
 :::note Which parts of this page are live
@@ -28,21 +28,21 @@ Block production uses the standard stake-weighted validator rotation, and slashi
 * A fully synced release `qorechaind` node (see [Connecting to Mainnet](/getting-started/connecting-to-mainnet), or [Connecting to Testnet](/getting-started/connecting-to-testnet) to rehearse)
 * A **registered ML-DSA-87 PQC key** on the operator account (see [PQC Key Registration](#pqc-key-registration)) — `create-validator` needs the hybrid signature
 * A funded account with at least **100,000 QOR** (100,000,000,000 uqor) for the initial self-delegation — this minimum is enforced on-chain and `create-validator` is rejected below it
-* An active **`validator_operator` license** on your account — see the note below; without it, `create-validator` fails with `ErrUnauthorized` regardless of how much QOR you self-bond
+* An active **`validator_operator` grant** on your operator address, issued through the [Validator Program](/dashboard/tools-hub#validator-application) (apply, be selected, pay the $1,000 programme fee); see the note below. Without it, `create-validator` fails with `ErrUnauthorized` regardless of how much QOR you self-bond
 * Familiarity with the [Staking and Delegation](/user-guide/staking-and-delegation) model
 
 ---
 
 ## Creating a Validator
 
-### License gate: `validator_operator` {#validator-license-gate}
+### Operator grant: `validator_operator` {#validator-license-gate}
 
 `create-validator` is gated by two independent checks, both enforced on-chain, and you need both — a large self-bond alone is not enough:
 
 1. **Minimum self-bond of 100,000 QOR.**
-2. **An active `validator_operator` license** on the account submitting the transaction.
+2. **An active `validator_operator` grant** on the account submitting the transaction.
 
-Licences are granted on-chain by the licence authority (see the [Tools Hub](/dashboard/tools-hub#validator-application) for the application steps); check yours with `GET /qorechain/license/v1/check/{grantee}/validator_operator`. A license's `expires_at` is a **block height**, not a date or duration — `0` means no expiry. Missing or expired, and `create-validator` fails with `ErrUnauthorized`, no matter how much you self-bond; this is the single most common reason a well-funded attempt fails and looks unexplained. This gate exists specifically because the EVM execution lane cannot see or enforce it (a single ante decorator there would bypass it entirely) — it is one of the reasons staking and validation stay exclusively on the Native lane.
+The grant is issued on chain by the QoreChain Association through the **Validator Program**: apply on the [Tools Hub](/dashboard/tools-hub#validator-application), run a validator on the diana testnet for the 14-day trial, and once selected pay the **$1,000 programme fee**; the grant is then signed in batches for the operator address in your application. Check yours with `GET /qorechain/license/v1/check/{grantee}/validator_operator`. A license's `expires_at` is a **block height**, not a date or duration — `0` means no expiry. Missing or expired, and `create-validator` fails with `ErrUnauthorized`, no matter how much you self-bond; this is the single most common reason a well-funded attempt fails and looks unexplained. This gate exists specifically because the EVM execution lane cannot see or enforce it (a single ante decorator there would bypass it entirely) — it is one of the reasons staking and validation stay exclusively on the Native lane.
 
 Create a `validator.json` file (the flag-based form was removed in the current SDK):
 
@@ -213,7 +213,7 @@ penalty = base_rate * escalation^effective_count * severity
 
 ## PQC Key Registration {#pqc-key-registration}
 
-Register your **post-quantum cryptographic (PQC) public key** — ML-DSA-87 — **before** applying for a validator license or running `create-validator`. This is **not optional and not automatic**: the chain requires a hybrid PQC signature on every Cosmos-lane transaction, `MsgCreateValidator` is not one of the exempted message types, and no account registers its key automatically: registration is an explicit transaction that every account (validator operators included) must send itself, ahead of time. Generate the key first:
+Register your **post-quantum cryptographic (PQC) public key** (ML-DSA-87) **before** running `create-validator`, and as early as you can: the [Validator Readiness](/dashboard/tools-hub#validator-application) panel checks it from the moment you apply. This is **not optional and not automatic**: the chain requires a hybrid PQC signature on every Cosmos-lane transaction, `MsgCreateValidator` is not one of the exempted message types, and no account registers its key automatically: registration is an explicit transaction that every account (validator operators included) must send itself, ahead of time. Generate the key first:
 
 ```bash
 qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored unencrypted under ~/.qorechaind/pqc/
@@ -222,10 +222,20 @@ qorechaind tx pqc gen-key mypqc          # prints the public key (hex); stored u
 ```bash
 qorechaind tx pqc register-key-v2 dilithium5 <pubkey-hex> hybrid \
   --from mykey \
+  --pqc-key mypqc \
   --chain-id qorechain-vladi \
   --gas 600000 --fees 60000uqor \
   -y
 ```
+
+`--pqc-key mypqc` attaches a **proof of possession**: the key signs `qorechain-pqc-pop-v1|chainid|algo|address|hex(pubkey)` and the chain verifies it, so nobody can register a public key whose private half they do not hold. It is optional in v3.2.3 and recommended.
+
+:::note What v3.2.3 changed for key registration
+* An account with **no** registered key can send only the registration itself: any other transaction carrying a hybrid signature extension is refused. Register first, then sign everything else with `tx pqc cosign`.
+* `classical_only`, empty and degenerate keys are refused at registration.
+* Once an account holds a key, further key maintenance (rotation, migration, re-registration) must itself be hybrid-signed, and cannot be sent through `authz`.
+* `tx pqc gen-key` never overwrites an existing key file.
+:::
 
 | Parameter      | Description                                       |
 | -------------- | ------------------------------------------------- |

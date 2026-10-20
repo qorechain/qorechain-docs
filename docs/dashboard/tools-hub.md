@@ -7,69 +7,59 @@ sidebar_position: 11
 
 # Tools Hub
 
-The **Tools** page gathers QoreChain's operator and builder tooling in one place, organized into seven tabs, in this order: **Information**, **Validator Application**, **Buy License**, **Light Node**, **Node Registration**, **Rollups**, and **SDK**. The **Information** tab is a read-only overview of the validator and light-node programs — the three ways to participate (genesis validator, light node, delegator), license tiers, staking and slashing basics, hardware requirements, who operates the program, and a FAQ. The other tabs are summarized below with where they lead for full documentation. The Tools page follows the network switch in the header, because published builds can differ between networks.
+The **Tools** page gathers QoreChain's operator and builder tooling in one place, in six tabs, in this order: **Validator Program**, **Validator Application**, **Light Node**, **Node Registration**, **Rollups** and **SDK**. The page follows the network switch in the header: chain checks, downloads and node status are read from the network you have selected. Licences are sold on **mainnet only** (see [Light Node](#light-node)).
 
-Sign in to use the tools that record registrations or submit applications — see [Sign in](/dashboard/overview#sign-in).
+Sign in to use the tools that record registrations, submit applications or take payment; see [Sign in](/dashboard/overview#sign-in).
 
-## Light Node
+## Validator Program
 
-Running a light node and joining its rewards program are two different things, and the Light Node tab keeps them separate rather than presenting one sign-up flow:
+A read-only overview of the **QoreChain Validator Program**, the way validators join the network: what the programme provides (the on-chain operator grant, delegation from Association-controlled stake and a QOR stipend for independent operators who meet the service levels), what it requires, the selection process and a FAQ. Protocol parameters on this tab (unbonding time, slashing, maximum validators) are read live from the chain; programme rules (the 100,000 QOR self-stake, the commission band, the stipend) are the Association's and are marked as such. Validators do not buy a package: they apply, and pay a **$1,000 programme fee** only once selected.
 
-1. **Get the software — works today.** No license, no on-chain check, and no approval needed; this is shown first regardless of your license status. The tab reads the live network manifest and gives you copy-ready commands for a full QoreChain node (download and verify the binary, initialize the node with genesis, point it at the network's peers, and state-sync instead of syncing from genesis). A light node itself only needs the `lightnode-sx` or `lightnode-ux` binary — see [Light Node Overview](/light-node/overview). Below the commands, **Download the light node** lists the published builds with their sha256 checksums — a **Desktop edition** (includes the web dashboard) and a **Server edition** (headless, command line) across six platforms; check the file against its checksum before running it. If no build is published for the network you have selected, the panel says so.
-2. **Check the chain's requirements — Light node status.** This panel reads the live chain parameters (they are governance parameters and can change without this page being edited): the delegated stake required — your total across all the validators you delegate to, not per validator (currently 1,000 QOR) — the registration fee (currently 1 QOR), the uptime needed for rewards, how often a heartbeat is expected (and the grace allowed), and the maximum number of light nodes. You can optionally enter an operator address to see whether a light node is registered to it, whether it is reporting on time, and its accrued rewards.
-3. **Rewards enrolment is not open yet.** Joining the light-node reward share needs an active `lightnode_operator` license granted on-chain, the minimum delegated stake, and the registration fee. Enrolment itself is not open (see [Status of the reward program](/light-node/overview#reward-program-status)), and buying a license does not open it early, so there is nothing to sign up for today; run and sync your node in the meantime. Uptime is counted from the block your node registers on-chain, not before.
-4. **Registration record.** If your account holds a license that is recorded as active, this tab also shows a short form — operator address (`qor1…`), moniker, public endpoint URL, and an acknowledgement of the stake commitment — and then a summary of what you submitted. That form records your registration request with The Qore Trust on the Dashboard; it does **not** send the on-chain registration transaction, and it does not check the chain. The on-chain registration is made from the node itself with `lightnode-sx register` (see [Registration & Licensing](/light-node/registration-and-licensing)) and succeeds only once the chain shows an active grant, the stake is already bonded from your operator address, and enrolment is open.
+## Validator Application {#validator-application}
 
-For the full picture, see [Light Node Overview](/light-node/overview) and [Registration & Licensing](/light-node/registration-and-licensing).
+Apply to the Validator Program:
+
+1. **Fill in the application.** Entity name, jurisdiction and contact email; the **operator address** (`qor1…`, the account you will run `create-validator` from: the on-chain operator grant is issued to this address); hosting provider, region and type; the networks you already operate; optionally your testnet validator address and the public infrastructure you offer (public RPC, snapshots, archive); the track (standard, or global for the reserved seats); and acceptance of the programme terms. Applying is free.
+2. **Review and testnet trial.** The application shows as **Submitted** while it is reviewed. Applications that go forward run a validator on the diana testnet for a 14-day trial, shown as **Testnet trial**.
+3. **Selection and the programme fee.** A selected application shows **Selected** with a **Pay $1,000** button. The payment step works as for a light node licence (USDT on ERC-20, BEP-20 or TRC-20, verified on chain). The fee is tied to the operator address in your application; it cannot be paid to another address. Approval and payment are always shown apart: an application can be selected and still unpaid.
+4. **The on-chain operator grant.** After payment the Association issues the `validator_operator` grant on chain to your operator address. Grants are signed by hand, in batches, so they are not instant. The tab shows **Operator grant on chain** as soon as the chain has it, and **In the active set** once your validator is bonded.
+
+From the moment an application is in, a **Validator Readiness** panel checks the chain directly for the operator address: a registered post-quantum key, enough spendable QOR for the self-stake, the operator grant and whether the validator is bonded. Run [PQC key registration](/developer-guide/running-a-validator#pqc-key-registration) on your own node early: nothing registers that key for you.
+
+Applications approved under the earlier validator offer (before October 2026) show as **Earlier application**; the Association contacts those applicants directly.
+
+## Light Node {#light-node}
+
+Everything a light node operator needs, from the licence to a node registered on chain.
+
+1. **Buy the licence (mainnet).** A light node licence costs **$50**, paid in USDT on ERC-20, BEP-20 or TRC-20 and verified on chain. Enter the `qor1…` address the licence should be granted to before paying; use an account whose recovery words you hold (your own words, Keplr or `qorechaind`), ideally one used only for the node. With the header set to **testnet**, nothing is for sale: testnet light node licences are free and granted by the QoreChain team.
+2. **Wait for the on-chain grant.** After payment the licence shows **Paid, awaiting on-chain grant**; it changes to **Active on chain** only when the chain confirms the `lightnode_operator` grant. Grants are signed by hand, in batches.
+3. **Install and register the node.** The tab lists the published builds for your network with their checksums (server edition `lightnode-sx`, desktop edition `lightnode-ux`, on Linux, macOS and Windows) and the steps for the current release: set a keyring passphrase, `lightnode-sx onboard`, `lightnode-sx keys add-operator --recover` (adds the account the licence is for), `lightnode-sx register` (attaches the node's post-quantum key and registers it, adding `--delegate-to <qorvaloper…>` if the address is short of the required stake), then `lightnode-sx start` and `lightnode-sx status`. The steps are shown as current only when the network's release manifest publishes a build that supports them, and the tab says whether registration is open on that network.
+4. **Notices for your address.** The tab warns when the licence address is one of your own custodial Dashboard wallets (the Dashboard holds that key, so a node cannot sign with it), and notes when the address already has a post-quantum key on chain (the node reuses it when it was derived from your recovery words, and otherwise refuses and recommends a dedicated account).
+5. **Status.** A panel reads the chain: the requirements in force (registration fee, delegated stake, uptime, heartbeat window, maximum light nodes) and, for an address, whether a light node is registered and reporting on time.
+
+See [Light Node Overview](/light-node/overview) and [Registration & Licensing](/light-node/registration-and-licensing).
+
+:::note Licences bought before the address was required
+If you bought a licence before the address was collected, the tab opens with **This licence needs a QoreChain address**: enter the address and select **Save address**. Until it is saved the licence cannot be granted.
+:::
 
 ## Node Registration
 
-The Node Registration tab records a validator registration with The Qore Trust on the Dashboard. It does not itself create the validator on chain; that is done from your own node (steps 1 and 5 below). Prerequisites and steps:
+Records your validator's details with the Association. It does not create the validator on chain; you do that from your own node with `create-validator`.
 
-1. **Register your PQC key first — from the CLI, on your own validator node.** A validator must run PQC key registration itself — it does not happen automatically — before applying for or using a license and before creating the validator. See [Running a Validator](/developer-guide/running-a-validator#pqc-key-registration) for the CLI command.
-2. **Confirm you're licensed.** The form needs a validator license recorded as active in your account. The **chain** is what decides whether `create-validator` is accepted, and it requires the operator grant on-chain: a license bought through **Buy License** is recorded on our side, and the on-chain grant is a separate, manual step that follows. Check **Validator Readiness** (on the Validator Application tab) to see what the chain currently recognises. If you're not yet licensed, this tab links to **Buy License** — validator licenses require an approved [Validator Application](#validator-application) first.
-3. **Fill in the registration form.** Provide your validator address or consensus pubkey, a moniker, a commission rate (within your license's allowed range), and an optional public endpoint. If your licenses include cross-network chains, select which of them this validator will service.
-4. **Acknowledge the self-stake requirement.** The validator self-stake floor is a fixed 100,000 QOR — a protocol-level constant, not an adjustable setting — subject to an unbonding period, with downtime or double-signing slashed. Acknowledge it, then submit to register.
-5. **Sync and create the validator.** Registering here records your validator; you still bring your node to the current chain tip and submit `create-validator` yourself, hybrid PQC-cosigned like every QoreChain transaction — the key from step 1 is what makes that signature valid.
-6. **Confirm and bond stake.** A summary panel shows the registration (moniker, validator address, commission, self-stake intent, cross-network chains, status) and prompts you to bond your self-stake to enter the active validator set. The bonding itself happens on your node with the post-quantum-cosigned transaction, not in the Dashboard.
+The form opens once the chain shows an active `validator_operator` grant for your operator address and you hold a selected Validator Program application (or a validator licence from before the programme). Provide your validator operator address, a moniker, a commission rate between 5% and 20%, and an optional public endpoint, then acknowledge the 100,000 QOR self-stake, the 21-day unbonding period and slashing.
 
-Staking and validator creation happen only on QoreChain's native transaction lane — there is no path to register or bond a validator through a linked EVM wallet such as MetaMask.
+The on-chain steps are in [Running a Validator](/developer-guide/running-a-validator): register your PQC key, then submit `create-validator` with at least 100,000 QOR of self-stake, PQC-cosigned like every QoreChain transaction. Staking and validator creation happen only on QoreChain's native transaction lane; there is no path to register or bond a validator through a linked EVM wallet such as MetaMask. Below the form, the tab also lists what a full node needs (release binary, genesis, peers) from the network's release manifest.
 
-See [Running a Validator](/developer-guide/running-a-validator) and [Staking & Validators](/dashboard/staking-and-validators).
+See [Staking & Validators](/dashboard/staking-and-validators).
 
 ## Rollups
 
-Request a QoreChain-powered rollup. The form lets you name the rollup and state the virtual machine (EVM, CosmWasm, or SVM), data-availability layer, gas token, sequencer model and settlement target you want. Submitting it records a provisioning request that The Qore Trust reviews; it does not create the rollup on-chain. The options are broader than what the on-chain rollup module currently supports. To register a rollup on-chain yourself, see [Deploying a Rollup](/rollups/deploying-a-rollup); for the concepts, see [Rollups Overview](/rollups/overview).
+Request a QoreChain-powered rollup. The form lets you name the rollup and state the virtual machine (EVM, CosmWasm, or SVM), data-availability layer, gas token, sequencer model and settlement target you want. Submitting it records a provisioning request that is reviewed; it does not create the rollup on-chain. The options are broader than what the on-chain rollup module currently supports. To register a rollup on-chain yourself, see [Deploying a Rollup](/rollups/deploying-a-rollup); for the concepts, see [Rollups Overview](/rollups/overview).
 
 ## SDK
 
 A quickstart and reference hub for building on QoreChain in code. The section shows installation steps and copy-ready snippets for connecting, deriving accounts across the three runtimes, reading state, sending transfers, and quantum-safe signing, plus a table of language packages and links to the repository, examples, and explorer. See [QoreChain SDK Overview](/sdk/overview) and [Install](/sdk/install).
-
-## Validator Application {#validator-application}
-
-Apply to become a Genesis Validator:
-
-1. **Enter your entity details.** Legal entity name, country/jurisdiction, and a contact email.
-2. **Choose your desired tier.** Pick from the validator tier catalog (each tier lists its slot count and feature set) — this is the tier you intend to license once approved, not a purchase yet.
-3. **Describe your infrastructure.** Your infrastructure region and hardware/datacenter details.
-4. **Explain your motivation.** A short statement on your team's validator/infrastructure experience and why you want to run a QoreChain Genesis Validator.
-5. **Acknowledge compliance and submit.** Confirm that KYC/AML verification of the applicant entity and its beneficial owners is required before a license is granted, then submit.
-6. **Track your status.** The tab shows your application as under review, approved, or not approved with a reason (with the option to revise and resubmit). Once your application is pending or approved, a live **Validator Readiness** panel checks three things directly against the chain, not against what you've purchased: your PQC key registration, your self-bond (a fixed 100,000 QOR — spendable balance only, vesting funds don't count), and whether your operator license has actually been granted on-chain and is currently valid (not suspended, and not past its expiry — licences expire at a block height, and if the chain tip cannot be read an expiring licence is reported as *couldn't verify* rather than as valid). Each check reports one of three states — met, not yet met, or *couldn't verify* when the chain can't be reached — and a failed read is never shown as "you don't have this," since that would send you off to redo something you already hold. Once approved, you can proceed to **Buy License** to acquire a validator license.
-
-See [Running a Validator](/developer-guide/running-a-validator).
-
-## Buy License
-
-Acquire the licenses required to run network infrastructure:
-
-1. **Enter the address to license.** The **QoreChain address** field at the top is required for every purchase: type the `qor1…` address the license should be granted to on-chain. Use an address you control and will keep — the grant binds to it, and changing it later needs support. A license cannot be ordered without one.
-2. **Choose a payment network.** Under **Pay with USDT on:** select ERC-20, BEP-20, or TRC-20.
-3. **Pick what to buy.** A light-node license is available to anyone. Validator licenses (across the tier catalog) unlock only once your [Validator Application](#validator-application) is approved. Cross-network add-ons extend a validator license to additional chains, priced per chain per year — select the chains you want, then buy.
-4. **Complete payment.** Each purchase moves you into a payment step that confirms the amount and network and verifies the payment on-chain before the license is recorded as paid.
-5. **Wait for the on-chain grant, then register.** After payment the license shows **Paid — awaiting on-chain grant**. Grants are issued by hand, in batches, so they are not instant. The status changes to **Active** only after the chain itself confirms the grant. Registration on the chain checks the chain, not our records, so registering before the grant lands will refuse. Once the badge reads **Active**, return to **Light Node** or **Node Registration** for the matching registration.
-
-:::note Licenses bought before the address was required
-If you bought a license before the address was collected, the Buy License tab opens with **This licence needs a QoreChain address** — enter the address and select **Save address**. Until it is saved the license cannot be granted.
-:::
 
 For how licensing works across the network, see [Chain Licensing](/architecture/chain-licensing).
