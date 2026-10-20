@@ -13,11 +13,11 @@ Bir hafif düğüm çalıştırmak, tam bir düğümün depolama, bant genişli�
 
 ## Kendine ait sürüm hattı
 
-Hafif düğüm **kendi sürüm hattıyla — şu anda 3.1.9** — gönderilir; bu hat **zincir sürüm numarasından ayrıdır** (ana ağ `v3.2.3` zincirini çalıştırır). Her ağ için ikili dosyalar, `https://download.qore.host/<net>/lightnode/latest.json` adresinde bir **SHA-256 sağlama toplamı (checksum) manifestiyle** yayınlanır (`<net>`, `mainnet` veya `testnet` değeridir). Her iki kanal da aynı 3.1.9 derlemesini taşır ve her iki manifest de `minCompatible` değerini `3.1.9` olarak ayarlar; bu nedenle eski hafif düğüm derlemeleri değiştirilmelidir. Sürümde 12 ikili dosya bulunur — Linux, macOS ve Windows için SX ve UX, her biri amd64 ve arm64 üzerinde — ayrıca bir `SHA256SUMS` dosyası. İndirme ve doğrulama adımları için bkz. [SX Sürümü](/light-node/sx-edition#install); `v3.1.9` kaynak etiketinden imaj oluşturmak için bkz. [Docker](/light-node/sx-edition#docker).
+Hafif düğüm **kendi sürüm hattıyla — şu anda 3.1.10** (3.1.9 hâlâ kabul edilir) — gönderilir; bu hat **zincir sürüm numarasından ayrıdır** (ana ağ `v3.2.3` zincirini çalıştırır). Her ağ için ikili dosyalar, `https://download.qore.host/<net>/lightnode/latest.json` adresinde bir **SHA-256 sağlama toplamı (checksum) manifestiyle** yayınlanır (`<net>`, `mainnet` veya `testnet` değeridir). Her iki kanal da aynı 3.1.10 derlemesini taşır ve her iki manifest de `minCompatible` değerini `3.1.9` olarak ayarlar; bu nedenle eski hafif düğüm derlemeleri değiştirilmelidir. Sürümde 12 ikili dosya bulunur — Linux, macOS ve Windows için SX ve UX, her biri amd64 ve arm64 üzerinde — ayrıca bir `SHA256SUMS` dosyası. İndirme ve doğrulama adımları için bkz. [SX Sürümü](/light-node/sx-edition#install); `v3.1.10` kaynak etiketinden imaj oluşturmak için bkz. [Docker](/light-node/sx-edition#docker).
 
 GitHub sürümüne bir Android derlemesi yalnızca **önizleme** olarak eklenmiştir: zinciri takip eder ve doğrular, ancak kayıt olmaz ve ödül kazanmaz.
 
-Belgeleri veya sürüm notlarını okurken, hafif düğümün sürümünü (3.1.9) ve zincirin sürümünü (v3.2.3), aynı ana seriyi paylaşan iki ayrı sayı olarak değerlendirin.
+Belgeleri veya sürüm notlarını okurken, hafif düğümün sürümünü (3.1.10) ve zincirin sürümünü (v3.2.3), aynı ana seriyi paylaşan iki ayrı sayı olarak değerlendirin.
 
 ## Neden bir hafif düğüm çalıştırmalı {#why-run-a-light-node}
 

@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Edición UX — Panel Web
 
-La edición **UX (User eXperience)** ejecuta el mismo daemon de light node que la edición SX, pero añade un **panel web integrado** para que puedas observar el nodo y la red desde un navegador. El binario es `lightnode-ux`. Al igual que la de la edición SX, esta página describe el light node **3.1.9** (su propia línea de versiones, independiente de la versión de la cadena).
+La edición **UX (User eXperience)** ejecuta el mismo daemon de light node que la edición SX, pero añade un **panel web integrado** para que puedas observar el nodo y la red desde un navegador. El binario es `lightnode-ux`. Al igual que la de la edición SX, esta página describe el light node **3.1.10** (su propia línea de versiones, independiente de la versión de la cadena).
 
 La edición UX es la opción adecuada para uso en escritorio y para operadores que prefieren una interfaz visual en lugar de la línea de comandos.
 
@@ -23,11 +23,11 @@ La edición UX requiere **Go 1.26.1**. Su criptografía poscuántica es una impl
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Compila desde la etiqueta de la versión (`git checkout v3.1.9`). Esto genera `build/lightnode-ux`.
+Compila desde la etiqueta de la versión (`git checkout v3.1.10`). Esto genera `build/lightnode-ux`.
 
 ### Docker
 
-El servicio UX se compila a partir de `Dockerfile.ux` en el repositorio de código fuente (`github.com/qorechain/qorechain-lightnode`, etiqueta `v3.1.9`). El contenedor necesita un `config.toml` en su volumen de datos antes de poder iniciarse. El binario UX tiene los comandos de configuración, así que puedes crearlo en el volumen:
+El servicio UX se compila a partir de `Dockerfile.ux` en el repositorio de código fuente (`github.com/qorechain/qorechain-lightnode`, etiqueta `v3.1.10`). El contenedor necesita un `config.toml` en su volumen de datos antes de poder iniciarse. El binario UX tiene los comandos de configuración, así que puedes crearlo en el volumen:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

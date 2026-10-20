@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX 에디션 — 서버 데몬
 
-**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 이 페이지는 라이트 노드 **3.1.9**(소스 태그 `v3.1.9`)를 설명하며, 이는 체인 버전과는 별개인 자체 버전 라인에 있습니다.
+**SX(Server eXperience)** 에디션은 헤드리스 라이트 노드입니다. 데몬과 완전한 관리 CLI로 구성되며, 서버 환경과 자동화를 위해 만들어졌습니다. 바이너리 이름은 `lightnode-sx`입니다. 이 페이지는 라이트 노드 **3.1.10**(소스 태그 `v3.1.10`)를 설명하며, 이는 체인 버전과는 별개인 자체 버전 라인에 있습니다.
 
 ## 설치 {#install}
 
@@ -18,13 +18,13 @@ sidebar_position: 2
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-Windows에서는 `certutil -hashfile lightnode-sx-<platform>.exe SHA256`의 결과를 매니페스트 값과 비교하세요. 두 네트워크 모두 동일한 3.1.9 빌드를 제공하며, 두 매니페스트 모두 이 빌드를 요구합니다(`minCompatible: 3.1.9`). 소스는 `github.com/qorechain/qorechain-lightnode`에 공개되어 있습니다(Apache 2.0). Android 빌드는 GitHub 릴리스에 프리뷰로 첨부되어 있으며, 등록하지 않고 보상도 받지 않습니다.
+Windows에서는 `certutil -hashfile lightnode-sx-<platform>.exe SHA256`의 결과를 매니페스트 값과 비교하세요. 두 네트워크 모두 동일한 3.1.10 빌드를 제공하며, 매니페스트는 여전히 3.1.9도 허용합니다(`minCompatible: 3.1.9`). 3.1.10부터 각 릴리스의 바이너리는 버전이 포함된 경로 `https://download.qore.host/<net>/lightnode/v<version>/<file>`에 있으며, 매니페스트의 `artifacts[].url`이 이 경로를 가리킵니다. 몇 시간 늦게 갱신될 수 있는 버전 없는 사본 대신 이 경로를 사용하세요. 소스는 `github.com/qorechain/qorechain-lightnode`에 공개되어 있습니다(Apache 2.0). Android 빌드는 GitHub 릴리스에 프리뷰로 첨부되어 있으며, 등록하지 않고 보상도 받지 않습니다.
 
 소스에서 바이너리를 직접 빌드하거나 Docker로 실행할 수도 있습니다.
 
@@ -36,16 +36,16 @@ Windows에서는 `certutil -hashfile lightnode-sx-<platform>.exe SHA256`의 결�
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-릴리스 태그(`git checkout v3.1.9`)에서 빌드하세요. 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 양자내성 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
+릴리스 태그(`git checkout v3.1.10`)에서 빌드하세요. 이 명령은 `build/lightnode-sx`를 생성합니다. 바로 실행하거나 `PATH`에 복사해서 사용하세요. 등록하기 전에 [`selftest`](#verify-the-pqc-stack-selftest)로 양자내성 서명 스택이 정상인지 먼저 점검하시기 바랍니다.
 
 ### Docker {#docker}
 
-미리 빌드된 레지스트리 이미지는 없으며, 소스 태그에서 직접 빌드합니다. **`v3.1.9`** 태그를 사용하세요. 기존 설치를 업데이트하려면 새 태그에서 다시 빌드하세요(`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`). 단순한 `docker compose up`이나 `restart`는 이전 이미지를 재사용합니다. 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
+미리 빌드된 레지스트리 이미지는 없으며, 소스 태그에서 직접 빌드합니다. **`v3.1.10`** 태그를 사용하세요. 기존 설치를 업데이트하려면 새 태그에서 다시 빌드하세요(`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`). 단순한 `docker compose up`이나 `restart`는 이전 이미지를 재사용합니다. 키, 설정, 데이터 볼륨은 그대로 유지됩니다.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host

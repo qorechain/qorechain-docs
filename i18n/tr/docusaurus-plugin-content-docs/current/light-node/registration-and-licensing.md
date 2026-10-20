@@ -23,7 +23,7 @@ Kayıt işleminiz yürütülürken zincir bunların hepsini kontrol eder:
 
 1. Operatör adresinde aktif bir `lightnode_operator` lisansı.
 2. Aynı adresten **bağlı (bonded)** doğrulayıcılara en az **1.000 QOR delege edilmiş** olması (herhangi bir sayıda doğrulayıcı genelindeki toplamınız; hapsedilmiş (jailed) veya bağı çözülmüş (unbonded) doğrulayıcılara yapılan delegasyonlar sayılmaz).
-3. **1 QOR** kayıt ücretini ve işlem ücretlerini ödemek için operatör hesabında bakiye. Düğüm ayrıca her kalp atışı için bu hesaptan ücret öder: yerel imzalamada ücret gaz birimi başına 0,25 uqor'dur; dolayısıyla varsayılan 300.000 `[heartbeat] gas` değerinde 75.000 uqor (0,075 QOR) eder.
+3. **1 QOR** kayıt ücretini ve işlem ücretlerini ödemek için operatör hesabında bakiye. Düğüm ayrıca her kalp atışı için bu hesaptan ücret öder: yerel imzalamada ücret gaz birimi başına 0,25 uqor'dur; dolayısıyla varsayılan 300.000 `[heartbeat] gas` değerinde 75.000 uqor (0,075 QOR) eder; günde yaklaşık 25 kalp atışıyla bu, ayda yaklaşık 1,9 QOR'dur.
 4. Ağ genelinde kayıtlı 10.000'den az hafif düğüm.
 
 Kayıttan sonra düğümün ödeme alabilmesi için her **1.000 blokta** bir kalp atışı göndermesi (100 blokluk tolerans payıyla) ve en az **%80 çalışma süresini** koruması gerekir. Canlı değerleri `GET https://api.qore.host/qorechain/lightnode/v1/params` ile okuyun (test ağı: `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Test ağı: talep üzerine
 
-Test ağında hiçbir şey satılmaz. Test ağı lisansları, test ağı lisans yetkilisi tarafından talep üzerine verilir.
+Test ağında hiçbir şey satılmaz. Test ağı lisansları ücretsizdir ve test ağı lisans yetkilisi tarafından talep üzerine verilir: test ağı `qor1…` adresinizle birlikte nodes@qorechain.io adresine yazın.
 
 ## Düğümü kaydetme
 
@@ -81,9 +81,9 @@ Parola, düğümün keyring'indeki iki anahtarı da korur: düğümün kuantum-s
 
 `register`, `operator_address` değerini ve anahtarları keyring'den okur, ardından:
 
-1. **Lisansı kontrol eder.** Zincire `operator_address` adresinin aktif bir `lightnode_operator` lisansı taşıyıp taşımadığını sorar. Lisans yoksa durur ve nereden alınacağını söyler. (3.1.9'da bu mesaj hâlâ Dashboard'un eski "Buy License" sekmesini anar; lisanslar **Araçlar → Hafif Düğüm** bölümünden satın alınır.) Süresi dolmuş veya askıya alınmış bir lisans bu şekilde bildirilir. Zaten kayıtlı olan bir düğüm bu şekilde bildirilir ve hiçbir şey gönderilmez.
+1. **Lisansı kontrol eder.** Zincire `operator_address` adresinin aktif bir `lightnode_operator` lisansı taşıyıp taşımadığını sorar. Lisans yoksa durur ve nereden alınacağını söyler. 3.1.10'dan itibaren mesaj ana ağda **Araçlar → Hafif Düğüm** bölümüne, test ağında ise nodes@qorechain.io adresinden talep üzerine verilen ücretsiz lisansa yönlendirir (3.1.9 hâlâ Dashboard'un eski sekmesini anıyordu). Süresi dolmuş veya askıya alınmış bir lisans bu şekilde bildirilir. Zaten kayıtlı olan bir düğüm bu şekilde bildirilir ve hiçbir şey gönderilmez.
 2. **Kuantum-sonrası anahtarı bağlar**, hesabın zaten bir anahtarı yoksa. Kuantum-sonrası anahtarı olmayan bir hesap yalnızca bu tek mesajı, klasik olarak imzalanmış şekilde (hibrit uzantı olmadan) gönderebilir; düğüm mesajı bu şekilde gönderir ve zincirin desteklediği yerlerde anahtara sahip olduğuna dair bir kanıt (proof of possession) ekler.
-3. **Eksik stake'i delege eder**, yalnızca `--delegate-to qorvaloper1...` ile bir doğrulayıcı belirtirseniz. `--delegate-to` olmadan, hesap minimumun altındaysa durur ve ne kadar eksik olduğunu söyler.
+3. **Eksik stake'i delege eder**, yalnızca `--delegate-to qorvaloper1...` ile bir doğrulayıcı belirtirseniz. `--delegate-to` olmadan, hesap minimumun altındaysa durur ve ne kadar eksik olduğunu söyler. 3.1.10'dan itibaren, zincirin yaptığı gibi yalnızca **bağlı (bonded)** doğrulayıcılara delege edilen stake'i sayar; 3.1.9 hapsedilmiş (jailed) veya bağı çözülmüş (unbonded) doğrulayıcıları da sayıyordu ve bu durumda zincirde reddedilebiliyordu, bu yüzden 3.1.9 çalıştırıyorsanız aktif bir doğrulayıcıya delege edin.
 4. **Düğümü kaydeder**, 1 QOR ücretle.
 
 Her adım düğümün kendisi tarafından imzalanır ve bir sonraki gönderilmeden önce bir blokta onaylanır. Anahtar kaydından sonraki her işlem, zincirin gerektirdiği hibrit ML-DSA-87 + secp256k1 imzasını taşır.

@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # SX Sürümü — Sunucu Daemon'u
 
-**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu sayfa hafif düğüm **3.1.9**'u (kaynak etiketi `v3.1.9`) açıklar; hafif düğüm, zincir sürümünden ayrı, kendi sürüm hattındadır.
+**SX (Server eXperience)** sürümü başsız hafif düğümdür: sunucular ve otomasyon için tasarlanmış bir daemon artı tam bir yönetim CLI'si. İkili dosya `lightnode-sx`'tir. Bu sayfa hafif düğüm **3.1.10**'u (kaynak etiketi `v3.1.10`) açıklar; hafif düğüm, zincir sürümünden ayrı, kendi sürüm hattındadır.
 
 ## Kurulum {#install}
 
@@ -18,13 +18,13 @@ sidebar_position: 2
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-Windows'ta `certutil -hashfile lightnode-sx-<platform>.exe SHA256` çıktısını manifestodaki değerle karşılaştırın. Her iki ağ da aynı 3.1.9 derlemesini sunar ve her iki manifesto da bunu zorunlu kılar (`minCompatible: 3.1.9`). Kaynak kodu `github.com/qorechain/qorechain-lightnode` adresinde herkese açıktır (Apache 2.0). GitHub sürümüne önizleme olarak bir Android derlemesi eklenmiştir; kayıt olmaz ve ödül kazanmaz.
+Windows'ta `certutil -hashfile lightnode-sx-<platform>.exe SHA256` çıktısını manifestodaki değerle karşılaştırın. Her iki ağ da aynı 3.1.10 derlemesini sunar; manifestolar 3.1.9'u hâlâ kabul eder (`minCompatible: 3.1.9`). 3.1.10'dan itibaren her sürümün ikili dosyaları sürüm numaralı bir yolda, `https://download.qore.host/<net>/lightnode/v<version>/<file>` altında bulunur; manifestodaki `artifacts[].url` bu yolu gösterir. Birkaç saat geride kalabilen sürümsüz kopya yerine bunu kullanın. Kaynak kodu `github.com/qorechain/qorechain-lightnode` adresinde herkese açıktır (Apache 2.0). GitHub sürümüne önizleme olarak bir Android derlemesi eklenmiştir; kayıt olmaz ve ödül kazanmaz.
 
 İkili dosyayı kaynaktan da derleyebilir veya Docker ile çalıştırabilirsiniz.
 
@@ -36,16 +36,16 @@ Hafif düğüm **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go i
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Sürüm etiketinden derleyin (`git checkout v3.1.9`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
+Sürüm etiketinden derleyin (`git checkout v3.1.10`). Bu, `build/lightnode-sx` üretir. Doğrudan çalıştırın veya `PATH`'inize kopyalayın. Kaydolmadan önce kuantum sonrası imzalama yığınını [`selftest`](#verify-the-pqc-stack-selftest) ile sağlık kontrolünden geçirin.
 
 ### Docker {#docker}
 
-Önceden derlenmiş bir kayıt defteri imajı yoktur; imajı kaynak etiketinden kendiniz derlersiniz. **`v3.1.9`** etiketini kullanın. Mevcut bir kurulumu güncellemek için yeni etiketten yeniden derleyin (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`); düz bir `docker compose up` veya `restart` eski imajı yeniden kullanır. Anahtarlar, yapılandırma ve veri birimi korunur.
+Önceden derlenmiş bir kayıt defteri imajı yoktur; imajı kaynak etiketinden kendiniz derlersiniz. **`v3.1.10`** etiketini kullanın. Mevcut bir kurulumu güncellemek için yeni etiketten yeniden derleyin (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); düz bir `docker compose up` veya `restart` eski imajı yeniden kullanır. Anahtarlar, yapılandırma ve veri birimi korunur.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host

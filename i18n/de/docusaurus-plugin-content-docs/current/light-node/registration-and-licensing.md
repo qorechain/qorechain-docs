@@ -23,7 +23,7 @@ Die Chain prüft all dies, wenn deine Registrierungstransaktion ausgeführt wird
 
 1. Eine aktive `lightnode_operator`-Lizenz auf der Operator-Adresse.
 2. Mindestens **1.000 QOR**, die von derselben Adresse an **gebondete** Validatoren **delegiert** sind (deine Gesamtsumme über alle Validatoren; Delegationen an gejailte oder ungebondete Validatoren zählen nicht).
-3. Ein Guthaben auf dem Operator-Konto, um die Registrierungsgebühr von **1 QOR** und die Transaktionsgebühren zu bezahlen. Der Node zahlt außerdem für jeden Heartbeat eine Gebühr von diesem Konto: Beim nativen Signieren beträgt die Gebühr 0,25 uqor pro Gas-Einheit, also 75.000 uqor (0,075 QOR) beim Standardwert `[heartbeat] gas` von 300.000.
+3. Ein Guthaben auf dem Operator-Konto, um die Registrierungsgebühr von **1 QOR** und die Transaktionsgebühren zu bezahlen. Der Node zahlt außerdem für jeden Heartbeat eine Gebühr von diesem Konto: Beim nativen Signieren beträgt die Gebühr 0,25 uqor pro Gas-Einheit, also 75.000 uqor (0,075 QOR) beim Standardwert `[heartbeat] gas` von 300.000, oder etwa 1,9 QOR im Monat bei rund 25 Heartbeats pro Tag.
 4. Weniger als 10.000 netzwerkweit registrierte Light Nodes.
 
 Nach der Registrierung muss der Node alle **1.000 Blöcke** einen Heartbeat senden (mit einer Karenz von 100 Blöcken) und mindestens **80 % Uptime** halten, um ausgezahlt zu werden. Die aktuellen Werte liest du mit `GET https://api.qore.host/qorechain/lightnode/v1/params` (Testnet: `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Testnet: auf Anfrage
 
-Im Testnet wird nichts verkauft. Testnet-Lizenzen werden auf Anfrage von der Testnet-Lizenzstelle vergeben.
+Im Testnet wird nichts verkauft. Testnet-Lizenzen sind kostenlos und werden auf Anfrage von der Testnet-Lizenzstelle vergeben: Schreib an nodes@qorechain.io und gib deine Testnet-Adresse `qor1…` an.
 
 ## Den Node registrieren
 
@@ -81,9 +81,9 @@ Die Passphrase schützt beide Schlüssel im Keyring des Nodes: den Post-Quantum-
 
 `register` liest `operator_address` und die Schlüssel aus dem Keyring und führt dann Folgendes aus:
 
-1. **Prüft die Lizenz.** Es fragt die Chain, ob `operator_address` eine aktive `lightnode_operator`-Lizenz besitzt. Ohne Lizenz bricht es ab und nennt, wo du eine bekommst. (In 3.1.9 nennt diese Meldung noch den alten Dashboard-Tab „Buy License“; Lizenzen werden unter **Tools → Light Node** gekauft.) Eine abgelaufene oder gesperrte Lizenz wird als solche gemeldet. Ein bereits registrierter Node wird als solcher gemeldet, und es wird nichts gesendet.
+1. **Prüft die Lizenz.** Es fragt die Chain, ob `operator_address` eine aktive `lightnode_operator`-Lizenz besitzt. Ohne Lizenz bricht es ab und nennt, wo du eine bekommst. Ab 3.1.10 verweist die Meldung im Mainnet auf **Tools → Light Node** und im Testnet auf eine kostenlose Lizenz auf Anfrage unter nodes@qorechain.io (3.1.9 nannte noch den alten Dashboard-Tab). Eine abgelaufene oder gesperrte Lizenz wird als solche gemeldet. Ein bereits registrierter Node wird als solcher gemeldet, und es wird nichts gesendet.
 2. **Hängt den Post-Quantum-Schlüssel an**, es sei denn, das Konto hat bereits einen. Ein Konto ohne Post-Quantum-Schlüssel darf nur diese eine Nachricht senden, klassisch signiert (ohne die hybride Erweiterung); der Node sendet sie auf diese Weise und fügt einen Besitznachweis (Proof of Possession) für den Schlüssel bei, wo die Chain dies unterstützt.
-3. **Delegiert den fehlenden Stake**, nur wenn du mit `--delegate-to qorvaloper1...` einen Validator angibst. Ohne `--delegate-to` bricht es ab, wenn das Konto unter dem Minimum liegt, und nennt den fehlenden Betrag.
+3. **Delegiert den fehlenden Stake**, nur wenn du mit `--delegate-to qorvaloper1...` einen Validator angibst. Ohne `--delegate-to` bricht es ab, wenn das Konto unter dem Minimum liegt, und nennt den fehlenden Betrag. Ab 3.1.10 zählt es, wie die Chain, nur Stake, der an **gebondete** Validatoren delegiert ist; 3.1.9 zählte auch gejailte oder ungebondete Validatoren mit und konnte dann on-chain abgewiesen werden, delegiere also an einen aktiven Validator, wenn du 3.1.9 betreibst.
 4. **Registriert den Node** mit der Gebühr von 1 QOR.
 
 Jeder Schritt wird vom Node selbst signiert und in einem Block bestätigt, bevor der nächste gesendet wird. Jede Transaktion nach der Schlüsselregistrierung trägt die hybride ML-DSA-87- + secp256k1-Signatur, die die Chain verlangt.

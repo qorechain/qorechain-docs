@@ -13,11 +13,11 @@ Exécuter un nœud léger vous permet d'observer l'état du réseau sans le stoc
 
 ## Sa propre ligne de version
 
-Le nœud léger est livré sur sa **propre ligne de version — actuellement 3.1.9** — qui est **distincte de la version de publication de la chaîne** (le mainnet exécute la chaîne `v3.2.3`). Les binaires de chaque réseau sont publiés avec un **manifeste de sommes de contrôle SHA-256** à l'adresse `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` vaut `mainnet` ou `testnet`). Les deux canaux fournissent la même version 3.1.9, et les deux manifestes fixent `minCompatible` à `3.1.9` : les versions plus anciennes du nœud léger doivent donc être remplacées. La publication comprend 12 binaires — SX et UX pour Linux, macOS et Windows, chacun en amd64 et arm64 — plus un fichier `SHA256SUMS`. Voir [Édition SX](/light-node/sx-edition#install) pour les étapes de téléchargement et de vérification, et [Docker](/light-node/sx-edition#docker) pour construire une image à partir du tag source `v3.1.9`.
+Le nœud léger est livré sur sa **propre ligne de version — actuellement 3.1.10** (la 3.1.9 reste acceptée) — qui est **distincte de la version de publication de la chaîne** (le mainnet exécute la chaîne `v3.2.3`). Les binaires de chaque réseau sont publiés avec un **manifeste de sommes de contrôle SHA-256** à l'adresse `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` vaut `mainnet` ou `testnet`). Les deux canaux fournissent la même version 3.1.10, et les deux manifestes fixent `minCompatible` à `3.1.9` : les versions plus anciennes du nœud léger doivent donc être remplacées. La publication comprend 12 binaires — SX et UX pour Linux, macOS et Windows, chacun en amd64 et arm64 — plus un fichier `SHA256SUMS`. Voir [Édition SX](/light-node/sx-edition#install) pour les étapes de téléchargement et de vérification, et [Docker](/light-node/sx-edition#docker) pour construire une image à partir du tag source `v3.1.10`.
 
 Une version Android est jointe à la publication GitHub uniquement en tant qu'**aperçu** : elle suit et vérifie la chaîne, mais elle ne s'enregistre pas et ne gagne rien.
 
-Lorsque vous lisez la documentation ou les notes de version, considérez la version du nœud léger (3.1.9) et la version de la chaîne (v3.2.3) comme deux numéros distincts qui se trouvent partager une série majeure.
+Lorsque vous lisez la documentation ou les notes de version, considérez la version du nœud léger (3.1.10) et la version de la chaîne (v3.2.3) comme deux numéros distincts qui se trouvent partager une série majeure.
 
 ## Pourquoi exécuter un nœud léger {#why-run-a-light-node}
 

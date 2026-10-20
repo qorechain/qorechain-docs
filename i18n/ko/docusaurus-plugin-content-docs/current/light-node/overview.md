@@ -13,11 +13,11 @@ sidebar_position: 1
 
 ## 자체 버전 라인
 
-라이트 노드는 **자체 버전 라인 — 현재 3.1.9**로 제공되며, 이는 **체인 릴리스 버전과는 별개입니다**(메인넷은 체인 `v3.2.3`을 실행합니다). 각 네트워크용 바이너리는 `https://download.qore.host/<net>/lightnode/latest.json`에 **SHA-256 체크섬 매니페스트**와 함께 게시됩니다(`<net>`은 `mainnet` 또는 `testnet`). 두 채널 모두 동일한 3.1.9 빌드를 제공하며, 두 매니페스트 모두 `minCompatible`을 `3.1.9`로 설정하므로 이전 라이트 노드 빌드는 교체해야 합니다. 이 릴리스에는 12개의 바이너리 — Linux, macOS, Windows용 SX와 UX, 각각 amd64와 arm64 — 와 `SHA256SUMS` 파일이 포함됩니다. 다운로드 및 검증 단계는 [SX 에디션](/light-node/sx-edition#install)을, 소스 태그 `v3.1.9`에서 이미지를 빌드하는 방법은 [Docker](/light-node/sx-edition#docker)를 참조하세요.
+라이트 노드는 **자체 버전 라인 — 현재 3.1.10**(3.1.9도 계속 허용됨)로 제공되며, 이는 **체인 릴리스 버전과는 별개입니다**(메인넷은 체인 `v3.2.3`을 실행합니다). 각 네트워크용 바이너리는 `https://download.qore.host/<net>/lightnode/latest.json`에 **SHA-256 체크섬 매니페스트**와 함께 게시됩니다(`<net>`은 `mainnet` 또는 `testnet`). 두 채널 모두 동일한 3.1.10 빌드를 제공하며, 두 매니페스트 모두 `minCompatible`을 `3.1.9`로 설정하므로 이전 라이트 노드 빌드는 교체해야 합니다. 이 릴리스에는 12개의 바이너리 — Linux, macOS, Windows용 SX와 UX, 각각 amd64와 arm64 — 와 `SHA256SUMS` 파일이 포함됩니다. 다운로드 및 검증 단계는 [SX 에디션](/light-node/sx-edition#install)을, 소스 태그 `v3.1.10`에서 이미지를 빌드하는 방법은 [Docker](/light-node/sx-edition#docker)를 참조하세요.
 
 Android 빌드는 GitHub 릴리스에 **프리뷰**로만 첨부되어 있습니다. 체인을 따르고 검증하지만, 등록하지 않으며 보상도 받지 않습니다.
 
-문서나 릴리스 노트를 읽을 때, 라이트 노드의 버전(3.1.9)과 체인의 버전(v3.2.3)을 우연히 동일한 메이저 시리즈를 공유하는 두 개의 별개 숫자로 취급하세요.
+문서나 릴리스 노트를 읽을 때, 라이트 노드의 버전(3.1.10)과 체인의 버전(v3.2.3)을 우연히 동일한 메이저 시리즈를 공유하는 두 개의 별개 숫자로 취급하세요.
 
 ## 라이트 노드를 실행하는 이유 {#why-run-a-light-node}
 

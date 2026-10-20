@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Ediția SX — Daemon Server
 
-Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Această pagină descrie light node-ul **3.1.9** (tag-ul sursă `v3.1.9`), care are o linie de versiune proprie, separată de versiunea lanțului.
+Ediția **SX (Server eXperience)** este light node-ul headless: un daemon plus un CLI complet de administrare, construit pentru servere și automatizare. Binarul este `lightnode-sx`. Această pagină descrie light node-ul **3.1.10** (tag-ul sursă `v3.1.10`), care are o linie de versiune proprie, separată de versiunea lanțului.
 
 ## Instalare {#install}
 
@@ -18,13 +18,13 @@ Binarele precompilate sunt calea cea mai simplă — clientul light node ruleaz�
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-Pe Windows, compară rezultatul `certutil -hashfile lightnode-sx-<platform>.exe SHA256` cu valoarea din manifest. Ambele rețele servesc același build 3.1.9 și ambele manifeste îl cer (`minCompatible: 3.1.9`). Sursa este publică la `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Un build Android este atașat release-ului GitHub ca previzualizare; nu se înregistrează și nu câștigă recompense.
+Pe Windows, compară rezultatul `certutil -hashfile lightnode-sx-<platform>.exe SHA256` cu valoarea din manifest. Ambele rețele servesc același build 3.1.10; manifestele acceptă în continuare 3.1.9 (`minCompatible: 3.1.9`). Din 3.1.10, binarele fiecărei versiuni stau sub o cale versionată, `https://download.qore.host/<net>/lightnode/v<version>/<file>`, spre care trimite `artifacts[].url` din manifest; folosește-o în locul copiei neversionate, care poate rămâne în urmă câteva ore. Sursa este publică la `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Un build Android este atașat release-ului GitHub ca previzualizare; nu se înregistrează și nu câștigă recompense.
 
 De asemenea, poți construi binarul din sursă sau îl poți rula cu Docker.
 
@@ -36,16 +36,16 @@ Light node-ul necesită **Go 1.26.1**. Criptografia sa post-cuantică este o imp
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Construiește din tag-ul de release (`git checkout v3.1.9`). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
+Construiește din tag-ul de release (`git checkout v3.1.10`). Aceasta produce `build/lightnode-sx`. Rulează-l direct sau copiază-l în `PATH`. Înainte de înregistrare, verifică rapid stiva de semnare post-cuantică cu [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Nu există o imagine precompilată într-un registru; o construiești din tag-ul sursă. Folosește tag-ul **`v3.1.9`**. Pentru a actualiza o instalare existentă, reconstruiește din noul tag (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`); un simplu `docker compose up` sau `restart` refolosește imaginea veche. Cheile, configurația și volumul de date se păstrează.
+Nu există o imagine precompilată într-un registru; o construiești din tag-ul sursă. Folosește tag-ul **`v3.1.10`**. Pentru a actualiza o instalare existentă, reconstruiește din noul tag (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`); un simplu `docker compose up` sau `restart` refolosește imaginea veche. Cheile, configurația și volumul de date se păstrează.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host

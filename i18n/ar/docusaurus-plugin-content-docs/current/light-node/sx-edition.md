@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # إصدار SX — عفريت الخادم
 
-إصدار **SX (تجربة الخادم - Server eXperience)** هو العقدة الخفيفة بلا واجهة: عفريت إضافةً إلى سطر أوامر إدارة كامل، مبني للخوادم والأتمتة. الثنائي هو `lightnode-sx`. تصف هذه الصفحة العقدة الخفيفة **3.1.9** (وسم المصدر `v3.1.9`)، وهي على خط إصداراتها الخاص، المنفصل عن إصدار السلسلة.
+إصدار **SX (تجربة الخادم - Server eXperience)** هو العقدة الخفيفة بلا واجهة: عفريت إضافةً إلى سطر أوامر إدارة كامل، مبني للخوادم والأتمتة. الثنائي هو `lightnode-sx`. تصف هذه الصفحة العقدة الخفيفة **3.1.10** (وسم المصدر `v3.1.10`)، وهي على خط إصداراتها الخاص، المنفصل عن إصدار السلسلة.
 
 ## التثبيت {#install}
 
@@ -18,13 +18,13 @@ sidebar_position: 2
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-على ويندوز، قارن ناتج `certutil -hashfile lightnode-sx-<platform>.exe SHA256` بقيمة البيان. تخدم الشبكتان بناء 3.1.9 نفسه، ويشترطه البيانان كلاهما (`minCompatible: 3.1.9`). المصدر عام على `github.com/qorechain/qorechain-lightnode` (Apache 2.0). يُرفَق بناء Android بإصدار GitHub بوصفه معاينة؛ وهو لا يسجّل ولا يكسب مكافآت.
+على ويندوز، قارن ناتج `certutil -hashfile lightnode-sx-<platform>.exe SHA256` بقيمة البيان. تخدم الشبكتان بناء 3.1.10 نفسه؛ ولا يزال البيانان يقبلان 3.1.9 (`minCompatible: 3.1.9`). منذ 3.1.10 توضع الملفات الثنائية لكل إصدار تحت مسار يحمل رقم الإصدار، `https://download.qore.host/<net>/lightnode/v<version>/<file>`، وهو ما يشير إليه `artifacts[].url` في البيان؛ استخدمه بدلًا من النسخة غير المرقَّمة، التي قد تتأخر بضع ساعات. المصدر عام على `github.com/qorechain/qorechain-lightnode` (Apache 2.0). يُرفَق بناء Android بإصدار GitHub بوصفه معاينة؛ وهو لا يسجّل ولا يكسب مكافآت.
 
 يمكنك أيضًا بناء الثنائي من المصدر أو تشغيله عبر Docker.
 
@@ -36,16 +36,16 @@ chmod +x $F
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-ابنِ من وسم الإصدار (`git checkout v3.1.9`). ينتج هذا `build/lightnode-sx`. شغِّله مباشرة، أو انسخه إلى `PATH` الخاص بك. قبل التسجيل، تحقَّق من سلامة حزمة التوقيع ما بعد الكمّي عبر [`selftest`](#verify-the-pqc-stack-selftest).
+ابنِ من وسم الإصدار (`git checkout v3.1.10`). ينتج هذا `build/lightnode-sx`. شغِّله مباشرة، أو انسخه إلى `PATH` الخاص بك. قبل التسجيل، تحقَّق من سلامة حزمة التوقيع ما بعد الكمّي عبر [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-لا توجد صورة جاهزة في سجل الصور؛ تبنيها من وسم المصدر. استخدم الوسم **`v3.1.9`**. لتحديث تثبيت قائم، أعد البناء من الوسم الجديد (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`)؛ فالأمر `docker compose up` أو `restart` وحده يعيد استخدام الصورة القديمة. تنتقل المفاتيح والإعدادات ووحدة تخزين البيانات كما هي.
+لا توجد صورة جاهزة في سجل الصور؛ تبنيها من وسم المصدر. استخدم الوسم **`v3.1.10`**. لتحديث تثبيت قائم، أعد البناء من الوسم الجديد (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`)؛ فالأمر `docker compose up` أو `restart` وحده يعيد استخدام الصورة القديمة. تنتقل المفاتيح والإعدادات ووحدة تخزين البيانات كما هي.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host

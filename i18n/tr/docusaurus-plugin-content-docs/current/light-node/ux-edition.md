@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX Sürümü — Web Dashboard
 
-**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu sayfa da hafif düğüm **3.1.9**'u açıklar (zincir sürümünden ayrı, kendi sürüm hattı).
+**UX (User eXperience)** sürümü, SX sürümüyle aynı hafif düğüm daemon'unu çalıştırır, ancak düğümü ve ağı bir tarayıcıda izleyebilmeniz için **gömülü bir web dashboard'u** ekler. İkili dosya `lightnode-ux`'tur. SX sürümü gibi, bu sayfa da hafif düğüm **3.1.10**'u açıklar (zincir sürümünden ayrı, kendi sürüm hattı).
 
 UX sürümü, masaüstü kullanımı ve komut satırı yerine görsel bir arabirimi tercih eden operatörler için doğru seçimdir.
 
@@ -23,11 +23,11 @@ UX sürümü **Go 1.26.1** gerektirir. Kuantum sonrası kriptografisi saf Go ile
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Sürüm etiketinden derleyin (`git checkout v3.1.9`). Bu, `build/lightnode-ux` üretir.
+Sürüm etiketinden derleyin (`git checkout v3.1.10`). Bu, `build/lightnode-ux` üretir.
 
 ### Docker
 
-UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, etiket `v3.1.9`) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
+UX hizmeti, kaynak deposundaki (`github.com/qorechain/qorechain-lightnode`, etiket `v3.1.10`) `Dockerfile.ux`'ten derlenir. Konteynerin başlayabilmesi için veri biriminde bir `config.toml` bulunması gerekir. UX ikili dosyası kurulum komutlarına sahip olduğundan bunu birim içinde oluşturabilirsiniz:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

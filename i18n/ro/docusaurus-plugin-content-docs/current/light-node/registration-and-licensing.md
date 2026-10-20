@@ -23,7 +23,7 @@ Chain-ul verifică toate acestea atunci când se execută tranzacția ta de înr
 
 1. O licență `lightnode_operator` activă pe adresa operatorului.
 2. Cel puțin **1.000 QOR delegați** de la aceeași adresă către validatori **bonded** (totalul tău pe oricâți validatori; delegările către validatori în jail sau unbonded nu se iau în calcul).
-3. Un sold în contul operatorului pentru a plăti taxa de înregistrare de **1 QOR** și taxele de tranzacție. Nodul plătește din acest cont și o taxă pentru fiecare heartbeat: cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas, adică 75.000 uqor (0,075 QOR) la valoarea implicită `[heartbeat] gas` de 300.000.
+3. Un sold în contul operatorului pentru a plăti taxa de înregistrare de **1 QOR** și taxele de tranzacție. Nodul plătește din acest cont și o taxă pentru fiecare heartbeat: cu semnarea nativă, taxa este de 0,25 uqor per unitate de gas, adică 75.000 uqor (0,075 QOR) la valoarea implicită `[heartbeat] gas` de 300.000, adică aproximativ 1,9 QOR pe lună la circa 25 de heartbeat-uri pe zi.
 4. Mai puțin de 10.000 de noduri light înregistrate la nivelul întregii rețele.
 
 După înregistrare, nodul trebuie să trimită un heartbeat la fiecare **1.000 de blocuri** (cu o toleranță de 100 de blocuri) și să păstreze un uptime de cel puțin **80%** pentru a fi plătit. Citește valorile curente cu `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Testnet: la cerere
 
-Pe testnet nu se vinde nimic. Licențele de testnet sunt acordate la cerere de autoritatea de licențiere a testnet-ului.
+Pe testnet nu se vinde nimic. Licențele de testnet sunt gratuite și sunt acordate la cerere de autoritatea de licențiere a testnet-ului: scrie la nodes@qorechain.io cu adresa ta `qor1…` de testnet.
 
 ## Înregistrarea nodului
 
@@ -81,9 +81,9 @@ Parola protejează ambele chei din keyring-ul nodului: cheia post-cuantică a no
 
 `register` citește `operator_address` și cheile din keyring, apoi:
 
-1. **Verifică licența.** Întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. Fără una, se oprește și spune de unde se poate obține. (În 3.1.9, acel mesaj încă numește vechiul tab "Buy License" din Dashboard; licențele se cumpără la **Tools → Light Node**.) O licență expirată sau suspendată este raportată ca atare. Un nod deja înregistrat este raportat ca atare și nu se trimite nimic.
+1. **Verifică licența.** Întreabă chain-ul dacă `operator_address` deține o licență `lightnode_operator` activă. Fără una, se oprește și spune de unde se poate obține. Din 3.1.10, mesajul trimite la **Tools → Light Node** pe mainnet și, pe testnet, la o licență gratuită la cerere la nodes@qorechain.io (3.1.9 încă numea vechiul tab din Dashboard). O licență expirată sau suspendată este raportată ca atare. Un nod deja înregistrat este raportat ca atare și nu se trimite nimic.
 2. **Atașează cheia post-cuantică**, cu excepția cazului în care contul are deja una. Un cont fără cheie post-cuantică poate trimite doar acest mesaj, semnat clasic (fără extensia hibridă); nodul îl trimite astfel și include o dovadă de posesie a cheii acolo unde chain-ul o suportă.
-3. **Delegă stake-ul lipsă**, doar dacă numești un validator cu `--delegate-to qorvaloper1...`. Fără `--delegate-to`, dacă contul este sub minim, se oprește și spune cât lipsește.
+3. **Delegă stake-ul lipsă**, doar dacă numești un validator cu `--delegate-to qorvaloper1...`. Fără `--delegate-to`, dacă contul este sub minim, se oprește și spune cât lipsește. Din 3.1.10 ia în calcul doar stake-ul delegat către validatori **bonded**, la fel ca chain-ul; 3.1.9 lua în calcul și validatorii în jail sau unbonded și putea fi apoi refuzat on-chain, așa că deleagă către un validator activ dacă rulezi 3.1.9.
 4. **Înregistrează nodul** cu taxa de 1 QOR.
 
 Fiecare pas este semnat de nodul însuși și confirmat într-un bloc înainte ca următorul să fie trimis. Fiecare tranzacție de după înregistrarea cheii poartă semnătura hibridă ML-DSA-87 + secp256k1 cerută de chain.

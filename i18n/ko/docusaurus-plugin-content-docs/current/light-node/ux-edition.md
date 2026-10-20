@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # UX 에디션 — 웹 대시보드
 
-**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 이 페이지는 라이트 노드 **3.1.9**를 설명합니다(체인 버전과는 별개인 자체 버전 라인).
+**UX (User eXperience)** 에디션은 SX 에디션과 동일한 라이트 노드 데몬을 실행하지만, **내장 웹 대시보드**를 추가하여 브라우저에서 노드와 네트워크를 지켜볼 수 있습니다. 바이너리는 `lightnode-ux`입니다. SX 에디션과 마찬가지로, 이 페이지는 라이트 노드 **3.1.10**를 설명합니다(체인 버전과는 별개인 자체 버전 라인).
 
 UX 에디션은 데스크톱 사용과, 명령줄보다 시각적 인터페이스를 선호하는 운영자에게 적합한 선택입니다.
 
@@ -23,11 +23,11 @@ UX 에디션은 **Go 1.26.1**이 필요합니다. 포스트 양자 암호화는 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-릴리스 태그(`git checkout v3.1.9`)에서 빌드하세요. 이는 `build/lightnode-ux`를 생성합니다.
+릴리스 태그(`git checkout v3.1.10`)에서 빌드하세요. 이는 `build/lightnode-ux`를 생성합니다.
 
 ### Docker
 
-UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 태그 `v3.1.9`)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
+UX 서비스는 소스 저장소(`github.com/qorechain/qorechain-lightnode`, 태그 `v3.1.10`)의 `Dockerfile.ux`에서 빌드됩니다. 컨테이너는 시작하기 전에 데이터 볼륨에 `config.toml`이 있어야 합니다. UX 바이너리에는 설정 명령이 있으므로 볼륨 안에서 직접 만들 수 있습니다:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

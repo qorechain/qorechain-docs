@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Ediția UX — Dashboard web
 
-Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, această pagină descrie nodul light **3.1.9** (linia sa de versiune proprie, separată de versiunea chain-ului).
+Ediția **UX (User eXperience)** rulează același daemon de nod light ca ediția SX, dar adaugă un **dashboard web încorporat** pentru ca tu să poți urmări nodul și rețeaua într-un browser. Binarul este `lightnode-ux`. La fel ca ediția SX, această pagină descrie nodul light **3.1.10** (linia sa de versiune proprie, separată de versiunea chain-ului).
 
 Ediția UX este alegerea potrivită pentru utilizarea pe desktop și pentru operatorii care preferă o interfață vizuală în locul liniei de comandă.
 
@@ -23,11 +23,11 @@ Ediția UX necesită **Go 1.26.1**. Criptografia sa post-cuantică este o implem
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Construiește din tag-ul de release (`git checkout v3.1.9`). Aceasta produce `build/lightnode-ux`.
+Construiește din tag-ul de release (`git checkout v3.1.10`). Aceasta produce `build/lightnode-ux`.
 
 ### Docker
 
-Serviciul UX se construiește din `Dockerfile.ux` din depozitul sursă (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.9`). Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
+Serviciul UX se construiește din `Dockerfile.ux` din depozitul sursă (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.10`). Containerul are nevoie de un `config.toml` în volumul său de date înainte de a porni. Binarul UX are comenzile de configurare, așa că îl poți crea direct în volum:
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

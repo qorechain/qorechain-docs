@@ -13,11 +13,11 @@ Eseguire un light node ti permette di osservare lo stato della rete senza i cost
 
 ## Una propria linea di versione
 
-Il light node viene rilasciato su una **propria linea di versione — attualmente 3.1.9** — che è **distinta dalla versione della chain** (la mainnet esegue la chain `v3.2.3`). I binari di ciascuna rete vengono pubblicati con un **manifest di checksum SHA-256** all'indirizzo `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` è `mainnet` o `testnet`). Entrambi i canali distribuiscono la stessa build 3.1.9 ed entrambi i manifest impostano `minCompatible` a `3.1.9`, quindi le build più vecchie del light node vanno sostituite. Il rilascio comprende 12 binari — SX e UX per Linux, macOS e Windows, ciascuno su amd64 e arm64 — più un file `SHA256SUMS`. Vedi [Edizione SX](/light-node/sx-edition#install) per i passaggi di download e verifica, e [Docker](/light-node/sx-edition#docker) per costruire un'immagine dal tag sorgente `v3.1.9`.
+Il light node viene rilasciato su una **propria linea di versione — attualmente 3.1.10** (la 3.1.9 è ancora accettata) — che è **distinta dalla versione della chain** (la mainnet esegue la chain `v3.2.3`). I binari di ciascuna rete vengono pubblicati con un **manifest di checksum SHA-256** all'indirizzo `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` è `mainnet` o `testnet`). Entrambi i canali distribuiscono la stessa build 3.1.10 ed entrambi i manifest impostano `minCompatible` a `3.1.9`, quindi le build più vecchie del light node vanno sostituite. Il rilascio comprende 12 binari — SX e UX per Linux, macOS e Windows, ciascuno su amd64 e arm64 — più un file `SHA256SUMS`. Vedi [Edizione SX](/light-node/sx-edition#install) per i passaggi di download e verifica, e [Docker](/light-node/sx-edition#docker) per costruire un'immagine dal tag sorgente `v3.1.10`.
 
 Una build Android è allegata al rilascio GitHub solo come **anteprima**: segue e verifica la chain, ma non si registra e non guadagna.
 
-Quando leggi la documentazione o le note di rilascio, tratta la versione del light node (3.1.9) e la versione della chain (v3.2.3) come due numeri separati che condividono per coincidenza una serie major.
+Quando leggi la documentazione o le note di rilascio, tratta la versione del light node (3.1.10) e la versione della chain (v3.2.3) come due numeri separati che condividono per coincidenza una serie major.
 
 ## Perché eseguire un light node {#why-run-a-light-node}
 

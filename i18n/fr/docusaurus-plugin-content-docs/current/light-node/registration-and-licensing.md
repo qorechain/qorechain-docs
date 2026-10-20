@@ -23,7 +23,7 @@ La chaîne vérifie tous les points suivants lors de l'exécution de votre trans
 
 1. Une licence `lightnode_operator` active sur l'adresse de l'opérateur.
 2. Au moins **1 000 QOR délégués** depuis cette même adresse à des validateurs **bondés** (votre total sur l'ensemble des validateurs ; les délégations à des validateurs emprisonnés (jailed) ou non bondés ne comptent pas).
-3. Un solde sur le compte de l'opérateur pour payer les **frais d'enregistrement de 1 QOR** et les frais de transaction. Le nœud paie également des frais pour chaque heartbeat depuis ce compte : avec la signature native, les frais sont de 0,25 uqor par unité de gas, soit 75 000 uqor (0,075 QOR) avec la valeur par défaut `[heartbeat] gas` de 300 000.
+3. Un solde sur le compte de l'opérateur pour payer les **frais d'enregistrement de 1 QOR** et les frais de transaction. Le nœud paie également des frais pour chaque heartbeat depuis ce compte : avec la signature native, les frais sont de 0,25 uqor par unité de gas, soit 75 000 uqor (0,075 QOR) avec la valeur par défaut `[heartbeat] gas` de 300 000, soit environ 1,9 QOR par mois à raison d'environ 25 heartbeats par jour.
 4. Moins de 10 000 nœuds légers enregistrés sur l'ensemble du réseau.
 
 Après l'enregistrement, le nœud doit envoyer un heartbeat tous les **1 000 blocs** (avec une tolérance de 100 blocs) et maintenir une **disponibilité d'au moins 80 %** pour être rémunéré. Lisez les valeurs en direct avec `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet : `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Testnet : sur demande
 
-Rien n'est vendu sur le testnet. Les licences testnet sont accordées sur demande par l'autorité de licence du testnet.
+Rien n'est vendu sur le testnet. Les licences testnet sont gratuites et accordées sur demande par l'autorité de licence du testnet : écrivez à nodes@qorechain.io en indiquant votre adresse `qor1…` du testnet.
 
 ## Enregistrer le nœud
 
@@ -81,9 +81,9 @@ La phrase secrète protège les deux clés du keyring du nœud : la clé post-qu
 
 `register` lit `operator_address` et les clés depuis le keyring, puis :
 
-1. **Vérifie la licence.** Il demande à la chaîne si `operator_address` détient une licence `lightnode_operator` active. Sans licence, il s'arrête et indique où en obtenir une. (Dans la version 3.1.9, ce message mentionne encore l'ancien onglet « Buy License » du Dashboard ; les licences s'achètent dans **Tools → Light Node**.) Une licence expirée ou suspendue est signalée comme telle. Un nœud déjà enregistré est signalé comme tel, et rien n'est envoyé.
+1. **Vérifie la licence.** Il demande à la chaîne si `operator_address` détient une licence `lightnode_operator` active. Sans licence, il s'arrête et indique où en obtenir une. À partir de la version 3.1.10, le message renvoie à **Tools → Light Node** sur le mainnet et, sur le testnet, à une licence gratuite sur demande à nodes@qorechain.io (la 3.1.9 mentionnait encore l'ancien onglet du Dashboard). Une licence expirée ou suspendue est signalée comme telle. Un nœud déjà enregistré est signalé comme tel, et rien n'est envoyé.
 2. **Rattache la clé post-quantique**, sauf si le compte en possède déjà une. Un compte sans clé post-quantique ne peut envoyer que ce seul message, signé de manière classique (sans l'extension hybride) ; le nœud l'envoie ainsi et y inclut une preuve de possession de la clé lorsque la chaîne la prend en charge.
-3. **Délègue le stake manquant**, uniquement si vous désignez un validateur avec `--delegate-to qorvaloper1...`. Sans `--delegate-to`, si le compte est sous le minimum, il s'arrête et indique le montant manquant.
+3. **Délègue le stake manquant**, uniquement si vous désignez un validateur avec `--delegate-to qorvaloper1...`. Sans `--delegate-to`, si le compte est sous le minimum, il s'arrête et indique le montant manquant. À partir de la version 3.1.10, il ne compte que le stake délégué à des validateurs **bondés**, comme le fait la chaîne ; la 3.1.9 comptait aussi les validateurs emprisonnés (jailed) ou non bondés et pouvait alors être refusée on-chain : déléguez donc à un validateur actif si vous utilisez la 3.1.9.
 4. **Enregistre le nœud** avec les frais de 1 QOR.
 
 Chaque étape est signée par le nœud lui-même et confirmée dans un bloc avant l'envoi de la suivante. Chaque transaction postérieure à l'enregistrement de la clé porte la signature hybride ML-DSA-87 + secp256k1 exigée par la chaîne.

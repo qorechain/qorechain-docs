@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Édition UX — dashboard web
 
-L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, cette page décrit le nœud léger **3.1.9** (sa propre ligne de version, distincte de la version de la chaîne).
+L'édition **UX (User eXperience)** exécute le même démon de nœud léger que l'édition SX, mais ajoute un **dashboard web intégré** pour que vous puissiez surveiller le nœud et le réseau dans un navigateur. Le binaire est `lightnode-ux`. Comme pour l'édition SX, cette page décrit le nœud léger **3.1.10** (sa propre ligne de version, distincte de la version de la chaîne).
 
 L'édition UX est le bon choix pour une utilisation sur ordinateur de bureau et pour les opérateurs qui préfèrent une interface visuelle à la ligne de commande.
 
@@ -23,11 +23,11 @@ L'édition UX nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une 
 go build -o build/lightnode-ux ./cmd/lightnode-ux/
 ```
 
-Compilez à partir du tag de version (`git checkout v3.1.9`). Cela produit `build/lightnode-ux`.
+Compilez à partir du tag de version (`git checkout v3.1.10`). Cela produit `build/lightnode-ux`.
 
 ### Docker
 
-Le service UX se compile à partir de `Dockerfile.ux` dans le dépôt source (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.9`). Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
+Le service UX se compile à partir de `Dockerfile.ux` dans le dépôt source (`github.com/qorechain/qorechain-lightnode`, tag `v3.1.10`). Le conteneur a besoin d'un `config.toml` dans son volume de données avant de pouvoir démarrer. Le binaire UX dispose des commandes de configuration, vous pouvez donc la créer directement dans le volume :
 
 ```bash
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'

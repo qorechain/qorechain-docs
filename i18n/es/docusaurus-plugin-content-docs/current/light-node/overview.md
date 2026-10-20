@@ -13,11 +13,11 @@ Ejecutar un nodo ligero te permite observar el estado de la red sin el coste de 
 
 ## Su propia línea de versiones
 
-El nodo ligero se distribuye en su **propia línea de versiones, actualmente 3.1.9**, que es **distinta de la versión de lanzamiento de la cadena** (mainnet ejecuta la cadena `v3.2.3`). Los binarios de cada red se publican con un **manifiesto de checksum SHA-256** en `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` es `mainnet` o `testnet`). Ambos canales llevan la misma compilación 3.1.9, y ambos manifiestos fijan `minCompatible` en `3.1.9`, por lo que las compilaciones anteriores del nodo ligero deben sustituirse. La versión incluye 12 binarios — SX y UX para Linux, macOS y Windows, cada uno en amd64 y arm64 — más un archivo `SHA256SUMS`. Consulta [Edición SX](/light-node/sx-edition#install) para los pasos de descarga y verificación, y [Docker](/light-node/sx-edition#docker) para compilar una imagen a partir de la etiqueta de código fuente `v3.1.9`.
+El nodo ligero se distribuye en su **propia línea de versiones, actualmente 3.1.10** (3.1.9 sigue aceptándose), que es **distinta de la versión de lanzamiento de la cadena** (mainnet ejecuta la cadena `v3.2.3`). Los binarios de cada red se publican con un **manifiesto de checksum SHA-256** en `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` es `mainnet` o `testnet`). Ambos canales llevan la misma compilación 3.1.10, y ambos manifiestos fijan `minCompatible` en `3.1.9`, por lo que las compilaciones anteriores del nodo ligero deben sustituirse. La versión incluye 12 binarios — SX y UX para Linux, macOS y Windows, cada uno en amd64 y arm64 — más un archivo `SHA256SUMS`. Consulta [Edición SX](/light-node/sx-edition#install) para los pasos de descarga y verificación, y [Docker](/light-node/sx-edition#docker) para compilar una imagen a partir de la etiqueta de código fuente `v3.1.10`.
 
 Se adjunta a la versión de GitHub una compilación para Android únicamente como **vista previa**: sigue y verifica la cadena, pero no se registra ni gana recompensas.
 
-Cuando leas documentación o notas de versión, trata la versión del nodo ligero (3.1.9) y la versión de la cadena (v3.2.3) como dos números separados que coinciden en compartir una serie mayor.
+Cuando leas documentación o notas de versión, trata la versión del nodo ligero (3.1.10) y la versión de la cadena (v3.2.3) como dos números separados que coinciden en compartir una serie mayor.
 
 ## Por qué ejecutar un nodo ligero {#why-run-a-light-node}
 

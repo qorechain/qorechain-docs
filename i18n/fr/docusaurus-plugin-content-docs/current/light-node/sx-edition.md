@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Édition SX — Démon serveur
 
-L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Cette page décrit le light node **3.1.9** (tag source `v3.1.9`), qui suit sa propre ligne de version, distincte de la version de la chaîne.
+L'édition **SX (Server eXperience)** est le light node headless : un démon associé à une CLI de gestion complète, conçu pour les serveurs et l'automatisation. Le binaire s'appelle `lightnode-sx`. Cette page décrit le light node **3.1.10** (tag source `v3.1.10`), qui suit sa propre ligne de version, distincte de la version de la chaîne.
 
 ## Installation {#install}
 
@@ -18,13 +18,13 @@ Les binaires précompilés constituent la voie la plus simple — le client ligh
 ```bash
 NET=mainnet            # or testnet
 F=lightnode-sx-linux-amd64   # see the artifact list in latest.json
-curl -fsSLO https://download.qore.host/$NET/lightnode/$F
+curl -fsSLO https://download.qore.host/$NET/lightnode/v3.1.10/$F   # or the artifacts[].url from latest.json
 curl -fsSLO https://download.qore.host/$NET/lightnode/SHA256SUMS
 grep " $F\$" SHA256SUMS | shasum -a 256 -c -    # Linux: sha256sum -c -
 chmod +x $F
 ```
 
-Sous Windows, comparez `certutil -hashfile lightnode-sx-<platform>.exe SHA256` avec la valeur du manifeste. Les deux réseaux servent la même version 3.1.9, et les deux manifestes l'exigent (`minCompatible: 3.1.9`). Le code source est public sur `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Une version Android est jointe à la publication GitHub en tant qu'aperçu ; elle ne s'enregistre pas et ne gagne rien.
+Sous Windows, comparez `certutil -hashfile lightnode-sx-<platform>.exe SHA256` avec la valeur du manifeste. Les deux réseaux servent la même version 3.1.10 ; les manifestes acceptent encore la 3.1.9 (`minCompatible: 3.1.9`). Depuis la 3.1.10, les binaires de chaque publication se trouvent sous un chemin versionné, `https://download.qore.host/<net>/lightnode/v<version>/<file>`, vers lequel pointe `artifacts[].url` dans le manifeste ; utilisez-le plutôt que la copie non versionnée, qui peut avoir quelques heures de retard. Le code source est public sur `github.com/qorechain/qorechain-lightnode` (Apache 2.0). Une version Android est jointe à la publication GitHub en tant qu'aperçu ; elle ne s'enregistre pas et ne gagne rien.
 
 Vous pouvez aussi compiler le binaire depuis les sources ou l'exécuter avec Docker.
 
@@ -36,16 +36,16 @@ Le light node nécessite **Go 1.26.1**. Sa cryptographie post-quantique est une 
 go build -o build/lightnode-sx ./cmd/lightnode-sx/
 ```
 
-Compilez à partir du tag de version (`git checkout v3.1.9`). Cela produit `build/lightnode-sx`. Exécutez-le directement, ou copiez-le dans votre `PATH`. Avant d'enregistrer le nœud, vérifiez la pile de signature post-quantique avec [`selftest`](#verify-the-pqc-stack-selftest).
+Compilez à partir du tag de version (`git checkout v3.1.10`). Cela produit `build/lightnode-sx`. Exécutez-le directement, ou copiez-le dans votre `PATH`. Avant d'enregistrer le nœud, vérifiez la pile de signature post-quantique avec [`selftest`](#verify-the-pqc-stack-selftest).
 
 ### Docker {#docker}
 
-Il n'existe pas d'image préconstruite dans un registre ; vous la construisez à partir du tag source. Utilisez le tag **`v3.1.9`**. Pour mettre à jour une installation existante, reconstruisez depuis le nouveau tag (`git fetch --tags && git checkout v3.1.9 && docker compose build --no-cache lightnode-sx`) ; un simple `docker compose up` ou `restart` réutilise l'ancienne image. Les clés, la configuration et le volume de données sont conservés.
+Il n'existe pas d'image préconstruite dans un registre ; vous la construisez à partir du tag source. Utilisez le tag **`v3.1.10`**. Pour mettre à jour une installation existante, reconstruisez depuis le nouveau tag (`git fetch --tags && git checkout v3.1.10 && docker compose build --no-cache lightnode-sx`) ; un simple `docker compose up` ou `restart` réutilise l'ancienne image. Les clés, la configuration et le volume de données sont conservés.
 
 ```bash
 git clone https://github.com/qorechain/qorechain-lightnode
 cd qorechain-lightnode
-git checkout v3.1.9
+git checkout v3.1.10
 
 export QORE_LIGHTNODE_KEYRING_PASSPHRASE='...'      # node keyring (node key + operator key)
 export QORECHAIN_RPC_ADDR=https://rpc.qore.host     # testnet: https://rpc-testnet.qore.host

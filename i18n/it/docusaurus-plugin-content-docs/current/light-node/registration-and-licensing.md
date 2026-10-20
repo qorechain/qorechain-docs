@@ -23,7 +23,7 @@ La chain verifica tutti i seguenti punti quando viene eseguita la tua transazion
 
 1. Una licenza `lightnode_operator` attiva sull'indirizzo operatore.
 2. Almeno **1.000 QOR delegati** da quello stesso indirizzo a validatori **bonded** (il tuo totale su qualsiasi validatore; le deleghe a validatori in jail o non bonded non contano).
-3. Un saldo sull'account operatore per pagare la **commissione di registrazione di 1 QOR** e le commissioni di transazione. Il nodo paga inoltre da questo account una commissione per ogni heartbeat: con la firma nativa la commissione è di 0,25 uqor per unità di gas, quindi 75.000 uqor (0,075 QOR) con il valore predefinito di `[heartbeat] gas` pari a 300.000.
+3. Un saldo sull'account operatore per pagare la **commissione di registrazione di 1 QOR** e le commissioni di transazione. Il nodo paga inoltre da questo account una commissione per ogni heartbeat: con la firma nativa la commissione è di 0,25 uqor per unità di gas, quindi 75.000 uqor (0,075 QOR) con il valore predefinito di `[heartbeat] gas` pari a 300.000, ovvero circa 1,9 QOR al mese con circa 25 heartbeat al giorno.
 4. Meno di 10.000 light node registrati a livello di rete.
 
 Dopo la registrazione il nodo deve inviare un heartbeat ogni **1.000 blocchi** (con una tolleranza di 100 blocchi) e mantenere almeno l'**80% di uptime** per essere pagato. Leggi i valori in tempo reale con `GET https://api.qore.host/qorechain/lightnode/v1/params` (testnet: `https://api-testnet.qore.host`).
@@ -50,7 +50,7 @@ curl -s https://api.qore.host/qorechain/license/v1/check/<operator-address>/ligh
 
 ### Testnet: su richiesta
 
-Sulla testnet non si vende nulla. Le licenze testnet vengono concesse su richiesta dall'autorità delle licenze della testnet.
+Sulla testnet non si vende nulla. Le licenze testnet sono gratuite e vengono concesse su richiesta dall'autorità delle licenze della testnet: scrivi a nodes@qorechain.io indicando il tuo indirizzo `qor1…` della testnet.
 
 ## Registrare il nodo
 
@@ -81,9 +81,9 @@ La passphrase protegge entrambe le chiavi nel keyring del nodo: la chiave post-q
 
 `register` legge `operator_address` e le chiavi dal keyring, quindi:
 
-1. **Verifica la licenza.** Chiede alla chain se `operator_address` possiede una licenza `lightnode_operator` attiva. Se non ce l'ha, si ferma e indica dove ottenerne una. (Nella 3.1.9 quel messaggio nomina ancora la vecchia scheda "Buy License" della Dashboard; le licenze si acquistano in **Tools → Light Node**.) Una licenza scaduta o sospesa viene segnalata come tale. Un nodo già registrato viene segnalato come tale e non viene inviato nulla.
+1. **Verifica la licenza.** Chiede alla chain se `operator_address` possiede una licenza `lightnode_operator` attiva. Se non ce l'ha, si ferma e indica dove ottenerne una. Dalla 3.1.10 il messaggio rimanda a **Tools → Light Node** sulla mainnet e, sulla testnet, a una licenza gratuita su richiesta a nodes@qorechain.io (la 3.1.9 nominava ancora la vecchia scheda della Dashboard). Una licenza scaduta o sospesa viene segnalata come tale. Un nodo già registrato viene segnalato come tale e non viene inviato nulla.
 2. **Associa la chiave post-quantistica**, a meno che l'account non ne abbia già una. Un account senza chiave post-quantistica può inviare solo questo messaggio, firmato in modo classico (senza l'estensione ibrida); il nodo lo invia in questo modo e include una prova di possesso della chiave dove la chain la supporta.
-3. **Delega lo stake mancante**, solo se indichi un validatore con `--delegate-to qorvaloper1...`. Senza `--delegate-to`, se l'account è sotto il minimo, si ferma e indica quanto manca.
+3. **Delega lo stake mancante**, solo se indichi un validatore con `--delegate-to qorvaloper1...`. Senza `--delegate-to`, se l'account è sotto il minimo, si ferma e indica quanto manca. Dalla 3.1.10 conta solo lo stake delegato a validatori **bonded**, come fa la chain; la 3.1.9 contava anche i validatori in jail o non bonded e poteva quindi essere respinta on-chain, perciò delega a un validatore attivo se usi la 3.1.9.
 4. **Registra il nodo** con la commissione di 1 QOR.
 
 Ogni passaggio è firmato dal nodo stesso e confermato in un blocco prima che venga inviato il successivo. Ogni transazione successiva alla registrazione della chiave porta la firma ibrida ML-DSA-87 + secp256k1 richiesta dalla chain.

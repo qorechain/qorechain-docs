@@ -13,11 +13,11 @@ Rularea unui nod light vă permite să observați starea rețelei fără costuri
 
 ## Propria sa linie de versiune
 
-Nodul light este livrat pe **propria sa linie de versiune — în prezent 3.1.9** — care este **distinctă de versiunea de lansare a lanțului** (rețeaua principală rulează lanțul `v3.2.3`). Binarele pentru fiecare rețea sunt publicate cu un **manifest de sumă de control SHA-256** la `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` este `mainnet` sau `testnet`). Ambele canale conțin aceeași versiune 3.1.9, iar ambele manifeste setează `minCompatible` la `3.1.9`, deci versiunile mai vechi ale nodului light trebuie înlocuite. Lansarea are 12 binare — SX și UX pentru Linux, macOS și Windows, fiecare pe amd64 și arm64 — plus un fișier `SHA256SUMS`. Vezi [Ediția SX](/light-node/sx-edition#install) pentru pașii de descărcare și verificare și [Docker](/light-node/sx-edition#docker) pentru construirea unei imagini din eticheta sursă `v3.1.9`.
+Nodul light este livrat pe **propria sa linie de versiune — în prezent 3.1.10** (3.1.9 este încă acceptată) — care este **distinctă de versiunea de lansare a lanțului** (rețeaua principală rulează lanțul `v3.2.3`). Binarele pentru fiecare rețea sunt publicate cu un **manifest de sumă de control SHA-256** la `https://download.qore.host/<net>/lightnode/latest.json` (`<net>` este `mainnet` sau `testnet`). Ambele canale conțin aceeași versiune 3.1.10, iar ambele manifeste setează `minCompatible` la `3.1.9`, deci versiunile mai vechi ale nodului light trebuie înlocuite. Lansarea are 12 binare — SX și UX pentru Linux, macOS și Windows, fiecare pe amd64 și arm64 — plus un fișier `SHA256SUMS`. Vezi [Ediția SX](/light-node/sx-edition#install) pentru pașii de descărcare și verificare și [Docker](/light-node/sx-edition#docker) pentru construirea unei imagini din eticheta sursă `v3.1.10`.
 
 O versiune Android este atașată lansării GitHub doar ca **previzualizare**: urmărește și verifică lanțul, dar nu se înregistrează și nu câștigă recompense.
 
-Când citiți documentația sau notele de lansare, tratați versiunea nodului light (3.1.9) și versiunea lanțului (v3.2.3) ca două numere separate care se întâmplă să împartă o serie majoră.
+Când citiți documentația sau notele de lansare, tratați versiunea nodului light (3.1.10) și versiunea lanțului (v3.2.3) ca două numere separate care se întâmplă să împartă o serie majoră.
 
 ## De ce să rulați un nod light {#why-run-a-light-node}
 
