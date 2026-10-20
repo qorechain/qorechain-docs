@@ -46,7 +46,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-모든 검증에 `client`를 전달하세요. 영수증 API와 그 검사 방식은 릴리스 간에 변경되었으므로, 체인에 대해 검증하는 릴리스(0.5.0 이상)를 사용하세요. Python, Go, Rust, Java 클라이언트도 동일한 빌드/검증 인터페이스를 제공합니다(Go와 Rust 클라이언트는 아래 제한 사항과 동일한 복수형 키 조회 경로를 사용합니다).
+모든 검증에 `client`를 전달하세요. 영수증 API와 그 검사 방식은 릴리스 간에 변경되었으므로, 체인에 대해 검증하는 릴리스(0.5.0 이상)를 사용하세요. Python, Go, Rust, Java 클라이언트도 동일한 빌드/검증 인터페이스를 제공합니다(다섯 개 클라이언트 모두 아래 제한 사항과 동일한 복수형 키 조회 경로를 사용합니다).
 
 :::caution 현재 클라이언트의 제한 사항 (RDK 0.5.0)
 0.5.0의 `verifySettlementReceipt`는 영수증만으로는 절대 `valid`를 보고하지 않으며(`client`가 없으면 결과는 `mode: "signature-only"`, `valid: false`입니다), 체인 검사는 아직 라이브 네트워크에 대해 완료되지 않습니다. 그 이유는 두 가지이며, 둘 다 체인이 아니라 클라이언트에 있습니다:

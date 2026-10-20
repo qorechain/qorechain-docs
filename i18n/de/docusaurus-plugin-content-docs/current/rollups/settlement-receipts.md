@@ -46,7 +46,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher eine Version, die gegen die Chain verifiziert (0.5.0 oder neuer). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle (die Clients für Go und Rust verwenden denselben Pluralpfad für die Schlüsselsuche wie in der folgenden Einschränkung).
+Übergeben Sie bei jeder Verifikation einen `client`. Die Beleg-API und ihre Prüfungen haben sich zwischen den Versionen geändert, verwenden Sie daher eine Version, die gegen die Chain verifiziert (0.5.0 oder neuer). Die Clients für Python, Go, Rust und Java bieten dieselbe Build-/Verify-Schnittstelle (alle fünf Clients verwenden denselben Pluralpfad für die Schlüsselsuche wie in der folgenden Einschränkung).
 
 :::caution Aktuelle Einschränkungen der Clients (RDK 0.5.0)
 `verifySettlementReceipt` meldet in 0.5.0 niemals `valid` allein anhand des Belegs (ohne `client` lautet das Ergebnis `mode: "signature-only"` und `valid: false`), und seine Chain-Prüfung wird gegen die Live-Netzwerke noch nicht abgeschlossen, aus zwei Gründen, die im Client liegen, nicht in der Chain:

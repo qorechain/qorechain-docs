@@ -46,7 +46,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Transmite un `client` la fiecare verificare. API-ul bonurilor și verificările sale s-au schimbat între versiuni, așa că folosește o versiune care verifică față de lanț (0.5.0 sau mai nouă). Clienții Python, Go, Rust și Java expun aceeași suprafață de construire/verificare (clienții Go și Rust folosesc aceeași cale plurală de căutare a cheii ca în limitarea de mai jos).
+Transmite un `client` la fiecare verificare. API-ul bonurilor și verificările sale s-au schimbat între versiuni, așa că folosește o versiune care verifică față de lanț (0.5.0 sau mai nouă). Clienții Python, Go, Rust și Java expun aceeași suprafață de construire/verificare (toți cei cinci clienți folosesc aceeași cale plurală de căutare a cheii ca în limitarea de mai jos).
 
 :::caution Limitări actuale ale clientului (RDK 0.5.0)
 `verifySettlementReceipt` în 0.5.0 nu raportează niciodată `valid` doar pe baza bonului (fără un `client`, rezultatul este `mode: "signature-only"` și `valid: false`), iar verificarea sa în lanț nu se finalizează încă pe rețelele active, din două motive care țin de client, nu de lanț:

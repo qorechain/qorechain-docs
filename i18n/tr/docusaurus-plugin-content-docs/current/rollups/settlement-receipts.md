@@ -46,7 +46,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Her doğrulama için bir `client` iletin. Makbuz API'si ve kontrolleri sürümler arasında değişmiştir; bu nedenle zincire karşı doğrulama yapan bir sürüm kullanın (0.5.0 veya sonrası). Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar (Go ve Rust istemcileri, aşağıdaki sınırlamadaki çoğul anahtar arama yolunun aynısını kullanır).
+Her doğrulama için bir `client` iletin. Makbuz API'si ve kontrolleri sürümler arasında değişmiştir; bu nedenle zincire karşı doğrulama yapan bir sürüm kullanın (0.5.0 veya sonrası). Python, Go, Rust ve Java istemcileri aynı oluşturma/doğrulama yüzeyini sunar (beş istemcinin tamamı, aşağıdaki sınırlamadaki çoğul anahtar arama yolunun aynısını kullanır).
 
 :::caution Mevcut istemci sınırlamaları (RDK 0.5.0)
 0.5.0'daki `verifySettlementReceipt`, yalnızca makbuza dayanarak asla `valid` bildirmez (`client` olmadan sonuç `mode: "signature-only"` ve `valid: false` olur) ve zincir kontrolü canlı ağlara karşı henüz tamamlanmaz; bunun iki nedeni vardır ve ikisi de zincirde değil, istemcidedir:

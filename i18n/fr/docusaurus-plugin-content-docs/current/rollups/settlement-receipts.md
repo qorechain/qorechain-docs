@@ -46,7 +46,7 @@ const result = await verifySettlementReceipt(receipt, { client: rdk });
 console.log(result.valid);
 ```
 
-Passez un `client` pour chaque vérification. L'API des reçus et ses contrôles ont changé d'une version à l'autre : utilisez donc une version qui vérifie par rapport à la chaîne (0.5.0 ou ultérieure). Les clients Python, Go, Rust et Java exposent la même surface de construction/vérification (les clients Go et Rust utilisent le même chemin de recherche de clé au pluriel que celui décrit dans la limitation ci-dessous).
+Passez un `client` pour chaque vérification. L'API des reçus et ses contrôles ont changé d'une version à l'autre : utilisez donc une version qui vérifie par rapport à la chaîne (0.5.0 ou ultérieure). Les clients Python, Go, Rust et Java exposent la même surface de construction/vérification (les cinq clients utilisent le même chemin de recherche de clé au pluriel que celui décrit dans la limitation ci-dessous).
 
 :::caution Limitations actuelles du client (RDK 0.5.0)
 Dans la 0.5.0, `verifySettlementReceipt` ne rapporte jamais `valid` à partir du seul reçu (sans `client`, le résultat est `mode: "signature-only"` et `valid: false`), et son contrôle sur la chaîne n'aboutit pas encore sur les réseaux en service, pour deux raisons qui tiennent au client et non à la chaîne :
